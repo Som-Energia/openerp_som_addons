@@ -27,19 +27,19 @@ class TestWizardCreacioRemesaPagamentTaxes(testing.OOTestCaseWithCursor):
             context={},
         )
 
-        wiz_o.create_remesa_pagaments(
+        order_id = wiz_o.create_remesa_pagaments(
             self.cursor,
             self.uid,
             [wiz_id],
             {},
         )
 
-        payment_orders = order_o.search(self.cursor, self.uid, [], limit=1, order="id desc")
-        po = order_o.browse(self.cursor, self.uid, payment_orders[0])
+        po = order_o.browse(self.cursor, self.uid, order_id)
         self.assertEqual(len(po.line_ids), 1)
 
     def test_create_remesa_pagaments__error_ja_pagat(self):
         wiz_o = self.pool.get("wizard.creacio.remesa.pagament.taxes")
+
         wiz_init = {
             "account": 7,
             "payment_mode": 1,
@@ -52,7 +52,6 @@ class TestWizardCreacioRemesaPagamentTaxes(testing.OOTestCaseWithCursor):
             wiz_init,
             context={},
         )
-
         wiz_o.create_remesa_pagaments(
             self.cursor,
             self.uid,
@@ -61,6 +60,12 @@ class TestWizardCreacioRemesaPagamentTaxes(testing.OOTestCaseWithCursor):
         )
 
         with self.assertRaises(except_osv) as validate_error:
+            wiz_id = wiz_o.create(
+                self.cursor,
+                self.uid,
+                wiz_init,
+                context={},
+            )
             wiz_o.create_remesa_pagaments(
                 self.cursor,
                 self.uid,
@@ -78,7 +83,7 @@ class TestWizardCreacioRemesaPagamentTaxes(testing.OOTestCaseWithCursor):
             datetime.date(2023, 10, 1),
             datetime.date(2023, 12, 31),
         )
-        assert get_dates_from_quarter(1984, 0) == (
+        assert get_dates_from_quarter(1984, 5) == (
             datetime.date(1984, 1, 1),
             datetime.date(1984, 12, 31),
         )

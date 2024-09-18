@@ -11,6 +11,9 @@ logging.basicConfig(stream=sys.stdout, level=logging.INFO)
 logger = logging.getLogger("wizard.importador.leads.comercials")
 
 
+ANUAL_VAL = 5
+
+
 class WizardCreacioRemesaPagamentTaxes(osv.osv_memory):
     _name = "wizard.creacio.remesa.pagament.taxes"
 
@@ -28,8 +31,15 @@ class WizardCreacioRemesaPagamentTaxes(osv.osv_memory):
         currency_obj = self.pool.get('res.currency')
         order_obj = self.pool.get('payment.order')
         line_obj = self.pool.get('payment.line')
+        mun_obj = self.pool.get('res.municipi')
 
-        municipis_conf_ids = config_obj.search(cursor, uid, [('type', '=', 'remesa')])
+        search_values = [('type', '=', 'remesa')]
+        if wizard.quarter == ANUAL_VAL:
+            search_values += [('payment', '=', 'year')]
+        else:
+            search_values += [('payment', '=', 'quarter')]
+
+        municipis_conf_ids = config_obj.search(cursor, uid, search_values)
 
         if not municipis_conf_ids:
             vals = {
@@ -70,7 +80,6 @@ class WizardCreacioRemesaPagamentTaxes(osv.osv_memory):
             return True
 
         # Crear remesa
-        # order_id = 11603
         order_id = order_obj.create(cursor, uid, dict(
             date_prefered='fixed',
             user_id=uid,
@@ -83,24 +92,23 @@ class WizardCreacioRemesaPagamentTaxes(osv.osv_memory):
         for city in totals_by_city:
             total_tax = round(city[4] - city[3] * (tax / 100.0), 2)
 
-            # TODO obtenir municip a traves d'INE city[5] i després partner i bank
-            partner_id = 54047
-            bank_id = 77705
-            partner_id = 1
-            bank_id = 1
+            municipi_id = mun_obj.search(cursor, uid, [('ine', '=', city[5])])[0]
+            config_id = config_obj.search(cursor, uid, [('municipi_id', '=', municipi_id)])[0]
+            config_data = config_obj.read(cursor, uid, config_id, ['partner_id', 'bank_id'])
 
-            # account_id = 166127
             account_id = wizard.account.id
 
             # Crear les línies
             euro_id = currency_obj.search(cursor, uid, [('code', '=', 'EUR')])[0]
+            quarter_name = dict(self._columns['quarter'].selection)[int(city[2])]
             vals = {
-                'name': 'Ajuntament de {} taxa 1,5%'.format(city[0]),
+                'name': 'Ajuntament de {} taxa 1,5% pel trimestre {}-{}'.format(
+                    city[0], wizard.year, quarter_name),
                 'order_id': order_id,
                 'currency': euro_id,
-                'partner_id': partner_id,
+                'partner_id': config_data['partner_id'][0],
                 'company_currency': euro_id,
-                'bank_id': bank_id,
+                'bank_id': config_data['bank_id'][0],
                 'state': 'normal',
                 'amount_currency': -1 * total_tax,
                 'account_id': account_id,
@@ -113,16 +121,28 @@ class WizardCreacioRemesaPagamentTaxes(osv.osv_memory):
                 raise osv.except_osv(
                     ('Error!'), (
                         "Ja s'ha pagat el trimestre {}-{} per a l'ajuntament {}".format(
-                            wizard.year, wizard.quarter, city[0])
+                            wizard.year, quarter_name, city[0])
                     )
                 )
 
         vals = {
             'info': "S'ha creat la remesa amb {} línies".format(len(totals_by_city)),
             'state': 'done',
+            'order_id': order_id
         }
         wizard.write(vals, context)
-        return vals
+        return order_id
+
+    def show_payment_order(self, cursor, uid, ids, context):
+        wizard = self.browse(cursor, uid, ids[0], context)
+        return {
+            'domain': "[('id','=', %s)]" % str(wizard.order_id),
+            'name': 'Ordre de pagament',
+            'view_type': 'form',
+            'view_mode': 'tree,form',
+            'res_model': 'payment.order',
+            'type': 'ir.actions.act_window',
+        }
 
     _columns = {
         'state': fields.char('Estat', size=16, required=True),
@@ -132,18 +152,20 @@ class WizardCreacioRemesaPagamentTaxes(osv.osv_memory):
         "info": fields.text("info"),
         "year": fields.integer("Any", required=True),
         "quarter": fields.selection(
-            [(0, 'Anual'), (1, '1T'), (2, '2T'), (3, '3T'), (4, '4T')],
+            [(1, '1T'), (2, '2T'), (3, '3T'), (4, '4T'), (ANUAL_VAL, 'Anual')],
             'Trimestre', required=True
         ),
+        'order_id': fields.integer("id remesa"),
     }
 
     _defaults = {
         'state': lambda *a: 'init',
+        'year': lambda *a: datetime.datetime.today().year,
     }
 
 
 def get_dates_from_quarter(year, quarter):
-    if quarter == 0:
+    if quarter == ANUAL_VAL:
         return datetime.date(year, 1, 1), datetime.date(year, 12, 31)
     else:
         start_date = datetime.date(year, (quarter - 1) * 3 + 1, day=1)

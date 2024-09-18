@@ -49,6 +49,6 @@
             <field name="view_id" ref="view_som_municipal_taxes_payment_tree"/>
             <field name="context">{'active_test': False}</field>
         </record>
-        <menuitem action="action_som_municipal_taxes_payment_tree" id="menu_municipal_taxes_payment_tree" parent="som_municipal_taxes.menu_som_municipal_taxes_base"/>
+        <!-- <menuitem action="action_som_municipal_taxes_payment_tree" id="menu_municipal_taxes_payment_tree" parent="giscedata_municipal_taxes.menu_admin_pub_municipal_taxes"/> -->
     </data>
 </openerp>

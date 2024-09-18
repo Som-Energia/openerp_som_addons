@@ -12,13 +12,15 @@
                 	<group colspan="4" col="4" attrs="{'invisible':[('state', '!=', 'init')]}">
                         <field name="account"/>
                         <field name="payment_mode"/>
+                        <field name="year"/>
+                        <field name="quarter"/>
 						<separator colspan="4" />
 						<button string="Crear" name="create_remesa_pagaments" type="object" icon="gtk-execute"/>
                         <button special="cancel" string="Cancelar" icon="gtk-cancel"/>
 					</group>
 					<group colspan="4" col="4" attrs="{'invisible':[('state', '!=', 'done')]}">
                         <separator colspan="4" />
-						<button string="Mostrar remesa" name="show" type="object" icon="gtk-new"/>
+						<button string="Mostrar remesa" name="show_payment_order" type="object" icon="gtk-new"/>
 					</group>
 					<group colspan="4" col="4" attrs="{'invisible':[('state', '!=', 'cancel')]}">
                         <separator colspan="4" />
@@ -38,7 +40,7 @@
         </record>
         <menuitem id="menu_wizard_creacio_remesa_pagament_taxes"
             name="Assistent per la creació de la remesa del pagament de les taxes municipals"
-            parent="som_municipal_taxes.menu_som_municipal_taxes_base"
+            parent="giscedata_municipal_taxes.menu_admin_pub_municipal_taxes"
             action="action_wizard_creacio_remesa_pagament_taxes_form"/>
     </data>
 </openerp>
