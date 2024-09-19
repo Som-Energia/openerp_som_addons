@@ -23,7 +23,7 @@
         'security/som_municipal_taxes_security.xml',
         'security/ir.model.access.csv',
     ],
-    'demo': [
+    'demo_xml': [
         'tests/som_municipal_taxes_demo.xml',
     ]
 }

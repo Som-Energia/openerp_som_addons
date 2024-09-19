@@ -26,7 +26,6 @@ class TestWizardCreacioRemesaPagamentTaxes(testing.OOTestCaseWithCursor):
             wiz_init,
             context={},
         )
-
         order_id = wiz_o.create_remesa_pagaments(
             self.cursor,
             self.uid,
@@ -34,6 +33,8 @@ class TestWizardCreacioRemesaPagamentTaxes(testing.OOTestCaseWithCursor):
             {},
         )
 
+        state = wiz_o.read(self.cursor, self.uid, wiz_id, ['state'])[0]['state']
+        self.assertEqual(state, 'done')
         po = order_o.browse(self.cursor, self.uid, order_id)
         self.assertEqual(len(po.line_ids), 1)
 
@@ -72,7 +73,7 @@ class TestWizardCreacioRemesaPagamentTaxes(testing.OOTestCaseWithCursor):
                 [wiz_id],
                 {},
             )
-        self.assertIn("Ja s'ha pagat el trimestre", validate_error.exception.message)
+            self.assertIn("Ja s'ha pagat el trimestre", validate_error.exception.message)
 
     def test_get_dates_from_quarter(self):
         assert get_dates_from_quarter(2024, 1) == (
