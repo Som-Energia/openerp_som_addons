@@ -88,13 +88,17 @@ class WizardCreacioRemesaPagamentTaxes(osv.osv_memory):
             type='payable',
             create_account_moves='direct-payment',
         ))
-
+        linia_creada = []
+        linia_no_creada = []
         for city in totals_by_city:
             total_tax = round(city[4] - city[3] * (tax / 100.0), 2)
 
             municipi_id = mun_obj.search(cursor, uid, [('ine', '=', city[5])])[0]
             config_id = config_obj.search(cursor, uid, [('municipi_id', '=', municipi_id)])[0]
             config_data = config_obj.read(cursor, uid, config_id, ['partner_id', 'bank_id'])
+            if not config_data['bank_id']:
+                linia_no_creada.append(config_data['partner_id'][1])
+                continue
 
             account_id = wizard.account.id
 
@@ -117,6 +121,7 @@ class WizardCreacioRemesaPagamentTaxes(osv.osv_memory):
             }
             try:
                 line_obj.create(cursor, uid, vals)
+                linia_creada.append(city[0])
             except UniqueViolation:
                 raise osv.except_osv(
                     ('Error!'), (
@@ -125,8 +130,13 @@ class WizardCreacioRemesaPagamentTaxes(osv.osv_memory):
                     )
                 )
 
+        info = "S'ha creat la remesa amb {} línies\n\n".format(len(linia_creada))
+        if linia_no_creada:
+            info += """Atenció. Els següents ajuntaments no tenen un compte corrent informat
+              i per tant no s'ha pogut crear el pagament: {}""".format(", ".join(linia_no_creada))
+
         vals = {
-            'info': "S'ha creat la remesa amb {} línies".format(len(totals_by_city)),
+            'info': info,
             'state': 'done',
             'order_id': order_id
         }

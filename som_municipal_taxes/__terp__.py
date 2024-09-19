@@ -16,12 +16,12 @@
     ],
     'init_xml': [],
     'update_xml': [
-        'security/som_municipal_taxes_security.xml',
-        'security/ir.model.access.csv',
+        'data/som_municipal_taxes_data.xml',
         'views/som_municipal_taxes_config_view.xml',
         'views/som_municipal_taxes_payment_view.xml',
         'wizard/wizard_creacio_remesa_pagament_taxes.xml',
-        'tests/som_municipal_taxes_demo.xml',
+        'security/som_municipal_taxes_security.xml',
+        'security/ir.model.access.csv',
     ],
     'demo': [
         'tests/som_municipal_taxes_demo.xml',
