@@ -1044,5 +1044,13 @@
             <field name="params">{}</field>
             <field name="task_id" ref="descarregar_udesa_ftp"/>
         </record>
+        <!-- Registre General -->
+        <record model="som.crawlers.task.step" id="pas_carregar_registre_general">
+            <field name="name">Omplir formulari registre general</field>
+            <field name="sequence">1</field>
+            <field name="function">upload_form_registre_general</field>
+            <field name="params"></field>
+            <field name="task_id" ref="carregar_registre_general"/>
+        </record>
     </data>
 </openerp>

@@ -709,5 +709,52 @@ class SomCrawlersTaskStep(osv.osv):
 
         return output
 
+    def upload_form_registre_general(self, cursor, uid, id, result_id, context=None):
+        classresult = self.pool.get("som.crawlers.result")
+        task_step_obj = self.browse(cursor, uid, id)
+        task_step_params = json.loads(task_step_obj.params)
+        path = os.path.join(os.path.dirname(os.path.realpath(__file__)), "../")
+
+        output = ""
+        if "nom_fitxer" in task_step_params:
+            config_obj = self.pool.get("som.crawlers.task").id_del_portal_config(
+                cursor, uid, task_step_obj.task_id.id, context
+            )
+            script_path = os.path.join(path, "scripts/" + task_step_params["nom_fitxer"])
+            if os.path.exists(script_path):
+                cfg_obj = self.pool.get("res.config")
+                path_python = cfg_obj.get(
+                    cursor,
+                    uid,
+                    "som_crawlers_massive_importer_python_path",
+                    "/home/erp/.virtualenvs/massive/bin/python",
+                )
+                if not os.path.exists(path_python):
+                    raise Exception("Not virtualenv of massive importer found")
+                file_name = (
+                    "output_"
+                    + config_obj.name
+                    + "_"
+                    + datetime.now().strftime("%Y-%m-%d_%H_%M_%S_%f")
+                    + ".txt"
+                )
+                args_str = self.create_script_args(config_obj, task_step_params, file_name)
+                os.system("{} {} {}".format(path_python, script_path, args_str))
+                output_path = self.get_output_path(cursor, uid)
+                output = self.readOutputFile(cursor, uid, output_path, file_name)
+            else:
+                output = "File or directory doesn't exist"
+        else:
+            output = "Falta especificar nom fitxer"
+        task_step_obj.task_id.write(
+            {
+                "ultima_tasca_executada": str(task_step_obj.name)
+                + " - "
+                + str(datetime.now().strftime("%Y-%m-%d_%H:%M:%S"))
+            }
+        )
+        classresult.write(cursor, uid, result_id, {"resultat_bool": True})
+        return output
+
 
 SomCrawlersTaskStep()
