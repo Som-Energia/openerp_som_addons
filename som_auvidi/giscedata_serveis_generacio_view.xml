@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<openerp>
+    <data>
+        <record id="view_servei_generacio_form_som" model="ir.ui.view">
+            <field name="name">giscedata.servei.generacio.form.som</field>
+            <field name="model">giscedata.servei.generacio</field>
+            <field name="inherit_id" ref="giscedata_serveis_generacio.view_servei_generacio_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='name']" position="attributes">
+                    <attribute name="on_change">onchange_name(name)</attribute>
+                </xpath>
+                <xpath expr="//field[@name='numero_integrants']" position="after">
+                    <field name="categoria_polissa" colspan="8"/>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</openerp>
