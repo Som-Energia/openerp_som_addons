@@ -147,7 +147,8 @@ class SomCrawlersTask(osv.osv):
         for taskStep in task_steps_list:
             resultat = "[" + taskStep.name + "]: "
             try:
-                resultat += classTaskStep.executar_steps(cursor, uid, taskStep.id, result_id)
+                resultat += classTaskStep.executar_steps(cursor,
+                                                         uid, taskStep.id, result_id, context)
                 resultat_correcte = True
             except exceptions.NoResultsException as e:
                 resultat += str(e)

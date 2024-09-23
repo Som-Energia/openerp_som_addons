@@ -4,6 +4,7 @@
 import click
 import os
 import importlib.util
+import json
 
 # Arguments passed through the os systemm call
 
@@ -24,6 +25,7 @@ import importlib.util
 @click.option("-pr", "--process", help="Process to download", required=False)
 @click.option("-url-upload", "--url-upload", help="Upload URL", required=False)
 @click.option("-fp", "--file-path", help="Upload file path.", required=False)
+@click.option("-context", "--context", help="Context from OpenERP", required=False)
 # Function that runs de crawler of the crawler saves the user and the date when
 # it was modified and returns the new password.
 # @param user Username of the portal
@@ -51,6 +53,7 @@ def crawl(
     process,
     url_upload,
     file_path=None,
+    context=None,
 ):
     path = os.path.dirname(os.path.abspath(__file__))
     if not os.path.exists("/tmp/outputFiles/"):
@@ -75,6 +78,7 @@ def crawl(
             process,
             url_upload,
             file_path,
+            context,
         )
         selenium_spiders_path = os.path.join(path, "../spiders/selenium_spiders")
         if process != "None":
@@ -102,7 +106,8 @@ def crawl(
 
 
 def buildPortalCreds(
-    user, password, url, filters, crawler, days, pfiles, browser, process, url_upload, file_path
+    user, password, url, filters, crawler, days, pfiles, browser, process, url_upload, file_path,
+    context=None,
 ):
     portalCreds = dict()
     portalCreds["username"] = user
@@ -119,7 +124,8 @@ def buildPortalCreds(
     portalCreds["url_upload"] = url_upload
     if file_path:
         portalCreds["file_path"] = file_path
-
+    if context:
+        portalCreds["context"] = json.loads(context)
     return portalCreds
 
 

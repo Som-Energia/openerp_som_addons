@@ -393,7 +393,7 @@ class SomCrawlersTaskStep(osv.osv):
 
     # test ok
     def create_script_args(
-        self, config_obj, task_step_params, execution_restult_file, file_path=None
+        self, config_obj, task_step_params, execution_restult_file, file_path=None, context=None
     ):
         args = {
             "-n": str(config_obj.name),
@@ -408,12 +408,15 @@ class SomCrawlersTaskStep(osv.osv):
             "-nfp": str(config_obj.pending_files_only),
             "-b": str(config_obj.browser),
             "-pr": "None",
+            "-context": context,
         }
         if file_path:
             args["-fp"] = file_path
 
         if "process" in task_step_params:
             args.update({"-pr": str(task_step_params["process"])})
+        if context:
+            args.update({"-context": json.dumps(context)})
 
         return " ".join(["{} {}".format(k, v) for k, v in args.iteritems()])
 
