@@ -18,7 +18,6 @@
     'update_xml': [
         'data/som_municipal_taxes_data.xml',
         'views/som_municipal_taxes_config_view.xml',
-        'views/som_municipal_taxes_payment_view.xml',
         'wizard/wizard_creacio_remesa_pagament_taxes.xml',
         'security/som_municipal_taxes_security.xml',
         'security/ir.model.access.csv',

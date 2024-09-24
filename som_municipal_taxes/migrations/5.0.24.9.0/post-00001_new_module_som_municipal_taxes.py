@@ -19,16 +19,10 @@ def up(cursor, installed_version):
         cursor, context={'module': 'som_municipal_taxes'}
     )
     logger.info("Table created succesfully.")
-    logger.info("Creating table: som.municipal.taxes.payment")
-    pool.get("som.municipal.taxes.payment")._auto_init(
-        cursor, context={'module': 'som_municipal_taxes'}
-    )
-    logger.info("Table created succesfully.")
 
     views = [
         'data/som_municipal_taxes_data.xml',
         'views/som_municipal_taxes_config_view.xml',
-        'views/som_municipal_taxes_payment_view.xml',
         'wizard/wizard_creacio_remesa_pagament_taxes.xml',
         'security/som_municipal_taxes_security.xml',
         'security/ir.model.access.csv',
