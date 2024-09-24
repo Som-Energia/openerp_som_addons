@@ -9,15 +9,13 @@
             <field name="arch" type="xml">
                 <form string="Configuració pagaments municipals">
                     <field name="name"/>
-                    <field name="type" readonly="1"/>
                     <field name="municipi_id"/>
                     <field name="partner_id" on_change="on_change_parnter_get_bank(partner_id)"/>
-                    <field name="payment"/>
                     <field name="bank_id" domain="[('partner_id', '=', partner_id)]"/>
-                    <group colspan="2" col="2" string="Contacte" attrs="{'invisible': [('type','!=','crawler')]}">
-                        <field name="url_portal" />
-                        <field name="usuari"/>
-                        <field name="password"/>
+                    <group colspan="2" col="2" string="Opcions">
+                        <field name="payment_order"/>
+                        <field name="red_sara"/>
+                        <field name="active"/>
                     </group>
                 </form>
             </field>
@@ -30,9 +28,11 @@
             <field name="arch" type="xml">
                 <tree string="Configuració pagament municipal">
                     <field name="name" select="1"/>
-                    <field name="type" select="1"/>
                     <field name="municipi_id" select="1"/>
                     <field name="partner_id" select="1"/>
+                    <field name="payment_order" select="1"/>
+                    <field name="red_sara" select="1"/>
+                    <field name="active" select="1"/>
                 </tree>
             </field>
         </record>

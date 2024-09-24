@@ -33,11 +33,13 @@ class WizardCreacioRemesaPagamentTaxes(osv.osv_memory):
         line_obj = self.pool.get('payment.line')
         mun_obj = self.pool.get('res.municipi')
 
-        search_values = [('type', '=', 'remesa')]
+        search_values = [('payment_order', '=', True), ('active', '=', True)]
         if wizard.quarter == ANUAL_VAL:
             search_values += [('payment', '=', 'year')]
         else:
             search_values += [('payment', '=', 'quarter')]
+        if 'from_model' in context:
+            search_values += [('id', 'in', context['active_ids'])]
 
         municipis_conf_ids = config_obj.search(cursor, uid, search_values)
 

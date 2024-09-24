@@ -29,7 +29,7 @@
                 </form>
             </field>
         </record>
-        <record model="ir.actions.act_window" id="action_wizard_creacio_remesa_pagament_taxes_form">
+        <record model="ir.actions.act_window" id="action_wizard_creacio_remesa_pagament_taxes_form_menu">
             <field name="name">Assistent per la creació de la remesa del pagament de les taxes municipals</field>
             <field name="type">ir.actions.act_window</field>
             <field name="res_model">wizard.creacio.remesa.pagament.taxes</field>
@@ -37,10 +37,30 @@
             <field name="view_mode">form</field>
             <field name="target">new</field>
             <field name="view_id" ref="view_wizard_creacio_remesa_pagament_taxes_form"/>
+            <field name="context">{'from_menu': True}</field>
         </record>
         <menuitem id="menu_wizard_creacio_remesa_pagament_taxes"
             name="Assistent per la creació de la remesa del pagament de les taxes municipals"
             parent="giscedata_municipal_taxes.menu_admin_pub_municipal_taxes"
-            action="action_wizard_creacio_remesa_pagament_taxes_form"/>
+            action="action_wizard_creacio_remesa_pagament_taxes_form_menu"/>
+        <record model="ir.actions.act_window" id="action_wizard_creacio_remesa_pagament_taxes_form_action">
+            <field name="name">Crear remesa pagament impost municipal</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">wizard.creacio.remesa.pagament.taxes</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">form</field>
+            <field name="target">new</field>
+            <field name="view_id" ref="view_wizard_creacio_remesa_pagament_taxes_form"/>
+            <field name="context">{'from_model': True}</field>
+        </record>
+        <record model="ir.values" id="value_wizard_create_atc_from_polissa_gas">
+            <field name="object" eval="1"/>
+            <field name="name">Crear remesa pagament impost municipal</field>
+            <field name="key2">client_action_multi</field>
+            <field name="key">action</field>
+            <field name="model">som.municipal.taxes.config</field>
+            <field name="value" eval="'ir.actions.act_window,'+str(ref('action_wizard_creacio_remesa_pagament_taxes_form_action'))" />
+        </record>
+
     </data>
 </openerp>
