@@ -7,23 +7,26 @@ class GiscedataServeiGeneracio(osv.osv):
     _name = "giscedata.servei.generacio"
     _inherit = "giscedata.servei.generacio"
 
-    def onchange_name(self, cursor, uid, ids, name, context=None):
+    def create(self, cursor, uid, vals, context=None):
         if context is None:
             context = {}
-        res = {}
-        if name:
+
+        res_id = super(GiscedataServeiGeneracio, self).create(cursor, uid, vals, context)
+
+        if vals.get('name'):
             imd_obj = self.pool.get('ir.model.data')
             categ_obj = self.pool.get('giscedata.polissa.category')
 
-            new_name = "[AUVIDI] " + name
-            new_code = "AVD" + ''.join([x[0] for x in name.split()]).upper()
+            new_name = "[AUVIDI] " + vals.get('name')
+            new_code = "AVD" + ''.join([x[0] for x in vals.get('name').split()]).upper()
             auvidi_categ_id = imd_obj.get_object_reference(
                 cursor, uid, 'som_auvidi', 'polissa_category_auvidi_base'
             )[1]
             existing_ids = categ_obj.search(cursor, uid, [('name', '=', new_name)])
+            new_vals = {}
             if len(existing_ids):
-                res.update({
-                    'value': {'categoria_polissa': existing_ids[0]}
+                new_vals.update({
+                    'categoria_polissa': existing_ids[0]
                 })
             else:
                 categ_vals = {
@@ -32,10 +35,11 @@ class GiscedataServeiGeneracio(osv.osv):
                     'parent_id': auvidi_categ_id,
                 }
                 new_categ_id = categ_obj.create(cursor, uid, categ_vals, context=context)
-                res.update({
-                    'value': {'categoria_polissa': new_categ_id}
+                new_vals.update({
+                    'categoria_polissa': new_categ_id
                 })
-        return res
+            self.write(cursor, uid, [res_id], new_vals)
+        return res_id
 
     _columns = {
         "categoria_polissa": fields.many2one("giscedata.polissa.category", "Categoria pòlissa"),
