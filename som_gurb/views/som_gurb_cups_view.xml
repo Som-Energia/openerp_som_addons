@@ -98,6 +98,6 @@
             <field name="context">{'active_test': False}</field>
         </record>
         <!-- Menú per llistar els GURBs-->
-        <menuitem id="menu_llistar_gurbs" parent="menu_gurb_cups" action="action_gurb_cups" />
+        <menuitem id="menu_llistar_gurbs_cups" parent="menu_gurb" action="action_gurb_cups" />
     </data>
 </openerp>
