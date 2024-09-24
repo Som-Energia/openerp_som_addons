@@ -1,0 +1,1 @@
+from test_wizard_creacio_remesa_pagament_taxes import *

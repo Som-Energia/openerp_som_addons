@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+    <data>
+        <record model="ir.ui.view" id="view_wizard_creacio_remesa_pagament_taxes_form">
+            <field name="name">wizard.creacio.remesa.pagament.taxes.form</field>
+            <field name="model">wizard.creacio.remesa.pagament.taxes</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <form string="Assistent per la creació de la remesa del pagament de les taxes municipals">
+                	<field name="state" invisible="1"/>
+                    <field name="info" nolabel="1" colspan="4" height="150" readonly="1"/>
+                	<group colspan="4" col="4" attrs="{'invisible':[('state', '!=', 'init')]}">
+                        <field name="account"/>
+                        <field name="payment_mode"/>
+                        <field name="year"/>
+                        <field name="quarter"/>
+						<separator colspan="4" />
+						<button string="Crear" name="create_remesa_pagaments" type="object" icon="gtk-execute"/>
+                        <button special="cancel" string="Cancelar" icon="gtk-cancel"/>
+					</group>
+					<group colspan="4" col="4" attrs="{'invisible':[('state', '!=', 'done')]}">
+                        <separator colspan="4" />
+						<button string="Mostrar remesa" name="show_payment_order" type="object" icon="gtk-new"/>
+					</group>
+					<group colspan="4" col="4" attrs="{'invisible':[('state', '!=', 'cancel')]}">
+                        <separator colspan="4" />
+                        <button special="cancel" string="Tancar" icon="gtk-cancel"/>
+					</group>
+                </form>
+            </field>
+        </record>
+        <record model="ir.actions.act_window" id="action_wizard_creacio_remesa_pagament_taxes_form_menu">
+            <field name="name">Assistent per la creació de la remesa del pagament de les taxes municipals</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">wizard.creacio.remesa.pagament.taxes</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">form</field>
+            <field name="target">new</field>
+            <field name="view_id" ref="view_wizard_creacio_remesa_pagament_taxes_form"/>
+            <field name="context">{'from_menu': True}</field>
+        </record>
+        <menuitem id="menu_wizard_creacio_remesa_pagament_taxes"
+            name="Assistent per la creació de la remesa del pagament de les taxes municipals"
+            parent="giscedata_municipal_taxes.menu_admin_pub_municipal_taxes"
+            action="action_wizard_creacio_remesa_pagament_taxes_form_menu"/>
+        <record model="ir.actions.act_window" id="action_wizard_creacio_remesa_pagament_taxes_form_action">
+            <field name="name">Crear remesa pagament impost municipal</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">wizard.creacio.remesa.pagament.taxes</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">form</field>
+            <field name="target">new</field>
+            <field name="view_id" ref="view_wizard_creacio_remesa_pagament_taxes_form"/>
+            <field name="context">{'from_model': True}</field>
+        </record>
+        <record model="ir.values" id="value_wizard_create_atc_from_polissa_gas">
+            <field name="object" eval="1"/>
+            <field name="name">Crear remesa pagament impost municipal</field>
+            <field name="key2">client_action_multi</field>
+            <field name="key">action</field>
+            <field name="model">som.municipal.taxes.config</field>
+            <field name="value" eval="'ir.actions.act_window,'+str(ref('action_wizard_creacio_remesa_pagament_taxes_form_action'))" />
+        </record>
+
+    </data>
+</openerp>

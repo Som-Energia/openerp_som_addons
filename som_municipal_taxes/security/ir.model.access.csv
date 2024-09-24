@@ -1,0 +1,5 @@
+"id","name","model_id:id","group_id:id","perm_read","perm_write","perm_create","perm_unlink"
+"access_som_municipal_taxes_config_manager","som.municipal.taxes.config","model_som_municipal_taxes_config","res_groups_som_municipal_taxes_manager",1,1,1,1
+"access_som_municipal_taxes_config_users","som.municipal.taxes.config","model_som_municipal_taxes_config","res_groups_som_municipal_taxes_user",1,0,0,0
+"access_wizard_creacio_remesa_pagament_taxes_manager","wizard.creacio.remesa.pagament.taxes","model_wizard_creacio_remesa_pagament_taxes","res_groups_som_municipal_taxes_manager",1,1,1,1
+"access_wizard_creacio_remesa_pagament_taxes_user","wizard.creacio.remesa.pagament.taxes","model_wizard_creacio_remesa_pagament_taxes","res_groups_som_municipal_taxes_user",1,0,0,0
