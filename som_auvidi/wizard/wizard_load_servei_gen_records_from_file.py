@@ -20,7 +20,8 @@ class WizardLoadServeiGenRecordsFromFile(osv.osv_memory):
 
         return polissa_id
 
-    def validate_data_and_get_state_contract(self, cursor, uid, polissa_id, record_data, context=None):
+    def validate_data_and_get_state_contract(
+            self, cursor, uid, polissa_id, record_data, context=None):
         """
         Valida les dades aportades a record_data i retorna un estat adient a la validació.
         :param cursor:
@@ -29,7 +30,8 @@ class WizardLoadServeiGenRecordsFromFile(osv.osv_memory):
         :param polissa_id: <giscedata.polissa> id
         :type polissa_id: long
         :param record_data: Llista de dades obtingudes del 'giscedata.servei.generacio.polissa'
-        :param record_data: Conté {'nif': str, 'data_sortida': date, 'pes': float, 'servei_gen_id': long}
+        :param record_data: Conté {
+            'nif': str, 'data_sortida': date, 'pes': float, 'servei_gen_id': long}
         :type record_data: dict
         :param context: OpenERP context
         :type context: {}
@@ -50,20 +52,23 @@ class WizardLoadServeiGenRecordsFromFile(osv.osv_memory):
         polissa_category_obj = self.pool.get('giscedata.polissa.category')
         servei_gen_pol_obj = self.pool.get('giscedata.servei.generacio.polissa')
 
-        read_fields = ['id', 'titular.vat', 'state', 'category_id', 'autoconsumo']
         ctx = context.copy()
         ctx.update({'prefetch': False})
         polissa = polissa_obj.browse(cursor, uid, polissa_id, context=ctx)
 
         # Categories GURB
-        not_allowed_pol_category_ids = polissa_category_obj.search(cursor, 1, [('code', 'ilike', 'GURB')])
+        not_allowed_pol_category_ids = polissa_category_obj.search(
+            cursor, 1, [('code', 'ilike', 'GURB')])
 
         # Categories AUVIDI
-        auvidi_base_categ_id = imd.get_object_reference(cursor, uid, 'som_auvidi', 'polissa_category_auvidi_base')[1]
-        auvidi_category_ids = polissa_category_obj.search(cursor, 1, [('parent_id', '=', auvidi_base_categ_id)])
+        auvidi_base_categ_id = imd.get_object_reference(
+            cursor, uid, 'som_auvidi', 'polissa_category_auvidi_base')[1]
+        auvidi_category_ids = polissa_category_obj.search(
+            cursor, 1, [('parent_id', '=', auvidi_base_categ_id)])
 
         # Te autoconsum col.lectiu
-        te_auto_collectiu = polissa_obj.te_autoconsum(cursor, uid, polissa_id, amb_o_sense_excedents=5, context=context)
+        te_auto_collectiu = polissa_obj.te_autoconsum(
+            cursor, uid, polissa_id, amb_o_sense_excedents=5, context=context)
 
         # Participació en altres AUVIDIs
         altres_auvidis = servei_gen_pol_obj.search(cursor, uid, [
@@ -86,8 +91,8 @@ class WizardLoadServeiGenRecordsFromFile(osv.osv_memory):
 
         # Condicions especifiques
         compleix_condicions = not len(altres_auvidis) and not len(matching_category_ids) \
-                              and not te_auto_collectiu and not te_generationkwh \
-                              and polissa.mode_facturacio == 'index'
+            and not te_auto_collectiu and not te_generationkwh \
+            and polissa.mode_facturacio == 'index'
 
         real_state = 'vinculat'
         # Let's check VAT is the correct one
