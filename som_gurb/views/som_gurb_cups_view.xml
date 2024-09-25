@@ -89,7 +89,7 @@
             <field name="value" eval="'ir.actions.act_window,'+str(ref('action_invoices_from_gurb_cups'))" />
         </record>
         <!-- Acció per obrir el llistat de tots els GURB CUPS-->
-        <record model="ir.actions.act_window" id="action_gurbs">
+        <record model="ir.actions.act_window" id="action_gurb_cups">
             <field name="name">Tots els CUPS dels GURBs</field>
             <field name="view_id" ref="view_gurbs_cups_tree" />
             <field name="res_model">som.gurb.cups</field>
@@ -98,6 +98,6 @@
             <field name="context">{'active_test': False}</field>
         </record>
         <!-- Menú per llistar els GURBs-->
-        <menuitem id="menu_llistar_gurbs_cups" parent="menu_gurb" action="action_gurb_cups" />
+        <menuitem id="menu_llistar_gurbs_cups" parent="menu_gurbs" action="action_gurb_cups" />
     </data>
 </openerp>
