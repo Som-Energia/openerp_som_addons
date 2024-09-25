@@ -5,7 +5,11 @@ from tools.translate import _
 
 _GURB_CANCEL_CASES = {
     "D1": ["01"],
-    "M1": ["02", "03", "04", "05"],
+    "M1": ["02", "03", "04"],
+}
+
+_GURB_CLOSE_CASES = {
+    "M1": ["05"],
 }
 
 
@@ -47,7 +51,7 @@ def _is_m1_closable(cursor, uid, pool, sw, context=None):
         return bool(step_m101_auto)
 
 
-def _is_case_closable(cursor, uid, pool, sw, context=None):
+def _is_case_cancellable(cursor, uid, pool, sw, context=None):
     if context is None:
         context = {}
 
@@ -55,6 +59,24 @@ def _is_case_closable(cursor, uid, pool, sw, context=None):
         not sw
         or sw.proces_id.name not in _GURB_CANCEL_CASES
         or sw.step_id.name not in _GURB_CANCEL_CASES[sw.proces_id.name]
+        or not _contract_has_gurb_category(cursor, uid, pool, sw.cups_polissa_id.id)
+    ):
+        return False
+
+    if sw.proces_id.name == "M1":
+        return _is_m1_closable(cursor, uid, pool, sw, context=context)
+
+    return True
+
+
+def _is_case_closable(cursor, uid, pool, sw, context=None):
+    if context is None:
+        context = {}
+
+    if (
+        not sw
+        or sw.proces_id.name not in _GURB_CLOSE_CASES
+        or sw.step_id.name not in _GURB_CLOSE_CASES[sw.proces_id.name]
         or not _contract_has_gurb_category(cursor, uid, pool, sw.cups_polissa_id.id)
     ):
         return False
@@ -78,10 +100,15 @@ class GiscedataSwitching(osv.osv):
         sw_obj = self.pool.get("giscedata.switching")
         sw = sw_obj.browse(cursor, uid, sw_id, context=context)
 
-        if _is_case_closable(cursor, uid, self.pool, sw, context=context):
+        if _is_case_cancellable(cursor, uid, self.pool, sw, context=context):
             msg = _("Cas cancel·lat per GURB")
             self.historize_msg(cursor, uid, sw.id, msg, context=context)
             sw_obj.write(cursor, uid, sw_id, {"state": "cancel"}, context=context)
+            return _("Cas importat correctament.")
+        elif _is_case_closable(cursor, uid, self.pool, sw, context=context):
+            msg = _("Cas tancat per GURB")
+            self.historize_msg(cursor, uid, sw.id, msg, context=context)
+            sw_obj.write(cursor, uid, sw_id, {"state": "done"}, context=context)
             return _("Cas importat correctament.")
         else:
             return super(GiscedataSwitching, self).importar_xml_post_hook(
@@ -127,3 +154,45 @@ class GiscedataSwitchingM1_02(osv.osv):
 
 
 GiscedataSwitchingM1_02()
+
+
+class GiscedataSwitchingM1_05(osv.osv):
+    _inherit = "giscedata.switching.m1.05"
+
+    def create_from_xml(self, cursor, uid, sw_id, xml, context=None):
+        if context is None:
+            context = {}
+
+        pas_id = super(GiscedataSwitchingM1_05, self).create_from_xml(
+            cursor, uid, sw_id, xml, context=context
+        )
+
+        sw_obj = self.pool.get("giscedata.switching")
+        gurb_obj = self.pool.get("som.gurb")
+        step_m101_obj = self.pool.get("giscedata.switching.m1.01")
+        sw_step_header_obj = self.pool.get("giscedata.switching.step.header")
+        sw = sw_obj.browse(cursor, uid, sw_id, context=context)
+
+        if sw and _contract_has_gurb_category(
+            cursor, uid, self.pool, sw.cups_polissa_id.id, context=context
+        ):
+            step_m101_auto = step_m101_obj.search(
+                cursor,
+                uid,
+                [("sw_id", "=", sw.id), ("solicitud_autoconsum", "=", "S")],
+                context=context,
+            )
+            if step_m101_auto:
+                sw_step_header_id = self.read(cursor, uid, pas_id, ['header_id'])['header_id'][0]
+                sw_step_header_obj.write(
+                    cursor, uid, sw_step_header_id, {'notificacio_pendent': False}
+                )
+                data_activacio = xml.datos_activacion.fecha
+                gurb_obj.activate_gurb_from_m1_05(
+                    cursor, uid, sw_id, data_activacio, context=context
+                )
+
+        return pas_id
+
+
+GiscedataSwitchingM1_05()
