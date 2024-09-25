@@ -408,7 +408,6 @@ class SomCrawlersTaskStep(osv.osv):
             "-nfp": str(config_obj.pending_files_only),
             "-b": str(config_obj.browser),
             "-pr": "None",
-            "-context": context,
         }
         if file_path:
             args["-fp"] = file_path
