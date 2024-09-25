@@ -124,7 +124,7 @@ def buildPortalCreds(
     portalCreds["url_upload"] = url_upload
     if file_path:
         portalCreds["file_path"] = file_path
-    if context:
+    if eval(context):
         portalCreds["context"] = json.loads(context)
     return portalCreds
 
