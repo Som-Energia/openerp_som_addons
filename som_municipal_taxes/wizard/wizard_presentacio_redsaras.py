@@ -4,7 +4,6 @@ import sys
 import logging
 import datetime
 from dateutil.relativedelta import relativedelta
-from giscedata_municipal_taxes.taxes.municipal_taxes_invoicing import MunicipalTaxesInvoicingReport
 
 logging.basicConfig(stream=sys.stdout, level=logging.INFO)
 logger = logging.getLogger("wizard.importador.leads.comercials")
@@ -27,10 +26,6 @@ class WizardPresentacioRedSaras(osv.osv_memory):
 
         # Buscar els municipis que es remesen
         config_obj = self.pool.get('som.municipal.taxes.config')
-        self.pool.get('res.currency')
-        self.pool.get('payment.order')
-        self.pool.get('payment.line')
-        mun_obj = self.pool.get('res.municipi')
 
         search_values = [('red_sara', '=', True), ('active', '=', True)]
         if wizard.quarter == ANUAL_VAL:
@@ -50,50 +45,13 @@ class WizardPresentacioRedSaras(osv.osv_memory):
             wizard.write(vals, context)
             return True
 
-        res_municipi_ids = [
-            m['municipi_id'][0]
-            for m in config_obj.read(cursor, uid, municipis_conf_ids, ['municipi_id'])
-        ]
-
-        # Calcular els imports
-        start_date, end_date = get_dates_from_quarter(wizard.year, wizard.quarter)
-        tax = 1.5
-        polissa_categ_imu_ex_id = (
-            self.pool.get('ir.model.data').get_object_reference(
-                cursor, uid, 'giscedata_municipal_taxes', 'contract_categ_imu_ex'
-            )[1]
-        )
-        invoiced_states = self.pool.get(
-            'giscedata.facturacio.extra').get_states_invoiced(cursor, uid)
-        invoiced_states.append('draft')
-        taxes_invoicing_report = MunicipalTaxesInvoicingReport(
-            cursor, uid, start_date, end_date, False, False, False,
-            polissa_categ_imu_ex_id, False, invoiced_states,
-            context=context
-        )
-        totals_by_city = taxes_invoicing_report.get_totals_by_city(res_municipi_ids)
-        if not totals_by_city:
-            vals = {
-                'info': "No hi ha factures dels municipis configurats en el període especificat",
-                'state': 'cancel',
-            }
-            wizard.write(vals, context)
-            return True
-
+        context['any'] = wizard.year
+        context['trimestre'] = wizard.quarter
         # Encuar per a RedSaras
-
-        for city in totals_by_city:
-            round(city[4] - city[3] * (tax / 100.0), 2)
-            municipi_id = mun_obj.search(cursor, uid, [('ine', '=', city[5])])[0]
-            config_id = config_obj.search(cursor, uid, [('municipi_id', '=', municipi_id)])[0]
-            config_data = config_obj.read(cursor, uid, config_id, ['partner_id'])
-            dict(self._columns['quarter'].selection)[int(city[2])]
-            vals = {
-                'partner_id': config_data['partner_id'][0],
-            }
+        config_obj.encuar_crawlers(cursor, uid, ids, municipis_conf_ids, context)
 
         info = "S'ha encuat la presentació a Red Saras de {} ajuntaments\n\n".format(
-            len(totals_by_city))
+            len(municipis_conf_ids))
 
         vals = {
             'info': info,
@@ -103,6 +61,8 @@ class WizardPresentacioRedSaras(osv.osv_memory):
         return True
 
     def show_payment_order(self, cursor, uid, ids, context):
+        # TODO: Show job group
+        # TODO: How to inform when no ok crawler
         wizard = self.browse(cursor, uid, ids[0], context)
         return True
         return {

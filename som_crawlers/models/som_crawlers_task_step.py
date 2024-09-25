@@ -415,7 +415,7 @@ class SomCrawlersTaskStep(osv.osv):
         if "process" in task_step_params:
             args.update({"-pr": str(task_step_params["process"])})
         if context:
-            args.update({"-context": json.dumps(context)})
+            args.update({"-context": "'{}'".format(json.dumps(context))})
 
         return " ".join(["{} {}".format(k, v) for k, v in args.iteritems()])
 
@@ -740,7 +740,8 @@ class SomCrawlersTaskStep(osv.osv):
                     + datetime.now().strftime("%Y-%m-%d_%H_%M_%S_%f")
                     + ".txt"
                 )
-                args_str = self.create_script_args(config_obj, task_step_params, file_name)
+                args_str = self.create_script_args(
+                    config_obj, task_step_params, file_name, context=context)
                 os.system("{} {} {}".format(path_python, script_path, args_str))
                 output_path = self.get_output_path(cursor, uid)
                 output = self.readOutputFile(cursor, uid, output_path, file_name)
