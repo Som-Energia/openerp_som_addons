@@ -171,8 +171,8 @@ class SomGurbCups(osv.osv):
 
         ctx = context.copy()
         ctx['prefetch'] = False
-        for gurb in self.browse(cursor, uid, ids, context=ctx):
-            resource = gurb.id
+        for gurb_cups in self.browse(cursor, uid, ids, context=ctx):
+            resource = gurb_cups.id
             ctx['src_rec_id'] = resource
 
             logger.debug(
@@ -180,51 +180,69 @@ class SomGurbCups(osv.osv):
             )
             tmpl_obj.generate_mail(cursor, uid, tmpl, resource, context=ctx)
 
-    def add_service_to_contract(self, cursor, uid, ids, data_inici, context=None):
+    def get_gurb_cups_from_sw_id(self, cursor, uid, sw_id, context=None):
+        if context is None:
+            context = {}
+
+        switching_obj = self.pool.get("giscedata.switching")
+
+        pol_id = switching_obj.read(
+            cursor, uid, sw_id, ["cups_polissa_id"], context=context)["cups_polissa_id"][0]
+
+        return self.get_gurb_cups_from_pol_id(cursor, uid, pol_id, context=context)
+
+    def get_gurb_cups_from_pol_id(self, cursor, uid, pol_id, context=None):
+        if context is None:
+            context = {}
+
+        gurb_cups_obj = self.pool.get("som.gurb.cups")
+
+        search_params = [
+            ("polissa_id", "=", pol_id)
+        ]
+
+        gurb_cups_ids = gurb_cups_obj.search(cursor, uid, search_params, context=context)
+
+        if len(gurb_cups_ids) == 1:
+            return gurb_cups_ids[0]
+
+    def add_service_to_contract(self, cursor, uid, gurb_cups_id, data_inici, context=None):
         if context is None:
             context = {}
 
         gurb_o = self.pool.get("som.gurb")
         wiz_service_o = self.pool.get("wizard.create.service")
-        imd_o = self.pool.get("ir.model.data")
 
-        owner_product_id = imd_o.get_object_reference(
-            cursor, uid, "som_gurb", "product_owner_gurb"
-        )[1]
+        read_vals = ["cups_id", "gurb_id", "owner_cups", "quota_product_id"]
 
-        gurb_product_id = imd_o.get_object_reference(
-            cursor, uid, "som_gurb", "product_gurb"
-        )[1]
+        gurb_vals = self.read(cursor, uid, gurb_cups_id, read_vals, context=context)
 
-        for gurb_cups_id in ids:
-            gurb_vals = self.read(cursor, uid, gurb_cups_id, ["cups_id", "gurb_id", "owner_cups"])
-
-            pol_id = self.get_polissa_gurb_cups(cursor, uid, gurb_cups_id, context=context)
-            if not pol_id:
-                error_title = _("No hi ha pòlisses actives o en esborrany per aquest CUPS"),
-                error_info = _(
-                    "El CUPS id {} no té pòlisses actives o en esborrany. No es pot afegir.".format(
-                        gurb_vals["cups_id"][0]
-                    )
+        pol_id = self.get_polissa_gurb_cups(cursor, uid, gurb_cups_id, context=context)
+        if not pol_id:
+            error_title = _("No hi ha pòlisses actives o en esborrany per aquest CUPS"),
+            error_info = _(
+                "El CUPS id {} no té pòlisses actives o en esborrany. No es pot afegir.".format(
+                    gurb_vals["cups_id"][0]
                 )
-                raise osv.except_osv(error_title, error_info)
+            )
+            raise osv.except_osv(error_title, error_info)
 
-            # Get related GURB service pricelist
-            pricelist_id = gurb_o.read(
-                cursor, uid, gurb_vals["gurb_id"][0], ["pricelist_id"], context=context
-            )["pricelist_id"]
+        # Get related GURB service pricelist
+        pricelist_id = gurb_o.read(
+            cursor, uid, gurb_vals["gurb_id"][0], ["pricelist_id"], context=context
+        )["pricelist_id"]
 
-            # Afegim el servei
-            creation_vals = {
-                "pricelist_id": pricelist_id,
-                "product_id": owner_product_id if gurb_vals["owner_cups"] else gurb_product_id,
-                "data_inici": data_inici,
-            }
+        # Afegim el servei
+        creation_vals = {
+            "pricelist_id": pricelist_id,
+            "product_id": read_vals["quota_product_id"],
+            "data_inici": data_inici,
+        }
 
-            wiz_id = wiz_service_o.create(cursor, uid, creation_vals, context=context)
+        wiz_id = wiz_service_o.create(cursor, uid, creation_vals, context=context)
 
-            context['active_ids'] = [pol_id]
-            wiz_service_o.create_services(cursor, uid, [wiz_id], context=context)
+        context['active_ids'] = [pol_id]
+        wiz_service_o.create_services(cursor, uid, [wiz_id], context=context)
 
     def unsubscribe_gurb_cups(self, cursor, uid, gurb_cups_id, context=None):
         if context is None:
@@ -499,7 +517,8 @@ class SomGurbCups(osv.osv):
             store=False,
             readonly=True,
         ),
-        "signed": fields.boolean("Signed", readonly=1)
+        "signed": fields.boolean("Signed", readonly=1),
+        "quota_product_id": fields.many2one("product.product", "Produce quota mensual"),
     }
 
     _defaults = {
