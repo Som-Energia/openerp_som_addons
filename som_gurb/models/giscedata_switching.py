@@ -5,7 +5,11 @@ from tools.translate import _
 
 _GURB_CANCEL_CASES = {
     "D1": ["01"],
-    "M1": ["02", "03", "04", "05"],
+    "M1": ["02", "03", "04"],
+}
+
+_GURB_CLOSE_CASES = {
+    "M1": ["05"],
 }
 
 
@@ -47,7 +51,7 @@ def _is_m1_closable(cursor, uid, pool, sw, context=None):
         return bool(step_m101_auto)
 
 
-def _is_case_closable(cursor, uid, pool, sw, context=None):
+def _is_case_cancellable(cursor, uid, pool, sw, context=None):
     if context is None:
         context = {}
 
@@ -55,6 +59,24 @@ def _is_case_closable(cursor, uid, pool, sw, context=None):
         not sw
         or sw.proces_id.name not in _GURB_CANCEL_CASES
         or sw.step_id.name not in _GURB_CANCEL_CASES[sw.proces_id.name]
+        or not _contract_has_gurb_category(cursor, uid, pool, sw.cups_polissa_id.id)
+    ):
+        return False
+
+    if sw.proces_id.name == "M1":
+        return _is_m1_closable(cursor, uid, pool, sw, context=context)
+
+    return True
+
+
+def _is_case_closable(cursor, uid, pool, sw, context=None):
+    if context is None:
+        context = {}
+
+    if (
+        not sw
+        or sw.proces_id.name not in _GURB_CLOSE_CASES
+        or sw.step_id.name not in _GURB_CLOSE_CASES[sw.proces_id.name]
         or not _contract_has_gurb_category(cursor, uid, pool, sw.cups_polissa_id.id)
     ):
         return False
@@ -78,10 +100,15 @@ class GiscedataSwitching(osv.osv):
         sw_obj = self.pool.get("giscedata.switching")
         sw = sw_obj.browse(cursor, uid, sw_id, context=context)
 
-        if _is_case_closable(cursor, uid, self.pool, sw, context=context):
+        if _is_case_cancellable(cursor, uid, self.pool, sw, context=context):
             msg = _("Cas cancel·lat per GURB")
             self.historize_msg(cursor, uid, sw.id, msg, context=context)
             sw_obj.write(cursor, uid, sw_id, {"state": "cancel"}, context=context)
+            return _("Cas importat correctament.")
+        elif _is_case_closable(cursor, uid, self.pool, sw, context=context):
+            msg = _("Cas tancat per GURB")
+            self.historize_msg(cursor, uid, sw.id, msg, context=context)
+            sw_obj.write(cursor, uid, sw_id, {"state": "done"}, context=context)
             return _("Cas importat correctament.")
         else:
             return super(GiscedataSwitching, self).importar_xml_post_hook(
