@@ -209,9 +209,13 @@ class SomGurb(osv.osv):
         if context is None:
             context = {}
 
+        gurb_cups_obj = self.pool.get("som.gurb.cups")
+
         gurb_id = self.get_gurb_from_sw_id(cursor, uid, sw_id, context=context)
-        self.add_services_to_gurb_contracts(
-            cursor, uid, [gurb_id], activation_date, context=context)
+        gurb_cups_id = gurb_cups_obj.get_gurb_cups_from_sw_id(cursor, uid, sw_id, context=context)
+        gurb_cups_obj.add_service_to_contract(
+            cursor, uid, gurb_cups_id, activation_date, context=context)
+        gurb_cups_obj.send_gurb_activation_email(cursor, uid, [gurb_cups_id], context=None)
         gurb_date = self.read(cursor, uid, gurb_id, ["activation_date"])["activation_date"]
         if not gurb_date:
             write_vals = {
@@ -388,9 +392,9 @@ class SomGurb(osv.osv):
         ),
         "pricelist_id": fields.many2one("product.pricelist", "Preus del GURB"),
         "initial_product_id": fields.many2one("product.product", "Producte quota inicial"),
-        "quota_product_id": fields.many2one("product.product", "Produce quota mensual"),
-
+        "quota_product_id": fields.many2one("product.product", "Producte base quota mensual"),
     }
+
     _defaults = {
         "logo": lambda *a: False,
         "state": lambda *a: "draft",
