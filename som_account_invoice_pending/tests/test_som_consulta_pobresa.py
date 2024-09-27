@@ -90,6 +90,7 @@ class TestConsultaPobresa(testing.OOTestCase):
         gff_obj = self.openerp.pool.get('giscedata.facturacio.factura')
         imd_obj = self.openerp.pool.get('ir.model.data')
         cups_obj = self.openerp.pool.get('giscedata.cups.ps')
+        pending_obj = self.openerp.pool.get("update.pending.states")
         pol_id = imd_obj.get_object_reference(
             cursor, uid, 'giscedata_polissa', 'polissa_0002'
         )[1]
@@ -133,6 +134,7 @@ class TestConsultaPobresa(testing.OOTestCase):
             'pending_state': correcte_state_id,
             'partner_id': partner_id,
         })
+        gff_obj.set_pending(cursor, uid, [fact3_id], correcte_state_id)
         fact = gff_obj.browse(cursor, uid, fact_id)
         fact.write({
             'state': 'open',
@@ -145,6 +147,7 @@ class TestConsultaPobresa(testing.OOTestCase):
                        'resolucio': 'positiva'})
         cons_obj.case_close_pobresa(cursor, uid, [consulta_id], ({}))
 
+        pending_obj.update_pending_ask_poverty(cursor, uid)
         fact = gff_obj.browse(cursor, uid, fact_id)
         fact3 = gff_obj.browse(cursor, uid, fact3_id)
         self.assertEqual(fact.pending_state.id, pobresa_state_id)
@@ -158,6 +161,7 @@ class TestConsultaPobresa(testing.OOTestCase):
         gff_obj = self.openerp.pool.get('giscedata.facturacio.factura')
         imd_obj = self.openerp.pool.get('ir.model.data')
         cups_obj = self.openerp.pool.get('giscedata.cups.ps')
+        pending_obj = self.openerp.pool.get("update.pending.states")
         pol_id = imd_obj.get_object_reference(
             cursor, uid, 'giscedata_polissa', 'polissa_0002'
         )[1]
@@ -211,6 +215,7 @@ class TestConsultaPobresa(testing.OOTestCase):
         cons_obj.write(cursor, uid, consulta_id, {
                        'resolucio': 'negativa'})
         cons_obj.case_close_pobresa(cursor, uid, [consulta_id], ({}))
+        pending_obj.update_pending_ask_poverty(cursor, uid)
 
         fact = gff_obj.browse(cursor, uid, fact_id)
         fact3 = gff_obj.browse(cursor, uid, fact3_id)

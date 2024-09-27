@@ -84,8 +84,8 @@ class SomConsultaPobresa(osv.osv):
         gff_ids = gff_obj.search(cr, uid, search_params)
         gffs = gff_obj.browse(cr, uid, gff_ids)
         for gff in gffs:
-            weight_polissa_state = gff.pending_state.weight
-            if weight_polissa_state < weight_consulta or weight_polissa_state > weight_tall:
+            weight_invoice_state = gff.pending_state.weight
+            if weight_invoice_state > weight_consulta and weight_invoice_state < weight_tall:
                 gff_obj.set_pending(cr, uid, [gff.id], pobresa_state_id)
 
     def consulta_pobresa_activa(self, cr, uid, ids, partner_id, polissa_id, context=None):
