@@ -265,18 +265,17 @@ class ReportBackendCondicionsParticulars(ReportBackend):
             pricelist_id = pol_obj.escull_llista_preus(
                 cursor, uid, pol.id, tarifes_ids, context=context)
             ctx.update({'force_pricelist': pricelist_id.id})
-            tarifes_a_mostrar = [{'date_start': False, 'date_end': False}]
+            tarifes_a_mostrar = get_comming_atr_price(cursor, uid, polissa, ctx)
         res['pricelists'] = []
         for dades_tarifa in tarifes_a_mostrar:
             text_vigencia = ''
             pricelist = {}
 
-            if pol.state == 'esborrany':
-                text_vigencia = ''
-            elif lead:
+            if lead:
                 text_vigencia = ''
             elif (not pol.modcontractual_activa.data_final and not (modcon_pendent_indexada or modcon_pendent_indexada)) and dades_tarifa['date_end']:  # noqa: E501
-                text_vigencia = _(u"(vigents fins al {})").format(dades_tarifa['date_end'])
+                text_vigencia = _(u"(vigents fins al {})").format(
+                    datetime.strptime(dades_tarifa['date_end'], '%Y-%m-%d').strftime('%d/%m/%Y'))
             elif dades_tarifa['date_end'] and dades_tarifa['date_start']:
                 text_vigencia = _(u"(vigents fins al {})").format(
                     (datetime.strptime(dades_tarifa['date_end'], '%Y-%m-%d')).strftime('%d/%m/%Y'))
