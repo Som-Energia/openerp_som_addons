@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 from osv import osv
+from tools import decimal_round
+
 
 class GiscedataFacturacioFacturador(osv.osv):
     _name = 'giscedata.facturacio.facturador'
@@ -57,6 +59,8 @@ class GiscedataFacturacioFacturador(osv.osv):
                         if 'id' in dict_vals:
                             linies_utilitzades_ids.append(dict_vals['id'])
 
+        iese_base = iese_quota = iese_amount = 0.0
+        iva_base = iva_quota = iva_amount = 0.0
         for line in linia_obj.browse(cursor, uid, linies_utilitzades_ids, context={'prefetch': False}):
             if not line.name:  # Si el ID no existeix, al consultar el nom retornara False
                 continue
@@ -68,12 +72,21 @@ class GiscedataFacturacioFacturador(osv.osv):
             other_taxes = [v for x, v  in taxes_dict.items() if 'especial' not in x.lower()]
             if has_iese:
                 # We asume there's only one IESE and only one VAT
-                iese_amount = line.price_subtotal * has_iese[0]
-                max_descompte += iese_amount
+                iese_base += line.price_subtotal
+                iese_quota = has_iese[0]
+            if other_taxes:
+                # We asume there's only one IESE and only one VAT
+                iva_base += line.price_subtotal
+                iva_quota = has_iese[0]
 
-                base_iva = line.price_subtotal + iese_amount
-                iva_amount = base_iva * other_taxes[0]
-                max_descompte += iva_amount
+        if iese_base:
+            iese_amount = iese_base * iese_quota
+            iese_amount = decimal_round(iese_amount, '.01')
+        if iva_base:
+            iva_amount = (iva_base + iese_amount) * iva_quota
+            iva_amount = decimal_round(iva_amount, '.01')
+
+        max_descompte += iese_amount + iva_amount
 
         return linies_utilitzades_ids, max_descompte
 
