@@ -292,8 +292,9 @@ class WizardChangeToIndexada(osv.osv_memory):
                     wiz.action_crear_contracte()
                     if not coeficient_k:
                         self.send_indexada_modcon_created_email(cursor, uid, polissa)
-        except Exception:
+        except Exception as e:
             polissa.send_signal("undo_modcontractual")
+            raise e
 
         wizard.write({"state": "end"})
         return polissa.modcontractuals_ids[0].id
