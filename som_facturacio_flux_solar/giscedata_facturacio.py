@@ -9,7 +9,7 @@ class GiscedataFacturacioFacturador(osv.osv):
         if context is None:
             context = {}
 
-        imd_obj = self.pool.get('ir,model.data')
+        imd_obj = self.pool.get('ir.model.data')
         linia_obj = self.pool.get('giscedata.facturacio.factura.linia')
 
         # Es vol descomptar el total dels conceptes del sector electric
@@ -63,7 +63,7 @@ class GiscedataFacturacioFacturador(osv.osv):
 
             taxes_dict = {}
             for tax in line.invoice_line_id.invoice_line_tax_id:
-                taxes_dict[tax.tax_id.name] = tax.tax_id.amount
+                taxes_dict[tax.name] = tax.amount
             has_iese = [v for x, v  in taxes_dict.items() if 'especial' in x.lower()]
             other_taxes = [v for x, v  in taxes_dict.items() if 'especial' not in x.lower()]
             if has_iese:
@@ -75,6 +75,6 @@ class GiscedataFacturacioFacturador(osv.osv):
                 iva_amount = base_iva * other_taxes[0]
                 max_descompte += iva_amount
 
-        return max_descompte, linies_utilitzades_ids
+        return linies_utilitzades_ids, max_descompte
 
 GiscedataFacturacioFacturador()
