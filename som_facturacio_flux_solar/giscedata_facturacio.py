@@ -77,7 +77,7 @@ class GiscedataFacturacioFacturador(osv.osv):
             if other_taxes:
                 # We asume there's only one IESE and only one VAT
                 iva_base += line.price_subtotal
-                iva_quota = has_iese[0]
+                iva_quota = other_taxes[0]
 
         if iese_base:
             iese_amount = iese_base * iese_quota
