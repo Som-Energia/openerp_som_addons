@@ -21,6 +21,18 @@ class SomPolissaException(osv.except_osv):
         )
 
 
+class UnexpectedException(SomPolissaException):
+    def __init__(self, e):
+        super(UnexpectedException, self).__init__(
+            title=_("Unexpected exception"),
+            text=repr(e)
+        )
+
+    @property
+    def code(self):
+        return "Unexpected"
+
+
 class PolissaModcontractual(SomPolissaException):
     def __init__(self, polissa_number):
         super(PolissaModcontractual, self).__init__(
