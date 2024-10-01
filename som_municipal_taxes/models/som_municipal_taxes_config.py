@@ -32,7 +32,7 @@ class SomMunicipalTaxesConfig(osv.osv):
                                     "Periode de pagament"),
     }
 
-    def generate_municipal_taxes_file_path(self, cr, uid, ids, municipi_id, context):
+    def generate_municipal_taxes_file_path(self, cr, uid, ids, municipi_id, context=None):
         start_date, end_date = self.get_dates_from_quarter(context['any'], context['trimestre'])
         polissa_categ_imu_ex_id = (
             self.pool.get('ir.model.data').get_object_reference(
@@ -46,6 +46,10 @@ class SomMunicipalTaxesConfig(osv.osv):
             polissa_categ_imu_ex_id, False, invoiced_states,
             context=context
         )
+        totals = taxes_invoicing_report.get_totals_by_city([municipi_id])
+        if not totals:
+            return False
+
         output_binary = taxes_invoicing_report.build_report_taxes([municipi_id])
         path = "/tmp/municipal_taxes_{}.xlsx".format(municipi_id)
         with open(path, 'wb') as file:
@@ -66,10 +70,13 @@ class SomMunicipalTaxesConfig(osv.osv):
                     cr, uid, municipi_id, ['codi_dir3'])['codi_dir3']
                 context['file_path'] = self.generate_municipal_taxes_file_path(
                     cr, uid, ids, municipi_id, context)
-                j = self.crawler_redsaras_async(
-                    cr, uid, crawler_id, municipi_conf_id, context
-                )
-                jobs_ids.append(j.id)
+                if context['file_path']:
+                    j = self.crawler_redsaras_async(
+                        cr, uid, crawler_id, municipi_conf_id, context
+                    )
+                    jobs_ids.append(j.id)
+                else:
+                    print("No hi ha factures al municipi {}".format(context['codi_municipi']))
 
         create_jobs_group(
             cr.dbname, uid, 'Crawlers Red Saras: {} municipis'.format(
