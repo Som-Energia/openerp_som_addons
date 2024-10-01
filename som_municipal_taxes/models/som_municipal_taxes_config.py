@@ -67,8 +67,10 @@ class SomMunicipalTaxesConfig(osv.osv):
             for municipi_conf_id in municipis_conf_ids:
                 municipi_id = self.read(cr, uid, municipi_conf_id, [
                                         'municipi_id'])['municipi_id'][0]
-                context['codi_municipi'] = mun_obj.read(
-                    cr, uid, municipi_id, ['codi_dir3'])['codi_dir3']
+                mun_data = mun_obj.read(
+                    cr, uid, municipi_id, ['name', 'codi_dir3'])
+                context['codi_municipi'] = mun_data['codi_dir3']
+                context['nom_municipi'] = mun_data['name']
                 context['file_path'] = self.generate_municipal_taxes_file_path(
                     cr, uid, ids, municipi_id, context)
                 if context['file_path']:

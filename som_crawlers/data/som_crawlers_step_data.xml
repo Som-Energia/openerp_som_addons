@@ -1046,7 +1046,7 @@
         </record>
         <!-- Registre General -->
         <record model="som.crawlers.task.step" id="pas_carregar_registre_general">
-            <field name="name">Omplir formulari registre general</field>
+            <field name="name">Carregar</field>
             <field name="sequence">1</field>
             <field name="function">upload_form_registre_general</field>
             <field name="params">{"nom_fitxer":"script_run_crawler.py"}</field>
