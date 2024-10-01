@@ -66,8 +66,6 @@ class WizardCreacioRemesaPagamentTaxes(osv.osv_memory):
         )
         invoiced_states = self.pool.get(
             'giscedata.facturacio.extra').get_states_invoiced(cursor, uid)
-        # TODO: REMOVE APPEND DRAFT IN PRODUCTION
-        invoiced_states.append('draft')
         taxes_invoicing_report = MunicipalTaxesInvoicingReport(
             cursor, uid, start_date, end_date, False, False, False,
             polissa_categ_imu_ex_id, False, invoiced_states,
