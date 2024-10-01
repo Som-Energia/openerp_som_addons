@@ -18,7 +18,7 @@
 					</group>
 					<group colspan="4" col="4" attrs="{'invisible':[('state', '!=', 'done')]}">
                         <separator colspan="4" />
-						<button string="Fet" name="show_payment_order" type="object" icon="gtk-new"/>
+						<button string="Mostrar resultat crawlers" name="show_crawlers_result" type="object" icon="gtk-go-forward"/>
 					</group>
 					<group colspan="4" col="4" attrs="{'invisible':[('state', '!=', 'cancel')]}">
                         <separator colspan="4" />

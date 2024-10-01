@@ -62,6 +62,7 @@ class SomMunicipalTaxesConfig(osv.osv):
             cr, uid, 'som_crawlers', 'carregar_registre_general',
         )[1]
         jobs_ids = []
+        municipis_sense_factura = []
         with NoDependency():
             for municipi_conf_id in municipis_conf_ids:
                 municipi_id = self.read(cr, uid, municipi_conf_id, [
@@ -76,15 +77,18 @@ class SomMunicipalTaxesConfig(osv.osv):
                     )
                     jobs_ids.append(j.id)
                 else:
-                    print("No hi ha factures al municipi {}".format(context['codi_municipi']))
+                    nom_municipi = mun_obj.read(cr, uid, municipi_id, ['name'])['name']
+                    municipis_sense_factura.append(nom_municipi)
+        if jobs_ids:
+            create_jobs_group(
+                cr.dbname, uid, 'Crawlers Red Saras: {} municipis'.format(
+                    len(municipis_conf_ids) - len(municipis_sense_factura)
+                ), 'crawler_redsaras', jobs_ids
+            )
+            aw = AutoWorker(queue='crawler_redsaras', default_result_ttl=24 * 3600, max_procs=1)
+            aw.work()
 
-        create_jobs_group(
-            cr.dbname, uid, 'Crawlers Red Saras: {} municipis'.format(
-                len(municipis_conf_ids)
-            ), 'crawler_redsaras', jobs_ids
-        )
-        aw = AutoWorker(queue='crawler_redsaras', default_result_ttl=24 * 3600, max_procs=1)
-        aw.work()
+        return municipis_sense_factura
 
     @job(queue='crawler_redsaras')
     def crawler_redsaras_async(self, cursor, uid, id, municipi_id, context=None):

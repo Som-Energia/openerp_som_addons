@@ -48,10 +48,15 @@ class WizardPresentacioRedSaras(osv.osv_memory):
         context['any'] = wizard.year
         context['trimestre'] = wizard.quarter
         # Encuar per a RedSaras
-        config_obj.encuar_crawlers(cursor, uid, ids, municipis_conf_ids, context)
-
-        info = "S'ha encuat la presentació a Red Saras de {} ajuntaments\n\n".format(
-            len(municipis_conf_ids))
+        municipis_sense_factura = config_obj.encuar_crawlers(
+            cursor, uid, ids, municipis_conf_ids, context)
+        info = "S'ha encuat la presentació a Red Saras de {}/{} ajuntaments\n\n".format(
+            len(municipis_conf_ids) - len(municipis_sense_factura),
+            len(municipis_conf_ids)
+        )
+        if municipis_sense_factura:
+            info += "Els següents municipis no s'han enviat perquè no tenen factures:\n"
+            info += "\n".join(municipis_sense_factura)
 
         vals = {
             'info': info,
@@ -60,17 +65,18 @@ class WizardPresentacioRedSaras(osv.osv_memory):
         wizard.write(vals, context)
         return True
 
-    def show_payment_order(self, cursor, uid, ids, context):
-        # TODO: Show job group
-        # TODO: How to inform when no ok crawler
-        wizard = self.browse(cursor, uid, ids[0], context)
-        return True
+    def show_crawlers_result(self, cursor, uid, ids, context):
+        task_id = self.pool.get('ir.model.data').get_object_reference(
+            cursor, uid, 'som_crawlers', 'carregar_registre_general',
+        )[1]
+        today = datetime.datetime.today().strftime('%Y-%m-%d')
         return {
-            'domain': "[('id','=', %s)]" % str(wizard.order_id),
-            'name': 'Ordre de pagament',
+            'domain': "[('task_id','=', {}), ('data_i_hora_execucio', '>', '{}')]".format(
+                task_id, today),
+            'name': 'Resultat crawlers Registre General',
             'view_type': 'form',
             'view_mode': 'tree,form',
-            'res_model': 'payment.order',
+            'res_model': 'som.crawlers.result',
             'type': 'ir.actions.act_window',
         }
 
