@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import traceback
 from osv import osv
 from tools.translate import _
 
@@ -19,6 +20,18 @@ class SomPolissaException(osv.except_osv):
             code=self.code,
             error=self._message,
         )
+
+
+class UnexpectedException(SomPolissaException):
+    def __init__(self):
+        super(UnexpectedException, self).__init__(
+            title=_("Unexpected exception"),
+            text=traceback.format_exc()
+        )
+
+    @property
+    def code(self):
+        return "Unexpected"
 
 
 class PolissaModcontractual(SomPolissaException):
