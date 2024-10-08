@@ -61,6 +61,7 @@ class GiscedataFacturacioFacturador(osv.osv):
 
         iese_base = iese_quota = iese_amount = 0.0
         iva_base = iva_quota = iva_amount = 0.0
+        igic_amount = 0.0
         for line in linia_obj.browse(cursor, uid, linies_utilitzades_ids, context={'prefetch': False}):
             if not line.name:  # Si el ID no existeix, al consultar el nom retornara False
                 continue
@@ -68,12 +69,19 @@ class GiscedataFacturacioFacturador(osv.osv):
             taxes_dict = {}
             for tax in line.invoice_line_id.invoice_line_tax_id:
                 taxes_dict[tax.name] = tax.amount
-            has_iese = [v for x, v  in taxes_dict.items() if 'especial' in x.lower()]
-            other_taxes = [v for x, v  in taxes_dict.items() if 'especial' not in x.lower()]
+            has_iese = [v for x, v in taxes_dict.items() if 'especial' in x.lower()]
+            has_igic = [v for x, v in taxes_dict.items() if 'igic' in x.lower()]
+            other_taxes = [v for x, v in taxes_dict.items() if 'especial' not in x.lower() and 'igic' not in x.lower()]
+
             if has_iese:
                 # We asume there's only one IESE and only one VAT
                 iese_base += line.price_subtotal
                 iese_quota = has_iese[0]
+            if has_igic:
+                # We can't asume there'll be only one IGIC so we calculate it here directly
+                igic_subtotal = line.price_subtotal * has_igic[0]
+                igic_subtotal = decimal_round(igic_subtotal, '.01')
+                igic_amount += igic_subtotal
             if other_taxes:
                 # We asume there's only one IESE and only one VAT
                 iva_base += line.price_subtotal
@@ -86,7 +94,7 @@ class GiscedataFacturacioFacturador(osv.osv):
             iva_amount = (iva_base + iese_amount) * iva_quota
             iva_amount = decimal_round(iva_amount, '.01')
 
-        max_descompte += iese_amount + iva_amount
+        max_descompte += iese_amount + iva_amount + igic_amount
 
         return linies_utilitzades_ids, max_descompte
 
