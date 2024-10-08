@@ -25,5 +25,13 @@
             <field name="extra_beta_kw">0</field>
             <field name="gurb_cups_id" ref="gurb_cups_0002" />
         </record>
+        <record id="giscedata_cups.cups_01" model="giscedata.cups.ps">
+            <field name="coordenada_latitud">-3.064674264239092</field>
+            <field name="coordenada_longitud">37.35812464702857</field>
+        </record>
+        <record id="giscedata_cups.cups_tarifa_018" model="giscedata.cups.ps">
+            <field name="coordenada_longitud">-3.064674264239092</field>
+            <field name="coordenada_latitud">37.35812464702857</field>
+        </record>
     </data>
 </openerp>
