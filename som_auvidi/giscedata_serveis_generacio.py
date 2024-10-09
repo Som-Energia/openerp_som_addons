@@ -45,5 +45,9 @@ class GiscedataServeiGeneracio(osv.osv):
         "categoria_polissa": fields.many2one("giscedata.polissa.category", "Categoria pòlissa"),
     }
 
+    _defaults = {
+        'mode_factura': lambda *a: 'contracte'
+    }
+
 
 GiscedataServeiGeneracio()
