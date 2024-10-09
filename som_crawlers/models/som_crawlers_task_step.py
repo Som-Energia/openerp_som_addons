@@ -745,6 +745,11 @@ class SomCrawlersTaskStep(osv.osv):
                 os.system("{} {} {}".format(path_python, script_path, args_str))
                 output_path = self.get_output_path(cursor, uid)
                 output = self.readOutputFile(cursor, uid, output_path, file_name)
+                if output != "Files have been successfully downloaded":
+                    self.attach_files_screenshot(
+                        cursor, uid, config_obj, path, result_id, task_step_params, context
+                    )
+                    raise Exception("Error al penjar el fitxer al Registre General: %s" % output)
             else:
                 output = "File or directory doesn't exist"
         else:
