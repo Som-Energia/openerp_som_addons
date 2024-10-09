@@ -3,7 +3,7 @@
 <%
 import locale
 %>
-    <tr class="tr_bold last_row">
+    <tr class="tr_bold head_row">
         <td class="td_first concepte_td">${_(u"Flux Solar")}</td>
         <td class="detall_td" colspan="${fs.number_of_columns}">${_(u"Descompte per Flux Solar")}</td>
         <td class="subtotal">${_(u"%s €") % formatLang(fs.subtotal)}</td>

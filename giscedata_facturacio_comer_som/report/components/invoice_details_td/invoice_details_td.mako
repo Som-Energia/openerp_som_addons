@@ -40,8 +40,8 @@
     <%include file="/giscedata_facturacio_comer_som/report/components/invoice_details_td_generation/invoice_details_td_generation.mako" args="id=id.generation" />
     <%include file="/giscedata_facturacio_comer_som/report/components/invoice_details_td_inductive/invoice_details_td_inductive.mako" args="id=id.inductive" />
     <%include file="/giscedata_facturacio_comer_som/report/components/invoice_details_td_capacitive/invoice_details_td_capacitive.mako" args="id=id.capacitive" />
-    <%include file="/giscedata_facturacio_comer_som/report/components/invoice_details_td_flux_solar/invoice_details_td_flux_solar.mako" args="fs=id.flux_solar" />
     <%include file="/giscedata_facturacio_comer_som/report/components/invoice_details_td_other_concepts/invoice_details_td_other_concepts.mako" args="id=id.other_concepts" />
+    <%include file="/giscedata_facturacio_comer_som/report/components/invoice_details_td_flux_solar/invoice_details_td_flux_solar.mako" args="fs=id.flux_solar" />
     <tr class="total_factura_row">
         <td class="total_factura_text" colspan="${len(id.showing_periods)+2}">${_(u"TOTAL FACTURA")}</td>
         <td class="subtotal">${_(u"%s €") % formatLang(id.amount_total)}</td>
