@@ -20,6 +20,26 @@ class WizardLoadServeiGenRecordsFromFile(osv.osv_memory):
 
         return polissa_id
 
+    def get_aux_dict_from_row(self, cursor, uid, row, tipus='contracte', context=None):
+        if context is None:
+            context = {}
+
+        aux_dict = {
+            'data_inici': False,
+            'data_sortida': row[2],
+            'percentatge': row[3].replace(',', '.'),
+        }
+
+        if tipus == 'empresa':
+            aux_dict.update({
+                'cups': row[1],
+            })
+        else:
+            aux_dict.update({
+                'nif': row[0],
+            })
+        return aux_dict
+
     def validate_data_and_get_state_contract(
             self, cursor, uid, polissa_id, record_data, context=None):
         """
