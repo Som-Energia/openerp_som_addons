@@ -12,6 +12,7 @@ class GiscedataFacturacioFacturador(osv.osv):
             context = {}
 
         imd_obj = self.pool.get('ir.model.data')
+        fact_obj = self.pool.get('giscedata.facturacio.factura')
         linia_obj = self.pool.get('giscedata.facturacio.factura.linia')
 
         # Es vol descomptar el total dels conceptes del sector electric
@@ -88,8 +89,23 @@ class GiscedataFacturacioFacturador(osv.osv):
                 iva_quota = other_taxes[0]
 
         if iese_base:
-            iese_amount = iese_base * iese_quota
-            iese_amount = decimal_round(iese_amount, '.01')
+            if self.has_to_recompute_iese_as_industrial(cursor, uid, factura_id, context=context):
+                factor = 0.5
+            else:
+                factor = 1.0
+
+            fact = fact_obj.browse(cursor, uid, factura_id, context=context)
+            linies_energia = self.get_energy_lines_to_count_consume(cursor, uid, fact, context=context)
+
+            total_energia = 0.0
+            for linia in linies_energia:
+                total_energia += linia.quantity
+
+            # Mirem si s'ha de fer el mínim segons article 99
+            calcul = total_energia / 1000 * factor
+            import_iese = iese_base * iese_quota
+            import_iese = decimal_round(import_iese, '.01')
+            iese_amount = max(calcul, import_iese)
         if iva_base:
             iva_amount = (iva_base + iese_amount) * iva_quota
             iva_amount = decimal_round(iva_amount, '.01')
