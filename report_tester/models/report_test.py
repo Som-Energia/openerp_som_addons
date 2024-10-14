@@ -19,18 +19,43 @@ class ReportTest(osv.osv):
     _order = "priority"
 
     _columns = {
-        "name": fields.char(_("Name"), size=64, required=True),
-        "description": fields.text(
-            _("Descripció"), help=_(u"Descripció del que es vol testejar amb aquest test")),
-        "priority": fields.integer(_("Order"), required=True),
-        "active": fields.boolean(
-            string=_(u"Actiu"), help=_(u"Indica si el test s'ha d'executar o no")
+        "name": fields.char(
+            _("Name"),
+            size=64,
+            required=True
         ),
-        "group_id": fields.many2one("report.test.group", _(u"Grup de tests"), required=True),
+        "description": fields.text(
+            _("Descripció"),
+            help=_(u"Descripció del que es vol testejar amb aquest test")
+        ),
+        "priority": fields.integer(
+            _("Order"),
+            required=True
+        ),
+        "active": fields.boolean(
+            string=_(u"Actiu"),
+            help=_(u"Indica si el test s'ha d'executar o no")
+        ),
+        "group_id": fields.many2one(
+            "report.test.group",
+            _(u"Grup de tests"),
+            required=True
+        ),
         "result": fields.selection(
-            EXECUTION_STATES, _(u"Resultat"),
+            EXECUTION_STATES,
+            _(u"Resultat"),
             help=_("Resultat de la darrera execució"),
             readonly=True
+        ),
+        "report": fields.many2one(
+            "ir.actions.report.xml",
+            _(u"Report"),
+            required=True
+        ),
+        "res_id": fields.integer(
+            _("Id"),
+            help=_("Id del registre a testejar"),
+            required=True
         ),
     }
 

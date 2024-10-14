@@ -13,6 +13,8 @@
                     <field name="priority"/>
                     <field name="active"/>
                     <field name="description"/>
+                    <field name="report"/>
+                    <field name="res_id"/>
                     <field name="group_id"/>
                 </tree>
             </field>
@@ -31,7 +33,9 @@
                         <field name="active" select="1"/>
                         <field name="description" colspan="6"/>
                         <separator colspan="6"/>
-                        <group colspan="6" col="2" string="Report a testejar">
+                        <group colspan="6" col="2" string="Cas a testejar">
+                            <field name="report" colspan="4"/>
+                            <field name="res_id"/>
                         </group>
                         <separator colspan="6"/>
                         <group colspan="6" col="2" string="Resultat testeig">
