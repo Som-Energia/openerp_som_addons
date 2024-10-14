@@ -9,7 +9,7 @@
     "author": "SomEnergia",
     "category": "SomEnergia",
     "depends": [
-        "base",
+        "base_extended",
     ],
     "init_xml": [],
     "demo_xml": [],
