@@ -21,6 +21,14 @@ EXECUTION_STATES = [
 ]
 
 
+RES_INTERPRETER = [
+    ("id", _(u"Id")),
+    ("fact_pol", _(u"Última factura de la pòlissa")),
+    ("id_pol", _(u"Id de la pòlissa")),
+    ("id_fact", _(u"Id de la factura")),
+]
+
+
 class ReportTest(osv.osv):
 
     _name = "report.test"
@@ -198,10 +206,61 @@ class ReportTest(osv.osv):
     def _del_diff_attachment(self, cursor, uid, id, context=None):
         return self._del_file(cursor, uid, "diff.pdf", id, context=context)
 
+    def _get_resource_id(self, cursor, uid, id, context=None):
+        data = self.read(cursor, uid, id, ['interpreter', 'value'])
+
+        if data['interpreter'] == 'id':
+            return int(data['value']), _("")
+
+        if data['interpreter'] == 'fact_pol':
+            pol_obj = self.pool.get("giscedata.polissa")
+            pol_ids = pol_obj.search(cursor, uid, [
+                ('name', '=', data['value']),
+            ], context={"active_test": False})
+            if not pol_ids:
+                return False, _("Polissa >{}< no trobada").format(data['value'])
+
+            fact_obj = self.pool.get("giscedata.facturacio.factura")
+            fact_ids = fact_obj.search(cursor, uid,
+                                       [
+                                           ('polissa_id', '=', pol_ids[0]),
+                                           ('type', 'in', ['out_invoice', 'out_refund']),
+                                       ],
+                                       order='data_final DESC',
+                                       limit=1
+                                       )
+            if not fact_ids:
+                return False, _("Polissa >{}< no té factures").format(data['value'])
+            return fact_ids[0], _("")
+
+        if data['interpreter'] == 'id_pol':
+            pol_obj = self.pool.get("giscedata.polissa")
+            pol_ids = pol_obj.search(cursor, uid, [
+                ('name', '=', data['value']),
+            ], context={"active_test": False})
+            if not pol_ids:
+                return False, _("Polissa >{}< no trobada").format(data['value'])
+            return pol_ids[0], _("")
+
+        if data['interpreter'] == 'id_fact':
+            fact_obj = self.pool.get("giscedata.facturacio.factura")
+            fact_ids = fact_obj.search(cursor, uid, [
+                ('number', '=', data['value']),
+            ])
+            if not fact_ids:
+                return False, _("Factura >{}< no trobada").format(data['value'])
+            return fact_ids[0], _("")
+
+        return False, _("Camp 'Valor es' no conegut!")
+
     def _generate_pdf(self, cursor, uid, id, context=None):
         data = self.browse(cursor, uid, id)
         report_name = "report." + data.report.report_name
-        res_ids = [data.res_id]
+        res_id, message = self._get_resource_id(cursor, uid, id, context=context)
+        if not res_id:
+            return False, message
+
+        res_ids = [res_id]
         values = {
             "model": data.report.model,
             "id": res_ids,
@@ -284,9 +343,16 @@ class ReportTest(osv.osv):
             _(u"Report"),
             required=True
         ),
-        "res_id": fields.integer(
-            _("Id"),
-            help=_("Id del registre a testejar"),
+        "interpreter": fields.selection(
+            RES_INTERPRETER,
+            _(u"Valor es"),
+            help=_("El camp Valor s'ha d'interpretar com"),
+            required=True
+        ),
+        "value": fields.char(
+            _("Valor"),
+            size=64,
+            help=_("Valor a ser interpretat per aconseguir el id del registre a testejar"),
             required=True
         ),
     }

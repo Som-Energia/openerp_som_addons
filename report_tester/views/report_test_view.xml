@@ -14,7 +14,8 @@
                     <field name="active"/>
                     <field name="description"/>
                     <field name="report"/>
-                    <field name="res_id"/>
+                    <field name="interpreter"/>
+                    <field name="value"/>
                     <field name="group_id"/>
                 </tree>
             </field>
@@ -35,7 +36,8 @@
                         <separator colspan="6"/>
                         <group colspan="6" col="2" string="Cas a testejar">
                             <field name="report" colspan="4"/>
-                            <field name="res_id"/>
+                            <field name="interpreter"/>
+                            <field name="value"/>
                         </group>
                         <separator colspan="6"/>
                         <group colspan="6" col="2" string="Resultat testeig">
