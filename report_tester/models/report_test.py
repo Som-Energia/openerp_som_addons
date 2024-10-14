@@ -49,6 +49,8 @@ class ReportTest(osv.osv):
 
     def execute_one_test(self, cursor, uid, id, context=None):
         self._set_status(cursor, uid, id, 'pending')
+        self._del_result_attachment(cursor, uid, id, context=context)
+        self._del_diff_attachment(cursor, uid, id, context=context)
         self._set_status(cursor, uid, id, 'doing')
         result_ok, result_pdf = self._generate_pdf(cursor, uid, id, context)
 
@@ -56,7 +58,7 @@ class ReportTest(osv.osv):
             self._set_status(cursor, uid, id, 'pdf_error', result_pdf)
             return _("Error generant pdf")
 
-        expected_pdf = self._get_extected_attachment(cursor, uid, id, context)
+        expected_pdf = self._get_expected_attachment(cursor, uid, id, context)
         if not expected_pdf:
             self._set_status(cursor, uid, id, 'no_expected')
             self._store_result_attachment(cursor, uid, id, result_pdf, context)
@@ -100,10 +102,15 @@ class ReportTest(osv.osv):
 
         data = self._get_result_attachment(cursor, uid, id, context=context)
         if not data:
-            return _("Error sense fitxer generat")
+            if self._exists_expected_attachment(cursor, uid, id, context=context):
+                return _("Res per acceptar / Ja acceptat")
+            else:
+                return _("Error sense fitxers!")
 
         self._store_expected_attachment(cursor, uid, id, data, context=context)
         self._del_result_attachment(cursor, uid, id, context=context)
+        self._del_diff_attachment(cursor, uid, id, context=context)
+        self._set_status(cursor, uid, id, 'equals')
         return _("Fitxer acceptat")
 
     def _set_status(self, cursor, uid, ids, status, log=''):
@@ -112,8 +119,7 @@ class ReportTest(osv.osv):
             'result_log': log,
         })
 
-    def _store_file(self, cursor, uid, content, file_name, test_id, context=None):
-        b64_content = base64.b64encode(content)
+    def _exists_file(self, cursor, uid, file_name, test_id, context=None):
 
         att_obj = self.pool.get("ir.attachment")
         att_ids = att_obj.search(cursor, uid, [
@@ -121,7 +127,12 @@ class ReportTest(osv.osv):
             ('res_model', '=', 'report.test'),
             ('res_id', '=', test_id),
         ])
+        return att_ids
 
+    def _store_file(self, cursor, uid, content, file_name, test_id, context=None):
+        att_obj = self.pool.get("ir.attachment")
+        b64_content = base64.b64encode(content)
+        att_ids = self._exists_file(cursor, uid, file_name, test_id, context=context)
         if att_ids:
             att_id = att_ids[0]
 
@@ -143,34 +154,23 @@ class ReportTest(osv.osv):
             return attachment_id
 
     def _read_file(self, cursor, uid, file_name, test_id, context=None):
-
-        att_obj = self.pool.get("ir.attachment")
-        att_ids = att_obj.search(cursor, uid, [
-            ('name', '=', file_name),
-            ('res_model', '=', 'report.test'),
-            ('res_id', '=', test_id),
-        ])
-
+        att_ids = self._exists_file(cursor, uid, file_name, test_id, context=context)
         if not att_ids:
             return None
 
         att_id = att_ids[0]
+        att_obj = self.pool.get("ir.attachment")
         b64_content = att_obj.read(cursor, uid, att_id, ["datas"])["datas"]
         content = base64.b64decode(b64_content)
         return content
 
     def _del_file(self, cursor, uid, file_name, test_id, context=None):
-        att_obj = self.pool.get("ir.attachment")
-        att_ids = att_obj.search(cursor, uid, [
-            ('name', '=', file_name),
-            ('res_model', '=', 'report.test'),
-            ('res_id', '=', test_id),
-        ])
-
+        att_ids = self._exists_file(cursor, uid, file_name, test_id, context=context)
         if not att_ids:
             return None
 
         att_id = att_ids[0]
+        att_obj = self.pool.get("ir.attachment")
         att_obj.unlink(cursor, uid, att_id, context=context)
         return True
 
@@ -186,11 +186,17 @@ class ReportTest(osv.osv):
     def _get_result_attachment(self, cursor, uid, id, context=None):
         return self._read_file(cursor, uid, "result.pdf", id, context=context)
 
-    def _get_extected_attachment(self, cursor, uid, id, context=None):
+    def _get_expected_attachment(self, cursor, uid, id, context=None):
         return self._read_file(cursor, uid, "expected.pdf", id, context=context)
+
+    def _exists_expected_attachment(self, cursor, uid, id, context=None):
+        return self._exists_file(cursor, uid, "expected.pdf", id, context=context)
 
     def _del_result_attachment(self, cursor, uid, id, context=None):
         return self._del_file(cursor, uid, "result.pdf", id, context=context)
+
+    def _del_diff_attachment(self, cursor, uid, id, context=None):
+        return self._del_file(cursor, uid, "diff.pdf", id, context=context)
 
     def _generate_pdf(self, cursor, uid, id, context=None):
         data = self.browse(cursor, uid, id)
