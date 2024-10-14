@@ -4,6 +4,10 @@ from tools.translate import _
 import netsvc
 import traceback
 import base64
+import tempfile
+import shutil
+import os
+import subprocess
 
 
 EXECUTION_STATES = [
@@ -206,8 +210,34 @@ class ReportTest(osv.osv):
             return False, tb
 
     def _compare_pdf(self, cursor, uid, result, expected):
-        return True, ""
-        return False, "vewvf"
+        tmp_dir = tempfile.mkdtemp(prefix='report-tester-')
+
+        expected_pdf_path = os.path.join(tmp_dir, "expected.pdf")
+        with open(expected_pdf_path, "wb") as f:
+            f.write(expected)
+
+        result_pdf_path = os.path.join(tmp_dir, "result.pdf")
+        with open(result_pdf_path, "wb") as f:
+            f.write(result)
+
+        diff_pdf_path = os.path.join(tmp_dir, "diff.pdf")
+
+        mdl_path = os.path.dirname(os.path.realpath(__file__))
+        cmp_path = os.path.join(mdl_path, "../scripts/pdfcmp.sh")
+        exit_code = subprocess.call([
+            cmp_path,
+            expected_pdf_path,
+            result_pdf_path,
+            diff_pdf_path
+        ])
+        if exit_code == 0:  # identical
+            shutil.rmtree(tmp_dir)
+            return True, ""
+        else:
+            with open(diff_pdf_path, "rb") as f:
+                diff_pdf = f.read()
+            shutil.rmtree(tmp_dir)
+            return False, diff_pdf
 
     _columns = {
         "name": fields.char(
