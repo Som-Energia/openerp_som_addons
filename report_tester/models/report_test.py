@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 from osv import osv, fields
 from tools.translate import _
+import netsvc
+import traceback
 
 
 EXECUTION_STATES = [
@@ -46,13 +48,13 @@ class ReportTest(osv.osv):
         result_ok, result_pdf = self._generate_pdf(cursor, uid, id, context)
 
         if result_ok is not True:
-            self._set_status(cursor, uid, id, 'pdf_error')
+            self._set_status(cursor, uid, id, 'pdf_error', result_pdf)
             return _("Error generant pdf")
 
         expected_pdf = self._get_extected_pdf(cursor, uid, id, context)
         if not expected_pdf:
             self._set_status(cursor, uid, id, 'no_expected')
-            self._store_result_attachement(cursor, uid, id, result_pdf, context)
+            self._store_result_attachment(cursor, uid, id, result_pdf, context)
             return _("Sense original per comprovar")
 
         equals, diff_pdf = self._compare_pdf(cursor, uid, result_pdf, expected_pdf)
@@ -61,15 +63,18 @@ class ReportTest(osv.osv):
             return _("Identics, sense canvis")
         else:
             self._set_status(cursor, uid, id, 'differents')
-            self._store_result_attachement(cursor, uid, id, result_pdf, context)
-            self._store_diff_attachement(cursor, uid, id, diff_pdf, context)
+            self._store_result_attachment(cursor, uid, id, result_pdf, context)
+            self._store_diff_attachment(cursor, uid, id, diff_pdf, context)
             return _("Diferències trobades")
 
         self._set_status(cursor, uid, id, 'error')
         return _("Error indeterminat")
 
-    def _set_status(self, cursor, uid, ids, status):
-        self.write(cursor, uid, ids, {'result': status})
+    def _set_status(self, cursor, uid, ids, status, log=''):
+        self.write(cursor, uid, ids, {
+            'result': status,
+            'result_log': log,
+        })
 
     def _store_result_attachment(self, cursor, uid, id, data, context=None):
         return True
@@ -85,8 +90,21 @@ class ReportTest(osv.osv):
         return "evouehvuoeùovòe"
 
     def _generate_pdf(self, cursor, uid, id, context=None):
-        return False, "error"
-        return True, "ewvpepbrfv"
+        data = self.browse(cursor, uid, id)
+        report_name = "report." + data.report.report_name
+        res_ids = [data.res_id]
+        values = {
+            "model": data.report.model,
+            "id": res_ids,
+            "report_type": "pdf",
+        }
+        try:
+            report = netsvc.service_exist(report_name)
+            result = report.create(cursor, uid, res_ids, values, context)
+            return True, result[0]
+        except Exception:
+            tb = traceback.format_exc()
+            return False, tb
 
     def _compare_pdf(self, cursor, uid, result, expected):
         return True, ""
@@ -121,6 +139,11 @@ class ReportTest(osv.osv):
             help=_("Resultat de la darrera execució"),
             readonly=True
         ),
+        "result_log": fields.text(
+            _("log"),
+            help=_(u"Resultat de l'execució del test"),
+            readonly=True
+        ),
         "report": fields.many2one(
             "ir.actions.report.xml",
             _(u"Report"),
@@ -135,6 +158,7 @@ class ReportTest(osv.osv):
 
     _defaults = {
         "active": lambda *a: True,
+        "result_log": lambda *a: '',
     }
 
 

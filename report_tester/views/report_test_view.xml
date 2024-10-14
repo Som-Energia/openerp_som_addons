@@ -39,7 +39,8 @@
                         </group>
                         <separator colspan="6"/>
                         <group colspan="6" col="2" string="Resultat testeig">
-                            <field name="result"/>
+                            <field name="result" colspan="4" />
+                            <field name="result_log" colspan="4" height="400"/>
                         </group>
                     </group>
                 </form>
