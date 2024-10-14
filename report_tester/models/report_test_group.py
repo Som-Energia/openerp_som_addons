@@ -11,7 +11,9 @@ class ReportTestGroup(osv.osv):
     _columns = {
         "name": fields.char(_("Name"), size=64, required=True),
         "description": fields.text(
-            _("Descripció"), help=_(u"Descipció del que es vol testejar amb aquest grup de tests")),
+            _("Descripció"),
+            help=_(u"Descripció del que es vol testejar amb aquest grup de tests")
+        ),
         "priority": fields.integer(_("Order"), required=True),
         "active": fields.boolean(
             string=_(u"Actiu"), help=_(u"Indica si el grup de tests s'ha d'executar o no")
