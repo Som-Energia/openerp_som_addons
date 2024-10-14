@@ -12,6 +12,8 @@ GithubActions:
 -  .github/**
 powersms:
 -  powersms/**
+report_tester:
+-  report_tester/**
 scripts:
 -  scripts/**
 som_account_invoice_pending:
