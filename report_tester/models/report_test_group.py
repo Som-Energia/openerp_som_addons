@@ -21,7 +21,7 @@ class ReportTestGroup(osv.osv):
         "test_ids": fields.one2many(
             "report.test",
             "group_id",
-            _(u"Tests que formen part del grup de tests"),
+            _(u"Tests"),
         ),
     }
 
