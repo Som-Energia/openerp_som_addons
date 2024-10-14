@@ -34,7 +34,7 @@
                         </group>
                         <group colspan="6" string="Accions">
                             <button string="Executa tots els tests" type="action" icon="gtk-execute" name="%(action_wizard_report_test_group_execute_tests)d" context="{}"/>
-                            <button string="Veure diferències" type="action" icon="gtk-print-preview" name="%(action_wizard_report_test_group_accept_tests)d" context="{}"/>
+                            <button string="Veure diferències" type="action" icon="gtk-print-preview" name="%(action_wizard_report_test_group_view_tests)d" context="{}"/>
                             <button string="Accepta tots els tests" type="action" icon="gtk-save" name="%(action_wizard_report_test_group_accept_tests)d" context="{}"/>
                         </group>
                     </group>

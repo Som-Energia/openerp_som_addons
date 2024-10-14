@@ -14,6 +14,7 @@
     "init_xml": [],
     "demo_xml": [],
     "update_xml": [
+        "wizard/wizard_report_test_group_view_tests.xml",
         "wizard/wizard_report_test_group_accept_tests.xml",
         "wizard/wizard_report_test_group_execute_tests.xml",
         "wizard/wizard_report_test_accept_test.xml",
