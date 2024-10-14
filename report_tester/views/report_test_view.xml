@@ -42,6 +42,10 @@
                             <field name="result" colspan="4" />
                             <field name="result_log" colspan="4" height="400"/>
                         </group>
+                        <group colspan="6" string="Accions">
+                            <button string="Executa" type="action" icon="gtk-execute" name="%(action_wizard_report_test_execute_test)d" context="{}"/>
+                            <button string="Accepta" type="action" icon="gtk-save" name="%(action_wizard_report_test_accept_test)d" context="{}"/>
+                        </group>
                     </group>
                 </form>
             </field>
