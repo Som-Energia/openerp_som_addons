@@ -182,29 +182,46 @@ class ReportTest(osv.osv):
         att_obj.unlink(cursor, uid, att_id, context=context)
         return True
 
+    def _get_attachment_file_expected(self, cursor, uid, id, context=None):
+        return "expected.pdf"
+
+    def _get_attachment_file_result(self, cursor, uid, id, context=None):
+        return "result.pdf"
+
+    def _get_attachment_file_diff(self, cursor, uid, id, context=None):
+        return "diff.pdf"
+
     def _store_result_attachment(self, cursor, uid, id, data, context=None):
-        return self._store_file(cursor, uid, data, "result.pdf", id, context=context)
+        result = self._get_attachment_file_result(cursor, uid, id, context=context)
+        return self._store_file(cursor, uid, data, result, id, context=context)
 
     def _store_diff_attachment(self, cursor, uid, id, data, context=None):
-        return self._store_file(cursor, uid, data, "diff.pdf", id, context=context)
+        diff = self._get_attachment_file_diff(cursor, uid, id, context=context)
+        return self._store_file(cursor, uid, data, diff, id, context=context)
 
     def _store_expected_attachment(self, cursor, uid, id, data, context=None):
-        return self._store_file(cursor, uid, data, "expected.pdf", id, context=context)
+        expected = self._get_attachment_file_expected(cursor, uid, id, context=context)
+        return self._store_file(cursor, uid, data, expected, id, context=context)
 
     def _get_result_attachment(self, cursor, uid, id, context=None):
-        return self._read_file(cursor, uid, "result.pdf", id, context=context)
+        result = self._get_attachment_file_result(cursor, uid, id, context=context)
+        return self._read_file(cursor, uid, result, id, context=context)
 
     def _get_expected_attachment(self, cursor, uid, id, context=None):
-        return self._read_file(cursor, uid, "expected.pdf", id, context=context)
+        expected = self._get_attachment_file_expected(cursor, uid, id, context=context)
+        return self._read_file(cursor, uid, expected, id, context=context)
 
     def _exists_expected_attachment(self, cursor, uid, id, context=None):
-        return self._exists_file(cursor, uid, "expected.pdf", id, context=context)
+        expected = self._get_attachment_file_expected(cursor, uid, id, context=context)
+        return self._exists_file(cursor, uid, expected, id, context=context)
 
     def _del_result_attachment(self, cursor, uid, id, context=None):
-        return self._del_file(cursor, uid, "result.pdf", id, context=context)
+        result = self._get_attachment_file_result(cursor, uid, id, context=context)
+        return self._del_file(cursor, uid, result, id, context=context)
 
     def _del_diff_attachment(self, cursor, uid, id, context=None):
-        return self._del_file(cursor, uid, "diff.pdf", id, context=context)
+        diff = self._get_attachment_file_diff(cursor, uid, id, context=context)
+        return self._del_file(cursor, uid, diff, id, context=context)
 
     def _get_resource_id(self, cursor, uid, id, context=None):
         data = self.read(cursor, uid, id, ['interpreter', 'value'])
