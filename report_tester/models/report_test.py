@@ -213,6 +213,10 @@ class ReportTest(osv.osv):
         result = self._get_attachment_file_result(cursor, uid, id, context=context)
         return self._read_file(cursor, uid, result, id, context=context)
 
+    def _get_diff_attachment(self, cursor, uid, id, context=None):
+        diff = self._get_attachment_file_diff(cursor, uid, id, context=context)
+        return self._read_file(cursor, uid, diff, id, context=context)
+
     def _get_expected_attachment(self, cursor, uid, id, context=None):
         expected = self._get_attachment_file_expected(cursor, uid, id, context=context)
         return self._read_file(cursor, uid, expected, id, context=context)
