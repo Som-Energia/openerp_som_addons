@@ -1,0 +1,2 @@
+import wizard_report_test_group_accept_tests
+import wizard_report_test_group_execute_tests

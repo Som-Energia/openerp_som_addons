@@ -14,6 +14,8 @@
     "init_xml": [],
     "demo_xml": [],
     "update_xml": [
+        "wizard/wizard_report_test_group_accept_tests.xml",
+        "wizard/wizard_report_test_group_execute_tests.xml",
         "views/report_test_view.xml",
         "views/report_test_group_view.xml",
         "security/ir.model.access.csv",

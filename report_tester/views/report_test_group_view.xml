@@ -11,6 +11,7 @@
                     <field name="name"/>
                     <field name="priority"/>
                     <field name="active"/>
+                    <field name="result"/>
                     <field name="description"/>
                 </tree>
             </field>
@@ -26,9 +27,16 @@
                         <field name="name" select="1"/>
                         <field name="priority" select="1"/>
                         <field name="active" select="1"/>
-                        <field name="description" colspan="6"/>
-                        <separator colspan="6"/>
-                        <field name="test_ids" colspan="6" height="500"/>
+                        <field name="description" colspan="6" height="60"/>
+                        <field name="test_ids" colspan="6" height="300" nolabel="1" />
+                        <group colspan="6" string="Resultat:">
+                            <field name="result" colspan="6" height="200" nolabel="1" />
+                        </group>
+                        <group colspan="6" string="Accions">
+                            <button string="Executa tots els tests" type="action" icon="gtk-execute" name="%(action_wizard_report_test_group_execute_tests)d" context="{}"/>
+                            <button string="Veure diferències" type="action" icon="gtk-print-preview" name="%(action_wizard_report_test_group_accept_tests)d" context="{}"/>
+                            <button string="Accepta tots els tests" type="action" icon="gtk-save" name="%(action_wizard_report_test_group_accept_tests)d" context="{}"/>
+                        </group>
                     </group>
                 </form>
             </field>

@@ -10,7 +10,7 @@ class ReportTestGroup(osv.osv):
 
     _columns = {
         "name": fields.char(
-            _("Name"),
+            _("Nom"),
             size=64,
             required=True
         ),
@@ -31,10 +31,16 @@ class ReportTestGroup(osv.osv):
             "group_id",
             _(u"Tests"),
         ),
+        "result": fields.text(
+            _("Resultats"),
+            help=_(u"Resultat de l'execució dels tests"),
+            readonly=True
+        ),
     }
 
     _defaults = {
         "active": lambda *a: True,
+        "result": lambda *a: "",
     }
 
 
