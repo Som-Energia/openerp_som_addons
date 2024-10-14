@@ -30,6 +30,8 @@ class ReportBackendCondicionsParticulars(ReportBackend):
 
         pol_obj = self.pool.get("giscedata.polissa")
         lang = pol_obj.browse(cursor, uid, record_id, context=context).titular.lang
+        if context.get("lang"):
+            lang = context.get("lang")
         return lang
 
     def get_pas01(self, cursor, uid, pol, context=None):
@@ -106,6 +108,8 @@ class ReportBackendCondicionsParticulars(ReportBackend):
         data_firma = datetime.today()
         res['sign_date'] = localize_period(data_firma, pol.titular.lang)
         res['lang'] = pol.titular.lang
+        if context.get("lang"):
+            res['lang'] = context.get("lang")
 
         return res
 

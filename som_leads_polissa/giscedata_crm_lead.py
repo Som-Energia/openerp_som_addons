@@ -18,6 +18,7 @@ class GiscedataCrmLead(osv.OsvInherits):
         context["lead"] = True
 
         lead = self.browse(cursor, uid, ids[0])
+        context["lang"] = lead.lang
 
         preus_provisional_energia = {
             "P1": lead.preu_fix_energia_p1,
