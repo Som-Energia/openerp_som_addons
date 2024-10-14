@@ -8,6 +8,23 @@ class ReportTestGroup(osv.osv):
     _name = "report.test.group"
     _order = "priority"
 
+    def execute_tests(self, cursor, uid, ids, context=None):
+        if context is None:
+            context = {}
+
+        rt_obj = self.pool.get("report.test")
+
+        result = ""
+        tgs = self.read(cursor, uid, ids, ['active', 'test_ids', 'priority', 'name'])
+        for tg in sorted(tgs, key=lambda e: e['priority']):
+            if not tg["active"]:
+                result += _("Grup de test '{}' no està actiu!!\n\n".format[tg['name']])
+            else:
+                result += _("Executant tests per grup '{}':\n".format(tg['name']))
+                result += rt_obj.execute_test(cursor, uid, tg['test_ids'], context)
+                result += "\n"
+        return result
+
     _columns = {
         "name": fields.char(
             _("Nom"),

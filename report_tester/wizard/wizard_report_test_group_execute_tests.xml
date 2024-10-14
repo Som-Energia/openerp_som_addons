@@ -9,7 +9,7 @@
                 <form string="Executar els tests">
                     <field name="state" invisible="1"/>
                     <group colspan="4" col="2" attrs="{'invisible':[('state', '!=', 'init')]}">
-                            <button name="do" string="Desactivar" icon="gtk-ok" type="object" />
+                        <button name="do" string="Executar Tests" icon="gtk-ok" type="object" />
                     </group>
                     <group colspan="4" col="4">
                         <field name="info" colspan="4" nolabel="1" height="150" width="600" readonly="1"/>
