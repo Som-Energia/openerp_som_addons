@@ -8,6 +8,7 @@ import tempfile
 import shutil
 import os
 import subprocess
+from oorq.decorators import job
 
 
 EXECUTION_STATES = [
@@ -54,6 +55,11 @@ class ReportTest(osv.osv):
                 ))
 
         return result
+
+    @job(queue='reports', timeout=3600)
+    def execute_one_test_async(self, cursor, uid, id, context=None):
+        self.execute_one_test(cursor, uid, id, context=context)
+        return True
 
     def execute_one_test(self, cursor, uid, id, context=None):
         self._set_status(cursor, uid, id, 'pending')

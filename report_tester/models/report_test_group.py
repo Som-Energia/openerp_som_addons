@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from osv import osv, fields
 from tools.translate import _
+from datetime import datetime
 
 
 class ReportTestGroup(osv.osv):
@@ -41,6 +42,20 @@ class ReportTestGroup(osv.osv):
                 result += rt_obj.accept_test(cursor, uid, tg['test_ids'], context)
                 result += "\n"
         return result
+
+    def pre_execute_tests_async(self, cursor, uid, ids, context=None):
+        if context is None:
+            context = {}
+
+        rt_obj = self.pool.get("report.test")
+        rt_ids = rt_obj.search(cursor, uid, [
+            ("group_id", "in", ids),
+            ("active", "=", True),
+        ], order="priority ASC")
+
+        msg = _("Execució pendent via workers amb data {}\n").format(str(datetime.now()))
+        rt_obj._set_status(cursor, uid, rt_ids, "doing", msg)
+        return rt_ids
 
     _columns = {
         "name": fields.char(
