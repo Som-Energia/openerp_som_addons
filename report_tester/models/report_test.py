@@ -3,6 +3,7 @@ from osv import osv, fields
 from tools.translate import _
 import netsvc
 import traceback
+import base64
 
 
 EXECUTION_STATES = [
@@ -76,14 +77,43 @@ class ReportTest(osv.osv):
             'result_log': log,
         })
 
+    def _store_file(self, cursor, uid, content, file_name, test_id, context=None):
+        b64_content = base64.b64encode(content)
+
+        att_obj = self.pool.get("ir.attachment")
+        att_ids = att_obj.search(cursor, uid, [
+            ('name', '=', file_name),
+            ('res_model', '=', 'report.test'),
+            ('res_id', '=', test_id),
+        ])
+
+        if att_ids:
+            att_id = att_ids[0]
+
+            att_obj.write(cursor, uid, att_id, {
+                "datas": b64_content,
+            })
+        else:
+            attachment = {
+                "name": file_name,
+                "datas": b64_content,
+                "datas_fname": file_name,
+                "res_model": "report.test",
+                "res_id": test_id,
+            }
+            attachment_id = att_obj.create(
+                cursor, uid, attachment, context=context
+            )
+            return attachment_id
+
     def _store_result_attachment(self, cursor, uid, id, data, context=None):
-        return True
+        return self._store_file(cursor, uid, data, "result.pdf", id, context=context)
 
     def _store_diff_attachment(self, cursor, uid, id, data, context=None):
-        return True
+        return self._store_file(cursor, uid, data, "diff.pdf", id, context=context)
 
     def _store_expected_attachment(self, cursor, uid, id, data, context=None):
-        return True
+        return self._store_file(cursor, uid, data, "expected.pdf", id, context=context)
 
     def _get_extected_pdf(self, cursor, uid, id, context=None):
         return None
