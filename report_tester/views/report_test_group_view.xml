@@ -1,5 +1,45 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <openerp>
     <data>
+        <record model="ir.ui.view" id="view_report_test_group_tree">
+            <field name="name">report.test.group.tree</field>
+            <field name="model">report.test.group</field>
+            <field name="type">tree</field>
+            <field name="priority">16</field>
+            <field name="arch" type="xml">
+                <tree string="Report test">
+                    <field name="name"/>
+                    <field name="priority"/>
+                    <field name="active"/>
+                    <field name="description"/>
+                </tree>
+            </field>
+        </record>
+        <record model="ir.ui.view" id="view_report_test_group_form">
+            <field name="name">report.test.group.form</field>
+            <field name="model">report.test.group</field>
+            <field name="type">form</field>
+            <field name="priority">16</field>
+            <field name="arch" type="xml">
+                <form string="Report test">
+                    <group colspan="2" col="6">
+                        <field name="name" select="1"/>
+                        <field name="priority" select="1"/>
+                        <field name="active" select="1"/>
+                        <field name="description" colspan="6"/>
+                        <separator colspan="6"/>
+                        <field name="test_ids" colspan="6" height="500"/>
+                    </group>
+                </form>
+            </field>
+        </record>
+        <record id="action_report_test_group_tree" model="ir.actions.act_window">
+            <field name="name">Report test group</field>
+            <field name="res_model">report.test.group</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="context">{'active_test': False}</field>
+        </record>
+        <menuitem id="menu_report_test_group_view" action="action_report_test_group_tree" parent="menu_report_tester_folder"/>
     </data>
 </openerp>
