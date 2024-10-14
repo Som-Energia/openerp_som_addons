@@ -1,2 +1,2 @@
-import ReportTest
-import ReportTestGroup
+import report_test
+import report_test_group
