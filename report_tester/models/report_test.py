@@ -66,8 +66,8 @@ class ReportTest(osv.osv):
         self._del_result_attachment(cursor, uid, id, context=context)
         self._del_diff_attachment(cursor, uid, id, context=context)
         self._set_status(cursor, uid, id, 'doing')
-        result_ok, result_pdf = self._generate_pdf(cursor, uid, id, context)
 
+        result_ok, result_pdf = self._generate_pdf(cursor, uid, id, context)
         if result_ok is not True:
             self._set_status(cursor, uid, id, 'pdf_error', result_pdf)
             return _("Error generant pdf")
