@@ -4,6 +4,8 @@ from tools.translate import _
 
 
 EXECUTION_STATES = [
+    ("pending", _(u"Pendent")),
+    ("doing", _(u"Executant-se")),
     ("equals", _(u"Iguals")),
     ("differents", _(u"Amb diferències")),
     ("error", _(u"Error en generar")),
