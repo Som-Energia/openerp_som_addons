@@ -52,7 +52,7 @@ class ReportTest(osv.osv):
             self._set_status(cursor, uid, id, 'pdf_error', result_pdf)
             return _("Error generant pdf")
 
-        expected_pdf = self._get_extected_pdf(cursor, uid, id, context)
+        expected_pdf = self._get_extected_attachment(cursor, uid, id, context)
         if not expected_pdf:
             self._set_status(cursor, uid, id, 'no_expected')
             self._store_result_attachment(cursor, uid, id, result_pdf, context)
@@ -70,6 +70,37 @@ class ReportTest(osv.osv):
 
         self._set_status(cursor, uid, id, 'error')
         return _("Error indeterminat")
+
+    def accept_test(self, cursor, uid, test_ids, context=None):
+        if context is None:
+            context = {}
+
+        result = ""
+        fields = ['priority', 'active', 'name']
+        tests_data = self.read(cursor, uid, test_ids, fields)
+        for test_data in sorted(tests_data, key=lambda e: e['priority']):
+            if test_data['active']:
+                one_result = self.accept_one_test(cursor, uid, test_data['id'], context)
+                result += _(" - Acceptant test '{}' --> {} \n".format(
+                    test_data['name'],
+                    one_result
+                ))
+            else:
+                result += _(" - Acceptant test '{}' --> no actiu!! \n".format(
+                    test_data['name']
+                ))
+
+        return result
+
+    def accept_one_test(self, cursor, uid, id, context=None):
+
+        data = self._get_result_attachment(cursor, uid, id, context=context)
+        if not data:
+            return _("Error sense fitxer generat")
+
+        self._store_expected_attachment(cursor, uid, id, data, context=context)
+        self._del_result_attachment(cursor, uid, id, context=context)
+        return _("Fitxer acceptat")
 
     def _set_status(self, cursor, uid, ids, status, log=''):
         self.write(cursor, uid, ids, {
@@ -93,6 +124,7 @@ class ReportTest(osv.osv):
             att_obj.write(cursor, uid, att_id, {
                 "datas": b64_content,
             })
+            return att_id
         else:
             attachment = {
                 "name": file_name,
@@ -106,6 +138,38 @@ class ReportTest(osv.osv):
             )
             return attachment_id
 
+    def _read_file(self, cursor, uid, file_name, test_id, context=None):
+
+        att_obj = self.pool.get("ir.attachment")
+        att_ids = att_obj.search(cursor, uid, [
+            ('name', '=', file_name),
+            ('res_model', '=', 'report.test'),
+            ('res_id', '=', test_id),
+        ])
+
+        if not att_ids:
+            return None
+
+        att_id = att_ids[0]
+        b64_content = att_obj.read(cursor, uid, att_id, ["datas"])["datas"]
+        content = base64.b64decode(b64_content)
+        return content
+
+    def _del_file(self, cursor, uid, file_name, test_id, context=None):
+        att_obj = self.pool.get("ir.attachment")
+        att_ids = att_obj.search(cursor, uid, [
+            ('name', '=', file_name),
+            ('res_model', '=', 'report.test'),
+            ('res_id', '=', test_id),
+        ])
+
+        if not att_ids:
+            return None
+
+        att_id = att_ids[0]
+        att_obj.unlink(cursor, uid, att_id, context=context)
+        return True
+
     def _store_result_attachment(self, cursor, uid, id, data, context=None):
         return self._store_file(cursor, uid, data, "result.pdf", id, context=context)
 
@@ -115,9 +179,14 @@ class ReportTest(osv.osv):
     def _store_expected_attachment(self, cursor, uid, id, data, context=None):
         return self._store_file(cursor, uid, data, "expected.pdf", id, context=context)
 
-    def _get_extected_pdf(self, cursor, uid, id, context=None):
-        return None
-        return "evouehvuoeùovòe"
+    def _get_result_attachment(self, cursor, uid, id, context=None):
+        return self._read_file(cursor, uid, "result.pdf", id, context=context)
+
+    def _get_extected_attachment(self, cursor, uid, id, context=None):
+        return self._read_file(cursor, uid, "expected.pdf", id, context=context)
+
+    def _del_result_attachment(self, cursor, uid, id, context=None):
+        return self._del_file(cursor, uid, "result.pdf", id, context=context)
 
     def _generate_pdf(self, cursor, uid, id, context=None):
         data = self.browse(cursor, uid, id)
