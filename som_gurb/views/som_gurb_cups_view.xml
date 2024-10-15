@@ -64,6 +64,7 @@
             <field name="arch" type="xml">
                 <tree string="Betes dels CUPS GURB" colors="red:active == False">
                     <field name="active" select="1" />
+                    <field name="future_beta" />
                     <field name="name" select="1" />
                     <field name="beta_kw" />
                     <field name="extra_beta_kw" />
