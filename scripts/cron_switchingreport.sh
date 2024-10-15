@@ -12,7 +12,7 @@ die() {
         --to itcrowd@somenergia.coop \
         --to atr@somenergia.coop \
         --to mar.burguera@somenergia.coop \
-        --to carme.baques@somenergia.coop \
+        --to andrea.montero@somenergia.coop \
         --from sistemes@somenergia.coop \
         --config $scriptpath/dbconfig.py \
         --format md \
@@ -69,7 +69,7 @@ emili.py \
     --subject "SomEnergia SCCL, informe cambios de comercializador, $year-$month" \
     --to atr@somenergia.coop \
     --to mar.burguera@somenergia.coop \
-    --to carme.baques@somenergia.coop \
+    --to andrea.montero@somenergia.coop \
     --to itcrowd@somenergia.coop \
     --from sistemes@somenergia.coop \
     --replyto itcrowd@somenergia.coop \
@@ -86,7 +86,7 @@ emili.py \
 emili.py \
     --subject "SomEnergia SCCL, informe cambios de comercializador, $year-$month" \
     --to mar.burguera@somenergia.coop \
-    --to carme.baques@somenergia.coop \
+    --to andrea.montero@somenergia.coop \
     --bcc itcrowd@somenergia.coop \
     --from atr@somenergia.coop \
     --replyto atr@somenergia.coop \
