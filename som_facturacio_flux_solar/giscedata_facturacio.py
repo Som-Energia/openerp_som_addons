@@ -119,4 +119,5 @@ class GiscedataFacturacioFacturador(osv.osv):
 
         return linies_utilitzades_ids, max_descompte
 
+
 GiscedataFacturacioFacturador()
