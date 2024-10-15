@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 from osv import osv, fields
-from datetime import datetime
+from datetime import datetime, timedelta
 from tools.translate import _
 import logging
 
@@ -173,7 +173,6 @@ class SomGurbCups(osv.osv):
         ctx['prefetch'] = False
         for gurb_cups in self.browse(cursor, uid, ids, context=ctx):
             resource = gurb_cups.id
-            ctx['src_rec_id'] = resource
 
             logger.debug(
                 "Generating poweremail template (id: {}) resource: {}".format(tmpl, resource)
@@ -206,6 +205,34 @@ class SomGurbCups(osv.osv):
         if len(gurb_cups_ids) == 1:
             return gurb_cups_ids[0]
 
+    def activate_gurb_cups(self, cursor, uid, gurb_cups_id, data_inici, context=None):
+        if context is None:
+            context = {}
+
+        som_gurb_beta_o = self.model("som.gurb.cups.beta")
+
+        gurb_cups_date = self.read(cursor, uid, gurb_cups_id, ["start_date"])["start_date"]
+        if not gurb_cups_date:
+            write_vals = {
+                "start_date": data_inici
+            }
+            self.write(cursor, uid, gurb_cups_id, write_vals, context=context)
+
+        search_params = [
+            ("future_beta", "=", True),
+            ("gurb_cups_id", "=", gurb_cups_id),
+        ]
+        future_beta = som_gurb_beta_o.search(cursor, uid, search_params, context=context)
+
+        if future_beta:
+            som_gurb_beta_o.activate_future_beta(
+                cursor, uid, future_beta[0], data_inici, context=context
+            )
+
+        self.add_service_to_contract(
+            cursor, uid, gurb_cups_id, data_inici, context=context
+        )
+
     def add_service_to_contract(self, cursor, uid, gurb_cups_id, data_inici, context=None):
         if context is None:
             context = {}
@@ -215,28 +242,40 @@ class SomGurbCups(osv.osv):
 
         read_vals = ["cups_id", "gurb_id", "owner_cups", "quota_product_id"]
 
-        gurb_vals = self.read(cursor, uid, gurb_cups_id, read_vals, context=context)
+        gurb_cups_vals = self.read(cursor, uid, gurb_cups_id, read_vals, context=context)
 
         pol_id = self.get_polissa_gurb_cups(cursor, uid, gurb_cups_id, context=context)
         if not pol_id:
             error_title = _("No hi ha pòlisses actives o en esborrany per aquest CUPS"),
             error_info = _(
                 "El CUPS id {} no té pòlisses actives o en esborrany. No es pot afegir.".format(
-                    gurb_vals["cups_id"][0]
+                    gurb_cups_vals["cups_id"][0]
                 )
             )
             raise osv.except_osv(error_title, error_info)
 
-        # Get related GURB service pricelist
-        pricelist_id = gurb_o.read(
-            cursor, uid, gurb_vals["gurb_id"][0], ["pricelist_id"], context=context
-        )["pricelist_id"]
+        if not gurb_cups_vals["quota_product_id"]:
+            gurb_cups_vals["quota_product_id"] = gurb_o.read(
+                cursor, uid, gurb_cups_vals["gurb_id"][0], ["quota_product_id"]
+            )["quota_product_id"][0]
+
+        read_vals = ["pricelist_id"]
+        if not gurb_cups_vals["quota_product_id"]:
+            read_vals.append("quota_product_id")
+
+        gurb_vals = gurb_o.read(
+            cursor, uid, gurb_cups_vals["gurb_id"][0], read_vals, context=context
+        )
+
+        pricelist_id = gurb_vals["pricelist_id"][0]
+        quota_product_id = gurb_cups_vals["quota_product_id"] or gurb_vals["quota_product_id"]
 
         # Afegim el servei
         creation_vals = {
             "pricelist_id": pricelist_id,
-            "product_id": read_vals["quota_product_id"],
+            "product_id": quota_product_id,
             "data_inici": data_inici,
+            "forcar_nom": "product"
         }
 
         wiz_id = wiz_service_o.create(cursor, uid, creation_vals, context=context)
@@ -449,7 +488,7 @@ class SomGurbCups(osv.osv):
 
     _columns = {
         "active": fields.boolean("Actiu"),
-        "start_date": fields.date("Data entrada GURB", required=True),
+        "start_date": fields.date("Data activació GURB"),
         "end_date": fields.date("Data sortida GURB",),
         "gurb_id": fields.many2one("som.gurb", "GURB", required=True, ondelete="cascade"),
         "cups_id": fields.many2one("giscedata.cups.ps", "CUPS", required=True),
@@ -536,6 +575,40 @@ class SomGurbCupsBeta(osv.osv):
     _description = _("Log of betas and changes for som.gurb.cups")
     _order = "start_date desc"
 
+    def activate_future_beta(self, cursor, uid, future_beta_id, data_inici, context=None):
+        if context is None:
+            context = {}
+
+        beta_browse = self.browse(cursor, uid, future_beta_id, context=context)
+
+        mod_number = int(beta_browse.name)
+        previous_mod_number = mod_number - 1
+
+        if previous_mod_number - 1 > 0:
+            gurb_cups_id = beta_browse.gurb_cups_id
+            search_vals = [
+                ("gurb_cups_id", "=", gurb_cups_id),
+                ("name", "=", previous_mod_number)
+            ]
+            actual_beta = self.search(cursor, uid, search_vals, context=context, limit=1)
+
+            end_date = (
+                datetime.strptime(data_inici, "%Y-%m-%d") - timedelta(days=1)
+            ).strftime("%Y-%m-%d")
+
+            write_vals = {
+                "end_date": end_date,
+                "active": False,
+            }
+            self.write(cursor, uid, actual_beta, write_vals, context=context)
+
+            write_vals = {
+                "start_date": data_inici,
+                "future_beta": False,
+                "active": True
+            }
+            self.write(cursor, uid, future_beta_id, write_vals, context=context)
+
     def create(self, cursor, uid, vals, context=None):
         if context is None:
             context = {}
@@ -554,7 +627,7 @@ class SomGurbCupsBeta(osv.osv):
 
     _columns = {
         "active": fields.boolean("Activa"),
-        'name': fields.char('Codi modificació', size=64, readonly=True),
+        "name": fields.char("Codi modificació", size=64, readonly=True),
         "start_date": fields.date("Data inici", required=True),
         "end_date": fields.date("Data fi"),
         "gurb_cups_id": fields.many2one(
@@ -570,6 +643,7 @@ class SomGurbCupsBeta(osv.osv):
             digits=(10, 3),
             required=True,
         ),
+        "future_beta": fields.boolean("Beta de futur"),
     }
 
     _sql_constraints = [
