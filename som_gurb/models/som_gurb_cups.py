@@ -209,7 +209,7 @@ class SomGurbCups(osv.osv):
         if context is None:
             context = {}
 
-        som_gurb_beta_o = self.model("som.gurb.cups.beta")
+        som_gurb_beta_o = self.pool.get("som.gurb.cups.beta")
 
         gurb_cups_date = self.read(cursor, uid, gurb_cups_id, ["start_date"])["start_date"]
         if not gurb_cups_date:
@@ -275,7 +275,6 @@ class SomGurbCups(osv.osv):
             "pricelist_id": pricelist_id,
             "product_id": quota_product_id,
             "data_inici": data_inici,
-            "forcar_nom": "product"
         }
 
         wiz_id = wiz_service_o.create(cursor, uid, creation_vals, context=context)
