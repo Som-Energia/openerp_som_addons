@@ -7,7 +7,8 @@ class GiscedataFacturacioFacturador(osv.osv):
     _name = 'giscedata.facturacio.facturador'
     _inherit = 'giscedata.facturacio.facturador'
 
-    def get_max_descompte_total_factura_sense_impostos(self, cursor, uid, factura_id, line_vals, context=None):
+    def get_max_descompte_total_factura_sense_impostos(
+            self, cursor, uid, factura_id, line_vals, context=None):
         if context is None:
             context = {}
 
@@ -24,8 +25,10 @@ class GiscedataFacturacioFacturador(osv.osv):
             "bateria_virtual_product"
         )[1]
 
-        # Si tenen bo social, les linies de bo social s'han de tenir en compte tot i ser de tipus "altres"
-        # No es lo millor, pero per dependencies és infinitament més simple fer-ho aqui.
+        # Si tenen bo social, les linies de bo social s'han de tenir en
+        # compte tot i ser de tipus "altres"
+        # No es lo millor, pero per dependencies és infinitament més
+        # simple fer-ho aqui.
         tenen_bo_social = self.pool.get("ir.module.module").search(
             cursor, uid, [
                 ("state", "=", "installed"),
@@ -41,11 +44,14 @@ class GiscedataFacturacioFacturador(osv.osv):
 
         linies_utilitzades_ids = []
         for dict_vals in line_vals:
-            if dict_vals['tipus'] not in ('altres', 'subtotal_xml', 'subtotal_xml_ren', 'subtotal_xml_oth'):
+            if dict_vals['tipus'] not in (
+                    'altres', 'subtotal_xml', 'subtotal_xml_ren', 'subtotal_xml_oth'
+            ):
                 max_descompte += dict_vals['price_subtotal']
                 if 'id' in dict_vals:
                     linies_utilitzades_ids.append(dict_vals['id'])
-            elif tenen_bo_social and dict_vals['product_id'] and pbosocial_id == dict_vals['product_id'][0]:
+            elif (tenen_bo_social and dict_vals['product_id']
+                  and pbosocial_id == dict_vals['product_id'][0]):
                 max_descompte += dict_vals['price_subtotal']
                 linies_utilitzades_ids.append(dict_vals['id'])
             elif product_id == dict_vals['product_id'][0]:
@@ -55,8 +61,9 @@ class GiscedataFacturacioFacturador(osv.osv):
             else:
                 # Si tenen IESE, son del sector electric
                 impostos_linia = dict_vals['invoice_line_tax_id']
-                for impostos_linia_info in self.pool.get("account.tax").read(cursor, uid, impostos_linia, ['name'],
-                                                                             context=context):
+                for impostos_linia_info in self.pool.get("account.tax").read(
+                        cursor, uid, impostos_linia, ['name'], context=context
+                ):
                     if 'especial' in impostos_linia_info['name'].lower():
                         max_descompte += dict_vals['price_subtotal']
                         if 'id' in dict_vals:
@@ -65,7 +72,9 @@ class GiscedataFacturacioFacturador(osv.osv):
         iese_base = iese_quota = iese_amount = 0.0
         iva_base = iva_quota = iva_amount = 0.0
         igic_amount = 0.0
-        for line in linia_obj.browse(cursor, uid, linies_utilitzades_ids, context={'prefetch': False}):
+        for line in linia_obj.browse(
+                cursor, uid, linies_utilitzades_ids, context={'prefetch': False}
+        ):
             if not line.name:  # Si el ID no existeix, al consultar el nom retornara False
                 continue
 
