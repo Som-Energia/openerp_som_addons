@@ -7,7 +7,7 @@ class GiscedataFacturacioFacturador(osv.osv):
     _name = 'giscedata.facturacio.facturador'
     _inherit = 'giscedata.facturacio.facturador'
 
-    def get_max_descompte_total_factura_sense_impostos(
+    def get_max_descompte_total_factura_sense_impostos(  # noqa C901
             self, cursor, uid, factura_id, line_vals, context=None):
         if context is None:
             context = {}
