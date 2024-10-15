@@ -27,8 +27,10 @@ class GiscedataFacturacioFacturador(osv.osv):
         # Si tenen bo social, les linies de bo social s'han de tenir en compte tot i ser de tipus "altres"
         # No es lo millor, pero per dependencies és infinitament més simple fer-ho aqui.
         tenen_bo_social = self.pool.get("ir.module.module").search(
-            cursor, uid, [("state", "=", "installed"), ('name', '=', 'giscedata_repercusio_bo_social')],
-            context=context
+            cursor, uid, [
+                ("state", "=", "installed"),
+                ('name', '=', 'giscedata_repercusio_bo_social')
+            ], context=context
         )
 
         pbosocial_id = None
@@ -72,7 +74,8 @@ class GiscedataFacturacioFacturador(osv.osv):
                 taxes_dict[tax.name] = tax.amount
             has_iese = [v for x, v in taxes_dict.items() if 'especial' in x.lower()]
             has_igic = [v for x, v in taxes_dict.items() if 'igic' in x.lower()]
-            other_taxes = [v for x, v in taxes_dict.items() if 'especial' not in x.lower() and 'igic' not in x.lower()]
+            other_taxes = [v for x, v in taxes_dict.items() if 'especial' not in x.lower()
+                           and 'igic' not in x.lower()]
 
             if has_iese:
                 # We asume there's only one IESE and only one VAT
@@ -95,7 +98,9 @@ class GiscedataFacturacioFacturador(osv.osv):
                 factor = 1.0
 
             fact = fact_obj.browse(cursor, uid, factura_id, context=context)
-            linies_energia = self.get_energy_lines_to_count_consume(cursor, uid, fact, context=context)
+            linies_energia = self.get_energy_lines_to_count_consume(
+                cursor, uid, fact, context=context
+            )
 
             total_energia = 0.0
             for linia in linies_energia:
