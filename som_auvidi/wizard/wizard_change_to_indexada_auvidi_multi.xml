@@ -10,10 +10,10 @@
                     <field name="state" invisible="1"/>
                     <group attrs="{'invisible': [('state','!=','init')]}">
                         <group colspan="4" col="4">
-                            <field name="pricelist"/>
-                            <field name="coeficient_k"/>
                             <button name="change_to_indexada_auvidi_multi"
-                                    icon="gtk-ok" string="Canviar a indexada amb auvidi" type="object"/>
+                                    icon="gtk-undo" string="Canviar a indexada amb auvidi" type="object"/>
+                            <button name="quit_auvidi_multi"
+                                    icon="gtk-redo" string="Treure d'auvidi" type="object"/>
                         </group>
                     </group>
                     <group attrs="{'invisible': [('state','!=','end')]}">
