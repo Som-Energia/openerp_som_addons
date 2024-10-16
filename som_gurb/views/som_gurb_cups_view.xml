@@ -98,7 +98,5 @@
             <field name="view_mode">tree,form</field>
             <field name="context">{'active_test': False}</field>
         </record>
-        <!-- Menú per llistar els GURBs-->
-        <menuitem id="menu_llistar_gurbs_cups" parent="menu_gurbs" action="action_gurb_cups" />
     </data>
 </openerp>
