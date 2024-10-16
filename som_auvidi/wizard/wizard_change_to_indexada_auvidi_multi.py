@@ -20,6 +20,7 @@ class WizardChangeToIndexadaAuvidiMulti(osv.osv_memory):
         from_waiting_indexed = []
         from_already_there = []
         from_indexed = []
+        from_auvidi = []
         msg = []
 
         for pol_id in pol_ids:
@@ -47,11 +48,15 @@ class WizardChangeToIndexadaAuvidiMulti(osv.osv_memory):
                         from_waiting_indexed.append(pol_id)
             else:  # in indexed
                 if not md:
-                    # Indexed with out MODCON to periods --> create MODCON to auvidi
-                    if not self.create_auvidi_pending_modcon(cursor, uid, pol_id):
-                        faileds.append(pol_id)
+                    if self.get_current_auvidi(cursor, uid, pol_id):
+                        # Indexed and auvidiwith out MODCON to periods --> don't do anything
+                        from_auvidi.append(pol_id)
                     else:
-                        from_indexed.append(pol_id)
+                        # Indexed with out MODCON to periods --> create MODCON to auvidi
+                        if not self.create_auvidi_pending_modcon(cursor, uid, pol_id):
+                            faileds.append(pol_id)
+                        else:
+                            from_indexed.append(pol_id)
                 else:
                     # Indexed with MODCON to periods --> error, cannot be done!
                     from_wainting_periodes.append(pol_id)
@@ -75,6 +80,11 @@ class WizardChangeToIndexadaAuvidiMulti(osv.osv_memory):
             pols = self.get_list_polissa_names(cursor, uid, from_indexed)
             msg.append("Pòlisses que estan a indexada:")
             msg.append(" - Creada modcon a auvidi: {}".format(pols))
+
+        if from_auvidi:
+            pols = self.get_list_polissa_names(cursor, uid, from_auvidi)
+            msg.append("Pòlisses que estan a indexada amb auvidi:")
+            msg.append(" - No fem res: {}".format(pols))
 
         if from_wainting_periodes:
             pols = self.get_list_polissa_names(cursor, uid, from_wainting_periodes)
@@ -108,6 +118,11 @@ class WizardChangeToIndexadaAuvidiMulti(osv.osv_memory):
         pol_obj = self.pool.get("giscedata.polissa")
         data = pol_obj.read(cursor, uid, pol_id, ['mode_facturacio'])
         return data['mode_facturacio']
+
+    def get_current_auvidi(self, cursor, uid, pol_id):
+        pol_obj = self.pool.get("giscedata.polissa")
+        data = pol_obj.read(cursor, uid, pol_id, ['te_auvidi'])
+        return data['te_auvidi']
 
     def get_list_polissa_names(self, cursor, uid, pol_ids):
         pol_obj = self.pool.get("giscedata.polissa")
