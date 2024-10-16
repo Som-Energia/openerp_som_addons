@@ -27,8 +27,8 @@ class WizardChangeToIndexadaAuvidiMulti(osv.osv_memory):
                     if not self.change_to_indexada_auvidi(
                         cursor, uid, pol_id, wiz_og.pricelist.id, wiz_og.coeficient_k
                     ):
-                        self.add_to_list(cursor, uid, pol_id, failed_polisses)
-                        break
+                        failed_polisses.append(pol_id)
+                        continue
 
                 md = self.get_last_pending_modcon(cursor, uid, pol_id)
                 # Periods with MODCON pending to indexed and auvidi --> don't do anything
@@ -41,13 +41,15 @@ class WizardChangeToIndexadaAuvidiMulti(osv.osv_memory):
                     pass
                 else:
                     # Indexed with MODCON to periods --> error, cannot be done!
-                    self.add_to_list(cursor, uid, pol_id, error_polisses)
+                    error_polisses.append(pol_id)
 
         info = ""
         if failed_polisses:
-            info += "\nLes pòlisses següents han fallat: {}".format(str(failed_polisses))
+            failed_str = self.get_list_polissa_names(cursor, uid, failed_polisses)
+            info += "\nLes pòlisses següents han fallat: {}".format(failed_str)
         if error_polisses:
-            info += "\nLes pòlisses següents no es pot fer el canvi: {}".format(str(error_polisses))
+            error_str = self.get_list_polissa_names(cursor, uid, error_polisses)
+            info += "\nLes pòlisses següents no es pot fer el canvi: {}".format(error_str)
         if not failed_polisses and not error_polisses:
             info = "Procés acabat correctament!"
 
@@ -68,10 +70,10 @@ class WizardChangeToIndexadaAuvidiMulti(osv.osv_memory):
         data = pol_obj.read(cursor, uid, pol_id, ['mode_facturacio'])
         return data['mode_facturacio']
 
-    def add_to_list(self, cursor, uid, pol_id, list_to_add):
+    def get_list_polissa_names(self, cursor, uid, pol_ids):
         pol_obj = self.pool.get("giscedata.polissa")
-        pol_name = pol_obj.read(cursor, uid, pol_id, ["name"])
-        list_to_add.append(pol_name["name"])
+        pol_data = pol_obj.read(cursor, uid, pol_ids, ["name"])
+        return ', '.join([pol['name'] for pol in pol_data])
 
     def change_to_indexada_auvidi(self, cursor, uid, pol_id, pricelist_id, coeficient_k):
         wz_chng_to_indx_obj = self.pool.get("wizard.change.to.indexada")
