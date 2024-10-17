@@ -36,7 +36,7 @@ class WizardChangeToIndexadaAuvidiMulti(osv.osv_memory):
                         faileds.append(pol_id)
                     else:
                         md = self.get_last_pending_modcon(cursor, uid, pol_id)
-                        md.te_auvidi = True
+                        self.set_auvidi(cursor, uid, md.id)
                         from_periodes.append(pol_id)
                 else:
                     if md.te_auvidi:
@@ -44,7 +44,7 @@ class WizardChangeToIndexadaAuvidiMulti(osv.osv_memory):
                         from_already_there.append(pol_id)
                     else:
                         # Periods with MODCON pending to indexed --> modify the MODCON to add auvdi
-                        md.te_auvidi = True
+                        self.set_auvidi(cursor, uid, md.id)
                         from_waiting_indexed.append(pol_id)
             else:  # in indexed
                 if not md:
@@ -107,12 +107,12 @@ class WizardChangeToIndexadaAuvidiMulti(osv.osv_memory):
     def get_last_pending_modcon(self, cursor, uid, pol_id):
         pol_obj = self.pool.get("giscedata.polissa")
         pol = pol_obj.browse(cursor, uid, pol_id)
-        if (pol.modcontractuals_ids[0].state == "pendent"
-            and pol.mode_facturacio != pol.modcontractuals_ids[0].mode_facturacio
-                and pol.modcontractuals_ids[0].mode_facturacio):
-            return pol.modcontractuals_ids[0]
-        else:
-            return None
+        if pol.modcontractuals_ids[0].state == "pendent":
+            if (pol.mode_facturacio != pol.modcontractuals_ids[0].mode_facturacio
+                    or pol.mode_facturacio == 'index'):
+                if pol.modcontractuals_ids[0].mode_facturacio:
+                    return pol.modcontractuals_ids[0]
+        return None
 
     def get_current_mode(self, cursor, uid, pol_id):
         pol_obj = self.pool.get("giscedata.polissa")
@@ -123,6 +123,10 @@ class WizardChangeToIndexadaAuvidiMulti(osv.osv_memory):
         pol_obj = self.pool.get("giscedata.polissa")
         data = pol_obj.read(cursor, uid, pol_id, ['te_auvidi'])
         return data['te_auvidi']
+
+    def set_auvidi(self, cursor, uid, modcon_id, value=True):
+        mod_obj = self.pool.get("giscedata.polissa.modcontractual")
+        mod_obj.write(cursor, uid, modcon_id, {'te_auvidi': value})
 
     def get_list_polissa_names(self, cursor, uid, pol_ids):
         pol_obj = self.pool.get("giscedata.polissa")
