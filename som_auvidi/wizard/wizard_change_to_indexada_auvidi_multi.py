@@ -53,7 +53,7 @@ class WizardChangeToIndexadaAuvidiMulti(osv.osv_memory):
                         from_auvidi.append(pol_id)
                     else:
                         # Indexed with out MODCON to periods --> create MODCON to auvidi
-                        if not self.create_auvidi_pending_modcon(cursor, uid, pol_id):
+                        if not self.create_auvidi_pending_modcon(cursor, uid, pol_id, True):
                             faileds.append(pol_id)
                         else:
                             from_indexed.append(pol_id)
@@ -101,8 +101,130 @@ class WizardChangeToIndexadaAuvidiMulti(osv.osv_memory):
 
         wiz_og.write({"state": "end", "info": "\n".join(msg)})
 
-    def quit_auvidi_multi(self, cursor, uid, ids, context=None):
-        pass
+    def quit_auvidi_multi(self, cursor, uid, ids, context=None):  # noqa: C901
+        if context is None:
+            context = {}
+
+        wiz_og = self.browse(cursor, uid, ids[0], context=context)
+
+        pol_ids = context.get("active_ids")
+        faileds = []
+        from_already_there = []
+        msg = []
+
+        for pol_id in pol_ids:
+
+            mode = self.get_current_mode(cursor, uid, pol_id)
+            auvidi = self.get_current_auvidi(cursor, uid, pol_id)
+            md = self.get_last_pending_modcon(cursor, uid, pol_id)
+
+            faileds = []
+            from_indexed_auvidi = []
+            from_indexed_waiting_auvidi = []
+            from_indexed_waiting_no_auvidi = []
+            from_indexed_no_auvidi = []
+            from_periods_auvidi = []
+            from_periods_waiting_indexada_auvidi = []
+            from_periods_waiting_no_auvidi = []
+            from_already_there = []
+
+            if mode == 'index':  # in indexed
+                if auvidi:  # has auvidi
+                    if not md:  # does not have any pending modcon
+                        # Indexed + auvidi --> create MODCON to quit auvidi
+                        if not self.create_auvidi_pending_modcon(cursor, uid, pol_id, False):
+                            faileds.append(pol_id)
+                        else:
+                            from_indexed_auvidi.append(pol_id)
+                    else:  # has a pending MODCON
+                        # Indexed + auvidi + MODCON --> modify the MODCON to quit auvidi
+                        if md.te_auvidi:
+                            self.set_auvidi(cursor, uid, md.id, False)
+                            from_indexed_waiting_auvidi.append(pol_id)
+                        else:
+                            from_indexed_waiting_no_auvidi.append(pol_id)
+                else:  # does not has auvidi
+                    if md and md.te_auvidi:
+                        # Indexed + MODCON auvidi --> modify the MODCON to quit auvidi
+                        self.set_auvidi(cursor, uid, md.id, False)
+                        from_indexed_waiting_auvidi.append(pol_id)
+                    else:
+                        from_indexed_no_auvidi.append(pol_id)
+
+            else:  # in periods
+                if auvidi:  # periods and auvidi --> Error!!
+                    if not md:  # does not have any pending modcon
+                        if not self.create_auvidi_pending_modcon(cursor, uid, pol_id, False):
+                            faileds.append(pol_id)
+                        else:
+                            from_periods_auvidi.append(pol_id)
+                    else:
+                        # periods + auvidi + MODCON --> modify the MODCON to quit auvidi
+                        if md.te_auvidi:
+                            self.set_auvidi(cursor, uid, md.id, False)
+                            from_periods_waiting_indexada_auvidi.append(pol_id)
+                        else:
+                            from_periods_waiting_no_auvidi.append(pol_id)
+                else:  # periods and not auvidi
+                    if not md:  # does not have any pending modcon
+                        # Periods no auvidi and no modcon --> don't do anything
+                        from_already_there.append(pol_id)
+                    else:
+                        if md.te_auvidi:
+                            self.set_auvidi(cursor, uid, md.id, False)
+                            from_periods_waiting_indexada_auvidi.append(pol_id)
+                        else:
+                            from_periods_waiting_no_auvidi.append(pol_id)
+
+        if from_indexed_auvidi:
+            pols = self.get_list_polissa_names(cursor, uid, from_indexed_auvidi)
+            msg.append("Pòlisses que estan a indexada amb auvidi:")
+            msg.append(" - Creada modcon per treure auvidi: {}".format(pols))
+
+        if from_indexed_waiting_auvidi:
+            pols = self.get_list_polissa_names(cursor, uid, from_indexed_waiting_auvidi)
+            msg.append("Pòlisses que estan a indexada amb modcon pendent per activar auvidi:")
+            msg.append(" - Modcon modificada, tret auvidi: {}".format(pols))
+
+        if from_indexed_waiting_no_auvidi:
+            pols = self.get_list_polissa_names(cursor, uid, from_indexed_waiting_no_auvidi)
+            msg.append("Pòlisses que ja estan a indexada amb modcon pendent per treure auvidi:")
+            msg.append(" - no fem res: {}".format(pols))
+
+        if from_indexed_no_auvidi:
+            pols = self.get_list_polissa_names(cursor, uid, from_indexed_no_auvidi)
+            msg.append("Pòlisses que estan a indexada sense auvidi i sense modcon pendent:")
+            msg.append(" - no fem res: {}".format(pols))
+
+        if from_periods_auvidi:
+            pols = self.get_list_polissa_names(cursor, uid, from_periods_auvidi)
+            msg.append("Pòlisses que estan a periodes amb auvidi!!!:")
+            msg.append(" - Creada modcon per treure auvidi: {}".format(pols))
+
+        if from_periods_waiting_indexada_auvidi:
+            pols = self.get_list_polissa_names(cursor, uid, from_periods_waiting_indexada_auvidi)
+            msg.append("Pòlisses que estan a periodes amb modcon per passar a indexada + auvidi:")
+            msg.append(" - Modcon modificada, tret auvidi: {}".format(pols))
+
+        if from_periods_waiting_no_auvidi:
+            pols = self.get_list_polissa_names(cursor, uid, from_periods_waiting_no_auvidi)
+            msg.append("Pòlisses que estan a periodes amb modcon per passar a indexada SENSE auvidi:")  # noqa: E501
+            msg.append(" - no fem res: {}".format(pols))
+
+        if from_already_there:
+            pols = self.get_list_polissa_names(cursor, uid, from_already_there)
+            msg.append("Pòlisses que estan a periodes i no tenen modcon a indexada ni auvidi:")
+            msg.append(" - No fem res: {}".format(pols))
+
+        if faileds:
+            pols = self.get_list_polissa_names(cursor, uid, faileds)
+            msg.append("ERROR Pòlisses que han fallat al crear modcon:")
+            msg.append(" - {}".format(pols))
+
+        if not faileds:
+            msg.append("Procés acabat correctament!")
+
+        wiz_og.write({"state": "end", "info": "\n".join(msg)})
 
     def get_last_pending_modcon(self, cursor, uid, pol_id):
         pol_obj = self.pool.get("giscedata.polissa")
@@ -145,11 +267,11 @@ class WizardChangeToIndexadaAuvidiMulti(osv.osv_memory):
         except Exception:
             return False
 
-    def create_auvidi_pending_modcon(self, cursor, uid, pol_id):
+    def create_auvidi_pending_modcon(self, cursor, uid, pol_id, auvidi_value):
         pol_obj = self.pool.get("giscedata.polissa")
         tomorrow = (date.today() + timedelta(days=1)).strftime("%Y-%m-%d")
         auvidi_flag = {
-            'te_auvidi': True,
+            'te_auvidi': auvidi_value,
         }
         try:
             pol_obj.create_contracte(cursor, uid, pol_id, tomorrow, auvidi_flag)
