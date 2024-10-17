@@ -307,6 +307,27 @@ class WizardExecutarTascaTests(testing.OOTestCase):
             result_string = "-pr None -u usuariProva -d 80 -f prova.txt -url 'https://egymonluments.gov.eg/en/museums/egyptian-museum' -p contraProva -c Selenium -b firefox -n prova1 -fltr 'https://egymonuments.gov.eg/en/collections/kawit-sarcophagus-4' -nfp False -url-upload 'False'"  # noqa: E501
             self.assertEqual(set(result.split()), set(result_string.split()))
 
+    def test__create_script_args__entrada_config_prova_mes_context_sortida_string_arguments_mes_context(self):  # noqa: E501
+        with Transaction().start(self.database) as txn:
+            cursor = txn.cursor
+            uid = txn.user
+            crawler_config_id = self.Data.get_object_reference(
+                cursor, uid, "som_crawlers", "demo1_conf"
+            )[1]
+            crawler_taskStep_id = self.Data.get_object_reference(
+                cursor, uid, "som_crawlers", "demo_taskStep_9"
+            )[1]
+            taskStep_obj = self.taskStep.browse(cursor, uid, crawler_taskStep_id)
+            taskStepParams = json.loads(taskStep_obj.params)
+            crawler_config_obj = self.Configuracio.browse(cursor, uid, crawler_config_id)
+            fileName = "prova.txt"
+            test = {"codi_municipi": "1234567", "filepath": "here/there/file.xml"}
+            result = self.taskStep.create_script_args(
+                crawler_config_obj, taskStepParams, fileName, context=test)
+
+            result_string = """-pr None -u usuariProva -d 80 -f prova.txt -url 'https://egymonluments.gov.eg/en/museums/egyptian-museum' -p contraProva -c Selenium -b firefox -n prova1 -fltr 'https://egymonuments.gov.eg/en/collections/kawit-sarcophagus-4' -nfp False -url-upload 'False' -context '{"codi_municipi": "1234567", "filepath": "here/there/file.xml"}'"""  # noqa: E501
+            self.assertEqual(set(result.split()), set(result_string.split()))
+
     def test_readOutPutFile_entrada_path_inexistent_sortida_excepcio(self):
         with Transaction().start(self.database) as txn:
             cursor = txn.cursor
