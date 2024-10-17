@@ -10,6 +10,7 @@
             <field name="sig_data">SIGDATA</field>
             <field name="pricelist_id" ref="pricelist_gurb_demo" ></field>
             <field name="generation_power">10</field>
+            <field name="quota_product_id" ref="product_gurb" />
         </record>
         <record model="product.pricelist" id="giscedata_facturacio.pricelist_tarifas_electricidad">
             <field name="dies_renovacio">30</field>

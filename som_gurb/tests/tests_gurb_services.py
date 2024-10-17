@@ -5,19 +5,15 @@ from tests_gurb_base import TestsGurbBase
 
 class TestsGurbServices(TestsGurbBase):
 
-    def add_service_to_contract(self, owner=False, start_date='2023-01-01', context=None):
+    def add_service_to_contract(self, start_date='2023-01-01', context=None):
         gurb_cups_o = self.openerp.pool.get("som.gurb.cups")
         vals = self.get_references()
 
-        context = {"polissa_xml_id": "polissa_0001" if owner else "polissa_tarifa_018"}
+        context = {"polissa_xml_id": "polissa_tarifa_018"}
         self.activar_polissa_CUPS(context=context)
-        gurb_cups_id = vals['owner_gurb_cups_id'] if owner else vals['gurb_cups_id']
-        gurb_cups_o.add_service_to_contract(
-            self.cursor,
-            self.uid,
-            [gurb_cups_id],
-            start_date,
-        )
+
+        gurb_cups_id = vals['gurb_cups_id']
+        gurb_cups_o.add_service_to_contract(self.cursor, self.uid, gurb_cups_id, start_date)
 
     def create_new_pricelist_version(self, start_date, pricelist_id):
         context = {}
@@ -53,17 +49,6 @@ class TestsGurbServices(TestsGurbBase):
 
         pl_vers_o.create(self.cursor, self.uid, create_version_vals, context=context)
 
-    def test_add_service_to_owner_contract(self):
-        pol_o = self.openerp.pool.get("giscedata.polissa")
-        self.add_service_to_contract(owner=True)
-        vals = self.get_references()
-
-        pol_br = pol_o.browse(self.cursor, self.uid, vals['owner_pol_id'])
-        self.assertEqual(len(pol_br.serveis), 1)
-        self.assertEqual(pol_br.serveis[0].llista_preus.id, vals['pricelist_id'])  # TODO: Revisar
-        self.assertEqual(pol_br.serveis[0].producte.id, vals['owner_product_id'])
-        self.assertEqual(pol_br.serveis[0].polissa_id.id, vals['owner_pol_id'])
-
     def test_add_service_to_contract(self):
         pol_o = self.openerp.pool.get("giscedata.polissa")
         self.add_service_to_contract()
@@ -85,7 +70,7 @@ class TestsGurbServices(TestsGurbBase):
             self.cursor, self.uid, "som_gurb", "gurb_cups_0001"
         )[1]
         gurb_cups_o.add_service_to_contract(
-            self.cursor, self.uid, [gurb_cups_id], '2023-01-01'
+            self.cursor, self.uid, gurb_cups_id, '2023-01-01'
         )
 
         polissa_id = imd_o.get_object_reference(
@@ -94,7 +79,7 @@ class TestsGurbServices(TestsGurbBase):
         pol_br = pol_o.browse(self.cursor, self.uid, polissa_id)
 
         self.assertEqual(pol_br.serveis[0].llista_preus.id, vals['pricelist_id'])
-        self.assertEqual(pol_br.serveis[0].producte.id, vals['owner_product_id'])
+        self.assertEqual(pol_br.serveis[0].producte.id, vals['product_id'])
         self.assertEqual(pol_br.serveis[0].polissa_id.state, "esborrany")
         self.assertEqual(pol_br.serveis[0].polissa_id.id, polissa_id)
 
@@ -112,7 +97,7 @@ class TestsGurbServices(TestsGurbBase):
 
         with self.assertRaises(osv.except_osv):
             gurb_cups_o.add_service_to_contract(
-                self.cursor, self.uid, [gurb_cups_id], '2023-01-01'
+                self.cursor, self.uid, gurb_cups_id, '2023-01-01'
             )
 
     def test_get_vals_linia_full_period(self):
@@ -122,12 +107,12 @@ class TestsGurbServices(TestsGurbBase):
         fact_o = self.openerp.pool.get("giscedata.facturacio.factura")
 
         vals = self.get_references()
-        pol_br = pol_o.browse(self.cursor, self.uid, vals['owner_pol_id'])
+        pol_br = pol_o.browse(self.cursor, self.uid, vals['pol_id'])
         factura_id = imd_o.get_object_reference(
             self.cursor, self.uid, "giscedata_facturacio", "factura_0001"
         )[1]
         fact_br = fact_o.browse(self.cursor, self.uid, factura_id)
-        self.add_service_to_contract(owner=True, start_date="2016-01-01")
+        self.add_service_to_contract(start_date="2016-01-01")
 
         n_lines = 0
         for line in fact_services_o._get_vals_linia(
@@ -146,13 +131,15 @@ class TestsGurbServices(TestsGurbBase):
         fact_o = self.openerp.pool.get("giscedata.facturacio.factura")
 
         vals = self.get_references()
-        pol_br = pol_o.browse(self.cursor, self.uid, vals['owner_pol_id'])
+
+        pol_br = pol_o.browse(self.cursor, self.uid, vals['pol_id'])
         factura_id = imd_o.get_object_reference(
             self.cursor, self.uid, "giscedata_facturacio", "factura_0001"
         )[1]
         fact_br = fact_o.browse(self.cursor, self.uid, factura_id)
-        self.add_service_to_contract(owner=True, start_date="2016-01-01")
-        self.create_new_gurb_cups_beta(vals["owner_gurb_cups_id"], "2016-02-01", 1.5, 0.5)
+        fact_o.write(self.cursor, self.uid, factura_id, {"polissa_id": vals['pol_id']})
+        self.add_service_to_contract(start_date="2016-01-01")
+        self.create_new_gurb_cups_beta(vals["gurb_cups_id"], "2016-02-01", 1.5, 0.5)
 
         lines = []
         for line in fact_services_o._get_vals_linia(
@@ -182,14 +169,14 @@ class TestsGurbServices(TestsGurbBase):
         gurb_o = self.openerp.pool.get("som.gurb")
 
         ref = self.get_references()
-        pol_br = pol_o.browse(self.cursor, self.uid, ref['owner_pol_id'], context=context)
+        pol_br = pol_o.browse(self.cursor, self.uid, ref['pol_id'], context=context)
         factura_id = imd_o.get_object_reference(
             self.cursor, self.uid, "giscedata_facturacio", "factura_0001"
         )[1]
         fact_br = fact_o.browse(self.cursor, self.uid, factura_id)
-        self.add_service_to_contract(owner=True, start_date="2016-01-01")
+        self.add_service_to_contract(start_date="2016-01-01")
 
-        gurb_cups_id = ref["owner_gurb_cups_id"]
+        gurb_cups_id = ref["gurb_cups_id"]
         gurb_id = gurb_cups_o.read(
             self.cursor, self.uid, gurb_cups_id, ["gurb_id"], context=context
         )["gurb_id"][0]
@@ -228,14 +215,15 @@ class TestsGurbServices(TestsGurbBase):
         gurb_o = self.openerp.pool.get("som.gurb")
 
         ref = self.get_references()
-        pol_br = pol_o.browse(self.cursor, self.uid, ref['owner_pol_id'], context=context)
+        pol_br = pol_o.browse(self.cursor, self.uid, ref['pol_id'], context=context)
         factura_id = imd_o.get_object_reference(
             self.cursor, self.uid, "giscedata_facturacio", "factura_0001"
         )[1]
         fact_br = fact_o.browse(self.cursor, self.uid, factura_id)
-        self.add_service_to_contract(owner=True, start_date="2016-01-01")
+        fact_o.write(self.cursor, self.uid, factura_id, {"polissa_id": ref['pol_id']})
+        self.add_service_to_contract(start_date="2016-01-01")
 
-        gurb_cups_id = ref["owner_gurb_cups_id"]
+        gurb_cups_id = ref["gurb_cups_id"]
         gurb_id = gurb_cups_o.read(
             self.cursor, self.uid, gurb_cups_id, ["gurb_id"], context=context
         )["gurb_id"][0]
