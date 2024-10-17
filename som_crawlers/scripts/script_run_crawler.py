@@ -125,7 +125,8 @@ def buildPortalCreds(
     if file_path:
         portalCreds["file_path"] = file_path
     if context and context != 'None':
-        portalCreds["context"] = json.loads(context)
+        context_str = context.replace('\\', '')
+        portalCreds["context"] = json.loads(context_str)
     return portalCreds
 
 
