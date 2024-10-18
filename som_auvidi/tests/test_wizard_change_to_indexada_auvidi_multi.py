@@ -221,3 +221,230 @@ class WizardChangeToIndexadaAuvidiMultiTests(WizardChangeToIndexadaAuvidiMultiBa
         self.assertIn(
             u"ERROR Pòlisses que estan a indexada amb modcon pendent a periodes:", wiz.info)
         self.assertIn(u" - {}".format(p.name), wiz.info)
+
+    def test__quit_auvidi_multi__indexed_auvidi_no_modcon(self):
+        # Indexed + auvidi --> create MODCON to quit auvidi
+        polissa_id = self.open_polissa("polissa_tarifa_018", 'index', True)
+        p = self.polissa_obj.browse(self.cursor, self.uid, polissa_id)
+        prev_modcons = len(p.modcontractuals_ids)
+
+        context = {"active_id": polissa_id, "active_ids": [polissa_id]}
+        wiz_id = self.wiz_obj.create(self.cursor, self.uid, {}, context=context)
+        self.wiz_obj.quit_auvidi_multi(self.cursor, self.uid, [wiz_id], context)
+
+        wiz = self.wiz_obj.browse(self.cursor, self.uid, wiz_id)
+        p = self.polissa_obj.browse(self.cursor, self.uid, polissa_id)
+        self.assertEqual(p.modcontractuals_ids[0].te_auvidi, False)
+        self.assertEqual(p.modcontractuals_ids[0].state, u'pendent')
+        self.assertEqual(len(p.modcontractuals_ids), prev_modcons + 1)
+        self.assertIn(
+            u"Pòlisses que estan a indexada amb auvidi:", wiz.info)
+        self.assertIn(u" - Creada modcon per treure auvidi: {}".format(p.name), wiz.info)
+
+    def test__quit_auvidi_multi__indexed_auvidi_modcon_no_auvidi(self):
+        # Indexed + auvidi + MODCON no au --> modify the MODCON to quit auvidi
+        polissa_id = self.open_polissa("polissa_tarifa_018", 'index', True)
+        self.wiz_obj.create_auvidi_pending_modcon(self.cursor, self.uid, polissa_id, False)
+        p = self.polissa_obj.browse(self.cursor, self.uid, polissa_id)
+        prev_modcons = len(p.modcontractuals_ids)
+
+        context = {"active_id": polissa_id, "active_ids": [polissa_id]}
+        wiz_id = self.wiz_obj.create(self.cursor, self.uid, {}, context=context)
+        self.wiz_obj.quit_auvidi_multi(self.cursor, self.uid, [wiz_id], context)
+
+        wiz = self.wiz_obj.browse(self.cursor, self.uid, wiz_id)
+        p = self.polissa_obj.browse(self.cursor, self.uid, polissa_id)
+        self.assertEqual(p.modcontractuals_ids[0].te_auvidi, False)
+        self.assertEqual(p.modcontractuals_ids[0].state, u'pendent')
+        self.assertEqual(len(p.modcontractuals_ids), prev_modcons)
+        self.assertIn(
+            u"Pòlisses que ja estan a indexada amb modcon pendent per treure auvidi:", wiz.info)
+        self.assertIn(u" - no fem res: {}".format(p.name), wiz.info)
+
+    def test__quit_auvidi_multi__indexed_auvidi_modcon_yes_auividi(self):
+        # Indexed + auvidi + MODCON no au --> modify the MODCON to quit auvidi
+        polissa_id = self.open_polissa("polissa_tarifa_018", 'index', True)
+        self.wiz_obj.create_auvidi_pending_modcon(self.cursor, self.uid, polissa_id, True)
+        p = self.polissa_obj.browse(self.cursor, self.uid, polissa_id)
+        prev_modcons = len(p.modcontractuals_ids)
+
+        context = {"active_id": polissa_id, "active_ids": [polissa_id]}
+        wiz_id = self.wiz_obj.create(self.cursor, self.uid, {}, context=context)
+        self.wiz_obj.quit_auvidi_multi(self.cursor, self.uid, [wiz_id], context)
+
+        wiz = self.wiz_obj.browse(self.cursor, self.uid, wiz_id)
+        p = self.polissa_obj.browse(self.cursor, self.uid, polissa_id)
+        self.assertEqual(p.modcontractuals_ids[0].te_auvidi, False)
+        self.assertEqual(p.modcontractuals_ids[0].state, u'pendent')
+        self.assertEqual(len(p.modcontractuals_ids), prev_modcons)
+        self.assertIn(
+            u"Pòlisses que estan a indexada amb modcon pendent per activar auvidi:", wiz.info)
+        self.assertIn(u" - Modcon modificada, tret auvidi: {}".format(p.name), wiz.info)
+
+    def test__quit_auvidi_multi__indexed_no_auvidi_modcon_yes_auvidi(self):
+        # Indexed + MODCON auvidi --> modify the MODCON to quit auvidi
+        polissa_id = self.open_polissa("polissa_tarifa_018", 'index', False)
+        self.wiz_obj.create_auvidi_pending_modcon(self.cursor, self.uid, polissa_id, True)
+        p = self.polissa_obj.browse(self.cursor, self.uid, polissa_id)
+        prev_modcons = len(p.modcontractuals_ids)
+
+        context = {"active_id": polissa_id, "active_ids": [polissa_id]}
+        wiz_id = self.wiz_obj.create(self.cursor, self.uid, {}, context=context)
+        self.wiz_obj.quit_auvidi_multi(self.cursor, self.uid, [wiz_id], context)
+
+        wiz = self.wiz_obj.browse(self.cursor, self.uid, wiz_id)
+        p = self.polissa_obj.browse(self.cursor, self.uid, polissa_id)
+        self.assertEqual(p.modcontractuals_ids[0].te_auvidi, False)
+        self.assertEqual(p.modcontractuals_ids[0].state, u'pendent')
+        self.assertEqual(len(p.modcontractuals_ids), prev_modcons)
+        self.assertIn(
+            u"Pòlisses que estan a indexada amb modcon pendent per activar auvidi:", wiz.info)
+        self.assertIn(u" - Modcon modificada, tret auvidi: {}".format(p.name), wiz.info)
+
+    def test__quit_auvidi_multi__indexed_no_auvidi_modcon_no_auvidi(self):
+        # Indexed + MODCON no auvidi --> do nothing
+        polissa_id = self.open_polissa("polissa_tarifa_018", 'index', False)
+        self.wiz_obj.create_auvidi_pending_modcon(self.cursor, self.uid, polissa_id, False)
+        p = self.polissa_obj.browse(self.cursor, self.uid, polissa_id)
+        prev_modcons = len(p.modcontractuals_ids)
+
+        context = {"active_id": polissa_id, "active_ids": [polissa_id]}
+        wiz_id = self.wiz_obj.create(self.cursor, self.uid, {}, context=context)
+        self.wiz_obj.quit_auvidi_multi(self.cursor, self.uid, [wiz_id], context)
+
+        wiz = self.wiz_obj.browse(self.cursor, self.uid, wiz_id)
+        p = self.polissa_obj.browse(self.cursor, self.uid, polissa_id)
+        self.assertEqual(p.modcontractuals_ids[0].te_auvidi, False)
+        self.assertEqual(p.modcontractuals_ids[0].state, u'pendent')
+        self.assertEqual(len(p.modcontractuals_ids), prev_modcons)
+        self.assertIn(
+            u"Pòlisses que estan a indexada sense auvidi i sense modcon pendent:", wiz.info)
+        self.assertIn(u" - no fem res: {}".format(p.name), wiz.info)
+
+    def test__quit_auvidi_multi__periods_auvidi_no_modcon(self):
+        # periods and auvidi --> Error!!
+        polissa_id = self.open_polissa("polissa_tarifa_018", 'atr', True)
+        p = self.polissa_obj.browse(self.cursor, self.uid, polissa_id)
+        prev_modcons = len(p.modcontractuals_ids)
+
+        context = {"active_id": polissa_id, "active_ids": [polissa_id]}
+        wiz_id = self.wiz_obj.create(self.cursor, self.uid, {}, context=context)
+        self.wiz_obj.quit_auvidi_multi(self.cursor, self.uid, [wiz_id], context)
+
+        wiz = self.wiz_obj.browse(self.cursor, self.uid, wiz_id)
+        p = self.polissa_obj.browse(self.cursor, self.uid, polissa_id)
+        self.assertEqual(p.modcontractuals_ids[0].te_auvidi, False)
+        self.assertEqual(p.modcontractuals_ids[0].state, u'pendent')
+        self.assertEqual(len(p.modcontractuals_ids), prev_modcons + 1)
+        self.assertIn(
+            u"Pòlisses que estan a periodes amb auvidi!!!:", wiz.info)
+        self.assertIn(u" - Creada modcon per treure auvidi: {}".format(p.name), wiz.info)
+
+    @mock.patch("poweremail.poweremail_send_wizard.poweremail_send_wizard.send_mail")
+    def test__quit_auvidi_multi__periods_auvidi_modcon_no_auvidi(self, mocked_send_mail):
+        # periods + auvidi + MODCON no auvidi --> nothing
+        polissa_id = self.open_polissa("polissa_tarifa_018", 'atr', True)
+        context = {"active_id": polissa_id, "active_ids": [polissa_id]}
+        wiz_id = self.wiz_obj.create(self.cursor, self.uid, {}, context=context)
+        self.wiz_obj.change_to_indexada_auvidi_multi(self.cursor, self.uid, [wiz_id], context)
+        p = self.polissa_obj.browse(self.cursor, self.uid, polissa_id)
+        self.wiz_obj.set_auvidi(self.cursor, self.uid, p.modcontractuals_ids[0].id, False)
+        prev_modcons = len(p.modcontractuals_ids)
+
+        wiz_id = self.wiz_obj.create(self.cursor, self.uid, {}, context=context)
+        self.wiz_obj.quit_auvidi_multi(self.cursor, self.uid, [wiz_id], context)
+
+        wiz = self.wiz_obj.browse(self.cursor, self.uid, wiz_id)
+        p = self.polissa_obj.browse(self.cursor, self.uid, polissa_id)
+        self.assertEqual(p.modcontractuals_ids[0].te_auvidi, False)
+        self.assertEqual(p.modcontractuals_ids[0].state, u'pendent')
+        self.assertEqual(len(p.modcontractuals_ids), prev_modcons)
+        self.assertIn(
+            u"Pòlisses que estan a periodes amb modcon per passar a indexada SENSE auvidi:",
+            wiz.info
+        )
+        self.assertIn(u" - no fem res: {}".format(p.name), wiz.info)
+
+    @mock.patch("poweremail.poweremail_send_wizard.poweremail_send_wizard.send_mail")
+    def test__quit_auvidi_multi__periods_auvidi_modcon_yes_auvidi(self, mocked_send_mail):
+        # periods + auvidi + MODCON --> modify the MODCON to quit auvidi
+        polissa_id = self.open_polissa("polissa_tarifa_018", 'atr', True)
+        context = {"active_id": polissa_id, "active_ids": [polissa_id]}
+        wiz_id = self.wiz_obj.create(self.cursor, self.uid, {}, context=context)
+        self.wiz_obj.change_to_indexada_auvidi_multi(self.cursor, self.uid, [wiz_id], context)
+        p = self.polissa_obj.browse(self.cursor, self.uid, polissa_id)
+        prev_modcons = len(p.modcontractuals_ids)
+
+        wiz_id = self.wiz_obj.create(self.cursor, self.uid, {}, context=context)
+        self.wiz_obj.quit_auvidi_multi(self.cursor, self.uid, [wiz_id], context)
+
+        wiz = self.wiz_obj.browse(self.cursor, self.uid, wiz_id)
+        p = self.polissa_obj.browse(self.cursor, self.uid, polissa_id)
+        self.assertEqual(p.modcontractuals_ids[0].te_auvidi, False)
+        self.assertEqual(p.modcontractuals_ids[0].state, u'pendent')
+        self.assertEqual(len(p.modcontractuals_ids), prev_modcons)
+        self.assertIn(
+            u"Pòlisses que estan a periodes amb modcon per passar a indexada + auvidi:", wiz.info)
+        self.assertIn(u" - Modcon modificada, tret auvidi: {}".format(p.name), wiz.info)
+
+    def test__quit_auvidi_multi__periods_no_auvidi_no_modcon(self):
+        # Periods no auvidi and no modcon --> don't do anything
+        polissa_id = self.open_polissa("polissa_tarifa_018", 'atr', False)
+        p = self.polissa_obj.browse(self.cursor, self.uid, polissa_id)
+        prev_modcons = len(p.modcontractuals_ids)
+
+        context = {"active_id": polissa_id, "active_ids": [polissa_id]}
+        wiz_id = self.wiz_obj.create(self.cursor, self.uid, {}, context=context)
+        self.wiz_obj.quit_auvidi_multi(self.cursor, self.uid, [wiz_id], context)
+
+        wiz = self.wiz_obj.browse(self.cursor, self.uid, wiz_id)
+        p = self.polissa_obj.browse(self.cursor, self.uid, polissa_id)
+        self.assertEqual(len(p.modcontractuals_ids), prev_modcons)
+        self.assertIn(
+            u"Pòlisses que estan a periodes i no tenen modcon a indexada ni auvidi:", wiz.info)
+        self.assertIn(u" - No fem res: {}".format(p.name), wiz.info)
+
+    @mock.patch("poweremail.poweremail_send_wizard.poweremail_send_wizard.send_mail")
+    def test__quit_auvidi_multi__periods_no_auvidi_modcon_yes_auvidi(self, mocked_send_mail):
+        # Periods no auvidi and modcon to set auvidi --> modify the MODCON to quit auvidi
+        polissa_id = self.open_polissa("polissa_tarifa_018", 'atr', False)
+        context = {"active_id": polissa_id, "active_ids": [polissa_id]}
+        wiz_id = self.wiz_obj.create(self.cursor, self.uid, {}, context=context)
+        self.wiz_obj.change_to_indexada_auvidi_multi(self.cursor, self.uid, [wiz_id], context)
+        p = self.polissa_obj.browse(self.cursor, self.uid, polissa_id)
+        prev_modcons = len(p.modcontractuals_ids)
+
+        wiz_id = self.wiz_obj.create(self.cursor, self.uid, {}, context=context)
+        self.wiz_obj.quit_auvidi_multi(self.cursor, self.uid, [wiz_id], context)
+
+        wiz = self.wiz_obj.browse(self.cursor, self.uid, wiz_id)
+        p = self.polissa_obj.browse(self.cursor, self.uid, polissa_id)
+        self.assertEqual(p.modcontractuals_ids[0].te_auvidi, False)
+        self.assertEqual(p.modcontractuals_ids[0].state, u'pendent')
+        self.assertEqual(len(p.modcontractuals_ids), prev_modcons)
+        self.assertIn(
+            u"Pòlisses que estan a periodes amb modcon per passar a indexada + auvidi:", wiz.info)
+        self.assertIn(u" - Modcon modificada, tret auvidi: {}".format(p.name), wiz.info)
+
+    @mock.patch("poweremail.poweremail_send_wizard.poweremail_send_wizard.send_mail")
+    def test__quit_auvidi_multi__periods_no_auvidi_modcon_no_auvidi(self, mocked_send_mail):
+        # Periods no auvidi and modcon neutral --> don't do anything
+        polissa_id = self.open_polissa("polissa_tarifa_018", 'atr', False)
+        self.wiz_obj.change_to_indexada(self.cursor, self.uid, polissa_id)
+        p = self.polissa_obj.browse(self.cursor, self.uid, polissa_id)
+        prev_modcons = len(p.modcontractuals_ids)
+
+        context = {"active_id": polissa_id, "active_ids": [polissa_id]}
+        wiz_id = self.wiz_obj.create(self.cursor, self.uid, {}, context=context)
+        self.wiz_obj.quit_auvidi_multi(self.cursor, self.uid, [wiz_id], context)
+
+        wiz = self.wiz_obj.browse(self.cursor, self.uid, wiz_id)
+        p = self.polissa_obj.browse(self.cursor, self.uid, polissa_id)
+        self.assertEqual(p.modcontractuals_ids[0].te_auvidi, False)
+        self.assertEqual(p.modcontractuals_ids[0].state, u'pendent')
+        self.assertEqual(len(p.modcontractuals_ids), prev_modcons)
+        self.assertIn(
+            u"Pòlisses que estan a periodes amb modcon per passar a indexada SENSE auvidi:",
+            wiz.info
+        )
+        self.assertIn(u" - no fem res: {}".format(p.name), wiz.info)
