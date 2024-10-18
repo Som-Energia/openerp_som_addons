@@ -30,7 +30,7 @@ class WizardChangeToIndexadaAuvidiMulti(osv.osv_memory):
 
             if mode == 'atr':  # in periods
                 if not md:
-                    # Periods withe MODCON pending to indexed --> modcon pending Indexed + auvidi
+                    # Periods without MODCON pending to indexed --> modcon pending Indexed + auvidi
                     # Create the MODCON to indexed
                     if not self.change_to_indexada(cursor, uid, pol_id):
                         faileds.append(pol_id)
