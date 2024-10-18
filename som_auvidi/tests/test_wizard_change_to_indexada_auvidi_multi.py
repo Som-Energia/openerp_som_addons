@@ -54,6 +54,42 @@ class WizardChangeToIndexadaAuvidiMultiTests(WizardChangeToIndexadaAuvidiMultiBa
         self.assertEqual(p.modcontractuals_ids[0].te_auvidi, True)
         self.assertEqual(len(p.modcontractuals_ids), prev_modcons + 1)
 
+    def test__get_last_pending_modcon__no_pending_modcon(self):
+        polissa_id = self.open_polissa("polissa_tarifa_018", 'index')
+
+        md = self.wiz_obj.get_last_pending_modcon(self.cursor, self.uid, polissa_id)
+
+        self.assertEqual(md, None)
+
+    def test__get_last_pending_modcon__pending_modcon_no_mode_facturacio_change(self):
+        polissa_id = self.open_polissa("polissa_tarifa_018", 'atr')
+        self.wiz_obj.create_auvidi_pending_modcon(self.cursor, self.uid, polissa_id, True)
+
+        md = self.wiz_obj.get_last_pending_modcon(self.cursor, self.uid, polissa_id)
+
+        self.assertEqual(md, None)
+
+    @mock.patch("poweremail.poweremail_send_wizard.poweremail_send_wizard.send_mail")
+    def test__get_last_pending_modcon__pending_modcon_to_indexed(self, mocked_send_mail):
+        polissa_id = self.open_polissa("polissa_tarifa_018", 'atr')
+        context = {"active_id": polissa_id, "active_ids": [polissa_id]}
+        wiz_id = self.wiz_obj.create(self.cursor, self.uid, {}, context=context)
+        self.wiz_obj.change_to_indexada_auvidi_multi(self.cursor, self.uid, [wiz_id], context)
+
+        md = self.wiz_obj.get_last_pending_modcon(self.cursor, self.uid, polissa_id)
+
+        p = self.polissa_obj.browse(self.cursor, self.uid, polissa_id)
+        self.assertEqual(md.id, p.modcontractuals_ids[0].id)
+
+    def test__get_last_pending_modcon__pending_modcon_indexed(self):
+        polissa_id = self.open_polissa("polissa_tarifa_018", 'index')
+        self.wiz_obj.create_auvidi_pending_modcon(self.cursor, self.uid, polissa_id, True)
+
+        md = self.wiz_obj.get_last_pending_modcon(self.cursor, self.uid, polissa_id)
+
+        p = self.polissa_obj.browse(self.cursor, self.uid, polissa_id)
+        self.assertEqual(md.id, p.modcontractuals_ids[0].id)
+
     @mock.patch("poweremail.poweremail_send_wizard.poweremail_send_wizard.send_mail")
     def test__inperiods_without_modcontoindex_to_auvidi(self, mocked_send_mail):
         # Periods without MODCON pending to indexed --> modcon pending Indexed + auvidi
