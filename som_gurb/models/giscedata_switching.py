@@ -27,13 +27,14 @@ def is_unidirectional_colective_autocons_change(cursor, uid, pool, step_obj, ste
     polissa_obj = pool.get('giscedata.polissa')
     step01_id = step01_obj.search(cursor, uid, [('sw_id', '=', step.sw_id.id)])
     if len(step01_id) == 0:
-        data_consulta = datetime.strptime(step.data_activacio, '%Y-%m-%d') - timedelta(days=1)
-        data_consulta = data_consulta.strftime('%Y-%m-%d')
-        ctx_on_date = {'date': data_consulta, 'prefetch': False, 'dont_raise_exception': True}
-        polissa = polissa_obj.browse(
-            cursor, uid, step.sw_id.cups_polissa_id.id, context=ctx_on_date)
-        if step.tipus_autoconsum in ["42", "43"] and polissa.autoconsumo == "00":
-            res = True
+        if step.data_activacio:
+            data_consulta = datetime.strptime(step.data_activacio, '%Y-%m-%d') - timedelta(days=1)
+            data_consulta = data_consulta.strftime('%Y-%m-%d')
+            ctx_on_date = {'date': data_consulta, 'prefetch': False, 'dont_raise_exception': True}
+            polissa = polissa_obj.browse(
+                cursor, uid, step.sw_id.cups_polissa_id.id, context=ctx_on_date)
+            if step.tipus_autoconsum in ["42", "43"] and polissa.autoconsumo == "00":
+                res = True
     return res
 
 

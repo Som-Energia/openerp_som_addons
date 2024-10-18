@@ -22,7 +22,7 @@ class TestsGurbCups(TestsGurbBase):
             self.cursor, self.uid, gurb_cups_id_2, ['beta_percentage']
         )['beta_percentage']
 
-        self.assertEqual(percentatge_1, 30.0)
+        self.assertEqual(percentatge_1, 35.0)
         self.assertEqual(percentatge_2, 30.0)
 
     def test_gurb_is_owner(self):
