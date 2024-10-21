@@ -133,15 +133,12 @@ class GiscedataSwitching(osv.osv):
             return _("Cas importat correctament.")
         elif _is_case_closable(cursor, uid, self.pool, sw, context=context):
             msg = _("Cas tancat per GURB")
-            step_id = sw.step_id.id
+            pas_id = int(sw.step_ids[-1].pas_id.split(",")[1])
             step_m105_obj.write(
-                cursor, uid, step_id, {"notificacio_pendent": False}, context=context)
-            res = super(GiscedataSwitching, self).importar_xml_post_hook(
-                cursor, uid, sw_id, context=context
-            )
+                cursor, uid, pas_id, {"notificacio_pendent": False}, context=context)
             self.historize_msg(cursor, uid, sw.id, msg, context=context)
             sw_obj.write(cursor, uid, sw_id, {"state": "done"}, context=context)
-            return res
+            return _("Cas importat correctament.")
         else:
             return super(GiscedataSwitching, self).importar_xml_post_hook(
                 cursor, uid, sw_id, context=context

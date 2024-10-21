@@ -95,7 +95,7 @@ class TestsGurbSwitching(TestsGurbBase):
             )
         cache.clean_caches_for_db(cursor.dbname)
 
-    def update_polissa_distri(self, txn):
+    def update_polissa_distri(self, txn, pol_ref="polissa_0001"):
         """
         Sets the distribuidora_id field in contract as the same of related cups
         """
@@ -107,7 +107,7 @@ class TestsGurbSwitching(TestsGurbBase):
         cups_obj = self.openerp.pool.get("giscedata.cups.ps")
 
         contract_id = imd_obj.get_object_reference(
-            cursor, uid, "giscedata_polissa", "polissa_0001"
+            cursor, uid, "giscedata_polissa", pol_ref
         )[1]
         cups_id = pol_obj.read(cursor, uid, contract_id, ["cups"])["cups"][0]
         distri_id = cups_obj.read(
@@ -627,3 +627,86 @@ class TestsGurbSwitching(TestsGurbBase):
         self.assertEqual(d1.proces_id.name, "D1")
         self.assertEqual(d1.step_id.name, "01")
         self.assertEqual(d1.state, "cancel")
+
+    def test_do_close_m1_05_gurb_category(self):
+        """
+        Test that self-consumption M1"s are closed when
+        contract does have GURB category
+        """
+        m1_02_xml_path = get_module_resource(
+            "giscedata_switching", "tests", "fixtures", "m102_new.xml"
+        )
+        with open(m1_02_xml_path, "r") as f:
+            m1_02_xml = f.read()
+
+        m1_05_xml_path = get_module_resource(
+            "giscedata_switching", "tests", "fixtures", "m105_canvi_autoconsum.xml"
+        )
+        with open(m1_05_xml_path, "r") as f:
+            m1_05_xml = f.read()
+
+        sw_obj = self.openerp.pool.get("giscedata.switching")
+
+        self.switch(self.txn, "comer")
+
+        # Create M1 01
+        contract_id = self.get_contract_id(self.txn)
+
+        self.change_polissa_comer(self.txn, pol_id='polissa_tarifa_018')
+        self.update_polissa_distri(self.txn, pol_ref='polissa_tarifa_018')
+        self.activar_polissa_CUPS(set_gurb_category=True, context={
+                                  "polissa_xml_id": "polissa_tarifa_018"})
+
+        step_id = self.create_case_and_step(
+            self.cursor, self.uid, contract_id, "M1", "01"
+        )
+        step_obj = self.openerp.pool.get("giscedata.switching.m1.01")
+        sw_step_header_obj = self.openerp.pool.get("giscedata.switching.step.header")
+        sw_step_header_id = step_obj.read(
+            self.cursor, self.uid, step_id, ["header_id"]
+        )["header_id"][0]
+        sw_step_header_obj.write(
+            self.cursor, self.uid, sw_step_header_id, {"notificacio_pendent": False}
+        )
+        sw_obj = self.openerp.pool.get("giscedata.switching")
+        m101 = step_obj.browse(self.cursor, self.uid, step_id)
+
+        # Set self-consumption modification
+        step_obj.write(self.cursor, self.uid, step_id, {"solicitud_autoconsum": "S"})
+
+        # Change "CodigoDeSolicitud" in XML
+        m1 = sw_obj.browse(self.cursor, self.uid, m101.sw_id.id)
+        codi_sollicitud = m1.codi_sollicitud
+        m1_02_xml = m1_02_xml.replace(
+            "<CodigoDeSolicitud>201412111009",
+            "<CodigoDeSolicitud>{0}".format(codi_sollicitud)
+        )
+
+        m1_05_xml = m1_05_xml.replace(
+            "<CodigoDeSolicitud>201607211260",
+            "<CodigoDeSolicitud>{0}".format(codi_sollicitud)
+        )
+
+        # Import XML
+        sw_obj.importar_xml(
+            self.cursor, self.uid, m1_02_xml, "m1_02.xml"
+        )
+
+        sw_obj.importar_xml(
+            self.cursor, self.uid, m1_05_xml, "m1_05.xml"
+        )
+
+        res = sw_obj.search(self.cursor, self.uid, [
+            ("proces_id.name", "=", "M1"),
+            ("step_id.name", "=", "05"),
+            ("codi_sollicitud", "=", codi_sollicitud)
+        ])
+        self.assertEqual(len(res), 1)
+
+        m1 = sw_obj.browse(self.cursor, self.uid, res[0])
+        self.assertEqual(m1.proces_id.name, "M1")
+        self.assertEqual(m1.step_id.name, "05")
+        self.assertEqual(m101.solicitud_autoconsum, "S")
+
+        self.assertEqual(m1.state, "done")
+        self.assertEqual(m1.notificacio_pendent, False)
