@@ -7,19 +7,19 @@ from som_polissa.exceptions import exceptions
 
 TARIFA_CODIS_INDEXADA = {
     "2.0TD": {
-        "peninsula": "pricelist_indexada_20td_peninsula",
-        "canaries": "pricelist_indexada_20td_canaries",
-        "balears": "pricelist_indexada_20td_balears",
+        "peninsula": "pricelist_indexada_20td_peninsula_2024",
+        "canaries": "pricelist_indexada_20td_canaries_2024",
+        "balears": "pricelist_indexada_20td_balears_2024",
     },
     "3.0TD": {
-        "peninsula": "pricelist_indexada_30td_peninsula",
-        "canaries": "pricelist_indexada_30td_canaries",
-        "balears": "pricelist_indexada_30td_balears",
+        "peninsula": "pricelist_indexada_30td_peninsula_2024",
+        "canaries": "pricelist_indexada_30td_canaries_2024",
+        "balears": "pricelist_indexada_30td_balears_2024",
     },
     "6.1TD": {
-        "peninsula": "pricelist_indexada_61td_peninsula",
-        "canaries": "pricelist_indexada_61td_canaries",
-        "balears": "pricelist_indexada_61td_balears",
+        "peninsula": "pricelist_indexada_61td_peninsula_2024",
+        "canaries": "pricelist_indexada_61td_canaries_2024",
+        "balears": "pricelist_indexada_61td_balears_2024",
     },
 }
 
@@ -294,6 +294,7 @@ class WizardChangeToIndexada(osv.osv_memory):
                         self.send_indexada_modcon_created_email(cursor, uid, polissa)
         except Exception:
             polissa.send_signal("undo_modcontractual")
+            raise exceptions.UnexpectedException()
 
         wizard.write({"state": "end"})
         return polissa.modcontractuals_ids[0].id

@@ -5,11 +5,15 @@ def get_gkwh_atr_price(cursor, uid, polissa, pname, context, with_taxes=False):
     prod_obj = polissa.pool.get("product.product")
     fact_obj = polissa.pool.get("giscedata.facturacio.factura")
     fiscal_pos_obj = polissa.pool.get("account.fiscal.position")
+    pricelist_obj = polissa.pool.get("product.pricelist")
 
     te_product_id = polissa["tarifa"].get_periodes_producte("te")[pname]
     product_id = fact_obj.get_gkwh_period(cursor, uid, te_product_id, context=context)
 
     pricelist = polissa["llista_preu"]
+    if "force_pricelist" in context:
+        pricelist_id = context["force_pricelist"]
+        pricelist = pricelist_obj.browse(cursor, uid, pricelist_id)
     price_atr, discount, uom = pricelist.get_atr_price(
         "gkwh",
         product_id,

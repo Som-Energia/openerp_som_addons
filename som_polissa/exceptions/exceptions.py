@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import traceback
 from osv import osv
 from tools.translate import _
 
@@ -18,6 +19,33 @@ class SomPolissaException(osv.except_osv):
         return dict(
             code=self.code,
             error=self._message,
+        )
+
+
+class UnexpectedException(SomPolissaException):
+    def __init__(self):
+        super(UnexpectedException, self).__init__(
+            title=_("Unexpected exception"),
+            text=traceback.format_exc()
+        )
+
+    @property
+    def code(self):
+        return "Unexpected"
+
+
+class PolissaModcontractual(SomPolissaException):
+    def __init__(self, polissa_number):
+        super(PolissaModcontractual, self).__init__(
+            title=_("Pòlissa modcon"),
+            text=_("Pòlissa {} in modcontractual state").format(polissa_number),
+        )
+        self.polissa_number = polissa_number
+
+    def to_dict(self):
+        return dict(
+            super(PolissaModcontractual, self).to_dict(),
+            polissa_number=self.polissa_number,
         )
 
 

@@ -51,10 +51,10 @@ class WizardMassiveKChange(osv.osv_memory):
         wiz_og = self.browse(cursor, uid, ids[0], context=context)
         polissa_obj = self.pool.get("giscedata.polissa")
         sw_obj = self.pool.get("giscedata.switching")
+        ir_model_data = self.pool.get("ir.model.data")
 
         failed_polisses = []
         inexistent_polisses = []
-
         csv_file = StringIO(base64.b64decode(wiz_og.csv_file))
         item_list, result = self._get_result_from_csv(csv_file)
 
@@ -87,25 +87,51 @@ class WizardMassiveKChange(osv.osv_memory):
                         failed_polisses.append(polissa.name)
                         continue
                     # Create new modcon
-                    data_activacio = date.today() + timedelta(days=1)
+                    if wiz_og.pending_modcon:
+                        data_activacio = date.today() + timedelta(days=1)
+                    else:
+                        data_activacio = date.today()
                     vals_mod = result[polissa.name]
+                    if wiz_og.update_pricelist:
+                        wiz_indexada = self.pool.get("wizard.change.to.indexada")
+                        if (
+                            polissa.cups.id_municipi.subsistema_id.code in
+                            ['TF', 'PA', 'LG', 'HI', 'GC', 'FL']
+                        ):
+                            pricelist_id = ir_model_data.get_object_reference(
+                                cursor, uid, "som_indexada",
+                                "pricelist_indexada_empresa_canaries_non_standard_2024"
+                            )[1]
+                        elif polissa.cups.id in wiz_indexada._get_list_cups_balears(cursor, uid):
+                            pricelist_id = ir_model_data.get_object_reference(
+                                cursor, uid, "som_indexada",
+                                "pricelist_indexada_empresa_balears_non_standard_2024"
+                            )[1]
+                        else:
+                            pricelist_id = ir_model_data.get_object_reference(
+                                cursor, uid, "som_indexada",
+                                "pricelist_indexada_empresa_peninsula_non_standard_2024"
+                            )[1]
+                        vals_mod['llista_preu'] = pricelist_id
                     polissa.send_signal("modcontractual")
                     polissa_obj.write(cursor, uid, polissa_id[0], vals_mod, context=context)
                     wz_crear_mc_obj = self.pool.get("giscedata.polissa.crear.contracte")
                     ctx = {"active_id": polissa_id[0]}
-                    params = {
-                        "duracio": "nou",
-                        "accio": "nou",
-                    }
+                    if wiz_og.modcon_actual:
+                        params = {
+                            "duracio": "actual",
+                        }
+                    else:
+                        params = {
+                            "duracio": "nou",
+                            "accio": "nou",
+                        }
                     wiz_id = wz_crear_mc_obj.create(cursor, uid, params, context=ctx)
                     wiz = wz_crear_mc_obj.browse(cursor, uid, [wiz_id])[0]
                     res = wz_crear_mc_obj.onchange_duracio(
                         cursor, uid, [wiz.id], str(data_activacio), wiz.duracio, context=ctx
                     )
-                    if res.get("warning", False):
-                        polissa.send_signal("undo_modcontractual")
-                        raise osv.except_osv("Error", res["warning"])
-                    else:
+                    if wiz_og.modcon_actual:
                         wiz.write(
                             {
                                 "data_inici": str(data_activacio),
@@ -113,6 +139,18 @@ class WizardMassiveKChange(osv.osv_memory):
                             }
                         )
                         wiz.action_crear_contracte()
+                    else:
+                        if res.get("warning", False):
+                            polissa.send_signal("undo_modcontractual")
+                            raise osv.except_osv("Error", res["warning"])
+                        else:
+                            wiz.write(
+                                {
+                                    "data_inici": str(data_activacio),
+                                    "data_final": str(data_activacio + timedelta(days=364)),
+                                }
+                            )
+                            wiz.action_crear_contracte()
                 except Exception:
                     polissa.send_signal("undo_modcontractual")
                     failed_polisses.append(polissa.name)
@@ -194,11 +232,17 @@ class WizardMassiveKChange(osv.osv_memory):
             "Process type",
             required=True,
         ),
+        "pending_modcon": fields.boolean("Modcon pendent"),
+        "update_pricelist": fields.boolean("Actualitzar llista de preus"),
+        "modcon_actual": fields.boolean("Utilitza la modcon Actual"),
     }
 
     _defaults = {
         "state": lambda *a: "init",
         "process_type": _default_process_type,
+        "pending_modcon": lambda *a: False,
+        "update_pricelist": lambda *a: False,
+        "modcon_actual": lambda *a: False,
     }
 
 

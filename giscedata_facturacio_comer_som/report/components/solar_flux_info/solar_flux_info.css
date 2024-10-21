@@ -1,0 +1,18 @@
+.sf {
+    width: 12%;
+  }
+  .text {
+    padding-left: 1em;
+    width: 85%;
+  }
+  .sf_table {
+    padding: 1em;
+  }
+  .sf_info {
+    background-color: #f7f7f7;
+    text-align: left;
+    width: 100%;
+    margin: 1em 0em 0em 0em;
+    float: left;
+    page-break-inside: avoid;
+  }

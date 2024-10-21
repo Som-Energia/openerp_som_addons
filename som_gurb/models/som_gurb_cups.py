@@ -1,5 +1,6 @@
 # -*- encoding: utf-8 -*-
 from osv import osv, fields
+from datetime import datetime
 from tools.translate import _
 import logging
 
@@ -11,7 +12,7 @@ class SomGurbGeneralConditions(osv.osv):
 
     _columns = {
         "active": fields.boolean("Activa"),
-        "name": fields.char("Nom", size=64, readonly=True),
+        "name": fields.char("Nom", size=64, readonly=False),
         "attachment_id": fields.many2one("ir.attachment", "Document", required=True),
         "lang_id": fields.many2one("res.lang", "Idioma", required=True),
     }
@@ -71,7 +72,7 @@ class SomGurbCups(osv.osv):
                 continue
 
             search_params = [
-                ("state", "=", "activa"),
+                ("state", "not in", ["baixa", "cancelada"]),
                 ("cups", "=", cups_id),
                 ("titular", "=", gurb_vals["roof_owner_id"][0])
             ]
@@ -80,6 +81,11 @@ class SomGurbCups(osv.osv):
             res[gurb_cups_vals["id"]] = bool(pol_id)
 
         return res
+
+    def get_beta_percentatge(self, cursor, uid, ids, context=None):
+        if not isinstance(ids, list):
+            ids = [ids]
+        return self._ff_get_beta_percentage(cursor, uid, ids, [], [], context=context)
 
     def _ff_get_beta_percentage(self, cursor, uid, ids, field_name, arg, context=None):
         if context is None:
@@ -176,9 +182,9 @@ class SomGurbCups(osv.osv):
 
             pol_id = self.get_polissa_gurb_cups(cursor, uid, gurb_cups_id, context=context)
             if not pol_id:
-                error_title = _("No hi ha pòlisses actives per aquest CUPS"),
+                error_title = _("No hi ha pòlisses actives o en esborrany per aquest CUPS"),
                 error_info = _(
-                    "El CUPS id {} no té pòlisses actives. No es pot afegir cap servei".format(
+                    "El CUPS id {} no té pòlisses actives o en esborrany. No es pot afegir.".format(
                         gurb_vals["cups_id"][0]
                     )
                 )
@@ -283,6 +289,8 @@ class SomGurbCups(osv.osv):
             "type": "out_invoice",
             "invoice_line": invoice_lines,
             "origin": "GURBCUPSID{}".format(gurb_cups_br.id),
+            "origin_date_invoice": datetime.today().strftime("%Y-%m-%d"),
+            "date_invoice": datetime.today().strftime("%Y-%m-%d")
         }
         invoice_vals.update(invoice_o.onchange_partner_id(  # Get invoice default values
             cursor, uid, [], "out_invoice", partner_id).get("value", {})
@@ -333,13 +341,70 @@ class SomGurbCups(osv.osv):
 
         return (invoice_ids, errors)
 
+    def sign_gurb(self, cursor, uid, gurb_cups_id, context=None):
+        if not context:
+            context = {}
+
+        self.write(cursor, uid, gurb_cups_id, {'signed': True})
+
+    def process_signature_callback(self, cursor, uid, gurb_cups_id, context=None):
+        if not context:
+            context = {}
+        process_data = context.get('process_data', False)
+        if process_data:
+            method_name = process_data.get('callback_method', False)
+            method = getattr(self, method_name)
+            if method:
+                method(cursor, uid, gurb_cups_id, context=context)
+
+    def onchange_cups_id(self, cursor, uid, ids, cups_id):
+        lang_o = self.pool.get("res.lang")
+        pol_o = self.pool.get("giscedata.polissa")
+        gurb_conditions_o = self.pool.get("som.gurb.general.conditions")
+
+        res = {
+            "value": {},
+            "domain": {},
+            "warning": {},
+        }
+
+        search_params = [
+            ("state", "in", ["activa", "esborrany"]),
+            ("cups", "=", cups_id),
+        ]
+        pol_ids = pol_o.search(cursor, uid, search_params, limit=1)
+
+        if pol_ids:
+            pol_br = pol_o.browse(cursor, uid, pol_ids[0])
+
+            lang = pol_br.titular.lang
+
+            search_params = [
+                ("code", "=", lang)
+            ]
+
+            lang_id = lang_o.search(cursor, uid, search_params)
+
+            if lang_id:
+                search_params = [
+                    ("lang_id", "=", lang_id),
+                    ("active", "=", True)
+                ]
+                conditions_id = gurb_conditions_o.search(cursor, uid, search_params)
+                if conditions_id:
+                    res["value"]["general_conditions_id"] = conditions_id[0]
+                    if ids:
+                        self.write(cursor, uid, ids, {"general_conditions_id": conditions_id[0]})
+
+        return res
+
     _columns = {
         "active": fields.boolean("Actiu"),
         "start_date": fields.date("Data entrada GURB", required=True),
         "end_date": fields.date("Data sortida GURB",),
         "gurb_id": fields.many2one("som.gurb", "GURB", required=True, ondelete="cascade"),
         "cups_id": fields.many2one("giscedata.cups.ps", "CUPS", required=True),
-        "polissa_id": fields.many2one("giscedata.polissa", "Pòlissa", readonly=True),
+        "polissa_id": fields.many2one("giscedata.polissa", "Pòlissa", readonly=False),
         "partner_id": fields.related(
             "polissa_id",
             "titular",
@@ -403,11 +468,13 @@ class SomGurbCups(osv.osv):
             store=False,
             readonly=True,
         ),
+        "signed": fields.boolean("Signed", readonly=1)
     }
 
     _defaults = {
         "active": lambda *a: True,
         "extra_beta_kw": lambda *a: 0,
+        "start_date": lambda *a: str(datetime.today()),
     }
 
 

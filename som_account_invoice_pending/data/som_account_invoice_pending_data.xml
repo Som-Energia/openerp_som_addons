@@ -270,6 +270,20 @@
             <field name="process_id" ref="account_invoice_pending.default_pending_state_process"/>
             <field name="pending_days_type">natural</field>
         </record>
+        <record model="account.invoice.pending.state" id="pendent_monitori_bo_social_pending_state">
+            <field name="name">Pendent Monitori (Bo Social)</field>
+            <field name="weight">1065</field>
+            <field name="pending_days">0</field>
+            <field name="process_id" ref="giscedata_facturacio_comer_bono_social.bono_social_pending_state_process"/>
+            <field name="pending_days_type">natural</field>
+        </record>
+        <record model="account.invoice.pending.state" id="pendent_monitori_default_pending_state">
+            <field name="name">Pendent Monitori (Default Process)</field>
+            <field name="weight">1165</field>
+            <field name="pending_days">0</field>
+            <field name="process_id" ref="account_invoice_pending.default_pending_state_process"/>
+            <field name="pending_days_type">natural</field>
+        </record>
         <record model="account.invoice.pending.state" id="som_account_invoice_pending.fracc_manual_bo_social_pending_state">
             <field name="name">Fraccionament manual (Bo Social)</field>
             <field name="weight">1022</field>
@@ -714,6 +728,28 @@ import_factura = object.residual
             <field name="def_bcc">support.17062.b8d9f4469fa4d856@helpscout.net</field>
             <field name="def_cc">correo@certificado.lleida.net</field>
             <field name="enforce_from_account" model="poweremail.core_accounts" search="[('name','=', 'Gestió de Cobraments')]"/>
+            <field name="def_body_text"><![CDATA[<!doctype html><html>Missatge generat automaticament</html>]]>
+            </field>
+        </record>
+
+        <record model="poweremail.templates" id="email_impagament_1er_avis_fraccionament_cancelat">
+            <field name="name">Impagament 1r Avís - Fraccionament cancel·lat</field>
+            <field name="object_name" model="ir.model" search="[('model', '=', 'giscedata.facturacio.factura')]"/>
+            <field name="model_int_name">giscedata.facturacio.factura</field>
+            <field name="save_to_drafts" eval="0"/>
+            <field name="use_filter" eval="0"/>
+            <field name="file_name">Recibo_${object.number}_N57.pdf</field>
+            <field name="def_to">${object.address_invoice_id.email}, ${object.polissa_id.direccio_notificacio.email}</field>
+            <field name="def_bcc">support.17062.b8d9f4469fa4d856@helpscout.net</field>
+            <field name="auto_email" eval="0"/>
+            <field name="single_email" eval="0"/>
+            <field name="report_template" ref="giscedata_facturacio.report_rebut"/>
+            <field name="use_sign" eval="0"/>
+            <field name="def_subject">[FACTURA IMPAGADA - FRACCIONAMENT CANCEL·LAT] Som Energia factura ${object.polissa_id.name}</field>
+            <field name="template_language">mako</field>
+            <field name="send_on_create" eval="0"/>
+            <field name="lang">${object.invoice_id.partner_id.lang}</field>
+            <field name="send_on_write" eval="0"/>
             <field name="def_body_text"><![CDATA[<!doctype html><html>Missatge generat automaticament</html>]]>
             </field>
         </record>

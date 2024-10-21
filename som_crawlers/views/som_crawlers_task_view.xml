@@ -21,7 +21,7 @@
                     </group>
                     <field name="ultima_tasca_executada"  select = '1'/>
                     <group colspan="6" col="2" string="Execucions realitzades per la tasca">
-                        <field name="run_ids" height="300" nolabel="1" widget="one2many_list"/>
+                        <field name="run_ids" height="300" nolabel="1" widget="one2many_list" widget_props="{'infinite': true}" />
                     </group>
                 </form>
             </field>

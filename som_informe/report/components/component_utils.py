@@ -42,19 +42,20 @@ def get_unit_magnitude(magnitud):
     return magnitud_a_unit.get(magnitud, "eV")
 
 
-def get_invoice_line(invoice, magnitud, periode):
+def get_invoice_lines(invoice, magnitud, periode):
     if magnitud == "PM" and periode == "93":
         periode = "9392"
 
     tipus = magnitud_a_tipus.get(magnitud, None)
     name = periode_a_name.get(periode, None)
     if not name or not tipus:
-        return None
+        return []
 
+    lines = []
     for l in invoice.linia_ids:  # noqa: E741
         if l.name == name and l.tipus == tipus:
-            return l
-    return None
+            lines.append(l)
+    return lines
 
 
 def to_date(str_date, hours=False):

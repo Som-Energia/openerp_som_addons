@@ -28,7 +28,7 @@ count = 1
             <td class="td_bold detall_td">${_(u"Preu energia [€/kWh]")}</td>
             % for p in id.showing_periods:
                 % if p in generation_lines_data:
-                    <td>${_(u"%s") %(locale.str(locale.atof(formatLang(generation_lines_data[p]["price_unit_multi"], digits=6))))}</td>
+                    <td>${_(u"%s") %(formatLang(generation_lines_data[p]["price_unit_multi"], digits=6).rstrip("0"))}</td>
                 % else:
                     <td></td>
                 % endif

@@ -3,7 +3,7 @@
 # Imports
 import click
 import os
-import importlib
+import importlib.util
 
 # Arguments passed through the os systemm call
 

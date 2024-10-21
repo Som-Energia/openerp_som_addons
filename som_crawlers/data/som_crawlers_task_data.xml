@@ -9,7 +9,27 @@
         </record>
         <!--hc-->
         <record model="som.crawlers.task" id="descargar_hc">
-            <field name="name">Descargar Hc</field>
+            <field name="name">Descargar HC ATR</field>
+            <field name="active">True</field>
+            <field name="configuracio_id" ref="hc_conf"/>
+        </record>
+        <record model="som.crawlers.task" id="descargar_hc_auto">
+            <field name="name">Descargar HC D Auto</field>
+            <field name="active">True</field>
+            <field name="configuracio_id" ref="hc_conf"/>
+        </record>
+        <record model="som.crawlers.task" id="descargar_hc_f1">
+            <field name="name">Descargar HC F1</field>
+            <field name="active">True</field>
+            <field name="configuracio_id" ref="hc_conf"/>
+        </record>
+        <record model="som.crawlers.task" id="descargar_hc_unidireccional">
+            <field name="name">Descargar HC D unidireccional</field>
+            <field name="active">True</field>
+            <field name="configuracio_id" ref="hc_conf"/>
+        </record>
+        <record model="som.crawlers.task" id="descargar_hc_r">
+            <field name="name">Descargar HC R</field>
             <field name="active">True</field>
             <field name="configuracio_id" ref="hc_conf"/>
         </record>
@@ -27,6 +47,11 @@
         <!--Soller-->
         <record model="som.crawlers.task" id="descargar_soller">
             <field name="name">Descargar Soller</field>
+            <field name="active">True</field>
+            <field name="configuracio_id" ref="soller_conf"/>
+        </record>
+        <record model="som.crawlers.task" id="descargar_soller_f1">
+            <field name="name">Descargar Soller F1</field>
             <field name="active">True</field>
             <field name="configuracio_id" ref="soller_conf"/>
         </record>
@@ -161,6 +186,11 @@
         </record>
         <record model="som.crawlers.task" id="descargar_D_viesgo">
             <field name="name">Viesgo descargar D</field>
+            <field name="active">True</field>
+            <field name="configuracio_id" ref="viesgo_conf"/>
+        </record>
+        <record model="som.crawlers.task" id="descargar_D_viesgo_unidireccional">
+            <field name="name">Viesgo descargar D unidireccional</field>
             <field name="active">True</field>
             <field name="configuracio_id" ref="viesgo_conf"/>
         </record>
@@ -353,6 +383,12 @@
             <field name="name">Descarregar Escuer</field>
             <field name="active">True</field>
             <field name="configuracio_id" ref="escuer_conf"/>
+        </record>
+        <!-- UDESA -->
+        <record model="som.crawlers.task" id="descarregar_udesa_ftp">
+            <field name="name">Descarregar FTP UDESA</field>
+            <field name="active">True</field>
+            <field name="configuracio_id" ref="udesa_ftp_conf"/>
         </record>
         <!-- TASQUES D'EXPORTACIÓ -->
         <record model="som.crawlers.task" id="carregar_anselmo">

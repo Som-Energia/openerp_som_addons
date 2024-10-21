@@ -27,40 +27,40 @@
             <field name="name">2.0TD (SOM2_INSULAR)</field>
             <field name="type">sale</field>
         </record>
-        <record model="product.pricelist.version" id="version_pricelist_indexada_20td_peninsula">
+        <record model="product.pricelist.version" id="version_pricelist_indexada_20td_peninsula_2024">
             <field name="name">Versio 1</field>
             <field name="date_start">2021-01-01</field>
             <field name="date_end" eval="False"/>
-            <field name="pricelist_id" ref="pricelist_indexada_20td_peninsula"/>
+            <field name="pricelist_id" ref="pricelist_indexada_20td_peninsula_2024"/>
         </record>
         <record model="giscedata.polissa.tarifa" id="giscedata_polissa.tarifa_20TD">
-            <field name="llistes_preus_comptatibles" eval="[(4,ref('pricelist_indexada_20td_peninsula'))]"/>
+            <field name="llistes_preus_comptatibles" eval="[(4,ref('pricelist_indexada_20td_peninsula_2024'))]"/>
         </record>
         <record model="giscedata.polissa.mode.facturacio" id="giscedata_facturacio_indexada.mode_facturacio_index">
-            <field name="compatible_price_lists" eval="[(4, ref('pricelist_indexada_20td_peninsula'))]"/>
+            <field name="compatible_price_lists" eval="[(4, ref('pricelist_indexada_20td_peninsula_2024'))]"/>
         </record>
-        <record model="product.pricelist.item" id="item_version_pricelist_indexada_20td_peninsula">
+        <record model="product.pricelist.item" id="item_version_pricelist_indexada_20td_peninsula_2024">
             <field name="name">Altres</field>
-            <field name="price_version_id" ref="version_pricelist_indexada_20td_peninsula"/>
+            <field name="price_version_id" ref="version_pricelist_indexada_20td_peninsula_2024"/>
             <field name="base" eval="-1"/>
             <field name="base_pricelist_id" ref="giscedata_facturacio.pricelist_tarifas_electricidad"/>
             <field name="sequence">999</field>
         </record>
-        <record model="product.pricelist.version" id="version_pricelist_indexada_30td_peninsula">
+        <record model="product.pricelist.version" id="version_pricelist_indexada_30td_peninsula_2024">
             <field name="name">Versio 1</field>
             <field name="date_start">2021-01-01</field>
             <field name="date_end" eval="False"/>
-            <field name="pricelist_id" ref="pricelist_indexada_30td_peninsula"/>
+            <field name="pricelist_id" ref="pricelist_indexada_30td_peninsula_2024"/>
         </record>
         <record model="giscedata.polissa.tarifa" id="giscedata_polissa.tarifa_30TD">
-            <field name="llistes_preus_comptatibles" eval="[(4,ref('pricelist_indexada_30td_peninsula'))]"/>
+            <field name="llistes_preus_comptatibles" eval="[(4,ref('pricelist_indexada_30td_peninsula_2024'))]"/>
         </record>
         <record model="giscedata.polissa.mode.facturacio" id="giscedata_facturacio_indexada.mode_facturacio_index">
-            <field name="compatible_price_lists" eval="[(4, ref('pricelist_indexada_30td_peninsula'))]"/>
+            <field name="compatible_price_lists" eval="[(4, ref('pricelist_indexada_30td_peninsula_2024'))]"/>
         </record>
-        <record model="product.pricelist.item" id="item_version_pricelist_indexada_30td_peninsula">
+        <record model="product.pricelist.item" id="item_version_pricelist_indexada_30td_peninsula_2024">
             <field name="name">Altres</field>
-            <field name="price_version_id" ref="version_pricelist_indexada_30td_peninsula"/>
+            <field name="price_version_id" ref="version_pricelist_indexada_30td_peninsula_2024"/>
             <field name="base" eval="-1"/>
             <field name="base_pricelist_id" ref="giscedata_facturacio.pricelist_tarifas_electricidad"/>
             <field name="sequence">999</field>

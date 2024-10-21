@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+        <!-- Vista mostrar llistat desde CSV -->
+        <record id="view_res_partner_list_from_file_tree" model="ir.ui.view">
+            <field name="name">res.partner.list.from.file.tree</field>
+            <field name="model">res.partner</field>
+            <field name="type">tree</field>
+            <field eval="99" name="priority"/>
+            <field name="arch" type="xml">
+                <tree string="Partners">
+                    <field name="name"/>
+                    <field name="vat"/>
+                    <field name="emails"/>
+                    <field name="title"/>
+                    <field name="ref"/>
+                    <field name="city" select="2"/>
+                    <field name="country" select="2"/>
+                    <field name="lang"/>
+                </tree>
+            </field>
+        </record>
+	</data>
+</openerp>

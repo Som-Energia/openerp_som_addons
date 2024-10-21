@@ -1001,7 +1001,7 @@ class UpdatePendingStates(osv.osv_memory):
                     wiz_obj.crear_consulta_pobresa(cursor, uid, wiz_id, context=context)
 
                 new_state = warning_cut_off_state
-                if scp_activa and scp_activa.resolucio:
+                if scp_activa and scp_activa.resolucio == 'positiva':
                     new_state = pobresa_certificada
 
                 fact_obj.set_pending(cursor, uid, [factura_id], new_state)

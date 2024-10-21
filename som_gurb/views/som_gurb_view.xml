@@ -64,8 +64,12 @@
                         <field name="reopening_days" />
                         <field name="critical_incomplete_state" />
                         <field name="pricelist_id" select="2" />
+                        <field name="initial_product_id" />
+                        <field name="quota_product_id" />
                         <field name="max_power" />
                         <field name="min_power" />
+                        <field name="cil" />
+                        <field name="producer" />
                     </group>
                     <group col="6" colspan="4" string="Autoconsum" icon="solar-panel">
                         <field name="self_consumption_id" select="1" />

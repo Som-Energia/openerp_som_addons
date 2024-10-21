@@ -251,6 +251,8 @@ class SomGurb(osv.osv):
         "name": fields.char("Nom GURB", size=60, required=True),
         "self_consumption_id": fields.many2one("giscedata.autoconsum", "CAU"),
         "code": fields.char("Codi GURB", size=60, readonly=True),
+        "producer": fields.many2one("res.partner", "Productora"),
+        "cil": fields.char("Codi CIL", size=60),
         "roof_owner_id": fields.many2one("res.partner", "Propietari teulada"),
         "logo": fields.boolean("Logo"),
         "address_id": fields.many2one("res.partner.address", "Adreça"),
@@ -356,6 +358,9 @@ class SomGurb(osv.osv):
             relation="ir.attachment"
         ),
         "pricelist_id": fields.many2one("product.pricelist", "Preus del GURB"),
+        "initial_product_id": fields.many2one("product.product", "Producte quota inicial"),
+        "quota_product_id": fields.many2one("product.product", "Produce quota mensual"),
+
     }
     _defaults = {
         "logo": lambda *a: False,

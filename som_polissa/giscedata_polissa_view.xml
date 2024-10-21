@@ -190,7 +190,6 @@
                     <field name="llista_preu"/>
                     <field name="data_alta"/>
                     <field name="data_alta_autoconsum"/>
-                    <field name="ac_state" string="Estat de l'auto"/>
                     <field name="data_baixa_autoconsum"/>
                     <field name="data_baixa"/>
                     <field name="facturacio_suspesa"/>
@@ -250,8 +249,8 @@
                 <xpath expr="//field[@name='potencia_generacio']" position="replace">
                     <field name="potencia_generacio" select="1"/>
                 </xpath>
-                <xpath expr="//field[@name='autoconsum_id']" position="replace">
-                    <field name="autoconsum_id" string="CAU" size="26" select="1" attrs="{'required':[('autoconsumo','!=','00'), ('state','in',['validar','modcontractual'])]}" on_change="onchange_autoconsum_id(autoconsum_id)"/>
+                <xpath expr="//field[@name='autoconsum_cups_ids']" position="replace">
+                    <field name="autoconsum_cups_ids" size="26" colspan="8" height="200" nolabel="1" string="CAU" select="1"/>
                 </xpath>
                 <xpath expr="//field[@name='is_autoconsum_collectiu']" position="replace">
                     <field name="is_autoconsum_collectiu" select="2"/>
