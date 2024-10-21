@@ -628,11 +628,19 @@ class TestsGurbSwitching(TestsGurbBase):
         self.assertEqual(d1.step_id.name, "01")
         self.assertEqual(d1.state, "cancel")
 
-    def test_do_close_m1_05_gurb_category(self):
+    @mock.patch('poweremail.poweremail_template.poweremail_templates.generate_mail')
+    def test_do_close_m1_05_gurb_category(self, mocked_function):
         """
         Test that self-consumption M1"s are closed when
         contract does have GURB category
         """
+        pol_obj = self.openerp.pool.get("giscedata.polissa")
+        sw_obj = self.openerp.pool.get("giscedata.switching")
+        step_obj = self.openerp.pool.get("giscedata.switching.m1.01")
+        sw_step_header_obj = self.openerp.pool.get("giscedata.switching.step.header")
+
+        mocked_function.return_value = True
+
         m1_02_xml_path = get_module_resource(
             "giscedata_switching", "tests", "fixtures", "m102_new.xml"
         )
@@ -645,30 +653,26 @@ class TestsGurbSwitching(TestsGurbBase):
         with open(m1_05_xml_path, "r") as f:
             m1_05_xml = f.read()
 
-        sw_obj = self.openerp.pool.get("giscedata.switching")
-
         self.switch(self.txn, "comer")
 
         # Create M1 01
-        contract_id = self.get_contract_id(self.txn)
+        contract_id = self.get_contract_id(self.txn, xml_id="polissa_tarifa_018")
 
         self.change_polissa_comer(self.txn, pol_id='polissa_tarifa_018')
         self.update_polissa_distri(self.txn, pol_ref='polissa_tarifa_018')
         self.activar_polissa_CUPS(set_gurb_category=True, context={
                                   "polissa_xml_id": "polissa_tarifa_018"})
+        cups = pol_obj.browse(self.cursor, self.uid, contract_id).cups.name
 
         step_id = self.create_case_and_step(
             self.cursor, self.uid, contract_id, "M1", "01"
         )
-        step_obj = self.openerp.pool.get("giscedata.switching.m1.01")
-        sw_step_header_obj = self.openerp.pool.get("giscedata.switching.step.header")
         sw_step_header_id = step_obj.read(
             self.cursor, self.uid, step_id, ["header_id"]
         )["header_id"][0]
         sw_step_header_obj.write(
             self.cursor, self.uid, sw_step_header_id, {"notificacio_pendent": False}
         )
-        sw_obj = self.openerp.pool.get("giscedata.switching")
         m101 = step_obj.browse(self.cursor, self.uid, step_id)
 
         # Set self-consumption modification
@@ -681,10 +685,18 @@ class TestsGurbSwitching(TestsGurbBase):
             "<CodigoDeSolicitud>201412111009",
             "<CodigoDeSolicitud>{0}".format(codi_sollicitud)
         )
+        m1_02_xml = m1_02_xml.replace(
+            "<CUPS>ES1234000000000001JN0F",
+            "<CUPS>{0}".format(cups)
+        )
 
         m1_05_xml = m1_05_xml.replace(
             "<CodigoDeSolicitud>201607211260",
             "<CodigoDeSolicitud>{0}".format(codi_sollicitud)
+        )
+        m1_05_xml = m1_05_xml.replace(
+            "<CUPS>ES1234000000000001JN0F",
+            "<CUPS>{0}".format(cups)
         )
 
         # Import XML
