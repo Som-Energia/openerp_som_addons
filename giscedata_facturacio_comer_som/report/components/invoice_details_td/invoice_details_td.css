@@ -55,6 +55,10 @@
     border-bottom: 1.8px solid black;
 }
 
+.head_row {
+    border-top: 1.8px solid black;
+}
+
 .td_first {
     background-color: #7a7a7a;
     color: white;

@@ -16,5 +16,10 @@
             <field name="parent_id" ref="cat_1"/>
             <field name="active">True</field>
         </record>
+        <record model="giscedata.polissa.category" id="origen_ct_sense_socia_category">
+            <field name="name">Origen vinculat al CT sense sòcia</field>
+            <field name="complete_name">Origen vinculat al CT sense sòcia</field>
+            <field name="active">True</field>
+        </record>
     </data>
 </openerp>

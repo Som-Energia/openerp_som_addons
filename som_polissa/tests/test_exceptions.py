@@ -16,6 +16,17 @@ class IndexadaExceptionsTest(unittest.TestCase):
             ),
         )
 
+    def test_as_dict__PolissaModcontractual(self):
+        e = indexada_exceptions.PolissaModcontractual("0018")  # noqa: F821
+        self.assertEqual(
+            e.to_dict(),
+            dict(
+                code="PolissaModcontractual",
+                error=u"Pòlissa 0018 in modcontractual state",
+                polissa_number="0018",
+            ),
+        )
+
     def test_as_dict__PolissaNotActive(self):
         e = indexada_exceptions.PolissaNotActive("0018")  # noqa: F821
         self.assertEqual(

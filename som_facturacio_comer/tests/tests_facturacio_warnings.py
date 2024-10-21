@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
+import base64
 from expects import expect
 from expects import contain
+from addons import get_module_resource
 from destral import testing
 from destral.transaction import Transaction
 
@@ -132,6 +134,7 @@ class TestsFacturesValidation(testing.OOTestCase):
 
     def modify_invoice(self, fact_id, pol_id, start, end, amount=1):
         fact_obj = self.model("giscedata.facturacio.factura")
+        attach_obj = self.openerp.pool.get('ir.attachment')
 
         fact_obj.write(
             self.txn.cursor,
@@ -146,6 +149,20 @@ class TestsFacturesValidation(testing.OOTestCase):
                 "energia_kwh": amount,
             },
         )
+
+        # polissa_0001 is indexed and needs a coef file for validations
+        csv_path = get_module_resource(
+            'giscedata_facturacio_indexada', 'tests', 'data', 'PMD_1612092_20200401_20200430.csv'
+        )
+        with open(csv_path, 'r') as f:
+            csv_file = f.read()
+        vals = {
+            'name': 'PMD_1612092_20200401_20200430.csv',
+            'datas': base64.b64encode(csv_file),
+            'res_model': 'giscedata.facturacio.factura',
+            'res_id': fact_id
+        }
+        attach_obj.create(self.txn.cursor, self.txn.user, vals)
 
     def crear_modcon(self, polissa_id, teoric_max, ini, fi):
         cursor = self.txn.cursor

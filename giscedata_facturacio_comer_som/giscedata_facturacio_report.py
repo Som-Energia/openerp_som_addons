@@ -198,6 +198,9 @@ class GiscedataFacturacioFacturaReport(osv.osv):
         super(GiscedataFacturacioFacturaReport, self).__init__(pool, cursor)
         self.readings_cache = {}
         self.historic_cache = {}
+        self.text_real = _(u"real")
+        self.text_estimada_distri = _(u"estimada distribuïdora")
+        self.text_calculada_som = _(u"calculada per Som Energia")
 
     def get_components_data(self, cursor, uid, ids, context=None):
         """
@@ -303,15 +306,15 @@ class GiscedataFacturacioFacturaReport(osv.osv):
         origen_obj = lectura.pool.get("giscedata.lectures.origen")
         origen_comer_obj = lectura.pool.get("giscedata.lectures.origen_comer")
 
-        estimada_id = origen_obj.search(self.cursor, self.uid, [("codi", "=", "40")])[0]
-        sin_lectura_id = origen_obj.search(self.cursor, self.uid, [("codi", "=", "99")])[0]
-        estimada_som_id = origen_comer_obj.search(self.cursor, self.uid, [("codi", "=", "ES")])[0]
-        calculada_som_id = origen_obj.search(self.cursor, self.uid, [("codi", "=", "LC")])
-        calculada_som_id = calculada_som_id[0] if calculada_som_id else None
-
         # Busquem la tarifa
         tarifa_id = tarifa_obj.search(self.cursor, self.uid, [("name", "=", lectura.name[:-5])])
         if tarifa_id:
+            estimada_id = origen_obj.search(self.cursor, self.uid, [("codi", "=", "40")])[0]
+            sin_lectura_id = origen_obj.search(self.cursor, self.uid, [("codi", "=", "99")])[0]
+            estimada_som_id = origen_comer_obj.search(
+                self.cursor, self.uid, [("codi", "=", "ES")])[0]
+            calculada_som_id = origen_obj.search(self.cursor, self.uid, [("codi", "=", "LC")])
+            calculada_som_id = calculada_som_id[0] if calculada_som_id else None
             tipus = lectura.tipus == "activa" and "A" or "R"
 
             search_vals = [
@@ -330,14 +333,14 @@ class GiscedataFacturacioFacturaReport(osv.osv):
                 # Si Estimada (40) o Sin Lectura (99) i Estimada (ES): Estimada Somenergia
                 # Si Estimada (40) o Sin Lectura (99) i F1/Q1/etc...(!ES): Estimada distribuïdora
                 # La resta: Real
-                origen_txt = _(u"real")
+                origen_txt = self.text_real
                 if lect["origen_id"][0] in [estimada_id, sin_lectura_id]:
                     if lect["origen_comer_id"][0] == estimada_som_id:
-                        origen_txt = _(u"calculada per Som Energia")
+                        origen_txt = self.text_calculada_som
                     else:
                         origen_txt = _(u"estimada distribuïdora")
                 if lect["origen_id"][0] == calculada_som_id:
-                    origen_txt = _(u"calculada")
+                    origen_txt = self.text_estimada_distri
                 res[lect["name"]] = "%s" % (origen_txt)
 
         return res
@@ -429,55 +432,24 @@ class GiscedataFacturacioFacturaReport(osv.osv):
                         val(lectura.motiu_ajust),
                     )
                 )
-                lectura_real = sorted(
-                    [
-                        lectura_real
-                        for lectura_real in lectura.comptador_id.pool_lectures
-                        if lectura_real.tipus == "A"
-                        and "{} ({})".format(
-                            lectura_real.periode.tarifa.name, lectura_real.periode.product_id.name
-                        )
-                        == lectura.name
-                        and lectura_real.origen_id.id not in [7, 9, 22, 23]
-                        and datetime.strptime(lectura_real.name, "%Y-%m-%d")
-                        < datetime.strptime(lectura.data_actual, "%Y-%m-%d")
-                    ],
-                    reverse=True,
-                    key=lambda l: l.name,  # noqa: E741
-                )
+                lectura_real = self.get_last_active_lectura_real_from_pool(lectura)
                 lectures_real_a.setdefault(lectura.comptador, [])
                 if len(lectura_real) > 0:
                     lectures_real_a[lectura.comptador].append(
                         (
                             lectura.name[-3:-1],
-                            val(lectura_real[0].lectura),
-                            dateformat(lectura_real[0].name),
+                            val(lectura_real[0]['lectura']),
+                            dateformat(lectura_real[0]['name']),
                         )
                     )
                 else:
-                    lectura_real = sorted(
-                        [
-                            lectura_real
-                            for lectura_real in lectura.comptador_id.lectures  # noqa: F812
-                            if lectura_real.tipus == "A"
-                            and "{} ({})".format(
-                                lectura_real.periode.tarifa.name,
-                                lectura_real.periode.product_id.name,
-                            )
-                            == lectura.name
-                            and lectura_real.origen_id.id not in [7, 9, 22, 23]
-                            and datetime.strptime(lectura_real.name, "%Y-%m-%d")
-                            < datetime.strptime(lectura.data_actual, "%Y-%m-%d")
-                        ],
-                        reverse=True,
-                        key=lambda l: l.name,  # noqa: E741
-                    )
+                    lectura_real = self.get_last_active_lectura_real_from_lectures(lectura)
                     if len(lectura_real) > 0:
                         lectures_real_a[lectura.comptador].append(
                             (
                                 lectura.name[-3:-1],
-                                val(lectura_real[0].lectura),
-                                dateformat(lectura_real[0].name),
+                                val(lectura_real[0]['lectura']),
+                                dateformat(lectura_real[0]['name']),
                             )
                         )
 
@@ -497,55 +469,24 @@ class GiscedataFacturacioFacturaReport(osv.osv):
                         val(lectura.motiu_ajust),
                     )
                 )
-                lectura_real = sorted(
-                    [
-                        lectura_real
-                        for lectura_real in lectura.comptador_id.pool_lectures
-                        if lectura_real.tipus == "A"
-                        and "{} ({})".format(
-                            lectura_real.periode.tarifa.name, lectura_real.periode.product_id.name
-                        )
-                        == lectura.name
-                        and lectura_real.origen_id.id not in [7, 9, 22, 23]
-                        and datetime.strptime(lectura_real.name, "%Y-%m-%d")
-                        < datetime.strptime(lectura.data_actual, "%Y-%m-%d")
-                    ],
-                    reverse=True,
-                    key=lambda l: l.name,  # noqa: E741
-                )
+                lectura_real = self.get_last_active_lectura_real_from_pool(lectura)
                 lectures_real_g.setdefault(lectura.comptador, [])
                 if len(lectura_real) > 0:
                     lectures_real_g[lectura.comptador].append(
                         (
                             lectura.name[-3:-1],
-                            val(lectura_real[0].lectura),
-                            dateformat(lectura_real[0].name),
+                            val(lectura_real[0]['lectura']),
+                            dateformat(lectura_real[0]['name']),
                         )
                     )
                 else:
-                    lectura_real = sorted(
-                        [
-                            lectura_real
-                            for lectura_real in lectura.comptador_id.lectures  # noqa: F812
-                            if lectura_real.tipus == "A"
-                            and "{} ({})".format(
-                                lectura_real.periode.tarifa.name,
-                                lectura_real.periode.product_id.name,
-                            )
-                            == lectura.name
-                            and lectura_real.origen_id.id not in [7, 9, 22, 23]
-                            and datetime.strptime(lectura_real.name, "%Y-%m-%d")
-                            < datetime.strptime(lectura.data_actual, "%Y-%m-%d")
-                        ],
-                        reverse=True,
-                        key=lambda l: l.name,  # noqa: E741
-                    )
+                    lectura_real = self.get_last_active_lectura_real_from_lectures(lectura)
                     if len(lectura_real) > 0:
                         lectures_real_g[lectura.comptador].append(
                             (
                                 lectura.name[-3:-1],
-                                val(lectura_real[0].lectura),
-                                dateformat(lectura_real[0].name),
+                                val(lectura_real[0]['lectura']),
+                                dateformat(lectura_real[0]['name']),
                             )
                         )
 
@@ -563,55 +504,24 @@ class GiscedataFacturacioFacturaReport(osv.osv):
                         origens[lectura.data_actual],
                     )
                 )
-                lectura_real = sorted(
-                    [
-                        lectura_real
-                        for lectura_real in lectura.comptador_id.pool_lectures
-                        if lectura_real.tipus == "R"
-                        and "{} ({})".format(
-                            lectura_real.periode.tarifa.name, lectura_real.periode.product_id.name
-                        )
-                        == lectura.name
-                        and lectura_real.origen_id.id not in [7, 22, 23]
-                        and datetime.strptime(lectura_real.name, "%Y-%m-%d")
-                        < datetime.strptime(lectura.data_actual, "%Y-%m-%d")
-                    ],
-                    reverse=True,
-                    key=lambda l: l.name,  # noqa: E741
-                )
+                lectura_real = self.get_last_reactive_lectura_real_from_pool(lectura)
                 lectures_real_r.setdefault(lectura.comptador, [])
                 if len(lectura_real) > 0:
                     lectures_real_r[lectura.comptador].append(
                         (
                             lectura.name[-3:-1],
-                            val(lectura_real[0].lectura),
-                            dateformat(lectura_real[0].name),
+                            val(lectura_real[0]['lectura']),
+                            dateformat(lectura_real[0]['name']),
                         )
                     )
                 else:
-                    lectura_real = sorted(
-                        [
-                            lectura_real
-                            for lectura_real in lectura.comptador_id.lectures  # noqa: F812
-                            if lectura_real.tipus == "R"
-                            and "{} ({})".format(
-                                lectura_real.periode.tarifa.name,
-                                lectura_real.periode.product_id.name,
-                            )
-                            == lectura.name
-                            and lectura_real.origen_id.id not in [7, 22, 23]
-                            and datetime.strptime(lectura_real.name, "%Y-%m-%d")
-                            < datetime.strptime(lectura.data_actual, "%Y-%m-%d")
-                        ],
-                        reverse=True,
-                        key=lambda l: l.name,  # noqa: E741
-                    )
+                    lectura_real = self.get_last_reactive_lectura_real_from_lectures(lectura)
                     if len(lectura_real) > 0:
                         lectures_real_r[lectura.comptador].append(
                             (
                                 lectura.name[-3:-1],
-                                val(lectura_real[0].lectura),
-                                dateformat(lectura_real[0].name),
+                                val(lectura_real[0]['lectura']),
+                                dateformat(lectura_real[0]['name']),
                             )
                         )
 
@@ -629,55 +539,24 @@ class GiscedataFacturacioFacturaReport(osv.osv):
                         origens[lectura.data_actual],
                     )
                 )
-                lectura_real = sorted(
-                    [
-                        lectura_real
-                        for lectura_real in lectura.comptador_id.pool_lectures
-                        if lectura_real.tipus == "R"
-                        and "{} ({})".format(
-                            lectura_real.periode.tarifa.name, lectura_real.periode.product_id.name
-                        )
-                        == lectura.name
-                        and lectura_real.origen_id.id not in [7, 22, 23]
-                        and datetime.strptime(lectura_real.name, "%Y-%m-%d")
-                        < datetime.strptime(lectura.data_actual, "%Y-%m-%d")
-                    ],
-                    reverse=True,
-                    key=lambda l: l.name,  # noqa: E741
-                )
+                lectura_real = self.get_last_reactive_lectura_real_from_pool(lectura)
                 lectures_real_c.setdefault(lectura.comptador, [])
                 if len(lectura_real) > 0:
                     lectures_real_c[lectura.comptador].append(
                         (
                             lectura.name[-3:-1],
-                            val(lectura_real[0].lectura),
-                            dateformat(lectura_real[0].name),
+                            val(lectura_real[0]['lectura']),
+                            dateformat(lectura_real[0]['name']),
                         )
                     )
                 else:
-                    lectura_real = sorted(
-                        [
-                            lectura_real
-                            for lectura_real in lectura.comptador_id.lectures  # noqa: F812
-                            if lectura_real.tipus == "R"
-                            and "{} ({})".format(
-                                lectura_real.periode.tarifa.name,
-                                lectura_real.periode.product_id.name,
-                            )
-                            == lectura.name
-                            and lectura_real.origen_id.id not in [7, 22, 23]
-                            and datetime.strptime(lectura_real.name, "%Y-%m-%d")
-                            < datetime.strptime(lectura.data_actual, "%Y-%m-%d")
-                        ],
-                        reverse=True,
-                        key=lambda l: l.name,  # noqa: E741
-                    )
+                    lectura_real = self.get_last_reactive_lectura_real_from_lectures(lectura)
                     if len(lectura_real) > 0:
                         lectures_real_c[lectura.comptador].append(
                             (
                                 lectura.name[-3:-1],
-                                val(lectura_real[0].lectura),
-                                dateformat(lectura_real[0].name),
+                                val(lectura_real[0]['lectura']),
+                                dateformat(lectura_real[0]['name']),
                             )
                         )
 
@@ -738,6 +617,37 @@ class GiscedataFacturacioFacturaReport(osv.osv):
             has_adjust_g,
             has_readings_g,
         )
+
+    def get_last_active_lectura_real_from_pool(self, lectura):
+        return self._get_last_lectura_real(
+            lectura, 'giscedata.lectures.lectura.pool', 'A', [7, 9, 22, 23])
+
+    def get_last_active_lectura_real_from_lectures(self, lectura):
+        return self._get_last_lectura_real(
+            lectura, 'giscedata.lectures.lectura', 'A', [7, 9, 22, 23])
+
+    def get_last_reactive_lectura_real_from_pool(self, lectura):
+        return self._get_last_lectura_real(
+            lectura, 'giscedata.lectures.lectura.pool', 'R', [7, 22, 23])
+
+    def get_last_reactive_lectura_real_from_lectures(self, lectura):
+        return self._get_last_lectura_real(
+            lectura, 'giscedata.lectures.lectura', 'R', [7, 22, 23])
+
+    def _get_last_lectura_real(self, lectura, model_name, type_, invalid_origins):
+        lect_obj = self.pool.get(model_name)
+        sql = lect_obj.q(self.cursor, self.uid).select(
+            ['lectura', 'name'], order_by=('name.desc',), limit=1
+        ).where([
+            ('comptador', '=', lectura.comptador_id.id),
+            ('tipus', '=', type_),
+            ('periode.tarifa.name', '=', lectura.name.split(" ")[0]),
+            ('periode.product_id.product_tmpl_id.name', '=', lectura.name.split("(")[1][:-1]),
+            ('origen_id', 'not in', invalid_origins),
+            ('name', '<', lectura.data_actual)
+        ])
+        self.cursor.execute(*sql)
+        return self.cursor.dictfetchall()
 
     def get_historic_data(self, fact):
         if fact.id not in self.historic_cache:
@@ -1307,6 +1217,14 @@ class GiscedataFacturacioFacturaReport(osv.osv):
             u"6.3TD": 5,
             u"6.4TD": 6,
         }
+
+        if len(pol.autoconsum_cups_ids) == 0:
+            data["autoconsum_caus"] = [data["autoconsum_cau"]]
+        else:
+            data["autoconsum_caus"] = []
+            for mcau in pol.autoconsum_cups_ids:
+                data["autoconsum_caus"].append(mcau.autoconsum_id.cau)
+
         data["segment_tariff"] = segment_tarif.get(pol.tarifa.name, "")
         return data
 
@@ -3886,6 +3804,71 @@ class GiscedataFacturacioFacturaReport(osv.osv):
             data["mitjana"] = eval_and_json(example_mitjana_2020)
 
         return data
+
+    def get_component_solar_flux_info_data(self, fact, pol):
+
+        def has_active_flux_solar(fact, pol):
+            for fl in pol.bateria_ids:
+                if not fl.data_final or fl.data_final > fact.data_inici:
+                    return True
+            return False
+
+        if not(te_autoconsum_amb_excedents(fact, pol) or pol.autoconsumo == '33'):
+            return {"is_visible": False}
+
+        if not has_active_flux_solar(fact, pol):
+            return {"is_visible": False}
+
+        imd_obj = self.pool.get("ir.model.data")
+        hidden_flux_id = imd_obj.get_object_reference(
+            self.cursor, self.uid, "som_polissa", "categ_flux_solar_ocult_ov"
+        )[1]
+        for categ in pol.category_id:
+            if categ.id == hidden_flux_id:
+                return {"is_visible": False}
+
+        autoconsum_excedents_product_id = self.get_autoconsum_excedents_product_id(fact)
+        ajustment = 0.0
+        surplus_kwh = 0.0
+        surplus_e = 0.0
+        for l in fact.linies_generacio:  # noqa: E741
+            if l.product_id.id == autoconsum_excedents_product_id:
+                ajustment += l.price_subtotal
+            else:
+                surplus_kwh += l.quantity
+                surplus_e += l.price_subtotal
+
+        surplus_kwh = surplus_kwh * -1.0
+        surplus_e = surplus_e * -1.0
+
+        flux_lines = [
+            l
+            for l in fact.linia_ids  # noqa: E741
+            if l.tipus in ("altres", "cobrament") and l.invoice_line_id.product_id.code == "PBV"
+        ]
+
+        lang = fact.lang_partner.lower()
+        if lang == 'ca_es':
+            link_help = 'https://ca.support.somenergia.coop/article/1371-que-es-el-flux-solar'
+            link_ov_suns = 'https://oficinavirtual.somenergia.coop/ca/flux-solar/'
+            link_nc = 'https://ca.support.somenergia.coop/article/1397-que-son-els-excedents-no-compensats'  # noqa: E501
+        else:
+            link_help = 'https://es.support.somenergia.coop/article/1372-que-es-el-flux-solar'
+            link_ov_suns = 'https://oficinavirtual.somenergia.coop/es/flux-solar/'
+            link_nc = 'https://es.support.somenergia.coop/article/1398-que-son-los-excedentes-no-compensados'  # noqa: E501
+
+        return {
+            'is_visible': True,
+            'surplus_kwh': surplus_kwh,
+            'surplus_e': surplus_e,
+            'compensation_e': surplus_e - ajustment,
+            'ajustment_e': ajustment,
+            'suns_generated': ajustment * 0.80,
+            'suns_used': sum([l.price_subtotal for l in flux_lines]) * -1.0,   # noqa: E741
+            'link_help': link_help,
+            'link_ov_suns': link_ov_suns,
+            'link_no_compens': link_nc,
+        }
 
 
 GiscedataFacturacioFacturaReport()

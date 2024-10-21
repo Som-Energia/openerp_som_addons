@@ -1029,5 +1029,20 @@
             <field name="params">{}</field>
             <field name="task_id" ref="descarregar_escuer"/>
         </record>
+        <!-- UDESA -->
+        <record model="som.crawlers.task.step" id="pas_descarregar_ftp_udesa">
+            <field name="name">Descarregar fitxers FTP UDESA</field>
+            <field name="sequence">1</field>
+            <field name="function">download_ftp_files</field>
+            <field name="params">{"dir_list": ["Entrada","Hist_Salida","Salida"]}</field>
+            <field name="task_id" ref="descarregar_udesa_ftp"/>
+        </record>
+        <record model="som.crawlers.task.step" id="pas_importar_udesa">
+            <field name="name">Importar fitxers XML</field>
+            <field name="sequence">2</field>
+            <field name="function">import_ftp_xml_files</field>
+            <field name="params">{}</field>
+            <field name="task_id" ref="descarregar_udesa_ftp"/>
+        </record>
     </data>
 </openerp>

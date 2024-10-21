@@ -11,8 +11,8 @@
                 % if polissa['tarifa'] == "2.0TD":
                     <tr style="background-color: #0fdb46;">
                         <th></th>
-                        <th colspan="3">Sense impostos</th>
-                        <th class="divisio_impostos" colspan="3">Amb impostos ${pricelist['text_impostos']}</th>
+                        <th colspan="3">${_(u"Sense impostos")}</th>
+                        <th class="divisio_impostos" colspan="3">${_(u"Amb impostos")} ${pricelist['text_impostos']}</th>
                     </tr>
                 %endif
                 <tr style="background-color: #878787;">
@@ -114,7 +114,7 @@
                                 <b>${_(u"Tarifa indexada")}</b>${_(u"(2) - el preu horari (PH) es calcula d'acord amb la fórmula:")}
                             </span>
                             <br/>
-                            <span>${_(u"PH = 1,015 * [(PHM + PHMA + Pc + Sc + I + POsOm) (1 + Perd) + FE + F] + PTD + CA")}</span>
+                            <span>${_(u"PH = 1,015 * [(PHM + Pc + Sc + Dsv + GdO + POsOm) (1 + Perd) + FE + F] + PTD + CA")}</span>
                         %if polissa['tarifa'] == "2.0TD":
                             </td>
                             </tr>
@@ -322,7 +322,7 @@
                                     <b>${_(u"Tarifa indexada")}</b>${_(u"(2) - el preu horari (PH) es calcula d'acord amb la fórmula:")}
                                 </span>
                                 <br/>
-                                <span>${_(u"PH = 1,015 * [(PHM + PHMA + Pc + Sc + I + POsOm) (1 + Perd) + FE + F] + PTD + CA")}</span>
+                                <span>${_(u"PH = 1,015 * [(PHM + Pc + Sc + Dsv + GdO + POsOm) (1 + Perd) + FE + F] + PTD + CA")}</span>
                                 <br/>
                                 <span class="normal_font_weight">${_(u"on la franja de la cooperativa")}</span>
                                 <span>&nbsp;${("(F) = %s €/kWh</B>") % formatLang(prices['coeficient_k'], digits=6)}</span>
@@ -401,10 +401,6 @@
         <!-- FI Bloc amb impostos de 3.X i 6.X -->
     %endfor
     </div>
-    %if prices['mostra_indexada']:
-        <%namespace file="/som_polissa_condicions_generals/report/components/upcoming_index.mako" import="upcoming_index"/>
-        ${upcoming_index(polissa, prices)}
-    %endif
     <div class="styled_box padding_bottom">
         <div class="center avis_impostos">
             %if (polissa['mode_facturacio'] == 'index' and not polissa['modcon_pendent_periodes']) or polissa['modcon_pendent_indexada']:
