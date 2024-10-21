@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 from osv import osv, fields
-from datetime import datetime, timedelta
 
 
 class GiscedataServeiGeneracio(osv.osv):
