@@ -15,7 +15,8 @@ def up(cursor, installed_version):
 
     logger.info("Update models giscedata.polissa and giscedata.polissa.modcontractual")
     pool.get('giscedata.polissa')._auto_init(cursor, context={'module': 'som_auvidi'})
-    pool.get('giscedata.polissa.modcontractual')._auto_init(cursor, context={'module': 'som_auvidi'})
+    pool.get('giscedata.polissa.modcontractual')._auto_init(
+        cursor, context={'module': 'som_auvidi'})
     logger.info("Models updated")
 
     logger.info("Updating XML giscedata_polissa_view.xml")
