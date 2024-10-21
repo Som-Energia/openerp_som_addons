@@ -56,8 +56,8 @@ class GiscedataPolissaModcontractual(osv.osv):
         modcon = self.browse(cursor, uid, mod_id)
         current_te_auvidi = modcon.te_auvidi
         cancels_auvidi = (modcon.modcontractual_ant
-            and modcon.modcontractual_ant.te_auvidi
-            and not modcon.te_auvidi)
+                          and modcon.modcontractual_ant.te_auvidi
+                          and not modcon.te_auvidi)
 
         if current_te_auvidi or cancels_auvidi:
             sg_pol_id = sg_polissa_obj.search(cursor, uid, [('polissa_id', '=', polissa_id)])
@@ -76,15 +76,15 @@ class GiscedataPolissaModcontractual(osv.osv):
                         polissa_current_categories = list(set(polissa_current_categories))
                         new_categories = []
                         # If AUVIDI is cancelled we must remove category
-                        if (cancels_auvidi and
-                                categoria_polissa and
-                                categoria_polissa[0] in polissa_current_categories):
+                        if (cancels_auvidi
+                                and categoria_polissa
+                                and categoria_polissa[0] in polissa_current_categories):
                             polissa_current_categories.remove(categoria_polissa[0])
                             new_categories = polissa_current_categories
                         # If AUVIDI and there's no category we must add it
-                        elif (current_te_auvidi and
-                              categoria_polissa and
-                              categoria_polissa[0] not in polissa_current_categories):
+                        elif (current_te_auvidi
+                              and categoria_polissa
+                              and categoria_polissa[0] not in polissa_current_categories):
                             new_categories = polissa_current_categories + [categoria_polissa[0]]
 
                         if new_categories:
