@@ -189,6 +189,88 @@ class GiscedataSwitchingM1_02(osv.osv):
 GiscedataSwitchingM1_02()
 
 
+class GiscedataSwitchingM1_03(osv.osv):
+    _inherit = "giscedata.switching.m1.03"
+
+    def create_from_xml(self, cursor, uid, sw_id, xml, context=None):
+        if context is None:
+            context = {}
+
+        step_id = super(GiscedataSwitchingM1_03, self).create_from_xml(
+            cursor, uid, sw_id, xml, context=context
+        )
+
+        sw_obj = self.pool.get("giscedata.switching")
+        step_m101_obj = self.pool.get("giscedata.switching.m1.01")
+        sw_step_header_obj = self.pool.get("giscedata.switching.step.header")
+        sw = sw_obj.browse(cursor, uid, sw_id, context=context)
+
+        if sw and _contract_has_gurb_category(
+            cursor, uid, self.pool, sw.cups_polissa_id.id, context=context
+        ):
+            step_m101_auto = step_m101_obj.search(
+                cursor,
+                uid,
+                [("sw_id", "=", sw.id), ("solicitud_autoconsum", "=", "S")],
+                context=context
+            )
+            unidirectional_change = is_unidirectional_colective_autocons_change(
+                cursor, uid, self.pool, "giscedata.switching.m1.03", step_id, context=context
+            )
+
+            if step_m101_auto or unidirectional_change:
+                sw_step_header_id = self.read(cursor, uid, step_id, ['header_id'])['header_id'][0]
+                sw_step_header_obj.write(
+                    cursor, uid, sw_step_header_id, {'notificacio_pendent': False}
+                )
+
+        return step_id
+
+
+GiscedataSwitchingM1_03()
+
+
+class GiscedataSwitchingM1_04(osv.osv):
+    _inherit = "giscedata.switching.m1.04"
+
+    def create_from_xml(self, cursor, uid, sw_id, xml, context=None):
+        if context is None:
+            context = {}
+
+        step_id = super(GiscedataSwitchingM1_04, self).create_from_xml(
+            cursor, uid, sw_id, xml, context=context
+        )
+
+        sw_obj = self.pool.get("giscedata.switching")
+        step_m101_obj = self.pool.get("giscedata.switching.m1.01")
+        sw_step_header_obj = self.pool.get("giscedata.switching.step.header")
+        sw = sw_obj.browse(cursor, uid, sw_id, context=context)
+
+        if sw and _contract_has_gurb_category(
+            cursor, uid, self.pool, sw.cups_polissa_id.id, context=context
+        ):
+            step_m101_auto = step_m101_obj.search(
+                cursor,
+                uid,
+                [("sw_id", "=", sw.id), ("solicitud_autoconsum", "=", "S")],
+                context=context
+            )
+            unidirectional_change = is_unidirectional_colective_autocons_change(
+                cursor, uid, self.pool, "giscedata.switching.m1.04", step_id, context=context
+            )
+
+            if step_m101_auto or unidirectional_change:
+                sw_step_header_id = self.read(cursor, uid, step_id, ['header_id'])['header_id'][0]
+                sw_step_header_obj.write(
+                    cursor, uid, sw_step_header_id, {'notificacio_pendent': False}
+                )
+
+        return step_id
+
+
+GiscedataSwitchingM1_04()
+
+
 class GiscedataSwitchingM1_05(osv.osv):
     _inherit = "giscedata.switching.m1.05"
 
