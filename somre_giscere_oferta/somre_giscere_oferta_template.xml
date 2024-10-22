@@ -6,7 +6,7 @@
             <field name="name">Plantilla Notificacion Automatismes OMIE Representació</field>
             <field name="object_name" model="ir.model" search="[('model', '=', 'res.company')]"/>
             <field eval="0" name="save_to_drafts"/>
-            <field name="def_to">mercats@lenergetica.cat</field>
+            <field name="def_to">representa@somenergia.coop</field>
             <field name="def_subject">[${env['resultat']}] Automatismes OMIE Representació ${env['today']}</field>
             <field name="template_language">mako</field>
             <field name="lang">ca_ES</field>
