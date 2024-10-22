@@ -14,6 +14,8 @@ class GiscedataFacturacioServices(osv.osv):
         if context is None:
             context = {}
 
+        context["dont_group_lines"] = True
+
         gurb_cups_beta_o = self.pool.get("som.gurb.cups.beta")
         imd_o = self.pool.get("ir.model.data")
         gurb_product_id = imd_o.get_object_reference(
@@ -84,7 +86,6 @@ class GiscedataFacturacioServices(osv.osv):
             ("start_date", "<=", vals["data_fins"]),
             ("end_date", ">=", vals["data_desde"]),
         ]
-        gurb_cups_o.search(cursor, uid, search_params, context=context)
         gurb_cups_ids += gurb_cups_o.search(cursor, uid, search_params, context=context)
 
         if not gurb_cups_ids:

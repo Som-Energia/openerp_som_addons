@@ -14,6 +14,7 @@
         </record>
         <record model="product.category" id="categ_product_gurb">
             <field name="name">Categoria GURB</field>
+            <field name="parent_id" ref="giscedata_facturacio.categ_extra" />
         </record>
         <record model="product.product" id="product_gurb">
             <field name="name">Producte GURB domèstic</field>
