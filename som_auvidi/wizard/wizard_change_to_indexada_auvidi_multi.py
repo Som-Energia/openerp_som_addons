@@ -248,7 +248,10 @@ class WizardChangeToIndexadaAuvidiMulti(osv.osv_memory):
 
     def set_auvidi(self, cursor, uid, modcon_id, value=True):
         mod_obj = self.pool.get("giscedata.polissa.modcontractual")
-        mod_obj.write(cursor, uid, modcon_id, {'te_auvidi': value})
+        if not value:
+            mod_obj.write(cursor, uid, modcon_id, {'te_auvidi': value})
+        pol_id = mod_obj.read(cursor, uid, modcon_id, ['polissa_id'])['polissa_id'][0]
+        self.create_auvidi_pending_modcon(cursor, uid, pol_id, value)
 
     def get_list_polissa_names(self, cursor, uid, pol_ids):
         pol_obj = self.pool.get("giscedata.polissa")
