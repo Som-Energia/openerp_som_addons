@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+    <data>
+        <record id="view_change_to_indexada_auvidi_multi" model="ir.ui.view">
+            <field name="name">wizard.change.to.indexada.auvidi.multi.form</field>
+            <field name="model">wizard.change.to.indexada.auvidi.multi</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <form string="Canviar mode facturació de les polisses   ">
+                    <field name="state" invisible="1"/>
+                    <group attrs="{'invisible': [('state','!=','init')]}">
+                        <group colspan="4" col="4">
+                            <button name="change_to_indexada_auvidi_multi"
+                                    icon="gtk-undo" string="Canviar a indexada amb auvidi" type="object"/>
+                            <button name="quit_auvidi_multi"
+                                    icon="gtk-redo" string="Treure d'auvidi" type="object"/>
+                        </group>
+                    </group>
+                    <group attrs="{'invisible': [('state','!=','end')]}">
+                        <field name="info" colspan="4" readonly="1" nolabel="1"/>
+                        <button icon="gtk-close" special="cancel" string="Finalitzar" type="object" colspan="4"/>
+                    </group>
+                </form>
+            </field>
+        </record>
+        <record id="action_change_to_indexada_auvidi_multi" model="ir.actions.act_window">
+            <field name="name">Wizard canviar polisses massivament a indexada amb auvidi</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">wizard.change.to.indexada.auvidi.multi</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">form</field>
+            <field name="domain">[]</field>
+            <field name="target">new</field>
+            <field name="view_id" ref="view_change_to_indexada_auvidi_multi"/>
+        </record>
+        <record id="wizard_change_to_indexada_auvidi_multi" model="ir.values">
+            <field name="object" eval="1"/>
+            <field name="name">Canviar les polisses a indexada amb auvidi</field>
+            <field name="key2">client_action_multi</field>
+            <field name="key">action</field>
+            <field name="model">giscedata.polissa</field>
+            <field name="value" eval="'ir.actions.act_window,'+str(ref('action_change_to_indexada_auvidi_multi'))" />
+        </record>
+    </data>
+</openerp>
