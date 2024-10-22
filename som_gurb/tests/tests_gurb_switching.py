@@ -464,7 +464,7 @@ class TestsGurbSwitching(TestsGurbBase):
         self.assertEqual(inf, m1.additional_info)
 
         self.assertEqual(m1.state, "cancel")
-        self.assertEqual(m1.notificacio_pendent, True)
+        self.assertEqual(m1.notificacio_pendent, False)
 
     def test_close_m1_02_rej_auto_gurb_category(self):
         """
@@ -626,7 +626,8 @@ class TestsGurbSwitching(TestsGurbBase):
         d1 = sw_obj.browse(self.cursor, self.uid, res[0])
         self.assertEqual(d1.proces_id.name, "D1")
         self.assertEqual(d1.step_id.name, "01")
-        self.assertEqual(d1.state, "cancel")
+        self.assertEqual(d1.state, "done")
+        self.assertEqual(d1.notificacio_pendent, False)
 
     @mock.patch('poweremail.poweremail_template.poweremail_templates.generate_mail')
     def test_do_close_m1_05_gurb_category(self, mocked_function):
