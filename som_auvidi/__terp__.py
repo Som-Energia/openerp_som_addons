@@ -14,7 +14,9 @@
     "init_xml": [],
     "demo_xml": [],
     "update_xml": [
-        "giscedata_polissa_view.xml"
+        "giscedata_polissa_view.xml",
+        "giscedata_serveis_generacio_data.xml",
+        "giscedata_serveis_generacio_view.xml",
     ],
     "active": False,
     "installable": True,

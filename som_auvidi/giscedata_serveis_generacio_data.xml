@@ -1,0 +1,18 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<openerp>
+    <data>
+        <record model="giscedata.polissa.category" id="polissa_category_auvidi_base">
+            <field name="name">AUVIDI</field>
+            <field name="complete_name">AUVIDI</field>
+            <field name="code">AVD</field>
+            <field name="active" eval="True"/>
+        </record>
+        <record model="giscedata.polissa.category" id="polissa_category_auvidi_pilot">
+            <field name="name">AUVIDI PILOT</field>
+            <field name="complete_name">AUVIDI Pilot</field>
+            <field name="code">AVDPLT</field>
+            <field name="parent_id" ref="polissa_category_auvidi_base"/>
+            <field name="active" eval="True"/>
+        </record>
+    </data>
+</openerp>
