@@ -5,12 +5,13 @@
             <field name="name">giscedata.servei.generacio.form.som</field>
             <field name="model">giscedata.servei.generacio</field>
             <field name="inherit_id" ref="giscedata_serveis_generacio.view_servei_generacio_form"/>
+            <field name="type">form</field>
             <field name="arch" type="xml">
-                <xpath expr="//field[@name='mode_calcul_preu']" position="after">
+                <field name="mode_calcul_preu" position="after">
                     <field name="categoria_polissa" colspan="8"/>
-                </xpath>
-                <xpath expr="//field[@name='mode_factura']" position="replace">
-                </xpath>
+                </field>
+                <field name="mode_factura" position="replace">
+                </field>
             </field>
         </record>
     </data>
