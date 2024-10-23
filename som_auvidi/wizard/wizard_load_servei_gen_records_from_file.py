@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from osv import osv
+from datetime import datetime
 
 
 class WizardLoadServeiGenRecordsFromFile(osv.osv_memory):
@@ -23,11 +24,12 @@ class WizardLoadServeiGenRecordsFromFile(osv.osv_memory):
     def get_aux_dict_from_row(self, cursor, uid, row, tipus='contracte', context=None):
         if context is None:
             context = {}
-
+        today = datetime.now().strftime('%Y-%m-%d')
         aux_dict = {
             'data_inici': False,
             'data_sortida': row[2],
-            'percentatge': row[3].replace(',', '.'),
+            'data_incorporacio': today,
+            'percentatge': float(row[3].replace(',', '.')),
         }
 
         if tipus == 'empresa':
