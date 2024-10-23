@@ -259,6 +259,13 @@ class WizardChangeToIndexadaAuvidiMulti(osv.osv_memory):
         return ', '.join([pol['name'] for pol in pol_data])
 
     def change_to_indexada(self, cursor, uid, pol_id):
+        pol_obj = self.pool.get("giscedata.polissa")
+        pol = pol_obj.browse(cursor, uid, pol_id)
+        last_modcon_date = pol.modcontractuals_ids[0].data_final
+        today = date.today().strftime("%Y-%m-%d")
+        if last_modcon_date < today:
+            return False
+
         wz_chng_to_indx_obj = self.pool.get("wizard.change.to.indexada")
         ctx = {"active_id": pol_id}
         params = {"change_type": "from_period_to_index"}
