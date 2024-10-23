@@ -205,32 +205,65 @@ class SomGurb(osv.osv):
         for record in self.browse(cursor, uid, ids, context=context):
             return record.assigned_betas_percentage < record.critical_incomplete_state
 
-    # WIP CODE
-    def add_services_to_gurb_contracts(self, cursor, uid, ids, context=None):
+    def activate_gurb_from_m1_05(self, cursor, uid, sw_id, activation_date, context=None):
         if context is None:
             context = {}
 
         gurb_cups_obj = self.pool.get("som.gurb.cups")
-        ir_model_obj = self.pool.get("ir.model.data")
+
+        gurb_id = self.get_gurb_from_sw_id(cursor, uid, sw_id, context=context)
+        gurb_cups_id = gurb_cups_obj.get_gurb_cups_from_sw_id(cursor, uid, sw_id, context=context)
+        gurb_cups_obj.activate_gurb_cups(
+            cursor, uid, gurb_cups_id, activation_date, context=context)
+        gurb_cups_obj.send_gurb_activation_email(cursor, uid, [gurb_cups_id], context=None)
+        gurb_date = self.read(cursor, uid, gurb_id, ["activation_date"])["activation_date"]
+        if not gurb_date:
+            write_vals = {
+                "activation_date": activation_date
+            }
+            self.write(cursor, uid, gurb_id, write_vals, context=context)
+
+    def get_gurb_from_sw_id(self, cursor, uid, sw_id, context=None):
+        if context is None:
+            context = {}
+
+        switching_obj = self.pool.get("giscedata.switching")
+
+        pol_id = switching_obj.read(
+            cursor, uid, sw_id, ["cups_polissa_id"], context=context)["cups_polissa_id"][0]
+
+        return self.get_gurb_from_pol_id(cursor, uid, pol_id, context=context)
+
+    def get_gurb_from_pol_id(self, cursor, uid, pol_id, context=None):
+        if context is None:
+            context = {}
+
+        gurb_cups_obj = self.pool.get("som.gurb.cups")
+
+        search_params = [
+            ("polissa_id", "=", pol_id)
+        ]
+
+        gurb_cups_ids = gurb_cups_obj.search(cursor, uid, search_params, context=context)
+
+        if len(gurb_cups_ids) == 1:
+            gurb_id = gurb_cups_obj.read(
+                cursor, uid, gurb_cups_ids[0], ["gurb_id"], context=context
+            )["gurb_id"][0]
+
+        return gurb_id
+
+    def add_services_to_gurb_contracts(self, cursor, uid, ids, activation_date, context=None):
+        if context is None:
+            context = {}
+
+        gurb_cups_obj = self.pool.get("som.gurb.cups")
 
         for gurb_id in ids:
-            pricelist_id = self.read(
-                cursor, uid, gurb_id, ["pricelist_id"], context=context
-            )["pricelist_id"]
-
-            product_id = ir_model_obj.get_object_reference(
-                cursor, uid, "som_gurb", "product_gurb"
-            )
-
-            search_params = [
-                ("gurb_id", "=", gurb_id)
-            ]
-            gurb_cups_ids = gurb_cups_obj.search(
-                cursor, uid, search_params, context=context
-            )
+            search_params = [("gurb_id", "=", gurb_id)]
+            gurb_cups_ids = gurb_cups_obj.search(cursor, uid, search_params, context=context)
             gurb_cups_obj.add_service_to_contract(
-                cursor, uid, gurb_cups_ids, pricelist_id, product_id, context=context
-            )
+                cursor, uid, gurb_cups_ids, activation_date, context=context)
 
         return True
 
@@ -359,9 +392,9 @@ class SomGurb(osv.osv):
         ),
         "pricelist_id": fields.many2one("product.pricelist", "Preus del GURB"),
         "initial_product_id": fields.many2one("product.product", "Producte quota inicial"),
-        "quota_product_id": fields.many2one("product.product", "Produce quota mensual"),
-
+        "quota_product_id": fields.many2one("product.product", "Producte base quota mensual"),
     }
+
     _defaults = {
         "logo": lambda *a: False,
         "state": lambda *a: "draft",

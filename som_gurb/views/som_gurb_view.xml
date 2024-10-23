@@ -118,6 +118,8 @@
         </record>
         <!-- Menú per llistar els GURBs-->
         <menuitem id="menu_llistar_gurbs" parent="menu_gurbs" action="action_gurbs" />
+        <!-- Menú per llistar els GURB CUPS-->
+        <menuitem id="menu_llistar_gurbs_cups" parent="menu_gurbs" action="action_gurb_cups" />
         <!-- Accés directe a la pestanya amb llistat dels som.gurb.cups del GURB -->
         <record id="action_som_gurb_cups_tree" model="ir.actions.act_window">
             <field name="name">Tots els CUPS del GURB</field>
