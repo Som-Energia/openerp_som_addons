@@ -2,4 +2,4 @@
 from __future__ import absolute_import
 from . import wizard
 from . import giscedata_serveis_generacio
-from . import giscedata_servei_generacio_facturacio
+from . import giscedata_serveis_generacio_facturacio
