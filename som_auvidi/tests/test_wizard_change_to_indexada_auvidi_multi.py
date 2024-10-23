@@ -1,7 +1,16 @@
 # -*- coding: utf-8 -*-
 from destral import testing
 from destral.transaction import Transaction
+from datetime import date, timedelta
 import mock
+
+
+def today_str():
+    return date.today().strftime("%Y-%m-%d")
+
+
+def today_minus_str(d):
+    return (date.today() - timedelta(days=d)).strftime("%Y-%m-%d")
 
 
 class WizardChangeToIndexadaAuvidiMultiBaseTests(testing.OOTestCase):
@@ -14,6 +23,7 @@ class WizardChangeToIndexadaAuvidiMultiBaseTests(testing.OOTestCase):
         self.wiz_obj = self.pool.get("wizard.change.to.indexada.auvidi.multi")
         self.polissa_obj = self.pool.get("giscedata.polissa")
         self.imd_obj = self.pool.get("ir.model.data")
+        self.mod_obj = self.pool.get("giscedata.polissa.modcontractual")
 
     def tearDown(self):
         self.txn.stop()
@@ -232,6 +242,26 @@ class WizardChangeToIndexadaAuvidiMultiTests(WizardChangeToIndexadaAuvidiMultiBa
         self.assertEqual(len(p.modcontractuals_ids), prev_modcons)
         self.assertIn(
             u"ERROR Pòlisses que estan a indexada amb modcon pendent a periodes:", wiz.info)
+        self.assertIn(u" - {}".format(p.name), wiz.info)
+
+    @mock.patch("poweremail.poweremail_send_wizard.poweremail_send_wizard.send_mail")
+    def test__inperiods_without_modcontoindex_to_auvidi_with_bad_current_modcon(self, mocked_send_mail):  # noqa E501
+        # Periods without MODCON pending to indexed --> modcon pending Indexed + auvidi
+        polissa_id = self.open_polissa("polissa_tarifa_018")
+        p = self.polissa_obj.browse(self.cursor, self.uid, polissa_id)
+        self.mod_obj.write(self.cursor, self.uid, p.modcontractuals_ids[0].id, {
+            'data_final': today_minus_str(2)
+        })
+        prev_modcons = len(p.modcontractuals_ids)
+
+        context = {"active_id": polissa_id, "active_ids": [polissa_id]}
+        wiz_id = self.wiz_obj.create(self.cursor, self.uid, {}, context=context)
+        self.wiz_obj.change_to_indexada_auvidi_multi(self.cursor, self.uid, [wiz_id], context)
+
+        wiz = self.wiz_obj.browse(self.cursor, self.uid, wiz_id)
+        p = self.polissa_obj.browse(self.cursor, self.uid, polissa_id)
+        self.assertEqual(len(p.modcontractuals_ids), prev_modcons)
+        self.assertIn(u"ERROR Pòlisses que han fallat al crear modcon:", wiz.info)
         self.assertIn(u" - {}".format(p.name), wiz.info)
 
     def test__quit_auvidi_multi__indexed_auvidi_no_modcon(self):
