@@ -5,6 +5,7 @@ import click
 import os
 import importlib.util
 import json
+import base64
 
 # Arguments passed through the os systemm call
 
@@ -125,8 +126,7 @@ def buildPortalCreds(
     if file_path:
         portalCreds["file_path"] = file_path
     if context and context != 'None':
-        context_str = context.replace('\\', '')
-        portalCreds["context"] = json.loads(context_str)
+        portalCreds["context"] = json.loads(base64.b64decode(context))
     return portalCreds
 
 

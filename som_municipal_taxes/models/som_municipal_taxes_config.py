@@ -2,7 +2,6 @@
 from osv import osv, fields
 from datetime import date, timedelta
 from dateutil.relativedelta import relativedelta
-from autoworker import AutoWorker
 from oorq.decorators import job, create_jobs_group
 from base_extended.base_extended import NoDependency
 from giscedata_municipal_taxes.taxes.municipal_taxes_invoicing import MunicipalTaxesInvoicingReport
@@ -30,6 +29,7 @@ class SomMunicipalTaxesConfig(osv.osv):
         'active': fields.boolean('Active'),
         'payment': fields.selection([("quarter", "Trimestral"), ("year", "Anual")],
                                     "Periode de pagament"),
+        'lang': fields.selection([("ca_ES", "Català"), ("es_ES", "Castellà")]),
     }
 
     def generate_municipal_taxes_file_path(self, cr, uid, ids, municipi_id, context=None):
@@ -65,21 +65,23 @@ class SomMunicipalTaxesConfig(osv.osv):
         municipis_sense_factura = []
         with NoDependency():
             for municipi_conf_id in municipis_conf_ids:
-                municipi_id = self.read(cr, uid, municipi_conf_id, [
-                                        'municipi_id'])['municipi_id'][0]
+                config_data = self.read(cr, uid, municipi_conf_id, [
+                                        'municipi_id', 'lang'])
                 mun_data = mun_obj.read(
-                    cr, uid, municipi_id, ['name', 'codi_dir3'])
+                    cr, uid, config_data['municipi_id'][0], ['name', 'codi_dir3'])
                 context['codi_municipi'] = mun_data['codi_dir3']
                 context['nom_municipi'] = mun_data['name']
+                context['lang'] = config_data['lang']
                 context['file_path'] = self.generate_municipal_taxes_file_path(
-                    cr, uid, ids, municipi_id, context)
+                    cr, uid, ids, config_data['municipi_id'][0], context)
                 if context['file_path']:
                     j = self.crawler_redsaras_async(
                         cr, uid, crawler_id, municipi_conf_id, context
                     )
                     jobs_ids.append(j.id)
                 else:
-                    nom_municipi = mun_obj.read(cr, uid, municipi_id, ['name'])['name']
+                    nom_municipi = mun_obj.read(
+                        cr, uid, config_data['municipi_id'][0], ['name'])['name']
                     municipis_sense_factura.append(nom_municipi)
         if jobs_ids:
             create_jobs_group(
@@ -87,8 +89,6 @@ class SomMunicipalTaxesConfig(osv.osv):
                     len(municipis_conf_ids) - len(municipis_sense_factura)
                 ), 'crawler_redsaras', jobs_ids
             )
-            aw = AutoWorker(queue='crawler_redsaras', default_result_ttl=24 * 3600, max_procs=1)
-            aw.work()
 
         return municipis_sense_factura
 
