@@ -98,7 +98,7 @@ class WizardCreacioRemesaPagamentTaxes(osv.osv_memory):
             config_id = config_obj.search(cursor, uid, [('municipi_id', '=', municipi_id)])[0]
             config_data = config_obj.read(cursor, uid, config_id, ['partner_id', 'bank_id'])
             if not config_data['bank_id']:
-                linia_no_creada.append(config_data['partner_id'][1])
+                linia_no_creada.append(config_data['name'])
                 continue
 
             account_id = wizard.account.id

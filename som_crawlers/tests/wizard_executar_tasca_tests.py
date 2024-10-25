@@ -325,7 +325,7 @@ class WizardExecutarTascaTests(testing.OOTestCase):
             result = self.taskStep.create_script_args(
                 crawler_config_obj, taskStepParams, fileName, context=test)
 
-            result_string = """-pr None -u usuariProva -d 80 -f prova.txt -url 'https://egymonluments.gov.eg/en/museums/egyptian-museum' -p contraProva -c Selenium -b firefox -n prova1 -fltr 'https://egymonuments.gov.eg/en/collections/kawit-sarcophagus-4' -nfp False -url-upload 'False' -context '{"codi_municipi": "1234567", "filepath": "here/there/file.xml"}'"""  # noqa: E501
+            result_string = """-pr None -u usuariProva -d 80 -f prova.txt -url 'https://egymonluments.gov.eg/en/museums/egyptian-museum' -p contraProva -c Selenium -b firefox -n prova1 -fltr 'https://egymonuments.gov.eg/en/collections/kawit-sarcophagus-4' -nfp False -url-upload 'False' -context eyJjb2RpX211bmljaXBpIjogIjEyMzQ1NjciLCAiZmlsZXBhdGgiOiAiaGVyZS90aGVyZS9maWxlLnhtbCJ9"""  # noqa: E501
             self.assertEqual(set(result.split()), set(result_string.split()))
 
     def test_readOutPutFile_entrada_path_inexistent_sortida_excepcio(self):

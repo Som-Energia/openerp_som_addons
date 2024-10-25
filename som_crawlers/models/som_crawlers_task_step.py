@@ -743,11 +743,7 @@ class SomCrawlersTaskStep(osv.osv):
                 args_str = self.create_script_args(
                     config_obj, task_step_params, file_name, context=context
                 )
-                result = os.system("{} {} {}".format(path_python, script_path, args_str))
-                if result != 0:
-                    raise Exception(
-                        "Error al cridar el crawler. Reviseu la comanda {} {} {}".format(
-                            path_python, script_path, args_str))
+                os.system("{} {} {}".format(path_python, script_path, args_str))
                 output_path = self.get_output_path(cursor, uid)
                 output = self.readOutputFile(cursor, uid, output_path, file_name)
                 if output != "Files have been successfully downloaded":
