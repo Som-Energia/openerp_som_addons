@@ -32,7 +32,7 @@ class WizardChangeToIndexadaAuvidiMulti(osv.osv_memory):
                 if not md:
                     # Periods without MODCON pending to indexed --> modcon pending Indexed + auvidi
                     # Create the MODCON to indexed
-                    if not self.change_to_indexada(cursor, uid, pol_id, {'te_auvidi': True}):
+                    if not self.change_to_indexada(cursor, uid, pol_id):
                         faileds.append(pol_id)
                     else:
                         from_periodes.append(pol_id)
@@ -265,7 +265,10 @@ class WizardChangeToIndexadaAuvidiMulti(osv.osv_memory):
             return False
 
         wz_chng_to_indx_obj = self.pool.get("wizard.change.to.indexada")
-        ctx = {"active_id": pol_id}
+        ctx = {
+            "active_id": pol_id,
+            "te_auvidi": True,
+        }
         params = {"change_type": "from_period_to_index"}
         wiz_id = wz_chng_to_indx_obj.create(cursor, uid, params, context=ctx)
         wiz = wz_chng_to_indx_obj.browse(cursor, uid, [wiz_id])[0]
