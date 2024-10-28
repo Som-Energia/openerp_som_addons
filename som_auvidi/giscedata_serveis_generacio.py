@@ -1,5 +1,9 @@
 # -*- coding: utf-8 -*-
+from __future__ import absolute_import
+
 from datetime import datetime
+
+from giscedata_serveis_generacio.giscedata_serveis_generacio import ESTATS_CONTRACTES_SERV_GEN
 
 from osv import osv, fields
 
@@ -83,10 +87,16 @@ class GiscedataServeiGeneracioPolissa(osv.osv):
             cursor, 1, [('parent_id', '=', auvidi_base_categ_id)])
 
         for sg_info in self.read(cursor, uid, ids, read_params, context=context):
-            servei_gen_id = sg_info.get['servei_generacio_id'][0]
-            polissa_id = sg_info.get['polissa_id'][0]
+            servei_gen_id = sg_info['servei_generacio_id'][0]
+            polissa_id = sg_info.get('polissa_id')
             ctx = context.copy()
             ctx.update({'prefetch': False})
+
+            if not polissa_id:
+                res[sg_info['id']] = 'vinculat'
+                continue
+            else:
+                polissa_id = polissa_id[0]
             polissa = polissa_obj.browse(cursor, uid, polissa_id, context=ctx)
 
             # Te autoconsum col.lectiu
@@ -118,15 +128,22 @@ class GiscedataServeiGeneracioPolissa(osv.osv):
                                   and polissa.mode_facturacio == 'index'
 
             new_state = 'vinculat'
-            # TODO validat NIF, s'ha d'aplicar el NIF al giscedata.servei.generacio.polissa
-            # Let's check VAT is the correct one
-            if polissa.titular.vat not in sg_info.get['polissa_id'] and \
-                    sg_info.get['polissa_id'] not in polissa.titular.vat:
-                new_state = 'pendent_incidencia'
+            # Te data_inici i aquesta és anterior o igual a avui
+            actiu_today =  sg_info.get('data_inici') and sg_info['data_inici'] <= today
 
+            # Te data_sortida i aquesta és anterior o igual a avui
+            anullat_today = sg_info.get('data_sortida') and sg_info['data_sortida'] <= today
+
+            # Let's check VAT is the correct one
+            te_nif = sg_info.get('nif') and sg_info['nif']
+            if (not te_nif or (te_nif and polissa.titular.vat not in sg_info['polissa_id']
+                               and sg_info.get['polissa_id'] not in polissa.titular.vat)):
+                new_state = 'pendent_incidencia'
             else:
                 # Mirem l'estat de la pòlissa i les validacions específiques
-                if polissa.state in ['baixa', 'cancelada']:
+                if anullat_today:
+                    new_state = 'anullat'
+                elif polissa.state in ['baixa', 'cancelada']:
                     if te_auvidi_category:
                         new_state = 'anullat'
                 elif polissa.state == 'esborrany':
@@ -135,36 +152,23 @@ class GiscedataServeiGeneracioPolissa(osv.osv):
                     else:
                         new_state = 'pendent_incidencia'
                 elif polissa.state == 'activa':
-                    if compleix_condicions and te_auvidi_category:
+                    if compleix_condicions and te_auvidi_category and actiu_today:
                         new_state = 'confirmat'
-                    elif te_auvidi_category:
+                    elif te_auvidi_category and actiu_today:
                         new_state = 'confirmat_incidencia'
                     elif compleix_condicions:
                         new_state = 'pendent'
                     else:
                         new_state = 'pendent_incidencia'
-            # new_state = 'vinculat'
-            # if 'data_inici' in sg_info and sg_info['data_inici']:
-            #     new_state = 'confirmat'
-            # if 'data_sortida' in sg_info and sg_info['data_sortida']:
-            #     if sg_info['data_sortida'] <= today:
-            #         new_state = 'anullat'
-            #     sg_posteriors_id = self.search(cursor, uid, [
-            #         ('servei_generacio_id', '=', sg_info['servei_generacio_id'][0]),
-            #         ('cups_name', '=', sg_info['cups_name']),
-            #         ('data_incorporacio', '>', sg_info['data_sortida'])
-            #     ], limit=1, order='data_incorporacio asc')
-            #     if len(sg_posteriors_id):
-            #         sg_posteriors_data = self.read(cursor, uid, sg_posteriors_id[0], read_params,
-            #                                        context=context)
-            #         data_anterior = (datetime.strptime(sg_posteriors_data['data_incorporacio'],
-            #                                            "%Y-%m-%d") - timedelta(days=1)).strftime(
-            #             "%Y-%m-%d")
-            #         # Si la data anterior a l'incorporació del nou és la sortida de l'anterior, és modificació
-            #         if data_anterior == sg_info['data_sortida']:
-            #             new_state = 'modificat'
 
             res[sg_info['id']] = new_state
         return res
+
+    _columns = {
+        'state': fields.function(
+            ff_get_state, method=True, type='selection',
+            selection=ESTATS_CONTRACTES_SERV_GEN, string='Estat'
+        ),
+    }
 
 GiscedataServeiGeneracioPolissa()
