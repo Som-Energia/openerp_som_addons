@@ -13,6 +13,7 @@
                         <field name="id" />
                         <field name="cups_id" on_change="onchange_cups_id(cups_id)" />
                         <field name="start_date" />
+                        <field name="inscription_date" />
                         <field name="end_date" />
                         <field name="gurb_id" />
                         <field name="beta_kw" />
