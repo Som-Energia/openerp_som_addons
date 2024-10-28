@@ -139,7 +139,12 @@ class GiscedataSwitching(osv.osv):
                 cursor, uid, pas_id, {"notificacio_pendent": False}, context=context)
             self.historize_msg(cursor, uid, sw.id, msg, context=context)
             sw_obj.write(cursor, uid, sw_id, {"state": "done"}, context=context)
-            return _("Cas importat correctament.")
+            if sw.step_id.name == "05" and sw.proces_id.name == "M1":
+                return super(GiscedataSwitching, self).importar_xml_post_hook(
+                    cursor, uid, sw_id, context=context
+                )
+            else:
+                return _("Cas importat correctament.")
         else:
             return super(GiscedataSwitching, self).importar_xml_post_hook(
                 cursor, uid, sw_id, context=context
