@@ -32,11 +32,9 @@ class WizardChangeToIndexadaAuvidiMulti(osv.osv_memory):
                 if not md:
                     # Periods without MODCON pending to indexed --> modcon pending Indexed + auvidi
                     # Create the MODCON to indexed
-                    if not self.change_to_indexada(cursor, uid, pol_id):
+                    if not self.change_to_indexada(cursor, uid, pol_id, {'te_auvidi': True}):
                         faileds.append(pol_id)
                     else:
-                        md = self.get_last_pending_modcon(cursor, uid, pol_id)
-                        self.set_auvidi(cursor, uid, md.id)
                         from_periodes.append(pol_id)
                 else:
                     if md.te_auvidi:
