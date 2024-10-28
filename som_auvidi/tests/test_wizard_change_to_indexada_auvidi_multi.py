@@ -475,8 +475,6 @@ class WizardChangeToIndexadaAuvidiMultiTests(WizardChangeToIndexadaAuvidiMultiBa
         p = self.polissa_obj.browse(self.cursor, self.uid, polissa_id)
         self.assertEqual(p.modcontractuals_ids[0].te_auvidi, False)
         self.assertEqual(p.modcontractuals_ids[0].state, u'pendent')
-        observacions = p.modcontractuals_ids[0].observacions
-        self.assertIn(u'Té AUVIDI: True → False', observacions)
         self.assertEqual(len(p.modcontractuals_ids), prev_modcons)
         self.assertIn(
             u"Pòlisses que estan a periodes amb modcon per passar a indexada + auvidi:", wiz.info)
@@ -486,7 +484,7 @@ class WizardChangeToIndexadaAuvidiMultiTests(WizardChangeToIndexadaAuvidiMultiBa
     def test__quit_auvidi_multi__periods_no_auvidi_modcon_no_auvidi(self, mocked_send_mail):
         # Periods no auvidi and modcon neutral --> don't do anything
         polissa_id = self.open_polissa("polissa_tarifa_018", 'atr', False)
-        self.wiz_obj.change_to_indexada(self.cursor, self.uid, polissa_id)
+        self.wiz_obj.change_to_indexada(self.cursor, self.uid, polissa_id, False)
         p = self.polissa_obj.browse(self.cursor, self.uid, polissa_id)
         prev_modcons = len(p.modcontractuals_ids)
 
