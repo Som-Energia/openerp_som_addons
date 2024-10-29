@@ -396,5 +396,11 @@
             <field name="active">True</field>
             <field name="configuracio_id" ref="anselmo_conf"/>
         </record>
+        <!-- Registre general -->
+        <record model="som.crawlers.task" id="carregar_registre_general">
+            <field name="name">Carregar impostos al Registre General</field>
+            <field name="active">True</field>
+            <field name="configuracio_id" ref="registregeneral_conf"/>
+        </record>
     </data>
 </openerp>

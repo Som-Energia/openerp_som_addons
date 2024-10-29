@@ -66,7 +66,6 @@ class WizardCreacioRemesaPagamentTaxes(osv.osv_memory):
         )
         invoiced_states = self.pool.get(
             'giscedata.facturacio.extra').get_states_invoiced(cursor, uid)
-        invoiced_states.append('draft')
         taxes_invoicing_report = MunicipalTaxesInvoicingReport(
             cursor, uid, start_date, end_date, False, False, False,
             polissa_categ_imu_ex_id, False, invoiced_states,
@@ -99,7 +98,7 @@ class WizardCreacioRemesaPagamentTaxes(osv.osv_memory):
             config_id = config_obj.search(cursor, uid, [('municipi_id', '=', municipi_id)])[0]
             config_data = config_obj.read(cursor, uid, config_id, ['partner_id', 'bank_id'])
             if not config_data['bank_id']:
-                linia_no_creada.append(config_data['partner_id'][1])
+                linia_no_creada.append(config_data['name'])
                 continue
 
             account_id = wizard.account.id

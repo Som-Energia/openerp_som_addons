@@ -146,8 +146,11 @@ class SomCrawlersTask(osv.osv):
         resultat_correcte = False
         for taskStep in task_steps_list:
             resultat = "[" + taskStep.name + "]: "
+            if 'nom_municipi' in context:
+                resultat += "[{}] ".format(context['nom_municipi'])
             try:
-                resultat += classTaskStep.executar_steps(cursor, uid, taskStep.id, result_id)
+                resultat += classTaskStep.executar_steps(cursor,
+                                                         uid, taskStep.id, result_id, context)
                 resultat_correcte = True
             except exceptions.NoResultsException as e:
                 resultat += str(e)
