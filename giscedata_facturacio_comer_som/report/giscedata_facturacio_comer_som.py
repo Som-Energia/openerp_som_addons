@@ -5,6 +5,7 @@ from report import report_sxw
 from tools import config
 import pooler
 from datetime import datetime
+import base64
 
 
 class report_webkit_html(report_sxw.rml_parse):
@@ -34,6 +35,106 @@ class FacturaReportSomWebkitParserHTML(webkit_report.WebKitParser):
             name, table, rml, parser, header, store
         )
 
+    def _get_filename(self, fact_number):
+        return 'STORED_{}.pdf'.format(fact_number)
+
+    def _search_stored(self, cursor, uid, ids, data, context=None):
+        if len(ids) != 1:
+            return False, ''
+
+        if context is None:
+            context = {}
+
+        if context.get("no_store", False):
+            return False, ''
+
+        fact_id = ids[0]
+        pool = pooler.get_pool(cursor.dbname)
+        fact_obj = pool.get("giscedata.facturacio.factura")
+        fact_number = fact_obj.read(cursor, uid, fact_id, ['number'])['number']
+        if not fact_number:
+            return False, ''
+
+        filename = self._get_filename(fact_number)
+        att_ids = self._exists_file(cursor, uid, filename, fact_id, context=context)
+        if att_ids:
+            return True, self._recover_file(cursor, uid, att_ids[0], context=context)
+
+        old_ids = self._exists_mailbox_file(cursor, uid, fact_number, context=context)
+        if old_ids:
+            return True, self._recover_file(cursor, uid, old_ids[0], context=context)
+
+        return False, ''
+
+    def _store(self, cursor, uid, ids, res, context=None):
+        if len(ids) != 1:
+            return False
+
+        if context is None:
+            context = {}
+
+        if context.get("no_store", False):
+            return False
+
+        fact_id = ids[0]
+        pool = pooler.get_pool(cursor.dbname)
+        fact_obj = pool.get("giscedata.facturacio.factura")
+        fact_number = fact_obj.read(cursor, uid, fact_id, ['number'])['number']
+        # TODO discard documents
+        if not fact_number:
+            return False
+
+        file_name = self._get_filename(fact_number)
+        att_ids = self._exists_file(cursor, uid, file_name, fact_id, context=context)
+        if not att_ids:
+            self._store_file(cursor, uid, res[0], file_name, fact_id, context=context)
+        return True
+
+    def _exists_mailbox_file(self, cursor, uid, fact_number, context=None):
+        pool = pooler.get_pool(cursor.dbname)
+        att_obj = pool.get("ir.attachment")
+        att_ids = att_obj.search(cursor, uid, [
+            ('name', 'like', '%{}%'.format(fact_number)),
+            ('res_model', '=', 'poweremail.mailbox'),
+            ('datas_fname', '=', '{}.pdf'.format(fact_number)),
+            ('link', '=', None),
+        ], context=context)
+        return att_ids
+
+    def _exists_file(self, cursor, uid, file_name, fact_id, context=None):
+        pool = pooler.get_pool(cursor.dbname)
+        att_obj = pool.get("ir.attachment")
+        att_ids = att_obj.search(cursor, uid, [
+            ('name', '=', file_name),
+            ('res_model', '=', 'giscedata.facturacio.factura'),
+            ('res_id', '=', fact_id),
+        ], context=context)
+        return att_ids
+
+    def _store_file(self, cursor, uid, content, file_name, fact_id, context=None):
+        pool = pooler.get_pool(cursor.dbname)
+        att_obj = pool.get("ir.attachment")
+        b64_content = base64.b64encode(content)
+        attachment = {
+            "name": file_name,
+            "datas": b64_content,
+            "datas_fname": file_name,
+            "res_model": "giscedata.facturacio.factura",
+            "res_id": fact_id,
+        }
+        with pooler.get_db(cursor.dbname).cursor() as w_cursor:
+            attachment_id = att_obj.create(
+                w_cursor, uid, attachment, context=context
+            )
+        return attachment_id
+
+    def _recover_file(self, cursor, uid, att_id, context=None):
+        pool = pooler.get_pool(cursor.dbname)
+        att_obj = pool.get("ir.attachment")
+        b64_content = att_obj.read(cursor, uid, att_id, ["datas"])["datas"]
+        content = base64.b64decode(b64_content)
+        return [content, u'pdf']
+
     def create(self, cursor, uid, ids, data, context=None):
         """
         To sign PDF of certain factures
@@ -44,6 +145,10 @@ class FacturaReportSomWebkitParserHTML(webkit_report.WebKitParser):
         :param context:
         :return:
         """
+
+        ok, res = self._search_stored(cursor, uid, ids, data, context=context)
+        if ok:
+            return res
 
         if context is None:
             context = {}
@@ -92,6 +197,7 @@ class FacturaReportSomWebkitParserHTML(webkit_report.WebKitParser):
             res = super(FacturaReportSomWebkitParserHTML, self).create(
                 cursor, uid, ids, data, context=context
             )
+        self._store(cursor, uid, ids, res, context=context)
         return res
 
 
