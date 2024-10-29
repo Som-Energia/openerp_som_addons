@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 from osv import osv
-from tools import decimal_round
 
 
 class GiscedataFacturacioFacturador(osv.osv):
@@ -93,7 +92,7 @@ class GiscedataFacturacioFacturador(osv.osv):
             if has_igic:
                 # We can't asume there'll be only one IGIC so we calculate it here directly
                 igic_subtotal = line.price_subtotal * has_igic[0]
-                igic_subtotal = decimal_round(igic_subtotal, '.01')
+                igic_subtotal = round(igic_subtotal, 2)
                 igic_amount += igic_subtotal
             if other_taxes:
                 # We asume there's only one IESE and only one VAT
@@ -118,11 +117,11 @@ class GiscedataFacturacioFacturador(osv.osv):
             # Mirem si s'ha de fer el mínim segons article 99
             calcul = total_energia / 1000 * factor
             import_iese = iese_base * iese_quota
-            import_iese = decimal_round(import_iese, '.01')
+            import_iese = round(import_iese, 2)
             iese_amount = max(calcul, import_iese)
         if iva_base:
             iva_amount = (iva_base + iese_amount) * iva_quota
-            iva_amount = decimal_round(iva_amount, '.01')
+            iva_amount = round(iva_amount, 2)
 
         max_descompte += iese_amount + iva_amount + igic_amount
 
