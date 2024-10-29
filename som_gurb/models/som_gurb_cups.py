@@ -239,6 +239,7 @@ class SomGurbCups(osv.osv):
 
         gurb_o = self.pool.get("som.gurb")
         wiz_service_o = self.pool.get("wizard.create.service")
+        service_o = self.pool.get("giscedata.facturacio.services")
 
         read_vals = ["cups_id", "gurb_id", "owner_cups", "quota_product_id"]
 
@@ -279,8 +280,18 @@ class SomGurbCups(osv.osv):
 
         wiz_id = wiz_service_o.create(cursor, uid, creation_vals, context=context)
 
-        context['active_ids'] = [pol_id]
+        context["active_ids"] = [pol_id]
         wiz_service_o.create_services(cursor, uid, [wiz_id], context=context)
+
+        search_params = [
+            ("polissa_id", "=", pol_id),
+            ("data_inici", "=", data_inici),
+            ("llista_preus", "=", pricelist_id),
+            ("producte", "=", quota_product_id),
+        ]
+
+        service_id = service_o.search(cursor, uid, search_params, context=context)
+        service_o.write(cursor, uid, service_id, {"forcar_nom": "product"}, context=context)
 
     def unsubscribe_gurb_cups(self, cursor, uid, gurb_cups_id, context=None):
         if context is None:
@@ -487,8 +498,9 @@ class SomGurbCups(osv.osv):
 
     _columns = {
         "active": fields.boolean("Actiu"),
-        "start_date": fields.date("Data activació GURB"),
-        "end_date": fields.date("Data sortida GURB",),
+        "start_date": fields.date("Data activació al GURB"),
+        "end_date": fields.date("Data sortida GURB"),
+        "inscription_date": fields.date("Data d'inscripció al GURB"),
         "gurb_id": fields.many2one("som.gurb", "GURB", required=True, ondelete="cascade"),
         "cups_id": fields.many2one("giscedata.cups.ps", "CUPS", required=True),
         "polissa_id": fields.many2one("giscedata.polissa", "Pòlissa", readonly=False),

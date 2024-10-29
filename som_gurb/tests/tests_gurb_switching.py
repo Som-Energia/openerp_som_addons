@@ -630,7 +630,10 @@ class TestsGurbSwitching(TestsGurbBase):
         self.assertEqual(d1.notificacio_pendent, False)
 
     @mock.patch('poweremail.poweremail_template.poweremail_templates.generate_mail')
-    def test_do_close_m1_05_gurb_category(self, mocked_function):
+    @mock.patch(
+        'giscedata_switching.giscedata_switching.GiscedataSwitchingActivacionsConfig.get_activation_method'  # noqa: F821, E501
+    )
+    def test_do_close_m1_05_gurb_category(self, get_activation_method, generate_mail):
         """
         Test that self-consumption M1"s are closed when
         contract does have GURB category
@@ -640,7 +643,8 @@ class TestsGurbSwitching(TestsGurbBase):
         step_obj = self.openerp.pool.get("giscedata.switching.m1.01")
         sw_step_header_obj = self.openerp.pool.get("giscedata.switching.step.header")
 
-        mocked_function.return_value = True
+        generate_mail.return_value = True
+        get_activation_method.return_value = ['activar_polissa_from_m1']
 
         m1_02_xml_path = get_module_resource(
             "giscedata_switching", "tests", "fixtures", "m102_new.xml"
@@ -663,7 +667,8 @@ class TestsGurbSwitching(TestsGurbBase):
         self.update_polissa_distri(self.txn, pol_ref='polissa_tarifa_018')
         self.activar_polissa_CUPS(set_gurb_category=True, context={
                                   "polissa_xml_id": "polissa_tarifa_018"})
-        cups = pol_obj.browse(self.cursor, self.uid, contract_id).cups.name
+        pol = pol_obj.browse(self.cursor, self.uid, contract_id)
+        cups = pol.cups.name
 
         step_id = self.create_case_and_step(
             self.cursor, self.uid, contract_id, "M1", "01"

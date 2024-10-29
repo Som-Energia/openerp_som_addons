@@ -139,7 +139,12 @@ class GiscedataSwitching(osv.osv):
                 cursor, uid, pas_id, {"notificacio_pendent": False}, context=context)
             self.historize_msg(cursor, uid, sw.id, msg, context=context)
             sw_obj.write(cursor, uid, sw_id, {"state": "done"}, context=context)
-            return _("Cas importat correctament.")
+            if sw.step_id.name == "05" and sw.proces_id.name == "M1":
+                return super(GiscedataSwitching, self).importar_xml_post_hook(
+                    cursor, uid, sw_id, context=context
+                )
+            else:
+                return _("Cas importat correctament.")
         else:
             return super(GiscedataSwitching, self).importar_xml_post_hook(
                 cursor, uid, sw_id, context=context
@@ -370,3 +375,31 @@ class GiscedataSwitchingD1_02(osv.osv):
 
 
 GiscedataSwitchingD1_02()
+
+
+class GiscedataSwitchingHelpers(osv.osv):
+    _inherit = 'giscedata.switching.helpers'
+
+    def activar_polissa_from_m1(self, cursor, uid, sw_id, context=None):
+        if context is None:
+            context = {}
+
+        gurb_obj = self.pool.get("som.gurb")
+        sw_obj = self.pool.get("giscedata.switching")
+
+        super(GiscedataSwitchingHelpers, self).activar_polissa_from_m1(
+            cursor, uid, sw_id, context=context
+        )
+
+        sw = sw_obj.browse(cursor, uid, sw_id, context=context)
+        if (
+            sw.proces_id.name == "M1"
+            and sw.step_id.name == "05"
+            and _contract_has_gurb_category(cursor, uid, self.pool, sw.cups_polissa_id.id)
+        ):
+            gurb_obj.activate_gurb_from_m1_05(
+                cursor, uid, sw_id, sw.step_ids[-1:].pas_id[0].data_activacio, context=context
+            )
+
+
+GiscedataSwitchingHelpers()
