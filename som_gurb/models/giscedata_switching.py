@@ -387,7 +387,7 @@ class GiscedataSwitchingHelpers(osv.osv):
         gurb_obj = self.pool.get("som.gurb")
         sw_obj = self.pool.get("giscedata.switching")
 
-        super(GiscedataSwitchingHelpers, self).activar_polissa_from_m1(
+        res = super(GiscedataSwitchingHelpers, self).activar_polissa_from_m1(
             cursor, uid, sw_id, context=context
         )
 
@@ -397,9 +397,16 @@ class GiscedataSwitchingHelpers(osv.osv):
             and sw.step_id.name == "05"
             and _contract_has_gurb_category(cursor, uid, self.pool, sw.cups_polissa_id.id)
         ):
+            step_obj = self.pool.get("giscedata.switching.m1.05")
+            pas_id = int(sw.step_ids[-1].pas_id.split(",")[1])
+
+            data_activacio = step_obj.read(
+                cursor, uid, pas_id, ["data_activacio"])["data_activacio"]
+
             gurb_obj.activate_gurb_from_m1_05(
-                cursor, uid, sw_id, sw.step_ids[-1:].pas_id[0].data_activacio, context=context
+                cursor, uid, sw_id, data_activacio, context=context
             )
+        return res
 
 
 GiscedataSwitchingHelpers()
