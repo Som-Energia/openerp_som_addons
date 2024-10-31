@@ -16,8 +16,8 @@ class GiscedataServeiGeneracio(osv.osv):
             imd_obj = self.pool.get('ir.model.data')
             categ_obj = self.pool.get('giscedata.polissa.category')
 
-            new_name = "[AUVIDI] " + vals.get('name')
-            new_code = "AVD" + ''.join([x[0] for x in vals.get('name').split()]).upper()
+            new_name = "[AUVI] " + vals.get('name')
+            new_code = "AUVI" + ''.join([x[0] for x in vals.get('name').split()]).upper()
             auvidi_categ_id = imd_obj.get_object_reference(
                 cursor, uid, 'som_auvidi', 'polissa_category_auvidi_base'
             )[1]
