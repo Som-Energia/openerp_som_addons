@@ -38,6 +38,7 @@ def up(cursor, installed_version):
             'code': category_code,
         })
 
+
 def down(cursor, installed_version):
     pass
 
