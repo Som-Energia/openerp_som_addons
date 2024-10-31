@@ -667,8 +667,8 @@ class TestsGurbSwitching(TestsGurbBase):
         self.update_polissa_distri(self.txn, pol_ref='polissa_tarifa_018')
         self.activar_polissa_CUPS(set_gurb_category=True, context={
                                   "polissa_xml_id": "polissa_tarifa_018"})
-        pol = pol_obj.browse(self.cursor, self.uid, contract_id)
-        cups = pol.cups.name
+
+        cups = pol_obj.browse(self.cursor, self.uid, contract_id).cups.name
 
         step_id = self.create_case_and_step(
             self.cursor, self.uid, contract_id, "M1", "01"
@@ -722,12 +722,15 @@ class TestsGurbSwitching(TestsGurbBase):
         self.assertEqual(len(res), 1)
 
         m1 = sw_obj.browse(self.cursor, self.uid, res[0])
+        pol = pol_obj.browse(self.cursor, self.uid, contract_id)
         self.assertEqual(m1.proces_id.name, "M1")
         self.assertEqual(m1.step_id.name, "05")
         self.assertEqual(m101.solicitud_autoconsum, "S")
 
         self.assertEqual(m1.state, "done")
         self.assertEqual(m1.notificacio_pendent, False)
+
+        self.assertEqual(pol.autoconsumo, "41")
 
     def test_notify_m1_03_gurb_category(self):
         pol_obj = self.openerp.pool.get("giscedata.polissa")
