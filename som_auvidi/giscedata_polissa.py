@@ -9,7 +9,7 @@ class GiscedataPolissa(osv.osv):
 
     _columns = {
         'te_auvidi': fields.boolean(
-            'Té AUVIDI',
+            'Té Autoconsum Virtual',
             readonly=True,
             states={
                 'esborrany': [('readonly', False)],
@@ -93,7 +93,7 @@ class GiscedataPolissaModcontractual(osv.osv):
         return res
 
     _columns = {
-        'te_auvidi': fields.boolean('Té AUVIDI'),
+        'te_auvidi': fields.boolean('Té Autoconsum Virtual'),
     }
 
 
