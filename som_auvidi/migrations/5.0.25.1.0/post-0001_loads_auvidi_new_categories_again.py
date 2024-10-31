@@ -9,6 +9,10 @@ def up(cursor, installed_version):
     if not installed_version:
         return
 
+    from tools import config
+    if config.updating_all:
+        return
+
     uid = 1
     pool = pooler.get_pool(cursor.dbname)
     category_obj = pool.get('giscedata.polissa.category')
@@ -31,7 +35,7 @@ def up(cursor, installed_version):
 
         category_obj.write(cursor, uid, category_id, {
             'name': category_name,
-            'cade': category_code,
+            'code': category_code,
         })
 
 def down(cursor, installed_version):
