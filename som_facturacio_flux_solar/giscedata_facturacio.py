@@ -115,7 +115,7 @@ class GiscedataFacturacioFacturador(osv.osv):
                 total_energia += linia.quantity
 
             # Mirem si s'ha de fer el mínim segons article 99
-            calcul = total_energia / 1000 * factor
+            calcul = round(total_energia / 1000 * factor, 2)
             import_iese = iese_base * iese_quota
             import_iese = round(import_iese, 2)
             iese_amount = max(calcul, import_iese)
