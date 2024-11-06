@@ -93,7 +93,7 @@ class GiscedataServeiGeneracioPolissa(osv.osv):
             ctx.update({'prefetch': False})
 
             # Te data_inici i aquesta és anterior o igual a avui
-            actiu_today =  sg_info.get('data_inici') and sg_info['data_inici'] <= today
+            actiu_today = sg_info.get('data_inici') and sg_info['data_inici'] <= today
 
             # Te data_sortida i aquesta és anterior o igual a avui
             anullat_today = sg_info.get('data_sortida') and sg_info['data_sortida'] <= today
@@ -107,9 +107,14 @@ class GiscedataServeiGeneracioPolissa(osv.osv):
                     ('data_incorporacio', '>', sg_info['data_sortida'])
                 ], limit=1, order='data_incorporacio asc')
                 if len(sg_posteriors_id):
-                    sg_posteriors_data = self.read(cursor, uid, sg_posteriors_id[0], read_params, context=context)
-                    data_anterior = (datetime.strptime(sg_posteriors_data['data_incorporacio'], "%Y-%m-%d") - timedelta(days=1)).strftime("%Y-%m-%d")
-                    # Si la data anterior a l'incorporació del nou és la sortida de l'anterior, és modificació
+                    sg_posteriors_data = self.read(
+                        cursor, uid, sg_posteriors_id[0], read_params, context=context
+                    )
+                    data_anterior = (datetime.strptime(
+                        sg_posteriors_data['data_incorporacio'], "%Y-%m-%d"
+                    ) - timedelta(days=1)).strftime("%Y-%m-%d")
+                    # Si la data anterior a l'incorporació del nou és la sortida de l'anterior,
+                    # és modificació
                     if data_anterior == sg_info['data_sortida']:
                         new_state = 'modificat'
 
@@ -145,9 +150,11 @@ class GiscedataServeiGeneracioPolissa(osv.osv):
             te_generationkwh = polissa.te_assignacio_gkwh
 
             # Condicions especifiques
-            compleix_condicions = not len(altres_auvidis) and not len(matching_category_ids) \
-                                  and not te_auto_collectiu and not te_generationkwh \
-                                  and polissa.mode_facturacio == 'index'
+            compleix_condicions = (not len(altres_auvidis)
+                                   and not len(matching_category_ids)
+                                   and not te_auto_collectiu
+                                   and not te_generationkwh
+                                   and polissa.mode_facturacio == 'index')
 
             # Let's check VAT is the correct one
             te_nif = sg_info.get('nif') and sg_info['nif']
@@ -185,5 +192,6 @@ class GiscedataServeiGeneracioPolissa(osv.osv):
             selection=ESTATS_CONTRACTES_SERV_GEN, string='Estat'
         ),
     }
+
 
 GiscedataServeiGeneracioPolissa()
