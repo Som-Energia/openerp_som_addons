@@ -42,7 +42,7 @@ class FacturaReportSomWebkitParserHTML(webkit_report.WebKitParser):
         storer = InvoicePdfStorer(cursor, uid, context)
         for f_id in ids:
             if not storer.search_stored_and_append(f_id):
-                res = self.sub_create(cursor, uid, f_id, data, context=context)
+                res = self.sub_create(cursor, uid, [f_id], data, context=context)
                 storer.append_and_store(f_id, res)
 
         return storer.retrieve()

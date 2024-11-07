@@ -8,7 +8,7 @@ class InvoicePdfStorer():
     def __init__(self, cursor, uid, context):
         self.cursor = cursor
         self.uid = uid
-        self.pooler = pooler.get_pool(cursor.dbname)
+        self.pool = pooler.get_pool(cursor.dbname)
         self.context = {} if context is None else context
         self.result = []
         self.fact_obj = self.pool.get("giscedata.facturacio.factura")
@@ -45,14 +45,10 @@ class InvoicePdfStorer():
             return self.result[0]
         # ToDo: pdf concatenation if n results
 
-    def get_storable_fact_number(self, ids):
-        if len(ids) != 1:
-            return False
-
+    def get_storable_fact_number(self, fact_id):
         if self.context.get("regenerate_pdf", False):
             return False
 
-        fact_id = ids[0]
         fact_number = self.fact_obj.read(
             self.cursor,
             self.uid,
