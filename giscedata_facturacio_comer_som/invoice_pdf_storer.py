@@ -13,22 +13,21 @@ class InvoicePdfStorer():
         self.result = []
         self.fact_obj = self.pool.get("giscedata.facturacio.factura")
         self.att_obj = self.pool.get("ir.attachment")
+        self.mailb_obj = self.pool.get("poweremail.mailbox")
 
     def search_stored_and_append(self, fact_id):
         fact_number = self.get_storable_fact_number(fact_id)
         if not fact_number:
             return False
 
-        found = False
-        att_id = None
-
-        # ToDo: search it in the mails
-        if not found:
-            # ToDo: search it in the attachements
-            if not found:
+        file_name = self.get_store_filename(fact_number)
+        att_ids = self.exists_file(file_name, fact_id)
+        if not att_ids:
+            att_ids = self.exists_mailbox_file(fact_id)
+            if not att_ids:
                 return False
 
-        result = self.read_file(att_id)
+        result = self.read_file(att_ids[0])
         self.result.append(result)
         return True
 
@@ -49,17 +48,21 @@ class InvoicePdfStorer():
         if self.context.get("regenerate_pdf", False):
             return False
 
-        fact_number = self.fact_obj.read(
+        fact_data = self.fact_obj.read(
             self.cursor,
             self.uid,
             fact_id,
-            ['number'],
+            ['number', 'state'],
             context=self.context
-        )['number']
+        )
+        fact_state = fact_data['state']
+        if fact_state not in ['open', 'paid']:
+            return False
+
+        fact_number = fact_data['number']
         if not fact_number:
             return False
 
-        # ToDo: add more contitions
         return fact_number
 
     def get_store_filename(self, fact_number):
@@ -103,3 +106,23 @@ class InvoicePdfStorer():
         )["datas"]
         content = base64.b64decode(b64_content)
         return [content, u'pdf']
+
+    def exists_mailbox_file(self, fact_id):
+        mail = self.fact_obj.read(
+            self.cursor,
+            self.uid,
+            fact_id,
+            ['enviat_mail_id'],
+            context=self.context,
+        )['enviat_mail_id']
+
+        if not mail:
+            return []
+
+        return self.mailb_obj.read(
+            self.cursor,
+            self.uid,
+            mail[0],
+            ['pem_attachments_ids'],
+            context=self.context,
+        )['pem_attachments_ids']
