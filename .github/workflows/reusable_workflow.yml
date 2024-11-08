@@ -133,13 +133,13 @@ jobs:
           cd $ROOT_DIR_SRC
           pip install -r $ROOT_DIR_SRC/erp/requirements-dev.txt
           pip install -r $ROOT_DIR_SRC/erp/requirements.txt
+          pip install somutils
 
       - name: Install dependecies for Python 3
         if: matrix.python-version != '2.7'
         run: |
           export ROOT_DIR_SRC=${{github.workspace}}/..
           . $ROOT_DIR_SRC/venv/bin/activate
-          pip install somutils
           pip install dm.xmlsec.binding
 
       - name: Install dependencies for Python 2.7
@@ -147,9 +147,6 @@ jobs:
         run: |
           export ROOT_DIR_SRC=${{github.workspace}}/..
           . $ROOT_DIR_SRC/venv/bin/activate
-          git clone --depth 1 https://github.com/Som-Energia/somenergia-utils.git -b py2 $ROOT_DIR_SRC/somenergia-utils
-          cd $ROOT_DIR_SRC/somenergia-utils
-          pip install -e . || "Not installing somenergia-utils Python package"
           pip install "dm.xmlsec.binding<=1.3.2"
 
       - name: Link Addons
