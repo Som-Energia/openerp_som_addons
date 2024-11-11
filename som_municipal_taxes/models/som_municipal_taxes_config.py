@@ -30,7 +30,7 @@ class SomMunicipalTaxesConfig(osv.osv):
         'active': fields.boolean('Active'),
         'payment': fields.selection([("quarter", "Trimestral"), ("year", "Anual")],
                                     "Periode de pagament"),
-        'lang': fields.selection([("ca_ES", "Català"), ("es_ES", "Castellà")]),
+        'lang': fields.selection([("ca_ES", "Català"), ("es_ES", "Castellà")], "Idioma"),
     }
 
     def generate_municipal_taxes_file_path(self, cr, uid, ids, municipi_id, context=None):
