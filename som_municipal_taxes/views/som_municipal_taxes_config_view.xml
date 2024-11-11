@@ -12,6 +12,8 @@
                     <field name="municipi_id"/>
                     <field name="partner_id" on_change="on_change_parnter_get_bank(partner_id)"/>
                     <field name="bank_id" domain="[('partner_id', '=', partner_id)]"/>
+                    <field name="payment"/>
+                    <field name="lang"/>
                     <group colspan="2" col="2" string="Opcions">
                         <field name="payment_order"/>
                         <field name="red_sara"/>
@@ -33,6 +35,8 @@
                     <field name="payment_order" select="1"/>
                     <field name="red_sara" select="1"/>
                     <field name="active" select="1"/>
+                    <field name="lang" select="1"/>
+                    <field name="payment" select="1"/>
                 </tree>
             </field>
         </record>

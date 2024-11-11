@@ -7,6 +7,7 @@ from base_extended.base_extended import NoDependency
 from giscedata_municipal_taxes.taxes.municipal_taxes_invoicing import MunicipalTaxesInvoicingReport
 
 ANUAL_VAL = 5
+TAX_VALUE = 1.5
 
 
 class SomMunicipalTaxesConfig(osv.osv):
@@ -29,7 +30,7 @@ class SomMunicipalTaxesConfig(osv.osv):
         'active': fields.boolean('Active'),
         'payment': fields.selection([("quarter", "Trimestral"), ("year", "Anual")],
                                     "Periode de pagament"),
-        'lang': fields.selection([("ca_ES", "Català"), ("es_ES", "Castellà")]),
+        'lang': fields.selection([("ca_ES", "Català"), ("es_ES", "Castellà")], "Idioma"),
     }
 
     def generate_municipal_taxes_file_path(self, cr, uid, ids, municipi_id, context=None):
@@ -42,7 +43,7 @@ class SomMunicipalTaxesConfig(osv.osv):
         invoiced_states = self.pool.get(
             'giscedata.facturacio.extra').get_states_invoiced(cr, uid)
         taxes_invoicing_report = MunicipalTaxesInvoicingReport(
-            cr, uid, start_date, end_date, False, "xlsx", False,
+            cr, uid, start_date, end_date, TAX_VALUE, "xlsx", False,
             polissa_categ_imu_ex_id, False, invoiced_states,
             context=context
         )
