@@ -116,14 +116,14 @@ class GiscedataFacturacioFacturador(osv.osv):
 
             # Mirem si s'ha de fer el mínim segons article 99
             calcul = round(total_energia / 1000 * factor, 2)
-            import_iese = iese_base * iese_quota
+            import_iese = round(iese_base, 2) * iese_quota
             import_iese = round(import_iese, 2)
             iese_amount = max(calcul, import_iese)
         if iva_base:
-            iva_amount = (iva_base + iese_amount) * iva_quota
+            iva_amount = (round(iva_base, 2) + iese_amount) * iva_quota
             iva_amount = round(iva_amount, 2)
 
-        max_descompte += iese_amount + iva_amount + igic_amount
+        max_descompte += round(iese_amount + iva_amount + igic_amount, 2)
 
         return linies_utilitzades_ids, max_descompte
 
