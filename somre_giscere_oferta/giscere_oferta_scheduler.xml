@@ -21,4 +21,11 @@
             <field name="description">Indica si cal comunicar via e-mail del resultat de l'automatisme d'OMIE de Representació.</field>
         </record>
     </data>
+    <data noupdate="1">
+        <record model="res.config" id="representacio_auto_oferta_n_days" forcecreate="1">
+            <field name="name">representacio_auto_oferta_n_days</field>
+            <field name="value">1</field>
+            <field name="description">Indica el nombre de dies a futur pels quals es genera i publica oferta a mercat.</field>
+        </record>
+    </data>
 </openerp>
