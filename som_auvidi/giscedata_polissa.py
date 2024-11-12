@@ -98,3 +98,4 @@ class GiscedataPolissaModcontractual(osv.osv):
 
 
 GiscedataPolissaModcontractual()
+
