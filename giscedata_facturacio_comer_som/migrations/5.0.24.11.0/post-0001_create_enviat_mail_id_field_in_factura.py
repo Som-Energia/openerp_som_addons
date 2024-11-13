@@ -6,20 +6,42 @@ from oopgrade.oopgrade import add_columns_fk, column_exists, load_data
 from tqdm import tqdm
 
 
-def search_email(pool, cursor, uid, fact_id, fact_number, sent_date=None):
+def search_email(pool, cursor, uid, fact_id, fact_number, sent_date):
     mail_obj = pool.get("poweremail.mailbox")
 
     query = [
-        ('pem_subject', 'like', '%{}%'.format(fact_number)),
         ('folder', '=', 'sent'),
         ('reference', '=', 'giscedata.facturacio.factura,{}'.format(fact_id)),
+        ('date_mail', '=', sent_date),
     ]
-    if sent_date:
-        query.append(
-            ('date_mail', '=', sent_date)
-        )
 
-    return mail_obj.search(cursor, uid, query)
+    subjects = [
+        u'Factura XX',
+        u'Som Energia: Factura XX',
+        u'Factura pagada XX',
+        u'Factura electricitat XX',
+        u'Factura electricidad XX',
+        u'Reenviament XX (adjunt correcte) / Reenvío XX (adjunto correcto)',
+        u'Reenvío de factura XX',
+        u'Reenviament Factura XX',
+        u'Reenvío Factura XX',
+    ]
+
+    # Let's try the fastest ones
+    for subject in subjects:
+        full_subject = subject.replace("XX", fact_number)
+        mail_ids = mail_obj.search(
+            cursor, uid,
+            [('pem_subject', '=', full_subject)] + query
+        )
+        if mail_ids:
+            return mail_ids
+
+    # The slowest one
+    return mail_obj.search(
+        cursor, uid,
+        [('pem_subject', 'like', '%{}%'.format(fact_number))] + query
+    )
 
 
 def update_field(pool, cursor, uid, fact_id):
@@ -29,9 +51,6 @@ def update_field(pool, cursor, uid, fact_id):
 
     mail_ids = search_email(pool, cursor, uid, fact_id,
                             fact_data['number'], fact_data['enviat_data'])
-    if not mail_ids:
-        mail_ids = search_email(pool, cursor, uid, fact_id, fact_data['number'])
-
     if mail_ids:
         fact_obj.write(cursor, uid, fact_id, {'enviat_mail_id': mail_ids[0]})
 
