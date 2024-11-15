@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 import logging
-import pooler
 from tools import config
 from oopgrade.oopgrade import add_columns_fk, column_exists, load_data, load_data_records
 
@@ -10,9 +9,6 @@ def up(cursor, installed_version):
         return
 
     logger = logging.getLogger('openerp.migration')
-
-    logger.info("Creating pooler")
-    pooler.get_pool(cursor.dbname)
 
     logger.info("Create enviat_mail_id column  in giscedata_facturacio_factura")
     if not column_exists(cursor, 'giscedata_facturacio_factura', 'enviat_mail_id'):
