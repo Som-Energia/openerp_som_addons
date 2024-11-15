@@ -2,7 +2,7 @@
 import logging
 import pooler
 from tools import config
-from oopgrade.oopgrade import add_columns_fk, column_exists, load_data
+from oopgrade.oopgrade import add_columns_fk, column_exists, load_data, load_data_records
 from tqdm import tqdm
 
 
@@ -89,6 +89,13 @@ def up(cursor, installed_version):
         'giscedata_facturacio_comer_som',
         'giscedata_facturacio_factura.xml',
         idref=None,
+        mode='update'
+    )
+    load_data_records(
+        cursor,
+        'giscedata_facturacio_comer_som',
+        'giscedata_facturacio_comer_data.xml',
+        ["fatura_pdf_cache_flags"],
         mode='update'
     )
     logger.info("XMLs succesfully updated.")

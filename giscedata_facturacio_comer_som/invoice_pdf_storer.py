@@ -14,6 +14,12 @@ class InvoicePdfStorer():
         self.fact_obj = self.pool.get("giscedata.facturacio.factura")
         self.att_obj = self.pool.get("ir.attachment")
         self.mailb_obj = self.pool.get("poweremail.mailbox")
+        self.conf_obj = self.pool.get("res.config")
+        flags = self.conf_obj.get(self.cursor, self.uid, "factura_pdf_cache_flags", None)
+        self.flags = eval(flags) if flags else []
+
+    def is_enabled(self):
+        return 'Enabled' in self.flags
 
     def search_stored_and_append(self, fact_id):
         fact_number = self.get_storable_fact_number(fact_id)
@@ -82,6 +88,8 @@ class InvoicePdfStorer():
         return att_ids
 
     def store_file(self, content, file_name, fact_id):
+        if 'Dont_store' in self.flags:
+            return []
         b64_content = base64.b64encode(content)
         attachment = {
             "name": file_name,
@@ -119,10 +127,14 @@ class InvoicePdfStorer():
         if not mail:
             return []
 
-        return self.mailb_obj.read(
+        result = self.mailb_obj.read(
             self.cursor,
             self.uid,
             mail[0],
             ['pem_attachments_ids'],
             context=self.context,
         )['pem_attachments_ids']
+
+        if 'No_mongo' in self.flags:
+            return []
+        return result

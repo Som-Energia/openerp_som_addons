@@ -36,10 +36,13 @@ class FacturaReportSomWebkitParserHTML(webkit_report.WebKitParser):
         )
 
     def create(self, cursor, uid, ids, data, context=None):
+        storer = InvoicePdfStorer(cursor, uid, context)
+        if not storer.is_enabled():
+            return self.sub_create(cursor, uid, ids, data, context=context)
+
         if not isinstance(ids, (tuple, list)):
             ids = [ids]
 
-        storer = InvoicePdfStorer(cursor, uid, context)
         for f_id in ids:
             if not storer.search_stored_and_append(f_id):
                 res = self.sub_create(cursor, uid, [f_id], data, context=context)
