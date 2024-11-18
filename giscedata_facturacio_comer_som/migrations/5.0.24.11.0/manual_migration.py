@@ -19,6 +19,7 @@ fact_obj = O.GiscedataFacturacioFactura
 DOIT = False
 
 not_found_ab_invoices = []
+not_found_fe_invoices = []
 not_found_xx_invoices = []
 subjects = [
     u'Factura XX',
@@ -48,6 +49,11 @@ subjects = [
     u'Factura XX - Import elevat',
     u'Facturación atrasada + Factura XX',
     u'Factura XX - diciembre',
+    u'Factura XX amb estimacions reiterades de la distribuïdora',
+    u'Factura XX con lectura estimada por la distribuidora',
+    u'Factura XX amb lectura estimada per la distribuïdora',
+    u'Factura XX amb lectures estimades de la distribuïdora',
+    u'Factura XX amb estimacions de la ditribuïdora',
 ]
 
 
@@ -80,10 +86,13 @@ def search_email(fact_id, fact_number, sent_date):
 
     if fact_number.startswith('AB'):
         not_found_ab_invoices.append(fact_id)
-        step('Not found --> {}', fact_number)
+        step('Not found AB --> {}', fact_number)
+    elif fact_number.startswith('FE'):
+        not_found_fe_invoices.append(fact_id)
+        success('Not found FE --> {}', fact_number)
     else:
         not_found_xx_invoices.append(fact_id)
-        success('not found --> {}', fact_number)
+        success('not found OTHER --> {}', fact_number)
     return mail_ids
 
 
@@ -152,6 +161,7 @@ def migrate():
     step("Column succesfuly filled")
     step("Status found/not found {} / {}", found, not_found)
     write_as_csv_assist(not_found_ab_invoices, 'not_found_AB_inv')
+    write_as_csv_assist(not_found_fe_invoices, 'not_found_FE_inv')
     write_as_csv_assist(not_found_xx_invoices, 'not_found_XX_inv')
 
 
@@ -160,5 +170,6 @@ if __name__ == '__main__':
         migrate()
     except (KeyboardInterrupt, SystemError):
         write_as_csv_assist(not_found_ab_invoices, 'not_found_AB_inv')
+        write_as_csv_assist(not_found_fe_invoices, 'not_found_FE_inv')
         write_as_csv_assist(not_found_xx_invoices, 'not_found_XX_inv')
         success("Bye!")
