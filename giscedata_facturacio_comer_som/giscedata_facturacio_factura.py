@@ -19,7 +19,7 @@ class GiscedataFacturacioFactura(osv.osv):
         if not isinstance(ids, (tuple, list)):
             ids = [ids]
 
-        if 'pe_callback_origin_ids' in context:
+        if 'folder' in vals and vals['folder'] == 'sent' and 'pe_callback_origin_ids' in context:
             for fact_id in ids:
                 fact_data = self.read(
                     cursor,
