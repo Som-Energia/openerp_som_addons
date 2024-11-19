@@ -13,6 +13,12 @@
         "giscedata_lectures_estimacio",
         "giscedata_polissa_category",
     ],
+    "test_depends": [
+        "giscedata_tarifas_peajes_20150101",
+        "giscedata_tarifas_peajes_20160101",
+        "giscedata_tarifas_peajes_20170101",
+        "giscedata_tarifas_peajes_20180101",
+    ],
     "init_xml": ["res_partner_data.xml"],
     "demo_xml": ["res_partner_demo_data.xml"],
     "update_xml": [
