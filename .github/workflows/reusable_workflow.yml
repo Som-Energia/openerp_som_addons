@@ -67,19 +67,35 @@ jobs:
 
       - name: Set up Python ${{ matrix.python-version }}
         if: matrix.python-version != '2.7'
-        uses: actions/setup-python@v4
-        with:
-          python-version: ${{ matrix.python-version }}
+        run: |
+          sudo apt-get update
+          curl https://pyenv.run | bash
+          exec $SHELL
+          export PATH="$HOME/.pyenv/bin:$PATH"
+          eval "$(pyenv init --path)"
+          eval "$(pyenv virtualenv-init -)"
+
+          pyenv install ${{ matrix.python-version }}
+          pyenv virtualenv ${{ matrix.python-version }} erp
+          pyenv activate erp
+
+          pip install --upgrade pip setuptools wheel
+
 
       - name: Set up Python 2.7
         if: matrix.python-version == '2.7'
         run: |
           sudo apt-get update
-          sudo apt-get install -y python2.7 python2.7-dev
-          sudo ln -sf python2.7 /usr/bin/python
-          curl https://bootstrap.pypa.io/pip/2.7/get-pip.py -o get-pip.py
-          python get-pip.py
-          rm get-pip.py
+          curl https://pyenv.run | bash
+          exec $SHELL
+          export PATH="$HOME/.pyenv/bin:$PATH"
+          eval "$(pyenv init --path)"
+          eval "$(pyenv virtualenv-init -)"
+
+          pyenv install 2.7.18
+          pyenv virtualenv 2.7.18 erp
+          pyenv activate erp
+
           pip install --upgrade pip setuptools wheel
 
       - name: Download required repositories
@@ -113,13 +129,12 @@ jobs:
 
       - name: Install dependencies
         run: |
+          export PATH="$HOME/.pyenv/bin:$PATH"
+          pyenv activate erp
           sudo apt-get --allow-releaseinfo-change update
           sudo apt-get install python2-dev python3-dev libxml2-dev libxmlsec1 libxmlsec1-dev libgdal-dev -y
           export ROOT_DIR_SRC=${{github.workspace}}/..
           cd $ROOT_DIR_SRC
-          pip install virtualenv
-          virtualenv venv
-          . $ROOT_DIR_SRC/venv/bin/activate
           cd $ROOT_DIR_SRC/libFacturacioATR
           git checkout $(git describe --tags `git rev-list --tags --max-count=1`)
           pip install -e .
@@ -137,16 +152,16 @@ jobs:
       - name: Install dependecies for Python 3
         if: matrix.python-version != '2.7'
         run: |
-          export ROOT_DIR_SRC=${{github.workspace}}/..
-          . $ROOT_DIR_SRC/venv/bin/activate
+          export PATH="$HOME/.pyenv/bin:$PATH"
+          pyenv activate erp
           pip install somutils
           pip install dm.xmlsec.binding
 
       - name: Install dependencies for Python 2.7
         if: matrix.python-version == '2.7'
         run: |
-          export ROOT_DIR_SRC=${{github.workspace}}/..
-          . $ROOT_DIR_SRC/venv/bin/activate
+          export PATH="$HOME/.pyenv/bin:$PATH"
+          pyenv activate erp
           git clone --depth 1 https://github.com/Som-Energia/somenergia-utils.git -b py2 $ROOT_DIR_SRC/somenergia-utils
           cd $ROOT_DIR_SRC/somenergia-utils
           pip install -e . || "Not installing somenergia-utils Python package"
@@ -154,8 +169,9 @@ jobs:
 
       - name: Link Addons
         run: |
+          export PATH="$HOME/.pyenv/bin:$PATH"
+          pyenv activate erp
           export ROOT_DIR_SRC=${{github.workspace}}/..
-          . $ROOT_DIR_SRC/venv/bin/activate
           cd $ROOT_DIR_SRC/erp && ./tools/link_addons.sh
 
       - name: Run Tests
@@ -163,11 +179,12 @@ jobs:
           ESIOS_TOKEN: ${{ secrets.ESIOS_TOKEN }}
           SRID: ${{ secrets.SRID }}
         run: |
+          export PATH="$HOME/.pyenv/bin:$PATH"
+          pyenv activate erp
           export ROOT_DIR_SRC=${{github.workspace}}/..
           export CI_REPO=som-energia/openerp_som_addons
           export CI_PULL_REQUEST=${{ github.event.number }}
           export ROOT_DIR_SRC=${{github.workspace}}/..
-          . $ROOT_DIR_SRC/venv/bin/activate
           export PYTHONPATH=${{github.workspace}}/../erp/server/bin:${{github.workspace}}/../erp/server/bin/addons:${{github.workspace}}/../erp/server/sitecustomize
           export OPENERP_PRICE_ACCURACY=6
           export OORQ_ASYNC=False
