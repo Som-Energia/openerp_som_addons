@@ -11,6 +11,9 @@ class GiscedataFacturacioFacturador(osv.osv):
         if context is None:
             context = {}
 
+        def uber_round(number):
+            return round(round(number, 6), 2)
+
         imd_obj = self.pool.get('ir.model.data')
         fact_obj = self.pool.get('giscedata.facturacio.factura')
         linia_obj = self.pool.get('giscedata.facturacio.factura.linia')
@@ -100,6 +103,17 @@ class GiscedataFacturacioFacturador(osv.osv):
                 iva_quota = other_taxes[0]
 
         if iese_base:
+            # Let's begin with some weird rounds here, because Python is a bitch and float values
+            # are difficult to handle with a precision of 2 decimals. We'll do round 2 after
+            # rounding to 6. That's because things like this:
+            # round(0.575, 2) = 0.57 BUT:
+            # 11.5 * 0.05 = 0.575 (in real maths)
+            # round(11.5 * 0.05, 2) = 0.58 !!!!!!!
+            # That's because 11.5 * 0.05 in Python is 0.5750000000000001 and it rounds up!!!
+            # So we are going to control each and every float rounding to 6 first and then to 2
+            # So, doing this round(0.5750000000000001, 6) = 0.575 and round(0.575, 2) = 0.57
+
+            iese_base = uber_round(iese_base)
             if self.has_to_recompute_iese_as_industrial(cursor, uid, factura_id, context=context):
                 factor = 0.5
             else:
@@ -115,15 +129,18 @@ class GiscedataFacturacioFacturador(osv.osv):
                 total_energia += linia.quantity
 
             # Mirem si s'ha de fer el mínim segons article 99
-            calcul = round(total_energia / 1000 * factor, 2)
-            import_iese = round(iese_base, 2) * iese_quota
-            import_iese = round(import_iese, 2)
+            calcul = total_energia / 1000 * factor
+            calcul = uber_round(calcul)
+            import_iese = uber_round(iese_base * iese_quota)
+            import_iese = uber_round(import_iese)
             iese_amount = max(calcul, import_iese)
         if iva_base:
-            iva_amount = (round(iva_base, 2) + iese_amount) * iva_quota
-            iva_amount = round(iva_amount, 2)
+            iva_base = uber_round(iva_base)
+            iva_amount = (uber_round(iva_base) + iese_amount) * iva_quota
+            iva_amount = uber_round(iva_amount)
 
-        max_descompte += round(iese_amount + iva_amount + igic_amount, 2)
+        max_descompte += iese_amount + iva_amount + igic_amount
+        max_descompte = uber_round(max_descompte)
 
         return linies_utilitzades_ids, max_descompte
 
