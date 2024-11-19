@@ -1,6 +1,7 @@
 # coding=utf-8
 from __future__ import absolute_import
 from osv import osv, fields
+from datetime import datetime, timedelta
 
 
 class GiscedataPolissa(osv.osv):
@@ -51,9 +52,9 @@ class GiscedataPolissaModcontractual(osv.osv):
         sg_polissa_obj = self.pool.get('giscedata.servei.generacio.polissa')
 
         if not polissa_id:
-            polissa_id = self.browse(cursor, uid, mod_id).polissa_id.id
+            polissa_id = self.simple_browse(cursor, uid, mod_id).polissa_id.id
 
-        modcon = self.browse(cursor, uid, mod_id)
+        modcon = self.simple_browse(cursor, uid, mod_id)
         current_te_auvidi = modcon.te_auvidi
         cancels_auvidi = (modcon.modcontractual_ant
                           and modcon.modcontractual_ant.te_auvidi
@@ -90,6 +91,17 @@ class GiscedataPolissaModcontractual(osv.osv):
                         if new_categories:
                             polissa_obj.write(cursor, uid, polissa_id, {
                                 'category_id': [(6, 0, new_categories)]})
+                info = ''
+                if current_te_auvidi:
+                    info = sg_polissa_obj.check_actualitzar_data_inici(cursor, uid, sg_pol_id, modcon.data_inici)
+                elif cancels_auvidi:
+                    data_sortida_sg = datetime.strptime(modcon.data_inici, '%Y-%m-%d')\
+                                      - timedelta(days=1)
+                    data_sortida_sg_str = data_sortida_sg.strftime('%Y-%m-%d')
+                    info = sg_polissa_obj.check_actualitzar_data_sortida(cursor, uid, sg_pol_id, data_sortida_sg_str)
+                if info:
+                    observacions = modcon.observacions + info
+                    modcon.write({'observacions': observacions})
         return res
 
     _columns = {
