@@ -1,6 +1,10 @@
 # -*- coding: utf-8 -*-
+import os
+import uuid
 import pooler
 import base64
+import pypdftk
+import tempfile
 
 
 class InvoicePdfStorer():
@@ -48,7 +52,29 @@ class InvoicePdfStorer():
     def retrieve(self):
         if len(self.result) == 1:
             return self.result[0]
-        # ToDo: pdf concatenation if n results
+
+        pdf_paths = []
+        tmp_dir = tempfile.gettempdir()
+        for print_result in self.result:
+            pdf_file_name = '{}.pdf'.format(uuid.uuid4())
+            pdf_file_path = os.path.join(tmp_dir, pdf_file_name.replace(' ', ''))
+            with open(pdf_file_path, 'w') as pdf_file:
+                pdf_file.write(print_result[0])
+            pdf_paths.append(pdf_file_path)
+
+        pdf_file_name = '{}.pdf'.format(uuid.uuid4())
+        pdf_path = os.path.join(tmp_dir, pdf_file_name.replace(' ', ''))
+
+        pypdftk.concat(files=pdf_paths, out_file=pdf_path)
+
+        with open(pdf_path, 'r') as full_pdf:
+            merged_pdf = full_pdf.read()
+
+        for tmp_file in pdf_paths:
+            os.remove(tmp_file)
+        os.remove(pdf_path)
+
+        return [merged_pdf, u'pdf']
 
     def get_storable_fact_number(self, fact_id):
         if self.context.get("regenerate_pdf", False):
