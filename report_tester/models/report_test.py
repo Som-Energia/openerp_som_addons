@@ -293,9 +293,13 @@ class ReportTest(osv.osv):
             "id": res_ids,
             "report_type": "pdf",
         }
+        if context is None:
+            context = {}
+        ctx = context.copy()
+        ctx['regenerate_pdf'] = True
         try:
             report = netsvc.service_exist(report_name)
-            result = report.create(cursor, uid, res_ids, values, context)
+            result = report.create(cursor, uid, res_ids, values, ctx)
             return True, result[0]
         except Exception:
             tb = traceback.format_exc()
