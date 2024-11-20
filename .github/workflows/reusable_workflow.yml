@@ -26,6 +26,7 @@ on:
 env:
   POSTGRES_USER: erp
   POSTGRES_PASSWORD: erp
+  PYENV_ROOT: /home/runner/.pyenv
 
 jobs:
   build:
@@ -65,37 +66,26 @@ jobs:
           ref: ${{ github.head_ref }}
           repository: ${{ github.event.pull_request.head.repo.full_name }}
 
-      - name: Set up Python ${{ matrix.python-version }}
-        if: matrix.python-version != '2.7'
+      - name: Install Dependencies for pyenv
         run: |
           sudo apt-get update
-          curl https://pyenv.run | bash
-          exec $SHELL
-          export PATH="$HOME/.pyenv/bin:$PATH"
-          eval "$(pyenv init --path)"
-          eval "$(pyenv virtualenv-init -)"
+          sudo apt-get install -y \
+            build-essential \
+            curl \
+            git \
+            libssl-dev \
+            zlib1g-dev
 
+      - name: Install pyenv
+        run: |
+          curl https://pyenv.run | bash
+          echo "$PYENV_ROOT/bin" >> $GITHUB_PATH
+          echo "$PYENV_ROOT/shims" >> $GITHUB_PATH
+
+      - name: Install Python ${{ matrix.python-version }}
+        run: |
           pyenv install ${{ matrix.python-version }}
-          pyenv virtualenv ${{ matrix.python-version }} erp
-          pyenv activate erp
-
-          pip install --upgrade pip setuptools wheel
-
-
-      - name: Set up Python 2.7
-        if: matrix.python-version == '2.7'
-        run: |
-          sudo apt-get update
-          curl https://pyenv.run | bash
-          exec $SHELL
-          export PATH="$HOME/.pyenv/bin:$PATH"
-          eval "$(pyenv init --path)"
-          eval "$(pyenv virtualenv-init -)"
-
-          pyenv install 2.7.18
-          pyenv virtualenv 2.7.18 erp
-          pyenv activate erp
-
+          pyenv global ${{ matrix.python-version }}
           pip install --upgrade pip setuptools wheel
 
       - name: Download required repositories
@@ -129,8 +119,6 @@ jobs:
 
       - name: Install dependencies
         run: |
-          export PATH="$HOME/.pyenv/bin:$PATH"
-          pyenv activate erp
           sudo apt-get --allow-releaseinfo-change update
           sudo apt-get install python2-dev python3-dev libxml2-dev libxmlsec1 libxmlsec1-dev libgdal-dev -y
           export ROOT_DIR_SRC=${{github.workspace}}/..
@@ -152,16 +140,12 @@ jobs:
       - name: Install dependecies for Python 3
         if: matrix.python-version != '2.7'
         run: |
-          export PATH="$HOME/.pyenv/bin:$PATH"
-          pyenv activate erp
           pip install somutils
           pip install dm.xmlsec.binding
 
       - name: Install dependencies for Python 2.7
         if: matrix.python-version == '2.7'
         run: |
-          export PATH="$HOME/.pyenv/bin:$PATH"
-          pyenv activate erp
           git clone --depth 1 https://github.com/Som-Energia/somenergia-utils.git -b py2 $ROOT_DIR_SRC/somenergia-utils
           cd $ROOT_DIR_SRC/somenergia-utils
           pip install -e . || "Not installing somenergia-utils Python package"
@@ -169,8 +153,6 @@ jobs:
 
       - name: Link Addons
         run: |
-          export PATH="$HOME/.pyenv/bin:$PATH"
-          pyenv activate erp
           export ROOT_DIR_SRC=${{github.workspace}}/..
           cd $ROOT_DIR_SRC/erp && ./tools/link_addons.sh
 
@@ -179,8 +161,6 @@ jobs:
           ESIOS_TOKEN: ${{ secrets.ESIOS_TOKEN }}
           SRID: ${{ secrets.SRID }}
         run: |
-          export PATH="$HOME/.pyenv/bin:$PATH"
-          pyenv activate erp
           export ROOT_DIR_SRC=${{github.workspace}}/..
           export CI_REPO=som-energia/openerp_som_addons
           export CI_PULL_REQUEST=${{ github.event.number }}
