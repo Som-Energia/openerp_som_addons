@@ -160,13 +160,12 @@ class ResPartner(osv.osv):
 
     @staticmethod
     def _prepare_datetime_value_www_response(dict_with_data):
-        # https://stackoverflow.com/questions/8777753/converting-datetime-date-to-utc-timestamp-in-python/8778548#8778548
-        cet = pytz.timezone('CET')
-        utc = pytz.timezone('UTC')
+        cet = pytz.timezone('Europe/Madrid')
+        utc = pytz.utc
         return [
             {
                 'date': (
-                    datetime.strptime(k, '%Y-%m-%d %H:%M:%S').replace(tzinfo=cet)
+                    cet.localize(datetime.strptime(k, '%Y-%m-%d %H:%M:%S'))
                     - datetime(1970, 1, 1, tzinfo=utc)
                 ).total_seconds()*1000,  # javascript works with 3 more 0 than python
                 'value': dict_with_data[k]
