@@ -161,7 +161,7 @@ class ResPartner(osv.osv):
     @staticmethod
     def _prepare_datetime_value_www_response(dict_with_data):
         # https://stackoverflow.com/questions/8777753/converting-datetime-date-to-utc-timestamp-in-python/8778548#8778548
-        cet = pytz.timezone('CET')
+        cet = pytz.timezone('Europe/Madrid')
         utc = pytz.timezone('UTC')
 
         res = []
