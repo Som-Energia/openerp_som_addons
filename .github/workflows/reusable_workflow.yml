@@ -146,6 +146,7 @@ jobs:
       - name: Install dependencies for Python 2.7
         if: matrix.python-version == '2.7'
         run: |
+          export ROOT_DIR_SRC=${{github.workspace}}/..
           git clone --depth 1 https://github.com/Som-Energia/somenergia-utils.git -b py2 $ROOT_DIR_SRC/somenergia-utils
           cd $ROOT_DIR_SRC/somenergia-utils
           pip install -e . || "Not installing somenergia-utils Python package"
