@@ -26,6 +26,7 @@ on:
 env:
   POSTGRES_USER: erp
   POSTGRES_PASSWORD: erp
+  PYENV_ROOT: /home/runner/.pyenv
 
 jobs:
   build:
@@ -65,21 +66,16 @@ jobs:
           ref: ${{ github.head_ref }}
           repository: ${{ github.event.pull_request.head.repo.full_name }}
 
-      - name: Set up Python ${{ matrix.python-version }}
-        if: matrix.python-version != '2.7'
-        uses: actions/setup-python@v4
-        with:
-          python-version: ${{ matrix.python-version }}
-
-      - name: Set up Python 2.7
-        if: matrix.python-version == '2.7'
+      - name: Install pyenv
         run: |
-          sudo apt-get update
-          sudo apt-get install -y python2.7 python2.7-dev
-          sudo ln -sf python2.7 /usr/bin/python
-          curl https://bootstrap.pypa.io/pip/2.7/get-pip.py -o get-pip.py
-          python get-pip.py
-          rm get-pip.py
+          curl https://pyenv.run | bash
+          echo "$PYENV_ROOT/bin" >> $GITHUB_PATH
+          echo "$PYENV_ROOT/shims" >> $GITHUB_PATH
+
+      - name: Install Python ${{ matrix.python-version }}
+        run: |
+          pyenv install ${{ matrix.python-version }}
+          pyenv global ${{ matrix.python-version }}
           pip install --upgrade pip setuptools wheel
 
       - name: Download required repositories
@@ -117,9 +113,6 @@ jobs:
           sudo apt-get install python2-dev python3-dev libxml2-dev libxmlsec1 libxmlsec1-dev libgdal-dev -y
           export ROOT_DIR_SRC=${{github.workspace}}/..
           cd $ROOT_DIR_SRC
-          pip install virtualenv
-          virtualenv venv
-          . $ROOT_DIR_SRC/venv/bin/activate
           cd $ROOT_DIR_SRC/libFacturacioATR
           git checkout $(git describe --tags `git rev-list --tags --max-count=1`)
           pip install -e .
@@ -137,8 +130,6 @@ jobs:
       - name: Install dependecies for Python 3
         if: matrix.python-version != '2.7'
         run: |
-          export ROOT_DIR_SRC=${{github.workspace}}/..
-          . $ROOT_DIR_SRC/venv/bin/activate
           pip install somutils
           pip install dm.xmlsec.binding
 
@@ -146,7 +137,6 @@ jobs:
         if: matrix.python-version == '2.7'
         run: |
           export ROOT_DIR_SRC=${{github.workspace}}/..
-          . $ROOT_DIR_SRC/venv/bin/activate
           git clone --depth 1 https://github.com/Som-Energia/somenergia-utils.git -b py2 $ROOT_DIR_SRC/somenergia-utils
           cd $ROOT_DIR_SRC/somenergia-utils
           pip install -e . || "Not installing somenergia-utils Python package"
@@ -155,7 +145,6 @@ jobs:
       - name: Link Addons
         run: |
           export ROOT_DIR_SRC=${{github.workspace}}/..
-          . $ROOT_DIR_SRC/venv/bin/activate
           cd $ROOT_DIR_SRC/erp && ./tools/link_addons.sh
 
       - name: Run Tests
@@ -167,7 +156,6 @@ jobs:
           export CI_REPO=som-energia/openerp_som_addons
           export CI_PULL_REQUEST=${{ github.event.number }}
           export ROOT_DIR_SRC=${{github.workspace}}/..
-          . $ROOT_DIR_SRC/venv/bin/activate
           export PYTHONPATH=${{github.workspace}}/../erp/server/bin:${{github.workspace}}/../erp/server/bin/addons:${{github.workspace}}/../erp/server/sitecustomize
           export OPENERP_PRICE_ACCURACY=6
           export OORQ_ASYNC=False
