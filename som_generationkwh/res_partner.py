@@ -160,37 +160,17 @@ class ResPartner(osv.osv):
 
     @staticmethod
     def _prepare_datetime_value_www_response(dict_with_data):
-        # https://stackoverflow.com/questions/8777753/converting-datetime-date-to-utc-timestamp-in-python/8778548#8778548
         cet = pytz.timezone('Europe/Madrid')
-        utc = pytz.timezone('UTC')
-
-        res = []
-        print("TEST ANGEL")
-        for k in sorted(dict_with_data):
-            date1 = datetime.strptime(k, '%Y-%m-%d %H:%M:%S').replace(tzinfo=cet)
-            date2 = datetime(1970, 1, 1, tzinfo=utc)
-            unix = (date1 - date2).total_seconds()
-            unix_js = unix*1000
-            print(k)
-            print(date1)
-            print(date2)
-            print(unix)
-            print(unix_js)
-            res.append({
-                'date': unix_js,
-                'value': dict_with_data[k],
-            })
-        return res
-
-        # return [
-        #     {
-        #         'date': (
-        #             datetime.strptime(k, '%Y-%m-%d %H:%M:%S').replace(tzinfo=cet)
-        #             - datetime(1970, 1, 1, tzinfo=utc)
-        #         ).total_seconds()*1000,  # javascript works with 3 more 0 than python
-        #         'value': dict_with_data[k]
-        #     } for k in sorted(dict_with_data)
-        # ]
+        utc = pytz.utc
+        return [
+            {
+                'date': (
+                    cet.localize(datetime.strptime(k, '%Y-%m-%d %H:%M:%S'))
+                    - datetime(1970, 1, 1, tzinfo=utc)
+                ).total_seconds()*1000,  # javascript works with 3 more 0 than python
+                'value': dict_with_data[k]
+            } for k in sorted(dict_with_data)
+        ]
 
     def last_invoiced_date_from_priority_polissa(self, cursor, uid, member_id, context=None):
         return self._last_invoiced_date_from_priority_polissa(cursor, uid, member_id, context).strftime("%Y-%m-%d")
