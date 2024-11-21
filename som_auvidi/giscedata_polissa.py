@@ -93,12 +93,16 @@ class GiscedataPolissaModcontractual(osv.osv):
                                 'category_id': [(6, 0, new_categories)]})
                 info = ''
                 if current_te_auvidi:
-                    info = sg_polissa_obj.check_actualitzar_data_inici(cursor, uid, sg_pol_id, modcon.data_inici)
+                    info = sg_polissa_obj.check_actualitzar_data_inici(
+                        cursor, uid, sg_pol_id, modcon.data_inici
+                    )
                 elif cancels_auvidi:
-                    data_sortida_sg = datetime.strptime(modcon.data_inici, '%Y-%m-%d')\
-                                      - timedelta(days=1)
+                    data_inici_modcon = datetime.strptime(modcon.data_inici, '%Y-%m-%d')
+                    data_sortida_sg = data_inici_modcon - timedelta(days=1)
                     data_sortida_sg_str = data_sortida_sg.strftime('%Y-%m-%d')
-                    info = sg_polissa_obj.check_actualitzar_data_sortida(cursor, uid, sg_pol_id, data_sortida_sg_str)
+                    info = sg_polissa_obj.check_actualitzar_data_sortida(
+                        cursor, uid, sg_pol_id, data_sortida_sg_str
+                    )
                 if info:
                     observacions = modcon.observacions + info
                     modcon.write({'observacions': observacions})
