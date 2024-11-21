@@ -26,13 +26,14 @@ class TarifaPoolSOM(TarifaPool):
         """
         res = super(TarifaPoolSOM, self).get_available_audit_coefs()
         if '2024' in self.phf_function:
+            res['curve'] = 'curve'
+            res['curve_qh'] = 'curve_qh'
             res['dsv'] = 'dsv'
             res['gdos'] = 'gdos'
             res['pmd'] = 'prmdiari'
             if 'ajom' in res:
                 del res['ajom']
             if 'peninsula' in self.phf_function:
-                res['curve_qh'] = 'curve_qh'
                 res['prdemcad'] = 'prdemcad'
                 res['csdvbaj'] = 'csdvbaj'
                 res['csdvsub'] = 'csdvsub'
@@ -66,6 +67,8 @@ class TarifaPoolSOM(TarifaPool):
 
         if self.phf_function == 'phf_calc_esmasa':
             # only if 'phf_calc_esmasa' formula is used
+            res['curve'] = 'curve'
+            res['curve_qh'] = 'curve_qh'
             res['pmd'] = 'prmdiari'
             del res['pc3_ree']
             res['peatges'] = 'pa'
@@ -372,8 +375,15 @@ class TarifaPoolSOM(TarifaPool):
                               end_date.strftime("%Y%m%d")))
         prmdiari = Prmdiari('C2_prmdiari_%(postfix)s' % locals(), esios_token)  # [€/MWh]
 
-        fname = self.perdclass.name
-        perdues = self.perdclass('C2_%(fname)s_%(postfix)s' % locals(), esios_token)
+        # Pérdidas
+        if start_date.year <= 2024 and start_date.month < 12:
+            fname = self.perdclass.name
+            perdues = self.perdclass('C2_%(fname)s_%(postfix)s' % locals(), esios_token)  # [%]
+        else:
+            fname = self.perdclassqh.name
+            perdues = self.perdclassqh('C2_%(fname)s_%(postfix)s' % locals(), esios_token)  # [%]
+
+        # Prdemcad
         prdemcad = Prdemcad('C2_prdemcad_%(postfix)s' % locals(), esios_token)  # prdemcad [€/MWh]
 
         # Desvios
@@ -411,6 +421,7 @@ class TarifaPoolSOM(TarifaPool):
 
         # Let's return component as an hourly Component
         component = component.get_component()
+
         audit_keys = self.get_available_audit_coefs()
         for key in self.conf.get('audit', []):
             if key not in self.audit_data.keys():
@@ -512,6 +523,9 @@ class TarifaPoolSOM(TarifaPool):
         esios_token = self.conf['esios_token']
         holidays = self.conf['holidays']
 
+        # Curva cuarto-horaria
+        curve_qh = curve.get_component_qh_divided()
+
         # REE
         # Precio horario demanda aplicable sistema no peninsular
         postfix = ('%s_%s' % (start_date.strftime("%Y%m%d"), end_date.strftime("%Y%m%d")))
@@ -529,7 +543,14 @@ class TarifaPoolSOM(TarifaPool):
         # Coeficientes de pérdidas
         self.get_perdclass()
         fname = self.perdclass.name
-        perdues = self.perdclass('C2_%(fname)s_%(postfix)s' % locals(), esios_token)  # [%]
+
+        # Pérdidas
+        if start_date.year <= 2024 and start_date.month < 12:
+            fname = self.perdclass.name
+            perdues = self.perdclass('C2_%(fname)s_%(postfix)s' % locals(), esios_token)  # [%]
+        else:
+            fname = self.perdclassqh.name
+            perdues = self.perdclassqh('C2_%(fname)s_%(postfix)s' % locals(), esios_token)  # [%]
 
         # Pricelist and contract
 
@@ -554,6 +575,20 @@ class TarifaPoolSOM(TarifaPool):
         # peajes y cargos
         pa = self.get_peaje_component(start_date, holidays)  # [€/kWh]
 
+        # Let's transform them in ComponentsQH
+        # First, which components must be divided by 4
+        # (the rest will set same value on each quarter)
+        divided_var_names = []
+        excluded_var_names = ['curve']
+
+        for key, var in locals().items():
+            if (isinstance(var, Component)
+                    and not isinstance(var, ComponentQH)
+                    and key not in excluded_var_names
+            ):
+                new_var = self.transform_local_to_qh(var, key, divided_var_names)
+                exec('{} = new_var'.format(key))
+
         A = ((sphdem + pc3_ree + dsv + ree + gdos) * 0.001)
         B = (1 + (perdues * 0.01))
         C = A * B
@@ -561,8 +596,11 @@ class TarifaPoolSOM(TarifaPool):
         E = C + D
         F = E * (1 + (imu * 0.01))
         G = F + pa
-        H = curve * 0.001
+        H = curve_qh * 0.001
         component = H * G
+
+        # Let's return component as an hourly Component
+        component = component.get_component()
 
         audit_keys = self.get_available_audit_coefs()
         for key in self.conf.get('audit', []):
@@ -663,6 +701,9 @@ class TarifaPoolSOM(TarifaPool):
         esios_token = self.conf['esios_token']
         holidays = self.conf['holidays']
 
+        # Curva cuarto-horaria
+        curve_qh = curve.get_component_qh_divided()
+
         # REE
         # Precio horario demanda aplicable sistema no peninsular
         postfix = ('%s_%s' % (start_date.strftime("%Y%m%d"), end_date.strftime("%Y%m%d")))
@@ -680,7 +721,14 @@ class TarifaPoolSOM(TarifaPool):
         # Coeficientes de pérdidas
         self.get_perdclass()
         fname = self.perdclass.name
-        perdues = self.perdclass('C2_%(fname)s_%(postfix)s' % locals(), esios_token)  # [%]
+
+        # Pérdidas
+        if start_date.year <= 2024 and start_date.month < 12:
+            fname = self.perdclass.name
+            perdues = self.perdclass('C2_%(fname)s_%(postfix)s' % locals(), esios_token)  # [%]
+        else:
+            fname = self.perdclassqh.name
+            perdues = self.perdclassqh('C2_%(fname)s_%(postfix)s' % locals(), esios_token)  # [%]
 
         # Pricelist and contract
 
@@ -705,6 +753,20 @@ class TarifaPoolSOM(TarifaPool):
         # peajes y cargos
         pa = self.get_peaje_component(start_date, holidays)  # [€/kWh]
 
+        # Let's transform them in ComponentsQH
+        # First, which components must be divided by 4
+        # (the rest will set same value on each quarter)
+        divided_var_names = []
+        excluded_var_names = ['curve']
+
+        for key, var in locals().items():
+            if (isinstance(var, Component)
+                    and not isinstance(var, ComponentQH)
+                    and key not in excluded_var_names
+            ):
+                new_var = self.transform_local_to_qh(var, key, divided_var_names)
+                exec('{} = new_var'.format(key))
+
         A = ((sphdem + pc3_ree + ree + dsv + gdos) * 0.001)
         B = (1 + (perdues * 0.01))
         C = A * B
@@ -712,8 +774,11 @@ class TarifaPoolSOM(TarifaPool):
         E = C + D
         F = E * (1 + (imu * 0.01))
         G = F + pa
-        H = curve * 0.001
+        H = curve_qh * 0.001
         component = H * G
+
+        # Let's return component as an hourly Component
+        component = component.get_component()
 
         audit_keys = self.get_available_audit_coefs()
         for key in self.conf.get('audit', []):
@@ -745,6 +810,9 @@ class TarifaPoolSOM(TarifaPool):
         esios_token = self.conf['esios_token']
         holidays = self.conf['holidays']
 
+        # Curva cuarto-horaria
+        curve_qh = curve.get_component_qh_divided()
+
         # peajes
         pa = self.get_peaje_component(start_date, holidays)    # [€/kWh]
         # Payments by capacity (PC3) BOE
@@ -767,10 +835,13 @@ class TarifaPoolSOM(TarifaPool):
         prmdiari = Prmdiari('C2_prmdiari_%(postfix)s' % locals(), esios_token)  # [€/MWh]
         si = SI('C2_si_%(postfix)s' % locals(), esios_token)  # [€/MWh]
 
-        fname = self.perdclass.name
-        perdues = self.perdclass(
-            'C2_%(fname)s_%(postfix)s' % locals(), esios_token
-        )
+        # Pérdidas
+        if start_date.year <= 2024 and start_date.month < 12:
+            fname = self.perdclass.name
+            perdues = self.perdclass('C2_%(fname)s_%(postfix)s' % locals(), esios_token)  # [%]
+        else:
+            fname = self.perdclassqh.name
+            perdues = self.perdclassqh('C2_%(fname)s_%(postfix)s' % locals(), esios_token)  # [%]
 
         # prdemcad file
         prdemcad = Prdemcad('C2_prdemcad_%(postfix)s' % locals(), esios_token)  # [€/MWh]
@@ -788,19 +859,33 @@ class TarifaPoolSOM(TarifaPool):
         ):
             ajom = self.get_coeficient_from_dict(start_date, 'ajom')  # [€/MWh]
         else:
-            ajom = None
+            ajom = 0
 
-        #A = (prmdiari * 0.001) + pc3_boe + (prdemcad * 0.001) + (dsv * 0.001) + (omie * 0.001) + (si * 0.001)
+        # Let's transform them in ComponentsQH
+        # First, which components must be divided by 4
+        # (the rest will set same value on each quarter)
+        divided_var_names = []
+        excluded_var_names = ['curve']
+
+        for key, var in locals().items():
+            if (isinstance(var, Component)
+                    and not isinstance(var, ComponentQH)
+                    and key not in excluded_var_names
+            ):
+                new_var = self.transform_local_to_qh(var, key, divided_var_names)
+                exec('{} = new_var'.format(key))
 
         A = (prmdiari + prdemcad + dsv + omie + si) * 0.001
         A += pc3_boe
-        if ajom:
-            A += ajom * 0.001
+        A += ajom * 0.001
         B = A * (1 + (perdues * 0.01))
         C = B * (1 + (imu * 0.01))
         G = C + pa + k + d
-        H = curve * 0.001
+        H = curve_qh * 0.001
         component = G * H
+
+        # Let's return component as an hourly Component
+        component = component.get_component()
 
         audit_keys = self.get_available_audit_coefs()
         for key in self.conf.get('audit', []):
