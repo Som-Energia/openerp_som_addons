@@ -161,6 +161,7 @@ class ReportBackendCondicionsParticulars(ReportBackend):
         # res['fiscal_position'] = pol.fiscal_position
         res['potencia_max'] = pol.potencia
         res['mode_facturacio'] = pol.mode_facturacio
+        res['auvi'] = pol.te_auvidi
 
         res['te_assignacio_gkwh'] = pol.te_assignacio_gkwh
         res['bank'] = pol.bank or False

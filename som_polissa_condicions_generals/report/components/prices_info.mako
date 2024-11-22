@@ -106,6 +106,10 @@
                         %endfor
                     %endif
             %endif
+            %if polissa['auvi']:
+                <%namespace file="/som_polissa_condicions_generals/report/components/auvi.mako" import="auvi"/>
+                ${auvi(polissa, prices)}
+            %endif
                     <tr>
                         <td class="bold">${_(u"Terme energia (€/kWh)")}</td>
                     %if prices['mostra_indexada']:
@@ -184,7 +188,7 @@
                                 %endif
                             %endif
                         %endfor
-                        </tr>
+                    </tr>
                     %endif
                 <!-- INICI Bloc Generationkwh -->
                 %if polissa['te_assignacio_gkwh']:
@@ -270,7 +274,7 @@
             %if polissa['te_assignacio_gkwh']:
                 <span class="bold">(1) </span> ${_(u"Terme d'energia en cas de participar-hi, segons condicions del contracte GenerationkWh.")}<br/>
             %endif
-            %if (polissa['mode_facturacio'] == 'index' and not polissa['modcon_pendent_periodes']) or polissa['modcon_pendent_indexada']:
+            %if (polissa['mode_facturacio'] == 'index' and not polissa['modcon_pendent_periodes']) or polissa['modcon_pendent_indexada'] or polissa['auvi']:
                 <span class="bold">(2) </span> ${_(u"Pots consultar el significat de les variables a les condicions específiques que trobaràs a continuació.")}
             %endif
             </div>
