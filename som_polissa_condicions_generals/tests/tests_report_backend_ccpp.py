@@ -95,6 +95,7 @@ class TestReportBackendCCPP(testing.OOTestCase):
         pricelist = 12
         self.assertEqual(result, {
             u'auto': u'00',
+            u'auvi': False,
             u'bank': False,
             u'contract_type': u'Anual',
             u'data_baixa': '2099-01-01',
