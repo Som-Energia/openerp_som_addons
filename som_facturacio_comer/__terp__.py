@@ -18,6 +18,11 @@
         "giscedata_repercussio_mecanismo_ajuste_gas",
         "giscedata_facturacio_impagat_comer",
     ],
+    "test_depends": [
+        "giscedata_tarifas_pagos_capacidad_20210601",
+        "giscedata_tarifas_peajes_20210601",
+        "giscedata_tarifas_cargos_20210601",
+    ],
     "init_xml": [],
     "demo_xml": [],
     "update_xml": [

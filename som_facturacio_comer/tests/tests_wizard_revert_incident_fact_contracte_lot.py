@@ -9,9 +9,6 @@ import os
 
 class TestRevertIncidentFactContracteLot(testing.OOTestCase):
     def setUp(self):
-        self.openerp.install_module("giscedata_tarifas_pagos_capacidad_20210601")
-        self.openerp.install_module("giscedata_tarifas_peajes_20210601")
-        self.openerp.install_module("giscedata_tarifas_cargos_20210601")
         os.environ["OORQ_ASYNC"] = "False"
         self.txn = Transaction().start(self.database)
         self.cursor = self.txn.cursor
