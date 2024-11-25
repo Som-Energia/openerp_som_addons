@@ -51,6 +51,7 @@ def main(redis_conn, interval, max_attempts):
                     print("We cannot delete job in FailedJobRegistry")
                     print(job_id)
                     print(e)
+                continue
             # if not job.meta.get('requeue', True):
             #    print("Job {} of Queue {} was marked as job.meta.requeue=false but we requeue it.".format(job_id, queue.name))   # noqa: E501
             #    #continue
