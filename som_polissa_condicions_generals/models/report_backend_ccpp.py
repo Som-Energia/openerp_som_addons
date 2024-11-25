@@ -235,6 +235,7 @@ class ReportBackendCondicionsParticulars(ReportBackend):
         prod_obj = self.pool.get("product.product")
         pricelist_obj = self.pool.get('product.pricelist')
         fp_obj = self.pool.get('account.fiscal.position')
+        sgpol_obj = self.pool.get('giscedata.servei.generacio.polissa')
         polissa = pol_obj.browse(cursor, uid, pol.id)
         if context.get('tarifa_provisional', False):
             dict_preus_tp_energia = context.get('tarifa_provisional')['preus_provisional_energia']
@@ -405,6 +406,24 @@ class ReportBackendCondicionsParticulars(ReportBackend):
                 )
         res['coeficient_k_untaxed'] = coeficient_k_untaxed
         res['coeficient_k'] = coeficient_k
+
+        auvi_pauvi = 0.0
+        auvi_name = ""
+        auvi_percent = 0
+        if polissa.te_auvidi:
+            sgpol_ids = sgpol_obj.search(cursor, uid, [
+                ('polissa_id', '=', pol.id),
+                ('data_sortida', '=', False)
+            ])
+            if sgpol_ids:
+                sgpol = sgpol_obj.browse(cursor, uid, sgpol_ids[0])
+                auvi_pauvi = 5.2
+                auvi_percent = sgpol.percentatge
+                auvi_name = sgpol.servei_generacio_id.name
+
+        res['auvi_pauvi'] = auvi_pauvi
+        res['auvi_name'] = auvi_name
+        res['auvi_percent'] = auvi_percent
 
         return res
 
