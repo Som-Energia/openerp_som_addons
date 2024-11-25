@@ -1,42 +1,30 @@
-function data_max(d) {
+function data_sum(d) {
     var maxim = d.P1;
-    if(!esgran) {
-        if(d.P2 != null && maxim < d.P2){
-            maxim = d.P2
-        }
-        if(d.P3 != null && maxim < d.P3){
-            maxim = d.P3
-        }
-        if(d.P4 != null && maxim < d.P4){
-            maxim = d.P4
-        }
-        if(d.P5 != null && maxim < d.P5){
-            maxim = d.P5
-        }
-        if(d.P6 != null && maxim < d.P6){
-            maxim = d.P6
-        }
-    } else {
-        if(d.P2 != null){
-            maxim = d.P1 + d.P2
-        }
-        if(d.P3 != null){
-            maxim = maxim + d.P3
-        }
-        if(d.P4 != null){
-            maxim = maxim + d.P4
-        }
-        if(d.P5 != null){
-            maxim = maxim + d.P5
-        }
-        if(d.P6 != null){
-            maxim = maxim + d.P6
-        }
+    if(d.P2 != null){
+        maxim = d.P1 + d.P2
+    }
+    if(d.P3 != null){
+        maxim = maxim + d.P3
+    }
+    if(d.P4 != null){
+        maxim = maxim + d.P4
+    }
+    if(d.P5 != null){
+        maxim = maxim + d.P5
+    }
+    if(d.P6 != null){
+        maxim = maxim + d.P6
     }
     return maxim
 }
 
-//  num_bars = data_consum[0].P2 != null ? data_consum[0].P3 != null ? 3 : 2 : 1;
+function data_average() {
+    total_sum = 0;
+    data_consum.forEach(function(d) {
+        total_sum = total_sum + data_sum(d);
+    });
+    return total_sum / data_consum.length;
+}
 
 if(!esgran) {
     num_bars = data_consum[0].P2 != null ? data_consum[0].P3 != null ? data_consum[0].P4 != null ?data_consum[0].P5 != null ?data_consum[0].P6 != null ? 6 : 5 : 4 : 3 : 2 : 1;
@@ -47,169 +35,161 @@ if(!esgran) {
 w = 650;
 h = 200;
 
-// marges
-var marges = {left: 60, right: 5 , top: 10 , bottom: 0};
-
-if (num_bars > 1) {
-    marges.bottom = 30;
-}
+var marges = {left: 60, right: 5 , top: 10 , bottom: 40};
 
 var graf_h = h - marges.top - marges.bottom;
 var graf_w = w - marges.left - marges.right;
 
-var bar_group_padding = 3 * num_bars;
-var max_bar_group_w = graf_w / 3;
-var bar_group_w = Math.min((graf_w / (data_consum.length)), max_bar_group_w);
+// Main graphic (container)
+var svg = d3.select("#chart_consum_" + factura_id)
+  .append("svg")
+    .attr("width", w)
+    .attr("height", h)
+  .append("g")
+    .attr("transform",
+          "translate(" + marges.left + "," + marges.top + ")");
 
-var bar_padding = 3;
-var bar_w = (bar_group_w - bar_group_padding) / num_bars;
+// List of subgroups (periodes)
+var subgroups = Object.keys(data_consum[0]).filter(function(key){return key[0] == "P"}).sort()
 
+// List of groups (months)
+var groups = d3.map(data_consum, function(d){return(d.mes)}).keys()
 
-var grad_colors_1 = [['#bdc83f', '#dde85f']];
-
-var grad_colors_3 = [['#dde85f', '#dde85f'],
-                   ['#bdc83f', '#bdc83f'],
-                   ['#5b5b5b', '#5b5b5b'],
-                  ];
-
-var grad_colors = (num_bars > 1 ? grad_colors_3 : grad_colors_1)
-
-var y_axis_left_margin = 10;
-
-var svg = d3_antic.select("#chart_consum_" + factura_id)
-    .append("svg")
-      .attr("width", w)
-      .attr("height", h);
-
-var y = d3_antic.scale.linear()
-        .range([graf_h, 0])
-        .domain([0, d3.max(data_consum, data_max)]);
-
-var x = d3_antic.scale.linear()
-    .range([0,w])
-    .domain([0, w]);
-
-function bar_group_pos_x(d,i) { return (bar_group_w) * i + marges.left}
-
-function bar_pos_x(d,i) { return (bar_w) * i }
-
-svg.append("defs")
-  .append("linearGradient")
-    .attr("id", "grad")
-    .attr("x1", "0%")
-    .attr("y1", "0%")
-    .attr("x2", "0%")
-    .attr("y2", "100%")
-  .selectAll("stop")
-  .data(grad_colors[0])
-    .enter()
-  .append("stop")
-    .attr("offset", function(d, i) { return i*100 + "%"})
-    .attr("style", function(d) {return "stop-color:" + d + ";stop-opacity:1"})
-
-svg.select("defs")
-  .selectAll("linearGradient")
-  .data(grad_colors)
-  .enter()
-  .append("linearGradient")
-    .attr("id", function(d, i){return "grad" + (i + 1)})
-    .attr("x1", "0%")
-    .attr("y1", "0%")
-    .attr("x2", "0%")
-    .attr("y2", "100%")
-  .selectAll("stop")
-  .data(function(d,i){return d})
-    .enter()
-  .append("stop")
-    .attr("offset", function(d, i) { return i*100 + "%"})
-    .attr("style", function(d) {return "stop-color:" + d + ";stop-opacity:1"});
-
-yAxis = d3_antic.svg.axis()
-    .scale(y)
-    .orient("left")
-    .tickFormat(function(d) {return (d == 0 && num_bars == 1) ? "" : d + " kWh";});
-
+// <-- X AXIS -------------
+var x = d3.scaleBand()
+    .domain(groups)
+    .range([0, graf_w])
+    .padding([0.2])
 svg.append("g")
-    .attr("class", "yaxis")
-//    .attr("transform", "translate(" + marges.left + ", " + (h - marges.bottom) + ")")
-       .attr("transform", "translate(" + (marges.left - y_axis_left_margin )+ " ," + marges.top + ")")
-    .call(yAxis);
+  .attr("class", "xaxis")
+  .attr("transform", "translate(0," + graf_h + ")")
+  .call(d3.axisBottom(x).tickSizeOuter(0));
+// -- X AXIS ------------->
+
+// <-- Y AXIS -------------
+var y = d3.scaleLinear()
+  .domain([0, d3.max(data_consum, data_sum)])
+  .range([ graf_h, 0 ]);
+svg.append("g")
+.attr("class", "yaxis")
+.call(
+  d3.axisLeft(y)
+  .tickFormat(function(d) {return (d == 0 && num_bars == 1) ? "" : d + " kWh";}));
 
 svg.selectAll(".yaxis line")
     .attr("x2", w)
     .attr("x1", 0);
 
-textWidth = d3_antic.max(svg.selectAll("g .tick text")[0], function(d) {return d.getBBox().width});
-
-// axis de l'esquerre
 svg.selectAll("g .tick")
-    .append("line")
-      .attr("class", "yaxis_l")
-    .call(yAxis);
+.append("line")
+    .attr("class", "yaxis_l")
+.call(y);
 
+textWidth = d3.max(svg.selectAll(".yaxis .tick text").nodes(), function(d) {return d.getBBox().width});
 svg.selectAll(".yaxis_l")
     .attr("x2", - marges.left)
     .attr("x1", - textWidth - 14 );
+// -- Y AXIS ------------->
 
-if (num_bars == 1 )
-{
-    var bar = svg.selectAll('g .bar')
-          .data(data_consum)
-        .enter()
-        .append('g')
-          .attr("transform", function(d,i) {return "rotate(180 "+ (bar_group_w / 2) + ", " + (y(data_max(d)/2) + marges.top) + ") translate(-" + bar_group_pos_x(d, i) + ", 0)"})
+if (num_bars == 1 ){ // 3X and 6X
+    var gradient = svg.append("defs").append("linearGradient")
+    .attr("id", "svgGradient")
+    .attr("x1", "0%")
+    .attr("x2", "100%")
+    .attr("y1", "0%")
+    .attr("y2", "100%");
+    gradient.append("stop")
+    .attr('class', 'start')
+    .attr("offset", "0%")
+    .attr("stop-color", "#dde85f")
+    .attr("stop-opacity", 1);
+    gradient.append("stop")
+    .attr('class', 'end')
+    .attr("offset", "100%")
+    .attr("stop-color", "#bdc83f")
+    .attr("stop-opacity", 1);
 
-    bar.append("rect")
-            .attr("y", function(d){return y(data_max(d)) + marges.top})
-            .attr("width", bar_group_w - bar_group_padding)
-            .attr("height", function(d){return (graf_h) - y(data_max(d))})
+    // Show the bars
+    svg.append("g")
+    .selectAll("g")
+    .data(data_consum)
+    .enter().append("rect")
+    .attr("x", function(d) { return x(d.mes); })
+    .attr("y", function(d) { return y(data_sum(d)); })
+    .attr("height", function(d) {return (graf_h) - y(data_sum(d))})
+    .attr("width",x.bandwidth())
+    .attr("fill", "url(#svgGradient)");
 
-    bar.append("text")
-        .attr("y", function(d) {return y(data_max(d)) + marges.top})
-        .attr("x", (bar_group_w - bar_group_padding)/ 2)
-        .attr("dy", ".35em")
-        .text(function(d){return d.mes})
-}
-else
-{
-    var bars = [];
+} else { // 20TD
+    // color palette = one color per subgroup (periode)
+    var color = d3.scaleOrdinal()
+    .domain(subgroups)
+    .range(['#dde85f','#bdc83f','#5b5b5b'])
 
-    for(var i=0;i<num_bars;i++){
-        var selector = 'g .bar' + (i + 1);
-        var valor = 'P' + (i + 1);
-        bars[i] = svg.selectAll(selector)
-              .data(data_consum)
-            .enter()
-            .append('g')
-              .attr("class", "bar" +  (i + 1))
-              .attr("transform", function(d,j) {return "rotate(180 "+ (bar_w / 2) + ", " + (y(d[valor]/2) + marges.top) + ") translate(-" + (bar_group_pos_x(d,j) + (bar_w * i)) + ", 0)"})
+    // stack per subgroup (periode)
+    var stackedData = d3.stack()
+    .keys(subgroups)
+    (data_consum)
 
-        bars[i].append("rect")
-                .attr("y", function(d){return y(d[valor]) + marges.top})
-                .attr("width", bar_w - bar_padding)
-                .attr("height", function(d){return (graf_h) - y(d[valor])})
+    // Show the bars
+    svg.append("g")
+    .selectAll("g")
+    // Enter in the stack data = loop key per key = group per group (month)
+    .data(stackedData)
+    .enter().append("g")
+    .attr("fill", function(d) { return color(d.key); })
+    .selectAll("rect")
+    // enter a second time = loop subgroup per subgroup (periode) to add all rectangles
+    .data(function(d) { return d; })
+    .enter().append("rect")
+        .attr("x", function(d) { return x(d.data.mes); })
+        .attr("y", function(d) { return y(d[1]); })
+        .attr("height", function(d) { return y(d[0]) - y(d[1]); })
+        .attr("width",x.bandwidth())
 
-        bars[i].append("text")
-                .attr("y", function(d) {return y(d[valor]) + marges.top - 15})
-                .attr("x", (bar_w - bar_padding)/ 2)
-                .attr("dy", ".35em")
-                .text(function(d){if ("labels" in d){return d["labels"][valor]} else {return valor}})
+    // Average line
+    average = data_average()
+    svg.append("line")
+    .attr("x1", x(1))
+    .attr("x2", graf_w)
+    .attr("y1", y(average))
+    .attr("y2", y(average))
+    .attr("stroke", "#446bc1")
+    .attr("stroke-width", 1);
 
-    }
+    // <-- LEGEND -------------
+    legendSpace = (graf_w/(subgroups.length+1)); // spacing for the legend
+    subgroups.forEach(function(d,i) {
 
-    svg.selectAll('g .bar1')
-        .data(data_consum)
-        .enter()
-        .append('text')
-            .attr('class', 'mes')
-/*          // VERTICAL
-            .attr("transform", function(d,j) {return "rotate(180 " + (bar_w/2)+ ", 0 )"})
-            .attr("y", - graf_h - marges.top)
-            .attr("x", function (d,i) {return - bar_group_pos_x(d,i)})*/
-          // HORITZONTAL
-//            .attr("transform", function(d,j) {return "rotate(180 " + (bar_w/2)+ ", 0 )"})
-            .attr("y", y(0) + marges.top + marges.bottom - 10)
-            .attr("x", function (d,i) {return bar_group_pos_x(d,i) + (bar_group_w - bar_group_padding)/2})
-            .attr("dy", ".35em")
-            .text(function(d){return d.mes})
+    svg.append("circle")
+        .attr("cx", (legendSpace/2)+i*legendSpace)  // space legend
+        .attr("cy", graf_h + (marges.bottom/2) + 8)
+        .attr("r", 5)
+        .style("fill", function(){ return d.color = color(d)})
+
+    svg.append("text")
+        .attr("x", 10+(legendSpace/2)+i*legendSpace)  // space legend
+        .attr("y", graf_h + (marges.bottom/2)+ 10)
+        .attr("class", "legend")    // style the legend
+        .text(function(){
+            if ("labels" in data_consum[0]){
+                return data_consum[0]["labels"][d]
+            } else {return d}}
+        );
+
+    });
+    svg.append("line")
+    .attr("x1", (legendSpace/2)+subgroups.length*legendSpace)
+    .attr("x2", 7+(legendSpace/2)+subgroups.length*legendSpace)
+    .attr("y1", graf_h + (marges.bottom/2) + 8)
+    .attr("y2", graf_h + (marges.bottom/2) + 8)
+    .attr("stroke", "#446bc1")
+    .attr("stroke-width", 1);
+
+    svg.append("text")
+    .attr("x", 10+(legendSpace/2)+subgroups.length*legendSpace)  // space legend
+    .attr("y", graf_h + (marges.bottom/2)+ 10)
+    .attr("class", "legend")    // style the legend
+    .text(average_text);
+    // -- LEGEND ------------->
 }
