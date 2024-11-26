@@ -409,7 +409,7 @@ class ReportBackendCondicionsParticulars(ReportBackend):
 
         auvi_pauvi = 0.0
         auvi_name = ""
-        auvi_percent = 0
+        auvi_percent = 0.0
         if polissa.te_auvidi:
             sgpol_ids = sgpol_obj.search(cursor, uid, [
                 ('polissa_id', '=', pol.id),
