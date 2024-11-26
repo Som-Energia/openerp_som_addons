@@ -124,6 +124,17 @@
                 </field>
             </field>
         </record>
+        <record model="ir.ui.view" id="view_giscedata_lectures_estimacio_polissa_som_form">
+            <field name="name">giscedata.polissa.enviament.form</field>
+            <field name="model">giscedata.polissa</field>
+            <field name="inherit_id" ref="giscedata_lectures_estimacio.view_giscedata_lectures_estimacio_polissa_form"/>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <field name="no_estimable" position="replace">
+                    <field name="no_estimable" readonly="1"/>
+                </field>
+            </field>
+        </record>
         <record model="ir.ui.view" id="view_giscedata_facturacio_factura_enviament_tree">
             <field name="name">giscedata.facturacio.factura.enviament.tree</field>
             <field name="model">giscedata.facturacio.factura</field>
