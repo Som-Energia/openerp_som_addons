@@ -148,8 +148,8 @@ class GiscedataNextDaysEnergyPrice(osv.osv):
         perdues = Tarifa.perdclass('A1_%(perdfname)s_%(postfix)s' % locals(), esios_token)  # [%]
 
         # Desvios
-        scdsvdem = Scdsvdem('C2_Scdsvdem_%(postfix)s' % locals())  # noqa: F405 [€/MWh]
-        factor_dsv = self.get_coeficient_component(data_inici_dt, 'factor_dsv')  # [%]
+        scdsvdem = Scdsvdem('C2_Scdsvdem_%(postfix)s' % locals(), esios_token)  # noqa: F405 [€/MWh]
+        factor_dsv = Tarifa.get_coeficient_component(data_inici_dt, 'factor_dsv')  # [%]
         dsv = scdsvdem * (factor_dsv * 0.01)
 
         # NON-VARIABLE COMPONENTS PRICE OBTENTION
@@ -158,7 +158,7 @@ class GiscedataNextDaysEnergyPrice(osv.osv):
         pa = Tarifa.get_peaje_component(data_inici_dt, holidays)  # [€/kWh]
         k = Tarifa.get_coeficient_component(data_inici_dt, 'k')  # [€/kWh]
         d = Tarifa.get_coeficient_component(data_inici_dt, 'd')  # [€/kWh]
-        gdos = self.get_coeficient_component(data_inici_dt, 'gdos')  # [€/MWh]
+        gdos = Tarifa.get_coeficient_component(data_inici_dt, 'gdos')  # [€/MWh]
 
         A = ((sphdem + pc3_ree + dsv + ree + gdos) * 0.001)
         B = (1 + (perdues * 0.01))
@@ -306,7 +306,7 @@ class GiscedataNextDaysEnergyPrice(osv.osv):
 
         # Desvios
         scdsvdem = Scdsvdem('C2_Scdsvdem_%(postfix)s' % locals())  # noqa: F405 [€/MWh]
-        factor_dsv = self.get_coeficient_component(data_inici_dt, 'factor_dsv')  # [%]
+        factor_dsv = Tarifa.get_coeficient_component(data_inici_dt, 'factor_dsv')  # [%]
         dsv = scdsvdem * (factor_dsv * 0.01)
 
         filename = 'Sprpcap{}_{}'.format(Tarifa.code.replace('.', ''), 'CANARIAS')
@@ -323,7 +323,7 @@ class GiscedataNextDaysEnergyPrice(osv.osv):
         pa = Tarifa.get_peaje_component(data_inici_dt, holidays)  # [€/kWh]
         k = Tarifa.get_coeficient_component(data_inici_dt, 'k')  # [€/kWh]
         d = Tarifa.get_coeficient_component(data_inici_dt, 'd')  # [€/kWh]
-        gdos = self.get_coeficient_component(data_inici_dt, 'gdos')  # [€/MWh]
+        gdos = Tarifa.get_coeficient_component(data_inici_dt, 'gdos')  # [€/MWh]
 
         A = ((sphdem + pc3_ree + ree + gdos + dsv) * 0.001)
         B = (1 + (perdues * 0.01))
