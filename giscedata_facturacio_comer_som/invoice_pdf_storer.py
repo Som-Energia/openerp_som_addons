@@ -26,7 +26,7 @@ class InvoicePdfStorer():
         if 'Enabled' not in self.flags:
             return False
 
-        if self.context.get("regenerate_pdf", False):
+        if self.context.get("do_not_use_stored_pdf", False):
             return False
 
         return True
@@ -49,11 +49,12 @@ class InvoicePdfStorer():
 
     def append_and_store(self, fact_id, result):
         self.result.append(result)
-        fact_number = self.get_storable_fact_number(fact_id)
-        if fact_number:
-            file_name = self.get_store_filename(fact_number)
-            if not self.exists_file(file_name, fact_id):
-                self.store_file(result[0], file_name, fact_id)
+        if self.context.get("save_pdf_in_invoice_attachments", False):
+            fact_number = self.get_storable_fact_number(fact_id)
+            if fact_number:
+                file_name = self.get_store_filename(fact_number)
+                if not self.exists_file(file_name, fact_id):
+                    self.store_file(result[0], file_name, fact_id)
 
     def retrieve(self):
         if len(self.result) == 1:
