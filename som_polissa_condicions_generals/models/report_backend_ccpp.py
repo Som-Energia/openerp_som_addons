@@ -161,7 +161,6 @@ class ReportBackendCondicionsParticulars(ReportBackend):
         # res['fiscal_position'] = pol.fiscal_position
         res['potencia_max'] = pol.potencia
         res['mode_facturacio'] = pol.mode_facturacio
-        res['auvi'] = pol.te_auvidi
 
         res['te_assignacio_gkwh'] = pol.te_assignacio_gkwh
         res['bank'] = pol.bank or False
@@ -186,11 +185,14 @@ class ReportBackendCondicionsParticulars(ReportBackend):
         if pol.state == 'esborrany':
             res['modcon_pendent_indexada'] = False
             res['modcon_pendent_periodes'] = False
+            res['modcon_pendent_auvi'] = False
         elif pol.state != 'esborrany' and not res['lead']:
             res['last_modcon_state'] = pol.modcontractuals_ids[0].state
             res['last_modcon_facturacio'] = pol.modcontractuals_ids[0].mode_facturacio
+            res['last_modcon_auvi'] = pol.modcontractuals_ids[0].te_auvidi
             res['modcon_pendent_indexada'] = res['last_modcon_state'] == 'pendent' and res['last_modcon_facturacio'] == 'index'  # noqa: E501
             res['modcon_pendent_periodes'] = res['last_modcon_state'] == 'pendent' and res['last_modcon_facturacio'] == 'atr'  # noqa: E501
+            res['modcon_pendent_auvi'] = res['last_modcon_state'] == 'pendent' and res['last_modcon_auvi']  # noqa: E501
 
         if res['modcon_pendent_indexada'] or res['modcon_pendent_periodes']:
             res['pricelist'] = pol.modcontractuals_ids[0].llista_preu
@@ -225,6 +227,66 @@ class ReportBackendCondicionsParticulars(ReportBackend):
 
         return res
 
+    def get_mostra_auvi(self, cursor, uid, pol, context=None):
+        res = False
+        if pol.state == 'esborrany' and pol.te_auvidi:
+            # Pol esborrany amb AUVI
+            res = True
+        elif pol.state != 'esborrany' and not context.get('lead', False):
+            # Pol activa
+            last_modcon_state = pol.modcontractuals_ids[0].state
+            last_modcon_facturacio = pol.modcontractuals_ids[0].mode_facturacio
+            last_modcon_auvi = pol.modcontractuals_ids[0].te_auvidi
+            modcon_pendent_periodes = last_modcon_state == 'pendent' and last_modcon_facturacio == 'atr'  # noqa: E501
+            modcon_pendent_auvi = last_modcon_state == 'pendent' and last_modcon_auvi
+            modcon_pendent_quit_auvi = last_modcon_state == 'pendent' \
+                and pol.te_auvidi and not pol.modcontractuals_ids[0].te_auvidi
+
+            if not pol.te_auvidi \
+                    or (pol.te_auvidi and (modcon_pendent_periodes or modcon_pendent_quit_auvi)):
+                res = False
+            elif (pol.te_auvidi and not modcon_pendent_periodes and not modcon_pendent_quit_auvi) \
+                    or modcon_pendent_auvi:
+                res = True
+        return res
+
+    def get_auvi_data(self, cursor, uid, pol, context=None):
+        res = {}
+        auvi = self.get_mostra_auvi(cursor, uid, pol, context=context)
+        auvi_pauvi = 0.0
+        auvi_name = ""
+        auvi_percent = 0.0
+        sgpol_obj = self.pool.get('giscedata.servei.generacio.polissa')
+        if self.get_mostra_auvi(cursor, uid, pol, context=context):
+            today_str = datetime.today().strftime("%Y-%m-%d")
+            sgpol_ids = sgpol_obj.search(cursor, uid, [
+                ('polissa_id', '=', pol.id),
+                ('cups_name', '=', pol.cups.name),
+                '|',
+                ('data_sortida', '=', False),
+                ('data_sortida', '>', today_str),
+                '|',
+                '&',
+                ('data_inici', '!=', False),
+                ('data_inici', '<=', today_str),
+                '&',
+                ('data_inici', '=', False),
+                ('data_incorporacio', '<=', today_str),
+            ])
+            if len(sgpol_ids) > 0:
+                sgpol = sgpol_obj.browse(cursor, uid, sgpol_ids[0])
+                auvi_pauvi = 5.2
+                auvi_percent = sgpol.percentatge
+                auvi_name = sgpol.servei_generacio_id.name
+
+        res = {
+            'auvi': auvi,
+            'auvi_pauvi': auvi_pauvi,
+            'auvi_name': auvi_name,
+            'auvi_percent': auvi_percent,
+        }
+        return res
+
     def get_prices_data(self, cursor, uid, pol, context=None):  # noqa: C901
         res = {}
         lead = context.get('lead')
@@ -237,7 +299,6 @@ class ReportBackendCondicionsParticulars(ReportBackend):
         prod_obj = self.pool.get("product.product")
         pricelist_obj = self.pool.get('product.pricelist')
         fp_obj = self.pool.get('account.fiscal.position')
-        sgpol_obj = self.pool.get('giscedata.servei.generacio.polissa')
         polissa = pol_obj.browse(cursor, uid, pol.id)
         if context.get('tarifa_provisional', False):
             dict_preus_tp_energia = context.get('tarifa_provisional')['preus_provisional_energia']
@@ -287,7 +348,7 @@ class ReportBackendCondicionsParticulars(ReportBackend):
             elif dades_tarifa['date_end'] and dades_tarifa['date_start']:
                 text_vigencia = _(u"(vigents fins al {})").format(
                     (datetime.strptime(dades_tarifa['date_end'], '%Y-%m-%d')).strftime('%d/%m/%Y'))
-            elif datetime.strptime(dades_tarifa['date_start'], '%Y-%m-%d') > datetime.today():
+            elif dades_tarifa['date_start'] and datetime.strptime(dades_tarifa['date_start'], '%Y-%m-%d') > datetime.today():  # noqa: E501
                 text_vigencia = _(u"(vigents a partir del {})").format(
                     datetime.strptime(dades_tarifa['date_start'], '%Y-%m-%d').strftime('%d/%m/%Y'))
                 ctx.update({'date': datetime.strptime(dades_tarifa['date_start'], '%Y-%m-%d')})
@@ -407,23 +468,9 @@ class ReportBackendCondicionsParticulars(ReportBackend):
         res['coeficient_k_untaxed'] = coeficient_k_untaxed
         res['coeficient_k'] = coeficient_k
 
-        auvi_pauvi = 0.0
-        auvi_name = ""
-        auvi_percent = 0.0
-        if polissa.te_auvidi:
-            sgpol_ids = sgpol_obj.search(cursor, uid, [
-                ('polissa_id', '=', pol.id),
-                ('data_sortida', '=', False)
-            ])
-            if sgpol_ids:
-                sgpol = sgpol_obj.browse(cursor, uid, sgpol_ids[0])
-                auvi_pauvi = 5.2
-                auvi_percent = sgpol.percentatge
-                auvi_name = sgpol.servei_generacio_id.name
-
-        res['auvi_pauvi'] = auvi_pauvi
-        res['auvi_name'] = auvi_name
-        res['auvi_percent'] = auvi_percent
+        # AUVI
+        auvi_data = self.get_auvi_data(cursor, uid, pol, context)
+        res.update(auvi_data)
 
         return res
 
