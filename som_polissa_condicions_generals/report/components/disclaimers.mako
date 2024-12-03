@@ -1,10 +1,10 @@
-<%def name="disclaimers(polissa)">
+<%def name="disclaimers(polissa, prices)">
     <div class="modi_condicions">
         <p>
             ${_(u"Al contractar s'accepten aquestes ")}
             %if (polissa['mode_facturacio'] == 'index' and not polissa['modcon_pendent_periodes'] and not polissa['auvi']) or polissa['modcon_pendent_indexada']:
                 ${_(u"Condicions Particulars, Específiques i les Condicions Generals,")}
-            %elif polissa['auvi']:
+            %elif prices['auvi']:
                 ${_(u"Condicions Particulars, Específiques de l'Autoconsum Virtual, Específiques de la tarifa Indexada i les Condicions Generals,")}
             %else:
                 ${_(u"Condicions Particulars i les Condicions Generals,")}

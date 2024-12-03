@@ -50,11 +50,14 @@
                             ${gurb(informe['gurb'])}
                         %endif
                         ${payment_info(informe['polissa'])}
-                        ${disclaimers(informe['polissa'])}
+                        ${disclaimers(informe['polissa'], informe['prices'])}
                         ${footer(informe['polissa'], informe['titular'])}
                         <p style="page-break-after:always;"></p>
                         %if informe['titular']['lang'] == 'ca_ES':
                             ${generals_ca()}
+                            %if informe['prices']['auvi']:
+                                ${auvi_ca()}
+                            %endif
                             %if informe['prices']['mostra_indexada']:
                                 ${indexada_ca()}
                                 <p style="page-break-after:always;"></p>
