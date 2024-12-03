@@ -62,7 +62,7 @@ class WizardCreateCoeficicientsFile(osv.osv_memory):
             line = "{};{}\r\n".format(item["cups"], item["coef"])
             txt += line
 
-        mfile = base64.b64encode(txt.encode('utf-8'))
+        mfile = base64.b64encode(txt[:-2].encode('utf-8'))
 
         return file_name, mfile
 

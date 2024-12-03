@@ -127,6 +127,8 @@ class SomCrawlersTask(osv.osv):
         self.executar_tasca(cursor, uid, id, context=context)
 
     def executar_tasca(self, cursor, uid, id, context=None):
+        if not context:
+            context = {}
         classresult = self.pool.get("som.crawlers.result")
         classTaskStep = self.pool.get("som.crawlers.task.step")
         sch_obj = self.pool.get("som.crawlers.holiday")
@@ -146,8 +148,11 @@ class SomCrawlersTask(osv.osv):
         resultat_correcte = False
         for taskStep in task_steps_list:
             resultat = "[" + taskStep.name + "]: "
+            if 'nom_municipi' in context:
+                resultat += "[{}] ".format(context['nom_municipi'])
             try:
-                resultat += classTaskStep.executar_steps(cursor, uid, taskStep.id, result_id)
+                resultat += classTaskStep.executar_steps(cursor,
+                                                         uid, taskStep.id, result_id, context)
                 resultat_correcte = True
             except exceptions.NoResultsException as e:
                 resultat += str(e)

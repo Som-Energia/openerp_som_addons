@@ -6,10 +6,6 @@ import json
 
 class TestsFacturacioBoSocial(testing.OOTestCase):
     def setUp(self):
-        self.openerp.install_module("giscedata_tarifas_peajes_20150101")
-        self.openerp.install_module("giscedata_tarifas_peajes_20160101")
-        self.openerp.install_module("giscedata_tarifas_peajes_20170101")
-        self.openerp.install_module("giscedata_tarifas_peajes_20180101")
         self.txn = Transaction().start(self.database)
 
         cursor, uid, pool = (self.txn.cursor, self.txn.user, self.openerp.pool)

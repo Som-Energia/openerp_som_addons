@@ -26,6 +26,8 @@ on:
 env:
   POSTGRES_USER: erp
   POSTGRES_PASSWORD: erp
+  PYENV_ROOT: /home/runner/.pyenv
+  ROOT_DIR_SRC: ${{github.workspace}}/..
 
 jobs:
   build:
@@ -65,42 +67,36 @@ jobs:
           ref: ${{ github.head_ref }}
           repository: ${{ github.event.pull_request.head.repo.full_name }}
 
-      - name: Set up Python ${{ matrix.python-version }}
-        if: matrix.python-version != '2.7'
-        uses: actions/setup-python@v4
-        with:
-          python-version: ${{ matrix.python-version }}
-
-      - name: Set up Python 2.7
-        if: matrix.python-version == '2.7'
+      - name: Install pyenv
         run: |
-          sudo apt-get update
-          sudo apt-get install -y python2.7 python2.7-dev
-          sudo ln -sf python2.7 /usr/bin/python
-          curl https://bootstrap.pypa.io/pip/2.7/get-pip.py -o get-pip.py
-          python get-pip.py
-          rm get-pip.py
+          curl https://pyenv.run | bash
+          echo "$PYENV_ROOT/bin" >> $GITHUB_PATH
+          echo "$PYENV_ROOT/shims" >> $GITHUB_PATH
+
+      - name: Install Python ${{ matrix.python-version }}
+        run: |
+          pyenv install ${{ matrix.python-version }}
+          pyenv global ${{ matrix.python-version }}
           pip install --upgrade pip setuptools wheel
 
       - name: Download required repositories
         env:
           GITHUB_TOKEN: ${{ secrets.ACCESS_TOKEN_GA }}
         run: |
-          export ROOT_DIR_SRC=${{github.workspace}}/..
           git clone --depth 1 https://$GITHUB_TOKEN@github.com/Som-Energia/erp.git -b ${{ inputs.erpbranch }} $ROOT_DIR_SRC/erp
           git clone --depth 1 https://$GITHUB_TOKEN@github.com/Som-Energia/libFacturacioATR.git $ROOT_DIR_SRC/libFacturacioATR
           if [ ! -d "$ROOT_DIR_SRC/openerp_som_addons" ]; then
-                  git clone --depth 1 https://github.com/Som-Energia/openerp_som_addons.git $ROOT_DIR_SRC/openerp_som_addons
+            git clone --depth 1 https://github.com/Som-Energia/openerp_som_addons.git $ROOT_DIR_SRC/openerp_som_addons
           fi
           if [ ! -d "$ROOT_DIR_SRC/somenergia-generationkwh" ]; then
-                  git clone --depth 1 https://github.com/Som-Energia/somenergia-generationkwh.git $ROOT_DIR_SRC/somenergia-generationkwh
+            git clone --depth 1 https://github.com/Som-Energia/somenergia-generationkwh.git $ROOT_DIR_SRC/somenergia-generationkwh
           fi
           if [ ! -d "$ROOT_DIR_SRC/plantmeter" ]; then
-                git clone --depth 1 https://github.com/Som-Energia/plantmeter.git $ROOT_DIR_SRC/plantmeter
+            git clone --depth 1 https://github.com/Som-Energia/plantmeter.git $ROOT_DIR_SRC/plantmeter
           fi
           git clone --depth 1 https://github.com/Som-Energia/giscedata_facturacio_indexada_som.git $ROOT_DIR_SRC/giscedata_facturacio_indexada_som
           if [ ! -d "$ROOT_DIR_SRC/oorq" ]; then
-                  git clone --depth 1 https://github.com/gisce/oorq.git -b api_v5 $ROOT_DIR_SRC/oorq
+            git clone --depth 1 https://github.com/gisce/oorq.git -b api_v5 $ROOT_DIR_SRC/oorq
           fi
           git clone --depth 1 https://github.com/gisce/poweremail.git $ROOT_DIR_SRC/poweremail2
           git clone --depth 1 https://github.com/gisce/openerp-sentry.git -b v5_legacy $ROOT_DIR_SRC/openerp-sentry
@@ -115,11 +111,6 @@ jobs:
         run: |
           sudo apt-get --allow-releaseinfo-change update
           sudo apt-get install python2-dev python3-dev libxml2-dev libxmlsec1 libxmlsec1-dev libgdal-dev -y
-          export ROOT_DIR_SRC=${{github.workspace}}/..
-          cd $ROOT_DIR_SRC
-          pip install virtualenv
-          virtualenv venv
-          . $ROOT_DIR_SRC/venv/bin/activate
           cd $ROOT_DIR_SRC/libFacturacioATR
           git checkout $(git describe --tags `git rev-list --tags --max-count=1`)
           pip install -e .
@@ -130,23 +121,18 @@ jobs:
           pip install -e . || "Not installing somenergia-generation Python package"
           cd $ROOT_DIR_SRC/plantmeter
           pip install -e . || "Not installing plantmeter Python package"
-          cd $ROOT_DIR_SRC
           pip install -r $ROOT_DIR_SRC/erp/requirements-dev.txt
           pip install -r $ROOT_DIR_SRC/erp/requirements.txt
 
       - name: Install dependecies for Python 3
         if: matrix.python-version != '2.7'
         run: |
-          export ROOT_DIR_SRC=${{github.workspace}}/..
-          . $ROOT_DIR_SRC/venv/bin/activate
           pip install somutils
           pip install dm.xmlsec.binding
 
       - name: Install dependencies for Python 2.7
         if: matrix.python-version == '2.7'
         run: |
-          export ROOT_DIR_SRC=${{github.workspace}}/..
-          . $ROOT_DIR_SRC/venv/bin/activate
           git clone --depth 1 https://github.com/Som-Energia/somenergia-utils.git -b py2 $ROOT_DIR_SRC/somenergia-utils
           cd $ROOT_DIR_SRC/somenergia-utils
           pip install -e . || "Not installing somenergia-utils Python package"
@@ -154,8 +140,6 @@ jobs:
 
       - name: Link Addons
         run: |
-          export ROOT_DIR_SRC=${{github.workspace}}/..
-          . $ROOT_DIR_SRC/venv/bin/activate
           cd $ROOT_DIR_SRC/erp && ./tools/link_addons.sh
 
       - name: Run Tests
@@ -163,11 +147,8 @@ jobs:
           ESIOS_TOKEN: ${{ secrets.ESIOS_TOKEN }}
           SRID: ${{ secrets.SRID }}
         run: |
-          export ROOT_DIR_SRC=${{github.workspace}}/..
           export CI_REPO=som-energia/openerp_som_addons
           export CI_PULL_REQUEST=${{ github.event.number }}
-          export ROOT_DIR_SRC=${{github.workspace}}/..
-          . $ROOT_DIR_SRC/venv/bin/activate
           export PYTHONPATH=${{github.workspace}}/../erp/server/bin:${{github.workspace}}/../erp/server/bin/addons:${{github.workspace}}/../erp/server/sitecustomize
           export OPENERP_PRICE_ACCURACY=6
           export OORQ_ASYNC=False

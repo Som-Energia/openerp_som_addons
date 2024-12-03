@@ -199,10 +199,13 @@ class WizardChangeToIndexada(osv.osv_memory):
             if not is_standard_price:
                 raise exceptions.PolissaNotStandardPrice(polissa.name)
 
-    def send_indexada_modcon_created_email(self, cursor, uid, polissa):
-        ir_model_data = self.pool.get("ir.model.data")
-        account_obj = self.pool.get("poweremail.core_accounts")
-        power_email_tmpl_obj = self.pool.get("poweremail.templates")
+    def send_indexada_modcon_created_email(self, cursor, uid, polissa, context=None):
+        if context is None:
+            context = {}
+
+        ir_model_data = self.pool.get('ir.model.data')
+        account_obj = self.pool.get('poweremail.core_accounts')
+        power_email_tmpl_obj = self.pool.get('poweremail.templates')
 
         template_id = ir_model_data.get_object_reference(
             cursor, uid, "som_indexada", "email_canvi_tarifa_a_indexada"
@@ -233,8 +236,8 @@ class WizardChangeToIndexada(osv.osv_memory):
             wiz_id = wiz_send_obj.create(cursor, uid, params, ctx)
             return wiz_send_obj.send_mail(cursor, uid, [wiz_id], ctx)
 
-        except Exception:
-            raise exceptions.FailSendEmail(polissa.name)
+        except Exception as e:
+            raise exceptions.FailSendEmail(polissa.name, e)
 
     def change_to_indexada(self, cursor, uid, ids, context=None):
         """update data_firma_contracte in polissa

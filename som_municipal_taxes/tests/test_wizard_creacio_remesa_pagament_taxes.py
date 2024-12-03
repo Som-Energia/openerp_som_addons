@@ -2,8 +2,10 @@
 import datetime
 from destral import testing
 from osv.osv import except_osv
+import mock
 
 from som_municipal_taxes.wizard.wizard_creacio_remesa_pagament_taxes import get_dates_from_quarter
+from giscedata_facturacio.facturacio_extra import FacturacioExtra
 
 
 class TestWizardCreacioRemesaPagamentTaxes(testing.OOTestCaseWithCursor):
@@ -11,7 +13,9 @@ class TestWizardCreacioRemesaPagamentTaxes(testing.OOTestCaseWithCursor):
         super(TestWizardCreacioRemesaPagamentTaxes, self).setUp()
         self.pool = self.openerp.pool
 
-    def test_create_remesa_pagaments__ok(self):
+    @mock.patch.object(FacturacioExtra, "get_states_invoiced")
+    def test_create_remesa_pagaments__ok(self, get_states_invoiced_mock):
+        get_states_invoiced_mock.return_value = ['draft', 'open', 'paid']
         wiz_o = self.pool.get("wizard.creacio.remesa.pagament.taxes")
         order_o = self.pool.get("payment.order")
         wiz_init = {
@@ -38,7 +42,9 @@ class TestWizardCreacioRemesaPagamentTaxes(testing.OOTestCaseWithCursor):
         po = order_o.browse(self.cursor, self.uid, order_id)
         self.assertEqual(len(po.line_ids), 1)
 
-    def test_create_remesa_pagaments__error_ja_pagat(self):
+    @mock.patch.object(FacturacioExtra, "get_states_invoiced")
+    def test_create_remesa_pagaments__error_ja_pagat(self, get_states_invoiced_mock):
+        get_states_invoiced_mock.return_value = ['draft', 'open', 'paid']
         wiz_o = self.pool.get("wizard.creacio.remesa.pagament.taxes")
 
         wiz_init = {

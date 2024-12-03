@@ -238,7 +238,12 @@ class GiscedataPolissaInfoenergia(osv.osv):
 
         subject = _(u"Resultat accions update de consum anual")
         msg = self._conany_updater(cursor, uid, context)
-        emails_to = filter(lambda a: bool(a), map(str.strip, data.get("emails_to", "").split(",")))
+        emails_to = data.get("emails_to", "").split(",")
+        emails = []
+        for email_to in emails_to:
+            if email_to:
+                emails.append(email_to.strip())
+        emails_to = emails
         if emails_to:
             user_obj = self.pool.get("res.users")
             email_from = user_obj.browse(cursor, uid, uid).address_id.email

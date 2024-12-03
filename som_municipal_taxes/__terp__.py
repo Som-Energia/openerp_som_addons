@@ -13,12 +13,15 @@
     'depends': [
         'base',
         'giscedata_municipal_taxes',
+        'res_municipi_dir3',
+        'som_crawlers',
     ],
     'init_xml': [],
     'update_xml': [
         'data/som_municipal_taxes_data.xml',
         'views/som_municipal_taxes_config_view.xml',
         'wizard/wizard_creacio_remesa_pagament_taxes.xml',
+        'wizard/wizard_presentacio_redsaras.xml',
         'security/som_municipal_taxes_security.xml',
         'security/ir.model.access.csv',
     ],

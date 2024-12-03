@@ -82,6 +82,8 @@ som_poweremail_common_templates:
 -  som_poweremail_common_templates/**
 somre_giscere_facturacio:
 -  somre_giscere_facturacio/**
+somre_giscere_oferta:
+-  somre_giscere_oferta/**
 som_remeses_base:
 -  som_remeses_base/**
 som_switching:

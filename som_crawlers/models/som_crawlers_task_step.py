@@ -393,7 +393,7 @@ class SomCrawlersTaskStep(osv.osv):
 
     # test ok
     def create_script_args(
-        self, config_obj, task_step_params, execution_restult_file, file_path=None
+        self, config_obj, task_step_params, execution_restult_file, file_path=None, context=None
     ):
         args = {
             "-n": str(config_obj.name),
@@ -414,6 +414,8 @@ class SomCrawlersTaskStep(osv.osv):
 
         if "process" in task_step_params:
             args.update({"-pr": str(task_step_params["process"])})
+        if context:
+            args.update({"-context": base64.b64encode(json.dumps(context))})
 
         return " ".join(["{} {}".format(k, v) for k, v in args.iteritems()])
 
@@ -707,6 +709,60 @@ class SomCrawlersTaskStep(osv.osv):
         except Exception as e:
             raise Exception("DESCARREGANT: " + str(e))
 
+        return output
+
+    def upload_form_registre_general(self, cursor, uid, id, result_id, context=None):
+        classresult = self.pool.get("som.crawlers.result")
+        task_step_obj = self.browse(cursor, uid, id)
+        task_step_params = json.loads(task_step_obj.params)
+        path = os.path.join(os.path.dirname(os.path.realpath(__file__)), "../")
+
+        output = ""
+        if "nom_fitxer" in task_step_params:
+            config_obj = self.pool.get("som.crawlers.task").id_del_portal_config(
+                cursor, uid, task_step_obj.task_id.id, context
+            )
+            script_path = os.path.join(path, "scripts/" + task_step_params["nom_fitxer"])
+            if os.path.exists(script_path):
+                cfg_obj = self.pool.get("res.config")
+                path_python = cfg_obj.get(
+                    cursor,
+                    uid,
+                    "som_crawlers_massive_importer_python_path",
+                    "/home/erp/.virtualenvs/massive/bin/python",
+                )
+                if not os.path.exists(path_python):
+                    raise Exception("Not virtualenv of massive importer found")
+                file_name = (
+                    "output_"
+                    + config_obj.name
+                    + "_"
+                    + datetime.now().strftime("%Y-%m-%d_%H_%M_%S_%f")
+                    + ".txt"
+                )
+                args_str = self.create_script_args(
+                    config_obj, task_step_params, file_name, context=context
+                )
+                os.system("{} {} {}".format(path_python, script_path, args_str))
+                output_path = self.get_output_path(cursor, uid)
+                output = self.readOutputFile(cursor, uid, output_path, file_name)
+                if output != "Files have been successfully downloaded":
+                    self.attach_files_screenshot(
+                        cursor, uid, config_obj, path, result_id, task_step_params, context
+                    )
+                    raise Exception("Error al penjar el fitxer al Registre General: %s" % output)
+            else:
+                output = "File or directory doesn't exist"
+        else:
+            output = "Falta especificar nom fitxer"
+        task_step_obj.task_id.write(
+            {
+                "ultima_tasca_executada": str(task_step_obj.name)
+                + " - "
+                + str(datetime.now().strftime("%Y-%m-%d_%H:%M:%S"))
+            }
+        )
+        classresult.write(cursor, uid, result_id, {"resultat_bool": True})
         return output
 
 

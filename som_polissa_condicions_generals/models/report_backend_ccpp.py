@@ -30,6 +30,8 @@ class ReportBackendCondicionsParticulars(ReportBackend):
 
         pol_obj = self.pool.get("giscedata.polissa")
         lang = pol_obj.browse(cursor, uid, record_id, context=context).titular.lang
+        if context.get("lead") and context.get("lang"):
+            lang = context.get("lang")
         return lang
 
     def get_pas01(self, cursor, uid, pol, context=None):
@@ -106,6 +108,8 @@ class ReportBackendCondicionsParticulars(ReportBackend):
         data_firma = datetime.today()
         res['sign_date'] = localize_period(data_firma, pol.titular.lang)
         res['lang'] = pol.titular.lang
+        if context.get("lead") and context.get("lang"):
+            res['lang'] = context.get("lang")
 
         return res
 
@@ -391,10 +395,8 @@ class ReportBackendCondicionsParticulars(ReportBackend):
                     tipus='', product_id=coeficient_id, fiscal_position=fp_k,
                     with_taxes=True)[0]
             else:
-                fp_k = polissa.fiscal_position_id if pol.fiscal_position_id else ctx.get(
-                    'force_fiscal_position', False)
                 coeficient_k = prod_obj.add_taxes(
-                    cursor, uid, coeficient_id, coeficient_k_untaxed, fp_k_id,
+                    cursor, uid, coeficient_id, coeficient_k_untaxed, fp_k,
                     direccio_pagament=polissa.direccio_pagament, titular=polissa.titular,
                     context=context,
                 )
