@@ -19,6 +19,7 @@
 <%namespace file="som_polissa_condicions_generals/report/components/gurb/autoritzacio_representant.mako" import="gurb_autoritzacio_es"/>
 <%namespace file="som_polissa_condicions_generals/report/components/gurb/acord_repartiment.mako" import="gurb_acord_ca"/>
 <%namespace file="som_polissa_condicions_generals/report/components/gurb/acord_repartiment.mako" import="gurb_acord_es"/>
+<%namespace file="som_polissa_condicions_generals/report/condicions_especifiques_auvi.mako" import="auvi_ca"/>
 
 <!DOCTYPE html>
 <html lang="es">
