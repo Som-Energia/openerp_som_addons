@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data noupdate="1">
+        <record model="res.config" id="representacio_auto_generar_oferta_omie" forcecreate="1">
+            <field name="name">representacio_auto_generar_oferta_omie</field>
+            <field name="value">0</field>
+            <field name="description">Indica si les ofertes de representació han de generar automàticament oferta a OMIE.</field>
+        </record>
+    </data>
+    <data noupdate="1">
+        <record model="res.config" id="representacio_auto_publicar_oferta_omie" forcecreate="1">
+            <field name="name">representacio_auto_publicar_oferta_omie</field>
+            <field name="value">0</field>
+            <field name="description">Indica si les ofertes de representació han de publicar automàticament la seva oferta a OMIE.</field>
+        </record>
+    </data>
+    <data noupdate="1">
+        <record model="res.config" id="representacio_auto_omie_mail_notification" forcecreate="1">
+            <field name="name">representacio_auto_omie_mail_notification</field>
+            <field name="value">0</field>
+            <field name="description">Indica si cal comunicar via e-mail del resultat de l'automatisme d'OMIE de Representació.</field>
+        </record>
+    </data>
+    <data noupdate="1">
+        <record model="res.config" id="representacio_auto_oferta_n_days" forcecreate="1">
+            <field name="name">representacio_auto_oferta_n_days</field>
+            <field name="value">1</field>
+            <field name="description">Indica el nombre de dies a futur pels quals es genera i publica oferta a mercat.</field>
+        </record>
+    </data>
+</openerp>
