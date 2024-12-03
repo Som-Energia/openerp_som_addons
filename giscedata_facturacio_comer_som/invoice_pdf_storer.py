@@ -83,9 +83,6 @@ class InvoicePdfStorer():
         return [merged_pdf, u'pdf']
 
     def get_storable_fact_number(self, fact_id):
-        if self.context.get("regenerate_pdf", False):
-            return False
-
         fact_data = self.fact_obj.read(
             self.cursor,
             self.uid,
