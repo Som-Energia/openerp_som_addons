@@ -11,6 +11,7 @@
 <%namespace file="som_polissa_condicions_generals/report/condicions_especifiques_indexada.mako" import="indexada_ca"/>
 <%namespace file="som_polissa_condicions_generals/report/condiciones_especificas_indexada.mako" import="indexada_es"/>
 <%namespace file="som_polissa_condicions_generals/report/components/gurb.mako" import="gurb"/>
+<%namespace file="som_polissa_condicions_generals/report/condicions_especifiques_auvi.mako" import="auvi_ca"/>
 
 <!DOCTYPE html>
 <html lang="es">
