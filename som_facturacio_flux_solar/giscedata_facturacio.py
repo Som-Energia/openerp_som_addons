@@ -71,6 +71,8 @@ class GiscedataFacturacioFacturador(osv.osv):
                         if 'id' in dict_vals:
                             linies_utilitzades_ids.append(dict_vals['id'])
 
+        res_fact_ids = self.get_invoices_to_remove_iese(cursor, uid, [factura_id], context=context)
+        skip_iese = factura_id in res_fact_ids
         iese_base = iese_quota = iese_amount = 0.0
         iva_base = iva_quota = iva_amount = 0.0
         igic_amount = 0.0
@@ -102,7 +104,7 @@ class GiscedataFacturacioFacturador(osv.osv):
                 iva_base += line.price_subtotal
                 iva_quota = other_taxes[0]
 
-        if iese_base:
+        if iese_base and not skip_iese:
             # Let's begin with some weird rounds here, because Python is a bitch and float values
             # are difficult to handle with a precision of 2 decimals. We'll do round 2 after
             # rounding to 6. That's because things like this:
