@@ -118,7 +118,7 @@ class WizardChangeToIndexadaAuvidiMultiTests(WizardChangeToIndexadaAuvidiMultiBa
         self.assertEqual(p.modcontractuals_ids[0].state, u'pendent')
         observacions = p.modcontractuals_ids[0].observacions
         self.assertIn(u'Mode facturació: ATR → Indexada', observacions)
-        self.assertIn(u'Té AUVIDI: False → True', observacions)
+        self.assertIn(u'Té Autoconsum Virtual: False → True', observacions)
         self.assertEqual(len(p.modcontractuals_ids), prev_modcons + 1)
         self.assertIn(u"Pòlisses que estan a periodes:", wiz.info)
         self.assertIn(u" - Creada modcon a indexada + auvidi: {}".format(p.name), wiz.info)
@@ -144,7 +144,7 @@ class WizardChangeToIndexadaAuvidiMultiTests(WizardChangeToIndexadaAuvidiMultiBa
         self.assertEqual(p.modcontractuals_ids[0].state, u'pendent')
         observacions = p.modcontractuals_ids[0].observacions
         self.assertIn(u'Mode facturació: ATR → Indexada', observacions)
-        self.assertIn(u'Té AUVIDI: False → True', observacions)
+        self.assertIn(u'Té Autoconsum Virtual: False → True', observacions)
         self.assertEqual(len(p.modcontractuals_ids), prev_modcons)
         self.assertIn(
             u"Pòlisses que estan a periodes i tenen modcon a indexada amb auvidi:", wiz.info)
@@ -172,7 +172,7 @@ class WizardChangeToIndexadaAuvidiMultiTests(WizardChangeToIndexadaAuvidiMultiBa
         self.assertEqual(p.modcontractuals_ids[0].state, u'pendent')
         observacions = p.modcontractuals_ids[0].observacions
         self.assertIn(u'Mode facturació: ATR → Indexada', observacions)
-        self.assertIn(u'Té AUVIDI: False → True', observacions)
+        self.assertIn(u'Té Autoconsum Virtual: False → True', observacions)
         self.assertEqual(len(p.modcontractuals_ids), prev_modcons)
         self.assertIn(u"Pòlisses que estan a periodes i tenen modcon a indexada:", wiz.info)
         self.assertIn(u" - Modcon modificada, afegit auvidi: {}".format(p.name), wiz.info)
@@ -213,7 +213,7 @@ class WizardChangeToIndexadaAuvidiMultiTests(WizardChangeToIndexadaAuvidiMultiBa
         self.assertEqual(p.modcontractuals_ids[0].state, u'pendent')
         observacions = p.modcontractuals_ids[0].observacions
         self.assertNotIn(u'Mode facturació: ATR → Indexada', observacions)
-        self.assertIn(u'Té AUVIDI: False → True', observacions)
+        self.assertIn(u'Té Autoconsum Virtual: False → True', observacions)
         self.assertEqual(len(p.modcontractuals_ids), prev_modcons + 1)
         self.assertIn(u"Pòlisses que estan a indexada:", wiz.info)
         self.assertIn(u" - Creada modcon a auvidi: {}".format(p.name), wiz.info)
@@ -279,7 +279,7 @@ class WizardChangeToIndexadaAuvidiMultiTests(WizardChangeToIndexadaAuvidiMultiBa
         self.assertEqual(p.modcontractuals_ids[0].te_auvidi, False)
         self.assertEqual(p.modcontractuals_ids[0].state, u'pendent')
         observacions = p.modcontractuals_ids[0].observacions
-        self.assertIn(u'Té AUVIDI: True → False', observacions)
+        self.assertIn(u'Té Autoconsum Virtual: True → False', observacions)
         self.assertEqual(len(p.modcontractuals_ids), prev_modcons + 1)
         self.assertIn(
             u"Pòlisses que estan a indexada amb auvidi:", wiz.info)
@@ -301,7 +301,7 @@ class WizardChangeToIndexadaAuvidiMultiTests(WizardChangeToIndexadaAuvidiMultiBa
         self.assertEqual(p.modcontractuals_ids[0].te_auvidi, False)
         self.assertEqual(p.modcontractuals_ids[0].state, u'pendent')
         observacions = p.modcontractuals_ids[0].observacions
-        self.assertIn(u'Té AUVIDI: True → False', observacions)
+        self.assertIn(u'Té Autoconsum Virtual: True → False', observacions)
         self.assertEqual(len(p.modcontractuals_ids), prev_modcons)
         self.assertIn(
             u"Pòlisses que ja estan a indexada amb modcon pendent per treure auvidi:", wiz.info)
@@ -323,7 +323,7 @@ class WizardChangeToIndexadaAuvidiMultiTests(WizardChangeToIndexadaAuvidiMultiBa
         self.assertEqual(p.modcontractuals_ids[0].te_auvidi, False)
         self.assertEqual(p.modcontractuals_ids[0].state, u'pendent')
         observacions = p.modcontractuals_ids[0].observacions
-        self.assertIn(u'Té AUVIDI: True → False', observacions)
+        self.assertIn(u'Té Autoconsum Virtual: True → False', observacions)
         self.assertEqual(len(p.modcontractuals_ids), prev_modcons)
         self.assertIn(
             u"Pòlisses que estan a indexada amb modcon pendent per activar auvidi:", wiz.info)
@@ -384,7 +384,7 @@ class WizardChangeToIndexadaAuvidiMultiTests(WizardChangeToIndexadaAuvidiMultiBa
         self.assertEqual(p.modcontractuals_ids[0].te_auvidi, False)
         self.assertEqual(p.modcontractuals_ids[0].state, u'pendent')
         observacions = p.modcontractuals_ids[0].observacions
-        self.assertIn(u'Té AUVIDI: True → False', observacions)
+        self.assertIn(u'Té Autoconsum Virtual: True → False', observacions)
         self.assertEqual(len(p.modcontractuals_ids), prev_modcons + 1)
         self.assertIn(
             u"Pòlisses que estan a periodes amb auvidi!!!:", wiz.info)
@@ -409,7 +409,7 @@ class WizardChangeToIndexadaAuvidiMultiTests(WizardChangeToIndexadaAuvidiMultiBa
         self.assertEqual(p.modcontractuals_ids[0].te_auvidi, False)
         self.assertEqual(p.modcontractuals_ids[0].state, u'pendent')
         observacions = p.modcontractuals_ids[0].observacions
-        self.assertIn(u'Té AUVIDI: True → False', observacions)
+        self.assertIn(u'Té Autoconsum Virtual: True → False', observacions)
         self.assertEqual(len(p.modcontractuals_ids), prev_modcons)
         self.assertIn(
             u"Pòlisses que estan a periodes amb modcon per passar a indexada SENSE auvidi:",
@@ -435,7 +435,7 @@ class WizardChangeToIndexadaAuvidiMultiTests(WizardChangeToIndexadaAuvidiMultiBa
         self.assertEqual(p.modcontractuals_ids[0].te_auvidi, False)
         self.assertEqual(p.modcontractuals_ids[0].state, u'pendent')
         observacions = p.modcontractuals_ids[0].observacions
-        self.assertIn(u'Té AUVIDI: True → False', observacions)
+        self.assertIn(u'Té Autoconsum Virtual: True → False', observacions)
         self.assertEqual(len(p.modcontractuals_ids), prev_modcons)
         self.assertIn(
             u"Pòlisses que estan a periodes amb modcon per passar a indexada + auvidi:", wiz.info)
