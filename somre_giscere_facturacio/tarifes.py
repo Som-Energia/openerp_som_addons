@@ -40,14 +40,16 @@ class RepresentaSom(Representa):
         desviaments_instalacions_df.rename(columns={'value': 'desviament_instalacions',
                                                     'subir': 'desviament_subir_instalacions',
                                                     'bajar': 'desviament_bajar_instalacions'}, inplace=True)  # KWh
-        desviaments_instalacions_df = desviaments_instalacions_df.groupby([
-            'local_timestamp',
-            'timestamp'
-        ]).agg({
-            'desviament_instalacions': 'sum',
-            'desviament_subir_instalacions': 'sum',
-            'desviament_bajar_instalacions': 'sum',
-        }).reset_index()
+
+        if len(desviaments_instalacions_df):
+            desviaments_instalacions_df = desviaments_instalacions_df.groupby([
+                'local_timestamp',
+                'timestamp'
+            ]).agg({
+                'desviament_instalacions': 'sum',
+                'desviament_subir_instalacions': 'sum',
+                'desviament_bajar_instalacions': 'sum',
+            }).reset_index()
 
         desv_instalacions_actual = self.corbes.get('desviament_instalacions_actual', [])
         if len(desv_instalacions_actual):
@@ -116,7 +118,13 @@ class RepresentaSom(Representa):
 
         desviaments_df = desviaments_df.merge(desvio_bajar_df, on=['timestamp'], how='left')
         desviaments_df = desviaments_df.merge(desvio_subir_df, on=['timestamp'], how='left')
-        desviaments_df = desviaments_df.merge(desviaments_instalacions_df, on=['timestamp'], how='left')
+
+        if len(desviaments_instalacions_df):
+            desviaments_df = desviaments_df.merge(desviaments_instalacions_df, on=['timestamp'], how='left')
+        else:
+            desviaments_df['desviament_instalacions'] = 0.0
+            desviaments_df['desviament_subir_instalacions'] = 0.0
+            desviaments_df['desviament_bajar_instalacions'] = 0.0
 
         desviaments_df = desviaments_df.sort_values(by=['timestamp'])
 
@@ -241,14 +249,15 @@ class RepresentaSom(Representa):
         desviaments_instalacions_df.rename(columns={'value': 'desviament_instalacions',
                                                     'subir': 'desviament_subir_instalacions',
                                                     'bajar': 'desviament_bajar_instalacions'}, inplace=True)  # KWh
-        desviaments_instalacions_df = desviaments_instalacions_df.groupby([
-            'local_timestamp',
-            'timestamp'
-        ]).agg({
-            'desviament_instalacions': 'sum',
-            'desviament_subir_instalacions': 'sum',
-            'desviament_bajar_instalacions': 'sum',
-        }).reset_index()
+        if len(desviaments_instalacions_df):
+            desviaments_instalacions_df = desviaments_instalacions_df.groupby([
+                'local_timestamp',
+                'timestamp'
+            ]).agg({
+                'desviament_instalacions': 'sum',
+                'desviament_subir_instalacions': 'sum',
+                'desviament_bajar_instalacions': 'sum',
+            }).reset_index()
 
         banda_secundaria_df.rename(columns={'value': 'desviament_instalacio', }, inplace=True)  # KWh
         desv_sistema_per_hora.rename(columns={'value': 'desviament_sistema',
@@ -278,8 +287,13 @@ class RepresentaSom(Representa):
 
         banda_secundaria_df = banda_secundaria_df.merge(bs3_curve_df, on=['timestamp'], how='left')
 
-        banda_secundaria_df = banda_secundaria_df.merge(desviaments_instalacions_df, on=['timestamp'],
-                                              how='left')
+        if len(desviaments_instalacions_df):
+            banda_secundaria_df = banda_secundaria_df.merge(desviaments_instalacions_df, on=['timestamp'],
+                                                            how='left')
+        else:
+            banda_secundaria_df['desviament_instalacions'] = 0.0
+            banda_secundaria_df['desviament_subir_instalacions'] = 0.0
+            banda_secundaria_df['desviament_bajar_instalacions'] = 0.0
 
         banda_secundaria_df = banda_secundaria_df.sort_values(by=['timestamp'])
 
@@ -388,14 +402,15 @@ class RepresentaSom(Representa):
                                                     'subir': 'desviament_subir_instalacions',
                                                     'bajar': 'desviament_bajar_instalacions'},
                                            inplace=True)  # KWh
-        desviaments_instalacions_df = desviaments_instalacions_df.groupby([
-            'local_timestamp',
-            'timestamp'
-        ]).agg({
-            'desviament_instalacions': 'sum',
-            'desviament_subir_instalacions': 'sum',
-            'desviament_bajar_instalacions': 'sum',
-        }).reset_index()
+        if len(desviaments_instalacions_df):
+            desviaments_instalacions_df = desviaments_instalacions_df.groupby([
+                'local_timestamp',
+                'timestamp'
+            ]).agg({
+                'desviament_instalacions': 'sum',
+                'desviament_subir_instalacions': 'sum',
+                'desviament_bajar_instalacions': 'sum',
+            }).reset_index()
 
         rad3_df.rename(columns={'value': 'desviament_instalacio', }, inplace=True)  # KWh
         desv_sistema_per_hora.rename(columns={'value': 'desviament_sistema',
@@ -428,7 +443,12 @@ class RepresentaSom(Representa):
         else:  # Si no tenim rad3 posem el preu a 0 i aixi no es cobrara res
             rad3_df['preu_rad3'] = rad3_df.apply(lambda row: 0.0, axis=1)
 
-        rad3_df = rad3_df.merge(desviaments_instalacions_df, on=['timestamp'], how='left')
+        if len(desviaments_instalacions_df):
+            rad3_df = rad3_df.merge(desviaments_instalacions_df, on=['timestamp'], how='left')
+        else:
+            rad3_df['desviament_instalacions'] = 0.0
+            rad3_df['desviament_subir_instalacions'] = 0.0
+            rad3_df['desviament_bajar_instalacions'] = 0.0
 
         rad3_df = rad3_df.sort_values(by=['timestamp'])
 
