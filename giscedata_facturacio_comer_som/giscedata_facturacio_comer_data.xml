@@ -84,10 +84,15 @@ div.back{
             <field name="description">Valors de la taula de Garantia d'Origen (gdo)</field>
             <field name="value">{'wind_power':151153,'photovoltaic':160497,'hydraulics':56298,'biomassa':6378,'biogas':0,'total': 374326,'year': '2023'}</field>
         </record>
-        <record model="res.config" id="fatura_pdf_cache_flags">
+        <record model="res.config" id="factura_pdf_cache_flags">
             <field name="name">factura_pdf_cache_flags</field>
             <field name="description">Flags per activar/desactivar el guardat de factures via adjunts del correus o adjunts de les factures\n - Enabled --> Activat, sense aquest flag no funciona el sistema de cache, la factura es genera i s'entrega on the fly\n - No_mongo --> No hi ha base de dades documental present, no tenim fitxers (per desenvolupar/testejar)\n - Dont_store --> No guarda la factura en pdf com adjunt directe de la factura </field>
             <field name="value">['Disabled']</field>
+        </record>
+        <record model="res.config" id="factura_pdf_unsent_store_days">
+            <field name="name">factura_pdf_unsent_store_days</field>
+            <field name="description">Dies que poden passar abans de que es forci guardar el PDF d'una factura que no s'ha enviat i guardat</field>
+            <field name="value">60</field>
         </record>
     </data>
 </openerp>
