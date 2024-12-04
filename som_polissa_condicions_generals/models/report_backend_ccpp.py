@@ -274,7 +274,7 @@ class ReportBackendCondicionsParticulars(ReportBackend):
             if len(sgpol_ids) > 0:
                 sgpol = sgpol_obj.browse(cursor, uid, sgpol_ids[0])
                 auvi_pauvi = 5.2
-                auvi_percent = sgpol.percentatge
+                auvi_percent = sgpol.percentatge or 0.0
                 auvi_name = sgpol.servei_generacio_id.name
 
         res = {
