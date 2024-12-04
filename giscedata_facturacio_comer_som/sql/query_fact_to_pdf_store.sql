@@ -7,7 +7,7 @@ WHERE
   i.number IS NOT NULL
   AND f.enviat_mail_id IS NULL
   AND i.type IN ('out_invoice', 'out_refund')
-  AND i.date_invoice >= '2021-01-01'
+  AND i.date_invoice >= '2020-01-01'
   AND i.date_invoice < %s
   AND (
     SELECT id
