@@ -30,7 +30,7 @@ def up(cursor, installed_version):
         cursor,
         'giscedata_facturacio_comer_som',
         'giscedata_facturacio_comer_data.xml',
-        ["fatura_pdf_cache_flags"],
+        ["factura_pdf_cache_flags"],
         mode='update'
     )
     logger.info("XMLs succesfully updated.")
