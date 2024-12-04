@@ -108,7 +108,7 @@
             %endif
             %if prices['auvi']:
                 <%namespace file="/som_polissa_condicions_generals/report/components/auvi.mako" import="auvi"/>
-                ${auvi(polissa, prices)}
+                ${auvi(polissa, prices, True)}
             %endif
                     <tr>
                         <td class="bold">${_(u"Terme energia (€/kWh)")}</td>
@@ -318,6 +318,10 @@
                             %endif
                         %endfor
                     </tr>
+                    %if prices['auvi']:
+                        <%namespace file="/som_polissa_condicions_generals/report/components/auvi.mako" import="auvi"/>
+                        ${auvi(polissa, prices, False)}
+                    %endif
                     <tr>
                         <td class="bold">${_(u"Terme energia (€/kWh)")}</td>
                         %if prices['mostra_indexada']:
