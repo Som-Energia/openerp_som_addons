@@ -242,7 +242,7 @@ class ReportBackendCondicionsParticulars(ReportBackend):
             modcon_pendent_quit_auvi = last_modcon_state == 'pendent' \
                 and pol.te_auvidi and not pol.modcontractuals_ids[0].te_auvidi
 
-            if not pol.te_auvidi \
+            if (not pol.te_auvidi and not modcon_pendent_auvi) \
                     or (pol.te_auvidi and (modcon_pendent_periodes or modcon_pendent_quit_auvi)):
                 res = False
             elif (pol.te_auvidi and not modcon_pendent_periodes and not modcon_pendent_quit_auvi) \
