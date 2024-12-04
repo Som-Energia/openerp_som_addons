@@ -2,7 +2,7 @@ with CTE as (
 	select pm.id as mail_id, gff.id as fact_id
 	from poweremail_mailbox pm
 	inner join giscedata_facturacio_factura gff on gff.id = split_part(pm.reference, ',', 2)::integer
-	where pm.reference like 'giscedata.facturacio.factura,%'
+	where pm.reference like 'giscedata.facturacio.factura,%' and gff.enviat_mail_id is null
 	and (
 		pm.pem_subject like 'Factura %'
 		or pm.pem_subject like 'Som Energia: Factura %'
@@ -43,4 +43,4 @@ with CTE as (
 update giscedata_facturacio_factura gff
 SET enviat_mail_id = CTE.mail_id
 from CTE
-where CTE.fact_id = gff.id and gff.enviat_mail_id is null;
+where CTE.fact_id = gff.id;
