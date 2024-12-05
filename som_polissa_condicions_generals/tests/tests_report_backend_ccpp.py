@@ -95,6 +95,7 @@ class TestReportBackendCCPP(testing.OOTestCase):
         pricelist = 12
         self.assertEqual(result, {
             u'auto': u'00',
+            u'auvi': False,
             u'bank': False,
             u'contract_type': u'Anual',
             u'data_baixa': '2099-01-01',
@@ -123,6 +124,9 @@ class TestReportBackendCCPP(testing.OOTestCase):
         result = self.backend_obj.get_prices_data(self.cursor, self.uid, pol_20td, context={})
 
         self.assertEqual(result, {
+            u'auvi_name': u'',
+            u'auvi_pauvi': 0.0,
+            u'auvi_percent': 0.0,
             u'coeficient_k': False,
             u'coeficient_k_untaxed': 0.0,
             u'dict_preus_tp_energia': False,
