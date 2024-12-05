@@ -165,6 +165,4 @@ class InvoicePdfStorer():
             context=self.context,
         )['pem_attachments_ids']
 
-        if 'No_mongo' in self.flags:
-            return []
         return result
