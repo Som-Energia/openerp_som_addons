@@ -252,12 +252,8 @@ class ReportBackendCondicionsParticulars(ReportBackend):
         imd_obj = self.pool.get('ir.model.data')
         fp_obj = self.pool.get('account.fiscal.position')
         pricelist_index = sgpol.servei_generacio_id.llista_preu_venda_id
-        res = {
-            'auvi_pauvi': 0.0,
-            'auvi_pauvi_untaxed': 0.0,
-        }
         if not pricelist_index:
-            return res
+            return 0.0
 
         fp_k_id = sgpol.polissa_id.fiscal_position_id \
             if sgpol.polissa_id.fiscal_position_id else ctx.get('force_fiscal_position', False)
@@ -268,19 +264,11 @@ class ReportBackendCondicionsParticulars(ReportBackend):
         poduct_pauvi_id = imd_obj.get_object_reference(
             cursor, uid, 'giscedata_serveis_generacio', 'facturacio_empresa_preu_fix'
         )[1]
-        pauvi_untaxed = pricelist_index.get_atr_price(
-            tipus='', product_id=poduct_pauvi_id, fiscal_position=fp_k,
-            with_taxes=False)[0]
 
         pauvi = pricelist_index.get_atr_price(
             tipus='', product_id=poduct_pauvi_id, fiscal_position=fp_k,
-            with_taxes=True)[0]
-        res = {
-            'auvi_pauvi': pauvi,
-            'auvi_pauvi_untaxed': pauvi_untaxed,
-        }
-
-        return res
+            with_taxes=False)[0]
+        return pauvi
 
     def get_auvi_data(self, cursor, uid, pol, context=None, ctx=None):
         res = {}
@@ -307,12 +295,9 @@ class ReportBackendCondicionsParticulars(ReportBackend):
             ])
             if len(sgpol_ids) > 0:
                 sgpol = sgpol_obj.browse(cursor, uid, sgpol_ids[0])
-                auvi_pauvi = 5.2
                 auvi_percent = sgpol.percentatge or 0.0
                 auvi_name = sgpol.servei_generacio_id.name
-
-                # WIP: get price PAUVI
-                # auvi_pauvi = self.get_pauvi(cursor, uid, sgpol, context, ctx)
+                auvi_pauvi = self.get_pauvi(cursor, uid, sgpol, context, ctx)
 
         res = {
             'auvi': auvi,
