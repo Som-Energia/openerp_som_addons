@@ -119,7 +119,7 @@ class InvoicePdfStorer():
 
     def store_file(self, content, file_name, fact_id):
         if 'Dont_store' in self.flags:
-            return []
+            return False
         b64_content = base64.b64encode(content)
         attachment = {
             "name": file_name,
