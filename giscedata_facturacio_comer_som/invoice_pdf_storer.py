@@ -9,7 +9,7 @@ import tempfile
 
 class InvoicePdfStorer():
 
-    def __init__(self, cursor, uid, context):
+    def __init__(self, cursor, uid, context=None):
         self.cursor = cursor
         self.uid = uid
         self.pool = pooler.get_pool(cursor.dbname)
