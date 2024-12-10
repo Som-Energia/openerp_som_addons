@@ -124,8 +124,6 @@ def download_all_files(server, server_port, ftp_server, ftp_username, ftp_passwo
 
 
 if __name__ == "__main__":
-    file_path = False
-    filename = False
     step("Start run: {}".format(datetime.today().strftime('%d-%m-%Y %H:%M:%S')))
     parser = argparse.ArgumentParser(description="Download ESIOS files")
     parser.add_argument(
