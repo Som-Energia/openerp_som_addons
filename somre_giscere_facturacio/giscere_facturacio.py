@@ -12,7 +12,7 @@ from tools.translate import _
 TIMEZONE = timezone('Europe/Madrid')
 
 REGANECU_LIQUIDACIO = {'H2': 'C2',
-                       'H3': 'C3',}
+                       'H3': 'C3', }
 
 
 class GiscereFacturacioFacturador(osv.osv):
@@ -20,12 +20,11 @@ class GiscereFacturacioFacturador(osv.osv):
     _name = 'giscere.facturacio.facturador'
     _inherit = 'giscere.facturacio.facturador'
 
-
     def get_tarifa_class(self, modcontractual):
         return TARIFES['Representa']
 
-    # Sobreescribim la funció per a calcular els desviaments i l'apantallament de forma personalitzada
-    def obtenir_desviaments(self, cursor, uid, cil_id, datetime_inici, datetime_fi, maduresa, context=None):
+    # Sobreescribim la funció per a calcular els desviaments i l'apantallament de forma personalitzada  # noqa: E501
+    def obtenir_desviaments(self, cursor, uid, cil_id, datetime_inici, datetime_fi, maduresa, context=None):  # noqa: E501
         """
         Overwrites function to use REGANECU instead of Market Offers to calculate System Bias
         :param cursor: OpenERP DB Cursor
@@ -54,15 +53,19 @@ class GiscereFacturacioFacturador(osv.osv):
         # dsv_rep_net
         # System bias between MHCIL and OFFERS  [kWh]
         # Context is None to allow CACHE in function
-        previsio_sistema = self.obtenir_previsio_sistema(cursor, uid, datetime_inici, datetime_fi, context=None)  # [MWh]
+        previsio_sistema = self.obtenir_previsio_sistema(
+            cursor, uid, datetime_inici, datetime_fi, context=None)  # [MWh]
 
         # Context is None to allow CACHE in function
-        mhcil = self.obtenir_generacio_sistema(cursor, uid, datetime_inici, datetime_fi, maduresa, context=None)  # [MWh]
-        dsv_rep_net = self.obtenir_desviament_sistema(mhcil, previsio_sistema, context=context)  # [kWh]
+        mhcil = self.obtenir_generacio_sistema(
+            cursor, uid, datetime_inici, datetime_fi, maduresa, context=None)  # [MWh]
+        dsv_rep_net = self.obtenir_desviament_sistema(
+            mhcil, previsio_sistema, context=context)  # [kWh]
 
         # dsv_brp
         # Calc system bias from REGANECU  [kWh]
-        dsv_brp = self.obtenir_desviament_sistema_reganecu(cursor, uid, datetime_inici, datetime_fi, maduresa,
+        dsv_brp = self.obtenir_desviament_sistema_reganecu(cursor, uid,
+                                                           datetime_inici, datetime_fi, maduresa,
                                                            context=context)
 
         # dsv_com_net
@@ -72,8 +75,10 @@ class GiscereFacturacioFacturador(osv.osv):
         dsv_com_net = dsv_com_net.merge(dsv_rep_net, on=['local_timestamp', 'timestamp'])
         dsv_com_net = dsv_com_net.rename(columns={'value': 'value_dsv_rep'})
         dsv_com_net['value'] = dsv_com_net['value_dsv_brp'] - dsv_com_net['value_dsv_rep']
-        dsv_com_net['subir'] = dsv_com_net.apply(lambda row: row['value'] if row['value'] > 0 else 0, axis=1)
-        dsv_com_net['bajar'] = dsv_com_net.apply(lambda row: abs(row['value']) if row['value'] < 0 else 0, axis=1)
+        dsv_com_net['subir'] = dsv_com_net.apply(
+            lambda row: row['value'] if row['value'] > 0 else 0, axis=1)
+        dsv_com_net['bajar'] = dsv_com_net.apply(lambda row: abs(
+            row['value']) if row['value'] < 0 else 0, axis=1)
         fields_to_keep = ['local_timestamp', 'timestamp', 'value', 'subir', 'bajar']
         dsv_com_net = dsv_com_net[fields_to_keep]
 
@@ -89,7 +94,7 @@ class GiscereFacturacioFacturador(osv.osv):
 
         return res
 
-    def obtenir_desviament_sistema_reganecu(self, cursor, uid, datetime_inici, datetime_fi, maduresa, context=None):
+    def obtenir_desviament_sistema_reganecu(self, cursor, uid, datetime_inici, datetime_fi, maduresa, context=None):  # noqa: E501
         """
         Calculates and returns SYSTEM BIAS from REGANECU
         :param cursor: OpenERP DB Cursor
@@ -128,13 +133,14 @@ class GiscereFacturacioFacturador(osv.osv):
 
         if len(reganecu_ids) == 0:
             raise osv.except_osv(_('Error'),
-                                 _("No s'han trobat registres de segment DSV entre {} i {} amb versió {} al REGANECU.").format(
+                                 _("No s'han trobat registres de segment DSV entre {} i {} amb versió {} al REGANECU.").format(  # noqa: E501
                                      datetime_inici, datetime_fi, maturity)
                                  )
 
         if use_newest_reganecu:
             # use max maturity
-            max_maturity = max([x['maturity'] for x in reganecu_o.read(cursor, uid, reganecu_ids, ['maturity'])])
+            max_maturity = max([x['maturity']
+                               for x in reganecu_o.read(cursor, uid, reganecu_ids, ['maturity'])])
             search_vals += [("maturity", "=", max_maturity)]
             reganecu_ids = reganecu_o.search(cursor, uid, search_vals, context=context)
 
@@ -143,8 +149,10 @@ class GiscereFacturacioFacturador(osv.osv):
         reganecu = reganecu_o.read(cursor, uid, reganecu_ids, read_fields, context=context)
 
         df = pd.DataFrame(data=reganecu)
-        df['energia_amb_signe'] = df.apply(lambda row: float(row['energia']) * int(row['signo_magnitud']), axis=1)
-        df['energia_amb_signe'] = df.apply(lambda row: row['energia_amb_signe'] * 1000.0, axis=1)  # from MWh to kWh
+        df['energia_amb_signe'] = df.apply(lambda row: float(
+            row['energia']) * int(row['signo_magnitud']), axis=1)
+        df['energia_amb_signe'] = df.apply(
+            lambda row: row['energia_amb_signe'] * 1000.0, axis=1)  # from MWh to kWh
 
         df = df.groupby(
             ['timestamp', 'local_timestamp']
@@ -178,7 +186,8 @@ class GiscereFacturacioFacturador(osv.osv):
                     'codigo_magnitud': '-',
                     'maturity': '-',
                     'local_timestamp': TIMEZONE.normalize(
-                        utc.localize(datetime.strptime(gap, '%Y-%m-%d %H:%M:%S')).astimezone(TIMEZONE)
+                        utc.localize(datetime.strptime(
+                            gap, '%Y-%m-%d %H:%M:%S')).astimezone(TIMEZONE)
                     ).strftime('%Y-%m-%d %H:%M:%S')
                 }
                 reganecu_filtered.append(gap_filler)
