@@ -63,13 +63,15 @@ class GiscedataPolissaModcontractual(osv.osv):
         sg_pol_id = sg_polissa_obj.search(cursor, uid, [('polissa_id', '=', polissa_id)])
         if len(sg_pol_id):
             if current_te_auvidi:
-                polissa_obj.handle_polissa_sg_category(cursor, uid, polissa_id, action='assign', context=context)
+                polissa_obj.handle_polissa_sg_category(
+                    cursor, uid, polissa_id, action='assign', context=context)
                 # # Actualitzem data inici si fa falta
                 info = sg_polissa_obj.check_actualitzar_data_inici(
                     cursor, uid, sg_pol_id, modcon.data_inici
                 )
             elif cancels_auvidi:
-                polissa_obj.handle_polissa_sg_category(cursor, uid, polissa_id, action='unassign', context=context)
+                polissa_obj.handle_polissa_sg_category(
+                    cursor, uid, polissa_id, action='unassign', context=context)
                 # Actualitzem data sortida si fa falta
                 data_inici_modcon = datetime.strptime(modcon.data_inici, '%Y-%m-%d')
                 data_sortida_sg = data_inici_modcon - timedelta(days=1)
@@ -79,7 +81,7 @@ class GiscedataPolissaModcontractual(osv.osv):
                 )
 
             if info:
-                observacions = modcon.observacions + info
+                observacions = (modcon.observacions or '') + info
                 modcon.write({'observacions': observacions})
 
         return res
