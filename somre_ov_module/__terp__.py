@@ -11,10 +11,11 @@
     'active': False,
     'installable': True,
     'depends': [
-        'base',
+        'base_extended',
     ],
     'init_xml': [],
     'update_xml': [
+        'data/somre_ov_signed_documents_data.xml',
         'security/ir.model.access.csv',
     ],
     'demo_xml': [
