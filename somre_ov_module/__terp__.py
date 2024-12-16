@@ -11,13 +11,22 @@
     'active': False,
     'installable': True,
     'depends': [
-        'base_extended',
+        "base_extended",
+        "partner_representante",
+        "som_ov_signed_documents",
+        "poweremail",
     ],
     'init_xml': [],
     'update_xml': [
-        'data/somre_ov_signed_documents_data.xml',
-        'security/ir.model.access.csv',
+        "data/somre_ov_signed_documents_data.xml",
+        "data/email_template_data.xml",
+        "views/res_users_view.xml",
+        "wizard/wizard_create_change_password_view.xml",
+        "wizard/wizard_create_staff_users_view.xml",
+        "security/ir.model.access.csv",
     ],
     'demo_xml': [
+        "demo/res_partner_demo.xml",
+        "demo/res_users_demo.xml",
     ],
 }

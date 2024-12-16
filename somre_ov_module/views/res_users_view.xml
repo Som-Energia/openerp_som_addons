@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+        <record id="res_users_staff_view" model="ir.ui.view">
+            <field name="name">res.users.staff.tree</field>
+            <field name="model">res.users</field>
+            <field name="type">tree</field>
+            <field name="priority">99</field>
+            <field name="inherit_id" ref="base.view_users_tree"/>
+            <field name="arch" type="xml">
+            	<field name="login" position="after">
+            		<field name="is_staff"/>
+            	</field>
+            </field>
+        </record>
+    </data>
+</openerp>

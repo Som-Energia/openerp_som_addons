@@ -2,3 +2,6 @@
 "access_signed_document_type_rcwd","somre.ov.signed.document.type","model_somre_ov_signed_document_type","base.group_user",1,1,1,1
 "access_signed_document_type_version_rcwd","somre.ov.signed.document.type.version","model_somre_ov_signed_document_type_version","base.group_user",1,1,1,1
 "access_signed_document_rcwd","somre.ov.signed.document","model_somre_ov_signed_document","base.group_user",1,1,1,1
+"access_partner_rcwd","somre.ov.users","model_somre_ov_users","base.group_user",1,1,1,1
+"access_wizard_create_change_password_rcwd","wizard.create.change.password","model_wizard_create_change_password","base.group_user",1,1,1,1
+"access_wizard_create_staff_users_rcwd","wizard.create.staff.users","model_wizard_create_staff_users","base.group_user",1,1,1,1

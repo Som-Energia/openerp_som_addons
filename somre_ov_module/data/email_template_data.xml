@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data noupdate="1">
+        <record model="poweremail.core_accounts" id="representa_from_email">
+            <field name="email_id">representa@somenergia.coop</field>
+            <field name="company">yes</field>
+            <field name="smtpserver">test.com</field>
+            <field name="send_pref">html</field>
+            <field name="name">Som Energia - Representació</field>
+            <field name="state">approved</field>
+            <field name="smtpport">587</field>
+        </record>
+        <record model="poweremail.templates" id="email_create_change_password">
+            <field name="name">Email crear o canviar contrasenya</field>
+            <field name="object_name" model="ir.model" search="[('name', '=', 'Partner')]"/>
+            <field eval="0" name="save_to_drafts"/>
+            <field name="model_int_name">res.partner</field>
+            <field name="def_to">${object.address[0].email}</field>
+            <field eval="0" name="auto_email"/>
+            <field eval="0" name="single_email"/>
+            <field eval="0" name="use_sign"/>
+            <field name="def_subject">Recuperació de la contrasenya de l’Oficina Virtual de representació a mercat de Som Energia</field>
+            <field name="template_language">mako</field>
+            <field eval="0" name="send_on_create"/>
+            <field name="lang">${object.lang}</field>
+            <field eval="0" name="send_on_write"/>
+            <field name="def_bcc"></field>
+            <field name="enforce_from_account" ref="representa_from_email"/>
+            <field name="def_body_text"><![CDATA[
+                <!doctype html>
+                <html>
+                <head></head>
+                <body>
+                Email text
+                </body>
+                </html>
+                ]]>
+            </field>
+    	</record>
+        <record model="poweremail.templates" id="common_template_legal_footer_representa">
+            <field name="name">Common template legal footer representa</field>
+            <field name="object_name" model="ir.model" search="[('model', '=', 'poweremail.templates')]"/>
+            <field eval="0" name="save_to_drafts"/>
+            <field name="model_int_name">poweremail.templates</field>
+            <field name="def_to">""</field>
+            <field name="def_bcc"></field>
+            <field eval="0" name="auto_email"/>
+            <field eval="0" name="single_email"/>
+            <field eval="0" name="use_sign"/>
+            <field name="def_subject"></field>
+            <field name="template_language">mako</field>
+            <field eval="0" name="send_on_create"/>
+            <field name="lang"></field>
+            <field name="copyvalue"></field>
+            <field eval="0" name="send_on_write"/>
+            <field name="def_body_text"><![CDATA[<!doctype html>
+                <!doctype html>
+                <html>
+                <head></head>
+                <body>
+                Footer representa text
+                </body>
+                </html>
+                ]]>
+            </field>
+        </record>
+    </data>
+</openerp>
