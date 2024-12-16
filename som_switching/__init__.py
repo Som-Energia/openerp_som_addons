@@ -6,3 +6,4 @@ import giscedata_atc
 import giscedata_polissa
 import giscedata_switching_b1
 import giscedata_switching_m1
+import giscedata_switching_c1
