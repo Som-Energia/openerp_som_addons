@@ -186,7 +186,7 @@ class SomreOvUsersTests(testing.OOTestCase):
     def test__sign_document__signs_last_document_version(self):
         username = self.base_costumer_vat
         document_type_id = self.reference(
-            "som_ov_signed_documents",
+            "somre_ov_module",
             "type_ovrepresenta_rgpd"
         )
         document_version_obj = self.pool.get('somre.ov.signed.document.type.version')
@@ -216,7 +216,7 @@ class SomreOvUsersTests(testing.OOTestCase):
         username = self.base_costumer_vat
 
         version_id = self.reference(
-            "somre_ov_signed_documents",
+            "somre_ov_module",
             "version_type_ovrepresenta_rgpd_2023"
         )
         print("version_ids", version_id)
