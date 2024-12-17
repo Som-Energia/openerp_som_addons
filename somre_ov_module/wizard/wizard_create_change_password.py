@@ -48,7 +48,7 @@ class WizardCreateChangePassword(osv.osv_memory):
         power_email_tmpl_obj = self.pool.get('poweremail.templates')
 
         template_id = ir_model_data.get_object_reference(
-            cursor, uid, 'som_ov_users', 'email_create_change_password'
+            cursor, uid, 'somre_ov_module', 'email_create_change_password'
         )[1]
         template = power_email_tmpl_obj.read(cursor, uid, template_id)
 
