@@ -271,6 +271,13 @@ class SomCrawlersTaskStep(osv.osv):
                     new_zip_path = os.path.join(root, filename)
                     self.recursive_extract_zip(new_zip_path, root)
                     return True
+            for sub in dirs:
+                sub_path = os.path.join(root, sub)
+                for f in os.listdir(sub_path):
+                    src = os.path.join(sub_path, f)
+                    dst = os.path.join(root, f)
+                    shutil.move(src, dst)
+                os.rmdir(sub_path)
 
         for root, dirs, files in os.walk(destination_path):
             for filename in files:
