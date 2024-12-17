@@ -4,6 +4,7 @@ from __future__ import unicode_literals
 from destral import testing
 from destral.transaction import Transaction
 from ..models.exceptions import FailSendEmail
+from ..wizard.wizard_create_change_password import WizardCreateChangePassword
 
 import mock
 
@@ -23,7 +24,7 @@ class WizardCreateChangePasswordTests(testing.OOTestCase):
     def tearDown(self):
         self.txn.stop()
 
-    @mock.patch("wizard.wizard_create_change_password.WizardCreateChangePassword.save_privisioning_data")  # noqa: E501
+    @mock.patch.object(WizardCreateChangePassword, "save_privisioning_data")
     def test__action_create_change_password__OK(self, mock_save_privisioning_data):
         partner_id = self.res_partner.search(
             self.cursor,
@@ -43,8 +44,8 @@ class WizardCreateChangePasswordTests(testing.OOTestCase):
         self.assertEqual(wiz['state'], 'done')
         self.assertEqual(wiz['info'], 'Contrasenyes generades')
 
-    @mock.patch("wizard.wizard_create_change_password.WizardCreateChangePassword.send_password_email")  # noqa: E501
-    @mock.patch("wizard.wizard_create_change_password.WizardCreateChangePassword.save_privisioning_data")  # noqa: E501
+    @mock.patch.object(WizardCreateChangePassword, "send_password_email")
+    @mock.patch.object(WizardCreateChangePassword, "save_privisioning_data")
     def test__action_create_change_password__KO_cannot_save_privisioning_data(self, mock_save_privisioning_data, mock_send_password_email):  # noqa: E501
         partner_id = self.res_partner.search(
             self.cursor,
@@ -70,8 +71,8 @@ class WizardCreateChangePasswordTests(testing.OOTestCase):
         )
         mock_send_password_email.assert_not_called()
 
-    @mock.patch("wizard.wizard_create_change_password.WizardCreateChangePassword.send_password_email")  # noqa: E501
-    @mock.patch("wizard.wizard_create_change_password.WizardCreateChangePassword.save_privisioning_data")  # noqa: E501
+    @mock.patch.object(WizardCreateChangePassword, "send_password_email")
+    @mock.patch.object(WizardCreateChangePassword, "save_privisioning_data")
     def test__action_create_change_password__KO_cannot_send_password_email(self, mock_save_privisioning_data, mock_send_password_email):  # noqa: E501
         partner_id = self.res_partner.search(
             self.cursor,
@@ -100,7 +101,7 @@ class WizardCreateChangePasswordTests(testing.OOTestCase):
             "Error al generar/enviar l'email")
         )
 
-    @mock.patch("wizard.wizard_create_change_password.WizardCreateChangePassword.save_privisioning_data")  # noqa: E501
+    @mock.patch.object(WizardCreateChangePassword, "save_privisioning_data")
     def test__action_create_change_password__multiple_partners__OK(self, mock_save_privisioning_data):  # noqa: E501
         partner_ids = self.res_partner.search(
             self.cursor,
@@ -120,8 +121,8 @@ class WizardCreateChangePasswordTests(testing.OOTestCase):
         self.assertEqual(wiz['state'], 'done')
         self.assertEqual(wiz['info'], 'Contrasenyes generades')
 
-    @mock.patch("wizard.wizard_create_change_password.WizardCreateChangePassword.send_password_email")  # noqa: E501
-    @mock.patch("wizard.wizard_create_change_password.WizardCreateChangePassword.save_privisioning_data")  # noqa: E501
+    @mock.patch.object(WizardCreateChangePassword, "send_password_email")
+    @mock.patch.object(WizardCreateChangePassword, "save_privisioning_data")
     def test__action_create_change_password__multiple_partners__KO_cannot_save_privisioning_data(self, mock_save_privisioning_data, mock_send_password_email):  # noqa: E501
         partner_ids = self.res_partner.search(
             self.cursor,
@@ -146,8 +147,8 @@ class WizardCreateChangePasswordTests(testing.OOTestCase):
         )
         )
 
-    @mock.patch("wizard.wizard_create_change_password.WizardCreateChangePassword.send_password_email")  # noqa: E501
-    @mock.patch("wizard.wizard_create_change_password.WizardCreateChangePassword.save_privisioning_data")  # noqa: E501
+    @mock.patch.object(WizardCreateChangePassword, "send_password_email")
+    @mock.patch.object(WizardCreateChangePassword, "save_privisioning_data")
     def test__action_create_change_password__multiple_partners__KO_cannot_save_privisioning_data__even_partner_id(self, mock_save_privisioning_data, mock_send_password_email):  # noqa: E501
         partner_ids = self.res_partner.search(
             self.cursor,
@@ -177,8 +178,8 @@ class WizardCreateChangePasswordTests(testing.OOTestCase):
         )
         )
 
-    @mock.patch("wizard.wizard_create_change_password.WizardCreateChangePassword.send_password_email")  # noqa: E501
-    @mock.patch("wizard.wizard_create_change_password.WizardCreateChangePassword.save_privisioning_data")  # noqa: E501
+    @mock.patch.object(WizardCreateChangePassword, "send_password_email")
+    @mock.patch.object(WizardCreateChangePassword, "save_privisioning_data")
     def test__action_create_change_password__KO_cannot_send_password_email__even_partner_id(self, mock_save_privisioning_data, mock_send_password_email):  # noqa: E501
         partner_ids = self.res_partner.search(
             self.cursor,
