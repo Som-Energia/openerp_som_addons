@@ -6,7 +6,7 @@ import requests
 import json
 from tools import config
 
-from models.exceptions import FailSendEmail
+from ..models.exceptions import FailSendEmail
 
 
 class WizardCreateChangePassword(osv.osv_memory):

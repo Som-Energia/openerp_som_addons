@@ -3,7 +3,7 @@ from __future__ import unicode_literals
 
 from destral import testing
 from destral.transaction import Transaction
-from models.exceptions import FailSendEmail
+from ..models.exceptions import FailSendEmail
 
 import mock
 

@@ -4,7 +4,7 @@
 from destral import testing
 from destral.transaction import Transaction
 
-from models.exceptions import NoSuchUser
+from ..models.exceptions import NoSuchUser
 
 
 class SomreOvUsersTests(testing.OOTestCase):
