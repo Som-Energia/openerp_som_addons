@@ -32,5 +32,6 @@
         "demo/res_partner_demo.xml",
         "demo/res_users_demo.xml",
         "demo/giscere_instalacio_demo.xml",
+        "demo/giscere_facturacio_demo.xml",
     ],
 }
