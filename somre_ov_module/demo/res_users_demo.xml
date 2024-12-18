@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<openerp>
+    <data>
+        <!-- Català -->
+        <record id="res_lang" model="res.lang">
+            <field name="code">ca_ES</field>
+            <field name="date_format">%m/%d/%Y</field>
+            <field name="direction">ltr</field>
+            <field name="name">Català</field>
+            <field name="thousand_sep">,</field>
+            <field name="time_format">%H:%M:%S</field>
+            <field name="decimal_point">.</field>
+            <field name="grouping">[]</field>
+        </record>
+
+        <!-- User exists, is active -->
+        <record id="res_users_staff" model="res.users">
+            <field name="name">Cameron, Katie</field>
+            <field name="login">lamaali</field>
+            <field name="password">$9$NB3wTRKd$PL7sNc2PQsY.foLPazpkr.</field>
+            <field name="active" eval="True"/>
+            <field name="lang">ca_ES</field>
+        </record>
+
+        <!-- User exists, is active and is staff -->
+        <record id="res_partner_res_users_already_staff" model="res.partner">
+            <field name="name">Hari, Mata</field>
+            <field name="vat">G78525763</field>
+        </record>
+        <record id="res_partner_address_res_users_already_staff" model="res.partner.address">
+            <field name="name">Hari, Mata</field>
+            <field name="email">matahari@somenergia.coop</field>
+            <field name="partner_id" ref="res_partner_res_users_already_staff"/>
+            <field name="street">Carrer Pic de Peguera, 9</field>
+            <field name="city">Girona</field>
+            <field name="zip">17002</field>
+            <field name="state_id">20</field>
+        </record>
+        <record id="res_users_already_staff" model="res.users">
+            <field name="name">Hari, Mata</field>
+            <field name="login">matahari</field>
+            <field name="password">$9$NB3wTRKF$PL9sNc2PQsY.foYLazpkr.</field>
+            <field name="address_id" ref="res_partner_address_res_users_already_staff"/>
+            <field name="active" eval="True"/>
+            <field name="lang">ca_ES</field>
+        </record>
+    </data>
+</openerp>

@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<openerp>
+    <data>
+        <record id="account_invoice_0" model="account.invoice">
+			<field name="currency_id" ref="base.EUR"/>
+			<field name="partner_id" ref="somre_ov_module.res_partner_soci"/>
+			<field name="journal_id" ref="account.sales_journal"/>
+			<field name="type">out_invoice</field>
+			<field name="account_id" ref="account.a_sale"/>
+			<field name="name">Proforma Test invoice 0</field>
+            <field name="date_invoice">2022-10-31</field>
+			<field name="address_invoice_id" ref="somre_ov_module.res_partner_address_soci"/>
+            <field name="amount_total">28.77</field>
+            <field name="state">open</field>
+        </record>
+        <record id="account_invoice_1" model="account.invoice">
+			<field name="currency_id" ref="base.EUR"/>
+			<field name="partner_id" ref="somre_ov_module.res_partner_soci_legal"/>
+			<field name="journal_id" ref="account.sales_journal"/>
+			<field name="type">out_invoice</field>
+			<field name="account_id" ref="account.a_sale"/>
+			<field name="name">Proforma Test invoice 1</field>
+            <field name="date_invoice">2022-10-31</field>
+			<field name="address_invoice_id" ref="somre_ov_module.res_partner_address_legal_entity"/>
+            <field name="amount_total">14.35</field>
+            <field name="state">draft</field>
+        </record>
+        <record id="account_invoice_specific_retribution_0" model="account.invoice">
+			<field name="currency_id" ref="base.EUR"/>
+			<field name="partner_id" ref="somre_ov_module.res_partner_soci"/>
+			<field name="journal_id" ref="account.sales_journal"/>
+			<field name="type">out_invoice</field>
+			<field name="account_id" ref="account.a_sale"/>
+			<field name="name">Specific retribution Test invoice 0</field>
+            <field name="date_invoice">2022-10-31</field>
+			<field name="address_invoice_id" ref="somre_ov_module.res_partner_address_soci"/>
+            <field name="amount_total">14.35</field>
+            <field name="state">open</field>
+        </record>
+        <record id="account_invoice_specific_retribution_complementary_0" model="account.invoice">
+            <field name="currency_id" ref="base.EUR"/>
+            <field name="partner_id" ref="somre_ov_module.res_partner_soci"/>
+            <field name="journal_id" ref="account.sales_journal"/>
+            <field name="type">out_invoice</field>
+            <field name="account_id" ref="account.a_sale"/>
+            <field name="name">Specific retribution Complementary Test invoice 0</field>
+            <field name="date_invoice">2022-10-31</field>
+            <field name="address_invoice_id" ref="somre_ov_module.res_partner_address_soci"/>
+            <field name="amount_total">-4.35</field>
+            <field name="state">open</field>
+        </record>
+        <record id="account_invoice_2" model="account.invoice">
+			<field name="currency_id" ref="base.EUR"/>
+			<field name="partner_id" ref="somre_ov_module.res_partner_soci"/>
+			<field name="journal_id" ref="account.sales_journal"/>
+			<field name="type">out_invoice</field>
+			<field name="account_id" ref="account.a_sale"/>
+			<field name="name">Proforma Test invoice 2</field>
+            <field name="date_invoice">2022-09-30</field>
+			<field name="address_invoice_id" ref="somre_ov_module.res_partner_address_soci"/>
+            <field name="amount_total">29.77</field>
+            <field name="state">paid</field>
+        </record>
+        <record id="giscere_facturacio_factura_0" model="giscere.facturacio.factura">
+            <field name="name">Factura 0</field>
+            <field name="number">F0</field>
+            <field name="data_inici">2022-10-01</field>
+            <field name="data_final">2022-10-31</field>
+            <field name="date_invoice">2022-10-31</field>
+            <field name="polissa_id" ref="somre_ov_module.giscere_polissa_3"/>
+            <field name="partner_id" ref="somre_ov_module.res_partner_soci"/>
+            <field name="tipo_factura">01</field>
+            <field name="invoice_id" ref="account_invoice_0"/>
+            <field name="cil_id" ref="somre_ov_module.giscere_cil_3"/>
+            <field name="facturacio" eval="1"/>
+            <field name="llista_preu" eval="1"/>
+        </record>
+        <record id="giscere_facturacio_factura_1" model="giscere.facturacio.factura">
+            <field name="name">Factura 1</field>
+            <field name="number">F1</field>
+            <field name="data_inici">2022-10-01</field>
+            <field name="data_final">2022-10-31</field>
+            <field name="date_invoice">2022-10-31</field>
+            <field name="polissa_id" ref="somre_ov_module.giscere_polissa_2"/>
+            <field name="partner_id" ref="somre_ov_module.res_partner_soci_legal"/>
+            <field name="tipo_factura">02</field>
+            <field name="invoice_id" ref="account_invoice_1"/>
+            <field name="cil_id" ref="somre_ov_module.giscere_cil_2"/>
+            <field name="facturacio" eval="1"/>
+            <field name="llista_preu" eval="1"/>
+        </record>
+        <record id="giscere_facturacio_factura_2" model="giscere.facturacio.factura">
+            <field name="name">Factura 2</field>
+            <field name="number">F2</field>
+            <field name="data_inici">2022-09-01</field>
+            <field name="data_final">2022-09-30</field>
+            <field name="date_invoice">2022-09-30</field>
+            <field name="polissa_id" ref="somre_ov_module.giscere_polissa_3"/>
+            <field name="partner_id" ref="somre_ov_module.res_partner_soci"/>
+            <field name="tipo_factura">01</field>
+            <field name="invoice_id" ref="account_invoice_2"/>
+            <field name="cil_id" ref="somre_ov_module.giscere_cil_3"/>
+            <field name="facturacio" eval="1"/>
+            <field name="llista_preu" eval="1"/>
+        </record>
+        <record id="giscere_facturacio_factura_specific_retribution_0" model="giscere.facturacio.factura">
+            <field name="name">Specific Retribution Invoice 0</field>
+            <field name="number">RE</field>
+            <field name="data_inici">2022-09-01</field>
+            <field name="data_final">2022-09-30</field>
+            <field name="date_invoice">2022-09-30</field>
+            <field name="polissa_id" ref="somre_ov_module.giscere_polissa_3"/>
+            <field name="partner_id" ref="somre_ov_module.res_partner_soci"/>
+            <field name="tipo_factura">02</field>
+            <field name="invoice_id" ref="account_invoice_specific_retribution_0"/>
+            <field name="cil_id" ref="somre_ov_module.giscere_cil_3"/>
+            <field name="facturacio" eval="1"/>
+            <field name="llista_preu" eval="1"/>
+        </record>
+        <record id="giscere_facturacio_factura_specific_retribution_complementary_0" model="giscere.facturacio.factura">
+            <field name="name">Specific Retribution Complementary Invoice 0</field>
+            <field name="number">CO</field>
+            <field name="data_inici">2022-09-01</field>
+            <field name="data_final">2022-09-30</field>
+            <field name="date_invoice">2022-09-30</field>
+            <field name="polissa_id" ref="somre_ov_module.giscere_polissa_3"/>
+            <field name="partner_id" ref="somre_ov_module.res_partner_soci"/>
+            <field name="tipo_factura">02</field>
+            <field name="invoice_id" ref="account_invoice_specific_retribution_complementary_0"/>
+            <field name="cil_id" ref="somre_ov_module.giscere_cil_3"/>
+            <field name="facturacio" eval="1"/>
+            <field name="llista_preu" eval="1"/>
+        </record>
+        <record id="giscere_facturacio_extra_specific_retribution_0" model="giscere.facturacio.extra">
+            <field name="name">Specific Retribution Extraline 2024/03</field>
+            <field name="factura_ids" eval="[(6, 0, [ref('giscere_facturacio_factura_specific_retribution_0')])]"/>
+            <field name="type_extra">retribution</field>
+            <field name="year">2024</field>
+            <field name="quantity">1</field>
+            <field name="price_unit">14.35</field>
+            <field name="total_amount_invoiced">5438.21</field>
+            <field name="product_id">1</field>
+            <field name="uos_id">1</field>
+			<field name="account_id" ref="account.a_sale"/>
+            <field name="polissa_id" ref="somre_ov_module.giscere_polissa_3"/>
+            <field name="date_from">2024-01-01</field>
+            <field name="date_to">2024-12-31</field>
+            <field name="term">1</field>
+            <field name="tipus">retrib_espec</field>
+        </record>
+        <record id="giscere_facturacio_extra_specific_retribution_complementary_0" model="giscere.facturacio.extra">
+            <field name="name">Retribución Específica: Complementaria de 2022-06-01 a 2022-06-30</field>
+            <field name="factura_ids" eval="[(6, 0, [ref('giscere_facturacio_factura_specific_retribution_complementary_0')])]"/>
+            <field name="type_extra">complementary</field>
+            <field name="year">2024</field>
+            <field name="quantity">1</field>
+            <field name="price_unit">1</field>
+            <field name="total_amount_invoiced">-3.35</field>
+            <field name="product_id">1</field>
+            <field name="uos_id">1</field>
+            <field name="account_id" ref="account.a_sale"/>
+            <field name="polissa_id" ref="somre_ov_module.giscere_polissa_3"/>
+            <field name="date_from">2024-01-01</field>
+            <field name="date_to">2024-12-31</field>
+            <field name="term">1</field>
+            <field name="tipus">retrib_espec</field>
+        </record>
+        <record id="giscere_facturacio_extra_specific_retribution_complementary_1" model="giscere.facturacio.extra">
+            <field name="name">Retribución Específica: Complementaria de 2022-07-01 a 2022-07-30</field>
+            <field name="factura_ids" eval="[(6, 0, [ref('giscere_facturacio_factura_specific_retribution_complementary_0')])]"/>
+            <field name="type_extra">complementary</field>
+            <field name="year">2024</field>
+            <field name="quantity">1</field>
+            <field name="price_unit">1</field>
+            <field name="total_amount_invoiced">-1</field>
+            <field name="product_id">1</field>
+            <field name="uos_id">1</field>
+            <field name="account_id" ref="account.a_sale"/>
+            <field name="polissa_id" ref="somre_ov_module.giscere_polissa_3"/>
+            <field name="date_from">2024-01-01</field>
+            <field name="date_to">2024-12-31</field>
+            <field name="term">1</field>
+            <field name="tipus">retrib_espec</field>
+        </record>
+    </data>
+</openerp>

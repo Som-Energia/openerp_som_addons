@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<openerp>
+    <data>
+        <!-- Partner exists, is active and is customer -->
+        <record id="res_partner_soci" model="res.partner">
+            <field name="name">Benedetti, Mario</field>
+            <field name="ref">S202199</field>
+            <field name="vat">ES48591264S</field>
+            <field name="active" eval="True"/>
+        </record>
+        <record id="res_partner_address_soci" model="res.partner.address">
+            <field name="city">Paso de los Toros</field>
+            <field name="name">Benedetti, Mario</field>
+            <field name="zip">08600</field>
+            <field name="title">M.</field>
+            <field name="country_id" model="res.country" search="[('name','=','España')]"/>
+            <field name="state_id" model="res.country.state" search="[('name', '=', 'Granada')]"/>
+            <field name="street">Rincón de Haikus, 23</field>
+            <field name="type">default</field>
+            <field name="email">test@test.test</field>
+            <field name="phone">933333333</field>
+            <field name="mobile">666666666</field>
+            <field name="customer" eval="True"/>
+            <field name="partner_id" ref="res_partner_soci"/>
+        </record>
+        <!-- Partner exists, is active and is customer and legal entity-->
+        <record id="res_partner_soci_legal_proxy" model="res.partner">
+            <field name="name">Aplastado, Coyote</field>
+            <field name="vat">ES36464471H</field>
+            <field name="active" eval="True"/>
+        </record>
+        <record id="res_partner_soci_legal" model="res.partner">
+            <field name="name">ACME Industries</field>
+            <field name="ref">S206199</field>
+            <field name="vat">ESW2796397D</field>
+            <field name="active" eval="True"/>
+            <field name="representante_id" ref="res_partner_soci_legal_proxy"/>
+        </record>
+        <record id="res_partner_address_legal_entity" model="res.partner.address">
+            <field name="city">El Camino</field>
+            <field name="name">ACME Industries</field>
+            <field name="zip">08600</field>
+            <field name="title">M.</field>
+            <field name="country_id" model="res.country" search="[('name','=','España')]"/>
+            <field name="state_id" model="res.country.state" search="[('name', '=', 'Granada')]"/>
+            <field name="street">Cañon, 12</field>
+            <field name="type">default</field>
+            <field name="email">info@acme.com</field>
+            <field name="phone">933333333</field>
+            <field name="mobile">666666666</field>
+            <field name="customer" eval="True"/>
+            <field name="partner_id" ref="res_partner_soci_legal"/>
+        </record>
+        <!-- Partner exists and is NOT active -->
+        <record id="res_partner_soci_not_active" model="res.partner">
+            <field name="name">San Basilio, Paloma</field>
+            <field name="ref">S205199</field>
+            <field name="vat">ES14763905K</field>
+            <field name="active" eval="False"/>
+        </record>
+        <!-- Partner exists, is active and is not customer -->
+        <record id="res_partner_not_customer" model="res.partner">
+            <field name="name">Distri Name</field>
+            <field name="ref">666</field>
+            <field name="vat"></field>
+            <field name="active" eval="True"/>
+        </record>
+        <record id="res_partner_address_not_customer" model="res.partner.address">
+            <field name="city">Girona</field>
+            <field name="name">Distri Name</field>
+            <field name="zip">08600</field>
+            <field name="title">M.</field>
+            <field name="country_id" model="res.country" search="[('name','=','España')]"/>
+            <field name="state_id" model="res.country.state" search="[('name', '=', 'Granada')]"/>
+            <field name="street">Distri street, 23</field>
+            <field name="type">default</field>
+            <field name="email">distri@test.test</field>
+            <field name="phone">933333333</field>
+            <field name="mobile">666666666</field>
+            <field name="customer" eval="False"/>
+            <field name="partner_id" ref="res_partner_not_customer"/>
+        </record>
+        <!-- Partner exists, is active and does not have contract -->
+        <record id="res_partner_soci_without_contract" model="res.partner">
+            <field name="name">Liluye Bina, Onawa</field>
+            <field name="ref">999</field>
+            <field name="vat">ES85190129S</field>
+            <field name="active" eval="True"/>
+        </record>
+    </data>
+</openerp>

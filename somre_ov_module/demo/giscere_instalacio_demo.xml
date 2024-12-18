@@ -1,0 +1,240 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<openerp>
+    <data>
+        <record id="res_country_state_0" model="res.country.state">
+            <field name="code">17</field>
+            <field name="country_id">67</field>
+            <field name="name">Girona</field>
+        </record>
+        <record id="res_municipi_0" model="res.municipi">
+            <field name="name">Girona</field>
+            <field name="subsistema_id">10</field>
+            <field name="ine">17079</field>
+        </record>
+        <record id="giscere_cil_0" model="giscere.cil">
+            <field name="name">ES1234000000000001JK1F001</field>
+            <field name="nv">Carrer Buenaventura Durruti</field>
+            <field name="pnp">1</field>
+            <field name="aclarador">aclaridor</field>
+            <field name="codi_unitat_fisica">Unitat del poble</field>
+            <field name="id_municipi" ref="res_municipi_0"/>
+            <field name="id_provincia" ref="res_country_state_0"/>
+            <field name="distribuidora_id">1</field>
+            <field name="dp">08080</field>
+        </record>
+        <record id="giscere_cil_1" model="giscere.cil">
+            <field name="name">ES1234000000000001JK1F002</field>
+            <field name="nv">Carrer Buenaventura Durruti</field>
+            <field name="pnp">2</field>
+            <field name="aclarador">aclaridor</field>
+            <field name="codi_unitat_fisica">Unitat del poble</field>
+            <field name="id_municipi" ref="res_municipi_0"/>
+            <field name="id_provincia" ref="res_country_state_0"/>
+            <field name="distribuidora_id">1</field>
+            <field name="dp">08080</field>
+        </record>
+        <record id="giscere_cil_2" model="giscere.cil">
+            <field name="name">ES1234000000000001JK1F003</field>
+            <field name="nv">Carrer Buenaventura Durruti</field>
+            <field name="pnp">3</field>
+            <field name="aclarador">aclaridor</field>
+            <field name="codi_unitat_fisica">Unitat del poble</field>
+            <field name="id_municipi" ref="res_municipi_0"/>
+            <field name="id_provincia" ref="res_country_state_0"/>
+            <field name="distribuidora_id">1</field>
+            <field name="dp">08080</field>
+        </record>
+        <record id="giscere_cil_3" model="giscere.cil">
+            <field name="name">ES1234000000000001JK1F004</field>
+            <field name="nv">Carrer Buenaventura Durruti</field>
+            <field name="pnp">4</field>
+            <field name="aclarador">aclaridor</field>
+            <field name="codi_unitat_fisica">Unitat del poble</field>
+            <field name="id_municipi" ref="res_municipi_0"/>
+            <field name="id_provincia" ref="res_country_state_0"/>
+            <field name="distribuidora_id">1</field>
+            <field name="dp">08080</field>
+        </record>
+        <record id="giscere_instalacio_0" model="giscere.instalacio">
+            <field name="subgrup">b11</field>
+            <field name="uprs">1</field>
+            <field name="codi_previsio">SR00000</field>
+            <field name="potencia_nominal">800</field>
+            <field name="name">Installation 0</field>
+            <field name="titular" ref="somre_ov_module.res_partner_soci"/>
+            <field name="codigo_ministerio">RE-00000</field>
+            <field name="utm_y">0,80284</field>
+            <field name="utm_x">41,54670</field>
+            <field name="cil" ref="giscere_cil_0"/>
+            <field name="data_alta">2022-09-01</field>
+            <field name="data_baixa"></field>
+            <field name="descripcio">Description 0</field>
+            <field name="solicitud_ree">20201203132064</field>
+            <field name="tipo">IT-00000</field>
+            <field name="unitat_oferta">2</field>
+            <field name="unitat_fisica">1</field>
+            <field name="data_creacio">2022-02-22</field>
+        </record>
+        <record id="giscere_instalacio_1" model="giscere.instalacio">
+            <field name="subgrup">b11</field>
+            <field name="uprs">1</field>
+            <field name="codi_previsio">SR00001</field>
+            <field name="potencia_nominal">801</field>
+            <field name="name">Installation 1</field>
+            <field name="titular" ref="somre_ov_module.res_partner_soci"/>
+            <field name="codigo_ministerio">RE-00001</field>
+            <field name="utm_y">0,80284</field>
+            <field name="utm_x">41,54670</field>
+            <field name="cil" ref="giscere_cil_1"/>
+            <field name="data_alta">2022-09-02</field>
+            <field name="data_baixa"></field>
+            <field name="descripcio">Description 1</field>
+            <field name="solicitud_ree">20201203132064</field>
+            <field name="tipo">IT-00001</field>
+            <field name="unitat_oferta">2</field>
+            <field name="unitat_fisica">1</field>
+            <field name="data_creacio">2022-02-21</field>
+        </record>
+        <record id="giscere_instalacio_2" model="giscere.instalacio">
+            <field name="subgrup">b11</field>
+            <field name="uprs">1</field>
+            <field name="codi_previsio">SR00002</field>
+            <field name="potencia_nominal">801</field>
+            <field name="name">Installation 2</field>
+            <field name="titular" ref="somre_ov_module.res_partner_soci_without_contract"/>
+            <field name="codigo_ministerio">RE-00002</field>
+            <field name="utm_y">0,80284</field>
+            <field name="utm_x">41,54670</field>
+            <field name="cil" ref="giscere_cil_2"/>
+            <field name="data_alta">2022-09-02</field>
+            <field name="data_baixa"></field>
+            <field name="descripcio">Description 2</field>
+            <field name="solicitud_ree">20201203132064</field>
+            <field name="tipo">IT-00001</field>
+            <field name="unitat_oferta">2</field>
+            <field name="unitat_fisica">1</field>
+            <field name="data_creacio">2022-02-21</field>
+        </record>
+        <record id="giscere_instalacio_3" model="giscere.instalacio">
+            <field name="subgrup">b11</field>
+            <field name="uprs">1</field>
+            <field name="codi_previsio">SR00003</field>
+            <field name="potencia_nominal">801</field>
+            <field name="name">Installation 3</field>
+            <field name="titular" ref="somre_ov_module.res_partner_soci"/>
+            <field name="codigo_ministerio">RE-00003</field>
+            <field name="utm_y"></field>
+            <field name="utm_x"></field>
+            <field name="cil" ref="giscere_cil_3"/>
+            <field name="data_alta">2022-09-02</field>
+            <field name="data_baixa"></field>
+            <field name="descripcio">Description 3</field>
+            <field name="solicitud_ree">20201203132064</field>
+            <field name="tipo">IT-00001</field>
+            <field name="unitat_oferta">2</field>
+            <field name="unitat_fisica">1</field>
+            <field name="data_creacio">2022-02-21</field>
+        </record>
+        <record id="res_partner_bank_0" model="res.partner.bank">
+            <field name="iban">ES3421008161215236295257</field>
+            <field name="printable_iban">ES34 2100 8161 2152 3629 5257</field>
+            <field name="state">iban</field>
+            <field name="partner_id" ref="somre_ov_module.res_partner_soci"/>
+            <field name="acc_country_id">67</field>
+        </record>
+        <record id="giscere_polissa_0" model="giscere.polissa">
+            <field name="titular" ref="somre_ov_module.res_partner_soci_legal"/>
+            <field name="renovacio_auto" eval="True"/>
+            <field name="comercialitzadora">1</field>
+            <field name="desvios">included</field>
+            <field name="representation_type">indirecta_cnmc</field>
+            <field name="contract_type">01</field>
+            <field name="name_auto" eval="True"/>
+            <field name="efecte_cartera">100</field>
+            <field name="active" eval="True"/>
+            <field name="name">100</field>
+            <field name="cil" ref="giscere_cil_0"/>
+            <field name="state">activa</field>
+            <field name="data_alta">2022-02-22</field>
+            <field name="data_firma_contracte">2022-02-23</field>
+            <field name="data_baixa"></field>
+            <field name="modcontractual_activa"></field>
+            <field name="mode_facturacio">index</field>
+            <field name="representant_fee">1.5</field>
+            <field name="desvios">included</field>
+            <field name="bank" ref="res_partner_bank_0"/>
+            <field name="efecte_cartera">100</field>
+            <field name="titular_nif">ES36464471H</field>
+        </record>
+        <record id="giscere_polissa_1" model="giscere.polissa">
+            <field name="titular" ref="somre_ov_module.res_partner_soci_legal"/>
+            <field name="renovacio_auto" eval="True"/>
+            <field name="comercialitzadora">1</field>
+            <field name="desvios">included</field>
+            <field name="representation_type">indirecta_cnmc</field>
+            <field name="contract_type">01</field>
+            <field name="name_auto" eval="True"/>
+            <field name="efecte_cartera">100</field>
+            <field name="active" eval="True"/>
+            <field name="name">101</field>
+            <field name="cil" ref="giscere_cil_1"/>
+            <field name="state">activa</field>
+            <field name="data_alta">2022-02-22</field>
+            <field name="data_firma_contracte">2022-02-23</field>
+            <field name="data_baixa"></field>
+            <field name="modcontractual_activa"></field>
+            <field name="mode_facturacio">index</field>
+            <field name="representant_fee">1.5</field>
+            <field name="desvios">included</field>
+            <field name="bank" ref="res_partner_bank_0"/>
+            <field name="efecte_cartera">100</field>
+        </record>
+        <record id="giscere_polissa_2" model="giscere.polissa">
+            <field name="titular" ref="somre_ov_module.res_partner_soci_legal"/>
+            <field name="renovacio_auto" eval="True"/>
+            <field name="comercialitzadora">1</field>
+            <field name="desvios">included</field>
+            <field name="representation_type">indirecta_cnmc</field>
+            <field name="contract_type">01</field>
+            <field name="name_auto" eval="True"/>
+            <field name="efecte_cartera">100</field>
+            <field name="active" eval="True"/>
+            <field name="name">102</field>
+            <field name="cil" ref="giscere_cil_2"/>
+            <field name="state">activa</field>
+            <field name="data_alta">2022-02-22</field>
+            <field name="data_firma_contracte">2022-02-23</field>
+            <field name="data_baixa"></field>
+            <field name="modcontractual_activa"></field>
+            <field name="mode_facturacio">index</field>
+            <field name="representant_fee">1.5</field>
+            <field name="desvios">included</field>
+            <field name="bank" ref="res_partner_bank_0"/>
+            <field name="efecte_cartera">100</field>
+        </record>
+        <record id="giscere_polissa_3" model="giscere.polissa">
+            <field name="titular" ref="somre_ov_module.res_partner_soci"/>
+            <field name="renovacio_auto" eval="True"/>
+            <field name="comercialitzadora">1</field>
+            <field name="desvios">included</field>
+            <field name="representation_type">indirecta_cnmc</field>
+            <field name="contract_type">01</field>
+            <field name="name_auto" eval="True"/>
+            <field name="efecte_cartera">100</field>
+            <field name="active" eval="True"/>
+            <field name="name">103</field>
+            <field name="cil" ref="giscere_cil_3"/>
+            <field name="state">activa</field>
+            <field name="data_alta">2022-02-22</field>
+            <field name="data_firma_contracte">2022-02-23</field>
+            <field name="data_baixa"></field>
+            <field name="modcontractual_activa"></field>
+            <field name="mode_facturacio">index</field>
+            <field name="representant_fee">1.5</field>
+            <field name="desvios">included</field>
+            <field name="bank" ref="res_partner_bank_0"/>
+            <field name="efecte_cartera">100</field>
+            <field name="titular_nif">ES48591264S</field>
+        </record>
+    </data>
+</openerp>
