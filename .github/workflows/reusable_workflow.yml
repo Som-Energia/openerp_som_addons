@@ -10,7 +10,7 @@ on:
       pyversion:
         required: false
         type: string
-        default: '["2.7-dev"]'
+        default: '["2.7"]'
       erpbranch:
         required: false
         type: string
@@ -110,7 +110,7 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt-get --allow-releaseinfo-change update
-          sudo apt-get install python3-dev libxml2-dev libxmlsec1 libxmlsec1-dev libgdal-dev -y
+          sudo apt-get install python2-dev python3-dev libxml2-dev libxmlsec1 libxmlsec1-dev libgdal-dev -y
           cd $ROOT_DIR_SRC/libFacturacioATR
           git checkout $(git describe --tags `git rev-list --tags --max-count=1`)
           pip install -e .
