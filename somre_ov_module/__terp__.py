@@ -14,6 +14,10 @@
         "base_extended",
         "partner_representante",
         "poweremail",
+        "giscere_cil",
+        "giscere_polissa",
+        "giscere_facturacio",
+        "base_iban",
     ],
     'init_xml': [],
     'update_xml': [
@@ -27,5 +31,6 @@
     'demo_xml': [
         "demo/res_partner_demo.xml",
         "demo/res_users_demo.xml",
+        "demo/giscere_instalacio_demo.xml",
     ],
 }
