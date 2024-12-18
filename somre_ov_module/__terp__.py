@@ -18,6 +18,7 @@
         "giscere_polissa",
         "giscere_facturacio",
         "base_iban",
+        "giscere_mhcil",
     ],
     'init_xml': [],
     'update_xml': [
@@ -33,5 +34,7 @@
         "demo/res_users_demo.xml",
         "demo/giscere_instalacio_demo.xml",
         "demo/giscere_facturacio_demo.xml",
+        "demo/giscere_mhcil_demo.xml",
+        "demo/giscere_previsio_publicada_demo.xml"
     ],
 }

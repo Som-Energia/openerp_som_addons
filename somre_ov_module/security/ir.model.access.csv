@@ -7,3 +7,4 @@
 "access_wizard_create_staff_users_rcwd","wizard.create.staff.users","model_wizard_create_staff_users","base.group_user",1,1,1,1
 "access_installations_rcwd","somre.ov.installations","model_somre_ov_installations","base.group_user",1,1,1,1
 "access_invoices_rcwd","somre.ov.invoices","model_somre_ov_invoices","base.group_user",1,1,1,1
+"access_somre_ov_production_data_rcwd","somre.ov.production.data","model_somre_ov_production_data","base.group_user",1,1,1,1
