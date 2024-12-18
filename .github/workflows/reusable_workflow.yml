@@ -10,7 +10,7 @@ on:
       pyversion:
         required: false
         type: string
-        default: '["2.7"]'
+        default: '["2.7-dev"]'
       erpbranch:
         required: false
         type: string
@@ -31,7 +31,7 @@ env:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     strategy:
       # You can use PyPy versions in python-version.
       # For example, pypy2 and pypy3
