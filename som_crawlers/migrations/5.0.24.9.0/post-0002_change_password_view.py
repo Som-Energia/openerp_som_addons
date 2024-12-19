@@ -7,11 +7,11 @@ def up(cursor, installed_version):
     if not installed_version:
         return
 
-    logger = logging.getLogger('openerp.migration')
+    logger = logging.getLogger("openerp.migration")
 
     logger.info("Updating XML")
     load_data(
-        cursor, 'som_crawlers', 'view/som_crawlers_config_view.xml', mode='update'
+        cursor, "som_crawlers", "views/som_crawlers_config_view.xml", mode="update"
     )
     logger.info("XML succesfully updated.")
 
