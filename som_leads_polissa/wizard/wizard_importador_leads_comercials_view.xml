@@ -7,7 +7,7 @@
             <field name="type">form</field>
             <field name="inherit_id" ref="giscedata_crm_importador.view_wizard_importar_leads"/>
             <field name="arch" type="xml">
-                <xpath expr="//field[@name='activate_leads']" position="replace">
+                <xpath expr="//field[@name='activate_leads']" position="after">
                     <field name="llista_preus" colspan="2"/>
                     <field name="atr_proces_name" colspan="2"/>
                 </xpath>

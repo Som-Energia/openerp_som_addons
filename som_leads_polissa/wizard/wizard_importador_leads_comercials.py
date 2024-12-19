@@ -54,5 +54,9 @@ class WizardImportarLeadsComercials(osv.osv):
         "coeficient_k": fields.float("Coeficient K €/MWh", digits=(5, 3)),
     }
 
+    _defaults = {
+        'activate_leads': lambda *a: False,
+    }
+
 
 WizardImportarLeadsComercials()
