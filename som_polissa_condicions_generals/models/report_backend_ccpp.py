@@ -264,7 +264,7 @@ class ReportBackendCondicionsParticulars(ReportBackend):
         else:
             fp_k = False
         poduct_pauvi_id = imd_obj.get_object_reference(
-            cursor, uid, 'giscedata_serveis_generacio', 'facturacio_empresa_preu_fix'
+            cursor, uid, 'giscedata_serveis_generacio', 'product_servei_generacio'
         )[1]
 
         pauvi = pricelist_index.get_atr_price(
