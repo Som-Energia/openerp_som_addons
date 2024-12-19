@@ -34,7 +34,7 @@ class TestReportBackendCCPP(testing.OOTestCase):
             u'cnae': u'9820',
             u'cnae_des': u'Actividades de los hogares como productores de servicios para uso propio',  # noqa: E501
             u'country': u'Espa\xf1a',
-            u'direccio': u'Pla\xe7a Mela Mutermilch 2 1 2 17001 (Girona)',
+            u'direccio': u'Pla\xe7a Mela Mutermilch ,  2 1 2 17001 (Girona)',
             u'distri': u'Agrolait',
             u'name': u'ES0021126262693495FV',
             u'provincia': u'Girona',
@@ -102,6 +102,7 @@ class TestReportBackendCCPP(testing.OOTestCase):
             u'data_inici': '2021-06-01',
             u'is_business': False,
             u'lead': False,
+            u'modcon_pendent_auvi': False,
             u'modcon_pendent_indexada': False,
             u'modcon_pendent_periodes': False,
             u'mode_facturacio': u'atr',
@@ -123,6 +124,10 @@ class TestReportBackendCCPP(testing.OOTestCase):
         result = self.backend_obj.get_prices_data(self.cursor, self.uid, pol_20td, context={})
 
         self.assertEqual(result, {
+            u'auvi': False,
+            u'auvi_name': u'',
+            u'auvi_pauvi': 0.0,
+            u'auvi_percent': 0.0,
             u'coeficient_k': False,
             u'coeficient_k_untaxed': 0.0,
             u'dict_preus_tp_energia': False,

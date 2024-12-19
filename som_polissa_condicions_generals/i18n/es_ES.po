@@ -9,8 +9,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Som Energia\n"
 "Report-Msgid-Bugs-To: support@openerp.com\n"
-"POT-Creation-Date: 2024-08-21 16:11+0000\n"
-"PO-Revision-Date: 2024-08-21 14:21+0000\n"
+"POT-Creation-Date: 2024-12-19 11:01+0000\n"
+"PO-Revision-Date: 2024-12-19 10:05+0000\n"
 "Last-Translator: Som Energia <itcrowd@somenergia.coop>\n"
 "Language-Team: Spanish (Spain) (http://trad.gisce.net/projects/p/somenergia/language/es_ES/)\n"
 "MIME-Version: 1.0\n"
@@ -228,7 +228,7 @@ msgstr ""
 #. module: som_polissa_condicions_generals
 #: model:poweremail.templates,file_name:som_polissa_condicions_generals.notification_atr_M1_01_SS
 msgid "${object.codi_sollicitud}"
-msgstr ""
+msgstr "${object.codi_sollicitud}"
 
 #. module: som_polissa_condicions_generals
 #: model:ir.model,name:som_polissa_condicions_generals.model_report_backend_mailcanvipreus
@@ -241,7 +241,7 @@ msgid "Contracte"
 msgstr "Contrato"
 
 #. module: som_polissa_condicions_generals
-#: code:addons/som_polissa_condicions_generals/models/report_backend_ccpp.py:283
+#: code:addons/som_polissa_condicions_generals/models/report_backend_ccpp.py:372
 msgid "(vigents a partir del {})"
 msgstr "(vigentes a partir del {})"
 
@@ -251,8 +251,8 @@ msgid "Al gener actualitzarem les tarifes d’electricitat"
 msgstr "En enero actualizamos las tarifas de electricidad"
 
 #. module: som_polissa_condicions_generals
-#: code:addons/som_polissa_condicions_generals/models/report_backend_ccpp.py:278
-#: code:addons/som_polissa_condicions_generals/models/report_backend_ccpp.py:280
+#: code:addons/som_polissa_condicions_generals/models/report_backend_ccpp.py:366
+#: code:addons/som_polissa_condicions_generals/models/report_backend_ccpp.py:369
 msgid "(vigents fins al {})"
 msgstr "(vigentes hasta el {})"
 
@@ -278,6 +278,53 @@ msgstr "Este módulo añade las siguientes funcionalidades:\n    * Condiciones g
 #: model:account.fiscal.position,name:som_polissa_condicions_generals.fp_iva_reduit
 msgid "IVA Reduït (IVA 5%)"
 msgstr "IVA Reducido (IVA 5%)"
+
+#: rml:som_polissa_condicions_generals/report/components/auvi.mako:3
+#: rml:som_polissa_condicions_generals/report/components/prices_info.mako:114
+#: rml:som_polissa_condicions_generals/report/components/prices_info.mako:326
+msgid "Terme energia (€/kWh)"
+msgstr "Término energía (€/kWh)"
+
+#: rml:som_polissa_condicions_generals/report/components/auvi.mako:6
+msgid "Tarifa autoconsum virtual"
+msgstr "Tarifa autoconsumo virtual"
+
+#: rml:som_polissa_condicions_generals/report/components/auvi.mako:6
+#: rml:som_polissa_condicions_generals/report/components/prices_info.mako:118
+#: rml:som_polissa_condicions_generals/report/components/prices_info.mako:330
+msgid "(2) - el preu horari (PH) es calcula d'acord amb la fórmula:"
+msgstr "(2) - el precio horario (PH) se calcula de acuerdo con la fórmula:"
+
+#: rml:som_polissa_condicions_generals/report/components/auvi.mako:10
+msgid ""
+"PHAUVI = 1,015 * [(PAUVI + Pc + Sc + Dsv + GdO + POsOm) (1 + Perd) + FE + F]"
+" + PTD + CA"
+msgstr "PHAUVI = 1,015 * [(PAUVI + Pc + Sc + Dsv + GdO + POsOm) (1 + Perd) + FE + F] + PTD + CA"
+
+#: rml:som_polissa_condicions_generals/report/components/auvi.mako:14
+#: rml:som_polissa_condicions_generals/report/components/auvi.mako:19
+#: rml:som_polissa_condicions_generals/report/components/auvi.mako:44
+#: rml:som_polissa_condicions_generals/report/components/prices_info.mako:126
+#: rml:som_polissa_condicions_generals/report/components/prices_info.mako:136
+#: rml:som_polissa_condicions_generals/report/components/prices_info.mako:335
+msgid "on la franja de la cooperativa"
+msgstr "donde la franja de la cooperativa"
+
+#: rml:som_polissa_condicions_generals/report/components/auvi.mako:26
+msgid "on PAUVI"
+msgstr "donde PAUVI"
+
+#: rml:som_polissa_condicions_generals/report/components/auvi.mako:31
+msgid " €/MWh"
+msgstr " €/MWh"
+
+#: rml:som_polissa_condicions_generals/report/components/auvi.mako:35
+msgid "percentatge assignat"
+msgstr "porcentaje asignado"
+
+#: rml:som_polissa_condicions_generals/report/components/auvi.mako:38
+msgid "%"
+msgstr "%"
 
 #: rml:som_polissa_condicions_generals/report/components/capcalera.mako:7
 msgid "Som Energia, SCCL"
@@ -416,7 +463,7 @@ msgid "DADES DE CONTACTE"
 msgstr "DATOS DE CONTACTO"
 
 #: rml:som_polissa_condicions_generals/report/components/disclaimers.mako:4
-msgid "Al contractar s’accepten aquestes "
+msgid "Al contractar s'accepten aquestes "
 msgstr "Al contratar se aceptan estas "
 
 #: rml:som_polissa_condicions_generals/report/components/disclaimers.mako:6
@@ -424,16 +471,22 @@ msgid "Condicions Particulars, Específiques i les Condicions Generals,"
 msgstr "Condiciones Particulares, Específicas y las Condiciones Generales,"
 
 #: rml:som_polissa_condicions_generals/report/components/disclaimers.mako:8
-msgid "Condicions Particulars i les Condicions Generals"
-msgstr "Condiciones Particulares y las Condiciones Generales"
+msgid ""
+"Condicions Particulars, Específiques de l'Autoconsum Virtual, Específiques "
+"de la tarifa Indexada i les Condicions Generals,"
+msgstr "Condiciones Particulares, Específicas del Autoconsumo Virtual, Específicas de la tarifa Indexada y las Condiciones Generales,"
 
 #: rml:som_polissa_condicions_generals/report/components/disclaimers.mako:10
+msgid "Condicions Particulars i les Condicions Generals,"
+msgstr "Condiciones Particulares y les Condiciones Generales,"
+
+#: rml:som_polissa_condicions_generals/report/components/disclaimers.mako:12
 msgid ""
 "que es poden consultar a les pàgines següents. Si ens cal modificar-les, a "
-"la clàusula 9 de les Condicions Generals s’explica el procediment que "
+"la clàusula 9 de les Condicions Generals s'explica el procediment que "
 "seguirem. En cas que hi hagi alguna discrepància, prevaldrà el que estigui "
 "previst en aquestes Condicions Particulars."
-msgstr "que se pueden consultar en las siguientes páginas. Si es necesario modificarlas, en la cláusula 9 de las Condiciones Generales se explica el procedimiento que seguiremos. En caso de que exista alguna discrepancia, prevalecerá lo que esté previsto en estas Condiciones Particulares."
+msgstr "que se pueden consultar en las siguientes páginas. Si es necesario modificarlos, en la cláusula 9 de las Condiciones Generales se explica el procedimiento que seguiremos. En caso de que exista alguna discrepancia, prevalecerá lo previsto en estas Condiciones Particulares."
 
 #: rml:som_polissa_condicions_generals/report/components/footer.mako:6
 msgid "a {0}"
@@ -557,7 +610,7 @@ msgid "Amb impostos"
 msgstr "Con impuestos"
 
 #: rml:som_polissa_condicions_generals/report/components/prices_info.mako:37
-#: rml:som_polissa_condicions_generals/report/components/prices_info.mako:298
+#: rml:som_polissa_condicions_generals/report/components/prices_info.mako:302
 msgid "Terme potència (€/kW i any)"
 msgstr "Término potencia (€/kW y año) "
 
@@ -566,78 +619,62 @@ msgstr "Término potencia (€/kW y año) "
 msgid "Pla"
 msgstr "Llano"
 
-#: rml:som_polissa_condicions_generals/report/components/prices_info.mako:110
-#: rml:som_polissa_condicions_generals/report/components/prices_info.mako:318
-msgid "Terme energia (€/kWh)"
-msgstr "Término energía (€/kWh)"
-
-#: rml:som_polissa_condicions_generals/report/components/prices_info.mako:114
-#: rml:som_polissa_condicions_generals/report/components/prices_info.mako:322
+#: rml:som_polissa_condicions_generals/report/components/prices_info.mako:118
+#: rml:som_polissa_condicions_generals/report/components/prices_info.mako:330
 msgid "Tarifa indexada"
 msgstr "Tarifa indexada"
 
-#: rml:som_polissa_condicions_generals/report/components/prices_info.mako:114
-#: rml:som_polissa_condicions_generals/report/components/prices_info.mako:322
-msgid "(2) - el preu horari (PH) es calcula d'acord amb la fórmula:"
-msgstr "(2) - el precio horario (PH) se calcula de acuerdo con la fórmula:"
-
-#: rml:som_polissa_condicions_generals/report/components/prices_info.mako:117
-#: rml:som_polissa_condicions_generals/report/components/prices_info.mako:325
+#: rml:som_polissa_condicions_generals/report/components/prices_info.mako:121
+#: rml:som_polissa_condicions_generals/report/components/prices_info.mako:333
 msgid ""
 "PH = 1,015 * [(PHM + Pc + Sc + Dsv + GdO + POsOm) (1 + Perd) + FE + F] + PTD"
 " + CA"
 msgstr "PH = 1,015 * [(PHM + Pc + Sc + Dsv + GdO + POsOm) (1 + Perd) + FE + F] + PTD + CA"
 
-#: rml:som_polissa_condicions_generals/report/components/prices_info.mako:122
-#: rml:som_polissa_condicions_generals/report/components/prices_info.mako:132
-#: rml:som_polissa_condicions_generals/report/components/prices_info.mako:327
-msgid "on la franja de la cooperativa"
-msgstr "donde la franja de la cooperativa"
-
-#: rml:som_polissa_condicions_generals/report/components/prices_info.mako:192
-#: rml:som_polissa_condicions_generals/report/components/prices_info.mako:352
+#: rml:som_polissa_condicions_generals/report/components/prices_info.mako:196
+#: rml:som_polissa_condicions_generals/report/components/prices_info.mako:360
 msgid "(1) GenerationkWh (€/kWh)"
 msgstr "(1) GenerationkWh (€/kWh)"
 
-#: rml:som_polissa_condicions_generals/report/components/prices_info.mako:231
-#: rml:som_polissa_condicions_generals/report/components/prices_info.mako:368
+#: rml:som_polissa_condicions_generals/report/components/prices_info.mako:235
+#: rml:som_polissa_condicions_generals/report/components/prices_info.mako:376
 msgid "Excedents d'autoconsum (€/kWh)"
 msgstr "Excedentes de autoconsumo (€/kWh)"
 
-#: rml:som_polissa_condicions_generals/report/components/prices_info.mako:234
-#: rml:som_polissa_condicions_generals/report/components/prices_info.mako:371
+#: rml:som_polissa_condicions_generals/report/components/prices_info.mako:238
+#: rml:som_polissa_condicions_generals/report/components/prices_info.mako:379
 msgid ""
 "Tarifa indexada(2) - el preu horari de la compensació d'excedents és igual "
 "al PHM"
 msgstr "Tarifa indexada(2) - el precio horario de la compensación de excedentes es igual al PHM"
 
-#: rml:som_polissa_condicions_generals/report/components/prices_info.mako:271
-#: rml:som_polissa_condicions_generals/report/components/prices_info.mako:389
+#: rml:som_polissa_condicions_generals/report/components/prices_info.mako:275
+#: rml:som_polissa_condicions_generals/report/components/prices_info.mako:397
 msgid ""
 "Terme d'energia en cas de participar-hi, segons condicions del contracte "
 "GenerationkWh."
 msgstr "Termino de energía en caso de participar, según condiciones del contrato GenerationkWh."
 
-#: rml:som_polissa_condicions_generals/report/components/prices_info.mako:274
-#: rml:som_polissa_condicions_generals/report/components/prices_info.mako:392
+#: rml:som_polissa_condicions_generals/report/components/prices_info.mako:278
+#: rml:som_polissa_condicions_generals/report/components/prices_info.mako:400
 msgid ""
 "Pots consultar el significat de les variables a les condicions específiques "
 "que trobaràs a continuació."
 msgstr "Puedes consultar el significado de las variables en las condiciones específicas que encontrarás a continuación."
 
-#: rml:som_polissa_condicions_generals/report/components/prices_info.mako:285
+#: rml:som_polissa_condicions_generals/report/components/prices_info.mako:289
 msgid "TARIFES D'ELECTRICITAT AMB IMPOSTOS"
 msgstr "TARIFAS DE ELECTRICIDAD CON IMPUESTOS"
 
-#: rml:som_polissa_condicions_generals/report/components/prices_info.mako:407
+#: rml:som_polissa_condicions_generals/report/components/prices_info.mako:415
 msgid "Els preus del terme de potència"
 msgstr "Los precios del término de potencia"
 
-#: rml:som_polissa_condicions_generals/report/components/prices_info.mako:409
+#: rml:som_polissa_condicions_generals/report/components/prices_info.mako:417
 msgid "Tots els preus que apareixen en aquest contracte"
 msgstr "Todos los precios que aparecen en este contrato"
 
-#: rml:som_polissa_condicions_generals/report/components/prices_info.mako:411
+#: rml:som_polissa_condicions_generals/report/components/prices_info.mako:419
 msgid ""
 "inclouen l'impost elèctric i l'IVA (IGIC a Canàries), amb el tipus impositiu"
 " vigent actualment per a cada tipus de contracte sense perjudici de les "
