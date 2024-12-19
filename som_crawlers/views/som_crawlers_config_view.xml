@@ -45,7 +45,6 @@
                     <field name="distribuidora" select="1"/>
                     <field name="name" select="1"/>
                     <field name="usuari" select="1"/>
-                    <field name="contrasenya" password="True" />
                     <field name="url_portal" />
                     <field name="url_upload" />
                     <field name="filtres" />
