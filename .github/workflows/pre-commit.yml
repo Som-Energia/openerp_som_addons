@@ -6,7 +6,7 @@ on:
 
 jobs:
   pre-commit:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     steps:
       - name: Changed Files Exporter
         uses: futuratrepadeira/changed-files@v4.0.0
