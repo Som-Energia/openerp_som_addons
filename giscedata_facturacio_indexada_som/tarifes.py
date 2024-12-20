@@ -27,15 +27,13 @@ class TarifaPoolSOM(TarifaPool):
         res = super(TarifaPoolSOM, self).get_available_audit_coefs()
         if '2024' in self.phf_function:
             res['curve'] = 'curve'
-            res['curve_qh'] = 'curve_qh'
+            res['curve_qh'] = 'H'
             res['dsv'] = 'dsv'
             res['gdos'] = 'gdos'
             res['pmd'] = 'prmdiari'
             if 'ajom' in res:
                 del res['ajom']
             if 'peninsula' in self.phf_function:
-                res['curve'] = 'curve'
-                res['curve_qh'] = 'H'
                 res['prdemcad'] = 'prdemcad'
                 res['csdvbaj'] = 'csdvbaj'
                 res['csdvsub'] = 'csdvsub'
@@ -534,6 +532,7 @@ class TarifaPoolSOM(TarifaPool):
 
         # Curva cuarto-horaria
         curve_qh = curve.get_component_qh_divided()
+        curve = curve * 0.001
 
         # REE
         # Precio horario demanda aplicable sistema no peninsular
@@ -712,6 +711,7 @@ class TarifaPoolSOM(TarifaPool):
 
         # Curva cuarto-horaria
         curve_qh = curve.get_component_qh_divided()
+        curve = curve * 0.001
 
         # REE
         # Precio horario demanda aplicable sistema no peninsular
@@ -821,6 +821,7 @@ class TarifaPoolSOM(TarifaPool):
 
         # Curva cuarto-horaria
         curve_qh = curve.get_component_qh_divided()
+        curve = curve * 0.001
 
         # peajes
         pa = self.get_peaje_component(start_date, holidays)    # [€/kWh]
