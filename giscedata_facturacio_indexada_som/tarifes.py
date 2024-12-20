@@ -34,6 +34,8 @@ class TarifaPoolSOM(TarifaPool):
             if 'ajom' in res:
                 del res['ajom']
             if 'peninsula' in self.phf_function:
+                res['curve'] = 'curve'
+                res['curve_qh'] = 'H'
                 res['prdemcad'] = 'prdemcad'
                 res['csdvbaj'] = 'csdvbaj'
                 res['csdvsub'] = 'csdvsub'
@@ -347,6 +349,7 @@ class TarifaPoolSOM(TarifaPool):
 
         # Curva cuarto-horaria
         curve_qh = curve.get_component_qh_divided()
+        curve = curve * 0.001
 
         # peajes
         pa = self.get_peaje_component(start_date, holidays)    # [€/kWh]
@@ -386,14 +389,17 @@ class TarifaPoolSOM(TarifaPool):
         # Prdemcad
         prdemcad = Prdemcad('C2_prdemcad_%(postfix)s' % locals(), esios_token)  # prdemcad [€/MWh]
 
-        # Desvios
-        csdvbaj = Codsvbaj('C2_codsvbaj_%(postfix)s' % locals(), esios_token)  # [€/MWh]
-        csdvsub = Codsvsub('C2_codsvsub_%(postfix)s' % locals(), esios_token)  # [€/MWh]
+        # Componentes Desvios
+        if start_date.year <= 2024 and start_date.month < 12:
+            csdvbaj = Codsvbaj('C2_codsvbaj_%(postfix)s' % locals(), esios_token)  # [€/MWh]
+            csdvsub = Codsvsub('C2_codsvsub_%(postfix)s' % locals(), esios_token)  # [€/MWh]
+        else:
+            csdvbaj = Codsvbaqh('C2_codsvbaqh_%(postfix)s' % locals(), esios_token)  # [€/MWh]
+            csdvsub = Codsvsuqh('C2_codsvsuqh_%(postfix)s' % locals(), esios_token)  # [€/MWh]
 
         compodem = MonthlyCompodem('C2_monthlycompodem_%(postfix)s' % locals(), esios_token)
         rad3 = compodem.get_component("RAD3")
         bs3 = compodem.get_component("BS3")
-        dsv = (0.5 * (csdvbaj + csdvsub) + rad3 + bs3) * (factor_dsv * 0.01)
 
         # Let's transform them in ComponentsQH
         # First, which components must be divided by 4
@@ -408,6 +414,9 @@ class TarifaPoolSOM(TarifaPool):
             ):
                 new_var = self.transform_local_to_qh(var, key, divided_var_names)
                 exec('{} = new_var'.format(key))
+
+        # Cálculo Desvios
+        dsv = (0.5 * (csdvbaj + csdvsub) + rad3 + bs3) * (factor_dsv * 0.01)
 
         A = ((prmdiari + prdemcad + dsv + gdos + omie) * 0.001) + pc3_boe
         B = (1 + (perdues * 0.01))
