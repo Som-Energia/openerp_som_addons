@@ -31,6 +31,9 @@ class GiscedataFacturacioFacturador(osv.osv):
         factor_dsv = imd_obj.get_object_reference(
             cursor, uid, 'giscedata_facturacio_indexada_som', 'product_factor_dsv_som'
         )[1]
+        pauvi = imd_obj.get_object_reference(
+            cursor, uid, 'giscedata_facturacio_indexada_som', 'product_auvi_som'
+        )[1]
         # Fem un browse amb la data final per obtenir quin mode de facturació té
         polissa = polissa_obj.browse(cursor, uid, polissa_id, context={
             'date': data_final
@@ -51,6 +54,9 @@ class GiscedataFacturacioFacturador(osv.osv):
                 )[llista_preu_id]
                 res[date_version]['factor_dsv'] = pricelist_obj.price_get(
                     cursor, uid, [llista_preu_id], factor_dsv, 1, context=ctx
+                )[llista_preu_id]
+                res[date_version]['pauvi'] = pricelist_obj.price_get(
+                    cursor, uid, [llista_preu_id], pauvi, 1, context=ctx
                 )[llista_preu_id]
 
                 if pricelist_obj.browse(cursor, uid, llista_preu_id).indexed_formula == u'Indexada Península':

@@ -78,6 +78,22 @@ class TarifaPoolSOM(TarifaPool):
             res['dsv'] = 'dsv'
             res['prdemcad'] = 'prdemcad'
 
+        if self.phf_function == 'phf_calc_auvi':
+            # only if 'phf_calc_auvi' formula is used
+            res['dsv'] = 'dsv'
+            res['gdos'] = 'gdos'
+            res['prdemcad'] = 'prdemcad'
+            res['csdvbaj'] = 'csdvbaj'
+            res['csdvsub'] = 'csdvsub'
+            res['pc3_boe'] = 'pc3_boe'
+            res['peatges'] = 'pa'
+            res['fe'] = 'fe'
+            res['rad3'] = 'rad3'
+            res['bs3'] = 'bs3'
+            res['factor_dsv'] = 'factor_dsv'
+            res['phm'] = 'phm'
+            res['pauvi'] = 'pauvi'
+
         return res
 
     def get_available_audit_coefs_gen(self):
@@ -795,6 +811,78 @@ class TarifaPoolSOM(TarifaPool):
             )
 
         return component
+    def phf_calc_auvi(self, curve, start_date):
+        """
+        Fòrmula pels kWh AUVI:
+        PHAUVI = 1,015 * [PAUVI + PHM(Perd) + (Pc + Sc + Dsv + GdO + POsOm) (1 + Perd) + FE + F] + PTD + CA
+        PHM(Perd) = prmdiari * % perdues.
+        """
+        num_days = calendar.monthrange(start_date.year, start_date.month)[1]
+        end_date = datetime(
+            start_date.year, start_date.month, num_days
+        ).date()
+
+        esios_token = self.conf['esios_token']
+        holidays = self.conf['holidays']
+
+        # peajes
+        pa = self.get_peaje_component(start_date, holidays)  # [€/kWh]
+        # Payments by capacity (PC3) BOE
+        pc3_boe = self.get_pricexperiod_component(start_date, 'pc', holidays)  # [€/kWh]
+
+        # From pricelist
+        factor_dsv = self.get_coeficient_component(start_date, 'factor_dsv')  # [%]
+        gdos = self.get_coeficient_component(start_date, 'gdos')  # [€/MWh]
+        pauvi = self.get_coeficient_component(start_date, 'pauvi')  # [€/MWh]
+        f = self.get_coeficient_component(start_date, 'k')  # [€/MWh]
+
+        # Coste remuneración OMIE REE
+        omie = self.get_coeficient_component(start_date, 'omie')  # [€/MWh]
+        # Fondo de Eficiencia
+        fe = self.get_coeficient_component(start_date, 'fe')  # [€/MWh]
+        # Municipal fee
+        imu = self.get_coeficient_component(start_date, 'imu')  # [%]
+
+        # REE
+        postfix = ('%s_%s' % (start_date.strftime("%Y%m%d"),
+                              end_date.strftime("%Y%m%d")))
+        prmdiari = Prmdiari('C2_prmdiari_%(postfix)s' % locals(), esios_token)  # [€/MWh]
+
+        fname = self.perdclass.name
+        perdues = self.perdclass('C2_%(fname)s_%(postfix)s' % locals(), esios_token)
+
+        # Desvios
+        csdvbaj = Codsvbaj('C2_codsvbaj_%(postfix)s' % locals(), esios_token)  # [€/MWh]
+        csdvsub = Codsvsub('C2_codsvsub_%(postfix)s' % locals(), esios_token)  # [€/MWh]
+        compodem = MonthlyCompodem('C2_monthlycompodem_%(postfix)s' % locals(), esios_token)
+        rad3 = compodem.get_component("RAD3")
+        bs3 = compodem.get_component("BS3")
+        dsv = (0.5 * (csdvbaj + csdvsub) + rad3 + bs3) * (factor_dsv * 0.01)
+        phm = prmdiari * (perdues/100)
+
+        A = ((pauvi + phm) * 0.001)
+        B = (pc3_boe + dsv + gdos + omie)
+        C = A + B * (1 + perdues)
+        D = (fe * 0.001) + f
+        E = C + D
+        F = E * (1 + (imu * 0.01))
+        G = F + pa
+        H = curve * 0.001
+        component = H * G
+
+        audit_keys = self.get_available_audit_coefs()
+        for key in self.conf.get('audit', []):
+            if key not in self.audit_data.keys():
+                self.audit_data[key] = []
+            var_name = audit_keys[key]
+            com = locals()[var_name]
+            if com is None:
+                continue
+            self.audit_data[key].extend(
+                com.get_audit_data(start=start_date.day)
+            )
+
+        return component
 
     def get_available_indexed_formulas(self):
         """
@@ -811,6 +899,7 @@ class TarifaPoolSOM(TarifaPool):
             u'Indexada Península 2024': 'phf_calc_peninsula_2024',
             u'Indexada Balears 2024': 'phf_calc_balears_2024',
             u'Indexada Canàries 2024': 'phf_calc_canaries_2024',
+            u'Indexada AUVI': 'phf_calc_auvi',
         }
 
 
