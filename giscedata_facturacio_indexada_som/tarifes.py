@@ -27,7 +27,7 @@ class TarifaPoolSOM(TarifaPool):
         res = super(TarifaPoolSOM, self).get_available_audit_coefs()
         if '2024' in self.phf_function:
             res['curve'] = 'curve'
-            res['curve_qh'] = 'H'
+            res['corba_qh'] = 'H'
             res['dsv'] = 'dsv'
             res['gdos'] = 'gdos'
             res['pmd'] = 'prmdiari'
@@ -68,7 +68,7 @@ class TarifaPoolSOM(TarifaPool):
         if self.phf_function == 'phf_calc_esmasa':
             # only if 'phf_calc_esmasa' formula is used
             res['curve'] = 'curve'
-            res['curve_qh'] = 'curve_qh'
+            res['corba_qh'] = 'curve_qh'
             res['pmd'] = 'prmdiari'
             del res['pc3_ree']
             res['peatges'] = 'pa'
