@@ -12,6 +12,14 @@ class GiscedataServeiGeneracio(osv.osv):
     _name = "giscedata.servei.generacio"
     _inherit = "giscedata.servei.generacio"
 
+    def get_phf_calc_component(self, cursor, uid, facturador, curve, data_inici, context=None):
+        if context is None:
+            context = {}
+
+        res = facturador.phf_calc_auvi(curve, data_inici)
+
+        return res
+
     def create(self, cursor, uid, vals, context=None):
         if context is None:
             context = {}

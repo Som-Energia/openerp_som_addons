@@ -11,6 +11,8 @@
         "giscedata_serveis_generacio",
         "giscedata_polissa_category",
         "som_indexada",
+        "giscedata_facturacio_indexada_som"
+ 
     ],
     "init_xml": [],
     "demo_xml": [],
