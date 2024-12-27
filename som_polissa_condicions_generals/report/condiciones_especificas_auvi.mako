@@ -1,4 +1,4 @@
-<%def name="auvi_ca()">
+<%def name="auvi_()">
 <p style="page-break-after:always;"></p>
 <br>
 <br>
@@ -8,7 +8,7 @@
 <span id='ccee-top'></span>
 
 <h1 id="condiciones-específicas-del-proyecto-piloto-del-autoconsumo-virtual">
- Condicions Específiques del Projecte pilot de l'Autoconsum Virtual
+ Condiciones Específicas del Proyecto Piloto del Autoconsumo Virtual
 </h1>
 <p><strong>TABLA DE CONTENIDOS</strong></p>
 <blockquote>

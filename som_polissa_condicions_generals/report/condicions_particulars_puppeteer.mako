@@ -20,6 +20,7 @@
 <%namespace file="som_polissa_condicions_generals/report/components/gurb/acord_repartiment.mako" import="gurb_acord_ca"/>
 <%namespace file="som_polissa_condicions_generals/report/components/gurb/acord_repartiment.mako" import="gurb_acord_es"/>
 <%namespace file="som_polissa_condicions_generals/report/condicions_especifiques_auvi.mako" import="auvi_ca"/>
+<%namespace file="som_polissa_condicions_generals/report/condiciones_especificas_auvi.mako" import="auvi_es"/>
 
 <!DOCTYPE html>
 <html lang="es">
@@ -79,6 +80,9 @@
                             %endif
                         %else:
                             ${generals_es()}
+                            %if informe['prices']['auvi']:
+                                ${auvi_es()}
+                            %endif
                             %if informe['prices']['mostra_indexada']:
                                 ${indexada_es()}
                                 <p style="page-break-after:always;"></p>
