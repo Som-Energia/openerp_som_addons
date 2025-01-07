@@ -314,6 +314,7 @@ class GiscedataNextDaysEnergyPrice(osv.osv):
         pc3_ree = classname('A1_%(filename)s_%(postfix)s' % locals(), esios_token)  # [€/MWh]
         si = SIFree('A1_sifree_%(postfix)s' % locals(), esios_token)  # noqa: F405 [€/MWh]
         ree = Tarifa.get_coeficient_component(data_inici_dt, 'om')  # [€/MWh]
+        Tarifa.get_perdclass()
         perdfname = Tarifa.perdclass.name
         perdues = Tarifa.perdclass('A1_%(perdfname)s_%(postfix)s' % locals(), esios_token)  # [%]
 
