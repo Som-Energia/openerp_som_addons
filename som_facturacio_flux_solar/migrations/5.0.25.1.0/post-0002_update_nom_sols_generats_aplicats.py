@@ -28,7 +28,6 @@ def up(cursor, installed_version):
         "giscedata_facturacio_bateria_virtual.value_giscedata_import_bateria_virtual",
         "giscedata_facturacio_bateria_virtual.act_giscedata_import_bateria_virtual_polissa",
         "giscedata_facturacio_bateria_virtual.value_giscedata_import_bateria_virtual_polissa",
-        "view_giscedata_import_bateria_virtual_form_inherit",
     ]
     load_data_records(
         cursor, 'som_facturacio_flux_solar', 'giscedata_bateria_virtual.xml', list_of_records, mode='update'
