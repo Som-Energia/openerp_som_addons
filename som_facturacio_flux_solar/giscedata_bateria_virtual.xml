@@ -30,5 +30,23 @@
                 </field>
             </field>
         </record>
+        <record id="view_giscedata_import_bateria_virtual_tree_inherit" model="ir.ui.view">
+            <field name="name">view_giscedata_import_bateria_virtual_tree_inherit</field>
+            <field name="model">giscedata.bateria.virtual.resum.facturacio</field>
+            <field name="inherit_id" ref="giscedata_facturacio_bateria_virtual.view_giscedata_import_bateria_virtual_tree"/>
+            <field name="arch" type="xml">
+                <tree string="Detalls d'import de bateria virtual">
+                    <tree string="Detall sols generats i aplicats" />
+                </tree>
+            </field>
+        </record>
+
+        <record id="giscedata_facturacio_bateria_virtual.act_giscedata_import_bateria_virtual" model="ir.actions.act_window">
+            <field name="name">Detall sols generats i aplicats</field>
+        </record>
+
+        <record id="giscedata_facturacio_bateria_virtual.value_giscedata_import_bateria_virtual" model="ir.values">
+            <field name="name">Detall sols generats i aplicats</field>
+        </record>
     </data>
 </openerp>
