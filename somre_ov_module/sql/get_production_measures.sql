@@ -78,7 +78,8 @@ ranked_data AS (
             WHEN maturity = 'HP' THEN 2
             WHEN maturity = 'H3' THEN 3
             WHEN maturity = 'H2' THEN 4
-            ELSE 5
+            WHEN maturity = 'HD' THEN 5
+            ELSE 6
         END AS ranking
     FROM
         joined_data
