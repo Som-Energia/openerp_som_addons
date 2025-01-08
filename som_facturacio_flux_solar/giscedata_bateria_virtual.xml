@@ -35,8 +35,8 @@
             <field name="model">giscedata.bateria.virtual.resum.facturacio</field>
             <field name="inherit_id" ref="giscedata_facturacio_bateria_virtual.view_giscedata_import_bateria_virtual_tree"/>
             <field name="arch" type="xml">
-                <xpath expr="/tree[@string=&quot;Detalls d'import de bateria virtual&quot;]" position="replace">
-                     <tree string="Detall sols generats i aplicats" />
+                <xpath expr="/tree[@string=&quot;Detalls d'import de bateria virtual&quot;]" position="attributes">
+                     <attribute name="string">Detall sols generats i aplicats</attribute>
                 </xpath>
             </field>
         </record>
