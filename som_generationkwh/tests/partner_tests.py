@@ -199,10 +199,10 @@ class PartnerTests(testing.OOTestCase):
             for a in assig_list:
                 a.pop('id')
             self.assertEquals(assig_list, [{'annual_use_kwh': False,
-                'contract_address': u'carrer inventat 1 1 1 1 aclaridor 00001 (Poble de Prova)',
+                'contract_address': u'carrer inventat ,  1  ESC.  1 1 1 aclaridor 00001 (Poble de Prova)',
                 'contract_id': 1, 'contract_last_invoiced': False, 'contract_name': u'0001C',
                 'contract_state': u'esborrany', 'member_id': member_id, 'member_name': u'Gil, Pere',
-                'priority': 0, 'contract_tariff': '2.0A'}])
+                'priority': 0, 'contract_tariff': u'2.0A'}])
 
 
     def test__www_set_generationkwh_assignment_order(self):
