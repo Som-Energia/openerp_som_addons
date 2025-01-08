@@ -41,11 +41,30 @@
             </field>
         </record>
 
+        <record id="view_giscedata_import_bateria_virtual_form_inherit" model="ir.ui.view">
+            <field name="name">view_giscedata_import_bateria_virtual_form_inherit</field>
+            <field name="model">giscedata.bateria.virtual.resum.facturacio</field>
+            <field name="inherit_id" ref="giscedata_facturacio_bateria_virtual.view_giscedata_import_bateria_virtual_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="/form[@string=&quot;Detalls d'import de bateria virtual&quot;]" position="attributes">
+                     <attribute name="string">Detall sols generats i aplicats</attribute>
+                </xpath>
+            </field>
+        </record>
+
         <record id="giscedata_facturacio_bateria_virtual.act_giscedata_import_bateria_virtual" model="ir.actions.act_window">
             <field name="name">Detall sols generats i aplicats</field>
         </record>
 
         <record id="giscedata_facturacio_bateria_virtual.value_giscedata_import_bateria_virtual" model="ir.values">
+            <field name="name">Detall sols generats i aplicats</field>
+        </record>
+
+        <record id="giscedata_facturacio_bateria_virtual.act_giscedata_import_bateria_virtual_polissa" model="ir.actions.act_window">
+            <field name="name">Detall sols generats i aplicats</field>
+        </record>
+
+        <record id="giscedata_facturacio_bateria_virtual.value_giscedata_import_bateria_virtual_polissa" model="ir.values">
             <field name="name">Detall sols generats i aplicats</field>
         </record>
     </data>
