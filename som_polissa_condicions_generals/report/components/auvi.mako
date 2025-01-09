@@ -24,7 +24,7 @@
     </tr>
     <tr>
         <td class="bold">${_(u"on PAUVI")}</td>
-        <td class="center reset_line_height" colspan="6">
+        <td class="center" colspan="6">
             <span class="">
                 ${formatLang(prices['auvi_pauvi'], digits=6)}
             </span>
@@ -33,7 +33,7 @@
     </tr>
     <tr>
         <td class="bold">${_(u"percentatge assignat")}</td>
-        <td class="center reset_line_height" colspan="6">
+        <td class="center" colspan="6">
             <span class="">
                 ${("%s") % prices['auvi_name']} ${formatLang(prices['auvi_percent'], digits=2)} ${_(u"%")}
             </span>
