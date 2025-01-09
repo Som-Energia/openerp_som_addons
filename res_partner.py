@@ -7,6 +7,7 @@ from dateutil.relativedelta import relativedelta
 from tools.translate import _
 from mongodb_backend.mongodb2 import mdbpool
 import pytz
+from ooquery import InnerJoin
 
 from generationkwh.sharescurve import MemberSharesCurve
 from generationkwh.rightspershare import RightsPerShare
@@ -71,6 +72,19 @@ class ResPartner(osv.osv):
             for x in Assignments.read(cursor, uid, assignment_ids, [])
         ], key=lambda x: (x['priority'],x['id']))
 
+
+    def www_generationkwh_assignments_donation_partners(self, cursor, uid, partner_id, context=None):
+        Assignments = self.pool.get('generationkwh.assignment')
+        result = (
+            Assignments.q(cursor, uid)
+            .read([InnerJoin("member_id.partner_id")])
+            .where([
+                (InnerJoin("contract_id.titular"), "=", partner_id),
+                (InnerJoin("member_id.partner_id"), "!=", partner_id),
+                (InnerJoin("contract_id.state"), "=", "activa"),
+            ])
+        )
+        return [x['member_id.partner_id'] for x in result]
 
     def www_set_generationkwh_assignment_order(self, cursor, uid, id, sorted_assignment_ids, context=None):
         Dealer = self.pool.get('generationkwh.dealer')
