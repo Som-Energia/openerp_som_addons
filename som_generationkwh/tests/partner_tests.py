@@ -205,6 +205,29 @@ class PartnerTests(testing.OOTestCase):
                 'priority': 0, 'contract_tariff': u'2.0A'}])
 
 
+    def test__www_generationkwh_assignments_donation_partners(self):
+        with Transaction().start(self.database) as txn:
+            cursor = txn.cursor
+            uid = txn.user
+            member_id = self.IrModelData.get_object_reference(
+                cursor, uid, 'som_generationkwh', 'soci_0001')[1]
+            polissa_id = self.IrModelData.get_object_reference(
+                cursor, uid, 'giscedata_polissa', 'polissa_0002')[1]
+            # titular of polissa_id
+            partner_id = self.IrModelData.get_object_reference(
+                cursor, uid, 'base', 'res_partner_c2c')[1]
+            # partner of member_id
+            donation_partner_id = self.IrModelData.get_object_reference(
+                cursor, uid, 'som_generationkwh', 'res_partner_inversor1')[1]
+            self.GenerationkWhAssignment.create(cursor, uid, {'member_id': member_id,
+                'contract_id': polissa_id, 'priority': 0})
+            self.GiscedataPolissa.write(cursor, uid, polissa_id, {'state': 'activa'})
+
+            partner_list = self.partner_obj.www_generationkwh_assignments_donation_partners(cursor, uid, partner_id)
+
+            self.assertEquals(partner_list, [donation_partner_id])
+
+
     def test__www_set_generationkwh_assignment_order(self):
         with Transaction().start(self.database) as txn:
             cursor = txn.cursor
