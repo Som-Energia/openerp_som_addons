@@ -3266,28 +3266,32 @@ class GiscedataFacturacioFacturaReport(osv.osv):
         return data
 
     def get_sub_component_invoice_details_td_bo_social_2023_data(self, fact, pol):
-        days = 0.0
-        price_per_day = 0.0
-        subtotal = 0.0
         visible = False
-        iva = ""
-
+        rbs_price_per_days = {}
+        rbs_lines = []
         for l in fact.linia_ids:  # noqa: E741
             if l.tipus in "altres" and l.invoice_line_id.product_id.code == "RBS":
-                days += l.quantity
-                price_per_day = l.price_unit
-                subtotal += l.price_subtotal
-                iva = get_iva_line(l)
+                if l.price_unit not in rbs_price_per_days:
+                    line = {
+                        "days": l.quantity,
+                        "price_per_day": l.price_unit,
+                        "subtotal": l.price_subtotal,
+                        "iva": get_iva_line(l),
+                    }
+                    rbs_price_per_days[l.price_unit] = line
+                    rbs_lines.append(line)
+                else:
+                    line = rbs_price_per_days[l.price_unit]
+                    line["days"] += l.quantity
+                    line["subtotal"] += l.price_subtotal
                 visible = True
 
         data = {
             "is_visible": visible,
             "number_of_columns": len(self.get_matrix_show_periods(pol)) + 1,
-            "days": days,
-            "price_per_day": price_per_day,
-            "subtotal": subtotal,
             "iva_column": has_iva_column(fact),
-            "iva": iva,
+            "lines": rbs_lines,
+            "header_multi": len(rbs_lines),
         }
         return data
 
