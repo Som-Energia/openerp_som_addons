@@ -173,3 +173,8 @@ jobs:
         with:
           files: test-results/destral/*.xml
           secondary_rate_limit_wait_seconds: 120.0
+
+      - name: Setup tmate session
+        uses: mxschmitt/action-tmate@v3
+        if: ${{ failure() }}
+        timeout-minutes: 30
