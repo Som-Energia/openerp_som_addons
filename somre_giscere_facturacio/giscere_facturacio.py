@@ -2,6 +2,7 @@
 from __future__ import absolute_import
 from .tarifes import TARIFES
 from datetime import datetime, timedelta
+from giscere_facturacio.defs import ISP15_start_date
 from osv import osv
 from pytz import timezone, utc
 import pandas as pd
@@ -57,10 +58,10 @@ class GiscereFacturacioFacturador(osv.osv):
             cursor, uid, datetime_inici, datetime_fi, context=None)  # [MWh]
 
         # Context is None to allow CACHE in function
-        mhcil = self.obtenir_generacio_sistema(
+        generacio = self.obtenir_generacio_sistema(
             cursor, uid, datetime_inici, datetime_fi, maduresa, context=None)  # [MWh]
         dsv_rep_net = self.obtenir_desviament_sistema(
-            mhcil, previsio_sistema, context=context)  # [kWh]
+            generacio, previsio_sistema, context=context)  # [kWh]
 
         # dsv_brp
         # Calc system bias from REGANECU  [kWh]
@@ -89,7 +90,7 @@ class GiscereFacturacioFacturador(osv.osv):
             'previsio_sistema': previsio_sistema,
             'desviaments_representacio_net': dsv_rep_net,
             'desviaments_comercialitzadora_net': dsv_com_net,
-            'generacio_sistema': mhcil
+            'generacio_sistema': generacio
         }
 
         return res
@@ -112,15 +113,26 @@ class GiscereFacturacioFacturador(osv.osv):
 
         use_newest_reganecu = context.get('use_newest_reganecu', False)
 
+        type_integrity = 'p4' if datetime_inici[:10] >= ISP15_start_date else 'p'
+
+        if type_integrity == 'p4':
+            datetime_inici = '{} 00:15:00'.format(datetime_inici[:10])
+
         start_dt = TIMEZONE.localize(datetime.strptime(datetime_inici, '%Y-%m-%d %H:%M:%S'))
         end_dt = TIMEZONE.localize(datetime.strptime(datetime_fi, '%Y-%m-%d %H:%M:%S'))
-        num_hours = int((end_dt - start_dt).total_seconds() / 3600) + 1
+        if type_integrity == 'p':
+            num_hours = int((end_dt - start_dt).total_seconds() / 3600) + 1
+            minutes_step = 60
+        else:
+            num_hours = int((end_dt - start_dt).total_seconds() / 3600 * 4) + 1
+            minutes_step = 15
 
         # Get reganecu
         search_vals = [
             ("local_timestamp", ">=", datetime_inici),
             ("local_timestamp", "<=", datetime_fi),
-            ("segmento", "=", "DSV")
+            ("segmento", "=", "DSV"),
+            ("type", "=", type_integrity)
         ]
         maturity = 'qualsevol'
 
@@ -173,7 +185,7 @@ class GiscereFacturacioFacturador(osv.osv):
             temp_dt = start_dt.astimezone(utc)
             while temp_dt <= end_dt.astimezone(utc):
                 expected_hours.append(temp_dt.strftime('%Y-%m-%d %H:%M:%S'))
-                temp_dt += timedelta(hours=1)
+                temp_dt += timedelta(minutes=minutes_step)
 
             found_hours = list(set([x['timestamp'] for x in reganecu_filtered]))
             gap_hours = list(set(expected_hours) - set(found_hours))
