@@ -110,7 +110,7 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt-get --allow-releaseinfo-change update
-          sudo apt-get install python2-dev python3-dev libxml2-dev libxmlsec1 libxmlsec1-dev libgdal-dev -y
+          sudo apt-get install python2-dev python3-dev libxml2-dev libxmlsec1 libxmlsec1-dev libgdal-dev pdftk -y
           cd $ROOT_DIR_SRC/libFacturacioATR
           git checkout $(git describe --tags `git rev-list --tags --max-count=1`)
           pip install -e .
@@ -173,8 +173,3 @@ jobs:
         with:
           files: test-results/destral/*.xml
           secondary_rate_limit_wait_seconds: 120.0
-
-      - name: Setup tmate session
-        uses: mxschmitt/action-tmate@v3
-        if: ${{ failure() }}
-        timeout-minutes: 30
