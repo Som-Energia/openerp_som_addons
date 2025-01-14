@@ -23,13 +23,13 @@ class InvoicePdfStorer():
         self.flags = eval(flags) if flags else []
 
     def is_enabled(self):
-        if 'Enabled' not in self.flags:
+        if self.context.get("force_store_pdf_disabled", False):
             return False
 
-        if self.context.get("do_not_use_stored_pdf", False):
-            return False
+        if self.context.get("force_store_pdf_enabled", False):
+            return True
 
-        return True
+        return 'Enabled' in self.flags
 
     def search_stored_and_append(self, fact_id):
         fact_number = self.get_storable_fact_number(fact_id)
