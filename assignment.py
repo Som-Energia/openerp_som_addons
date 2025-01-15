@@ -494,7 +494,7 @@ class GenerationkWhAssignment(osv.osv):
         GenerationkWhInvoiceLineOwner = self.pool.get('generationkwh.invoice.line.owner')
         q = OOQuery(GenerationkWhInvoiceLineOwner, cursor, uid)
 
-        sql = q.select(['id']).where([('owner_id.id', '=', res_partner_id)]+date_domain)
+        sql = q.select(['id']).where([('factura_id.polissa_id.titular.id', '=', res_partner_id)]+date_domain)
         cursor.execute(*sql)
         res = cursor.fetchall()
         generation_line_ids = [line[0] for line in res]
