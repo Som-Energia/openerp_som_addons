@@ -811,6 +811,7 @@ class TarifaPoolSOM(TarifaPool):
             )
 
         return component
+    
     def phf_calc_auvi(self, curve, start_date):
         """
         Fòrmula pels kWh AUVI:
@@ -861,7 +862,7 @@ class TarifaPoolSOM(TarifaPool):
         phm = prmdiari * (perdues/100)
 
         A = ((pauvi + phm) * 0.001)
-        B = (pc3_boe + dsv + gdos + omie)
+        B = (pc3_boe + (dsv + gdos + omie) * 0.001)
         C = A + B * (1 + perdues)
         D = (fe * 0.001) + f
         E = C + D
