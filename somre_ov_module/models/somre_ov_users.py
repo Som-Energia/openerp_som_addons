@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
-from osv import osv
+from osv import osv, fields
+from tools.translate import _
 
 from decorators import www_entry_point
 from exceptions import NoSuchUser, NoDocumentVersions
@@ -7,62 +8,46 @@ from exceptions import NoSuchUser, NoDocumentVersions
 from datetime import datetime
 
 
-class SomreOvUsers(osv.osv_memory):
+class SomreOvUsers(osv.osv):
 
     _name = "somre.ov.users"
+    _inherits = {"res.partner": "partner_id"}
 
     @www_entry_point(
         expected_exceptions=NoSuchUser
     )
     def identify_login(self, cursor, uid, login):
-        partner_obj = self.pool.get('res.partner')
         search_params = [
             ('vat', '=', login),
             ('active', '=', True),
             ('customer', '=', True)  # Get only providers
         ]
-        partner_id = partner_obj.search(cursor, uid, search_params)
-        if partner_id:
-            partner = partner_obj.browse(cursor, uid, partner_id)[0]
+        ov_user_id = self.search(cursor, uid, search_params)
+        if ov_user_id:
+            ov_user = self.browse(cursor, uid, ov_user_id)[0]
 
             return dict(
-                vat=partner.vat,
-                name=partner.name,
-                email=partner.address[0].email,
-                roles=['staff'] if self.partner_is_staff(cursor, uid, partner.id) else ['customer'],
-                username=partner.vat,
+                vat=ov_user.vat,
+                name=ov_user.name,
+                email=ov_user.address[0].email,
+                roles=['staff'] if ov_user.is_staff else ['customer'],
+                username=ov_user.vat,
             )
         raise NoSuchUser()
 
-    def partner_is_staff(self, cursor, uid, partner_id):
-        address_obj = self.pool.get('res.partner.address')
-        search_params = [
-            ('partner_id', '=', partner_id),
-        ]
-        partner_adddress_ids = address_obj.search(cursor, uid, search_params)
-        if partner_adddress_ids:
-            user_obj = self.pool.get('res.users')
-            search_params = [
-                ('address_id', '=', partner_adddress_ids[0]),
-            ]
-            user = user_obj.search(cursor, uid, search_params)
-            if user:
-                return True
-        return False
-
     def get_customer(self, cursor, uid, username):
         # Get user profile: for now recover customer profile
-        partner_obj = self.pool.get('res.partner')
         search_params = [
             ('vat', '=', username),
             ('active', '=', True),
             ('customer', '=', True),
+            ('reov_baixa', '=', False),
         ]
-        partner_id = partner_obj.search(cursor, uid, search_params)
-        if not partner_id:
+        ov_user_id = self.search(cursor, uid, search_params)
+        if not ov_user_id:
             raise NoSuchUser()
 
-        return partner_obj.browse(cursor, uid, partner_id)[0]
+        return self.browse(cursor, uid, ov_user_id)[0]
 
     @www_entry_point(
         expected_exceptions=NoSuchUser
@@ -72,7 +57,7 @@ class SomreOvUsers(osv.osv_memory):
         partner = self.get_customer(cursor, uid, username)
         return dict(
             username=partner.vat,
-            roles=['staff'] if self.partner_is_staff(cursor, uid, partner.id) else ['customer'],
+            roles=['staff'] if partner.is_staff else ['customer'],
             vat=partner.vat,
             name=partner.name,
             email=partner.address[0].email,
@@ -127,6 +112,47 @@ class SomreOvUsers(osv.osv_memory):
             )
             for signature in signed_document_obj.browse(cursor, uid, signature_ids)
         ]
+
+    def _check_vat_exist(self, cursor, user, ids):
+
+        for ov_user in self.browse(cursor, user, ids):
+            if ov_user.partner_id.vat:
+                cursor.execute(
+                    "SELECT rp.id "
+                    "FROM somre_ov_users sou "
+                    "INNER JOIN res_partner rp on rp.id=sou.partner_id "
+                    "WHERE rp.vat = '" + ov_user.partner_id.vat + "' "
+                    "AND sou.reov_baixa IS FALSE"
+                )
+                ov_user_with_vat = cursor.fetchall()
+                if len(ov_user_with_vat) > 1:
+                    return False
+        return True
+
+    def vat_change(self, cr, uid, ids, value, context={}):
+        pids = self.read(cr, uid, ids, ['partner_id'])
+        pids = [p['partner_id'][0] for p in pids]
+        return self.pool.get("res.partner").vat_change(cr, uid, pids, value, context)
+
+    _columns = {
+        "partner_id": fields.many2one("res.partner", _("Client teste")),
+        "is_staff": fields.boolean(_("És staff")),
+        "reov_baixa": fields.boolean(_("Usuari de baixa")),
+        "initial_password": fields.char(_("Initial password"), size=15),
+    }
+
+    _defaults = {
+        "is_staff": lambda *a: False,
+        "reov_baixa": lambda *a: False,
+        "initial_password": lambda *a: '',
+    }
+
+    _constraints = [(_check_vat_exist, "You cannot have same VAT for two active members!", ["vat"])]
+
+    _sql_constraints = [
+        ("partner_id_uniq", "unique(partner_id)",
+         "Ja existeix un usuari de la ov de representa per aquest client")
+    ]
 
 
 SomreOvUsers()

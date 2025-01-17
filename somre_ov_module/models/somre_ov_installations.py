@@ -43,10 +43,10 @@ class SomreOvInstallations(osv.osv_memory):
             context = {}
 
         users_obj = self.pool.get('somre.ov.users')
-        partner = users_obj.get_customer(cursor, uid, vat)
+        ov_user = users_obj.get_customer(cursor, uid, vat)
         polissa_obj = self.pool.get('giscere.polissa')
         search_params = [
-            ('titular', '=', partner.id),
+            ('titular', '=', ov_user.partner_id.id),
             ('state', '=', 'activa'),
         ]
 
@@ -76,8 +76,8 @@ class SomreOvInstallations(osv.osv_memory):
         contract = polissa_obj.browse(cursor, uid, contract_id)[0]
 
         users_obj = self.pool.get('somre.ov.users')
-        partner = users_obj.get_customer(cursor, uid, vat)
-        if partner.id != contract.titular.id:
+        ov_user = users_obj.get_customer(cursor, uid, vat)
+        if ov_user.partner_id.id != contract.titular.id:
             raise UnauthorizedAccess(
                 username=vat,
                 resource_type='Contract',

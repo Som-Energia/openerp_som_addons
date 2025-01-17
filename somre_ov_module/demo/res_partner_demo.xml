@@ -87,5 +87,25 @@
             <field name="vat">ES85190129S</field>
             <field name="active" eval="True"/>
         </record>
+        <!-- Partner exists, is active and is staff -->
+        <record id="res_partner_res_users_already_staff" model="res.partner">
+            <field name="name">Hari, Mata</field>
+            <field name="vat">G78525763</field>
+            <field name="ref">777</field>
+            <field name="active" eval="True"/>
+        </record>
+        <record id="res_partner_address_res_users_already_staff" model="res.partner.address">
+            <field name="name">Hari, Mata</field>
+            <field name="email">matahari@somenergia.coop</field>
+            <field name="partner_id" ref="res_partner_res_users_already_staff"/>
+            <field name="street">Carrer Pic de Peguera, 9</field>
+            <field name="city">Girona</field>
+            <field name="zip">17002</field>
+            <field name="state_id">20</field>
+            <field name="title">M.</field>
+            <field name="country_id" model="res.country" search="[('name','=','España')]"/>
+            <field name="type">default</field>
+            <field name="customer" eval="True"/>
+        </record>
     </data>
 </openerp>

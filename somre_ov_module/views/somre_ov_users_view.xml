@@ -1,0 +1,40 @@
+<?xml version="1.0"?>
+<openerp>
+    <data>
+        <record model="ir.ui.view" id="view_somre_ov_users_form">
+            <field name="name">somre.ov.users.form</field>
+            <field name="model">somre.ov.users</field>
+            <field name="type">form</field>
+            <field name="inherit_id" ref="base.view_partner_form"/>
+            <field name="extend">1</field>
+            <field name="arch" type="xml">
+                <page string="General" position="after">
+                    <page string="Usuari de la oficina virtual de representació">
+                        <field name="is_staff"/>
+                        <field name="reov_baixa"/>
+                    </page>
+                </page>
+            </field>
+        </record>
+        <record model="ir.ui.view" id="view_somre_ov_users_tree">
+            <field name="name">somre.ov.users.tree</field>
+            <field name="model">somre.ov.users</field>
+            <field name="type">tree</field>
+            <field name="arch" type="xml">
+                <tree string="Usuaris ov representa">
+                    <field name="partner_id" select="1"/>
+                    <field name="is_staff"/>
+                    <field name="reov_baixa"/>
+                </tree>
+            </field>
+        </record>
+        <record id="action_somre_ov_users_tree" model="ir.actions.act_window">
+            <field name="name">Usuaris de la oficina virtual de representa</field>
+            <field name="res_model">somre.ov.users</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="view_id" ref="view_somre_ov_users_tree"/>
+        </record>
+        <menuitem action="action_somre_ov_users_tree" id="menu_somre_ov_users_tree" parent="base.menu_base_partner"/>
+    </data>
+</openerp>

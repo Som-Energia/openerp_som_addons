@@ -12,9 +12,9 @@
         </record>
         <record model="poweremail.templates" id="email_create_change_password">
             <field name="name">Email crear o canviar contrasenya</field>
-            <field name="object_name" model="ir.model" search="[('name', '=', 'Partner')]"/>
+            <field name="object_name" model="ir.model" search="[('model', '=', 'somre.ov.users')]"/>
             <field eval="0" name="save_to_drafts"/>
-            <field name="model_int_name">res.partner</field>
+            <field name="model_int_name">somre.ov.users</field>
             <field name="def_to">${object.address[0].email}</field>
             <field eval="0" name="auto_email"/>
             <field eval="0" name="single_email"/>

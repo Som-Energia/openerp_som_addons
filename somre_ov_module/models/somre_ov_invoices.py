@@ -44,11 +44,11 @@ class SomreOvInvoices(osv.osv_memory):
             context = {}
 
         users_obj = self.pool.get('somre.ov.users')
-        partner = users_obj.get_customer(cursor, uid, vat)
+        ov_user = users_obj.get_customer(cursor, uid, vat)
         invoice_obj = self.pool.get('giscere.facturacio.factura')
 
         search_params = [
-            ('partner_id', '=', partner.id),
+            ('partner_id', '=', ov_user.partner_id.id),
             ('state', 'in', ['open', 'paid']),
         ]
         if oldest_date:
@@ -78,7 +78,7 @@ class SomreOvInvoices(osv.osv_memory):
     def validate_invoices(self, cursor, uid, invoice_obj, vat, invoice_numbers):
         invoice_numbers = self.ensure_list(invoice_numbers)
         users_obj = self.pool.get('somre.ov.users')
-        partner = users_obj.get_customer(cursor, uid, vat)
+        ov_user = users_obj.get_customer(cursor, uid, vat)
 
         search_params = [
             ('number', 'in', invoice_numbers),
@@ -89,7 +89,7 @@ class SomreOvInvoices(osv.osv_memory):
         for invoice_id in invoice_ids:
             invoice = invoice_obj.browse(cursor, uid, invoice_id)
 
-            if invoice.partner_id.id != partner.id:
+            if invoice.partner_id.id != ov_user.partner_id.id:
                 raise UnauthorizedAccess(
                     username=vat,
                     resource_type='Invoice',

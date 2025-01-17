@@ -19,13 +19,13 @@ class WizardCreateChangePassword(osv.osv_memory):
     def default_get(self, cursor, uid, fields, context=None):
         res = super(WizardCreateChangePassword, self).default_get(cursor, uid, fields, context)
 
-        partner_obj = self.pool.get('res.partner')
+        ov_users_obj = self.pool.get('somre.ov.users')
         active_ids = context.get('active_ids')
 
         info = '{} ({}): \n{}'.format(
             'Es generarant contrasenyes pels següents partners',
             len(active_ids),
-            '\n'.join([partner_obj.read(cursor, uid, x, ['name'])['name'] for x in active_ids])
+            '\n'.join([ov_users_obj.read(cursor, uid, x, ['name'])['name'] for x in active_ids])
         )
 
         res.update({
@@ -43,7 +43,7 @@ class WizardCreateChangePassword(osv.osv_memory):
         # Return the shuffled list of characters as a string
         return ''.join(characters)
 
-    def send_password_email(self, cursor, uid, partner, context=None):
+    def send_password_email(self, cursor, uid, ov_user, context=None):
         ir_model_data = self.pool.get('ir.model.data')
         power_email_tmpl_obj = self.pool.get('poweremail.templates')
 
@@ -64,11 +64,11 @@ class WizardCreateChangePassword(osv.osv_memory):
         try:
             wiz_send_obj = self.pool.get('poweremail.send.wizard')
             ctx = {
-                'active_ids': [partner.id],
-                'active_id': partner.id,
+                'active_ids': [ov_user.id],
+                'active_id': ov_user.id,
                 'template_id': template_id,
-                'src_model': 'res.partner',
-                'src_rec_ids': [partner.id],
+                'src_model': 'somre.ov.users',
+                'src_rec_ids': [ov_user.id],
                 'from': email_from,
                 'state': 'single',
                 'priority': '0',
@@ -101,47 +101,28 @@ class WizardCreateChangePassword(osv.osv_memory):
         except Exception:
             return False
 
-    def add_password_to_partner_comment(self, cursor, uid, partner_id, password, context=None):
-        partner_o = self.pool.get("res.partner")
-        comment = partner_o.read(cursor, uid, partner_id, ['comment'])['comment']
-        start_key = 'generated_ov_password='
-        end_key = '(generated_ov_password)\n'
-
-        new_comment = '{}{}{}'.format(start_key, password, end_key)
-
-        if comment:
-            if start_key in comment:
-                start_comments = comment.split(start_key)[0]
-                end_comments = comment.split(end_key)[1]
-
-                # remove old password
-                new_comment = '{}{}{}'.format(new_comment, start_comments, end_comments)
-            else:
-                new_comment = '{}{}'.format(new_comment, comment)
-
-        partner_o.write(cursor, uid, partner_id, {'comment': new_comment})
-
     def action_create_change_password(self, cursor, uid, ids, context=None):
         if context is None:
             context = {}
 
-        partner_ids = context.get("active_ids")
-        partner_o = self.pool.get("res.partner")
+        ov_users_ids = context.get("active_ids")
+        ov_users_o = self.pool.get("somre.ov.users")
 
         error_info = []
-        for partner_id in partner_ids:
-            partner = partner_o.browse(cursor, uid, partner_id)
+        for ov_user_id in ov_users_ids:
+            ov_user = ov_users_o.browse(cursor, uid, ov_user_id)
             password = self.generatePassword()
-            result = self.save_privisioning_data(cursor, uid, partner_id, password)
+            result = self.save_privisioning_data(cursor, uid, ov_user_id, password)
             if not result:
-                info = "{} ({})\n".format(str(int(partner_id)), 'Error al guardar la contrasenya')
+                info = "{} ({})\n".format(str(int(ov_user_id)), 'Error al guardar la contrasenya')
                 error_info.append(info)
                 continue
-            self.add_password_to_partner_comment(cursor, uid, partner_id, password)
+
+            ov_users_o.write(cursor, uid, [ov_user_id], {'initial_password': password})
             try:
-                self.send_password_email(cursor, uid, partner)
+                self.send_password_email(cursor, uid, ov_user)
             except FailSendEmail:
-                info = "{} ({})\n".format(str(int(partner_id)), "Error al generar/enviar l'email")
+                info = "{} ({})\n".format(str(int(ov_user_id)), "Error al generar/enviar l'email")
                 error_info.append(info)
                 continue
 

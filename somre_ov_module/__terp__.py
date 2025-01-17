@@ -24,14 +24,13 @@
     'update_xml': [
         "data/somre_ov_signed_documents_data.xml",
         "data/email_template_data.xml",
-        "views/res_users_view.xml",
+        "views/somre_ov_users_view.xml",
         "wizard/wizard_create_change_password_view.xml",
-        "wizard/wizard_create_staff_users_view.xml",
         "security/ir.model.access.csv",
     ],
     'demo_xml': [
         "demo/res_partner_demo.xml",
-        "demo/res_users_demo.xml",
+        "demo/somre_ov_users_demo.xml",
         "demo/giscere_instalacio_demo.xml",
         "demo/giscere_facturacio_demo.xml",
         "demo/giscere_mhcil_demo.xml",

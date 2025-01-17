@@ -1,5 +1,4 @@
 import somre_ov_signed_documents
-import res_users
 import somre_ov_users
 import somre_ov_installations
 import somre_ov_invoices
