@@ -13,7 +13,7 @@ class WizardCreateChangePasswordTests(testing.OOTestCase):
 
     def setUp(self):
         self.pool = self.openerp.pool
-        self.res_partner = self.pool.get('res.partner')
+        self.ov_user = self.pool.get('somre.ov.users')
         self.wiz_o = self.pool.get('wizard.create.change.password')
 
         self.txn = Transaction().start(self.database)
@@ -26,13 +26,13 @@ class WizardCreateChangePasswordTests(testing.OOTestCase):
 
     @mock.patch.object(WizardCreateChangePassword, "save_privisioning_data")
     def test__action_create_change_password__OK(self, mock_save_privisioning_data):
-        partner_id = self.res_partner.search(
+        ov_user_id = self.ov_user.search(
             self.cursor,
             self.uid,
             [('vat', '=', 'ES48591264S')]
         )
 
-        context = {'active_ids': partner_id}
+        context = {'active_ids': ov_user_id}
         wiz_id = self.wiz_o.create(self.cursor, self.uid, {}, context=context)
 
         mock_save_privisioning_data.return_value = True
@@ -47,13 +47,13 @@ class WizardCreateChangePasswordTests(testing.OOTestCase):
     @mock.patch.object(WizardCreateChangePassword, "send_password_email")
     @mock.patch.object(WizardCreateChangePassword, "save_privisioning_data")
     def test__action_create_change_password__KO_cannot_save_privisioning_data(self, mock_save_privisioning_data, mock_send_password_email):  # noqa: E501
-        partner_id = self.res_partner.search(
+        ov_user_id = self.ov_user.search(
             self.cursor,
             self.uid,
             [('vat', '=', 'ES48591264S')]
         )
 
-        context = {'active_ids': partner_id}
+        context = {'active_ids': ov_user_id}
         wiz_id = self.wiz_o.create(self.cursor, self.uid, {}, context=context)
 
         mock_save_privisioning_data.return_value = False
@@ -65,7 +65,7 @@ class WizardCreateChangePasswordTests(testing.OOTestCase):
         self.assertEqual(wiz['state'], 'done')
         self.assertEqual(wiz['info'], '{}: \n {} ({})\n'.format(
             'Error generant contrasenyes pels següents partners',
-            int(partner_id[0]),
+            int(ov_user_id[0]),
             'Error al guardar la contrasenya'
         )
         )
@@ -74,18 +74,18 @@ class WizardCreateChangePasswordTests(testing.OOTestCase):
     @mock.patch.object(WizardCreateChangePassword, "send_password_email")
     @mock.patch.object(WizardCreateChangePassword, "save_privisioning_data")
     def test__action_create_change_password__KO_cannot_send_password_email(self, mock_save_privisioning_data, mock_send_password_email):  # noqa: E501
-        partner_id = self.res_partner.search(
+        ov_user_id = self.ov_user.search(
             self.cursor,
             self.uid,
             [('vat', '=', 'ES48591264S')]
         )
 
-        context = {'active_ids': partner_id}
+        context = {'active_ids': ov_user_id}
         wiz_id = self.wiz_o.create(self.cursor, self.uid, {}, context=context)
 
         mock_save_privisioning_data.return_value = True
 
-        def send_password_email(cursor, uid, partner_id):
+        def send_password_email(cursor, uid, ov_user_id):
             raise FailSendEmail('Error text')
 
         mock_send_password_email.side_effect = send_password_email
@@ -97,19 +97,19 @@ class WizardCreateChangePasswordTests(testing.OOTestCase):
         self.assertEqual(wiz['state'], 'done')
         self.assertEqual(wiz['info'], '{}: \n {} ({})\n'.format(
             'Error generant contrasenyes pels següents partners',
-            int(partner_id[0]),
+            int(ov_user_id[0]),
             "Error al generar/enviar l'email")
         )
 
     @mock.patch.object(WizardCreateChangePassword, "save_privisioning_data")
     def test__action_create_change_password__multiple_partners__OK(self, mock_save_privisioning_data):  # noqa: E501
-        partner_ids = self.res_partner.search(
+        ov_user_ids = self.ov_user.search(
             self.cursor,
             self.uid,
             [('active', '=', True)]
         )
 
-        context = {'active_ids': partner_ids}
+        context = {'active_ids': ov_user_ids}
         wiz_id = self.wiz_o.create(self.cursor, self.uid, {}, context=context)
 
         mock_save_privisioning_data.return_value = True
@@ -124,13 +124,13 @@ class WizardCreateChangePasswordTests(testing.OOTestCase):
     @mock.patch.object(WizardCreateChangePassword, "send_password_email")
     @mock.patch.object(WizardCreateChangePassword, "save_privisioning_data")
     def test__action_create_change_password__multiple_partners__KO_cannot_save_privisioning_data(self, mock_save_privisioning_data, mock_send_password_email):  # noqa: E501
-        partner_ids = self.res_partner.search(
+        ov_user_ids = self.ov_user.search(
             self.cursor,
             self.uid,
             [('active', '=', True)]
         )
 
-        context = {'active_ids': partner_ids}
+        context = {'active_ids': ov_user_ids}
         wiz_id = self.wiz_o.create(self.cursor, self.uid, {}, context=context)
 
         mock_save_privisioning_data.return_value = False
@@ -143,24 +143,24 @@ class WizardCreateChangePasswordTests(testing.OOTestCase):
         self.assertEqual(wiz['info'], '{}: \n {}'.format(
             'Error generant contrasenyes pels següents partners',
             ','.join(['{} ({})\n'.format(str(int(x)), 'Error al guardar la contrasenya')
-                     for x in partner_ids])
+                     for x in ov_user_ids])
         )
         )
 
     @mock.patch.object(WizardCreateChangePassword, "send_password_email")
     @mock.patch.object(WizardCreateChangePassword, "save_privisioning_data")
     def test__action_create_change_password__multiple_partners__KO_cannot_save_privisioning_data__even_partner_id(self, mock_save_privisioning_data, mock_send_password_email):  # noqa: E501
-        partner_ids = self.res_partner.search(
+        ov_user_ids = self.ov_user.search(
             self.cursor,
             self.uid,
             [('active', '=', True)]
         )
 
-        context = {'active_ids': partner_ids}
+        context = {'active_ids': ov_user_ids}
         wiz_id = self.wiz_o.create(self.cursor, self.uid, {}, context=context)
 
-        def save_privisioning_data(cursor, uid, partner_id, password):
-            if partner_id % 2 == 0:
+        def save_privisioning_data(cursor, uid, ov_user_id, password):
+            if ov_user_id % 2 == 0:
                 return False
             return True
 
@@ -174,26 +174,26 @@ class WizardCreateChangePasswordTests(testing.OOTestCase):
         self.assertEqual(wiz['info'], '{}: \n {}'.format(
             'Error generant contrasenyes pels següents partners',
             ','.join(['{} ({})\n'.format(str(int(x)), 'Error al guardar la contrasenya')
-                     for x in partner_ids if x % 2 == 0])
+                     for x in ov_user_ids if x % 2 == 0])
         )
         )
 
     @mock.patch.object(WizardCreateChangePassword, "send_password_email")
     @mock.patch.object(WizardCreateChangePassword, "save_privisioning_data")
     def test__action_create_change_password__KO_cannot_send_password_email__even_partner_id(self, mock_save_privisioning_data, mock_send_password_email):  # noqa: E501
-        partner_ids = self.res_partner.search(
+        ov_user_ids = self.ov_user.search(
             self.cursor,
             self.uid,
             [('active', '=', True)]
         )
 
-        context = {'active_ids': partner_ids}
+        context = {'active_ids': ov_user_ids}
         wiz_id = self.wiz_o.create(self.cursor, self.uid, {}, context=context)
 
         mock_save_privisioning_data.return_value = True
 
-        def send_password_email(cursor, uid, partner_id):
-            if int(partner_id.id) % 2 == 0:
+        def send_password_email(cursor, uid, ov_user_id):
+            if int(ov_user_id.id) % 2 == 0:
                 raise FailSendEmail('Error text')
 
         mock_send_password_email.side_effect = send_password_email
@@ -206,13 +206,13 @@ class WizardCreateChangePasswordTests(testing.OOTestCase):
         self.assertEqual(wiz['info'], '{}: \n {}'.format(
             'Error generant contrasenyes pels següents partners',
             ','.join(['{} ({})\n'.format(str(int(x)), "Error al generar/enviar l'email")
-                     for x in partner_ids if x % 2 == 0])
+                     for x in ov_user_ids if x % 2 == 0])
         )
         )
 
     @mock.patch("tools.config.get")
     def test__save_privisioning_data__KO_without_api_key(self, mock_config):
-        partner_id = self.res_partner.search(
+        ov_user_id = self.ov_user.search(
             self.cursor,
             self.uid,
             [('vat', '=', 'ES48591264S')]
@@ -222,54 +222,6 @@ class WizardCreateChangePasswordTests(testing.OOTestCase):
 
         mock_config.return_value = False
 
-        result = self.wiz_o.save_privisioning_data(self.cursor, self.uid, partner_id[0], password)
+        result = self.wiz_o.save_privisioning_data(self.cursor, self.uid, ov_user_id[0], password)
 
         self.assertFalse(result)
-
-    def test__add_password_to_partner_comment__comment_empty(self):
-        partner_id = self.res_partner.search(
-            self.cursor,
-            self.uid,
-            [('vat', '=', 'ES48591264S')]
-        )
-
-        password = 'test-password'
-
-        self.wiz_o.add_password_to_partner_comment(self.cursor, self.uid, partner_id[0], password)
-
-        partner = self.res_partner.browse(self.cursor, self.uid, partner_id[0])
-
-        self.assertTrue('generated_ov_password' in partner.comment)
-
-    def test__add_password_to_partner_comment__comment_not_empty(self):
-        partner_id = self.res_partner.search(
-            self.cursor,
-            self.uid,
-            [('vat', '=', 'ES48591264S')]
-        )
-
-        password = 'test-password'
-        self.res_partner.write(self.cursor, self.uid, partner_id[0], {'comment': 'one_comment'})
-
-        self.wiz_o.add_password_to_partner_comment(self.cursor, self.uid, partner_id[0], password)
-
-        partner = self.res_partner.browse(self.cursor, self.uid, partner_id[0])
-
-        self.assertTrue('generated_ov_password' in partner.comment)
-
-    def test__add_password_to_partner_comment__comment_has_generated_password(self):
-        partner_id = self.res_partner.search(
-            self.cursor,
-            self.uid,
-            [('vat', '=', 'ES48591264S')]
-        )
-
-        password = 'new_test_password'
-        comment = 'one_comment\ngenerated_ov_password=test_password(generated_ov_password)\n'
-        self.res_partner.write(self.cursor, self.uid, partner_id[0], {'comment': comment})
-
-        self.wiz_o.add_password_to_partner_comment(self.cursor, self.uid, partner_id[0], password)
-
-        partner = self.res_partner.browse(self.cursor, self.uid, partner_id[0])
-
-        self.assertTrue('new_test_password' in partner.comment)
