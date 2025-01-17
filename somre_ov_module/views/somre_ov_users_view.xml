@@ -35,6 +35,6 @@
             <field name="view_mode">tree,form</field>
             <field name="view_id" ref="view_somre_ov_users_tree"/>
         </record>
-        <menuitem action="action_somre_ov_users_tree" id="menu_somre_ov_users_tree" parent="base.menu_base_partner"/>
+        <menuitem action="action_somre_ov_users_tree" id="menu_somre_ov_users_tree" parent="giscere_cil.menu_representantes" sequence="99"/>
     </data>
 </openerp>
