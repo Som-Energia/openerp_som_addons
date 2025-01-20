@@ -157,11 +157,15 @@ class GiscedataServeiGeneracioPolissa(osv.osv):
             # TODO validar generationkwh
             te_generationkwh = polissa.te_assignacio_gkwh
 
+            # La llista de preus és ESMASA
+            te_llista_preus_esmasa = polissa.llista_preu.indexed_formula == 'Indexada ESMASA'
+
             # Condicions especifiques
             compleix_condicions = (not len(altres_auvidis)
                                    and not len(matching_category_ids)
                                    and not te_auto_collectiu
                                    and not te_generationkwh
+                                   and not te_llista_preus_esmasa
                                    and polissa.mode_facturacio == 'index')
 
             # Let's check VAT is the correct one
