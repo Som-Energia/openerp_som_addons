@@ -3,6 +3,7 @@
 from __future__ import absolute_import
 
 from osv import osv, fields
+from osv.expression import OOQuery
 
 from osv.orm import browse_record
 import logging
@@ -88,6 +89,15 @@ class SomenergiaSoci(osv.osv):
                     cursor.close()
 
         return soci_ids
+
+    def count_active_socis(self, cursor, uid):
+        q = OOQuery(self, cursor, uid)
+        sql = q.select(['id']).where([
+            ('baixa', '=', False),
+            ('partner_id.category_id.name', 'ilike', 'Soci'),
+        ])
+        cursor.execute(*sql)
+        return cursor.rowcount
 
     def _ff_emails(self, cursor, uid, ids, field_name, args, context=None):
         """
