@@ -93,6 +93,7 @@ class SomenergiaSoci(osv.osv):
     def count_active_socis(self, cursor, uid):
         q = OOQuery(self, cursor, uid)
         sql = q.select(['id']).where([
+            ('partner_id.active', '=', True),
             ('baixa', '=', False),
             ('partner_id.category_id.name', 'ilike', 'Soci'),
         ])
