@@ -114,11 +114,18 @@ class GiscedataServeiGeneracioPolissa(osv.osv):
             new_state = 'vinculat'
             if anullat_today:
                 new_state = 'anullat'
-                sg_posteriors_id = self.search(cursor, uid, [
+                posteriors_params = [
                     ('servei_generacio_id', '=', sg_info['servei_generacio_id'][0]),
                     ('cups_name', '=', sg_info['cups_name']),
                     ('data_incorporacio', '>', sg_info['data_sortida'])
-                ], limit=1, order='data_incorporacio asc')
+                ]
+
+                if polissa_id:
+                    posteriors_params.append(('polissa_id', '=', polissa_id[0]))
+
+                sg_posteriors_id = self.search(
+                    cursor, uid, posteriors_params, limit=1, order='data_incorporacio asc'
+                )
                 if len(sg_posteriors_id):
                     sg_posteriors_data = self.read(
                         cursor, uid, sg_posteriors_id[0], read_params, context=context
