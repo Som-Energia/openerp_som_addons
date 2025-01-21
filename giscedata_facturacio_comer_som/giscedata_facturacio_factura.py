@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import netsvc
 import logging
-import tqdm
+from tqdm import tqdm
 from datetime import datetime, timedelta
 from osv import osv, fields
 from addons import get_module_resource
