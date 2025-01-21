@@ -7,6 +7,8 @@ from giscedata_serveis_generacio.giscedata_serveis_generacio import ESTATS_CONTR
 
 from osv import osv, fields
 
+NOT_ALLOWED_COLLECTIVES = ['42', '43', '52', '55', '57', '58', '63', '64', '73', '74']
+
 
 class GiscedataServeiGeneracio(osv.osv):
     _name = "giscedata.servei.generacio"
@@ -68,6 +70,9 @@ class GiscedataServeiGeneracioPolissa(osv.osv):
 
         imd = self.pool.get('ir.model.data')
         polissa_obj = self.pool.get('giscedata.polissa')
+        modcon_obj = self.pool.get('giscedata.polissa.modcontractual')
+        swi_obj = self.pool.get('giscedata.switching')
+        m1_obj = self.pool.get('giscedata.switching.m1.01')
         polissa_category_obj = self.pool.get('giscedata.polissa.category')
         servei_gen_pol_obj = self.pool.get('giscedata.servei.generacio.polissa')
 
@@ -160,6 +165,44 @@ class GiscedataServeiGeneracioPolissa(osv.osv):
                                    and not te_llista_preus_esmasa
                                    and polissa.mode_facturacio == 'index')
 
+            # Condicions extra confirmat
+            te_modi_pendent_canvi_mode_facturacio = False
+            modcons_pendents = modcon_obj.search(cursor, uid, [
+                ('polissa_id', '=', polissa_id),
+                ('state', '=', 'pendent')
+            ])
+            if len(modcons_pendents):
+                for modcon_pendent in modcons_pendents:
+                    modcon = modcon_obj.browse(cursor, uid, modcon_pendent)
+                    if modcon.mode_facturacio != modcon.modcontractual_ant.mode_facturacio:
+                        te_modi_pendent_canvi_mode_facturacio = True
+
+            sw_ids = swi_obj.search(cursor, uid, [
+                ('cups_polissa_id', '=', polissa_id),
+                ('state', 'in', ['open', 'draft']),
+            ])
+
+            m1s_canvi_autoconsum_collectiu = m1_obj.search(cursor, uid, [
+                ('header_id.sw_id', 'in', sw_ids),
+                ('sollicitudadm', 'in', ['N', 'A']),
+                ('tipus_autoconsum', 'in', NOT_ALLOWED_COLLECTIVES)
+            ])
+
+            m1s_canvi_titular = m1_obj.search(cursor, uid, [
+                ('header_id.sw_id', 'in', sw_ids),
+                ('sollicitudadm', 'in', ['S', 'A']),
+                ('canvi_titular', 'in', ['S', 'T'])
+            ])
+
+            te_m1_canvi_auto_collectiu = bool(len(m1s_canvi_autoconsum_collectiu))
+            te_m1_canvi_titular = bool(len(m1s_canvi_titular))
+
+            compleix_extra_condicions = (
+                not te_modi_pendent_canvi_mode_facturacio
+                and not te_m1_canvi_auto_collectiu
+                and not te_m1_canvi_titular
+            )
+
             # Let's check VAT is the correct one
             te_nif = sg_info.get('nif') and sg_info['nif']
             if (not te_nif or (te_nif and polissa.titular.vat not in sg_info['nif']
@@ -178,7 +221,8 @@ class GiscedataServeiGeneracioPolissa(osv.osv):
                     else:
                         new_state = 'pendent_incidencia'
                 elif polissa.state == 'activa':
-                    if compleix_condicions and te_auvidi_category and actiu_today:
+                    if (compleix_condicions and te_auvidi_category
+                            and actiu_today and compleix_extra_condicions):
                         new_state = 'confirmat'
                     elif te_auvidi_category and actiu_today:
                         new_state = 'confirmat_incidencia'
