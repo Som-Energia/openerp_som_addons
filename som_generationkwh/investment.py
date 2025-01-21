@@ -616,15 +616,19 @@ class GenerationkwhInvestment(osv.osv):
             gilo_line  = gilo_obj.browse(cursor, uid, item[1][0])
             line = gffl_obj.read(cursor, uid, item[0])
 
+            quantity_kwh = line['quantity']
+            if item[1][1] < 0:  # If saving is negative, quantity must be negative too
+                quantity_kwh *= -1
+
             total_amount_saving += item[1][1]
-            total_generation_kwh += line['quantity']
+            total_generation_kwh += quantity_kwh
             total_generation_amount += line['price_subtotal']
             pol_name = gilo_line.factura_id.polissa_id.name
             pol_dire = gilo_line.factura_id.polissa_id.cups_direccio
             if pol_name in contracts:
-                contracts[pol_name]['kWh'] = contracts[pol_name]['kWh'] + line['quantity']
+                contracts[pol_name]['kWh'] = contracts[pol_name]['kWh'] + quantity_kwh
             else:
-                contracts[pol_name] = {'address': pol_dire, 'kWh': line['quantity']}
+                contracts[pol_name] = {'address': pol_dire, 'kWh': quantity_kwh}
 
         res = {
             'total_amount_saving': total_amount_saving,
