@@ -63,7 +63,8 @@ class GiscedataFacturacioFacturador(osv.osv):
             factura_info = factura_obj.read(
                 cursor, uid, factura_id, ['type', 'data_inici', 'data_final']
             )
-            if factura_info and factura_info['type'] in ('out_invoice', 'out_refund') and factura_info.get("data_inici") and factura_info.get("data_final"):
+            if (factura_info and factura_info.get('type') in ('out_invoice', 'out_refund')
+                    and factura_info.get("data_inici") and factura_info.get("data_final")):
                 any_desde = datetime.strptime(factura_info['data_inici'], '%Y-%m-%d').year
                 any_fins = datetime.strptime(factura_info['data_final'], '%Y-%m-%d').year
                 if any_desde != any_fins:
