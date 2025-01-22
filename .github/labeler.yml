@@ -86,6 +86,8 @@ somre_giscere_facturacio:
 -  somre_giscere_facturacio/**
 somre_giscere_oferta:
 -  somre_giscere_oferta/**
+somre_ov_module:
+-  somre_ov_module/**
 som_remeses_base:
 -  som_remeses_base/**
 som_switching:
