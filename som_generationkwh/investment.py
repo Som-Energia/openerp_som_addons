@@ -1637,7 +1637,6 @@ class GenerationkwhInvestment(osv.osv):
             context = {}
 
         PEAccounts = self.pool.get('poweremail.core_accounts')
-        WizardInvoiceOpenAndSend = self.pool.get('wizard.invoice.open.and.send')
         MailMockup = self.pool.get('generationkwh.mailmockup')
         IrModelData = self.pool.get('ir.model.data')
 
@@ -1677,8 +1676,7 @@ class GenerationkwhInvestment(osv.osv):
                                 from_id = from_id,
                             ).dump())
             else:
-                WizardInvoiceOpenAndSend.envia_mail_a_client(
-                    cursor, uid, id, model, prefix + template, ctx)
+                PETemplate.generate_mail(cursor, uid, template_id, id, context=ctx)
 
     def cancel(self,cursor,uid, ids, context=None):
         User = self.pool.get('res.users')
