@@ -26,6 +26,7 @@
         "data/email_template_data.xml",
         "views/somre_ov_users_view.xml",
         "wizard/wizard_create_change_password_view.xml",
+        "wizard/wizard_create_somre_ov_users.xml",
         "security/ir.model.access.csv",
     ],
     'demo_xml': [
