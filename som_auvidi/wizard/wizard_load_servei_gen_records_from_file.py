@@ -7,20 +7,6 @@ class WizardLoadServeiGenRecordsFromFile(osv.osv_memory):
     _name = 'wizard.load.servei.gen.records.from.file'
     _inherit = 'wizard.load.servei.gen.records.from.file'
 
-    def get_polissa_from_record_data(self, cursor, uid, cups_name, data, context=None):
-        if context is None:
-            context = {}
-
-        pol_obj = self.pool.get('giscedata.polissa')
-
-        ctx = context.copy()
-        ctx.update({'active_test': False})
-        polissa_id = pol_obj.search(cursor, uid, [
-            ('cups.name', '=', cups_name),
-        ], order='id desc', context=ctx)
-
-        return polissa_id
-
     def get_aux_dict_from_row(self, cursor, uid, row, tipus='contracte', context=None):
         if context is None:
             context = {}
