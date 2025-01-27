@@ -145,7 +145,7 @@ class GiscedataFacturacioFacturador(osv.osv):
         max_descompte = uber_round(max_descompte)
 
         # Last check:
-        if max_descompte - 0.02 < fact.amount_total < max_descompte + 0.02:
+        if max_descompte - 0.02 <= fact.amount_total <= max_descompte + 0.02:
             max_descompte = fact.amount_total
 
         return linies_utilitzades_ids, max_descompte
