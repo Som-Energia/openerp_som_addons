@@ -8,7 +8,7 @@ class GiscedataServeiGeneracioFacturacio(osv.osv):
     _inherit = "giscedata.servei.generacio"
 
     def get_missatge_factura_duplicada(self, cursor, uid, context=None):
-        return _("Aquest contracte té auvidi i seria millor fer la factura per lot, si no saps "
+        return _("Aquest contracte té AUVI i seria millor fer la factura per lot, si no saps "
                  "com procedir busca ajuda. Si ja l'estas creant per lot vol dir que algu abans "
                  "l'ha creat per factura manual")
 
