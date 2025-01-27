@@ -23,7 +23,7 @@ class WizardCreateChangePassword(osv.osv_memory):
         active_ids = context.get('active_ids')
 
         info = '{} ({}): \n{}'.format(
-            'Es generarant contrasenyes pels següents partners',
+            'Es generaran contrasenyes pels següents partners:',
             len(active_ids),
             '\n'.join([ov_users_obj.read(cursor, uid, x, ['name'])['name'] for x in active_ids])
         )
