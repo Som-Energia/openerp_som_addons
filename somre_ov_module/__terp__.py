@@ -27,6 +27,7 @@
         "views/somre_ov_users_view.xml",
         "wizard/wizard_create_change_password_view.xml",
         "wizard/wizard_create_somre_ov_users.xml",
+        "security/somre_ov_module.xml",
         "security/ir.model.access.csv",
     ],
     'demo_xml': [
