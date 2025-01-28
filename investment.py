@@ -1678,8 +1678,6 @@ class GenerationkwhInvestment(osv.osv):
                                 from_id = from_id,
                             ).dump())
             else:
-                # PETemplate.generate_mail(cursor, uid, template_id, id, context=ctx)
-
                 params = {'state': 'single', 'priority': '0',
                             'from': ctx['from']}
 
