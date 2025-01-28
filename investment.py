@@ -1678,8 +1678,11 @@ class GenerationkwhInvestment(osv.osv):
                                 from_id = from_id,
                             ).dump())
             else:
-                params = {'state': 'single', 'priority': '0',
-                            'from': ctx['from']}
+                params = {
+                    'state': 'single',
+                    'priority': '0',
+                    'from': ctx['from']
+                }
 
                 poweremail_wizard_id = PoweremailSendWizard.create(cursor, uid, params, context=ctx)
                 PoweremailSendWizard.send_mail(cursor, uid, [poweremail_wizard_id], context=ctx)
