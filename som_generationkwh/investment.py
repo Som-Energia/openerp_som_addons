@@ -1639,6 +1639,7 @@ class GenerationkwhInvestment(osv.osv):
         PEAccounts = self.pool.get('poweremail.core_accounts')
         MailMockup = self.pool.get('generationkwh.mailmockup')
         IrModelData = self.pool.get('ir.model.data')
+        PoweremailSendWizard = self.pool.get('poweremail.send.wizard')
 
         if not investment_id:
             investment_id = id
@@ -1654,7 +1655,7 @@ class GenerationkwhInvestment(osv.osv):
                ('name','=','Generation kWh')
                 ])
         else:
-            from_id = from_id[:1]
+            from_id = from_id[0]
 
         ctx = context.copy()
         ctx.update({
@@ -1665,6 +1666,7 @@ class GenerationkwhInvestment(osv.osv):
             'from': from_id,
             'state': 'single',
             'priority': '0',
+            'template_id': template_id,
             })
 
         with AsyncMode('sync') as asmode:
@@ -1676,7 +1678,13 @@ class GenerationkwhInvestment(osv.osv):
                                 from_id = from_id,
                             ).dump())
             else:
-                PETemplate.generate_mail(cursor, uid, template_id, id, context=ctx)
+                # PETemplate.generate_mail(cursor, uid, template_id, id, context=ctx)
+
+                params = {'state': 'single', 'priority': '0',
+                            'from': ctx['from']}
+
+                poweremail_wizard_id = PoweremailSendWizard.create(cursor, uid, params, context=ctx)
+                PoweremailSendWizard.send_mail(cursor, uid, [poweremail_wizard_id], context=ctx)
 
     def cancel(self,cursor,uid, ids, context=None):
         User = self.pool.get('res.users')
