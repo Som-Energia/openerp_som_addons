@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<openerp>
+    <data>
+        <record id="somre_ov_user_soci" model="somre.ov.users">
+            <field name="partner_id" ref="res_partner_soci"/>
+            <field name="is_staff" eval="False" />
+            <field name="reov_baixa" eval="False" />
+        </record>
+        <record id="somre_ov_user_soci_legal_proxy" model="somre.ov.users">
+            <field name="partner_id" ref="res_partner_soci_legal_proxy"/>
+            <field name="is_staff" eval="False" />
+            <field name="reov_baixa" eval="False" />
+        </record>
+        <record id="somre_ov_user_soci_legal" model="somre.ov.users">
+            <field name="partner_id" ref="res_partner_soci_legal"/>
+            <field name="is_staff" eval="False" />
+            <field name="reov_baixa" eval="False" />
+        </record>
+        <record id="somre_ov_user_soci_not_active" model="somre.ov.users">
+            <field name="partner_id" ref="res_partner_soci_not_active"/>
+            <field name="is_staff" eval="False" />
+            <field name="reov_baixa" eval="True" />
+        </record>
+         <record id="somre_ov_user_no_customer" model="somre.ov.users">
+            <field name="partner_id" ref="res_partner_not_customer"/>
+            <field name="is_staff" eval="False" />
+            <field name="reov_baixa" eval="False" />
+        </record>
+         <record id="somre_ov_user_already_staff" model="somre.ov.users">
+            <field name="partner_id" ref="res_partner_res_users_already_staff"/>
+            <field name="is_staff" eval="True" />
+            <field name="reov_baixa" eval="False" />
+        </record>
+    </data>
+</openerp>
