@@ -514,7 +514,7 @@ class InvestmentTests(testing.OOTestCase):
                 - model: generationkwh.investment
                   id: {id}
                   template: aportacio_mail_creacio
-                  from_id: [ {account_id} ]
+                  from_id: {account_id}
                 """.format(
                     id=inv_id,
                     account_id = self._aportaMailAccount(cursor, uid),
@@ -543,7 +543,7 @@ class InvestmentTests(testing.OOTestCase):
                 - model: generationkwh.investment
                   id: {id}
                   template: generationkwh_mail_creacio
-                  from_id: [ {account_id} ]
+                  from_id: {account_id}
                 """.format(
                     id=inv_id,
                     account_id = self._generationMailAccount(cursor, uid),
@@ -1172,7 +1172,7 @@ class InvestmentTests(testing.OOTestCase):
                 - model: account.invoice
                   id: {id}
                   template: generationkwh_mail_amortitzacio
-                  from_id: [ {account_id} ]
+                  from_id: {account_id}
                 """.format(
                     id=amortization_ids[0],
                     account_id = self._generationMailAccount(cursor, uid),
@@ -1202,7 +1202,7 @@ class InvestmentTests(testing.OOTestCase):
                 - model: account.invoice
                   id: {id}
                   template: generationkwh_mail_amortitzacio
-                  from_id: [ {account_id} ]
+                  from_id: {account_id}
                 """.format(
                     id=amortization_ids[0],
                     account_id = self._generationMailAccount(cursor, uid),
@@ -1231,7 +1231,7 @@ class InvestmentTests(testing.OOTestCase):
                 - model: account.invoice
                   id: {id}
                   template: generationkwh_mail_pagament
-                  from_id: [ {account_id} ]
+                  from_id: {account_id}
                 """.format(
                     id=invoice_ids[0],
                     account_id = self._generationMailAccount(cursor, uid),
@@ -1257,7 +1257,7 @@ class InvestmentTests(testing.OOTestCase):
                 - model: account.invoice
                   id: {id}
                   template: aportacio_mail_pagament
-                  from_id: [ {account_id} ]
+                  from_id: {account_id}
                 """.format(
                     id=invoice_ids[0],
                     account_id = self._aportaMailAccount(cursor, uid),
@@ -2635,7 +2635,7 @@ class InvestmentTests(testing.OOTestCase):
                 - model: account.invoice
                   id: {id}
                   template: aportacio_interest_notification_mail
-                  from_id: [ {account_id} ]
+                  from_id: {account_id}
                 """.format(
                     id=interest_ids[0],
                     account_id=self._aportaMailAccount(cursor, uid),
