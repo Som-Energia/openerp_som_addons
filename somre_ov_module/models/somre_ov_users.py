@@ -129,6 +129,20 @@ class SomreOvUsers(osv.osv):
                     return False
         return True
 
+    @www_entry_point(
+        expected_exceptions=(NoSuchUser)
+    )
+    def get_execution_environment_values(self, cursor, uid):
+        par_obj = self.pool.get('res.partner')
+        ent = par_obj.browse(cursor, uid, 1)
+        data = {
+            'name': ent.name,
+            'vat': ent.vat[2:],
+            'address': ent.address[0].street,
+            'type': 'repre' if 'RENOVA' in ent.name else 'comer',
+        }
+        return data
+
     def vat_change(self, cr, uid, ids, value, context={}):
         pids = self.read(cr, uid, ids, ['partner_id'])
         pids = [p['partner_id'][0] for p in pids]

@@ -23,7 +23,7 @@ class WizardCreateChangePassword(osv.osv_memory):
         active_ids = context.get('active_ids')
 
         info = '{} ({}): \n{}'.format(
-            'Es generaran contrasenyes pels següents partners:',
+            'Es generaran contrasenyes pels següents partners',
             len(active_ids),
             '\n'.join([ov_users_obj.read(cursor, uid, x, ['name'])['name'] for x in active_ids])
         )
@@ -112,7 +112,7 @@ class WizardCreateChangePassword(osv.osv_memory):
         for ov_user_id in ov_users_ids:
             ov_user = ov_users_o.browse(cursor, uid, ov_user_id)
             password = self.generatePassword()
-            result = self.save_privisioning_data(cursor, uid, ov_user_id, password)
+            result = self.save_privisioning_data(cursor, uid, ov_user.partner_id.id, password)
             if not result:
                 info = "{} ({})\n".format(str(int(ov_user_id)), 'Error al guardar la contrasenya')
                 error_info.append(info)
