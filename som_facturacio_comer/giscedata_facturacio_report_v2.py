@@ -66,7 +66,10 @@ class GiscedataFacturacioFacturaReportV2(osv.osv):
             list_conf_ids = eval(cfg_obj.get(cursor, uid, "som_tax_21_ids_for_invoice_mail", "[]"))
         except Exception:
             pass
-        list_fra_tax_ids = fra.tax_line.tax_id.id
+        if len(fra.tax_line) > 0:
+            list_fra_tax_ids = fra.tax_line.tax_id.id
+        else:
+            list_fra_tax_ids = []
         common_elements = [id for id in list_fra_tax_ids if id in list_conf_ids]
         return len(common_elements) > 0
 
