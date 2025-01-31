@@ -85,7 +85,7 @@ class GiscedataFacturacioSwitchingValidator(osv.osv):
                 consume_by_period[period] = consume_by_period.get(period, 0.0) + c["total_consum"]
 
             consums_facturats = dict.fromkeys(consume_by_period.keys(), 0.0)
-            for ltype, line_xml in fact_xml.get_linies_factura_by_type().iteritems():
+            for ltype, line_xml in getattr(fact_xml.get_linies_factura_by_type(), 'items', fact_xml.get_linies_factura_by_type().items)(): # noqa: E501
                 if ltype == "energia":
                     result = self.get_consume_by_periode_facturat(cursor, uid, ltype, line_xml)
                     for cf in result:
