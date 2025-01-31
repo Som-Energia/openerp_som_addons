@@ -124,6 +124,8 @@ jobs:
           pip install -e . || "Not installing plantmeter Python package"
           pip install -r $ROOT_DIR_SRC/erp/requirements-dev.txt
           pip install -r $ROOT_DIR_SRC/erp/requirements.txt
+          cd $ROOT_DIR_SRC/cchloader
+          pip install -e .
 
       - name: Install dependecies for Python 3
         if: matrix.python-version != '2.7.17'
