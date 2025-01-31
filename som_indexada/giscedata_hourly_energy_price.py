@@ -29,7 +29,6 @@ class GiscedataNextDaysEnergyPrice(osv.osv):
                     :return: list, str list with the prices for each day
                     and str with the maturity of the prmdiari
                 """
-
         if context is None:
             context = {}
 
