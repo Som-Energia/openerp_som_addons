@@ -10,7 +10,7 @@ on:
       pyversion:
         required: false
         type: string
-        default: '["2.7"]'
+        default: '["2.7.17"]'
       erpbranch:
         required: false
         type: string
@@ -125,13 +125,13 @@ jobs:
           pip install -r $ROOT_DIR_SRC/erp/requirements.txt
 
       - name: Install dependecies for Python 3
-        if: matrix.python-version != '2.7'
+        if: matrix.python-version != '2.7.17'
         run: |
           pip install somutils
           pip install dm.xmlsec.binding
 
       - name: Install dependencies for Python 2.7
-        if: matrix.python-version == '2.7'
+        if: matrix.python-version == '2.7.17'
         run: |
           git clone --depth 1 https://github.com/Som-Energia/somenergia-utils.git -b py2 $ROOT_DIR_SRC/somenergia-utils
           cd $ROOT_DIR_SRC/somenergia-utils
@@ -168,7 +168,7 @@ jobs:
           destral --report-coverage --enable-coverage --report-junitxml ${{github.workspace}}/test-results/destral -m ${{ inputs.module }}
 
       - name: Publish Unit Test Results
-        if: (success() || failure()) && matrix.python-version == '2.7'
+        if: (success() || failure()) && matrix.python-version == '2.7.17'
         uses: EnricoMi/publish-unit-test-result-action@v2
         with:
           files: test-results/destral/*.xml
