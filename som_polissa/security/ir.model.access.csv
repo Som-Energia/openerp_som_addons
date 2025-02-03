@@ -4,3 +4,6 @@
 "access_som_polissa_webforms_helpers_rcwd","som.polissa.webforms.helpers","model_som_polissa_webforms_helpers","giscedata_facturacio.group_giscedata_facturacio_u",1,1,1,1
 "access_wizard_import_ref_cadastral_from_csv_rcwd","wizard.import.ref.cadastral.from.csv","model_wizard_import_ref_cadastral_from_csv","giscedata_facturacio.group_giscedata_facturacio_u",1,1,1,1
 "access_wizard_add_cut_off_to_polissa_from_csv_rcwd","wizard.add.cut.off.to.polissa.from.csv","model_wizard_add_cut_off_to_polissa_from_csv","giscedata_facturacio.group_giscedata_facturacio_u",1,1,1,1
+"access_wizard_generate_cau_migration_file_r","wizard.generate.cau.migration.file","model_wizard_generate_cau_migration_file","giscedata_cups.group_giscedata_cups_r",1,0,0,0
+"access_wizard_generate_cau_migration_file_w","wizard.generate.cau.migration.file","model_wizard_generate_cau_migration_file","giscedata_cups.group_giscedata_cups_w",1,1,1,0
+"access_wizard_generate_cau_migration_file_u","wizard.generate.cau.migration.file","model_wizard_generate_cau_migration_file","giscedata_cups.group_giscedata_cups_u",1,1,1,1
