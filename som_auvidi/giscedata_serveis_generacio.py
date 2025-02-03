@@ -161,15 +161,17 @@ class GiscedataServeiGeneracioPolissa(osv.osv):
             # TODO validar generationkwh
             te_generationkwh = polissa.te_assignacio_gkwh
 
-            # La llista de preus és ESMASA
-            te_llista_preus_esmasa = polissa.llista_preu.indexed_formula == 'Indexada ESMASA'
+            # La llista de preus és Empresa
+            llista_preus = polissa.llista_preu
+            te_llista_preus_empresa = (llista_preus.indexed_formula == 'Indexada ESMASA'
+                                       or 'Empresa' in llista_preus.name)
 
             # Condicions especifiques
             compleix_condicions = (not len(altres_auvidis)
                                    and not len(matching_category_ids)
                                    and not te_auto_collectiu
                                    and not te_generationkwh
-                                   and not te_llista_preus_esmasa
+                                   and not te_llista_preus_empresa
                                    and polissa.mode_facturacio == 'index')
 
             # Condicions extra confirmat
