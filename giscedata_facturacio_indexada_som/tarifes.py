@@ -856,9 +856,8 @@ class TarifaPoolSOM(TarifaPool):
         # prdemcad file
         prdemcad = Prdemcad('C2_prdemcad_%(postfix)s' % locals(), esios_token)  # [€/MWh]
 
-        # preu del desvío corresponent als NOCUR
-        compodem = MonthlyCompodem('C2_monthlycompodem_%(postfix)s' % locals(), esios_token)
-        dsv = compodem.get_component("DSV")  # [€/MWh]
+        # preu del desvío
+        dsv = MeasuredDeviationsFree('C2_mdsvfree_%(postfix)s' % locals(), esios_token) # [€/MWh]
 
         # MAJ RDL 10/2022
         # Use AJOM if invoice includes june'22 or later days and variable is activated
