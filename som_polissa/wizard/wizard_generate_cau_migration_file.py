@@ -31,11 +31,6 @@ MAPPING_SUBSECCION = {
     '0C': '0C',
 }
 
-MAPPING_SECTION = {
-    '': '',
-    '': ''
-}
-
 
 class WizardGenerateCAUMigrationFile(osv.osv_memory):
     """Genera un Fitxer amb el format definit per la CNMC amb la informació per a les comers
@@ -53,10 +48,9 @@ class WizardGenerateCAUMigrationFile(osv.osv_memory):
 
         text = _("Es generarà un fitxer amb els autoconsums disponibles al sistema vinculats "
                  "a CUPS a dia d'avui en el format establert per la CNMC. Es generarà un fitxer "
-                 "per comercialitzadora. El nom del fitxer resultant tindrà un prefix amb el codi "
-                 "REE de la comercialitzadora per a poder identificar-la fàcil i enviar-li el "
-                 "fitxer. ATENCIÓ!!! Abans d'enviar el fitxer, renombrar el mateix sense el prefix."
-                 "\n *Per exemple:\n9999_{}_{}_VersionInicial.csv -> {}_{}_VersionInicial.csv"
+                 "per distribuïdora. El nom del fitxer resultant tindrà un prefix amb el codi "
+                 "REE de la distribuïdora per a poder identificar-la fàcil i contrastar el "
+                 "fitxer."
                  ).format(ree_code, data_publicacio, ree_code, data_publicacio)
         return text
 
@@ -81,17 +75,17 @@ class WizardGenerateCAUMigrationFile(osv.osv_memory):
         results = cursor.dictfetchall()
 
         for record in results:
-            codi_comer = record['codi_comer']
-            if codi_comer not in res:
-                res[codi_comer] = {}
+            codi_distri = record['codi_distri']
+            if codi_distri not in res:
+                res[codi_distri] = {}
             cups = record['cups']
-            if cups not in res[codi_comer]:
-                res[codi_comer][cups] = {}
+            if cups not in res[codi_distri]:
+                res[codi_distri][cups] = {}
             cau = record['cau']
-            if cau not in res[codi_comer][cups]:
-                nou_comptador_cau = len(res[codi_comer][cups].keys()) + 1
+            if cau not in res[codi_distri][cups]:
+                nou_comptador_cau = len(res[codi_distri][cups].keys()) + 1
                 datos_cau_x = 'DatosCAU_{}'.format(nou_comptador_cau)
-                res[codi_comer][cups][cau] = {
+                res[codi_distri][cups][cau] = {
                     'DatosCAU_x': datos_cau_x,
                     'generadors': {}
                 }
@@ -99,21 +93,21 @@ class WizardGenerateCAUMigrationFile(osv.osv_memory):
             tipus_auto = ('11' if record['tipoautoconsumo'] in ['31', '32', '33']
                           else '00' if record['tipoautoconsumo'] == '00'
                           else '12')
-            res[codi_comer][cups][cau].update({
+            res[codi_distri][cups][cau].update({
                 'TipoAutoconsumo': tipus_auto,
                 'TipoSubseccion': MAPPING_SUBSECCION[record['tiposubseccion']],
                 'Colectivo': 'S' if record['colectivo'] else 'N',
             })
 
             cil = record['cil']
-            other_unknown_gens = [g for g in res[codi_comer][cups][cau].keys() if 'unknown' in g]
+            other_unknown_gens = [g for g in res[codi_distri][cups][cau].keys() if 'unknown' in g]
             gen = cil or 'unknown_gen_{}'.format(len(other_unknown_gens) + 1)
-            if not cil or gen not in res[codi_comer][cups][cau]['generadors']:
-                nou_comptador_gen = len(res[codi_comer][cups][cau]['generadors'].keys()) + 1
+            if not cil or gen not in res[codi_distri][cups][cau]['generadors']:
+                nou_comptador_gen = len(res[codi_distri][cups][cau]['generadors'].keys()) + 1
                 datos_inst_gen_y = 'DatosInstGen_{}'.format(nou_comptador_gen)
-                res[codi_comer][cups][cau]['generadors'][gen] = {'DatosInstGen_y': datos_inst_gen_y}
+                res[codi_distri][cups][cau]['generadors'][gen] = {'DatosInstGen_y': datos_inst_gen_y}
 
-            res[codi_comer][cups][cau]['generadors'][gen].update({
+            res[codi_distri][cups][cau]['generadors'][gen].update({
                 'CIL': record['cil'],
                 'TecGenerador': record['tecgenerador'],
                 'Combustible': record['combustible'],
@@ -147,9 +141,9 @@ class WizardGenerateCAUMigrationFile(osv.osv_memory):
 
         files = []
         autoconsums_data = self.get_all_autoconsum_data(cursor, uid, context=context)
-        for comer_code, auto_data_per_comer in autoconsums_data.items():
+        for distri_code, auto_data_per_distri in autoconsums_data.items():
             linies = [headers]
-            for cups, auto_data_per_cups in auto_data_per_comer.items():
+            for cups, auto_data_per_cups in auto_data_per_distri.items():
                 for cau, cau_data in auto_data_per_cups.items():
                     for gen_name, gen_data in cau_data['generadors'].items():
                         linia = []
@@ -171,7 +165,7 @@ class WizardGenerateCAUMigrationFile(osv.osv_memory):
                 writer.writerow(line)
             file = base64.b64encode(output.getvalue())
             file_name = '{}_{}_{}_{}.csv'.format(
-                comer_code or '9999', ree_code, data_publicacio, versio
+                distri_code or '9999', ree_code, data_publicacio, versio
             )
             files.append((file, file_name))
             output.close()
