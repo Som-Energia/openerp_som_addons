@@ -93,9 +93,9 @@ class WizardGenerateCAUMigrationFile(osv.osv_memory):
             tipus_auto = ('11' if record['tipoautoconsumo'] in ['31', '32', '33']
                           else '00' if record['tipoautoconsumo'] == '00'
                           else '12')
-            res[codi_comer][cups][cau].update({
+            res[codi_distri][cups][cau].update({
                 'TipoAutoconsumo': tipus_auto,
-                'TipoSubseccion': tipus_subseccio,
+                'TipoSubseccion': MAPPING_SUBSECCION[record['tiposubseccion']],
                 'Colectivo': 'S' if record['colectivo'] else 'N',
             })
 
