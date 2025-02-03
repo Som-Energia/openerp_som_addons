@@ -65,7 +65,7 @@ class WizardGenerateCAUMigrationFile(osv.osv_memory):
 
         today = datetime.now().strftime('%Y-%m-%d')
         autoconsums_query = get_module_resource(
-            'giscedata_cups_distri', 'sql', 'fitxer_migracio_autoconsums.sql'
+            'som_polissa', 'sql', 'fitxer_migracio_autoconsums.sql'
         )
         sql = open(autoconsums_query).read()
         cursor.execute(sql, {
