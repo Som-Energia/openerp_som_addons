@@ -868,7 +868,7 @@ class TarifaPoolSOM(TarifaPool):
         ):
             ajom = self.get_coeficient_from_dict(start_date, 'ajom')  # [€/MWh]
         else:
-            ajom = 0
+            ajom = None
 
         # Let's transform them in ComponentsQH
         # First, which components must be divided by 4
@@ -886,7 +886,8 @@ class TarifaPoolSOM(TarifaPool):
 
         A = (prmdiari + prdemcad + dsv + omie + si) * 0.001
         A += pc3_boe
-        A += ajom * 0.001
+        if ajom is not None:
+            A += ajom * 0.001
         B = A * (1 + (perdues * 0.01))
         C = B * (1 + (imu * 0.01))
         G = C + pa + k + d
