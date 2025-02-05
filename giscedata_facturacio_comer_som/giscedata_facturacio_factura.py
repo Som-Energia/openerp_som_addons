@@ -59,7 +59,7 @@ class GiscedataFacturacioFactura(osv.osv):
         context.update({'save_pdf_in_invoice_attachments': True})
 
         conf_obj = self.pool.get("res.config")
-        unsent_store_days = conf_obj.get(cursor, uid, "factura_pdf_unsent_store_days", 60)
+        unsent_store_days = int(conf_obj.get(cursor, uid, "factura_pdf_unsent_store_days", 60))
         date_search = datetime.today() - timedelta(days=unsent_store_days)
 
         query_file = get_module_resource(
