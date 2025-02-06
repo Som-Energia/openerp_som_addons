@@ -11,8 +11,8 @@ import argparse
 
 INTERVAL = 1200  # Seconds
 MAX_ATTEMPTS = 5
-QUEUES_TO_REQUEUE = ["cups_cch", "tm_validate", "sii"]
-QUEUES_TO_DELETE = ["jobspool-autoworker", "profiling", "make_invoices"]
+QUEUES_TO_REQUEUE = ["cups_cch", "sii"]
+QUEUES_TO_DELETE = ["jobspool-autoworker", "profiling", "make_invoices", "tm_validate", "cch_loaderX"]  # noqa: E501
 EXECINFO_TO_DELETE = [
     "Work-horse process was terminated unexpectedly",
     "es mes petita que la data inicial",
@@ -22,6 +22,7 @@ EXECINFO_TO_DELETE = [
     "RepresenterError: ('cannot represent an object', <osv.orm.browse_null object at 0x7f3148f11a90>)",  # noqa: E501
     "You try to write on an record that doesn't exist",
     "cursor, uid, line_id, ['import_phase'])['import_phase']\nTypeError: 'bool' object has no attribute '__getitem__'",  # noqa: E501
+    "Registrator for meter id GSM501815908 is not found",
 ]
 QUEUES_TO_DELETE_AFETER_REQUE = ["sii"]
 
