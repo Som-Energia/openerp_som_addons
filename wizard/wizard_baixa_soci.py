@@ -9,7 +9,8 @@ class WizardBaixaSoci(osv.osv_memory):
     _name = 'wizard.baixa.soci'
     _columns = {
         'state': fields.char('State', size=16),
-        'info': fields.text('Info')
+        'info': fields.text('Info'),
+        'skip_pending_check': fields.boolean('Salta la comprovació de factures pendents'),
     }
     _defaults = {
         'state': 'init'
@@ -28,6 +29,8 @@ class WizardBaixaSoci(osv.osv_memory):
             raise "Has de seleccionar un sol soci"
 
         try:
+            if wizard.skip_pending_check:
+                context['skip_pending_check'] = True
             soci_obj.verifica_baixa_soci(cursor, uid, soci_id[0], context)
         except osv.except_osv as e:
             wizard.write({'state':'error', 'info': e.message})
