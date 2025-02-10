@@ -24,26 +24,11 @@ class WizardCreacioRemesaPagamentTaxes(osv.osv_memory):
         if isinstance(ids, list):
             ids = ids[0]
 
+        config_obj = self.pool.get('som.municipal.taxes.config')
         wizard = self.browse(cursor, uid, ids, context=context)
 
-        # Buscar els municipis que es remesen
-        config_obj = self.pool.get('som.municipal.taxes.config')
-        currency_obj = self.pool.get('res.currency')
-        order_obj = self.pool.get('payment.order')
-        line_obj = self.pool.get('payment.line')
-        mun_obj = self.pool.get('res.municipi')
-
-        search_values = [('payment_order', '=', True), ('active', '=', True)]
-        if wizard.quarter == ANUAL_VAL:
-            search_values += [('payment', '=', 'year')]
-        else:
-            search_values += [('payment', '=', 'quarter')]
-        if 'from_model' in context:
-            search_values += [('id', 'in', context['active_ids'])]
-
-        municipis_conf_ids = config_obj.search(cursor, uid, search_values)
-
-        if not municipis_conf_ids:
+        municipi_conf_ids = self.buscar_municipis_remesar(cursor, uid, wizard.quarter, context)
+        if not municipi_conf_ids:
             vals = {
                 'info': "No hi ha municipis configurats per remesar",
                 'state': 'cancel',
@@ -53,11 +38,53 @@ class WizardCreacioRemesaPagamentTaxes(osv.osv_memory):
 
         res_municipi_ids = [
             m['municipi_id'][0]
-            for m in config_obj.read(cursor, uid, municipis_conf_ids, ['municipi_id'])
+            for m in config_obj.read(cursor, uid, municipi_conf_ids, ['municipi_id'])
         ]
 
+        totals_by_city = self.calcul_imports(
+            cursor, uid, res_municipi_ids, wizard.year, wizard.quarter, context)
+        if not totals_by_city:
+            vals = {
+                'info': "No hi ha factures dels municipis configurats en el període especificat",
+                'state': 'cancel',
+            }
+            wizard.write(vals, context)
+            return True
+
+        order_id, info = self.crear_remesa(
+            cursor, uid, totals_by_city, wizard.payment_mode.id,
+            wizard.account.id, wizard.year, context)
+
+        vals = {
+            'info': info,
+            'state': 'done',
+            'order_id': order_id
+        }
+        wizard.write(vals, context)
+        return order_id
+
+    def buscar_municipis_remesar(self, cursor, uid, quarter, context=None):
+        # Buscar els municipis que es remesen
+        config_obj = self.pool.get('som.municipal.taxes.config')
+
+        search_values = [('payment_order', '=', True), ('active', '=', True)]
+        if quarter == ANUAL_VAL:
+            search_values += [('payment', '=', 'year')]
+        else:
+            search_values += [('payment', '=', 'quarter')]
+        if 'from_model' in context:
+            search_values += [('id', 'in', context['active_ids'])]
+
+        municipis_conf_ids = config_obj.search(cursor, uid, search_values)
+
+        if not municipis_conf_ids:
+            return False
+
+        return municipis_conf_ids
+
+    def calcul_imports(self, cursor, uid, res_municipi_ids, year, quarter, context=None):
         # Calcular els imports
-        start_date, end_date = get_dates_from_quarter(wizard.year, wizard.quarter)
+        start_date, end_date = get_dates_from_quarter(year, quarter)
         polissa_categ_imu_ex_id = (
             self.pool.get('ir.model.data').get_object_reference(
                 cursor, uid, 'giscedata_municipal_taxes', 'contract_categ_imu_ex'
@@ -80,12 +107,23 @@ class WizardCreacioRemesaPagamentTaxes(osv.osv_memory):
             wizard.write(vals, context)
             return True
 
+        return df_mun # ex totals_by_city
+
+    def crear_remesa(self, cursor, uid, totals_by_city, payment_mode_id,
+                     account_id, year, context=None):
+        config_obj = self.pool.get('som.municipal.taxes.config')
+        order_obj = self.pool.get('payment.order')
+        currency_obj = self.pool.get('res.currency')
+        line_obj = self.pool.get('payment.line')
+        mun_obj = self.pool.get('res.municipi')
+        tax = 1.5
+
         # Crear remesa
         order_id = order_obj.create(cursor, uid, dict(
             date_prefered='fixed',
             user_id=uid,
             state='draft',
-            mode=wizard.payment_mode.id,
+            mode=payment_mode_id,
             type='payable',
             create_account_moves='direct-payment',
         ))
@@ -100,14 +138,12 @@ class WizardCreacioRemesaPagamentTaxes(osv.osv_memory):
                 linia_no_creada.append(config_data['name'])
                 continue
 
-            account_id = wizard.account.id
-
             # Crear les línies
             euro_id = currency_obj.search(cursor, uid, [('code', '=', 'EUR')])[0]
             quarter_name = idx[3]
             vals = {
                 'name': 'Ajuntament de {} taxa 1,5% pel trimestre {}-{}'.format(
-                    idx[0], wizard.year, quarter_name),
+                    idx[0], year, quarter_name),
                 'order_id': order_id,
                 'currency': euro_id,
                 'partner_id': config_data['partner_id'][0],
@@ -126,7 +162,7 @@ class WizardCreacioRemesaPagamentTaxes(osv.osv_memory):
                 raise osv.except_osv(
                     ('Error!'), (
                         "Ja s'ha pagat el trimestre {}-{} per a l'ajuntament {}".format(
-                            wizard.year, quarter_name, idx[0])
+                            year, quarter_name, idx[0])
                     )
                 )
 
@@ -135,13 +171,7 @@ class WizardCreacioRemesaPagamentTaxes(osv.osv_memory):
             info += """Atenció. Els següents ajuntaments no tenen un compte corrent informat
               i per tant no s'ha pogut crear el pagament: {}""".format(", ".join(linia_no_creada))
 
-        vals = {
-            'info': info,
-            'state': 'done',
-            'order_id': order_id
-        }
-        wizard.write(vals, context)
-        return order_id
+        return order_id, info
 
     def show_payment_order(self, cursor, uid, ids, context):
         wizard = self.browse(cursor, uid, ids[0], context)
