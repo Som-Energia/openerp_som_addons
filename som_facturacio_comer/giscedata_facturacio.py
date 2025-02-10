@@ -3,6 +3,7 @@
 """
 
 from osv import osv
+from datetime import datetime
 
 
 class GiscedataFacturacioFacturador(osv.osv):
@@ -52,6 +53,25 @@ class GiscedataFacturacioFacturador(osv.osv):
         }
 
         return vals
+
+    def crear_linia(self, cursor, uid, factura_id, vals, context=None):
+        if not context:
+            context = {}
+
+        if factura_id or 'factura_id' in vals:
+            factura_obj = self.pool.get('giscedata.facturacio.factura')
+            factura_info = factura_obj.read(
+                cursor, uid, factura_id, ['type', 'data_inici', 'data_final']
+            )
+            if (factura_info and factura_info.get('type') in ('out_invoice', 'out_refund')
+                    and factura_info.get("data_inici") and factura_info.get("data_final")):
+                any_desde = datetime.strptime(factura_info['data_inici'], '%Y-%m-%d').year
+                any_fins = datetime.strptime(factura_info['data_final'], '%Y-%m-%d').year
+                if any_desde != any_fins:
+                    context.update({'group_line': False})
+        return super(GiscedataFacturacioFacturador, self).crear_linia(
+            cursor, uid, factura_id, vals, context=context
+        )
 
 
 GiscedataFacturacioFacturador()

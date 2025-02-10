@@ -54,7 +54,7 @@ class TestInvoicePdfStorer(testing.OOTestCase):
         storer = InvoicePdfStorer(self.cursor, self.uid)
         self.assertTrue(storer.is_enabled())
 
-        storer = InvoicePdfStorer(self.cursor, self.uid, {"do_not_use_stored_pdf": True})
+        storer = InvoicePdfStorer(self.cursor, self.uid, {"force_store_pdf_disabled": True})
         self.assertFalse(storer.is_enabled())
 
     def test_get_storable_fact_number(self):

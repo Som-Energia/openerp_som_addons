@@ -296,7 +296,7 @@ class ReportTest(osv.osv):
         if context is None:
             context = {}
         ctx = context.copy()
-        ctx['do_not_use_stored_pdf'] = True
+        ctx['force_store_pdf_disabled'] = True
         try:
             report = netsvc.service_exist(report_name)
             result = report.create(cursor, uid, res_ids, values, ctx)

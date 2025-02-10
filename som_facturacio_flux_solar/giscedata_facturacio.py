@@ -18,6 +18,7 @@ class GiscedataFacturacioFacturador(osv.osv):
         fact_obj = self.pool.get('giscedata.facturacio.factura')
         linia_obj = self.pool.get('giscedata.facturacio.factura.linia')
 
+        fact = fact_obj.browse(cursor, uid, factura_id, context=context)
         # Es vol descomptar el total dels conceptes del sector electric
         max_descompte = 0
 
@@ -121,7 +122,6 @@ class GiscedataFacturacioFacturador(osv.osv):
             else:
                 factor = 1.0
 
-            fact = fact_obj.browse(cursor, uid, factura_id, context=context)
             linies_energia = self.get_energy_lines_to_count_consume(
                 cursor, uid, fact, context=context
             )
@@ -143,6 +143,10 @@ class GiscedataFacturacioFacturador(osv.osv):
 
         max_descompte += iese_amount + iva_amount + igic_amount
         max_descompte = uber_round(max_descompte)
+
+        # Last check:
+        if max_descompte - 0.02 <= fact.amount_total <= max_descompte + 0.02:
+            max_descompte = fact.amount_total
 
         return linies_utilitzades_ids, max_descompte
 

@@ -1,8 +1,13 @@
 # -*- coding: utf-8 -*-
 import netsvc
+import logging
+from tqdm import tqdm
 from datetime import datetime, timedelta
 from osv import osv, fields
 from addons import get_module_resource
+
+
+logger = logging.getLogger('openerp' + __name__)
 
 
 class GiscedataFacturacioFactura(osv.osv):
@@ -49,8 +54,12 @@ class GiscedataFacturacioFactura(osv.osv):
         return res
 
     def store_unsent_pdf_invoices(self, cursor, uid, context=None):
+        if context is None:
+            context = {}
+        context.update({'save_pdf_in_invoice_attachments': True})
+
         conf_obj = self.pool.get("res.config")
-        unsent_store_days = conf_obj.get(cursor, uid, "factura_pdf_unsent_store_days", 60)
+        unsent_store_days = int(conf_obj.get(cursor, uid, "factura_pdf_unsent_store_days", 60))
         date_search = datetime.today() - timedelta(days=unsent_store_days)
 
         query_file = get_module_resource(
@@ -61,7 +70,7 @@ class GiscedataFacturacioFactura(osv.osv):
         unstored_fact_ids = [x[0] for x in cursor.fetchall()]
 
         error_ids = []
-        for fact_id in unstored_fact_ids:
+        for fact_id in tqdm(unstored_fact_ids, "Printing and storing invoices"):
             try:
                 report = netsvc.service_exist("report.giscedata.facturacio.factura")
                 values = {
@@ -69,11 +78,10 @@ class GiscedataFacturacioFactura(osv.osv):
                     "id": [fact_id],
                     "report_type": "pdf",
                 }
-                report.create(
-                    cursor, uid, [fact_id], values,
-                    {'save_pdf_in_invoice_attachments': True}
-                )[0]
+                report.create(cursor, uid, [fact_id], values, context)[0]
+                logger.debug("Invoice %s printed and stored", fact_id)
             except Exception:
+                logger.warning("Invoice %s FAILED", fact_id)
                 error_ids.append(fact_id)
 
         total_successful = len(unstored_fact_ids) - len(error_ids)

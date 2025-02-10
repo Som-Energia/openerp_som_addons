@@ -18,7 +18,10 @@
         "som_indexada",
     ],
     "init_xml": [],
-    "demo_xml": ["pricelist_demo_data.xml"],
+    "demo_xml": [
+        "pricelist_demo_data.xml",
+        "demo/som_facturacio_switching_demo.xml",
+    ],
     "update_xml": [
         "wizard/wizard_gestio_text_to_polissa_view.xml",
         "wizard/wizard_model_list_from_file_data.xml",
