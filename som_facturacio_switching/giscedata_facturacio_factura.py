@@ -9,8 +9,9 @@ class GiscedataFacturacioFactura(osv.osv):
     def generate_unpayment_expenses(self, cursor, uid, fact_ids, context=None):
         res = {}
         pobresa_energetica = self.check_pobresa_energetica(cursor, uid, fact_ids, context=context)
-
-        if not pobresa_energetica:
+        too_much_unpayment_expenses = self.check_total_invoice_more_than_unpaymnet_expenses(
+            cursor, uid, fact_ids, context=context)
+        if not pobresa_energetica and not too_much_unpayment_expenses:
             res = super(GiscedataFacturacioFactura, self).generate_unpayment_expenses(
                 cursor, uid, fact_ids, context=context
             )
@@ -48,13 +49,12 @@ class GiscedataFacturacioFactura(osv.osv):
         """Comprovem que la factura no té un import total inferior a l'import de l'extra line"""
         if context is None:
             context = {}
-
         if len(fact_ids) > 1:
             raise Exception("Ha arribat més d'un id")
 
         imd_obj = self.pool.get("ir.model.data")
         prod_obj = self.pool.get('product.product')
-        self.pool.get('giscedata.facturacio.extra')
+        extra_obj = self.pool.get('giscedata.facturacio.extra')
 
         factura_browse = self.browse(cursor, uid, fact_ids[0], context=context)
 
@@ -68,8 +68,20 @@ class GiscedataFacturacioFactura(osv.osv):
             cursor, uid, unpayment_fee_product_id, context=context
         )
 
-        if factura_browse.amount_total < unpayment_fee_product.list_price:
-            total_invoice_more_than_unpaymnet_expenses = True
+        existing_lines = extra_obj.search(cursor, uid,
+                                          [('polissa_id', '=', factura_browse.polissa_id.id),
+                                           ('product_id', '=', unpayment_fee_product_id),
+                                              ('is_invoiced', '=', False),
+                                              ('name', 'ilike', factura_browse.name)])
+        if existing_lines:
+            pending_lines = unpayment_fee_product.list_price
+            for line in existing_lines:
+                pending_lines += extra_obj.read(
+                    cursor, uid, line, ['total_amount_pending'],
+                    context=context)['total_amount_pending']
+
+            if factura_browse.amount_total < pending_lines:
+                total_invoice_more_than_unpaymnet_expenses = True
 
         return total_invoice_more_than_unpaymnet_expenses
 
