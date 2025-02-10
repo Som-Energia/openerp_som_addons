@@ -31,7 +31,6 @@ class GiscedataFacturacioFactura(osv.osv):
 
         pobresa_energetica = False
 
-        # TODO: Posar semantic ID
         pobresa_id = imd_obj.get_object_reference(
             cursor, uid, "som_polissa", "categ_pobresa_energetica"
         )[1]
