@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+        <record id="wkf_gurb_cups" model="workflow">
+            <field name="name">GURB CUPS Workflow</field>
+            <field name="osv">som.gurb.cups</field>
+            <field name="on_create">True</field>
+        </record>
+
+        <!--Activity -->
+
+        <record id="act_comming_registration" model="workflow.activity">
+            <field name="wkf_id" ref="wkf_gurb_cups"/>
+            <field name="flow_start">True</field>
+            <field name="name">comming_registration</field>
+            <field name="kind">function</field>
+            <field name="action">change_state('comming_registration')</field>
+        </record>
+
+        <record id="act_comming_modification" model="workflow.activity">
+            <field name="wkf_id" ref="wkf_gurb_cups"/>
+            <field name="name">comming_modification</field>
+            <field name="kind">function</field>
+            <field name="action">change_state('comming_modification')</field>
+        </record>
+
+        <record id="act_comming_cancellation" model="workflow.activity">
+            <field name="wkf_id" ref="wkf_gurb_cups"/>
+            <field name="name">comming_cancelation</field>
+            <field name="kind">function</field>
+            <field name="action">change_state('comming_cancelation')</field>
+        </record>
+
+        <record id="act_active" model="workflow.activity">
+            <field name="wkf_id" ref="wkf_gurb_cups"/>
+            <field name="name">active</field>
+            <field name="kind">function</field>
+            <field name="action">change_state('active')</field>
+        </record>
+
+        <record id="act_cancel" model="workflow.activity">
+            <field name="wkf_id" ref="wkf_gurb_cups"/>
+            <field name="name">cancel</field>
+            <field name="kind">function</field>
+            <field name="action">change_state('cancel')</field>
+        </record>
+
+        <!-- Transition -->
+
+        <record id="trans_comming_registration_active" model="workflow.transition">
+            <field name="act_from" ref="act_comming_registration"/>
+            <field name="act_to" ref="act_active"/>
+            <field name="condition">validate_comming_registration_active()</field>
+            <field name="signal">button_activate</field>
+        </record>
+
+        <record id="trans_active_comming_modification" model="workflow.transition">
+            <field name="act_from" ref="act_active"/>
+            <field name="act_to" ref="act_comming_modification"/>
+            <field name="condition">validate_active_comming_modification()</field>
+            <field name="signal">button_pending_modification</field>
+        </record>
+
+        <record id="trans_comming_modification_active" model="workflow.transition">
+            <field name="act_from" ref="act_comming_modification"/>
+            <field name="act_to" ref="act_active"/>
+            <field name="condition">validate_comming_modification_active()</field>
+            <field name="signal">button_activate_modification</field>
+        </record>
+
+        <record id="trans_active_comming_cancellation" model="workflow.transition">
+            <field name="act_from" ref="act_active"/>
+            <field name="act_to" ref="act_comming_cancellation"/>
+            <field name="condition">validate_active_comming_cancelation</field>
+            <field name="signal">button_coming_cancel</field>
+        </record>
+
+        <record id="trans_comming_cancellation_cancel" model="workflow.transition">
+            <field name="act_from" ref="act_comming_cancellation"/>
+            <field name="act_to" ref="act_cancel"/>
+            <field name="condition">validate_comming_cancellation_cancel()</field>
+            <field name="signal">button_cancel</field>
+        </record>
+
+        <record id="trans_cancel_comming_registration" model="workflow.transition">
+            <field name="act_from" ref="act_cancel"/>
+            <field name="act_to" ref="act_comming_registration"/>
+            <field name="condition">validate_cancel_comming_registration</field>
+            <field name="signal">button_activate</field>
+        </record>
+
+    </data>
+</openerp>

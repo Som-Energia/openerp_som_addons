@@ -6,6 +6,14 @@ import logging
 
 logger = logging.getLogger("openerp.{}".format(__name__))
 
+_GURB_CUPS_STATES = [
+    ("comming_registration", "Alta pendent al GURB"),
+    ("comming_modification", "Modificació pendent al GURB"),
+    ("comming_cancellation", "Baixa pendent al GURB"),
+    ("active", "Activa"),
+    ("cancel", "Baixa"),
+]
+
 
 class SomGurbGeneralConditions(osv.osv):
     _name = "som.gurb.general.conditions"
@@ -496,6 +504,30 @@ class SomGurbCups(osv.osv):
 
         return res
 
+    def validate_comming_registration_active(self, cursor, uid, ids, context=None):
+        for record in self.browse(cursor, uid, ids, context=context):
+            return True
+
+    def validate_active_comming_modification(self, cursor, uid, ids, context=None):
+        for record in self.browse(cursor, uid, ids, context=context):
+            return True
+
+    def validate_comming_modification_active(self, cursor, uid, ids, context=None):
+        for record in self.browse(cursor, uid, ids, context=context):
+            return True
+
+    def validate_active_comming_cancelation(self, cursor, uid, ids, context=None):
+        for record in self.browse(cursor, uid, ids, context=context):
+            return True
+
+    def validate_comming_cancellation_cancel(self, cursor, uid, ids, context=None):
+        for record in self.browse(cursor, uid, ids, context=context):
+            return True
+
+    def validate_cancel_comming_registration(self, cursor, uid, ids, context=None):
+        for record in self.browse(cursor, uid, ids, context=context):
+            return True
+
     _columns = {
         "active": fields.boolean("Actiu"),
         "start_date": fields.date("Data activació al GURB"),
@@ -569,6 +601,11 @@ class SomGurbCups(osv.osv):
         ),
         "signed": fields.boolean("Signed", readonly=1),
         "quota_product_id": fields.many2one("product.product", "Produce quota mensual"),
+        "state": fields.selection(_GURB_CUPS_STATES, "Estat del CUPS dins del GURB", readonly=True),
+        "ens_ha_avisat": fields.boolean(
+            "Ens ha avisat",
+            help="No és un canvi sobrevingut, sinó que estem informats i ho hem gestionat.",
+            readonly=1),
     }
 
     _defaults = {
