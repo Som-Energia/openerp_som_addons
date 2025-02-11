@@ -25,8 +25,9 @@
         'wizard/wizard_presentacio_redsaras.xml',
         'security/som_municipal_taxes_security.xml',
         'security/ir.model.access.csv',
+        'tests/som_municipal_taxes_demo.xml',
     ],
     'demo_xml': [
-        'tests/som_municipal_taxes_demo.xml',
+        'demo/som_municipal_taxes_demo.xml',
     ]
 }
