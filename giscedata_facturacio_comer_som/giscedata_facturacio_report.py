@@ -3069,6 +3069,12 @@ class GiscedataFacturacioFacturaReport(osv.osv):
             fact, pol, generationkwh_lines
         )
         mag_line_data = self.get_mag_lines_info(fact)
+
+        auvi_lines = self.get_auvi_lines(fact)
+        auvi_energy_lines_data = self.get_sub_component_invoice_details_td(
+            fact, pol, auvi_lines
+        )
+
         for e in energy_lines_data:
             if (
                 e["data"] >= BOE17_2021_dates["start"]
@@ -3085,6 +3091,14 @@ class GiscedataFacturacioFacturaReport(osv.osv):
             ):
                 e["has_discount"] = True
 
+        for e in auvi_energy_lines_data:
+            if (
+                e["data"] >= BOE17_2021_dates["start"]
+                and e["data"] <= BOE17_2021_dates["end"]
+                and u"P1" in discount
+            ):
+                e["has_discount"] = True
+
         data = {
             "energy_lines_data": energy_lines_data,
             "gkwh_energy_lines_data": gkwh_energy_lines_data,
@@ -3094,6 +3108,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
             "mag_line_data": mag_line_data,
             "indexed": pol.mode_facturacio == "index",
             "iva_column": has_iva_column(fact),
+            "auvi_energy_lines_data": auvi_energy_lines_data,
         }
         return data
 
