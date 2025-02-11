@@ -1538,8 +1538,13 @@ class GiscedataFacturacioFacturaReport(osv.osv):
         }
 
         labels = {
-            "es_ES": {"P1": "Pu", "P2": "Ll", "P3": "Va"},
-            "ca_ES": {"P1": "Pu", "P2": "Pl", "P3": "Va"},
+            "es_ES": {"P1": "Punta", "P2": "Llano", "P3": "Valle"},
+            "ca_ES": {"P1": "Punta", "P2": "Pla", "P3": "Vall"},
+        }
+
+        average_text = {
+            "es_ES": "Media",
+            "ca_ES": "Mitjana",
         }
 
         (historic, historic_js) = self.get_historic_data(fact)
@@ -1604,6 +1609,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
             "show_mean_zipcode_consumption": show_mean_zipcode_consumption,
             "zipcode": fact.cups_id.dp,
             "mean_zipcode_consumption": mean_zipcode_consumption,
+            "average_text": average_text[fact.lang_partner],
         }
 
         return data
