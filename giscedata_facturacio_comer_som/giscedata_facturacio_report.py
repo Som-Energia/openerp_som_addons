@@ -1070,6 +1070,28 @@ class GiscedataFacturacioFacturaReport(osv.osv):
         }
         return data
 
+    def get_auvi_product_categ_id(self):
+        model_obj = self.pool.get("ir.model.data")
+        return model_obj.get_object_reference(
+            self.cursor, self.uid,
+            "giscedata_serveis_generacio",
+            "categ_serveis_generacio_facturar_contracte",
+        )[1]
+
+    def get_auvi_lines(self, fact):
+        id_auvi_product_categ = self.get_auvi_product_categ_id()
+        auvi_lines = [
+            line
+            for line in fact.linia_ids
+            if line.product_id and line.product_id.categ_id.id == id_auvi_product_categ
+        ]
+        return auvi_lines
+
+    def te_auvi(self, fact):
+        if self.get_auvi_lines(fact):
+            return True
+        return False
+
     # -----------------------------
     # Component fill data functions
     # -----------------------------
@@ -1201,6 +1223,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
             "power_invoicing_type": pol.facturacio_potencia == "max" or len(periodes_a) > 3,
             "small_text": self.is_visible_readings_g_table(fact, pol)
             and (is_3X(pol) or is_DHS(pol)),
+            "is_auvi": self.te_auvi(fact),
         }
         return data
 
