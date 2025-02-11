@@ -3,6 +3,7 @@ from osv import osv, fields
 from datetime import datetime, timedelta
 from tools.translate import _
 import logging
+import netsvc
 
 logger = logging.getLogger("openerp.{}".format(__name__))
 
@@ -12,6 +13,7 @@ _GURB_CUPS_STATES = [
     ("comming_cancellation", "Baixa pendent al GURB"),
     ("active", "Activa"),
     ("cancel", "Baixa"),
+    ("draft", "Esborrany"),
 ]
 
 
@@ -528,6 +530,25 @@ class SomGurbCups(osv.osv):
         for record in self.browse(cursor, uid, ids, context=context):
             return True
 
+    def change_state(self, cursor, uid, ids, new_state, context=None):
+        write_values = {
+            "state": new_state,
+            "state_date": datetime.now().strftime("%Y-%m-%d")
+        }
+        for record_id in ids:
+            self.write(cursor, uid, ids, write_values, context=context)
+
+    def send_signal(self, cursor, uid, ids, signals):
+        """Enviem el signal al workflow del som_gurb_cups.
+        """
+        wf_service = netsvc.LocalService('workflow')
+        if not isinstance(signals, list) and not isinstance(signals, tuple):
+            signals = [signals]
+        for p_id in ids:
+            for signal in signals:
+                wf_service.trg_validate(uid, 'som.gurb.cups', p_id, signal, cursor)
+        return True
+
     _columns = {
         "active": fields.boolean("Actiu"),
         "start_date": fields.date("Data activació al GURB"),
@@ -606,12 +627,14 @@ class SomGurbCups(osv.osv):
             "Ens ha avisat",
             help="No és un canvi sobrevingut, sinó que estem informats i ho hem gestionat.",
             readonly=1),
+        "state_date": fields.date("Data de l'estat"),
     }
 
     _defaults = {
         "active": lambda *a: True,
         "extra_beta_kw": lambda *a: 0,
         "start_date": lambda *a: str(datetime.today()),
+        "state": lambda *a: "draft",
     }
 
 

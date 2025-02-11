@@ -910,3 +910,48 @@ class TestsGurbSwitching(TestsGurbBase):
 
         self.assertEqual(m1.state, "cancel")
         self.assertEqual(m1.notificacio_pendent, False)
+
+    @mock.patch('som_gurb.models.giscedata_switching._contract_has_gurb_category')
+    @mock.patch('som_gurb.models.giscedata_switching.is_unidirectional_colective_autocons_change')
+    def test_create_from_xml(self, mock_is_unidirectional, mock_has_gurb_category):
+        mock_has_gurb_category.return_value = True
+        mock_is_unidirectional.return_value = False
+
+        sw_obj = self.openerp.pool.get('giscedata.switching')
+        sgc_obj = self.openerp.pool.get('som.gurb.cups')
+        self.openerp.pool.get('giscedata.switching.step.header')
+        self.openerp.pool.get('giscedata.switching.c1.06')
+        pol_obj = self.openerp.pool.get("giscedata.polissa")
+
+        # Preparar el sgc_obj
+        sgc_id = self.openerp.pool.get('ir.model.data').get_object_reference(
+            self.cursor, self.uid, 'som_gurb', 'gurb_cups_0002')[1]
+        sgc_obj.browse(self.cursor, self.uid, sgc_id).send_signal('comming_registration')
+        sgc_obj.browse(self.cursor, self.uid, sgc_id).send_signal('active')
+
+        c1_06_xml_path = get_module_resource(
+            "giscedata_switching", "tests", "fixtures", "c106_new.xml"
+        )
+        with open(c1_06_xml_path, "r") as f:
+            c1_06_xml = f.read()
+
+        self.switch(self.txn, "comer")
+        contract_id = self.get_contract_id(self.txn, xml_id='polissa_tarifa_018')
+        self.change_polissa_comer(self.txn, pol_id='polissa_tarifa_018')
+        cups = pol_obj.browse(self.cursor, self.uid, contract_id).cups
+
+        # Change "CodigoDeSolicitud" in XML
+        c1_06_xml = c1_06_xml.replace(
+            "<CUPS>ES1234000000000001JN0F",
+            "<CUPS>{0}".format(cups.name)
+        )
+
+        # Import XML
+        step_id = sw_obj.importar_xml(
+            self.cursor, self.uid, c1_06_xml, "c1_06.xml"
+        )
+
+        # Assertions
+        self.assertIsNotNone(step_id)
+        scb = sgc_obj.browse(self.cursor, self.uid, sgc_id)
+        self.assertEqual(scb.state, 'comming_cancellation')
