@@ -8,6 +8,12 @@
         </record>
 
         <!--Activity -->
+        <record id="act_draft" model="workflow.activity">
+            <field name="wkf_id" ref="wkf_gurb_cups"/>
+            <field name="name">draft</field>
+            <field name="kind">function</field>
+            <field name="action">change_state('draft')</field>
+        </record>
 
         <record id="act_comming_registration" model="workflow.activity">
             <field name="wkf_id" ref="wkf_gurb_cups"/>
@@ -47,6 +53,20 @@
 
         <!-- Transition -->
 
+        <record id="trans_draft_comming_registration" model="workflow.transition">
+            <field name="act_from" ref="act_draft"/>
+            <field name="act_to" ref="act_comming_registration"/>
+            <field name="condition">True</field>
+            <field name="signal">button_create</field>
+        </record>
+
+        <record id="trans_draft_cancel" model="workflow.transition">
+            <field name="act_from" ref="act_draft"/>
+            <field name="act_to" ref="act_cancel"/>
+            <field name="condition">True</field>
+            <field name="signal">button_undo</field>
+        </record>
+
         <record id="trans_comming_registration_active" model="workflow.transition">
             <field name="act_from" ref="act_comming_registration"/>
             <field name="act_to" ref="act_active"/>
@@ -72,7 +92,7 @@
             <field name="act_from" ref="act_active"/>
             <field name="act_to" ref="act_comming_cancellation"/>
             <field name="condition">validate_active_comming_cancelation</field>
-            <field name="signal">button_coming_cancel</field>
+            <field name="signal">button_coming_cancellation</field>
         </record>
 
         <record id="trans_comming_cancellation_cancel" model="workflow.transition">

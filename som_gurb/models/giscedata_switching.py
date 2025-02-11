@@ -377,6 +377,38 @@ class GiscedataSwitchingD1_02(osv.osv):
 GiscedataSwitchingD1_02()
 
 
+class GiscedataSwitchingC1_06(osv.osv):
+    """Classe pel pas 06
+    """
+    _inherit = "giscedata.switching.c1.06"
+
+    def create_from_xml(self, cursor, uid, sw_id, xml, context=None):
+        if context is None:
+            context = {}
+        step_id = super(GiscedataSwitchingC1_06, self).create_from_xml(
+            cursor, uid, sw_id, xml, context=context
+        )
+
+        sgc_obj = self.pool.get("som.gurb.cups")
+        sw_obj = self.pool.get("giscedata.switching")
+        self.pool.get("giscedata.switching.step.header")
+        sw = sw_obj.browse(cursor, uid, sw_id, context=context)
+
+        if sw and _contract_has_gurb_category(
+            cursor, uid, self.pool, sw.cups_polissa_id.id, context=context
+        ):
+            gurb_cups_id = sgc_obj.search(
+                cursor, uid, [('cups_id', '=', sw.cups_polissa_id.cups.id)], context=context)
+            if gurb_cups_id:
+                gurb_cups = sgc_obj.browse(cursor, uid, gurb_cups_id[0], context=context)
+                gurb_cups.send_signal(['comming_cancellation'])
+
+        return step_id
+
+
+GiscedataSwitchingC1_06()
+
+
 class GiscedataSwitchingHelpers(osv.osv):
     _inherit = 'giscedata.switching.helpers'
 
