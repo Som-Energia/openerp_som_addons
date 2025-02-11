@@ -3,9 +3,9 @@ from osv import fields, osv
 import sys
 import logging
 import datetime
+import netsvc
 from dateutil.relativedelta import relativedelta
 from giscedata_municipal_taxes.taxes.municipal_taxes_invoicing import MunicipalTaxesInvoicingReport
-from psycopg2.errors import UniqueViolation
 
 logging.basicConfig(stream=sys.stdout, level=logging.INFO)
 logger = logging.getLogger("wizard.importador.leads.comercials")
@@ -51,7 +51,7 @@ class WizardCreacioRemesaPagamentTaxes(osv.osv_memory):
             wizard.write(vals, context)
             return True
 
-        order_id, info = self.crear_remesa(
+        order_id, info = self.crear_factures(
             cursor, uid, totals_by_city, wizard.payment_mode.id,
             wizard.account.id, wizard.year, context)
 
@@ -103,14 +103,15 @@ class WizardCreacioRemesaPagamentTaxes(osv.osv_memory):
 
         return totals_by_city
 
-    def crear_remesa(self, cursor, uid, totals_by_city, payment_mode_id,
-                     account_id, year, context=None):
+    def crear_factures(self, cursor, uid, totals_by_city, payment_mode_id,
+                       account_id, year, context=None):
         config_obj = self.pool.get('som.municipal.taxes.config')
         order_obj = self.pool.get('payment.order')
         currency_obj = self.pool.get('res.currency')
-        line_obj = self.pool.get('payment.line')
+        self.pool.get('payment.line')
         mun_obj = self.pool.get('res.municipi')
         tax = 1.5
+        euro_id = currency_obj.search(cursor, uid, [('code', '=', 'EUR')])[0]
 
         # Crear remesa
         order_id = order_obj.create(cursor, uid, dict(
@@ -121,46 +122,52 @@ class WizardCreacioRemesaPagamentTaxes(osv.osv_memory):
             type='payable',
             create_account_moves='direct-payment',
         ))
+
         linia_creada = []
         linia_no_creada = []
+        invoice_ids = []
         for city in totals_by_city:
             total_tax = round(city[4] - city[3] * (tax / 100.0), 2)
 
             municipi_id = mun_obj.search(cursor, uid, [('ine', '=', city[5])])[0]
             config_id = config_obj.search(cursor, uid, [('municipi_id', '=', municipi_id)])[0]
             config_data = config_obj.read(cursor, uid, config_id, ['partner_id', 'bank_id'])
-            if not config_data['bank_id']:
+            if not config_data['partner_id']:
                 linia_no_creada.append(config_data['name'])
                 continue
 
-            # Crear les línies
-            euro_id = currency_obj.search(cursor, uid, [('code', '=', 'EUR')])[0]
+            # Create account.invoice objects for each city
+            invoice_obj = self.pool.get('account.invoice')
+            invoice_line_obj = self.pool.get('account.invoice.line')
             quarter_name = dict(self._columns['quarter'].selection)[int(city[2])]
-            vals = {
-                'name': 'Ajuntament de {} taxa 1,5% pel trimestre {}-{}'.format(
+            # Get partner_address_id from partner_id
+            partner_address_id = self.pool.get('res.partner').address_get(
+                cursor, uid, [config_data['partner_id'][0]], ['invoice'])['invoice']
+            invoice_id = invoice_obj.create(cursor, uid, dict(
+                partner_id=config_data['partner_id'][0],
+                date_invoice=datetime.datetime.now(),
+                account_id=account_id,
+                currency_id=euro_id,
+                payment_mode_id=payment_mode_id,
+                state='draft',
+                address_invoice_id=partner_address_id,
+            ))
+            invoice_line_obj.create(cursor, uid, dict(
+                invoice_id=invoice_id,
+                name='Ajuntament de {} taxa 1,5% pel trimestre {}-{}'.format(
                     city[0], year, quarter_name),
-                'order_id': order_id,
-                'currency': euro_id,
-                'partner_id': config_data['partner_id'][0],
-                'company_currency': euro_id,
-                'bank_id': config_data['bank_id'][0],
-                'state': 'normal',
-                'amount_currency': -1 * total_tax,
-                'account_id': account_id,
-                'communication': 'Ajuntament de {} taxa 1,5%'.format(city[0]),
-                'comm_text': 'Ajuntament de {} taxa 1,5%'.format(city[0]),
-            }
-            try:
-                line_obj.create(cursor, uid, vals)
-                linia_creada.append(city[0])
-            except UniqueViolation:
-                raise osv.except_osv(
-                    ('Error!'), (
-                        "Ja s'ha pagat el trimestre {}-{} per a l'ajuntament {}".format(
-                            year, quarter_name, city[0])
-                    )
-                )
+                account_id=account_id,
+                price_unit=total_tax,
+                quantity=1,
+                uom_id=1,
+                company_currency_id=euro_id,
+            ))
+            wf_service = netsvc.LocalService("workflow")
+            wf_service.trg_validate(uid, 'account.invoice', invoice_id, 'invoice_open', cursor)
+            linia_creada.append(city[0])
+            invoice_ids.append(invoice_id)
 
+        invoice_obj.afegeix_a_remesa(cursor, uid, invoice_ids, order_id)
         info = "S'ha creat la remesa amb {} línies\n\n".format(len(linia_creada))
         if linia_no_creada:
             info += """Atenció. Els següents ajuntaments no tenen un compte corrent informat
