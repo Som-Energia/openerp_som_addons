@@ -1070,8 +1070,8 @@ class GiscedataFacturacioFacturaReport(osv.osv):
         }
         return data
 
-    def get_auvi_product_categ_id(self):
-        model_obj = self.pool.get("ir.model.data")
+    def get_auvi_product_categ_id(self, fact):
+        model_obj = fact.pool.get("ir.model.data")
         return model_obj.get_object_reference(
             self.cursor, self.uid,
             "giscedata_serveis_generacio",
@@ -1079,7 +1079,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
         )[1]
 
     def get_auvi_lines(self, fact):
-        id_auvi_product_categ = self.get_auvi_product_categ_id()
+        id_auvi_product_categ = self.get_auvi_product_categ_id(fact)
         auvi_lines = [
             line
             for line in fact.linia_ids
