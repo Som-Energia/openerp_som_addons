@@ -88,12 +88,12 @@ class SomenergiaSociTests(testing.OOTestCase):
         self.assertEqual(ctx.exception.message,
             "warning -- El soci no pot ser donat de baixa!\n\nEl soci té factures pendents.")
 
-    def test_cancel_member_with_active_contract__notAllowed(self):
+    def test_cancel_member_with_active_contract__Allowed(self):
         partner_id = self.IrModelData.get_object_reference(
-            self.cursor, self.uid, 'som_generationkwh', 'res_partner_inversor1' 
+            self.cursor, self.uid, 'som_generationkwh', 'res_partner_inversor1'
             )[1]
         member_id = self.IrModelData.get_object_reference(
-            self.cursor, self.uid, 'som_generationkwh', 'soci_0001' 
+            self.cursor, self.uid, 'som_generationkwh', 'soci_0001'
             )[1]
         self.Soci.write(self.cursor, self.uid, [member_id], {'baixa': False, 'data_baixa_soci': None})
         invs = self.Investment.search(self.cursor, self.uid, [('member_id','=', member_id)])
@@ -103,14 +103,34 @@ class SomenergiaSociTests(testing.OOTestCase):
         polissa_id = self.IrModelData.get_object_reference(
             self.cursor, self.uid, 'giscedata_polissa', 'polissa_0001'
         )[1]
-        
+
         self.Polissa.write(self.cursor, self.uid, [polissa_id], {'titular': partner_id})
-    
+
+        self.assertEqual(self.Soci.verifica_baixa_soci(self.cursor, self.uid, member_id), True)
+
+    def test_cancel_member_with_related_contract__notAllowed(self):
+        partner_id = self.IrModelData.get_object_reference(
+            self.cursor, self.uid, 'som_generationkwh', 'res_partner_inversor1'
+            )[1]
+        member_id = self.IrModelData.get_object_reference(
+            self.cursor, self.uid, 'som_generationkwh', 'soci_0001'
+            )[1]
+        self.Soci.write(self.cursor, self.uid, [member_id], {'baixa': False, 'data_baixa_soci': None})
+        invs = self.Investment.search(self.cursor, self.uid, [('member_id','=', member_id)])
+
+        self.Investment.write(self.cursor, self.uid, invs, {'active':False})
+
+        polissa_id = self.IrModelData.get_object_reference(
+            self.cursor, self.uid, 'giscedata_polissa', 'polissa_0001'
+        )[1]
+
+        self.Polissa.write(self.cursor, self.uid, [polissa_id], {'soci': partner_id})
+
         with self.assertRaises(except_osv) as ctx:
             self.Soci.verifica_baixa_soci(self.cursor, self.uid, member_id)
 
         self.assertEqual(ctx.exception.message,
-            "warning -- El soci no pot ser donat de baixa!\n\nEl soci té al menys un contracte actiu.")
+            "warning -- El soci no pot ser donat de baixa!\n\nEl soci té al menys un contracte vinculat.")
 
 
     @mock.patch("som_polissa_soci.res_partner_address.ResPartnerAddress.archieve_mail_in_list")
