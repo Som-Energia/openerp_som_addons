@@ -36,6 +36,7 @@
         "wizard/wizard_gurb_create_initial_invoice_view.xml",
         "wizard/wizard_create_coef_file_view.xml",
         "report/som_gurb_reports.xml",
+        "workflow/som_gurb_cups_workflow.xml",
     ],
     "init_xml": [],
     "active": False,
