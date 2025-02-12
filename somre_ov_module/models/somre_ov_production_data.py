@@ -106,9 +106,12 @@ class SomreOvProductionData(osv.osv_memory):
         )
         return cursor.fetchone()[0]
 
-    def _get_production_measures(self, cursor, contract, first_timestamp_utc, last_timestamp_utc):
-        query_file = get_module_resource(
-            'somre_ov_module', 'sql', "get_production_measures.sql")
+    def _get_production_measures(self, cursor, contract, first_timestamp_utc, last_timestamp_utc, quartihour=False):  # noqa: E501
+        if quartihour:
+            sql_file = "get_production_measures_qh.sql"
+        else:
+            sql_file = "get_production_measures.sql"
+        query_file = get_module_resource('somre_ov_module', 'sql', sql_file)
         query = open(query_file).read()
 
         cursor.execute(
