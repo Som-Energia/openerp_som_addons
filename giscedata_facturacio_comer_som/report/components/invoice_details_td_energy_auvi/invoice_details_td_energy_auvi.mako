@@ -9,8 +9,9 @@
             <td class="detall_td">${_(u"Electricitat AV utilitzada [kWh] (real)") }</td>
         % endif
         % for p in id.showing_periods:
-            % if p in auvi_energy_line_data:
-                <td>${_(u"%s") %(locale.str(locale.atof(formatLang(auvi_energy_line_data[p]["quantity"], digits=3))))}</td>
+            <% pAuvi = "Linia energia autoconsumida " + p %>
+            % if pAuvi in auvi_energy_line_data:
+                <td>${_(u"%s") %(locale.str(locale.atof(formatLang(auvi_energy_line_data[pAuvi]["quantity"], digits=3))))}</td>
             % else:
                 <td></td>
             % endif
@@ -23,8 +24,9 @@
     <tr>
         <td class="detall_td">${_(u"Preu energia AV [€/kWh]")}</td>
         % for p in id.showing_periods:
-            % if p in auvi_energy_line_data:
-                <td>${_(u"%s") %(locale.str(locale.atof(formatLang(auvi_energy_line_data[p]["price_unit_multi"], digits=6))))}</td>
+            <% pAuvi = "Linia energia autoconsumida " + p %>
+            % if pAuvi in auvi_energy_line_data:
+                <td>${_(u"%s") %(locale.str(locale.atof(formatLang(auvi_energy_line_data[pAuvi]["price_unit_multi"], digits=6))))}</td>
             % else:
                 <td></td>
             % endif
