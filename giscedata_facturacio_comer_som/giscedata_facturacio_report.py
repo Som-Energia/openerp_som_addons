@@ -3087,6 +3087,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
         )
         mag_line_data = self.get_mag_lines_info(fact)
 
+        # import pudb;pu.db
         auvi_lines = self.get_auvi_lines(fact)
         auvi_energy_lines_data = self.get_sub_component_invoice_details_td(
             fact, pol, auvi_lines

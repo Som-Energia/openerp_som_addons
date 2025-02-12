@@ -32,7 +32,7 @@
     <%include file="/giscedata_facturacio_comer_som/report/components/invoice_details_td_excess_power_maximeter/invoice_details_td_excess_power_maximeter.mako" args="id=id.excess_power_maximeter" />
     <%include file="/giscedata_facturacio_comer_som/report/components/invoice_details_td_excess_power_quarterhours/invoice_details_td_excess_power_quarterhours.mako" args="id=id.excess_power_quarterhours" />
     <%include file="/giscedata_facturacio_comer_som/report/components/invoice_details_td_energy/invoice_details_td_energy.mako" args="id=id.energy" />
-    <%include file="/giscedata_facturacio_comer_som/report/components/invoice_details_td_auvi/invoice_details_td_auvi.mako" args="id=id.energy" />
+    ## <%include file="/giscedata_facturacio_comer_som/report/components/invoice_details_td_energy_auvi/invoice_details_td_energy_auvi.mako" args="id=id.energy" />
     <%include file="/giscedata_facturacio_comer_som/report/components/invoice_details_td_energy_generationkwh/invoice_details_td_energy_generationkwh.mako" args="id=id.energy" />
     <%include file="/giscedata_facturacio_comer_som/report/components/invoice_details_td_energy_tolls/invoice_details_td_energy_tolls.mako" args="id=id.energy_tolls" />
     <%include file="/giscedata_facturacio_comer_som/report/components/invoice_details_td_energy_charges/invoice_details_td_energy_charges.mako" args="id=id.energy_charges" />
