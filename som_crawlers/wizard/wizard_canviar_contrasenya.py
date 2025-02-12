@@ -30,6 +30,7 @@ class WizardCanviarContrasenya(osv.osv_memory):
             required=True,
             help="La nova contrasenya",
         ),
+        "state": fields.selection([('init', 'Inicial'), ('end', 'Final')], 'Estado'),
     }
 
 
