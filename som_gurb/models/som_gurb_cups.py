@@ -518,7 +518,7 @@ class SomGurbCups(osv.osv):
         for record in self.browse(cursor, uid, ids, context=context):
             return True
 
-    def validate_active_comming_cancelation(self, cursor, uid, ids, context=None):
+    def validate_active_comming_cancellation(self, cursor, uid, ids, context=None):
         for record in self.browse(cursor, uid, ids, context=context):
             return True
 
@@ -634,7 +634,6 @@ class SomGurbCups(osv.osv):
         "active": lambda *a: True,
         "extra_beta_kw": lambda *a: 0,
         "start_date": lambda *a: str(datetime.today()),
-        "state": lambda *a: "draft",
     }
 
 

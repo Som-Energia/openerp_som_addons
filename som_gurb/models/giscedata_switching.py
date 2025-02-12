@@ -401,7 +401,7 @@ class GiscedataSwitchingC1_06(osv.osv):
                 cursor, uid, [('cups_id', '=', sw.cups_polissa_id.cups.id)], context=context)
             if gurb_cups_id:
                 gurb_cups = sgc_obj.browse(cursor, uid, gurb_cups_id[0], context=context)
-                gurb_cups.send_signal(['comming_cancellation'])
+                gurb_cups.send_signal(['button_coming_cancellation'])
 
         return step_id
 

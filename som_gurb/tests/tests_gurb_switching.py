@@ -926,8 +926,10 @@ class TestsGurbSwitching(TestsGurbBase):
         # Preparar el sgc_obj
         sgc_id = self.openerp.pool.get('ir.model.data').get_object_reference(
             self.cursor, self.uid, 'som_gurb', 'gurb_cups_0002')[1]
-        sgc_obj.browse(self.cursor, self.uid, sgc_id).send_signal('comming_registration')
-        sgc_obj.browse(self.cursor, self.uid, sgc_id).send_signal('active')
+
+        sgc_0002 = sgc_obj.browse(self.cursor, self.uid, sgc_id)
+        sgc_0002.send_signal('button_create')
+        sgc_0002.send_signal('button_activate')
 
         c1_06_xml_path = get_module_resource(
             "giscedata_switching", "tests", "fixtures", "c106_new.xml"

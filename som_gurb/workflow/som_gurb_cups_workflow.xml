@@ -8,8 +8,9 @@
         </record>
 
         <!--Activity -->
-        <record id="act_draft" model="workflow.activity">
+        <record id="act_draft_cups" model="workflow.activity">
             <field name="wkf_id" ref="wkf_gurb_cups"/>
+            <field name="flow_start">True</field>
             <field name="name">draft</field>
             <field name="kind">function</field>
             <field name="action">change_state('draft')</field>
@@ -17,7 +18,6 @@
 
         <record id="act_comming_registration" model="workflow.activity">
             <field name="wkf_id" ref="wkf_gurb_cups"/>
-            <field name="flow_start">True</field>
             <field name="name">comming_registration</field>
             <field name="kind">function</field>
             <field name="action">change_state('comming_registration')</field>
@@ -32,12 +32,12 @@
 
         <record id="act_comming_cancellation" model="workflow.activity">
             <field name="wkf_id" ref="wkf_gurb_cups"/>
-            <field name="name">comming_cancelation</field>
+            <field name="name">comming_cancellation</field>
             <field name="kind">function</field>
-            <field name="action">change_state('comming_cancelation')</field>
+            <field name="action">change_state('comming_cancellation')</field>
         </record>
 
-        <record id="act_active" model="workflow.activity">
+        <record id="act_active_cups" model="workflow.activity">
             <field name="wkf_id" ref="wkf_gurb_cups"/>
             <field name="name">active</field>
             <field name="kind">function</field>
@@ -54,14 +54,14 @@
         <!-- Transition -->
 
         <record id="trans_draft_comming_registration" model="workflow.transition">
-            <field name="act_from" ref="act_draft"/>
+            <field name="act_from" ref="act_draft_cups"/>
             <field name="act_to" ref="act_comming_registration"/>
             <field name="condition">True</field>
             <field name="signal">button_create</field>
         </record>
 
         <record id="trans_draft_cancel" model="workflow.transition">
-            <field name="act_from" ref="act_draft"/>
+            <field name="act_from" ref="act_draft_cups"/>
             <field name="act_to" ref="act_cancel"/>
             <field name="condition">True</field>
             <field name="signal">button_undo</field>
@@ -69,13 +69,13 @@
 
         <record id="trans_comming_registration_active" model="workflow.transition">
             <field name="act_from" ref="act_comming_registration"/>
-            <field name="act_to" ref="act_active"/>
+            <field name="act_to" ref="act_active_cups"/>
             <field name="condition">validate_comming_registration_active()</field>
             <field name="signal">button_activate</field>
         </record>
 
         <record id="trans_active_comming_modification" model="workflow.transition">
-            <field name="act_from" ref="act_active"/>
+            <field name="act_from" ref="act_active_cups"/>
             <field name="act_to" ref="act_comming_modification"/>
             <field name="condition">validate_active_comming_modification()</field>
             <field name="signal">button_pending_modification</field>
@@ -83,15 +83,15 @@
 
         <record id="trans_comming_modification_active" model="workflow.transition">
             <field name="act_from" ref="act_comming_modification"/>
-            <field name="act_to" ref="act_active"/>
+            <field name="act_to" ref="act_active_cups"/>
             <field name="condition">validate_comming_modification_active()</field>
             <field name="signal">button_activate_modification</field>
         </record>
 
         <record id="trans_active_comming_cancellation" model="workflow.transition">
-            <field name="act_from" ref="act_active"/>
+            <field name="act_from" ref="act_active_cups"/>
             <field name="act_to" ref="act_comming_cancellation"/>
-            <field name="condition">validate_active_comming_cancelation</field>
+            <field name="condition">validate_active_comming_cancellation</field>
             <field name="signal">button_coming_cancellation</field>
         </record>
 
