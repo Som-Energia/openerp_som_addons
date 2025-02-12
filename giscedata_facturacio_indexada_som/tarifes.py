@@ -93,7 +93,7 @@ class TarifaPoolSOM(TarifaPool):
             'phf_gen': 'component',
         }
         """
-        res = super(TarifaPoolSOM, self).get_available_audit_coefs()
+        res = super(TarifaPoolSOM, self).get_available_audit_coefs_gen()
         res['pvpc_gen'] = 'prmdiari'
         res['sphdem'] = 'sphdem'
         res['sphauto'] = 'sphauto'
