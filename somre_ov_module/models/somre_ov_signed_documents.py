@@ -76,7 +76,7 @@ class SomreOvSignedDocument(osv.osv):
             store=True,
             size=124
         ),
-        'signer': fields.many2one('res.partner', 'Type', required=True),
+        'signer': fields.many2one('somre.ov.users', 'Type', required=True),
         'document_version': fields.many2one(
             'somre.ov.signed.document.type.version',
             'Document version',
