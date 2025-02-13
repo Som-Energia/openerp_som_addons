@@ -303,6 +303,7 @@ class GiscedataSwitchingM1_05(osv.osv):
 
         sw_obj = self.pool.get("giscedata.switching")
         gurb_obj = self.pool.get("som.gurb")
+        sgc_obj = self.pool.get("som.gurb.cups")
         step_m101_obj = self.pool.get("giscedata.switching.m1.01")
         sw_step_header_obj = self.pool.get("giscedata.switching.step.header")
         sw = sw_obj.browse(cursor, uid, sw_id, context=context)
@@ -310,21 +311,33 @@ class GiscedataSwitchingM1_05(osv.osv):
         if sw and _contract_has_gurb_category(
             cursor, uid, self.pool, sw.cups_polissa_id.id, context=context
         ):
-            search_params = [("sw_id", "=", sw.id), ("solicitud_autoconsum", "=", "S")]
-            step_m101_auto = step_m101_obj.search(cursor, uid, search_params, context=context)
-            unidirectional_change = is_unidirectional_colective_autocons_change(
-                cursor, uid, self.pool, "giscedata.switching.m1.05", step_id, context=context
-            )
+            canvi_titular_traspas = step_m101_obj.search(cursor, uid, [
+                ('sw_id', '=', sw.id),
+                ('sollicitudadm', '=', 'S'),
+                ('canvi_titular', '=', 'T')])
+            if canvi_titular_traspas:
+                gurb_cups_id = sgc_obj.search(
+                    cursor, uid, [('cups_id', '=', sw.cups_polissa_id.cups.id)], context=context)
+                if gurb_cups_id:
+                    gurb_cups = sgc_obj.browse(cursor, uid, gurb_cups_id[0], context=context)
+                    gurb_cups.send_signal(['button_coming_cancellation'])
+            else:
+                search_params = [("sw_id", "=", sw.id), ("solicitud_autoconsum", "=", "S")]
+                step_m101_auto = step_m101_obj.search(cursor, uid, search_params, context=context)
+                unidirectional_change = is_unidirectional_colective_autocons_change(
+                    cursor, uid, self.pool, "giscedata.switching.m1.05", step_id, context=context
+                )
 
-            if step_m101_auto or unidirectional_change:
-                sw_step_header_id = self.read(cursor, uid, step_id, ['header_id'])['header_id'][0]
-                sw_step_header_obj.write(
-                    cursor, uid, sw_step_header_id, {'notificacio_pendent': False}
-                )
-                data_activacio = xml.datos_activacion.fecha
-                gurb_obj.activate_gurb_from_m1_05(
-                    cursor, uid, sw_id, data_activacio, context=context
-                )
+                if step_m101_auto or unidirectional_change:
+                    sw_step_header_id = self.read(cursor, uid, step_id, ['header_id'])[
+                        'header_id'][0]
+                    sw_step_header_obj.write(
+                        cursor, uid, sw_step_header_id, {'notificacio_pendent': False}
+                    )
+                    data_activacio = xml.datos_activacion.fecha
+                    gurb_obj.activate_gurb_from_m1_05(
+                        cursor, uid, sw_id, data_activacio, context=context
+                    )
 
         return step_id
 
