@@ -26,6 +26,7 @@ def up(cursor, installed_version):
         'wizard/wizard_deactivate_gurb_cups_view.xml',
         'workflow/som_gurb_cups_workflow.xml',
         'views/som_gurb_cups_view.xml',
+        'security/ir.model.access.csv',
     ]
     for view in views:
         # Actualitza els diferents records i vistes
