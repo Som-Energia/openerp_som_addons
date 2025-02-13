@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+        <record model="res.groups" id="group_somre_ov_module_r">
+            <field name="name">Somre OV module / ReadOnly</field>
+        </record>
+        <record model="res.groups" id="group_somre_ov_module_w">
+            <field name="name">Somre OV module / User</field>
+        </record>
+        <record model="res.groups" id="group_somre_ov_module_u">
+            <field name="name">Somre OV module / Manager</field>
+        </record>
+     </data>
+</openerp>
