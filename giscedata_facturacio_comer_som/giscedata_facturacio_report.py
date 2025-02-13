@@ -1091,35 +1091,34 @@ class GiscedataFacturacioFacturaReport(osv.osv):
         return auvi_lines
 
     def get_auvi_data(self, fact, pol):
-        # import pudb;pu.db
         auvi_lines = self.get_auvi_lines(fact)
         if not auvi_lines:
             return False
-        else:
-            date_ref = auvi_lines[0]['data_fins']
-            sgpol_obj = fact.pool.get('giscedata.servei.generacio.polissa')
-            sgpol_ids = sgpol_obj.search(self.cursor, self.uid, [
-                ('polissa_id', '=', pol.id),
-                ('cups_name', '=', pol.cups.name),
-                '|',
-                ('data_sortida', '=', False),
-                ('data_sortida', '>', date_ref),
-                '|',
-                '&',
-                ('data_inici', '!=', False),
-                ('data_inici', '<=', date_ref),
-                '&',
-                ('data_inici', '=', False),
-                ('data_incorporacio', '<=', date_ref),
-            ])
-            if sgpol_ids:
-                sgpol = sgpol_obj.browse(self.cursor, self.uid, sgpol_ids[0])
-                res = {
-                    'auvi_id': sgpol.servei_generacio_id.id,
-                    'auvi_name': sgpol.servei_generacio_id.name,
-                    'auvi_percent': sgpol.percentatge or 0.0,
-                }
-                return res
+        date_ref = auvi_lines[0]['data_fins']
+        sgpol_obj = fact.pool.get('giscedata.servei.generacio.polissa')
+        sgpol_ids = sgpol_obj.search(self.cursor, self.uid, [
+            ('polissa_id', '=', pol.id),
+            ('cups_name', '=', pol.cups.name),
+            '|',
+            ('data_sortida', '=', False),
+            ('data_sortida', '>', date_ref),
+            '|',
+            '&',
+            ('data_inici', '!=', False),
+            ('data_inici', '<=', date_ref),
+            '&',
+            ('data_inici', '=', False),
+            ('data_incorporacio', '<=', date_ref),
+        ])
+        if not sgpol_ids:
+            return False
+        sgpol = sgpol_obj.browse(self.cursor, self.uid, sgpol_ids[0])
+        res = {
+            'auvi_id': sgpol.servei_generacio_id.id,
+            'auvi_name': sgpol.servei_generacio_id.name,
+            'auvi_percent': sgpol.percentatge or 0.0,
+        }
+        return res
 
     def get_auvi_logo(self, fact, pol):
         auvi_data = self.get_auvi_data(fact, pol)
@@ -3148,7 +3147,6 @@ class GiscedataFacturacioFacturaReport(osv.osv):
         )
         mag_line_data = self.get_mag_lines_info(fact)
 
-        # import pudb;pu.db
         auvi_lines = self.get_auvi_lines(fact)
         auvi_energy_lines_data = self.get_sub_component_invoice_details_td(
             fact, pol, auvi_lines
