@@ -159,8 +159,9 @@ class WizardCreateChangePasswordTests(testing.OOTestCase):
         context = {'active_ids': ov_user_ids}
         wiz_id = self.wiz_o.create(self.cursor, self.uid, {}, context=context)
 
-        def save_privisioning_data(cursor, uid, ov_user_id, password):
-            if ov_user_id % 2 == 0:
+        def save_privisioning_data(cursor, uid, partner_id, password):
+            ov_user_ids = self.ov_user.search(cursor, uid, [('partner_id', '=', partner_id)])
+            if ov_user_ids[0] % 2 == 0:
                 return False
             return True
 
@@ -171,6 +172,7 @@ class WizardCreateChangePasswordTests(testing.OOTestCase):
         wiz = self.wiz_o.read(self.cursor, self.uid, [wiz_id])[0]
 
         self.assertEqual(wiz['state'], 'done')
+
         self.assertEqual(wiz['info'], '{}: \n {}'.format(
             'Error generant contrasenyes pels següents partners',
             ','.join(['{} ({})\n'.format(str(int(x)), 'Error al guardar la contrasenya')
