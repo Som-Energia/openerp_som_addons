@@ -1087,10 +1087,35 @@ class GiscedataFacturacioFacturaReport(osv.osv):
         ]
         return auvi_lines
 
-    def te_auvi(self, fact):
-        if self.get_auvi_lines(fact):
-            return True
-        return False
+    def get_auvi_data(self, fact, pol):
+        # import pudb;pu.db
+        auvi_lines = self.get_auvi_lines(fact)
+        if not auvi_lines:
+            return False
+        else:
+            date_ref = auvi_lines[0]['data_fins']
+            sgpol_obj = fact.pool.get('giscedata.servei.generacio.polissa')
+            sgpol_ids = sgpol_obj.search(self.cursor, self.uid, [
+                ('polissa_id', '=', pol.id),
+                ('cups_name', '=', pol.cups.name),
+                '|',
+                ('data_sortida', '=', False),
+                ('data_sortida', '>', date_ref),
+                '|',
+                '&',
+                ('data_inici', '!=', False),
+                ('data_inici', '<=', date_ref),
+                '&',
+                ('data_inici', '=', False),
+                ('data_incorporacio', '<=', date_ref),
+            ])
+            if sgpol_ids:
+                sgpol = sgpol_obj.browse(self.cursor, self.uid, sgpol_ids[0])
+                res = {
+                    'auvi_name': sgpol.servei_generacio_id.name,
+                    'auvi_percent': sgpol.percentatge or 0.0,
+                }
+                return res
 
     # -----------------------------
     # Component fill data functions
@@ -1194,6 +1219,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
             )
         )
         pricelist = pol.llista_preu.nom_comercial or pol.llista_preu.name
+        auvi_data = self.get_auvi_data(fact, pol)
         data = {
             "start_date": pol.data_alta,
             "renovation_date": get_renovation_date(pol.data_alta, datetime.now()),
@@ -1223,7 +1249,8 @@ class GiscedataFacturacioFacturaReport(osv.osv):
             "power_invoicing_type": pol.facturacio_potencia == "max" or len(periodes_a) > 3,
             "small_text": self.is_visible_readings_g_table(fact, pol)
             and (is_3X(pol) or is_DHS(pol)),
-            "is_auvi": self.te_auvi(fact),
+            "is_auvi": True if auvi_data else False,
+            "auvi_data": auvi_data,
         }
         return data
 
