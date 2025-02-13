@@ -116,9 +116,12 @@ class WizardCreacioRemesaPagamentTaxes(osv.osv_memory):
         currency_obj = self.pool.get('res.currency')
         self.pool.get('payment.line')
         mun_obj = self.pool.get('res.municipi')
+        invoice_obj = self.pool.get('account.invoice')
+        invoice_line_obj = self.pool.get('account.invoice.line')
         tax = 1.5
         euro_id = currency_obj.search(cursor, uid, [('code', '=', 'EUR')])[0]
-
+        journal_id = self.pool.get('ir.model.data').get_object_reference(
+            cursor, uid, 'som_municipal_taxes', 'municipal_tax_journal')[1]
         # Crear remesa
         order_id = order_obj.create(cursor, uid, dict(
             date_prefered='fixed',
@@ -129,20 +132,21 @@ class WizardCreacioRemesaPagamentTaxes(osv.osv_memory):
             create_account_moves='direct-payment',
         ))
 
+        invoice_ids = []
         linia_creada = []
         linia_no_creada = []
         for idx, mun in df_gr.iterrows():
             total_tax = mun['TOVP']
-            quarter = mun['trimestre']
-            municipi_name = idx[0]
-            ine = idx[1]
+            city_name = idx[0]
+            city_ine = idx[1]
             quarter_name = idx[3]
             municipi_id = mun_obj.search(cursor, uid, [('ine', '=', ine)])[0]
-            config_id = config_obj.search(cursor, uid, [('municipi_id', '=', municipi_id)])[0]
-            config_data = config_obj.read(cursor, uid, config_id, ['partner_id', 'bank_id'])
-            if not config_data['partner_id']:
-                linia_no_creada.append(config_data['name'])
+            origin_name = '{}/{}{}'.format(city_ine, year, quarter_name)
+            if invoice_obj.search(cursor, uid, [('origin', '=', origin_name)]):
+                linia_no_creada.append(city_name)
                 continue
+
+            municipi_id = mun_obj.search(cursor, uid, [('ine', '=', city_ine)])[0]
 
             # Create account.invoice objects for each city
             invoice_obj = self.pool.get('account.invoice')
@@ -150,6 +154,7 @@ class WizardCreacioRemesaPagamentTaxes(osv.osv_memory):
             # Get partner_address_id from partner_id
             partner_address_id = self.pool.get('res.partner').address_get(
                 cursor, uid, [config_data['partner_id'][0]], ['invoice'])['invoice']
+            # Create account.invoice objects for each city
             invoice_id = invoice_obj.create(cursor, uid, dict(
                 partner_id=config_data['partner_id'][0],
                 date_invoice=datetime.datetime.now(),
@@ -158,20 +163,27 @@ class WizardCreacioRemesaPagamentTaxes(osv.osv_memory):
                 payment_mode_id=payment_mode_id,
                 state='draft',
                 address_invoice_id=partner_address_id,
+                journal_id=journal_id,
+                type='in_invoice',
+                origin=origin_name,
+                reference='',
+                origin_date_invoice=self.get_dates_from_quarter(year, quarter_number),
             ))
             invoice_line_obj.create(cursor, uid, dict(
                 invoice_id=invoice_id,
                 name='Ajuntament de {} taxa 1,5% pel trimestre {}-{}'.format(
-                    municipi_name, year, quarter_name),
+                    city_name, year, quarter_name),
                 account_id=account_id,
                 price_unit=total_tax,
                 quantity=1,
                 uom_id=1,
                 company_currency_id=euro_id,
             ))
+            invoice_obj.write(cursor, uid, [invoice_id], {'check_total': total_tax})
             wf_service = netsvc.LocalService("workflow")
             wf_service.trg_validate(uid, 'account.invoice', invoice_id, 'invoice_open', cursor)
-            linia_creada.append(municipi_name)
+
+            linia_creada.append(city_name)
             invoice_ids.append(invoice_id)
 
         invoice_obj.afegeix_a_remesa(cursor, uid, invoice_ids, order_id)
@@ -181,6 +193,13 @@ class WizardCreacioRemesaPagamentTaxes(osv.osv_memory):
               i per tant no s'ha pogut crear el pagament: {}""".format(", ".join(linia_no_creada))
 
         return order_id, info
+
+    def get_dates_from_quarter(self, year, quarter):
+        if quarter == ANUAL_VAL:
+            return datetime.date(year, 1, 1), datetime.date(year, 12, 31)
+        else:
+            start_date = datetime.date(year, (quarter - 1) * 3 + 1, day=1)
+            return start_date.strftime('%Y-%m-%d')
 
     def show_payment_order(self, cursor, uid, ids, context):
         wizard = self.browse(cursor, uid, ids[0], context)
