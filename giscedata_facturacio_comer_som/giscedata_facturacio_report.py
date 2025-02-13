@@ -7,6 +7,7 @@ from tools.translate import _
 import json
 from operator import attrgetter
 from collections import Counter
+import base64
 
 SENSE_EXCEDENTS = ["31", "32", "33"]
 
@@ -29,6 +30,8 @@ mean_zipcode_consumption_dates = {
 }
 
 show_iva_column_date = "2023-10-10"
+
+auvi_logo_attachment_name = "auvi_logo.png"
 
 # -----------------------------------
 # helper functions
@@ -1112,10 +1115,34 @@ class GiscedataFacturacioFacturaReport(osv.osv):
             if sgpol_ids:
                 sgpol = sgpol_obj.browse(self.cursor, self.uid, sgpol_ids[0])
                 res = {
+                    'auvi_id': sgpol.servei_generacio_id.id,
                     'auvi_name': sgpol.servei_generacio_id.name,
                     'auvi_percent': sgpol.percentatge or 0.0,
                 }
                 return res
+
+    def get_auvi_logo(self, fact, pol):
+        auvi_data = self.get_auvi_data(fact, pol)
+        if not auvi_data:
+            return False
+        attachment_obj = fact.pool.get('ir.attachment')
+        id_att = attachment_obj.search(self.cursor, self.uid, [
+            ('res_model', '=', 'giscedata.servei.generacio'),
+            ('res_id', '=', auvi_data['auvi_id']),
+            ('name', '=', auvi_logo_attachment_name),
+        ])
+        if id_att:
+            b64_content = attachment_obj.read(
+                self.cursor,
+                self.uid,
+                id_att,
+                ["datas"],
+                context=self.context
+            )[0]["datas"]
+            content = base64.b64decode(b64_content)
+            return content
+        else:
+            return False
 
     # -----------------------------
     # Component fill data functions
@@ -1130,6 +1157,13 @@ class GiscedataFacturacioFacturaReport(osv.osv):
             data["logo_agreement_partner"] = agreementPartners[pol.soci.ref]["logo"]
         else:
             data["has_agreement_partner"] = False
+        auvi_logo = self.get_auvi_logo(fact, pol)
+        if auvi_logo:
+            data["has_agreement_partner"] = False
+            data["has_auvi"] = True
+            data["auvi_logo"] = auvi_logo
+        else:
+            data["has_auvi"] = False
         return data
 
     def get_component_company_data(self, fact, pol):
