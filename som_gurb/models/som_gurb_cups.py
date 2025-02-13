@@ -242,6 +242,7 @@ class SomGurbCups(osv.osv):
         self.add_service_to_contract(
             cursor, uid, gurb_cups_id, data_inici, context=context
         )
+        self.send_signal(cursor, uid, [gurb_cups_id], "button_activate_cups")
 
     def add_service_to_contract(self, cursor, uid, gurb_cups_id, data_inici, context=None):
         if context is None:
@@ -308,12 +309,16 @@ class SomGurbCups(osv.osv):
             context = {}
 
         # Donar de baixa Servei Contractat
+        self.send_signal(cursor, uid, [gurb_cups_id], "button_coming_cancellation")
+        self.write(gurb_cups_id, {"ens_ha_avisat": False})
 
-        # Tancar beta
+    def cancel_gurb_cups(self, cursor, uid, gurb_cups_id, context=None):
+        if context is None:
+            context = {}
 
-        # Desactivar Gurb CUPS
-
-        # Enviar mail (?)
+        # Desactivar Gurb CUPS i tancar beta
+        self.send_signal(cursor, uid, [gurb_cups_id], "button_cancel_cups")
+        self.write(cursor, uid, gurb_cups_id, {"beta_kw": 0, "extra_beta_kw": 0, "active": False})
 
     def create_initial_invoice(self, cursor, uid, gurb_cups_id, context=None):
         if context is None:
@@ -506,30 +511,6 @@ class SomGurbCups(osv.osv):
 
         return res
 
-    def validate_comming_registration_active(self, cursor, uid, ids, context=None):
-        for record in self.browse(cursor, uid, ids, context=context):
-            return True
-
-    def validate_active_comming_modification(self, cursor, uid, ids, context=None):
-        for record in self.browse(cursor, uid, ids, context=context):
-            return True
-
-    def validate_comming_modification_active(self, cursor, uid, ids, context=None):
-        for record in self.browse(cursor, uid, ids, context=context):
-            return True
-
-    def validate_active_comming_cancellation(self, cursor, uid, ids, context=None):
-        for record in self.browse(cursor, uid, ids, context=context):
-            return True
-
-    def validate_comming_cancellation_cancel(self, cursor, uid, ids, context=None):
-        for record in self.browse(cursor, uid, ids, context=context):
-            return True
-
-    def validate_cancel_comming_registration(self, cursor, uid, ids, context=None):
-        for record in self.browse(cursor, uid, ids, context=context):
-            return True
-
     def change_state(self, cursor, uid, ids, new_state, context=None):
         write_values = {
             "state": new_state,
@@ -623,17 +604,17 @@ class SomGurbCups(osv.osv):
         "signed": fields.boolean("Signed", readonly=1),
         "quota_product_id": fields.many2one("product.product", "Produce quota mensual"),
         "state": fields.selection(_GURB_CUPS_STATES, "Estat del CUPS dins del GURB", readonly=True),
+        "state_date": fields.date("Data de l'estat"),
         "ens_ha_avisat": fields.boolean(
             "Ens ha avisat",
-            help="No és un canvi sobrevingut, sinó que estem informats i ho hem gestionat.",
-            readonly=1),
-        "state_date": fields.date("Data de l'estat"),
+            help="No és un canvi sobrevingut, sinó que estem informats i ho hem gestionat."),
     }
 
     _defaults = {
         "active": lambda *a: True,
         "extra_beta_kw": lambda *a: 0,
         "start_date": lambda *a: str(datetime.today()),
+        "ens_ha_avisat": lambda *a: False,
     }
 
 

@@ -913,7 +913,7 @@ class TestsGurbSwitching(TestsGurbBase):
 
     @mock.patch('som_gurb.models.giscedata_switching._contract_has_gurb_category')
     @mock.patch('som_gurb.models.giscedata_switching.is_unidirectional_colective_autocons_change')
-    def test_create_from_xml_c1(self, mock_is_unidirectional, mock_has_gurb_category):
+    def test_create_from_xml_c1_cancel_gurb(self, mock_is_unidirectional, mock_has_gurb_category):
         mock_has_gurb_category.return_value = True
         mock_is_unidirectional.return_value = False
 
@@ -928,8 +928,8 @@ class TestsGurbSwitching(TestsGurbBase):
             self.cursor, self.uid, 'som_gurb', 'gurb_cups_0002')[1]
 
         sgc_0002 = sgc_obj.browse(self.cursor, self.uid, sgc_id)
-        sgc_0002.send_signal('button_create')
-        sgc_0002.send_signal('button_activate')
+        sgc_0002.send_signal('button_create_cups')
+        sgc_0002.send_signal('button_activate_cups')
 
         c1_06_xml_path = get_module_resource(
             "giscedata_switching", "tests", "fixtures", "c106_new.xml"
@@ -960,7 +960,7 @@ class TestsGurbSwitching(TestsGurbBase):
 
     @mock.patch('som_gurb.models.giscedata_switching._contract_has_gurb_category')
     @mock.patch('som_gurb.models.giscedata_switching.is_unidirectional_colective_autocons_change')
-    def test_create_from_xml_c2(self, mock_is_unidirectional, mock_has_gurb_category):
+    def test_create_from_xml_c2_cancel_gurb(self, mock_is_unidirectional, mock_has_gurb_category):
         mock_has_gurb_category.return_value = True
         mock_is_unidirectional.return_value = False
 
@@ -975,8 +975,8 @@ class TestsGurbSwitching(TestsGurbBase):
             self.cursor, self.uid, 'som_gurb', 'gurb_cups_0002')[1]
 
         sgc_0002 = sgc_obj.browse(self.cursor, self.uid, sgc_id)
-        sgc_0002.send_signal('button_create')
-        sgc_0002.send_signal('button_activate')
+        sgc_0002.send_signal('button_create_cups')
+        sgc_0002.send_signal('button_activate_cups')
 
         c2_06_xml_path = get_module_resource(
             "som_gurb", "tests", "fixtures", "c206_new.xml"
@@ -1007,7 +1007,8 @@ class TestsGurbSwitching(TestsGurbBase):
 
     @mock.patch('som_gurb.models.giscedata_switching._contract_has_gurb_category')
     @mock.patch('som_gurb.models.giscedata_switching.is_unidirectional_colective_autocons_change')
-    def test_create_from_xml_m1_02_subrogacio(self, mock_is_unidirectional, mock_has_gurb_category):
+    def test_create_from_xml_m1_02_subrogacio_cancel_gurb(
+            self, mock_is_unidirectional, mock_has_gurb_category):
         mock_has_gurb_category.return_value = True
         mock_is_unidirectional.return_value = False
 
@@ -1022,8 +1023,8 @@ class TestsGurbSwitching(TestsGurbBase):
             self.cursor, self.uid, 'som_gurb', 'gurb_cups_0002')[1]
 
         sgc_0002 = sgc_obj.browse(self.cursor, self.uid, sgc_id)
-        sgc_0002.send_signal('button_create')
-        sgc_0002.send_signal('button_activate')
+        sgc_0002.send_signal('button_create_cups')
+        sgc_0002.send_signal('button_activate_cups')
 
         # Creem el M1 01
         contract_id = self.get_contract_id(self.txn, xml_id='polissa_tarifa_018')
@@ -1077,7 +1078,8 @@ class TestsGurbSwitching(TestsGurbBase):
 
     @mock.patch('som_gurb.models.giscedata_switching._contract_has_gurb_category')
     @mock.patch('som_gurb.models.giscedata_switching.is_unidirectional_colective_autocons_change')
-    def test_create_from_xml_m1_05_traspas(self, mock_is_unidirectional, mock_has_gurb_category):
+    def test_create_from_xml_m1_05_traspas_cancel_gurb(
+            self, mock_is_unidirectional, mock_has_gurb_category):
         mock_has_gurb_category.return_value = True
         mock_is_unidirectional.return_value = False
 
@@ -1092,8 +1094,8 @@ class TestsGurbSwitching(TestsGurbBase):
             self.cursor, self.uid, 'som_gurb', 'gurb_cups_0002')[1]
 
         sgc_0002 = sgc_obj.browse(self.cursor, self.uid, sgc_id)
-        sgc_0002.send_signal('button_create')
-        sgc_0002.send_signal('button_activate')
+        sgc_0002.send_signal('button_create_cups')
+        sgc_0002.send_signal('button_activate_cups')
 
         # Creem el M1 01
         contract_id = self.get_contract_id(self.txn, xml_id='polissa_tarifa_018')
