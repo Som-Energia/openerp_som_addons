@@ -20,6 +20,7 @@
                         <field name="extra_beta_kw" />
                         <field name="beta_percentage" />
                         <field name="owner_cups" />
+                        <field name="ens_ha_avisat" />
                     </group>
                     <group col="4" colspan="4" string="Relacions">
                         <field name="polissa_id" />
