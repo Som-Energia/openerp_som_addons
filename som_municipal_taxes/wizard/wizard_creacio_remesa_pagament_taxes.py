@@ -134,6 +134,9 @@ class WizardCreacioRemesaPagamentTaxes(osv.osv_memory):
 
         invoice_ids = []
         linia_creada = []
+        linia_falta_partner = []
+        linia_ja_creada = []
+        linia_falta_partner_address = []
         linia_no_creada = []
         for idx, mun in df_gr.iterrows():
             total_tax = mun['TOVP']
@@ -143,10 +146,18 @@ class WizardCreacioRemesaPagamentTaxes(osv.osv_memory):
             municipi_id = mun_obj.search(cursor, uid, [('ine', '=', ine)])[0]
             origin_name = '{}/{}{}'.format(city_ine, year, quarter_name)
             if invoice_obj.search(cursor, uid, [('origin', '=', origin_name)]):
-                linia_no_creada.append(city_name)
+                linia_ja_creada.append(city_name)
                 continue
 
             municipi_id = mun_obj.search(cursor, uid, [('ine', '=', city_ine)])[0]
+            config_id = config_obj.search(cursor, uid, [('municipi_id', '=', municipi_id)])[0]
+            config_data = config_obj.read(cursor, uid, config_id, ['partner_id', 'bank_id'])
+            if not config_data['partner_id']:
+                if config_data.get('name', False):
+                    linia_falta_partner.append(config_data['name'])
+                else:
+                    linia_falta_partner.append(str(config_data))
+                    continue
 
             # Create account.invoice objects for each city
             invoice_obj = self.pool.get('account.invoice')
@@ -154,6 +165,10 @@ class WizardCreacioRemesaPagamentTaxes(osv.osv_memory):
             # Get partner_address_id from partner_id
             partner_address_id = self.pool.get('res.partner').address_get(
                 cursor, uid, [config_data['partner_id'][0]], ['invoice'])['invoice']
+            if not partner_address_id:
+                linia_falta_partner_address.append(city_name)
+                continue
+
             # Create account.invoice objects for each city
             invoice_id = invoice_obj.create(cursor, uid, dict(
                 partner_id=config_data['partner_id'][0],
@@ -188,9 +203,16 @@ class WizardCreacioRemesaPagamentTaxes(osv.osv_memory):
 
         invoice_obj.afegeix_a_remesa(cursor, uid, invoice_ids, order_id)
         info = "S'ha creat la remesa amb {} línies\n\n".format(len(linia_creada))
-        if linia_no_creada:
-            info += """Atenció. Els següents ajuntaments no tenen un compte corrent informat
-              i per tant no s'ha pogut crear el pagament: {}""".format(", ".join(linia_no_creada))
+        if linia_falta_partner:
+            info += """Atenció. Els següents ajuntaments no tenen un partner \
+            creat: \n {}\n\n""".format(", ".join(linia_falta_partner))
+        if linia_ja_creada:
+            info += """Atenció. Els següents ajuntaments ja tenen una factura creada \
+              per aquest període:\n {}\n\n""".format(", ".join(linia_ja_creada))
+        if linia_falta_partner_address:
+            info += """Atenció. Els següents ajuntaments no tenen una adreça creada a la \
+              fitxa del partner i per tant no s'ha pogut crear la factura:\n {}\n\n""".format(
+                ", ".join(linia_falta_partner_address))
 
         return order_id, info
 
