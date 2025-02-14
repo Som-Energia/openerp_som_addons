@@ -598,6 +598,9 @@ class Tests_FacturacioFacturaReport_contract_data_component(Tests_FacturacioFact
     maxDiff = None
 
     @mock.patch.object(
+        giscedata_facturacio_report.GiscedataFacturacioFacturaReport, "get_auvi_data"
+    )
+    @mock.patch.object(
         giscedata_facturacio_report.GiscedataFacturacioFacturaReport, "is_visible_readings_g_table"
     )
     @mock.patch.object(giscedata_facturacio_report, "get_renovation_date")
@@ -609,6 +612,7 @@ class Tests_FacturacioFacturaReport_contract_data_component(Tests_FacturacioFact
         te_autoconsum_collectiu_mock_function,
         get_renovation_date_mock_function,
         is_visible_readings_g_table_mock_function,
+        get_auvi_data_mock_function,
     ):
         f_id = self.get_fixture("giscedata_facturacio", "factura_0001")
 
@@ -616,6 +620,7 @@ class Tests_FacturacioFacturaReport_contract_data_component(Tests_FacturacioFact
         get_renovation_date_mock_function.return_value = "2021-01-01"
         te_autoconsum_mock_function.return_value = False
         te_autoconsum_collectiu_mock_function.return_value = False
+        get_auvi_data_mock_function.return_value = False
 
         result = self.r_obj.get_component_contract_data_data(**self.bfp(f_id))
         self.assertYamlfy(result)
@@ -640,6 +645,8 @@ class Tests_FacturacioFacturaReport_contract_data_component(Tests_FacturacioFact
                 "is_autoconsum": False,
                 "start_date": "2016-01-01",
                 "small_text": False,
+                "is_auvi": False,
+                "auvi_data": False,
             },
         )
 
