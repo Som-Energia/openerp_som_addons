@@ -1,7 +1,7 @@
 <%def name="som_serveis_box()">
     <div class="container alert">
-        <div class="exclamation">
-            <span>👀</span>
+        <div class="emoji">
+            <img src="${addons_path}/som_estalvi/assets/emoji_eyes.png">
         </div>
         <div>
             <p class="alert-text">
