@@ -204,15 +204,16 @@ class WizardCreacioRemesaPagamentTaxes(osv.osv_memory):
         invoice_obj.afegeix_a_remesa(cursor, uid, invoice_ids, order_id)
         info = "S'ha creat la remesa amb {} línies\n\n".format(len(linia_creada))
         if linia_falta_partner:
-            info += """Atenció. Els següents ajuntaments no tenen un partner \
-            creat: \n {}\n\n""".format(", ".join(linia_falta_partner))
+            info += """Atenció. Els següents ajuntaments ({}) no tenen un partner
+            creat: \n {}\n\n""".format(len(linia_falta_partner), ", ".join(linia_falta_partner))
         if linia_ja_creada:
-            info += """Atenció. Els següents ajuntaments ja tenen una factura creada \
-              per aquest període:\n {}\n\n""".format(", ".join(linia_ja_creada))
+            info += """Atenció. Els següents ajuntaments ({}) ja tenen una factura creada
+              per aquest període:\n {}\n\n""".format(
+                len(linia_ja_creada), ", ".join(linia_ja_creada))
         if linia_falta_partner_address:
-            info += """Atenció. Els següents ajuntaments no tenen una adreça creada a la \
+            info += """Atenció. Els següents ajuntaments ({}) no tenen una adreça creada a la
               fitxa del partner i per tant no s'ha pogut crear la factura:\n {}\n\n""".format(
-                ", ".join(linia_falta_partner_address))
+                len(linia_falta_partner_address), ", ".join(linia_falta_partner_address))
 
         return order_id, info
 
