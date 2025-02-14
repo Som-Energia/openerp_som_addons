@@ -15,6 +15,7 @@
         'giscedata_municipal_taxes',
         'res_municipi_dir3',
         'som_crawlers',
+        'account_invoice_som',
     ],
     'init_xml': [],
     'update_xml': [
@@ -26,6 +27,6 @@
         'security/ir.model.access.csv',
     ],
     'demo_xml': [
-        'tests/som_municipal_taxes_demo.xml',
+        'demo/som_municipal_taxes_demo.xml',
     ]
 }
