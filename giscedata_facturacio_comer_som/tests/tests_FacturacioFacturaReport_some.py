@@ -595,6 +595,8 @@ class Tests_FacturacioFacturaReport_renovation_date(Tests_FacturacioFacturaRepor
 
 
 class Tests_FacturacioFacturaReport_contract_data_component(Tests_FacturacioFacturaReport_base):
+    maxDiff = None
+
     @mock.patch.object(
         giscedata_facturacio_report.GiscedataFacturacioFacturaReport, "is_visible_readings_g_table"
     )
@@ -642,6 +644,9 @@ class Tests_FacturacioFacturaReport_contract_data_component(Tests_FacturacioFact
         )
 
     @mock.patch.object(
+        giscedata_facturacio_report.GiscedataFacturacioFacturaReport, "get_auvi_data"
+    )
+    @mock.patch.object(
         giscedata_facturacio_report.GiscedataFacturacioFacturaReport, "is_visible_readings_g_table"
     )
     @mock.patch.object(giscedata_facturacio_report, "get_renovation_date")
@@ -653,6 +658,7 @@ class Tests_FacturacioFacturaReport_contract_data_component(Tests_FacturacioFact
         te_autoconsum_collectiu_mock_function,
         get_renovation_date_mock_function,
         is_visible_readings_g_table_mock_function,
+        get_auvi_data_mock_function,
     ):
         f_id = self.get_fixture("giscedata_facturacio", "factura_0001")
         p_id = self.get_fixture("giscedata_polissa", "polissa_autoconsum_01")
@@ -662,32 +668,35 @@ class Tests_FacturacioFacturaReport_contract_data_component(Tests_FacturacioFact
         get_renovation_date_mock_function.return_value = "2021-01-01"
         te_autoconsum_mock_function.return_value = True
         te_autoconsum_collectiu_mock_function.return_value = False
+        get_auvi_data_mock_function.return_value = False
 
         result = self.r_obj.get_component_contract_data_data(**self.bfp(f_id))
-
         self.assertYamlfy(result)
-        self.assertEquals(
+        dict_expected = {
+            "power": 4.6,
+            "autoconsum": u"41",
+            "powers": [],
+            "renovation_date": "2021-01-01",
+            "cups": u"ES1234000000000001JN0F",
+            "tariff": u"2.0A",
+            "invoicing_mode": u"atr",
+            "pricelist": u"TARIFAS ELECTRICIDAD",
+            "autoconsum_cau": u"ES0318363477145938GEA000",
+            "is_autoconsum_colectiu": False,
+            "cups_direction": u"carrer inventat ,  1  ESC.  1 1 1 aclaridor 00001 (Poble de Prova)",  # noqa: E501
+            "autoconsum_colectiu_repartiment": 100.0,
+            "cnae": u"0111",
+            "power_invoicing_type": False,
+            "remote_managed_meter": True,
+            "is_autoconsum": True,
+            "start_date": "2012-01-01",
+            "small_text": False,
+            "is_auvi": False,
+            "auvi_data": False,
+        }
+        self.assertDictEqual(
             result,
-            {
-                "power": 4.6,
-                "autoconsum": u"21",
-                "powers": [],
-                "renovation_date": "2021-01-01",
-                "cups": u"ES1234000000000001JN0F",
-                "tariff": u"2.0A",
-                "invoicing_mode": u"atr",
-                "pricelist": u"TARIFAS ELECTRICIDAD",
-                "autoconsum_cau": u"ES0318363477145938GEA000",
-                "is_autoconsum_colectiu": False,
-                "cups_direction": u"carrer inventat ,  1  ESC.  1 1 1 aclaridor 00001 (Poble de Prova)",  # noqa: E501
-                "autoconsum_colectiu_repartiment": 100.0,
-                "cnae": u"0111",
-                "power_invoicing_type": False,
-                "remote_managed_meter": True,
-                "is_autoconsum": True,
-                "start_date": "2012-01-01",
-                "small_text": False,
-            },
+            dict_expected,
         )
 
 
