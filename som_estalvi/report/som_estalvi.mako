@@ -31,8 +31,10 @@
                 <div class="page-content">
                     <div class="content">
                         ${capcalera(informe['titular'])}
+                        ${new_web_section_eie()}
                         ${resum_facturacio_anual(informe['costs'])}
                         ${analisi_potencies(informe['potencia'])}
+                        ${som_serveis_box()}
                         ${footer()}
                     </div>
                 </div>
