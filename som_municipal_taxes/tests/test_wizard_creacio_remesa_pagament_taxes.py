@@ -112,7 +112,7 @@ class TestWizardCreacioRemesaPagamentTaxes(testing.OOTestCaseWithCursor):
 
         # Mock totals_by_city data
         totals_by_city = [
-            ["City1", 2016, 1.0, 44001.0, 1500.0, "01001"],
+            ["City1", 2016, 1.0, 1230.0, 1500.0, "01001"],
             ["City2", 2016, 1.0, 2000.0, 2500.0, "17114"],
         ]
 
@@ -132,6 +132,7 @@ class TestWizardCreacioRemesaPagamentTaxes(testing.OOTestCaseWithCursor):
         self.assertIsNotNone(po)
         self.assertEqual(po.state, 'draft')
         self.assertEqual(po.mode.id, payment_mode_id)
+        self.assertEqual(po.total, 11.55)
 
         # Verify the invoices were created and linked to the payment order
         invoice_ids = po.line_ids
