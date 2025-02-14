@@ -1,7 +1,7 @@
 <%def name="new_web_section_eie()">
     <div class="container alert">
         <div class="emoji">
-            <img src="${addons_path}/som_estalvi/report/assets/emoji_nerd_face.svg">
+            <img src="${addons_path}/som_estalvi/report/assets/emoji_nerd_face.svg" width="35px"/>
         </div>
         <div>
             <p class="alert-text">
