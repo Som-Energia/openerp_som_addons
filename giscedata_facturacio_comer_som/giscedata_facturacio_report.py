@@ -3420,7 +3420,11 @@ class GiscedataFacturacioFacturaReport(osv.osv):
         amount_total = fact.amount_total - flux_solar
 
         # Repartiment segons BOE
-        rep_BOE = {"r": 0.76, "d": 71.0, "t": 27.58, "o": 0.66}
+        conf_obj = fact.pool.get("res.config")
+
+        example_data_2023 = {"r": 0.76, "d": 71.0, "t": 27.58, "o": 0.66}
+        rep_BOE = conf_obj.get(self.cursor, self.uid, "rep_boe_data", example_data_2023)
+        rep_BOE = eval(rep_BOE)
 
         pie_total = round(amount_total, 2)
         pie_renting = round(fact.total_lloguers, 2)
