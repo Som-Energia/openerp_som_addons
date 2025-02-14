@@ -16,6 +16,7 @@
         "som_polissa_soci",
         "jasper_reports",
         # "giscedata_omie_comer",
+        "som_auvidi",
     ],
     "init_xml": [],
     "demo_xml": ["giscedata_facturacio_comer_som_demo.xml"],
