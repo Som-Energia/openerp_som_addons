@@ -70,16 +70,16 @@ class GiscedataFacturacioFactura(osv.osv):
         existing_lines = extra_obj.search(cursor, uid,
                                           [('polissa_id', '=', factura_browse.polissa_id.id),
                                            ('product_id', '=', unpayment_fee_product_id),
-                                              ('is_invoiced', '=', False),
-                                              ('name', 'ilike', factura_browse.name)])
+                                              ('name', 'ilike', factura_browse.number)],
+                                          context={'active_test': False})
         if existing_lines:
             pending_lines = unpayment_fee_product.list_price
             for line in existing_lines:
                 pending_lines += extra_obj.read(
-                    cursor, uid, line, ['total_amount_pending'],
-                    context=context)['total_amount_pending']
+                    cursor, uid, line, ['price_subtotal'],
+                    context=context)['price_subtotal']
 
-            if factura_browse.amount_total < pending_lines:
+            if factura_browse.amount_total <= pending_lines:
                 total_invoice_more_than_unpaymnet_expenses = True
 
         return total_invoice_more_than_unpaymnet_expenses
