@@ -70,9 +70,13 @@ class Tests_FacturacioFacturaReport_fill_and_find(Tests_FacturacioFacturaReport_
         self.assertTrue("logo" in result[f_id2])
         self.assertTrue("company" in result[f_id2])
 
-    def test__get_report_data__cross_test_1_sample(self):
+    @mock.patch.object(
+        giscedata_facturacio_report.GiscedataFacturacioFacturaReport, "get_auvi_data"
+    )
+    def test__get_report_data__cross_test_1_sample(self, get_auvi_data_mock_function):
         f_id = self.get_fixture("giscedata_facturacio", "factura_0001")
         ctxt = {"allow_list": ["logo", "company"], "not_testing_old_polissa": True}
+        get_auvi_data_mock_function.return_value = False
 
         result1 = self.r_obj.get_components_data(self.cursor, self.uid, [f_id], ctxt)
         result2 = self.r_obj.get_report_data(self.cursor, self.uid, [self.bf(f_id)], ctxt)
