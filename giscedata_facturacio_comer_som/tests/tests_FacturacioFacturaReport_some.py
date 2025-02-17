@@ -164,12 +164,19 @@ class Tests_FacturacioFacturaReport_fill_and_find(Tests_FacturacioFacturaReport_
 
 
 class Tests_FacturacioFacturaReport_logo_component(Tests_FacturacioFacturaReport_base):
-    def test__som_report_comp_logo__no_soci(self):
+    @mock.patch.object(
+        giscedata_facturacio_report.GiscedataFacturacioFacturaReport, "get_auvi_data"
+    )
+    def test__som_report_comp_logo__no_soci(self, get_auvi_data_mock_function):
         f_id = self.get_fixture("giscedata_facturacio", "factura_0001")
+        get_auvi_data_mock_function.return_value = False
 
         result = self.r_obj.get_component_logo_data(**self.bfp(f_id))
         self.assertYamlfy(result)
-        self.assertEquals(result, {"logo": "logo_som.png", "has_agreement_partner": False})
+        self.assertEquals(
+            result,
+            {"logo": "logo_som.png", "has_agreement_partner": False, "has_auvi": False},
+        )
 
     @unittest.skip(reason="WIP using mock")
     @mock.patch("som_polissa_soci.giscedata_polissa.GiscedataPolissa")
