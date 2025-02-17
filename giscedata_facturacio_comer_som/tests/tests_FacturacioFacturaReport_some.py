@@ -217,9 +217,13 @@ class Tests_FacturacioFacturaReport_logo_component(Tests_FacturacioFacturaReport
         self.assertYamlfy(result)
         self.assertEquals(result, {"logo": "logo_som.png", "has_agreement_partner": False})
 
-    def test__som_report_comp_logo__energetica(self):
+    @mock.patch.object(
+        giscedata_facturacio_report.GiscedataFacturacioFacturaReport, "get_auvi_data"
+    )
+    def test__som_report_comp_logo__energetica(self, get_auvi_data_mock_function):
         f_id = self.get_fixture("giscedata_facturacio", "factura_0001")
         f = self.factura_obj.browse(self.cursor, self.uid, f_id)
+        get_auvi_data_mock_function.return_value = False
 
         p_id = 23
         self.partner_obj.write(self.cursor, self.uid, p_id, {"ref": "S019753"})
@@ -233,6 +237,7 @@ class Tests_FacturacioFacturaReport_logo_component(Tests_FacturacioFacturaReport
                 "logo": "logo_som.png",
                 "has_agreement_partner": True,
                 "logo_agreement_partner": "logo_S019753.png",
+                "has_auvi": False,
             },
         )
 
