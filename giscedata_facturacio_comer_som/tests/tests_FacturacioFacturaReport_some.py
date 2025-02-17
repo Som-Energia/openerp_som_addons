@@ -53,10 +53,14 @@ class Tests_FacturacioFacturaReport_base(testing.OOTestCase):
 
 
 class Tests_FacturacioFacturaReport_fill_and_find(Tests_FacturacioFacturaReport_base):
-    def test__get_report_data__simple_list(self):
+    @mock.patch.object(
+        giscedata_facturacio_report.GiscedataFacturacioFacturaReport, "get_auvi_data"
+    )
+    def test__get_report_data__simple_list(self, get_auvi_data_mock_function):
         f_id1 = self.get_fixture("giscedata_facturacio", "factura_0001")
         f_id2 = self.get_fixture("giscedata_facturacio", "factura_0002")
         ctxt = {"allow_list": ["logo", "company"], "not_testing_old_polissa": True}
+        get_auvi_data_mock_function.return_value = False
 
         result = self.r_obj.get_report_data(
             self.cursor, self.uid, [self.bf(f_id1), self.bf(f_id2)], ctxt
