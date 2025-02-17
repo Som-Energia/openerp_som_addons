@@ -78,6 +78,16 @@ class TestsEscullLlistaPreus(testing.OOTestCase):
             self.cursor, self.uid, "som_indexada", "pricelist_indexada_20td_canaries"
         )[1]
 
+        pricelist_som_indexada_2024_id = imd_obj.get_object_reference(
+            self.cursor, self.uid, "som_indexada", "pricelist_indexada_20td_peninsula_2024"
+        )[1]
+        pricelist_som_indexada_balears_2024_id = imd_obj.get_object_reference(
+            self.cursor, self.uid, "som_indexada", "pricelist_indexada_20td_balears_2024"
+        )[1]
+        pricelist_som_indexada_canaries_2024_id = imd_obj.get_object_reference(
+            self.cursor, self.uid, "som_indexada", "pricelist_indexada_20td_canaries_2024"
+        )[1]
+
         return [
             pricelist_som_id,
             pricelist_som_insular_id,
@@ -85,6 +95,9 @@ class TestsEscullLlistaPreus(testing.OOTestCase):
             pricelist_som_indexada_id,
             pricelist_som_indexada_balears_id,
             pricelist_som_indexada_canaries_id,
+            pricelist_som_indexada_2024_id,
+            pricelist_som_indexada_balears_2024_id,
+            pricelist_som_indexada_canaries_2024_id,
         ]
 
     def test_escull_llista_preus_peninsular(self):
@@ -137,7 +150,7 @@ class TestsEscullLlistaPreus(testing.OOTestCase):
 
         result = pol.escull_llista_preus(pricelist_list)
 
-        self.assertEqual(result.id, pricelist_list[3])
+        self.assertEqual(result.id, pricelist_list[6])
 
     def test_escull_llista_preus_indexada_balears(self):
         pol = self.get_demo_contract(indexed=True, location="balears")
@@ -145,7 +158,7 @@ class TestsEscullLlistaPreus(testing.OOTestCase):
 
         result = pol.escull_llista_preus(pricelist_list)
 
-        self.assertEqual(result.id, pricelist_list[4])
+        self.assertEqual(result.id, pricelist_list[7])
 
     @mock.patch(
         "som_indexada.wizard.wizard_change_to_indexada.WizardChangeToIndexada._get_location_polissa"
@@ -157,4 +170,4 @@ class TestsEscullLlistaPreus(testing.OOTestCase):
 
         result = pol.escull_llista_preus(pricelist_list)
 
-        self.assertEqual(result.id, pricelist_list[5])
+        self.assertEqual(result.id, pricelist_list[8])

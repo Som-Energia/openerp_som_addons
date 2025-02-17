@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<openerp>
+    <data>
+        <record  model="giscedata.facturacio.extra" id="extra_line_1">
+            <field name="polissa_id" ref="giscedata_polissa.polissa_0001"/>
+            <field name="product_id" ref="giscedata_facturacio_impagat.product_unpaid_management"/>
+            <field name="name">Despeses gestió impagament 0001F</field>
+            <field name="date_from">2024-01-01</field>
+            <field name="date_to">2024-01-01</field>
+            <field name="price_unit">4</field>
+        </record>
+    </data>
+</openerp>
