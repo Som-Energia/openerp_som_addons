@@ -50,7 +50,8 @@ class TestsFacturesUnpaymentExpenses(OOTestCaseWithCursor):
         extra_id = self.imd_obj.get_object_reference(
             cursor, uid, "som_facturacio_switching", "extra_line_1"
         )[1]
-        self.extra_obj.write(cursor, uid, [extra_id], {"quantity": 28})
+        # Add paid extra line
+        self.extra_obj.write(cursor, uid, [extra_id], {"quantity": 28, 'active': False})
 
         # Test
         res = self.fact_obj.check_total_invoice_more_than_unpaymnet_expenses(
