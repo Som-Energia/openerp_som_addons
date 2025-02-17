@@ -56,6 +56,9 @@ autoconsum_text = TABLA_113_dict[cd.autoconsum] if cd.autoconsum in TABLA_113_di
                     % endif
                     ${_(u"Peatge de transport i distribució:")} <span style="font-weight: bold;">${cd.tariff}</span> <br />
                     ${_(u"Segment tarifari:")} <span style="font-weight: bold;">${cd.segment_tariff}</span> <br />
+                    % if cd.is_auvi:
+                        ${_(u"Tarifa:")} <span style="font-weight: bold;">${cd['auvi_data']['auvi_name']}</span> <br />
+                    % endif
                     % if cd.invoicing_mode == 'index':
                         ${_(u"Tarifa:")} <span style="font-weight: bold;">${cd.pricelist}</span> <br />
                     % endif
