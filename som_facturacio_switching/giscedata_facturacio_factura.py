@@ -72,15 +72,15 @@ class GiscedataFacturacioFactura(osv.osv):
                                            ('product_id', '=', unpayment_fee_product_id),
                                               ('name', 'ilike', factura_browse.number)],
                                           context={'active_test': False})
-        if existing_lines:
-            pending_lines = unpayment_fee_product.list_price
-            for line in existing_lines:
-                pending_lines += extra_obj.read(
-                    cursor, uid, line, ['price_subtotal'],
-                    context=context)['price_subtotal']
 
-            if factura_browse.amount_total <= pending_lines:
-                total_invoice_more_than_unpaymnet_expenses = True
+        pending_lines = unpayment_fee_product.list_price
+        for line in existing_lines:
+            pending_lines += extra_obj.read(
+                cursor, uid, line, ['price_subtotal'],
+                context=context)['price_subtotal']
+
+        if factura_browse.amount_total <= pending_lines:
+            total_invoice_more_than_unpaymnet_expenses = True
 
         return total_invoice_more_than_unpaymnet_expenses
 
