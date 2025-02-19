@@ -1,9 +1,7 @@
 # -*- coding: utf-8 -*-
 from osv import osv, fields
 
-from gestionatr.defs import TABLA_113
-
-TIPO_AUTOCONSUMO_SEL = [(ac[0], "[{}] - {}".format(ac[0], ac[1])) for ac in TABLA_113]
+from giscedata_polissa.giscedata_polissa import TIPO_AUTOCONSUMO_SEL
 
 
 class GiscedataAtc(osv.osv):
@@ -41,7 +39,7 @@ class GiscedataAtc(osv.osv):
         ),
         "tipus_autoconsum": fields.related(
             "polissa_id",
-            "autoconsumo",
+            "tipus_autoconsum",
             type="selection",
             selection=TIPO_AUTOCONSUMO_SEL,
             string="tipus autoconsum",

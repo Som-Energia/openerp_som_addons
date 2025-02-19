@@ -123,7 +123,7 @@ class ReportBackendCondicionsParticulars(ReportBackend):
         else:
             es_canvi_tecnic = False
         pots = pas.pot_ids if es_canvi_tecnic else pol.potencies_periode
-        res['autoconsum'] = pas.tipus_autoconsum if es_canvi_tecnic else pol.autoconsumo
+        res['autoconsum'] = pas.tipus_autoconsum if es_canvi_tecnic else pol.tipus_autoconsum
         if res['autoconsum'] and res['autoconsum'] in TABLA_113_dict:
             res['autoconsum'] = TABLA_113_dict[res['autoconsum']]
         res['es_canvi_tecnic'] = es_canvi_tecnic
@@ -152,7 +152,7 @@ class ReportBackendCondicionsParticulars(ReportBackend):
         res['name'] = pol.name
         res['state'] = pol.state
         res['lead'] = context.get('lead', False)
-        res['auto'] = pol.autoconsumo
+        res['auto'] = pol.tipus_autoconsum
         res['contract_type'] = CONTRACT_TYPES[pol.contract_type]
         res['tarifa'] = pol.tarifa_codi
         res['data_baixa'] = pol.data_baixa
