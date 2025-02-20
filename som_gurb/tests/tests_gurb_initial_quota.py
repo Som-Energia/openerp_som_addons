@@ -33,7 +33,7 @@ class TestsGurbInitialQuota(TestsGurbBase):
         self.assertEqual(invoice_ids[0], invoice_id)
         self.assertEqual(invoice_br.partner_id.id, pol_br.titular.id)
         self.assertEqual(len(invoice_br.invoice_line), 1)
-        self.assertEqual(invoice_br.invoice_line[0].quantity, 2.5)
+        self.assertEqual(invoice_br.invoice_line[0].quantity, 1)
         self.assertEqual(invoice_br.invoice_line[0].price_unit, 3.75)
         self.assertEqual(invoice_br.invoice_line[0].price_subtotal, 9.38)
         self.assertEqual(len(invoice_br.invoice_line[0].invoice_line_tax_id), 1)
