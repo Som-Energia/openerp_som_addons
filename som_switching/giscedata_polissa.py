@@ -44,12 +44,11 @@ class GiscedataPolissaModcontractual(osv.osv):
     _inherit = "giscedata.polissa.modcontractual"
 
     def aplicar_modificacio(self, cursor, uid, mod_id, polissa_id=None):
-
         super(GiscedataPolissaModcontractual, self).aplicar_modificacio(
             cursor, uid, mod_id, polissa_id
         )
 
-        fields_to_read = ["tipus_autoconsum", "data_inici", "modcontractual_ant", "polissa_id"]
+        fields_to_read = ["autoconsumo", "data_inici", "modcontractual_ant", "polissa_id"]
 
         modcon_info = self.read(cursor, uid, mod_id, fields_to_read)
         auto_vals = {}
@@ -58,17 +57,17 @@ class GiscedataPolissaModcontractual(osv.osv):
                 cursor, uid, modcon_info["modcontractual_ant"][0], fields_to_read
             )
             if (
-                modcon_ant_info.get("tipus_autoconsum") != modcon_info["tipus_autoconsum"]
-                and modcon_ant_info["tipus_autoconsum"] == "00"
+                modcon_ant_info.get("autoconsumo") != modcon_info["autoconsumo"]
+                and modcon_ant_info["autoconsumo"] == "00"
             ):
                 auto_vals.update({"data_alta_autoconsum": modcon_info["data_inici"]})
             elif (
-                modcon_ant_info.get("tipus_autoconsum") != modcon_info["tipus_autoconsum"]
-                and modcon_info["tipus_autoconsum"] == "00"
+                modcon_ant_info.get("autoconsumo") != modcon_info["autoconsumo"]
+                and modcon_info["autoconsumo"] == "00"
             ):
                 auto_vals.update({"data_baixa_autoconsum": modcon_info["data_inici"]})
         else:
-            if modcon_info["tipus_autoconsum"] != "00":
+            if modcon_info["autoconsumo"] != "00":
                 auto_vals.update({"data_alta_autoconsum": modcon_info["data_inici"]})
 
         if auto_vals:
