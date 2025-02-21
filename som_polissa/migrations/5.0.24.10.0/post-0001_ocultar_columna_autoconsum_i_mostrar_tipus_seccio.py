@@ -11,7 +11,11 @@ def up(cursor, installed_version):
 
     # UPDATAR UNA PART DE L'XML (POSAR LA ID)
     logger.info("Updating XMLs")
-    list_of_records = ["view_giscedata_polissa_tree_inherit"]
+    list_of_records = [
+        "view_giscedata_polissa_tree_inherit",
+        "view_giscedata_polissa_cau_tree",
+        "view_giscedata_polissa_endarrerida_tree",
+    ]
     load_data_records(
         cursor, "som_polissa", "giscedata_polissa_view.xml", list_of_records, mode="update"
     )
