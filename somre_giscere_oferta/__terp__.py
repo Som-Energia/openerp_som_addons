@@ -7,6 +7,7 @@
     "category": "RE",
     "depends": [
         "giscere_omie",
+        "poweremail",
     ],
     "init_xml": [],
     "demo_xml": [],
