@@ -1180,7 +1180,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
                 key=lambda l: l[0],  # noqa: E741
             ),
             "is_autoconsum": te_autoconsum(fact, pol),  # fact.te_autoconsum
-            "autoconsum": pol.tipus_autoconsum,
+            "autoconsum": pol.autoconsum,
             "autoconsum_cau": pol.autoconsum_id.cau if pol.autoconsum_id else "",
             "is_autoconsum_colectiu": te_autoconsum_collectiu(
                 fact, pol

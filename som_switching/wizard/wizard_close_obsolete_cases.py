@@ -38,7 +38,7 @@ class WizardCloseObsoleteCases(osv.osv_memory):
                 pas_obj = self.pool.get(swsi_obj).browse(cursor, uid, eval(pas_id))
                 if pas_obj.motiu_canvi != "04":
                     continue
-                if not sw.cups_polissa_id.active or sw.cups_polissa_id.tipus_autoconsum != "00":
+                if not sw.cups_polissa_id.active or sw.cups_polissa_id.autoconsumo != "00":
                     case_ids.append(sw.case_id.id)
 
         ctx = context.copy()

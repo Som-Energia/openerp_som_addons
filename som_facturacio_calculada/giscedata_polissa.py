@@ -47,7 +47,7 @@ class GiscedataPolissaCalculada(osv.osv):
             return False, _(u"no es 2.0TD")
         if pol.te_assignacio_gkwh:
             return False, _(u"té GenerationKWh")
-        if pol.tipus_autoconsum != "00":
+        if pol.autoconsumo != "00":
             return False, _(u"té Autoconsum")
         if pol.facturacio_potencia == "max":  # != 'icp'
             return False, _(u"té Maximetre")
