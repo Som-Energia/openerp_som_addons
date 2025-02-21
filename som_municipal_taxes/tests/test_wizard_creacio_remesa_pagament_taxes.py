@@ -18,9 +18,12 @@ class TestWizardCreacioRemesaPagamentTaxes(testing.OOTestCaseWithCursor):
         get_states_invoiced_mock.return_value = ['draft', 'open', 'paid']
         wiz_o = self.pool.get("wizard.creacio.remesa.pagament.taxes")
         order_o = self.pool.get("payment.order")
+        payment_mode_id = self.pool.get("ir.model.data").get_object_reference(
+            self.cursor, self.uid, "account_invoice_som", "payment_mode_0001"
+        )[1]
         wiz_init = {
             "account": 7,
-            "payment_mode": 1,
+            "payment_mode": payment_mode_id,
             "year": 2016,
             "quarter": 1,
         }
@@ -46,10 +49,12 @@ class TestWizardCreacioRemesaPagamentTaxes(testing.OOTestCaseWithCursor):
     def test_create_remesa_pagaments__error_ja_pagat(self, get_states_invoiced_mock):
         get_states_invoiced_mock.return_value = ['draft', 'open', 'paid']
         wiz_o = self.pool.get("wizard.creacio.remesa.pagament.taxes")
-
+        payment_mode_id = self.pool.get("ir.model.data").get_object_reference(
+            self.cursor, self.uid, "account_invoice_som", "payment_mode_0001"
+        )[1]
         wiz_init = {
             "account": 7,
-            "payment_mode": 1,
+            "payment_mode": payment_mode_id,
             "year": 2016,
             "quarter": 1,
         }
