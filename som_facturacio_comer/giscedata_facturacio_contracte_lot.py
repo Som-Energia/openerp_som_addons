@@ -207,7 +207,7 @@ class GiscedataFacturacioContracteLot(osv.osv):
         ),
         "autoconsum": fields.related(
             "polissa_id",
-            "tipus_autoconsum",
+            "autoconsumo",
             type="selection",
             selection=TIPO_AUTOCONSUMO_SEL,
             string="Autoconsum",
