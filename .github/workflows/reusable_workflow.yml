@@ -85,6 +85,7 @@ jobs:
         run: |
           git clone --depth 1 https://$GITHUB_TOKEN@github.com/Som-Energia/erp.git -b ${{ inputs.erpbranch }} $ROOT_DIR_SRC/erp
           git clone --depth 1 https://$GITHUB_TOKEN@github.com/Som-Energia/libFacturacioATR.git $ROOT_DIR_SRC/libFacturacioATR
+          git clone --depth 1 https://$GITHUB_TOKEN@github.com/gisce/omie-modules.git $ROOT_DIR_SRC/omie-modules
           if [ ! -d "$ROOT_DIR_SRC/openerp_som_addons" ]; then
             git clone --depth 1 https://github.com/Som-Energia/openerp_som_addons.git $ROOT_DIR_SRC/openerp_som_addons
           fi
