@@ -15,6 +15,20 @@ class GiscedataFacturacioFactura(osv.osv):
     _name = 'giscedata.facturacio.factura'
     _inherit = 'giscedata.facturacio.factura'
 
+    def copy_data(self, cr, uid, id, default=None, context=None):
+        if default is None:
+            default = {}
+        res, x = super(GiscedataFacturacioFactura, self).copy_data(
+            cr, uid, id, default, context
+        )
+        res.update({
+            'enviat_mail_id': False,
+            'enviat': False,
+            'enviat_data': False,
+            'enviat_carpeta': False,
+        })
+        return res, x
+
     # Poweremails hooks
     def poweremail_write_callback(self, cursor, uid, ids, vals, context=None):
         res = True
