@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<openerp>
+    <data>
+        <record id="giscere_previsio_publicada_E0_MH3" model="giscere.previsio.publicada">
+            <field name="utc_offset">UTC+01:0</field>
+            <field name="generacio">10</field>
+            <field name="local_timestamp">2022-01-01 01:00:00.000</field>
+            <field name="timestamp">2022-01-01 00:00:00.000</field>
+            <field name="codi_previsio">SR00000</field>
+            <field name="potencia_instalada">2000</field>
+            <field name="oferta">3-2022-01-01-2024-02-06 15:02:44</field>
+            <field name="publicada" eval="True"/>
+        </record>
+        <!--
+        <record id="giscere_previsio_publicada_E0_MHP" model="giscere.previsio.publicada">
+            <field name="utc_offset">UTC+01:0</field>
+            <field name="generacio">80</field>
+            <field name="local_timestamp">2022-01-01 01:00:00.000</field>
+            <field name="timestamp">2022-01-01 00:00:00.000</field>
+            <field name="codi_previsio">SR00000</field>
+            <field name="potencia_instalada">2000</field>
+            <field name="oferta">3-2022-01-01-2024-02-06 15:02:44</field>
+            <field name="publicada" eval="True"/>
+        </record>
+        <record id="giscere_previsio_publicada_E0_MHC" model="giscere.previsio.publicada">
+            <field name="utc_offset">UTC+01:0</field>
+            <field name="generacio">0</field>
+            <field name="local_timestamp">2022-01-01 01:00:00.000</field>
+            <field name="timestamp">2022-01-01 00:00:00.000</field>
+            <field name="codi_previsio">SR00000</field>
+            <field name="potencia_instalada">2000</field>
+            <field name="oferta">3-2022-01-01-2024-02-06 15:02:44</field>
+            <field name="publicada" eval="True"/>
+        </record>
+        -->
+        <record id="giscere_previsio_publicada_E1_MHP" model="giscere.previsio.publicada">
+            <field name="utc_offset">UTC+01:0</field>
+            <field name="generacio">100</field>
+            <field name="local_timestamp">2023-01-01 01:00:00.000</field>
+            <field name="timestamp">2023-01-01 00:00:00.000</field>
+            <field name="codi_previsio">SR00000</field>
+            <field name="potencia_instalada">2000</field>
+            <field name="oferta">3-2023-01-01-2024-02-06 15:02:44</field>
+            <field name="publicada" eval="True"/>
+        </record>
+        <!--
+        <record id="giscere_previsio_publicada_E1_MHC" model="giscere.previsio.publicada">
+            <field name="utc_offset">UTC+01:0</field>
+            <field name="generacio">220</field>
+            <field name="local_timestamp">2023-01-01 01:00:00.000</field>
+            <field name="timestamp">2023-01-01 00:00:00.000</field>
+            <field name="codi_previsio">SR00000</field>
+            <field name="potencia_instalada">2000</field>
+            <field name="oferta">3-2023-01-01-2024-02-06 15:02:44</field>
+            <field name="publicada" eval="True"/>
+        </record>
+        <record id="giscere_previsio_publicada_R0" model="giscere.previsio.publicada">
+            <field name="utc_offset">UTC+01:0</field>
+            <field name="generacio">380</field>
+            <field name="local_timestamp">2022-01-01 01:00:00.000</field>
+            <field name="timestamp">2022-01-01 00:00:00.000</field>
+            <field name="codi_previsio">SR00000</field>
+            <field name="potencia_instalada">2000</field>
+            <field name="oferta">3-2022-01-01-2024-02-06 15:02:44</field>
+            <field name="publicada" eval="True"/>
+        </record>
+        -->
+        <record id="giscere_previsio_publicada_E0" model="giscere.previsio.publicada">
+            <field name="utc_offset">UTC+01:0</field>
+            <field name="generacio">22</field>
+            <field name="local_timestamp">2022-01-01 02:00:00.000</field>
+            <field name="timestamp">2022-01-01 01:00:00.000</field>
+            <field name="codi_previsio">SR00000</field>
+            <field name="potencia_instalada">2000</field>
+            <field name="oferta">3-2022-01-01-2024-02-06 15:02:44</field>
+            <field name="publicada" eval="True"/>
+        </record>
+    </data>
+</openerp>
