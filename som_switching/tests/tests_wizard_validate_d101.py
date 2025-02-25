@@ -42,10 +42,11 @@ class TestWizardValidateD101(TestSwitchingImport):
         autoconsum_id = self.crear_autoconsum(txn)
 
         polissa_obj = self.openerp.pool.get("giscedata.polissa")
-        cups_obj = self.openerp.pool.get("giscedata.cups.ps")
+        # cups_obj = self.openerp.pool.get("giscedata.cups.ps")
 
         cups_id = polissa_obj.read(cursor, uid, contract_id, ["cups"])["cups"]
-        cups_obj.write(cursor, uid, cups_id[0], {"autoconsum_id": autoconsum_id})
+        self.activar_autoconsum_a_cups(txn, autoconsum_id, cups_id[0])
+        # cups_obj.write(cursor, uid, cups_id[0], {"autoconsum_id": autoconsum_id})
 
         # Button create case
         context.update({"autoconsum_id": autoconsum_id})
