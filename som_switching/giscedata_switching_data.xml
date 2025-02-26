@@ -610,6 +610,74 @@
 </%def>
                 ]]>
             </field>
+        </record>
+        <record model="poweremail.templates" id="notificacioD112ModificacioPotenciaGeneracio">
+            <field name="name">ATR D101 motiu 12: Correu de modificació de la potència de generació es modifica el generador</field>
+            <field name="object_name" model="ir.model" search="[('name', '=', 'giscedata.switching')]"/>
+            <field eval="0" name="save_to_drafts"/>
+            <field name="model_int_name">giscedata.switching</field>
+            <field name="def_to">${object.cups_polissa_id.titular.www_email}</field>
+            <field eval="0" name="auto_email"/>
+            <field eval="0" name="single_email"/>
+            <field eval="0" name="use_sign"/>
+            <field name="def_subject">S'ha modificat la potència de generació del CUPS ${object.cups_polissa_id.name}</field>
+            <field name="template_language">mako</field>
+            <field eval="0" name="send_on_create"/>
+            <field name="lang">${object.cups_polissa_id.titular.lang}</field>
+            <field eval="0" name="send_on_write"/>
+            <field name="def_bcc">support.17062.b8d9f4469fa4d856@helpscout.net</field>
+            <field name="enforce_from_account" model="poweremail.core_accounts" search="[('name','=', 'Modificacions Contractuals')]"/>
+            <field name="def_body_text"><![CDATA[
+               <%!
+    from mako.template import Template
+
+    def render(text_to_render, object_):
+        templ = Template(text_to_render)
+        return templ.render_unicode(
+            object=object_,
+            format_exceptions=True
+    )
+%>
+<%
+    polissa = object.cups_polissa_id
+
+    t_obj = object.pool.get('poweremail.templates')
+    md_obj = object.pool.get('ir.model.data')
+    template_id = md_obj.get_object_reference(
+                        object._cr, object._uid,  'som_poweremail_common_templates', 'common_template_legal_footer'
+                    )[1]
+
+    text_legal = render(t_obj.read(
+        object._cr, object._uid, [template_id], ['def_body_text'])[0]['def_body_text'],
+        object
+    )
+
+%>
+<!doctype html>
+<html>
+    <head>
+        <meta charset='utf-8'>
+    </head>
+    % if object.cups_polissa_id.titular.lang == "ca_ES":
+        ${correu_cat()}
+    % else:
+        ${correu_es()}
+    % endif
+    ${text_legal}
+</html>
+
+<%def name="correu_cat()">
+    <body>
+        Correu CAT
+    </body>
+</%def>
+<%def name="correu_es()">
+    <body>
+        Correu ES
+    </body>
+</%def>
+                ]]>
+            </field>
     	</record>
     </data>
 </openerp>
