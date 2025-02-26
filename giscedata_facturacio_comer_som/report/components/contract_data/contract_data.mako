@@ -6,10 +6,6 @@
 import locale
 TABLA_113_dict = { # Table extracted from gestionatr.defs TABLA_113, not imported due translations issues
     '00': _(u"Sense Autoconsum"), # Sin Autoconsumo
-    '01': _(u"Autoconsum Tipus 1"), # Autoconsumo Tipo 1
-    '2A': _(u"Autoconsum tipus 2 (segons l'Art. 13. 2. a) RD 900/2015)"), # Autoconsumo tipo 2 (según el Art. 13. 2. a) RD 900/2015)
-    '2B': _(u"Autoconsum tipus 2 (segons l'Art. 13. 2. b) RD 900/2015)"), # Autoconsumo tipo 2 (según el Art. 13. 2. b) RD 900/2015)
-    '2G': _(u"Serveis auxiliars de generació lligada a un autoconsum tipus 2"), # Servicios auxiliares de generación ligada a un autoconsumo tipo 2
     '31': _(u"Sense Excedents Individual - Consum"), # Sin Excedentes Individual – Consumo
     '32': _(u"Sense Excedents Col·lectiu - Consum"), # Sin Excedentes Colectivo – Consumo
     '33': _(u"Sense Excedents Col·lectiu amb acord de compensació – Consum"), # Sin Excedentes Colectivo con acuerdo de compensación – Consumo
@@ -22,6 +18,8 @@ TABLA_113_dict = { # Table extracted from gestionatr.defs TABLA_113, not importe
     '54': _(u"Amb excedents sense compensació individual amb cte. de Serv. Aux. en Xarxa Interior - Serv. Aux."), # Con excedentes sin compensación individual con cto SSAA en Red Interior– SSAA
     '55': _(u"Amb excedents sense compensació Col·lectiu / en Xarxa Interior - Consum"), # Con excedentes sin compensación Colectivo/en Red Interior– Consumo
     '56': _(u"Amb excedents sense compensació Col·lectiu / en Xarxa Interior - Serv. Aux."), # Con excedentes sin compensación Colectivo/en Red Interior - SSAA
+    '57': _(u"Amb excedents sense compensació Col·lectiu sense cte de Serv. Aux. (menyspreable) en Xarxa Interior – Consum')"), # Con excedentes sin compensación Colectivo sin cto de SSAA (despreciable) en red interior – Consumo')
+    '58': _(u"Amb excedents sense compensació Col·lectiu sense cto de Serv. Aux. a través de xarxa - Consum')"), # Con excedentes sin compensación Colectivo sin cto de SSAA a través de red - Consumo
     '61': _(u"Amb excedents sense compensació Individual amb cte. de Serv. Aux. a través de xarxa - Consum"), # Con excedentes sin compensación Individual con cto SSAA a través de red – Consumo
     '62': _(u"Amb excedents sense compensació individual amb cte. de Serv. Aux. a través de xarxa - Serv. Aux."), # Con excedentes sin compensación individual con cto SSAA a través de red – SSAA
     '63': _(u"Amb excedents sense compensació Col·lectiu a través de xarxa - Consum"), # Con excedentes sin compensación Colectivo a través de red – Consumo
@@ -30,7 +28,7 @@ TABLA_113_dict = { # Table extracted from gestionatr.defs TABLA_113, not importe
     '72': _(u"Amb excedents sense compensació individual amb cte. de Serv. Aux. a través de xarxa i xarxa interior - Serv. Aux."), # Con excedentes sin compensación individual con cto SSAA a través de red y red interior – SSAA
     '73': _(u"Amb excedents sense compensació Col·lectiu amb cte. de Serv. Aux. a través de xarxa i xarxa interior - Consum"), # Con excedentes sin compensación Colectivo con cto de SSAA  a través de red y red interior – Consumo
     '74': _(u"Amb excedents sense compensació Col·lectiu amb cte. de Serv. Aux. a través de xarxa i xarxa interior - SSAA"), # Con excedentes sin compensación Colectivo con cto de SSAA a través de red y red interior - SSAA
-    }
+}
 autoconsum_text = TABLA_113_dict[cd.autoconsum] if cd.autoconsum in TABLA_113_dict else _("")
 %>
     <div class="contract_data${cd.small_text and '_small' or ''}">

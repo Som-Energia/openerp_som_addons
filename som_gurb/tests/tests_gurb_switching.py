@@ -234,7 +234,7 @@ class TestsGurbSwitching(TestsGurbBase):
             cursor, uid, "giscedata_polissa", "polissa_0001"
         )[1]
         polissa_obj.write(cursor, uid, [polissa_id], {
-            "autoconsumo": autoconsumo_mode,
+            "tipus_subseccio": autoconsumo_mode,
         })
 
     def test_do_not_notify_m1_02_auto_gurb_category(self):
@@ -730,7 +730,7 @@ class TestsGurbSwitching(TestsGurbBase):
         self.assertEqual(m1.state, "done")
         self.assertEqual(m1.notificacio_pendent, False)
 
-        self.assertEqual(pol.autoconsumo, "41")
+        self.assertEqual(pol.tipus_subseccio, "41")
 
     def test_notify_m1_03_gurb_category(self):
         pol_obj = self.openerp.pool.get("giscedata.polissa")

@@ -39,7 +39,7 @@ class GiscedataAtc(osv.osv):
         ),
         "tipus_autoconsum": fields.related(
             "polissa_id",
-            "autoconsumo",
+            "tipus_subseccio",
             type="selection",
             selection=TIPO_AUTOCONSUMO_SEL,
             string="tipus autoconsum",

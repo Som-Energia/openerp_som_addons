@@ -214,7 +214,7 @@ class TestChangeToIndexada(TestSwitchingImport):
                 "active",
                 "state",
                 "modcontractual_ant",
-                "autoconsumo",
+                "tipus_subseccio",
             ],
         )
         modcon_act.pop("id")
@@ -232,7 +232,7 @@ class TestChangeToIndexada(TestSwitchingImport):
                 "active": True,
                 "state": "pendent",
                 "modcontractual_ant": prev_modcontactual_id,
-                "autoconsumo": "41",
+                "tipus_subseccio": "41",
             },
         )
         IrModel = self.pool.get("ir.model.data")

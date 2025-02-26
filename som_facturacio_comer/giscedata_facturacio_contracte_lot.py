@@ -2,11 +2,10 @@
 from __future__ import absolute_import
 from osv import osv, fields
 from tools.translate import _
-from gestionatr.defs import TABLA_113
 import re
 import logging
 
-TIPO_AUTOCONSUMO_SEL = [(ac[0], "[{}] - {}".format(ac[0], ac[1])) for ac in TABLA_113]
+from giscedata_polissa.giscedata_polissa import TIPO_AUTOCONSUMO_SEL
 
 
 class GiscedataFacturacioContracteLot(osv.osv):
@@ -207,7 +206,7 @@ class GiscedataFacturacioContracteLot(osv.osv):
         ),
         "autoconsum": fields.related(
             "polissa_id",
-            "autoconsumo",
+            "tipus_subseccio",
             type="selection",
             selection=TIPO_AUTOCONSUMO_SEL,
             string="Autoconsum",

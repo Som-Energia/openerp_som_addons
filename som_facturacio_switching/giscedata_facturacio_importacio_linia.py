@@ -2,12 +2,12 @@
 from osv import osv, fields
 import re
 from tools.translate import _
-from gestionatr.defs import TABLA_113, TABLA_17
+from gestionatr.defs import TABLA_17
 from datetime import datetime, timedelta
 from tools import cache
 import logging
 
-TIPO_AUTOCONSUMO_SEL = [(ac[0], "[{}] - {}".format(ac[0], ac[1])) for ac in TABLA_113]
+from giscedata_polissa.giscedata_polissa import TIPO_AUTOCONSUMO_SEL
 IMPORT_PHASE_1 = 10  # 10 = Fase de càrrega XML
 
 
