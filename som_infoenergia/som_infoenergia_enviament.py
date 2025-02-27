@@ -345,8 +345,8 @@ class SomInfoenergiaEnviament(osv.osv):
             if not "polissa_id" in pol or not pol["polissa_id"]:  # noqa: E713
                 res[item] = False
             else:
-                auto_type = gp_obj.read(cursor, uid, pol["polissa_id"][0], ["autoconsumo"])[
-                    "autoconsumo"
+                auto_type = gp_obj.read(cursor, uid, pol["polissa_id"][0], ["tipus_subseccio"])[
+                    "tipus_subseccio"
                 ]
                 res[item] = auto_type != "00"
 
