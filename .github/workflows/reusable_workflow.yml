@@ -106,6 +106,7 @@ jobs:
           git clone --depth 1 https://github.com/gisce/poweremail-modules.git $ROOT_DIR_SRC/poweremail-modules
           git clone --depth 1 https://github.com/gisce/crm_poweremail.git $ROOT_DIR_SRC/crm_poweremail
           git clone --depth 1 https://github.com/gisce/ooop.git $ROOT_DIR_SRC/ooop
+          git clone --depth 1 https://github.com/gisce/gestionatr.git -b 65118_adaptar_gestionatr_atr3.0 $ROOT_DIR_SRC/gestionatr
 
       - name: Install dependencies
         run: |
@@ -123,6 +124,8 @@ jobs:
           pip install -e . || "Not installing plantmeter Python package"
           pip install -r $ROOT_DIR_SRC/erp/requirements-dev.txt
           pip install -r $ROOT_DIR_SRC/erp/requirements.txt
+          cd $ROOT_DIR_SRC/gestionatr
+          pip install -e . || "Not installing custom gestionatr Python package"
 
       - name: Install dependecies for Python 3
         if: matrix.python-version != '2.7'
