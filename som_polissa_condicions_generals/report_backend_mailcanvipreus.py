@@ -369,7 +369,7 @@ class ReportBackendMailcanvipreus(ReportBackend):
             ),
             'autoconsum': {
                 'es_autoconsum': env.polissa_id.es_autoconsum,
-                'compensacio': env.polissa_id.autoconsum_id.tipus_autoconsum in ['41', '42', '43']
+                'compensacio': env.polissa_id.tipus_subseccio in ['21']
             },
         }
 
