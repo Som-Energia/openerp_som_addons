@@ -29,7 +29,15 @@ TABLA_113_dict = { # Table extracted from gestionatr.defs TABLA_113, not importe
     '73': _(u"Amb excedents sense compensació Col·lectiu amb cte. de Serv. Aux. a través de xarxa i xarxa interior - Consum"), # Con excedentes sin compensación Colectivo con cto de SSAA  a través de red y red interior – Consumo
     '74': _(u"Amb excedents sense compensació Col·lectiu amb cte. de Serv. Aux. a través de xarxa i xarxa interior - SSAA"), # Con excedentes sin compensación Colectivo con cto de SSAA a través de red y red interior - SSAA
 }
-autoconsum_text = TABLA_113_dict[cd.autoconsum] if cd.autoconsum in TABLA_113_dict else _("")
+TABLA_133_dict = { # Table extracted from gestionatr.defs TABLA_133, not imported due translations issues
+    '10': _(u"Sense excedents No acollit a compensació"), # Sin excedentes No acogido a compensación
+    '11': _(u"Sense excedents acollit a compensació"), # Sin excedentes acogido a compensación
+    '20': _(u"Amb excedents no acollits a compensació"), # Con excedentes no acogidos a compensación
+    '21': _(u"Amb excedents acollits a compensació"), # Con excedentes acogidos a compensación
+    '00': _(u"Sense autoconsum"), # Sin autoconsumo
+    '0C': _(u"Baixa com a membre d'autoconsum col·lectiu"), # Baja como miembro de autoconsumo colectivo
+}
+autoconsum_text = TABLA_133_dict[cd.autoconsum] if cd.autoconsum in TABLA_133_dict else _("")
 %>
     <div class="contract_data${cd.small_text and '_small' or ''}">
         <h1>${_(u"DADES DEL CONTRACTE")}</h1>
