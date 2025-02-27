@@ -3827,7 +3827,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
                     return True
             return False
 
-        if not(te_autoconsum_amb_excedents(fact, pol) or pol.tipus_subseccio == '33'):
+        if not(te_autoconsum_amb_excedents(fact, pol) or pol.tipus_subseccio == '11'):
             return {"is_visible": False}
 
         if not has_active_flux_solar(fact, pol):

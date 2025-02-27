@@ -4,8 +4,9 @@ from osv import osv, fields
 from tools.translate import _
 import re
 import logging
+from gestionatr.defs import TABLA_133
 
-from giscedata_polissa.giscedata_polissa import TIPO_AUTOCONSUMO_SEL
+TIPO_SUBSECCIO_SEL = [(ac[0], "[{}] - {}".format(ac[0], ac[1])) for ac in TABLA_133]
 
 
 class GiscedataFacturacioContracteLot(osv.osv):
@@ -208,7 +209,7 @@ class GiscedataFacturacioContracteLot(osv.osv):
             "polissa_id",
             "tipus_subseccio",
             type="selection",
-            selection=TIPO_AUTOCONSUMO_SEL,
+            selection=TIPO_SUBSECCIO_SEL,
             string="Autoconsum",
             readonly=True,
         ),

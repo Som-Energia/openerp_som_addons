@@ -339,7 +339,7 @@ class TestChangeToPeriodes(TestSwitchingImport):
                 "active": True,
                 "state": "pendent",
                 "modcontractual_ant": prev_modcontactual_id,
-                "tipus_subseccio": "41",
+                "tipus_subseccio": "21",
             },
         )
         IrModel = self.pool.get("ir.model.data")
