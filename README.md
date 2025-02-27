@@ -2,8 +2,7 @@
 Repository whith OpenERP addons customization made by [Som Energia](https://www.somenergia.coop/). We used an already customized version of OpenERP developed by [GISCE](https://gisce.net/) that at the same time, has some features from [Odoo](https://www.odoo.com/).
 
   [![SOM_MODULES](https://github.com/Som-Energia/openerp_som_addons/actions/workflows/all_modules_test.yml/badge.svg)](https://github.com/Som-Energia/openerp_som_addons/actions/workflows/all_modules_test.yml)
-  [![GISCE_MODULES](https://github.com/Som-Energia/som_modules_fulla/actions/workflows/schedule_all_installed_modules.yml/badge.svg)](https://github.com/Som-Energia/som_modules_fulla/actions/workflows/schedule_all_installed_modules.yml)
-  [![Coverage Status](https://coveralls.io/repos/github/Som-Energia/openerp_som_addons/badge.svg?branch=)](https://coveralls.io/github/Som-Energia/openerp_som_addons?branch=)
+
 
 List of modules ([add new module](docs/crear_nou_modul.md))
 ----------------
