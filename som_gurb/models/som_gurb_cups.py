@@ -603,7 +603,7 @@ class SomGurbCups(osv.osv):
         ),
         "signed": fields.boolean("Signed", readonly=1),
         "quota_product_id": fields.many2one("product.product", "Produce quota mensual"),
-        "state": fields.selection(_GURB_CUPS_STATES, "Estat del CUPS dins del GURB", readonly=True),
+        "state": fields.selection(_GURB_CUPS_STATES, "Estat del titular", readonly=True),
         "state_date": fields.date("Data de l'estat"),
         "ens_ha_avisat": fields.boolean(
             "Ens ha avisat",
