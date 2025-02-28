@@ -1,7 +1,6 @@
 # -*- encoding: utf-8 -*-
 import logging
 import pooler
-from oopgrade.oopgrade import load_data
 
 
 def up(cursor, installed_version):
@@ -9,30 +8,29 @@ def up(cursor, installed_version):
         return
 
     logger = logging.getLogger('openerp.migration')
+
     uid = 1
-
-    logger.info("Creating pooler")
     pool = pooler.get_pool(cursor.dbname)
-    pool.get('som.gurb.cups')._auto_init(cursor, context={'module': 'som_gurb'})
+    logger.info("Creating pooler")
+    pooler.get_pool(cursor.dbname)
 
-    # Update states of all GurbCups to active
+    # Create initial workflows
+    import netsvc
     sgc_obj = pool.get('som.gurb.cups')
-    list_to_update = sgc_obj.search(cursor, uid, [('state', '=', False)])
-    for _id in list_to_update:
-        activation_date = sgc_obj.read(cursor, uid, _id, ['start_date'])['start_date']
-        sgc_obj.write(cursor, uid, _id, {'state': 'active', 'state_date': activation_date})
+    wf_service = netsvc.LocalService("workflow")
 
-    views = [
-        'wizard/wizard_deactivate_gurb_cups_view.xml',
-        'workflow/som_gurb_cups_workflow.xml',
-        'views/som_gurb_cups_view.xml',
-        'security/ir.model.access.csv',
-    ]
-    for view in views:
-        # Actualitza els diferents records i vistes
-        logger.info("Updating XML {}".format(view))
-        load_data(cursor, 'som_gurb', view, idref=None, mode='update')
-        logger.info("XMLs succesfully updatd.")
+    cursor.execute("""
+        SELECT id FROM som_gurb_cups
+        WHERE id NOT IN (SELECT res_id FROM wkf_instance WHERE res_type = 'som.gurb.cups')
+    """)
+    list_gurb_cups_ids = [row[0] for row in cursor.fetchall()]
+    list_gurb_cups = sgc_obj.browse(cursor, uid, list_gurb_cups_ids)
+
+    for gurb_cups in list_gurb_cups[:2]:
+        wf_service.trg_create(uid, 'som.gurb.cups', gurb_cups.id, cursor)
+        gurb_cups.send_signal('button_create_cups')
+        gurb_cups.send_signal('active')
+        print sgc_obj.read(cursor, uid, gurb_cups.id, ['state'])
 
 
 def down(cursor, installed_version):
