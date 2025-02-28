@@ -12,6 +12,40 @@ class GiscedataCrmLead(osv.OsvInherits):
 
     _inherit = "giscedata.crm.lead"
 
+    def get_contract_template_from_delivery_type(
+        self, cursor, uid, lead_id, delivery_type='email', context=None
+    ):
+        '''
+            Returns powersms or poweremail template depending on delivery type
+        '''
+        if context is None:
+            context = context
+        imd_obj = self.pool.get('ir.model.data')
+        crm_lead_type = self.read(
+            cursor, uid, lead_id, ['crm_lead_type']
+        )['crm_lead_type']
+        is_renovation = crm_lead_type == 'renovation'
+        if delivery_type == 'sms':
+            tmpl_id = imd_obj.get_object_reference(
+                cursor, uid, 'giscedata_crm_leads_signatura',
+                'alta_lead_signatura_sms'
+            )[1]
+        elif delivery_type == 'email' and not is_renovation:
+            # Obtenim el valor del camp many2one signature_template_id
+            lead = self.browse(cursor, uid, lead_id, context=context)
+            tmpl_id = lead.signature_template_id.id
+        elif is_renovation:
+            tmpl_id = imd_obj.get_object_reference(
+                cursor, uid, 'giscedata_crm_leads_signatura',
+                'renovacio_lead_signatura'
+            )[1]
+        else:
+            tmpl_id = imd_obj.get_object_reference(
+                cursor, uid, 'giscedata_crm_leads_signatura',
+                'alta_lead_signatura'
+            )[1]
+        return tmpl_id
+
     def contract_pdf(self, cursor, uid, ids, context=None):
         if context is None:
             context = {}
@@ -132,6 +166,11 @@ class GiscedataCrmLead(osv.OsvInherits):
         "preu_fix_potencia_p4": fields.float("Preu Fix Potència P4", digits=(16, 6)),
         "preu_fix_potencia_p5": fields.float("Preu Fix Potència P5", digits=(16, 6)),
         "preu_fix_potencia_p6": fields.float("Preu Fix Potència P6", digits=(16, 6)),
+        "signature_template_id": fields.many2one(
+            'poweremail.templates',
+            'Plantilla de Signatura',
+            help="Selecciona la plantilla de signatura per a l'email."
+        ),
     }
 
     _defaults = {
