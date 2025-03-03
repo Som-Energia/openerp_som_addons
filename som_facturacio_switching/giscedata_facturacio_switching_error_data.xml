@@ -15,4 +15,9 @@
             <field name="level">warning</field>
         </record>
     </data>
+    <data>
+        <record model="giscedata.facturacio.switching.error.template" id="error_phase_3_code_043" forcecreate="1">
+            <field name="level">critical</field>
+        </record>
+    </data>
 </openerp>
