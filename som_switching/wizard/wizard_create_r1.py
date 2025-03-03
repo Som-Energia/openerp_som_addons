@@ -108,10 +108,12 @@ class WizardSubtypeR1(osv.osv_memory):
         return res
 
     def fields_view_get(
-        self, cursor, uid, view_id=None, view_type='form', context=None, toolbar=False, version=DEFAULT_VIEW_VERSION
+        self, cursor, uid, view_id=None, view_type='form', context=None, toolbar=False,
+        version=DEFAULT_VIEW_VERSION
     ):
         res = super(WizardSubtypeR1, self).fields_view_get(
-            cursor, uid, view_id, view_type, context=context, toolbar=toolbar, version=version
+            cursor, uid, view_id, view_type, context=context, toolbar=toolbar,
+            version=version
         )
         # Afegim facturacio_suspesa i refacturacio_pendent a les vistes
         root = ET.fromstring(res["arch"])
