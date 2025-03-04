@@ -3,12 +3,8 @@ from osv import osv, fields
 from tools.translate import _
 
 
-TABLA_113_dict = {  # Table extracted from gestionatr.defs TABLA_113, not imported due translations issues # noqa: E501
-    '00': _(u"Sense Autoconsum"),
-    '01': _(u"Autoconsum Tipus 1"),
-    '2A': _(u"Autoconsum tipus 2 (segons l'Art. 13. 2. a) RD 900/2015)"),
-    '2B': _(u"Autoconsum tipus 2 (segons l'Art. 13. 2. b) RD 900/2015)"),
-    '2G': _(u"Serveis auxiliars de generació lligada a un autoconsum tipus 2"),
+TABLA_113_dict = {  # Table extracted from gestionatr.defs TABLA_113, not imported due translations issues  # noqa: E501
+    '00': _(u"Sense Autoconsum"),   # noqa: E501
     '31': _(u"Sense Excedents Individual - Consum"),
     '32': _(u"Sense Excedents Col·lectiu - Consum"),
     '33': _(u"Sense Excedents Col·lectiu amb acord de compensació – Consum"),
@@ -21,6 +17,8 @@ TABLA_113_dict = {  # Table extracted from gestionatr.defs TABLA_113, not import
     '54': _(u"Amb excedents sense compensació individual amb cte. de Serv. Aux. en Xarxa Interior - Serv. Aux."),  # noqa: E501
     '55': _(u"Amb excedents sense compensació Col·lectiu / en Xarxa Interior - Consum"),
     '56': _(u"Amb excedents sense compensació Col·lectiu / en Xarxa Interior - Serv. Aux."),
+    '57': _(u"Amb excedents sense compensació Col·lectiu sense cte de Serv. Aux. (menyspreable) en Xarxa Interior – Consum')"),  # noqa: E501
+    '58': _(u"Amb excedents sense compensació Col·lectiu sense cto de Serv. Aux. a través de xarxa - Consum')"),  # noqa: E501
     '61': _(u"Amb excedents sense compensació Individual amb cte. de Serv. Aux. a través de xarxa - Consum"),  # noqa: E501
     '62': _(u"Amb excedents sense compensació individual amb cte. de Serv. Aux. a través de xarxa - Serv. Aux."),  # noqa: E501
     '63': _(u"Amb excedents sense compensació Col·lectiu a través de xarxa - Consum"),
