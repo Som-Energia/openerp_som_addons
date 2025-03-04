@@ -10,12 +10,12 @@ def up(cursor, installed_version):
 
     logger = logging.getLogger('openerp.migration')
 
-    logger.info("Updating giscedata_facturacio_switching_data.xml")
+    logger.info("Updating giscedata_facturacio_switching_error_data.xml")
     load_data_records(
         cursor,
         'som_facturacio_switching',
-        'giscedata_facturacio_switching_data.xml',
-        ['error_phase_3_code_043'],
+        'giscedata_facturacio_switching_error_data.xml',
+        ['giscedata_facturacio_switching.error_phase_3_code_043'],
         mode='update'
     )
     logger.info("XMLs succesfully updated.")
