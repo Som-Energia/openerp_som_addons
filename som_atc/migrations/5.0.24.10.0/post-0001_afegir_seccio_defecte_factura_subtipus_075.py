@@ -20,10 +20,10 @@ def up(cursor, installed_version):
     )[1]
     ccs_xml_id = "atc_section_factura"
     ccs_id = imd_obj.get_object_reference(
-        cursor, uid, "giscedata_atc", ccs_xml_id
+        cursor, uid, "som_switching", ccs_xml_id
     )[1]
 
-    gsr_obj.write(cursor, uid, gsr_id, {"section_id": ccs_id})
+    gsr_obj.write(cursor, uid, gsr_id, {"section_id": [(4, ccs_id)]})
 
     logger.info("XMLs succesfully updated.")
 
