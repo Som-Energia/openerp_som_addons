@@ -34,7 +34,7 @@ class GiscedataSwitchingWizardValidateD101(osv.osv_memory):
         """
         Method prepared to add default values
         """
-        res = {"mod_autoconsum": True}
+        res = {"tipus_mod_autoconsum": 'alta'}
 
         isAutoconsum = self.isAutoconsum(cursor, uid)
 
@@ -77,36 +77,25 @@ class GiscedataSwitchingWizardValidateD101(osv.osv_memory):
         rejection_comment = wizard_vals["rejection_comment"]
         set_pending = wizard_vals["set_pending"]
 
-        d102_id = self._create_step_d1_02_autoconsum(
-            cursor, uid, ids, sw_id, is_rejected, rejection_comment, set_pending, context
-        )
-        self.write(cursor, uid, [ids], {"generated_d102": d102_id})
+        # només pels de rebuig
+        if is_rejected:
+            d102_id = self._create_step_d1_02_autoconsum(
+                cursor, uid, ids, sw_id, is_rejected, rejection_comment, set_pending, context
+            )
+            self.write(cursor, uid, [ids], {"generated_d102": d102_id})
 
         cups_name = sw_obj.read(cursor, uid, sw_id, ["cups_id"])["cups_id"][1]
 
         if not is_rejected:
             pol_id = sw_obj.read(cursor, uid, sw_id, ["polissa_ref_id"])["polissa_ref_id"][0]
-            d102_obj = self.pool.get("giscedata.switching.d1.02")
 
             try:
                 m1_id = self._create_case_m1_01_autoconsum(cursor, uid, ids, pol_id, context)
                 self.write(cursor, uid, [ids], {"generated_m1": m1_id})
-                d102_obj = self.pool.get("giscedata.switching.d1.02")
-                d102_sw_id = d102_obj.read(cursor, uid, d102_id, ["sw_id"])["sw_id"][0]
-                sw_obj.write(cursor, uid, d102_sw_id, {"state": "done"})
 
             except Exception as e:
                 # set validacio_pendent to True
                 sw_obj.write(cursor, uid, sw_id, {"validacio_pendent": True})
-                d102_obj.write(cursor, uid, d102_id, {"validacio_pendent": True})
-
-                # historize error
-                d1 = sw_obj.browse(cursor, uid, sw_id)
-                error_msg = (
-                    "Hi ha hagut un error al generar el cas M1 després d'acceptar "
-                    + "el D1-01 mitjançant l'assistent de validació: {}".format(e.message)
-                )
-                d1.historize_msg(error_msg)
 
                 raise osv.except_osv(
                     "Error",
@@ -117,10 +106,10 @@ class GiscedataSwitchingWizardValidateD101(osv.osv_memory):
                     ),
                 )
 
-            message = "Passos D1-02 d'acceptació i M1-01 creats per al CUPS {}".format(cups_name)
+            message = "M1-01 creat per al CUPS {}".format(cups_name)
             self.write(cursor, uid, [ids], {"state": "end", "results": message})
 
-            return d102_id, m1_id
+            return False, m1_id
 
         message = "Pas D1-02 de rebuig creat per al CUPS {}".format(cups_name)
 
@@ -234,17 +223,19 @@ class GiscedataSwitchingWizardValidateD101(osv.osv_memory):
 
         sw_obj = self.pool.get("giscedata.switching")
         wiz_obj = self.pool.get("giscedata.switching.mod.con.wizard")
-        pol_obj = self.pool.get("giscedata.polissa")
+        # self.pool.get("giscedata.polissa")
 
         wiz_id = wiz_obj.create(cursor, uid, {}, context={"cas": "M1", "pol_id": pol_id})
-        cups_name = pol_obj.read(cursor, uid, pol_id, ["cups"])["cups"][1]
+        # cups_name = pol_obj.read(cursor, uid, pol_id, ["cups"])["cups"][1]
 
-        # validate autoconsum data
-        res_auto = wiz_obj.onchange_mod_autoconsum(
-            cursor, uid, wiz_id, True, cups_name, context=None
-        )
-        if res_auto["warning"]:
-            raise osv.except_osv(_("Error"), res_auto["warning"])
+        # deprecated
+        # # validate autoconsum data
+        # res_auto = wiz_obj.onchange_mod_autoconsum(
+        #     cursor, uid, wiz_id, True, cups_name, context=None
+        # )
+        # hem de saber quin cau hem de fer
+        # if res_auto["warning"]:
+        #     raise osv.except_osv(_("Error"), res_auto["warning"])
 
         # validate tarpot changes
         self_vals = self.read(cursor, uid, ids)[0]
@@ -290,7 +281,7 @@ class GiscedataSwitchingWizardValidateD101(osv.osv_memory):
         # update wizard and create cases
         wiz_modcon_args.update(
             {
-                "autoconsum": res_auto["value"]["autoconsum"],
+                "autoconsum_id": self_vals['autoconsum_id'],
                 "retail_tariff": res_tarpot["value"].get("retail_tariff", False),
             }
         )
@@ -302,6 +293,8 @@ class GiscedataSwitchingWizardValidateD101(osv.osv_memory):
             if field_name in self_vals and self_vals[field_name]:
                 wiz_modcon_args[field_name] = self_vals[field_name]
         wiz_obj.write(cursor, uid, [wiz_id], wiz_modcon_args)
+
+        wiz_obj.afegir_cau(cursor, uid, [wiz_id], context={"pol_id": pol_id})
 
         wiz_obj.genera_casos_atr(cursor, uid, [wiz_id], context={"pol_id": pol_id})
 
@@ -350,8 +343,9 @@ class GiscedataSwitchingWizardValidateD101(osv.osv_memory):
         }
 
     _columns = {
+        'autoconsum_id': fields.many2one('giscedata.autoconsum', 'Autoconsums', size=64),
         "is_rejected": fields.boolean(
-            "Rebutjar", help="Si s'activa, el D1-02 serà de rebuig, si no serà d'acceptació"
+            "Rebutjar", help="Si s'activa es generarà un D1-02 serà de rebuig"
         ),
         "rejection_comment": fields.text(
             "Motiu de rebuig", help="Comentari de rebuig del pas D1-02"
