@@ -22,7 +22,7 @@ def up(cursor, installed_version):
     load_data(
         cursor,
         "som_switching",
-        "wizard/wizard_validate_d101.xml",
+        "wizard/wizard_validate_d101_view.xml",
         idref=None,
         mode="update",
     )
