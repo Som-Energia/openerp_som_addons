@@ -34,7 +34,7 @@ class GiscedataSwitchingWizardValidateD101(osv.osv_memory):
         """
         Method prepared to add default values
         """
-        res = {"tipus_mod_autoconsum": 'alta'}
+        res = {"tipus_mod_cau": 'alta'}
 
         isAutoconsum = self.isAutoconsum(cursor, uid)
 
@@ -84,10 +84,13 @@ class GiscedataSwitchingWizardValidateD101(osv.osv_memory):
             )
             self.write(cursor, uid, [ids], {"generated_d102": d102_id})
 
-        cups_name = sw_obj.read(cursor, uid, sw_id, ["cups_id"])["cups_id"][1]
+        cups_id, cups_name = sw_obj.read(cursor, uid, sw_id, ["cups_id"])["cups_id"]
+        # cups_id = sw_obj.read(cursor, uid, sw_id, ["cups_id"])["cups_id"][0]
 
         if not is_rejected:
-            pol_id = sw_obj.read(cursor, uid, sw_id, ["polissa_ref_id"])["polissa_ref_id"][0]
+            pol_obj = self.pool.get("giscedata.polissa")
+            pol_id = pol_obj.search(cursor, uid, [('cups', '=', cups_id)])[0]
+            # pol_id = sw_obj.read(cursor, uid, sw_id, ["polissa_ref_id"])["polissa_ref_id"][0]
 
             try:
                 m1_id = self._create_case_m1_01_autoconsum(cursor, uid, ids, pol_id, context)
@@ -100,7 +103,7 @@ class GiscedataSwitchingWizardValidateD101(osv.osv_memory):
                 raise osv.except_osv(
                     "Error",
                     _(
-                        u"No s'ha pogut crear el cas M1 pel contracte {}: {}".format(
+                        u"No s'ha pogut crear el cas M1 pel contracte amb id {}: {}".format(
                             pol_id, e.message
                         )
                     ),
