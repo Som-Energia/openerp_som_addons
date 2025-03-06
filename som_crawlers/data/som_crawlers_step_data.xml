@@ -955,9 +955,9 @@
             <field name="params">{}</field>
             <field name="task_id" ref="descarregar_chilla_ftp"/>
         </record>
-        <!-- aseme -->
+        <!-- 6eis (formerly aseme) -->
         <record model="som.crawlers.task.step" id="pas_descarregar_ftp_aseme">
-            <field name="name">Descarregar fitxers FTP aseme</field>
+            <field name="name">Descarregar fitxers FTP 6eis (abans aseme)</field>
             <field name="sequence">1</field>
             <field name="function">download_ftp_files</field>
             <field name="params">{"dir_list": ["Entrada"]}</field>
