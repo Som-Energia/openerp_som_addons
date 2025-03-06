@@ -242,6 +242,12 @@ class GiscedataSwitchingWizardValidateD101(osv.osv_memory):
 
         # validate tarpot changes
         self_vals = self.read(cursor, uid, ids)[0]
+        if not self_vals['autoconsum_id']:
+            raise osv.except_osv(
+                "Error",
+                _(u"No s'ha pogut crear el cas M1 per la pòlissa {}"
+                  "al no haver-hi un autoconsum".format(pol_id))
+            )
         wiz_obj_vals = wiz_obj.read(cursor, uid, wiz_id)[0]
         wiz_modcon_args = {
             "tariff": self_vals["tariff"]
@@ -346,7 +352,7 @@ class GiscedataSwitchingWizardValidateD101(osv.osv_memory):
         }
 
     _columns = {
-        'autoconsum_id': fields.many2one('giscedata.autoconsum', 'Autoconsums', size=64),
+        'autoconsum_id': fields.many2one('giscedata.autoconsum', 'Autoconsum', size=64),
         "is_rejected": fields.boolean(
             "Rebutjar", help="Si s'activa es generarà un D1-02 serà de rebuig"
         ),
