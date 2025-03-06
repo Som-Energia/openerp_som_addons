@@ -2,7 +2,7 @@
 from osv import osv, fields
 import re
 from tools.translate import _
-from gestionatr.defs import TABLA_17, TABLA_113_NEW
+from gestionatr.defs import TABLA_17, TABLA_113_NEW, TENEN_AUTOCONSUM
 from datetime import datetime, timedelta
 from tools import cache
 import logging
@@ -52,6 +52,8 @@ class GiscedataFacturacioImportacioLinia(osv.osv):
             tipus = tipus_autoconsum[0]
             if tipus in ["01", "2A", "2B", "2G"]:
                 tipus = "00"
+            if tipus != '00' and tipus in TENEN_AUTOCONSUM:
+                tipus = '11' if tipus in ['31', '32', '33'] else '12'
             vals["tipus_autoconsum"] = tipus
 
         tarifaATR = re.findall("<TarifaATRFact>(.*)</TarifaATRFact>", xml_data)
