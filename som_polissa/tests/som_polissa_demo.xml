@@ -34,6 +34,7 @@
             <field name="tipus_vivenda">habitual</field>
             <field name="tg">1</field>
             <field name="autoconsumo">00</field>
+            <field name="tipus_subseccio">00</field>
             <field name="llista_preu" ref="giscedata_facturacio.pricelist_tarifas_electricidad"/>
             <field name="bank" ref="res_partner_bank_som_iban"/>
             <field name="facturacio" eval="1"/>

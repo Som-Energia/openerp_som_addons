@@ -31,7 +31,7 @@ class M101(ProcesM1.ProcesM1):
             result["codi_document"] = step.codi_document[2:]
         else:
             result["codi_document"] = step.codi_document
-        result["tipus_autoconsum"] = get_description(step.tipus_autoconsum, "TABLA_113")
+        result["tipus_autoconsum"] = get_description(step.tipus_autoconsum, "TABLA_113_NEW")
         result["control_potencia"] = get_description(step.control_potencia, "TABLA_51", True)
         result["comentaris"] = step.comentaris
         if len(step.document_ids) == 0:

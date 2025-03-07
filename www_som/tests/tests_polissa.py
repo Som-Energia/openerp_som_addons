@@ -222,7 +222,7 @@ class TestPolissaWwwAutolectura(testing.OOTestCase):
         today_plus_10_days = (datetime.today() + timedelta(days=10)).strftime("%Y-%m-%d")
         today_plus_100_days = (datetime.today() + timedelta(days=10)).strftime("%Y-%m-%d")
 
-        values = {"autoconsumo": "41"}
+        values = {"tipus_subseccio": "21"}
 
         self.pol_obj.crear_modcon(
             self.cursor,

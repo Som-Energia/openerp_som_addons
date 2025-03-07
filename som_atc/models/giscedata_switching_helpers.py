@@ -41,9 +41,9 @@ class GiscedataSwitchingHelpers(osv.osv):
         self._tmp_atc_ids = atc_ids  # Trick to temporally save the ATC_IDS
         return atc_ids
 
-    def _crear_autoconsum_from_d1(self, cursor, uid, step, autoconsum_id, context=None):
-        res = super(GiscedataSwitchingHelpers, self)._crear_autoconsum_from_d1(
-            cursor, uid, step, autoconsum_id, context
+    def _crear_autoconsum_from_datos_cau(self, cursor, uid, step, dades_cau=None, context=None):
+        res = super(GiscedataSwitchingHelpers, self)._crear_autoconsum_from_datos_cau(
+            cursor, uid, step, dades_cau, context
         )
         # We're in the same transaction, we can recover the case_ids from memory
         atc_ids = getattr(self, '_tmp_atc_ids', None)

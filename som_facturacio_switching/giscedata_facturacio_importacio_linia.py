@@ -2,13 +2,17 @@
 from osv import osv, fields
 import re
 from tools.translate import _
-from gestionatr.defs import TABLA_113, TABLA_17
+from gestionatr.defs import TABLA_17, TABLA_113_NEW, TENEN_AUTOCONSUM
 from datetime import datetime, timedelta
 from tools import cache
 import logging
 
-TIPO_AUTOCONSUMO_SEL = [(ac[0], "[{}] - {}".format(ac[0], ac[1])) for ac in TABLA_113]
 IMPORT_PHASE_1 = 10  # 10 = Fase de càrrega XML
+
+TIPO_AUTOCONSUMO_NEW = TABLA_113_NEW
+TIPO_AUTOCONSUMO_SEL_NEW = [
+    (ac[0], u'[{}] - {}'.format(ac[0], ac[1])) for ac in TIPO_AUTOCONSUMO_NEW
+]
 
 
 class GiscedataFacturacioImportacioLinia(osv.osv):
@@ -48,6 +52,8 @@ class GiscedataFacturacioImportacioLinia(osv.osv):
             tipus = tipus_autoconsum[0]
             if tipus in ["01", "2A", "2B", "2G"]:
                 tipus = "00"
+            if tipus != '00' and tipus in TENEN_AUTOCONSUM:
+                tipus = '11' if tipus in ['31', '32', '33'] else '12'
             vals["tipus_autoconsum"] = tipus
 
         tarifaATR = re.findall("<TarifaATRFact>(.*)</TarifaATRFact>", xml_data)
@@ -220,7 +226,7 @@ class GiscedataFacturacioImportacioLinia(osv.osv):
 
     _columns = {
         "tipus_autoconsum": fields.selection(
-            TIPO_AUTOCONSUMO_SEL,
+            TIPO_AUTOCONSUMO_SEL_NEW,
             u"Autoconsum",
             readonly=True,
             help=u"Tipus de autoconsum informat a l'F1",
