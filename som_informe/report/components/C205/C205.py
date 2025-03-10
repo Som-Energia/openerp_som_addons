@@ -10,7 +10,7 @@ class C205(ProcesC2.ProcesC2):
         result = ProcesC2.ProcesC2.get_data(self, wiz, cursor, uid, step)
         result["type"] = "C205"
         result["tipus_contracte"] = get_description(step.tipus_contracte, "TABLA_9")
-        result["tipus_autoconsum"] = get_description(step.tipus_autoconsum, "TABLA_113", True)
+        result["tipus_autoconsum"] = get_description(step.tipus_autoconsum, "TABLA_113_NEW", True)
         result["codi_contracte"] = step.contracte_atr
         result["potencies"] = [
             {"name": pot.name, "potencia": pot.potencia}

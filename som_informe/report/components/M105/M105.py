@@ -9,7 +9,7 @@ class M105(ProcesM1.ProcesM1):
     def get_data(self, wiz, cursor, uid, step):
         result = ProcesM1.ProcesM1.get_data(self, wiz, cursor, uid, step)
         result["type"] = "M105"
-        result["tipus_autoconsum"] = get_description(step.tipus_autoconsum, "TABLA_113")
+        result["tipus_autoconsum"] = get_description(step.tipus_autoconsum, "TABLA_113_NEW")
         result["control_potencia"] = get_description(step.control_potencia, "TABLA_51", True)
         result["potencies"] = [
             {"name": pot.name, "potencia": pot.potencia}

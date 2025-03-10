@@ -28,7 +28,7 @@
                     <field name="info_gestio_endarrerida_curta" string="Gest. Endarrerida"/>
                     <field name="info_gestions_massives"/>
                     <field name="data_alta_autoconsum"/>
-                    <field name="autoconsumo"/>
+                    <field name="tipus_subseccio"/>
                     <field name="user_id"/>
                 </tree>
             </field>
@@ -189,7 +189,7 @@
                     <field name="autoconsum_id" string="CAU"/>
                     <field name="name"/>
                     <field name="cups"/>
-                    <field name="autoconsumo"/>
+                    <field name="tipus_subseccio"/>
                     <field name="is_autoconsum_collectiu"/>
                     <field name="tipus_installacio"/>
                     <field name="esquema_mesura"/>
@@ -285,9 +285,6 @@
             <field name="inherit_id" ref="giscedata_polissa.view_polisses_tree" />
             <field name="type">tree</field>
             <field name="arch" type="xml">
-                <field name="cups" position="after">
-                    <field name="autoconsumo"/>
-                </field>
                 <field name="potencia_generacio" position="after">
                     <field name="bateria_activa"/>
                     <field name="data_activacio_bateria"/>
