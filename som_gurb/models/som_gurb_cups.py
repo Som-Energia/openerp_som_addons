@@ -3,8 +3,18 @@ from osv import osv, fields
 from datetime import datetime, timedelta
 from tools.translate import _
 import logging
+import netsvc
 
 logger = logging.getLogger("openerp.{}".format(__name__))
+
+_GURB_CUPS_STATES = [
+    ("comming_registration", "Alta pendent al GURB"),
+    ("comming_modification", "Modificació pendent al GURB"),
+    ("comming_cancellation", "Baixa pendent al GURB"),
+    ("active", "Activa"),
+    ("cancel", "Baixa"),
+    ("draft", "Esborrany"),
+]
 
 
 class SomGurbGeneralConditions(osv.osv):
@@ -232,6 +242,7 @@ class SomGurbCups(osv.osv):
         self.add_service_to_contract(
             cursor, uid, gurb_cups_id, data_inici, context=context
         )
+        self.send_signal(cursor, uid, [gurb_cups_id], "button_activate_cups")
 
     def add_service_to_contract(self, cursor, uid, gurb_cups_id, data_inici, context=None):
         if context is None:
@@ -298,12 +309,16 @@ class SomGurbCups(osv.osv):
             context = {}
 
         # Donar de baixa Servei Contractat
+        self.send_signal(cursor, uid, [gurb_cups_id], "button_coming_cancellation")
+        self.write(gurb_cups_id, {"ens_ha_avisat": False})
 
-        # Tancar beta
+    def cancel_gurb_cups(self, cursor, uid, gurb_cups_id, context=None):
+        if context is None:
+            context = {}
 
-        # Desactivar Gurb CUPS
-
-        # Enviar mail (?)
+        # Desactivar Gurb CUPS i tancar beta
+        self.send_signal(cursor, uid, [gurb_cups_id], "button_cancel_cups")
+        self.write(cursor, uid, gurb_cups_id, {"beta_kw": 0, "extra_beta_kw": 0, "active": False})
 
     def create_initial_invoice(self, cursor, uid, gurb_cups_id, context=None):
         if context is None:
@@ -496,6 +511,25 @@ class SomGurbCups(osv.osv):
 
         return res
 
+    def change_state(self, cursor, uid, ids, new_state, context=None):
+        write_values = {
+            "state": new_state,
+            "state_date": datetime.now().strftime("%Y-%m-%d")
+        }
+        for record_id in ids:
+            self.write(cursor, uid, ids, write_values, context=context)
+
+    def send_signal(self, cursor, uid, ids, signals):
+        """Enviem el signal al workflow del som_gurb_cups.
+        """
+        wf_service = netsvc.LocalService('workflow')
+        if not isinstance(signals, list) and not isinstance(signals, tuple):
+            signals = [signals]
+        for p_id in ids:
+            for signal in signals:
+                wf_service.trg_validate(uid, 'som.gurb.cups', p_id, signal, cursor)
+        return True
+
     _columns = {
         "active": fields.boolean("Actiu"),
         "start_date": fields.date("Data activació al GURB"),
@@ -569,12 +603,18 @@ class SomGurbCups(osv.osv):
         ),
         "signed": fields.boolean("Signed", readonly=1),
         "quota_product_id": fields.many2one("product.product", "Produce quota mensual"),
+        "state": fields.selection(_GURB_CUPS_STATES, "Estat del titular", readonly=True),
+        "state_date": fields.date("Data de l'estat"),
+        "ens_ha_avisat": fields.boolean(
+            "Ens ha avisat",
+            help="No és un canvi sobrevingut, sinó que estem informats i ho hem gestionat."),
     }
 
     _defaults = {
         "active": lambda *a: True,
         "extra_beta_kw": lambda *a: 0,
         "start_date": lambda *a: str(datetime.today()),
+        "ens_ha_avisat": lambda *a: False,
     }
 
 
