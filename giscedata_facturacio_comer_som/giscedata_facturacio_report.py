@@ -1180,7 +1180,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
                 key=lambda l: l[0],  # noqa: E741
             ),
             "is_autoconsum": te_autoconsum(fact, pol),  # fact.te_autoconsum
-            "autoconsum": pol.autoconsumo,
+            "autoconsum": pol.tipus_subseccio,
             "autoconsum_cau": pol.autoconsum_id.cau if pol.autoconsum_id else "",
             "is_autoconsum_colectiu": te_autoconsum_collectiu(
                 fact, pol
@@ -3827,7 +3827,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
                     return True
             return False
 
-        if not(te_autoconsum_amb_excedents(fact, pol) or pol.autoconsumo == '33'):
+        if not(te_autoconsum_amb_excedents(fact, pol) or pol.tipus_subseccio == '11'):
             return {"is_visible": False}
 
         if not has_active_flux_solar(fact, pol):
