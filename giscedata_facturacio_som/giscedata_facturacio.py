@@ -35,13 +35,13 @@ class GiscedataFacturacio(osv.osv):
                 if len(arg) == 3:
                     field, operator, match = arg
                     if (exact_number and field == "number" and operator == "ilike"
-                            and isinstance(match, (unicode, str) and "%" not in match):
-                            operator="="
-                            args[idx]=(field, operator, match)
+                            and isinstance(match, (unicode, str)) and "%" not in match):
+                        operator = "="
+                        args[idx] = (field, operator, match)
                     if (exact_origin and field == "origin" and operator == "ilike"
-                        and isinstance(match, (unicode, str)) and "%" not in match):
-                            operator="="
-                            args[idx]=(field, operator, match)
+                            and isinstance(match, (unicode, str)) and "%" not in match):
+                        operator = "="
+                        args[idx] = (field, operator, match)
         return super(GiscedataFacturacio, self).search(
             cr, user, args, offset, limit, order, context, count
         )
