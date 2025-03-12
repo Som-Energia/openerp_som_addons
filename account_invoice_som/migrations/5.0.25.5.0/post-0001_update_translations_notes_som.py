@@ -4,7 +4,7 @@ from tools.translate import trans_load
 
 
 def up(cursor, installed_version):
-    if not installed_version:
+    if not installed_version or config.updating_all:
         return
 
 
