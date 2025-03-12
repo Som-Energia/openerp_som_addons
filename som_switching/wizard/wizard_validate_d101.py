@@ -54,8 +54,8 @@ class GiscedataSwitchingWizardValidateD101(osv.osv_memory):
         If it's not a rejections, a M1 case is created to change self-consumption
         for the related contract.
         Returns a tuple with 2 values:
-            - If the D102 is a rejection step , returns (D102_ID, None)
-            - If the D102 is an accepted step, returns (D102_ID, M1_ID)
+            - If the D102 is a rejection step , returns (D102_ID, False)
+            - If the D101 is accepted, returns (False, M1_ID)
         """
         if not context:
             context = {}
@@ -108,6 +108,8 @@ class GiscedataSwitchingWizardValidateD101(osv.osv_memory):
                         )
                     ),
                 )
+            sw = sw_obj.browse(cursor, uid, sw_id)
+            sw.case_close()
 
             message = "M1-01 creat per al CUPS {}".format(cups_name)
             self.write(cursor, uid, [ids], {"state": "end", "results": message})
