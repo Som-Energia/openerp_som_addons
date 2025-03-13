@@ -40,6 +40,7 @@
         "giscedata_cups_view.xml",
         "wizard/wizard_import_ref_cadastral_from_csv_view.xml",
         "wizard/wizard_add_cut_off_to_polissa_from_csv_view.xml",
+        "wizard/wizard_generate_cau_migration_file_view.xml",
         "giscedata_autoconsum_view.xml"
     ],
     "active": False,
