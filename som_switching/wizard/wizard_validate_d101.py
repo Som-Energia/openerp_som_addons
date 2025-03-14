@@ -248,7 +248,7 @@ class GiscedataSwitchingWizardValidateD101(osv.osv_memory):
             raise osv.except_osv(
                 "Error",
                 _(u"No s'ha pogut crear el cas M1 per la pòlissa {}"
-                  "al no haver-hi un autoconsum".format(pol_id))
+                  " al no haver-hi un autoconsum".format(pol_id))
             )
         wiz_obj_vals = wiz_obj.read(cursor, uid, wiz_id)[0]
         wiz_modcon_args = {
