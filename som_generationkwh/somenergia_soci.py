@@ -212,15 +212,16 @@ class SomenergiaSoci(osv.osv):
         factures_pendents = fact_obj.search(cursor, uid, [('partner_id', '=', res_partner_id),
                                                           ('state', 'not in', ['cancel', 'paid']),
                                                           ('type', '=', 'out_invoice')])
-        if factures_pendents:
+
+        if factures_pendents and not context.get('skip_pending_check', False):
             raise osv.except_osv(_('El soci no pot ser donat de baixa!'), _('El soci té factures pendents.'))
 
         polisses = pol_obj.search(cursor, uid,
-                                  [('titular', '=', res_partner_id),
+                                  [('soci', '=', res_partner_id),
                                    ('state', '!=', 'baixa'),
                                    ('state', '!=', 'cancelada')])
         if polisses:
-            raise osv.except_osv(_('El soci no pot ser donat de baixa!'), _('El soci té al menys un contracte actiu.'))
+            raise osv.except_osv(_('El soci no pot ser donat de baixa!'), _('El soci té al menys un contracte vinculat.'))
 
         soci_category_id = imd_obj.get_object_reference(
             cursor, uid, 'som_partner_account', 'res_partner_category_soci'
