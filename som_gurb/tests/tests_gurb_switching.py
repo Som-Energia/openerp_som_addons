@@ -913,7 +913,8 @@ class TestsGurbSwitching(TestsGurbBase):
 
     @mock.patch('som_gurb.models.giscedata_switching._contract_has_gurb_category')
     @mock.patch('som_gurb.models.giscedata_switching.is_unidirectional_colective_autocons_change')
-    def test_create_from_xml_c1_cancel_gurb(self, mock_is_unidirectional, mock_has_gurb_category):
+    def test_create_from_xml_c1_06_cancel_gurb(
+            self, mock_is_unidirectional, mock_has_gurb_category):
         mock_has_gurb_category.return_value = True
         mock_is_unidirectional.return_value = False
 
@@ -960,7 +961,8 @@ class TestsGurbSwitching(TestsGurbBase):
 
     @mock.patch('som_gurb.models.giscedata_switching._contract_has_gurb_category')
     @mock.patch('som_gurb.models.giscedata_switching.is_unidirectional_colective_autocons_change')
-    def test_create_from_xml_c2_cancel_gurb(self, mock_is_unidirectional, mock_has_gurb_category):
+    def test_create_from_xml_c2_06_cancel_gurb(
+            self, mock_is_unidirectional, mock_has_gurb_category):
         mock_has_gurb_category.return_value = True
         mock_is_unidirectional.return_value = False
 
@@ -1004,6 +1006,48 @@ class TestsGurbSwitching(TestsGurbBase):
         self.assertIsNotNone(step_id)
         scb = sgc_obj.browse(self.cursor, self.uid, sgc_id)
         self.assertEqual(scb.state, 'comming_cancellation')
+
+    @mock.patch('som_gurb.models.giscedata_switching._contract_has_gurb_category')
+    @mock.patch('som_gurb.models.giscedata_switching.is_unidirectional_colective_autocons_change')
+    def test_create_from_xml_m1_01_subrogacio_atr_pending_gurb(
+            self, mock_is_unidirectional, mock_has_gurb_category):
+        mock_has_gurb_category.return_value = True
+        mock_is_unidirectional.return_value = False
+
+        self.openerp.pool.get('giscedata.switching')
+        sgc_obj = self.openerp.pool.get('som.gurb.cups')
+        self.openerp.pool.get("giscedata.polissa")
+
+        # Preparar el sgc_obj
+        sgc_id = self.openerp.pool.get('ir.model.data').get_object_reference(
+            self.cursor, self.uid, 'som_gurb', 'gurb_cups_0002')[1]
+
+        sgc_0002 = sgc_obj.browse(self.cursor, self.uid, sgc_id)
+        sgc_0002.send_signal('button_create_cups')
+        sgc_0002.send_signal('button_activate_cups')
+
+        # Creem el M1 01sw_obj
+        contract_id = self.get_contract_id(self.txn, xml_id='polissa_tarifa_018')
+        step_id = self.create_case_and_step(
+            self.cursor, self.uid, contract_id, "M1", "01"
+        )
+        step_obj = self.openerp.pool.get("giscedata.switching.m1.01")
+        sw_step_header_obj = self.openerp.pool.get("giscedata.switching.step.header")
+        sw_step_header_id = step_obj.read(
+            self.cursor, self.uid, step_id, ["header_id"]
+        )["header_id"][0]
+        sw_step_header_obj.write(
+            self.cursor, self.uid, sw_step_header_id, {"notificacio_pendent": False}
+        )
+        step_obj.write(self.cursor, self.uid, step_id, {"sollicitudadm": "S"})
+        step_obj.write(self.cursor, self.uid, step_id, {"canvi_titular": "S"})
+
+        m101 = step_obj.browse(self.cursor, self.uid, step_id)
+        step_obj.generar_xml(self.cursor, self.uid, m101.id)
+        # Assertions
+        self.assertIsNotNone(step_id)
+        scb = sgc_obj.browse(self.cursor, self.uid, sgc_id)
+        self.assertEqual(scb.state, 'atr_pending')
 
     @mock.patch('som_gurb.models.giscedata_switching._contract_has_gurb_category')
     @mock.patch('som_gurb.models.giscedata_switching.is_unidirectional_colective_autocons_change')
@@ -1166,3 +1210,48 @@ class TestsGurbSwitching(TestsGurbBase):
         self.assertIsNotNone(step_id)
         scb = sgc_obj.browse(self.cursor, self.uid, sgc_id)
         self.assertEqual(scb.state, 'comming_cancellation')
+
+    @mock.patch('som_gurb.models.giscedata_switching._contract_has_gurb_category')
+    @mock.patch('som_gurb.models.giscedata_switching.is_unidirectional_colective_autocons_change')
+    def test_create_from_xml_m1_05_traspas_atr_pending_gurb(
+            self, mock_is_unidirectional, mock_has_gurb_category):
+        mock_has_gurb_category.return_value = True
+        mock_is_unidirectional.return_value = False
+
+        self.openerp.pool.get('giscedata.switching')
+        sgc_obj = self.openerp.pool.get('som.gurb.cups')
+        self.openerp.pool.get('giscedata.switching.step.header')
+        self.openerp.pool.get('giscedata.switching.m1.02')
+        self.openerp.pool.get("giscedata.polissa")
+
+        # Preparar el sgc_obj
+        sgc_id = self.openerp.pool.get('ir.model.data').get_object_reference(
+            self.cursor, self.uid, 'som_gurb', 'gurb_cups_0002')[1]
+
+        sgc_0002 = sgc_obj.browse(self.cursor, self.uid, sgc_id)
+        sgc_0002.send_signal('button_create_cups')
+        sgc_0002.send_signal('button_activate_cups')
+
+        # Creem el M1 01
+        contract_id = self.get_contract_id(self.txn, xml_id='polissa_tarifa_018')
+        step_id = self.create_case_and_step(
+            self.cursor, self.uid, contract_id, "M1", "01"
+        )
+        step_obj = self.openerp.pool.get("giscedata.switching.m1.01")
+        sw_step_header_obj = self.openerp.pool.get("giscedata.switching.step.header")
+        sw_step_header_id = step_obj.read(
+            self.cursor, self.uid, step_id, ["header_id"]
+        )["header_id"][0]
+        sw_step_header_obj.write(
+            self.cursor, self.uid, sw_step_header_id, {"notificacio_pendent": False}
+        )
+        step_obj.write(self.cursor, self.uid, step_id, {"sollicitudadm": "S"})
+        step_obj.write(self.cursor, self.uid, step_id, {"canvi_titular": "T"})
+
+        m101 = step_obj.browse(self.cursor, self.uid, step_id)
+        step_obj.generar_xml(self.cursor, self.uid, m101.id)
+
+        # Assertions
+        self.assertIsNotNone(step_id)
+        scb = sgc_obj.browse(self.cursor, self.uid, sgc_id)
+        self.assertEqual(scb.state, 'atr_pending')

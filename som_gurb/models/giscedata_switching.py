@@ -208,6 +208,33 @@ class GiscedataSwitchingM1_02(osv.osv):
 GiscedataSwitchingM1_02()
 
 
+class GiscedataSwitchingM1_01(osv.osv):
+    _inherit = "giscedata.switching.m1.01"
+
+    def generar_xml(self, cursor, uid, pas_id, context=None):
+        if context is None:
+            context = {}
+        sgc_obj = self.pool.get("som.gurb.cups")
+
+        xml = super(GiscedataSwitchingM1_01, self).generar_xml(
+            cursor, uid, pas_id, context=context
+        )
+        pas = self.browse(cursor, uid, pas_id, context)
+        sw = pas.sw_id
+        if sw and _contract_has_gurb_category(
+            cursor, uid, self.pool, sw.cups_polissa_id.id, context=context
+        ):
+            gurb_cups_id = sgc_obj.search(
+                cursor, uid, [('cups_id', '=', sw.cups_polissa_id.cups.id)], context=context)
+            if gurb_cups_id:
+                gurb_cups = sgc_obj.browse(cursor, uid, gurb_cups_id[0], context=context)
+                gurb_cups.send_signal(['button_atr_pending'])
+        return xml
+
+
+GiscedataSwitchingM1_01()
+
+
 class GiscedataSwitchingM1_03(osv.osv):
     _inherit = "giscedata.switching.m1.03"
 
