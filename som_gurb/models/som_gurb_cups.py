@@ -14,6 +14,7 @@ _GURB_CUPS_STATES = [
     ("active", "Activa"),
     ("cancel", "Baixa"),
     ("draft", "Esborrany"),
+    ("atr_pending", "ATR Obert"),
 ]
 
 
