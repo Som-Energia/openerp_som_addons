@@ -1057,7 +1057,7 @@ class TestsGurbSwitching(TestsGurbBase):
         step_obj.write(self.cursor, self.uid, step_id, {"canvi_titular": "S"})
 
         m101 = step_obj.browse(self.cursor, self.uid, step_id)
-        step_obj.generar_xml(self.cursor, self.uid, m101.id)
+        step_obj.generar_xml(self.cursor, self.uid, [m101.id])
         # Assertions
         self.assertIsNotNone(step_id)
         scb = sgc_obj.browse(self.cursor, self.uid, sgc_id)
@@ -1263,7 +1263,7 @@ class TestsGurbSwitching(TestsGurbBase):
         step_obj.write(self.cursor, self.uid, step_id, {"canvi_titular": "T"})
 
         m101 = step_obj.browse(self.cursor, self.uid, step_id)
-        step_obj.generar_xml(self.cursor, self.uid, m101.id)
+        step_obj.generar_xml(self.cursor, self.uid, [m101.id])
 
         # Assertions
         self.assertIsNotNone(step_id)
