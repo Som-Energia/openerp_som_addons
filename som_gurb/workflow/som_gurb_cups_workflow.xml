@@ -96,6 +96,12 @@
             <field name="condition">True</field>
             <field name="signal">button_cancel_cups</field>
         </record>
+        <record id="trans_comming_cancellation_active" model="workflow.transition">
+            <field name="act_from" ref="act_comming_cancellation"/>
+            <field name="act_to" ref="act_active_cups"/>
+            <field name="condition">True</field>
+            <field name="signal">button_discard_comming_cancellation_cups</field>
+        </record>
         <record id="trans_cancel_comming_registration" model="workflow.transition">
             <field name="act_from" ref="act_cancel"/>
             <field name="act_to" ref="act_comming_registration"/>
