@@ -8,6 +8,7 @@
             <field name="arch" type="xml">
                 <form string="Desactivar el CUPS al GURB">
                     <group colspan="4">
+                        <field name="ens_ha_avisat" />
                         <button name="deactivate_cups" type="object" string="Desactivar CUPS al GURB" icon="gtk-execute" />
                     </group>
                 </form>

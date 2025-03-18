@@ -311,7 +311,8 @@ class SomGurbCups(osv.osv):
 
         # Donar de baixa Servei Contractat
         self.send_signal(cursor, uid, [gurb_cups_id], "button_coming_cancellation")
-        self.write(gurb_cups_id, {"ens_ha_avisat": False})
+        self.write(cursor, uid, gurb_cups_id, {
+            "ens_ha_avisat": context.get('ens_ha_avisat', False)})
 
     def cancel_gurb_cups(self, cursor, uid, gurb_cups_id, context=None):
         if context is None:
