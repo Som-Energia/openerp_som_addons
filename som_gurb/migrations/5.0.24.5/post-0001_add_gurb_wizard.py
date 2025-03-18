@@ -1,6 +1,7 @@
 # -*- encoding: utf-8 -*-
 import logging
 import pooler
+from oopgrade.oopgrade import load_data
 
 
 def up(cursor, installed_version):
@@ -12,7 +13,6 @@ def up(cursor, installed_version):
     uid = 1
     pool = pooler.get_pool(cursor.dbname)
     logger.info("Creating pooler")
-    pooler.get_pool(cursor.dbname)
 
     # Create initial workflows
     import netsvc
@@ -31,6 +31,22 @@ def up(cursor, installed_version):
         gurb_cups.send_signal('button_create_cups')
         gurb_cups.send_signal('button_activate_cups')
         print sgc_obj.read(cursor, uid, gurb_cups.id, ['state'])
+
+    pool.get('som.gurb.cups')._auto_init(cursor, context={'module': 'som_gurb'})
+
+    # Update XMLs
+    views = [
+        'views/som_gurb_cups_view.xml',
+        'views/som_gurb_view.xml',
+        'security/ir.model.access.csv',
+        'wizard/wizard_deactivate_gurb_cups_view.xml',
+        'workflow/som_gurb_cups_workflow.xml',
+    ]
+    for view in views:
+        # Actualitza els diferents records i vistes
+        logger.info("Updating XML {}".format(view))
+        load_data(cursor, 'som_gurb', view, idref=None, mode='update')
+        logger.info("XMLs succesfully updatd.")
 
 
 def down(cursor, installed_version):
