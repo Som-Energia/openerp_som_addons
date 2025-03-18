@@ -219,7 +219,7 @@ class GiscedataSwitchingM1_01(osv.osv):
         xml = super(GiscedataSwitchingM1_01, self).generar_xml(
             cursor, uid, pas_id, context=context
         )
-        pas = self.browse(cursor, uid, pas_id, context)
+        pas = self.browse(cursor, uid, pas_id, context)[0]
         sw = pas.sw_id
         if sw and _contract_has_gurb_category(
             cursor, uid, self.pool, sw.cups_polissa_id.id, context=context
@@ -365,6 +365,13 @@ class GiscedataSwitchingM1_05(osv.osv):
                     gurb_obj.activate_gurb_from_m1_05(
                         cursor, uid, sw_id, data_activacio, context=context
                     )
+                    gurb_cups_id = sgc_obj.search(
+                        cursor, uid, [('cups_id', '=', sw.cups_polissa_id.cups.id)], context=context
+                    )
+                    if gurb_cups_id:
+                        gurb_cups = sgc_obj.browse(cursor, uid, gurb_cups_id[0], context=context)
+                        gurb_cups.send_signal(['button_activate_modification'])
+                        gurb_cups.send_signal(['button_activate_cups'])
 
         return step_id
 

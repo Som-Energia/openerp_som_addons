@@ -638,6 +638,7 @@ class TestsGurbSwitching(TestsGurbBase):
         Test that self-consumption M1"s are closed when
         contract does have GURB category
         """
+        sgc_obj = self.openerp.pool.get("som.gurb.cups")
         pol_obj = self.openerp.pool.get("giscedata.polissa")
         sw_obj = self.openerp.pool.get("giscedata.switching")
         step_obj = self.openerp.pool.get("giscedata.switching.m1.01")
@@ -668,7 +669,14 @@ class TestsGurbSwitching(TestsGurbBase):
         self.activar_polissa_CUPS(set_gurb_category=True, context={
                                   "polissa_xml_id": "polissa_tarifa_018"})
 
-        cups = pol_obj.browse(self.cursor, self.uid, contract_id).cups.name
+        cups = pol_obj.browse(self.cursor, self.uid, contract_id).cups
+
+        gurb_cups_0002_id = sgc_obj.search(
+            self.cursor, self.uid, [('cups_id', '=', cups.id)]
+        )[0]
+        gurb_cups_0002 = sgc_obj.browse(self.cursor, self.uid, gurb_cups_0002_id)
+        gurb_cups_0002.send_signal('button_create_cups')
+        gurb_cups_0002.send_signal('button_activate_cups')
 
         step_id = self.create_case_and_step(
             self.cursor, self.uid, contract_id, "M1", "01"
@@ -693,7 +701,7 @@ class TestsGurbSwitching(TestsGurbBase):
         )
         m1_02_xml = m1_02_xml.replace(
             "<CUPS>ES1234000000000001JN0F",
-            "<CUPS>{0}".format(cups)
+            "<CUPS>{0}".format(cups.name)
         )
 
         m1_05_xml = m1_05_xml.replace(
@@ -702,7 +710,7 @@ class TestsGurbSwitching(TestsGurbBase):
         )
         m1_05_xml = m1_05_xml.replace(
             "<CUPS>ES1234000000000001JN0F",
-            "<CUPS>{0}".format(cups)
+            "<CUPS>{0}".format(cups.name)
         )
 
         # Import XML
@@ -731,6 +739,12 @@ class TestsGurbSwitching(TestsGurbBase):
         self.assertEqual(m1.notificacio_pendent, False)
 
         self.assertEqual(pol.tipus_subseccio, "00")
+
+        gurb_cups_id = sgc_obj.search(
+            self.cursor, self.uid, [('cups_id', '=', m1.cups_polissa_id.cups.id)]
+        )[0]
+        gurb_cups = sgc_obj.browse(self.cursor, self.uid, gurb_cups_id)
+        self.assertEqual(gurb_cups.state, 'active')
 
     def test_notify_m1_03_gurb_category(self):
         pol_obj = self.openerp.pool.get("giscedata.polissa")
@@ -1213,7 +1227,7 @@ class TestsGurbSwitching(TestsGurbBase):
 
     @mock.patch('som_gurb.models.giscedata_switching._contract_has_gurb_category')
     @mock.patch('som_gurb.models.giscedata_switching.is_unidirectional_colective_autocons_change')
-    def test_create_from_xml_m1_05_traspas_atr_pending_gurb(
+    def test_create_from_xml_m1_01_traspas_atr_pending_gurb(
             self, mock_is_unidirectional, mock_has_gurb_category):
         mock_has_gurb_category.return_value = True
         mock_is_unidirectional.return_value = False
