@@ -72,6 +72,7 @@ class ReportBackendCondicionsParticulars(ReportBackend):
         if pas01:
             m101_obj = self.pool.get("giscedata.switching.m1.01")
             pas_id = pas01.pas_id.split(",")[1]
+            pas_id = int(pas_id)
             pas = m101_obj.browse(cursor, uid, pas_id)
             dades_client = pas.dades_client
             dades_envio = pas.direccio_notificacio
@@ -118,6 +119,7 @@ class ReportBackendCondicionsParticulars(ReportBackend):
         if pas01:
             m101_obj = self.pool.get("giscedata.switching.m1.01")
             pas_id = pas01.pas_id.split(",")[1]
+            pas_id = int(pas_id)
             pas = m101_obj.browse(cursor, uid, pas_id)
             es_canvi_tecnic = pas.sollicitudadm == "N"
         else:
