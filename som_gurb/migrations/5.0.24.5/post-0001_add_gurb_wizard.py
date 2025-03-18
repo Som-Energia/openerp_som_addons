@@ -26,10 +26,10 @@ def up(cursor, installed_version):
     list_gurb_cups_ids = [row[0] for row in cursor.fetchall()]
     list_gurb_cups = sgc_obj.browse(cursor, uid, list_gurb_cups_ids)
 
-    for gurb_cups in list_gurb_cups[:2]:
+    for gurb_cups in list_gurb_cups:
         wf_service.trg_create(uid, 'som.gurb.cups', gurb_cups.id, cursor)
         gurb_cups.send_signal('button_create_cups')
-        gurb_cups.send_signal('active')
+        gurb_cups.send_signal('button_activate_cups')
         print sgc_obj.read(cursor, uid, gurb_cups.id, ['state'])
 
 
