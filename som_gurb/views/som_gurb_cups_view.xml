@@ -39,6 +39,7 @@
                         <button string="Modifica beta" name="button_pending_modification" states="active" type="workflow" confirm="Vols deixar en modificació pendent el CUPS al GURB?" />
                         <button string="Baixa" name="button_coming_cancellation" states="active" type="workflow" confirm="Vols deixar en baixa pendent el CUPS al GURB?" />
                         <button string="Reactiva" name="button_reactivate_cups" states="cancel" type="workflow" confirm="Vols tornar a activar el CUPS al GURB? (pendent d'activar)"/>
+                        <button string="Desfer baixa pendent" name="button_discard_comming_cancellation_cups" states="comming_cancellation" type="workflow" confirm="Vols deixar el CUPS pendent d'activar al GURB?" />
                     </group>
                     <field name="betas_ids" nolabel="1" colspan="4" readonly="1" />
                 </form>
@@ -103,7 +104,7 @@
             <field name="value" eval="'ir.actions.act_window,'+str(ref('action_invoices_from_gurb_cups'))" />
         </record>
         <!-- Acció per obrir el llistat de tots els GURB CUPS-->
-        <record model="ir.actions.act_window" id="action_gurb_cups">
+        <record model="ir.actions.act_window" id="action_gurb_cups_all">
             <field name="name">Tots els CUPS dels GURBs</field>
             <field name="view_id" ref="view_gurbs_cups_tree" />
             <field name="res_model">som.gurb.cups</field>
@@ -112,7 +113,7 @@
             <field name="context">{'active_test': False}</field>
         </record>
         <!-- Llistat de GURB CUPS de baixa -->
-        <record model="ir.actions.act_window" id="action_gurb_cups">
+        <record model="ir.actions.act_window" id="action_gurb_cups_cancel">
             <field name="name">Tots els CUPS dels GURBs de baixa</field>
             <field name="view_id" ref="view_gurbs_cups_tree" />
             <field name="res_model">som.gurb.cups</field>
@@ -122,7 +123,7 @@
             <field name="domain">[('state', '=', 'cancel')]</field>
         </record>
         <!-- Llistat de GURB CUPS en estats pendents -->
-        <record model="ir.actions.act_window" id="action_gurb_cups">
+        <record model="ir.actions.act_window" id="action_gurb_cups_comming">
             <field name="name">Tots els CUPS dels GURBs en estats pendents</field>
             <field name="view_id" ref="view_gurbs_cups_tree" />
             <field name="res_model">som.gurb.cups</field>
@@ -131,8 +132,8 @@
             <field name="domain">[('state', 'in', ["comming_registration","comming_modification","comming_cancellation"])]</field>
         </record>
         <!-- Llistat de GURB CUPS en ATR Pendent -->
-        <record model="ir.actions.act_window" id="action_gurb_cups">
-            <field name="name">Tots els CUPS dels GURBs en estats pendents</field>
+        <record model="ir.actions.act_window" id="action_gurb_cups_atr_pending">
+            <field name="name">Tots els CUPS dels GURBs en estat ATR pendents</field>
             <field name="view_id" ref="view_gurbs_cups_tree" />
             <field name="res_model">som.gurb.cups</field>
             <field name="view_type">form</field>
