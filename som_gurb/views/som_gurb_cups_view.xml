@@ -111,5 +111,33 @@
             <field name="view_mode">tree,form</field>
             <field name="context">{'active_test': False}</field>
         </record>
+        <!-- Llistat de GURB CUPS de baixa -->
+        <record model="ir.actions.act_window" id="action_gurb_cups">
+            <field name="name">Tots els CUPS dels GURBs de baixa</field>
+            <field name="view_id" ref="view_gurbs_cups_tree" />
+            <field name="res_model">som.gurb.cups</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="context">{'active_test': False}</field>
+            <field name="domain">[('state', '=', 'cancel')]</field>
+        </record>
+        <!-- Llistat de GURB CUPS en estats pendents -->
+        <record model="ir.actions.act_window" id="action_gurb_cups">
+            <field name="name">Tots els CUPS dels GURBs en estats pendents</field>
+            <field name="view_id" ref="view_gurbs_cups_tree" />
+            <field name="res_model">som.gurb.cups</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="domain">[('state', 'in', ["comming_registration","comming_modification","comming_cancellation"])]</field>
+        </record>
+        <!-- Llistat de GURB CUPS en ATR Pendent -->
+        <record model="ir.actions.act_window" id="action_gurb_cups">
+            <field name="name">Tots els CUPS dels GURBs en estats pendents</field>
+            <field name="view_id" ref="view_gurbs_cups_tree" />
+            <field name="res_model">som.gurb.cups</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="domain">[('state', 'in', ["atr_pending"])]</field>
+        </record>
     </data>
 </openerp>
