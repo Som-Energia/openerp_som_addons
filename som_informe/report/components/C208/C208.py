@@ -1,6 +1,5 @@
-from gestionatr.utils import get_description
-from ..component_utils import dateformat
 from ..ProcesC2 import ProcesC2
+
 
 class C208(ProcesC2.ProcesC2):
     def __init__(self):
@@ -8,6 +7,6 @@ class C208(ProcesC2.ProcesC2):
 
     def get_data(self, wiz, cursor, uid, step):
         result = ProcesC2.ProcesC2.get_data(self, wiz, cursor, uid, step)
-        result['type'] = 'C208'
+        result["type"] = "C208"
 
         return result

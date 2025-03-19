@@ -1,0 +1,49 @@
+<?xml version="1.0" ?>
+<openerp>
+    <data>
+        <record id="som_giscedata_atc-view" model="ir.ui.view">
+            <field name="name">som.giscedata.atc.switching.form</field>
+            <field name="model">giscedata.atc</field>
+            <field name="type">form</field>
+            <field name="priority" eval="1"/>
+            <field name="inherit_id" ref="giscedata_atc.giscedata_atc-view"/>
+            <field name="arch" type="xml">
+                <field name="state" position="after">
+                    <field name="tarifa" invisible="1"/>
+                    <field name="tipus_autoconsum" invisible="1"/>
+                    <field name="te_generation" invisible="1"/>
+                    <field name="pending_state" invisible="1"/>
+                    <field name="polissa_active" invisible="1"/>
+                </field>
+            </field>
+        </record>
+        <record id="som_giscedata_atc_tree-view" model="ir.ui.view">
+            <field name="name">som.giscedata.atc.switching.tree</field>
+            <field name="model">giscedata.atc</field>
+            <field name="type">tree</field>
+            <field name="inherit_id" ref="giscedata_atc_electricitat.view_giscedata_atc_electricitat_tree"/>
+            <field name="arch" type="xml">
+                <field name="polissa_id" position="before">
+                    <field name="tarifa" string="Tarifa Comer" select="2"/>
+                    <field name="tipus_autoconsum" string="Tipus Autoconsum" select="2"/>
+                    <field name="te_generation" string="Té GkWh" select="2"/>
+                </field>
+            </field>
+        </record>
+        <record model="ir.ui.view" id="giscedata_atc_som_pending_tree-view">
+            <field name="name">giscedata.atc.autoreclama.som.pending.tree</field>
+            <field name="model">giscedata.atc</field>
+            <field name="type">tree</field>
+            <field name="inherit_id" ref="giscedata_atc.giscedata_atc_tree-view"/>
+            <field name="arch" type="xml">
+                <field name="business_days_with_same_agent" position="after" >
+                    <field name="pending_state" string="Pending State" select="2"/>
+                    <field name="polissa_active" string="Pòlissa Activa" select="2"/>
+                </field>
+            </field>
+        </record>
+        <record id="giscedata_atc.all_atc_case-act" model="ir.actions.act_window">
+            <field name="context">{'active_test': False}</field>
+        </record>
+    </data>
+</openerp>

@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<openerp>
+    <data noupdate="1">
+         <!-- Template de import de facturació anual- -->
+        <record model="poweremail.templates" id="email_model_347_resum">
+            <field name="name">Resum de la facturació anual agrupada per trimestres l'any</field>
+            <field name="object_name" model="ir.model" search="[('name', '=', 'Partner Record')]"/>
+            <field eval="0" name="save_to_drafts"/>
+            <field name="model_int_name">l10n.es.aeat.mod347.partner_record</field>
+            <field name="def_to">${object.partner_id.address[0].email}</field>
+            <field eval="0" name="auto_email"/>
+            <field eval="0" name="single_email"/>
+            <field eval="0" name="use_sign"/>
+            <field name="def_subject">Resum de la facturació anual agrupada per trimestres l'any ${object.report_id.fiscalyear_id.name}</field>
+            <field name="template_language">mako</field>
+            <field eval="0" name="send_on_create"/>
+            <field name="lang"/>
+            <field eval="0" name="send_on_write"/>
+            <field name="def_bcc">support.17062.b8d9f4469fa4d856@helpscout.net</field>
+            <field name="enforce_from_account" model="poweremail.core_accounts" search="[('email_id','=', 'fiscal@somenergia.coop')]"/>
+            <field name="def_body_text"><![CDATA[<!doctype html>
+                <html>
+                <head></head>
+                <body>
+                Este correo ha sido generado automáticamente.
+                </body>
+                </html>
+                ]]></field>
+        </record>
+    </data>
+</openerp>

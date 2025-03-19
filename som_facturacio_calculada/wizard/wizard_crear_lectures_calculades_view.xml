@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<openerp>
+    <data>
+        <record model="ir.ui.view" id="view_wizard_crear_lectures_calculades_form">
+            <field name="name">wizard.crear.lectures.calculades.form</field>
+            <field name="model">wizard.crear.lectures.calculades</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <form string="Crear lectures calculades a partir de CCH">
+                    <field name="state" invisible="1"/>
+                    <group attrs="{'invisible': [('state', '=', 'finished')]}">
+                        <button special="cancel" string="Cancelar" icon="gtk-cancel"/>
+                        <button name="crear_lectures_moure_lot" type="object" icon="gtk-ok" string="Crear lectures"/>
+                    </group>
+                    <field name="info" width="600" height="400" colspan="4" nolabel="1"/>
+                    <group colspan="4" attrs="{'invisible': [('state', '!=', 'finished')]}">
+                        <button special="cancel" string="Sortir" icon="gtk-ok" colspan="4"/>
+                    </group>
+                </form>
+            </field>
+        </record>
+        <record model="ir.actions.act_window" id="action_crear_lectures_calculades_form">
+            <field name="name">Crear lectures calculades a partir de CCH</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">wizard.crear.lectures.calculades</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">form</field>
+            <field name="target">new</field>
+            <field name="view_id" ref="view_wizard_crear_lectures_calculades_form"/>
+            <field name="context">{'from_model':'giscedata.polissa'}</field>
+        </record>
+        <record id="values_crear_lectures_calculades" model="ir.values">
+            <field name="object" eval="1"/>
+            <field name="name">Crear lectures calculades a partir de CCH</field>
+            <field name="key2">client_action_multi</field>
+            <field name="key">action</field>
+            <field name="model">giscedata.polissa</field>
+            <field name="value" eval="'ir.actions.act_window,'+str(ref('action_crear_lectures_calculades_form'))"/>
+        </record>
+
+        <record model="ir.actions.act_window" id="action_crear_lectures_calculades_async_form">
+            <field name="name">Crear lectures calculades a partir de CCH</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">wizard.crear.lectures.calculades</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">form</field>
+            <field name="target">new</field>
+            <field name="view_id" ref="view_wizard_crear_lectures_calculades_form"/>
+            <field name="context">{'from_model':''}</field>
+        </record>
+
+        <menuitem id="calcular_lectures_async" action="action_crear_lectures_calculades_async_form" parent="giscedata_facturacio.menu_facturacio_lot_base"/>
+    </data>
+</openerp>

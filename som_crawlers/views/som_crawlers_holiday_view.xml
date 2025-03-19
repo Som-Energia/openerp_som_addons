@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+    <data>
+        <record model="ir.ui.view" id="view_som_crawlers_holiday_form">
+            <field name="name">som.crawlers.holiday.form</field>
+            <field name="model">som.crawlers.holiday</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <form string="Dies de no execució">
+                        <field name="date"/>
+                        <field name="description"/>
+                </form>
+            </field>
+        </record>
+         <record model="ir.ui.view" id="view_som_crawlers_holiday_tree">
+            <field name="name">som.crawlers.holiday.tree</field>
+            <field name="model">som.crawlers.holiday</field>
+            <field name="type">tree</field>
+            <field name="arch" type="xml">
+            <tree string="Dies de no execució">
+                    <field name="date" select="1"/>
+                    <field name="description" select="1"/>
+                </tree>
+            </field>
+        </record>
+        <record id="action_som_crawlers_holiday_tree" model="ir.actions.act_window">
+            <field name="name">Dies de no execució</field>
+            <field name="res_model">som.crawlers.holiday</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="view_id" ref="view_som_crawlers_holiday_tree"/>
+        </record>
+
+    <menuitem action="action_som_crawlers_holiday_tree" id="menu_som_crawlers_holiday_tree" parent="som_crawlers.menu_som_crawlers_config"/>
+    </data>
+</openerp>

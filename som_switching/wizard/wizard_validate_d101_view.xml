@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+    <data>
+        <record id="wizard_validate_d101_form" model="ir.ui.view">
+            <field name="name">wizard.validate.d101.form</field>
+            <field name="model">wizard.validate.d101</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <form string="Validar D1-01">
+                    <field name="state" invisible="1"/>
+                    <group attrs="{'invisible': [('state', '!=', 'init')]}">
+                        <group colspan="4">
+                            <field name="sw_id"/>
+                            <field name="autoconsum_id"/>
+                            <field name="is_rejected"/>
+                        </group>
+                        <group colspan="4" attrs="{'invisible': [('is_rejected', '!=', True)]}">
+                            <field name="rejection_comment" colspan="4"/>
+                        </group>
+                        <group colspan="4" attrs="{'invisible': [('is_rejected', '!=', True)]}">
+                            <field name="set_pending" colspan="4"/>
+                        </group>
+                        <group colspan="4" attrs="{'invisible':[('is_rejected','=', True)]}">
+                            <label colspan="4" string=""/>
+                            <label colspan="4" string=""/>
+                            <label colspan="4" string=""/>
+                            <label colspan="4" string=""/>
+                            <label colspan="4" string=""/>
+                        </group>
+                        <button name="validate_d101_autoconsum" type="object" icon="gtk-execute"
+                                string="D'acord" colspan="4"/>
+                        <button special="cancel" string="Cancel·lar" icon="gtk-cancel" colspan="4"/>
+                    </group>
+                    <group attrs="{'invisible': [('state', '!=', 'end')]}">
+                        <label string="Resultats:" colspan="4"/>
+                        <field name="results" colspan="4" nolabel="1"/>
+                        <button name="open_generated_cases" type="object" icon="gtk-execute"
+                                string="Obrir casos generats" colspan="4"/>
+                        <button special="cancel" string="Sortir" icon="gtk-cancel" colspan="4"/>
+                    </group>
+                </form>
+            </field>
+        </record>
+
+        <record id="action_wizard_validate_d101_form" model="ir.actions.act_window">
+            <field name="name">Validació D1</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">wizard.validate.d101</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">form</field>
+            <field name="target">new</field>
+        </record>
+        <menuitem id="menu_wizard_validate_d101_form" name="Validar D101" action="action_wizard_validate_d101_form" parent="giscedata_cups.menu_autoconsum"/>
+    </data>
+</openerp>

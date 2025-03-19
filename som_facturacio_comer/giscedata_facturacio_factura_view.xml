@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<openerp>
+    <data>
+        <record model="ir.ui.view" id="view_giscedata_facturacio_factura_list_from_file">
+            <field name="name">giscedata.facturacio.factura.list.from.file.tree</field>
+            <field name="model">giscedata.facturacio.factura</field>
+            <field name="inherit_id" ref="giscedata_facturacio.view_factura_tree" />
+            <field name="type">tree</field>
+            <field name="priority">99</field>
+            <field name="arch" type="xml">
+                <field name="origin_date_invoice" position="replace">
+                    <field name="origin_date_invoice"/>
+                </field>
+            </field>
+        </record>
+        <record model="ir.ui.view" id="view_giscedata_facturacio_factura_generacio_som_form">
+            <field name="name">giscedata.facturacio.factura.generacio.som.form</field>
+            <field name="model">giscedata.facturacio.factura</field>
+            <field name="inherit_id" ref="giscedata_facturacio.view_factura_tree" />
+            <field name="type">tree</field>
+            <field name="arch" type="xml">
+                <field name="energia_kwh" position="after">
+                    <field name="generacio_kwh" select="2"/>
+                </field>
+            </field>
+        </record>
+        <record model="ir.ui.view" id="view_giscedata_facturacio_factura_generacio_grouped_som_form">
+            <field name="name">giscedata.facturacio.factura.grouped.generacio.som.form</field>
+            <field name="model">giscedata.facturacio.factura</field>
+            <field name="inherit_id" ref="giscedata_facturacio.view_factura_grouped_tree" />
+            <field name="type">tree</field>
+            <field name="arch" type="xml">
+                <field name="energia_kwh" position="after">
+                    <field name="generacio_kwh" select="2"/>
+                </field>
+            </field>
+        </record>
+    </data>
+</openerp>

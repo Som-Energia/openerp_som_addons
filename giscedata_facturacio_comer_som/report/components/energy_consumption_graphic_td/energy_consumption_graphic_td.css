@@ -1,0 +1,54 @@
+.chart_consum svg{
+    background-color: #ffffff;
+}
+
+.chart_consum text {
+    font-size: .7em;
+    fill: #6c6c6c;
+}
+
+.chart_consum .xaxis text {
+    font-size: 1em;
+}
+
+.chart_consum .mes {
+    font-size: .7em;
+    writing-mode: lr;
+    text-anchor: middle;
+}
+
+.chart_consum_container {
+    margin: 2em;
+    margin-left: 0px;
+    float:right;
+}
+
+.chart_consum_container_big {
+    margin: auto;
+}
+
+.chart_consum {
+    margin: 0px;
+    border: 1px solid #e2e2e2;
+    text-align: center;
+}
+
+.chart_estadistica {
+    font-size: .8em;
+    width: 100%;
+}
+
+.yaxis  path,
+.yaxis  line {
+    fill: none;
+    stroke: #6c6c6c;
+    shape-rendering: crispEdges;
+}
+
+.yaxis text {
+    writing-mode: lr;
+    fill: #6c6c6c;
+}
+.yaxis path {
+    display: none;
+}

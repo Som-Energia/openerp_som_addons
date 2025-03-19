@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<openerp>
+    <data>
+        <record model="ir.ui.view" id="view_wizard_create_attachments_from_zip_form">
+            <field name="name">wizard.create.attachments.from.zip.form</field>
+            <field name="model">wizard.create.attachments.from.zip</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <form string="Crear adjunts des de ZIP">
+                    <field name="state" invisible="1"/>
+                    <group attrs="{'invisible': [('state', '!=', 'init')]}">
+                        <label string="Crear adjunts als enviaments a partir d'un ZIP." colspan="4"/>
+                        <label string="El nom del fitxer ha de coincidir amb el número de pòlissa." colspan="4"/>
+                        <field name="zip_file" filename="name" string="Arxiu ZIP" colspan="4"/>
+                        <button name="attach_files" type="object" string="Afegir adjunts" icon="gtk-ok" colspan="4"/>
+                    </group>
+                    <group attrs="{'invisible': [('state', '!=', 'finished')]}">
+                        <label string="S'han afegit els adjunts dels enviaments." colspan="4"/>
+                        <button special="cancel" string="Sortir" icon="gtk-ok" colspan="4"/>
+                    </group>
+                </form>
+            </field>
+        </record>
+        <record model="ir.actions.act_window" id="action_wizard_create_attachments_from_zip">
+            <field name="name">Crear adjunts des de ZIP</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">wizard.create.attachments.from.zip</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">form</field>
+            <field name="target">new</field>
+            <field name="view_id" ref="view_wizard_create_attachments_from_zip_form"/>
+        </record>
+        <record id="values_wizard_create_attachments_from_zip_form" model="ir.values">
+            <field name="object" eval="1"/>
+            <field name="name">Crear adjunts des de ZIP</field>
+            <field name="key2">client_action_multi</field>
+            <field name="key">action</field>
+            <field name="model">som.infoenergia.lot.enviament</field>
+            <field name="value" eval="'ir.actions.act_window,'+str(ref('action_wizard_create_attachments_from_zip'))"/>
+        </record>
+    </data>
+</openerp>

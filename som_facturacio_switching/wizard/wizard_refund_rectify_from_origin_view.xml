@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+        <record model="ir.ui.view" id="view_wizard_refund_rectify_from_origin">
+            <field name="name">wizard.refund.rectify.from.origin.form</field>
+            <field name="model">wizard.refund.rectify.from.origin</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <form string="Abonar i rectificar automàticament" >
+                    <field name="state" invisible="1" height="600"/>
+                    <group colspan="4" col="4" attrs="{'invisible': [('state', '!=', 'init')]}">
+                        <group colspan="4" col="4">
+                            <label string="Abonar i rectificar automàticament" colspan="4"/>
+                            <label string="Es rectifiquen i anuŀlen les factures client que comprenguin algun període de les dates de factura de l'F1" colspan="4"/>
+                            <label string="En cas que s'indiqui, s'obren i agrupen les factures, es remesen les que són a pagar" colspan="4"/>
+                            <label string=" " colspan="4"/>
+                            <label string=" " colspan="4"/>
+                            <label string=" " colspan="4"/>
+                            <field name="max_amount" colspan="2"/>
+                            <field name="actions" colspan="2"/>
+                            <group colspan="4" col="4" attrs="{'invisible': [('actions', 'in', ['draft', 'open','open-group'])]}">
+                                <field name="order" domain="[('type','=','payable'),('state','=','draft')]" colspan="2"/>
+                            </group>
+                            <group colspan="4" col="4" attrs="{'invisible': [('actions', '!=', 'open-group-order-send')]}">
+                                <field name="email_template_to_pay" colspan="2"/>
+                                <field name="email_template_to_refund" colspan="2"/>
+                            </group>
+                        </group>
+                        <button special="cancel" string="Cancel·lar" icon="gtk-close"/>
+                        <button name="refund_rectify_by_origin" string="Acceptar" icon="gtk-ok" type="object"/>
+                    </group>
+                    <group colspan="4" col="4" attrs="{'invisible': [('state', '!=', 'end')]}" height="1000">
+                        <label string="Informació del procés" colspan="4"/>
+                        <field name="info" nolabel="1" colspan="4" height="100" width="300"/>
+                        <field name="report_file" filename="report_filename" colspan="4" readonly="1"/>
+                        <button special="cancel" string="Finalizar" icon="gtk-close" />
+                        <button name="_show_invoices" string="Veure factures generades" icon="gtk-ok" type="object"/>
+                    </group>
+                </form>
+            </field>
+        </record>
+
+        <record model="ir.actions.act_window" id="action_wizard_refund_rectify_from_origin_from_f1_form">
+            <field name="name">Abonar i rectificar automàticament</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">wizard.refund.rectify.from.origin</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="view_wizard_refund_rectify_from_origin"/>
+            <field name="context">{'from_model': 'giscedata.facturacio.importacio.linia'}</field>
+            <field name="target">new</field>
+        </record>
+        <record id="value_wizard_refund_rectify_from_origin_from_f1_form" model="ir.values">
+            <field name="object" eval="1"/>
+            <field name="name">Abonar i rectificar automàticament</field>
+            <field name="key2">client_action_multi</field>
+            <field name="key">action</field>
+            <field name="model">giscedata.facturacio.importacio.linia</field>
+            <field name="value" eval="'ir.actions.act_window,'+str(ref('action_wizard_refund_rectify_from_origin_from_f1_form'))"/>
+        </record>
+    </data>
+</openerp>

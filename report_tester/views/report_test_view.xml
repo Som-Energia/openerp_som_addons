@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+    <data>
+        <record model="ir.ui.view" id="view_report_test_tree">
+            <field name="name">report.test.tree</field>
+            <field name="model">report.test</field>
+            <field name="type">tree</field>
+            <field name="priority">16</field>
+            <field name="arch" type="xml">
+                <tree string="Report test">
+                    <field name="name"/>
+                    <field name="result"/>
+                    <field name="priority"/>
+                    <field name="active"/>
+                    <field name="description"/>
+                    <field name="report"/>
+                    <field name="interpreter"/>
+                    <field name="value"/>
+                    <field name="group_id"/>
+                </tree>
+            </field>
+        </record>
+        <record model="ir.ui.view" id="view_report_test_form">
+            <field name="name">report.test.form</field>
+            <field name="model">report.test</field>
+            <field name="type">form</field>
+            <field name="priority">16</field>
+            <field name="arch" type="xml">
+                <form string="Report test">
+                    <group colspan="2" col="6">
+                        <field name="name" select="1" colspan="4"/>
+                        <field name="priority" select="1"/>
+                        <field name="group_id" select="1"/>
+                        <field name="active" select="1"/>
+                        <field name="description" colspan="6"/>
+                        <separator colspan="6"/>
+                        <group colspan="6" col="2" string="Cas a testejar">
+                            <field name="report" colspan="4"/>
+                            <field name="interpreter"/>
+                            <field name="value"/>
+                        </group>
+                        <separator colspan="6"/>
+                        <group colspan="6" col="2" string="Resultat testeig">
+                            <field name="result" colspan="4" />
+                            <field name="result_log" colspan="4" height="400"/>
+                        </group>
+                        <group colspan="6" string="Accions">
+                            <button string="Executa" type="action" icon="gtk-execute" name="%(action_wizard_report_test_execute_test)d" context="{}"/>
+                            <button string="Accepta" type="action" icon="gtk-save" name="%(action_wizard_report_test_accept_test)d" context="{}"/>
+                        </group>
+                    </group>
+                </form>
+            </field>
+        </record>
+        <record id="action_report_test_tree" model="ir.actions.act_window">
+            <field name="name">Report test</field>
+            <field name="res_model">report.test</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="context">{'active_test': False}</field>
+        </record>
+        <menuitem id="menu_report_tester_folder" parent="base.menu_administration" name="Report tester" sequence="99"/>
+        <menuitem id="menu_report_test_view" action="action_report_test_tree" parent="menu_report_tester_folder"/>
+    </data>
+</openerp>

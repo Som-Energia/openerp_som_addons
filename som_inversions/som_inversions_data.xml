@@ -1,0 +1,153 @@
+<?xml version="1.0"?>
+<openerp>
+    <data noupdate="1">
+        <record id="mode_pagament_inversions" model="payment.mode">
+            <field name="name">ARQUITECTES (inversions)</field>
+            <field name="type" search="[('code', '=', 'RECIBO_CSB')]"/>
+            <field name="journal" ref="account_invoice_base.facturacio_journal_caja"/>
+            <field name="bank_id" search="[('partner_id', '=', 1)]"/>
+            <field name="tipo">csb_19</field>
+            <field name="nombre">Som Energia</field>
+            <field name="sufijo">000</field>
+            <field name="require_bank_account" eval="True"/>
+            <field name="partner_id">1</field>
+        </record>
+        <record id="seq_inversions_type" model="ir.sequence.type">
+            <field name="name">Seqüències d'inversions</field>
+            <field name="code">som.inversions</field>
+        </record>
+        <record id="seq_inversions" model="ir.sequence">
+            <field name="name">Inversions</field>
+            <field name="code">som.inversions</field>
+            <field name="prefix">INV</field>
+            <field name="padding">5</field>
+            <field name="number_increment">1</field>
+        </record>
+        <record id="seq_desinversions_type" model="ir.sequence.type">
+            <field name="name">Seqüències de desinversions</field>
+            <field name="code">som.desinversions</field>
+        </record>
+        <record id="seq_desinversions" model="ir.sequence">
+            <field name="name">Desinversions</field>
+            <field name="code">som.desinversions</field>
+            <field name="prefix">DINV</field>
+            <field name="padding">5</field>
+            <field name="number_next">1</field>
+            <field name="number_increment">1</field>
+        </record>
+        <record id="tax_retorn_inversions" model="account.tax">
+            <field name="name">Retorn inversions</field>
+            <field name="description">Interessos que generen les aportacions de socis</field>
+            <field name="amount">0.035</field>
+            <field name="tax_group">other</field>
+        </record>
+    </data>
+	<data noupdate="1">
+        <record id="mode_pagament_inversions_titols" model="payment.mode">
+            <field name="name">INVERSIONS (títols)</field>
+            <field name="type" search="[('code', '=', 'RECIBO_CSB')]"/>
+            <field name="journal" ref="account_invoice_base.facturacio_journal_caja"/>
+            <field name="bank_id" search="[('partner_id', '=', 1)]"/>
+            <field name="tipo">csb_19</field>
+            <field name="nombre">Som Energia</field>
+            <field name="sufijo">000</field>
+            <field name="require_bank_account" eval="True"/>
+            <field name="partner_id">1</field>
+        </record>
+        <record id="seq_inversions_titols_type" model="ir.sequence.type">
+            <field name="name">Seqüències compra títols</field>
+            <field name="code">som.inversions.titols</field>
+        </record>
+        <record id="seq_inversions_titols" model="ir.sequence">
+            <field name="name">Compra de títols</field>
+            <field name="code">som.inversions.titols</field>
+            <field name="prefix">AA</field>
+            <field name="padding">5</field>
+            <field name="number_increment">1</field>
+        </record>
+    </data>
+	<data noupdate="1">
+        <record id="mode_pagament_inversions_gkwh" model="payment.mode">
+            <field name="name">GENERATION kWh</field>
+            <field name="type" search="[('code', '=', 'RECIBO_CSB')]"/>
+            <field name="journal" ref="account_invoice_base.facturacio_journal_caja"/>
+            <field name="bank_id" search="[('partner_id', '=', 1)]"/>
+            <field name="tipo">sepa19</field>
+            <field name="nombre">Som Energia</field>
+            <field name="sufijo">000</field>
+            <field name="require_bank_account" eval="True"/>
+            <field name="partner_id">1</field>
+        </record>
+        <record id="seq_inversions_gkwh_type" model="ir.sequence.type">
+            <field name="name">Seqüències Generation kWh</field>
+            <field name="code">som.inversions.gkwh</field>
+        </record>
+        <record id="seq_inversions_gkwh" model="ir.sequence">
+            <field name="name">Generation kWh</field>
+            <field name="code">som.inversions.gkwh</field>
+            <field name="prefix">GKWH</field>
+            <field name="padding">5</field>
+            <field name="number_increment">1</field>
+        </record>
+    </data>
+    <data noupdate="1">
+        <record model="poweremail.templates" id="email_certificat_retencions_titols">
+            <field name="name">Liquidacions - Certificats retencions títols</field>
+            <field name="object_name" model="ir.model"
+                search="[('name', '=', 'som.enviament.massiu')]" />
+            <field eval="0" name="save_to_drafts" />
+            <field name="model_int_name">som.enviament.massiu</field>
+            <field name="def_to">${object.partner_id.address[0].email}</field>
+            <field eval="0" name="auto_email" />
+            <field eval="0" name="single_email" />
+            <field eval="0" name="use_sign" />
+            <field name="def_subject">Certificat IRPF 2022 Títols - Som Energia</field>
+            <field name="template_language">mako</field>
+            <field eval="0" name="send_on_create" />
+            <field name="lang">${object.partner_id.lang}</field>
+            <field eval="0" name="send_on_write" />
+            <field name="def_bcc">support.17062.b8d9f4469fa4d856@helpscout.net</field>
+            <field name="enforce_from_account" model="poweremail.core_accounts"
+                search="[('name','=', 'Som Energia Aporta')]" />
+            <field name="def_body_text"><![CDATA[
+                <!doctype html>
+                <html>
+                <head></head>
+                <body>
+                Email text
+                </body>
+                </html>
+                ]]>
+            </field>
+        </record>
+        <record model="poweremail.templates" id="email_certificat_retencions_aportacions">
+            <field name="name">Liquidacions - Certificats retencions aportacions</field>
+            <field name="object_name" model="ir.model"
+                search="[('name', '=', 'som.enviament.massiu')]" />
+            <field eval="0" name="save_to_drafts" />
+            <field name="model_int_name">som.enviament.massiu</field>
+            <field name="def_to">${object.partner_id.address[0].email}</field>
+            <field eval="0" name="auto_email" />
+            <field eval="0" name="single_email" />
+            <field eval="0" name="use_sign" />
+            <field name="def_subject">Certificat IRPF 2022 Aportacions voluntàries - Som Energia</field>
+            <field name="template_language">mako</field>
+            <field eval="0" name="send_on_create" />
+            <field name="lang">${object.partner_id.lang}</field>
+            <field eval="0" name="send_on_write" />
+            <field name="def_bcc">support.17062.b8d9f4469fa4d856@helpscout.net</field>
+            <field name="enforce_from_account" model="poweremail.core_accounts"
+                search="[('name','=', 'Som Energia Aporta')]" />
+            <field name="def_body_text"><![CDATA[
+                <!doctype html>
+                <html>
+                <head></head>
+                <body>
+                Email text
+                </body>
+                </html>
+                ]]>
+            </field>
+        </record>
+    </data>
+</openerp>

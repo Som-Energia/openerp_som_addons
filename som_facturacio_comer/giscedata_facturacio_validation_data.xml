@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<openerp>
+    <data noupdate="1">
+        <record model="giscedata.facturacio.validation.warning.template" id="warning_SF01" forcecreate="1">
+            <field name="code">SF01</field>
+            <field name="description">Factura de pòlissa categoria {categoria} amb origen lectures {origen} i origen distri {origen_distri}</field>
+            <field name="method">check_origin_readings_by_contract_category</field>
+            <field name="parameters">{"categoria": "Gran Contracte", "lectures_origen_codes": "['40','99']", "lectures_origen_comer_codes": "['F1','AT']"}</field>
+            <field name="active" eval="True"/>
+        </record>
+        <record model="giscedata.facturacio.validation.warning.template" id="warning_SF02" forcecreate="1">
+            <field name="code">SF02</field>
+            <field name="description">El consum d'energia del mes ({invoice_consume}kWh) no ha pogut ser validat ja que no es disposa de històric suficient o valor de consum màxim teòric</field>
+            <field name="method">check_min_periods_and_teoric_maximum_consum</field>
+            <field name="parameters">{"n_months": 14, "overuse_percentage":50.0, "min_periods": 4, "min_amount": 0.0, "min_invoice_len": 0, "category":"Gran Contracte"}</field>
+            <field name="active" eval="False"/>
+        </record>
+        <record model="giscedata.facturacio.validation.warning.template" id="warning_SF03" forcecreate="1">
+            <field name="code">SF03</field>
+            <field name="description">El consum d'energia del mes ({invoice_consume}kWh) és superior en un {percentage}% al consum màxim dels {n_months} anteriors mesos (segons la informació disponible ({maximum_consume}kWh)) o bé el màxim consum teòric ({maximum_teoric_consume_GC}kWh)</field>
+            <field name="method">check_consume_by_percentage_and_category</field>
+            <field name="parameters">{"n_months": 14, "overuse_percentage":50.0, "min_periods": 4, "min_amount": 0.0, "min_invoice_len": 0, "category":"Gran Contracte"}</field>
+            <field name="active" eval="False"/>
+        </record>
+    </data>
+    <data>
+        <record model="giscedata.facturacio.validation.warning.template" id="warning_SF01" forcecreate="1">
+            <field name="code">SF01</field>
+            <field name="description">Factura de pòlissa categoria {categoria} amb origen lectures {origen} i origen distri {origen_distri}</field>
+            <field name="observation">En factures de pòlisses amb categoria "GranContracte" és necessari detectar que la factura s'està enviant amb lectures que no són Reals, per tal de poder revisar exhaustivament i valorar si la factura s'envia o si cal fer una reclmació a Distri.</field>
+            <field name="method">check_origin_readings_by_contract_category</field>
+            <field name="type">pre-facturacio</field>
+        </record>
+        <record model="giscedata.facturacio.validation.warning.template" id="warning_SF02" forcecreate="1">
+            <field name="code">SF02</field>
+            <field name="description">El consum d'energia del mes ({invoice_consume}kWh) no ha pogut ser validat ja que no es disposa de històric suficient o valor de consum màxim teòric</field>
+            <field name="observation">Comprovació de què el consum d'energia en un mes ha pogut ser validat .</field>
+            <field name="method">check_min_periods_and_teoric_maximum_consum</field>
+            <field name="type">pre-facturacio</field>
+        </record>
+        <record model="giscedata.facturacio.validation.warning.template" id="warning_SF03" forcecreate="1">
+            <field name="code">SF03</field>
+            <field name="description">El consum d'energia del mes ({invoice_consume}kWh) és superior en un {percentage}% al consum màxim dels {n_months} anteriors mesos (segons la informació disponible ({maximum_consume}kWh)) o bé el màxim consum teòric ({maximum_teoric_consume_GC}kWh)</field>
+            <field name="observation">Comprovació de què el consum d'energia en un mes supera amb un cert percentatge el màxim actual per la pòlissa. A traves del parametre 'min_amount' es pot configurar que aquesta validacio no salti per factures amb un import inferior a X euros. A traves del parametre 'min_invoice_len' es pot configurar que al revisar l'historic no es tinguin en compte les factures a,b un numero de dies inferior al definit.</field>
+            <field name="method">check_consume_by_percentage_and_category</field>
+            <field name="type">pre-facturacio</field>
+        </record>
+    </data>
+</openerp>

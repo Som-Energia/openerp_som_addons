@@ -1,0 +1,55 @@
+<?xml version="1.0"?>
+<openerp>
+    <data>
+        <record id="view_partner_form_account_button" model="ir.ui.view">
+            <field name="name">res.partner.som.form</field>
+            <field name="model">res.partner</field>
+            <field name="type">form</field>
+            <field name="priority">90</field>
+            <field name="inherit_id" ref="account.view_partner_property_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='payment_type_customer']" position="before">
+                    <button name="button_assign_accounts" type="object"
+                    colspan="2" string="Assignar compte a cobrar"
+                    icon="gtk-execute"/>
+                </xpath>
+            </field>
+        </record>
+        <record id="view_partner_form_account_fields" model="ir.ui.view">
+            <field name="name">res.partner.som.form.fields</field>
+            <field name="model">res.partner</field>
+            <field name="type">form</field>
+            <field name="priority">90</field>
+            <field name="inherit_id" ref="account.view_partner_property_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='payment_type_supplier']"
+                       position="after">
+                    <group id="aportacions" col="2" colspan="2">
+                        <separator string="Comptes inversions" colspan="2"/>
+                        <field name="property_account_aportacions"/>
+						<field name="property_account_titols"/>
+                        <field name="property_account_liquidacio"/>
+                        <field name="property_account_gkwh"/>
+                    </group>
+                </xpath>
+            </field>
+        </record>
+        <record id="view_partner_form_soci_fields" model="ir.ui.view">
+            <field name="name">res.partner.som.form.soci</field>
+            <field name="model">res.partner</field>
+            <field name="type">form</field>
+            <field name="inherit_id" ref="base.view_partner_form"/>
+            <field name="priority" eval="20"/>
+            <field name="arch" type="xml">
+                <data>
+                    <xpath expr="//form[@string='Partners']/group/field[@name='supplier']" position="after">
+                        <group colspan="2" attrs="{'invisible': [('ref', '!=', False)]}">
+                            <button name="button_assign_soci_seq" string="Nou soci" type="object" icon="gtk-execute" colspan="1"/>
+                        </group>
+                        <label string="" colspan="4"/>
+                    </xpath>
+                </data>
+            </field>
+        </record>
+    </data>
+</openerp>

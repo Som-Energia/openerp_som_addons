@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+        <!--
+        Invoices
+        -->
+
+        <record id="invoice_supplier_number_form" model="ir.ui.view">
+            <field name="name">account.invoice.supplier.number.form</field>
+            <field name="model">account.invoice</field>
+            <field name="inherit_id" ref="account.invoice_supplier_form"/>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+            	<field name="type" position="replace">
+            		<group col="3" colspan="2">
+            			<field name="type"/>
+            			<field name="sequence_number" nolabel="1"/>
+            		</group>
+            	</field>
+            </field>
+       </record>
+
+       <wizard id="wizard_invoice_supplier_renumber" menu="False" model="account.invoice" name="invoice.supplier.renumber" string="Invoice Supplier Renumber"/>
+       <menuitem action="wizard_invoice_supplier_renumber" id="menu_wizard_invoice_supplier_renumber" parent="account.menu_account_end_year_treatments" type="wizard"/>
+
+
+    </data>
+</openerp>

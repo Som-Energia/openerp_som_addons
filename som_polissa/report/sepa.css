@@ -1,0 +1,88 @@
+h1 {
+    font-size: 14px;
+}
+h2 {
+    font-size: 12px;
+    font-style: italic;
+}
+p {
+    margin: 3px;
+    font-size: 10px;
+}
+.margin50 {
+    margin: 5px 30px;
+}
+.margin20 {
+    margin: 5px 30px;
+    text-align: justify;
+
+}
+.last {
+    margin: 2px 30px;
+}
+
+.full-width {
+    width: 620px;
+}
+.extern {
+    border: 2px solid black;
+    padding-bottom: 5px;
+}
+.intern {
+    border: 2px solid #17365d;
+    padding: 0px 4px;
+
+}
+.centered {
+    text-align: center;
+}
+.entrada {
+    min-height: 1em;
+    border-bottom:  1px dashed black;
+    background-color:#f1f4ff;
+    font-family: Arial, Helvetica, sans-serif;
+    padding: 3px;
+}
+.spanish {
+    font-size: 9px;
+}
+.english {
+    font-size: 8px;
+    font-style: italic;
+}
+#logo {
+    position: absolute;
+    left: 70px;
+    top: 20px;
+
+}
+.label {
+    font-weight: bold;
+}
+.entrada-label {
+    font-family: Arial, Helvetica, sans-serif;
+    margin-left: 10px;
+    font-size: 9px;
+}
+.parella {
+    margin-top: 8px;
+    margin-bottom: 8px;
+}
+.title {
+    padding-top: 20px;
+}
+.entrada-alta {
+    min-height: 1.75em;
+    padding-top: 0.75em;
+    padding-bottom: 0px;
+}
+.entrada-molt-alta {
+    min-height: 40px;
+    padding-top: 0.75em;
+    padding-bottom: 0px;
+}
+.blau {
+    color: #17365d;
+    font-size: 8px;
+    margin-top: 3px;
+}

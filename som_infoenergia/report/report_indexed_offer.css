@@ -1,0 +1,108 @@
+body {
+  font-family: "Montserrat", sans-serif;
+}
+
+.logo {
+  width: 100%;
+  text-align: center;
+}
+
+.logo img {
+  margin-top: 80px;
+  margin-bottom: 75px;
+  max-width: 265px;
+}
+
+h1 {
+  color: #aeca02;
+  font-size: 40px;
+  font-weight: 700;
+  padding: 0 30%;
+  text-align: center;
+}
+
+h2 {
+  color: #000000;
+  font-size: 40px;
+  font-weight: 700;
+  padding: 20% 15%;
+  text-align: center;
+}
+
+h3 {
+  margin-top: 48px;
+}
+
+h4 {
+  margin-top: 48px;
+  font-size: 16px;
+  text-decoration: underline;
+}
+
+p {
+  line-height: 1.5;
+}
+
+p.center {
+  text-align: center;
+}
+
+p sub {
+  margin-left:-8px;
+}
+
+.data-oferta {
+  font-size: 18px;
+  text-align: center;
+  font-weight: 600;
+}
+
+.codi-oferta {
+  font-size: 18px;
+  margin: 24px 0;
+  text-align: center;
+  font-weight: 600;
+}
+
+.header-oferta {
+  background-color: #aeca02;
+  width: 100%;
+}
+
+.header-oferta td {
+  padding: 0 16px;
+  color: #ffffff;
+}
+
+table {
+  width: 100%;
+  margin: 1.5rem 0;
+}
+
+table td {
+  text-align: center;
+  padding: 4px 16px;
+  font-size: 14px;
+}
+
+thead th {
+  padding: 4px 16px;
+  font-weight: normal;
+  background-color: #aeca02;
+}
+
+thead th:first-child {
+  font-size: 14px;
+  background-color: #eeefee;
+}
+
+tbody td:first-child {
+  background-color: #aeca02;
+}
+
+.table-note {
+  padding-top: 16px;
+  text-align: center;
+  font-size: 14px;
+  font-style: italic;
+}

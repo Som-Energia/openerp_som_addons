@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<openerp>
+    <data>
+        <record model="ir.ui.view" id="view_wizard_autofactura_form">
+            <field name="name">wizard.autofactura.form</field>
+            <field name="model">wizard.autofactura</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <form string="Procés de factura automàtic">
+                    <group colspan="6">
+                        <group colspan="4">
+                            <label string="Recorda revisar els checks de les tasques de facturació automatiques abans de començar!!" colspan="4"/>
+                            <button name="view_tasks" type="object" string="Tasques de procés automàtic de facturació" icon="gtk-ok" colspan="4"/>
+                        </group>
+                        <separator colspan="4"/>
+                        <button special="cancel" string="Cancelar" icon="gtk-cancel"/>
+                        <button name="do" type="object" icon="gtk-ok" string="Iniciar el procés automàtic de facturació"/>
+                    </group>
+                </form>
+            </field>
+        </record>
+        <record model="ir.actions.act_window" id="action_wizard_autofactura">
+            <field name="name">Procés de factura automàtic</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">wizard.autofactura</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">form</field>
+            <field name="target">new</field>
+            <field name="view_id" ref="view_wizard_autofactura_form"/>
+        </record>
+        <record id="values_autofactura_form" model="ir.values">
+            <field name="object" eval="1"/>
+            <field name="name">Procés de factura automàtic</field>
+            <field name="key2">client_action_multi</field>
+            <field name="key">action</field>
+            <field name="model">giscedata.facturacio.lot</field>
+            <field name="value" eval="'ir.actions.act_window,'+str(ref('action_wizard_autofactura'))"/>
+        </record>
+        <menuitem id="menu_wizard_autofactura" name="Facturar automàticament"
+            parent="giscedata_facturacio.menu_facturacio_accions" action="action_wizard_autofactura"/>
+    </data>
+</openerp>

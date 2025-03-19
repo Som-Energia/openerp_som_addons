@@ -1,0 +1,7 @@
+"id","name","model_id:id","group_id:id","perm_read","perm_write","perm_create","perm_unlink"
+"access_send_email_over_limit_wizard_rcwd","send.email.over.limit.wizard","model_send_email_over_limit_wizard","base.group_erp_manager",1,1,1,1
+"access_send_email_over_limit_wizard_rcwd","send.email.over.limit.wizard","model_send_email_over_limit_wizard","base.group_system",1,1,1,1
+"access_send_email_over_limit_partner_wizard_rcwd","send.email.over.limit.partner.wizard","model_send_email_over_limit_partner_wizard","base.group_erp_manager",1,1,1,1
+"access_send_email_over_limit_partner_wizard_rcwd","send.email.over.limit.partner.wizard","model_send_email_over_limit_partner_wizard","base.group_system",1,1,1,1
+"access_som_347_email_backend_rcwd","report.backend.347.email","model_report_backend_347_email","base.group_erp_manager",1,1,1,1
+"access_som_347_email_backend_rcwd","report.backend.347.email","model_report_backend_347_email","base.group_system",1,1,1,1

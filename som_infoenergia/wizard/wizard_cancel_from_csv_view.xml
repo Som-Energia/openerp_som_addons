@@ -10,6 +10,8 @@
                     <field name="state" invisible="1"/>
                     <group attrs="{'invisible': [('state', '!=', 'init')]}">
                         <label string="Cancel·lar enviaments de les pòlisses indicades al CSV" colspan="4"/>
+                        <label string="A la primera columna hi ha d'haver els números de contracte sense capçalera" colspan="4"/>
+                        <label string="(afegeix 0 a l'esquerra als números de pòlissa si en falten)" colspan="4"/>
                         <field name="csv_file" colspan="4" filename="name" string="Arxiu CSV"/>
                         <field name="reason" string="Motiu" colspan="4" width="500" />
                         <button name="cancel_from_file" type="object" string="Cancel·lar enviaments" icon="gtk-ok"/>

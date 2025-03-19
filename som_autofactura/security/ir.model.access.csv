@@ -1,0 +1,10 @@
+"id","name","model_id:id","group_id:id","perm_read","perm_write","perm_create","perm_unlink"
+"access_wizard_autofactura_rcwd","wizard.autofactura","model_wizard_autofactura","giscedata_facturacio.group_giscedata_facturacio_u",1,1,1,1
+"access_wizard_autofactura_rcw","wizard.autofactura","model_wizard_autofactura","giscedata_facturacio.group_giscedata_facturacio_w",1,1,1,0
+"access_wizard_autofactura_r","wizard.autofactura","model_wizard_autofactura","giscedata_facturacio.group_giscedata_facturacio_r",1,0,0,0
+"access_som_autofactura_task_rcwd","som.autofactura.task","model_som_autofactura_task","giscedata_facturacio.group_giscedata_facturacio_u",1,1,1,1
+"access_som_autofactura_task_rcw","som.autofactura.task","model_som_autofactura_task","giscedata_facturacio.group_giscedata_facturacio_w",1,1,1,0
+"access_som_autofactura_task_r","som.autofactura.task","model_som_autofactura_task","giscedata_facturacio.group_giscedata_facturacio_r",1,0,0,0
+"access_som_autofactura_task_step_rcwd","som.autofactura.task.step","model_som_autofactura_task_step","giscedata_facturacio.group_giscedata_facturacio_u",1,1,1,1
+"access_som_autofactura_task_step_rcw","som.autofactura.task.step","model_som_autofactura_task_step","giscedata_facturacio.group_giscedata_facturacio_w",1,1,1,0
+"access_som_autofactura_task_step_r","som.autofactura.task.step","model_som_autofactura_task_step","giscedata_facturacio.group_giscedata_facturacio_r",1,0,0,0

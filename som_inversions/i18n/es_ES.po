@@ -1,0 +1,1898 @@
+# Translation of OpenERP Server.
+# This file contains the translation of the following modules:
+# * som_inversions
+#
+# Translators:
+#   <>, 2018.
+# Agustí Fita <afita@gisce.net>, 2017.
+# Eduard Carreras <ecarreras@gisce.net>, 2014.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2012.
+# Pau Pericay <ppericay@gisce.net>, 2014.
+# Som Energia  <itcrowd@somenergia.coop>, 2020, 2021.
+msgid ""
+msgstr ""
+"Project-Id-Version: Som Energia\n"
+"Report-Msgid-Bugs-To: support@openerp.com\n"
+"POT-Creation-Date: 2021-03-29 14:12+0000\n"
+"PO-Revision-Date: 2021-03-29 12:40+0000\n"
+"Last-Translator: Som Energia <itcrowd@somenergia.coop>\n"
+"Language-Team: Spanish (Spain) (http://trad.gisce.net/projects/p/somenergia/language/es_ES/)\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Generated-By: Babel 2.8.0\n"
+"Language: es_ES\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#. module: som_inversions
+#: model:ir.model,name:som_inversions.model_wizard_liquidacio_interessos
+msgid "wizard.liquidacio.interessos"
+msgstr "wizard.liquidacio.interessos"
+
+#. module: som_inversions
+#: view:wizard.liquidacio.interessos:0
+msgid "Errors"
+msgstr "Errores"
+
+#. module: som_inversions
+#: field:wizard.liquidacio.interessos,interes:0
+msgid "Interés anual (en %)"
+msgstr "Interés anual (en %)"
+
+#. module: som_inversions
+#: help:wizard.liquidacio.interessos,force:0
+msgid "Forçar els que el balanç sigui 0 a calcular-lo igualment"
+msgstr ""
+
+#. module: som_inversions
+#: code:addons/som_inversions/wizard/wizard_liquidacio_interessos.py:306
+msgid "Factures generades"
+msgstr ""
+
+#. module: som_inversions
+#: field:wizard.liquidacio.interessos,account:0
+msgid "Compte a liquidar"
+msgstr ""
+
+#. module: som_inversions
+#: field:wizard.liquidacio.interessos,date_invoice:0
+msgid "Data factura"
+msgstr "Fecha factura"
+
+#. module: som_inversions
+#: field:wizard.liquidacio.interessos,force:0
+msgid "Forçar"
+msgstr "Forzar"
+
+#. module: som_inversions
+#: field:wizard.liquidacio.interessos,state:0
+msgid "Estat"
+msgstr "Estado"
+
+#. module: som_inversions
+#: model:ir.actions.report.xml,name:som_inversions.som_inversions_titols_doc
+msgid "Títol"
+msgstr "Título"
+
+#. module: som_inversions
+#: model:ir.actions.report.xml,name:som_inversions.report_retencions_interessos
+msgid "Retencions d'interessos"
+msgstr "Retenciones de intereses"
+
+#. module: som_inversions
+#: constraint:ir.actions.act_window:0
+msgid "Invalid model name in the action definition."
+msgstr ""
+
+#. module: som_inversions
+#: constraint:ir.model:0
+msgid ""
+"The Object name must start with x_ and not contain any special character !"
+msgstr ""
+
+#. module: som_inversions
+#: model:ir.actions.report.xml,name:som_inversions.report_generationkwh_doc
+msgid "Préstec Generation kWh"
+msgstr ""
+
+#. module: som_inversions
+#: model:ir.actions.report.xml,name:som_inversions.som_inversions_doc
+msgid "Aportació"
+msgstr "Aportación"
+
+#. module: som_inversions
+#: field:wizard.liquidacio.interessos,journal:0
+msgid "Dirari per crear les factures"
+msgstr ""
+
+#. module: som_inversions
+#: field:wizard.liquidacio.interessos,err:0
+msgid "Missatges d'error"
+msgstr ""
+
+#. module: som_inversions
+#: model:ir.actions.report.xml,name:som_inversions.som_inversions_doc2012
+msgid "Aportació 2012"
+msgstr ""
+
+#. module: som_inversions
+#: view:wizard.liquidacio.interessos:0
+msgid "Càlculs"
+msgstr ""
+
+#. module: som_inversions
+#: code:addons/som_inversions/wizard/wizard_liquidacio_interessos.py:168
+msgid "No s'ha trobat cap compte per liquidar amb el prefix {0}"
+msgstr ""
+
+#. module: som_inversions
+#: code:addons/som_inversions/wizard/wizard_liquidacio_interessos.py:266
+#, python-format
+msgid "De %s a %s: %s * %s/%s * %s: %s"
+msgstr ""
+
+#. module: som_inversions
+#: model:ir.actions.act_window,name:som_inversions.act_order_payment_lines
+msgid "Payment Lines"
+msgstr ""
+
+#. module: som_inversions
+#: model:ir.actions.report.xml,name:som_inversions.report_liquidacions_titols
+msgid "Liquidació interessos títols"
+msgstr "Liquidación intereses títulos"
+
+#. module: som_inversions
+#: model:ir.actions.act_window,name:som_inversions.action_wizard_liquidacio_interessos_form
+#: view:wizard.liquidacio.interessos:0
+msgid "Assistent liquidació interessos"
+msgstr ""
+
+#. module: som_inversions
+#: code:addons/som_inversions/wizard/wizard_liquidacio_interessos.py:195
+msgid "{0:05d}/{1:05d} Compte {2}."
+msgstr ""
+
+#. module: som_inversions
+#: code:addons/som_inversions/wizard/wizard_liquidacio_interessos.py:270
+#, python-format
+msgid "De %s a %s"
+msgstr ""
+
+#. module: som_inversions
+#: constraint:ir.ui.view:0
+msgid "Invalid XML for View Architecture!"
+msgstr ""
+
+#. module: som_inversions
+#: field:wizard.liquidacio.interessos,account_prefix:0
+msgid "Prefix comptes"
+msgstr ""
+
+#. module: som_inversions
+#: help:wizard.liquidacio.interessos,account_prefix:0
+msgid ""
+"Selecciona els comptes a liquidar a partir del codi. Agafa tots els comptes "
+"que comencin pel prefix especificat. Només quan no s'ha seleccionat un "
+"compte específic"
+msgstr ""
+
+#. module: som_inversions
+#: field:wizard.liquidacio.interessos,date_start:0
+msgid "Data inici"
+msgstr "Fecha inicio"
+
+#. module: som_inversions
+#: field:wizard.liquidacio.interessos,date_end:0
+msgid "Data final"
+msgstr "Fecha final"
+
+#. module: som_inversions
+#: code:addons/som_inversions/wizard/wizard_liquidacio_interessos.py:297
+msgid "Pre calc: err:{0} out:{1})."
+msgstr ""
+
+#. module: som_inversions
+#: model:ir.actions.report.xml,name:som_inversions.report_liquidacions_interessos
+msgid "Liquidació interessos aportacions"
+msgstr "Liquidación intereses aportaciones"
+
+#. module: som_inversions
+#: model:ir.ui.menu,name:som_inversions.menu_wizard_liquidacio_interessos
+#: rml:som_inversions/report/report_liquidacions_interessos.mako:204
+#: rml:som_inversions/report/report_liquidacions_titols.mako:198
+msgid "Liquidació interessos"
+msgstr "Liquidación de intereses"
+
+#. module: som_inversions
+#: model:ir.module.module,shortdesc:som_inversions.module_meta_information
+msgid "Mòdul d'inversions de socis"
+msgstr ""
+
+#. module: som_inversions
+#: model:account.tax,name:som_inversions.tax_retorn_inversions
+msgid "Retorn inversions"
+msgstr ""
+
+#. module: som_inversions
+#: code:addons/som_inversions/wizard/wizard_liquidacio_interessos.py:167
+msgid "Error Compte"
+msgstr ""
+
+#. module: som_inversions
+#: code:addons/som_inversions/wizard/wizard_liquidacio_interessos.py:225
+msgid "Error"
+msgstr "Error"
+
+#. module: som_inversions
+#: field:wizard.liquidacio.interessos,product:0
+msgid "Producte"
+msgstr "Producto"
+
+#. module: som_inversions
+#: field:res.partner,bank_inversions:0
+msgid "Banc interessos"
+msgstr ""
+
+#. module: som_inversions
+#: model:ir.module.module,description:som_inversions.module_meta_information
+#, python-format
+msgid ""
+"\n"
+"    This module provide :\n"
+"        * Creació del mode de pagament per inversions\n"
+"        * Creació de la seqüència per les inversions\n"
+"        * Creació de nou camp de bank al partner per guardar-hi el compte\n"
+"          bancari on es cobraran els interessos de les inversions\n"
+"        * Creació d'impost per representar el % de retorn d'inversió\n"
+"    "
+msgstr "\n    This module provide :\n        * Creació del mode de pagament per inversions\n        * Creació de la seqüència per les inversions\n        * Creació de nou camp de bank al partner per guardar-hi el compte\n          bancari on es cobraran els interessos de les inversions\n        * Creació d'impost per representar el % de retorn d'inversió\n    "
+
+#. module: som_inversions
+#: code:addons/som_inversions/wizard/wizard_liquidacio_interessos.py:174
+msgid ""
+"Calculem liquidació aportacions de {0} comptes ({1},{2}). pre calc: {3}"
+msgstr ""
+
+#. module: som_inversions
+#: view:wizard.liquidacio.interessos:0
+msgid "Calcular"
+msgstr "Calcular"
+
+#. module: som_inversions
+#: code:addons/som_inversions/wizard/wizard_liquidacio_interessos.py:226
+#, python-format
+msgid "El moviment %s de la compta %s no té empresa assignada"
+msgstr ""
+
+#. module: som_inversions
+#: constraint:payment.mode:0
+msgid "The SEPA creditor code is not correct"
+msgstr ""
+
+#. module: som_inversions
+#: view:wizard.liquidacio.interessos:0
+msgid "Crear i mostrar factures"
+msgstr ""
+
+#. module: som_inversions
+#: field:wizard.liquidacio.interessos,calc:0
+msgid "Missatges de càlcul"
+msgstr ""
+
+#. module: som_inversions
+#: help:wizard.liquidacio.interessos,account:0
+msgid ""
+"Assignar la compte a liquidar. Si és la compta general liquidarà tots els "
+"interessos de les comptes filles. Si només es vol liquidar els interessos "
+"d'un soci s'ha d'assignar la compte específica."
+msgstr ""
+
+#: rml:som_inversions/report/report_generationkwh_doc.mako:175
+msgid "gener"
+msgstr "enero"
+
+#: rml:som_inversions/report/report_generationkwh_doc.mako:175
+msgid "febrer"
+msgstr "febrero"
+
+#: rml:som_inversions/report/report_generationkwh_doc.mako:175
+msgid "març"
+msgstr "marzo"
+
+#: rml:som_inversions/report/report_generationkwh_doc.mako:175
+msgid "abril"
+msgstr "abril"
+
+#: rml:som_inversions/report/report_generationkwh_doc.mako:175
+msgid "maig"
+msgstr "mayo"
+
+#: rml:som_inversions/report/report_generationkwh_doc.mako:176
+msgid "juny"
+msgstr "junio"
+
+#: rml:som_inversions/report/report_generationkwh_doc.mako:176
+msgid "juliol"
+msgstr "julio"
+
+#: rml:som_inversions/report/report_generationkwh_doc.mako:176
+msgid "agost"
+msgstr "agosto"
+
+#: rml:som_inversions/report/report_generationkwh_doc.mako:176
+msgid "setembre"
+msgstr "septiembre"
+
+#: rml:som_inversions/report/report_generationkwh_doc.mako:176
+msgid "octubre"
+msgstr "octubre"
+
+#: rml:som_inversions/report/report_generationkwh_doc.mako:177
+msgid "novembre"
+msgstr "noviembre"
+
+#: rml:som_inversions/report/report_generationkwh_doc.mako:177
+msgid "desembre"
+msgstr "diciembre"
+
+#: rml:som_inversions/report/report_generationkwh_doc.mako:192
+#, python-format
+msgid "%d/%m/%Y a les %T"
+msgstr "%d/%m/%Y a las %T"
+
+#: rml:som_inversions/report/report_generationkwh_doc.mako:196
+msgid "Data del contracte:"
+msgstr "Fecha del contrato:"
+
+#: rml:som_inversions/report/report_generationkwh_doc.mako:198
+msgid ""
+"Aquest contracte només serà actiu un cop el pagament corresponent s'hagi fet"
+" efectiu"
+msgstr "Este contrato se considerará activo una vez el pago correspondiente se haya efectuado"
+
+#: rml:som_inversions/report/report_generationkwh_doc.mako:205
+#: rml:som_inversions/report/report_generationkwh_doc.mako:212
+msgid "Signat:"
+msgstr "Firmado:"
+
+#: rml:som_inversions/report/report_generationkwh_doc.mako:210
+msgid "El Soci/La Sòcia"
+msgstr "El Socio/La socia"
+
+#: rml:som_inversions/report/report_generationkwh_doc.mako:211
+#, python-format
+msgid "Condicions acceptades a través del formulari web el dia %s"
+msgstr "Condiciones aceptadas a través del formulario web el día %s"
+
+#: rml:som_inversions/report/report_generationkwh_doc.mako:222
+msgid ""
+"CONTRACTE D’ADHESIÓ AL SISTEMA D’AUTOPRODUCCIÓ COL·LECTIVA D’ENERGIA "
+"ELÈCTRICA PROVINENT DE FONTS RENOVABLES"
+msgstr "CONTRATO DE ADHESIÓN AL SISTEMA DE AUTOPRODUCCIÓN COLECTIVA DE ENERGÍA ELÉCTRICA PROVENIENTE DE FUENTES RENOVABLES"
+
+#: rml:som_inversions/report/report_generationkwh_doc.mako:224
+msgid "CONDICIONS PARTICULARS"
+msgstr "CONDICIONES PARTICULARES"
+
+#: rml:som_inversions/report/report_generationkwh_doc.mako:225
+msgid "Parts contractants:"
+msgstr "Partes contratantes:"
+
+#: rml:som_inversions/report/report_generationkwh_doc.mako:227
+msgid ", en endavant, el <b>Soci/Sòcia</b>."
+msgstr ", en adelante, el <b>Socio/a.</b>."
+
+#: rml:som_inversions/report/report_generationkwh_doc.mako:228
+msgid ""
+"SOM ENERGIA, S.C.C.L., amb domicili a carrer Pic de Peguera, 15, Parc "
+"Científic i Tecnològic de la UdG, 17003 - Girona i amb NIF F55091367."
+msgstr "SOM ENERGIA, S.C.C.L., con domicilio en calle Pic de Peguera, 15, Parc Científic i Tecnològic de la UdG, 17003 - Girona y con NIF F55091367."
+
+#: rml:som_inversions/report/report_generationkwh_doc.mako:231
+msgid ""
+"Nombre d’Accions Energètiques del Soci en el Sistema d’Autoproducció "
+"Col·lectiva:"
+msgstr "Número de Acciones Energéticas del Socio en el Sistema de Autoproducción Colectiva:"
+
+#: rml:som_inversions/report/report_generationkwh_doc.mako:233
+msgid ""
+" Accions Energètiques. Cada Acció Energètica correspon a un préstec per part"
+" del Soci/Sòcia de 100 €."
+msgstr " Acciones Energéticas. Cada Acción Energética corresponde a un préstamo por parte del Socio/Socia de 100 €."
+
+#: rml:som_inversions/report/report_generationkwh_doc.mako:235
+msgid "Nombre de kWh per Acció Energètica"
+msgstr "Número de kWh por Acción Energética"
+
+#: rml:som_inversions/report/report_generationkwh_doc.mako:237
+msgid ""
+"El nombre de kWh que pertocaran a cada Acció Energètica s’establirà  en "
+"funció de la producció real de les Plantes Associades al sistema Generation "
+"kWh d’acord amb els criteris establerts a les Condicions Generals i els seus"
+" annexos."
+msgstr "El número de kWh que corresponderán a cada Acción Energética se establecerá  en función de la producción real de las Plantas Asociadas al sistema Generation kWh de acuerdo con los criterios establecidos en las Condiciones Generales y sus anexos."
+
+#: rml:som_inversions/report/report_generationkwh_doc.mako:239
+msgid "Import del préstec concedit pel Soci/Sòcia a Som Energia"
+msgstr "Importe del préstamo concedido por el Socio a Som Energia"
+
+#: rml:som_inversions/report/report_generationkwh_doc.mako:239
+msgid " Accions Energètiques x 100 €)"
+msgstr " Acciones Energéticas x 100 €)"
+
+#: rml:som_inversions/report/report_generationkwh_doc.mako:241
+msgid "Condicions de retorn del préstec:"
+msgstr "Condiciones de retorno del préstamo:"
+
+#: rml:som_inversions/report/report_generationkwh_doc.mako:243
+msgid ""
+"El capital aportat es retornarà un cop a l’any repartida en 23 pagues iguals"
+" i una última paga del doble de les anteriors . La primera quota de retorn "
+"del préstec es farà efectiva dos anys després de l’acceptació d’aquestes "
+"condicions particulars."
+msgstr "El capital aportado se devolverá una vez al año repartido en 23 cuotas iguales y una última cuota del doble de las anteriores. La primera cuota de retorno del préstamo se hará efectiva dos años después de la aceptación de estas condiciones articulares."
+
+#: rml:som_inversions/report/report_generationkwh_doc.mako:249
+msgid ""
+"Condicions generals del contracte d’adhesió al sistema d’autoproducció "
+"col·lectiva d’energia elèctrica provinent de fonts renovables"
+msgstr "Condiciones generales del contrato de adhesión al sistema de autoproducción colectiva de energía eléctrica proveniente de fuentes renovables"
+
+#: rml:som_inversions/report/report_generationkwh_doc.mako:252
+msgid "OBJECTE"
+msgstr "OBJETO"
+
+#: rml:som_inversions/report/report_generationkwh_doc.mako:254
+msgid ""
+"L’objecte del present contracte (el <b>“contracte”</b> o el <b>“contracte "
+"d’autoproducció col·lectiva”</b>) és regular la inclusió del soci o sòcia "
+"sotasignat (el <b>“soci/a”</b>) en el sistema d’autoproducció d’energia "
+"elèctrica de fonts renovables (d’ara endavant, el <b>“sistema "
+"d’autoproducció col·lectiva”</b>) que Som Energia, SCCL, (d’ara endavant, "
+"“Som Energia”) ha decidit impulsar i posar en pràctica i, en concret, en la "
+"Cartera de projectes del referit sistema d’autoproducció col·lectiva, "
+"acordada per l’Assemblea general de Som Energia celebrada el dia 09/05/2015 "
+"(enllaç a l’acta). En la referida assemblea es va acordar, com a objecte de "
+"la indicada Cartera de projectes, emprendre inversions per a la construcció "
+"i posada en marxa de plantes de producció d’energia elèctrica de fonts "
+"renovables i, per tant, sol·licitar a les persones sòcies que volguessin "
+"incloure’s en el sistema esmentat, l’aportació, via préstec gratuït (en els "
+"termes que es detallen a continuació), dels recursos indicats, amb subjecció"
+" a les condicions que s’establiran en aquest contracte. El soci/a declara "
+"haver rebut còpia de l’acord adoptat per l’Assemblea general esmentada. El "
+"present contracte es convé en el marc i amb submissió als valors i principis"
+" cooperatius."
+msgstr "El objeto del presente contrato (el <b>\"Contrato\"</b> o el <b>\"Contrato de Autoproducción Colectiva\"</b>) es regular la inclusión del socio firmante (el <b>\"Socio\"</b>) en el sistema de autoproducción de energía eléctrica de fuentes renovables (en adelante, el <b>\"Sistema de Autoproducción Colectiva\"</b>) que Som Energia SCCL (en adelante, \"Som Energia\") ha decidido impulsar y poner en práctica y, en concreto, en la Cartera de Proyectos del referido Sistema de Autoproducción Colectiva, acordada por la Asamblea General de Som Energia celebrada el día 09/05/2015 (enllaç a l’Acta). En la referida asamblea se acordó, como objeto de la indicada Cartera de Proyectos, emprender inversiones para la construcción y puesta en marcha de plantas de producción de energía eléctrica de fuentes renovables y, por tanto, solicitar a los socios que quisieran incluirse en el referido sistema, la aportación, vía préstamo gratuito (en los términos que a continuación se detallan), de los indicados recursos, con sujeción a las condiciones que se establecerán en el presente Contrato. El Socio declara haber recibido copia del acuerdo adoptado por la referida Asamblea General. El presente Contrato se conviene en el marco y con sometimiento a los valores y principios cooperativos."
+
+#: rml:som_inversions/report/report_generationkwh_doc.mako:255
+msgid ""
+"L’objectiu a assolir, en virtut del conjunt de contractes d’autoproducció "
+"col·lectiva, és facilitar que les persones sòcies que els subscriguin puguin"
+" passar a consumir, mitjançant la seva agrupació, una energia elèctrica "
+"equivalent a la que produeixi la mateixa Som Energia, procedent de fonts "
+"renovables, mitjançant les plantes de producció que, amb el suport financer "
+"obtingut de tals contractes, promourà a tal fi, salvant així els "
+"inconvenients actuals que afecten l’autoproducció individual d’aquest tipus "
+"d’energia elèctrica i la retirada d’incentius als projectes de producció "
+"d’energies renovables. A aquests efectes, l’accés a aquest sistema "
+"d’autoproducció col·lectiva s’entén com una opció del soci/a d’utilitzar "
+"electricitat al preu resultant dels costos de generació de les plantes "
+"associades. Per contractar i mantenir la titularitat dels drets derivats del"
+" present contracte cal tenir, en tot moment, la condició de soci/a de Som "
+"Energia i ser titular d’un contracte de subministrament d’energia elèctrica "
+"subscrit amb Som Energia. Per tant, en aquest contracte es regularà el règim"
+" aplicable en el supòsit que el soci/a deixi de complir tals condicions. En "
+"supòsits excepcionals, en els quals hi hagi una relació prèvia acreditable "
+"entre un soci/a i un no soci/a titular del contracte de subministrament "
+"d’energia elèctrica subscrit amb Som Energia (relació de parentiu, "
+"arrendador-arrendatari, copropietaris, etc.), Som Energia permetrà que el no"
+" soci/a titular del contracte de subministrament d’energia elèctrica "
+"participi en el sistema d’autoproducció col·lectiva sempre que sigui el "
+"soci/a qui tingui i mantingui la condició de prestador o prestadora de Som "
+"Energia. En aquests casos, la persona titular del contracte de "
+"subministrament elèctric haurà d’acceptar les condicions generals i "
+"particulars objecte d’aquest contracte juntament amb el soci/a."
+msgstr "El objetivo a alcanzar en virtud del conjunto de contratos de Autoproducción Colectiva es el de facilitar que los socios que los suscriban puedan pasar a consumir, mediante su agrupación, una energía eléctrica equivalente a la que produzca la propia Som Energia, procedente de fuentes renovables, mediante las plantas de producción que, con el apoyo financiero obtenido de tales contratos, promoverá a tal fin, salvando así los inconvenientes actuales que afectan la autoproducción individual de tal tipo de energía eléctrica y la retirada de incentivos a los proyectos de producción de energías renovables. A estos efectos, el acceso a este Sistema de Autoproducción Colectiva se entiende como una opción del socio de utilizar electricidad al precio resultante de los costes de generación de las Plantas Asociadas. Para contratar y mantener la titularidad de los derechos derivados del presente Contrato se debe mantener, en todo momento, la condición de socio de Som Energia y ser titular de un Contrato de Suministro de energía eléctrica suscrito con Som Energia. Por tanto, en el presente Contrato se regulará el régimen aplicable en el supuesto de que el Socio deje de cumplir tales condiciones. En supuestos excepcionales, en los que haya una relación previa acreditable entre un socio y un no-socio titular del Contrato de suministro de energía eléctrica suscrito con Som Energia (relación de parentesco, arrendador-arrendatario, co-propietarios, etc.), Som Energia permitirá que el no-socio titular del Contrato de Suministro de energía eléctrica participe en el sistema de autoproducción colectiva siempre que sea el Socio quien tenga y mantenga la condición de prestamista de Som Energia. En estos casos, el titular del contrato de Suministro Eléctrico deberá aceptar las condiciones generales y particulares objeto de este contrato junto con el Socio."
+
+#: rml:som_inversions/report/report_generationkwh_doc.mako:256
+msgid ""
+"En el present contracte es regulen les condicions de l’aportació que, per "
+"adherir-se al sistema d’autoproducció col·lectiva, el soci/a fa a Som "
+"Energia en concepte de préstec gratuït, per l’import que consta a les "
+"condicions particulars i, per tant, el procediment mitjançant el qual Som "
+"Energia, durant el període de vigència del present Contracte, restituirà al "
+"soci/a la suma prestada. L’aportació del préstec permetrà a Som Energia "
+"finançar les plantes de producció de fonts d’energies renovables vinculades "
+"a aquest contracte. La qualificació del préstec com a gratuït es refereix a "
+"la inexistència d’interessos o remuneració del capital, en els termes i "
+"condicions que s’estableixen en el present Contracte. Ho és sense perjudici "
+"del potencial estalvi que pugui resultar en un concret exercici com a "
+"conseqüència de l’existència d’una diferència positiva, que resulti daplicar"
+" el Preu Generation kWh (segons definit en l’Annex II) respecte de la tarifa"
+" general aplicada per Som energia a la resta de contractes de "
+"subministrament d’energia elèctrica."
+msgstr "En el presente Contrato se regulan las condiciones de la aportación que, para adherirse al Sistema de Autoproducción Colectiva, el Socio hace a Som Energia en concepto de préstamo gratuito, por el importe que consta en las Condiciones Particulares y, por tanto, el procedimiento mediante el cual Som Energia, durante el período de vigencia del presente Contrato, restituirá al Socio la suma prestada. La aportación del préstamo permitirá a Som Energia financiar las plantas de producción de fuentes de energías renovables vinculadas a este contrato. La calificación del préstamo como gratuito se refiere a la inexistencia de intereses o remuneración en capital, en los términos y condiciones que se establecen en el presente Contrato, y lo es sin perjuicio del potencial ahorro que pueda resultar en un concreto ejercicio como consecuencia de la existencia de una diferencia positiva resultante de aplicar el Precio Generation kWh (según definido en el Anexo II) respecto a la tarifa general aplicada por Som Energia en el resto de contratos de suministro de energía eléctrica."
+
+#: rml:som_inversions/report/report_generationkwh_doc.mako:257
+msgid ""
+"No obstant això, en cas que durant la vigència d’aquest contracte hi hagi "
+"canvis en el règim retributiu que impliquin millores per als projectes "
+"d’energies renovables en general (possibilitat d’incorporació d’alguns "
+"projectes, o tots, al règim retributiu específic, etc.) o per als projectes "
+"de les plantes associades en particular (recepció d’alguna subvenció i/o "
+"ajuda específica, etc.), l’Assemblea general, a proposta del Consell Rector,"
+" podrà aprovar la retribució d’un interès a determinar a favor del soci/a "
+"prestamista sempre que no es perjudiqui la viabilitat general de la cartera "
+"de projectes. La resolució de l’Assemblea general establirà les condicions, "
+"termini i modes de pagament concretes, que produiran efecte des de "
+"l’acceptació per part del soci/a aquestes condicions més avantatjoses."
+msgstr "No obstante, en caso de que durante la vigencia de este contrato haya cambios en el régimen retributivo que impliquen mejoras para los proyectos de energías renovables en general (posibilidad de incorporación de los proyectos o de algunos de ellos en el régimen retributivo específico, etc.) o para los proyectos de las Plantas Asociadas en particular (recepción de alguna subvención y/o ayuda específica, etc.), la Asamblea General, a propuesta del Consejo Rector, podrá aprobar la retribución de un interés a determinar a favor del socio prestamista siempre que no se perjudique la viabilidad general de la Cartera de Proyectos. La resolución de la Asamblea General establecerá las condiciones, plazo y modos de pago concretas, que surtirán efecto desde la aceptación por parte del Socio de estas condiciones más ventajosas."
+
+#: rml:som_inversions/report/report_generationkwh_doc.mako:258
+msgid ""
+"El contracte d’autoproducció col·lectiva i el préstec convingut en aquest "
+"marc tenen caràcter personal i només podran ésser cedits a favor de les "
+"persones sòcies que compleixin les condicions indicades a l’apartat 1.2 "
+"anterior i amb l’aprovació prèvia i documentada de Som Energia, tal com es "
+"regula en el present contracte. Tot això sens perjudici de l’eventual "
+"cancel·lació del present contracte que, en els termes que s’hi convenen, es "
+"pugui acordar o convenir en el seu moment."
+msgstr "El Contrato de Autoproducción Colectiva y el préstamo convenido en el marco del mismo tienen carácter personal y sólo podrán ser cedidos a favor de socios que cumplan las condiciones indicadas en el apartado 1.2 anterior y con la aprobación previa y documentada de Som Energia, tal y como se regula en el presente Contrato. Todo ello sin perjuicio de la eventual cancelación del presente Contrato que, de acuerdo con los términos descritos en el mismo, pueda acordarse o convenirse en su momento."
+
+#: rml:som_inversions/report/report_generationkwh_doc.mako:261
+msgid "DURADA I ENTRADA EN VIGOR"
+msgstr "DURADA Y ENTRADA EN VIGOR"
+
+#: rml:som_inversions/report/report_generationkwh_doc.mako:263
+msgid ""
+"El present contracte es convé per un termini de VINT-I-CINC (25) ANYS, "
+"període en el qual Som Energia haurà de retornar en la seva totalitat "
+"l’import del préstec rebut d’acord amb els terminis, forma de pagament i "
+"imports detallats a les condicions particulars, sens perjudici del que "
+"s’indica a les condicions generals 6 i 7.2."
+msgstr "El presente Contrato se acuerda por un plazo de VEINTICINCO (25) AÑOS, periodo en el que Som Energia deberá devolver en su totalidad el importe del préstamo recibido de acuerdo con los plazos, forma de pago y los importes detallados en las Condiciones Particulares, sin perjuicio de lo indicado en las Condiciones Generales 6 y 7.2."
+
+#: rml:som_inversions/report/report_generationkwh_doc.mako:264
+msgid ""
+"El present contracte entrarà en vigor en el moment que hagi quedat subscrit "
+"pel soci/a i per Som Energia i hagi resultat efectiu l’ingrés per part del "
+"soci/a de l’import del préstec que consta a les condicions particulars."
+msgstr "El presente Contrato entrará en vigor en el momento en que haya quedado suscrito por el Socio y por Som Energia y haya resultado efectivo mediante recibo domiciliado el ingreso por parte del Socio del importe del préstamo que consta en las Condiciones Particulares."
+
+#: rml:som_inversions/report/report_generationkwh_doc.mako:267
+msgid "PLANTES DE PRODUCCIÓ D’ENERGIA ELÈCTRICA ASSOCIADES A AQUEST CONTRACTE"
+msgstr "PLANTAS DE PRODUCCIÓN DE ENERGÍA ELÉCTRICA ASOCIADAS A ESTE CONTRATO"
+
+#: rml:som_inversions/report/report_generationkwh_doc.mako:269
+msgid ""
+"Les sumes prestades per les persones sòcies es destinaran a finançar la "
+"construcció i posada en marxa dels projectes de plantes de producció "
+"d’energia elèctrica renovable. Aquestes plantes de producció (d’ara "
+"endavant, les <b>“plantes associades”</b>) queden, doncs, vinculades o "
+"associades als contractes d’autoproducció col·lectiva i, per tant, el cost "
+"de l’electricitat generada per les plantes associades servirà com a "
+"paràmetre per calcular les tarifes en la facturació dels contractes de "
+"subministrament dels socis i sòcies acollits, mitjançant la subscripció del "
+"present contracte, a la cartera de projectes."
+msgstr "Las sumas prestadas por los socios se destinarán a financiar la construcción y puesta en marcha de los proyectos de plantas de producción de energía eléctrica renovable. Las indicadas plantas de producción (en adelante, las <b>\"Plantas Asociadas\"</b>) quedan, pues, vinculadas o asociadas a los Contratos de Autoproducción Colectiva y, por tanto, el coste de la electricidad generada por las Plantas Asociadas servirá como parámetro para calcular las tarifas en la facturación de los Contratos de Suministro de los socios acogidos, mediante la suscripción del presente Contrato, en la Cartera de Proyectos."
+
+#: rml:som_inversions/report/report_generationkwh_doc.mako:270
+msgid ""
+"No obstant l’anterior, l’Assemblea general de Som Energia podrà associar a "
+"la present cartera de projectes altres plantes de producció d’energia "
+"elèctrica promogudes per Som Energia a l’empara d’altres campanyes, que en "
+"tal cas podran passar també a ser plantes associades de l’actual cartera de "
+"projectes. I també, viceversa, l’Assemblea de Som Energia podrà associar a "
+"altres carteres les plantes associades a aquesta. Per tant, en els casos "
+"aquí previstos, les plantes associades serviran de referència comuna per a "
+"la determinació del preu <i>generation</i> kWh."
+msgstr "No obstante lo anterior, la Asamblea General de Som Energia podrá asociar a la presente Cartera de Proyectos otras plantas de producción de energía eléctrica promovidas por Som Energia al amparo de otras campañas, que en tal caso podrán pasar también a ser Plantas Asociadas de la actual Cartera de Proyectos. Y también, viceversa, la Asamblea de Som Energia podrá asociar a otras carteras las Plantas Asociadas a la misma. Por lo tanto, en los casos aquí previstos, las Plantas Asociadas servirán de referencia común para la determinación del Precio <i>Generation kWh</i>."
+
+#: rml:som_inversions/report/report_generationkwh_doc.mako:273
+msgid "PRÉSTEC DEL SOCI/A"
+msgstr "PRÉSTAMO DEL SOCIO"
+
+#: rml:som_inversions/report/report_generationkwh_doc.mako:275
+msgid ""
+"El soci/a, amb la finalitat referida a la condició general 1, lliura a Som "
+"Energia, en concepte de préstec gratuït (en els termes descrits a la "
+"condició general 1.3), l’import que consta en les condicions particulars i "
+"que aquesta declara rebre i destinarà a finançar la construcció de les "
+"plantes associades."
+msgstr "El Socio, con la finalidad a la que hace referencia la Condición General 1, entrega a Som Energia, en concepto de préstamo gratuito (en los términos descritos en la Condición General 1.3), el importe que consta en las Condiciones Particulares y que ésta declara recibir y que destinará a financiar la construcción de las Plantas Asociadas."
+
+#: rml:som_inversions/report/report_generationkwh_doc.mako:276
+msgid ""
+"Som Energia queda obligada a retornar al soci/a el capital del referit "
+"préstec en el termini màxim de vint-i-cinc (25) anys de vigència del present"
+" contracte d’acord amb els terminis, forma de pagament i imports establerts "
+"a les condicions particulars. Les parts acorden que d’aquest capital es "
+"compensaran les quantitats que Som Energia hagi ingressat a l’Agència "
+"Tributària per compte del soci/a en concepte de retenció a compte de "
+"l’Impost sobre la renda de les persones físiques, segons el que preveu la "
+"clàusula 5.5."
+msgstr "Som Energia queda obligada a devolver al Socio el capital del referido préstamo en el plazo máximo de veinticinco (25) años de vigencia del presente Contrato de acuerdo con los plazos, forma de pago e importes establecidos en las Condiciones Particulares. Las partes acuerdan que de dicho capital se compensarán las cantidades que Som Energía haya ingresado a la Agencia Tributaria por cuenta del Socio en concepto de retención a cuenta del Impuesto sobre la Renta de las Personas Físicas según lo previsto en la cláusula 5.5."
+
+#: rml:som_inversions/report/report_generationkwh_doc.mako:277
+msgid ""
+"El preu <i>Generation kWh</i> a aplicar es calcularà, segons s’indica en la "
+"condició general 5 següent, en funció del cost de generar l’electricitat a "
+"les plantes associades. Per tant, atès que existirà una fase de construcció "
+"de les plantes associades a construir en virtut de la present cartera de "
+"projectes, dins de la qual es convé aquest contracte, s’estableix un període"
+" de carència inicial, durant el qual no es retornarà el préstec ni "
+"s’aplicarà el preu <i>Generation kWh</i>. L’indicat període de carència té "
+"una durada d’un (1) any. No obstant això, si es produís un endarreriment en "
+"la construcció i posada en marxa de les plantes associades a construir, en "
+"virtut de la cartera de projectes vigent, l’Assemblea general de Som Energia"
+" podrà prorrogar aquest període de carència fins que les referides plantes "
+"associades estiguin plenament operatives. Tal pròrroga no podrà superar el "
+"termini addicional de sis (6) mesos, transcorregut el qual, si continués la "
+"situació indicada, Som Energia, per acord de la seva Assemblea general, "
+"proposarà al soci/a, alternativament i a la seva elecció, o bé una adaptació"
+" del present contracte, o bé la devolució del préstec i la cancel·lació del "
+"contracte, en un termini addicional de sis (6) mesos."
+msgstr "El Precio Generation kWh a aplicar se calculará, según se indica en la siguiente Condición General 5, en función del coste de generar la electricidad en las Plantas Asociadas. Por tanto, dado que existirá una fase de construcción de las Plantas Asociadas a construir en virtud de la presente Cartera de proyectos, dentro de la cual se conviene este Contrato, se establece un periodo de carencia inicial, durante el cual no se devolverá el préstamo ni se aplicará el precio Generation kWh. El indicado periodo de carencia tiene una duración de un (1) año. No obstante, si se produjera un retraso en la construcción y puesta en marcha de las Plantas Asociadas a construir en virtud de la Cartera de proyectos vigente, la Asamblea General de Som Energia podrá prorrogar dicho periodo de carencia hasta que las referidas Plantas Asociadas estén plenamente operativas. Tal prórroga no podrá superar el plazo adicional de seis (6) meses, transcurrido el cual, si continuara la indicada situación, Som Energia, por acuerdo de su Asamblea General, propondrá al Socio, alternativamente y a elección de éste, o bien una adaptación del presente Contrato, o bien la devolución del préstamo y la cancelación del Contrato, en un plazo adicional de seis (6) meses."
+
+#: rml:som_inversions/report/report_generationkwh_doc.mako:280
+msgid ""
+"LA FACTURACIÓ DEL CONTRACTE DE SUBMINISTRAMENT: ACCIONS ENERGÈTIQUES I PREU "
+"GENERATION KWH"
+msgstr "LA FACTURACIÓN DEL CONTRATO DE SUMINISTRO: ACCIONES ENERGÉTICAS Y PRECIO GENERATION KWH"
+
+#: rml:som_inversions/report/report_generationkwh_doc.mako:282
+msgid ""
+"La participació del soci/a o, excepcionalment del titular del contracte no "
+"soci/a segons l’establert a la clàusula 1.2, en el sistema d’autoproducció "
+"col·lectiva objecte d’aquest contracte li atorga un nombre determinat "
+"d’accions energètiques en funció de l’import del préstec concedit. El preu "
+"<i>Generation kWh</i> s’aplicarà exclusivament a la quantitat d’electricitat"
+" que li pertoqui al soci/a en funció de les accions energètiques assignades."
+msgstr "La participación del Socio o, excepcionalmente del titular del contrato no-socio según lo establecido en la cláusula 1.2, en el Sistema de Autoproducción Colectiva objeto de este Contrato le otorga un número determinado de Acciones Energéticas en función del importe del préstamo concedido. El Precio <i>Generation kWh</i> se aplicará exclusivamente a la cantidad de electricidad que le corresponda al socio en función de las Acciones Energéticas asignadas."
+
+#: rml:som_inversions/report/report_generationkwh_doc.mako:283
+msgid ""
+"Cada acció energètica (100 €) equival a una quantitat d’energia elèctrica "
+"(kWh) determinada en funció de la producció real de les plantes associades. "
+"A l’annex I d’aquestes condicions generals s’estableixen els criteris a "
+"partir dels quals es determinaran i ajustaran les referides ràtios per a "
+"cada un dels períodes tarifaris."
+msgstr "Cada Acción energética (100 €) equivale a una cantidad de energía eléctrica (kWhs) determinada en función de la producción real de las Plantas Asociadas. En el Anexo I de estas Condiciones Generales se establecen los criterios en base a los cuales se determinarán y ajustarán las referidas ratios para cada uno de los períodos tarifarios."
+
+#: rml:som_inversions/report/report_generationkwh_doc.mako:284
+msgid ""
+"Cada acció energètica (de 100 €) equival a la quantitat d’energia elèctrica "
+"(kWh) en funció de la producció real de les plantes segons el que consta a "
+"les condicions particulars. En l’annex II d’aquestes condicions generals "
+"s’estableixen els criteris a partir dels quals es determinaran i ajustaran "
+"les referides ràtios per a cada un dels períodes tarifaris."
+msgstr "Cada Acción energética (100 €) equivale a la cantidad de energía eléctrica (kWhs) en función de la producción real de las plantas según lo que consta en las Condiciones Particulares. En el Anexo II de estas Condiciones Generales se establecen los criterios con base a los cuales se determinarán y ajustarán las referidas ratios para cada uno de los períodos tarifarios."
+
+#: rml:som_inversions/report/report_generationkwh_doc.mako:285
+msgid ""
+"El Consell Rector aprovarà, per a cada anualitat, d’acord amb les directrius"
+" de l’Assemblea general, el preu <i>Generation kWh</i> corresponent en "
+"funció dels costos d’obtenció, per Som Energia, de l’energia elèctrica "
+"produïda per les plantes associades. Els annexos I i II d’aquestes "
+"condicions generals desglossen els costos o despeses i el mètode de càlcul "
+"que Som Energia prendrà en consideració per a la determinació del preu "
+"<i>Generation kWh</i>."
+msgstr "El Consejo Rector aprobará, para cada anualidad, de acuerdo con las directrices establecidas por la Asamblea General, el Precio Generation kWh correspondiente en función de los costes de obtención, por Som Energia, de la energía eléctrica producida por las Plantas Asociadas. Los Anexos I y II de estas Condiciones Generales desglosan los costes o gastos y el método de cálculo que Som Energia tomará en consideración para la determinación del Precio <i>Generation kWh</i>."
+
+#: rml:som_inversions/report/report_generationkwh_doc.mako:286
+msgid ""
+"El Preu Generation kWh de cada anualitat s’aprovarà amb caràcter definitiu "
+"pel Consell Rector de Som Energia i tindrà efectes en data 31 de desembre de"
+" cada anualitat. Així, fins a aquesta data s’aplicarà amb caràcter merament "
+"provisional el Preu Generation kWh, la qual cosa pot implicar la "
+"regularització del Preu ja aplicat a l’electricitat que li correspongui al "
+"soci en el transcurs de l’anualitat si aquest diferís del definitiu. En els "
+"30 dies següents s’informarà al soci del resultat d’aplicar el Preu "
+"Generation kWh en l’exercici fiscal anterior (de gener a desembre), "
+"realitzant la corresponent retenció a compte de l’Impost sobre la Renda de "
+"les Persones Físiques."
+msgstr "El Precio Generation kWh de cada anualidad se aprobará con carácter definitivo por el Consejo Rector de Som Energia y tendrá efectos en fecha 31 de diciembre de cada anualidad. Así, hasta esa fecha se aplicará con carácter meramente provisional el Precio Generation kWh, pudiendo implicar la regularización del Precio ya aplicado a la electricidad que le corresponda al socio en el transcurso de la anualidad si el mismo difiriese del definitivo. En los 30 días siguientes se informará al socio del resultado de aplicar el Precio Generation kWh en ejercicio fiscal anterior (enero a diciembre), realizando la correspondiente retención a cuenta del Impuesto sobre la Renta de las Personas Físicas."
+
+#: rml:som_inversions/report/report_generationkwh_doc.mako:289
+msgid "RETORN ANTICIPAT DEL PRÉSTEC"
+msgstr "RETORNO ANTICIPADO DEL PRÉSTAMO"
+
+#: rml:som_inversions/report/report_generationkwh_doc.mako:291
+#, python-format
+msgid ""
+"L’exercici, per part del soci/a o per part de Som Energia, de l’opció de "
+"retorn anticipat del préstec haurà de ser comunicat per la part optant a "
+"l’altra part amb una anticipació mínima de 90 dies. En aquest cas, el "
+"present contracte quedarà cancel·lat i l’import pendent d’amortització en "
+"aquella data del préstec concedit per part del soci/a a favor de Som Energia"
+" haurà de ser retornat per aquesta última a aquell. Aquesta devolució es "
+"produirà en el termini de 90 dies a partir de la data d’efectiva resolució "
+"del contracte. No obstant això, en el supòsit que el conjunt de préstecs "
+"derivats de contractes d’autoproducció col·lectiva a retornar "
+"anticipadament, en el curs d’una anualitat, superi el 5 % de l’import global"
+" pendent de la seva amortització, Som Energia podrà ajornar fins a "
+"l’anualitat següent la devolució d’aquells préstecs que superin el límit. En"
+" tal cas, la devolució es produiria dins dels primers 3 mesos de l’anualitat"
+" següent (a la qual li seria igualment d’aplicació el límit indicat màxim de"
+" devolucions exigibles). La referida cancel·lació anticipada del contracte "
+"comportarà la meritació d’un càrrec a favor de Som Energia per despeses de "
+"gestió corresponent com a màxim al 4 % de l’import del préstec pendent "
+"d’amortitzar en el moment de la devolució. En conseqüència, el soci/a "
+"deixarà de participar des d’aquell moment en el sistema d’autoproducció "
+"col·lectiva."
+msgstr "El ejercicio, por parte del Socio o por parte de Som Energia, de la opción de retorno anticipado del préstamo deberá ser comunicada por la parte optando a la otra parte con una anticipación mínima de 90 días. En este caso, el presente Contrato quedará cancelado y el importe pendiente de amortización en esa fecha del préstamo concedido por parte del Socio a favor de Som Energia deberá ser devuelto por esta última a aquél. Tal devolución se producirá en el plazo de 90 días a partir de la fecha en que se haga efectiva resolución del Contrato. No obstante, en el supuesto de que el conjunto de préstamos derivados de Contratos de Autoproducción Colectiva a devolver anticipadamente, en el curso de una anualidad, supere el 5% del importe global pendiente de amortización de los mismos, Som Energia podrá aplazar hasta la siguiente anualidad la devolución de aquellos préstamos que superen el indicado límite. En tal caso, la devolución se produciría dentro de los primeros 3 meses de la siguiente anualidad (a la que le sería igualmente de aplicación lo indicado respecto el límite máximo de devoluciones exigibles). La referida cancelación anticipada del Contrato comportará el devengo de un cargo a favor de Som Energia por gastos de gestión correspondiente como máximo a un 4% del importe del préstamo pendiente de amortizar en el momento de la devolución. En consecuencia, el Socio dejará de participar desde aquel momento en el Sistema de Autoproducción Colectiva."
+
+#: rml:som_inversions/report/report_generationkwh_doc.mako:292
+msgid ""
+"Atès que la titularitat del present contracte, per part del soci/a, està "
+"sempre condicionada al fet que tingui i mantingui la seva condició de soci/a"
+" de Som Energia i de titular d’un contracte de subministrament amb aquesta, "
+"en el supòsit que, de forma sobrevinguda, el soci/a deixés de complir algun "
+"d’aquests requisits i no tingués acordada i aprovada la cessió del contracte"
+" en els termes establerts a l’apartat 7.1, el present contracte quedarà "
+"cancel·lat i l’import pendent d’amortització en aquella data del préstec "
+"concedit per part del soci/a a favor de Som Energia haurà de ser retornat "
+"per aquesta última a aquell amb els límits indicats en aquesta clàusula. "
+"Aquesta clàusula també serà aplicable quan, de forma excepcional, el titular"
+" del contracte no soci/a vinculat a un soci/a d’acord amb el que estableix "
+"la clàusula 1.2 deixi de complir aquest requisit de titularitat del "
+"contracte de subministrament elèctric. En aquest cas, el préstec concedit "
+"per part del soci/a a favor de Som Energia haurà de ser retornat per aquesta"
+" última al soci/a d’acord amb els límits establerts en aquesta clàusula i el"
+" titular del contracte no soci/a deixarà de participar des d’aquell moment "
+"en el sistema d’autoproducció col·lectiva."
+msgstr "Dado que la titularidad del presente Contrato, por parte del Socio, está siempre condicionada a que tenga y mantenga su condición de socio de Som Energia y de titular de un Contrato de Suministro con ésta, en el supuesto de que, de forma sobrevenida, el Socio dejara de cumplir alguno de estos requisitos y no tuviera acordada y aprobada la cesión del Contrato en los términos establecidos en el apartado 7.1, el presente Contrato quedará cancelado y el importe pendiente de amortización en esa fecha del préstamo concedido por parte del Socio a favor de Som Energia deberá ser devuelto por esta última a aquel con los límites indicados en esta cláusula. Lo mismo será aplicable cuando, de forma excepcional, el titular del contrato no-socio vinculado a un Socio de acuerdo con lo establecido en la cláusula 1.2 deje de cumplir este requisito de titularidad del contrato de suministro eléctrico. En este caso, el préstamo concedido por parte del Socio a favor de Som Energia deberá ser devuelto por esta última al Socio de acuerdo con los límites establecidos en esta cláusula y el titular del contrato no-socio dejará de participar desde ese momento en el Sistema de Autoproducción Colectiva."
+
+#: rml:som_inversions/report/report_generationkwh_doc.mako:293
+msgid ""
+"No obstant això, en els casos de canvi de domicili, s’acostuma a produir un "
+"lapse de temps en el qual la persona titular del contracte de "
+"subministrament elèctric ha de fer els tràmits necessaris per regularitzar "
+"el contracte amb Som Energia al nou domicili. En aquests casos, sempre que "
+"la persona titular notifiqui de forma fefaent a Som Energia la intenció de "
+"regularitzar el contracte amb Som Energia al nou domicili i el període de "
+"temps per realitzar el canvi de titularitat no superi l’any de durada des de"
+" la baixa de l’anterior contracte, no s’aplicarà l’establert a la clàusula "
+"6.2 i el préstec es continuarà ajustant als terminis i modes de pagament "
+"previstos a les condicions particulars sense que se’n produeixi el retorn "
+"anticipat. Ara bé, durant aquest període el soci/a no tindrà accés al preu "
+"<i>Generation kWh</i> ni podrà reclamar posteriorment cap import addicional "
+"per aquest concepte."
+msgstr "No obstante, en los casos de cambio de domicilio, se suele producir un lapso de tiempo en el que el titular del Contrato de Suministro Eléctrico debe hacer los trámites necesarios para regularizar el contrato con Som Energia en el nuevo domicilio. En estos casos, siempre que el titular notifique fehacientemente a Som Energia la intención de regularizar el contrato con Som Energia en el nuevo domicilio y el periodo de tiempo para realizar el cambio de titularidad no supere el año de duración desde la baja del anterior contrato, no se aplicará lo establecido en la cláusula 6.2 y el préstamo se continuará ajustando a los plazos y modos de pago previstos en las Condiciones Particulares sin que se produzca el retorno anticipado del mismo. Ahora bien, durante este periodo el Socio no tendrá acceso al <i>Precio Generation kWh</i>ni podrá reclamar posteriormente ningún importe adicional por este concepto."
+
+#: rml:som_inversions/report/report_generationkwh_doc.mako:296
+msgid "CANVI DE TITULARITAT DEL CONTRACTE"
+msgstr "CAMBIO DE TITULARIDAD DEL CONTRATO"
+
+#: rml:som_inversions/report/report_generationkwh_doc.mako:298
+msgid ""
+"El soci/a, amb el consentiment previ i escrit de Som Energia, podrà cedir el"
+" present contracte a favor d’un altre soci/a, que compleixi també el "
+"requisit de ser titular d’un contracte de subministrament i per al qual les "
+"accions energètiques objecte del present contracte siguin adequades al seu "
+"nivell previsible de consum elèctric. La cessió comportarà, en tal cas, la "
+"subrogació del soci/a adquirent en la posició jurídica del cedent en aquest "
+"contracte. Serà a càrrec de l’adquirent pagar al cedent la suma que ambdues "
+"parts convinguin per rescabalar al cedent les sumes del préstec que tingui "
+"pendents de recuperar. Som Energia, en tals supòsits facilitarà a les dues "
+"parts informació actualitzada sobre la suma pendent d’amortització del "
+"préstec."
+msgstr "El Socio, con el consentimiento previo y escrito de Som Energia, podrá ceder el presente Contrato a favor de otro socio de la misma, que cumpla también el requisito de ser titular de un Contrato de Suministro y para el que las Acciones Energéticas objeto del presente Contrato sean adecuadas a su nivel previsible de consumo eléctrico. La cesión conllevará, en tal caso, la subrogación del Socio adquirente en la posición jurídica del cedente en este Contrato. Será a cargo del adquirente pagar al cedente la suma que ambas partes convengan para resarcir al cedente de las sumas del préstamo que tenga pendientes de recuperar. Som Energia, en tales supuestos facilitará a las dos partes información actualizada sobre el monto pendiente de amortización del préstamo."
+
+#: rml:som_inversions/report/report_generationkwh_doc.mako:299
+msgid ""
+"En cas de mort del soci/a titular del contracte, el seu successor/a (un cop "
+"acreditat documentalment aquesta condició davant de Som Energia) podrà optar"
+" per exercir el dret a retorn anticipat del préstec i consegüent "
+"cancel·lació del contracte o optar per subrogar-se en els drets i deures del"
+" difunt/a i tenir accés al sistema d’autoproducció col·lectiva. Si exerceix "
+"aquesta darrera opció, el successor/a haurà de ser titular d’un contracte de"
+" subministrament elèctric amb Som Energia o realitzar i formalitzar els "
+"tràmits pertinents a aquests efectes."
+msgstr "En caso de fallecimiento del socio titular del contrato, su sucesor/a (una vez acreditado documentalmente esta condición ante Som Energia) podrá optar por ejercer el derecho a retorno anticipado del préstamo y consecuente cancelación del contrato u optar por subrogarse en los derechos y deberes del Socio difunto y tener acceso al sistema de Autoproducción Colectiva. Si ejerce esta última opción, el sucesor/a deberá ser titular de un contrato de Suministro Eléctrico con Som Energia o realizar y formalizar los trámites pertinentes a estos efectos."
+
+#: rml:som_inversions/report/report_generationkwh_doc.mako:302
+msgid "DECLARACIONS DEL SOCI/A"
+msgstr "DECLARACIONES DEL SOCIO/A"
+
+#: rml:som_inversions/report/report_generationkwh_doc.mako:304
+msgid ""
+"Amb l’acceptació d’aquest contracte, el soci/a declara conèixer i acceptar "
+"que aquest és un contracte de tipus col·laboratiu, en el marc de la seva "
+"pertinença a Som Energia, i que la seva finalitat no és, en cap cas, oferir "
+"per part de Som Energia a favor del soci/a un producte financer o d’estalvi,"
+" ni garantir-li rendibilitat financer pel préstec el qual, en el marc del "
+"contracte, el soci/a concedeix a Som Energia."
+msgstr "Con la aceptación de este Contrato el Socio declara conocer y aceptar que este es un contrato de tipo colaborativo, en el marco de su pertenencia a Som Energia, y que su finalidad no es, en ningún caso, ofrecer por parte de Som Energia a favor del Socio un producto financiero o de ahorro, ni garantizarle rentabilidad financiera por el préstamo que, en el marco del Contrato, el Socio concede a Som Energia."
+
+#: rml:som_inversions/report/report_generationkwh_doc.mako:305
+msgid ""
+"Amb l’acceptació del present contracte, el soci/a manifesta que la finalitat"
+" per ell perseguida és la possibilitat d’assegurar, mitjançant la seva "
+"actuació concertada i agrupada amb altres persones sòcies, que una part "
+"substancial de l’energia elèctrica que consumeix sigui equivalent a "
+"l’energia elèctrica provinent de fonts renovables, produïda per les plantes "
+"associades promogudes i operades per Som Energia; i que el préstec concedit "
+"a Som Energia és un mitjà o instrument per assolir tal objectiu "
+"col·laboratiu i de sostenibilitat mediambiental."
+msgstr "Con la aceptación del presente Contrato el Socio manifiesta que la finalidad por él perseguida es la posibilidad de asegurar, mediante su actuación concertada y agrupada con otros socios, que una parte sustancial de la energía eléctrica por él consumida sea equivalente a la energía eléctrica proveniente de fuentes renovables que se producirá por las Plantas Asociadas promovidas y operadas por Som Energia; siendo el préstamo concedido a Som Energia un medio o instrumento para alcanzar tal objetivo colaborativo y de sostenibilidad medioambiental."
+
+#: rml:som_inversions/report/report_generationkwh_doc.mako:306
+msgid ""
+"Amb l’acceptació del present contracte,  el soci/a i/o titular del contracte"
+" de subministrament elèctric manifesta conèixer i acceptar que la "
+"determinació del preu Generation kWh al qual tindrà accés es durà a terme en"
+" funció dels paràmetres establerts a l’annex II d’aquest contracte i serà de"
+" caràcter variable."
+msgstr "Con la aceptación del presente Contrato el Socio y/o titular del Contrato de Suministro Eléctrico manifiesta conocer y aceptar que la determinación del Precio Generation kWh al que tendrá acceso se realizará en función de los parámetros establecidos en el Anexo II de este contrato y será de carácter variable."
+
+#: rml:som_inversions/report/report_generationkwh_doc.mako:307
+msgid ""
+"La determinació i quantificació periòdica dels paràmetres referits, "
+"mitjançant l’aplicació dels criteris establerts als annexos I i II "
+"d’aquestes condicions generals, és facultat, segons el present contracte, de"
+" l’Assemblea general de persones sòcies de Som Energia, de la qual el soci/a"
+" forma part, sens perjudici de les actuacions puntuals del Consell Rector, "
+"referides en aquest contracte, sotmeses al control i ratificació de "
+"l’Assemblea general esmentada, extrems aquests que el soci/a declara "
+"conèixer i accepta."
+msgstr "La determinación y cuantificación periódica de los referidos parámetros, mediante la aplicación de los criterios establecidos en los Anexos I y II de estas Condiciones Generales, es facultad, según el presente Contrato, de la Asamblea General de socios de Som Energia, de la que el Socio forma parte, sin perjuicio de las actuaciones puntuales del Consejo Rector, mencionadas en el presente Contrato, sometidas al control y ratificación de la Asamblea General, extremos éstos que el Socio declara conocer y acepta."
+
+#: rml:som_inversions/report/report_generationkwh_doc.mako:308
+msgid ""
+"Amb l’acceptació del present contracte, el soci/a manifesta conèixer i "
+"acceptar que el préstec per ell concedit és de caràcter gratuït i que no "
+"resultarà retribuït, sense perjudici del que és relatiu a l’aplicació del "
+"preu Generation kWh i llevat que es produeixi alguna de les condicions "
+"previstes a 1.4. A aquests efectes, l’accés a aquest sistema d’autoproducció"
+" col·lectiva s’entén com una opció del soci/a d’utilitzar electricitat al "
+"preu resultant dels costos de generació de les plantes associades, sense que"
+" en cap cas impliqui una contraprestació o retribució pel préstec concedit."
+msgstr "Con la aceptación del presente Contrato el Socio manifiesta conocer y aceptar que el préstamo por él concedido es de carácter gratuito y que no resultará retribuido, sin perjuicio de lo relativo a la aplicación del Precio Generation kWh y salvo que se produzca alguna de las condiciones previstas en la cláusula 1.4. A estos efectos, el acceso a este Sistema de irpf Autoproducción Colectiva se entiende como una opción del socio de utilizar electricidad al precio resultante de los costes de generación de las Plantas Asociadas, sin que en ningún caso implique una contraprestación o retribución por el préstamo concedido."
+
+#: rml:som_inversions/report/report_generationkwh_doc.mako:309
+msgid ""
+"Amb l’acceptació del present contracte, tant el soci/a com la persona "
+"titular del contracte de subministrament d’energia elèctrica, en els casos "
+"que no siguin la mateixa persona d’acord amb els supòsits previstos a la "
+"clàusula 1.2, manifesten i accepten que l’accés a la participació en el "
+"sistema d’autoproducció col·lectiva per part de la persona titular del "
+"contracte de subministrament d’energia elèctrica no s’entén en cap cas com "
+"la transmissió d’un valor net de béns i/o drets adquirits per part del "
+"soci/a, sinó com una opció exercida de forma conjunta per facilitar que una "
+"part de l’energia elèctrica consumida sigui equivalent a l’energia elèctrica"
+" provinent de fonts renovables que es produirà a les plantes associades "
+"promogudes i operades, directament o indirecta, per Som Energia. En tot cas,"
+" les declaracions i retencions a compte de l’Impost sobre la Renda de les "
+"Persones Físiques (IRPF) que Som Energia hagi de realitzar en compliment de "
+"la normativa aplicable en cada moment s’efectuarà en relació al Soci "
+"prestador, en constituir l’estalvi resultant de l’aplicació del Preu "
+"Generation kWh (en els casos en què existeixi una diferència positiva "
+"respecte a la tarifa general aplicada per Som energia a la resta de "
+"contractes de subministrament d’energia elèctrica), un estalvi vinculat al "
+"préstec realitzat per aquest Soci."
+msgstr "Con la aceptación del presente contrato, tanto el Socio como el titular no-socio del Contrato de Suministro de energía eléctrica, en los casos en que no sean la misma persona de acuerdo con los supuestos previstos en la cláusula 1.2, manifiestan y aceptan que el acceso a la participación en el sistema de autoproducción colectiva por parte del titular del contrato de suministro de energía eléctrica no se entiende en ningún caso como la transmisión de un valor neto de bienes y/o derechos adquiridos por parte del Socio al mismo, sino como una opción ejercida de forma conjunta para facilitar que una parte de la energía eléctrica consumida sea equivalente a la energía eléctrica proveniente de fuentes renovables que se producirá por las Plantas Asociadas promovidas y operadas, directa o indirectamente, por Som Energia. En todo caso, las declaraciones y retenciones a cuenta del Impuesto sobre la Renta de las Personas Físicas (IRPF) que Som Energia deba realizar en cumplimiento de la normativa aplicable en cada momento se efectuará en relación al Socio prestamista, al constituir el ahorro resultante de la aplicación del Precio Generation kWh (en los casos en que exista una diferencia positiva respecto a la tarifa general aplicada por Som Energia en el resto de contratos de suministro de energía eléctrica), un ahorro vinculado al préstamo realizado por dicho Socio."
+
+#: rml:som_inversions/report/report_generationkwh_doc.mako:310
+msgid ""
+"Amb l’acceptació del present contracte el soci/a i/o titular del contracte "
+"de subministrament elèctric manifesta conèixer que el sistema "
+"d’autoproducció col·lectiva incidirà de forma exclusiva en el concepte "
+"d’energia del terme variable de la factura i que aquest contracte no exclou "
+"al soci/a de pagar els altres conceptes d’aquest terme (peatges, pagaments "
+"regularitzats, taxes, etc.)"
+msgstr "Con la firma y/o aceptación del presente contrato el Socio y/o titular del Contrato de Suministro Eléctrico manifiesta conocer que el Sistema de Autoproducción Colectiva incidirá de forma exclusiva en el concepto de energía del término variable de la factura y que este contrato no excluye al Socio de pagar los otros conceptos de este término (peajes, pagos regularizados , tasas, etc.)"
+
+#: rml:som_inversions/report/report_generationkwh_doc.mako:313
+msgid "DECLARACIONS DE SOM ENERGIA"
+msgstr "DECLARACIONES SOM ENERGIA"
+
+#: rml:som_inversions/report/report_generationkwh_doc.mako:315
+msgid ""
+"Som Energia garanteix al soci/a la devolució, en el termini màxim de "
+"vint-i-cinc (25) anys, del capital del préstec concedit en el marc d’aquest "
+"contracte d’acord amb els terminis, modes de pagament i imports detallats a "
+"les condicions particulars."
+msgstr "Som Energia garantiza al Socio la devolución, en el plazo máximo de veinticinco (25) años, del capital del préstamo concedido en el marco de este Contrato de acuerdo con los plazos, modos de pago e importes detallados en las Condiciones Particulares."
+
+#: rml:som_inversions/report/report_generationkwh_doc.mako:316
+msgid ""
+"Som Energia garanteix al soci/a que la determinació del preu Generation kWh "
+"es durà a terme, per part del Consell Rector, en aplicació dels criteris "
+"aprovats per l’Assemblea general, en funció estrictament dels costos reals, "
+"per a la cooperativa, de l’energia elèctrica produïda per les plantes "
+"associades, més, únicament, un import adequat i proporcional destinat a la "
+"cobertura dels costos generals de la cooperativa i despeses de gestió, i amb"
+" aplicació dels criteris que consten a l’annex II d’aquestes condicions "
+"generals."
+msgstr "Som Energia garantiza al Socio que la determinación del Precio Generation kWh se llevará a cabo, por parte de la Asamblea General, en función estrictamente de los costes reales, para la cooperativa, de la energía eléctrica producida por las Plantas Asociadas, añadiendo, únicamente, un importe adecuado y proporcional destinado a la cobertura de los costes generales de la cooperativa y gastos de gestión, y con aplicación de los criterios que constan en el Anexo II de estas Condiciones Generales."
+
+#: rml:som_inversions/report/report_generationkwh_doc.mako:317
+msgid ""
+"Som Energia mantindrà informat el soci/a, tant en el marc de l’Assemblea "
+"general com mitjançant la informació escrita que, com a mínim amb caràcter "
+"anual, li facilitarà, de l’evolució de les plantes associades, del seu "
+"procés de construcció i, posteriorment, d’operació, i dels costos per a la "
+"cooperativa de l’energia produïda per aquestes."
+msgstr "Som Energia mantendrá informado al Socio, tanto en el marco de la Asamblea General como mediante información escrita que, como mínimo con carácter anual, le facilitará, de la evolución de las Plantas Asociadas, de su proceso de construcción y posteriormente de su operación, y de los costes para la cooperativa de la energía producida por éstas."
+
+#: rml:som_inversions/report/report_generationkwh_doc.mako:320
+msgid "NATURALESA JURÍDICA DEL PRÉSTEC CONCEDIT EN EL MARC DEL CONTRACTE"
+msgstr "NATURALEZA JURÍDICA DEL PRÉSTAMO CONCEDIDO EN EL MARCO DEL CONTRATO"
+
+#: rml:som_inversions/report/report_generationkwh_doc.mako:322
+msgid ""
+"El préstec concedit pel soci/a es regeix per la normativa pròpia per a "
+"aquests contractes establerta pel Codi civil i pel Codi de comerç. Som "
+"Energia està obligada a retornar al soci/a la totalitat de la suma prestada "
+"en el termini convingut, amb deducció prèvia dels imports avançats per Som "
+"Energia a l’Agència Tributària motivats pel mateix contracte. El soci/a, en "
+"tant que prestador, no participa en les eventuals pèrdues dels negocis o "
+"activitats als quals es destinaran les sumes prestades i, per tant, el "
+"present contracte no té la consideració jurídica de compte en participació."
+msgstr "El préstamo concedido por el Socio se rige por la normativa propia para estos contratos establecida por el Código civil y por el Código de Comercio. Som Energia está obligada a devolver al Socio la totalidad de la suma prestada en el plazo convenido, previa deducción de los importes adelantados por Som Energia a la Agencia Tributaria con motivo del propio contrato. El Socio, como prestamista, no participa en las eventuales pérdidas de los negocios o actividades a los que se destinarán las sumas prestadas y, por tanto, el presente contrato no tiene la consideración jurídica de cuenta en participación."
+
+#: rml:som_inversions/report/report_generationkwh_doc.mako:325
+msgid "DADES DE CARÀCTER PERSONAL"
+msgstr "DATOS DE CARÁCTER PERSONAL"
+
+#: rml:som_inversions/report/report_generationkwh_doc.mako:327
+msgid ""
+"El responsable de les dades personals facilitades en el marc del contracte "
+"actual és Som Energia, SCCL, qui els emprarà únicament per a l’objecte i "
+"finalitat previstos en quest, així com l’enviament de comunicacions sobre "
+"els seus productes i serveis. La legitimació per a aquest tractament deriva "
+"de l’execució del contracte actual, així com del consentiment que el soci/a "
+"expressa en subscriure’l."
+msgstr "El responsable de los datos personales facilitados en el marco del presente Contrato es SOM ENERGIA SCCL, quien los empleará únicamente para el objeto y finalidad previstos en el mismo, así como el envío de comunicaciones sobre sus productos y servicios. La legitimación para dicho tratamiento deriva de la ejecución del presente Contrato, así como del consentimiento que el Socio expresa al suscribir el mismo."
+
+#: rml:som_inversions/report/report_generationkwh_doc.mako:328
+msgid ""
+"En el marc de l’execució d’aquest contracte està prevista la cessió de "
+"dades, procedents de la mateixa persona interessada, a terceres empreses "
+"quan sigui necessari per a la seva execució, tal com, per exemple, "
+"assessories fiscals i comptables, bancs i caixes, administració tributària o"
+" altres administracions públiques i tercers països."
+msgstr "En el marco de la ejecución del presente Contrato está prevista la cesión de datos, procedentes de la propia persona interesada, a terceras empresas cuando sea necesario para la ejecución del mismo, tal como, por ejemplo, asesorías fiscales y contables, bancos y cajas, administración tributaria u otras administraciones públicas y terceros países."
+
+#: rml:som_inversions/report/report_generationkwh_doc.mako:329
+msgid ""
+"El soci/a té dret a accedir, rectificar i suprimir les dades, així com "
+"altres drets, indicats en la informació addicional que figura en la Política"
+" de Privacitat de Som Energia, SCCL, disponible en la seva pàgina en "
+"Internet www.somenergia.coop i que pot exercir els drets o trobar la "
+"informació addicional dirigint-se a l’adreça de Som Energia, SCCL, tal com "
+"indica la condició general 12."
+msgstr "El Socio tiene derecho a acceder, rectificar y suprimir los datos, así como otros derechos, indicados en la información adicional que figura en la Política de Privacidad de SOM ENERGIA SCCL, disponible en su página en Internet www.somenergia.coop y que puede ejercer los derechos o encontrar la información adicional dirigiéndose a la dirección de SOM ENERGIA SCCL conforme a lo indicado en la Condición General número 12."
+
+#: rml:som_inversions/report/report_generationkwh_doc.mako:332
+msgid "MODIFICACIÓ"
+msgstr "MODIFICACIÓN"
+
+#: rml:som_inversions/report/report_generationkwh_doc.mako:334
+msgid ""
+"Les parts estan obligades al compliment de les obligacions reflectides en el"
+" contracte conforme als termes que s’hi recullen."
+msgstr "Las Partes están obligadas al cumplimiento de las obligaciones reflejadas en el Contrato conforme a los términos en él recogidos."
+
+#: rml:som_inversions/report/report_generationkwh_doc.mako:335
+msgid ""
+"Sense perjudici de l’anterior, el contracte actual podrà ser modificat per "
+"Som Energia, SCCL, per decisió del seu Consell Rector o de l’Assemblea "
+"general. Tota modificació serà degudament comunicada al soci/a de "
+"conformitat amb el que es preveu en aquesta clàusula, i podrà ser motivada a"
+" fi de complir amb la normativa del mercat elèctric, així com per a la "
+"fixació de criteris sobre els valors que la cooperativa desitja transmetre."
+msgstr "Sin perjuicio de lo anterior, el presente Contrato podrá ser modificado por SOM ENERGIA SCCL por decisión de su Consejo Rector o de la Asamblea General. Toda modificación será debidamente comunicada al Socio de conformidad con lo previsto en la presente cláusula, y podrán ser motivada a fin de cumplir con la normativa del mercado eléctrico, así como para la fijación de criterios sobre los valores que la cooperativa desea transmitir."
+
+#: rml:som_inversions/report/report_generationkwh_doc.mako:336
+msgid ""
+"Igualment, Som Energia, SCCL, podrà modificar unilateralment el contracte en"
+" el cas que demostri que, per alteracions de la normativa aplicable o "
+"qualsevol altra circumstància equivalent (per exemple, alteracions del "
+"mercat de producció o comercialització d’energia), fos necessària aquesta "
+"modificació per ajustar el contingut del contracte a la normativa vigent o "
+"quan el compliment de les prestacions contractuals li resulti excessivament "
+"onerós."
+msgstr "Igualmente, SOM ENERGIA SCCL podrá modificar unilateralmente el Contrato en el caso de que demuestre que, por alteraciones de la normativa aplicable o cualquier otra circunstancia equivalente (por ejemplo alteraciones del mercado de producción o comercialización de energía), fuese necesaria dicha modificación para ajustar el contenido del Contrato a la normativa vigente o cuando el cumplimiento de las prestaciones contractuales resulte excesivamente oneroso para ella."
+
+#: rml:som_inversions/report/report_generationkwh_doc.mako:337
+msgid ""
+"Aquestes modificacions seran comunicades al soci/a amb una antelació de "
+"trenta (30) dies naturals a l’aplicació de la modificació i, en cas que "
+"suposin un perjudici per al soci/a, aquest podrà resoldre el contracte "
+"comunicant-lo a Som Energia, SCCL, per qualsevol dels mitjans establerts en "
+"el contracte actual en el termini de quinze (15) dies naturals següents a "
+"aquesta comunicació. En cas de no resoldre el contracte en aquest termini, "
+"la modificació s’entendrà acceptada pel soci/a."
+msgstr "Estas modificaciones serán comunicadas al Socio con una antelación de treinta (30) días naturales a la aplicación de la modificación y, en caso de que supongan un perjuicio para el Socio, éste podrá resolver el Contrato comunicándolo a SOM ENERGIA SCCL por cualquiera de los medios establecidos en el presente Contrato en el plazo de quince (15) días naturales siguientes a dicha comunicación. En caso de no resolver el Contrato en dicho plazo, la modificación se entenderá aceptada por el Socio."
+
+#: rml:som_inversions/report/report_generationkwh_doc.mako:340
+msgid "NOTIFICACIONS I ALTRES"
+msgstr "NOTIFICACIONES Y VARIOS"
+
+#: rml:som_inversions/report/report_generationkwh_doc.mako:342
+msgid ""
+"La notificació al soci/a de les operacions, liquidacions, facturacions i "
+"comunicacions de caràcter general derivades de l’operativa d’aquest "
+"contracte i, en especial, del préstec concedit en aquest marc, es "
+"realitzaran prioritàriament per correu electrònic a l’adreça indicada a les "
+"condicions particulars. És responsabilitat del soci/a el manteniment "
+"correcte, en estat operatiu, del correu referit."
+msgstr "La notificación al Socio de las operaciones, liquidaciones, facturaciones y comunicaciones de carácter general derivadas de la operativa de este Contrato y, en especial, del préstamo concedido en el marco del mismo, se realizarán prioritariamente por correo electrónico a la dirección indicada en las Condiciones Particulares. Es responsabilidad del Socio el correcto mantenimiento, en estado operativo, del referido correo."
+
+#: rml:som_inversions/report/report_generationkwh_doc.mako:343
+msgid ""
+"Excepte en els casos indicats en l’anterior apartat 12.1, qualsevol "
+"notificació que hagi de practicar una part a l’altra en relació amb el "
+"present Contracte, es durà a terme per correu certificat amb justificant de "
+"recepció, o per un altre mitjà equivalent que permeti deixar constància del "
+"seu enviament, recepció i contingut."
+msgstr "Excepto en los casos indicados en el anterior apartado 12.1, cualquier notificación que deba practicar una parte a la otra en relación con el presente Contrato, se llevará a cabo por correo certificado con acuse de recibo, o por otro medio equivalente que permita dejar constancia de su envío, recepción y contenido."
+
+#: rml:som_inversions/report/report_generationkwh_doc.mako:344
+msgid ""
+"La declaració de qualsevol d’aquestes condicions generals com a invàlida o "
+"ineficaç no afectarà la validesa o eficàcia de la resta, que continuarà "
+"essent vinculant per a les parts contractuals, les quals es comprometen en "
+"aquest cas a substituir la clàusula afectada per una altra de vàlida "
+"d’efecte equivalent, segons els principis de bona fe i equilibri de "
+"contraprestacions. La renúncia per qualsevol de les parts a exigir en un "
+"moment determinat el compliment de qualsevol de les condicions generals aquí"
+" estipulades no implicarà una renúncia amb caràcter general ni crearà un "
+"dret adquirit per l’altra part."
+msgstr "La declaración de cualquiera de estas Condiciones Generales como inválida o ineficaz no afectará a la validez o eficacia de las restantes, que seguirán siendo vinculantes para las partes contractuales, las cuales se comprometen en este caso a sustituir la cláusula afectada por otra de válida de efecto equivalente, según los principios de buena fe y equilibrio de contraprestaciones. La renuncia por cualquiera de las partes a exigir en un momento determinado el cumplimiento de cualquiera de las Condiciones Generales aquí estipuladas no implicará una renuncia con carácter general ni creará un derecho adquirido para la otra parte."
+
+#: rml:som_inversions/report/report_generationkwh_doc.mako:347
+msgid "LEGISLACIÓ I JURISDICCIÓ"
+msgstr "LEGISLACIÓN Y JURISDICCIÓN"
+
+#: rml:som_inversions/report/report_generationkwh_doc.mako:349
+msgid ""
+"Aquest contracte es regirà i interpretarà en tots els seus extrems per les "
+"lleis espanyoles que resultin aplicables."
+msgstr "El presente contrato se regirá y interpretará en todos sus extremos por las leyes españolas que resulten aplicables."
+
+#: rml:som_inversions/report/report_generationkwh_doc.mako:350
+msgid ""
+"Totes les controvèrsies que puguin sorgir en relació amb aquest contracte se"
+" sotmetran a la jurisdicció dels jutjats i tribunals de la ciutat de Girona,"
+" excepte en aquells supòsits que es disposi una altra cosa de forma "
+"imperativa per la normativa aplicable a l’efecte."
+msgstr "Todas las controversias que puedan surgir en relación con este Contrato se someterán a la jurisdicción de los juzgados y tribunales de la ciudad de Girona, salvo en aquellos supuestos en que se disponga otra jurisdicción de forma imperativa por la normativa aplicable al efecto."
+
+#: rml:som_inversions/report/report_generationkwh_doc.mako:353
+msgid "CONTRACTE COMPLET"
+msgstr "CONTRATO COMPLETO"
+
+#: rml:som_inversions/report/report_generationkwh_doc.mako:355
+msgid ""
+"Aquestes condicions generals, juntament amb les condicions particulars, "
+"constitueixen la integritat dels pactes existents entre les parts en relació"
+" amb els extrems que en constitueixen el seu objecte, substituint qualssevol"
+" altres pactes o acords al respecte existents entre les parts amb "
+"anterioritat a la seva subscripció."
+msgstr "Estas Condiciones Generales, conjuntamente con las Condiciones Particulares, constituyen la integridad de los pactos existentes entre las partes en relación con los extremos que constituyen su objeto, sustituyendo cualesquiera otros pactos o acuerdos al respecto existentes entre las partes con anterioridad a su suscripción."
+
+#: rml:som_inversions/report/report_generationkwh_doc.mako:363
+msgid "ANNEX I"
+msgstr "ANEXO I"
+
+#: rml:som_inversions/report/report_generationkwh_doc.mako:364
+msgid "CRITERIS A APLICAR PER LA DETERMINACIÓ DEL PREU GENERATION KWH"
+msgstr "CRITERIOS A APLICAR PARA LA DETERMINACIÓN DEL PRECIO GENERATION KWH"
+
+#: rml:som_inversions/report/report_generationkwh_doc.mako:365
+msgid ""
+"L’assignació de kWhs a cada Acció Energètica es realitzarà en funció de la "
+"<b>producció real</b> que tinguin les plantes. Diàriament es realitzarà el "
+"recompte de quina ha estat aquesta producció i a partir d’aquesta informació"
+" es reflectirà a la factura elèctrica <b>segons s’estableix a l’ Annex "
+"II.</b>"
+msgstr "La asignación de kWhs para cada Acción Energética se realizará en función de la <b>producción real</b> que tengan las plantas. Diariamente se realizará el recuento de cuál ha sido esta producción y a partir de esta información se reflejará en la factura eléctrica <b>según se establece en el AnexoII</b>"
+
+#: rml:som_inversions/report/report_generationkwh_doc.mako:366
+msgid "1) Establiment del preu de cost mitjà de generació Generation kWh."
+msgstr "1) Establecimiento del precio de coste medio de generación Generation kWh."
+
+#: rml:som_inversions/report/report_generationkwh_doc.mako:367
+msgid ""
+"Per tal de mostrar quin serà el criteri a seguir a l’hora de determinar el "
+"preu de cost mitjà de generació fem una simulació amb tres exemples de "
+"projectes tipus."
+msgstr "Para mostrar cuál será el criterio a seguir a la hora de determinar el precio de coste medio de generación hacemos una simulación con tres ejemplos de proyectos tipo."
+
+#: rml:som_inversions/report/report_generationkwh_doc.mako:370
+msgid "Projecte 1:"
+msgstr "Proyecto 1:"
+
+#: rml:som_inversions/report/report_generationkwh_doc.mako:371
+#: rml:som_inversions/report/report_generationkwh_doc.mako:385
+msgid "Tipologia"
+msgstr "Tipologia"
+
+#: rml:som_inversions/report/report_generationkwh_doc.mako:371
+msgid "Projecte FV sobre terreny"
+msgstr "Proyecto FV sobre terreno"
+
+#: rml:som_inversions/report/report_generationkwh_doc.mako:372
+#: rml:som_inversions/report/report_generationkwh_doc.mako:400
+msgid "Inversió prevista"
+msgstr "Inversión prevista"
+
+#: rml:som_inversions/report/report_generationkwh_doc.mako:372
+#: rml:som_inversions/report/report_generationkwh_doc.mako:414
+msgid "1.800.000 €"
+msgstr "1.800.000 €"
+
+#: rml:som_inversions/report/report_generationkwh_doc.mako:373
+#: rml:som_inversions/report/report_generationkwh_doc.mako:387
+#: rml:som_inversions/report/report_generationkwh_doc.mako:401
+msgid "Producció anual prevista"
+msgstr "Producción anual prevista"
+
+#: rml:som_inversions/report/report_generationkwh_doc.mako:373
+#: rml:som_inversions/report/report_generationkwh_doc.mako:414
+msgid "2.818.580 kWh"
+msgstr "2.818.580 kWh"
+
+#: rml:som_inversions/report/report_generationkwh_doc.mako:374
+msgid "Vida útil considerada"
+msgstr "Vida útil considerada"
+
+#: rml:som_inversions/report/report_generationkwh_doc.mako:374
+msgid "30 anys"
+msgstr "30 años"
+
+#: rml:som_inversions/report/report_generationkwh_doc.mako:375
+msgid "Període d’amortització"
+msgstr "Período de amortización"
+
+#: rml:som_inversions/report/report_generationkwh_doc.mako:375
+#: rml:som_inversions/report/report_generationkwh_doc.mako:403
+msgid "25 anys"
+msgstr "25 años"
+
+#: rml:som_inversions/report/report_generationkwh_doc.mako:376
+msgid "Valor residual considerat als 25 anys"
+msgstr "Valor residual considerado a los 25 años"
+
+#: rml:som_inversions/report/report_generationkwh_doc.mako:376
+msgid "416.666 €"
+msgstr "416.666 €"
+
+#: rml:som_inversions/report/report_generationkwh_doc.mako:377
+#: rml:som_inversions/report/report_generationkwh_doc.mako:391
+#: rml:som_inversions/report/report_generationkwh_doc.mako:405
+msgid "Cost d’amortització (1):"
+msgstr "Coste de amortización (1):"
+
+#: rml:som_inversions/report/report_generationkwh_doc.mako:377
+msgid "0.020 €/kWh"
+msgstr "0.020 €/kWh"
+
+#: rml:som_inversions/report/report_generationkwh_doc.mako:378
+msgid "Cost O&M (operació i manteniment)(2):"
+msgstr "Coste O&M (operación y mantenimiento)(2):"
+
+#: rml:som_inversions/report/report_generationkwh_doc.mako:378
+#: rml:som_inversions/report/report_generationkwh_doc.mako:405
+msgid "0.013 €/kWh"
+msgstr "0.013 €/kWh"
+
+#: rml:som_inversions/report/report_generationkwh_doc.mako:379
+#: rml:som_inversions/report/report_generationkwh_doc.mako:393
+msgid "Cost generació(1+2):"
+msgstr "Coste generación(1+2):"
+
+#: rml:som_inversions/report/report_generationkwh_doc.mako:379
+msgid "0.033 €/kWh"
+msgstr "0.033 €/kWh"
+
+#: rml:som_inversions/report/report_generationkwh_doc.mako:380
+#: rml:som_inversions/report/report_generationkwh_doc.mako:394
+msgid "Cost final (amb IVPEE 7%)"
+msgstr "Coste final (con IVPEE 7%)"
+
+#: rml:som_inversions/report/report_generationkwh_doc.mako:380
+#: rml:som_inversions/report/report_generationkwh_doc.mako:414
+msgid "0.035 €/kWh"
+msgstr "0.035 €/kWh"
+
+#: rml:som_inversions/report/report_generationkwh_doc.mako:384
+msgid "Projecte 2:"
+msgstr "Proyecto 2:"
+
+#: rml:som_inversions/report/report_generationkwh_doc.mako:385
+msgid "Projecte eòlic"
+msgstr "Proyecto eólico"
+
+#: rml:som_inversions/report/report_generationkwh_doc.mako:386
+msgid "Inversión prevista"
+msgstr "Inversión prevista"
+
+#: rml:som_inversions/report/report_generationkwh_doc.mako:386
+#: rml:som_inversions/report/report_generationkwh_doc.mako:415
+msgid "1.750.000 €"
+msgstr "1.750.000 €"
+
+#: rml:som_inversions/report/report_generationkwh_doc.mako:387
+#: rml:som_inversions/report/report_generationkwh_doc.mako:415
+msgid "3.593.789 kWh"
+msgstr "3.593.789 kWh"
+
+#: rml:som_inversions/report/report_generationkwh_doc.mako:388
+#: rml:som_inversions/report/report_generationkwh_doc.mako:402
+msgid "Vida útil considerada:"
+msgstr "Vida útil considerada:"
+
+#: rml:som_inversions/report/report_generationkwh_doc.mako:388
+#: rml:som_inversions/report/report_generationkwh_doc.mako:389
+msgid "20 anys"
+msgstr "20 años"
+
+#: rml:som_inversions/report/report_generationkwh_doc.mako:389
+#: rml:som_inversions/report/report_generationkwh_doc.mako:403
+msgid "Període d’amortització:"
+msgstr "Periodo de amortización:"
+
+#: rml:som_inversions/report/report_generationkwh_doc.mako:390
+#: rml:som_inversions/report/report_generationkwh_doc.mako:404
+msgid "Valor residual considerat:"
+msgstr "Valor residual considerado:"
+
+#: rml:som_inversions/report/report_generationkwh_doc.mako:390
+msgid "0 €"
+msgstr "0 €"
+
+#: rml:som_inversions/report/report_generationkwh_doc.mako:391
+msgid "0.024 €/kWh"
+msgstr "0.024 €/kWh"
+
+#: rml:som_inversions/report/report_generationkwh_doc.mako:392
+#: rml:som_inversions/report/report_generationkwh_doc.mako:406
+msgid "Cost O&M(2):"
+msgstr "Coste O&M(2):"
+
+#: rml:som_inversions/report/report_generationkwh_doc.mako:392
+msgid "0.016 €/kWh"
+msgstr "0.016 €/kWh"
+
+#: rml:som_inversions/report/report_generationkwh_doc.mako:393
+msgid "0.039 €/kWh"
+msgstr "0.039 €/kWh"
+
+#: rml:som_inversions/report/report_generationkwh_doc.mako:394
+#: rml:som_inversions/report/report_generationkwh_doc.mako:415
+msgid "0.044 €/kWh"
+msgstr "0.044 €/kWh"
+
+#: rml:som_inversions/report/report_generationkwh_doc.mako:398
+msgid "Projecte 3:"
+msgstr "Proyecto 3:"
+
+#: rml:som_inversions/report/report_generationkwh_doc.mako:399
+msgid "Tipologia:"
+msgstr "Tipología:"
+
+#: rml:som_inversions/report/report_generationkwh_doc.mako:399
+msgid "Projecte hidràulic"
+msgstr "Proyecto hidráulico"
+
+#: rml:som_inversions/report/report_generationkwh_doc.mako:400
+#: rml:som_inversions/report/report_generationkwh_doc.mako:416
+msgid "1.600.000 €"
+msgstr "1.600.000 €"
+
+#: rml:som_inversions/report/report_generationkwh_doc.mako:401
+#: rml:som_inversions/report/report_generationkwh_doc.mako:416
+msgid "4.184.615 kWh"
+msgstr "4.184.615 kWh"
+
+#: rml:som_inversions/report/report_generationkwh_doc.mako:402
+msgid "35 anys"
+msgstr "35 años"
+
+#: rml:som_inversions/report/report_generationkwh_doc.mako:404
+msgid "215.385 €"
+msgstr "215.385 €"
+
+#: rml:som_inversions/report/report_generationkwh_doc.mako:406
+msgid "0.015 €/kWh"
+msgstr "0.015 €/kWh"
+
+#: rml:som_inversions/report/report_generationkwh_doc.mako:407
+msgid "Cost generació(1 + 2):"
+msgstr "Coste generación(1+2):"
+
+#: rml:som_inversions/report/report_generationkwh_doc.mako:407
+msgid "0.027 €/kWh"
+msgstr "0.027 €/kWh"
+
+#: rml:som_inversions/report/report_generationkwh_doc.mako:408
+#, python-format
+msgid "Cost final (con IVPEE 7%+2% cànon hidràulic)"
+msgstr "Coste final (con IVPEE 7%+2% canon hidráulico)"
+
+#: rml:som_inversions/report/report_generationkwh_doc.mako:408
+#: rml:som_inversions/report/report_generationkwh_doc.mako:416
+msgid "0.029 €/kWh"
+msgstr "0.029 €/kWh"
+
+#: rml:som_inversions/report/report_generationkwh_doc.mako:412
+msgid "Determinació Preu Generation kWh:"
+msgstr "Determinación Precio Generation kWh:"
+
+#: rml:som_inversions/report/report_generationkwh_doc.mako:413
+msgid "Projecte"
+msgstr "Proyecto"
+
+#: rml:som_inversions/report/report_generationkwh_doc.mako:413
+msgid "Producció anual"
+msgstr "Producción anual"
+
+#: rml:som_inversions/report/report_generationkwh_doc.mako:413
+#: rml:som_inversions/report/report_generationkwh_doc.mako:491
+msgid "Inversió"
+msgstr "Inversión"
+
+#: rml:som_inversions/report/report_generationkwh_doc.mako:413
+msgid "Previsió kWh any/A.E. (100€)"
+msgstr "Previsión kWh año/A.E. (100€)"
+
+#: rml:som_inversions/report/report_generationkwh_doc.mako:413
+msgid "Cost final"
+msgstr "Coste final"
+
+#: rml:som_inversions/report/report_generationkwh_doc.mako:414
+msgid "1"
+msgstr "1"
+
+#: rml:som_inversions/report/report_generationkwh_doc.mako:414
+msgid "157"
+msgstr "157"
+
+#: rml:som_inversions/report/report_generationkwh_doc.mako:415
+msgid "2"
+msgstr "2"
+
+#: rml:som_inversions/report/report_generationkwh_doc.mako:415
+msgid "205"
+msgstr "205"
+
+#: rml:som_inversions/report/report_generationkwh_doc.mako:416
+msgid "3"
+msgstr "3"
+
+#: rml:som_inversions/report/report_generationkwh_doc.mako:416
+msgid "262"
+msgstr "262"
+
+#: rml:som_inversions/report/report_generationkwh_doc.mako:420
+msgid "Preu Generation kW"
+msgstr "Precio Generation kW"
+
+#: rml:som_inversions/report/report_generationkwh_doc.mako:420
+msgid "Previsió kWh any/Acció Energètica"
+msgstr "Previsión kWh año/Acción Energética"
+
+#: rml:som_inversions/report/report_generationkwh_doc.mako:421
+msgid "0.036 €/kWh"
+msgstr "0.036 €/kWh"
+
+#: rml:som_inversions/report/report_generationkwh_doc.mako:421
+msgid "206 kWh"
+msgstr "206 kWh"
+
+#: rml:som_inversions/report/report_generationkwh_doc.mako:427
+msgid "ANNEX II"
+msgstr "ANEXO II"
+
+#: rml:som_inversions/report/report_generationkwh_doc.mako:428
+msgid ""
+"CRITERIS A APLICAR PER A L’ASSIGNACIÓ DE  KWHs ASSOCIATS A CADA ACCIÓ "
+"ENERGÈTICA I REPARTIMENT SEGONS PERÍODES TARIFARIS."
+msgstr "CRITERIOS A APLICAR PARA LA ASIGNACIÓN DE  KWHs ASOCIADOS A CADA ACCIÓN ENERGÉTICA Y REPARTO SEGÚN PERIODOS TARIFARIOS."
+
+#: rml:som_inversions/report/report_generationkwh_doc.mako:429
+msgid ""
+"La producció de les plantes estarà monitoritzada en temps real i cada dia es"
+" realitzarà el recompte de la producció que hi ha hagut en cadascun dels "
+"diferents períodes tarifaris vigents. En funció d’aquests paràmetres "
+"s’establiran les diferents tarifes on se substituirà el preu de "
+"l’electricitat al mercat majorista pel preu mitjà de cost de generació de "
+"les plantes Generation kWh (Preu Generation kWh), deixant tots els altres "
+"conceptes que conformen el preu de de l’electricitat igual."
+msgstr "La producción de las plantas estará monitorizada en tiempo real y cada día se realizará el recuento de la producción que ha habido en cada uno de los diferentes periodos tarifarios vigentes. En función de estos parámetros se establecerán las diferentes tarifas en las que se sustituirá el precio de la electricidad en el mercado mayorista por el precio medio de coste de generación de las plantas Generation kWh (Precio Generation kWh), dejando todos los demás conceptos que conforman el precio de la electricidad igual."
+
+#: rml:som_inversions/report/report_generationkwh_doc.mako:430
+msgid ""
+"D’aquesta manera, el rati kWh per Acció Energètica variarà en funció del "
+"període de tarificació. El preu mitjà de cost de generació de les plantes "
+"Generation kWh es mantindrà igual en tots els períodes i durant tot l’any."
+msgstr "De este modo, la ratio kWh por Acción Energética variará en función del periodo de tarificación. El precio medio de coste de generación de las plantas Generation kWh se mantendrá igual en todos los periodos y durante todo el año."
+
+#: rml:som_inversions/report/report_generationkwh_doc.mako:432
+msgid "Per a cada una de les plantes, hem realitzat una inversió determinada:"
+msgstr "Para cada una de las plantas, hemos realizado una inversión determinada:"
+
+#: rml:som_inversions/report/report_generationkwh_doc.mako:434
+msgid "P1= Projecte 1"
+msgstr "P1 = Proyecto 1"
+
+#: rml:som_inversions/report/report_generationkwh_doc.mako:434
+msgid "I1=Inversió P1"
+msgstr "I1 = Inversión P1"
+
+#: rml:som_inversions/report/report_generationkwh_doc.mako:435
+msgid "P2= Projecte 2"
+msgstr "P2 = Proyecto 2"
+
+#: rml:som_inversions/report/report_generationkwh_doc.mako:435
+msgid "I2=Inversió P2"
+msgstr "I2 = Inversión P2"
+
+#: rml:som_inversions/report/report_generationkwh_doc.mako:436
+msgid "P3 = Projecte 3"
+msgstr "P3 = Proyecto 3"
+
+#: rml:som_inversions/report/report_generationkwh_doc.mako:436
+msgid "I3=Inversió P3"
+msgstr "I3 = Inversión P3"
+
+#: rml:som_inversions/report/report_generationkwh_doc.mako:437
+#: rml:som_inversions/report/report_generationkwh_doc.mako:446
+#: rml:som_inversions/report/report_generationkwh_doc.mako:460
+#: rml:som_inversions/report/report_generationkwh_doc.mako:474
+msgid "(...)"
+msgstr "(...)"
+
+#: rml:som_inversions/report/report_generationkwh_doc.mako:438
+msgid "Pn= Projecte n"
+msgstr "Pn = Proyecto n"
+
+#: rml:som_inversions/report/report_generationkwh_doc.mako:438
+msgid "In=Inversió Pn"
+msgstr "In = Inversión Pn"
+
+#: rml:som_inversions/report/report_generationkwh_doc.mako:440
+msgid ""
+"Cada una de les plantes té una producció diària (Prd) distribuïda en cada un"
+" dels períodes tarifaris diferent:"
+msgstr "Cada una de les plantes té una producció diària (Prd) distribuïda en cada un dels períodes tarifaris diferent:"
+
+#: rml:som_inversions/report/report_generationkwh_doc.mako:442
+msgid "En el cas de tarifes sense discriminació horària:"
+msgstr "En el caso de tarifas sin discriminación horaria:"
+
+#: rml:som_inversions/report/report_generationkwh_doc.mako:443
+msgid "Pd1(0)= Prd.diària P1"
+msgstr "Pd1 (0) = Prd.diaria P1"
+
+#: rml:som_inversions/report/report_generationkwh_doc.mako:444
+msgid "Pd2(0)= Prd.diària P2"
+msgstr "Pd2(0)= Prd.diaria P2"
+
+#: rml:som_inversions/report/report_generationkwh_doc.mako:445
+msgid "Pd3(0)= Prd.diària P3"
+msgstr "Pd3(0)= Prd.diaria P3"
+
+#: rml:som_inversions/report/report_generationkwh_doc.mako:447
+msgid "Pdn(0)=Prd. diària Pn"
+msgstr "PdN (0) = PRD. diaria Pn"
+
+#: rml:som_inversions/report/report_generationkwh_doc.mako:450
+msgid ""
+"Els kWh/Acció Energètica que ens pertoquen per un període de facturació "
+"determinat segueix la següent fórmula:"
+msgstr "Los kWh/Acción Energética que corresponden por un periodo de facturación concreto se determinan a partir de la siguiente fórmula:"
+
+#: rml:som_inversions/report/report_generationkwh_doc.mako:451
+msgid "On i= nº dies de facturació"
+msgstr "Donde i = nº días de facturación"
+
+#: rml:som_inversions/report/report_generationkwh_doc.mako:456
+msgid "En el cas de tarifes amb dos períodes:"
+msgstr "En el caso de tarifas con dos períodos:"
+
+#: rml:som_inversions/report/report_generationkwh_doc.mako:457
+#: rml:som_inversions/report/report_generationkwh_doc.mako:471
+msgid "Pd1(1)= Prd.diària P1 en p1"
+msgstr "Pd1 (1) = Prd.diaria P1 en p1"
+
+#: rml:som_inversions/report/report_generationkwh_doc.mako:457
+#: rml:som_inversions/report/report_generationkwh_doc.mako:471
+msgid "Pd1(2)= Prd.diària P1 en p2"
+msgstr "Pd1(2)= Prd.diaria P1 en p2"
+
+#: rml:som_inversions/report/report_generationkwh_doc.mako:458
+#: rml:som_inversions/report/report_generationkwh_doc.mako:472
+msgid "Pd2(1)= Prd.diària P2 en p1"
+msgstr "Pd2(1)= Prd.diaria P2 en p1"
+
+#: rml:som_inversions/report/report_generationkwh_doc.mako:458
+#: rml:som_inversions/report/report_generationkwh_doc.mako:472
+msgid "Pd2(2)= Prd.diària P2 en p2"
+msgstr "Pd2(2)= Prd.diaria P2 en p2"
+
+#: rml:som_inversions/report/report_generationkwh_doc.mako:459
+#: rml:som_inversions/report/report_generationkwh_doc.mako:473
+msgid "Pd3(1)= Prd.diària P3 en p1"
+msgstr "Pd3(1)= Prd.diaria P3 en p1"
+
+#: rml:som_inversions/report/report_generationkwh_doc.mako:459
+#: rml:som_inversions/report/report_generationkwh_doc.mako:473
+msgid "Pd3(2)= Prd.diària P3 en p2"
+msgstr "Pd3(2)= Prd.diaria P3 en p2"
+
+#: rml:som_inversions/report/report_generationkwh_doc.mako:461
+#: rml:som_inversions/report/report_generationkwh_doc.mako:475
+msgid "Pdn(1)=Prd. diària Pn en p1"
+msgstr "PdN (1) = Prd.diaria Pn en p1"
+
+#: rml:som_inversions/report/report_generationkwh_doc.mako:461
+#: rml:som_inversions/report/report_generationkwh_doc.mako:475
+msgid "Pdn(2)=Prd. diària Pn en p2"
+msgstr "Pdn(2)=Prd. diaria Pn en p2"
+
+#: rml:som_inversions/report/report_generationkwh_doc.mako:464
+#: rml:som_inversions/report/report_generationkwh_doc.mako:478
+msgid "Pel Període P1"
+msgstr "Para periodo p1"
+
+#: rml:som_inversions/report/report_generationkwh_doc.mako:466
+#: rml:som_inversions/report/report_generationkwh_doc.mako:480
+msgid "Pel Període P2"
+msgstr "Para periodo p2"
+
+#: rml:som_inversions/report/report_generationkwh_doc.mako:470
+msgid "En el cas de tarifes amb tres períodes:"
+msgstr "En el caso de tarifas con tres periodos:"
+
+#: rml:som_inversions/report/report_generationkwh_doc.mako:471
+msgid "Pd1(2)= Prd.diària P1 en p3"
+msgstr "Pd1(2)= Prd.diaria P1 en p3"
+
+#: rml:som_inversions/report/report_generationkwh_doc.mako:472
+msgid "Pd1(2)= Prd.diària P2 en p3"
+msgstr "Pd1 (2 ) = Prd.diaria P2 en p3"
+
+#: rml:som_inversions/report/report_generationkwh_doc.mako:473
+msgid "Pd1(2)= Prd.diària P3 en p3"
+msgstr "Pd1 (2) = Prd.diaria P3 en p3"
+
+#: rml:som_inversions/report/report_generationkwh_doc.mako:475
+msgid "Pd1(2)= Prd.diària Pn en p3"
+msgstr "Pd1 (2) = Prd.diaria Pn en p3"
+
+#: rml:som_inversions/report/report_generationkwh_doc.mako:482
+msgid "Pel Període P3"
+msgstr "Para periodo p3"
+
+#: rml:som_inversions/report/report_generationkwh_doc.mako:486
+msgid "A nivell d’Exemple:"
+msgstr "A nivel de Ejemplo:"
+
+#: rml:som_inversions/report/report_generationkwh_doc.mako:488
+msgid "-Considerant una tarifa 3.0A amb tres períodes."
+msgstr "-Considerando una tarifa 3.0A con tres períodos."
+
+#: rml:som_inversions/report/report_generationkwh_doc.mako:490
+msgid "Projectes"
+msgstr "Proyectos"
+
+#: rml:som_inversions/report/report_generationkwh_doc.mako:492
+msgid "Producció total dia (i)"
+msgstr "Producción total día (y)"
+
+#: rml:som_inversions/report/report_generationkwh_doc.mako:493
+msgid "Producció en p1"
+msgstr "Producción en p1"
+
+#: rml:som_inversions/report/report_generationkwh_doc.mako:494
+msgid "Producció en p2"
+msgstr "Producción en p2"
+
+#: rml:som_inversions/report/report_generationkwh_doc.mako:495
+msgid "Producció en p3"
+msgstr "Producción en p3"
+
+#: rml:som_inversions/report/report_generationkwh_doc.mako:498
+msgid "P1"
+msgstr "P1"
+
+#: rml:som_inversions/report/report_generationkwh_doc.mako:499
+msgid "1.800.000"
+msgstr "1.800.000"
+
+#: rml:som_inversions/report/report_generationkwh_doc.mako:500
+msgid "7.722"
+msgstr "7.722"
+
+#: rml:som_inversions/report/report_generationkwh_doc.mako:501
+msgid "2.085"
+msgstr "2.085"
+
+#: rml:som_inversions/report/report_generationkwh_doc.mako:502
+msgid "5.483"
+msgstr "5.483"
+
+#: rml:som_inversions/report/report_generationkwh_doc.mako:503
+msgid "232"
+msgstr "232"
+
+#: rml:som_inversions/report/report_generationkwh_doc.mako:506
+msgid "P2"
+msgstr "P2"
+
+#: rml:som_inversions/report/report_generationkwh_doc.mako:507
+msgid "1.750.000"
+msgstr "1.750.000"
+
+#: rml:som_inversions/report/report_generationkwh_doc.mako:508
+msgid "9.846"
+msgstr "9.846"
+
+#: rml:som_inversions/report/report_generationkwh_doc.mako:509
+msgid "1.477"
+msgstr "1.477"
+
+#: rml:som_inversions/report/report_generationkwh_doc.mako:510
+msgid "4.726"
+msgstr "4.726"
+
+#: rml:som_inversions/report/report_generationkwh_doc.mako:511
+msgid "3.643"
+msgstr "3.643"
+
+#: rml:som_inversions/report/report_generationkwh_doc.mako:514
+msgid "P3"
+msgstr "P3"
+
+#: rml:som_inversions/report/report_generationkwh_doc.mako:515
+msgid "1.600.000"
+msgstr "1.600.000"
+
+#: rml:som_inversions/report/report_generationkwh_doc.mako:516
+msgid "11.465"
+msgstr "11.465"
+
+#: rml:som_inversions/report/report_generationkwh_doc.mako:517
+msgid "1.911"
+msgstr "1.911"
+
+#: rml:som_inversions/report/report_generationkwh_doc.mako:518
+msgid "5.732"
+msgstr "5.732"
+
+#: rml:som_inversions/report/report_generationkwh_doc.mako:519
+msgid "3.822"
+msgstr "3.822"
+
+#: rml:som_inversions/report/report_generationkwh_doc.mako:522
+msgid "Total"
+msgstr "Total"
+
+#: rml:som_inversions/report/report_generationkwh_doc.mako:523
+msgid "5.150.000"
+msgstr "5.150.000"
+
+#: rml:som_inversions/report/report_generationkwh_doc.mako:524
+msgid "29.033"
+msgstr "29.033"
+
+#: rml:som_inversions/report/report_generationkwh_doc.mako:525
+msgid "5.473"
+msgstr "5.473"
+
+#: rml:som_inversions/report/report_generationkwh_doc.mako:526
+msgid "15.941"
+msgstr "15.941"
+
+#: rml:som_inversions/report/report_generationkwh_doc.mako:527
+msgid "7.696"
+msgstr "7.696"
+
+#: rml:som_inversions/report/report_generationkwh_doc.mako:530
+msgid "kWh/dia (i)*. Acció Energètica"
+msgstr "kWh/dia (i)*. AccióN Energética"
+
+#: rml:som_inversions/report/report_generationkwh_doc.mako:533
+msgid "0.106 kWh"
+msgstr "0.106 kWh"
+
+#: rml:som_inversions/report/report_generationkwh_doc.mako:534
+msgid "0.310 kWh"
+msgstr "0.310 kWh"
+
+#: rml:som_inversions/report/report_generationkwh_doc.mako:535
+msgid "0.149 kWh"
+msgstr "0.149 kWh"
+
+#: rml:som_inversions/report/report_generationkwh_doc.mako:538
+msgid "* les dades són per un dia mitjà anual."
+msgstr "* los datos son para un día medio anual."
+
+#: rml:som_inversions/report/report_liquidacions_interessos.mako:200
+#: rml:som_inversions/report/report_liquidacions_titols.mako:194
+#: rml:som_inversions/report/report_retencions_interessos.mako:158
+msgid "CIF:"
+msgstr "CIF:"
+
+#: rml:som_inversions/report/report_liquidacions_interessos.mako:200
+#: rml:som_inversions/report/report_liquidacions_titols.mako:194
+#: rml:som_inversions/report/report_retencions_interessos.mako:158
+msgid "Domicili:"
+msgstr "Domicilio:"
+
+#: rml:som_inversions/report/report_liquidacions_interessos.mako:201
+#: rml:som_inversions/report/report_liquidacions_titols.mako:195
+#: rml:som_inversions/report/report_retencions_interessos.mako:159
+msgid "Adreça electrònica:"
+msgstr "Dirección electrónica:"
+
+#: rml:som_inversions/report/report_liquidacions_interessos.mako:201
+#: rml:som_inversions/report/report_liquidacions_titols.mako:195
+msgid "aporta@somenergia.coop"
+msgstr "aporta@somenergia.coop"
+
+#: rml:som_inversions/report/report_liquidacions_interessos.mako:205
+#: rml:som_inversions/report/report_liquidacions_titols.mako:199
+msgid "Comunicat dels interessos generats  per les teves aportacions"
+msgstr "Comunicado de los intereses generados por sus aportaciones"
+
+#: rml:som_inversions/report/report_liquidacions_interessos.mako:211
+#: rml:som_inversions/report/report_liquidacions_titols.mako:205
+msgid "Tipus d'aportació:"
+msgstr "Tipo de aportación"
+
+#: rml:som_inversions/report/report_liquidacions_interessos.mako:213
+#: rml:som_inversions/report/report_liquidacions_titols.mako:206
+msgid "Titular:"
+msgstr "Titular"
+
+#: rml:som_inversions/report/report_liquidacions_interessos.mako:214
+#: rml:som_inversions/report/report_liquidacions_titols.mako:207
+msgid "NIF:"
+msgstr "NIF:"
+
+#: rml:som_inversions/report/report_liquidacions_interessos.mako:219
+#: rml:som_inversions/report/report_retencions_interessos.mako:179
+msgid "Aportacions voluntàries al capital social"
+msgstr "Aportaciones voluntarias al capital social"
+
+#: rml:som_inversions/report/report_liquidacions_interessos.mako:236
+#: rml:som_inversions/report/report_liquidacions_titols.mako:229
+msgid "LIQUIDACIÓ INTERESSOS"
+msgstr "LIQUIDACIÓN INTERESES"
+
+#: rml:som_inversions/report/report_liquidacions_interessos.mako:243
+#: rml:som_inversions/report/report_liquidacions_titols.mako:236
+msgid "DATA INICIAL"
+msgstr "FECHA INICIAL"
+
+#: rml:som_inversions/report/report_liquidacions_interessos.mako:247
+#: rml:som_inversions/report/report_liquidacions_titols.mako:240
+msgid "DATA FINAL"
+msgstr "FECHA FINAL"
+
+#: rml:som_inversions/report/report_liquidacions_interessos.mako:251
+#: rml:som_inversions/report/report_liquidacions_titols.mako:244
+msgid "SALDO APORTAT"
+msgstr "SALDO APORTADO"
+
+#: rml:som_inversions/report/report_liquidacions_interessos.mako:255
+#: rml:som_inversions/report/report_liquidacions_titols.mako:248
+msgid "TIPUS INTERÈS"
+msgstr "TIPO INTERÉS"
+
+#: rml:som_inversions/report/report_liquidacions_interessos.mako:259
+#: rml:som_inversions/report/report_liquidacions_titols.mako:252
+msgid "INTERESSOS GENERATS"
+msgstr "INTERESES GENERADOS"
+
+#: rml:som_inversions/report/report_liquidacions_interessos.mako:303
+#: rml:som_inversions/report/report_liquidacions_titols.mako:296
+msgid "TOTAL INTERESSOS:"
+msgstr "TOTAL INTERESES:"
+
+#: rml:som_inversions/report/report_liquidacions_interessos.mako:327
+#: rml:som_inversions/report/report_liquidacions_titols.mako:320
+msgid "RETENCIONS"
+msgstr "RETENCIONES"
+
+#: rml:som_inversions/report/report_liquidacions_interessos.mako:351
+#: rml:som_inversions/report/report_liquidacions_titols.mako:344
+msgid "IMPORT A ABONAR:"
+msgstr "IMPORTE A ABONAR:"
+
+#: rml:som_inversions/report/report_liquidacions_interessos.mako:390
+#: rml:som_inversions/report/report_liquidacions_titols.mako:383
+msgid "Aquest import serà transferit al teu compte corrent número:"
+msgstr "Este importe será transferido a tu cuenta corriente número:"
+
+#: rml:som_inversions/report/report_liquidacions_interessos.mako:391
+msgid ""
+"Actualment les teves aportacions voluntàries al capital social de SOM "
+"ENERGIA SCCL sumen"
+msgstr "Actualmente tus aportaciones voluntarias al capital social de SOM ENERGIA SCCL suman"
+
+#: rml:som_inversions/report/report_liquidacions_interessos.mako:392
+#: rml:som_inversions/report/report_liquidacions_titols.mako:385
+msgid ""
+"Gràcies a les aportacions com la teva, la cooperativa finança projectes i "
+"pot generar cada vegada més energia provinent de fonts renovables."
+msgstr "Gracias a aportaciones como la tuya, la cooperativa financia proyectos y puede generar cada vez más energía proveniente de fuentes renovables."
+
+#: rml:som_inversions/report/report_liquidacions_titols.mako:212
+#: rml:som_inversions/report/report_retencions_interessos.mako:181
+msgid "Títols participatius"
+msgstr "Títulos participativos"
+
+#: rml:som_inversions/report/report_liquidacions_titols.mako:384
+msgid ""
+"Actualment les teves aportacions en títols participatius de SOM ENERGIA SCCL"
+" sumen"
+msgstr "Actualmente tus aportaciones en títulos participativos de SOM ENERGIA SCCL suman"
+
+#: rml:som_inversions/report/report_retencions_interessos.mako:163
+msgid "Comunicat de rendiments per a la"
+msgstr "Comunicado de rendimientos para la"
+
+#: rml:som_inversions/report/report_retencions_interessos.mako:163
+msgid "declaració de la RENDA "
+msgstr "declaración de la RENTA "
+
+#: rml:som_inversions/report/report_retencions_interessos.mako:169
+msgid "<b>Data:</b>"
+msgstr "<b>Fecha:</b>"
+
+#: rml:som_inversions/report/report_retencions_interessos.mako:170
+msgid "<b>Exercici:</b>"
+msgstr "<b>Ejercicio:</b>"
+
+#: rml:som_inversions/report/report_retencions_interessos.mako:171
+msgid "<b>Tipus d'aportació:</b>"
+msgstr "<b>Tipo de aportación:</b>"
+
+#: rml:som_inversions/report/report_retencions_interessos.mako:202
+msgid "DADES DEL TITULAR"
+msgstr "DATOS DEL TITULAR"
+
+#: rml:som_inversions/report/report_retencions_interessos.mako:207
+msgid "INFORMACIÓ FISCAL"
+msgstr "INFORMACIÓN FISCAL"
+
+#: rml:som_inversions/report/report_retencions_interessos.mako:212
+msgid "Nom:"
+msgstr "Nombre:"
+
+#: rml:som_inversions/report/report_retencions_interessos.mako:212
+msgid "NIF/NIE:"
+msgstr "NIF/NIE:"
+
+#: rml:som_inversions/report/report_retencions_interessos.mako:218
+msgid "Rendiments bruts:"
+msgstr "Rendimientos brutos:"
+
+#: rml:som_inversions/report/report_retencions_interessos.mako:219
+msgid "19% Retenció sobre l'estalvi:"
+msgstr "19% Retención sobre el ahorro: "
+
+#: rml:som_inversions/report/report_retencions_interessos.mako:220
+msgid "Tipus percepció:"
+msgstr "Tipo percepción:"
+
+#: rml:som_inversions/report/report_retencions_interessos.mako:220
+msgid "Dinerària"
+msgstr "Dineraria"
+
+#: rml:som_inversions/report/report_retencions_interessos.mako:223
+msgid "Saldo a "
+msgstr "Saldo a "
+
+#: rml:som_inversions/report/report_retencions_interessos.mako:228
+msgid ""
+"Som Energia, SCCL, CIF F55091367 | Domicili Pic de Peguera, 11 A 28 - 17003 "
+"- Girona | aporta@somenergia.coop | www.somenergia.coop"
+msgstr "Som Energia, SCCL, CIF F55091367 | Domicilio Pic de Peguera, 11 A 28 - 17003 - Girona | aporta@somenergia.coop | www.somenergia.coop"

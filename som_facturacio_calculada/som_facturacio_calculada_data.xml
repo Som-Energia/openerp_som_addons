@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+    <data>
+        <record model="giscedata.polissa.category" id="cat_gp_factura_calc">
+        <field name="name">Facturacio Calculada</field>
+        <field name="active">True</field>
+        </record>
+        <record model="giscedata.lectures.origen" id="origen_lect_calculada">
+            <field name="codi">LC</field>
+            <field name="subcodi">00</field>
+            <field name="name">Calculada segons CCH</field>
+        </record>
+    </data>
+    <data noupdate="1">
+        <record model="res.config" id="facturacio_calculada_tasks_max_procs">
+            <field name="name">facturacio_calculada_tasks_max_procs</field>
+            <field name="value">0</field>
+            <field name="description">Numero màxim de workers dedicats a les tasques de facturació calculada (CCH) en paral·lel. Si s'indica '0' (per defecte), no hi ha limit.</field>
+        </record>
+    </data>
+</openerp>

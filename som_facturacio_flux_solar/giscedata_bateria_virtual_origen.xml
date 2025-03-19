@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+        <!-- Percentatges acumulacio -->
+        <record model="ir.ui.view" id="view_giscedata_bateria_virtual_percentatges_acumulacio_tree">
+            <field name="name">giscedata.bateria.virtual.percentatges.acumulacio.tree</field>
+            <field name="model">giscedata.bateria.virtual.percentatges.acumulacio</field>
+            <field name="type">tree</field>
+            <field name="arch" type="xml" >
+                <tree string="Percentatges acumulacio">
+                    <field name="data_inici"/>
+                    <field name="data_fi"/>
+                    <field name="percentatge"/>
+                </tree>
+            </field>
+        </record>
+        <record model="ir.ui.view" id="view_giscedata_bateria_virtual_percentatges_acumulacio_form">
+            <field name="name">giscedata.bateria.virtual.percentatges.acumulacio.form</field>
+            <field name="model">giscedata.bateria.virtual.percentatges.acumulacio</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml" >
+                <form string="Percentatges acumulacio">
+                    <field name="data_inici"/>
+                    <field name="data_fi"/>
+                    <field name="percentatge"/>
+                </form>
+            </field>
+        </record>
+
+        <!-- Percentatges en origen -->
+        <record model="ir.ui.view" id="view_giscedata_bateria_virtual_origen_percentatges">
+            <field name="name">giscedata.bateria.virtual.origen.percentatges</field>
+            <field name="model">giscedata.bateria.virtual.origen</field>
+			<field name="inherit_id" ref="giscedata_facturacio_bateria_virtual.view_bateries_virtuals_origens_form" />
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <field name="data_ultim_dia_calculat" position="after">
+                    <field name="data_inici_descomptes"/>
+                </field>
+                <field name="gestio_acumulacio" position="after">
+                    <newline/>
+                    <group colspan="4" attrs="{'invisible':[('gestio_acumulacio','!=','percentatge')]}">
+                        <field name="percentatges_acumulacio" nolabel="1"/>
+                    </group>
+                </field>
+            </field>
+        </record>
+    </data>
+</openerp>

@@ -1,0 +1,1056 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data noupdate="1">
+        <!-- Passos de cada tasca general-->
+        <!--Hc-->
+        <record model="som.crawlers.task.step" id="pas_descargar_hc">
+            <field name="name">Descarregar fitxers</field>
+            <field name="sequence">1</field>
+            <field name="function">download_files</field>
+            <field name="params">{"nom_fitxer":"script_run_crawler.py"}</field>
+            <field name="task_id" ref="descargar_hc"/>
+        </record>
+        <record model="som.crawlers.task.step" id="pas_importar_hc">
+            <field name="name">Importar fitxers XML</field>
+            <field name="sequence">2</field>
+            <field name="function">import_xml_files</field>
+            <field name="params">{}</field>
+            <field name="task_id" ref="descargar_hc"/>
+        </record>
+        <record model="som.crawlers.task.step" id="pas_descargar_hc_auto">
+            <field name="name">Descarregar fitxers</field>
+            <field name="sequence">1</field>
+            <field name="function">download_files</field>
+            <field name="params">{"nom_fitxer":"script_run_crawler.py","process":"auto"}</field>
+            <field name="task_id" ref="descargar_hc_auto"/>
+        </record>
+        <record model="som.crawlers.task.step" id="pas_importar_hc_auto">
+            <field name="name">Importar fitxers XML</field>
+            <field name="sequence">2</field>
+            <field name="function">import_xml_files</field>
+            <field name="params">{}</field>
+            <field name="task_id" ref="descargar_hc_auto"/>
+        </record>
+        <record model="som.crawlers.task.step" id="pas_descargar_hc_f1">
+            <field name="name">Descarregar fitxers</field>
+            <field name="sequence">1</field>
+            <field name="function">download_files</field>
+            <field name="params">{"nom_fitxer":"script_run_crawler.py","process":"f1"}</field>
+            <field name="task_id" ref="descargar_hc_f1"/>
+        </record>
+        <record model="som.crawlers.task.step" id="pas_importar_hc_f1">
+            <field name="name">Importar fitxers XML</field>
+            <field name="sequence">2</field>
+            <field name="function">import_xml_files</field>
+            <field name="params">{}</field>
+            <field name="task_id" ref="descargar_hc_f1"/>
+        </record>
+        <record model="som.crawlers.task.step" id="pas_descargar_hc_unidireccional">
+            <field name="name">Descarregar fitxers</field>
+            <field name="sequence">1</field>
+            <field name="function">download_files</field>
+            <field name="params">{"nom_fitxer":"script_run_crawler.py","process":"unidireccional"}</field>
+            <field name="task_id" ref="descargar_hc_unidireccional"/>
+        </record>
+        <record model="som.crawlers.task.step" id="pas_importar_hc_unidireccional">
+            <field name="name">Importar fitxers XML</field>
+            <field name="sequence">2</field>
+            <field name="function">import_xml_files</field>
+            <field name="params">{}</field>
+            <field name="task_id" ref="descargar_hc_unidireccional"/>
+        </record>
+        <record model="som.crawlers.task.step" id="pas_descargar_hc_r">
+            <field name="name">Descarregar fitxers</field>
+            <field name="sequence">1</field>
+            <field name="function">download_files</field>
+            <field name="params">{"nom_fitxer":"script_run_crawler.py","process":"r"}</field>
+            <field name="task_id" ref="descargar_hc_r"/>
+        </record>
+        <record model="som.crawlers.task.step" id="pas_importar_hc_r">
+            <field name="name">Importar fitxers XML</field>
+            <field name="sequence">2</field>
+            <field name="function">import_xml_files</field>
+            <field name="params">{}</field>
+            <field name="task_id" ref="descargar_hc_r"/>
+        </record>
+        <!--Enguerina-->
+        <record model="som.crawlers.task.step" id="pas_descargar_enguerina">
+            <field name="name">Descarregar fitxers</field>
+            <field name="sequence">1</field>
+            <field name="function">download_files</field>
+            <field name="params">{"nom_fitxer":"script_run_crawler.py"}</field>
+            <field name="task_id" ref="descargar_enguerina"/>
+        </record>
+        <record model="som.crawlers.task.step" id="pas_importar_enguerina">
+            <field name="name">Importar fitxers XML</field>
+            <field name="sequence">2</field>
+            <field name="function">import_xml_files</field>
+            <field name="params">{}</field>
+            <field name="task_id" ref="descargar_enguerina"/>
+        </record>
+        <!--Cide-->
+        <record model="som.crawlers.task.step" id="pas_descargar_cide">
+            <field name="name">Descarregar fitxers</field>
+            <field name="sequence">1</field>
+            <field name="function">download_files</field>
+            <field name="params">{"nom_fitxer":"script_run_crawler.py"}</field>
+            <field name="task_id" ref="descargar_cide"/>
+        </record>
+        <record model="som.crawlers.task.step" id="pas_importar_cide">
+            <field name="name">Importar fitxers XML</field>
+            <field name="sequence">2</field>
+            <field name="function">import_xml_files</field>
+            <field name="params">{}</field>
+            <field name="task_id" ref="descargar_cide"/>
+        </record>
+        <record model="som.crawlers.task.step" id="pas_descargar_cide_f1">
+            <field name="name">Descarregar fitxers</field>
+            <field name="sequence">1</field>
+            <field name="function">download_files</field>
+            <field name="params">{"nom_fitxer":"script_run_crawler.py", "process":"f1"}</field>
+            <field name="task_id" ref="descargar_cide_f1"/>
+        </record>
+        <record model="som.crawlers.task.step" id="pas_importar_cide_f1">
+            <field name="name">Importar fitxers XML</field>
+            <field name="sequence">2</field>
+            <field name="function">import_xml_files</field>
+            <field name="params">{}</field>
+            <field name="task_id" ref="descargar_cide_f1"/>
+        </record>
+        <!--Soler-->
+        <record model="som.crawlers.task.step" id="pas_descargar_soller">
+            <field name="name">Descarregar fitxers</field>
+            <field name="sequence">1</field>
+            <field name="function">download_files</field>
+            <field name="params">{"nom_fitxer":"script_run_crawler.py"}</field>
+            <field name="task_id" ref="descargar_soller"/>
+        </record>
+        <record model="som.crawlers.task.step" id="pas_importar_soller">
+            <field name="name">Importar fitxers XML</field>
+            <field name="sequence">2</field>
+            <field name="function">import_xml_files</field>
+            <field name="params">{}</field>
+            <field name="task_id" ref="descargar_soller"/>
+        </record>
+        <record model="som.crawlers.task.step" id="pas_descargar_soller_f1">
+            <field name="name">Descarregar fitxers</field>
+            <field name="sequence">1</field>
+            <field name="function">download_files</field>
+            <field name="params">{"nom_fitxer":"script_run_crawler.py", "process":"f1"}</field>
+            <field name="task_id" ref="descargar_soller_f1"/>
+        </record>
+        <record model="som.crawlers.task.step" id="pas_importar_soller_f1">
+            <field name="name">Importar fitxers XML</field>
+            <field name="sequence">2</field>
+            <field name="function">import_xml_files</field>
+            <field name="params">{}</field>
+            <field name="task_id" ref="descargar_soller_f1"/>
+        </record>
+        <!--Meliana-->
+        <record model="som.crawlers.task.step" id="pas_descargar_meliana">
+            <field name="name">Descarregar fitxers</field>
+            <field name="sequence">1</field>
+            <field name="function">download_files</field>
+            <field name="params">{"nom_fitxer":"script_run_crawler.py"}</field>
+            <field name="task_id" ref="descargar_meliana"/>
+        </record>
+        <record model="som.crawlers.task.step" id="pas_importar_meliana">
+            <field name="name">Importar fitxers XML</field>
+            <field name="sequence">2</field>
+            <field name="function">import_xml_files</field>
+            <field name="params">{}</field>
+            <field name="task_id" ref="descargar_meliana"/>
+        </record>
+        <!--Serrania-->
+        <record model="som.crawlers.task.step" id="pas_descargar_serrania">
+            <field name="name">Descarregar fitxers</field>
+            <field name="sequence">1</field>
+            <field name="function">download_files</field>
+            <field name="params">{"nom_fitxer":"script_run_crawler.py"}</field>
+            <field name="task_id" ref="descargar_serrania"/>
+        </record>
+        <record model="som.crawlers.task.step" id="pas_importar_serrania">
+            <field name="name">Importar fitxers XML</field>
+            <field name="sequence">2</field>
+            <field name="function">import_xml_files</field>
+            <field name="params">{}</field>
+            <field name="task_id" ref="descargar_serrania"/>
+        </record>
+        <!--Iberdrola-->
+        <record model="som.crawlers.task.step" id="pas_descargar_iberdrola_contratacion">
+            <field name="name">Descarregar fitxers</field>
+            <field name="sequence">1</field>
+            <field name="function">download_files</field>
+            <field name="params">{"nom_fitxer":"script_run_crawler.py", "process":"contratacion"}</field>
+            <field name="task_id" ref="descargar_iberdrola_contratacion"/>
+        </record>
+        <record model="som.crawlers.task.step" id="pas_importar_iberdrola_contratacion">
+            <field name="name">Importar fitxers XML</field>
+            <field name="sequence">2</field>
+            <field name="function">import_xml_files</field>
+            <field name="params">{}</field>
+            <field name="task_id" ref="descargar_iberdrola_contratacion"/>
+        </record>
+        <record model="som.crawlers.task.step" id="pas_descargar_iberdrola_r1">
+            <field name="name">Descarregar fitxers</field>
+            <field name="sequence">1</field>
+            <field name="function">download_files</field>
+            <field name="params">{"nom_fitxer":"script_run_crawler.py", "process":"r1"}</field>
+            <field name="task_id" ref="descargar_iberdrola_r1"/>
+        </record>
+        <record model="som.crawlers.task.step" id="pas_importar_iberdrola_r1">
+            <field name="name">Importar fitxers XML</field>
+            <field name="sequence">2</field>
+            <field name="function">import_xml_files</field>
+            <field name="params">{}</field>
+            <field name="task_id" ref="descargar_iberdrola_r1"/>
+        </record>
+        <record model="som.crawlers.task.step" id="pas_descargar_iberdrola_q1">
+            <field name="name">Descarregar fitxers</field>
+            <field name="sequence">1</field>
+            <field name="function">download_files</field>
+            <field name="params">{"nom_fitxer":"script_run_crawler.py", "process":"q1"}</field>
+            <field name="task_id" ref="descargar_iberdrola_q1"/>
+        </record>
+        <record model="som.crawlers.task.step" id="pas_descargar_iberdrola_f1">
+            <field name="name">Descarregar fitxers</field>
+            <field name="sequence">1</field>
+            <field name="function">download_files</field>
+            <field name="params">{"nom_fitxer":"script_run_crawler.py", "process":"f1"}</field>
+            <field name="task_id" ref="descargar_iberdrola_f1"/>
+        </record>
+        <record model="som.crawlers.task.step" id="pas_importar_iberdrola_f1">
+            <field name="name">Importar fitxers XML</field>
+            <field name="sequence">2</field>
+            <field name="function">import_xml_files</field>
+            <field name="params">{}</field>
+            <field name="task_id" ref="descargar_iberdrola_f1"/>
+        </record>
+        <record model="som.crawlers.task.step" id="pas_descargar_iberdrola_e1">
+            <field name="name">Descarregar fitxers</field>
+            <field name="sequence">1</field>
+            <field name="function">download_files</field>
+            <field name="params">{"nom_fitxer":"script_run_crawler.py", "process":"e1"}</field>
+            <field name="task_id" ref="descargar_iberdrola_e1"/>
+        </record>
+        <record model="som.crawlers.task.step" id="pas_importar_iberdrola_e1">
+            <field name="name">Importar fitxers XML</field>
+            <field name="sequence">2</field>
+            <field name="function">import_xml_files</field>
+            <field name="params">{}</field>
+            <field name="task_id" ref="descargar_iberdrola_e1"/>
+        </record>
+        <record model="som.crawlers.task.step" id="pas_descargar_iberdrola_d1">
+            <field name="name">Descarregar fitxers</field>
+            <field name="sequence">1</field>
+            <field name="function">download_files</field>
+            <field name="params">{"nom_fitxer":"script_run_crawler.py", "process":"d1"}</field>
+            <field name="task_id" ref="descargar_iberdrola_d1"/>
+        </record>
+        <record model="som.crawlers.task.step" id="pas_importar_iberdrola_d1">
+            <field name="name">Importar fitxers XML</field>
+            <field name="sequence">2</field>
+            <field name="function">import_xml_files</field>
+            <field name="params">{}</field>
+            <field name="task_id" ref="descargar_iberdrola_d1"/>
+        </record>
+        <record model="som.crawlers.task.step" id="pas_descargar_iberdrola_t1">
+            <field name="name">Descarregar fitxers</field>
+            <field name="sequence">1</field>
+            <field name="function">download_files</field>
+            <field name="params">{"nom_fitxer":"script_run_crawler.py", "process":"t1"}</field>
+            <field name="task_id" ref="descargar_iberdrola_t1"/>
+        </record>
+        <record model="som.crawlers.task.step" id="pas_importar_iberdrola_t1">
+            <field name="name">Importar fitxers XML</field>
+            <field name="sequence">2</field>
+            <field name="function">import_xml_files</field>
+            <field name="params">{}</field>
+            <field name="task_id" ref="descargar_iberdrola_t1"/>
+        </record>
+        <!--fenosa-->
+        <record model="som.crawlers.task.step" id="pas_descarregar_fenosa">
+            <field name="name">Descarregar fitxers</field>
+            <field name="sequence">1</field>
+            <field name="function">download_files</field>
+            <field name="params">{"nom_fitxer":"script_run_crawler.py"}</field>
+            <field name="task_id" ref="descarregar_fenosa"/>
+        </record>
+        <record model="som.crawlers.task.step" id="pas_importar_fenosa">
+            <field name="name">Importar fitxers XML</field>
+            <field name="sequence">2</field>
+            <field name="function">import_xml_files</field>
+            <field name="params">{}</field>
+            <field name="task_id" ref="descarregar_fenosa"/>
+        </record>
+        <!-- Anselmo -->
+        <record model="som.crawlers.task.step" id="pas_descarregar_anselmo">
+            <field name="name">Descarregar fitxers</field>
+            <field name="sequence">1</field>
+            <field name="function">download_files</field>
+            <field name="params">{"nom_fitxer":"script_run_crawler.py"}</field>
+            <field name="task_id" ref="descarregar_anselmo"/>
+        </record>
+        <record model="som.crawlers.task.step" id="pas_importar_anselmo">
+            <field name="name">Importar fitxers XML</field>
+            <field name="sequence">2</field>
+            <field name="function">import_xml_files</field>
+            <field name="params">{}</field>
+            <field name="task_id" ref="descarregar_anselmo"/>
+        </record>
+        <record model="som.crawlers.task.step" id="pas_generar_zip_anselmo_d1">
+            <field name="name">Generar zip exportació</field>
+            <field name="sequence">1</field>
+            <field name="function">export_xml_files</field>
+            <field name="params">{"process": ["D1"]}</field>
+            <field name="task_id" ref="carregar_anselmo"/>
+        </record>
+        <record model="som.crawlers.task.step" id="pas_carregar_fitxers_anselmo_d1">
+            <field name="name">Carregar fitxers D1</field>
+            <field name="sequence">2</field>
+            <field name="function">upload_files</field>
+            <field name="params">{"nom_fitxer":"script_run_crawler.py"}</field>
+            <field name="task_id" ref="carregar_anselmo"/>
+        </record>
+        <record model="som.crawlers.task.step" id="pas_generar_zip_anselmo_atr">
+            <field name="name">Generar zip exportació</field>
+            <field name="sequence">3</field>
+            <field name="function">export_xml_files</field>
+            <field name="params">{"process": ["C1", "C2", "M1", "A3", "R1"]}</field>
+            <field name="task_id" ref="carregar_anselmo"/>
+        </record>
+        <record model="som.crawlers.task.step" id="pas_carregar_fitxers_anselmo_atr">
+            <field name="name">Carregar fitxers resta ATR</field>
+            <field name="sequence">4</field>
+            <field name="function">upload_files</field>
+            <field name="params">{"nom_fitxer":"script_run_crawler.py"}</field>
+            <field name="task_id" ref="carregar_anselmo"/>
+        </record>
+        <record model="som.crawlers.task.step" id="pas_descarregar_A3_endesa">
+            <field name="name">Descarregar fitxers</field>
+            <field name="sequence">1</field>
+            <field name="function">download_files</field>
+            <field name="params">{"nom_fitxer":"script_run_crawler.py","process":"a3"}</field>
+            <field name="task_id" ref="descargar_A3_endesa"/>
+        </record>
+        <record model="som.crawlers.task.step" id="pas_import_A3_endesa">
+            <field name="name">Importar fitxers XML</field>
+            <field name="sequence">2</field>
+            <field name="function">import_xml_files</field>
+            <field name="params">{}</field>
+            <field name="task_id" ref="descargar_A3_endesa"/>
+        </record>
+        <record model="som.crawlers.task.step" id="pas_descarregar_B1_endesa">
+            <field name="name">Descarregar fitxers</field>
+            <field name="sequence">1</field>
+            <field name="function">download_files</field>
+            <field name="params">{"nom_fitxer":"script_run_crawler.py","process":"b1"}</field>
+            <field name="task_id" ref="descargar_B1_endesa"/>
+        </record>
+        <record model="som.crawlers.task.step" id="pas_import_B1_endesa">
+            <field name="name">Importar fitxers XML</field>
+            <field name="sequence">2</field>
+            <field name="function">import_xml_files</field>
+            <field name="params">{}</field>
+            <field name="task_id" ref="descargar_B1_endesa"/>
+        </record>
+        <record model="som.crawlers.task.step" id="pas_descarregar_B2_endesa">
+            <field name="name">Descarregar fitxers</field>
+            <field name="sequence">1</field>
+            <field name="function">download_files</field>
+            <field name="params">{"nom_fitxer":"script_run_crawler.py","process":"b2"}</field>
+            <field name="task_id" ref="descargar_B2_endesa"/>
+        </record>
+        <record model="som.crawlers.task.step" id="pas_import_B2_endesa">
+            <field name="name">Importar fitxers XML</field>
+            <field name="sequence">2</field>
+            <field name="function">import_xml_files</field>
+            <field name="params">{}</field>
+            <field name="task_id" ref="descargar_B2_endesa"/>
+        </record>
+        <record model="som.crawlers.task.step" id="pas_descarregar_C1_endesa">
+            <field name="name">Descarregar fitxers</field>
+            <field name="sequence">1</field>
+            <field name="function">download_files</field>
+            <field name="params">{"nom_fitxer":"script_run_crawler.py","process":"c1"}</field>
+            <field name="task_id" ref="descargar_C1_endesa"/>
+        </record>
+        <record model="som.crawlers.task.step" id="pas_import_C1_endesa">
+            <field name="name">Importar fitxers XML</field>
+            <field name="sequence">2</field>
+            <field name="function">import_xml_files</field>
+            <field name="params">{}</field>
+            <field name="task_id" ref="descargar_C1_endesa"/>
+        </record>
+        <record model="som.crawlers.task.step" id="pas_descarregar_C2_endesa">
+            <field name="name">Descarregar fitxers</field>
+            <field name="sequence">1</field>
+            <field name="function">download_files</field>
+            <field name="params">{"nom_fitxer":"script_run_crawler.py","process":"c2"}</field>
+            <field name="task_id" ref="descargar_C2_endesa"/>
+        </record>
+        <record model="som.crawlers.task.step" id="pas_import_C2_endesa">
+            <field name="name">Importar fitxers XML</field>
+            <field name="sequence">2</field>
+            <field name="function">import_xml_files</field>
+            <field name="params">{}</field>
+            <field name="task_id" ref="descargar_C2_endesa"/>
+        </record>
+        <record model="som.crawlers.task.step" id="pas_descarregar_D1_endesa">
+            <field name="name">Descarregar fitxers</field>
+            <field name="sequence">1</field>
+            <field name="function">download_files</field>
+            <field name="params">{"nom_fitxer":"script_run_crawler.py","process":"d1"}</field>
+            <field name="task_id" ref="descargar_D1_endesa"/>
+        </record>
+        <record model="som.crawlers.task.step" id="pas_import_D1_endesa">
+            <field name="name">Importar fitxers XML</field>
+            <field name="sequence">2</field>
+            <field name="function">import_xml_files</field>
+            <field name="params">{}</field>
+            <field name="task_id" ref="descargar_D1_endesa"/>
+        </record>
+        <record model="som.crawlers.task.step" id="pas_descarregar_T1_endesa">
+            <field name="name">Descarregar fitxers</field>
+            <field name="sequence">1</field>
+            <field name="function">download_files</field>
+            <field name="params">{"nom_fitxer":"script_run_crawler.py","process":"t1"}</field>
+            <field name="task_id" ref="descargar_T1_endesa"/>
+        </record>
+        <record model="som.crawlers.task.step" id="pas_import_T1_endesa">
+            <field name="name">Importar fitxers XML</field>
+            <field name="sequence">2</field>
+            <field name="function">import_xml_files</field>
+            <field name="params">{}</field>
+            <field name="task_id" ref="descargar_T1_endesa"/>
+        </record>
+        <record model="som.crawlers.task.step" id="pas_descarregar_R1_endesa">
+            <field name="name">Descarregar fitxers</field>
+            <field name="sequence">1</field>
+            <field name="function">download_files</field>
+            <field name="params">{"nom_fitxer":"script_run_crawler.py","process":"r1"}</field>
+            <field name="task_id" ref="descargar_R1_endesa"/>
+        </record>
+        <record model="som.crawlers.task.step" id="pas_import_R1_endesa">
+            <field name="name">Importar fitxers XML</field>
+            <field name="sequence">2</field>
+            <field name="function">import_xml_files</field>
+            <field name="params">{}</field>
+            <field name="task_id" ref="descargar_R1_endesa"/>
+        </record>
+        <record model="som.crawlers.task.step" id="pas_descarregar_E1_endesa">
+            <field name="name">Descarregar fitxers</field>
+            <field name="sequence">1</field>
+            <field name="function">download_files</field>
+            <field name="params">{"nom_fitxer":"script_run_crawler.py","process":"e1"}</field>
+            <field name="task_id" ref="descargar_E1_endesa"/>
+        </record>
+        <record model="som.crawlers.task.step" id="pas_import_E1_endesa">
+            <field name="name">Importar fitxers XML</field>
+            <field name="sequence">2</field>
+            <field name="function">import_xml_files</field>
+            <field name="params">{}</field>
+            <field name="task_id" ref="descargar_E1_endesa"/>
+        </record>
+        <record model="som.crawlers.task.step" id="pas_descarregar_F1_endesa">
+            <field name="name">Descarregar fitxers</field>
+            <field name="sequence">1</field>
+            <field name="function">download_files</field>
+            <field name="params">{"nom_fitxer":"script_run_crawler.py"}</field>
+            <field name="task_id" ref="descargar_F1_endesa"/>
+        </record>
+        <record model="som.crawlers.task.step" id="pas_import_F1_endesa">
+            <field name="name">Importar fitxers XML</field>
+            <field name="sequence">2</field>
+            <field name="function">import_xml_files</field>
+            <field name="params">{}</field>
+            <field name="task_id" ref="descargar_F1_endesa"/>
+        </record>
+        <record model="som.crawlers.task.step" id="pas_descarregar_M1_endesa">
+            <field name="name">Descarregar fitxers</field>
+            <field name="sequence">1</field>
+            <field name="function">download_files</field>
+            <field name="params">{"nom_fitxer":"script_run_crawler.py","process":"m1"}</field>
+            <field name="task_id" ref="descargar_M1_endesa"/>
+        </record>
+        <record model="som.crawlers.task.step" id="pas_import_M1_endesa">
+            <field name="name">Importar fitxers XML</field>
+            <field name="sequence">2</field>
+            <field name="function">import_xml_files</field>
+            <field name="params">{}</field>
+            <field name="task_id" ref="descargar_M1_endesa"/>
+        </record>
+        <!--Viesgo-->
+        <record model="som.crawlers.task.step" id="taskStep_viesgo_download_ATR">
+            <field name="name">Descarregar fitxers</field>
+            <field name="sequence">1</field>
+            <field name="function">download_files</field>
+            <field name="params">{"nom_fitxer":"script_run_crawler.py","process":"atr"}</field>
+            <field name="task_id" ref="descargar_atr_viesgo"/>
+        </record>
+        <record model="som.crawlers.task.step" id="taskStep_viesgo_import_ATR">
+            <field name="name">Importar fitxers XML</field>
+            <field name="sequence">2</field>
+            <field name="function">import_xml_files</field>
+            <field name="params">{}</field>
+            <field name="task_id" ref="descargar_atr_viesgo"/>
+        </record>
+        <record model="som.crawlers.task.step" id="taskStep_viesgo_download_R">
+            <field name="name">Descarregar fitxers</field>
+            <field name="sequence">1</field>
+            <field name="function">download_files</field>
+            <field name="params">{"nom_fitxer":"script_run_crawler.py","process":"r"}</field>
+            <field name="task_id" ref="descargar_R_viesgo"/>
+        </record>
+        <record model="som.crawlers.task.step" id="taskStep_viesgo_import_R">
+            <field name="name">Importar fitxers XML</field>
+            <field name="sequence">2</field>
+            <field name="function">import_xml_files</field>
+            <field name="params">{}</field>
+            <field name="task_id" ref="descargar_R_viesgo"/>
+        </record>
+        <record model="som.crawlers.task.step" id="taskStep_viesgo_download_F1">
+            <field name="name">Descarregar fitxers</field>
+            <field name="sequence">1</field>
+            <field name="function">download_files</field>
+            <field name="params">{"nom_fitxer":"script_run_crawler.py","process":"f1"}</field>
+            <field name="task_id" ref="descargar_F1_viesgo"/>
+        </record>
+        <record model="som.crawlers.task.step" id="taskStep_viesgo_import_F1">
+            <field name="name">Importar fitxers XML</field>
+            <field name="sequence">2</field>
+            <field name="function">import_xml_files</field>
+            <field name="params">{}</field>
+            <field name="task_id" ref="descargar_F1_viesgo"/>
+        </record>
+        <record model="som.crawlers.task.step" id="taskStep_viesgo_download_D">
+            <field name="name">Descarregar fitxers</field>
+            <field name="sequence">1</field>
+            <field name="function">download_files</field>
+            <field name="params">{"nom_fitxer":"script_run_crawler.py","process":"d"}</field>
+            <field name="task_id" ref="descargar_D_viesgo"/>
+        </record>
+        <record model="som.crawlers.task.step" id="taskStep_viesgo_import_D">
+            <field name="name">Importar fitxers XML</field>
+            <field name="sequence">2</field>
+            <field name="function">import_xml_files</field>
+            <field name="params">{}</field>
+            <field name="task_id" ref="descargar_D_viesgo"/>
+        </record>
+        <record model="som.crawlers.task.step" id="taskStep_viesgo_download_D_unidireccional">
+            <field name="name">Descarregar fitxers</field>
+            <field name="sequence">1</field>
+            <field name="function">download_files</field>
+            <field name="params">{"nom_fitxer":"script_run_crawler.py","process":"unidireccional"}</field>
+            <field name="task_id" ref="descargar_D_viesgo_unidireccional"/>
+        </record>
+        <record model="som.crawlers.task.step" id="taskStep_viesgo_import_D_unidireccional">
+            <field name="name">Importar fitxers XML</field>
+            <field name="sequence">2</field>
+            <field name="function">import_xml_files</field>
+            <field name="params">{}</field>
+            <field name="task_id" ref="descargar_D_viesgo_unidireccional"/>
+        </record>
+        <!--Guadassuar-->
+        <record model="som.crawlers.task.step" id="taskStep_guadassuar_download_F1">
+            <field name="name">Descarregar fitxers</field>
+            <field name="sequence">1</field>
+            <field name="function">download_files</field>
+            <field name="params">{"nom_fitxer":"script_run_crawler.py"}</field>
+            <field name="task_id" ref="descargar_guadassuar"/>
+        </record>
+        <record model="som.crawlers.task.step" id="taskStep_guadassuar_import_F1">
+            <field name="name">Importar fitxers XML</field>
+            <field name="sequence">2</field>
+            <field name="function">import_xml_files</field>
+            <field name="params">{}</field>
+            <field name="task_id" ref="descargar_guadassuar"/>
+        </record>
+        <!--Vinalesa-->
+        <record model="som.crawlers.task.step" id="taskStep_vinalesa_download">
+            <field name="name">Descarregar fitxers</field>
+            <field name="sequence">1</field>
+            <field name="function">download_files</field>
+            <field name="params">{"nom_fitxer":"script_run_crawler.py"}</field>
+            <field name="task_id" ref="descargar_vinalesa"/>
+        </record>
+        <record model="som.crawlers.task.step" id="taskStep_vinalesa_import">
+            <field name="name">Importar fitxers XML</field>
+            <field name="sequence">2</field>
+            <field name="function">import_xml_files</field>
+            <field name="params">{}</field>
+            <field name="task_id" ref="descargar_vinalesa"/>
+        </record>
+        <!--Camprodon-->
+        <record model="som.crawlers.task.step" id="taskStep_camprodon_download">
+            <field name="name">Descarregar fitxers</field>
+            <field name="sequence">1</field>
+            <field name="function">download_files</field>
+            <field name="params">{"nom_fitxer":"script_run_crawler.py"}</field>
+            <field name="task_id" ref="descargar_camprodon"/>
+        </record>
+        <record model="som.crawlers.task.step" id="taskStep_camprodon_import">
+            <field name="name">Importar fitxers XML</field>
+            <field name="sequence">2</field>
+            <field name="function">import_xml_files</field>
+            <field name="params">{}</field>
+            <field name="task_id" ref="descargar_camprodon"/>
+        </record>
+        <!--SUCSA-->
+        <record model="som.crawlers.task.step" id="taskStep_sucsa_download">
+            <field name="name">Descarregar fitxers</field>
+            <field name="sequence">1</field>
+            <field name="function">download_files</field>
+            <field name="params">{"nom_fitxer":"script_run_crawler.py"}</field>
+            <field name="task_id" ref="descargar_sucsa"/>
+        </record>
+        <record model="som.crawlers.task.step" id="taskStep_sucsa_import">
+            <field name="name">Importar fitxers XML</field>
+            <field name="sequence">2</field>
+            <field name="function">import_xml_files</field>
+            <field name="params">{}</field>
+            <field name="task_id" ref="descargar_sucsa"/>
+        </record>
+        <!--DIELESUR-->
+        <record model="som.crawlers.task.step" id="taskStep_dielesur_download">
+            <field name="name">Descarregar fitxers</field>
+            <field name="sequence">1</field>
+            <field name="function">download_files</field>
+            <field name="params">{"nom_fitxer":"script_run_crawler.py"}</field>
+            <field name="task_id" ref="descargar_dielesur"/>
+        </record>
+        <record model="som.crawlers.task.step" id="taskStep_dielesur_import">
+            <field name="name">Importar fitxers XML</field>
+            <field name="sequence">2</field>
+            <field name="function">import_xml_files</field>
+            <field name="params">{}</field>
+            <field name="task_id" ref="descargar_dielesur"/>
+        </record>
+        <!--CONSTANCIA AREN-->
+        <record model="som.crawlers.task.step" id="taskStep_constancia_download">
+            <field name="name">Descarregar fitxers</field>
+            <field name="sequence">1</field>
+            <field name="function">download_files</field>
+            <field name="params">{"nom_fitxer":"script_run_crawler.py"}</field>
+            <field name="task_id" ref="descargar_constancia"/>
+        </record>
+        <record model="som.crawlers.task.step" id="taskStep_constancia_import">
+            <field name="name">Importar fitxers XML</field>
+            <field name="sequence">2</field>
+            <field name="function">import_xml_files</field>
+            <field name="params">{}</field>
+            <field name="task_id" ref="descargar_constancia"/>
+        </record>
+        <!--Conquense-->
+        <record model="som.crawlers.task.step" id="taskStep_conquense_download">
+            <field name="name">Descarregar fitxers</field>
+            <field name="sequence">1</field>
+            <field name="function">download_files</field>
+            <field name="params">{"nom_fitxer":"script_run_crawler.py"}</field>
+            <field name="task_id" ref="descargar_conquense"/>
+        </record>
+        <record model="som.crawlers.task.step" id="taskStep_conquense_import">
+            <field name="name">Importar fitxers XML</field>
+            <field name="sequence">2</field>
+            <field name="function">import_xml_files</field>
+            <field name="params">{}</field>
+            <field name="task_id" ref="descargar_conquense"/>
+        </record>
+        <!--Cabriel-->
+        <record model="som.crawlers.task.step" id="taskStep_cabriel_download">
+            <field name="name">Descarregar fitxers</field>
+            <field name="sequence">1</field>
+            <field name="function">download_files</field>
+            <field name="params">{"nom_fitxer":"script_run_crawler.py"}</field>
+            <field name="task_id" ref="descargar_cabriel"/>
+        </record>
+        <record model="som.crawlers.task.step" id="taskStep_cabriel_import">
+            <field name="name">Importar fitxers XML</field>
+            <field name="sequence">2</field>
+            <field name="function">import_xml_files</field>
+            <field name="params">{}</field>
+            <field name="task_id" ref="descargar_cabriel"/>
+        </record>
+        <!--Cipriano-->
+        <record model="som.crawlers.task.step" id="taskStep_cipriano_download">
+            <field name="name">Descarregar fitxers</field>
+            <field name="sequence">1</field>
+            <field name="function">download_files</field>
+            <field name="params">{"nom_fitxer":"script_run_crawler.py"}</field>
+            <field name="task_id" ref="descargar_cipriano"/>
+        </record>
+        <record model="som.crawlers.task.step" id="taskStep_cipriano_import">
+            <field name="name">Importar fitxers XML</field>
+            <field name="sequence">2</field>
+            <field name="function">import_xml_files</field>
+            <field name="params">{}</field>
+            <field name="task_id" ref="descargar_cipriano"/>
+        </record>
+        <!--Herederos-->
+        <record model="som.crawlers.task.step" id="taskStep_herederos_download">
+            <field name="name">Descarregar fitxers</field>
+            <field name="sequence">1</field>
+            <field name="function">download_files</field>
+            <field name="params">{"nom_fitxer":"script_run_crawler.py"}</field>
+            <field name="task_id" ref="descargar_herederos"/>
+        </record>
+        <record model="som.crawlers.task.step" id="taskStep_herederos_import">
+            <field name="name">Importar fitxers XML</field>
+            <field name="sequence">2</field>
+            <field name="function">import_xml_files</field>
+            <field name="params">{}</field>
+            <field name="task_id" ref="descargar_herederos"/>
+        </record>
+        <!--Serrano-->
+        <record model="som.crawlers.task.step" id="taskStep_serrano_download">
+            <field name="name">Descarregar fitxers</field>
+            <field name="sequence">1</field>
+            <field name="function">download_files</field>
+            <field name="params">{"nom_fitxer":"script_run_crawler.py"}</field>
+            <field name="task_id" ref="descargar_serrano"/>
+        </record>
+        <record model="som.crawlers.task.step" id="taskStep_serrano_import">
+            <field name="name">Importar fitxers XML</field>
+            <field name="sequence">2</field>
+            <field name="function">import_xml_files</field>
+            <field name="params">{}</field>
+            <field name="task_id" ref="descargar_serrano"/>
+        </record>
+        <!--Cardener-->
+        <record model="som.crawlers.task.step" id="taskStep_cardener_download">
+            <field name="name">Descarregar fitxers</field>
+            <field name="sequence">1</field>
+            <field name="function">download_files</field>
+            <field name="params">{"nom_fitxer":"script_run_crawler.py"}</field>
+            <field name="task_id" ref="descargar_cardener"/>
+        </record>
+        <record model="som.crawlers.task.step" id="taskStep_cardener_import">
+            <field name="name">Importar fitxers XML</field>
+            <field name="sequence">2</field>
+            <field name="function">import_xml_files</field>
+            <field name="params">{}</field>
+            <field name="task_id" ref="descargar_cardener"/>
+        </record>
+        <!--Aduriz-->
+        <record model="som.crawlers.task.step" id="taskStep_aduriz_download">
+            <field name="name">Descarregar fitxers</field>
+            <field name="sequence">1</field>
+            <field name="function">download_files</field>
+            <field name="params">{"nom_fitxer":"script_run_crawler.py"}</field>
+            <field name="task_id" ref="descargar_aduriz"/>
+        </record>
+        <record model="som.crawlers.task.step" id="taskStep_aduriz_import">
+            <field name="name">Importar fitxers XML</field>
+            <field name="sequence">2</field>
+            <field name="function">import_xml_files</field>
+            <field name="params">{}</field>
+            <field name="task_id" ref="descargar_aduriz"/>
+        </record>
+        <!--Peusa-->
+        <record model="som.crawlers.task.step" id="taskStep_peusa_download">
+            <field name="name">Descarregar fitxers</field>
+            <field name="sequence">1</field>
+            <field name="function">download_files</field>
+            <field name="params">{"nom_fitxer":"script_run_crawler.py"}</field>
+            <field name="task_id" ref="descargar_peusa"/>
+        </record>
+        <record model="som.crawlers.task.step" id="taskStep_peusa_import">
+            <field name="name">Importar fitxers XML</field>
+            <field name="sequence">2</field>
+            <field name="function">import_xml_files</field>
+            <field name="params">{}</field>
+            <field name="task_id" ref="descargar_peusa"/>
+        </record>
+        <!--Avellana-->
+        <record model="som.crawlers.task.step" id="taskStep_avellana_download">
+            <field name="name">Descarregar fitxers</field>
+            <field name="sequence">1</field>
+            <field name="function">download_files</field>
+            <field name="params">{"nom_fitxer":"script_run_crawler.py"}</field>
+            <field name="task_id" ref="descargar_avellana"/>
+        </record>
+        <record model="som.crawlers.task.step" id="taskStep_avellana_import">
+            <field name="name">Importar fitxers XML</field>
+            <field name="sequence">2</field>
+            <field name="function">import_xml_files</field>
+            <field name="params">{}</field>
+            <field name="task_id" ref="descargar_avellana"/>
+        </record>
+        <record model="som.crawlers.task.step" id="taskStep_avellana_ftp_download">
+            <field name="name">Descarregar fitxers FTP Avellana</field>
+            <field name="sequence">1</field>
+            <field name="function">download_ftp_files</field>
+            <field name="params">{"dir_list": ["Salida", "Entrada"]}</field>
+            <field name="task_id" ref="descargar_ftp_avellana"/>
+        </record>
+        <record model="som.crawlers.task.step" id="taskStep_avellana_ftp_import">
+            <field name="name">Importar fitxers XML</field>
+            <field name="sequence">2</field>
+            <field name="function">import_ftp_xml_files</field>
+            <field name="params">{}</field>
+            <field name="task_id" ref="descargar_ftp_avellana"/>
+        </record>
+        <!--Centelles-->
+        <record model="som.crawlers.task.step" id="taskStep_centelles_download">
+            <field name="name">Descarregar fitxers</field>
+            <field name="sequence">1</field>
+            <field name="function">download_files</field>
+            <field name="params">{"nom_fitxer":"script_run_crawler.py"}</field>
+            <field name="task_id" ref="descargar_centelles"/>
+        </record>
+        <record model="som.crawlers.task.step" id="taskStep_centelles_import">
+            <field name="name">Importar fitxers XML</field>
+            <field name="sequence">2</field>
+            <field name="function">import_xml_files</field>
+            <field name="params">{}</field>
+            <field name="task_id" ref="descargar_centelles"/>
+        </record>
+        <!--Bassols-->
+        <record model="som.crawlers.task.step" id="taskStep_bassols_download">
+            <field name="name">Descarregar fitxers</field>
+            <field name="sequence">1</field>
+            <field name="function">download_files</field>
+            <field name="params">{"nom_fitxer":"script_run_crawler.py"}</field>
+            <field name="task_id" ref="descargar_bassols"/>
+        </record>
+        <record model="som.crawlers.task.step" id="taskStep_bassols_import">
+            <field name="name">Importar fitxers XML</field>
+            <field name="sequence">2</field>
+            <field name="function">import_xml_files</field>
+            <field name="params">{}</field>
+            <field name="task_id" ref="descargar_bassols"/>
+        </record>
+        <!--Curós-->
+        <record model="som.crawlers.task.step" id="taskStep_curos_download">
+            <field name="name">Descarregar fitxers</field>
+            <field name="sequence">1</field>
+            <field name="function">download_files</field>
+            <field name="params">{"nom_fitxer":"script_run_crawler.py"}</field>
+            <field name="task_id" ref="descargar_curos"/>
+        </record>
+        <record model="som.crawlers.task.step" id="taskStep_curos_import">
+            <field name="name">Importar fitxers XML</field>
+            <field name="sequence">2</field>
+            <field name="function">import_xml_files</field>
+            <field name="params">{}</field>
+            <field name="task_id" ref="descargar_curos"/>
+        </record>
+        <!-- Caldense -->
+        <record model="som.crawlers.task.step" id="pas_descarregar_ftp_caldense">
+            <field name="name">Descarregar fitxers FTP Caldense</field>
+            <field name="sequence">1</field>
+            <field name="function">download_ftp_files</field>
+            <field name="params">{"dir_list": ["Salida", "Facturas"]}</field>
+            <field name="task_id" ref="descarregar_caldense_ftp"/>
+        </record>
+        <record model="som.crawlers.task.step" id="pas_importar_caldense">
+            <field name="name">Importar fitxers XML</field>
+            <field name="sequence">2</field>
+            <field name="function">import_ftp_xml_files</field>
+            <field name="params">{"clean_zip": "True"}</field>
+            <field name="task_id" ref="descarregar_caldense_ftp"/>
+        </record>
+        <!-- Red energia -->
+        <record model="som.crawlers.task.step" id="pas_descarregar_ftp_redenergia">
+            <field name="name">Descarregar fitxers FTP Red energia</field>
+            <field name="sequence">1</field>
+            <field name="function">download_ftp_files</field>
+            <field name="params">{"dir_list": ["Sortides/0762/Salida", "Sortides/0762/Facturas"]}</field>
+            <field name="task_id" ref="descarregar_redenergia_ftp"/>
+        </record>
+        <record model="som.crawlers.task.step" id="pas_importar_redenergia">
+            <field name="name">Importar fitxers XML</field>
+            <field name="sequence">2</field>
+            <field name="function">import_ftp_xml_files</field>
+            <field name="params">{"clean_zip": "True"}</field>
+            <field name="task_id" ref="descarregar_redenergia_ftp"/>
+        </record>
+        <!-- Aurora -->
+        <record model="som.crawlers.task.step" id="pas_descarregar_ftp_aurora">
+            <field name="name">Descarregar fitxers FTP Aurora</field>
+            <field name="sequence">1</field>
+            <field name="function">download_ftp_files</field>
+            <field name="params">{"dir_list": ["Entrada"]}</field>
+            <field name="task_id" ref="descarregar_aurora_ftp"/>
+        </record>
+        <record model="som.crawlers.task.step" id="pas_importar_aurora">
+            <field name="name">Importar fitxers XML</field>
+            <field name="sequence">2</field>
+            <field name="function">import_ftp_xml_files</field>
+            <field name="params">{}</field>
+            <field name="task_id" ref="descarregar_aurora_ftp"/>
+        </record>
+        <!-- Mitjans -->
+        <record model="som.crawlers.task.step" id="pas_descarregar_ftp_mitjans">
+            <field name="name">Descarregar fitxers FTP mitjans</field>
+            <field name="sequence">1</field>
+            <field name="function">download_ftp_files</field>
+            <field name="params">{"dir_list": ["Entrada"]}</field>
+            <field name="task_id" ref="descarregar_mitjans_ftp"/>
+        </record>
+        <record model="som.crawlers.task.step" id="pas_importar_mitjans">
+            <field name="name">Importar fitxers XML</field>
+            <field name="sequence">2</field>
+            <field name="function">import_ftp_xml_files</field>
+            <field name="params">{}</field>
+            <field name="task_id" ref="descarregar_mitjans_ftp"/>
+        </record>
+        <!-- panticosa -->
+        <record model="som.crawlers.task.step" id="pas_descarregar_ftp_panticosa">
+            <field name="name">Descarregar fitxers FTP panticosa</field>
+            <field name="sequence">1</field>
+            <field name="function">download_ftp_files</field>
+            <field name="params">{"dir_list": ["Entrada"]}</field>
+            <field name="task_id" ref="descarregar_panticosa_ftp"/>
+        </record>
+        <record model="som.crawlers.task.step" id="pas_importar_panticosa">
+            <field name="name">Importar fitxers XML</field>
+            <field name="sequence">2</field>
+            <field name="function">import_ftp_xml_files</field>
+            <field name="params">{}</field>
+            <field name="task_id" ref="descarregar_panticosa_ftp"/>
+        </record>
+        <!-- guadiela -->
+        <record model="som.crawlers.task.step" id="pas_descarregar_ftp_guadiela">
+            <field name="name">Descarregar fitxers FTP guadiela</field>
+            <field name="sequence">1</field>
+            <field name="function">download_ftp_files</field>
+            <field name="params">{"dir_list": ["Entrada"]}</field>
+            <field name="task_id" ref="descarregar_guadiela_ftp"/>
+        </record>
+        <record model="som.crawlers.task.step" id="pas_importar_guadiela">
+            <field name="name">Importar fitxers XML</field>
+            <field name="sequence">2</field>
+            <field name="function">import_ftp_xml_files</field>
+            <field name="params">{}</field>
+            <field name="task_id" ref="descarregar_guadiela_ftp"/>
+        </record>
+        <!-- pitarch -->
+        <record model="som.crawlers.task.step" id="pas_descarregar_ftp_pitarch">
+            <field name="name">Descarregar fitxers FTP pitarch</field>
+            <field name="sequence">1</field>
+            <field name="function">download_ftp_files</field>
+            <field name="params">{"dir_list": ["/0762/ATR/salida","/0762/FACTURAS"]}</field>
+            <field name="task_id" ref="descarregar_pitarch_ftp"/>
+        </record>
+        <record model="som.crawlers.task.step" id="pas_importar_pitarch">
+            <field name="name">Importar fitxers XML</field>
+            <field name="sequence">2</field>
+            <field name="function">import_ftp_xml_files</field>
+            <field name="params">{"clean_zip": "True"}</field>
+            <field name="task_id" ref="descarregar_pitarch_ftp"/>
+        </record>
+        <!-- chilla -->
+        <record model="som.crawlers.task.step" id="pas_descarregar_ftp_chilla">
+            <field name="name">Descarregar fitxers FTP chilla</field>
+            <field name="sequence">1</field>
+            <field name="function">download_ftp_files</field>
+            <field name="params">{"dir_list": ["Entrada"]}</field>
+            <field name="task_id" ref="descarregar_chilla_ftp"/>
+        </record>
+        <record model="som.crawlers.task.step" id="pas_importar_chilla">
+            <field name="name">Importar fitxers XML</field>
+            <field name="sequence">2</field>
+            <field name="function">import_ftp_xml_files</field>
+            <field name="params">{}</field>
+            <field name="task_id" ref="descarregar_chilla_ftp"/>
+        </record>
+        <!-- 6eis (formerly aseme) -->
+        <record model="som.crawlers.task.step" id="pas_descarregar_ftp_aseme">
+            <field name="name">Descarregar fitxers FTP 6eis (abans aseme)</field>
+            <field name="sequence">1</field>
+            <field name="function">download_ftp_files</field>
+            <field name="params">{"dir_list": ["Entrada"]}</field>
+            <field name="task_id" ref="descarregar_aseme_ftp"/>
+        </record>
+        <record model="som.crawlers.task.step" id="pas_importar_aseme">
+            <field name="name">Importar fitxers XML</field>
+            <field name="sequence">2</field>
+            <field name="function">import_ftp_xml_files</field>
+            <field name="params">{}</field>
+            <field name="task_id" ref="descarregar_aseme_ftp"/>
+        </record>
+        <!-- datacenter -->
+        <record model="som.crawlers.task.step" id="pas_descarregar_ftp_datacenter_atr">
+            <field name="name">Descarregar fitxers FTP datacenter atr</field>
+            <field name="sequence">1</field>
+            <field name="function">download_ftp_files</field>
+            <field name="params">{"dir_list": ["SALIDA"]}</field>
+            <field name="task_id" ref="descarregar_datacenter_ftp_atr"/>
+        </record>
+        <record model="som.crawlers.task.step" id="pas_importar_datacenter_atr">
+            <field name="name">Importar fitxers XML atr</field>
+            <field name="sequence">2</field>
+            <field name="function">import_ftp_xml_files</field>
+            <field name="params">{}</field>
+            <field name="task_id" ref="descarregar_datacenter_ftp_atr"/>
+        </record>
+        <record model="som.crawlers.task.step" id="pas_descarregar_ftp_datacenter_f1">
+            <field name="name">Descarregar fitxers FTP datacenter f1</field>
+            <field name="sequence">1</field>
+            <field name="function">download_ftp_files</field>
+            <field name="params">{"dir_list": ["0111/FACTURAS","0127/FACTURAS","0131/FACTURAS","0160/FACTURAS","0170/FACTURAS","0173/FACTURAS","0181/FACTURAS","0183/FACTURAS","0184/FACTURAS","0185/FACTURAS","0186/FACTURAS","0188/FACTURAS","0191/FACTURAS","0193/FACTURAS","0217/FACTURAS","0221/FACTURAS","0228/FACTURAS","0235/FACTURAS","0301/FACTURAS","0302/FACTURAS","0350/FACTURAS","0354/FACTURAS","0357/FACTURAS","0358/FACTURAS","0414/FACTURAS","0496/FACTURAS","0555/FACTURAS","0574/FACTURAS","0999/FACTURAS"]}</field>
+            <field name="task_id" ref="descarregar_datacenter_ftp_f1"/>
+        </record>
+        <record model="som.crawlers.task.step" id="pas_importar_datacenter_f1">
+            <field name="name">Importar fitxers XML f1</field>
+            <field name="sequence">2</field>
+            <field name="function">import_ftp_xml_files</field>
+            <field name="params">{"clean_zip": "True"}</field>
+            <field name="task_id" ref="descarregar_datacenter_ftp_f1"/>
+        </record>
+        <!-- SCQ -->
+        <record model="som.crawlers.task.step" id="pas_descarregar_scq">
+            <field name="name">Descarregar fitxers</field>
+            <field name="sequence">1</field>
+            <field name="function">download_files</field>
+            <field name="params">{"nom_fitxer":"script_run_crawler.py"}</field>
+            <field name="task_id" ref="descarregar_scq"/>
+        </record>
+        <record model="som.crawlers.task.step" id="pas_importar_scq">
+            <field name="name">Importar fitxers XML</field>
+            <field name="sequence">2</field>
+            <field name="function">import_xml_files</field>
+            <field name="params">{}</field>
+            <field name="task_id" ref="descarregar_scq"/>
+        </record>
+        <!-- Escuer -->
+        <record model="som.crawlers.task.step" id="pas_descarregar_escuer">
+            <field name="name">Descarregar fitxers</field>
+            <field name="sequence">1</field>
+            <field name="function">download_files</field>
+            <field name="params">{"nom_fitxer":"script_run_crawler.py"}</field>
+            <field name="task_id" ref="descarregar_escuer"/>
+        </record>
+        <record model="som.crawlers.task.step" id="pas_importar_escuer">
+            <field name="name">Importar fitxers XML</field>
+            <field name="sequence">2</field>
+            <field name="function">import_xml_files</field>
+            <field name="params">{}</field>
+            <field name="task_id" ref="descarregar_escuer"/>
+        </record>
+        <!-- UDESA -->
+        <record model="som.crawlers.task.step" id="pas_descarregar_ftp_udesa">
+            <field name="name">Descarregar fitxers FTP UDESA</field>
+            <field name="sequence">1</field>
+            <field name="function">download_ftp_files</field>
+            <field name="params">{"dir_list": ["Entrada","Hist_Salida","Salida"]}</field>
+            <field name="task_id" ref="descarregar_udesa_ftp"/>
+        </record>
+        <record model="som.crawlers.task.step" id="pas_importar_udesa">
+            <field name="name">Importar fitxers XML</field>
+            <field name="sequence">2</field>
+            <field name="function">import_ftp_xml_files</field>
+            <field name="params">{}</field>
+            <field name="task_id" ref="descarregar_udesa_ftp"/>
+        </record>
+        <!-- Registre General -->
+        <record model="som.crawlers.task.step" id="pas_carregar_registre_general">
+            <field name="name">Carregar</field>
+            <field name="sequence">1</field>
+            <field name="function">upload_form_registre_general</field>
+            <field name="params">{"nom_fitxer":"script_run_crawler.py"}</field>
+            <field name="task_id" ref="carregar_registre_general"/>
+        </record>
+    </data>
+</openerp>

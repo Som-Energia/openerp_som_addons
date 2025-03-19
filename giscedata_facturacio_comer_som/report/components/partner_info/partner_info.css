@@ -1,0 +1,20 @@
+.partner_data {
+    float: right;
+    width: 58%;
+    margin: 5px 0px 10px 10px;
+    padding: 0px;
+}
+
+.owner_data {
+    background-color: #f7f7f7;
+    text-align: left;
+    width: 100%;
+    margin: 0px;
+    padding: 0px;
+}
+.payment_data {
+    background-color: #f7f7f7;
+    text-align: left;
+    width: 100%;
+    margin: 1em 0px 0px 0px;
+}

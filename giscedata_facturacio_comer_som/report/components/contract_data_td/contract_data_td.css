@@ -1,0 +1,26 @@
+    /* DADES CONTRACTE */
+    .contract_data,
+    .contract_data_small {
+        background-color: #f7f7f7;
+        text-align: left;
+        width: 100%;
+        margin: 0px 0px 1em 0px;
+        float: left;
+        page-break-inside: avoid;
+    }
+    .contract_data_small {
+        margin: 0px 0px .05em 0px;
+        font-size: 8px;
+    }
+    /* CONTENIDOR DADES DE CONTRACTE */
+    .contract_data_container {
+        position: relative;
+    }
+    .contract_data_adreca {
+        margin-left: 10px;
+        margin-bottom: -0.75em;
+    }
+    .contract_data_column {
+        float: left;
+        width: 50%;
+    }

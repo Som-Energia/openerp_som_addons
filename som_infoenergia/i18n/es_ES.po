@@ -1,0 +1,2213 @@
+# Translation of OpenERP Server.
+# This file contains the translation of the following modules:
+# * som_infoenergia
+#
+# Translators:
+# Som Energia  <itcrowd@somenergia.coop>, 2022.
+msgid ""
+msgstr ""
+"Project-Id-Version: Som Energia\n"
+"Report-Msgid-Bugs-To: support@openerp.com\n"
+"POT-Creation-Date: 2022-11-23 14:33+0000\n"
+"PO-Revision-Date: 2022-11-23 13:39+0000\n"
+"Last-Translator: Som Energia <itcrowd@somenergia.coop>\n"
+"Language-Team: Spanish (Spain) (http://trad.gisce.net/projects/p/somenergia/language/es_ES/)\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Generated-By: Babel 2.9.1\n"
+"Language: es_ES\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#. module: som_infoenergia
+#: view:som.infoenergia.lot.enviament:0
+msgid "(baixa) presents en alguna cerca"
+msgstr "(baja) presentes en alguna búsqueda"
+
+#. module: som_infoenergia
+#: model:ir.actions.act_window,name:som_infoenergia.action_som_infoenergia_tree
+#: model:ir.ui.menu,name:som_infoenergia.menu_carpeta_infoenergia
+msgid "Enviaments Infoenergia"
+msgstr "Envíos Infoenergía"
+
+#. module: som_infoenergia
+#: view:wizard.add.partners.lot:0 view:wizard.infoenergia.add.contracts.lot:0
+msgid "-"
+msgstr "-"
+
+#. module: som_infoenergia
+#: selection:wizard.infoenergia.add.contracts.lot,autoconsum:0
+msgid "Sin Autoconsumo"
+msgstr "Sin Autoconsumo"
+
+#. module: som_infoenergia
+#: selection:som.infoenergia.enviament,estat:0
+msgid "Error"
+msgstr "Error"
+
+#. module: som_infoenergia
+#: field:wizard.infoenergia.send.reports,is_from_lot:0
+msgid "Cridat des de lot"
+msgstr "Llamado desde lote"
+
+#. module: som_infoenergia
+#: code:addons/som_infoenergia/som_enviament_massiu.py:185
+#: code:addons/som_infoenergia/som_infoenergia_enviament.py:385
+#: field:som.enviament.massiu,data_enviament:0
+#: field:som.infoenergia.enviament,data_enviament:0
+msgid "Data enviament"
+msgstr "Fecha envío"
+
+#. module: som_infoenergia
+#: field:wizard.infoenergia.send.reports,email_subject:0
+msgid "Assumpte correu"
+msgstr "Asunto correo"
+
+#. module: som_infoenergia
+#: code:addons/som_infoenergia/wizard/wizard_add_contracts_lot.py:20
+#: code:addons/som_infoenergia/wizard/wizard_create_enviaments_from_partner.py:17
+msgid "S'ha de seleccionar un lot"
+msgstr "Se debe seleccionar un lote"
+
+#. module: som_infoenergia
+#: field:wizard.infoenergia.add.contracts.lot,access_fare:0
+msgid "Tarifa d'accés"
+msgstr "Tarifa de acceso"
+
+#. module: som_infoenergia
+#: selection:wizard.infoenergia.add.contracts.lot,autoconsum:0
+msgid ""
+"Con excedentes sin compensación Colectivo sin cto de SSAA a través de red - "
+"Consumo"
+msgstr "Con excedentes sin compensación Colectivo sin cto de SSAA a través de red - Consumo"
+
+#. module: som_infoenergia
+#: field:som.infoenergia.lot.enviament,total_oberts_in_search:0
+msgid "Enviaments oberts trobats en cerca"
+msgstr "Envíos abiertos encontrados en búsqueda"
+
+#. module: som_infoenergia
+#: field:som.infoenergia.lot.enviament,is_test:0
+#: field:wizard.infoenergia.send.reports,is_test:0
+msgid "Test"
+msgstr "Test"
+
+#. module: som_infoenergia
+#: model:poweremail.templates,def_subject:som_infoenergia.env_empowering_report_fv_auto_from_enviament
+msgid ""
+"[Informe] Quin potencial d’autoproducció tens? (contracte "
+"${object.polissa_id.name})"
+msgstr "[Informe] ¿Qué potencial de autoproducción tienes? (contrato ${object.polissa_id.name})"
+
+#. module: som_infoenergia
+#: view:wizard.infoenergia.download.csv:0
+#: view:wizard.infoenergia.download.pdf:0
+msgid "Descarregar"
+msgstr "Descargar"
+
+#. module: som_infoenergia
+#: model:ir.model,name:som_infoenergia.model_sepa_report
+msgid "sepa.report"
+msgstr "sepa.report"
+
+#. module: som_infoenergia
+#: selection:wizard.infoenergia.add.contracts.lot,autoconsum:0
+msgid "Con excedentes y compensación Colectivo– Consumo"
+msgstr "Con excedentes y compensación Colectivo– Consumo"
+
+#. module: som_infoenergia
+#: field:wizard.add.partners.lot,baixa:0
+#: selection:som.infoenergia.enviament,estat:0
+#: selection:wizard.infoenergia.add.contracts.lot,polissa_state:0
+msgid "Baixa"
+msgstr "Baja"
+
+#. module: som_infoenergia
+#: view:wizard.add.partners.lot:0 view:wizard.infoenergia.add.contracts.lot:0
+msgid " "
+msgstr " "
+
+#. module: som_infoenergia
+#: help:wizard.infoenergia.send.reports,email_subject:0
+msgid "Assumpte dels correus enviats"
+msgstr "Asunto de los correos enviados"
+
+#. module: som_infoenergia
+#: view:wizard.infoenergia.add.contracts.lot:0
+msgid "Seleccionar pòlisses per afegir al lot d'enviament"
+msgstr "Seleccionar pólizas para añadir al lote de envío"
+
+#. module: som_infoenergia
+#: model:poweremail.templates,def_subject:som_infoenergia.env_empowering_report_empresa
+msgid ""
+"Informe energètic personalitzat pel teu contracte ${object.name} amb tarifa "
+"${object.tarifa_codi} - Servei Infoenergia"
+msgstr "Informe energético personalizado por tu contrato ${object.name} con tarifa ${object.tarifa_codi} - Servicio Infoenergía"
+
+#. module: som_infoenergia
+#: view:wizard.infoenergia.download.pdf:0
+msgid "El informe es desarà als Adjunts del Enviament"
+msgstr "El informe se guardará en los Adjuntos del Envío"
+
+#. module: som_infoenergia
+#: model:poweremail.templates,def_subject:som_infoenergia.tercer_env_no_renovacio_30
+msgid ""
+"[IMPORTANT] Finalització del contracte ${object.polissa_id.name} el "
+"${object.polissa_id.modcontractual_activa.data_final}"
+msgstr "[IMPORTANTE] Finalización del contrato ${object.polissa_id.name} el ${object.polissa_id.modcontractual_activa.data_final}"
+
+#. module: som_infoenergia
+#: help:som.infoenergia.lot.enviament,total_encuats:0
+msgid ""
+"S'ha realitzat l'acció d'enviar i el procés en segon pla té la tasca pendent"
+msgstr "Se ha realizado la acción de enviar y el proceso en segundo plano tiene la tarea pendiente"
+
+#. module: som_infoenergia
+#: selection:som.infoenergia.lot.enviament,tipus_informe:0
+msgid "M11 domèstic"
+msgstr "M11 doméstico"
+
+#. module: som_infoenergia
+#: field:som.infoenergia.lot.enviament,total_cancelats_in_search:0
+msgid "Enviaments cancel·lats trobats en cerca"
+msgstr "Envíos cancelados encontrados en búsqueda"
+
+#. module: som_infoenergia
+#: model:ir.model,name:som_infoenergia.model_som_enviament_massiu
+msgid "som.enviament.massiu"
+msgstr "som.enviament.massiu"
+
+#. module: som_infoenergia
+#: selection:som.infoenergia.lot.enviament,tipus_informe:0
+msgid "M10 terciari"
+msgstr "M10 terciario"
+
+#. module: som_infoenergia
+#: view:wizard.add.partners.lot:0 view:wizard.infoenergia.add.contracts.lot:0
+msgid "Afegeix"
+msgstr "Añade"
+
+#. module: som_infoenergia
+#: code:addons/som_infoenergia/som_infoenergia_enviament.py:391
+#: field:som.infoenergia.enviament,body_text:0
+msgid "Cos de l'e-mail enviat per Beedata"
+msgstr "Cuerpo del e-mail enviado por Beedata"
+
+#. module: som_infoenergia
+#: field:som.infoenergia.lot.enviament,total_cancelats:0
+msgid "Enviaments cancel·lats"
+msgstr "Envíos cancelados"
+
+#. module: som_infoenergia
+#: selection:wizard.infoenergia.add.contracts.lot,autoconsum:0
+msgid ""
+"Con excedentes sin compensación individual con cto SSAA en Red Interior– "
+"SSAA"
+msgstr "Con excedentes sin compensación individual con cto SSAA en Red Interior– SSAA"
+
+#. module: som_infoenergia
+#: code:addons/som_infoenergia/som_infoenergia_enviament.py:387
+#: field:som.infoenergia.enviament,pdf_filename:0
+msgid "Nom fitxer PDF"
+msgstr "Nombre archivo PDF"
+
+#. module: som_infoenergia
+#: view:wizard.cancel.from.csv:0
+msgid "Cancel·lar enviaments"
+msgstr "Cancelar envíos"
+
+#. module: som_infoenergia
+#: view:wizard.create.enviaments.from.csv:0
+msgid ""
+"Format del CSV: a la primera columna hi ha d'haver els números dels "
+"contractes, un contracte a cada fila. Les següents columnes que hi hagi, les"
+" guardarà en un diccionari de dades al camp 'Informació Extra'"
+msgstr "Formato del CSV: en la primera columna tiene que haber los números de los contratos, un contrato en cada fila. las siguientes columnas que haya, las guardará en un diccionario de datos en el campo 'Información Extra'"
+
+#. module: som_infoenergia
+#: view:wizard.infoenergia.create.enviaments.from.object:0
+msgid "Selecciona el Lot on vols afegir les pòlisses"
+msgstr "Selecciona el Lote al que quieres añadir las pólizas"
+
+#. module: som_infoenergia
+#: code:addons/som_infoenergia/wizard/wizard_download_csv.py:30
+#: field:wizard.infoenergia.download.csv,path_pdf:0
+msgid "Ruta carpeta dels PDFs"
+msgstr "Ruta carpeta de los PDFs"
+
+#. module: som_infoenergia
+#: code:addons/som_infoenergia/som_enviament_massiu.py:174
+#: field:som.enviament.massiu,name:0
+msgid "Nom"
+msgstr "Nombre"
+
+#. module: som_infoenergia
+#: help:wizard.infoenergia.send.reports,email_to:0
+msgid "Tots els enviaments s'enviaran a aquesta adreça"
+msgstr "Todos los envíos se enviarán a esta dirección"
+
+#. module: som_infoenergia
+#: help:som.infoenergia.lot.enviament,total_cancelats:0
+msgid ""
+"Ja sigui perquè la pòlissa té l'enviament deshabilitat, s'ha cancel·lat a "
+"través d'una acció..."
+msgstr "Ya sea porque la póliza tiene el envío deshabilitado, se ha cancelado a través de una acción..."
+
+#. module: som_infoenergia
+#: field:som.infoenergia.lot.enviament,total_env_csv_in_search:0
+msgid ""
+"Enviaments totals informats en algun CSV descarregat de Beedata trobats en "
+"cerca"
+msgstr "Envíos totales informados en algún CSV descargado de Beedata encontrados en búsqueda"
+
+#. module: som_infoenergia
+#: model:poweremail.templates,def_subject:som_infoenergia.rebaixa_iva_5
+#, python-format
+msgid "Preus actualitzats amb l’IVA al 5% establert pel govern espanyol"
+msgstr "Precios actualizados con el IVA al 5% establecido por el gobierno español"
+
+#. module: som_infoenergia
+#: code:addons/som_infoenergia/wizard/wizard_add_contracts_lot.py:20
+#: code:addons/som_infoenergia/wizard/wizard_create_enviaments_from_partner.py:17
+msgid "Error!"
+msgstr "Error!"
+
+#. module: som_infoenergia
+#: selection:wizard.infoenergia.add.contracts.lot,polissa_state:0
+msgid "Tall"
+msgstr "Corte"
+
+#. module: som_infoenergia
+#: field:som.infoenergia.lot.enviament,total_enviaments:0
+msgid "Enviaments totals"
+msgstr "Envíos totales"
+
+#. module: som_infoenergia
+#: code:addons/som_infoenergia/som_infoenergia_enviament.py:386
+#: field:som.infoenergia.enviament,data_informe:0
+msgid "Data de l'informe"
+msgstr "Fecha del informe"
+
+#. module: som_infoenergia
+#: selection:som.enviament.massiu,estat:0
+#: selection:som.infoenergia.enviament,estat:0
+msgid "Enviat"
+msgstr "Enviado"
+
+#. module: som_infoenergia
+#: selection:wizard.infoenergia.add.contracts.lot,polissa_state:0
+msgid "Validar"
+msgstr "Validar"
+
+#. module: som_infoenergia
+#: model:ir.actions.act_window,name:som_infoenergia.action_som_enviament_massiu_tree
+#: model:ir.ui.menu,name:som_infoenergia.menu_carpeta_massius
+msgid "Enviaments Massius"
+msgstr "Envíos Masivos"
+
+#. module: som_infoenergia
+#: code:addons/som_infoenergia/wizard/wizard_cancel_from_csv.py:19
+#: help:wizard.cancel.from.csv,csv_file:0
+msgid ""
+"Número de pòlissa de les pòlisses de les quals se'n vol cancel·lar "
+"l'enviament"
+msgstr "Número de póliza de las pólizas de las que se desea cancelar su envío"
+
+#. module: som_infoenergia
+#: selection:wizard.infoenergia.add.contracts.lot,autoconsum:0
+msgid ""
+"Con excedentes sin compensación Colectivo sin cto de SSAA (despreciable) en "
+"red interior – Consumo"
+msgstr "Con excedentes sin compensación Colectivo sin cto de SSAA (despreciable) en red interior – Consumo"
+
+#. module: som_infoenergia
+#: model:ir.model,name:som_infoenergia.model_wizard_infoenergia_download_csv
+msgid "wizard.infoenergia.download.csv"
+msgstr "wizard.infoenergia.download.csv"
+
+#. module: som_infoenergia
+#: code:addons/som_infoenergia/som_infoenergia_enviament.py:369
+#: field:som.infoenergia.enviament,tarifa:0
+msgid "Tarifa"
+msgstr "Tarifa"
+
+#. module: som_infoenergia
+#: code:addons/som_infoenergia/som_enviament_massiu.py:161
+#: field:som.enviament.massiu,partner_id:0
+msgid "Contacte"
+msgstr "Contacto"
+
+#. module: som_infoenergia
+#: code:addons/som_infoenergia/wizard/wizard_send_reports.py:87
+#: field:wizard.infoenergia.send.reports,state:0
+msgid "Estat del wizard d'enviament del lot de reports"
+msgstr "Estado del wizard de envío del lote de reportes"
+
+#. module: som_infoenergia
+#: field:som.infoenergia.lot.enviament,total_esborrany_in_search:0
+msgid "Enviaments en esborrany trobats en cerca"
+msgstr "Envíos en borrador encontrados en búsqueda"
+
+#. module: som_infoenergia
+#: code:addons/som_infoenergia/som_infoenergia_lot.py:379
+#: field:som.infoenergia.lot.enviament,name:0
+msgid "Nom del lot"
+msgstr "Nombre del lote"
+
+#. module: som_infoenergia
+#: field:wizard.add.partners.lot,vat:0
+msgid "NIF"
+msgstr "NIF"
+
+#. module: som_infoenergia
+#: code:addons/som_infoenergia/som_enviament_massiu.py:164
+#: field:som.enviament.massiu,invoice_id:0
+msgid "Factura"
+msgstr "Factura"
+
+#. module: som_infoenergia
+#: code:addons/som_infoenergia/som_infoenergia_enviament.py:382
+#: field:som.infoenergia.enviament,tipus_informe_lot:0
+msgid "Tipus d'informe lot"
+msgstr "Tipo de informe lote"
+
+#. module: som_infoenergia
+#: model:ir.model,name:som_infoenergia.model_som_infoenergia_enviament
+msgid "som.infoenergia.enviament"
+msgstr "som.infoenergia.enviament"
+
+#. module: som_infoenergia
+#: code:addons/som_infoenergia/wizard/wizard_send_reports.py:93
+#: help:wizard.infoenergia.send.reports,n_max_mails:0
+msgid "Número màxim de correus que es volen enviar. 0 per enviar-los tots"
+msgstr "Número máximo de correos a enviar. 0 para enviarlos todos"
+
+#. module: som_infoenergia
+#: model:ir.ui.menu,name:som_infoenergia.menu_som_enviament_massiu_lot_altres_tree
+msgid "Tots els lots enviaments massius"
+msgstr "Todos los lotes envío masivo"
+
+#. module: som_infoenergia
+#: selection:wizard.infoenergia.add.contracts.lot,autoconsum:0
+msgid "Sin Excedentes Colectivo – Consumo"
+msgstr "Sin Excedentes Colectivo – Consumo"
+
+#. module: som_infoenergia
+#: selection:wizard.infoenergia.add.contracts.lot,polissa_state:0
+msgid "Cancel·lada"
+msgstr "Cancelada"
+
+#. module: som_infoenergia
+#: help:som.infoenergia.lot.enviament,env_csv_progress:0
+msgid ""
+"Indica quants enviaments s'han trobat en algun CSV descarregat de Beedata"
+msgstr "Indica cuántos envíos se han encontrado en algún CSV descargado de Beedata"
+
+#. module: som_infoenergia
+#: model:poweremail.templates,def_body_text:som_infoenergia.segon_env_no_renovacio_30
+msgid ""
+"\n"
+"    \n"
+"    <!doctype html>\n"
+"    <html>\n"
+"    <head></head>\n"
+"    <body>\n"
+"    2n avís de no renovació de contractes 3.0\n"
+"    </body>\n"
+"    </html>\n"
+"        "
+msgstr "\n    \n    <!doctype html>\n    <html>\n    <head></head>\n    <body>\n    2n avís de no renovació de contractes 3.0\n    </body>\n    </html>\n        "
+
+#. module: som_infoenergia
+#: selection:som.infoenergia.lot.enviament,tipus_informe:0
+msgid "M6 domèstic"
+msgstr "M6 doméstico"
+
+#. module: som_infoenergia
+#: selection:wizard.infoenergia.add.contracts.lot,autoconsum:0
+msgid ""
+"Con excedentes sin compensación Colectivo con cto de SSAA a través de red y "
+"red interior - SSAA"
+msgstr "Con excedentes sin compensación Colectivo con cto de SSAA a través de red y red interior - SSAA"
+
+#. module: som_infoenergia
+#: selection:wizard.infoenergia.add.contracts.lot,autoconsum:0
+msgid "Con excedentes sin compensación Colectivo/en Red Interior– Consumo"
+msgstr "Con excedentes sin compensación Colectivo/en Red Interior– Consumo"
+
+#. module: som_infoenergia
+#: constraint:ir.actions.act_window:0
+msgid "Invalid model name in the action definition."
+msgstr "Invalid model name in the action definition."
+
+#. module: som_infoenergia
+#: view:wizard.infoenergia.send.reports:0
+msgid "Envia reports Infoenergia"
+msgstr "Envía reportes Infoenergía"
+
+#. module: som_infoenergia
+#: code:addons/som_infoenergia/giscedata_cups.py:12
+msgid "Historic consums"
+msgstr "Historico consumos"
+
+#. module: som_infoenergia
+#: model:ir.model,name:som_infoenergia.model_wizard_infoenergia_create_enviaments_from_object
+msgid "wizard.infoenergia.create.enviaments.from.object"
+msgstr "wizard.infoenergia.create.enviaments.from.object"
+
+#. module: som_infoenergia
+#: model:ir.actions.report.xml,name:som_infoenergia.report_indexed_offer
+msgid "Oferta indexada"
+msgstr "Oferta indexada"
+
+#. module: som_infoenergia
+#: selection:wizard.infoenergia.add.contracts.lot,autoconsum:0
+msgid "Con excedentes sin compensación Colectivo a través de red – Consumo"
+msgstr "Con excedentes sin compensación Colectivo a través de red – Consumo"
+
+#. module: som_infoenergia
+#: code:addons/som_infoenergia/wizard/wizard_create_enviaments_from_csv.py:19
+#: field:wizard.create.enviaments.from.csv,csv_file:0
+msgid "Fitxer CSV"
+msgstr "Fichero CSV"
+
+#. module: som_infoenergia
+#: model:ir.actions.report.xml,name:som_infoenergia.sepa_report
+msgid "SEPA Report"
+msgstr "SEPA Report"
+
+#. module: som_infoenergia
+#: code:addons/som_infoenergia/wizard/wizard_download_pdf.py:17
+#: help:wizard.infoenergia.download.pdf,force_download_pdf:0
+msgid "Es tornaran a baixar els PDFs dels Enviaments en estat Obert"
+msgstr "Se volverán a descargar los PDFs de los Envíos en estado Abierto"
+
+#. module: som_infoenergia
+#: selection:som.enviament.massiu,estat:0
+#: selection:som.infoenergia.enviament,estat:0
+#: selection:som.infoenergia.lot.enviament,estat:0
+#: selection:wizard.infoenergia.multiple.state.change,new_state:0
+msgid "Obert"
+msgstr "Abierto"
+
+#. module: som_infoenergia
+#: code:addons/som_infoenergia/som_enviament_massiu.py:176
+#: code:addons/som_infoenergia/som_infoenergia_enviament.py:371
+#: code:addons/som_infoenergia/som_infoenergia_lot.py:380
+#: code:addons/som_infoenergia/wizard/wizard_add_contracts_lot.py:53
+#: field:som.enviament.massiu,estat:0 field:som.infoenergia.enviament,estat:0
+#: field:som.infoenergia.lot.enviament,estat:0
+#: field:wizard.infoenergia.add.contracts.lot,polissa_state:0
+msgid "Estat"
+msgstr "Estado"
+
+#. module: som_infoenergia
+#: field:wizard.add.partners.lot,has_gkwh:0
+msgid "Té GKwh"
+msgstr "Tiene GKwh"
+
+#. module: som_infoenergia
+#: view:wizard.infoenergia.create.enviaments.from.object:0
+msgid "Tancar"
+msgstr "Cerrar"
+
+#. module: som_infoenergia
+#: view:som.infoenergia.lot.enviament:0
+msgid "Progrés"
+msgstr "Progreso"
+
+#. module: som_infoenergia
+#: help:som.infoenergia.lot.enviament,env_sending_progress:0
+msgid "Indica quants enviaments s'han enviat del total d'enviaments del Lot"
+msgstr "Indica cuántos envíos se han enviado del total de envíos del Lote"
+
+#. module: som_infoenergia
+#: code:addons/som_infoenergia/som_infoenergia_lot.py:386
+#: field:som.infoenergia.lot.enviament,tipus_informe:0
+msgid "Tipus d'informe"
+msgstr "Tipo de informe"
+
+#. module: som_infoenergia
+#: code:addons/som_infoenergia/som_infoenergia_enviament.py:357
+#: help:som.infoenergia.enviament,lang:0
+msgid "Idioma del partner titular de la pòlissa"
+msgstr "Idioma del partner titular de la póliza"
+
+#. module: som_infoenergia
+#: view:wizard.infoenergia.download.csv:0
+msgid "Ruta dels PDFs"
+msgstr "Ruta de los PDFs"
+
+#. module: som_infoenergia
+#: selection:wizard.infoenergia.add.contracts.lot,polissa_state:0
+msgid "Modificació Contractual"
+msgstr "Modificación Contractual"
+
+#. module: som_infoenergia
+#: field:som.infoenergia.lot.enviament,total_errors_in_search:0
+msgid "Enviaments amb error trobats en cerca"
+msgstr "Envíos con error encontrados en búsqueda"
+
+#. module: som_infoenergia
+#: field:wizard.add.partners.lot,es_soci:0
+msgid "És sòcia"
+msgstr "Es socia"
+
+#. module: som_infoenergia
+#: help:som.infoenergia.lot.enviament,total_preesborrany:0
+msgid ""
+"Enviaments que s'han creat des d'una pòlissa i no s'han descarregat en cap "
+"CSV"
+msgstr "Envíos que se han creado desde una póliza y no se han descargado en ningún CSV"
+
+#. module: som_infoenergia
+#: field:som.infoenergia.lot.enviament,env_sending_progress:0
+#: field:som.infoenergia.lot.enviament,total_enviats:0
+msgid "Enviaments enviats"
+msgstr "Envíos enviados"
+
+#. module: som_infoenergia
+#: view:som.infoenergia.lot.enviament:0
+msgid "(errors) presents en alguna cerca"
+msgstr "(errores) presentes en alguna búsqueda"
+
+#. module: som_infoenergia
+#: help:som.infoenergia.lot.enviament,total_baixa:0
+msgid "Enviaments que tenen associat una pòlissa de baixa o amb data de baixa"
+msgstr "Envíos que tienen asociado una póliza de baja o con fecha de baja"
+
+#. module: som_infoenergia
+#: view:wizard.cancel.from.csv:0
+msgid "(afegeix 0 a l'esquerra als números de pòlissa si en falten)"
+msgstr "(añade 0 a la izquierda a los números de póliza si faltan)"
+
+#. module: som_infoenergia
+#: selection:wizard.infoenergia.add.contracts.lot,autoconsum:0
+msgid "Con excedentes sin compensación Colectivo/en Red Interior - SSAA"
+msgstr "Con excedentes sin compensación Colectivo/en Red Interior - SSAA"
+
+#. module: som_infoenergia
+#: selection:wizard.infoenergia.add.contracts.lot,autoconsum:0
+msgid ""
+"Con excedentes sin compensación individual con cto SSAA a través de red – "
+"SSAA"
+msgstr "Con excedentes sin compensación individual con cto SSAA a través de red – SSAA"
+
+#. module: som_infoenergia
+#: view:wizard.infoenergia.create.enviaments.from.object:0
+msgid "Afegir pòlisses al Lot Infoenergia"
+msgstr "Añadir pólizas en el Lote Infoenergía"
+
+#. module: som_infoenergia
+#: view:som.infoenergia.lot.enviament:0
+msgid "(encuats) presents en alguna cerca"
+msgstr "(encolados) presentes en alguna búsqueda"
+
+#. module: som_infoenergia
+#: view:som.infoenergia.lot.enviament:0
+msgid "Quantitats"
+msgstr "Cantidades"
+
+#. module: som_infoenergia
+#: code:addons/som_infoenergia/som_enviament_massiu.py:69
+msgid "Enviament Massiu Lot {} - {} enviaments"
+msgstr "Envío Masivo Lote {} - {} envíos"
+
+#. module: som_infoenergia
+#: view:som.infoenergia.lot.enviament:0
+msgid "(cancel·lats) presents en alguna cerca"
+msgstr "(cancelados) presentes en alguna búsqueda"
+
+#. module: som_infoenergia
+#: code:addons/som_infoenergia/som_infoenergia_enviament.py:384
+#: field:som.infoenergia.enviament,found_in_search:0
+msgid "La pòlissa relacionada estava present a alguna cerca"
+msgstr "La póliza relacionada estaba presente en alguna búsqueda"
+
+#. module: som_infoenergia
+#: field:wizard.cancel.from.csv,name:0
+msgid "Filename"
+msgstr "Filename"
+
+#. module: som_infoenergia
+#: code:addons/som_infoenergia/wizard/wizard_download_pdf.py:15
+#: field:wizard.infoenergia.download.pdf,state:0
+msgid "Estat del wizard de baixada de PDF"
+msgstr "Estado del wizard de descarga de PDF"
+
+#. module: som_infoenergia
+#: code:addons/som_infoenergia/som_infoenergia_enviament.py:390
+#: field:som.infoenergia.enviament,num_polissa_csv:0
+msgid "Número contracte CSV Beedata"
+msgstr "Número contrato CSV Beedata"
+
+#. module: som_infoenergia
+#: constraint:ir.ui.view:0
+msgid "Invalid XML for View Architecture!"
+msgstr "Invalid XML for View Architecture!"
+
+#. module: som_infoenergia
+#: code:addons/som_infoenergia/wizard/wizard_create_enviaments_from_csv.py:20
+#: field:wizard.create.enviaments.from.csv,state:0
+msgid "Estat del wizard de crear enviaments des de CSV"
+msgstr "Estado del wizard de crear envíos desde CSV"
+
+#. module: som_infoenergia
+#: model:poweremail.templates,def_subject:som_infoenergia.primer_env_no_renovacio_30
+msgid ""
+"[IMPORTANT] Finalització del contracte ${object.polissa_id.name} i proposta "
+"de renovació"
+msgstr "[IMPORTANTE] Finalización del contrato ${object.polissa_id.name} y propuesta de renovación"
+
+#. module: som_infoenergia
+#: view:wizard.infoenergia.download.csv:0
+msgid ""
+"Es descarragarà el CSV de Beedata i es crearan o actualitzaran les línies "
+"d'enviament"
+msgstr "Se descargará el CSV de Beedata y se crearán o actualizarán las líneas de envío"
+
+#. module: som_infoenergia
+#: selection:som.infoenergia.lot.enviament,estat:0
+msgid "Realitzat"
+msgstr "Realizado"
+
+#. module: som_infoenergia
+#: field:wizard.infoenergia.add.contracts.lot,comer_fare:0
+msgid "Tarifa comercialitzadora"
+msgstr "Tarifa comercializadora"
+
+#. module: som_infoenergia
+#: view:wizard.cancel.from.csv:0
+msgid "Motiu"
+msgstr "Motivo"
+
+#. module: som_infoenergia
+#: field:wizard.infoenergia.multiple.state.change,new_state:0
+msgid "Nou estat dels enviaments"
+msgstr "Nuevo estado de los envíos"
+
+#. module: som_infoenergia
+#: view:som.infoenergia.lot.enviament:0
+msgid "Infoenergia Lot Enviament"
+msgstr "Infoenergía Lote Envío"
+
+#. module: som_infoenergia
+#: code:addons/som_infoenergia/giscedata_cups.py:13
+msgid "Historic factures"
+msgstr "Historic facturas"
+
+#. module: som_infoenergia
+#: code:addons/som_infoenergia/wizard/wizard_send_reports.py:59
+#: code:addons/som_infoenergia/wizard/wizard_send_reports.py:63
+#: code:addons/som_infoenergia/wizard/wizard_send_reports.py:75
+msgid "ERROR"
+msgstr "ERROR"
+
+#. module: som_infoenergia
+#: view:wizard.create.enviaments.from.csv:0
+msgid "Crear enviaments"
+msgstr "Crear envíos"
+
+#. module: som_infoenergia
+#: model:ir.ui.menu,name:som_infoenergia.menu_infoenergia
+#: selection:som.infoenergia.lot.enviament,tipus:0 view:giscedata.polissa:0
+msgid "Infoenergia"
+msgstr "Infoenergia"
+
+#. module: som_infoenergia
+#: code:addons/som_infoenergia/som_enviament_massiu.py:170
+#: code:addons/som_infoenergia/som_infoenergia_enviament.py:358
+#: field:som.enviament.massiu,lang:0 field:som.infoenergia.enviament,lang:0
+msgid "Idioma"
+msgstr "Idioma"
+
+#. module: som_infoenergia
+#: field:som.infoenergia.lot.enviament,total_errors:0
+msgid "Enviaments amb error"
+msgstr "Envíos con error"
+
+#. module: som_infoenergia
+#: help:giscedata.polissa,emp_allow_send_data:0
+msgid "Compartir dades a través de l'API amb BeeData"
+msgstr "Compartir datos a través de la API con BeeData"
+
+#. module: som_infoenergia
+#: field:som.infoenergia.lot.enviament,env_csv_progress:0
+msgid "Enviaments informats en algun CSV descarregat"
+msgstr "Envíos informados en algún CSV descargado"
+
+#. module: som_infoenergia
+#: selection:wizard.infoenergia.add.contracts.lot,autoconsum:0
+msgid "Qualsevol Autoconsum"
+msgstr "Cualquier Autoconsumo"
+
+#. module: som_infoenergia
+#: selection:wizard.infoenergia.add.contracts.lot,autoconsum:0
+msgid "Autoconsumo Tipo 1"
+msgstr "Autoconsumo Tipo 1"
+
+#. module: som_infoenergia
+#: view:giscedata.polissa:0
+msgid "Compartir dades per infoenergia"
+msgstr "Compartir datos por infoenergía"
+
+#. module: som_infoenergia
+#: model:poweremail.templates,def_subject:som_infoenergia.env_empowering_report_fv_auto
+msgid ""
+"[Informe] Quin potencial d’autoproducció tens? (contracte ${object.name})"
+msgstr "[Informe] ¿Qué potencial de autoproducción tienes? (contrato ${object.name})"
+
+#. module: som_infoenergia
+#: selection:wizard.infoenergia.add.contracts.lot,autoconsum:0
+msgid ""
+"Con excedentes sin compensación Colectivo sin cto de SSAA en Red Interior– "
+"Consumo"
+msgstr "Con excedentes sin compensación Colectivo sin cto de SSAA en Red Interior– Consumo"
+
+#. module: som_infoenergia
+#: code:addons/som_infoenergia/wizard/wizard_create_enviaments_from_partner.py:66
+#: help:wizard.add.partners.lot,category:0
+msgid "Categoria de Partner"
+msgstr "Catégoria de Partner"
+
+#. module: som_infoenergia
+#: model:ir.model,name:som_infoenergia.model_wizard_infoenergia_multiple_state_change
+msgid "wizard.infoenergia.multiple.state.change"
+msgstr "wizard.infoenergia.multiple.state.change"
+
+#. module: som_infoenergia
+#: model:ir.actions.act_window,name:som_infoenergia.action_enviament_jobs_group_list
+#: model:ir.ui.menu,name:som_infoenergia.enviament_jobs_groups
+msgid "Tasques d'enviament"
+msgstr "Tareas de envío"
+
+#. module: som_infoenergia
+#: help:giscedata.polissa,emp_allow_recieve_mail_infoenergia:0
+msgid "Indica si es vol rebre informes per email del serveid'infoenergia"
+msgstr "Indica si se desea recibir informes por email del servicio de infoenergía"
+
+#. module: som_infoenergia
+#: model:ir.module.module,shortdesc:som_infoenergia.module_meta_information
+msgid "Mòdul inforenergia de Som Energia'"
+msgstr "Módulo información de Som Energia'"
+
+#. module: som_infoenergia
+#: code:addons/som_infoenergia/wizard/wizard_send_reports.py:88
+#: help:wizard.infoenergia.send.reports,is_test:0
+msgid "És un lot de Test?"
+msgstr "¿Es un lote de Test?"
+
+#. module: som_infoenergia
+#: view:som.infoenergia.lot.enviament:0
+msgid "(esborrany) presents en alguna cerca"
+msgstr "(borrador) presentes en alguna búsqueda"
+
+#. module: som_infoenergia
+#: field:wizard.infoenergia.send.reports,email_to:0
+msgid "E-mail on enviar els correus"
+msgstr "E-mail donde enviar los correos"
+
+#. module: som_infoenergia
+#: code:addons/som_infoenergia/wizard/wizard_download_csv.py:31
+#: field:wizard.infoenergia.download.csv,path_csv:0
+msgid "Ruta fitxer CSV"
+msgstr "Ruta archivo CSV"
+
+#. module: som_infoenergia
+#: field:wizard.infoenergia.add.contracts.lot,tipo_medida:0
+msgid "Tipus Punt"
+msgstr "Tipo Punto"
+
+#. module: som_infoenergia
+#: code:addons/som_infoenergia/som_enviament_massiu.py:187
+#: code:addons/som_infoenergia/som_infoenergia_enviament.py:389
+#: code:addons/som_infoenergia/som_infoenergia_lot.py:389
+#: help:som.enviament.massiu,info:0 help:som.infoenergia.enviament,info:0
+#: help:som.infoenergia.lot.enviament,info:0
+msgid "Inclou qualsevol informació adicional, com els errors del Shera"
+msgstr "Incluye cualquier información adicional, como los errores del Shera"
+
+#. module: som_infoenergia
+#: model:ir.model,name:som_infoenergia.model_wizard_infoenergia_download_pdf
+msgid "wizard.infoenergia.download.pdf"
+msgstr "wizard.infoenergia.download.pdf"
+
+#. module: som_infoenergia
+#: field:som.infoenergia.lot.enviament,total_encuats:0
+msgid "Enviaments encuats per enviar"
+msgstr "Envíos encuados para enviar"
+
+#. module: som_infoenergia
+#: field:som.infoenergia.lot.enviament,total_env_csv:0
+msgid "Enviaments presents en CSVs"
+msgstr "Envíos presentes en CSVs"
+
+#. module: som_infoenergia
+#: code:addons/som_infoenergia/wizard/wizard_send_reports.py:89
+#: help:wizard.infoenergia.send.reports,is_from_lot:0
+msgid "Accionat des de lot?"
+msgstr "¿Accionado desde lote?"
+
+#. module: som_infoenergia
+#: selection:wizard.infoenergia.add.contracts.lot,autoconsum:0
+msgid "Con excedentes y compensación Individual - Consumo"
+msgstr "Con excedentes y compensación Individual - Consumo"
+
+#. module: som_infoenergia
+#: code:addons/som_infoenergia/wizard/wizard_add_contracts_lot.py:52
+#: code:addons/som_infoenergia/wizard/wizard_create_enviaments_from_partner.py:73
+#: field:wizard.add.partners.lot,state:0
+#: field:wizard.infoenergia.add.contracts.lot,state:0
+msgid "Estat del wizard"
+msgstr "Estado del wizard"
+
+#. module: som_infoenergia
+#: model:poweremail.templates,def_subject:som_infoenergia.env_empowering_report_domestic_from_enviament
+msgid ""
+"Infoenergia - Tancament d’any 2020 (contracte ${object.polissa_id.name})"
+msgstr "Infoenergía - Cierre de año 2020 (contrato ${object.polissa_id.name})"
+
+#. module: som_infoenergia
+#: model:ir.actions.act_window,name:som_infoenergia.action_obrir_enviament_lot
+msgid "Enviaments d'Infoenergia del Lot"
+msgstr "Envíos de Infoenergía del Lote"
+
+#. module: som_infoenergia
+#: code:addons/som_infoenergia/wizard/wizard_cancel_from_csv.py:21
+#: code:addons/som_infoenergia/wizard/wizard_multiple_state_change.py:39
+#: field:wizard.cancel.from.csv,reason:0
+#: field:wizard.infoenergia.multiple.state.change,message:0
+msgid "Comentari"
+msgstr "Comentario"
+
+#. module: som_infoenergia
+#: field:wizard.infoenergia.download.pdf,force_download_pdf:0
+msgid "Forçar baixada pdfs ja baixats"
+msgstr "Forzar descarga pdfs ya descargados"
+
+#. module: som_infoenergia
+#: model:ir.model,name:som_infoenergia.model_wizard_cancel_from_csv
+msgid "wizard.cancel.from.csv"
+msgstr "wizard.cancel.from.csv"
+
+#. module: som_infoenergia
+#: model:ir.actions.act_window,name:som_infoenergia.action_obrir_enviament_massiu_lot
+msgid "Enviaments Massius del Lot"
+msgstr "Envíos Masivos del Lote"
+
+#. module: som_infoenergia
+#: selection:wizard.infoenergia.add.contracts.lot,autoconsum:0
+msgid "Con excedentes y compensación Colectivo a través de red– Consumo"
+msgstr "Con excedentes y compensación Colectivo a través de red– Consumo"
+
+#. module: som_infoenergia
+#: view:som.infoenergia.lot.enviament:0
+msgid "(enviats) presents en alguna cerca"
+msgstr "(enviados) presentes en alguna búsqueda"
+
+#. module: som_infoenergia
+#: field:som.infoenergia.lot.enviament,total_baixa_in_search:0
+msgid "Enviaments de baixa trobats en cerca"
+msgstr "Envíos de baja encontrados en búsqueda"
+
+#. module: som_infoenergia
+#: view:wizard.infoenergia.send.reports:0
+msgid ""
+"Els correus de test s'enviaran exactament amb aquest assumpte (sense "
+"traduir)"
+msgstr "Los correos de test se enviarán exactamente con este asunto (sin traducir)"
+
+#. module: som_infoenergia
+#: field:wizard.add.partners.lot,active:0
+msgid "Actiu"
+msgstr "Activo"
+
+#. module: som_infoenergia
+#: field:wizard.infoenergia.add.contracts.lot,autoconsum:0
+msgid "Tipus autoconsum"
+msgstr "Tipo autoconsumo"
+
+#. module: som_infoenergia
+#: model:ir.actions.act_window,name:som_infoenergia.action_wizard_cancel_from_csv
+#: view:wizard.cancel.from.csv:0
+msgid "Cancel·la enviaments des de CSV"
+msgstr "Cancelar envíos desde CSV"
+
+#. module: som_infoenergia
+#: code:addons/som_infoenergia/wizard/wizard_send_reports.py:92
+#: help:wizard.infoenergia.send.reports,allow_reenviar:0
+msgid "Permetre que es reenviïn correus ja enviats?"
+msgstr "¿Permitir que se reenvíen correos ya enviados?"
+
+#. module: som_infoenergia
+#: field:wizard.add.partners.lot,len_result:0
+#: field:wizard.infoenergia.add.contracts.lot,len_result:0
+msgid "Resultat de la cerca"
+msgstr "Resultado de la búsqueda"
+
+#. module: som_infoenergia
+#: code:addons/som_infoenergia/som_infoenergia_lot.py:385
+#: help:som.infoenergia.lot.enviament,is_test:0
+msgid "És un enviament de prova?"
+msgstr "¿Es un envío de prueba?"
+
+#. module: som_infoenergia
+#: view:wizard.add.partners.lot:0
+msgid "Seleccionar partners per afegir al lot d'enviament"
+msgstr "Seleccionar partners para agregar al lote de envío"
+
+#. module: som_infoenergia
+#: model:poweremail.templates,def_body_text:som_infoenergia.tercer_env_no_renovacio_30
+msgid ""
+"\n"
+"    \n"
+"    <!doctype html>\n"
+"    <html>\n"
+"    <head></head>\n"
+"    <body>\n"
+"    3r avís de no renovació de contractes 3.0\n"
+"    </body>\n"
+"    </html>\n"
+"        "
+msgstr "\n    \n    <!doctype html>\n    <html>\n    <head></head>\n    <body>\n    3r avís de no renovació de contractes 3.0\n    </body>\n    </html>\n        "
+
+#. module: som_infoenergia
+#: view:som.enviament.massiu:0 view:som.infoenergia.enviament:0
+msgid "Dades polissa"
+msgstr "Datos poliza"
+
+#. module: som_infoenergia
+#: code:addons/som_infoenergia/wizard/wizard_create_enviaments_from_csv.py:21
+#: help:wizard.create.enviaments.from.csv,info:0
+msgid "Només es creen enviaments de pòlisses Activa=Si"
+msgstr "Sólo se crean envíos de pólizas Activa=Si"
+
+#. module: som_infoenergia
+#: code:addons/som_infoenergia/som_infoenergia_enviament.py:365
+#: field:som.infoenergia.enviament,autoconsum:0
+msgid "Té Autoproducció"
+msgstr "Tiene Autoproducción"
+
+#. module: som_infoenergia
+#: selection:wizard.infoenergia.add.contracts.lot,autoconsum:0
+msgid ""
+"Con excedentes sin compensación Individual con cto SSAA a través de red y "
+"red interior – Consumo"
+msgstr "Con excedentes sin compensación Individual con cto SSAA a través de red y red interior – Consumo"
+
+#. module: som_infoenergia
+#: field:wizard.add.partners.lot,category:0
+#: field:wizard.infoenergia.add.contracts.lot,category:0
+msgid "Categoria"
+msgstr "Categoria"
+
+#. module: som_infoenergia
+#: selection:som.infoenergia.enviament,estat:0
+msgid "Pre Esborrany"
+msgstr "Pre Borrador"
+
+#. module: som_infoenergia
+#: model:ir.module.module,description:som_infoenergia.module_meta_information
+msgid ""
+"\n"
+"    This module provide :\n"
+"        * Model enviament\n"
+"        * Model lot enviament\n"
+"        * Acció d'enviament\n"
+"    "
+msgstr "\n    This module provide :\n        * Model enviament\n        * Model lot enviament\n        * Acció d'enviament\n    "
+
+#. module: som_infoenergia
+#: model:ir.ui.menu,name:som_infoenergia.menu_som_infoenergia_tree
+#: view:som.enviament.massiu:0 view:som.infoenergia.enviament:0
+msgid "Enviaments infoenergia"
+msgstr "Envíos infoenergía"
+
+#. module: som_infoenergia
+#: selection:som.enviament.massiu,estat:0
+#: selection:som.infoenergia.enviament,estat:0
+#: selection:wizard.infoenergia.multiple.state.change,new_state:0
+msgid "Cancel·lat"
+msgstr "Cancelado"
+
+#. module: som_infoenergia
+#: view:giscedata.polissa:0
+msgid "Rebre email infoenergia"
+msgstr "Recibir email infoenergía"
+
+#. module: som_infoenergia
+#: model:poweremail.templates,def_subject:som_infoenergia.segon_env_no_renovacio_30
+msgid ""
+"[IMPORTANT] Condicions per a la renovació del contracte "
+"${object.polissa_id.name} amb tarifa indexada"
+msgstr "[IMPORTANTE] Condiciones para la renovación del contrato ${object.polissa_id.name} con tarifa indexada"
+
+#. module: som_infoenergia
+#: view:wizard.cancel.from.csv:0 view:wizard.create.enviaments.from.csv:0
+msgid "Arxiu CSV"
+msgstr "Archivo CSV"
+
+#. module: som_infoenergia
+#: help:som.infoenergia.lot.enviament,total_oberts:0
+msgid "Enviaments que tenen el PDF adjunt i encara no s'han enviat"
+msgstr "Envíos que tienen el PDF adjunto y todavía no se han enviado"
+
+#. module: som_infoenergia
+#: view:wizard.cancel.from.csv:0
+msgid "Cancel·lar enviaments de les pòlisses indicades al CSV"
+msgstr "Cancelar envíos de las pólizas indicadas en el CSV"
+
+#. module: som_infoenergia
+#: model:poweremail.templates,def_body_text:som_infoenergia.env_empowering_report_domestic
+#: model:poweremail.templates,def_body_text:som_infoenergia.env_empowering_report_empresa
+#: model:poweremail.templates,def_body_text:som_infoenergia.env_empowering_report_fv_auto
+msgid ""
+"\n"
+"    \n"
+"    <!doctype html>\n"
+"    <html>\n"
+"    <head></head>\n"
+"    <body>\n"
+"    Benvolgut/da ${object.direccio_pagament.name},\n"
+"\n"
+"    Informe energètic\n"
+"\n"
+"    </body>\n"
+"    </html>\n"
+"        "
+msgstr "\n    \n    <!doctype html>\n    <html>\n    <head></head>\n    <body>\n    Benvolgut/da ${object.direccio_pagament.name},\n\n    Informe energètic\n\n    </body>\n    </html>\n        "
+
+#. module: som_infoenergia
+#: model:ir.actions.act_window,name:som_infoenergia.action_wizard_create_from_csv
+#: view:wizard.create.enviaments.from.csv:0
+msgid "Crea enviaments des de CSV"
+msgstr "Crea envíos desde CSV"
+
+#. module: som_infoenergia
+#: selection:wizard.infoenergia.add.contracts.lot,autoconsum:0
+msgid "Sin Excedentes Individual – Consumo"
+msgstr "Sin Excedentes Individual – Consumo"
+
+#. module: som_infoenergia
+#: model:ir.ui.menu,name:som_infoenergia.menu_som_infoenergia_lot_oberts_tree
+msgid "Lots enviament infoenergia Oberts"
+msgstr "Lotes de envío infoenergia Abiertos"
+
+#. module: som_infoenergia
+#: code:addons/som_infoenergia/som_infoenergia_enviament.py:362
+#: field:som.infoenergia.enviament,name:0
+msgid "Num Polissa"
+msgstr "Num Poliza"
+
+#. module: som_infoenergia
+#: model:ir.actions.act_window,name:som_infoenergia.action_wizard_create_enviaments_from_object
+msgid "Afegir pòlisses al Lot d'Enviaments Infoenergia/Massiu"
+msgstr "Añadir pólizas al Lote de Envíos Infoenergia/Massiu"
+
+#. module: som_infoenergia
+#: selection:wizard.infoenergia.add.contracts.lot,polissa_state:0
+msgid "Facturació"
+msgstr "Facturación"
+
+#. module: som_infoenergia
+#: selection:wizard.add.partners.lot,state:0
+#: selection:wizard.cancel.from.csv,state:0
+#: selection:wizard.create.enviaments.from.csv,state:0
+#: selection:wizard.infoenergia.add.contracts.lot,state:0
+#: selection:wizard.infoenergia.create.enviaments.from.object,state:0
+#: selection:wizard.infoenergia.download.csv,state:0
+#: selection:wizard.infoenergia.download.pdf,state:0
+#: selection:wizard.infoenergia.multiple.state.change,state:0
+#: selection:wizard.infoenergia.send.reports,state:0
+msgid "Estat Inicial"
+msgstr "Estado Inicial"
+
+#. module: som_infoenergia
+#: selection:wizard.infoenergia.add.contracts.lot,polissa_state:0
+msgid "Activa"
+msgstr "Activa"
+
+#. module: som_infoenergia
+#: code:addons/som_infoenergia/som_enviament_massiu.py:158
+#: code:addons/som_infoenergia/som_infoenergia_enviament.py:352
+#: field:som.enviament.massiu,polissa_id:0
+#: field:som.infoenergia.enviament,polissa_id:0
+msgid "Contracte"
+msgstr "Contrato"
+
+#. module: som_infoenergia
+#: selection:som.infoenergia.lot.enviament,tipus_informe:0
+msgid "M1 terciari"
+msgstr "M1 terciario"
+
+#. module: som_infoenergia
+#: code:addons/som_infoenergia/som_enviament_massiu.py:178
+#: code:addons/som_infoenergia/som_infoenergia_enviament.py:373
+#: field:som.enviament.massiu,lot_enviament:0
+#: field:som.infoenergia.enviament,lot_enviament:0
+#: field:wizard.infoenergia.create.enviaments.from.object,lot_enviament:0
+msgid "Lot Enviament"
+msgstr "Lote Envío"
+
+#. module: som_infoenergia
+#: selection:wizard.infoenergia.add.contracts.lot,autoconsum:0
+msgid ""
+"Con excedentes sin compensación Individual con cto SSAA en Red Interior– "
+"Consumo"
+msgstr "Con excedentes sin compensación Individual con cto SSAA en Red Interior– Consumo"
+
+#. module: som_infoenergia
+#: model:ir.actions.act_window,name:som_infoenergia.action_wizard_download_lot_pdfs
+msgid "Descàrrega PDFs Infoenergia del Lot"
+msgstr "Descarga PDFs Infoenergía del Lote"
+
+#. module: som_infoenergia
+#: model:poweremail.templates,def_subject:som_infoenergia.env_empowering_report_empresa_from_enviament
+msgid ""
+"Informe energètic personalitzat pel teu contracte ${object.polissa_id.name} "
+"amb tarifa ${object.polissa_id.tarifa_codi} - Servei Infoenergia"
+msgstr "Informe energético personalizado por tu contrato ${object.polissa_id.name} con tarifa ${object.polissa_id.tarifa_codi} - Servicio Infoenergía"
+
+#. module: som_infoenergia
+#: selection:som.enviament.massiu,estat:0
+#: selection:som.infoenergia.enviament,estat:0
+msgid "Encuat per enviar"
+msgstr "Encuat para enviar"
+
+#. module: som_infoenergia
+#: selection:wizard.infoenergia.add.contracts.lot,autoconsum:0
+msgid ""
+"Con excedentes sin compensación Individual con cto SSAA a través de red – "
+"Consumo"
+msgstr "Con excedentes sin compensación Individual con cto SSAA a través de red – Consumo"
+
+#. module: som_infoenergia
+#: model:poweremail.templates,def_subject:som_infoenergia.env_empowering_report_domestic
+msgid "Infoenergia - Tancament d’any 2020 (contracte ${object.name})"
+msgstr "Infoenergía - Cierre de año 2020 (contrato ${object.name})"
+
+#. module: som_infoenergia
+#: field:wizard.cancel.from.csv,csv_file:0
+msgid "CSV File"
+msgstr "CSV File"
+
+#. module: som_infoenergia
+#: view:wizard.cancel.from.csv:0
+msgid ""
+"A la primera columna hi ha d'haver els números de contracte sense capçalera"
+msgstr "En la primera columna deben estar los números de contrato sin cabecera"
+
+#. module: som_infoenergia
+#: view:som.infoenergia.lot.enviament:0
+msgid "(total) presents en alguna cerca"
+msgstr "(total) presentes en alguna búsqueda"
+
+#. module: som_infoenergia
+#: view:som.infoenergia.lot.enviament:0
+msgid "(oberts) presents en alguna cerca"
+msgstr "(abiertos) presentes en alguna búsqueda"
+
+#. module: som_infoenergia
+#: code:addons/som_infoenergia/wizard/wizard_create_enviaments_from_csv.py:18
+#: field:wizard.create.enviaments.from.csv,name:0
+msgid "Nom del fitxer"
+msgstr "Nombre del fichero"
+
+#. module: som_infoenergia
+#: model:ir.actions.act_window,name:som_infoenergia.action_wizard_send_mail_enviament_massiu
+#: model:ir.actions.act_window,name:som_infoenergia.action_wizard_send_reports
+msgid "Enviament correu"
+msgstr "Envío correo"
+
+#. module: som_infoenergia
+#: help:som.infoenergia.lot.enviament,pdf_download_progress:0
+msgid "Indica quants PDFs s'han descarregat del total d'enviaments del Lot"
+msgstr "Indica cuántos PDFs se han descargado del total de envíos del Lote"
+
+#. module: som_infoenergia
+#: code:addons/som_infoenergia/wizard/wizard_download_csv.py:29
+#: code:addons/som_infoenergia/wizard/wizard_multiple_state_change.py:37
+#: field:wizard.infoenergia.download.csv,state:0
+#: field:wizard.infoenergia.multiple.state.change,state:0
+msgid "Estat del wizard de baixada de CSV"
+msgstr "Estado del wizard de descarga de CSV"
+
+#. module: som_infoenergia
+#: selection:wizard.infoenergia.add.contracts.lot,polissa_state:0
+msgid "Creació nova pòlissa"
+msgstr "Creación nueva póliza"
+
+#. module: som_infoenergia
+#: view:som.infoenergia.lot.enviament:0
+msgid "Informació del lot"
+msgstr "Información del lote"
+
+#. module: som_infoenergia
+#: selection:wizard.infoenergia.add.contracts.lot,autoconsum:0
+msgid ""
+"Con excedentes sin compensación Colectivo con cto de SSAA  a través de red y"
+" red interior – Consumo"
+msgstr "Con excedentes sin compensación Colectivo con cto de SSAA  a través de red y red interior – Consumo"
+
+#. module: som_infoenergia
+#: model:ir.model,name:som_infoenergia.model_wizard_infoenergia_send_reports
+msgid "wizard.infoenergia.send.reports"
+msgstr "wizard.infoenergia.send.reports"
+
+#. module: som_infoenergia
+#: selection:som.infoenergia.lot.enviament,tipus_informe:0
+msgid "M5 domèstic"
+msgstr "M5 doméstico"
+
+#. module: som_infoenergia
+#: code:addons/som_infoenergia/som_enviament_massiu.py:169
+#: help:som.enviament.massiu,lang:0
+msgid "Idioma del partner"
+msgstr "Idioma del partner"
+
+#. module: som_infoenergia
+#: model:ir.actions.act_window,name:som_infoenergia.action_wizard_download_pdf
+#: view:wizard.infoenergia.download.pdf:0
+msgid "Descàrrega PDF Infoenergia"
+msgstr "Descarga PDF Infoenergía"
+
+#. module: som_infoenergia
+#: code:addons/som_infoenergia/som_enviament_massiu.py:188
+#: field:som.enviament.massiu,extra_text:0
+msgid "Informació Extra"
+msgstr "Información Extra"
+
+#. module: som_infoenergia
+#: model:poweremail.templates,def_body_text:som_infoenergia.env_empowering_report_domestic_from_enviament
+#: model:poweremail.templates,def_body_text:som_infoenergia.env_empowering_report_empresa_from_enviament
+#: model:poweremail.templates,def_body_text:som_infoenergia.env_empowering_report_fv_auto_from_enviament
+msgid ""
+"\n"
+"    \n"
+"    <!doctype html>\n"
+"    <html>\n"
+"    <head></head>\n"
+"    <body>\n"
+"    Benvolgut/da ${object.polissa_id.direccio_pagament.name},\n"
+"\n"
+"    Informe energètic\n"
+"\n"
+"    </body>\n"
+"    </html>\n"
+"        "
+msgstr "\n    \n    <!doctype html>\n    <html>\n    <head></head>\n    <body>\n    Benvolgut/da ${object.polissa_id.direccio_pagament.name},\n\n    Informe energètic\n\n    </body>\n    </html>\n        "
+
+#. module: som_infoenergia
+#: model:ir.actions.act_window,name:som_infoenergia.action_wizard_create_enviaments_from_invoice
+msgid "Afegir factures al Lot d'Enviaments Infoenergia/Massiu"
+msgstr "Añadir facturas al Lote de Envíos Infoenergia/Massiu"
+
+#. module: som_infoenergia
+#: view:wizard.infoenergia.download.csv:0
+msgid "Ruta del CSV"
+msgstr "Ruta del CSV"
+
+#. module: som_infoenergia
+#: model:ir.actions.act_window,name:som_infoenergia.action_wizard_create_enviaments_from_partner
+msgid "Afegir partners al Lot d'Enviament Massiu"
+msgstr "Añadir partners en el Lote de Envío Masivo"
+
+#. module: som_infoenergia
+#: code:addons/som_infoenergia/wizard/wizard_create_enviaments_from_object.py:27
+#: field:wizard.infoenergia.create.enviaments.from.object,state:0
+msgid "Estat del wizard de creació d'enviaments a partir de pòlisses"
+msgstr "Estado del wizard de creación de envíos a partir de pólizas"
+
+#. module: som_infoenergia
+#: selection:som.infoenergia.enviament,estat:0
+#: selection:som.infoenergia.lot.enviament,estat:0
+#: selection:wizard.infoenergia.add.contracts.lot,polissa_state:0
+#: selection:wizard.infoenergia.multiple.state.change,new_state:0
+msgid "Esborrany"
+msgstr "Borrador"
+
+#. module: som_infoenergia
+#: code:addons/som_infoenergia/wizard/wizard_create_enviaments_from_object.py:29
+#: help:wizard.infoenergia.create.enviaments.from.object,lot_enviament:0
+msgid "Lot Enviament on s'afegeixen les pòlisses"
+msgstr "Lote Envío donde se añaden las pólizas"
+
+#. module: som_infoenergia
+#: selection:wizard.infoenergia.add.contracts.lot,autoconsum:0
+msgid "Autoconsumo tipo 2 (según el Art. 13. 2. b) RD 900/2015)"
+msgstr "Autoconsumo tipo 2 (según el Art. 13. 2. b) RD 900/2015)"
+
+#. module: som_infoenergia
+#: code:addons/som_infoenergia/som_enviament_massiu.py:186
+#: code:addons/som_infoenergia/som_infoenergia_enviament.py:388
+#: code:addons/som_infoenergia/som_infoenergia_lot.py:388
+#: field:som.enviament.massiu,info:0 field:som.infoenergia.enviament,info:0
+#: field:som.infoenergia.lot.enviament,info:0
+msgid "Informació Adicional"
+msgstr "Información Adicional"
+
+#. module: som_infoenergia
+#: selection:wizard.infoenergia.add.contracts.lot,autoconsum:0
+msgid ""
+"Con excedentes sin compensación individual con cto SSAA a través de red y "
+"red interior – SSAA"
+msgstr "Con excedentes sin compensación individual con cto SSAA a través de red y red interior – SSAA"
+
+#. module: som_infoenergia
+#: field:wizard.infoenergia.send.reports,allow_reenviar:0
+msgid "Reenviar correus ja enviats"
+msgstr "Reenviar correos ya enviados"
+
+#. module: som_infoenergia
+#: model:ir.actions.act_window,name:som_infoenergia.action_som_infoenergia_lot
+#: model:ir.actions.act_window,name:som_infoenergia.action_som_infoenergia_lot_oberts
+msgid "Lots Infoenergia"
+msgstr "Lotes Infoenergía"
+
+#. module: som_infoenergia
+#: field:som.infoenergia.lot.enviament,email_template:0
+msgid "Plantilla del correu del lot"
+msgstr "Plantilla del correo del lote"
+
+#. module: som_infoenergia
+#: model:ir.ui.menu,name:som_infoenergia.menu_som_enviament_massiu_tree
+msgid "Enviaments massius"
+msgstr "Envíos masivos"
+
+#. module: som_infoenergia
+#: model:ir.actions.act_window,name:som_infoenergia.action_open_infoenergia_enviaments
+msgid "Enviaments d'Infoenergia"
+msgstr "Envíos de Infoenergía"
+
+#. module: som_infoenergia
+#: selection:som.infoenergia.lot.enviament,tipus:0
+#: selection:som.infoenergia.lot.enviament,tipus_informe:0
+msgid "Altres"
+msgstr "Otros"
+
+#. module: som_infoenergia
+#: model:ir.model,name:som_infoenergia.model_wizard_add_partners_lot
+msgid "wizard.add.partners.lot"
+msgstr "wizard.add.partners.lot"
+
+#. module: som_infoenergia
+#: field:giscedata.polissa,emp_allow_recieve_mail_infoenergia:0
+msgid "Permetre rebre informes"
+msgstr "Permitir recibir informes"
+
+#. module: som_infoenergia
+#: model:ir.actions.act_window,name:som_infoenergia.action_wizard_send_report_lot
+msgid "Enviament correus del lot"
+msgstr "Envío correos del lote"
+
+#. module: som_infoenergia
+#: constraint:ir.model:0
+msgid ""
+"The Object name must start with x_ and not contain any special character !"
+msgstr "The Object name must start with x_ and not contain any special character !"
+
+#. module: som_infoenergia
+#: model:ir.model,name:som_infoenergia.model_som_infoenergia_lot_enviament
+msgid "som.infoenergia.lot.enviament"
+msgstr "som.infoenergia.lot.enviament"
+
+#. module: som_infoenergia
+#: view:wizard.create.enviaments.from.csv:0
+msgid "Crear enviaments de les pòlisses indicades al CSV"
+msgstr "Crear envíos de las pólizas indicadas en el CSV"
+
+#. module: som_infoenergia
+#: code:addons/som_infoenergia/wizard/wizard_add_contracts_lot.py:54
+#: field:wizard.infoenergia.add.contracts.lot,init_date:0
+#: view:wizard.infoenergia.add.contracts.lot:0
+msgid "Data alta"
+msgstr "Fecha alta"
+
+#. module: som_infoenergia
+#: selection:som.infoenergia.lot.enviament,tipus_informe:0
+msgid "M6 terciari"
+msgstr "M6 terciario"
+
+#. module: som_infoenergia
+#: model:ir.ui.menu,name:som_infoenergia.menu_som_enviament_massiu_lot_altres_oberts_tree
+msgid "Lots enviaments massius Oberts"
+msgstr "Lotes de envío masivo Abiertos"
+
+#. module: som_infoenergia
+#: view:som.enviament.massiu:0 view:som.infoenergia.enviament:0
+msgid "Infoenergia Enviaments"
+msgstr "Infoenergía Envíos"
+
+#. module: som_infoenergia
+#: model:ir.model,name:som_infoenergia.model_wizard_create_enviaments_from_csv
+msgid "wizard.create.enviaments.from.csv"
+msgstr "wizard.create.enviaments.from.csv"
+
+#. module: som_infoenergia
+#: code:addons/som_infoenergia/wizard/wizard_create_enviaments_from_csv.py:21
+#: field:wizard.create.enviaments.from.csv,info:0
+msgid "Informació"
+msgstr "Información"
+
+#. module: som_infoenergia
+#: selection:wizard.infoenergia.add.contracts.lot,polissa_state:0
+msgid "Pendent"
+msgstr "Pendiente"
+
+#. module: som_infoenergia
+#: field:giscedata.polissa,emp_allow_send_data:0
+msgid "Permetre compartir dades amb BeeData"
+msgstr "Permitir compartir datos con BeeData"
+
+#. module: som_infoenergia
+#: field:som.enviament.massiu,mail_id:0
+#: field:som.infoenergia.enviament,mail_id:0
+msgid "Mail"
+msgstr "Mail"
+
+#. module: som_infoenergia
+#: model:ir.actions.act_window,name:som_infoenergia.action_som_enviament_massiu_lot
+#: model:ir.actions.act_window,name:som_infoenergia.action_som_enviament_massiu_lot_oberts
+msgid "Lots enviaments massius"
+msgstr "Lotes envíos masivos"
+
+#. module: som_infoenergia
+#: selection:wizard.add.partners.lot,state:0
+#: selection:wizard.cancel.from.csv,state:0
+#: selection:wizard.create.enviaments.from.csv,state:0
+#: selection:wizard.infoenergia.add.contracts.lot,state:0
+#: selection:wizard.infoenergia.create.enviaments.from.object,state:0
+#: selection:wizard.infoenergia.download.csv,state:0
+#: selection:wizard.infoenergia.download.pdf,state:0
+#: selection:wizard.infoenergia.multiple.state.change,state:0
+#: selection:wizard.infoenergia.send.reports,state:0
+msgid "Estat Final"
+msgstr "Estado Final"
+
+#. module: som_infoenergia
+#: field:som.infoenergia.lot.enviament,total_preesborrany:0
+msgid "Enviaments en pre-esborrany"
+msgstr "Envíos en pre-borrador"
+
+#. module: som_infoenergia
+#: model:poweremail.templates,def_body_text:som_infoenergia.correu_titular_pagador_diferents
+msgid ""
+"\n"
+"    \n"
+"    <!doctype html>\n"
+"    <html>\n"
+"    <head></head>\n"
+"    <body>\n"
+"    Avís pagador i titular diferents\n"
+"    </body>\n"
+"    </html>\n"
+"        "
+msgstr "\n    \n    <!doctype html>\n    <html>\n    <head></head>\n    <body>\n    Aviso pagador y titular diferentes\n    </body>\n    </html>\n        "
+
+#. module: som_infoenergia
+#: model:poweremail.templates,def_subject:som_infoenergia.correu_titular_pagador_diferents
+msgid "Dades titular i fiscals"
+msgstr "Dades titular i fiscals"
+
+#. module: som_infoenergia
+#: view:som.infoenergia.lot.enviament:0
+msgid "(en csv) presents en alguna cerca"
+msgstr "(en csv) presentes en alguna búsqueda"
+
+#. module: som_infoenergia
+#: field:som.infoenergia.lot.enviament,total_enviaments_in_search:0
+msgid "Enviaments totals trobats en cerca"
+msgstr "Envíos totales encontrados en búsqueda"
+
+#. module: som_infoenergia
+#: selection:wizard.infoenergia.add.contracts.lot,polissa_state:0
+msgid "Activació Contracte"
+msgstr "Activación Contrato"
+
+#. module: som_infoenergia
+#: model:poweremail.templates,def_body_text:som_infoenergia.rebaixa_iva_5
+msgid ""
+"\n"
+"    \n"
+"    <!doctype html>\n"
+"    <html>\n"
+"    <head></head>\n"
+"    <body>\n"
+"    Hola ${object.polissa_id.direccio_pagament.name},\n"
+"\n"
+"    Text\n"
+"\n"
+"    </body>\n"
+"    </html>\n"
+"        "
+msgstr "\n    \n    <!doctype html>\n    <html>\n    <head></head>\n    <body>\n    Hola ${object.polissa_id.direccio_pagament.name},\n\n    Text\n\n    </body>\n    </html>\n        "
+
+#. module: som_infoenergia
+#: selection:wizard.infoenergia.add.contracts.lot,autoconsum:0
+msgid ""
+"Con excedentes sin compensación Individual sin cto de SSAA en Red Interior– "
+"Consumo"
+msgstr "Con excedentes sin compensación Individual sin cto de SSAA en Red Interior– Consumo"
+
+#. module: som_infoenergia
+#: code:addons/som_infoenergia/wizard/wizard_create_enviaments_from_csv.py:68
+msgid "Es crearan els enviaments de {} pòlisses en segon pla"
+msgstr "Se crearánlos envios de {} pólizas en segundo plano"
+
+#. module: som_infoenergia
+#: model:ir.actions.act_window,name:som_infoenergia.action_wizard_add_partners_lot
+#: view:wizard.add.partners.lot:0
+msgid "Seleccionar partners per afegir al lot"
+msgstr "Seleccionar partners parra agregrar lote"
+
+#. module: som_infoenergia
+#: view:wizard.add.partners.lot:0 view:wizard.infoenergia.add.contracts.lot:0
+msgid "Resultat de la cerca:"
+msgstr "Resultado de la búsqueda:"
+
+#. module: som_infoenergia
+#: view:wizard.infoenergia.create.enviaments.from.object:0
+msgid "Afegir"
+msgstr "Añadir"
+
+#. module: som_infoenergia
+#: view:som.enviament.massiu:0 view:som.infoenergia.enviament:0
+#: view:som.infoenergia.lot.enviament:0
+msgid "Dades enviament"
+msgstr "Datos envío"
+
+#. module: som_infoenergia
+#: view:som.infoenergia.lot.enviament:0
+msgid "Lots enviaments infoenergia"
+msgstr "Lotes envíos infoenergía"
+
+#. module: som_infoenergia
+#: model:ir.model,name:som_infoenergia.model_wizard_infoenergia_add_contracts_lot
+msgid "wizard.infoenergia.add.contracts.lot"
+msgstr "wizard.infoenergia.add.contracts.lot"
+
+#. module: som_infoenergia
+#: field:wizard.add.partners.lot,end_date:0
+msgid "Data Baixa (Fi)"
+msgstr "Fecha Baja (Fin)"
+
+#. module: som_infoenergia
+#: code:addons/som_infoenergia/som_infoenergia_lot.py:124
+msgid "Crear Enviaments al lot {0} a partir de {1} {2}."
+msgstr "Crear Envíos al lote {0} a partir de {1} {2}."
+
+#. module: som_infoenergia
+#: view:wizard.add.partners.lot:0 view:wizard.cancel.from.csv:0
+#: view:wizard.create.enviaments.from.csv:0
+#: view:wizard.infoenergia.add.contracts.lot:0
+#: view:wizard.infoenergia.download.csv:0
+#: view:wizard.infoenergia.download.pdf:0
+#: view:wizard.infoenergia.multiple.state.change:0
+#: view:wizard.infoenergia.send.reports:0
+msgid "Sortir"
+msgstr "Salir"
+
+#. module: som_infoenergia
+#: field:wizard.add.partners.lot,init_date:0
+msgid "Data Baixa (Inici)"
+msgstr "Fecha Baja (Inicio)"
+
+#. module: som_infoenergia
+#: field:wizard.infoenergia.send.reports,n_max_mails:0
+msgid "Màxim de correus (0 per enviar-los tots)"
+msgstr "Máximo de correos (0 para enviarlos todos)"
+
+#. module: som_infoenergia
+#: code:addons/som_infoenergia/wizard/wizard_cancel_from_csv.py:20
+#: field:wizard.cancel.from.csv,state:0
+msgid "Estat del wizard de cancelar enviaments des de CSV"
+msgstr "Estado del wizard de cancelar envíos desde CSV"
+
+#. module: som_infoenergia
+#: model:poweremail.templates,def_body_text:som_infoenergia.primer_env_no_renovacio_30
+msgid ""
+"\n"
+"    \n"
+"    <!doctype html>\n"
+"    <html>\n"
+"    <head></head>\n"
+"    <body>\n"
+"    1r avís de no renovació de contractes 3.0\n"
+"    </body>\n"
+"    </html>\n"
+"        "
+msgstr "\n    \n    <!doctype html>\n    <html>\n    <head></head>\n    <body>\n    1r avís de no renovació de contractes 3.0\n    </body>\n    </html>\n        "
+
+#. module: som_infoenergia
+#: model:ir.actions.act_window,name:som_infoenergia.action_wizard_download_csv
+#: view:wizard.infoenergia.download.csv:0
+msgid "Descàrrega CSV Infoenergia"
+msgstr "Descarga CSV Infoenergía"
+
+#. module: som_infoenergia
+#: selection:wizard.infoenergia.add.contracts.lot,autoconsum:0
+msgid "Con excedentes sin compensación Colectivo a través de red - SSAA"
+msgstr "Con excedentes sin compensación Colectivo a través de red - SSAA"
+
+#. module: som_infoenergia
+#: view:wizard.infoenergia.download.csv:0
+msgid "El fitxer CSV es desarà als Adjunts del Lot"
+msgstr "El archivo CSV se guardará en los Adjuntos del Lote"
+
+#. module: som_infoenergia
+#: field:som.infoenergia.lot.enviament,total_esborrany:0
+msgid "Enviaments en esborrany"
+msgstr "Envíos en borrador"
+
+#. module: som_infoenergia
+#: selection:som.infoenergia.lot.enviament,tipus_informe:0
+msgid "M2 domèstic"
+msgstr "M2 doméstico"
+
+#. module: som_infoenergia
+#: code:addons/som_infoenergia/wizard/wizard_create_enviaments_from_csv.py:19
+#: help:wizard.create.enviaments.from.csv,csv_file:0
+msgid ""
+"Número de pòlissa de les pòlisses de les quals se'n vol crear un enviament"
+msgstr "Número de póliza de las pólizas de las que se desea crear un envío"
+
+#. module: som_infoenergia
+#: view:wizard.infoenergia.create.enviaments.from.object:0
+msgid "El procés es continuarà fent en segon plà."
+msgstr "El proceso se seguirá haciendo en segundo plano."
+
+#. module: som_infoenergia
+#: field:som.infoenergia.lot.enviament,pdf_download_progress:0
+msgid "Enviaments amb PDF descarregat"
+msgstr "Envíos con PDF descargado"
+
+#. module: som_infoenergia
+#: view:wizard.infoenergia.download.pdf:0
+msgid "Es descarragaran i desanonimitzaran els PDFs de Beedata"
+msgstr "Se descargarán y desanonimizarán los PDFs de Beedata"
+
+#. module: som_infoenergia
+#: field:som.infoenergia.lot.enviament,total_enviats_in_search:0
+msgid "Enviaments enviats trobats en cerca"
+msgstr "Envíos enviados encontrados en búsqueda"
+
+#. module: som_infoenergia
+#: selection:wizard.infoenergia.add.contracts.lot,autoconsum:0
+msgid "Autoconsumo tipo 2 (según el Art. 13. 2. a) RD 900/2015)"
+msgstr "Autoconsumo tipo 2 (según el Art. 13. 2. a) RD 900/2015)"
+
+#. module: som_infoenergia
+#: model:ir.ui.menu,name:som_infoenergia.menu_som_infoenergia_lot_tree
+msgid "Tots els lots enviament infoenergia"
+msgstr "Todos los lotes envío infoenergía"
+
+#. module: som_infoenergia
+#: code:addons/som_infoenergia/som_enviament_massiu.py:189
+#: help:som.enviament.massiu,extra_text:0
+msgid "Missatge que es vol afegir al correu"
+msgstr "Mensaje que se quiere añadir al correo"
+
+#. module: som_infoenergia
+#: view:wizard.infoenergia.send.reports:0
+msgid "Enviar"
+msgstr "Enviar"
+
+#. module: som_infoenergia
+#: field:som.infoenergia.lot.enviament,total_encuats_in_search:0
+msgid "Enviaments encuats per enviar trobats en cerca"
+msgstr "Envíos encuados para enviar encontrados en búsqueda"
+
+#. module: som_infoenergia
+#: field:wizard.add.partners.lot,te_aportacions:0
+msgid "Té Aportacions al Capital Social"
+msgstr "Tiene Aportaciones al Capital Social"
+
+#. module: som_infoenergia
+#: selection:som.infoenergia.lot.enviament,tipus_informe:0
+msgid "FV (fotovoltaic)"
+msgstr "FV (fotovoltaico)"
+
+#. module: som_infoenergia
+#: code:addons/som_infoenergia/som_infoenergia_enviament.py:203
+msgid "Enviament Infoenergia Lot {} - {} enviaments"
+msgstr "Envío Infoenergía Lote {} - {} envíos"
+
+#. module: som_infoenergia
+#: view:wizard.add.partners.lot:0
+msgid "Data baixa sòcia"
+msgstr "Data baja socia"
+
+#. module: som_infoenergia
+#: selection:wizard.infoenergia.add.contracts.lot,polissa_state:0
+msgid "Impagament"
+msgstr "Impago"
+
+#. module: som_infoenergia
+#: model:ir.actions.act_window,name:som_infoenergia.action_wizard_add_contracts_lot
+#: view:wizard.infoenergia.add.contracts.lot:0
+msgid "Seleccionar pòlisses per afegir al lot"
+msgstr "Seleccionar pólizas para añadir al lote"
+
+#. module: som_infoenergia
+#: help:som.infoenergia.lot.enviament,total_env_csv:0
+msgid "Enviaments que han estat informats en algun CSV descarregat de Beedata"
+msgstr "Envíos que han sido informados en algún CSV descargado de Beedata"
+
+#. module: som_infoenergia
+#: field:som.infoenergia.lot.enviament,total_baixa:0
+msgid "Enviaments de baixa"
+msgstr "Envíos de baja"
+
+#. module: som_infoenergia
+#: view:wizard.add.partners.lot:0 view:wizard.infoenergia.add.contracts.lot:0
+#: view:wizard.infoenergia.create.enviaments.from.object:0
+#: view:wizard.infoenergia.download.csv:0
+#: view:wizard.infoenergia.download.pdf:0
+#: view:wizard.infoenergia.multiple.state.change:0
+#: view:wizard.infoenergia.send.reports:0
+msgid "Cancelar"
+msgstr "Cancelar"
+
+#. module: som_infoenergia
+#: model:ir.model,name:som_infoenergia.model_report_indexed_offer
+msgid "report.indexed.offer"
+msgstr "report.indexed.offer"
+
+#. module: som_infoenergia
+#: model:ir.actions.act_window,name:som_infoenergia.action_wizard_infoenergia_multiple_state_change
+#: view:wizard.infoenergia.multiple.state.change:0
+msgid "Canvi d'estat múltiple"
+msgstr "Cambio de estado múltiple"
+
+#. module: som_infoenergia
+#: field:som.infoenergia.lot.enviament,total_oberts:0
+msgid "Enviaments oberts"
+msgstr "Envíos abiertos"
+
+#. module: som_infoenergia
+#: selection:wizard.infoenergia.add.contracts.lot,autoconsum:0
+msgid "Servicios auxiliares de generación ligada a un autoconsumo tipo 2"
+msgstr "Servicios auxiliares de generación ligada a un autoconsumo tipo 2"
+
+#. module: som_infoenergia
+#: code:addons/som_infoenergia/som_infoenergia_lot.py:382
+#: field:som.infoenergia.lot.enviament,tipus:0
+msgid "Tipus de lot"
+msgstr "Tipo de lote"
+
+#. module: som_infoenergia
+#: view:wizard.infoenergia.send.reports:0
+msgid ""
+"S'enviaran els reports pendents del lot (el procés es farà en segon pla)."
+msgstr "Se enviarán los reportes pendientes del lote (el proceso se realizará en segundo plano)."
+
+#. module: som_infoenergia
+#: selection:wizard.infoenergia.add.contracts.lot,autoconsum:0
+msgid "Sin Excedentes Colectivo con acuerdo de compensación – Consumo"
+msgstr "Sin Excedentes Colectivo con acuerdo de compensación – Consumo"
+
+#. module: som_infoenergia
+#: view:wizard.infoenergia.send.reports:0
+msgid "Enviament de test"
+msgstr "Envío de test"
+
+#. module: som_infoenergia
+#: view:wizard.infoenergia.multiple.state.change:0
+msgid "Canvi d'estat"
+msgstr "Cambio de estado"
+
+#: rml:som_infoenergia/report/components/antecedents/antecedents.mako:2
+msgid "Antecedents"
+msgstr "Antecedentes"
+
+#: rml:som_infoenergia/report/components/antecedents/antecedents.mako:3
+#, python-format
+msgid ""
+"<b>%s</b> disposa del contracte de subministrament elèctric de <b>%s</b>, "
+"amb CUPS <b>%s</b>  i per tal de renovar el contracte Som Energia presenta "
+"la millor oferta de <b>preu indexat</b> que pot oferir com a "
+"comercialitzadora."
+msgstr "<b>%s</b> dispone del contrato de suministro eléctrico de <b>%s</b>, con CUPS <b>%s</b> y para renovar el contrato Som Energia presenta la mejor oferta de <b>precio indexado</b> que puede ofrecer como comercializadora."
+
+#: rml:som_infoenergia/report/components/antecedents/antecedents.mako:4
+#, python-format
+msgid "El volum total d’energia és d’aproximadament <b>%s</b> kWh anuals."
+msgstr "El volumen total de energía es aproximadamente de <b>%s</b> kWh anuales."
+
+#: rml:som_infoenergia/report/components/conclusions/conclusions.mako:2
+msgid "Conclusions"
+msgstr "Conclusiones"
+
+#: rml:som_infoenergia/report/components/conclusions/conclusions.mako:3
+msgid ""
+"En conjunt, la proposta de Som Energia ofereix un marge ajustat i apropiat "
+"pel volum d’energia total."
+msgstr "En conjunto, la propuesta de Som Energia ofrece un margen ajustado y apropiado para el volumen de energía total."
+
+#: rml:som_infoenergia/report/components/conclusions/conclusions.mako:4
+msgid ""
+"Per qualsevol consulta sobre aquesta oferta podeu fer-ho a <a "
+"href=\"mailto:empresa@somenergia.coop\">empresa@somenergia.coop</a>."
+msgstr "Para cualquier consulta sobre esta oferta puede hacerlo en <a href=\"mailto:empresa@somenergia.coop\">empresa@somenergia.coop</a>."
+
+#: rml:som_infoenergia/report/components/cond_contr/cond_contr.mako:2
+msgid "Condicions contractuals"
+msgstr "Condiciones contractuales"
+
+#: rml:som_infoenergia/report/components/cond_contr/cond_contr.mako:3
+#, python-format
+msgid ""
+"Som Energia és una cooperativa de consum d’energia verda sense ànim de "
+"lucre. Així doncs, per poder renovar el contracte, cal ser sòcia de la "
+"cooperativa. <b>Més informació <a href=\"%s\">aquí</a>.</b>"
+msgstr "Som Energia es una cooperativa de consumo de energía verde sin ánimo de lucro. Así pues, para poder renovar el contrato, es necesario ser socia de la cooperativa. <b>Más información <a href=\"%s\">aquí</a>.</b>"
+
+#: rml:som_infoenergia/report/components/cond_contr/cond_contr.mako:4
+msgid ""
+"Un dels objectius de Som Energia és l’impuls d’un model energètic renovable "
+"i eficient. Així, des de la cooperativa vetllem per oferir les millors "
+"condicions per les nostres persones sòcies i clientes a partir d'una "
+"informació transparent i un tracte directe."
+msgstr "Uno de los objetivos de Som Energia es el impulso de un modelo energético renovable y eficiente. Así, desde la cooperativa velamos por ofrecer las mejores condiciones para nuestras personas socias y clientas a partir de una información transparente y un trato directo."
+
+#: rml:som_infoenergia/report/components/cond_contr/cond_contr.mako:5
+#, python-format
+msgid ""
+"Tota l’energia que comercialitza Som Energia disposa de <b>certificat de "
+"garantia d’origen 100% renovable.</b>"
+msgstr "Toda la energía que comercializa Som Energia dispone de <b>certificado de garantía de origen 100% renovable.</b>"
+
+#: rml:som_infoenergia/report/components/energy_prices/energy_prices.mako:2
+msgid "Preus del terme d’energia"
+msgstr "Precios del término de energía"
+
+#: rml:som_infoenergia/report/components/energy_prices/energy_prices.mako:3
+msgid ""
+"En el terme d’energia es presenta una oferta indexada en relació amb els "
+"preus de mercat diari. La tarifa indexada es calcula mitjançant la següent "
+"fórmula:"
+msgstr "En el término de energía se presenta una oferta indexada en relación a los precios de mercado diario. La tarifa indexada se calcula mediante la siguiente fórmula:"
+
+#: rml:som_infoenergia/report/components/energy_prices/energy_prices.mako:4
+msgid ""
+"PH = 1,015 * [(PHM + PHMA + Pc + SobrecostosREE + Interrump + "
+"P<sub>OsOm</sub>) (1 + Perd) + FE + K] + PA + CA"
+msgstr "PH = 1,015 * [(PHM + PHMA + Pc + SobrecostesREE + Interrump + P<sub>OsOm</sub>) (1 + Perd) + FE + K] + PA + CA"
+
+#: rml:som_infoenergia/report/components/energy_prices/energy_prices.mako:5
+msgid "On:"
+msgstr "Donde:"
+
+#: rml:som_infoenergia/report/components/energy_prices/energy_prices.mako:7
+msgid "<b>PH</b> = Preu horari de l’energia"
+msgstr "<b>PH</b> = Precio horario de la energía"
+
+#: rml:som_infoenergia/report/components/energy_prices/energy_prices.mako:8
+msgid ""
+"<b>PHM</b> = Preu horari del mercat diari. Per als contractes de la "
+"península és el preu OMIE, mentre que a les illes Balears i Canàries és el "
+"preu horari de la demanda del sistema balear i canari respectivament."
+msgstr "<b>PHM</b> = Precio horario del mercado diario. Para los contratos de la península es el precio OMIE, mientras que en las islas Baleares y Canarias es el precio horario de la demanda del sistema balear y canario respectivamente."
+
+#: rml:som_infoenergia/report/components/energy_prices/energy_prices.mako:9
+msgid ""
+"<b>PHMA</b> = Preu horari del Mecanisme d’Ajust als costos de producció "
+"d’electricitat mitjançant el gas."
+msgstr "<b>PHMA</b> = Precio horario del Mecanismo de Ajuste a los costes de producción de electricidad mediante el gas."
+
+#: rml:som_infoenergia/report/components/energy_prices/energy_prices.mako:10
+msgid ""
+"<b>Pc</b> = Pagaments per Capacitat definits pel Ministeri corresponent."
+msgstr "<b>Pc</b> = Pagos por Capacidad definidos por el Ministerio correspondiente."
+
+#: rml:som_infoenergia/report/components/energy_prices/energy_prices.mako:11
+msgid ""
+"<b>SobrecostosREE</b> = sobrecostos publicats per REE per la gestió de la "
+"xarxa."
+msgstr "<b>SobrecostesREE</b> = sobrecostes publicados por REE para la gestión de la red."
+
+#: rml:som_infoenergia/report/components/energy_prices/energy_prices.mako:12
+msgid "<b>Interrump</b> = Cost del servei d’Interrumpibilitat."
+msgstr "<b>Interrump</b> = Coste del servicio de Interrumpibilidad."
+
+#: rml:som_infoenergia/report/components/energy_prices/energy_prices.mako:13
+msgid ""
+"<b>P<sub>OsOm</sub></b> = Cost de l’Operador del sistema (REE) i de "
+"l’Operador del Mercat (OMIE). (El cost de l’Operador del Mercat (OMIE) no "
+"aplica a contractes de Balears i Canàries)"
+msgstr "<b>P<sub>OsOm</sub></b> = Coste del Operador del sistema (REE) i del Operador del Mercado (OMIE). (El coste del Operador del Mercado (OMIE) no aplica a contratos de Baleares y Canarias)."
+
+#: rml:som_infoenergia/report/components/energy_prices/energy_prices.mako:14
+msgid ""
+"<b>Perd</b> = Pèrdues regulades de sistema des del punt de generació al punt"
+" de consum."
+msgstr "<b>Perd</b> = Pérdidas reguladas de sistema desde el punto de generación al punto de consumo."
+
+#: rml:som_infoenergia/report/components/energy_prices/energy_prices.mako:15
+msgid "<b>FE</b> = Aportació al Fons d’Eficiència Energètica."
+msgstr "<b>FE</b> = Aportación al Fondo de Eficiencia Energética."
+
+#: rml:som_infoenergia/report/components/energy_prices/energy_prices.mako:16
+msgid ""
+"<b>K</b> = Marge de comercialització (que inclou els costos de desviament)."
+msgstr "<b>K</b> = Margen de comercialización (que incluye los costes de desvío)."
+
+#: rml:som_infoenergia/report/components/energy_prices/energy_prices.mako:17
+msgid "<b>PA</b> = Peatges de transport i distribució definits per la CNMC."
+msgstr "<b>PA</b> = Peajes de transporte y distribución definidos por la CNMC."
+
+#: rml:som_infoenergia/report/components/energy_prices/energy_prices.mako:18
+msgid "<b>CA</b> = Càrrecs del sistema definits pel Ministeri corresponent."
+msgstr "<b>CA</b> = Cargos del sistema definidos por el Ministerio correspondiente."
+
+#: rml:som_infoenergia/report/components/energy_prices/energy_prices.mako:20
+msgid ""
+"El marge de comercialització inclòs els costos de desviament pel punt de "
+"subministrament resulta:"
+msgstr "El margen de comercialización incluido los costes de desvío por el punto de suministro resulta:"
+
+#: rml:som_infoenergia/report/components/energy_prices/energy_prices.mako:21
+#, python-format
+msgid "<b>%s Euros/MWh</b>"
+msgstr "<b>%s Euros/MWh</b>"
+
+#: rml:som_infoenergia/report/components/energy_prices/energy_prices.mako:22
+#, python-format
+msgid ""
+"En cas de procedir a la contractació, aquest marge es podrà revisar "
+"anualment en funció del volum total d’energia utilitzada. Podeu ampliar la "
+"informació de la <b>tarifa indexada</b> en aquest <a "
+"href=\"%s\">document</a>."
+msgstr "En caso de proceder a la contratación, este margen podrá revisarse anualmente en función del volumen total de energía utilizada. Podéis ampliar la información de la <b>tarifa indexada</b> en este <a href=\"%s\">documento</a>."
+
+#: rml:som_infoenergia/report/components/first_page/first_page.mako:8
+msgid "Oferta tarifa indexada Som Energia"
+msgstr "Oferta tarifa indexada Som Energia"
+
+#: rml:som_infoenergia/report/components/first_page/first_page.mako:9
+#: rml:som_infoenergia/report/components/first_page/first_page.mako:10
+#: rml:som_infoenergia/report/components/first_page/first_page.mako:11
+#: rml:som_infoenergia/report/components/header/header.mako:5
+#: rml:som_infoenergia/report/components/header/header.mako:8
+#, python-format
+msgid "%s"
+msgstr "%s"
+
+#: rml:som_infoenergia/report/components/main/main.mako:10
+msgid "Ordre SEPA de domiciliació de dèbit directe d’empresa a empresa"
+msgstr "Orden de domiciliación de adeudo directo SEPA B2B"
+
+#: rml:som_infoenergia/report/components/main/main.mako:13
+msgid "Ordre de domiciliació de dèbit directe SEPA"
+msgstr "Orden de domiciliación de adeudo directo SEPA"
+
+#: rml:som_infoenergia/report/components/main/main.mako:19
+msgid "A completar pel creditor"
+msgstr "A cumplimentar por el acreedor"
+
+#: rml:som_infoenergia/report/components/main/main.mako:23
+msgid "Referència de l’ordre de domiciliació"
+msgstr "Referencia de la orden de domiciliación"
+
+#: rml:som_infoenergia/report/components/main/main.mako:25
+msgid "Identificador del creditor"
+msgstr "Identificador del acreedor"
+
+#: rml:som_infoenergia/report/components/main/main.mako:27
+msgid "Nom del creditor"
+msgstr "Nombre del acreedor"
+
+#: rml:som_infoenergia/report/components/main/main.mako:29
+msgid "Adreça"
+msgstr "Dirección"
+
+#: rml:som_infoenergia/report/components/main/main.mako:31
+#: rml:som_infoenergia/report/components/main/main.mako:63
+msgid "Codi postal - Població - Província"
+msgstr "Código postal - Población - Provincia"
+
+#: rml:som_infoenergia/report/components/main/main.mako:33
+msgid "País"
+msgstr "País"
+
+#: rml:som_infoenergia/report/components/main/main.mako:40
+msgid ""
+"Mitjançant la signatura d’aquest formulari d’ordre de domiciliació el "
+"autoritzeu a (A) SOM ENERGIA, SCCL a enviar ordres a la vostre entitat "
+"financera per debitar càrrecs al vostre compte i (B) a la seva entitat "
+"financera per debitar els imports corresponents al vostre compte d’acord amb"
+" les instruccions de SOM ENERGIA, SCCL. Aquesta ordre de domiciliació està "
+"prevista exclusivament per a operacions de empresa a empresa. Vostè no té "
+"dret a que la seva entitat li reemborsi una vegada que s’hagi debitat al seu"
+" compte, però té dret a sol·licitar a la seva entitat financera que no "
+"debiti el seu compte fins a la data de venciment per al cobrament del dèbit."
+" Poseu-vos en contacte amb el vostre banc per obtenir els procediments "
+"detallats en aquest cas."
+msgstr "Mediante la firma de esta orden de domiciliación, el deudor autoriza (A) al acreedor a enviar instrucciones a la entidad del deudor para adeudar su cuenta y  (B) a la entidad para efectuar los adeudos en su cuenta siguiendo las instrucciones del acreedor. Esta orden de domiciliación está prevista para operaciones  exclusivamente entre empresas y/o autónomos. El deudor no tiene derecho a que su entidad le reembolse una vez que se haya realizado el cargo en cuenta,  pero puede solicitar a su entidad que no efectúe el adeudo en la cuenta hasta la fecha debida. Podrá obtener información detallada del procedimiento en su  entidad financiera."
+
+#: rml:som_infoenergia/report/components/main/main.mako:47
+msgid ""
+"Mitjançant la signatura d’aquesta ordre de domiciliació, el deutor autoritza"
+" (A) el creditor a enviar instruccions a l’entitat del deutor per deure el "
+"compte i (B) l’entitat per efectuar els deutes al compte seguint les "
+"instruccions del creditor. Com a part dels seus drets, el deutor està "
+"legitimat al reemborsament per la seva entitat en els termes i les "
+"condicions del contracte subscrit amb aquesta. La sol·licitud de "
+"reemborsament s’ha d’efectuar dins de les vuit setmanes que segueixen la "
+"data de càrrec en compte. Podeu obtenir informació addicional sobre els "
+"vostres drets a la vostra entitat financera."
+msgstr "Mediante la firma de esta orden de domiciliación, el deudor autoriza (A) al acreedor a enviar instrucciones a la entidad del deudor para adeudar su cuenta y (B) a la entidad para efectuar los adeudos en su cuenta siguiendo las instrucciones del acreedor. Como parte de sus derechos, el deudor está legitimado al reembolso por su entidad en los términos y condiciones del contrato suscrito con la misma. La solicitud de reembolso deberá efectuarse dentro de las ocho semanas que siguen a la fecha de adeudo en cuenta. Puede obtener información adicional sobre sus derechos en su entidad financiera."
+
+#: rml:som_infoenergia/report/components/main/main.mako:55
+msgid "A completar pel deutor"
+msgstr "A cumplimentar por el deudor"
+
+#: rml:som_infoenergia/report/components/main/main.mako:59
+msgid "Nom(s) del(s) deutor(s) / (titulars del compte de càrrec)"
+msgstr "Nombre del deudor/es (titular/es de la cuenta de cargo)"
+
+#: rml:som_infoenergia/report/components/main/main.mako:61
+msgid "Adreça del deutor"
+msgstr "Dirección del deudor"
+
+#: rml:som_infoenergia/report/components/main/main.mako:65
+msgid "País del deutor"
+msgstr "País del deudor"
+
+#: rml:som_infoenergia/report/components/main/main.mako:67
+msgid "Swift BIC"
+msgstr "Swift BIC"
+
+#: rml:som_infoenergia/report/components/main/main.mako:69
+msgid "Número de compte - IBAN"
+msgstr "Número de cuenta - IBAN"
+
+#: rml:som_infoenergia/report/components/main/main.mako:71
+msgid "A Espanya l’IBAN consta de 24 posicions començant sempre per ES"
+msgstr "En España el IBAN consta de 24 posiciones comenzando siempre por ES"
+
+#: rml:som_infoenergia/report/components/main/main.mako:73
+msgid "Tipus de pagament"
+msgstr "Tipo de pago "
+
+#: rml:som_infoenergia/report/components/main/main.mako:75
+msgid "Pagament periòdic"
+msgstr "Pago recurrente"
+
+#: rml:som_infoenergia/report/components/main/main.mako:78
+msgid "Pagament únic"
+msgstr "Pago único"
+
+#: rml:som_infoenergia/report/components/main/main.mako:81
+msgid "Data – Localitat on es realitza la signatura"
+msgstr "Fecha - Localidad"
+
+#: rml:som_infoenergia/report/components/main/main.mako:83
+msgid "Signatura del deutor"
+msgstr "Firma del deudor"
+
+#: rml:som_infoenergia/report/components/main/main.mako:90
+#: rml:som_infoenergia/report/components/main/main.mako:100
+msgid "TOTS ELS CAMPS HAN DE SER OMPLERTS OBLIGATÒRIAMENT."
+msgstr "TODOS LOS CAMPOS HAN DE SER CUMPLIMENTADOS OBLIGATORIAMENTE."
+
+#: rml:som_infoenergia/report/components/main/main.mako:91
+#: rml:som_infoenergia/report/components/main/main.mako:102
+msgid ""
+"UNA VEGADA FIRMADA AQUESTA ORDRE DE DOMICILIACIÓ HA DE SER ENVIADA AL "
+"CREDITOR PER LA SEVA CUSTÒDIA."
+msgstr "UNA VEZ FIRMADA ESTA ORDEN DE DOMICILIACIÓN DEBE SER ENVIADA AL ACREEDOR PARA SU CUSTODIA."
+
+#: rml:som_infoenergia/report/components/main/main.mako:92
+msgid ""
+"L’ENTITAT DEL DEUTOR REQUEREIX L’AUTORITZACIÓ D’AQUEST PRÈVIA AL CÀRREC EN "
+"COMPTE DELS MANDATS B2B."
+msgstr "LA ENTIDAD DE DEUDOR REQUIERE AUTORIZACIÓN DE ÉSTE PREVIA AL CARGO EN CUENTA DE LOS ADEUDOS DIRECTOS B2B."
+
+#: rml:som_infoenergia/report/components/main/main.mako:93
+msgid ""
+"EL DEUTOR PODRÀ GESTIONAR AQUESTA AUTORITZACIÓ AMB ELS MITJANS QUE LA SEVA "
+"ENTITAT POSI A LA SEVA DISPOSICIÓ."
+msgstr "EL DEUDOR PODRÁ GESTIONAR DICHA AUTORIZACIÓN CON LOS MEDIOS QUE SU ENTIDAD PONGA A SU DISPOSICIÓN."
+
+#: rml:som_infoenergia/report/components/objecte/objecte.mako:2
+msgid "Objecte"
+msgstr "Objeto"
+
+#: rml:som_infoenergia/report/components/objecte/objecte.mako:3
+msgid ""
+"Som Energia SCCL presenta la millor oferta possible pel punt de "
+"subministrament."
+msgstr "Som Energia SCCL presenta la mejor oferta posible para el punto de suministro."
+
+#: rml:som_infoenergia/report/components/power_prices/power_prices.mako:3
+msgid "Preus del terme de potència"
+msgstr "Precios del término de potencia"
+
+#: rml:som_infoenergia/report/components/power_prices/power_prices.mako:4
+msgid ""
+"El terme de potència serà el cost regulat, sense que Som Energia apliqui cap"
+" marge ni cost afegit. Aquests preus només seran modificables per canvis "
+"normatius."
+msgstr "El término de potencia será el coste regulado, sin que Som Energia aplique ningún margen ni coste añadido. Estos precios sólo serán modificables por cambios normativos."
+
+#: rml:som_infoenergia/report/components/power_prices/power_prices.mako:8
+msgid "Periode tarifari"
+msgstr "Periodo tarifario"
+
+#: rml:som_infoenergia/report/components/power_prices/power_prices.mako:9
+msgid "P1"
+msgstr "P1"
+
+#: rml:som_infoenergia/report/components/power_prices/power_prices.mako:10
+msgid "P2"
+msgstr "P2"
+
+#: rml:som_infoenergia/report/components/power_prices/power_prices.mako:11
+msgid "P3"
+msgstr "P3"
+
+#: rml:som_infoenergia/report/components/power_prices/power_prices.mako:12
+msgid "P4"
+msgstr "P4"
+
+#: rml:som_infoenergia/report/components/power_prices/power_prices.mako:13
+msgid "P5"
+msgstr "P5"
+
+#: rml:som_infoenergia/report/components/power_prices/power_prices.mako:14
+msgid "P6"
+msgstr "P6"
+
+#: rml:som_infoenergia/report/components/power_prices/power_prices.mako:19
+#, python-format
+msgid "Preu %s"
+msgstr "Precio %s"
+
+#: rml:som_infoenergia/report/components/power_prices/power_prices.mako:29
+msgid ""
+"Taula 1: Preus del terme de potència per període tarifari sense impostos "
+"(€/kW i any)"
+msgstr "Tabla 1: Precios del término de potencia por período tarifario sin impuestos (€/kW y año)"
+
+#: rml:som_infoenergia/report/components/tail_text/tail_text.mako:2
+msgid "Permanència"
+msgstr "Permanencia"
+
+#: rml:som_infoenergia/report/components/tail_text/tail_text.mako:3
+msgid ""
+"En aquesta tarifa no s’aplica cap mena de permanència. Tot i això, en el "
+"moment en què es vulgui donar de baixa el subministrament amb la "
+"comercialitzadora caldrà fer-ho amb un preavís de trenta (30) dies "
+"d’antelació."
+msgstr "En esta tarifa no se aplica permanencia alguna. Sin embargo, en el momento en que se quiera dar de baja el suministro con la comercializadora habrá que hacerlo con un preaviso de treinta (30) días de antelación."
+
+#: rml:som_infoenergia/report/components/tail_text/tail_text.mako:4
+msgid "Vigència oferta"
+msgstr "Vigencia oferta"
+
+#: rml:som_infoenergia/report/components/tail_text/tail_text.mako:5
+msgid ""
+"Aquesta oferta té una vigència de 15 dies naturals a partir de la data "
+"d’oferta."
+msgstr "Esta oferta tiene una vigencia de 15 días naturales a partir de la fecha de oferta."

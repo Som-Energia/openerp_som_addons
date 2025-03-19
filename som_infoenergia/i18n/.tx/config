@@ -1,0 +1,9 @@
+[main]
+host = https://www.transifex.com
+
+[somenergia.som_infoenergia]
+source_file = som_infoenergia.pot
+type = PO
+file_filter = <lang>.po
+source_lang = ca_ES
+lang_map = es_ES: es, ca_ES: ca

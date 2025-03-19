@@ -1,0 +1,171 @@
+    ${css}
+    body {
+        font-family: Roboto;
+        font-size: 10px;
+        color: #4c4c4c;
+        font-weight: 100;
+        margin: 0px;
+        padding: 0px;
+        width: 800px;
+    }
+    #container {
+        margin-left: 50px;
+        margin-right: 10px;
+    }
+    h1 {
+        font-size: 1.0em;
+        margin: 0;
+        padding: .3em;
+        background-color: #4c4c4c;
+        color: #ffffff;
+    }
+    p {
+        padding: .5em .5em;
+        margin: .5em .5em;
+        line-height: 1.5;
+    }
+    hr {
+        border: none;
+        height: 1px;
+        background-color: #4c4c4c;
+        margin: 0em 1em 0em 1em;
+    }
+    table {
+        border: 0px;
+        padding: 0px;
+        border-collapse: collapse;
+        width: 100%;
+        font-size: 1em;
+        font-weight: 100;
+    }
+    th {
+        text-align: left;
+        padding: .5em;
+    }
+    td {
+        padding: .5em;
+    }
+    td.e {
+        text-align: right;
+        font-weight: bold;
+    }
+    tr:nth-child(odd){
+        background-color: #f7f7f7;
+    }
+    tr:nth-child(even){
+        background-color: #e2e2e2;
+    }
+
+    tr.total {
+        font-size: 1.2em;
+        border-top: 1px solid #000000;
+        font-weight: 900;
+    }
+
+    .center {
+        text-align: center;
+    }
+
+    /* ADREÇA COMPANYIA */
+    .company_address {
+        float: left;
+        text-align: left;
+        width: 30%;
+        margin: 8px;
+        font-size: 0.95em;
+        line-height: 1.5;
+    }
+    /* DADES FACTURA */
+    .invoice_data {
+        position: relative;
+        float: right;
+        background-color: #f7f7f7;
+        width: 58%;
+        margin: 10px 0px 0px 10px;
+    }
+    .invoice_data div{
+        padding: .5em;
+        padding-bottom: 0px;
+    }
+
+    /* CONTENIDOR LECTURES ACTIVA */
+    .energy_info{
+        background-color: #f7f7f7;
+        text-align: left;
+        margin: 0px 0px 1em 0px;
+        width: 100%;
+        padding: .05em;
+        float: left;
+    }
+    .energy_child_info{
+        width: 50%;
+        float: left;
+    }
+
+    /* LECTURES ACTIVA/REACTIVA */
+    .lectures_6x {
+        width: 47%;
+        float: left;
+        border: 1px solid #e2e2e2;
+        background-color: #f7f7f7;
+        margin: 2em;
+        font-size: .8em;
+    }
+
+    /* CONTENIDOR REACTIVA/MAXÍMETRES */
+    .other_measures{
+        background-color: #ffffff;
+        text-align: left;
+        margin: 0px;
+        width: 100%;
+        float: left;
+        padding: 0px;
+    }
+
+    /* DETALL FACTURA */
+    .invoice_detail {
+        background-color: #f7f7f7;
+        text-align: left;
+        width: 100%;
+        margin: 1em 0px 0px 0px;
+        float: left;
+        font-size: .8em;
+        padding-bottom: 1em;
+    }
+
+    .energy_consumption_info
+    {
+        background-color: #f7f7f7;
+        text-align: left;
+        width: 100%;
+        margin: 1em 0px 0px 0px;
+        float: left;
+        font-size: .8em;
+        padding-bottom: 1em;
+    }
+
+    /* ORÍGEN CERTIFICATS DE GARANTIA*/
+
+    .row {
+        display: table;
+        width: 100%;
+        table-layout: fixed;
+        border-spacing: 0px;
+    }
+
+    .column {
+        display: table-cell;
+        width: 45%;
+    }
+
+    .tick {
+        font-size: 7px;
+        font-family: Roboto;
+    }
+    .c3-legend-item {
+        font-size: 7px;
+        font-family: Roboto;
+    }
+    .c3-shape {
+        opacity: 0.7;
+    }

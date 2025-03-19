@@ -1,0 +1,54 @@
+<?xml version="1.0"?>
+<openerp>
+    <data noupdate="1">
+        <record id="som_autofactura_wait_time_task" model="res.config">
+            <field name="name">som_autofactura_wait_time_task</field>
+            <field name="value">300</field>
+            <field name="description">Temps (en segons) d'espera entre comprovacions sobre si la tasca d'Autofactura ha acabat.</field>
+        </record>
+        <record model="som.autofactura.task" id='som_autofactura_task_facturacio'>
+            <field name='name'>Procés de facturació</field>
+            <field name='active'>True</field>
+        </record>
+        <record model="som.autofactura.task.step" id='som_autofactura_task_step_lectures_pool'>
+            <field name='name'>Carregar lectures de pool</field>
+            <field name="task_id" ref="som_autofactura_task_facturacio" />
+            <field name="function">action_carrega_lectures</field>
+            <field name="object_name" model="ir.model" search="[('model', '=', 'giscedata.lectures.pool.wizard')]"/>
+            <field name="params">{'sync': False}</field>
+            <field name="autoworker_task_name">Carregar lectures pool</field>
+            <field name='active'>True</field>
+            <field name='sequence'>1</field>
+        </record>
+        <record model="som.autofactura.task.step" id='som_autofactura_task_step_validar'>
+            <field name='name'>Validar</field>
+            <field name="task_id" ref="som_autofactura_task_facturacio" />
+            <field name="function">validar_button</field>
+            <field name="object_name" model="ir.model" search="[('model', '=', 'giscedata.facturacio.lot')]"/>
+            <field name="params">{}</field>
+            <field name="autoworker_task_name">Validar Lot</field>
+            <field name='active'>True</field>
+            <field name='sequence'>5</field>
+        </record>
+        <record model="som.autofactura.task.step" id='som_autofactura_task_step_facturar'>
+            <field name='name'>Facturar</field>
+            <field name="task_id" ref="som_autofactura_task_facturacio" />
+            <field name="function">facturacio_button</field>
+            <field name="object_name" model="ir.model" search="[('model', '=', 'giscedata.facturacio.lot')]"/>
+            <field name="params">{}</field>
+            <field name="autoworker_task_name">Facturació lot</field>
+            <field name='active'>True</field>
+            <field name='sequence'>10</field>
+        </record>
+        <record model="som.autofactura.task.step" id='som_autofactura_task_step_obrir'>
+            <field name='name'>Obrir factures</field>
+            <field name="task_id" ref="som_autofactura_task_facturacio" />
+            <field name="function">obrir_factures_button</field>
+            <field name="object_name" model="ir.model" search="[('model', '=', 'giscedata.facturacio.lot')]"/>
+            <field name="params">{}</field>
+            <field name="autoworker_task_name"></field>
+            <field name='active'>True</field>
+            <field name='sequence'>15</field>
+        </record>
+    </data>
+</openerp>

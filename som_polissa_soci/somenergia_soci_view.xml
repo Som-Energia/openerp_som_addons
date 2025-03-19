@@ -1,0 +1,42 @@
+<?xml version="1.0"?>
+<openerp>
+    <data>
+        <record model="ir.ui.view" id="view_somenergia_soci_form">
+            <field name="name">somenergia.soci.form</field>
+            <field name="model">somenergia.soci</field>
+            <field name="type">form</field>
+            <field name="inherit_id" ref="base.view_partner_form"/>
+            <field name="extend">1</field>
+            <field name="arch" type="xml">
+                <page string="General" position="after">
+                    <page string="Soci">
+                        <field name="baixa" readonly="1"/>
+                        <group colspan="2" col="2" attrs="{'invisible': [('baixa','=',0)]}">
+                        <field name="data_baixa_soci"/>
+                        </group>
+                    </page>
+                </page>
+            </field>
+        </record>
+        <record model="ir.ui.view" id="view_somenergia_soci_tree">
+            <field name="name">somenergia.soci.tree</field>
+            <field name="model">somenergia.soci</field>
+            <field name="type">tree</field>
+            <field name="arch" type="xml">
+                <tree string="Socis">
+                    <field name="partner_id" select="1"/>
+                    <field name="baixa"/>
+                    <field name="data_baixa_soci"/>
+                </tree>
+            </field>
+        </record>
+        <record id="action_somenergia_soci_tree" model="ir.actions.act_window">
+            <field name="name">Socis</field>
+            <field name="res_model">somenergia.soci</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="view_id" ref="view_somenergia_soci_tree"/>
+        </record>
+        <menuitem action="action_somenergia_soci_tree" id="menu_somenergia_soci_tree" parent="base.menu_base_partner"/>
+    </data>
+</openerp>

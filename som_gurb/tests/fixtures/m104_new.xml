@@ -1,0 +1,21 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<MensajeRechazo xmlns="http://localhost/elegibilidad">
+    <Cabecera>
+        <CodigoREEEmpresaEmisora>1234</CodigoREEEmpresaEmisora>
+        <CodigoREEEmpresaDestino>4321</CodigoREEEmpresaDestino>
+        <CodigoDelProceso>M1</CodigoDelProceso>
+        <CodigoDePaso>04</CodigoDePaso>
+        <CodigoDeSolicitud>123456789123</CodigoDeSolicitud>
+        <SecuencialDeSolicitud>01</SecuencialDeSolicitud>
+        <FechaSolicitud>2020-01-01T00:00:00</FechaSolicitud>
+        <CUPS>ES1234000000000001JN0F</CUPS>
+    </Cabecera>
+    <Rechazos>
+        <FechaRechazo>2020-01-01</FechaRechazo>
+        <Rechazo>
+            <Secuencial>1</Secuencial>
+            <CodigoMotivo>B2</CodigoMotivo>
+            <Comentarios>Exemple de M1 04. "Ha hecho un fraude!"</Comentarios>
+        </Rechazo>
+    </Rechazos>
+</MensajeRechazo>

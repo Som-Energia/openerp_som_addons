@@ -1,0 +1,97 @@
+#invoice_detail_td {
+    /*border-collapse: collapse;*/
+    width: 100%;
+    text-align: center;
+}
+
+#invoice_detail_td td{
+    /*border-collapse: collapse;*/
+}
+
+#invoice_detail_td th {
+    padding-top: 6px;
+    padding-bottom: 6px;
+    background-color: #bdc83f;
+    color: white;
+    font-size: 10px;
+}
+
+#invoice_detail_td .concepte_td {
+    text-align: left;
+    width: 50px;
+}
+#invoice_detail_td .detall_td{
+    text-align: left;
+    font-weight: bold;
+}
+#invoice_detail_td .periods_td{
+    text-align: center;
+}
+#invoice_detail_td .total_td {
+    text-align: right;
+    width: 80px;
+}
+#invoice_detail_td .iva_td {
+    text-align: center;
+}
+#invoice_detail_td .detall_td_no_bold{
+    font-weight: normal;
+    font-size: 0.9em;
+    display: inline;
+}
+
+#invoice_detail_td .total_factura_row {
+    background-color: #bdc83f;
+    color: white;
+    font-size: 10px;
+    font-weight: bold;
+}
+
+#invoice_detail_td .total_factura_text {
+    text-align: right;
+}
+
+.last_row {
+    border-bottom: 1.8px solid black;
+}
+
+.head_row {
+    border-top: 1.8px solid black;
+}
+
+.td_first {
+    background-color: #7a7a7a;
+    color: white;
+    font-weight: bold;
+    width: 50px;
+}
+
+.tr_bold {
+    font-weight: bold;
+}
+
+.subtotal {
+    font-size: 1.2em;
+    text-align: center;
+    width: 70px;
+    padding: 0px 0px 0px 0px;
+    font-weight: bold;
+}
+
+.td_second {
+    background-color: #b5b5b5;
+    color: white;
+    font-weight: bold;
+    width: 50px;
+}
+
+.td_bold {
+    font-weight: bold;
+}
+
+.td_third {
+    background-color: #d6d6d6;
+    color: white;
+    font-weight: bold;
+    width: 50px;
+}

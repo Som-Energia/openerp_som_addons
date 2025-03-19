@@ -1,0 +1,244 @@
+# Translation of OpenERP Server.
+# This file contains the translation of the following modules:
+#
+# Translators:
+msgid ""
+msgstr ""
+"Project-Id-Version: GISCE-ERP\n"
+"Report-Msgid-Bugs-To: https://github.com/gisce/erp/issues\n"
+"POT-Creation-Date: 2017-06-21 14:46:34+0000\n"
+"PO-Revision-Date: 2017-06-21 14:48+0000\n"
+"Last-Translator: Agustí Fita <afita@gisce.net>\n"
+"Language-Team: English (United States) (http://trad.gisce.net/projects/p/erp/language/en_US/)\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Language: en_US\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#. module: som_polissa_soci
+#: constraint:ir.model:0
+msgid ""
+"The Object name must start with x_ and not contain any special character !"
+msgstr ""
+
+#. module: som_polissa_soci
+#: constraint:product.template:0
+msgid ""
+"Error: The default UOM and the purchase UOM must be in the same category."
+msgstr ""
+
+#. module: som_polissa_soci
+#: view:giscedata.polissa:0 field:giscedata.polissa,soci:0
+#: view:somenergia.soci:0 field:somenergia.soci,partner_id:0
+msgid "Soci"
+msgstr ""
+
+#. module: som_polissa_soci
+#: field:giscedata.polissa,soci_nif:0
+msgid "NIF soci"
+msgstr ""
+
+#. module: som_polissa_soci
+#: model:ir.ui.menu,name:som_polissa_soci.menu_action_wizard_llistat_socis
+msgid "Generar llistat Socis"
+msgstr ""
+
+#. module: som_polissa_soci
+#: field:wizard.llistat.socis,name:0
+msgid "Nom fitxer"
+msgstr ""
+
+#. module: som_polissa_soci
+#: constraint:ir.actions.act_window:0
+msgid "Invalid model name in the action definition."
+msgstr ""
+
+#. module: som_polissa_soci
+#: model:ir.model,name:som_polissa_soci.model_wizard_llistat_socis
+msgid "wizard.llistat.socis"
+msgstr ""
+
+#. module: som_polissa_soci
+#: view:wizard.llistat.socis:0
+msgid "Generació CSV Llistat de socis"
+msgstr ""
+
+#. module: som_polissa_soci
+#: constraint:payment.mode:0
+msgid "The SEPA creditor code is not correct"
+msgstr ""
+
+#. module: som_polissa_soci
+#: model:ir.module.module,shortdesc:som_polissa_soci.module_meta_information
+msgid "Soci d'una Pòlissa"
+msgstr ""
+
+#. module: som_polissa_soci
+#: code:addons/som_polissa_soci/giscedata_cups.py:15
+#, python-format
+msgid "usuari (webforms)"
+msgstr ""
+
+#. module: som_polissa_soci
+#: field:somenergia.soci,baixa:0
+msgid "Soci de baixa"
+msgstr ""
+
+#. module: som_polissa_soci
+#: code:addons/som_polissa_soci/giscedata_cups.py:14
+#, python-format
+msgid "Estadística SOM"
+msgstr ""
+
+#. module: som_polissa_soci
+#: model:product.template,description:som_polissa_soci.bosocial_BS01_product_template
+msgid "Obligació finançament bo Social (€/dia)"
+msgstr ""
+
+#. module: som_polissa_soci
+#: constraint:giscedata.polissa.category:0
+msgid "Error ! No pots crear categories recursives."
+msgstr ""
+
+#. module: som_polissa_soci
+#: field:giscedata.polissa,donatiu:0
+msgid "Donatiu voluntari"
+msgstr ""
+
+#. module: som_polissa_soci
+#: view:wizard.llistat.socis:0
+msgid "Tanca"
+msgstr ""
+
+#. module: som_polissa_soci
+#: field:somenergia.soci,emails:0
+msgid "Emails"
+msgstr ""
+
+#. module: som_polissa_soci
+#: model:product.uom,name:som_polissa_soci.product_uom_day
+msgid "dia"
+msgstr ""
+
+#. module: som_polissa_soci
+#: model:product.category,name:som_polissa_soci.categ_donacions
+msgid "Donacions"
+msgstr ""
+
+#. module: som_polissa_soci
+#: constraint:ir.ui.view:0
+msgid "Invalid XML for View Architecture!"
+msgstr ""
+
+#. module: som_polissa_soci
+#: constraint:product.template:0
+msgid "Error: UOS must be in a different category than the UOM"
+msgstr ""
+
+#. module: som_polissa_soci
+#: model:product.uom.categ,name:som_polissa_soci.categ_uom_day
+msgid "DIES"
+msgstr ""
+
+#. module: som_polissa_soci
+#: model:product.template,name:som_polissa_soci.dona_DN01_product_template
+msgid "Donacio"
+msgstr ""
+
+#. module: som_polissa_soci
+#: field:somenergia.soci,data_baixa_soci:0
+msgid "Data de baixa"
+msgstr ""
+
+#. module: som_polissa_soci
+#: help:giscedata.polissa,donatiu:0
+msgid "Incloure a la factura 0.01€/kWh consumit"
+msgstr ""
+
+#. module: som_polissa_soci
+#: model:giscedata.polissa.category,name:som_polissa_soci.cat_2
+msgid "Impagats"
+msgstr ""
+
+#. module: som_polissa_soci
+#: model:product.category,name:som_polissa_soci.categ_bo_social
+#: model:product.template,name:som_polissa_soci.bosocial_BS01_product_template
+msgid "Bo Social"
+msgstr ""
+
+#. module: som_polissa_soci
+#: model:product.template,description:som_polissa_soci.dona_DN01_product_template
+msgid "Donatiu voluntari (0,01€/kWh)"
+msgstr ""
+
+#. module: som_polissa_soci
+#: field:wizard.llistat.socis,state:0
+msgid "State"
+msgstr ""
+
+#. module: som_polissa_soci
+#: model:ir.model,name:som_polissa_soci.model_somenergia_soci
+msgid "somenergia.soci"
+msgstr ""
+
+#. module: som_polissa_soci
+#: model:ir.actions.act_window,name:som_polissa_soci.action_somenergia_soci_tree
+#: model:ir.ui.menu,name:som_polissa_soci.menu_somenergia_soci_tree
+#: view:somenergia.soci:0
+msgid "Socis"
+msgstr ""
+
+#. module: som_polissa_soci
+#: constraint:product.category:0
+msgid "Error ! You can not create recursive categories."
+msgstr ""
+
+#. module: som_polissa_soci
+#: model:giscedata.polissa.category,name:som_polissa_soci.cat_1
+msgid "Reclamacions Distribuidora"
+msgstr ""
+
+#. module: som_polissa_soci
+#: view:somenergia.soci:0
+msgid "General"
+msgstr ""
+
+#. module: som_polissa_soci
+#: view:wizard.llistat.socis:0
+msgid "Generar el fitxer"
+msgstr ""
+
+#. module: som_polissa_soci
+#: view:giscedata.polissa:0
+msgid "Contactes"
+msgstr ""
+
+#. module: som_polissa_soci
+#: constraint:product.product:0
+msgid "Error: Invalid ean code"
+msgstr ""
+
+#. module: som_polissa_soci
+#: field:wizard.llistat.socis,file:0
+msgid "Fitxer"
+msgstr ""
+
+#. module: som_polissa_soci
+#: model:ir.module.module,description:som_polissa_soci.module_meta_information
+msgid ""
+"\n"
+"    This module provide :\n"
+"        * Camp de soci per relacionar un contracte amb un soci.\n"
+"    "
+msgstr ""
+
+#. module: som_polissa_soci
+#: model:ir.actions.act_window,name:som_polissa_soci.action_wizard_llistat_socis_form
+msgid "Generació CSV llistat de socis"
+msgstr ""
+
+#. module: som_polissa_soci
+#: model:ir.actions.act_window,name:som_polissa_soci.action_abrir_polisses_soci
+msgid "Com a Soci"
+msgstr ""

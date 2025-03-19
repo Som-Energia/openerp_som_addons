@@ -16,6 +16,6 @@
     %if d.tensio:
         ${_(u"<b>Tensió:</b> %s") % (d.tensio)}<br/>
     %endif
-    ${_(u"<b>Data activacio:</b> %s") % (d.data_activacio)}<br/>
+    ${_(u"<b>Data activació:</b> %s") % (d.data_activacio)}<br/>
     <br><br>
 </li>

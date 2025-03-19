@@ -7,17 +7,16 @@
     "version": "0-dev",
     "author": "GISCE",
     "category": "Master",
-    "depends":[
+    "depends": [
         "base",
-        "empowering_api",
-        "www_som",
-        "mongodb_backend"
+        "giscedata_polissa",
+        "giscedata_facturacio",
+        "base_extended_som",
+        "mongodb_backend",
     ],
     "init_xml": [],
     "demo_xml": [],
-    "update_xml":[
-        "res_partner_view.xml"
-    ],
+    "update_xml": ["res_partner_view.xml"],
     "active": False,
-    "installable": True
+    "installable": True,
 }

@@ -12,7 +12,7 @@
     pool = objects[0].pool
     polissa_obj = objects[0].pool.get('giscedata.polissa')
     fact_obj =  objects[0].pool.get('giscedata.facturacio.factura')
-    
+
     def merge_two_dicts(x, y):
         z = x.copy()   # start with x's keys and values
         z.update(y)    # modifies z with y's keys and values & returns None
@@ -168,7 +168,7 @@
                     <div class="quantity_section">
                         %for i in sorted(altres_lines):
                             <div class="preu_concepte center">
-                                ${formatLang(i.quantity, 0)}
+                                ${formatLang(i.quantity, 2)}
                             </div>
                         %endfor
                     </div>

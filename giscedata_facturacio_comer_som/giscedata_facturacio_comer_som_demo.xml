@@ -1,0 +1,203 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<openerp>
+    <data>
+        <record id="factura_101SF" model="giscedata.facturacio.factura">
+            <field name="name">0018</field>
+            <field name="date_invoice">2021-08-01</field>
+            <field name="date_due">2021-08-08</field>
+            <field name="number">0101/F</field>
+            <field name="polissa_id" ref="giscedata_polissa.polissa_tarifa_018"/>
+            <field name="account_id"  search="[('code', '=', 430000)]" model="account.account"/>
+            <field name="company_id" ref="base.main_company"/>
+            <field name="date_boe">2017-01-01</field>
+            <field name="reference_type">none</field>
+            <field name="journal_id" ref="giscedata_facturacio.facturacio_journal_energia"/>
+            <field name="cups_id" ref="giscedata_cups.cups_tarifa_018"/>
+            <field eval="1" name="facturacio"/>
+            <field name="currency_id" ref="base.EUR"/>
+            <field name="address_invoice_id" ref="base.res_partner_address_c2c_1"/>
+            <field name="potencia">6.0</field>
+            <field name="tarifa_acces_id" ref="giscedata_polissa.tarifa_20TD"/>
+            <field name="llista_preu" ref="giscedata_facturacio.pricelist_tarifas_electricidad"/>
+            <field name="partner_id" ref="base.res_partner_c2c"/>
+            <field name="data_inici">2021-07-01</field>
+            <field name="data_final">2021-07-31</field>
+            <field name="fiscal_position" ref="giscedata_facturacio.fp_nacional_2012"/>
+            <field name="payment_type" ref="l10n_ES_remesas.payment_type_recibodomiciliado0"/>
+        </record>
+        <!-- Linies energia -->
+        <record id="linia_factura_ene_P1_0045" model="giscedata.facturacio.factura.linia">
+            <field name="name">P1</field>
+            <field name="product_id" search="[('name', '=', 'P1'), ('categ_id', '=', ref('giscedata_polissa.categ_e_t20TD'))]" model="product.product"/>
+            <field name="account_id"  search="[('code', '=', 700000)]" model="account.account"/>
+            <field name="tipus">energia</field>
+            <field name="quantity" eval="2"/>
+            <field name="price_unit" eval="0.108728"/>
+            <field name="price_unit_multi" eval="0.108728"/>
+            <field name="uos_id" ref="giscedata_polissa.uom_eneg_elec"/>
+            <field name="multi" eval="1"/>
+            <!--<field name="uom_multi_id"></field>-->
+            <field name="factura_id" ref="factura_101SF"/>
+            <!--<field name="invoice_line_id"></field>-->
+            <!--<field name="cosfi"></field>-->
+            <field name="data_desde">2021-07-01</field>
+            <field name="data_fins">2021-07-16</field>
+        </record>
+        <record id="linia_factura_ene_P2_0045" model="giscedata.facturacio.factura.linia">
+            <field name="name">P2</field>
+            <field name="product_id" search="[('name', '=', 'P2'), ('categ_id', '=', ref('giscedata_polissa.categ_e_t20TD'))]" model="product.product"/>
+            <field name="account_id"  search="[('code', '=', 700000)]" model="account.account"/>
+            <field name="tipus">energia</field>
+            <field name="quantity" eval="0"/>
+            <field name="price_unit" eval="0.28728"/>
+            <field name="price_unit_multi" eval="0.108728"/>
+            <field name="multi" eval="1"/>
+            <!--<field name="uom_multi_id"></field>-->
+            <field name="factura_id" ref="factura_101SF"/>
+            <field name="uos_id" ref="giscedata_polissa.uom_eneg_elec"/>
+            <!--<field name="invoice_line_id"></field>-->
+            <!--<field name="cosfi"></field>-->
+            <field name="data_desde">2021-07-01</field>
+            <field name="data_fins">2021-07-16</field>
+        </record>
+        <record id="linia_factura_ene_P3_0045" model="giscedata.facturacio.factura.linia">
+            <field name="name">P3</field>
+            <field name="product_id" search="[('name', '=', 'P3'), ('categ_id', '=', ref('giscedata_polissa.categ_e_t20TD'))]" model="product.product"/>
+            <field name="account_id"  search="[('code', '=', 700000)]" model="account.account"/>
+            <field name="tipus">energia</field>
+            <field name="quantity" eval="3"/>
+            <field name="price_unit" eval="0.308728"/>
+            <field name="price_unit_multi" eval="0.108728"/>
+            <!--<field name="multi" eval="1"/>-->
+            <!--<field name="uom_multi_id"></field>-->
+            <field name="factura_id" ref="factura_101SF"/>
+            <field name="uos_id" ref="giscedata_polissa.uom_eneg_elec"/>
+            <!--<field name="invoice_line_id"></field>-->
+            <!--<field name="cosfi"></field>-->
+            <field name="data_desde">2021-07-01</field>
+            <field name="data_fins">2021-07-16</field>
+        </record>
+        <record id="linia_factura_ene_P1_0045_bis" model="giscedata.facturacio.factura.linia">
+            <field name="name">P1</field>
+            <field name="product_id" search="[('name', '=', 'P1'), ('categ_id', '=', ref('giscedata_polissa.categ_e_t20TD'))]" model="product.product"/>
+            <field name="account_id"  search="[('code', '=', 700000)]" model="account.account"/>
+            <field name="tipus">energia</field>
+            <field name="quantity" eval="2"/>
+            <field name="price_unit" eval="0.108728"/>
+            <field name="price_unit_multi" eval="0.108728"/>
+            <field name="uos_id" ref="giscedata_polissa.uom_eneg_elec"/>
+            <!--<field name="multi" eval="1"/>-->
+            <!--<field name="uom_multi_id"></field>-->
+            <field name="factura_id" ref="factura_101SF"/>
+            <!--<field name="invoice_line_id"></field>-->
+            <!--<field name="cosfi"></field>-->
+            <field name="data_desde">2021-07-16</field>
+            <field name="data_fins">2021-07-31</field>
+        </record>
+        <record id="linia_factura_ene_P2_0045_bis" model="giscedata.facturacio.factura.linia">
+            <field name="name">P2</field>
+            <field name="product_id" search="[('name', '=', 'P2'), ('categ_id', '=', ref('giscedata_polissa.categ_e_t20TD'))]" model="product.product"/>
+            <field name="account_id"  search="[('code', '=', 700000)]" model="account.account"/>
+            <field name="tipus">energia</field>
+            <field name="quantity" eval="0"/>
+            <field name="price_unit" eval="0.108728"/>
+            <field name="price_unit_multi" eval="0.108728"/>
+            <!--<field name="multi" eval="1"/>-->
+            <!--<field name="uom_multi_id"></field>-->
+            <field name="factura_id" ref="factura_101SF"/>
+            <field name="uos_id" ref="giscedata_polissa.uom_eneg_elec"/>
+            <!--<field name="invoice_line_id"></field>-->
+            <!--<field name="cosfi"></field>-->
+            <field name="data_desde">2021-07-16</field>
+            <field name="data_fins">2021-07-31</field>
+        </record>
+        <record id="linia_factura_ene_P3_0045_bis" model="giscedata.facturacio.factura.linia">
+            <field name="name">P3</field>
+            <field name="product_id" search="[('name', '=', 'P3'), ('categ_id', '=', ref('giscedata_polissa.categ_e_t20TD'))]" model="product.product"/>
+            <field name="account_id"  search="[('code', '=', 700000)]" model="account.account"/>
+            <field name="tipus">energia</field>
+            <field name="quantity" eval="3"/>
+            <field name="price_unit" eval="0.108728"/>
+            <field name="price_unit_multi" eval="0.108728"/>
+            <!--<field name="multi" eval="1"/>-->
+            <!--<field name="uom_multi_id"></field>-->
+            <field name="factura_id" ref="factura_101SF"/>
+            <field name="uos_id" ref="giscedata_polissa.uom_eneg_elec"/>
+            <!--<field name="invoice_line_id"></field>-->
+            <!--<field name="cosfi"></field>-->
+            <field name="data_desde">2021-07-16</field>
+            <field name="data_fins">2021-07-31</field>
+        </record>
+        <!-- Línies potència -->
+        <record id="linia_factura_pot_P1_0045" model="giscedata.facturacio.factura.linia">
+            <field name="name">P1</field>
+            <field name="product_id" search="[('name', '=', 'P1'), ('categ_id', '=', ref('giscedata_polissa.categ_p_t20TD'))]" model="product.product"/>
+            <field name="account_id"  search="[('code', '=', 700000)]" model="account.account"/>
+            <field name="tipus">potencia</field>
+            <field name="quantity" eval="6.928"/>
+            <field name="price_unit" eval="6.30584"/>
+            <field name="price_unit_multi" eval="0.103944"/>
+            <!--<field name="multi" eval="1"/>-->
+            <field name="uos_id" ref="giscedata_facturacio.uom_pot_elec_dia_traspas"/>
+            <field name="factura_id" ref="factura_101SF"/>
+            <!--<field name="invoice_line_id"></field>-->
+            <!--<field name="cosfi"></field>-->
+            <field name="data_desde">2021-07-01</field>
+            <field name="data_fins">2021-07-15</field>
+        </record>
+        <record id="linia_factura_pot_P1_0045_bis" model="giscedata.facturacio.factura.linia">
+            <field name="name">P1</field>
+            <field name="product_id" search="[('name', '=', 'P1'), ('categ_id', '=', ref('giscedata_polissa.categ_p_t20TD'))]" model="product.product"/>
+            <field name="account_id"  search="[('code', '=', 700000)]" model="account.account"/>
+            <field name="tipus">potencia</field>
+            <field name="quantity" eval="6.928"/>
+            <field name="price_unit" eval="6.340584"/>
+            <field name="price_unit_multi" eval="0.103944"/>
+            <field name="multi" eval="1"/>
+            <field name="uos_id" ref="giscedata_facturacio.uom_pot_elec_dia_traspas"/>
+            <field name="factura_id" ref="factura_101SF"/>
+            <!--<field name="invoice_line_id"></field>-->
+            <!--<field name="cosfi"></field>-->
+            <field name="data_desde">2021-07-16</field>
+            <field name="data_fins">2021-07-31</field>
+        </record>
+        <record id="linia_factura_llog_0045" model="giscedata.facturacio.factura.linia">
+            <field name="name">P1</field>
+            <field name="product_id" eval="False"/>
+            <field name="account_id"  search="[('code', '=', 700000)]" model="account.account"/>
+            <field name="tipus">lloguer</field>
+            <field name="quantity" eval="60.0"/>
+            <field name="price_unit" eval="0.05"/>
+            <field name="price_unit_multi" eval="0.05"/>
+            <!--<field name="multi" eval="1"/>-->
+            <!--<field name="uom_multi_id"></field>-->
+            <field name="factura_id" ref="factura_101SF"/>
+            <!--<field name="invoice_line_id"></field>-->
+            <!--<field name="cosfi"></field>-->
+            <field name="data_desde">2021-07-01</field>
+            <field name="data_fins">2021-07-31</field>
+        </record>
+        <record id="lectura_energia_factura_101SF" model="giscedata.facturacio.lectures.energia">
+            <field name="name">P1</field>
+            <field name="comptador_id" ref="giscedata_lectures.comptador_0001"/>
+            <field name="factura_id" ref="factura_101SF"/>
+            <field name="tipus">activa</field>
+            <field name="magnitud">AE</field>
+            <field name="data_actual">2021-07-31</field>
+            <field name="lect_actual">21</field>
+            <field name="data_anterior">2021-06-30</field>
+            <field name="lect_anterior">19</field>
+            <field name="consum">2</field>
+            <field name="origen_id" ref="giscedata_lectures.origen10"/>
+            <field name="origen_anterior_id"  ref="giscedata_lectures.origen10"/>
+            <!--<field name="motiu_ajust"></field>-->
+            <!--<field name="ajust"></field>-->
+        </record>
+        <record id="lectura_potencia_factura_101SF" model="giscedata.facturacio.lectures.potencia">
+            <field name="name">P1</field>
+            <field name="comptador_id" ref="giscedata_lectures.comptador_0001"/>
+            <field name="factura_id" ref="factura_101SF"/>
+            <field name="pot_contract">6</field>
+        </record>
+    </data>
+</openerp>

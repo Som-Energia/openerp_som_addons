@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+<openerp>
+    <data>
+        <!--m1-02-->
+        <record model="giscedata.switching.notificacio.config" id="sw_not_m1_02_rebuig_57">
+            <field name="proces_id" ref="giscedata_switching.sw_proces_m1"/>
+            <field name="step_id" ref="giscedata_switching.sw_step_m1_02"/>
+            <field name="description">Activa les notificacions per els passos de rebuig M1-02 motiu 57 amb canvis tècnics però sense canvis en l'autoconsum</field>
+            <field name="conditions">[('01', 'sollicitudadm', '!=', 'S'),('02', 'rebuig', '==', True),('02', 'rebuig_ids[0].motiu_rebuig.name', '==', '57'),('01', 'solicitud_autoconsum', '==', 'N')]</field>
+        </record>
+        <record model="giscedata.switching.notificacio.config" id="sw_not_m1_02_rebuig">
+            <field name="proces_id" ref="giscedata_switching.sw_proces_m1"/>
+            <field name="step_id" ref="giscedata_switching.sw_step_m1_02"/>
+            <field name="description">Activa les notificacions per els passos de rebuig M1-02 amb canvis tècnics per a tots els motius excepte el 57</field>
+            <field name="conditions">[('01', 'sollicitudadm', '!=', 'S'),('02', 'rebuig', '==', True),('02', 'rebuig_ids[0].motiu_rebuig.name', '!=', '57')]</field>
+        </record>
+        <record model="giscedata.switching.notificacio.config" id="giscedata_switching.sw_not_m1_altres_02">
+            <field name="conditions">[('01', 'sollicitudadm', '!=', 'S'),('02', 'rebuig', '==', False)]</field>
+        </record>
+        <!--b1-07-->
+        <record model="giscedata.switching.notificacio.config" id="giscedata_switching.sw_not_b107">
+            <field name="conditions">[('01', 'motiu', '==', '01')]</field>
+        </record>
+        <!--b1-02-->
+        <record model="giscedata.switching.notificacio.config" id="giscedata_switching.sw_not_b102">
+            <field name="conditions">[('01', 'motiu', '==', '01')]</field>
+        </record>
+    </data>
+</openerp>

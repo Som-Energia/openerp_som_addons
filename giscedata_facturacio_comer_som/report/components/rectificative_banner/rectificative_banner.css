@@ -1,0 +1,11 @@
+.rectificative_banner{
+    background-color: #f7f7f7;
+    text-align: left;
+    margin: 0px 0px 1em 0px;
+    width: 100%;
+    padding: .05em;
+    float: left;
+}
+.rectificative_warn{
+    background-color: #c83f3f;
+}

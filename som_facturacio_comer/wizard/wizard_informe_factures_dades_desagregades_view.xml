@@ -1,0 +1,48 @@
+<?xml version="1.0"?>
+<openerp>
+  <data>
+    <!-- vistes wizard informe dades desagregades -->
+    <record id="view_informe_dades_desagregades_form" model="ir.ui.view">
+      <field name="name">informe.dades_desagregades</field>
+      <field name="model">wizard.informe.dades_desagregades</field>
+      <field name="type">form</field>
+      <field name="arch" type="xml">
+        <form string="Informe dades desagregades: 3.0 i 6.x">
+          <field name="state" invisible="1" />
+          <group colspan="4" col="4" attrs="{'invisible': [('state', '!=', 'init')]}">
+            <field name="start_date" on_change="onchange_start_date(start_date)" />
+            <newline/>
+            <field name="from_date"/>
+            <field name="to_date"/>
+            <newline/>
+            <field name="contracts" />
+            <newline />
+            <separator colspan="4" />
+            <group colspan="4">
+              <button icon="gtk-cancel" special="cancel" string="Cancel" type="object" colspan="1" />
+              <button name="action_crear_informe" type="object" colspan="1" string="Generar informe" icon="gtk-ok" />
+            </group>
+          </group>
+          <group colspan="4" col="4" attrs="{'invisible': [('state', '!=', 'done')]}">
+            <label>S'ha generat les dades de l'informe</label>
+            <newline/>
+            <separator colspan="4"/>
+            <field name="file_name" invisible="1" readonly="1"/>
+            <field name="file" filename="file_name" readonly="1"/>
+          </group>
+        </form>
+      </field>
+    </record>
+    <!-- acció informe dades desagregades -->
+    <record id="action_informe_dades_desagregades_form" model="ir.actions.act_window">
+      <field name="name">Informe dades desagregades</field>
+      <field name="type">ir.actions.act_window</field>
+      <field name="res_model">wizard.informe.dades_desagregades</field>
+      <field name="view_type">form</field>
+      <field name="view_mode">form</field>
+      <field name="target">new</field>
+    </record>
+    <menuitem id="menu_informe_dades_desagregades" parent="giscedata_facturacio.menu_informes_facturacio"
+              name="Generar informe dades desagregades: 3.0 i 6.x" action="action_informe_dades_desagregades_form"/>
+  </data>
+</openerp>

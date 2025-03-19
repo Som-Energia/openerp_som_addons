@@ -1,0 +1,43 @@
+# -*- coding: utf-8 -*-
+{
+    "name": "Generació urbana",
+    "description": "Mòdul per gestionar els grups de generació urbana",
+    "version": "0-dev",
+    "author": "SomEnergia",
+    "category": "SomEnergia",
+    "depends": [
+        "giscedata_polissa",
+        "giscedata_telemesures_base",
+        "giscedata_facturacio_services",
+        "giscedata_polissa_category",
+        "giscedata_switching",
+        "giscedata_facturacio",
+        "report_puppeteer",
+        "giscedata_polissa_representante",
+        "som_poweremail_common_templates",
+        "giscedata_signatura_documents_signaturit",
+        "som_polissa_condicions_generals"
+    ],
+    "demo_xml": [
+        "demo/som_gurb_service_demo.xml",
+        "demo/som_gurb_demo.xml",
+        "demo/som_gurb_cups_demo.xml",
+    ],
+    "update_xml": [
+        "data/som_gurb_data.xml",
+        "data/som_gurb_email_template_data.xml",
+        "views/som_gurb_cups_view.xml",
+        "views/som_gurb_view.xml",
+        "views/som_gurb_webview.xml",
+        "workflow/som_gurb_workflow.xml",
+        "security/ir.model.access.csv",
+        "wizard/wizard_gurb_create_new_beta_view.xml",
+        "wizard/wizard_create_gurb_cups_signature_view.xml",
+        "wizard/wizard_gurb_create_initial_invoice_view.xml",
+        "wizard/wizard_create_coef_file_view.xml",
+        "report/som_gurb_reports.xml",
+    ],
+    "init_xml": [],
+    "active": False,
+    "installable": True,
+}

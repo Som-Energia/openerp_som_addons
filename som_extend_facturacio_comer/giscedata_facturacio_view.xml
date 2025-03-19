@@ -1,0 +1,66 @@
+<?xml version="1.0"?>
+<openerp>
+    <data>
+        <!-- Vista de factures de proveïdor de comptabilitat i finances -->
+        <record id="account.action_invoice_tree2_new" model="ir.actions.act_window">
+            <field name="context">{'type':'in_invoice', 'default_journal_id': 2}</field>
+        </record>
+
+        <record id="action_factura_tree_admin" model="ir.actions.act_window">
+            <field name="name">Factures Admin. Locals</field>
+            <field name="res_model">giscedata.facturacio.factura</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="context">{'type':'out_invoice'}</field>
+            <field name="domain">[('type', '=', 'out_invoice'),('polissa_id.titular.vat', 'like', 'ESP%%')]</field>
+            <field name="view_id" ref="giscedata_facturacio.view_factura_tree"/>
+        </record>
+        <menuitem id="menu_facturacio_base_factures_admin" action="action_factura_tree_admin" parent="giscedata_facturacio.menu_facturacio_base"/>
+
+        <!-- Vista de factures impagades -->
+        <record id="action_factures_impagades" model="ir.actions.act_window">
+            <field name="name">Factures amb dificultats en el pagament</field>
+            <field name="res_model">giscedata.facturacio.factura</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="domain">[('invoice_id.pending_state.weight', '>', 1)]</field>
+            <field name="view_id" ref="giscedata_facturacio.view_factura_tree" />
+        </record>
+        <!-- La fem visible des del menu -->
+        <menuitem id="menu_facturacio_factures_impagades" action="action_factures_impagades" parent="giscedata_facturacio.menu_facturacio_base_factures"/>
+
+	    <record id="view_giscedata_facturacio_factura_devolucio_add_comment_tree" model="ir.ui.view">
+            <field name="name">giscedata.facturacio.factura.devolucio.add.commeent.tree</field>
+            <field name="model">giscedata.facturacio.factura</field>
+            <field name="inherit_id" ref="giscedata_facturacio.view_factura_tree"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='origin_date_invoice']" position="after">
+                    <field name="comment"/>
+                </xpath>
+            </field>
+        </record>
+
+        <record id="view_factura_impagades_add_comment_tree" model="ir.ui.view">
+            <field name="name">giscedata.facturacio.factura.impagades.add.comment.tree</field>
+            <field name="model">giscedata.facturacio.factura</field>
+            <field name="inherit_id" ref="giscedata_facturacio_impagat.view_factura_impagades_tree"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='group_move_id']" position="after">
+                    <field name="comment"/>
+                </xpath>
+            </field>
+        </record>
+
+        <record id="view_facturacio_extra_add_polissa_state_tree" model="ir.ui.view">
+            <field name="name">giscedata.facturacio.extra.tree</field>
+            <field name="model">giscedata.facturacio.extra</field>
+            <field name="inherit_id" ref="giscedata_facturacio.view_facturacio_extra_tree"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='polissa_id']" position="after">
+                    <field name="polissa_state" select="2"/>
+                </xpath>
+            </field>
+        </record>
+
+    </data>
+</openerp>

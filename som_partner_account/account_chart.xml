@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+    <data noupdate="0">
+    	<record id="pgc_1714" model="account.account.template">
+            <field name="code">1714</field>
+            <field name="reconcile" eval="False"/>
+            <field name="parent_id" ref="l10n_chart_ES.pgc_171"/>
+            <field name="type">view</field>
+            <field name="name">Creditores para fondos capitalizados a largo plazo</field>
+            <field name="user_type" ref="l10n_chart_ES.capital"/>
+            <field name="template_name">PGCE 2008</field>
+        </record>
+		<record id="pgc_1714_child" model="account.account.template">
+            <field name="code">1714</field>
+            <field name="reconcile" eval="False"/>
+            <field name="parent_id" ref="pgc_1714"/>
+            <field name="type">other</field>
+            <field name="name">Creditores para fondos capitalizados a largo plazo</field>
+            <field name="user_type" ref="l10n_chart_ES.capital"/>
+            <field name="template_name">PGCE 2008</field>
+        </record>
+    </data>
+</openerp>

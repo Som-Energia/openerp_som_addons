@@ -1,0 +1,72 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2010-12-21 03:35+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+msgid "1,75% nominal anual (2017, revisable anualment)"
+msgstr ""
+
+msgid "Cancel·lació: En qualsevol moment"
+msgstr ""
+
+msgid "Import:"
+msgstr ""
+
+msgid "Liquidació:"
+msgstr ""
+
+msgid "Aquest contracte només serà actiu un cop el pagament corresponent s'hagi fet efectiu"
+msgstr ""
+
+msgid "I=((A*%I)/365)*D<br>on I = interessos; A = aportació; D = dies"
+msgstr ""
+
+msgid "Aportació disponible en qualsevol moment amb 3 mesos de pre-avís mitjançant l'enviament de correu electrònic a invertir@somenergia.coop"
+msgstr ""
+
+msgid "Remuneració:"
+msgstr ""
+
+msgid "Titular:"
+msgstr ""
+
+msgid "Fórmula per determinar l'import absolut de la remuneració meritada:"
+msgstr ""
+
+msgid "Pots fer el seguiment dels nostres projectes a l'apartat invertir en projectes del  nostre web www.somenergia.coop o bé consultar-nos qualsevol tema referent a inversions al correu electrònic invertir@somenergia.coop"
+msgstr ""
+
+msgid "La liquidació dels interessos meritats durant l'any es percebrà durant els últims 10 dies del mes de gener de l'any següent.<br>En cas de reintegrament parcial o total de l’aportació els interessos es percebran en la següent liquidació anual d'interessos."
+msgstr ""
+
+msgid "CONDICIONS GENERALS DE L’APORTACIÓ SOCIAL"
+msgstr ""
+
+msgid "La remuneració de l’aportació social serà durant el primer any la fixada per l’Assemblea General amb data 27/05/2017.<br>A partir del segon i successius l’Assemblea General fixarà la remuneració anual.<br>La reducció de les aportacions, o les noves aportacions que es facin, seran acreditades mitjançant extractes que s’annexaran al final de cada exercici així com per internet a travès de la nostra oficina virtual."
+msgstr ""
+
+msgid "Data d'obertura:"
+msgstr ""
+
+msgid "L’aportació està subjecta a les prescripcions previstes a la Llei de Cooperatives de Catalunya (Llei 12/2015 de 9 de juliol), als Estatuts socials vigents de la cooperativa i als acords de l’Assemblea General."
+msgstr ""
+
+msgid "Resum condicions de l’aportació voluntària al capital social"
+msgstr ""
+
+msgid "Informació addicional:"
+msgstr ""

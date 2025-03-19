@@ -1,6 +1,6 @@
 <%page args="d" />
 <li>
-    ${_(u"El %s Som Energia presenta la sol·licitud següent a la distribuïdora (%s)") % (d.day, d.distribuidora) }<br/>
+    ${_(u"El %s la distribuïdora (%s) ens dóna l’activació del cas tramitat:") % (d.day, d.distribuidora) }<br/>
     <br>
     ${_(u"<b>Procediment:</b> M1 (Modificació contractual)")}<br/>
     ${_(u"<b>Pas:</b> 05")}<br/>

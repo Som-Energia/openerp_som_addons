@@ -1,0 +1,796 @@
+<?xml version="1.0"?>
+<openerp>
+    <data noupdate="1">
+        <record model="giscedata.switching.notify" id="notification_atr_C102_38">
+            <field name="proces_id" ref="giscedata_switching.sw_proces_c1"/>
+            <field name="step_id" ref="giscedata_switching.sw_step_c1_02"/>
+            <field name="active" eval="1"/>
+            <field name="notify_text"><![CDATA[<!doctype html>
+
+% if cas.cups_polissa_id.titular.lang == "ca_ES":
+    ${correu_cat()}
+% else:
+    ${correu_es()}
+% endif
+
+<%def name="correu_cat()">
+    <p>
+       L'<a href="https://ca.support.somenergia.coop/article/655-les-distribuidores-d-electricitat">empresa distribuïdora</a> de la zona (que gestiona aquest procediment) ens comunica que la sol·licitud ha sigut denegada indicant que <b>existeix una altra sol·licitud de canvi de comercialitzadora en curs</b>.
+    </p>
+    <p>
+        Per poder tirar endavant amb la sol·licitud necessitaríem que, una vegada realitzada la contractació amb l'altra companyia, ens respongueu aquest missatge i llavors podrem iniciar el tràmit.
+    </p>
+</%def>
+
+
+<%def name="correu_es()">
+    <p>
+        La <a href="https://es.support.somenergia.coop/article/656-las-distribuidoras-de-electricidad">empresa distribuidora</a> de tu zona (que gestiona este procedimiento) nos comunica que la solicitud ha sido rechazada indicando que <b>existe otra solicitud de cambio de comercializadora en curso</b>.  
+    </p>
+    <p>
+        Para poder seguir adelante con la solicitud necesitaríamos que, una vez realizada la contratación con la otra compañía, nos lo indiques para iniciar el trámite.
+    </p>
+</%def>
+                ]]>
+            </field>
+            <field name="rebuig_ids" eval="[(6,0,[ref('giscedata_switching.sw_motiu_rebuig_38')])]" />
+        </record>
+
+        <record model="giscedata.switching.notify" id="notification_atr_C202_38">
+            <field name="proces_id" ref="giscedata_switching.sw_proces_c2"/>
+            <field name="step_id" ref="giscedata_switching.sw_step_c2_02"/>
+            <field name="active" eval="1"/>
+            <field name="notify_text"><![CDATA[<!doctype html>
+
+% if cas.cups_polissa_id.titular.lang == "ca_ES":
+    ${correu_cat()}
+% else:
+    ${correu_es()}
+% endif
+
+<%def name="correu_cat()">
+    <p>
+       L'<a href="https://ca.support.somenergia.coop/article/655-les-distribuidores-d-electricitat">empresa distribuïdora</a> de la zona (que gestiona aquest procediment) ens comunica que la sol·licitud ha sigut denegada indicant que <b>existeix una altra sol·licitud de canvi de comercialitzadora en curs</b>.
+    </p>
+    <p>
+        Per poder tirar endavant amb la sol·licitud necessitaríem que, una vegada realitzada la contractació amb l'altra companyia, ens respongueu aquest missatge i llavors podrem iniciar el tràmit.
+    </p>
+</%def>
+
+
+<%def name="correu_es()">
+    <p>
+        La <a href="https://es.support.somenergia.coop/article/656-las-distribuidoras-de-electricidad">empresa distribuidora</a> de tu zona (que gestiona este procedimiento) nos comunica que la solicitud ha sido rechazada indicando que <b>existe otra solicitud de cambio de comercializadora en curso</b>.  
+    </p>
+    <p>
+        Para poder seguir adelante con la solicitud necesitaríamos que, una vez realizada la contratación con la otra compañía, nos lo indiques para iniciar el trámite.
+    </p>
+</%def>
+                ]]>
+            </field>
+            <field name="rebuig_ids" eval="[(6,0,[ref('giscedata_switching.sw_motiu_rebuig_38')])]" />
+        </record>
+
+        <record model="giscedata.switching.notify" id="notification_atr_C102_39">
+            <field name="proces_id" ref="giscedata_switching.sw_proces_c1"/>
+            <field name="step_id" ref="giscedata_switching.sw_step_c1_02"/>
+            <field name="active" eval="1"/>
+            <field name="notify_text"><![CDATA[<!doctype html>
+
+% if cas.cups_polissa_id.titular.lang == "ca_ES":
+    ${correu_cat()}
+% else:
+    ${correu_es()}
+% endif
+
+<%def name="correu_cat()">
+    <p>
+       L'<a href="https://ca.support.somenergia.coop/article/655-les-distribuidores-d-electricitat">empresa distribuïdora</a> de la zona (que gestiona aquest procediment) ens comunica que la sol·licitud ha sigut denegada indicant que <b>existeix una altra sol·licitud de canvi de comercialitzadora amb modificacions en curs</b>.
+    </p>
+    <p>
+        Per poder tirar endavant amb la sol·licitud necessitaríem que, una vegada realitzada la contractació amb l'altra companyia, ens respongueu aquest missatge i llavors podrem iniciar el tràmit.
+    </p>
+</%def>
+
+
+<%def name="correu_es()">
+    <p>
+        La <a href="https://es.support.somenergia.coop/article/656-las-distribuidoras-de-electricidad">empresa distribuidora</a> de tu zona (que gestiona este procedimiento) nos comunica que la solicitud ha sido rechazada indicando que <b>existe otra solicitud de cambio de comercializadora con modificaciones en curso</b>.  
+    </p>
+    <p>
+        Para poder seguir adelante con la solicitud necesitaríamos que, una vez realizada la contratación con la otra compañía, nos lo indiques para iniciar el trámite.
+    </p>
+</%def>
+                ]]>
+            </field>
+            <field name="rebuig_ids" eval="[(6,0,[ref('giscedata_switching.sw_motiu_rebuig_39')])]" />
+        </record>
+
+        <record model="giscedata.switching.notify" id="notification_atr_C202_39">
+            <field name="proces_id" ref="giscedata_switching.sw_proces_c2"/>
+            <field name="step_id" ref="giscedata_switching.sw_step_c2_02"/>
+            <field name="active" eval="1"/>
+            <field name="notify_text"><![CDATA[<!doctype html>
+
+% if cas.cups_polissa_id.titular.lang == "ca_ES":
+    ${correu_cat()}
+% else:
+    ${correu_es()}
+% endif
+
+<%def name="correu_cat()">
+    <p>
+       L'<a href="https://ca.support.somenergia.coop/article/655-les-distribuidores-d-electricitat">empresa distribuïdora</a> de la zona (que gestiona aquest procediment) ens comunica que la sol·licitud ha sigut denegada indicant que <b>existeix una altra sol·licitud de canvi de comercialitzadora amb modificacions en curs</b>.
+    </p>
+    <p>
+        Per poder tirar endavant amb la sol·licitud necessitaríem que, una vegada realitzada la contractació amb l'altra companyia, ens respongueu aquest missatge i llavors podrem iniciar el tràmit.
+    </p>
+</%def>
+
+
+<%def name="correu_es()">
+    <p>
+        La <a href="https://es.support.somenergia.coop/article/656-las-distribuidoras-de-electricidad">empresa distribuidora</a> de tu zona (que gestiona este procedimiento) nos comunica que la solicitud ha sido rechazada indicando que <b>existe otra solicitud de cambio de comercializadora con modificaciones en curso</b>.  
+    </p>
+    <p>
+        Para poder seguir adelante con la solicitud necesitaríamos que, una vez realizada la contratación con la otra compañía, nos lo indiques para iniciar el trámite.
+    </p>
+</%def>
+                ]]>
+            </field>
+            <field name="rebuig_ids" eval="[(6,0,[ref('giscedata_switching.sw_motiu_rebuig_39')])]" />
+        </record>
+
+        <record model="giscedata.switching.notify" id="notification_atr_C102_02">
+            <field name="proces_id" ref="giscedata_switching.sw_proces_c1"/>
+            <field name="step_id" ref="giscedata_switching.sw_step_c1_02"/>
+            <field name="active" eval="1"/>
+            <field name="notify_text"><![CDATA[<!doctype html>
+
+% if cas.cups_polissa_id.titular.lang == "ca_ES":
+    ${correu_cat()}
+% else:
+    ${correu_es()}
+% endif
+
+<%def name="correu_cat()">
+    <p>
+       L'<a href="https://ca.support.somenergia.coop/article/655-les-distribuidores-d-electricitat">empresa distribuïdora</a> de la zona (que gestiona aquest procediment) ens comunica que <b>actualment no existeix un contracte amb cap altra comercialitzadora</b>, per tant la gestió a realitzar és una alta de subministrament.
+    </p>
+    <p>
+        Aquest procediment sol requerir la presentació de documentació que certifiqui l'adequació de la instal·lació elèctrica i té un cost variable (depenent de la potència a contractar i el temps que fa que no hi ha subministrament). Podreu trobar més informació en el següent enllaç:
+    </p>
+    <p>
+        <a href="https://ca.support.somenergia.coop/article/225-no-tinc-llum-actualment-puc-sol-licitar-un-nou-punt-de-consum">Actualment no hi ha llum. Com sol·licitar un nou punt de subministrament</a>
+    </p>
+    <p>
+        Un cop ens ho confirmeu, procedirem a iniciar els tràmits per l'alta de subministrament.
+    </p>
+</%def>
+
+
+<%def name="correu_es()">
+    <p>
+        La <a href="https://es.support.somenergia.coop/article/656-las-distribuidoras-de-electricidad">empresa distribuidora</a> de tu zona (que gestiona este procedimiento) nos comunica que la solicitud ha sido rechazada indicando que <b>actualmente no existe un contrato con ninguna otra comercializadora</b> de modo que la gestión a realizar es una alta del suministro.
+    </p>
+    <p>
+        Este procedimiento suele requerir la presentación de documentación que certifique la adecuación de la instalación eléctrica, lo cual tiene un coste variable (dependiendo de la potencia a contratar y del tiempo que hace que no hay suministro). Podréis encontrar más información en este enlace:
+    </p>
+    <p>
+        <a href="https://es.support.somenergia.coop/article/245-no-tengo-luz-actualmente-puedo-solicitar-un-nuevo-punto-de-consumo">Actualmente no hay luz. Cómo solicitar un nuevo punto de suministro</a>
+    </p>
+    <p>
+        Cuando nos lo confirméis, procederemos a iniciar el trámite del alta del suministro, que una vez aceptada la solicitud.
+    </p>
+</%def>
+                ]]>
+            </field>
+            <field name="rebuig_ids" eval="[(6,0,[ref('giscedata_switching.sw_motiu_rebuig_2')])]" />
+        </record>
+
+        <record model="giscedata.switching.notify" id="notification_atr_C202_02">
+            <field name="proces_id" ref="giscedata_switching.sw_proces_c2"/>
+            <field name="step_id" ref="giscedata_switching.sw_step_c2_02"/>
+            <field name="active" eval="1"/>
+            <field name="notify_text"><![CDATA[<!doctype html>
+
+% if cas.cups_polissa_id.titular.lang == "ca_ES":
+    ${correu_cat()}
+% else:
+    ${correu_es()}
+% endif
+
+<%def name="correu_cat()">
+    <p>
+       L'<a href="https://ca.support.somenergia.coop/article/655-les-distribuidores-d-electricitat">empresa distribuïdora</a> de la zona (que gestiona aquest procediment) ens comunica que <b>actualment no existeix un contracte amb cap altra comercialitzadora</b>, per tant la gestió a realitzar és una alta de subministrament.
+    </p>
+    <p>
+        Aquest procediment sol requerir la presentació de documentació que certifiqui l'adequació de la instal·lació elèctrica i té un cost variable (depenent de la potència a contractar i el temps que fa que no hi ha subministrament). Podreu trobar més informació en el següent enllaç:
+    </p>
+    <p>
+        <a href="https://ca.support.somenergia.coop/article/225-no-tinc-llum-actualment-puc-sol-licitar-un-nou-punt-de-consum">Actualment no hi ha llum. Com sol·licitar un nou punt de subministrament</a>
+    </p>
+    <p>
+        Un cop ens ho confirmeu, procedirem a iniciar els tràmits per l'alta de subministrament.
+    </p>
+</%def>
+
+
+<%def name="correu_es()">
+    <p>
+        La <a href="https://es.support.somenergia.coop/article/656-las-distribuidoras-de-electricidad">empresa distribuidora</a> de tu zona (que gestiona este procedimiento) nos comunica que la solicitud ha sido rechazada indicando que <b>actualmente no existe un contrato con ninguna otra comercializadora</b> de modo que la gestión a realizar es una alta del suministro.
+    </p>
+    <p>
+        Este procedimiento suele requerir la presentación de documentación que certifique la adecuación de la instalación eléctrica, lo cual tiene un coste variable (dependiendo de la potencia a contratar y del tiempo que hace que no hay suministro). Podréis encontrar más información en este enlace:
+    </p>
+    <p>
+        <a href="https://es.support.somenergia.coop/article/245-no-tengo-luz-actualmente-puedo-solicitar-un-nuevo-punto-de-consumo">Actualmente no hay luz. Cómo solicitar un nuevo punto de suministro</a>
+    </p>
+    <p>
+        Cuando nos lo confirméis, procederemos a iniciar el trámite del alta del suministro, que una vez aceptada la solicitud.
+    </p>
+</%def>
+                ]]>
+            </field>
+            <field name="rebuig_ids" eval="[(6,0,[ref('giscedata_switching.sw_motiu_rebuig_2')])]" />
+        </record>
+
+        <record model="giscedata.switching.notify" id="notification_atr_C102_40">
+            <field name="proces_id" ref="giscedata_switching.sw_proces_c1"/>
+            <field name="step_id" ref="giscedata_switching.sw_step_c1_02"/>
+            <field name="active" eval="1"/>
+            <field name="notify_text"><![CDATA[<!doctype html>
+
+% if cas.cups_polissa_id.titular.lang == "ca_ES":
+    ${correu_cat()}
+% else:
+    ${correu_es()}
+% endif
+
+<%def name="correu_cat()">
+    <p>
+       L'<a href="https://ca.support.somenergia.coop/article/655-les-distribuidores-d-electricitat">empresa distribuïdora</a> de la zona (que gestiona aquest procediment) ens comunica que la sol·licitud ha sigut denegada indicant que <b>existeix una sol·licitud de modificació del contracte amb una altra comercialitzadora.</b>
+    </p>
+    <p>
+        Per poder tirar endavant amb la sol·licitud necessitaríem que, una vegada realitzada la modificació amb l'altra companyia, ens ho indiqueu i llavors podrem iniciar la contractació.
+    </p>
+</%def>
+
+
+<%def name="correu_es()">
+    <p>
+        La <a href="https://es.support.somenergia.coop/article/656-las-distribuidoras-de-electricidad">empresa distribuidora</a> de tu zona (que gestiona este procedimiento) nos comunica que la solicitud ha sido rechazada indicando que <b>existe una solicitud de modificación del contrato con otra comercializadora.</b>
+    </p>
+    <p>
+        Para poder seguir adelante con la solicitud necesitaríamos que, una vez realizada la modificación con la otra compañía, nos lo indiques para iniciar la contratación.
+    </p>
+</%def>
+                ]]>
+            </field>
+            <field name="rebuig_ids" eval="[(6,0,[ref('giscedata_switching.sw_motiu_rebuig_40')])]" />
+        </record>
+
+        <record model="giscedata.switching.notify" id="notification_atr_C202_40">
+            <field name="proces_id" ref="giscedata_switching.sw_proces_c2"/>
+            <field name="step_id" ref="giscedata_switching.sw_step_c2_02"/>
+            <field name="active" eval="1"/>
+            <field name="notify_text"><![CDATA[<!doctype html>
+
+% if cas.cups_polissa_id.titular.lang == "ca_ES":
+    ${correu_cat()}
+% else:
+    ${correu_es()}
+% endif
+
+<%def name="correu_cat()">
+    <p>
+       L'<a href="https://ca.support.somenergia.coop/article/655-les-distribuidores-d-electricitat">empresa distribuïdora</a> de la zona (que gestiona aquest procediment) ens comunica que la sol·licitud ha sigut denegada indicant que <b>existeix una sol·licitud de modificació del contracte amb una altra comercialitzadora.</b>
+    </p>
+    <p>
+        Per poder tirar endavant amb la sol·licitud necessitaríem que, una vegada realitzada la modificació amb l'altra companyia, ens ho indiqueu i llavors podrem iniciar la contractació.
+    </p>
+</%def>
+
+
+<%def name="correu_es()">
+    <p>
+        La <a href="https://es.support.somenergia.coop/article/656-las-distribuidoras-de-electricidad">empresa distribuidora</a> de tu zona (que gestiona este procedimiento) nos comunica que la solicitud ha sido rechazada indicando que <b>existe una solicitud de modificación del contrato con otra comercializadora.</b>
+    </p>
+    <p>
+        Para poder seguir adelante con la solicitud necesitaríamos que, una vez realizada la modificación con la otra compañía, nos lo indiques para iniciar la contratación.
+    </p>
+</%def>
+                ]]>
+            </field>
+            <field name="rebuig_ids" eval="[(6,0,[ref('giscedata_switching.sw_motiu_rebuig_40')])]" />
+        </record>
+
+        <record model="giscedata.switching.notify" id="notification_atr_C102_B7">
+            <field name="proces_id" ref="giscedata_switching.sw_proces_c1"/>
+            <field name="step_id" ref="giscedata_switching.sw_step_c1_02"/>
+            <field name="active" eval="1"/>
+            <field name="notify_text"><![CDATA[<!doctype html>
+
+% if cas.cups_polissa_id.titular.lang == "ca_ES":
+    ${correu_cat()}
+% else:
+    ${correu_es()}
+% endif
+
+<%def name="correu_cat()">
+    <p>
+       L'<a href="https://ca.support.somenergia.coop/article/655-les-distribuidores-d-electricitat">empresa distribuïdora</a> de la zona (que gestiona aquest procediment) ens comunica que la sol·licitud ha sigut denegada indicant el següent motiu:
+    </p>
+    <p>
+        <b>Existencia de solicitud previa en curso B1 (motivo 03)</b>
+    </p>
+    <p>
+        Això vol dir que els hi consta que hi ha una situació de tall per impagament en curs ordenada per la teva comercialitzadora, i el canvi a Som Energia no és possible. Cal que ho parlis amb la teva actual comercialitzadora.
+    </p>
+    <p>
+        Fins que la teva comercialitzadora actual no reverteixi aquesta situació, no podem iniciar la contractació. Quan això passi, pots contestar aquest correu electrònic i tornarem a intentar-ho.
+    </p>
+</%def>
+
+
+<%def name="correu_es()">
+    <p>
+        La <a href="https://es.support.somenergia.coop/article/656-las-distribuidoras-de-electricidad">empresa distribuidora</a> de tu zona (que gestiona este procedimiento) nos comunica que la solicitud ha sido rechazada indicando el siguiente motivo:
+    </p>
+    <p>
+        <b>Existencia de solicitud previa curso B1 (motivo 03)</b>
+    </p>
+    <p>
+        Esto quiere decir que se les consta que hay una situación de corte por impago en curso ordenada por tu comercializadora y el cambio a Som Energía no es posible. Será necesario que contactes con la actual comercializadora.
+    </p>
+    <p>
+        Hasta que la comercializadora actual no revierta esta situación, no podremos iniciar la contratación. Cuando esto pase, puedes contestar este correo electrónico y volveremos a intentarlo.
+    </p>
+</%def>
+                ]]>
+            </field>
+            <field name="rebuig_ids" eval="[(6,0,[ref('giscedata_switching.sw_motiu_rebuig_B7')])]" />
+        </record>
+
+        <record model="giscedata.switching.notify" id="notification_atr_C202_B7">
+            <field name="proces_id" ref="giscedata_switching.sw_proces_c2"/>
+            <field name="step_id" ref="giscedata_switching.sw_step_c2_02"/>
+            <field name="active" eval="1"/>
+            <field name="notify_text"><![CDATA[<!doctype html>
+
+% if cas.cups_polissa_id.titular.lang == "ca_ES":
+    ${correu_cat()}
+% else:
+    ${correu_es()}
+% endif
+
+<%def name="correu_cat()">
+    <p>
+       L'<a href="https://ca.support.somenergia.coop/article/655-les-distribuidores-d-electricitat">empresa distribuïdora</a> de la zona (que gestiona aquest procediment) ens comunica que la sol·licitud ha sigut denegada indicant el següent motiu:
+    </p>
+    <p>
+        <b>Existencia de solicitud previa en curso B1 (motivo 03)</b>
+    </p>
+    <p>
+        Això vol dir que els hi consta que hi ha una situació de tall per impagament en curs ordenada per la teva comercialitzadora, i el canvi a Som Energia no és possible. Cal que ho parlis amb la teva actual comercialitzadora.
+    </p>
+    <p>
+        Fins que la teva comercialitzadora actual no reverteixi aquesta situació, no podem iniciar la contractació. Quan això passi, pots contestar aquest correu electrònic i tornarem a intentar-ho.
+    </p>
+</%def>
+
+
+<%def name="correu_es()">
+    <p>
+        La <a href="https://es.support.somenergia.coop/article/656-las-distribuidoras-de-electricidad">empresa distribuidora</a> de tu zona (que gestiona este procedimiento) nos comunica que la solicitud ha sido rechazada indicando el siguiente motivo:
+    </p>
+    <p>
+        <b>Existencia de solicitud previa curso B1 (motivo 03)</b>
+    </p>
+    <p>
+        Esto quiere decir que se les consta que hay una situación de corte por impago en curso ordenada por tu comercializadora y el cambio a Som Energía no es posible. Será necesario que contactes con la actual comercializadora.
+    </p>
+    <p>
+        Hasta que la comercializadora actual no revierta esta situación, no podremos iniciar la contratación. Cuando esto pase, puedes contestar este correo electrónico y volveremos a intentarlo.
+    </p>
+</%def>
+                ]]>
+            </field>
+            <field name="rebuig_ids" eval="[(6,0,[ref('giscedata_switching.sw_motiu_rebuig_B7')])]" />
+        </record>
+
+        <record model="giscedata.switching.notify" id="notification_atr_C102_B8">
+            <field name="proces_id" ref="giscedata_switching.sw_proces_c1"/>
+            <field name="step_id" ref="giscedata_switching.sw_step_c1_02"/>
+            <field name="active" eval="1"/>
+            <field name="notify_text"><![CDATA[<!doctype html>
+
+% if cas.cups_polissa_id.titular.lang == "ca_ES":
+    ${correu_cat()}
+% else:
+    ${correu_es()}
+% endif
+
+<%def name="correu_cat()">
+    <p>
+       L'empresa distribuïdora de la zona (que gestiona aquest procediment) ens comunica que la sol·licitud ha sigut denegada indicant el següent motiu:
+    </p>
+    <p>
+        <b>Existencia de solicitud previa en curso B1 (motivo 04)</b>
+    </p>
+    <p>
+        Això vol dir que els hi consta que hi ha una Baixa per impagament per aquest punt de subministrament, i un canvi de comercialitzadora no és possible. Cal que aclareixis la situació d’aquest punt de subministrament amb l'<a href="https://ca.support.somenergia.coop/article/655-les-distribuidores-d-electricitat">empresa distribuïdora</a> de la teva zona.
+    </p>
+    <p>
+        Pots consultar en aquest enllaç <a href="https://ca.support.somenergia.coop/article/655-les-distribuidores-d-electricitat">el telèfon de les principals empreses distribuïdores</a>.
+    </p>
+</%def>
+
+
+<%def name="correu_es()">
+    <p>
+        La empresa distribuidora de tu zona (que gestiona este procedimiento) nos comunica que la solicitud ha sido rechazada indicando el siguiente motivo:
+    </p>
+    <p>
+        <b>Existencia de solicitud previa curso B1 (motivo 04)</b>
+    </p>
+    <p>
+        Esto significa que se les consta que hay una baja de corte por impago en este punto de suministro y un cambio de comercializadora no es posible. Será necesario que contactes con <a href="https://es.support.somenergia.coop/article/656-las-distribuidoras-de-electricidad">la empresa de distribución</a> de tu zona.
+    </p>
+    <p>
+        Puedes consultar en este enlace el teléfono de <a href="https://es.support.somenergia.coop/article/656-las-distribuidoras-de-electricidad">las principales empresas distribuidoras.</a>
+    </p>
+</%def>
+                ]]>
+            </field>
+            <field name="rebuig_ids" eval="[(6,0,[ref('giscedata_switching.sw_motiu_rebuig_B8')])]" />
+        </record>
+
+        <record model="giscedata.switching.notify" id="notification_atr_C202_B8">
+            <field name="proces_id" ref="giscedata_switching.sw_proces_c2"/>
+            <field name="step_id" ref="giscedata_switching.sw_step_c2_02"/>
+            <field name="active" eval="1"/>
+            <field name="notify_text"><![CDATA[<!doctype html>
+
+% if cas.cups_polissa_id.titular.lang == "ca_ES":
+    ${correu_cat()}
+% else:
+    ${correu_es()}
+% endif
+<%def name="correu_cat()">
+    <p>
+       L'empresa distribuïdora de la zona (que gestiona aquest procediment) ens comunica que la sol·licitud ha sigut denegada indicant el següent motiu:
+    </p>
+    <p>
+        <b>Existencia de solicitud previa en curso B1 (motivo 04)</b>
+    </p>
+    <p>
+        Això vol dir que els hi consta que hi ha una Baixa per impagament per aquest punt de subministrament, i un canvi de comercialitzadora no és possible. Cal que aclareixis la situació d’aquest punt de subministrament amb l'<a href="https://ca.support.somenergia.coop/article/655-les-distribuidores-d-electricitat">empresa distribuïdora</a> de la teva zona.
+    </p>
+    <p>
+        Pots consultar en aquest enllaç <a href="https://ca.support.somenergia.coop/article/655-les-distribuidores-d-electricitat">el telèfon de les principals empreses distribuïdores</a>.
+    </p>
+</%def>
+
+
+<%def name="correu_es()">
+    <p>
+        La empresa distribuidora de tu zona (que gestiona este procedimiento) nos comunica que la solicitud ha sido rechazada indicando el siguiente motivo:
+    </p>
+    <p>
+        <b>Existencia de solicitud previa curso B1 (motivo 04)</b>
+    </p>
+    <p>
+        Esto significa que se les consta que hay una baja de corte por impago en este punto de suministro y un cambio de comercializadora no es posible. Será necesario que contactes con <a href="https://es.support.somenergia.coop/article/656-las-distribuidoras-de-electricidad">la empresa de distribución</a> de tu zona.
+    </p>
+    <p>
+        Puedes consultar en este enlace el teléfono de <a href="https://es.support.somenergia.coop/article/656-las-distribuidoras-de-electricidad">las principales empresas distribuidoras.</a>
+    </p>
+</%def>
+        ]]>
+            </field>
+            <field name="rebuig_ids" eval="[(6,0,[ref('giscedata_switching.sw_motiu_rebuig_B8')])]" />
+        </record>
+
+        <record model="giscedata.switching.notify" id="notification_atr_C102_D5">
+            <field name="proces_id" ref="giscedata_switching.sw_proces_c1"/>
+            <field name="step_id" ref="giscedata_switching.sw_step_c1_02"/>
+            <field name="active" eval="1"/>
+            <field name="notify_text"><![CDATA[<!doctype html>
+
+% if cas.cups_polissa_id.titular.lang == "ca_ES":
+    ${correu_cat()}
+% else:
+    ${correu_es()}
+% endif
+
+<%def name="correu_cat()">
+    <p>
+       L'<a href="https://ca.support.somenergia.coop/article/655-les-distribuidores-d-electricitat">empresa distribuïdora</a> de la zona (que gestiona aquest procediment) ens comunica que la sol·licitud ha sigut denegada indicant que <b>És necessari presentar la cèdula d'habitabilitat per a procedir amb el canvi.</b>
+    </p>
+    <p>
+        <b>En cas que sigui una contractació per uns CUPS provisional d’obres, la documentació a presentar és la llicència d’obres.</b>
+    </p>
+    <p>
+        Per poder tirar endavant amb la sol·licitud necessitem aquest document. Un cop ens feu arribar, tornarem a realitzar la sol·licitud.
+    </p>
+</%def>
+
+
+<%def name="correu_es()">
+    <p>
+        La <a href="https://es.support.somenergia.coop/article/656-las-distribuidoras-de-electricidad">empresa distribuidora</a> de tu zona (que gestiona este procedimiento) nos comunica que la solicitud ha sido rechazada indicando que <b>Es necesario presentar la cédula de habitabilidad para proceder con el cambio.</b>
+    </p>
+    <p>
+        <b>En caso que sea una contratación para un CUPS de obras, la documentación a presentar es la licencia de obras.</b>
+    </p>
+    <p>
+        Para poder seguir adelante con la solicitud necesitamos este documento. Una vez nos lo enviéis, volveremos a realizar la solicitud.
+    </p>
+</%def>
+                ]]>
+            </field>
+            <field name="rebuig_ids" eval="[(6,0,[ref('giscedata_switching.sw_motiu_rebuig_D5')])]" />
+        </record>
+
+        <record model="giscedata.switching.notify" id="notification_atr_C202_D5">
+            <field name="proces_id" ref="giscedata_switching.sw_proces_c2"/>
+            <field name="step_id" ref="giscedata_switching.sw_step_c2_02"/>
+            <field name="active" eval="1"/>
+            <field name="notify_text"><![CDATA[<!doctype html>
+
+% if cas.cups_polissa_id.titular.lang == "ca_ES":
+    ${correu_cat()}
+% else:
+    ${correu_es()}
+% endif
+
+<%def name="correu_cat()">
+    <p>
+       L'<a href="https://ca.support.somenergia.coop/article/655-les-distribuidores-d-electricitat">empresa distribuïdora</a> de la zona (que gestiona aquest procediment) ens comunica que la sol·licitud ha sigut denegada indicant que <b>És necessari presentar la cèdula d'habitabilitat per a procedir amb el canvi.</b>
+    </p>
+    <p>
+        <b>En cas que sigui una contractació per uns CUPS provisional d’obres, la documentació a presentar és la llicència d’obres.</b>
+    </p>
+    <p>
+        Per poder tirar endavant amb la sol·licitud necessitem aquest document. Un cop ens feu arribar, tornarem a realitzar la sol·licitud.
+    </p>
+</%def>
+
+
+<%def name="correu_es()">
+    <p>
+        La <a href="https://es.support.somenergia.coop/article/656-las-distribuidoras-de-electricidad">empresa distribuidora</a> de tu zona (que gestiona este procedimiento) nos comunica que la solicitud ha sido rechazada indicando que <b>Es necesario presentar la cédula de habitabilidad para proceder con el cambio.</b>
+    </p>
+    <p>
+        <b>En caso que sea una contratación para un CUPS de obras, la documentación a presentar es la licencia de obras.</b>
+    </p>
+    <p>
+        Para poder seguir adelante con la solicitud necesitamos este documento. Una vez nos lo enviéis, volveremos a realizar la solicitud.
+    </p>
+</%def>
+                ]]>
+            </field>
+            <field name="rebuig_ids" eval="[(6,0,[ref('giscedata_switching.sw_motiu_rebuig_D5')])]" />
+        </record>
+
+        <record model="giscedata.switching.notify" id="notification_atr_C102_A2">
+            <field name="proces_id" ref="giscedata_switching.sw_proces_c1"/>
+            <field name="step_id" ref="giscedata_switching.sw_step_c1_02"/>
+            <field name="active" eval="1"/>
+            <field name="notify_text"><![CDATA[<!doctype html>
+
+% if cas.cups_polissa_id.titular.lang == "ca_ES":
+    ${correu_cat()}
+% else:
+    ${correu_es()}
+% endif
+
+<%def name="correu_cat()">
+    <p>
+       L'empresa distribuïdora de la zona (que gestiona aquest procediment) ens comunica el següent:
+    </p>
+    <p>
+        <b>Contrato cortado por el distribuidor.</b>
+    </p>
+    <p>
+        Amb això ens indiquen que actualment no existeix un contracte amb cap altra comercialitzadora, per tant la gestió a realitzar és una alta de subministrament.
+    </p>
+    <p>
+        Haureu de contactar amb l’empresa distribuïdora , per a què us diguin quines accions heu de dur a terme.
+    </p>
+    <p>
+        Pots consultar en aquest enllaç <a href="https://ca.support.somenergia.coop/article/655-les-distribuidores-d-electricitat">el telèfon de les principals empreses distribuïdores</a>.
+    </p>
+    <p>
+        Aquest procediment sol requerir la presentació de documentació que certifiqui l'adequació de la instal·lació elèctrica i té un cost variable (depenent de la potència a contractar i el temps que fa que no hi ha subministrament). Podreu trobar més informació en el següent enllaç:
+    </p>
+    <p>
+        <a href="https://ca.support.somenergia.coop/article/225-no-tinc-llum-actualment-puc-sol-licitar-un-nou-punt-de-consum">Actualment no hi ha llum. Com sol·licitar un nou punt de subministrament</a>
+    </p>
+    <p>
+        Un cop ens ho confirmeu, procedirem a iniciar els tràmits per l'alta de subministrament.
+    </p>
+</%def>
+
+
+<%def name="correu_es()">
+    <p>
+        La empresa distribuidora de tu zona (que gestiona este procedimiento) nos comunica lo siguiente:
+    </p>
+    <p>
+        <b>Contrato cortado por el distribuidor.</b>
+    </p>
+    <p>
+        Con esto quieren decir que actualmente no existe un contrato con ninguna otra comercializadora, de modo que la gestión a realizar es una alta del suministro.
+    </p>
+    <p>
+        Debéis contactar con la empresa de distribución para que os indiquen que es lo que tenéis que hacer.
+    </p>
+    <p>
+        Puedes consultar en el siguiente enlace <a href="https://es.support.somenergia.coop/article/656-las-distribuidoras-de-electricidad">el teléfono de las principales empresas distribuidoras</a>.
+    </p>
+    <p>
+        Este procedimiento suele requerir la presentación de documentación que certifique la adecuación de la instalación eléctrica, lo cual tiene un coste variable (dependiendo de la potencia a contratar y del tiempo que hace que no hay suministro). Podréis encontrar más información en este enlace:
+    </p>
+    <p>
+         <a href="https://es.support.somenergia.coop/article/245-no-tengo-luz-actualmente-puedo-solicitar-un-nuevo-punto-de-consumo">Actualmente no hay luz. Cómo solicitar un nuevo punto de suministro</a>
+    </p>
+    <p>
+        Cuando nos lo confirméis, procederemos a iniciar el trámite del alta del suministro.
+    </p>
+</%def>
+                ]]>
+            </field>
+            <field name="rebuig_ids" eval="[(6,0,[ref('giscedata_switching.sw_motiu_rebuig_A2')])]" />
+        </record>
+
+        <record model="giscedata.switching.notify" id="notification_atr_C202_A2">
+            <field name="proces_id" ref="giscedata_switching.sw_proces_c2"/>
+            <field name="step_id" ref="giscedata_switching.sw_step_c2_02"/>
+            <field name="active" eval="1"/>
+            <field name="notify_text"><![CDATA[<!doctype html>
+
+% if cas.cups_polissa_id.titular.lang == "ca_ES":
+    ${correu_cat()}
+% else:
+    ${correu_es()}
+% endif
+
+<%def name="correu_cat()">
+    <p>
+       L'<a href="https://ca.support.somenergia.coop/article/655-les-distribuidores-d-electricitat">empresa distribuïdora</a> de la zona (que gestiona aquest procediment) ens comunica el següent:
+    </p>
+    <p>
+        <b>Contrato cortado por el distribuidor.</b>
+    </p>
+    <p>
+        Amb això ens indiquen que actualment no existeix un contracte amb cap altra comercialitzadora, per tant la gestió a realitzar és una alta de subministrament.
+    </p>
+    <p>
+        Haureu de contactar amb l’empresa distribuïdora , per a què us diguin quines accions heu de dur a terme.
+    </p>
+    <p>
+        Pots consultar en aquest enllaç <a href="https://ca.support.somenergia.coop/article/655-les-distribuidores-d-electricitat">el telèfon de les principals empreses distribuïdores</a>.
+    </p>
+    <p>
+        Aquest procediment sol requerir la presentació de documentació que certifiqui l'adequació de la instal·lació elèctrica i té un cost variable (depenent de la potència a contractar i el temps que fa que no hi ha subministrament). Podreu trobar més informació en el següent enllaç:
+    </p>
+    <p>
+        <a href="https://ca.support.somenergia.coop/article/225-no-tinc-llum-actualment-puc-sol-licitar-un-nou-punt-de-consum">Actualment no hi ha llum. Com sol·licitar un nou punt de subministrament</a>
+    </p>
+    <p>
+        Un cop ens ho confirmeu, procedirem a iniciar els tràmits per l'alta de subministrament.
+    </p>
+</%def>
+
+
+<%def name="correu_es()">
+    <p>
+        La <a href="https://es.support.somenergia.coop/article/656-las-distribuidoras-de-electricidad">empresa distribuidora</a> de tu zona (que gestiona este procedimiento) nos comunica lo siguiente:
+    </p>
+    <p>
+        <b>Contrato cortado por el distribuidor.</b>
+    </p>
+    <p>
+        Con esto quieren decir que actualmente no existe un contrato con ninguna otra comercializadora, de modo que la gestión a realizar es una alta del suministro.
+    </p>
+    <p>
+        Debéis contactar con la empresa de distribución para que os indiquen que es lo que tenéis que hacer.
+    </p>
+    <p>
+        Puedes consultar en el siguiente enlace <a href="https://es.support.somenergia.coop/article/656-las-distribuidoras-de-electricidad">el teléfono de las principales empresas distribuidoras</a>.
+    </p>
+    <p>
+        Este procedimiento suele requerir la presentación de documentación que certifique la adecuación de la instalación eléctrica, lo cual tiene un coste variable (dependiendo de la potencia a contratar y del tiempo que hace que no hay suministro). Podréis encontrar más información en este enlace:
+    </p>
+    <p>
+         <a href="https://es.support.somenergia.coop/article/245-no-tengo-luz-actualmente-puedo-solicitar-un-nuevo-punto-de-consumo">Actualmente no hay luz. Cómo solicitar un nuevo punto de suministro</a>
+    </p>
+    <p>
+        Cuando nos lo confirméis, procederemos a iniciar el trámite del alta del suministro.
+    </p>
+</%def>
+                ]]>
+            </field>
+            <field name="rebuig_ids" eval="[(6,0,[ref('giscedata_switching.sw_motiu_rebuig_A2')])]" />
+        </record>
+
+        <record model="giscedata.switching.notify" id="notification_atr_C102_03">
+            <field name="proces_id" ref="giscedata_switching.sw_proces_c1"/>
+            <field name="step_id" ref="giscedata_switching.sw_step_c1_02"/>
+            <field name="active" eval="1"/>
+            <field name="notify_text"><![CDATA[<!doctype html>
+% if cas.cups_polissa_id.titular.lang == "ca_ES":
+    ${correu_cat()}
+% else:
+    ${correu_es()}
+% endif
+
+<%def name="correu_cat()">
+    <p>
+        La sol·licitud ens ha estat rebutjada per part de <a href="https://ca.support.somenergia.coop/article/655-les-distribuidores-d-electricitat">l’empresa distribuïdora</a> indicant que no ets l’actual titular d’aquest contracte.
+    </p>
+
+    <p>
+        Per poder tirar endavant amb el canvi de comercialitzadora necessitaríem que ens feu arribar:
+        <ul>
+            <li>
+                Una factura recent.
+            </li>
+            <li>
+                Indicar qui voleu que sigui la persona titular amb Som Energia.
+            </li>
+            <li>
+                Confirmar el compte IBAN de la persona titular on voleu domiciliar les factures.
+            </li>
+            <li>
+                En cas que vulgueu conservar la titularitat del contracte, ens farà falta una còpia escanejada del seu DNI, correu electrònic i telèfon de contacte.
+            </li>
+        </ul>
+    </p>
+
+    <p>
+        En quan tinguem aquestes dades podrem continuar gestionant el canvi.
+    </p>
+    <p>
+        Recorda que el titular del contracte de subministrament ha de ser l’usuari efectiu de l’electricitat contractada i que ha de tenir un just títol (contracte d’arrendament, etc.) sobre el punt de subministrament.
+    </p>
+</%def>
+
+<%def name="correu_es()">
+    <p>
+        La solicitud nos ha sido rechazada por parte de <a href="https://es.support.somenergia.coop/article/656-las-distribuidoras-de-electricidad">la empresa distribuidora</a> indicando que no eres el actual titular del contrato.
+    </p>
+
+    <p>
+        Para poder continuar con la solicitud necesitaremos:
+        <ul>
+            <li>
+                Una factura reciente.
+            </li>
+            <li>
+                Saber quién quieres que sea la persona titular con Som Energia.
+            </li>
+            <li>
+                Confirmar la cuenta IBAN del titular donde queréis domiciliar las facturas.
+            </li>
+            <li>
+                En caso de que desees conservar la titularidad, bastará con enviarnos una copia escaneada de su DNI, correo electrónico y teléfono de contacto.
+            </li>
+        </ul>
+    </p>
+
+    <p>
+        En cuanto tengamos estos datos podremos continuar gestionando el cambio.
+    </p>
+    <p>
+        Recuerda que el titular del contrato de suministro tiene que ser el usuario efectivo de la electricidad contratada y que tiene que tener un justo título (contrato de arrendamiento, etc.) sobre el punto de suministro.
+    </p>
+</%def>
+                ]]>
+            </field>
+            <field name="rebuig_ids" eval="[(6,0,[ref('giscedata_switching.sw_motiu_rebuig_3')])]" />
+        </record>
+    </data>
+</openerp>

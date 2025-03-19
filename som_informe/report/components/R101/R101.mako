@@ -21,89 +21,89 @@
 
         ${_(u"<b>Detalls Reclamació:</b>")}<br/>
         %if reclama['codi_dh']:
-            ${_(u"<b>Codi dh:</b> %s") %(reclama['codi_dh'])}<br/>
+            ${_(u"&nbsp;&nbsp;Codi dh: %s") %(reclama['codi_dh'])}<br/>
         %endif
         %if reclama['codi_incidencia']:
-            ${_(u"<b>Codi incidència:</b> %s") %(reclama['codi_incidencia'])}<br/>
+            ${_(u"&nbsp;&nbsp;Codi incidència: %s") %(reclama['codi_incidencia'])}<br/>
         %endif
         %if reclama ['codi_postal']:
-            ${_(u"<b>Codi postal:</b> %s") %(reclama ['codi_postal'])}<br/>
+            ${_(u"&nbsp;&nbsp;Codi postal: %s") %(reclama ['codi_postal'])}<br/>
         %endif
         %if reclama['codi_solicitud']:
-            ${_(u"<b>Codi sol·licitud:</b> %s") %(reclama['codi_solicitud'])}<br/>
+            ${_(u"&nbsp;&nbsp;Codi sol·licitud: %s") %(reclama['codi_solicitud'])}<br/>
         %endif
         %if reclama['codi_solicitud_reclamacio']:
-            ${_(u"<b>Codi sol·licitud reclamació:</b> %s") %(reclama['codi_solicitud_reclamacio'])}<br/>
+            ${_(u"&nbsp;&nbsp;Codi sol·licitud reclamació: %s") %(reclama['codi_solicitud_reclamacio'])}<br/>
         %endif
         %if reclama['concepte_disconformitat']:
-            ${_(u"<b>Concepte disconformitat:</b> %s") %(reclama['concepte_disconformitat'])}<br/>
+            ${_(u"&nbsp;&nbsp;Concepte disconformitat: %s") %(reclama['concepte_disconformitat'])}<br/>
         %endif
         %if reclama['cont_email']:
-            ${_(u"<b>Cont email:</b> %s") %(reclama['cont_email'])}<br/>
+            ${_(u"&nbsp;&nbsp;Cont email: %s") %(reclama['cont_email'])}<br/>
         %endif
         %if reclama['cont_nom']:
-            ${_(u"<b>Cont nom:</b> %s") %(reclama['cont_nom'])}<br/>
+            ${_(u"&nbsp;&nbsp;Cont nom: %s") %(reclama['cont_nom'])}<br/>
         %endif
         %if reclama['cont_prefix']:
-            ${_(u"<b>Cont prefix:</b> %s") %(reclama['cont_prefix'])}<br/>
+            ${_(u"&nbsp;&nbsp;Cont prefix: %s") %(reclama['cont_prefix'])}<br/>
         %endif
         %if reclama['cont_telefon']:
-            ${_(u"<b>Cont telèfon:</b> %s") %(reclama['cont_telefon'])}<br/>
+            ${_(u"&nbsp;&nbsp;Cont telèfon: %s") %(reclama['cont_telefon'])}<br/>
         %endif
         %if reclama['data_fins']:
-            ${_(u"<b>Data fins:</b> %s") %(reclama['data_fins'])}<br/>
+            ${_(u"&nbsp;&nbsp;Data fins: %s") %(reclama['data_fins'])}<br/>
         %endif
         %if reclama['data_incident']:
-            ${_(u"<b>Data incident:</b> %s") %(reclama['data_incident'])}<br/>
+            ${_(u"&nbsp;&nbsp;Data incident: %s") %(reclama['data_incident'])}<br/>
         %endif
         %if reclama['data_inici']:
-            ${_(u"<b>Data inici:</b> %s") %(reclama['data_inici'])}<br/>
+            ${_(u"&nbsp;&nbsp;Data inici: %s") %(reclama['data_inici'])}<br/>
         %endif
         %if reclama['data_lectura']:
-            ${_(u"<b>Data lectura:</b> %s") %(reclama['data_lectura'])}<br/>
+            ${_(u"&nbsp;&nbsp;Data lectura: %s") %(reclama['data_lectura'])}<br/>
         %endif
         %if reclama['descripcio_ubicacio']:
-            ${_(u"<b>Descripció ubicació:</b> %s") %(reclama['descripcio_ubicacio'])}<br/>
+            ${_(u"&nbsp;&nbsp;Descripció ubicació: %s") %(reclama['descripcio_ubicacio'])}<br/>
         %endif
         %if reclama['IBAN']:
-            ${_(u"<b>IBAN:</b> %s") %(reclama['IBAN'])}<br/>
+            ${_(u"&nbsp;&nbsp;IBAN: %s") %(reclama['IBAN'])}<br/>
         %endif
         %if reclama['import_reclamat']:
-            ${_(u"<b>Import reclamat:</b> %s") %(reclama['import_reclamat'])}<br/>
+            ${_(u"&nbsp;&nbsp;Import reclamat: %s") %(reclama['import_reclamat'])}<br/>
         %endif
         %if reclama['municipi']:
-            ${_(u"<b>Municipi:</b> %s") %(reclama['municipi'])}<br/>
+            ${_(u"&nbsp;&nbsp;Municipi: %s") %(reclama['municipi'])}<br/>
         %endif
         %if reclama['numero_expedient_escomesa']:
-            ${_(u"<b>Número expedient escomesa:</b> %s") %(reclama['numero_expedient_escomesa'])}<br/>
+            ${_(u"&nbsp;&nbsp;Número expedient escomesa: %s") %(reclama['numero_expedient_escomesa'])}<br/>
         %endif
         %if reclama['numero_expedient_frau']:
-            ${_(u"<b>Número expedient frau:</b> %s") %(reclama['numero_expedient_frau'])}<br/>
+            ${_(u"&nbsp;&nbsp;Número expedient frau: %s") %(reclama['numero_expedient_frau'])}<br/>
         %endif
         %if reclama['numero_factura']:
-            ${_(u"<b>Número factura:</b> %s") %(reclama['numero_factura'])}<br/>
+            ${_(u"&nbsp;&nbsp;Número factura: %s") %(reclama['numero_factura'])}<br/>
         %endif
         %if reclama['parametre_contractacio']:
-            ${_(u"<b>Paràmetre contractació:</b> %s") %(reclama['parametre_contractacio'])}<br/>
+            ${_(u"&nbsp;&nbsp;Paràmetre contractació: %s") %(reclama['parametre_contractacio'])}<br/>
         %endif
         %if reclama['poblacio']:
-            ${_(u"<b>Població:</b> %s") %(reclama['poblacio'])}<br/>
+            ${_(u"&nbsp;&nbsp;Població: %s") %(reclama['poblacio'])}<br/>
         %endif
         %if reclama['provincia']:
-            ${_(u"<b>Província:</b> %s") %(reclama['provincia'])}<br/>
+            ${_(u"&nbsp;&nbsp;Província: %s") %(reclama['provincia'])}<br/>
         %endif
         %if reclama['tipus_atencio_incorrecte']:
-            ${_(u"<b>Tipus atenció incorrecte:</b> %s") %(reclama['tipus_atencio_incorrecte'])}<br/>
+            ${_(u"&nbsp;&nbsp;Tipus atenció incorrecte: %s") %(reclama['tipus_atencio_incorrecte'])}<br/>
         %endif
         %if reclama['tipus_concepte_facturat']:
-            ${_(u"<b>Tipus concepte facturat:</b> %s") %(reclama['tipus_concepte_facturat'])}<br/>
+            ${_(u"&nbsp;&nbsp;Tipus concepte facturat: %s") %(reclama['tipus_concepte_facturat'])}<br/>
         %endif
         % if reclama['lectures']:
-            ${_(u"<b>Lectures:</b>")}<br/>
+            ${_(u"&nbsp;&nbsp;Lectures:")}<br/>
             % for lectures in reclama['lectures']:
-                ${_(u"<b>lectura:</b> %s") %(lectures['lectura'])}<br/>
-                ${_(u"<b>magnitud:</b> %s") %(lectures['magnitud'])}<br/>
-                ${_(u"<b>nom:</b> %s") %(lectures['nom'])}<br/>
+                ${_(u"&nbsp;&nbsp;lectura: %s") %(lectures['lectura'])}<br/>
+                ${_(u"&nbsp;&nbsp;magnitud: %s") %(lectures['magnitud'])}<br/>
+                ${_(u"&nbsp;&nbsp;nom: %s") %(lectures['nom'])}<br/>
             % endfor
         % endif
     % endfor
@@ -121,4 +121,3 @@
     %endif
      <br/>
 </li>
-

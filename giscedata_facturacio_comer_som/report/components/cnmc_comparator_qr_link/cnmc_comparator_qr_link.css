@@ -1,0 +1,21 @@
+.qr {
+  width: 12%;
+}
+.qr_img {
+  width: 140px;
+}
+.text {
+  padding-left: 1em;
+  width: 85%;
+}
+.qr_table {
+  padding: 1em;
+}
+.qr_info {
+  background-color: #f7f7f7;
+  text-align: left;
+  width: 100%;
+  margin: 1em 0em 0em 0em;
+  float: left;
+  page-break-inside: avoid;
+}

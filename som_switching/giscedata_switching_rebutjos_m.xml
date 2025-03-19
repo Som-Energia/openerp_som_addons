@@ -1,0 +1,788 @@
+<?xml version="1.0"?>
+<openerp>
+    <data noupdate="1">
+        <!-- Notificació rebuitjos M1-->
+        <record model="giscedata.switching.notify" id="notification_atr_M102_22">
+            <field name="proces_id" ref="giscedata_switching.sw_proces_m1"/>
+            <field name="step_id" ref="giscedata_switching.sw_step_m1_02"/>
+            <field name="active" eval="1"/>
+            <field name="notify_text"><![CDATA[<!doctype html>
+% if cas.cups_polissa_id.titular.lang == "ca_ES":
+    ${correu_cat()}
+% else:
+    ${correu_es()}
+% endif
+
+<%def name="correu_cat()">
+    <p>
+        <a href="https://ca.support.somenergia.coop/article/655-les-distribuidores-d-electricitat">L’empresa distribuïdora</a> de la teva zona, l’encarregada d'aplicar aquestes modificacions, ha rebutjat la teva sol·licitud amb el següent motiu:
+    </p>
+    <p>
+        <b>Potencia Solicitada mayor que la Potencia Máxima Reconocida de Extensión.</b>
+    </p>
+    <p>
+        Aquest rebuig significa que la potència que pot fer arribar l'empresa de distribució de la zona, és inferior a la potència que sol·licites pel teu punt de subministrament.
+    </p>
+    <p>
+        En aquests cas, si vols contractar aquesta potència, hauràs de contactar amb l'empresa de distribució, perquè obrin un expedient d'escomesa i t'indiquin com procedir per augmentar la potència.
+    </p>
+    <p>
+        Pots consultar en aquest enllaç el <a href="https://ca.support.somenergia.coop/article/655-les-distribuidores-d-electricitat">telèfon de les principals empreses distribuïdores</a>.
+    </p>
+    <p>
+        Quan aquest expedient estigui resolt, pots tornar a sol·licitar la modificació contractual a través de la teva <a href="https://oficinavirtual.somenergia.coop/ca/">Oficina Virtual</a>
+    </p>
+</%def>
+
+<%def name="correu_es()">
+    <p>
+        <a href="https://es.support.somenergia.coop/article/656-las-distribuidoras-de-electricidad">La empresa distribuidora</a> de tu zona, la encargada de aplicar estas modificaciones, ha rechazado tu solicitud con el siguiente motivo:
+    </p>
+    <p>
+        <b>Potencia Solicitada mayor que la Potencia Máxima Reconocida de Extensión.</b>
+    </p>
+    <p>
+        Este rechazo indica que la potencia permitida por parte de la empresa de distribución, es inferior a la potencia que solicitas para tu punto de suministro.
+    </p>
+    <p>
+        En este caso, si quieres contratar esta potencia, tendrás que contactar con la empresa de distribución de tu zona, para que abran un expediente de acometida y te indiquen cómo proceder para aumentar la potencia.
+    </p>
+    <p>
+        Puedes consultar en el siguiente enlace <a href="https://es.support.somenergia.coop/article/656-las-distribuidoras-de-electricidad">el teléfono de las principales empresas distribuidoras</a>.
+    </p>
+    <p>
+        Cuando este expediente esté resuelto, puedes volver a solicitar la modificación contractual a través de tu <a href="https://oficinavirtual.somenergia.coop/es/">Oficina Virtual</a>
+    </p>
+</%def>
+                ]]>
+            </field>
+            <field name="rebuig_ids" eval="[(6,0,[ref('giscedata_switching.sw_motiu_rebuig_22')])]" />
+        </record>
+        <record model="giscedata.switching.notify" id="notification_atr_M102_53">
+            <field name="proces_id" ref="giscedata_switching.sw_proces_m1"/>
+            <field name="step_id" ref="giscedata_switching.sw_step_m1_02"/>
+            <field name="active" eval="1"/>
+            <field name="notify_text"><![CDATA[<!doctype html>
+% if cas.cups_polissa_id.titular.lang == "ca_ES":
+    ${correu_cat()}
+% else:
+    ${correu_es()}
+% endif
+
+<%def name="correu_cat()">
+    <p>
+        <a href="https://ca.support.somenergia.coop/article/655-les-distribuidores-d-electricitat">L’empresa distribuïdora</a> de la teva zona, l’encarregada d'aplicar aquestes modificacions, ha rebutjat la teva sol·licitud amb el següent motiu:
+    </p>
+    <p>
+        <b>Necesidad de abrir Expediente de Acometida.</b>
+    </p>
+    <p>
+        Hauràs de contactar amb l’empresa distribuïdora perquè et diguin quines accions has de dur a terme. En principi, el que han de fer és obrir un expedient per comprovar que l’escomesa que arriba al teu punt de subministrament permet la potència que vols contractar.
+    </p>
+    <p>
+        Pots consultar en aquest enllaç el <a href="https://ca.support.somenergia.coop/article/655-les-distribuidores-d-electricitat">telèfon de les principals empreses distribuïdores</a>.
+    </p>
+    <p>
+        Una vegada resolts els requeriments de l’empresa distribuïdora, l’expedient quedarà tancat i serà el moment en què podràs tornar a tramitar de nou la modificació contractual a través de la teva <a href="https://oficinavirtual.somenergia.coop/ca/">Oficina Virtual</a>
+    </p>
+</%def>
+
+<%def name="correu_es()">
+    <p>
+        <a href="https://es.support.somenergia.coop/article/656-las-distribuidoras-de-electricidad">La empresa distribuidora</a> de tu zona, la encargada de aplicar estas modificaciones, ha rechazado tu solicitud con el siguiente motivo:
+    </p>
+    <p>
+        <b>Necesidad de abrir Expediente de Acometida.</b>
+    </p>
+    <p>
+        Debes contactar con la empresa de distribución para que abran un expediente, y te indiquen como proceder. En principio deben comprobar que la acometida que llega a tu domicilio permite la potencia que deseas contratar.
+    </p>
+    <p>
+        Puedes consultar en el siguiente enlace <a href="https://es.support.somenergia.coop/article/656-las-distribuidoras-de-electricidad">el teléfono de las principales empresas distribuidoras</a>.
+    </p>
+    <p>
+        Una vez resueltos los requerimientos de la distribuidora, el expediente quedará cerrado y será el momento en que podrás volver a tramitar la modificación contractual rellenando de nuevo el formulario a través de tu <a href="https://oficinavirtual.somenergia.coop/es/">Oficina Virtual</a>.
+    </p>
+</%def>
+                ]]>
+            </field>
+            <field name="rebuig_ids" eval="[(6,0,[ref('giscedata_switching.sw_motiu_rebuig_53')])]" />
+        </record>
+        <record model="giscedata.switching.notify" id="notification_atr_M104_60">
+            <field name="proces_id" ref="giscedata_switching.sw_proces_m1"/>
+            <field name="step_id" ref="giscedata_switching.sw_step_m1_04"/>
+            <field name="active" eval="1"/>
+            <field name="notify_text"><![CDATA[<!doctype html>
+% if cas.cups_polissa_id.titular.lang == "ca_ES":
+    ${correu_cat()}
+% else:
+    ${correu_es()}
+% endif
+
+<%def name="correu_cat()">
+    <p>
+        <a href="https://ca.support.somenergia.coop/article/655-les-distribuidores-d-electricitat">L’empresa distribuïdora</a> de la teva zona, l’encarregada d'aplicar aquestes modificacions, ha rebutjat la teva sol·licitud amb el següent motiu:
+    </p>
+    <p>
+        <b>Instalación incompleta o con elementos no válidos.</b>
+    </p>
+    <p>
+        S'ha posat en contacte amb tu personal tècnic de l'empresa de distribució elèctrica? T'han explicat quina és la deficiència present a la teva instal·lació, i com solucionar-ho?
+    </p>
+    <p>
+        Si no és així, pots contactar amb <a href="https://ca.support.somenergia.coop/article/655-les-distribuidores-d-electricitat">l'empresa de distribuïció elèctrica</a> de la teva zona, per tal que et facilitin aquesta informació. En cas que no hi puguis contactar, nosaltres podem enviar-los una reclamació, sol·licitant més informació.
+    </p>
+    <p>
+        Un cop hagis corregit la teva instal·lació, pots tornar a sol·licitar la modificació contractual a través de la teva <a href="https://oficinavirtual.somenergia.coop/ca/">Oficina Virtual</a>
+    </p>
+</%def>
+
+<%def name="correu_es()">
+    <p>
+        <a href="https://es.support.somenergia.coop/article/656-las-distribuidoras-de-electricidad">La empresa distribuidora</a> de tu zona, la encargada de aplicar estas modificaciones, ha rechazado tu solicitud con el siguiente motivo:
+    </p>
+    <p>
+        <b>Instalación incompleta o con elementos no válidos.</b>
+    </p>
+    <p>
+        ¿Se ha puesto en contacto contigo personal técnico de la empresa de distribución eléctrica? ¿Te han explicado cuál es la deficiencia presente en tu instalación, y cómo solucionarla?
+    </p>
+    <p>
+        Si no es así, puedes contactar directamente con <a href="https://es.support.somenergia.coop/article/656-las-distribuidoras-de-electricidad"> la empresa de distribución eléctrica</a> de tu zona, para que te faciliten esta información. En el caso que no consigas contactar con ellos, nosotras podemos enviarles una reclamación, solicitando más información.
+    </p>
+    <p>
+        Una vez hayas corregido tu instalación, puedes volver a solicitar la modificación contractual a través de tu <a href="https://oficinavirtual.somenergia.coop/es/">Oficina Virtual</a>.
+    </p>
+</%def>
+                ]]>
+            </field>
+            <field name="rebuig_ids" eval="[(6,0,[ref('giscedata_switching.sw_motiu_rebuig_60')])]" />
+        </record>
+        <record model="giscedata.switching.notify" id="notification_atr_M102_65">
+            <field name="proces_id" ref="giscedata_switching.sw_proces_m1"/>
+            <field name="step_id" ref="giscedata_switching.sw_step_m1_02"/>
+            <field name="active" eval="1"/>
+            <field name="notify_text"><![CDATA[<!doctype html>
+% if cas.cups_polissa_id.titular.lang == "ca_ES":
+    ${correu_cat()}
+% else:
+    ${correu_es()}
+% endif
+
+<%def name="correu_cat()">
+    <p>
+        <a href="https://ca.support.somenergia.coop/article/655-les-distribuidores-d-electricitat">L’empresa distribuïdora</a> de la teva zona, l’encarregada d'aplicar aquestes modificacions, ha rebutjat la teva sol·licitud amb el següent motiu:
+    </p>
+    <p>
+        <b>Más de una modificación de potencia en un punto de suministro en menos de 12 meses para el mismo titular del punto de suministro.</b>
+    </p>
+    <p>
+        Per llei, la distribuïdora està obligada a fer una única modificació cada 12 mesos. La resta de sol·licituds en aquest període les pot rebutjar.
+    </p>
+    <p>
+        Un cop hagin passat 12 mesos des de la teva darrera modificació, podràs tornar a sol·licitar una modificació contractual, a través de la teva <a href="https://oficinavirtual.somenergia.coop/ca/">Oficina Virtual</a>
+    </p>
+</%def>
+
+<%def name="correu_es()">
+    <p>
+        <a href="https://es.support.somenergia.coop/article/656-las-distribuidoras-de-electricidad">La empresa distribuidora</a> de tu zona, la encargada de aplicar estas modificaciones, ha rechazado tu solicitud con el siguiente motivo:
+    </p>
+    <p>
+        <b>Más de una modificación de potencia en un punto de suministro en menos de 12 meses para el mismo titular del punto de suministro.</b>
+    </p>
+    <p>
+        Por ley, la distribuidora está obligada a hacer una única modificación cada 12 meses. El resto de solicitudes en este periodo las puede rechazar.
+    </p>
+    <p>
+        Una vez hayan pasado 12 meses desde tu última modificación, podrás volver a solicitar una modificación contractual a través de tu <a href="https://oficinavirtual.somenergia.coop/es/">Oficina Virtual</a>.
+    </p>
+</%def>
+                ]]>
+            </field>
+            <field name="rebuig_ids" eval="[(6,0,[ref('giscedata_switching.sw_motiu_rebuig_65')])]" />
+        </record>
+        <record model="giscedata.switching.notify" id="notification_atr_M104_A1">
+            <field name="proces_id" ref="giscedata_switching.sw_proces_m1"/>
+            <field name="step_id" ref="giscedata_switching.sw_step_m1_04"/>
+            <field name="active" eval="1"/>
+            <field name="notify_text"><![CDATA[<!doctype html>
+% if cas.cups_polissa_id.titular.lang == "ca_ES":
+    ${correu_cat()}
+% else:
+    ${correu_es()}
+% endif
+
+<%def name="correu_cat()">
+    <p>
+        <a href="https://ca.support.somenergia.coop/article/655-les-distribuidores-d-electricitat">L’empresa distribuïdora</a> de la teva zona, l’encarregada d'aplicar aquestes modificacions, ha rebutjat la teva sol·licitud amb el següent motiu:
+    </p>
+    <p>
+        <b>Incidència no subsanada.</b>
+    </p>
+    <p>
+        Quan ens diuen això, donen a entendre que personal tècnic de l’empresa distribuïdora, hauria visitat el punt de subministrament, i s'hauria trobat amb alguna cosa que et vas comprometre a arreglar.
+    </p>
+    <p>
+        Semblaria que en no realitzar-se aquesta determinada acció a temps, s'hauria rebutjat i tancat el tràmit.
+    </p>
+    <p>
+        Per tornar a iniciar el tràmit, quan hagis resolt la incidència, pots tornar a sol·licitar la modificació contractual a través de la teva <a href="https://oficinavirtual.somenergia.coop/ca/">Oficina Virtual</a>
+    </p>
+</%def>
+
+<%def name="correu_es()">
+    <p>
+        <a href="https://es.support.somenergia.coop/article/656-las-distribuidoras-de-electricidad">La empresa distribuidora</a> de tu zona, la encargada de aplicar estas modificaciones, ha rechazado tu solicitud con el siguiente motivo:
+    </p>
+    <p>
+        <b>Incidència no subsanada.</b>
+    </p>
+    <p>
+        Con esta comunicación dan a entender que unos días atrás personal técnico de la distribuidora, habría visitado el punto de suministro, y se habría encontrado con algo que te comprometiste a arreglar.
+    </p>
+    <p>
+        Parecería que al no realizarse esta determinada acción a tiempo se habría rechazado y cerrado el trámite.
+    </p>
+    <p>
+        Para volver a iniciar el trámite, una vez esté resuelta la incidencia, puedes volver a solicitar la modificación contractual a través de tu <a href="https://oficinavirtual.somenergia.coop/es/">Oficina Virtual</a>.
+    </p>
+</%def>
+                ]]>
+            </field>
+            <field name="rebuig_ids" eval="[(6,0,[ref('giscedata_switching.sw_motiu_rebuig_A1')])]" />
+        </record>
+        <record model="giscedata.switching.notify" id="notification_atr_M102_20">
+            <field name="proces_id" ref="giscedata_switching.sw_proces_m1"/>
+            <field name="step_id" ref="giscedata_switching.sw_step_m1_02"/>
+            <field name="active" eval="1"/>
+            <field name="notify_text"><![CDATA[<!doctype html>
+% if cas.cups_polissa_id.titular.lang == "ca_ES":
+    ${correu_cat()}
+% else:
+    ${correu_es()}
+% endif
+
+<%def name="correu_cat()">
+    <p>
+        <a href="https://ca.support.somenergia.coop/article/655-les-distribuidores-d-electricitat">L’empresa distribuïdora</a> de la teva zona, l’encarregada d'aplicar aquestes modificacions, ha rebutjat la teva sol·licitud amb el següent motiu:
+    </p>
+    <p>
+        <b>NECESIDAD DE ABRIR EXPEDIENTE DE ACOMETIDA,INSTALACIÓN NO DISPONIBLE O AMPLIACIÓN SUMINISTRO EN TRÁMITE (EXPTE ABIERTO + CÓDIGO DE EXPTE + MOTIVO DE EXPTE</b>
+    </p>
+    <p>
+        Hauràs de contactar amb l’empresa distribuïdora per a confirmar que l’expedient està tancat i si no és així, us diguin quines accions has de dur a terme. En principi, el que han de fer és comprovar que l’escomesa que arriba al vostre punt de subministrament permet la potència que vols contractar.
+    </p>
+    <p>
+        Pots consultar en aquest enllaç  <a href="https://ca.support.somenergia.coop/article/655-les-distribuidores-d-electricitat">el telèfon de les principals empreses distribuïdores</a>.
+    </p>
+    <p>
+        Una vegada resolts els requeriments de l’empresa distribuïdora, l’expedient quedarà tancat i serà el moment en què podràs tornar a tramitar de nou la modificació contractual  a través de la teva <a href="https://oficinavirtual.somenergia.coop/ca/">Oficina Virtual</a>
+    </p>
+</%def>
+
+<%def name="correu_es()">
+    <p>
+        <a href="https://es.support.somenergia.coop/article/656-las-distribuidoras-de-electricidad">La empresa distribuidora</a> de tu zona, la encargada de aplicar estas modificaciones, ha rechazado tu solicitud con el siguiente motivo:
+    </p>
+    <p>
+        <b>NECESIDAD DE ABRIR EXPEDIENTE DE ACOMETIDA,INSTALACIÓN NO DISPONIBLE O AMPLIACIÓN SUMINISTRO EN TRÁMITE (EXPTE ABIERTO + CÓDIGO DE EXPTE + MOTIVO DE EXPTE</b>
+    </p>
+    <p>
+        Tendrás que contactar con la empresa distribuidora para confirmar que el expediente está cerrado y si no es así, os digan qué acciones tienes que llevar a cabo. Deben comprobar que la acometida que llega a vuestro punto de suministro permite la potencia que quieres contratar.
+    </p>
+    <p>
+        Puedes consultar en el siguiente enlace <a href="https://es.support.somenergia.coop/article/656-las-distribuidoras-de-electricidad">el teléfono de las principales empresas distribuidoras</a>.
+    </p>
+    <p>
+        Una vez resueltos los requerimientos de la distribuidora el expediente quedará cerrado y será el momento en podrás volver a tramitar la modificación contractual rellenando otra vez el formulario a través de tu <a href="https://oficinavirtual.somenergia.coop/es/">Oficina Virtual</a>.
+    </p>
+</%def>
+                ]]>
+            </field>
+            <field name="rebuig_ids" eval="[(6,0,[ref('giscedata_switching.sw_motiu_rebuig_20')])]" />
+        </record>
+        <record model="giscedata.switching.notify" id="notification_atr_M104_31">
+            <field name="proces_id" ref="giscedata_switching.sw_proces_m1"/>
+            <field name="step_id" ref="giscedata_switching.sw_step_m1_04"/>
+            <field name="active" eval="1"/>
+            <field name="notify_text"><![CDATA[<!doctype html>
+% if cas.cups_polissa_id.titular.lang == "ca_ES":
+    ${correu_cat()}
+% else:
+    ${correu_es()}
+% endif
+
+<%def name="correu_cat()">
+    <p>
+        <a href="https://ca.support.somenergia.coop/article/655-les-distribuidores-d-electricitat">L’empresa distribuïdora</a> de la teva zona, l’encarregada d'aplicar aquestes modificacions, ha rebutjat la teva sol·licitud amb el següent motiu:
+    </p>
+    <p>
+        <b>Impedimento del titular.</b>
+    </p>
+    <p>
+        Entenem que heu parlat amb el personal tècnic de l’empresa distribuïdora, i els heu indicat que no voleu continuar amb la modificació sol·licitada. Així doncs, et confirmem que la modificació no es durà a terme.
+    </p>
+    <p>
+        Si vols que demanem una nova modificació contractual, cal que tornis a fer una nova sol·licitud a través de la teva <a href="https://oficinavirtual.somenergia.coop/ca/">Oficina Virtual</a>
+    </p>
+    <p>
+        Si el rebuig que ens ha notificat l’empresa distribuïdora no és correcte, ens ho comuniques, i els hi enviarem una reclamació.
+    </p>
+</%def>
+
+<%def name="correu_es()">
+    <p>
+        <a href="https://es.support.somenergia.coop/article/656-las-distribuidoras-de-electricidad">La empresa distribuidora</a> de tu zona, la encargada de aplicar estas modificaciones, ha rechazado tu solicitud con el siguiente motivo:
+    </p>
+    <p>
+        <b>Impedimento del titular.</b>
+    </p>
+    <p>
+        Entendemos habéis hablado con personal técnico de la empresa distribuidora, y les habéis indicado que no queréis continuar con la modificación solicitada. De este modo, te confirmamos que la modificación no se hará efectiva.
+    </p>
+    <p>
+        Si quieres que tramitemos una nueva modificación contractual, deberás solicitarla de nuevo a través de tu <a href="https://oficinavirtual.somenergia.coop/es/">Oficina Virtual</a>.
+    </p>
+    <p>
+        Si el rechazo que nos ha enviado la empresa distribuidora no es correcto, nos lo comunicas,  y les enviaremos una reclamación.
+    </p>
+</%def>
+                ]]>
+            </field>
+            <field name="rebuig_ids" eval="[(6,0,[ref('giscedata_switching.sw_motiu_rebuig_31')])]" />
+        </record>
+        <record model="giscedata.switching.notify" id="notification_atr_M102_39">
+            <field name="proces_id" ref="giscedata_switching.sw_proces_m1"/>
+            <field name="step_id" ref="giscedata_switching.sw_step_m1_02"/>
+            <field name="active" eval="1"/>
+            <field name="notify_text"><![CDATA[<!doctype html>
+% if cas.cups_polissa_id.titular.lang == "ca_ES":
+    ${correu_cat()}
+% else:
+    ${correu_es()}
+% endif
+
+<%def name="correu_cat()">
+    <p>
+        <a href="https://ca.support.somenergia.coop/article/655-les-distribuidores-d-electricitat">L’empresa distribuïdora</a> de la teva zona, l’encarregada d'aplicar aquestes modificacions, ha rebutjat la teva sol·licitud amb el següent motiu:
+    </p>
+    <p>
+        <b>Existencia de Solicitud previa en curso C2.</b>
+    </p>
+    <p>
+        Aquest rebuig indica que actualment s’està tramitant un canvi de comercialitzadora amb canvi de titularitat per aquest punt de subministrament.
+    </p>
+    <p>
+        Així doncs, un cop es faci efectiu aquest canvi de companyia que hi ha en curs, rebràs un correu electrònic en el qual t’informarem de la data de baixa del teu contracte.
+    </p>
+</%def>
+
+<%def name="correu_es()">
+    <p>
+        <a href="https://es.support.somenergia.coop/article/656-las-distribuidoras-de-electricidad">La empresa distribuidora</a> de tu zona, la encargada de aplicar estas modificaciones, ha rechazado tu solicitud con el siguiente motivo:
+    </p>
+    <p>
+        <b>Existencia de Solicitud previa en curso C2.</b>
+    </p>
+    <p>
+        Este rechazo indica que actualmente se está tramitando un cambio de comercializadora con cambio de titularidad para este punto de suministro.
+    </p>
+    <p>
+        En cualquier caso, una vez se haga efectivo el cambio de compañía que hay en curso, recibirás un correo en el que te informaremos sobre la fecha de baja de tu contrato.
+    </p>
+</%def>
+                ]]>
+            </field>
+            <field name="rebuig_ids" eval="[(6,0,[ref('giscedata_switching.sw_motiu_rebuig_39')])]" />
+        </record>
+        <record model="giscedata.switching.notify" id="notification_atr_M102_63">
+            <field name="proces_id" ref="giscedata_switching.sw_proces_m1"/>
+            <field name="step_id" ref="giscedata_switching.sw_step_m1_02"/>
+            <field name="active" eval="1"/>
+            <field name="notify_text"><![CDATA[<!doctype html>
+% if cas.cups_polissa_id.titular.lang == "ca_ES":
+    ${correu_cat()}
+% else:
+    ${correu_es()}
+% endif
+
+<%def name="correu_cat()">
+    <p>
+        <a href="https://ca.support.somenergia.coop/article/655-les-distribuidores-d-electricitat">L’empresa distribuïdora</a> de la teva zona, l’encarregada d'aplicar aquestes modificacions, ha rebutjat la teva sol·licitud amb el següent motiu:
+    </p>
+    <p>
+        <b>Potencia Solicitada no puede ser inferior a Potencia de B.I.E. (Suministros en Modo 2 no interrumpibles)</b>
+    </p>
+    <p>
+        Aquest rebuig es produeix quan l'empresa distribuïdora té notificat que la instal·lació d’aquest punt de subministrament disposa d'un element no interrompible (per exemple un ascensor), i per tant, la facturació ha de ser per <a href="https://ca.support.somenergia.coop/article/261-que-es-el-maximetre">maxímetre</a>. El maxímetre permet que no deixi d’haver-hi subministrament, si en algun moment sobrepasseu la potència contractada.
+    </p>
+    <p>
+        <b>Si disposeu d’un element no interrompible</b>, per a que puguem tornar a sol·licitar aquesta modificació contractual amb maxímetre, fa falta que ens faciliteu un butlletí elèctric o Certificat d'Instal·lació Elèctrica, en el que s’especifiqui en l'apartat d'observacions, que aquest punt de subministrament disposa d’un element no interrompible; també caldrà indicar quina és la potència nominal d'aquest element en kW. Heu de tenir en compte que la potència mínima a contractar, serà la potència nominal d’aquest element.
+    </p>
+    <p>
+        <b>En cas de no disposar de cap element no interruptible</b> a la vostra instal·lació, no necessitaríeu la facturació per maxímetre, i es podrà demanar la modificació que sol·licitis amb facturació per ICP (Interruptor de Control de Potència).
+    </p>
+    <p>
+        Quedem pendents que ens confirmis quina és la teva situació.
+    </p>
+</%def>
+
+<%def name="correu_es()">
+    <p>
+        <a href="https://es.support.somenergia.coop/article/656-las-distribuidoras-de-electricidad">La empresa distribuidora</a> de tu zona, la encargada de aplicar estas modificaciones, ha rechazado tu solicitud con el siguiente motivo:
+    </p>
+    <p>
+        <b>Potencia Solicitada no puede ser inferior a Potencia de B.I.E. (Suministros en Modo 2 no interrumpibles)</b>
+    </p>
+    <p>
+        Este rechazo se produce cuando la empresa distribuidora, tiene notificado que la instalación de este punto de suministro, dispone de un elemento no interrumpible (por ejemplo un ascensor) y por tanto, la facturación debe ser por <a href="https://es.support.somenergia.coop/article/187-que-es-el-maximetro">maxímetro</a>. El maxímetro permite que no deje de haber suministro, si en algún momento sobrepasáis la potencia contratada.
+    </p>
+    <p>
+        <b>Si disponéis de un elemento no interrumpible</b>, para que podamos volver a solicitar esta modificación contractual con maxímetro, hace falta que nos facilitéis un boletín o Certificado de Instalación Eléctrica, especificando en el apartado de observaciones, que este punto de suministro dispone de un elemento no interrumpible, e indicar cuál es la potencia nominal de este elemento en kW. Debes tener en cuenta que la potencia mínima a contratar, será la potencia nominal de este elemento.
+    </p>
+    <p>
+        <b>En caso de no disponer de ningún elemento no interrumpible</b> en vuestra instalación, no necesitaríais la facturación por maxímetro y podemos pedir la modificación que solicites con facturación por ICP (Interruptor de Control de Potencia).
+    </p>
+    <p>
+        Quedamos a la espera que nos confirmes cuál es tu situación.
+    </p>
+</%def>
+                ]]>
+            </field>
+            <field name="rebuig_ids" eval="[(6,0,[ref('giscedata_switching.sw_motiu_rebuig_63')])]" />
+        </record>
+        <record model="giscedata.switching.notify" id="notification_atr_M104_E7">
+            <field name="proces_id" ref="giscedata_switching.sw_proces_m1"/>
+            <field name="step_id" ref="giscedata_switching.sw_step_m1_04"/>
+            <field name="active" eval="1"/>
+            <field name="notify_text"><![CDATA[<!doctype html>
+% if cas.cups_polissa_id.titular.lang == "ca_ES":
+    ${correu_cat()}
+% else:
+    ${correu_es()}
+% endif
+
+<%def name="correu_cat()">
+    <p>
+        Modalitat d’autoconsum: **** TODO: Es pot treure aquesta dada de la M1 01?
+    </p>
+    <p>
+        <a href="https://ca.support.somenergia.coop/article/655-les-distribuidores-d-electricitat">L’empresa distribuïdora</a> de la teva zona, l’encarregada d'aplicar aquestes modificacions, ha rebutjat la teva sol·licitud amb el següent motiu:
+    </p>
+    <p>
+        <b>Falta acuerdo de reparto/Acuerdo de reparto incorrecto/Faltan coeficientes de reparto en acuerdo</b>
+    </p>
+    <p>
+        Entenem que  l’empresa distribuïdora, no considera vàlid el document que ens vau fer arribar corresponent a l’acord de repartiment. Necessitarem que ens feu arribar de nou aquest document, tenint en compte que han de constar clarament els coeficients de repartiment per a cada CUPS, i la signatura de totes les persones titulars.
+    </p>
+    <p>
+        Si l’acord de repartiment que ja ens havíeu enviat, ja complia aquests requisits, i el rebuig que ens ha notificat l’empresa distribuïdora no és correcte, ens ho comuniques, i els hi enviarem una reclamació.
+    </p>
+</%def>
+
+<%def name="correu_es()">
+    <p>
+        Modalitat d’autoconsum: **** TODO: Es pot treure aquesta dada de la M1 01?
+    </p>
+    <p>
+        <a href="https://es.support.somenergia.coop/article/656-las-distribuidoras-de-electricidad">La empresa distribuidora</a> de tu zona, la encargada de aplicar estas modificaciones, ha rechazado tu solicitud con el siguiente motivo:
+    </p>
+    <p>
+        <b>Falta acuerdo de reparto/Acuerdo de reparto incorrecto/Faltan coeficientes de reparto en acuerdo.</b>
+    </p>
+    <p>
+        Entendemos que la empresa distribuidora, no ha considerado válida la documentación que nos hicisteis llegar correspondiente al acuerdo de reparto. Necesitaremos que nos envíes de nuevo este documento, teniendo en cuenta que deben constar los coeficientes de reparto para cada CUPS, y además debe de estar firmado por todas las personas titulares.
+    </p>
+    <p>
+        Si el acuerdo de reparto que nos habías enviado, ya cumple estos requisitos, y el rechazo que nos ha notificado la empresa distribuidora no es correcto, nos lo comunicas, y les enviaremos una reclamación.
+    </p>
+</%def>
+                ]]>
+            </field>
+            <field name="rebuig_ids" eval="[(6,0,[ref('giscedata_switching.sw_motiu_rebuig_E7')])]" />
+        </record>
+        <record model="giscedata.switching.notify" id="notification_atr_M104_62">
+            <field name="proces_id" ref="giscedata_switching.sw_proces_m1"/>
+            <field name="step_id" ref="giscedata_switching.sw_step_m1_04"/>
+            <field name="active" eval="1"/>
+            <field name="notify_text"><![CDATA[<!doctype html>
+% if cas.cups_polissa_id.titular.lang == "ca_ES":
+    ${correu_cat()}
+% else:
+    ${correu_es()}
+% endif
+
+<%def name="correu_cat()">
+    <p>
+        <a href="https://ca.support.somenergia.coop/article/655-les-distribuidores-d-electricitat">L’empresa distribuïdora</a> de la teva zona, l’encarregada d'aplicar aquestes modificacions, ha rebutjat la teva sol·licitud amb el següent motiu:
+    </p>
+    <p>
+        <b>Actuación Solicitada por Comercializador no acorde con requerimientos Cliente.</b>
+    </p>
+    <p>
+        Entenem que heu parlat amb el personal tècnic de l’empresa distribuïdora, i els heu indicat que hi ha una divergència entre la nostra sol·licitud i el que realment voleu modificar. Així doncs, et confirmem que la modificació no serà realitzada.
+    </p>
+    <p>
+        Us recordem que com a titulars del punt de subministrament, sempre podeu trucar directament a la distribuïdora per tal de demanar explicacions sobre el motiu pel qual rebutgen la vostra sol·licitud. Pots consultar en aquest enllaç <a href="https://ca.support.somenergia.coop/article/655-les-distribuidores-d-electricitat">el telèfon de les principals empreses distribuïdores</a>.
+    </p>
+    <p>
+        Si el rebuig que ens ha notificat l’empresa distribuïdora no és correcte, ens ho comuniques, i els hi enviarem una reclamació.
+    </p>
+    <p>
+        Si el que vols és que demanem una nova modificació contractual, cal que tornis a fer una nova sol·licitud a través de la teva <a href="https://oficinavirtual.somenergia.coop/ca/">Oficina Virtual</a>.
+    </p>
+</%def>
+
+<%def name="correu_es()">
+    <p>
+        <a href="https://es.support.somenergia.coop/article/656-las-distribuidoras-de-electricidad">La empresa distribuidora</a> de tu zona, la encargada de aplicar estas modificaciones, ha rechazado tu solicitud con el siguiente motivo:
+    </p>
+    <p>
+        <b>Actuación Solicitada por Comercializador no acorde con requerimientos Cliente.</b>
+    </p>
+    <p>
+        Entendemos que habéis hablado con el personal técnico de la empresa distribuidora, y les habéis indicado que hay una divergencia entre nuestra solicitud y lo que realmente queréis modificar. Así pues, te confirmamos que la modificación no se llevará a cabo.
+    </p>
+    <p>
+        Os recordamos que como titulares del punto de suministro, siempre podéis llamar directamente a la distribuidora para pedir explicaciones sobre el motivo por el cual rechazan vuestra solicitud. Puedes consultar en este enlace <a href="https://es.support.somenergia.coop/article/656-las-distribuidoras-de-electricidad">el teléfono de las principales empresas distribuidoras</a>.
+    </p>
+    <p>
+        Si el rechazo que nos ha notificado la empresa distribuidora no es correcto, nos lo comunicas, y enviaremos una reclamación a la empresa distribuidora.
+    </p>
+    <p>
+        Si quieres que tramitemos una nueva modificación contractual, será necesario que la solicites a través de tu <a href="https://oficinavirtual.somenergia.coop/es/">Oficina Virtual</a>
+    </p>
+</%def>
+                ]]>
+            </field>
+            <field name="rebuig_ids" eval="[(6,0,[ref('giscedata_switching.sw_motiu_rebuig_62')])]" />
+        </record>
+        <record model="giscedata.switching.notify" id="notification_atr_M104_26">
+            <field name="proces_id" ref="giscedata_switching.sw_proces_m1"/>
+            <field name="step_id" ref="giscedata_switching.sw_step_m1_04"/>
+            <field name="active" eval="1"/>
+            <field name="notify_text"><![CDATA[<!doctype html>
+<%
+    r_model,r_id = cas.step_ids[0].pas_id.split(',')
+    cas_obj = cas.pool.get(r_model)
+    llista_telefons = cas_obj.read(cas._cr, cas._uid, int(r_id), ['cont_telefons'])['cont_telefons']
+    if len(llista_telefons) > 0:
+        tel_obj = cas.pool.get('giscedata.switching.telefon')
+        telefon = tel_obj.read(cas._cr, cas._uid, llista_telefons[0])
+        tel_cont =  "+" + telefon['prefix'] + " " + telefon['numero']
+    else:
+        tel_cont = "-"
+%>
+% if cas.cups_polissa_id.titular.lang == "ca_ES":
+    ${correu_cat()}
+% else:
+    ${correu_es()}
+% endif
+<%def name="correu_cat()">
+    <p>
+        <a href="https://ca.support.somenergia.coop/article/655-les-distribuidores-d-electricitat">L’empresa distribuïdora</a> de la teva zona, l’encarregada d'aplicar aquestes modificacions, ha rebutjat la teva sol·licitud amb el següent motiu:
+    </p>
+    <p>
+        <b>Acceso imposibilitado más de dos veces por causas ajenas a la Distribuidora.</b>
+    </p>
+    <p>
+        Entenem que el personal tècnic de l’empresa distribuïdora, que ha de fer l’actuació al vostre comptador, no ha pogut contactar amb vosaltres. El telèfon que vas indicar a la sol·licitud és <b>${tel_cont}</b>.
+    </p>
+    <p>
+        Si vols que tornem a tramitar la modificació, caldrà que tornis a fer una nova sol·licitud a través de la teva <a href="https://oficinavirtual.somenergia.coop/ca/">Oficina Virtual</a>.
+    </p>
+    <p>
+        Un cop hagis fet la nova sol·licitud, et recomanem que estiguis atent a les trucades que puguis rebre al telèfon de contacte que ens indiquis a través d’aquesta nova sol·licitud.
+    </p>
+</%def>
+
+<%def name="correu_es()">
+    <p>
+        <a href="https://es.support.somenergia.coop/article/656-las-distribuidoras-de-electricidad">La empresa distribuidora</a> de tu zona, la encargada de aplicar estas modificaciones, ha rechazado tu solicitud con el siguiente motivo:
+    </p>
+    <p>
+        <b>Acceso imposibilitado más de dos veces por causas ajenas a la Distribuidora.</b>
+    </p>
+    <p>
+        Entendemos que el personal técnico de la empresa distribuidora, que debe modificar vuestro contador, no ha podido contactar con vosotros. El teléfono de contacto que indicaste en la solicitud es: <b>${tel_cont}</b>
+    </p>
+    <p>
+        Si quieres que volvamos a tramitar la modificación, debes solicitarla de nuevo a través de tu <a href="https://oficinavirtual.somenergia.coop/es/">Oficina Virtual</a>.
+    </p>
+    <p>
+        Una vez hayas tramitado la nueva solicitud, te recomendamos que estés atento a las llamadas que puedas recibir al teléfono de contacto que hayas indicado en la nueva solicitud.
+    </p>
+</%def>
+                ]]>
+            </field>
+            <field name="rebuig_ids" eval="[(6,0,[ref('giscedata_switching.sw_motiu_rebuig_26')])]" />
+        </record>
+        <record model="giscedata.switching.notify" id="notification_atr_M102_14">
+            <field name="proces_id" ref="giscedata_switching.sw_proces_m1"/>
+            <field name="step_id" ref="giscedata_switching.sw_step_m1_02"/>
+            <field name="active" eval="1"/>
+            <field name="notify_text"><![CDATA[<!doctype html>
+% if cas.cups_polissa_id.titular.lang == "ca_ES":
+    ${correu_cat()}
+% else:
+    ${correu_es()}
+% endif
+
+<%def name="correu_cat()">
+    <p>
+        <a href="https://ca.support.somenergia.coop/article/655-les-distribuidores-d-electricitat">L’empresa distribuïdora</a> de la teva zona, l’encarregada d'aplicar aquestes modificacions, ha rebutjat la teva sol·licitud amb el següent motiu:
+    </p>
+    <p>
+        <b>Potencia Solicitada mayor que la Potencia Máxima Autorizada en baja tensión.</b>
+    </p>
+    <p>
+        Per poder tirar endavant aquest augment de potència caldrà que personal electricista autoritzat emeti un nou <a href="https://ca.support.somenergia.coop/article/500-que-es-el-butlleti-electric">butlletí o certificat elèctric</a> de la teva instal·lació on consti que la potència màxima admissible és igual o superior a la potència que desitges contractar.
+    </p>
+    <p>
+        Un cop el tingueu, podeu tornar a omplir el formulari de modificació contractual i adjuntar la documentació a través de l'<a href="https://oficinavirtual.somenergia.coop/ca/">Oficina Virtual</a>.
+    </p>
+</%def>
+
+<%def name="correu_es()">
+    <p>
+        <a href="https://es.support.somenergia.coop/article/656-las-distribuidoras-de-electricidad">La empresa distribuidora</a> de tu zona, la encargada de aplicar estas modificaciones, ha rechazado tu solicitud con el siguiente motivo:
+    </p>
+    <p>
+        <b>Potencia Solicitada mayor que la Potencia Máxima Autorizada en baja tensión.</b>
+    </p>
+    <p>
+        Para poder llevar a cabo este aumento de potencia será necesario que personal electricista autorizado emita un nuevo <a href="https://es.support.somenergia.coop/article/505-que-es-el-boletin-electrico">boletín o certificado eléctrico</a> de tu instalación donde conste que la potencia máxima admisible es igual o superior a la potencia que deseas contratar.
+    </p>
+    <p>
+        Una vez lo tengas, puedes volver a solicitar la modificación contractual y adjuntar el documento a través de tu <a href="https://oficinavirtual.somenergia.coop/es/">Oficina Virtual</a>.
+    </p>
+</%def>
+                ]]>
+            </field>
+            <field name="rebuig_ids" eval="[(6,0,[ref('giscedata_switching.sw_motiu_rebuig_14')])]" />
+        </record>
+        <record model="giscedata.switching.notify" id="notification_atr_M102_17">
+            <field name="proces_id" ref="giscedata_switching.sw_proces_m1"/>
+            <field name="step_id" ref="giscedata_switching.sw_step_m1_02"/>
+            <field name="active" eval="1"/>
+            <field name="notify_text"><![CDATA[<!doctype html>
+<%
+r_model,r_id = cas.step_ids[0].pas_id.split(',')
+cas_obj = cas.pool.get(r_model)
+tarifa_cas_dict = cas_obj.read(cas._cr, cas._uid, int(r_id), ['tarifaATR'])
+tarifa_pol = cas.polissa_ref_id.tarifa_codi
+pas01 = cas_obj.browse(cas._cr, cas._uid, r_id)
+diccionari = cas_obj.fields_get(cas._cr, cas._uid)
+mapaTarifes = dict(diccionari['tarifaATR']['selection'])
+tarifa_cas = mapaTarifes[tarifa_cas_dict['tarifaATR']]
+%>
+% if cas.cups_polissa_id.titular.lang == "ca_ES":
+%     if tarifa_cas == tarifa_pol:
+          ${correu_cat_20()}
+%     else:
+          ${correu_cat_30_20()}
+%     endif
+% else:
+%     if tarifa_cas == tarifa_pol:
+          ${correu_es_20()}
+%     else:
+          ${correu_es_30_20()}
+%     endif
+% endif
+
+<%def name="correu_cat_20()">
+    <p>
+        <a href="https://ca.support.somenergia.coop/article/655-les-distribuidores-d-electricitat">L’empresa distribuïdora</a> de la teva zona, l’encarregada d'aplicar aquestes modificacions, ha rebutjat la teva sol·licitud amb el següent motiu:
+    </p>
+    <p>
+        <b>Tarifa no válida para la Tensión de Suministro.</b>
+    </p>
+    <p>
+        És possible que l'empresa distribuïdora tingui registrat un element no interrompible en aquest punt de subministrament.
+    </p>
+    <p>
+        Segons la normativa vigent, en les instal·lacions amb elements no interrompibles (ascensor, extractor d'incendis, etc.) amb una potència inferior a 15 kW han de passar a <a href="https://ca.support.somenergia.coop/article/261-que-es-el-maximetre">facturació per maxímetre</a> perquè no salti la llum en els moments d'activitat de l'aparell en qüestió.
+    </p>
+    <p>
+        En aquests casos, la potència mínima a contractar ha de ser la potència nominal de l'element no interrompible. Així doncs, per a poder continuar amb el tràmit, s'ha de presentar un butlletí elèctric o Certificat de la instal·lació elèctrica del punt de subministrament, on es deixi constància dels elements no interrompibles i les seves potències nominals.
+    </p>
+    <p>
+        Si ens confirmeu, que tal com se'ns indica, teniu un element no interrompible com pot ser un ascensor, i ens envieu aquesta documentació, tornarem a tramitar la sol·licitud per al canvi corresponent, amb les condicions indicades.
+    </p>
+</%def>
+
+<%def name="correu_es_20()">
+    <p>
+        <a href="https://es.support.somenergia.coop/article/656-las-distribuidoras-de-electricidad">La empresa distribuidora</a> de tu zona, la encargada de aplicar estas modificaciones, ha rechazado tu solicitud con el siguiente motivo:
+    </p>
+    <p>
+        <b>Tarifa no válida para la Tensión de Suministro.</b>
+    </p>
+    <p>
+        Es posible que la empresa distribuidora tenga registrado un elemento no interrumpible en este punto de suministro.
+    </p>
+    <p>
+        Según la normativa vigente, en las instalaciones con elementos no interrumpibles (ascensor, extractor de incendios, etc.) con una potencia inferior a 15 kW han de pasar a facturación por <a href="https://es.support.somenergia.coop/article/187-que-es-el-maximetro">maxímetro</a> para que no salte la luz en los momentos de actividad del aparato en cuestión.
+    </p>
+    <p>
+        En estos casos, la potencia mínima a contratar tiene que ser la potencia nominal del elemento no interrumpible. Para poder continuar con el trámite, se debe presentar un boletín eléctrico o Certificado de la instalación eléctrica del punto de suministro, donde se deje constancia de los elementos no interrumpibles y sus potencias nominales.
+    </p>
+    <p>
+        Si nos confirmáis, que tal y como se nos indica, tenéis un elemento no interrumpible como puede ser un ascensor, y nos enviáis esta documentación, volveremos a tramitar la solicitud para el cambio correspondiente con las condiciones indicadas.
+    </p>
+</%def>
+
+<%def name="correu_cat_30_20()">
+    <p>
+        Has de tenir en compte que reduir la potència per sota de 15kW, comporta un canvi de tarifa <a href="https://ca.support.somenergia.coop/category/1095-la-tarifa-30td">3.0TD</a> a tarifa domèstica <a href="https://ca.support.somenergia.coop/article/1003-la-tarifa-2-0td">2.0TD</a>.
+    </p>
+    <p>
+        <a href="https://ca.support.somenergia.coop/article/655-les-distribuidores-d-electricitat">L’empresa distribuïdora</a> de la teva zona, l’encarregada d'aplicar aquestes modificacions, ha rebutjat la teva sol·licitud amb el següent motiu:
+    </p>
+    <p>
+        <b>Tarifa no válida para la Tensión de Suministro.</b>
+    </p>
+    <p>
+        Volem informar-te que per normativa, la tarifa 3.0TD porta per defecte, <a href="https://ca.support.somenergia.coop/article/261-que-es-el-maximetre">facturació per maxímetre</a>. En canvi, si contractes una potència inferior a 15kW, al passar-te a la tarifa 2.0TD, la teva facturació passarà a ser per <a href="https://ca.support.somenergia.coop/article/172-que-es-l-icp-i-el-quadre-d-interruptors">Control de Potència</a>.
+    </p>
+    <p>
+        <b>Necessitem que ens confirmis si vols que continuem amb la modificació de potència i canvi a facturació per control de potència (ICP)</b>.
+    </p>
+    <p>
+        Excepcionalment, en cas de tenir un element no interrompible en la teva instal·lació, com pot ser un ascensor, podries mantenir el maxímetre amb la tarifa 2.0TD. Si és el teu cas, necessitem que ens facilitis un butlletí o un certificat de la instal·lació elèctric en el qual consti la potència nominal de l’element no interrompible. Aquí tens més informació: <a href="https://ca.support.somenergia.coop/article/695-punts-de-subministrament-amb-ascensor">Punts de subministrament amb ascensor</a>.
+    </p>
+    <p>
+        Quan ens confirmis com vols que procedim, iniciem el tràmit.
+    </p>
+</%def>
+
+<%def name="correu_es_30_20()">
+    <p>
+        Debes tener en cuenta que reducir la potencia por debajo de 15kW, comporta un cambio de <a href="https://es.support.somenergia.coop/category/1099-la-tarifa-30td">tarifa 3.0TD</a> a tarifa doméstica <a href="https://ca.support.somenergia.coop/article/1003-la-tarifa-2-0td">2.0TD</a>.
+    </p>
+    <p>
+        <a href="https://es.support.somenergia.coop/article/656-las-distribuidoras-de-electricidad">La empresa distribuidora</a> de tu zona, la encargada de aplicar estas modificaciones, ha rechazado tu solicitud con el siguiente motivo:
+    </p>
+    <p>
+        <b>Tarifa no válida para la Tensión de Suministro.</b>
+    </p>
+    <p>
+        Queremos informarte que por normativa, la tarifa 3.0 tiene por defecto <a href="https://es.support.somenergia.coop/article/187-que-es-el-maximetro">facturación por maxímetro</a>. Si contratas una potencia inferior a 15kW, al cambiar a tarifa 2.0TD, tu facturación pasará a ser por <a href="https://es.support.somenergia.coop/article/209-el-interruptor-de-control-de-potencia-o-icp">Control de Potencia</a>.
+    </p>
+    <p>
+        <b>Necesitamos que nos confirmes si quieres que continuemos con la modificación de potencia y cambio a facturación por control de potencia (ICP).</b>
+    </p>
+    <p>
+        Excepcionalmente, en caso de tener un elemento no interrumpible en tu instalación, como puede ser un ascensor, podrías mantener el maxímetro con contrato la tarifa 2.0TD. Si es tu caso, necesitamos que nos facilites un boletín o Certificado de la instalación eléctrica en el que conste la potencia nominal del elemento no interrumpible. Aquí tenso más información: <a href="https://es.support.somenergia.coop/article/696-puntos-de-suministro-con-ascensor">Puntos de suministro con ascensor</a>.
+    </p>
+    <p>
+        En cuanto nos confirmes cómo quieres proceder, iniciamos el trámite.
+    </p>
+</%def>
+                ]]>
+            </field>
+            <field name="rebuig_ids" eval="[(6,0,[ref('giscedata_switching.sw_motiu_rebuig_17')])]" />
+        </record>
+    </data>
+</openerp>

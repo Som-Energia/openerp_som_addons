@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+        <!-- Formulari per defecte dels CUPS de GURBs -->
+        <record model="ir.ui.view" id="view_gurbs_cups_form">
+            <field name="name">som.gurb.cups.form</field>
+            <field name="model">som.gurb.cups</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <form string="GURB">
+                    <group col="4" colspan="4" string="General">
+                        <field name="active" />
+                        <field name="id" />
+                        <field name="cups_id" on_change="onchange_cups_id(cups_id)" />
+                        <field name="start_date" />
+                        <field name="inscription_date" />
+                        <field name="end_date" />
+                        <field name="gurb_id" />
+                        <field name="beta_kw" />
+                        <field name="extra_beta_kw" />
+                        <field name="beta_percentage" />
+                        <field name="owner_cups" />
+                    </group>
+                    <group col="4" colspan="4" string="Relacions">
+                        <field name="polissa_id" />
+                        <field name="polissa_state" />
+                        <field name="partner_id" />
+                        <field name="initial_invoice_id" />
+                        <field name="invoice_state" />
+                        <field name="signed" readonly="1" />
+                        <field name="general_conditions_id" />
+                    </group>
+                    <field name="betas_ids" nolabel="1" colspan="4" readonly="1" />
+                </form>
+            </field>
+        </record>
+        <!-- Llistat per defecte dels CUPS de GURBs-->
+        <record model="ir.ui.view" id="view_gurbs_cups_tree">
+            <field name="name">som.gurb.cups.tree</field>
+            <field name="model">som.gurb.cups</field>
+            <field name="type">tree</field>
+            <field name="arch" type="xml">
+                <tree string="CUPS GURB" colors="red:active == False">
+                    <field name="cups_id" select="1" />
+                    <field name="polissa_id" select="1" />
+                    <field name="beta_kw" select="2" />
+                    <field name="extra_beta_kw" select="2" />
+                    <field name="beta_percentage" select="2" />
+                    <field name="partner_id" select="1" />
+                    <field name="start_date" select="1" />
+                    <field name="active" select="1" />
+                    <field name="end_date" select="1" />
+                    <field name="owner_cups" select="2" />
+                    <field name="polissa_state" select="1" />
+                    <field name="invoice_state" />
+                    <field name="signed" />
+                </tree>
+            </field>
+        </record>
+        <!-- Llistat per defecte d'hitòric de Betes dels CUPS de GURBs-->
+        <record model="ir.ui.view" id="view_gurbs_cups_beta_tree">
+            <field name="name">som.gurb.cups.beta.tree</field>
+            <field name="model">som.gurb.cups.beta</field>
+            <field name="type">tree</field>
+            <field name="arch" type="xml">
+                <tree string="Betes dels CUPS GURB" colors="red:active == False">
+                    <field name="active" select="1" />
+                    <field name="future_beta" />
+                    <field name="name" select="1" />
+                    <field name="beta_kw" />
+                    <field name="extra_beta_kw" />
+                    <field name="start_date" select="1" />
+                    <field name="end_date" select="1" />
+                </tree>
+            </field>
+        </record>
+        <record model="ir.actions.act_window" id="action_invoices_from_gurb_cups">
+            <field name="name">Factures del GURB CUPS</field>
+            <field name="res_model">account.invoice</field>
+            <field name="src_model">som.gurb.cups</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="domain">[('origin', '=', 'GURBCUPS'+id)]</field>
+        </record>
+        <record id="value_action_invoices_from_gurb_cups" model="ir.values">
+            <field name="object" eval="1"/>
+            <field name="name">Factures del GURB CUPS</field>
+            <field name="key2">client_action_relate</field>
+            <field name="key">action</field>
+            <field name="model">som.gurb.cups</field>
+            <field name="value" eval="'ir.actions.act_window,'+str(ref('action_invoices_from_gurb_cups'))" />
+        </record>
+        <!-- Acció per obrir el llistat de tots els GURB CUPS-->
+        <record model="ir.actions.act_window" id="action_gurb_cups">
+            <field name="name">Tots els CUPS dels GURBs</field>
+            <field name="view_id" ref="view_gurbs_cups_tree" />
+            <field name="res_model">som.gurb.cups</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="context">{'active_test': False}</field>
+        </record>
+    </data>
+</openerp>

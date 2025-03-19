@@ -8,7 +8,7 @@
             <field name="arch" type="xml">
                 <form string="Genera Informe Consum" col="2">
                     <group string="Dades Informe" colspan="3" col="4">
-                        <field name="polissa" select="1"/>
+                        <field name="polissa" select="1" context="{'active_test': False}"/>
                         <field name="lang" />
                         <field name="date_from" select="1"/>
                         <field name="date_to" select="1"/>
@@ -19,9 +19,8 @@
                         </page>
                         <page string="Factura">
                             <field name="mostra_factura"/>
-                        </page>
-                        <page string="Comptablilitat">
-                            <field name="mostra_comptabilitat"/>
+                            <field name="mostra_quadre_resum_lectures"/>
+                            <field name="mostra_quadre_resum_factures"/>
                         </page>
                         <page string="ATR">
                             <!-- Informes a generar -->
@@ -36,6 +35,7 @@
                         </page>
                         <page string="Gestió de cobraments">
                             <field name="mostra_cobraments"/>
+                            <field name="mostrar_cobraments_factures" attrs="{'readonly':[('mostra_cobraments','!=',True)] , 'required':[('mostra_cobraments','=',True)]}"/>
                         </page>
                     </notebook>
                     <field name="state" invisible="1"/>
@@ -62,5 +62,23 @@
             <field name="value" eval="'ir.actions.act_window,'+str(ref('action_som_informe_report'))"/>
         </record>
         <menuitem action="action_som_informe_report" id="menu_som_informe_report" name="Informe automàtic Som" parent="crm.menu_crm" sequence="10"/>
+        <record id="action_som_informe_report_from_polissa" model="ir.actions.act_window">
+            <field name="name">Generar informe automàtic Som</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">wizard.create.technical.report</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">form</field>
+            <field name="target">new</field>
+            <field name="view_id" ref="view_som_informe_report_form"/>
+            <field name="context">{'origin': 'giscedata.polissa'}</field>
+        </record>
+        <record id="values_wizard_som_informe_report_from_polissa" model="ir.values">
+            <field name="object" eval="1"/>
+            <field name="name">Generar informe automàtic Som</field>
+            <field name="key2">client_action_multi</field>
+            <field name="key">action</field>
+            <field name="model">giscedata.polissa</field>
+            <field name="value" eval="'ir.actions.act_window,'+str(ref('action_som_informe_report_from_polissa'))"/>
+        </record>
     </data>
 </openerp>

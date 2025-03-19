@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+    <data>
+        <record id="som_administradora_notification_form_view" model="ir.ui.view">
+            <field name="name">som.admin.notification.form</field>
+            <field name="model">som.admin.notification</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <form string="Notificacions d'administradora de pòlissa">
+                    <group  col="1">
+                        <group colspan="2" col="8">
+                            <field name="receptor" string="Receptor de la notificació"/>
+                            <field name="template_id" string="Plantilla de correu"/>
+                            <field name="pending_notification" string="E-mail pendent"/>
+                        </group>
+                        <group colspan="2" col="2" string="Informació">
+                            <field name="info" nolabel="1"/>
+                        </group>
+                    </group>
+                    <notebook colspan="4">
+                        <page string="Modifications">
+                            <field colspan="4" name="modification" nolabel="1" select="1" readonly="1" ref="som_administradora_modification_tree_view"/>
+                        </page>
+                    </notebook>
+                </form>
+            </field>
+        </record>
+        <record id="som_administradora_notification_tree_view" model="ir.ui.view">
+            <field name="name">som.admin.notification.tree</field>
+            <field name="model">som.admin.notification</field>
+            <field name="type">tree</field>
+            <field name="arch" type="xml">
+                <tree string="Notificacions d'administradora de pòlissa">
+                    <field name="id"/>
+                    <field name="receptor" select="1" string="Receptor"/>
+                    <field name="receptor_nif" select="1" string="NIF receptor"/>
+                    <field name="create_date" select="1" string="Data de creació"/>
+                    <field name="pending_notification" select="1" string="Pendent de notificar"/>
+                    <field name="info" select="1" string="Informació"/>
+                    <field name="template_id" select="1" string="Plantilla de correu"/>
+                </tree>
+            </field>
+        </record>
+        <record id="action_som_administradora_notification_tree" model="ir.actions.act_window">
+            <field name="name">Notifications administradora</field>
+            <field name="res_model">som.admin.notification</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="view_id" ref="som_administradora_notification_tree_view"/>
+        </record>
+        <menuitem action="action_som_administradora_notification_tree" id="menu_som_administradora_notification_tree" parent="giscedata_polissa.menu_principal"/>
+
+        <record id="som_administradora_modification_tree_view" model="ir.ui.view">
+            <field name="name">som.admin.modification.tree</field>
+            <field name="model">som.admin.modification</field>
+            <field name="type">tree</field>
+            <field name="arch" type="xml">
+                <tree string="Modificacions d'administradora de pòlissa">
+                    <field name="polissa_id" select="1" string="Pòlissa"/>
+                    <field name="claimant" select="1" string="Sol·licitant"/>
+                    <field name="old_administradora" select="1" string="Administradora anterior"/>
+                    <field name="new_administradora" select="1" string="Administradora actual"/>
+                    <field name="permissions" select="1" string="Permisos"/>
+                    <field name="is_legal_representative" select="1" string="Representant legal"/>
+                    <field name="info" select="1" string="Informació"/>
+                    <field name="error" select="1" string="Errors"/>
+                </tree>
+            </field>
+        </record>
+    </data>
+</openerp>

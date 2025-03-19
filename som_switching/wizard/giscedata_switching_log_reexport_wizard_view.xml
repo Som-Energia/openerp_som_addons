@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+    <data>
+        <record id="view_wizard_giscedata_switching_log_reexport_form" model="ir.ui.view">
+            <field name="name">wizard.giscedata.switching.log.reexport.form</field>
+            <field name="model">wizard.giscedata.switching.log.reexport</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <form string="Reexportar fitxers dels logs">
+                    <field name="state" invisible="1"/>
+                    <field name="filename" invisible="1"/>
+                    <field name="msg" nolabel="1" readonly="1" height="200" width="800"/>
+                    <group col="2" colspan="8" attrs="{'invisible': [('state', '!=', 'init')]}">
+                        <button string="Cancel·lar" special="cancel" icon="gtk-close" colspan="1"/>
+                        <button string="Reexportar fitxers" name="reexport_files" type="object" icon="gtk-go-forward" colspan="1" />
+                    </group>
+                    <group attrs="{'invisible': [('state', '=', 'init')]}">
+                        <field name="report" width="200" filename="filename_report"/>
+                        <button string="Tancar" special="cancel" icon="gtk-close" colspan="1"/>
+                    </group>
+                </form>
+            </field>
+        </record>
+        <record id="action_wizard_giscedata_switching_log_reexport" model="ir.actions.act_window">
+            <field name="name">Reexportar fitxer adjunts</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">wizard.giscedata.switching.log.reexport</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="view_wizard_giscedata_switching_log_reexport_form"/>
+            <field name="target">new</field>
+        </record>
+        <record id="value_wizard_giscedata_switching_log_reexport" model="ir.values">
+            <field name="object" eval="1"/>
+            <field name="name">Reexportar fitxers adjunts</field>
+            <field name="key2">client_action_multi</field>
+            <field name="key">action</field>
+            <field name="model">giscedata.switching.log</field>
+            <field name="value" eval="'ir.actions.act_window,'+str(ref('action_wizard_giscedata_switching_log_reexport'))" />
+        </record>
+    </data>
+</openerp>

@@ -1,0 +1,451 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<openerp>
+    <data noupdate="1">
+         <!-- Template d'assignació d'administradora cap a titular -->
+        <record model="poweremail.templates" id="email_assignacio_a_titular">
+            <field name="name">Admin OV: Assignació/Modificació, per a Titular</field>
+            <field name="object_name" model="ir.model" search="[('name', '=', 'som.admin.notification')]"/>
+            <field eval="0" name="save_to_drafts"/>
+            <field name="model_int_name">som.admin.notification</field>
+            <field name="def_to">${object.receptor.address[0].email}</field>
+            <field eval="0" name="auto_email"/>
+            <field eval="0" name="single_email"/>
+            <field eval="0" name="use_sign"/>
+            <field name="def_subject">Som Energia: Administració de l’Oficina Virtual</field>
+            <field name="template_language">mako</field>
+            <field eval="0" name="send_on_create"/>
+            <field name="lang"/>
+            <field eval="0" name="send_on_write"/>
+            <field name="def_bcc">support.17062.b8d9f4469fa4d856@helpscout.net</field>
+            <field name="enforce_from_account" model="poweremail.core_accounts" search="[('name','=', 'Empresa Som Energia')]"/>
+            <field name="def_body_text"><![CDATA[<!doctype html>
+                <html>
+                <body>
+                <%
+                from mako.template import Template
+                def render(text_to_render, object_):
+                    templ = Template(text_to_render)
+                    return templ.render_unicode(
+                        object=object_,
+                        format_exceptions=True
+                    )
+                t_obj = object.pool.get('poweremail.templates')
+                md_obj = object.pool.get('ir.model.data')
+                template_id = md_obj.get_object_reference(
+                                    object._cr, object._uid,  'som_poweremail_common_templates', 'common_template_legal_footer'
+                                )[1]
+                text_legal = render(t_obj.read(
+                    object._cr, object._uid, [template_id], ['def_body_text'])[0]['def_body_text'],
+                    object
+                )
+
+                rp_obj = object.pool.get('res.partner')
+                def get_clean_name(composed_name, vat, name_only):
+                    if rp_obj.vat_es_empresa(object._cr, object._uid, vat):
+                        return composed_name
+                    name = rp_obj.separa_cognoms(object._cr, object._uid, composed_name)
+                    if name_only:
+                        return name['nom']
+                    return '{} {}{}{}'.format(name['nom'],name['cognoms'][0],'' if name['fuzzy'] else ' ',name['cognoms'][1])
+
+                permissions = {
+                    'readonly': {'ca_ES':'visualitzar',
+                                'es_ES':'visualizar'},
+                    'manage':   {'ca_ES':'gestionar',
+                                'es_ES':'gestionar'}
+                }
+
+                final = {
+                    True: { 'ca_ES':'dels següents contractes',
+                            'es_ES':'de los siguientes contratos'},
+                    False: {'ca_ES':'del següent contracte',
+                            'es_ES':'del siguiente contrato'}
+                }
+
+                action = {
+                    True: { 'ca_ES':'modificat',
+                            'es_ES':'modificado'},
+                    False: {'ca_ES':'assignat',
+                            'es_ES':'asignado'}
+                }
+
+                mail_lang = object.receptor.lang
+                titular = get_clean_name(object.receptor.name, object.receptor.vat, True)
+                contractes = []
+                for mod in object.modification:
+                    contractes.append((
+                        mod.polissa_id.name,
+                        get_clean_name(mod.new_administradora.name, mod.new_administradora.vat, False),
+                        permissions[mod.permissions][mail_lang],
+                        action[bool(mod.old_administradora)][mail_lang],
+                    ))
+                plural = len(contractes)>1
+                %>
+                <br>
+                Hola ${titular},<br>
+                <br>
+                % if mail_lang != "es_ES":
+                T’enviem aquest correu per a confirmar-te que has modificat les opcions d’administració de l’Oficina Virtual ${final[plural][mail_lang]}:<br>
+                <ul>
+                % for (contracte, administradora, permission, action) in contractes:
+                    <li>Contracte ${contracte}: has ${action} a la persona administradora ${administradora} per a ${permission} el contracte.</li>
+                % endfor
+                </ul>
+                Per a qualsevol dubte seguim en contacte.<br>
+                <br>
+                Equip de Som Energia<br>
+
+                % endif
+                % if mail_lang != "ca_ES" and mail_lang != "es_ES":
+                ----------------------------------------------------------------------------------------------------
+                % endif
+                % if mail_lang != "ca_ES":
+                Te enviamos este correo para confirmarte que has modificado las opciones de administración de la Oficina Virtual ${final[plural][mail_lang]}:<br>
+                <ul>
+                % for (contracte, administradora, permission, action) in contractes:
+                    <li>Contrato ${contracte}: has ${action} a la persona administradora ${administradora} para ${permission} el contrato.</li>
+                % endfor
+                </ul>
+                Para cualquier duda seguimos en contacto. <br>
+                <br>
+                Equipo de Som Energia<br>
+                % endif
+                <a href="https://www.somenergia.coop/">www.somenergia.coop</a><br>
+                <br>
+                ${text_legal}
+                </body>
+                </html>
+                ]]></field>
+        </record>
+
+         <!-- Template desassignació d'administradora cap a titular -->
+        <record model="poweremail.templates" id="email_desassignacio_a_titular">
+            <field name="name">Admin OV: Desassignació, per a Titular</field>
+            <field name="object_name" model="ir.model" search="[('name', '=', 'som.admin.notification')]"/>
+            <field eval="0" name="save_to_drafts"/>
+            <field name="model_int_name">som.admin.notification</field>
+            <field name="def_to">${object.receptor.address[0].email}</field>
+            <field eval="0" name="auto_email"/>
+            <field eval="0" name="single_email"/>
+            <field eval="0" name="use_sign"/>
+            <field name="def_subject">Som Energia: Administració de l’Oficina Virtual</field>
+            <field name="template_language">mako</field>
+            <field eval="0" name="send_on_create"/>
+            <field name="lang"/>
+            <field eval="0" name="send_on_write"/>
+            <field name="def_bcc">support.17062.b8d9f4469fa4d856@helpscout.net</field>
+            <field name="enforce_from_account" model="poweremail.core_accounts" search="[('name','=', 'Empresa Som Energia')]"/>
+            <field name="def_body_text"><![CDATA[<!doctype html>
+                <html>
+                <body>
+                <%
+                from mako.template import Template
+                def render(text_to_render, object_):
+                    templ = Template(text_to_render)
+                    return templ.render_unicode(
+                        object=object_,
+                        format_exceptions=True
+                    )
+                t_obj = object.pool.get('poweremail.templates')
+                md_obj = object.pool.get('ir.model.data')
+                template_id = md_obj.get_object_reference(
+                                    object._cr, object._uid,  'som_poweremail_common_templates', 'common_template_legal_footer'
+                                )[1]
+                text_legal = render(t_obj.read(
+                    object._cr, object._uid, [template_id], ['def_body_text'])[0]['def_body_text'],
+                    object
+                )
+
+                rp_obj = object.pool.get('res.partner')
+                def get_clean_name(composed_name, vat, name_only):
+                    if rp_obj.vat_es_empresa(object._cr, object._uid, vat):
+                        return composed_name
+                    name = rp_obj.separa_cognoms(object._cr, object._uid, composed_name)
+                    if name_only:
+                        return name['nom']
+                    return '{} {}{}{}'.format(name['nom'],name['cognoms'][0],'' if name['fuzzy'] else ' ',name['cognoms'][1])
+
+                final = {
+                    True: { 'ca_ES':'dels següents contractes',
+                            'es_ES':'de los siguientes contratos'},
+                    False: {'ca_ES':'del següent contracte',
+                            'es_ES':'del siguiente contrato'}
+                }
+
+                mail_lang = object.receptor.lang
+                titular = get_clean_name(object.receptor.name, object.receptor.vat, True)
+                contractes = []
+                for mod in object.modification:
+                    contractes.append((
+                        mod.polissa_id.name,
+                        get_clean_name(mod.old_administradora.name, mod.old_administradora.vat, False),
+                    ))
+                plural = len(contractes)>1
+                %>
+                <br>
+                Hola ${titular},<br>
+                <br>
+                % if mail_lang != "es_ES":
+                T’enviem aquest correu per a confirmar-te que s'han modificat les opcions d’administració de l’Oficina Virtual ${final[plural][mail_lang]}:<br>
+                <ul>
+                % for (contracte, administradora) in contractes:
+                    <li>Contracte ${contracte}: s’ha desassignat a la persona administradora ${administradora}.</li>
+                % endfor
+                </ul>
+                Per a qualsevol dubte seguim en contacte.<br>
+                <br>
+                Equip de Som Energia<br>
+
+                % endif
+                % if mail_lang != "ca_ES" and mail_lang != "es_ES":
+                ----------------------------------------------------------------------------------------------------
+                % endif
+                % if mail_lang != "ca_ES":
+                Te enviamos este correo para confirmarte que se han modificado las opciones de administración de la Oficina Virtual ${final[plural][mail_lang]}:<br>
+                <ul>
+                % for (contracte, administradora) in contractes:
+                    <li>Contrato ${contracte}: se ha desasignado a la persona administradora ${administradora}.</li>
+                % endfor
+                </ul>
+                Para cualquier duda seguimos en contacto. <br>
+                <br>
+                Equipo de Som Energia<br>
+                % endif
+                <a href="https://www.somenergia.coop/">www.somenergia.coop</a><br>
+                <br>
+                ${text_legal}
+                </body>
+                </html>
+                ]]></field>
+        </record>
+
+         <!-- Template d'assignació d'administradora cap a administradora -->
+        <record model="poweremail.templates" id="email_assignacio_a_administradora">
+            <field name="name">Admin OV: Assignació/Modificació, per a Administradora</field>
+            <field name="object_name" model="ir.model" search="[('name', '=', 'som.admin.notification')]"/>
+            <field eval="0" name="save_to_drafts"/>
+            <field name="model_int_name">som.admin.notification</field>
+            <field name="def_to">${object.receptor.address[0].email}</field>
+            <field eval="0" name="auto_email"/>
+            <field eval="0" name="single_email"/>
+            <field eval="0" name="use_sign"/>
+            <field name="def_subject">Som Energia: Administració de l’Oficina Virtual</field>
+            <field name="template_language">mako</field>
+            <field eval="0" name="send_on_create"/>
+            <field name="lang"/>
+            <field eval="0" name="send_on_write"/>
+            <field name="def_bcc">support.17062.b8d9f4469fa4d856@helpscout.net</field>
+            <field name="enforce_from_account" model="poweremail.core_accounts" search="[('name','=', 'Empresa Som Energia')]"/>
+            <field name="def_body_text"><![CDATA[<!doctype html>
+                <html>
+                <body>
+                <%
+                from mako.template import Template
+                def render(text_to_render, object_):
+                    templ = Template(text_to_render)
+                    return templ.render_unicode(
+                        object=object_,
+                        format_exceptions=True
+                    )
+                t_obj = object.pool.get('poweremail.templates')
+                md_obj = object.pool.get('ir.model.data')
+                template_id = md_obj.get_object_reference(
+                                    object._cr, object._uid,  'som_poweremail_common_templates', 'common_template_legal_footer'
+                                )[1]
+                text_legal = render(t_obj.read(
+                    object._cr, object._uid, [template_id], ['def_body_text'])[0]['def_body_text'],
+                    object
+                )
+
+                rp_obj = object.pool.get('res.partner')
+                def get_clean_name(composed_name, vat, name_only):
+                    if rp_obj.vat_es_empresa(object._cr, object._uid, vat):
+                        return composed_name
+                    name = rp_obj.separa_cognoms(object._cr, object._uid, composed_name)
+                    if name_only:
+                        return name['nom']
+                    return '{} {}{}{}'.format(name['nom'],name['cognoms'][0],'' if name['fuzzy'] else ' ',name['cognoms'][1])
+
+                permissions = {
+                    'readonly': {'ca_ES':'visualitzar',
+                                'es_ES':'visualizar'},
+                    'manage':   {'ca_ES':'gestionar',
+                                'es_ES':'gestionar'}
+                }
+
+                final = {
+                    True: { 'ca_ES':'dels següents contractes',
+                            'es_ES':'de los siguientes contratos'},
+                    False: {'ca_ES':'del següent contracte',
+                            'es_ES':'del siguiente contrato'}
+                }
+                this_contract_text = {
+                    True: { 'ca_ES':'aquests contractes',
+                            'es_ES':'estos contratos'},
+                    False: {'ca_ES':'aquest contracte',
+                            'es_ES':'este contrato'}
+                }
+
+                mail_lang = object.receptor.lang
+                administradora = get_clean_name(object.receptor.name, object.receptor.vat, True)
+                contractes = []
+                for mod in object.modification:
+                    contractes.append((
+                        mod.polissa_id.name,
+                        get_clean_name(mod.polissa_id.titular.name, mod.polissa_id.titular.vat, False),
+                        permissions[mod.permissions][mail_lang],
+                    ))
+                plural = len(contractes)>1
+                %>
+                <br>
+                Hola ${administradora},<br>
+                <br>
+                % if mail_lang != "es_ES":
+                T’enviem aquest correu per informar-te de les opcions d’administració de l’Oficina Virtual ${final[plural][mail_lang]}:<br>
+                <ul>
+                % for (contracte, titular, permission) in contractes:
+                    <li>Contracte ${contracte}: ${titular} t’ha assignat com a persona administradora per a ${permission} el contracte.</li>
+                % endfor
+                </ul>
+                <br>
+                Així doncs, podràs ${permission} ${this_contract_text[plural][mail_lang]} des de la teva Oficina Virtual, encara que no en siguis la persona titular. El fet que siguis administradora no implica que en siguis el/la responsable legal.
+                <br>
+                <br>
+                Si no has accedit mai a l'Oficina Virtual, <a href="https://ca.support.somenergia.coop/article/109-com-puc-accedir-a-l-oficina-virtual">aquí</a> t’expliquem com fer-ho.
+                <br>
+                <br>
+                Per a qualsevol dubte seguim en contacte.<br>
+                <br>
+                Equip de Som Energia<br>
+
+                % endif
+                % if mail_lang != "ca_ES" and mail_lang != "es_ES":
+                ----------------------------------------------------------------------------------------------------
+                % endif
+                % if mail_lang != "ca_ES":
+                Te enviamos este correo para informarte de las opciones de administración de la Oficina Virtual ${final[plural][mail_lang]}:<br>
+                <ul>
+                % for (contracte, titular, permission) in contractes:
+                    <li>Contrato ${contracte}: ${titular} te ha asignado como persona administradora para ${permission} el contrato.</li>
+                % endfor
+                </ul>
+                <br>
+                Por lo tanto, podrás ${permission} ${this_contract_text[plural][mail_lang]} desde tu Oficina Virtual, aunque no seas la persona titular. El hecho de que seas administradora no implica que seas el/la responsable legal.
+                <br>
+                <br>
+                Si no has accedido nunca a la oficina virtual, <a href="https://es.support.somenergia.coop/article/165-como-puedo-acceder-a-la-oficina-virtual">aquí</a> te explicamos cómo hacerlo.
+                <br>
+                <br>
+                Para cualquier duda seguimos en contacto. <br>
+                <br>
+                Equipo de Som Energia<br>
+                % endif
+                <a href="https://www.somenergia.coop/">www.somenergia.coop</a><br>
+                <br>
+                ${text_legal}
+                </body>
+                </html>
+                ]]></field>
+        </record>
+
+         <!-- Template d'desassignació d'administradora cap a administradora -->
+        <record model="poweremail.templates" id="email_desassignacio_a_administradora">
+            <field name="name">Admin OV: Desassignació, per a Administradora</field>
+            <field name="object_name" model="ir.model" search="[('name', '=', 'som.admin.notification')]"/>
+            <field eval="0" name="save_to_drafts"/>
+            <field name="model_int_name">som.admin.notification</field>
+            <field name="def_to">${object.receptor.address[0].email}</field>
+            <field eval="0" name="auto_email"/>
+            <field eval="0" name="single_email"/>
+            <field eval="0" name="use_sign"/>
+            <field name="def_subject">Som Energia: Administració de l’Oficina Virtual</field>
+            <field name="template_language">mako</field>
+            <field eval="0" name="send_on_create"/>
+            <field name="lang"/>
+            <field eval="0" name="send_on_write"/>
+            <field name="def_bcc">support.17062.b8d9f4469fa4d856@helpscout.net</field>
+            <field name="enforce_from_account" model="poweremail.core_accounts" search="[('name','=', 'Empresa Som Energia')]"/>
+            <field name="def_body_text"><![CDATA[<!doctype html>
+                <html>
+                <body>
+                <%
+                from mako.template import Template
+                def render(text_to_render, object_):
+                    templ = Template(text_to_render)
+                    return templ.render_unicode(
+                        object=object_,
+                        format_exceptions=True
+                    )
+                t_obj = object.pool.get('poweremail.templates')
+                md_obj = object.pool.get('ir.model.data')
+                template_id = md_obj.get_object_reference(
+                                    object._cr, object._uid,  'som_poweremail_common_templates', 'common_template_legal_footer'
+                                )[1]
+                text_legal = render(t_obj.read(
+                    object._cr, object._uid, [template_id], ['def_body_text'])[0]['def_body_text'],
+                    object
+                )
+
+                rp_obj = object.pool.get('res.partner')
+                def get_clean_name(composed_name, vat, name_only):
+                    if rp_obj.vat_es_empresa(object._cr, object._uid, vat):
+                        return composed_name
+                    name = rp_obj.separa_cognoms(object._cr, object._uid, composed_name)
+                    if name_only:
+                        return name['nom']
+                    return '{} {}{}{}'.format(name['nom'],name['cognoms'][0],'' if name['fuzzy'] else ' ',name['cognoms'][1])
+
+                final = {
+                    True: { 'ca_ES':'dels següents contractes',
+                            'es_ES':'de los siguientes contratos'},
+                    False: {'ca_ES':'del següent contracte',
+                            'es_ES':'del siguiente contrato'}
+                }
+
+                mail_lang = object.receptor.lang
+                administradora = get_clean_name(object.receptor.name, object.receptor.vat, True)
+                contractes = []
+                for mod in object.modification:
+                    contractes.append(
+                        mod.polissa_id.name
+                    )
+                plural = len(contractes)>1
+                %>
+                <br>
+                Hola ${administradora},<br>
+                <br>
+                % if mail_lang != "es_ES":
+                T’enviem aquest correu per informar-te de les opcions d’administració de l’Oficina Virtual ${final[plural][mail_lang]}:<br>
+                <ul>
+                % for contracte in contractes:
+                    <li>Contracte ${contracte}: has estat desassignat/ada com a persona administradora del contracte.</li>
+                % endfor
+                </ul>
+                Per a qualsevol dubte seguim en contacte.<br>
+                <br>
+                Equip de Som Energia<br>
+
+                % endif
+                % if mail_lang != "ca_ES" and mail_lang != "es_ES":
+                ----------------------------------------------------------------------------------------------------
+                % endif
+                % if mail_lang != "ca_ES":
+                Te enviamos este correo para informarte de las opciones de administración de la Oficina Virtual ${final[plural][mail_lang]}:<br>
+                <ul>
+                % for contracte in contractes:
+                    <li>Contrato ${contracte}:has sido desasignado/ada como persona administradora del contracto.</li>
+                % endfor
+                </ul>
+                Para cualquier duda seguimos en contacto. <br>
+                <br>
+                Equipo de Som Energia<br>
+                % endif
+                <a href="https://www.somenergia.coop/">www.somenergia.coop</a><br>
+                <br>
+                ${text_legal}
+                </body>
+                </html>
+                ]]></field>
+        </record>
+    </data>
+</openerp>

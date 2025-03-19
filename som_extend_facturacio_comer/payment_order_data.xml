@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+<openerp>
+    <data noupdate="1">
+        <record model="ir.cron" id="ir_cron_remesa_automatica" forcecreate="1">
+            <field name="name">Acción para añadir automáticamente facturas a remesas</field>
+            <field name="active" eval="0"/>
+            <field name="user_id" ref="base.user_admin"/>
+            <field name="interval_number">1</field>
+            <field name="interval_type">days</field>
+            <field name="numbercall">-1</field>
+            <field name="doall" eval="0"/>
+            <field name="nextcall" eval="time.strftime('%Y-%m-%d 00:00:00')"/>
+            <field name="model" eval="'payment.order'"/>
+            <field name="function" eval="'_cronjob_remesa_automatica'"/>
+            <field eval="'({},)'" name="args"/>
+        </record>
+        <record model="payment.mode" id="payment_mode_remesa_automatica">
+            <field name="name">GIR FACTURES</field>
+            <field name="type" search="[('code','=','RECIBO_CSB')]"/>
+            <field name="journal" search="[('id','=',1)]"/>
+            <field name="bank_id" search="[('id','=',1)]"/>
+            <field name="nombre">Som Energia</field>
+            <field name="tipo">sepa19</field>
+            <field name="sufijo">000</field>
+            <field name="sepa_creditor_code">ES24000F55091367</field>
+            <field name="cor1_scheme">True</field>
+            <field name="active">True</field>
+            <field name="require_bank_account">True</field>
+        </record>
+    </data>
+</openerp>

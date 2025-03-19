@@ -1,0 +1,20 @@
+<?xml version="1.0" ?>
+<openerp>
+    <data>
+        <record model="ir.ui.view" id="view_autoconsum_generador_form_som">
+            <field name="name">giscedata.autoconsum.generador.som</field>
+            <field name="model">giscedata.autoconsum.generador</field>
+            <field name="type">form</field>
+            <field name="inherit_id" ref="giscedata_cups.view_autoconsum_generador_form"/>
+            <field name="arch" type="xml">
+                <field name="emmagatzematge" position="replace">
+                    <field name="emmagatzematge" select="2" readonly="0"/>
+                </field>
+                <field name="emmagatzematge" position="after">
+                    <field name="energia_acumulable" select="2"/>
+                    <field name="potencia_sortida" select="2"/>
+                </field>
+            </field>
+        </record>
+    </data>
+</openerp>

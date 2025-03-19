@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<openerp>
+    <data>
+        <record model="ir.header_webkit" id="factura_som_webkit_header">
+            <field name="format">A4</field>
+            <field name="margin_bottom">1.0</field>
+            <field name="margin_top">10.0</field>
+            <field name="margin_left">0.01</field>
+            <field name="margin_right">0.01</field>
+            <field name="name">Factura SOM header</field>
+            <field name="orientation">Portrait</field>
+        </record>
+        <record model="ir.header_webkit" id="rebut_header_sense_fons">
+            <field name="format">A4</field>
+            <field name="margin_bottom">1.0</field>
+            <field name="margin_top">0.01</field>
+            <field name="margin_left">0.01</field>
+            <field name="margin_right">0.01</field>
+            <field name="name">Rebut sense fons header</field>
+            <field name="orientation">Portrait</field>
+            <field name="html"><![CDATA[<html>
+                    <head>
+                        <script>
+                        </script>
+                       <style type="text/css">
+                            ${css}
+                       </style>
+                    </head>
+                        <body >
+                        <br/>
+                        ${_debug or ''}
+                        <br/>
+                    </body>
+                </html>]]>
+            </field>
+            <field name="css" ><![CDATA[
+div.background {
+    display:none;
+}
+.new_page img{
+    display:none;
+}
+div.back{
+    background: none !important;
+}
+.new_page {page-break-after: avoid; display:none;}
+.new_page img {display:none;}
+.last_page { display: none;}
+                ]]>
+            </field>
+        </record>
+    <record model="res.partner.category" id="cat_rp_factura_sign">
+        <field name="name">Signar Factures</field>
+        <field name="active">True</field>
+    </record>
+    <record model="giscedata.polissa.category" id="cat_gp_factura_sign">
+        <field name="name">Signar Factures</field>
+        <field name="active">True</field>
+    </record>
+    </data>
+    <data noupdate="0">
+        <record model="res.config" id="first_date_qr_pot_max">
+            <field name="name">first_date_qr_pot_max</field>
+            <field name="description">Data d'emisió de la factura a partir de la qual ha d'aparèixer el codi QR i potències màximes demandades a la factura</field>
+            <field name="value">2021-09-01</field>
+        </record>
+        <record model="res.config" id="gdo_and_impact_yearly_switch_date">
+            <field name="name">gdo_and_impact_yearly_switch_date</field>
+            <field name="description">Data a partir de la cual es fa servir el nou widget i els valors de Impacte Ambiental i de Garantia d'Origen que hi ha al xml data.</field>
+            <field name="value">2022-05-01</field>
+        </record>
+        <record model="res.config" id="som_environmental_impact_data">
+            <field name="name">som_environmental_impact_data</field>
+            <field name="description">Valors de la taula d'impacto ambiental de Som Energia</field>
+            <field name="value">{'renovable':100.0,'cae':0.0,'gasNatural':0.0,'carbo':0.0,'fuelGas': 0.0,'nuclear': 0.0,'altres': 0.0,'emisionCo2': 0.0,'residuRadio': 0.0,'year': '2023'}</field>
+        </record>
+        <record model="res.config" id="mitjana_environmental_impact_data">
+            <field name="name">mitjana_environmental_impact_data</field>
+            <field name="description">Valors de la taula d'impacto ambiental mitjana nacional</field>
+            <field name="value">{'renovable':50.8,'cae':2.6,'gasNatural':18.3,'carbo':1.5,'fuelGas': 1.2,'nuclear': 20.9,'altres': 4.7,'emisionCo2': 121,'residuRadio': 512,'year': '2023'}</field>
+        </record>
+        <record model="res.config" id="component_gdo_data">
+            <field name="name">component_gdo_data</field>
+            <field name="description">Valors de la taula de Garantia d'Origen (gdo)</field>
+            <field name="value">{'wind_power':151153,'photovoltaic':160497,'hydraulics':56298,'biomassa':6378,'biogas':0,'total': 374326,'year': '2023'}</field>
+        </record>
+        <record model="res.config" id="rep_boe_data">
+            <field name="name">rep_boe_data</field>
+            <field name="description">Repartiment de què es destinen els càrrecs</field>
+            <field name="value">{"r": 13.06, "d": 63.92, "t": 22.36, "o": 0.66}</field>
+        </record>
+    </data>
+    <data noupdate="1">
+        <record model="res.config" id="factura_pdf_cache_flags">
+            <field name="name">factura_pdf_cache_flags</field>
+            <field name="description">Flags per activar/desactivar el guardat de factures via adjunts del correus o adjunts de les factures\n - Enabled --> Activat, sense aquest flag no funciona el sistema de cache, la factura es genera i s'entrega on the fly\n - No_mongo --> No hi ha base de dades documental present, no tenim fitxers (per desenvolupar/testejar)\n - Dont_store --> No guarda la factura en pdf com adjunt directe de la factura </field>
+            <field name="value">['Disabled']</field>
+        </record>
+        <record model="res.config" id="factura_pdf_unsent_store_days">
+            <field name="name">factura_pdf_unsent_store_days</field>
+            <field name="description">Dies que poden passar abans de que es forci guardar el PDF d'una factura que no s'ha enviat i guardat</field>
+            <field name="value">60</field>
+        </record>
+    </data>
+</openerp>

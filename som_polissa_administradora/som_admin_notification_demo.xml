@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<openerp>
+    <data noupdate="0">
+    <record id="adm_01" model="som.admin.modification">
+            <field name="polissa_id" ref="giscedata_polissa.polissa_0001"/>
+            <field name="new_administradora" ref="base.res_partner_agrolait"/>
+            <field name="old_administradora" ref="base.res_partner_asus"/>
+            <field name="permissions">manage</field>
+            <field name="is_legal_representative" eval="1"/>
+            <field name="info">test info polissa 1</field>
+            <field name="error" eval="0"/>
+      </record>
+      <record id="adm_02" model="som.admin.modification">
+            <field name="polissa_id" ref="giscedata_polissa.polissa_0002"/>
+            <field name="new_administradora" ref="base.res_partner_agrolait"/>
+            <field name="old_administradora" ref="base.res_partner_asus"/>
+            <field name="permissions">readonly</field>
+            <field name="is_legal_representative" eval="1"/>
+            <field name="info">test info polissa 2</field>
+            <field name="error" eval="1"/>
+      </record>
+      <record id="adm_03" model="som.admin.modification">
+            <field name="polissa_id" ref="giscedata_polissa.polissa_0003"/>
+            <field name="new_administradora" ref="base.res_partner_agrolait"/>
+            <field name="old_administradora" ref="base.res_partner_asus"/>
+            <field name="permissions">manage</field>
+            <field name="is_legal_representative" eval="0"/>
+            <field name="info">test info polissa 3</field>
+            <field name="error" eval="1"/>
+      </record>
+      <record id="adm_04" model="som.admin.modification">
+            <field name="polissa_id" ref="giscedata_polissa.polissa_0002"/>
+            <field name="new_administradora"></field>
+            <field name="old_administradora" ref="base.res_partner_asus"/>
+            <field name="permissions">manage</field>
+            <field name="is_legal_representative" eval="0"/>
+            <field name="info">test info polissa 4</field>
+            <field name="error" eval="1"/>
+      </record>
+      <record id="adm_05" model="som.admin.modification">
+            <field name="polissa_id" ref="giscedata_polissa.polissa_0001"/>
+            <field name="new_administradora" ref="base.res_partner_agrolait" />
+            <field name="old_administradora"></field>
+            <field name="permissions">manage</field>
+            <field name="is_legal_representative" eval="0"/>
+            <field name="info">test info polissa 5</field>
+            <field name="error" eval="1"/>
+      </record>
+      <record id="adn_01" model="som.admin.notification">
+           <field name="receptor" ref="base.res_partner_agrolait"/>
+            <field name="pending_notification" eval="1"/>
+            <field name="name">Administradora notification</field>
+            <field name="info">Test info, bla, bla bla 1</field>
+            <field name="template_id" ref="email_assignacio_a_titular"/>
+            <field name="modification" eval="[(6, 0, [ref('adm_01'),ref('adm_02'),ref('adm_03')])]"/>
+      </record>
+      <record id="adn_02" model="som.admin.notification">
+            <field name="receptor" ref="base.res_partner_asus"/>
+            <field name="pending_notification" eval="1"/>
+            <field name="name">Administradora notification</field>
+            <field name="info">Test info, bla, bla bla 2</field>
+            <field name="template_id" ref="email_desassignacio_a_titular"/>
+      </record>
+      <record id="adn_03" model="som.admin.notification">
+            <field name="receptor" ref="base.res_partner_agrolait"/>
+            <field name="pending_notification" eval="1"/>
+            <field name="name">Administradora notification</field>
+            <field name="info">Test info, bla, bla bla 3</field>
+            <field name="template_id" ref="email_assignacio_a_administradora"/>
+      </record>
+      <record id="adn_04" model="som.admin.notification">
+            <field name="receptor" ref="base.res_partner_asus"/>
+            <field name="pending_notification" eval="1"/>
+            <field name="name">Administradora notification</field>
+            <field name="info">Test info, bla, bla bla 4</field>
+            <field name="template_id" ref="email_desassignacio_a_administradora"/>
+      </record>
+      <record id="adn_05" model="som.admin.notification">
+            <field name="receptor" ref="base.res_partner_asus"/>
+            <field name="pending_notification" eval="1"/>
+            <field name="name">Administradora notification</field>
+            <field name="info">Test info, bla, bla bla 5</field>
+            <field name="template_id" ref="email_desassignacio_a_administradora"/>
+            <field name="modification" eval="[(6, 0, [ref('adm_04'),ref('adm_05')])]"/>
+      </record>
+    </data>
+</openerp>

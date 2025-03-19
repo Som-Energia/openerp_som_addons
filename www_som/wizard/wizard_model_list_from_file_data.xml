@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+    <data>
+        <record model="wizard.model.list.from.file.filter" id="model_list_wizard_filter_email_id">
+            <field name="model">res.partner</field>
+            <field name="name">Email</field>
+            <field name="column">www_email</field>
+        </record>
+    </data>
+</openerp>

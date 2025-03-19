@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+        <record model="ir.ui.view" id="view_giscedata_lectures_lectura_origen_comer_tree">
+            <field name="name">giscedata.lectures.lectura.origen.comer.tree</field>
+            <field name="model">giscedata.lectures.lectura</field>
+			<field name="inherit_id" ref="giscedata_lectures.view_giscedata_lectures_lectura_tree" />
+            <field name="type">tree</field>
+            <field name="arch" type="xml">
+                <field name="origen_id" position="after">
+                    <field name="origen_comer_id"/>
+                </field>
+            </field>
+        </record>
+        <record model="ir.ui.view" id="view_giscedata_lectures_comptador_tree">
+            <field name="name">giscedata.lectures.comptador.tree</field>
+            <field name="model">giscedata.lectures.comptador</field>
+            <field name="inherit_id" ref="giscedata_lectures.view_giscedata_lectures_comptador_tree" />
+            <field name="type">tree</field>
+            <field name="arch" type="xml">
+                    <field name="meter_type" position="after">
+                        <field name="polissa"/>
+                    </field>
+            </field>
+        </record>
+    </data>
+</openerp>

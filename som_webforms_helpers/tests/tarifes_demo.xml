@@ -1,0 +1,438 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+    <data noupdate="0">
+        <record model="product.pricelist" id="giscedata_facturacio.pricelist_tarifas_electricidad_test">
+            <field name="name">2.0A_SOM</field>
+            <field name="type">sale</field>
+            <field name="active">True</field>
+        </record>
+        <record model="giscedata.polissa.tarifa" id="giscedata_polissa.tarifa_20A_test">
+            <field name="name">2.0ATest</field>
+            <field name="llistes_preus_comptatibles" eval="[(6,0,[ref('giscedata_facturacio.pricelist_tarifas_electricidad_test')])]"/>
+        </record>
+        <record model="product.pricelist.version" id="version_pricelist_tarifas_electricidad_test">
+            <field name="name">Versio 1</field>
+            <field name="active">True</field>
+            <field name="date_start">2021-01-01</field>
+            <field name="date_end" eval="False"/>
+            <field name="pricelist_id" ref="giscedata_facturacio.pricelist_tarifas_electricidad_test"/>
+        </record>
+        <record model="product.pricelist.item" id="item_version_pricelist_tarifas_electricidad_test">
+            <field name="name">Test</field>
+            <field name="price_version_id" ref="version_pricelist_tarifas_electricidad_test"/>
+            <field name="base" eval="-1"/>
+            <field name="price_surcharge">10.0</field>
+            <field name="sequence">999</field>
+            <field name="product_id" eval="1"/>
+        </record>
+        <record model="product.pricelist.version" id="version_pricelist_tarifas_electricidad_test">
+            <field name="name">Versio 1</field>
+            <field name="active">True</field>
+            <field name="date_start">2020-06-01</field>
+            <field name="date_end" eval="False"/>
+            <field name="pricelist_id" ref="giscedata_facturacio.pricelist_tarifas_electricidad_test"/>
+        </record>
+        <record model="product.pricelist.item" id="item_version_pricelist_tarifas_electricidad_test">
+            <field name="name">Test</field>
+            <field name="price_version_id" ref="version_pricelist_tarifas_electricidad_test"/>
+            <field name="base" eval="-1"/>
+            <field name="price_surcharge">12.0</field>
+            <field name="sequence">999</field>
+            <field name="product_id" eval="1"/>
+        </record>
+        <record model="giscedata.polissa.tarifa.periodes" id="p1_test">
+            <field name="tarifa" ref="giscedata_polissa.tarifa_20A_test"/>
+            <field name="tipus">tp</field>
+            <field name="name">P1</field>
+            <field name="product_id" eval="1"/>
+        </record>
+        <record model="giscedata.polissa.tarifa.periodes" id="p2_test">
+            <field name="tarifa" ref="giscedata_polissa.tarifa_20A_test"/>
+            <field name="tipus">tp</field>
+            <field name="name">P2</field>
+            <field name="product_id" eval="1"/>
+        </record>
+        <!--Tariff 20TD-->
+        <record model="product.pricelist" id="pricelist_tarifas_electricidad_20TD_SOM_test">
+            <field name="name">2.0TD_SOM</field>
+            <field name="type">sale</field>
+            <field name="active">True</field>
+        </record>
+        <record model="product.pricelist" id="pricelist_tarifas_electricidad_20TD_SOM_V2_test">
+            <field name="name">2.0TD_V2_SOM</field>
+            <field name="type">sale</field>
+            <field name="active">True</field>
+        </record>
+        <record model="giscedata.polissa.tarifa" id="tarifa_20TD_test">
+            <field name="name">2.0TD Test</field>
+            <field name="llistes_preus_comptatibles" eval="[(6,0,[ref('pricelist_tarifas_electricidad_20TD_SOM_test'), ref('pricelist_tarifas_electricidad_20TD_SOM_V2_test')])]"/>
+        </record>
+        <record model="product.product" id="p1_p_tarifa_20TD_test">
+            <field name="name">P1</field>
+            <field name="categ_id" ref="giscedata_polissa.categ_p_t20TD"/>
+            <field name="type">service</field>
+            <field name="procure_method">make_to_stock</field>
+            <field name="standard_price">25.383055</field>
+            <field name="supply_method">buy</field>
+            <field name="uom_id" ref="giscedata_polissa.uom_pot_elec"/>
+            <field name="uom_po_id" ref="giscedata_polissa.uom_pot_elec"/>
+        </record>
+        <record model="giscedata.polissa.tarifa.periodes" id="p1_p_20TD_test">
+            <field name="tarifa" ref="tarifa_20TD_test"/>
+            <field name="tipus">tp</field>
+            <field name="name">P1</field>
+            <field name="product_id" ref="p1_p_tarifa_20TD_test"/>
+        </record>
+        <record model="product.product" id="p2_p_tarifa_20TD_test">
+            <field name="name">P2</field>
+            <field name="categ_id" ref="giscedata_polissa.categ_p_t20TD"/>
+            <field name="type">service</field>
+            <field name="procure_method">make_to_stock</field>
+            <field name="standard_price">1.342713</field>
+            <field name="supply_method">buy</field>
+            <field name="uom_id" ref="giscedata_polissa.uom_pot_elec"/>
+            <field name="uom_po_id" ref="giscedata_polissa.uom_pot_elec"/>
+        </record>
+        <record model="giscedata.polissa.tarifa.periodes" id="p2_p_20TD_test">
+            <field name="tarifa" ref="tarifa_20TD_test"/>
+            <field name="tipus">tp</field>
+            <field name="name">P2</field>
+            <field name="product_id" ref="p2_p_tarifa_20TD_test"/>
+        </record>
+        <record model="product.product" id="p1_e_tarifa_20TD_test">
+            <field name="name">P1</field>
+            <field name="categ_id" ref="giscedata_polissa.categ_e_t20TD"/>
+            <field name="type">service</field>
+            <field name="procure_method">make_to_stock</field>
+            <field name="standard_price">0.072991</field>
+            <field name="supply_method">buy</field>
+            <field name="uom_id" ref="giscedata_polissa.uom_eneg_elec"/>
+            <field name="uom_po_id" ref="giscedata_polissa.uom_eneg_elec"/>
+        </record>
+        <record model="product.product" id="p1_gkwh_tarifa_20TD_test">
+            <field name="name">P1</field>
+            <field name="categ_id" ref="som_generationkwh.categ_gkwh_t20TD"/>
+            <field name="type">service</field>
+            <field name="procure_method">make_to_stock</field>
+            <field name="standard_price">1.0</field>
+            <field name="supply_method">buy</field>
+            <field name="uom_id" ref="giscedata_polissa.uom_eneg_elec"/>
+            <field name="uom_po_id" ref="giscedata_polissa.uom_eneg_elec"/>
+        </record>
+        <record model="product.product" id="p1_reactiva_tarifa_20TD_test">
+            <field name="name">P1</field>
+            <field name="categ_id" ref="giscedata_polissa.categ_r_t20TD"/>
+            <field name="type">service</field>
+            <field name="procure_method">make_to_stock</field>
+            <field name="standard_price">1.0</field>
+            <field name="supply_method">buy</field>
+            <field name="uom_id" ref="giscedata_polissa.uom_eneg_elec"/>
+            <field name="uom_po_id" ref="giscedata_polissa.uom_eneg_elec"/>
+        </record>
+        <record model="giscedata.polissa.tarifa.periodes" id="p1_e_20TD_test">
+            <field name="tarifa" ref="tarifa_20TD_test"/>
+            <field name="tipus">te</field>
+            <field name="name">P1</field>
+            <field name="product_id" ref="p1_e_tarifa_20TD_test"/>
+            <field name="product_gkwh_id" ref="p1_gkwh_tarifa_20TD_test"/>
+            <field name="product_reactiva_id" ref="p1_reactiva_tarifa_20TD_test"/>
+        </record>
+        <record model="product.product" id="p2_e_tarifa_20TD_test">
+            <field name="name">P2</field>
+            <field name="categ_id" ref="giscedata_polissa.categ_e_t20TD"/>
+            <field name="type">service</field>
+            <field name="procure_method">make_to_stock</field>
+            <field name="standard_price">0.028573</field>
+            <field name="supply_method">buy</field>
+            <field name="uom_id" ref="giscedata_polissa.uom_eneg_elec"/>
+            <field name="uom_po_id" ref="giscedata_polissa.uom_eneg_elec"/>
+        </record>
+        <record model="product.product" id="p2_gkwh_tarifa_20TD_test">
+            <field name="name">P2</field>
+            <field name="categ_id" ref="som_generationkwh.categ_gkwh_t20TD"/>
+            <field name="type">service</field>
+            <field name="procure_method">make_to_stock</field>
+            <field name="standard_price">1.0</field>
+            <field name="supply_method">buy</field>
+            <field name="uom_id" ref="giscedata_polissa.uom_eneg_elec"/>
+            <field name="uom_po_id" ref="giscedata_polissa.uom_eneg_elec"/>
+        </record>
+        <record model="giscedata.polissa.tarifa.periodes" id="p2_e_20TD_test">
+            <field name="tarifa" ref="tarifa_20TD_test"/>
+            <field name="tipus">te</field>
+            <field name="name">P2</field>
+            <field name="product_id" ref="p2_e_tarifa_20TD_test"/>
+            <field name="product_gkwh_id" ref="p2_gkwh_tarifa_20TD_test"/>
+        </record>
+        <record model="product.product" id="p3_e_tarifa_20TD_test">
+            <field name="name">P3</field>
+            <field name="categ_id" ref="giscedata_polissa.categ_e_t20TD"/>
+            <field name="type">service</field>
+            <field name="procure_method">make_to_stock</field>
+            <field name="standard_price">0.003175</field>
+            <field name="supply_method">buy</field>
+            <field name="uom_id" ref="giscedata_polissa.uom_eneg_elec"/>
+            <field name="uom_po_id" ref="giscedata_polissa.uom_eneg_elec"/>
+        </record>
+        <record model="product.product" id="p3_gkwh_tarifa_20TD_test">
+            <field name="name">P3</field>
+            <field name="categ_id" ref="som_generationkwh.categ_gkwh_t20TD"/>
+            <field name="type">service</field>
+            <field name="procure_method">make_to_stock</field>
+            <field name="standard_price">1.0</field>
+            <field name="supply_method">buy</field>
+            <field name="uom_id" ref="giscedata_polissa.uom_eneg_elec"/>
+            <field name="uom_po_id" ref="giscedata_polissa.uom_eneg_elec"/>
+        </record>
+        <record model="giscedata.polissa.tarifa.periodes" id="p3_e_20TD_test">
+            <field name="tarifa" ref="tarifa_20TD_test"/>
+            <field name="tipus">te</field>
+            <field name="name">P3</field>
+            <field name="product_id" ref="p3_e_tarifa_20TD_test"/>
+            <field name="product_gkwh_id" ref="p3_gkwh_tarifa_20TD_test"/>
+        </record>
+        <!--Tariff 20TD Product V2-->
+        <record model="product.product" id="p1_p_tarifa_20TD_V2_test">
+            <field name="name">P1</field>
+            <field name="categ_id" ref="giscedata_polissa.categ_p_t20TD"/>
+            <field name="type">service</field>
+            <field name="procure_method">make_to_stock</field>
+            <field name="standard_price">10.0</field>
+            <field name="supply_method">buy</field>
+            <field name="uom_id" ref="giscedata_polissa.uom_pot_elec"/>
+            <field name="uom_po_id" ref="giscedata_polissa.uom_pot_elec"/>
+        </record>
+        <record model="giscedata.polissa.tarifa.periodes" id="p1_p_20TD_V2_test">
+            <field name="tarifa" ref="tarifa_20TD_test"/>
+            <field name="tipus">tp</field>
+            <field name="name">P1</field>
+            <field name="product_id" ref="p1_p_tarifa_20TD_V2_test"/>
+        </record>
+        <record model="product.product" id="p2_p_tarifa_20TD_V2_test">
+            <field name="name">P2</field>
+            <field name="categ_id" ref="giscedata_polissa.categ_p_t20TD"/>
+            <field name="type">service</field>
+            <field name="procure_method">make_to_stock</field>
+            <field name="standard_price">20.0</field>
+            <field name="supply_method">buy</field>
+            <field name="uom_id" ref="giscedata_polissa.uom_pot_elec"/>
+            <field name="uom_po_id" ref="giscedata_polissa.uom_pot_elec"/>
+        </record>
+        <record model="giscedata.polissa.tarifa.periodes" id="p2_p_20TD_V2_test">
+            <field name="tarifa" ref="tarifa_20TD_test"/>
+            <field name="tipus">tp</field>
+            <field name="name">P2</field>
+            <field name="product_id" ref="p2_p_tarifa_20TD_V2_test"/>
+        </record>
+        <record model="product.product" id="p1_e_tarifa_20TD_V2_test">
+            <field name="name">P1</field>
+            <field name="categ_id" ref="giscedata_polissa.categ_e_t20TD"/>
+            <field name="type">service</field>
+            <field name="procure_method">make_to_stock</field>
+            <field name="standard_price">11.0</field>
+            <field name="supply_method">buy</field>
+            <field name="uom_id" ref="giscedata_polissa.uom_eneg_elec"/>
+            <field name="uom_po_id" ref="giscedata_polissa.uom_eneg_elec"/>
+        </record>
+        <record model="product.product" id="p1_gkwh_tarifa_20TD_V2_test">
+            <field name="name">P1</field>
+            <field name="categ_id" ref="som_generationkwh.categ_gkwh_t20TD"/>
+            <field name="type">service</field>
+            <field name="procure_method">make_to_stock</field>
+            <field name="supply_method">buy</field>
+            <field name="uom_id" ref="giscedata_polissa.uom_eneg_elec"/>
+            <field name="uom_po_id" ref="giscedata_polissa.uom_eneg_elec"/>
+        </record>
+        <record model="giscedata.polissa.tarifa.periodes" id="p1_e_20TD_V2_test">
+            <field name="tarifa" ref="tarifa_20TD_test"/>
+            <field name="tipus">te</field>
+            <field name="name">P1</field>
+            <field name="product_id" ref="p1_e_tarifa_20TD_V2_test"/>
+            <field name="product_gkwh_id" ref="p1_gkwh_tarifa_20TD_V2_test"/>
+        </record>
+        <record model="product.product" id="p2_e_tarifa_20TD_V2_test">
+            <field name="name">P2</field>
+            <field name="categ_id" ref="giscedata_polissa.categ_e_t20TD"/>
+            <field name="type">service</field>
+            <field name="procure_method">make_to_stock</field>
+            <field name="standard_price">21.0</field>
+            <field name="supply_method">buy</field>
+            <field name="uom_id" ref="giscedata_polissa.uom_eneg_elec"/>
+            <field name="uom_po_id" ref="giscedata_polissa.uom_eneg_elec"/>
+        </record>
+        <record model="product.product" id="p2_gkwh_tarifa_20TD_V2_test">
+            <field name="name">P2</field>
+            <field name="categ_id" ref="som_generationkwh.categ_gkwh_t20TD"/>
+            <field name="type">service</field>
+            <field name="procure_method">make_to_stock</field>
+            <field name="supply_method">buy</field>
+            <field name="uom_id" ref="giscedata_polissa.uom_eneg_elec"/>
+            <field name="uom_po_id" ref="giscedata_polissa.uom_eneg_elec"/>
+        </record>
+        <record model="giscedata.polissa.tarifa.periodes" id="p2_e_20TD_V2_test">
+            <field name="tarifa" ref="tarifa_20TD_test"/>
+            <field name="tipus">te</field>
+            <field name="name">P2</field>
+            <field name="product_id" ref="p2_e_tarifa_20TD_V2_test"/>
+            <field name="product_gkwh_id" ref="p2_gkwh_tarifa_20TD_V2_test"/>
+        </record>
+        <record model="product.product" id="p3_e_tarifa_20TD_V2_test">
+            <field name="name">P3</field>
+            <field name="categ_id" ref="giscedata_polissa.categ_e_t20TD"/>
+            <field name="type">service</field>
+            <field name="procure_method">make_to_stock</field>
+            <field name="standard_price">31.0</field>
+            <field name="supply_method">buy</field>
+            <field name="uom_id" ref="giscedata_polissa.uom_eneg_elec"/>
+            <field name="uom_po_id" ref="giscedata_polissa.uom_eneg_elec"/>
+        </record>
+        <record model="product.product" id="p3_gkwh_tarifa_20TD_V2_test">
+            <field name="name">P3</field>
+            <field name="categ_id" ref="som_generationkwh.categ_gkwh_t20TD"/>
+            <field name="type">service</field>
+            <field name="procure_method">make_to_stock</field>
+            <field name="supply_method">buy</field>
+            <field name="uom_id" ref="giscedata_polissa.uom_eneg_elec"/>
+            <field name="uom_po_id" ref="giscedata_polissa.uom_eneg_elec"/>
+        </record>
+        <record model="giscedata.polissa.tarifa.periodes" id="p3_e_20TD_V2_test">
+            <field name="tarifa" ref="tarifa_20TD_test"/>
+            <field name="tipus">te</field>
+            <field name="name">P3</field>
+            <field name="product_id" ref="p3_e_tarifa_20TD_V2_test"/>
+            <field name="product_gkwh_id" ref="p3_e_tarifa_20TD_V2_test"/>
+        </record>
+        <!-- Tariff versions-->
+        <record model="product.pricelist.version" id="version_pricelist_tarifas_electricidad_20TD_SOM_20230101">
+            <field name="name">2.0TD_SOM 2023-01-01</field>
+            <field name="active">True</field>
+            <field name="date_start">2023-01-01</field>
+            <field name="date_end" eval="False"/>
+            <field name="pricelist_id" ref="pricelist_tarifas_electricidad_20TD_SOM_test"/>
+        </record>
+        <record model="product.pricelist.item" id="item_version_pricelist_tarifas_electricidad_2TD_SOM_P1_P_test">
+            <field name="name">2.0TD P1 POTENCIA 2.0TD_SOM</field>
+            <field name="price_version_id" ref="version_pricelist_tarifas_electricidad_20TD_SOM_20230101"/>
+            <field name="base" eval="-3"/>
+            <field name="base_price">27.203</field>
+            <field name="price_surcharge">0.0</field>
+            <field name="sequence">11</field>
+            <field name="product_id" ref="p1_p_tarifa_20TD_test"/>
+        </record>
+        <record model="product.pricelist.item" id="item_version_pricelist_tarifas_electricidad_2TD_SOM_P2_P_test">
+            <field name="name">2.0TD P2 POTENCIA 2.0TD_SOM</field>
+            <field name="price_version_id" ref="version_pricelist_tarifas_electricidad_20TD_SOM_20230101"/>
+            <field name="base" eval="-3"/>
+            <field name="base_price">3.163</field>
+            <field name="price_surcharge">0.0</field>
+            <field name="sequence">12</field>
+            <field name="product_id" ref="p2_p_tarifa_20TD_test"/>
+        </record>
+        <record model="product.pricelist.item" id="item_version_pricelist_tarifas_electricidad_2TD_SOM_P1_E_test">
+            <field name="name">2.0TD P1 ENERGIA 2.0TD_SOM</field>
+            <field name="price_version_id" ref="version_pricelist_tarifas_electricidad_20TD_SOM_20230101"/>
+            <field name="base" eval="-3"/>
+            <field name="base_price">0.342</field>
+            <field name="price_surcharge">0.0</field>
+            <field name="sequence">21</field>
+            <field name="product_id" ref="p1_e_tarifa_20TD_test"/>
+        </record>
+        <record model="product.pricelist.item" id="item_version_pricelist_tarifas_electricidad_2TD_SOM_P1_GKWH_test">
+            <field name="name">2.0TD P1 ENERGIA GKWH 2.0TD_SOM</field>
+            <field name="price_version_id" ref="version_pricelist_tarifas_electricidad_20TD_SOM_20230101"/>
+            <field name="base" eval="-3"/>
+            <field name="base_price">0.170</field>
+            <field name="price_surcharge">0.0</field>
+            <field name="sequence">27</field>
+            <field name="product_id" ref="p1_gkwh_tarifa_20TD_test"/>
+        </record>
+        <record model="product.pricelist.item" id="item_version_pricelist_tarifas_electricidad_2TD_SOM_P2_GKWH_test">
+            <field name="name">2.0TD P2 ENERGIA GKWH 2.0TD_SOM</field>
+            <field name="price_version_id" ref="version_pricelist_tarifas_electricidad_20TD_SOM_20230101"/>
+            <field name="base" eval="-3"/>
+            <field name="base_price">0.12</field>
+            <field name="price_surcharge">0.0</field>
+            <field name="sequence">28</field>
+            <field name="product_id" ref="p2_gkwh_tarifa_20TD_test"/>
+        </record>
+        <record model="product.pricelist.item" id="item_version_pricelist_tarifas_electricidad_2TD_SOM_P3_GKWH_test">
+            <field name="name">2.0TD P1 ENERGIA GKWH 2.0TD_SOM</field>
+            <field name="price_version_id" ref="version_pricelist_tarifas_electricidad_20TD_SOM_20230101"/>
+            <field name="base" eval="-3"/>
+            <field name="base_price">0.095</field>
+            <field name="price_surcharge">0.0</field>
+            <field name="sequence">29</field>
+            <field name="product_id" ref="p3_gkwh_tarifa_20TD_test"/>
+        </record>
+        <record model="product.pricelist.item" id="item_version_pricelist_tarifas_electricidad_2TD_SOM_P2_E_test">
+            <field name="name">2.0TD P2 ENERGIA 2.0TD_SOM</field>
+            <field name="price_version_id" ref="version_pricelist_tarifas_electricidad_20TD_SOM_20230101"/>
+            <field name="base" eval="-3"/>
+            <field name="base_price">0.281</field>
+            <field name="price_surcharge">0.0</field>
+            <field name="sequence">22</field>
+            <field name="product_id" ref="p2_e_tarifa_20TD_test"/>
+        </record>
+        <record model="product.pricelist.item" id="item_version_pricelist_tarifas_electricidad_2TD_SOM_P3_E_test">
+            <field name="name">2.0TD P3 ENERGIA 2.0TD_SOM</field>
+            <field name="price_version_id" ref="version_pricelist_tarifas_electricidad_20TD_SOM_20230101"/>
+            <field name="base" eval="-3"/>
+            <field name="base_price">0.234</field>
+            <field name="price_surcharge">0.0</field>
+            <field name="sequence">23</field>
+            <field name="product_id" ref="p3_e_tarifa_20TD_test"/>
+        </record>
+        <record model="product.pricelist.version" id="version_pricelist_tarifas_electricidad_20TD_SOM_20220601">
+            <field name="name">2.0TD_SOM 2022-06-01</field>
+            <field name="active">True</field>
+            <field name="date_start">2022-06-01</field>
+            <field name="date_end"> 2022-12-31</field>
+            <field name="pricelist_id" ref="pricelist_tarifas_electricidad_20TD_SOM_V2_test"/>
+        </record>
+        <record model="product.pricelist.item" id="item_version_pricelist_tarifas_electricidad_2TD_SOM_P1_P_V2_test">
+            <field name="name">2.0TD P1 POTENCIA 2.0TD_SOM</field>
+            <field name="price_version_id" ref="version_pricelist_tarifas_electricidad_20TD_SOM_20220601"/>
+            <field name="base" eval="-3"/>
+            <field name="base_price">17.203</field>
+            <field name="price_surcharge">0.0</field>
+            <field name="sequence">13</field>
+            <field name="product_id" ref="p1_p_tarifa_20TD_V2_test"/>
+        </record>
+        <record model="product.pricelist.item" id="item_version_pricelist_tarifas_electricidad_2TD_SOM_P2_P_V2_test">
+            <field name="name">2.0TD P2 POTENCIA 2.0TD_SOM</field>
+            <field name="price_version_id" ref="version_pricelist_tarifas_electricidad_20TD_SOM_20220601"/>
+            <field name="base" eval="-3"/>
+            <field name="base_price">2.163</field>
+            <field name="price_surcharge">0.0</field>
+            <field name="sequence">14</field>
+            <field name="product_id" ref="p2_p_tarifa_20TD_V2_test"/>
+        </record>
+        <record model="product.pricelist.item" id="item_version_pricelist_tarifas_electricidad_2TD_SOM_P1_E_V2_test">
+            <field name="name">2.0TD P1 ENERGIA 2.0TD_SOM</field>
+            <field name="price_version_id" ref="version_pricelist_tarifas_electricidad_20TD_SOM_20220601"/>
+            <field name="base" eval="-3"/>
+            <field name="base_price">0.242</field>
+            <field name="price_surcharge">0.0</field>
+            <field name="sequence">24</field>
+            <field name="product_id" ref="p1_e_tarifa_20TD_V2_test"/>
+        </record>
+        <record model="product.pricelist.item" id="item_version_pricelist_tarifas_electricidad_2TD_SOM_P2_E_V2_test">
+            <field name="name">2.0TD P2 ENERGIA 2.0TD_SOM</field>
+            <field name="price_version_id" ref="version_pricelist_tarifas_electricidad_20TD_SOM_20220601"/>
+            <field name="base" eval="-3"/>
+            <field name="base_price">0.181</field>
+            <field name="price_surcharge">0.0</field>
+            <field name="sequence">25</field>
+            <field name="product_id" ref="p2_e_tarifa_20TD_V2_test"/>
+        </record>
+        <record model="product.pricelist.item" id="item_version_pricelist_tarifas_electricidad_2TD_SOM_P3_E_V2_test">
+            <field name="name">2.0TD P3 ENERGIA 2.0TD_SOM</field>
+            <field name="price_version_id" ref="version_pricelist_tarifas_electricidad_20TD_SOM_20220601"/>
+            <field name="base" eval="-3"/>
+            <field name="base_price">0.182</field>
+            <field name="price_surcharge">0.0</field>
+            <field name="sequence">26</field>
+            <field name="product_id" ref="p3_e_tarifa_20TD_V2_test"/>
+        </record>
+    </data>
+</openerp>

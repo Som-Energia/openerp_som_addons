@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+        <record model="res.partner.canal" id="giscedata_switching.atr_cnmc_canal_telefonico">
+            <field name="active" eval="False"/>
+        </record>
+        <record model="res.partner.canal" id="giscedata_switching.atr_cnmc_canal_online">
+            <field name="active" eval="False"/>
+        </record>
+        <record model="res.partner.canal" id="giscedata_switching.atr_cnmc_canal_domiciliario">
+            <field name="active" eval="False"/>
+        </record>
+        <record model="res.partner.canal" id="giscedata_switching.atr_cnmc_canal_presencial">
+            <field name="active" eval="False"/>
+        </record>
+        <record model="res.partner.canal" id="giscedata_switching.atr_cnmc_canal_resto">
+            <field name="active" eval="False"/>
+        </record>
+    </data>
+</openerp>

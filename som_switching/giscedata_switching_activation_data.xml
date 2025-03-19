@@ -1,0 +1,88 @@
+<?xml version="1.0"?>
+<openerp>
+    <data>
+        <!--R1-->
+        <record model="giscedata.switching.activation.config" id="sw_act_r105_cac">
+            <field name="proces_id" ref="giscedata_switching.sw_proces_r1"/>
+            <field name="step_id" ref="giscedata_switching.sw_step_r1_05"/>
+            <field name="description">Quan s'importa o activa un R1-05 que sigui dels subtipus 009 o 036,
+                sigui procedent, estigui en estat obert i el seu contracte no tingui refacturacio pendent,
+                es treu facturacio suspesa i refacturacio pendent. A més es marca el CAC com a
+                "Tancar al finalitzar CAC", cosa que provoca que el propi cas CAC es passi a finalitzat i
+                el R1 també.</field>
+            <field name="method">tancar_reclamacio_cac</field>
+            <field name="conditions">Aplica sempre</field>
+            <field name="comerdist">comer</field>
+        </record>
+        <!--M1-->
+        <record model="giscedata.switching.activation.config" id="sw_act_m102_ct_subrogacio_mailchimp">
+            <field name="proces_id" ref="giscedata_switching.sw_proces_m1"/>
+            <field name="step_id" ref="giscedata_switching.sw_step_m1_02"/>
+            <field name="description">Dóna de baixa de la llista de Mailchimp indicada a la variable
+            de configuració "mailchimp_clients_list" l'antic titular si aquest no té cap més contracte actiu.
+            Aplica pels canvis de titular per subrogació en activar el pas 02.</field>
+            <field name="method">ct_baixa_mailchimp</field>
+            <field name="conditions">[('01', 'sollicitudadm', 'in', ['A', 'S'])]</field>
+            <field name="comerdist">comer</field>
+            <field name="sequence">999</field>
+        </record>
+        <record model="giscedata.switching.activation.config" id="sw_act_m105_ct_traspas_mailchimp">
+            <field name="proces_id" ref="giscedata_switching.sw_proces_m1"/>
+            <field name="step_id" ref="giscedata_switching.sw_step_m1_05"/>
+            <field name="description">Dóna de baixa de la llista de Mailchimp indicada a la variable
+            de configuració "mailchimp_clients_list" l'antic titular si aquest no té cap més contracte actiu.
+            Aplica pels canvis de titular per transpàs en activar el pas 05.</field>
+            <field name="method">ct_baixa_mailchimp</field>
+            <field name="conditions">[('01', 'sollicitudadm','in', ['A', 'S'])]</field>
+            <field name="comerdist">comer</field>
+            <field name="sequence">999</field>
+        </record>
+        <!--Cn-->
+        <record model="giscedata.switching.activation.config" id="sw_act_c106_baixa_mailchimp">
+            <field name="proces_id" ref="giscedata_switching.sw_proces_c1"/>
+            <field name="step_id" ref="giscedata_switching.sw_step_c1_06"/>
+            <field name="description">Dóna de baixa el titular de la llista de Mailchimp indicada a la variable
+            de configuració "mailchimp_clients_list" si aquest no té cap més contracte actiu.</field>
+            <field name="method">cn06_bn05_baixa_mailchimp</field>
+            <field name="conditions">Aplica sempre</field>
+            <field name="comerdist">comer</field>
+            <field name="sequence">999</field>
+        </record>
+        <record model="giscedata.switching.activation.config" id="sw_act_c206_baixa_mailchimp">
+            <field name="proces_id" ref="giscedata_switching.sw_proces_c2"/>
+            <field name="step_id" ref="giscedata_switching.sw_step_c2_06"/>
+            <field name="description">Dóna de baixa el titular de la llista de Mailchimp indicada a la variable
+            de configuració "mailchimp_clients_list" si aquest no té cap més contracte actiu.</field>
+            <field name="method">cn06_bn05_baixa_mailchimp</field>
+            <field name="conditions">Aplica sempre</field>
+            <field name="comerdist">comer</field>
+            <field name="sequence">999</field>
+        </record>
+        <!--Bn-->
+        <record model="giscedata.switching.activation.config" id="sw_act_b105_baixa_mailchimp">
+            <field name="proces_id" ref="giscedata_switching.sw_proces_b1"/>
+            <field name="step_id" ref="giscedata_switching.sw_step_b1_05"/>
+            <field name="description">Dóna de baixa el titular de la llista de Mailchimp indicada a la variable
+            de configuració "mailchimp_clients_list" si aquest no té cap més contracte actiu.</field>
+            <field name="method">cn06_bn05_baixa_mailchimp</field>
+            <field name="conditions">Aplica sempre</field>
+            <field name="comerdist">comer</field>
+            <field name="sequence">999</field>
+        </record>
+        <record model="giscedata.switching.activation.config" id="sw_act_b205_baixa_mailchimp">
+            <field name="proces_id" ref="giscedata_switching.sw_proces_b2"/>
+            <field name="step_id" ref="giscedata_switching.sw_step_b2_05"/>
+            <field name="description">Dóna de baixa el titular de la llista de Mailchimp indicada a la variable
+            de configuració "mailchimp_clients_list" si aquest no té cap més contracte actiu.</field>
+            <field name="method">cn06_bn05_baixa_mailchimp</field>
+            <field name="conditions">Aplica sempre</field>
+            <field name="comerdist">comer</field>
+            <field name="sequence">999</field>
+        </record>
+    </data>
+    <data noupdate="1">
+        <record model="giscedata.switching.activation.config" id="sw_act_r105_cac">
+            <field name="is_automatic" eval="True"/>
+        </record>
+    </data>
+</openerp>

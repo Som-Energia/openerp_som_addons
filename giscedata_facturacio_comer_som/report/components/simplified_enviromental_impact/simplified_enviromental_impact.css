@@ -1,0 +1,73 @@
+  .sei_box {
+    float: left;
+    width: 49%;
+    padding: 4px;
+  }
+  .sei_subtitle{
+    background-color: lightgrey;
+    color: black;
+    font-weight: bold;
+    text-align: center;
+  }
+  .sei_info{
+    background-color: grey;
+    color: white;
+    font-weight: bold;
+    text-align: center;
+  }
+  .sei_table_r td{
+    border: 1px solid;
+    width: 50%;
+  }
+  .sei_table_r tr:nth-child(odd){
+    border: 1px solid;
+    background-color: #ffffff;
+  }
+  .sei_table_r tr:nth-child(even){
+    border: 1px solid;
+    background-color: #ffffff;
+  }
+  .sei_renewable_img {
+    text-align: center;
+    padding: 0px 0px 0px 0px;
+  }
+  .sei_table_l td{
+    border: 1px solid;
+    width: 33%;
+    font-weight: bold;
+    padding: 0px;
+  }
+  .sei_table_l tr:nth-child(odd){
+    border: 1px solid;
+    background-color: #ffffff;
+  }
+  .sei_table_l tr:nth-child(even){
+    border: 1px solid;
+    background-color: #ffffff;
+  }
+  .sei_table_l thead{
+    text-align: center;
+  }
+  .sei_cell {
+    padding: 0px 50px 0px 0px;
+    text-align: right;
+  }
+  .alignright {
+    text-align: right;
+    font-weight: bold;
+  }
+  .sei_box_noborder table{
+    border-collapse: separate;
+    padding: 0px;
+    border: 0px;
+  }
+  .sei_box_noborder td{
+    padding: 0px;
+    border: 0px;
+  }
+  .sei_box_noborder td:nth-child(odd){
+    width: 85%
+  }
+  .sei_box_noborder td:nth-child(even){
+    width: 15%
+  }

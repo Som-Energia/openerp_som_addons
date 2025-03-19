@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+    <data>
+        <record model="giscedata.facturacio.switching.error.template" id="error_phase_3_code_S35" forcecreate="1">
+            <field name="code">035S</field>
+            <field name="phase">3</field>
+            <field name="description">En el periode {period} s'ha facturat un consum de {consum_facturat} kW peró no quadra amb el consum calculat de les lectures i ajust ({total_consum} kW).</field>
+            <field name="observation"> </field>
+            <field name="method">check_consum_lectures_facturat_incoherent</field>
+        </record>
+    </data>
+    <data noupdate="1">
+        <record model="giscedata.facturacio.switching.error.template" id="error_phase_3_code_S35" forcecreate="1">
+            <field name="parameters">{"tolerance_by_period": 1.0}</field>
+            <field name="level">warning</field>
+        </record>
+    </data>
+</openerp>

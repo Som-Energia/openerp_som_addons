@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+        <record model="ir.ui.view" id="view_wizard_change_payment_type_form">
+            <field name="name">wizard_change_payment_type.form</field>
+            <field name="model">wizard.change.payment.type</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <form string="Canviar tipus de pagament">
+                    <field name="state" invisible="1"/>
+                    <separator string="Canviar tipus de pagament" colspan="4"/>
+                    <group colspan="4" col="4" attrs="{'invisible': [('state', '!=', 'init')]}">
+                        <group colspan="2" col="4">
+                            <field name="payment_type"/>
+                        </group>
+                        <group colspan="2" col="4" attrs="{'invisible': [('model', '=', 'account.invoice')]}">
+                            <field name="payment_mode"/>
+                        </group>
+                        <button name="action_change_payment_type" string="Canviar"
+                                type="object" icon="gtk-go" colspan="4"/>
+                    </group>
+                    <group colspan="4" col="4" attrs="{'invisible': [('state', '!=', 'end')]}">
+                        <button special="cancel" string="Finalizar" icon="gtk-close"/>
+                    </group>
+                </form>
+            </field>
+        </record>
+
+        <record model="ir.actions.act_window" id="action_wizard_change_acc_inv_payment_type_form">
+            <field name="name">Canviar tipus de pagament</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">wizard.change.payment.type</field>
+            <field name="view_type">form</field>
+            <field name="target">new</field>
+            <field name="context">{'model': 'account.invoice'}</field>
+            <field name="view_id" ref="view_wizard_change_payment_type_form"/>
+        </record>
+        <record id="value_wizard_change_acc_inv_payment_type_form" model="ir.values">
+            <field name="object" eval="1"/>
+            <field name="name">Canviar tipus de pagament</field>
+            <field name="key2">client_action_multi</field>
+            <field name="key">action</field>
+            <field name="model">account.invoice</field>
+            <field name="value" eval="'ir.actions.act_window,'+str(ref('action_wizard_change_acc_inv_payment_type_form'))"/>
+        </record>
+
+        <record model="ir.actions.act_window" id="action_wizard_change_gd_fact_payment_type_form">
+            <field name="name">Canviar tipus de pagament</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">wizard.change.payment.type</field>
+            <field name="view_type">form</field>
+            <field name="target">new</field>
+            <field name="context">{'model': 'giscedata.facturacio.factura'}</field>
+            <field name="view_id" ref="view_wizard_change_payment_type_form"/>
+        </record>
+        <record id="value_wizard_change_gd_fact_inv_payment_type_form" model="ir.values">
+            <field name="object" eval="1"/>
+            <field name="name">Canviar tipus de pagament</field>
+            <field name="key2">client_action_multi</field>
+            <field name="key">action</field>
+            <field name="model">giscedata.facturacio.factura</field>
+            <field name="value" eval="'ir.actions.act_window,'+str(ref('action_wizard_change_gd_fact_payment_type_form'))"/>
+        </record>
+    </data>
+</openerp>

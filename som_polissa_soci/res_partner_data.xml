@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<openerp>
+    <data noupdate="1">
+        <record model="res.config" id="mailchimp_clients_list">
+            <field name="name">mailchimp_clients_list</field>
+            <field name="value">Clients No Socis</field>
+            <field name="description">Nom exacte de la llista de mailchimp on es subscriuen o arxiven automàticament les persones titulars no sòcies.</field>
+        </record>
+    </data>
+</openerp>

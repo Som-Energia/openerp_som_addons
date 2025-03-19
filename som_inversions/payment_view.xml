@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+
+        <act_window domain="[('order_id.id', '=', active_id)]" id="act_order_payment_lines" name="Payment Lines" res_model="payment.line" src_model="payment.order"/>
+        <record id="view_payment_line_tree_acc" model="ir.ui.view">
+            <field name="name">payment.line.acc</field>
+            <field name="model">payment.line</field>
+            <field name="type">tree</field>
+            <field name="inherit_id" ref="account_payment.view_payment_line_tree"/>
+            <field name="arch" type="xml">
+                <field name="move_line_id" position="after">
+                    <field name="account_id"/>
+                </field>
+            </field>
+        </record>
+    </data>
+</openerp>

@@ -1,0 +1,15 @@
+    .logo_little_center {
+      position: absolute;
+      right: 36px;
+      top: -15px;
+    }
+    .logo_little_left {
+      position: absolute;
+      right: 67px;
+      top: -15px;
+    }
+    .logo_little_right {
+      position: absolute;
+      right: 5px;
+      top: -15px;
+    }

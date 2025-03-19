@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<openerp>
+    <data>
+        <!-- Partner -->
+        <record id="res_partner_soci" model="res.partner">
+            <field name="name">Pi, Pere</field>
+            <field name="ref">S202129</field>
+            <field name="vat">ES97053918J</field>
+        </record>
+        <record id="res_partner_address_soci" model="res.partner.address">
+            <field name="city">Berga</field>
+            <field name="name">Adreça Pere Gil</field>
+            <field name="zip">08600</field>
+            <field name="title">M.</field>
+            <field name="country_id" model="res.country" search="[('name','=','Espanya')]"/>
+            <field name="street">Major, 32</field>
+            <field name="type">default</field>
+            <field name="email">test@test.test</field>
+            <field name="partner_id" ref="res_partner_soci"/>
+        </record>
+        <record id="soci_0001" model="somenergia.soci">
+            <field name="partner_id" ref="res_partner_soci"/>
+        </record>
+
+        <!-- Clienta no sòcia -->
+        <record id="res_partner_nosoci1" model="res.partner">
+            <field name="name">Puig, Maria</field>
+            <field name="ref">T202020</field>
+            <field name="vat">ES61427198V</field>
+        </record>
+        <record id="res_partner_address_nosoci1" model="res.partner.address">
+                <field name="city">Solsona</field>
+                <field name="name">Adreça Maria Puig</field>
+                <field name="zip">25280</field>
+                <field name="title">Ms.</field>
+                <field name="country_id" model="res.country" search="[('name','=','Espanya')]"/>
+                <field name="street">Major, 38</field>
+                <field name="type">default</field>
+                <field name="email">test@test.test</field>
+                <field name="partner_id" ref="res_partner_nosoci1"/>
+        </record>
+
+        <record id="res_partner_nosoci2" model="res.partner">
+            <field name="name">Puig, Eva</field>
+            <field name="ref">T205984</field>
+            <field name="vat">ES06458346S</field>
+        </record>
+        <record id="res_partner_address_nosoci2" model="res.partner.address">
+                <field name="city">Solsona</field>
+                <field name="name">Adreça Eva Puig</field>
+                <field name="zip">25280</field>
+                <field name="title">Ms.</field>
+                <field name="country_id" model="res.country" search="[('name','=','Espanya')]"/>
+                <field name="street">Major, 3</field>
+                <field name="type">default</field>
+                <field name="email">test@test.test</field>
+                <field name="partner_id" ref="res_partner_nosoci2"/>
+        </record>
+        <record id="res_partner_address2_nosoci2" model="res.partner.address">
+                <field name="city">Solsona</field>
+                <field name="name">Adreça Eva Puig</field>
+                <field name="zip">25280</field>
+                <field name="title">Ms.</field>
+                <field name="country_id" model="res.country" search="[('name','=','Espanya')]"/>
+                <field name="street">Major, 5</field>
+                <field name="email">noutest@test.test</field>
+                <field name="type">default</field>
+                <field name="partner_id" ref="res_partner_nosoci2"/>
+        </record>
+     </data>
+</openerp>

@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+    <data>
+		<record id="view_wizard_update_ov_check_form" model="ir.ui.view">
+            <field name="name">wizard.update.ov.check.form</field>
+            <field name="model">wizard.update.ov.check</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <form string="Actualitzar visiblitat de les factures (Oficina Virtual)">
+                    <field name="state" invisible="1"/>
+                    <group colspan="4">
+                        <field name="info" colspan="4" width="290" height="20" readonly="True" nolabel="1"/>
+                        <field name="action"/>
+                    </group>
+
+                    <group colspan="4" attrs="{'invisible': [('state', '!=', 'init')]}">
+                        <button icon="gtk-cancel" special="cancel" string="Cancel·lar" name="action_cancel" type="object"/>
+                        <button icon="gtk-ok" name="update_check_ov_box" string="Modificar factures" type="object"/>
+                    </group>
+
+                    <group colspan="4" attrs="{'invisible': [('state', '!=', 'end')]}">
+                        <button icon="gtk-close" special="cancel" string="Tancar"
+                                    type="object" />
+                    </group>
+		        </form>
+	        </field>
+	    </record>
+
+	    <record id="action_wizard_update_ov_check_form" model="ir.actions.act_window">
+            <field name="name">Actualitzar visiblitat OV</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">wizard.update.ov.check</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">form</field>
+            <field name="target">new</field>
+        </record>
+
+        <record id="value_wizard_update_ov_check_form" model="ir.values">
+            <field name="object" eval="1"/>
+            <field name="name">Marcar/Desmarcar visiblitat OV</field>
+            <field name="key2">client_action_multi</field>
+            <field name="key">action</field>
+            <field name="model">giscedata.facturacio.factura</field>
+            <field name="value"
+                   eval="'ir.actions.act_window,'+str(ref('action_wizard_update_ov_check_form'))" />
+        </record>
+	</data>
+</openerp>

@@ -17,7 +17,7 @@
                         <field name="access_fare" />
                         <field name="comer_fare" />
                         <field name="autoconsum" />
-                        <field name="agree_tipus" />
+                        <field name="tipo_medida" />
                         <field name="category" />
                     </group>
                     <group colspan="6" attrs="{'invisible': [('state', '=', 'finished')]}">

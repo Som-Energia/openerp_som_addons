@@ -1,0 +1,59 @@
+<?xml version="1.0" ?>
+<openerp>
+    <data>
+        <record id="res_partner_domestic" model="res.partner">
+            <field name="vat">ES78106306P</field>
+            <field name="name">Física, Persona</field>
+        </record>
+        <record id="res_partner_bank_som_iban" model="res.partner.bank">
+            <field name="name">0001_som_iban_bank</field>
+            <field name="state">iban</field>
+            <field name="partner_id" ref="base.res_partner_gisce"/>
+            <field name="bank" ref="base.partner_bank"/>
+            <field name="acc_country_id">1</field>
+            <field name="iban">ES5131050395675655409397</field>
+        </record>
+        <record id="polissa_domestica_0100" model="giscedata.polissa">
+            <field name="name">0100</field>
+            <field name="name_auto" eval="1"/>
+            <field name="active" eval="1"/>
+            <field name="renovacio_auto" eval="1"/>
+            <field name="cups" ref="giscedata_cups.cups_tarifa_018"/>
+            <field name="observacions">Polissa per 2.0TD</field>
+            <field name="potencia">4.600</field>
+            <field name="tarifa" ref="giscedata_polissa.tarifa_20TD"/>
+            <field name="titular" ref="res_partner_domestic"/>
+            <field name="tensio_normalitzada" ref="giscedata_tensions.tensio_127"/>
+            <field name="state">activa</field>
+            <field name="data_alta">2021-06-01</field>
+            <field name="data_baixa">2099-01-01</field>
+            <field name="data_firma_contracte">2021-03-20</field>
+            <field name="cnae" ref="giscemisc_cnae.cnae_9820"/>
+            <field name="comercialitzadora" ref="base.main_partner"/>
+            <field name="distribuidora" ref="base.res_partner_agrolait"/>
+            <field name="tipus_vivenda">habitual</field>
+            <field name="tg">1</field>
+            <field name="autoconsumo">00</field>
+            <field name="tipus_subseccio">00</field>
+            <field name="llista_preu" ref="giscedata_facturacio.pricelist_tarifas_electricidad"/>
+            <field name="bank" ref="res_partner_bank_som_iban"/>
+            <field name="facturacio" eval="1"/>
+            <field name="facturacio_potencia">icp</field>
+            <field name="notificacio">titular</field>
+            <field name="pagador_sel">titular</field>
+            <field name="pagador" ref="base.res_partner_gisce"/>
+            <field name="direccio_notificacio" ref="base.res_partner_address_1"/>
+            <field name="direccio_pagament" ref="base.res_partner_address_1"/>
+            <field name="tipo_pago">1</field>
+            <field name="contract_type">01</field>
+            <field name="property_unitat_potencia" search="[('name','=','kW/dia')]"/>
+            <field name="payment_mode_id" ref="som_switching.payment_mode_demo_som"/>
+        </record>
+        <record model="payment.mode" id="payment_mode_enginyers">
+            <field name="name">ENGINYERS</field>
+            <field name="type" ref="account_payment.payment_type_demo"/>
+            <field name="bank_id" ref="base.main_bank"/>
+            <field name="journal" model="account.journal" search="[('type','=','cash')]"/>
+        </record>
+    </data>
+</openerp>

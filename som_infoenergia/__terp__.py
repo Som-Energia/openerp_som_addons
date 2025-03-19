@@ -10,20 +10,19 @@
     "version": "0-dev",
     "author": "SomEnergia",
     "category": "SomEnergia",
-    "depends":[
-        "base",
-        "giscedata_polissa",
-        "giscedata_facturacio",
+    "depends": [
         "poweremail_references",
-        "giscedata_polissa_category"
+        "som_polissa_soci",
+        "som_generationkwh",
     ],
     "init_xml": [],
-    "demo_xml": [
-        "tests/som_infoenergia_demo.xml"
-    ],
-    "update_xml":[
+    "demo_xml": ["tests/som_infoenergia_demo.xml"],
+    "update_xml": [
+        "som_infoenergia_report.xml",
+        "som_infoenergia_sepa.xml",
         "som_infoenergia_data.xml",
         "som_infoenergia_view.xml",
+        "som_infoenergia_conany_data.xml",
         "giscedata_polissa_view.xml",
         "security/infoenergia_security.xml",
         "security/ir.model.access.csv",
@@ -35,7 +34,9 @@
         "wizard/wizard_add_contracts_lot_view.xml",
         "wizard/wizard_cancel_from_csv_view.xml",
         "wizard/wizard_create_enviaments_from_csv_view.xml",
+        "wizard/wizard_create_enviaments_from_partner_view.xml",
+        "wizard/wizard_create_attachments_from_zip_view.xml",
     ],
     "active": False,
-    "installable": True
+    "installable": True,
 }

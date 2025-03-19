@@ -1,0 +1,354 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+#
+# Translators:
+# Agustí Fita <afita@gisce.net>, 2012
+# Eduard Carreras <ecarreras@gisce.net>, 2012
+# gisce <devel@gisce.net>, 2013-2014
+msgid ""
+msgstr ""
+"Project-Id-Version: SomEnergia\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2010-12-21 03:35+0100\n"
+"PO-Revision-Date: 2014-04-24 08:56+0000\n"
+"Last-Translator: gisce <devel@gisce.net>\n"
+"Language-Team: Spanish (Spain) (http://www.transifex.com/projects/p/somenergia/language/es_ES/)\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: es_ES\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+msgid "TOTAL"
+msgstr "TOTAL"
+
+msgid "Compte corrent:"
+msgstr "Cuenta corriente:"
+
+msgid "Correu:"
+msgstr "Correo:"
+
+msgid "Cogeneració Alta Eficiencia"
+msgstr "Cogeneración de Alta Eficiencia"
+
+msgid "Mix Som Energia SCCL"
+msgstr "Mezcla Som Energia SCCL"
+
+msgid "Nº Contracte:"
+msgstr "Nº Contrato:"
+
+msgid "Renovable"
+msgstr "Renovable"
+
+msgid "Anterior"
+msgstr "Anterior"
+
+msgid "Contracte distribuïdora"
+msgstr "Contrato distribuidora"
+
+msgid "Origen"
+msgstr "Origen"
+
+msgid "Mix producció en el sistema elèctric espanyol 2013"
+msgstr "Mix producción en el sistema eléctrico español 2013"
+
+msgid "Som Energia SCCL"
+msgstr "Som Energia SCCL"
+
+msgid ""
+"En una escala de la A a la G (on A indica el mínim impacte ambiental i G el "
+"màxim), i on el valor mitjà nacional correspon al nivell D, l'energia "
+"comercialitzada per <b>Som Energia SCCL</b> té els següents valors:"
+msgstr "En una escala de A a G (donde A indica el mínimo impacto ambiental y G el máximo), y que el valor medio nacional corresponde al nivel D, la energía comercializada por <b>Som Energia SCCL</b> tiene los siguientes valores:"
+
+msgid "Excés"
+msgstr "Exceso"
+
+msgid "Empresa distribuïdora:"
+msgstr "Empresa distribuidora"
+
+msgid "Residus radioactius"
+msgstr "Residuos Radiactivos"
+
+msgid "Adreça:"
+msgstr "Dirección"
+
+msgid "Titular:"
+msgstr "Titular:"
+
+msgid "Cogeneració Alta Eficiència 1.8%"
+msgstr "Cogeneración de Alta Eficiencia 1.8%"
+
+msgid "Dades titular i punt de consum"
+msgstr "Datos titular  punto de consumo"
+
+msgid "Nº Comptador"
+msgstr "Nº Contador"
+
+msgid ""
+"Si bé l'energia elèctrica que arriba a les nostres llars és indistingible de"
+" la que consumeixen els nostres veïns o altres consumidors connectats al "
+"mateix sistema elèctric, sí és possible garantir l'origen de la producció "
+"d'energia elèctrica que vostè consumeix."
+msgstr "Si bien la energía eléctrica que llega a nuestros hogares es indistinguible de la que consumen nuestros vecinos u otros consumidores conectados al mismo sistema eléctrico, sí es posible garantizar el origen de la producción de energía eléctrica que usted consume."
+
+msgid "Solar Fotovoltaica"
+msgstr "Solar Fotovoltaica"
+
+msgid "€/kW any"
+msgstr "€/kW año"
+
+msgid "Terme d'energia activa"
+msgstr "Término de energía activa"
+
+msgid "Potència contractada (kW):"
+msgstr "Potencia contratada (kW):"
+
+msgid "Impostos"
+msgstr "Impuestos"
+
+msgid "Energia Reactiva [kVArh]"
+msgstr "Energía Reactiva [kVArh]"
+
+msgid "Renovable 40.6%"
+msgstr "Renovable 40.6%"
+
+msgid "Total factura"
+msgstr "Total factura"
+
+msgid "Nuclear 19.7%"
+msgstr "Nuclear 19.7%"
+
+msgid "Cogeneració 9.0%"
+msgstr "Cogeneración 9.0%"
+
+msgid "Nuclear"
+msgstr "Nuclear"
+
+msgid ""
+"L'import d'aquesta factura serà carregat al seu compte. El seu pagament "
+"queda justificat amb el corresponent apunt bancari."
+msgstr "El importe de esta factura será cargado a su cuenta. Su pago queda justificado con el correspondiente apunte bancario"
+
+msgid ""
+"Les certificacions de garantia d'origen s'han obtingut de les següents "
+"col·laboracions "
+msgstr "Las certificaciones de garantía de origen se han obtenido de las siguientes colaboraciones"
+
+msgid "Telèfon:"
+msgstr "Teléfono:"
+
+msgid "Miligrams per kWh"
+msgstr "Miligramos por kWh"
+
+msgid "€/any"
+msgstr "€/año"
+
+msgid "Fotovoltaica"
+msgstr "Fotovoltaica"
+
+msgid "Quilogram diòxid de carboni per kWh"
+msgstr "Kilogramo dióxido de carbono por kWh"
+
+msgid "Factura nº:"
+msgstr "Factura nº:"
+
+msgid "Facturació"
+msgstr "Facturación"
+
+msgid "Carbó"
+msgstr "Carbón"
+
+msgid "Tarifa:"
+msgstr "Tarifa:"
+
+msgid "Historial de consum"
+msgstr "Historial de consumo"
+
+msgid "Entitat bancària:"
+msgstr "Entidad bancaria:"
+
+msgid "dies"
+msgstr "días"
+
+msgid "Empresa"
+msgstr "Empresa"
+
+msgid "Cogeneració"
+msgstr "Cogeneración"
+
+msgid ""
+"El sistema elèctric espanyol ha exportat un 2,5% de producció neta total"
+msgstr "El sistema eléctrico nacional ha exportado un 2,5% de producción neta total nacional"
+
+msgid " a "
+msgstr "a"
+
+msgid "Dades Pagament"
+msgstr "Datos de pago"
+
+msgid "Període facturat:"
+msgstr "Período facturado:"
+
+msgid "Impost sobre l'electricitat"
+msgstr "Impuesto sobre la electricidad"
+
+msgid "Període"
+msgstr "Período"
+
+msgid "Carbó 14.1%"
+msgstr "Carbón 14.1%"
+
+msgid "CC Gas Natural 10.1%"
+msgstr "CC Gas Natural 10.1%"
+
+msgid "Fuel/Gas 3.5%"
+msgstr "Fuel/Gas 3.5%"
+
+msgid "Telèfon avaries"
+msgstr "Teléfono averias"
+
+msgid "Data factura:"
+msgstr "Fecha factura:"
+
+msgid ""
+"L'impacte ambiental de la seva electricitat depèn de les fonts energètiques "
+"utilitzades per a la seva generació."
+msgstr "El impacto ambiental de su electricidad depende de las fuentes energéticas utilizadas para su generación."
+
+msgid "Biogàs"
+msgstr "Biogás"
+
+msgid "Altres 1.2%"
+msgstr "Otras 1.2%"
+
+msgid "Fuel/Gas"
+msgstr "Fuel/Gas"
+
+msgid "Població:"
+msgstr "Población:"
+
+msgid "Altres conceptes"
+msgstr "Otros conceptos"
+
+msgid "Emissions de diòxid de carboni"
+msgstr "Emisiones de dióxido de carbono"
+
+msgid "Tecnologia"
+msgstr "Tecnología"
+
+msgid ""
+"A aquest efecte es proporciona el desglossament de la barreja de tecnologies"
+" de producció nacional per així comparar els percentatges de la mitjana "
+"nacional amb els corresponents a l'energia venuda per la seva "
+"comercialitzadora"
+msgstr "A estos efectos se proporciona el desglose de la mezcla de tecnologías de producción nacional para así comparar los porcentajes del promedio nacional con los correspondientes a la energía vendida por su compañía comercializadora."
+
+msgid "Terme d'energia reactiva"
+msgstr "Término energía reactiva"
+
+msgid "Contractada"
+msgstr "Contratada"
+
+msgid "Origen de l'electricitat"
+msgstr "Origen de la electricidad"
+
+msgid "Energia MWh"
+msgstr "Energía MWh"
+
+msgid "Lectura Consum"
+msgstr "Lectura Consumo"
+
+msgid "Actual"
+msgstr "Actual"
+
+msgid "Més diòxid de carboni"
+msgstr "Más dióxido de carbono"
+
+msgid "Mitjana Nacional"
+msgstr "Media Nacional"
+
+msgid "CC Gas Natural"
+msgstr "CC Gas Natural"
+
+msgid "Més residus radioactius"
+msgstr "Más residuos radiactivos"
+
+msgid "Detall Som Energia 2013"
+msgstr "Detalle Som Energia 2013"
+
+msgid "Energia comercialitzada per Som Energia"
+msgstr "Energía comercializada por Som Energia"
+
+msgid "Titular compte:"
+msgstr "Titular cuenta"
+
+msgid "any"
+msgstr "año"
+
+msgid "Soci/a de Som Energia"
+msgstr "Socio/a de Som Energia"
+
+msgid "CUPS:"
+msgstr "CUPS:"
+
+msgid "Energia Activa [kWh]"
+msgstr "Energía Activa [kWh]"
+
+msgid "Altres"
+msgstr "Otras"
+
+msgid "Activitat econòmica (CNAE):"
+msgstr "Actividad económica (CNAE):"
+
+msgid "Menys residus radioactius"
+msgstr "Menos residuos radiactivos"
+
+msgid "Menys diòxid de carboni"
+msgstr "Menos dióxido de carbono"
+
+msgid "a"
+msgstr "a"
+
+msgid "Contingut de carboni"
+msgstr "Contenido de carbono"
+
+msgid "Consum"
+msgstr "Consumo"
+
+msgid "NIF:"
+msgstr "NIF:"
+
+msgid "Eòlica"
+msgstr "Eólica"
+
+msgid "Max"
+msgstr "Max"
+
+msgid "Impacte mediambiental"
+msgstr "Impacto medioambiental"
+
+msgid "Impost electricitat"
+msgstr "Impuesto electricidad"
+
+msgid "barreja de producció en el sistema elèctric espanyol 2013"
+msgstr "Mezcla de Producción sistema eléctrico español 2013"
+
+msgid "BASE"
+msgstr "BASE"
+
+msgid "Terme de potència"
+msgstr "Término de potencia"
+
+msgid "Residus radioactius Alta Activitat"
+msgstr "Residuos Radiactivos"
+
+msgid "Informació de l'electricitat"
+msgstr "Información sobre su electricidad"
+
+msgid "Potència [kW]"
+msgstr "Potencia [kW]"
+
+msgid "ABONAMENT"
+msgstr "ABONO"

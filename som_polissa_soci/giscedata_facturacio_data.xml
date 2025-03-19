@@ -1,0 +1,78 @@
+<?xml version="1.0"?>
+<openerp>
+    <data>
+        <!-- Categ uom -->
+        <record model="product.uom.categ" id="categ_uom_day">
+            <field name="name">DIES</field>
+        </record>
+        <record model="product.uom" id="product_uom_day">
+            <field name="name">dia</field>
+            <field name="rounding">0.0</field>
+            <field name="category_id" ref="categ_uom_day"/>
+        </record>
+        <!-- Categoria extra -->
+        <record model="product.category" id="categ_donacions">
+            <field name="name">Donacions</field>
+            <field name="sequence">1</field>
+        </record>
+        <record model="product.product" id="dona_DN01">
+            <field name="name">Donacio</field>
+            <field name="default_code">DN01</field>
+            <field name="categ_id" ref="categ_donacions"/>
+            <field name="type">service</field>
+            <field name="uom_id" ref="giscedata_polissa.uom_eneg_elec"/>
+            <field name="uom_po_id" ref="giscedata_polissa.uom_eneg_elec"/>
+            <field name="property_account_income" model="account.account" search="[('code','=','778000000001')]"/>
+            <field name="procure_method">make_to_stock</field>
+            <field name="supply_method">buy</field>
+            <field name="description">Donatiu voluntari (0,01€/kWh)</field>
+        </record>
+        <!-- Bo social -->
+        <record model="product.category" id="categ_bo_social">
+            <field name="name">Bo Social</field>
+            <field name="sequence">1</field>
+        </record>
+        <record model="product.product" id="bosocial_BS01">
+            <field name="name">Bo Social</field>
+            <field name="default_code">BS01</field>
+            <field name="categ_id" ref="categ_bo_social"/>
+            <field name="type">service</field>
+            <field name="uom_id" ref="product_uom_day"/>
+            <field name="uom_po_id" ref="product_uom_day"/>
+            <field name="property_account_income" model="account.account" search="[('code','=','700000000006')]"/>
+            <field name="procure_method">make_to_stock</field>
+            <field name="supply_method">buy</field>
+            <field name="description">Obligació finançament bo Social (€/dia)</field>
+        </record>
+    </data>
+	<data noupdate="1">
+        <record id="mode_pagament_socis" model="payment.mode">
+            <field name="name">QUOTA SOCIS</field>
+            <field name="type" search="[('code', '=', 'RECIBO_CSB')]"/>
+            <field name="journal" search="[('code', '=', 'CAJA')]"/>
+            <field name="bank_id" search="[('partner_id', '=', 1)]"/>
+            <field name="tipo">sepa19</field>
+            <field name="nombre">Som Energia</field>
+            <field name="sufijo">000</field>
+            <field name="require_bank_account" eval="True"/>
+            <field name="partner_id">1</field>
+        </record>
+        <record id="som_invoice_active_bo_social" model="res.config">
+            <field name="name">som_invoice_active_bo_social</field>
+            <field name="value">0</field>
+        </record>
+        <record id="som_invoice_start_date_bo_social" model="res.config">
+            <field name="name">som_invoice_start_date_bo_social</field>
+            <field name="value">2017-07-01</field>
+        </record>
+        <record id="som_invoice_bo_social_journal_codes" model="res.config">
+            <field name="name">som_invoice_bo_social_journal_codes</field>
+            <field name="value">['ENERGIA', 'ENERGIA.R', 'RECUPERACION_IVA.R']</field>
+        </record>
+        <record id="som_invoice_end_date_bo_social" model="res.config">
+            <field name="name">som_invoice_end_date_bo_social</field>
+            <field name="value">2021-03-31</field>
+            <field name="description">Data final d'aplicació del BO SOCIAL</field>
+        </record>
+    </data>
+</openerp>

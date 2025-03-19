@@ -1,0 +1,739 @@
+<?xml version="1.0"?>
+<openerp>
+    <data noupdate="1">
+        <record model="res.config" id="treure_facturacio_suspesa_on_cac_close" forcecreate="1">
+            <field name="name">treure_facturacio_suspesa_on_cac_close</field>
+            <field name="value">0</field>
+            <field name="description">Si s'activa (1) al tancar qualsevol cas d'Atencio al Client es treu la facturacio suspesa del contracte relacionat. Valor per defecte: 0 (desactivat)</field>
+        </record>
+    </data>
+    <data noupdate="1">
+<!--        Creem les seccions filles de atc-->
+        <record model="crm.case.section" id="atc_section_info">
+            <field name="name">INFO</field>
+            <field name="code">ATCI</field>
+            <field name="sequence">90</field>
+            <field name="parent_id" ref="giscedata_atc.atc_section"/>
+        </record>
+        <record model="crm.case.section" id="atc_section_factura">
+            <field name="name">FACTURA</field>
+            <field name="code">ATCF</field>
+            <field name="sequence">90</field>
+            <field name="parent_id" ref="giscedata_atc.atc_section"/>
+        </record>
+        <record model="crm.case.section" id="atc_section_contractes">
+            <field name="name">CONTRACTES</field>
+            <field name="code">ATCC</field>
+            <field name="sequence">90</field>
+            <field name="parent_id" ref="giscedata_atc.atc_section"/>
+        </record>
+        <record model="crm.case.section" id="atc_section_reclamacions">
+            <field name="name">RECLAMACIONS</field>
+            <field name="code">ATCR</field>
+            <field name="sequence">90</field>
+            <field name="parent_id" ref="giscedata_atc.atc_section"/>
+        </record>
+        <record model="crm.case.section" id="atc_section_cobraments">
+            <field name="name">COBRAMENTS</field>
+            <field name="code">ATCCB</field>
+            <field name="sequence">90</field>
+            <field name="parent_id" ref="giscedata_atc.atc_section"/>
+        </record>
+        <record model="crm.case.section" id="atc_section_contractes_a">
+            <field name="name">CONTRACTES - A</field>
+            <field name="code">ATCC-A</field>
+            <field name="sequence">90</field>
+            <field name="parent_id" ref="atc_section_contractes"/>
+        </record>
+        <record model="crm.case.section" id="atc_section_contractes_b">
+            <field name="name">CONTRACTES - B</field>
+            <field name="code">ATCC-B</field>
+            <field name="sequence">90</field>
+            <field name="parent_id" ref="atc_section_contractes"/>
+        </record>
+        <record model="crm.case.section" id="atc_section_contractes_c">
+            <field name="name">CONTRACTES - C</field>
+            <field name="code">ATCC-C</field>
+            <field name="sequence">90</field>
+            <field name="parent_id" ref="atc_section_contractes"/>
+        </record>
+        <record model="crm.case.section" id="atc_section_contractes_m">
+            <field name="name">CONTRACTES - M</field>
+            <field name="code">ATCC-M</field>
+            <field name="sequence">90</field>
+            <field name="parent_id" ref="atc_section_contractes"/>
+        </record>
+    </data>
+<!--    Assignem seccions als subtipus-->
+    <data noupdate="1">
+        <record model="giscedata.subtipus.reclamacio" id="giscedata_subtipus_reclamacio.subtipus_reclamacio_001">
+            <field name="default_section" ref="atc_section_reclamacions"/>
+        </record>
+        <record model="giscedata.subtipus.reclamacio" id="giscedata_subtipus_reclamacio.subtipus_reclamacio_002">
+            <field name="default_section" ref="atc_section_reclamacions"/>
+        </record>
+        <record model="giscedata.subtipus.reclamacio" id="giscedata_subtipus_reclamacio.subtipus_reclamacio_003">
+            <field name="default_section" ref="atc_section_reclamacions"/>
+        </record>
+        <record model="giscedata.subtipus.reclamacio" id="giscedata_subtipus_reclamacio.subtipus_reclamacio_004">
+            <field name="default_section" ref="atc_section_reclamacions"/>
+        </record>
+        <record model="giscedata.subtipus.reclamacio" id="giscedata_subtipus_reclamacio.subtipus_reclamacio_005">
+            <field name="default_section" ref="atc_section_reclamacions"/>
+        </record>
+        <record model="giscedata.subtipus.reclamacio" id="giscedata_subtipus_reclamacio.subtipus_reclamacio_006">
+            <field name="default_section" ref="atc_section_factura"/>
+        </record>
+        <record model="giscedata.subtipus.reclamacio" id="giscedata_subtipus_reclamacio.subtipus_reclamacio_007">
+            <field name="default_section" ref="atc_section_factura"/>
+        </record>
+        <record model="giscedata.subtipus.reclamacio" id="giscedata_subtipus_reclamacio.subtipus_reclamacio_008">
+            <field name="default_section" ref="atc_section_factura"/>
+        </record>
+        <record model="giscedata.subtipus.reclamacio" id="giscedata_subtipus_reclamacio.subtipus_reclamacio_009">
+            <field name="default_section" ref="atc_section_factura"/>
+        </record>
+        <record model="giscedata.subtipus.reclamacio" id="giscedata_subtipus_reclamacio.subtipus_reclamacio_010">
+            <field name="default_section" ref="atc_section_factura"/>
+        </record>
+        <record model="giscedata.subtipus.reclamacio" id="giscedata_subtipus_reclamacio.subtipus_reclamacio_011">
+            <field name="default_section" ref="atc_section_factura"/>
+        </record>
+        <record model="giscedata.subtipus.reclamacio" id="giscedata_subtipus_reclamacio.subtipus_reclamacio_012">
+            <field name="default_section" ref="atc_section_factura"/>
+        </record>
+        <record model="giscedata.subtipus.reclamacio" id="giscedata_subtipus_reclamacio.subtipus_reclamacio_013">
+            <field name="default_section" ref="atc_section_contractes_c"/>
+        </record>
+        <record model="giscedata.subtipus.reclamacio" id="giscedata_subtipus_reclamacio.subtipus_reclamacio_014">
+            <field name="default_section" ref="atc_section_reclamacions"/>
+        </record>
+        <record model="giscedata.subtipus.reclamacio" id="giscedata_subtipus_reclamacio.subtipus_reclamacio_015">
+            <field name="default_section" ref="atc_section_contractes_b"/>
+        </record>
+        <record model="giscedata.subtipus.reclamacio" id="giscedata_subtipus_reclamacio.subtipus_reclamacio_018">
+            <field name="default_section" ref="atc_section_factura"/>
+        </record>
+        <record model="giscedata.subtipus.reclamacio" id="giscedata_subtipus_reclamacio.subtipus_reclamacio_019">
+            <field name="default_section" ref="atc_section_factura"/>
+        </record>
+        <record model="giscedata.subtipus.reclamacio" id="giscedata_subtipus_reclamacio.subtipus_reclamacio_020">
+            <field name="default_section" ref="atc_section_reclamacions"/>
+        </record>
+        <record model="giscedata.subtipus.reclamacio" id="giscedata_subtipus_reclamacio.subtipus_reclamacio_021">
+            <field name="default_section" ref="atc_section_reclamacions"/>
+        </record>
+        <record model="giscedata.subtipus.reclamacio" id="giscedata_subtipus_reclamacio.subtipus_reclamacio_022">
+            <field name="default_section" ref="atc_section_reclamacions"/>
+        </record>
+        <record model="giscedata.subtipus.reclamacio" id="giscedata_subtipus_reclamacio.subtipus_reclamacio_023">
+            <field name="default_section" ref="atc_section_reclamacions"/>
+        </record>
+        <record model="giscedata.subtipus.reclamacio" id="giscedata_subtipus_reclamacio.subtipus_reclamacio_024">
+            <field name="default_section" ref="atc_section_reclamacions"/>
+        </record>
+        <record model="giscedata.subtipus.reclamacio" id="giscedata_subtipus_reclamacio.subtipus_reclamacio_025">
+            <field name="default_section" ref="atc_section_reclamacions"/>
+        </record>
+        <record model="giscedata.subtipus.reclamacio" id="giscedata_subtipus_reclamacio.subtipus_reclamacio_026">
+            <field name="default_section" ref="atc_section_reclamacions"/>
+        </record>
+        <record model="giscedata.subtipus.reclamacio" id="giscedata_subtipus_reclamacio.subtipus_reclamacio_027">
+            <field name="default_section" ref="atc_section_reclamacions"/>
+        </record>
+        <record model="giscedata.subtipus.reclamacio" id="giscedata_subtipus_reclamacio.subtipus_reclamacio_028">
+            <field name="default_section" ref="atc_section_reclamacions"/>
+        </record>
+        <record model="giscedata.subtipus.reclamacio" id="giscedata_subtipus_reclamacio.subtipus_reclamacio_029">
+            <field name="default_section" eval="None"/>
+        </record>
+        <record model="giscedata.subtipus.reclamacio" id="giscedata_subtipus_reclamacio.subtipus_reclamacio_030">
+            <field name="default_section" ref="atc_section_contractes_a"/>
+        </record>
+        <record model="giscedata.subtipus.reclamacio" id="giscedata_subtipus_reclamacio.subtipus_reclamacio_031">
+            <field name="default_section" ref="atc_section_contractes_a"/>
+        </record>
+        <record model="giscedata.subtipus.reclamacio" id="giscedata_subtipus_reclamacio.subtipus_reclamacio_032">
+            <field name="default_section" ref="atc_section_contractes_b"/>
+        </record>
+        <record model="giscedata.subtipus.reclamacio" id="giscedata_subtipus_reclamacio.subtipus_reclamacio_034">
+            <field name="default_section" ref="atc_section_contractes_c"/>
+        </record>
+        <record model="giscedata.subtipus.reclamacio" id="giscedata_subtipus_reclamacio.subtipus_reclamacio_035">
+            <field name="default_section" eval="None"/>
+        </record>
+        <record model="giscedata.subtipus.reclamacio" id="giscedata_subtipus_reclamacio.subtipus_reclamacio_036">
+            <field name="default_section" ref="atc_section_factura"/>
+        </record>
+        <record model="giscedata.subtipus.reclamacio" id="giscedata_subtipus_reclamacio.subtipus_reclamacio_037">
+            <field name="default_section" ref="atc_section_factura"/>
+        </record>
+        <record model="giscedata.subtipus.reclamacio" id="giscedata_subtipus_reclamacio.subtipus_reclamacio_038">
+            <field name="default_section" ref="atc_section_reclamacions"/>
+        </record>
+        <record model="giscedata.subtipus.reclamacio" id="giscedata_subtipus_reclamacio.subtipus_reclamacio_039">
+            <field name="default_section" ref="atc_section_reclamacions"/>
+        </record>
+        <record model="giscedata.subtipus.reclamacio" id="giscedata_subtipus_reclamacio.subtipus_reclamacio_040">
+            <field name="default_section" ref="atc_section_factura"/>
+        </record>
+        <record model="giscedata.subtipus.reclamacio" id="giscedata_subtipus_reclamacio.subtipus_reclamacio_041">
+            <field name="default_section" ref="atc_section_reclamacions"/>
+        </record>
+        <record model="giscedata.subtipus.reclamacio" id="giscedata_subtipus_reclamacio.subtipus_reclamacio_042">
+            <field name="default_section" ref="atc_section_reclamacions"/>
+        </record>
+        <record model="giscedata.subtipus.reclamacio" id="giscedata_subtipus_reclamacio.subtipus_reclamacio_043">
+            <field name="default_section" ref="atc_section_reclamacions"/>
+        </record>
+        <record model="giscedata.subtipus.reclamacio" id="giscedata_subtipus_reclamacio.subtipus_reclamacio_044">
+            <field name="default_section" ref="atc_section_reclamacions"/>
+        </record>
+        <record model="giscedata.subtipus.reclamacio" id="giscedata_subtipus_reclamacio.subtipus_reclamacio_045">
+            <field name="default_section" ref="atc_section_reclamacions"/>
+        </record>
+        <record model="giscedata.subtipus.reclamacio" id="giscedata_subtipus_reclamacio.subtipus_reclamacio_046">
+            <field name="default_section" ref="atc_section_factura"/>
+        </record>
+        <record model="giscedata.subtipus.reclamacio" id="giscedata_subtipus_reclamacio.subtipus_reclamacio_047">
+            <field name="default_section" ref="atc_section_factura"/>
+        </record>
+        <record model="giscedata.subtipus.reclamacio" id="giscedata_subtipus_reclamacio.subtipus_reclamacio_048">
+            <field name="default_section" eval="None"/>
+        </record>
+        <record model="giscedata.subtipus.reclamacio" id="giscedata_subtipus_reclamacio.subtipus_reclamacio_049">
+            <field name="default_section" ref="atc_section_factura"/>
+        </record>
+        <record model="giscedata.subtipus.reclamacio" id="giscedata_subtipus_reclamacio.subtipus_reclamacio_055">
+            <field name="default_section" ref="atc_section_factura"/>
+        </record>
+        <record model="giscedata.subtipus.reclamacio" id="giscedata_subtipus_reclamacio.subtipus_reclamacio_056">
+            <field name="default_section" ref="atc_section_factura"/>
+        </record>
+        <record model="giscedata.subtipus.reclamacio" id="giscedata_subtipus_reclamacio.subtipus_reclamacio_057">
+            <field name="default_section" ref="atc_section_reclamacions"/>
+        </record>
+        <record model="giscedata.subtipus.reclamacio" id="giscedata_subtipus_reclamacio.subtipus_reclamacio_058">
+            <field name="default_section" ref="atc_section_contractes_c"/>
+        </record>
+        <record model="giscedata.subtipus.reclamacio" id="giscedata_subtipus_reclamacio.subtipus_reclamacio_059">
+            <field name="default_section" ref="atc_section_contractes_c"/>
+        </record>
+        <record model="giscedata.subtipus.reclamacio" id="giscedata_subtipus_reclamacio.subtipus_reclamacio_060">
+            <field name="default_section" ref="atc_section_contractes_m"/>
+        </record>
+        <record model="giscedata.subtipus.reclamacio" id="giscedata_subtipus_reclamacio.subtipus_reclamacio_061">
+            <field name="default_section" ref="atc_section_contractes_m"/>
+        </record>
+        <record model="giscedata.subtipus.reclamacio" id="giscedata_subtipus_reclamacio.subtipus_reclamacio_062">
+            <field name="default_section" ref="atc_section_contractes_a"/>
+        </record>
+        <record model="giscedata.subtipus.reclamacio" id="giscedata_subtipus_reclamacio.subtipus_reclamacio_063">
+            <field name="default_section" ref="atc_section_contractes_a"/>
+        </record>
+        <record model="giscedata.subtipus.reclamacio" id="giscedata_subtipus_reclamacio.subtipus_reclamacio_064">
+            <field name="default_section" ref="atc_section_contractes_b"/>
+        </record>
+        <record model="giscedata.subtipus.reclamacio" id="giscedata_subtipus_reclamacio.subtipus_reclamacio_065">
+            <field name="default_section" ref="atc_section_contractes_b"/>
+        </record>
+        <record model="giscedata.subtipus.reclamacio" id="giscedata_subtipus_reclamacio.subtipus_reclamacio_066">
+            <field name="default_section" eval="None"/>
+        </record>
+        <record model="giscedata.subtipus.reclamacio" id="giscedata_subtipus_reclamacio.subtipus_reclamacio_067">
+            <field name="default_section" ref="atc_section_factura"/>
+        </record>
+        <record model="giscedata.subtipus.reclamacio" id="giscedata_subtipus_reclamacio.subtipus_reclamacio_070">
+            <field name="default_section" eval="None"/>
+        </record>
+        <record model="giscedata.subtipus.reclamacio" id="giscedata_subtipus_reclamacio.subtipus_reclamacio_100">
+            <field name="default_section" ref="atc_section_contractes_c"/>
+        </record>
+        <record model="giscedata.subtipus.reclamacio" id="giscedata_subtipus_reclamacio.subtipus_reclamacio_101">
+            <field name="default_section" ref="atc_section_cobraments"/>
+        </record>
+        <record model="giscedata.subtipus.reclamacio" id="giscedata_subtipus_reclamacio.subtipus_reclamacio_102">
+            <field name="default_section" ref="atc_section_cobraments"/>
+        </record>
+        <record model="giscedata.subtipus.reclamacio" id="giscedata_subtipus_reclamacio.subtipus_reclamacio_103">
+            <field name="default_section" ref="atc_section_factura"/>
+        </record>
+        <record model="giscedata.subtipus.reclamacio" id="giscedata_subtipus_reclamacio.subtipus_reclamacio_104">
+            <field name="default_section" ref="atc_section_cobraments"/>
+        </record>
+        <record model="giscedata.subtipus.reclamacio" id="giscedata_subtipus_reclamacio.subtipus_reclamacio_105">
+            <field name="default_section" ref="atc_section_cobraments"/>
+        </record>
+        <record model="giscedata.subtipus.reclamacio" id="giscedata_subtipus_reclamacio.subtipus_reclamacio_106">
+            <field name="default_section" ref="atc_section_reclamacions"/>
+        </record>
+        <record model="giscedata.subtipus.reclamacio" id="giscedata_subtipus_reclamacio.subtipus_reclamacio_107">
+            <field name="default_section" ref="atc_section_contractes_c"/>
+        </record>
+        <record model="giscedata.subtipus.reclamacio" id="giscedata_subtipus_reclamacio.subtipus_reclamacio_108">
+            <field name="default_section" ref="atc_section_contractes_c"/>
+        </record>
+        <record model="giscedata.subtipus.reclamacio" id="giscedata_subtipus_reclamacio.subtipus_reclamacio_109">
+            <field name="default_section" ref="atc_section_factura"/>
+        </record>
+        <record model="giscedata.subtipus.reclamacio" id="giscedata_subtipus_reclamacio.subtipus_reclamacio_110">
+            <field name="default_section" ref="atc_section_factura"/>
+        </record>
+        <record model="giscedata.subtipus.reclamacio" id="giscedata_subtipus_reclamacio.subtipus_reclamacio_111">
+            <field name="default_section" ref="atc_section_reclamacions"/>
+        </record>
+        <record model="giscedata.subtipus.reclamacio" id="giscedata_subtipus_reclamacio.subtipus_reclamacio_112">
+            <field name="default_section" ref="atc_section_reclamacions"/>
+        </record>
+        <record model="giscedata.subtipus.reclamacio" id="giscedata_subtipus_reclamacio.subtipus_reclamacio_113">
+            <field name="default_section" ref="atc_section_reclamacions"/>
+        </record>
+        <record model="giscedata.subtipus.reclamacio" id="giscedata_subtipus_reclamacio.subtipus_reclamacio_114">
+            <field name="default_section" ref="atc_section_factura"/>
+        </record>
+    </data>
+    <data noupdate="1">
+         <record model="giscedata.atc.tag" id="tag_1">
+            <field name="name">3.0 estimades 33% jurídic</field>
+            <field name="titol">Estimacions (3.0TD) en què s'aplica càlcul del 33% sobre potència pel càlcul de l'energia. També ho podem fer servir amb sobreestimades recurrents</field>
+            <field name="description">https://docs.google.com/document/d/1Nd3r0XgGuK-CU440H7g7WWWUQ94y80EGwspwVDWhlmY/edit?usp=sharing</field>
+            <field name="creation_date">2021-10-21</field>
+            <field name="text_R1"> Procediment:
+            Un cop en tinguem vàries resolucions, es valorarà amb jurídic si elevem la queixa a la CNMC
+
+
+            Proposta text R1:
+
+
+            Según el proceso establecido de validación de medidas establecido en el Procedimiento de Operación 10.5, aprobado por la Resolución de 29 de diciembre de 2020, de la Secretaría de Estado de Energía por la que se aprueban determinados procedimientos de operación
+            para su adaptación a las condiciones relativas al balance, las estimaciones propuestas por el encargado de la lectura se tienen que hacer según el cálculo del mejor valor de energía estimada en punto frontera y cierres de energía del sistema de información de medidas eléctricas.
+
+            En este caso, la estimación de energía horaria se está realizando en base a un factor de utilización del 33% de la potencia contratada. El apartado 4 del PO 10.5 establece un orden de prelación en la aplicación de los diferentes mecanismos de estimación, siendo el factor del 33% el mecanismo residual que causa un grave perjuicio al cliente al generar sobreestimaciones que son posteriormente corregidas cuando el encargado de lectura dispone de lecturas reales.
+
+            Solicitamos justificación de los motivos que han llevado a aplicar este criterio de estimación pese a que se evidencia que las facturas posteriores al 31/05/2021 se están emitiendo con un consumo estimado que multiplica el consumo real histórico exponencialmente (algunos casos más de DIEZ veces).
+
+            Además, ya nos han enviado más de tres facturas con lecturas estimadas, cuando la normativa aplicable (Real Decreto 1164/2001) establece una periodicidad bimestral para el envío de lecturas reales. En caso de repetirse esta situación, iniciaremos las actuaciones oportunas en defensa del consumidor.
+
+            En este sentido, jurisprudencia reciente (Sentencia 327/2021 dictada por la Audiencia Provincial de A Coruña) ha declarado abusivas y por tanto contrarias a la normativa de protección al consumidor las siguientes prácticas:
+
+            No efectuar las lecturas del consumo real de electricidad en los plazos establecidos en la normativa vigente o no comunicar a la empresa comercializadora dichas lecturas en los mencionados plazos.
+            Emitir y girar facturas que incluyan consumos de electricidad estimados fuera de los casos previstos en la normativa vigente.
+            El cobro del alquiler del contador en las facturas que incluyan consumos estimados de electricidad, fuera de los casos admitidos en la normativa vigente.</field>
+            <field name="active">True</field>
+        </record>
+        <record model="giscedata.atc.tag" id="tag_2">
+            <field name="name">SOBREESTIMACIO ENDESA 3.0TD</field>
+            <field name="titol">Estimacions Endesa post canvi peatges (3.0TD)</field>
+            <field name="description">Contractes 3.0TD que han rebut lectures estimades després del canvi de peatges, que han servit per desencallar la situació de no-facturació però l'estimació és errònia</field>
+            <field name="creation_date">2021-09-13</field>
+            <field name="active">True</field>
+        </record>
+        <record model="giscedata.atc.tag" id="tag_3">
+            <field name="name">SOBREESTIMACIO ENDESA 2.0TD</field>
+            <field name="titol">Estimacions Endesa post canvi peatges (2.0TD)</field>
+            <field name="description">Contractes 2.0TD que han rebut lectures estimades després del canvi de peatges, que han servit per desencallar la situació de no-facturació però l'estimació és errònia</field>
+            <field name="creation_date">2021-09-13</field>
+            <field name="text_R1">
+            Procediment:
+
+            1 - Encara que les usuàries ens aportin lectures, no refacturarem directament.
+            2 - Si ens demanen expressament aturar el cobrament, ho fem.
+            3 - Posarem CAC+R1 sempre, per curar-nos en salut. Si ens aporten lectures, estem obligats a fer-ho.
+            4 - Recollim els casos per a traspassar-ho a Endesa per altra via i de forma massiva. Ho fem posant etiqueta "SOBREESTIMACIO ENDESA 2.0TD" al CAC</field>
+            <field name="active">True</field>
+        </record>
+         <record model="giscedata.atc.tag" id="tag_4">
+            <field name="name">FacturaR1</field>
+            <field name="titol">Factura en estat R1 Reclamació</field>
+            <field name="description">CAC's que surten d'una factura client en estat R1 Reclamació i que no es cobra</field>
+            <field name="creation_date">2021-09-14</field>
+            <field name="text_R1"> Procediment:
+            Es posa la factura client en "No remesable", Estat: "R1 Reclamació" i comentari a la factura explicant el cas. En el CAC es posa el tag "FacturaR1"</field>
+            <field name="active">True</field>
+        </record>
+        <record model="giscedata.atc.tag" id="tag_5">
+            <field name="name">FaltaF1Juny21</field>
+            <field name="titol">Falta F1 i genera error de facturació F024</field>
+            <field name="description">Contractes que ens falta l'F1 de Juny i no està al portal, però tenim períodes posteriors.</field>
+            <field name="creation_date">2021-08-13</field>
+            <field name="text_R1"> Procediment:
+            Es suspen la facturació i s'obra reclamació 049-FALTA FICHERO MEDIDA amb l'etiqueta</field>
+            <field name="active">True</field>
+        </record>
+        <record model="giscedata.atc.tag" id="tag_6">
+            <field name="name">012NNPP31Maig</field>
+            <field name="titol">p1 de tancament estimat i amb consum superior que el que tenim habitualment</field>
+            <field name="description">Contractes que amb l'adaptació de NNPP, la lectura de tall podria no ser correcte, sospitant que es pugin cobrar per part de distri kWh ja facturats</field>
+            <field name="creation_date">2021-07-30</field>
+            <field name="text_R1">
+            Procediment:
+
+            Si es posa 047 sha de revisar ERP de corbes, exemple cas c. 0042445:
+            Revisando las CH del contrato observamos como del 6/05/2021 al 31/05/2021 nos habéis mandado unas curvas horarias estimadas ya que facturais unos consumos de 11kWh diaros y la media esta en 2 kWh diarios.
+
+            Por favor, modificad y arreglad las curvas horarias y la facturación del consumo por encima del consumo habitual.
+
+            teniu altres exemples cercant 047 a casos ATC
+
+
+            --> per ara hem posat 009s i 047, amb poc èxit.</field>
+            <field name="active">True</field>
+        </record>
+        <record model="giscedata.atc.tag" id="tag_5bis">
+            <field name="name">011TENIA_DH</field>
+            <field name="titol">P2 comença a comptar amb la lectura finsl de quan tenia DH</field>
+            <field name="description">Contractes que en algun moment tenis la tarifa amb DH i vas passar a sense. En el moment d'adaptar els comptadors als NNPP,Endesa comença acomptar el valor de P2 teninet en compte l'antic valor de P2 quan el contracte tenia DH i cobre uns consums astronòmics a les titulars.</field>
+            <field name="creation_date">2021-06-08</field>
+            <field name="active">True</field>
+        </record>
+        <record model="giscedata.atc.tag" id="tag_6bis">
+            <field name="name">010AUTO</field>
+            <field name="titol">Consum facturat superior a la diferència entre lectures.</field>
+            <field name="description">El balanç horaria hauria de fer que el consum cobrat és sempre menor a la diferència entre lectures, a l'ERP ho podem detectar fàcilmetn quan veiem que l'ajust  creat en les lectures EA és positiu</field>
+            <field name="creation_date">2021-03-04</field>
+            <field name="text_R1">
+            Procediment:
+
+            "Fins ara s'han posat dues Rs diferents, les dues sense resolució per aprt de distri encara.
+            009 - DISCONFORMIDAD CON LECTURA FACTURADA
+            056 - PETICIÓN DESGLOSE IMPORTE A FACTURAR AUTOCONSUMO
+            (Poso textos fets servir fins ara a mode exemple per a futures Rs, quan tinguem resolució caldrà actualitzar els textos en consonància amb la resolució que millors resultats hagi tingut)"
+
+
+
+
+            056 - PETICIÓN DESGLOSE IMPORTE A FACTURAR AUTOCONSUMO
+
+            "Necesitamos que se pueda clarificar los motivos por los que el ajuste de P1 es positivo, cuando en un contrato de autoconsumo el balance horario lo aplicáis a partir de ajustes negativos.
+
+            Eestsa información es importante para poder informar debidamente a la persona titular y no crearle dudas sobre el sistema.
+
+            Gracias por vuestra atención
+
+            Solicitamos revisión de las medidas y refacturación."
+
+
+            009 - DISCONFORMIDAD CON LECTURA FACTURADA
+
+            "En este F1  se está facturando más consumo que la diferencia entre lecturas de energía entrante. Concretamente en P2 la energía facturada es mayor que la diferencia entre la lectura hasta y lectura desde.
+
+            La diferencia entre la lectura en P2 es de XX kWh y nos estáis facturando XX kWh, XX kWh de más.
+
+            Entendemos que esto se debe a un error, ya que el consumo facturado no puede ser mayor a la diferencia entre lecturas y menos en un punto de suministro con autoconsumo en el que se le tiene que aplicar el balance horario. En estos casos el consumo facturado siempre debe ser menor, tal y como pasa en la energía calculada y facturada en el período P1." </field>
+            <field name="active">True</field>
+        </record>
+        <record model="giscedata.atc.tag" id="tag_7">
+            <field name="name">009AUTO</field>
+            <field name="titol">Altres</field>
+            <field name="titol">Auto+Endesa+ La primera lectura real que rebem és inferior a la darrera que teníem.</field>
+            <field name="description">En alguns casos de contractes amb endesa i auto, la primera lectura real que rebem és inferior a la darrera calculada que ens havien fet arribar. Això ens pot fer pensar que hi hagi hagut una sobrestimació en algun moment</field>
+            <field name="creation_date">2021-03-01</field>
+            <field name="text_R1">
+            Exemple text R1:
+
+            La lectura "desde" es inferior a la lectura hasta del F1 anterior.
+
+            Hasta ahora entendemos que las lecturas eran calculadas en base a reglamento e instalación (con el balance horario aplicado) y por lo tanto inferior a las lecturas reales que marca el contador y por esto se tipificaban como estimadas. Entendemos que la lectura desde de este F1 debe ser superior y no inferior a la lectura hasta del F1 anterior. Se está facturando consumo por duplicado.
+
+            Lectura hasta del 14/01/2021 del F1 reclamado: 23745 kWh
+            Lectura desde del 14/01/2021 del F1 anterior: 23865 kWh
+
+            Como pueden observar la lectura "desde" del F1 anterior es superior, en cambio la del F1 reclamado es inferior, esto genera una incongruencia, ya que si hasta ahora han calculado las lecturas, la lectura del 14/01/200221 del F1 reclamado debería ser superior y no inferior, ya que nos las han mandado calculada y por lo tanto inferiores siempre a la lectura real que indica el contador.
+
+            Espero haber aclarado cualquier duda. </field>
+            <field name="active">True</field>
+        </record>
+        <record model="giscedata.atc.tag" id="tag_8">
+            <field name="name">007P3</field>
+            <field name="titol">Comptadors Endesa amb Tres períodes</field>
+            <field name="description">Des de fa poc que estem rebent per part dels titulars fotografies de comptadors amb tres lesctures en lloc de les que correspondria per tarifa (2 ens els casos de la DHA i una en la resta de comptadors)</field>
+            <field name="creation_date">2021-01-25</field>
+            <field name="text_R1">Procediment:
+            Usuari es queixa per bústia
+            Revisar si tenim lectures de F1
+            - Si la lectura de F1 és real i en canvi el titular ens envia fotografies amb tres períodes fare R1 009
+            - Si la elctura de distri F1és estimada posar R1 003
+
+
+
+            Possible text per la R1:
+
+            "Este usuario tiene contratada la tarifa 2.0DHA, en el contador le debaría aparecer solo 1.18.1 y 1.18.2.
+
+            Desde el dia 12/01/2020 le aparece tambien en periodo 3 (1.18.3) que registra consumo.
+
+            Si la aparicón de P3 se debe a la adecuación de los nuevos peajes, este periodo ahora mismo no debería registrar consumo alguno, pues los nuevos peajes no se aplican hasta el mes de abril.
+
+            Si tenim lectures reals del comptador, posar-les
+
+            Solicitamos revisen el consumo facturado y rectifiquen la factura.
+
+            Gracias" </field>
+            <field name="active">True</field>
+        </record>
+        <record model="giscedata.atc.tag" id="tag_9">
+            <field name="name">008AUTO</field>
+            <field name="titol">Lectures comencen de zero</field>
+            <field name="description">Endesa ens envia lectures estimades com si el comptador comencés a comptar de zero. Les lectutes reals de la persona titular són completament diferents, segeuixen sent consecutives amb les lectures anteriors (no inici zero)</field>
+            <field name="creation_date">2021-01-29</field>
+            <field name="active">True</field>
+        </record>
+        <record model="giscedata.atc.tag" id="tag_10">
+            <field name="name">006AUTO</field>
+            <field name="titol">(AUTO ENDESA) lectura estimada + coherent amb les CCH + superior a la que ens diu el titular</field>
+            <field name="description"></field>
+            <field name="creation_date">1970-1-1</field>
+            <field name="active">True</field>
+        </record>
+        <record model="giscedata.atc.tag" id="tag_11">
+            <field name="name">[3034+3.0+1kWh]</field>
+            <field name="titol">Error F1 3034 en contracte 3.0 per una diferència de 1kWh</field>
+            <field name="description">Ens trobem molts contractes Endesa amb error F1 3034 que en la majoria de casos van acompanyats de 3035 que la divergència entre el consum facturat i el calcul de consum entre lectures + ajust difereix de només 1kWh en alguns dels periodes informats</field>
+            <field name="creation_date">1970-1-1</field>
+            <field name="active">True</field>
+        </record>
+        <record model="giscedata.atc.tag" id="tag_12">
+            <field name="name">[3034+3.0]</field>
+            <field name="titol">Error F1 en contractes 3.0 per una diferència de kWh de més d'un kWh</field>
+            <field name="description"></field>
+            <field name="creation_date">1970-1-1</field>
+            <field name="text_R1">
+            Procediment:
+
+            Posem R1 009
+
+            - només xec refacturació pendent
+            - deixar nota a observacions F1
+            - deixar tag
+            - al sota hi ha un text genèric de comentari per R1:
+
+
+
+            Observamos una discordancia entre la energía facturada y la energía que nos indican las lecturas de cada periodo.
+
+            A continuación os listamos la relación de las divergencias, por cada periodo y según Energía Activa y Reactiva:
+
+            Energía Activa
+
+            En el contador XXXXXXX en fecha XXXXXXXX se indica un consumo:
+
+            P1 se indica un consumo de XXX kW pero no cuadra con el consumo calculado (lectura_hasta - lectura_desde + ajuste): XXXXXXXXXXX
+            P2 se indica un consumo de XXX kW pero no cuadra con el consumo calculado (lectura_hasta - lectura_desde + ajuste): XXXXXXXXXXX
+            P3 se indica un consumo de XXX kW pero no cuadra con el consumo calculado (lectura_hasta - lectura_desde + ajuste): XXXXXXXXXXX
+            P4 se indica un consumo de XXX kW pero no cuadra con el consumo calculado (lectura_hasta - lectura_desde + ajuste): XXXXXXXXXXX
+            P5 se indica un consumo de XXX kW pero no cuadra con el consumo calculado (lectura_hasta - lectura_desde + ajuste): XXXXXXXXXXX
+            P6 se indica un consumo de XXX kW pero no cuadra con el consumo calculado (lectura_hasta - lectura_desde + ajuste): XXXXXXXXXXX
+
+            Energía Reactiva
+
+            P1 se indica un consumo de XXX kW pero no cuadra con el consumo calculado (lectura_hasta - lectura_desde + ajuste): XXXXXXXXXXX
+            P2 se indica un consumo de XXX kW pero no cuadra con el consumo calculado (lectura_hasta - lectura_desde + ajuste): XXXXXXXXXXX
+            P3 se indica un consumo de XXX kW pero no cuadra con el consumo calculado (lectura_hasta - lectura_desde + ajuste): XXXXXXXXXXX
+            P4 se indica un consumo de XXX kW pero no cuadra con el consumo calculado (lectura_hasta - lectura_desde + ajuste): XXXXXXXXXXX
+            P5 se indica un consumo de XXX kW pero no cuadra con el consumo calculado (lectura_hasta - lectura_desde + ajuste): XXXXXXXXXXX
+            P6 se indica un consumo de XXX kW pero no cuadra con el consumo calculado (lectura_hasta - lectura_desde + ajuste): XXXXXXXXXXX
+
+            Solicitamos revisión y modificación de las lecturas, con el envío de un nuevo F1 con las lecturas adecuadas a los valores del término de energía que constan en el mismo fichero xml.
+
+            Gracias.</field>
+            <field name="active">True</field>
+        </record>
+        <record model="giscedata.atc.tag" id="tag_13">
+            <field name="name">[3034+2.0]</field>
+            <field name="titol">Error en contractes 2.0 o 2.1 per una diferència de més d'un kwh</field>
+            <field name="description">Altres</field>
+            <field name="creation_date">1970-1-1</field>
+            <field name="text_R1">
+            Procediment:
+
+            Posem R1 009
+
+            - només xec refacturació pendent
+            - deixar nota a observacions F1
+            - deixar tag</field>
+            <field name="active">True</field>
+        </record>
+        <record model="giscedata.atc.tag" id="tag_14">
+            <field name="name">[CT+G] </field>
+            <field name="titol">Canvi de titular + factura tipo G</field>
+            <field name="description">Són contractes que es donen de baixa amb lectura estimada. El contracte nou es dona d'alta l'endemà d'aquella data i normalemnt esperem a rebre un F1 tipo N mab la lectura d'inici que ha de coincidir amb la lectura de fi del contracte de baixa, fins aquí tot guai però NO! en aquests casos ens envien una factura tipo G que compren periodes del contracte de baixa i un nou periode del contracte nou. No tenim lectura d'inici de contracte nou en aquests casos.La lectura Hasta de la G es carrega al nou contracte i és una lectura real, aquesta difereix de la lectura estimada amb què hem donat de baixa l'anterior contracte  per tantn haurem de refacturar segons convingui l'anterior contracte)</field>
+            <field name="creation_date">1970-1-1</field>
+            <field name="text_R1">
+            Són contractes que es donen de baixa amb lectura estimada.
+            El contracte nou es dona d'alta l'endemà d'aquella data i normalemnt esperem a rebre un F1 tipo N mab la lectura d'inici que ha de coincidir amb la lectura de fi del contracte de baixa, fins aquí tot guai però NO! en aquests casos ens envien una factura tipo G que compren periodes del contracte de baixa i un nou periode del contracte nou. No tenim lectura d'inici de contracte nou en aquests casos.
+            La lectura Hasta de la G es carrega al nou contracte i és una lectura real, aquesta difereix de la lectura estimada amb què hem donat de baixa l'anterior contracte  per tantn haurem de refacturar segons convingui l'anterior contracte)
+
+
+            Procediment:
+
+            Hem posat un parel de Reclamacions en quest sentit del tipus 009 --> Text R1:
+
+
+            "Esta factura corresponde a una regularización posterior de una fecha en que se aplicó una modificación contractual de cambio de titularidad, a través de proceso M1.
+
+            Según normativa y propuesta de la CNMC en el documento CNMC_Reunion31 GrupoTrabajo2_17 mayo 2019_20191019 se indica:
+
+            que en caso de cambio de titularidad por traspaso, se romperá el ciclo de facturación.
+
+            Al enviar factura regularizadora tipo G para la rectificación de la estimación, no se está rompiendo el ciclo de facturación, pues no existe lectura real de cierre para un titular y lectura inicial de inicio para el nuevo titular.
+
+            Con la factura regularizadora G se desconoce qué consumo corresponde a un titular y cual al otro. Además, el archivo xml de la factura G no aporta ninguna lectura o medida del día del cambio, dato que es fundamental para romper el ciclo y solamente indica correctamente el período de factura, aportando la lectura del ciclo anterior como punto de partida desde el que regularizan.
+
+            Solicitamos corrección de estas situación con anulación de la factura G con su correspondiente factura A y emisión de factura R sobre la factura N final con lectura real de cierre del contrato para el titular anterior y nueva factura N con lectura de inicio real que rompa el ciclo e inicie nuevo ciclo para el nuevo titular.
+
+            Gracias y un saludo, seguimos en contacto para cualquier aclaración."</field>
+            <field name="active">True</field>
+        </record>
+        <record model="giscedata.atc.tag" id="tag_15">
+            <field name="name">[CC+G]</field>
+            <field name="titol">Canvi de comptador + factura tipo G</field>
+            <field name="description">factura G que regularitza consums de dos comptadors i no ens delimita la lectura d'inici del comptador nou</field>
+            <field name="creation_date">1970-1-1</field>
+            <field name="text_R1">
+            Procediment:
+
+            Posar a mode de prova R 002-009. Exemple:
+
+
+            Recibimos factura tipo G sin facilitar lectura real de cierre por cambio de contador nº de serie XXXXXXXXX, regularizando consumos de dos EDM. Solicitamos lectura real de cierre de contador y la fecha de baja. Respecto al nuevo contador con nº serie XXXXXXXXX, solicitamos lectura real de inicio así como especificación del día que se inicia. A fin de evitar una nueva queja a la CNMC sobre las facturas tipo G que comprenden un periodo en el cual se ha producido un cambio de contador, adjuntamos respuesta de dicho organismo de una consulta que le realizamos anteriormente en el correo cambiodecomercializador@cnmc.es:
+
+            "Efectivamente las facturas están incompletas o incorrectamente informadas. Si se produce un cambio de contador, debe informarse del contador previo y del contador posterior al cambio, indicando correctamente la fecha del cambio y números de serie en __Medidas__. El cambio del contador se produce el día indicado como fecha en la que empiezan sus lecturas para el CUPS correspondiente, por lo que la fecha del campo __LecturaDesde__ del nuevo contador, debería coincidir con la de __LecturaHasta__ del previo. Además, debe informarse de los periodos de facturación consecuencia del cambio de contador, independientemente del tipo de factura del que se trate en el campo __EnergiaActiva__ pero no necesariamente en el campo __TerminoPotencia__ si esta no cambia."
+            Solicitamos, por favor, las lecturas de cierre de contador y las de inicio del nuevo. Gracias.
+            (A continuación se muestra el mensaje de error de nuestro sistema de facturación, el cual no tiene ninguna relevancia de cara a la reclamación.)</field>
+            <field name="active">True</field>
+        </record>
+        <record model="giscedata.atc.tag" id="tag_16">
+            <field name="name">[3035+R]</field>
+            <field name="titol">Error sol, que no va acompanyat d'un 3034. Divergència entre consum facturat i consum calculat entre lectures + ajsust en una factura de distri tipo R</field>
+            <field name="description">Tenim molts F1 amb error 3035 per la divergència del consum calculat i facturat en facturas R amb una mateixa casuística. Ens trobem amb que la factura tipo R refactura una factura tipo N i no coincideix en periode facturat, sinó que la factura tippus R tot  i rectificar el consum (normalment ve d'una R1) informa de toot el periode refacturat, encara que aquest ja estigui refacturat. (s'entén?)</field>
+            <field name="creation_date">1970-1-1</field>
+            <field name="text_R1">
+            Tenim molts F1 amb error 3035 per la divergència del consum calculat i facturat en facturas R amb una mateixa casuística.
+            Ens trobem amb que la factura tipo R refactura una factura tipo N i no coincideix en periode facturat, sinó que la factura tippus R tot  i rectificar el consum (normalment ve d'una R1) informa de toot el periode refacturat, encara que aquest ja estigui refacturat. (s'entén?)
+
+
+            Càrol ha enviat mail a la CNMC per fer consulta donat que totes les R1ns en aquest sentit han vingut rebutjedas </field>
+            <field name="active">True</field>
+        </record>
+        <record model="giscedata.atc.tag" id="tag_17">
+            <field name="name">[3035+N]</field>
+            <field name="titol">Error sol, que no va acompanyat d'un 3034. Divergència entre consum facturat i consum calculat entre lectures + ajsust en una factura de distri tipo N</field>
+            <field name="description">Altres</field>
+            <field name="creation_date">1970-1-1</field>
+            <field name="active">True</field>
+        </record>
+        <record model="giscedata.atc.tag" id="tag_18">
+            <field name="name"> [JURÍDIC]</field>
+            <field name="titol">pels casos d'enderreriment d'endesa que hem entrat denúncia a la generalitat</field>
+            <field name="description">https://drive.google.com/open?id=1-Bz5dWVGBYH3YCgwApn2TytaeUMPiPQs</field>
+            <field name="creation_date">1970-1-1</field>
+            <field name="active">True</field>
+        </record>
+        <record model="giscedata.atc.tag" id="tag_19">
+            <field name="name">[TE]</field>
+            <field name="titol">Tota gestió relacionada amb contractes especials</field>
+            <field name="description"></field>
+            <field name="creation_date">1970-1-1</field>
+            <field name="active">True</field>
+        </record>
+        <record model="giscedata.atc.tag" id="tag_20">
+            <field name="name">[TE INDEXADA]</field>
+            <field name="titol">Tota gestió relacionada amb contractes especials i que a més tenen tarifa indexada</field>
+            <field name="description">Altres</field>
+            <field name="creation_date">1970-1-1</field>
+            <field name="active">True</field>
+        </record>
+        <record model="giscedata.atc.tag" id="tag_21">
+            <field name="name">[SENSE LECT AUTO]</field>
+            <field name="titol">Aqueslls contractes amb algun tipus de tarifa amb autoproducció i endarrerits pq no tenen lectures des de fa més de dos mesos</field>
+            <field name="description"></field>
+            <field name="creation_date">1970-1-1</field>
+            <field name="active">True</field>
+        </record>
+        <record model="giscedata.atc.tag" id="tag_22">
+            <field name="name">[ENDESA SENSE AUTO]</field>
+            <field name="titol">Afecta a tots aquells contractes amb auto d'ENdesa que a l'F1 tinguin algun tipus d'error</field>
+            <field name="description"></field>
+            <field name="creation_date">1970-1-1</field>
+            <field name="active">True</field>
+        </record>
+        <record model="giscedata.atc.tag" id="tag_23">
+            <field name="name">[Petites SENSE AUTO]</field>
+            <field name="titol">Afecta a tots aquells contractes amb auto de distris petites que a l'F1 tinguin algun tipus d'error</field>
+            <field name="description"></field>
+            <field name="creation_date">1970-1-1</field>
+            <field name="active">True</field>
+        </record>
+        <record model="giscedata.atc.tag" id="tag_24">
+            <field name="name">[FACTURACIO BIMESTRAL]</field>
+            <field name="titol">Contractes amb facturació bimestral per part de la duistribuïdora</field>
+            <field name="description">https://docs.google.com/spreadsheets/d/1qcgTKvEovfzsFELGlzek6LHWRbKMgDuMDQ1zGNlClTI/edit#gid=0</field>
+            <field name="creation_date">1970-1-1</field>
+            <field name="text_R1">
+            Procediment:
+
+            Registre de casoso nous i seguiment d'aquells ja reclamats. Hi ha un mail a tenir en compte i un registre de casos --> https://docs.google.com/spreadsheets/d/1qcgTKvEovfzsFELGlzek6LHWRbKMgDuMDQ1zGNlClTI/edit#gid=0
+
+
+            Text exemple per la R1:
+
+            "Solicitamos recibir lecturas mensuales de este suministro. El Real Decreto 1718/2012 indica claramente la obligación de tomar lecturas reales, y especifica que en el caso de suministros que cuenten con equipos de medida con capacidad para telemedida y tele-gestión, y efectivamente integrados en los correspondientes sistemas (como es el caso, tal y como indican los ficheros F1), la lectura se realizará con una periodicidad mensual. Gracias"</field>
+            <field name="active">True</field>
+        </record>
+        <record model="giscedata.atc.tag" id="tag_25">
+            <field name="name">3035</field>
+            <field name="titol">Contractes en què la diferència entre lectures no és igual al consum facturat</field>
+            <field name="description">Davant un 3.0 o 2.0 amb error F3035. 1. Posar CAC deixar-lo obert + etiqueta 3035 possible text: Hola. De este contrato nos indicáis unos consumos a facturar en los tres periodos no coinciden con la diferencia entre lecturas. Como ejemplo, para el periodo del dd/mm al dd/mm facturan xx kWh en periodo llano y la diferencia entre lecturas es de xx kWh. Se recuerda que si un saldo ATR es inválido sistemáticamente se debe abrir una incidencia en línea con lo establecido en el P.O 10.5. Los saldos ATR deben ser válidos y disponibles de manera que las lecturas hasta de un fichero F1 coincida con la lectura desde del fichero F1 siguiente. Corrijan el fichero o rectifiquen la facturación para este periodo. Gracias. 2. Passar a fase 5 l’F1 3. Facturar el contracte i que aquest sí que es cobri</field>
+            <field name="creation_date">1970-1-1</field>
+            <field name="text_R1">
+            Davant un 3.0 o 2.0 amb error F3035
+
+            1. Posar CAC deixar-lo obert + etiqueta 3035
+            possible text:
+            Hola. De este contrato nos indicáis unos consumos a facturar en los tres periodos no coinciden con la diferencia entre lecturas.
+            Como ejemplo, para el periodo del dd/mm al dd/mm facturan xx kWh en periodo llano y la diferencia entre lecturas es de xx kWh.
+
+            Se recuerda que si un saldo ATR es inválido sistemáticamente se debe abrir una incidencia en línea con lo establecido en el P.O 10.5. Los saldos ATR deben ser válidos y disponibles de manera que las lecturas hasta de un fichero F1 coincida con la lectura desde del fichero F1 siguiente.
+
+            Corrijan el fichero o rectifiquen la facturación para este periodo.
+
+            Gracias.
+
+            2. Passar a fase 5 l’F1
+            3. Facturar el contracte i que aquest sí que es cobri </field>
+            <field name="active">True</field>
+        </record>
+        <record model="giscedata.atc.tag" id="tag_26">
+            <field name="name">Gener22</field>
+            <field name="titol">F1s rebuts gener 2022</field>
+            <field name="description">Altres</field>
+            <field name="creation_date">1970-1-1</field>
+            <field name="active">True</field>
+        </record>
+        <record model="giscedata.atc.tag" id="tag_27">
+            <field name="name">Falta F1 periode febrer 22</field>
+            <field name="titol"></field>
+            <field name="description">Contractes amb facturació suspesa perquè falta la factura de febrer i ja tenim les lectures de març.Donen incicidència per procés. Les que he trobat fins ara són auto + endesa</field>
+            <field name="creation_date">1970-1-1</field>
+            <field name="active">True</field>
+        </record>
+        <record model="giscedata.atc.tag" id="tag_28">
+            <field name="name">[F13036]</field>
+            <field name="titol">F1 error 3036 d'Endesa</field>
+            <field name="description">Contractes d'Endesa que tenen error 3036 i que hem facturat amb CH</field>
+            <field name="creation_date">1970-1-1</field>
+            <field name="text_R1">
+            Procediment:
+
+            F1 tipus 037 o 055, pendent mirar quina funciona </field>
+            <field name="active">True</field>
+        </record>
+        <record model="giscedata.atc.tag" id="altres">
+            <field name="name">Altres</field>
+            <field name="titol">Altres</field>
+            <field name="description">Altres</field>
+            <field name="creation_date">1970-1-1</field>
+            <field name="active">True</field>
+        </record>
+    </data>
+</openerp>

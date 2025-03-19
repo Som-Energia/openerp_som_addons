@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<openerp>
+    <data>
+        <record model="ir.ui.view" id="view_giscedata_cups_ps_form">
+            <field name="name">giscedata.cups.ps.form</field>
+            <field name="model">giscedata.cups.ps</field>
+            <field name="inherit_id" ref="giscedata_cups.view_cups_ps_form"/>
+            <field name="type">tree</field>
+            <field name="priority">99</field>
+            <field name="arch" type="xml">
+                <field name="catas_dp" position="after">
+                    <separator string="Importació Cadastre" colspan="4"/>
+                    <field name="importacio_cadastre_incidencies_origen" readonly="True"/>
+                </field>
+            </field>
+        </record>
+
+        <!-- Habilitem l'edició de l'històric d'autoconsums -->
+        <record model="ir.ui.view" id="view_cups_ps_hist_autoconsum_form_som">
+            <field name="name">view.cups.ps.hist.autoconsum.form.som</field>
+            <field name="model">giscedata.cups.ps</field>
+            <field name="inherit_id" ref="giscedata_cups.view_cups_ps_hist_autoconsum_form"/>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <field name="hist_autoconsum" position="replace">
+                    <field name="hist_autoconsum" nolabel="1" context="{'default_cups_id': active_id}" readonly="0"/>
+                </field>
+            </field>
+        </record>
+
+        <!-- Habilitem la modificació dels camps de l'històric d'autoconsums -->
+        <record model="ir.ui.view" id="view_autoconsum_cups_form_som">
+            <field name="name">giscedata_autoconsum.cups.form.som</field>
+            <field name="model">giscedata.autoconsum.cups.autoconsum</field>
+            <field name="inherit_id" ref="giscedata_cups.view_autoconsum_cups_form"/>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <field name="cups_id" position="replace">
+                    <field name="cups_id" colspan="4" readonly="0"/>
+                </field>
+                <field name="autoconsum_id" position="replace">
+                    <field name="autoconsum_id" colspan="4" readonly="0"/>
+                </field>
+                <field name="tipus_cups" position="replace">
+                    <field name="tipus_cups" colspan="4" readonly="0"/>
+                </field>
+                <field name="data_inici" position="replace">
+                    <field name="data_inici" colspan="4" readonly="0"/>
+                </field>
+                <field name="data_final" position="replace">
+                    <field name="data_final" colspan="4" readonly="0"/>
+                </field>
+            </field>
+        </record>
+    </data>
+</openerp>

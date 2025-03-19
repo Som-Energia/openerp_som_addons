@@ -6,7 +6,9 @@
     ${_(u"<b>Pas:</b> 05")}<br/>
     ${_(u"<b>Codi de la sol·licitud:</b> %s") % (d.codi_solicitud)}<br/>
     ${_(u"<b>Tipus contracte:</b> %s") % (d.tipus_contracte)}<br/>
-    ${_(u"<b>Tipus Autoconsum:</b> %s") % (d.tipus_autoconsum)}<br/>
+    % if d.tipus_autoconsum:
+        ${_(u"<b>Tipus Autoconsum:</b> %s") % (d.tipus_autoconsum)}<br/>
+    % endif
     ${_(u"<b>Codi contracte:</b> %s") % (d.codi_contracte)}<br/>
      ${_(u"<b>Potència: </b>")}
      % for pot in d.potencies[:-1]:
@@ -17,7 +19,6 @@
     %if d.tensio:
         ${_(u"<b>Tensió:</b> %s") % (d.tensio)}<br/>
     %endif
-    ${_(u"<b>Data activacio:</b> %s") % (d.data_activacio)}<br/>
+    ${_(u"<b>Data activació:</b> %s") % (d.data_activacio)}<br/>
     <br><br>
 </li>
-

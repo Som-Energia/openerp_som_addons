@@ -1,0 +1,22 @@
+.td_circle{
+    width: 5%;
+}
+.td_text{
+    width: 90%;
+}
+.circle{
+    background-color: #bdc83f;
+    display:block;
+    height:50px;
+    width:50px;
+    border-radius:50%;
+    margin:auto;
+    color:#fff;
+    line-height:50px;
+    text-align:center;
+    font-size: 40px;
+    font-weight: bold;
+}
+.invoice_details_info_td_indivisible{
+    page-break-inside: avoid;
+}

@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<openerp>
+    <data noupdate="0">
+        <!--Configuracions demo-->
+        <record model="som.crawlers.config" id="demo1_conf">
+            <field name="name">prova1</field>
+            <field name="crawler">Selenium</field>
+            <field name="usuari">usuariProva</field>
+            <field name="filtres">https://egymonuments.gov.eg/en/collections/kawit-sarcophagus-4</field>
+            <field name="url_portal">https://egymonluments.gov.eg/en/museums/egyptian-museum</field>
+            <field name="contrasenya">contraProva</field>
+            <field name="days_of_margin">80</field>
+            <field name="pending_files_only" eval="False"/>
+            <field name="browser">firefox</field>
+            <field name="user_ultima_modificacio" ref="base.user_admin"/>
+        </record>
+        <!-- Exemple accions planificades-->
+        <record model="som.crawlers.task" id="demo_accions_planificades_1">
+            <field name="name">Anselmo descargar demo</field>
+            <field name="data_proxima_execucio">2022-07-20+00:58:11</field>
+            <field name="active">True</field>
+            <field name="configuracio_id" ref="anselmo_conf"/>
+        </record>
+        <record model="som.crawlers.task" id="demo_accions_planificades_2">
+            <field name="name">Anselmo descargar demo2</field>
+            <field name="data_proxima_execucio">2022-07-20+00:58:11</field>
+            <field name="active">True</field>
+            <field name="configuracio_id" ref="anselmo_conf"/>
+        </record>
+        <record model="som.crawlers.task" id="demo_accions_planificades_3">
+            <field name="name">zip attachment test</field>
+            <field name="data_proxima_execucio">2022-07-20+00:58:11</field>
+            <field name="active">True</field>
+            <field name="configuracio_id" ref="anselmo_conf"/>
+        </record>
+        <record model="som.crawlers.task" id="demo_accions_planificades_4">
+            <field name="name">zip attachment test</field>
+            <field name="data_proxima_execucio">2022-07-20+00:58:11</field>
+            <field name="active">True</field>
+            <field name="configuracio_id" ref="anselmo_conf"/>
+        </record>
+        <!-- Exemple tasca-->
+        <record model="som.crawlers.task.step" id="demo_taskStep_1">
+            <field name="name">Descarregar fitxers</field>
+            <field name="sequence">1</field>
+            <field name="function">download_files</field>
+            <field name="params">{"nom_fitxer":"script_run_crawler.py"}</field>
+            <field name="task_id" ref="demo_accions_planificades_1"/>
+        </record>
+        <record model="som.crawlers.task.step" id="demo_taskStep_2">
+            <field name="name">Importar fitxers XML</field>
+            <field name="sequence">2</field>
+            <field name="function">import_xml_files</field>
+            <field name="params">{"nom_fitxer":"script_import_xml_files.py"}</field>
+            <field name="task_id" ref="demo_accions_planificades_1"/>
+        </record>
+        <record model="som.crawlers.task.step" id="demo_taskStep_3">
+            <field name="name">Descarregar fitxers</field>
+            <field name="sequence">1</field>
+            <field name="function">download_files</field>
+            <field name="params">{}</field>
+            <field name="task_id" ref="demo_accions_planificades_1"/>
+        </record>
+        <record model="som.crawlers.task.step" id="demo_taskStep_4">
+            <field name="name">Descarregar fitxers</field>
+            <field name="sequence">1</field>
+            <field name="function">download_files</field>
+            <field name="params">{"nom_fitxer":"script_import_xml_f"}</field>
+            <field name="task_id" ref="demo_accions_planificades_1"/>
+        </record>
+        <record model="som.crawlers.task.step" id="demo_taskStep_5">
+            <field name="name">Descarregar fitxers</field>
+            <field name="sequence">1</field>
+            <field name="function">download_files</field>
+            <field name="params">{"nom_fitxer":"script_import_xml_f"}</field>
+            <field name="task_id" ref="demo_accions_planificades_1"/>
+        </record>
+        <record model="som.crawlers.task.step" id="demo_taskStep_6">
+            <field name="name">Importar fitxers XML</field>
+            <field name="sequence">1</field>
+            <field name="function">import_xml_files</field>
+            <field name="params">{}</field>
+            <field name="task_id" ref="demo_accions_planificades_1"/>
+        </record>
+        <record model="som.crawlers.task.step" id="demo_taskStep_7">
+            <field name="name">Importar fitxers XML</field>
+            <field name="sequence">1</field>
+            <field name="function">import_xml_files</field>
+            <field name="params">{"nom_fitxer":"script_import_xml"}</field>
+            <field name="task_id" ref="demo_accions_planificades_1"/>
+        </record>
+            <record model="som.crawlers.task.step" id="demo_taskStep_8">
+            <field name="name">Descarregar fitxers</field>
+            <field name="sequence">1</field>
+            <field name="function">download_files</field>
+            <field name="params">{"nom_fitxer":"script_run_crawler.py"}</field>
+            <field name="task_id" ref="demo_accions_planificades_3"/>
+        </record>
+        <record model="som.crawlers.task.step" id="demo_taskStep_9">
+            <field name="name">Descarregar fitxers</field>
+            <field name="sequence">1</field>
+            <field name="function">download_files</field>
+            <field name="params">{"nom_fitxer":"script_run_crawler.py"}</field>
+            <field name="task_id" ref="demo_accions_planificades_4"/>
+        </record>
+        <!-- Exemple result-->
+        <record model="som.crawlers.result" id="demo_result_1">
+            <field name="task_id" ref="demo_accions_planificades_1"/>
+        </record>
+        <record model="som.crawlers.result" id="demo_result_2">
+            <field name="task_id" ref="demo_accions_planificades_1"/>
+        </record>
+        <record model="som.crawlers.result" id="demo_result_3">
+            <field name="task_id" ref="demo_accions_planificades_3"/>
+        </record>
+        <record model="som.crawlers.result" id="demo_result_4">
+            <field name="task_id" ref="demo_accions_planificades_3"/>
+        </record>
+    </data>
+</openerp>

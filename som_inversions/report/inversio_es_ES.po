@@ -1,0 +1,96 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+#
+# Translators:
+# Albert Pérez <albert.perezr@gmail.com>, 2013
+# Eduard Carreras <ecarreras@gisce.net>, 2012
+# GISCE-TI, S.L. <devel@gisce.net>, 2015
+# Som Energia  <marc.rosello@somenergia.coop>, 2012
+msgid ""
+msgstr ""
+"Project-Id-Version: SomEnergia\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2010-12-21 03:35+0100\n"
+"PO-Revision-Date: 2018-06-22 13:00+0000\n"
+"Last-Translator: GISCE-TI, S.L. <devel@gisce.net>\n"
+"Language-Team: Spanish (Spain) (http://www.transifex.com/monfero/somenergia/language/es_ES/)\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: es_ES\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+msgid "1,75% nominal anual (2017, revisable anualment)"
+msgstr "1,75% nominal anual (2017, revisable anualmente)"
+
+msgid "Cancel·lació: En qualsevol moment"
+msgstr "Cancelación: En cualquier momento"
+
+msgid "Import:"
+msgstr "Importe:"
+
+msgid "Liquidació:"
+msgstr "Liquidación:"
+
+msgid ""
+"Aquest contracte només serà actiu un cop el pagament corresponent s'hagi fet"
+" efectiu"
+msgstr "Este contrato se considerará activo una vez el pago correspondiente se haya efectuado"
+
+msgid "I=((A*%I)/365)*D<br>on I = interessos; A = aportació; D = dies"
+msgstr "I=((A*%I)/365)*D<br>donde I= intereses; A= aportación; D= días"
+
+msgid ""
+"Aportació disponible en qualsevol moment amb 3 mesos de pre-avís mitjançant "
+"l'enviament de correu electrònic a invertir@somenergia.coop"
+msgstr "Aportación disponible en cualquier momento con 3 meses de pre-aviso mediante el envío de correo electrónico a invertir@somenergia.coop"
+
+msgid "Remuneració:"
+msgstr "Remuneración:"
+
+msgid "Titular:"
+msgstr "Titular:"
+
+msgid "Fórmula per determinar l'import absolut de la remuneració meritada:"
+msgstr "Fórmula para determinar el importe absoluto de la remuneración meritada:"
+
+msgid ""
+"Pots fer el seguiment dels nostres projectes a l'apartat invertir en "
+"projectes del  nostre web www.somenergia.coop o bé consultar-nos qualsevol "
+"tema referent a inversions al correu electrònic invertir@somenergia.coop"
+msgstr "Puedes consultar nuestros proyectos en el apartado invertir en proyectos del web\nwww.somenergia.coop y para cualquier duda referente a inversiones envianos un correo a\ninvertir@somenergia.coop"
+
+msgid ""
+"La liquidació dels interessos meritats durant l'any es percebrà durant els "
+"últims 10 dies del mes de gener de l'any següent.<br>En cas de reintegrament"
+" parcial o total de l’aportació els interessos es percebran en la següent "
+"liquidació anual d'interessos."
+msgstr "La liquidación de los intereses devengados durante el año se percibirá durante los últimos 10 días del mes de enero del año siguiente.<br>En caso de reintegro parcial o total de la aportación los intereses se percibirán en la siguiente liquidación anual de intereses."
+
+msgid "CONDICIONS GENERALS DE L’APORTACIÓ SOCIAL"
+msgstr "CONDICIONES GENERALES DE LA APORTACIÓN SOCIAL"
+
+msgid ""
+"La remuneració de l’aportació social serà durant el primer any la fixada per"
+" l’Assemblea General amb data 27/05/2017.<br>A partir del segon i successius"
+" l’Assemblea General fixarà la remuneració anual.<br>La reducció de les "
+"aportacions, o les noves aportacions que es facin, seran acreditades "
+"mitjançant extractes que s’annexaran al final de cada exercici així com per "
+"internet a travès de la nostra oficina virtual."
+msgstr "La remuneración de la aportación social para el primer año será la fijada por la Asamblea General de fecha 27/05/2017.<br>A partir del segundo y sucesivos, la Asamblea General fijará la remuneración anual.<br>La reducción de las aportaciones, o las nuevas aportaciones que se hagan, serán acreditadas mediante extractos que se anexarán al final de cada ejercicio así como por internet a través de nuestra oficina virtual."
+
+msgid "Data d'obertura:"
+msgstr "Fecha apertura:"
+
+msgid ""
+"L’aportació està subjecta a les prescripcions previstes a la Llei de "
+"Cooperatives de Catalunya (Llei 12/2015 de 9 de juliol), als Estatuts "
+"socials vigents de la cooperativa i als acords de l’Assemblea General."
+msgstr "La aportación está sujeta a las prescripciones previstas en la Ley de Cooperativas de Cataluña (Ley 12/2015 de 9 de julio), en los Estatutos sociales vigentes de la cooperativa y los acuerdos de la Asamblea General."
+
+msgid "Resum condicions de l’aportació voluntària al capital social"
+msgstr "Resumen condiciones de la aportación voluntaria al capital social"
+
+msgid "Informació addicional:"
+msgstr "Información adicional:"

@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+    <data>
+		<record id="view_wizard_subscribe_soci_mailchimp_form" model="ir.ui.view">
+            <field name="name">wizard.subscribe.soci.mailchimp.form</field>
+            <field name="model">wizard.subscribe.soci.mailchimp</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <form string="Subscriure soci a la llista de Mailchimp">
+                    <field name="state" invisible="1"/>
+                    <field name="info" colspan="4" width="290" height="200" readonly="True" nolabel="1"/>
+                    <group colspan="4" attrs="{'invisible': [('state', '!=', 'init')]}">
+                        <button icon="gtk-cancel" special="cancel" string="Cancel·lar" type="object"/>
+                        <button icon="gtk-ok" name="subscribe_soci_address" string="Subscriure" type="object"/>
+                    </group>
+
+                    <group colspan="4" attrs="{'invisible': [('state', '!=', 'end')]}">
+                        <button icon="gtk-close" special="cancel"
+                            string="Tancar" type="object" />
+                    </group>
+		        </form>
+	        </field>
+	    </record>
+
+	    <record id="action_wizard_subscribe_soci_mailchimp_form" model="ir.actions.act_window">
+            <field name="name">Subscriure soci a la llista de Mailchimp</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">wizard.subscribe.soci.mailchimp</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">form</field>
+            <field name="target">new</field>
+        </record>
+
+        <record id="value_wizard_subscribe_soci_mailchimp_form" model="ir.values">
+            <field name="object" eval="1"/>
+            <field name="name">Subscriure soci a la llista de Mailchimp</field>
+            <field name="key2">client_action_multi</field>
+            <field name="key">action</field>
+            <field name="model">res.partner.address</field>
+            <field name="value"
+                   eval="'ir.actions.act_window,'+str(ref('action_wizard_subscribe_soci_mailchimp_form'))" />
+        </record>
+	</data>
+</openerp>

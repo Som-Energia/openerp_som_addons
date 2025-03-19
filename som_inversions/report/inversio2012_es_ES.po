@@ -1,0 +1,93 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+#
+# Translators:
+# Eduard Carreras <ecarreras@gisce.net>, 2012.
+# Som Energia  <marc.rosello@somenergia.coop>, 2012.
+msgid ""
+msgstr ""
+"Project-Id-Version: Som Energia\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2010-12-21 03:35+0100\n"
+"PO-Revision-Date: 2012-04-18 08:51+0000\n"
+"Last-Translator: Som Energia <marc.rosello@somenergia.coop>\n"
+"Language-Team: Spanish (Spain) (http://trad.gisce.net/projects/p/somenergia/language/es_ES/)\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: es_ES\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+msgid "CONDICIONS GENERALS DE L’APORTACIÓ SOCIAL"
+msgstr "CONDICIONES GENERALES DE LA APORTACIÓN SOCIAL"
+
+msgid ""
+"L’aportació està subjecta a les prescripcions relatives al seu règim "
+"d’exigibilitat, responsabilitat, actualitzacions, retribució mitjançant "
+"interessos, imputació de resultats, transmissibilitat i reemborsalment "
+"previstes a la Llei de Cooperatives de Catalunya (Llei 18/2002 de 5 de "
+"juliol), als Estatuts socials vigents i als acords de l’Assemblea General."
+msgstr "La aportación está sujeta a les prescripciones relativas a su régimen de exigibilidad, responsabilidad,\nactualizaciones, retribución mediante intereses, imputación de resultados, transmisibilidad y reembolso\nprevistas en la Ley de Cooperativas de Catalunya (Llei 18/2002 de 5 de julio), en los Estatutos sociales\nvigentes y en los acuerdos de la Asamblea General."
+
+msgid "Titular:"
+msgstr "Titular:"
+
+msgid "Resum condicions de l’aportació social com a soci/a"
+msgstr "Resumen condiciones de la aportación social como socio/a"
+
+msgid "Import:"
+msgstr "Importe:"
+
+msgid "Data d'obertura:"
+msgstr "Fecha apertura:"
+
+msgid "Remuneració:"
+msgstr "Remuneración:"
+
+msgid "Informació addicional:"
+msgstr "Información adicional:"
+
+msgid "Venciment:"
+msgstr "Vencimiento:"
+
+msgid "Fórmula càlcul dels interessos:"
+msgstr "Fórmula cálculo de los intereses:"
+
+msgid "Liquidació:"
+msgstr "Liquidación:"
+
+msgid "3,50% nominal anual (2012, revisable anualment)"
+msgstr "3,50% nominal anual (2012, revisable anualmente)"
+
+msgid ""
+"La remuneració de l’aportació social serà durant el primer any la fixada per"
+" l’Assemblea General amb data 24/03/2012.<br>A partir del segon i successius"
+" l’Assemblea General fixarà la remuneració anual.<br>La reducció de les "
+"aportacions, o les noves aportacions que es facin, seran acreditades "
+"mitjançant extractes que s’annexaran al final de cada exercici així com per "
+"internet atravès de la nostra pàgina web."
+msgstr "La remuneración de la aportación social será durante el primer año la fijada por la Asamblea General con fecha 24/03/2012.<br>A partir del segundo y sucesivos la Asamblea General fijará la remuneración anual.<br>La reducción de las aportaciones, o las nuevas aportaciones que se realizen, serán acreditadas mediante extractos que se annexarán al final de cada ejercicio así como por internet a travès de nuestra página web."
+
+msgid ""
+"Aportació disponible en qualsevol moment amb 3 mesos de pre-avís mitjançant "
+"l'enviament de correu electrònic a invertir@somenergia.coop"
+msgstr "Aportación disponible en qualquier momento con 3 meses de pre-aviso mediante el envio de correo electrónico a invertir@somenergia.coop"
+
+msgid "I=((A*%I)/365)*D<br>on I = interessos; A = aportació; D = dies"
+msgstr "I=((A*%I)/365)*D<br>donde I= intereses; A= aportación; D= días"
+
+msgid ""
+"La liquidació dels interessos meritats durant l'any es percebrà durant els "
+"últims 10 dies del mes de gener de l'any següent.<br>En cas de reintegrament"
+" parcial de l’aportació els interessos es pagaran a final d'any conjuntament"
+" amb els interessos de les imposicions vigents.<br>En cas de reintegrament "
+"total de l'aportació els interessos es percebran en el moment de la "
+"desinversió conjuntament amb el capital retornat."
+msgstr "La liquidación de los intereses devengados durante el año se percibirá durante los últimos 10 días del mes de enero del año siguiente. En caso de reintegro parcial de la aportación los intereses se pagarán a final de año conjuntamente con los intereses de las imposiciones vigentes.En caso de reintegramiento total de la aportación, los intereses se percibirán en el momento de la desinversión conjuntamente con el capital devuelto."
+
+msgid ""
+"Pots fer el seguiment dels nostres projectes a l'apartat invertir en "
+"projectes del  nostre web www.somenergia.coop o bé consultar-nos qualsevol "
+"tema referent a inversions al correu electrònic invertir@somenergia.coop"
+msgstr "Puedes consultar nuestros proyectos en el apartado invertir en proyectos del web\nwww.somenergia.coop y para cualquier duda referente a inversiones envianos un correo a\ninvertir@somenergia.coop"

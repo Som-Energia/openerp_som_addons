@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+	<data>
+		<!--Polisses com a administrador-->
+		<record model="ir.actions.act_window" id="action_abrir_polisses_administradora">
+			<field name="name">Com a Administradora</field>
+			<field name="res_model">giscedata.polissa</field>
+			<field name="src_model">res.partner</field>
+			<field name="view_type">form</field>
+			<field name="view_mode">tree,form</field>
+			<field name="domain">[('administradora', '=', active_id)]</field>
+		</record>
+
+		<record id="value_action_abrir_polisses_administradora" model="ir.values">
+			<field name="object" eval="1"/>
+			<field name="name">Com a Administradora</field>
+			<field name="key2">client_action_relate</field>
+			<field name="key">action</field>
+			<field name="model">res.partner</field>
+			<field name="value" eval="'ir.actions.act_window,'+str(ref('action_abrir_polisses_administradora'))" />
+		</record>
+	</data>
+</openerp>

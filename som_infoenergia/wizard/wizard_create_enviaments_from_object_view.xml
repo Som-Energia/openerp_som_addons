@@ -59,5 +59,23 @@
             <field name="model">res.partner</field>
             <field name="value" eval="'ir.actions.act_window,'+str(ref('action_wizard_create_enviaments_from_partner'))"/>
         </record>
+        <record model="ir.actions.act_window" id="action_wizard_create_enviaments_from_invoice">
+            <field name="name">Afegir factures al Lot d'Enviaments Infoenergia/Massiu</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">wizard.infoenergia.create.enviaments.from.object</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">form</field>
+            <field name="target">new</field>
+            <field name="view_id" ref="view_wizard_create_enviaments_from_object_form"/>
+            <field name="context">{'from_model':'invoice_id'}</field>
+        </record>
+        <record id="values_wizard_create_enviaments_from_invoice_form" model="ir.values">
+            <field name="object" eval="1"/>
+            <field name="name">Afegir factures al Lot d'Enviaments Infoenergia/Massiu</field>
+            <field name="key2">client_action_multi</field>
+            <field name="key">action</field>
+            <field name="model">account.invoice</field>
+            <field name="value" eval="'ir.actions.act_window,'+str(ref('action_wizard_create_enviaments_from_invoice'))"/>
+        </record>
     </data>
 </openerp>

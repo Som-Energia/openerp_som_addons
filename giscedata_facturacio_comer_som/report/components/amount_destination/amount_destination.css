@@ -1,0 +1,70 @@
+.destination {
+    background-color: #f7f7f7;
+    text-align: left;
+    width: 100%;
+    margin: 1em 0px 0px 0px;
+    float: left;
+}
+
+.chart_desti svg{
+    font-size: .8em;
+}
+
+
+.chart_desti p {
+    text-align: center;
+    line-height: 1;
+    margin: .3em;
+}
+
+.FONS {
+    fill: #ffffff;
+}
+
+.REG {
+    fill: #444242;
+}
+
+.IMP {
+    fill: #bdc83f;
+}
+
+.PROD {
+    fill: #006bce;
+}
+
+.bar_i {
+    fill: #5b5b5b;
+}
+
+.bar_c {
+    fill: #727176;
+}
+
+.bar_o {
+    fill: #444242;
+}
+
+
+.bar_f {
+    fill: #ffffff;
+}
+
+.etiqueta,
+.etiqueta_reparto{
+    background-color: #ffffff;
+    line-height: 1;
+    padding: .2em;
+    display: inline-block;
+    font-size: .8em;
+    box-shadow: 1px 1px 1px #000000;
+}
+
+.etiqueta p {
+    padding: 0px;
+}
+.etiqueta_reparto p {
+    margin: .2em;
+    padding: .5em;
+    text-align: left;
+}

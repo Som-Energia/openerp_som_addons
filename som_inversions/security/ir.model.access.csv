@@ -1,0 +1,4 @@
+"id","name","model_id:id","group_id:id","perm_read","perm_write","perm_create","perm_unlink"
+"access_wizard_liquidacio_interessos_r","wizard.liquidacio.interessos","model_wizard_liquidacio_interessos","som_inversions.group_som_inversions_r",1,0,0,0
+"access_wizard_liquidacio_interessos_w","wizard.liquidacio.interessos","model_wizard_liquidacio_interessos","som_inversions.group_som_inversions_w",1,1,1,0
+"access_wizard_liquidacio_interessos_u","wizard.liquidacio.interessos","model_wizard_liquidacio_interessos","som_inversions.group_som_inversions_u",1,1,1,1

@@ -1,0 +1,15 @@
+# -*- coding: utf-8 -*-
+import wizard_create_r1
+import wizard_generate_R1_from_F1_erroni
+import wizard_create_r1_from_multiple_contracts
+import giscedata_switching_wizard_r1_invoice
+import wizard_a3_from_contract
+import wizard_comment_to_F1
+import giscedata_switching_mod_con_wizard
+import wizard_create_atc_from_polissa
+import giscedata_switching_wizard_b1
+import wizard_import_atr_and_f1
+import wizard_close_obsolete_cases
+import wizard_validate_d101
+import giscedata_switching_log_reexport_wizard
+import wizard_switching_multi_change

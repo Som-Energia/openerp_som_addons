@@ -1,2 +1,5 @@
 consolemsg==0.3.3
 yamlns==0.7
+ine_tugesto_somenergia==1.0.0.1
+xlsxwriter==2.0.0
+freezegun

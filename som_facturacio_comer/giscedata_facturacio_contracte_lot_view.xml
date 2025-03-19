@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<openerp>
+    <data noupdate="0">
+        <record model="ir.ui.view" id="view_giscedata_facturacio_contracte_lot_som_form">
+            <field name="name">polisses.facturacio.contracte.lot.som.form</field>
+            <field name="model">giscedata.facturacio.contracte_lot</field>
+            <field name="inherit_id" ref="giscedata_facturacio.view_facturacio_contracte_lot_form" />
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <field name="n_factures" position="after">
+                    <field name="polissa_distribuidora"/>
+                    <field name="autoconsum" />
+                    <field name="tarifaATR" />
+                    <field name="llista_preu" />
+                    <field name="n_retrocedir_lot"/>
+                </field>
+                <field name="falten_dades" position="after">
+                    <field name="info_gestions_massives" />
+                </field>
+            </field>
+        </record>
+        <record model="ir.ui.view" id="view_giscedata_facturacio_contracte_lot_som_tree">
+            <field name="name">polisses.facturacio.contracte.lot.som.tree</field>
+            <field name="model">giscedata.facturacio.contracte_lot</field>
+            <field name="inherit_id" ref="giscedata_facturacio.view_facturacio_contracte_lot_tree"/>
+            <field name="arch" type="xml">
+                <field name="n_factures" position="after">
+                    <field name="polissa_distribuidora" select="1"/>
+                    <field name="autoconsum" select="1"/>
+                    <field name="tarifaATR" select="1"/>
+                    <field name="llista_preu" select="1"/>
+                    <field name="date_invoice" select="1"/>
+                    <field name="consum_facturat" select="2"/>
+                    <field name="total_incidencies" select="1"/>
+                    <field name="data_alta_contracte" select="2"/>
+                    <field name="data_ultima_lectura" select="2"/>
+                    <field name="mode_facturacio" select="2"/>
+                    <field name="n_retrocedir_lot" select="1"/>
+                    <field name="canal_enviament" select="2"/>
+                    <field name="te_generation" select="2"/>
+                    <field name="gran_contracte" select="2"/>
+                    <field name="data_final" select="2"/>
+                    <field name="te_generation_polissa" select="2"/>
+                    <field name="data_alta_auto" select="2"/>
+                </field>
+                <field name="status_tree" position="before">
+                    <field name="import_factures" select="2" />
+                </field>
+                <field name="status_tree" position="after">
+                    <field name="info_gestions_massives" select="2" />
+                </field>
+            </field>
+        </record>
+        <record model="ir.ui.view" id="view_facturacio_contracte_lot_tree_som">
+            <field name="name">giscedata.facturacio.contracte_lot.tree.som</field>
+            <field name="model">giscedata.facturacio.contracte_lot</field>
+			<field name="inherit_id" ref="giscedata_facturacio.view_facturacio_contracte_lot_tree" />
+            <field name="type">tree</field>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='lectures_status']" position="replace"/>
+            </field>
+        </record>
+    </data>
+</openerp>

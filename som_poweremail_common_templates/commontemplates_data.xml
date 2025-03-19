@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<openerp>
+    <data noupdate="1">
+        <record model="poweremail.templates" id="common_template_legal_footer">
+            <field name="name">Common template legal footer</field>
+            <field name="object_name" model="ir.model" search="[('model', '=', 'poweremail.templates')]"/>
+            <field eval="0" name="save_to_drafts"/>
+            <field name="model_int_name">poweremail.templates</field>
+            <field name="def_to">""</field>
+            <field name="def_bcc"></field>
+            <field eval="0" name="auto_email"/>
+            <field eval="0" name="single_email"/>
+            <field eval="0" name="use_sign"/>
+            <field name="def_subject"></field>
+            <field name="template_language">mako</field>
+            <field eval="0" name="send_on_create"/>
+            <field name="lang"></field>
+            <field name="copyvalue"></field>
+            <field eval="0" name="send_on_write"/>
+            <field name="def_body_text"><![CDATA[<!doctype html>
+<p>
+    Som Energia, SCCL
+</p>
+<p>
+    <a href="http://es.support.somenergia.coop">Ayuda</a> / <a href="http://ca.support.somenergia.coop">Suport</a> / <a href="http://eu.support.somenergia.coop">Laguntza</a> / <a href="http://gl.support.somenergia.coop">Axuda</a><br>
+    <a href="https://www.facebook.com/somenergia">facebook</a> - <a href="https://twitter.com/SomEnergia">twitter</a> - <a href="https://www.youtube.com/SomEnergia">youtube</a><br>
+    <a href="http://www.somenergia.coop">Web</a> - <a href="http://blog.somenergia.coop">Blog</a><br>
+</p>
+<p>
+    [CA] Informació Bàsica de Protecció de Dades. Responsable:<br>
+    <strong>SOM ENERGIA SCCL</strong>. Finalitat: prestar-te els serveis que ens has sollicitat, atendre les teves sollicituds d’informació i enviar-te comunicacions comercials. Legitimació: Execució d’un contracte, Interès legítim del responsable o Consentiment de l’Interessat/interessada. Cessions: No es cediran les teves dades a tercers llevat obligació legal. <br>
+    Drets: Tens dret a accedir, rectificar i suprimir les dades, així com altres drets, indicats a la informació addicional, que pots exercir a l’adreça del responsable. Informació addicional: Pots consultar informació addicional i detallada sobre Protecció de Dades <a href="https://www.somenergia.coop/ca/avis-legal/#politica-privacitat">aquí</a>. <br>
+    Aquest missatge i els seus arxius adjunts van dirigits exclusivament al seu destinatari, podent contenir informació confidencial sotmesa a secret professional. No està permesa la seva reproducció o distribució sense la nostra autorització expressa. Si tu no ets la destinatària final si us plau elimina’l i informa’ns per aquesta via.
+</p>
+<p>
+    [ES] Información Básica de Protección de Datos. Responsable:<br>
+    <strong>SOM ENERGIA SCCL.</strong> Finalidad: prestarte los servicios que nos has solicitado, atender tus solicitudes de información y enviarte comunicaciones comerciales. Legitimación: Ejecución de contrato, Interés legítimo del responsable o Consentimiento del Interesado/a. Cesiones: No se cederán tus datos a terceros salvo obligación legal. <br>
+    Derechos: Tienes derecho a acceder, rectificar y suprimir los datos, así como otros derechos, indicados en la información adicional, que puedes ejercer en la dirección del responsable. Información adicional: Puedes consultar información adicional y detallada sobre Protección de Datos <a href="https://www.somenergia.coop/es/aviso-legal/#politica-privacidad">aquí</a>.<br>
+    Este mensaje y sus archivos adjuntos van dirigidos exclusivamente a su destinatario, pudiendo contener información confidencial sometida a secreto profesional. No está permitida su reproducción o distribución sin nuestra autorización expresa. Si tú no eres la destinataria final por favor elimínalo e informa por esta vía.
+  </p>
+  ]]> </field>
+        </record>
+    </data>
+    <data noupdate="1">
+        <record model="poweremail.templates" id="common_template_rejection_text">
+            <field name="name">Common template rejection text</field>
+            <field name="object_name" model="ir.model" search="[('model', '=', 'poweremail.templates')]"/>
+            <field eval="0" name="save_to_drafts"/>
+            <field name="model_int_name">poweremail.templates</field>
+            <field name="def_to">""</field>
+            <field name="def_bcc"></field>
+            <field eval="0" name="auto_email"/>
+            <field eval="0" name="single_email"/>
+            <field eval="0" name="use_sign"/>
+            <field name="def_subject"></field>
+            <field name="template_language">mako</field>
+            <field eval="0" name="send_on_create"/>
+            <field name="lang"></field>
+            <field name="copyvalue"></field>
+            <field eval="0" name="send_on_write"/>
+            <field name="def_body_text"><![CDATA[ Text desistiment]]> </field>
+        </record>
+
+        <record model="poweremail.templates" id="common_template_modi_rejection_text">
+            <field name="name">Common template modi rejection text</field>
+            <field name="object_name" model="ir.model" search="[('model', '=', 'poweremail.templates')]"/>
+            <field eval="0" name="save_to_drafts"/>
+            <field name="model_int_name">poweremail.templates</field>
+            <field name="def_to">""</field>
+            <field name="def_bcc"></field>
+            <field eval="0" name="auto_email"/>
+            <field eval="0" name="single_email"/>
+            <field eval="0" name="use_sign"/>
+            <field name="def_subject"></field>
+            <field name="template_language">mako</field>
+            <field eval="0" name="send_on_create"/>
+            <field name="lang"></field>
+            <field name="copyvalue"></field>
+            <field eval="0" name="send_on_write"/>
+            <field name="def_body_text"><![CDATA[ Text desistiment modi]]> </field>
+        </record>
+    </data>
+    <data noupdate="1">
+        <record model="poweremail.templates" id="common_template_header">
+            <field name="name">Common template header</field>
+            <field name="object_name" model="ir.model" search="[('model', '=', 'poweremail.templates')]"/>
+            <field eval="0" name="save_to_drafts"/>
+            <field name="model_int_name">poweremail.templates</field>
+            <field name="def_to">""</field>
+            <field name="def_bcc"></field>
+            <field eval="0" name="auto_email"/>
+            <field eval="0" name="single_email"/>
+            <field eval="0" name="use_sign"/>
+            <field name="def_subject"></field>
+            <field name="template_language">mako</field>
+            <field eval="0" name="send_on_create"/>
+            <field name="lang"></field>
+            <field name="copyvalue"></field>
+            <field eval="0" name="send_on_write"/>
+            <field name="def_body_text"><![CDATA[ <p>HEADER</p> ]]> </field>
+        </record>
+    </data>
+    <data noupdate="1">
+        <record model="poweremail.templates" id="common_template_footer">
+            <field name="name">Common template footer</field>
+            <field name="object_name" model="ir.model" search="[('model', '=', 'poweremail.templates')]"/>
+            <field eval="0" name="save_to_drafts"/>
+            <field name="model_int_name">poweremail.templates</field>
+            <field name="def_to">""</field>
+            <field name="def_bcc"></field>
+            <field eval="0" name="auto_email"/>
+            <field eval="0" name="single_email"/>
+            <field eval="0" name="use_sign"/>
+            <field name="def_subject"></field>
+            <field name="template_language">mako</field>
+            <field eval="0" name="send_on_create"/>
+            <field name="lang"></field>
+            <field name="copyvalue"></field>
+            <field eval="0" name="send_on_write"/>
+            <field name="def_body_text"><![CDATA[ <p>FOOTER</p> ]]> </field>
+        </record>
+    </data>
+</openerp>

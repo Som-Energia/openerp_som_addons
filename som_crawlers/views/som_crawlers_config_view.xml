@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+    <data>
+        <record model="ir.ui.view" id="view_configuracio_form">
+            <field name="name">som.crawlers.config.form</field>
+            <field name="model">som.crawlers.config</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <form string="Configuracio">
+                    <group colspan="4" string="Informació distribuïdora">
+                        <field name="distribuidora"/>
+                        <field name="name"/>
+                    </group>
+                    <group colspan="2" string="Credencials">
+                        <field name="usuari" readonly='1'/>
+                        <field name="contrasenya" password="True" readonly='1'/>
+                    </group>
+                    <group colspan="2" string="Configuració FTP">
+                        <field name="port"/>
+                        <field name="ftp"/>
+                    </group>
+                    <group colspan="2" col="2" string="URLs">
+                        <field name="url_portal" readonly='1'/>
+                        <field name="url_upload"/>
+                        <field name="filtres"/>
+                    </group>
+                    <group colspan="2" col="2" string="Configuració crawler web">
+                        <field name="crawler" readonly='1'/>
+                        <field name="days_of_margin" readonly='1'/>
+                        <field name="pending_files_only" />
+                        <field name="browser" readonly='1'/>
+                    </group>
+                    <group colspan="4" string="Logs">
+                        <field name="log" readonly='1'/>
+                    </group>
+                </form>
+            </field>
+        </record>
+         <record model="ir.ui.view" id="view_configuracio_tree">
+            <field name="name">som.crawlers.config.tree</field>
+            <field name="model">som.crawlers.config</field>
+            <field name="type">tree</field>
+            <field name="arch" type="xml">
+            <tree string="Configuracio">
+                    <field name="distribuidora" select="1"/>
+                    <field name="name" select="1"/>
+                    <field name="usuari" select="1"/>
+                    <field name="url_portal" />
+                    <field name="url_upload" />
+                    <field name="filtres" />
+                    <field name="crawler"/>
+                    <field name="days_of_margin"/>
+                    <field name="pending_files_only"/>
+                    <field name="browser"/>
+                </tree>
+            </field>
+        </record>
+        <record id="action_configuracio_tree" model="ir.actions.act_window">
+            <field name="name">Configuracio</field>
+            <field name="res_model">som.crawlers.config</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="view_id" ref="view_configuracio_tree"/>
+        </record>
+
+    <menuitem id="menu_som_crawlers_base" name="Som Crawlers" />
+    <menuitem id="menu_som_crawlers_config" name="Configuracio" parent="som_crawlers.menu_som_crawlers_base"/>
+    <menuitem action="action_configuracio_tree" id="menu_configuracio_tree" parent="som_crawlers.menu_som_crawlers_config"/>
+    </data>
+</openerp>

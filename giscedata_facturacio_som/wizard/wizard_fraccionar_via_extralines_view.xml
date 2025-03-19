@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+    <data>
+        <record id="view_wizard_fraccionar_via_extralines" model="ir.ui.view">
+            <field name="name">wizard.fraccionar.via.extralines.view.form</field>
+            <field name="model">wizard.fraccionar.via.extralines</field>
+            <field name="type">form</field>
+            <field name="inherit_id" ref="giscedata_facturacio.view_wizard_fraccionar_via_extralines"/>
+            <field name="arch" type="xml">
+                <field name="ntermes" position="after">
+                    <field name="first_term_payment"/>
+                </field>
+            </field>
+        </record>
+    </data>
+</openerp>

@@ -1,0 +1,15 @@
+.detail_description_line {
+    font-weight: bold;
+    float: left;
+    width: 25em;
+}
+.detail_description_subtotal {
+    font-weight: bold;
+    float: right;
+
+}
+.detail_line {
+    float: left;
+    width:89%;
+    margin: 0px 10px;
+}

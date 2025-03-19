@@ -1,0 +1,374 @@
+<?xml version="1.0" ?>
+<openerp>
+    <data>
+        <!--2.0 TD-->
+        <!-- Importacio -->
+        <record id="f1_import_01" model="giscedata.facturacio.importacio">
+            <field name="name">Import 1</field>
+        </record>
+        <!-- Linia importacio -->
+        <record id="line_01_f1_import_01" model="giscedata.facturacio.importacio.linia">
+            <field name="name">File 1</field>
+            <field name="importacio_id" ref="f1_import_01"/>
+            <field name="distribuidora_id" ref="giscedata_polissa_comer.res_partner_endesa"/>
+            <field name="import_phase" eval="10"/>
+            <field name="state">erroni</field>
+            <field name="invoice_number_text">12345678</field>
+            <field name="type_factura">N</field>
+            <field name="tipo_factura_f1">atr</field>
+        </record>
+        <!--Factures-->
+        <record id="factura_0067" model="giscedata.facturacio.factura">
+            <field name="name">0001</field>
+            <field name="number">00067</field>
+            <field name="date_invoice">2021-10-01</field>
+            <!--<field name="invoice_id" ref="account.invoice_0001"/>-->
+            <field name="type">in_invoice</field>
+            <field name="polissa_id" ref="giscedata_polissa.polissa_0001"/>
+            <field name="account_id" search="[('code', '=', 430000)]" model="account.account"/>
+            <field name="company_id">1</field>
+            <field name="date_boe">2021-08-15</field>
+            <field name="reference_type">none</field>
+            <field name="journal_id" ref="giscedata_facturacio.facturacio_journal_energia"/>
+            <field name="cups_id" ref="giscedata_cups.cups_01"/>
+            <field name="facturacio" eval="1"/>
+            <field name="currency_id">1</field>
+            <field name="address_invoice_id" ref="base.res_partner_address_8"/>
+            <field name="potencia">15.0</field>
+            <field name="tarifa_acces_id" ref="giscedata_polissa.tarifa_20A_new"/>
+            <field name="llista_preu" ref="giscedata_facturacio.pricelist_tarifas_electricidad"/>
+            <field name="partner_id" ref="base.res_partner_agrolait"/>
+            <!-- <field name="periode_liquidacio">1</field> -->
+            <field name="data_inici">2021-08-15</field>
+            <field name="data_final">2021-09-15</field>
+            <field name="origin">12345678</field>
+        </record>
+        <!--Linies Factures-->
+        <record id="linia_factura_0067" model="giscedata.facturacio.factura.linia">
+            <field name="name">Linia 1</field>
+            <field name="product_id" eval="False"/>
+            <field name="account_id" search="[('code', '=', '700000')]" model="account.account"/>
+            <field name="tipus">energia</field>
+            <field name="price_unit_multi" eval="10.0"/>
+            <field name="multi" eval="1"/>
+            <!--<field name="uom_multi_id"></field>-->
+            <field name="factura_id" ref="factura_0067"/>
+            <!--<field name="invoice_line_id"></field>-->
+            <!--<field name="cosfi"></field>-->
+            <field name="data_desde">2021-08-15</field>
+            <!--<field name="data_fins"></field>-->
+        </record>
+        <!-- Linia importacio linia factura -->
+        <record id="line_01_f1_import_01_factura" model="giscedata.facturacio.importacio.linia.factura">
+            <field name="linia_id" ref="line_01_f1_import_01"/>
+            <field name="factura_id" ref="factura_0067"/>
+        </record>
+        <!-- Lectures de la factura-->
+        <record id="linia_1_factura_0067" model="giscedata.facturacio.importacio.linia.lectures">
+            <field name="linia_id" ref="line_01_f1_import_01" />
+            <field name="magnitud">AE</field>
+            <field name="lectura_desde">1000</field>
+            <field name="lectura_actual">1100</field>
+            <field name="fecha_desde">2021-08-15</field>
+            <field name="fecha_actual">2021-09-15</field>
+            <field name="comptador">004007</field>
+            <field name="origen_desde">60</field>
+            <field name="origen_actual">60</field>
+            <field name="periode">91</field>
+            <field name="ajust">0</field>
+            <field name="motiu"></field>
+        </record>
+        <record id="linia_2_factura_0067" model="giscedata.facturacio.importacio.linia.lectures">
+            <field name="linia_id" ref="line_01_f1_import_01" />
+            <field name="magnitud">AE</field>
+            <field name="lectura_desde">500</field>
+            <field name="lectura_actual">550</field>
+            <field name="fecha_desde">2021-08-15</field>
+            <field name="fecha_actual">2021-09-15</field>
+            <field name="comptador">004007</field>
+            <field name="origen_desde">60</field>
+            <field name="origen_actual">60</field>
+            <field name="periode">92</field>
+            <field name="ajust">0</field>
+            <field name="motiu"></field>
+        </record>
+        <record id="linia_3_factura_0067" model="giscedata.facturacio.importacio.linia.lectures">
+            <field name="linia_id" ref="line_01_f1_import_01" />
+            <field name="magnitud">AE</field>
+            <field name="lectura_desde">100</field>
+            <field name="lectura_actual">120</field>
+            <field name="fecha_desde">2021-08-15</field>
+            <field name="fecha_actual">2021-09-15</field>
+            <field name="comptador">004007</field>
+            <field name="origen_desde">60</field>
+            <field name="origen_actual">60</field>
+            <field name="periode">93</field>
+            <field name="ajust">0</field>
+            <field name="motiu"></field>
+        </record>
+        <record id="linia_4_factura_0067" model="giscedata.facturacio.importacio.linia.lectures">
+            <field name="linia_id" ref="line_01_f1_import_01" />
+            <field name="magnitud">AS</field>
+            <field name="lectura_desde">100</field>
+            <field name="lectura_actual">110</field>
+            <field name="fecha_desde">2021-08-15</field>
+            <field name="fecha_actual">2021-09-15</field>
+            <field name="comptador">004007</field>
+            <field name="origen_desde">60</field>
+            <field name="origen_actual">60</field>
+            <field name="periode">91</field>
+            <field name="ajust">0</field>
+            <field name="motiu"></field>
+        </record>
+        <record id="linia_5_factura_0067" model="giscedata.facturacio.importacio.linia.lectures">
+            <field name="linia_id" ref="line_01_f1_import_01" />
+            <field name="magnitud">AS</field>
+            <field name="lectura_desde">50</field>
+            <field name="lectura_actual">55</field>
+            <field name="fecha_desde">2021-08-15</field>
+            <field name="fecha_actual">2021-09-15</field>
+            <field name="comptador">004007</field>
+            <field name="origen_desde">60</field>
+            <field name="origen_actual">60</field>
+            <field name="periode">92</field>
+            <field name="ajust">0</field>
+            <field name="motiu"></field>
+        </record>
+        <record id="linia_6_factura_0067" model="giscedata.facturacio.importacio.linia.lectures">
+            <field name="linia_id" ref="line_01_f1_import_01" />
+            <field name="magnitud">AS</field>
+            <field name="lectura_desde">10</field>
+            <field name="lectura_actual">12</field>
+            <field name="fecha_desde">2021-08-15</field>
+            <field name="fecha_actual">2021-09-15</field>
+            <field name="comptador">004007</field>
+            <field name="origen_desde">60</field>
+            <field name="origen_actual">60</field>
+            <field name="periode">93</field>
+            <field name="ajust">0</field>
+            <field name="motiu"></field>
+        </record>
+
+    <!--3.0 TD-->
+        <!-- Importacio -->
+        <record id="f1_import_01_30TD" model="giscedata.facturacio.importacio">
+            <field name="name">Import 1</field>
+        </record>
+        <!-- Linia importacio -->
+        <record id="line_01_f1_import_01_30TD" model="giscedata.facturacio.importacio.linia">
+            <field name="name">File 1</field>
+            <field name="importacio_id" ref="f1_import_01"/>
+            <field name="distribuidora_id" ref="giscedata_polissa_comer.res_partner_endesa"/>
+            <field name="import_phase" eval="10"/>
+            <field name="state">erroni</field>
+            <field name="invoice_number_text">12345679</field>
+            <field name="type_factura">N</field>
+            <field name="tipo_factura_f1">atr</field>
+        </record>
+        <!--Factures-->
+        <record id="factura_0068_30TD" model="giscedata.facturacio.factura">
+            <field name="name">0001</field>
+            <field name="number">00068</field>
+            <field name="date_invoice">2021-09-16</field>
+            <!--<field name="invoice_id" ref="account.invoice_0001"/>-->
+            <field name="type">in_invoice</field>
+            <field name="polissa_id" ref="giscedata_polissa.polissa_tarifa_019"/>
+            <field name="account_id" search="[('code', '=', 430000)]" model="account.account"/>
+            <field name="company_id">1</field>
+            <field name="date_boe">2021-08-15</field>
+            <field name="reference_type">none</field>
+            <field name="journal_id" ref="giscedata_facturacio.facturacio_journal_energia"/>
+            <field name="cups_id" ref="giscedata_cups.cups_tarifa_019"/>
+            <field name="facturacio" eval="1"/>
+            <field name="currency_id">1</field>
+            <field name="address_invoice_id" ref="base.res_partner_address_8"/>
+            <field name="potencia">6.0</field>
+            <field name="tarifa_acces_id" ref="giscedata_polissa.tarifa_30TD"/>
+            <field name="llista_preu" ref="giscedata_facturacio.pricelist_tarifas_electricidad"/>
+            <field name="partner_id" ref="base.res_partner_agrolait"/>
+            <!-- <field name="periode_liquidacio">1</field> -->
+            <field name="data_inici">2021-08-15</field>
+            <field name="data_final">2021-09-15</field>
+            <field name="origin">12345679</field>
+        </record>
+        <!--Linies Factures-->
+        <record id="linia_01_factura_0068_30TD" model="giscedata.facturacio.factura.linia">
+            <field name="name">P1</field>
+            <field name="product_id" eval="False"/>
+            <field name="account_id" search="[('code', '=', '700000')]" model="account.account"/>
+            <field name="tipus">energia</field>
+            <field name="price_unit_multi" eval="10.0"/>
+            <field name="multi" eval="1"/>
+            <field name="quantity" eval="100"/>
+            <!--<field name="uom_multi_id"></field>-->
+            <field name="factura_id" ref="factura_0068_30TD"/>
+            <!--<field name="invoice_line_id"></field>-->
+            <!--<field name="cosfi"></field>-->
+            <field name="data_desde">2021-08-15</field>
+            <!--<field name="data_fins"></field>-->
+        </record>
+        <record id="linia_02_factura_0068_30TD" model="giscedata.facturacio.factura.linia">
+            <field name="name">P1</field>
+            <field name="product_id" eval="False"/>
+            <field name="account_id" search="[('code', '=', '700000')]" model="account.account"/>
+            <field name="tipus">generacio</field>
+            <field name="price_unit_multi" eval="10.0"/>
+            <field name="multi" eval="1"/>
+            <field name="quantity" eval="50.0"/>
+            <!--<field name="uom_multi_id"></field>-->
+            <field name="factura_id" ref="factura_0068_30TD"/>
+            <!--<field name="invoice_line_id"></field>-->
+            <!--<field name="cosfi"></field>-->
+            <field name="data_desde">2021-08-15</field>
+            <!--<field name="data_fins"></field>-->
+        </record>
+        <record id="linia_03_factura_0068_30TD" model="giscedata.facturacio.factura.linia">
+            <field name="name">P1</field>
+            <field name="product_id" eval="False"/>
+            <field name="account_id" search="[('code', '=', '700000')]" model="account.account"/>
+            <field name="tipus">potencia</field>
+            <field name="price_unit_multi" eval="10.0"/>
+            <field name="multi" eval="31"/>
+            <field name="quantity" eval="15.0"/>
+            <!--<field name="uom_multi_id"></field>-->
+            <field name="factura_id" ref="factura_0068_30TD"/>
+            <!--<field name="invoice_line_id"></field>-->
+            <!--<field name="cosfi"></field>-->
+            <field name="data_desde">2021-08-15</field>
+            <!--<field name="data_fins"></field>-->
+        </record>
+        <record id="linia_04_factura_0068_30TD" model="giscedata.facturacio.factura.linia">
+            <field name="name">P1</field>
+            <field name="product_id" eval="False"/>
+            <field name="account_id" search="[('code', '=', '700000')]" model="account.account"/>
+            <field name="tipus">reactiva</field>
+            <field name="price_unit_multi" eval="10.0"/>
+            <field name="multi" eval="1"/>
+            <field name="quantity" eval="5.0"/>
+            <!--<field name="uom_multi_id"></field>-->
+            <field name="factura_id" ref="factura_0068_30TD"/>
+            <!--<field name="invoice_line_id"></field>-->
+            <!--<field name="cosfi"></field>-->
+            <field name="data_desde">2021-08-15</field>
+            <!--<field name="data_fins"></field>-->
+        </record>
+        <!-- Linia importacio linia factura -->
+        <record id="line_01_f1_import_01_factura_30TD" model="giscedata.facturacio.importacio.linia.factura">
+            <field name="linia_id" ref="line_01_f1_import_01_30TD"/>
+            <field name="factura_id" ref="factura_0068_30TD"/>
+        </record>
+        <!-- Lectures de la factura-->
+        <record id="linia_1_factura_0068_30TD" model="giscedata.facturacio.importacio.linia.lectures">
+            <field name="linia_id" ref="line_01_f1_import_01_30TD" />
+            <field name="magnitud">AE</field>
+            <field name="lectura_desde">1000</field>
+            <field name="lectura_actual">1100</field>
+            <field name="fecha_desde">2021-08-15</field>
+            <field name="fecha_actual">2021-09-15</field>
+            <field name="comptador">004008</field>
+            <field name="origen_desde">60</field>
+            <field name="origen_actual">60</field>
+            <field name="periode">A1</field>
+            <field name="ajust">0</field>
+            <field name="motiu"></field>
+        </record>
+        <record id="linia_2_factura_0068_30TD" model="giscedata.facturacio.importacio.linia.lectures">
+            <field name="linia_id" ref="line_01_f1_import_01_30TD" />
+            <field name="magnitud">AS</field>
+            <field name="lectura_desde">500</field>
+            <field name="lectura_actual">550</field>
+            <field name="fecha_desde">2021-08-15</field>
+            <field name="fecha_actual">2021-09-15</field>
+            <field name="comptador">004008</field>
+            <field name="origen_desde">60</field>
+            <field name="origen_actual">60</field>
+            <field name="periode">A1</field>
+            <field name="ajust">0</field>
+            <field name="motiu"></field>
+        </record>
+        <record id="linia_3_factura_0068_30TD" model="giscedata.facturacio.importacio.linia.lectures">
+            <field name="linia_id" ref="line_01_f1_import_01_30TD" />
+            <field name="magnitud">PM</field>
+            <field name="lectura_desde">100</field>
+            <field name="lectura_actual">120</field>
+            <field name="fecha_desde">2021-08-15</field>
+            <field name="fecha_actual">2021-09-15</field>
+            <field name="comptador">004008</field>
+            <field name="origen_desde">60</field>
+            <field name="origen_actual">60</field>
+            <field name="periode">A1</field>
+            <field name="ajust">0</field>
+            <field name="motiu"></field>
+        </record>
+        <record id="linia_4_factura_0068_30TD" model="giscedata.facturacio.importacio.linia.lectures">
+            <field name="linia_id" ref="line_01_f1_import_01_30TD" />
+            <field name="magnitud">EP</field>
+            <field name="lectura_desde">100</field>
+            <field name="lectura_actual">110</field>
+            <field name="fecha_desde">2021-08-15</field>
+            <field name="fecha_actual">2021-09-15</field>
+            <field name="comptador">004008</field>
+            <field name="origen_desde">60</field>
+            <field name="origen_actual">60</field>
+            <field name="periode">A1</field>
+            <field name="ajust">0</field>
+            <field name="motiu"></field>
+        </record>
+        <record id="linia_5_factura_0068_30TD" model="giscedata.facturacio.importacio.linia.lectures">
+            <field name="linia_id" ref="line_01_f1_import_01_30TD" />
+            <field name="magnitud">R1</field>
+            <field name="lectura_desde">50</field>
+            <field name="lectura_actual">55</field>
+            <field name="fecha_desde">2021-08-15</field>
+            <field name="fecha_actual">2021-09-15</field>
+            <field name="comptador">004008</field>
+            <field name="origen_desde">60</field>
+            <field name="origen_actual">60</field>
+            <field name="periode">A1</field>
+            <field name="ajust">0</field>
+            <field name="motiu"></field>
+        </record>
+        <record id="linia_6_factura_0068_30TD" model="giscedata.facturacio.importacio.linia.lectures">
+            <field name="linia_id" ref="line_01_f1_import_01_30TD" />
+            <field name="magnitud">R2</field>
+            <field name="lectura_desde">10</field>
+            <field name="lectura_actual">12</field>
+            <field name="fecha_desde">2021-08-15</field>
+            <field name="fecha_actual">2021-09-15</field>
+            <field name="comptador">004008</field>
+            <field name="origen_desde">60</field>
+            <field name="origen_actual">60</field>
+            <field name="periode">A1</field>
+            <field name="ajust">0</field>
+            <field name="motiu"></field>
+        </record>
+        <record id="linia_7_factura_0068_30TD" model="giscedata.facturacio.importacio.linia.lectures">
+            <field name="linia_id" ref="line_01_f1_import_01_30TD" />
+            <field name="magnitud">R3</field>
+            <field name="lectura_desde">10</field>
+            <field name="lectura_actual">12</field>
+            <field name="fecha_desde">2021-08-15</field>
+            <field name="fecha_actual">2021-09-15</field>
+            <field name="comptador">004008</field>
+            <field name="origen_desde">60</field>
+            <field name="origen_actual">60</field>
+            <field name="periode">A1</field>
+            <field name="ajust">0</field>
+            <field name="motiu"></field>
+        </record>
+        <record id="linia_8_factura_0068_30TD" model="giscedata.facturacio.importacio.linia.lectures">
+            <field name="linia_id" ref="line_01_f1_import_01_30TD" />
+            <field name="magnitud">R4</field>
+            <field name="lectura_desde">10</field>
+            <field name="lectura_actual">12</field>
+            <field name="fecha_desde">2021-08-15</field>
+            <field name="fecha_actual">2021-09-15</field>
+            <field name="comptador">004008</field>
+            <field name="origen_desde">60</field>
+            <field name="origen_actual">60</field>
+            <field name="periode">A1</field>
+            <field name="ajust">0</field>
+            <field name="motiu"></field>
+        </record>
+    </data>
+</openerp>

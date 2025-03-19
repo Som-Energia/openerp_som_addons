@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<openerp>
+    <data>
+        <record model="ir.ui.view" id="view_wizard_add_partners_lot_form">
+            <field name="name">wizard.add.partners.lot.form</field>
+            <field name="model">wizard.add.partners.lot</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <form string="Seleccionar partners per afegir al lot d'enviament">
+                    <field name="state" invisible="1"/>
+                    <group attrs="{'invisible': [('state', '=', 'finished')]}">
+                        <label string="Seleccionar partners per afegir al lot" colspan="4"/>
+                        <field name="init_date" string="Data baixa sòcia" />
+                        <field name="end_date" string="-" nolabel="1"/>
+                        <field name="es_soci" />
+                        <separator string="" colspan="4"/>
+                        <field name="baixa" />
+                        <field name="has_gkwh" />
+                        <field name="te_aportacions" />
+                        <field name="vat" />
+                        <field name="active" />
+                        <field name="category" />
+                    </group>
+                    <group colspan="6" attrs="{'invisible': [('state', '=', 'finished')]}">
+                        <button special="cancel" string="Cancelar" icon="gtk-cancel"/>
+                        <button name="add_partners_lot" type="object" icon="gtk-ok" string="Afegeix"/>
+                    </group>
+                    <group colspan="4" attrs="{'invisible': [('state', '!=', 'finished')]}">
+                        <label string="Resultat de la cerca:" colspan="4"/>
+                        <field name="len_result" readonly="1" colspan="4" nolabel="1"/>
+                        <label string=" "/>
+                        <label string=" "/>
+                        <button special="cancel" string="Sortir" icon="gtk-ok" colspan="4"/>
+                    </group>
+                </form>
+            </field>
+        </record>
+        <record model="ir.actions.act_window" id="action_wizard_add_partners_lot">
+            <field name="name">Seleccionar partners per afegir al lot</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">wizard.add.partners.lot</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">form</field>
+            <field name="target">new</field>
+            <field name="view_id" ref="view_wizard_add_partners_lot_form"/>
+        </record>
+        <record id="values_add_partners_lot_form" model="ir.values">
+            <field name="object" eval="1"/>
+            <field name="name">Seleccionar partners per afegir al lot</field>
+            <field name="key2">client_action_multi</field>
+            <field name="key">action</field>
+            <field name="model">som.infoenergia.lot.enviament</field>
+            <field name="value" eval="'ir.actions.act_window,'+str(ref('action_wizard_add_partners_lot'))"/>
+        </record>
+    </data>
+</openerp>

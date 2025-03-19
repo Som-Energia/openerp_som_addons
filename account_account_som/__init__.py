@@ -1,2 +1,5 @@
 # -*- coding: utf-8 -*-
-import account_account
+from __future__ import absolute_import
+from . import account_account
+from . import wizard
+from . import account_payment_term

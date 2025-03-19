@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data noupdate="1">
+        <record id="payment_mode_0001" model="payment.mode">
+            <field name="journal" ref="account.sales_journal"/>
+            <field name="type">1</field>
+            <field name="name">0001_payment_mode</field>
+            <field name="bank_id" ref="base.res_partner_bank_0001"/>
+        </record>
+        <record id="remesa_0001" model="payment.order">
+            <field name="reference">Remesa 0001</field>
+            <field name="type">receivable</field>
+            <field name="mode" ref="payment_mode_0001"/>
+        </record>
+        <record id="payment_mode_0002" model="payment.mode">
+            <field name="journal" ref="account.sales_journal"/>
+            <field name="type">1</field>
+            <field name="name">0002_payment_mode</field>
+            <field name="bank_id" ref="base.res_partner_bank_0002"/>
+        </record>
+        <record id="remesa_0002" model="payment.order">
+            <field name="reference">Remesa 0002</field>
+            <field name="type">payable</field>
+            <field name="mode" ref="payment_mode_0002"/>
+        </record>
+        <record id="invoice_fe210001" model="account.invoice">
+            <field name="number">FE210001</field>
+            <field name="type">out_invoice</field>
+            <field name="state">draft</field>
+            <field name="date_invoice">2021-03-01</field>
+            <field name="date_due">2021-03-08</field>
+            <field name="partner_id" ref="base.res_partner_c2c"/>
+            <field name="address_invoice_id" ref="base.res_partner_address_c2c_1"/>
+            <field name="period_id" ref="account.period_1"/>
+            <field name="account_id" ref="account.a_recv"/>
+            <field name="journal_id" ref="account.sales_journal" />
+        </record>
+        <record id="invoice_fe210001_line_1" model="account.invoice.line">
+            <field name="name">Aportació Compra Colectiva</field>
+            <field name="invoice_id" ref="invoice_fe210001"/>
+            <field name="price_unit">642</field>
+            <field name="quantity">4</field>
+            <field name="account_id" ref="account.a_sale"/>
+        </record>
+        <record id="invoice_fe210002" model="account.invoice">
+            <field name="number">FE210002</field>
+            <field name="type">out_invoice</field>
+            <field name="state">draft</field>
+            <field name="date_invoice">2021-04-01</field>
+            <field name="date_due">2021-04-08</field>
+            <field name="partner_id" ref="base.res_partner_c2c"/>
+            <field name="address_invoice_id" ref="base.res_partner_address_c2c_1"/>
+            <field name="period_id" ref="account.period_1"/>
+            <field name="account_id" ref="account.a_recv"/>
+            <field name="journal_id" ref="account.sales_journal" />
+        </record>
+        <record id="invoice_fe210002_line_1" model="account.invoice.line">
+            <field name="name">Aportació Compra Colectiva</field>
+            <field name="invoice_id" ref="invoice_fe210002"/>
+            <field name="price_unit">342</field>
+            <field name="quantity">4</field>
+            <field name="account_id" ref="account.a_sale"/>
+        </record>
+        <record id="invoice_fpe210001" model="account.invoice">
+            <field name="number">FPE210001</field>
+            <field name="type">in_invoice</field>
+            <field name="state">draft</field>
+            <field name="date_invoice">2021-03-01</field>
+            <field name="date_due">2021-03-08</field>
+            <field name="partner_id" ref="base.res_partner_c2c"/>
+            <field name="address_invoice_id" ref="base.res_partner_address_c2c_1"/>
+            <field name="period_id" ref="account.period_1"/>
+            <field name="account_id" ref="account.a_recv"/>
+            <field name="origin">5015093073892</field>
+            <field name="origin_date_invoice">2015-10-09</field>
+            <field name="reference">GISCE</field>
+            <field name="journal_id" ref="account.expenses_journal"/>
+        </record>
+        <record id="invoice_fpe210001_line_1" model="account.invoice.line">
+            <field name="name">Aportació Compra Colectiva</field>
+            <field name="invoice_id" ref="invoice_fpe210001"/>
+            <field name="price_unit">242</field>
+            <field name="quantity">4</field>
+            <field name="account_id" ref="account.a_sale"/>
+        </record>
+        <record id="invoice_fpe210002" model="account.invoice">
+            <field name="number">FPE210002</field>
+            <field name="type">in_invoice</field>
+            <field name="state">draft</field>
+            <field name="date_invoice">2021-04-01</field>
+            <field name="date_due">2021-04-08</field>
+            <field name="partner_id" ref="base.res_partner_c2c"/>
+            <field name="address_invoice_id" ref="base.res_partner_address_c2c_1"/>
+            <field name="period_id" ref="account.period_1"/>
+            <field name="account_id" ref="account.a_recv"/>
+            <field name="origin">5015093073892</field>
+            <field name="origin_date_invoice">2015-10-09</field>
+            <field name="reference">GISCE</field>
+            <field name="journal_id" ref="account.expenses_journal" />
+        </record>
+        <record id="invoice_fpe210002_line_1" model="account.invoice.line">
+            <field name="name">Aportació Compra Colectiva</field>
+            <field name="invoice_id" ref="invoice_fpe210002"/>
+            <field name="price_unit">142</field>
+            <field name="quantity">4</field>
+            <field name="account_id" ref="account.a_sale"/>
+        </record>
+    </data>
+</openerp>

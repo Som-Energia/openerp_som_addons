@@ -1,0 +1,406 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data noupdate="1">
+        <!-- Exemple accions planificades-->
+        <record model="som.crawlers.task" id="descargar_enguerina">
+            <field name="name">Descargar Enguerina</field>
+            <field name="active">True</field>
+            <field name="configuracio_id" ref="enguerina_conf"/>
+        </record>
+        <!--hc-->
+        <record model="som.crawlers.task" id="descargar_hc">
+            <field name="name">Descargar HC ATR</field>
+            <field name="active">True</field>
+            <field name="configuracio_id" ref="hc_conf"/>
+        </record>
+        <record model="som.crawlers.task" id="descargar_hc_auto">
+            <field name="name">Descargar HC D Auto</field>
+            <field name="active">True</field>
+            <field name="configuracio_id" ref="hc_conf"/>
+        </record>
+        <record model="som.crawlers.task" id="descargar_hc_f1">
+            <field name="name">Descargar HC F1</field>
+            <field name="active">True</field>
+            <field name="configuracio_id" ref="hc_conf"/>
+        </record>
+        <record model="som.crawlers.task" id="descargar_hc_unidireccional">
+            <field name="name">Descargar HC D unidireccional</field>
+            <field name="active">True</field>
+            <field name="configuracio_id" ref="hc_conf"/>
+        </record>
+        <record model="som.crawlers.task" id="descargar_hc_r">
+            <field name="name">Descargar HC R</field>
+            <field name="active">True</field>
+            <field name="configuracio_id" ref="hc_conf"/>
+        </record>
+        <!--Cide-->
+        <record model="som.crawlers.task" id="descargar_cide">
+            <field name="name">Descargar Cide</field>
+            <field name="active">True</field>
+            <field name="configuracio_id" ref="cide_conf"/>
+        </record>
+        <record model="som.crawlers.task" id="descargar_cide_f1">
+            <field name="name">Descargar Cide F1</field>
+            <field name="active">True</field>
+            <field name="configuracio_id" ref="cide_conf"/>
+        </record>
+        <!--Soller-->
+        <record model="som.crawlers.task" id="descargar_soller">
+            <field name="name">Descargar Soller</field>
+            <field name="active">True</field>
+            <field name="configuracio_id" ref="soller_conf"/>
+        </record>
+        <record model="som.crawlers.task" id="descargar_soller_f1">
+            <field name="name">Descargar Soller F1</field>
+            <field name="active">True</field>
+            <field name="configuracio_id" ref="soller_conf"/>
+        </record>
+        <!--Serrania-->
+        <record model="som.crawlers.task" id="descargar_serrania">
+            <field name="name">Descargar Serrania</field>
+            <field name="active">True</field>
+            <field name="configuracio_id" ref="serrania_conf"/>
+        </record>
+        <!--Meliana-->
+        <record model="som.crawlers.task" id="descargar_meliana">
+            <field name="name">Descargar Meliana</field>
+            <field name="active">True</field>
+            <field name="configuracio_id" ref="meliana_conf"/>
+        </record>
+
+        <!--  Iberdrola[different]-->
+        <record model="som.crawlers.task" id="descargar_iberdrola_contratacion">
+            <field name="name">Descargar Iberdrola Contrataciones</field>
+            <field name="active">True</field>
+            <field name="configuracio_id" ref="iberdrola_conf"/>
+        </record>
+        <record model="som.crawlers.task" id="descargar_iberdrola_r1">
+            <field name="name">Descargar Iberdrola R1</field>
+            <field name="active">True</field>
+            <field name="configuracio_id" ref="iberdrola_conf"/>
+        </record>
+        <record model="som.crawlers.task" id="descargar_iberdrola_q1">
+            <field name="name">Descargar Iberdrola Q1</field>
+            <field name="active">True</field>
+            <field name="configuracio_id" ref="iberdrola_conf"/>
+        </record>
+        <record model="som.crawlers.task" id="descargar_iberdrola_f1">
+            <field name="name">Descargar Iberdrola F1</field>
+            <field name="active">True</field>
+            <field name="configuracio_id" ref="iberdrola_conf"/>
+        </record>
+        <record model="som.crawlers.task" id="descargar_iberdrola_e1">
+            <field name="name">Descargar Iberdrola E1</field>
+            <field name="active">True</field>
+            <field name="configuracio_id" ref="iberdrola_conf"/>
+        </record>
+        <record model="som.crawlers.task" id="descargar_iberdrola_d1">
+            <field name="name">Descargar Iberdrola D1</field>
+            <field name="active">True</field>
+            <field name="configuracio_id" ref="iberdrola_conf"/>
+        </record>
+        <record model="som.crawlers.task" id="descargar_iberdrola_t1">
+            <field name="name">Descargar Iberdrola T1</field>
+            <field name="active">True</field>
+            <field name="configuracio_id" ref="iberdrola_conf"/>
+        </record>
+        <record model="som.crawlers.task" id="descargar_A3_endesa">
+            <field name="name">Endesa descargar A3</field>
+            <field name="active">True</field>
+            <field name="configuracio_id" ref="endesa_conf"/>
+        </record>
+        <record model="som.crawlers.task" id="descargar_B1_endesa">
+            <field name="name">Endesa descargar B1</field>
+            <field name="active">True</field>
+            <field name="configuracio_id" ref="endesa_conf"/>
+        </record>
+        <record model="som.crawlers.task" id="descargar_B2_endesa">
+            <field name="name">Endesa descargar B2</field>
+            <field name="active">True</field>
+            <field name="configuracio_id" ref="endesa_conf"/>
+        </record>
+        <record model="som.crawlers.task" id="descargar_C1_endesa">
+            <field name="name">Endesa descargar C1</field>
+            <field name="active">True</field>
+            <field name="configuracio_id" ref="endesa_conf"/>
+        </record>
+        <record model="som.crawlers.task" id="descargar_C2_endesa">
+            <field name="name">Endesa descargar C2</field>
+            <field name="active">True</field>
+            <field name="configuracio_id" ref="endesa_conf"/>
+        </record>
+        <record model="som.crawlers.task" id="descargar_D1_endesa">
+            <field name="name">Endesa descargar D1</field>
+            <field name="active">True</field>
+            <field name="configuracio_id" ref="endesa_conf"/>
+        </record>
+        <record model="som.crawlers.task" id="descargar_E1_endesa">
+            <field name="name">Endesa descargar E1</field>
+            <field name="active">True</field>
+            <field name="configuracio_id" ref="endesa_conf"/>
+        </record>
+        <record model="som.crawlers.task" id="descargar_F1_endesa">
+            <field name="name">Endesa descargar F1</field>
+            <field name="active">True</field>
+            <field name="configuracio_id" ref="endesa_f1_conf"/>
+        </record>
+        <record model="som.crawlers.task" id="descargar_M1_endesa">
+            <field name="name">Endesa descargar M1</field>
+            <field name="active">True</field>
+            <field name="configuracio_id" ref="endesa_conf"/>
+        </record>
+        <record model="som.crawlers.task" id="descargar_R1_endesa">
+            <field name="name">Endesa descargar R1</field>
+            <field name="active">True</field>
+            <field name="configuracio_id" ref="endesa_conf"/>
+        </record>
+        <record model="som.crawlers.task" id="descargar_T1_endesa">
+            <field name="name">Endesa descargar T1</field>
+            <field name="active">True</field>
+            <field name="configuracio_id" ref="endesa_conf"/>
+        </record>
+        <record model="som.crawlers.task" id="descarregar_anselmo">
+            <field name="name">Descarregar Anselmo</field>
+            <field name="active">True</field>
+            <field name="configuracio_id" ref="anselmo_conf"/>
+        </record>
+        <record model="som.crawlers.task" id="descarregar_fenosa">
+            <field name="name">Fenosa descargar F1 i ATR</field>
+            <field name="active">True</field>
+            <field name="configuracio_id" ref="fenosa_conf"/>
+        </record>
+        <record model="som.crawlers.task" id="descargar_atr_viesgo">
+            <field name="name">Viesgo descargar ATR</field>
+            <field name="active">True</field>
+            <field name="configuracio_id" ref="viesgo_conf"/>
+        </record>
+        <record model="som.crawlers.task" id="descargar_R_viesgo">
+            <field name="name">Viesgo descargar R</field>
+            <field name="active">True</field>
+            <field name="configuracio_id" ref="viesgo_conf"/>
+        </record>
+        <record model="som.crawlers.task" id="descargar_F1_viesgo">
+            <field name="name">Viesgo descargar F1</field>
+            <field name="active">True</field>
+            <field name="configuracio_id" ref="viesgo_conf"/>
+        </record>
+        <record model="som.crawlers.task" id="descargar_D_viesgo">
+            <field name="name">Viesgo descargar D</field>
+            <field name="active">True</field>
+            <field name="configuracio_id" ref="viesgo_conf"/>
+        </record>
+        <record model="som.crawlers.task" id="descargar_D_viesgo_unidireccional">
+            <field name="name">Viesgo descargar D unidireccional</field>
+            <field name="active">True</field>
+            <field name="configuracio_id" ref="viesgo_conf"/>
+        </record>
+        <!--Guadassuar-->
+        <record model="som.crawlers.task" id="descargar_guadassuar">
+            <field name="name">Descarregar Guadassuar</field>
+            <field name="active">True</field>
+            <field name="configuracio_id" ref="guadassuar_conf"/>
+        </record>
+        <!--Vinalesa-->
+        <record model="som.crawlers.task" id="descargar_vinalesa">
+            <field name="name">Descarregar Vinalesa</field>
+            <field name="active">True</field>
+            <field name="configuracio_id" ref="vinalesa_conf"/>
+        </record>
+        <!--Camprodon-->
+        <record model="som.crawlers.task" id="descargar_camprodon">
+            <field name="name">Descarregar Camprodon</field>
+            <field name="active">True</field>
+            <field name="configuracio_id" ref="camprodon_conf"/>
+        </record>
+        <!--SUCSA-->
+        <record model="som.crawlers.task" id="descargar_sucsa">
+            <field name="name">Descarregar SUCSA</field>
+            <field name="active">True</field>
+            <field name="configuracio_id" ref="sucsa_conf"/>
+        </record>
+        <!--DIELESUR-->
+        <record model="som.crawlers.task" id="descargar_dielesur">
+            <field name="name">Descarregar Dielesur</field>
+            <field name="active">True</field>
+            <field name="configuracio_id" ref="dielesur_conf"/>
+        </record>
+        <!--Constancia-->
+        <record model="som.crawlers.task" id="descargar_constancia">
+            <field name="name">Descarregar La Constancia Arén</field>
+            <field name="active">True</field>
+            <field name="configuracio_id" ref="constancia_conf"/>
+        </record>
+        <!--Conquense-->
+        <record model="som.crawlers.task" id="descargar_conquense">
+            <field name="name">Descarregar Conquense</field>
+            <field name="active">True</field>
+            <field name="configuracio_id" ref="conquense_conf"/>
+        </record>
+        <!--Cabriel-->
+        <record model="som.crawlers.task" id="descargar_cabriel">
+            <field name="name">Descarregar Cabriel</field>
+            <field name="active">True</field>
+            <field name="configuracio_id" ref="cabriel_conf"/>
+        </record>
+        <!--Cipriano-->
+        <record model="som.crawlers.task" id="descargar_cipriano">
+            <field name="name">Descarregar Cipriano</field>
+            <field name="active">True</field>
+            <field name="configuracio_id" ref="cipriano_conf"/>
+        </record>
+        <!--Herederos-->
+        <record model="som.crawlers.task" id="descargar_herederos">
+            <field name="name">Descarregar Herederos</field>
+            <field name="active">True</field>
+            <field name="configuracio_id" ref="herederos_conf"/>
+        </record>
+        <!--Serrano-->
+        <record model="som.crawlers.task" id="descargar_serrano">
+            <field name="name">Descarregar Serrano</field>
+            <field name="active">True</field>
+            <field name="configuracio_id" ref="serrano_conf"/>
+        </record>
+        <!--Cardener-->
+        <record model="som.crawlers.task" id="descargar_cardener">
+            <field name="name">Descarregar Cardener</field>
+            <field name="active">True</field>
+            <field name="configuracio_id" ref="cardener_conf"/>
+        </record>
+        <!--Aduriz-->
+        <record model="som.crawlers.task" id="descargar_aduriz">
+            <field name="name">Descarregar Aduriz</field>
+            <field name="active">True</field>
+            <field name="configuracio_id" ref="aduriz_conf"/>
+        </record>
+        <!--Peusa-->
+        <record model="som.crawlers.task" id="descargar_peusa">
+            <field name="name">Descarregar Peusa</field>
+            <field name="active">True</field>
+            <field name="configuracio_id" ref="peusa_conf"/>
+        </record>
+        <!--Avellana-->
+        <record model="som.crawlers.task" id="descargar_avellana">
+            <field name="name">Descarregar Avellana</field>
+            <field name="active">True</field>
+            <field name="configuracio_id" ref="avellana_conf"/>
+        </record>
+        <record model="som.crawlers.task" id="descargar_ftp_avellana">
+            <field name="name">Descarregar FTP Avellana</field>
+            <field name="active">True</field>
+            <field name="configuracio_id" ref="avellana_ftp_conf"/>
+        </record>
+        <!--Centelles-->
+        <record model="som.crawlers.task" id="descargar_centelles">
+            <field name="name">Descarregar Centelles</field>
+            <field name="active">True</field>
+            <field name="configuracio_id" ref="centelles_conf"/>
+        </record>
+        <!--Bassols-->
+        <record model="som.crawlers.task" id="descargar_bassols">
+            <field name="name">Descarregar Bassols</field>
+            <field name="active">True</field>
+            <field name="configuracio_id" ref="bassols_conf"/>
+        </record>
+        <!--Curós-->
+        <record model="som.crawlers.task" id="descargar_curos">
+            <field name="name">Descarregar Curós</field>
+            <field name="active">True</field>
+            <field name="configuracio_id" ref="curos_conf"/>
+        </record>
+        <!-- Caldense -->
+        <record model="som.crawlers.task" id="descarregar_caldense_ftp">
+            <field name="name">Descarregar FTP Caldense</field>
+            <field name="active">True</field>
+            <field name="configuracio_id" ref="caldense_ftp_conf"/>
+        </record>
+        <!-- Red energia -->
+        <record model="som.crawlers.task" id="descarregar_redenergia_ftp">
+            <field name="name">Descarregar FTP Redenergia SL</field>
+            <field name="active">True</field>
+            <field name="configuracio_id" ref="redenergia_ftp_conf"/>
+        </record>
+        <!-- Aurora -->
+        <record model="som.crawlers.task" id="descarregar_aurora_ftp">
+            <field name="name">Descarregar FTP Aurora</field>
+            <field name="active">True</field>
+            <field name="configuracio_id" ref="aurora_ftp_conf"/>
+        </record>
+        <!-- Mitjans -->
+        <record model="som.crawlers.task" id="descarregar_mitjans_ftp">
+            <field name="name">Descarregar FTP mitjans</field>
+            <field name="active">True</field>
+            <field name="configuracio_id" ref="mitjans_ftp_conf"/>
+        </record>
+        <!-- panticosa -->
+        <record model="som.crawlers.task" id="descarregar_panticosa_ftp">
+            <field name="name">Descarregar FTP panticosa</field>
+            <field name="active">True</field>
+            <field name="configuracio_id" ref="panticosa_ftp_conf"/>
+        </record>
+        <!-- guadiela -->
+        <record model="som.crawlers.task" id="descarregar_guadiela_ftp">
+            <field name="name">Descarregar FTP guadiela</field>
+            <field name="active">True</field>
+            <field name="configuracio_id" ref="guadiela_ftp_conf"/>
+        </record>
+        <!-- pitarch -->
+        <record model="som.crawlers.task" id="descarregar_pitarch_ftp">
+            <field name="name">Descarregar FTP pitarch</field>
+            <field name="active">True</field>
+            <field name="configuracio_id" ref="pitarch_ftp_conf"/>
+        </record>
+        <!-- chilla -->
+        <record model="som.crawlers.task" id="descarregar_chilla_ftp">
+            <field name="name">Descarregar FTP chilla</field>
+            <field name="active">True</field>
+            <field name="configuracio_id" ref="chilla_ftp_conf"/>
+        </record>
+        <!-- 6eis (formerly aseme) -->
+        <record model="som.crawlers.task" id="descarregar_aseme_ftp">
+            <field name="name">Descarregar FTP 6eis (abans aseme)</field>
+            <field name="active">True</field>
+            <field name="configuracio_id" ref="aseme_ftp_conf"/>
+        </record>
+        <!-- datacenter -->
+        <record model="som.crawlers.task" id="descarregar_datacenter_ftp_atr">
+            <field name="name">Descarregar FTP datacenter ATR</field>
+            <field name="active">True</field>
+            <field name="configuracio_id" ref="datacenter_ftp_atr_conf"/>
+        </record>
+        <record model="som.crawlers.task" id="descarregar_datacenter_ftp_f1">
+            <field name="name">Descarregar FTP datacenter F1s</field>
+            <field name="active">True</field>
+            <field name="configuracio_id" ref="datacenter_ftp_f1_conf"/>
+        </record>
+        <!-- SCQ -->
+        <record model="som.crawlers.task" id="descarregar_scq">
+            <field name="name">Descarregar SCQ</field>
+            <field name="active">True</field>
+            <field name="configuracio_id" ref="scq_conf"/>
+        </record>
+        <!-- Escuer -->
+        <record model="som.crawlers.task" id="descarregar_escuer">
+            <field name="name">Descarregar Escuer</field>
+            <field name="active">True</field>
+            <field name="configuracio_id" ref="escuer_conf"/>
+        </record>
+        <!-- UDESA -->
+        <record model="som.crawlers.task" id="descarregar_udesa_ftp">
+            <field name="name">Descarregar FTP UDESA</field>
+            <field name="active">True</field>
+            <field name="configuracio_id" ref="udesa_ftp_conf"/>
+        </record>
+        <!-- TASQUES D'EXPORTACIÓ -->
+        <record model="som.crawlers.task" id="carregar_anselmo">
+            <field name="name">Carregar Anselmo</field>
+            <field name="active">True</field>
+            <field name="configuracio_id" ref="anselmo_conf"/>
+        </record>
+        <!-- Registre general -->
+        <record model="som.crawlers.task" id="carregar_registre_general">
+            <field name="name">Carregar impostos al Registre General</field>
+            <field name="active">True</field>
+            <field name="configuracio_id" ref="registregeneral_conf"/>
+        </record>
+    </data>
+</openerp>

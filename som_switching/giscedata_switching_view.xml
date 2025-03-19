@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+    <data>
+
+        <record id="view_partner_form_add_user_ovservations" model="ir.ui.view">
+            <field name="name">giscedata.switching.observations.form</field>
+            <field name="model">giscedata.switching</field>
+            <field name="type">form</field>
+            <field name="inherit_id" ref="giscedata_switching.giscedata_switching_form_view"/>
+            <field name="arch" type="xml">
+                <xpath expr="//page[@string='Communication']" position="after">
+                    <page string="Observacions">
+                        <field name="user_observations" nolabel="1"/>
+                    </page>
+                </xpath>
+            </field>
+        </record>
+
+        <record id="view_r1_custom_som_historize_tree" model="ir.ui.view">
+            <field name="name">giscedata.switching.custom.som.datasoll.tree</field>
+            <field name="model">giscedata.switching</field>
+            <field name="inherit_id" ref="giscedata_switching.giscedata_switching_tree_view"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='codi_sollicitud']" position="before">
+                    <field name="last_observation_line"/>
+                </xpath>
+            </field>
+        </record>
+
+        <!--Create inherit view from switching generic tree to add fecha solicitudview-->
+        <record id="view_r1_custom_som_tree" model="ir.ui.view">
+            <field name="name">giscedata.switching.custom.som.tree</field>
+            <field name="model">giscedata.switching</field>
+            <field name="inherit_id" ref="giscedata_switching.giscedata_switching_tree_view"/>
+            <field name="extend">1</field>
+            <field name="type">tree</field>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='additional_info']" position="after">
+                    <field name="data_sollicitud"/>
+                </xpath>
+            </field>
+        </record>
+
+        <record model="ir.ui.view" id="giscedata_switching_tree_view">
+            <field name="name">giscedata.switching.tree</field>
+            <field name="model">giscedata.switching</field>
+            <field name="type">tree</field>
+            <field name="inherit_id" ref="giscedata_switching.giscedata_switching_tree_view"/>
+            <field name="arch" type="xml">
+                <field name="validacio_pendent" position="after">
+                    <field name="data_accio" select="2"/>
+                </field>
+            </field>
+        </record>
+
+        <!--Replace reference view for r1 casos en marxa action-->
+        <record id="giscedata_switching.sw_crm_case_r1" model="ir.actions.act_window">
+            <field name="view_id" ref="som_switching.view_r1_custom_som_tree"/>
+        </record>
+
+        <!--Add F1 observacions page and tree field-->
+        <record id="view_f1_form_add_user_observations" model="ir.ui.view">
+            <field name="name">giscedata.facturacio.importacio.linia.add.page.obs.form</field>
+            <field name="model">giscedata.facturacio.importacio.linia</field>
+            <field name="type">form</field>
+            <field name="inherit_id" ref="giscedata_facturacio_switching.view_importacio_linia_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//page[@string='Lectures']" position="after">
+                    <page string="Observacions">
+                        <field name="user_observations" nolabel="1"/>
+                    </page>
+                </xpath>
+            </field>
+        </record>
+
+        <record model="ir.ui.view" id="view_f1_form_add_last_observations_line">
+            <field name="name">giscedata.facturacio.importacio.linia.last.obs.form</field>
+            <field name="model">giscedata.facturacio.importacio.linia</field>
+            <field name="type">form</field>
+            <field name="inherit_id" ref="giscedata_facturacio_switching.view_importacio_linia_form"/>
+            <field name="arch" type="xml">
+                <field name="distribuidora" position="after">
+                    <field name="last_observation_line" select="2"/>
+                </field>
+            </field>
+        </record>
+
+        <record id="view_r1_custom_som_historize_tree" model="ir.ui.view">
+            <field name="name">giscedata.facturacio.importacio.linia.add.page.obs.tree</field>
+            <field name="model">giscedata.facturacio.importacio.linia</field>
+            <field name="type">tree</field>
+            <field name="inherit_id" ref="giscedata_facturacio_switching.view_importacio_linia_general_tree"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='codi_sollicitud']" position="before">
+                    <field name="last_observation_line"/>
+                </xpath>
+            </field>
+        </record>
+
+        <!-- Menu de atr pendents de enviar en pas 01-->
+        <record id="sw_crm_case_pendents_enviar_01_act_tree" model="ir.actions.act_window">
+            <field name="name">Solicituds obertes pendents d'enviar</field>
+            <field name="res_model">giscedata.switching</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="domain">[('enviament_pendent', '=', True), ('state', 'in', ['open']), ('step_id.name', '=', '01')]</field>
+            <field name="view_id" ref="giscedata_switching.giscedata_switching_tree_view"/>
+        </record>
+        <menuitem sequence="41" action="sw_crm_case_pendents_enviar_01_act_tree" id="menu_sw_crm_case_pendents_enviar_01_section_act_tree" parent="giscedata_switching.menu_sw"/>
+
+        <!-- Llistat de passos C2-01 amb filtres -->
+        <record id="giscedata_switching.sw_crm_case_c2_01" model="ir.actions.act_window">
+            <field name="view_id" ref="giscedata_switching.c2_01_sw_crm_case-tree"></field>
+            <field name="domain">[('header_id.sw_id.state', '!=', 'done'), ('header_id.sw_id.step_id.name','=', '01'),('header_id.sw_id.cups_polissa_id.state','=','esborrany')]</field>
+        </record>
+    </data>
+</openerp>

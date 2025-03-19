@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+	<data>
+        <record model="ir.ui.view" id="view_giscedata_polissa_factura_en_paper_form">
+            <field name="name">giscedata.polissa.factura.en.paper.form</field>
+            <field name="model">giscedata.polissa</field>
+            <field name="inherit_id" ref="giscedata_facturacio_comer.view_giscedata_email_pagador"/>
+            <field name="type">form</field>
+            <field name="priority">100</field>
+            <field name="arch" type="xml">
+                <field name="enviament" position="after">
+                    <group colspan="2" col="2" attrs="{'invisible': [('enviament', '=', 'email')]}">
+                        <field name="postal_rebut" />
+                        <field name="postal_observacions" height="50" widget="text"/>
+                    </group>
+                </field>
+            </field>
+        </record>
+	</data>
+</openerp>

@@ -1,0 +1,20 @@
+[main]
+host = https://www.transifex.com
+
+[somenergia.som_inversions-inversio_jrxml]
+source_file = inversio.pot
+type = PO
+file_filter = inversio_<lang>.po
+source_lang = ca_ES
+
+[somenergia.som_inversions-inversio2012_jrxml]
+source_file = inversio2012.pot
+type = PO
+file_filter = inversio2012_<lang>.po
+source_lang = ca_ES
+
+[somenergia.som_inversions-titol_jrxml]
+source_file = titol.pot
+type = PO
+file_filter = titol_<lang>.po
+source_lang = ca_ES

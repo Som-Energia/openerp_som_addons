@@ -5,24 +5,65 @@
 </head>
 <body>
 <style>
+    <%
+       name = customer['name'] + customer['surname']
+    %>
 .absolute {
   position: absolute;
-  top: 98px;
-  left: 349px;
+  top: 56px;
+  left: 305px;
   right: 0;
   width: 600px;
   height: 120px;
   color: #3F3F3F;
+  font-family: Open Sans;
+  font-size: 0.75em;
+  line-height: 18px;
+}
+.username, .useradress, .usercups {
+  width: 235px;
+  display: block;
+  padding-bottom: 5px;
+  overflow: hidden;
+}
+%if len(name) > 30:
+  .username {
+    font-size: 0.6em;
+  }
+%endif
+.useradress {
+  position:absolute;
+  top: 35px;
+  left: 0px;
+  %if len(customer['address']) > 85:
+      font-size: 0.6em;
+  %else:
+      font-size: 0.8em;
+  %endif
+  width: 230px;
+}
+.usercups {
+  position: absolute;
+  font-size: 0.8em;
+  top: 70px;
+  left: 285px;
+  color: #505050;
+}
+.username {
+  position: absolute;
+  left: 0px;
 }
 </style>
 <div class="absolute">
-<span style="font-family: Open Sans; font-size: 1em; line-height: 18px">
-<span style="font-weight:bold">
-${customer['name']} ${customer['surname']}
-</span>
-<br>${customer['address']}
-<br><span style="font-weight:bold">CUPS ${customer['cups']}</span>
-</span>
+    <span class="username">
+    <strong>${name}</strong>
+    </span>
+    <span class="useradress">
+    ${customer['address']}
+    </span>
+    <span class="usercups">
+    <strong>${customer['cups']}</strong>
+    </span>
 </div>
 </body>
 </html>

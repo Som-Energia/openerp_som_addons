@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+    <data>
+        <report id="som_inversions_doc" string="Aportació" model="payment.line" auto="True" name="som.inversions.aportacio" rml="som_inversions/report/inversio.jrxml" multi="True" menu="True"/>
+        <report id="som_inversions_doc2012" string="Aportació 2012" model="payment.line" auto="True" name="som.inversions.aportacio2012" rml="som_inversions/report/inversio2012.jrxml" multi="True" menu="True"/>
+        <report id="som_inversions_titols_doc" string="Títol" model="payment.line" auto="True" name="som.inversions.titols" rml="som_inversions/report/titol.jrxml" multi="True" menu="True"/>
+        <record id="report_liquidacions_interessos_unificat" model="ir.actions.report.xml">
+            <field name="report_type">webkit</field>
+            <field name="report_name">liquidacions.interessos.unificat</field>
+            <field eval="[(6,0,[])]" name="groups_id"/>
+            <field eval="0" name="multi"/>
+            <field eval="0" name="auto"/>
+            <field eval="0" name="header"/>
+            <field name="model">res.partner</field>
+            <field name="type">ir.actions.report.xml</field>
+            <field name="name">Liquidació interessos aportacions unificat</field>
+            <field name="report_webkit">som_inversions/report/report_liquidacions_interessos_unificat.mako</field>
+        </record>
+        <record id="report_liquidacions_interessos" model="ir.actions.report.xml">
+            <field name="report_type">webkit</field>
+            <field name="report_name">liquidacions.interessos</field>
+            <field eval="[(6,0,[])]" name="groups_id"/>
+            <field eval="0" name="multi"/>
+            <field eval="0" name="auto"/>
+            <field eval="0" name="header"/>
+            <field name="model">account.invoice</field>
+            <field name="type">ir.actions.report.xml</field>
+            <field name="name">Liquidació interessos aportacions</field>
+            <field name="report_webkit">som_inversions/report/report_liquidacions_interessos.mako</field>
+        </record>
+        <record id="report_liquidacions_titols" model="ir.actions.report.xml">
+            <field name="report_type">webkit</field>
+            <field name="report_name">liquidacions.titols</field>
+            <field eval="[(6,0,[])]" name="groups_id"/>
+            <field eval="0" name="multi"/>
+            <field eval="0" name="auto"/>
+            <field eval="0" name="header"/>
+            <field name="model">account.invoice</field>
+            <field name="type">ir.actions.report.xml</field>
+            <field name="name">Liquidació interessos títols</field>
+            <field name="report_webkit">som_inversions/report/report_liquidacions_titols.mako</field>
+        </record>
+        <record id="report_retencions_interessos" model="ir.actions.report.xml">
+            <field name="report_type">webkit</field>
+            <field name="report_name">retencions.interessos</field>
+            <field eval="[(6,0,[])]" name="groups_id"/>
+            <field eval="0" name="multi"/>
+            <field eval="0" name="auto"/>
+            <field eval="0" name="header"/>
+            <field name="model">account.invoice</field>
+            <field name="type">ir.actions.report.xml</field>
+            <field name="name">Retencions d'interessos</field>
+            <field name="report_webkit">som_inversions/report/report_retencions_interessos.mako</field>
+        </record>
+        <record id="report_generationkwh_doc" model="ir.actions.report.xml">
+            <field name="report_type">webkit</field>
+            <field name="report_name">generationkwh.doc</field>
+            <field eval="[(6,0,[])]" name="groups_id"/>
+            <field eval="0" name="multi"/>
+            <field eval="0" name="auto"/>
+            <field eval="0" name="header"/>
+            <field name="model">account.invoice</field>
+            <field name="type">ir.actions.report.xml</field>
+            <field name="name">Préstec Generation kWh</field>
+            <field name="report_webkit">som_inversions/report/report_generationkwh_doc.mako</field>
+        </record>
+        <record id="report_retencions_interessos_titols" model="ir.actions.report.xml">
+            <field name="report_type">webkit</field>
+            <field name="report_name">retencions.interessos.titols</field>
+            <field eval="[(6,0,[])]" name="groups_id"/>
+            <field eval="0" name="multi"/>
+            <field eval="0" name="auto"/>
+            <field eval="0" name="header"/>
+            <field name="model">res.partner</field>
+            <field name="type">ir.actions.report.xml</field>
+            <field name="name">Retencions d'interessos títols</field>
+            <field name="report_webkit">som_inversions/report/report_retencions_interessos_titols.mako</field>
+        </record>
+        <record id="report_retencions_interessos_apo" model="ir.actions.report.xml">
+            <field name="report_type">webkit</field>
+            <field name="report_name">retencions.interessos.aportacions</field>
+            <field eval="[(6,0,[])]" name="groups_id"/>
+            <field eval="0" name="multi"/>
+            <field eval="0" name="auto"/>
+            <field eval="0" name="header"/>
+            <field name="model">res.partner</field>
+            <field name="type">ir.actions.report.xml</field>
+            <field name="name">Retencions d'interessos aportacions</field>
+            <field name="report_webkit">som_inversions/report/report_retencions_interessos_apo.mako</field>
+        </record>
+  </data>
+</openerp>

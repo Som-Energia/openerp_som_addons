@@ -1,6 +1,99 @@
 <?xml version="1.0"?>
 <openerp>
-    <data noupdate="1">
+	<data noupdate="1">
+	<record model="poweremail.template.attachment" id='report_oferta_renovacio_30'>
+		<field name='report_id' ref='report_indexed_offer' />
+		<field name='file_name'>Oferta_renovacio.pdf</field>
+		<field name='search_params'>[('id','=', '${object.id}')]</field>
+	</record>
+	<record model="poweremail.template.attachment" id='report_oferta_renovacio_30_sepa'>
+		<field name='report_id' ref='sepa_report' />
+		<field name='file_name'>SEPA.pdf</field>
+		<field name='search_params'>[('id','=', '${object.id}')]</field>
+	</record>
+        <record model="poweremail.templates" id="primer_env_no_renovacio_30">
+            <field name="name">Primer enviament no renovació 3.0</field>
+            <field name="object_name" model="ir.model" search="[('model', '=', 'som.enviament.massiu')]"/>
+            <field eval="0" name="save_to_drafts"/>
+            <field name="model_int_name">som.enviament.massiu</field>
+            <field eval="0" name="use_filter"/>
+            <field name="def_to">${object.polissa_id.titular.address[0].email}</field>
+            <field name="def_bcc">support.17062.b8d9f4469fa4d856@helpscout.net</field>
+            <field name="def_cc">correu@certificat.lleida.net</field>
+            <field eval="0" name="auto_email"/>
+            <field eval="0" name="use_sign"/>
+            <field name="def_subject">[IMPORTANT] Finalització del contracte ${object.polissa_id.name} i proposta de renovació</field>
+            <field name="template_language">mako</field>
+	    <field name="enforce_from_account" model="poweremail.core_accounts" search="[('email_id','=', 'empresa@somenergia.coop')]" />
+            <field eval="0" name="send_on_create"/>
+            <field name="lang">${object.polissa_id.titular.lang}</field>
+            <field eval="0" name="send_on_write"/>
+            <field name="def_body_text">
+    <![CDATA[
+    <!doctype html>
+    <html>
+    <head></head>
+    <body>
+    1r avís de no renovació de contractes 3.0
+    </body>
+    </html>
+        ]]></field>
+        </record>
+        <record model="poweremail.templates" id="segon_env_no_renovacio_30">
+            <field name="name">Segon enviament no renovació 3.0</field>
+            <field name="object_name" model="ir.model" search="[('model', '=', 'som.enviament.massiu')]"/>
+            <field eval="0" name="save_to_drafts"/>
+            <field name="model_int_name">som.enviament.massiu</field>
+            <field eval="0" name="use_filter"/>
+            <field name="def_to">${object.polissa_id.titular.address[0].email}</field>
+            <field name="def_bcc">support.17062.b8d9f4469fa4d856@helpscout.net</field>
+	    <field name="enforce_from_account" model="poweremail.core_accounts" search="[('email_id','=', 'empresa@somenergia.coop')]" />
+            <field eval="0" name="auto_email"/>
+            <field eval="0" name="use_sign"/>
+            <field name="def_subject">[IMPORTANT] Condicions per a la renovació del contracte ${object.polissa_id.name} amb tarifa indexada</field>
+            <field name="template_language">mako</field>
+            <field eval="0" name="send_on_create"/>
+            <field name="lang">${object.polissa_id.titular.lang}</field>
+	    <field eval="0" name="send_on_write"/>
+	    <field name="tmpl_attachment_ids" eval='[(6,0,[report_oferta_renovacio_30,report_oferta_renovacio_30_sepa] )]' />
+            <field name="def_body_text">
+    <![CDATA[
+    <!doctype html>
+    <html>
+    <head></head>
+    <body>
+    2n avís de no renovació de contractes 3.0
+    </body>
+    </html>
+        ]]></field>
+        </record>
+        <record model="poweremail.templates" id="tercer_env_no_renovacio_30">
+            <field name="name">Tercer enviament no renovació 3.0</field>
+            <field name="object_name" model="ir.model" search="[('model', '=', 'som.enviament.massiu')]"/>
+            <field eval="0" name="save_to_drafts"/>
+            <field name="model_int_name">som.enviament.massiu</field>
+            <field eval="0" name="use_filter"/>
+            <field name="def_to">${object.polissa_id.titular.address[0].email}</field>
+            <field name="def_bcc">support.17062.b8d9f4469fa4d856@helpscout.net</field>
+	    <field name="enforce_from_account" model="poweremail.core_accounts" search="[('email_id','=', 'empresa@somenergia.coop')]" />
+            <field eval="0" name="auto_email"/>
+            <field eval="0" name="use_sign"/>
+            <field name="def_subject">[IMPORTANT] Finalització del contracte ${object.polissa_id.name} el ${object.polissa_id.modcontractual_activa.data_final}</field>
+            <field name="template_language">mako</field>
+            <field eval="0" name="send_on_create"/>
+            <field name="lang">${object.polissa_id.titular.lang}</field>
+            <field eval="0" name="send_on_write"/>
+            <field name="def_body_text">
+    <![CDATA[
+    <!doctype html>
+    <html>
+    <head></head>
+    <body>
+    3r avís de no renovació de contractes 3.0
+    </body>
+    </html>
+        ]]></field>
+        </record>
         <record model="poweremail.templates" id="env_empowering_report_empresa">
             <field name="name">Infoenergia Entitats i Empreses</field>
             <field name="object_name" model="ir.model" search="[('model', '=', 'giscedata.polissa')]"/>
@@ -179,17 +272,98 @@
     </html>
         ]]></field>
         </record>
+        <record model="poweremail.templates" id="rebaixa_iva_5">
+            <field name="name">Enviament rebaixa iva 5%</field>
+            <field name="object_name" model="ir.model" search="[('model', '=', 'som.enviament.massiu')]"/>
+            <field eval="0" name="save_to_drafts"/>
+            <field name="model_int_name">som.enviament.massiu</field>
+            <field eval="0" name="use_filter"/>
+            <field name="def_to">${object.polissa_id.titular.address[0].email}</field>
+            <field name="def_bcc">support.17062.b8d9f4469fa4d856@helpscout.net</field>
+            <field name="enforce_from_account" model="poweremail.core_accounts" search="[('email_id','=', 'no-reply@somenergia.coop')]" />
+            <field eval="0" name="auto_email"/>
+            <field eval="0" name="use_sign"/>
+            <field name="def_subject">Preus actualitzats amb l’IVA al 5% establert pel govern espanyol</field>
+            <field name="template_language">mako</field>
+            <field eval="0" name="send_on_create"/>
+            <field name="lang">${object.polissa_id.titular.lang}</field>
+            <field eval="0" name="send_on_write"/>
+            <field name="def_body_text">
+    <![CDATA[
+    <!doctype html>
+    <html>
+    <head></head>
+    <body>
+    Hola ${object.polissa_id.direccio_pagament.name},
+
+    Text
+
+    </body>
+    </html>
+        ]]></field>
+        </record>
+        <record model="poweremail.templates" id="correu_titular_pagador_diferents">
+            <field name="name">Correu Titular i Pagador diferents</field>
+            <field name="object_name" model="ir.model" search="[('model', '=', 'som.enviament.massiu')]"/>
+            <field eval="0" name="save_to_drafts"/>
+            <field name="model_int_name">som.enviament.massiu</field>
+            <field eval="0" name="use_filter"/>
+            <field name="def_to">${object.polissa_id.titular.address[0].email},${object.polissa_id.pagador.address[0].email}</field>
+            <field name="def_bcc">support.17062.b8d9f4469fa4d856@helpscout.net</field>
+            <field name="def_cc"></field>
+            <field eval="0" name="auto_email"/>
+            <field eval="0" name="use_sign"/>
+            <field name="def_subject">Dades titular i fiscals</field>
+            <field name="template_language">mako</field>
+	    <field name="enforce_from_account" model="poweremail.core_accounts" search="[('email_id','=', 'modifica@somenergia.coop')]" />
+            <field eval="0" name="send_on_create"/>
+            <field name="lang">${object.polissa_id.titular.lang}</field>
+            <field eval="0" name="send_on_write"/>
+            <field name="def_body_text">
+    <![CDATA[
+    <!doctype html>
+    <html>
+    <head></head>
+    <body>
+    Avís pagador i titular diferents
+    </body>
+    </html>
+        ]]></field>
+        </record>
+        <record model="poweremail.templates" id="correu_confirmacio_subministraments_essencials">
+            <field name="name">Correu confirmació subministraments essencials</field>
+            <field name="object_name" model="ir.model" search="[('model', '=', 'som.enviament.massiu')]"/>
+            <field eval="0" name="save_to_drafts"/>
+            <field name="model_int_name">som.enviament.massiu</field>
+            <field eval="0" name="use_filter"/>
+            <field name="def_to">${object.polissa_id.titular.address[0].email}</field>
+            <field name="def_bcc">support.17062.b8d9f4469fa4d856@helpscout.net</field>
+            <field name="def_cc"></field>
+            <field eval="0" name="auto_email"/>
+            <field eval="0" name="use_sign"/>
+            <field name="def_subject">Subministrament essencial</field>
+            <field name="template_language">mako</field>
+	    <field name="enforce_from_account" model="poweremail.core_accounts" search="[('email_id','=', 'comercialitzacio@somenergia.coop')]" />
+            <field eval="0" name="send_on_create"/>
+            <field name="lang">${object.polissa_id.titular.lang}</field>
+            <field eval="0" name="send_on_write"/>
+            <field name="def_body_text">
+    <![CDATA[
+    <!doctype html>
+    <html>
+    <head></head>
+    <body>
+    Subministrament essencial
+    </body>
+    </html>
+        ]]></field>
+        </record>
     </data>
     <data noupdate="1">
-        <record model="res.config" id="infoenergia_send_tasks_max_procs">
-            <field name="name">infoenergia_send_tasks_max_procs</field>
-            <field name="value">0</field>
-            <field name="description">Numero màxim de workers dedicats enviar informes d'Infoenergia en paral·lel. Si s'indica '0' (per defecte), no hi ha limit.</field>
-        </record>
-        <record model="res.config" id="infoenergia_create_enviaments_tasks_max_procs">
-            <field name="name">infoenergia_create_enviaments_tasks_max_procs</field>
-            <field name="value">0</field>
-            <field name="description">Numero màxim de workers dedicats a crear enviaments d'Infoenergia en paral·lel. Si s'indica '0' (per defecte), no hi ha limit.</field>
+        <record model="res.config" id="som_conany_pdf_days_limit" >
+            <field name="name">som_conany_pdf_days_limit</field>
+            <field name="value">[355,375]</field>
+            <field name="description">Dies minim i maxim per considerar que el consum anual calculat via pdf és correcte.</field>
         </record>
     </data>
 </openerp>

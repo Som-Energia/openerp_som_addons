@@ -9,36 +9,36 @@ db_id	pending_days	name	weight	process_id	module	id	pending_days_type
 36	7	Enviat annex III 1r	30	Bo Social	giscedata_facturacio_comer_bono_social	carta_1_pending_state	business
 37	0	Pendent enviar annex III 2n i SMS	40	Bo Social	giscedata_facturacio_comer_bono_social	carta_2_pendent_pending_state	natural
 38	1	Enviat annex III 2n i SMS	50	Bo Social	giscedata_facturacio_comer_bono_social	carta_2_pending_state	natural
-46	0	Pendent consulta pobresa	55	Bo Social	som_account_invoice_pending	pendent_consulta_probresa_pending_state	
+46	0	Pendent consulta pobresa	55	Bo Social	som_account_invoice_pending	pendent_consulta_probresa_pending_state
 39	45	Avís impagament confirmat	60	Bo Social	giscedata_facturacio_comer_bono_social	avis_tall_pending_state	natural
 40	0	Pendent enviar annex IV email i SMS	70	Bo Social	giscedata_facturacio_comer_bono_social	pendent_carta_avis_tall_pending_state	natural
 41	15	Enviat annex IV email y SMS	80	Bo Social	giscedata_facturacio_comer_bono_social	carta_avis_tall_pending_state	business
-47	0	Pendent 2a factura impagada	82	Bo Social	som_account_invoice_pending	esperant_segona_factura_impagada_pending_state	
-48	0	Pendent enviar email tall i SMS tall 48h	83	Bo Social	som_account_invoice_pending	pendent_notificacio_tall_imminent_pending_state	
+47	0	Pendent 2a factura impagada	82	Bo Social	som_account_invoice_pending	esperant_segona_factura_impagada_pending_state
+48	0	Pendent enviar email tall i SMS tall 48h	83	Bo Social	som_account_invoice_pending	pendent_notificacio_tall_imminent_pending_state
 49	2	Enviat email i SMS 48h	85	Bo Social	som_account_invoice_pending	notificacio_tall_imminent_enviada_pending_state	business
-50	0	Pendent crear tall	88	Bo Social	som_account_invoice_pending	pendent_execucio_tall_pending_state	
+50	0	Pendent crear tall	88	Bo Social	som_account_invoice_pending	pendent_execucio_tall_pending_state
 42	0	Tall	90	Bo Social	giscedata_facturacio_comer_bono_social	tall_pending_state	natural
-58	0	Pendent enviament email impagament	110	Default Process	som_account_invoice_pending	default_avis_impagament_pending_state	
+58	0	Pendent enviament email impagament	110	Default Process	som_account_invoice_pending	default_avis_impagament_pending_state
 59	7	Email impagament enviat	120	Default Process	som_account_invoice_pending	default_avis_impagament_enviat_pending_state	natural
-63	0	Pendent enviament mail Annex IV i SMS	160	Default Process	som_account_invoice_pending	default_pendent_carta_avis_tall_pending_state	
+63	0	Pendent enviament mail Annex IV i SMS	160	Default Process	som_account_invoice_pending	default_pendent_carta_avis_tall_pending_state
 65	13	Enviat annex IV i SMS	180	Default Process	som_account_invoice_pending	default_carta_avis_tall_pending_state	business
-62	0	Pendent 2a factura impagada	185	Default Process	som_account_invoice_pending	default_esperant_segona_factura_impagada_pending_state	
-66	0	Pendent enviament email tall i SMS 48 hores	190	Default Process	som_account_invoice_pending	default_pendent_notificacio_tall_imminent_pending_state	
+62	0	Pendent 2a factura impagada	185	Default Process	som_account_invoice_pending	default_esperant_segona_factura_impagada_pending_state
+66	0	Pendent enviament email tall i SMS 48 hores	190	Default Process	som_account_invoice_pending	default_pendent_notificacio_tall_imminent_pending_state
 68	2	Enviat email i SMS 48 hores	210	Default Process	som_account_invoice_pending	default_notificacio_tall_imminent_enviada_pending_state	business
 74	0	Pendent crear tall	215	Default Process	som_account_invoice_pending	default_pendent_execucio_tall_pending_state	natural
-69	0	Tall	220	Default Process	som_account_invoice_pending	default_tall_pending_state	
-51	0	Advocats	1001	Bo Social	som_account_invoice_pending	traspassat_advocats_pending_state	
-52	0	Pobresa energètica	1002	Bo Social	som_account_invoice_pending	probresa_energetica_certificada_pending_state	
-53	0	PACTE FRACCIO	1003	Bo Social	som_account_invoice_pending	pacte_fraccio_pending_state	
-54	0	Pacte girar	1004	Bo Social	som_account_invoice_pending	pacte_girar_pending_state	
-55	0	Pacte transfer	1005	Bo Social	som_account_invoice_pending	pacte_transferencia_pending_state	
-56	0	R1 RECLAMACIÓ	1006	Bo Social	som_account_invoice_pending	reclamacio_en_curs_pending_state	
-57	0	No reclamar - Altres	1007	Bo Social	som_account_invoice_pending	no_reclamable_pending_state	
+69	0	Tall	220	Default Process	som_account_invoice_pending	default_tall_pending_state
+51	0	Advocats	1001	Bo Social	som_account_invoice_pending	traspassat_advocats_pending_state
+52	0	Pobresa energètica	1002	Bo Social	som_account_invoice_pending	probresa_energetica_certificada_pending_state
+53	0	PACTE FRACCIO	1003	Bo Social	som_account_invoice_pending	pacte_fraccio_pending_state
+54	0	Pacte girar	1004	Bo Social	som_account_invoice_pending	pacte_girar_pending_state
+55	0	Pacte transfer	1005	Bo Social	som_account_invoice_pending	pacte_transferencia_pending_state
+56	0	R1 RECLAMACIÓ	1006	Bo Social	som_account_invoice_pending	reclamacio_en_curs_pending_state
+57	0	No reclamar - Altres	1007	Bo Social	som_account_invoice_pending	no_reclamable_pending_state
 76	0	Pendent consulta advocats	1008	Bo Social	som_account_invoice_pending	pendent_traspas_advocats_pending_state	natural
-70	0	Advocats	1101	Default Process	som_account_invoice_pending	default_traspassat_advocats_pending_state	
-71	0	PACTE FRACCIO	1102	Default Process	som_account_invoice_pending	default_pacte_fraccio_pending_state	
-72	0	R1 RECLAMACIÓ	1103	Default Process	som_account_invoice_pending	default_reclamacio_en_curs_pending_state	
-73	0	No reclamar - Altres	1104	Default Process	som_account_invoice_pending	default_no_reclamable_pending_state	
+70	0	Advocats	1101	Default Process	som_account_invoice_pending	default_traspassat_advocats_pending_state
+71	0	PACTE FRACCIO	1102	Default Process	som_account_invoice_pending	default_pacte_fraccio_pending_state
+72	0	R1 RECLAMACIÓ	1103	Default Process	som_account_invoice_pending	default_reclamacio_en_curs_pending_state
+73	0	No reclamar - Altres	1104	Default Process	som_account_invoice_pending	default_no_reclamable_pending_state
 3	0	PACTE TRANSFER	1105	Default Process	som_account_invoice_pending	default_pacte_transferencia_pending_state	natural
 7	0	Pacte girar	1106	Default Process	som_account_invoice_pending	default_pacte_girar_pending_state	natural
 77	0	Pendent consulta advocats	1108	Default Process	som_account_invoice_pending	default_pendent_traspas_advocats_pending_state	natural

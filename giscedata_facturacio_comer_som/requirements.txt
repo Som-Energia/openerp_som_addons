@@ -1,0 +1,6 @@
+progressbar==2.5
+https://github.com/AxiaCore/number-to-letters/archive/master.zip
+bankbarcode
+https://github.com/oriolpiera/nombres-a-lletres/archive/master.zip
+yamlns==0.7
+pypdftk==0.4

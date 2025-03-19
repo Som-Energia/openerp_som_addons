@@ -1,0 +1,615 @@
+<?xml version="1.0"?>
+<openerp>
+    <data noupdate="1">
+        <record model="poweremail.templates" id="email_validacio_dades_canvi_titular">
+            <field name="name">M101: Validació de dades (OV) canvi titular</field>
+            <field name="object_name" model="ir.model" search="[('name', '=', 'giscedata.switching')]"/>
+            <field eval="0" name="save_to_drafts"/>
+            <field name="model_int_name">giscedata.switching</field>
+            <field name="def_to">${object.step_ids[0].pas_id.fiscal_address_id.email}</field>
+            <field eval="0" name="auto_email"/>
+            <field eval="0" name="single_email"/>
+            <field eval="0" name="use_sign"/>
+            <field name="def_subject">Canvi de titular. Verificació de dades. Contracte ${object.cups_polissa_id.name}</field>
+            <field name="template_language">mako</field>
+            <field eval="0" name="send_on_create"/>
+            <field name="lang">${object.cups_polissa_id.titular.lang}</field>
+            <field eval="0" name="send_on_write"/>
+            <field name="def_bcc">support.17062.b8d9f4469fa4d856@helpscout.net</field>
+            <field name="enforce_from_account" model="poweremail.core_accounts" search="[('name','=', 'Modificacions Contractuals')]"/>
+            <field name="def_body_text"><![CDATA[
+                <!doctype html>
+                <html>
+                <head></head>
+                <body>
+                <%
+                nom_nou_titular =  object.step_ids[0].pas_id.fiscal_address_id.name
+                %>
+                %if object.polissa_ref_id.titular.lang != "es_ES":
+                Benvolguts/des,<br>
+                <br>
+                Us informem que hem rebut correctament la sol·licitud d'un canvi de titular pel contracte número ${object.cups_polissa_id.name} amb el CUPS: ${object.cups_id.name} i del qual, fins ara, el titular és en/na  ${object.cups_polissa_id.titular.name}.<br>
+                <br>
+                Si es tracta d'un canvi de titularitat degut a la defunció de la persona titular actual o bé detecteu un error en el resum de dades següent, contesteu aquest correu.<br>
+                <b>Si tot és correcte no és necessari que contesteu</b> i la gestió es durà a terme en un màxim de cinc dies hàbils.<br>
+                És important tenir en compte que en les properes setmanes, la persona que ha estat titular fins ara, rebrà una última factura fins a la data d’activació del contracte amb la nova persona titular.<br>
+                <br>
+                Les dades del nou titular són:<br>
+                - Nom: ${nom_nou_titular.split(',')[-1]} ${nom_nou_titular.split(',')[0]}<br/>
+                - NIF, NIE o CIF: ****<br>
+                - Número de compte: **** **** **** **** ****<br>
+                <br>
+                % if object.polissa_ref_id.soci:
+                El contracte estarà associat al soci/a ${object.polissa_ref_id.soci.name.split(',')[-1]} ${object.polissa_ref_id.soci.name.split(',')[0]}.<br>
+                % else:
+                El contracte estarà associat al soci/a: Encara sense persona sòcia vinculada.<br/>
+                % endif
+                <br>
+                Salutacions,<br>
+                <br>
+                Equip de Som Energia<br>
+                modifica@somenergia.coop<br>
+                <a href="www.somenergia.coop/ca">www.somenergia.coop</a><br/>
+                % endif
+                % if object.polissa_ref_id.titular.lang != "ca_ES" and object.polissa_ref_id.titular.lang != "es_ES":
+                <br>
+                ----------------------------------------------------------------------------------------------------
+                <br>
+                % endif
+                % if object.polissa_ref_id.titular.lang != "ca_ES":
+                Estimados/as,<br/>
+                <br/>
+                Os informamos que hemos recibido correctamente la solicitud de cambio de titular del contrato número ${object.cups_polissa_id.name} con el CUPS: ${object.cups_id.name} y del cual, hasta ahora el titular es ${object.cups_polissa_id.titular.name.split(',')[-1]} ${object.cups_polissa_id.titular.name.split(',')[0]}.<br/>
+                <br/>
+                Si se trata de un cambio de titularidad debido a la defunción de la persona titular actual o bien detectáis un error en el resumen de datos siguiente, contestad este correo.<br/>
+                <b>Si todo es correcto no es necesario que lo hagáis</b> y la gestión se llevará a cabo en un plazo máximo de cinco días hábiles.<br/>
+                Es importante tener en cuenta que en las próximas semanas, la persona que ha sido titular hasta ahora, recibirá una última factura hasta la fecha de activación del contrato con la nueva persona titular.<br/>
+                <br/>
+                Los datos del nuevo titular son:<br/>
+                - Nombre: ${nom_nou_titular.split(',')[-1]} ${nom_nou_titular.split(',')[0]}<br/>
+                - NIF, NIE o CIF: ****<br/>
+                - Número de cuenta: **** **** **** **** ****<br/>
+                <br/>
+                % if object.polissa_ref_id.soci:
+                El contrato estará asociado al socio/a ${object.polissa_ref_id.soci.name.split(',')[-1]} ${object.polissa_ref_id.soci.name.split(',')[0]}.<br>
+                % else:
+                El contrato estará asociado al socio/a: Aún sin persona socia vinculada.<br/>
+                % endif
+                <br/>
+                Saludos,<br/>
+                <br/>
+                Equipo de Som Energia<br/>
+                modifica@somenergia.coop<br/>
+                <a href="www.somenergia.coop/es">www.somenergia.coop</a><br/>
+                % endif
+                </body>
+                </html>
+                ]]>
+            </field>
+    	</record>
+        <!-- Notificació rebuig D101-->
+        <record model="poweremail.templates" id="email_atr_rebuig_d1_01">
+            <field name="name">ATR D101: Rebuig dades autoproducció</field>
+            <field name="object_name" model="ir.model" search="[('name', '=', 'giscedata.switching')]"/>
+            <field eval="0" name="save_to_drafts"/>
+            <field name="model_int_name">giscedata.switching</field>
+            <field eval="0" name="use_filter"/>
+            <field name="file_name">${object.codi_sollicitud}</field>
+            <field name="def_to">${object.cups_polissa_id.direccio_notificacio.email}</field>
+            <field eval="0" name="auto_email"/>
+            <field eval="0" name="single_email"/>
+            <field eval="0" name="use_sign"/>
+            <field name="def_subject">Rebuig dades inst.autoproducció CUPS ${object.cups_id.name}</field>
+            <field name="template_language">mako</field>
+            <field eval="0" name="send_on_create"/>
+            <field name="lang">${object.cups_polissa_id.titular.lang}</field>
+            <field name="copyvalue">${object.codi_sollicitud}</field>
+            <field eval="0" name="send_on_write"/>
+            <field name="def_bcc">support.17062.b8d9f4469fa4d856@helpscout.net</field>
+            <field name="def_body_text"><![CDATA[
+                <%!
+                    from mako.template import Template
+
+                    def render(text_to_render, object_):
+                        templ = Template(text_to_render)
+                        return templ.render_unicode(
+                            object=object_,
+                            format_exceptions=True
+                    )
+
+                    def get_partner_name(object_):
+                        p_obj = object_.pool.get('res.partner')
+                        if not object_.vat_enterprise():
+                            nom_titular =' ' + p_obj.separa_cognoms(object_._cr, object_._uid, object_.cups_polissa_id.titular.name)['nom']
+                        else:
+                            nom_titular = ''
+                        return nom_titular
+                %>
+                <%
+                    polissa = object.cups_polissa_id
+
+                    t_obj = object.pool.get('poweremail.templates')
+                    md_obj = object.pool.get('ir.model.data')
+                    template_id = md_obj.get_object_reference(
+                                        object._cr, object._uid,  'som_poweremail_common_templates', 'common_template_legal_footer'
+                                    )[1]
+
+                    text_legal = render(t_obj.read(
+                        object._cr, object._uid, [template_id], ['def_body_text'])[0]['def_body_text'],
+                        object
+                    )
+
+                %>
+                <!doctype html>
+                <html>
+                    <head>
+                        <meta charset='utf-8'>
+                    </head>
+                    % if object.cups_polissa_id.titular.lang == "ca_ES":
+                        ${correu_cat()}
+                    % else:
+                        ${correu_es()}
+                    % endif
+                    ${text_legal}
+                </html>
+
+                <%def name="correu_cat()">
+                    <body>
+                        <table width="100%" frame="below" bgcolor="#E8F1D4">
+                            <tr>
+                                <td height=2px>
+                                    <font size=2><strong> Contracte Som Energia nº ${polissa.name}</strong></font>
+                                </td>
+                                <td valign=top rowspan="4" align="right">
+                                    <img width='130' height='65' src="https://www.somenergia.coop/wp-content/uploads/2014/11/logo-somenergia.png">
+                                </td>
+                            </tr>
+                            <tr>
+                                <td height=2px>
+                                    <font size=1> Adreça punt subministrament: ${object.cups_id.direccio}</font>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td height=2px>
+                                    <font size=1> Codi CUPS: ${object.cups_id.name}</font>
+                                </td>
+                            </tr>
+                        </table>
+                        <p>
+                            Hola${get_partner_name(object)},
+                        </p>
+                        <p>
+                            Ens ha arribat la notificació que no estàs d’acord amb les dades que ens ha passat l’empresa de distribució elèctrica referent a la teva instal·lació d’autoconsum associada al CUPS ${object.cups_id.name} amb direcció de subministrament ${object.cups_id.direccio}.
+                        </p>
+                        <p>
+                            Enviem el rebuig, amb el detall del motiu de desacord que ens has indicat a través de la teva oficina virtual, a la distribuïdora.
+                        </p>
+                        <p>
+                            Si es tracta d’un error en la comunicació per part de la distribuïdora ens faran arribar una nova comunicació corregida, si pel contrari es tracta d’un error a l’hora de fer el registre o de la comunicació per part de la Comunitat Autònoma cal que contacteu amb la mateixa per tal de modificar la informació i que comenci el procés novament.
+                        </p>
+                        <p>
+                            Malauradament, la distribuïdora no ens indica si es tracta d’una o altra casuística pel que et recomanem que contactis directament amb la distribuïdora i el departament corresponent de la teva Comunitat Autònoma per aclarir-ho.
+                        </p>
+                        <p>
+                            Qualsevol dubte seguim en contacte.
+                        </p>
+                        Salutacions,<br>
+                        <br>
+                        Equip de Som Energia<br>
+                        <a href="mailto:modifica@somenergia.coop">modifica@somenergia.coop</a><br>
+                        <a href="http://www.somenergia.coop/ca">www.somenergia.coop</a>
+                    </body>
+                </%def>
+                <%def name="correu_es()">
+                    <body>
+                        <table width="100%" frame="below" bgcolor="#E8F1D4">
+                            <tr>
+                                <td height=2px>
+                                    <font size=2><strong> Contrato Som Energia nº ${polissa.name}</strong></font>
+                                </td>
+                                <td valign=top rowspan="4" align="right">
+                                    <img width='130' height='65' src="https://www.somenergia.coop/wp-content/uploads/2014/11/logo-somenergia.png">
+                                </td>
+                            </tr>
+                            <tr>
+                                <td height=2px>
+                                    <font size=1> Dirección del punto de suministro: ${object.cups_id.direccio}</font>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td height=2px>
+                                    <font size=1> Código CUPS: ${object.cups_id.name}</font>
+                                </td>
+                            </tr>
+                        </table>
+                        <p>
+                            Hola${get_partner_name(object)},
+                        </p>
+                        <p>
+                            Nos ha llegado la notificación que no estás de acuerdo con los datos que nos ha pasado la empresa de distribución eléctrica referente a tu instalación de autoconsumo asociada al CUPS ${object.cups_id.name} con dirección de suministro ${object.cups_id.direccio}.
+                        </p>
+                        <p>
+                            Enviamos el rechazo, con el detalle del motivo de desacuerdo que nos has indicado a través de tu oficina virtual, a la distribuidora.
+                        </p>
+                        <p>
+                            Si se trata de un error en la comunicación por parte de la distribuidora nos harán llegar una nueva comunicación corregida, si por el contrario se trata de un error a la hora de hacer el registro o de la comunicación por parte de la Comunidad Autónoma deberás ponerte en contacto con la misma a fin de modificar la información y que comience el proceso nuevamente.
+                        </p>
+                        <p>
+                            Desgraciadamente, la distribuidora no nos indica si se trata de una u otra casuística por lo que te recomendamos que contactes directamente con la distribuidora y el departamento correspondiente de tu Comunidad Autónoma para aclararlo.
+                        </p>
+                        <p>
+                            Cualquier duda seguimos en contacto.
+                        </p>
+                        Saludos,<br>
+                        <br>
+                        Equipo de Som Energia<br>
+                        <a href="mailto:modifica@somenergia.coop">modifica@somenergia.coop</a><br>
+                        <a href="http://www.somenergia.coop/es">www.somenergia.coop</a>
+                    </body>
+                </%def>
+                ]]>
+            </field>
+        </record>
+
+        <!-- Rebutjos B1-->
+        <record model="giscedata.switching.notify" id="notification_atr_B107_C7">
+            <field name="proces_id" ref="giscedata_switching.sw_proces_b1"/>
+            <field name="step_id" ref="giscedata_switching.sw_step_b1_07"/>
+            <field name="active" eval="1"/>
+            <field name="notify_text"><![CDATA[<!doctype html>
+                % if cas.cups_polissa_id.titular.lang == "ca_ES":
+                    ${correu_cat()}
+                % else:
+                    ${correu_es()}
+                % endif
+
+                <%def name="correu_cat()">
+                    <p>
+                        <a href="https://ca.support.somenergia.coop/article/655-les-distribuidores-d-electricitat">L’empresa distribuïdora</a> de la teva zona, l’encarregada de fer efectiva la baixa, ha rebutjat la teva sol·licitud amb el següent motiu:
+                    </p>
+                    <p>
+                        <b>Impedimento del Titular.</b>
+                    </p>
+                    <p>
+                        Segons ens indiquen, entenem que heu parlat amb el personal tècnic de l’empresa distribuïdora, i els heu indicat que no voleu continuar amb la baixa sol·licitada. Així doncs, et confirmem que la baixa no es durà a terme.
+                    </p>
+                    <p>
+                        Si el rebuig que ens ha notificat l’empresa distribuïdora no és correcte, ens ho pots comunicar responent a aquest mateix missatge, i els hi enviarem una reclamació.
+                    </p>
+                </%def>
+
+
+                <%def name="correu_es()">
+                    <p>
+                        <a href="https://es.support.somenergia.coop/article/656-las-distribuidoras-de-electricidad">La empresa distribuidora</a> de tu zona, la encargada hacer efectiva la baja, ha rechazado tu solicitud con el siguiente motivo:
+                    </p>
+                    <p>
+                        <b>Impedimento del Titular.</b>
+                    </p>
+                    <p>
+                        Según nos indican, entendemos habéis hablado con personal técnico de la empresa distribuidora, y les habéis indicado que no queréis continuar con la baja solicitada. De este modo, te confirmamos que la baja con corte de suministro, no se hará efectiva.
+                    </p>
+                    <p>
+                        Si el rechazo que nos ha enviado la empresa distribuidora no es correcto, nos lo puedes comunicar respondiendo a este mismo mensaje, y les enviaremos una reclamación.
+                    </p>
+                </%def>
+                                ]]>
+                </field>
+            <field name="rebuig_ids" eval="[(6,0,[ref('giscedata_switching.sw_motiu_rebuig_C7')])]" />
+        </record>
+        <record model="giscedata.switching.notify" id="notification_atr_B107_C1">
+            <field name="proces_id" ref="giscedata_switching.sw_proces_b1"/>
+            <field name="step_id" ref="giscedata_switching.sw_step_b1_07"/>
+            <field name="active" eval="1"/>
+            <field name="notify_text"><![CDATA[<!doctype html>
+                % if cas.cups_polissa_id.titular.lang == "ca_ES":
+                    ${correu_cat()}
+                % else:
+                    ${correu_es()}
+                % endif
+
+                <%def name="correu_cat()">
+                    <p>
+                        <a href="https://ca.support.somenergia.coop/article/655-les-distribuidores-d-electricitat">L’empresa distribuïdora</a> de la teva zona, l’encarregada de fer efectiva la baixa, ha rebutjat la teva sol·licitud amb el següent motiu:
+                    </p>
+                    <p>
+                        <b>Concurrencia con cambio de comercializador/Traspaso a la COR. Se prioriza la activación del cambio sobre la baja.</b>
+                    </p>
+                    <p>
+                        Això vol dir, que per aquest punt de subministrament, també s’ha sol·licitat un canvi de comercialitzadora. En aquest cas, l’empresa distribuïdora no tramitarà la baixa de subministrament, ja que es prioritza el canvi de companyia.
+                    </p>
+                    <p>
+                        Ben aviat, rebràs un correu electrònic en el qual t’indicarem la data efectiva del canvi de comercialitzadora.
+                    </p>
+                </%def>
+
+
+                <%def name="correu_es()">
+                    <p>
+                        <a href="https://es.support.somenergia.coop/article/656-las-distribuidoras-de-electricidad">La empresa distribuidora</a> de tu zona, la encargada hacer efectiva la baja, ha rechazado tu solicitud con el siguiente motivo:
+                    </p>
+                    <p>
+                        <b>Concurrencia con cambio de comercializador/Traspaso a la COR. Se prioriza la activación del cambio sobre la baja.</b>
+                    </p>
+                    <p>
+                        Esto quiere decir, que para este punto de suministro, también se ha solicitado un cambio de comercializadora. En este caso, la empresa distribuidora no tramitará la baja de suministro, ya que se prioriza el cambio de compañía.
+                    </p>
+                    <p>
+                        En los próximos días, recibirás un correo electrónico en el que te indicaremos la fecha efectiva del cambio de comercializadora.
+                    </p>
+                </%def>
+                ]]>
+            </field>
+            <field name="rebuig_ids" eval="[(6,0,[ref('giscedata_switching.sw_motiu_rebuig_C1')])]" />
+        </record>
+        <record model="giscedata.switching.notify" id="notification_atr_B102_39">
+            <field name="proces_id" ref="giscedata_switching.sw_proces_b1"/>
+            <field name="step_id" ref="giscedata_switching.sw_step_b1_02"/>
+            <field name="active" eval="1"/>
+            <field name="notify_text"><![CDATA[<!doctype html>
+                % if cas.cups_polissa_id.titular.lang == "ca_ES":
+                    ${correu_cat()}
+                % else:
+                    ${correu_es()}
+                % endif
+
+                <%def name="correu_cat()">
+                    <p>
+                        <a href="https://ca.support.somenergia.coop/article/655-les-distribuidores-d-electricitat">L’empresa distribuïdora</a> de la teva zona, l’encarregada de fer efectiva la baixa, ha rebutjat la teva sol·licitud amb el següent motiu:
+                    </p>
+                    <p>
+                        <b>Existencia de Solicitud previa en curso C2</b>
+                    </p>
+                    <p>
+                        Això vol dir, que per aquest punt de subministrament, també s’ha sol·licitat un canvi de comercialitzadora amb modificacions contractuals (el més probable és que es tracti d’un canvi de comercialitzadora amb canvi de titularitat). En aquest cas, l’empresa distribuïdora no tramitarà la baixa de subministrament, ja que es prioritza el canvi de companyia.
+                    </p>
+                    <p>
+                        Ben aviat, rebràs un correu electrònic en el qual t’indicarem la data efectiva del canvi de comercialitzadora.
+                    </p>
+                </%def>
+
+
+                <%def name="correu_es()">
+                    <p>
+                        <a href="https://es.support.somenergia.coop/article/656-las-distribuidoras-de-electricidad">La empresa distribuidora</a> de tu zona, la encargada hacer efectiva la baja, ha rechazado tu solicitud con el siguiente motivo:
+                    </p>
+                    <p>
+                        <b>Existencia de Solicitud previa en curso C2</b>
+                    </p>
+                    <p>
+                        Esto quiere decir, que para este punto de suministro, también se ha solicitado un cambio de comercializadora con modificaciones contractuales (lo más probable es que se trate de un cambio de comercializadora con cambio de titularidad). En este caso, la empresa distribuidora no tramitará la baja de suministro, ya que se prioriza el cambio de compañía.
+                    </p>
+                    <p>
+                        En los próximos días, recibirás un correo electrónico en el que te indicaremos la fecha efectiva del cambio de comercializadora.
+                    </p>
+                </%def>
+                                ]]>
+            </field>
+            <field name="rebuig_ids" eval="[(6,0,[ref('giscedata_switching.sw_motiu_rebuig_39')])]" />
+        </record>
+        <record model="poweremail.templates" id="notificacioTractamentDadesGeneradorAutoconsum">
+            <field name="name">ATR D101: permís pel tractament de dades al titular de la instal·lació</field>
+            <field name="object_name" model="ir.model" search="[('name', '=', 'giscedata.switching')]"/>
+            <field eval="0" name="save_to_drafts"/>
+            <field name="model_int_name">giscedata.switching</field>
+            <field name="def_to">${object.cups_polissa_id.autoconsum_id.generador_id[0].partner_id.www_email}</field>
+            <field eval="0" name="auto_email"/>
+            <field eval="0" name="single_email"/>
+            <field eval="0" name="use_sign"/>
+            <field name="def_subject">Canvi de titular. Verificació de dades. Contracte ${object.cups_polissa_id.name}</field>
+            <field name="template_language">mako</field>
+            <field eval="0" name="send_on_create"/>
+            <field name="lang">${object.cups_polissa_id.titular.lang}</field>
+            <field eval="0" name="send_on_write"/>
+            <field name="def_bcc">support.17062.b8d9f4469fa4d856@helpscout.net</field>
+            <field name="enforce_from_account" model="poweremail.core_accounts" search="[('name','=', 'Modificacions Contractuals')]"/>
+            <field name="def_body_text"><![CDATA[
+               <%!
+    from mako.template import Template
+
+    def render(text_to_render, object_):
+        templ = Template(text_to_render)
+        return templ.render_unicode(
+            object=object_,
+            format_exceptions=True
+    )
+%>
+<%
+    polissa = object.cups_polissa_id
+
+    t_obj = object.pool.get('poweremail.templates')
+    md_obj = object.pool.get('ir.model.data')
+    template_id = md_obj.get_object_reference(
+                        object._cr, object._uid,  'som_poweremail_common_templates', 'common_template_legal_footer'
+                    )[1]
+
+    text_legal = render(t_obj.read(
+        object._cr, object._uid, [template_id], ['def_body_text'])[0]['def_body_text'],
+        object
+    )
+
+%>
+<!doctype html>
+<html>
+    <head>
+        <meta charset='utf-8'>
+    </head>
+    % if object.cups_polissa_id.titular.lang == "ca_ES":
+        ${correu_cat()}
+    % else:
+        ${correu_es()}
+    % endif
+    ${text_legal}
+</html>
+
+<%def name="correu_cat()">
+    <body>
+        <table width="100%" frame="below" bgcolor="#E8F1D4">
+            <tr>
+                <td height=2px>
+                    <font size=2><strong> Contracte Som Energia nº ${polissa.name}</strong></font>
+                </td>
+                <td valign=top rowspan="4" align="right">
+                    <img width='130' height='65' src="https://www.somenergia.coop/wp-content/uploads/2014/11/logo-somenergia.png">
+                </td>
+            </tr>
+            <tr>
+                <td height=2px>
+                    <font size=1> Adreça punt subministrament: ${object.cups_id.direccio}</font>
+                </td>
+            </tr>
+            <tr>
+                <td height=2px>
+                    <font size=1> Codi CUPS: ${object.cups_id.name}</font>
+                </td>
+            </tr>
+        </table>
+        <p>
+            Bon dia,
+        </p>
+        <p>
+            Recentment l'empresa de distribució elèctrica ens ha fet arribar les teves dades donat que estan associades a una instal·lació d'autoconsum d'un CUPS comercialitzat per Som Energia.
+        </p>
+        <p>
+            Per poder gestionar l'aplicació de l'autoconsum necessitem que ens donis autorització per tractar les teves dades.
+        </p>
+        <p>
+            T'enviem la informació relacionada amb la protecció de dades per què ens autoritzis el tractament d'aquestes responent aquest mateix correu.
+        </p>
+        <p>
+            INFORMACIÓ DE PROTECCIÓ DE DADES DE SOM ENERGIA
+        </p>
+        <p>
+            <b>Responsabilitats:</b> SOM ENERGIA, SCCL. (F55091367), C / Pic de Peguera, 11, 17003 de Girona, somenergia@delegado-datos.com. <b>Finalitats:</b> Tramitar l'alta de l'autoconsum associat a la seva instal·lació. <b>Legitimació:</b> Acord de serveis amb el titular de la instal·lació fotovoltaica. <b>Destinataris:</b> No estan previstes cessions, tret entre el client, el titular de la instal·lació i Som Energia i, les legalment previstes. <b>Drets:</b> Pot retirar el seu consentiment en qualsevol moment, així com accedir, rectificar, suprimir les seves dades i altres drets a somenergia@delegado-datos.com. <b>Informació Addicional:</b><a href="https://www.somenergia.coop/ca/avis-legal/#politica-de-privacitat">Política de Privadesa.</a>
+        </p>
+        <p>
+            Esperem la teva resposta per continuar o no amb la gestió,
+        </p>
+	    Salutacions,<br>
+        <br>
+        Equip de Som Energia<br>
+        <a href="mailto:comercialitzacio@somenergia.coop">comercialitzacio@somenergia.coop</a><br>
+        <a href="http://www.somenergia.coop/ca">www.somenergia.coop</a> - facebook <a href="https://www.facebook.com/somenergia/">https://www.facebook.com/somenergia/</b> - twitter <a href="https://twitter.com/somenergia">https://twitter.com/somenergia</b>
+    </body>
+</%def>
+<%def name="correu_es()">
+    <body>
+        <table width="100%" frame="below" bgcolor="#E8F1D4">
+            <tr>
+                <td height=2px>
+                    <font size=2><strong> Contrato Som Energia nº ${polissa.name}</strong></font>
+                </td>
+                <td valign=top rowspan="4" align="right">
+                    <img width='130' height='65' src="https://www.somenergia.coop/wp-content/uploads/2014/11/logo-somenergia.png">
+                </td>
+            </tr>
+            <tr>
+                <td height=2px>
+                    <font size=1> Dirección del punto de suministro: ${object.cups_id.direccio}</font>
+                </td>
+            </tr>
+            <tr>
+                <td height=2px>
+                    <font size=1> Código CUPS: ${object.cups_id.name}</font>
+                </td>
+            </tr>
+        </table>
+        <p>
+            Buenos días,
+	    </p>
+        <p>
+            Recientemente la empresa de distribución eléctrica nos ha hecho llegar tus datos dado que están asociadas a una instalación de autoconsumo de un CUPS comercializado por Som Energia.        </p>
+        <p>
+            Para poder gestionar la aplicación del autoconsumo necesitamos que nos des autorización para tratar tus datos.
+        </p>
+        <p>
+            Te enviamos la información relacionada con la protección de datos para que nos autorices el tratamiento de estas respondiendo a este mismo correo.        </p>
+        <p>
+            INFORMACIÓN DE PROTECCIÓN DE DATOS DE SOM ENERGIA
+        </p>
+        <p>
+            Esperamos tu respuesta para continuar o no con la gestión,
+        </p>
+        <p>
+            <b>Responsabilidades:</b> SOM ENERGIA, SCCL. (F55091367), C/ Pic de Peguera, 11, 17003 de Girona, somenergia@delegado-datos.com. <b>Finalidades:</b> Tramitar el alta del autoconsumo asociado a su instalación.<b> Legitimación:</b> Acuerdo de servicios con el titular de la instalación fotovoltaica. <b>Destinatarios:</b> No están previstas cesiones, salvo entre el cliente, el titular de la instalación y Som Energia y, las legalmente previstas. <b>Derechos:</b>  Puede retirar su consentimiento en cualquier momento, así como acceder, rectificar, suprimir sus datos y demás derechos en somenergia@delegado-datos.com. <b>Información Adicional:</b> <a href="https://www.somenergia.coop/es/aviso-legal/#politica-de-privacidad">Política de Privacidad</a>.
+        </p>
+        Saludos,<br>
+        <br>
+        Equipo de Som Energia<br>
+        <a href="mailto:comercialitzacio@somenergia.coop">comercialitzacio@somenergia.coop</a><br>
+        <a href="http://www.somenergia.coop/es">www.somenergia.coop</a> - facebook <a href="https://www.facebook.com/somenergia/">https://www.facebook.com/somenergia/</b> - twitter <a href="https://twitter.com/somenergia">https://twitter.com/somenergia</b>
+    </body>
+</%def>
+                ]]>
+            </field>
+    	</record>
+        <record model="poweremail.templates" id="notificacioTractamentDadesTitularDiferentContracte">
+            <field name="name">ATR D101: Correu pel titular del contracte quan el titular del D1 diferent del titular contracte</field>
+            <field name="object_name" model="ir.model" search="[('name', '=', 'giscedata.switching')]"/>
+            <field eval="0" name="save_to_drafts"/>
+            <field name="model_int_name">giscedata.switching</field>
+            <field name="def_to">${object.cups_polissa_id.titular.www_email}</field>
+            <field eval="0" name="auto_email"/>
+            <field eval="0" name="single_email"/>
+            <field eval="0" name="use_sign"/>
+            <field name="def_subject">Sol·licitud autorització de dades titular autoconsum CUPS: ${object.cups_polissa_id.name}</field>
+            <field name="template_language">mako</field>
+            <field eval="0" name="send_on_create"/>
+            <field name="lang">${object.cups_polissa_id.titular.lang}</field>
+            <field eval="0" name="send_on_write"/>
+            <field name="def_bcc">support.17062.b8d9f4469fa4d856@helpscout.net</field>
+            <field name="enforce_from_account" model="poweremail.core_accounts" search="[('name','=', 'Modificacions Contractuals')]"/>
+            <field name="def_body_text"><![CDATA[
+               <%!
+    from mako.template import Template
+
+    def render(text_to_render, object_):
+        templ = Template(text_to_render)
+        return templ.render_unicode(
+            object=object_,
+            format_exceptions=True
+    )
+%>
+<%
+    polissa = object.cups_polissa_id
+
+    t_obj = object.pool.get('poweremail.templates')
+    md_obj = object.pool.get('ir.model.data')
+    template_id = md_obj.get_object_reference(
+                        object._cr, object._uid,  'som_poweremail_common_templates', 'common_template_legal_footer'
+                    )[1]
+
+    text_legal = render(t_obj.read(
+        object._cr, object._uid, [template_id], ['def_body_text'])[0]['def_body_text'],
+        object
+    )
+
+%>
+<!doctype html>
+<html>
+    <head>
+        <meta charset='utf-8'>
+    </head>
+    % if object.cups_polissa_id.titular.lang == "ca_ES":
+        ${correu_cat()}
+    % else:
+        ${correu_es()}
+    % endif
+    ${text_legal}
+</html>
+
+<%def name="correu_cat()">
+    <body>
+        Correu CAT
+    </body>
+</%def>
+<%def name="correu_es()">
+    <body>
+        Correu ES
+    </body>
+</%def>
+                ]]>
+            </field>
+    	</record>
+    </data>
+</openerp>

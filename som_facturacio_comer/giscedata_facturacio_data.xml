@@ -1,0 +1,41 @@
+<?xml version="1.0"?>
+<openerp>
+    <data noupdate="1">
+        <record model="res.config" id="facturacio_tasks_delete_invoices_tasks_max_procs" forcecreate="1">
+            <field name="name">facturacio_tasks_delete_invoices_tasks_max_procs</field>
+            <field name="value">0</field>
+            <field name="description">Numero màxim de workers dedicats a eliminar factures en incidènica en paral·lel. Si s'indica '0' (per defecte), no hi ha limit.</field>
+        </record>
+        <record model="poweremail.templates" id="refacturacio_auto_g">
+            <field name="name">Refacturacio Auto G</field>
+            <field name="object_name" model="ir.model" search="[('model', '=', 'giscedata.polissa')]"/>
+            <field eval="0" name="save_to_drafts"/>
+            <field name="model_int_name">giscedata.polissa</field>
+            <field eval="0" name="use_filter"/>
+            <field name="def_to">${object.titular.address[0].email},${object.direccio_notificacio.email}</field>
+            <field name="def_bcc">support.17062.b8d9f4469fa4d856@helpscout.net</field>
+            <field eval="0" name="auto_email"/>
+            <field eval="0" name="use_sign"/>
+            <field name="def_subject">Refacturació (contracte ${object.name})</field>
+            <field name="template_language">mako</field>
+	    <field name="enforce_from_account" model="poweremail.core_accounts" search="[('email_id','=', 'factura@somenergia.coop')]" />
+            <field eval="0" name="send_on_create"/>
+            <field name="lang">${object.titular.lang}</field>
+            <field eval="0" name="send_on_write"/>
+            <field name="def_body_text">
+    <![CDATA[
+    <!doctype html>
+    <html>
+    <head></head>
+    <body>
+    <br>
+        Hola,<br>
+        <br>
+        T'escrivim perquè la distribuïdora ja ha corregit la incidència on ens indicaven un consum incorrecte.<br>
+        <br>
+    </body>
+    </html>
+        ]]></field>
+        </record>
+    </data>
+</openerp>

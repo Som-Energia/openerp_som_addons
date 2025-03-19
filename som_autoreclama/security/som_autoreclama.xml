@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+        <record model="res.groups" id="group_som_autoreclama_r">
+            <field name="name">Som Autoreclama / ReadOnly</field>
+        </record>
+        <record model="res.groups" id="group_som_autoreclama_w">
+            <field name="name">Som Autoreclama / User</field>
+        </record>
+        <record model="res.groups" id="group_som_autoreclama_u">
+            <field name="name">Som Autoreclama / Manager</field>
+        </record>
+     </data>
+</openerp>

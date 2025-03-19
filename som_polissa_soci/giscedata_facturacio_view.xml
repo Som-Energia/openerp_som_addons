@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+<openerp>
+    <data>
+        <!-- Afegim l'apart d'enviament de factures per E-mail -->
+        <record model="ir.ui.view" id="view_factura_ov_check_visible_form">
+            <field name="name">view.factura.ov.check.visible.form</field>
+            <field name="model">giscedata.facturacio.factura</field>
+            <field name="inherit_id" ref="giscedata_facturacio.view_factura_form"/>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <xpath expr="//label[@string='(keep empty to use the current period)']" position="after">
+                    <group col="2" colspan="4">
+                        <field name="visible_ov" readonly="1" select="2"/>
+                    </group>
+                </xpath>
+            </field>
+        </record>
+
+        <record model="ir.ui.view" id="view_factura_ov_check_visible_tree_ov">
+            <field name="name">view.factura.ov.check.visible.tree</field>
+            <field name="model">giscedata.facturacio.factura</field>
+            <field name="inherit_id" ref="giscedata_facturacio.view_factura_tree"/>
+            <field name="arch" type="xml">
+                <field name="state" position="after">
+                    <field name="visible_ov" select="2"/>
+                </field>
+            </field>
+        </record>
+    </data>
+</openerp>

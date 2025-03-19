@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+    <data>
+        <record model="ir.ui.view" id="view_poweremail_send_wizard_form">
+            <field name="name">poweremail.send.wizard.form.inherit</field>
+            <field name="model">poweremail.send.wizard</field>
+            <field name="type">form</field>
+            <field name="inherit_id" ref="poweremail.poweremail_send_wizard_form"/>
+            <field name="arch" type="xml">
+                <field name="single_email" position="replace">
+                    <field name="single_email" readonly="True" colspan="4"/>
+                    <label string="(Opció deshabilitada)" colspan="8"/>
+                    <label string="S'enviarà cada correu per separat" colspan="8"/>
+                </field>
+           </field>
+       </record>
+    </data>
+</openerp>

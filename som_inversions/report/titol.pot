@@ -1,0 +1,99 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2010-12-21 03:35+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+msgid "<b>Quart.</b> 4.1.-{0} pot demanar, parcial o totalment, el retorn anticipat dels títols subscrits mitjançant una sol·licitud per e-mail a <u>invertir@somenergia.coop</u></span>"
+msgstr ""
+
+msgid "Ambdues parts, en les respectives qualitats amb les que actuen, es reconeixen mútuament capacitat suficient per contractar i obligar-se i"
+msgstr ""
+
+msgid "<b>Primer.</b>- {0} lliure en aquest acte a SOM ENERGIA SCCL la quantitat de {1} €. En concepte de subscripció de {2} títols participatius de SOM ENERGIA SCCL, i SOM ENERGIA SCCL els rep i accepta, comprometent-se a retornar-los en les condicions que seguidament s’estableixen."
+msgstr ""
+
+msgid "I.- Que SOM ENERGIA SCCL és una Cooperativa de Consumidors/es i Usuaris/es que té per objecte la comercialització i producció d’energia elèctrica i calorífica provinent de fonts renovables, així com la prestació de serveis i distribució de productes relacionats."
+msgstr ""
+
+msgid "Per una part, en Gijsbert Huijink, amb NIE X6963738M, i domicili als efectes del present contracte a l'Edifici Jaume Casademont, al carrer Pic de Peguera, 15, despatx 16, de Girona."
+msgstr ""
+
+msgid "I- REUNITS"
+msgstr ""
+
+msgid "CONTRACTE DE SUBSCRIPCIÓ DE TÍTOLS PARTICIPATIUS"
+msgstr ""
+
+msgid "4.2.- SOM ENERGIA SCCL oferirà els títols el retorn dels quals hagi estat sol·licitat a nous subscriptors per a que puguin ser recomprats a {0} pel seu import nominal, que es pagarà mitjançant ingrés de la quantitat resultant al compte bancari, indicat per {0}, dins el termini, màxim, de dos mesos des de la data de recepció de sol·licitud de devolució."
+msgstr ""
+
+msgid "En conseqüència, ambdues parts de mutu acord subscriuen el present contracte que es regeix especialment pels següents:"
+msgstr ""
+
+msgid "<b>Sisé.</b>- Per a la resolució de tota controvèrsia derivada del present contracte, tant si es relatiu a la seva nterpretació com a la seva aplicació, les parts es sotmeten a un arbitratge d’equitat en els termes previstos a la llei 60/2003 d’arbitratge i normes de desenvolupament, amb les següents especificitats:<br>L’arbitratge es portarà a terme per un àrbitre únic coneixedor de l’economia social i solidària. Les mesures cautelars no podran suspendre l’executivitat del contracte i els seus efectes. El termini per dictar laude arbitral serà de tres mesos des de la data de recepció de la contestació a la demanda. Les parts es comprometen des d’ara al compliment de la resolució arbitral.<br>Es designen els jutjats i els tribunals de Girona per a la resolució de les controvèrsies que puguin derivar-se de l’arbitratge."
+msgstr ""
+
+msgid "<b>Tercer.</b>- L’import nominal dels títols participatius serà retornat per SOM ENERGIA SCCL a {0} en un sol termini, dins els deu dies hàbils següents al cumpliment dels 5 anys des de la data de subscripció, mitjançant ingrés al compte bancari, indicat per {0}."
+msgstr ""
+
+msgid "Política de privacitat"
+msgstr ""
+
+msgid "Gijsbert Huijink, en nom i representació de SOM ENERGIA SCCL, amb NIF F550911367, i domiciliada a Girona, a l'Edifici Jaume Casademont, al carrer Pic de Peguera, 15, despatx 16, inscrita al Registre de Cooperatives de Girona amb el número d’assentament 1 en el full 13936. Està especialment facultat per aquest acte per acord del Consell Rector de Som Energia SCCL en data 18 de juny de 2012, en endavant Som Energia SCCL."
+msgstr ""
+
+msgid "Les parts aproven i accepten totes i cadascuna de les estipulacions del contracte, que malgrat sigui privat, volen que tingui tota la força legal d’obligar com si en document públic l’haguessin atorgat, i el signen, en doble exemplar a un sol efecte, a Girona el {0}."
+msgstr ""
+
+msgid "4.3.- En el cas de que no hi hagi nous subscriptors/es interessats/des, SOM ENERGIA SCCL recomprarà, i fins a un màxim anual del 10 % del total de l’emissió, els títols el retorn dels quals hagi estat sol·licitat a {0} pel seu import nominal, que es pagarà mitjançant ingrés de la quantitat resultant al compte bancari, indicat per {0}, dins el termini, màxim, de dos mesos des de la data de recepció de sol·licitud de devolució"
+msgstr ""
+
+msgid "Les dades que ens ha proporcionat a través de la sol·licitud seran incorporades a un fitxer de titularitat de SOM ENERGIA, SCCL creat amb la finalitat de ser utilitzades en la gestió administrativa i comercial de la seva sol·licitud i de la nostra eventual relació contractual. En qualsevol moment pot exercir els seus drets d'accés, rectificació, oposició i cancel·lació dirigint-se a les oficines del carrer Pic de Peguera, 15, despatx 16 del Parc Científic i Tecnològic de la UdG, 17003 - Girona o bé escriure al mail <u>info@somenergia.coop.</u>"
+msgstr ""
+
+msgid "II.- Que en data 23/09/12 SOM ENERGIA SCCL ha fet una emissió de títols participatius a 5 anys per import de 1.500.000 € (títols de 1.000 € cadascun) amb l’objecte de finançar instal·lacions de producció d’energia elèctrica i calorífica provinent de fonts renovables i projectes d’eficiència i estalvi energètic."
+msgstr ""
+
+msgid "Per altra part, en/na {0}, soci/a de Som Energia SCCL, amb NIF {1}, i domicili als efectes del present contracte a {2} ({3})."
+msgstr ""
+
+msgid "Mitjançant ingrés al compte bancari {0}, indicat per {1}."
+msgstr ""
+
+msgid "III.- Que {0} està disposat/da a subscriure títols participatius per col·laborar amb SOM ENERGIA SCCL per fer possible el finançament d’instal·lacions de producció d’energia elèctrica i calorífica provinent de fonts renovables i projectes d’eficiència i estalvi energètic."
+msgstr ""
+
+msgid "IV.-PACTES"
+msgstr ""
+
+msgid "<b>Cinqué.</b>- Les comunicacions entre les parts es dirigiran a les persones i a les adreces que consten a l'encapçalament i s'efectuaran per escrit, per qualsevol mitjà que acrediti la recepció de la comunicació per la part destinatària."
+msgstr ""
+
+msgid "IV.- Que SOM ENERGIA SCCL està interessada en rebre i acceptar la subscripció que realitza {0} i li ofereix les condicions de retribució i devolució dels títols subscrits, que són del seu interès, i que es detallen en el present contracte"
+msgstr ""
+
+msgid "II.-INTERVENEN"
+msgstr ""
+
+msgid "III.-MANIFESTEN"
+msgstr ""
+
+msgid "<b>Segon.</b>- La quantitat prestada meritarà a favor de {0} un interès nominal d’un 5% anual. Els interessos meritats seran pagats a {0}, anualment, durant els deu dies hàbils següents a les dates que seguidament s'indiquen:"
+msgstr ""
+
+msgid "{0} actuant en el seu propi nom i interès."
+msgstr ""

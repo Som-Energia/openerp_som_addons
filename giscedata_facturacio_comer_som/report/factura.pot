@@ -1,0 +1,333 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2010-12-21 03:35+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+msgid "TOTAL"
+msgstr ""
+
+msgid "Compte corrent:"
+msgstr ""
+
+msgid "Correu:"
+msgstr ""
+
+msgid "Cogeneració Alta Eficiencia"
+msgstr ""
+
+msgid "Mix Som Energia SCCL"
+msgstr ""
+
+msgid "Nº Contracte:"
+msgstr ""
+
+msgid "Renovable"
+msgstr ""
+
+msgid "Anterior"
+msgstr ""
+
+msgid "Contracte distribuïdora"
+msgstr ""
+
+msgid "Origen"
+msgstr ""
+
+msgid "Mix producció en el sistema elèctric espanyol 2013"
+msgstr ""
+
+msgid "Som Energia SCCL"
+msgstr ""
+
+msgid "En una escala de la A a la G (on A indica el mínim impacte ambiental i G el màxim), i on el valor mitjà nacional correspon al nivell D, l'energia comercialitzada per <b>Som Energia SCCL</b> té els següents valors:"
+msgstr ""
+
+msgid "Excés"
+msgstr ""
+
+msgid "Empresa distribuïdora:"
+msgstr ""
+
+msgid "Residus radioactius"
+msgstr ""
+
+msgid "Adreça:"
+msgstr ""
+
+msgid "Titular:"
+msgstr ""
+
+msgid "Cogeneració Alta Eficiència 1.8%"
+msgstr ""
+
+msgid "Dades titular i punt de consum"
+msgstr ""
+
+msgid "Nº Comptador"
+msgstr ""
+
+msgid "Si bé l'energia elèctrica que arriba a les nostres llars és indistingible de la que consumeixen els nostres veïns o altres consumidors connectats al mateix sistema elèctric, sí és possible garantir l'origen de la producció d'energia elèctrica que vostè consumeix."
+msgstr ""
+
+msgid "Solar Fotovoltaica"
+msgstr ""
+
+msgid "€/kW any"
+msgstr ""
+
+msgid "Terme d'energia activa"
+msgstr ""
+
+msgid "Potència contractada (kW):"
+msgstr ""
+
+msgid "Impostos"
+msgstr ""
+
+msgid "Energia Reactiva [kVArh]"
+msgstr ""
+
+msgid "Renovable 40.6%"
+msgstr ""
+
+msgid "Total factura"
+msgstr ""
+
+msgid "Nuclear 19.7%"
+msgstr ""
+
+msgid "Cogeneració 9.0%"
+msgstr ""
+
+msgid "Nuclear"
+msgstr ""
+
+msgid "L'import d'aquesta factura serà carregat al seu compte. El seu pagament queda justificat amb el corresponent apunt bancari."
+msgstr ""
+
+msgid "Les certificacions de garantia d'origen s'han obtingut de les següents col·laboracions "
+msgstr ""
+
+msgid "Telèfon:"
+msgstr ""
+
+msgid "Miligrams per kWh"
+msgstr ""
+
+msgid "€/any"
+msgstr ""
+
+msgid "Fotovoltaica"
+msgstr ""
+
+msgid "Quilogram diòxid de carboni per kWh"
+msgstr ""
+
+msgid "Factura nº:"
+msgstr ""
+
+msgid "Facturació"
+msgstr ""
+
+msgid "Carbó"
+msgstr ""
+
+msgid "Tarifa:"
+msgstr ""
+
+msgid "Historial de consum"
+msgstr ""
+
+msgid "Entitat bancària:"
+msgstr ""
+
+msgid "dies"
+msgstr ""
+
+msgid "Empresa"
+msgstr ""
+
+msgid "Cogeneració"
+msgstr ""
+
+msgid "El sistema elèctric espanyol ha exportat un 2,5% de producció neta total"
+msgstr ""
+
+msgid " a "
+msgstr ""
+
+msgid "Dades Pagament"
+msgstr ""
+
+msgid "Període facturat:"
+msgstr ""
+
+msgid "Impost sobre l'electricitat"
+msgstr ""
+
+msgid "Període"
+msgstr ""
+
+msgid "Carbó 14.1%"
+msgstr ""
+
+msgid "CC Gas Natural 10.1%"
+msgstr ""
+
+msgid "Fuel/Gas 3.5%"
+msgstr ""
+
+msgid "Telèfon avaries"
+msgstr ""
+
+msgid "Data factura:"
+msgstr ""
+
+msgid "L'impacte ambiental de la seva electricitat depèn de les fonts energètiques utilitzades per a la seva generació."
+msgstr ""
+
+msgid "Biogàs"
+msgstr ""
+
+msgid "Altres 1.2%"
+msgstr ""
+
+msgid "Fuel/Gas"
+msgstr ""
+
+msgid "Població:"
+msgstr ""
+
+msgid "Altres conceptes"
+msgstr ""
+
+msgid "Emissions de diòxid de carboni"
+msgstr ""
+
+msgid "Tecnologia"
+msgstr ""
+
+msgid "A aquest efecte es proporciona el desglossament de la barreja de tecnologies de producció nacional per així comparar els percentatges de la mitjana nacional amb els corresponents a l'energia venuda per la seva comercialitzadora"
+msgstr ""
+
+msgid "Terme d'energia reactiva"
+msgstr ""
+
+msgid "Contractada"
+msgstr ""
+
+msgid "Origen de l'electricitat"
+msgstr ""
+
+msgid "Energia MWh"
+msgstr ""
+
+msgid "Lectura Consum"
+msgstr ""
+
+msgid "Actual"
+msgstr ""
+
+msgid "Més diòxid de carboni"
+msgstr ""
+
+msgid "Mitjana Nacional"
+msgstr ""
+
+msgid "CC Gas Natural"
+msgstr ""
+
+msgid "Més residus radioactius"
+msgstr ""
+
+msgid "Detall Som Energia 2013"
+msgstr ""
+
+msgid "Energia comercialitzada per Som Energia"
+msgstr ""
+
+msgid "Titular compte:"
+msgstr ""
+
+msgid "any"
+msgstr ""
+
+msgid "Soci/a de Som Energia"
+msgstr ""
+
+msgid "CUPS:"
+msgstr ""
+
+msgid "Energia Activa [kWh]"
+msgstr ""
+
+msgid "Altres"
+msgstr ""
+
+msgid "Activitat econòmica (CNAE):"
+msgstr ""
+
+msgid "Menys residus radioactius"
+msgstr ""
+
+msgid "Menys diòxid de carboni"
+msgstr ""
+
+msgid "a"
+msgstr ""
+
+msgid "Contingut de carboni"
+msgstr ""
+
+msgid "Consum"
+msgstr ""
+
+msgid "NIF:"
+msgstr ""
+
+msgid "Eòlica"
+msgstr ""
+
+msgid "Max"
+msgstr ""
+
+msgid "Impacte mediambiental"
+msgstr ""
+
+msgid "Impost electricitat"
+msgstr ""
+
+msgid "barreja de producció en el sistema elèctric espanyol 2013"
+msgstr ""
+
+msgid "BASE"
+msgstr ""
+
+msgid "Terme de potència"
+msgstr ""
+
+msgid "Residus radioactius Alta Activitat"
+msgstr ""
+
+msgid "Informació de l'electricitat"
+msgstr ""
+
+msgid "Potència [kW]"
+msgstr ""
+
+msgid "ABONAMENT"
+msgstr ""

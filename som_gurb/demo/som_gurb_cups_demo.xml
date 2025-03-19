@@ -1,0 +1,29 @@
+<?xml version="1.0" ?>
+<openerp>
+    <data>
+        <record id="gurb_cups_0001" model="som.gurb.cups">
+            <field name="start_date">2016-01-01</field>
+            <field name="gurb_id" ref="gurb_0001" />
+            <field name="cups_id" ref="giscedata_cups.cups_01" />
+        </record>
+        <record id="gurb_cups_0002" model="som.gurb.cups">
+            <field name="start_date">2016-01-01</field>
+            <field name="gurb_id" ref="gurb_0001" />
+            <field name="cups_id" ref="giscedata_cups.cups_tarifa_018" />
+        </record>
+        <record id="gurb_cups_beta_0001" model="som.gurb.cups.beta">
+            <field name="active">True</field>
+            <field name="start_date">2016-01-01</field>
+            <field name="beta_kw">2.5</field>
+            <field name="extra_beta_kw">1</field>
+            <field name="gurb_cups_id" ref="gurb_cups_0001" />
+        </record>
+        <record id="gurb_cups_beta_0002" model="som.gurb.cups.beta">
+            <field name="active">True</field>
+            <field name="start_date">2016-01-01</field>
+            <field name="beta_kw">2.5</field>
+            <field name="extra_beta_kw">1</field>
+            <field name="gurb_cups_id" ref="gurb_cups_0002" />
+        </record>
+    </data>
+</openerp>

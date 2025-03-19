@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+    <data>
+        <record model="ir.ui.view" id="view_som_crawlers_task_form">
+            <field name="name">som.crawlers.task.form</field>
+            <field name="model">som.crawlers.task</field>
+            <field name="type">form</field>
+            <field name="priority">16</field>
+            <field name="arch" type="xml">
+                <form string="Tasques a realitzar">
+                    <field name="distribuidora" select = '1'/>
+                    <field name="name" select = '1'/>
+                    <field name="active"  select = '1'/>
+                    <separator colspan="6"/>
+                    <group colspan="6" col="2" string="Passos de la tasca">
+                        <field name="task_step_ids"  height="300" nolabel="1" widget="one2many_list"/>
+                    </group>
+                    <field name="data_proxima_execucio" select = '1'/>
+                    <group colspan="6" col="2" string="Configuració de tasca">
+                        <field name="configuracio_id"  select = '1'/>
+                    </group>
+                    <field name="ultima_tasca_executada"  select = '1'/>
+                    <group colspan="6" col="2" string="Execucions realitzades per la tasca">
+                        <field name="run_ids" height="300" nolabel="1" widget="one2many_list" widget_props="{'infinite': true}" />
+                    </group>
+                </form>
+            </field>
+        </record>
+        <record model="ir.ui.view" id="view_som_crawlers_task_tree">
+            <field name="name">som.crawlers.task.tree</field>
+            <field name="model">som.crawlers.task</field>
+            <field name="type">tree</field>
+            <field name="arch" type="xml">
+                <tree string="Tasques a realitzar" colors="red:resultat_bool == False">
+                        <field name="distribuidora"/>
+                        <field name="name" />
+                        <field name="active"/>
+                        <field name="task_step_ids" />
+                        <field name="data_proxima_execucio" />
+                        <field name="configuracio_id" />
+                        <field name="ultima_tasca_executada"/>
+                        <field name="run_ids"/>
+                        <field name="resultat_bool" select="1"/>
+                        <field name="resultat_curt" select="1"/>
+                </tree>
+            </field>
+        </record>
+        <record id="action_som_crawlers_task_tree" model="ir.actions.act_window">
+            <field name="name">Tasques automàtiques</field>
+            <field name="res_model">som.crawlers.task</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="context">{'active_test': True}</field>
+        </record>
+        <menuitem id="menu_crawlers_folder_task" name="Tasques" parent="som_crawlers.menu_som_crawlers_base"/>
+        <menuitem id="menu_crawlers_task" action="action_som_crawlers_task_tree" parent="som_crawlers.menu_crawlers_folder_task"/>
+        <record id="action_som_crawlers_all_task_tree" model="ir.actions.act_window">
+            <field name="name">Totes les tasques automàtiques</field>
+            <field name="res_model">som.crawlers.task</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="context">{'active_test': False}</field>
+        </record>
+        <menuitem id="menu_crawlers_all_task" action="action_som_crawlers_all_task_tree" parent="som_crawlers.menu_crawlers_folder_task" />
+        <act_window name="Resultats"
+            domain="[('task_id', '=', active_id)]"
+            res_model="som.crawlers.result"
+            src_model="som.crawlers.task"
+            view_type="form"
+            view_mode="tree,form"
+            id="act_resultats_tasca" />
+        <record id="value_act_resultats_tasca" model="ir.values">
+            <field name="object" eval="1"/>
+            <field name="name">Resultats</field>
+            <field name="key2">client_action_relate</field>
+            <field name="key">action</field>
+            <field name="model">"som.crawlers.task</field>
+            <field name="value" eval="'ir.actions.act_window,'+str(ref('act_resultats_tasca'))" />
+        </record>
+        <record id="action_som_crawlers_task_fail_tree" model="ir.actions.act_window">
+            <field name="name">Tasques amb resultat incorrecte</field>
+            <field name="res_model">som.crawlers.task</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="domain">[('resultat_bool', '=', False)]</field>
+            <field name="view_id" ref="view_som_crawlers_task_tree"/>
+        </record>
+        <menuitem action='action_som_crawlers_task_fail_tree' id="menu_crawlers_fail_task"  parent="som_crawlers.menu_crawlers_folder_task"/>
+    </data>
+</openerp>
