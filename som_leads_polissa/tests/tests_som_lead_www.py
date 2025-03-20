@@ -10,6 +10,11 @@ class TestsSomLeadWww(testing.OOTestCase):
         self.cursor = self.txn.cursor
         self.uid = self.txn.user
 
+        lang_o = self.get_model("res.lang")
+
+        lang_o.create(self.cursor, self.uid, {"name": "Català", "code": "ca_ES"})
+        lang_o.create(self.cursor, self.uid, {"name": "Español", "code": "es_ES"})
+
     def tearDown(self):
         self.txn.stop()
 
@@ -17,8 +22,8 @@ class TestsSomLeadWww(testing.OOTestCase):
         return self.openerp.pool.get(model_name)
 
     def test_create_simple_lead(self):
-        self.get_model("ir.model.data")
         www_lead_o = self.get_model("som.lead.www")
+        lead_o = self.get_model("giscedata.crm.lead")
 
         values = {
             "owner_is_member": True,
@@ -37,7 +42,7 @@ class TestsSomLeadWww(testing.OOTestCase):
                 "lang": "es_ES",
                 "privacy_conditions": True,
             },
-            "cups": "ES0122449351050857YA",
+            "cups": "ES0031615910084261WM",
             "is_indexed": False,
             "tariff": "2.0TD",
             "power_p1": "4400",
@@ -56,4 +61,6 @@ class TestsSomLeadWww(testing.OOTestCase):
             "particular_contract_terms_accepted": True,
         }
 
-        www_lead_o.create_lead(self.cursor, self.uid, values)
+        lead_id = www_lead_o.create_lead(self.cursor, self.uid, values)
+        lead_o.force_validation(self.cursor, self.uid, [lead_id])
+        lead_o.create_entities(self.cursor, self.uid, lead_id)
