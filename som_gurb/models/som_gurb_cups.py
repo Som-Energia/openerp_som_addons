@@ -92,7 +92,9 @@ class SomGurbCups(osv.osv):
             context = {}
         gurb_obj = self.pool.get("som.gurb")
         res = dict.fromkeys(ids, False)
-        for gurb_cups_vals in self.read(cursor, uid, ids, ["gurb_id", "beta_kw", "extra_beta_kw"]):
+        for gurb_cups_vals in self.read(cursor, uid, ids, [
+            "gurb_id", "beta_kw", "extra_beta_kw", "gift_beta_kw"
+        ]):
             gurb_id = gurb_cups_vals.get("gurb_id", False)
             if gurb_id:
                 generation_power = gurb_obj.read(
@@ -102,7 +104,9 @@ class SomGurbCups(osv.osv):
                 if generation_power:
                     beta_kw = gurb_cups_vals.get("beta_kw", 0)
                     extra_beta_kw = gurb_cups_vals.get("extra_beta_kw", 0)
-                    res[gurb_cups_vals["id"]] = (extra_beta_kw + beta_kw) * 100 / generation_power
+                    gift_beta_kw = gurb_cups_vals.get("gift_beta_kw", 0)
+                    res[gurb_cups_vals["id"]] = (
+                        extra_beta_kw + beta_kw + gift_beta_kw) * 100 / generation_power
                 else:
                     res[gurb_cups_vals["id"]] = 0
         return res
@@ -119,10 +123,11 @@ class SomGurbCups(osv.osv):
                 ("gurb_cups_id", "=", gurb_cups_id)
             ]
             active_beta_id = gurb_cups_beta_o.search(cursor, uid, search_params, context=context)
-            read_vals = ["beta_kw", "extra_beta_kw"]
+            read_vals = ["beta_kw", "extra_beta_kw", "gift_beta_kw"]
             active_beta_vals = {
                 "beta_kw": 0.0,
-                "extra_beta_kw": 0.0
+                "extra_beta_kw": 0.0,
+                "gift_beta_kw": 0.0,
             }
             if active_beta_id:
                 active_beta_vals = gurb_cups_beta_o.read(
@@ -539,6 +544,14 @@ class SomGurbCups(osv.osv):
             method=True,
             multi="betas",
         ),
+        "gift_beta_kw": fields.function(
+            _ff_active_beta,
+            string="Beta regal (kW)",
+            type="float",
+            digits=(10, 3),
+            method=True,
+            multi="betas",
+        ),
         "beta_percentage": fields.function(
             _ff_get_beta_percentage,
             type="float",
@@ -574,6 +587,7 @@ class SomGurbCups(osv.osv):
     _defaults = {
         "active": lambda *a: True,
         "extra_beta_kw": lambda *a: 0,
+        "gift_beta_kw": lambda *a: 0,
         "start_date": lambda *a: str(datetime.today()),
     }
 
@@ -651,6 +665,11 @@ class SomGurbCupsBeta(osv.osv):
         ),
         "extra_beta_kw": fields.float(
             "Extra Beta (kW)",
+            digits=(10, 3),
+            required=True,
+        ),
+        "gift_beta_kw": fields.float(
+            "Beta regal (kW)",
             digits=(10, 3),
             required=True,
         ),
