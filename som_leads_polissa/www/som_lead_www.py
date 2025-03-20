@@ -1,50 +1,65 @@
 from osv import osv
 from datetime import datetime
 
+from giscedata_cups.dso_cups.cups import get_distri_vals
+
 
 class SomLeadWww(osv.osv_memory):
     _name = "som.lead.www"
 
+    _CONTRACT_TYPE_ANUAL = '01'
+
     def create_lead(self, cr, uid, www_vals, context=None):
         if context is None:
             context = {}
+        imd_o = self.pool.get("ir.model.data")
         lead_o = self.pool.get("giscedata.crm.lead")
+        payment_mode_o = self.pool.get("payment.mode")
         tarifa_o = self.pool.get("giscedata.polissa.tarifa")
+        cnae_o = self.pool.get("giscemisc.cnae")
+
+        tensio_230 = imd_o.get_object_reference(cr, uid, 'giscedata_tensions', 'tensio_230')[1]
 
         tarifa_id = tarifa_o.search(cr, uid, [("name", "=", www_vals["tariff"])])[0]
+        payment_mode_id = payment_mode_o.search(cr, uid, [("name", "=", "ENGINYERS")])[0]
+        cnae_id = cnae_o.search(cr, uid, [("name", "=", www_vals["cnae"])])[0]
+
+        distri_vals = get_distri_vals(www_vals["cups"])
 
         # TODO: Cal posar poblacions? (CUPS i titular)
+        # TODO: Carregar traduccions CAT - ES
         values = {
+            "name": "Cunyat",  # TODO: Pensar que posar aqui
             "lang": www_vals["contract_member"]["lang"],
             "cups": www_vals["cups"],
+            "codigoEmpresaDistribuidora": distri_vals.get("code"),
+            "nombreEmpresaDistribuidora": distri_vals.get("name"),
+            "distribuidora_vat": distri_vals['vat'] and 'ES%s' % distri_vals['vat'],
             # "cups_ref_catastral": www_vals.get("cups_cadastral_reference"), TODO test
             "cups_zip": www_vals["cups_postal_code"],
             "cups_id_municipi": www_vals["cups_city_id"],
             "cups_nv": www_vals["cups_address"],
-            "cnae": www_vals["cnae"],
+            "cnae": cnae_id,
             "data_alta_prevista": datetime.today().strftime('%Y-%m-%d'),
             "tarifa": tarifa_id,
             "facturacio_potencia": 'max' if www_vals["tariff"] == '3.0TD' else 'icp',
-            "tensio_normalitzada": None,  # FIXME: is mandatory!!!
+            "tensio_normalitzada": tensio_230,  # TODO check if always work
             "atr_proces_name": www_vals['process'],
             "change_adm": www_vals['process'] == 'C2',
-            # "contract_type": "01", # FIXME: use getionatr defs tabla9
+            "contract_type": self._CONTRACT_TYPE_ANUAL,
             "autoconsumo": "00",  # FIXME: use getionatr defs tabla113
             "potenciasContratadasEnKWP1": float(www_vals["power_p1"]) / 1000,
             "potenciasContratadasEnKWP2": float(www_vals["power_p2"]) / 1000,
             # TODO: other potencias
-            "llista_preu": None,  # FIXME: is mandatory!!! (index o no)
+            # "llista_preu": None,  # FIXME: is mandatory!!! (index o no)
             "facturacio": 1,  # FIXME: remove magic number (mensual)
             "iban": www_vals["payment_iban"],
-            "payment_mode_id": None,  # FIXME: is mandatory!!!
+            "payment_mode_id": payment_mode_id,
             "enviament": "email",
-            "titular_vat": www_vals["contract_member"]["vat"],
-            "titular_nom": _get_full_name(
-                www_vals["contract_member"]["name"],
-                www_vals["contract_member"]["surname"],
-                www_vals["contract_member"]["is_juridic"]
-            ),
-            "tipus_vivenda": None,  # FIXME: habitual or not, is mandatory!!!, mirar cnae
+            "titular_vat": 'ES%s' % www_vals["contract_member"]["vat"].upper(),
+            "titular_nom": www_vals["contract_member"]["name"],
+            "titular_cognom1": www_vals["contract_member"].get("surname"),
+            # "tipus_vivenda": None,  # FIXME: habitual or not, is mandatory!!!, mirar cnae
             "titular_zip": www_vals["contract_member"]["postal_code"],
             "titular_nv": www_vals["contract_member"]["address"],
             "titular_id_municipi": www_vals["contract_member"]["city_id"],
@@ -74,12 +89,12 @@ class SomLeadWww(osv.osv_memory):
         return lead_id
 
 
-def _get_full_name(name, surname='', is_juridic=False):
-    full_name = not is_juridic \
-        and '{}, {}'.format(surname, name).strip() \
-        or '{}'.format(name)
+# def _get_full_name(name, surname='', is_juridic=False):
+#     full_name = not is_juridic \
+#         and '{}, {}'.format(surname, name).strip() \
+#         or '{}'.format(name)
 
-    return full_name.strip()
+#     return full_name.strip()
 
 
 SomLeadWww()
