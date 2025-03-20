@@ -13,6 +13,7 @@
         "giscedata_crm_leads",
         "giscedata_crm_importador",
         "som_polissa",
+        "som_indexada",
     ],
     "init_xml": [],
     "demo_xml": [],

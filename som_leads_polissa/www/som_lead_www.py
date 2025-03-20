@@ -8,6 +8,7 @@ class SomLeadWww(osv.osv_memory):
     _name = "som.lead.www"
 
     _CONTRACT_TYPE_ANUAL = '01'
+    _FACTURACIO_MENSUAL = 1
 
     def create_lead(self, cr, uid, www_vals, context=None):
         if context is None:
@@ -15,6 +16,7 @@ class SomLeadWww(osv.osv_memory):
         imd_o = self.pool.get("ir.model.data")
         lead_o = self.pool.get("giscedata.crm.lead")
         payment_mode_o = self.pool.get("payment.mode")
+        polissa_o = self.pool.get("giscedata.polissa")
         tarifa_o = self.pool.get("giscedata.polissa.tarifa")
         cnae_o = self.pool.get("giscemisc.cnae")
 
@@ -23,6 +25,9 @@ class SomLeadWww(osv.osv_memory):
         tarifa_id = tarifa_o.search(cr, uid, [("name", "=", www_vals["tariff"])])[0]
         payment_mode_id = payment_mode_o.search(cr, uid, [("name", "=", "ENGINYERS")])[0]
         cnae_id = cnae_o.search(cr, uid, [("name", "=", www_vals["cnae"])])[0]
+        tariff_mode = 'index' if www_vals["is_indexed"] else 'atr'
+        llista_preu_id = polissa_o.get_pricelist_from_tariff_and_location(
+            cr, uid, www_vals["tariff"], tariff_mode, www_vals["cups_city_id"], context).id
 
         distri_vals = get_distri_vals(www_vals["cups"])
 
@@ -51,15 +56,15 @@ class SomLeadWww(osv.osv_memory):
             "potenciasContratadasEnKWP1": float(www_vals["power_p1"]) / 1000,
             "potenciasContratadasEnKWP2": float(www_vals["power_p2"]) / 1000,
             # TODO: other potencias
-            # "llista_preu": None,  # FIXME: is mandatory!!! (index o no)
-            "facturacio": 1,  # FIXME: remove magic number (mensual)
+            "llista_preu": llista_preu_id,
+            "facturacio": self._FACTURACIO_MENSUAL,
             "iban": www_vals["payment_iban"],
             "payment_mode_id": payment_mode_id,
             "enviament": "email",
             "titular_vat": 'ES%s' % www_vals["contract_member"]["vat"].upper(),
             "titular_nom": www_vals["contract_member"]["name"],
             "titular_cognom1": www_vals["contract_member"].get("surname"),
-            # "tipus_vivenda": None,  # FIXME: habitual or not, is mandatory!!!, mirar cnae
+            "tipus_vivenda": 'habitual',  # TODO: webforms use always habitual, its ok?
             "titular_zip": www_vals["contract_member"]["postal_code"],
             "titular_nv": www_vals["contract_member"]["address"],
             "titular_id_municipi": www_vals["contract_member"]["city_id"],
