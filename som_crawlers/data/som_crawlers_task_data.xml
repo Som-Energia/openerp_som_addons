@@ -355,9 +355,9 @@
             <field name="active">True</field>
             <field name="configuracio_id" ref="chilla_ftp_conf"/>
         </record>
-        <!-- aseme -->
+        <!-- 6eis (formerly aseme) -->
         <record model="som.crawlers.task" id="descarregar_aseme_ftp">
-            <field name="name">Descarregar FTP aseme</field>
+            <field name="name">Descarregar FTP 6eis (abans aseme)</field>
             <field name="active">True</field>
             <field name="configuracio_id" ref="aseme_ftp_conf"/>
         </record>

@@ -2,8 +2,7 @@
 Repository whith OpenERP addons customization made by [Som Energia](https://www.somenergia.coop/). We used an already customized version of OpenERP developed by [GISCE](https://gisce.net/) that at the same time, has some features from [Odoo](https://www.odoo.com/).
 
   [![SOM_MODULES](https://github.com/Som-Energia/openerp_som_addons/actions/workflows/all_modules_test.yml/badge.svg)](https://github.com/Som-Energia/openerp_som_addons/actions/workflows/all_modules_test.yml)
-  [![GISCE_MODULES](https://github.com/Som-Energia/som_modules_fulla/actions/workflows/schedule_all_installed_modules.yml/badge.svg)](https://github.com/Som-Energia/som_modules_fulla/actions/workflows/schedule_all_installed_modules.yml)
-  [![Coverage Status](https://coveralls.io/repos/github/Som-Energia/openerp_som_addons/badge.svg?branch=)](https://coveralls.io/github/Som-Energia/openerp_som_addons?branch=)
+
 
 List of modules ([add new module](docs/crear_nou_modul.md))
 ----------------
@@ -25,7 +24,6 @@ tests | name | description
 [![som_control_reports](https://github.com/Som-Energia/openerp_som_addons/actions/workflows/schedule_tests_som_control_reports.yml/badge.svg)](https://github.com/Som-Energia/openerp_som_addons/actions/workflows/schedule_tests_som_control_reports.yml) | [som_control_reports](som_control_reports/) |
 [![som_crawlers](https://github.com/Som-Energia/openerp_som_addons/actions/workflows/schedule_tests_som_crawlers.yml/badge.svg)](https://github.com/Som-Energia/openerp_som_addons/actions/workflows/schedule_tests_som_crawlers.yml) | [som_crawlers](som_crawlers/) | A module to scrapy providers web portals
 [![som_custom_views](https://github.com/Som-Energia/openerp_som_addons/actions/workflows/schedule_tests_som_custom_views.yml/badge.svg)](https://github.com/Som-Energia/openerp_som_addons/actions/workflows/schedule_tests_som_custom_views.yml) | [som_custom_views](som_custom_views/) | Som energia custom views
-[![som_dashboard](https://github.com/Som-Energia/openerp_som_addons/actions/workflows/schedule_tests_som_dashboard.yml/badge.svg)](https://github.com/Som-Energia/openerp_som_addons/actions/workflows/schedule_tests_som_dashboard.yml) | [som_dashboard](som_dashboard/) |
 [![som_documents_sensibles](https://github.com/Som-Energia/openerp_som_addons/actions/workflows/schedule_tests_som_documents_sensibles.yml/badge.svg)](https://github.com/Som-Energia/openerp_som_addons/actions/workflows/schedule_tests_som_documents_sensibles.yml) | [som_documents_sensibles](som_documents_sensibles/) | A module to support attach private documents, only visibile to eligible users
 [![som_empowering](https://github.com/Som-Energia/openerp_som_addons/actions/workflows/schedule_tests_som_empowering.yml/badge.svg)](https://github.com/Som-Energia/openerp_som_addons/actions/workflows/schedule_tests_som_empowering.yml) | [som_empowering](som_empowering/) |
 [![som_energetica](https://github.com/Som-Energia/openerp_som_addons/actions/workflows/schedule_tests_som_energetica.yml/badge.svg)](https://github.com/Som-Energia/openerp_som_addons/actions/workflows/schedule_tests_som_energetica.yml) | [som_energetica](som_energetica/) |
@@ -53,6 +51,7 @@ tests | name | description
 [![som_poweremail_common_templates](https://github.com/Som-Energia/openerp_som_addons/actions/workflows/schedule_tests_som_poweremail_common_templates.yml/badge.svg)](https://github.com/Som-Energia/openerp_som_addons/actions/workflows/schedule_tests_som_poweremail_common_templates.yml) | [som_poweremail_common_templates](som_poweremail_common_templates/) |
 [![somre_giscere_facturacio](https://github.com/Som-Energia/openerp_som_addons/actions/workflows/schedule_tests_somre_giscere_facturacio.yml/badge.svg)](https://github.com/Som-Energia/openerp_som_addons/actions/workflows/schedule_tests_somre_giscere_facturacio.yml) | [somre_giscere_facturacio](somre_giscere_facturacio/) |
 [![somre_giscere_oferta](https://github.com/Som-Energia/openerp_som_addons/actions/workflows/schedule_tests_somre_giscere_oferta.yml/badge.svg)](https://github.com/Som-Energia/openerp_som_addons/actions/workflows/schedule_tests_somre_giscere_oferta.yml) | [somre_giscere_oferta](somre_giscere_oferta/) |
+[![somre_ov_module](https://github.com/Som-Energia/openerp_som_addons/actions/workflows/schedule_tests_somre_ov_module.yml/badge.svg)](https://github.com/Som-Energia/openerp_som_addons/actions/workflows/schedule_tests_somre_ov_module.yml) | [somre_ov_module](somre_ov_module/) | A module to integrate OV representa
 [![som_remeses_base](https://github.com/Som-Energia/openerp_som_addons/actions/workflows/schedule_tests_som_remeses_base.yml/badge.svg)](https://github.com/Som-Energia/openerp_som_addons/actions/workflows/schedule_tests_som_remeses_base.yml) | [som_remeses_base](som_remeses_base/) |
 [![som_switching](https://github.com/Som-Energia/openerp_som_addons/actions/workflows/schedule_tests_som_switching.yml/badge.svg)](https://github.com/Som-Energia/openerp_som_addons/actions/workflows/schedule_tests_som_switching.yml) | [som_switching](som_switching/) | A customization of GiscedataSwitching model from PowerERP (GISCE)
 [![som_telemesura](https://github.com/Som-Energia/openerp_som_addons/actions/workflows/schedule_tests_som_telemesura.yml/badge.svg)](https://github.com/Som-Energia/openerp_som_addons/actions/workflows/schedule_tests_som_telemesura.yml) | [som_telemesura](som_telemesura/) |
@@ -60,17 +59,6 @@ tests | name | description
 [![uiqmako_helpers](https://github.com/Som-Energia/openerp_som_addons/actions/workflows/schedule_tests_uiqmako_helpers.yml/badge.svg)](https://github.com/Som-Energia/openerp_som_addons/actions/workflows/schedule_tests_uiqmako_helpers.yml) | [uiqmako_helpers](uiqmako_helpers/) | A module of helpers for [UIQMako](https//github.com/Som-Energia/uiqmako-api) project
 [![www_som](https://github.com/Som-Energia/openerp_som_addons/actions/workflows/schedule_tests_www_som.yml/badge.svg)](https://github.com/Som-Energia/openerp_som_addons/actions/workflows/schedule_tests_www_som.yml) | [www_som](www_som/) | A module to integrate **Oficina Virtual** (Virtual office)
 
-External modules
-----------------
-tests | name | description
---- | --- | ---
-. | [empowering_api](https://github.com/Som-Energia/erp-empowering) (external) |
-. | [empowering_api_online](https://github.com/Som-Energia/erp-empowering) (external) |
-. | [empowering_customize](https://github.com/Som-Energia/erp-empowering) (external) |
-. | [giscedata_facturacio_indexada_som](https://github.com/Som-Energia/giscedata_facturacio_indexada_som) (extern) |
-[![som_generationkwh](https://github.com/Som-Energia/somenergia-generationkwh/actions/workflows/som_generation_integration_config.yml/badge.svg)](https://github.com/Som-Energia/somenergia-generationkwh/actions/workflows/som_generation_integration_config.yml) | [som_generationkwh](https://github.com/Som-Energia/somenergia-generationkwh/tree/master/som_generationkwh)  (external) |
-[![som_modules_fulla](https://github.com/Som-Energia/som_modules_fulla/actions/workflows/som_modules_fulla.yml/badge.svg)](https://github.com/Som-Energia/som_modules_fulla/actions/workflows/som_modules_fulla.yml)  | [som_modul_fulla](https://github.com/Som-Energia/som_modules_fulla) (external) |
-[![som_plantmeter](https://github.com/Som-Energia/plantmeter/actions/workflows/som_plantmeter.yml/badge.svg)](https://github.com/Som-Energia/plantmeter/actions/workflows/som_plantmeter.yml) | [som_plantmeter](https://github.com/Som-Energia/plantmeter/tree/master/som_plantmeter)  (external) |
 
 ## Other folders
 * [scripts](scripts/): Set of scripts

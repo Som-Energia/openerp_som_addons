@@ -1180,7 +1180,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
                 key=lambda l: l[0],  # noqa: E741
             ),
             "is_autoconsum": te_autoconsum(fact, pol),  # fact.te_autoconsum
-            "autoconsum": pol.autoconsumo,
+            "autoconsum": pol.tipus_subseccio,
             "autoconsum_cau": pol.autoconsum_id.cau if pol.autoconsum_id else "",
             "is_autoconsum_colectiu": te_autoconsum_collectiu(
                 fact, pol
@@ -1538,8 +1538,13 @@ class GiscedataFacturacioFacturaReport(osv.osv):
         }
 
         labels = {
-            "es_ES": {"P1": "Pu", "P2": "Ll", "P3": "Va"},
-            "ca_ES": {"P1": "Pu", "P2": "Pl", "P3": "Va"},
+            "es_ES": {"P1": "Punta", "P2": "Llano", "P3": "Valle"},
+            "ca_ES": {"P1": "Punta", "P2": "Pla", "P3": "Vall"},
+        }
+
+        average_text = {
+            "es_ES": "Media",
+            "ca_ES": "Mitjana",
         }
 
         (historic, historic_js) = self.get_historic_data(fact)
@@ -1604,6 +1609,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
             "show_mean_zipcode_consumption": show_mean_zipcode_consumption,
             "zipcode": fact.cups_id.dp,
             "mean_zipcode_consumption": mean_zipcode_consumption,
+            "average_text": average_text[fact.lang_partner],
         }
 
         return data
@@ -3414,7 +3420,11 @@ class GiscedataFacturacioFacturaReport(osv.osv):
         amount_total = fact.amount_total - flux_solar
 
         # Repartiment segons BOE
-        rep_BOE = {"r": 0.76, "d": 71.0, "t": 27.58, "o": 0.66}
+        conf_obj = fact.pool.get("res.config")
+
+        example_data_2023 = {"r": 0.76, "d": 71.0, "t": 27.58, "o": 0.66}
+        rep_BOE = conf_obj.get(self.cursor, self.uid, "rep_boe_data", example_data_2023)
+        rep_BOE = eval(rep_BOE)
 
         pie_total = round(amount_total, 2)
         pie_renting = round(fact.total_lloguers, 2)
@@ -3817,7 +3827,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
                     return True
             return False
 
-        if not(te_autoconsum_amb_excedents(fact, pol) or pol.autoconsumo == '33'):
+        if not(te_autoconsum_amb_excedents(fact, pol) or pol.tipus_subseccio == '11'):
             return {"is_visible": False}
 
         if not has_active_flux_solar(fact, pol):

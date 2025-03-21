@@ -12,7 +12,8 @@ class tarifes_tests(testing.OOTestCase):
         self.pool = self.openerp.pool
         self.imd_obj = self.pool.get("ir.model.data")
         self.tariff_model = self.pool.get("giscedata.polissa.tarifa")
-        self.res_config = self.pool.get("res.config")
+        self.conf_obj = self.pool.get("res.config")
+        self.maxDiff = None
 
     def tearDown(self):
         pass
@@ -210,17 +211,20 @@ class tarifes_tests(testing.OOTestCase):
             cursor = txn.cursor
             uid = txn.user
             tariff_obj = self.tariff_model
+            # Prepare data
             tariff_id = self.imd_obj.get_object_reference(
                 cursor, uid, "som_webforms_helpers", "tarifa_20TD_test"
             )[1]
-
+            end_date_iva_reduit = self.conf_obj.get(
+                cursor, uid, "iva_reduit_get_tariff_prices_end_date", "2024-12-31"
+            )
             tariff_obj.browse(cursor, uid, tariff_id)
-
             today = datetime.today().strftime("%Y-%m-%d")
-
+            # Test
             result = tariff_obj.get_tariff_prices_by_range(
                 cursor, uid, tariff_id, 5386, 15000, None, False, False, today, today
             )
+            # Assert
             prices = {
                 "current": {
                     "bo_social": {"unit": "\xe2\x82\xac/dia", "value": 0.0},
@@ -247,7 +251,11 @@ class tarifes_tests(testing.OOTestCase):
                 },
                 "history": [],
             }
-
+            if datetime.today().strftime("%Y-%m-%d") > end_date_iva_reduit:
+                prices["current"]["potencia"] = {
+                    u"P1": {"unit": "\xe2\x82\xac/kW/dia", "value": 0.074529},
+                    u"P2": {"unit": "\xe2\x82\xac/kW/dia", "value": 0.008666},
+                }
             self.assertEqual(result, prices)
 
     def test__get_tariff_prices__tariff_concret_range_OK(self):
@@ -262,7 +270,10 @@ class tarifes_tests(testing.OOTestCase):
             tariff_id = self.imd_obj.get_object_reference(
                 cursor, uid, "som_webforms_helpers", "tarifa_20TD_test"
             )[1]
-
+            end_date_iva_reduit = self.conf_obj.get(
+                cursor, uid, "iva_reduit_get_tariff_prices_end_date", "2024-12-31"
+            )
+            # Test
             result = tariff_obj.get_tariff_prices_by_range(
                 cursor, uid, tariff_id, 5386, 15000, None, False, False, "2022-10-15", "2023-01-15"
             )
@@ -315,7 +326,15 @@ class tarifes_tests(testing.OOTestCase):
                     }
                 ],
             }
-
+            if datetime.today().strftime("%Y-%m-%d") > end_date_iva_reduit:
+                prices["current"]["potencia"] = {
+                    u"P1": {"unit": "\xe2\x82\xac/kW/dia", "value": 0.074529},
+                    u"P2": {"unit": "\xe2\x82\xac/kW/dia", "value": 0.008666},
+                }
+                prices["history"][0]["potencia"] = {
+                    u"P1": {"unit": "\xe2\x82\xac/kW/dia", "value": 0.047132},
+                    u"P2": {"unit": "\xe2\x82\xac/kW/dia", "value": 0.005926},
+                }
             self.assertEqual(result, prices)
 
     def test__get_dades_modcontractuals__reduce_equal_data(self):
@@ -467,14 +486,18 @@ class tarifes_tests(testing.OOTestCase):
             cursor = txn.cursor
             uid = txn.user
             tariff_obj = self.tariff_model
+            # Prepare data
             tariff_id = self.imd_obj.get_object_reference(
                 cursor, uid, "som_webforms_helpers", "tarifa_20TD_test"
             )[1]
-
+            end_date_iva_reduit = self.conf_obj.get(
+                cursor, uid, "iva_reduit_get_tariff_prices_end_date", "2024-12-31"
+            )
+            # Test
             result = tariff_obj.get_tariff_prices(
                 cursor, uid, tariff_id, 5386, 15000, None, False, "2022-10-15"
             )
-
+            # Assert
             prices = {
                 "bo_social": {"uom": "\xe2\x82\xac/dia", "value": 0.0},
                 "comptador": {"uom": "\xe2\x82\xac/mes", "value": 0.0},
@@ -496,6 +519,11 @@ class tarifes_tests(testing.OOTestCase):
                 },
                 "version_name": u"2.0TD_SOM 2022-06-01",
             }
+            if datetime.today().strftime("%Y-%m-%d") > end_date_iva_reduit:
+                prices["tp"] = {
+                    u"P1": {"uom": "\xe2\x82\xac/kW/dia", "value": 0.047132},
+                    u"P2": {"uom": "\xe2\x82\xac/kW/dia", "value": 0.005926},
+                }
 
             self.assertEqual(result, prices)
 
@@ -505,7 +533,7 @@ class tarifes_tests(testing.OOTestCase):
             cursor = txn.cursor
             uid = txn.user
             tariff_obj = self.tariff_model
-            self.res_config.set(cursor, uid, 'charge_iva_10_percent_when_available', 1)
+            self.conf_obj.set(cursor, uid, 'charge_iva_10_percent_when_available', 1)
             mock_omie_price.return_value = True
 
             result = tariff_obj._get_fiscal_position_reduced(
@@ -521,7 +549,7 @@ class tarifes_tests(testing.OOTestCase):
             cursor = txn.cursor
             uid = txn.user
             tariff_obj = self.tariff_model
-            self.res_config.set(cursor, uid, 'charge_iva_10_percent_when_available', 1)
+            self.conf_obj.set(cursor, uid, 'charge_iva_10_percent_when_available', 1)
 
             result = tariff_obj._get_fiscal_position_reduced(
                 cursor, uid, 15000, "2022-06-15", "2022-06-30"
@@ -534,7 +562,7 @@ class tarifes_tests(testing.OOTestCase):
             cursor = txn.cursor
             uid = txn.user
             tariff_obj = self.tariff_model
-            self.res_config.set(cursor, uid, 'charge_iva_10_percent_when_available', 0)
+            self.conf_obj.set(cursor, uid, 'charge_iva_10_percent_when_available', 0)
 
             result = tariff_obj._get_fiscal_position_reduced(
                 cursor, uid, 10000, "2022-06-15", "2022-06-30"
@@ -548,7 +576,7 @@ class tarifes_tests(testing.OOTestCase):
             cursor = txn.cursor
             uid = txn.user
             tariff_obj = self.tariff_model
-            self.res_config.set(cursor, uid, 'charge_iva_10_percent_when_available', 1)
+            self.conf_obj.set(cursor, uid, 'charge_iva_10_percent_when_available', 1)
             mock_omie_price.return_value = False
 
             result = tariff_obj._get_fiscal_position_reduced(

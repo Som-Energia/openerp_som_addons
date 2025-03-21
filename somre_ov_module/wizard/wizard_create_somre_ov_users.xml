@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+        <record model="ir.ui.view" id="view_create_somre_ov_users">
+            <field name="name">wizard.create.somre.ov.users.form</field>
+            <field name="model">wizard.create.somre.ov.users</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <form string="Crear usuari de la OV de representa a partir de Client existent">
+                    <field name="state" invisible="1"/>
+                    <group colspan="4" attrs="{'invisible': [('state', '!=', 'init')]}">
+                        <group colspan="4">
+                            <field name="partner_id"/>
+                            <button icon="gtk-ok" name="action_create_somre_ov_users" string="Activar" type="object"/>
+                            <button special="cancel" string="Cancel·lar" icon="gtk-cancel"/>
+                        </group>
+                    </group>
+                    <group colspan="4" attrs="{'invisible': [('state', '!=', 'done')]}">
+                        <field name="info" colspan="4" height="200" width="400" editable="no" nolabel="1"/>
+                        <button special="cancel" string="Tancar" icon="gtk-ok" colspan="4"/>
+                    </group>
+                </form>
+            </field>
+        </record>
+        <record id="action_generar_somre_ov_users" model="ir.actions.act_window">
+            <field name="name">Crear usuari de la OV de representa a partir de Client existent</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">wizard.create.somre.ov.users</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">form</field>
+            <field name="target">new</field>
+            <field name="view_id" ref="view_create_somre_ov_users"/>
+        </record>
+        <menuitem action="action_generar_somre_ov_users" id="menu_generar_somre_ov_users" name="Crear usuari de la OV de representa a partir de Client existent" parent="giscere_cil.menu_representantes" sequence="99"/>
+    </data>
+</openerp>

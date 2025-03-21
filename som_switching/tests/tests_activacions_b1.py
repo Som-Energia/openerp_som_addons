@@ -34,7 +34,7 @@ class TestActivacioB1(TestSwitchingImport):
         # create step 01
         self.change_polissa_comer(txn)
         self.update_polissa_distri(txn)
-        self.activar_polissa_CUPS(txn, context)
+        self.activar_polissa_CUPS(txn, context=context)
         step_id = self.create_case_and_step(cursor, uid, contract_id, "B1", "01")
 
         sw_id = self.B101.read(cursor, uid, step_id, ["sw_id"])["sw_id"][0]

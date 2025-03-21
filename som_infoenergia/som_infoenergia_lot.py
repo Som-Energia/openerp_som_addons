@@ -11,6 +11,7 @@ from oorq.decorators import job, create_jobs_group
 from osv import fields, osv
 from tools.translate import _
 from tools import config
+import logging
 
 TIPUS_LOT = [
     ("infoenergia", "Infoenergia"),
@@ -101,6 +102,19 @@ class SomInfoenergiaLotEnviament(osv.osv):
         context["tipus"] = lot_info["tipus"]
         job_ids = []
 
+        # Remove already created
+        before_clean = len(object_ids)
+        env_obj = self.get_enviament_object(cursor, uid, ids)
+        env_ids = env_obj.search(cursor, uid, [('lot_enviament', '=', ids)])
+        for pol in env_obj.read(cursor, uid, env_ids, ['polissa_id']):
+            if pol['polissa_id'] and pol['polissa_id'][0] in object_ids:
+                object_ids.remove(pol['polissa_id'][0])
+        if len(object_ids) != before_clean:
+            logger = logging.getLogger('openerp.poweremail')
+            logger.info(
+                "Eliminem {0} enviaments que ja estaven creats".format(
+                    before_clean - len(object_ids))
+            )
         contexte = context.copy()
         for obj_id in object_ids:
             if context.get("extra_text", False):

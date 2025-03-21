@@ -136,3 +136,6 @@ patches/
 
 # GISCE Stuff
 .idea
+
+# Jasper binaries
+*.jasper

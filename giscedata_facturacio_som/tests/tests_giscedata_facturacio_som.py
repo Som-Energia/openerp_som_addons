@@ -112,3 +112,21 @@ class TestGiscedataFacturacioSom(testing.OOTestCaseWithCursor):
         gff_ids = self.gff_obj.search(self.cursor, self.uid, [("origin", "ilike", "sample_origin")])
 
         self.assertGreater(len(gff_ids), 1)
+
+    def test_search_nonequal_operator_active(self):
+        self.set_invoice_origin_cerca_exacte(self.cursor, self.uid, "1")
+
+        gff_ids = self.gff_obj.search(
+            self.cursor, self.uid, [("origin", "!=", "sample_origin1")]
+        )
+
+        self.assertEqual(len(gff_ids), 3)
+
+    def test_search_equal_operator_active(self):
+        self.set_invoice_origin_cerca_exacte(self.cursor, self.uid, "1")
+
+        gff_ids = self.gff_obj.search(
+            self.cursor, self.uid, [("origin", "=", "sample_origin1")]
+        )
+
+        self.assertEqual(len(gff_ids), 1)

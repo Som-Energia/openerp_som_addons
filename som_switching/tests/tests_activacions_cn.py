@@ -34,7 +34,7 @@ class TestActivacioCn(TestSwitchingImport):
         }
         # create step 06
         self.update_polissa_distri(txn)
-        self.activar_polissa_CUPS(txn, context)
+        self.activar_polissa_CUPS(txn, context=context)
         self.change_polissa_comer(txn)
         step_id = self.create_case_and_step(
             cursor, uid, contract_id, tipus, "06", {"whereiam": "distri"}

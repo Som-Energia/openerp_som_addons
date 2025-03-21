@@ -20,4 +20,4 @@ echo "=============================="
 
 # Push local branch to repo
 cd /home/erp/src/erp
-git push
+git push somenergia rolling_erp01

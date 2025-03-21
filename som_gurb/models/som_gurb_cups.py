@@ -366,7 +366,7 @@ class SomGurbCups(osv.osv):
             "name": "Quota inicial Gurb",
             "product_id": product_id,
             "price_unit": price_unit,
-            "quantity": gurb_cups_br.beta_kw,
+            "quantity": 1,
         })
 
         # Create invoice
