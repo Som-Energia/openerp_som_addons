@@ -15,6 +15,8 @@ def up(cursor, installed_version):
 
     views = [
         'data/som_municipal_taxes_data.xml',
+        'wizard/wizard_creacio_remesa_pagament_taxes.xml',
+        'wizard/wizard_presentacio_redsaras.xml',
     ]
     for view in views:
         # Crear les diferents vistes
