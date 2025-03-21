@@ -1,4 +1,4 @@
-# -*- encoding: utf-8 -*-
+# -*- coding: utf-8 -*-
 import logging
 import pooler
 from oopgrade.oopgrade import load_data
@@ -33,14 +33,15 @@ def up(cursor, installed_version):
         print sgc_obj.read(cursor, uid, gurb_cups.id, ['state'])
 
     pool.get('som.gurb.cups')._auto_init(cursor, context={'module': 'som_gurb'})
+    pool.get('wizard.deactivate.gurb.cups')._auto_init(cursor, context={'module': 'som_gurb'})
 
     # Update XMLs
     views = [
         'views/som_gurb_cups_view.xml',
         'views/som_gurb_view.xml',
-        'security/ir.model.access.csv',
         'wizard/wizard_deactivate_gurb_cups_view.xml',
         'workflow/som_gurb_cups_workflow.xml',
+        'security/ir.model.access.csv',
     ]
     for view in views:
         # Actualitza els diferents records i vistes
