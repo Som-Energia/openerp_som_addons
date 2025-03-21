@@ -52,6 +52,8 @@ def open_invoices():
     now = datetime.now()
     print("========================")
     print(now)
+    if invoice_err:
+        exit(1)
 
 
 if __name__ == '__main__':
