@@ -39,19 +39,21 @@ def open_invoices():
         try:
             ctx = {'active_ids': [id_]}
             wiz_o = conn.GiscedataFacturacioSwitchingAprovarFactura
-            wizard_id = wiz_o.create({'open_1ct_diff_invoices': True,
-                                     'open_negative_invoices': False}, ctx)
-            wiz_o.action_aprovar_factures([wizard_id], ctx)
+            wizard = wiz_o.create({'open_1ct_diff_invoices': True,
+                                   'open_negative_invoices': False}, ctx)
+            wizard.action_aprovar_factures(context=ctx)
             n_invoices = n_invoices + 1
         except Exception as e:
             print(e)
             invoice_err.append(id_)
 
-    print("S'han obert un total de {0} factures.".format(str(n_invoices)))
+    print("S'han obert un total de {0}/{1} factures.".format(str(n_invoices), str(len(ids))))
     print("Factures que no s'han pogut obrir: {0}".format(invoice_err))
     now = datetime.now()
     print("========================")
     print(now)
+    if invoice_err:
+        exit(1)
 
 
 if __name__ == '__main__':
