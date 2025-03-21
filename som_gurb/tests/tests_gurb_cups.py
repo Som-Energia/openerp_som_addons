@@ -22,8 +22,8 @@ class TestsGurbCups(TestsGurbBase):
             self.cursor, self.uid, gurb_cups_id_2, ['beta_percentage']
         )['beta_percentage']
 
-        self.assertEqual(percentatge_1, 35.0)
-        self.assertEqual(percentatge_2, 35.0)
+        self.assertEqual(percentatge_1, 40.0)
+        self.assertEqual(percentatge_2, 40.0)
 
     def test_gurb_is_owner(self):
 
@@ -53,49 +53,59 @@ class TestsGurbCups(TestsGurbBase):
         start_date = "2015-02-01"
         new_beta_kw = 1.5
         new_extra_beta_kw = 0.5
+        new_gift_beta = 1
 
         with self.assertRaises(osv.except_osv):
             self.create_new_gurb_cups_beta(
-                gurb_cups_id, start_date, new_beta_kw, new_extra_beta_kw, context=context
+                gurb_cups_id, start_date, new_beta_kw, new_extra_beta_kw,
+                new_gift_beta, context=context
             )
 
         new_beta_kw = -10
 
         with self.assertRaises(osv.except_osv):
             self.create_new_gurb_cups_beta(
-                gurb_cups_id, start_date, new_beta_kw, new_extra_beta_kw, context=context
+                gurb_cups_id, start_date, new_beta_kw, new_extra_beta_kw,
+                new_gift_beta, context=context
             )
 
         new_beta_kw = 0
         new_extra_beta_kw = 0
+        new_gift_beta = 0
 
         with self.assertRaises(osv.except_osv):
             self.create_new_gurb_cups_beta(
-                gurb_cups_id, start_date, new_beta_kw, new_extra_beta_kw, context=context
+                gurb_cups_id, start_date, new_beta_kw, new_extra_beta_kw,
+                new_gift_beta, context=context
             )
 
         start_date = (datetime.today() + timedelta(days=20)).strftime("%Y-%m-%d")
         new_beta_kw = 1.5
         new_extra_beta_kw = 0.5
+        new_gift_beta = 1
 
         with self.assertRaises(osv.except_osv):
             self.create_new_gurb_cups_beta(
-                gurb_cups_id, start_date, new_beta_kw, new_extra_beta_kw, context=context
+                gurb_cups_id, start_date, new_beta_kw, new_extra_beta_kw,
+                new_gift_beta, context=context
             )
 
         new_beta_kw = 2.5
         new_extra_beta_kw = 1
+        new_gift_beta = 0.5
         start_date = "2017-02-01"
 
         with self.assertRaises(osv.except_osv):
             self.create_new_gurb_cups_beta(
-                gurb_cups_id, start_date, new_beta_kw, new_extra_beta_kw, context=context
+                gurb_cups_id, start_date, new_beta_kw, new_extra_beta_kw,
+                new_gift_beta, context=context
             )
 
         new_beta_kw = 3
         new_extra_beta_kw = 2
+        new_gift_beta = 1
         start_date = (datetime.today()).strftime("%Y-%m-%d")
 
         self.create_new_gurb_cups_beta(
-            gurb_cups_id, start_date, new_beta_kw, new_extra_beta_kw, context=context
+            gurb_cups_id, start_date, new_beta_kw, new_extra_beta_kw, new_gift_beta, context=context
         )
