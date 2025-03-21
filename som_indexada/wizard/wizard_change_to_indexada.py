@@ -54,14 +54,14 @@ class WizardChangeToIndexada(osv.osv_memory):
     def calculate_new_pricelist(self, cursor, uid, polissa, change_type, context=None):
         polissa_obj = self.pool.get("giscedata.polissa")
         tarifa_codi = polissa.tarifa_codi
-        municipi_id = polissa.cups.id_municipi
+        municipi_id = polissa.cups.id_municipi.id
 
         # Choose price list dict
         mode_facturacio = 'atr'
         if change_type == "from_period_to_index":
             mode_facturacio = 'index'
 
-        new_pricelist_browse = polissa_obj.get_new_pricelist(
+        new_pricelist_browse = polissa_obj.get_pricelist_from_tariff_and_location(
             cursor, uid, tarifa_codi, mode_facturacio, municipi_id, context=context
         )
         return new_pricelist_browse.id
