@@ -93,7 +93,6 @@ class WizardMassiveKChange(osv.osv_memory):
                         data_activacio = date.today()
                     vals_mod = result[polissa.name]
                     if wiz_og.update_pricelist:
-                        wiz_indexada = self.pool.get("wizard.change.to.indexada")
                         if (
                             polissa.cups.id_municipi.subsistema_id.code in
                             ['TF', 'PA', 'LG', 'HI', 'GC', 'FL']
@@ -102,7 +101,7 @@ class WizardMassiveKChange(osv.osv_memory):
                                 cursor, uid, "som_indexada",
                                 "pricelist_indexada_empresa_canaries_non_standard_2024"
                             )[1]
-                        elif polissa.cups.id in wiz_indexada._get_list_cups_balears(cursor, uid):
+                        elif polissa.cups.id_municipi.subsistema_id.code in ['IF', 'MM']:
                             pricelist_id = ir_model_data.get_object_reference(
                                 cursor, uid, "som_indexada",
                                 "pricelist_indexada_empresa_balears_non_standard_2024"
