@@ -68,39 +68,94 @@
             <field name="configuracio_id" ref="meliana_conf"/>
         </record>
 
-        <!--  Iberdrola[different]-->
-        <record model="som.crawlers.task" id="descargar_iberdrola_contratacion">
-            <field name="name">Descargar Iberdrola Contrataciones</field>
+        <!--  Iberdrola -->
+        <record model="som.crawlers.task" id="descargar_iberdrola_a1">
+            <field name="name">Descarregar Iberdrola A1</field>
             <field name="active">True</field>
             <field name="configuracio_id" ref="iberdrola_conf"/>
         </record>
-        <record model="som.crawlers.task" id="descargar_iberdrola_r1">
-            <field name="name">Descargar Iberdrola R1</field>
+        <record model="som.crawlers.task" id="descargar_iberdrola_a3">
+            <field name="name">Descarregar Iberdrola A3</field>
             <field name="active">True</field>
             <field name="configuracio_id" ref="iberdrola_conf"/>
         </record>
-        <record model="som.crawlers.task" id="descargar_iberdrola_q1">
-            <field name="name">Descargar Iberdrola Q1</field>
+        <record model="som.crawlers.task" id="descargar_iberdrola_b1">
+            <field name="name">Descarregar Iberdrola B1</field>
             <field name="active">True</field>
             <field name="configuracio_id" ref="iberdrola_conf"/>
         </record>
-        <record model="som.crawlers.task" id="descargar_iberdrola_f1">
-            <field name="name">Descargar Iberdrola F1</field>
+        <record model="som.crawlers.task" id="descargar_iberdrola_b2">
+            <field name="name">Descarregar Iberdrola B2</field>
             <field name="active">True</field>
             <field name="configuracio_id" ref="iberdrola_conf"/>
         </record>
-        <record model="som.crawlers.task" id="descargar_iberdrola_e1">
-            <field name="name">Descargar Iberdrola E1</field>
+        <record model="som.crawlers.task" id="descargar_iberdrola_c1">
+            <field name="name">Descarregar Iberdrola C1</field>
+            <field name="active">True</field>
+            <field name="configuracio_id" ref="iberdrola_conf"/>
+        </record>
+        <record model="som.crawlers.task" id="descargar_iberdrola_c2">
+            <field name="name">Descarregar Iberdrola C2</field>
             <field name="active">True</field>
             <field name="configuracio_id" ref="iberdrola_conf"/>
         </record>
         <record model="som.crawlers.task" id="descargar_iberdrola_d1">
-            <field name="name">Descargar Iberdrola D1</field>
+            <field name="name">Descarregar Iberdrola D1</field>
+            <field name="active">True</field>
+            <field name="configuracio_id" ref="iberdrola_conf"/>
+        </record>
+        <record model="som.crawlers.task" id="descargar_iberdrola_e1">
+            <field name="name">Descarregar Iberdrola E1</field>
+            <field name="active">True</field>
+            <field name="configuracio_id" ref="iberdrola_conf"/>
+        </record>
+        <record model="som.crawlers.task" id="descargar_iberdrola_e2">
+            <field name="name">Descarregar Iberdrola E2</field>
+            <field name="active">True</field>
+            <field name="configuracio_id" ref="iberdrola_conf"/>
+        </record>
+        <record model="som.crawlers.task" id="descargar_iberdrola_f1">
+            <field name="name">Descarregar Iberdrola F1</field>
+            <field name="active">True</field>
+            <field name="configuracio_id" ref="iberdrola_conf"/>
+        </record>
+        <record model="som.crawlers.task" id="descargar_iberdrola_j1">
+            <field name="name">Descarregar Iberdrola J1</field>
+            <field name="active">True</field>
+            <field name="configuracio_id" ref="iberdrola_conf"/>
+        </record>
+        <record model="som.crawlers.task" id="descargar_iberdrola_m1">
+            <field name="name">Descarregar Iberdrola M1</field>
+            <field name="active">True</field>
+            <field name="configuracio_id" ref="iberdrola_conf"/>
+        </record>
+        <record model="som.crawlers.task" id="descargar_iberdrola_m2">
+            <field name="name">Descarregar Iberdrola M2</field>
+            <field name="active">True</field>
+            <field name="configuracio_id" ref="iberdrola_conf"/>
+        </record>
+        <record model="som.crawlers.task" id="descargar_iberdrola_p0">
+            <field name="name">Descarregar Iberdrola P0</field>
+            <field name="active">True</field>
+            <field name="configuracio_id" ref="iberdrola_conf"/>
+        </record>
+        <record model="som.crawlers.task" id="descargar_iberdrola_q1">
+            <field name="name">Descarregar Iberdrola Q1</field>
+            <field name="active">True</field>
+            <field name="configuracio_id" ref="iberdrola_conf"/>
+        </record>
+        <record model="som.crawlers.task" id="descargar_iberdrola_r0">
+            <field name="name">Descarregar Iberdrola R0</field>
+            <field name="active">True</field>
+            <field name="configuracio_id" ref="iberdrola_conf"/>
+        </record>
+        <record model="som.crawlers.task" id="descargar_iberdrola_r1">
+            <field name="name">Descarregar Iberdrola R1</field>
             <field name="active">True</field>
             <field name="configuracio_id" ref="iberdrola_conf"/>
         </record>
         <record model="som.crawlers.task" id="descargar_iberdrola_t1">
-            <field name="name">Descargar Iberdrola T1</field>
+            <field name="name">Descarregar Iberdrola T1</field>
             <field name="active">True</field>
             <field name="configuracio_id" ref="iberdrola_conf"/>
         </record>
