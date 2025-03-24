@@ -3180,7 +3180,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
             "energy_lines_data": energy_lines_data,
             "gkwh_energy_lines_data": gkwh_energy_lines_data,
             "header_multi": 3 * (len(energy_lines_data) + len(gkwh_energy_lines_data))
-            + (1 if mag_line_data else 0) + (2 if auvi_energy_lines_data else 0),
+            + (1 if mag_line_data else 0) + (3 if auvi_energy_lines_data else 0),
             "showing_periods": self.get_matrix_show_periods(pol),
             "mag_line_data": mag_line_data,
             "indexed": pol.mode_facturacio == "index",

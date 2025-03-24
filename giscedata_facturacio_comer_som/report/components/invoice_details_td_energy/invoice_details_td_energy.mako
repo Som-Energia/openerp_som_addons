@@ -54,6 +54,21 @@ first_energy_line = True
             <td></td>
         % endif
     </tr>
+    <tr class="tr_bold">
+        <td class="detall_td">${_(u"kWh x €/kWh (del %s al %s)") % (auvi_energy_line_data.date_from, auvi_energy_line_data.date_to)}</td>
+        % for p in id.showing_periods:
+            <% pAuvi = "Linia energia autoconsumida " + p %>
+            % if pAuvi in auvi_energy_line_data:
+                <td>${_(u"%s") %(locale.str(locale.atof(formatLang(auvi_energy_line_data[pAuvi]["price_subtotal"], digits=6))))}</td>
+            % else:
+                <td></td>
+            % endif
+        % endfor
+        <td><span class="subtotal">${_(u"%s €") %(formatLang(auvi_energy_line_data.total))}</span></td>
+        % if id.iva_column:
+            <td>${_(u"%s") % (auvi_energy_line_data.iva) }</td>
+        % endif
+    </tr>
 % endfor
 % for energy_lines_data in id.energy_lines_data:
     <tr>
