@@ -117,7 +117,7 @@ class TestsEscullLlistaPreus(testing.OOTestCase):
         self.assertEqual(result.id, pricelist_list[1])
 
     @mock.patch(
-        "som_indexada.wizard.wizard_change_to_indexada.WizardChangeToIndexada._get_location_polissa"
+        "som_indexada.giscedata_polissa.GiscedataPolissa._get_tariff_zone_from_location"
     )
     def test_escull_llista_preus_insular_canaries(self, mock_function):
         mock_function.return_value = "canaries"
@@ -161,7 +161,7 @@ class TestsEscullLlistaPreus(testing.OOTestCase):
         self.assertEqual(result.id, pricelist_list[7])
 
     @mock.patch(
-        "som_indexada.wizard.wizard_change_to_indexada.WizardChangeToIndexada._get_location_polissa"
+        "som_indexada.giscedata_polissa.GiscedataPolissa._get_tariff_zone_from_location"
     )
     def test_escull_llista_preus_indexada_canaries(self, mock_function):
         mock_function.return_value = "canaries"

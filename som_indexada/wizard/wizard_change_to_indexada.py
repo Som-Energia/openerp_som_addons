@@ -5,42 +5,6 @@ from oorq.oorq import AsyncMode
 from som_polissa.exceptions import exceptions
 
 
-TARIFA_CODIS_INDEXADA = {
-    "2.0TD": {
-        "peninsula": "pricelist_indexada_20td_peninsula_2024",
-        "canaries": "pricelist_indexada_20td_canaries_2024",
-        "balears": "pricelist_indexada_20td_balears_2024",
-    },
-    "3.0TD": {
-        "peninsula": "pricelist_indexada_30td_peninsula_2024",
-        "canaries": "pricelist_indexada_30td_canaries_2024",
-        "balears": "pricelist_indexada_30td_balears_2024",
-    },
-    "6.1TD": {
-        "peninsula": "pricelist_indexada_61td_peninsula_2024",
-        "canaries": "pricelist_indexada_61td_canaries_2024",
-        "balears": "pricelist_indexada_61td_balears_2024",
-    },
-}
-
-TARIFA_CODIS_PERIODES = {
-    "2.0TD": {
-        "peninsula": "pricelist_periodes_20td_peninsula",  # id 101
-        "canaries": "pricelist_periodes_20td_insular",  # id 120
-        "balears": "pricelist_periodes_20td_insular",
-    },
-    "3.0TD": {
-        "peninsula": "pricelist_periodes_30td_peninsula",  # id 102
-        "canaries": "pricelist_periodes_30td_insular",  # id 121
-        "balears": "pricelist_periodes_30td_insular",
-    },
-    "6.1TD": {
-        "peninsula": "pricelist_periodes_61td_peninsula",  # id 103
-        "canaries": "pricelist_periodes_61td_insular",  # id 122
-        "balears": "pricelist_periodes_61td_insular",
-    },
-}
-
 CHANGE_AUX_VALUES = {
     "from_index_to_period": {
         "comments": "periodes",
@@ -71,112 +35,36 @@ class WizardChangeToIndexada(osv.osv_memory):
             change_type = context.get("change_type", "from_period_to_index")
         return change_type
 
-    def _get_list_cups_balears(self, cursor, uid, context=None):
-        xml_id_prov_balears = "ES07"
-        IrModel = self.pool.get("ir.model.data")
-        id_prov_balears = IrModel._get_obj(
-            cursor,
-            uid,
-            "l10n_ES_toponyms",
-            xml_id_prov_balears,
-        ).id
-
-        sql_array = """
-            select array_agg(gcp.id) as cup_ids
-            from giscedata_cups_ps gcp
-            inner join res_municipi rm on rm.id = gcp.id_municipi
-            inner join res_country_state rcs on rcs.id = rm.state
-            where rcs.id = %s and gcp.active=True
-        """
-        cursor.execute(sql_array, (id_prov_balears,))
-        res = cursor.dictfetchone()["cup_ids"]
-        return res or []
-
-    def _get_location_polissa(self, cursor, uid, polissa):
-        if (
-            polissa.cups.id_municipi.subsistema_id.code in ['TF', 'PA', 'LG', 'HI', 'GC', 'FL']
-        ):
-            return "canaries"
-        elif polissa.cups.id in self._get_list_cups_balears(cursor, uid):
-            return "balears"
-        else:
-            return "peninsula"
-
     def get_new_pricelist(self, cursor, uid, polissa, context=None):
-        IrModel = self.pool.get("ir.model.data")
-        Pricelist = self.pool.get("product.pricelist")
+        polissa_obj = self.pool.get("giscedata.polissa")
 
         tarifa_codi = polissa.tarifa_codi
         if context.get("forced_tariff"):
             tarifa_codi = context.get("forced_tariff")
 
-        # Choose price list dict
-        dict_pricelist_codis = TARIFA_CODIS_PERIODES
-        if polissa.mode_facturacio == "index":
-            dict_pricelist_codis = TARIFA_CODIS_INDEXADA
+        mode_facturacio = polissa.mode_facturacio
+        municipi_id = polissa.cups.id_municipi.id
 
-        if tarifa_codi not in dict_pricelist_codis:
-            raise exceptions.TariffCodeNotSupported(tarifa_codi)
-
-        location = self._get_location_polissa(cursor, uid, polissa)
-
-        search_params = [
-            ("module", "=", "som_indexada"),
-            ("name", "=", dict_pricelist_codis[tarifa_codi][location]),
-        ]
-
-        ir_model_id = IrModel.search(cursor, uid, search_params, context=context)[0]
-
-        new_pricelist_id = IrModel.read(cursor, uid, ir_model_id, ["res_id"], context=context)[
-            "res_id"
-        ]
-
-        new_pricelist_browse = Pricelist.browse(cursor, uid, new_pricelist_id, context=context)
+        new_pricelist_browse = polissa_obj.get_pricelist_from_tariff_and_location(
+            cursor, uid, tarifa_codi, mode_facturacio, municipi_id, context=context
+        )
 
         return new_pricelist_browse
 
     def calculate_new_pricelist(self, cursor, uid, polissa, change_type, context=None):
-        IrModel = self.pool.get("ir.model.data")
+        polissa_obj = self.pool.get("giscedata.polissa")
         tarifa_codi = polissa.tarifa_codi
+        municipi_id = polissa.cups.id_municipi.id
 
         # Choose price list dict
-        dict_tarifa_codis = TARIFA_CODIS_PERIODES
+        mode_facturacio = 'atr'
         if change_type == "from_period_to_index":
-            dict_tarifa_codis = TARIFA_CODIS_INDEXADA
+            mode_facturacio = 'index'
 
-        if tarifa_codi not in dict_tarifa_codis:
-            raise exceptions.TariffCodeNotSupported(tarifa_codi)
-
-        location = self._get_location_polissa(cursor, uid, polissa)
-
-        new_pricelist_id = IrModel._get_obj(
-            cursor,
-            uid,
-            "som_indexada",
-            dict_tarifa_codis[tarifa_codi][location],
-        ).id
-
-        return new_pricelist_id
-
-    def _is_standard_price_list(self, cursor, uid, price_list_id, context=None):
-        IrModel = self.pool.get("ir.model.data")
-
-        for price_list_mode in (
-            TARIFA_CODIS_PERIODES,
-            TARIFA_CODIS_INDEXADA,
-        ):
-            for tarifa_codi, locations in price_list_mode.items():
-                for location, semantic_id in locations.items():
-                    # TODO: Could this resolution be calculated once?
-                    standard_price_list_id = IrModel._get_obj(
-                        cursor,
-                        uid,
-                        "som_indexada",
-                        semantic_id,
-                    )
-                    if price_list_id == standard_price_list_id.id:
-                        return True
-        return False
+        new_pricelist_browse = polissa_obj.get_pricelist_from_tariff_and_location(
+            cursor, uid, tarifa_codi, mode_facturacio, municipi_id, context=context
+        )
+        return new_pricelist_browse.id
 
     def validate_polissa_can_change(
         self, cursor, uid, polissa, change_type, only_standard_prices=False, context=None
@@ -195,7 +83,9 @@ class WizardChangeToIndexada(osv.osv_memory):
 
         if only_standard_prices:
             price_list_id = polissa.llista_preu.id
-            is_standard_price = self._is_standard_price_list(cursor, uid, price_list_id, context)
+            is_standard_price = pol_obj.is_standard_price_list(
+                cursor, uid, price_list_id, context=context
+            )
             if not is_standard_price:
                 raise exceptions.PolissaNotStandardPrice(polissa.name)
 
