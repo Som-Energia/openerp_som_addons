@@ -154,6 +154,9 @@ class WizardChangeToIndexada(osv.osv_memory):
             "coeficient_k": coeficient_k,
             "coeficient_d": False,
         }
+        if context.get("te_auvidi", False):
+            new_modcon_vals['te_auvidi'] = True
+
         try:
             polissa.send_signal("modcontractual")
             polissa_obj.write(cursor, uid, polissa.id, new_modcon_vals, context=context)
