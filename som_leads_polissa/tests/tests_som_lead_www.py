@@ -42,7 +42,7 @@ class TestsSomLeadWww(testing.OOTestCase):
                 "lang": "es_ES",
                 "privacy_conditions": True,
             },
-            "cups": "ES0031615910084261WM",
+            "cups": "ES0177000000000000LR",
             "is_indexed": False,
             "tariff": "2.0TD",
             "power_p1": "4400",
