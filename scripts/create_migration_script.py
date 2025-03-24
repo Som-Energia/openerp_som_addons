@@ -4,6 +4,15 @@ import os
 import subprocess
 import ast
 
+"""
+Aquest script crea scripts de migració per a mòduls d'OpenERP 5.0.
+Per a cada mòdul, comprova els fitxers modificats i crea un script de migració
+per actualitzar els camps i vistes dels models afectats.
+
+Execució des de l'arrel del repositori:
+    python scripts/create_migration_script.py
+"""
+
 
 def get_modified_files():
     """Retorna un diccionari amb els mòduls i els seus fitxers modificats (XML, CSV i Python)."""
@@ -85,14 +94,14 @@ def get_current_branch():
 def get_next_script_number(migration_dir):
     """Obté el següent número de seqüència per l'script de migració."""
     if not os.path.exists(migration_dir):
-        return 1
+        return '0001'
 
     # Buscar tots els scripts de migració existents
     existing_scripts = [f for f in os.listdir(migration_dir)
                         if f.startswith('post-') and f.endswith('.py')]
 
     if not existing_scripts:
-        return 1
+        return '0001'
 
     # Extreure els números de seqüència
     numbers = []
@@ -103,25 +112,43 @@ def get_next_script_number(migration_dir):
         except (IndexError, ValueError):
             continue
 
-    return max(numbers + [0]) + 1
+    next_num = max(numbers + [0]) + 1
+    return str(next_num).zfill(4)
 
 
 def create_migration_script(module_name, files):
     """Crea un script de migració pel mòdul especificat."""
+    # Primer comprovem si hi ha canvis a fer
+    models_to_init = []
+    for py_file in files['py']:
+        full_path = os.path.join(module_name, py_file)
+        models = find_new_fields(full_path)
+        models_to_init.extend(models)
+
+    # Si no hi ha ni models per inicialitzar ni fitxers data per actualitzar, sortim
+    if not models_to_init and not files['data']:
+        return
+
     manifest_path = os.path.join(module_name, '__terp__.py')
     with open(manifest_path, 'r') as f:
         manifest = eval(f.read())
     version = manifest.get('version', '0.0.0')
     version = "5.0.{0}".format(version)
     migration_dir = os.path.join(module_name, 'migrations', version)
-    os.makedirs(migration_dir, exist_ok=True)
+
+    # Crear directori si no existeix (compatible amb Python 2)
+    try:
+        os.makedirs(migration_dir)
+    except OSError as e:
+        if e.errno != os.errno.EEXIST:
+            raise
 
     # Obtenir el següent número de seqüència i el nom de la branca
-    get_next_script_number(migration_dir)
+    next_num = get_next_script_number(migration_dir)
     branch_name = get_current_branch().replace('/', '_')
 
     # Crear el nom de l'script
-    script_name = 'post-{next_num:04d}_{branch_name}_update_views_and_fields.py'
+    script_name = 'post-{0}_{1}_update_views_and_fields.py'.format(next_num, branch_name)
     script_path = os.path.join(migration_dir, script_name)
 
     # Comprovar si ja existeix un script per aquesta branca
@@ -156,12 +183,6 @@ def up(cursor, installed_version):
     pool = pooler.get_pool(cursor.dbname)
 ''')
         # Afegir _auto_init per models amb nous camps
-        models_to_init = []
-        for py_file in files['py']:
-            full_path = os.path.join(module_name, py_file)
-            models = find_new_fields(full_path)
-            models_to_init.extend(models)
-
         if models_to_init:
             f.write('\n    logger.info("Initializing new fields")\n')
             for model in models_to_init:
