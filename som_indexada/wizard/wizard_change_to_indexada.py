@@ -43,9 +43,9 @@ class WizardChangeToIndexada(osv.osv_memory):
             tarifa_codi = context.get("forced_tariff")
 
         mode_facturacio = polissa.mode_facturacio
-        municipi_id = polissa.cups.id_municipi
+        municipi_id = polissa.cups.id_municipi.id
 
-        new_pricelist_browse = polissa_obj.get_new_pricelist(
+        new_pricelist_browse = polissa_obj.get_pricelist_from_tariff_and_location(
             cursor, uid, tarifa_codi, mode_facturacio, municipi_id, context=context
         )
 
