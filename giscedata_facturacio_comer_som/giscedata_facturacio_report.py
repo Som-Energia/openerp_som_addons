@@ -1181,7 +1181,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
             ),
             "is_autoconsum": te_autoconsum(fact, pol),  # fact.te_autoconsum
             "autoconsum": pol.tipus_subseccio,
-            "autoconsum_cau": pol.autoconsum_id.cau if pol.autoconsum_id else "",
+            "autoconsum_cau": pol.autoconsum_id.cau if pol.autoconsum_id and pol.tipus_subseccio != '00' else "",  # noqa: E501
             "is_autoconsum_colectiu": te_autoconsum_collectiu(
                 fact, pol
             ),  # fact.te_autoconsum and fact.polissa_id.autoconsum_id
@@ -1218,7 +1218,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
             u"6.4TD": 6,
         }
 
-        if len(pol.autoconsum_cups_ids) == 0:
+        if data["autoconsum"] == '00' or len(pol.autoconsum_cups_ids) == 0:
             data["autoconsum_caus"] = [data["autoconsum_cau"]]
         else:
             data["autoconsum_caus"] = []
