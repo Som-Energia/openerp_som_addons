@@ -68,42 +68,98 @@
             <field name="configuracio_id" ref="meliana_conf"/>
         </record>
 
-        <!--  Iberdrola[different]-->
-        <record model="som.crawlers.task" id="descargar_iberdrola_contratacion">
-            <field name="name">Descargar Iberdrola Contrataciones</field>
+        <!--  Iberdrola -->
+        <record model="som.crawlers.task" id="descargar_iberdrola_a1">
+            <field name="name">Descarregar Iberdrola A1</field>
             <field name="active">True</field>
             <field name="configuracio_id" ref="iberdrola_conf"/>
         </record>
-        <record model="som.crawlers.task" id="descargar_iberdrola_r1">
-            <field name="name">Descargar Iberdrola R1</field>
+        <record model="som.crawlers.task" id="descargar_iberdrola_a3">
+            <field name="name">Descarregar Iberdrola A3</field>
             <field name="active">True</field>
             <field name="configuracio_id" ref="iberdrola_conf"/>
         </record>
-        <record model="som.crawlers.task" id="descargar_iberdrola_q1">
-            <field name="name">Descargar Iberdrola Q1</field>
+        <record model="som.crawlers.task" id="descargar_iberdrola_b1">
+            <field name="name">Descarregar Iberdrola B1</field>
             <field name="active">True</field>
             <field name="configuracio_id" ref="iberdrola_conf"/>
         </record>
-        <record model="som.crawlers.task" id="descargar_iberdrola_f1">
-            <field name="name">Descargar Iberdrola F1</field>
+        <record model="som.crawlers.task" id="descargar_iberdrola_b2">
+            <field name="name">Descarregar Iberdrola B2</field>
             <field name="active">True</field>
             <field name="configuracio_id" ref="iberdrola_conf"/>
         </record>
-        <record model="som.crawlers.task" id="descargar_iberdrola_e1">
-            <field name="name">Descargar Iberdrola E1</field>
+        <record model="som.crawlers.task" id="descargar_iberdrola_c1">
+            <field name="name">Descarregar Iberdrola C1</field>
+            <field name="active">True</field>
+            <field name="configuracio_id" ref="iberdrola_conf"/>
+        </record>
+        <record model="som.crawlers.task" id="descargar_iberdrola_c2">
+            <field name="name">Descarregar Iberdrola C2</field>
             <field name="active">True</field>
             <field name="configuracio_id" ref="iberdrola_conf"/>
         </record>
         <record model="som.crawlers.task" id="descargar_iberdrola_d1">
-            <field name="name">Descargar Iberdrola D1</field>
+            <field name="name">Descarregar Iberdrola D1</field>
+            <field name="active">True</field>
+            <field name="configuracio_id" ref="iberdrola_conf"/>
+        </record>
+        <record model="som.crawlers.task" id="descargar_iberdrola_e1">
+            <field name="name">Descarregar Iberdrola E1</field>
+            <field name="active">True</field>
+            <field name="configuracio_id" ref="iberdrola_conf"/>
+        </record>
+        <record model="som.crawlers.task" id="descargar_iberdrola_e2">
+            <field name="name">Descarregar Iberdrola E2</field>
+            <field name="active">True</field>
+            <field name="configuracio_id" ref="iberdrola_conf"/>
+        </record>
+        <record model="som.crawlers.task" id="descargar_iberdrola_f1">
+            <field name="name">Descarregar Iberdrola F1</field>
+            <field name="active">True</field>
+            <field name="configuracio_id" ref="iberdrola_conf"/>
+        </record>
+        <record model="som.crawlers.task" id="descargar_iberdrola_j1">
+            <field name="name">Descarregar Iberdrola J1</field>
+            <field name="active">True</field>
+            <field name="configuracio_id" ref="iberdrola_conf"/>
+        </record>
+        <record model="som.crawlers.task" id="descargar_iberdrola_m1">
+            <field name="name">Descarregar Iberdrola M1</field>
+            <field name="active">True</field>
+            <field name="configuracio_id" ref="iberdrola_conf"/>
+        </record>
+        <record model="som.crawlers.task" id="descargar_iberdrola_m2">
+            <field name="name">Descarregar Iberdrola M2</field>
+            <field name="active">True</field>
+            <field name="configuracio_id" ref="iberdrola_conf"/>
+        </record>
+        <record model="som.crawlers.task" id="descargar_iberdrola_p0">
+            <field name="name">Descarregar Iberdrola P0</field>
+            <field name="active">True</field>
+            <field name="configuracio_id" ref="iberdrola_conf"/>
+        </record>
+        <record model="som.crawlers.task" id="descargar_iberdrola_q1">
+            <field name="name">Descarregar Iberdrola Q1</field>
+            <field name="active">True</field>
+            <field name="configuracio_id" ref="iberdrola_conf"/>
+        </record>
+        <record model="som.crawlers.task" id="descargar_iberdrola_r0">
+            <field name="name">Descarregar Iberdrola R0</field>
+            <field name="active">True</field>
+            <field name="configuracio_id" ref="iberdrola_conf"/>
+        </record>
+        <record model="som.crawlers.task" id="descargar_iberdrola_r1">
+            <field name="name">Descarregar Iberdrola R1</field>
             <field name="active">True</field>
             <field name="configuracio_id" ref="iberdrola_conf"/>
         </record>
         <record model="som.crawlers.task" id="descargar_iberdrola_t1">
-            <field name="name">Descargar Iberdrola T1</field>
+            <field name="name">Descarregar Iberdrola T1</field>
             <field name="active">True</field>
             <field name="configuracio_id" ref="iberdrola_conf"/>
         </record>
+        <!-- Endesa -->
         <record model="som.crawlers.task" id="descargar_A3_endesa">
             <field name="name">Endesa descargar A3</field>
             <field name="active">True</field>
@@ -159,11 +215,98 @@
             <field name="active">True</field>
             <field name="configuracio_id" ref="endesa_conf"/>
         </record>
-        <record model="som.crawlers.task" id="descarregar_anselmo">
-            <field name="name">Descarregar Anselmo</field>
+        <!-- Anselmo -->
+        <record model="som.crawlers.task" id="descargar_anselmo_a1">
+            <field name="name">Descarregar Anselmo A1</field>
             <field name="active">True</field>
             <field name="configuracio_id" ref="anselmo_conf"/>
         </record>
+        <record model="som.crawlers.task" id="descargar_anselmo_a3">
+            <field name="name">Descarregar Anselmo A3</field>
+            <field name="active">True</field>
+            <field name="configuracio_id" ref="anselmo_conf"/>
+        </record>
+        <record model="som.crawlers.task" id="descargar_anselmo_b1">
+            <field name="name">Descarregar Anselmo B1</field>
+            <field name="active">True</field>
+            <field name="configuracio_id" ref="anselmo_conf"/>
+        </record>
+        <record model="som.crawlers.task" id="descargar_anselmo_b2">
+            <field name="name">Descarregar Anselmo B2</field>
+            <field name="active">True</field>
+            <field name="configuracio_id" ref="anselmo_conf"/>
+        </record>
+        <record model="som.crawlers.task" id="descargar_anselmo_c1">
+            <field name="name">Descarregar Anselmo C1</field>
+            <field name="active">True</field>
+            <field name="configuracio_id" ref="anselmo_conf"/>
+        </record>
+        <record model="som.crawlers.task" id="descargar_anselmo_c2">
+            <field name="name">Descarregar Anselmo C2</field>
+            <field name="active">True</field>
+            <field name="configuracio_id" ref="anselmo_conf"/>
+        </record>
+        <record model="som.crawlers.task" id="descargar_anselmo_d1">
+            <field name="name">Descarregar Anselmo D1</field>
+            <field name="active">True</field>
+            <field name="configuracio_id" ref="anselmo_conf"/>
+        </record>
+        <record model="som.crawlers.task" id="descargar_anselmo_e1">
+            <field name="name">Descarregar Anselmo E1</field>
+            <field name="active">True</field>
+            <field name="configuracio_id" ref="anselmo_conf"/>
+        </record>
+        <record model="som.crawlers.task" id="descargar_anselmo_e2">
+            <field name="name">Descarregar Anselmo E2</field>
+            <field name="active">True</field>
+            <field name="configuracio_id" ref="anselmo_conf"/>
+        </record>
+        <record model="som.crawlers.task" id="descargar_anselmo_f1">
+            <field name="name">Descarregar Anselmo F1</field>
+            <field name="active">True</field>
+            <field name="configuracio_id" ref="anselmo_conf"/>
+        </record>
+        <record model="som.crawlers.task" id="descargar_anselmo_j1">
+            <field name="name">Descarregar Anselmo J1</field>
+            <field name="active">True</field>
+            <field name="configuracio_id" ref="anselmo_conf"/>
+        </record>
+        <record model="som.crawlers.task" id="descargar_anselmo_m1">
+            <field name="name">Descarregar Anselmo M1</field>
+            <field name="active">True</field>
+            <field name="configuracio_id" ref="anselmo_conf"/>
+        </record>
+        <record model="som.crawlers.task" id="descargar_anselmo_m2">
+            <field name="name">Descarregar Anselmo M2</field>
+            <field name="active">True</field>
+            <field name="configuracio_id" ref="anselmo_conf"/>
+        </record>
+        <record model="som.crawlers.task" id="descargar_anselmo_p0">
+            <field name="name">Descarregar Anselmo P0</field>
+            <field name="active">True</field>
+            <field name="configuracio_id" ref="anselmo_conf"/>
+        </record>
+        <record model="som.crawlers.task" id="descargar_anselmo_q1">
+            <field name="name">Descarregar Anselmo Q1</field>
+            <field name="active">True</field>
+            <field name="configuracio_id" ref="anselmo_conf"/>
+        </record>
+        <record model="som.crawlers.task" id="descargar_anselmo_r0">
+            <field name="name">Descarregar Anselmo R0</field>
+            <field name="active">True</field>
+            <field name="configuracio_id" ref="anselmo_conf"/>
+        </record>
+        <record model="som.crawlers.task" id="descargar_anselmo_r1">
+            <field name="name">Descarregar Anselmo R1</field>
+            <field name="active">True</field>
+            <field name="configuracio_id" ref="anselmo_conf"/>
+        </record>
+        <record model="som.crawlers.task" id="descargar_anselmo_t1">
+            <field name="name">Descarregar Anselmo T1</field>
+            <field name="active">True</field>
+            <field name="configuracio_id" ref="anselmo_conf"/>
+        </record>
+        <!-- Fenosa -->
         <record model="som.crawlers.task" id="descarregar_fenosa">
             <field name="name">Fenosa descargar F1 i ATR</field>
             <field name="active">True</field>
@@ -231,8 +374,93 @@
             <field name="configuracio_id" ref="constancia_conf"/>
         </record>
         <!--Conquense-->
-        <record model="som.crawlers.task" id="descargar_conquense">
-            <field name="name">Descarregar Conquense</field>
+        <record model="som.crawlers.task" id="descargar_conquense_a1">
+            <field name="name">Descarregar Conquense A1</field>
+            <field name="active">True</field>
+            <field name="configuracio_id" ref="conquense_conf"/>
+        </record>
+        <record model="som.crawlers.task" id="descargar_conquense_a3">
+            <field name="name">Descarregar Conquense A3</field>
+            <field name="active">True</field>
+            <field name="configuracio_id" ref="conquense_conf"/>
+        </record>
+        <record model="som.crawlers.task" id="descargar_conquense_b1">
+            <field name="name">Descarregar Conquense B1</field>
+            <field name="active">True</field>
+            <field name="configuracio_id" ref="conquense_conf"/>
+        </record>
+        <record model="som.crawlers.task" id="descargar_conquense_b2">
+            <field name="name">Descarregar Conquense B2</field>
+            <field name="active">True</field>
+            <field name="configuracio_id" ref="conquense_conf"/>
+        </record>
+        <record model="som.crawlers.task" id="descargar_conquense_c1">
+            <field name="name">Descarregar Conquense C1</field>
+            <field name="active">True</field>
+            <field name="configuracio_id" ref="conquense_conf"/>
+        </record>
+        <record model="som.crawlers.task" id="descargar_conquense_c2">
+            <field name="name">Descarregar Conquense C2</field>
+            <field name="active">True</field>
+            <field name="configuracio_id" ref="conquense_conf"/>
+        </record>
+        <record model="som.crawlers.task" id="descargar_conquense_d1">
+            <field name="name">Descarregar Conquense D1</field>
+            <field name="active">True</field>
+            <field name="configuracio_id" ref="conquense_conf"/>
+        </record>
+        <record model="som.crawlers.task" id="descargar_conquense_e1">
+            <field name="name">Descarregar Conquense E1</field>
+            <field name="active">True</field>
+            <field name="configuracio_id" ref="conquense_conf"/>
+        </record>
+        <record model="som.crawlers.task" id="descargar_conquense_e2">
+            <field name="name">Descarregar Conquense E2</field>
+            <field name="active">True</field>
+            <field name="configuracio_id" ref="conquense_conf"/>
+        </record>
+        <record model="som.crawlers.task" id="descargar_conquense_f1">
+            <field name="name">Descarregar Conquense F1</field>
+            <field name="active">True</field>
+            <field name="configuracio_id" ref="conquense_conf"/>
+        </record>
+        <record model="som.crawlers.task" id="descargar_conquense_j1">
+            <field name="name">Descarregar Conquense J1</field>
+            <field name="active">True</field>
+            <field name="configuracio_id" ref="conquense_conf"/>
+        </record>
+        <record model="som.crawlers.task" id="descargar_conquense_m1">
+            <field name="name">Descarregar Conquense M1</field>
+            <field name="active">True</field>
+            <field name="configuracio_id" ref="conquense_conf"/>
+        </record>
+        <record model="som.crawlers.task" id="descargar_conquense_m2">
+            <field name="name">Descarregar Conquense M2</field>
+            <field name="active">True</field>
+            <field name="configuracio_id" ref="conquense_conf"/>
+        </record>
+        <record model="som.crawlers.task" id="descargar_conquense_p0">
+            <field name="name">Descarregar Conquense P0</field>
+            <field name="active">True</field>
+            <field name="configuracio_id" ref="conquense_conf"/>
+        </record>
+        <record model="som.crawlers.task" id="descargar_conquense_q1">
+            <field name="name">Descarregar Conquense Q1</field>
+            <field name="active">True</field>
+            <field name="configuracio_id" ref="conquense_conf"/>
+        </record>
+        <record model="som.crawlers.task" id="descargar_conquense_r0">
+            <field name="name">Descarregar Conquense R0</field>
+            <field name="active">True</field>
+            <field name="configuracio_id" ref="conquense_conf"/>
+        </record>
+        <record model="som.crawlers.task" id="descargar_conquense_r1">
+            <field name="name">Descarregar Conquense R1</field>
+            <field name="active">True</field>
+            <field name="configuracio_id" ref="conquense_conf"/>
+        </record>
+        <record model="som.crawlers.task" id="descargar_conquense_t1">
+            <field name="name">Descarregar Conquense T1</field>
             <field name="active">True</field>
             <field name="configuracio_id" ref="conquense_conf"/>
         </record>
