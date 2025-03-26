@@ -14,6 +14,7 @@
         "giscedata_crm_importador",
         "som_polissa",
         "som_indexada",
+        "som_partner_seq",
     ],
     "init_xml": [],
     "demo_xml": [

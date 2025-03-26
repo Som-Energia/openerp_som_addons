@@ -74,16 +74,22 @@ class GiscedataCrmLead(osv.OsvInherits):
         res = super(GiscedataCrmLead, self).create_entity_polissa(
             cursor, uid, crml_id, context=context
         )
+        values = {}
+        partner_o = self.pool.get("res.partner")
 
         # recuperem la polissa recent creada del lead
-        polissa_id = self.read(
-            cursor, uid, crml_id, ['polissa_id'],
+        lead_vals = self.read(
+            cursor, uid, crml_id, ['polissa_id', 'member_number'],
             context=context
-        )['polissa_id'][0]
+        )
+
+        polissa_id = lead_vals["polissa_id"][0]
+        member_number = lead_vals["member_number"]
+
+        values["soci"] = partner_o.search(cursor, uid, [("ref", "=", member_number)], limit=1)[0]
 
         polissa_o = self.pool.get("giscedata.polissa")
         polissa = polissa_o.browse(cursor, uid, polissa_id, context=context)
-        values = {}
         if polissa.mode_facturacio != 'atr':
             values['mode_facturacio_generacio'] = polissa.mode_facturacio
 
@@ -138,7 +144,7 @@ class GiscedataCrmLead(osv.OsvInherits):
         seq_o = self.pool.get("ir.sequence")
 
         if vals.get("owner_is_member"):
-            vals['member_number'] = seq_o.get_next('res.partner.soci')
+            vals['member_number'] = seq_o.get_next(cursor, uid, 'res.partner.soci')
 
         lead_id = super(GiscedataCrmLead, self).create(cursor, uid, vals, context=context)
 
@@ -178,7 +184,8 @@ class GiscedataCrmLead(osv.OsvInherits):
         "preu_fix_potencia_p4": fields.float("Preu Fix Potència P4", digits=(16, 6)),
         "preu_fix_potencia_p5": fields.float("Preu Fix Potència P5", digits=(16, 6)),
         "preu_fix_potencia_p6": fields.float("Preu Fix Potència P6", digits=(16, 6)),
-        "member_number": fields.char('Acronym', size=64),
+        "member_number": fields.char('Número de sòcia', size=64),
+        "owner_is_member": fields.boolean("Mateixa sòcia que titular"),
     }
 
     _defaults = {
