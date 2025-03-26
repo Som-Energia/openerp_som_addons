@@ -67,6 +67,7 @@ class TestsSomLeadWww(testing.OOTestCase):
 
         lead = lead_o.browse(self.cursor, self.uid, lead_id)
         # Comprovació de s'ha creat la sòcia - en el titular
+        self.assertTrue(lead.member_number)
         self.assertEqual(lead.polissa_id.titular.ref, lead.member_number)
 
         # Comprovació de s'ha creat la sòcia - a la polissa
