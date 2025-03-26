@@ -21,7 +21,7 @@ class TestsSomLeadWww(testing.OOTestCase):
     def get_model(self, model_name):
         return self.openerp.pool.get(model_name)
 
-    def test_create_simple_lead(self):
+    def test_create_simple_domestic_lead(self):
         www_lead_o = self.get_model("som.lead.www")
         lead_o = self.get_model("giscedata.crm.lead")
         sw_o = self.get_model("giscedata.switching")
@@ -86,3 +86,55 @@ class TestsSomLeadWww(testing.OOTestCase):
             ]
         )
         self.assertEqual(len(atr_case), 1)
+
+    def test_create_simple_juridic_lead(self):
+        www_lead_o = self.get_model("som.lead.www")
+        lead_o = self.get_model("giscedata.crm.lead")
+        # sw_o = self.get_model("giscedata.switching")
+
+        values = {
+            "owner_is_member": True,
+            "owner_is_payer": True,
+            "contract_member": {
+                "vat": "C81837452",
+                "name": "PEC COOP SCCL",
+                "proxy_name": "Pepito Palotes",
+                "proxy_vat": "40323835M",
+                "is_juridic": True,
+                "address": "C/ Not True, 123",
+                "city_id": 5386,
+                "state_id": 20,
+                "postal_code": "08178",
+                "email": "pepito@foo.bar",
+                "phone": "972123456",
+                "lang": "ca_ES",
+                "privacy_conditions": True,
+            },
+            "cups": "ES0177000000000000LR",
+            "is_indexed": False,
+            "tariff": "2.0TD",
+            "power_p1": "4400",
+            "power_p2": "8000",
+            "cups_address": "C/ Falsa, 123",
+            "cups_postal_code": "08178",
+            "cups_city_id": 5386,
+            "cups_state_id": 20,
+            "cnae": "9820",
+            "supply_point_accepted": True,
+            "payment_iban": "ES77 1234 1234 1612 3456 7890",
+            "sepa_conditions": True,
+            "donation": False,
+            "process": "C1",
+            "general_contract_terms_accepted": True,
+            "particular_contract_terms_accepted": True,
+        }
+
+        lead_id = www_lead_o.create_lead(self.cursor, self.uid, values)
+        lead_o.force_validation(self.cursor, self.uid, [lead_id])
+        lead_o.create_entities(self.cursor, self.uid, lead_id)
+
+        lead = lead_o.browse(self.cursor, self.uid, lead_id)
+        # Check that the name is correctly set
+        self.assertEqual(lead.name, "C81837452 / ES0177000000000000LR")
+
+        # FIXME: This test must be done
