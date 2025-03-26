@@ -5,7 +5,7 @@
     This module provide :
         * Obligació que un compte comptable tingui pare
     """,
-    "version": "0.1",
+    "version": "24.5.0",
     "author": "GISCE",
     "category": "SomEnergia",
     "depends": [
