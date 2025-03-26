@@ -33,7 +33,7 @@ class SomLeadWww(osv.osv_memory):
 
         # TODO: Cal posar poblacions? (CUPS i titular)
         values = {
-            "name": "Cunyat",  # TODO: Pensar que posar aqui
+            "name": "{} / {}".format(www_vals["contract_member"]["vat"].upper(), www_vals["cups"]),
             "lang": www_vals["contract_member"]["lang"],
             "cups": www_vals["cups"],
             "codigoEmpresaDistribuidora": distri_vals.get("code"),
@@ -70,25 +70,9 @@ class SomLeadWww(osv.osv_memory):
             "titular_id_municipi": www_vals["contract_member"]["city_id"],
             "titular_email": www_vals["contract_member"]["email"],
             "titular_phone": www_vals["contract_member"]["phone"],
-            "titular_mobile": www_vals["contract_member"].get("phone2"),  # TODO: test this
+            "titular_mobile": www_vals["contract_member"].get("phone2"),
             "use_cont_address": False,
-            "allow_contact": False,  # FIXME: use privacy_conditions? or remove
-
-            # COSES de www_vals que no s'han fet servir:
-            #
-            # "owner_is_member": True,
-            # "owner_is_payer": True,
-            # "contract_member": {
-            #     "state_id": 20,
-            #     "privacy_conditions": True,
-            # },
-            # "is_indexed": False,
-            # "cups_state_id": 20,
-            # "supply_point_accepted": True,
-            # "sepa_conditions": True,
-            # "donation": False,
-            # "general_contract_terms_accepted": True,
-            # "particular_contract_terms_accepted": True,
+            "allow_contact": False,  # TODO: use privacy_conditions? or remove
         }
         lead_id = lead_o.create(cr, uid, values, context=context)
         return lead_id
