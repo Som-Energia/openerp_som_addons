@@ -13,8 +13,8 @@ def up(cursor, installed_version):
 
     logger.info("Updating XML and CSV files")
     data_files = [
-        'data/som_crawlers_step_data.xml',
         'data/som_crawlers_task_data.xml',
+        'data/som_crawlers_step_data.xml',
     ]
 
     for data_file in data_files:
