@@ -2,7 +2,7 @@
 {
     "name": "GISCE Remeses Base Somenergia",
     "description": """Modificació de remeses per mostrar el texte especific de client""",
-    "version": "0-dev",
+    "version": "24.5.0",
     "author": "GISCE Enginyeria, SL",
     "category": "Facturació",
     "depends": [

@@ -3,7 +3,7 @@
     "name": "Customitzacions per AUVIDIs (Serveis de generació) per a SOM",
     "description": """
     """,
-    "version": "0-dev",
+    "version": "24.5.0",
     "author": "GISCE",
     "category": "SomEnergia",
     "depends": [

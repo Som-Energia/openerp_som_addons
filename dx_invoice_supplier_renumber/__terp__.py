@@ -4,7 +4,7 @@
     "description": """
         *** Dx Invoice Supplier Renumber
     """,
-    "version": "0-dev",
+    "version": "24.5.0",
     "author": "Domatix",
     "category": "Account",
     "depends": [

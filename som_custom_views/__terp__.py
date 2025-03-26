@@ -2,7 +2,7 @@
 {
     "name": "Vistes personalitzades de Som Energia",
     "description": """Vistes personalitzades de Som Energia""",
-    "version": "0-dev",
+    "version": "24.5.0",
     "author": "Som Energia",
     "category": "Generic Modules",
     "depends": [
