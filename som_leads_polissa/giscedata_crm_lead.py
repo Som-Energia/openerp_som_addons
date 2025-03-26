@@ -119,6 +119,50 @@ class GiscedataCrmLead(osv.OsvInherits):
 
         return res
 
+    def create_entity_titular(self, cursor, uid, crml_id, context=None):
+        if context is None:
+            context = {}
+
+        owner_is_member = self.read(cursor, uid, crml_id, ['owner_is_member'])
+
+        if owner_is_member:
+            context["create_member"] = True
+
+        return super(GiscedataCrmLead, self).create_entity_titular(
+            cursor, uid, crml_id, context=context
+        )
+
+    def create(self, cursor, uid, vals, context=None):
+        if context is None:
+            context = {}
+        seq_o = self.pool.get("ir.sequence")
+
+        if vals.get("owner_is_member"):
+            vals['member_number'] = seq_o.get_next('res.partner.soci')
+
+        lead_id = super(GiscedataCrmLead, self).create(cursor, uid, vals, context=context)
+
+        return lead_id
+
+    def create_partner(self, cursor, uid, create_vals, crml_id, context=None):
+        if context is None:
+            context = {}
+
+        member_o = self.pool.get("somenergia.soci")
+
+        if context.get("create_member"):
+            create_vals['ref'] = self.read(
+                cursor, uid, crml_id, ["member_number"], context=context
+            )["member_number"]
+
+        partner_id = super(GiscedataCrmLead, self).create_partner(
+            cursor, uid, create_vals, crml_id, context=context)
+
+        if context.get("create_member"):
+            member_o.create_one_soci(cursor, uid, partner_id, context=context)
+
+        return partner_id
+
     _columns = {
         "tipus_tarifa_lead": fields.selection(_tipus_tarifes_lead, "Tipus de tarifa del contracte"),
         "set_custom_potencia": fields.boolean("Personalitzar preus potència"),
@@ -134,6 +178,7 @@ class GiscedataCrmLead(osv.OsvInherits):
         "preu_fix_potencia_p4": fields.float("Preu Fix Potència P4", digits=(16, 6)),
         "preu_fix_potencia_p5": fields.float("Preu Fix Potència P5", digits=(16, 6)),
         "preu_fix_potencia_p6": fields.float("Preu Fix Potència P6", digits=(16, 6)),
+        "member_number": fields.char('Acronym', size=64),
     }
 
     _defaults = {
