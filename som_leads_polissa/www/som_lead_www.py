@@ -32,7 +32,6 @@ class SomLeadWww(osv.osv_memory):
         distri_vals = get_distri_vals(www_vals["cups"])
 
         # TODO: Cal posar poblacions? (CUPS i titular)
-        # TODO: Carregar traduccions CAT - ES
         values = {
             "name": "Cunyat",  # TODO: Pensar que posar aqui
             "lang": www_vals["contract_member"]["lang"],
@@ -61,6 +60,7 @@ class SomLeadWww(osv.osv_memory):
             "iban": www_vals["payment_iban"],
             "payment_mode_id": payment_mode_id,
             "enviament": "email",
+            "owner_is_member": www_vals["owner_is_member"],
             "titular_vat": 'ES%s' % www_vals["contract_member"]["vat"].upper(),
             "titular_nom": www_vals["contract_member"]["name"],
             "titular_cognom1": www_vals["contract_member"].get("surname"),
