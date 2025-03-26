@@ -35,6 +35,9 @@
                     <group colspan="2" string="Betes assignades + extres" icon="alphabet-greek">
                         <field nolabel="1" name="assigned_extra_betas_percentage" widget="progressbar" />
                     </group>
+                    <group colspan="2" string="Betes assignades + extres + regalades" icon="alphabet-greek">
+                        <field nolabel="1" name="assigned_extra_gift_betas_percentage" widget="progressbar" />
+                    </group>
                     <group col="6" colspan="4" string="Estats" icon="123">
                         <field name="state_date" colspan="1" />
                         <field name="state" select="1" colspan="1" />
@@ -86,6 +89,7 @@
                                 <field name="assigned_betas_kw" colspan="4"/>
                                 <field name="available_betas_percentage" colspan="4"/>
                                 <field name="extra_betas_kw" colspan="4"/>
+                                <field name="gift_betas_kw" colspan="4"/>
                             </group>
                             <separator string="CUPS del GURB" colspan="4"/>
                             <field name="gurb_cups_ids" nolabel="1" colspan="4"/>

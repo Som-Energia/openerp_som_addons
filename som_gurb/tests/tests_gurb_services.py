@@ -139,7 +139,7 @@ class TestsGurbServices(TestsGurbBase):
         fact_br = fact_o.browse(self.cursor, self.uid, factura_id)
         fact_o.write(self.cursor, self.uid, factura_id, {"polissa_id": vals['pol_id']})
         self.add_service_to_contract(start_date="2016-01-01")
-        self.create_new_gurb_cups_beta(vals["gurb_cups_id"], "2016-02-01", 1.5, 0.5)
+        self.create_new_gurb_cups_beta(vals["gurb_cups_id"], "2016-02-01", 1.5, 0.5, 2)
 
         lines = []
         for line in fact_services_o._get_vals_linia(
@@ -233,7 +233,7 @@ class TestsGurbServices(TestsGurbBase):
         )["pricelist_id"][0]
 
         self.create_new_pricelist_version("2016-02-15", pricelist_id)
-        self.create_new_gurb_cups_beta(gurb_cups_id, "2016-02-01", 1.5, 0.5)
+        self.create_new_gurb_cups_beta(gurb_cups_id, "2016-02-01", 1.5, 0.5, 2)
 
         lines = []
         for line in fact_services_o._get_vals_linia(
