@@ -45,19 +45,17 @@ class WizardContractPowerOptimization(osv.osv_memory):
         return result
 
     def _calculate_maximeter_excess_price(
-        self, cursor, uid, wiz_id, month, maximeter_power, period_power, context=None
+        self, cursor, uid, wiz_id, month, maximeter_power, period_power, excess_price, context=None
     ):
         if context is None:
             context = {}
-
-        wiz = self.browse(cursor, uid, wiz_id, context=context)
 
         month_days = [31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
         maximeter_excess_price = 0
 
         maximeter_excess = maximeter_power - period_power
         if maximeter_excess > 0:
-            maximeter_excess_price = 2 * maximeter_excess * wiz.excess_price * month_days[month - 1]
+            maximeter_excess_price = 2 * maximeter_excess * excess_price * month_days[month - 1]
 
         return maximeter_excess_price
 
@@ -87,37 +85,37 @@ class WizardContractPowerOptimization(osv.osv_memory):
                 if period == 'P1':
                     total_maximeter_price.append(self._calculate_maximeter_excess_price(
                         cursor, uid, wiz_id, month, maximeter_period_month,
-                        wiz.float_p1, context=context
+                        wiz.float_p1, wiz.excess_price_p1, context=context
                     ))
                     total_by_period['P1'] += total_maximeter_price[-1]
                 elif period == 'P2':
                     total_maximeter_price.append(self._calculate_maximeter_excess_price(
                         cursor, uid, wiz_id, month, maximeter_period_month,
-                        wiz.float_p2, context=context
+                        wiz.float_p2, wiz.excess_price_p2, context=context
                     ))
                     total_by_period['P2'] += total_maximeter_price[-1]
                 elif period == 'P3':
                     total_maximeter_price.append(self._calculate_maximeter_excess_price(
                         cursor, uid, wiz_id, month, maximeter_period_month,
-                        wiz.float_p3, context=context
+                        wiz.float_p3, wiz.excess_price_p3, context=context
                     ))
                     total_by_period['P3'] += total_maximeter_price[-1]
                 elif period == 'P4':
                     total_maximeter_price.append(self._calculate_maximeter_excess_price(
                         cursor, uid, wiz_id, month, maximeter_period_month,
-                        wiz.float_p4, context=context
+                        wiz.float_p4, wiz.excess_price_p4, context=context
                     ))
                     total_by_period['P4'] += total_maximeter_price[-1]
                 elif period == 'P5':
                     total_maximeter_price.append(self._calculate_maximeter_excess_price(
                         cursor, uid, wiz_id, month, maximeter_period_month,
-                        wiz.float_p5, context=context
+                        wiz.float_p5, wiz.excess_price_p5, context=context
                     ))
                     total_by_period['P5'] += total_maximeter_price[-1]
                 elif period == 'P6':
                     total_maximeter_price.append(self._calculate_maximeter_excess_price(
                         cursor, uid, wiz_id, month, maximeter_period_month,
-                        wiz.float_p6, context=context
+                        wiz.float_p6, wiz.excess_price_p6, context=context
                     ))
                     total_by_period['P6'] += total_maximeter_price[-1]
 
@@ -287,10 +285,27 @@ class WizardContractPowerOptimization(osv.osv_memory):
         polissa = pol_obj.browse(cursor, uid, polissa_id, context=context)
         wiz = self.browse(cursor, uid, wiz_id, context=context)
 
-        excess_price = get_atr_price(
-            cursor, uid, polissa, 'P1', 'epm', context=context, with_taxes=False
-        )[0]
-        wiz.write({'excess_price': excess_price}, context=context)
+        vals = {
+            "excess_price_p1": get_atr_price(
+                cursor, uid, polissa, 'P1', 'epm', context=context, with_taxes=False
+            )[0],
+            "excess_price_p2": get_atr_price(
+                cursor, uid, polissa, 'P2', 'epm', context=context, with_taxes=False
+            )[0],
+            "excess_price_p3": get_atr_price(
+                cursor, uid, polissa, 'P3', 'epm', context=context, with_taxes=False
+            )[0],
+            "excess_price_p4": get_atr_price(
+                cursor, uid, polissa, 'P4', 'epm', context=context, with_taxes=False
+            )[0],
+            "excess_price_p5": get_atr_price(
+                cursor, uid, polissa, 'P5', 'epm', context=context, with_taxes=False
+            )[0],
+            "excess_price_p6": get_atr_price(
+                cursor, uid, polissa, 'P6', 'epm', context=context, with_taxes=False
+            )[0],
+        }
+        wiz.write(vals, context=context)
 
     def button_get_optimization_required_data(self, cursor, uid, wiz_id, context=None):
         if context is None:
@@ -329,7 +344,7 @@ class WizardContractPowerOptimization(osv.osv_memory):
         values = self.browse(cursor, uid, wiz_id, context=context)
         data = {
             'power_price': [],
-            'excess_price': values['excess_price'],
+            'excess_price': [],
             'maximeters_powers': [],
             'power_p6': values['float_p6'],
         }
@@ -337,6 +352,8 @@ class WizardContractPowerOptimization(osv.osv_memory):
         for k, v in sorted(values.read()[0].items()):
             if 'power_price' in k:
                 data['power_price'].append(v)
+            elif 'excess_price' in k:
+                data['excess_price'].append(v)
             elif 'maximeters_powers' in k:
                 maximeters_powers = json.loads(values[k])
                 for mes in sorted(maximeters_powers):
@@ -563,7 +580,12 @@ class WizardContractPowerOptimization(osv.osv_memory):
             ],
             'State'),
 
-        'excess_price': fields.float('Preu excés maxímetre', digits=(16, 6)),
+        'excess_price_p1': fields.float('Preu excés maxímetre P1', digits=(16, 6)),
+        'excess_price_p2': fields.float('Preu excés maxímetre P2', digits=(16, 6)),
+        'excess_price_p3': fields.float('Preu excés maxímetre P3', digits=(16, 6)),
+        'excess_price_p4': fields.float('Preu excés maxímetre P4', digits=(16, 6)),
+        'excess_price_p5': fields.float('Preu excés maxímetre P5', digits=(16, 6)),
+        'excess_price_p6': fields.float('Preu excés maxímetre P6', digits=(16, 6)),
 
         'start_date': fields.date('Data inici'),
         'end_date': fields.date('Data final'),
