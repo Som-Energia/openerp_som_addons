@@ -15,6 +15,7 @@
         "som_polissa",
         "som_indexada",
         "som_partner_seq",
+        "partner_representante",
     ],
     "init_xml": [],
     "demo_xml": [
