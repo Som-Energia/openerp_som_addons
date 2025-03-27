@@ -90,7 +90,7 @@ class TestsSomLeadWww(testing.OOTestCase):
     def test_create_simple_juridic_lead(self):
         www_lead_o = self.get_model("som.lead.www")
         lead_o = self.get_model("giscedata.crm.lead")
-        # sw_o = self.get_model("giscedata.switching")
+        parnter_o = self.get_model("res.partner")
 
         values = {
             "owner_is_member": True,
@@ -137,4 +137,6 @@ class TestsSomLeadWww(testing.OOTestCase):
         # Check that the name is correctly set
         self.assertEqual(lead.name, "C81837452 / ES0177000000000000LR")
 
-        # FIXME: This test must be done
+        # Check that the representative is created and correctly linked
+        rep_id = parnter_o.search(self.cursor, self.uid, [("vat", "=", "ES40323835M")])[0]
+        self.assertEqual(lead.polissa_id.titular.representante_id.id, rep_id)

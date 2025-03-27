@@ -74,6 +74,11 @@ class SomLeadWww(osv.osv_memory):
             "use_cont_address": False,
             "allow_contact": False,  # TODO: use privacy_conditions? or remove
         }
+
+        if www_vals["contract_member"]["is_juridic"]:
+            values["persona_firmant_vat"] = www_vals["contract_member"]["proxy_vat"]
+            values["persona_nom"] = www_vals["contract_member"]["proxy_name"]
+
         lead_id = lead_o.create(cr, uid, values, context=context)
         return lead_id
 
