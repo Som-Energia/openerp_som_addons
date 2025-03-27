@@ -129,10 +129,29 @@ class GiscedataCrmLead(osv.OsvInherits):
         if context is None:
             context = {}
 
-        owner_is_member = self.read(cursor, uid, crml_id, ['owner_is_member'])
+        partner_o = self.pool.get("res.partner")
 
-        if owner_is_member:
+        lead_vals = self.read(
+            cursor, uid, crml_id,
+            ['owner_is_member', 'persona_firmant_vat', 'persona_nom'],
+            context=context
+        )
+
+        if lead_vals['owner_is_member']:
             context["create_member"] = True
+
+        if lead_vals['persona_firmant_vat']:
+            if len(lead_vals.get("persona_firmant_vat")) <= 9:
+                lead_vals['persona_firmant_vat'] = "ES" + lead_vals['persona_firmant_vat']
+            lead_vals['persona_firmant_vat'] = lead_vals['persona_firmant_vat'].upper()
+            representant_id = partner_o.create(
+                cursor, uid, {
+                    "vat": lead_vals['persona_firmant_vat'],
+                    "name": lead_vals['persona_nom'],
+                },
+                context=context
+            )
+            context["partner_representant_id"] = representant_id
 
         return super(GiscedataCrmLead, self).create_entity_titular(
             cursor, uid, crml_id, context=context
@@ -160,6 +179,9 @@ class GiscedataCrmLead(osv.OsvInherits):
             create_vals['ref'] = self.read(
                 cursor, uid, crml_id, ["member_number"], context=context
             )["member_number"]
+
+        if context.get("partner_representant_id"):
+            create_vals["representante_id"] = context["partner_representant_id"]
 
         partner_id = super(GiscedataCrmLead, self).create_partner(
             cursor, uid, create_vals, crml_id, context=context)
