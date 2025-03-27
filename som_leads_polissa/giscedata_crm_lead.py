@@ -129,8 +129,6 @@ class GiscedataCrmLead(osv.OsvInherits):
         if context is None:
             context = {}
 
-        partner_o = self.pool.get("res.partner")
-
         lead_vals = self.read(
             cursor, uid, crml_id,
             ['owner_is_member', 'persona_firmant_vat', 'persona_nom'],
@@ -140,22 +138,40 @@ class GiscedataCrmLead(osv.OsvInherits):
         if lead_vals['owner_is_member']:
             context["create_member"] = True
 
-        if lead_vals['persona_firmant_vat']:
-            if len(lead_vals.get("persona_firmant_vat")) <= 9:
-                lead_vals['persona_firmant_vat'] = "ES" + lead_vals['persona_firmant_vat']
-            lead_vals['persona_firmant_vat'] = lead_vals['persona_firmant_vat'].upper()
-            representant_id = partner_o.create(
-                cursor, uid, {
-                    "vat": lead_vals['persona_firmant_vat'],
-                    "name": lead_vals['persona_nom'],
-                },
-                context=context
-            )
-            context["partner_representant_id"] = representant_id
+        representative_id = self._create_or_get_representative(
+            cursor, uid, lead_vals['persona_firmant_vat'], lead_vals['persona_nom'], context=context
+        )
+        if representative_id:
+            context["partner_representantive_id"] = representative_id
 
         return super(GiscedataCrmLead, self).create_entity_titular(
             cursor, uid, crml_id, context=context
         )
+
+    def _create_or_get_representative(self, cursor, uid, vat, name, context=None):
+        if context is None:
+            context = {}
+
+        partner_o = self.pool.get("res.partner")
+
+        representative_id = None
+        if vat:
+            if len(vat) <= 9:
+                vat = "ES" + vat
+            vat = vat.upper()
+
+            representative_ids = partner_o.search(cursor, uid, [("vat", "=", vat)])
+            if representative_ids:
+                representative_id = representative_ids[0]
+            else:
+                representative_id = partner_o.create(
+                    cursor, uid, {
+                        "vat": vat,
+                        "name": name,
+                    },
+                    context=context
+                )
+        return representative_id
 
     def create(self, cursor, uid, vals, context=None):
         if context is None:
@@ -180,8 +196,8 @@ class GiscedataCrmLead(osv.OsvInherits):
                 cursor, uid, crml_id, ["member_number"], context=context
             )["member_number"]
 
-        if context.get("partner_representant_id"):
-            create_vals["representante_id"] = context["partner_representant_id"]
+        if context.get("partner_representantive_id"):
+            create_vals["representante_id"] = context["partner_representantive_id"]
 
         partner_id = super(GiscedataCrmLead, self).create_partner(
             cursor, uid, create_vals, crml_id, context=context)
