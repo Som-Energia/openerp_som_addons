@@ -54,7 +54,6 @@ class SomLeadWww(osv.osv_memory):
             "autoconsumo": "00",  # FIXME: use getionatr defs tabla113
             "potenciasContratadasEnKWP1": float(www_vals["power_p1"]) / 1000,
             "potenciasContratadasEnKWP2": float(www_vals["power_p2"]) / 1000,
-            # TODO: other potencias
             "llista_preu": llista_preu_id,
             "facturacio": self._FACTURACIO_MENSUAL,
             "iban": www_vals["payment_iban"],
@@ -78,6 +77,12 @@ class SomLeadWww(osv.osv_memory):
         if www_vals["contract_member"]["is_juridic"]:
             values["persona_firmant_vat"] = www_vals["contract_member"]["proxy_vat"]
             values["persona_nom"] = www_vals["contract_member"]["proxy_name"]
+
+        if www_vals["tariff"] == "3.0TD":
+            values["potenciasContratadasEnKWP3"] = float(www_vals["power_p3"]) / 1000
+            values["potenciasContratadasEnKWP4"] = float(www_vals["power_p4"]) / 1000
+            values["potenciasContratadasEnKWP5"] = float(www_vals["power_p5"]) / 1000
+            values["potenciasContratadasEnKWP6"] = float(www_vals["power_p6"]) / 1000
 
         lead_id = lead_o.create(cr, uid, values, context=context)
         return lead_id
