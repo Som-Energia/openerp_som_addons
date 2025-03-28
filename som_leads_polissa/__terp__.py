@@ -13,11 +13,17 @@
         "giscedata_crm_leads",
         "giscedata_crm_importador",
         "som_polissa",
+        "som_indexada",
+        "som_partner_seq",
+        "partner_representante",
     ],
     "init_xml": [],
-    "demo_xml": [],
+    "demo_xml": [
+        "demo/res_partner_demo.xml"
+    ],
     "update_xml": [
         "giscedata_crm_lead_view.xml",
+        "security/ir.model.access.csv",
         "wizard/wizard_crm_lead_create_entities_view.xml",
         "wizard/wizard_importador_leads_comercials_view.xml",
     ],
