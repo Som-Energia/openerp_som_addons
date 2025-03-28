@@ -1008,7 +1008,7 @@ class TarifaPoolSOM(TarifaPool):
         A = ((pauvi + phm) * 0.001)
         B = (pc3_boe + (dsv + gdos + omie) * 0.001)
         C = A + B * (1 + perdues)
-        D = (fe * 0.001) + f
+        D = (fe * 0.001) + (f * 0.001)
         E = C + D
         F = E * (1 + (imu * 0.01))
         G = F + pa
