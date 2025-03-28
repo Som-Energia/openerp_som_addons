@@ -234,7 +234,7 @@ class TestsSomLeadWww(testing.OOTestCase):
             "power_p3": "5000",
             "power_p4": "6000",
             "power_p5": "7000",
-            "power_p6": "8000",
+            "power_p6": "15001",
             "cups_address": "C/ Falsa, 123",
             "cups_postal_code": "08178",
             "cups_city_id": 5386,
@@ -256,3 +256,4 @@ class TestsSomLeadWww(testing.OOTestCase):
         lead = lead_o.browse(self.cursor, self.uid, lead_id)
 
         self.assertEqual(len(lead.polissa_id.potencies_periode), 6)
+        self.assertEqual(lead.polissa_id.tarifa.name, "3.0TD")
