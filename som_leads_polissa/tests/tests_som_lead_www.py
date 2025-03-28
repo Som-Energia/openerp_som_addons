@@ -205,3 +205,54 @@ class TestsSomLeadWww(testing.OOTestCase):
 
         # Check that the representative is correctly linked
         self.assertEqual(lead.polissa_id.titular.representante_id.id, existing_partner_id)
+
+    def test_create_lead_30TD(self):
+        www_lead_o = self.get_model("som.lead.www")
+        lead_o = self.get_model("giscedata.crm.lead")
+
+        values = {
+            "owner_is_member": True,
+            "owner_is_payer": True,
+            "contract_member": {
+                "vat": "C81837452",
+                "name": "PEC COOP SCCL",
+                "is_juridic": False,
+                "address": "C/ Not True, 123",
+                "city_id": 5386,
+                "state_id": 20,
+                "postal_code": "08178",
+                "email": "pepito@foo.bar",
+                "phone": "972123456",
+                "lang": "ca_ES",
+                "privacy_conditions": True,
+            },
+            "cups": "ES0177000000000000LR",
+            "is_indexed": False,
+            "tariff": "3.0TD",
+            "power_p1": "4400",
+            "power_p2": "4900",
+            "power_p3": "5000",
+            "power_p4": "6000",
+            "power_p5": "7000",
+            "power_p6": "8000",
+            "cups_address": "C/ Falsa, 123",
+            "cups_postal_code": "08178",
+            "cups_city_id": 5386,
+            "cups_state_id": 20,
+            "cnae": "9820",
+            "supply_point_accepted": True,
+            "payment_iban": "ES77 1234 1234 1612 3456 7890",
+            "sepa_conditions": True,
+            "donation": False,
+            "process": "C1",
+            "general_contract_terms_accepted": True,
+            "particular_contract_terms_accepted": True,
+        }
+
+        lead_id = www_lead_o.create_lead(self.cursor, self.uid, values)
+        lead_o.force_validation(self.cursor, self.uid, [lead_id])
+        lead_o.create_entities(self.cursor, self.uid, lead_id)
+
+        lead = lead_o.browse(self.cursor, self.uid, lead_id)
+
+        self.assertEqual(len(lead.polissa_id.potencies_periode), 6)
