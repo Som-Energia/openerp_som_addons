@@ -279,13 +279,8 @@ class TarifaPoolSOM(TarifaPool):
 
         # Sobrecostes REE
         compodem = MonthlyCompodem('C2_monthlycompodem_%(postfix)s' % locals(), esios_token)
-        bs3qh = self.conf.get('versions', {})[start_date.strftime("%Y-%m-%d")]['bs3qh'].get_component()
-        if not any(x != 0 for row in bs3qh.matrix for x in row):
-            raise osv.osv.except_osv(
-                'Error:', 'No hi ha valors de BS3 al reganecuQH amb data {}'.format(start_date.strftime("%Y-%m-%d"))
-            )
         sobrecostes_ree = (
-                compodem.get_component("RT3") + compodem.get_component("RT6") + bs3qh +
+                compodem.get_component("RT3") + compodem.get_component("RT6") + compodem.get_component("BS3") +
                 compodem.get_component("EXD") + compodem.get_component("IN7") + compodem.get_component("CFP") +
                 compodem.get_component("BALX") + compodem.get_component("DSV") + compodem.get_component("PS3") +
                 compodem.get_component("IN3") + compodem.get_component("CT3")
@@ -402,13 +397,15 @@ class TarifaPoolSOM(TarifaPool):
             csdvbaj = Codsvbaqh('C2_codsvbaqh_%(postfix)s' % locals(), esios_token)  # [€/MWh]
             csdvsub = Codsvsuqh('C2_codsvsuqh_%(postfix)s' % locals(), esios_token)  # [€/MWh]
 
-        compodem = MonthlyCompodem('C2_monthlycompodem_%(postfix)s' % locals(), esios_token)
-        bs3 = self.conf.get('versions', {})[start_date.strftime("%Y-%m-%d")]['bs3qh'].get_component()
+        # BS3 format QH from REGANECU
+        bs3 = self.conf.get('versions', {})[start_date.strftime("%Y-%m-%d")]['bs3qh']
         if not any(x != 0 for row in bs3.matrix for x in row):
             raise osv.osv.except_osv(
                 'Error:', 'No hi ha valors de BS3 al reganecuQH amb data {}'.format(start_date.strftime("%Y-%m-%d"))
             )
-        rad3 = self.conf.get('versions', {})[start_date.strftime("%Y-%m-%d")]['rad3qh'].get_component()
+
+        # RAD3 format QH from REGANECU
+        rad3 = self.conf.get('versions', {})[start_date.strftime("%Y-%m-%d")]['rad3qh']
         if not any(x != 0 for row in rad3.matrix for x in row):
             raise osv.osv.except_osv(
                 'Error:', 'No hi ha valors de RAD3 al reganecuQH amb data {}'.format(start_date.strftime("%Y-%m-%d"))

@@ -44,6 +44,7 @@ class GiscedataFacturacioFacturador(osv.osv):
                 llista_preu_id = context['llista_preu']
             else:
                 llista_preu_id = polissa.llista_preu.id
+
             ctx.update({'component_qh': True})
             for date_version in res:
                 ctx['date'] = date_version
