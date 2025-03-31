@@ -118,7 +118,7 @@ class TestsSomLeadWww(testing.OOTestCase):
         www_lead_o = self.get_model("som.lead.www")
         lead_o = self.get_model("giscedata.crm.lead")
         partner_o = self.get_model("res.partner")
-        imd_o = self.openerp.pool.get('ir.model.data')
+        imd_o = self.get_model('ir.model.data')
 
         existing_partner_id = imd_o.get_object_reference(
             self.cursor, self.uid, 'som_leads_polissa', 'res_partner_distri'
@@ -280,3 +280,37 @@ class TestsSomLeadWww(testing.OOTestCase):
         a3 = sw_o.get_pas(self.cursor, self.uid, atr_case_ids)
         self.assertEqual(a3.control_potencia, "1")
         self.assertEqual(a3.cnae.name, values["cnae"])
+
+    def test_create_lead_from_canarias(self):
+        ir_model_o = self.get_model("ir.model.data")
+        cfg_o = self.get_model("res.config")
+        www_lead_o = self.get_model("som.lead.www")
+        lead_o = self.get_model("giscedata.crm.lead")
+
+        values = self._basic_values
+
+        laguna_municipi_id = ir_model_o.get_object_reference(
+            self.cursor, self.uid, "base_extended", "ine_38023"
+        )[1]
+        tenerife_state_id = ir_model_o.get_object_reference(
+            self.cursor, self.uid, "l10n_ES_toponyms", "ES38"
+        )[1]
+
+        values["cups_city_id"] = laguna_municipi_id
+        values["cups_state_id"] = tenerife_state_id
+        values["cups"] = "ES0031601267738003JC0F"
+
+        lead_id = www_lead_o.create_lead(self.cursor, self.uid, values)
+        lead_o.force_validation(self.cursor, self.uid, [lead_id])
+        lead_o.create_entities(self.cursor, self.uid, lead_id)
+
+        lead = lead_o.browse(self.cursor, self.uid, lead_id)
+
+        posicio_id = cfg_o.get(self.cursor, self.uid, "fp_canarias_vivienda_id")
+
+        canarian_pricelist_id = ir_model_o.get_object_reference(
+            self.cursor, self.uid, "som_indexada", "pricelist_periodes_20td_insular"
+        )[1]
+
+        self.assertEqual(lead.polissa_id.fiscal_position_id.id, posicio_id)
+        self.assertEqual(lead.polissa_id.llista_preus.id, canarian_pricelist_id)
