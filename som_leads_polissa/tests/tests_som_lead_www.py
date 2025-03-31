@@ -77,6 +77,9 @@ class TestsSomLeadWww(testing.OOTestCase):
         # Check that the contract has the member field filled correctly
         self.assertEqual(lead.polissa_id.soci, lead.polissa_id.titular)
 
+        # Check the invoicing mode
+        self.assertEqual(lead.polissa_id.facturacio_potencia, "icp")
+
         # Check that the ATR is created with C1 process
         atr_case = sw_o.search(
             self.cursor, self.uid, [
@@ -167,6 +170,7 @@ class TestsSomLeadWww(testing.OOTestCase):
 
         self.assertEqual(len(lead.polissa_id.potencies_periode), 6)
         self.assertEqual(lead.polissa_id.tarifa.name, "3.0TD")
+        self.assertEqual(lead.polissa_id.facturacio_potencia, "max")
 
     def test_create_lead_with_donatiu(self):
         www_lead_o = self.get_model("som.lead.www")
@@ -182,7 +186,7 @@ class TestsSomLeadWww(testing.OOTestCase):
         lead = lead_o.browse(self.cursor, self.uid, lead_id)
         self.assertIs(lead.polissa_id.donatiu, True)
 
-    def test_create_lead_with_owner_change_C2(self):
+    def test_create_lead_with_owner_change_C2_20TD(self):
         www_lead_o = self.get_model("som.lead.www")
         sw_o = self.get_model("giscedata.switching")
         lead_o = self.get_model("giscedata.crm.lead")
@@ -206,7 +210,45 @@ class TestsSomLeadWww(testing.OOTestCase):
         )
         self.assertEqual(len(atr_case_ids), 1)
 
-        # comprovar change type owner
+        # check change type owner
         c2 = sw_o.get_pas(self.cursor, self.uid, atr_case_ids)
         self.assertEqual(c2.sollicitudadm, "S")
         self.assertEqual(c2.canvi_titular, "T")
+        self.assertEqual(c2.control_potencia, "1")
+
+    def test_create_lead_with_owner_change_C2_30TD(self):
+        www_lead_o = self.get_model("som.lead.www")
+        sw_o = self.get_model("giscedata.switching")
+        lead_o = self.get_model("giscedata.crm.lead")
+
+        values = self._basic_values
+        values['process'] = "C2"
+        values["tariff"] = "3.0TD"
+        values["power_p1"] = "4400"
+        values["power_p2"] = "4900"
+        values["power_p3"] = "5000"
+        values["power_p4"] = "6000"
+        values["power_p5"] = "7000"
+        values["power_p6"] = "15001"
+
+        lead_id = www_lead_o.create_lead(self.cursor, self.uid, values)
+        lead_o.force_validation(self.cursor, self.uid, [lead_id])
+        lead_o.create_entities(self.cursor, self.uid, lead_id)
+
+        lead = lead_o.browse(self.cursor, self.uid, lead_id)
+
+        # Check that the ATR is created with C2 process
+        atr_case_ids = sw_o.search(
+            self.cursor, self.uid, [
+                ("proces_id.name", "=", "C2"),
+                ("cups_polissa_id", "=", lead.polissa_id.id),
+                ("cups_input", "=", lead.polissa_id.cups.name),
+            ]
+        )
+        self.assertEqual(len(atr_case_ids), 1)
+
+        # check change type owner
+        c2 = sw_o.get_pas(self.cursor, self.uid, atr_case_ids)
+        self.assertEqual(c2.sollicitudadm, "S")
+        self.assertEqual(c2.canvi_titular, "T")
+        self.assertEqual(c2.control_potencia, "2")
