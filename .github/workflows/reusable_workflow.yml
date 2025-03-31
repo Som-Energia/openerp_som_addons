@@ -22,6 +22,8 @@ on:
             required: true
         SRID:
             required: true
+        CODECOV_TOKEN:
+            required: true
 
 env:
   POSTGRES_USER: erp
