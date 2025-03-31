@@ -71,6 +71,7 @@ class SomLeadWww(osv.osv_memory):
             "titular_phone": www_vals["contract_member"]["phone"],
             "titular_mobile": www_vals["contract_member"].get("phone2"),
             "use_cont_address": False,
+            "donation": www_vals.get("donation", False),
             "allow_contact": False,  # TODO: use privacy_conditions? or remove
         }
 

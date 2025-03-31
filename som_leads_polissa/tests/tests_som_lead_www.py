@@ -167,3 +167,17 @@ class TestsSomLeadWww(testing.OOTestCase):
 
         self.assertEqual(len(lead.polissa_id.potencies_periode), 6)
         self.assertEqual(lead.polissa_id.tarifa.name, "3.0TD")
+
+    def test_create_lead_with_donatiu(self):
+        www_lead_o = self.get_model("som.lead.www")
+        lead_o = self.get_model("giscedata.crm.lead")
+
+        values = self._basic_values
+        values["donation"] = True
+
+        lead_id = www_lead_o.create_lead(self.cursor, self.uid, values)
+        lead_o.force_validation(self.cursor, self.uid, [lead_id])
+        lead_o.create_entities(self.cursor, self.uid, lead_id)
+
+        lead = lead_o.browse(self.cursor, self.uid, lead_id)
+        self.assertIs(lead.polissa_id.donatiu, True)
