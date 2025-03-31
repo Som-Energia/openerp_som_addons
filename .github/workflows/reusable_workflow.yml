@@ -174,3 +174,13 @@ jobs:
         with:
           files: test-results/destral/*.xml
           secondary_rate_limit_wait_seconds: 120.0
+
+      - name: Generate coverage file
+        run: |
+          cd ${{github.workspace}}
+          coverage xml
+
+      - name: Upload coverage reports to Codecov
+        uses: codecov/codecov-action@v5
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
