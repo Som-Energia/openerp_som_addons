@@ -23,6 +23,7 @@
     ],
     "update_xml": [
         "giscedata_crm_lead_view.xml",
+        "data/giscedata_crm_lead_data.xml",
         "security/ir.model.access.csv",
         "wizard/wizard_crm_lead_create_entities_view.xml",
         "wizard/wizard_importador_leads_comercials_view.xml",
