@@ -15,18 +15,7 @@ class TestsSomLeadWww(testing.OOTestCase):
         lang_o.create(self.cursor, self.uid, {"name": "Català", "code": "ca_ES"})
         lang_o.create(self.cursor, self.uid, {"name": "Español", "code": "es_ES"})
 
-    def tearDown(self):
-        self.txn.stop()
-
-    def get_model(self, model_name):
-        return self.openerp.pool.get(model_name)
-
-    def test_create_simple_domestic_lead(self):
-        www_lead_o = self.get_model("som.lead.www")
-        lead_o = self.get_model("giscedata.crm.lead")
-        sw_o = self.get_model("giscedata.switching")
-
-        values = {
+        self._basic_values = {
             "owner_is_member": True,
             "owner_is_payer": True,
             "contract_member": {
@@ -62,7 +51,18 @@ class TestsSomLeadWww(testing.OOTestCase):
             "particular_contract_terms_accepted": True,
         }
 
-        lead_id = www_lead_o.create_lead(self.cursor, self.uid, values)
+    def tearDown(self):
+        self.txn.stop()
+
+    def get_model(self, model_name):
+        return self.openerp.pool.get(model_name)
+
+    def test_create_simple_domestic_lead(self):
+        www_lead_o = self.get_model("som.lead.www")
+        lead_o = self.get_model("giscedata.crm.lead")
+        sw_o = self.get_model("giscedata.switching")
+
+        lead_id = www_lead_o.create_lead(self.cursor, self.uid, self._basic_values)
         lead_o.force_validation(self.cursor, self.uid, [lead_id])
         lead_o.create_entities(self.cursor, self.uid, lead_id)
 
@@ -92,42 +92,12 @@ class TestsSomLeadWww(testing.OOTestCase):
         lead_o = self.get_model("giscedata.crm.lead")
         partner_o = self.get_model("res.partner")
 
-        values = {
-            "owner_is_member": True,
-            "owner_is_payer": True,
-            "contract_member": {
-                "vat": "C81837452",
-                "name": "PEC COOP SCCL",
-                "proxy_name": "Pepito Palotes",
-                "proxy_vat": "40323835M",
-                "is_juridic": True,
-                "address": "C/ Not True, 123",
-                "city_id": 5386,
-                "state_id": 20,
-                "postal_code": "08178",
-                "email": "pepito@foo.bar",
-                "phone": "972123456",
-                "lang": "ca_ES",
-                "privacy_conditions": True,
-            },
-            "cups": "ES0177000000000000LR",
-            "is_indexed": False,
-            "tariff": "2.0TD",
-            "power_p1": "4400",
-            "power_p2": "8000",
-            "cups_address": "C/ Falsa, 123",
-            "cups_postal_code": "08178",
-            "cups_city_id": 5386,
-            "cups_state_id": 20,
-            "cnae": "9820",
-            "supply_point_accepted": True,
-            "payment_iban": "ES77 1234 1234 1612 3456 7890",
-            "sepa_conditions": True,
-            "donation": False,
-            "process": "C1",
-            "general_contract_terms_accepted": True,
-            "particular_contract_terms_accepted": True,
-        }
+        values = self._basic_values
+        values["contract_member"]["is_juridic"] = True
+        values["contract_member"]["vat"] = "C81837452"
+        values["contract_member"]["name"] = "PEC COOP SCCL"
+        values["contract_member"]["proxy_name"] = "Pepito Palotes"
+        values["contract_member"]["proxy_vat"] = "40323835M"
 
         lead_id = www_lead_o.create_lead(self.cursor, self.uid, values)
         lead_o.force_validation(self.cursor, self.uid, [lead_id])
@@ -155,42 +125,12 @@ class TestsSomLeadWww(testing.OOTestCase):
             self.cursor, self.uid, existing_partner_id, ['vat']
         )['vat']
 
-        values = {
-            "owner_is_member": True,
-            "owner_is_payer": True,
-            "contract_member": {
-                "vat": "C81837452",
-                "name": "PEC COOP SCCL",
-                "proxy_name": "Pepito Palotes",
-                "proxy_vat": existing_partner_vat,
-                "is_juridic": True,
-                "address": "C/ Not True, 123",
-                "city_id": 5386,
-                "state_id": 20,
-                "postal_code": "08178",
-                "email": "pepito@foo.bar",
-                "phone": "972123456",
-                "lang": "ca_ES",
-                "privacy_conditions": True,
-            },
-            "cups": "ES0177000000000000LR",
-            "is_indexed": False,
-            "tariff": "2.0TD",
-            "power_p1": "4400",
-            "power_p2": "8000",
-            "cups_address": "C/ Falsa, 123",
-            "cups_postal_code": "08178",
-            "cups_city_id": 5386,
-            "cups_state_id": 20,
-            "cnae": "9820",
-            "supply_point_accepted": True,
-            "payment_iban": "ES77 1234 1234 1612 3456 7890",
-            "sepa_conditions": True,
-            "donation": False,
-            "process": "C1",
-            "general_contract_terms_accepted": True,
-            "particular_contract_terms_accepted": True,
-        }
+        values = self._basic_values
+        values["contract_member"]["is_juridic"] = True
+        values["contract_member"]["vat"] = "C81837452"
+        values["contract_member"]["name"] = "PEC COOP SCCL"
+        values["contract_member"]["proxy_name"] = "Pepito Palotes"
+        values["contract_member"]["proxy_vat"] = existing_partner_vat
 
         lead_id = www_lead_o.create_lead(self.cursor, self.uid, values)
         lead_o.force_validation(self.cursor, self.uid, [lead_id])
@@ -210,44 +150,14 @@ class TestsSomLeadWww(testing.OOTestCase):
         www_lead_o = self.get_model("som.lead.www")
         lead_o = self.get_model("giscedata.crm.lead")
 
-        values = {
-            "owner_is_member": True,
-            "owner_is_payer": True,
-            "contract_member": {
-                "vat": "C81837452",
-                "name": "PEC COOP SCCL",
-                "is_juridic": False,
-                "address": "C/ Not True, 123",
-                "city_id": 5386,
-                "state_id": 20,
-                "postal_code": "08178",
-                "email": "pepito@foo.bar",
-                "phone": "972123456",
-                "lang": "ca_ES",
-                "privacy_conditions": True,
-            },
-            "cups": "ES0177000000000000LR",
-            "is_indexed": False,
-            "tariff": "3.0TD",
-            "power_p1": "4400",
-            "power_p2": "4900",
-            "power_p3": "5000",
-            "power_p4": "6000",
-            "power_p5": "7000",
-            "power_p6": "15001",
-            "cups_address": "C/ Falsa, 123",
-            "cups_postal_code": "08178",
-            "cups_city_id": 5386,
-            "cups_state_id": 20,
-            "cnae": "9820",
-            "supply_point_accepted": True,
-            "payment_iban": "ES77 1234 1234 1612 3456 7890",
-            "sepa_conditions": True,
-            "donation": False,
-            "process": "C1",
-            "general_contract_terms_accepted": True,
-            "particular_contract_terms_accepted": True,
-        }
+        values = self._basic_values
+        values["tariff"] = "3.0TD"
+        values["power_p1"] = "4400"
+        values["power_p2"] = "4900"
+        values["power_p3"] = "5000"
+        values["power_p4"] = "6000"
+        values["power_p5"] = "7000"
+        values["power_p6"] = "15001"
 
         lead_id = www_lead_o.create_lead(self.cursor, self.uid, values)
         lead_o.force_validation(self.cursor, self.uid, [lead_id])
