@@ -79,7 +79,7 @@ class GiscedataCrmLead(osv.OsvInherits):
 
         # recuperem la polissa recent creada del lead
         lead_vals = self.read(
-            cursor, uid, crml_id, ['polissa_id', 'member_number'],
+            cursor, uid, crml_id, ['polissa_id', 'member_number', 'donation'],
             context=context
         )
 
@@ -87,6 +87,7 @@ class GiscedataCrmLead(osv.OsvInherits):
         member_number = lead_vals["member_number"]
 
         values["soci"] = partner_o.search(cursor, uid, [("ref", "=", member_number)], limit=1)[0]
+        values["donatiu"] = lead_vals["donation"]
 
         polissa_o = self.pool.get("giscedata.polissa")
         polissa = polissa_o.browse(cursor, uid, polissa_id, context=context)
@@ -224,11 +225,13 @@ class GiscedataCrmLead(osv.OsvInherits):
         "preu_fix_potencia_p6": fields.float("Preu Fix Potència P6", digits=(16, 6)),
         "member_number": fields.char('Número de sòcia', size=64),
         "owner_is_member": fields.boolean("Mateixa sòcia que titular"),
+        "donation": fields.boolean("Donatiu voluntari"),
     }
 
     _defaults = {
         "tipus_tarifa_lead": lambda *a: "tarifa_existent",
         "set_custom_potencia": lambda *a: False,
+        "donation": lambda *a: False,
     }
 
 
