@@ -186,3 +186,10 @@ jobs:
         uses: codecov/codecov-action@v5
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
+
+      - name: Coveralls
+        env:
+          GITHUB_TOKEN: ${{ secrets.ACCESS_TOKEN_GA }}
+        uses: coverallsapp/github-action@v2
+        with:
+          format: cobertura
