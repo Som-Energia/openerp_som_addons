@@ -186,6 +186,7 @@ jobs:
         uses: codecov/codecov-action@v5
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
+          flags: ${{ inputs.module }}
 
       - name: Coveralls
         env:
@@ -193,3 +194,4 @@ jobs:
         uses: coverallsapp/github-action@v2
         with:
           format: cobertura
+          flag-name: ${{ inputs.module }}
