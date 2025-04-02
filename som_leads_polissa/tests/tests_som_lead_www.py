@@ -72,6 +72,7 @@ class TestsSomLeadWww(testing.OOTestCase):
         www_lead_o = self.get_model("som.lead.www")
         lead_o = self.get_model("giscedata.crm.lead")
         sw_o = self.get_model("giscedata.switching")
+        ir_model_o = self.get_model("ir.model.data")
 
         lead_id = www_lead_o.create_lead(self.cursor, self.uid, self._basic_values)
         lead_o.force_validation(self.cursor, self.uid, [lead_id])
@@ -100,6 +101,12 @@ class TestsSomLeadWww(testing.OOTestCase):
             ]
         )
         self.assertEqual(len(atr_case), 1)
+
+        # Check the pricelist
+        peninsular_pricelist_id = ir_model_o.get_object_reference(
+            self.cursor, self.uid, "som_indexada", "pricelist_periodes_20td_peninsula"
+        )[1]
+        self.assertEqual(lead.polissa_id.llista_preu.id, peninsular_pricelist_id)
 
     def test_create_simple_juridic_lead(self):
         www_lead_o = self.get_model("som.lead.www")
@@ -322,9 +329,38 @@ class TestsSomLeadWww(testing.OOTestCase):
 
         lead = lead_o.browse(self.cursor, self.uid, lead_id)
 
-        canarian_pricelist_id = ir_model_o.get_object_reference(
+        insular_pricelist_id = ir_model_o.get_object_reference(
             self.cursor, self.uid, "som_indexada", "pricelist_periodes_20td_insular"
         )[1]
 
         self.assertEqual(lead.polissa_id.fiscal_position_id.id, canarian_posicio_id)
-        self.assertEqual(lead.polissa_id.llista_preu.id, canarian_pricelist_id)
+        self.assertEqual(lead.polissa_id.llista_preu.id, insular_pricelist_id)
+
+    def test_create_lead_from_balears(self):
+        ir_model_o = self.get_model("ir.model.data")
+        www_lead_o = self.get_model("som.lead.www")
+        lead_o = self.get_model("giscedata.crm.lead")
+
+        values = self._basic_values
+
+        capdepera_municipi_id = ir_model_o.get_object_reference(
+            self.cursor, self.uid, "base_extended", "ine_07014"
+        )[1]
+        balears_state_id = ir_model_o.get_object_reference(
+            self.cursor, self.uid, "l10n_ES_toponyms", "ES07"
+        )[1]
+
+        values["cups_city_id"] = capdepera_municipi_id
+        values["cups_state_id"] = balears_state_id
+
+        lead_id = www_lead_o.create_lead(self.cursor, self.uid, values)
+        lead_o.force_validation(self.cursor, self.uid, [lead_id])
+        lead_o.create_entities(self.cursor, self.uid, lead_id)
+
+        lead = lead_o.browse(self.cursor, self.uid, lead_id)
+
+        insular_pricelist_id = ir_model_o.get_object_reference(
+            self.cursor, self.uid, "som_indexada", "pricelist_periodes_20td_insular"
+        )[1]
+
+        self.assertEqual(lead.polissa_id.llista_preu.id, insular_pricelist_id)

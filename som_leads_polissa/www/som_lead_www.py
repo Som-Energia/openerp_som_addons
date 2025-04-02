@@ -2,9 +2,6 @@
 from osv import osv
 from datetime import datetime
 
-from giscedata_cups.dso_cups.cups import get_distri_vals, get_dso
-from gestionatr.defs import conv_dict_5, conv_dict_6
-
 
 class SomLeadWww(osv.osv_memory):
     _name = "som.lead.www"
@@ -21,6 +18,7 @@ class SomLeadWww(osv.osv_memory):
         polissa_o = self.pool.get("giscedata.polissa")
         tarifa_o = self.pool.get("giscedata.polissa.tarifa")
         cnae_o = self.pool.get("giscemisc.cnae")
+        cups_ps_o = self.pool.get("giscedata.cups.ps")
 
         tensio_230 = imd_o.get_object_reference(cr, uid, 'giscedata_tensions', 'tensio_230')[1]
 
@@ -31,16 +29,14 @@ class SomLeadWww(osv.osv_memory):
         llista_preu_id = polissa_o.get_pricelist_from_tariff_and_location(
             cr, uid, www_vals["tariff"], tariff_mode, www_vals["cups_city_id"], context).id
 
-        distri_vals = _get_distri_vals_from_cups(www_vals["cups"])
+        distri_ref = cups_ps_o.partner_map_from_cups(cr, uid, www_vals["cups"], context=context)
 
         # TODO: Cal posar poblacions? (CUPS i titular)
         values = {
             "name": "{} / {}".format(www_vals["contract_member"]["vat"].upper(), www_vals["cups"]),
             "lang": www_vals["contract_member"]["lang"],
             "cups": www_vals["cups"],
-            "codigoEmpresaDistribuidora": distri_vals.get("code"),
-            "nombreEmpresaDistribuidora": distri_vals.get("name"),
-            "distribuidora_vat": distri_vals.get('vat') and 'ES%s' % distri_vals['vat'],
+            "codigoEmpresaDistribuidora": distri_ref,
             # "cups_ref_catastral": www_vals.get("cups_cadastral_reference"), TODO test
             "cups_zip": www_vals["cups_postal_code"],
             "cups_id_municipi": www_vals["cups_city_id"],
@@ -89,32 +85,6 @@ class SomLeadWww(osv.osv_memory):
 
         lead_id = lead_o.create(cr, uid, values, context=context)
         return lead_id
-
-
-def _get_distri_vals_from_cups(cups):
-    # based in giscedata_cups_comer -> partner_map_from_cups
-    partner_ref = get_dso(cups)
-    if partner_ref not in ['0031', '0390']:
-        # Original get_distri_vals that do not use the conversion dicts
-        return get_distri_vals(cups)
-
-    # In this case we return only the code and rely the distri will be in the bbdd
-    distri_vals = {}
-    cups_ref = cups[2:8]
-    if cups_ref[:5] == '00314':
-        if cups_ref[:6] == '003144':
-            # hidroelèctrica de l'empordà
-            distri_vals['code'] = '0396'
-        else:
-            distri_vals['code'] = '0024'
-
-    if cups_ref[:5] in conv_dict_5:
-        distri_vals['code'] = conv_dict_5[cups_ref[:5]]
-
-    if cups_ref[:6] in conv_dict_6:
-        distri_vals['code'] = conv_dict_6[cups_ref[:6]]
-
-    return distri_vals
 
 
 SomLeadWww()
