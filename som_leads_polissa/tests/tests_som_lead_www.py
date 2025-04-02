@@ -300,17 +300,20 @@ class TestsSomLeadWww(testing.OOTestCase):
         values["cups_state_id"] = tenerife_state_id
         values["cups"] = "ES0031601267738003JC0F"
 
+        canarian_posicio_id = ir_model_o.get_object_reference(
+            self.cursor, self.uid, "giscedata_facturacio", "fp_canarias_vivienda"
+        )[1]
+        cfg_o.set(self.cursor, self.uid, "fp_canarias_vivienda_id", canarian_posicio_id)
+
         lead_id = www_lead_o.create_lead(self.cursor, self.uid, values)
         lead_o.force_validation(self.cursor, self.uid, [lead_id])
         lead_o.create_entities(self.cursor, self.uid, lead_id)
 
         lead = lead_o.browse(self.cursor, self.uid, lead_id)
 
-        posicio_id = cfg_o.get(self.cursor, self.uid, "fp_canarias_vivienda_id")
-
         canarian_pricelist_id = ir_model_o.get_object_reference(
             self.cursor, self.uid, "som_indexada", "pricelist_periodes_20td_insular"
         )[1]
 
-        self.assertEqual(lead.polissa_id.fiscal_position_id.id, posicio_id)
-        self.assertEqual(lead.polissa_id.llista_preus.id, canarian_pricelist_id)
+        self.assertEqual(lead.polissa_id.fiscal_position_id.id, canarian_posicio_id)
+        self.assertEqual(lead.polissa_id.llista_preu.id, canarian_pricelist_id)
