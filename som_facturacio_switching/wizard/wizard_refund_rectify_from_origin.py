@@ -244,11 +244,11 @@ class WizardRefundRectifyFromOrigin(osv.osv_memory):
         db = pooler.get_db_only(cursor.dbname)
         tmp_cr = db.cursor()
         try:
-            fact_infos = fact_obj.read(cursor, uid, facts_created, ["id", "date_invoice"])
+            fact_infos = fact_obj.read(tmp_cr, uid, facts_created, ["id", "date_invoice"])
             sorted_factures = sorted(fact_infos, key=lambda f: f["date_invoice"])
             for factura in sorted_factures:
                 factura_id = factura["id"]
-                fact_obj.invoice_open(cursor, uid, [factura_id], context=context)
+                fact_obj.invoice_open(tmp_cr, uid, [factura_id], context=context)
 
             tmp_cr.commit()
         except Exception:
@@ -426,6 +426,9 @@ class WizardRefundRectifyFromOrigin(osv.osv_memory):
             origen = f1.invoice_number_text
             pol_id = f1.polissa_id.id
             pol_name = f1.polissa_id.name
+
+            db = pooler.get_db_only(cursor.dbname)
+            tmp_cr = db.cursor()
             try:
                 if f1.type_factura != "R":
                     msg.append(
@@ -446,7 +449,7 @@ class WizardRefundRectifyFromOrigin(osv.osv_memory):
                     continue
 
                 facts_cli_ids, msg_get = self.get_factures_client_by_dates(
-                    cursor,
+                    tmp_cr,
                     uid,
                     ids,
                     pol_id,
@@ -472,7 +475,7 @@ class WizardRefundRectifyFromOrigin(osv.osv_memory):
                         ]
                     )
                     self.add_f1_observation(
-                        cursor,
+                        tmp_cr,
                         uid,
                         _id,
                         "F1 NO refacturat en data {} per falta de factura generada".format(
@@ -483,7 +486,7 @@ class WizardRefundRectifyFromOrigin(osv.osv_memory):
                     continue
 
                 n_lect_del = self.recarregar_lectures_between_dates(
-                    cursor,
+                    tmp_cr,
                     uid,
                     ids,
                     pol_id,
@@ -502,9 +505,9 @@ class WizardRefundRectifyFromOrigin(osv.osv_memory):
                     )
                     continue
 
-                facts_created = self.refund_rectify_if_needed(cursor, uid, facts_cli_ids, context)
+                facts_created = self.refund_rectify_if_needed(tmp_cr, uid, facts_cli_ids, context)
                 msg_rr, facts_created = self.delete_draft_invoices_if_needed(
-                    cursor, uid, facts_created, facts_cli_ids, context
+                    tmp_cr, uid, facts_created, facts_cli_ids, context
                 )
                 msg.append(
                     "S'han esborrat {} lectures de la pòlissa {} i s'han generat {} factures".format(  # noqa: E501
@@ -516,7 +519,7 @@ class WizardRefundRectifyFromOrigin(osv.osv_memory):
                 f1_refacturats.append({"id": _id, "refund_result": msg_rr})
                 if wiz.max_amount:
                     facts_over_limit = self.check_max_amount(
-                        cursor, uid, ids, facts_created, wiz.max_amount, context
+                        tmp_cr, uid, ids, facts_created, wiz.max_amount, context
                     )
                     if facts_over_limit:
                         msg.append(
@@ -533,7 +536,7 @@ class WizardRefundRectifyFromOrigin(osv.osv_memory):
                         )
                         continue
                 if facts_created and self.has_open_initial_invoices(
-                    cursor, uid, ids, facts_cli_ids
+                    tmp_cr, uid, ids, facts_cli_ids
                 ):
                     msg.append(
                         "La pòlissa {} té alguna factura inicial oberta. No continua el procés".format(  # noqa: E501
@@ -549,12 +552,16 @@ class WizardRefundRectifyFromOrigin(osv.osv_memory):
                     )
                     continue
                 facts_by_polissa.setdefault(pol_name, []).extend(facts_created)
+                tmp_cr.commit()
 
             except Exception as e:
                 msg.append("Error processant la factura amb origen {}: {}".format(origen, str(e)))
                 fact_csv_result.append(
                     [origen, pol_name, "Hi ha hagut algun problema, cal revisar."]
                 )
+                tmp_cr.rollback()
+            finally:
+                tmp_cr.close()
 
         if f1_refacturats and wiz.actions != "draft":
             msg_open_send, csv_open_send = self.open_polissa_invoices_send_mail(
