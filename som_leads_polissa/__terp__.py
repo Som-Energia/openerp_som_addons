@@ -18,9 +18,7 @@
         "partner_representante",
     ],
     "init_xml": [],
-    "demo_xml": [
-        "demo/res_partner_demo.xml"
-    ],
+    "demo_xml": [],
     "update_xml": [
         "giscedata_crm_lead_view.xml",
         "data/giscedata_crm_lead_data.xml",
