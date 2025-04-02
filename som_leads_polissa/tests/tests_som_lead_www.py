@@ -1,9 +1,20 @@
 # -*- encoding: utf-8 -*-
 from destral import testing
 from destral.transaction import Transaction
+from oopgrade import oopgrade
+from tools import config
 
 
 class TestsSomLeadWww(testing.OOTestCase):
+
+    @classmethod
+    def setUpClass(cls):
+        super(TestsSomLeadWww, cls).setUpClass()
+        with Transaction().start(config['db_name']) as txn:
+            oopgrade.load_data(
+                txn.cursor, "giscedata_facturacio_comer", 'distribuidores_data.xml', mode='update'
+            )
+            txn.cursor.commit()
 
     def setUp(self):
         self.txn = Transaction().start(self.database)
@@ -121,7 +132,7 @@ class TestsSomLeadWww(testing.OOTestCase):
         imd_o = self.get_model('ir.model.data')
 
         existing_partner_id = imd_o.get_object_reference(
-            self.cursor, self.uid, 'som_leads_polissa', 'res_partner_distri'
+            self.cursor, self.uid, 'base', 'res_partner_agrolait'
         )[1]
 
         existing_partner_vat = partner_o.read(
