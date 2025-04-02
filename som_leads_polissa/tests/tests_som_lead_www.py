@@ -102,11 +102,32 @@ class TestsSomLeadWww(testing.OOTestCase):
         )
         self.assertEqual(len(atr_case), 1)
 
-        # Check the pricelist
+        # Check the pricelist and mode facturacio
         peninsular_pricelist_id = ir_model_o.get_object_reference(
             self.cursor, self.uid, "som_indexada", "pricelist_periodes_20td_peninsula"
         )[1]
         self.assertEqual(lead.polissa_id.llista_preu.id, peninsular_pricelist_id)
+        self.assertEqual(lead.polissa_id.mode_facturacio, 'atr')
+
+    def test_create_simple_domestic_lead_indexada(self):
+        www_lead_o = self.get_model("som.lead.www")
+        lead_o = self.get_model("giscedata.crm.lead")
+        ir_model_o = self.get_model("ir.model.data")
+
+        values = self._basic_values
+        values["is_indexed"] = True
+
+        lead_id = www_lead_o.create_lead(self.cursor, self.uid, values)
+        lead_o.force_validation(self.cursor, self.uid, [lead_id])
+        lead_o.create_entities(self.cursor, self.uid, lead_id)
+
+        lead = lead_o.browse(self.cursor, self.uid, lead_id)
+
+        peninsular_pricelist_id = ir_model_o.get_object_reference(
+            self.cursor, self.uid, "som_indexada", "pricelist_indexada_20td_peninsula_2024"
+        )[1]
+        self.assertEqual(lead.polissa_id.llista_preu.id, peninsular_pricelist_id)
+        self.assertEqual(lead.polissa_id.mode_facturacio, 'index')
 
     def test_create_simple_juridic_lead(self):
         www_lead_o = self.get_model("som.lead.www")
