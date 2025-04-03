@@ -19,6 +19,7 @@ class SomLeadWww(osv.osv_memory):
         tarifa_o = self.pool.get("giscedata.polissa.tarifa")
         cnae_o = self.pool.get("giscemisc.cnae")
         cups_ps_o = self.pool.get("giscedata.cups.ps")
+        selfcons_o = self.pool.get("giscedata.autoconsum")
 
         tensio_230 = imd_o.get_object_reference(cr, uid, 'giscedata_tensions', 'tensio_230')[1]
 
@@ -85,8 +86,23 @@ class SomLeadWww(osv.osv_memory):
 
         if www_vals.get("self_consumption"):
             values["cau"] = www_vals["self_consumption"]["cau"]
+            values["collectiu"] = www_vals["self_consumption"]["collective_installation"]
+            values["tec_generador"] = www_vals["self_consumption"]["technology"]
+            values["pot_instalada_gen"] = www_vals["self_consumption"]["installation_power"]
+            values["tipus_installacio"] = www_vals["self_consumption"]["installation_type"]
+            values["ssaa"] = 'S' if www_vals["self_consumption"]['aux_services'] else 'N'
+            # FIXME: Use constants!!!
+            values["seccio_registre"] = "2"
+            values["subseccio"] = "a0"
+            values["tipus_cups"] = "01"
+
+            values["autoconsumo"] = selfcons_o.get_ree_autoconsum_type_from_attrs(
+                values["seccio_registre"], values["subseccio"], int(values["collectiu"]),
+                int(values["tipus_cups"]), int(values["tipus_installacio"]), context=context
+            )
 
         lead_id = lead_o.create(cr, uid, values, context=context)
+        lead_o.copy_base_attr_gen_from_titular(cr, uid, lead_id)
         return lead_id
 
 
