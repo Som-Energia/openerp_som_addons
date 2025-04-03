@@ -109,6 +109,9 @@ class TestsSomLeadWww(testing.OOTestCase):
         self.assertEqual(lead.polissa_id.llista_preu.id, peninsular_pricelist_id)
         self.assertEqual(lead.polissa_id.mode_facturacio, 'atr')
 
+        # Check that don't have self consumption
+        self.assertEqual(lead.polissa_id.autoconsumo, '00')
+
     def test_create_simple_domestic_lead_indexada(self):
         www_lead_o = self.get_model("som.lead.www")
         lead_o = self.get_model("giscedata.crm.lead")
@@ -385,3 +388,31 @@ class TestsSomLeadWww(testing.OOTestCase):
         )[1]
 
         self.assertEqual(lead.polissa_id.llista_preu.id, insular_pricelist_id)
+
+    def test_create_self_consumption_lead(self):
+        www_lead_o = self.get_model("som.lead.www")
+        lead_o = self.get_model("giscedata.crm.lead")
+
+        values = self._basic_values
+        values["self_consumption"] = {
+            "cau": "ES0353501028615353EE0FA000",
+            "collective_installation": False,
+            "installation_power": "3500",
+            "installation_type": "01",
+            "technology": "b11",
+            "aux_services": False,
+        }
+
+        lead_id = www_lead_o.create_lead(self.cursor, self.uid, values)
+        lead_o.force_validation(self.cursor, self.uid, [lead_id])
+        lead_o.create_entities(self.cursor, self.uid, lead_id)
+
+        lead = lead_o.browse(self.cursor, self.uid, lead_id)
+
+        self.assertEqual(lead.polissa_id.autoconsumo, '41')
+
+        # Buscar el CAU i mirar els CUPS adherits
+
+        # Mirar que el tipus_subsecció de la polissa no és 00
+
+        # Que surt al ATR que és un contracte amb autoconsum
