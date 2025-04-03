@@ -83,6 +83,9 @@ class SomLeadWww(osv.osv_memory):
             values["potenciasContratadasEnKWP5"] = float(www_vals["power_p5"]) / 1000
             values["potenciasContratadasEnKWP6"] = float(www_vals["power_p6"]) / 1000
 
+        if www_vals.get("self_consumption"):
+            values["cau"] = www_vals["self_consumption"]["cau"]
+
         lead_id = lead_o.create(cr, uid, values, context=context)
         return lead_id
 
