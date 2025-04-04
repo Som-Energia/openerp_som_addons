@@ -43,7 +43,7 @@ class SomMunicipalTaxesConfig(osv.osv):
         invoiced_states = self.pool.get(
             'giscedata.facturacio.extra').get_states_invoiced(cr, uid)
         taxes_invoicing_report = MunicipalTaxesInvoicingReport(
-            cr, uid, start_date, end_date, TAX_VALUE, "xlsx", False,
+            cr, uid, start_date, end_date, TAX_VALUE, "xlsx", 'tri', False,
             polissa_categ_imu_ex_id, False, invoiced_states,
             context=context
         )
