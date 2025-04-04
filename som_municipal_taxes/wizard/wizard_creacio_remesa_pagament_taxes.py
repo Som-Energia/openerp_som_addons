@@ -58,7 +58,6 @@ class WizardCreacioRemesaPagamentTaxes(osv.osv_memory):
 
         # Calcular els imports
         start_date, end_date = get_dates_from_quarter(wizard.year, wizard.quarter)
-        tax = 1.5
         polissa_categ_imu_ex_id = (
             self.pool.get('ir.model.data').get_object_reference(
                 cursor, uid, 'giscedata_municipal_taxes', 'contract_categ_imu_ex'
@@ -67,12 +66,13 @@ class WizardCreacioRemesaPagamentTaxes(osv.osv_memory):
         invoiced_states = self.pool.get(
             'giscedata.facturacio.extra').get_states_invoiced(cursor, uid)
         taxes_invoicing_report = MunicipalTaxesInvoicingReport(
-            cursor, uid, start_date, end_date, False, False, False,
+            cursor, uid, start_date, end_date, False, False, 'tri', False,
             polissa_categ_imu_ex_id, False, invoiced_states,
             context=context
         )
-        totals_by_city = taxes_invoicing_report.get_totals_by_city(res_municipi_ids)
-        if not totals_by_city:
+        df_mun, df_gr, df_out, df_in, col_gr, col_mun = taxes_invoicing_report.build_dataframe_taxes_detallat(  # noqa: E501
+            res_municipi_ids, context)
+        if not col_mun:
             vals = {
                 'info': "No hi ha factures dels municipis configurats en el període especificat",
                 'state': 'cancel',
@@ -91,10 +91,9 @@ class WizardCreacioRemesaPagamentTaxes(osv.osv_memory):
         ))
         linia_creada = []
         linia_no_creada = []
-        for city in totals_by_city:
-            total_tax = round(city[4] - city[3] * (tax / 100.0), 2)
-
-            municipi_id = mun_obj.search(cursor, uid, [('ine', '=', city[5])])[0]
+        for idx, mun in df_gr.iterrows():
+            total_tax = mun['TOVP']
+            municipi_id = mun_obj.search(cursor, uid, [('ine', '=', idx[1])])[0]
             config_id = config_obj.search(cursor, uid, [('municipi_id', '=', municipi_id)])[0]
             config_data = config_obj.read(cursor, uid, config_id, ['partner_id', 'bank_id'])
             if not config_data['bank_id']:
@@ -105,10 +104,10 @@ class WizardCreacioRemesaPagamentTaxes(osv.osv_memory):
 
             # Crear les línies
             euro_id = currency_obj.search(cursor, uid, [('code', '=', 'EUR')])[0]
-            quarter_name = dict(self._columns['quarter'].selection)[int(city[2])]
+            quarter_name = idx[3]
             vals = {
                 'name': 'Ajuntament de {} taxa 1,5% pel trimestre {}-{}'.format(
-                    city[0], wizard.year, quarter_name),
+                    idx[0], wizard.year, quarter_name),
                 'order_id': order_id,
                 'currency': euro_id,
                 'partner_id': config_data['partner_id'][0],
@@ -117,17 +116,17 @@ class WizardCreacioRemesaPagamentTaxes(osv.osv_memory):
                 'state': 'normal',
                 'amount_currency': -1 * total_tax,
                 'account_id': account_id,
-                'communication': 'Ajuntament de {} taxa 1,5%'.format(city[0]),
-                'comm_text': 'Ajuntament de {} taxa 1,5%'.format(city[0]),
+                'communication': 'Ajuntament de {} taxa 1,5%'.format(idx[0]),
+                'comm_text': 'Ajuntament de {} taxa 1,5%'.format(idx[0]),
             }
             try:
                 line_obj.create(cursor, uid, vals)
-                linia_creada.append(city[0])
+                linia_creada.append(idx[0])
             except UniqueViolation:
                 raise osv.except_osv(
                     ('Error!'), (
                         "Ja s'ha pagat el trimestre {}-{} per a l'ajuntament {}".format(
-                            wizard.year, quarter_name, city[0])
+                            wizard.year, quarter_name, idx[0])
                     )
                 )
 

@@ -12,7 +12,7 @@
     'installable': True,
     'depends': [
         'base',
-        'giscedata_municipal_taxes',
+        'giscedata_municipal_taxes_comer',
         'res_municipi_dir3',
         'som_crawlers',
         'account_invoice_som',

@@ -43,15 +43,16 @@ class SomMunicipalTaxesConfig(osv.osv):
         invoiced_states = self.pool.get(
             'giscedata.facturacio.extra').get_states_invoiced(cr, uid)
         taxes_invoicing_report = MunicipalTaxesInvoicingReport(
-            cr, uid, start_date, end_date, TAX_VALUE, "xlsx", False,
+            cr, uid, start_date, end_date, TAX_VALUE, "xlsx", 'tri', False,
             polissa_categ_imu_ex_id, False, invoiced_states,
             context=context
         )
-        totals = taxes_invoicing_report.get_totals_by_city([municipi_id])
+        _, _, _, _, _, totals = taxes_invoicing_report.build_dataframe_taxes_detallat(
+            [municipi_id], context)
         if not totals:
             return False
 
-        output_binary = taxes_invoicing_report.build_report_taxes([municipi_id])
+        output_binary, _ = taxes_invoicing_report.build_report_taxes([municipi_id])
         path = "/tmp/municipal_taxes_{}.xlsx".format(municipi_id)
         with open(path, 'wb') as file:
             file.write(output_binary)
