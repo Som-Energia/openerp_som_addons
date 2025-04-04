@@ -4,7 +4,6 @@ import sys
 import logging
 import datetime
 from dateutil.relativedelta import relativedelta
-from giscedata_municipal_taxes.taxes.municipal_taxes_invoicing import MunicipalTaxesInvoicingReport
 from psycopg2.errors import UniqueViolation
 
 logging.basicConfig(stream=sys.stdout, level=logging.INFO)
@@ -66,12 +65,9 @@ class WizardCreacioRemesaPagamentTaxes(osv.osv_memory):
         )
         invoiced_states = self.pool.get(
             'giscedata.facturacio.extra').get_states_invoiced(cursor, uid)
-        taxes_invoicing_report = MunicipalTaxesInvoicingReport(
-            cursor, uid, start_date, end_date, False, False, 'tri', False,
-            polissa_categ_imu_ex_id, False, invoiced_states,
-            context=context
-        )
-        totals_by_city = taxes_invoicing_report.get_totals_by_city(res_municipi_ids)
+        totals_by_city = self.pool.get('municipal.taxes.report').get_totals_by_city(
+            cursor, uid, res_municipi_ids, start_date, end_date, invoiced_states,
+            polissa_categ_imu_ex_id, context=context)
         if not totals_by_city:
             vals = {
                 'info': "No hi ha factures dels municipis configurats en el període especificat",

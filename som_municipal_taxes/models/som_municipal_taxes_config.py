@@ -47,7 +47,9 @@ class SomMunicipalTaxesConfig(osv.osv):
             polissa_categ_imu_ex_id, False, invoiced_states,
             context=context
         )
-        totals = taxes_invoicing_report.get_totals_by_city([municipi_id])
+        totals = self.pool.get('municipal.taxes.report').get_totals_by_city(
+            cr, uid, [municipi_id], start_date, end_date, invoiced_states,
+            polissa_categ_imu_ex_id, context=context)
         if not totals:
             return False
 
