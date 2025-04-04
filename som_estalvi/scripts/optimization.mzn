@@ -22,9 +22,9 @@ constraint potenciaOptima[3] <= potenciaOptima[4];
 constraint potenciaOptima[4] <= potenciaOptima[5];
 constraint potenciaOptima[5] <= optim_p6;
 
-constraint forall(i in 1..nMesos, j in 1..(nPeriodes-1)) (((maximeters_powers[i,j]-potenciaOptima[j]) > 0) -> (maximetreMesPeriode[i,j] = (maximeters_powers[i,j]-potenciaOptima[j]) * diesMes[i] * excess_price[j] * 2));
+constraint forall(i in 1..nMesos, j in 1..(nPeriodes-1)) (((maximeters_powers[i,j]-potenciaOptima[j]) > 0) -> (maximetreMesPeriode[i,j] = (maximeters_powers[i,j]-potenciaOptima[j]) * diesMes[i] * excess_price[j]));
 
-constraint forall(i in 1..nMesos) (((maximeters_powers[i,nPeriodes]-optim_p6) > 0) -> (maximetreMesPeriode[i,nPeriodes] = (maximeters_powers[i,nPeriodes]-optim_p6) * diesMes[i] * excess_price[nPeriodes] * 2));
+constraint forall(i in 1..nMesos) (((maximeters_powers[i,nPeriodes]-optim_p6) > 0) -> (maximetreMesPeriode[i,nPeriodes] = (maximeters_powers[i,nPeriodes]-optim_p6) * diesMes[i] * excess_price[nPeriodes]));
 
 constraint forall(i in 1..nPeriodes) (totalMaximetres[i] = sum(col(maximetreMesPeriode,i)));
 constraint forall(i in 1..(nPeriodes-1)) (totalPotencies[i] = (potenciaOptima[i] * power_price[i]));
