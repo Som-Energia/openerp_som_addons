@@ -47,13 +47,12 @@ class SomMunicipalTaxesConfig(osv.osv):
             polissa_categ_imu_ex_id, False, invoiced_states,
             context=context
         )
-        totals = self.pool.get('municipal.taxes.report').get_totals_by_city(
-            cr, uid, [municipi_id], start_date, end_date, invoiced_states,
-            polissa_categ_imu_ex_id, context=context)
+        _, _, _, _, _, totals = taxes_invoicing_report.build_dataframe_taxes_detallat(
+            [municipi_id], context)
         if not totals:
             return False
 
-        output_binary = taxes_invoicing_report.build_report_taxes([municipi_id])
+        output_binary, _ = taxes_invoicing_report.build_report_taxes([municipi_id])
         path = "/tmp/municipal_taxes_{}.xlsx".format(municipi_id)
         with open(path, 'wb') as file:
             file.write(output_binary)
