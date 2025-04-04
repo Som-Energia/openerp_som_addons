@@ -63,6 +63,11 @@ class GiscedataFacturacioServices(osv.osv):
                     res_vals["multi"] = days if days > 0 else 0
 
                     yield res_vals
+
+                    if gurb_cups_beta_br.gift_beta_kw > 0:
+                        res_vals["multi"] = 0
+                        res_vals["name"] = "{} {}".format(res_vals["name"], " (beta regal)")
+                    yield res_vals
             else:
                 yield vals
 
@@ -95,6 +100,7 @@ class GiscedataFacturacioServices(osv.osv):
             ("gurb_cups_id", "=", gurb_cups_ids[0]),
             ("start_date", "<=", vals["data_fins"]),
             ("end_date", "=", False),
+            ("future_beta", "=", False),
         ]
         gurb_cups_beta_ids = gurb_cups_beta_o.search(cursor, uid, search_params, context=context)
 
@@ -102,6 +108,7 @@ class GiscedataFacturacioServices(osv.osv):
             ("gurb_cups_id", "=", gurb_cups_ids[0]),
             ("start_date", "<=", vals["data_fins"]),
             ("end_date", ">=", vals["data_desde"]),
+            ("future_beta", "=", False),
         ]
         gurb_cups_beta_ids += gurb_cups_beta_o.search(cursor, uid, search_params, context=context)
 
