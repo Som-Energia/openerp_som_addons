@@ -105,8 +105,38 @@ class SomLeadWww(osv.osv_memory):
             )
 
         lead_id = lead_o.create(cr, uid, values, context=context)
+        self.create_attachments(cr, uid, lead_id, www_vals.get("attachments", []), context=context)
         lead_o.copy_base_attr_gen_from_titular(cr, uid, lead_id)
         return lead_id
+
+    def create_attachments(self, cr, uid, lead_id, attachments, context=None):
+        if context is None:
+            context = {}
+
+        ir_attach_o = self.pool.get("ir.attachment")
+
+        for attachment in attachments:
+            values = {
+                "res_model": "giscedata.crm.lead",
+                "res_id": lead_id,
+                "datas_fname": attachment["filename"],
+                "name": attachment["filename"],
+                "category_id": self.get_category_id(cr, uid, attachment["category"]),
+                "datas": attachment["datas"]
+            }
+            ir_attach_o.create(cr, uid, values, context=context)
+
+    def get_category_id(self, cr, uid, category_code, context=None):
+        if context is None:
+            context = {}
+
+        ir_attach_categ_o = self.pool.get("ir.attachment.category")
+
+        categ_id = ir_attach_categ_o.search(
+            cr, uid, [("code", "=", category_code)], context=context
+        )[0]
+
+        return categ_id
 
 
 SomLeadWww()

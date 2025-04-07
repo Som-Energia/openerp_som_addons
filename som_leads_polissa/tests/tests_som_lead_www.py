@@ -1,4 +1,6 @@
 # -*- encoding: utf-8 -*-
+import os
+import base64
 from destral import testing
 from destral.transaction import Transaction
 from oopgrade import oopgrade
@@ -587,3 +589,45 @@ class TestsSomLeadWww(testing.OOTestCase):
         test_fn = partial(lead_o.create_entities, self.cursor, self.uid, lead_id)
 
         self.assertRaises(osv.except_osv, test_fn)
+
+    def test_add_attachments_to_simple_lead(self):
+        www_lead_o = self.get_model("som.lead.www")
+        lead_o = self.get_model("giscedata.crm.lead")
+        ir_model_o = self.get_model("ir.model.data")
+        ir_attach_o = self.get_model("ir.attachment")
+
+        dir_path = os.path.dirname(os.path.realpath(__file__))
+        with open(os.path.join(dir_path, 'assets', 'blank.pdf'), 'rb') as pdf_file:
+            pdf_data = pdf_file.read()
+
+        encoded_pdf = base64.b64encode(pdf_data).decode('utf-8')
+
+        values = self._basic_values
+
+        values["attachments"] = [
+            {
+                "filename": "blank.pdf",
+                "datas": encoded_pdf,
+                "category": "lead_old_invoice"
+            }
+        ]
+
+        old_invoice_categ_id = ir_model_o.get_object_reference(
+            self.cursor, self.uid, "som_leads_polissa", "ir_attachment_lead_old_invoice"
+        )[1]
+
+        lead_id = www_lead_o.create_lead(self.cursor, self.uid, values)
+        lead_o.force_validation(self.cursor, self.uid, [lead_id])
+        lead_o.create_entities(self.cursor, self.uid, lead_id)
+
+        lead = lead_o.browse(self.cursor, self.uid, lead_id)
+
+        search_params = [
+            ("res_model", "=", "giscedata.polissa"),
+            ("res_id", "=", lead.polissa_id.id),
+            ("category_id", "=", old_invoice_categ_id)
+        ]
+
+        ir_attach_ids = ir_attach_o.search(self.cursor, self.uid, search_params)
+
+        self.assertEqual(len(ir_attach_ids), 1)
