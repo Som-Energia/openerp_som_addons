@@ -6,4 +6,18 @@
             <field name="value">T</field>
         </record>
     </data>
+    <data noupdate="1">
+        <record id="ir_attachment_lead_old_invoice" model="ir.attachment.category">
+            <field name="code">lead_old_invoice</field>
+            <field name="name">Factura prèvia a SomEnergia</field>
+        </record>
+        <record id="ir_attachment_lead_a3_documentation" model="ir.attachment.category">
+            <field name="code">lead_a3_documentation</field>
+            <field name="name">Documentació per activar el subministrament (A3)</field>
+        </record>
+        <record id="ir_attachment_lead_autoconsum" model="ir.attachment.category">
+            <field name="code">lead_autoconsum</field>
+            <field name="name">Documents relacionats amb l'Autoconsum</field>
+        </record>
+    </data>
 </openerp>
