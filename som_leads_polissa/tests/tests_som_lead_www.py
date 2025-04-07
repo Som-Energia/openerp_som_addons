@@ -3,6 +3,8 @@ from destral import testing
 from destral.transaction import Transaction
 from oopgrade import oopgrade
 from tools import config
+from functools import partial
+from osv import osv
 
 
 class TestsSomLeadWww(testing.OOTestCase):
@@ -433,5 +435,155 @@ class TestsSomLeadWww(testing.OOTestCase):
         self.assertNotEqual(lead.polissa_id.tipus_subseccio, "00")
         self.assertEqual(lead.polissa_id.autoconsumo, '41')
 
-        # Que surt al ATR que és un contracte amb autoconsum
-        # TODO
+    def test_create_collective_self_consumption_lead(self):
+        www_lead_o = self.get_model("som.lead.www")
+        lead_o = self.get_model("giscedata.crm.lead")
+        self_consumption_o = self.get_model("giscedata.autoconsum")
+        generator_o = self.get_model("giscedata.autoconsum.generador")
+
+        values = self._basic_values
+        values["self_consumption"] = {
+            "cau": "ES0353501028615353EE0FA000",
+            "collective_installation": True,
+            "installation_power": "3500",
+            "installation_type": "01",
+            "technology": "b11",
+            "aux_services": False,
+        }
+
+        lead_id = www_lead_o.create_lead(self.cursor, self.uid, values)
+        lead_o.force_validation(self.cursor, self.uid, [lead_id])
+        lead_o.create_entities(self.cursor, self.uid, lead_id)
+
+        lead = lead_o.browse(self.cursor, self.uid, lead_id)
+
+        # Buscar el CAU
+        self_consumption_ids = self_consumption_o.search(
+            self.cursor, self.uid, [("cau", '=', values["self_consumption"]["cau"])]
+        )
+        self.assertEqual(len(self_consumption_ids), 1)
+
+        # Look if there is our CUPS in CAU
+        self_consumption_cups = self_consumption_o.browse(
+            self.cursor, self.uid, self_consumption_ids[0]
+        )
+        self.assertEqual(self_consumption_cups.cups_id[0].name[:-2], values["cups"])
+
+        # A Generator for our CAU exists
+        generator_ids = generator_o.search(
+            self.cursor, self.uid, [("autoconsum_id", "=", self_consumption_ids[0])]
+        )
+        self.assertEqual(len(generator_ids), 1)
+
+        # Check Contract fields
+        self.assertNotEqual(lead.polissa_id.tipus_subseccio, "00")
+        self.assertEqual(lead.polissa_id.autoconsumo, '42')
+
+    def test_create_colective_multiconsumption_self_consumption_lead(self):
+        www_lead_o = self.get_model("som.lead.www")
+        lead_o = self.get_model("giscedata.crm.lead")
+        self_consumption_o = self.get_model("giscedata.autoconsum")
+        generator_o = self.get_model("giscedata.autoconsum.generador")
+
+        values = self._basic_values
+        values["self_consumption"] = {
+            "cau": "ES0353501028615353EE0FA000",
+            "collective_installation": True,
+            "installation_power": "3500",
+            "installation_type": "02",
+            "technology": "b11",
+            "aux_services": False,
+        }
+
+        lead_id = www_lead_o.create_lead(self.cursor, self.uid, values)
+        lead_o.force_validation(self.cursor, self.uid, [lead_id])
+        lead_o.create_entities(self.cursor, self.uid, lead_id)
+
+        lead = lead_o.browse(self.cursor, self.uid, lead_id)
+
+        # Buscar el CAU
+        self_consumption_ids = self_consumption_o.search(
+            self.cursor, self.uid, [("cau", '=', values["self_consumption"]["cau"])]
+        )
+        self.assertEqual(len(self_consumption_ids), 1)
+
+        # Look if there is our CUPS in CAU
+        self_consumption_cups = self_consumption_o.browse(
+            self.cursor, self.uid, self_consumption_ids[0]
+        )
+        self.assertEqual(self_consumption_cups.cups_id[0].name[:-2], values["cups"])
+
+        # A Generator for our CAU exists
+        generator_ids = generator_o.search(
+            self.cursor, self.uid, [("autoconsum_id", "=", self_consumption_ids[0])]
+        )
+        self.assertEqual(len(generator_ids), 1)
+
+        # Check Contract fields
+        self.assertNotEqual(lead.polissa_id.tipus_subseccio, "00")
+        self.assertEqual(lead.polissa_id.autoconsumo, '42')
+
+    def test_create_collective_net_self_consumption_lead(self):
+        www_lead_o = self.get_model("som.lead.www")
+        lead_o = self.get_model("giscedata.crm.lead")
+        self_consumption_o = self.get_model("giscedata.autoconsum")
+        generator_o = self.get_model("giscedata.autoconsum.generador")
+
+        values = self._basic_values
+        values["self_consumption"] = {
+            "cau": "ES0353501028615353EE0FA000",
+            "collective_installation": True,
+            "installation_power": "3500",
+            "installation_type": "03",
+            "technology": "b11",
+            "aux_services": False,
+        }
+
+        lead_id = www_lead_o.create_lead(self.cursor, self.uid, values)
+        lead_o.force_validation(self.cursor, self.uid, [lead_id])
+        lead_o.create_entities(self.cursor, self.uid, lead_id)
+
+        lead = lead_o.browse(self.cursor, self.uid, lead_id)
+
+        # Buscar el CAU
+        self_consumption_ids = self_consumption_o.search(
+            self.cursor, self.uid, [("cau", '=', values["self_consumption"]["cau"])]
+        )
+        self.assertEqual(len(self_consumption_ids), 1)
+
+        # Look if there is our CUPS in CAU
+        self_consumption_cups = self_consumption_o.browse(
+            self.cursor, self.uid, self_consumption_ids[0]
+        )
+        self.assertEqual(self_consumption_cups.cups_id[0].name[:-2], values["cups"])
+
+        # A Generator for our CAU exists
+        generator_ids = generator_o.search(
+            self.cursor, self.uid, [("autoconsum_id", "=", self_consumption_ids[0])]
+        )
+        self.assertEqual(len(generator_ids), 1)
+
+        # Check Contract fields
+        self.assertNotEqual(lead.polissa_id.tipus_subseccio, "00")
+        self.assertEqual(lead.polissa_id.autoconsumo, '43')
+
+    def test_create_individual_net_self_consumption_lead_fails(self):
+        www_lead_o = self.get_model("som.lead.www")
+        lead_o = self.get_model("giscedata.crm.lead")
+
+        values = self._basic_values
+        values["self_consumption"] = {
+            "cau": "ES0353501028615353EE0FA000",
+            "collective_installation": False,
+            "installation_power": "3500",
+            "installation_type": "03",
+            "technology": "b11",
+            "aux_services": False,
+        }
+
+        lead_id = www_lead_o.create_lead(self.cursor, self.uid, values)
+        lead_o.force_validation(self.cursor, self.uid, [lead_id])
+
+        test_fn = partial(lead_o.create_entities, self.cursor, self.uid, lead_id)
+
+        self.assertRaises(osv.except_osv, test_fn)
