@@ -294,20 +294,29 @@ class TestsGurbServices(TestsGurbBase):
         ):
             lines.append(line)
 
-        print lines
-        self.assertEqual(len(lines), 4)
+        self.assertEqual(len(lines), 5)
 
         self.assertEqual(lines[0]["data_desde"], "2016-02-01")  # Line start date
         self.assertEqual(lines[0]["data_fins"], "2016-02-14")  # Line end date
         self.assertEqual(lines[0]["quantity"], 1.5)  # Number of betas
         self.assertEqual(lines[0]["multi"], 14)  # Service days invoiced
 
-        self.assertEqual(lines[1]["data_desde"], "2016-01-01")  # Line start date
-        self.assertEqual(lines[1]["data_fins"], "2016-01-31")  # Line end date
-        self.assertEqual(lines[1]["quantity"], 2.5)  # Number of betas
-        self.assertEqual(lines[1]["multi"], 31)  # Service days invoiced
+        self.assertEqual(lines[1]["data_desde"], "2016-02-01")  # Line start date
+        self.assertEqual(lines[1]["data_fins"], "2016-02-14")  # Line end date
+        self.assertEqual(lines[1]["quantity"], 2)  # Number of betas
+        self.assertEqual(lines[1]["multi"], 0)  # Service days invoiced
 
-        self.assertEqual(lines[2]["data_desde"], "2016-02-15")  # Line start date
-        self.assertEqual(lines[2]["data_fins"], "2016-02-29")  # Line end date
-        self.assertEqual(lines[2]["quantity"], 1.5)  # Number of betas
-        self.assertEqual(lines[2]["multi"], 15)  # Service days invoiced
+        self.assertEqual(lines[2]["data_desde"], "2016-01-01")  # Line start date
+        self.assertEqual(lines[2]["data_fins"], "2016-01-31")  # Line end date
+        self.assertEqual(lines[2]["quantity"], 2.5)  # Number of betas
+        self.assertEqual(lines[2]["multi"], 31)  # Service days invoiced
+
+        self.assertEqual(lines[3]["data_desde"], "2016-02-15")  # Line start date
+        self.assertEqual(lines[3]["data_fins"], "2016-02-29")  # Line end date
+        self.assertEqual(lines[3]["quantity"], 1.5)  # Number of betas
+        self.assertEqual(lines[3]["multi"], 15)  # Service days invoiced
+
+        self.assertEqual(lines[4]["data_desde"], "2016-02-15")  # Line start date
+        self.assertEqual(lines[4]["data_fins"], "2016-02-29")  # Line end date
+        self.assertEqual(lines[4]["quantity"], 2)  # Number of betas
+        self.assertEqual(lines[4]["multi"], 0)  # Service days invoiced

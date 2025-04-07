@@ -65,9 +65,11 @@ class GiscedataFacturacioServices(osv.osv):
                     yield res_vals
 
                     if gurb_cups_beta_br.gift_beta_kw > 0:
-                        res_vals["multi"] = 0
-                        res_vals["name"] = "{} {}".format(res_vals["name"], " (beta regal)")
-                    yield res_vals
+                        gift_values = res_vals.copy()
+                        gift_values["multi"] = 0
+                        gift_values["quantity"] = gurb_cups_beta_br.gift_beta_kw
+                        gift_values["name"] = "{} {}".format(gift_values["name"], " (beta regal)")
+                        yield gift_values
             else:
                 yield vals
 
