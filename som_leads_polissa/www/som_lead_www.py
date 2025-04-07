@@ -8,6 +8,9 @@ class SomLeadWww(osv.osv_memory):
 
     _CONTRACT_TYPE_ANUAL = '01'
     _FACTURACIO_MENSUAL = 1
+    _127_WITH_SURPLUSES = '2'
+    _128_SIMPLIFIED_SURPLUSES = 'a0'
+    _131_CONSUMPTION = '01'
 
     def create_lead(self, cr, uid, www_vals, context=None):
         if context is None:
@@ -85,16 +88,16 @@ class SomLeadWww(osv.osv_memory):
             values["potenciasContratadasEnKWP6"] = float(www_vals["power_p6"]) / 1000
 
         if www_vals.get("self_consumption"):
+            values["seccio_registre"] = self._127_WITH_SURPLUSES
+            values["subseccio"] = self._128_SIMPLIFIED_SURPLUSES
+            values["tipus_cups"] = self._131_CONSUMPTION
+
             values["cau"] = www_vals["self_consumption"]["cau"]
             values["collectiu"] = www_vals["self_consumption"]["collective_installation"]
             values["tec_generador"] = www_vals["self_consumption"]["technology"]
             values["pot_instalada_gen"] = www_vals["self_consumption"]["installation_power"]
             values["tipus_installacio"] = www_vals["self_consumption"]["installation_type"]
             values["ssaa"] = 'S' if www_vals["self_consumption"]['aux_services'] else 'N'
-            # FIXME: Use constants!!!
-            values["seccio_registre"] = "2"
-            values["subseccio"] = "a0"
-            values["tipus_cups"] = "01"
 
             values["autoconsumo"] = selfcons_o.get_ree_autoconsum_type_from_attrs(
                 values["seccio_registre"], values["subseccio"], int(values["collectiu"]),
