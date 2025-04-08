@@ -1,6 +1,9 @@
 # -*- encoding: utf-8 -*-
 from osv import osv
 from datetime import datetime
+import yaml
+
+from som_leads_polissa.giscedata_crm_lead import WWW_DATA_FORM_HEADER
 
 
 class SomLeadWww(osv.osv_memory):
@@ -106,6 +109,7 @@ class SomLeadWww(osv.osv_memory):
 
         lead_id = lead_o.create(cr, uid, values, context=context)
         self.create_attachments(cr, uid, lead_id, www_vals.get("attachments", []), context=context)
+        self.save_www_data_in_history(cr, uid, lead_id, www_vals, context=context)
         lead_o.copy_base_attr_gen_from_titular(cr, uid, lead_id)
         return lead_id
 
@@ -137,6 +141,17 @@ class SomLeadWww(osv.osv_memory):
         )[0]
 
         return categ_id
+
+    def save_www_data_in_history(self, cr, uid, lead_id, www_vals, context=None):
+        if context is None:
+            context = {}
+
+        lead_o = self.pool.get("giscedata.crm.lead")
+        lead = lead_o.browse(cr, uid, lead_id, context=context)
+
+        data = yaml.safe_dump(www_vals, indent=2)
+        msg = "{header}\n{data}".format(header=WWW_DATA_FORM_HEADER, data=data)
+        lead.historize_msg(msg, context=context)
 
 
 SomLeadWww()

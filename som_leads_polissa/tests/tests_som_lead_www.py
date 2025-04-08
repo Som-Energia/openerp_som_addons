@@ -631,3 +631,15 @@ class TestsSomLeadWww(testing.OOTestCase):
         ir_attach_ids = ir_attach_o.search(self.cursor, self.uid, search_params)
 
         self.assertEqual(len(ir_attach_ids), 1)
+
+    def test_www_form_data_is_stored(self):
+        www_lead_o = self.get_model("som.lead.www")
+        lead_o = self.get_model("giscedata.crm.lead")
+
+        lead_id = www_lead_o.create_lead(self.cursor, self.uid, self._basic_values)
+        lead_o.force_validation(self.cursor, self.uid, [lead_id])
+        lead_o.create_entities(self.cursor, self.uid, lead_id)
+
+        lead = lead_o.browse(self.cursor, self.uid, lead_id)
+
+        self.assertIn("name: Pepito", lead.polissa_id.observacions)

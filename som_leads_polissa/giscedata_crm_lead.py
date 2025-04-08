@@ -7,6 +7,8 @@ _tipus_tarifes_lead = [
     ("tarifa_provisional", "Tarifa ATR provisional"),
 ]
 
+WWW_DATA_FORM_HEADER = "**** DADES DEL FORMULARI ****"
+
 
 class GiscedataCrmLead(osv.OsvInherits):
 
@@ -78,16 +80,18 @@ class GiscedataCrmLead(osv.OsvInherits):
         partner_o = self.pool.get("res.partner")
 
         # recuperem la polissa recent creada del lead
-        lead_vals = self.read(
-            cursor, uid, crml_id, ['polissa_id', 'member_number', 'donation'],
-            context=context
-        )
+        lead = self.browse(cursor, uid, crml_id, context=context)
 
-        polissa_id = lead_vals["polissa_id"][0]
-        member_number = lead_vals["member_number"]
+        polissa_id = lead.polissa_id.id
+        member_number = lead.member_number
 
         values["soci"] = partner_o.search(cursor, uid, [("ref", "=", member_number)], limit=1)[0]
-        values["donatiu"] = lead_vals["donation"]
+        values["donatiu"] = lead.donation
+
+        for line in lead.history_line:
+            if line.description and line.description.startswith(WWW_DATA_FORM_HEADER):
+                values["observacions"] = line.description
+                break
 
         polissa_o = self.pool.get("giscedata.polissa")
         polissa = polissa_o.browse(cursor, uid, polissa_id, context=context)
