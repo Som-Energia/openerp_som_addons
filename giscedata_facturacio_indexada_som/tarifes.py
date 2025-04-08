@@ -33,6 +33,8 @@ class TarifaPoolSOM(TarifaPool):
             res['dsv'] = 'dsv'
             res['gdos'] = 'gdos'
             res['pmd'] = 'prmdiari'
+            res['k'] = 'k'
+            res['d'] = 'd'
             if 'ajom' in res:
                 del res['ajom']
             if 'peninsula' in self.phf_function:
@@ -397,19 +399,18 @@ class TarifaPoolSOM(TarifaPool):
             csdvbaj = Codsvbaqh('C2_codsvbaqh_%(postfix)s' % locals(), esios_token)  # [€/MWh]
             csdvsub = Codsvsuqh('C2_codsvsuqh_%(postfix)s' % locals(), esios_token)  # [€/MWh]
 
+        # get first version date on version
+        first_version = self.conf.get('versions', {}).keys[0]
+
         # BS3 format QH from REGANECU
-        bs3 = self.conf.get('versions', {})[start_date.strftime("%Y-%m-%d")]['bs3qh']
-        if not any(x != 0 for row in bs3.matrix for x in row):
-            raise osv.osv.except_osv(
-                'Error:', 'No hi ha valors de BS3 al reganecuQH amb data {}'.format(start_date.strftime("%Y-%m-%d"))
-            )
+        all_bs3 = self.conf.get('versions', {})[first_version]['bs3qh']
+        current_bs3 = [x for x in all_bs3 if x.start_date.strftime("%Y-%m-%d") == start_date]
+        bs3 = current_bs3[0]
 
         # RAD3 format QH from REGANECU
-        rad3 = self.conf.get('versions', {})[start_date.strftime("%Y-%m-%d")]['rad3qh']
-        if not any(x != 0 for row in rad3.matrix for x in row):
-            raise osv.osv.except_osv(
-                'Error:', 'No hi ha valors de RAD3 al reganecuQH amb data {}'.format(start_date.strftime("%Y-%m-%d"))
-            )
+        all_rad3 = self.conf.get('versions', {})[first_version]['rad3qh']
+        current_rad3 = [x for x in all_rad3 if x.start_date == start_date]
+        rad3 = current_rad3[0]
 
         # Let's transform them in ComponentsQH
         # First, which components must be divided by 4

@@ -54,10 +54,10 @@ class GiscedataFacturacioFacturador(osv.osv):
                 res[date_version]['factor_dsv'] = pricelist_obj.price_get(
                     cursor, uid, [llista_preu_id], factor_dsv, 1, context=ctx
                 )[llista_preu_id]
-                res[date_version]['bs3qh'] = reganecu_obj.get_reganecu_json_between_dates(
+                res[date_version]['bs3qh'] = reganecu_obj.get_reganecu_components_between_dates(
                     cursor, uid, data_inici, data_final, 'BS3', context=ctx
                 )
-                res[date_version]['rad3qh'] = reganecu_obj.get_reganecu_json_between_dates(
+                res[date_version]['rad3qh'] = reganecu_obj.get_reganecu_components_between_dates(
                     cursor, uid, data_inici, data_final, 'RAD3', context=ctx
                 )
 
