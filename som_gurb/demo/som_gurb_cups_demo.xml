@@ -16,7 +16,7 @@
             <field name="start_date">2016-01-01</field>
             <field name="beta_kw">2.5</field>
             <field name="extra_beta_kw">1</field>
-            <field name="gift_beta_kw">0.5</field>
+            <field name="gift_beta_kw">0</field>
             <field name="gurb_cups_id" ref="gurb_cups_0001" />
         </record>
         <record id="gurb_cups_beta_0002" model="som.gurb.cups.beta">

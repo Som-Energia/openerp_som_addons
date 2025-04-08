@@ -8,6 +8,7 @@ class TestsGurbCups(TestsGurbBase):
     def test_gurb_cups_percentage(self):
         imd_o = self.openerp.pool.get("ir.model.data")
         gurb_cups_o = self.openerp.pool.get("som.gurb.cups")
+        gurb_cups_beta_o = self.openerp.pool.get("som.gurb.cups.beta")
 
         gurb_cups_id_1 = imd_o.get_object_reference(
             self.cursor, self.uid, "som_gurb", "gurb_cups_0001"
@@ -15,6 +16,17 @@ class TestsGurbCups(TestsGurbBase):
         gurb_cups_id_2 = imd_o.get_object_reference(
             self.cursor, self.uid, "som_gurb", "gurb_cups_0002"
         )[1]
+
+        gurb_beta_id_1 = imd_o.get_object_reference(
+            self.cursor, self.uid, "som_gurb", "gurb_cups_beta_0001"
+        )[1]
+        gurb_beta_id_2 = imd_o.get_object_reference(
+            self.cursor, self.uid, "som_gurb", "gurb_cups_beta_0002"
+        )[1]
+
+        gurb_cups_beta_o.write(self.cursor, self.uid, gurb_beta_id_1, {"gift_beta_kw": 0.5})
+        gurb_cups_beta_o.write(self.cursor, self.uid, gurb_beta_id_2, {"gift_beta_kw": 0.5})
+
         percentatge_1 = gurb_cups_o.read(
             self.cursor, self.uid, gurb_cups_id_1, ['beta_percentage']
         )['beta_percentage']
@@ -92,7 +104,7 @@ class TestsGurbCups(TestsGurbBase):
 
         new_beta_kw = 2.5
         new_extra_beta_kw = 1
-        new_gift_beta = 0.5
+        new_gift_beta = 0
         start_date = "2017-02-01"
 
         with self.assertRaises(osv.except_osv):
