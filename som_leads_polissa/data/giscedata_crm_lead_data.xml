@@ -20,4 +20,25 @@
             <field name="name">Documents relacionats amb l'Autoconsum</field>
         </record>
     </data>
+    <data noupdate="1">
+        <record id="webform_section" model="crm.case.section">
+            <field name="code">WEBFORMS</field>
+            <field name="name">Formularis web</field>
+        </record>
+        <record id="webform_stage_recieved" model="crm.case.stage">
+            <field name="name">Formulari web rebut (i validat)</field>
+            <field name="section_id" ref="webform_section"/>
+            <field name="sequence">10</field>
+        </record>
+        <record id="webform_stage_converted" model="crm.case.stage">
+            <field name="name">Formulari web convertit</field>
+            <field name="section_id" ref="webform_section"/>
+            <field name="sequence">20</field>
+        </record>
+        <record id="webform_stage_error" model="crm.case.stage">
+            <field name="name">Formulari web amb error</field>
+            <field name="section_id" ref="webform_section"/>
+            <field name="sequence">99</field>
+        </record>
+    </data>
 </openerp>
