@@ -43,7 +43,7 @@ class SomMunicipalTaxesConfig(osv.osv):
         invoiced_states = self.pool.get(
             'giscedata.facturacio.extra').get_states_invoiced(cr, uid)
         taxes_invoicing_report = MunicipalTaxesInvoicingReport(
-            cr, uid, start_date, end_date, TAX_VALUE, "xlsx", 'tri', False,
+            cr, uid, start_date, end_date, TAX_VALUE, "xlsx.db", 'tri', False,
             polissa_categ_imu_ex_id, False, invoiced_states,
             context=context
         )
@@ -104,13 +104,15 @@ class SomMunicipalTaxesConfig(osv.osv):
 
     def get_dates_from_quarter(self, year, quarter):
         if quarter == ANUAL_VAL:
-            return date(year, 1, 1), date(year, 12, 31)
+            start_date = date(year, 1, 1)
+            end_date = date(year, 12, 31)
         else:
             start_date = date(year, (quarter - 1) * 3 + 1, day=1)
-            return (
-                start_date,
-                start_date + relativedelta(months=3) - timedelta(days=1)
-            )
+            end_date = start_date + relativedelta(months=3) - timedelta(days=1)
+        return (
+            start_date.strftime('%Y-%m-%d'),
+            end_date.strftime('%Y-%m-%d')
+        )
 
 
 SomMunicipalTaxesConfig()
