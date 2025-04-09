@@ -628,3 +628,23 @@ class TestsSomLeadWww(testing.OOTestCase):
         lead = lead_o.browse(self.cursor, self.uid, result["lead_id"])
 
         self.assertIn("name: Pepito", lead.polissa_id.observacions)
+
+    def test_create_lead_crm_stages_and_section(self):
+        www_lead_o = self.get_model("som.lead.www")
+        lead_o = self.get_model("giscedata.crm.lead")
+        ir_model_o = self.get_model("ir.model.data")
+
+        webform_stage_recieved_id = ir_model_o.get_object_reference(
+            self.cursor, self.uid, "som_leads_polissa", "webform_stage_recieved"
+        )[1]
+
+        webform_stage_converted_id = ir_model_o.get_object_reference(
+            self.cursor, self.uid, "som_leads_polissa", "webform_stage_converted"
+        )[1]
+
+        result = www_lead_o.create_lead(self.cursor, self.uid, self._basic_values)
+        lead = lead_o.browse(self.cursor, self.uid, result["lead_id"])
+        self.assertEqual(lead.crm_id.stage.id, webform_stage_recieved_id)
+
+        www_lead_o.activate_lead(self.cursor, self.uid, result["lead_id"])
+        self.assertEqual(lead.crm_id.stage.id, webform_stage_converted_id)
