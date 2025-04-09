@@ -644,7 +644,7 @@ class TestsSomLeadWww(testing.OOTestCase):
 
         result = www_lead_o.create_lead(self.cursor, self.uid, self._basic_values)
         lead = lead_o.browse(self.cursor, self.uid, result["lead_id"])
-        self.assertEqual(lead.crm_id.stage.id, webform_stage_recieved_id)
+        self.assertEqual(lead.crm_id.stage_id.id, webform_stage_recieved_id)
 
         www_lead_o.activate_lead(self.cursor, self.uid, result["lead_id"])
-        self.assertEqual(lead.crm_id.stage.id, webform_stage_converted_id)
+        self.assertEqual(lead.crm_id.stage_id.id, webform_stage_converted_id)
