@@ -87,6 +87,14 @@ class SomLeadWww(osv.osv_memory):
             cr, uid, "base_extended_som", "res_users_webforms"
         )[1]
 
+        values["stage_id"] = ir_model_o.get_object_reference(
+            cr, uid, "som_leads_polissa", "webform_stage_recieved"
+        )[1]
+
+        values["section_id"] = ir_model_o.get_object_reference(
+            cr, uid, "som_leads_polissa", "webform_section"
+        )[1]
+
         if www_vals["contract_member"]["is_juridic"]:
             values["persona_firmant_vat"] = www_vals["contract_member"]["proxy_vat"]
             values["persona_nom"] = www_vals["contract_member"]["proxy_name"]
@@ -138,6 +146,7 @@ class SomLeadWww(osv.osv_memory):
         lead_o.force_validation(cr, uid, [lead_id], context=context)
 
         lead_o.create_entities(cr, uid, lead_id, context=context)
+        lead_o.stage_next(cr, uid, [lead_id], context=context)
 
     def _create_attachments(self, cr, uid, lead_id, attachments, context=None):
         if context is None:
