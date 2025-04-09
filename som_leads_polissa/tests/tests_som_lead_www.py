@@ -115,6 +115,12 @@ class TestsSomLeadWww(testing.OOTestCase):
         # Check that don't have self consumption
         self.assertEqual(lead.polissa_id.autoconsumo, '00')
 
+        # Check if user_id ("comercial") is created on polissa
+        webforms_user_id = ir_model_o.get_object_reference(
+            self.cursor, self.uid, "base_extended_som", "res_users_webforms"
+        )[1]
+        self.assertEqual(lead.polissa_id.user_id.id, webforms_user_id)
+
     def test_create_simple_domestic_lead_indexada(self):
         www_lead_o = self.get_model("som.lead.www")
         lead_o = self.get_model("giscedata.crm.lead")

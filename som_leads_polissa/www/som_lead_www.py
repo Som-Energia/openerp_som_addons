@@ -28,6 +28,7 @@ class SomLeadWww(osv.osv_memory):
         cnae_o = self.pool.get("giscemisc.cnae")
         cups_ps_o = self.pool.get("giscedata.cups.ps")
         selfcons_o = self.pool.get("giscedata.autoconsum")
+        ir_model_o = self.pool.get("ir.model.data")
 
         tensio_230 = imd_o.get_object_reference(cr, uid, 'giscedata_tensions', 'tensio_230')[1]
 
@@ -81,6 +82,10 @@ class SomLeadWww(osv.osv_memory):
             "donation": www_vals.get("donation", False),
             "allow_contact": False,  # TODO: use privacy_conditions? or remove
         }
+
+        values["user_id"] = ir_model_o.get_object_reference(
+            cr, uid, "base_extended_som", "res_users_webforms"
+        )[1]
 
         if www_vals["contract_member"]["is_juridic"]:
             values["persona_firmant_vat"] = www_vals["contract_member"]["proxy_vat"]
