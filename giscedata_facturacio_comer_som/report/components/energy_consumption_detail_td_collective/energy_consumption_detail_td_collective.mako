@@ -9,7 +9,7 @@
         <td class="detall_td">${_(u"Generació segons coeficient de repartiment (periode del %s fins al %s)") % (coll.initial_date, coll.final_date)}</td>
         % for p in coll.showing_periods:
             % if p in coll:
-                <td>${_(u"%s") %(int(coll[p]["generated_coef"]))}</td>
+                <td>${_(u"%s") %(formatLang(coll[p]["generacio_neta"], digits=3))}</td>
             % else:
                 <td></td>
             % endif
@@ -20,7 +20,7 @@
         <td class="detall_td">${_(u"Energia autoconsumida (periode del %s fins al %s)") % (coll.initial_date, coll.final_date)}</td>
         % for p in coll.showing_periods:
             % if p in coll:
-                <td>${_(u"%s") %(int(coll[p]["auto_consumed"]))}</td>
+                <td>${_(u"%s") %(formatLang(coll[p]["autoconsum"], digits=3))}</td>
             % else:
                 <td></td>
             % endif
@@ -39,7 +39,7 @@
         </td>
         % for p in coll.showing_periods:
             % if p in coll:
-                <td>${_(u"%s") %(int(round(coll[p]["surplus"])))}</td>
+                <td>${_(u"%s") %(formatLang(coll[p]["generacio"], digits=3))}</td>
             % else:
                 <td></td>
             % endif
