@@ -646,5 +646,7 @@ class TestsSomLeadWww(testing.OOTestCase):
         lead = lead_o.browse(self.cursor, self.uid, result["lead_id"])
         self.assertEqual(lead.crm_id.stage_id.id, webform_stage_recieved_id)
 
+        # FIXME? Something is happening with the cursors (?)
+        lead = lead_o.browse(self.cursor, self.uid, result["lead_id"])
         www_lead_o.activate_lead(self.cursor, self.uid, result["lead_id"])
         self.assertEqual(lead.crm_id.stage_id.id, webform_stage_converted_id)
