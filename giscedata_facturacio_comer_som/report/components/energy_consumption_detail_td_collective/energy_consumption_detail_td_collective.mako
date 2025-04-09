@@ -45,9 +45,6 @@
             % endif
         % endfor
         <td>
-        % if coll.adjust_reason != False:
-            <sup>(2)</sup>
-        % endif
         </td>
     </tr>
 % endif
