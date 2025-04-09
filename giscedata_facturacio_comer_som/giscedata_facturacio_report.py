@@ -3513,19 +3513,22 @@ class GiscedataFacturacioFacturaReport(osv.osv):
 
             adjust_reason.append(data["adjust_reason"])
 
-        collectives = []
-        for coll in pol.autoconsum_cups_ids:
-            if coll.autoconsum_id.collectiu:
-                data = self.get_sub_component_energy_consumption_detail_collective_td_data(
-                    fact, pol, coll)
-                if data["is_visible"]:
-                    collectives.append(data)
-                adjust_reason.append(data["adjust_reason"])
+        if te_autoconsum_collectiu(fact, pol):
+            data = self.get_sub_component_energy_consumption_detail_collective_td_data(fact, pol)
+
+        # collectives = []
+        # for coll in pol.autoconsum_cups_ids:
+        #     if coll.autoconsum_id.collectiu:
+        #         data = self.get_sub_component_energy_consumption_detail_collective_td_data(
+        #             fact, pol)
+        #         if data["is_visible"]:
+        #             collectives.append(data)
+        #         adjust_reason.append(data["adjust_reason"])
 
         highest_adjust_reason = self.adjust_readings_priority(adjust_reason)
         data = {
             "meters": meters,
-            "collectives": collectives,
+            "collectives": [data],
             "info": self.get_sub_component_energy_consumption_detail_td_info_data(
                 fact, pol, highest_adjust_reason
             ),
@@ -3770,7 +3773,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
         }
         return data
 
-    def get_sub_component_energy_consumption_detail_collective_td_data(self, fact, pol, collective):
+    def get_sub_component_energy_consumption_detail_collective_td_data(self, fact, pol):
 
         def adjust_reason(subs):
             return [sub["adjust_reason"] for sub in subs]
@@ -3779,10 +3782,10 @@ class GiscedataFacturacioFacturaReport(osv.osv):
             return any([sub["is_visible"] for sub in subs])
 
         generated = self.get_sub_component_energy_consumption_detail_td_collective_data_data(
-            fact, pol, collective)
+            fact, pol)
         generated["last_visible"] = True
         data = {
-            "name": collective.autoconsum_id.cau,
+            "name": "",
             "showing_periods": self.get_matrix_show_periods(pol),
             "generated": generated,
             "is_visible": visibility([generated]),
@@ -3792,7 +3795,66 @@ class GiscedataFacturacioFacturaReport(osv.osv):
         }
         return data
 
-    def get_sub_component_energy_consumption_detail_td_collective_data_data(self, fact, pol, collective):  # noqa: E501
+    def get_sub_component_energy_consumption_detail_td_collective_data_data(self, fact, pol):
+        f1_obj = fact.pool.get("giscedata.facturacio.importacio.linia")
+        f1_lf_obj = fact.pool.get('giscedata.facturacio.importacio.linia.factura')
+        f1_cups_ids = f1_obj.search(
+            self.cursor,
+            self.uid,
+            [('cups_id', '=', fact.cups_id.id)],
+        )
+        f1_lf_ids = f1_lf_obj.search(
+            self.cursor,
+            self.uid,
+            [
+                ('linia_id', 'in', f1_cups_ids),
+                ('data_inici', '=', fact.data_inici),
+                ('data_final', '=', fact.data_final),
+            ]
+        )
+        f1_lf = f1_lf_obj.browse(
+            self.cursor,
+            self.uid,
+            f1_lf_ids[-1] if f1_lf_ids else []
+        )
+
+        linies = []
+        if f1_lf:
+            linies = [
+                linia for linia in f1_lf.factura_id.linia_ids if linia.tipus in [
+                    'generacio_neta', 'generacio', 'autoconsum',
+                ]
+            ]
+
+        data = {
+            "showing_periods": self.get_matrix_show_periods(pol),
+            "is_visible": False,
+            "title": _(u"Autoconsum compartit (kWh)"),
+            "is_active": False,
+        }
+
+        data["is_visible"] = len(linies) > 0 and te_autoconsum_amb_excedents(fact, pol)
+
+        for p in data["showing_periods"]:
+            data[p] = {}
+
+        # keys = {
+        #     'generacio_neta': 'generated_coef',
+        #     'autoconsum': 'auto_consumed',
+        #     'generacio': 'surplus',
+        # }
+
+        adjust_reason = []
+        for linia in linies:
+            data[linia.name][linia.tipus] = linia.quantity
+            data["initial_date"] = linia.data_desde
+            data["final_date"] = linia.data_fins
+            adjust_reason.append('98')
+
+        data["adjust_reason"] = self.adjust_readings_priority(adjust_reason)
+        return data
+
+    def get_sub_component_energy_consumption_detail_td_collective_data_data_old(self, fact, pol, collective):  # noqa: E501
         # TODO: this function generates dummy data for developing purposes
         (a, a, a, a, a, a, a, lectures_g, a, a, a, a, a, a, a, a, a, a, a) = self.get_readings_data(
             fact
