@@ -5,8 +5,6 @@ from destral import testing
 from destral.transaction import Transaction
 from oopgrade import oopgrade
 from tools import config
-from functools import partial
-from osv import osv
 
 
 class TestsSomLeadWww(testing.OOTestCase):
@@ -78,11 +76,12 @@ class TestsSomLeadWww(testing.OOTestCase):
         sw_o = self.get_model("giscedata.switching")
         ir_model_o = self.get_model("ir.model.data")
 
-        lead_id = www_lead_o.create_lead(self.cursor, self.uid, self._basic_values)
-        lead_o.force_validation(self.cursor, self.uid, [lead_id])
-        lead_o.create_entities(self.cursor, self.uid, lead_id)
+        result = www_lead_o.create_lead(self.cursor, self.uid, self._basic_values)
+        self.assertFalse(result["error"])
 
-        lead = lead_o.browse(self.cursor, self.uid, lead_id)
+        www_lead_o.activate_lead(self.cursor, self.uid, result["lead_id"])
+
+        lead = lead_o.browse(self.cursor, self.uid, result["lead_id"])
         # Check that the name is correctly set
         self.assertEqual(lead.name, "40323835M / ES0177000000000000LR")
 
@@ -124,11 +123,10 @@ class TestsSomLeadWww(testing.OOTestCase):
         values = self._basic_values
         values["is_indexed"] = True
 
-        lead_id = www_lead_o.create_lead(self.cursor, self.uid, values)
-        lead_o.force_validation(self.cursor, self.uid, [lead_id])
-        lead_o.create_entities(self.cursor, self.uid, lead_id)
+        result = www_lead_o.create_lead(self.cursor, self.uid, self._basic_values)
+        www_lead_o.activate_lead(self.cursor, self.uid, result["lead_id"])
 
-        lead = lead_o.browse(self.cursor, self.uid, lead_id)
+        lead = lead_o.browse(self.cursor, self.uid, result["lead_id"])
 
         peninsular_pricelist_id = ir_model_o.get_object_reference(
             self.cursor, self.uid, "som_indexada", "pricelist_indexada_20td_peninsula_2024"
@@ -148,11 +146,10 @@ class TestsSomLeadWww(testing.OOTestCase):
         values["contract_member"]["proxy_name"] = "Pepito Palotes"
         values["contract_member"]["proxy_vat"] = "40323835M"
 
-        lead_id = www_lead_o.create_lead(self.cursor, self.uid, values)
-        lead_o.force_validation(self.cursor, self.uid, [lead_id])
-        lead_o.create_entities(self.cursor, self.uid, lead_id)
+        result = www_lead_o.create_lead(self.cursor, self.uid, self._basic_values)
+        www_lead_o.activate_lead(self.cursor, self.uid, result["lead_id"])
 
-        lead = lead_o.browse(self.cursor, self.uid, lead_id)
+        lead = lead_o.browse(self.cursor, self.uid, result["lead_id"])
         # Check that the name is correctly set
         self.assertEqual(lead.name, "C81837452 / ES0177000000000000LR")
 
@@ -181,11 +178,10 @@ class TestsSomLeadWww(testing.OOTestCase):
         values["contract_member"]["proxy_name"] = "Pepito Palotes"
         values["contract_member"]["proxy_vat"] = existing_partner_vat
 
-        lead_id = www_lead_o.create_lead(self.cursor, self.uid, values)
-        lead_o.force_validation(self.cursor, self.uid, [lead_id])
-        lead_o.create_entities(self.cursor, self.uid, lead_id)
+        result = www_lead_o.create_lead(self.cursor, self.uid, self._basic_values)
+        www_lead_o.activate_lead(self.cursor, self.uid, result["lead_id"])
 
-        lead = lead_o.browse(self.cursor, self.uid, lead_id)
+        lead = lead_o.browse(self.cursor, self.uid, result["lead_id"])
 
         # Check that no new partner is created
         num_repeated_vats = len(
@@ -208,11 +204,10 @@ class TestsSomLeadWww(testing.OOTestCase):
         values["power_p5"] = "7000"
         values["power_p6"] = "15001"
 
-        lead_id = www_lead_o.create_lead(self.cursor, self.uid, values)
-        lead_o.force_validation(self.cursor, self.uid, [lead_id])
-        lead_o.create_entities(self.cursor, self.uid, lead_id)
+        result = www_lead_o.create_lead(self.cursor, self.uid, self._basic_values)
+        www_lead_o.activate_lead(self.cursor, self.uid, result["lead_id"])
 
-        lead = lead_o.browse(self.cursor, self.uid, lead_id)
+        lead = lead_o.browse(self.cursor, self.uid, result["lead_id"])
 
         self.assertEqual(len(lead.polissa_id.potencies_periode), 6)
         self.assertEqual(lead.polissa_id.tarifa.name, "3.0TD")
@@ -225,11 +220,10 @@ class TestsSomLeadWww(testing.OOTestCase):
         values = self._basic_values
         values["donation"] = True
 
-        lead_id = www_lead_o.create_lead(self.cursor, self.uid, values)
-        lead_o.force_validation(self.cursor, self.uid, [lead_id])
-        lead_o.create_entities(self.cursor, self.uid, lead_id)
+        result = www_lead_o.create_lead(self.cursor, self.uid, self._basic_values)
+        www_lead_o.activate_lead(self.cursor, self.uid, result["lead_id"])
 
-        lead = lead_o.browse(self.cursor, self.uid, lead_id)
+        lead = lead_o.browse(self.cursor, self.uid, result["lead_id"])
         self.assertIs(lead.polissa_id.donatiu, True)
 
     def test_create_lead_with_owner_change_C2_20TD(self):
@@ -240,11 +234,10 @@ class TestsSomLeadWww(testing.OOTestCase):
         values = self._basic_values
         values['process'] = 'C2'
 
-        lead_id = www_lead_o.create_lead(self.cursor, self.uid, values)
-        lead_o.force_validation(self.cursor, self.uid, [lead_id])
-        lead_o.create_entities(self.cursor, self.uid, lead_id)
+        result = www_lead_o.create_lead(self.cursor, self.uid, self._basic_values)
+        www_lead_o.activate_lead(self.cursor, self.uid, result["lead_id"])
 
-        lead = lead_o.browse(self.cursor, self.uid, lead_id)
+        lead = lead_o.browse(self.cursor, self.uid, result["lead_id"])
 
         # Check that the ATR is created with C2 process
         atr_case_ids = sw_o.search(
@@ -277,11 +270,10 @@ class TestsSomLeadWww(testing.OOTestCase):
         values["power_p5"] = "7000"
         values["power_p6"] = "15001"
 
-        lead_id = www_lead_o.create_lead(self.cursor, self.uid, values)
-        lead_o.force_validation(self.cursor, self.uid, [lead_id])
-        lead_o.create_entities(self.cursor, self.uid, lead_id)
+        result = www_lead_o.create_lead(self.cursor, self.uid, self._basic_values)
+        www_lead_o.activate_lead(self.cursor, self.uid, result["lead_id"])
 
-        lead = lead_o.browse(self.cursor, self.uid, lead_id)
+        lead = lead_o.browse(self.cursor, self.uid, result["lead_id"])
 
         # Check that the ATR is created with C2 process
         atr_case_ids = sw_o.search(
@@ -307,11 +299,10 @@ class TestsSomLeadWww(testing.OOTestCase):
         values = self._basic_values
         values['process'] = 'A3'
 
-        lead_id = www_lead_o.create_lead(self.cursor, self.uid, values)
-        lead_o.force_validation(self.cursor, self.uid, [lead_id])
-        lead_o.create_entities(self.cursor, self.uid, lead_id)
+        result = www_lead_o.create_lead(self.cursor, self.uid, self._basic_values)
+        www_lead_o.activate_lead(self.cursor, self.uid, result["lead_id"])
 
-        lead = lead_o.browse(self.cursor, self.uid, lead_id)
+        lead = lead_o.browse(self.cursor, self.uid, result["lead_id"])
 
         # Check that the ATR is created with A3 process
         atr_case_ids = sw_o.search(
@@ -351,11 +342,10 @@ class TestsSomLeadWww(testing.OOTestCase):
         )[1]
         cfg_o.set(self.cursor, self.uid, "fp_canarias_vivienda_id", canarian_posicio_id)
 
-        lead_id = www_lead_o.create_lead(self.cursor, self.uid, values)
-        lead_o.force_validation(self.cursor, self.uid, [lead_id])
-        lead_o.create_entities(self.cursor, self.uid, lead_id)
+        result = www_lead_o.create_lead(self.cursor, self.uid, self._basic_values)
+        www_lead_o.activate_lead(self.cursor, self.uid, result["lead_id"])
 
-        lead = lead_o.browse(self.cursor, self.uid, lead_id)
+        lead = lead_o.browse(self.cursor, self.uid, result["lead_id"])
 
         insular_pricelist_id = ir_model_o.get_object_reference(
             self.cursor, self.uid, "som_indexada", "pricelist_periodes_20td_insular"
@@ -381,11 +371,10 @@ class TestsSomLeadWww(testing.OOTestCase):
         values["cups_city_id"] = capdepera_municipi_id
         values["cups_state_id"] = balears_state_id
 
-        lead_id = www_lead_o.create_lead(self.cursor, self.uid, values)
-        lead_o.force_validation(self.cursor, self.uid, [lead_id])
-        lead_o.create_entities(self.cursor, self.uid, lead_id)
+        result = www_lead_o.create_lead(self.cursor, self.uid, self._basic_values)
+        www_lead_o.activate_lead(self.cursor, self.uid, result["lead_id"])
 
-        lead = lead_o.browse(self.cursor, self.uid, lead_id)
+        lead = lead_o.browse(self.cursor, self.uid, result["lead_id"])
 
         insular_pricelist_id = ir_model_o.get_object_reference(
             self.cursor, self.uid, "som_indexada", "pricelist_periodes_20td_insular"
@@ -409,11 +398,10 @@ class TestsSomLeadWww(testing.OOTestCase):
             "aux_services": False,
         }
 
-        lead_id = www_lead_o.create_lead(self.cursor, self.uid, values)
-        lead_o.force_validation(self.cursor, self.uid, [lead_id])
-        lead_o.create_entities(self.cursor, self.uid, lead_id)
+        result = www_lead_o.create_lead(self.cursor, self.uid, self._basic_values)
+        www_lead_o.activate_lead(self.cursor, self.uid, result["lead_id"])
 
-        lead = lead_o.browse(self.cursor, self.uid, lead_id)
+        lead = lead_o.browse(self.cursor, self.uid, result["lead_id"])
 
         # Buscar el CAU
         self_consumption_ids = self_consumption_o.search(
@@ -453,11 +441,10 @@ class TestsSomLeadWww(testing.OOTestCase):
             "aux_services": False,
         }
 
-        lead_id = www_lead_o.create_lead(self.cursor, self.uid, values)
-        lead_o.force_validation(self.cursor, self.uid, [lead_id])
-        lead_o.create_entities(self.cursor, self.uid, lead_id)
+        result = www_lead_o.create_lead(self.cursor, self.uid, self._basic_values)
+        www_lead_o.activate_lead(self.cursor, self.uid, result["lead_id"])
 
-        lead = lead_o.browse(self.cursor, self.uid, lead_id)
+        lead = lead_o.browse(self.cursor, self.uid, result["lead_id"])
 
         # Buscar el CAU
         self_consumption_ids = self_consumption_o.search(
@@ -497,11 +484,10 @@ class TestsSomLeadWww(testing.OOTestCase):
             "aux_services": False,
         }
 
-        lead_id = www_lead_o.create_lead(self.cursor, self.uid, values)
-        lead_o.force_validation(self.cursor, self.uid, [lead_id])
-        lead_o.create_entities(self.cursor, self.uid, lead_id)
+        result = www_lead_o.create_lead(self.cursor, self.uid, self._basic_values)
+        www_lead_o.activate_lead(self.cursor, self.uid, result["lead_id"])
 
-        lead = lead_o.browse(self.cursor, self.uid, lead_id)
+        lead = lead_o.browse(self.cursor, self.uid, result["lead_id"])
 
         # Buscar el CAU
         self_consumption_ids = self_consumption_o.search(
@@ -541,11 +527,10 @@ class TestsSomLeadWww(testing.OOTestCase):
             "aux_services": False,
         }
 
-        lead_id = www_lead_o.create_lead(self.cursor, self.uid, values)
-        lead_o.force_validation(self.cursor, self.uid, [lead_id])
-        lead_o.create_entities(self.cursor, self.uid, lead_id)
+        result = www_lead_o.create_lead(self.cursor, self.uid, self._basic_values)
+        www_lead_o.activate_lead(self.cursor, self.uid, result["lead_id"])
 
-        lead = lead_o.browse(self.cursor, self.uid, lead_id)
+        lead = lead_o.browse(self.cursor, self.uid, result["lead_id"])
 
         # Buscar el CAU
         self_consumption_ids = self_consumption_o.search(
@@ -571,7 +556,6 @@ class TestsSomLeadWww(testing.OOTestCase):
 
     def test_create_individual_net_self_consumption_lead_fails(self):
         www_lead_o = self.get_model("som.lead.www")
-        lead_o = self.get_model("giscedata.crm.lead")
 
         values = self._basic_values
         values["self_consumption"] = {
@@ -583,12 +567,8 @@ class TestsSomLeadWww(testing.OOTestCase):
             "aux_services": False,
         }
 
-        lead_id = www_lead_o.create_lead(self.cursor, self.uid, values)
-        lead_o.force_validation(self.cursor, self.uid, [lead_id])
-
-        test_fn = partial(lead_o.create_entities, self.cursor, self.uid, lead_id)
-
-        self.assertRaises(osv.except_osv, test_fn)
+        result = www_lead_o.create_lead(self.cursor, self.uid, self._basic_values)
+        self.assertTrue(result["error"])
 
     def test_add_attachments_to_simple_lead(self):
         www_lead_o = self.get_model("som.lead.www")
@@ -616,11 +596,10 @@ class TestsSomLeadWww(testing.OOTestCase):
             self.cursor, self.uid, "som_leads_polissa", "ir_attachment_lead_old_invoice"
         )[1]
 
-        lead_id = www_lead_o.create_lead(self.cursor, self.uid, values)
-        lead_o.force_validation(self.cursor, self.uid, [lead_id])
-        lead_o.create_entities(self.cursor, self.uid, lead_id)
+        result = www_lead_o.create_lead(self.cursor, self.uid, self._basic_values)
+        www_lead_o.activate_lead(self.cursor, self.uid, result["lead_id"])
 
-        lead = lead_o.browse(self.cursor, self.uid, lead_id)
+        lead = lead_o.browse(self.cursor, self.uid, result["lead_id"])
 
         search_params = [
             ("res_model", "=", "giscedata.polissa"),
@@ -636,10 +615,10 @@ class TestsSomLeadWww(testing.OOTestCase):
         www_lead_o = self.get_model("som.lead.www")
         lead_o = self.get_model("giscedata.crm.lead")
 
-        lead_id = www_lead_o.create_lead(self.cursor, self.uid, self._basic_values)
-        lead_o.force_validation(self.cursor, self.uid, [lead_id])
-        lead_o.create_entities(self.cursor, self.uid, lead_id)
+        result = www_lead_o.create_lead(self.cursor, self.uid, self._basic_values)
+        lead_o.force_validation(self.cursor, self.uid, [result["lead_id"]])
+        lead_o.create_entities(self.cursor, self.uid, result["lead_id"])
 
-        lead = lead_o.browse(self.cursor, self.uid, lead_id)
+        lead = lead_o.browse(self.cursor, self.uid, result["lead_id"])
 
         self.assertIn("name: Pepito", lead.polissa_id.observacions)

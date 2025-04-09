@@ -17,6 +17,9 @@ class GiscedataCrmLead(osv.OsvInherits):
     def contract_pdf(self, cursor, uid, ids, context=None):
         if context is None:
             context = {}
+        if not isinstance(ids, (list, tuple)):
+            ids = [ids]
+
         context["lead"] = True
 
         lead = self.browse(cursor, uid, ids[0])

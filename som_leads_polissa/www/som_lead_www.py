@@ -1,4 +1,6 @@
 # -*- encoding: utf-8 -*-
+import traceback
+import sys
 from osv import osv
 from datetime import datetime
 import yaml
@@ -108,12 +110,31 @@ class SomLeadWww(osv.osv_memory):
             )
 
         lead_id = lead_o.create(cr, uid, values, context=context)
-        self.create_attachments(cr, uid, lead_id, www_vals.get("attachments", []), context=context)
-        self.save_www_data_in_history(cr, uid, lead_id, www_vals, context=context)
+        self._create_attachments(cr, uid, lead_id, www_vals.get("attachments", []), context=context)
+        self._save_www_data_in_history(cr, uid, lead_id, www_vals, context=context)
         lead_o.copy_base_attr_gen_from_titular(cr, uid, lead_id)
-        return lead_id
+        lead_o.assign_contract_number(cr, uid, lead_id, context=context)
 
-    def create_attachments(self, cr, uid, lead_id, attachments, context=None):
+        # similar to lead.contract_pdf but simpler (contract_pdf fails because the 2nd cursor)
+        error_info = self._check_lead_can_be_activated(cr, uid, lead_id, context=context)
+
+        return {
+            "lead_id": lead_id,
+            "error": error_info,
+        }
+
+    def activate_lead(self, cr, uid, lead_id, context=None):
+        if context is None:
+            context = {}
+
+        lead_o = self.pool.get("giscedata.crm.lead")
+
+        # FIXME: improve this with the stages
+        lead_o.force_validation(cr, uid, [lead_id], context=context)
+
+        lead_o.create_entities(cr, uid, lead_id, context=context)
+
+    def _create_attachments(self, cr, uid, lead_id, attachments, context=None):
         if context is None:
             context = {}
 
@@ -125,12 +146,12 @@ class SomLeadWww(osv.osv_memory):
                 "res_id": lead_id,
                 "datas_fname": attachment["filename"],
                 "name": attachment["filename"],
-                "category_id": self.get_category_id(cr, uid, attachment["category"]),
+                "category_id": self._get_category_id(cr, uid, attachment["category"]),
                 "datas": attachment["datas"]
             }
             ir_attach_o.create(cr, uid, values, context=context)
 
-    def get_category_id(self, cr, uid, category_code, context=None):
+    def _get_category_id(self, cr, uid, category_code, context=None):
         if context is None:
             context = {}
 
@@ -142,7 +163,7 @@ class SomLeadWww(osv.osv_memory):
 
         return categ_id
 
-    def save_www_data_in_history(self, cr, uid, lead_id, www_vals, context=None):
+    def _save_www_data_in_history(self, cr, uid, lead_id, www_vals, context=None):
         if context is None:
             context = {}
 
@@ -152,6 +173,31 @@ class SomLeadWww(osv.osv_memory):
         data = yaml.safe_dump(www_vals, indent=2)
         msg = "{header}\n{data}".format(header=WWW_DATA_FORM_HEADER, data=data)
         lead.historize_msg(msg, context=context)
+
+    def _check_lead_can_be_activated(self, cr, uid, lead_id, context=None):
+        if context is None:
+            context = {}
+
+        lead_o = self.pool.get("giscedata.crm.lead")
+
+        savepoint = 'savepoint_check_lead_can_be_activated_{}'.format(id(cr))
+        cr.savepoint(savepoint)
+
+        error = None
+        try:
+            lead_o.force_validation(cr, uid, [lead_id], context=context)
+            lead_o.create_entities(cr, uid, lead_id, context=context)
+            cr.rollback(savepoint)
+        except Exception as e:
+            cr.rollback(savepoint)
+            exc_type, exc_value, exc_tb = sys.exc_info()
+            error = dict(
+                error=str(e),
+                code="Unactivable",
+                trace=traceback.format_exception(exc_type, exc_value, exc_tb),
+            )
+
+        return error
 
 
 SomLeadWww()
