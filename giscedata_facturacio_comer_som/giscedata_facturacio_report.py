@@ -3635,7 +3635,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
             data["is_visible"] = (
                 len(lectures[meter.name]) > 0
                 and te_autoconsum_amb_excedents(fact, pol)
-                and te_autoconsum_no_collectiu(fact, pol)
+                and not te_autoconsum_collectiu(fact, pol)
             )
             for reading in lectures[meter.name]:
                 data[reading[0]] = {
