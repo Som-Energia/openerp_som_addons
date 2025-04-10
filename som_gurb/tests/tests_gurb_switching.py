@@ -730,7 +730,7 @@ class TestsGurbSwitching(TestsGurbBase):
         self.assertEqual(m1.state, "done")
         self.assertEqual(m1.notificacio_pendent, False)
 
-        self.assertEqual(pol.tipus_subseccio, "21")
+        self.assertEqual(pol.tipus_subseccio, "00")
 
     def test_notify_m1_03_gurb_category(self):
         pol_obj = self.openerp.pool.get("giscedata.polissa")
