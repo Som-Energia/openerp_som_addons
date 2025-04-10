@@ -43,6 +43,7 @@ class SomLeadWww(osv.osv_memory):
 
         # TODO: Cal posar poblacions? (CUPS i titular)
         values = {
+            "state": "open",
             "name": "{} / {}".format(www_vals["contract_member"]["vat"].upper(), www_vals["cups"]),
             "lang": www_vals["contract_member"]["lang"],
             "cups": www_vals["cups"],
@@ -131,6 +132,17 @@ class SomLeadWww(osv.osv_memory):
         # similar to lead.contract_pdf but simpler (contract_pdf fails because the 2nd cursor)
         error_info = self._check_lead_can_be_activated(cr, uid, lead_id, context=context)
 
+        if error_info:
+            # Set the stage to error and state to pending
+            error_stage_id = ir_model_o.get_object_reference(
+                cr, uid, "som_leads_polissa", "webform_stage_error"
+            )[1]
+            lead_o.write(
+                cr, uid, lead_id,
+                {'stage_id': error_stage_id, 'state': 'pending'},
+                context=context
+            )
+
         return {
             "lead_id": lead_id,
             "error": error_info,
@@ -141,9 +153,6 @@ class SomLeadWww(osv.osv_memory):
             context = {}
 
         lead_o = self.pool.get("giscedata.crm.lead")
-
-        # FIXME: improve this with the stages
-        lead_o.force_validation(cr, uid, [lead_id], context=context)
 
         lead_o.create_entities(cr, uid, lead_id, context=context)
         lead_o.stage_next(cr, uid, [lead_id], context=context)
