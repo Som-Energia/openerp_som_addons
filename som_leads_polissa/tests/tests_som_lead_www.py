@@ -24,9 +24,17 @@ class TestsSomLeadWww(testing.OOTestCase):
         self.uid = self.txn.user
 
         lang_o = self.get_model("res.lang")
+        ir_model_o = self.get_model("ir.model.data")
+        stage_validation_template_o = self.get_model("crm.stage.validation.template")
 
         lang_o.create(self.cursor, self.uid, {"name": "Català", "code": "ca_ES"})
         lang_o.create(self.cursor, self.uid, {"name": "Español", "code": "es_ES"})
+
+        # Remove a demo data that changes the stage validation behaviour
+        no_stage_validation_id = ir_model_o.get_object_reference(
+            self.cursor, self.uid, "giscedata_crm_leads", "demo_crm_lead_no_stage_validation"
+        )[1]
+        stage_validation_template_o.unlink(self.cursor, self.uid, no_stage_validation_id)
 
         self._basic_values = {
             "owner_is_member": True,
@@ -642,11 +650,26 @@ class TestsSomLeadWww(testing.OOTestCase):
             self.cursor, self.uid, "som_leads_polissa", "webform_stage_converted"
         )[1]
 
+        webform_stage_error_id = ir_model_o.get_object_reference(
+            self.cursor, self.uid, "som_leads_polissa", "webform_stage_error"
+        )[1]
+
         result = www_lead_o.create_lead(self.cursor, self.uid, self._basic_values)
         lead = lead_o.browse(self.cursor, self.uid, result["lead_id"])
         self.assertEqual(lead.crm_id.stage_id.id, webform_stage_recieved_id)
+        self.assertEqual(lead.crm_id.state, 'open')
 
-        # FIXME? Something is happening with the cursors (?)
+        # we need to reload the browse record because the cache
         lead = lead_o.browse(self.cursor, self.uid, result["lead_id"])
         www_lead_o.activate_lead(self.cursor, self.uid, result["lead_id"])
         self.assertEqual(lead.crm_id.stage_id.id, webform_stage_converted_id)
+        self.assertEqual(lead.crm_id.state, 'done')
+
+        # Test the error stage
+        values = self._basic_values
+        values["atr_proces_name"] = 'patata'
+        result = www_lead_o.create_lead(self.cursor, self.uid, values)
+        lead = lead_o.browse(self.cursor, self.uid, result["lead_id"])
+        self.assertTrue(result["error"])
+        self.assertEqual(lead.crm_id.state, 'pending')
+        self.assertEqual(lead.crm_id.stage_id.id, webform_stage_error_id)
