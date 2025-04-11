@@ -10,9 +10,9 @@
         % for p in coll.showing_periods:
             % if p in coll:
                 <% data = coll[p].get(u"generacio_neta", 0.0) %>
-                <td>${_(u"%s") %(formatLang(data, digits=3))}</td>
+                <td class="periods_td">${_(u"%s") %(formatLang(data, digits=3))}</td>
             % else:
-                <td></td>
+                <td class="periods_td"></td>
             % endif
         % endfor
         <td></td>
@@ -22,9 +22,9 @@
         % for p in coll.showing_periods:
             % if p in coll:
                 <% data = coll[p].get(u"autoconsum", 0.0) %>
-                <td>${_(u"%s") %(formatLang(data, digits=3))}</td>
+                <td class="periods_td">${_(u"%s") %(formatLang(data, digits=3))}</td>
             % else:
-                <td></td>
+                <td class="periods_td"></td>
             % endif
         % endfor
         <td></td>
@@ -42,12 +42,12 @@
         % for p in coll.showing_periods:
             % if p in coll:
                 <% data = coll[p].get(u"generacio", 0.0) %>
-                <td>${_(u"%s") %(formatLang(data, digits=3))}</td>
+                <td class="periods_td">${_(u"%s") %(formatLang(data, digits=3))}</td>
             % else:
-                <td></td>
+                <td class="periods_td"></td>
             % endif
         % endfor
-        <td>
+        <td class="periods_td">
         </td>
     </tr>
 % endif
