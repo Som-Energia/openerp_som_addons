@@ -26,6 +26,7 @@ class WizardCreacioRemesaPagamentTaxes(osv.osv_memory):
             ids = ids[0]
 
         config_obj = self.pool.get('som.municipal.taxes.config')
+        res_config = self.pool.get('res.config')
         wizard = self.browse(cursor, uid, ids, context=context)
 
         municipi_conf_ids = self.buscar_municipis_remesar(cursor, uid, ids, wizard.quarter, context)
@@ -52,9 +53,23 @@ class WizardCreacioRemesaPagamentTaxes(osv.osv_memory):
             wizard.write(vals, context)
             return False
 
-        order_id, info = self.crear_factures(
-            cursor, uid, ids, totals_by_city, wizard.payment_mode.id,
-            wizard.account.id, wizard.year, context)
+        var_config_v = int(
+            res_config.get(cursor, uid, 'do_empty_vat_or_name_func', 0)
+        )
+
+        try:
+            if var_config_v:
+                res_config.set(cursor, uid, 'do_empty_vat_or_name_func', 0)
+
+            order_id, info = self.crear_factures(
+                cursor, uid, ids, totals_by_city, wizard.payment_mode.id,
+                wizard.account.id, wizard.year, context)
+        except Exception as e:
+            raise e
+        finally:
+            if var_config_v:
+                res_config.set(cursor, uid, 'do_empty_vat_or_name_func', 1)
+
         if not order_id:
             vals = {
                 'info': info,
@@ -105,10 +120,10 @@ class WizardCreacioRemesaPagamentTaxes(osv.osv_memory):
             polissa_categ_imu_ex_id, False, invoiced_states,
             context=context
         )
-        df_mun, df_gr, df_out, df_in, col_gr, col_mun = taxes_invoicing_report.build_dataframe_taxes_detallat(  # noqa: E501
+        _, df_gr, _, _, _, _ = taxes_invoicing_report.build_dataframe_taxes_detallat(
             res_municipi_ids, context)
 
-        return df_gr  # ex totals_by_city
+        return df_gr
 
     def crear_factures(self, cursor, uid, ids, df_gr, payment_mode_id,
                        account_id, year, context=None):
@@ -173,6 +188,7 @@ class WizardCreacioRemesaPagamentTaxes(osv.osv_memory):
                 origin=origin_name,
                 reference='',
                 origin_date_invoice=self.get_invoice_date_from_quarter(year, quarter_name),
+                sii_to_send=False,
             ))
             invoice_line_obj.create(cursor, uid, dict(
                 invoice_id=invoice_id,
