@@ -35,7 +35,7 @@ class WizardCreacioRemesaPagamentTaxes(osv.osv_memory):
                 'state': 'cancel',
             }
             wizard.write(vals, context)
-            return True
+            return False
 
         res_municipi_ids = [
             m['municipi_id'][0]
@@ -50,11 +50,18 @@ class WizardCreacioRemesaPagamentTaxes(osv.osv_memory):
                 'state': 'cancel',
             }
             wizard.write(vals, context)
-            return True
+            return False
 
         order_id, info = self.crear_factures(
             cursor, uid, ids, totals_by_city, wizard.payment_mode.id,
             wizard.account.id, wizard.year, context)
+        if not order_id:
+            vals = {
+                'info': info,
+                'state': 'cancel',
+            }
+            wizard.write(vals, context)
+            return False
 
         vals = {
             'info': info,
@@ -100,8 +107,6 @@ class WizardCreacioRemesaPagamentTaxes(osv.osv_memory):
         )
         df_mun, df_gr, df_out, df_in, col_gr, col_mun = taxes_invoicing_report.build_dataframe_taxes_detallat(  # noqa: E501
             res_municipi_ids, context)
-        if not col_mun:
-            return False
 
         return df_gr  # ex totals_by_city
 
@@ -117,15 +122,6 @@ class WizardCreacioRemesaPagamentTaxes(osv.osv_memory):
         euro_id = currency_obj.search(cursor, uid, [('code', '=', 'EUR')])[0]
         journal_id = self.pool.get('ir.model.data').get_object_reference(
             cursor, uid, 'som_municipal_taxes', 'municipal_tax_journal')[1]
-        # Crear remesa
-        order_id = order_obj.create(cursor, uid, dict(
-            date_prefered='fixed',
-            user_id=uid,
-            state='draft',
-            mode=payment_mode_id,
-            type='payable',
-            create_account_moves='direct-payment',
-        ))
 
         invoice_ids = []
         linia_creada = []
@@ -194,9 +190,21 @@ class WizardCreacioRemesaPagamentTaxes(osv.osv_memory):
 
             linia_creada.append(city_name)
             invoice_ids.append(invoice_id)
-
-        invoice_obj.afegeix_a_remesa(cursor, uid, invoice_ids, order_id)
-        info = "S'ha creat la remesa amb {} línies\n\n".format(len(linia_creada))
+        if invoice_ids:
+            # Crear remesa
+            order_id = order_obj.create(cursor, uid, dict(
+                date_prefered='fixed',
+                user_id=uid,
+                state='draft',
+                mode=payment_mode_id,
+                type='payable',
+                create_account_moves='direct-payment',
+            ))
+            invoice_obj.afegeix_a_remesa(cursor, uid, invoice_ids, order_id)
+            info = "S'ha creat la remesa amb {} línies\n\n".format(len(linia_creada))
+        else:
+            order_id = False
+            info = "No s'ha creat cap remesa perquè no s'ha creat cap factura\n\n"
         if linia_falta_partner:
             info += """Atenció. Els següents ajuntaments ({}) no tenen un partner
             creat: \n {}\n\n""".format(len(linia_falta_partner), ", ".join(linia_falta_partner))

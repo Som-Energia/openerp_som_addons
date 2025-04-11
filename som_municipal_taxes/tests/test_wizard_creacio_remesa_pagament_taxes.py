@@ -48,7 +48,7 @@ class TestWizardCreacioRemesaPagamentTaxes(testing.OOTestCaseWithCursor):
     @mock.patch.object(FacturacioExtra, "get_states_invoiced")
     def test_create_remesa_pagaments__error_ja_pagat(self, get_states_invoiced_mock):
         get_states_invoiced_mock.return_value = ['draft', 'open', 'paid']
-        order_o = self.pool.get("payment.order")
+        self.pool.get("payment.order")
         wiz_o = self.pool.get("wizard.creacio.remesa.pagament.taxes")
         payment_mode_id = self.pool.get("ir.model.data").get_object_reference(
             self.cursor, self.uid, "account_invoice_som", "payment_mode_0001"
@@ -85,8 +85,36 @@ class TestWizardCreacioRemesaPagamentTaxes(testing.OOTestCaseWithCursor):
             {},
         )
 
-        po = order_o.browse(self.cursor, self.uid, order_id)
-        self.assertEqual(len(po.line_ids), 0)
+        self.assertFalse(order_id)
+
+    def test_create_remesa_pagaments__no_invoices(self):
+        wiz_o = self.pool.get("wizard.creacio.remesa.pagament.taxes")
+
+        payment_mode_id = self.pool.get("ir.model.data").get_object_reference(
+            self.cursor, self.uid, "account_invoice_som", "payment_mode_0001"
+        )[1]
+        wiz_init = {
+            "account": 7,
+            "payment_mode": payment_mode_id,
+            "year": 2016,
+            "quarter": 1,
+        }
+        wiz_id = wiz_o.create(
+            self.cursor,
+            self.uid,
+            wiz_init,
+            context={},
+        )
+        order_id = wiz_o.create_remesa_pagaments(
+            self.cursor,
+            self.uid,
+            [wiz_id],
+            {},
+        )
+
+        state = wiz_o.read(self.cursor, self.uid, wiz_id, ['state'])[0]['state']
+        self.assertEqual(state, 'cancel')
+        self.assertFalse(order_id)
 
     @mock.patch.object(FacturacioExtra, "get_states_invoiced")
     def test__crear_factures__ok(self, get_states_invoiced_mock):
