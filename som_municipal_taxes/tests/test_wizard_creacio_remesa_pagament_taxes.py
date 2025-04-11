@@ -2,7 +2,7 @@
 import datetime
 from destral import testing
 import mock
-
+import pandas as pd
 from som_municipal_taxes.wizard.wizard_creacio_remesa_pagament_taxes import get_dates_from_quarter
 from giscedata_facturacio.facturacio_extra import FacturacioExtra
 
@@ -98,7 +98,7 @@ class TestWizardCreacioRemesaPagamentTaxes(testing.OOTestCaseWithCursor):
         )[1]
 
         # Create the wizard
-        wiz_o.create(
+        wiz_id = wiz_o.create(
             self.cursor,
             self.uid,
             {
@@ -111,15 +111,29 @@ class TestWizardCreacioRemesaPagamentTaxes(testing.OOTestCaseWithCursor):
         )
 
         # Mock totals_by_city data
-        totals_by_city = [
-            ["City1", 2016, 1.0, 1230.0, 1500.0, "01001"],
-            ["City2", 2016, 1.0, 2000.0, 2500.0, "17114"],
-        ]
+        dades = {
+            'base_compres': [100, 150],
+            'base_vendes': [200, 250],
+            'base_impost': [300, 400],
+            'tax': [True, False],
+            'TOVP': [1.5, 2.0]
+        }
+        # Crear un MultiIndex per a les files
+        index = pd.MultiIndex.from_tuples(
+            [
+                ('Alegría-Dulantzi', '01001', 2016, '1T'),
+                ('Olot', '17114', 2016, '2T')
+            ],
+            names=['municipi', 'ine', 'any', 'trimestre']
+        )
+        # Crear el DataFrame amb les dades i el MultiIndex
+        totals_by_city = pd.DataFrame(dades, index=index)
 
         # Call the method to create invoices
         order_id, info = wiz_o.crear_factures(
             self.cursor,
             self.uid,
+            wiz_id,
             totals_by_city,
             payment_mode_id,  # payment_mode_id
             7,  # account_id
@@ -132,7 +146,7 @@ class TestWizardCreacioRemesaPagamentTaxes(testing.OOTestCaseWithCursor):
         self.assertIsNotNone(po)
         self.assertEqual(po.state, 'draft')
         self.assertEqual(po.mode.id, payment_mode_id)
-        self.assertEqual(po.total, 11.55)
+        self.assertEqual(po.total, 3.5)
 
         # Verify the invoices were created and linked to the payment order
         invoice_ids = po.line_ids
