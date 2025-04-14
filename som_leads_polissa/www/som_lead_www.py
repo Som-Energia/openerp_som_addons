@@ -148,13 +148,32 @@ class SomLeadWww(osv.osv_memory):
             "error": error_info,
         }
 
+    # def set_atr_case_in_draft(self, cr, uid, lead, context=context):
+    #     if context is None:
+    #         context = {}
+
+    #     sw_o = self.pool.get("giscedata.switching")
+
+    #     atr_case_ids = sw_o.search(
+    #         cr, uid, [
+    #             ("proces_id.name", "=", "2"),
+    #             ("cups_polissa_id", "=", lead.polissa_id.id),
+    #             ("cups_input", "=", lead.polissa_id.cups.name),
+    #         ]
+    #     )
+
     def activate_lead(self, cr, uid, lead_id, context=None):
         if context is None:
             context = {}
 
+        context["create_draft_atr"] = True
+
         lead_o = self.pool.get("giscedata.crm.lead")
 
         msg = lead_o.create_entities(cr, uid, lead_id, context=context)
+
+        # self.set_atr_case_in_draft(cr, uid, lead_id, context=context)
+
         lead_o.historize_msg(cr, uid, [lead_id], msg, context=context)
         lead_o.stage_next(cr, uid, [lead_id], context=context)
 

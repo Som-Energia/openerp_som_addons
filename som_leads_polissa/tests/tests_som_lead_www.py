@@ -263,6 +263,9 @@ class TestsSomLeadWww(testing.OOTestCase):
         )
         self.assertEqual(len(atr_case_ids), 1)
 
+        atr_case = sw_o.browse(self.cursor, self.uid, atr_case_ids[0])
+        self.assertEqual(atr_case.state, "draft")
+
         # check change type owner
         c2 = sw_o.get_pas(self.cursor, self.uid, atr_case_ids)
         self.assertEqual(c2.sollicitudadm, "S")
@@ -299,6 +302,9 @@ class TestsSomLeadWww(testing.OOTestCase):
         )
         self.assertEqual(len(atr_case_ids), 1)
 
+        atr_case = sw_o.browse(self.cursor, self.uid, atr_case_ids[0])
+        self.assertEqual(atr_case.state, "draft")
+
         # check change type owner
         c2 = sw_o.get_pas(self.cursor, self.uid, atr_case_ids)
         self.assertEqual(c2.sollicitudadm, "S")
@@ -328,8 +334,11 @@ class TestsSomLeadWww(testing.OOTestCase):
         )
         self.assertEqual(len(atr_case_ids), 1)
 
+        atr_case = sw_o.browse(self.cursor, self.uid, atr_case_ids[0])
+
         a3 = sw_o.get_pas(self.cursor, self.uid, atr_case_ids)
         self.assertEqual(a3.control_potencia, "1")
+        self.assertEqual(atr_case.state, "draft")
         self.assertEqual(a3.cnae.name, values["cnae"])
 
     def test_create_lead_from_canarias(self):
