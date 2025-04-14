@@ -214,7 +214,7 @@
       </div>
       <div class="CaixaDadesAportacio">
         <p class="ContingutDades"><b>${_(u"Estalvi:")}</b> ${formatLang(data.estalvi, monetary=True)} €<br>
-        <b>${_(u"19% Retenció sobre l'estalvi:")}</b> ${formatLang(data.retencio, monetary=True)} €<br>
+        <b>${_(u"19% IRPF:")}</b> ${formatLang(data.retencio, monetary=True)} €<br>
         <b>${_(u"Tipus percepció:")}</b> ${_(u"Guany en espècie")}</p>
       </div>
     </div>
