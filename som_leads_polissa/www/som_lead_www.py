@@ -154,7 +154,8 @@ class SomLeadWww(osv.osv_memory):
 
         lead_o = self.pool.get("giscedata.crm.lead")
 
-        lead_o.create_entities(cr, uid, lead_id, context=context)
+        msg = lead_o.create_entities(cr, uid, lead_id, context=context)
+        lead_o.historize_msg(cr, uid, [lead_id], msg, context=context)
         lead_o.stage_next(cr, uid, [lead_id], context=context)
 
     def _create_attachments(self, cr, uid, lead_id, attachments, context=None):
