@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 from report_backend.report_backend import ReportBackend, report_browsify
-from tools.translate import _
 
 
 class ReportBackendNotaCarrec(ReportBackend):
@@ -21,7 +20,8 @@ class ReportBackendNotaCarrec(ReportBackend):
         if context is None:
             context = {}
 
-        nota_carrec_brw = self.pool.get('account.invoice.nota.carrec').browse(cursor, uid, record_id, context=context)
+        nota_carrec_brw = self.pool.get('account.invoice.nota.carrec').browse(
+            cursor, uid, record_id, context=context)
         lang = nota_carrec_brw.partner_id.lang or 'ca_ES'
 
         return lang
@@ -34,5 +34,6 @@ class ReportBackendNotaCarrec(ReportBackend):
         })
 
         return res
+
 
 ReportBackendNotaCarrec()
