@@ -625,17 +625,19 @@ class TestsSomLeadWww(testing.OOTestCase):
 
         self.assertEqual(len(ir_attach_ids), 1)
 
-    def test_www_form_data_is_stored(self):
+    def test_www_form_data_and_create_entites_log_is_stored(self):
         www_lead_o = self.get_model("som.lead.www")
         lead_o = self.get_model("giscedata.crm.lead")
 
         result = www_lead_o.create_lead(self.cursor, self.uid, self._basic_values)
-        lead_o.force_validation(self.cursor, self.uid, [result["lead_id"]])
-        lead_o.create_entities(self.cursor, self.uid, result["lead_id"])
+        www_lead_o.activate_lead(self.cursor, self.uid, result["lead_id"])
 
         lead = lead_o.browse(self.cursor, self.uid, result["lead_id"])
 
         self.assertIn("name: Pepito", lead.polissa_id.observacions)
+
+        # we check the second line because the first has the stage change
+        self.assertIn("ES40323835M", lead.history_line[1].description)
 
     def test_create_lead_crm_stages_and_section(self):
         www_lead_o = self.get_model("som.lead.www")
