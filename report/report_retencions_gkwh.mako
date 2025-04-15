@@ -3,7 +3,7 @@
     import logging
     logger = logging.getLogger('openerp')
     report = objects[0]
-    data = report.generationkwh_amortization_data()
+    data = report.report_retencions_data(is_generationkwh=True)
 %>
 
 <html>
@@ -157,8 +157,8 @@
     <div class="LogoPpal">
       <a href="https://www.somenergia.coop" target="_blank">
         <img src="${addons_path}/som_inversions/report/logo.jpg" width="150" height="150"/ alt="Logo Som Energia"></a><br>
-      <p class="sotalogo"><b>${data.partner_name}</b><br>${_(u"CIF:")} ${data.partner_vat.replace('ES','')}<br>${_(u"Domicili:")} ${data.address_street} ${data.address_zip} - ${data.address_city}<br>
-        ${_(u"Adreça electrònica:")} ${data.address_email}
+      <p class="sotalogo"><b>${data.somenergia.partner_name}</b><br>${_(u"CIF:")} ${data.somenergia.partner_vat.replace('ES','')}<br>${_(u"Domicili:")} ${data.somenergia.address_street} ${data.somenergia.address_zip} - ${data.somenergia.address_city}<br>
+        ${_(u"Adreça electrònica:")} generationkwh@somenergia.coop
     </div>
   </div>
   <div class="TitolHeader">
@@ -213,8 +213,8 @@
       <div class="CaixaEspai">
       </div>
       <div class="CaixaDadesAportacio">
-        <p class="ContingutDades"><b>${_(u"Estalvi:")}</b> ${formatLang(data.estalvi, monetary=True)} €<br>
-        <b>${_(u"19% IRPF:")}</b> ${formatLang(data.retencio, monetary=True)} €<br>
+        <p class="ContingutDades"><b>${_(u"Estalvi:")}</b> ${formatLang(data.amount_untaxed, monetary=True)} €<br>
+        <b>${_(u"19% IRPF:")}</b> ${formatLang(data.amount_tax, monetary=True)} €<br>
         <b>${_(u"Tipus percepció:")}</b> ${_(u"Guany en espècie")}</p>
       </div>
     </div>

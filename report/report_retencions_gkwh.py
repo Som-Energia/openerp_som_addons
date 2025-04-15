@@ -14,7 +14,7 @@ class ResPartner(osv.osv):
     _name = 'res.partner'
     _inherit = 'res.partner'
 
-    def generationkwh_amortization_data(self, cursor, uid, ids):
+    def generationkwh_amortization_data_unused(self, cursor, uid, ids):
         if not ids:
             raise Exception("No member provided")
 
