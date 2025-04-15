@@ -21,7 +21,7 @@
                 <th class="info_td"></th>
             </tr>
             <%include file="/giscedata_facturacio_comer_som/report/components/energy_consumption_detail_td_base/energy_consumption_detail_td_base.mako" args="meter=meter.active" />
-            <%include file="/giscedata_facturacio_comer_som/report/components/energy_consumption_detail_td_base/energy_consumption_detail_td_base.mako" args="meter=meter.surplus" />
+            <%include file="/giscedata_facturacio_comer_som/report/components/energy_consumption_detail_td_surplus/energy_consumption_detail_td_surplus.mako" args="meter=meter.surplus" />
             <%include file="/giscedata_facturacio_comer_som/report/components/energy_consumption_detail_td_base/energy_consumption_detail_td_base.mako" args="meter=meter.inductive" />
             <%include file="/giscedata_facturacio_comer_som/report/components/energy_consumption_detail_td_base/energy_consumption_detail_td_base.mako" args="meter=meter.capacitive" />
             % if meter == id.meters[-1]:

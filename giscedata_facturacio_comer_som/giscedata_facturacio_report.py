@@ -3635,7 +3635,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
             data["is_visible"] = (
                 len(lectures[meter.name]) > 0
                 and te_autoconsum_amb_excedents(fact, pol)
-                and not te_autoconsum_collectiu(fact, pol)
+                and te_autoconsum_no_collectiu(fact, pol)
             )
             for reading in lectures[meter.name]:
                 data[reading[0]] = {
@@ -3650,7 +3650,9 @@ class GiscedataFacturacioFacturaReport(osv.osv):
                 if "final_type" not in data or reading[7] != u"real":
                     data["final_type"] = reading[7]
                 adjust_reason.append(reading[9])
-
+        data["hide_total_surplus"] = (
+            te_autoconsum_collectiu(fact, pol) and te_autoconsum_no_collectiu(fact, pol)
+        )
         data["adjust_reason"] = self.adjust_readings_priority(adjust_reason)
         return data
 
