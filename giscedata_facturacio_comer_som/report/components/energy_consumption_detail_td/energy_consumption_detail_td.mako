@@ -32,7 +32,6 @@
 %  endfor
 %for coll in id.collectives:
     <div class="energy_consumption_detail_td_block">
-        <h1>${_(u"Autoconsum col·lectiu: %s") %(coll.name)}</h1>
         <table id="energy_consumption_detail_td">
             <tr>
                 <th class="concepte_td">${_(u"Tipus")}</th>
