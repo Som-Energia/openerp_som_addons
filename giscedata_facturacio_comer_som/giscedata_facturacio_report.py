@@ -3781,9 +3781,6 @@ class GiscedataFacturacioFacturaReport(osv.osv):
             "generated": generated,
             "is_visible": visibility([generated]),
             "adjust_reason": False,
-            "hide_total_surplus": (
-                te_autoconsum_collectiu(fact, pol) and te_autoconsum_no_collectiu(fact, pol)
-            ),
         }
         return data
 
@@ -3823,6 +3820,9 @@ class GiscedataFacturacioFacturaReport(osv.osv):
             "is_visible": False,
             "title": _(u"Autoconsum compartit (kWh)"),
             "is_active": False,
+            "hide_total_surplus": (
+                te_autoconsum_collectiu(fact, pol) and te_autoconsum_no_collectiu(fact, pol)
+            ),
         }
 
         data["is_visible"] = len(linies) > 0 and te_autoconsum_amb_excedents(fact, pol)
