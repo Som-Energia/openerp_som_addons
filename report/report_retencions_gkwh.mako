@@ -207,7 +207,7 @@
     </div>
     <div class="fila">
       <div class="CaixaDadesTitular">
-        <p class="ContingutDades"><b>${_(u"Nom:")}</b> ${data.member_name}<br><b>${_(u"NIF/NIE:")}</b> ${data.member_vat}
+        <p class="ContingutDades"><b>${_(u"Nom:")}</b> ${data.partner_name}<br><b>${_(u"NIF/NIE:")}</b> ${data.partner_vat}
         </p>
       </div>
       <div class="CaixaEspai">
