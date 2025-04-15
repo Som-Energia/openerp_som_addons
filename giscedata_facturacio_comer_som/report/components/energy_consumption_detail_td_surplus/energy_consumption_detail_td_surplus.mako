@@ -20,7 +20,6 @@
         % else:
             <td class="detall_td last_row">${_(u"Lectura final (%s) (%s)") % (meter.final_date, _(meter.final_type))}</td>
         % endif
-        <td class="detall_td">${_(u"Lectura final (%s) (%s)") % (meter.final_date, _(meter.final_type))}</td>
         % for p in meter.showing_periods:
             % if p in meter:
                 <td class="periods_td">${_(u"%s") %(int(meter[p]["final"]))}</td>
