@@ -37,39 +37,54 @@ class TestsSomLeadWww(testing.OOTestCase):
         stage_validation_template_o.unlink(self.cursor, self.uid, no_stage_validation_id)
 
         self._basic_values = {
-            "owner_is_member": True,
-            "owner_is_payer": True,
-            "contract_member": {
+            "linked_member": "new_member",
+            "new_member_info": {
                 "vat": "40323835M",
                 "name": "Pepito",
                 "surname": "Palotes",
                 "is_juridic": False,
-                "address": "C/ Falsa, 123",
-                "city_id": 5386,
-                "state_id": 20,
-                "postal_code": "08178",
+                "address": {
+                    "state_id": 20,
+                    "city_id": 5386,
+                    "postal_code": "08178",
+                    "street": "Carrer Falsa",
+                    "number": "123",
+                    "floor": "5",
+                    "stair": "A",
+                    "door": "C",
+                    "block": "B",
+                },
                 "email": "pepito@foo.bar",
                 "phone": "972123456",
                 "lang": "es_ES",
                 "privacy_conditions": True,
             },
-            "cups": "ES0177000000000000LR",
-            "is_indexed": False,
-            "tariff": "2.0TD",
-            "power_p1": "4400",
-            "power_p2": "8000",
-            "cups_address": "C/ Falsa, 123",
-            "cups_postal_code": "08178",
-            "cups_city_id": 5386,
-            "cups_state_id": 20,
-            "cnae": "9820",
-            "supply_point_accepted": True,
-            "payment_iban": "ES77 1234 1234 1612 3456 7890",
-            "sepa_conditions": True,
+            "contract_info": {
+                "cups": "ES0177000000000000LR",
+                "is_indexed": False,
+                "tariff": "2.0TD",
+                "powers": ["4400", "8000"],
+                "cnae": "9820",
+                "process": "C1",  # TODO: It comes from webforms?
+                "cups_address": {
+                    "state_id": 20,
+                    "city_id": 5386,
+                    "postal_code": "08178",
+                    "street": "Carrer Falsa",
+                    "number": "123",
+                    "floor": "5",
+                    "stair": "A",
+                    "door": "C",
+                    "block": "B",
+                },
+            },
+            "iban": "ES7712341234161234567890",
+            "member_payment_type": "tpv",
             "donation": False,
-            "process": "C1",
+            "supply_point_accepted": True,  # TODO: It comes from webforms?
             "general_contract_terms_accepted": True,
             "particular_contract_terms_accepted": True,
+            "sepa_conditions": True,
         }
 
     def tearDown(self):
@@ -135,9 +150,10 @@ class TestsSomLeadWww(testing.OOTestCase):
         ir_model_o = self.get_model("ir.model.data")
 
         values = self._basic_values
-        values["is_indexed"] = True
+        values["contract_info"]["is_indexed"] = True
+        values["contract_info"]["indexed_contract_terms_accepted"] = True
 
-        result = www_lead_o.create_lead(self.cursor, self.uid, self._basic_values)
+        result = www_lead_o.create_lead(self.cursor, self.uid, values)
         www_lead_o.activate_lead(self.cursor, self.uid, result["lead_id"])
 
         lead = lead_o.browse(self.cursor, self.uid, result["lead_id"])
@@ -154,13 +170,13 @@ class TestsSomLeadWww(testing.OOTestCase):
         partner_o = self.get_model("res.partner")
 
         values = self._basic_values
-        values["contract_member"]["is_juridic"] = True
-        values["contract_member"]["vat"] = "C81837452"
-        values["contract_member"]["name"] = "PEC COOP SCCL"
-        values["contract_member"]["proxy_name"] = "Pepito Palotes"
-        values["contract_member"]["proxy_vat"] = "40323835M"
+        values["new_member_info"]["is_juridic"] = True
+        values["new_member_info"]["vat"] = "C81837452"
+        values["new_member_info"]["name"] = "PEC COOP SCCL"
+        values["new_member_info"]["proxy_name"] = "Pepito Palotes"
+        values["new_member_info"]["proxy_vat"] = "40323835M"
 
-        result = www_lead_o.create_lead(self.cursor, self.uid, self._basic_values)
+        result = www_lead_o.create_lead(self.cursor, self.uid, values)
         www_lead_o.activate_lead(self.cursor, self.uid, result["lead_id"])
 
         lead = lead_o.browse(self.cursor, self.uid, result["lead_id"])
@@ -186,13 +202,13 @@ class TestsSomLeadWww(testing.OOTestCase):
         )['vat']
 
         values = self._basic_values
-        values["contract_member"]["is_juridic"] = True
-        values["contract_member"]["vat"] = "C81837452"
-        values["contract_member"]["name"] = "PEC COOP SCCL"
-        values["contract_member"]["proxy_name"] = "Pepito Palotes"
-        values["contract_member"]["proxy_vat"] = existing_partner_vat
+        values["new_member_info"]["is_juridic"] = True
+        values["new_member_info"]["vat"] = "C81837452"
+        values["new_member_info"]["name"] = "PEC COOP SCCL"
+        values["new_member_info"]["proxy_name"] = "Pepito Palotes"
+        values["new_member_info"]["proxy_vat"] = existing_partner_vat
 
-        result = www_lead_o.create_lead(self.cursor, self.uid, self._basic_values)
+        result = www_lead_o.create_lead(self.cursor, self.uid, values)
         www_lead_o.activate_lead(self.cursor, self.uid, result["lead_id"])
 
         lead = lead_o.browse(self.cursor, self.uid, result["lead_id"])
@@ -210,15 +226,10 @@ class TestsSomLeadWww(testing.OOTestCase):
         lead_o = self.get_model("giscedata.crm.lead")
 
         values = self._basic_values
-        values["tariff"] = "3.0TD"
-        values["power_p1"] = "4400"
-        values["power_p2"] = "4900"
-        values["power_p3"] = "5000"
-        values["power_p4"] = "6000"
-        values["power_p5"] = "7000"
-        values["power_p6"] = "15001"
+        values["contract_info"]["tariff"] = "3.0TD"
+        values["contract_info"]["powers"] = ["4400", "4900", "5000", "6000", "7000", "15001"]
 
-        result = www_lead_o.create_lead(self.cursor, self.uid, self._basic_values)
+        result = www_lead_o.create_lead(self.cursor, self.uid, values)
         www_lead_o.activate_lead(self.cursor, self.uid, result["lead_id"])
 
         lead = lead_o.browse(self.cursor, self.uid, result["lead_id"])
@@ -234,7 +245,7 @@ class TestsSomLeadWww(testing.OOTestCase):
         values = self._basic_values
         values["donation"] = True
 
-        result = www_lead_o.create_lead(self.cursor, self.uid, self._basic_values)
+        result = www_lead_o.create_lead(self.cursor, self.uid, values)
         www_lead_o.activate_lead(self.cursor, self.uid, result["lead_id"])
 
         lead = lead_o.browse(self.cursor, self.uid, result["lead_id"])
@@ -246,9 +257,9 @@ class TestsSomLeadWww(testing.OOTestCase):
         lead_o = self.get_model("giscedata.crm.lead")
 
         values = self._basic_values
-        values['process'] = 'C2'
+        values["contract_info"]['process'] = 'C2'
 
-        result = www_lead_o.create_lead(self.cursor, self.uid, self._basic_values)
+        result = www_lead_o.create_lead(self.cursor, self.uid, values)
         www_lead_o.activate_lead(self.cursor, self.uid, result["lead_id"])
 
         lead = lead_o.browse(self.cursor, self.uid, result["lead_id"])
@@ -278,16 +289,11 @@ class TestsSomLeadWww(testing.OOTestCase):
         lead_o = self.get_model("giscedata.crm.lead")
 
         values = self._basic_values
-        values['process'] = "C2"
-        values["tariff"] = "3.0TD"
-        values["power_p1"] = "4400"
-        values["power_p2"] = "4900"
-        values["power_p3"] = "5000"
-        values["power_p4"] = "6000"
-        values["power_p5"] = "7000"
-        values["power_p6"] = "15001"
+        values["contract_info"]['process'] = "C2"
+        values["contract_info"]["tariff"] = "3.0TD"
+        values["contract_info"]["powers"] = ["4400", "4900", "5000", "6000", "7000", "15001"]
 
-        result = www_lead_o.create_lead(self.cursor, self.uid, self._basic_values)
+        result = www_lead_o.create_lead(self.cursor, self.uid, values)
         www_lead_o.activate_lead(self.cursor, self.uid, result["lead_id"])
 
         lead = lead_o.browse(self.cursor, self.uid, result["lead_id"])
@@ -317,9 +323,9 @@ class TestsSomLeadWww(testing.OOTestCase):
         lead_o = self.get_model("giscedata.crm.lead")
 
         values = self._basic_values
-        values['process'] = 'A3'
+        values["contract_info"]['process'] = 'A3'
 
-        result = www_lead_o.create_lead(self.cursor, self.uid, self._basic_values)
+        result = www_lead_o.create_lead(self.cursor, self.uid, values)
         www_lead_o.activate_lead(self.cursor, self.uid, result["lead_id"])
 
         lead = lead_o.browse(self.cursor, self.uid, result["lead_id"])
@@ -339,7 +345,7 @@ class TestsSomLeadWww(testing.OOTestCase):
         a3 = sw_o.get_pas(self.cursor, self.uid, atr_case_ids)
         self.assertEqual(a3.control_potencia, "1")
         self.assertEqual(atr_case.state, "draft")
-        self.assertEqual(a3.cnae.name, values["cnae"])
+        self.assertEqual(a3.cnae.name, values["contract_info"]["cnae"])
 
     def test_create_lead_from_canarias(self):
         ir_model_o = self.get_model("ir.model.data")
@@ -356,16 +362,16 @@ class TestsSomLeadWww(testing.OOTestCase):
             self.cursor, self.uid, "l10n_ES_toponyms", "ES38"
         )[1]
 
-        values["cups_city_id"] = laguna_municipi_id
-        values["cups_state_id"] = tenerife_state_id
-        values["cups"] = "ES0031601267738003JC0F"
+        values["contract_info"]["cups_address"]["city_id"] = laguna_municipi_id
+        values["contract_info"]["cups_address"]["state_id"] = tenerife_state_id
+        values["contract_info"]["cups"] = "ES0031601267738003JC0F"
 
         canarian_posicio_id = ir_model_o.get_object_reference(
             self.cursor, self.uid, "giscedata_facturacio", "fp_canarias_vivienda"
         )[1]
         cfg_o.set(self.cursor, self.uid, "fp_canarias_vivienda_id", canarian_posicio_id)
 
-        result = www_lead_o.create_lead(self.cursor, self.uid, self._basic_values)
+        result = www_lead_o.create_lead(self.cursor, self.uid, values)
         www_lead_o.activate_lead(self.cursor, self.uid, result["lead_id"])
 
         lead = lead_o.browse(self.cursor, self.uid, result["lead_id"])
@@ -391,10 +397,10 @@ class TestsSomLeadWww(testing.OOTestCase):
             self.cursor, self.uid, "l10n_ES_toponyms", "ES07"
         )[1]
 
-        values["cups_city_id"] = capdepera_municipi_id
-        values["cups_state_id"] = balears_state_id
+        values["contract_info"]["cups_address"]["city_id"] = capdepera_municipi_id
+        values["contract_info"]["cups_address"]["state_id"] = balears_state_id
 
-        result = www_lead_o.create_lead(self.cursor, self.uid, self._basic_values)
+        result = www_lead_o.create_lead(self.cursor, self.uid, values)
         www_lead_o.activate_lead(self.cursor, self.uid, result["lead_id"])
 
         lead = lead_o.browse(self.cursor, self.uid, result["lead_id"])
@@ -421,7 +427,7 @@ class TestsSomLeadWww(testing.OOTestCase):
             "aux_services": False,
         }
 
-        result = www_lead_o.create_lead(self.cursor, self.uid, self._basic_values)
+        result = www_lead_o.create_lead(self.cursor, self.uid, values)
         www_lead_o.activate_lead(self.cursor, self.uid, result["lead_id"])
 
         lead = lead_o.browse(self.cursor, self.uid, result["lead_id"])
@@ -436,7 +442,8 @@ class TestsSomLeadWww(testing.OOTestCase):
         self_consumption_cups = self_consumption_o.browse(
             self.cursor, self.uid, self_consumption_ids[0]
         )
-        self.assertEqual(self_consumption_cups.cups_id[0].name[:-2], values["cups"])
+        self.assertEqual(
+            self_consumption_cups.cups_id[0].name[:-2], values["contract_info"]["cups"])
 
         # A Generator for our CAU exists
         generator_ids = generator_o.search(
@@ -464,7 +471,7 @@ class TestsSomLeadWww(testing.OOTestCase):
             "aux_services": False,
         }
 
-        result = www_lead_o.create_lead(self.cursor, self.uid, self._basic_values)
+        result = www_lead_o.create_lead(self.cursor, self.uid, values)
         www_lead_o.activate_lead(self.cursor, self.uid, result["lead_id"])
 
         lead = lead_o.browse(self.cursor, self.uid, result["lead_id"])
@@ -479,7 +486,8 @@ class TestsSomLeadWww(testing.OOTestCase):
         self_consumption_cups = self_consumption_o.browse(
             self.cursor, self.uid, self_consumption_ids[0]
         )
-        self.assertEqual(self_consumption_cups.cups_id[0].name[:-2], values["cups"])
+        self.assertEqual(
+            self_consumption_cups.cups_id[0].name[:-2], values["contract_info"]["cups"])
 
         # A Generator for our CAU exists
         generator_ids = generator_o.search(
@@ -507,7 +515,7 @@ class TestsSomLeadWww(testing.OOTestCase):
             "aux_services": False,
         }
 
-        result = www_lead_o.create_lead(self.cursor, self.uid, self._basic_values)
+        result = www_lead_o.create_lead(self.cursor, self.uid, values)
         www_lead_o.activate_lead(self.cursor, self.uid, result["lead_id"])
 
         lead = lead_o.browse(self.cursor, self.uid, result["lead_id"])
@@ -522,7 +530,8 @@ class TestsSomLeadWww(testing.OOTestCase):
         self_consumption_cups = self_consumption_o.browse(
             self.cursor, self.uid, self_consumption_ids[0]
         )
-        self.assertEqual(self_consumption_cups.cups_id[0].name[:-2], values["cups"])
+        self.assertEqual(
+            self_consumption_cups.cups_id[0].name[:-2], values["contract_info"]["cups"])
 
         # A Generator for our CAU exists
         generator_ids = generator_o.search(
@@ -550,7 +559,7 @@ class TestsSomLeadWww(testing.OOTestCase):
             "aux_services": False,
         }
 
-        result = www_lead_o.create_lead(self.cursor, self.uid, self._basic_values)
+        result = www_lead_o.create_lead(self.cursor, self.uid, values)
         www_lead_o.activate_lead(self.cursor, self.uid, result["lead_id"])
 
         lead = lead_o.browse(self.cursor, self.uid, result["lead_id"])
@@ -565,7 +574,8 @@ class TestsSomLeadWww(testing.OOTestCase):
         self_consumption_cups = self_consumption_o.browse(
             self.cursor, self.uid, self_consumption_ids[0]
         )
-        self.assertEqual(self_consumption_cups.cups_id[0].name[:-2], values["cups"])
+        self.assertEqual(
+            self_consumption_cups.cups_id[0].name[:-2], values["contract_info"]["cups"])
 
         # A Generator for our CAU exists
         generator_ids = generator_o.search(
@@ -590,7 +600,7 @@ class TestsSomLeadWww(testing.OOTestCase):
             "aux_services": False,
         }
 
-        result = www_lead_o.create_lead(self.cursor, self.uid, self._basic_values)
+        result = www_lead_o.create_lead(self.cursor, self.uid, values)
         self.assertTrue(result["error"])
 
     def test_add_attachments_to_simple_lead(self):
@@ -619,7 +629,7 @@ class TestsSomLeadWww(testing.OOTestCase):
             self.cursor, self.uid, "som_leads_polissa", "ir_attachment_lead_old_invoice"
         )[1]
 
-        result = www_lead_o.create_lead(self.cursor, self.uid, self._basic_values)
+        result = www_lead_o.create_lead(self.cursor, self.uid, values)
         www_lead_o.activate_lead(self.cursor, self.uid, result["lead_id"])
 
         lead = lead_o.browse(self.cursor, self.uid, result["lead_id"])
@@ -676,10 +686,8 @@ class TestsSomLeadWww(testing.OOTestCase):
         self.assertEqual(lead.crm_id.stage_id.id, webform_stage_converted_id)
         self.assertEqual(lead.crm_id.state, 'done')
 
-        # Test the error stage
-        values = self._basic_values
-        values["atr_proces_name"] = 'patata'
-        result = www_lead_o.create_lead(self.cursor, self.uid, values)
+        # Test the error stage (cant have 2 leads on the same cups)
+        result = www_lead_o.create_lead(self.cursor, self.uid, self._basic_values)
         lead = lead_o.browse(self.cursor, self.uid, result["lead_id"])
         self.assertTrue(result["error"])
         self.assertEqual(lead.crm_id.state, 'pending')
