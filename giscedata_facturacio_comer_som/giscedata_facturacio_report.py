@@ -76,7 +76,7 @@ def te_autoconsum_amb_excedents(fact, pol):
 def te_autoconsum_collectiu(fact, pol):
     if te_autoconsum(fact, pol):
         for cups_autoconsum in pol.autoconsum_cups_ids:
-            if cups_autoconsum.autoconsum_id and cups_autoconsum.autoconsum_id.collectiu:
+            if cups_autoconsum.collectiu:
                 return True
     return False
 
@@ -87,9 +87,8 @@ def te_autoconsum_no_collectiu(fact, pol):
             return True
 
         for cups_autoconsum in pol.autoconsum_cups_ids:
-            if cups_autoconsum.autoconsum_id:
-                if cups_autoconsum.autoconsum_id.collectiu is False:
-                    return True
+            if cups_autoconsum.collectiu is False:
+                return True
     return False
 
 
