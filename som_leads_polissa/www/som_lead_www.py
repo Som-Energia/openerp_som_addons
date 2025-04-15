@@ -30,58 +30,61 @@ class SomLeadWww(osv.osv_memory):
         selfcons_o = self.pool.get("giscedata.autoconsum")
         ir_model_o = self.pool.get("ir.model.data")
 
+        contract_info = www_vals["contract_info"]
+        contract_address = contract_info["cups_address"]
+
         tensio_230 = imd_o.get_object_reference(cr, uid, 'giscedata_tensions', 'tensio_230')[1]
 
-        tarifa_id = tarifa_o.search(cr, uid, [("name", "=", www_vals["tariff"])])[0]
+        tarifa_id = tarifa_o.search(cr, uid, [("name", "=", contract_info["tariff"])])[0]
         payment_mode_id = payment_mode_o.search(cr, uid, [("name", "=", "ENGINYERS")])[0]
-        cnae_id = cnae_o.search(cr, uid, [("name", "=", www_vals["cnae"])])[0]
-        tariff_mode = 'index' if www_vals["is_indexed"] else 'atr'
+        cnae_id = cnae_o.search(cr, uid, [("name", "=", contract_info["cnae"])])[0]
+        tariff_mode = 'index' if contract_info["is_indexed"] else 'atr'
         llista_preu_id = polissa_o.get_pricelist_from_tariff_and_location(
-            cr, uid, www_vals["tariff"], tariff_mode, www_vals["cups_city_id"], context).id
+            cr, uid, contract_info["tariff"], tariff_mode, contract_address["city_id"], context).id
 
-        distri_ref = cups_ps_o.partner_map_from_cups(cr, uid, www_vals["cups"], context=context)
+        distri_ref = cups_ps_o.partner_map_from_cups(
+            cr, uid, contract_info["cups"], context=context)
 
-        # TODO: Cal posar poblacions? (CUPS i titular)
+        # TODO: In the future, this needs to accept also not new members
+        member = www_vals["new_member_info"]
+
         values = {
             "state": "open",
-            "name": "{} / {}".format(www_vals["contract_member"]["vat"].upper(), www_vals["cups"]),
-            "lang": www_vals["contract_member"]["lang"],
-            "cups": www_vals["cups"],
+            "name": "{} / {}".format(member["vat"].upper(), contract_info["cups"]),
+            "lang": member["lang"],
+            "cups": contract_info["cups"],
             "codigoEmpresaDistribuidora": distri_ref,
             # "cups_ref_catastral": www_vals.get("cups_cadastral_reference"), TODO test
-            "cups_zip": www_vals["cups_postal_code"],
-            "cups_id_municipi": www_vals["cups_city_id"],
-            "cups_nv": www_vals["cups_address"],
+            "cups_zip": contract_address["postal_code"],
+            "cups_id_municipi": contract_address["city_id"],
+            "cups_nv": contract_address["street"],
             "cnae": cnae_id,
             "data_alta_prevista": datetime.today().strftime('%Y-%m-%d'),
             "tarifa": tarifa_id,
-            "facturacio_potencia": 'max' if www_vals["tariff"] == '3.0TD' else 'icp',
+            "facturacio_potencia": 'max' if contract_info["tariff"] == '3.0TD' else 'icp',
             "tensio_normalitzada": tensio_230,  # TODO check if always work
-            "atr_proces_name": www_vals['process'],
-            "change_adm": www_vals['process'] == 'C2',
+            "atr_proces_name": contract_info['process'],
+            "change_adm": contract_info['process'] == 'C2',
             "contract_type": self._CONTRACT_TYPE_ANUAL,
-            "autoconsumo": "00",  # FIXME: use getionatr defs tabla113
-            "potenciasContratadasEnKWP1": float(www_vals["power_p1"]) / 1000,
-            "potenciasContratadasEnKWP2": float(www_vals["power_p2"]) / 1000,
             "llista_preu": llista_preu_id,
             "facturacio": self._FACTURACIO_MENSUAL,
-            "iban": www_vals["payment_iban"],
+            "iban": www_vals["iban"],
             "payment_mode_id": payment_mode_id,
             "enviament": "email",
-            "owner_is_member": www_vals["owner_is_member"],
-            "titular_vat": 'ES%s' % www_vals["contract_member"]["vat"].upper(),
-            "titular_nom": www_vals["contract_member"]["name"],
-            "titular_cognom1": www_vals["contract_member"].get("surname"),
-            "tipus_vivenda": 'habitual',  # TODO: webforms use always habitual, its ok?
-            "titular_zip": www_vals["contract_member"]["postal_code"],
-            "titular_nv": www_vals["contract_member"]["address"],
-            "titular_id_municipi": www_vals["contract_member"]["city_id"],
-            "titular_email": www_vals["contract_member"]["email"],
-            "titular_phone": www_vals["contract_member"]["phone"],
-            "titular_mobile": www_vals["contract_member"].get("phone2"),
+            "owner_is_member": www_vals["linked_member"] != "sponsored",
+            "autoconsumo": "00",  # Without self-consumption by default
+            "titular_vat": 'ES%s' % member["vat"].upper(),
+            "titular_nom": member["name"],
+            "titular_cognom1": member.get("surname"),
+            "tipus_vivenda": 'habitual',
+            "titular_zip": member["address"]["postal_code"],
+            "titular_nv": member["address"]["street"],
+            "titular_id_municipi": member["address"]["city_id"],
+            "titular_email": member["email"],
+            "titular_phone": member["phone"],
+            "titular_mobile": member.get("phone2"),
             "use_cont_address": False,
             "donation": www_vals.get("donation", False),
-            "allow_contact": False,  # TODO: use privacy_conditions? or remove
         }
 
         values["user_id"] = ir_model_o.get_object_reference(
@@ -96,15 +99,12 @@ class SomLeadWww(osv.osv_memory):
             cr, uid, "som_leads_polissa", "webform_section"
         )[1]
 
-        if www_vals["contract_member"]["is_juridic"]:
-            values["persona_firmant_vat"] = www_vals["contract_member"]["proxy_vat"]
-            values["persona_nom"] = www_vals["contract_member"]["proxy_name"]
+        if member["is_juridic"]:
+            values["persona_firmant_vat"] = member["proxy_vat"]
+            values["persona_nom"] = member["proxy_name"]
 
-        if www_vals["tariff"] == "3.0TD":
-            values["potenciasContratadasEnKWP3"] = float(www_vals["power_p3"]) / 1000
-            values["potenciasContratadasEnKWP4"] = float(www_vals["power_p4"]) / 1000
-            values["potenciasContratadasEnKWP5"] = float(www_vals["power_p5"]) / 1000
-            values["potenciasContratadasEnKWP6"] = float(www_vals["power_p6"]) / 1000
+        for i, power in enumerate(contract_info["powers"]):
+            values["potenciasContratadasEnKWP%s" % str(i + 1)] = float(power) / 1000
 
         if www_vals.get("self_consumption"):
             values["seccio_registre"] = self._127_WITH_SURPLUSES
@@ -148,20 +148,6 @@ class SomLeadWww(osv.osv_memory):
             "error": error_info,
         }
 
-    # def set_atr_case_in_draft(self, cr, uid, lead, context=context):
-    #     if context is None:
-    #         context = {}
-
-    #     sw_o = self.pool.get("giscedata.switching")
-
-    #     atr_case_ids = sw_o.search(
-    #         cr, uid, [
-    #             ("proces_id.name", "=", "2"),
-    #             ("cups_polissa_id", "=", lead.polissa_id.id),
-    #             ("cups_input", "=", lead.polissa_id.cups.name),
-    #         ]
-    #     )
-
     def activate_lead(self, cr, uid, lead_id, context=None):
         if context is None:
             context = {}
@@ -171,8 +157,6 @@ class SomLeadWww(osv.osv_memory):
         lead_o = self.pool.get("giscedata.crm.lead")
 
         msg = lead_o.create_entities(cr, uid, lead_id, context=context)
-
-        # self.set_atr_case_in_draft(cr, uid, lead_id, context=context)
 
         lead_o.historize_msg(cr, uid, [lead_id], msg, context=context)
         lead_o.stage_next(cr, uid, [lead_id], context=context)
