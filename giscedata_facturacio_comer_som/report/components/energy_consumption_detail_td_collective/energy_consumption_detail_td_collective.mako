@@ -5,7 +5,11 @@
 % endif
 % if coll.is_visible:
     <tr>
-        <td class="td_first concepte_td" rowspan="3">${_(u"Autoconsum compartit (kWh)")}</td>
+        % if coll.hide_total_surplus:
+            <td class="td_first concepte_td" rowspan="3">${_(u"Autoconsum (kWh)")}</td>
+        % else:
+            <td class="td_first concepte_td" rowspan="3">${_(u"Autoconsum compartit (kWh)")}</td>
+        % endif
         <td class="detall_td">${_(u"Generació segons coeficient de repartiment (periode del %s fins al %s)") % (coll.initial_date, coll.final_date)}</td>
         % for p in coll.showing_periods:
             % if p in coll:

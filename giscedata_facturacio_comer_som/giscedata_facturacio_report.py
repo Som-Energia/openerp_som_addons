@@ -3781,6 +3781,9 @@ class GiscedataFacturacioFacturaReport(osv.osv):
             "generated": generated,
             "is_visible": visibility([generated]),
             "adjust_reason": False,
+            "hide_total_surplus": (
+                te_autoconsum_collectiu(fact, pol) and te_autoconsum_no_collectiu(fact, pol)
+            ),
         }
         return data
 
