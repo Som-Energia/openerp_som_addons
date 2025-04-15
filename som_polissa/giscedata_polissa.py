@@ -729,6 +729,36 @@ class GiscedataPolissa(osv.osv):
             }
         return res
 
+    def _ff_search_canvi_tarifa_pendent(self, cursor, uid, ids, field_name, args, context=None):
+        if context is None:
+            context = {}
+        mod_obj = self.pool.get('giscedata.polissa.modcontractual')
+        modcons_pendents = mod_obj.search(
+            cursor, uid, [('state', '=', 'pendent'), ('mode_facturacio', 'in', ['atr', 'index'])])
+
+        polissa_ids = []
+        for mod_id in modcons_pendents:
+            mod = mod_obj.browse(cursor, uid, mod_id)
+            if mod.mode_facturacio != mod.polissa_id.mode_facturacio:
+                polissa_ids.append(mod.polissa_id.id)
+
+        return [('id', 'in', polissa_ids)]
+
+    def _ff_get_canvi_tarifa_pendent(self, cursor, uid, ids, field_name, arg, context=None):
+        if context is None:
+            context = {}
+
+        res = dict.fromkeys(ids, False)
+
+        for pol_id in ids:
+            polissa = self.browse(cursor, uid, pol_id, context=context)
+            res[pol_id] = (polissa.modcontractuals_ids[0].state == 'pendent'
+                           and polissa.mode_facturacio != polissa.modcontractuals_ids[0].mode_facturacio
+                           and polissa.modcontractuals_ids[0].mode_facturacio
+                           )
+
+        return res
+
     def consum_diari(
         self, cursor, uid, polissa_id, dies, data_ref=None, separat=None, context=None
     ):
@@ -1097,6 +1127,11 @@ class GiscedataPolissa(osv.osv):
             type="selection",
             selection=TABLA_129,
             string="Tipus instal.lació",
+        ),
+        'canvi_tarifa_pendent': fields.function(
+            _ff_get_canvi_tarifa_pendent, type='boolean', 
+            fnct_search=_ff_search_canvi_tarifa_pendent, method=True, multi=True,
+            string='Data baixa bateria',
         ),
         'historic_autoconsum': fields.function(
             _ff_historic_autoconsum, method=True,
