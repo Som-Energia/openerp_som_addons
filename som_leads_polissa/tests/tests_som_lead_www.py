@@ -144,6 +144,12 @@ class TestsSomLeadWww(testing.OOTestCase):
         )[1]
         self.assertEqual(lead.polissa_id.user_id.id, webforms_user_id)
 
+        # Check that the address is correcty created
+        self.assertEqual(
+            lead.polissa_id.direccio_notificacio.street,
+            "Carrer Falsa, 123 BLQ. B ESC. A 5 C"
+        )
+
     def test_create_simple_domestic_lead_indexada(self):
         www_lead_o = self.get_model("som.lead.www")
         lead_o = self.get_model("giscedata.crm.lead")
