@@ -964,12 +964,14 @@ class TarifaPoolSOM(TarifaPool):
         imu = self.get_coeficient_component(start_date, 'imu')  # [%]
 
         # REE
-        postfix = ('%s_%s' % (start_date.strftime("%Y%m%d"),
-                              end_date.strftime("%Y%m%d")))
+        postfix = ('%s_%s' % (start_date.strftime("%Y%m%d"), end_date.strftime("%Y%m%d")))
         prmdiari = Prmdiari('C2_prmdiari_%(postfix)s' % locals(), esios_token)  # [€/MWh]
 
+        # Prdemcad
+        prdemcad = Prdemcad('C2_prdemcad_%(postfix)s' % locals(), esios_token)  # [€/MWh]
+
         # Pérdidas
-        if start_date.year <= 2024 and start_date.month < 12:
+        if start_date.year <= 2024 or (start_date.year == 2024 and start_date.month < 12):
             fname = self.perdclass.name
             perdues = self.perdclass('C2_%(fname)s_%(postfix)s' % locals(), esios_token)  # [%]
         else:
@@ -977,7 +979,7 @@ class TarifaPoolSOM(TarifaPool):
             perdues = self.perdclassqh('C2_%(fname)s_%(postfix)s' % locals(), esios_token)  # [%]
 
         # Componentes Desvios
-        if start_date.year <= 2024 and start_date.month < 12:
+        if start_date.year <= 2024 or (start_date.year == 2024 and start_date.month < 12):
             csdvbaj = Codsvbaj('C2_codsvbaj_%(postfix)s' % locals(), esios_token)  # [€/MWh]
             csdvsub = Codsvsub('C2_codsvsub_%(postfix)s' % locals(), esios_token)  # [€/MWh]
         else:
@@ -1006,7 +1008,7 @@ class TarifaPoolSOM(TarifaPool):
         phm = prmdiari * (perdues * 0.01)
 
         A = ((pauvi + phm) * 0.001)
-        B = (pc3_boe + (dsv + gdos + omie) * 0.001)
+        B = (pc3_boe + (prdemcad + dsv + gdos + omie) * 0.001)
         C = A + B * (1 + perdues)
         D = (fe * 0.001) + f
         E = C + D
