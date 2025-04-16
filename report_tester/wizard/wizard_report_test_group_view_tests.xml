@@ -7,10 +7,21 @@
             <field name="type">form</field>
             <field name="arch" type="xml">
                 <form string="Veure diferències">
-                    <button name="view_all_test" string="Tots els Tests" icon="gtk-ok" type="object" />
-                    <button name="view_error_test" string="Tests amb error" icon="gtk-dialog-error" type="object" />
-                    <button name="view_diffs" string="Tests amb diferències" icon="gtk-dialog-question" type="object" />
-                    <button name="view_attach_diffs" string="Adjunts de diferències" icon="gtk-dialog-warning" type="object" />
+                    <group colspan="4" col="4">
+                        <button name="view_all_test" string="Tots els Tests" icon="gtk-ok" type="object" />
+                        <button name="view_error_test" string="Tests amb error" icon="gtk-dialog-error" type="object" />
+                        <button name="view_diffs" string="Tests amb diferències" icon="gtk-dialog-question" type="object" />
+                    </group>
+                    <group colspan="4" col="4">
+                        <button name="view_attach_all_test" string="Tots els adjunts" icon="gtk-ok" type="object" />
+                        <button name="view_attach_error_test" string="Adjunts d'errors" icon="gtk-dialog-error" type="object" />
+                        <button name="view_attach_diffs" string="Adjunts de diferències" icon="gtk-dialog-question" type="object" />
+                    </group>
+                    <group colspan="4" col="4">
+                    </group>
+                    <group colspan="4" col="4">
+                        <button name="delete_all_attachs" string="Esborrar tots els adjunts dels tests" icon="gtk-dialog-warning" type="object" />
+                    </group>
                 </form>
             </field>
         </record>
