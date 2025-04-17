@@ -76,7 +76,7 @@ class SomLeadWww(osv.osv_memory):
             "iban": www_vals["iban"],
             "payment_mode_id": payment_mode_id,
             "enviament": "email",
-            "owner_is_member": www_vals["linked_member"] != "sponsored",
+            "create_new_member": www_vals["linked_member"] == "new_member",
             "autoconsumo": "00",  # Without self-consumption by default
             "titular_vat": 'ES%s' % member["vat"].upper(),
             "titular_nom": member["name"],
@@ -95,6 +95,7 @@ class SomLeadWww(osv.osv_memory):
             "titular_mobile": member.get("phone2"),
             "use_cont_address": False,
             "donation": www_vals.get("donation", False),
+            "member_quota_payment_type": www_vals.get("member_payment_type")
         }
 
         values["user_id"] = ir_model_o.get_object_reference(
