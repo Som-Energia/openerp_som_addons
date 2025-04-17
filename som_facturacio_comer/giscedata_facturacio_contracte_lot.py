@@ -213,6 +213,13 @@ class GiscedataFacturacioContracteLot(osv.osv):
             string="Autoconsum",
             readonly=True,
         ),
+        "collectiu": fields.related(
+            "polissa_id",
+            "is_autoconsum_collectiu",
+            type="boolean",
+            string="Col·lectiu",
+            readonly=True,
+        ),
         "tarifaATR": fields.related(
             "polissa_id", "tarifa", "name", type="char", string=_("Tarifa Accés"), readonly=True
         ),
