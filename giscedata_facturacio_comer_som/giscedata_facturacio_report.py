@@ -3212,6 +3212,8 @@ class GiscedataFacturacioFacturaReport(osv.osv):
                 items["total"] = excess_lines["total"]
                 items["date_from"] = excess_lines["date_from"]
                 items["date_to"] = excess_lines["date_to"]
+                items["pre_2025_04_01"] = datetime.strptime(
+                    excess_lines["date_to"], "%d/%m/%Y") < datetime(2025, 04, 1)
                 items["iva"] = excess_lines["iva"]
             excess_data.append(items)
         data = {
