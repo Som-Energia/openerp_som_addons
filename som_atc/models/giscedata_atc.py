@@ -48,6 +48,13 @@ class GiscedataAtc(osv.osv):
             string="tipus autoconsum",
             readonly=True,
         ),
+        "collectiu": fields.related(
+            "polissa_id",
+            "is_autoconsum_collectiu",
+            type="boolean",
+            string="Col·lectiu",
+            readonly=True,
+        ),
         "te_generation": fields.related(
             "polissa_id",
             "te_assignacio_gkwh",
