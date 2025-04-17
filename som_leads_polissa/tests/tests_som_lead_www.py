@@ -698,3 +698,32 @@ class TestsSomLeadWww(testing.OOTestCase):
         self.assertTrue(result["error"])
         self.assertEqual(lead.crm_id.state, 'pending')
         self.assertEqual(lead.crm_id.stage_id.id, webform_stage_error_id)
+
+    def test_create_lead_with_remesable_member(self):
+        www_lead_o = self.get_model("som.lead.www")
+        account_invoice_o = self.get_model("account.invoice")
+        lead_o = self.get_model("giscedata.crm.lead")
+        mandate_o = self.get_model("payment.mandate")
+
+        values = self._basic_values
+        values["member_payment_type"] = "remesa"
+
+        result = www_lead_o.create_lead(self.cursor, self.uid, values)
+        www_lead_o.activate_lead(self.cursor, self.uid, result["lead_id"])
+
+        lead = lead_o.browse(self.cursor, self.uid, result["lead_id"])
+        titular_id = lead.polissa_id.titular.id
+
+        mandate_id = mandate_o.search(
+            self.cursor, self.uid, [("reference", "=", "res.partner,{}".format(titular_id))])[0]
+
+        mandate = mandate_o.browse(self.cursor, self.uid, mandate_id)
+
+        self.assertEqual(mandate.payment_type, "one_payment")
+
+        invoice_id = account_invoice_o.search(
+            self.cursor, self.uid, [("partner_id", "=", titular_id)])[0]
+
+        invoice = account_invoice_o.browse(self.cursor, self.uid, invoice_id)
+
+        self.assertFalse(invoice.sii_to_send)
