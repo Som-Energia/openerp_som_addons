@@ -1,0 +1,47 @@
+<?xml version="1.0" ?>
+<openerp>
+    <data noupdate="1">
+        <record model="res.config" id="giscedata_crm_leads_switching.configurable_lead_owner_change_type_atr">
+            <field name="name">lead_owner_change_type</field>
+            <field name="value">T</field>
+        </record>
+    </data>
+    <data noupdate="1">
+        <record id="ir_attachment_lead_old_invoice" model="ir.attachment.category">
+            <field name="code">lead_old_invoice</field>
+            <field name="name">Factura prèvia a SomEnergia</field>
+        </record>
+        <record id="ir_attachment_lead_a3_documentation" model="ir.attachment.category">
+            <field name="code">lead_a3_documentation</field>
+            <field name="name">Documentació per activar el subministrament (A3)</field>
+        </record>
+        <record id="ir_attachment_lead_autoconsum" model="ir.attachment.category">
+            <field name="code">lead_autoconsum</field>
+            <field name="name">Documents relacionats amb l'Autoconsum</field>
+        </record>
+    </data>
+    <data noupdate="1">
+        <record id="webform_section" model="crm.case.section">
+            <field name="code">WEBFORMS</field>
+            <field name="name">Formularis web</field>
+        </record>
+        <record id="webform_stage_recieved" model="crm.case.stage">
+            <field name="name">Formulari web rebut (i validat)</field>
+            <field name="section_id" ref="webform_section"/>
+            <field name="section_ids" eval="[(6,0,[ref('webform_section')])]"/>
+            <field name="sequence">10</field>
+        </record>
+        <record id="webform_stage_converted" model="crm.case.stage">
+            <field name="name">Formulari web convertit</field>
+            <field name="section_id" ref="webform_section"/>
+            <field name="section_ids" eval="[(6,0,[ref('webform_section')])]"/>
+            <field name="sequence">20</field>
+        </record>
+        <record id="webform_stage_error" model="crm.case.stage">
+            <field name="name">Formulari web amb error</field>
+            <field name="section_id" ref="webform_section"/>
+            <field name="section_ids" eval="[(6,0,[ref('webform_section')])]"/>
+            <field name="sequence">99</field>
+        </record>
+    </data>
+</openerp>

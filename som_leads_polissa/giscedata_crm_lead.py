@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from datetime import datetime
 from osv import fields, osv
 
 
@@ -6,6 +7,13 @@ _tipus_tarifes_lead = [
     ("tarifa_existent", "Tarifa existent (ATR o Fixa)"),
     ("tarifa_provisional", "Tarifa ATR provisional"),
 ]
+
+_member_quota_payment_types = [
+    ("remesa", "Remesa"),
+    ("tpv", "Passarel·la de pagament")
+]
+
+WWW_DATA_FORM_HEADER = "**** DADES DEL FORMULARI ****"
 
 
 class GiscedataCrmLead(osv.OsvInherits):
@@ -15,6 +23,9 @@ class GiscedataCrmLead(osv.OsvInherits):
     def contract_pdf(self, cursor, uid, ids, context=None):
         if context is None:
             context = {}
+        if not isinstance(ids, (list, tuple)):
+            ids = [ids]
+
         context["lead"] = True
 
         lead = self.browse(cursor, uid, ids[0])
@@ -72,16 +83,25 @@ class GiscedataCrmLead(osv.OsvInherits):
         res = super(GiscedataCrmLead, self).create_entity_polissa(
             cursor, uid, crml_id, context=context
         )
+        values = {}
+        partner_o = self.pool.get("res.partner")
 
         # recuperem la polissa recent creada del lead
-        polissa_id = self.read(
-            cursor, uid, crml_id, ['polissa_id'],
-            context=context
-        )['polissa_id'][0]
+        lead = self.browse(cursor, uid, crml_id, context=context)
+
+        polissa_id = lead.polissa_id.id
+        member_number = lead.member_number
+
+        values["soci"] = partner_o.search(cursor, uid, [("ref", "=", member_number)], limit=1)[0]
+        values["donatiu"] = lead.donation
+
+        for line in lead.history_line:
+            if line.description and line.description.startswith(WWW_DATA_FORM_HEADER):
+                values["observacions"] = line.description
+                break
 
         polissa_o = self.pool.get("giscedata.polissa")
         polissa = polissa_o.browse(cursor, uid, polissa_id, context=context)
-        values = {}
         if polissa.mode_facturacio != 'atr':
             values['mode_facturacio_generacio'] = polissa.mode_facturacio
 
@@ -117,6 +137,117 @@ class GiscedataCrmLead(osv.OsvInherits):
 
         return res
 
+    def create_entity_member_bank_payment(self, cursor, uid, crml_id, context=None):
+        if context is None:
+            context = {}
+
+        partner_o = self.pool.get("res.partner")
+        mandate_o = self.pool.get("payment.mandate")
+
+        lead = self.browse(cursor, uid, crml_id, context=context)
+
+        # We create the mandate
+        today = datetime.strftime(datetime.now(), '%Y-%m-%d')
+        member_id = partner_o.search(cursor, uid, [("vat", "=", lead.titular_vat)])[0]
+        mandate_reference = "res.partner,{}".format(member_id)
+        mandate_scheme = "core"
+
+        mandate_new_id = mandate_o._create_mandate(
+            cursor, uid, today, mandate_reference, mandate_scheme,
+            context=context
+        )
+
+        mandate_o.write(cursor, uid, [mandate_new_id], {
+            "signed": 1,
+            "debtor_iban": lead.iban.replace(" ", ""),
+            "payment_type": "one_payment"
+        })
+
+        # We create the invoice
+
+    def create_entity_titular(self, cursor, uid, crml_id, context=None):
+        if context is None:
+            context = {}
+
+        lead = self.browse(cursor, uid, crml_id, context=context)
+
+        if lead.create_new_member:
+            context["create_member"] = True
+
+        representative_id = self._create_or_get_representative(
+            cursor, uid, lead.persona_firmant_vat, lead.persona_nom, context=context
+        )
+        if representative_id:
+            context["partner_representantive_id"] = representative_id
+
+        res = super(GiscedataCrmLead, self).create_entity_titular(
+            cursor, uid, crml_id, context=context
+        )
+
+        if lead.member_quota_payment_type == 'remesa':
+            self.create_entity_member_bank_payment(cursor, uid, crml_id, context=context)
+
+        return res
+
+    def _create_or_get_representative(self, cursor, uid, vat, name, context=None):
+        if context is None:
+            context = {}
+
+        partner_o = self.pool.get("res.partner")
+
+        representative_id = None
+        if vat:
+            if len(vat) <= 9:
+                vat = "ES" + vat
+            vat = vat.upper()
+
+            representative_ids = partner_o.search(cursor, uid, [("vat", "=", vat)])
+            if representative_ids:
+                representative_id = representative_ids[0]
+            else:
+                representative_id = partner_o.create(
+                    cursor, uid, {
+                        "vat": vat,
+                        "name": name,
+                    },
+                    context=context
+                )
+        return representative_id
+
+    def create(self, cursor, uid, vals, context=None):
+        if context is None:
+            context = {}
+        seq_o = self.pool.get("ir.sequence")
+
+        if vals.get("create_new_member"):
+            vals['member_number'] = seq_o.get_next(cursor, uid, 'res.partner.soci')
+
+        lead_id = super(GiscedataCrmLead, self).create(cursor, uid, vals, context=context)
+
+        return lead_id
+
+    def create_partner(self, cursor, uid, create_vals, crml_id, context=None):
+        if context is None:
+            context = {}
+
+        member_o = self.pool.get("somenergia.soci")
+
+        if context.get("create_member"):
+            create_vals['ref'] = self.read(
+                cursor, uid, crml_id, ["member_number"], context=context
+            )["member_number"]
+
+        if context.get("partner_representantive_id"):
+            create_vals["representante_id"] = context["partner_representantive_id"]
+
+        partner_id = super(GiscedataCrmLead, self).create_partner(
+            cursor, uid, create_vals, crml_id, context=context)
+
+        if context.get("create_member"):
+            member_o.create_one_soci(cursor, uid, partner_id, context=context)
+
+        return partner_id
+
     _columns = {
         "tipus_tarifa_lead": fields.selection(_tipus_tarifes_lead, "Tipus de tarifa del contracte"),
         "set_custom_potencia": fields.boolean("Personalitzar preus potència"),
@@ -132,11 +263,17 @@ class GiscedataCrmLead(osv.OsvInherits):
         "preu_fix_potencia_p4": fields.float("Preu Fix Potència P4", digits=(16, 6)),
         "preu_fix_potencia_p5": fields.float("Preu Fix Potència P5", digits=(16, 6)),
         "preu_fix_potencia_p6": fields.float("Preu Fix Potència P6", digits=(16, 6)),
+        "member_number": fields.char('Número de sòcia', size=64),
+        "create_new_member": fields.boolean("Sòcia de nova creació"),
+        "member_quota_payment_type": fields.selection(
+            _member_quota_payment_types, "Forma pagament quota sòcia"),
+        "donation": fields.boolean("Donatiu voluntari"),
     }
 
     _defaults = {
         "tipus_tarifa_lead": lambda *a: "tarifa_existent",
         "set_custom_potencia": lambda *a: False,
+        "donation": lambda *a: False,
     }
 
 
