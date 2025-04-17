@@ -11,6 +11,7 @@
                 <field name="state" position="after">
                     <field name="tarifa" invisible="1"/>
                     <field name="tipus_autoconsum" invisible="1"/>
+                    <field name="collectiu" invisible="1"/>
                     <field name="te_generation" invisible="1"/>
                     <field name="pending_state" invisible="1"/>
                     <field name="polissa_active" invisible="1"/>
@@ -26,6 +27,7 @@
                 <field name="polissa_id" position="before">
                     <field name="tarifa" string="Tarifa Comer" select="2"/>
                     <field name="tipus_autoconsum" string="Tipus Autoconsum" select="2"/>
+                    <field name="collectiu" string="Col·lectiu" select="2"/>
                     <field name="te_generation" string="Té GkWh" select="2"/>
                 </field>
             </field>
