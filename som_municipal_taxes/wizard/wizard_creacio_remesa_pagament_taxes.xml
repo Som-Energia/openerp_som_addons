@@ -10,7 +10,6 @@
                 	<field name="state" invisible="1"/>
                     <field name="info" nolabel="1" colspan="4" height="150" readonly="1"/>
                 	<group colspan="4" col="4" attrs="{'invisible':[('state', '!=', 'init')]}">
-                        <field name="account"/>
                         <field name="payment_mode"/>
                         <field name="year"/>
                         <field name="quarter"/>
@@ -53,7 +52,7 @@
             <field name="view_id" ref="view_wizard_creacio_remesa_pagament_taxes_form"/>
             <field name="context">{'from_model': True}</field>
         </record>
-        <record model="ir.values" id="value_wizard_create_atc_from_polissa_gas">
+        <record model="ir.values" id="value_action_wizard_creacio_remesa_pagament_taxes_form_action">
             <field name="object" eval="1"/>
             <field name="name">Crear remesa pagament impost municipal</field>
             <field name="key2">client_action_multi</field>
@@ -61,6 +60,5 @@
             <field name="model">som.municipal.taxes.config</field>
             <field name="value" eval="'ir.actions.act_window,'+str(ref('action_wizard_creacio_remesa_pagament_taxes_form_action'))" />
         </record>
-
     </data>
 </openerp>
