@@ -39,5 +39,29 @@
             <field name="payment">quarter</field>
             <field name="bank_id" ref="catalunya_bank" />
         </record>
+        <record id="tax_account" model="account.account">
+            <field name="name">Taxa 1,5%</field>
+            <field name="code">411000000000</field>
+            <field name="type">payable</field>
+            <field eval="ref('account.minimal_0')" name="parent_id"/>
+            <field name="company_id" ref="base.main_company"/>
+            <field eval="True" name="reconcile"/>
+            <field name="user_type" ref="l10n_chart_ES.terceros - pay"/>
+            <field name="note">
+                Compte comptable de les taxes
+            </field>
+        </record>
+        <record id="debt_account" model="account.account">
+            <field name="name">Taxa 1,5%</field>
+            <field name="code">600000000300</field>
+            <field name="type">other</field>
+            <field eval="ref('account.minimal_0')" name="parent_id"/>
+            <field name="company_id" ref="base.main_company"/>
+            <field eval="False" name="reconcile"/>
+            <field name="user_type" ref="account.account_type_expense"/>
+            <field name="note">
+                Compte comptable de despesa
+            </field>
+        </record>
     </data>
 </openerp>

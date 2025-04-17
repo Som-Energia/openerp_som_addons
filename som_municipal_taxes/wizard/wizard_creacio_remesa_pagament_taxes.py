@@ -27,7 +27,12 @@ class WizardCreacioRemesaPagamentTaxes(osv.osv_memory):
 
         config_obj = self.pool.get('som.municipal.taxes.config')
         res_config = self.pool.get('res.config')
+        acc_o = self.pool.get("account.account")
         wizard = self.browse(cursor, uid, ids, context=context)
+
+        # Comptes comptables
+        invoice_account_id = acc_o.search(cursor, uid, [('code', '=', '411000000000')])[0]
+        line_account_id = acc_o.search(cursor, uid, [('code', '=', '600000000300')])[0]
 
         municipi_conf_ids = self.buscar_municipis_remesar(cursor, uid, ids, wizard.quarter, context)
         if not municipi_conf_ids:
@@ -63,7 +68,7 @@ class WizardCreacioRemesaPagamentTaxes(osv.osv_memory):
 
             order_id, info = self.crear_factures(
                 cursor, uid, ids, totals_by_city, wizard.payment_mode.id,
-                wizard.account.id, wizard.year, context)
+                invoice_account_id, line_account_id, wizard.year, context)
         except Exception as e:
             raise e
         finally:
@@ -126,18 +131,20 @@ class WizardCreacioRemesaPagamentTaxes(osv.osv_memory):
         return df_gr
 
     def crear_factures(self, cursor, uid, ids, df_gr, payment_mode_id,
-                       account_id, year, context=None):
+                       invoice_account_id, line_account_id, year, context=None):
         config_obj = self.pool.get('som.municipal.taxes.config')
         order_obj = self.pool.get('payment.order')
         currency_obj = self.pool.get('res.currency')
-        self.pool.get('payment.line')
         mun_obj = self.pool.get('res.municipi')
         invoice_obj = self.pool.get('account.invoice')
         invoice_line_obj = self.pool.get('account.invoice.line')
+        payment_type_o = self.pool.get("payment.type")
         euro_id = currency_obj.search(cursor, uid, [('code', '=', 'EUR')])[0]
         journal_id = self.pool.get('ir.model.data').get_object_reference(
             cursor, uid, 'som_municipal_taxes', 'municipal_tax_journal')[1]
-
+        payment_type_id = payment_type_o.search(
+            cursor, uid, [("code", "=", "TRANSFERENCIA_CSB")], context=context
+        )[0]
         invoice_ids = []
         linia_creada = []
         linia_falta_partner = []
@@ -178,9 +185,10 @@ class WizardCreacioRemesaPagamentTaxes(osv.osv_memory):
             invoice_id = invoice_obj.create(cursor, uid, dict(
                 partner_id=config_data['partner_id'][0],
                 date_invoice=datetime.datetime.now(),
-                account_id=account_id,
+                account_id=invoice_account_id,
                 currency_id=euro_id,
                 payment_mode_id=payment_mode_id,
+                payment_type_id=payment_type_id,
                 state='draft',
                 address_invoice_id=partner_address_id,
                 journal_id=journal_id,
@@ -194,7 +202,7 @@ class WizardCreacioRemesaPagamentTaxes(osv.osv_memory):
                 invoice_id=invoice_id,
                 name='Ajuntament de {} taxa 1,5% pel trimestre {}-{}'.format(
                     city_name, year, quarter_name),
-                account_id=account_id,
+                account_id=line_account_id,
                 price_unit=city_tax,
                 quantity=1,
                 uom_id=1,
@@ -255,8 +263,6 @@ class WizardCreacioRemesaPagamentTaxes(osv.osv_memory):
 
     _columns = {
         'state': fields.char('Estat', size=16, required=True),
-        "account": fields.many2one(
-            "account.account", "Compte comptable", help="On comptabilitzar les taxes (grup 4751)"),
         "payment_mode": fields.many2one("payment.mode", "Mode de pagament"),
         "info": fields.text("info"),
         "year": fields.integer("Any", required=True),
