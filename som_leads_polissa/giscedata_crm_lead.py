@@ -139,32 +139,6 @@ class GiscedataCrmLead(osv.OsvInherits):
 
         return res
 
-    def create_entity_member_bank_payment(self, cursor, uid, crml_id, context=None):
-        if context is None:
-            context = {}
-
-        partner_o = self.pool.get("res.partner")
-        mandate_o = self.pool.get("payment.mandate")
-
-        lead = self.browse(cursor, uid, crml_id, context=context)
-
-        # We create the mandate
-        today = datetime.strftime(datetime.now(), '%Y-%m-%d')
-        partner_id = partner_o.search(cursor, uid, [("vat", "=", lead.titular_vat)])[0]
-        mandate_reference = "res.partner,{}".format(partner_id)
-        mandate_scheme = "core"
-
-        mandate_o.create(cursor, uid, {
-            "date": today,
-            "reference": mandate_reference,
-            "mandate_scheme": mandate_scheme,
-            "signed": 1,
-            "debtor_iban": lead.iban.replace(" ", ""),
-            "payment_type": "one_payment"
-        })
-
-        # We create the invoice
-
     def create_entity_titular(self, cursor, uid, crml_id, context=None):
         if context is None:
             context = {}
@@ -213,6 +187,102 @@ class GiscedataCrmLead(osv.OsvInherits):
                     context=context
                 )
         return representative_id
+
+    def create_entity_member_bank_payment(self, cursor, uid, crml_id, context=None):
+        if context is None:
+            context = {}
+
+        partner_o = self.pool.get("res.partner")
+        mandate_o = self.pool.get("payment.mandate")
+
+        lead = self.browse(cursor, uid, crml_id, context=context)
+
+        # We create the mandate
+        today = datetime.strftime(datetime.now(), '%Y-%m-%d')
+        partner_id = partner_o.search(cursor, uid, [("vat", "=", lead.titular_vat)])[0]
+        mandate_reference = "res.partner,{}".format(partner_id)
+        mandate_scheme = "core"
+
+        mandate_o.create(cursor, uid, {
+            "date": today,
+            "reference": mandate_reference,
+            "mandate_scheme": mandate_scheme,
+            "signed": 1,
+            "debtor_iban": lead.iban.replace(" ", ""),
+            "payment_type": "one_payment"
+        })
+
+        # We create the invoice
+        imd_o = self.pool.get("ir.model.data")
+        invoice_o = self.pool.get("account.invoice")
+        account_o = self.pool.get("account.account")
+        journal_o = self.pool.get("account.journal")
+        payment_type_o = self.pool.get("payment.type")
+        invoice_line_o = self.pool.get("account.invoice.line")
+        product_o = self.pool.get("product.product")
+
+        # TODO: check if a previous invoice exists? Is necessary?
+
+        partner_id = lead.partner_id.id
+
+        # Initial quota  # FIXME replace with quota xd
+        product_id = imd_o.get_object_reference(
+            cursor, uid, "som_polissa_soci", "dona_DN01"
+        )[1]
+        product_br = product_o.browse(cursor, uid, product_id, context=context)
+
+        # Create invoice line
+        inv_line = invoice_line_o.product_id_change(  # Get line default values
+            cursor,
+            uid,
+            [],
+            product=product_br.id,
+            uom=product_br.uom_id.id,
+            partner_id=partner_id,
+            type="out_invoice",
+        ).get("value", {})
+        inv_line["invoice_line_tax_id"] = [(6, 0, inv_line.get("invoice_line_tax_id", []))]
+        inv_line.update({
+            "name": "Quota inicial Gurb",
+            "product_id": product_id,
+            "price_unit": 100,  # TODO: product_br.list_price ???
+            "quantity": 1,
+        })
+
+        # Create invoice
+        invoice_account_ids = account_o.search(
+            cursor, uid, [("code", "=", "430000000000")], context=context
+        )
+        journal_ids = journal_o.search(
+            cursor, uid, [("code", "=", "VENTA")], context=context
+        )
+        payment_type_id = payment_type_o.search(
+            cursor, uid, [("code", "=", "TRANSFERENCIA_CSB")], context=context
+        )[0]
+        invoice_lines = [
+            (0, 0, inv_line)
+        ]
+        invoice_vals = {
+            "partner_id": partner_id,
+            "type": "out_invoice",
+            "invoice_line": invoice_lines,
+            "origin": "LEADID{}".format(lead.id),  # TODO: Patillada xd
+            "origin_date_invoice": datetime.today().strftime("%Y-%m-%d"),
+            "date_invoice": datetime.today().strftime("%Y-%m-%d")
+        }
+
+        invoice_vals.update(invoice_o.onchange_partner_id(  # Get invoice default values
+            cursor, uid, [], "out_invoice", partner_id).get("value", {})
+        )
+        invoice_vals.update({"payment_type": payment_type_id})
+
+        if invoice_account_ids:
+            invoice_vals.update({"account_id": invoice_account_ids[0]})
+        if journal_ids:
+            invoice_vals.update({"journal_id": journal_ids[0]})
+
+        invoice_id = invoice_o.create(cursor, uid, invoice_vals, context=context)
+        invoice_o.button_reset_taxes(cursor, uid, [invoice_id])
 
     def create(self, cursor, uid, vals, context=None):
         if context is None:
