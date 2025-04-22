@@ -195,6 +195,11 @@
             <field name="active">True</field>
             <field name="configuracio_id" ref="endesa_conf"/>
         </record>
+        <record model="som.crawlers.task" id="descargar_E2_endesa">
+            <field name="name">Endesa descargar E2</field>
+            <field name="active">True</field>
+            <field name="configuracio_id" ref="endesa_conf"/>
+        </record>
         <record model="som.crawlers.task" id="descargar_F1_endesa">
             <field name="name">Endesa descargar F1</field>
             <field name="active">True</field>
@@ -202,6 +207,11 @@
         </record>
         <record model="som.crawlers.task" id="descargar_M1_endesa">
             <field name="name">Endesa descargar M1</field>
+            <field name="active">True</field>
+            <field name="configuracio_id" ref="endesa_conf"/>
+        </record>
+        <record model="som.crawlers.task" id="descargar_M2_endesa">
+            <field name="name">Endesa descargar M2</field>
             <field name="active">True</field>
             <field name="configuracio_id" ref="endesa_conf"/>
         </record>
