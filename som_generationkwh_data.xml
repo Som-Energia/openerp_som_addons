@@ -1909,11 +1909,8 @@ year = (datetime.now() - timedelta(days=365)).year
 Benvolgut/da,<br />
 <br />
 Com cada any per aquestes dates, ha començat la campanya de la Renda ${year}.<br />
-<br />
 T’enviem, per si és del teu interès, el comunicat dels rendiments en espècie obtinguts i les retencions aplicades en relació al projecte GenerationkWh de SOM ENERGIA durant l’any ${year}.<br />
-<br />
 Aprofitem per agrair-te una vegada més la teva implicació en el nostre projecte.<br />
-<br />
 Atentament,<br />
 <br />
 Equip Som Energia<br />
@@ -1928,11 +1925,8 @@ generationkwh@somenergia.coop<br />
 Apreciado/a,<br />
 <br />
 Como cada año por estas fechas, ha empezado la campaña de Renta ${year}.<br />
-<br />
-Te enviamos, por si es de tu interés, comunicado de los rendimientos en especie obtenidos y retenciones aplicadas en relación a tus inversiones en aportaciones voluntarias de SOM ENERGIA durante el año ${year}.<br />
-<br />
+Te enviamos, por si es de tu interés, comunicado de los rendimientos en especie obtenidos y retenciones aplicadas en relación al proyecto GenerationKWh de SOM ENERGIA durante el año ${year}.<br />
 Aprovechamos una vez más para agradecer tu implicación en nuestro proyecto.<br />
-<br />
 Atentamente,<br />
 <br />
 Equipo de Som Energia<br />
