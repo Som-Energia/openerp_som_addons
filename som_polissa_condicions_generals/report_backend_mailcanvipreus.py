@@ -339,6 +339,8 @@ class ReportBackendMailcanvipreus(ReportBackend):
             cursor, uid, env.polissa_id, with_taxes=True, context=context_preus_nous
         )
 
+        gurb = self.has_gurb(cursor, uid, env.polissa_id, context)
+
         canaries = self.esCanaries(cursor, uid, env, context=context)
         balears = self.esBalears(cursor, uid, env, context=context)
 
@@ -359,6 +361,7 @@ class ReportBackendMailcanvipreus(ReportBackend):
             "preus_nous": preus_nous,
             "preus_antics_imp": preus_antics_imp,
             "preus_nous_imp": preus_nous_imp,
+            "gurb": gurb,
 
             "impostos_str": impostos_str,
             "modcon": (
@@ -689,6 +692,13 @@ class ReportBackendMailcanvipreus(ReportBackend):
                 imp_str = "IGIC del 0%"
                 imp_value = 0
         return imp_str, float(imp_value)
+
+    def has_gurb(self, cursor, uid, polissa, context=False):
+        gurb_cups_obj = self.pool.get("som.gurb.cups")
+
+        gurb_cups_id = gurb_cups_obj.search(cursor, uid, [("cups_id", "=", polissa.cups.id)])
+
+        return gurb_cups_id
 
     def getEstimacioData(self, cursor, uid, env, context=False):
         PRICE_CHANGE_DATE = "2024-11-01"
