@@ -150,16 +150,14 @@ class GiscedataCrmLead(osv.OsvInherits):
 
         # We create the mandate
         today = datetime.strftime(datetime.now(), '%Y-%m-%d')
-        member_id = partner_o.search(cursor, uid, [("vat", "=", lead.titular_vat)])[0]
-        mandate_reference = "res.partner,{}".format(member_id)
+        partner_id = partner_o.search(cursor, uid, [("vat", "=", lead.titular_vat)])[0]
+        mandate_reference = "res.partner,{}".format(partner_id)
         mandate_scheme = "core"
 
-        mandate_new_id = mandate_o._create_mandate(
-            cursor, uid, today, mandate_reference, mandate_scheme,
-            context=context
-        )
-
-        mandate_o.write(cursor, uid, [mandate_new_id], {
+        mandate_o.create(cursor, uid, {
+            "date": today,
+            "reference": mandate_reference,
+            "mandate_scheme": mandate_scheme,
             "signed": 1,
             "debtor_iban": lead.iban.replace(" ", ""),
             "payment_type": "one_payment"
