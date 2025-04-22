@@ -838,6 +838,20 @@
             <field name="params">{}</field>
             <field name="task_id" ref="descargar_E1_endesa"/>
         </record>
+        <record model="som.crawlers.task.step" id="pas_descarregar_E2_endesa">
+            <field name="name">Descarregar fitxers</field>
+            <field name="sequence">1</field>
+            <field name="function">download_files</field>
+            <field name="params">{"nom_fitxer":"script_run_crawler.py","process":"e2"}</field>
+            <field name="task_id" ref="descargar_E2_endesa"/>
+        </record>
+        <record model="som.crawlers.task.step" id="pas_import_E2_endesa">
+            <field name="name">Importar fitxers XML</field>
+            <field name="sequence">2</field>
+            <field name="function">import_xml_files</field>
+            <field name="params">{}</field>
+            <field name="task_id" ref="descargar_E2_endesa"/>
+        </record>
         <record model="som.crawlers.task.step" id="pas_descarregar_F1_endesa">
             <field name="name">Descarregar fitxers</field>
             <field name="sequence">1</field>
@@ -865,6 +879,20 @@
             <field name="function">import_xml_files</field>
             <field name="params">{}</field>
             <field name="task_id" ref="descargar_M1_endesa"/>
+        </record>
+        <record model="som.crawlers.task.step" id="pas_descarregar_M2_endesa">
+            <field name="name">Descarregar fitxers</field>
+            <field name="sequence">1</field>
+            <field name="function">download_files</field>
+            <field name="params">{"nom_fitxer":"script_run_crawler.py","process":"m2"}</field>
+            <field name="task_id" ref="descargar_M2_endesa"/>
+        </record>
+        <record model="som.crawlers.task.step" id="pas_import_M2_endesa">
+            <field name="name">Importar fitxers XML</field>
+            <field name="sequence">2</field>
+            <field name="function">import_xml_files</field>
+            <field name="params">{}</field>
+            <field name="task_id" ref="descargar_M2_endesa"/>
         </record>
         <!--Viesgo-->
         <record model="som.crawlers.task.step" id="taskStep_viesgo_download_ATR">
