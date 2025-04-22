@@ -701,7 +701,7 @@ class TestsSomLeadWww(testing.OOTestCase):
 
     def test_create_lead_with_remesable_member(self):
         www_lead_o = self.get_model("som.lead.www")
-        # account_invoice_o = self.get_model("account.invoice")
+        account_invoice_o = self.get_model("account.invoice")
         lead_o = self.get_model("giscedata.crm.lead")
         mandate_o = self.get_model("payment.mandate")
 
@@ -721,10 +721,9 @@ class TestsSomLeadWww(testing.OOTestCase):
 
         self.assertEqual(mandate.payment_type, "one_payment")
 
-        # TODO: Finish the test xd
-        # invoice_id = account_invoice_o.search(
-        #     self.cursor, self.uid, [("partner_id", "=", titular_id)])[0]
+        invoice_id = account_invoice_o.search(
+            self.cursor, self.uid, [("partner_id", "=", titular_id)])[0]
 
-        # invoice = account_invoice_o.browse(self.cursor, self.uid, invoice_id)
+        invoice = account_invoice_o.browse(self.cursor, self.uid, invoice_id)
 
-        # self.assertFalse(invoice.sii_to_send)
+        self.assertFalse(invoice.sii_to_send)
