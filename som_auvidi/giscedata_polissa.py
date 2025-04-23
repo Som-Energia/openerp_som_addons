@@ -65,7 +65,7 @@ class GiscedataPolissaModcontractual(osv.osv):
             if current_te_auvidi:
                 polissa_obj.handle_polissa_sg_category(
                     cursor, uid, polissa_id, action='assign', context=context)
-                # # Actualitzem data inici si fa falta
+                # Actualitzem data inici si fa falta
                 info = sg_polissa_obj.check_actualitzar_data_inici(
                     cursor, uid, sg_pol_id, modcon.data_inici
                 )
