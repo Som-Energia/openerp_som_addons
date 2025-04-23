@@ -7,6 +7,8 @@ from giscedata_serveis_generacio.giscedata_serveis_generacio import ESTATS_CONTR
 
 from osv import osv, fields
 
+import pooler
+
 NOT_ALLOWED_COLLECTIVES = ['42', '43', '52', '55', '57', '58', '63', '64', '73', '74']
 
 
@@ -94,6 +96,25 @@ class GiscedataServeiGeneracioPolissa(osv.osv):
         for sg_info in self.read(cursor, uid, ids, read_params, context=context):
             servei_gen_id = sg_info['servei_generacio_id'][0]
             polissa_id = sg_info.get('polissa_id')
+            # Provem d'obtenir-la de nou
+            if not polissa_id and sg_info.get('cups_name'):
+                wizard_obj = self.pool.get('wizard.load.servei.gen.records.from.file')
+                tmp_polissa_id = wizard_obj.get_polissa_from_record_data(
+                    cursor, uid, sg_info['cups_name'], sg_info
+                )
+                if tmp_polissa_id:
+                    try:
+                        db = pooler.get_db(cursor.dbname)
+                        tmp_cursor = db.cursor()
+                        servei_gen_pol_obj.write(
+                            tmp_cursor, uid, sg_info['id'], {'polissa_id': tmp_polissa_id}
+                        )
+                        tmp_cursor.commit()
+                        polissa_id = [tmp_polissa_id]
+                    except:
+                        pass
+                    finally:
+                        tmp_cursor.close()
             ctx = context.copy()
             ctx.update({'prefetch': False})
 
