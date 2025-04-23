@@ -4,7 +4,7 @@
     "description": """Aquest mòdul afegeix les següents funcionalitats:
     * Condicions generals pòlisses Somenergia
     """,
-    "version": "2.107.5",
+    "version": "24.5.0",
     "author": "GISCE",
     "category": "SomEnergia",
     "depends": [

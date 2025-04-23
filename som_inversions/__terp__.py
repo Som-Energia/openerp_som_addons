@@ -9,7 +9,7 @@
           bancari on es cobraran els interessos de les inversions
         * Creació d'impost per representar el % de retorn d'inversió
     """,
-    "version": "0-dev",
+    "version": "24.5.0",
     "author": "GISCE",
     "category": "SomEnergia",
     "depends": [

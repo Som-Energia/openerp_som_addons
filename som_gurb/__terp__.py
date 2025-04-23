@@ -2,7 +2,7 @@
 {
     "name": "Generació urbana",
     "description": "Mòdul per gestionar els grups de generació urbana",
-    "version": "0-dev",
+    "version": "24.5.0",
     "author": "SomEnergia",
     "category": "SomEnergia",
     "depends": [

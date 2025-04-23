@@ -5,7 +5,7 @@
     This module provide :
         * Validació propia a giscedata_facturacio_comer
     """,
-    "version": "0-dev",
+    "version": "24.5.0",
     "author": "GISCE",
     "category": "SomEnergia",
     "depends": [

@@ -7,11 +7,8 @@
             <field name="inherit_id" ref="giscedata_serveis_generacio.view_servei_generacio_form"/>
             <field name="type">form</field>
             <field name="arch" type="xml">
-                <xpath expr="//field[@name='mode_calcul_preu']" position="after">
+                <xpath expr="//field[@name='format_corba']" position="after">
                     <field name="categoria_polissa" colspan="8"/>
-                </xpath>
-                <xpath expr="//field[@name='mode_factura']" position="replace">
-                    <field name="mode_factura" invisible="1"/>
                 </xpath>
             </field>
         </record>

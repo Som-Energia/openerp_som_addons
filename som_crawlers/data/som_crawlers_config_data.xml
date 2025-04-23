@@ -341,8 +341,8 @@
             <field name="port">22</field>
             <field name="user_ultima_modificacio" ref="base.user_admin"/>
         </record>
-        <record model="som.crawlers.config" id="aseme_ftp_conf">
-            <field name="name">aseme_ftp</field>
+        <record model="som.crawlers.config" id="aseme_ftp_conf">  <!-- now 6eis -->
+            <field name="name">6eis_ftp</field>
             <field name="crawler">Selenium</field>
             <field name="days_of_margin">5</field>
             <field name="pending_files_only" eval="False"/>

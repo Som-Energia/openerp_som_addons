@@ -1,18 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <openerp>
     <data>
-        <record model="ir.ui.view" id="view_polissa_autoconsum_form">
-            <field name="name">view.polissa.autoconsum.form.som</field>
-            <field name="model">giscedata.polissa</field>
-            <field name="type">form</field>
-            <field name="inherit_id" ref="giscedata_polissa.view_polissa_autoconsum_form"/>
-            <field name="arch" type="xml">
-                <xpath expr="//page[@string='Autoconsum']/field[@name='is_autoconsum_collectiu']" position="after">
-                    <field name="data_alta_autoconsum" readonly="1" select="2"/>
-                    <field name="data_baixa_autoconsum" readonly="1" select="2"/>
-                </xpath>
-            </field>
-        </record>
         <record model="ir.ui.view" id="giscedata_polissa_auto_tree">
             <field name="name">giscedata.polissa.auto.tree</field>
             <field name="model">giscedata.polissa</field>

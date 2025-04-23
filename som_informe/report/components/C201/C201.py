@@ -23,7 +23,7 @@ class C201(ProcesC2.ProcesC2):
         else:
             result["codi_document"] = step.codi_document
         result["tipus_contracte"] = get_description(step.tipus_contracte, "TABLA_9")
-        result["tipus_autoconsum"] = get_description(step.tipus_autoconsum, "TABLA_113")
+        result["tipus_autoconsum"] = get_description(step.tipus_autoconsum, "TABLA_113_NEW")
         result["control_potencia"] = get_description(step.control_potencia, "TABLA_51", True)
         result["potencies"] = [
             {"name": pot.name, "potencia": pot.potencia}

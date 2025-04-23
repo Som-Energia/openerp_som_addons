@@ -72,6 +72,7 @@ class ReportBackendCondicionsParticulars(ReportBackend):
         if pas01:
             m101_obj = self.pool.get("giscedata.switching.m1.01")
             pas_id = pas01.pas_id.split(",")[1]
+            pas_id = int(pas_id)
             pas = m101_obj.browse(cursor, uid, pas_id)
             dades_client = pas.dades_client
             dades_envio = pas.direccio_notificacio
@@ -118,12 +119,13 @@ class ReportBackendCondicionsParticulars(ReportBackend):
         if pas01:
             m101_obj = self.pool.get("giscedata.switching.m1.01")
             pas_id = pas01.pas_id.split(",")[1]
+            pas_id = int(pas_id)
             pas = m101_obj.browse(cursor, uid, pas_id)
             es_canvi_tecnic = pas.sollicitudadm == "N"
         else:
             es_canvi_tecnic = False
         pots = pas.pot_ids if es_canvi_tecnic else pol.potencies_periode
-        res['autoconsum'] = pas.tipus_autoconsum if es_canvi_tecnic else pol.autoconsumo
+        res['autoconsum'] = pas.tipus_autoconsum if es_canvi_tecnic else pol.tipus_subseccio
         if res['autoconsum'] and res['autoconsum'] in TABLA_113_dict:
             res['autoconsum'] = TABLA_113_dict[res['autoconsum']]
         res['es_canvi_tecnic'] = es_canvi_tecnic
@@ -152,7 +154,7 @@ class ReportBackendCondicionsParticulars(ReportBackend):
         res['name'] = pol.name
         res['state'] = pol.state
         res['lead'] = context.get('lead', False)
-        res['auto'] = pol.autoconsumo
+        res['auto'] = pol.tipus_subseccio
         res['contract_type'] = CONTRACT_TYPES[pol.contract_type]
         res['tarifa'] = pol.tarifa_codi
         res['data_baixa'] = pol.data_baixa

@@ -12,6 +12,8 @@ GithubActions:
 -  .github/**
 powersms:
 -  powersms/**
+report_tester:
+-  report_tester/**
 scripts:
 -  scripts/**
 som_account_invoice_pending:
@@ -30,8 +32,6 @@ som_crawlers:
 -  som_crawlers/**
 som_custom_views:
 -  som_custom_views/**
-som_dashboard:
--  som_dashboard/**
 som_documents_sensibles:
 -  som_documents_sensibles/**
 som_empowering:
@@ -84,6 +84,8 @@ somre_giscere_facturacio:
 -  somre_giscere_facturacio/**
 somre_giscere_oferta:
 -  somre_giscere_oferta/**
+somre_ov_module:
+-  somre_ov_module/**
 som_remeses_base:
 -  som_remeses_base/**
 som_switching:

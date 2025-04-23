@@ -603,8 +603,6 @@ class SomAutoreclamaEzATC_Test(SomAutoreclamaBaseTests):
             "state": state,
             "active": active,
         }
-        if date_closed:
-            last_write['date_closed'] = date_closed
         if date:
             last_write['date'] = date
         atc_obj.write(
@@ -613,6 +611,13 @@ class SomAutoreclamaEzATC_Test(SomAutoreclamaBaseTests):
             atc_id,
             last_write,
         )
+        if date_closed:
+            atc_obj.write(
+                self.cursor,
+                self.uid,
+                atc_id,
+                {'date_closed': date_closed}
+            )
         atc = atc_obj.browse(self.cursor, self.uid, atc_id)
         log_obj = self.get_model("crm.case.log")
         log_obj.write(self.cursor, self.uid, atc.log_ids[1].id, {"date": today_minus_str(log_days)})
@@ -1511,10 +1516,12 @@ class SomAutoreclamaUpdaterTest(SomAutoreclamaEzATC_Test):
         })
 
         # close the ATC and set it up
+        atc_obj.write(self.cursor, self.uid, first_006.id, {
+            "state": 'done'
+        })
         data_close = today_minus_str(21)
         atc_obj.write(self.cursor, self.uid, first_006.id, {
-            "state": 'done',
-            "date_closed": data_close,
+            "date_closed": data_close
         })
 
         # The real test

@@ -286,7 +286,7 @@ class Tests_FacturacioFacturaReport_company_component(Tests_FacturacioFacturaRep
                 "city": u"Girona",
                 "email": u"info@somenergia.coop",
                 "name": u"Som Energia, SCCL",
-                "street": u"Pic de Peguera, 11 A 2 8",
+                "street": u"Pic de Peguera, 11 ESC. A 2 8",
                 "zip": u"17003",
             },
         )
@@ -630,7 +630,7 @@ class Tests_FacturacioFacturaReport_contract_data_component(Tests_FacturacioFact
                 "pricelist": u"TARIFAS ELECTRICIDAD",
                 "autoconsum_cau": "",
                 "is_autoconsum_colectiu": False,
-                "cups_direction": u"carrer inventat 1 1 1 1 aclaridor 00001 (Poble de Prova)",
+                "cups_direction": u"carrer inventat ,  1  ESC.  1 1 1 aclaridor 00001 (Poble de Prova)",  # noqa: E501
                 "autoconsum_colectiu_repartiment": 100.0,
                 "cnae": u"0111",
                 "power_invoicing_type": True,
@@ -670,7 +670,7 @@ class Tests_FacturacioFacturaReport_contract_data_component(Tests_FacturacioFact
             result,
             {
                 "power": 4.6,
-                "autoconsum": u"41",
+                "autoconsum": u"21",
                 "powers": [],
                 "renovation_date": "2021-01-01",
                 "cups": u"ES1234000000000001JN0F",
@@ -679,8 +679,8 @@ class Tests_FacturacioFacturaReport_contract_data_component(Tests_FacturacioFact
                 "pricelist": u"TARIFAS ELECTRICIDAD",
                 "autoconsum_cau": u"ES0318363477145938GEA000",
                 "is_autoconsum_colectiu": False,
-                "cups_direction": u"carrer inventat 1 1 1 1 aclaridor 00001 (Poble de Prova)",
-                "autoconsum_colectiu_repartiment": 0.0,
+                "cups_direction": u"carrer inventat ,  1  ESC.  1 1 1 aclaridor 00001 (Poble de Prova)",  # noqa: E501
+                "autoconsum_colectiu_repartiment": 100.0,
                 "cnae": u"0111",
                 "power_invoicing_type": False,
                 "remote_managed_meter": True,
@@ -2098,7 +2098,7 @@ class Tests_FacturacioFacturaReport_invoice_info(Tests_FacturacioFacturaReport_b
                 "start_date": "01/01/2016",
                 "end_date": "29/02/2016",
                 "contract_number": u"0001C",
-                "address": u"carrer inventat 1 1 1 1 aclaridor 00001 (Poble de Prova)",
+                "address": u"carrer inventat ,  1  ESC.  1 1 1 aclaridor 00001 (Poble de Prova)",
                 "due_date": "01/01/2016",
             },
         )

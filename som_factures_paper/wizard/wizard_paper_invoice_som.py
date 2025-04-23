@@ -173,6 +173,7 @@ class WizardPaperInvoiceSom(osv.osv_memory):
         """Return a tuple of status (True: OK, False: Failed) and the invoice path."""
         if context is None:
             context = {}
+        context['save_pdf_in_invoice_attachments'] = True
         try:
             report = netsvc.service_exist(report)
             values = {"model": "giscedata.facturacio.factura", "id": fids, "report_type": "pdf"}

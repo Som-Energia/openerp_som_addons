@@ -1,14 +1,11 @@
 # -*- coding: utf-8 -*-
 from osv import osv, fields
 from tools.translate import _
+from gestionatr.defs import TABLA_113_NEW, TABLA_133
 
 
-TABLA_113_dict = {  # Table extracted from gestionatr.defs TABLA_113, not imported due translations issues # noqa: E501
-    '00': _(u"Sense Autoconsum"),
-    '01': _(u"Autoconsum Tipus 1"),
-    '2A': _(u"Autoconsum tipus 2 (segons l'Art. 13. 2. a) RD 900/2015)"),
-    '2B': _(u"Autoconsum tipus 2 (segons l'Art. 13. 2. b) RD 900/2015)"),
-    '2G': _(u"Serveis auxiliars de generació lligada a un autoconsum tipus 2"),
+TABLA_113_dict = {  # Table extracted from gestionatr.defs TABLA_113, not imported due translations issues  # noqa: E501
+    '00': _(u"Sense Autoconsum"),   # noqa: E501
     '31': _(u"Sense Excedents Individual - Consum"),
     '32': _(u"Sense Excedents Col·lectiu - Consum"),
     '33': _(u"Sense Excedents Col·lectiu amb acord de compensació – Consum"),
@@ -21,6 +18,8 @@ TABLA_113_dict = {  # Table extracted from gestionatr.defs TABLA_113, not import
     '54': _(u"Amb excedents sense compensació individual amb cte. de Serv. Aux. en Xarxa Interior - Serv. Aux."),  # noqa: E501
     '55': _(u"Amb excedents sense compensació Col·lectiu / en Xarxa Interior - Consum"),
     '56': _(u"Amb excedents sense compensació Col·lectiu / en Xarxa Interior - Serv. Aux."),
+    '57': _(u"Amb excedents sense compensació Col·lectiu sense cte de Serv. Aux. (menyspreable) en Xarxa Interior – Consum')"),  # noqa: E501
+    '58': _(u"Amb excedents sense compensació Col·lectiu sense cto de Serv. Aux. a través de xarxa - Consum')"),  # noqa: E501
     '61': _(u"Amb excedents sense compensació Individual amb cte. de Serv. Aux. a través de xarxa - Consum"),  # noqa: E501
     '62': _(u"Amb excedents sense compensació individual amb cte. de Serv. Aux. a través de xarxa - Serv. Aux."),  # noqa: E501
     '63': _(u"Amb excedents sense compensació Col·lectiu a través de xarxa - Consum"),
@@ -30,6 +29,25 @@ TABLA_113_dict = {  # Table extracted from gestionatr.defs TABLA_113, not import
     '73': _(u"Amb excedents sense compensació Col·lectiu amb cte. de Serv. Aux. a través de xarxa i xarxa interior - Consum"),  # noqa: E501
     '74': _(u"Amb excedents sense compensació Col·lectiu amb cte. de Serv. Aux. a través de xarxa i xarxa interior - SSAA"),  # noqa: E501
 }
+
+TABLA_113_NEW_CA_dict = {
+    '00': 'Sense Autoconsum',
+    '11': 'Sense excedents',
+    '12': 'Amb excedents',
+    '0C': 'Baixa com a memebre d\'autoconsum col·lectiu',
+}
+
+TABLA_133_CA_dict = {
+    '10': "Sense excedents No acollit a compensació",
+    '11': "Sense excedents acollit a compensació",
+    '20': "Amb excedents no acollits a compensació",
+    '21': "Amb excedents acollits a compensació",
+    '00': "Sense autoconsum",
+    '0C': "Baixa com a membre d'autoconsum col·lectiu",
+}
+
+TABLA_113_NEW_ES_dict = dict(TABLA_113_NEW)
+TABLA_133_ES_dict = dict(TABLA_133)
 
 
 class GiscedataCupsPs(osv.osv):
@@ -122,6 +140,20 @@ class GiscedataCupsPs(osv.osv):
         llista += vals
 
         return llista
+
+    def get_autoconsum_description(self, cursor, uid, auto_consum, lang):
+        """Get the description of the autoconsum"""
+        if lang == "ca_ES":
+            return auto_consum + " - " + TABLA_113_NEW_CA_dict[auto_consum]
+        else:
+            return auto_consum + " - " + TABLA_113_NEW_ES_dict[auto_consum]
+
+    def get_auto_tipus_subseccio_description(self, cursor, uid, tipus_subseccio, lang):
+        """Get the description of the auto tipus subseccio"""
+        if lang == "ca_ES":
+            return tipus_subseccio + " - " + TABLA_133_CA_dict[tipus_subseccio]
+        else:
+            return tipus_subseccio + " - " + TABLA_133_ES_dict[tipus_subseccio]
 
     _columns = {
         'importacio_cadastre_incidencies_origen': fields.char(

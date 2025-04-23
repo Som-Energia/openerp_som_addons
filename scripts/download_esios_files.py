@@ -24,7 +24,7 @@ javax.net.ssl.keyStorePassword=PASSWORD_OF_CERTIFICATE
 '''
 
 import argparse
-from datetime import datetime, timedelta
+from datetime import datetime
 from consolemsg import step, error
 from subprocess import Popen, PIPE, STDOUT, call
 import re
@@ -32,74 +32,21 @@ import os
 from time import sleep
 import paramiko
 
-FILE_TYPE = 'liquicomun'
-FILE_PREFERENCE = ['A2_liquicomun', 'A1_liquicomun']
-BIN_PATH = '/home/erp/ConnectionKit/bin'  # /bin folder of the ConnectionKit path
+FTP_FOLDER = 'liquicomun'
 REGEX = r'\s+([0-9]+)\s+([^ ]*)\s+[0-9]{2}-[0-9]{2}-[0-9]{4} [0-9]{2}:[0-9]{2} - [0-9]{2}-[0-9]{2}-[0-9]{4} [0-9]{2}:[0-9]{2} [0-9]{2}-[0-9]{2}-[0-9]{4} [0-9]{2}:[0-9]{2}:[0-9]{2}\s+([^ ]*)\s+([^ ]*)'  # noqa: E501
 
 
 def get_search_day():
-    # Always looking for the next day to get most updated file unless is the last day of the month
+    # Always looking for today because we want all posible files
     today = datetime.today()
-    tomorrow = datetime.today() + timedelta(days=1)
-    if today.month != tomorrow.month:
-        return today.strftime('%d-%m-%Y')
-    else:
-        return tomorrow.strftime('%d-%m-%Y')
+    return today.strftime('%d-%m-%Y')
 
 
-def download_files(file_type, server, server_port, ftp_server, ftp_username, ftp_password):
-    day_of_search = get_search_day()
-    step("Listing avaiable files {}...".format(FILE_TYPE))
-    output = Popen(
-        ['./list.sh', '-startTime', day_of_search, '-intervalType', 'Application'],
-        cwd=BIN_PATH, stdout=PIPE, stderr=STDOUT)
-
-    # Search for liquicomuns
-    result = []
-    errors = []
-    for line in output.stdout:
-        if file_type in line:
-            result.append(line)
-        else:
-            errors.append(line)
-
-    # Get preferred file
-    file_list = []
-    preferred_file = None
-    for res in result:
-        file_tuple = re.match(REGEX, res).groups()
-        if (file_tuple[2] == FILE_PREFERENCE[0] or (file_tuple[2] == FILE_PREFERENCE[1]
-                                                    and preferred_file is None)):
-            preferred_file = (file_tuple[0], file_tuple[1])
-            file_list.append(file_tuple[1])
-
-    if len(result) == 0:
-        error("No files avaiables")
-        print errors
-        return 0
-    elif len(file_list) == 0 or preferred_file is None:
-        error("No A2_liquicomun or A1_liquicomun files avaiables")
-        print result
-        return 0
-    elif preferred_file:
-        step("Found file...")
-        code = preferred_file[0]
-        filename = preferred_file[1]
-
-    step("Downloading {}...".format(filename))
-    output = Popen(
-        ['./get.sh', '-code', code], cwd=BIN_PATH, stdout=PIPE, stderr=STDOUT)
-
-    file_path = '{}/{}'.format(BIN_PATH, filename)
-    timeout = 10
-    while not os.path.isfile('{}/{}'.format(BIN_PATH, filename)):
-        if not timeout:
-            error("Timeout downloading file {}".format(filename))
-            return 0
-        sleep(15)
-        timeout -= 1
-
+def send_to_server(server, server_port, ftp_server, ftp_username,
+                   ftp_password, filename=None, file_path=None, absolute_path=None):
+    if absolute_path is not None:
+        file_path = absolute_path
+        filename = absolute_path.split('/')[-1]
     step("Coping file to the server {}...".format(server))
     call(["scp", "-P", server_port, file_path, server])
     step("File {} copied to {} successfully".format(filename, server))
@@ -114,30 +61,71 @@ def download_files(file_type, server, server_port, ftp_server, ftp_username, ftp
 
     step("Coping file to SFTP server {}".format(ftp_server))
 
-    with paramiko.SSHClient() as ssh:
-        ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-        ssh.load_system_host_keys()
-        ssh.connect(hostname=ftp_server, port=server_port,
-                    username=ftp_username, password=ftp_password)
-        sftp = ssh.open_sftp()
-        sftp.chdir('/{}'.format(FILE_TYPE))
-        sftp.put(file_path, filename)
+    try:
+        with paramiko.SSHClient() as ssh:
+            ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+            ssh.load_system_host_keys()
+            ssh.connect(hostname=ftp_server, port=server_port,
+                        username=ftp_username, password=ftp_password)
+            sftp = ssh.open_sftp()
+            sftp.chdir('/{}'.format(FTP_FOLDER))
+            sftp.put(file_path, filename)
+    except Exception:
+        error("Error copy SFTP server file {}".format(filename))
+        return True
 
     step("All done")
     step("Removing file from localhost")
-    os.remove('{}/{}'.format(BIN_PATH, filename))
+    os.remove('{}'.format(file_path))
+
+
+def download_all_files(server, server_port, ftp_server, ftp_username, ftp_password, kit_path):
+    day_of_search = get_search_day()
+    step("Listing avaiable files...")
+    output = Popen(
+        ['./list.sh', '-startTime', day_of_search, '-intervalType', 'Application'],
+        cwd=kit_path, stdout=PIPE, stderr=STDOUT)
+
+    # Search for all files
+    result = []
+    for line in output.stdout:
+        result.append(line)
+
+    # Get preferred file
+    file_list = []
+    preferred_file = None
+    for res in result:
+        try:
+            file_tuple = re.match(REGEX, res).groups()
+        except Exception:
+            continue
+        preferred_file = (file_tuple[0], file_tuple[1])
+        file_list.append(file_tuple[1])
+
+        code = preferred_file[0]
+        filename = preferred_file[1]
+
+        step("Downloading {}...".format(filename))
+        output = Popen(
+            ['./get.sh', '-code', code], cwd=kit_path, stdout=PIPE, stderr=STDOUT)
+
+        file_path = '{}/{}'.format(kit_path, filename)
+        timeout = 10
+        while not os.path.isfile('{}/{}'.format(kit_path, filename)):
+            if timeout == 0:
+                error("Timeout downloading file {}".format(filename))
+                break
+            sleep(15)
+            timeout -= 1
+
+        if timeout != 0:
+            send_to_server(server, server_port, ftp_server, ftp_username,
+                           ftp_password, filename, file_path, absolute_path=None)
 
 
 if __name__ == "__main__":
     step("Start run: {}".format(datetime.today().strftime('%d-%m-%Y %H:%M:%S')))
     parser = argparse.ArgumentParser(description="Download ESIOS files")
-    parser.add_argument(
-        "--file_type",
-        dest="file_type",
-        default=FILE_TYPE,
-        type=str,
-        help="File type (default 'liquicomun')",
-    )
     parser.add_argument(
         "--destination_server",
         dest="server",
@@ -168,9 +156,24 @@ if __name__ == "__main__":
         type=str,
         help="FTP user password",
     )
+    parser.add_argument(
+        "--absolute_path",
+        dest="absolute_path",
+        type=str,
+        default='None',
+        help="Absolute path of magic folder file downloaded",
+    )
+    parser.add_argument(
+        "--kit_path",
+        dest="kit_path",
+        type=str,
+        default='/home/erp/ConnectionKit/bin',
+        help="Absolute path of ConnectionKit bin folder",
+    )
     args = parser.parse_args()
 
-    download_files(args.file_type, args.server, args.server_port,
-                   args.ftp_server, args.ftp_username, args.ftp_password)
+    download_all_files(args.server, args.server_port, args.ftp_server,
+                       args.ftp_username, args.ftp_password, args.kit_path)
+
     step("Finsish run: {}".format(datetime.today().strftime('%d-%m-%Y %H:%M:%S')))
     step("=============================================\n")

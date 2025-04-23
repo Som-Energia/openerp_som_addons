@@ -2,7 +2,7 @@
 {
     "name": "Reports Facturació SOM (Comercialitzadora)",
     "description": """Reports Facturació SOM (Comercialitzadora)""",
-    "version": "0-dev",
+    "version": "24.5.0",
     "author": "GISCE",
     "category": "Extrareports",
     "depends": [
@@ -19,7 +19,11 @@
     ],
     "init_xml": [],
     "demo_xml": ["giscedata_facturacio_comer_som_demo.xml"],
-    "update_xml": ["giscedata_facturacio_comer_data.xml", "giscedata_facturacio_comer_report.xml"],
+    "update_xml": [
+        "giscedata_facturacio_comer_data.xml",
+        "giscedata_facturacio_comer_report.xml",
+        "giscedata_facturacio_factura.xml"
+    ],
     "active": False,
     "installable": True,
 }
