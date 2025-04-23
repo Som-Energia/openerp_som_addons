@@ -601,7 +601,8 @@ class ReportBackendMailcanvipreus(ReportBackend):
                 and polissa_id.modcontractuals_ids[0].mode_facturacio == 'atr'):
             ctx["force_pricelist"] = polissa_id.modcontractuals_ids[0].llista_preu.id
         # maj_price = 0  # €/kWh
-        bo_social_price = 2.299047
+        # bo_social_price = 2.299047  # 2024
+        bo_social_price = 4.650987  # 2025
         types = {"tp": potencies or {}, "te": consums or {}}
         imports = 0
         for terme, values in types.items():
