@@ -311,7 +311,7 @@ class ReportBackendMailcanvipreus(ReportBackend):
         if context is None:
             context = {}
 
-        context['iva10'] = env.polissa_id.potencia <= 10
+        # context['iva10'] = env.polissa_id.potencia <= 10
 
         impostos_str, impostos_value = self.getImpostos(env.polissa_id.fiscal_position_id, context)
 
