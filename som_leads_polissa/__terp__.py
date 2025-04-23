@@ -16,6 +16,7 @@
         "som_indexada",
         "som_partner_seq",
         "partner_representante",
+        "l10n_ES_aeat_sii",
     ],
     "init_xml": [],
     "demo_xml": [
