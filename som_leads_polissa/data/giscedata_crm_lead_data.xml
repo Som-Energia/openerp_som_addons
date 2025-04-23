@@ -44,4 +44,28 @@
             <field name="sequence">99</field>
         </record>
     </data>
+    <data noupdate="1">
+        <record model="account.journal" id="member_fee_journal">
+            <field name="account_control_ids" eval="[(6,0,[])]"/>
+            <field name="active" eval="1"/>
+            <field name="cash_journal" eval="0"/>
+            <field name="centralisation" eval="0"/>
+            <field name="code">SOCIS</field>
+            <field name="default_credit_account_id" model="account.account" search="[('code','=','555000000003')]"/>
+            <field name="default_debit_account_id" model="account.account" search="[('code','=','555000000003')]"/>
+            <field name="property_writeoff_account_id" model="account.account" search="[('code','=','659000000000')]"/>
+            <field name="entry_posted" eval="1"/>
+            <field name="group_invoice_lines" eval="0"/>
+            <field name="include_to_iva_book" eval="0"/>
+            <field name="name">SOCIS</field>
+            <field name="refund_journal" eval="0"/>
+            <field name="sequence_id" ref="account.sequence_statement"/>
+            <field name="sii_to_send" eval="False"/>
+            <field name="type">cash</field>
+            <field name="type_control_ids" eval="[(6,0,[])]"/>
+            <field name="update_posted" eval="1"/>
+            <field name="user_id" ref="base.user_root"/>
+            <field name="view_id" ref="account.account_journal_bank_view"/>
+        </record>
+    </data>
 </openerp>

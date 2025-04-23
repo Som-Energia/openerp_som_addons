@@ -14,6 +14,7 @@ _member_quota_payment_types = [
 ]
 
 WWW_DATA_FORM_HEADER = "**** DADES DEL FORMULARI ****"
+_MEMBER_FEE_PURPOSE = 'QUOTA SOCI'
 
 
 class GiscedataCrmLead(osv.OsvInherits):
@@ -192,27 +193,6 @@ class GiscedataCrmLead(osv.OsvInherits):
         if context is None:
             context = {}
 
-        partner_o = self.pool.get("res.partner")
-        mandate_o = self.pool.get("payment.mandate")
-
-        lead = self.browse(cursor, uid, crml_id, context=context)
-
-        # We create the mandate
-        today = datetime.strftime(datetime.now(), '%Y-%m-%d')
-        partner_id = partner_o.search(cursor, uid, [("vat", "=", lead.titular_vat)])[0]
-        mandate_reference = "res.partner,{}".format(partner_id)
-        mandate_scheme = "core"
-
-        mandate_o.create(cursor, uid, {
-            "date": today,
-            "reference": mandate_reference,
-            "mandate_scheme": mandate_scheme,
-            "signed": 1,
-            "debtor_iban": lead.iban.replace(" ", ""),
-            "payment_type": "one_payment"
-        })
-
-        # We create the invoice
         imd_o = self.pool.get("ir.model.data")
         invoice_o = self.pool.get("account.invoice")
         account_o = self.pool.get("account.account")
@@ -221,9 +201,14 @@ class GiscedataCrmLead(osv.OsvInherits):
         invoice_line_o = self.pool.get("account.invoice.line")
         product_o = self.pool.get("product.product")
 
-        # TODO: check if a previous invoice exists? Is necessary?
+        lead = self.browse(cursor, uid, crml_id, context=context)
+
+        if lead.initial_invoice_id:
+            raise osv.except_osv('Error', 'Ja existeix una factura de remesa inicial')
 
         partner_id = lead.partner_id.id
+        mandate_id = self.get_or_create_payment_mandate(
+            cursor, uid, partner_id, lead.iban, _MEMBER_FEE_PURPOSE, context=context)
 
         # Initial quota  # FIXME replace with quota xd
         product_id = imd_o.get_object_reference(
@@ -243,7 +228,7 @@ class GiscedataCrmLead(osv.OsvInherits):
         ).get("value", {})
         inv_line["invoice_line_tax_id"] = [(6, 0, inv_line.get("invoice_line_tax_id", []))]
         inv_line.update({
-            "name": "Quota inicial Gurb",
+            "name": _MEMBER_FEE_PURPOSE,
             "product_id": product_id,
             "price_unit": 100,  # TODO: product_br.list_price ???
             "quantity": 1,
@@ -254,7 +239,7 @@ class GiscedataCrmLead(osv.OsvInherits):
             cursor, uid, [("code", "=", "430000000000")], context=context
         )
         journal_ids = journal_o.search(
-            cursor, uid, [("code", "=", "VENTA")], context=context
+            cursor, uid, [("code", "=", "SOCIS")], context=context
         )
         payment_type_id = payment_type_o.search(
             cursor, uid, [("code", "=", "TRANSFERENCIA_CSB")], context=context
@@ -263,12 +248,14 @@ class GiscedataCrmLead(osv.OsvInherits):
             (0, 0, inv_line)
         ]
         invoice_vals = {
+            "number": "QUOTA-SOCIA-LEAD-{}".format(lead.id),
             "partner_id": partner_id,
             "type": "out_invoice",
             "invoice_line": invoice_lines,
-            "origin": "LEADID{}".format(lead.id),  # TODO: Patillada xd
             "origin_date_invoice": datetime.today().strftime("%Y-%m-%d"),
-            "date_invoice": datetime.today().strftime("%Y-%m-%d")
+            "date_invoice": datetime.today().strftime("%Y-%m-%d"),
+            "mandate_id": mandate_id,
+            "sii_to_send": False,
         }
 
         invoice_vals.update(invoice_o.onchange_partner_id(  # Get invoice default values
@@ -283,6 +270,42 @@ class GiscedataCrmLead(osv.OsvInherits):
 
         invoice_id = invoice_o.create(cursor, uid, invoice_vals, context=context)
         invoice_o.button_reset_taxes(cursor, uid, [invoice_id])
+
+        self.write(cursor, uid, lead.id, {"initial_invoice_id": invoice_id}, context=context)
+
+    def get_or_create_payment_mandate(self, cursor, uid, partner_id, iban, purpose, context=None):
+        if context is None:
+            context = {}
+
+        partner_o = self.pool.get("res.partner")
+        mandate_o = self.pool.get("payment.mandate")
+
+        partner = partner_o.read(cursor, uid, partner_id, ['address', 'name', 'vat'])
+        search_params = [
+            ('debtor_iban', '=', iban),
+            ('debtor_vat', '=', partner['vat']),
+            ('date_end', '=', False),
+            ('reference', '=', 'res.partner,{}'.format(partner_id)),
+            ('notes', '=', purpose),
+        ]
+
+        mandate_ids = mandate_o.search(cursor, uid, search_params)
+        if mandate_ids:
+            return mandate_ids[0]
+
+        today = datetime.strftime(datetime.now(), '%Y-%m-%d')
+        mandate_reference = "res.partner,{}".format(partner_id)
+        mandate_scheme = "core"
+
+        return mandate_o.create(cursor, uid, {
+            "date": today,
+            "reference": mandate_reference,
+            "mandate_scheme": mandate_scheme,
+            "signed": 1,
+            "debtor_iban": iban.replace(" ", ""),
+            "payment_type": "one_payment",
+            'notes': purpose,
+        })
 
     def create(self, cursor, uid, vals, context=None):
         if context is None:
@@ -334,6 +357,7 @@ class GiscedataCrmLead(osv.OsvInherits):
         "preu_fix_potencia_p5": fields.float("Preu Fix Potència P5", digits=(16, 6)),
         "preu_fix_potencia_p6": fields.float("Preu Fix Potència P6", digits=(16, 6)),
         "member_number": fields.char('Número de sòcia', size=64),
+        "initial_invoice_id": fields.many2one("account.invoice", "Factura de remesa inicial"),
         "create_new_member": fields.boolean("Sòcia de nova creació"),
         "member_quota_payment_type": fields.selection(
             _member_quota_payment_types, "Forma pagament quota sòcia"),

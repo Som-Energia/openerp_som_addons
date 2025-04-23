@@ -727,3 +727,10 @@ class TestsSomLeadWww(testing.OOTestCase):
         invoice = account_invoice_o.browse(self.cursor, self.uid, invoice_id)
 
         self.assertFalse(invoice.sii_to_send)
+
+        self.assertEqual(invoice.number, "QUOTA-SOCIA-LEAD-{}".format(lead.id))
+
+        # mirar que sigui una altre serie perque les bones siguin consecutivess
+        # tipus de seq, seq i diari
+
+        # test__crear_factures__ok
