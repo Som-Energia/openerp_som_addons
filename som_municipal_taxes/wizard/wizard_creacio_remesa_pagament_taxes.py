@@ -31,7 +31,7 @@ class WizardCreacioRemesaPagamentTaxes(osv.osv_memory):
         wizard = self.browse(cursor, uid, ids, context=context)
 
         # Comptes comptables
-        invoice_account_id = acc_o.search(cursor, uid, [('code', '=', '411000000000')])[0]
+        invoice_account_id = acc_o.search(cursor, uid, [('code', '=', '410000000000')])[0]
         line_account_id = acc_o.search(cursor, uid, [('code', '=', '600000000300')])[0]
 
         municipi_conf_ids = self.buscar_municipis_remesar(cursor, uid, ids, wizard.quarter, context)

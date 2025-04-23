@@ -41,7 +41,7 @@
         </record>
         <record id="tax_account" model="account.account">
             <field name="name">Taxa 1,5%</field>
-            <field name="code">411000000000</field>
+            <field name="code">410000000000</field>
             <field name="type">payable</field>
             <field eval="ref('account.minimal_0')" name="parent_id"/>
             <field name="company_id" ref="base.main_company"/>
