@@ -675,9 +675,9 @@ class ReportBackendMailcanvipreus(ReportBackend):
         iva = 0.1 if context and context.get('iva10') else 0.21
         impost_electric = 0.05112696
         if fiscal_position:
-            if fiscal_position.id in [33, 47, 56, 52, 61, 38, 21, 19]:
+            if fiscal_position.id in [33, 47, 56, 52, 61, 38, 21, 19, 87, 89, 94]:
                 iva = 0.03
-            if fiscal_position.id in [34, 48, 53, 57, 53, 62, 39, 25]:
+            if fiscal_position.id in [34, 48, 53, 57, 53, 62, 39, 25, 88, 90]:
                 iva = 0.0
         preu_imp = round(preu * (1 + impost_electric), 2)
         return round(preu_imp * (1 + iva))
