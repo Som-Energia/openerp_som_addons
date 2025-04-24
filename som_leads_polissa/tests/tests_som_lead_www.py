@@ -729,8 +729,7 @@ class TestsSomLeadWww(testing.OOTestCase):
         self.assertFalse(invoice.sii_to_send)
 
         self.assertEqual(invoice.number, "QUOTA-SOCIA-LEAD-{}".format(lead.id))
+        self.assertEqual(invoice.amount_total, 100)
+        self.assertEqual(invoice.state, "open")
 
-        # mirar que sigui una altre serie perque les bones siguin consecutivess
-        # tipus de seq, seq i diari
-
-        # test__crear_factures__ok
+        # cal obrir factures i crear remesa, mirar generation i/o codi oriol PR :D

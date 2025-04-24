@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from datetime import datetime
 from osv import fields, osv
+import netsvc
 
 
 _tipus_tarifes_lead = [
@@ -193,13 +194,12 @@ class GiscedataCrmLead(osv.OsvInherits):
         if context is None:
             context = {}
 
-        imd_o = self.pool.get("ir.model.data")
         invoice_o = self.pool.get("account.invoice")
         account_o = self.pool.get("account.account")
         journal_o = self.pool.get("account.journal")
         payment_type_o = self.pool.get("payment.type")
-        invoice_line_o = self.pool.get("account.invoice.line")
-        product_o = self.pool.get("product.product")
+        currency_o = self.pool.get('res.currency')
+        conf_o = self.pool.get("res.config")
 
         lead = self.browse(cursor, uid, crml_id, context=context)
 
@@ -210,52 +210,40 @@ class GiscedataCrmLead(osv.OsvInherits):
         mandate_id = self.get_or_create_payment_mandate(
             cursor, uid, partner_id, lead.iban, _MEMBER_FEE_PURPOSE, context=context)
 
-        # Initial quota  # FIXME replace with quota xd
-        product_id = imd_o.get_object_reference(
-            cursor, uid, "som_polissa_soci", "dona_DN01"
-        )[1]
-        product_br = product_o.browse(cursor, uid, product_id, context=context)
+        socia_fee_amount = conf_o.get(cursor, uid, "socia_member_fee_amount", "100")
+        euro_id = currency_o.search(cursor, uid, [('code', '=', 'EUR')])[0]
+        invoice_account_ids = account_o.search(
+            cursor, uid, [("code", "=", "100000000000")], context=context
+        )
 
         # Create invoice line
-        inv_line = invoice_line_o.product_id_change(  # Get line default values
-            cursor,
-            uid,
-            [],
-            product=product_br.id,
-            uom=product_br.uom_id.id,
-            partner_id=partner_id,
-            type="out_invoice",
-        ).get("value", {})
-        inv_line["invoice_line_tax_id"] = [(6, 0, inv_line.get("invoice_line_tax_id", []))]
-        inv_line.update({
+        inv_line = {
             "name": _MEMBER_FEE_PURPOSE,
-            "product_id": product_id,
-            "price_unit": 100,  # TODO: product_br.list_price ???
+            "account_id": invoice_account_ids[0],
+            "price_unit": socia_fee_amount,
             "quantity": 1,
-        })
+            "uom_id": 1,
+            "company_currency_id": euro_id,
+        }
 
         # Create invoice
-        invoice_account_ids = account_o.search(
-            cursor, uid, [("code", "=", "430000000000")], context=context
-        )
         journal_ids = journal_o.search(
             cursor, uid, [("code", "=", "SOCIS")], context=context
         )
         payment_type_id = payment_type_o.search(
             cursor, uid, [("code", "=", "TRANSFERENCIA_CSB")], context=context
         )[0]
-        invoice_lines = [
-            (0, 0, inv_line)
-        ]
         invoice_vals = {
             "number": "QUOTA-SOCIA-LEAD-{}".format(lead.id),
             "partner_id": partner_id,
             "type": "out_invoice",
-            "invoice_line": invoice_lines,
+            "invoice_line": [(0, 0, inv_line)],
             "origin_date_invoice": datetime.today().strftime("%Y-%m-%d"),
             "date_invoice": datetime.today().strftime("%Y-%m-%d"),
             "mandate_id": mandate_id,
             "sii_to_send": False,
+            "account_id": invoice_account_ids[0],
+            "journal_id": journal_ids[0],
         }
 
         invoice_vals.update(invoice_o.onchange_partner_id(  # Get invoice default values
@@ -263,15 +251,17 @@ class GiscedataCrmLead(osv.OsvInherits):
         )
         invoice_vals.update({"payment_type": payment_type_id})
 
-        if invoice_account_ids:
-            invoice_vals.update({"account_id": invoice_account_ids[0]})
-        if journal_ids:
-            invoice_vals.update({"journal_id": journal_ids[0]})
-
         invoice_id = invoice_o.create(cursor, uid, invoice_vals, context=context)
         invoice_o.button_reset_taxes(cursor, uid, [invoice_id])
 
         self.write(cursor, uid, lead.id, {"initial_invoice_id": invoice_id}, context=context)
+
+        # open the invoice
+        wf_service = netsvc.LocalService("workflow")
+        wf_service.trg_validate(uid, 'account.invoice', invoice_id, 'invoice_open', cursor)
+
+        # fer un tipus de pagament especial per a la quota de soci i despres buscar una remesa
+        # oberta o crearla de nou com fa generation a get_or_create_open_payment_order
 
     def get_or_create_payment_mandate(self, cursor, uid, partner_id, iban, purpose, context=None):
         if context is None:

@@ -68,4 +68,12 @@
             <field name="view_id" ref="account.account_journal_bank_view"/>
         </record>
     </data>
+    <data noupdate="1">
+        <record model="res.config" id="socia_member_fee_amount">
+            <!-- We use socia and member to make easy the search -->
+            <field name="name">socia_member_fee_amount</field>
+            <field name="value">100</field>
+            <field name="description">Import de la quota de sòcia</field>
+        </record>
+    </data>
 </openerp>
