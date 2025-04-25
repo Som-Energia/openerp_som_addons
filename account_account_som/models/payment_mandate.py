@@ -22,7 +22,8 @@ class PaymentMandate(osv.osv):
 
         partner_o = self.pool.get("res.partner")
 
-        partner = partner_o.read(cursor, uid, partner_id, ['address', 'name', 'vat'])
+        partner = partner_o.read(
+            cursor, uid, partner_id, ['address', 'name', 'vat'], context=context)
         search_params = [
             ('debtor_iban', '=', iban),
             ('debtor_vat', '=', partner['vat']),
@@ -31,7 +32,7 @@ class PaymentMandate(osv.osv):
             ('notes', '=', purpose),
         ]
 
-        mandate_ids = self.search(cursor, uid, search_params)
+        mandate_ids = self.search(cursor, uid, search_params, context=context)
         if mandate_ids:
             return mandate_ids[0]
 
