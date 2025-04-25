@@ -1245,42 +1245,10 @@ class GenerationkwhInvestment(osv.osv):
         the partner, iban and purpose (communication).
         If none is found, a new one is created.
         """
-        if not context:
-            context = {}
 
-        ResPartner = self.pool.get("res.partner")
-        PaymentMandate = self.pool.get("payment.mandate")
-        ResPartnerAddress = self.pool.get("res.partner.address")
-        partner = ResPartner.read(cursor, uid, partner_id, ['address', 'name', 'vat'])
-        search_params = [
-            ('debtor_iban', '=', iban),
-            ('debtor_vat', '=', partner['vat']),
-            ('date_end', '=', False),
-            ('reference', '=', 'res.partner,{}'.format(partner_id)),
-            ('notes', '=', purpose),
-        ]
-
-        mandate_ids = PaymentMandate.search(cursor, uid, search_params)
-        if mandate_ids: return mandate_ids[0]
-
-        adr = ResPartnerAddress.read(cursor, uid, partner['address'][0], ['nv', 'state_id'])
-        mandate_name = context.get("mandate_name", uuid4().hex)
-        mandate_date = datetime.now()
-        vals = {
-            'debtor_name': partner['name'],
-            'debtor_vat': partner['vat'],
-            'debtor_address': adr['nv'],
-            # TODO: No test covers case having no state
-            'debtor_state': adr['state_id'] and adr['state_id'][1] or '',
-            'debtor_country': self.get_default_country(cursor, uid),
-            'debtor_iban': iban,
-            'reference': 'res.partner,{}'.format(partner_id),
-            'notes': purpose,
-            'name': mandate_name,
-            'creditor_code': creditor_code,
-            'date': mandate_date.strftime('%Y-%m-%d')
-        }
-        return PaymentMandate.create(cursor, uid, vals)
+        return self.pool.get("payment.mandate").get_or_create_payment_mandate(
+            cursor, uid, partner_id, iban, purpose, creditor_code=creditor_code, context=context
+        )
 
     def get_or_create_open_payment_order(self, cursor, uid,  payment_mode_name, use_invoice = False):
         """
@@ -1288,38 +1256,10 @@ class GenerationkwhInvestment(osv.osv):
         with the proper payment mode and still in draft.
         If none is found, a new one gets created.
         """
-        PaymentMode = self.pool.get('payment.mode')
-        payment_mode_ids = PaymentMode.search(cursor, uid, [
-            ('name', '=', payment_mode_name),
-            ])
 
-        if not payment_mode_ids: return False
-
-        PaymentOrder = self.pool.get('payment.order')
-        payment_orders = PaymentOrder.search(cursor, uid, [
-            ('mode', '=', payment_mode_ids[0]),
-            ('state', '=', 'draft'),
-            ])
-        if payment_orders:
-            return payment_orders[0]
-
-        PaymentType = self.pool.get('payment.type')
-        payable_type_id = PaymentType.search(cursor, uid, [
-            ('code', '=', 'TRANSFERENCIA_CSB'),
-            ])[0]
-
-        paymentmode = PaymentMode.read(cursor, uid, payment_mode_ids[0])
-        order_moves = 'bank-statement' if use_invoice else 'direct-payment'
-        order_type = 'payable' if paymentmode['type'][0] == payable_type_id else 'receivable'
-
-        return PaymentOrder.create(cursor, uid, dict(
-            date_prefered = 'fixed',
-            user_id = uid,
-            state = 'draft',
-            mode = payment_mode_ids[0],
-            type = order_type,
-            create_account_moves = order_moves,
-        ))
+        return self.pool.get("payment.order").get_or_create_open_payment_order(
+            cursor, uid,  payment_mode_name, use_invoice=use_invoice
+        )
 
     def mark_as_invoiced(self, cursor, uid, id):
         """
