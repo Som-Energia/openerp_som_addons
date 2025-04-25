@@ -61,7 +61,7 @@
                                 ${indexada_ca()}
                                 <p style="page-break-after:always;"></p>
                             %endif
-                            %if informe['gurb']['mostra_condicions']:
+                            %if "gurb" in informe:
                                 ${gurb_ca()}
                             %endif
                         %else:
@@ -70,7 +70,7 @@
                                 ${indexada_es()}
                                 <p style="page-break-after:always;"></p>
                             %endif
-                            %if informe['gurb']['mostra_condicions']:
+                            %if "gurb" in informe:
                                 ${gurb_es()}
                             %endif
                         %endif
