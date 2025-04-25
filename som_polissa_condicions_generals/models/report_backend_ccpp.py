@@ -61,7 +61,23 @@ class ReportBackendCondicionsParticulars(ReportBackend):
             "polissa": self.get_polissa_data(cursor, uid, pol, context=context),
             "cups": self.get_cups_data(cursor, uid, pol, context=context),
             "prices": self.get_prices_data(cursor, uid, pol, context=context),
+            "gurb": self.get_gurb_data(cursor, uid, pol, context=context),
         }
+        return data
+
+    def get_gurb_data(self, cursor, uid, pol, context=None):
+        if context is None:
+            context = {}
+
+        gurb_cups_obj = self.pool.get("som.gurb.cups")
+
+        data = {"mostra_condicions": False}
+        gurb_cups_id = gurb_cups_obj.search(
+            cursor, uid, [("cups_id", "=", pol.cups.id)]
+        )
+        if gurb_cups_id:
+            data["mostra_condicions"] = True
+
         return data
 
     def get_titular_data(self, cursor, uid, pol, pas01, context=None):

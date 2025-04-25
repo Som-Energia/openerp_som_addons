@@ -11,6 +11,8 @@
 <%namespace file="som_polissa_condicions_generals/report/condicions_especifiques_indexada.mako" import="indexada_ca"/>
 <%namespace file="som_polissa_condicions_generals/report/condiciones_especificas_indexada.mako" import="indexada_es"/>
 <%namespace file="som_polissa_condicions_generals/report/components/gurb.mako" import="gurb"/>
+<%namespace file="som_polissa_condicions_generals/report/condicions_gurb.mako" import="gurb_ca"/>
+<%namespace file="som_polissa_condicions_generals/report/condicions_gurb.mako" import="gurb_es"/>
 
 <!DOCTYPE html>
 <html lang="es">
@@ -59,11 +61,17 @@
                                 ${indexada_ca()}
                                 <p style="page-break-after:always;"></p>
                             %endif
+                            %if informe['gurb']['mostra_condicions']:
+                                ${gurb_ca()}
+                            %endif
                         %else:
                             ${generals_es()}
                             %if informe['prices']['mostra_indexada']:
                                 ${indexada_es()}
                                 <p style="page-break-after:always;"></p>
+                            %endif
+                            %if informe['gurb']['mostra_condicions']:
+                                ${gurb_es()}
                             %endif
                         %endif
                     </div>
