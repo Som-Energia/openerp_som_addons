@@ -386,7 +386,7 @@ class ReportBackendCondicionsParticulars(ReportBackend):
         coeficient_k_untaxed = (pol.coeficient_k + pol.coeficient_d) / 1000
         coeficient_k = False
         res['mostra_indexada'] = False
-        fp_k_id = polissa.fiscal_position_id if pol.fiscal_position_id else ctx.get(
+        fp_k_id = polissa.fiscal_position_id.id if pol.fiscal_position_id else ctx.get(
             'force_fiscal_position', False)
         if fp_k_id:
             fp_k = fp_obj.browse(cursor, uid, fp_k_id)
