@@ -400,11 +400,11 @@ class TarifaPoolSOM(TarifaPool):
             csdvsub = Codsvsuqh('C2_codsvsuqh_%(postfix)s' % locals(), esios_token)  # [€/MWh]
 
         # get first version date on version
-        first_version = self.conf.get('versions', {}).keys[0]
+        first_version = self.conf.get('versions', {}).keys()[0]
 
         # BS3 format QH from REGANECU
         all_bs3 = self.conf.get('versions', {})[first_version]['bs3qh']
-        current_bs3 = [x for x in all_bs3 if x.start_date.strftime("%Y-%m-%d") == start_date]
+        current_bs3 = [x for x in all_bs3 if x.start_date == start_date]
         bs3 = current_bs3[0]
 
         # RAD3 format QH from REGANECU
