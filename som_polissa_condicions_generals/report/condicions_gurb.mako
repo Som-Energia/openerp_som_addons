@@ -114,7 +114,7 @@
 <h3>5. FINALITZACIÓ DEL SERVEI GURB</h3>
 
     <p>
-        5.1. La part Contractant pot resoldre unilateralment el servei GURB notificant aquesta circumstància a SOM ENERGIA, SCCL, amb TRES (3) MESOS d'antelació a la data desitjada mitjançant l'enviament de comunicació a l'adreça <strong><a href="gurb@somenergia.coop">gurb@somenergia.coop</a><strong>.
+        5.1. La part Contractant pot resoldre unilateralment el servei GURB notificant aquesta circumstància a SOM ENERGIA, SCCL, amb TRES (3) MESOS d'antelació a la data desitjada mitjançant l'enviament de comunicació a l'adreça <strong><a href="gurb@somenergia.coop">gurb@somenergia.coop</a></strong>.
     </p>
     <p>
         SOM ENERGIA, SCCL, respondrà a aquesta sol·licitud de baixa informant la Contractant de la data en què és possible tramitar-la segons els terminis previstos al Reial decret 244/2019 i Ordre TED/1247/2021 (vegeu la clàusula 4.6). La data efectiva en la qual el CUPS de la Contractant serà desvinculat de l'autoconsum col·lectiu (d'ara endavant, la <strong>"Data de Baixa"</strong>) dependrà que la Contractant aporti tota la documentació signada que sigui requerida per la distribuïdora. Aquesta Data de Baixa serà comunicada per SOM ENERGIA, SCCL, a la Contractant tan aviat li sigui notificada per la companyia distribuïdora. La Contractant accepta abonar la Quota GURB fins a la Data de Baixa.
@@ -209,13 +209,6 @@
         SOM ENERGIA, SCCL, ha posat a disposició de la Contractant aquestes Condicions Específiques prèviament a la contractació a través de la seva pàgina web <a href="https://somenergia.coop">www.somenergia.coop</a>. Aquestes han estat subscrites mitjançant sistemes de contractació electrònica, i se n'ha emès un exemplar en suport durador a la Contractant una vegada finalitzada la contractació.
     </p>
 </div>
-
-<section class="footnotes">
-<hr />
-<ol>
-<li id="fn1"><p></p>
-</ol>
-</section>
 </%def>
 
 <%def name="gurb_es()">
@@ -429,11 +422,4 @@
         SOM ENERGIA, SCCL, ha puesto a disposición de la Contratante estas Condiciones Específicas previamente a su contratación a través de su página web www.somenergia.coop. Estas han sido subscritas mediante sistemas de contratación electrónica, y se ha emitido un ejemplar en soporte duradero a la Contratante una vez finalizada la contratación.
     </p>
 </div>
-
-<section class="footnotes">
-<hr />
-<ol>
-<li id="fn1"><p></p>
-</ol>
-</section>
 </%def>
