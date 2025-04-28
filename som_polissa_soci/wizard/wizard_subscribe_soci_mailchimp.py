@@ -26,6 +26,7 @@ class WizardSubscribeSociMailchimp(osv.osv_memory):
         conf_obj = self.pool.get("res.config")
 
         list_name = conf_obj.get(cursor, uid, "mailchimp_socis_list", None)
+        avoid_mailchimp = conf_obj.get(cursor, uid, "avoid_emails_mailchimp", None)
 
         MAILCHIMP_CLIENT = MailchimpMarketing.Client(
             dict(
@@ -42,6 +43,9 @@ class WizardSubscribeSociMailchimp(osv.osv_memory):
             address_data = address_obj.read(cursor, uid, address, ["email", "partner_id"])
             if not address_data["email"]:
                 raise osv.except_osv(u"Error", u"L'adreça seleccionada no té email")
+            if address_data["email"] in avoid_mailchimp:
+                info_wizard += "Adreça obviada: " + address_data["email"] + "\n"
+                continue
 
             is_member = soci_obj.search(
                 cursor,
