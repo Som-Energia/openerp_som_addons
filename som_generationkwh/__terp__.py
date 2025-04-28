@@ -24,6 +24,7 @@
     'async_reports',
     'custom_search',
     'giscedata_facturacio_impagat_comer',
+    'account_account_som',
     ],
   "init_xml": [],
   "demo_xml": [
