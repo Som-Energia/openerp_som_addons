@@ -37,7 +37,6 @@
                         <button string="Activa" name="button_create_cups" states="draft" type="workflow" confirm="Vols deixar el CUPS pendent d'activar al GURB?" />
                         <button string="Canceŀla" name="button_undo_cups" states="draft" type="workflow" confirm="Vols cancelar el CUPS al GURB?" />
                         <button string="Modifica beta" name="button_pending_modification" states="active" type="workflow" confirm="Vols deixar en modificació pendent el CUPS al GURB?" />
-                        <button string="Baixa" name="button_coming_cancellation" states="active" type="workflow" confirm="Vols deixar en baixa pendent el CUPS al GURB?" />
                         <button string="Reactiva" name="button_reactivate_cups" states="cancel" type="workflow" confirm="Vols tornar a activar el CUPS al GURB? (pendent d'activar)"/>
                         <button string="Desfer baixa pendent" name="button_discard_comming_cancellation_cups" states="comming_cancellation" type="workflow" confirm="Vols deixar el CUPS pendent d'activar al GURB?" />
                     </group>
