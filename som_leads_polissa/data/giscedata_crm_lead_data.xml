@@ -61,7 +61,7 @@
             <field name="refund_journal" eval="0"/>
             <field name="sequence_id" ref="account.sequence_statement"/>
             <field name="sii_to_send" eval="False"/>
-            <field name="type">cash</field>
+            <field name="type">sale</field>
             <field name="type_control_ids" eval="[(6,0,[])]"/>
             <field name="update_posted" eval="1"/>
             <field name="user_id" ref="base.user_root"/>

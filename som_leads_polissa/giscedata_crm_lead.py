@@ -198,8 +198,11 @@ class GiscedataCrmLead(osv.OsvInherits):
         account_o = self.pool.get("account.account")
         journal_o = self.pool.get("account.journal")
         payment_type_o = self.pool.get("payment.type")
-        currency_o = self.pool.get('res.currency')
+        payment_mode_o = self.pool.get("payment.mode")
+        payment_order_o = self.pool.get("payment.order")
+        currency_o = self.pool.get("res.currency")
         conf_o = self.pool.get("res.config")
+        ir_model_o = self.pool.get("ir.model.data")
 
         lead = self.browse(cursor, uid, crml_id, context=context)
 
@@ -262,6 +265,16 @@ class GiscedataCrmLead(osv.OsvInherits):
 
         # fer un tipus de pagament especial per a la quota de soci i despres buscar una remesa
         # oberta o crearla de nou com fa generation a get_or_create_open_payment_order
+        payment_mode_id = ir_model_o.get_object_reference(
+            cursor, uid, "som_polissa_soci", "mode_pagament_socis"
+        )[1]
+        payment_mode_name = payment_mode_o.read(
+            cursor, uid, payment_mode_id, ["name"], context=context
+        )["name"]
+        payment_order_id = payment_order_o.get_or_create_open_payment_order(
+            cursor, uid, payment_mode_name, use_invoice=True, context=context
+        )
+        invoice_o.afegeix_a_remesa(cursor, uid, [invoice_id], payment_order_id)
 
     def get_or_create_payment_mandate(self, cursor, uid, partner_id, iban, purpose, context=None):
         if context is None:
