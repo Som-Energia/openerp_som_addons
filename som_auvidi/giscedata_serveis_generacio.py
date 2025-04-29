@@ -6,11 +6,12 @@ class GiscedataServeiGeneracio(osv.osv):
     _name = "giscedata.servei.generacio"
     _inherit = "giscedata.servei.generacio"
 
-    def get_phf_calc_component(self, cursor, uid, facturador, curve, data_inici, context=None):
+    def config_facturador_autoconsumida(self, cursor, uid, facturador, context=None):
         if context is None:
             context = {}
 
-        res = facturador.phf_calc_auvi(curve, data_inici)
+        facturador.phf_function = 'phf_calc_auvi'
+        res = super(GiscedataServeiGeneracio, self).config_facturador_autoconsumida(cursor, uid, facturador, context=context)
 
         return res
 
