@@ -1,24 +1,15 @@
 # -*- coding: utf-8 -*-
 import logging
-import pooler
+
 from oopgrade.oopgrade import load_data_records
 from tools import config
 
 
 def up(cursor, installed_version):
-    if not installed_version:
+    if not installed_version or config.updating_all:
         return
 
-    try:
-        if config.updating_all:
-            return
-    except Exception as e:
-        pass
-
     logger = logging.getLogger('openerp.migration')
-
-    logger.info("Creating pooler")
-    pool = pooler.get_pool(cursor.dbname)
 
     ##UPDATAR UNA PART DE L'XML (POSAR LA ID)##
     logger.info("Updating XMLs")
@@ -30,7 +21,8 @@ def up(cursor, installed_version):
         "giscedata_facturacio_bateria_virtual.value_giscedata_import_bateria_virtual_polissa",
     ]
     load_data_records(
-        cursor, 'som_facturacio_flux_solar', 'giscedata_bateria_virtual.xml', list_of_records, mode='update'
+        cursor, 'som_facturacio_flux_solar', 'giscedata_bateria_virtual.xml', list_of_records,
+        mode='update'
     )
     logger.info("XMLs succesfully updated.")
 
