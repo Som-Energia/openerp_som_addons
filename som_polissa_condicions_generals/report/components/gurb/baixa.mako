@@ -26,7 +26,7 @@
     </p>
     <br />
     <p>
-        Girona, ${informe['day']}/${informe['month']} de ${informe['year']}
+        Girona, ${informe['day']}/${informe['month']}/${informe['year']}
     </p>
     <br />
     <p>
@@ -68,7 +68,7 @@
     </p>
     <br />
     <p>
-        Girona, ${informe['day']}/${informe['month']} de ${informe['year']}
+        Girona, ${informe['day']}/${informe['month']}/${informe['year']}
     </p>
     <br />
     <p>
