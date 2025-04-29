@@ -316,7 +316,9 @@ class GiscedataCrmLead(osv.OsvInherits):
         seq_o = self.pool.get("ir.sequence")
 
         if vals.get("create_new_member"):
-            vals['member_number'] = seq_o.get_next(cursor, uid, 'res.partner.soci')
+            vals["member_number"] = seq_o.get_next(cursor, uid, "res.partner.soci")
+        elif context.get("sponsored_titular"):
+            vals["titular_number"] = seq_o.get_next(cursor, uid, "res.partner.titular")
 
         lead_id = super(GiscedataCrmLead, self).create(cursor, uid, vals, context=context)
 
@@ -328,10 +330,11 @@ class GiscedataCrmLead(osv.OsvInherits):
 
         member_o = self.pool.get("somenergia.soci")
 
+        lead = self.read(cursor, uid, crml_id, ["member_number", "titular_number"], context=context)
         if context.get("create_member"):
-            create_vals['ref'] = self.read(
-                cursor, uid, crml_id, ["member_number"], context=context
-            )["member_number"]
+            create_vals['ref'] = lead["member_number"]
+        elif lead["titular_number"]:
+            create_vals['ref'] = lead["titular_number"]
 
         if context.get("partner_representantive_id"):
             create_vals["representante_id"] = context["partner_representantive_id"]
@@ -360,6 +363,7 @@ class GiscedataCrmLead(osv.OsvInherits):
         "preu_fix_potencia_p5": fields.float("Preu Fix Potència P5", digits=(16, 6)),
         "preu_fix_potencia_p6": fields.float("Preu Fix Potència P6", digits=(16, 6)),
         "member_number": fields.char('Número de sòcia', size=64),
+        "titular_number": fields.char('Número de titular', size=64),
         "initial_invoice_id": fields.many2one("account.invoice", "Factura de remesa inicial"),
         "create_new_member": fields.boolean("Sòcia de nova creació"),
         "member_quota_payment_type": fields.selection(

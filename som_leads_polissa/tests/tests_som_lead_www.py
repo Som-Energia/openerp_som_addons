@@ -825,7 +825,7 @@ class TestsSomLeadWww(testing.OOTestCase):
 
         # Check the member number and the different member and titular
         self.assertEqual(member.partner_id.ref, lead.member_number)
-        # TODO: Check titular P0001243
+        self.assertEqual(lead.polissa_id.titular.ref[0], "T")
         self.assertNotEqual(lead.polissa_id.titular.ref, lead.member_number)
         self.assertEqual(lead.polissa_id.soci.id, member.partner_id.id)
         self.assertNotEqual(lead.polissa_id.soci, lead.polissa_id.titular)
