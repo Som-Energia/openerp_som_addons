@@ -15,8 +15,8 @@
 <%namespace file="som_polissa_condicions_generals/report/components/gurb/ccee.mako" import="gurb_ccee_es"/>
 <%namespace file="som_polissa_condicions_generals/report/components/gurb/baixa.mako" import="gurb_baixa_ca"/>
 <%namespace file="som_polissa_condicions_generals/report/components/gurb/baixa.mako" import="gurb_baixa_es"/>
-<%namespace file="som_polissa_condicions_generals/report/components/gurb/autoritzacio_representant.mako" import="gurb_baixa_autoritzacio_ca"/>
-<%namespace file="som_polissa_condicions_generals/report/components/gurb/autoritzacio_representant.mako" import="gurb_baixa_autoritzacio_es"/>
+<%namespace file="som_polissa_condicions_generals/report/components/gurb/autoritzacio_representant.mako" import="gurb_autoritzacio_ca"/>
+<%namespace file="som_polissa_condicions_generals/report/components/gurb/autoritzacio_representant.mako" import="gurb_autoritzacio_es"/>
 <%namespace file="som_polissa_condicions_generals/report/components/gurb/acord_repartiment.mako" import="gurb_acord_ca"/>
 <%namespace file="som_polissa_condicions_generals/report/components/gurb/acord_repartiment.mako" import="gurb_acord_es"/>
 
@@ -70,7 +70,7 @@
                             %if "gurb" in informe:
                                 ${gurb_ccee_ca()}
                                 ${gurb_acord_ca()}
-                                ${gurb_baixa_autoritzacio_ca(informe['gurb'])}
+                                ${gurb_autoritzacio_ca(informe['gurb'])}
                                 ${gurb_baixa_ca(informe['gurb'])}
                             %endif
                         %else:
@@ -82,7 +82,7 @@
                             %if "gurb" in informe:
                                 ${gurb_ccee_es()}
                                 ${gurb_acord_es()}
-                                ${gurb_baixa_autoritzacio_es(informe['gurb'])}
+                                ${gurb_autoritzacio_es(informe['gurb'])}
                                 ${gurb_baixa_es(informe['gurb'])}
                             %endif
                         %endif
