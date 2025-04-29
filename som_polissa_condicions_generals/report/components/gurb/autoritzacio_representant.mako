@@ -1,4 +1,5 @@
-<%def name="gurb_baixa_autoritzacio_ca()">
+<%def name="gurb_baixa_autoritzacio_ca(gurb)">
+<% informe = gurb["annex"] %>
 <p style="page-break-after:always;"></p>
 <br>
 <br>
@@ -56,7 +57,8 @@
 </div>
 </%def>
 
-<%def name="gurb_baixa_autoritzacio_es()">
+<%def name="gurb_baixa_autoritzacio_es(gurb)">
+<% informe = gurb["annex"] %>
 <p style="page-break-after:always;"></p>
 <br>
 <br>
