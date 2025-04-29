@@ -4,6 +4,9 @@
 <br>
 <br>
 <div id="titol">
+    <h2 style="font-size: 14px;">Annex II</h2>
+</div>
+<div id="titol">
     <h2 style="font-size: 14px;">Autorització del representant de l'autoconsum col·lectiu</h2>
 </div>
 
@@ -62,6 +65,9 @@
 <p style="page-break-after:always;"></p>
 <br>
 <br>
+<div id="titol">
+    <h2 style="font-size: 14px;">Annexo II</h2>
+</div>
 <div id="titol">
     <h2 style="font-size: 14px;">Autorización al representante del autoconsumo colectivo</h2>
 </div>
