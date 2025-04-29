@@ -44,6 +44,7 @@ class ReportBackendCondicionsParticulars(ReportBackend):
             context = {}
 
         res = False
+        partner_obj = self.pool.get("res.partner")
         gurb_cups_obj = self.pool.get("som.gurb.cups")
         product_obj = self.pool.get("product.product")
         pricelist_obj = self.pool.get("product.pricelist")
@@ -82,6 +83,7 @@ class ReportBackendCondicionsParticulars(ReportBackend):
                 "cau": gurb_cups_browse.gurb_id.self_consumption_id.cau,
                 "beta_kw": gurb_cups_browse.beta_kw,
                 "beta_percentage": gurb_cups_browse.beta_percentage,
+                "is_enterprise": partner_obj.is_enterprise_vat(pol.titular.vat)
             }
 
             res = {
