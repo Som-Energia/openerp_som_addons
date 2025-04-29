@@ -52,6 +52,7 @@ class SomLeadWww(osv.osv_memory):
         elif www_vals["linked_member"] == "sponsored":
             member = www_vals["contract_owner"]
             member["number"] = www_vals["linked_member_info"]["code"]
+            context["sponsored_titular"] = True
         else:  # existing_member TODO: elif + fail if is different?
             member = {
                 "number": www_vals["linked_member_info"]["code"],
