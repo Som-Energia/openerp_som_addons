@@ -17,6 +17,8 @@
         "som_partner_seq",
         "partner_representante",
         "l10n_ES_aeat_sii",
+        "l10n_ES_aeat_mod347",
+        "account_account_som",
     ],
     "init_xml": [],
     "demo_xml": [

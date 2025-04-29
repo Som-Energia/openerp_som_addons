@@ -4,14 +4,29 @@
         <record id="som_polissa_soci.mode_pagament_socis" model="payment.mode">
             <field name="sepa_creditor_code">ES10000B22350466</field>
         </record>
-        <record id="cash" model="account.account">
+        <record id="mandatory_social_capital" model="account.account">
             <field name="name">Demo: Das Kapital Social Obligatòri</field>
             <field name="code">100000000000</field>
             <field name="type">other</field>
             <field name="parent_id" ref="l10n_chart_ES.pgc_100"/>
             <field name="company_id" ref="base.main_company"/>
             <field name="user_type" ref="l10n_chart_ES.capital"/>
-            <field name="template_name">PGCE 2008</field>
+        </record>
+        <record id="member_cash" model="account.account">
+            <field name="name">Demo: Caixa Socis</field>
+            <field name="code">555000000003</field>
+            <field name="type">other</field>
+            <field name="parent_id" ref="l10n_chart_ES.pgc_555"/>
+            <field name="company_id" ref="base.main_company"/>
+            <field name="user_type" ref="l10n_chart_ES.financieras"/>
+        </record>
+        <record id="other_loss_current_managament" model="account.account">
+            <field name="name">Demo: Otras pérdidas en gestión corriente</field>
+            <field name="code">659000000000</field>
+            <field name="type">other</field>
+            <field name="parent_id" ref="l10n_chart_ES.pgc_659"/>
+            <field name="company_id" ref="base.main_company"/>
+            <field name="user_type" ref="l10n_chart_ES.gastos"/>
         </record>
     </data>
 </openerp>

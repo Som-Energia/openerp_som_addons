@@ -3,6 +3,7 @@ import os
 import base64
 from destral import testing
 from destral.transaction import Transaction
+from destral.patch import PatchNewCursors
 from oopgrade import oopgrade
 from tools import config
 
@@ -704,6 +705,9 @@ class TestsSomLeadWww(testing.OOTestCase):
         account_invoice_o = self.get_model("account.invoice")
         lead_o = self.get_model("giscedata.crm.lead")
         mandate_o = self.get_model("payment.mandate")
+        ir_model_o = self.get_model("ir.model.data")
+        payment_order_o = self.get_model("payment.order")
+        wiz_pay_o = self.get_model('pagar.remesa.wizard')
 
         values = self._basic_values
         values["member_payment_type"] = "remesa"
@@ -732,4 +736,30 @@ class TestsSomLeadWww(testing.OOTestCase):
         self.assertEqual(invoice.amount_total, 100)
         self.assertEqual(invoice.state, "open")
 
-        # cal obrir factures i crear remesa, mirar generation i/o codi oriol PR :D
+        payment_mode_id = ir_model_o.get_object_reference(
+            self.cursor, self.uid, "som_polissa_soci", "mode_pagament_socis"
+        )[1]
+
+        payment_order = invoice.payment_order_id
+        self.assertEqual(payment_order.state, 'draft')
+        self.assertEqual(payment_order.mode.id, payment_mode_id)
+        self.assertEqual(payment_order.total, -100)
+
+        # Pay payment order
+        payment_order_o.action_open(self.cursor, self.uid, [payment_order.id])
+        with PatchNewCursors():
+            context = {'active_ids': [payment_order.id], 'active_id': payment_order.id}
+            wiz_pay_id = wiz_pay_o.create(
+                self.cursor,
+                self.uid,
+                {'work_async': False},
+                context=context,
+            )
+            wiz_pay_o.action_pagar_remesa_threaded(self.cursor.dbname, self.uid, [
+                                                   wiz_pay_id], context=context)
+
+        po = payment_order_o.browse(self.cursor, self.uid, payment_order.id)
+        payment_line_ids = po.line_ids
+        # Verify the state of the invoices is 'paid'
+        for invoice in payment_line_ids:
+            self.assertEqual(invoice.ml_inv_ref.state, 'paid')
