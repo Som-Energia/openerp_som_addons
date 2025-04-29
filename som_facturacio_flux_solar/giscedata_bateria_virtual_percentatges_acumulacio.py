@@ -5,6 +5,8 @@ Nou modesl de dades per gestionar els percentatges d'acumulacio dels origens de 
 
 from osv import osv, fields
 from tools.translate import _
+from osv.orm import PgView
+from addons import get_module_resource
 
 
 class GiscedataBateriaVirtualPercentatgesAcumulacio(osv.osv):
@@ -60,3 +62,15 @@ class GiscedataPolissa(osv.osv):
 
 
 GiscedataPolissa()
+
+
+class GiscedataBateriaVirtualResumFacturacio(PgView, osv.osv):
+
+    _inherit = 'giscedata.bateria.virtual.resum.facturacio'
+    _view_file = get_module_resource(
+        'giscedata_facturacio_bateria_virtual', 'sql',
+        'detall_bateria_virtual_resum_facturacio_percentatges_acumulacio.sql'
+    )
+
+
+GiscedataBateriaVirtualResumFacturacio()
