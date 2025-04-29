@@ -763,3 +763,69 @@ class TestsSomLeadWww(testing.OOTestCase):
         # Verify the state of the invoices is 'paid'
         for invoice in payment_line_ids:
             self.assertEqual(invoice.ml_inv_ref.state, 'paid')
+
+    def test_create_simple_domestic_lead_already_member(self):
+        www_lead_o = self.get_model("som.lead.www")
+        lead_o = self.get_model("giscedata.crm.lead")
+        member_o = self.get_model("somenergia.soci")
+        ir_model_o = self.get_model("ir.model.data")
+
+        member_id = ir_model_o.get_object_reference(
+            self.cursor, self.uid, "som_polissa_soci", "soci_0001"
+        )[1]
+        member = member_o.browse(self.cursor, self.uid, member_id)
+        vat = member.partner_id.vat.replace("ES", "")
+
+        values = self._basic_values
+        del values["new_member_info"]
+        values["linked_member"] = "already_member"
+        values["linked_member_info"] = {
+            "vat": vat,
+            "code": member.partner_id.ref,
+        }
+
+        result = www_lead_o.create_lead(self.cursor, self.uid, values)
+        www_lead_o.activate_lead(self.cursor, self.uid, result["lead_id"])
+
+        lead = lead_o.browse(self.cursor, self.uid, result["lead_id"])
+
+        self.assertEqual(lead.name, "{} / ES0177000000000000LR".format(vat,))
+
+        # Check that the lead has a valid member number and is the same that we entered
+        self.assertEqual(member.partner_id.ref, lead.member_number)
+        self.assertEqual(lead.polissa_id.titular.ref, lead.member_number)
+        self.assertEqual(lead.polissa_id.soci, lead.polissa_id.titular)
+
+    def test_create_simple_domestic_lead_sponsored(self):
+        www_lead_o = self.get_model("som.lead.www")
+        lead_o = self.get_model("giscedata.crm.lead")
+        member_o = self.get_model("somenergia.soci")
+        ir_model_o = self.get_model("ir.model.data")
+
+        member_id = ir_model_o.get_object_reference(
+            self.cursor, self.uid, "som_polissa_soci", "soci_0001"
+        )[1]
+        member = member_o.browse(self.cursor, self.uid, member_id)
+        vat = member.partner_id.vat.replace("ES", "")
+
+        values = self._basic_values
+        values["linked_member"] = "sponsored"
+        values["contract_owner"] = values.pop("new_member_info")
+        values["linked_member_info"] = {
+            "vat": vat,
+            "code": member.partner_id.ref,
+        }
+
+        result = www_lead_o.create_lead(self.cursor, self.uid, values)
+        www_lead_o.activate_lead(self.cursor, self.uid, result["lead_id"])
+
+        lead = lead_o.browse(self.cursor, self.uid, result["lead_id"])
+
+        self.assertEqual(lead.name, "40323835M / ES0177000000000000LR")
+
+        # Check the member number and the different member and titular
+        self.assertEqual(member.partner_id.ref, lead.member_number)
+        # TODO: Check titular P0001243
+        self.assertNotEqual(lead.polissa_id.titular.ref, lead.member_number)
+        self.assertEqual(lead.polissa_id.soci.id, member.partner_id.id)
+        self.assertNotEqual(lead.polissa_id.soci, lead.polissa_id.titular)

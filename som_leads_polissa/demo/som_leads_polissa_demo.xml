@@ -4,6 +4,9 @@
         <record id="som_polissa_soci.mode_pagament_socis" model="payment.mode">
             <field name="sepa_creditor_code">ES10000B22350466</field>
         </record>
+        <record id="som_polissa_soci.res_partner_address_soci" model="res.partner.address">
+            <field name="phone">972123456</field>
+        </record>
         <record id="mandatory_social_capital" model="account.account">
             <field name="name">Demo: Das Kapital Social Obligatòri</field>
             <field name="code">100000000000</field>
