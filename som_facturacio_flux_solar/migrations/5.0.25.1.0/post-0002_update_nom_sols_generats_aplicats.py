@@ -11,7 +11,7 @@ def up(cursor, installed_version):
 
     logger = logging.getLogger('openerp.migration')
 
-    ##UPDATAR UNA PART DE L'XML (POSAR LA ID)##
+    # Comentari que a l'Emili no li agrada. "UPDATAR"
     logger.info("Updating XMLs")
     list_of_records = [
         "view_giscedata_import_bateria_virtual_tree_inherit",
