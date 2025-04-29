@@ -1,5 +1,4 @@
 <%def name="gurb_acord_ca()">
-    <% informe = gurb["annex"] %>
     <p style="page-break-after:always;"></p>
     <br>
     <br>
@@ -12,7 +11,6 @@
 </%def>
 
 <%def name="gurb_acord_es()">
-    <% informe = gurb["annex"] %>
     <p style="page-break-after:always;"></p>
     <br>
     <br>
