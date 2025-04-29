@@ -4,21 +4,6 @@ from report_backend.report_backend import ReportBackend, report_browsify
 from tools import float_round
 from datetime import datetime
 
-MONTHS = {
-    "1": "de gener",
-    "2": "de febrer",
-    "3": "de març",
-    "4": "d'abril",
-    "5": "de maig",
-    "6": "de juny",
-    "7": "de juliol",
-    "8": "d'agost",
-    "9": "de setembre",
-    "10": "d'octubre",
-    "11": "de novembre",
-    "12": "de desembre",
-}
-
 
 class ReportBackendCondicionsParticulars(ReportBackend):
     _inherit = "report.backend.condicions.particulars"
@@ -78,7 +63,7 @@ class ReportBackendCondicionsParticulars(ReportBackend):
                 "nif": pol.titular.vat,
                 "cups": pol.cups.name,
                 "day": datetime.now().day,
-                "month": MONTHS[str(datetime.now().month)],
+                "month": str(datetime.now().month).zfill(2),
                 "year": datetime.now().year,
                 "cau": gurb_cups_browse.gurb_id.self_consumption_id.cau,
                 "beta_kw": gurb_cups_browse.beta_kw,

@@ -51,7 +51,7 @@
             A dur a terme qualsevol altra actuació que, segons el parer de l'Autoritzada, sigui necessària, convenient, accessòria o relacionada amb les actuacions indicades més amunt.
         </li>
     </ul>
-    <p> Girona, ${informe['day']} ${informe['month']} ${informe['year']}</p>
+    <p> Girona, ${informe['day']}/${informe['month']} ${informe['year']}</p>
     <p>L'Autoritzant</p>
     <p>${informe['name']} ${informe['nif']}</p>
 </div>
@@ -110,7 +110,7 @@
             A realizar cualquier otra actuación que, según el parecer de la Autorizada, sea necesaria, conveniente, accesoria o relacionada con las actuaciones antes indicadas.
         </li>
     </ul>
-    <p> Girona, ${informe['day']} ${informe['month']} ${informe['year']}</p>
+    <p> Girona, ${informe['day']}/${informe['month']} ${informe['year']}</p>
     <p>El Autorizante</p>
     <p>${informe['name']} ${informe['nif']}</p>
 </div>
