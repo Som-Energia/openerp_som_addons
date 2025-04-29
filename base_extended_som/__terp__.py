@@ -15,6 +15,8 @@
     ],
     "update_xml": [
         "res_partner_view.xml",
+        "data/res_users_data.xml",
+        "data/res_request_link_data.xml",
     ],
     "active": False,
     "installable": True,

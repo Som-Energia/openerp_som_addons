@@ -194,4 +194,5 @@ jobs:
         uses: coverallsapp/github-action@v2
         with:
           format: cobertura
+          fail-on-error: false
           flag-name: ${{ inputs.module }}
