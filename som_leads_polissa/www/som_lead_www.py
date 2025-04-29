@@ -45,13 +45,24 @@ class SomLeadWww(osv.osv_memory):
         distri_ref = cups_ps_o.partner_map_from_cups(
             cr, uid, contract_info["cups"], context=context)
 
-        # TODO: In the future, this needs to accept also not new members
-        member = www_vals["new_member_info"]
+        # TODO check linked_member_info is correct (vat and number)
+
+        if www_vals["linked_member"] == "new_member":
+            member = www_vals["new_member_info"]
+        elif www_vals["linked_member"] == "sponsored":
+            member = www_vals["contract_owner"]
+            member["number"] = www_vals["linked_member_info"]["code"]
+        else:  # existing_member TODO: elif + fail if is different?
+            member = {
+                "number": www_vals["linked_member_info"]["code"],
+                "vat": www_vals["linked_member_info"]["vat"],
+                "address": {},
+            }
 
         values = {
             "state": "open",
             "name": "{} / {}".format(member["vat"].upper(), contract_info["cups"]),
-            "lang": member["lang"],
+            "lang": member.get("lang"),
             "cups": contract_info["cups"],
             "codigoEmpresaDistribuidora": distri_ref,
             # "cups_ref_catastral": www_vals.get("cups_cadastral_reference"), TODO test
@@ -78,20 +89,21 @@ class SomLeadWww(osv.osv_memory):
             "enviament": "email",
             "create_new_member": www_vals["linked_member"] == "new_member",
             "autoconsumo": "00",  # Without self-consumption by default
+            "member_number": member.get("number"),
             "titular_vat": 'ES%s' % member["vat"].upper(),
-            "titular_nom": member["name"],
+            "titular_nom": member.get("name"),
             "titular_cognom1": member.get("surname"),
             "tipus_vivenda": 'habitual',
-            "titular_zip": member["address"]["postal_code"],
-            "titular_nv": member["address"]["street"],
+            "titular_zip": member["address"].get("postal_code"),
+            "titular_nv": member["address"].get("street"),
             "titular_pnp": member["address"].get("number"),
             "titular_pt": member["address"].get("floor"),
             "titular_es": member["address"].get("stair"),
             "titular_pu": member["address"].get("door"),
             "titular_bq": member["address"].get("block"),
-            "titular_id_municipi": member["address"]["city_id"],
-            "titular_email": member["email"],
-            "titular_phone": member["phone"],
+            "titular_id_municipi": member["address"].get("city_id"),
+            "titular_email": member.get("email"),
+            "titular_phone": member.get("phone"),
             "titular_mobile": member.get("phone2"),
             "use_cont_address": False,
             "donation": www_vals.get("donation", False),
@@ -110,7 +122,8 @@ class SomLeadWww(osv.osv_memory):
             cr, uid, "som_leads_polissa", "webform_section"
         )[1]
 
-        if member["is_juridic"]:
+        # TODO: test this with existing member
+        if member.get("is_juridic"):
             values["persona_firmant_vat"] = member["proxy_vat"]
             values["persona_nom"] = member["proxy_name"]
 
@@ -133,6 +146,11 @@ class SomLeadWww(osv.osv_memory):
                 values["seccio_registre"], values["subseccio"], int(values["collectiu"]),
                 int(values["tipus_cups"]), int(values["tipus_installacio"]), context=context
             )
+
+        # Remove None values to let the lead get them if exists in the bbdd
+        for field, value in values.items():
+            if value is None:
+                del values[field]
 
         lead_id = lead_o.create(cr, uid, values, context=context)
         self._create_attachments(cr, uid, lead_id, www_vals.get("attachments", []), context=context)
