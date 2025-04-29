@@ -1,4 +1,4 @@
-<%def name="gurb_ca()">
+<%def name="gurb_ccee_ca()">
 <p style="page-break-after:always;"></p>
 <br>
 <br>
@@ -211,7 +211,7 @@
 </div>
 </%def>
 
-<%def name="gurb_es()">
+<%def name="gurb_ccee_es()">
 <p style="page-break-after:always;"></p>
 <br>
 <br>

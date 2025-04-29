@@ -10,9 +10,13 @@
 <%namespace file="som_polissa_condicions_generals/report/condiciones_generales.mako" import="generals_es"/>
 <%namespace file="som_polissa_condicions_generals/report/condicions_especifiques_indexada.mako" import="indexada_ca"/>
 <%namespace file="som_polissa_condicions_generals/report/condiciones_especificas_indexada.mako" import="indexada_es"/>
-<%namespace file="som_polissa_condicions_generals/report/components/gurb.mako" import="gurb"/>
-<%namespace file="som_polissa_condicions_generals/report/condicions_gurb.mako" import="gurb_ca"/>
-<%namespace file="som_polissa_condicions_generals/report/condicions_gurb.mako" import="gurb_es"/>
+<%namespace file="som_polissa_condicions_generals/report/components/gurb/gurb.mako" import="gurb"/>
+<%namespace file="som_polissa_condicions_generals/report/components/gurb/ccee.mako" import="gurb_ccee_ca"/>
+<%namespace file="som_polissa_condicions_generals/report/components/gurb/ccee.mako" import="gurb_ccee_es"/>
+<%namespace file="som_polissa_condicions_generals/report/components/gurb/baixa.mako" import="gurb_baixa_ca"/>
+<%namespace file="som_polissa_condicions_generals/report/components/gurb/baixa.mako" import="gurb_baixa_es"/>
+<%namespace file="som_polissa_condicions_generals/report/components/gurb/autoritzacio_representant.mako" import="gurb_baixa_autoritzacio_ca"/>
+<%namespace file="som_polissa_condicions_generals/report/components/gurb/autoritzacio_representant.mako" import="gurb_baixa_autoritzacio_es"/>
 
 <!DOCTYPE html>
 <html lang="es">
@@ -62,7 +66,9 @@
                                 <p style="page-break-after:always;"></p>
                             %endif
                             %if "gurb" in informe:
-                                ${gurb_ca()}
+                                ${gurb_ccee_ca()}
+                                ${gurb_baixa_ca(informe['gurb'])}
+                                ${gurb_baixa_autoritzacio_ca(informe['gurb'])}
                             %endif
                         %else:
                             ${generals_es()}
@@ -71,7 +77,9 @@
                                 <p style="page-break-after:always;"></p>
                             %endif
                             %if "gurb" in informe:
-                                ${gurb_es()}
+                                ${gurb_ccee_es()}
+                                ${gurb_baixa_es(informe['gurb'])}
+                                ${gurb_baixa_autoritzacio_es(informe['gurb'])}
                             %endif
                         %endif
                     </div>

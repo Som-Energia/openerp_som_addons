@@ -2,6 +2,22 @@
 from __future__ import absolute_import, unicode_literals
 from report_backend.report_backend import ReportBackend, report_browsify
 from tools import float_round
+from datetime import datetime
+
+MONTHS = {
+    "1": "de gener",
+    "2": "de febrer",
+    "3": "de març",
+    "4": "d'abril",
+    "5": "de maig",
+    "6": "de juny",
+    "7": "de juliol",
+    "8": "d'agost",
+    "9": "de setembre",
+    "10": "d'octubre",
+    "11": "de novembre",
+    "12": "de desembre",
+}
 
 
 class ReportBackendCondicionsParticulars(ReportBackend):
@@ -50,12 +66,31 @@ class ReportBackendCondicionsParticulars(ReportBackend):
                 cursor, uid, initial_product_id, initial_product_price, False, context=context
             )
 
+            gurb_cups_id = gurb_cups_obj.search(
+                cursor, uid, [("polissa_id", "=", pol.id)], context=context)[0]
+            gurb_cups_browse = gurb_cups_obj.browse(
+                cursor, uid, gurb_cups_id, context=context)
+
+            annex = {
+                "name": pol.titular.name,
+                "address": pol.cups.direccio,
+                "nif": pol.titular.vat,
+                "cups": pol.cups.name,
+                "day": datetime.now().day,
+                "month": MONTHS[str(datetime.now().month)],
+                "year": datetime.now().year,
+                "cau": gurb_cups_browse.gurb_id.self_consumption_id.cau,
+                "beta_kw": gurb_cups_browse.beta_kw,
+                "beta_percentage": gurb_cups_browse.beta_percentage,
+            }
+
             res = {
                 "nom": gurb_cups_br.gurb_id.name,
                 "cost": float_round(initial_product_price_with_taxes, 2),
                 "potencia": gurb_cups_br.beta_kw,
                 "quota": 0.35,  # TODO: Use pricelist
-                "beta_percentatge": gurb_cups_br.beta_percentage
+                "beta_percentatge": gurb_cups_br.beta_percentage,
+                "annex": annex
             }
 
         return res
