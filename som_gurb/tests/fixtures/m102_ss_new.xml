@@ -1,33 +1,33 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <MensajeAceptacionModificacionDeATR xmlns="http://localhost/elegibilidad">
-<Cabecera>
-<CodigoREEEmpresaEmisora>1234</CodigoREEEmpresaEmisora>
-<CodigoREEEmpresaDestino>4321</CodigoREEEmpresaDestino>
-<CodigoDelProceso>M1</CodigoDelProceso>
-<CodigoDePaso>02</CodigoDePaso>
-<CodigoDeSolicitud>201412111009</CodigoDeSolicitud>
-<SecuencialDeSolicitud>01</SecuencialDeSolicitud>
-<FechaSolicitud>2025-02-04T16:55:12</FechaSolicitud>
-<CUPS>ES1234000000000001JN0F</CUPS>
-</Cabecera>
-<AceptacionModificacionDeATR>
-<DatosAceptacion>
-<FechaAceptacion>2025-02-04</FechaAceptacion>
-<ActuacionCampo>N</ActuacionCampo>
-<BonoSocial>0</BonoSocial>
-</DatosAceptacion>
-<Contrato>
-<TipoContratoATR>01</TipoContratoATR>
-<CondicionesContractuales>
-<TarifaATR>018</TarifaATR>
-<PotenciasContratadas>
-<Potencia Periodo="1">8000</Potencia>
-<Potencia Periodo="2">8000</Potencia>
-</PotenciasContratadas>
-<ModoControlPotencia>1</ModoControlPotencia>
-</CondicionesContractuales>
-<TipoActivacionPrevista>L0</TipoActivacionPrevista>
-<FechaActivacionPrevista>2025-01-12</FechaActivacionPrevista>
-</Contrato>
-</AceptacionModificacionDeATR>
+    <Cabecera>
+        <CodigoREEEmpresaEmisora>1234</CodigoREEEmpresaEmisora>
+        <CodigoREEEmpresaDestino>4321</CodigoREEEmpresaDestino>
+        <CodigoDelProceso>M1</CodigoDelProceso>
+        <CodigoDePaso>02</CodigoDePaso>
+        <CodigoDeSolicitud>201412111009</CodigoDeSolicitud>
+        <SecuencialDeSolicitud>01</SecuencialDeSolicitud>
+        <FechaSolicitud>2025-02-04T16:55:12</FechaSolicitud>
+        <CUPS>ES1234000000000001JN0F</CUPS>
+    </Cabecera>
+    <AceptacionModificacionDeATR>
+        <DatosAceptacion>
+        <FechaAceptacion>2025-02-04</FechaAceptacion>
+        <ActuacionCampo>N</ActuacionCampo>
+        <BonoSocial>0</BonoSocial>
+        </DatosAceptacion>
+        <Contrato>
+            <TipoContratoATR>01</TipoContratoATR>
+            <CondicionesContractuales>
+                <TarifaATR>018</TarifaATR>
+                <PotenciasContratadas>
+                    <Potencia Periodo="1">8000</Potencia>
+                    <Potencia Periodo="2">8000</Potencia>
+                </PotenciasContratadas>
+                <ModoControlPotencia>1</ModoControlPotencia>
+            </CondicionesContractuales>
+            <TipoActivacionPrevista>L0</TipoActivacionPrevista>
+            <FechaActivacionPrevista>2025-01-12</FechaActivacionPrevista>
+        </Contrato>
+    </AceptacionModificacionDeATR>
 </MensajeAceptacionModificacionDeATR>
