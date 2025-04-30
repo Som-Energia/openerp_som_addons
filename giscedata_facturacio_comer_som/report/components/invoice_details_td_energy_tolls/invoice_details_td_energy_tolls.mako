@@ -5,7 +5,7 @@
     <td class="td_bold detall_td">${_(u"Preu peatges per electricitat utilitzada [€/kWh]")}</td>
     % for p in id.showing_periods:
         % if p in id:
-            <td>${_(u"%s") %(locale.str(locale.atof(formatLang(id[p]["preu_peatge"], digits=6))))}</td>
+            <td>${_(u"%s") %(formatLang(id[p]["preu_peatge"], digits=6))}</td>
         % else:
             <td></td>
         % endif
