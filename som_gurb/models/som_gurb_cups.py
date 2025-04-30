@@ -617,6 +617,7 @@ class SomGurbCups(osv.osv):
         "extra_beta_kw": lambda *a: 0,
         "start_date": lambda *a: str(datetime.today()),
         "ens_ha_avisat": lambda *a: False,
+        "state": lambda *a: "draft",
     }
 
 

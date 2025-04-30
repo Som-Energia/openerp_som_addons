@@ -14,11 +14,14 @@ def up(cursor, installed_version):
     pool = pooler.get_pool(cursor.dbname)
     logger.info("Creating pooler")
 
+    # Update models
+    pool.get('som.gurb.cups')._auto_init(cursor, context={'module': 'som_gurb'})
+    pool.get('wizard.deactivate.gurb.cups')._auto_init(cursor, context={'module': 'som_gurb'})
+
     # Create initial workflows
     import netsvc
     sgc_obj = pool.get('som.gurb.cups')
     wf_service = netsvc.LocalService("workflow")
-
     cursor.execute("""
         SELECT id FROM som_gurb_cups
         WHERE id NOT IN (SELECT res_id FROM wkf_instance WHERE res_type = 'som.gurb.cups')
@@ -31,9 +34,6 @@ def up(cursor, installed_version):
         gurb_cups.send_signal('button_create_cups')
         gurb_cups.send_signal('button_activate_cups')
         print sgc_obj.read(cursor, uid, gurb_cups.id, ['state'])
-
-    pool.get('som.gurb.cups')._auto_init(cursor, context={'module': 'som_gurb'})
-    pool.get('wizard.deactivate.gurb.cups')._auto_init(cursor, context={'module': 'som_gurb'})
 
     # Update XMLs
     views = [

@@ -11,11 +11,11 @@
         <CUPS>ES1234000000000001JN0F</CUPS>
     </Cabecera>
     <Rechazos>
-        <FechaRechazo>2023-07-18</FechaRechazo>
+        <FechaRechazo>2025-02-18</FechaRechazo>
         <Rechazo>
             <Secuencial>1</Secuencial>
-            <CodigoMotivo>E7</CodigoMotivo>
-            <Comentarios>El CAU indicado en los ficheros no existe en SF.No se encuentra ningún Fichero de Coeficientes de Reparto.</Comentarios>
+            <CodigoMotivo>11</CodigoMotivo>
+            <Comentarios>Comercializadora incorrecta.</Comentarios>
         </Rechazo>
     </Rechazos>
 </MensajeRechazo>

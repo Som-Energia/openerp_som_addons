@@ -201,16 +201,19 @@ class GiscedataSwitchingM1_02(osv.osv):
         if sw and _contract_has_gurb_category(
             cursor, uid, self.pool, sw.cups_polissa_id.id, context=context
         ):
+            gurb_cups_id = sgc_obj.search(
+                cursor, uid, [('cups_id', '=', sw.cups_polissa_id.cups.id)], context=context)
+            if sw.rebuig and gurb_cups_id:
+                gurb_cups = sgc_obj.browse(cursor, uid, gurb_cups_id[0], context=context)
+                gurb_cups.send_signal(['button_reject_atr'])
+
             canvi_titular_ss = step_m101_obj.search(cursor, uid, [
                 ('sw_id', '=', sw.id),
                 ('sollicitudadm', '=', 'S'),
                 ('canvi_titular', '=', 'S')])
-            if canvi_titular_ss:
-                gurb_cups_id = sgc_obj.search(
-                    cursor, uid, [('cups_id', '=', sw.cups_polissa_id.cups.id)], context=context)
-                if gurb_cups_id:
-                    gurb_cups = sgc_obj.browse(cursor, uid, gurb_cups_id[0], context=context)
-                    gurb_cups.send_signal(['button_coming_cancellation'])
+            if canvi_titular_ss and gurb_cups_id:
+                gurb_cups = sgc_obj.browse(cursor, uid, gurb_cups_id[0], context=context)
+                gurb_cups.send_signal(['button_confirm_atr'])
             else:
                 step_m101_auto = step_m101_obj.search(
                     cursor,
@@ -347,7 +350,7 @@ class GiscedataSwitchingM1_05(osv.osv):
                     cursor, uid, [('cups_id', '=', sw.cups_polissa_id.cups.id)], context=context)
                 if gurb_cups_id:
                     gurb_cups = sgc_obj.browse(cursor, uid, gurb_cups_id[0], context=context)
-                    gurb_cups.send_signal(['button_coming_cancellation'])
+                    gurb_cups.send_signal(['button_confirm_atr'])
             else:
                 search_params = [("sw_id", "=", sw.id), ("solicitud_autoconsum", "=", "S")]
                 step_m101_auto = step_m101_obj.search(cursor, uid, search_params, context=context)
