@@ -66,32 +66,179 @@ class GiscedataServeiGeneracioPolissa(osv.osv):
     _name = "giscedata.servei.generacio.polissa"
     _inherit = "giscedata.servei.generacio.polissa"
 
-    def ff_get_state(self, cursor, uid, ids, name, arg, context=None):  # noqa: C901
+    def _get_te_auvidi_category(self, cursor, uid, servei_gen_id, polissa, context=None):
         if context is None:
             context = {}
 
         imd = self.pool.get('ir.model.data')
-        polissa_obj = self.pool.get('giscedata.polissa')
-        modcon_obj = self.pool.get('giscedata.polissa.modcontractual')
-        swi_obj = self.pool.get('giscedata.switching')
-        m1_obj = self.pool.get('giscedata.switching.m1.01')
         polissa_category_obj = self.pool.get('giscedata.polissa.category')
-        servei_gen_pol_obj = self.pool.get('giscedata.servei.generacio.polissa')
-
-        res = {}
-        today = datetime.today().strftime("%Y-%m-%d")
-        read_params = ['data_sortida', 'data_inici', 'data_incorporacio', 'cups_name',
-                       'servei_generacio_id', 'polissa_id', 'nif']
-
-        # Categories GURB
-        not_allowed_pol_category_ids = polissa_category_obj.search(
-            cursor, 1, [('code', 'ilike', 'GURB')])
 
         # Categories AUVIDI
         auvidi_base_categ_id = imd.get_object_reference(
             cursor, uid, 'som_auvidi', 'polissa_category_auvidi_base')[1]
         auvidi_category_ids = polissa_category_obj.search(
             cursor, 1, [('parent_id', '=', auvidi_base_categ_id)])
+
+        # Te categoria AUVIDI
+        te_auvidi_category = bool(len([
+            cat.id for cat in polissa.category_id if cat.id in auvidi_category_ids
+        ]))
+
+        return te_auvidi_category
+
+    def _get_compleix_condicions(self, cursor, uid, servei_gen_id, polissa, context=None):
+        if context is None:
+            context = {}
+
+        polissa_obj = self.pool.get('giscedata.polissa')
+        polissa_category_obj = self.pool.get('giscedata.polissa.category')
+        servei_gen_pol_obj = self.pool.get('giscedata.servei.generacio.polissa')
+
+        # Categories GURB
+        not_allowed_pol_category_ids = polissa_category_obj.search(
+            cursor, 1, [('code', 'ilike', 'GURB')])
+
+        # Te autoconsum col.lectiu
+        te_auto_collectiu = polissa_obj.te_autoconsum(
+            cursor, uid, polissa.id, amb_o_sense_excedents=5, context=context)
+
+        # Participació en altres AUVIDIs
+        altres_auvidis = servei_gen_pol_obj.search(cursor, uid, [
+            ('polissa_id', '=', polissa.id),
+            ('servei_generacio_id', '!=', servei_gen_id)
+        ])
+
+        # Categories coincidents que no es permeten
+        matching_category_ids = [
+            cat.id for cat in polissa.category_id if cat.id in not_allowed_pol_category_ids
+        ]
+
+        # TODO validar generationkwh
+        te_generationkwh = polissa.te_assignacio_gkwh
+
+        # La llista de preus és Empresa
+        llista_preus = polissa.llista_preu
+        te_llista_preus_empresa = (llista_preus
+                                   and (llista_preus.indexed_formula == 'Indexada ESMASA'
+                                        or 'Empresa' in llista_preus.name))
+
+        # Condicions especifiques
+        compleix_condicions = (not len(altres_auvidis)
+                               and not len(matching_category_ids)
+                               and not te_auto_collectiu
+                               and not te_generationkwh
+                               and not te_llista_preus_empresa
+                               and polissa.mode_facturacio == 'index')
+
+        return compleix_condicions
+
+    def _get_compleix_extra_condicions(self, cursor, uid, servei_gen_id, polissa, context=None):
+        if context is None:
+            context = {}
+
+        modcon_obj = self.pool.get('giscedata.polissa.modcontractual')
+        swi_obj = self.pool.get('giscedata.switching')
+        m1_obj = self.pool.get('giscedata.switching.m1.01')
+
+        te_modi_pendent_canvi_mode_facturacio = False
+        modcons_pendents = modcon_obj.search(cursor, uid, [
+            ('polissa_id', '=', polissa.id),
+            ('state', '=', 'pendent')
+        ])
+        if len(modcons_pendents):
+            for modcon_pendent in modcons_pendents:
+                modcon = modcon_obj.browse(cursor, uid, modcon_pendent)
+                if modcon.mode_facturacio != modcon.modcontractual_ant.mode_facturacio:
+                    te_modi_pendent_canvi_mode_facturacio = True
+
+        sw_ids = swi_obj.search(cursor, uid, [
+            ('cups_polissa_id', '=', polissa.id),
+            ('state', 'in', ['open', 'draft']),
+        ])
+
+        m1s_canvi_autoconsum_collectiu = m1_obj.search(cursor, uid, [
+            ('header_id.sw_id', 'in', sw_ids),
+            ('sollicitudadm', 'in', ['N', 'A']),
+            ('tipus_autoconsum', 'in', NOT_ALLOWED_COLLECTIVES)
+        ])
+
+        m1s_canvi_titular = m1_obj.search(cursor, uid, [
+            ('header_id.sw_id', 'in', sw_ids),
+            ('sollicitudadm', 'in', ['S', 'A']),
+            ('canvi_titular', 'in', ['S', 'T'])
+        ])
+
+        te_m1_canvi_auto_collectiu = bool(len(m1s_canvi_autoconsum_collectiu))
+        te_m1_canvi_titular = bool(len(m1s_canvi_titular))
+
+        compleix_extra_condicions = (
+                not te_modi_pendent_canvi_mode_facturacio
+                and not te_m1_canvi_auto_collectiu
+                and not te_m1_canvi_titular
+        )
+
+        return compleix_extra_condicions
+
+    def check_permet_modificar_data_inici(self, cursor, uid, sg_polissa_id, data_activacio,
+                                          context=None):
+        if context is None:
+            context = {}
+        polissa_obj = self.pool.get('giscedata.polissa')
+
+        read_params = ['cups_name', 'servei_generacio_id', 'polissa_id', 'nif']
+        sg_info = self.read(cursor, uid, sg_polissa_id, read_params, context=context)
+
+        if not sg_info.get('polissa_id'):
+            return False
+
+        ctx = context.copy()
+        ctx.update({'prefetch': False})
+        polissa_id = sg_info.get('polissa_id')[0]
+        polissa = polissa_obj.browse(cursor, uid, polissa_id, context=ctx)
+
+        today = datetime.today().strftime("%Y-%m-%d")
+        actiu_today = data_activacio and data_activacio <= today
+
+        servei_gen_id = False
+        if sg_info.get('servei_generacio_id'):
+            servei_gen_id = sg_info.get('servei_generacio_id')[0]
+
+        # Condicions categories
+        te_auvidi_category = self._get_te_auvidi_category(
+            cursor, uid, servei_gen_id, polissa, context=context
+        )
+
+        # Condicions especifiques
+        compleix_condicions = self._get_compleix_condicions(
+            cursor, uid, servei_gen_id, polissa, context=context
+        )
+
+        # Condicions extra confirmat
+        compleix_extra_condicions = self._get_compleix_extra_condicions(
+            cursor, uid, servei_gen_id, polissa, context=context
+        )
+
+        # Let's check VAT is the correct one
+        te_nif = sg_info.get('nif') and sg_info['nif']
+        if (not te_nif or (te_nif and polissa.titular.vat not in sg_info['nif']
+                           and sg_info['nif'] not in polissa.titular.vat)):
+            return False
+
+        if (compleix_condicions and te_auvidi_category
+                and actiu_today and compleix_extra_condicions):
+            return True
+        return False
+
+    def ff_get_state(self, cursor, uid, ids, name, arg, context=None):  # noqa: C901
+        if context is None:
+            context = {}
+
+        polissa_obj = self.pool.get('giscedata.polissa')
+
+        res = {}
+        today = datetime.today().strftime("%Y-%m-%d")
+        read_params = ['data_sortida', 'data_inici', 'data_incorporacio', 'cups_name',
+                       'servei_generacio_id', 'polissa_id', 'nif']
 
         for sg_info in self.read(cursor, uid, ids, read_params, context=context):
             servei_gen_id = sg_info['servei_generacio_id'][0]
@@ -106,7 +253,7 @@ class GiscedataServeiGeneracioPolissa(osv.osv):
                     try:
                         db = pooler.get_db(cursor.dbname)
                         tmp_cursor = db.cursor()
-                        servei_gen_pol_obj.write(
+                        self.write(
                             tmp_cursor, uid, sg_info['id'], {'polissa_id': tmp_polissa_id}
                         )
                         tmp_cursor.commit()
@@ -115,8 +262,6 @@ class GiscedataServeiGeneracioPolissa(osv.osv):
                         pass
                     finally:
                         tmp_cursor.close()
-            ctx = context.copy()
-            ctx.update({'prefetch': False})
 
             # Te data_inici i aquesta és anterior o igual a avui
             actiu_today = sg_info.get('data_inici') and sg_info['data_inici'] <= today
@@ -157,81 +302,24 @@ class GiscedataServeiGeneracioPolissa(osv.osv):
                 continue
             else:
                 polissa_id = polissa_id[0]
+
+            ctx = context.copy()
+            ctx.update({'prefetch': False})
             polissa = polissa_obj.browse(cursor, uid, polissa_id, context=ctx)
 
-            # Te autoconsum col.lectiu
-            te_auto_collectiu = polissa_obj.te_autoconsum(
-                cursor, uid, polissa_id, amb_o_sense_excedents=5, context=context)
-
-            # Participació en altres AUVIDIs
-            altres_auvidis = servei_gen_pol_obj.search(cursor, uid, [
-                ('polissa_id', '=', polissa_id),
-                ('servei_generacio_id', '!=', servei_gen_id)
-            ])
-
-            # Categories coincidents que no es permeten
-            matching_category_ids = [
-                cat.id for cat in polissa.category_id if cat.id in not_allowed_pol_category_ids
-            ]
-
-            # Te categoria AUVIDI
-            te_auvidi_category = bool(len([
-                cat.id for cat in polissa.category_id if cat.id in auvidi_category_ids
-            ]))
-
-            # TODO validar generationkwh
-            te_generationkwh = polissa.te_assignacio_gkwh
-
-            # La llista de preus és Empresa
-            llista_preus = polissa.llista_preu
-            te_llista_preus_empresa = (llista_preus
-                                       and (llista_preus.indexed_formula == 'Indexada ESMASA'
-                                            or 'Empresa' in llista_preus.name))
+            # Condicions categories
+            te_auvidi_category = self._get_te_auvidi_category(
+                cursor, uid, servei_gen_id, polissa, context=context
+            )
 
             # Condicions especifiques
-            compleix_condicions = (not len(altres_auvidis)
-                                   and not len(matching_category_ids)
-                                   and not te_auto_collectiu
-                                   and not te_generationkwh
-                                   and not te_llista_preus_empresa
-                                   and polissa.mode_facturacio == 'index')
+            compleix_condicions = self._get_compleix_condicions(
+                cursor, uid, servei_gen_id, polissa, context=context
+            )
 
             # Condicions extra confirmat
-            te_modi_pendent_canvi_mode_facturacio = False
-            modcons_pendents = modcon_obj.search(cursor, uid, [
-                ('polissa_id', '=', polissa_id),
-                ('state', '=', 'pendent')
-            ])
-            if len(modcons_pendents):
-                for modcon_pendent in modcons_pendents:
-                    modcon = modcon_obj.browse(cursor, uid, modcon_pendent)
-                    if modcon.mode_facturacio != modcon.modcontractual_ant.mode_facturacio:
-                        te_modi_pendent_canvi_mode_facturacio = True
-
-            sw_ids = swi_obj.search(cursor, uid, [
-                ('cups_polissa_id', '=', polissa_id),
-                ('state', 'in', ['open', 'draft']),
-            ])
-
-            m1s_canvi_autoconsum_collectiu = m1_obj.search(cursor, uid, [
-                ('header_id.sw_id', 'in', sw_ids),
-                ('sollicitudadm', 'in', ['N', 'A']),
-                ('tipus_autoconsum', 'in', NOT_ALLOWED_COLLECTIVES)
-            ])
-
-            m1s_canvi_titular = m1_obj.search(cursor, uid, [
-                ('header_id.sw_id', 'in', sw_ids),
-                ('sollicitudadm', 'in', ['S', 'A']),
-                ('canvi_titular', 'in', ['S', 'T'])
-            ])
-
-            te_m1_canvi_auto_collectiu = bool(len(m1s_canvi_autoconsum_collectiu))
-            te_m1_canvi_titular = bool(len(m1s_canvi_titular))
-
-            compleix_extra_condicions = (
-                not te_modi_pendent_canvi_mode_facturacio
-                and not te_m1_canvi_auto_collectiu
-                and not te_m1_canvi_titular
+            compleix_extra_condicions = self._get_compleix_extra_condicions(
+                cursor, uid, servei_gen_id, polissa, context=context
             )
 
             # Let's check VAT is the correct one
