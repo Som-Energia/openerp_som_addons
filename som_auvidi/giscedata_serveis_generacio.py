@@ -172,9 +172,9 @@ class GiscedataServeiGeneracioPolissa(osv.osv):
         te_m1_canvi_titular = bool(len(m1s_canvi_titular))
 
         compleix_extra_condicions = (
-                not te_modi_pendent_canvi_mode_facturacio
-                and not te_m1_canvi_auto_collectiu
-                and not te_m1_canvi_titular
+            not te_modi_pendent_canvi_mode_facturacio
+            and not te_m1_canvi_auto_collectiu
+            and not te_m1_canvi_titular
         )
 
         return compleix_extra_condicions
