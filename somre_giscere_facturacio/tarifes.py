@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import
-from libfacturacioatr.pool.generation import Representa, pd, REEcurve, Codsvbaj, Component, Codsvsub
+from libfacturacioatr.pool.generation import (Representa, pd, REEcurve, REEcurveQH,
+                                              Codsvbaj, Codsvbaqh, Component, ComponentQH, Codsvsub, Codsvsuqh)
 
 
 class RepresentaSom(Representa):
@@ -29,6 +30,8 @@ class RepresentaSom(Representa):
 
     # Desviaments
     def factura_desviaments(self):
+        is_isp15 = self.conf.get('ISP15', False)
+
         desv_instalacio = self.corbes.get('desviament_instalacio', [])
         desv_sistema_per_hora = self.corbes.get('desviaments_sistema_per_hora', [])  # unitat oferta
 
@@ -86,10 +89,18 @@ class RepresentaSom(Representa):
         )
 
         esios_token = self.conf['esios_token']
-        desvio_bajar = REEcurve('Codsvbaj', self.data_inici, self.data_final, esios_token)  # €/MWh
-        desvio_subir = REEcurve('Codsvsub', self.data_inici, self.data_final, esios_token)  # €/MWh
-        desvio_bajar_curve = desvio_bajar.get_curve()
-        desvio_subir_curve = desvio_subir.get_curve()
+
+        if is_isp15:
+            desvio_bajar = REEcurveQH('Codsvbaqh', self.data_inici, self.data_final, esios_token)  # €/MWh
+            desvio_subir = REEcurveQH('Codsvsuqh', self.data_inici, self.data_final, esios_token)  # €/MWh
+            desvio_bajar_curve = desvio_bajar.get_curve()
+            desvio_subir_curve = desvio_subir.get_curve()
+        else:
+            desvio_bajar = REEcurve('Codsvbaj', self.data_inici, self.data_final, esios_token)  # €/MWh
+            desvio_subir = REEcurve('Codsvsub', self.data_inici, self.data_final, esios_token)  # €/MWh
+            desvio_bajar_curve = desvio_bajar.get_curve()
+            desvio_subir_curve = desvio_subir.get_curve()
+
         desvio_bajar_df = pd.DataFrame(data=desvio_bajar_curve)
         canvi_noms_columnes = {
             'value': 'preu_desvio_bajar',
@@ -199,30 +210,52 @@ class RepresentaSom(Representa):
         # Preus DSV
         postfix = ('%s_%s' % (self.data_inici.strftime(
             "%Y%m%d"), self.data_final.strftime("%Y%m%d")))
-        csdvbaj = Codsvbaj('C2_codsvbaj_%(postfix)s' % locals(), esios_token)  # [€/MWh]
-        csdvsub = Codsvsub('C2_codsvsub_%(postfix)s' % locals(), esios_token)  # [€/MWh]
+        if is_isp15:
+            csdvbaj = Codsvbaqh('C2_codsvbaqh_%(postfix)s' % locals(), esios_token)  # [€/MWh]
+            csdvsub = Codsvsuqh('C2_codsvsuqh_%(postfix)s' % locals(), esios_token)  # [€/MWh]
+        else:
+            csdvbaj = Codsvbaj('C2_codsvbaj_%(postfix)s' % locals(), esios_token)  # [€/MWh]
+            csdvsub = Codsvsub('C2_codsvsub_%(postfix)s' % locals(), esios_token)  # [€/MWh]
 
         # DSV REP (Brut)
         if len(desv_instalacions_actual):
             desvios_cils = desviaments_instalacions_actual_df.to_dict('records')
             desvios_cils = sorted(desvios_cils, key=lambda d: d['timestamp'])
-            desvio_bruto_subir = self.get_component_from_dict_list(desvios_cils, self.data_inici,
-                                                                   magn='desviament_subir_instalacions_actual')  # noqa: E501
-            desvio_bruto_bajar = self.get_component_from_dict_list(desvios_cils, self.data_inici,
-                                                                   magn='desviament_bajar_instalacions_actual')  # noqa: E501
+            if is_isp15:
+                desvio_bruto_subir = self.get_componentQH_from_dict_list(desvios_cils, self.data_inici,
+                                                                         magn='desviament_subir_instalacions_actual')  # noqa: E501
+                desvio_bruto_bajar = self.get_componentQH_from_dict_list(desvios_cils, self.data_inici,
+                                                                         magn='desviament_bajar_instalacions_actual')  # noqa: E501
+            else:
+                desvio_bruto_subir = self.get_component_from_dict_list(desvios_cils, self.data_inici,
+                                                                       magn='desviament_subir_instalacions_actual')  # noqa: E501
+                desvio_bruto_bajar = self.get_component_from_dict_list(desvios_cils, self.data_inici,
+                                                                       magn='desviament_bajar_instalacions_actual')  # noqa: E501
         else:
-            desvio_bruto_subir = Component(self.data_inici)
-            desvio_bruto_bajar = Component(self.data_inici)
+            if is_isp15:
+                desvio_bruto_subir = ComponentQH(self.data_inici)
+                desvio_bruto_bajar = ComponentQH(self.data_inici)
+            else:
+                desvio_bruto_subir = Component(self.data_inici)
+                desvio_bruto_bajar = Component(self.data_inici)
 
         # DSV REP (Net)
         desvio_rep_list = desviaments_representacio_net_df.to_dict('records')
-        desvio_rep = self.get_component_from_dict_list(
-            desvio_rep_list, self.data_inici, magn='value_rep_net')
+        if is_isp15:
+            desvio_rep = self.get_componentQH_from_dict_list(
+                desvio_rep_list, self.data_inici, magn='value_rep_net')
+        else:
+            desvio_rep = self.get_component_from_dict_list(
+                desvio_rep_list, self.data_inici, magn='value_rep_net')
 
         # DSV COM (Net)
         desvio_com_list = desviaments_comercialitzadora_net_df.to_dict('records')
-        desvio_com = self.get_component_from_dict_list(
-            desvio_com_list, self.data_inici, magn='value_com_net')
+        if is_isp15:
+            desvio_com = self.get_componentQH_from_dict_list(
+                desvio_com_list, self.data_inici, magn='value_com_net')
+        else:
+            desvio_com = self.get_component_from_dict_list(
+                desvio_com_list, self.data_inici, magn='value_com_net')
 
         audit_keys = self.get_available_audit_coefs_desvios()
         for key in self.conf.get('audit', []):
@@ -241,6 +274,8 @@ class RepresentaSom(Representa):
 
     # Banda Secundària
     def factura_banda_secundaria(self):
+        is_isp15 = self.conf.get('ISP15', False)
+
         desv_instalacio = self.corbes.get('desviament_instalacio', [])
         desv_sistema_per_hora = self.corbes.get('desviaments_sistema_per_hora', [])  # unitat oferta
         bs3_curve = self.corbes.get('bs3', [])
@@ -374,11 +409,18 @@ class RepresentaSom(Representa):
             self.calc_preu_banda_secundaria_apantallat, axis=1
         )
 
-        bs3 = Component(self.data_inici)
-        if len(bs3_curve):
-            bs3_curve = sorted(bs3_curve, key=lambda d: d['timestamp'])
-            bs3 = self.get_component_from_dict_list(
-                bs3_curve, self.data_inici, version=bs3_version, magn='precio')
+        if is_isp15:
+            bs3 = ComponentQH(self.data_inici)
+            if len(bs3_curve):
+                bs3_curve = sorted(bs3_curve, key=lambda d: d['timestamp'])
+                bs3 = self.get_componentQH_from_dict_list(
+                    bs3_curve, self.data_inici, version=bs3_version, magn='precio')
+        else:
+            bs3 = Component(self.data_inici)
+            if len(bs3_curve):
+                bs3_curve = sorted(bs3_curve, key=lambda d: d['timestamp'])
+                bs3 = self.get_component_from_dict_list(
+                    bs3_curve, self.data_inici, version=bs3_version, magn='precio')
 
         audit_keys = self.get_available_audit_coefs_banda_secundaria()
         for key in self.conf.get('audit', []):
@@ -397,6 +439,8 @@ class RepresentaSom(Representa):
 
     # SRAD
     def factura_rad3(self):
+        is_isp15 = self.conf.get('ISP15', False)
+
         desv_instalacio = self.corbes.get('desviament_instalacio', [])
         desv_sistema_per_hora = self.corbes.get('desviaments_sistema_per_hora', [])  # unitat oferta
         rad3_curve = self.corbes.get('rad3', [])
@@ -526,11 +570,20 @@ class RepresentaSom(Representa):
         postfix = ('%s_%s' % (self.data_inici.strftime(
             "%Y%m%d"), self.data_final.strftime("%Y%m%d")))
 
-        rad3 = Component(self.data_inici)
-        if len(rad3_curve):
-            rad3_curve = sorted(rad3_curve, key=lambda d: d['timestamp'])
-            rad3 = self.get_component_from_dict_list(rad3_curve, self.data_inici, version=rad3_version,  # noqa: E501
-                                                     magn='precio')
+        if is_isp15:
+            rad3 = ComponentQH(self.data_inici)
+            if len(rad3_curve):
+                rad3_curve = sorted(rad3_curve, key=lambda d: d['timestamp'])
+                rad3 = self.get_componentQH_from_dict_list(rad3_curve, self.data_inici, version=rad3_version,
+                                                           # noqa: E501
+                                                           magn='precio')
+        else:
+            rad3 = Component(self.data_inici)
+            if len(rad3_curve):
+                rad3_curve = sorted(rad3_curve, key=lambda d: d['timestamp'])
+                rad3 = self.get_component_from_dict_list(rad3_curve, self.data_inici, version=rad3_version,
+                                                         # noqa: E501
+                                                         magn='precio')
 
         audit_keys = self.get_available_audit_coefs_srad3()
         for key in self.conf.get('audit', []):

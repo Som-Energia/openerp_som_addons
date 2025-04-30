@@ -3,7 +3,7 @@
     "name": "SOM Telemesura",
     "description": """
     """,
-    "version": "0-dev",
+    "version": "24.5.0",
     "author": "GISCE-TI",
     "category": "",
     "depends": ["giscedata_telemesura"],

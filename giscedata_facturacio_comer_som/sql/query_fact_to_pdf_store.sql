@@ -16,3 +16,4 @@ WHERE
     AND a.datas_fname = ('STORED_' || i."number" || '.pdf')
   ) IS NULL
 ORDER BY i.date_invoice
+LIMIT 250 -- ~2h, to avoid saturating the crons night

@@ -1180,8 +1180,8 @@ class GiscedataFacturacioFacturaReport(osv.osv):
                 key=lambda l: l[0],  # noqa: E741
             ),
             "is_autoconsum": te_autoconsum(fact, pol),  # fact.te_autoconsum
-            "autoconsum": pol.autoconsumo,
-            "autoconsum_cau": pol.autoconsum_id.cau if pol.autoconsum_id else "",
+            "autoconsum": pol.tipus_subseccio,
+            "autoconsum_cau": pol.autoconsum_id.cau if pol.autoconsum_id and pol.tipus_subseccio != '00' else "",  # noqa: E501
             "is_autoconsum_colectiu": te_autoconsum_collectiu(
                 fact, pol
             ),  # fact.te_autoconsum and fact.polissa_id.autoconsum_id
@@ -1218,7 +1218,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
             u"6.4TD": 6,
         }
 
-        if len(pol.autoconsum_cups_ids) == 0:
+        if data["autoconsum"] == '00' or len(pol.autoconsum_cups_ids) == 0:
             data["autoconsum_caus"] = [data["autoconsum_cau"]]
         else:
             data["autoconsum_caus"] = []
@@ -1538,8 +1538,13 @@ class GiscedataFacturacioFacturaReport(osv.osv):
         }
 
         labels = {
-            "es_ES": {"P1": "Pu", "P2": "Ll", "P3": "Va"},
-            "ca_ES": {"P1": "Pu", "P2": "Pl", "P3": "Va"},
+            "es_ES": {"P1": "Punta", "P2": "Llano", "P3": "Valle"},
+            "ca_ES": {"P1": "Punta", "P2": "Pla", "P3": "Vall"},
+        }
+
+        average_text = {
+            "es_ES": "Media",
+            "ca_ES": "Mitjana",
         }
 
         (historic, historic_js) = self.get_historic_data(fact)
@@ -1604,6 +1609,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
             "show_mean_zipcode_consumption": show_mean_zipcode_consumption,
             "zipcode": fact.cups_id.dp,
             "mean_zipcode_consumption": mean_zipcode_consumption,
+            "average_text": average_text[fact.lang_partner],
         }
 
         return data
@@ -3206,6 +3212,8 @@ class GiscedataFacturacioFacturaReport(osv.osv):
                 items["total"] = excess_lines["total"]
                 items["date_from"] = excess_lines["date_from"]
                 items["date_to"] = excess_lines["date_to"]
+                items["pre_2025_04_01"] = datetime.strptime(
+                    excess_lines["date_to"], "%d/%m/%Y") < datetime(2025, 04, 1)
                 items["iva"] = excess_lines["iva"]
             excess_data.append(items)
         data = {
@@ -3266,28 +3274,32 @@ class GiscedataFacturacioFacturaReport(osv.osv):
         return data
 
     def get_sub_component_invoice_details_td_bo_social_2023_data(self, fact, pol):
-        days = 0.0
-        price_per_day = 0.0
-        subtotal = 0.0
         visible = False
-        iva = ""
-
+        rbs_price_per_days = {}
+        rbs_lines = []
         for l in fact.linia_ids:  # noqa: E741
             if l.tipus in "altres" and l.invoice_line_id.product_id.code == "RBS":
-                days += l.quantity
-                price_per_day = l.price_unit
-                subtotal += l.price_subtotal
-                iva = get_iva_line(l)
+                if l.price_unit not in rbs_price_per_days:
+                    line = {
+                        "days": l.quantity,
+                        "price_per_day": l.price_unit,
+                        "subtotal": l.price_subtotal,
+                        "iva": get_iva_line(l),
+                    }
+                    rbs_price_per_days[l.price_unit] = line
+                    rbs_lines.append(line)
+                else:
+                    line = rbs_price_per_days[l.price_unit]
+                    line["days"] += l.quantity
+                    line["subtotal"] += l.price_subtotal
                 visible = True
 
         data = {
             "is_visible": visible,
             "number_of_columns": len(self.get_matrix_show_periods(pol)) + 1,
-            "days": days,
-            "price_per_day": price_per_day,
-            "subtotal": subtotal,
             "iva_column": has_iva_column(fact),
-            "iva": iva,
+            "lines": rbs_lines,
+            "header_multi": len(rbs_lines),
         }
         return data
 
@@ -3410,7 +3422,11 @@ class GiscedataFacturacioFacturaReport(osv.osv):
         amount_total = fact.amount_total - flux_solar
 
         # Repartiment segons BOE
-        rep_BOE = {"r": 0.76, "d": 71.0, "t": 27.58, "o": 0.66}
+        conf_obj = fact.pool.get("res.config")
+
+        example_data_2023 = {"r": 0.76, "d": 71.0, "t": 27.58, "o": 0.66}
+        rep_BOE = conf_obj.get(self.cursor, self.uid, "rep_boe_data", example_data_2023)
+        rep_BOE = eval(rep_BOE)
 
         pie_total = round(amount_total, 2)
         pie_renting = round(fact.total_lloguers, 2)
@@ -3813,7 +3829,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
                     return True
             return False
 
-        if not(te_autoconsum_amb_excedents(fact, pol) or pol.autoconsumo == '33'):
+        if not(te_autoconsum_amb_excedents(fact, pol) or pol.tipus_subseccio == '11'):
             return {"is_visible": False}
 
         if not has_active_flux_solar(fact, pol):

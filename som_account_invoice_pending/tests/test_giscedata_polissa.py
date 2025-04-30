@@ -42,6 +42,7 @@ class TestGiscedataPolissa(testing.OOTestCase):
             cursor, uid, 'giscedata_facturacio_comer_bono_social',
             'bono_social_pending_state_process'
         )[1]
+        # Prepare data
         pol_obj.write(cursor, uid, pol_id, {'state': 'activa', 'process_id': process_id})
         pol = pol_obj.browse(cursor, uid, pol_id)
         consulta_state_id = imd_obj.get_object_reference(
@@ -53,8 +54,8 @@ class TestGiscedataPolissa(testing.OOTestCase):
         consulta_id = imd_obj.get_object_reference(
             cursor, uid, 'som_account_invoice_pending', 'som_consulta_pobresa_demo_record',
         )[1]
-        cons_obj.write(cursor, uid, consulta_id, {
-                       'state': 'done', 'date_closed': '2020-01-01 00:00:00'})
+        cons_obj.write(cursor, uid, consulta_id, {'state': 'done'})
+        cons_obj.write(cursor, uid, consulta_id, {'date_closed': '2020-01-01 00:00:00'})
         girona_id = imd_obj.get_object_reference(
             cursor, uid, 'l10n_ES_toponyms', 'ES17',
         )[1]
@@ -65,8 +66,9 @@ class TestGiscedataPolissa(testing.OOTestCase):
             'pending_state': consulta_state_id,
         })
         cups_obj.write(cursor, uid, pol.cups.id, {'id_provincia': girona_id})
+        # Test
         fact.set_pending(consulta_state_id)
-
+        # Assert
         pol = pol_obj.browse(cursor, uid, pol_id)
         self.assertTrue(pol.consulta_pobresa_pendent)
 

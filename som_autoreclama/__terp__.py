@@ -7,7 +7,7 @@
         * Model d'historització
         * Vistes associades
     """,
-    "version": "0-dev",
+    "version": "24.5.0",
     "author": "SOM ENERGIA",
     "category": "SomEnergia",
     "depends": [

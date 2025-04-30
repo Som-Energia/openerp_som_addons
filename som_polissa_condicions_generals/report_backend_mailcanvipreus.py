@@ -311,7 +311,7 @@ class ReportBackendMailcanvipreus(ReportBackend):
         if context is None:
             context = {}
 
-        context['iva10'] = env.polissa_id.potencia <= 10
+        # context['iva10'] = env.polissa_id.potencia <= 10
 
         impostos_str, impostos_value = self.getImpostos(env.polissa_id.fiscal_position_id, context)
 
@@ -339,6 +339,8 @@ class ReportBackendMailcanvipreus(ReportBackend):
             cursor, uid, env.polissa_id, with_taxes=True, context=context_preus_nous
         )
 
+        gurb = self.has_gurb(cursor, uid, env.polissa_id, context)
+
         canaries = self.esCanaries(cursor, uid, env, context=context)
         balears = self.esBalears(cursor, uid, env, context=context)
 
@@ -359,6 +361,7 @@ class ReportBackendMailcanvipreus(ReportBackend):
             "preus_nous": preus_nous,
             "preus_antics_imp": preus_antics_imp,
             "preus_nous_imp": preus_nous_imp,
+            "gurb": gurb,
 
             "impostos_str": impostos_str,
             "modcon": (
@@ -369,7 +372,7 @@ class ReportBackendMailcanvipreus(ReportBackend):
             ),
             'autoconsum': {
                 'es_autoconsum': env.polissa_id.es_autoconsum,
-                'compensacio': env.polissa_id.autoconsum_id.tipus_autoconsum in ['41', '42', '43']
+                'compensacio': env.polissa_id.tipus_subseccio in ['21']
             },
         }
 
@@ -598,7 +601,8 @@ class ReportBackendMailcanvipreus(ReportBackend):
                 and polissa_id.modcontractuals_ids[0].mode_facturacio == 'atr'):
             ctx["force_pricelist"] = polissa_id.modcontractuals_ids[0].llista_preu.id
         # maj_price = 0  # €/kWh
-        bo_social_price = 2.299047
+        # bo_social_price = 2.299047  # 2024
+        bo_social_price = 4.650987  # 2025
         types = {"tp": potencies or {}, "te": consums or {}}
         imports = 0
         for terme, values in types.items():
@@ -671,9 +675,9 @@ class ReportBackendMailcanvipreus(ReportBackend):
         iva = 0.1 if context and context.get('iva10') else 0.21
         impost_electric = 0.05112696
         if fiscal_position:
-            if fiscal_position.id in [33, 47, 56, 52, 61, 38, 21, 19]:
+            if fiscal_position.id in [33, 47, 56, 52, 61, 38, 21, 19, 87, 89, 94]:
                 iva = 0.03
-            if fiscal_position.id in [34, 48, 53, 57, 53, 62, 39, 25]:
+            if fiscal_position.id in [34, 48, 53, 57, 53, 62, 39, 25, 88, 90]:
                 iva = 0.0
         preu_imp = round(preu * (1 + impost_electric), 2)
         return round(preu_imp * (1 + iva))
@@ -682,16 +686,23 @@ class ReportBackendMailcanvipreus(ReportBackend):
         imp_str = "IVA del 10%" if context and context.get('iva10') else "IVA del 21%"
         imp_value = 21
         if fiscal_position:
-            if fiscal_position.id in [33, 47, 56, 52, 61, 38, 21, 19]:
+            if fiscal_position.id in [33, 47, 56, 52, 61, 38, 21, 19, 87, 89, 94]:
                 imp_str = "IGIC del 3%"
                 imp_value = 3
-            if fiscal_position.id in [34, 48, 53, 57, 53, 62, 39, 25]:
+            if fiscal_position.id in [34, 48, 53, 57, 53, 62, 39, 25, 88, 90]:
                 imp_str = "IGIC del 0%"
                 imp_value = 0
         return imp_str, float(imp_value)
 
+    def has_gurb(self, cursor, uid, polissa, context=False):
+        gurb_cups_obj = self.pool.get("som.gurb.cups")
+
+        gurb_cups_id = gurb_cups_obj.search(cursor, uid, [("cups_id", "=", polissa.cups.id)])
+
+        return gurb_cups_id
+
     def getEstimacioData(self, cursor, uid, env, context=False):
-        PRICE_CHANGE_DATE = "2024-11-01"
+        PRICE_CHANGE_DATE = "2025-06-01"
 
         potencies = self.getPotenciesPolissa(cursor, uid, env.polissa_id)
 

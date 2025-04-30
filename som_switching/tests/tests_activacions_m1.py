@@ -31,7 +31,7 @@ class TestActivacioM1(TestSwitchingImport):
         # create step 01
         self.change_polissa_comer(txn)
         self.update_polissa_distri(txn)
-        self.activar_polissa_CUPS(txn, context)
+        self.activar_polissa_CUPS(txn, context=context)
         step_id = self.create_case_and_step(cursor, uid, contract_id, "M1", "01")
 
         pt_obj = self.openerp.pool.get("payment.type")

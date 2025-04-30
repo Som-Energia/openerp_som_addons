@@ -15,7 +15,7 @@ class SomCrawlersConfig(osv.osv):
         ),
         "usuari": fields.char(
             "Usuari del portal",
-            size=20,
+            size=100,
             unique=True,
             help="Usuari del portal web o servidor FTP/SFTP",
         ),

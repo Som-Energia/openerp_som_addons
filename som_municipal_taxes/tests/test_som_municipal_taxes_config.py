@@ -41,7 +41,12 @@ class TestSomMunicipalTaxesConfig(testing.OOTestCaseWithCursor):
             'trimestre': 1,
         }
 
-        result = config_o.generate_municipal_taxes_file_path(
+        file_path = config_o.generate_municipal_taxes_file_path(
             self.cursor, self.uid, [], municipal_id, context)
 
-        self.assertEqual(result, '/tmp/municipal_taxes_1.xlsx')
+        # check if the file path is correct
+        self.assertEqual(file_path, '/tmp/municipal_taxes_1.xlsx')
+        # check if the file is not empty
+        with open(file_path, 'rb') as f:
+            content = f.read()
+            self.assertTrue(content)
