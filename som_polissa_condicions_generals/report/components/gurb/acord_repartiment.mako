@@ -6,7 +6,7 @@
         <h2 style="font-size: 14px;">Annex I</h2>
     </div>
     <div id="titol">
-        <h2 style="font-size: 14px;">Acord de repartiment d'energia en autoconsum col·lectiu amb excedents i compensació </h2>
+        <h2 style="font-size: 14px;"><a href="https://www.somenergia.coop/GURB/231123_GURB_REPARTIMENT_EACS_CAU_UNIC_CAT.pdf">Acord de repartiment d'energia en autoconsum col·lectiu amb excedents i compensació</a></h2>
     </div>
 </%def>
 
@@ -18,6 +18,6 @@
         <h2 style="font-size: 14px;">Annex I</h2>
     </div>
     <div id="titol">
-        <h2 style="font-size: 14px;">Acorde de reparto de energía en autoconsumo colectivo con excedentes y compensación </h2>
+        <h2 style="font-size: 14px;"><a href="https://www.somenergia.coop/GURB/231123_GURB_REPARTIMENT_EACS_CAU_UNIC_CAT.pdf">Acorde de reparto de energía en autoconsumo colectivo con excedentes y compensación</a></h2>
     </div>
 </%def>
