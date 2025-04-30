@@ -66,7 +66,7 @@ class GiscedataServeiGeneracioPolissa(osv.osv):
     _name = "giscedata.servei.generacio.polissa"
     _inherit = "giscedata.servei.generacio.polissa"
 
-    def ff_get_state(self, cursor, uid, ids, name, arg, context=None):
+    def ff_get_state(self, cursor, uid, ids, name, arg, context=None):  # noqa: C901
         if context is None:
             context = {}
 
@@ -111,7 +111,7 @@ class GiscedataServeiGeneracioPolissa(osv.osv):
                         )
                         tmp_cursor.commit()
                         polissa_id = [tmp_polissa_id]
-                    except:
+                    except Exception:
                         pass
                     finally:
                         tmp_cursor.close()
