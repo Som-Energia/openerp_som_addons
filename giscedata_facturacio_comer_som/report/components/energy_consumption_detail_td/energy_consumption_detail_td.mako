@@ -35,7 +35,7 @@
         <table id="energy_consumption_detail_td">
             <tr>
                 <th class="concepte_td">${_(u"Tipus")}</th>
-                <th class="detall_td">${_(u"Detall de lectures")}</th>
+                <th class="detall_td"></th>
                 % if len(coll.showing_periods) == 3:
                     <th class="periods_td">${_(u"Punta")}</th>
                     <th class="periods_td">${_(u"Pla")}</th>
