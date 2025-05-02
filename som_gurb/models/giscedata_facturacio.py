@@ -18,11 +18,15 @@ class GiscedataFacturacioServices(osv.osv):
 
         gurb_cups_beta_o = self.pool.get("som.gurb.cups.beta")
         imd_o = self.pool.get("ir.model.data")
+
         gurb_product_id = imd_o.get_object_reference(
             cursor, uid, "som_gurb", "product_gurb"
         )[1]
         owner_product_id = imd_o.get_object_reference(
             cursor, uid, "som_gurb", "product_owner_gurb"
+        )[1]
+        enterprise_product_id = imd_o.get_object_reference(
+            cursor, uid, "som_gurb", "product_enterprise_gurb"
         )[1]
 
         for vals in super(GiscedataFacturacioServices, self)._get_vals_linia(
@@ -31,6 +35,7 @@ class GiscedataFacturacioServices(osv.osv):
             if (
                 gurb_product_id == vals.get("product_id", False)
                 or owner_product_id == vals.get("product_id", False)
+                or enterprise_product_id == vals.get("product_id", False)
             ):
                 line_start_date = _str_to_date(vals["data_desde"])
                 line_end_date = _str_to_date(vals["data_fins"])
