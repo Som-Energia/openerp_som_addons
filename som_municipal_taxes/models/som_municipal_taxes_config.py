@@ -47,8 +47,11 @@ class SomMunicipalTaxesConfig(osv.osv):
             polissa_categ_imu_ex_id, False, invoiced_states, format_2025=True,
             context=context
         )
-        _, _, _, _, _, totals = taxes_invoicing_report.build_dataframe_taxes_detallat(
-            [municipi_id], context)
+        try:
+            _, _, _, _, _, totals = taxes_invoicing_report.build_dataframe_taxes_detallat(
+                [municipi_id], context)
+        except ValueError:
+            totals = None
         if not totals:
             return False
 

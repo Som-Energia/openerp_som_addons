@@ -7,6 +7,7 @@ import netsvc
 from dateutil.relativedelta import relativedelta
 from giscedata_municipal_taxes.taxes.municipal_taxes_invoicing import MunicipalTaxesInvoicingReport
 from som_municipal_taxes.models.som_municipal_taxes_config import TAX_VALUE
+import pandas as pd
 
 logging.basicConfig(stream=sys.stdout, level=logging.INFO)
 logger = logging.getLogger("wizard.importador.leads.comercials")
@@ -125,8 +126,11 @@ class WizardCreacioRemesaPagamentTaxes(osv.osv_memory):
             polissa_categ_imu_ex_id, False, invoiced_states, format_2025=True,
             context=context
         )
-        _, df_gr, _, _, _, _ = taxes_invoicing_report.build_dataframe_taxes_detallat(
-            res_municipi_ids, context)
+        try:
+            _, df_gr, _, _, _, _ = taxes_invoicing_report.build_dataframe_taxes_detallat(
+                res_municipi_ids, context)
+        except ValueError:
+            df_gr = pd.DataFrame()
 
         return df_gr
 
