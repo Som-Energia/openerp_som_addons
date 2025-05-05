@@ -16,6 +16,9 @@
         'res_municipi_dir3',
         'som_crawlers',
         'account_invoice_som',
+        'l10n_ES_aeat_mod347',
+        'giscedata_informes_comptables',
+        'l10n_ES_aeat_sii',
     ],
     'init_xml': [],
     'update_xml': [

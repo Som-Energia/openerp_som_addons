@@ -44,7 +44,7 @@ class SomMunicipalTaxesConfig(osv.osv):
             'giscedata.facturacio.extra').get_states_invoiced(cr, uid)
         taxes_invoicing_report = MunicipalTaxesInvoicingReport(
             cr, uid, start_date, end_date, TAX_VALUE, "xlsx.db", 'tri', False,
-            polissa_categ_imu_ex_id, False, invoiced_states,
+            polissa_categ_imu_ex_id, False, invoiced_states, format_2025=True,
             context=context
         )
         _, _, _, _, _, totals = taxes_invoicing_report.build_dataframe_taxes_detallat(

@@ -122,7 +122,7 @@ class WizardCreacioRemesaPagamentTaxes(osv.osv_memory):
             'giscedata.facturacio.extra').get_states_invoiced(cursor, uid)
         taxes_invoicing_report = MunicipalTaxesInvoicingReport(
             cursor, uid, start_date, end_date, TAX_VALUE, False, 'tri', False,
-            polissa_categ_imu_ex_id, False, invoiced_states,
+            polissa_categ_imu_ex_id, False, invoiced_states, format_2025=True,
             context=context
         )
         _, df_gr, _, _, _, _ = taxes_invoicing_report.build_dataframe_taxes_detallat(
@@ -155,7 +155,6 @@ class WizardCreacioRemesaPagamentTaxes(osv.osv_memory):
             city_name = idx[0]
             city_ine = idx[1]
             quarter_name = idx[3]
-            municipi_id = mun_obj.search(cursor, uid, [('ine', '=', city_ine)])[0]
             origin_name = '{}/{}{}'.format(city_ine, year, quarter_name)
             if invoice_obj.search(cursor, uid, [('origin', '=', origin_name)]):
                 linia_ja_creada.append(city_name)
