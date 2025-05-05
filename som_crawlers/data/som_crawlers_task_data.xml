@@ -383,6 +383,11 @@
             <field name="active">True</field>
             <field name="configuracio_id" ref="constancia_conf"/>
         </record>
+        <record model="som.crawlers.task" id="descargar_constancia_f1">
+            <field name="name">Descarregar La Constancia Arén F1</field>
+            <field name="active">True</field>
+            <field name="configuracio_id" ref="constancia_conf"/>
+        </record>
         <!--Conquense-->
         <record model="som.crawlers.task" id="descargar_conquense_a1">
             <field name="name">Descarregar Conquense A1</field>
