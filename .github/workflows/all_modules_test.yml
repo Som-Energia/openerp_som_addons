@@ -38,4 +38,5 @@ jobs:
     with:
       module: ${{matrix.module}}
       erpbranch: rolling_erp01
+      all_modules: true
     secrets: inherit
