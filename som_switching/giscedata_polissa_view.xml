@@ -11,6 +11,8 @@
                 <field name="lectura_en_baja" position="after" >
                     <field name="data_alta_autoconsum"/>
                     <field name="data_baixa_autoconsum"/>
+                </field>
+                <field name="llista_preu" position="after" >
                     <field name="tipus_subseccio"/>
                     <field name="is_autoconsum_collectiu"/>
                 </field>
