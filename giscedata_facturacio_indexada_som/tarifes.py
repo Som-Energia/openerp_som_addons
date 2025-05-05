@@ -84,18 +84,9 @@ class TarifaPoolSOM(TarifaPool):
 
         if self.phf_function == 'phf_calc_auvi':
             # only if 'phf_calc_auvi' formula is used
-            res['dsv'] = 'dsv'
-            res['gdos'] = 'gdos'
-            res['prdemcad'] = 'prdemcad'
-            res['csdvbaj'] = 'csdvbaj'
-            res['csdvsub'] = 'csdvsub'
-            res['pc3_boe'] = 'pc3_boe'
-            res['peatges'] = 'pa'
-            res['fe'] = 'fe'
-            res['rad3'] = 'rad3'
-            res['bs3'] = 'bs3'
-            res['factor_dsv'] = 'factor_dsv'
-            res['phm'] = 'phm'
+            res = {}
+            res['curve_auvi'] = 'H'
+            res['ph_auvi'] = 'G'
             res['pauvi'] = 'pauvi'
 
         return res
@@ -1009,7 +1000,7 @@ class TarifaPoolSOM(TarifaPool):
 
         A = ((pauvi + phm) * 0.001)
         B = (pc3_boe + (prdemcad + dsv + gdos + omie) * 0.001)
-        C = A + B * (1 + perdues)
+        C = A + B * (1 + perdues * 0.01)
         D = (fe * 0.001) + f
         E = C + D
         F = E * (1 + (imu * 0.01))
