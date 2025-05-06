@@ -12,9 +12,9 @@ def up(cursor, installed_version):
     model_data_o = pool.get("ir.model.data")
     journal_o = pool.get("account.journal")
 
-    jounral_ids = journal_o.search(cursor, 1, [("object", "=", "res.partner")])
-    if len(jounral_ids) == 1:
-        jounral_id = jounral_ids[0]
+    journal_ids = journal_o.search(cursor, 1, [("code", "=", "SOCIS")])
+    if len(journal_ids) == 1:
+        journal_id = journal_ids[0]
         today = datetime.today().strftime("%Y-%m-%d")
 
         model_data_vals = {
@@ -22,7 +22,7 @@ def up(cursor, installed_version):
             "name": "member_fee_journal",
             "module": "som_leads_polissa",
             "model": "account.journal",
-            "res_id": jounral_id,
+            "res_id": journal_id,
             "date_init": today,
             "date_update": today,
         }
