@@ -1,6 +1,17 @@
 <?xml version="1.0" ?>
 <openerp>
     <data>
+        <record id="giscedata_crm_leads_signature_view_som" model="ir.ui.view">
+            <field name="name">giscedata.crm.lead.form</field>
+            <field name="model">giscedata.crm.lead</field>
+            <field name="type">form</field>
+            <field name="inherit_id" ref="giscedata_crm_leads_signatura.giscedata_crm_leads_view_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='data_firma']" position="after">
+                    <field name="signature_template_id" colspan="8" select="1"/>
+                </xpath>
+            </field>
+        </record>
         <record id="giscedata_crm_leads_som_view" model="ir.ui.view">
             <field name="name">giscedata.crm.lead.som</field>
             <field name="model">giscedata.crm.lead</field>
