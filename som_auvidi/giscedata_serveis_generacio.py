@@ -288,12 +288,14 @@ class GiscedataServeiGeneracioPolissa(osv.osv):
                     sg_posteriors_data = self.read(
                         cursor, uid, sg_posteriors_id[0], read_params, context=context
                     )
-                    data_anterior = (datetime.strptime(
-                        sg_posteriors_data['data_incorporacio'], "%Y-%m-%d"
-                    ) - timedelta(days=1)).strftime("%Y-%m-%d")
-                    # Si la data anterior a l'incorporació del nou és la sortida de l'anterior,
-                    # és modificació
-                    if data_anterior == sg_info['data_sortida']:
+                    data_anterior = (
+                        datetime.strptime(sg_posteriors_data['data_incorporacio'], "%Y-%m-%d") -
+                        timedelta(days=1)
+                    ).strftime("%Y-%m-%d")
+                    # Si la data anterior a l'incorporació del nou és la sortida de l'anterior pel
+                    # mateix CUPS i mateix titular, és modificació (segurament de percentatge)
+                    if (data_anterior == sg_info['data_sortida'] and
+                            sg_info['nif'] == sg_posteriors_data['nif']):
                         new_state = 'modificat'
 
             # Si no hi ha pòlissa o el sg_polissa ja ha sortit no cal que seguim mirant
