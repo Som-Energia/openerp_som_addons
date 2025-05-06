@@ -6,6 +6,7 @@ from destral.transaction import Transaction
 from destral.patch import PatchNewCursors
 from oopgrade import oopgrade
 from tools import config
+from osv import osv
 
 
 class TestsSomLeadWww(testing.OOTestCase):
@@ -66,7 +67,7 @@ class TestsSomLeadWww(testing.OOTestCase):
                 "tariff": "2.0TD",
                 "powers": ["4400", "8000"],
                 "cnae": "9820",
-                "process": "C1",  # TODO: It comes from webforms?
+                "process": "C1",
                 "cups_address": {
                     "state_id": 20,
                     "city_id": 5386,
@@ -82,7 +83,6 @@ class TestsSomLeadWww(testing.OOTestCase):
             "iban": "ES7712341234161234567890",
             "member_payment_type": "tpv",
             "donation": False,
-            "supply_point_accepted": True,  # TODO: It comes from webforms?
             "general_contract_terms_accepted": True,
             "particular_contract_terms_accepted": True,
             "sepa_conditions": True,
@@ -781,7 +781,7 @@ class TestsSomLeadWww(testing.OOTestCase):
         values["linked_member"] = "already_member"
         values["linked_member_info"] = {
             "vat": vat,
-            "code": member.partner_id.ref,
+            "code": member.partner_id.ref.replace("S", ""),
         }
 
         result = www_lead_o.create_lead(self.cursor, self.uid, values)
@@ -813,7 +813,7 @@ class TestsSomLeadWww(testing.OOTestCase):
         values["contract_owner"] = values.pop("new_member_info")
         values["linked_member_info"] = {
             "vat": vat,
-            "code": member.partner_id.ref,
+            "code": member.partner_id.ref.replace("S", ""),
         }
 
         result = www_lead_o.create_lead(self.cursor, self.uid, values)
@@ -829,3 +829,34 @@ class TestsSomLeadWww(testing.OOTestCase):
         self.assertNotEqual(lead.polissa_id.titular.ref, lead.member_number)
         self.assertEqual(lead.polissa_id.soci.id, member.partner_id.id)
         self.assertNotEqual(lead.polissa_id.soci, lead.polissa_id.titular)
+
+    def test_bad_linked_member_fails(self):
+        www_lead_o = self.get_model("som.lead.www")
+
+        values = self._basic_values
+        values["linked_member"] = "Nye he he he he"
+
+        with self.assertRaises(osv.except_osv):
+            www_lead_o.create_lead(self.cursor, self.uid, values)
+
+    def test_bad_member_vat_number_data_fails(self):
+        www_lead_o = self.get_model("som.lead.www")
+        member_o = self.get_model("somenergia.soci")
+        ir_model_o = self.get_model("ir.model.data")
+
+        member_id = ir_model_o.get_object_reference(
+            self.cursor, self.uid, "som_polissa_soci", "soci_0001"
+        )[1]
+        member = member_o.browse(self.cursor, self.uid, member_id)
+        vat = member.partner_id.vat.replace("ES", "")
+
+        values = self._basic_values
+        del values["new_member_info"]
+        values["linked_member"] = "already_member"
+        values["linked_member_info"] = {
+            "vat": vat,
+            "code": "S000042",  # Just a random different code
+        }
+
+        with self.assertRaises(osv.except_osv):
+            www_lead_o.create_lead(self.cursor, self.uid, values)

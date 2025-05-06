@@ -45,20 +45,29 @@ class SomLeadWww(osv.osv_memory):
         distri_ref = cups_ps_o.partner_map_from_cups(
             cr, uid, contract_info["cups"], context=context)
 
-        # TODO check linked_member_info is correct (vat and number)
+        member_type = www_vals["linked_member"]
 
-        if www_vals["linked_member"] == "new_member":
+        if member_type == "new_member":
             member = www_vals["new_member_info"]
-        elif www_vals["linked_member"] == "sponsored":
-            member = www_vals["contract_owner"]
-            member["number"] = www_vals["linked_member_info"]["code"]
-            context["sponsored_titular"] = True
-        else:  # existing_member TODO: elif + fail if is different?
-            member = {
-                "number": www_vals["linked_member_info"]["code"],
-                "vat": www_vals["linked_member_info"]["vat"],
-                "address": {},
-            }
+        elif member_type in ["sponsored", "already_member"]:
+            self._check_member_vat_number_matching(
+                cr, uid, www_vals["linked_member_info"]["vat"],
+                www_vals["linked_member_info"]["code"], context=context
+            )
+            if member_type == "sponsored":
+                member = www_vals["contract_owner"]
+                context["sponsored_titular"] = True
+            else:
+                member = {
+                    "vat": www_vals["linked_member_info"]["vat"],
+                    "address": {},
+                }
+            member["number"] = "S" + www_vals["linked_member_info"]["code"]
+        else:
+            raise osv.except_osv(
+                "Error",
+                "linked_member value not valid: %s" % member_type
+            )
 
         values = {
             "state": "open",
@@ -79,7 +88,7 @@ class SomLeadWww(osv.osv_memory):
             "data_alta_prevista": datetime.today().strftime('%Y-%m-%d'),
             "tarifa": tarifa_id,
             "facturacio_potencia": 'max' if contract_info["tariff"] == '3.0TD' else 'icp',
-            "tensio_normalitzada": tensio_230,  # TODO check if always work
+            "tensio_normalitzada": tensio_230,
             "atr_proces_name": contract_info['process'],
             "change_adm": contract_info['process'] == 'C2',
             "contract_type": self._CONTRACT_TYPE_ANUAL,
@@ -88,7 +97,7 @@ class SomLeadWww(osv.osv_memory):
             "iban": www_vals["iban"],
             "payment_mode_id": payment_mode_id,
             "enviament": "email",
-            "create_new_member": www_vals["linked_member"] == "new_member",
+            "create_new_member": member_type == "new_member",
             "autoconsumo": "00",  # Without self-consumption by default
             "member_number": member.get("number"),
             "titular_vat": 'ES%s' % member["vat"].upper(),
@@ -255,6 +264,26 @@ class SomLeadWww(osv.osv_memory):
             )
 
         return error
+
+    def _check_member_vat_number_matching(self, cr, uid, vat, number, context=None):
+        if context is None:
+            context = {}
+
+        member_o = self.pool.get("somenergia.soci")
+
+        member_www_soci = None
+        vat = 'ES%s' % vat.upper()
+
+        member_id = member_o.search(cr, uid, [('vat', '=', vat)])
+        if member_id:
+            member_www_soci = member_o.read(cr, uid, member_id[0], ['www_soci'])['www_soci']
+
+        member_found = member_id and member_www_soci == number
+        if not member_found:
+            raise osv.except_osv(
+                "INVALID_MEMBER",
+                "Member has been not found: {} not match with VAT {}".format(number, vat)
+            )
 
 
 SomLeadWww()
