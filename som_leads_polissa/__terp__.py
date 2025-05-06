@@ -19,6 +19,7 @@
         "l10n_ES_aeat_sii",
         "l10n_ES_aeat_mod347",
         "account_account_som",
+        "som_partner_account",
     ],
     "init_xml": [],
     "demo_xml": [
