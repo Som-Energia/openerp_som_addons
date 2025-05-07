@@ -48,6 +48,8 @@ class SomLeadWww(osv.osv_memory):
         member_type = www_vals["linked_member"]
 
         if member_type == "new_member":
+            self._check_partner_vat_dont_exists(
+                cr, uid, www_vals["new_member_info"]["vat"], context=context)
             member = www_vals["new_member_info"]
         elif member_type in ["sponsored", "already_member"]:
             self._check_member_vat_number_matching(
@@ -264,6 +266,21 @@ class SomLeadWww(osv.osv_memory):
             )
 
         return error
+
+    def _check_partner_vat_dont_exists(self, cr, uid, vat, context=None):
+        if context is None:
+            context = {}
+
+        partner_o = self.pool.get("res.partner")
+
+        vat = 'ES%s' % vat.upper()
+
+        partner_id = partner_o.search(cr, uid, [('vat', '=', vat)])
+        if partner_id:
+            raise osv.except_osv(
+                "INVALID_VAT",
+                "An existing partner ({}) vas found with VAT {}".format(partner_id, vat)
+            )
 
     def _check_member_vat_number_matching(self, cr, uid, vat, number, context=None):
         if context is None:
