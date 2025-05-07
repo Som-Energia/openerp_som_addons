@@ -3832,8 +3832,8 @@ class GiscedataFacturacioFacturaReport(osv.osv):
 
         for linia in linies:
             data[linia.name][linia.tipus] = linia.quantity
-            data["initial_date"] = linia.data_desde
-            data["final_date"] = linia.data_fins
+            data["initial_date"] = dateformat(linia.data_desde)
+            data["final_date"] = dateformat(linia.data_fins)
 
         return data
 

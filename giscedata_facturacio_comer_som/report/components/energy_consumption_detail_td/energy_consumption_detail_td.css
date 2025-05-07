@@ -29,6 +29,7 @@
 
 #energy_consumption_detail_td .periods_td{
     text-align: center;
+    width: 70px;
 }
 
 .last_row {
