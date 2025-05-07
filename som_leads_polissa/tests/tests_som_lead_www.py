@@ -68,6 +68,7 @@ class TestsSomLeadWww(testing.OOTestCase):
                 "powers": ["4400", "8000"],
                 "cnae": "9820",
                 "process": "C1",
+                "cups_cadastral_reference": "9872023VH5797S0001WX",
                 "cups_address": {
                     "state_id": 20,
                     "city_id": 5386,
@@ -150,6 +151,9 @@ class TestsSomLeadWww(testing.OOTestCase):
             lead.polissa_id.direccio_notificacio.street,
             "Carrer Falsa, 123 BLQ. B ESC. A 5 C"
         )
+
+        # Check the catastral reference
+        self.assertEqual(lead.polissa_id.cups.ref_catastral, "9872023VH5797S0001WX")
 
     def test_create_simple_domestic_lead_indexada(self):
         www_lead_o = self.get_model("som.lead.www")

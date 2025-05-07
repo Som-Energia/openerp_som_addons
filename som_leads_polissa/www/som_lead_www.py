@@ -77,7 +77,7 @@ class SomLeadWww(osv.osv_memory):
             "lang": member.get("lang"),
             "cups": contract_info["cups"],
             "codigoEmpresaDistribuidora": distri_ref,
-            # "cups_ref_catastral": www_vals.get("cups_cadastral_reference"), TODO test
+            "cups_ref_catastral": contract_info.get("cups_cadastral_reference"),
             "cups_zip": contract_address["postal_code"],
             "cups_id_municipi": contract_address["city_id"],
             "cups_nv": contract_address["street"],
