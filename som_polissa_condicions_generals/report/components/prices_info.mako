@@ -136,7 +136,7 @@
                     %else:
                         %if len(polissa['periodes_energia']) < 6:
                             %for p in polissa['periodes_energia']:
-                                %if polissa['pricelist'] and not polissa['lead']:
+                                %if polissa['pricelist'] and not prices['dict_preus_tp_energia']:
                                     <td class="center">
                                         <span class="">${formatLang(pricelist['energy_prices_untaxed'][p], digits=6)}</span>
                                     </td>
@@ -155,7 +155,7 @@
                         %endif
                         <% first_column = True %>
                         %for p in polissa['periodes_energia']:
-                            %if polissa['pricelist'] and not polissa['lead']:
+                            %if polissa['pricelist'] and not prices['dict_preus_tp_energia']:
                                 %if polissa['tarifa'] == "2.0TD":
                                     %if first_column:
                                         <td class="center divisio_impostos">
@@ -329,7 +329,7 @@
                             </td>
                         %else:
                             %for p in polissa['periodes_energia']:
-                                %if polissa['pricelist'] and not polissa['lead']:
+                                %if polissa['pricelist'] and not prices['dict_preus_tp_energia']:
                                     <td class="center">
                                         <span class="">${formatLang(pricelist['energy_prices'][p], digits=6)}</span>
                                     </td>
