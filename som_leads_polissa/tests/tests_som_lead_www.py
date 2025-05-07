@@ -694,7 +694,9 @@ class TestsSomLeadWww(testing.OOTestCase):
         self.assertEqual(lead.crm_id.state, 'done')
 
         # Test the error stage (cant have 2 leads on the same cups)
-        result = www_lead_o.create_lead(self.cursor, self.uid, self._basic_values)
+        values = self._basic_values
+        values["new_member_info"]["vat"] = "53247948G"
+        result = www_lead_o.create_lead(self.cursor, self.uid, values)
         lead = lead_o.browse(self.cursor, self.uid, result["lead_id"])
         self.assertTrue(result["error"])
         self.assertEqual(lead.crm_id.state, 'pending')
@@ -857,6 +859,23 @@ class TestsSomLeadWww(testing.OOTestCase):
             "vat": vat,
             "code": "S000042",  # Just a random different code
         }
+
+        with self.assertRaises(osv.except_osv):
+            www_lead_o.create_lead(self.cursor, self.uid, values)
+
+    def test_existing_new_member_vat_fails(self):
+        www_lead_o = self.get_model("som.lead.www")
+        member_o = self.get_model("somenergia.soci")
+        ir_model_o = self.get_model("ir.model.data")
+
+        member_id = ir_model_o.get_object_reference(
+            self.cursor, self.uid, "som_polissa_soci", "soci_0001"
+        )[1]
+        member = member_o.browse(self.cursor, self.uid, member_id)
+        vat = member.partner_id.vat.replace("ES", "")
+
+        values = self._basic_values
+        values["new_member_info"]["vat"] = vat
 
         with self.assertRaises(osv.except_osv):
             www_lead_o.create_lead(self.cursor, self.uid, values)
