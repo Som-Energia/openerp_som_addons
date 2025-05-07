@@ -134,7 +134,6 @@ class SomLeadWww(osv.osv_memory):
             cr, uid, "som_leads_polissa", "webform_section"
         )[1]
 
-        # TODO: test this with existing member
         if member.get("is_juridic"):
             values["persona_firmant_vat"] = member["proxy_vat"]
             values["persona_nom"] = member["proxy_name"]
