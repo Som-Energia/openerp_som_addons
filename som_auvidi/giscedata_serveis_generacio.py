@@ -336,6 +336,15 @@ class GiscedataServeiGeneracioPolissa(osv.osv):
 
             # Let's check VAT is the correct one
             te_nif = sg_info.get('nif') and sg_info['nif']
+            te_posteriors_altre_nif = False
+            if te_nif:
+                posteriors_altre_nif_ids = self.search(cursor, uid, [
+                    ('servei_generacio_id', '=', sg_info['servei_generacio_id'][0]),
+                    ('cups_name', '=', sg_info['cups_name']),
+                    ('nif', '!=', te_nif),
+                    ('data_incorporacio', '>', sg_info['data_incorporacio'])
+                ])
+                te_posteriors_altre_nif = bool(posteriors_altre_nif_ids)
             if (not te_nif or (te_nif and polissa.titular.vat not in sg_info['nif']
                                and sg_info['nif'] not in polissa.titular.vat)):
                 new_state = 'pendent_incidencia'
@@ -347,7 +356,7 @@ class GiscedataServeiGeneracioPolissa(osv.osv):
                     if te_auvidi_category:
                         new_state = 'anullat'
                 elif polissa.state == 'esborrany':
-                    if compleix_condicions:
+                    if compleix_condicions and not te_posteriors_altre_nif:
                         new_state = 'pendent'
                     else:
                         new_state = 'pendent_incidencia'
@@ -357,7 +366,7 @@ class GiscedataServeiGeneracioPolissa(osv.osv):
                         new_state = 'confirmat'
                     elif te_auvidi_category and actiu_today:
                         new_state = 'confirmat_incidencia'
-                    elif compleix_condicions:
+                    elif compleix_condicions and not te_posteriors_altre_nif:
                         new_state = 'pendent'
                     else:
                         new_state = 'pendent_incidencia'
