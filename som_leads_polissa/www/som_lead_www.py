@@ -203,6 +203,8 @@ class SomLeadWww(osv.osv_memory):
         lead_o.historize_msg(cr, uid, [lead_id], msg, context=context)
         lead_o.stage_next(cr, uid, [lead_id], context=context)
 
+        return True
+
     def _create_attachments(self, cr, uid, lead_id, attachments, context=None):
         if context is None:
             context = {}
