@@ -156,11 +156,21 @@ class GiscedataServeiGeneracioPolissa(osv.osv):
             ('state', 'in', ['open', 'draft']),
         ])
 
-        m1s_canvi_autoconsum_collectiu = m1_obj.search(cursor, uid, [
+        # Old ATR 2.X cases
+        m1s_canvi_auto_collectiu_old = m1_obj.search(cursor, uid, [
             ('header_id.sw_id', 'in', sw_ids),
             ('sollicitudadm', 'in', ['N', 'A']),
             ('tipus_autoconsum', 'in', NOT_ALLOWED_COLLECTIVES)
         ])
+
+        # New ATR 3.0 cases
+        m1s_canvi_auto_collectiu_new = m1_obj.search(cursor, uid, [
+            ('header_id.sw_id', 'in', sw_ids),
+            ('sollicitudadm', 'in', ['N', 'A']),
+            ('header_id.dades_cau.collectiu', '=', True),
+        ])
+
+        m1s_canvi_autoconsum_collectiu = m1s_canvi_auto_collectiu_old + m1s_canvi_auto_collectiu_new
 
         m1s_canvi_titular = m1_obj.search(cursor, uid, [
             ('header_id.sw_id', 'in', sw_ids),
