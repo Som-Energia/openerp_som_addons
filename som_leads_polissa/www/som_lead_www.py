@@ -64,7 +64,9 @@ class SomLeadWww(osv.osv_memory):
                     "vat": www_vals["linked_member_info"]["vat"],
                     "address": {},
                 }
-            member["number"] = "S" + www_vals["linked_member_info"]["code"]
+
+            # Complying with the format seq_som_partner_seq format
+            member["number"] = "S" + www_vals["linked_member_info"]["code"].zfill(6)
         else:
             raise osv.except_osv(
                 "Error",
