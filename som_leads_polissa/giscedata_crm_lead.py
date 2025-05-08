@@ -73,16 +73,6 @@ class GiscedataCrmLead(osv.OsvInherits):
             cursor, uid, crml_id, mandatory_fields, other_fields, context
         )
 
-    def onchange_tipus_tarifa_lead(self, cursor, uid, ids, tipus_tarifa_lead):
-        res = {
-            "value": {"set_custom_potencia": False},
-            "domain": {},
-            "warning": {},
-        }
-        if tipus_tarifa_lead == "tarifa_provisional":
-            res["value"]["llista_preu"] = False
-        return res
-
     def create_entity_polissa(self, cursor, uid, crml_id, context=None):
         res = super(GiscedataCrmLead, self).create_entity_polissa(
             cursor, uid, crml_id, context=context
@@ -129,9 +119,7 @@ class GiscedataCrmLead(osv.OsvInherits):
             "domain": {},
             "warning": {},
         }
-        if set_custom_potencia == True:   # noqa: E712
-            res["value"]["llista_preu"] = False
-        else:
+        if not set_custom_potencia:
             res["value"]["preu_fix_potencia_p1"] = 0
             res["value"]["preu_fix_potencia_p2"] = 0
             res["value"]["preu_fix_potencia_p3"] = 0
@@ -349,7 +337,7 @@ class GiscedataCrmLead(osv.OsvInherits):
 
     _columns = {
         "tipus_tarifa_lead": fields.selection(_tipus_tarifes_lead, "Tipus de tarifa del contracte"),
-        "set_custom_potencia": fields.boolean("Personalitzar preus potència"),
+        "set_custom_potencia": fields.boolean("Sobreescriure preus potència"),
         "preu_fix_energia_p1": fields.float("Preu Fix Energia P1", digits=(16, 6)),
         "preu_fix_energia_p2": fields.float("Preu Fix Energia P2", digits=(16, 6)),
         "preu_fix_energia_p3": fields.float("Preu Fix Energia P3", digits=(16, 6)),
@@ -363,7 +351,7 @@ class GiscedataCrmLead(osv.OsvInherits):
         "preu_fix_potencia_p5": fields.float("Preu Fix Potència P5", digits=(16, 6)),
         "preu_fix_potencia_p6": fields.float("Preu Fix Potència P6", digits=(16, 6)),
         "member_number": fields.char('Número de sòcia', size=64),
-        "titular_number": fields.char('Número de titular', size=64),
+        "titular_number": fields.char('Número de titular (apadrinada)', size=64),
         "initial_invoice_id": fields.many2one("account.invoice", "Factura de remesa inicial"),
         "create_new_member": fields.boolean("Sòcia de nova creació"),
         "member_quota_payment_type": fields.selection(
