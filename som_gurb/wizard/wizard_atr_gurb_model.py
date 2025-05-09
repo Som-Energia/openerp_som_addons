@@ -8,9 +8,12 @@ class WizardATRGurbModel(osv.osv_memory):
     def list_all_pols(self, cursor, uid, ids, context=None):
         if context is None:
             context = {}
+        if not context.get('active_ids'):
+            return {}
 
+        active_ids = context.get("active_ids", [])
         gurb_cups_obj = self.pool.get('som.gurb.cups')
-        gurb_cups_ids = gurb_cups_obj.search(cursor, uid, [])
+        gurb_cups_ids = gurb_cups_obj.search(cursor, uid, [("gurb_id", "=", active_ids)])
 
         pol_list = []
         gurb_cups_list = gurb_cups_obj.browse(cursor, uid, gurb_cups_ids)

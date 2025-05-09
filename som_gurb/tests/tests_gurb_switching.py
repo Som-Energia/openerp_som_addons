@@ -910,3 +910,19 @@ class TestsGurbSwitching(TestsGurbBase):
 
         self.assertEqual(m1.state, "cancel")
         self.assertEqual(m1.notificacio_pendent, False)
+
+    def test_wizard_atr_gurb_model(self):
+        wiz_o = self.openerp.pool.get("wizard.atr.gurb.model")
+        context = {"active_ids": [1]}
+        wiz_id = wiz_o.create(self.cursor, self.uid, {}, context=context)
+        expected = {
+            'domain': [('cups_polissa_id', 'in', [1, 19])],
+            'name': 'Tots els casos ATR del GURB',
+            'view_type': 'form',
+            'view_mode': 'tree,form',
+            'res_model': 'giscedata.switching',
+            'type': 'ir.actions.act_window',
+            'view_id': False
+        }
+        res = wiz_o.list_all_pols(self.cursor, self.uid, [wiz_id], context=context)
+        self.assertEqual(res, expected)
