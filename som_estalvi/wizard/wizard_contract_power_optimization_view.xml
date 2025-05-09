@@ -32,7 +32,12 @@
                                 <field name="power_price_p5"/>
                                 <field name="power_price_p6"/>
                                 <separator string="Preu Exces de potència" colspan="4"/>
-                                <field name="excess_price"/>
+                                <field name="excess_price_p1"/>
+                                <field name="excess_price_p2"/>
+                                <field name="excess_price_p3"/>
+                                <field name="excess_price_p4"/>
+                                <field name="excess_price_p5"/>
+                                <field name="excess_price_p6"/>
                             </page>
                             <page string="Potencies maximetres">
                                <separator string="Nombre de mesos estimats" colspan="4"/>
