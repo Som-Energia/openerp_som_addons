@@ -22,7 +22,6 @@
     "init_xml": ["res_partner_data.xml"],
     "demo_xml": [
         "demo/res_partner_demo_data.xml",
-        "demo/som_polissa_soci_demo_data.xml",
     ],
     "update_xml": [
         "giscedata_polissa_view.xml",
