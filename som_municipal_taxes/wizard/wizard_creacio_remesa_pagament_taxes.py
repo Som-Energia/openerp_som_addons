@@ -7,6 +7,7 @@ import netsvc
 from dateutil.relativedelta import relativedelta
 from giscedata_municipal_taxes.taxes.municipal_taxes_invoicing import MunicipalTaxesInvoicingReport
 from som_municipal_taxes.models.som_municipal_taxes_config import TAX_VALUE
+import pandas as pd
 
 logging.basicConfig(stream=sys.stdout, level=logging.INFO)
 logger = logging.getLogger("wizard.importador.leads.comercials")
@@ -122,11 +123,14 @@ class WizardCreacioRemesaPagamentTaxes(osv.osv_memory):
             'giscedata.facturacio.extra').get_states_invoiced(cursor, uid)
         taxes_invoicing_report = MunicipalTaxesInvoicingReport(
             cursor, uid, start_date, end_date, TAX_VALUE, False, 'tri', False,
-            polissa_categ_imu_ex_id, False, invoiced_states,
+            polissa_categ_imu_ex_id, False, invoiced_states, format_2025=True,
             context=context
         )
-        _, df_gr, _, _, _, _ = taxes_invoicing_report.build_dataframe_taxes_detallat(
-            res_municipi_ids, context)
+        try:
+            _, df_gr, _, _, _, _ = taxes_invoicing_report.build_dataframe_taxes_detallat(
+                res_municipi_ids, context)
+        except ValueError:
+            df_gr = pd.DataFrame()
 
         return df_gr
 
@@ -155,7 +159,6 @@ class WizardCreacioRemesaPagamentTaxes(osv.osv_memory):
             city_name = idx[0]
             city_ine = idx[1]
             quarter_name = idx[3]
-            municipi_id = mun_obj.search(cursor, uid, [('ine', '=', city_ine)])[0]
             origin_name = '{}/{}{}'.format(city_ine, year, quarter_name)
             if invoice_obj.search(cursor, uid, [('origin', '=', origin_name)]):
                 linia_ja_creada.append(city_name)

@@ -1042,18 +1042,32 @@
         </record>
         <!--CONSTANCIA AREN-->
         <record model="som.crawlers.task.step" id="taskStep_constancia_download">
-            <field name="name">Descarregar fitxers</field>
+            <field name="name">Descarregar fitxers ATR</field>
             <field name="sequence">1</field>
             <field name="function">download_files</field>
             <field name="params">{"nom_fitxer":"script_run_crawler.py"}</field>
             <field name="task_id" ref="descargar_constancia"/>
         </record>
         <record model="som.crawlers.task.step" id="taskStep_constancia_import">
-            <field name="name">Importar fitxers XML</field>
+            <field name="name">Importar fitxers XML ATR</field>
             <field name="sequence">2</field>
             <field name="function">import_xml_files</field>
             <field name="params">{}</field>
             <field name="task_id" ref="descargar_constancia"/>
+        </record>
+        <record model="som.crawlers.task.step" id="taskStep_constancia_download_f1">
+            <field name="name">Descarregar fitxers F1</field>
+            <field name="sequence">1</field>
+            <field name="function">download_files</field>
+            <field name="params">{"nom_fitxer":"script_run_crawler.py", "process": "f1"}</field>
+            <field name="task_id" ref="descargar_constancia_f1"/>
+        </record>
+        <record model="som.crawlers.task.step" id="taskStep_constancia_import_f1">
+            <field name="name">Importar fitxers XML F1</field>
+            <field name="sequence">2</field>
+            <field name="function">import_xml_files</field>
+            <field name="params">{}</field>
+            <field name="task_id" ref="descargar_constancia_f1"/>
         </record>
         <!--Conquense-->
         <record model="som.crawlers.task.step" id="pas_descarregar_conquense_a1">

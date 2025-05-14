@@ -1,0 +1,176 @@
+flag_management:
+  default_rules:
+    carryforward: true
+
+  individual_flags:
+    - name: account_account_som
+      paths:
+        - account_account_som/
+    - name: account_invoice_som
+      paths:
+        - account_invoice_som/
+    - name: base_extended_som
+      paths:
+        - base_extended_som/
+    - name: dx_invoice_supplier_renumber
+      paths:
+        - dx_invoice_supplier_renumber/
+    - name: giscedata_facturacio_comer_som
+      paths:
+        - giscedata_facturacio_comer_som/
+    - name: giscedata_facturacio_iva_10_som
+      paths:
+        - giscedata_facturacio_iva_10_som/
+    - name: giscedata_facturacio_som
+      paths:
+        - giscedata_facturacio_som/
+    - name: report_tester
+      paths:
+        - report_tester/
+    - name: som_account_invoice_pending
+      paths:
+        - som_account_invoice_pending/
+    - name: som_assets
+      paths:
+        - som_assets/
+    - name: som_atc
+      paths:
+        - som_atc/
+    - name: som_autofactura
+      paths:
+        - som_autofactura/
+    - name: som_autoreclama
+      paths:
+        - som_autoreclama/
+    - name: som_auvidi
+      paths:
+        - som_auvidi/
+    - name: som_control_reports
+      paths:
+        - som_control_reports/
+    - name: som_crawlers
+      paths:
+        - som_crawlers/
+    - name: som_custom_views
+      paths:
+        - som_custom_views/
+    - name: som_documents_sensibles
+      paths:
+        - som_documents_sensibles/
+    - name: som_empowering
+      paths:
+        - som_empowering/
+    - name: som_energetica
+      paths:
+        - som_energetica/
+    - name: som_estalvi
+      paths:
+        - som_estalvi/
+    - name: som_extend_facturacio_comer
+      paths:
+        - som_extend_facturacio_comer/
+    - name: som_extend_facturacio_facturae
+      paths:
+        - som_extend_facturacio_facturae/
+    - name: som_facturacio_calculada
+      paths:
+        - som_facturacio_calculada/
+    - name: som_facturacio_comer
+      paths:
+        - som_facturacio_comer/
+    - name: som_facturacio_flux_solar
+      paths:
+        - som_facturacio_flux_solar/
+    - name: som_facturacio_switching
+      paths:
+        - som_facturacio_switching/
+    - name: som_factures_paper
+      paths:
+        - som_factures_paper/
+    - name: som_gurb
+      paths:
+        - som_gurb/
+    - name: som_indexada
+      paths:
+        - som_indexada/
+    - name: som_infoenergia
+      paths:
+        - som_infoenergia/
+    - name: som_informe
+      paths:
+        - som_informe/
+    - name: som_inversions
+      paths:
+        - som_inversions/
+    - name: som_l10n_ES_aeat_mod347
+      paths:
+        - som_l10n_ES_aeat_mod347/
+    - name: som_leads_polissa
+      paths:
+        - som_leads_polissa/
+    - name: som_municipal_taxes
+      paths:
+        - som_municipal_taxes/
+    - name: som_partner_account
+      paths:
+        - som_partner_account/
+    - name: som_partner_seq
+      paths:
+        - som_partner_seq/
+    - name: som_polissa
+      paths:
+        - som_polissa/
+    - name: som_polissa_administradora
+      paths:
+        - som_polissa_administradora/
+    - name: som_polissa_condicions_generals
+      paths:
+        - som_polissa_condicions_generals/
+    - name: som_polissa_soci
+      paths:
+        - som_polissa_soci/
+    - name: som_poweremail_common_templates
+      paths:
+        - som_poweremail_common_templates/
+    - name: somre_giscere_facturacio
+      paths:
+        - somre_giscere_facturacio/
+    - name: somre_giscere_oferta
+      paths:
+        - somre_giscere_oferta/
+    - name: som_remeses_base
+      paths:
+        - som_remeses_base/
+    - name: somre_ov_module
+      paths:
+        - somre_ov_module/
+    - name: som_stash
+      paths:
+        - som_stash/
+    - name: som_switching
+      paths:
+        - som_switching/
+    - name: som_telemesura
+      paths:
+        - som_telemesura/
+    - name: som_tg_comer_provider
+      paths:
+        - som_tg_comer_provider/
+    - name: som_webforms_helpers
+      paths:
+        - som_webforms_helpers/
+    - name: uiqmako_helpers
+      paths:
+        - uiqmako_helpers/
+    - name: www_som
+      paths:
+        - www_som/
+
+coverage:
+  status:
+    project:
+      default:
+        informational: true
+    patch:
+      default:
+        threshold: 1.0

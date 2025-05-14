@@ -15,6 +15,10 @@ on:
         required: false
         type: string
         default: rolling_erp01
+      all_modules:
+        required: false
+        type: string
+        default: 'false'
     secrets:
         ACCESS_TOKEN_GA:
             required: true
@@ -182,11 +186,18 @@ jobs:
           cd ${{github.workspace}}
           coverage xml
 
-      - name: Upload coverage reports to Codecov
+      - name: Upload coverage reports to Codecov of a module
         uses: codecov/codecov-action@v5
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           flags: ${{ inputs.module }}
+        if: ${{ inputs.all_modules == 'false' }}
+
+      - name: Upload coverage reports to Codecov all modules
+        uses: codecov/codecov-action@v5
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+        if: ${{ inputs.all_modules == 'true' }}
 
       - name: Coveralls
         env:
