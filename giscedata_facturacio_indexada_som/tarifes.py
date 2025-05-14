@@ -932,9 +932,13 @@ class TarifaPoolSOM(TarifaPool):
         esios_token = self.conf['esios_token']
         holidays = self.conf['holidays']
 
+        # Guardem la corba d'autoconsumida per l'adjunt
+        curve_autocons = curve
+
         # Curva cuarto-horaria
+        curve = self.get_coeficient_component(start_date, 1000)
+        curve.get_sub_component(curve_autocons.start_date.day, curve_autocons.end_date.day)
         curve_qh = curve.get_component_qh_divided()
-        curve = curve * 0.001
 
         # peajes
         pa = self.get_peaje_component(start_date, holidays)  # [€/kWh]
@@ -984,7 +988,7 @@ class TarifaPoolSOM(TarifaPool):
         # Let's transform them in ComponentsQH
         # First, which components must be divided by 4
         # (the rest will set same value on each quarter)
-        divided_var_names = []
+        divided_var_names = ['curve_autocons']
         excluded_var_names = ['curve']
 
         for key, var in locals().items():
