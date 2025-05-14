@@ -43,15 +43,15 @@ graph TD
     act_active_cups["active"]
     act_cancel["cancel"]
 
-    act_draft_cups -->|button_create_cups| act_comming_registration
-    act_draft_cups -->|button_undo_cups| act_cancel
-    act_comming_registration -->|button_activate_cups| act_active_cups
-    act_active_cups -->|button_pending_modification| act_comming_modification
-    act_comming_modification -->|button_activate_modification| act_active_cups
-    act_active_cups -->|button_coming_cancellation| act_comming_cancellation
-    act_comming_cancellation -->|button_cancel_cups| act_cancel
-    act_comming_cancellation -->|button_discard_comming_cancellation_cups| act_active_cups
-    act_cancel -->|button_reactivate_cups| act_comming_registration
-    act_active_cups -->|button_atr_pending| act_atr_pending
-    act_atr_pending -->|button_reject_atr| act_active_cups
-    act_atr_pending -->|button_confirm_atr| act_comming_cancellation
+    act_draft_cups -->|"button_create_cups (Botó Activa)"| act_comming_registration
+    act_draft_cups -->|"button_undo_cups (Botó Cancela)"| act_cancel
+    act_comming_registration -->|"button_activate_cups (Arriba un M1 05)"| act_active_cups
+    act_active_cups -->|"button_pending_modification (Botó Modifica beta)"| act_comming_modification
+    act_comming_modification -->|"button_activate_modification (Arriba un M1 05)"| act_active_cups
+    act_active_cups -->|"button_coming_cancellation (Arriba un Cx 06)"| act_comming_cancellation
+    act_comming_cancellation -->|"button_cancel_cups (sembla que no el crida ningú, funció cancel_gurb_cups)"| act_cancel
+    act_comming_cancellation -->|"button_discard_comming_cancellation_cups (Botó Desfer baixa pendent)"| act_active_cups
+    act_cancel -->|"button_reactivate_cups (Botó Reactiva)"| act_comming_registration
+    act_active_cups -->|"button_atr_pending (Creem un M1 01)"| act_atr_pending
+    act_atr_pending -->|"button_reject_atr (Arriba un M1 02 de rebuig)"| act_active_cups
+    act_atr_pending -->|"button_confirm_atr (Arriba un M1 02 SS o un M1 05 traspas)"| act_comming_cancellation
