@@ -146,9 +146,11 @@ class GiscedataSwitchingHelpers(osv.osv):
         elif pas01_info["canvi_titular"] == "S" and not use_new_contract:
             # si es subrogació sense nou contracte, mirem que el titular abans i
             # després de la data d'activació són diferents
-            m102_obj = self.pool.get("giscedata.switching.m1.02")
+            model_name = sw.get_pas_model_name()
+            # 'giscedata.switching.m1.02' or 'giscedata.switching.m1.05' expected
+            m10X_obj = self.pool.get(model_name)
 
-            data_activacio = m102_obj.read(cursor, uid, pas_actual.id, ["data_activacio"])[
+            data_activacio = m10X_obj.read(cursor, uid, pas_actual.id, ["data_activacio"])[
                 "data_activacio"
             ]
             data_activacio = datetime.strptime(data_activacio, "%Y-%m-%d")
