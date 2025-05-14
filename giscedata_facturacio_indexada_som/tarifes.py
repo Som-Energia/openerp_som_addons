@@ -85,7 +85,7 @@ class TarifaPoolSOM(TarifaPool):
         if self.phf_function == 'phf_calc_auvi':
             # only if 'phf_calc_auvi' formula is used
             res = {}
-            res['curve_auvi'] = 'H'
+            res['curve_auvi'] = 'curve_autocons'
             res['ph_auvi'] = 'G'
             res['pauvi'] = 'pauvi'
 
