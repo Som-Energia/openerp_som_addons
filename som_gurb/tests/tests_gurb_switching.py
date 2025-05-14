@@ -638,6 +638,7 @@ class TestsGurbSwitching(TestsGurbBase):
         Test that self-consumption M1"s are closed when
         contract does have GURB category
         """
+        sgc_obj = self.openerp.pool.get("som.gurb.cups")
         pol_obj = self.openerp.pool.get("giscedata.polissa")
         sw_obj = self.openerp.pool.get("giscedata.switching")
         step_obj = self.openerp.pool.get("giscedata.switching.m1.01")
@@ -668,7 +669,14 @@ class TestsGurbSwitching(TestsGurbBase):
         self.activar_polissa_CUPS(set_gurb_category=True, context={
                                   "polissa_xml_id": "polissa_tarifa_018"})
 
-        cups = pol_obj.browse(self.cursor, self.uid, contract_id).cups.name
+        cups = pol_obj.browse(self.cursor, self.uid, contract_id).cups
+
+        gurb_cups_0002_id = sgc_obj.search(
+            self.cursor, self.uid, [('cups_id', '=', cups.id)]
+        )[0]
+        gurb_cups_0002 = sgc_obj.browse(self.cursor, self.uid, gurb_cups_0002_id)
+        gurb_cups_0002.send_signal('button_create_cups')
+        gurb_cups_0002.send_signal('button_activate_cups')
 
         step_id = self.create_case_and_step(
             self.cursor, self.uid, contract_id, "M1", "01"
@@ -693,7 +701,7 @@ class TestsGurbSwitching(TestsGurbBase):
         )
         m1_02_xml = m1_02_xml.replace(
             "<CUPS>ES1234000000000001JN0F",
-            "<CUPS>{0}".format(cups)
+            "<CUPS>{0}".format(cups.name)
         )
 
         m1_05_xml = m1_05_xml.replace(
@@ -702,7 +710,7 @@ class TestsGurbSwitching(TestsGurbBase):
         )
         m1_05_xml = m1_05_xml.replace(
             "<CUPS>ES1234000000000001JN0F",
-            "<CUPS>{0}".format(cups)
+            "<CUPS>{0}".format(cups.name)
         )
 
         # Import XML
@@ -731,6 +739,12 @@ class TestsGurbSwitching(TestsGurbBase):
         self.assertEqual(m1.notificacio_pendent, False)
 
         self.assertEqual(pol.tipus_subseccio, "00")
+
+        gurb_cups_id = sgc_obj.search(
+            self.cursor, self.uid, [('cups_id', '=', m1.cups_polissa_id.cups.id)]
+        )[0]
+        gurb_cups = sgc_obj.browse(self.cursor, self.uid, gurb_cups_id)
+        self.assertEqual(gurb_cups.state, 'active')
 
     def test_notify_m1_03_gurb_category(self):
         pol_obj = self.openerp.pool.get("giscedata.polissa")
@@ -910,3 +924,415 @@ class TestsGurbSwitching(TestsGurbBase):
 
         self.assertEqual(m1.state, "cancel")
         self.assertEqual(m1.notificacio_pendent, False)
+
+    @mock.patch('som_gurb.models.giscedata_switching._contract_has_gurb_category')
+    @mock.patch('som_gurb.models.giscedata_switching.is_unidirectional_colective_autocons_change')
+    def test_create_from_xml_c1_06_cancel_gurb(
+            self, mock_is_unidirectional, mock_has_gurb_category):
+        mock_has_gurb_category.return_value = True
+        mock_is_unidirectional.return_value = False
+
+        sw_obj = self.openerp.pool.get('giscedata.switching')
+        sgc_obj = self.openerp.pool.get('som.gurb.cups')
+        self.openerp.pool.get('giscedata.switching.step.header')
+        self.openerp.pool.get('giscedata.switching.c1.06')
+        pol_obj = self.openerp.pool.get("giscedata.polissa")
+
+        # Preparar el sgc_obj
+        sgc_id = self.openerp.pool.get('ir.model.data').get_object_reference(
+            self.cursor, self.uid, 'som_gurb', 'gurb_cups_0002')[1]
+
+        sgc_0002 = sgc_obj.browse(self.cursor, self.uid, sgc_id)
+        sgc_0002.send_signal('button_create_cups')
+        sgc_0002.send_signal('button_activate_cups')
+
+        c1_06_xml_path = get_module_resource(
+            "giscedata_switching", "tests", "fixtures", "c106_new.xml"
+        )
+        with open(c1_06_xml_path, "r") as f:
+            c1_06_xml = f.read()
+
+        self.switch(self.txn, "comer")
+        contract_id = self.get_contract_id(self.txn, xml_id='polissa_tarifa_018')
+        self.change_polissa_comer(self.txn, pol_id='polissa_tarifa_018')
+        cups = pol_obj.browse(self.cursor, self.uid, contract_id).cups
+
+        # Change "CodigoDeSolicitud" in XML
+        c1_06_xml = c1_06_xml.replace(
+            "<CUPS>ES1234000000000001JN0F",
+            "<CUPS>{0}".format(cups.name)
+        )
+
+        # Import XML
+        step_id = sw_obj.importar_xml(
+            self.cursor, self.uid, c1_06_xml, "c1_06.xml"
+        )
+
+        # Assertions
+        self.assertIsNotNone(step_id)
+        scb = sgc_obj.browse(self.cursor, self.uid, sgc_id)
+        self.assertEqual(scb.state, 'comming_cancellation')
+
+    @mock.patch('som_gurb.models.giscedata_switching._contract_has_gurb_category')
+    @mock.patch('som_gurb.models.giscedata_switching.is_unidirectional_colective_autocons_change')
+    def test_create_from_xml_c2_06_cancel_gurb(
+            self, mock_is_unidirectional, mock_has_gurb_category):
+        mock_has_gurb_category.return_value = True
+        mock_is_unidirectional.return_value = False
+
+        sw_obj = self.openerp.pool.get('giscedata.switching')
+        sgc_obj = self.openerp.pool.get('som.gurb.cups')
+        self.openerp.pool.get('giscedata.switching.step.header')
+        self.openerp.pool.get('giscedata.switching.c1.06')
+        pol_obj = self.openerp.pool.get("giscedata.polissa")
+
+        # Preparar el sgc_obj
+        sgc_id = self.openerp.pool.get('ir.model.data').get_object_reference(
+            self.cursor, self.uid, 'som_gurb', 'gurb_cups_0002')[1]
+
+        sgc_0002 = sgc_obj.browse(self.cursor, self.uid, sgc_id)
+        sgc_0002.send_signal('button_create_cups')
+        sgc_0002.send_signal('button_activate_cups')
+
+        c2_06_xml_path = get_module_resource(
+            "som_gurb", "tests", "fixtures", "c206_new.xml"
+        )
+        with open(c2_06_xml_path, "r") as f:
+            c2_06_xml = f.read()
+
+        self.switch(self.txn, "comer")
+        contract_id = self.get_contract_id(self.txn, xml_id='polissa_tarifa_018')
+        self.change_polissa_comer(self.txn, pol_id='polissa_tarifa_018')
+        cups = pol_obj.browse(self.cursor, self.uid, contract_id).cups
+
+        # Change "CodigoDeSolicitud" in XML
+        c2_06_xml = c2_06_xml.replace(
+            "<CUPS>ES1234000000000001JN0F",
+            "<CUPS>{0}".format(cups.name)
+        )
+
+        # Import XML
+        step_id = sw_obj.importar_xml(
+            self.cursor, self.uid, c2_06_xml, "c2_06.xml"
+        )
+
+        # Assertions
+        self.assertIsNotNone(step_id)
+        scb = sgc_obj.browse(self.cursor, self.uid, sgc_id)
+        self.assertEqual(scb.state, 'comming_cancellation')
+
+    @mock.patch('som_gurb.models.giscedata_switching._contract_has_gurb_category')
+    @mock.patch('som_gurb.models.giscedata_switching.is_unidirectional_colective_autocons_change')
+    def test_create_from_xml_m1_01_subrogacio_atr_pending_gurb(
+            self, mock_is_unidirectional, mock_has_gurb_category):
+        mock_has_gurb_category.return_value = True
+        mock_is_unidirectional.return_value = False
+
+        self.openerp.pool.get('giscedata.switching')
+        sgc_obj = self.openerp.pool.get('som.gurb.cups')
+        self.openerp.pool.get("giscedata.polissa")
+
+        # Preparar el sgc_obj
+        sgc_id = self.openerp.pool.get('ir.model.data').get_object_reference(
+            self.cursor, self.uid, 'som_gurb', 'gurb_cups_0002')[1]
+
+        sgc_0002 = sgc_obj.browse(self.cursor, self.uid, sgc_id)
+        sgc_0002.send_signal('button_create_cups')
+        sgc_0002.send_signal('button_activate_cups')
+
+        # Creem el M1 01sw_obj
+        contract_id = self.get_contract_id(self.txn, xml_id='polissa_tarifa_018')
+        step_id = self.create_case_and_step(
+            self.cursor, self.uid, contract_id, "M1", "01"
+        )
+        step_obj = self.openerp.pool.get("giscedata.switching.m1.01")
+        sw_step_header_obj = self.openerp.pool.get("giscedata.switching.step.header")
+        sw_step_header_id = step_obj.read(
+            self.cursor, self.uid, step_id, ["header_id"]
+        )["header_id"][0]
+        sw_step_header_obj.write(
+            self.cursor, self.uid, sw_step_header_id, {"notificacio_pendent": False}
+        )
+        step_obj.write(self.cursor, self.uid, step_id, {"sollicitudadm": "S"})
+        step_obj.write(self.cursor, self.uid, step_id, {"canvi_titular": "S"})
+
+        m101 = step_obj.browse(self.cursor, self.uid, step_id)
+        step_obj.generar_xml(self.cursor, self.uid, m101.id)
+        # Assertions
+        self.assertIsNotNone(step_id)
+        scb = sgc_obj.browse(self.cursor, self.uid, sgc_id)
+        self.assertEqual(scb.state, 'atr_pending')
+
+    @mock.patch('som_gurb.models.giscedata_switching._contract_has_gurb_category')
+    @mock.patch('som_gurb.models.giscedata_switching.is_unidirectional_colective_autocons_change')
+    def test_create_from_xml_m1_02_subrogacio_cancel_gurb(
+            self, mock_is_unidirectional, mock_has_gurb_category):
+        mock_has_gurb_category.return_value = True
+        mock_is_unidirectional.return_value = False
+
+        sw_obj = self.openerp.pool.get('giscedata.switching')
+        sgc_obj = self.openerp.pool.get('som.gurb.cups')
+        m101_obj = self.openerp.pool.get('giscedata.switching.m1.01')
+        pol_obj = self.openerp.pool.get("giscedata.polissa")
+
+        # Preparar el sgc_obj
+        sgc_id = self.openerp.pool.get('ir.model.data').get_object_reference(
+            self.cursor, self.uid, 'som_gurb', 'gurb_cups_0002')[1]
+
+        sgc_0002 = sgc_obj.browse(self.cursor, self.uid, sgc_id)
+        sgc_0002.send_signal('button_create_cups')
+        sgc_0002.send_signal('button_activate_cups')
+
+        # Creem el M1 01
+        contract_id = self.get_contract_id(self.txn, xml_id='polissa_tarifa_018')
+        step_id = self.create_case_and_step(
+            self.cursor, self.uid, contract_id, "M1", "01"
+        )
+        step_obj = self.openerp.pool.get("giscedata.switching.m1.01")
+        sw_step_header_obj = self.openerp.pool.get("giscedata.switching.step.header")
+        sw_step_header_id = step_obj.read(
+            self.cursor, self.uid, step_id, ["header_id"]
+        )["header_id"][0]
+        sw_step_header_obj.write(
+            self.cursor, self.uid, sw_step_header_id, {"notificacio_pendent": False}
+        )
+        step_obj.write(self.cursor, self.uid, step_id, {"sollicitudadm": "S"})
+        step_obj.write(self.cursor, self.uid, step_id, {"canvi_titular": "S"})
+        m101 = step_obj.browse(self.cursor, self.uid, step_id)
+        codi_sollicitud = m101.sw_id.codi_sollicitud
+        m101_obj.generar_xml(self.cursor, self.uid, step_id)
+
+        # Carreguem el M102
+        m1_02_xml_path = get_module_resource(
+            "som_gurb", "tests", "fixtures", "m102_ss_new.xml"
+        )
+        with open(m1_02_xml_path, "r") as f:
+            m1_02_xml = f.read()
+
+        self.switch(self.txn, "comer")
+
+        self.change_polissa_comer(self.txn, pol_id='polissa_tarifa_018')
+        cups = pol_obj.browse(self.cursor, self.uid, contract_id).cups
+
+        # Change "CodigoDeSolicitud" in XML
+        m1_02_xml = m1_02_xml.replace(
+            "<CodigoDeSolicitud>201412111009",
+            "<CodigoDeSolicitud>{0}".format(codi_sollicitud)
+        )
+        m1_02_xml = m1_02_xml.replace(
+            "<CUPS>ES1234000000000001JN0F",
+            "<CUPS>{0}".format(cups.name)
+        )
+
+        # Import XML
+        step_id = sw_obj.importar_xml(
+            self.cursor, self.uid, m1_02_xml, "m102_ss_new.xml"
+        )
+
+        # Assertions
+        self.assertIsNotNone(step_id)
+        scb = sgc_obj.browse(self.cursor, self.uid, sgc_id)
+        self.assertEqual(scb.state, 'comming_cancellation')
+
+    @mock.patch('som_gurb.models.giscedata_switching._contract_has_gurb_category')
+    @mock.patch('som_gurb.models.giscedata_switching.is_unidirectional_colective_autocons_change')
+    def test_create_from_xml_m1_05_traspas_cancel_gurb(
+            self, mock_is_unidirectional, mock_has_gurb_category):
+        mock_has_gurb_category.return_value = True
+        mock_is_unidirectional.return_value = False
+
+        sw_obj = self.openerp.pool.get('giscedata.switching')
+        sgc_obj = self.openerp.pool.get('som.gurb.cups')
+        m101_obj = self.openerp.pool.get('giscedata.switching.m1.01')
+        pol_obj = self.openerp.pool.get("giscedata.polissa")
+
+        # Preparar el sgc_obj
+        sgc_id = self.openerp.pool.get('ir.model.data').get_object_reference(
+            self.cursor, self.uid, 'som_gurb', 'gurb_cups_0002')[1]
+
+        sgc_0002 = sgc_obj.browse(self.cursor, self.uid, sgc_id)
+        sgc_0002.send_signal('button_create_cups')
+        sgc_0002.send_signal('button_activate_cups')
+
+        # Creem el M1 01
+        contract_id = self.get_contract_id(self.txn, xml_id='polissa_tarifa_018')
+        step_id = self.create_case_and_step(
+            self.cursor, self.uid, contract_id, "M1", "01"
+        )
+        step_obj = self.openerp.pool.get("giscedata.switching.m1.01")
+        sw_step_header_obj = self.openerp.pool.get("giscedata.switching.step.header")
+        sw_step_header_id = step_obj.read(
+            self.cursor, self.uid, step_id, ["header_id"]
+        )["header_id"][0]
+        sw_step_header_obj.write(
+            self.cursor, self.uid, sw_step_header_id, {"notificacio_pendent": False}
+        )
+        step_obj.write(self.cursor, self.uid, step_id, {"sollicitudadm": "S"})
+        step_obj.write(self.cursor, self.uid, step_id, {"canvi_titular": "T"})
+
+        m101 = step_obj.browse(self.cursor, self.uid, step_id)
+        codi_sollicitud = m101.sw_id.codi_sollicitud
+        m101_obj.generar_xml(self.cursor, self.uid, step_id)
+
+        # Carreguem el M102
+        m1_02_xml_path = get_module_resource(
+            "som_gurb", "tests", "fixtures", "m102_st_new.xml"
+        )
+        with open(m1_02_xml_path, "r") as f:
+            m1_02_xml = f.read()
+        self.switch(self.txn, "comer")
+        self.change_polissa_comer(self.txn, pol_id='polissa_tarifa_018')
+        cups = pol_obj.browse(self.cursor, self.uid, contract_id).cups
+        # Change "CodigoDeSolicitud" in XML
+        m1_02_xml = m1_02_xml.replace(
+            "<CodigoDeSolicitud>202412161862",
+            "<CodigoDeSolicitud>{0}".format(codi_sollicitud)
+        )
+        m1_02_xml = m1_02_xml.replace(
+            "<CUPS>ES1234000000000001JN0F",
+            "<CUPS>{0}".format(cups.name)
+        )
+        step_id = sw_obj.importar_xml(
+            self.cursor, self.uid, m1_02_xml, "m102_st_new.xml"
+        )
+
+        # Import XML M105
+        m1_05_xml_path = get_module_resource(
+            "som_gurb", "tests", "fixtures", "m105_st_new.xml"
+        )
+        with open(m1_05_xml_path, "r") as f:
+            m1_05_xml = f.read()
+        self.switch(self.txn, "comer")
+        self.change_polissa_comer(self.txn, pol_id='polissa_tarifa_018')
+        cups = pol_obj.browse(self.cursor, self.uid, contract_id).cups
+        # Change "CodigoDeSolicitud" in XML
+        m1_05_xml = m1_05_xml.replace(
+            "<CodigoDeSolicitud>202412161862",
+            "<CodigoDeSolicitud>{0}".format(codi_sollicitud)
+        )
+        m1_05_xml = m1_05_xml.replace(
+            "<CUPS>ES1234000000000001JN0F",
+            "<CUPS>{0}".format(cups.name)
+        )
+
+        # Import XML
+        step_id = sw_obj.importar_xml(
+            self.cursor, self.uid, m1_05_xml, "m105_st_new.xml"
+        )
+
+        # Assertions
+        self.assertIsNotNone(step_id)
+        scb = sgc_obj.browse(self.cursor, self.uid, sgc_id)
+        self.assertEqual(scb.state, 'comming_cancellation')
+
+    @mock.patch('som_gurb.models.giscedata_switching._contract_has_gurb_category')
+    @mock.patch('som_gurb.models.giscedata_switching.is_unidirectional_colective_autocons_change')
+    def test_create_from_xml_m1_01_traspas_atr_pending_gurb(
+            self, mock_is_unidirectional, mock_has_gurb_category):
+        mock_has_gurb_category.return_value = True
+        mock_is_unidirectional.return_value = False
+
+        self.openerp.pool.get('giscedata.switching')
+        sgc_obj = self.openerp.pool.get('som.gurb.cups')
+        self.openerp.pool.get('giscedata.switching.step.header')
+        self.openerp.pool.get('giscedata.switching.m1.02')
+        self.openerp.pool.get("giscedata.polissa")
+
+        # Preparar el sgc_obj
+        sgc_id = self.openerp.pool.get('ir.model.data').get_object_reference(
+            self.cursor, self.uid, 'som_gurb', 'gurb_cups_0002')[1]
+
+        sgc_0002 = sgc_obj.browse(self.cursor, self.uid, sgc_id)
+        sgc_0002.send_signal('button_create_cups')
+        sgc_0002.send_signal('button_activate_cups')
+
+        # Creem el M1 01
+        contract_id = self.get_contract_id(self.txn, xml_id='polissa_tarifa_018')
+        step_id = self.create_case_and_step(
+            self.cursor, self.uid, contract_id, "M1", "01"
+        )
+        step_obj = self.openerp.pool.get("giscedata.switching.m1.01")
+        sw_step_header_obj = self.openerp.pool.get("giscedata.switching.step.header")
+        sw_step_header_id = step_obj.read(
+            self.cursor, self.uid, step_id, ["header_id"]
+        )["header_id"][0]
+        sw_step_header_obj.write(
+            self.cursor, self.uid, sw_step_header_id, {"notificacio_pendent": False}
+        )
+        step_obj.write(self.cursor, self.uid, step_id, {"sollicitudadm": "S"})
+        step_obj.write(self.cursor, self.uid, step_id, {"canvi_titular": "T"})
+
+        m101 = step_obj.browse(self.cursor, self.uid, step_id)
+        step_obj.generar_xml(self.cursor, self.uid, m101.id)
+
+        # Assertions
+        self.assertIsNotNone(step_id)
+        scb = sgc_obj.browse(self.cursor, self.uid, sgc_id)
+        self.assertEqual(scb.state, 'atr_pending')
+
+    @mock.patch('som_gurb.models.giscedata_switching._contract_has_gurb_category')
+    @mock.patch('som_gurb.models.giscedata_switching.is_unidirectional_colective_autocons_change')
+    def test_create_from_xml_m1_02_traspas_rebuig(
+            self, mock_is_unidirectional, mock_has_gurb_category):
+        mock_has_gurb_category.return_value = True
+        mock_is_unidirectional.return_value = False
+
+        sw_obj = self.openerp.pool.get('giscedata.switching')
+        sgc_obj = self.openerp.pool.get('som.gurb.cups')
+        m101_obj = self.openerp.pool.get('giscedata.switching.m1.01')
+        pol_obj = self.openerp.pool.get("giscedata.polissa")
+
+        # Preparar el sgc_obj
+        sgc_id = self.openerp.pool.get('ir.model.data').get_object_reference(
+            self.cursor, self.uid, 'som_gurb', 'gurb_cups_0002')[1]
+
+        sgc_0002 = sgc_obj.browse(self.cursor, self.uid, sgc_id)
+        sgc_0002.send_signal('button_create_cups')
+        sgc_0002.send_signal('button_activate_cups')
+
+        # Creem el M1 01
+        contract_id = self.get_contract_id(self.txn, xml_id='polissa_tarifa_018')
+        step_id = self.create_case_and_step(
+            self.cursor, self.uid, contract_id, "M1", "01"
+        )
+        step_obj = self.openerp.pool.get("giscedata.switching.m1.01")
+        sw_step_header_obj = self.openerp.pool.get("giscedata.switching.step.header")
+        sw_step_header_id = step_obj.read(
+            self.cursor, self.uid, step_id, ["header_id"]
+        )["header_id"][0]
+        sw_step_header_obj.write(
+            self.cursor, self.uid, sw_step_header_id, {"notificacio_pendent": False}
+        )
+        step_obj.write(self.cursor, self.uid, step_id, {"sollicitudadm": "S"})
+        step_obj.write(self.cursor, self.uid, step_id, {"canvi_titular": "T"})
+
+        m101 = step_obj.browse(self.cursor, self.uid, step_id)
+        codi_sollicitud = m101.sw_id.codi_sollicitud
+        m101_obj.generar_xml(self.cursor, self.uid, step_id)
+
+        # Carreguem el M102
+        m1_02_xml_path = get_module_resource(
+            "som_gurb", "tests", "fixtures", "m102_st_new_rej.xml"
+        )
+        with open(m1_02_xml_path, "r") as f:
+            m1_02_xml = f.read()
+        self.switch(self.txn, "comer")
+        self.change_polissa_comer(self.txn, pol_id='polissa_tarifa_018')
+        cups = pol_obj.browse(self.cursor, self.uid, contract_id).cups
+        # Change "CodigoDeSolicitud" in XML
+        m1_02_xml = m1_02_xml.replace(
+            "<CodigoDeSolicitud>202412161862",
+            "<CodigoDeSolicitud>{0}".format(codi_sollicitud)
+        )
+        m1_02_xml = m1_02_xml.replace(
+            "<CUPS>ES1234000000000001JN0F",
+            "<CUPS>{0}".format(cups.name)
+        )
+        step_id = sw_obj.importar_xml(
+            self.cursor, self.uid, m1_02_xml, "m102_st_new_rej.xml"
+        )
+
+        # Assertions
+        self.assertIsNotNone(step_id)
+        scb = sgc_obj.browse(self.cursor, self.uid, sgc_id)
+        self.assertEqual(scb.state, 'active')
