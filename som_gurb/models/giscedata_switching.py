@@ -441,8 +441,6 @@ GiscedataSwitchingD1_02()
 
 
 class GiscedataSwitchingC1_06(osv.osv):
-    """Classe pel pas 06
-    """
     _inherit = "giscedata.switching.c1.06"
 
     def create_from_xml(self, cursor, uid, sw_id, xml, context=None):
@@ -473,8 +471,6 @@ GiscedataSwitchingC1_06()
 
 
 class GiscedataSwitchingC2_06(osv.osv):
-    """Classe pel pas 06
-    """
     _inherit = "giscedata.switching.c2.06"
 
     def create_from_xml(self, cursor, uid, sw_id, xml, context=None):
