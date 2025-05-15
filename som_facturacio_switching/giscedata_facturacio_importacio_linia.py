@@ -2,7 +2,7 @@
 from osv import osv, fields
 import re
 from tools.translate import _
-from gestionatr.defs import TABLA_17, TABLA_113_NEW, TENEN_AUTOCONSUM
+from gestionatr.defs import TABLA_17, TABLA_113_NEW, TENEN_AUTOCONSUM, TABLA_133
 from datetime import datetime, timedelta
 from tools import cache
 import logging
@@ -12,6 +12,13 @@ IMPORT_PHASE_1 = 10  # 10 = Fase de càrrega XML
 TIPO_AUTOCONSUMO_NEW = TABLA_113_NEW
 TIPO_AUTOCONSUMO_SEL_NEW = [
     (ac[0], u'[{}] - {}'.format(ac[0], ac[1])) for ac in TIPO_AUTOCONSUMO_NEW
+]
+
+TIPUS_SUBSECCIO = TABLA_133
+TIPUS_SUBSECCIO_SEL = [
+    (ac[0], u'[{}] - {}'.format(ac[0], ac[1])) for ac in TIPUS_SUBSECCIO
+] + [
+    ['  ', u"[  ] - No informat a l'F1"],
 ]
 
 
@@ -77,6 +84,17 @@ class GiscedataFacturacioImportacioLinia(osv.osv):
                         comentario = ""
 
                 vals["comentari"] = comentario
+
+        tipus_subseccio = re.findall("<TipoSubseccion>(.*)</TipoSubseccion>", xml_data)
+        if tipus_subseccio:
+            vals["tipus_subseccio"] = tipus_subseccio[0]
+        else:
+            vals["tipus_subseccio"] = '  '
+
+        is_autoconsum_collectiu = re.findall("<Colectivo>(.*)</Colectivo>", xml_data)
+        if is_autoconsum_collectiu:
+            vals["is_autoconsum_collectiu"] = is_autoconsum_collectiu[0] == 'S'
+
         return vals
 
     @cache(timeout=5 * 60)
@@ -248,6 +266,17 @@ class GiscedataFacturacioImportacioLinia(osv.osv):
             type="date",
             string="Data ultima lect. facturada pòlissa",
             readonly=True,
+        ),
+        "tipus_subseccio": fields.selection(
+            TIPUS_SUBSECCIO_SEL,
+            u"Tipus subsecció",
+            readonly=True,
+            help=u"Tipus subsecció informat a l'F1",
+        ),
+        "is_autoconsum_collectiu": fields.boolean(
+            "Es col·lectiu",
+            readonly=True,
+            help=u"Es autoconsum col·lectiu informat a l'F1",
         ),
     }
 
