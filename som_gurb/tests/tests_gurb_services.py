@@ -60,6 +60,23 @@ class TestsGurbServices(TestsGurbBase):
         self.assertEqual(pol_br.serveis[0].producte.id, vals['product_id'])
         self.assertEqual(pol_br.serveis[0].polissa_id.id, vals['pol_id'])
 
+    def test_terminate_service_to_contract(self):
+        pol_o = self.openerp.pool.get("giscedata.polissa")
+        gurb_cups_o = self.openerp.pool.get("som.gurb.cups")
+        self.add_service_to_contract()
+        vals = self.get_references()
+
+        gurb_cups_o.terminate_service_gurb_cups(
+            self.cursor, self.uid, vals['gurb_cups_id'], "2025-01-01", context=None
+        )
+
+        pol_br = pol_o.browse(self.cursor, self.uid, vals['pol_id'])
+        self.assertEqual(len(pol_br.serveis), 1)
+        self.assertEqual(pol_br.serveis[0].llista_preus.id, vals['pricelist_id'])
+        self.assertEqual(pol_br.serveis[0].producte.id, vals['product_id'])
+        self.assertEqual(pol_br.serveis[0].polissa_id.id, vals['pol_id'])
+        self.assertEqual(pol_br.serveis[0].data_fi, "2025-01-01")
+
     def test_fail_add_service_to_draft_contract(self):
         pol_o = self.openerp.pool.get("giscedata.polissa")
         imd_o = self.openerp.pool.get("ir.model.data")

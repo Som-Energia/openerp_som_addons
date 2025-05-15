@@ -20,7 +20,8 @@ class WizardGurbCreateNewBeta(osv.osv_memory):
             "beta_kw": wiz.beta_kw,
             "extra_beta_kw": wiz.extra_beta_kw,
             "gurb_cups_id": gurb_cups_id,
-            "active": True
+            "active": True,
+            "future_beta": True,
         }
 
         search_params = [
