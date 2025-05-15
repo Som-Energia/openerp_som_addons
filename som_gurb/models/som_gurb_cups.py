@@ -314,13 +314,58 @@ class SomGurbCups(osv.osv):
         self.write(cursor, uid, gurb_cups_id, {
             "ens_ha_avisat": context.get('ens_ha_avisat', False)})
 
-    def cancel_gurb_cups(self, cursor, uid, gurb_cups_id, context=None):
+    def get_gurb_products(self, cursor, uid, context=None):
         if context is None:
             context = {}
 
-        # Desactivar Gurb CUPS i tancar beta
+        imd_o = self.pool.get("ir.model.data")
+
+        base_product_id = imd_o.get_object_reference(
+            cursor, uid, "som_gurb", "product_gurb"
+        )[1]
+        owner_product_id = imd_o.get_object_reference(
+            cursor, uid, "som_gurb", "product_owner_gurb"
+        )[1]
+        enterprise_product_id = imd_o.get_object_reference(
+            cursor, uid, "som_gurb", "product_enterprise_gurb"
+        )[1]
+
+        products_ids = [base_product_id, owner_product_id, enterprise_product_id]
+
+        return products_ids
+
+    def cancel_gurb_cups(self, cursor, uid, gurb_cups_id, end_date, context=None):
+        if context is None:
+            context = {}
+
+        # Desactivate GURB CUPS, Close Beta, Unsubscribe Service
         self.send_signal(cursor, uid, [gurb_cups_id], "button_cancel_cups")
-        self.write(cursor, uid, gurb_cups_id, {"beta_kw": 0, "extra_beta_kw": 0, "active": False})
+        self.write(cursor, uid, gurb_cups_id, {"active": False, "end_date": end_date})
+        self.terminate_service_gurb_cups(
+            cursor, uid, gurb_cups_id, end_date, context=context
+        )
+
+    def terminate_service_gurb_cups(self, cursor, uid, gurb_cups_id, end_date, context=None):
+        if context is None:
+            context = {}
+
+        service_o = self.pool.get("giscedata.facturacio.services")
+        wiz_terminate_o = self.pool.get("wizard.terminate.service")
+
+        pol_id = self.get_polissa_gurb_cups(cursor, uid, gurb_cups_id, context=context)
+        products_ids = self.get_gurb_products(cursor, uid, context=context)
+
+        search_params = [
+            ("polissa_id", "=", pol_id),
+            ("producte", "in", products_ids),
+            ("data_fi", "=", False)
+        ]
+
+        service_ids = service_o.search(cursor, uid, search_params, context=context)
+
+        wiz_id = wiz_terminate_o.create(cursor, uid, {}, context=context)
+        context["active_ids"] = service_ids
+        wiz_terminate_o.terminate_services(cursor, uid, [wiz_id], context=context)
 
     def create_initial_invoice(self, cursor, uid, gurb_cups_id, context=None):
         if context is None:
