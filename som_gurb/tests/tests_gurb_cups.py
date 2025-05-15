@@ -49,6 +49,8 @@ class TestsGurbCups(TestsGurbBase):
     def test_wizard_gurb_create_new_beta(self):
         context = {}
 
+        gurb_cups_beta_o = self.openerp.pool.get("som.gurb.cups.beta")
+
         gurb_cups_id = self.get_references()['gurb_cups_id']
         start_date = "2015-02-01"
         new_beta_kw = 1.5
@@ -99,3 +101,7 @@ class TestsGurbCups(TestsGurbBase):
         self.create_new_gurb_cups_beta(
             gurb_cups_id, start_date, new_beta_kw, new_extra_beta_kw, context=context
         )
+        gurb_cups_beta_id = gurb_cups_beta_o.search(
+            self.cursor, self.uid, [("gurb_cups_id", "=", gurb_cups_id), ("future_beta", "=", True)]
+        )
+        self.assertEqual(len(gurb_cups_beta_id), 1)
