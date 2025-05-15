@@ -88,6 +88,8 @@ somre_ov_module:
 -  somre_ov_module/**
 som_remeses_base:
 -  som_remeses_base/**
+som_stash:
+-  som_stash/**
 som_switching:
 -  som_switching/**
 som_telemesura:
