@@ -1,3 +1,11 @@
+/* Partners vinculats a sòcies de baixa més de X anys (des de dia actual) i que NO son o estan:
+ * SOCIS ACTIUS
+ * COM A TITULAR d'alguna pòlissa activa o de baixa menys de X anys
+ * COM A ADMINISTRADORA d'alguna pòlissa activa o de baixa menys de X anys
+ * COM A SOCI d'alguna pòlissa activa o de baixa menys de X anys
+ * COM A NOTIFICACIÓ d'alguna pòlissa activa o de baixa menys de X anys
+ * AMB INVERSIONS, APORTACIONS, GNKWH amb darrera data efectiva posterior a fa X anys
+ */
 select
  partner_id
 ,ss.data_baixa_soci as date_expiry
