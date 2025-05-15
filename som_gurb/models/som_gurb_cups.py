@@ -363,7 +363,7 @@ class SomGurbCups(osv.osv):
 
         service_ids = service_o.search(cursor, uid, search_params, context=context)
 
-        wiz_id = wiz_terminate_o.create(cursor, uid, {}, context=context)
+        wiz_id = wiz_terminate_o.create(cursor, uid, {'data_final': end_date}, context=context)
         context["active_ids"] = service_ids
         wiz_terminate_o.terminate_services(cursor, uid, [wiz_id], context=context)
 
