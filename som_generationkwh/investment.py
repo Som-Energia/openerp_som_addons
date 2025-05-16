@@ -1898,6 +1898,8 @@ class GenerationkwhInvestment(osv.osv):
         else:
             if purchase_date > date_start:
                 date_start_dt = datetime.strptime(purchase_date,'%Y-%m-%d')
+            if investment.first_effective_date and investment.first_effective_date > date_start:
+                date_start_dt = datetime.strptime(investment.first_effective_date,'%Y-%m-%d')
 
         if last_effective_date and date_end >= last_effective_date:
             date_end_dt = datetime.strptime(investment.last_effective_date,'%Y-%m-%d')
