@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <openerp>
     <data noupdate="1">
-        <record model="custom.search" id="custom_search_dashboard_som_canvis_a_indexada">
+        <record id="custom_search_dashboard_som_canvis_a_indexada" model="custom.search">
             <field name="name">[DASHBOARDS][SOM - Contractes] Número de canvis acumulats a indexada últims 30 dies</field>
             <field name="query">
 SELECT
