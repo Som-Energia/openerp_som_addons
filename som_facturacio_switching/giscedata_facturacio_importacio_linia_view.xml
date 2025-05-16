@@ -10,7 +10,6 @@
                     <field name="is_autoconsum_collectiu" select="2"/>
                     <field name="tipus_subseccio" select="2"/>
                     <field name="tarifa_atr" select="2" />
-                    <field name="tipus_autoconsum" select="2"/>
                 </xpath>
                 <xpath expr="//field[@name='type_factura']" position="after">
                     <group attrs="{'invisible': [('type_factura', 'not in', ['C'])]}" colspan="4" col="4">
@@ -32,7 +31,6 @@
                 <field name="tipo_factura_f1" position="after">
                     <field name="is_autoconsum_collectiu"/>
                     <field name="tipus_subseccio"/>
-                    <field name="tipus_autoconsum"/>
                     <field name="tarifa_atr"/>
                     <field name="data_ultima_lectura_polissa"/>
                     <field name="polissa_id"/>
