@@ -213,7 +213,7 @@ class SomGurb(osv.osv):
 
         gurb_id = self.get_gurb_from_sw_id(cursor, uid, sw_id, context=context)
         gurb_cups_id = gurb_cups_obj.get_gurb_cups_from_sw_id(cursor, uid, sw_id, context=context)
-        gurb_cups_obj.activate_gurb_cups(
+        gurb_cups_obj.activate_or_modify_gurb_cups(
             cursor, uid, gurb_cups_id, activation_date, context=context)
         gurb_cups_obj.send_gurb_activation_email(cursor, uid, [gurb_cups_id], context=None)
         gurb_date = self.read(cursor, uid, gurb_id, ["activation_date"])["activation_date"]

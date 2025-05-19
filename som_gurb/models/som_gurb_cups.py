@@ -216,7 +216,7 @@ class SomGurbCups(osv.osv):
         if len(gurb_cups_ids) == 1:
             return gurb_cups_ids[0]
 
-    def activate_gurb_cups(self, cursor, uid, gurb_cups_id, data_inici, context=None):
+    def activate_or_modify_gurb_cups(self, cursor, uid, gurb_cups_id, data_inici, context=None):
         if context is None:
             context = {}
 

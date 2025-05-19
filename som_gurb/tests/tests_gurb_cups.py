@@ -116,7 +116,7 @@ class TestsGurbCups(TestsGurbBase):
 
         gurb_cups_o.write(self.cursor, self.uid, gurb_cups_id, {"start_date": False})
         gurb_cups_beta_o.write(self.cursor, self.uid, gurb_cups_beta_id, {"future_beta": True})
-        gurb_cups_o.activate_gurb_cups(self.cursor, self.uid, gurb_cups_id, "2024-01-01")
+        gurb_cups_o.activate_or_modify_gurb_cups(self.cursor, self.uid, gurb_cups_id, "2024-01-01")
 
         pol_id = gurb_cups_o.read(
             self.cursor, self.uid, gurb_cups_id, ["polissa_id"]
