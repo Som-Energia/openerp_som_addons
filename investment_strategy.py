@@ -857,6 +857,8 @@ class AportacionsActions(InvestmentActions):
             date_end = investment.last_effective_date
         if investment.purchase_date > vals['date_start']:
             date_start = investment.purchase_date
+        if investment.first_effective_date and investment.first_effective_date > vals['date_start']:
+            date_start = investment.first_effective_date
 
         invoice_name = '%s-INT%s' % (
             investment.name,
