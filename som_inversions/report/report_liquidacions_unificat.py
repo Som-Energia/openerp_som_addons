@@ -44,12 +44,16 @@ class ResPartner(osv.osv):
 
             data["invoices"][invoice.origin]["to_pay_total"] = invoice.amount_total
             data["invoices"][invoice.origin]["partner_iban"] = invoice.partner_bank.printable_iban
-
+            pos_date_ini = 3
+            pos_date_end = 6
             for line in invoice.invoice_line:
+                if line.name.split(" ")[0] == "Intereses":
+                    pos_date_ini = 2
+                    pos_date_end = 4
                 data["invoices"][invoice.origin]["lines"].append(
                     ns(
-                        date_ini=line.name.split(" ")[3],
-                        date_end=line.name.split(" ")[6],
+                        date_ini=line.name.split(" ")[pos_date_ini],
+                        date_end=line.name.split(" ")[pos_date_end],
                         quantity=float(
                             line.note.split("investmentInitialAmount: ")[1].split("\n")[0]
                         ),
