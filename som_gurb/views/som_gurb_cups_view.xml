@@ -12,7 +12,7 @@
                         <field name="active" />
                         <field name="id" />
                         <field name="cups_id" on_change="onchange_cups_id(cups_id)" />
-                        <field name="start_date" />
+                        <field name="start_date" readonly="1" />
                         <field name="inscription_date" />
                         <field name="end_date" />
                         <field name="gurb_id" />

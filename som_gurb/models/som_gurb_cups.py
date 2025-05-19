@@ -228,6 +228,9 @@ class SomGurbCups(osv.osv):
                 "start_date": data_inici
             }
             self.write(cursor, uid, gurb_cups_id, write_vals, context=context)
+            self.add_service_to_contract(
+                cursor, uid, gurb_cups_id, data_inici, context=context
+            )
 
         search_params = [
             ("future_beta", "=", True),
@@ -240,9 +243,6 @@ class SomGurbCups(osv.osv):
                 cursor, uid, future_beta[0], data_inici, context=context
             )
 
-        self.add_service_to_contract(
-            cursor, uid, gurb_cups_id, data_inici, context=context
-        )
         self.send_signal(cursor, uid, [gurb_cups_id], "button_activate_cups")
 
     def add_service_to_contract(self, cursor, uid, gurb_cups_id, data_inici, context=None):
@@ -701,12 +701,12 @@ class SomGurbCupsBeta(osv.osv):
             }
             self.write(cursor, uid, actual_beta, write_vals, context=context)
 
-            write_vals = {
-                "start_date": data_inici,
-                "future_beta": False,
-                "active": True
-            }
-            self.write(cursor, uid, future_beta_id, write_vals, context=context)
+        write_vals = {
+            "start_date": data_inici,
+            "future_beta": False,
+            "active": True
+        }
+        self.write(cursor, uid, future_beta_id, write_vals, context=context)
 
     def create(self, cursor, uid, vals, context=None):
         if context is None:
