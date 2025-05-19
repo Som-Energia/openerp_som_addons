@@ -105,3 +105,27 @@ class TestsGurbCups(TestsGurbBase):
             self.cursor, self.uid, [("gurb_cups_id", "=", gurb_cups_id), ("future_beta", "=", True)]
         )
         self.assertEqual(len(gurb_cups_beta_id), 1)
+
+    def test_gurb_cups_activation(self):
+        gurb_cups_o = self.openerp.pool.get("som.gurb.cups")
+        gurb_cups_beta_o = self.openerp.pool.get("som.gurb.cups.beta")
+        pol_o = self.openerp.pool.get("giscedata.polissa")
+
+        gurb_cups_id = self.get_references()["gurb_cups_id"]
+        gurb_cups_beta_id = self.get_references()["gurb_cups_beta_2_id"]
+
+        gurb_cups_o.write(self.cursor, self.uid, gurb_cups_id, {"start_date": False})
+        gurb_cups_beta_o.write(self.cursor, self.uid, gurb_cups_beta_id, {"future_beta": True})
+        gurb_cups_o.activate_gurb_cups(self.cursor, self.uid, gurb_cups_id, "2024-01-01")
+
+        pol_id = gurb_cups_o.read(
+            self.cursor, self.uid, gurb_cups_id, ["polissa_id"]
+        )["polissa_id"][0]
+        pol_br = pol_o.browse(self.cursor, self.uid, pol_id)
+        gurb_cups_br = gurb_cups_o.browse(self.cursor, self.uid, gurb_cups_id)
+        gurb_cups_beta_br = gurb_cups_beta_o.browse(self.cursor, self.uid, gurb_cups_id)
+
+        self.assertEqual(len(pol_br.serveis), 1)
+        self.assertEqual(pol_br.serveis[0].polissa_id.id, pol_id)
+        self.assertEqual(gurb_cups_br.start_date, "2024-01-01")
+        self.assertEqual(gurb_cups_beta_br.future_beta, False)
