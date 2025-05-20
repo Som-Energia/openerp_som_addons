@@ -111,6 +111,10 @@
                 <field name="direccio_pagament" position="after">
                     <field name="enviament"/>
                 </field>
+                <field name="llista_preu" position="after" >
+                    <field name="tipus_subseccio"/>
+                    <field name="is_autoconsum_collectiu"/>
+                </field>
             </field>
         </record>
         <record model="ir.ui.view" id="view_giscedata_polissa_enviament_form">
