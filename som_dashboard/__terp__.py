@@ -6,7 +6,7 @@
     "version": "0-dev",
     "author": "SOM Energia - ERP Team",
     "category": "Dashboards",
-    "depends": ["board", "giscedata_polissa"],
+    "depends": ["board", "giscedata_polissa", "som_indexada"],
     "init_xml": [],
     "demo_xml": [],
     "update_xml": [

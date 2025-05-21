@@ -1,13 +1,19 @@
 <?xml version="1.0"?>
 <openerp>
-    <data noupdate="1">
-        <record id="custom_search_dashboard_som_canvis_a_indexada" model="custom.search">
-            <field name="name">[DASHBOARDS][SOM - Contractes] Número de canvis acumulats a indexada últims 30 dies</field>
+    <data noupdate="0">
+        <record id="custom_search_dashboard_som_canvis_a_index_period" model="custom.search">
+            <field name="name">[DASHBOARDS][SOM - Contractes] Número de canvis a indexada i períodes acumulats en els últims 30 dies</field>
             <field name="query">
 SELECT
     g.fecha AS dates,
-    COALESCE(SUM(altes) OVER (ORDER BY g.fecha), 0) AS altes,
-    COALESCE(SUM(canvis) OVER (ORDER BY g.fecha), 0) AS canvis
+    COALESCE(SUM(canvis_index) OVER (ORDER BY g.fecha), 0) AS canvis_index,
+    COALESCE(SUM(canvis_periodes) OVER (ORDER BY g.fecha), 0) AS canvis_periodes,
+    COALESCE(SUM(canvis_index_peninsula) OVER (ORDER BY g.fecha), 0) AS canvis_index_peninsula,
+    COALESCE(SUM(canvis_periodes_peninsula) OVER (ORDER BY g.fecha), 0) AS canvis_periodes_peninsula,
+    COALESCE(SUM(canvis_index_balears) OVER (ORDER BY g.fecha), 0) AS canvis_index_balears,
+    COALESCE(SUM(canvis_periodes_balears) OVER (ORDER BY g.fecha), 0) AS canvis_periodes_balears,
+    COALESCE(SUM(canvis_index_canaries) OVER (ORDER BY g.fecha), 0) AS canvis_index_canaries,
+    COALESCE(SUM(canvis_periodes_canaries) OVER (ORDER BY g.fecha), 0) AS canvis_periodes_canaries
 FROM (
     SELECT DATE_TRUNC('day', generate_series)::DATE AS fecha
     FROM generate_series(NOW() - '30 days'::interval, NOW(), '1 day'::interval)
@@ -15,25 +21,747 @@ FROM (
 LEFT JOIN (
     SELECT
         CAST(create_date AS DATE) AS dates,
-        COUNT(*) AS altes
+        COUNT(*) AS canvis_index
     FROM
-        giscedata_polissa
+        giscedata_polissa_modcontractual
     WHERE
-        observacions LIKE '%is_indexed: true%'
+        observacions LIKE '%Mode facturació: ATR → Indexada%'
     GROUP BY
         CAST(create_date AS DATE)
 ) t ON g.fecha = t.dates
 LEFT JOIN (
     SELECT
         CAST(create_date AS DATE) AS dates,
-        COUNT(*) AS canvis
+        COUNT(*) AS canvis_periodes
     FROM
         giscedata_polissa_modcontractual
     WHERE
-        observacions LIKE '%Modcon canvi a indexada%'
+        observacions LIKE '%Mode facturació: Indexada → ATR%'
     GROUP BY
         CAST(create_date AS DATE)
 ) z ON g.fecha = z.dates
+LEFT JOIN (
+    SELECT
+        CAST(gpm.create_date AS DATE) AS dates,
+        COUNT(*) AS canvis_index_peninsula
+    FROM
+        giscedata_polissa_modcontractual gpm
+        LEFT JOIN giscedata_cups_ps gcps ON gpm.cups = gcps.id
+        LEFT JOIN res_municipi rm ON gcps.id_municipi = rm.id
+        LEFT JOIN res_subsistemas_electricos rse ON rm.subsistema_id = rse.id
+    WHERE
+        observacions LIKE '%Mode facturació: ATR → Indexada%' and rse.code = 'PE'
+    GROUP BY
+        CAST(gpm.create_date AS DATE)
+) a ON g.fecha = a.dates
+LEFT JOIN (
+    SELECT
+        CAST(gpm.create_date AS DATE) AS dates,
+        COUNT(*) AS canvis_periodes_peninsula
+    FROM
+        giscedata_polissa_modcontractual gpm
+        LEFT JOIN giscedata_cups_ps gcps ON gpm.cups = gcps.id
+        LEFT JOIN res_municipi rm ON gcps.id_municipi = rm.id
+        LEFT JOIN res_subsistemas_electricos rse ON rm.subsistema_id = rse.id
+    WHERE
+        observacions LIKE '%Mode facturació: Indexada → ATR%' and rse.code = 'PE'
+    GROUP BY
+        CAST(gpm.create_date AS DATE)
+) b ON g.fecha = b.dates
+LEFT JOIN (
+    SELECT
+        CAST(gpm.create_date AS DATE) AS dates,
+        COUNT(*) AS canvis_index_balears
+    FROM
+        giscedata_polissa_modcontractual gpm
+        LEFT JOIN giscedata_cups_ps gcps ON gpm.cups = gcps.id
+        LEFT JOIN res_municipi rm ON gcps.id_municipi = rm.id
+        LEFT JOIN res_subsistemas_electricos rse ON rm.subsistema_id = rse.id
+    WHERE
+        observacions LIKE '%Mode facturació: ATR → Indexada%' and rse.code IN ('IF', 'MM')
+    GROUP BY
+        CAST(gpm.create_date AS DATE)
+) aa ON g.fecha = aa.dates
+LEFT JOIN (
+    SELECT
+        CAST(gpm.create_date AS DATE) AS dates,
+        COUNT(*) AS canvis_periodes_balears
+    FROM
+        giscedata_polissa_modcontractual gpm
+        LEFT JOIN giscedata_cups_ps gcps ON gpm.cups = gcps.id
+        LEFT JOIN res_municipi rm ON gcps.id_municipi = rm.id
+        LEFT JOIN res_subsistemas_electricos rse ON rm.subsistema_id = rse.id
+    WHERE
+        observacions LIKE '%Mode facturació: Indexada → ATR%' and rse.code IN ('IF', 'MM')
+    GROUP BY
+        CAST(gpm.create_date AS DATE)
+) bb ON g.fecha = bb.dates
+LEFT JOIN (
+    SELECT
+        CAST(gpm.create_date AS DATE) AS dates,
+        COUNT(*) AS canvis_index_canaries
+    FROM
+        giscedata_polissa_modcontractual gpm
+        LEFT JOIN giscedata_cups_ps gcps ON gpm.cups = gcps.id
+        LEFT JOIN res_municipi rm ON gcps.id_municipi = rm.id
+        LEFT JOIN res_subsistemas_electricos rse ON rm.subsistema_id = rse.id
+    WHERE
+        observacions LIKE '%Mode facturació: ATR → Indexada%' and rse.code IN ('TF', 'PA', 'LG', 'HI', 'GC', 'FL')
+    GROUP BY
+        CAST(gpm.create_date AS DATE)
+) aaa ON g.fecha = aaa.dates
+LEFT JOIN (
+    SELECT
+        CAST(gpm.create_date AS DATE) AS dates,
+        COUNT(*) AS canvis_periodes_canaries
+    FROM
+        giscedata_polissa_modcontractual gpm
+        LEFT JOIN giscedata_cups_ps gcps ON gpm.cups = gcps.id
+        LEFT JOIN res_municipi rm ON gcps.id_municipi = rm.id
+        LEFT JOIN res_subsistemas_electricos rse ON rm.subsistema_id = rse.id
+    WHERE
+        observacions LIKE '%Mode facturació: Indexada → ATR%' and rse.code IN ('TF', 'PA', 'LG', 'HI', 'GC', 'FL')
+    GROUP BY
+        CAST(gpm.create_date AS DATE)
+) bbb ON g.fecha = bbb.dates
+ORDER BY g.fecha
+            </field>
+        </record>
+        <record id="custom_search_dashboard_som_altes_index" model="custom.search">
+            <field name="name">[DASHBOARDS][SOM - Contractes] Número d'altes amb indexada i períodes acumulats en els últims 30 dies</field>
+            <field name="query">
+SELECT
+    g.fecha AS dates,
+    COALESCE(SUM(altes) OVER (ORDER BY g.fecha), 0) AS altes,
+    COALESCE(SUM(altes_indexada) OVER (ORDER BY g.fecha), 0) AS altes_indexada,
+    COALESCE(SUM(altes_periodes) OVER (ORDER BY g.fecha), 0) AS altes_periodes,
+    COALESCE(SUM(altes_indexada_peninsula) OVER (ORDER BY g.fecha), 0) AS altes_indexada_peninsula,
+    COALESCE(SUM(altes_periodes_peninsula) OVER (ORDER BY g.fecha), 0) AS altes_periodes_peninsula,
+    COALESCE(SUM(altes_indexada_balears) OVER (ORDER BY g.fecha), 0) AS altes_indexada_balears,
+    COALESCE(SUM(altes_periodes_balears) OVER (ORDER BY g.fecha), 0) AS altes_periodes_balears,
+    COALESCE(SUM(altes_indexada_canaries) OVER (ORDER BY g.fecha), 0) AS altes_indexada_canaries,
+    COALESCE(SUM(altes_periodes_canaries) OVER (ORDER BY g.fecha), 0) AS altes_periodes_canaries
+FROM (
+    SELECT DATE_TRUNC('day', generate_series)::DATE AS fecha
+    FROM generate_series(NOW() - '30 days'::interval, NOW(), '1 day'::interval)
+) g
+LEFT JOIN (
+    SELECT
+        CAST(gpm.data_inici AS DATE) AS dates,
+        COUNT(*) AS altes
+    FROM
+        giscedata_polissa_modcontractual gpm
+    WHERE
+        gpm.name = '1'
+    GROUP BY
+        CAST(gpm.data_inici AS DATE)
+) t ON g.fecha = t.dates
+LEFT JOIN (
+    SELECT
+        CAST(gpm.data_inici AS DATE) AS dates,
+        COUNT(*) AS altes_indexada
+    FROM
+        giscedata_polissa_modcontractual gpm
+    WHERE
+        gpm.mode_facturacio = 'index' and  gpm.name = '1'
+    GROUP BY
+        CAST(gpm.data_inici AS DATE)
+) z ON g.fecha = z.dates
+LEFT JOIN (
+    SELECT
+        CAST(gpm.data_inici AS DATE) AS dates,
+        COUNT(*) AS altes_periodes
+    FROM
+        giscedata_polissa_modcontractual gpm
+    WHERE
+        mode_facturacio = 'atr' and  gpm.name = '1'
+    GROUP BY
+        CAST(gpm.data_inici AS DATE)
+) zz ON g.fecha = zz.dates
+LEFT JOIN (
+    SELECT
+        CAST(gpm.data_inici AS DATE) AS dates,
+        COUNT(*) AS altes_indexada_peninsula
+    FROM
+        giscedata_polissa_modcontractual gpm
+        LEFT JOIN giscedata_cups_ps gcps ON gpm.cups = gcps.id
+        LEFT JOIN res_municipi rm ON gcps.id_municipi = rm.id
+        LEFT JOIN res_subsistemas_electricos rse ON rm.subsistema_id = rse.id
+    WHERE
+        mode_facturacio = 'index' and rse.code = 'PE' and gpm.name = '1'
+    GROUP BY
+        CAST(gpm.data_inici AS DATE)
+) a ON g.fecha = a.dates
+LEFT JOIN (
+    SELECT
+        CAST(gpm.data_inici AS DATE) AS dates,
+        COUNT(*) AS altes_periodes_peninsula
+    FROM
+        giscedata_polissa_modcontractual gpm
+        LEFT JOIN giscedata_cups_ps gcps ON gpm.cups = gcps.id
+        LEFT JOIN res_municipi rm ON gcps.id_municipi = rm.id
+        LEFT JOIN res_subsistemas_electricos rse ON rm.subsistema_id = rse.id
+    WHERE
+        mode_facturacio = 'atr' and rse.code = 'PE' and gpm.name = '1'
+    GROUP BY
+        CAST(gpm.data_inici AS DATE)
+) b ON g.fecha = b.dates
+LEFT JOIN (
+    SELECT
+        CAST(gpm.data_inici AS DATE) AS dates,
+        COUNT(*) AS altes_indexada_balears
+    FROM
+        giscedata_polissa_modcontractual gpm
+        LEFT JOIN giscedata_cups_ps gcps ON gpm.cups = gcps.id
+        LEFT JOIN res_municipi rm ON gcps.id_municipi = rm.id
+        LEFT JOIN res_subsistemas_electricos rse ON rm.subsistema_id = rse.id
+    WHERE
+        mode_facturacio = 'index' and rse.code IN ('IF', 'MM') and gpm.name = '1'
+    GROUP BY
+        CAST(gpm.data_inici AS DATE)
+) aaa ON g.fecha = aaa.dates
+LEFT JOIN (
+    SELECT
+        CAST(gpm.data_inici AS DATE) AS dates,
+        COUNT(*) AS altes_periodes_balears
+    FROM
+        giscedata_polissa_modcontractual gpm
+        LEFT JOIN giscedata_cups_ps gcps ON gpm.cups = gcps.id
+        LEFT JOIN res_municipi rm ON gcps.id_municipi = rm.id
+        LEFT JOIN res_subsistemas_electricos rse ON rm.subsistema_id = rse.id
+    WHERE
+        mode_facturacio = 'atr' and rse.code IN ('IF', 'MM') and gpm.name = '1'
+    GROUP BY
+        CAST(gpm.data_inici AS DATE)
+) aab ON g.fecha = aab.dates
+LEFT JOIN (
+    SELECT
+        CAST(gpm.data_inici AS DATE) AS dates,
+        COUNT(*) AS altes_indexada_canaries
+    FROM
+        giscedata_polissa_modcontractual gpm
+        LEFT JOIN giscedata_cups_ps gcps ON gpm.cups = gcps.id
+        LEFT JOIN res_municipi rm ON gcps.id_municipi = rm.id
+        LEFT JOIN res_subsistemas_electricos rse ON rm.subsistema_id = rse.id
+    WHERE
+        mode_facturacio = 'index' and rse.code IN ('TF', 'PA', 'LG', 'HI', 'GC', 'FL') and gpm.name = '1'
+    GROUP BY
+        CAST(gpm.data_inici AS DATE)
+) aac ON g.fecha = aac.dates
+LEFT JOIN (
+    SELECT
+        CAST(gpm.data_inici AS DATE) AS dates,
+        COUNT(*) AS altes_periodes_canaries
+    FROM
+        giscedata_polissa_modcontractual gpm
+        LEFT JOIN giscedata_cups_ps gcps ON gpm.cups = gcps.id
+        LEFT JOIN res_municipi rm ON gcps.id_municipi = rm.id
+        LEFT JOIN res_subsistemas_electricos rse ON rm.subsistema_id = rse.id
+    WHERE
+        mode_facturacio = 'atr' and rse.code IN ('TF', 'PA', 'LG', 'HI', 'GC', 'FL') and gpm.name = '1'
+    GROUP BY
+        CAST(gpm.data_inici AS DATE)
+) aad ON g.fecha = aad.dates
+ORDER BY g.fecha
+            </field>
+        </record>
+        <record id="custom_search_dashboard_som_canvis_a_index_period_tariff" model="custom.search">
+            <field name="name">[DASHBOARDS][SOM - Contractes] Número de canvis a indexada i períodes acumulats en els últims 30 dies per tarifa</field>
+            <field name="query">
+SELECT
+    g.fecha AS dates,
+    COALESCE(SUM(canvis_index) OVER (ORDER BY g.fecha), 0) AS canvis_index,
+    COALESCE(SUM(canvis_periodes) OVER (ORDER BY g.fecha), 0) AS canvis_periodes,
+    COALESCE(SUM(canvis_index_20td) OVER (ORDER BY g.fecha), 0) AS canvis_index_20td,
+    COALESCE(SUM(canvis_periodes_20td) OVER (ORDER BY g.fecha), 0) AS canvis_periodes_20td,
+    COALESCE(SUM(canvis_index_30td) OVER (ORDER BY g.fecha), 0) AS canvis_index_30td,
+    COALESCE(SUM(canvis_periodes_30td) OVER (ORDER BY g.fecha), 0) AS canvis_periodes_30td,
+    COALESCE(SUM(canvis_index_61td) OVER (ORDER BY g.fecha), 0) AS canvis_index_61td,
+    COALESCE(SUM(canvis_periodes_61td) OVER (ORDER BY g.fecha), 0) AS canvis_periodes_61td
+FROM (
+    SELECT DATE_TRUNC('day', generate_series)::DATE AS fecha
+    FROM generate_series(NOW() - '30 days'::interval, NOW(), '1 day'::interval)
+) g
+LEFT JOIN (
+    SELECT
+        CAST(create_date AS DATE) AS dates,
+        COUNT(*) AS canvis_index
+    FROM
+        giscedata_polissa_modcontractual
+    WHERE
+        observacions LIKE '%Mode facturació: ATR → Indexada%'
+    GROUP BY
+        CAST(create_date AS DATE)
+) t ON g.fecha = t.dates
+LEFT JOIN (
+    SELECT
+        CAST(create_date AS DATE) AS dates,
+        COUNT(*) AS canvis_periodes
+    FROM
+        giscedata_polissa_modcontractual
+    WHERE
+        observacions LIKE '%Mode facturació: Indexada → ATR%'
+    GROUP BY
+        CAST(create_date AS DATE)
+) z ON g.fecha = z.dates
+LEFT JOIN (
+    SELECT
+        CAST(gpm.create_date AS DATE) AS dates,
+        COUNT(*) AS canvis_index_20td
+    FROM
+        giscedata_polissa_modcontractual gpm
+        LEFT JOIN giscedata_polissa_tarifa gpt ON gpm.tarifa = gpt.id
+    WHERE
+        observacions LIKE '%Mode facturació: ATR → Indexada%' and gpt.name ILIKE '%2.0TD%'
+    GROUP BY
+        CAST(gpm.create_date AS DATE)
+) a ON g.fecha = a.dates
+LEFT JOIN (
+    SELECT
+        CAST(gpm.create_date AS DATE) AS dates,
+        COUNT(*) AS canvis_periodes_20td
+    FROM
+        giscedata_polissa_modcontractual gpm
+        LEFT JOIN giscedata_polissa_tarifa gpt ON gpm.tarifa = gpt.id
+    WHERE
+        observacions LIKE '%Mode facturació: Indexada → ATR%' and gpt.name ILIKE '%2.0TD'
+    GROUP BY
+        CAST(gpm.create_date AS DATE)
+) b ON g.fecha = b.dates
+LEFT JOIN (
+    SELECT
+        CAST(gpm.create_date AS DATE) AS dates,
+        COUNT(*) AS canvis_index_30td
+    FROM
+        giscedata_polissa_modcontractual gpm
+        LEFT JOIN giscedata_polissa_tarifa gpt ON gpm.tarifa = gpt.id
+    WHERE
+        observacions LIKE '%Mode facturació: ATR → Indexada%' and gpt.name ILIKE '%3.0TD%'
+    GROUP BY
+        CAST(gpm.create_date AS DATE)
+) aa ON g.fecha = aa.dates
+LEFT JOIN (
+    SELECT
+        CAST(gpm.create_date AS DATE) AS dates,
+        COUNT(*) AS canvis_periodes_30td
+    FROM
+        giscedata_polissa_modcontractual gpm
+        LEFT JOIN giscedata_polissa_tarifa gpt ON gpm.tarifa = gpt.id
+    WHERE
+        observacions LIKE '%Mode facturació: Indexada → ATR%' and gpt.name ILIKE '%3.0TD%'
+    GROUP BY
+        CAST(gpm.create_date AS DATE)
+) bb ON g.fecha = bb.dates
+LEFT JOIN (
+    SELECT
+        CAST(gpm.create_date AS DATE) AS dates,
+        COUNT(*) AS canvis_index_61td
+    FROM
+        giscedata_polissa_modcontractual gpm
+        LEFT JOIN giscedata_polissa_tarifa gpt ON gpm.tarifa = gpt.id
+    WHERE
+        observacions LIKE '%Mode facturació: ATR → Indexada%' and gpt.name ILIKE '%6.1TD%'
+    GROUP BY
+        CAST(gpm.create_date AS DATE)
+) aaa ON g.fecha = aaa.dates
+LEFT JOIN (
+    SELECT
+        CAST(gpm.create_date AS DATE) AS dates,
+        COUNT(*) AS canvis_periodes_61td
+    FROM
+        giscedata_polissa_modcontractual gpm
+        LEFT JOIN giscedata_polissa_tarifa gpt ON gpm.tarifa = gpt.id
+    WHERE
+        observacions LIKE '%Mode facturació: Indexada → ATR%' and gpt.name ILIKE '%6.1TD%'
+    GROUP BY
+        CAST(gpm.create_date AS DATE)
+) bbb ON g.fecha = bbb.dates
+ORDER BY g.fecha
+            </field>
+        </record>
+        <record id="custom_search_dashboard_som_altes_index_tariff" model="custom.search">
+            <field name="name">[DASHBOARDS][SOM - Contractes] Número d'altes amb indexada i períodes acumulats en els últims 30 dies per tarifa</field>
+            <field name="query">
+SELECT
+    g.fecha AS dates,
+    COALESCE(SUM(altes) OVER (ORDER BY g.fecha), 0) AS altes,
+    COALESCE(SUM(altes_indexada) OVER (ORDER BY g.fecha), 0) AS altes_indexada,
+    COALESCE(SUM(altes_periodes) OVER (ORDER BY g.fecha), 0) AS altes_periodes,
+    COALESCE(SUM(altes_indexada_20td) OVER (ORDER BY g.fecha), 0) AS altes_indexada_20td,
+    COALESCE(SUM(altes_periodes_20td) OVER (ORDER BY g.fecha), 0) AS altes_periodes_20td,
+    COALESCE(SUM(altes_indexada_30td) OVER (ORDER BY g.fecha), 0) AS altes_indexada_30td,
+    COALESCE(SUM(altes_periodes_30td) OVER (ORDER BY g.fecha), 0) AS altes_periodes_30td,
+    COALESCE(SUM(altes_indexada_61td) OVER (ORDER BY g.fecha), 0) AS altes_indexada_61td,
+    COALESCE(SUM(altes_periodes_61td) OVER (ORDER BY g.fecha), 0) AS altes_periodes_61td
+FROM (
+    SELECT DATE_TRUNC('day', generate_series)::DATE AS fecha
+    FROM generate_series(NOW() - '30 days'::interval, NOW(), '1 day'::interval)
+) g
+LEFT JOIN (
+    SELECT
+        CAST(gpm.data_inici AS DATE) AS dates,
+        COUNT(*) AS altes
+    FROM
+        giscedata_polissa_modcontractual gpm
+    WHERE
+        gpm.name = '1'
+    GROUP BY
+        CAST(gpm.data_inici AS DATE)
+) t ON g.fecha = t.dates
+LEFT JOIN (
+    SELECT
+        CAST(gpm.data_inici AS DATE) AS dates,
+        COUNT(*) AS altes_indexada
+    FROM
+        giscedata_polissa_modcontractual gpm
+    WHERE
+        gpm.mode_facturacio = 'index' and gpm.name = '1'
+    GROUP BY
+        CAST(gpm.data_inici AS DATE)
+) z ON g.fecha = z.dates
+LEFT JOIN (
+    SELECT
+        CAST(gpm.data_inici AS DATE) AS dates,
+        COUNT(*) AS altes_periodes
+    FROM
+        giscedata_polissa_modcontractual gpm
+    WHERE
+        mode_facturacio = 'atr' and gpm.name = '1'
+    GROUP BY
+        CAST(gpm.data_inici AS DATE)
+) zz ON g.fecha = zz.dates
+LEFT JOIN (
+    SELECT
+        CAST(gpm.data_inici AS DATE) AS dates,
+        COUNT(*) AS altes_indexada_20td
+    FROM
+        giscedata_polissa_modcontractual gpm
+        LEFT JOIN giscedata_polissa_tarifa gpt ON gpm.tarifa = gpt.id
+    WHERE
+        gpm.name = '1' and mode_facturacio = 'index' and gpt.name ILIKE '%2.0TD%'
+    GROUP BY
+        CAST(gpm.data_inici AS DATE)
+) a ON g.fecha = a.dates
+LEFT JOIN (
+    SELECT
+        CAST(gpm.data_inici AS DATE) AS dates,
+        COUNT(*) AS altes_periodes_20td
+    FROM
+        giscedata_polissa_modcontractual gpm
+        LEFT JOIN giscedata_polissa_tarifa gpt ON gpm.tarifa = gpt.id
+    WHERE
+        gpm.name = '1' and mode_facturacio = 'atr' and gpt.name ILIKE '%2.0TD%'
+    GROUP BY
+        CAST(gpm.data_inici AS DATE)
+) b ON g.fecha = b.dates
+LEFT JOIN (
+    SELECT
+        CAST(gpm.data_inici AS DATE) AS dates,
+        COUNT(*) AS altes_indexada_30td
+    FROM
+        giscedata_polissa_modcontractual gpm
+        LEFT JOIN giscedata_polissa_tarifa gpt ON gpm.tarifa = gpt.id
+    WHERE
+        gpm.name = '1' and mode_facturacio = 'index' and gpt.name ILIKE '%3.0TD%'
+    GROUP BY
+        CAST(gpm.data_inici AS DATE)
+) aaa ON g.fecha = aaa.dates
+LEFT JOIN (
+    SELECT
+        CAST(gpm.data_inici AS DATE) AS dates,
+        COUNT(*) AS altes_periodes_30td
+    FROM
+        giscedata_polissa_modcontractual gpm
+        LEFT JOIN giscedata_polissa_tarifa gpt ON gpm.tarifa = gpt.id
+    WHERE
+        gpm.name = '1' and mode_facturacio = 'atr' and gpt.name ILIKE '%3.0TD%'
+    GROUP BY
+        CAST(gpm.data_inici AS DATE)
+) aab ON g.fecha = aab.dates
+LEFT JOIN (
+    SELECT
+        CAST(gpm.data_inici AS DATE) AS dates,
+        COUNT(*) AS altes_indexada_61td
+    FROM
+        giscedata_polissa_modcontractual gpm
+        LEFT JOIN giscedata_polissa_tarifa gpt ON gpm.tarifa = gpt.id
+    WHERE
+        gpm.name = '1' and mode_facturacio = 'index' and gpt.name ILIKE '%6.1TD%'
+    GROUP BY
+        CAST(gpm.data_inici AS DATE)
+) aac ON g.fecha = aac.dates
+LEFT JOIN (
+    SELECT
+        CAST(gpm.data_inici AS DATE) AS dates,
+        COUNT(*) AS altes_periodes_61td
+    FROM
+        giscedata_polissa_modcontractual gpm
+        LEFT JOIN giscedata_polissa_tarifa gpt ON gpm.tarifa = gpt.id
+    WHERE
+        gpm.name = '1' and mode_facturacio = 'atr' and gpt.name ILIKE '%6.1TD%'
+    GROUP BY
+        CAST(gpm.data_inici AS DATE)
+) aad ON g.fecha = aad.dates
+ORDER BY g.fecha
+            </field>
+        </record>
+        <record id="custom_search_dashboard_som_baixes_index" model="custom.search">
+            <field name="name">[DASHBOARDS][SOM - Contractes] Número de baixes amb indexada i períodes acumulats en els últims 30 dies</field>
+            <field name="query">
+SELECT
+    g.fecha AS dates,
+    COALESCE(SUM(baixes) OVER (ORDER BY g.fecha), 0) AS baixes,
+    COALESCE(SUM(baixes_indexada) OVER (ORDER BY g.fecha), 0) AS baixes_indexada,
+    COALESCE(SUM(baixes_periodes) OVER (ORDER BY g.fecha), 0) AS baixes_periodes,
+    COALESCE(SUM(baixes_indexada_peninsula) OVER (ORDER BY g.fecha), 0) AS baixes_indexada_peninsula,
+    COALESCE(SUM(baixes_periodes_peninsula) OVER (ORDER BY g.fecha), 0) AS baixes_periodes_peninsula,
+    COALESCE(SUM(baixes_indexada_balears) OVER (ORDER BY g.fecha), 0) AS baixes_indexada_balears,
+    COALESCE(SUM(baixes_periodes_balears) OVER (ORDER BY g.fecha), 0) AS baixes_periodes_balears,
+    COALESCE(SUM(baixes_indexada_canaries) OVER (ORDER BY g.fecha), 0) AS baixes_indexada_canaries,
+    COALESCE(SUM(baixes_periodes_canaries) OVER (ORDER BY g.fecha), 0) AS baixes_periodes_canaries
+FROM (
+    SELECT DATE_TRUNC('day', generate_series)::DATE AS fecha
+    FROM generate_series(NOW() - '30 days'::interval, NOW(), '1 day'::interval)
+) g
+LEFT JOIN (
+    SELECT
+        CAST(gp.data_baixa AS DATE) AS dates,
+        COUNT(*) AS baixes
+    FROM
+        giscedata_polissa gp
+    GROUP BY
+        CAST(gp.data_baixa AS DATE)
+) t ON g.fecha = t.dates
+LEFT JOIN (
+    SELECT
+        CAST(gp.data_baixa AS DATE) AS dates,
+        COUNT(*) AS baixes_indexada
+    FROM
+        giscedata_polissa gp
+    WHERE
+        mode_facturacio = 'index'
+    GROUP BY
+        CAST(gp.data_baixa AS DATE)
+) z ON g.fecha = z.dates
+LEFT JOIN (
+    SELECT
+        CAST(gp.data_baixa AS DATE) AS dates,
+        COUNT(*) AS baixes_periodes
+    FROM
+        giscedata_polissa gp
+    WHERE
+        mode_facturacio = 'atr'
+    GROUP BY
+        CAST(gp.data_baixa AS DATE)
+) zz ON g.fecha = zz.dates
+LEFT JOIN (
+    SELECT
+        CAST(gp.data_baixa AS DATE) AS dates,
+        COUNT(*) AS baixes_indexada_peninsula
+    FROM
+        giscedata_polissa gp
+        LEFT JOIN giscedata_cups_ps gcps ON gp.cups = gcps.id
+        LEFT JOIN res_municipi rm ON gcps.id_municipi = rm.id
+        LEFT JOIN res_subsistemas_electricos rse ON rm.subsistema_id = rse.id
+    WHERE
+        mode_facturacio = 'index' and rse.code = 'PE'
+    GROUP BY
+        CAST(gp.data_baixa AS DATE)
+) a ON g.fecha = a.dates
+LEFT JOIN (
+    SELECT
+        CAST(gp.data_baixa AS DATE) AS dates,
+        COUNT(*) AS baixes_periodes_peninsula
+    FROM
+        giscedata_polissa gp
+        LEFT JOIN giscedata_cups_ps gcps ON gp.cups = gcps.id
+        LEFT JOIN res_municipi rm ON gcps.id_municipi = rm.id
+        LEFT JOIN res_subsistemas_electricos rse ON rm.subsistema_id = rse.id
+    WHERE
+        mode_facturacio = 'atr' and rse.code = 'PE'
+    GROUP BY
+        CAST(gp.data_baixa AS DATE)
+) b ON g.fecha = b.dates
+LEFT JOIN (
+    SELECT
+        CAST(gp.data_baixa AS DATE) AS dates,
+        COUNT(*) AS baixes_indexada_balears
+    FROM
+        giscedata_polissa gp
+        LEFT JOIN giscedata_cups_ps gcps ON gp.cups = gcps.id
+        LEFT JOIN res_municipi rm ON gcps.id_municipi = rm.id
+        LEFT JOIN res_subsistemas_electricos rse ON rm.subsistema_id = rse.id
+    WHERE
+        mode_facturacio = 'index' and rse.code IN ('IF', 'MM')
+    GROUP BY
+        CAST(gp.data_baixa AS DATE)
+) aaa ON g.fecha = aaa.dates
+LEFT JOIN (
+    SELECT
+        CAST(gp.data_baixa AS DATE) AS dates,
+        COUNT(*) AS baixes_periodes_balears
+    FROM
+        giscedata_polissa gp
+        LEFT JOIN giscedata_cups_ps gcps ON gp.cups = gcps.id
+        LEFT JOIN res_municipi rm ON gcps.id_municipi = rm.id
+        LEFT JOIN res_subsistemas_electricos rse ON rm.subsistema_id = rse.id
+    WHERE
+        mode_facturacio = 'atr' and rse.code IN ('IF', 'MM')
+    GROUP BY
+        CAST(gp.data_baixa AS DATE)
+) aab ON g.fecha = aab.dates
+LEFT JOIN (
+    SELECT
+        CAST(gp.data_baixa AS DATE) AS dates,
+        COUNT(*) AS baixes_indexada_canaries
+    FROM
+        giscedata_polissa gp
+        LEFT JOIN giscedata_cups_ps gcps ON gp.cups = gcps.id
+        LEFT JOIN res_municipi rm ON gcps.id_municipi = rm.id
+        LEFT JOIN res_subsistemas_electricos rse ON rm.subsistema_id = rse.id
+    WHERE
+        mode_facturacio = 'index' and rse.code IN ('TF', 'PA', 'LG', 'HI', 'GC', 'FL')
+    GROUP BY
+        CAST(gp.data_baixa AS DATE)
+) aac ON g.fecha = aac.dates
+LEFT JOIN (
+    SELECT
+        CAST(gp.data_baixa AS DATE) AS dates,
+        COUNT(*) AS baixes_periodes_canaries
+    FROM
+        giscedata_polissa gp
+        LEFT JOIN giscedata_cups_ps gcps ON gp.cups = gcps.id
+        LEFT JOIN res_municipi rm ON gcps.id_municipi = rm.id
+        LEFT JOIN res_subsistemas_electricos rse ON rm.subsistema_id = rse.id
+    WHERE
+        mode_facturacio = 'atr' and rse.code IN ('TF', 'PA', 'LG', 'HI', 'GC', 'FL')
+    GROUP BY
+        CAST(gp.data_baixa AS DATE)
+) aad ON g.fecha = aad.dates
+ORDER BY g.fecha
+            </field>
+        </record>
+        <record id="custom_search_dashboard_som_baixes_index_tariff" model="custom.search">
+            <field name="name">[DASHBOARDS][SOM - Contractes] Número d'baixes amb indexada i períodes acumulats en els últims 30 dies per tarifa</field>
+            <field name="query">
+SELECT
+    g.fecha AS dates,
+    COALESCE(SUM(baixes) OVER (ORDER BY g.fecha), 0) AS baixes,
+    COALESCE(SUM(baixes_indexada) OVER (ORDER BY g.fecha), 0) AS baixes_indexada,
+    COALESCE(SUM(baixes_periodes) OVER (ORDER BY g.fecha), 0) AS baixes_periodes,
+    COALESCE(SUM(baixes_indexada_20td) OVER (ORDER BY g.fecha), 0) AS baixes_indexada_20td,
+    COALESCE(SUM(baixes_periodes_20td) OVER (ORDER BY g.fecha), 0) AS baixes_periodes_20td,
+    COALESCE(SUM(baixes_indexada_30td) OVER (ORDER BY g.fecha), 0) AS baixes_indexada_30td,
+    COALESCE(SUM(baixes_periodes_30td) OVER (ORDER BY g.fecha), 0) AS baixes_periodes_30td,
+    COALESCE(SUM(baixes_indexada_61td) OVER (ORDER BY g.fecha), 0) AS baixes_indexada_61td,
+    COALESCE(SUM(baixes_periodes_61td) OVER (ORDER BY g.fecha), 0) AS baixes_periodes_61td
+FROM (
+    SELECT DATE_TRUNC('day', generate_series)::DATE AS fecha
+    FROM generate_series(NOW() - '30 days'::interval, NOW(), '1 day'::interval)
+) g
+LEFT JOIN (
+    SELECT
+        CAST(gp.data_baixa AS DATE) AS dates,
+        COUNT(*) AS baixes
+    FROM
+        giscedata_polissa gp
+    GROUP BY
+        CAST(gp.data_baixa AS DATE)
+) t ON g.fecha = t.dates
+LEFT JOIN (
+    SELECT
+        CAST(gp.data_baixa AS DATE) AS dates,
+        COUNT(*) AS baixes_indexada
+    FROM
+        giscedata_polissa gp
+    WHERE
+        mode_facturacio = 'index'
+    GROUP BY
+        CAST(gp.data_baixa AS DATE)
+) z ON g.fecha = z.dates
+LEFT JOIN (
+    SELECT
+        CAST(gp.data_baixa AS DATE) AS dates,
+        COUNT(*) AS baixes_periodes
+    FROM
+        giscedata_polissa gp
+    WHERE
+        mode_facturacio = 'atr'
+    GROUP BY
+        CAST(gp.data_baixa AS DATE)
+) zz ON g.fecha = zz.dates
+LEFT JOIN (
+    SELECT
+        CAST(gp.data_baixa AS DATE) AS dates,
+        COUNT(*) AS baixes_indexada_20td
+    FROM
+        giscedata_polissa gp
+        LEFT JOIN giscedata_polissa_tarifa gpt ON gp.tarifa = gpt.id
+    WHERE
+        mode_facturacio = 'index' and gpt.name ILIKE '%2.0TD%'
+    GROUP BY
+        CAST(gp.data_baixa AS DATE)
+) a ON g.fecha = a.dates
+LEFT JOIN (
+    SELECT
+        CAST(gp.data_baixa AS DATE) AS dates,
+        COUNT(*) AS baixes_periodes_20td
+    FROM
+        giscedata_polissa gp
+        LEFT JOIN giscedata_polissa_tarifa gpt ON gp.tarifa = gpt.id
+    WHERE
+        mode_facturacio = 'atr' and gpt.name ILIKE '%2.0TD%'
+    GROUP BY
+        CAST(gp.data_baixa AS DATE)
+) b ON g.fecha = b.dates
+LEFT JOIN (
+    SELECT
+        CAST(gp.data_baixa AS DATE) AS dates,
+        COUNT(*) AS baixes_indexada_30td
+    FROM
+        giscedata_polissa gp
+        LEFT JOIN giscedata_polissa_tarifa gpt ON gp.tarifa = gpt.id
+    WHERE
+        mode_facturacio = 'index' and gpt.name ILIKE '%3.0TD%'
+    GROUP BY
+        CAST(gp.data_baixa AS DATE)
+) aaa ON g.fecha = aaa.dates
+LEFT JOIN (
+    SELECT
+        CAST(gp.data_baixa AS DATE) AS dates,
+        COUNT(*) AS baixes_periodes_30td
+    FROM
+        giscedata_polissa gp
+        LEFT JOIN giscedata_polissa_tarifa gpt ON gp.tarifa = gpt.id
+    WHERE
+        mode_facturacio = 'atr' and gpt.name ILIKE '%3.0TD%'
+    GROUP BY
+        CAST(gp.data_baixa AS DATE)
+) aab ON g.fecha = aab.dates
+LEFT JOIN (
+    SELECT
+        CAST(gp.data_baixa AS DATE) AS dates,
+        COUNT(*) AS baixes_indexada_61td
+    FROM
+        giscedata_polissa gp
+        LEFT JOIN giscedata_polissa_tarifa gpt ON gp.tarifa = gpt.id
+    WHERE
+        mode_facturacio = 'index' and gpt.name ILIKE '%6.1TD%'
+    GROUP BY
+        CAST(gp.data_baixa AS DATE)
+) aac ON g.fecha = aac.dates
+LEFT JOIN (
+    SELECT
+        CAST(gp.data_baixa AS DATE) AS dates,
+        COUNT(*) AS baixes_periodes_61td
+    FROM
+        giscedata_polissa gp
+        LEFT JOIN giscedata_polissa_tarifa gpt ON gp.tarifa = gpt.id
+    WHERE
+        mode_facturacio = 'atr' and gpt.name ILIKE '%6.1TD%'
+    GROUP BY
+        CAST(gp.data_baixa AS DATE)
+) aad ON g.fecha = aad.dates
 ORDER BY g.fecha
             </field>
         </record>
