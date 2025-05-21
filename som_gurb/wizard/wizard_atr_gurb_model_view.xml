@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+    <data>
+        <record model="ir.ui.view" id="view_wizard_atr_gurb_model_form">
+            <field name="name">Tots els casos ATR del GURB</field>
+            <field name="model">wizard.atr.gurb.model</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <form string="Tots els casos del GURB">
+                    <button name="list_all_pols" type="object" string="Llistar tots els casos ATR del GURB" icon="gtk-execute" colspan="4"/>
+                </form>
+            </field>
+        </record>
+        <record model="ir.actions.act_window" id="action_wizard_atr_gurb_model_form">
+            <field name="name">Tots els casos ATR del GURB</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">wizard.atr.gurb.model</field>
+            <field name="view_type">form</field>
+            <field name="target">new</field>
+            <field name="view_id" ref="view_wizard_atr_gurb_model_form" />
+        </record>
+        <record id="values_wizard_create_gurb_coeficients_file_form" model="ir.values">
+            <field name="object" eval="1" />
+            <field name="name">Tots els casos ATR del GURB</field>
+            <field name="key2">client_action_multi</field>
+            <field name="key">action</field>
+            <field name="model">som.gurb</field>
+            <field name="value"
+                eval="'ir.actions.act_window,'+str(ref('action_wizard_atr_gurb_model_form'))" />
+        </record>
+    </data>
+</openerp>
