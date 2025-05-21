@@ -17,8 +17,6 @@ TIPO_AUTOCONSUMO_SEL_NEW = [
 TIPUS_SUBSECCIO = TABLA_133
 TIPUS_SUBSECCIO_SEL = [
     (ac[0], u'[{}] - {}'.format(ac[0], ac[1])) for ac in TIPUS_SUBSECCIO
-] + [
-    ['  ', u"[  ] - No informat a l'F1"],
 ]
 
 
@@ -88,8 +86,6 @@ class GiscedataFacturacioImportacioLinia(osv.osv):
         tipus_subseccio = re.findall("<TipoSubseccion>(.*)</TipoSubseccion>", xml_data)
         if tipus_subseccio:
             vals["tipus_subseccio"] = tipus_subseccio[0]
-        else:
-            vals["tipus_subseccio"] = '  '
 
         is_autoconsum_collectiu = re.findall("<Colectivo>(.*)</Colectivo>", xml_data)
         if is_autoconsum_collectiu:
