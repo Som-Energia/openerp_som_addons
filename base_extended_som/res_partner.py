@@ -330,6 +330,18 @@ class ResPartner(osv.osv):
             type="many2one",
             method=True,
         ),
+        "birthdate": fields.date("Data de naixement"),
+        "gender": fields.selection(
+            [
+                ("", ""),
+                ("female", "Dona"),
+                ("male", "Home"),
+                ("gender_fluid", "Gènere fluïd"),
+                ("non_binary", "No binària"),
+                ("other", "Altres"),
+                ("prefer_not_to_say", "Prefereixo no dir-ho"),
+            ],
+            "Gender"),
     }
 
 
