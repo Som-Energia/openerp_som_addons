@@ -50,6 +50,9 @@
                 <field name="validacio_pendent" position="after">
                     <field name="data_accio" select="2"/>
                 </field>
+                <field name="additional_info" position="after">
+                    <field name="collectiu" select="2"/>
+                </field>
             </field>
         </record>
 
