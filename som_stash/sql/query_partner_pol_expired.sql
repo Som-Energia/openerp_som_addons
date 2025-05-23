@@ -1,3 +1,11 @@
+/* Partners titular d'una pòlissa que està de baixa abans de la data_limit i que NO son o estan:
+ * SOCIS ACTIUS
+ * COM A TITULAR d'alguna pòlissa activa o de baixa menys després de la data_limit
+ * COM A ADMINISTRADORA d'alguna pòlissa activa o de baixa després de la data_limit
+ * COM A SOCI d'alguna pòlissa activa o de baixa després de la data_limit
+ * COM A NOTIFICACIÓ d'alguna pòlissa activa o de baixa després de la data_limit
+ * AMB INVERSIONS, APORTACIONS, GNKWH amb darrera data efectiva després de la data_limit
+ */
 select partner_id, date_expiry
 from
 (
