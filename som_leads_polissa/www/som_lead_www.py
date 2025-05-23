@@ -121,7 +121,10 @@ class SomLeadWww(osv.osv_memory):
             "titular_mobile": member.get("phone2"),
             "use_cont_address": False,
             "donation": www_vals.get("donation", False),
-            "member_quota_payment_type": www_vals.get("member_payment_type")
+            "member_quota_payment_type": www_vals.get("member_payment_type"),
+            "gender": member.get("gender"),
+            "birthdate": member.get("birthdate"),
+            "referral_source": member.get("referral_source"),
         }
 
         values["user_id"] = ir_model_o.get_object_reference(

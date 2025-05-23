@@ -922,3 +922,21 @@ class TestsSomLeadWww(testing.OOTestCase):
 
         with self.assertRaises(osv.except_osv):
             www_lead_o.create_lead(self.cursor, self.uid, values)
+
+    def test_lead_with_demographic_data(self):
+        www_lead_o = self.get_model("som.lead.www")
+        lead_o = self.get_model("giscedata.crm.lead")
+
+        values = self._basic_values
+        values["new_member_info"]["gender"] = "non_binary"
+        values["new_member_info"]["birthdate"] = "1990-01-01"
+        values["new_member_info"]["referral_source"] = "opcions"
+
+        result = www_lead_o.create_lead(self.cursor, self.uid, values)
+        www_lead_o.activate_lead(self.cursor, self.uid, result["lead_id"])
+
+        lead = lead_o.browse(self.cursor, self.uid, result["lead_id"])
+
+        self.assertEqual(lead.polissa_id.titular.gender, "non_binary")
+        self.assertEqual(lead.polissa_id.titular.birthdate, "1990-01-01")
+        self.assertEqual(lead.polissa_id.titular.referral_source, "opcions")

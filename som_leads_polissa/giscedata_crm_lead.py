@@ -3,6 +3,8 @@ from datetime import datetime
 from osv import fields, osv
 import netsvc
 
+from base_extended_som.res_partner import GENDER_SELECTION
+
 
 _tipus_tarifes_lead = [
     ("tarifa_existent", "Tarifa existent (ATR o Fixa)"),
@@ -318,14 +320,18 @@ class GiscedataCrmLead(osv.OsvInherits):
 
         member_o = self.pool.get("somenergia.soci")
 
-        lead = self.read(cursor, uid, crml_id, ["member_number", "titular_number"], context=context)
+        lead = self.browse(cursor, uid, crml_id)
         if context.get("create_member"):
-            create_vals['ref'] = lead["member_number"]
-        elif lead["titular_number"]:
-            create_vals['ref'] = lead["titular_number"]
+            create_vals['ref'] = lead.member_number
+        elif lead.titular_number:
+            create_vals['ref'] = lead.titular_number
 
         if context.get("partner_representantive_id"):
             create_vals["representante_id"] = context["partner_representantive_id"]
+
+        create_vals["gender"] = lead.gender
+        create_vals["birthdate"] = lead.birthdate
+        create_vals["referral_source"] = lead.referral_source
 
         partner_id = super(GiscedataCrmLead, self).create_partner(
             cursor, uid, create_vals, crml_id, context=context)
@@ -357,6 +363,9 @@ class GiscedataCrmLead(osv.OsvInherits):
         "member_quota_payment_type": fields.selection(
             _member_quota_payment_types, "Forma pagament quota sòcia"),
         "donation": fields.boolean("Donatiu voluntari"),
+        "referral_source": fields.char("Com ens ha conegut", size=255),
+        "birthdate": fields.date("Data de naixement"),
+        "gender": fields.selection(GENDER_SELECTION, "Gender"),
     }
 
     _defaults = {

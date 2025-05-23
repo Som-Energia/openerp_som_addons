@@ -3,6 +3,16 @@
 from osv import osv, fields
 import re
 
+GENDER_SELECTION = [
+    ("", ""),
+    ("female", "Dona"),
+    ("male", "Home"),
+    ("gender_fluid", "Gènere fluïd"),
+    ("non_binary", "No binària"),
+    ("other", "Altres"),
+    ("prefer_not_to_say", "Prefereixo no dir-ho"),
+]
+
 
 class ResPartner(osv.osv):
 
@@ -331,17 +341,7 @@ class ResPartner(osv.osv):
             method=True,
         ),
         "birthdate": fields.date("Data de naixement"),
-        "gender": fields.selection(
-            [
-                ("", ""),
-                ("female", "Dona"),
-                ("male", "Home"),
-                ("gender_fluid", "Gènere fluïd"),
-                ("non_binary", "No binària"),
-                ("other", "Altres"),
-                ("prefer_not_to_say", "Prefereixo no dir-ho"),
-            ],
-            "Gender"),
+        "gender": fields.selection(GENDER_SELECTION, "Gender"),
     }
 
 
