@@ -25,7 +25,7 @@ LEFT JOIN (
     FROM
         giscedata_polissa_modcontractual
     WHERE
-        observacions LIKE '%Mode facturació: ATR → Indexada%'
+        observacions LIKE '%Mode facturaci%: ATR % Indexada%'
     GROUP BY
         CAST(create_date AS DATE)
 ) t ON g.fecha = t.dates
@@ -36,7 +36,7 @@ LEFT JOIN (
     FROM
         giscedata_polissa_modcontractual
     WHERE
-        observacions LIKE '%Mode facturació: Indexada → ATR%'
+        observacions LIKE '%Mode facturaci%: Indexada % ATR%'
     GROUP BY
         CAST(create_date AS DATE)
 ) z ON g.fecha = z.dates
@@ -50,7 +50,7 @@ LEFT JOIN (
         LEFT JOIN res_municipi rm ON gcps.id_municipi = rm.id
         LEFT JOIN res_subsistemas_electricos rse ON rm.subsistema_id = rse.id
     WHERE
-        observacions LIKE '%Mode facturació: ATR → Indexada%' and rse.code = 'PE'
+        observacions LIKE '%Mode facturaci%: ATR % Indexada%' and rse.code = 'PE'
     GROUP BY
         CAST(gpm.create_date AS DATE)
 ) a ON g.fecha = a.dates
@@ -64,7 +64,7 @@ LEFT JOIN (
         LEFT JOIN res_municipi rm ON gcps.id_municipi = rm.id
         LEFT JOIN res_subsistemas_electricos rse ON rm.subsistema_id = rse.id
     WHERE
-        observacions LIKE '%Mode facturació: Indexada → ATR%' and rse.code = 'PE'
+        observacions LIKE '%Mode facturaci%: Indexada % ATR%' and rse.code = 'PE'
     GROUP BY
         CAST(gpm.create_date AS DATE)
 ) b ON g.fecha = b.dates
@@ -78,7 +78,7 @@ LEFT JOIN (
         LEFT JOIN res_municipi rm ON gcps.id_municipi = rm.id
         LEFT JOIN res_subsistemas_electricos rse ON rm.subsistema_id = rse.id
     WHERE
-        observacions LIKE '%Mode facturació: ATR → Indexada%' and rse.code IN ('IF', 'MM')
+        observacions LIKE '%Mode facturaci%: ATR % Indexada%' and rse.code IN ('IF', 'MM')
     GROUP BY
         CAST(gpm.create_date AS DATE)
 ) aa ON g.fecha = aa.dates
@@ -92,7 +92,7 @@ LEFT JOIN (
         LEFT JOIN res_municipi rm ON gcps.id_municipi = rm.id
         LEFT JOIN res_subsistemas_electricos rse ON rm.subsistema_id = rse.id
     WHERE
-        observacions LIKE '%Mode facturació: Indexada → ATR%' and rse.code IN ('IF', 'MM')
+        observacions LIKE '%Mode facturaci%: Indexada % ATR%' and rse.code IN ('IF', 'MM')
     GROUP BY
         CAST(gpm.create_date AS DATE)
 ) bb ON g.fecha = bb.dates
@@ -106,7 +106,7 @@ LEFT JOIN (
         LEFT JOIN res_municipi rm ON gcps.id_municipi = rm.id
         LEFT JOIN res_subsistemas_electricos rse ON rm.subsistema_id = rse.id
     WHERE
-        observacions LIKE '%Mode facturació: ATR → Indexada%' and rse.code IN ('TF', 'PA', 'LG', 'HI', 'GC', 'FL')
+        observacions LIKE '%Mode facturaci%: ATR % Indexada%' and rse.code IN ('TF', 'PA', 'LG', 'HI', 'GC', 'FL')
     GROUP BY
         CAST(gpm.create_date AS DATE)
 ) aaa ON g.fecha = aaa.dates
@@ -120,7 +120,7 @@ LEFT JOIN (
         LEFT JOIN res_municipi rm ON gcps.id_municipi = rm.id
         LEFT JOIN res_subsistemas_electricos rse ON rm.subsistema_id = rse.id
     WHERE
-        observacions LIKE '%Mode facturació: Indexada → ATR%' and rse.code IN ('TF', 'PA', 'LG', 'HI', 'GC', 'FL')
+        observacions LIKE '%Mode facturaci%: Indexada % ATR%' and rse.code IN ('TF', 'PA', 'LG', 'HI', 'GC', 'FL')
     GROUP BY
         CAST(gpm.create_date AS DATE)
 ) bbb ON g.fecha = bbb.dates
@@ -289,7 +289,7 @@ LEFT JOIN (
     FROM
         giscedata_polissa_modcontractual
     WHERE
-        observacions LIKE '%Mode facturació: ATR → Indexada%'
+        observacions LIKE '%Mode facturaci%: ATR % Indexada%'
     GROUP BY
         CAST(create_date AS DATE)
 ) t ON g.fecha = t.dates
@@ -300,7 +300,7 @@ LEFT JOIN (
     FROM
         giscedata_polissa_modcontractual
     WHERE
-        observacions LIKE '%Mode facturació: Indexada → ATR%'
+        observacions LIKE '%Mode facturaci%: Indexada % ATR%'
     GROUP BY
         CAST(create_date AS DATE)
 ) z ON g.fecha = z.dates
@@ -312,7 +312,7 @@ LEFT JOIN (
         giscedata_polissa_modcontractual gpm
         LEFT JOIN giscedata_polissa_tarifa gpt ON gpm.tarifa = gpt.id
     WHERE
-        observacions LIKE '%Mode facturació: ATR → Indexada%' and gpt.name ILIKE '%2.0TD%'
+        observacions LIKE '%Mode facturaci%: ATR % Indexada%' and gpt.name ILIKE '%2.0TD%'
     GROUP BY
         CAST(gpm.create_date AS DATE)
 ) a ON g.fecha = a.dates
@@ -324,7 +324,7 @@ LEFT JOIN (
         giscedata_polissa_modcontractual gpm
         LEFT JOIN giscedata_polissa_tarifa gpt ON gpm.tarifa = gpt.id
     WHERE
-        observacions LIKE '%Mode facturació: Indexada → ATR%' and gpt.name ILIKE '%2.0TD'
+        observacions LIKE '%Mode facturaci%: Indexada % ATR%' and gpt.name ILIKE '%2.0TD'
     GROUP BY
         CAST(gpm.create_date AS DATE)
 ) b ON g.fecha = b.dates
@@ -336,7 +336,7 @@ LEFT JOIN (
         giscedata_polissa_modcontractual gpm
         LEFT JOIN giscedata_polissa_tarifa gpt ON gpm.tarifa = gpt.id
     WHERE
-        observacions LIKE '%Mode facturació: ATR → Indexada%' and gpt.name ILIKE '%3.0TD%'
+        observacions LIKE '%Mode facturaci%: ATR % Indexada%' and gpt.name ILIKE '%3.0TD%'
     GROUP BY
         CAST(gpm.create_date AS DATE)
 ) aa ON g.fecha = aa.dates
@@ -348,7 +348,7 @@ LEFT JOIN (
         giscedata_polissa_modcontractual gpm
         LEFT JOIN giscedata_polissa_tarifa gpt ON gpm.tarifa = gpt.id
     WHERE
-        observacions LIKE '%Mode facturació: Indexada → ATR%' and gpt.name ILIKE '%3.0TD%'
+        observacions LIKE '%Mode facturaci%: Indexada % ATR%' and gpt.name ILIKE '%3.0TD%'
     GROUP BY
         CAST(gpm.create_date AS DATE)
 ) bb ON g.fecha = bb.dates
@@ -360,7 +360,7 @@ LEFT JOIN (
         giscedata_polissa_modcontractual gpm
         LEFT JOIN giscedata_polissa_tarifa gpt ON gpm.tarifa = gpt.id
     WHERE
-        observacions LIKE '%Mode facturació: ATR → Indexada%' and gpt.name ILIKE '%6.1TD%'
+        observacions LIKE '%Mode facturaci%: ATR % Indexada%' and gpt.name ILIKE '%6.1TD%'
     GROUP BY
         CAST(gpm.create_date AS DATE)
 ) aaa ON g.fecha = aaa.dates
@@ -372,7 +372,7 @@ LEFT JOIN (
         giscedata_polissa_modcontractual gpm
         LEFT JOIN giscedata_polissa_tarifa gpt ON gpm.tarifa = gpt.id
     WHERE
-        observacions LIKE '%Mode facturació: Indexada → ATR%' and gpt.name ILIKE '%6.1TD%'
+        observacions LIKE '%Mode facturaci%: Indexada % ATR%' and gpt.name ILIKE '%6.1TD%'
     GROUP BY
         CAST(gpm.create_date AS DATE)
 ) bbb ON g.fecha = bbb.dates
@@ -789,7 +789,7 @@ LEFT JOIN (
     FROM
         giscedata_polissa_modcontractual
     WHERE
-        observacions LIKE '%Mode facturació: ATR → Indexada%'
+        observacions LIKE '%Mode facturaci%: ATR % Indexada%'
     GROUP BY
         DATE_TRUNC('month', create_date)
 ) t ON g.fecha = t.dates
@@ -800,7 +800,7 @@ LEFT JOIN (
     FROM
         giscedata_polissa_modcontractual
     WHERE
-        observacions LIKE '%Mode facturació: Indexada → ATR%'
+        observacions LIKE '%Mode facturaci%: Indexada % ATR%'
     GROUP BY
         DATE_TRUNC('month', create_date)
 ) z ON g.fecha = z.dates
@@ -814,7 +814,7 @@ LEFT JOIN (
         LEFT JOIN res_municipi rm ON gcps.id_municipi = rm.id
         LEFT JOIN res_subsistemas_electricos rse ON rm.subsistema_id = rse.id
     WHERE
-        observacions LIKE '%Mode facturació: ATR → Indexada%' AND rse.code = 'PE'
+        observacions LIKE '%Mode facturaci%: ATR % Indexada%' AND rse.code = 'PE'
     GROUP BY
         DATE_TRUNC('month', gpm.create_date)
 ) a ON g.fecha = a.dates
@@ -828,7 +828,7 @@ LEFT JOIN (
         LEFT JOIN res_municipi rm ON gcps.id_municipi = rm.id
         LEFT JOIN res_subsistemas_electricos rse ON rm.subsistema_id = rse.id
     WHERE
-        observacions LIKE '%Mode facturació: Indexada → ATR%' AND rse.code = 'PE'
+        observacions LIKE '%Mode facturaci%: Indexada % ATR%' AND rse.code = 'PE'
     GROUP BY
         DATE_TRUNC('month', gpm.create_date)
 ) b ON g.fecha = b.dates
@@ -842,7 +842,7 @@ LEFT JOIN (
         LEFT JOIN res_municipi rm ON gcps.id_municipi = rm.id
         LEFT JOIN res_subsistemas_electricos rse ON rm.subsistema_id = rse.id
     WHERE
-        observacions LIKE '%Mode facturació: ATR → Indexada%' AND rse.code IN ('IF', 'MM')
+        observacions LIKE '%Mode facturaci%: ATR % Indexada%' AND rse.code IN ('IF', 'MM')
     GROUP BY
         DATE_TRUNC('month', gpm.create_date)
 ) aa ON g.fecha = aa.dates
@@ -856,7 +856,7 @@ LEFT JOIN (
         LEFT JOIN res_municipi rm ON gcps.id_municipi = rm.id
         LEFT JOIN res_subsistemas_electricos rse ON rm.subsistema_id = rse.id
     WHERE
-        observacions LIKE '%Mode facturació: Indexada → ATR%' AND rse.code IN ('IF', 'MM')
+        observacions LIKE '%Mode facturaci%: Indexada % ATR%' AND rse.code IN ('IF', 'MM')
     GROUP BY
         DATE_TRUNC('month', gpm.create_date)
 ) bb ON g.fecha = bb.dates
@@ -870,7 +870,7 @@ LEFT JOIN (
         LEFT JOIN res_municipi rm ON gcps.id_municipi = rm.id
         LEFT JOIN res_subsistemas_electricos rse ON rm.subsistema_id = rse.id
     WHERE
-        observacions LIKE '%Mode facturació: ATR → Indexada%' AND rse.code IN ('TF', 'PA', 'LG', 'HI', 'GC', 'FL')
+        observacions LIKE '%Mode facturaci%: ATR % Indexada%' AND rse.code IN ('TF', 'PA', 'LG', 'HI', 'GC', 'FL')
     GROUP BY
         DATE_TRUNC('month', gpm.create_date)
 ) aaa ON g.fecha = aaa.dates
@@ -884,7 +884,7 @@ LEFT JOIN (
         LEFT JOIN res_municipi rm ON gcps.id_municipi = rm.id
         LEFT JOIN res_subsistemas_electricos rse ON rm.subsistema_id = rse.id
     WHERE
-        observacions LIKE '%Mode facturació: Indexada → ATR%' AND rse.code IN ('TF', 'PA', 'LG', 'HI', 'GC', 'FL')
+        observacions LIKE '%Mode facturaci%: Indexada % ATR%' AND rse.code IN ('TF', 'PA', 'LG', 'HI', 'GC', 'FL')
     GROUP BY
         DATE_TRUNC('month', gpm.create_date)
 ) bbb ON g.fecha = bbb.dates
@@ -1046,7 +1046,7 @@ LEFT JOIN (
         DATE_TRUNC('month', create_date)::DATE AS dates,
         COUNT(*) AS canvis_index
     FROM giscedata_polissa_modcontractual
-    WHERE observacions LIKE '%Mode facturació: ATR → Indexada%'
+    WHERE observacions LIKE '%Mode facturaci%: ATR % Indexada%'
     GROUP BY DATE_TRUNC('month', create_date)
 ) t ON g.fecha = t.dates
 LEFT JOIN (
@@ -1054,7 +1054,7 @@ LEFT JOIN (
         DATE_TRUNC('month', create_date)::DATE AS dates,
         COUNT(*) AS canvis_periodes
     FROM giscedata_polissa_modcontractual
-    WHERE observacions LIKE '%Mode facturació: Indexada → ATR%'
+    WHERE observacions LIKE '%Mode facturaci%: Indexada % ATR%'
     GROUP BY DATE_TRUNC('month', create_date)
 ) z ON g.fecha = z.dates
 LEFT JOIN (
@@ -1063,7 +1063,7 @@ LEFT JOIN (
         COUNT(*) AS canvis_index_20td
     FROM giscedata_polissa_modcontractual gpm
     LEFT JOIN giscedata_polissa_tarifa gpt ON gpm.tarifa = gpt.id
-    WHERE observacions LIKE '%Mode facturació: ATR → Indexada%'
+    WHERE observacions LIKE '%Mode facturaci%: ATR % Indexada%'
       AND gpt.name ILIKE '%2.0TD%'
     GROUP BY DATE_TRUNC('month', gpm.create_date)
 ) a ON g.fecha = a.dates
@@ -1073,7 +1073,7 @@ LEFT JOIN (
         COUNT(*) AS canvis_periodes_20td
     FROM giscedata_polissa_modcontractual gpm
     LEFT JOIN giscedata_polissa_tarifa gpt ON gpm.tarifa = gpt.id
-    WHERE observacions LIKE '%Mode facturació: Indexada → ATR%'
+    WHERE observacions LIKE '%Mode facturaci%: Indexada % ATR%'
       AND gpt.name ILIKE '%2.0TD%'
     GROUP BY DATE_TRUNC('month', gpm.create_date)
 ) b ON g.fecha = b.dates
@@ -1083,7 +1083,7 @@ LEFT JOIN (
         COUNT(*) AS canvis_index_30td
     FROM giscedata_polissa_modcontractual gpm
     LEFT JOIN giscedata_polissa_tarifa gpt ON gpm.tarifa = gpt.id
-    WHERE observacions LIKE '%Mode facturació: ATR → Indexada%'
+    WHERE observacions LIKE '%Mode facturaci%: ATR % Indexada%'
       AND gpt.name ILIKE '%3.0TD%'
     GROUP BY DATE_TRUNC('month', gpm.create_date)
 ) aa ON g.fecha = aa.dates
@@ -1093,7 +1093,7 @@ LEFT JOIN (
         COUNT(*) AS canvis_periodes_30td
     FROM giscedata_polissa_modcontractual gpm
     LEFT JOIN giscedata_polissa_tarifa gpt ON gpm.tarifa = gpt.id
-    WHERE observacions LIKE '%Mode facturació: Indexada → ATR%'
+    WHERE observacions LIKE '%Mode facturaci%: Indexada % ATR%'
       AND gpt.name ILIKE '%3.0TD%'
     GROUP BY DATE_TRUNC('month', gpm.create_date)
 ) bb ON g.fecha = bb.dates
@@ -1103,7 +1103,7 @@ LEFT JOIN (
         COUNT(*) AS canvis_index_61td
     FROM giscedata_polissa_modcontractual gpm
     LEFT JOIN giscedata_polissa_tarifa gpt ON gpm.tarifa = gpt.id
-    WHERE observacions LIKE '%Mode facturació: ATR → Indexada%'
+    WHERE observacions LIKE '%Mode facturaci%: ATR % Indexada%'
       AND gpt.name ILIKE '%6.1TD%'
     GROUP BY DATE_TRUNC('month', gpm.create_date)
 ) aaa ON g.fecha = aaa.dates
@@ -1113,7 +1113,7 @@ LEFT JOIN (
         COUNT(*) AS canvis_periodes_61td
     FROM giscedata_polissa_modcontractual gpm
     LEFT JOIN giscedata_polissa_tarifa gpt ON gpm.tarifa = gpt.id
-    WHERE observacions LIKE '%Mode facturació: Indexada → ATR%'
+    WHERE observacions LIKE '%Mode facturaci%: Indexada % ATR%'
       AND gpt.name ILIKE '%6.1TD%'
     GROUP BY DATE_TRUNC('month', gpm.create_date)
 ) bbb ON g.fecha = bbb.dates
