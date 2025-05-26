@@ -334,7 +334,7 @@ class GiscedataCrmLead(osv.OsvInherits):
         "donation": fields.boolean("Donatiu voluntari"),
         "referral_source": fields.char("Com ens ha conegut", size=255),
         "birthdate": fields.date("Data de naixement"),
-        "gender": fields.selection(GENDER_SELECTION, "Gender"),
+        "gender": fields.selection(GENDER_SELECTION, "Gènere"),
     }
 
     _defaults = {

@@ -341,7 +341,7 @@ class ResPartner(osv.osv):
             method=True,
         ),
         "birthdate": fields.date("Data de naixement"),
-        "gender": fields.selection(GENDER_SELECTION, "Gender"),
+        "gender": fields.selection(GENDER_SELECTION, "Gènere"),
     }
 
 
