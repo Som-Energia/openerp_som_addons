@@ -190,6 +190,7 @@ class GiscedataCrmLead(osv.OsvInherits):
         payment_type_o = self.pool.get("payment.type")
         payment_mode_o = self.pool.get("payment.mode")
         payment_order_o = self.pool.get("payment.order")
+        mandate_o = self.pool.get("payment.mandate")
         currency_o = self.pool.get("res.currency")
         conf_o = self.pool.get("res.config")
         ir_model_o = self.pool.get("ir.model.data")
@@ -200,8 +201,10 @@ class GiscedataCrmLead(osv.OsvInherits):
             raise osv.except_osv('Error', 'Ja existeix una factura de remesa inicial')
 
         partner_id = lead.partner_id.id
-        mandate_id = self.get_or_create_payment_mandate(
-            cursor, uid, partner_id, lead.iban, _MEMBER_FEE_PURPOSE, context=context)
+        mandate_id = mandate_o.get_or_create_payment_mandate(
+            cursor, uid, partner_id, lead.iban, _MEMBER_FEE_PURPOSE,
+            payment_type="one_payment", context=context
+        )
 
         socia_fee_amount = conf_o.get(cursor, uid, "socia_member_fee_amount", "100")
         euro_id = currency_o.search(cursor, uid, [('code', '=', 'EUR')])[0]
@@ -265,40 +268,6 @@ class GiscedataCrmLead(osv.OsvInherits):
             cursor, uid, payment_mode_name, use_invoice=True, context=context
         )
         invoice_o.afegeix_a_remesa(cursor, uid, [invoice_id], payment_order_id)
-
-    def get_or_create_payment_mandate(self, cursor, uid, partner_id, iban, purpose, context=None):
-        if context is None:
-            context = {}
-
-        partner_o = self.pool.get("res.partner")
-        mandate_o = self.pool.get("payment.mandate")
-
-        partner = partner_o.read(cursor, uid, partner_id, ['address', 'name', 'vat'])
-        search_params = [
-            ('debtor_iban', '=', iban),
-            ('debtor_vat', '=', partner['vat']),
-            ('date_end', '=', False),
-            ('reference', '=', 'res.partner,{}'.format(partner_id)),
-            ('notes', '=', purpose),
-        ]
-
-        mandate_ids = mandate_o.search(cursor, uid, search_params)
-        if mandate_ids:
-            return mandate_ids[0]
-
-        today = datetime.strftime(datetime.now(), '%Y-%m-%d')
-        mandate_reference = "res.partner,{}".format(partner_id)
-        mandate_scheme = "core"
-
-        return mandate_o.create(cursor, uid, {
-            "date": today,
-            "reference": mandate_reference,
-            "mandate_scheme": mandate_scheme,
-            "signed": 1,
-            "debtor_iban": iban.replace(" ", ""),
-            "payment_type": "one_payment",
-            'notes': purpose,
-        })
 
     def create(self, cursor, uid, vals, context=None):
         if context is None:
