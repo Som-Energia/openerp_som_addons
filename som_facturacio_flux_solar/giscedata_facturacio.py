@@ -21,12 +21,20 @@ class GiscedataFacturacioFacturador(osv.osv):
         fact = fact_obj.browse(cursor, uid, factura_id, context=context)
         # Es vol descomptar el total dels conceptes del sector electric
         max_descompte = 0
+        productes_a_descomptar = []
 
         # Producte de descompte de la bateria virtual
-        product_id = imd_obj.get_object_reference(
+        bv_product_id = imd_obj.get_object_reference(
             cursor, uid, "giscedata_facturacio_bateria_virtual",
             "bateria_virtual_product"
         )[1]
+        productes_a_descomptar.append(bv_product_id)
+
+        indemnitzacio_product_id = imd_obj.get_object_reference(
+            cursor, uid, "giscedata_facturacio_comer",
+            "concepte_01"
+        )[1]
+        productes_a_descomptar.append(indemnitzacio_product_id)
 
         # Si tenen bo social, les linies de bo social s'han de tenir en
         # compte tot i ser de tipus "altres"
@@ -57,7 +65,7 @@ class GiscedataFacturacioFacturador(osv.osv):
                   and pbosocial_id == dict_vals['product_id'][0]):
                 max_descompte += dict_vals['price_subtotal']
                 linies_utilitzades_ids.append(dict_vals['id'])
-            elif product_id == dict_vals['product_id'][0]:
+            elif dict_vals['product_id'][0] in productes_a_descomptar:
                 max_descompte += dict_vals['price_subtotal']
                 if 'id' in dict_vals:
                     linies_utilitzades_ids.append(dict_vals['id'])
