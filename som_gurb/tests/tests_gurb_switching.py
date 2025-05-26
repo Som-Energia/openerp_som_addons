@@ -1336,3 +1336,151 @@ class TestsGurbSwitching(TestsGurbBase):
         self.assertIsNotNone(step_id)
         scb = sgc_obj.browse(self.cursor, self.uid, sgc_id)
         self.assertEqual(scb.state, 'active')
+
+    @mock.patch('som_gurb.models.giscedata_switching._contract_has_gurb_category')
+    @mock.patch('som_gurb.models.giscedata_switching.is_unidirectional_colective_autocons_change')
+    def test_create_from_xml_m2_05_unexpected_leaving_gurb(
+            self, mock_is_unidirectional, mock_has_gurb_category):
+        mock_has_gurb_category.return_value = True
+        mock_is_unidirectional.return_value = False
+
+        sw_obj = self.openerp.pool.get("giscedata.switching")
+        sgc_obj = self.openerp.pool.get("som.gurb.cups")
+        pol_obj = self.openerp.pool.get("giscedata.polissa")
+
+        contract_id = self.get_contract_id(self.txn, xml_id="polissa_tarifa_018")
+
+        # Preparar el sgc_obj
+        sgc_id = self.openerp.pool.get("ir.model.data").get_object_reference(
+            self.cursor, self.uid, "som_gurb", "gurb_cups_0002")[1]
+
+        sgc_0002 = sgc_obj.browse(self.cursor, self.uid, sgc_id)
+        sgc_0002.send_signal("button_create_cups")
+        sgc_0002.send_signal("button_activate_cups")
+
+        # Import XML M2_05
+        m2_05_xml_path = get_module_resource(
+            "som_gurb", "tests", "fixtures", "m205_new.xml"
+        )
+        with open(m2_05_xml_path, "r") as f:
+            m2_05_xml = f.read()
+        self.switch(self.txn, "comer")
+        self.change_polissa_comer(self.txn, pol_id='polissa_tarifa_018')
+        cups = pol_obj.browse(self.cursor, self.uid, contract_id).cups
+
+        m2_05_xml = m2_05_xml.replace(
+            "<CUPS>ES1234000000000001JN0F",
+            "<CUPS>{0}".format(cups.name)
+        )
+        m2_05_xml = m2_05_xml.replace(
+            "<Motivo>01",
+            "<Motivo>{0}".format("06")
+        )
+
+        # Import XML
+        step_id = sw_obj.importar_xml(
+            self.cursor, self.uid, m2_05_xml, "m205_new.xml"
+        )
+
+        # Assertions
+        self.assertIsNotNone(step_id)
+        scb = sgc_obj.browse(self.cursor, self.uid, sgc_id)
+        self.assertEqual(scb.state, "atr_pending")
+
+    @mock.patch("som_gurb.models.giscedata_switching._contract_has_gurb_category")
+    @mock.patch("som_gurb.models.giscedata_switching.is_unidirectional_colective_autocons_change")
+    def test_create_from_xml_m2_05_expected_leaving_gurb(
+            self, mock_is_unidirectional, mock_has_gurb_category):
+        mock_has_gurb_category.return_value = True
+        mock_is_unidirectional.return_value = False
+
+        sw_obj = self.openerp.pool.get("giscedata.switching")
+        sgc_obj = self.openerp.pool.get("som.gurb.cups")
+        pol_obj = self.openerp.pool.get("giscedata.polissa")
+
+        contract_id = self.get_contract_id(self.txn, xml_id="polissa_tarifa_018")
+
+        # Preparar el sgc_obj
+        sgc_id = self.openerp.pool.get("ir.model.data").get_object_reference(
+            self.cursor, self.uid, "som_gurb", "gurb_cups_0002")[1]
+
+        sgc_0002 = sgc_obj.browse(self.cursor, self.uid, sgc_id)
+        sgc_0002.send_signal("button_create_cups")
+        sgc_0002.send_signal("button_activate_cups")
+        sgc_0002.send_signal("button_coming_cancellation")
+
+        # Import XML M2_05
+        m2_05_xml_path = get_module_resource(
+            "som_gurb", "tests", "fixtures", "m205_new.xml"
+        )
+        with open(m2_05_xml_path, "r") as f:
+            m2_05_xml = f.read()
+        self.switch(self.txn, "comer")
+        self.change_polissa_comer(self.txn, pol_id='polissa_tarifa_018')
+        cups = pol_obj.browse(self.cursor, self.uid, contract_id).cups
+
+        m2_05_xml = m2_05_xml.replace(
+            "<CUPS>ES1234000000000001JN0F",
+            "<CUPS>{0}".format(cups.name)
+        )
+        m2_05_xml = m2_05_xml.replace(
+            "<Motivo>01",
+            "<Motivo>{0}".format("06")
+        )
+
+        # Import XML
+        step_id = sw_obj.importar_xml(
+            self.cursor, self.uid, m2_05_xml, "m205_new.xml"
+        )
+
+        # Assertions
+        self.assertIsNotNone(step_id)
+        self.assertEqual(sgc_0002.state, "cancel")
+
+    @mock.patch("som_gurb.models.giscedata_switching._contract_has_gurb_category")
+    @mock.patch("som_gurb.models.giscedata_switching.is_unidirectional_colective_autocons_change")
+    def test_create_from_xml_m2_05_activating_gurb(
+            self, mock_is_unidirectional, mock_has_gurb_category):
+        mock_has_gurb_category.return_value = True
+        mock_is_unidirectional.return_value = False
+
+        sw_obj = self.openerp.pool.get("giscedata.switching")
+        sgc_obj = self.openerp.pool.get("som.gurb.cups")
+        pol_obj = self.openerp.pool.get("giscedata.polissa")
+
+        contract_id = self.get_contract_id(self.txn, xml_id="polissa_tarifa_018")
+
+        # Preparar el sgc_obj
+        sgc_id = self.openerp.pool.get("ir.model.data").get_object_reference(
+            self.cursor, self.uid, "som_gurb", "gurb_cups_0002")[1]
+
+        sgc_0002 = sgc_obj.browse(self.cursor, self.uid, sgc_id)
+        sgc_0002.send_signal("button_create_cups")
+
+        # Import XML M2_05
+        m2_05_xml_path = get_module_resource(
+            "som_gurb", "tests", "fixtures", "m205_new.xml"
+        )
+        with open(m2_05_xml_path, "r") as f:
+            m2_05_xml = f.read()
+        self.switch(self.txn, "comer")
+        self.change_polissa_comer(self.txn, pol_id='polissa_tarifa_018')
+        cups = pol_obj.browse(self.cursor, self.uid, contract_id).cups
+
+        m2_05_xml = m2_05_xml.replace(
+            "<CUPS>ES1234000000000001JN0F",
+            "<CUPS>{0}".format(cups.name)
+        )
+        m2_05_xml = m2_05_xml.replace(
+            "<Motivo>01",
+            "<Motivo>{0}".format("04")
+        )
+
+        # Import XML
+        step_id = sw_obj.importar_xml(
+            self.cursor, self.uid, m2_05_xml, "m205_new.xml"
+        )
+
+        # Assertions
+        self.assertIsNotNone(step_id)
+        self.assertEqual(sgc_0002.state, "active")

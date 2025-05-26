@@ -338,12 +338,17 @@ class SomGurbCups(osv.osv):
         if context is None:
             context = {}
 
-        # Desactivate GURB CUPS, Close Beta, Unsubscribe Service
-        self.send_signal(cursor, uid, [gurb_cups_id], "button_cancel_cups")
-        self.write(cursor, uid, gurb_cups_id, {"active": False, "end_date": end_date})
-        self.terminate_service_gurb_cups(
-            cursor, uid, gurb_cups_id, end_date, context=context
-        )
+        state = self.read(cursor, uid, gurb_cups_id, ["state"])["state"]
+
+        if state == "active":
+            self.send_signal(cursor, uid, [gurb_cups_id], "button_atr_pending")
+        else:
+            # Desactivate GURB CUPS, Close Beta, Unsubscribe Service
+            self.send_signal(cursor, uid, [gurb_cups_id], "button_cancel_cups")
+            self.write(cursor, uid, gurb_cups_id, {"active": False, "end_date": end_date})
+            self.terminate_service_gurb_cups(
+                cursor, uid, gurb_cups_id, end_date, context=context
+            )
 
     def terminate_service_gurb_cups(self, cursor, uid, gurb_cups_id, end_date, context=None):
         if context is None:

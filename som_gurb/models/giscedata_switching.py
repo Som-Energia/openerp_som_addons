@@ -533,3 +533,57 @@ class GiscedataSwitchingHelpers(osv.osv):
 
 
 GiscedataSwitchingHelpers()
+
+
+class GiscedataSwitchingM2_05(osv.osv):
+    _inherit = "giscedata.switching.m2.05"
+
+    def create_from_xml(self, cursor, uid, sw_id, xml, context=None):
+        if context is None:
+            context = {}
+
+        step_id = super(GiscedataSwitchingM2_05, self).create_from_xml(
+            cursor, uid, sw_id, xml, context=context
+        )
+
+        sw_obj = self.pool.get("giscedata.switching")
+        gurb_obj = self.pool.get("som.gurb")
+        gurb_cups_obj = self.pool.get("som.gurb.cups")
+        sw_step_header_obj = self.pool.get("giscedata.switching.step.header")
+        sw = sw_obj.browse(cursor, uid, sw_id, context=context)
+
+        if sw and _contract_has_gurb_category(
+            cursor, uid, self.pool, sw.cups_polissa_id.id, context=context
+        ):
+
+            step = self.browse(cursor, uid, step_id, context=context)
+
+            gurb_cups_id = gurb_cups_obj.get_gurb_cups_from_sw_id(
+                cursor, uid, sw_id, context=context
+            )
+
+            # GURB Leaving Codes
+            if step.motiu_modificacio == "06":
+                gurb_cups_obj.cancel_gurb_cups(
+                    cursor, uid, gurb_cups_id, step.data_activacio, context=context
+                )
+            # GURB Possible contractual change Codes
+            elif step.motiu_modificacio == "02":
+                gurb_cups_obj.activate_or_modify_gurb_cups(
+                    cursor, uid, gurb_cups_id, step.data_activacio, context=context
+                )
+            # GURB Activation Codes
+            elif step.motiu_modificacio in ["04", "15", "19"]:
+                sw_step_header_id = self.read(cursor, uid, step_id, ['header_id'])['header_id'][0]
+                sw_step_header_obj.write(
+                    cursor, uid, sw_step_header_id, {'notificacio_pendent': False}
+                )
+                data_activacio = xml.datos_activacion.fecha
+                gurb_obj.activate_gurb_from_m1_05(
+                    cursor, uid, sw_id, data_activacio, context=context
+                )
+
+        return step_id
+
+
+GiscedataSwitchingM2_05()
