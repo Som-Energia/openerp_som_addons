@@ -127,7 +127,7 @@ class AccountInvoice(osv.osv):
                     "active_ids": [fact_id],
                 }
             )
-            self.action_mail_avis_cobraments_async(cursor, uid, ids, ctx)
+            self.action_mail_unpaid_apo_invoice_async(cursor, uid, ids, ctx)
 
     def action_mail_unpaid_apo_invoice(self, cursor, uid, ids, context=None):
         email_wizard_obj = self.pool.get("poweremail.send.wizard")
