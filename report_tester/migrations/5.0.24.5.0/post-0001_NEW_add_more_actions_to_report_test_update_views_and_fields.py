@@ -18,11 +18,11 @@ def up(cursor, installed_version):
 
     logger.info("Updating XML and CSV files")
     data_files = [
-        'security/ir.model.access.csv',
         'views/report_test_view.xml',
         'wizard/wizard_report_test_attach_to_invoice.xml',
         'wizard/wizard_report_test_group_view_tests.xml',
         'wizard/wizard_report_test_view_attached.xml',
+        'security/ir.model.access.csv',
     ]
 
     for data_file in data_files:
