@@ -16,7 +16,7 @@ Execució des de l'arrel del repositori:
 
 def get_modified_files():
     """Retorna un diccionari amb els mòduls i els seus fitxers modificats (XML, CSV i Python)."""
-    cmd = "git diff --name-only origin/main"
+    cmd = "git diff --name-only main"
     result = subprocess.check_output(cmd.split()).decode('utf-8')
 
     modified_files = {}

@@ -38,6 +38,7 @@
         "wizard/wizard_deactivate_gurb_cups_view.xml",
         "report/som_gurb_reports.xml",
         "workflow/som_gurb_cups_workflow.xml",
+        "wizard/wizard_atr_gurb_model_view.xml",
     ],
     "init_xml": [],
     "active": False,
