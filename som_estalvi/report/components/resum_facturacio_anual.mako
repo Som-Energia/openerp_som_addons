@@ -1,7 +1,7 @@
 ## -*- coding: utf-8 -*-
 <%def name="resum_facturacio_anual(costs)">
     <div class="seccio container-resum">
-        <span>${_(u"RESUM DE LA TEVA FACTURACIÓ ANUAL")}</span>
+        <span>${_(u"RESUM DE LA VOSTRA FACTURACIÓ ANUAL")}</span>
         <hr/>
     </div>
     <div class="container">
@@ -45,19 +45,19 @@
             <div id="grafic-costos"></div>
         </div>
     </div>
-    <div class="container">
-        <div class="descomptes-excedents">
-            <table>
-                <tr>
-                    <td>
-                        <p class="text-descompte">${_(u"Descompte pels excedents:")}</p>
-                        <p class="secondary-text text-negre">${_(u"Inclou la compensació i el Flux Solar descomptats.")}</p>
-                    </td>
-                    <td class="text-descompte"><b>${costs['descompte_generacio']} €</b></td>
-                </tr>
-            </table>
-        </div>
-    </div>
+    ## <div class="container">
+    ##     <div class="descomptes-excedents">
+    ##         <table>
+    ##             <tr>
+    ##                 <td>
+    ##                     <p class="text-descompte">${_(u"Descompte pels excedents:")}</p>
+    ##                     <p class="secondary-text text-negre">${_(u"Inclou la compensació i el Flux Solar descomptats.")}</p>
+    ##                 </td>
+    ##                 <td class="text-descompte"><b>${costs['descompte_generacio']} €</b></td>
+    ##             </tr>
+    ##         </table>
+    ##     </div>
+    ## </div>
     <div class="container">
         <div class="note">
             <span>
@@ -65,14 +65,5 @@
             </span>
         </div>
     </div>
-    <div class="container alert">
-        <div class="exclamation">
-            <span><b>!</b></span>
-        </div>
-        <div>
-            <p class="alert-text">
-                ${_(u"Pots consultar i descarregar les corbes horàries d'ús d'energia per dies, setmanes, mesos i anys, i fer comparatives entre aquests períodes a l'")}<a href="${_(u"https://oficinavirtual.somenergia.coop/ca/")}">${_(u"Oficina Virtual")}</a>, <b>${_(u"a l'apartat Infoenergia > Veure l'ús de l'energia")}</b>.
-            </p>
-        </div>
-    </div>
+
 </%def>
