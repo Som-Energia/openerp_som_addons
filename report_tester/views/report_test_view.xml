@@ -46,7 +46,9 @@
                         </group>
                         <group colspan="6" string="Accions">
                             <button string="Executa" type="action" icon="gtk-execute" name="%(action_wizard_report_test_execute_test)d" context="{}"/>
+                            <button string="Veure adjunts" type="action" icon="gtk-print-preview" name="%(action_wizard_report_test_view_attached)d" context="{}"/>
                             <button string="Accepta" type="action" icon="gtk-save" name="%(action_wizard_report_test_accept_test)d" context="{}"/>
+                            <button string="Adjuntar a factures" type="action" icon="gtk-dnd" name="%(action_wizard_report_test_attach_to_invoice)d" context="{}"/>
                         </group>
                     </group>
                 </form>
