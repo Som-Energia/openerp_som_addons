@@ -12,7 +12,7 @@ def up(cursor, installed_version):
     #  Actualitzar una part de l'XML (cal posar la id del record)
     logger.info("Updating XMLs")
     list_of_records = [
-        "email_impagament_1er_avis_fraccionament_cancelat",
+        "email_interessos_aportacions_retornat",
     ]
     load_data_records(
         cursor, 'som_account_invoice_pending', 'data/som_account_invoice_pending_data.xml',
