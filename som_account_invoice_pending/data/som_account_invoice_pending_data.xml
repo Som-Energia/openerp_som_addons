@@ -756,7 +756,7 @@ import_factura = object.residual
 
         <record model="poweremail.templates" id="email_interessos_aportacions_retornat">
             <field name="name">Factura interessos aportacions retornat</field>
-            <field name="object_name" model="ir.model" search="[('name', '=', 'account.invoice')]"/>
+            <field name="object_name" model="ir.model" search="[('model', '=', 'account.invoice')]"/>
             <field eval="0" name="save_to_drafts"/>
             <field name="model_int_name">account.invoice</field>
             <field name="def_to">${object.partner_id.address[0].email}</field>
