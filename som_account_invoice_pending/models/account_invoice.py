@@ -98,5 +98,20 @@ class AccountInvoice(osv.osv):
 
         return res
 
+    def unpay(self, cursor, uid, ids, amount, pay_account_id, period_id,
+              pay_journal_id, context=None, name=''):
+
+        res = super(AccountInvoice, self).unpay(
+            cursor, uid, ids, amount, pay_account_id, period_id, pay_journal_id,
+            context, name
+        )
+        invoice_id = ids[0] if ids else None
+        # invoice = self.browse(cursor, uid, invoice_id)
+        if self.is_interest_payment(cursor, uid, invoice_id):
+            # Send email notification for APO invoices
+            pass
+
+        return res
+
 
 AccountInvoice()
