@@ -1439,8 +1439,10 @@ class TestsGurbSwitching(TestsGurbBase):
 
     @mock.patch("som_gurb.models.giscedata_switching._contract_has_gurb_category")
     @mock.patch("som_gurb.models.giscedata_switching.is_unidirectional_colective_autocons_change")
+    @mock.patch("som_gurb.models.som_gurb_cups.SomGurbCups.send_gurb_activation_email")
     def test_create_from_xml_m2_05_activating_gurb(
-            self, mock_is_unidirectional, mock_has_gurb_category):
+            self, mock_send_gurb_activation_email, mock_is_unidirectional, mock_has_gurb_category):
+        mock_send_gurb_activation_email.return_value = False
         mock_has_gurb_category.return_value = True
         mock_is_unidirectional.return_value = False
 
