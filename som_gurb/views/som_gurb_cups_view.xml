@@ -69,6 +69,32 @@
                 </tree>
             </field>
         </record>
+        <!-- Llistat sense filtrar gurb dels CUPS dels GURBs-->
+        <record model="ir.ui.view" id="view_gurbs_cups_tree_unfiltered">
+            <field name="name">som.gurb.cups.unfiltered.tree</field>
+            <field name="model">som.gurb.cups</field>
+            <field name="type">tree</field>
+            <field name="arch" type="xml">
+                <tree string="CUPS GURB" colors="red:active == False">
+                    <field name="gurb_id" select="1" />
+                    <field name="cups_id" select="1" />
+                    <field name="polissa_id" select="1" />
+                    <field name="beta_kw" select="2" />
+                    <field name="extra_beta_kw" select="2" />
+                    <field name="beta_percentage" select="2" />
+                    <field name="partner_id" select="1" />
+                    <field name="start_date" select="1" />
+                    <field name="active" select="1" />
+                    <field name="end_date" select="1" />
+                    <field name="owner_cups" select="2" />
+                    <field name="polissa_state" select="1" />
+                    <field name="invoice_state" />
+                    <field name="signed" />
+                    <field name="ens_ha_avisat" select="1"/>
+                    <field name="state" select="1"/>
+                </tree>
+            </field>
+        </record>
         <!-- Llistat per defecte d'hitòric de Betes dels CUPS de GURBs-->
         <record model="ir.ui.view" id="view_gurbs_cups_beta_tree">
             <field name="name">som.gurb.cups.beta.tree</field>
@@ -105,7 +131,7 @@
         <!-- Acció per obrir el llistat de tots els GURB CUPS-->
         <record model="ir.actions.act_window" id="action_gurb_cups_all">
             <field name="name">Tots els CUPS dels GURBs</field>
-            <field name="view_id" ref="view_gurbs_cups_tree" />
+            <field name="view_id" ref="view_gurbs_cups_tree_unfiltered" />
             <field name="res_model">som.gurb.cups</field>
             <field name="view_type">form</field>
             <field name="view_mode">tree,form</field>
@@ -114,7 +140,7 @@
         <!-- Llistat de GURB CUPS de baixa -->
         <record model="ir.actions.act_window" id="action_gurb_cups_cancel">
             <field name="name">Tots els CUPS dels GURBs de baixa</field>
-            <field name="view_id" ref="view_gurbs_cups_tree" />
+            <field name="view_id" ref="view_gurbs_cups_tree_unfiltered" />
             <field name="res_model">som.gurb.cups</field>
             <field name="view_type">form</field>
             <field name="view_mode">tree,form</field>
@@ -124,7 +150,7 @@
         <!-- Llistat de GURB CUPS en estats pendents -->
         <record model="ir.actions.act_window" id="action_gurb_cups_comming">
             <field name="name">Tots els CUPS dels GURBs en estats pendents</field>
-            <field name="view_id" ref="view_gurbs_cups_tree" />
+            <field name="view_id" ref="view_gurbs_cups_tree_unfiltered" />
             <field name="res_model">som.gurb.cups</field>
             <field name="view_type">form</field>
             <field name="view_mode">tree,form</field>
@@ -132,8 +158,8 @@
         </record>
         <!-- Llistat de GURB CUPS en ATR Pendent -->
         <record model="ir.actions.act_window" id="action_gurb_cups_atr_pending">
-            <field name="name">Tots els CUPS dels GURBs en estat ATR pendents</field>
-            <field name="view_id" ref="view_gurbs_cups_tree" />
+            <field name="name">Tots els CUPS dels GURBs en estat ATR obert</field>
+            <field name="view_id" ref="view_gurbs_cups_tree_unfiltered" />
             <field name="res_model">som.gurb.cups</field>
             <field name="view_type">form</field>
             <field name="view_mode">tree,form</field>
