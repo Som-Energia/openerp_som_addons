@@ -404,9 +404,11 @@ class GiscedataSwitchingD1_01(osv.osv):
         sw_step_header_obj = self.pool.get("giscedata.switching.step.header")
         sw = sw_obj.browse(cursor, uid, sw_id, context=context)
 
+        excluded_motiu_canvi = ["01", "02", "03", "09", "10"]
+
         if sw and _cups_contract_has_gurb_cups(
             cursor, uid, self.pool, sw.cups_polissa_id.id, context=context
-        ) and sw.step_id.motiu_canvi not in ["01", "02", "03", "09", "10"]:
+        ) and sw.step_id.motiu_canvi not in excluded_motiu_canvi:
             sw_step_header_id = self.read(cursor, uid, step_id, ['header_id'])['header_id'][0]
             sw_step_header_obj.write(
                 cursor, uid, sw_step_header_id, {'notificacio_pendent': False}
