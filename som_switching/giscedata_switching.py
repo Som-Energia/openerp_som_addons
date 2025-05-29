@@ -377,6 +377,13 @@ class GiscedataSwitching(osv.osv):
                 "giscedata.switching.m1.01": (_get_pas_id, ["data_accio"], 20),
             },
         ),
+        "collectiu": fields.related(
+            "cups_polissa_id",
+            "is_autoconsum_collectiu",
+            type="boolean",
+            string="Col·lectiu",
+            readonly=True,
+        ),
     }
 
     _defaults = {"user_observations": lambda *a: ""}

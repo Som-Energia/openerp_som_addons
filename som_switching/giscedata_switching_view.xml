@@ -13,6 +13,9 @@
                         <field name="user_observations" nolabel="1"/>
                     </page>
                 </xpath>
+                <field name="data_sollicitud" position="after">
+                    <field name="collectiu"/>
+                </field>
             </field>
         </record>
 
@@ -49,6 +52,9 @@
             <field name="arch" type="xml">
                 <field name="validacio_pendent" position="after">
                     <field name="data_accio" select="2"/>
+                </field>
+                <field name="additional_info" position="after">
+                    <field name="collectiu" select="2"/>
                 </field>
             </field>
         </record>
