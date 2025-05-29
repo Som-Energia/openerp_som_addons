@@ -86,6 +86,8 @@ class GiscedataFacturacioImportacioLinia(osv.osv):
         tipus_subseccio = re.findall("<TipoSubseccion>(.*)</TipoSubseccion>", xml_data)
         if tipus_subseccio:
             vals["tipus_subseccio"] = tipus_subseccio[0]
+        else:
+            vals["tipus_subseccio"] = '00'
 
         is_autoconsum_collectiu = re.findall("<Colectivo>(.*)</Colectivo>", xml_data)
         if is_autoconsum_collectiu:
