@@ -13,6 +13,9 @@
                         <field name="user_observations" nolabel="1"/>
                     </page>
                 </xpath>
+                <field name="data_sollicitud" position="after">
+                    <field name="collectiu"/>
+                </field>
             </field>
         </record>
 
