@@ -249,6 +249,16 @@ class TestsGurbSwitching(TestsGurbBase):
         with open(m1_xml_path, "r") as f:
             m1_xml = f.read()
 
+        sgc_obj = self.openerp.pool.get("som.gurb.cups")
+
+        # Preparar el sgc_obj
+        sgc_id = self.openerp.pool.get("ir.model.data").get_object_reference(
+            self.cursor, self.uid, "som_gurb", "gurb_cups_0001")[1]
+
+        sgc_0002 = sgc_obj.browse(self.cursor, self.uid, sgc_id)
+        sgc_0002.send_signal("button_create_cups")
+        sgc_0002.send_signal("button_activate_cups")
+
         self.switch(self.txn, "comer")
 
         # Create M1 01
@@ -439,6 +449,15 @@ class TestsGurbSwitching(TestsGurbBase):
             m1_02_rej_xml = f.read()
 
         sw_obj = self.openerp.pool.get("giscedata.switching")
+        sgc_obj = self.openerp.pool.get("som.gurb.cups")
+
+        # Preparar el sgc_obj
+        sgc_id = self.openerp.pool.get("ir.model.data").get_object_reference(
+            self.cursor, self.uid, "som_gurb", "gurb_cups_0001")[1]
+
+        sgc_0002 = sgc_obj.browse(self.cursor, self.uid, sgc_id)
+        sgc_0002.send_signal("button_create_cups")
+        sgc_0002.send_signal("button_activate_cups")
 
         self.switch(self.txn, "comer")
         self.activar_polissa_CUPS(set_gurb_category=True, context={
@@ -477,6 +496,15 @@ class TestsGurbSwitching(TestsGurbBase):
             m1_02_rej_xml = f.read()
 
         sw_obj = self.openerp.pool.get("giscedata.switching")
+        sgc_obj = self.openerp.pool.get("som.gurb.cups")
+
+        # Preparar el sgc_obj
+        sgc_id = self.openerp.pool.get("ir.model.data").get_object_reference(
+            self.cursor, self.uid, "som_gurb", "gurb_cups_0001")[1]
+
+        sgc_0002 = sgc_obj.browse(self.cursor, self.uid, sgc_id)
+        sgc_0002.send_signal("button_create_cups")
+        sgc_0002.send_signal("button_activate_cups")
 
         self.switch(self.txn, "comer")
 
@@ -554,7 +582,7 @@ class TestsGurbSwitching(TestsGurbBase):
         self.change_polissa_comer(self.txn)
         self.update_polissa_distri(self.txn)
         self.activar_polissa_CUPS(set_gurb_category=False, context={
-                                  "polissa_xml_id": "polissa_0001"})
+                                  "polissa_xml_id": "polissa_tarifa_019"})
 
         step_id = self.create_case_and_step(
             self.cursor, self.uid, contract_id, "M1", "01"
@@ -609,9 +637,19 @@ class TestsGurbSwitching(TestsGurbBase):
             d1_xml = f.read()
 
         sw_obj = self.openerp.pool.get("giscedata.switching")
+        sgc_obj = self.openerp.pool.get("som.gurb.cups")
+
+        # Preparar el sgc_obj
+        sgc_id = self.openerp.pool.get("ir.model.data").get_object_reference(
+            self.cursor, self.uid, "som_gurb", "gurb_cups_0001")[1]
+
+        sgc_0002 = sgc_obj.browse(self.cursor, self.uid, sgc_id)
+        sgc_0002.send_signal("button_create_cups")
+        sgc_0002.send_signal("button_activate_cups")
+
         self.switch(self.txn, "comer")
-        self.activar_polissa_CUPS(set_gurb_category=True, context={
-                                  "polissa_xml_id": "polissa_0001"})
+        self.activar_polissa_CUPS(
+            set_gurb_category=True, context={"polissa_xml_id": "polissa_0001"})
         sw_obj.importar_xml(
             self.cursor, self.uid, d1_xml, "d101.xml"
         )
@@ -751,6 +789,15 @@ class TestsGurbSwitching(TestsGurbBase):
         sw_obj = self.openerp.pool.get("giscedata.switching")
         step_obj = self.openerp.pool.get("giscedata.switching.m1.01")
         sw_step_header_obj = self.openerp.pool.get("giscedata.switching.step.header")
+        sgc_obj = self.openerp.pool.get("som.gurb.cups")
+
+        # Preparar el sgc_obj
+        sgc_id = self.openerp.pool.get("ir.model.data").get_object_reference(
+            self.cursor, self.uid, "som_gurb", "gurb_cups_0002")[1]
+
+        sgc_0002 = sgc_obj.browse(self.cursor, self.uid, sgc_id)
+        sgc_0002.send_signal("button_create_cups")
+        sgc_0002.send_signal("button_activate_cups")
 
         m1_02_xml_path = get_module_resource(
             "giscedata_switching", "tests", "fixtures", "m102_new.xml"
@@ -843,6 +890,16 @@ class TestsGurbSwitching(TestsGurbBase):
         sw_obj = self.openerp.pool.get("giscedata.switching")
         step_obj = self.openerp.pool.get("giscedata.switching.m1.01")
         sw_step_header_obj = self.openerp.pool.get("giscedata.switching.step.header")
+        sgc_obj = self.openerp.pool.get("som.gurb.cups")
+
+        # Preparar el sgc_obj
+        sgc_id = self.openerp.pool.get("ir.model.data").get_object_reference(
+            self.cursor, self.uid, "som_gurb", "gurb_cups_0002")[1]
+
+        sgc_0002 = sgc_obj.browse(self.cursor, self.uid, sgc_id)
+        sgc_0002.send_signal("button_create_cups")
+        sgc_0002.send_signal("button_activate_cups")
+
         m1_02_xml_path = get_module_resource(
             "giscedata_switching", "tests", "fixtures", "m102_new.xml"
         )
@@ -925,11 +982,9 @@ class TestsGurbSwitching(TestsGurbBase):
         self.assertEqual(m1.state, "cancel")
         self.assertEqual(m1.notificacio_pendent, False)
 
-    @mock.patch('som_gurb.models.giscedata_switching._contract_has_gurb_category')
     @mock.patch('som_gurb.models.giscedata_switching.is_unidirectional_colective_autocons_change')
     def test_create_from_xml_c1_06_cancel_gurb(
-            self, mock_is_unidirectional, mock_has_gurb_category):
-        mock_has_gurb_category.return_value = True
+            self, mock_is_unidirectional):
         mock_is_unidirectional.return_value = False
 
         sw_obj = self.openerp.pool.get('giscedata.switching')
@@ -973,11 +1028,9 @@ class TestsGurbSwitching(TestsGurbBase):
         scb = sgc_obj.browse(self.cursor, self.uid, sgc_id)
         self.assertEqual(scb.state, 'comming_cancellation')
 
-    @mock.patch('som_gurb.models.giscedata_switching._contract_has_gurb_category')
     @mock.patch('som_gurb.models.giscedata_switching.is_unidirectional_colective_autocons_change')
     def test_create_from_xml_c2_06_cancel_gurb(
-            self, mock_is_unidirectional, mock_has_gurb_category):
-        mock_has_gurb_category.return_value = True
+            self, mock_is_unidirectional):
         mock_is_unidirectional.return_value = False
 
         sw_obj = self.openerp.pool.get('giscedata.switching')
@@ -1021,11 +1074,9 @@ class TestsGurbSwitching(TestsGurbBase):
         scb = sgc_obj.browse(self.cursor, self.uid, sgc_id)
         self.assertEqual(scb.state, 'comming_cancellation')
 
-    @mock.patch('som_gurb.models.giscedata_switching._contract_has_gurb_category')
     @mock.patch('som_gurb.models.giscedata_switching.is_unidirectional_colective_autocons_change')
     def test_create_from_xml_m1_01_subrogacio_atr_pending_gurb(
-            self, mock_is_unidirectional, mock_has_gurb_category):
-        mock_has_gurb_category.return_value = True
+            self, mock_is_unidirectional):
         mock_is_unidirectional.return_value = False
 
         self.openerp.pool.get('giscedata.switching')
@@ -1063,11 +1114,9 @@ class TestsGurbSwitching(TestsGurbBase):
         scb = sgc_obj.browse(self.cursor, self.uid, sgc_id)
         self.assertEqual(scb.state, 'atr_pending')
 
-    @mock.patch('som_gurb.models.giscedata_switching._contract_has_gurb_category')
     @mock.patch('som_gurb.models.giscedata_switching.is_unidirectional_colective_autocons_change')
     def test_create_from_xml_m1_02_subrogacio_cancel_gurb(
-            self, mock_is_unidirectional, mock_has_gurb_category):
-        mock_has_gurb_category.return_value = True
+            self, mock_is_unidirectional):
         mock_is_unidirectional.return_value = False
 
         sw_obj = self.openerp.pool.get('giscedata.switching')
@@ -1134,11 +1183,9 @@ class TestsGurbSwitching(TestsGurbBase):
         scb = sgc_obj.browse(self.cursor, self.uid, sgc_id)
         self.assertEqual(scb.state, 'comming_cancellation')
 
-    @mock.patch('som_gurb.models.giscedata_switching._contract_has_gurb_category')
     @mock.patch('som_gurb.models.giscedata_switching.is_unidirectional_colective_autocons_change')
     def test_create_from_xml_m1_05_traspas_cancel_gurb(
-            self, mock_is_unidirectional, mock_has_gurb_category):
-        mock_has_gurb_category.return_value = True
+            self, mock_is_unidirectional):
         mock_is_unidirectional.return_value = False
 
         sw_obj = self.openerp.pool.get('giscedata.switching')
@@ -1225,11 +1272,9 @@ class TestsGurbSwitching(TestsGurbBase):
         scb = sgc_obj.browse(self.cursor, self.uid, sgc_id)
         self.assertEqual(scb.state, 'comming_cancellation')
 
-    @mock.patch('som_gurb.models.giscedata_switching._contract_has_gurb_category')
     @mock.patch('som_gurb.models.giscedata_switching.is_unidirectional_colective_autocons_change')
     def test_create_from_xml_m1_01_traspas_atr_pending_gurb(
-            self, mock_is_unidirectional, mock_has_gurb_category):
-        mock_has_gurb_category.return_value = True
+            self, mock_is_unidirectional):
         mock_is_unidirectional.return_value = False
 
         self.openerp.pool.get('giscedata.switching')
@@ -1270,11 +1315,9 @@ class TestsGurbSwitching(TestsGurbBase):
         scb = sgc_obj.browse(self.cursor, self.uid, sgc_id)
         self.assertEqual(scb.state, 'atr_pending')
 
-    @mock.patch('som_gurb.models.giscedata_switching._contract_has_gurb_category')
     @mock.patch('som_gurb.models.giscedata_switching.is_unidirectional_colective_autocons_change')
     def test_create_from_xml_m1_02_traspas_rebuig(
-            self, mock_is_unidirectional, mock_has_gurb_category):
-        mock_has_gurb_category.return_value = True
+            self, mock_is_unidirectional):
         mock_is_unidirectional.return_value = False
 
         sw_obj = self.openerp.pool.get('giscedata.switching')
@@ -1337,11 +1380,9 @@ class TestsGurbSwitching(TestsGurbBase):
         scb = sgc_obj.browse(self.cursor, self.uid, sgc_id)
         self.assertEqual(scb.state, 'active')
 
-    @mock.patch('som_gurb.models.giscedata_switching._contract_has_gurb_category')
     @mock.patch('som_gurb.models.giscedata_switching.is_unidirectional_colective_autocons_change')
     def test_create_from_xml_m2_05_unexpected_leaving_gurb(
-            self, mock_is_unidirectional, mock_has_gurb_category):
-        mock_has_gurb_category.return_value = True
+            self, mock_is_unidirectional):
         mock_is_unidirectional.return_value = False
 
         sw_obj = self.openerp.pool.get("giscedata.switching")
@@ -1387,11 +1428,9 @@ class TestsGurbSwitching(TestsGurbBase):
         scb = sgc_obj.browse(self.cursor, self.uid, sgc_id)
         self.assertEqual(scb.state, "atr_pending")
 
-    @mock.patch("som_gurb.models.giscedata_switching._contract_has_gurb_category")
     @mock.patch("som_gurb.models.giscedata_switching.is_unidirectional_colective_autocons_change")
     def test_create_from_xml_m2_05_expected_leaving_gurb(
-            self, mock_is_unidirectional, mock_has_gurb_category):
-        mock_has_gurb_category.return_value = True
+            self, mock_is_unidirectional):
         mock_is_unidirectional.return_value = False
 
         sw_obj = self.openerp.pool.get("giscedata.switching")
@@ -1437,13 +1476,11 @@ class TestsGurbSwitching(TestsGurbBase):
         self.assertIsNotNone(step_id)
         self.assertEqual(sgc_0002.state, "cancel")
 
-    @mock.patch("som_gurb.models.giscedata_switching._contract_has_gurb_category")
     @mock.patch("som_gurb.models.giscedata_switching.is_unidirectional_colective_autocons_change")
     @mock.patch("som_gurb.models.som_gurb_cups.SomGurbCups.send_gurb_activation_email")
     def test_create_from_xml_m2_05_activating_gurb(
-            self, mock_send_gurb_activation_email, mock_is_unidirectional, mock_has_gurb_category):
+            self, mock_send_gurb_activation_email, mock_is_unidirectional):
         mock_send_gurb_activation_email.return_value = False
-        mock_has_gurb_category.return_value = True
         mock_is_unidirectional.return_value = False
 
         sw_obj = self.openerp.pool.get("giscedata.switching")
