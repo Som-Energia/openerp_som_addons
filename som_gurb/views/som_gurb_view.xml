@@ -119,7 +119,10 @@
         <!-- Menú per llistar els GURBs-->
         <menuitem id="menu_llistar_gurbs" parent="menu_gurbs" action="action_gurbs" />
         <!-- Menú per llistar els GURB CUPS-->
-        <menuitem id="menu_llistar_gurbs_cups" parent="menu_gurbs" action="action_gurb_cups" />
+        <menuitem id="menu_llistar_gurbs_cups_all" parent="menu_gurbs" action="action_gurb_cups_all" />
+        <menuitem id="menu_llistar_gurbs_cups_cancel" parent="menu_gurbs" action="action_gurb_cups_cancel" />
+        <menuitem id="menu_llistar_gurbs_cups_comming" parent="menu_gurbs" action="action_gurb_cups_comming" />
+        <menuitem id="menu_llistar_gurbs_cups_atr_pending" parent="menu_gurbs" action="action_gurb_cups_atr_pending" />
         <!-- Accés directe a la pestanya amb llistat dels som.gurb.cups del GURB -->
         <record id="action_som_gurb_cups_tree" model="ir.actions.act_window">
             <field name="name">Tots els CUPS del GURB</field>
