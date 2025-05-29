@@ -390,25 +390,6 @@ class TestAccountInvoiceProviderUnpaidAutomations(testing.OOTestCase):
     def tearDown(self):
         self.txn.stop()
 
-    def getref(self, module, reference):
-        IrModelData = self.pool.get("ir.model.data")
-        return IrModelData.get_object_reference(
-            self.cursor, self.uid,
-            module, reference
-        )[1]
-
-    def read_one(self, model_obj, model_id, field):
-        data = model_obj.read(self.cursor, self.uid, model_id, [field])
-        if field in data:
-            return data[field]
-        return None
-
-    def write_one(self, model_obj, model_id, field, value):
-        data = {
-            field: value
-        }
-        model_obj.write(self.cursor, self.uid, model_id, data)
-
     @mock.patch("poweremail.poweremail_send_wizard.poweremail_send_wizard.send_mail")
     def test_no_send_mail_when_unpaid_no_apo(self, mocked_send_mail):
         ai_obj = self.pool.get("account.invoice")
