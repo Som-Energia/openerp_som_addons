@@ -1,5 +1,8 @@
 # -*- coding: utf-8 -*-
-# SCRIPT EN PYTHON 3 
+# SCRIPT EN PYTHON 3
+from __future__ import print_function
+from __future__ import unicode_literals
+from __future__ import absolute_import
 
 from datetime import datetime
 from erppeek import Client
@@ -44,7 +47,7 @@ def write_csv_factura(c, fact_ids, filename):
     fields = ['id', 'number', 'energia_kwh', ['rectifying_id', 1], 'rectifying_id.energia_kwh', [
         'polissa_id', 1], ['cups_id', 1], ['tarifa_acces_id', 1], 'data_inici', 'data_final']
     header = ['id', 'number', 'energia_kwh', 'rectifying_id', 'rectifying_id.energia_kwh',
-        'polissa_id', 'cups_id', 'tarifa_acces_id', 'data_inici', 'data_final']
+              'polissa_id', 'cups_id', 'tarifa_acces_id', 'data_inici', 'data_final']
     result = []
     for data in c.GiscedataFacturacioFactura.read(fact_ids, header):
         for field in header:
@@ -87,30 +90,30 @@ def count_directories(directory_path):
 
         return num_directories
     except Exception as e:
-        print(f"Hi ha hagut un error: {e}")
+        print("Hi ha hagut un error: {0}".format(e))
         return 0
 
 
-def obtenir_factures_refacturades_sobrestimades(O, fact_ids):
+def obtenir_factures_refacturades_sobrestimades(conn, fact_ids):
     sobrestimades_ids = []
     total_sobrestimat = 0
-    for fact in O.GiscedataFacturacioFactura.browse(fact_ids):
+    for fact in conn.GiscedataFacturacioFactura.browse(fact_ids):
         if fact.energia_kwh < fact.ref.energia_kwh:
             sobrestimades_ids.append(fact_ids)
             total_sobrestimat += fact.ref.energia_kwh - fact.energia_kwh
     return sobrestimades_ids, total_sobrestimat
 
 
-def obtenir_factures_refacturades(O, fact_ids):
+def obtenir_factures_refacturades(conn, fact_ids):
     refact_ids = []
     for inv_id in fact_ids:
-        gff_id = get_gff_id(O, inv_id)
-        fact = O.GiscedataFacturacioFactura.browse(gff_id)
+        gff_id = get_gff_id(conn, inv_id)
+        fact = conn.GiscedataFacturacioFactura.browse(gff_id)
         if fact.refund_by_id:
-            gff_ids = O.GiscedataFacturacioFactura.search(
+            gff_ids = conn.GiscedataFacturacioFactura.search(
                 [('rectifying_id', '=', fact.invoice_id.id)])
             for gff_id in gff_ids:
-                tipo = O.GiscedataFacturacioFactura.read(gff_id, ['tipo_rectificadora'])[
+                tipo = conn.GiscedataFacturacioFactura.read(gff_id, ['tipo_rectificadora'])[
                     'tipo_rectificadora']
                 if tipo == 'R':
                     refact_ids.append(gff_id)
@@ -118,12 +121,12 @@ def obtenir_factures_refacturades(O, fact_ids):
     return refact_ids
 
 
-def get_gff_id(O, inv_id):
-    return O.GiscedataFacturacioFactura.search([('invoice_id', '=', inv_id)])[0]
+def get_gff_id(conn, inv_id):
+    return conn.GiscedataFacturacioFactura.search([('invoice_id', '=', inv_id)])[0]
 
 
-def obtenir_subministres_actius_periode(O, data_inici, data_final):
-    pol_ids = O.GiscedataPolissa.search(
+def obtenir_subministres_actius_periode(conn, data_inici, data_final):
+    pol_ids = conn.GiscedataPolissa.search(
         [
             ('data_alta', '<=', data_final),
             '|',
@@ -132,12 +135,12 @@ def obtenir_subministres_actius_periode(O, data_inici, data_final):
         ], context={'active_test': False})
 
     cups_ids = set(cups['cups'][0] if cups['cups']
-                   else 0 for cups in O.GiscedataPolissa.read(pol_ids, ['cups']))
+                   else 0 for cups in conn.GiscedataPolissa.read(pol_ids, ['cups']))
     cups_ids.pop()
     return len(cups_ids)
 
 
-O = Client(**dbconfig.erppeek)
+conn = Client(**dbconfig.erppeek)
 
 pdf_files = get_pdf_files(root_dir)
 invoice_numbers = [os.path.splitext(file)[0] for file in pdf_files]
@@ -145,9 +148,8 @@ sense_r = []
 nomes_a = []
 amb_a_r = []
 for invoice_number in invoice_numbers:
-    inv_id = O.AccountInvoice.search([('number', '=', invoice_number)])
-    inv_rect_id = O.AccountInvoice.search([('rectifying_id', '=', inv_id)])
-    #print("{} - {}".format(invoice_number, O.AccountInvoice.read(inv_rect_id, ['number'])))
+    inv_id = conn.AccountInvoice.search([('number', '=', invoice_number)])
+    inv_rect_id = conn.AccountInvoice.search([('rectifying_id', '=', inv_id)])
     if len(inv_rect_id) == 0:
         sense_r.append(inv_id)
     elif len(inv_rect_id) == 1:
@@ -156,16 +158,12 @@ for invoice_number in invoice_numbers:
         amb_a_r.append(inv_id)
 
 
-#print("{} que no s'ha fet res".format(sense_r))
-#print("{} només abonadores".format(nomes_a))
-#print("{} amb abonadora i rectificadora".format(amb_a_r))
-
-llista_factures_refacturades = obtenir_factures_refacturades(O, amb_a_r)
+llista_factures_refacturades = obtenir_factures_refacturades(conn, amb_a_r)
 sobrestimades_ids, total_sobrestimat = obtenir_factures_refacturades_sobrestimades(
-    O, llista_factures_refacturades)
+    conn, llista_factures_refacturades)
 llista_polisses = count_directories(root_dir)
 ncontractes_actius = obtenir_subministres_actius_periode(
-    O, START_DATE, datetime.today().strftime('%Y-%m-%d'))
+    conn, START_DATE, datetime.today().strftime('%Y-%m-%d'))
 percentatge_estimats = round(llista_polisses * 100.0 / ncontractes_actius, 2)
 
 print("Nombre de factures amb lectures estimades {}".format(len(invoice_numbers)))
@@ -176,4 +174,4 @@ print(u"Nombre de factures estimades refacturades sobrestimades: {}".format(
     len(sobrestimades_ids)))
 print(u"Total kwh sobrestimats: {}".format(round(total_sobrestimat)))
 
-write_csv_factura(O, llista_factures_refacturades, 'llista_factures_refacturades.csv')
+write_csv_factura(conn, llista_factures_refacturades, 'llista_factures_refacturades.csv')
