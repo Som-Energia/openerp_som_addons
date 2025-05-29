@@ -406,7 +406,7 @@ class GiscedataSwitchingD1_01(osv.osv):
 
         if sw and _cups_contract_has_gurb_cups(
             cursor, uid, self.pool, sw.cups_polissa_id.id, context=context
-        ):
+        ) and sw.step_id.motiu_canvi not in ["01", "02", "03", "09", "10"]:
             sw_step_header_id = self.read(cursor, uid, step_id, ['header_id'])['header_id'][0]
             sw_step_header_obj.write(
                 cursor, uid, sw_step_header_id, {'notificacio_pendent': False}
