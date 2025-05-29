@@ -666,6 +666,7 @@ class TestsGurbSwitching(TestsGurbBase):
         self.assertEqual(d1.step_id.name, "01")
         self.assertEqual(d1.state, "done")
         self.assertEqual(d1.notificacio_pendent, False)
+        self.assertEqual(sgc_0002.state, "atr_pending")
 
     @mock.patch('poweremail.poweremail_template.poweremail_templates.generate_mail')
     @mock.patch(

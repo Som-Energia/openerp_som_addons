@@ -399,6 +399,7 @@ class GiscedataSwitchingD1_01(osv.osv):
             cursor, uid, sw_id, xml, context=context
         )
 
+        sgc_obj = self.pool.get("som.gurb.cups")
         sw_obj = self.pool.get("giscedata.switching")
         sw_step_header_obj = self.pool.get("giscedata.switching.step.header")
         sw = sw_obj.browse(cursor, uid, sw_id, context=context)
@@ -410,6 +411,11 @@ class GiscedataSwitchingD1_01(osv.osv):
             sw_step_header_obj.write(
                 cursor, uid, sw_step_header_id, {'notificacio_pendent': False}
             )
+            gurb_cups_id = sgc_obj.search(
+                cursor, uid, [('cups_id', '=', sw.cups_polissa_id.cups.id)], context=context)
+            if gurb_cups_id:
+                gurb_cups = sgc_obj.browse(cursor, uid, gurb_cups_id[0], context=context)
+                gurb_cups.send_signal(['button_atr_pending'])
 
         return step_id
 
