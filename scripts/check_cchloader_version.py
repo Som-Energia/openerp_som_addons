@@ -19,7 +19,7 @@ def is_installed_from_repo():
 def is_version_invalid():
     try:
         version = pkg_resources.get_distribution('cchloader').version
-        return pkg_resources.parse_version(version) > pkg_resources.parse_version('1.0')
+        return pkg_resources.parse_version(version) < pkg_resources.parse_version('4.0')
     except pkg_resources.DistributionNotFound:
         return False
 
