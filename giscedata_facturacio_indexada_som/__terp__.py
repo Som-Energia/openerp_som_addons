@@ -8,7 +8,7 @@
   "version": "0-dev",
   "author": "GISCE",
   "category": "Master",
-  "depends": ['base', 'giscedata_facturacio_indexada'],
+  "depends": ['base', 'giscedata_facturacio_indexada', 'giscedata_reganecu'],
   "init_xml": [],
   "demo_xml": ['giscedata_facturacio_indexada_som_demo.xml'],
   "update_xml": [
