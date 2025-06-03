@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <openerp>
-    <data noupdate="0">
+    <data noupdate="1">
         <record id="custom_search_dashboard_som_canvis_a_index_period" model="custom.search">
             <field name="name">[DASHBOARDS][SOM - Contractes] Número de canvis a indexada i períodes acumulats en els últims 30 dies</field>
             <field name="query">
