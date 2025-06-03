@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <openerp>
     <data noupdate="0">
-       <record id="consulta_factures_deute_pobresa" model="custom.search">
-            <field name="name">COB - Consulta factures pobresa</field>
+       <record id="consulta_pepinho_1" model="custom.search">
+            <field name="name">consulta_pepinho_1</field>
             <field name="query">
             WITH dates AS (
     SELECT DATE_TRUNC('month', generate_series)::DATE AS fecha
@@ -150,8 +150,8 @@ WHERE ts.sistema IS NOT NULL
 ORDER BY mes, ts.tarifa_name, ts.sistema
             </field>
         </record>
-        <record id="consulta_factures_deute_pobresa" model="custom.search">
-            <field name="name">COB - Consulta factures pobresa</field>
+        <record id="consulta_pepinho_2" model="custom.search">
+            <field name="name">consulta_pepinho_2</field>
             <field name="query">WITH dates AS (
     SELECT DATE_TRUNC('day', generate_series)::DATE AS fecha
     FROM generate_series(NOW() - INTERVAL '${n_days} days', NOW(), INTERVAL '1 day')
