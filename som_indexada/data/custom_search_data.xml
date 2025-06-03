@@ -1,0 +1,301 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<openerp>
+    <data noupdate="0">
+       <record id="consulta_factures_deute_pobresa" model="custom.search">
+            <field name="name">COB - Consulta factures pobresa</field>
+            <field name="query">
+            WITH dates AS (
+    SELECT DATE_TRUNC('month', generate_series)::DATE AS fecha
+    FROM generate_series(NOW() - INTERVAL '${n_months} months', NOW(), INTERVAL '1 month')
+),
+tarifes_sistemes AS (
+    SELECT DISTINCT
+        gpt.name AS tarifa_name,
+        CASE
+            WHEN rse.code IN ('TF', 'PA', 'LG', 'HI', 'GC', 'FL') THEN 'Canàries'
+            WHEN rse.code IN ('IF', 'MM') THEN 'Balears'
+            WHEN rse.code = 'PE' THEN 'Península'
+        END AS sistema
+    FROM giscedata_polissa gp
+    LEFT JOIN giscedata_polissa_tarifa gpt ON gp.tarifa = gpt.id
+    LEFT JOIN giscedata_cups_ps gcps ON gp.cups = gcps.id
+    LEFT JOIN res_municipi rm ON gcps.id_municipi = rm.id
+    LEFT JOIN res_subsistemas_electricos rse ON rm.subsistema_id = rse.id
+    WHERE gpt.name ILIKE '%TD%'
+)
+SELECT
+    d.fecha AS mes,
+    ts.tarifa_name,
+    ts.sistema,
+    COALESCE(aa.altes, 0) AS altes,
+    COALESCE(a.altes_indexada, 0) AS altes_indexada,
+    COALESCE(ci.canvis_index, 0) AS canvis_index,
+    COALESCE(cp.canvis_periodes, 0) AS canvis_periodes,
+    COALESCE(bb.baixes, 0) AS baixes,
+    COALESCE(b.baixes_indexada, 0) AS baixes_indexada
+
+FROM dates d
+CROSS JOIN (
+    SELECT * FROM tarifes_sistemes WHERE sistema IS NOT NULL
+) ts
+LEFT JOIN (
+    SELECT
+        DATE_TRUNC('month', gpm.create_date) AS dates,
+        COUNT(*) AS altes,
+        gpt.name,
+        CASE
+            WHEN rse.code IN ('TF', 'PA', 'LG', 'HI', 'GC', 'FL') THEN 'Canàries'
+            WHEN rse.code IN ('IF', 'MM') THEN 'Balears'
+            WHEN rse.code = 'PE' THEN 'Península'
+        END AS sistema
+    FROM giscedata_polissa_modcontractual gpm
+    LEFT JOIN giscedata_polissa_tarifa gpt ON gpm.tarifa = gpt.id
+    LEFT JOIN giscedata_cups_ps gcps ON gpm.cups = gcps.id
+    LEFT JOIN res_municipi rm ON gcps.id_municipi = rm.id
+    LEFT JOIN res_subsistemas_electricos rse ON rm.subsistema_id = rse.id
+    WHERE gpm.name = '1'
+    GROUP BY 1, gpt.name, sistema
+) aa ON aa.dates = d.fecha AND aa.name = ts.tarifa_name AND aa.sistema = ts.sistema
+LEFT JOIN (
+    SELECT
+        DATE_TRUNC('month', gpm.create_date) AS dates,
+        COUNT(*) AS altes_indexada,
+        gpt.name,
+        CASE
+            WHEN rse.code IN ('TF', 'PA', 'LG', 'HI', 'GC', 'FL') THEN 'Canàries'
+            WHEN rse.code IN ('IF', 'MM') THEN 'Balears'
+            WHEN rse.code = 'PE' THEN 'Península'
+        END AS sistema
+    FROM giscedata_polissa_modcontractual gpm
+    LEFT JOIN giscedata_polissa_tarifa gpt ON gpm.tarifa = gpt.id
+    LEFT JOIN giscedata_cups_ps gcps ON gpm.cups = gcps.id
+    LEFT JOIN res_municipi rm ON gcps.id_municipi = rm.id
+    LEFT JOIN res_subsistemas_electricos rse ON rm.subsistema_id = rse.id
+    WHERE gpm.mode_facturacio = 'index' AND gpm.name = '1'
+    GROUP BY 1, gpt.name, sistema
+) a ON a.dates = d.fecha AND a.name = ts.tarifa_name AND a.sistema = ts.sistema
+LEFT JOIN (
+    SELECT
+        DATE_TRUNC('month', gpm.create_date) AS dates,
+        COUNT(*) AS canvis_index,
+        gpt.name,
+        CASE
+            WHEN rse.code IN ('TF', 'PA', 'LG', 'HI', 'GC', 'FL') THEN 'Canàries'
+            WHEN rse.code IN ('IF', 'MM') THEN 'Balears'
+            WHEN rse.code = 'PE' THEN 'Península'
+        END AS sistema
+    FROM giscedata_polissa_modcontractual gpm
+    LEFT JOIN giscedata_polissa_tarifa gpt ON gpm.tarifa = gpt.id
+    LEFT JOIN giscedata_cups_ps gcps ON gpm.cups = gcps.id
+    LEFT JOIN res_municipi rm ON gcps.id_municipi = rm.id
+    LEFT JOIN res_subsistemas_electricos rse ON rm.subsistema_id = rse.id
+    WHERE gpm.observacions LIKE '%Mode facturaci%: ATR % Indexada%' AND gpt.name ILIKE '%TD%'
+    GROUP BY 1, gpt.name, sistema
+) ci ON ci.dates = d.fecha AND ci.name = ts.tarifa_name AND ci.sistema = ts.sistema
+LEFT JOIN (
+    SELECT
+        DATE_TRUNC('month', gp.data_baixa) AS dates,
+        COUNT(*) AS baixes,
+        gpt.name,
+        CASE
+            WHEN rse.code IN ('TF', 'PA', 'LG', 'HI', 'GC', 'FL') THEN 'Canàries'
+            WHEN rse.code IN ('IF', 'MM') THEN 'Balears'
+            WHEN rse.code = 'PE' THEN 'Península'
+        END AS sistema
+    FROM giscedata_polissa gp
+    LEFT JOIN giscedata_polissa_tarifa gpt ON gp.tarifa = gpt.id
+    LEFT JOIN giscedata_cups_ps gcps ON gp.cups = gcps.id
+    LEFT JOIN res_municipi rm ON gcps.id_municipi = rm.id
+    LEFT JOIN res_subsistemas_electricos rse ON rm.subsistema_id = rse.id
+    WHERE gpt.name ILIKE '%TD%'
+    GROUP BY 1, gpt.name, sistema
+) bb ON bb.dates = d.fecha AND bb.name = ts.tarifa_name AND bb.sistema = ts.sistema
+LEFT JOIN (
+    SELECT
+        DATE_TRUNC('month', gp.data_baixa) AS dates,
+        COUNT(*) AS baixes_indexada,
+        gpt.name,
+        CASE
+            WHEN rse.code IN ('TF', 'PA', 'LG', 'HI', 'GC', 'FL') THEN 'Canàries'
+            WHEN rse.code IN ('IF', 'MM') THEN 'Balears'
+            WHEN rse.code = 'PE' THEN 'Península'
+        END AS sistema
+    FROM giscedata_polissa gp
+    LEFT JOIN giscedata_polissa_tarifa gpt ON gp.tarifa = gpt.id
+    LEFT JOIN giscedata_cups_ps gcps ON gp.cups = gcps.id
+    LEFT JOIN res_municipi rm ON gcps.id_municipi = rm.id
+    LEFT JOIN res_subsistemas_electricos rse ON rm.subsistema_id = rse.id
+    WHERE gp.mode_facturacio = 'index' AND gpt.name ILIKE '%TD%'
+    GROUP BY 1, gpt.name, sistema
+) b ON b.dates = d.fecha AND b.name = ts.tarifa_name AND b.sistema = ts.sistema
+LEFT JOIN (
+    SELECT
+        DATE_TRUNC('month', gpm.create_date) AS dates,
+        COUNT(*) AS canvis_periodes,
+        gpt.name,
+        CASE
+            WHEN rse.code IN ('TF', 'PA', 'LG', 'HI', 'GC', 'FL') THEN 'Canàries'
+            WHEN rse.code IN ('IF', 'MM') THEN 'Balears'
+            WHEN rse.code = 'PE' THEN 'Península'
+        END AS sistema
+    FROM giscedata_polissa_modcontractual gpm
+    LEFT JOIN giscedata_polissa_tarifa gpt ON gpm.tarifa = gpt.id
+    LEFT JOIN giscedata_cups_ps gcps ON gpm.cups = gcps.id
+    LEFT JOIN res_municipi rm ON gcps.id_municipi = rm.id
+    LEFT JOIN res_subsistemas_electricos rse ON rm.subsistema_id = rse.id
+    WHERE gpm.observacions LIKE '%Mode facturaci%: Indexada % ATR%' AND gpt.name ILIKE '%TD%'
+    GROUP BY 1, gpt.name, sistema
+) cp ON cp.dates = d.fecha AND cp.name = ts.tarifa_name AND cp.sistema = ts.sistema
+WHERE ts.sistema IS NOT NULL
+ORDER BY mes, ts.tarifa_name, ts.sistema
+            </field>
+        </record>
+        <record id="consulta_factures_deute_pobresa" model="custom.search">
+            <field name="name">COB - Consulta factures pobresa</field>
+            <field name="query">WITH dates AS (
+    SELECT DATE_TRUNC('day', generate_series)::DATE AS fecha
+    FROM generate_series(NOW() - INTERVAL '${n_days} days', NOW(), INTERVAL '1 day')
+),
+tarifes_sistemes AS (
+    SELECT DISTINCT
+        gpt.name AS tarifa_name,
+        CASE
+            WHEN rse.code IN ('TF', 'PA', 'LG', 'HI', 'GC', 'FL') THEN 'Canàries'
+            WHEN rse.code IN ('IF', 'MM') THEN 'Balears'
+            WHEN rse.code = 'PE' THEN 'Península'
+        END AS sistema
+    FROM giscedata_polissa gp
+    LEFT JOIN giscedata_polissa_tarifa gpt ON gp.tarifa = gpt.id
+    LEFT JOIN giscedata_cups_ps gcps ON gp.cups = gcps.id
+    LEFT JOIN res_municipi rm ON gcps.id_municipi = rm.id
+    LEFT JOIN res_subsistemas_electricos rse ON rm.subsistema_id = rse.id
+    WHERE gpt.name ILIKE '%TD%'
+)
+SELECT
+    d.fecha AS dia,
+    ts.tarifa_name,
+    ts.sistema,
+    COALESCE(aa.altes, 0) AS altes,
+    COALESCE(a.altes_indexada, 0) AS altes_indexada,
+    COALESCE(ci.canvis_index, 0) AS canvis_index,
+    COALESCE(cp.canvis_periodes, 0) AS canvis_periodes,
+    COALESCE(bb.baixes, 0) AS baixes,
+    COALESCE(b.baixes_indexada, 0) AS baixes_indexada
+FROM dates d
+CROSS JOIN (
+    SELECT * FROM tarifes_sistemes WHERE sistema IS NOT NULL
+) ts
+LEFT JOIN (
+    SELECT
+        DATE_TRUNC('day', gpm.create_date) AS dates,
+        COUNT(*) AS altes,
+        gpt.name,
+        CASE
+            WHEN rse.code IN ('TF', 'PA', 'LG', 'HI', 'GC', 'FL') THEN 'Canàries'
+            WHEN rse.code IN ('IF', 'MM') THEN 'Balears'
+            WHEN rse.code = 'PE' THEN 'Península'
+        END AS sistema
+    FROM giscedata_polissa_modcontractual gpm
+    LEFT JOIN giscedata_polissa_tarifa gpt ON gpm.tarifa = gpt.id
+    LEFT JOIN giscedata_cups_ps gcps ON gpm.cups = gcps.id
+    LEFT JOIN res_municipi rm ON gcps.id_municipi = rm.id
+    LEFT JOIN res_subsistemas_electricos rse ON rm.subsistema_id = rse.id
+    WHERE gpm.name = '1'
+    GROUP BY 1, gpt.name, sistema
+) aa ON aa.dates = d.fecha AND aa.name = ts.tarifa_name AND aa.sistema = ts.sistema
+LEFT JOIN (
+    SELECT
+        DATE_TRUNC('day', gpm.create_date) AS dates,
+        COUNT(*) AS altes_indexada,
+        gpt.name,
+        CASE
+            WHEN rse.code IN ('TF', 'PA', 'LG', 'HI', 'GC', 'FL') THEN 'Canàries'
+            WHEN rse.code IN ('IF', 'MM') THEN 'Balears'
+            WHEN rse.code = 'PE' THEN 'Península'
+        END AS sistema
+    FROM giscedata_polissa_modcontractual gpm
+    LEFT JOIN giscedata_polissa_tarifa gpt ON gpm.tarifa = gpt.id
+    LEFT JOIN giscedata_cups_ps gcps ON gpm.cups = gcps.id
+    LEFT JOIN res_municipi rm ON gcps.id_municipi = rm.id
+    LEFT JOIN res_subsistemas_electricos rse ON rm.subsistema_id = rse.id
+    WHERE gpm.mode_facturacio = 'index' AND gpm.name = '1'
+    GROUP BY 1, gpt.name, sistema
+) a ON a.dates = d.fecha AND a.name = ts.tarifa_name AND a.sistema = ts.sistema
+LEFT JOIN (
+    SELECT
+        DATE_TRUNC('day', gpm.create_date) AS dates,
+        COUNT(*) AS canvis_index,
+        gpt.name,
+        CASE
+            WHEN rse.code IN ('TF', 'PA', 'LG', 'HI', 'GC', 'FL') THEN 'Canàries'
+            WHEN rse.code IN ('IF', 'MM') THEN 'Balears'
+            WHEN rse.code = 'PE' THEN 'Península'
+        END AS sistema
+    FROM giscedata_polissa_modcontractual gpm
+    LEFT JOIN giscedata_polissa_tarifa gpt ON gpm.tarifa = gpt.id
+    LEFT JOIN giscedata_cups_ps gcps ON gpm.cups = gcps.id
+    LEFT JOIN res_municipi rm ON gcps.id_municipi = rm.id
+    LEFT JOIN res_subsistemas_electricos rse ON rm.subsistema_id = rse.id
+    WHERE gpm.observacions LIKE '%Mode facturaci%: ATR % Indexada%' AND gpt.name ILIKE '%TD%'
+    GROUP BY 1, gpt.name, sistema
+) ci ON ci.dates = d.fecha AND ci.name = ts.tarifa_name AND ci.sistema = ts.sistema
+LEFT JOIN (
+    SELECT
+        DATE_TRUNC('day', gp.data_baixa) AS dates,
+        COUNT(*) AS baixes,
+        gpt.name,
+        CASE
+            WHEN rse.code IN ('TF', 'PA', 'LG', 'HI', 'GC', 'FL') THEN 'Canàries'
+            WHEN rse.code IN ('IF', 'MM') THEN 'Balears'
+            WHEN rse.code = 'PE' THEN 'Península'
+        END AS sistema
+    FROM giscedata_polissa gp
+    LEFT JOIN giscedata_polissa_tarifa gpt ON gp.tarifa = gpt.id
+    LEFT JOIN giscedata_cups_ps gcps ON gp.cups = gcps.id
+    LEFT JOIN res_municipi rm ON gcps.id_municipi = rm.id
+    LEFT JOIN res_subsistemas_electricos rse ON rm.subsistema_id = rse.id
+    WHERE gpt.name ILIKE '%TD%'
+    GROUP BY 1, gpt.name, sistema
+) bb ON bb.dates = d.fecha AND bb.name = ts.tarifa_name AND bb.sistema = ts.sistema
+LEFT JOIN (
+    SELECT
+        DATE_TRUNC('day', gp.data_baixa) AS dates,
+        COUNT(*) AS baixes_indexada,
+        gpt.name,
+        CASE
+            WHEN rse.code IN ('TF', 'PA', 'LG', 'HI', 'GC', 'FL') THEN 'Canàries'
+            WHEN rse.code IN ('IF', 'MM') THEN 'Balears'
+            WHEN rse.code = 'PE' THEN 'Península'
+        END AS sistema
+    FROM giscedata_polissa gp
+    LEFT JOIN giscedata_polissa_tarifa gpt ON gp.tarifa = gpt.id
+    LEFT JOIN giscedata_cups_ps gcps ON gp.cups = gcps.id
+    LEFT JOIN res_municipi rm ON gcps.id_municipi = rm.id
+    LEFT JOIN res_subsistemas_electricos rse ON rm.subsistema_id = rse.id
+    WHERE gp.mode_facturacio = 'index' AND gpt.name ILIKE '%TD%'
+    GROUP BY 1, gpt.name, sistema
+) b ON b.dates = d.fecha AND b.name = ts.tarifa_name AND b.sistema = ts.sistema
+LEFT JOIN (
+    SELECT
+        DATE_TRUNC('day', gpm.create_date) AS dates,
+        COUNT(*) AS canvis_periodes,
+        gpt.name,
+        CASE
+            WHEN rse.code IN ('TF', 'PA', 'LG', 'HI', 'GC', 'FL') THEN 'Canàries'
+            WHEN rse.code IN ('IF', 'MM') THEN 'Balears'
+            WHEN rse.code = 'PE' THEN 'Península'
+        END AS sistema
+    FROM giscedata_polissa_modcontractual gpm
+    LEFT JOIN giscedata_polissa_tarifa gpt ON gpm.tarifa = gpt.id
+    LEFT JOIN giscedata_cups_ps gcps ON gpm.cups = gcps.id
+    LEFT JOIN res_municipi rm ON gcps.id_municipi = rm.id
+    LEFT JOIN res_subsistemas_electricos rse ON rm.subsistema_id = rse.id
+    WHERE gpm.observacions LIKE '%Mode facturaci%: Indexada % ATR%' AND gpt.name ILIKE '%TD%'
+    GROUP BY 1, gpt.name, sistema
+) cp ON cp.dates = d.fecha AND cp.name = ts.tarifa_name AND cp.sistema = ts.sistema
+WHERE ts.sistema IS NOT NULL
+ORDER BY dia, ts.tarifa_name, ts.sistema
+            </field>
+        </record>
+    </data>
+</openerp>
