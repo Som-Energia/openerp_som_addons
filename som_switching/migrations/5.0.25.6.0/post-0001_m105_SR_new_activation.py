@@ -11,6 +11,7 @@ def up(cursor, installed_version):
 
     logger.info("Updating XMLs")
     list_of_records = [
+        "som_sw_act_m105_ct_traspas",
         "sw_act_m105_acord_repartiment_autoconsum",
     ]
     load_data_records(
