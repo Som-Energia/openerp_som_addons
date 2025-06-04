@@ -30,6 +30,7 @@ class GiscedataFacturacioFacturador(osv.osv):
         )[1]
         productes_a_descomptar.append(bv_product_id)
 
+        # Producte d'indemnització de F1s
         indemnitzacio_product_id = imd_obj.get_object_reference(
             cursor, uid, "giscedata_facturacio_comer",
             "concepte_01"
