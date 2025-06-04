@@ -308,7 +308,6 @@ class GiscedataSwitching(osv.osv):
         """
         result = dict.fromkeys(ids, None)
         atr_cases = ["m1", "d1"]
-        pol_cases = ["c1", "c2", "a1", "b1"]
         for sw_obs in self.read(cursor, uid, ids,
                                 ["proces_id", "cups_polissa_id"],
                                 context=context):
@@ -328,11 +327,6 @@ class GiscedataSwitching(osv.osv):
                     if pas01_id:
                         result[sw_obs["id"]] = any(pas01_obj.browse(
                             cursor, uid, pas01_id[0]).dades_cau.collectiu)
-            elif sw_obs["proces_id"][1].lower() in pol_cases:
-                pol_obj = self.pool.get("giscedata.polissa")
-                pol_data = pol_obj.read(cursor, uid, sw_obs["cups_polissa_id"], [
-                                        'is_autoconsum_collectiu'])
-                result[sw_obs["id"]] = pol_data['is_autoconsum_collectiu']
 
         return result
 
