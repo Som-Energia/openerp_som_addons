@@ -26,7 +26,8 @@ class WizardGurbCreateNewBeta(osv.osv_memory):
 
         search_params = [
             ("active", "=", True),
-            ("gurb_cups_id", "=", gurb_cups_id)
+            ("gurb_cups_id", "=", gurb_cups_id),
+            ("future_beta", "=", False),
         ]
 
         old_beta_id = gurb_cups_beta_o.search(cursor, uid, search_params, context=context)
@@ -70,7 +71,18 @@ class WizardGurbCreateNewBeta(osv.osv_memory):
             }
             gurb_cups_beta_o.write(cursor, uid, old_beta_id[0], write_params, context=context)
 
-        gurb_cups_beta_o.create(cursor, uid, data, context=context)
+        search_params = [
+            ("active", "=", True),
+            ("gurb_cups_id", "=", gurb_cups_id),
+            ("future_beta", "=", True),
+        ]
+        future_beta_id = gurb_cups_beta_o.search(cursor, uid, search_params, context=context)
+        if future_beta_id:
+            gurb_cups_beta_o.write(
+                cursor, uid, future_beta_id[0], data, context=context
+            )
+        else:
+            gurb_cups_beta_o.create(cursor, uid, data, context=context)
 
         return {"type": "ir.actions.act_window_close"}
 
