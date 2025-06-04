@@ -51,6 +51,7 @@ Les lectures, comptadors, linies extra, F1 i factures de proveidor posteriors a 
             <field name="method">activar_polissa_from_m1</field>
             <field name="conditions">[('01', 'sollicitudadm', '==', 'S'), ('01', 'canvi_titular', '!=', 'R')]</field>
             <field name="comerdist">comer</field>
+            <field name="sequence">115</field>
         </record>
         <record model="giscedata.switching.activation.config" id="sw_act_m105_acord_repartiment_autoconsum">
             <field name="proces_id" ref="giscedata_switching.sw_proces_m1"/>
@@ -59,7 +60,7 @@ Les lectures, comptadors, linies extra, F1 i factures de proveidor posteriors a 
             <field name="method">m105_acord_repartiment_autoconsum</field>
             <field name="conditions">[('01', 'sollicitudadm', '==', 'S'), ('01', 'canvi_titular', '==', 'R')]</field>
             <field name="comerdist">comer</field>
-            <field name="sequence">114</field>
+            <field name="sequence">115</field>
         </record>
         <!--Cn-->
         <record model="giscedata.switching.activation.config" id="sw_act_c106_baixa_mailchimp">
