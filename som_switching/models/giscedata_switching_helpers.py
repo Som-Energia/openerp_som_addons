@@ -3,6 +3,8 @@ from osv import osv
 from datetime import datetime, timedelta
 from tools.translate import _
 
+from som_gurb.models.giscedata_switching import _contract_has_gurb_category
+
 
 class GiscedataSwitchingHelpers(osv.osv):
 
@@ -294,14 +296,26 @@ class GiscedataSwitchingHelpers(osv.osv):
         polissa = polissa_obj.browse(
             cursor, uid, sw.cups_polissa_id.id, context={'prefetch': False}
         )
-        # tanquem el cas
-        if not sw.case_close():
+
+        has_gurb = _contract_has_gurb_category(
+            cursor, uid, self.pool, sw.cups_polissa_id.id, context=context
+        )
+
+        if has_gurb:
             info += _(
-                u"Per la pólissa '%s' no hem pogut tancar el cas %s") % (polissa.name, sw.name)
+                u"Per la pólissa '%s' no podem tancar el cas %s "
+                u"perquè té una categoria GURB."
+            ) % (polissa.name, sw.name)
             return _(u'ERROR'), info
         else:
-            info += _(u"  * S'ha tancat correctament.")
-            return 'OK', info
+            # tanquem el cas
+            if not sw.case_close():
+                info += _(
+                    u"Per la pólissa '%s' no hem pogut tancar el cas %s") % (polissa.name, sw.name)
+                return _(u'ERROR'), info
+            else:
+                info += _(u"  * S'ha tancat correctament.")
+                return 'OK', info
 
 
 GiscedataSwitchingHelpers()
