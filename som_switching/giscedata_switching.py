@@ -297,6 +297,45 @@ class GiscedataSwitching(osv.osv):
 
         return result
 
+    def _ff_get_atr_collectiu(self, cursor, uid, ids, field_name, args, context=None):
+        """Find the value of field dades_cau.collectiu  in step '01'.
+        Only search for process which are in ['m1', 'd1', parlar amb marta]
+        :param cursor: Database cursor
+        :param uid: User id
+        :param ids: cas atr id list
+        :param context: Application context
+        :returns data_accio
+        """
+        result = dict.fromkeys(ids, None)
+        atr_cases = ["m1", "d1"]
+        pol_cases = ["c1", "c2", "a1", "b1"]
+        for sw_obs in self.read(cursor, uid, ids,
+                                ["proces_id", "cups_polissa_id"],
+                                context=context):
+            if sw_obs["proces_id"][1].lower() in atr_cases:
+                pas05_obj = self.pool.get(
+                    "giscedata.switching.{}.05".format(sw_obs["proces_id"][1].lower())
+                )
+                pas05_id = pas05_obj.search(cursor, uid, [("sw_id", "=", sw_obs["id"])])
+                if pas05_id:
+                    result[sw_obs["id"]] = any(pas05_obj.browse(
+                        cursor, uid, pas05_id[0]).dades_cau.collectiu)
+                else:
+                    pas01_obj = self.pool.get(
+                        "giscedata.switching.{}.01".format(sw_obs["proces_id"][1].lower())
+                    )
+                    pas01_id = pas01_obj.search(cursor, uid, [("sw_id", "=", sw_obs["id"])])
+                    if pas01_id:
+                        result[sw_obs["id"]] = any(pas01_obj.browse(
+                            cursor, uid, pas01_id[0]).dades_cau.collectiu)
+            elif sw_obs["proces_id"][1].lower() in pol_cases:
+                pol_obj = self.pool.get("giscedata.polissa")
+                pol_data = pol_obj.read(cursor, uid, sw_obs["cups_polissa_id"], [
+                                        'is_autoconsum_collectiu'])
+                result[sw_obs["id"]] = pol_data['is_autoconsum_collectiu']
+
+        return result
+
     def _get_pas_id(self, cr, uid, ids, context=None):
         res = []
         for sw_obs in self.read(cr, uid, ids, ["sw_id"]):
@@ -377,12 +416,24 @@ class GiscedataSwitching(osv.osv):
                 "giscedata.switching.m1.01": (_get_pas_id, ["data_accio"], 20),
             },
         ),
-        "collectiu": fields.related(
+        "collectiu_polissa": fields.related(
             "cups_polissa_id",
             "is_autoconsum_collectiu",
             type="boolean",
             string="Col·lectiu",
             readonly=True,
+        ),
+        "collectiu": fields.function(
+            _ff_get_atr_collectiu,
+            method=True,
+            type="boolean",
+            string="Col·lectiu",
+            store={
+                "giscedata.switching.m1.01": (_get_pas_id, ["dades_cau"], 20),
+                "giscedata.switching.m1.05": (_get_pas_id, ["dades_cau"], 20),
+                "giscedata.switching.d1.01": (_get_pas_id, ["dades_cau"], 20),
+                "giscedata.switching.d1.05": (_get_pas_id, ["dades_cau"], 20),
+            },
         ),
     }
 
