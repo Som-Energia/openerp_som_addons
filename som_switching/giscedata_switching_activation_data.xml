@@ -37,6 +37,15 @@
             <field name="comerdist">comer</field>
             <field name="sequence">999</field>
         </record>
+        <record model="giscedata.switching.activation.config" id="sw_act_m105_acord_repartiment_autoconsum">
+            <field name="proces_id" ref="giscedata_switching.sw_proces_m1"/>
+            <field name="step_id" ref="giscedata_switching.sw_step_m1_05"/>
+            <field name="description">Tanca el cas quan es tracta d'un M1 05 Mod. Acord repartiment/fitxer coeficients.</field>
+            <field name="method">m105_acord_repartiment_autoconsum</field>
+            <field name="conditions">[('02', 'rebuig', '!=', False), ('01', 'sollicitudadm', '==', 'S'), ('01', 'canvi_titular', '==', 'R')]</field>
+            <field name="comerdist">comer</field>
+            <field name="sequence">114</field>
+        </record>
         <!--Cn-->
         <record model="giscedata.switching.activation.config" id="sw_act_c106_baixa_mailchimp">
             <field name="proces_id" ref="giscedata_switching.sw_proces_c1"/>
