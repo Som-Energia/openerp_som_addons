@@ -14,7 +14,8 @@
                     </page>
                 </xpath>
                 <field name="data_sollicitud" position="after">
-                    <field name="collectiu"/>
+                    <field name="collectiu_atr"/>
+                    <field name="collectiu_polissa"/>
                 </field>
             </field>
         </record>
@@ -54,7 +55,8 @@
                     <field name="data_accio" select="2"/>
                 </field>
                 <field name="additional_info" position="after">
-                    <field name="collectiu" select="2"/>
+                    <field name="collectiu_atr" select="2"/>
+                    <field name="collectiu_polissa" select="2"/>
                 </field>
             </field>
         </record>

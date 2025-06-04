@@ -317,16 +317,18 @@ class GiscedataSwitching(osv.osv):
                 )
                 pas05_id = pas05_obj.search(cursor, uid, [("sw_id", "=", sw_obs["id"])])
                 if pas05_id:
-                    result[sw_obs["id"]] = any(pas05_obj.browse(
-                        cursor, uid, pas05_id[0]).dades_cau.collectiu)
+                    caus = pas05_obj.browse(cursor, uid, pas05_id[0]).dades_cau
+                    value = any([cau.collectiu for cau in caus])
+                    result[sw_obs["id"]] = value
                 else:
                     pas01_obj = self.pool.get(
                         "giscedata.switching.{}.01".format(sw_obs["proces_id"][1].lower())
                     )
                     pas01_id = pas01_obj.search(cursor, uid, [("sw_id", "=", sw_obs["id"])])
                     if pas01_id:
-                        result[sw_obs["id"]] = any(pas01_obj.browse(
-                            cursor, uid, pas01_id[0]).dades_cau.collectiu)
+                        caus = pas01_obj.browse(cursor, uid, pas01_id[0]).dades_cau
+                        value = any([cau.collectiu for cau in caus])
+                        result[sw_obs["id"]] = value
 
         return result
 
@@ -414,14 +416,14 @@ class GiscedataSwitching(osv.osv):
             "cups_polissa_id",
             "is_autoconsum_collectiu",
             type="boolean",
-            string="Col·lectiu",
+            string="Col·lectiu pòlissa",
             readonly=True,
         ),
-        "collectiu": fields.function(
+        "collectiu_atr": fields.function(
             _ff_get_atr_collectiu,
             method=True,
             type="boolean",
-            string="Col·lectiu",
+            string="Col·lectiu pas",
             store={
                 "giscedata.switching.m1.01": (_get_pas_id, ["dades_cau"], 20),
                 "giscedata.switching.m1.05": (_get_pas_id, ["dades_cau"], 20),
