@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from generationkwh.fareperiodcurve import FarePeriodCurve, libfacturacioatr
+from som_generationkwh.holidays import HolidaysProvider
 from destral import testing
 from destral.transaction import Transaction
 from yamlns import namespace as ns
@@ -19,7 +20,7 @@ class HolidaysProvidersMockup(object):
         self.set(holidays)
 
 
-class FarePeriodCurveTests(testing.OOTestCaseWithCursor):
+class FarePeriodCurveTests(testing.OOTestCase):
 
     from yamlns.testutils import assertNsEqual
 
@@ -444,5 +445,30 @@ class FarePeriodCurveTests(testing.OOTestCaseWithCursor):
             (datetime.date(2021,6,1), datetime.date(2022,5,31)),
                 ]
         self.assertEqual(result, expected)
+
+    def test_holidaysProvider__implementation(self):
+        """
+        Test that the holidays provider mockup works as expected.
+        """
+        with Transaction().start(self.database) as txn:
+            cursor = txn.cursor
+            uid = txn.user
+
+            holidays_provider = HolidaysProvider(self.openerp, cursor, uid)
+            holidays = holidays_provider.get(datetime.date(2024, 8, 15), datetime.date(2025, 5, 1))
+            self.assertEqual(
+                holidays,
+                [
+                    isodate('2024-08-15'),
+                    isodate('2024-10-12'),
+                    isodate('2024-11-01'),
+                    isodate('2024-12-06'),
+                    isodate('2024-12-08'),
+                    isodate('2024-12-25'),
+                    isodate('2025-01-01'),
+                    isodate('2025-01-06'),
+                    isodate('2025-05-01'),
+                ]
+            )
 
 # vim: et ts=4 sw=4
