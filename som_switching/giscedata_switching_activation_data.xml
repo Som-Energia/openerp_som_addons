@@ -37,12 +37,27 @@
             <field name="comerdist">comer</field>
             <field name="sequence">999</field>
         </record>
+        <record model="giscedata.switching.activation.config" id="som_sw_act_m105_ct_traspas">
+            <field name="proces_id" ref="giscedata_switching.sw_proces_m1"/>
+            <field name="step_id" ref="giscedata_switching.sw_step_m1_05"/>
+            <field name="description">Nomes quan es tracte de un canvi de titular sense altres canvis.
+
+Si es tracte de una subrogació i en la variable de configuració 'sw_m1_owner_change_subrogacio_new_contract' s'indica que no es vol nou contracte per subrogacions (valor 0):
+Es fa una modificació contractual en la data indicada per la distribuidora cambiant el titular i les altres dades administratives.
+
+Si es tracte de un traspàs o una subrogació amb contracte nou (variable 'sw_m1_owner_change_subrogacio_new_contract' a 1):
+Es dona de baixa l'antic contracte en la data de canvi sol.licitada en el pas 01 o en data de última lectura facturada (la més recent).
+Les lectures, comptadors, linies extra, F1 i factures de proveidor posteriors a la data de baixa s'assignen al nou contracte, que es dona d'alta el dia despres de la baixa de l'antic.</field>
+            <field name="method">activar_polissa_from_m1</field>
+            <field name="conditions">[('01', 'sollicitudadm', '==', 'S'), ('01', 'canvi_titular', '!=', 'R')]</field>
+            <field name="comerdist">comer</field>
+        </record>
         <record model="giscedata.switching.activation.config" id="sw_act_m105_acord_repartiment_autoconsum">
             <field name="proces_id" ref="giscedata_switching.sw_proces_m1"/>
             <field name="step_id" ref="giscedata_switching.sw_step_m1_05"/>
             <field name="description">Tanca el cas quan es tracta d'un M1 05 Mod. Acord repartiment/fitxer coeficients.</field>
             <field name="method">m105_acord_repartiment_autoconsum</field>
-            <field name="conditions">[('02', 'rebuig', '!=', False), ('01', 'sollicitudadm', '==', 'S'), ('01', 'canvi_titular', '==', 'R')]</field>
+            <field name="conditions">[('01', 'sollicitudadm', '==', 'S'), ('01', 'canvi_titular', '==', 'R')]</field>
             <field name="comerdist">comer</field>
             <field name="sequence">114</field>
         </record>
