@@ -3,7 +3,7 @@ from osv import osv
 from datetime import datetime, timedelta
 from tools.translate import _
 
-from som_gurb.models.giscedata_switching import _contract_has_gurb_category
+# from som_gurb.models.giscedata_switching import _contract_has_gurb_category
 
 
 class GiscedataSwitchingHelpers(osv.osv):
@@ -297,9 +297,7 @@ class GiscedataSwitchingHelpers(osv.osv):
             cursor, uid, sw.cups_polissa_id.id, context={'prefetch': False}
         )
 
-        has_gurb = _contract_has_gurb_category(
-            cursor, uid, self.pool, sw.cups_polissa_id.id, context=context
-        )
+        has_gurb = False  # TODO: Use imported '_contract_has_gurb_category' to check GURB category?
 
         if has_gurb:
             info += _(
