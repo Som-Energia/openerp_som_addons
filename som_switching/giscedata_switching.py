@@ -308,9 +308,7 @@ class GiscedataSwitching(osv.osv):
         """
         result = dict.fromkeys(ids, None)
         atr_cases = ["m1", "d1"]
-        for sw_obs in self.read(cursor, uid, ids,
-                                ["proces_id", "cups_polissa_id"],
-                                context=context):
+        for sw_obs in self.read(cursor, uid, ids, ["proces_id"], context=context):
             if sw_obs["proces_id"][1].lower() in atr_cases:
                 pas05_obj = self.pool.get(
                     "giscedata.switching.{}.05".format(sw_obs["proces_id"][1].lower())
