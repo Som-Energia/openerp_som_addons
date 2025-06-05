@@ -172,9 +172,16 @@ class TestActivacioM1(TestSwitchingImport):
             cursor = txn.cursor
             uid = txn.user
 
+            # deactivate old ATR activation config that has been replaced
+            act_sw_act_m105_ct_traspas_old_id = self.IrModelData.get_object_reference(
+                cursor, uid, "giscedata_switching", "sw_act_m105_ct_traspas"
+            )[1]
+            act_o = self.openerp.pool.get("giscedata.switching.activation.config")
+            act_o.write(cursor, uid, act_sw_act_m105_ct_traspas_old_id, {"active": False})
+
             mock_lectures.return_value = []
             contract_id = self.get_contract_id(txn)
-            # remove all other contracts
+
             old_partner_id = self.Polissa.read(cursor, uid, contract_id, ["titular"])["titular"][0]
             pol_ids = self.Polissa.search(
                 cursor, uid, [("id", "!=", contract_id), ("titular", "=", old_partner_id)]
@@ -204,6 +211,13 @@ class TestActivacioM1(TestSwitchingImport):
         with Transaction().start(self.database) as txn:
             cursor = txn.cursor
             uid = txn.user
+
+            # deactivate old ATR activation config that has been replaced
+            act_sw_act_m105_ct_traspas_old_id = self.IrModelData.get_object_reference(
+                cursor, uid, "giscedata_switching", "sw_act_m105_ct_traspas"
+            )[1]
+            act_o = self.openerp.pool.get("giscedata.switching.activation.config")
+            act_o.write(cursor, uid, act_sw_act_m105_ct_traspas_old_id, {"active": False})
 
             mock_lectures.return_value = []
             contract_id = self.get_contract_id(txn, "polissa_tarifa_018")
