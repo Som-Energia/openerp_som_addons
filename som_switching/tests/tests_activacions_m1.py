@@ -597,7 +597,7 @@ class TestActivacioM1(TestSwitchingImport):
             self.assertTrue(d1.collectiu_atr)
 
     @mock.patch(
-        "som_switching.giscedata_switching_helpers.GiscedataSwitchingHelpers.activar_polissa_from_m1"  # noqa: E501
+        "giscedata_switching.giscedata_switching_helpers.GiscedataSwitchingHelpers.activar_polissa_from_m1"  # noqa: E501
     )
     def test_sw_act_m105_acord_repartiment_autoconsum_SR(
         self, mock_activar_polissa_from_m1
