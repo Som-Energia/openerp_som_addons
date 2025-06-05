@@ -426,7 +426,6 @@ class GiscedataSwitching(osv.osv):
                 "giscedata.switching.m1.01": (_get_pas_id, ["dades_cau"], 20),
                 "giscedata.switching.m1.05": (_get_pas_id, ["dades_cau"], 20),
                 "giscedata.switching.d1.01": (_get_pas_id, ["dades_cau"], 20),
-                "giscedata.switching.d1.05": (_get_pas_id, ["dades_cau"], 20),
             },
         ),
     }
