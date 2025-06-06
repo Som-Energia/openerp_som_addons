@@ -12,6 +12,7 @@
     "update_xml": [
         "som_dashboard_custom_search.xml",
         "som_dashboard_contractes.xml",
+        "som_dashboard_gc_fase_3.xml",
     ],
     "active": False,
     "installable": True,
