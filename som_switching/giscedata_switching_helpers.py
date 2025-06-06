@@ -261,32 +261,6 @@ class GiscedataSwitchingHelpers(osv.osv):
             cac.case_close(context)
         return res
 
-    # def activar_polissa_from_m1(self, cursor, uid, sw_id, context=None):
-    #     if context is None:
-    #         context = {}
-
-    #     m101_obj = self.pool.get('giscedata.switching.m1.01')
-    #     sw_obj = self.pool.get('giscedata.switching')
-
-    #     res = False
-
-    #     sw = sw_obj.browse(cursor, uid, sw_id, context=context)
-    #     pas01 = m101_obj.browse(
-    #         cursor, uid,
-    #         m101_obj.search(cursor, uid, [('sw_id', '=', sw.id)])[0]
-    #     )
-
-    #     if pas01.sollicitudadm in ['S'] and pas01.canvi_titular in ['R']:
-    #         ATR M105 (S)[R] Mod. Acord repartiment/fitxer coeficients
-    #         res = self.m105_acord_repartiment_autoconsum(
-    #             cursor, uid, sw_id, context=context
-    #         )
-    #     else:
-    #         res = super(GiscedataSwitchingHelpers, self).activar_polissa_from_m1(
-    #             cursor, uid, sw_id, context=context
-    #         )
-    #     return res
-
     def m105_acord_repartiment_autoconsum(self, cursor, uid, sw_id, context=None):
         sw_obj = self.pool.get('giscedata.switching')
         polissa_obj = self.pool.get('giscedata.polissa')
