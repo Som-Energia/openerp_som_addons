@@ -310,28 +310,21 @@ class GiscedataSwitching(osv.osv):
         atr_cases = ["m1", "d1"]
         for sw_obs in self.read(cursor, uid, ids, ["proces_id"], context=context):
             if sw_obs["proces_id"][1].lower() in atr_cases:
-                if sw_obs["proces_id"][1].lower() == "d1":
-                    pas_obj = self.pool.get(
-                        "giscedata.switching.d1.01"
-                    )
-                else:
+                pas_id = False
+                if sw_obs["proces_id"][1].lower() == "m1":
                     pas_obj = self.pool.get(
                         "giscedata.switching.{}.05".format(sw_obs["proces_id"][1].lower())
                     )
-                pas05_id = pas_obj.search(cursor, uid, [("sw_id", "=", sw_obs["id"])])
-                if pas05_id:
-                    caus = pas_obj.browse(cursor, uid, pas05_id[0]).dades_cau
-                    value = any([cau.collectiu for cau in caus])
-                    result[sw_obs["id"]] = value
-                else:
-                    pas01_obj = self.pool.get(
+                    pas_id = pas_obj.search(cursor, uid, [("sw_id", "=", sw_obs["id"])])
+                if not pas_id:
+                    pas_obj = self.pool.get(
                         "giscedata.switching.{}.01".format(sw_obs["proces_id"][1].lower())
                     )
-                    pas01_id = pas01_obj.search(cursor, uid, [("sw_id", "=", sw_obs["id"])])
-                    if pas01_id:
-                        caus = pas01_obj.browse(cursor, uid, pas01_id[0]).dades_cau
-                        value = any([cau.collectiu for cau in caus])
-                        result[sw_obs["id"]] = value
+                    pas_id = pas_obj.search(cursor, uid, [("sw_id", "=", sw_obs["id"])])
+
+                caus = pas_obj.browse(cursor, uid, pas_id[0]).dades_cau
+                value = any([cau.collectiu for cau in caus])
+                result[sw_obs["id"]] = value
 
         return result
 
