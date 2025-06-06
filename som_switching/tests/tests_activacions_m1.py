@@ -3,6 +3,7 @@ from destral.transaction import Transaction
 import mock
 from giscedata_switching.tests.common_tests import TestSwitchingImport
 from destral.patch import PatchNewCursors
+from addons import get_module_resource
 
 
 class TestActivacioM1(TestSwitchingImport):
@@ -309,5 +310,96 @@ class TestActivacioM1(TestSwitchingImport):
             # Col·lectiu
             datos_cau_obj.write(cursor, uid, datos_cau_ids, {'collectiu': True})
             m101.write({'dades_cau': datos_cau_ids})
+            m1 = sw_obj.browse(cursor, uid, m101.sw_id.id)
+            self.assertTrue(m1.collectiu_atr)
+
+    def test_ff_collectiu_atr_m1_05_no_auto(self):
+        sw_obj = self.openerp.pool.get("giscedata.switching")
+        step_obj = self.openerp.pool.get("giscedata.switching.m1.01")
+        partner_address_obj = self.openerp.pool.get('res.partner.address')
+
+        with Transaction().start(self.database) as txn:
+            cursor = txn.cursor
+            uid = txn.user
+            hist_autoconsum_id = self.IrModelData.get_object_reference(
+                cursor, uid, 'giscedata_cups', 'rel_autoconsum_cups_tarifa_018_autoconsum_41'
+            )[1]
+            partner_id = self.IrModelData.get_object_reference(
+                cursor, uid, 'base', 'res_partner_gisce')[1]
+            partner_address_obj.create(cursor, uid, {'phone': 666999222, 'partner_id': partner_id})
+
+            self.switch(txn, "comer")
+
+            # Create M1 01 no auto
+            contract_id = self.get_contract_id(txn)
+
+            self.change_polissa_comer(txn)
+            self.update_polissa_distri(txn)
+            self.activar_polissa_CUPS(txn, context={
+                "polissa_xml_id": "polissa_0001"})
+
+            step_id = self.create_case_and_step(
+                cursor, uid, contract_id, "M1", "01"
+            )
+            m101 = step_obj.browse(cursor, uid, step_id)
+            datos_cau_obj = self.openerp.pool.get('giscedata.switching.datos.cau')
+            datos_cau_ids = datos_cau_obj.dummy_create(
+                cursor, uid, m101.sw_id, '04', hist_autoconsum_id)
+            vals = {
+                'dades_cau': datos_cau_ids,
+                'change_type': 'tarpot',
+                'tariff': '018',
+                'phone_num': '666888555',
+                'phone_pre': '034',
+                'con_name': '0018_A41',
+                'con_sur1': 'asdfg',
+                'con_sur2': 'gfdsa',
+                'power_p1': 4600,
+                'power_p2': 4600,
+                'power_p3': 4600,
+                'power_invoicing': '1',
+            }
+            m101.config_step(vals)
+
+            # No col·lectiu
+            m1 = sw_obj.browse(cursor, uid, m101.sw_id.id)
+            self.assertFalse(m1.collectiu_atr)
+
+            # Carreguem el pas 02 de la distri
+            m1_02_xml_path = get_module_resource(
+                "giscedata_switching", "tests", "fixtures", "m102_new.xml"
+            )
+            with open(m1_02_xml_path, "r") as f:
+                m1_02_xml = f.read()
+            # codi_sollicitud = '20250605160800'
+            m1_02_xml = m1_02_xml.replace(
+                "<CodigoDeSolicitud>201412111009",
+                "<CodigoDeSolicitud>{0}".format(m1.codi_sollicitud)
+            )
+
+            # Carreguem el pas 05 de la distri
+            m1_05_xml_path = get_module_resource(
+                "giscedata_switching", "tests", "fixtures", "m105_canvi_autoconsum.xml"
+            )
+            with open(m1_05_xml_path, "r") as f:
+                m1_05_xml = f.read()
+            m1_05_xml = m1_05_xml.replace(
+                "<CodigoDeSolicitud>201607211260",
+                "<CodigoDeSolicitud>{0}".format(m1.codi_sollicitud)
+            )
+            m1_05_xml = m1_05_xml.replace(
+                "<CUPS>ES0021126262693495FV",
+                "<CUPS>ES1234000000000001JN0F",
+            )
+
+            # Import XML
+            sw_obj.importar_xml(
+                cursor, uid, m1_02_xml, "m1_02.xml"
+            )
+            sw_obj.importar_xml(
+                cursor, uid, m1_05_xml, "m1_05.xml"
+            )
+
+            # Comprovem que és Col·lectiu
             m1 = sw_obj.browse(cursor, uid, m101.sw_id.id)
             self.assertTrue(m1.collectiu_atr)
