@@ -28,7 +28,7 @@ def up(cursor, installed_version):
             idref=None, mode='update'
         )
 
-    full_migrate = False
+    full_migrate = True
     if full_migrate:
         logger.info("Populate new stored field.")
         uid = 1
@@ -66,7 +66,7 @@ def up(cursor, installed_version):
         sw_ids = sorted(list(sw_01_ids | sw_05_ids))
         logger.info("Found {} cases ids to set to collective".format(len(sw_ids)))
         sw_obj = pool.get("giscedata.switching")
-        sw_obj.write(cursor, uid, sw_ids, {'collectiu_atr': True})
+        sw_obj._store_set_values(cursor, uid, sw_ids, ['collectiu_atr'], {})
 
         logger.info("New stored field populated!.")
 
