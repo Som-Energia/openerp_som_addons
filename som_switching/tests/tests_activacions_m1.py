@@ -497,3 +497,73 @@ class TestActivacioM1(TestSwitchingImport):
             # Comprovem que ja no és Col·lectiu
             m1 = sw_obj.browse(cursor, uid, m101.sw_id.id)
             self.assertFalse(m1.collectiu_atr)
+
+    def test_ff_collectiu_atr_d1_01_auto_col_no(self):
+        sw_obj = self.openerp.pool.get("giscedata.switching")
+        partner_address_obj = self.openerp.pool.get('res.partner.address')
+
+        with Transaction().start(self.database) as txn:
+            cursor = txn.cursor
+            uid = txn.user
+            partner_id = self.IrModelData.get_object_reference(
+                cursor, uid, 'base', 'res_partner_gisce')[1]
+            partner_address_obj.create(cursor, uid, {'phone': 666999222, 'partner_id': partner_id})
+
+            self.switch(txn, "comer")
+            self.change_polissa_comer(txn)
+            self.update_polissa_distri(txn)
+            self.activar_polissa_CUPS(txn, context={
+                "polissa_xml_id": "polissa_0001"})
+
+            # Carreguem el pas 02 de la distri
+            d1_01_xml_path = get_module_resource(
+                "giscedata_switching", "tests", "fixtures", "d101_new.xml"
+            )
+            with open(d1_01_xml_path, "r") as f:
+                d1_01_xml = f.read()
+            d1_01_xml = d1_01_xml.replace(
+                "<Colectivo>S",
+                "<Colectivo>N",
+            )
+
+            # Import XML
+            sw_id, _ = sw_obj.importar_xml(
+                cursor, uid, d1_01_xml, "d1_01_xml.xml"
+            )
+
+            # Comprovem que no és Col·lectiu
+            d1 = sw_obj.browse(cursor, uid, sw_id)
+            self.assertFalse(d1.collectiu_atr)
+
+    def test_ff_collectiu_atr_d1_01_auto_col_si(self):
+        sw_obj = self.openerp.pool.get("giscedata.switching")
+        partner_address_obj = self.openerp.pool.get('res.partner.address')
+
+        with Transaction().start(self.database) as txn:
+            cursor = txn.cursor
+            uid = txn.user
+            partner_id = self.IrModelData.get_object_reference(
+                cursor, uid, 'base', 'res_partner_gisce')[1]
+            partner_address_obj.create(cursor, uid, {'phone': 666999222, 'partner_id': partner_id})
+
+            self.switch(txn, "comer")
+            self.change_polissa_comer(txn)
+            self.update_polissa_distri(txn)
+            self.activar_polissa_CUPS(txn, context={
+                "polissa_xml_id": "polissa_0001"})
+
+            # Carreguem el pas 02 de la distri
+            d1_01_xml_path = get_module_resource(
+                "giscedata_switching", "tests", "fixtures", "d101_new.xml"
+            )
+            with open(d1_01_xml_path, "r") as f:
+                d1_01_xml = f.read()
+
+            # Import XML
+            sw_id, _ = sw_obj.importar_xml(
+                cursor, uid, d1_01_xml, "d1_01_xml.xml"
+            )
+
+            # Comprovem que és Col·lectiu
+            d1 = sw_obj.browse(cursor, uid, sw_id)
+            self.assertTrue(d1.collectiu_atr)
