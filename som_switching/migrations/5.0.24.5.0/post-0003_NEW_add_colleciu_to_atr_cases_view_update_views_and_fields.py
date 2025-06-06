@@ -28,7 +28,7 @@ def up(cursor, installed_version):
             idref=None, mode='update'
         )
 
-    full_migrate = True
+    full_migrate = False
     if full_migrate:
         logger.info("Populate new stored field.")
         uid = 1
