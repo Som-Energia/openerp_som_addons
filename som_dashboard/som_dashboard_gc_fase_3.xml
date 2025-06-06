@@ -12,7 +12,7 @@
             <field name="priority" eval="16"/>
             <field name="version" eval="2"/>
             <field name="arch" type="xml">
-                <graph type="indicator" icon="skull:value&gt;19;meh:value&gt;11 and value &lt; 11;smile:value&lt;6"/>
+                <graph type="indicator" icon="skull:value&gt;19;meh:value&gt;10 and value &lt; 20;smile:value&lt;10" color="red:value&gt;19;orange:value&gt;10 and value &lt; 20;green:value&lt;10"/>
             </field>
         </record>
         <record model="ir.actions.act_window" id="action_notifiable_accepted_cases_equip_dashboard">
@@ -21,7 +21,7 @@
             <field name="view_type">form</field>
             <field name="view_mode">graph,tree,form</field>
             <field name="limit" eval="0"/>
-            <field name="res_model">crm.case</field>
+            <field name="res_model">giscedata.switching</field>
             <field name="domain">
                 [("state", "=", "open"), ("enviament_pendent", "=", False), ("rebuig", "=", False), ("notificacio_pendent", "=", True)]
             </field>
@@ -47,7 +47,7 @@
             <field name="priority" eval="16"/>
             <field name="version" eval="2"/>
             <field name="arch" type="xml">
-                <graph type="indicator" icon="skull:value&gt;19;meh:value&gt;11 and value &lt; 11;smile:value&lt;6"/>
+                <graph type="indicator" icon="skull:value&gt;19;meh:value&gt;10 and value &lt; 20;smile:value&lt;10" color="red:value&gt;19;orange:value&gt;10 and value &lt; 20;green:value&lt;10"/>
             </field>
         </record>
         <record model="ir.actions.act_window" id="action_notifiable_rejected_cases_equip_dashboard">
@@ -56,7 +56,7 @@
             <field name="view_type">form</field>
             <field name="view_mode">graph,tree,form</field>
             <field name="limit" eval="0"/>
-            <field name="res_model">crm.case</field>
+            <field name="res_model">giscedata.switching</field>
             <field name="domain">
                 [("state", "=", "open"), ("rebuig", "=", True), ("notificacio_pendent", "=", True)]
             </field>
@@ -82,7 +82,7 @@
             <field name="priority" eval="16"/>
             <field name="version" eval="2"/>
             <field name="arch" type="xml">
-                <graph type="indicator" icon="skull:value&gt;19;meh:value&gt;11 and value &lt; 11;smile:value&lt;6"/>
+                <graph type="indicator" icon="skull:value&gt;19;meh:value&gt;10 and value &lt; 20;smile:value&lt;10" color="red:value&gt;19;orange:value&gt;10 and value &lt; 20;green:value&lt;10"/>
             </field>
         </record>
         <record model="ir.actions.act_window" id="action_notifiable_other_cases_equip_dashboard">
@@ -91,9 +91,9 @@
             <field name="view_type">form</field>
             <field name="view_mode">graph,tree,form</field>
             <field name="limit" eval="0"/>
-            <field name="res_model">crm.case</field>
+            <field name="res_model">giscedata.switching</field>
             <field name="domain">
-                [("state", "=", "open"), ("enviament_pendent", "=", False), ("notificacio_pendent", "=", False)]
+                [("state", "=", "open"), ("enviament_pendent", "=", False), ("notificacio_pendent", "=", False), ('date','>=', datetime.datetime.today().strftime('%Y-%m-%d'))]
             </field>
         </record>
         <record model="ir.actions.act_window.view" id="action_view_notifiable_other_cases_equip_dashboard">
