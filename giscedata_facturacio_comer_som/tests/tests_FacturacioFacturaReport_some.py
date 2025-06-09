@@ -711,7 +711,7 @@ class Tests_FacturacioFacturaReport_contract_data_component(Tests_FacturacioFact
         self.assertYamlfy(result)
         dict_expected = {
             "power": 4.6,
-            "autoconsum": u"41",
+            "autoconsum": u"21",
             "powers": [],
             "renovation_date": "2021-01-01",
             "cups": u"ES1234000000000001JN0F",
@@ -721,7 +721,7 @@ class Tests_FacturacioFacturaReport_contract_data_component(Tests_FacturacioFact
             "autoconsum_cau": u"ES0318363477145938GEA000",
             "is_autoconsum_colectiu": False,
             "cups_direction": u"carrer inventat ,  1  ESC.  1 1 1 aclaridor 00001 (Poble de Prova)",  # noqa: E501
-            "autoconsum_colectiu_repartiment": 0.0,
+            "autoconsum_colectiu_repartiment": 100.0,
             "cnae": u"0111",
             "power_invoicing_type": False,
             "remote_managed_meter": True,
