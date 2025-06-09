@@ -162,7 +162,7 @@ jobs:
           export OPENERP_SRID=$SRID
           export OPENERP_ESIOS_TOKEN=$ESIOS_TOKEN
           export OPENERP_MONGODB_HOST=localhost
-          export OPENERP_REDIS_URL=redis://localhost:6379
+          export OPENERP_REDIS_URL=redis://localhost:6379/0
           export OPENERP_ROOT_PATH=${{github.workspace}}/../erp/server/bin
           export OPENERP_ADDONS_PATH=$OPENERP_ROOT_PATH/addons
           export OPENERP_DB_HOST=localhost
