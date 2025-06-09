@@ -1150,7 +1150,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
         """
         returns a dictionary with all required logo component data
         """
-        data = {"logo": "logo_som.png"}
+        data = {"logo": "logo_som2.png"}
         if pol.soci.ref in agreementPartners.keys():
             data["has_agreement_partner"] = True
             data["logo_agreement_partner"] = agreementPartners[pol.soci.ref]["logo"]
