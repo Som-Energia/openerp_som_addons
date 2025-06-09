@@ -297,23 +297,14 @@ class GiscedataSwitchingHelpers(osv.osv):
             cursor, uid, sw.cups_polissa_id.id, context={'prefetch': False}
         )
 
-        has_gurb = False  # TODO: Use imported '_contract_has_gurb_category' to check GURB category?
-
-        if has_gurb:
+        # tanquem el cas
+        if not sw.case_close():
             info += _(
-                u"Per la pólissa '%s' no podem tancar el cas %s "
-                u"perquè té una categoria GURB."
-            ) % (polissa.name, sw.name)
+                u"Per la pólissa '%s' no hem pogut tancar el cas %s") % (polissa.name, sw.name)
             return _(u'ERROR'), info
         else:
-            # tanquem el cas
-            if not sw.case_close():
-                info += _(
-                    u"Per la pólissa '%s' no hem pogut tancar el cas %s") % (polissa.name, sw.name)
-                return _(u'ERROR'), info
-            else:
-                info += _(u"  * S'ha tancat correctament.")
-                return 'OK', info
+            info += _(u"  * S'ha tancat correctament.")
+            return 'OK', info
 
 
 GiscedataSwitchingHelpers()
