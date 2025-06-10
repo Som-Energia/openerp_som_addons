@@ -44,3 +44,23 @@ class GiscedataSwitchingM1_01(osv.osv):
 
 
 GiscedataSwitchingM1_01()
+
+
+class GiscedataSwitchingM1_05(osv.osv):
+    """Classe per gestionar el canvi de comercialitzador"""
+
+    _name = "giscedata.switching.m1.05"
+    _inherit = "giscedata.switching.m1.05"
+
+    def create(self, cursor, uid, values, context=None):
+        res_id = super(GiscedataSwitchingM1_05, self).create(cursor, uid, values, context=context)
+        # Forcem el recomput del camp function
+        obj = self.browse(cursor, uid, res_id, context=context)
+        if obj.dades_cau:
+            self.pool.get('giscedata.switching')._store_set_values(
+                cursor, uid, [obj.sw_id.id], ['collectiu_atr'], context)
+
+        return res_id
+
+
+GiscedataSwitchingM1_05()
