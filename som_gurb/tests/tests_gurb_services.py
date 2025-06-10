@@ -274,3 +274,16 @@ class TestsGurbServices(TestsGurbBase):
         self.assertEqual(lines[2]["multi"], 15)  # Service days invoiced
 
         self.assertEqual(len(lines), 3)
+
+    def test_add_two_services_error(self):
+        imd_o = self.openerp.pool.get("ir.model.data")
+        fact_o = self.openerp.pool.get("giscedata.facturacio.factura")
+
+        ref = self.get_references()
+        factura_id = imd_o.get_object_reference(
+            self.cursor, self.uid, "giscedata_facturacio", "factura_0001"
+        )[1]
+        fact_o.write(self.cursor, self.uid, factura_id, {"polissa_id": ref['pol_id']})
+        self.add_service_to_contract(start_date="2016-01-01")
+        with self.assertRaises(osv.except_osv):
+            self.add_service_to_contract(start_date="2018-01-01")

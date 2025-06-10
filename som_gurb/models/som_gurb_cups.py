@@ -245,6 +245,29 @@ class SomGurbCups(osv.osv):
 
         self.send_signal(cursor, uid, [gurb_cups_id], "button_activate_cups")
 
+    def check_only_one_gurb_service(self, cursor, uid, gurb_cups_id, context=None):
+        if context is None:
+            context = {}
+
+        gurb_o = self.pool.get("som.gurb")
+        service_o = self.pool.get("giscedata.facturacio.services")
+
+        pol_id = self.get_polissa_gurb_cups(cursor, uid, gurb_cups_id, context=context)
+        products_ids = gurb_o.get_gurb_products_ids(cursor, uid, context=context)
+
+        search_params = [
+            ("polissa_id", "=", pol_id),
+            ("producte", "in", products_ids)
+        ]
+
+        service_ids = service_o.search(cursor, uid, search_params, context=context)
+
+        if service_ids:
+            raise osv.except_osv(
+                _("Error"),
+                _("Ja hi ha un servei GURB actiu associat. No es pot afegir un altre.")
+            )
+
     def add_service_to_contract(self, cursor, uid, gurb_cups_id, data_inici, context=None):
         if context is None:
             context = {}
@@ -266,6 +289,10 @@ class SomGurbCups(osv.osv):
                 )
             )
             raise osv.except_osv(error_title, error_info)
+
+        self.check_only_one_gurb_service(
+            cursor, uid, gurb_cups_id, context=context
+        )
 
         if not gurb_cups_vals["quota_product_id"]:
             gurb_cups_vals["quota_product_id"] = gurb_o.read(
