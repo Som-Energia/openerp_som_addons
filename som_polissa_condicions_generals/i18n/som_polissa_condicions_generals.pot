@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OpenERP Server 5.0.14\n"
 "Report-Msgid-Bugs-To: support@openerp.com\n"
-"POT-Creation-Date: 2024-12-19 11:01+0000\n"
-"PO-Revision-Date: 2024-12-19 11:01+0000\n"
+"POT-Creation-Date: 2025-06-10 11:25+0000\n"
+"PO-Revision-Date: 2025-06-10 11:25+0000\n"
 "Last-Translator: <>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -278,7 +278,7 @@ msgid "Contracte"
 msgstr ""
 
 #. module: som_polissa_condicions_generals
-#: code:addons/som_polissa_condicions_generals/models/report_backend_ccpp.py:372
+#: code:addons/som_polissa_condicions_generals/models/report_backend_ccpp.py:374
 msgid "(vigents a partir del {})"
 msgstr ""
 
@@ -288,8 +288,8 @@ msgid "Al gener actualitzarem les tarifes d’electricitat"
 msgstr ""
 
 #. module: som_polissa_condicions_generals
-#: code:addons/som_polissa_condicions_generals/models/report_backend_ccpp.py:366
-#: code:addons/som_polissa_condicions_generals/models/report_backend_ccpp.py:369
+#: code:addons/som_polissa_condicions_generals/models/report_backend_ccpp.py:368
+#: code:addons/som_polissa_condicions_generals/models/report_backend_ccpp.py:371
 msgid "(vigents fins al {})"
 msgstr ""
 
@@ -557,34 +557,6 @@ msgid ""
 "d'accés a xarxa segons la clàusula 6.3 de les Condicions Generals."
 msgstr ""
 
-#: rml:som_polissa_condicions_generals/report/components/gurb.mako:3
-msgid "SERVEI CONTRACTAT:"
-msgstr ""
-
-#: rml:som_polissa_condicions_generals/report/components/gurb.mako:3
-msgid "(21 % IVA)"
-msgstr ""
-
-#: rml:som_polissa_condicions_generals/report/components/gurb.mako:5
-msgid "Cost d'adhesió:"
-msgstr ""
-
-#: rml:som_polissa_condicions_generals/report/components/gurb.mako:6
-msgid "Potència GURB (kW):"
-msgstr ""
-
-#: rml:som_polissa_condicions_generals/report/components/gurb.mako:7
-msgid "Quota GURB (€/kW/dia):"
-msgstr ""
-
-#: rml:som_polissa_condicions_generals/report/components/gurb.mako:7
-msgid "€/kW/dia"
-msgstr ""
-
-#: rml:som_polissa_condicions_generals/report/components/gurb.mako:8
-msgid "Beta contractada (%):"
-msgstr ""
-
 #: rml:som_polissa_condicions_generals/report/components/payment_info.mako:4
 msgid "DADES DE PAGAMENT"
 msgstr ""
@@ -717,4 +689,32 @@ msgid ""
 "inclouen l'impost elèctric i l'IVA (IGIC a Canàries), amb el tipus "
 "impositiu vigent actualment per a cada tipus de contracte sense perjudici"
 " de les exempcions o bonificacions que puguin ser d'aplicació."
+msgstr ""
+
+#: rml:som_polissa_condicions_generals/report/components/gurb/gurb.mako:3
+msgid "SERVEI CONTRACTAT:"
+msgstr ""
+
+#: rml:som_polissa_condicions_generals/report/components/gurb/gurb.mako:3
+msgid "(21 % IVA)"
+msgstr ""
+
+#: rml:som_polissa_condicions_generals/report/components/gurb/gurb.mako:5
+msgid "Cost d'adhesió:"
+msgstr ""
+
+#: rml:som_polissa_condicions_generals/report/components/gurb/gurb.mako:6
+msgid "Potència GURB (kW):"
+msgstr ""
+
+#: rml:som_polissa_condicions_generals/report/components/gurb/gurb.mako:7
+msgid "Quota GURB (€/kW/dia):"
+msgstr ""
+
+#: rml:som_polissa_condicions_generals/report/components/gurb/gurb.mako:7
+msgid "€/kW/dia"
+msgstr ""
+
+#: rml:som_polissa_condicions_generals/report/components/gurb/gurb.mako:8
+msgid "Beta contractada (%):"
 msgstr ""
