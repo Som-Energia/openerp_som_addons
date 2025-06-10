@@ -12,6 +12,10 @@
             			<field name="www_email"/>
             		</page>
                 </xpath>
+                <xpath expr="//field[@name='comment']" position="before">
+                    <field name="birthdate"/>
+                    <field name="gender"/>
+                </xpath>
             </field>
 		</record>
 	</data>
