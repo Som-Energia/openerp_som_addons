@@ -103,6 +103,20 @@ class TestActivacioM1(TestSwitchingImport):
 
         return m1
 
+    def get_m1_05_SR(self, txn, contract_id, context=None):
+        if not context:
+            context = {}
+        uid = txn.user
+        cursor = txn.cursor
+        m1 = self.get_m1_02_ct(txn, contract_id, "R")
+        self.ResConfig.set(cursor, uid, "sw_m1_owner_change_auto", "1")
+        self.create_step(cursor, uid, m1, "M1", "05", context=None)
+        m1 = self.Switching.browse(cursor, uid, m1.id, {"browse_reference": True})
+        m105 = m1.step_ids[-1].pas_id
+        m105.write({"data_activacio": context.get("data_activacio", "2021-08-05")})
+
+        return m1
+
     @mock.patch("som_polissa_soci.res_partner.ResPartner.arxiva_client_mailchimp_async")
     def test_ct_subrogacio_baixa_mailchimp_ok(self, mock_function):
         with Transaction().start(self.database) as txn:
@@ -172,9 +186,16 @@ class TestActivacioM1(TestSwitchingImport):
             cursor = txn.cursor
             uid = txn.user
 
+            # deactivate old ATR activation config that has been replaced
+            act_sw_act_m105_ct_traspas_old_id = self.IrModelData.get_object_reference(
+                cursor, uid, "giscedata_switching", "sw_act_m105_ct_traspas"
+            )[1]
+            act_o = self.openerp.pool.get("giscedata.switching.activation.config")
+            act_o.write(cursor, uid, act_sw_act_m105_ct_traspas_old_id, {"active": False})
+
             mock_lectures.return_value = []
             contract_id = self.get_contract_id(txn)
-            # remove all other contracts
+
             old_partner_id = self.Polissa.read(cursor, uid, contract_id, ["titular"])["titular"][0]
             pol_ids = self.Polissa.search(
                 cursor, uid, [("id", "!=", contract_id), ("titular", "=", old_partner_id)]
@@ -204,6 +225,13 @@ class TestActivacioM1(TestSwitchingImport):
         with Transaction().start(self.database) as txn:
             cursor = txn.cursor
             uid = txn.user
+
+            # deactivate old ATR activation config that has been replaced
+            act_sw_act_m105_ct_traspas_old_id = self.IrModelData.get_object_reference(
+                cursor, uid, "giscedata_switching", "sw_act_m105_ct_traspas"
+            )[1]
+            act_o = self.openerp.pool.get("giscedata.switching.activation.config")
+            act_o.write(cursor, uid, act_sw_act_m105_ct_traspas_old_id, {"active": False})
 
             mock_lectures.return_value = []
             contract_id = self.get_contract_id(txn, "polissa_tarifa_018")
@@ -567,3 +595,69 @@ class TestActivacioM1(TestSwitchingImport):
             # Comprovem que és Col·lectiu
             d1 = sw_obj.browse(cursor, uid, sw_id)
             self.assertTrue(d1.collectiu_atr)
+
+    @mock.patch(
+        "giscedata_switching.giscedata_switching_helpers.GiscedataSwitchingHelpers.activar_polissa_from_m1"  # noqa: E501
+    )
+    def test_sw_act_m105_acord_repartiment_autoconsum_SR(
+        self, mock_activar_polissa_from_m1
+    ):
+        with Transaction().start(self.database) as txn:
+            cursor = txn.cursor
+            uid = txn.user
+
+            # deactivate old ATR activation config that has been replaced
+            act_sw_act_m105_ct_traspas_old_id = self.IrModelData.get_object_reference(
+                cursor, uid, "giscedata_switching", "sw_act_m105_ct_traspas"
+            )[1]
+            act_o = self.openerp.pool.get("giscedata.switching.activation.config")
+            act_o.write(cursor, uid, act_sw_act_m105_ct_traspas_old_id, {"active": False})
+
+            mock_activar_polissa_from_m1.return_value = []
+            contract_id = self.get_contract_id(txn, "polissa_tarifa_018")
+
+            m1 = self.get_m1_05_SR(txn, contract_id, {"polissa_xml_id": "polissa_tarifa_018"})
+
+            with PatchNewCursors():
+                self.Switching.activa_cas_atr(cursor, uid, m1)
+
+            self.assertTrue(not mock_activar_polissa_from_m1.called)
+
+            expected_result = (
+                u"OK:   * S'ha tancat correctament."
+            )
+            history_line_desc = [line["description"] for line in m1.history_line]
+            self.assertTrue(any([expected_result in desc for desc in history_line_desc]))
+
+    @mock.patch(
+        "som_switching.giscedata_switching_helpers.GiscedataSwitchingHelpers.m105_acord_repartiment_autoconsum"  # noqa: E501
+    )
+    def test_sw_act_m105_acord_repartiment_autoconsum_not_SR(
+        self, mock_m105_acord_repartiment_autoconsum
+    ):
+        with Transaction().start(self.database) as txn:
+            cursor = txn.cursor
+            uid = txn.user
+
+            # deactivate old ATR activation config that has been replaced
+            act_sw_act_m105_ct_traspas_old_id = self.IrModelData.get_object_reference(
+                cursor, uid, "giscedata_switching", "sw_act_m105_ct_traspas"
+            )[1]
+            act_o = self.openerp.pool.get("giscedata.switching.activation.config")
+            act_o.write(cursor, uid, act_sw_act_m105_ct_traspas_old_id, {"active": False})
+
+            mock_m105_acord_repartiment_autoconsum.return_value = []
+            contract_id = self.get_contract_id(txn, "polissa_tarifa_018")
+
+            m1 = self.get_m1_05_traspas(txn, contract_id, {"polissa_xml_id": "polissa_tarifa_018"})
+
+            with PatchNewCursors():
+                self.Switching.activa_cas_atr(cursor, uid, m1)
+
+            self.assertTrue(not mock_m105_acord_repartiment_autoconsum.called)
+
+            not_expected_result = (
+                u"OK:   * S'ha tancat correctament."
+            )
+            history_line_desc = [line["description"] for line in m1.history_line]
+            self.assertFalse(any([not_expected_result in desc for desc in history_line_desc]))
