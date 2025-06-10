@@ -124,7 +124,7 @@ if (num_bars == 1 ){ // 3X and 6X
     // color palette = one color per subgroup (periode)
     var color = d3.scaleOrdinal()
     .domain(subgroups)
-    .range(['#dde85f','#bdc83f','#5b5b5b'])
+    .range(['#dde85f','#bdc83f','#0B2E34'])
 
     // stack per subgroup (periode)
     var stackedData = d3.stack()

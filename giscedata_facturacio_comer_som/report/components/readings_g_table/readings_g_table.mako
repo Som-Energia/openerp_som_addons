@@ -50,9 +50,9 @@
                 </tr>
             % endfor
             <tr>
-                <th style="border-top: 1px solid #4c4c4c">${_(u"Total període")}</th>
+                <th style="border-top: 1px solid #0B2E34">${_(u"Total període")}</th>
                 %for p in readings.periodes_g:
-                    <td style="border-top: 1px solid #4c4c4c; text-align: center;">${formatLang(readings.total_lectures_g[p], digits=0)} kWh
+                    <td style="border-top: 1px solid #0B2E34; text-align: center;">${formatLang(readings.total_lectures_g[p], digits=0)} kWh
                     % if ajust_periode[readings.periodes_g.index(p)]:
                         *
                     %endif
