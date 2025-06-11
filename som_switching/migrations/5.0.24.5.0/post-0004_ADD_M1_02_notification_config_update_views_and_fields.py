@@ -13,12 +13,12 @@ def up(cursor, installed_version):
     data_files = [
         'giscedata_switching_notification_data.xml',
     ]
-
     for data_file in data_files:
         load_data(
             cursor, 'som_switching', data_file,
             idref=None, mode='update'
         )
+
     logger.info("Migration completed successfully.")
 
 
