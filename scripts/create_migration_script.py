@@ -35,8 +35,10 @@ def get_modified_files():
                 if len(parts) == 2:
                     module_name, relative_path = parts
                     if module_name not in modified_files:
-                        modified_files[module_name] = {'data': [], 'py': []}
-                    if is_security_csv or is_xml:
+                        modified_files[module_name] = {'data': [], 'py': [], 'security': []}
+                    if is_security_csv:
+                        modified_files[module_name]['security'].append(relative_path)
+                    elif is_xml:
                         modified_files[module_name]['data'].append(relative_path)
                     elif is_py:
                         modified_files[module_name]['py'].append(relative_path)
@@ -172,37 +174,51 @@ def create_migration_script(module_name, files):
         f.write('''# -*- coding: utf-8 -*-
 import logging
 from oopgrade.oopgrade import load_data
-import pooler
-
+''')
+        if models_to_init:
+            f.write('''import pooler''')
+        f.write('''
 
 def up(cursor, installed_version):
     if not installed_version:
         return
 
     logger = logging.getLogger('openerp.migration')
-    pool = pooler.get_pool(cursor.dbname)
 ''')
         # Afegir _auto_init per models amb nous camps
         if models_to_init:
             f.write('\n    logger.info("Initializing new fields")\n')
+            f.write('\n    pool = pooler.get_pool(cursor.dbname)\n')
             for model in models_to_init:
                 f.write('''    pool.get("{0}")._auto_init(
         cursor, context={{'module': '{1}'}}
-    )\n'''.format(model, module_name))
+    )\n\n'''.format(model, module_name))
 
-        # Afegir load_data per XMLs i CSVs modificats
+        # Afegir load_data per XMLs modificats
         if files['data']:
-            f.write('\n    logger.info("Updating XML and CSV files")\n')
+            f.write('\n    logger.info("Updating XML files")\n')
             f.write('    data_files = [\n')
             for data_file in files['data']:
                 f.write("        '{0}',\n".format(data_file))
-            f.write('    ]\n\n')
+            f.write('    ]\n')
             f.write('''    for data_file in data_files:
         load_data(
             cursor, '{0}', data_file,
             idref=None, mode='update'
-        )
-'''.format(module_name))
+        )\n\n'''.format(module_name))
+
+        # Afegir load_data per CSVs security modificats
+        if files['security']:
+            f.write('\n    logger.info("Updating CSV security files")\n')
+            f.write('    security_files = [\n')
+            for data_file in files['security']:
+                f.write("        '{0}',\n".format(data_file))
+            f.write('    ]\n')
+            f.write('''    for security_file in security_files:
+        load_data(
+            cursor, '{0}', security_file,
+            idref=None, mode='update'
+        )\n\n'''.format(module_name))
 
         f.write('''    logger.info("Migration completed successfully.")
 
