@@ -55,7 +55,7 @@ class WizardContractPowerOptimization(osv.osv_memory):
 
         maximeter_excess = maximeter_power - period_power
         if maximeter_excess > 0:
-            maximeter_excess_price = 2 * maximeter_excess * excess_price * month_days[month - 1]
+            maximeter_excess_price = maximeter_excess * excess_price * month_days[month - 1]
 
         return maximeter_excess_price
 
