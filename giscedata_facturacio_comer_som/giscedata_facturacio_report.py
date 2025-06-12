@@ -75,8 +75,19 @@ def te_autoconsum_amb_excedents(fact, pol):
 
 def te_autoconsum_collectiu(fact, pol):
     if te_autoconsum(fact, pol):
-        if pol.autoconsum_id:
-            if pol.autoconsum_id.collectiu:
+        for cups_autoconsum in pol.autoconsum_cups_ids:
+            if cups_autoconsum.collectiu:
+                return True
+    return False
+
+
+def te_autoconsum_no_collectiu(fact, pol):
+    if te_autoconsum(fact, pol):
+        if len(pol.autoconsum_cups_ids) == 0:  # old cases not migrated
+            return True
+
+        for cups_autoconsum in pol.autoconsum_cups_ids:
+            if cups_autoconsum.collectiu is False:
                 return True
     return False
 
@@ -1181,7 +1192,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
             ),
             "is_autoconsum": te_autoconsum(fact, pol),  # fact.te_autoconsum
             "autoconsum": pol.tipus_subseccio,
-            "autoconsum_cau": pol.autoconsum_id.cau if pol.autoconsum_id else "",
+            "autoconsum_cau": pol.autoconsum_id.cau if pol.autoconsum_id and pol.tipus_subseccio != '00' else "",  # noqa: E501
             "is_autoconsum_colectiu": te_autoconsum_collectiu(
                 fact, pol
             ),  # fact.te_autoconsum and fact.polissa_id.autoconsum_id
@@ -1218,7 +1229,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
             u"6.4TD": 6,
         }
 
-        if len(pol.autoconsum_cups_ids) == 0:
+        if data["autoconsum"] == '00' or len(pol.autoconsum_cups_ids) == 0:
             data["autoconsum_caus"] = [data["autoconsum_cau"]]
         else:
             data["autoconsum_caus"] = []
@@ -3212,6 +3223,8 @@ class GiscedataFacturacioFacturaReport(osv.osv):
                 items["total"] = excess_lines["total"]
                 items["date_from"] = excess_lines["date_from"]
                 items["date_to"] = excess_lines["date_to"]
+                items["pre_2025_04_01"] = datetime.strptime(
+                    excess_lines["date_to"], "%d/%m/%Y") < datetime(2025, 04, 1)
                 items["iva"] = excess_lines["iva"]
             excess_data.append(items)
         data = {
@@ -3499,9 +3512,16 @@ class GiscedataFacturacioFacturaReport(osv.osv):
 
             adjust_reason.append(data["adjust_reason"])
 
+        collectives = []
+        if te_autoconsum_collectiu(fact, pol):
+            data = self.get_sub_component_energy_consumption_detail_collective_td_data(fact, pol)
+            if data["is_visible"]:
+                collectives.append(data)
+
         highest_adjust_reason = self.adjust_readings_priority(adjust_reason)
         data = {
             "meters": meters,
+            "collectives": collectives,
             "info": self.get_sub_component_energy_consumption_detail_td_info_data(
                 fact, pol, highest_adjust_reason
             ),
@@ -3611,8 +3631,10 @@ class GiscedataFacturacioFacturaReport(osv.osv):
 
         adjust_reason = []
         if meter.name in lectures:
-            data["is_visible"] = len(lectures[meter.name]) > 0 and te_autoconsum_amb_excedents(
-                fact, pol
+            data["is_visible"] = (
+                len(lectures[meter.name]) > 0
+                and te_autoconsum_amb_excedents(fact, pol)
+                and te_autoconsum_no_collectiu(fact, pol)
             )
             for reading in lectures[meter.name]:
                 data[reading[0]] = {
@@ -3627,7 +3649,9 @@ class GiscedataFacturacioFacturaReport(osv.osv):
                 if "final_type" not in data or reading[7] != u"real":
                     data["final_type"] = reading[7]
                 adjust_reason.append(reading[9])
-
+        data["hide_total_surplus"] = (
+            te_autoconsum_collectiu(fact, pol) and te_autoconsum_no_collectiu(fact, pol)
+        )
         data["adjust_reason"] = self.adjust_readings_priority(adjust_reason)
         return data
 
@@ -3742,6 +3766,107 @@ class GiscedataFacturacioFacturaReport(osv.osv):
             "web_distri": pol.distribuidora.website,
             "distri_name": pol.distribuidora.name,
         }
+        return data
+
+    def get_sub_component_energy_consumption_detail_collective_td_data(self, fact, pol):
+        def visibility(subs):
+            return any([sub["is_visible"] for sub in subs])
+
+        generated = self.get_sub_component_energy_consumption_detail_td_collective_data_data(
+            fact, pol)
+        generated["last_visible"] = True
+        data = {
+            "name": "",
+            "showing_periods": self.get_matrix_show_periods(pol),
+            "generated": generated,
+            "is_visible": visibility([generated]),
+            "adjust_reason": False,
+        }
+        return data
+
+    def get_sub_component_energy_consumption_detail_td_collective_data_data(self, fact, pol):
+        f1_obj = fact.pool.get("giscedata.facturacio.importacio.linia")
+        f1_lf_obj = fact.pool.get('giscedata.facturacio.importacio.linia.factura')
+        f1_cups_ids = f1_obj.search(
+            self.cursor,
+            self.uid,
+            [('cups_id', '=', fact.cups_id.id)],
+        )
+        f1_lf_ids = f1_lf_obj.search(
+            self.cursor,
+            self.uid,
+            [
+                ('linia_id', 'in', f1_cups_ids),
+                ('data_inici', '=', fact.data_inici),
+                ('data_final', '=', fact.data_final),
+            ]
+        )
+        f1_lf = f1_lf_obj.browse(
+            self.cursor,
+            self.uid,
+            f1_lf_ids[-1] if f1_lf_ids else []
+        )
+
+        linies = []
+        if f1_lf:
+            linies = [
+                linia for linia in f1_lf.factura_id.linia_ids if linia.tipus in [
+                    'generacio_neta', 'generacio', 'autoconsum',
+                ]
+            ]
+
+        data = {
+            "showing_periods": self.get_matrix_show_periods(pol),
+            "is_visible": False,
+            "title": _(u"Autoconsum compartit (kWh)"),
+            "is_active": False,
+            "hide_total_surplus": (
+                te_autoconsum_collectiu(fact, pol) and te_autoconsum_no_collectiu(fact, pol)
+            ),
+        }
+
+        data["is_visible"] = len(linies) > 0 and te_autoconsum_amb_excedents(fact, pol)
+
+        for p in data["showing_periods"]:
+            data[p] = {}
+
+        for linia in linies:
+            data[linia.name][linia.tipus] = linia.quantity
+            data["initial_date"] = dateformat(linia.data_desde)
+            data["final_date"] = dateformat(linia.data_fins)
+
+        return data
+
+    def get_sub_component_energy_consumption_detail_td_collective_data_data_old(self, fact, pol, collective):  # noqa: E501
+        # TODO: this function generates dummy data for developing purposes
+        (a, a, a, a, a, a, a, lectures_g, a, a, a, a, a, a, a, a, a, a, a) = self.get_readings_data(
+            fact
+        )
+        lectures = lectures_g
+        data = {
+            "showing_periods": self.get_matrix_show_periods(pol),
+            "is_visible": False,
+            "title": _(u"Autoconsum compartit (kWh)"),
+            "is_active": False,
+        }
+
+        meter_name = "304798778"
+        adjust_reason = []
+        if meter_name in lectures:
+            data["is_visible"] = len(lectures[meter_name]) > 0 and te_autoconsum_amb_excedents(
+                fact, pol
+            )
+            for reading in lectures[meter_name]:
+                data[reading[0]] = {
+                    "generated_coef": reading[1],
+                    "auto_consumed": reading[2],
+                    "surplus": reading[3],
+                }
+                data["initial_date"] = reading[4]
+                data["final_date"] = reading[5]
+                adjust_reason.append(reading[9])
+
+        data["adjust_reason"] = self.adjust_readings_priority(adjust_reason)
         return data
 
     def get_component_cnmc_comparator_qr_link_data(self, fact, pol):

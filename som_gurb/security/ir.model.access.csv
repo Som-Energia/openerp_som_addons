@@ -26,3 +26,7 @@
 "access_report_backend_som_gurb_acord_repartiment_rcwd","report.backend.som.gurb.acord.repartiment","model_report_backend_som_gurb_acord_repartiment","giscedata_polissa.group_giscedata_polissa_u",1,1,1,1
 "access_report_backend_som_gurb_acord_repartiment_rcwd","report.backend.som.gurb.acord.repartiment","model_report_backend_som_gurb_acord_repartiment","giscedata_polissa.group_giscedata_polissa_r",0,0,0,0
 "access_report_backend_som_gurb_acord_repartiment_rcwd","report.backend.som.gurb.acord.repartiment","model_report_backend_som_gurb_acord_repartiment","giscedata_polissa.group_giscedata_polissa_w",1,1,1,1
+"access_wizard_deactivate_gurb_cups_r","wizard.deactivate.gurb.cups","model_wizard_deactivate_gurb_cups","giscedata_polissa.group_giscedata_polissa_r",0,0,0,0
+"access_wizard_deactivate_gurb_cups_w","wizard.deactivate.gurb.cups","model_wizard_deactivate_gurb_cups","giscedata_polissa.group_giscedata_polissa_w",1,1,1,1
+"access_wizard_deactivate_gurb_cups_u","wizard.deactivate.gurb.cups","model_wizard_deactivate_gurb_cups","giscedata_polissa.group_giscedata_polissa_u",1,1,1,1
+"access_wizard_atr_gurb_model_rcwd","wizard.atr.gurb.model","model_wizard_atr_gurb_model","giscedata_polissa.group_giscedata_polissa_u",1,1,1,1

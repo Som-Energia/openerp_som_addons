@@ -3,7 +3,7 @@
     "name": "Procediments d'impagats específics de Som Energia",
     "description": """Mòdul per a la gestió dels impagaments de contractes
         especifics de SomEngergia""",
-    "version": "0.1.2",
+    "version": "24.5.0",
     "author": "Som Energia SCCL",
     "category": "Master",
     "depends": [

@@ -4,7 +4,7 @@
     "description": """Aquest mòdul afegeix les següents funcionalitats:
   * Add empowering features
 """,
-    "version": "0-dev",
+    "version": "24.5.0",
     "author": "GISCE",
     "category": "Master",
     "depends": [

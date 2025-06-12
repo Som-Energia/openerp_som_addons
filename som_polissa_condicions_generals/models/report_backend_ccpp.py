@@ -72,6 +72,7 @@ class ReportBackendCondicionsParticulars(ReportBackend):
         if pas01:
             m101_obj = self.pool.get("giscedata.switching.m1.01")
             pas_id = pas01.pas_id.split(",")[1]
+            pas_id = int(pas_id)
             pas = m101_obj.browse(cursor, uid, pas_id)
             dades_client = pas.dades_client
             dades_envio = pas.direccio_notificacio
@@ -118,6 +119,7 @@ class ReportBackendCondicionsParticulars(ReportBackend):
         if pas01:
             m101_obj = self.pool.get("giscedata.switching.m1.01")
             pas_id = pas01.pas_id.split(",")[1]
+            pas_id = int(pas_id)
             pas = m101_obj.browse(cursor, uid, pas_id)
             es_canvi_tecnic = pas.sollicitudadm == "N"
         else:
@@ -368,7 +370,7 @@ class ReportBackendCondicionsParticulars(ReportBackend):
         coeficient_k_untaxed = (pol.coeficient_k + pol.coeficient_d) / 1000
         coeficient_k = False
         res['mostra_indexada'] = False
-        fp_k_id = polissa.fiscal_position_id if pol.fiscal_position_id else ctx.get(
+        fp_k_id = polissa.fiscal_position_id.id if pol.fiscal_position_id else ctx.get(
             'force_fiscal_position', False)
         if fp_k_id:
             fp_k = fp_obj.browse(cursor, uid, fp_k_id)

@@ -6,6 +6,7 @@ WITH filtered_data AS (
         giscere_previsio_publicada gp
     WHERE
         gp.publicada = TRUE
+        AND gp.type = 'p'
         AND gp.codi_previsio = %(forecast_code)s
         AND gp."timestamp" AT TIME ZONE 'UTC' BETWEEN %(first_timestamp_utc)s AND %(last_timestamp_utc)s
 ),

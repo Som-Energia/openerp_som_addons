@@ -4,7 +4,7 @@
     import logging
     logger = logging.getLogger('openerp')
     report = objects[0]
-    data = report.report_retencions_data_apo()
+    data = report.report_retencions_data(is_generationkwh=False)
     setLang(data.lang)
 %>
 
@@ -208,7 +208,7 @@
       </div>
       <div class="CaixaDadesAportacio">
         <p class="ContingutDades"><b>${_(u"Rendiments bruts:")}</b> ${formatLang(data.amount_untaxed, monetary=True)} €<br>
-        <b>${_(u"19% Retenció sobre l'estalvi:")}</b> ${formatLang(data.amount_tax, monetary=True)} €<br>
+        <b>${_(u"19% IRPF:")}</b> ${formatLang(data.amount_tax, monetary=True)} €<br>
         <b>${_(u"Tipus percepció:")}</b> ${_(u"Dinerària")}</p>
       </div>
     </div>

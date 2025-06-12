@@ -3,7 +3,7 @@
     "name": "Mòdul per crear informes per Consum",
     "description": """
     """,
-    "version": "0-dev",
+    "version": "24.5.0",
     "author": "SomEnergia",
     "category": "SomEnergia",
     "depends": [

@@ -32,7 +32,11 @@ count = 1
                 <%count += 1%>
             </tr>
             <tr>
-                <td class="td_bold detall_td">${_(u"2 x (Potència maxímetre - Potència contractada) [kW]")}</td>
+                % if excess_data["pre_2025_04_01"]:
+                    <td class="td_bold detall_td">${_(u"2 x (Potència maxímetre - Potència contractada) [kW]")}</td>
+                % else:
+                    <td class="td_bold detall_td">${_(u"Potència maxímetre - Potència contractada [kW]")}</td>
+                % endif
                 % for p in id.showing_periods[:-1]:
                     % if p in excess_data:
                         % if p == 'P1':
@@ -124,7 +128,11 @@ count = 1
                 <%count += 1%>
             </tr>
             <tr>
-                <td class="td_bold detall_td">${_(u"2 x (Potència maxímetre - Potència contractada) [kW]")}</td>
+                % if excess_data["pre_2025_04_01"]:
+                    <td class="td_bold detall_td">${_(u"2 x (Potència maxímetre - Potència contractada) [kW]")}</td>
+                % else:
+                    <td class="td_bold detall_td">${_(u"Potència maxímetre - Potència contractada [kW]")}</td>
+                % endif
                 % for p in id.showing_periods:
                     % if p in excess_data:
                         <td>${_(u"%s") %(locale.str(locale.atof(formatLang(excess_data[p]["power_excess"], digits=3))))}</td>

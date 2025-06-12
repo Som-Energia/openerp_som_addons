@@ -2,7 +2,7 @@
 {
     "name": "Som Energia billing extension",
     "description": """SomEnergia billing extension""",
-    "version": "0-dev",
+    "version": "24.5.0",
     "author": "Som Energia",
     "category": "Master",
     "depends": [

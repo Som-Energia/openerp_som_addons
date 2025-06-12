@@ -2,7 +2,7 @@
 {
     "name": "GISCE RE Oferta Som Energia",
     "description": """Mòdul de generació i publicació d'Ofertas de Generació""",
-    "version": "0-dev",
+    "version": "24.5.0",
     "author": "GISCE",
     "category": "RE",
     "depends": [

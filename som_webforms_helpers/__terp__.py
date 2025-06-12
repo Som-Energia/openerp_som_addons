@@ -2,7 +2,7 @@
 {
     "name": "Webforms Helpers for Som Energia",
     "description": """Aquest mòdul afegeix funcions per donar suport a l'API de Webforms""",
-    "version": "2.103.13",
+    "version": "24.5.0",
     "author": "SOMEnergia",
     "category": "Master",
     "depends": [

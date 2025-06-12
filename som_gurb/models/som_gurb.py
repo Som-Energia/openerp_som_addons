@@ -52,6 +52,26 @@ class SomGurb(osv.osv):
 
         return res_id
 
+    def get_gurb_products_ids(self, cursor, uid, context=None):
+        if context is None:
+            context = {}
+
+        imd_obj = self.pool.get("ir.model.data")
+
+        gurb_product_id = imd_obj.get_object_reference(
+            cursor, uid, "som_gurb", "product_gurb"
+        )[1]
+        owner_product_id = imd_obj.get_object_reference(
+            cursor, uid, "som_gurb", "product_owner_gurb"
+        )[1]
+        enterprise_product_id = imd_obj.get_object_reference(
+            cursor, uid, "som_gurb", "product_enterprise_gurb"
+        )[1]
+
+        product_ids = [gurb_product_id, owner_product_id, enterprise_product_id]
+
+        return product_ids
+
     def _ff_get_address_fields(self, cursor, uid, ids, field_name, arg, context=None):
         if context is None:
             context = {}
@@ -221,7 +241,7 @@ class SomGurb(osv.osv):
 
         gurb_id = self.get_gurb_from_sw_id(cursor, uid, sw_id, context=context)
         gurb_cups_id = gurb_cups_obj.get_gurb_cups_from_sw_id(cursor, uid, sw_id, context=context)
-        gurb_cups_obj.activate_gurb_cups(
+        gurb_cups_obj.activate_or_modify_gurb_cups(
             cursor, uid, gurb_cups_id, activation_date, context=context)
         gurb_cups_obj.send_gurb_activation_email(cursor, uid, [gurb_cups_id], context=None)
         gurb_date = self.read(cursor, uid, gurb_id, ["activation_date"])["activation_date"]

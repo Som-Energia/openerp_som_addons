@@ -15,12 +15,18 @@ on:
         required: false
         type: string
         default: rolling_erp01
+      all_modules:
+        required: false
+        type: string
+        default: 'false'
     secrets:
         ACCESS_TOKEN_GA:
             required: true
         ESIOS_TOKEN:
             required: true
         SRID:
+            required: true
+        CODECOV_TOKEN:
             required: true
 
 env:
@@ -174,3 +180,30 @@ jobs:
         with:
           files: test-results/destral/*.xml
           secondary_rate_limit_wait_seconds: 120.0
+
+      - name: Generate coverage file
+        run: |
+          cd ${{github.workspace}}
+          coverage xml
+
+      - name: Upload coverage reports to Codecov of a module
+        uses: codecov/codecov-action@v5
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          flags: ${{ inputs.module }}
+        if: ${{ inputs.all_modules == 'false' }}
+
+      - name: Upload coverage reports to Codecov all modules
+        uses: codecov/codecov-action@v5
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+        if: ${{ inputs.all_modules == 'true' }}
+
+      - name: Coveralls
+        env:
+          GITHUB_TOKEN: ${{ secrets.ACCESS_TOKEN_GA }}
+        uses: coverallsapp/github-action@v2
+        with:
+          format: cobertura
+          fail-on-error: false
+          flag-name: ${{ inputs.module }}

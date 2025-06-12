@@ -3,7 +3,7 @@
     "name": "Mòdul per crear lectures calculades per a la facturació",
     "description": """
     """,
-    "version": "0-dev",
+    "version": "24.5.0",
     "author": "SomEnergia",
     "category": "SomEnergia",
     "depends": [

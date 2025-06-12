@@ -43,6 +43,9 @@ class TestsGurbBase(testing.OOTestCase):
 
         vals = {}
 
+        vals['gurb_id'] = imd_o.get_object_reference(
+            self.cursor, self.uid, "som_gurb", "gurb_0001"
+        )[1]
         vals['owner_gurb_cups_id'] = imd_o.get_object_reference(
             self.cursor, self.uid, "som_gurb", "gurb_cups_0001"
         )[1]
@@ -69,6 +72,12 @@ class TestsGurbBase(testing.OOTestCase):
         )[1]
         vals['pol_id'] = imd_o.get_object_reference(
             self.cursor, self.uid, "giscedata_polissa", "polissa_tarifa_018"
+        )[1]
+        vals['gurb_cups_beta_id'] = imd_o.get_object_reference(
+            self.cursor, self.uid, "som_gurb", "gurb_cups_beta_0001"
+        )[1]
+        vals['gurb_cups_beta_2_id'] = imd_o.get_object_reference(
+            self.cursor, self.uid, "som_gurb", "gurb_cups_beta_0002"
         )[1]
 
         return vals
