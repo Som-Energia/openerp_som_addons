@@ -43,6 +43,9 @@ class TestsGurbBase(testing.OOTestCase):
 
         vals = {}
 
+        vals['gurb_id'] = imd_o.get_object_reference(
+            self.cursor, self.uid, "som_gurb", "gurb_0001"
+        )[1]
         vals['owner_gurb_cups_id'] = imd_o.get_object_reference(
             self.cursor, self.uid, "som_gurb", "gurb_cups_0001"
         )[1]
@@ -70,11 +73,17 @@ class TestsGurbBase(testing.OOTestCase):
         vals['pol_id'] = imd_o.get_object_reference(
             self.cursor, self.uid, "giscedata_polissa", "polissa_tarifa_018"
         )[1]
+        vals['gurb_cups_beta_id'] = imd_o.get_object_reference(
+            self.cursor, self.uid, "som_gurb", "gurb_cups_beta_0001"
+        )[1]
+        vals['gurb_cups_beta_2_id'] = imd_o.get_object_reference(
+            self.cursor, self.uid, "som_gurb", "gurb_cups_beta_0002"
+        )[1]
 
         return vals
 
     def create_new_gurb_cups_beta(
-        self, gurb_cups_id, start_date, new_beta_kw, new_extra_beta_kw, context=None
+        self, gurb_cups_id, start_date, new_beta_kw, new_extra_beta_kw, new_gift_beta, context=None
     ):
         context = {"active_id": gurb_cups_id}
         wiz_o = self.openerp.pool.get("wizard.gurb.create.new.beta")
@@ -83,6 +92,7 @@ class TestsGurbBase(testing.OOTestCase):
             "start_date": start_date,
             "beta_kw": new_beta_kw,
             "extra_beta_kw": new_extra_beta_kw,
+            "gift_beta_kw": new_gift_beta,
         }
 
         wiz_id = wiz_o.create(self.cursor, self.uid, vals, context=context)

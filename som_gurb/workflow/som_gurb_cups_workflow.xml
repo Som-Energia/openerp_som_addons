@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+        <record id="wkf_gurb_cups" model="workflow">
+            <field name="name">GURB CUPS Workflow</field>
+            <field name="osv">som.gurb.cups</field>
+            <field name="on_create">True</field>
+        </record>
+
+        <!--Activity -->
+        <record id="act_draft_cups" model="workflow.activity">
+            <field name="wkf_id" ref="wkf_gurb_cups"/>
+            <field name="flow_start">True</field>
+            <field name="name">draft</field>
+            <field name="kind">function</field>
+            <field name="action">change_state('draft')</field>
+        </record>
+        <record id="act_comming_registration" model="workflow.activity">
+            <field name="wkf_id" ref="wkf_gurb_cups"/>
+            <field name="name">comming_registration</field>
+            <field name="kind">function</field>
+            <field name="action">change_state('comming_registration')</field>
+        </record>
+        <record id="act_comming_modification" model="workflow.activity">
+            <field name="wkf_id" ref="wkf_gurb_cups"/>
+            <field name="name">comming_modification</field>
+            <field name="kind">function</field>
+            <field name="action">change_state('comming_modification')</field>
+        </record>
+        <record id="act_comming_cancellation" model="workflow.activity">
+            <field name="wkf_id" ref="wkf_gurb_cups"/>
+            <field name="name">comming_cancellation</field>
+            <field name="kind">function</field>
+            <field name="action">change_state('comming_cancellation')</field>
+        </record>
+        <record id="act_atr_pending" model="workflow.activity">
+            <field name="wkf_id" ref="wkf_gurb_cups"/>
+            <field name="name">atr_pending</field>
+            <field name="kind">function</field>
+            <field name="action">change_state('atr_pending')</field>
+        </record>
+        <record id="act_active_cups" model="workflow.activity">
+            <field name="wkf_id" ref="wkf_gurb_cups"/>
+            <field name="name">active</field>
+            <field name="kind">function</field>
+            <field name="action">change_state('active')</field>
+        </record>
+        <record id="act_cancel" model="workflow.activity">
+            <field name="wkf_id" ref="wkf_gurb_cups"/>
+            <field name="name">cancel</field>
+            <field name="kind">function</field>
+            <field name="action">change_state('cancel')</field>
+        </record>
+
+        <!-- Transition -->
+
+        <record id="trans_draft_comming_registration" model="workflow.transition">
+            <field name="act_from" ref="act_draft_cups"/>
+            <field name="act_to" ref="act_comming_registration"/>
+            <field name="condition">True</field>
+            <field name="signal">button_create_cups</field>
+        </record>
+        <record id="trans_draft_cancel" model="workflow.transition">
+            <field name="act_from" ref="act_draft_cups"/>
+            <field name="act_to" ref="act_cancel"/>
+            <field name="condition">True</field>
+            <field name="signal">button_undo_cups</field>
+        </record>
+        <record id="trans_comming_registration_active" model="workflow.transition">
+            <field name="act_from" ref="act_comming_registration"/>
+            <field name="act_to" ref="act_active_cups"/>
+            <field name="condition">True</field>
+            <field name="signal">button_activate_cups</field>
+        </record>
+        <record id="trans_active_comming_modification" model="workflow.transition">
+            <field name="act_from" ref="act_active_cups"/>
+            <field name="act_to" ref="act_comming_modification"/>
+            <field name="condition">True</field>
+            <field name="signal">button_pending_modification</field>
+        </record>
+        <record id="trans_comming_modification_active" model="workflow.transition">
+            <field name="act_from" ref="act_comming_modification"/>
+            <field name="act_to" ref="act_active_cups"/>
+            <field name="condition">True</field>
+            <field name="signal">button_activate_modification</field>
+        </record>
+        <record id="trans_active_comming_cancellation" model="workflow.transition">
+            <field name="act_from" ref="act_active_cups"/>
+            <field name="act_to" ref="act_comming_cancellation"/>
+            <field name="condition">True</field>
+            <field name="signal">button_coming_cancellation</field>
+        </record>
+        <record id="trans_comming_cancellation_cancel" model="workflow.transition">
+            <field name="act_from" ref="act_comming_cancellation"/>
+            <field name="act_to" ref="act_cancel"/>
+            <field name="condition">True</field>
+            <field name="signal">button_cancel_cups</field>
+        </record>
+        <record id="trans_comming_cancellation_active" model="workflow.transition">
+            <field name="act_from" ref="act_comming_cancellation"/>
+            <field name="act_to" ref="act_active_cups"/>
+            <field name="condition">True</field>
+            <field name="signal">button_discard_comming_cancellation_cups</field>
+        </record>
+        <record id="trans_cancel_comming_registration" model="workflow.transition">
+            <field name="act_from" ref="act_cancel"/>
+            <field name="act_to" ref="act_comming_registration"/>
+            <field name="condition">True</field>
+            <field name="signal">button_reactivate_cups</field>
+        </record>
+        <record id="trans_active_atr_pending" model="workflow.transition">
+            <field name="act_from" ref="act_active_cups"/>
+            <field name="act_to" ref="act_atr_pending"/>
+            <field name="condition">True</field>
+            <field name="signal">button_atr_pending</field>
+        </record>
+        <record id="trans_reject_atr_pending" model="workflow.transition">
+            <field name="act_from" ref="act_atr_pending"/>
+            <field name="act_to" ref="act_active_cups"/>
+            <field name="condition">True</field>
+            <field name="signal">button_reject_atr</field>
+        </record>
+        <record id="trans_confirm_atr_pending" model="workflow.transition">
+            <field name="act_from" ref="act_atr_pending"/>
+            <field name="act_to" ref="act_comming_cancellation"/>
+            <field name="condition">True</field>
+            <field name="signal">button_confirm_atr</field>
+        </record>
+    </data>
+</openerp>
