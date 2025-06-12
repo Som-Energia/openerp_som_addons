@@ -258,6 +258,14 @@
             <field name="browser">chrome</field>
             <field name="user_ultima_modificacio" ref="base.user_admin"/>
         </record>
+        <record model="som.crawlers.config" id="coelca_conf">
+            <field name="name">coelca</field>
+            <field name="crawler">Selenium</field>
+            <field name="days_of_margin">15</field>
+            <field name="pending_files_only" eval="False"/>
+            <field name="browser">chrome</field>
+            <field name="user_ultima_modificacio" ref="base.user_admin"/>
+        </record>
 
         <!-- Configuracions a FTPs -->
         <record model="som.crawlers.config" id="avellana_ftp_conf">

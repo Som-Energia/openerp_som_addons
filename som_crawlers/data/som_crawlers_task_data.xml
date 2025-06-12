@@ -645,5 +645,11 @@
             <field name="active">True</field>
             <field name="configuracio_id" ref="registregeneral_conf"/>
         </record>
+        <!-- COELCA -->
+        <record model="som.crawlers.task" id="descarregar_coelca">
+            <field name="name">Descarregar COELCA</field>
+            <field name="active">True</field>
+            <field name="configuracio_id" ref="coelca_conf"/>
+        </record>
     </data>
 </openerp>
