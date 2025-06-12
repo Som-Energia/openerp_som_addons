@@ -45,10 +45,10 @@ class ReportBackendInvoiceEmail(ReportBackend):
         if energetica:
             data[
                 "dark_logo"
-            ] = "https://blog.somenergia.coop/wp-content/uploads/2018/10/som-energia-energetica-logos.jpg"  # noqa: E501
+            ] = "https://www.somenergia.coop/factura/logo-factura-energetica-fosc.png"  # noqa: E501
             data[
                 "light_logo"
-            ] = "https://blog.somenergia.coop/wp-content/uploads/2018/10/som-energia-energetica-logos.jpg"  # noqa: E501
+            ] = "https://www.somenergia.coop/factura/logo-factura-energetica-clar.png"  # noqa: E501
 
         return data
 
