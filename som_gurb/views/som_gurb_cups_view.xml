@@ -18,6 +18,7 @@
                         <field name="gurb_id" />
                         <field name="beta_kw" />
                         <field name="extra_beta_kw" />
+                        <field name="gift_beta_kw" />
                         <field name="beta_percentage" />
                         <field name="owner_cups" />
                         <field name="ens_ha_avisat" />
@@ -55,6 +56,7 @@
                     <field name="polissa_id" select="1" />
                     <field name="beta_kw" select="2" />
                     <field name="extra_beta_kw" select="2" />
+                    <field name="gift_beta_kw" select="2" />
                     <field name="beta_percentage" select="2" />
                     <field name="partner_id" select="1" />
                     <field name="start_date" select="1" />
@@ -107,6 +109,7 @@
                     <field name="name" select="1" />
                     <field name="beta_kw" />
                     <field name="extra_beta_kw" />
+                    <field name="gift_beta_kw" />
                     <field name="start_date" select="1" />
                     <field name="end_date" select="1" />
                 </tree>
