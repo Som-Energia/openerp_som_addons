@@ -302,7 +302,6 @@ class TestsGurbServices(TestsGurbBase):
             self.cursor, self.uid, gurb_id, ["pricelist_id"], context=context
         )["pricelist_id"][0]
 
-
         self.create_new_pricelist_version("2016-02-15", pricelist_id)
         self.create_new_gurb_cups_beta(gurb_cups_id, "2016-02-01", 1.5, 0.5, 2)
 
