@@ -131,6 +131,7 @@ class SomGurbCups(osv.osv):
         for gurb_cups_id in ids:
             search_params = [
                 ("active", "=", True),
+                ("future_beta", "=", False),
                 ("gurb_cups_id", "=", gurb_cups_id)
             ]
             active_beta_id = gurb_cups_beta_o.search(cursor, uid, search_params, context=context)

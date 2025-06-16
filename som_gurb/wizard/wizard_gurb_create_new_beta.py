@@ -11,6 +11,7 @@ class WizardGurbCreateNewBeta(osv.osv_memory):
         if context is None:
             context = {}
 
+        gurb_cups_o = self.pool.get("som.gurb.cups")
         gurb_cups_beta_o = self.pool.get("som.gurb.cups.beta")
         gurb_cups_id = context.get("active_id", False)
         wiz = self.browse(cursor, uid, ids[0], context=context)
@@ -86,6 +87,20 @@ class WizardGurbCreateNewBeta(osv.osv_memory):
             )
         else:
             gurb_cups_beta_o.create(cursor, uid, data, context=context)
+
+        gurb_cups_state = gurb_cups_o.read(
+            cursor, uid, gurb_cups_id, ["state"], context=context
+        )["state"]
+
+        if gurb_cups_state in ["draft"]:
+            gurb_cups_o.send_signal(cursor, uid, [gurb_cups_id], "button_create_cups")
+        elif gurb_cups_state in ["active"]:
+            gurb_cups_o.send_signal(cursor, uid, [gurb_cups_id], "button_pending_modification")
+        elif gurb_cups_state in ["comming_cancellation", "cancel", "atr_pending"]:
+            raise osv.except_osv(
+                _("Estat incorrecte!"),
+                _("No es pot crear una nova beta en estat {}.").format(gurb_cups_state)
+            )
 
         return {"type": "ir.actions.act_window_close"}
 
