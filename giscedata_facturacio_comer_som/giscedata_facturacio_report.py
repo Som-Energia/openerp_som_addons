@@ -7,6 +7,7 @@ from tools.translate import _
 import json
 from operator import attrgetter
 from collections import Counter
+import base64
 
 SENSE_EXCEDENTS = ["31", "32", "33"]
 
@@ -29,6 +30,8 @@ mean_zipcode_consumption_dates = {
 }
 
 show_iva_column_date = "2023-10-10"
+
+auvi_logo_attachment_name = "auvi_logo.png"
 
 # -----------------------------------
 # helper functions
@@ -1070,6 +1073,76 @@ class GiscedataFacturacioFacturaReport(osv.osv):
         }
         return data
 
+    def get_auvi_product_categ_id(self, fact):
+        model_obj = fact.pool.get("ir.model.data")
+        return model_obj.get_object_reference(
+            self.cursor, self.uid,
+            "giscedata_serveis_generacio",
+            "categ_serveis_generacio_facturar_contracte",
+        )[1]
+
+    def get_auvi_lines(self, fact):
+        id_auvi_product_categ = self.get_auvi_product_categ_id(fact)
+        auvi_lines = [
+            line
+            for line in fact.linia_ids
+            if line.product_id and line.product_id.categ_id.id == id_auvi_product_categ
+        ]
+        return auvi_lines
+
+    def get_auvi_data(self, fact, pol):
+        auvi_lines = self.get_auvi_lines(fact)
+        if not auvi_lines:
+            return False
+        date_ref = auvi_lines[0]['data_fins']
+        sgpol_obj = fact.pool.get('giscedata.servei.generacio.polissa')
+        sgpol_ids = sgpol_obj.search(self.cursor, self.uid, [
+            ('polissa_id', '=', pol.id),
+            ('cups_name', '=', pol.cups.name),
+            '|',
+            ('data_sortida', '=', False),
+            ('data_sortida', '>', date_ref),
+            '|',
+            '&',
+            ('data_inici', '!=', False),
+            ('data_inici', '<=', date_ref),
+            '&',
+            ('data_inici', '=', False),
+            ('data_incorporacio', '<=', date_ref),
+        ])
+        if not sgpol_ids:
+            return False
+        sgpol = sgpol_obj.browse(self.cursor, self.uid, sgpol_ids[0])
+        res = {
+            'auvi_id': sgpol.servei_generacio_id.id,
+            'auvi_name': sgpol.servei_generacio_id.name,
+            'auvi_percent': sgpol.percentatge or 0.0,
+        }
+        return res
+
+    def get_auvi_logo(self, fact, pol):
+        auvi_data = self.get_auvi_data(fact, pol)
+        if not auvi_data:
+            return False
+        attachment_obj = fact.pool.get('ir.attachment')
+        id_att = attachment_obj.search(self.cursor, self.uid, [
+            ('res_model', '=', 'giscedata.servei.generacio'),
+            ('res_id', '=', auvi_data['auvi_id']),
+            ('name', '=', auvi_logo_attachment_name),
+        ])
+        if id_att:
+            b64_content = attachment_obj.read(
+                self.cursor,
+                self.uid,
+                id_att,
+                ["datas"],
+                context=self.context
+            )[0]["datas"]
+            content = base64.b64decode(b64_content)
+            return content
+        else:
+            return False
+
     # -----------------------------
     # Component fill data functions
     # -----------------------------
@@ -1083,6 +1156,13 @@ class GiscedataFacturacioFacturaReport(osv.osv):
             data["logo_agreement_partner"] = agreementPartners[pol.soci.ref]["logo"]
         else:
             data["has_agreement_partner"] = False
+        auvi_logo = self.get_auvi_logo(fact, pol)
+        if auvi_logo:
+            data["has_agreement_partner"] = False
+            data["has_auvi"] = True
+            data["auvi_logo"] = auvi_logo
+        else:
+            data["has_auvi"] = False
         return data
 
     def get_component_company_data(self, fact, pol):
@@ -1172,6 +1252,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
             )
         )
         pricelist = pol.llista_preu.nom_comercial or pol.llista_preu.name
+        auvi_data = self.get_auvi_data(fact, pol)
         data = {
             "start_date": pol.data_alta,
             "renovation_date": get_renovation_date(pol.data_alta, datetime.now()),
@@ -1201,6 +1282,8 @@ class GiscedataFacturacioFacturaReport(osv.osv):
             "power_invoicing_type": pol.facturacio_potencia == "max" or len(periodes_a) > 3,
             "small_text": self.is_visible_readings_g_table(fact, pol)
             and (is_3X(pol) or is_DHS(pol)),
+            "is_auvi": True if auvi_data else False,
+            "auvi_data": auvi_data,
         }
         return data
 
@@ -3063,6 +3146,12 @@ class GiscedataFacturacioFacturaReport(osv.osv):
             fact, pol, generationkwh_lines
         )
         mag_line_data = self.get_mag_lines_info(fact)
+
+        auvi_lines = self.get_auvi_lines(fact)
+        auvi_energy_lines_data = self.get_sub_component_invoice_details_td(
+            fact, pol, auvi_lines
+        )
+
         for e in energy_lines_data:
             if (
                 e["data"] >= BOE17_2021_dates["start"]
@@ -3079,15 +3168,24 @@ class GiscedataFacturacioFacturaReport(osv.osv):
             ):
                 e["has_discount"] = True
 
+        for e in auvi_energy_lines_data:
+            if (
+                e["data"] >= BOE17_2021_dates["start"]
+                and e["data"] <= BOE17_2021_dates["end"]
+                and u"P1" in discount
+            ):
+                e["has_discount"] = True
+
         data = {
             "energy_lines_data": energy_lines_data,
             "gkwh_energy_lines_data": gkwh_energy_lines_data,
             "header_multi": 3 * (len(energy_lines_data) + len(gkwh_energy_lines_data))
-            + (1 if mag_line_data else 0),
+            + (1 if mag_line_data else 0) + (3 if auvi_energy_lines_data else 0),
             "showing_periods": self.get_matrix_show_periods(pol),
             "mag_line_data": mag_line_data,
             "indexed": pol.mode_facturacio == "index",
             "iva_column": has_iva_column(fact),
+            "auvi_energy_lines_data": auvi_energy_lines_data,
         }
         return data
 

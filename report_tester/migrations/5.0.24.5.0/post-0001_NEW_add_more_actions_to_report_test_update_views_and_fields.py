@@ -12,16 +12,22 @@ def up(cursor, installed_version):
     pool = pooler.get_pool(cursor.dbname)
 
     logger.info("Initializing new fields")
+    pool.get("wizard.report.test.view.attached")._auto_init(
+        cursor, context={'module': 'report_tester'}
+    )
+    pool.get("wizard.report.test.attach.to.invoice")._auto_init(
+        cursor, context={'module': 'report_tester'}
+    )
     pool.get("report.test")._auto_init(
         cursor, context={'module': 'report_tester'}
     )
 
     logger.info("Updating XML and CSV files")
     data_files = [
-        'views/report_test_view.xml',
         'wizard/wizard_report_test_attach_to_invoice.xml',
         'wizard/wizard_report_test_group_view_tests.xml',
         'wizard/wizard_report_test_view_attached.xml',
+        'views/report_test_view.xml',
         'security/ir.model.access.csv',
     ]
 

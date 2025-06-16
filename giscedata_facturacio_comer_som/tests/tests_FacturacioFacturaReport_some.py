@@ -53,10 +53,14 @@ class Tests_FacturacioFacturaReport_base(testing.OOTestCase):
 
 
 class Tests_FacturacioFacturaReport_fill_and_find(Tests_FacturacioFacturaReport_base):
-    def test__get_report_data__simple_list(self):
+    @mock.patch.object(
+        giscedata_facturacio_report.GiscedataFacturacioFacturaReport, "get_auvi_data"
+    )
+    def test__get_report_data__simple_list(self, get_auvi_data_mock_function):
         f_id1 = self.get_fixture("giscedata_facturacio", "factura_0001")
         f_id2 = self.get_fixture("giscedata_facturacio", "factura_0002")
         ctxt = {"allow_list": ["logo", "company"], "not_testing_old_polissa": True}
+        get_auvi_data_mock_function.return_value = False
 
         result = self.r_obj.get_report_data(
             self.cursor, self.uid, [self.bf(f_id1), self.bf(f_id2)], ctxt
@@ -70,19 +74,27 @@ class Tests_FacturacioFacturaReport_fill_and_find(Tests_FacturacioFacturaReport_
         self.assertTrue("logo" in result[f_id2])
         self.assertTrue("company" in result[f_id2])
 
-    def test__get_report_data__cross_test_1_sample(self):
+    @mock.patch.object(
+        giscedata_facturacio_report.GiscedataFacturacioFacturaReport, "get_auvi_data"
+    )
+    def test__get_report_data__cross_test_1_sample(self, get_auvi_data_mock_function):
         f_id = self.get_fixture("giscedata_facturacio", "factura_0001")
         ctxt = {"allow_list": ["logo", "company"], "not_testing_old_polissa": True}
+        get_auvi_data_mock_function.return_value = False
 
         result1 = self.r_obj.get_components_data(self.cursor, self.uid, [f_id], ctxt)
         result2 = self.r_obj.get_report_data(self.cursor, self.uid, [self.bf(f_id)], ctxt)
 
         assertNsEqual(self, result1, result2)
 
-    def test__get_report_data__cross_test_more_sample(self):
+    @mock.patch.object(
+        giscedata_facturacio_report.GiscedataFacturacioFacturaReport, "get_auvi_data"
+    )
+    def test__get_report_data__cross_test_more_sample(self, get_auvi_data_mock_function):
         f_id1 = self.get_fixture("giscedata_facturacio", "factura_0001")
         f_id2 = self.get_fixture("giscedata_facturacio", "factura_0002")
         ctxt = {"allow_list": ["logo", "company"], "not_testing_old_polissa": True}
+        get_auvi_data_mock_function.return_value = False
 
         result1 = self.r_obj.get_components_data(self.cursor, self.uid, [f_id1, f_id2], ctxt)
         result2 = self.r_obj.get_report_data(
@@ -152,12 +164,19 @@ class Tests_FacturacioFacturaReport_fill_and_find(Tests_FacturacioFacturaReport_
 
 
 class Tests_FacturacioFacturaReport_logo_component(Tests_FacturacioFacturaReport_base):
-    def test__som_report_comp_logo__no_soci(self):
+    @mock.patch.object(
+        giscedata_facturacio_report.GiscedataFacturacioFacturaReport, "get_auvi_data"
+    )
+    def test__som_report_comp_logo__no_soci(self, get_auvi_data_mock_function):
         f_id = self.get_fixture("giscedata_facturacio", "factura_0001")
+        get_auvi_data_mock_function.return_value = False
 
         result = self.r_obj.get_component_logo_data(**self.bfp(f_id))
         self.assertYamlfy(result)
-        self.assertEquals(result, {"logo": "logo_som.png", "has_agreement_partner": False})
+        self.assertEquals(
+            result,
+            {"logo": "logo_som.png", "has_agreement_partner": False, "has_auvi": False},
+        )
 
     @unittest.skip(reason="WIP using mock")
     @mock.patch("som_polissa_soci.giscedata_polissa.GiscedataPolissa")
@@ -193,9 +212,13 @@ class Tests_FacturacioFacturaReport_logo_component(Tests_FacturacioFacturaReport
                 },
             )
 
-    def test__som_report_comp_logo__no_energetica(self):
+    @mock.patch.object(
+        giscedata_facturacio_report.GiscedataFacturacioFacturaReport, "get_auvi_data"
+    )
+    def test__som_report_comp_logo__no_energetica(self, get_auvi_data_mock_function):
         f_id = self.get_fixture("giscedata_facturacio", "factura_0001")
         f = self.factura_obj.browse(self.cursor, self.uid, f_id)
+        get_auvi_data_mock_function.return_value = False
 
         p_id = 23
         self.partner_obj.write(self.cursor, self.uid, p_id, {"ref": "S12345"})
@@ -203,11 +226,17 @@ class Tests_FacturacioFacturaReport_logo_component(Tests_FacturacioFacturaReport
 
         result = self.r_obj.get_component_logo_data(**self.bfp(f_id))
         self.assertYamlfy(result)
-        self.assertEquals(result, {"logo": "logo_som.png", "has_agreement_partner": False})
+        self.assertEquals(
+            result,
+            {"logo": "logo_som.png", "has_agreement_partner": False, "has_auvi": False})
 
-    def test__som_report_comp_logo__energetica(self):
+    @mock.patch.object(
+        giscedata_facturacio_report.GiscedataFacturacioFacturaReport, "get_auvi_data"
+    )
+    def test__som_report_comp_logo__energetica(self, get_auvi_data_mock_function):
         f_id = self.get_fixture("giscedata_facturacio", "factura_0001")
         f = self.factura_obj.browse(self.cursor, self.uid, f_id)
+        get_auvi_data_mock_function.return_value = False
 
         p_id = 23
         self.partner_obj.write(self.cursor, self.uid, p_id, {"ref": "S019753"})
@@ -221,6 +250,7 @@ class Tests_FacturacioFacturaReport_logo_component(Tests_FacturacioFacturaReport
                 "logo": "logo_som.png",
                 "has_agreement_partner": True,
                 "logo_agreement_partner": "logo_S019753.png",
+                "has_auvi": False,
             },
         )
 
@@ -595,6 +625,11 @@ class Tests_FacturacioFacturaReport_renovation_date(Tests_FacturacioFacturaRepor
 
 
 class Tests_FacturacioFacturaReport_contract_data_component(Tests_FacturacioFacturaReport_base):
+    maxDiff = None
+
+    @mock.patch.object(
+        giscedata_facturacio_report.GiscedataFacturacioFacturaReport, "get_auvi_data"
+    )
     @mock.patch.object(
         giscedata_facturacio_report.GiscedataFacturacioFacturaReport, "is_visible_readings_g_table"
     )
@@ -607,6 +642,7 @@ class Tests_FacturacioFacturaReport_contract_data_component(Tests_FacturacioFact
         te_autoconsum_collectiu_mock_function,
         get_renovation_date_mock_function,
         is_visible_readings_g_table_mock_function,
+        get_auvi_data_mock_function,
     ):
         f_id = self.get_fixture("giscedata_facturacio", "factura_0001")
 
@@ -614,6 +650,7 @@ class Tests_FacturacioFacturaReport_contract_data_component(Tests_FacturacioFact
         get_renovation_date_mock_function.return_value = "2021-01-01"
         te_autoconsum_mock_function.return_value = False
         te_autoconsum_collectiu_mock_function.return_value = False
+        get_auvi_data_mock_function.return_value = False
 
         result = self.r_obj.get_component_contract_data_data(**self.bfp(f_id))
         self.assertYamlfy(result)
@@ -638,9 +675,14 @@ class Tests_FacturacioFacturaReport_contract_data_component(Tests_FacturacioFact
                 "is_autoconsum": False,
                 "start_date": "2016-01-01",
                 "small_text": False,
+                "is_auvi": False,
+                "auvi_data": False,
             },
         )
 
+    @mock.patch.object(
+        giscedata_facturacio_report.GiscedataFacturacioFacturaReport, "get_auvi_data"
+    )
     @mock.patch.object(
         giscedata_facturacio_report.GiscedataFacturacioFacturaReport, "is_visible_readings_g_table"
     )
@@ -653,6 +695,7 @@ class Tests_FacturacioFacturaReport_contract_data_component(Tests_FacturacioFact
         te_autoconsum_collectiu_mock_function,
         get_renovation_date_mock_function,
         is_visible_readings_g_table_mock_function,
+        get_auvi_data_mock_function,
     ):
         f_id = self.get_fixture("giscedata_facturacio", "factura_0001")
         p_id = self.get_fixture("giscedata_polissa", "polissa_autoconsum_01")
@@ -662,32 +705,35 @@ class Tests_FacturacioFacturaReport_contract_data_component(Tests_FacturacioFact
         get_renovation_date_mock_function.return_value = "2021-01-01"
         te_autoconsum_mock_function.return_value = True
         te_autoconsum_collectiu_mock_function.return_value = False
+        get_auvi_data_mock_function.return_value = False
 
         result = self.r_obj.get_component_contract_data_data(**self.bfp(f_id))
-
         self.assertYamlfy(result)
-        self.assertEquals(
+        dict_expected = {
+            "power": 4.6,
+            "autoconsum": u"21",
+            "powers": [],
+            "renovation_date": "2021-01-01",
+            "cups": u"ES1234000000000001JN0F",
+            "tariff": u"2.0A",
+            "invoicing_mode": u"atr",
+            "pricelist": u"TARIFAS ELECTRICIDAD",
+            "autoconsum_cau": u"ES0318363477145938GEA000",
+            "is_autoconsum_colectiu": False,
+            "cups_direction": u"carrer inventat ,  1  ESC.  1 1 1 aclaridor 00001 (Poble de Prova)",  # noqa: E501
+            "autoconsum_colectiu_repartiment": 100.0,
+            "cnae": u"0111",
+            "power_invoicing_type": False,
+            "remote_managed_meter": True,
+            "is_autoconsum": True,
+            "start_date": "2012-01-01",
+            "small_text": False,
+            "is_auvi": False,
+            "auvi_data": False,
+        }
+        self.assertDictEqual(
             result,
-            {
-                "power": 4.6,
-                "autoconsum": u"21",
-                "powers": [],
-                "renovation_date": "2021-01-01",
-                "cups": u"ES1234000000000001JN0F",
-                "tariff": u"2.0A",
-                "invoicing_mode": u"atr",
-                "pricelist": u"TARIFAS ELECTRICIDAD",
-                "autoconsum_cau": u"ES0318363477145938GEA000",
-                "is_autoconsum_colectiu": False,
-                "cups_direction": u"carrer inventat ,  1  ESC.  1 1 1 aclaridor 00001 (Poble de Prova)",  # noqa: E501
-                "autoconsum_colectiu_repartiment": 100.0,
-                "cnae": u"0111",
-                "power_invoicing_type": False,
-                "remote_managed_meter": True,
-                "is_autoconsum": True,
-                "start_date": "2012-01-01",
-                "small_text": False,
-            },
+            dict_expected,
         )
 
 

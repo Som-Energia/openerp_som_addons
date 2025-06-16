@@ -522,6 +522,7 @@ class GiscedataSwitchingHelpers(osv.osv):
             context = {}
 
         gurb_obj = self.pool.get("som.gurb")
+        sw_step_header_obj = self.pool.get("giscedata.switching.step.header")
         sw_obj = self.pool.get("giscedata.switching")
 
         res = super(GiscedataSwitchingHelpers, self).activar_polissa_from_m1(
@@ -535,14 +536,53 @@ class GiscedataSwitchingHelpers(osv.osv):
             and _cups_contract_has_gurb_cups(cursor, uid, self.pool, sw.cups_polissa_id.id)
         ):
             step_obj = self.pool.get("giscedata.switching.m1.05")
-            pas_id = int(sw.step_ids[-1].pas_id.split(",")[1])
+            step_id = int(sw.step_ids[-1].pas_id.split(",")[1])
 
             data_activacio = step_obj.read(
-                cursor, uid, pas_id, ["data_activacio"])["data_activacio"]
+                cursor, uid, step_id, ["data_activacio"])["data_activacio"]
 
             gurb_obj.activate_gurb_from_m1_05(
                 cursor, uid, sw_id, data_activacio, context=context
             )
+            sw_step_header_id = self.read(cursor, uid, step_id, ['header_id'])['header_id'][0]
+            sw_step_header_obj.write(
+                cursor, uid, sw_step_header_id, {'notificacio_pendent': False}
+            )
+
+        return res
+
+    def m105_acord_repartiment_autoconsum(self, cursor, uid, sw_id, context=None):
+        if context is None:
+            context = {}
+
+        sw_obj = self.pool.get('giscedata.switching')
+        sw_step_header_obj = self.pool.get("giscedata.switching.step.header")
+        gurb_obj = self.pool.get("som.gurb")
+
+        res = super(GiscedataSwitchingHelpers, self).m105_acord_repartiment_autoconsum(
+            cursor, uid, sw_id, context=context
+        )
+
+        sw = sw_obj.browse(cursor, uid, sw_id, context=context)
+        if (
+            sw.proces_id.name == "M1"
+            and sw.step_id.name == "05"
+            and _contract_has_gurb_category(cursor, uid, self.pool, sw.cups_polissa_id.id)
+        ):
+            step_obj = self.pool.get("giscedata.switching.m1.05")
+            step_id = int(sw.step_ids[-1].pas_id.split(",")[1])
+
+            data_activacio = step_obj.read(
+                cursor, uid, step_id, ["data_activacio"])["data_activacio"]
+
+            gurb_obj.activate_gurb_from_m1_05(
+                cursor, uid, sw_id, data_activacio, context=context
+            )
+            sw_step_header_id = self.read(cursor, uid, step_id, ['header_id'])['header_id'][0]
+            sw_step_header_obj.write(
+                cursor, uid, sw_step_header_id, {'notificacio_pendent': False}
+            )
+
         return res
 
 
