@@ -17,9 +17,9 @@
     "init_xml": [],
     "demo_xml": [],
     "update_xml": [
-        "som_energetica_view.xml",
-        "som_energetica_data.xml",
-        "giscedata_facturacio_data.xml",
+        "views/som_energetica_view.xml",
+        "data/som_energetica_data.xml",
+        "data/giscedata_facturacio_data.xml",
     ],
     "active": False,
     "installable": True,
