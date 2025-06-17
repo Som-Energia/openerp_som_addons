@@ -567,7 +567,7 @@ class GiscedataSwitchingHelpers(osv.osv):
         if (
             sw.proces_id.name == "M1"
             and sw.step_id.name == "05"
-            and _contract_has_gurb_category(cursor, uid, self.pool, sw.cups_polissa_id.id)
+            and _cups_contract_has_gurb_cups(cursor, uid, self.pool, sw.cups_polissa_id.id)
         ):
             step_obj = self.pool.get("giscedata.switching.m1.05")
             step_id = int(sw.step_ids[-1].pas_id.split(",")[1])
