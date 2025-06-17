@@ -20,6 +20,7 @@
             <field name="view_type">form</field>
             <field name="view_mode">tree,form</field>
             <field name="domain">[('soci', '=', active_id)]</field>
+            <field name="view_id" ref="giscedata_polissa.view_polisses_tree"/>
         </record>
 
         <record id="value_action_abrir_polisses_soci" model="ir.values">
