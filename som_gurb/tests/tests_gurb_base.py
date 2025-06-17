@@ -85,8 +85,9 @@ class TestsGurbBase(testing.OOTestCase):
     def create_new_gurb_cups_beta(
         self, gurb_cups_id, start_date, new_beta_kw, new_extra_beta_kw, new_gift_beta, context=None
     ):
-        context = {"active_id": gurb_cups_id}
+        ctx = {"active_id": gurb_cups_id}
         wiz_o = self.openerp.pool.get("wizard.gurb.create.new.beta")
+        gurb_cups_beta_o = self.openerp.pool.get("som.gurb.cups.beta")
 
         vals = {
             "start_date": start_date,
@@ -95,5 +96,19 @@ class TestsGurbBase(testing.OOTestCase):
             "gift_beta_kw": new_gift_beta,
         }
 
-        wiz_id = wiz_o.create(self.cursor, self.uid, vals, context=context)
-        wiz_o.create_new_beta(self.cursor, self.uid, [wiz_id], context=context)
+        wiz_id = wiz_o.create(self.cursor, self.uid, vals, context=ctx)
+        wiz_o.create_new_beta(self.cursor, self.uid, [wiz_id], context=ctx)
+
+        if ctx.get("activate", True):
+            beta_id = gurb_cups_beta_o.search(
+                self.cursor, self.uid, [
+                    ("gurb_cups_id", "=", gurb_cups_id),
+                    ("start_date", "=", start_date),
+                    ("beta_kw", "=", new_beta_kw),
+                    ("extra_beta_kw", "=", new_extra_beta_kw),
+                    ("gift_beta_kw", "=", new_gift_beta),
+                ], context=ctx
+            )
+            gurb_cups_beta_o.activate_future_beta(
+                self.cursor, self.uid, beta_id[0], start_date, context=ctx
+            )

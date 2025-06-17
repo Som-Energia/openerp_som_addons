@@ -737,8 +737,8 @@ class SomGurbCupsBeta(osv.osv):
         mod_number = int(beta_browse.name)
         previous_mod_number = mod_number - 1
 
-        if previous_mod_number - 1 > 0:
-            gurb_cups_id = beta_browse.gurb_cups_id
+        if previous_mod_number > 0:
+            gurb_cups_id = beta_browse.gurb_cups_id.id
             search_vals = [
                 ("gurb_cups_id", "=", gurb_cups_id),
                 ("name", "=", previous_mod_number)
@@ -758,7 +758,6 @@ class SomGurbCupsBeta(osv.osv):
         write_vals = {
             "start_date": data_inici,
             "future_beta": False,
-            "active": True
         }
         self.write(cursor, uid, future_beta_id, write_vals, context=context)
 
