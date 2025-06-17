@@ -7,6 +7,8 @@ class TestsGurbWizardCreateCoefFile(TestsGurbBase):
 
     def test_gurb_wizard_creacte_coef_file(self):
 
+        self.activate_gurb_cups()
+
         ctx = {
             "active_id": self.get_references()["gurb_id"]
         }
@@ -27,6 +29,8 @@ class TestsGurbWizardCreateCoefFile(TestsGurbBase):
 
     def test_gurb_wizard_creacte_coef_file_with_future_beta(self):
 
+        self.activate_gurb_cups()
+
         ctx = {
             "active_id": self.get_references()["gurb_id"]
         }
@@ -35,8 +39,9 @@ class TestsGurbWizardCreateCoefFile(TestsGurbBase):
         start_date = (datetime.now()).strftime("%Y-%m-%d")
         new_beta_kw = 0.5
         new_extra_beta_kw = 0
+        gift_beta_kw = 0
         self.create_new_gurb_cups_beta(
-            gurb_cups_id, start_date, new_beta_kw, new_extra_beta_kw
+            gurb_cups_id, start_date, new_beta_kw, new_extra_beta_kw, gift_beta_kw
         )
 
         wiz_obj = self.openerp.pool.get("wizard.create.coeficients.file")

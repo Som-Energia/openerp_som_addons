@@ -15,6 +15,21 @@ class TestsGurbBase(testing.OOTestCase):
     def get_model(self, model_name):
         return self.openerp.pool.get(model_name)
 
+    def activate_gurb_cups(self, context=None):
+        if context is None:
+            context = {}
+
+        imd_obj = self.openerp.pool.get("ir.model.data")
+        gurb_cups_obj = self.openerp.pool.get("som.gurb.cups")
+        gurb_cups_ids = [imd_obj.get_object_reference(
+            self.cursor, self.uid, "som_gurb", context.get("gurb_cups_xml_id", "gurb_cups_0001")
+        )[1]]
+        gurb_cups_ids.append(imd_obj.get_object_reference(
+            self.cursor, self.uid, "som_gurb", context.get("gurb_cups_xml_id", "gurb_cups_0001")
+        )[1])
+        gurb_cups_obj.send_signal(self.cursor, self.uid, gurb_cups_ids, ["button_create_cups"])
+        gurb_cups_obj.send_signal(self.cursor, self.uid, gurb_cups_ids, ["button_activate_cups"])
+
     def activar_polissa_CUPS(self, set_gurb_category=False, context=None):
         if context is None:
             context = {}

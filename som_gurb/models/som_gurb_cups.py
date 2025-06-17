@@ -93,10 +93,40 @@ class SomGurbCups(osv.osv):
 
         return res
 
-    def get_beta_percentatge(self, cursor, uid, ids, context=None):
+    def get_new_beta_percentatge(self, cursor, uid, ids, context=None):
         if not isinstance(ids, list):
             ids = [ids]
-        return self._ff_get_beta_percentage(cursor, uid, ids, [], [], context=context)
+        res = self._ff_get_future_beta_percentage(cursor, uid, ids, [], [], context=context)
+        for gurb_cups_id in ids:
+            if res[gurb_cups_id] == 0:
+                res[gurb_cups_id] = self._ff_get_beta_percentage(
+                    cursor, uid, [gurb_cups_id], [], [], context=context
+                )[gurb_cups_id]
+        return res
+
+    def _ff_get_future_beta_percentage(self, cursor, uid, ids, field_name, arg, context=None):
+        if context is None:
+            context = {}
+        gurb_obj = self.pool.get("som.gurb")
+        res = dict.fromkeys(ids, False)
+        for gurb_cups_vals in self.read(cursor, uid, ids, [
+            "gurb_id", "future_beta_kw", "future_extra_beta_kw", "future_gift_beta_kw"
+        ]):
+            gurb_id = gurb_cups_vals.get("gurb_id", False)
+            if gurb_id:
+                generation_power = gurb_obj.read(
+                    cursor, uid, gurb_id[0], ["generation_power"]
+                )["generation_power"]
+
+                if generation_power:
+                    beta_kw = gurb_cups_vals.get("beta_kw", 0)
+                    extra_beta_kw = gurb_cups_vals.get("extra_beta_kw", 0)
+                    gift_beta_kw = gurb_cups_vals.get("gift_beta_kw", 0)
+                    res[gurb_cups_vals["id"]] = (
+                        extra_beta_kw + beta_kw + gift_beta_kw) * 100 / generation_power
+                else:
+                    res[gurb_cups_vals["id"]] = 0
+        return res
 
     def _ff_get_beta_percentage(self, cursor, uid, ids, field_name, arg, context=None):
         if context is None:
@@ -147,6 +177,38 @@ class SomGurbCups(osv.osv):
                 )
 
             res[gurb_cups_id] = active_beta_vals
+
+        return res
+
+    def _ff_future_beta(self, cursor, uid, ids, field_name, arg, context=None):
+        if context is None:
+            context = {}
+
+        gurb_cups_beta_o = self.pool.get("som.gurb.cups.beta")
+        res = dict.fromkeys(ids, False)
+        for gurb_cups_id in ids:
+            search_params = [
+                ("active", "=", True),
+                ("future_beta", "=", True),
+                ("gurb_cups_id", "=", gurb_cups_id)
+            ]
+            future_beta_id = gurb_cups_beta_o.search(cursor, uid, search_params, context=context)
+            read_vals = ["beta_kw", "extra_beta_kw", "gift_beta_kw"]
+            future_beta_vals = {
+                "future_beta_kw": 0.0,
+                "future_extra_beta_kw": 0.0,
+                "future_gift_beta_kw": 0.0,
+            }
+
+            if future_beta_id:
+                future_beta_id = gurb_cups_beta_o.read(
+                    cursor, uid, future_beta_id[0], read_vals, context=context
+                )
+                future_beta_vals["future_beta_kw"] = future_beta_id["beta_kw"]
+                future_beta_vals["future_extra_beta_kw"] = future_beta_id["extra_beta_kw"]
+                future_beta_vals["future_gift_beta_kw"] = future_beta_id["gift_beta_kw"]
+
+            res[gurb_cups_id] = future_beta_vals
 
         return res
 
@@ -666,6 +728,30 @@ class SomGurbCups(osv.osv):
             method=True,
             multi="betas",
         ),
+        "future_beta_kw": fields.function(
+            _ff_future_beta,
+            string="Beta futur (kW)",
+            type="float",
+            digits=(10, 3),
+            method=True,
+            multi="future_betas",
+        ),
+        "future_extra_beta_kw": fields.function(
+            _ff_future_beta,
+            string="Extra Beta futur (kW)",
+            type="float",
+            digits=(10, 3),
+            method=True,
+            multi="future_betas",
+        ),
+        "future_gift_beta_kw": fields.function(
+            _ff_future_beta,
+            string="Beta regal futur (kW)",
+            type="float",
+            digits=(10, 3),
+            method=True,
+            multi="future_betas",
+        ),
         "beta_percentage": fields.function(
             _ff_get_beta_percentage,
             type="float",
@@ -674,7 +760,7 @@ class SomGurbCups(osv.osv):
             method=True,
         ),
         "future_beta_percentage": fields.function(
-            _ff_get_beta_percentage,
+            _ff_get_future_beta_percentage,
             type="float",
             string="Total Beta (%)",
             digits=(12, 4),
