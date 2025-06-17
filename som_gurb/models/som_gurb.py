@@ -487,7 +487,7 @@ class SomGurb(osv.osv):
         ),
         "future_assigned_betas_percentage": fields.function(
             _ff_total_betas,
-            string="Betes assginades + regalades (%)",
+            string="Betes assginades + regalades (%) propera reobertura",
             type="float",
             method=True,
             multi="betas",

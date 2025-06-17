@@ -673,6 +673,13 @@ class SomGurbCups(osv.osv):
             digits=(12, 4),
             method=True,
         ),
+        "future_beta_percentage": fields.function(
+            _ff_get_beta_percentage,
+            type="float",
+            string="Total Beta (%)",
+            digits=(12, 4),
+            method=True,
+        ),
         "owner_cups": fields.function(
             _ff_is_owner,
             type="boolean",
