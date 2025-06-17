@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from osv import osv, fields
-from datetime import datetime, timedelta
+from datetime import datetime
 from tools.translate import _
 
 
@@ -31,6 +31,10 @@ class WizardGurbCreateNewBeta(osv.osv_memory):
             ("gurb_cups_id", "=", gurb_cups_id),
             ("future_beta", "=", False),
         ]
+
+        gurb_cups_state = gurb_cups_o.read(
+            cursor, uid, gurb_cups_id, ["state"], context=context
+        )["state"]
 
         old_beta_id = gurb_cups_beta_o.search(cursor, uid, search_params, context=context)
         if old_beta_id:
@@ -69,12 +73,6 @@ class WizardGurbCreateNewBeta(osv.osv_memory):
                     _("No es pot fer un canvi de beta a futur.")
                 )
 
-            write_params = {
-                "active": False,
-                "end_date": datetime.strptime(wiz.start_date, "%Y-%m-%d") - timedelta(days=1)
-            }
-            gurb_cups_beta_o.write(cursor, uid, old_beta_id[0], write_params, context=context)
-
         search_params = [
             ("active", "=", True),
             ("gurb_cups_id", "=", gurb_cups_id),
@@ -87,10 +85,6 @@ class WizardGurbCreateNewBeta(osv.osv_memory):
             )
         else:
             gurb_cups_beta_o.create(cursor, uid, data, context=context)
-
-        gurb_cups_state = gurb_cups_o.read(
-            cursor, uid, gurb_cups_id, ["state"], context=context
-        )["state"]
 
         if gurb_cups_state in ["draft"]:
             gurb_cups_o.send_signal(cursor, uid, [gurb_cups_id], "button_create_cups")
