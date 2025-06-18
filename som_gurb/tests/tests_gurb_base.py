@@ -114,7 +114,7 @@ class TestsGurbBase(testing.OOTestCase):
         wiz_id = wiz_o.create(self.cursor, self.uid, vals, context=ctx)
         wiz_o.create_new_beta(self.cursor, self.uid, [wiz_id], context=ctx)
 
-        if ctx.get("activate", True):
+        if context.get("activate", True):
             beta_id = gurb_cups_beta_o.search(
                 self.cursor, self.uid, [
                     ("gurb_cups_id", "=", gurb_cups_id),

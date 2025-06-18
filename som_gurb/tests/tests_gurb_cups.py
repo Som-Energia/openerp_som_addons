@@ -120,6 +120,8 @@ class TestsGurbCups(TestsGurbBase):
         new_gift_beta = 1
         start_date = (datetime.today()).strftime("%Y-%m-%d")
 
+        context["activate"] = False
+
         self.create_new_gurb_cups_beta(
             gurb_cups_id, start_date, new_beta_kw, new_extra_beta_kw, new_gift_beta, context=context
         )
