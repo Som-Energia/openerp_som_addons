@@ -133,6 +133,70 @@ class GiscedataAtc(osv.osv):
 
         return self.create_general_atc_r1_case_via_wizard(cursor, uid, new_case_data, context)
 
+    # Automatic ATC + R1-010 from existing F1 / Entry point
+
+    def create_ATC_R1_010_from_f1_via_wizard(self, cursor, uid, f1_id, context=None):
+        subtr_obj = self.pool.get("giscedata.subtipus.reclamacio")
+        subtr_id = subtr_obj.search(cursor, uid, [("name", "=", "010")], context=context)[0]
+
+        # TODO: verify there is no other cac
+
+        channel_obj = self.pool.get("res.partner.canal")
+        canal_id = channel_obj.search(
+            cursor, uid, [("name", "ilike", "intercambi")], context=context
+        )[0]
+
+        imd_obj = self.pool.get("ir.model.data")
+        initial_state_id = imd_obj.get_object_reference(
+            cursor, uid, "som_autoreclama", "correct_state_workflow_atc"
+        )[1]
+
+        section_id = imd_obj.get_object_reference(
+            cursor, uid, "som_switching", "atc_section_factura"
+        )[1]
+
+        f1_obj = self.pool.get("giscedata.facturacio.importacio.linia")
+        f1 = f1_obj.browse(cursor, uid, f1_id, context=context)
+        if f1.type_factura != 'C':
+            raise Exception(
+                _(
+                    u"Error en la creació del CAC amb R1 010, F1 no es tipus C id_f1 {}!!!"  # noqa: E501
+                ).format(f1_id)
+            )
+
+        if f1.liniafactura_id[0].tipo_factura == '06':
+            tag_name = "[GET] Expedient ANOMALIA"
+        elif f1.liniafactura_id[0].tipo_factura == '11':
+            tag_name = "[GET] Expedient FRAU"
+        else:
+            raise Exception(
+                _(
+                    u"Error en la creació del CAC amb R1 010, F1 no es tipus anomalia o frau id_f1 {}!!!"  # noqa: E501
+                ).format(f1_id)
+            )
+
+        tag_obj = self.pool.get("giscedata.atc.tag")
+        tag_ids = tag_obj.search(
+            cursor, uid, [('name', '=', tag_name)], context=context
+        )
+
+        new_case_data = {
+            "polissa_id": f1.id,
+            "atc_tag_id": tag_ids[0],
+            "canal_id": canal_id,
+            "descripcio": u"R per defecte expedient",
+            "section_id": section_id,
+            "subtipus_reclamacio_id": subtr_id,
+            "comentaris": u"",
+            "sense_responsable": True,
+            "tanca_al_finalitzar_r1": False,
+            "crear_cas_r1": True,
+            "autoreclama_history_initial_state_id": initial_state_id,
+            "from_model": "giscedata.facturacio.importacio.linia",
+            "polissa_field": "cups_id.polissa_id",
+        }
+        return self.create_general_atc_r1_case_via_wizard(cursor, uid, new_case_data, context)
+
     # Automatic ATC + [R1] from dictonary / Entry poiut
 
     def create_general_atc_r1_case_via_wizard(self, cursor, uid, case_data, context=None):
@@ -140,10 +204,11 @@ class GiscedataAtc(osv.osv):
             ctx = {}
         else:
             ctx = context.copy()
-        ctx["from_model"] = "giscedata.polissa"  # model gas o electricitat
-        ctx["polissa_field"] = "id"  # camp per llegir
-        ctx["active_ids"] = [case_data["polissa_id"]]  # id de la polissa
-        ctx["active_id"] = case_data["polissa_id"]  # id de la polissa
+        ctx["from_model"] = case_data.get(
+            "from_model", "giscedata.polissa")  # model gas o electricitat
+        ctx["polissa_field"] = case_data.get("polissa_field", "id")  # camp per llegir
+        ctx["active_ids"] = [case_data["polissa_id"]]  # id del model origen
+        ctx["active_id"] = case_data["polissa_id"]  # id del model origen
         if case_data.get("autoreclama_history_initial_state_id", False):
             ctx["autoreclama_history_initial_state_id"] = case_data[
                 "autoreclama_history_initial_state_id"
@@ -178,6 +243,12 @@ class GiscedataAtc(osv.osv):
             open_r1_wiz = atcw_obj.open_r1_wizard(cursor, uid, [wiz_id], ctx)
 
             r1atcw_ctx = open_r1_wiz["context"]
+
+            if "from_model" in case_data:
+                r1atcw_ctx["from_model"] = case_data["from_model"]
+            if "polissa_field" in case_data:
+                r1atcw_ctx["polissa_field"] = case_data["polissa_field"]
+
             r1atcw_obj = self.pool.get(open_r1_wiz["res_model"])  # wizard.generate.r1.from.atc.case
             r1atcw_id = r1atcw_obj.create(cursor, uid, {}, r1atcw_ctx)
             generate_r1_wiz = r1atcw_obj.generate_r1(
@@ -208,6 +279,25 @@ class GiscedataAtc(osv.osv):
                 r1w_obj.action_create_atr_case(
                     cursor, uid, [r1w_id], r1w_ctx
                 )
+            elif generate_r1_wiz["res_model"] == 'wizard.r1.from.f1.erroni':
+                r1w_obj = self.pool.get(generate_r1_wiz["res_model"])  # "wizard.r1.from.f1.erroni"
+                r1w_id = r1w_obj.create(cursor, uid, {}, r1w_ctx)
+                generate_r1_wiz = r1w_obj.create_cases_from_invoice_contracts(
+                    cursor, uid, [r1w_id], r1w_ctx
+                )
+
+                r1w_obj = self.pool.get(generate_r1_wiz["res_model"])  # "wizard.create.r1"
+                r1w_id = r1w_obj.create(cursor, uid, {}, generate_r1_wiz['context'])
+                subtype_r1_wiz = r1w_obj.action_subtype_fields_view(
+                    cursor, uid, [r1w_id], r1w_ctx
+                )  # obtain subtype wizard R1
+
+                sr1w_obj = self.pool.get(subtype_r1_wiz["res_model"])  # "wizard.subtype.r1"
+                sr1w_id = sr1w_obj.create(cursor, uid, {}, eval(subtype_r1_wiz["context"]))
+                sr1w_obj.action_create_r1_case(
+                    cursor, uid, [sr1w_id], r1w_ctx
+                )  # create subtype R1 for example:029  # USE OLD CONTEXT!
+
             else:
                 raise Exception(_("Error en la creació del R1, aquest cas no està suportat"))
 
