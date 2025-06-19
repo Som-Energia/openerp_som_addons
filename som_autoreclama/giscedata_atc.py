@@ -134,11 +134,43 @@ class GiscedataAtc(osv.osv):
         return self.create_general_atc_r1_case_via_wizard(cursor, uid, new_case_data, context)
 
     # Automatic ATC + R1-010 from existing F1 / Entry point
+    def has_previous_R1_010(self, cursor, uid, cups_name, factura_number):
+        rec_obj = self.pool.get("giscedata.switching.reclamacio")
+        rec_ids = rec_obj.search(cursor, uid, [("num_factura", "=", factura_number)])
+        if not rec_ids:
+            return False
+
+        sw_obj = self.pool.get("giscedata.switching")
+        sw_ids = sw_obj.search(cursor, uid, [
+            ("cups_input", "=", cups_name),
+            ("state", "=", "open"),
+            ("proces_id.name", "=", "R1"),
+        ])
+        if not sw_ids:
+            return False
+
+        subtipus_id = 10
+        sw_r101_obj = self.pool.get("giscedata.switching.r1.01")
+        sw_r101_ids = sw_r101_obj.search(cursor, uid, [
+            ("subtipus_id", "in", [subtipus_id]),
+            ("reclamacio_ids", "in", rec_ids),
+            ("sw_id", "in", sw_ids),
+        ])
+        return len(sw_r101_ids) > 0
 
     def create_ATC_R1_010_from_f1_via_wizard(self, cursor, uid, f1_id, context=None):
         subtr_obj = self.pool.get("giscedata.subtipus.reclamacio")
         subtr_id = subtr_obj.search(cursor, uid, [("name", "=", "010")], context=context)[0]
 
+        f1_obj = self.pool.get("giscedata.facturacio.importacio.linia")
+        f1 = f1_obj.browse(cursor, uid, f1_id, context=context)
+
+        if self.has_previous_R1_010(cursor, uid, f1.cups_id.name, f1.invoice_number_text):
+            raise Exception(
+                _(
+                    u"Error en la creació del CAC amb R1 010, ja existeix un R1 obert vinculat a la mateixa factura f1 {}!!!"  # noqa: E501
+                ).format(f1_id)
+            )
         # TODO: verify there is no other cac
 
         channel_obj = self.pool.get("res.partner.canal")
@@ -155,8 +187,6 @@ class GiscedataAtc(osv.osv):
             cursor, uid, "som_switching", "atc_section_factura"
         )[1]
 
-        f1_obj = self.pool.get("giscedata.facturacio.importacio.linia")
-        f1 = f1_obj.browse(cursor, uid, f1_id, context=context)
         if f1.type_factura != 'C':
             raise Exception(
                 _(
