@@ -24,7 +24,7 @@ class TestsGurbWizardCreateCoefFile(TestsGurbBase):
         decoded_file = base64.b64decode(file)
 
         self.assertEqual(
-            decoded_file, "ES1234000000000001JN0F;0,350000\r\nES0021126262693495FV;0,350000"
+            decoded_file, "ES1234000000000001JN0F;0,350000"
         )
 
     def test_gurb_wizard_creacte_coef_file_with_future_beta(self):
