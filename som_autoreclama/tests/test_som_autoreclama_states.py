@@ -554,6 +554,184 @@ class SomAutoreclamaCreationWizardTest(SomAutoreclamaBaseTests):
         self.assertEqual(ref.state, u"open")
         self.assertEqual(ref.ref, u"giscedata.atc, {}".format(atc.id))
 
+    def test_create_ATC_R1_010_from_f1_via_wizard__f1_non_C(self):
+        atc_obj = self.get_model("giscedata.atc")
+        pol_obj = self.get_model("giscedata.polissa")
+        f1_obj = self.get_model("giscedata.facturacio.importacio.linia")
+
+        _, polissa_id = self.get_object_reference(
+            "giscedata_polissa", "polissa_0004"
+        )
+        pol = pol_obj.browse(self.cursor, self.uid, polissa_id)
+        f1_ids = f1_obj.search(self.cursor, self.uid, [("cups_id", "in", [pol.cups.id])])
+        self.assertGreater(len(f1_ids), 0)
+        f1_id = f1_ids[0]
+        f1 = f1_obj.browse(self.cursor, self.uid, f1_id)
+        self.assertEqual(f1.cups_id.name, pol.cups.name)
+
+        f1_obj.write(self.cursor, self.uid, f1_id, {
+            "invoice_number_text": "1234567890ABCD",
+            "type_factura": "N",
+        })
+
+        with self.assertRaises(Exception) as context:
+            _ = atc_obj.create_ATC_R1_010_from_f1_via_wizard(
+                self.cursor, self.uid, f1_id, {}
+            )
+
+        msg = u"Error en la creació del CAC amb R1 010, F1 no es tipus C id_f1 {}".format(f1_id)
+        self.assertTrue(msg in context.exception.message)
+
+    def test_create_ATC_R1_010_from_f1_via_wizard__f1_C_no_lines(self):
+        atc_obj = self.get_model("giscedata.atc")
+        pol_obj = self.get_model("giscedata.polissa")
+        f1_obj = self.get_model("giscedata.facturacio.importacio.linia")
+
+        _, polissa_id = self.get_object_reference(
+            "giscedata_polissa", "polissa_0004"
+        )
+        pol = pol_obj.browse(self.cursor, self.uid, polissa_id)
+        f1_ids = f1_obj.search(self.cursor, self.uid, [("cups_id", "in", [pol.cups.id])])
+        self.assertGreater(len(f1_ids), 0)
+        f1_id = f1_ids[0]
+        f1 = f1_obj.browse(self.cursor, self.uid, f1_id)
+        self.assertEqual(f1.cups_id.name, pol.cups.name)
+
+        f1_obj.write(self.cursor, self.uid, f1_id, {
+            "invoice_number_text": "1234567890ABCD",
+            "type_factura": "C",
+        })
+
+        with self.assertRaises(Exception) as context:
+            _ = atc_obj.create_ATC_R1_010_from_f1_via_wizard(
+                self.cursor, self.uid, f1_id, {}
+            )
+
+        msg = u"Error en la creació del CAC amb R1 010, F1 sense linies id_f1 {}".format(f1_id)
+        self.assertTrue(msg in context.exception.message)
+
+    def test_create_ATC_R1_010_from_f1_via_wizard__f1_C_bad_line(self):
+        atc_obj = self.get_model("giscedata.atc")
+        pol_obj = self.get_model("giscedata.polissa")
+        f1_obj = self.get_model("giscedata.facturacio.importacio.linia")
+        ff_obj = self.get_model("giscedata.facturacio.importacio.linia.factura")
+
+        _, polissa_id = self.get_object_reference(
+            "giscedata_polissa", "polissa_0004"
+        )
+        pol = pol_obj.browse(self.cursor, self.uid, polissa_id)
+        f1_ids = f1_obj.search(self.cursor, self.uid, [("cups_id", "in", [pol.cups.id])])
+        self.assertGreater(len(f1_ids), 0)
+        f1_id = f1_ids[0]
+        f1 = f1_obj.browse(self.cursor, self.uid, f1_id)
+        self.assertEqual(f1.cups_id.name, pol.cups.name)
+
+        f1_obj.write(self.cursor, self.uid, f1_id, {
+            "invoice_number_text": "1234567890ABCD",
+            "type_factura": "C",
+        })
+
+        ff_obj.create(self.cursor, self.uid, {
+            'linia_id': f1_id,
+            'tipo_factura': '04',
+            'importacio_id': 1,
+            'address_invoice_id': pol.direccio_pagament.id,
+            'partner_id': pol.titular.id,
+            'account_id': 1,
+            'polissa_id': polissa_id,
+            'tarifa_acces_id': pol.tarifa.id,
+            'cups_id': pol.cups.id,
+            'factura_id': 1,
+            'llista_preu': pol.llista_preu.id,
+        })
+
+        with self.assertRaises(Exception) as context:
+            _ = atc_obj.create_ATC_R1_010_from_f1_via_wizard(
+                self.cursor, self.uid, f1_id, {}
+            )
+
+        msg = u"Error en la creació del CAC amb R1 010, F1 no es tipus anomalia o frau id_f1 {}".format(f1_id)  # noqa: E501
+        self.assertTrue(msg in context.exception.message)
+
+    def test_create_ATC_R1_010_from_f1_via_wizard__f1_C_line_anomalia(self):
+        atc_obj = self.get_model("giscedata.atc")
+        tag_obj = self.get_model("giscedata.atc.tag")
+        pol_obj = self.get_model("giscedata.polissa")
+        f1_obj = self.get_model("giscedata.facturacio.importacio.linia")
+        ff_obj = self.get_model("giscedata.facturacio.importacio.linia.factura")
+
+        _, polissa_id = self.get_object_reference(
+            "giscedata_polissa", "polissa_0004"
+        )
+        pol = pol_obj.browse(self.cursor, self.uid, polissa_id)
+        f1_ids = f1_obj.search(self.cursor, self.uid, [("cups_id", "in", [pol.cups.id])])
+        self.assertGreater(len(f1_ids), 0)
+        f1_id = f1_ids[0]
+        f1 = f1_obj.browse(self.cursor, self.uid, f1_id)
+        self.assertEqual(f1.cups_id.name, pol.cups.name)
+
+        f1_obj.write(self.cursor, self.uid, f1_id, {
+            "invoice_number_text": "1234567890ABCD",
+            "type_factura": "C",
+        })
+
+        ff_obj.create(self.cursor, self.uid, {
+            'linia_id': f1_id,
+            'tipo_factura': '06',
+            'importacio_id': 1,
+            'address_invoice_id': pol.direccio_pagament.id,
+            'partner_id': pol.titular.id,
+            'account_id': 1,
+            'polissa_id': polissa_id,
+            'tarifa_acces_id': pol.tarifa.id,
+            'cups_id': pol.cups.id,
+            'factura_id': 1,
+            'llista_preu': pol.llista_preu.id,
+        })
+
+        tag_obj.create(self.cursor, self.uid, {
+            'name': "[GET] Expedient FRAU",
+            'description': "Bla bla bla",
+        })
+        tag_obj.create(self.cursor, self.uid, {
+            'name': "[GET] Expedient ANOMALIA",
+            'description': "Bla bla bla",
+        })
+
+        new_atc_id = atc_obj.create_ATC_R1_010_from_f1_via_wizard(
+            self.cursor, self.uid, f1_id, {}
+        )
+
+        channel_id = self.search_in("res.partner.canal", [("name", "ilike", "intercambi")])
+        subtipus_id = self.search_in("giscedata.subtipus.reclamacio", [("name", "=", "010")])
+        _, section_id = self.get_object_reference(
+            "som_switching", "atc_section_factura"
+        )
+
+        atc = atc_obj.browse(self.cursor, self.uid, new_atc_id)
+
+        self.assertEqual(atc.name, u"R per defecte expedient")
+        self.assertEqual(atc.canal_id.id, channel_id)
+        self.assertEqual(atc.section_id.id, section_id)
+        self.assertEqual(atc.subtipus_id.id, subtipus_id)
+        self.assertEqual(atc.polissa_id.id, polissa_id)
+
+        self.assertEqual(atc.tancar_cac_al_finalitzar_r1, True)
+        self.assertEqual(atc.state, "pending")
+        self.assertEqual(atc.agent_actual, "10")
+
+        model, id = atc.ref.split(",")
+        self.assertEqual(model, "giscedata.switching")
+        model_obj = self.get_model(model)
+        ref = model_obj.browse(self.cursor, self.uid, int(id))
+
+        self.assertEqual(ref.proces_id.name, u"R1")
+        self.assertEqual(ref.step_id.name, u"01")
+        self.assertEqual(ref.section_id.name, u"Switching")
+        self.assertEqual(ref.cups_polissa_id.id, polissa_id)
+        self.assertEqual(ref.state, u"open")
+        self.assertEqual(ref.ref, u"giscedata.atc, {}".format(atc.id))
+
 
 class SomAutoreclamaEzATC_Test(SomAutoreclamaBaseTests):
     def build_atc(
