@@ -52,5 +52,5 @@
     </div>
 % endfor
 <div class="energy_consumption_detail_td_block">
-    <%include file="/giscedata_facturacio_comer_som/report/components/energy_consumption_detail_td_info/energy_consumption_detail_td_info.mako" args="id_info=id.info" />
+    <%include file="/giscedata_facturacio_comer_som/report/components/energy_consumption_detail_td_info/energy_consumption_detail_td_info.mako" args="id_info=id.info,col=id.collectives" />
 </div>
