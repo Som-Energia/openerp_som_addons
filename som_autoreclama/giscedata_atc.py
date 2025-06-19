@@ -196,6 +196,13 @@ class GiscedataAtc(osv.osv):
                 ).format(f1_id)
             )
 
+        if len(f1.liniafactura_id) == 0:
+            raise Exception(
+                _(
+                    u"Error en la creació del CAC amb R1 010, F1 sense linies id_f1 {}!!!"  # noqa: E501
+                ).format(f1_id)
+            )
+
         if f1.liniafactura_id[0].tipo_factura == '06':
             tag_name = "[GET] Expedient ANOMALIA"
         elif f1.liniafactura_id[0].tipo_factura == '11':
