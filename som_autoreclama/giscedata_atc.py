@@ -135,6 +135,9 @@ class GiscedataAtc(osv.osv):
 
     # Automatic ATC + R1-010 from existing F1 / Entry point
     def has_previous_R1_010(self, cursor, uid, cups_name, factura_number):
+        subtipus_id = self.pool.get('ir.model.data').get_object_reference(
+            cursor, uid, 'giscedata_subtipus_reclamacio', 'subtipus_reclamacio_010')[1]
+
         rec_obj = self.pool.get("giscedata.switching.reclamacio")
         rec_ids = rec_obj.search(cursor, uid, [("num_factura", "=", factura_number)])
         if not rec_ids:
@@ -149,7 +152,6 @@ class GiscedataAtc(osv.osv):
         if not sw_ids:
             return False
 
-        subtipus_id = 10
         sw_r101_obj = self.pool.get("giscedata.switching.r1.01")
         sw_r101_ids = sw_r101_obj.search(cursor, uid, [
             ("subtipus_id", "in", [subtipus_id]),
