@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OpenERP Server 5.0.14\n"
 "Report-Msgid-Bugs-To: support@openerp.com\n"
-"POT-Creation-Date: 2025-06-09 13:22+0000\n"
-"PO-Revision-Date: 2025-06-09 13:22+0000\n"
+"POT-Creation-Date: 2025-06-19 15:55+0000\n"
+"PO-Revision-Date: 2025-06-19 15:55+0000\n"
 "Last-Translator: <>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -1067,26 +1067,33 @@ msgid ""
 "distribuïdora."
 msgstr ""
 
-#: rml:giscedata_facturacio_comer_som/report/components/energy_consumption_detail_td_info/energy_consumption_detail_td_info.mako:15
+#: rml:giscedata_facturacio_comer_som/report/components/energy_consumption_detail_td_info/energy_consumption_detail_td_info.mako:16
+msgid ""
+"(2) Aquesta energia utilitzada inclou els ajustos corresponents a "
+"l'energia autoconsumida."
+msgstr ""
+
+#: rml:giscedata_facturacio_comer_som/report/components/energy_consumption_detail_td_info/energy_consumption_detail_td_info.mako:18
+#: rml:giscedata_facturacio_comer_som/report/components/energy_consumption_detail_td_info/energy_consumption_detail_td_info.mako:21
+#: rml:giscedata_facturacio_comer_som/report/components/energy_consumption_detail_td_info/energy_consumption_detail_td_info.mako:23
+#: rml:giscedata_facturacio_comer_som/report/components/readings_text/readings_text.mako:12
+msgid "(més informació)."
+msgstr ""
+
+#: rml:giscedata_facturacio_comer_som/report/components/energy_consumption_detail_td_info/energy_consumption_detail_td_info.mako:19
 msgid ""
 "(2) Aquesta energia utilitzada inclou els ajustos corresponents al balanç"
 " horari "
 msgstr ""
 
-#: rml:giscedata_facturacio_comer_som/report/components/energy_consumption_detail_td_info/energy_consumption_detail_td_info.mako:17
-#: rml:giscedata_facturacio_comer_som/report/components/energy_consumption_detail_td_info/energy_consumption_detail_td_info.mako:19
-#: rml:giscedata_facturacio_comer_som/report/components/readings_text/readings_text.mako:12
-msgid "(més informació)."
-msgstr ""
-
-#: rml:giscedata_facturacio_comer_som/report/components/energy_consumption_detail_td_info/energy_consumption_detail_td_info.mako:23
+#: rml:giscedata_facturacio_comer_som/report/components/energy_consumption_detail_td_info/energy_consumption_detail_td_info.mako:28
 msgid ""
 "(2) Aquesta energia utilitzada inclou ajustos perquè les lectures "
 "informades per la companyia distribuïdora no concorden amb els consums "
 "informats per a cada període."
 msgstr ""
 
-#: rml:giscedata_facturacio_comer_som/report/components/energy_consumption_detail_td_info/energy_consumption_detail_td_info.mako:26
+#: rml:giscedata_facturacio_comer_som/report/components/energy_consumption_detail_td_info/energy_consumption_detail_td_info.mako:31
 #: rml:giscedata_facturacio_comer_som/report/components/invoice_details_comments/invoice_details_comments.mako:9
 msgid ""
 "Si vols conèixer el detall de les teves dades horàries d’ús "
@@ -1095,7 +1102,7 @@ msgid ""
 " la teva empresa distribuïdora: "
 msgstr ""
 
-#: rml:giscedata_facturacio_comer_som/report/components/energy_consumption_detail_td_info/energy_consumption_detail_td_info.mako:30
+#: rml:giscedata_facturacio_comer_som/report/components/energy_consumption_detail_td_info/energy_consumption_detail_td_info.mako:35
 #: rml:giscedata_facturacio_comer_som/report/components/invoice_details_comments/invoice_details_comments.mako:13
 #, python-format
 msgid "(Ho sentim, %s encara no ens ha facilitat l’enllaç al portal)"
