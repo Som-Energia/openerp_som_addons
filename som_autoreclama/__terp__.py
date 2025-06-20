@@ -13,8 +13,10 @@
     "depends": [
         "base",
         "giscedata_subtipus_reclamacio",
+        "som_facturacio_switching",
         "som_switching",
         "som_polissa",
+        "som_atc",
     ],
     "init_xml": [],
     "demo_xml": [],
