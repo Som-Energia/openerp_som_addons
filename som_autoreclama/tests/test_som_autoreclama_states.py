@@ -735,6 +735,14 @@ class SomAutoreclamaCreationWizardTest(SomAutoreclamaBaseTests):
         self.assertEqual(ref.state, u"open")
         self.assertEqual(ref.ref, u"giscedata.atc, {}".format(atc.id))
 
+        model, id = ref.step_ids[0].pas_id.split(",")
+        self.assertEqual(model, "giscedata.switching.r1.01")
+        model_obj = self.get_model(model)
+        pas = model_obj.browse(self.cursor, self.uid, int(id))
+
+        self.assertEqual(pas.subtipus_id.id, subtipus_id)
+        self.assertEqual(pas.reclamacio_ids[0].num_factura, '1234567890ABCD')
+
 
 class SomAutoreclamaEzATC_Test(SomAutoreclamaBaseTests):
     def build_atc(
