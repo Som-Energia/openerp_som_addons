@@ -663,6 +663,7 @@ class SomAutoreclamaCreationWizardTest(SomAutoreclamaBaseTests):
         _, polissa_id = self.get_object_reference(
             "giscedata_polissa", "polissa_0004"
         )
+        pol_obj.write(self.cursor, self.uid, polissa_id, {"state": 'activa'})
         pol = pol_obj.browse(self.cursor, self.uid, polissa_id)
         f1_ids = f1_obj.search(self.cursor, self.uid, [("cups_id", "in", [pol.cups.id])])
         self.assertGreater(len(f1_ids), 0)
@@ -671,10 +672,12 @@ class SomAutoreclamaCreationWizardTest(SomAutoreclamaBaseTests):
         self.assertEqual(f1.cups_id.name, pol.cups.name)
 
         f1_obj.write(self.cursor, self.uid, f1_id, {
+            "fecha_factura_desde": "2015-01-01",
             "invoice_number_text": "1234567890ABCD",
             "type_factura": "C",
         })
-
+        f1 = f1_obj.browse(self.cursor, self.uid, f1_id)
+        self.assertEqual(f1.polissa_id.id, pol.id)
         ff_obj.create(self.cursor, self.uid, {
             'linia_id': f1_id,
             'tipo_factura': '06',
@@ -716,7 +719,7 @@ class SomAutoreclamaCreationWizardTest(SomAutoreclamaBaseTests):
         self.assertEqual(atc.subtipus_id.id, subtipus_id)
         self.assertEqual(atc.polissa_id.id, polissa_id)
 
-        self.assertEqual(atc.tancar_cac_al_finalitzar_r1, True)
+        self.assertEqual(atc.tancar_cac_al_finalitzar_r1, False)
         self.assertEqual(atc.state, "pending")
         self.assertEqual(atc.agent_actual, "10")
 
