@@ -12,36 +12,42 @@ per actualitzar els camps i vistes dels models afectats.
 Execució des de l'arrel del repositori:
     python scripts/create_migration_script.py
 """
+TARGET_VERSION = "5.0.24.5.0"
 
 
 def get_modified_files():
-    """Retorna un diccionari amb els mòduls i els seus fitxers modificats (XML, CSV i Python)."""
+    """Retorna un diccionari amb els mòduls i
+        els seus fitxers modificats (XML, CSV, Python i PO)."""
     cmd = "git diff --name-only main"
     result = subprocess.check_output(cmd.split()).decode('utf-8')
 
     modified_files = {}
     for file_path in result.splitlines():
         if 'demo' not in file_path:
-            # Processar només XML, CSV de security i Python que no siguin wizards
+            # Processar només XML, CSV de security, Python que no siguin wizards i fitxers .po
             is_security_csv = file_path.endswith('.csv') and '/security/' in file_path
             is_xml = file_path.endswith('.xml')
             is_py = (file_path.endswith('.py')
                      and 'wizard' not in file_path.lower()
                      and '/wizard/' not in file_path
                      and 'scripts/' not in file_path)
+            is_po = file_path.endswith('.po')
 
-            if is_security_csv or is_xml or is_py:
+            if is_security_csv or is_xml or is_py or is_po:
                 parts = file_path.split('/', 1)
                 if len(parts) == 2:
                     module_name, relative_path = parts
                     if module_name not in modified_files:
-                        modified_files[module_name] = {'data': [], 'py': [], 'security': []}
+                        modified_files[module_name] = {
+                            'data': [], 'py': [], 'security': [], 'po': []}
                     if is_security_csv:
                         modified_files[module_name]['security'].append(relative_path)
                     elif is_xml:
                         modified_files[module_name]['data'].append(relative_path)
                     elif is_py:
                         modified_files[module_name]['py'].append(relative_path)
+                    elif is_po:
+                        modified_files[module_name]['po'].append(relative_path)
 
     return modified_files
 
@@ -118,7 +124,21 @@ def get_next_script_number(migration_dir):
     return str(next_num).zfill(4)
 
 
-def create_migration_script(module_name, files):
+def get_script_name(files, next_num, branch_name):
+    script_name = 'post-{0}_{1}_migrate'.format(next_num, branch_name)
+    if files.get('py'):
+        script_name += '_fields'
+    if files.get('data'):
+        script_name += '_data'
+    if files.get('security'):
+        script_name += '_security'
+    if files.get('po'):
+        script_name += '_translations'
+    script_name += '.py'
+    return script_name
+
+
+def create_migration_script(module_name, files):  # noqa: C901
     """Crea un script de migració pel mòdul especificat."""
     # Primer comprovem si hi ha canvis a fer
     models_to_init = []
@@ -127,16 +147,11 @@ def create_migration_script(module_name, files):
         models = find_new_fields(full_path)
         models_to_init.extend(models)
 
-    # Si no hi ha ni models per inicialitzar ni fitxers data per actualitzar, sortim
-    if not models_to_init and not files['data']:
+    # Si no hi ha ni models per inicialitzar ni fitxers data per actualitzar ni po, sortim
+    if not models_to_init and not files['data'] and not files.get('po'):
         return
 
-    manifest_path = os.path.join(module_name, '__terp__.py')
-    with open(manifest_path, 'r') as f:
-        manifest = eval(f.read())
-    version = manifest.get('version', '0.0.0')
-    version = "5.0.{0}".format(version)
-    migration_dir = os.path.join(module_name, 'migrations', version)
+    migration_dir = os.path.join(module_name, 'migrations', TARGET_VERSION)
 
     # Crear directori si no existeix (compatible amb Python 2)
     try:
@@ -150,7 +165,7 @@ def create_migration_script(module_name, files):
     branch_name = get_current_branch().replace('/', '_')
 
     # Crear el nom de l'script
-    script_name = 'post-{0}_{1}_update_views_and_fields.py'.format(next_num, branch_name)
+    script_name = get_script_name(files, next_num, branch_name)
     script_path = os.path.join(migration_dir, script_name)
 
     # Comprovar si ja existeix un script per aquesta branca
@@ -173,10 +188,15 @@ def create_migration_script(module_name, files):
     with open(script_path, 'w') as f:
         f.write('''# -*- coding: utf-8 -*-
 import logging
-from oopgrade.oopgrade import load_data
 ''')
+        if files.get('data') or files.get('security'):
+            f.write('''from oopgrade.oopgrade import load_data''')
         if models_to_init:
             f.write('''import pooler''')
+        if files.get('po'):
+            f.write('''from tools.translate import trans_load
+from tools import config
+''')
         f.write('''
 
 def up(cursor, installed_version):
@@ -220,6 +240,14 @@ def up(cursor, installed_version):
             idref=None, mode='update'
         )\n\n'''.format(module_name))
 
+        # Afegir bloc per traduccions si hi ha .po
+        if files.get('po'):
+            for po_file in files['po']:
+                if po_file == 'i18n/es_ES.po':
+                    f.write('    logger.info("Updating translations")\n')
+                    f.write(
+                        '    trans_load(cursor, "{{}}/{{}}/i18n/es_ES.po".format(config[\'addons_path\'], "{0}"), \'es_ES\')  # noqa: E501\n'.format(module_name))  # noqa: E501
+                    f.write('    logger.info("Translations succesfully updated.")\n')
         f.write('''    logger.info("Migration completed successfully.")
 
 
@@ -236,7 +264,7 @@ migrate = up
 def main():
     modified_files = get_modified_files()
     for module_name, files in modified_files.items():
-        if files['data'] or files['py']:  # Crear script si hi ha canvis
+        if files['data'] or files['py'] or files.get('po'):  # Crear script si hi ha canvis
             create_migration_script(module_name, files)
 
 
