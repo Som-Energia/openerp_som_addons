@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 
 from osv import fields, osv
-from tools.translate import _
 
 
 class ResPartnerAddress(osv.osv):
@@ -9,12 +8,12 @@ class ResPartnerAddress(osv.osv):
 
     _name = "res.partner.address"
 
-   _columns = {
-       'phone_prefix': fields.one2many(
-           'res.phone.national.code', 'partner_address_id'),
-       'mobile_prefix': fields.one2many(
-           'res.phone.national.code', 'partner_address_id'),
-   }
+    _columns = {
+        'phone_prefix': fields.one2many(
+            'res.phone.national.code', 'partner_address_id'),
+        'mobile_prefix': fields.one2many(
+            'res.phone.national.code', 'partner_address_id'),
+    }
 
 
 ResPartnerAddress()
