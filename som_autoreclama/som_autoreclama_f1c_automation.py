@@ -31,7 +31,7 @@ class SomAutoreclamaF1cAutomation(osv.osv_memory):
         if not context:
             context = {}
 
-        subject = _(u"Resultat accions d'automatització de resota als F1 tipus C")
+        subject = _(u"Resultat accions d'automatització de resposta als F1 tipus C")
         msg = self.automation(cursor, uid, context)
         emails_to = data.get("emails_to", "").split(",")
         emails = []
