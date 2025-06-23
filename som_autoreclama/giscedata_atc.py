@@ -2,6 +2,7 @@
 from osv import osv, fields
 from tools.translate import _
 from datetime import date
+from addons import get_module_resource
 
 
 class GiscedataAtc(osv.osv):
@@ -219,6 +220,10 @@ class GiscedataAtc(osv.osv):
             cursor, uid, [('name', '=', tag_name)], context=context
         )
 
+        txt_file = get_module_resource('som_autoreclama', 'data', 'R1-01-010-legal_text.txt')
+        with open(txt_file, 'r') as f:
+            legal_txt = f.read()
+
         new_case_data = {
             "polissa_id": f1.id,
             "atc_tag_id": tag_ids[0],
@@ -226,7 +231,7 @@ class GiscedataAtc(osv.osv):
             "descripcio": u"R per defecte expedient",
             "section_id": section_id,
             "subtipus_reclamacio_id": subtr_id,
-            "comentaris": u"",
+            "comentaris": legal_txt,
             "sense_responsable": True,
             "tanca_al_finalitzar_r1": False,
             "crear_cas_r1": True,
@@ -335,6 +340,7 @@ class GiscedataAtc(osv.osv):
                 )
             elif generate_r1_wiz["res_model"] == 'wizard.r1.from.f1.erroni':
                 r1w_obj = self.pool.get(generate_r1_wiz["res_model"])  # "wizard.r1.from.f1.erroni"
+                r1w_ctx['extra_values']['comments'] = case_data["comentaris"]
                 r1w_id = r1w_obj.create(cursor, uid, {}, r1w_ctx)
                 generate_r1_wiz = r1w_obj.create_cases_from_invoice_contracts(
                     cursor, uid, [r1w_id], r1w_ctx
