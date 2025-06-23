@@ -2,6 +2,7 @@
 from destral import testing
 from destral.transaction import Transaction
 from datetime import date, timedelta
+from addons import get_module_resource
 import mock
 
 from .. import giscedata_atc, giscedata_polissa, som_autoreclama_state_history
@@ -742,6 +743,10 @@ class SomAutoreclamaCreationWizardTest(SomAutoreclamaBaseTests):
 
         self.assertEqual(pas.subtipus_id.id, subtipus_id)
         self.assertEqual(pas.reclamacio_ids[0].num_factura, '1234567890ABCD')
+        txt_file = get_module_resource('som_autoreclama', 'data', 'R1-01-010-legal_text.txt')
+        with open(txt_file, 'r') as f:
+            legal_txt = f.read()
+        self.assertEqual(pas.comentaris, legal_txt)
 
 
 class SomAutoreclamaEzATC_Test(SomAutoreclamaBaseTests):
