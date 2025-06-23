@@ -1,0 +1,75 @@
+<!-- This XML file defines views and actions for managing national phone codes in Odoo. -->
+<!-- It includes a form view for creating/editing codes, a tree view for listing them, -->
+<!-- and an action to open the list of codes. The menu item is added under the partner -->
+<!-- menu for easy access. The context sets default values for new entries. -->
+<openerp>
+    <data>
+        <record id="view_partner_phone_national_code_form" model="ir.ui.view">
+            <field name="name">res.partner.phone.national.code.form</field>
+            <field name="model">res.partner.phone.national.code</field>
+            <field name="type">form</field>
+            <field name="priority" eval="20"/>
+            <field name="arch" type="xml">
+                <data>
+                    <group>
+                        <group>
+                            <field name="name" placeholder="Name"/>
+                            <field name="code"/>
+                            <field name="country_id"/>
+                        </group>
+                        <group>
+                            <field name="phone_prefix"/>
+                            <field name="mobile_prefix"/>
+                        </group>
+                        <group>
+                            <field name="active" widget="boolean_toggle"/>
+                            <field name="sequence" placeholder="Sequence"/>
+                        </group>
+                    </group>
+                </data>
+            </field>
+        </record>
+        <record id="view_partner_phone_national_code_tree" model="ir.ui.view">
+            <field name="name">res.partner.phone.national.code.tree</field>
+            <field name="model">res.partner.phone.national.code</field>
+            <field name="type">tree</field>
+            <field name="priority" eval="20"/>
+            <field name="arch" type="xml">
+                <data>
+                    <tree>
+                        <field name="name"/>
+                        <field name="code"/>
+                        <field name="country_id"/>
+                        <field name="phone_prefix"/>
+                        <field name="mobile_prefix"/>
+                        <field name="active"/>
+                        <field name="sequence"/>
+                    </tree>
+                </data>
+            </field>
+        </record>
+        <record id="action_partner_phone_national_code" model="ir.actions.act_window">
+            <field name="name">National Phone Codes</field>
+            <field name="res_model">res.partner.phone.national.code</field>
+            <field name="view_mode">tree,form</field>
+            <field name="view_id" ref="view_partner_phone_national_code_tree"/>
+            <field name="help" type="html">
+                <p>
+                    This model is used to store the national phone codes and their
+                    corresponding prefixes for phone and mobile numbers.
+                </p>
+                <p>
+                    You can create, edit, and delete entries to manage the phone
+                    codes and prefixes for different countries.
+                </p>
+            </field>
+            <field name="context">{'default_code': 'XX', 'default_country_id':
+                'base.country.us'}</field>
+        </record>
+        <menuitem id="menu_partner_phone_national_code"
+                name="National Phone Codes"
+                parent="base.menu_partner"
+                action="action_partner_phone_national_code"
+                sequence="20"/>
+    </data>
+</openerp>

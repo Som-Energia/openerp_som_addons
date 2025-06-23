@@ -1,0 +1,19 @@
+<openerp>
+    <data>
+        <record id="view_partner_address_form_prefix_fields" model="ir.ui.view">
+            <field name="name">res.partner.address.form.prefix.fields</field>
+            <field name="model">res.partner.address</field>
+            <field name="type">form</field>
+            <field name="inherit_id" ref="base.view_partner_form"/>
+            <field name="priority" eval="20"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='phone']" position="before">
+                    <field name="phone_prefix" placeholder="Prefix"/>
+                </xpath>
+                <xpath expr="//field[@name='mobile']" position="after">
+                    <field name="mobile_prefix" placeholder="Prefix"/>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</openerp>
