@@ -1,0 +1,1989 @@
+<?xml version='1.0' encoding='utf-8'?>
+<openerp>
+    <data>
+        <record id="res_phone_national_code_data_93" model="res.phone.national.code.data">
+            <field name="name">Afghanistan</field>
+            <field name="code">93</field>
+            <field name="phone_number_format">+93 ###########</field>
+            <field name="active">True</field>
+            <field name="sequence">99</field>
+            <field name="phone_number_example">+93 123456789</field>
+        </record>
+        <record id="res_phone_national_code_data_358" model="res.phone.national.code.data">
+            <field name="name">Kepulauan Aland</field>
+            <field name="code">358</field>
+            <field name="phone_number_format">+358 ###########</field>
+            <field name="active">True</field>
+            <field name="sequence">99</field>
+            <field name="phone_number_example">+358 123456789</field>
+        </record>
+        <record id="res_phone_national_code_data_355" model="res.phone.national.code.data">
+            <field name="name">Albania</field>
+            <field name="code">355</field>
+            <field name="phone_number_format">+355 ###########</field>
+            <field name="active">True</field>
+            <field name="sequence">99</field>
+            <field name="phone_number_example">+355 123456789</field>
+        </record>
+        <record id="res_phone_national_code_data_213" model="res.phone.national.code.data">
+            <field name="name">Algeria</field>
+            <field name="code">213</field>
+            <field name="phone_number_format">+213 ###########</field>
+            <field name="active">True</field>
+            <field name="sequence">99</field>
+            <field name="phone_number_example">+213 123456789</field>
+        </record>
+        <record id="res_phone_national_code_data_1-684" model="res.phone.national.code.data">
+            <field name="name">Samoa Amerika</field>
+            <field name="code">1-684</field>
+            <field name="phone_number_format">+1-684 ###########</field>
+            <field name="active">True</field>
+            <field name="sequence">99</field>
+            <field name="phone_number_example">+1-684 123456789</field>
+        </record>
+        <record id="res_phone_national_code_data_376" model="res.phone.national.code.data">
+            <field name="name">Andorra</field>
+            <field name="code">376</field>
+            <field name="phone_number_format">+376 ###########</field>
+            <field name="active">True</field>
+            <field name="sequence">99</field>
+            <field name="phone_number_example">+376 123456789</field>
+        </record>
+        <record id="res_phone_national_code_data_244" model="res.phone.national.code.data">
+            <field name="name">Angola</field>
+            <field name="code">244</field>
+            <field name="phone_number_format">+244 ###########</field>
+            <field name="active">True</field>
+            <field name="sequence">99</field>
+            <field name="phone_number_example">+244 123456789</field>
+        </record>
+        <record id="res_phone_national_code_data_1-264" model="res.phone.national.code.data">
+            <field name="name">Anguilla</field>
+            <field name="code">1-264</field>
+            <field name="phone_number_format">+1-264 ###########</field>
+            <field name="active">True</field>
+            <field name="sequence">99</field>
+            <field name="phone_number_example">+1-264 123456789</field>
+        </record>
+        <record id="res_phone_national_code_data_672" model="res.phone.national.code.data">
+            <field name="name">Antartika</field>
+            <field name="code">672</field>
+            <field name="phone_number_format">+672 ###########</field>
+            <field name="active">True</field>
+            <field name="sequence">99</field>
+            <field name="phone_number_example">+672 123456789</field>
+        </record>
+        <record id="res_phone_national_code_data_1-268" model="res.phone.national.code.data">
+            <field name="name">Antigua dan Barbuda</field>
+            <field name="code">1-268</field>
+            <field name="phone_number_format">+1-268 ###########</field>
+            <field name="active">True</field>
+            <field name="sequence">99</field>
+            <field name="phone_number_example">+1-268 123456789</field>
+        </record>
+        <record id="res_phone_national_code_data_54" model="res.phone.national.code.data">
+            <field name="name">Argentina</field>
+            <field name="code">54</field>
+            <field name="phone_number_format">+54 ###########</field>
+            <field name="active">True</field>
+            <field name="sequence">99</field>
+            <field name="phone_number_example">+54 123456789</field>
+        </record>
+        <record id="res_phone_national_code_data_374" model="res.phone.national.code.data">
+            <field name="name">Armenia</field>
+            <field name="code">374</field>
+            <field name="phone_number_format">+374 ###########</field>
+            <field name="active">True</field>
+            <field name="sequence">99</field>
+            <field name="phone_number_example">+374 123456789</field>
+        </record>
+        <record id="res_phone_national_code_data_297" model="res.phone.national.code.data">
+            <field name="name">Aruba</field>
+            <field name="code">297</field>
+            <field name="phone_number_format">+297 ###########</field>
+            <field name="active">True</field>
+            <field name="sequence">99</field>
+            <field name="phone_number_example">+297 123456789</field>
+        </record>
+        <record id="res_phone_national_code_data_61" model="res.phone.national.code.data">
+            <field name="name">Australia</field>
+            <field name="code">61</field>
+            <field name="phone_number_format">+61 ###########</field>
+            <field name="active">True</field>
+            <field name="sequence">99</field>
+            <field name="phone_number_example">+61 123456789</field>
+        </record>
+        <record id="res_phone_national_code_data_43" model="res.phone.national.code.data">
+            <field name="name">Austria</field>
+            <field name="code">43</field>
+            <field name="phone_number_format">+43 ###########</field>
+            <field name="active">True</field>
+            <field name="sequence">99</field>
+            <field name="phone_number_example">+43 123456789</field>
+        </record>
+        <record id="res_phone_national_code_data_994" model="res.phone.national.code.data">
+            <field name="name">Azerbaijan</field>
+            <field name="code">994</field>
+            <field name="phone_number_format">+994 ###########</field>
+            <field name="active">True</field>
+            <field name="sequence">99</field>
+            <field name="phone_number_example">+994 123456789</field>
+        </record>
+        <record id="res_phone_national_code_data_1-242" model="res.phone.national.code.data">
+            <field name="name">Bahamas</field>
+            <field name="code">1-242</field>
+            <field name="phone_number_format">+1-242 ###########</field>
+            <field name="active">True</field>
+            <field name="sequence">99</field>
+            <field name="phone_number_example">+1-242 123456789</field>
+        </record>
+        <record id="res_phone_national_code_data_973" model="res.phone.national.code.data">
+            <field name="name">Bahrain</field>
+            <field name="code">973</field>
+            <field name="phone_number_format">+973 ###########</field>
+            <field name="active">True</field>
+            <field name="sequence">99</field>
+            <field name="phone_number_example">+973 123456789</field>
+        </record>
+        <record id="res_phone_national_code_data_880" model="res.phone.national.code.data">
+            <field name="name">Bangladesh</field>
+            <field name="code">880</field>
+            <field name="phone_number_format">+880 ###########</field>
+            <field name="active">True</field>
+            <field name="sequence">99</field>
+            <field name="phone_number_example">+880 123456789</field>
+        </record>
+        <record id="res_phone_national_code_data_1-246" model="res.phone.national.code.data">
+            <field name="name">Barbados</field>
+            <field name="code">1-246</field>
+            <field name="phone_number_format">+1-246 ###########</field>
+            <field name="active">True</field>
+            <field name="sequence">99</field>
+            <field name="phone_number_example">+1-246 123456789</field>
+        </record>
+        <record id="res_phone_national_code_data_375" model="res.phone.national.code.data">
+            <field name="name">Belarus</field>
+            <field name="code">375</field>
+            <field name="phone_number_format">+375 ###########</field>
+            <field name="active">True</field>
+            <field name="sequence">99</field>
+            <field name="phone_number_example">+375 123456789</field>
+        </record>
+        <record id="res_phone_national_code_data_32" model="res.phone.national.code.data">
+            <field name="name">Belgium</field>
+            <field name="code">32</field>
+            <field name="phone_number_format">+32 ###########</field>
+            <field name="active">True</field>
+            <field name="sequence">99</field>
+            <field name="phone_number_example">+32 123456789</field>
+        </record>
+        <record id="res_phone_national_code_data_501" model="res.phone.national.code.data">
+            <field name="name">Belize</field>
+            <field name="code">501</field>
+            <field name="phone_number_format">+501 ###########</field>
+            <field name="active">True</field>
+            <field name="sequence">99</field>
+            <field name="phone_number_example">+501 123456789</field>
+        </record>
+        <record id="res_phone_national_code_data_229" model="res.phone.national.code.data">
+            <field name="name">Benin</field>
+            <field name="code">229</field>
+            <field name="phone_number_format">+229 ###########</field>
+            <field name="active">True</field>
+            <field name="sequence">99</field>
+            <field name="phone_number_example">+229 123456789</field>
+        </record>
+        <record id="res_phone_national_code_data_1-441" model="res.phone.national.code.data">
+            <field name="name">Bermuda</field>
+            <field name="code">1-441</field>
+            <field name="phone_number_format">+1-441 ###########</field>
+            <field name="active">True</field>
+            <field name="sequence">99</field>
+            <field name="phone_number_example">+1-441 123456789</field>
+        </record>
+        <record id="res_phone_national_code_data_975" model="res.phone.national.code.data">
+            <field name="name">Bhutan</field>
+            <field name="code">975</field>
+            <field name="phone_number_format">+975 ###########</field>
+            <field name="active">True</field>
+            <field name="sequence">99</field>
+            <field name="phone_number_example">+975 123456789</field>
+        </record>
+        <record id="res_phone_national_code_data_591" model="res.phone.national.code.data">
+            <field name="name">Bolivia</field>
+            <field name="code">591</field>
+            <field name="phone_number_format">+591 ###########</field>
+            <field name="active">True</field>
+            <field name="sequence">99</field>
+            <field name="phone_number_example">+591 123456789</field>
+        </record>
+        <record id="res_phone_national_code_data_599" model="res.phone.national.code.data">
+            <field name="name">Belanda Caribbean</field>
+            <field name="code">599</field>
+            <field name="phone_number_format">+599 ###########</field>
+            <field name="active">True</field>
+            <field name="sequence">99</field>
+            <field name="phone_number_example">+599 123456789</field>
+        </record>
+        <record id="res_phone_national_code_data_387" model="res.phone.national.code.data">
+            <field name="name">Bosnia dan Herzegovina</field>
+            <field name="code">387</field>
+            <field name="phone_number_format">+387 ###########</field>
+            <field name="active">True</field>
+            <field name="sequence">99</field>
+            <field name="phone_number_example">+387 123456789</field>
+        </record>
+        <record id="res_phone_national_code_data_267" model="res.phone.national.code.data">
+            <field name="name">Botswana</field>
+            <field name="code">267</field>
+            <field name="phone_number_format">+267 ###########</field>
+            <field name="active">True</field>
+            <field name="sequence">99</field>
+            <field name="phone_number_example">+267 123456789</field>
+        </record>
+        <record id="res_phone_national_code_data_47" model="res.phone.national.code.data">
+            <field name="name">Pulau Bouvet</field>
+            <field name="code">47</field>
+            <field name="phone_number_format">+47 ###########</field>
+            <field name="active">True</field>
+            <field name="sequence">99</field>
+            <field name="phone_number_example">+47 123456789</field>
+        </record>
+        <record id="res_phone_national_code_data_55" model="res.phone.national.code.data">
+            <field name="name">Brazil</field>
+            <field name="code">55</field>
+            <field name="phone_number_format">+55 ###########</field>
+            <field name="active">True</field>
+            <field name="sequence">99</field>
+            <field name="phone_number_example">+55 123456789</field>
+        </record>
+        <record id="res_phone_national_code_data_246" model="res.phone.national.code.data">
+            <field name="name">Wilayah Lautan Hindi British</field>
+            <field name="code">246</field>
+            <field name="phone_number_format">+246 ###########</field>
+            <field name="active">True</field>
+            <field name="sequence">99</field>
+            <field name="phone_number_example">+246 123456789</field>
+        </record>
+        <record id="res_phone_national_code_data_1-284" model="res.phone.national.code.data">
+            <field name="name">Kepulauan Virgin British</field>
+            <field name="code">1-284</field>
+            <field name="phone_number_format">+1-284 ###########</field>
+            <field name="active">True</field>
+            <field name="sequence">99</field>
+            <field name="phone_number_example">+1-284 123456789</field>
+        </record>
+        <record id="res_phone_national_code_data_673" model="res.phone.national.code.data">
+            <field name="name">Brunei</field>
+            <field name="code">673</field>
+            <field name="phone_number_format">+673 ###########</field>
+            <field name="active">True</field>
+            <field name="sequence">99</field>
+            <field name="phone_number_example">+673 123456789</field>
+        </record>
+        <record id="res_phone_national_code_data_359" model="res.phone.national.code.data">
+            <field name="name">Bulgaria</field>
+            <field name="code">359</field>
+            <field name="phone_number_format">+359 ###########</field>
+            <field name="active">True</field>
+            <field name="sequence">99</field>
+            <field name="phone_number_example">+359 123456789</field>
+        </record>
+        <record id="res_phone_national_code_data_226" model="res.phone.national.code.data">
+            <field name="name">Burkina Faso</field>
+            <field name="code">226</field>
+            <field name="phone_number_format">+226 ###########</field>
+            <field name="active">True</field>
+            <field name="sequence">99</field>
+            <field name="phone_number_example">+226 123456789</field>
+        </record>
+        <record id="res_phone_national_code_data_257" model="res.phone.national.code.data">
+            <field name="name">Burundi</field>
+            <field name="code">257</field>
+            <field name="phone_number_format">+257 ###########</field>
+            <field name="active">True</field>
+            <field name="sequence">99</field>
+            <field name="phone_number_example">+257 123456789</field>
+        </record>
+        <record id="res_phone_national_code_data_238" model="res.phone.national.code.data">
+            <field name="name">Cape Verde</field>
+            <field name="code">238</field>
+            <field name="phone_number_format">+238 ###########</field>
+            <field name="active">True</field>
+            <field name="sequence">99</field>
+            <field name="phone_number_example">+238 123456789</field>
+        </record>
+        <record id="res_phone_national_code_data_855" model="res.phone.national.code.data">
+            <field name="name">Kemboja</field>
+            <field name="code">855</field>
+            <field name="phone_number_format">+855 ###########</field>
+            <field name="active">True</field>
+            <field name="sequence">99</field>
+            <field name="phone_number_example">+855 123456789</field>
+        </record>
+        <record id="res_phone_national_code_data_237" model="res.phone.national.code.data">
+            <field name="name">Cameroon</field>
+            <field name="code">237</field>
+            <field name="phone_number_format">+237 ###########</field>
+            <field name="active">True</field>
+            <field name="sequence">99</field>
+            <field name="phone_number_example">+237 123456789</field>
+        </record>
+        <record id="res_phone_national_code_data_1" model="res.phone.national.code.data">
+            <field name="name">Kanada</field>
+            <field name="code">1</field>
+            <field name="phone_number_format">+1 ###########</field>
+            <field name="active">True</field>
+            <field name="sequence">99</field>
+            <field name="phone_number_example">+1 123456789</field>
+        </record>
+        <record id="res_phone_national_code_data_1-345" model="res.phone.national.code.data">
+            <field name="name">Kepulauan Cayman</field>
+            <field name="code">1-345</field>
+            <field name="phone_number_format">+1-345 ###########</field>
+            <field name="active">True</field>
+            <field name="sequence">99</field>
+            <field name="phone_number_example">+1-345 123456789</field>
+        </record>
+        <record id="res_phone_national_code_data_236" model="res.phone.national.code.data">
+            <field name="name">Republik Afrika Tengah</field>
+            <field name="code">236</field>
+            <field name="phone_number_format">+236 ###########</field>
+            <field name="active">True</field>
+            <field name="sequence">99</field>
+            <field name="phone_number_example">+236 123456789</field>
+        </record>
+        <record id="res_phone_national_code_data_235" model="res.phone.national.code.data">
+            <field name="name">Chad</field>
+            <field name="code">235</field>
+            <field name="phone_number_format">+235 ###########</field>
+            <field name="active">True</field>
+            <field name="sequence">99</field>
+            <field name="phone_number_example">+235 123456789</field>
+        </record>
+        <record id="res_phone_national_code_data_56" model="res.phone.national.code.data">
+            <field name="name">Chile</field>
+            <field name="code">56</field>
+            <field name="phone_number_format">+56 ###########</field>
+            <field name="active">True</field>
+            <field name="sequence">99</field>
+            <field name="phone_number_example">+56 123456789</field>
+        </record>
+        <record id="res_phone_national_code_data_86" model="res.phone.national.code.data">
+            <field name="name">China</field>
+            <field name="code">86</field>
+            <field name="phone_number_format">+86 ###########</field>
+            <field name="active">True</field>
+            <field name="sequence">99</field>
+            <field name="phone_number_example">+86 123456789</field>
+        </record>
+        <record id="res_phone_national_code_data_852" model="res.phone.national.code.data">
+            <field name="name">Hong Kong</field>
+            <field name="code">852</field>
+            <field name="phone_number_format">+852 ###########</field>
+            <field name="active">True</field>
+            <field name="sequence">99</field>
+            <field name="phone_number_example">+852 123456789</field>
+        </record>
+        <record id="res_phone_national_code_data_853" model="res.phone.national.code.data">
+            <field name="name">Macau</field>
+            <field name="code">853</field>
+            <field name="phone_number_format">+853 ###########</field>
+            <field name="active">True</field>
+            <field name="sequence">99</field>
+            <field name="phone_number_example">+853 123456789</field>
+        </record>
+        <record id="res_phone_national_code_data_61" model="res.phone.national.code.data">
+            <field name="name">Pulau Krismas</field>
+            <field name="code">61</field>
+            <field name="phone_number_format">+61 ###########</field>
+            <field name="active">True</field>
+            <field name="sequence">99</field>
+            <field name="phone_number_example">+61 123456789</field>
+        </record>
+        <record id="res_phone_national_code_data_61" model="res.phone.national.code.data">
+            <field name="name">Kepulauan Cocos (Keeling)</field>
+            <field name="code">61</field>
+            <field name="phone_number_format">+61 ###########</field>
+            <field name="active">True</field>
+            <field name="sequence">99</field>
+            <field name="phone_number_example">+61 123456789</field>
+        </record>
+        <record id="res_phone_national_code_data_57" model="res.phone.national.code.data">
+            <field name="name">Colombia</field>
+            <field name="code">57</field>
+            <field name="phone_number_format">+57 ###########</field>
+            <field name="active">True</field>
+            <field name="sequence">99</field>
+            <field name="phone_number_example">+57 123456789</field>
+        </record>
+        <record id="res_phone_national_code_data_269" model="res.phone.national.code.data">
+            <field name="name">Comoros</field>
+            <field name="code">269</field>
+            <field name="phone_number_format">+269 ###########</field>
+            <field name="active">True</field>
+            <field name="sequence">99</field>
+            <field name="phone_number_example">+269 123456789</field>
+        </record>
+        <record id="res_phone_national_code_data_242" model="res.phone.national.code.data">
+            <field name="name">Congo - Brazzaville</field>
+            <field name="code">242</field>
+            <field name="phone_number_format">+242 ###########</field>
+            <field name="active">True</field>
+            <field name="sequence">99</field>
+            <field name="phone_number_example">+242 123456789</field>
+        </record>
+        <record id="res_phone_national_code_data_682" model="res.phone.national.code.data">
+            <field name="name">Kepulauan Cook</field>
+            <field name="code">682</field>
+            <field name="phone_number_format">+682 ###########</field>
+            <field name="active">True</field>
+            <field name="sequence">99</field>
+            <field name="phone_number_example">+682 123456789</field>
+        </record>
+        <record id="res_phone_national_code_data_506" model="res.phone.national.code.data">
+            <field name="name">Costa Rica</field>
+            <field name="code">506</field>
+            <field name="phone_number_format">+506 ###########</field>
+            <field name="active">True</field>
+            <field name="sequence">99</field>
+            <field name="phone_number_example">+506 123456789</field>
+        </record>
+        <record id="res_phone_national_code_data_385" model="res.phone.national.code.data">
+            <field name="name">Croatia</field>
+            <field name="code">385</field>
+            <field name="phone_number_format">+385 ###########</field>
+            <field name="active">True</field>
+            <field name="sequence">99</field>
+            <field name="phone_number_example">+385 123456789</field>
+        </record>
+        <record id="res_phone_national_code_data_53" model="res.phone.national.code.data">
+            <field name="name">Cuba</field>
+            <field name="code">53</field>
+            <field name="phone_number_format">+53 ###########</field>
+            <field name="active">True</field>
+            <field name="sequence">99</field>
+            <field name="phone_number_example">+53 123456789</field>
+        </record>
+        <record id="res_phone_national_code_data_599" model="res.phone.national.code.data">
+            <field name="name">Curacao</field>
+            <field name="code">599</field>
+            <field name="phone_number_format">+599 ###########</field>
+            <field name="active">True</field>
+            <field name="sequence">99</field>
+            <field name="phone_number_example">+599 123456789</field>
+        </record>
+        <record id="res_phone_national_code_data_357" model="res.phone.national.code.data">
+            <field name="name">Cyprus</field>
+            <field name="code">357</field>
+            <field name="phone_number_format">+357 ###########</field>
+            <field name="active">True</field>
+            <field name="sequence">99</field>
+            <field name="phone_number_example">+357 123456789</field>
+        </record>
+        <record id="res_phone_national_code_data_420" model="res.phone.national.code.data">
+            <field name="name">Czechia</field>
+            <field name="code">420</field>
+            <field name="phone_number_format">+420 ###########</field>
+            <field name="active">True</field>
+            <field name="sequence">99</field>
+            <field name="phone_number_example">+420 123456789</field>
+        </record>
+        <record id="res_phone_national_code_data_850" model="res.phone.national.code.data">
+            <field name="name">Korea Utara</field>
+            <field name="code">850</field>
+            <field name="phone_number_format">+850 ###########</field>
+            <field name="active">True</field>
+            <field name="sequence">99</field>
+            <field name="phone_number_example">+850 123456789</field>
+        </record>
+        <record id="res_phone_national_code_data_243" model="res.phone.national.code.data">
+            <field name="name">Congo - Kinshasa</field>
+            <field name="code">243</field>
+            <field name="phone_number_format">+243 ###########</field>
+            <field name="active">True</field>
+            <field name="sequence">99</field>
+            <field name="phone_number_example">+243 123456789</field>
+        </record>
+        <record id="res_phone_national_code_data_45" model="res.phone.national.code.data">
+            <field name="name">Denmark</field>
+            <field name="code">45</field>
+            <field name="phone_number_format">+45 ###########</field>
+            <field name="active">True</field>
+            <field name="sequence">99</field>
+            <field name="phone_number_example">+45 123456789</field>
+        </record>
+        <record id="res_phone_national_code_data_253" model="res.phone.national.code.data">
+            <field name="name">Djibouti</field>
+            <field name="code">253</field>
+            <field name="phone_number_format">+253 ###########</field>
+            <field name="active">True</field>
+            <field name="sequence">99</field>
+            <field name="phone_number_example">+253 123456789</field>
+        </record>
+        <record id="res_phone_national_code_data_1-767" model="res.phone.national.code.data">
+            <field name="name">Dominica</field>
+            <field name="code">1-767</field>
+            <field name="phone_number_format">+1-767 ###########</field>
+            <field name="active">True</field>
+            <field name="sequence">99</field>
+            <field name="phone_number_example">+1-767 123456789</field>
+        </record>
+        <record id="res_phone_national_code_data_1-809,1-829,1-849" model="res.phone.national.code.data">
+            <field name="name">Republik Dominica</field>
+            <field name="code">1-809,1-829,1-849</field>
+            <field name="phone_number_format">+1-809,1-829,1-849 ###########</field>
+            <field name="active">True</field>
+            <field name="sequence">99</field>
+            <field name="phone_number_example">+1-809,1-829,1-849 123456789</field>
+        </record>
+        <record id="res_phone_national_code_data_593" model="res.phone.national.code.data">
+            <field name="name">Ecuador</field>
+            <field name="code">593</field>
+            <field name="phone_number_format">+593 ###########</field>
+            <field name="active">True</field>
+            <field name="sequence">99</field>
+            <field name="phone_number_example">+593 123456789</field>
+        </record>
+        <record id="res_phone_national_code_data_20" model="res.phone.national.code.data">
+            <field name="name">Mesir</field>
+            <field name="code">20</field>
+            <field name="phone_number_format">+20 ###########</field>
+            <field name="active">True</field>
+            <field name="sequence">99</field>
+            <field name="phone_number_example">+20 123456789</field>
+        </record>
+        <record id="res_phone_national_code_data_503" model="res.phone.national.code.data">
+            <field name="name">El Salvador</field>
+            <field name="code">503</field>
+            <field name="phone_number_format">+503 ###########</field>
+            <field name="active">True</field>
+            <field name="sequence">99</field>
+            <field name="phone_number_example">+503 123456789</field>
+        </record>
+        <record id="res_phone_national_code_data_240" model="res.phone.national.code.data">
+            <field name="name">Guinea Khatulistiwa</field>
+            <field name="code">240</field>
+            <field name="phone_number_format">+240 ###########</field>
+            <field name="active">True</field>
+            <field name="sequence">99</field>
+            <field name="phone_number_example">+240 123456789</field>
+        </record>
+        <record id="res_phone_national_code_data_291" model="res.phone.national.code.data">
+            <field name="name">Eritrea</field>
+            <field name="code">291</field>
+            <field name="phone_number_format">+291 ###########</field>
+            <field name="active">True</field>
+            <field name="sequence">99</field>
+            <field name="phone_number_example">+291 123456789</field>
+        </record>
+        <record id="res_phone_national_code_data_372" model="res.phone.national.code.data">
+            <field name="name">Estonia</field>
+            <field name="code">372</field>
+            <field name="phone_number_format">+372 ###########</field>
+            <field name="active">True</field>
+            <field name="sequence">99</field>
+            <field name="phone_number_example">+372 123456789</field>
+        </record>
+        <record id="res_phone_national_code_data_268" model="res.phone.national.code.data">
+            <field name="name">Eswatini</field>
+            <field name="code">268</field>
+            <field name="phone_number_format">+268 ###########</field>
+            <field name="active">True</field>
+            <field name="sequence">99</field>
+            <field name="phone_number_example">+268 123456789</field>
+        </record>
+        <record id="res_phone_national_code_data_251" model="res.phone.national.code.data">
+            <field name="name">Ethiopia</field>
+            <field name="code">251</field>
+            <field name="phone_number_format">+251 ###########</field>
+            <field name="active">True</field>
+            <field name="sequence">99</field>
+            <field name="phone_number_example">+251 123456789</field>
+        </record>
+        <record id="res_phone_national_code_data_500" model="res.phone.national.code.data">
+            <field name="name">Kepulauan Falkland</field>
+            <field name="code">500</field>
+            <field name="phone_number_format">+500 ###########</field>
+            <field name="active">True</field>
+            <field name="sequence">99</field>
+            <field name="phone_number_example">+500 123456789</field>
+        </record>
+        <record id="res_phone_national_code_data_298" model="res.phone.national.code.data">
+            <field name="name">Kepulauan Faroe</field>
+            <field name="code">298</field>
+            <field name="phone_number_format">+298 ###########</field>
+            <field name="active">True</field>
+            <field name="sequence">99</field>
+            <field name="phone_number_example">+298 123456789</field>
+        </record>
+        <record id="res_phone_national_code_data_679" model="res.phone.national.code.data">
+            <field name="name">Fiji</field>
+            <field name="code">679</field>
+            <field name="phone_number_format">+679 ###########</field>
+            <field name="active">True</field>
+            <field name="sequence">99</field>
+            <field name="phone_number_example">+679 123456789</field>
+        </record>
+        <record id="res_phone_national_code_data_358" model="res.phone.national.code.data">
+            <field name="name">Finland</field>
+            <field name="code">358</field>
+            <field name="phone_number_format">+358 ###########</field>
+            <field name="active">True</field>
+            <field name="sequence">99</field>
+            <field name="phone_number_example">+358 123456789</field>
+        </record>
+        <record id="res_phone_national_code_data_33" model="res.phone.national.code.data">
+            <field name="name">Perancis</field>
+            <field name="code">33</field>
+            <field name="phone_number_format">+33 # ## ## ## ##</field>
+            <field name="active">True</field>
+            <field name="sequence">99</field>
+            <field name="phone_number_example">+33 1 23 45 67 89</field>
+        </record>
+        <record id="res_phone_national_code_data_594" model="res.phone.national.code.data">
+            <field name="name">Guiana Perancis</field>
+            <field name="code">594</field>
+            <field name="phone_number_format">+594 ###########</field>
+            <field name="active">True</field>
+            <field name="sequence">99</field>
+            <field name="phone_number_example">+594 123456789</field>
+        </record>
+        <record id="res_phone_national_code_data_689" model="res.phone.national.code.data">
+            <field name="name">Polinesia Perancis</field>
+            <field name="code">689</field>
+            <field name="phone_number_format">+689 ###########</field>
+            <field name="active">True</field>
+            <field name="sequence">99</field>
+            <field name="phone_number_example">+689 123456789</field>
+        </record>
+        <record id="res_phone_national_code_data_262" model="res.phone.national.code.data">
+            <field name="name">Wilayah Selatan Perancis</field>
+            <field name="code">262</field>
+            <field name="phone_number_format">+262 ###########</field>
+            <field name="active">True</field>
+            <field name="sequence">99</field>
+            <field name="phone_number_example">+262 123456789</field>
+        </record>
+        <record id="res_phone_national_code_data_241" model="res.phone.national.code.data">
+            <field name="name">Gabon</field>
+            <field name="code">241</field>
+            <field name="phone_number_format">+241 ###########</field>
+            <field name="active">True</field>
+            <field name="sequence">99</field>
+            <field name="phone_number_example">+241 123456789</field>
+        </record>
+        <record id="res_phone_national_code_data_220" model="res.phone.national.code.data">
+            <field name="name">Gambia</field>
+            <field name="code">220</field>
+            <field name="phone_number_format">+220 ###########</field>
+            <field name="active">True</field>
+            <field name="sequence">99</field>
+            <field name="phone_number_example">+220 123456789</field>
+        </record>
+        <record id="res_phone_national_code_data_995" model="res.phone.national.code.data">
+            <field name="name">Georgia</field>
+            <field name="code">995</field>
+            <field name="phone_number_format">+995 ###########</field>
+            <field name="active">True</field>
+            <field name="sequence">99</field>
+            <field name="phone_number_example">+995 123456789</field>
+        </record>
+        <record id="res_phone_national_code_data_49" model="res.phone.national.code.data">
+            <field name="name">Jerman</field>
+            <field name="code">49</field>
+            <field name="phone_number_format">+49 #### #######</field>
+            <field name="active">True</field>
+            <field name="sequence">99</field>
+            <field name="phone_number_example">+49 30 1234567</field>
+        </record>
+        <record id="res_phone_national_code_data_233" model="res.phone.national.code.data">
+            <field name="name">Ghana</field>
+            <field name="code">233</field>
+            <field name="phone_number_format">+233 ###########</field>
+            <field name="active">True</field>
+            <field name="sequence">99</field>
+            <field name="phone_number_example">+233 123456789</field>
+        </record>
+        <record id="res_phone_national_code_data_350" model="res.phone.national.code.data">
+            <field name="name">Gibraltar</field>
+            <field name="code">350</field>
+            <field name="phone_number_format">+350 ###########</field>
+            <field name="active">True</field>
+            <field name="sequence">99</field>
+            <field name="phone_number_example">+350 123456789</field>
+        </record>
+        <record id="res_phone_national_code_data_30" model="res.phone.national.code.data">
+            <field name="name">Greece</field>
+            <field name="code">30</field>
+            <field name="phone_number_format">+30 ###########</field>
+            <field name="active">True</field>
+            <field name="sequence">99</field>
+            <field name="phone_number_example">+30 123456789</field>
+        </record>
+        <record id="res_phone_national_code_data_299" model="res.phone.national.code.data">
+            <field name="name">Greenland</field>
+            <field name="code">299</field>
+            <field name="phone_number_format">+299 ###########</field>
+            <field name="active">True</field>
+            <field name="sequence">99</field>
+            <field name="phone_number_example">+299 123456789</field>
+        </record>
+        <record id="res_phone_national_code_data_1-473" model="res.phone.national.code.data">
+            <field name="name">Grenada</field>
+            <field name="code">1-473</field>
+            <field name="phone_number_format">+1-473 ###########</field>
+            <field name="active">True</field>
+            <field name="sequence">99</field>
+            <field name="phone_number_example">+1-473 123456789</field>
+        </record>
+        <record id="res_phone_national_code_data_590" model="res.phone.national.code.data">
+            <field name="name">Guadeloupe</field>
+            <field name="code">590</field>
+            <field name="phone_number_format">+590 ###########</field>
+            <field name="active">True</field>
+            <field name="sequence">99</field>
+            <field name="phone_number_example">+590 123456789</field>
+        </record>
+        <record id="res_phone_national_code_data_1-671" model="res.phone.national.code.data">
+            <field name="name">Guam</field>
+            <field name="code">1-671</field>
+            <field name="phone_number_format">+1-671 ###########</field>
+            <field name="active">True</field>
+            <field name="sequence">99</field>
+            <field name="phone_number_example">+1-671 123456789</field>
+        </record>
+        <record id="res_phone_national_code_data_502" model="res.phone.national.code.data">
+            <field name="name">Guatemala</field>
+            <field name="code">502</field>
+            <field name="phone_number_format">+502 ###########</field>
+            <field name="active">True</field>
+            <field name="sequence">99</field>
+            <field name="phone_number_example">+502 123456789</field>
+        </record>
+        <record id="res_phone_national_code_data_44" model="res.phone.national.code.data">
+            <field name="name">Guernsey</field>
+            <field name="code">44</field>
+            <field name="phone_number_format">+44 ###########</field>
+            <field name="active">True</field>
+            <field name="sequence">99</field>
+            <field name="phone_number_example">+44 123456789</field>
+        </record>
+        <record id="res_phone_national_code_data_224" model="res.phone.national.code.data">
+            <field name="name">Guinea</field>
+            <field name="code">224</field>
+            <field name="phone_number_format">+224 ###########</field>
+            <field name="active">True</field>
+            <field name="sequence">99</field>
+            <field name="phone_number_example">+224 123456789</field>
+        </record>
+        <record id="res_phone_national_code_data_245" model="res.phone.national.code.data">
+            <field name="name">Guinea Bissau</field>
+            <field name="code">245</field>
+            <field name="phone_number_format">+245 ###########</field>
+            <field name="active">True</field>
+            <field name="sequence">99</field>
+            <field name="phone_number_example">+245 123456789</field>
+        </record>
+        <record id="res_phone_national_code_data_592" model="res.phone.national.code.data">
+            <field name="name">Guyana</field>
+            <field name="code">592</field>
+            <field name="phone_number_format">+592 ###########</field>
+            <field name="active">True</field>
+            <field name="sequence">99</field>
+            <field name="phone_number_example">+592 123456789</field>
+        </record>
+        <record id="res_phone_national_code_data_509" model="res.phone.national.code.data">
+            <field name="name">Haiti</field>
+            <field name="code">509</field>
+            <field name="phone_number_format">+509 ###########</field>
+            <field name="active">True</field>
+            <field name="sequence">99</field>
+            <field name="phone_number_example">+509 123456789</field>
+        </record>
+        <record id="res_phone_national_code_data_672" model="res.phone.national.code.data">
+            <field name="name">Kepulauan Heard &amp; McDonald</field>
+            <field name="code">672</field>
+            <field name="phone_number_format">+672 ###########</field>
+            <field name="active">True</field>
+            <field name="sequence">99</field>
+            <field name="phone_number_example">+672 123456789</field>
+        </record>
+        <record id="res_phone_national_code_data_39-06" model="res.phone.national.code.data">
+            <field name="name">Kota Vatican</field>
+            <field name="code">39-06</field>
+            <field name="phone_number_format">+39-06 ###########</field>
+            <field name="active">True</field>
+            <field name="sequence">99</field>
+            <field name="phone_number_example">+39-06 123456789</field>
+        </record>
+        <record id="res_phone_national_code_data_504" model="res.phone.national.code.data">
+            <field name="name">Honduras</field>
+            <field name="code">504</field>
+            <field name="phone_number_format">+504 ###########</field>
+            <field name="active">True</field>
+            <field name="sequence">99</field>
+            <field name="phone_number_example">+504 123456789</field>
+        </record>
+        <record id="res_phone_national_code_data_36" model="res.phone.national.code.data">
+            <field name="name">Hungary</field>
+            <field name="code">36</field>
+            <field name="phone_number_format">+36 ###########</field>
+            <field name="active">True</field>
+            <field name="sequence">99</field>
+            <field name="phone_number_example">+36 123456789</field>
+        </record>
+        <record id="res_phone_national_code_data_354" model="res.phone.national.code.data">
+            <field name="name">Iceland</field>
+            <field name="code">354</field>
+            <field name="phone_number_format">+354 ###########</field>
+            <field name="active">True</field>
+            <field name="sequence">99</field>
+            <field name="phone_number_example">+354 123456789</field>
+        </record>
+        <record id="res_phone_national_code_data_91" model="res.phone.national.code.data">
+            <field name="name">India</field>
+            <field name="code">91</field>
+            <field name="phone_number_format">+91 ###########</field>
+            <field name="active">True</field>
+            <field name="sequence">99</field>
+            <field name="phone_number_example">+91 123456789</field>
+        </record>
+        <record id="res_phone_national_code_data_62" model="res.phone.national.code.data">
+            <field name="name">Indonesia</field>
+            <field name="code">62</field>
+            <field name="phone_number_format">+62 ###########</field>
+            <field name="active">True</field>
+            <field name="sequence">99</field>
+            <field name="phone_number_example">+62 123456789</field>
+        </record>
+        <record id="res_phone_national_code_data_98" model="res.phone.national.code.data">
+            <field name="name">Iran</field>
+            <field name="code">98</field>
+            <field name="phone_number_format">+98 ###########</field>
+            <field name="active">True</field>
+            <field name="sequence">99</field>
+            <field name="phone_number_example">+98 123456789</field>
+        </record>
+        <record id="res_phone_national_code_data_964" model="res.phone.national.code.data">
+            <field name="name">Iraq</field>
+            <field name="code">964</field>
+            <field name="phone_number_format">+964 ###########</field>
+            <field name="active">True</field>
+            <field name="sequence">99</field>
+            <field name="phone_number_example">+964 123456789</field>
+        </record>
+        <record id="res_phone_national_code_data_353" model="res.phone.national.code.data">
+            <field name="name">Ireland</field>
+            <field name="code">353</field>
+            <field name="phone_number_format">+353 ###########</field>
+            <field name="active">True</field>
+            <field name="sequence">99</field>
+            <field name="phone_number_example">+353 123456789</field>
+        </record>
+        <record id="res_phone_national_code_data_44" model="res.phone.national.code.data">
+            <field name="name">Isle of Man</field>
+            <field name="code">44</field>
+            <field name="phone_number_format">+44 ###########</field>
+            <field name="active">True</field>
+            <field name="sequence">99</field>
+            <field name="phone_number_example">+44 123456789</field>
+        </record>
+        <record id="res_phone_national_code_data_39" model="res.phone.national.code.data">
+            <field name="name">Italy</field>
+            <field name="code">39</field>
+            <field name="phone_number_format">+39 ###########</field>
+            <field name="active">True</field>
+            <field name="sequence">99</field>
+            <field name="phone_number_example">+39 123456789</field>
+        </record>
+        <record id="res_phone_national_code_data_225" model="res.phone.national.code.data">
+            <field name="name">Cote d’Ivoire</field>
+            <field name="code">225</field>
+            <field name="phone_number_format">+225 ###########</field>
+            <field name="active">True</field>
+            <field name="sequence">99</field>
+            <field name="phone_number_example">+225 123456789</field>
+        </record>
+        <record id="res_phone_national_code_data_1-876" model="res.phone.national.code.data">
+            <field name="name">Jamaica</field>
+            <field name="code">1-876</field>
+            <field name="phone_number_format">+1-876 ###########</field>
+            <field name="active">True</field>
+            <field name="sequence">99</field>
+            <field name="phone_number_example">+1-876 123456789</field>
+        </record>
+        <record id="res_phone_national_code_data_81" model="res.phone.national.code.data">
+            <field name="name">Japan</field>
+            <field name="code">81</field>
+            <field name="phone_number_format">+81 ###########</field>
+            <field name="active">True</field>
+            <field name="sequence">99</field>
+            <field name="phone_number_example">+81 123456789</field>
+        </record>
+        <record id="res_phone_national_code_data_44" model="res.phone.national.code.data">
+            <field name="name">Jersey</field>
+            <field name="code">44</field>
+            <field name="phone_number_format">+44 ###########</field>
+            <field name="active">True</field>
+            <field name="sequence">99</field>
+            <field name="phone_number_example">+44 123456789</field>
+        </record>
+        <record id="res_phone_national_code_data_962" model="res.phone.national.code.data">
+            <field name="name">Jordan</field>
+            <field name="code">962</field>
+            <field name="phone_number_format">+962 ###########</field>
+            <field name="active">True</field>
+            <field name="sequence">99</field>
+            <field name="phone_number_example">+962 123456789</field>
+        </record>
+        <record id="res_phone_national_code_data_7" model="res.phone.national.code.data">
+            <field name="name">Kazakhstan</field>
+            <field name="code">7</field>
+            <field name="phone_number_format">+7 ###########</field>
+            <field name="active">True</field>
+            <field name="sequence">99</field>
+            <field name="phone_number_example">+7 123456789</field>
+        </record>
+        <record id="res_phone_national_code_data_254" model="res.phone.national.code.data">
+            <field name="name">Kenya</field>
+            <field name="code">254</field>
+            <field name="phone_number_format">+254 ###########</field>
+            <field name="active">True</field>
+            <field name="sequence">99</field>
+            <field name="phone_number_example">+254 123456789</field>
+        </record>
+        <record id="res_phone_national_code_data_686" model="res.phone.national.code.data">
+            <field name="name">Kiribati</field>
+            <field name="code">686</field>
+            <field name="phone_number_format">+686 ###########</field>
+            <field name="active">True</field>
+            <field name="sequence">99</field>
+            <field name="phone_number_example">+686 123456789</field>
+        </record>
+        <record id="res_phone_national_code_data_965" model="res.phone.national.code.data">
+            <field name="name">Kuwait</field>
+            <field name="code">965</field>
+            <field name="phone_number_format">+965 ###########</field>
+            <field name="active">True</field>
+            <field name="sequence">99</field>
+            <field name="phone_number_example">+965 123456789</field>
+        </record>
+        <record id="res_phone_national_code_data_996" model="res.phone.national.code.data">
+            <field name="name">Kyrgyzstan</field>
+            <field name="code">996</field>
+            <field name="phone_number_format">+996 ###########</field>
+            <field name="active">True</field>
+            <field name="sequence">99</field>
+            <field name="phone_number_example">+996 123456789</field>
+        </record>
+        <record id="res_phone_national_code_data_856" model="res.phone.national.code.data">
+            <field name="name">Laos</field>
+            <field name="code">856</field>
+            <field name="phone_number_format">+856 ###########</field>
+            <field name="active">True</field>
+            <field name="sequence">99</field>
+            <field name="phone_number_example">+856 123456789</field>
+        </record>
+        <record id="res_phone_national_code_data_371" model="res.phone.national.code.data">
+            <field name="name">Latvia</field>
+            <field name="code">371</field>
+            <field name="phone_number_format">+371 ###########</field>
+            <field name="active">True</field>
+            <field name="sequence">99</field>
+            <field name="phone_number_example">+371 123456789</field>
+        </record>
+        <record id="res_phone_national_code_data_961" model="res.phone.national.code.data">
+            <field name="name">Lubnan</field>
+            <field name="code">961</field>
+            <field name="phone_number_format">+961 ###########</field>
+            <field name="active">True</field>
+            <field name="sequence">99</field>
+            <field name="phone_number_example">+961 123456789</field>
+        </record>
+        <record id="res_phone_national_code_data_266" model="res.phone.national.code.data">
+            <field name="name">Lesotho</field>
+            <field name="code">266</field>
+            <field name="phone_number_format">+266 ###########</field>
+            <field name="active">True</field>
+            <field name="sequence">99</field>
+            <field name="phone_number_example">+266 123456789</field>
+        </record>
+        <record id="res_phone_national_code_data_231" model="res.phone.national.code.data">
+            <field name="name">Liberia</field>
+            <field name="code">231</field>
+            <field name="phone_number_format">+231 ###########</field>
+            <field name="active">True</field>
+            <field name="sequence">99</field>
+            <field name="phone_number_example">+231 123456789</field>
+        </record>
+        <record id="res_phone_national_code_data_218" model="res.phone.national.code.data">
+            <field name="name">Libya</field>
+            <field name="code">218</field>
+            <field name="phone_number_format">+218 ###########</field>
+            <field name="active">True</field>
+            <field name="sequence">99</field>
+            <field name="phone_number_example">+218 123456789</field>
+        </record>
+        <record id="res_phone_national_code_data_423" model="res.phone.national.code.data">
+            <field name="name">Liechtenstein</field>
+            <field name="code">423</field>
+            <field name="phone_number_format">+423 ###########</field>
+            <field name="active">True</field>
+            <field name="sequence">99</field>
+            <field name="phone_number_example">+423 123456789</field>
+        </record>
+        <record id="res_phone_national_code_data_370" model="res.phone.national.code.data">
+            <field name="name">Lithuania</field>
+            <field name="code">370</field>
+            <field name="phone_number_format">+370 ###########</field>
+            <field name="active">True</field>
+            <field name="sequence">99</field>
+            <field name="phone_number_example">+370 123456789</field>
+        </record>
+        <record id="res_phone_national_code_data_352" model="res.phone.national.code.data">
+            <field name="name">Luxembourg</field>
+            <field name="code">352</field>
+            <field name="phone_number_format">+352 ###########</field>
+            <field name="active">True</field>
+            <field name="sequence">99</field>
+            <field name="phone_number_example">+352 123456789</field>
+        </record>
+        <record id="res_phone_national_code_data_261" model="res.phone.national.code.data">
+            <field name="name">Madagaskar</field>
+            <field name="code">261</field>
+            <field name="phone_number_format">+261 ###########</field>
+            <field name="active">True</field>
+            <field name="sequence">99</field>
+            <field name="phone_number_example">+261 123456789</field>
+        </record>
+        <record id="res_phone_national_code_data_265" model="res.phone.national.code.data">
+            <field name="name">Malawi</field>
+            <field name="code">265</field>
+            <field name="phone_number_format">+265 ###########</field>
+            <field name="active">True</field>
+            <field name="sequence">99</field>
+            <field name="phone_number_example">+265 123456789</field>
+        </record>
+        <record id="res_phone_national_code_data_60" model="res.phone.national.code.data">
+            <field name="name">Malaysia</field>
+            <field name="code">60</field>
+            <field name="phone_number_format">+60 ###########</field>
+            <field name="active">True</field>
+            <field name="sequence">99</field>
+            <field name="phone_number_example">+60 123456789</field>
+        </record>
+        <record id="res_phone_national_code_data_960" model="res.phone.national.code.data">
+            <field name="name">Maldives</field>
+            <field name="code">960</field>
+            <field name="phone_number_format">+960 ###########</field>
+            <field name="active">True</field>
+            <field name="sequence">99</field>
+            <field name="phone_number_example">+960 123456789</field>
+        </record>
+        <record id="res_phone_national_code_data_223" model="res.phone.national.code.data">
+            <field name="name">Mali</field>
+            <field name="code">223</field>
+            <field name="phone_number_format">+223 ###########</field>
+            <field name="active">True</field>
+            <field name="sequence">99</field>
+            <field name="phone_number_example">+223 123456789</field>
+        </record>
+        <record id="res_phone_national_code_data_356" model="res.phone.national.code.data">
+            <field name="name">Malta</field>
+            <field name="code">356</field>
+            <field name="phone_number_format">+356 ###########</field>
+            <field name="active">True</field>
+            <field name="sequence">99</field>
+            <field name="phone_number_example">+356 123456789</field>
+        </record>
+        <record id="res_phone_national_code_data_692" model="res.phone.national.code.data">
+            <field name="name">Kepulauan Marshall</field>
+            <field name="code">692</field>
+            <field name="phone_number_format">+692 ###########</field>
+            <field name="active">True</field>
+            <field name="sequence">99</field>
+            <field name="phone_number_example">+692 123456789</field>
+        </record>
+        <record id="res_phone_national_code_data_596" model="res.phone.national.code.data">
+            <field name="name">Martinique</field>
+            <field name="code">596</field>
+            <field name="phone_number_format">+596 ###########</field>
+            <field name="active">True</field>
+            <field name="sequence">99</field>
+            <field name="phone_number_example">+596 123456789</field>
+        </record>
+        <record id="res_phone_national_code_data_222" model="res.phone.national.code.data">
+            <field name="name">Mauritania</field>
+            <field name="code">222</field>
+            <field name="phone_number_format">+222 ###########</field>
+            <field name="active">True</field>
+            <field name="sequence">99</field>
+            <field name="phone_number_example">+222 123456789</field>
+        </record>
+        <record id="res_phone_national_code_data_230" model="res.phone.national.code.data">
+            <field name="name">Mauritius</field>
+            <field name="code">230</field>
+            <field name="phone_number_format">+230 ###########</field>
+            <field name="active">True</field>
+            <field name="sequence">99</field>
+            <field name="phone_number_example">+230 123456789</field>
+        </record>
+        <record id="res_phone_national_code_data_262" model="res.phone.national.code.data">
+            <field name="name">Mayotte</field>
+            <field name="code">262</field>
+            <field name="phone_number_format">+262 ###########</field>
+            <field name="active">True</field>
+            <field name="sequence">99</field>
+            <field name="phone_number_example">+262 123456789</field>
+        </record>
+        <record id="res_phone_national_code_data_52" model="res.phone.national.code.data">
+            <field name="name">Mexico</field>
+            <field name="code">52</field>
+            <field name="phone_number_format">+52 ###########</field>
+            <field name="active">True</field>
+            <field name="sequence">99</field>
+            <field name="phone_number_example">+52 123456789</field>
+        </record>
+        <record id="res_phone_national_code_data_691" model="res.phone.national.code.data">
+            <field name="name">Micronesia</field>
+            <field name="code">691</field>
+            <field name="phone_number_format">+691 ###########</field>
+            <field name="active">True</field>
+            <field name="sequence">99</field>
+            <field name="phone_number_example">+691 123456789</field>
+        </record>
+        <record id="res_phone_national_code_data_377" model="res.phone.national.code.data">
+            <field name="name">Monaco</field>
+            <field name="code">377</field>
+            <field name="phone_number_format">+377 ###########</field>
+            <field name="active">True</field>
+            <field name="sequence">99</field>
+            <field name="phone_number_example">+377 123456789</field>
+        </record>
+        <record id="res_phone_national_code_data_976" model="res.phone.national.code.data">
+            <field name="name">Mongolia</field>
+            <field name="code">976</field>
+            <field name="phone_number_format">+976 ###########</field>
+            <field name="active">True</field>
+            <field name="sequence">99</field>
+            <field name="phone_number_example">+976 123456789</field>
+        </record>
+        <record id="res_phone_national_code_data_382" model="res.phone.national.code.data">
+            <field name="name">Montenegro</field>
+            <field name="code">382</field>
+            <field name="phone_number_format">+382 ###########</field>
+            <field name="active">True</field>
+            <field name="sequence">99</field>
+            <field name="phone_number_example">+382 123456789</field>
+        </record>
+        <record id="res_phone_national_code_data_1-664" model="res.phone.national.code.data">
+            <field name="name">Montserrat</field>
+            <field name="code">1-664</field>
+            <field name="phone_number_format">+1-664 ###########</field>
+            <field name="active">True</field>
+            <field name="sequence">99</field>
+            <field name="phone_number_example">+1-664 123456789</field>
+        </record>
+        <record id="res_phone_national_code_data_212" model="res.phone.national.code.data">
+            <field name="name">Maghribi</field>
+            <field name="code">212</field>
+            <field name="phone_number_format">+212 ###########</field>
+            <field name="active">True</field>
+            <field name="sequence">99</field>
+            <field name="phone_number_example">+212 123456789</field>
+        </record>
+        <record id="res_phone_national_code_data_258" model="res.phone.national.code.data">
+            <field name="name">Mozambique</field>
+            <field name="code">258</field>
+            <field name="phone_number_format">+258 ###########</field>
+            <field name="active">True</field>
+            <field name="sequence">99</field>
+            <field name="phone_number_example">+258 123456789</field>
+        </record>
+        <record id="res_phone_national_code_data_95" model="res.phone.national.code.data">
+            <field name="name">Myanmar (Burma)</field>
+            <field name="code">95</field>
+            <field name="phone_number_format">+95 ###########</field>
+            <field name="active">True</field>
+            <field name="sequence">99</field>
+            <field name="phone_number_example">+95 123456789</field>
+        </record>
+        <record id="res_phone_national_code_data_264" model="res.phone.national.code.data">
+            <field name="name">Namibia</field>
+            <field name="code">264</field>
+            <field name="phone_number_format">+264 ###########</field>
+            <field name="active">True</field>
+            <field name="sequence">99</field>
+            <field name="phone_number_example">+264 123456789</field>
+        </record>
+        <record id="res_phone_national_code_data_674" model="res.phone.national.code.data">
+            <field name="name">Nauru</field>
+            <field name="code">674</field>
+            <field name="phone_number_format">+674 ###########</field>
+            <field name="active">True</field>
+            <field name="sequence">99</field>
+            <field name="phone_number_example">+674 123456789</field>
+        </record>
+        <record id="res_phone_national_code_data_977" model="res.phone.national.code.data">
+            <field name="name">Nepal</field>
+            <field name="code">977</field>
+            <field name="phone_number_format">+977 ###########</field>
+            <field name="active">True</field>
+            <field name="sequence">99</field>
+            <field name="phone_number_example">+977 123456789</field>
+        </record>
+        <record id="res_phone_national_code_data_31" model="res.phone.national.code.data">
+            <field name="name">Belanda</field>
+            <field name="code">31</field>
+            <field name="phone_number_format">+31 ###########</field>
+            <field name="active">True</field>
+            <field name="sequence">99</field>
+            <field name="phone_number_example">+31 123456789</field>
+        </record>
+        <record id="res_phone_national_code_data_687" model="res.phone.national.code.data">
+            <field name="name">New Caledonia</field>
+            <field name="code">687</field>
+            <field name="phone_number_format">+687 ###########</field>
+            <field name="active">True</field>
+            <field name="sequence">99</field>
+            <field name="phone_number_example">+687 123456789</field>
+        </record>
+        <record id="res_phone_national_code_data_64" model="res.phone.national.code.data">
+            <field name="name">New Zealand</field>
+            <field name="code">64</field>
+            <field name="phone_number_format">+64 ###########</field>
+            <field name="active">True</field>
+            <field name="sequence">99</field>
+            <field name="phone_number_example">+64 123456789</field>
+        </record>
+        <record id="res_phone_national_code_data_505" model="res.phone.national.code.data">
+            <field name="name">Nicaragua</field>
+            <field name="code">505</field>
+            <field name="phone_number_format">+505 ###########</field>
+            <field name="active">True</field>
+            <field name="sequence">99</field>
+            <field name="phone_number_example">+505 123456789</field>
+        </record>
+        <record id="res_phone_national_code_data_227" model="res.phone.national.code.data">
+            <field name="name">Niger</field>
+            <field name="code">227</field>
+            <field name="phone_number_format">+227 ###########</field>
+            <field name="active">True</field>
+            <field name="sequence">99</field>
+            <field name="phone_number_example">+227 123456789</field>
+        </record>
+        <record id="res_phone_national_code_data_234" model="res.phone.national.code.data">
+            <field name="name">Nigeria</field>
+            <field name="code">234</field>
+            <field name="phone_number_format">+234 ###########</field>
+            <field name="active">True</field>
+            <field name="sequence">99</field>
+            <field name="phone_number_example">+234 123456789</field>
+        </record>
+        <record id="res_phone_national_code_data_683" model="res.phone.national.code.data">
+            <field name="name">Niue</field>
+            <field name="code">683</field>
+            <field name="phone_number_format">+683 ###########</field>
+            <field name="active">True</field>
+            <field name="sequence">99</field>
+            <field name="phone_number_example">+683 123456789</field>
+        </record>
+        <record id="res_phone_national_code_data_672" model="res.phone.national.code.data">
+            <field name="name">Pulau Norfolk</field>
+            <field name="code">672</field>
+            <field name="phone_number_format">+672 ###########</field>
+            <field name="active">True</field>
+            <field name="sequence">99</field>
+            <field name="phone_number_example">+672 123456789</field>
+        </record>
+        <record id="res_phone_national_code_data_1-670" model="res.phone.national.code.data">
+            <field name="name">Kepulauan Mariana Utara</field>
+            <field name="code">1-670</field>
+            <field name="phone_number_format">+1-670 ###########</field>
+            <field name="active">True</field>
+            <field name="sequence">99</field>
+            <field name="phone_number_example">+1-670 123456789</field>
+        </record>
+        <record id="res_phone_national_code_data_389" model="res.phone.national.code.data">
+            <field name="name">Macedonia Utara</field>
+            <field name="code">389</field>
+            <field name="phone_number_format">+389 ###########</field>
+            <field name="active">True</field>
+            <field name="sequence">99</field>
+            <field name="phone_number_example">+389 123456789</field>
+        </record>
+        <record id="res_phone_national_code_data_47" model="res.phone.national.code.data">
+            <field name="name">Norway</field>
+            <field name="code">47</field>
+            <field name="phone_number_format">+47 ###########</field>
+            <field name="active">True</field>
+            <field name="sequence">99</field>
+            <field name="phone_number_example">+47 123456789</field>
+        </record>
+        <record id="res_phone_national_code_data_968" model="res.phone.national.code.data">
+            <field name="name">Oman</field>
+            <field name="code">968</field>
+            <field name="phone_number_format">+968 ###########</field>
+            <field name="active">True</field>
+            <field name="sequence">99</field>
+            <field name="phone_number_example">+968 123456789</field>
+        </record>
+        <record id="res_phone_national_code_data_92" model="res.phone.national.code.data">
+            <field name="name">Pakistan</field>
+            <field name="code">92</field>
+            <field name="phone_number_format">+92 ###########</field>
+            <field name="active">True</field>
+            <field name="sequence">99</field>
+            <field name="phone_number_example">+92 123456789</field>
+        </record>
+        <record id="res_phone_national_code_data_680" model="res.phone.national.code.data">
+            <field name="name">Palau</field>
+            <field name="code">680</field>
+            <field name="phone_number_format">+680 ###########</field>
+            <field name="active">True</field>
+            <field name="sequence">99</field>
+            <field name="phone_number_example">+680 123456789</field>
+        </record>
+        <record id="res_phone_national_code_data_507" model="res.phone.national.code.data">
+            <field name="name">Panama</field>
+            <field name="code">507</field>
+            <field name="phone_number_format">+507 ###########</field>
+            <field name="active">True</field>
+            <field name="sequence">99</field>
+            <field name="phone_number_example">+507 123456789</field>
+        </record>
+        <record id="res_phone_national_code_data_675" model="res.phone.national.code.data">
+            <field name="name">Papua New Guinea</field>
+            <field name="code">675</field>
+            <field name="phone_number_format">+675 ###########</field>
+            <field name="active">True</field>
+            <field name="sequence">99</field>
+            <field name="phone_number_example">+675 123456789</field>
+        </record>
+        <record id="res_phone_national_code_data_595" model="res.phone.national.code.data">
+            <field name="name">Paraguay</field>
+            <field name="code">595</field>
+            <field name="phone_number_format">+595 ###########</field>
+            <field name="active">True</field>
+            <field name="sequence">99</field>
+            <field name="phone_number_example">+595 123456789</field>
+        </record>
+        <record id="res_phone_national_code_data_51" model="res.phone.national.code.data">
+            <field name="name">Peru</field>
+            <field name="code">51</field>
+            <field name="phone_number_format">+51 ###########</field>
+            <field name="active">True</field>
+            <field name="sequence">99</field>
+            <field name="phone_number_example">+51 123456789</field>
+        </record>
+        <record id="res_phone_national_code_data_63" model="res.phone.national.code.data">
+            <field name="name">Filipina</field>
+            <field name="code">63</field>
+            <field name="phone_number_format">+63 ###########</field>
+            <field name="active">True</field>
+            <field name="sequence">99</field>
+            <field name="phone_number_example">+63 123456789</field>
+        </record>
+        <record id="res_phone_national_code_data_870" model="res.phone.national.code.data">
+            <field name="name">Kepulauan Pitcairn</field>
+            <field name="code">870</field>
+            <field name="phone_number_format">+870 ###########</field>
+            <field name="active">True</field>
+            <field name="sequence">99</field>
+            <field name="phone_number_example">+870 123456789</field>
+        </record>
+        <record id="res_phone_national_code_data_48" model="res.phone.national.code.data">
+            <field name="name">Poland</field>
+            <field name="code">48</field>
+            <field name="phone_number_format">+48 ###########</field>
+            <field name="active">True</field>
+            <field name="sequence">99</field>
+            <field name="phone_number_example">+48 123456789</field>
+        </record>
+        <record id="res_phone_national_code_data_351" model="res.phone.national.code.data">
+            <field name="name">Portugal</field>
+            <field name="code">351</field>
+            <field name="phone_number_format">+351 ###########</field>
+            <field name="active">True</field>
+            <field name="sequence">99</field>
+            <field name="phone_number_example">+351 123456789</field>
+        </record>
+        <record id="res_phone_national_code_data_1" model="res.phone.national.code.data">
+            <field name="name">Puerto Rico</field>
+            <field name="code">1</field>
+            <field name="phone_number_format">+1 ###########</field>
+            <field name="active">True</field>
+            <field name="sequence">99</field>
+            <field name="phone_number_example">+1 123456789</field>
+        </record>
+        <record id="res_phone_national_code_data_974" model="res.phone.national.code.data">
+            <field name="name">Qatar</field>
+            <field name="code">974</field>
+            <field name="phone_number_format">+974 ###########</field>
+            <field name="active">True</field>
+            <field name="sequence">99</field>
+            <field name="phone_number_example">+974 123456789</field>
+        </record>
+        <record id="res_phone_national_code_data_82" model="res.phone.national.code.data">
+            <field name="name">Korea Selatan</field>
+            <field name="code">82</field>
+            <field name="phone_number_format">+82 ###########</field>
+            <field name="active">True</field>
+            <field name="sequence">99</field>
+            <field name="phone_number_example">+82 123456789</field>
+        </record>
+        <record id="res_phone_national_code_data_373" model="res.phone.national.code.data">
+            <field name="name">Moldova</field>
+            <field name="code">373</field>
+            <field name="phone_number_format">+373 ###########</field>
+            <field name="active">True</field>
+            <field name="sequence">99</field>
+            <field name="phone_number_example">+373 123456789</field>
+        </record>
+        <record id="res_phone_national_code_data_262" model="res.phone.national.code.data">
+            <field name="name">Reunion</field>
+            <field name="code">262</field>
+            <field name="phone_number_format">+262 ###########</field>
+            <field name="active">True</field>
+            <field name="sequence">99</field>
+            <field name="phone_number_example">+262 123456789</field>
+        </record>
+        <record id="res_phone_national_code_data_40" model="res.phone.national.code.data">
+            <field name="name">Romania</field>
+            <field name="code">40</field>
+            <field name="phone_number_format">+40 ###########</field>
+            <field name="active">True</field>
+            <field name="sequence">99</field>
+            <field name="phone_number_example">+40 123456789</field>
+        </record>
+        <record id="res_phone_national_code_data_7" model="res.phone.national.code.data">
+            <field name="name">Rusia</field>
+            <field name="code">7</field>
+            <field name="phone_number_format">+7 ###########</field>
+            <field name="active">True</field>
+            <field name="sequence">99</field>
+            <field name="phone_number_example">+7 123456789</field>
+        </record>
+        <record id="res_phone_national_code_data_250" model="res.phone.national.code.data">
+            <field name="name">Rwanda</field>
+            <field name="code">250</field>
+            <field name="phone_number_format">+250 ###########</field>
+            <field name="active">True</field>
+            <field name="sequence">99</field>
+            <field name="phone_number_example">+250 123456789</field>
+        </record>
+        <record id="res_phone_national_code_data_590" model="res.phone.national.code.data">
+            <field name="name">St. Barthelemy</field>
+            <field name="code">590</field>
+            <field name="phone_number_format">+590 ###########</field>
+            <field name="active">True</field>
+            <field name="sequence">99</field>
+            <field name="phone_number_example">+590 123456789</field>
+        </record>
+        <record id="res_phone_national_code_data_290 n" model="res.phone.national.code.data">
+            <field name="name">Saint Helena</field>
+            <field name="code">290 n</field>
+            <field name="phone_number_format">+290 n ###########</field>
+            <field name="active">True</field>
+            <field name="sequence">99</field>
+            <field name="phone_number_example">+290 n 123456789</field>
+        </record>
+        <record id="res_phone_national_code_data_1-869" model="res.phone.national.code.data">
+            <field name="name">Saint Kitts dan Nevis</field>
+            <field name="code">1-869</field>
+            <field name="phone_number_format">+1-869 ###########</field>
+            <field name="active">True</field>
+            <field name="sequence">99</field>
+            <field name="phone_number_example">+1-869 123456789</field>
+        </record>
+        <record id="res_phone_national_code_data_1-758" model="res.phone.national.code.data">
+            <field name="name">Saint Lucia</field>
+            <field name="code">1-758</field>
+            <field name="phone_number_format">+1-758 ###########</field>
+            <field name="active">True</field>
+            <field name="sequence">99</field>
+            <field name="phone_number_example">+1-758 123456789</field>
+        </record>
+        <record id="res_phone_national_code_data_590" model="res.phone.national.code.data">
+            <field name="name">Saint Martin</field>
+            <field name="code">590</field>
+            <field name="phone_number_format">+590 ###########</field>
+            <field name="active">True</field>
+            <field name="sequence">99</field>
+            <field name="phone_number_example">+590 123456789</field>
+        </record>
+        <record id="res_phone_national_code_data_508" model="res.phone.national.code.data">
+            <field name="name">Saint Pierre dan Miquelon</field>
+            <field name="code">508</field>
+            <field name="phone_number_format">+508 ###########</field>
+            <field name="active">True</field>
+            <field name="sequence">99</field>
+            <field name="phone_number_example">+508 123456789</field>
+        </record>
+        <record id="res_phone_national_code_data_1-784" model="res.phone.national.code.data">
+            <field name="name">Saint Vincent dan Grenadines</field>
+            <field name="code">1-784</field>
+            <field name="phone_number_format">+1-784 ###########</field>
+            <field name="active">True</field>
+            <field name="sequence">99</field>
+            <field name="phone_number_example">+1-784 123456789</field>
+        </record>
+        <record id="res_phone_national_code_data_685" model="res.phone.national.code.data">
+            <field name="name">Samoa</field>
+            <field name="code">685</field>
+            <field name="phone_number_format">+685 ###########</field>
+            <field name="active">True</field>
+            <field name="sequence">99</field>
+            <field name="phone_number_example">+685 123456789</field>
+        </record>
+        <record id="res_phone_national_code_data_378" model="res.phone.national.code.data">
+            <field name="name">San Marino</field>
+            <field name="code">378</field>
+            <field name="phone_number_format">+378 ###########</field>
+            <field name="active">True</field>
+            <field name="sequence">99</field>
+            <field name="phone_number_example">+378 123456789</field>
+        </record>
+        <record id="res_phone_national_code_data_239" model="res.phone.national.code.data">
+            <field name="name">Sao Tome dan Principe</field>
+            <field name="code">239</field>
+            <field name="phone_number_format">+239 ###########</field>
+            <field name="active">True</field>
+            <field name="sequence">99</field>
+            <field name="phone_number_example">+239 123456789</field>
+        </record>
+        <record id="res_phone_national_code_data_966" model="res.phone.national.code.data">
+            <field name="name">Arab Saudi</field>
+            <field name="code">966</field>
+            <field name="phone_number_format">+966 ###########</field>
+            <field name="active">True</field>
+            <field name="sequence">99</field>
+            <field name="phone_number_example">+966 123456789</field>
+        </record>
+        <record id="res_phone_national_code_data_221" model="res.phone.national.code.data">
+            <field name="name">Senegal</field>
+            <field name="code">221</field>
+            <field name="phone_number_format">+221 ###########</field>
+            <field name="active">True</field>
+            <field name="sequence">99</field>
+            <field name="phone_number_example">+221 123456789</field>
+        </record>
+        <record id="res_phone_national_code_data_381 p" model="res.phone.national.code.data">
+            <field name="name">Serbia</field>
+            <field name="code">381 p</field>
+            <field name="phone_number_format">+381 p ###########</field>
+            <field name="active">True</field>
+            <field name="sequence">99</field>
+            <field name="phone_number_example">+381 p 123456789</field>
+        </record>
+        <record id="res_phone_national_code_data_248" model="res.phone.national.code.data">
+            <field name="name">Seychelles</field>
+            <field name="code">248</field>
+            <field name="phone_number_format">+248 ###########</field>
+            <field name="active">True</field>
+            <field name="sequence">99</field>
+            <field name="phone_number_example">+248 123456789</field>
+        </record>
+        <record id="res_phone_national_code_data_232" model="res.phone.national.code.data">
+            <field name="name">Sierra Leone</field>
+            <field name="code">232</field>
+            <field name="phone_number_format">+232 ###########</field>
+            <field name="active">True</field>
+            <field name="sequence">99</field>
+            <field name="phone_number_example">+232 123456789</field>
+        </record>
+        <record id="res_phone_national_code_data_65" model="res.phone.national.code.data">
+            <field name="name">Singapura</field>
+            <field name="code">65</field>
+            <field name="phone_number_format">+65 ###########</field>
+            <field name="active">True</field>
+            <field name="sequence">99</field>
+            <field name="phone_number_example">+65 123456789</field>
+        </record>
+        <record id="res_phone_national_code_data_1-721" model="res.phone.national.code.data">
+            <field name="name">Sint Maarten</field>
+            <field name="code">1-721</field>
+            <field name="phone_number_format">+1-721 ###########</field>
+            <field name="active">True</field>
+            <field name="sequence">99</field>
+            <field name="phone_number_example">+1-721 123456789</field>
+        </record>
+        <record id="res_phone_national_code_data_421" model="res.phone.national.code.data">
+            <field name="name">Slovakia</field>
+            <field name="code">421</field>
+            <field name="phone_number_format">+421 ###########</field>
+            <field name="active">True</field>
+            <field name="sequence">99</field>
+            <field name="phone_number_example">+421 123456789</field>
+        </record>
+        <record id="res_phone_national_code_data_386" model="res.phone.national.code.data">
+            <field name="name">Slovenia</field>
+            <field name="code">386</field>
+            <field name="phone_number_format">+386 ###########</field>
+            <field name="active">True</field>
+            <field name="sequence">99</field>
+            <field name="phone_number_example">+386 123456789</field>
+        </record>
+        <record id="res_phone_national_code_data_677" model="res.phone.national.code.data">
+            <field name="name">Kepulauan Solomon</field>
+            <field name="code">677</field>
+            <field name="phone_number_format">+677 ###########</field>
+            <field name="active">True</field>
+            <field name="sequence">99</field>
+            <field name="phone_number_example">+677 123456789</field>
+        </record>
+        <record id="res_phone_national_code_data_252" model="res.phone.national.code.data">
+            <field name="name">Somalia</field>
+            <field name="code">252</field>
+            <field name="phone_number_format">+252 ###########</field>
+            <field name="active">True</field>
+            <field name="sequence">99</field>
+            <field name="phone_number_example">+252 123456789</field>
+        </record>
+        <record id="res_phone_national_code_data_27" model="res.phone.national.code.data">
+            <field name="name">Afrika Selatan</field>
+            <field name="code">27</field>
+            <field name="phone_number_format">+27 ###########</field>
+            <field name="active">True</field>
+            <field name="sequence">99</field>
+            <field name="phone_number_example">+27 123456789</field>
+        </record>
+        <record id="res_phone_national_code_data_500" model="res.phone.national.code.data">
+            <field name="name">Kepulauan Georgia Selatan &amp; Sandwich Selatan</field>
+            <field name="code">500</field>
+            <field name="phone_number_format">+500 ###########</field>
+            <field name="active">True</field>
+            <field name="sequence">99</field>
+            <field name="phone_number_example">+500 123456789</field>
+        </record>
+        <record id="res_phone_national_code_data_211" model="res.phone.national.code.data">
+            <field name="name">Sudan Selatan</field>
+            <field name="code">211</field>
+            <field name="phone_number_format">+211 ###########</field>
+            <field name="active">True</field>
+            <field name="sequence">99</field>
+            <field name="phone_number_example">+211 123456789</field>
+        </record>
+        <record id="res_phone_national_code_data_34" model="res.phone.national.code.data">
+            <field name="name">Spain</field>
+            <field name="code">34</field>
+            <field name="phone_number_format">+34 ### ## ## ##</field>
+            <field name="active">True</field>
+            <field name="sequence">99</field>
+            <field name="phone_number_example">+34 91 123 45 67</field>
+        </record>
+        <record id="res_phone_national_code_data_94" model="res.phone.national.code.data">
+            <field name="name">Sri Lanka</field>
+            <field name="code">94</field>
+            <field name="phone_number_format">+94 ###########</field>
+            <field name="active">True</field>
+            <field name="sequence">99</field>
+            <field name="phone_number_example">+94 123456789</field>
+        </record>
+        <record id="res_phone_national_code_data_970" model="res.phone.national.code.data">
+            <field name="name">Palestin</field>
+            <field name="code">970</field>
+            <field name="phone_number_format">+970 ###########</field>
+            <field name="active">True</field>
+            <field name="sequence">99</field>
+            <field name="phone_number_example">+970 123456789</field>
+        </record>
+        <record id="res_phone_national_code_data_249" model="res.phone.national.code.data">
+            <field name="name">Sudan</field>
+            <field name="code">249</field>
+            <field name="phone_number_format">+249 ###########</field>
+            <field name="active">True</field>
+            <field name="sequence">99</field>
+            <field name="phone_number_example">+249 123456789</field>
+        </record>
+        <record id="res_phone_national_code_data_597" model="res.phone.national.code.data">
+            <field name="name">Surinam</field>
+            <field name="code">597</field>
+            <field name="phone_number_format">+597 ###########</field>
+            <field name="active">True</field>
+            <field name="sequence">99</field>
+            <field name="phone_number_example">+597 123456789</field>
+        </record>
+        <record id="res_phone_national_code_data_47" model="res.phone.national.code.data">
+            <field name="name">Svalbard dan Jan Mayen</field>
+            <field name="code">47</field>
+            <field name="phone_number_format">+47 ###########</field>
+            <field name="active">True</field>
+            <field name="sequence">99</field>
+            <field name="phone_number_example">+47 123456789</field>
+        </record>
+        <record id="res_phone_national_code_data_46" model="res.phone.national.code.data">
+            <field name="name">Sweden</field>
+            <field name="code">46</field>
+            <field name="phone_number_format">+46 ###########</field>
+            <field name="active">True</field>
+            <field name="sequence">99</field>
+            <field name="phone_number_example">+46 123456789</field>
+        </record>
+        <record id="res_phone_national_code_data_41" model="res.phone.national.code.data">
+            <field name="name">Switzerland</field>
+            <field name="code">41</field>
+            <field name="phone_number_format">+41 ###########</field>
+            <field name="active">True</field>
+            <field name="sequence">99</field>
+            <field name="phone_number_example">+41 123456789</field>
+        </record>
+        <record id="res_phone_national_code_data_963" model="res.phone.national.code.data">
+            <field name="name">Syria</field>
+            <field name="code">963</field>
+            <field name="phone_number_format">+963 ###########</field>
+            <field name="active">True</field>
+            <field name="sequence">99</field>
+            <field name="phone_number_example">+963 123456789</field>
+        </record>
+        <record id="res_phone_national_code_data_886" model="res.phone.national.code.data">
+            <field name="name">Taiwan</field>
+            <field name="code">886</field>
+            <field name="phone_number_format">+886 ###########</field>
+            <field name="active">True</field>
+            <field name="sequence">99</field>
+            <field name="phone_number_example">+886 123456789</field>
+        </record>
+        <record id="res_phone_national_code_data_992" model="res.phone.national.code.data">
+            <field name="name">Tajikistan</field>
+            <field name="code">992</field>
+            <field name="phone_number_format">+992 ###########</field>
+            <field name="active">True</field>
+            <field name="sequence">99</field>
+            <field name="phone_number_example">+992 123456789</field>
+        </record>
+        <record id="res_phone_national_code_data_66" model="res.phone.national.code.data">
+            <field name="name">Thailand</field>
+            <field name="code">66</field>
+            <field name="phone_number_format">+66 ###########</field>
+            <field name="active">True</field>
+            <field name="sequence">99</field>
+            <field name="phone_number_example">+66 123456789</field>
+        </record>
+        <record id="res_phone_national_code_data_670" model="res.phone.national.code.data">
+            <field name="name">Timor-Leste</field>
+            <field name="code">670</field>
+            <field name="phone_number_format">+670 ###########</field>
+            <field name="active">True</field>
+            <field name="sequence">99</field>
+            <field name="phone_number_example">+670 123456789</field>
+        </record>
+        <record id="res_phone_national_code_data_228" model="res.phone.national.code.data">
+            <field name="name">Togo</field>
+            <field name="code">228</field>
+            <field name="phone_number_format">+228 ###########</field>
+            <field name="active">True</field>
+            <field name="sequence">99</field>
+            <field name="phone_number_example">+228 123456789</field>
+        </record>
+        <record id="res_phone_national_code_data_690" model="res.phone.national.code.data">
+            <field name="name">Tokelau</field>
+            <field name="code">690</field>
+            <field name="phone_number_format">+690 ###########</field>
+            <field name="active">True</field>
+            <field name="sequence">99</field>
+            <field name="phone_number_example">+690 123456789</field>
+        </record>
+        <record id="res_phone_national_code_data_676" model="res.phone.national.code.data">
+            <field name="name">Tonga</field>
+            <field name="code">676</field>
+            <field name="phone_number_format">+676 ###########</field>
+            <field name="active">True</field>
+            <field name="sequence">99</field>
+            <field name="phone_number_example">+676 123456789</field>
+        </record>
+        <record id="res_phone_national_code_data_1-868" model="res.phone.national.code.data">
+            <field name="name">Trinidad dan Tobago</field>
+            <field name="code">1-868</field>
+            <field name="phone_number_format">+1-868 ###########</field>
+            <field name="active">True</field>
+            <field name="sequence">99</field>
+            <field name="phone_number_example">+1-868 123456789</field>
+        </record>
+        <record id="res_phone_national_code_data_216" model="res.phone.national.code.data">
+            <field name="name">Tunisia</field>
+            <field name="code">216</field>
+            <field name="phone_number_format">+216 ###########</field>
+            <field name="active">True</field>
+            <field name="sequence">99</field>
+            <field name="phone_number_example">+216 123456789</field>
+        </record>
+        <record id="res_phone_national_code_data_90" model="res.phone.national.code.data">
+            <field name="name">Turkiye</field>
+            <field name="code">90</field>
+            <field name="phone_number_format">+90 ###########</field>
+            <field name="active">True</field>
+            <field name="sequence">99</field>
+            <field name="phone_number_example">+90 123456789</field>
+        </record>
+        <record id="res_phone_national_code_data_993" model="res.phone.national.code.data">
+            <field name="name">Turkmenistan</field>
+            <field name="code">993</field>
+            <field name="phone_number_format">+993 ###########</field>
+            <field name="active">True</field>
+            <field name="sequence">99</field>
+            <field name="phone_number_example">+993 123456789</field>
+        </record>
+        <record id="res_phone_national_code_data_1-649" model="res.phone.national.code.data">
+            <field name="name">Kepulauan Turks dan Caicos</field>
+            <field name="code">1-649</field>
+            <field name="phone_number_format">+1-649 ###########</field>
+            <field name="active">True</field>
+            <field name="sequence">99</field>
+            <field name="phone_number_example">+1-649 123456789</field>
+        </record>
+        <record id="res_phone_national_code_data_688" model="res.phone.national.code.data">
+            <field name="name">Tuvalu</field>
+            <field name="code">688</field>
+            <field name="phone_number_format">+688 ###########</field>
+            <field name="active">True</field>
+            <field name="sequence">99</field>
+            <field name="phone_number_example">+688 123456789</field>
+        </record>
+        <record id="res_phone_national_code_data_256" model="res.phone.national.code.data">
+            <field name="name">Uganda</field>
+            <field name="code">256</field>
+            <field name="phone_number_format">+256 ###########</field>
+            <field name="active">True</field>
+            <field name="sequence">99</field>
+            <field name="phone_number_example">+256 123456789</field>
+        </record>
+        <record id="res_phone_national_code_data_380" model="res.phone.national.code.data">
+            <field name="name">Ukraine</field>
+            <field name="code">380</field>
+            <field name="phone_number_format">+380 ###########</field>
+            <field name="active">True</field>
+            <field name="sequence">99</field>
+            <field name="phone_number_example">+380 123456789</field>
+        </record>
+        <record id="res_phone_national_code_data_971" model="res.phone.national.code.data">
+            <field name="name">Emiriah Arab Bersatu</field>
+            <field name="code">971</field>
+            <field name="phone_number_format">+971 ###########</field>
+            <field name="active">True</field>
+            <field name="sequence">99</field>
+            <field name="phone_number_example">+971 123456789</field>
+        </record>
+        <record id="res_phone_national_code_data_44" model="res.phone.national.code.data">
+            <field name="name">UK</field>
+            <field name="code">44</field>
+            <field name="phone_number_format">+44 #### ######</field>
+            <field name="active">True</field>
+            <field name="sequence">99</field>
+            <field name="phone_number_example">+44 20 7946 0958</field>
+        </record>
+        <record id="res_phone_national_code_data_255" model="res.phone.national.code.data">
+            <field name="name">Tanzania</field>
+            <field name="code">255</field>
+            <field name="phone_number_format">+255 ###########</field>
+            <field name="active">True</field>
+            <field name="sequence">99</field>
+            <field name="phone_number_example">+255 123456789</field>
+        </record>
+        <record id="res_phone_national_code_data_ " model="res.phone.national.code.data">
+            <field name="name">Kepulauan Terpencil A.S.</field>
+            <field name="code"> </field>
+            <field name="phone_number_format">+  ###########</field>
+            <field name="active">True</field>
+            <field name="sequence">99</field>
+            <field name="phone_number_example">+  123456789</field>
+        </record>
+        <record id="res_phone_national_code_data_1" model="res.phone.national.code.data">
+            <field name="name">A.S</field>
+            <field name="code">1</field>
+            <field name="phone_number_format">+1 (###) ###-####</field>
+            <field name="active">True</field>
+            <field name="sequence">99</field>
+            <field name="phone_number_example">+1 (555) 123-4567</field>
+        </record>
+        <record id="res_phone_national_code_data_1-340" model="res.phone.national.code.data">
+            <field name="name">Kepulauan Virgin A.S.</field>
+            <field name="code">1-340</field>
+            <field name="phone_number_format">+1-340 ###########</field>
+            <field name="active">True</field>
+            <field name="sequence">99</field>
+            <field name="phone_number_example">+1-340 123456789</field>
+        </record>
+        <record id="res_phone_national_code_data_598" model="res.phone.national.code.data">
+            <field name="name">Uruguay</field>
+            <field name="code">598</field>
+            <field name="phone_number_format">+598 ###########</field>
+            <field name="active">True</field>
+            <field name="sequence">99</field>
+            <field name="phone_number_example">+598 123456789</field>
+        </record>
+        <record id="res_phone_national_code_data_998" model="res.phone.national.code.data">
+            <field name="name">Uzbekistan</field>
+            <field name="code">998</field>
+            <field name="phone_number_format">+998 ###########</field>
+            <field name="active">True</field>
+            <field name="sequence">99</field>
+            <field name="phone_number_example">+998 123456789</field>
+        </record>
+        <record id="res_phone_national_code_data_678" model="res.phone.national.code.data">
+            <field name="name">Vanuatu</field>
+            <field name="code">678</field>
+            <field name="phone_number_format">+678 ###########</field>
+            <field name="active">True</field>
+            <field name="sequence">99</field>
+            <field name="phone_number_example">+678 123456789</field>
+        </record>
+        <record id="res_phone_national_code_data_58" model="res.phone.national.code.data">
+            <field name="name">Venezuela</field>
+            <field name="code">58</field>
+            <field name="phone_number_format">+58 ###########</field>
+            <field name="active">True</field>
+            <field name="sequence">99</field>
+            <field name="phone_number_example">+58 123456789</field>
+        </record>
+        <record id="res_phone_national_code_data_84" model="res.phone.national.code.data">
+            <field name="name">Vietnam</field>
+            <field name="code">84</field>
+            <field name="phone_number_format">+84 ###########</field>
+            <field name="active">True</field>
+            <field name="sequence">99</field>
+            <field name="phone_number_example">+84 123456789</field>
+        </record>
+        <record id="res_phone_national_code_data_681" model="res.phone.national.code.data">
+            <field name="name">Wallis dan Futuna</field>
+            <field name="code">681</field>
+            <field name="phone_number_format">+681 ###########</field>
+            <field name="active">True</field>
+            <field name="sequence">99</field>
+            <field name="phone_number_example">+681 123456789</field>
+        </record>
+        <record id="res_phone_national_code_data_212" model="res.phone.national.code.data">
+            <field name="name">Sahara Barat</field>
+            <field name="code">212</field>
+            <field name="phone_number_format">+212 ###########</field>
+            <field name="active">True</field>
+            <field name="sequence">99</field>
+            <field name="phone_number_example">+212 123456789</field>
+        </record>
+        <record id="res_phone_national_code_data_967" model="res.phone.national.code.data">
+            <field name="name">Yaman</field>
+            <field name="code">967</field>
+            <field name="phone_number_format">+967 ###########</field>
+            <field name="active">True</field>
+            <field name="sequence">99</field>
+            <field name="phone_number_example">+967 123456789</field>
+        </record>
+        <record id="res_phone_national_code_data_260" model="res.phone.national.code.data">
+            <field name="name">Zambia</field>
+            <field name="code">260</field>
+            <field name="phone_number_format">+260 ###########</field>
+            <field name="active">True</field>
+            <field name="sequence">99</field>
+            <field name="phone_number_example">+260 123456789</field>
+        </record>
+        <record id="res_phone_national_code_data_263" model="res.phone.national.code.data">
+            <field name="name">Zimbabwe</field>
+            <field name="code">263</field>
+            <field name="phone_number_format">+263 ###########</field>
+            <field name="active">True</field>
+            <field name="sequence">99</field>
+            <field name="phone_number_example">+263 123456789</field>
+        </record>
+    </data>
+</openerp>
