@@ -287,7 +287,7 @@ class SomLeadWww(osv.osv_memory):
         if partner_id:
             raise osv.except_osv(
                 "INVALID_VAT",
-                "An existing partner ({}) vas found with VAT {}".format(partner_id, vat)
+                "An existing partner ({}) was found with VAT {}".format(partner_id, vat)
             )
 
     def _check_member_vat_number_matching(self, cr, uid, vat, number, context=None):
