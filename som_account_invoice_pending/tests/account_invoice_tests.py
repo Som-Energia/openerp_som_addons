@@ -2,6 +2,7 @@
 from destral import testing
 from destral.transaction import Transaction
 from datetime import date
+import mock
 
 
 def get_today_str():
@@ -376,5 +377,92 @@ class TestAccountInvoiceSetPendingAutomations(testing.OOTestCase):
         self.assertEqual(f_data.pending_state.id, extra_df_state_id)
         self.assertEqual(f_data.payment_type.id, previous_payment_type_7)
         self.assertEqual(f_data.comment, previous_comment[idx])
+
+
+class TestAccountInvoiceProviderUnpaidAutomations(testing.OOTestCase):
+    def setUp(self):
+        self.txn = Transaction().start(self.database)
+
+        self.cursor = self.txn.cursor
+        self.uid = self.txn.user
+        self.pool = self.openerp.pool
+
+    def tearDown(self):
+        self.txn.stop()
+
+    @mock.patch("poweremail.poweremail_send_wizard.poweremail_send_wizard.send_mail")
+    def test_no_send_mail_when_unpaid_no_apo(self, mocked_send_mail):
+        ai_obj = self.pool.get("account.invoice")
+        ai_id = ai_obj.search(self.cursor, self.uid, [('name', '=', 'PURCHASE-SMOKE-TEST-1')])[0]
+
+        wiz_o = self.pool.get("wizard.unpay")
+        context = {"active_ids": [ai_id], "active_id": ai_id, "model": "account.invoice"}
+
+        values = {
+            "pay_journal_id": 47,
+            "pay_account_id": 1718,
+            "date": date.today().strftime("%Y-%m-%d"),
+        }
+        wiz_id = wiz_o.create(self.cursor, self.uid, values, context=context)
+        wiz_o.unpay(self.cursor, self.uid, [wiz_id], context=context)
+
+        mocked_send_mail.assert_not_called()
+
+    @mock.patch("poweremail.poweremail_send_wizard.poweremail_send_wizard.send_mail")
+    def test_send_mail_when_unpaid_apo(self, mocked_send_mail):
+
+        ai_obj = self.pool.get("account.invoice")
+        ai_id = ai_obj.search(self.cursor, self.uid, [('name', '=', 'PURCHASE-SMOKE-TEST-1')])[0]
+
+        IrModel = self.pool.get("ir.model.data")
+        journal_id = IrModel.get_object_reference(
+            self.cursor, self.uid, "som_generationkwh", "apo_journal"
+        )[1]
+        payment_type_id = IrModel.get_object_reference(
+            self.cursor, self.uid, "account_payment", "payment_type_demo"
+        )[1]
+
+        ai_obj.write(self.cursor, self.uid, ai_id, {
+                     "journal_id": journal_id, "payment_type": payment_type_id, "name": 'APO_001'})
+        wiz_o = self.pool.get("wizard.unpay")
+        context = {"active_ids": [ai_id], "active_id": ai_id, "model": "account.invoice"}
+
+        values = {
+            "pay_journal_id": 47,
+            "pay_account_id": 1718,
+            "date": date.today().strftime("%Y-%m-%d"),
+        }
+        wiz_id = wiz_o.create(self.cursor, self.uid, values, context=context)
+        wiz_o.unpay(self.cursor, self.uid, [wiz_id], context=context)
+
+        mocked_send_mail.assert_called_once()
+
+        # template_id = IrModel.get_object_reference(
+        #     self.cursor, self.uid, "som_account_invoice_pending",
+        #     "email_interessos_aportacions_retornat"
+        # )[1]
+        # account_obj = self.pool.get("poweremail.core_accounts")
+        # email_from = account_obj.search(
+        #     self.cursor, self.uid, [("email_id", "=", "aporta@somenergia.coop")]
+        # )[0]
+        # expected_ctx = {
+        #     'unpay_move_pending_state': 1,
+        #     'from': email_from,
+        #     'journal_id': 47,
+        #     'priority': '0',
+        #     'src_model': 'account.invoice',
+        #     'state': 'single',
+        #     'period_id': 5,
+        #     'use_account_id': False,
+        #     'date_p': '2025-05-28',
+        #     'src_rec_ids': [ai_id],
+        #     'model': 'account.invoice',
+        #     'active_ids': [ai_id],
+        #     'type': 'in_invoice',
+        #     'template_id': template_id,
+        #     'active_id': ai_id,
+        # }
+        # mocked_send_mail.assert_called_with(self.cursor, self.uid, [1], context = expected_ctx)
+
 
 # vim: et ts=4 sw=4
