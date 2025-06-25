@@ -115,6 +115,12 @@ class TestsSomLeadWww(testing.OOTestCase):
         self.assertTrue(lead.member_number)
         self.assertEqual(lead.polissa_id.titular.ref, lead.member_number)
 
+        # Check the member category
+        member_category_id = ir_model_o.get_object_reference(
+            self.cursor, self.uid, "som_partner_account", "res_partner_category_soci"
+        )[1]
+        self.assertIn(member_category_id, [c.id for c in lead.polissa_id.soci.category_id])
+
         # Check that the contract has the member field filled correctly
         self.assertEqual(lead.polissa_id.soci, lead.polissa_id.titular)
 
@@ -939,16 +945,28 @@ class TestsSomLeadWww(testing.OOTestCase):
             self.cursor, self.uid, "giscedata_polissa", "polissa_gisce"
         )[1]
         pol_o.write(self.cursor, self.uid, [gisce_contract], {"soci": agrolait_id})
+        partner_o.write(self.cursor, self.uid, [gisce_id], {"ref": "P000042"})
         gisce_br = partner_o.browse(self.cursor, self.uid, gisce_id)
         vat = gisce_br.vat.replace("ES", "")
 
         values = self._basic_values
         values["new_member_info"]["vat"] = vat
 
-        www_lead_o.create_lead(self.cursor, self.uid, values)
-        contract_member_id = pol_o.read(
-            self.cursor, self.uid, gisce_contract, ['soci_id'])['soci_id'][0]
+        result = www_lead_o.create_lead(self.cursor, self.uid, values)
+        www_lead_o.activate_lead(self.cursor, self.uid, result["lead_id"])
 
+        gisce_br = partner_o.browse(self.cursor, self.uid, gisce_id)
+        contract_member_id = pol_o.read(
+            self.cursor, self.uid, gisce_contract, ['soci'])['soci'][0]
+        member_category_id = ir_model_o.get_object_reference(
+            self.cursor, self.uid, "som_partner_account", "res_partner_category_soci"
+        )[1]
+
+        # Check that the existing customer is now a member
+        self.assertEqual(gisce_br.ref[0], "S")
+        self.assertIn(member_category_id, [c.id for c in gisce_br.category_id])
+
+        # Check that the existing contract is adopted by the new member
         self.assertEqual(contract_member_id, gisce_id)
 
     def test_lead_with_demographic_data(self):

@@ -135,10 +135,17 @@ class GiscedataCrmLead(osv.OsvInherits):
         if context is None:
             context = {}
 
-        lead = self.browse(cursor, uid, crml_id, context=context)
+        partner_o = self.pool.get("res.partner")
 
-        if lead.create_new_member:
+        lead = self.browse(cursor, uid, crml_id, context=context)
+        partner_ids = partner_o.search(cursor, uid, [('vat', '=', lead.titular_vat)])
+
+        if lead.create_new_member and not partner_ids:
             context["create_member"] = True
+        elif lead.create_new_member and partner_ids:
+            self._convert_customer_to_member(
+                cursor, uid, partner_ids[0], lead.member_number, context=context
+            )
 
         representative_id = self._create_or_get_representative(
             cursor, uid, lead.persona_firmant_vat, lead.persona_nom, context=context
@@ -154,6 +161,37 @@ class GiscedataCrmLead(osv.OsvInherits):
             self.create_entity_member_bank_payment(cursor, uid, crml_id, context=context)
 
         return res
+
+    def _convert_customer_to_member(self, cursor, uid, partner_id, member_number, context=None):
+        if context is None:
+            context = {}
+
+        partner_o = self.pool.get("res.partner")
+        ir_model_o = self.pool.get("ir.model.data")
+        polissa_o = self.pool.get("giscedata.polissa")
+
+        member_category_id = ir_model_o.get_object_reference(
+            cursor, uid, "som_partner_account", "res_partner_category_soci")[1]
+        partner_o.write(cursor, uid, partner_id, {
+            'ref': member_number,
+            'category_id': [(6, 0, [member_category_id])]
+        }, context=context)
+
+        # Adopt contracts as member
+        polissa_ids = polissa_o.search(cursor, uid, ['|',
+                                                     ('titular', '=', partner_id),
+                                                     ('pagador', '=', partner_id),
+                                                     ])
+        fields = ['soci', 'titular', 'pagador']
+        for pol in polissa_o.read(cursor, uid, polissa_ids, fields):
+            # if sponsor member is already the payer or owner, don't
+            if pol['soci']:
+                soci_id = pol['soci'][0]
+                if pol['titular'][0] == soci_id:
+                    continue
+                if pol['pagador'][0] == soci_id:
+                    continue
+            polissa_o.write(cursor, uid, pol['id'], {'soci': partner_id})
 
     def _create_or_get_representative(self, cursor, uid, vat, name, context=None):
         if context is None:
@@ -288,10 +326,14 @@ class GiscedataCrmLead(osv.OsvInherits):
             context = {}
 
         member_o = self.pool.get("somenergia.soci")
+        ir_model_o = self.pool.get("ir.model.data")
 
         lead = self.browse(cursor, uid, crml_id)
         if context.get("create_member"):
+            member_category_id = ir_model_o.get_object_reference(
+                cursor, uid, "som_partner_account", "res_partner_category_soci")[1]
             create_vals['ref'] = lead.member_number
+            create_vals['category_id'] = [(6, 0, [member_category_id])]
         elif lead.titular_number:
             create_vals['ref'] = lead.titular_number
 
