@@ -23,6 +23,8 @@ class SomAutoreclamaBaseTests(testing.OOTestCase):
         self.cursor = self.txn.cursor
         self.uid = self.txn.user
 
+        self.create_tags()
+
     def tearDown(self):
         self.txn.stop()
 
@@ -667,7 +669,6 @@ class SomAutoreclamaCreationWizardTest(SomAutoreclamaBaseTests):
 
     def test_create_ATC_R1_010_from_f1_via_wizard__f1_C_line_anomalia(self):
         atc_obj = self.get_model("giscedata.atc")
-        tag_obj = self.get_model("giscedata.atc.tag")
         pol_obj = self.get_model("giscedata.polissa")
         f1_obj = self.get_model("giscedata.facturacio.importacio.linia")
         ff_obj = self.get_model("giscedata.facturacio.importacio.linia.factura")
@@ -702,15 +703,6 @@ class SomAutoreclamaCreationWizardTest(SomAutoreclamaBaseTests):
             'cups_id': pol.cups.id,
             'factura_id': 1,
             'llista_preu': pol.llista_preu.id,
-        })
-
-        tag_obj.create(self.cursor, self.uid, {
-            'name': "[GET] Expedient FRAU",
-            'description': "Bla bla bla",
-        })
-        tag_obj.create(self.cursor, self.uid, {
-            'name': "[GET] Expedient ANOMALIA",
-            'description': "Bla bla bla",
         })
 
         new_atc_id = atc_obj.create_ATC_R1_010_from_f1_via_wizard(
@@ -761,7 +753,6 @@ class SomAutoreclamaCreationWizardTest(SomAutoreclamaBaseTests):
 
     def test_create_ATC_R1_010_from_f1_via_wizard__f1_C_line_frau(self):
         atc_obj = self.get_model("giscedata.atc")
-        tag_obj = self.get_model("giscedata.atc.tag")
         pol_obj = self.get_model("giscedata.polissa")
         f1_obj = self.get_model("giscedata.facturacio.importacio.linia")
         ff_obj = self.get_model("giscedata.facturacio.importacio.linia.factura")
@@ -796,15 +787,6 @@ class SomAutoreclamaCreationWizardTest(SomAutoreclamaBaseTests):
             'cups_id': pol.cups.id,
             'factura_id': 1,
             'llista_preu': pol.llista_preu.id,
-        })
-
-        tag_obj.create(self.cursor, self.uid, {
-            'name': "[GET] Expedient FRAU",
-            'description': "Bla bla bla",
-        })
-        tag_obj.create(self.cursor, self.uid, {
-            'name': "[GET] Expedient ANOMALIA",
-            'description': "Bla bla bla",
         })
 
         new_atc_id = atc_obj.create_ATC_R1_010_from_f1_via_wizard(
@@ -855,7 +837,6 @@ class SomAutoreclamaCreationWizardTest(SomAutoreclamaBaseTests):
 
     def test_create_ATC_R1_010_from_f1_via_wizard__f1_C_line_anomalia_x_2_repeated(self):
         atc_obj = self.get_model("giscedata.atc")
-        tag_obj = self.get_model("giscedata.atc.tag")
         pol_obj = self.get_model("giscedata.polissa")
         f1_obj = self.get_model("giscedata.facturacio.importacio.linia")
         ff_obj = self.get_model("giscedata.facturacio.importacio.linia.factura")
@@ -892,15 +873,6 @@ class SomAutoreclamaCreationWizardTest(SomAutoreclamaBaseTests):
             'llista_preu': pol.llista_preu.id,
         })
 
-        tag_obj.create(self.cursor, self.uid, {
-            'name': "[GET] Expedient FRAU",
-            'description': "Bla bla bla",
-        })
-        tag_obj.create(self.cursor, self.uid, {
-            'name': "[GET] Expedient ANOMALIA",
-            'description': "Bla bla bla",
-        })
-
         new_atc_id = atc_obj.create_ATC_R1_010_from_f1_via_wizard(
             self.cursor, self.uid, f1_id, {}
         )
@@ -918,7 +890,6 @@ class SomAutoreclamaCreationWizardTest(SomAutoreclamaBaseTests):
 
     def test_create_ATC_R1_010_from_f1_via_wizard__f1_C_line_anomalia_x_2(self):
         atc_obj = self.get_model("giscedata.atc")
-        tag_obj = self.get_model("giscedata.atc.tag")
         pol_obj = self.get_model("giscedata.polissa")
         f1_obj = self.get_model("giscedata.facturacio.importacio.linia")
         ff_obj = self.get_model("giscedata.facturacio.importacio.linia.factura")
@@ -979,15 +950,6 @@ class SomAutoreclamaCreationWizardTest(SomAutoreclamaBaseTests):
             'cups_id': pol.cups.id,
             'factura_id': 1,
             'llista_preu': pol.llista_preu.id,
-        })
-
-        tag_obj.create(self.cursor, self.uid, {
-            'name': "[GET] Expedient FRAU",
-            'description': "Bla bla bla",
-        })
-        tag_obj.create(self.cursor, self.uid, {
-            'name': "[GET] Expedient ANOMALIA",
-            'description': "Bla bla bla",
         })
 
         A_atc_id = atc_obj.create_ATC_R1_010_from_f1_via_wizard(
@@ -2287,7 +2249,6 @@ class SomAutoreclamaf1cAutomationTest(SomAutoreclamaEzATC_Test):
         self.assertEqual(len(error), 1)
         self.assertTrue("F1's tipus C amb ATC generat : .................... 0" in msg)
         self.assertTrue("F1's tipus C que han donat error en generar ATC ....1" in msg)
-        self.assertTrue("F1's tipus C que han donat error en generar ATC ....1" in msg)
         exce = u"Error en la creació del CAC amb R1 010, F1 no es tipus C id_f1 {}".format(error[0])
         self.assertTrue(exce in msg)
 
@@ -2307,7 +2268,6 @@ class SomAutoreclamaf1cAutomationTest(SomAutoreclamaEzATC_Test):
         self.assertEqual(len(ok), 0)
         self.assertEqual(len(error), 1)
         self.assertTrue("F1's tipus C amb ATC generat : .................... 0" in msg)
-        self.assertTrue("F1's tipus C que han donat error en generar ATC ....1" in msg)
         self.assertTrue("F1's tipus C que han donat error en generar ATC ....1" in msg)
         exce = u"Error en la creació del CAC amb R1 010, F1 sense linies id_f1 {}".format(error[0])
         self.assertTrue(exce in msg)
@@ -2351,7 +2311,6 @@ class SomAutoreclamaf1cAutomationTest(SomAutoreclamaEzATC_Test):
             'factura_id': 1,
             'llista_preu': pol.llista_preu.id,
         })
-        self.create_tags()
 
         ok, error, msg = aut_obj.reclaim_f1c(self.cursor, self.uid, [f1_id], {})
 
@@ -2360,4 +2319,277 @@ class SomAutoreclamaf1cAutomationTest(SomAutoreclamaEzATC_Test):
         self.assertTrue("F1's tipus C amb ATC generat : .................... 1" in msg)
         self.assertTrue("F1's tipus C que han donat error en generar ATC ....0" in msg)
         exce = u"F1 {} ha generat cas ATC 010 amb id ".format(f1.name)
+        self.assertTrue(exce in msg)
+
+    def test__automation__none(self):
+        aut_obj = self.get_model("som.autoreclama.f1c.automation")
+
+        msg = aut_obj.automation(self.cursor, self.uid, {})
+
+        self.assertEqual(msg, u"Sumari ATC 010 per F1 tipus C\nF1's tipus C amb ATC generat : .................... 0\nF1's tipus C que han donat error en generar ATC ....0\n\n")  # noqa: E501
+
+    def test__automation__1_yes(self):
+        pol_obj = self.get_model("giscedata.polissa")
+        f1_obj = self.get_model("giscedata.facturacio.importacio.linia")
+        ff_obj = self.get_model("giscedata.facturacio.importacio.linia.factura")
+        f1_obj = self.get_model("giscedata.facturacio.importacio.linia")
+        aut_obj = self.get_model("som.autoreclama.f1c.automation")
+
+        _, polissa_id = self.get_object_reference(
+            "giscedata_polissa", "polissa_0004"
+        )
+        pol_obj.write(self.cursor, self.uid, polissa_id, {"state": 'activa'})
+        pol = pol_obj.browse(self.cursor, self.uid, polissa_id)
+        f1_ids = f1_obj.search(self.cursor, self.uid, [("cups_id", "in", [pol.cups.id])])
+        self.assertGreater(len(f1_ids), 1)
+
+        f1_id = f1_ids[0]
+        f1 = f1_obj.browse(self.cursor, self.uid, f1_id)
+        self.assertEqual(f1.cups_id.name, pol.cups.name)
+
+        f1_obj.write(self.cursor, self.uid, f1_id, {
+            "fecha_factura_desde": "2015-01-01",
+            "invoice_number_text": "1234567890ABCD",
+            "type_factura": "C",
+        })
+        f1 = f1_obj.browse(self.cursor, self.uid, f1_id)
+        self.assertEqual(f1.polissa_id.id, pol.id)
+        ff_obj.create(self.cursor, self.uid, {
+            'linia_id': f1_id,
+            'tipo_factura': '06',
+            'importacio_id': 1,
+            'address_invoice_id': pol.direccio_pagament.id,
+            'partner_id': pol.titular.id,
+            'account_id': 1,
+            'polissa_id': polissa_id,
+            'tarifa_acces_id': pol.tarifa.id,
+            'cups_id': pol.cups.id,
+            'factura_id': 1,
+            'llista_preu': pol.llista_preu.id,
+        })
+        last_hours = (datetime.now() - timedelta(hours=12)).strftime("%Y-%m-%d %H:%M:%S")
+        ssql = '''update giscedata_facturacio_importacio_linia set create_date = %s where id = %s'''
+        self.cursor.execute(ssql, (last_hours, f1_id,))
+
+        msg = aut_obj.automation(self.cursor, self.uid, {})
+
+        self.assertTrue("F1's tipus C amb ATC generat : .................... 1" in msg)
+        self.assertTrue("F1's tipus C que han donat error en generar ATC ....0" in msg)
+        exce = u"F1 {} ha generat cas ATC 010 amb id ".format(f1.name)
+        self.assertTrue(exce in msg)
+
+    def test__automation__2_yes_1_no(self):
+        pol_obj = self.get_model("giscedata.polissa")
+        f1_obj = self.get_model("giscedata.facturacio.importacio.linia")
+        ff_obj = self.get_model("giscedata.facturacio.importacio.linia.factura")
+        f1_obj = self.get_model("giscedata.facturacio.importacio.linia")
+        aut_obj = self.get_model("som.autoreclama.f1c.automation")
+
+        _, polissa_id = self.get_object_reference(
+            "giscedata_polissa", "polissa_0004"
+        )
+        pol_obj.write(self.cursor, self.uid, polissa_id, {"state": 'activa'})
+        pol = pol_obj.browse(self.cursor, self.uid, polissa_id)
+        f1_ids = f1_obj.search(self.cursor, self.uid, [("cups_id", "in", [pol.cups.id])])
+        self.assertGreater(len(f1_ids), 2)
+
+        f1_id = f1_ids[0]
+        f1 = f1_obj.browse(self.cursor, self.uid, f1_id)
+        self.assertEqual(f1.cups_id.name, pol.cups.name)
+
+        f1_obj.write(self.cursor, self.uid, f1_id, {
+            "fecha_factura_desde": "2015-01-01",
+            "invoice_number_text": "1234567890ABCD",
+            "type_factura": "C",
+        })
+        f1 = f1_obj.browse(self.cursor, self.uid, f1_id)
+        self.assertEqual(f1.polissa_id.id, pol.id)
+        ff_obj.create(self.cursor, self.uid, {
+            'linia_id': f1_id,
+            'tipo_factura': '06',
+            'importacio_id': 1,
+            'address_invoice_id': pol.direccio_pagament.id,
+            'partner_id': pol.titular.id,
+            'account_id': 1,
+            'polissa_id': polissa_id,
+            'tarifa_acces_id': pol.tarifa.id,
+            'cups_id': pol.cups.id,
+            'factura_id': 1,
+            'llista_preu': pol.llista_preu.id,
+        })
+        last_hours = (datetime.now() - timedelta(hours=12)).strftime("%Y-%m-%d %H:%M:%S")
+        ssql = '''update giscedata_facturacio_importacio_linia set create_date = %s where id = %s'''
+        self.cursor.execute(ssql, (last_hours, f1_id,))
+
+        f1_id = f1_ids[1]
+        f1 = f1_obj.browse(self.cursor, self.uid, f1_id)
+        self.assertEqual(f1.cups_id.name, pol.cups.name)
+
+        f1_obj.write(self.cursor, self.uid, f1_id, {
+            "fecha_factura_desde": "2015-01-01",
+            "invoice_number_text": "987654321ZXY",
+            "type_factura": "C",
+        })
+        f1 = f1_obj.browse(self.cursor, self.uid, f1_id)
+        self.assertEqual(f1.polissa_id.id, pol.id)
+        ff_obj.create(self.cursor, self.uid, {
+            'linia_id': f1_id,
+            'tipo_factura': '11',
+            'importacio_id': 1,
+            'address_invoice_id': pol.direccio_pagament.id,
+            'partner_id': pol.titular.id,
+            'account_id': 1,
+            'polissa_id': polissa_id,
+            'tarifa_acces_id': pol.tarifa.id,
+            'cups_id': pol.cups.id,
+            'factura_id': 1,
+            'llista_preu': pol.llista_preu.id,
+        })
+        last_hours = (datetime.now() - timedelta(hours=12)).strftime("%Y-%m-%d %H:%M:%S")
+        ssql = '''update giscedata_facturacio_importacio_linia set create_date = %s where id = %s'''
+        self.cursor.execute(ssql, (last_hours, f1_id,))
+
+        f1_id = f1_ids[2]
+        f1 = f1_obj.browse(self.cursor, self.uid, f1_id)
+        self.assertEqual(f1.cups_id.name, pol.cups.name)
+
+        f1_obj.write(self.cursor, self.uid, f1_id, {
+            "fecha_factura_desde": "2015-01-01",
+            "invoice_number_text": "NONONONONONONNONONNONO123",
+            "type_factura": "J",
+        })
+        f1 = f1_obj.browse(self.cursor, self.uid, f1_id)
+        self.assertEqual(f1.polissa_id.id, pol.id)
+        ff_obj.create(self.cursor, self.uid, {
+            'linia_id': f1_id,
+            'tipo_factura': '06',
+            'importacio_id': 1,
+            'address_invoice_id': pol.direccio_pagament.id,
+            'partner_id': pol.titular.id,
+            'account_id': 1,
+            'polissa_id': polissa_id,
+            'tarifa_acces_id': pol.tarifa.id,
+            'cups_id': pol.cups.id,
+            'factura_id': 1,
+            'llista_preu': pol.llista_preu.id,
+        })
+        last_hours = (datetime.now() - timedelta(hours=2)).strftime("%Y-%m-%d %H:%M:%S")
+        ssql = '''update giscedata_facturacio_importacio_linia set create_date = %s where id = %s'''
+        self.cursor.execute(ssql, (last_hours, f1_id,))
+
+        msg = aut_obj.automation(self.cursor, self.uid, {})
+
+        self.assertTrue("F1's tipus C amb ATC generat : .................... 2" in msg)
+        self.assertTrue("F1's tipus C que han donat error en generar ATC ....1" in msg)
+        exce = u" ha generat cas ATC 010 amb id "
+        self.assertTrue(exce in msg)
+        exce = u"Error en la creació del CAC amb R1 010, F1 no es tipus C id_f1 "
+        self.assertTrue(exce in msg)
+
+    def test__automation__1_yes_1_no_1_far(self):
+        pol_obj = self.get_model("giscedata.polissa")
+        f1_obj = self.get_model("giscedata.facturacio.importacio.linia")
+        ff_obj = self.get_model("giscedata.facturacio.importacio.linia.factura")
+        f1_obj = self.get_model("giscedata.facturacio.importacio.linia")
+        aut_obj = self.get_model("som.autoreclama.f1c.automation")
+
+        _, polissa_id = self.get_object_reference(
+            "giscedata_polissa", "polissa_0004"
+        )
+        pol_obj.write(self.cursor, self.uid, polissa_id, {"state": 'activa'})
+        pol = pol_obj.browse(self.cursor, self.uid, polissa_id)
+        f1_ids = f1_obj.search(self.cursor, self.uid, [("cups_id", "in", [pol.cups.id])])
+        self.assertGreater(len(f1_ids), 2)
+
+        f1_id = f1_ids[0]
+        f1 = f1_obj.browse(self.cursor, self.uid, f1_id)
+        self.assertEqual(f1.cups_id.name, pol.cups.name)
+
+        f1_obj.write(self.cursor, self.uid, f1_id, {
+            "fecha_factura_desde": "2015-01-01",
+            "invoice_number_text": "1234567890ABCD",
+            "type_factura": "C",
+        })
+        f1 = f1_obj.browse(self.cursor, self.uid, f1_id)
+        self.assertEqual(f1.polissa_id.id, pol.id)
+        ff_obj.create(self.cursor, self.uid, {
+            'linia_id': f1_id,
+            'tipo_factura': '06',
+            'importacio_id': 1,
+            'address_invoice_id': pol.direccio_pagament.id,
+            'partner_id': pol.titular.id,
+            'account_id': 1,
+            'polissa_id': polissa_id,
+            'tarifa_acces_id': pol.tarifa.id,
+            'cups_id': pol.cups.id,
+            'factura_id': 1,
+            'llista_preu': pol.llista_preu.id,
+        })
+        last_hours = (datetime.now() - timedelta(hours=12)).strftime("%Y-%m-%d %H:%M:%S")
+        ssql = '''update giscedata_facturacio_importacio_linia set create_date = %s where id = %s'''
+        self.cursor.execute(ssql, (last_hours, f1_id,))
+
+        f1_id = f1_ids[1]
+        f1 = f1_obj.browse(self.cursor, self.uid, f1_id)
+        self.assertEqual(f1.cups_id.name, pol.cups.name)
+
+        f1_obj.write(self.cursor, self.uid, f1_id, {
+            "fecha_factura_desde": "2015-01-01",
+            "invoice_number_text": "546372819OOOOPPPSSSS",
+            "type_factura": "C",
+        })
+        f1 = f1_obj.browse(self.cursor, self.uid, f1_id)
+        self.assertEqual(f1.polissa_id.id, pol.id)
+        ff_obj.create(self.cursor, self.uid, {
+            'linia_id': f1_id,
+            'tipo_factura': '06',
+            'importacio_id': 1,
+            'address_invoice_id': pol.direccio_pagament.id,
+            'partner_id': pol.titular.id,
+            'account_id': 1,
+            'polissa_id': polissa_id,
+            'tarifa_acces_id': pol.tarifa.id,
+            'cups_id': pol.cups.id,
+            'factura_id': 1,
+            'llista_preu': pol.llista_preu.id,
+        })
+        last_hours = (datetime.now() - timedelta(hours=56)).strftime("%Y-%m-%d %H:%M:%S")
+        ssql = '''update giscedata_facturacio_importacio_linia set create_date = %s where id = %s'''
+        self.cursor.execute(ssql, (last_hours, f1_id,))
+
+        f1_id = f1_ids[2]
+        f1 = f1_obj.browse(self.cursor, self.uid, f1_id)
+        self.assertEqual(f1.cups_id.name, pol.cups.name)
+
+        f1_obj.write(self.cursor, self.uid, f1_id, {
+            "fecha_factura_desde": "2015-01-01",
+            "invoice_number_text": "NONONONONONONNONONNONO123",
+            "type_factura": "J",
+        })
+        f1 = f1_obj.browse(self.cursor, self.uid, f1_id)
+        self.assertEqual(f1.polissa_id.id, pol.id)
+        ff_obj.create(self.cursor, self.uid, {
+            'linia_id': f1_id,
+            'tipo_factura': '06',
+            'importacio_id': 1,
+            'address_invoice_id': pol.direccio_pagament.id,
+            'partner_id': pol.titular.id,
+            'account_id': 1,
+            'polissa_id': polissa_id,
+            'tarifa_acces_id': pol.tarifa.id,
+            'cups_id': pol.cups.id,
+            'factura_id': 1,
+            'llista_preu': pol.llista_preu.id,
+        })
+        last_hours = (datetime.now() - timedelta(hours=2)).strftime("%Y-%m-%d %H:%M:%S")
+        ssql = '''update giscedata_facturacio_importacio_linia set create_date = %s where id = %s'''
+        self.cursor.execute(ssql, (last_hours, f1_id,))
+
+        msg = aut_obj.automation(self.cursor, self.uid, {})
+
+        self.assertTrue("F1's tipus C amb ATC generat : .................... 1" in msg)
+        self.assertTrue("F1's tipus C que han donat error en generar ATC ....1" in msg)
+        exce = u" ha generat cas ATC 010 amb id "
+        self.assertTrue(exce in msg)
+        exce = u"Error en la creació del CAC amb R1 010, F1 no es tipus C id_f1 "
         self.assertTrue(exce in msg)
