@@ -10,7 +10,7 @@
                 <xpath expr="//field[@name='phone']" position="before">
                     <field name="phone_prefix" placeholder="Prefix"/>
                 </xpath>
-                <xpath expr="//field[@name='mobile']" position="after">
+                <xpath expr="//field[@name='mobile']" position="before">
                     <field name="mobile_prefix" placeholder="Prefix"/>
                 </xpath>
             </field>
