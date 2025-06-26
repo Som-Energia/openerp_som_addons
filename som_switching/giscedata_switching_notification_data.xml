@@ -47,19 +47,19 @@
             <field name="proces_id" ref="giscedata_switching.sw_proces_m2"/>
             <field name="step_id" ref="giscedata_switching.sw_step_m2_05"/>
             <field name="description">Activa les notificacions per els pasos M2-05 on els motius siguin 01, 02, 03, 04, 05 i 08</field>
-            <field name="conditions">[('01', 'motiu', 'in', ['01', '02', '03', '04', '05', '08'])]</field>
+            <field name="conditions">[('05', 'motiu', 'in', ['01', '02', '03', '04', '05', '08'])]</field>
         </record>
         <record model="giscedata.switching.notificacio.config" id="sw_not_m2_05_motiu_06">
             <field name="proces_id" ref="giscedata_switching.sw_proces_m2"/>
             <field name="step_id" ref="giscedata_switching.sw_step_m2_05"/>
             <field name="description">Activa les notificacions per els pasos M2-05 motiu 06</field>
-            <field name="conditions">[('01', 'motiu', '==', '06')]</field>
+            <field name="conditions">[('05', 'motiu', '==', '06')]</field>
         </record>
         <record model="giscedata.switching.notificacio.config" id="sw_not_m2_05_motiu_07">
             <field name="proces_id" ref="giscedata_switching.sw_proces_m2"/>
             <field name="step_id" ref="giscedata_switching.sw_step_m2_05"/>
             <field name="description">Activa les notificacions per els pasos M2-05 motiu 07</field>
-            <field name="conditions">[('01', 'motiu', '==', '07')]</field>
+            <field name="conditions">[('05', 'motiu', '==', '07')]</field>
         </record>
     </data>
 </openerp>
