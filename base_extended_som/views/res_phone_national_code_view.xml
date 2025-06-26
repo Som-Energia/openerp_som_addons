@@ -14,12 +14,11 @@
                     <group>
                         <group>
                             <field name="name" readonly='1'/>
-                            <field name="code" readonly='1'/>
                             <field name="country_id" readonly='1'/>
                         </group>
                         <group>
-                            <field name="phone_prefix"/>
-                            <field name="mobile_prefix"/>
+                            <field name="phone_number_format"/>
+                            <field name="phone_number_example"/>
                         </group>
                         <group>
                             <field name="active"/>
@@ -36,10 +35,7 @@
             <field name="arch" type="xml">
                 <tree string="National Phone Code">
                     <field name="name" select="1"/>
-                    <field name="code" select="1"/>
                     <field name="country_id"/>
-                    <field name="phone_prefix"/>
-                    <field name="mobile_prefix"/>
                     <field name="active" select="1"/>
                     <field name="sequence"/>
                 </tree>
@@ -51,16 +47,6 @@
             <field name="view_type">form</field>
             <field name="view_mode">tree,form</field>
             <field name="view_id" ref="view_phone_national_code_tree"/>
-            <field name="help" type="html">
-                <p>
-                    This model is used to store the national phone codes and their
-                    corresponding prefixes for phone and mobile numbers.
-                </p>
-                <p>
-                    You can create, edit, and delete entries to manage the phone
-                    codes and prefixes for different countries.
-                </p>
-            </field>
         </record>
         <menuitem id="menu_phone_national_code"
                 name="National Phone Codes"

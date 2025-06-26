@@ -17,6 +17,7 @@
         "res_partner_view.xml",
         "data/res_users_data.xml",
         "data/res_request_link_data.xml",
+        "data/base_extended_som_data.xml",
         "data/res_phone_national_code_data.xml",
         "views/res_partner_address_view.xml",
         "views/res_phone_national_code_view.xml",
