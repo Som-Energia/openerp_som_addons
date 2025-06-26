@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from destral import testing
 from destral.transaction import Transaction
-from datetime import date, timedelta
+from datetime import date, timedelta, datetime
 from addons import get_module_resource
 import mock
 
@@ -45,6 +45,17 @@ class SomAutoreclamaBaseTests(testing.OOTestCase):
             self.cursor, self.uid, module, semantic_id
         )
         return expected_id
+
+    def create_tags(self):
+        tag_obj = self.get_model("giscedata.atc.tag")
+        tag_obj.create(self.cursor, self.uid, {
+            'name': "[GET] Expedient FRAU",
+            'description': "Bla bla bla",
+        })
+        tag_obj.create(self.cursor, self.uid, {
+            'name': "[GET] Expedient ANOMALIA",
+            'description': "Bla bla bla",
+        })
 
 
 class SomAutoreclamaStatesTest(SomAutoreclamaBaseTests):
@@ -2207,3 +2218,146 @@ class SomAutoreclamaDoActionTest(SomAutoreclamaEzATC_Test):
         self.assertEqual(pre_atc_history_len, len(atc.autoreclama_history_ids))
         self.assertEqual(pre_atc_state_name, atc.autoreclama_state.name)
         self.assertEqual(pre_atc_data, str(atc.read()))
+
+
+class SomAutoreclamaf1cAutomationTest(SomAutoreclamaEzATC_Test):
+    def test__get_f1c_candidates_to_reclaim__find_none(self):
+        aut_obj = self.get_model("som.autoreclama.f1c.automation")
+
+        f1_ids = aut_obj.get_f1c_candidates_to_reclaim(self.cursor, self.uid, {})
+
+        self.assertEqual(len(f1_ids), 0)
+
+    def test__get_f1c_candidates_to_reclaim__find_one_c(self):
+        f1_obj = self.get_model("giscedata.facturacio.importacio.linia")
+        aut_obj = self.get_model("som.autoreclama.f1c.automation")
+
+        f1_ids = f1_obj.search(self.cursor, self.uid, [])
+        self.assertGreater(len(f1_ids), 1)
+        f1_id = f1_ids[0]
+
+        f1_obj.write(self.cursor, self.uid, f1_id, {
+            "type_factura": "C",
+        })
+        last_hours = (datetime.now() - timedelta(hours=120)).strftime("%Y-%m-%d %H:%M:%S")
+        ssql = '''update giscedata_facturacio_importacio_linia set create_date = %s where id = %s'''
+        self.cursor.execute(ssql, (last_hours, f1_id,))
+
+        found_ids = aut_obj.get_f1c_candidates_to_reclaim(self.cursor, self.uid, {})
+
+        self.assertEqual(len(found_ids), 0)
+
+        last_hours = (datetime.now() - timedelta(hours=12)).strftime("%Y-%m-%d %H:%M:%S")
+        ssql = '''update giscedata_facturacio_importacio_linia set create_date = %s where id = %s'''
+        self.cursor.execute(ssql, (last_hours, f1_id,))
+
+        found_ids = aut_obj.get_f1c_candidates_to_reclaim(self.cursor, self.uid, {})
+
+        self.assertEqual(len(found_ids), 1)
+        self.assertEqual(found_ids[0], f1_id)
+
+        f1_obj.write(self.cursor, self.uid, f1_id, {
+            "user_observations": "bla bla bla \n\nGenerat cas atc r1 010 automàtic amb id \n test test",  # noqa: E501
+        })
+
+        found_ids = aut_obj.get_f1c_candidates_to_reclaim(self.cursor, self.uid, {})
+
+        self.assertEqual(len(found_ids), 0)
+
+    def test__reclaim_f1c__none(self):
+        aut_obj = self.get_model("som.autoreclama.f1c.automation")
+
+        ok, error, msg = aut_obj.reclaim_f1c(self.cursor, self.uid, [], {})
+
+        self.assertEqual(len(ok), 0)
+        self.assertEqual(len(error), 0)
+        self.assertEqual(msg, u"Sumari ATC 010 per F1 tipus C\nF1's tipus C amb ATC generat : .................... 0\nF1's tipus C que han donat error en generar ATC ....0\n\n")  # noqa: E501
+
+    def test__reclaim_f1c__not_c_type(self):
+        f1_obj = self.get_model("giscedata.facturacio.importacio.linia")
+        aut_obj = self.get_model("som.autoreclama.f1c.automation")
+
+        f1_ids = f1_obj.search(self.cursor, self.uid, [])
+        self.assertGreater(len(f1_ids), 1)
+        f1_id = f1_ids[0]
+
+        ok, error, msg = aut_obj.reclaim_f1c(self.cursor, self.uid, [f1_id], {})
+
+        self.assertEqual(len(ok), 0)
+        self.assertEqual(len(error), 1)
+        self.assertTrue("F1's tipus C amb ATC generat : .................... 0" in msg)
+        self.assertTrue("F1's tipus C que han donat error en generar ATC ....1" in msg)
+        self.assertTrue("F1's tipus C que han donat error en generar ATC ....1" in msg)
+        exce = u"Error en la creació del CAC amb R1 010, F1 no es tipus C id_f1 {}".format(error[0])
+        self.assertTrue(exce in msg)
+
+    def test__reclaim_f1c__no_lines(self):
+        f1_obj = self.get_model("giscedata.facturacio.importacio.linia")
+        aut_obj = self.get_model("som.autoreclama.f1c.automation")
+
+        f1_ids = f1_obj.search(self.cursor, self.uid, [])
+        self.assertGreater(len(f1_ids), 1)
+        f1_id = f1_ids[0]
+        f1_obj.write(self.cursor, self.uid, f1_id, {
+            "type_factura": "C",
+        })
+
+        ok, error, msg = aut_obj.reclaim_f1c(self.cursor, self.uid, [f1_id], {})
+
+        self.assertEqual(len(ok), 0)
+        self.assertEqual(len(error), 1)
+        self.assertTrue("F1's tipus C amb ATC generat : .................... 0" in msg)
+        self.assertTrue("F1's tipus C que han donat error en generar ATC ....1" in msg)
+        self.assertTrue("F1's tipus C que han donat error en generar ATC ....1" in msg)
+        exce = u"Error en la creació del CAC amb R1 010, F1 sense linies id_f1 {}".format(error[0])
+        self.assertTrue(exce in msg)
+
+    def test__reclaim_f1c__one_ok(self):
+        pol_obj = self.get_model("giscedata.polissa")
+        f1_obj = self.get_model("giscedata.facturacio.importacio.linia")
+        ff_obj = self.get_model("giscedata.facturacio.importacio.linia.factura")
+        f1_obj = self.get_model("giscedata.facturacio.importacio.linia")
+        aut_obj = self.get_model("som.autoreclama.f1c.automation")
+
+        _, polissa_id = self.get_object_reference(
+            "giscedata_polissa", "polissa_0004"
+        )
+        pol_obj.write(self.cursor, self.uid, polissa_id, {"state": 'activa'})
+        pol = pol_obj.browse(self.cursor, self.uid, polissa_id)
+        f1_ids = f1_obj.search(self.cursor, self.uid, [("cups_id", "in", [pol.cups.id])])
+        self.assertGreater(len(f1_ids), 1)
+
+        f1_id = f1_ids[0]
+        f1 = f1_obj.browse(self.cursor, self.uid, f1_id)
+        self.assertEqual(f1.cups_id.name, pol.cups.name)
+
+        f1_obj.write(self.cursor, self.uid, f1_id, {
+            "fecha_factura_desde": "2015-01-01",
+            "invoice_number_text": "1234567890ABCD",
+            "type_factura": "C",
+        })
+        f1 = f1_obj.browse(self.cursor, self.uid, f1_id)
+        self.assertEqual(f1.polissa_id.id, pol.id)
+        ff_obj.create(self.cursor, self.uid, {
+            'linia_id': f1_id,
+            'tipo_factura': '06',
+            'importacio_id': 1,
+            'address_invoice_id': pol.direccio_pagament.id,
+            'partner_id': pol.titular.id,
+            'account_id': 1,
+            'polissa_id': polissa_id,
+            'tarifa_acces_id': pol.tarifa.id,
+            'cups_id': pol.cups.id,
+            'factura_id': 1,
+            'llista_preu': pol.llista_preu.id,
+        })
+        self.create_tags()
+
+        ok, error, msg = aut_obj.reclaim_f1c(self.cursor, self.uid, [f1_id], {})
+
+        self.assertEqual(len(ok), 1)
+        self.assertEqual(len(error), 0)
+        self.assertTrue("F1's tipus C amb ATC generat : .................... 1" in msg)
+        self.assertTrue("F1's tipus C que han donat error en generar ATC ....0" in msg)
+        exce = u"F1 {} ha generat cas ATC 010 amb id ".format(f1.name)
+        self.assertTrue(exce in msg)
