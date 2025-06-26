@@ -37,10 +37,14 @@ class SomLeadWww(osv.osv_memory):
 
         tarifa_id = tarifa_o.search(cr, uid, [("name", "=", contract_info["tariff"])])[0]
         payment_mode_id = payment_mode_o.search(cr, uid, [("name", "=", "ENGINYERS")])[0]
-        cnae_id = cnae_o.search(cr, uid, [("name", "=", contract_info["cnae"])])[0]
         tariff_mode = 'index' if contract_info["is_indexed"] else 'atr'
         llista_preu_id = polissa_o.get_pricelist_from_tariff_and_location(
             cr, uid, contract_info["tariff"], tariff_mode, contract_address["city_id"], context).id
+
+        try:
+            cnae_id = cnae_o.search(cr, uid, [("name", "=", contract_info["cnae"])])[0]
+        except IndexError:
+            cnae_id = None  # TODO: Probably new CNAE 2025, by the moment we avoid to fail
 
         distri_ref = cups_ps_o.partner_map_from_cups(
             cr, uid, contract_info["cups"], context=context)
