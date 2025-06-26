@@ -37,6 +37,7 @@
         "wizard/wizard_create_coef_file_view.xml",
         "report/som_gurb_reports.xml",
         "wizard/wizard_atr_gurb_model_view.xml",
+        "wizard/wizard_calculate_gurb_savings_view.xml",
     ],
     "init_xml": [],
     "active": False,

@@ -7,37 +7,17 @@ class WizardCalculateGurbSavings(osv.osv_memory):
     _name = "wizard.calculate.gurb.savings"
     _description = "Wizard per calcular l'estalvi d'un Gurb Cups"
 
-    def _default_email(self, cursor, uid, context=None):
-        if context is None:
-            context = {}
-
-        email = False
-
-        gurb_cups_id = context.get('active_id')
-        gurb_cups_obj = self.pool.get('som.gurb.cups')
-        gurb_cups = gurb_cups_obj.browse(cursor, uid, gurb_cups_id, context=context)
-        if gurb_cups.polissa_id:
-            email = gurb_cups.polissa_id.direccio_pagament.email
-        return email
-
     def calculate_gurb_savings(self, cursor, uid, ids, context=None):
         if context is None:
             context = {}
 
-        # imd_obj = self.pool.get("ir.model.data")
-        # partner_obj = self.pool.get("res.partner")
-        # attach_obj = self.pool.get("ir.attachment")
         gurb_cups_obj = self.pool.get("som.gurb.cups")
         gff_obj = self.pool.get("giscedata.facturacio.factura")
-        # pro_obj = self.pool.get("giscedata.signatura.process")
-        # pol_obj = self.pool.get("giscedata.polissa")
         gffl_obj = self.pool.get("giscedata.facturacio.factura.linia")
         prod_obj = self.pool.get("product.product")
 
         wiz = self.browse(cursor, uid, ids[0], context=context)
         gurb_cups_id = context.get("active_id", False)
-
-        self.validate_gurb_cups(cursor, uid, gurb_cups_id, context=context)
 
         if not gurb_cups_id:
             raise osv.except_osv("Registre actiu", "Aquest assistent necessita un registre actiu!")
@@ -106,7 +86,7 @@ class WizardCalculateGurbSavings(osv.osv_memory):
             for linia_generacio in linies_generacio:
                 total_generacio += (linia_generacio.quantity * linia_generacio.price_unit)
 
-            # profit_fact += total_generacio
+            profit_fact += total_generacio
 
             cost_gurb = 0
             for linia_gurb in linies_gurb:
@@ -126,18 +106,22 @@ class WizardCalculateGurbSavings(osv.osv_memory):
 
             profit += (profit_fact_taxed + total_generacio - cost_gurb_taxed)
 
-        res = {'profit_untaxed': profit_untaxed, 'profit': profit}
+        info = "L'estalvi sense impostos ha estat de {}€ i amb impostos de {}€".format(
+            str(profit_untaxed), str(profit))
+
         wiz.write(
             {
                 "state": "end",
-                "info": res
+                "info": info,
+
             }
         )
-        return res
+
+        return True
 
     _columns = {
-        "date_from": fields.date("Data desde"),
-        "date_to": fields.date("Data fins"),
+        "date_from": fields.date("Data desde", required=True),
+        "date_to": fields.date("Data fins", required=True),
         'info': fields.text('Description'),
         "state": fields.selection(
             [("init", "Init"), ("end", "End")],
