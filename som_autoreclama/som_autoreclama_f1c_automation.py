@@ -45,8 +45,9 @@ class SomAutoreclamaF1cAutomation(osv.osv_memory):
                 f1_obj.write(cursor, uid, f1_id, {"user_observations": new_observations})
                 msg += u"F1 {} ha generat cas ATC 010 amb id {}\n\n".format(f1_name, f1_id)
                 ok_ids.append(atc_id)
-            except Exception:
+            except Exception as e:
                 msg += u"F1 {} no ha pogut generar cas ATC 010 per el motiu:\n".format(f1_name)
+                msg += u"  ERROR: {}\n".format(e.message)
                 msg += u"{}\n\n".format(traceback.format_exc())
                 error_ids.append(f1_ids)
 
