@@ -7,6 +7,7 @@ class ResPartnerAddress(osv.osv):
     """Afegim el codi nacional de telèfon a la taula res.partner.address"""
 
     _name = "res.partner.address"
+    _inherit = "res.partner.address"
 
     _columns = {
         'phone_prefix': fields.many2one(
@@ -20,12 +21,9 @@ class ResPartnerAddress(osv.osv):
         """Return the default phone and mobile prefixes for Spain."""
         if context is None:
             context = {}
-        return {
-            'phone_prefix': self.pool.get('res.phone.national.code').search(
-                cr, uid, [('country_id.code', '=', 'ES')], limit=1, context=context),
-            'mobile_prefix': self.pool.get('res.phone.national.code').search(
-                cr, uid, [('country_id.code', '=', 'ES')], limit=1, context=context),
-        }
+        res = self.pool.get('res.phone.national.code').search(
+            cr, uid, [('code', '=', '34')], limit=1, context=context)
+        return res
 
     _defaults = {
         'phone_prefix': _get_default_prefix,

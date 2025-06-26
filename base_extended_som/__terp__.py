@@ -19,7 +19,8 @@
         "data/res_request_link_data.xml",
         "data/res_phone_national_code_data.xml",
         "views/res_partner_address_view.xml",
-        "views/res_phone_national_code_view.xml"
+        "views/res_phone_national_code_view.xml",
+        "security/ir.model.access.csv",
     ],
     "active": False,
     "installable": True,
