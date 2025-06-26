@@ -23,8 +23,6 @@ class SomAutoreclamaBaseTests(testing.OOTestCase):
         self.cursor = self.txn.cursor
         self.uid = self.txn.user
 
-        self.create_tags()
-
     def tearDown(self):
         self.txn.stop()
 
@@ -673,6 +671,7 @@ class SomAutoreclamaCreationWizardTest(SomAutoreclamaBaseTests):
         f1_obj = self.get_model("giscedata.facturacio.importacio.linia")
         ff_obj = self.get_model("giscedata.facturacio.importacio.linia.factura")
 
+        self.create_tags()
         _, polissa_id = self.get_object_reference(
             "giscedata_polissa", "polissa_0004"
         )
@@ -757,6 +756,7 @@ class SomAutoreclamaCreationWizardTest(SomAutoreclamaBaseTests):
         f1_obj = self.get_model("giscedata.facturacio.importacio.linia")
         ff_obj = self.get_model("giscedata.facturacio.importacio.linia.factura")
 
+        self.create_tags()
         _, polissa_id = self.get_object_reference(
             "giscedata_polissa", "polissa_0004"
         )
@@ -841,6 +841,7 @@ class SomAutoreclamaCreationWizardTest(SomAutoreclamaBaseTests):
         f1_obj = self.get_model("giscedata.facturacio.importacio.linia")
         ff_obj = self.get_model("giscedata.facturacio.importacio.linia.factura")
 
+        self.create_tags()
         _, polissa_id = self.get_object_reference(
             "giscedata_polissa", "polissa_0004"
         )
@@ -894,6 +895,7 @@ class SomAutoreclamaCreationWizardTest(SomAutoreclamaBaseTests):
         f1_obj = self.get_model("giscedata.facturacio.importacio.linia")
         ff_obj = self.get_model("giscedata.facturacio.importacio.linia.factura")
 
+        self.create_tags()
         _, polissa_id = self.get_object_reference(
             "giscedata_polissa", "polissa_0004"
         )
@@ -2279,6 +2281,7 @@ class SomAutoreclamaf1cAutomationTest(SomAutoreclamaEzATC_Test):
         f1_obj = self.get_model("giscedata.facturacio.importacio.linia")
         aut_obj = self.get_model("som.autoreclama.f1c.automation")
 
+        self.create_tags()
         _, polissa_id = self.get_object_reference(
             "giscedata_polissa", "polissa_0004"
         )
@@ -2335,6 +2338,7 @@ class SomAutoreclamaf1cAutomationTest(SomAutoreclamaEzATC_Test):
         f1_obj = self.get_model("giscedata.facturacio.importacio.linia")
         aut_obj = self.get_model("som.autoreclama.f1c.automation")
 
+        self.create_tags()
         _, polissa_id = self.get_object_reference(
             "giscedata_polissa", "polissa_0004"
         )
@@ -2385,6 +2389,7 @@ class SomAutoreclamaf1cAutomationTest(SomAutoreclamaEzATC_Test):
         f1_obj = self.get_model("giscedata.facturacio.importacio.linia")
         aut_obj = self.get_model("som.autoreclama.f1c.automation")
 
+        self.create_tags()
         _, polissa_id = self.get_object_reference(
             "giscedata_polissa", "polissa_0004"
         )
@@ -2456,13 +2461,13 @@ class SomAutoreclamaf1cAutomationTest(SomAutoreclamaEzATC_Test):
         f1_obj.write(self.cursor, self.uid, f1_id, {
             "fecha_factura_desde": "2015-01-01",
             "invoice_number_text": "NONONONONONONNONONNONO123",
-            "type_factura": "J",
+            "type_factura": "C",
         })
         f1 = f1_obj.browse(self.cursor, self.uid, f1_id)
         self.assertEqual(f1.polissa_id.id, pol.id)
         ff_obj.create(self.cursor, self.uid, {
             'linia_id': f1_id,
-            'tipo_factura': '06',
+            'tipo_factura': '05',
             'importacio_id': 1,
             'address_invoice_id': pol.direccio_pagament.id,
             'partner_id': pol.titular.id,
@@ -2493,6 +2498,7 @@ class SomAutoreclamaf1cAutomationTest(SomAutoreclamaEzATC_Test):
         f1_obj = self.get_model("giscedata.facturacio.importacio.linia")
         aut_obj = self.get_model("som.autoreclama.f1c.automation")
 
+        self.create_tags()
         _, polissa_id = self.get_object_reference(
             "giscedata_polissa", "polissa_0004"
         )
@@ -2564,13 +2570,13 @@ class SomAutoreclamaf1cAutomationTest(SomAutoreclamaEzATC_Test):
         f1_obj.write(self.cursor, self.uid, f1_id, {
             "fecha_factura_desde": "2015-01-01",
             "invoice_number_text": "NONONONONONONNONONNONO123",
-            "type_factura": "J",
+            "type_factura": "C",
         })
         f1 = f1_obj.browse(self.cursor, self.uid, f1_id)
         self.assertEqual(f1.polissa_id.id, pol.id)
         ff_obj.create(self.cursor, self.uid, {
             'linia_id': f1_id,
-            'tipo_factura': '06',
+            'tipo_factura': '05',
             'importacio_id': 1,
             'address_invoice_id': pol.direccio_pagament.id,
             'partner_id': pol.titular.id,
