@@ -7,12 +7,11 @@ class ResPhoneNationalCode(osv.osv):
     """Afegim el codi nacional de telèfon a la taula res.partner.address"""
 
     _name = "res.phone.national.code"
+    _order = "sequence, name"
 
     _columns = {
         'name': fields.char(
-            'Nom', size=48, required=True, help='Nom descriptiu del codi nacional de telèfon'),
-        'code': fields.char('Codi nacional de telèfon', size=8,
-                            help='Codi nacional de telèfon, per exemple: +34'),
+            'Codi', size=8, required=True, help='Codi nacional de telèfon, per exemple: +34'),
         'country_id': fields.many2one('res.country', 'País', required=True, ondelete='cascade'),
         'active': fields.boolean(
             'Actiu', help='Si està inactiu, no es mostrarà en els formularis de telèfons'),

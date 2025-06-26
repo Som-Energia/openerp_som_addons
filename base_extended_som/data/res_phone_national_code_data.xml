@@ -2,8 +2,7 @@
 <openerp>
     <data>
         <record id="res_phone_national_code_data_93" model="res.phone.national.code">
-            <field name="name">Afghanistan</field>
-            <field name="code">93</field>
+            <field name="name">+93</field>
             <field name="phone_number_format">+93 ###########</field>
             <field name="phone_number_example">+93 123456789</field>
             <field name="active">True</field>
@@ -11,8 +10,7 @@
             <field name="country_id" ref="base.af" />
         </record>
         <record id="res_phone_national_code_data_355" model="res.phone.national.code">
-            <field name="name">Albania</field>
-            <field name="code">355</field>
+            <field name="name">+355</field>
             <field name="phone_number_format">+355 ###########</field>
             <field name="phone_number_example">+355 123456789</field>
             <field name="active">True</field>
@@ -20,8 +18,7 @@
             <field name="country_id" ref="base.al" />
         </record>
         <record id="res_phone_national_code_data_213" model="res.phone.national.code">
-            <field name="name">Algeria</field>
-            <field name="code">213</field>
+            <field name="name">+213</field>
             <field name="phone_number_format">+213 ###########</field>
             <field name="phone_number_example">+213 123456789</field>
             <field name="active">True</field>
@@ -29,8 +26,7 @@
             <field name="country_id" ref="base.dz" />
         </record>
         <record id="res_phone_national_code_data_1684" model="res.phone.national.code">
-            <field name="name">American Samoa</field>
-            <field name="code">1684</field>
+            <field name="name">+1684</field>
             <field name="phone_number_format">+1684 ###########</field>
             <field name="phone_number_example">+1684 123456789</field>
             <field name="active">True</field>
@@ -38,8 +34,7 @@
             <field name="country_id" ref="base.as" />
         </record>
         <record id="res_phone_national_code_data_376" model="res.phone.national.code">
-            <field name="name">Andorra</field>
-            <field name="code">376</field>
+            <field name="name">+376</field>
             <field name="phone_number_format">+376 ###########</field>
             <field name="phone_number_example">+376 123456789</field>
             <field name="active">True</field>
@@ -47,8 +42,7 @@
             <field name="country_id" ref="base.ad" />
         </record>
         <record id="res_phone_national_code_data_244" model="res.phone.national.code">
-            <field name="name">Angola</field>
-            <field name="code">244</field>
+            <field name="name">+244</field>
             <field name="phone_number_format">+244 ###########</field>
             <field name="phone_number_example">+244 123456789</field>
             <field name="active">True</field>
@@ -56,8 +50,7 @@
             <field name="country_id" ref="base.ao" />
         </record>
         <record id="res_phone_national_code_data_1264" model="res.phone.national.code">
-            <field name="name">Anguilla</field>
-            <field name="code">1264</field>
+            <field name="name">+1264</field>
             <field name="phone_number_format">+1264 ###########</field>
             <field name="phone_number_example">+1264 123456789</field>
             <field name="active">True</field>
@@ -65,8 +58,7 @@
             <field name="country_id" ref="base.ai" />
         </record>
         <record id="res_phone_national_code_data_672" model="res.phone.national.code">
-            <field name="name">Antarctica</field>
-            <field name="code">672</field>
+            <field name="name">+672</field>
             <field name="phone_number_format">+672 ###########</field>
             <field name="phone_number_example">+672 123456789</field>
             <field name="active">True</field>
@@ -74,8 +66,7 @@
             <field name="country_id" ref="base.aq" />
         </record>
         <record id="res_phone_national_code_data_1268" model="res.phone.national.code">
-            <field name="name">Antigua and Barbuda</field>
-            <field name="code">1268</field>
+            <field name="name">+1268</field>
             <field name="phone_number_format">+1268 ###########</field>
             <field name="phone_number_example">+1268 123456789</field>
             <field name="active">True</field>
@@ -83,8 +74,7 @@
             <field name="country_id" ref="base.ag" />
         </record>
         <record id="res_phone_national_code_data_54" model="res.phone.national.code">
-            <field name="name">Argentina</field>
-            <field name="code">54</field>
+            <field name="name">+54</field>
             <field name="phone_number_format">+54 ###########</field>
             <field name="phone_number_example">+54 123456789</field>
             <field name="active">True</field>
@@ -92,8 +82,7 @@
             <field name="country_id" ref="base.ar" />
         </record>
         <record id="res_phone_national_code_data_374" model="res.phone.national.code">
-            <field name="name">Armenia</field>
-            <field name="code">374</field>
+            <field name="name">+374</field>
             <field name="phone_number_format">+374 ###########</field>
             <field name="phone_number_example">+374 123456789</field>
             <field name="active">True</field>
@@ -101,8 +90,7 @@
             <field name="country_id" ref="base.am" />
         </record>
         <record id="res_phone_national_code_data_297" model="res.phone.national.code">
-            <field name="name">Aruba</field>
-            <field name="code">297</field>
+            <field name="name">+297</field>
             <field name="phone_number_format">+297 ###########</field>
             <field name="phone_number_example">+297 123456789</field>
             <field name="active">True</field>
@@ -110,8 +98,7 @@
             <field name="country_id" ref="base.aw" />
         </record>
         <record id="res_phone_national_code_data_61" model="res.phone.national.code">
-            <field name="name">Australia</field>
-            <field name="code">61</field>
+            <field name="name">+61</field>
             <field name="phone_number_format">+61 ###########</field>
             <field name="phone_number_example">+61 123456789</field>
             <field name="active">True</field>
@@ -119,8 +106,7 @@
             <field name="country_id" ref="base.au" />
         </record>
         <record id="res_phone_national_code_data_43" model="res.phone.national.code">
-            <field name="name">Austria</field>
-            <field name="code">43</field>
+            <field name="name">+43</field>
             <field name="phone_number_format">+43 ###########</field>
             <field name="phone_number_example">+43 123456789</field>
             <field name="active">True</field>
@@ -128,8 +114,7 @@
             <field name="country_id" ref="base.at" />
         </record>
         <record id="res_phone_national_code_data_994" model="res.phone.national.code">
-            <field name="name">Azerbaijan</field>
-            <field name="code">994</field>
+            <field name="name">+994</field>
             <field name="phone_number_format">+994 ###########</field>
             <field name="phone_number_example">+994 123456789</field>
             <field name="active">True</field>
@@ -137,8 +122,7 @@
             <field name="country_id" ref="base.az" />
         </record>
         <record id="res_phone_national_code_data_1242" model="res.phone.national.code">
-            <field name="name">Bahamas</field>
-            <field name="code">1242</field>
+            <field name="name">+1242</field>
             <field name="phone_number_format">+1242 ###########</field>
             <field name="phone_number_example">+1242 123456789</field>
             <field name="active">True</field>
@@ -146,8 +130,7 @@
             <field name="country_id" ref="base.bs" />
         </record>
         <record id="res_phone_national_code_data_973" model="res.phone.national.code">
-            <field name="name">Bahrain</field>
-            <field name="code">973</field>
+            <field name="name">+973</field>
             <field name="phone_number_format">+973 ###########</field>
             <field name="phone_number_example">+973 123456789</field>
             <field name="active">True</field>
@@ -155,8 +138,7 @@
             <field name="country_id" ref="base.bh" />
         </record>
         <record id="res_phone_national_code_data_880" model="res.phone.national.code">
-            <field name="name">Bangladesh</field>
-            <field name="code">880</field>
+            <field name="name">+880</field>
             <field name="phone_number_format">+880 ###########</field>
             <field name="phone_number_example">+880 123456789</field>
             <field name="active">True</field>
@@ -164,8 +146,7 @@
             <field name="country_id" ref="base.bd" />
         </record>
         <record id="res_phone_national_code_data_1246" model="res.phone.national.code">
-            <field name="name">Barbados</field>
-            <field name="code">1246</field>
+            <field name="name">+1246</field>
             <field name="phone_number_format">+1246 ###########</field>
             <field name="phone_number_example">+1246 123456789</field>
             <field name="active">True</field>
@@ -173,8 +154,7 @@
             <field name="country_id" ref="base.bs" />
         </record>
         <record id="res_phone_national_code_data_375" model="res.phone.national.code">
-            <field name="name">Belarus</field>
-            <field name="code">375</field>
+            <field name="name">+375</field>
             <field name="phone_number_format">+375 ###########</field>
             <field name="phone_number_example">+375 123456789</field>
             <field name="active">True</field>
@@ -182,8 +162,7 @@
             <field name="country_id" ref="base.by" />
         </record>
         <record id="res_phone_national_code_data_32" model="res.phone.national.code">
-            <field name="name">Belgium</field>
-            <field name="code">32</field>
+            <field name="name">+32</field>
             <field name="phone_number_format">+32 ###########</field>
             <field name="phone_number_example">+32 123456789</field>
             <field name="active">True</field>
@@ -191,8 +170,7 @@
             <field name="country_id" ref="base.be" />
         </record>
         <record id="res_phone_national_code_data_501" model="res.phone.national.code">
-            <field name="name">Belize</field>
-            <field name="code">501</field>
+            <field name="name">+501</field>
             <field name="phone_number_format">+501 ###########</field>
             <field name="phone_number_example">+501 123456789</field>
             <field name="active">True</field>
@@ -200,8 +178,7 @@
             <field name="country_id" ref="base.bz" />
         </record>
         <record id="res_phone_national_code_data_229" model="res.phone.national.code">
-            <field name="name">Benin</field>
-            <field name="code">229</field>
+            <field name="name">+229</field>
             <field name="phone_number_format">+229 ###########</field>
             <field name="phone_number_example">+229 123456789</field>
             <field name="active">True</field>
@@ -209,8 +186,7 @@
             <field name="country_id" ref="base.bj" />
         </record>
         <record id="res_phone_national_code_data_1441" model="res.phone.national.code">
-            <field name="name">Bermuda</field>
-            <field name="code">1441</field>
+            <field name="name">+1441</field>
             <field name="phone_number_format">+1441 ###########</field>
             <field name="phone_number_example">+1441 123456789</field>
             <field name="active">True</field>
@@ -218,8 +194,7 @@
             <field name="country_id" ref="base.bm" />
         </record>
         <record id="res_phone_national_code_data_975" model="res.phone.national.code">
-            <field name="name">Bhutan</field>
-            <field name="code">975</field>
+            <field name="name">+975</field>
             <field name="phone_number_format">+975 ###########</field>
             <field name="phone_number_example">+975 123456789</field>
             <field name="active">True</field>
@@ -227,8 +202,7 @@
             <field name="country_id" ref="base.bt" />
         </record>
         <record id="res_phone_national_code_data_591" model="res.phone.national.code">
-            <field name="name">Bolivia (Plurinational State of)</field>
-            <field name="code">591</field>
+            <field name="name">+591</field>
             <field name="phone_number_format">+591 ###########</field>
             <field name="phone_number_example">+591 123456789</field>
             <field name="active">True</field>
@@ -236,8 +210,7 @@
             <field name="country_id" ref="base.bo" />
         </record>
         <record id="res_phone_national_code_data_387" model="res.phone.national.code">
-            <field name="name">Bosnia and Herzegovina</field>
-            <field name="code">387</field>
+            <field name="name">+387</field>
             <field name="phone_number_format">+387 ###########</field>
             <field name="phone_number_example">+387 123456789</field>
             <field name="active">True</field>
@@ -245,8 +218,7 @@
             <field name="country_id" ref="base.ba" />
         </record>
         <record id="res_phone_national_code_data_267" model="res.phone.national.code">
-            <field name="name">Botswana</field>
-            <field name="code">267</field>
+            <field name="name">+267</field>
             <field name="phone_number_format">+267 ###########</field>
             <field name="phone_number_example">+267 123456789</field>
             <field name="active">True</field>
@@ -254,8 +226,7 @@
             <field name="country_id" ref="base.bw" />
         </record>
         <record id="res_phone_national_code_data_47" model="res.phone.national.code">
-            <field name="name">Bouvet Island</field>
-            <field name="code">47</field>
+            <field name="name">+47</field>
             <field name="phone_number_format">+47 ###########</field>
             <field name="phone_number_example">+47 123456789</field>
             <field name="active">True</field>
@@ -263,8 +234,7 @@
             <field name="country_id" ref="base.bv" />
         </record>
         <record id="res_phone_national_code_data_55" model="res.phone.national.code">
-            <field name="name">Brazil</field>
-            <field name="code">55</field>
+            <field name="name">+55</field>
             <field name="phone_number_format">+55 ###########</field>
             <field name="phone_number_example">+55 123456789</field>
             <field name="active">True</field>
@@ -272,8 +242,7 @@
             <field name="country_id" ref="base.br" />
         </record>
         <record id="res_phone_national_code_data_246" model="res.phone.national.code">
-            <field name="name">British Indian Ocean Territory</field>
-            <field name="code">246</field>
+            <field name="name">+246</field>
             <field name="phone_number_format">+246 ###########</field>
             <field name="phone_number_example">+246 123456789</field>
             <field name="active">True</field>
@@ -281,8 +250,7 @@
             <field name="country_id" ref="base.io" />
         </record>
         <record id="res_phone_national_code_data_1284" model="res.phone.national.code">
-            <field name="name">British Virgin Islands</field>
-            <field name="code">1284</field>
+            <field name="name">+1284</field>
             <field name="phone_number_format">+1284 ###########</field>
             <field name="phone_number_example">+1284 123456789</field>
             <field name="active">True</field>
@@ -290,8 +258,7 @@
             <field name="country_id" ref="base.vg" />
         </record>
         <record id="res_phone_national_code_data_673" model="res.phone.national.code">
-            <field name="name">Brunei Darussalam</field>
-            <field name="code">673</field>
+            <field name="name">+673</field>
             <field name="phone_number_format">+673 ###########</field>
             <field name="phone_number_example">+673 123456789</field>
             <field name="active">True</field>
@@ -299,8 +266,7 @@
             <field name="country_id" ref="base.bn" />
         </record>
         <record id="res_phone_national_code_data_359" model="res.phone.national.code">
-            <field name="name">Bulgaria</field>
-            <field name="code">359</field>
+            <field name="name">+359</field>
             <field name="phone_number_format">+359 ###########</field>
             <field name="phone_number_example">+359 123456789</field>
             <field name="active">True</field>
@@ -308,8 +274,7 @@
             <field name="country_id" ref="base.bg" />
         </record>
         <record id="res_phone_national_code_data_226" model="res.phone.national.code">
-            <field name="name">Burkina Faso</field>
-            <field name="code">226</field>
+            <field name="name">+226</field>
             <field name="phone_number_format">+226 ###########</field>
             <field name="phone_number_example">+226 123456789</field>
             <field name="active">True</field>
@@ -317,8 +282,7 @@
             <field name="country_id" ref="base.bf" />
         </record>
         <record id="res_phone_national_code_data_257" model="res.phone.national.code">
-            <field name="name">Burundi</field>
-            <field name="code">257</field>
+            <field name="name">+257</field>
             <field name="phone_number_format">+257 ###########</field>
             <field name="phone_number_example">+257 123456789</field>
             <field name="active">True</field>
@@ -326,8 +290,7 @@
             <field name="country_id" ref="base.bi" />
         </record>
         <record id="res_phone_national_code_data_238" model="res.phone.national.code">
-            <field name="name">Cabo Verde</field>
-            <field name="code">238</field>
+            <field name="name">+238</field>
             <field name="phone_number_format">+238 ###########</field>
             <field name="phone_number_example">+238 123456789</field>
             <field name="active">True</field>
@@ -335,8 +298,7 @@
             <field name="country_id" ref="base.cv" />
         </record>
         <record id="res_phone_national_code_data_855" model="res.phone.national.code">
-            <field name="name">Cambodia</field>
-            <field name="code">855</field>
+            <field name="name">+855</field>
             <field name="phone_number_format">+855 ###########</field>
             <field name="phone_number_example">+855 123456789</field>
             <field name="active">True</field>
@@ -344,8 +306,7 @@
             <field name="country_id" ref="base.kh" />
         </record>
         <record id="res_phone_national_code_data_237" model="res.phone.national.code">
-            <field name="name">Cameroon</field>
-            <field name="code">237</field>
+            <field name="name">+237</field>
             <field name="phone_number_format">+237 ###########</field>
             <field name="phone_number_example">+237 123456789</field>
             <field name="active">True</field>
@@ -353,8 +314,7 @@
             <field name="country_id" ref="base.cm" />
         </record>
         <record id="res_phone_national_code_data_1" model="res.phone.national.code">
-            <field name="name">Canada</field>
-            <field name="code">1</field>
+            <field name="name">+1</field>
             <field name="phone_number_format">+1 ###########</field>
             <field name="phone_number_example">+1 123456789</field>
             <field name="active">True</field>
@@ -362,8 +322,7 @@
             <field name="country_id" ref="base.ca" />
         </record>
         <record id="res_phone_national_code_data_1345" model="res.phone.national.code">
-            <field name="name">Cayman Islands</field>
-            <field name="code">1345</field>
+            <field name="name">+1345</field>
             <field name="phone_number_format">+1345 ###########</field>
             <field name="phone_number_example">+1345 123456789</field>
             <field name="active">True</field>
@@ -371,8 +330,7 @@
             <field name="country_id" ref="base.ky" />
         </record>
         <record id="res_phone_national_code_data_236" model="res.phone.national.code">
-            <field name="name">Central African Republic</field>
-            <field name="code">236</field>
+            <field name="name">+236</field>
             <field name="phone_number_format">+236 ###########</field>
             <field name="phone_number_example">+236 123456789</field>
             <field name="active">True</field>
@@ -380,8 +338,7 @@
             <field name="country_id" ref="base.cf" />
         </record>
         <record id="res_phone_national_code_data_235" model="res.phone.national.code">
-            <field name="name">Chad</field>
-            <field name="code">235</field>
+            <field name="name">+235</field>
             <field name="phone_number_format">+235 ###########</field>
             <field name="phone_number_example">+235 123456789</field>
             <field name="active">True</field>
@@ -389,8 +346,7 @@
             <field name="country_id" ref="base.td" />
         </record>
         <record id="res_phone_national_code_data_56" model="res.phone.national.code">
-            <field name="name">Chile</field>
-            <field name="code">56</field>
+            <field name="name">+56</field>
             <field name="phone_number_format">+56 ###########</field>
             <field name="phone_number_example">+56 123456789</field>
             <field name="active">True</field>
@@ -398,8 +354,7 @@
             <field name="country_id" ref="base.cl" />
         </record>
         <record id="res_phone_national_code_data_86" model="res.phone.national.code">
-            <field name="name">China</field>
-            <field name="code">86</field>
+            <field name="name">+86</field>
             <field name="phone_number_format">+86 ###########</field>
             <field name="phone_number_example">+86 123456789</field>
             <field name="active">True</field>
@@ -407,8 +362,7 @@
             <field name="country_id" ref="base.cn" />
         </record>
         <record id="res_phone_national_code_data_852" model="res.phone.national.code">
-            <field name="name">China, Hong Kong Special Administrative Region</field>
-            <field name="code">852</field>
+            <field name="name">+852</field>
             <field name="phone_number_format">+852 ###########</field>
             <field name="phone_number_example">+852 123456789</field>
             <field name="active">True</field>
@@ -416,8 +370,7 @@
             <field name="country_id" ref="base.hk" />
         </record>
         <record id="res_phone_national_code_data_853" model="res.phone.national.code">
-            <field name="name">China, Macao Special Administrative Region</field>
-            <field name="code">853</field>
+            <field name="name">+853</field>
             <field name="phone_number_format">+853 ###########</field>
             <field name="phone_number_example">+853 123456789</field>
             <field name="active">True</field>
@@ -425,8 +378,7 @@
             <field name="country_id" ref="base.mo" />
         </record>
         <record id="res_phone_national_code_data_61" model="res.phone.national.code">
-            <field name="name">Christmas Island</field>
-            <field name="code">61</field>
+            <field name="name">+61</field>
             <field name="phone_number_format">+61 ###########</field>
             <field name="phone_number_example">+61 123456789</field>
             <field name="active">True</field>
@@ -434,8 +386,7 @@
             <field name="country_id" ref="base.cx" />
         </record>
         <record id="res_phone_national_code_data_61" model="res.phone.national.code">
-            <field name="name">Cocos (Keeling) Islands</field>
-            <field name="code">61</field>
+            <field name="name">+61</field>
             <field name="phone_number_format">+61 ###########</field>
             <field name="phone_number_example">+61 123456789</field>
             <field name="active">True</field>
@@ -443,8 +394,7 @@
             <field name="country_id" ref="base.cc" />
         </record>
         <record id="res_phone_national_code_data_57" model="res.phone.national.code">
-            <field name="name">Colombia</field>
-            <field name="code">57</field>
+            <field name="name">+57</field>
             <field name="phone_number_format">+57 ###########</field>
             <field name="phone_number_example">+57 123456789</field>
             <field name="active">True</field>
@@ -452,8 +402,7 @@
             <field name="country_id" ref="base.co" />
         </record>
         <record id="res_phone_national_code_data_269" model="res.phone.national.code">
-            <field name="name">Comoros</field>
-            <field name="code">269</field>
+            <field name="name">+269</field>
             <field name="phone_number_format">+269 ###########</field>
             <field name="phone_number_example">+269 123456789</field>
             <field name="active">True</field>
@@ -461,8 +410,7 @@
             <field name="country_id" ref="base.km" />
         </record>
         <record id="res_phone_national_code_data_242" model="res.phone.national.code">
-            <field name="name">Congo</field>
-            <field name="code">242</field>
+            <field name="name">+242</field>
             <field name="phone_number_format">+242 ###########</field>
             <field name="phone_number_example">+242 123456789</field>
             <field name="active">True</field>
@@ -470,8 +418,7 @@
             <field name="country_id" ref="base.cg" />
         </record>
         <record id="res_phone_national_code_data_682" model="res.phone.national.code">
-            <field name="name">Cook Islands</field>
-            <field name="code">682</field>
+            <field name="name">+682</field>
             <field name="phone_number_format">+682 ###########</field>
             <field name="phone_number_example">+682 123456789</field>
             <field name="active">True</field>
@@ -479,8 +426,7 @@
             <field name="country_id" ref="base.ck" />
         </record>
         <record id="res_phone_national_code_data_506" model="res.phone.national.code">
-            <field name="name">Costa Rica</field>
-            <field name="code">506</field>
+            <field name="name">+506</field>
             <field name="phone_number_format">+506 ###########</field>
             <field name="phone_number_example">+506 123456789</field>
             <field name="active">True</field>
@@ -488,8 +434,7 @@
             <field name="country_id" ref="base.cr" />
         </record>
         <record id="res_phone_national_code_data_385" model="res.phone.national.code">
-            <field name="name">Croatia</field>
-            <field name="code">385</field>
+            <field name="name">+385</field>
             <field name="phone_number_format">+385 ###########</field>
             <field name="phone_number_example">+385 123456789</field>
             <field name="active">True</field>
@@ -497,8 +442,7 @@
             <field name="country_id" ref="base.hr" />
         </record>
         <record id="res_phone_national_code_data_53" model="res.phone.national.code">
-            <field name="name">Cuba</field>
-            <field name="code">53</field>
+            <field name="name">+53</field>
             <field name="phone_number_format">+53 ###########</field>
             <field name="phone_number_example">+53 123456789</field>
             <field name="active">True</field>
@@ -506,8 +450,7 @@
             <field name="country_id" ref="base.cu" />
         </record>
         <record id="res_phone_national_code_data_357" model="res.phone.national.code">
-            <field name="name">Cyprus</field>
-            <field name="code">357</field>
+            <field name="name">+357</field>
             <field name="phone_number_format">+357 ###########</field>
             <field name="phone_number_example">+357 123456789</field>
             <field name="active">True</field>
@@ -515,8 +458,7 @@
             <field name="country_id" ref="base.cy" />
         </record>
         <record id="res_phone_national_code_data_420" model="res.phone.national.code">
-            <field name="name">Czechia</field>
-            <field name="code">420</field>
+            <field name="name">+420</field>
             <field name="phone_number_format">+420 ###########</field>
             <field name="phone_number_example">+420 123456789</field>
             <field name="active">True</field>
@@ -524,8 +466,7 @@
             <field name="country_id" ref="base.cz" />
         </record>
         <record id="res_phone_national_code_data_850" model="res.phone.national.code">
-            <field name="name">Democratic People's Republic of Korea</field>
-            <field name="code">850</field>
+            <field name="name">+850</field>
             <field name="phone_number_format">+850 ###########</field>
             <field name="phone_number_example">+850 123456789</field>
             <field name="active">True</field>
@@ -533,8 +474,7 @@
             <field name="country_id" ref="base.kp" />
         </record>
         <record id="res_phone_national_code_data_243" model="res.phone.national.code">
-            <field name="name">Democratic Republic of the Congo</field>
-            <field name="code">243</field>
+            <field name="name">+243</field>
             <field name="phone_number_format">+243 ###########</field>
             <field name="phone_number_example">+243 123456789</field>
             <field name="active">True</field>
@@ -542,8 +482,7 @@
             <field name="country_id" ref="base.cd" />
         </record>
         <record id="res_phone_national_code_data_45" model="res.phone.national.code">
-            <field name="name">Denmark</field>
-            <field name="code">45</field>
+            <field name="name">+45</field>
             <field name="phone_number_format">+45 ###########</field>
             <field name="phone_number_example">+45 123456789</field>
             <field name="active">True</field>
@@ -551,8 +490,7 @@
             <field name="country_id" ref="base.dk" />
         </record>
         <record id="res_phone_national_code_data_253" model="res.phone.national.code">
-            <field name="name">Djibouti</field>
-            <field name="code">253</field>
+            <field name="name">+253</field>
             <field name="phone_number_format">+253 ###########</field>
             <field name="phone_number_example">+253 123456789</field>
             <field name="active">True</field>
@@ -560,8 +498,7 @@
             <field name="country_id" ref="base.dj" />
         </record>
         <record id="res_phone_national_code_data_1767" model="res.phone.national.code">
-            <field name="name">Dominica</field>
-            <field name="code">1767</field>
+            <field name="name">+1767</field>
             <field name="phone_number_format">+1767 ###########</field>
             <field name="phone_number_example">+1767 123456789</field>
             <field name="active">True</field>
@@ -569,8 +506,7 @@
             <field name="country_id" ref="base.dm" />
         </record>
         <record id="res_phone_national_code_data_1809,1829,1849" model="res.phone.national.code">
-            <field name="name">Dominican Republic</field>
-            <field name="code">1809,1829,1849</field>
+            <field name="name">+1809,1829,1849</field>
             <field name="phone_number_format">+1809,1829,1849 ###########</field>
             <field name="phone_number_example">+1809,1829,1849 123456789</field>
             <field name="active">True</field>
@@ -578,8 +514,7 @@
             <field name="country_id" ref="base.do" />
         </record>
         <record id="res_phone_national_code_data_593" model="res.phone.national.code">
-            <field name="name">Ecuador</field>
-            <field name="code">593</field>
+            <field name="name">+593</field>
             <field name="phone_number_format">+593 ###########</field>
             <field name="phone_number_example">+593 123456789</field>
             <field name="active">True</field>
@@ -587,8 +522,7 @@
             <field name="country_id" ref="base.ec" />
         </record>
         <record id="res_phone_national_code_data_20" model="res.phone.national.code">
-            <field name="name">Egypt</field>
-            <field name="code">20</field>
+            <field name="name">+20</field>
             <field name="phone_number_format">+20 ###########</field>
             <field name="phone_number_example">+20 123456789</field>
             <field name="active">True</field>
@@ -596,8 +530,7 @@
             <field name="country_id" ref="base.eg" />
         </record>
         <record id="res_phone_national_code_data_503" model="res.phone.national.code">
-            <field name="name">El Salvador</field>
-            <field name="code">503</field>
+            <field name="name">+503</field>
             <field name="phone_number_format">+503 ###########</field>
             <field name="phone_number_example">+503 123456789</field>
             <field name="active">True</field>
@@ -605,8 +538,7 @@
             <field name="country_id" ref="base.sv" />
         </record>
         <record id="res_phone_national_code_data_240" model="res.phone.national.code">
-            <field name="name">Equatorial Guinea</field>
-            <field name="code">240</field>
+            <field name="name">+240</field>
             <field name="phone_number_format">+240 ###########</field>
             <field name="phone_number_example">+240 123456789</field>
             <field name="active">True</field>
@@ -614,8 +546,7 @@
             <field name="country_id" ref="base.gq" />
         </record>
         <record id="res_phone_national_code_data_291" model="res.phone.national.code">
-            <field name="name">Eritrea</field>
-            <field name="code">291</field>
+            <field name="name">+291</field>
             <field name="phone_number_format">+291 ###########</field>
             <field name="phone_number_example">+291 123456789</field>
             <field name="active">True</field>
@@ -623,8 +554,7 @@
             <field name="country_id" ref="base.er" />
         </record>
         <record id="res_phone_national_code_data_372" model="res.phone.national.code">
-            <field name="name">Estonia</field>
-            <field name="code">372</field>
+            <field name="name">+372</field>
             <field name="phone_number_format">+372 ###########</field>
             <field name="phone_number_example">+372 123456789</field>
             <field name="active">True</field>
@@ -632,8 +562,7 @@
             <field name="country_id" ref="base.ee" />
         </record>
         <record id="res_phone_national_code_data_268" model="res.phone.national.code">
-            <field name="name">Eswatini</field>
-            <field name="code">268</field>
+            <field name="name">+268</field>
             <field name="phone_number_format">+268 ###########</field>
             <field name="phone_number_example">+268 123456789</field>
             <field name="active">True</field>
@@ -641,8 +570,7 @@
             <field name="country_id" ref="base.sz" />
         </record>
         <record id="res_phone_national_code_data_251" model="res.phone.national.code">
-            <field name="name">Ethiopia</field>
-            <field name="code">251</field>
+            <field name="name">+251</field>
             <field name="phone_number_format">+251 ###########</field>
             <field name="phone_number_example">+251 123456789</field>
             <field name="active">True</field>
@@ -650,8 +578,7 @@
             <field name="country_id" ref="base.et" />
         </record>
         <record id="res_phone_national_code_data_500" model="res.phone.national.code">
-            <field name="name">Falkland Islands</field>
-            <field name="code">500</field>
+            <field name="name">+500</field>
             <field name="phone_number_format">+500 ###########</field>
             <field name="phone_number_example">+500 123456789</field>
             <field name="active">True</field>
@@ -659,8 +586,7 @@
             <field name="country_id" ref="base.fk" />
         </record>
         <record id="res_phone_national_code_data_298" model="res.phone.national.code">
-            <field name="name">Faroe Islands</field>
-            <field name="code">298</field>
+            <field name="name">+298</field>
             <field name="phone_number_format">+298 ###########</field>
             <field name="phone_number_example">+298 123456789</field>
             <field name="active">True</field>
@@ -668,8 +594,7 @@
             <field name="country_id" ref="base.fo" />
         </record>
         <record id="res_phone_national_code_data_679" model="res.phone.national.code">
-            <field name="name">Fiji</field>
-            <field name="code">679</field>
+            <field name="name">+679</field>
             <field name="phone_number_format">+679 ###########</field>
             <field name="phone_number_example">+679 123456789</field>
             <field name="active">True</field>
@@ -677,8 +602,7 @@
             <field name="country_id" ref="base.fj" />
         </record>
         <record id="res_phone_national_code_data_358" model="res.phone.national.code">
-            <field name="name">Finland</field>
-            <field name="code">358</field>
+            <field name="name">+358</field>
             <field name="phone_number_format">+358 ###########</field>
             <field name="phone_number_example">+358 123456789</field>
             <field name="active">True</field>
@@ -686,8 +610,7 @@
             <field name="country_id" ref="base.fi" />
         </record>
         <record id="res_phone_national_code_data_33" model="res.phone.national.code">
-            <field name="name">France</field>
-            <field name="code">33</field>
+            <field name="name">+33</field>
             <field name="phone_number_format">+33 # ## ## ## ##</field>
             <field name="phone_number_example">+33 1 23 45 67 89</field>
             <field name="active">True</field>
@@ -695,8 +618,7 @@
             <field name="country_id" ref="base.fr" />
         </record>
         <record id="res_phone_national_code_data_594" model="res.phone.national.code">
-            <field name="name">French Guiana</field>
-            <field name="code">594</field>
+            <field name="name">+594</field>
             <field name="phone_number_format">+594 ###########</field>
             <field name="phone_number_example">+594 123456789</field>
             <field name="active">True</field>
@@ -704,8 +626,7 @@
             <field name="country_id" ref="base.gf" />
         </record>
         <record id="res_phone_national_code_data_689" model="res.phone.national.code">
-            <field name="name">French Polynesia</field>
-            <field name="code">689</field>
+            <field name="name">+689</field>
             <field name="phone_number_format">+689 ###########</field>
             <field name="phone_number_example">+689 123456789</field>
             <field name="active">True</field>
@@ -713,8 +634,7 @@
             <field name="country_id" ref="base.pf" />
         </record>
         <record id="res_phone_national_code_data_262" model="res.phone.national.code">
-            <field name="name">French Southern Territories</field>
-            <field name="code">262</field>
+            <field name="name">+262</field>
             <field name="phone_number_format">+262 ###########</field>
             <field name="phone_number_example">+262 123456789</field>
             <field name="active">True</field>
@@ -722,8 +642,7 @@
             <field name="country_id" ref="base.tf" />
         </record>
         <record id="res_phone_national_code_data_241" model="res.phone.national.code">
-            <field name="name">Gabon</field>
-            <field name="code">241</field>
+            <field name="name">+241</field>
             <field name="phone_number_format">+241 ###########</field>
             <field name="phone_number_example">+241 123456789</field>
             <field name="active">True</field>
@@ -731,8 +650,7 @@
             <field name="country_id" ref="base.ga" />
         </record>
         <record id="res_phone_national_code_data_220" model="res.phone.national.code">
-            <field name="name">Gambia</field>
-            <field name="code">220</field>
+            <field name="name">+220</field>
             <field name="phone_number_format">+220 ###########</field>
             <field name="phone_number_example">+220 123456789</field>
             <field name="active">True</field>
@@ -740,8 +658,7 @@
             <field name="country_id" ref="base.gm" />
         </record>
         <record id="res_phone_national_code_data_995" model="res.phone.national.code">
-            <field name="name">Georgia</field>
-            <field name="code">995</field>
+            <field name="name">+995</field>
             <field name="phone_number_format">+995 ###########</field>
             <field name="phone_number_example">+995 123456789</field>
             <field name="active">True</field>
@@ -749,8 +666,7 @@
             <field name="country_id" ref="base.ge" />
         </record>
         <record id="res_phone_national_code_data_49" model="res.phone.national.code">
-            <field name="name">Germany</field>
-            <field name="code">49</field>
+            <field name="name">+49</field>
             <field name="phone_number_format">+49 #### #######</field>
             <field name="phone_number_example">+49 30 1234567</field>
             <field name="active">True</field>
@@ -758,8 +674,7 @@
             <field name="country_id" ref="base.de" />
         </record>
         <record id="res_phone_national_code_data_233" model="res.phone.national.code">
-            <field name="name">Ghana</field>
-            <field name="code">233</field>
+            <field name="name">+233</field>
             <field name="phone_number_format">+233 ###########</field>
             <field name="phone_number_example">+233 123456789</field>
             <field name="active">True</field>
@@ -767,8 +682,7 @@
             <field name="country_id" ref="base.gh" />
         </record>
         <record id="res_phone_national_code_data_350" model="res.phone.national.code">
-            <field name="name">Gibraltar</field>
-            <field name="code">350</field>
+            <field name="name">+350</field>
             <field name="phone_number_format">+350 ###########</field>
             <field name="phone_number_example">+350 123456789</field>
             <field name="active">True</field>
@@ -776,8 +690,7 @@
             <field name="country_id" ref="base.gi" />
         </record>
         <record id="res_phone_national_code_data_30" model="res.phone.national.code">
-            <field name="name">Greece</field>
-            <field name="code">30</field>
+            <field name="name">+30</field>
             <field name="phone_number_format">+30 ###########</field>
             <field name="phone_number_example">+30 123456789</field>
             <field name="active">True</field>
@@ -785,8 +698,7 @@
             <field name="country_id" ref="base.gr" />
         </record>
         <record id="res_phone_national_code_data_299" model="res.phone.national.code">
-            <field name="name">Greenland</field>
-            <field name="code">299</field>
+            <field name="name">+299</field>
             <field name="phone_number_format">+299 ###########</field>
             <field name="phone_number_example">+299 123456789</field>
             <field name="active">True</field>
@@ -794,8 +706,7 @@
             <field name="country_id" ref="base.gl" />
         </record>
         <record id="res_phone_national_code_data_1473" model="res.phone.national.code">
-            <field name="name">Grenada</field>
-            <field name="code">1473</field>
+            <field name="name">+1473</field>
             <field name="phone_number_format">+1473 ###########</field>
             <field name="phone_number_example">+1473 123456789</field>
             <field name="active">True</field>
@@ -803,8 +714,7 @@
             <field name="country_id" ref="base.gd" />
         </record>
         <record id="res_phone_national_code_data_590" model="res.phone.national.code">
-            <field name="name">Guadeloupe</field>
-            <field name="code">590</field>
+            <field name="name">+590</field>
             <field name="phone_number_format">+590 ###########</field>
             <field name="phone_number_example">+590 123456789</field>
             <field name="active">True</field>
@@ -812,8 +722,7 @@
             <field name="country_id" ref="base.gp" />
         </record>
         <record id="res_phone_national_code_data_1671" model="res.phone.national.code">
-            <field name="name">Guam</field>
-            <field name="code">1671</field>
+            <field name="name">+1671</field>
             <field name="phone_number_format">+1671 ###########</field>
             <field name="phone_number_example">+1671 123456789</field>
             <field name="active">True</field>
@@ -821,8 +730,7 @@
             <field name="country_id" ref="base.gu" />
         </record>
         <record id="res_phone_national_code_data_502" model="res.phone.national.code">
-            <field name="name">Guatemala</field>
-            <field name="code">502</field>
+            <field name="name">+502</field>
             <field name="phone_number_format">+502 ###########</field>
             <field name="phone_number_example">+502 123456789</field>
             <field name="active">True</field>
@@ -830,8 +738,7 @@
             <field name="country_id" ref="base.gt" />
         </record>
         <record id="res_phone_national_code_data_224" model="res.phone.national.code">
-            <field name="name">Guinea</field>
-            <field name="code">224</field>
+            <field name="name">+224</field>
             <field name="phone_number_format">+224 ###########</field>
             <field name="phone_number_example">+224 123456789</field>
             <field name="active">True</field>
@@ -839,8 +746,7 @@
             <field name="country_id" ref="base.gn" />
         </record>
         <record id="res_phone_national_code_data_245" model="res.phone.national.code">
-            <field name="name">Guinea-Bissau</field>
-            <field name="code">245</field>
+            <field name="name">+245</field>
             <field name="phone_number_format">+245 ###########</field>
             <field name="phone_number_example">+245 123456789</field>
             <field name="active">True</field>
@@ -848,8 +754,7 @@
             <field name="country_id" ref="base.gw" />
         </record>
         <record id="res_phone_national_code_data_592" model="res.phone.national.code">
-            <field name="name">Guyana</field>
-            <field name="code">592</field>
+            <field name="name">+592</field>
             <field name="phone_number_format">+592 ###########</field>
             <field name="phone_number_example">+592 123456789</field>
             <field name="active">True</field>
@@ -857,8 +762,7 @@
             <field name="country_id" ref="base.gy" />
         </record>
         <record id="res_phone_national_code_data_509" model="res.phone.national.code">
-            <field name="name">Haiti</field>
-            <field name="code">509</field>
+            <field name="name">+509</field>
             <field name="phone_number_format">+509 ###########</field>
             <field name="phone_number_example">+509 123456789</field>
             <field name="active">True</field>
@@ -866,8 +770,7 @@
             <field name="country_id" ref="base.ht" />
         </record>
         <record id="res_phone_national_code_data_39-06" model="res.phone.national.code">
-            <field name="name">Holy See</field>
-            <field name="code">39-06</field>
+            <field name="name">+39-06</field>
             <field name="phone_number_format">+39-06 ###########</field>
             <field name="phone_number_example">+39-06 123456789</field>
             <field name="active">True</field>
@@ -875,8 +778,7 @@
             <field name="country_id" ref="base.va" />
         </record>
         <record id="res_phone_national_code_data_504" model="res.phone.national.code">
-            <field name="name">Honduras</field>
-            <field name="code">504</field>
+            <field name="name">+504</field>
             <field name="phone_number_format">+504 ###########</field>
             <field name="phone_number_example">+504 123456789</field>
             <field name="active">True</field>
@@ -884,8 +786,7 @@
             <field name="country_id" ref="base.hn" />
         </record>
         <record id="res_phone_national_code_data_36" model="res.phone.national.code">
-            <field name="name">Hungary</field>
-            <field name="code">36</field>
+            <field name="name">+36</field>
             <field name="phone_number_format">+36 ###########</field>
             <field name="phone_number_example">+36 123456789</field>
             <field name="active">True</field>
@@ -893,8 +794,7 @@
             <field name="country_id" ref="base.hu" />
         </record>
         <record id="res_phone_national_code_data_354" model="res.phone.national.code">
-            <field name="name">Iceland</field>
-            <field name="code">354</field>
+            <field name="name">+354</field>
             <field name="phone_number_format">+354 ###########</field>
             <field name="phone_number_example">+354 123456789</field>
             <field name="active">True</field>
@@ -902,8 +802,7 @@
             <field name="country_id" ref="base.is" />
         </record>
         <record id="res_phone_national_code_data_91" model="res.phone.national.code">
-            <field name="name">India</field>
-            <field name="code">91</field>
+            <field name="name">+91</field>
             <field name="phone_number_format">+91 ###########</field>
             <field name="phone_number_example">+91 123456789</field>
             <field name="active">True</field>
@@ -911,8 +810,7 @@
             <field name="country_id" ref="base.in" />
         </record>
         <record id="res_phone_national_code_data_62" model="res.phone.national.code">
-            <field name="name">Indonesia</field>
-            <field name="code">62</field>
+            <field name="name">+62</field>
             <field name="phone_number_format">+62 ###########</field>
             <field name="phone_number_example">+62 123456789</field>
             <field name="active">True</field>
@@ -920,8 +818,7 @@
             <field name="country_id" ref="base.id" />
         </record>
         <record id="res_phone_national_code_data_98" model="res.phone.national.code">
-            <field name="name">Iran (Islamic Republic of)</field>
-            <field name="code">98</field>
+            <field name="name">+98</field>
             <field name="phone_number_format">+98 ###########</field>
             <field name="phone_number_example">+98 123456789</field>
             <field name="active">True</field>
@@ -929,8 +826,7 @@
             <field name="country_id" ref="base.ir" />
         </record>
         <record id="res_phone_national_code_data_964" model="res.phone.national.code">
-            <field name="name">Iraq</field>
-            <field name="code">964</field>
+            <field name="name">+964</field>
             <field name="phone_number_format">+964 ###########</field>
             <field name="phone_number_example">+964 123456789</field>
             <field name="active">True</field>
@@ -938,8 +834,7 @@
             <field name="country_id" ref="base.iq" />
         </record>
         <record id="res_phone_national_code_data_353" model="res.phone.national.code">
-            <field name="name">Ireland</field>
-            <field name="code">353</field>
+            <field name="name">+353</field>
             <field name="phone_number_format">+353 ###########</field>
             <field name="phone_number_example">+353 123456789</field>
             <field name="active">True</field>
@@ -947,8 +842,7 @@
             <field name="country_id" ref="base.ie" />
         </record>
         <record id="res_phone_national_code_data_39" model="res.phone.national.code">
-            <field name="name">Italy</field>
-            <field name="code">39</field>
+            <field name="name">+39</field>
             <field name="phone_number_format">+39 ###########</field>
             <field name="phone_number_example">+39 123456789</field>
             <field name="active">True</field>
@@ -956,8 +850,7 @@
             <field name="country_id" ref="base.it" />
         </record>
         <record id="res_phone_national_code_data_225" model="res.phone.national.code">
-            <field name="name">Ivory Coast</field>
-            <field name="code">225</field>
+            <field name="name">+225</field>
             <field name="phone_number_format">+225 ###########</field>
             <field name="phone_number_example">+225 123456789</field>
             <field name="active">True</field>
@@ -965,8 +858,7 @@
             <field name="country_id" ref="base.ci" />
         </record>
         <record id="res_phone_national_code_data_1876" model="res.phone.national.code">
-            <field name="name">Jamaica</field>
-            <field name="code">1876</field>
+            <field name="name">+1876</field>
             <field name="phone_number_format">+1876 ###########</field>
             <field name="phone_number_example">+1876 123456789</field>
             <field name="active">True</field>
@@ -974,8 +866,7 @@
             <field name="country_id" ref="base.jm" />
         </record>
         <record id="res_phone_national_code_data_81" model="res.phone.national.code">
-            <field name="name">Japan</field>
-            <field name="code">81</field>
+            <field name="name">+81</field>
             <field name="phone_number_format">+81 ###########</field>
             <field name="phone_number_example">+81 123456789</field>
             <field name="active">True</field>
@@ -983,8 +874,7 @@
             <field name="country_id" ref="base.jp" />
         </record>
         <record id="res_phone_national_code_data_962" model="res.phone.national.code">
-            <field name="name">Jordan</field>
-            <field name="code">962</field>
+            <field name="name">+962</field>
             <field name="phone_number_format">+962 ###########</field>
             <field name="phone_number_example">+962 123456789</field>
             <field name="active">True</field>
@@ -992,8 +882,7 @@
             <field name="country_id" ref="base.jo" />
         </record>
         <record id="res_phone_national_code_data_7" model="res.phone.national.code">
-            <field name="name">Kazakhstan</field>
-            <field name="code">7</field>
+            <field name="name">+7</field>
             <field name="phone_number_format">+7 ###########</field>
             <field name="phone_number_example">+7 123456789</field>
             <field name="active">True</field>
@@ -1001,8 +890,7 @@
             <field name="country_id" ref="base.kz" />
         </record>
         <record id="res_phone_national_code_data_254" model="res.phone.national.code">
-            <field name="name">Kenya</field>
-            <field name="code">254</field>
+            <field name="name">+254</field>
             <field name="phone_number_format">+254 ###########</field>
             <field name="phone_number_example">+254 123456789</field>
             <field name="active">True</field>
@@ -1010,8 +898,7 @@
             <field name="country_id" ref="base.ke" />
         </record>
         <record id="res_phone_national_code_data_686" model="res.phone.national.code">
-            <field name="name">Kiribati</field>
-            <field name="code">686</field>
+            <field name="name">+686</field>
             <field name="phone_number_format">+686 ###########</field>
             <field name="phone_number_example">+686 123456789</field>
             <field name="active">True</field>
@@ -1019,8 +906,7 @@
             <field name="country_id" ref="base.ki" />
         </record>
         <record id="res_phone_national_code_data_965" model="res.phone.national.code">
-            <field name="name">Kuwait</field>
-            <field name="code">965</field>
+            <field name="name">+965</field>
             <field name="phone_number_format">+965 ###########</field>
             <field name="phone_number_example">+965 123456789</field>
             <field name="active">True</field>
@@ -1028,8 +914,7 @@
             <field name="country_id" ref="base.kw" />
         </record>
         <record id="res_phone_national_code_data_996" model="res.phone.national.code">
-            <field name="name">Kyrgyzstan</field>
-            <field name="code">996</field>
+            <field name="name">+996</field>
             <field name="phone_number_format">+996 ###########</field>
             <field name="phone_number_example">+996 123456789</field>
             <field name="active">True</field>
@@ -1037,8 +922,7 @@
             <field name="country_id" ref="base.kg" />
         </record>
         <record id="res_phone_national_code_data_856" model="res.phone.national.code">
-            <field name="name">Lao People's Democratic Republic</field>
-            <field name="code">856</field>
+            <field name="name">+856</field>
             <field name="phone_number_format">+856 ###########</field>
             <field name="phone_number_example">+856 123456789</field>
             <field name="active">True</field>
@@ -1046,8 +930,7 @@
             <field name="country_id" ref="base.la" />
         </record>
         <record id="res_phone_national_code_data_371" model="res.phone.national.code">
-            <field name="name">Latvia</field>
-            <field name="code">371</field>
+            <field name="name">+371</field>
             <field name="phone_number_format">+371 ###########</field>
             <field name="phone_number_example">+371 123456789</field>
             <field name="active">True</field>
@@ -1055,8 +938,7 @@
             <field name="country_id" ref="base.lv" />
         </record>
         <record id="res_phone_national_code_data_961" model="res.phone.national.code">
-            <field name="name">Lebanon</field>
-            <field name="code">961</field>
+            <field name="name">+961</field>
             <field name="phone_number_format">+961 ###########</field>
             <field name="phone_number_example">+961 123456789</field>
             <field name="active">True</field>
@@ -1064,8 +946,7 @@
             <field name="country_id" ref="base.lb" />
         </record>
         <record id="res_phone_national_code_data_266" model="res.phone.national.code">
-            <field name="name">Lesotho</field>
-            <field name="code">266</field>
+            <field name="name">+266</field>
             <field name="phone_number_format">+266 ###########</field>
             <field name="phone_number_example">+266 123456789</field>
             <field name="active">True</field>
@@ -1073,8 +954,7 @@
             <field name="country_id" ref="base.ls" />
         </record>
         <record id="res_phone_national_code_data_231" model="res.phone.national.code">
-            <field name="name">Liberia</field>
-            <field name="code">231</field>
+            <field name="name">+231</field>
             <field name="phone_number_format">+231 ###########</field>
             <field name="phone_number_example">+231 123456789</field>
             <field name="active">True</field>
@@ -1082,8 +962,7 @@
             <field name="country_id" ref="base.lr" />
         </record>
         <record id="res_phone_national_code_data_218" model="res.phone.national.code">
-            <field name="name">Libya</field>
-            <field name="code">218</field>
+            <field name="name">+218</field>
             <field name="phone_number_format">+218 ###########</field>
             <field name="phone_number_example">+218 123456789</field>
             <field name="active">True</field>
@@ -1091,8 +970,7 @@
             <field name="country_id" ref="base.ly" />
         </record>
         <record id="res_phone_national_code_data_423" model="res.phone.national.code">
-            <field name="name">Liechtenstein</field>
-            <field name="code">423</field>
+            <field name="name">+423</field>
             <field name="phone_number_format">+423 ###########</field>
             <field name="phone_number_example">+423 123456789</field>
             <field name="active">True</field>
@@ -1100,8 +978,7 @@
             <field name="country_id" ref="base.li" />
         </record>
         <record id="res_phone_national_code_data_370" model="res.phone.national.code">
-            <field name="name">Lithuania</field>
-            <field name="code">370</field>
+            <field name="name">+370</field>
             <field name="phone_number_format">+370 ###########</field>
             <field name="phone_number_example">+370 123456789</field>
             <field name="active">True</field>
@@ -1109,8 +986,7 @@
             <field name="country_id" ref="base.lt" />
         </record>
         <record id="res_phone_national_code_data_352" model="res.phone.national.code">
-            <field name="name">Luxembourg</field>
-            <field name="code">352</field>
+            <field name="name">+352</field>
             <field name="phone_number_format">+352 ###########</field>
             <field name="phone_number_example">+352 123456789</field>
             <field name="active">True</field>
@@ -1118,8 +994,7 @@
             <field name="country_id" ref="base.lu" />
         </record>
         <record id="res_phone_national_code_data_261" model="res.phone.national.code">
-            <field name="name">Madagascar</field>
-            <field name="code">261</field>
+            <field name="name">+261</field>
             <field name="phone_number_format">+261 ###########</field>
             <field name="phone_number_example">+261 123456789</field>
             <field name="active">True</field>
@@ -1127,8 +1002,7 @@
             <field name="country_id" ref="base.mg" />
         </record>
         <record id="res_phone_national_code_data_265" model="res.phone.national.code">
-            <field name="name">Malawi</field>
-            <field name="code">265</field>
+            <field name="name">+265</field>
             <field name="phone_number_format">+265 ###########</field>
             <field name="phone_number_example">+265 123456789</field>
             <field name="active">True</field>
@@ -1136,8 +1010,7 @@
             <field name="country_id" ref="base.mw" />
         </record>
         <record id="res_phone_national_code_data_60" model="res.phone.national.code">
-            <field name="name">Malaysia</field>
-            <field name="code">60</field>
+            <field name="name">+60</field>
             <field name="phone_number_format">+60 ###########</field>
             <field name="phone_number_example">+60 123456789</field>
             <field name="active">True</field>
@@ -1145,8 +1018,7 @@
             <field name="country_id" ref="base.my" />
         </record>
         <record id="res_phone_national_code_data_960" model="res.phone.national.code">
-            <field name="name">Maldives</field>
-            <field name="code">960</field>
+            <field name="name">+960</field>
             <field name="phone_number_format">+960 ###########</field>
             <field name="phone_number_example">+960 123456789</field>
             <field name="active">True</field>
@@ -1154,8 +1026,7 @@
             <field name="country_id" ref="base.mv" />
         </record>
         <record id="res_phone_national_code_data_223" model="res.phone.national.code">
-            <field name="name">Mali</field>
-            <field name="code">223</field>
+            <field name="name">+223</field>
             <field name="phone_number_format">+223 ###########</field>
             <field name="phone_number_example">+223 123456789</field>
             <field name="active">True</field>
@@ -1163,8 +1034,7 @@
             <field name="country_id" ref="base.ml" />
         </record>
         <record id="res_phone_national_code_data_356" model="res.phone.national.code">
-            <field name="name">Malta</field>
-            <field name="code">356</field>
+            <field name="name">+356</field>
             <field name="phone_number_format">+356 ###########</field>
             <field name="phone_number_example">+356 123456789</field>
             <field name="active">True</field>
@@ -1172,8 +1042,7 @@
             <field name="country_id" ref="base.mt" />
         </record>
         <record id="res_phone_national_code_data_692" model="res.phone.national.code">
-            <field name="name">Marshall Islands</field>
-            <field name="code">692</field>
+            <field name="name">+692</field>
             <field name="phone_number_format">+692 ###########</field>
             <field name="phone_number_example">+692 123456789</field>
             <field name="active">True</field>
@@ -1181,8 +1050,7 @@
             <field name="country_id" ref="base.mh" />
         </record>
         <record id="res_phone_national_code_data_596" model="res.phone.national.code">
-            <field name="name">Martinique</field>
-            <field name="code">596</field>
+            <field name="name">+596</field>
             <field name="phone_number_format">+596 ###########</field>
             <field name="phone_number_example">+596 123456789</field>
             <field name="active">True</field>
@@ -1190,8 +1058,7 @@
             <field name="country_id" ref="base.mq" />
         </record>
         <record id="res_phone_national_code_data_222" model="res.phone.national.code">
-            <field name="name">Mauritania</field>
-            <field name="code">222</field>
+            <field name="name">+222</field>
             <field name="phone_number_format">+222 ###########</field>
             <field name="phone_number_example">+222 123456789</field>
             <field name="active">True</field>
@@ -1199,8 +1066,7 @@
             <field name="country_id" ref="base.mr" />
         </record>
         <record id="res_phone_national_code_data_230" model="res.phone.national.code">
-            <field name="name">Mauritius</field>
-            <field name="code">230</field>
+            <field name="name">+230</field>
             <field name="phone_number_format">+230 ###########</field>
             <field name="phone_number_example">+230 123456789</field>
             <field name="active">True</field>
@@ -1208,8 +1074,7 @@
             <field name="country_id" ref="base.mu" />
         </record>
         <record id="res_phone_national_code_data_262" model="res.phone.national.code">
-            <field name="name">Mayotte</field>
-            <field name="code">262</field>
+            <field name="name">+262</field>
             <field name="phone_number_format">+262 ###########</field>
             <field name="phone_number_example">+262 123456789</field>
             <field name="active">True</field>
@@ -1217,8 +1082,7 @@
             <field name="country_id" ref="base.yt" />
         </record>
         <record id="res_phone_national_code_data_52" model="res.phone.national.code">
-            <field name="name">Mexico</field>
-            <field name="code">52</field>
+            <field name="name">+52</field>
             <field name="phone_number_format">+52 ###########</field>
             <field name="phone_number_example">+52 123456789</field>
             <field name="active">True</field>
@@ -1226,8 +1090,7 @@
             <field name="country_id" ref="base.mx" />
         </record>
         <record id="res_phone_national_code_data_691" model="res.phone.national.code">
-            <field name="name">Micronesia (Federated States of)</field>
-            <field name="code">691</field>
+            <field name="name">+691</field>
             <field name="phone_number_format">+691 ###########</field>
             <field name="phone_number_example">+691 123456789</field>
             <field name="active">True</field>
@@ -1235,8 +1098,7 @@
             <field name="country_id" ref="base.fm" />
         </record>
         <record id="res_phone_national_code_data_377" model="res.phone.national.code">
-            <field name="name">Monaco</field>
-            <field name="code">377</field>
+            <field name="name">+377</field>
             <field name="phone_number_format">+377 ###########</field>
             <field name="phone_number_example">+377 123456789</field>
             <field name="active">True</field>
@@ -1244,8 +1106,7 @@
             <field name="country_id" ref="base.mc" />
         </record>
         <record id="res_phone_national_code_data_976" model="res.phone.national.code">
-            <field name="name">Mongolia</field>
-            <field name="code">976</field>
+            <field name="name">+976</field>
             <field name="phone_number_format">+976 ###########</field>
             <field name="phone_number_example">+976 123456789</field>
             <field name="active">True</field>
@@ -1253,8 +1114,7 @@
             <field name="country_id" ref="base.mn" />
         </record>
         <record id="res_phone_national_code_data_382" model="res.phone.national.code">
-            <field name="name">Montenegro</field>
-            <field name="code">382</field>
+            <field name="name">+382</field>
             <field name="phone_number_format">+382 ###########</field>
             <field name="phone_number_example">+382 123456789</field>
             <field name="active">True</field>
@@ -1262,8 +1122,7 @@
             <field name="country_id" ref="base.me" />
         </record>
         <record id="res_phone_national_code_data_1664" model="res.phone.national.code">
-            <field name="name">Montserrat</field>
-            <field name="code">1664</field>
+            <field name="name">+1664</field>
             <field name="phone_number_format">+1664 ###########</field>
             <field name="phone_number_example">+1664 123456789</field>
             <field name="active">True</field>
@@ -1271,8 +1130,7 @@
             <field name="country_id" ref="base.ms" />
         </record>
         <record id="res_phone_national_code_data_212" model="res.phone.national.code">
-            <field name="name">Morocco</field>
-            <field name="code">212</field>
+            <field name="name">+212</field>
             <field name="phone_number_format">+212 ###########</field>
             <field name="phone_number_example">+212 123456789</field>
             <field name="active">True</field>
@@ -1280,8 +1138,7 @@
             <field name="country_id" ref="base.ma" />
         </record>
         <record id="res_phone_national_code_data_258" model="res.phone.national.code">
-            <field name="name">Mozambique</field>
-            <field name="code">258</field>
+            <field name="name">+258</field>
             <field name="phone_number_format">+258 ###########</field>
             <field name="phone_number_example">+258 123456789</field>
             <field name="active">True</field>
@@ -1289,8 +1146,7 @@
             <field name="country_id" ref="base.mz" />
         </record>
         <record id="res_phone_national_code_data_95" model="res.phone.national.code">
-            <field name="name">Myanmar</field>
-            <field name="code">95</field>
+            <field name="name">+95</field>
             <field name="phone_number_format">+95 ###########</field>
             <field name="phone_number_example">+95 123456789</field>
             <field name="active">True</field>
@@ -1298,8 +1154,7 @@
             <field name="country_id" ref="base.mm" />
         </record>
         <record id="res_phone_national_code_data_264" model="res.phone.national.code">
-            <field name="name">Namibia</field>
-            <field name="code">264</field>
+            <field name="name">+264</field>
             <field name="phone_number_format">+264 ###########</field>
             <field name="phone_number_example">+264 123456789</field>
             <field name="active">True</field>
@@ -1307,8 +1162,7 @@
             <field name="country_id" ref="base.na" />
         </record>
         <record id="res_phone_national_code_data_674" model="res.phone.national.code">
-            <field name="name">Nauru</field>
-            <field name="code">674</field>
+            <field name="name">+674</field>
             <field name="phone_number_format">+674 ###########</field>
             <field name="phone_number_example">+674 123456789</field>
             <field name="active">True</field>
@@ -1316,8 +1170,7 @@
             <field name="country_id" ref="base.nr" />
         </record>
         <record id="res_phone_national_code_data_977" model="res.phone.national.code">
-            <field name="name">Nepal</field>
-            <field name="code">977</field>
+            <field name="name">+977</field>
             <field name="phone_number_format">+977 ###########</field>
             <field name="phone_number_example">+977 123456789</field>
             <field name="active">True</field>
@@ -1325,8 +1178,7 @@
             <field name="country_id" ref="base.np" />
         </record>
         <record id="res_phone_national_code_data_31" model="res.phone.national.code">
-            <field name="name">Netherlands</field>
-            <field name="code">31</field>
+            <field name="name">+31</field>
             <field name="phone_number_format">+31 ###########</field>
             <field name="phone_number_example">+31 123456789</field>
             <field name="active">True</field>
@@ -1334,8 +1186,7 @@
             <field name="country_id" ref="base.nl" />
         </record>
         <record id="res_phone_national_code_data_687" model="res.phone.national.code">
-            <field name="name">New Caledonia</field>
-            <field name="code">687</field>
+            <field name="name">+687</field>
             <field name="phone_number_format">+687 ###########</field>
             <field name="phone_number_example">+687 123456789</field>
             <field name="active">True</field>
@@ -1343,8 +1194,7 @@
             <field name="country_id" ref="base.nc" />
         </record>
         <record id="res_phone_national_code_data_64" model="res.phone.national.code">
-            <field name="name">New Zealand</field>
-            <field name="code">64</field>
+            <field name="name">+64</field>
             <field name="phone_number_format">+64 ###########</field>
             <field name="phone_number_example">+64 123456789</field>
             <field name="active">True</field>
@@ -1352,8 +1202,7 @@
             <field name="country_id" ref="base.nz" />
         </record>
         <record id="res_phone_national_code_data_505" model="res.phone.national.code">
-            <field name="name">Nicaragua</field>
-            <field name="code">505</field>
+            <field name="name">+505</field>
             <field name="phone_number_format">+505 ###########</field>
             <field name="phone_number_example">+505 123456789</field>
             <field name="active">True</field>
@@ -1361,8 +1210,7 @@
             <field name="country_id" ref="base.ni" />
         </record>
         <record id="res_phone_national_code_data_227" model="res.phone.national.code">
-            <field name="name">Niger</field>
-            <field name="code">227</field>
+            <field name="name">+227</field>
             <field name="phone_number_format">+227 ###########</field>
             <field name="phone_number_example">+227 123456789</field>
             <field name="active">True</field>
@@ -1370,8 +1218,7 @@
             <field name="country_id" ref="base.ne" />
         </record>
         <record id="res_phone_national_code_data_234" model="res.phone.national.code">
-            <field name="name">Nigeria</field>
-            <field name="code">234</field>
+            <field name="name">+234</field>
             <field name="phone_number_format">+234 ###########</field>
             <field name="phone_number_example">+234 123456789</field>
             <field name="active">True</field>
@@ -1379,8 +1226,7 @@
             <field name="country_id" ref="base.ng" />
         </record>
         <record id="res_phone_national_code_data_683" model="res.phone.national.code">
-            <field name="name">Niue</field>
-            <field name="code">683</field>
+            <field name="name">+683</field>
             <field name="phone_number_format">+683 ###########</field>
             <field name="phone_number_example">+683 123456789</field>
             <field name="active">True</field>
@@ -1388,8 +1234,7 @@
             <field name="country_id" ref="base.nu" />
         </record>
         <record id="res_phone_national_code_data_672" model="res.phone.national.code">
-            <field name="name">Norfolk Island</field>
-            <field name="code">672</field>
+            <field name="name">+672</field>
             <field name="phone_number_format">+672 ###########</field>
             <field name="phone_number_example">+672 123456789</field>
             <field name="active">True</field>
@@ -1397,8 +1242,7 @@
             <field name="country_id" ref="base.nf" />
         </record>
         <record id="res_phone_national_code_data_1670" model="res.phone.national.code">
-            <field name="name">Northern Mariana Islands</field>
-            <field name="code">1670</field>
+            <field name="name">+1670</field>
             <field name="phone_number_format">+1670 ###########</field>
             <field name="phone_number_example">+1670 123456789</field>
             <field name="active">True</field>
@@ -1406,8 +1250,7 @@
             <field name="country_id" ref="base.mp" />
         </record>
         <record id="res_phone_national_code_data_389" model="res.phone.national.code">
-            <field name="name">North Macedonia</field>
-            <field name="code">389</field>
+            <field name="name">+389</field>
             <field name="phone_number_format">+389 ###########</field>
             <field name="phone_number_example">+389 123456789</field>
             <field name="active">True</field>
@@ -1415,8 +1258,7 @@
             <field name="country_id" ref="base.mk" />
         </record>
         <record id="res_phone_national_code_data_47" model="res.phone.national.code">
-            <field name="name">Norway</field>
-            <field name="code">47</field>
+            <field name="name">+47</field>
             <field name="phone_number_format">+47 ###########</field>
             <field name="phone_number_example">+47 123456789</field>
             <field name="active">True</field>
@@ -1424,8 +1266,7 @@
             <field name="country_id" ref="base.no" />
         </record>
         <record id="res_phone_national_code_data_968" model="res.phone.national.code">
-            <field name="name">Oman</field>
-            <field name="code">968</field>
+            <field name="name">+968</field>
             <field name="phone_number_format">+968 ###########</field>
             <field name="phone_number_example">+968 123456789</field>
             <field name="active">True</field>
@@ -1433,8 +1274,7 @@
             <field name="country_id" ref="base.om" />
         </record>
         <record id="res_phone_national_code_data_92" model="res.phone.national.code">
-            <field name="name">Pakistan</field>
-            <field name="code">92</field>
+            <field name="name">+92</field>
             <field name="phone_number_format">+92 ###########</field>
             <field name="phone_number_example">+92 123456789</field>
             <field name="active">True</field>
@@ -1442,8 +1282,7 @@
             <field name="country_id" ref="base.pk" />
         </record>
         <record id="res_phone_national_code_data_680" model="res.phone.national.code">
-            <field name="name">Palau</field>
-            <field name="code">680</field>
+            <field name="name">+680</field>
             <field name="phone_number_format">+680 ###########</field>
             <field name="phone_number_example">+680 123456789</field>
             <field name="active">True</field>
@@ -1451,8 +1290,7 @@
             <field name="country_id" ref="base.pw" />
         </record>
         <record id="res_phone_national_code_data_507" model="res.phone.national.code">
-            <field name="name">Panama</field>
-            <field name="code">507</field>
+            <field name="name">+507</field>
             <field name="phone_number_format">+507 ###########</field>
             <field name="phone_number_example">+507 123456789</field>
             <field name="active">True</field>
@@ -1460,8 +1298,7 @@
             <field name="country_id" ref="base.pa" />
         </record>
         <record id="res_phone_national_code_data_675" model="res.phone.national.code">
-            <field name="name">Papua New Guinea</field>
-            <field name="code">675</field>
+            <field name="name">+675</field>
             <field name="phone_number_format">+675 ###########</field>
             <field name="phone_number_example">+675 123456789</field>
             <field name="active">True</field>
@@ -1469,8 +1306,7 @@
             <field name="country_id" ref="base.pg" />
         </record>
         <record id="res_phone_national_code_data_595" model="res.phone.national.code">
-            <field name="name">Paraguay</field>
-            <field name="code">595</field>
+            <field name="name">+595</field>
             <field name="phone_number_format">+595 ###########</field>
             <field name="phone_number_example">+595 123456789</field>
             <field name="active">True</field>
@@ -1478,8 +1314,7 @@
             <field name="country_id" ref="base.py" />
         </record>
         <record id="res_phone_national_code_data_51" model="res.phone.national.code">
-            <field name="name">Peru</field>
-            <field name="code">51</field>
+            <field name="name">+51</field>
             <field name="phone_number_format">+51 ###########</field>
             <field name="phone_number_example">+51 123456789</field>
             <field name="active">True</field>
@@ -1487,8 +1322,7 @@
             <field name="country_id" ref="base.pe" />
         </record>
         <record id="res_phone_national_code_data_63" model="res.phone.national.code">
-            <field name="name">Philippines</field>
-            <field name="code">63</field>
+            <field name="name">+63</field>
             <field name="phone_number_format">+63 ###########</field>
             <field name="phone_number_example">+63 123456789</field>
             <field name="active">True</field>
@@ -1496,8 +1330,7 @@
             <field name="country_id" ref="base.ph" />
         </record>
         <record id="res_phone_national_code_data_870" model="res.phone.national.code">
-            <field name="name">Pitcairn</field>
-            <field name="code">870</field>
+            <field name="name">+870</field>
             <field name="phone_number_format">+870 ###########</field>
             <field name="phone_number_example">+870 123456789</field>
             <field name="active">True</field>
@@ -1505,8 +1338,7 @@
             <field name="country_id" ref="base.pn" />
         </record>
         <record id="res_phone_national_code_data_48" model="res.phone.national.code">
-            <field name="name">Poland</field>
-            <field name="code">48</field>
+            <field name="name">+48</field>
             <field name="phone_number_format">+48 ###########</field>
             <field name="phone_number_example">+48 123456789</field>
             <field name="active">True</field>
@@ -1514,8 +1346,7 @@
             <field name="country_id" ref="base.pl" />
         </record>
         <record id="res_phone_national_code_data_351" model="res.phone.national.code">
-            <field name="name">Portugal</field>
-            <field name="code">351</field>
+            <field name="name">+351</field>
             <field name="phone_number_format">+351 ###########</field>
             <field name="phone_number_example">+351 123456789</field>
             <field name="active">True</field>
@@ -1523,8 +1354,7 @@
             <field name="country_id" ref="base.pt" />
         </record>
         <record id="res_phone_national_code_data_1" model="res.phone.national.code">
-            <field name="name">Puerto Rico</field>
-            <field name="code">1</field>
+            <field name="name">+1</field>
             <field name="phone_number_format">+1 ###########</field>
             <field name="phone_number_example">+1 123456789</field>
             <field name="active">True</field>
@@ -1532,8 +1362,7 @@
             <field name="country_id" ref="base.pr" />
         </record>
         <record id="res_phone_national_code_data_974" model="res.phone.national.code">
-            <field name="name">Qatar</field>
-            <field name="code">974</field>
+            <field name="name">+974</field>
             <field name="phone_number_format">+974 ###########</field>
             <field name="phone_number_example">+974 123456789</field>
             <field name="active">True</field>
@@ -1541,8 +1370,7 @@
             <field name="country_id" ref="base.qa" />
         </record>
         <record id="res_phone_national_code_data_82" model="res.phone.national.code">
-            <field name="name">Republic of Korea</field>
-            <field name="code">82</field>
+            <field name="name">+82</field>
             <field name="phone_number_format">+82 ###########</field>
             <field name="phone_number_example">+82 123456789</field>
             <field name="active">True</field>
@@ -1550,8 +1378,7 @@
             <field name="country_id" ref="base.kr" />
         </record>
         <record id="res_phone_national_code_data_373" model="res.phone.national.code">
-            <field name="name">Republic of Moldova</field>
-            <field name="code">373</field>
+            <field name="name">+373</field>
             <field name="phone_number_format">+373 ###########</field>
             <field name="phone_number_example">+373 123456789</field>
             <field name="active">True</field>
@@ -1559,8 +1386,7 @@
             <field name="country_id" ref="base.md" />
         </record>
         <record id="res_phone_national_code_data_262" model="res.phone.national.code">
-            <field name="name">Réunion</field>
-            <field name="code">262</field>
+            <field name="name">+262</field>
             <field name="phone_number_format">+262 ###########</field>
             <field name="phone_number_example">+262 123456789</field>
             <field name="active">True</field>
@@ -1568,8 +1394,7 @@
             <field name="country_id" ref="base.re" />
         </record>
         <record id="res_phone_national_code_data_40" model="res.phone.national.code">
-            <field name="name">Romania</field>
-            <field name="code">40</field>
+            <field name="name">+40</field>
             <field name="phone_number_format">+40 ###########</field>
             <field name="phone_number_example">+40 123456789</field>
             <field name="active">True</field>
@@ -1577,8 +1402,7 @@
             <field name="country_id" ref="base.ro" />
         </record>
         <record id="res_phone_national_code_data_7" model="res.phone.national.code">
-            <field name="name">Russian Federation</field>
-            <field name="code">7</field>
+            <field name="name">+7</field>
             <field name="phone_number_format">+7 ###########</field>
             <field name="phone_number_example">+7 123456789</field>
             <field name="active">True</field>
@@ -1586,8 +1410,7 @@
             <field name="country_id" ref="base.ru" />
         </record>
         <record id="res_phone_national_code_data_250" model="res.phone.national.code">
-            <field name="name">Rwanda</field>
-            <field name="code">250</field>
+            <field name="name">+250</field>
             <field name="phone_number_format">+250 ###########</field>
             <field name="phone_number_example">+250 123456789</field>
             <field name="active">True</field>
@@ -1595,8 +1418,7 @@
             <field name="country_id" ref="base.rw" />
         </record>
         <record id="res_phone_national_code_data_290 n" model="res.phone.national.code">
-            <field name="name">Saint Helena</field>
-            <field name="code">290 n</field>
+            <field name="name">+290 n</field>
             <field name="phone_number_format">+290 n ###########</field>
             <field name="phone_number_example">+290 n 123456789</field>
             <field name="active">True</field>
@@ -1604,8 +1426,7 @@
             <field name="country_id" ref="base.sh" />
         </record>
         <record id="res_phone_national_code_data_1869" model="res.phone.national.code">
-            <field name="name">Saint Kitts and Nevis</field>
-            <field name="code">1869</field>
+            <field name="name">+1869</field>
             <field name="phone_number_format">+1869 ###########</field>
             <field name="phone_number_example">+1869 123456789</field>
             <field name="active">True</field>
@@ -1613,8 +1434,7 @@
             <field name="country_id" ref="base.kn" />
         </record>
         <record id="res_phone_national_code_data_1758" model="res.phone.national.code">
-            <field name="name">Saint Lucia</field>
-            <field name="code">1758</field>
+            <field name="name">+1758</field>
             <field name="phone_number_format">+1758 ###########</field>
             <field name="phone_number_example">+1758 123456789</field>
             <field name="active">True</field>
@@ -1622,8 +1442,7 @@
             <field name="country_id" ref="base.lc" />
         </record>
         <record id="res_phone_national_code_data_508" model="res.phone.national.code">
-            <field name="name">Saint Pierre and Miquelon</field>
-            <field name="code">508</field>
+            <field name="name">+508</field>
             <field name="phone_number_format">+508 ###########</field>
             <field name="phone_number_example">+508 123456789</field>
             <field name="active">True</field>
@@ -1631,8 +1450,7 @@
             <field name="country_id" ref="base.pm" />
         </record>
         <record id="res_phone_national_code_data_685" model="res.phone.national.code">
-            <field name="name">Samoa</field>
-            <field name="code">685</field>
+            <field name="name">+685</field>
             <field name="phone_number_format">+685 ###########</field>
             <field name="phone_number_example">+685 123456789</field>
             <field name="active">True</field>
@@ -1640,8 +1458,7 @@
             <field name="country_id" ref="base.ws" />
         </record>
         <record id="res_phone_national_code_data_378" model="res.phone.national.code">
-            <field name="name">San Marino</field>
-            <field name="code">378</field>
+            <field name="name">+378</field>
             <field name="phone_number_format">+378 ###########</field>
             <field name="phone_number_example">+378 123456789</field>
             <field name="active">True</field>
@@ -1649,8 +1466,7 @@
             <field name="country_id" ref="base.sm" />
         </record>
         <record id="res_phone_national_code_data_239" model="res.phone.national.code">
-            <field name="name">Sao Tome and Principe</field>
-            <field name="code">239</field>
+            <field name="name">+239</field>
             <field name="phone_number_format">+239 ###########</field>
             <field name="phone_number_example">+239 123456789</field>
             <field name="active">True</field>
@@ -1658,8 +1474,7 @@
             <field name="country_id" ref="base.st" />
         </record>
         <record id="res_phone_national_code_data_966" model="res.phone.national.code">
-            <field name="name">Saudi Arabia</field>
-            <field name="code">966</field>
+            <field name="name">+966</field>
             <field name="phone_number_format">+966 ###########</field>
             <field name="phone_number_example">+966 123456789</field>
             <field name="active">True</field>
@@ -1667,8 +1482,7 @@
             <field name="country_id" ref="base.sa" />
         </record>
         <record id="res_phone_national_code_data_221" model="res.phone.national.code">
-            <field name="name">Senegal</field>
-            <field name="code">221</field>
+            <field name="name">+221</field>
             <field name="phone_number_format">+221 ###########</field>
             <field name="phone_number_example">+221 123456789</field>
             <field name="active">True</field>
@@ -1676,8 +1490,7 @@
             <field name="country_id" ref="base.sn" />
         </record>
         <record id="res_phone_national_code_data_381 p" model="res.phone.national.code">
-            <field name="name">Serbia</field>
-            <field name="code">381</field>
+            <field name="name">+381</field>
             <field name="phone_number_format">+381 p ###########</field>
             <field name="phone_number_example">+381 p 123456789</field>
             <field name="active">True</field>
@@ -1685,8 +1498,7 @@
             <field name="country_id" ref="base.rs" />
         </record>
         <record id="res_phone_national_code_data_248" model="res.phone.national.code">
-            <field name="name">Seychelles</field>
-            <field name="code">248</field>
+            <field name="name">+248</field>
             <field name="phone_number_format">+248 ###########</field>
             <field name="phone_number_example">+248 123456789</field>
             <field name="active">True</field>
@@ -1694,8 +1506,7 @@
             <field name="country_id" ref="base.sc" />
         </record>
         <record id="res_phone_national_code_data_232" model="res.phone.national.code">
-            <field name="name">Sierra Leone</field>
-            <field name="code">232</field>
+            <field name="name">+232</field>
             <field name="phone_number_format">+232 ###########</field>
             <field name="phone_number_example">+232 123456789</field>
             <field name="active">True</field>
@@ -1703,8 +1514,7 @@
             <field name="country_id" ref="base.sl" />
         </record>
         <record id="res_phone_national_code_data_65" model="res.phone.national.code">
-            <field name="name">Singapore</field>
-            <field name="code">65</field>
+            <field name="name">+65</field>
             <field name="phone_number_format">+65 ###########</field>
             <field name="phone_number_example">+65 123456789</field>
             <field name="active">True</field>
@@ -1712,8 +1522,7 @@
             <field name="country_id" ref="base.sg" />
         </record>
         <record id="res_phone_national_code_data_421" model="res.phone.national.code">
-            <field name="name">Slovakia</field>
-            <field name="code">421</field>
+            <field name="name">+421</field>
             <field name="phone_number_format">+421 ###########</field>
             <field name="phone_number_example">+421 123456789</field>
             <field name="active">True</field>
@@ -1721,8 +1530,7 @@
             <field name="country_id" ref="base.sk" />
         </record>
         <record id="res_phone_national_code_data_386" model="res.phone.national.code">
-            <field name="name">Slovenia</field>
-            <field name="code">386</field>
+            <field name="name">+386</field>
             <field name="phone_number_format">+386 ###########</field>
             <field name="phone_number_example">+386 123456789</field>
             <field name="active">True</field>
@@ -1730,8 +1538,7 @@
             <field name="country_id" ref="base.si" />
         </record>
         <record id="res_phone_national_code_data_677" model="res.phone.national.code">
-            <field name="name">Solomon Islands</field>
-            <field name="code">677</field>
+            <field name="name">+677</field>
             <field name="phone_number_format">+677 ###########</field>
             <field name="phone_number_example">+677 123456789</field>
             <field name="active">True</field>
@@ -1739,8 +1546,7 @@
             <field name="country_id" ref="base.sb" />
         </record>
         <record id="res_phone_national_code_data_252" model="res.phone.national.code">
-            <field name="name">Somalia</field>
-            <field name="code">252</field>
+            <field name="name">+252</field>
             <field name="phone_number_format">+252 ###########</field>
             <field name="phone_number_example">+252 123456789</field>
             <field name="active">True</field>
@@ -1748,8 +1554,7 @@
             <field name="country_id" ref="base.so" />
         </record>
         <record id="res_phone_national_code_data_27" model="res.phone.national.code">
-            <field name="name">South Africa</field>
-            <field name="code">27</field>
+            <field name="name">+27</field>
             <field name="phone_number_format">+27 ###########</field>
             <field name="phone_number_example">+27 123456789</field>
             <field name="active">True</field>
@@ -1757,8 +1562,7 @@
             <field name="country_id" ref="base.za" />
         </record>
         <record id="res_phone_national_code_data_500" model="res.phone.national.code">
-            <field name="name">South Georgia and the South Sandwich Islands</field>
-            <field name="code">500</field>
+            <field name="name">+500</field>
             <field name="phone_number_format">+500 ###########</field>
             <field name="phone_number_example">+500 123456789</field>
             <field name="active">True</field>
@@ -1766,17 +1570,15 @@
             <field name="country_id" ref="base.gs" />
         </record>
         <record id="res_phone_national_code_data_34" model="res.phone.national.code">
-            <field name="name">Spain</field>
-            <field name="code">34</field>
+            <field name="name">+34</field>
             <field name="phone_number_format">+34 ### ## ## ##</field>
             <field name="phone_number_example">+34 91 123 45 67</field>
             <field name="active">True</field>
-            <field name="sequence">99</field>
+            <field name="sequence">1</field>
             <field name="country_id" ref="base.es" />
         </record>
         <record id="res_phone_national_code_data_94" model="res.phone.national.code">
-            <field name="name">Sri Lanka</field>
-            <field name="code">94</field>
+            <field name="name">+94</field>
             <field name="phone_number_format">+94 ###########</field>
             <field name="phone_number_example">+94 123456789</field>
             <field name="active">True</field>
@@ -1786,11 +1588,10 @@
         <record id="ps" model="res.country">
             <field name="name">Palestine</field>
             <field name="code">ps</field>
-            <field name="code_alpha3">PSE</field>
+            <field name="code_alpha3">GBR</field>
         </record>
         <record id="res_phone_national_code_data_970" model="res.phone.national.code">
-            <field name="name">State of Palestine</field>
-            <field name="code">970</field>
+            <field name="name">+970</field>
             <field name="phone_number_format">+970 ###########</field>
             <field name="phone_number_example">+970 123456789</field>
             <field name="active">True</field>
@@ -1798,8 +1599,7 @@
             <field name="country_id" ref="ps" />
         </record>
         <record id="res_phone_national_code_data_249" model="res.phone.national.code">
-            <field name="name">Sudan</field>
-            <field name="code">249</field>
+            <field name="name">+249</field>
             <field name="phone_number_format">+249 ###########</field>
             <field name="phone_number_example">+249 123456789</field>
             <field name="active">True</field>
@@ -1807,8 +1607,7 @@
             <field name="country_id" ref="base.sd" />
         </record>
         <record id="res_phone_national_code_data_597" model="res.phone.national.code">
-            <field name="name">Suriname</field>
-            <field name="code">597</field>
+            <field name="name">+597</field>
             <field name="phone_number_format">+597 ###########</field>
             <field name="phone_number_example">+597 123456789</field>
             <field name="active">True</field>
@@ -1816,8 +1615,7 @@
             <field name="country_id" ref="base.sr" />
         </record>
         <record id="res_phone_national_code_data_47" model="res.phone.national.code">
-            <field name="name">Svalbard and Jan Mayen Islands</field>
-            <field name="code">47</field>
+            <field name="name">+47</field>
             <field name="phone_number_format">+47 ###########</field>
             <field name="phone_number_example">+47 123456789</field>
             <field name="active">True</field>
@@ -1825,8 +1623,7 @@
             <field name="country_id" ref="base.sj" />
         </record>
         <record id="res_phone_national_code_data_46" model="res.phone.national.code">
-            <field name="name">Sweden</field>
-            <field name="code">46</field>
+            <field name="name">+46</field>
             <field name="phone_number_format">+46 ###########</field>
             <field name="phone_number_example">+46 123456789</field>
             <field name="active">True</field>
@@ -1834,8 +1631,7 @@
             <field name="country_id" ref="base.se" />
         </record>
         <record id="res_phone_national_code_data_41" model="res.phone.national.code">
-            <field name="name">Switzerland</field>
-            <field name="code">41</field>
+            <field name="name">+41</field>
             <field name="phone_number_format">+41 ###########</field>
             <field name="phone_number_example">+41 123456789</field>
             <field name="active">True</field>
@@ -1843,8 +1639,7 @@
             <field name="country_id" ref="base.ch" />
         </record>
         <record id="res_phone_national_code_data_963" model="res.phone.national.code">
-            <field name="name">Syrian Arab Republic</field>
-            <field name="code">963</field>
+            <field name="name">+963</field>
             <field name="phone_number_format">+963 ###########</field>
             <field name="phone_number_example">+963 123456789</field>
             <field name="active">True</field>
@@ -1852,8 +1647,7 @@
             <field name="country_id" ref="base.sy" />
         </record>
         <record id="res_phone_national_code_data_886" model="res.phone.national.code">
-            <field name="name">Taiwan</field>
-            <field name="code">886</field>
+            <field name="name">+886</field>
             <field name="phone_number_format">+886 ###########</field>
             <field name="phone_number_example">+886 123456789</field>
             <field name="active">True</field>
@@ -1861,8 +1655,7 @@
             <field name="country_id" ref="base.tw" />
         </record>
         <record id="res_phone_national_code_data_992" model="res.phone.national.code">
-            <field name="name">Tajikistan</field>
-            <field name="code">992</field>
+            <field name="name">+992</field>
             <field name="phone_number_format">+992 ###########</field>
             <field name="phone_number_example">+992 123456789</field>
             <field name="active">True</field>
@@ -1870,8 +1663,7 @@
             <field name="country_id" ref="base.tj" />
         </record>
         <record id="res_phone_national_code_data_66" model="res.phone.national.code">
-            <field name="name">Thailand</field>
-            <field name="code">66</field>
+            <field name="name">+66</field>
             <field name="phone_number_format">+66 ###########</field>
             <field name="phone_number_example">+66 123456789</field>
             <field name="active">True</field>
@@ -1879,8 +1671,7 @@
             <field name="country_id" ref="base.th" />
         </record>
         <record id="res_phone_national_code_data_228" model="res.phone.national.code">
-            <field name="name">Togo</field>
-            <field name="code">228</field>
+            <field name="name">+228</field>
             <field name="phone_number_format">+228 ###########</field>
             <field name="phone_number_example">+228 123456789</field>
             <field name="active">True</field>
@@ -1888,8 +1679,7 @@
             <field name="country_id" ref="base.tg" />
         </record>
         <record id="res_phone_national_code_data_690" model="res.phone.national.code">
-            <field name="name">Tokelau</field>
-            <field name="code">690</field>
+            <field name="name">+690</field>
             <field name="phone_number_format">+690 ###########</field>
             <field name="phone_number_example">+690 123456789</field>
             <field name="active">True</field>
@@ -1897,8 +1687,7 @@
             <field name="country_id" ref="base.tk" />
         </record>
         <record id="res_phone_national_code_data_676" model="res.phone.national.code">
-            <field name="name">Tonga</field>
-            <field name="code">676</field>
+            <field name="name">+676</field>
             <field name="phone_number_format">+676 ###########</field>
             <field name="phone_number_example">+676 123456789</field>
             <field name="active">True</field>
@@ -1906,8 +1695,7 @@
             <field name="country_id" ref="base.to" />
         </record>
         <record id="res_phone_national_code_data_1868" model="res.phone.national.code">
-            <field name="name">Trinidad and Tobago</field>
-            <field name="code">1868</field>
+            <field name="name">+1868</field>
             <field name="phone_number_format">+1868 ###########</field>
             <field name="phone_number_example">+1868 123456789</field>
             <field name="active">True</field>
@@ -1915,8 +1703,7 @@
             <field name="country_id" ref="base.tt" />
         </record>
         <record id="res_phone_national_code_data_216" model="res.phone.national.code">
-            <field name="name">Tunisia</field>
-            <field name="code">216</field>
+            <field name="name">+216</field>
             <field name="phone_number_format">+216 ###########</field>
             <field name="phone_number_example">+216 123456789</field>
             <field name="active">True</field>
@@ -1924,8 +1711,7 @@
             <field name="country_id" ref="base.tn" />
         </record>
         <record id="res_phone_national_code_data_90" model="res.phone.national.code">
-            <field name="name">Turkey</field>
-            <field name="code">90</field>
+            <field name="name">+90</field>
             <field name="phone_number_format">+90 ###########</field>
             <field name="phone_number_example">+90 123456789</field>
             <field name="active">True</field>
@@ -1933,8 +1719,7 @@
             <field name="country_id" ref="base.tr" />
         </record>
         <record id="res_phone_national_code_data_993" model="res.phone.national.code">
-            <field name="name">Turkmenistan</field>
-            <field name="code">993</field>
+            <field name="name">+993</field>
             <field name="phone_number_format">+993 ###########</field>
             <field name="phone_number_example">+993 123456789</field>
             <field name="active">True</field>
@@ -1942,8 +1727,7 @@
             <field name="country_id" ref="base.tm" />
         </record>
         <record id="res_phone_national_code_data_1649" model="res.phone.national.code">
-            <field name="name">Turks and Caicos Islands</field>
-            <field name="code">1649</field>
+            <field name="name">+1649</field>
             <field name="phone_number_format">+1649 ###########</field>
             <field name="phone_number_example">+1649 123456789</field>
             <field name="active">True</field>
@@ -1951,8 +1735,7 @@
             <field name="country_id" ref="base.tc" />
         </record>
         <record id="res_phone_national_code_data_688" model="res.phone.national.code">
-            <field name="name">Tuvalu</field>
-            <field name="code">688</field>
+            <field name="name">+688</field>
             <field name="phone_number_format">+688 ###########</field>
             <field name="phone_number_example">+688 123456789</field>
             <field name="active">True</field>
@@ -1960,8 +1743,7 @@
             <field name="country_id" ref="base.tv" />
         </record>
         <record id="res_phone_national_code_data_256" model="res.phone.national.code">
-            <field name="name">Uganda</field>
-            <field name="code">256</field>
+            <field name="name">+256</field>
             <field name="phone_number_format">+256 ###########</field>
             <field name="phone_number_example">+256 123456789</field>
             <field name="active">True</field>
@@ -1969,8 +1751,7 @@
             <field name="country_id" ref="base.ug" />
         </record>
         <record id="res_phone_national_code_data_380" model="res.phone.national.code">
-            <field name="name">Ukraine</field>
-            <field name="code">380</field>
+            <field name="name">+380</field>
             <field name="phone_number_format">+380 ###########</field>
             <field name="phone_number_example">+380 123456789</field>
             <field name="active">True</field>
@@ -1978,8 +1759,7 @@
             <field name="country_id" ref="base.ua" />
         </record>
         <record id="res_phone_national_code_data_971" model="res.phone.national.code">
-            <field name="name">United Arab Emirates</field>
-            <field name="code">971</field>
+            <field name="name">+971</field>
             <field name="phone_number_format">+971 ###########</field>
             <field name="phone_number_example">+971 123456789</field>
             <field name="active">True</field>
@@ -1987,8 +1767,7 @@
             <field name="country_id" ref="base.ae" />
         </record>
         <record id="res_phone_national_code_data_44" model="res.phone.national.code">
-            <field name="name">United Kingdom of Great Britain and Northern Ireland</field>
-            <field name="code">44</field>
+            <field name="name">+44</field>
             <field name="phone_number_format">+44 #### ######</field>
             <field name="phone_number_example">+44 20 7946 0958</field>
             <field name="active">True</field>
@@ -1996,8 +1775,7 @@
             <field name="country_id" ref="base.uk" />
         </record>
         <record id="res_phone_national_code_data_255" model="res.phone.national.code">
-            <field name="name">United Republic of Tanzania</field>
-            <field name="code">255</field>
+            <field name="name">+255</field>
             <field name="phone_number_format">+255 ###########</field>
             <field name="phone_number_example">+255 123456789</field>
             <field name="active">True</field>
@@ -2005,8 +1783,7 @@
             <field name="country_id" ref="base.tz" />
         </record>
         <record id="res_phone_national_code_data_ " model="res.phone.national.code">
-            <field name="name">United States Minor Outlying Islands</field>
-            <field name="code"> </field>
+            <field name="name">+ </field>
             <field name="phone_number_format">+  ###########</field>
             <field name="phone_number_example">+  123456789</field>
             <field name="active">True</field>
@@ -2014,8 +1791,7 @@
             <field name="country_id" ref="base.um" />
         </record>
         <record id="res_phone_national_code_data_1" model="res.phone.national.code">
-            <field name="name">United States of America</field>
-            <field name="code">1</field>
+            <field name="name">+1</field>
             <field name="phone_number_format">+1 (###) ###-####</field>
             <field name="phone_number_example">+1 (555) 123-4567</field>
             <field name="active">True</field>
@@ -2023,8 +1799,7 @@
             <field name="country_id" ref="base.us" />
         </record>
         <record id="res_phone_national_code_data_1340" model="res.phone.national.code">
-            <field name="name">United States Virgin Islands</field>
-            <field name="code">1340</field>
+            <field name="name">+1340</field>
             <field name="phone_number_format">+1340 ###########</field>
             <field name="phone_number_example">+1340 123456789</field>
             <field name="active">True</field>
@@ -2032,8 +1807,7 @@
             <field name="country_id" ref="base.vi" />
         </record>
         <record id="res_phone_national_code_data_598" model="res.phone.national.code">
-            <field name="name">Uruguay</field>
-            <field name="code">598</field>
+            <field name="name">+598</field>
             <field name="phone_number_format">+598 ###########</field>
             <field name="phone_number_example">+598 123456789</field>
             <field name="active">True</field>
@@ -2041,8 +1815,7 @@
             <field name="country_id" ref="base.uy" />
         </record>
         <record id="res_phone_national_code_data_998" model="res.phone.national.code">
-            <field name="name">Uzbekistan</field>
-            <field name="code">998</field>
+            <field name="name">+998</field>
             <field name="phone_number_format">+998 ###########</field>
             <field name="phone_number_example">+998 123456789</field>
             <field name="active">True</field>
@@ -2050,8 +1823,7 @@
             <field name="country_id" ref="base.uz" />
         </record>
         <record id="res_phone_national_code_data_678" model="res.phone.national.code">
-            <field name="name">Vanuatu</field>
-            <field name="code">678</field>
+            <field name="name">+678</field>
             <field name="phone_number_format">+678 ###########</field>
             <field name="phone_number_example">+678 123456789</field>
             <field name="active">True</field>
@@ -2059,8 +1831,7 @@
             <field name="country_id" ref="base.vu" />
         </record>
         <record id="res_phone_national_code_data_58" model="res.phone.national.code">
-            <field name="name">Venezuela (Bolivarian Republic of)</field>
-            <field name="code">58</field>
+            <field name="name">+58</field>
             <field name="phone_number_format">+58 ###########</field>
             <field name="phone_number_example">+58 123456789</field>
             <field name="active">True</field>
@@ -2068,8 +1839,7 @@
             <field name="country_id" ref="base.ve" />
         </record>
         <record id="res_phone_national_code_data_84" model="res.phone.national.code">
-            <field name="name">Viet Nam</field>
-            <field name="code">84</field>
+            <field name="name">+84</field>
             <field name="phone_number_format">+84 ###########</field>
             <field name="phone_number_example">+84 123456789</field>
             <field name="active">True</field>
@@ -2077,8 +1847,7 @@
             <field name="country_id" ref="base.vn" />
         </record>
         <record id="res_phone_national_code_data_212" model="res.phone.national.code">
-            <field name="name">Western Sahara</field>
-            <field name="code">212</field>
+            <field name="name">+212</field>
             <field name="phone_number_format">+212 ###########</field>
             <field name="phone_number_example">+212 123456789</field>
             <field name="active">True</field>
@@ -2086,8 +1855,7 @@
             <field name="country_id" ref="base.eh" />
         </record>
         <record id="res_phone_national_code_data_967" model="res.phone.national.code">
-            <field name="name">Yemen</field>
-            <field name="code">967</field>
+            <field name="name">+967</field>
             <field name="phone_number_format">+967 ###########</field>
             <field name="phone_number_example">+967 123456789</field>
             <field name="active">True</field>
@@ -2095,8 +1863,7 @@
             <field name="country_id" ref="base.ye" />
         </record>
         <record id="res_phone_national_code_data_260" model="res.phone.national.code">
-            <field name="name">Zambia</field>
-            <field name="code">260</field>
+            <field name="name">+260</field>
             <field name="phone_number_format">+260 ###########</field>
             <field name="phone_number_example">+260 123456789</field>
             <field name="active">True</field>
@@ -2104,8 +1871,7 @@
             <field name="country_id" ref="base.zm" />
         </record>
         <record id="res_phone_national_code_data_263" model="res.phone.national.code">
-            <field name="name">Zimbabwe</field>
-            <field name="code">263</field>
+            <field name="name">+263</field>
             <field name="phone_number_format">+263 ###########</field>
             <field name="phone_number_example">+263 123456789</field>
             <field name="active">True</field>

@@ -4,14 +4,72 @@
             <field name="name">res.partner.address.form.prefix.fields</field>
             <field name="model">res.partner.address</field>
             <field name="type">form</field>
-            <field name="inherit_id" ref="base.view_partner_form"/>
-            <field name="priority" eval="20"/>
+            <field name="inherit_id" ref="base.view_partner_address_form1"/>
+            <field name="priority" eval="30"/>
             <field name="arch" type="xml">
-                <xpath expr="//field[@name='phone']" position="before">
-                    <field name="phone_prefix" placeholder="Prefix"/>
+                <xpath expr="//field[@name='phone']" position="replace">
+                    <field name="phone" invisible="1"/>
                 </xpath>
-                <xpath expr="//field[@name='mobile']" position="before">
-                    <field name="mobile_prefix" placeholder="Prefix"/>
+                <xpath expr="//field[@name='fax']" position="replace">
+                    <field name="fax" invisible="1"/>
+                </xpath>
+                <xpath expr="//field[@name='email']" position="replace">
+                    <field name="email" invisible="1"/>
+                </xpath>
+                <xpath expr="//field[@name='mobile']" position="replace">
+                    <group col="22" colspan="4">
+                        <field name="phone_prefix" colspan="2"/>
+                        <field name="phone" colspan="8"/>
+                        <field name="fax"  colspan="8" />
+                    </group>
+                    <group col="22" colspan="4">
+                        <field name="mobile_prefix" colspan="2"/>
+                        <field name="mobile" colspan="8"/>
+                        <field name="email" colspan="8" widget="email"/>
+                    </group>
+                    <group colspan="4">
+                        <field name="notes" colspan="4"/>
+                    </group>
+                </xpath>
+                <xpath expr="//page[@string='Notes']" position="replace">
+                    <page string="Notes" invisible="1"></page>
+                </xpath>
+
+            </field>
+        </record>
+        <record id="view_partner_form_prefix_fields" model="ir.ui.view">
+            <field name="name">res.partner.form.prefix.fields</field>
+            <field name="model">res.partner</field>
+            <field name="type">form</field>
+            <field name="inherit_id" ref="base.view_partner_form"/>
+            <field name="priority" eval="30"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='phone']" position="replace">
+                    <field name="phone" invisible="1"/>
+                </xpath>
+                <xpath expr="//field[@name='fax']" position="replace">
+                    <field name="fax" invisible="1"/>
+                </xpath>
+                <xpath expr="//field[@name='email']" position="replace">
+                    <field name="email" invisible="1"/>
+                </xpath>
+                <xpath expr="//field[@name='mobile']" position="replace">
+                    <group col="30" colspan="4">
+                        <field name="phone_prefix" colspan="2"/>
+                        <field name="phone" colspan="12"/>
+                        <field name="mobile_prefix" colspan="2"/>
+                        <field name="mobile" colspan="12"/>
+                    </group>
+                    <group col="30" colspan="4">
+                        <field name="fax"  colspan="12" />
+                        <field name="email" colspan="12" widget="email"/>
+                    </group>
+                    <group colspan="4">
+                        <field name="notes" colspan="4"/>
+                    </group>
+                </xpath>
+                <xpath expr="//page[@string='Notes']" position="replace">
+                    <page string="Notes" invisible="1"></page>
                 </xpath>
             </field>
         </record>
