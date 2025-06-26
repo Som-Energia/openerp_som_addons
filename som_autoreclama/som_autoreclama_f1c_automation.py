@@ -10,24 +10,28 @@ class SomAutoreclamaF1cAutomation(osv.osv_memory):
 
     _name = "som.autoreclama.f1c.automation"
 
+    tag = u"Generat cas atc r1 010 automàtic amb id"
+
     def get_f1c_candidates_to_reclaim(self, cursor, uid, context=None):
         last_24_hours = datetime.now() - timedelta(hours=24)
         f1_obj = self.pool.get("giscedata.facturacio.importacio.linia")
         f1_ids = f1_obj.search(cursor, uid, [
-            ('data_carrega', '>=', last_24_hours.strftime("%Y-%m-%d")),
+            ('data_carrega', '>=', last_24_hours.strftime("%Y-%m-%d %H:%M:%S")),
             ('type_factura', '=', 'C'),
-            ('user_observations', 'not ilike', '%Generat cas atc r1 010 automàtic amb id%'),
         ])
-        # remove the sent ones (comment)
-        return f1_ids
+
+        found = []
+        for f1 in f1_obj.read(cursor, uid, f1_ids, ['user_observations']):
+            if not f1['user_observations'] or self.tag not in f1['user_observations']:
+                found.append(f1['id'])
+
+        return found
 
     def reclaim_f1c(self, cursor, uid, f1_ids, context=None):
         atc_obj = self.pool.get("giscedata.atc")
         f1_obj = self.pool.get("giscedata.facturacio.importacio.linia")
 
-        tag = u"Generat cas atc r1 010 automàtic amb id"
-        today = date.today().strptime("%Y-%m-%d")
-
+        today = date.today().strftime("%Y-%m-%d")
         ok_ids = []
         error_ids = []
         msg = u""
@@ -40,16 +44,17 @@ class SomAutoreclamaF1cAutomation(osv.osv_memory):
                     cursor, uid, f1_id, ["user_observations", "name"])
                 observations = data["user_observations"] or u""
                 f1_name = data["name"]
-                line = u"{} {} {}".format(today, tag, atc_id)
+                line = u"{} {} {}".format(today, self.tag, atc_id)
                 new_observations = u"{}\n{}".format(line, observations)
                 f1_obj.write(cursor, uid, f1_id, {"user_observations": new_observations})
-                msg += u"F1 {} ha generat cas ATC 010 amb id {}\n\n".format(f1_name, f1_id)
-                ok_ids.append(atc_id)
+                msg += u"F1 {} ha generat cas ATC 010 amb id {}\n\n".format(f1_name, atc_id)
+                ok_ids.append(f1_id)
             except Exception as e:
-                msg += u"F1 {} no ha pogut generar cas ATC 010 per el motiu:\n".format(f1_name)
+                name = f1_obj.read(cursor, uid, f1_id, ["name"])["name"]
+                msg += u"F1 {} no ha pogut generar cas ATC 010 per el motiu:\n".format(name)
                 msg += u"  ERROR: {}\n".format(e.message)
                 msg += u"{}\n\n".format(traceback.format_exc())
-                error_ids.append(f1_ids)
+                error_ids.append(f1_id)
 
         summary = u"Sumari ATC 010 per F1 tipus C\n"
         summary += u"F1's tipus C amb ATC generat : .................... {}\n".format(len(ok_ids))
