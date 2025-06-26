@@ -15,6 +15,17 @@ class WizardCalculateGurbSavings(osv.osv_memory):
         gff_obj = self.pool.get("giscedata.facturacio.factura")
         gffl_obj = self.pool.get("giscedata.facturacio.factura.linia")
         prod_obj = self.pool.get("product.product")
+        imd_o = self.pool.get("ir.model.data")
+
+        gurb_product_id = imd_o.get_object_reference(
+            cursor, uid, "som_gurb", "product_gurb"
+        )[1]
+        owner_product_id = imd_o.get_object_reference(
+            cursor, uid, "som_gurb", "product_owner_gurb"
+        )[1]
+        enterprise_product_id = imd_o.get_object_reference(
+            cursor, uid, "som_gurb", "product_enterprise_gurb"
+        )[1]
 
         wiz = self.browse(cursor, uid, ids[0], context=context)
         gurb_cups_id = context.get("active_id", False)
@@ -35,25 +46,31 @@ class WizardCalculateGurbSavings(osv.osv_memory):
 
         for f1_id in f1_ids:
             # del f1
-            linies_autoconsum_ids = gffl_obj.search(cursor, uid, ([("factura_id", "in", f1_id),
+            linies_autoconsum_ids = gffl_obj.search(cursor, uid, ([("factura_id", "=", f1_id),
                                                                    ("tipus", "=", "autoconsum")]))
-            linies_generacio_ids = gffl_obj.search(cursor, uid, ([("factura_id", "in", f1_id),
+            linies_generacio_ids = gffl_obj.search(cursor, uid, ([("factura_id", "=", f1_id),
                                                                   ("tipus", "=", "generacio")]))
-            linies_energia_f1_ids = gffl_obj.search(cursor, uid, ([("factura_id", "in", f1_id),
+            linies_energia_f1_ids = gffl_obj.search(cursor, uid, ([("factura_id", "=", f1_id),
                                                                    ("tipus", "=", "energia")]))
 
             f1 = gff_obj.browse(cursor, uid, f1_id)
             # de la gff
-            gff_id = gff_obj.search(cursor, uid, (
+            gff_ids = gff_obj.search(cursor, uid, (
                 [("polissa_id", "=", polissa_id),
                  ("data_inici", ">=", f1.data_inici),
                     ("data_final", "<=", f1.data_final),
-                    ("type", "=", "out_invoice")]))[0]
+                    ("type", "=", "out_invoice")]))
+            if gff_ids:
+                gff_id = gff_ids[0]
+            else:
+                raise osv.except_osv("Error ", "No coincideixen els F1s i les factures per calcular l'estalvi")  # noqa: E501
             linies_gurb_ids = gffl_obj.search(cursor,
                                               uid,
-                                              ([("factura_id", "in", gff_id),
-                                                ("name", "=", "Quota del servei GURB")]))
-            linies_energia_ids = gffl_obj.search(cursor, uid, ([("factura_id", "in", gff_id),
+                                              ([("factura_id", "=", gff_id),
+                                                ("product_id", "in", [gurb_product_id,
+                                                                      enterprise_product_id,
+                                                                      owner_product_id])]))
+            linies_energia_ids = gffl_obj.search(cursor, uid, ([("factura_id", "=", gff_id),
                                                                 ("tipus", "=", "energia")]))
 
             # buscar la gff a partir del date to i from del f1?
@@ -78,7 +95,7 @@ class WizardCalculateGurbSavings(osv.osv_memory):
                 price_energia[linia_energia.name] = linia_energia.price_unit
 
             profit_fact = 0
-            for k, _ in total_auto:
+            for k in total_auto:
                 # en aquesta linia no hi ha impostos, també deixaràs de pagar iva, com ho calculem?
                 profit_fact += ((total_energia[k] * price_energia[k]) - ((total_energia[k] - total_auto[k]) * price_energia[k]))  # noqa: E501
 
@@ -95,16 +112,20 @@ class WizardCalculateGurbSavings(osv.osv_memory):
             # al gurb se li han d'aplicar els impostos? si és empresa dona igual?
             profit_fact -= cost_gurb
 
-            profit_untaxed += (profit_fact + total_generacio - cost_gurb)
+            if linies_gurb:
+                profit_untaxed += (profit_fact + total_generacio - cost_gurb)
 
-            profit_fact_taxed = prod_obj.add_taxes(cursor, uid, linies_energia[0].product_id.id,
-                                                   profit_fact, False, context=context,
-                                                   )
-            cost_gurb_taxed = prod_obj.add_taxes(cursor, uid, linies_gurb[0].product_id.id,
-                                                 cost_gurb, False, context=context,
-                                                 )
+            if linies_energia:
+                profit_fact_taxed = prod_obj.add_taxes(cursor, uid, linies_energia[0].product_id.id,
+                                                       profit_fact, False, context=context,
+                                                       )
+            if linies_gurb:
+                cost_gurb_taxed = prod_obj.add_taxes(cursor, uid, linies_gurb[0].product_id.id,
+                                                     cost_gurb, False, context=context,
+                                                     )
 
-            profit += (profit_fact_taxed + total_generacio - cost_gurb_taxed)
+            if linies_energia and linies_gurb:
+                profit += (profit_fact_taxed + total_generacio - cost_gurb_taxed)
 
         info = "L'estalvi sense impostos ha estat de {}€ i amb impostos de {}€".format(
             str(profit_untaxed), str(profit))
