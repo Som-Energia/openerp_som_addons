@@ -18,13 +18,7 @@
     ],
     "init_xml": [],
     "demo_xml": [],
-    "update_xml": [
-        "partner_view.xml",
-        "account_chart.xml",
-        "partner_data.xml",
-        "views/res_partner_address_view.xml",
-        "views/res_phone_national_code_view.xml"
-    ],
+    "update_xml": ["partner_view.xml", "account_chart.xml", "partner_data.xml"],
     "active": False,
     "installable": True,
 }
