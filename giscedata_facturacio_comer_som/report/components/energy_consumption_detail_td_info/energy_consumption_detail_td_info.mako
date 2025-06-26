@@ -1,4 +1,4 @@
-<%page args="id_info" />
+<%page args="id_info,col" />
 <style>
 <%include file="energy_consumption_detail_td_info.css" />
 </style>
@@ -12,11 +12,16 @@
     %if id_info.adjust_reason == '99':
         ${_(u"(2) Aquesta energia utilitzada inclou ajustos aplicats per la companyia distribuïdora.")}
     %elif id_info.adjust_reason == '98':
-        ${_(u"(2) Aquesta energia utilitzada inclou els ajustos corresponents al balanç horari ")}
-        %if id_info.lang == 'ca_ES':
-            <a href="https://ca.support.somenergia.coop/article/849-autoproduccio-que-es-el-balanc-net-horari">${_(u"(més informació).")}</a>
+        %if col:
+            ${_(u"(2) Aquesta energia utilitzada inclou els ajustos corresponents a l'energia autoconsumida.")}
         %else:
             <a href="https://es.support.somenergia.coop/article/850-autoproduccion-que-es-el-balance-neto-horario">${_(u"(més informació).")}</a>
+            ${_(u"(2) Aquesta energia utilitzada inclou els ajustos corresponents al balanç horari ")}
+            %if id_info.lang == 'ca_ES':
+                <a href="https://ca.support.somenergia.coop/article/849-autoproduccio-que-es-el-balanc-net-horari">${_(u"(més informació).")}</a>
+            %else:
+                <a href="https://es.support.somenergia.coop/article/850-autoproduccion-que-es-el-balance-neto-horario">${_(u"(més informació).")}</a>
+            %endif
         %endif
         <br>
     %elif id_info.adjust_reason == '97':
