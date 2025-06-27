@@ -16,9 +16,27 @@ class ResPartnerAddress(osv.osv):
             'res.phone.national.code', 'Prefix', required=False),
     }
 
+    @staticmethod
+    def check_mobile_or_landline(number):
+        """docstring
+        Check if the spanish phone number is a valid landline or mobile number in Spain.
+        Valid landline numbers start with 8 or 9 and have 9 digits.
+        Valid mobile numbers start with 6 or 7 and have 9 digits.
+
+        :param number: str, the phone number to check
+        :return: str or bool, 'landline' if valid landline,
+             'mobile' if valid mobile, False if invalid"""
+
+        if number.isdigit() and len(number) == 9 and \
+           (number.startswith('9') or number.startswith('8')):
+            return 'landline'
+        if number.isdigit() and len(number) == 9 and \
+           (number.startswith('6') or number.startswith('7')):
+            return 'mobile'
+        return False
+
     def _check_phone_number(self, cr, uid, ids, context=None):
-        """Check if the phone number is valid."""
-        """Phone numbers in Spain have 9 digits and start with 9, 8, or 7."""
+        """Check if the spanish phone number is valid."""
         if not int(self.pool.get('res.config').get(cr, uid, 'check_phone_number', '0')):
             return True
 
@@ -26,25 +44,25 @@ class ResPartnerAddress(osv.osv):
             value = record.phone
             if not value:
                 return True
-            if value.isdigit() and len(value) == 9 and \
-               (value.startswith('9') or value.startswith('8')
-                    or value.startswith('7')):
+            if record.phone_prefix.name != '+34':
+                return True
+            if self.check_mobile_or_landline(value) == 'landline':
                 return True
             else:
                 return False
         return True
 
     def _check_mobile_number(self, cr, uid, ids, context=None):
-        """Check if the mobile number is valid."""
-        """Mobile numbers in Spain start with 6 or 7 and have 9 digits."""
+        """Check if the spanish mobile number is valid."""
         if not int(self.pool.get('res.config').get(cr, uid, 'check_mobile_number', '0')):
             return True
         for record in self.browse(cr, uid, ids, context=context):
             value = record.mobile
             if not value:
                 return True
-            if value.isdigit() and len(value) == 9 and \
-               (value.startswith('6') or value.startswith('7')):
+            if record.mobile_prefix.name != '+34':
+                return True
+            if self.check_mobile_or_landline(value) == 'mobile':
                 return True
             else:
                 return False
