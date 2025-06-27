@@ -2440,14 +2440,14 @@ class SomAutoreclamaf1cAutomationTest(SomAutoreclamaEzATC_Test):
         ff_obj.create(self.cursor, self.uid, {
             'linia_id': f1_id,
             'tipo_factura': '11',
-            'importacio_id': 1,
+            'importacio_id': 2,
             'address_invoice_id': pol.direccio_pagament.id,
             'partner_id': pol.titular.id,
             'account_id': 1,
             'polissa_id': polissa_id,
             'tarifa_acces_id': pol.tarifa.id,
             'cups_id': pol.cups.id,
-            'factura_id': 1,
+            'factura_id': 2,
             'llista_preu': pol.llista_preu.id,
         })
         last_hours = (datetime.now() - timedelta(hours=12)).strftime("%Y-%m-%d %H:%M:%S")
@@ -2471,11 +2471,11 @@ class SomAutoreclamaf1cAutomationTest(SomAutoreclamaEzATC_Test):
             'importacio_id': 1,
             'address_invoice_id': pol.direccio_pagament.id,
             'partner_id': pol.titular.id,
-            'account_id': 1,
+            'account_id': 3,
             'polissa_id': polissa_id,
             'tarifa_acces_id': pol.tarifa.id,
             'cups_id': pol.cups.id,
-            'factura_id': 1,
+            'factura_id': 3,
             'llista_preu': pol.llista_preu.id,
         })
         last_hours = (datetime.now() - timedelta(hours=2)).strftime("%Y-%m-%d %H:%M:%S")
@@ -2488,14 +2488,13 @@ class SomAutoreclamaf1cAutomationTest(SomAutoreclamaEzATC_Test):
         self.assertTrue("F1's tipus C que han donat error en generar ATC ....1" in msg)
         exce = u" ha generat cas ATC 010 amb id "
         self.assertTrue(exce in msg)
-        exce = u"Error en la creació del CAC amb R1 010, F1 no es tipus C id_f1 "
+        exce = u"Error en la creació del CAC amb R1 010, F1 no es tipus anomalia o frau"
         self.assertTrue(exce in msg)
 
     def test__automation__1_yes_1_no_1_far(self):
         pol_obj = self.get_model("giscedata.polissa")
         f1_obj = self.get_model("giscedata.facturacio.importacio.linia")
         ff_obj = self.get_model("giscedata.facturacio.importacio.linia.factura")
-        f1_obj = self.get_model("giscedata.facturacio.importacio.linia")
         aut_obj = self.get_model("som.autoreclama.f1c.automation")
 
         self.create_tags()
@@ -2507,6 +2506,7 @@ class SomAutoreclamaf1cAutomationTest(SomAutoreclamaEzATC_Test):
         f1_ids = f1_obj.search(self.cursor, self.uid, [("cups_id", "in", [pol.cups.id])])
         self.assertGreater(len(f1_ids), 2)
 
+        # F1 ok
         f1_id = f1_ids[0]
         f1 = f1_obj.browse(self.cursor, self.uid, f1_id)
         self.assertEqual(f1.cups_id.name, pol.cups.name)
@@ -2535,6 +2535,7 @@ class SomAutoreclamaf1cAutomationTest(SomAutoreclamaEzATC_Test):
         ssql = '''update giscedata_facturacio_importacio_linia set create_date = %s where id = %s'''
         self.cursor.execute(ssql, (last_hours, f1_id,))
 
+        # F1 far
         f1_id = f1_ids[1]
         f1 = f1_obj.browse(self.cursor, self.uid, f1_id)
         self.assertEqual(f1.cups_id.name, pol.cups.name)
@@ -2552,17 +2553,18 @@ class SomAutoreclamaf1cAutomationTest(SomAutoreclamaEzATC_Test):
             'importacio_id': 1,
             'address_invoice_id': pol.direccio_pagament.id,
             'partner_id': pol.titular.id,
-            'account_id': 1,
+            'account_id': 2,
             'polissa_id': polissa_id,
             'tarifa_acces_id': pol.tarifa.id,
             'cups_id': pol.cups.id,
-            'factura_id': 1,
+            'factura_id': 2,
             'llista_preu': pol.llista_preu.id,
         })
         last_hours = (datetime.now() - timedelta(hours=56)).strftime("%Y-%m-%d %H:%M:%S")
         ssql = '''update giscedata_facturacio_importacio_linia set create_date = %s where id = %s'''
         self.cursor.execute(ssql, (last_hours, f1_id,))
 
+        # F1 no ok (tipus 05)
         f1_id = f1_ids[2]
         f1 = f1_obj.browse(self.cursor, self.uid, f1_id)
         self.assertEqual(f1.cups_id.name, pol.cups.name)
@@ -2576,15 +2578,15 @@ class SomAutoreclamaf1cAutomationTest(SomAutoreclamaEzATC_Test):
         self.assertEqual(f1.polissa_id.id, pol.id)
         ff_obj.create(self.cursor, self.uid, {
             'linia_id': f1_id,
-            'tipo_factura': '05',
+            'tipo_factura': '04',
             'importacio_id': 1,
             'address_invoice_id': pol.direccio_pagament.id,
             'partner_id': pol.titular.id,
-            'account_id': 1,
+            'account_id': 3,
             'polissa_id': polissa_id,
             'tarifa_acces_id': pol.tarifa.id,
             'cups_id': pol.cups.id,
-            'factura_id': 1,
+            'factura_id': 3,
             'llista_preu': pol.llista_preu.id,
         })
         last_hours = (datetime.now() - timedelta(hours=2)).strftime("%Y-%m-%d %H:%M:%S")
@@ -2597,5 +2599,5 @@ class SomAutoreclamaf1cAutomationTest(SomAutoreclamaEzATC_Test):
         self.assertTrue("F1's tipus C que han donat error en generar ATC ....1" in msg)
         exce = u" ha generat cas ATC 010 amb id "
         self.assertTrue(exce in msg)
-        exce = u"Error en la creació del CAC amb R1 010, F1 no es tipus C id_f1 "
+        exce = u"Error en la creació del CAC amb R1 010, F1 no es tipus anomalia o frau id_f1"
         self.assertTrue(exce in msg)
