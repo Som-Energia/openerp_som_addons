@@ -17,15 +17,15 @@
                     <field name="email" invisible="1"/>
                 </xpath>
                 <xpath expr="//field[@name='mobile']" position="replace">
-                    <group col="22" colspan="4">
+                    <group col="16" colspan="4">
                         <field name="phone_prefix" colspan="2"/>
-                        <field name="phone" colspan="8"/>
-                        <field name="fax"  colspan="8" />
+                        <field name="phone" colspan="6"/>
+                        <field name="fax"  colspan="6" />
                     </group>
-                    <group col="22" colspan="4">
+                    <group col="16" colspan="4">
                         <field name="mobile_prefix" colspan="2"/>
-                        <field name="mobile" colspan="8"/>
-                        <field name="email" colspan="8" widget="email"/>
+                        <field name="mobile" colspan="6"/>
+                        <field name="email" colspan="6" widget="email"/>
                     </group>
                     <group colspan="4">
                         <field name="notes" colspan="4"/>
@@ -53,15 +53,15 @@
                     <field name="email" invisible="1"/>
                 </xpath>
                 <xpath expr="//field[@name='mobile']" position="replace">
-                    <group col="22" colspan="4">
+                    <group col="16" colspan="4">
                         <field name="phone_prefix" colspan="2"/>
-                        <field name="phone" colspan="8"/>
-                        <field name="fax"  colspan="8" />
+                        <field name="phone" colspan="6"/>
+                        <field name="fax"  colspan="6" />
                     </group>
-                    <group col="22" colspan="4">
+                    <group col="16" colspan="4">
                         <field name="mobile_prefix" colspan="2"/>
-                        <field name="mobile" colspan="8"/>
-                        <field name="email" colspan="8" widget="email"/>
+                        <field name="mobile" colspan="6"/>
+                        <field name="email" colspan="6" widget="email"/>
                     </group>
                     <group colspan="4">
                         <field name="notes" colspan="4"/>
