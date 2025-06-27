@@ -13,7 +13,10 @@ class SomAutoreclamaF1cAutomation(osv.osv_memory):
     tag = u"Generat cas atc r1 010 automàtic amb id"
 
     def get_f1c_candidates_to_reclaim(self, cursor, uid, context=None):
-        last_24_hours = datetime.now() - timedelta(hours=24)
+        if not context:
+            context = {}
+        hours_back = context.get('hours_back', 24)
+        last_24_hours = datetime.now() - timedelta(hours=hours_back)
         f1_obj = self.pool.get("giscedata.facturacio.importacio.linia")
         f1_ids = f1_obj.search(cursor, uid, [
             ('data_carrega', '>=', last_24_hours.strftime("%Y-%m-%d %H:%M:%S")),
