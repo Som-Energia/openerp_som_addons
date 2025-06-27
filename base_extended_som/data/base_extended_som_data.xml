@@ -1,0 +1,14 @@
+<openerp>
+    <data noupdate="1">
+        <record id="res_config_check_phone_number" model="res.config">
+            <field name="name">check_phone_number</field>
+            <field name="value">0</field>
+            <field name="description">Activar la validació de dígits del número de telèfon</field>
+        </record>
+        <record id="res_config_check_mobile_number" model="res.config">
+            <field name="name">check_mobile_number</field>
+            <field name="value">0</field>
+            <field name="description">Activar la validació de dígits del número de mòbil</field>
+        </record>
+    </data>
+</openerp>
