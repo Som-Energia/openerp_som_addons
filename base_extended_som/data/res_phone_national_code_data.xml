@@ -505,10 +505,26 @@
             <field name="sequence">99</field>
             <field name="country_id" ref="base.dm" />
         </record>
-        <record id="res_phone_national_code_data_1809,1829,1849" model="res.phone.national.code">
-            <field name="name">+1809,1829,1849</field>
-            <field name="phone_number_format">+1809,1829,1849 ###########</field>
-            <field name="phone_number_example">+1809,1829,1849 123456789</field>
+        <record id="res_phone_national_code_data_1809" model="res.phone.national.code">
+            <field name="name">+1809</field>
+            <field name="phone_number_format">+1809 ###########</field>
+            <field name="phone_number_example">+1809 123456789</field>
+            <field name="active">True</field>
+            <field name="sequence">99</field>
+            <field name="country_id" ref="base.do" />
+        </record>
+        <record id="res_phone_national_code_data_1829" model="res.phone.national.code">
+            <field name="name">+1829</field>
+            <field name="phone_number_format">+1829 ###########</field>
+            <field name="phone_number_example">+1829 123456789</field>
+            <field name="active">True</field>
+            <field name="sequence">99</field>
+            <field name="country_id" ref="base.do" />
+        </record>
+        <record id="res_phone_national_code_data_1849" model="res.phone.national.code">
+            <field name="name">+1849</field>
+            <field name="phone_number_format">+1849 ###########</field>
+            <field name="phone_number_example">+1849 123456789</field>
             <field name="active">True</field>
             <field name="sequence">99</field>
             <field name="country_id" ref="base.do" />
@@ -769,10 +785,10 @@
             <field name="sequence">99</field>
             <field name="country_id" ref="base.ht" />
         </record>
-        <record id="res_phone_national_code_data_39-06" model="res.phone.national.code">
-            <field name="name">+39-06</field>
-            <field name="phone_number_format">+39-06 ###########</field>
-            <field name="phone_number_example">+39-06 123456789</field>
+        <record id="res_phone_national_code_data_379" model="res.phone.national.code">
+            <field name="name">+379</field>
+            <field name="phone_number_format">+379 ###########</field>
+            <field name="phone_number_example">+379 123456789</field>
             <field name="active">True</field>
             <field name="sequence">99</field>
             <field name="country_id" ref="base.va" />
@@ -1417,10 +1433,10 @@
             <field name="sequence">99</field>
             <field name="country_id" ref="base.rw" />
         </record>
-        <record id="res_phone_national_code_data_290 n" model="res.phone.national.code">
-            <field name="name">+290 n</field>
-            <field name="phone_number_format">+290 n ###########</field>
-            <field name="phone_number_example">+290 n 123456789</field>
+        <record id="res_phone_national_code_data_290" model="res.phone.national.code">
+            <field name="name">+290</field>
+            <field name="phone_number_format">+290 ###########</field>
+            <field name="phone_number_example">+290 123456789</field>
             <field name="active">True</field>
             <field name="sequence">99</field>
             <field name="country_id" ref="base.sh" />
@@ -1588,7 +1604,7 @@
         <record id="ps" model="res.country">
             <field name="name">Palestine</field>
             <field name="code">ps</field>
-            <field name="code_alpha3">GBR</field>
+            <field name="code_alpha3">PSE</field>
         </record>
         <record id="res_phone_national_code_data_970" model="res.phone.national.code">
             <field name="name">+970</field>
@@ -1781,14 +1797,6 @@
             <field name="active">True</field>
             <field name="sequence">99</field>
             <field name="country_id" ref="base.tz" />
-        </record>
-        <record id="res_phone_national_code_data_ " model="res.phone.national.code">
-            <field name="name">+ </field>
-            <field name="phone_number_format">+  ###########</field>
-            <field name="phone_number_example">+  123456789</field>
-            <field name="active">True</field>
-            <field name="sequence">99</field>
-            <field name="country_id" ref="base.um" />
         </record>
         <record id="res_phone_national_code_data_1" model="res.phone.national.code">
             <field name="name">+1</field>
