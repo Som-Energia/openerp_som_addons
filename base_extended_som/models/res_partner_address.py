@@ -81,7 +81,7 @@ class ResPartnerAddress(osv.osv):
         if context is None:
             context = {}
         res = self.pool.get('res.phone.national.code').search(
-            cr, uid, [('name', '=', '+34')], limit=1, context=context)
+            cr, uid, [('name', '=', '+34')], limit=1, context=context)[0]
         return res
 
     _defaults = {
