@@ -54,6 +54,13 @@ class TestBaseExtendedSom(testing.OOTestCaseWithCursor):
         rp_ids = self.rpa_obj.search(self.cursor, self.uid, [("phone", "=", "972000000")])
         self.assertGreater(len(rp_ids), 0, "Phone number should be valid.")
 
+        rp_ids = self.rpa_obj.create(self.cursor, self.uid, {
+            "name": "Test Address",
+            "phone": "972000000",
+            "mobile": "600000000",
+        })
+        self.assertTrue(rp_ids, "Default prefix works.")
+
     def test_check_mobile_number_with_config_disabled(self):
         """Test that mobile numbers are checked correctly."""
         self.spanish_prefix = self.ir_obj.get_object_reference(
