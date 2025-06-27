@@ -13,11 +13,10 @@ def up(cursor, installed_version):
     logger.info("Initializing new fields")
 
     pool = pooler.get_pool(cursor.dbname)
-    pool.get("res.partner.address")._auto_init(
+    pool.get("res.phone.national.code")._auto_init(
         cursor, context={'module': 'base_extended_som'}
     )
-
-    pool.get("res.phone.national.code")._auto_init(
+    pool.get("res.partner.address")._auto_init(
         cursor, context={'module': 'base_extended_som'}
     )
 
