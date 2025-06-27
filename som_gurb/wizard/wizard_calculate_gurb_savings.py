@@ -103,15 +103,11 @@ class WizardCalculateGurbSavings(osv.osv_memory):
             for linia_generacio in linies_generacio:
                 total_generacio += (linia_generacio.quantity * linia_generacio.price_unit)
 
-            profit_fact += total_generacio
-
             cost_gurb = 0
             for linia_gurb in linies_gurb:
                 cost_gurb += linia_gurb.price_subtotal
 
             # al gurb se li han d'aplicar els impostos? si és empresa dona igual?
-            profit_fact -= cost_gurb
-
             if linies_gurb:
                 profit_untaxed += (profit_fact + total_generacio - cost_gurb)
 
