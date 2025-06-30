@@ -48,8 +48,7 @@ class WizardCalculateGurbSavings(osv.osv_memory):
             # del f1
             linies_autoconsum_ids = gffl_obj.search(cursor, uid, ([("factura_id", "=", f1_id),
                                                                    ("tipus", "=", "autoconsum")]))
-            linies_generacio_ids = gffl_obj.search(cursor, uid, ([("factura_id", "=", f1_id),
-                                                                  ("tipus", "=", "generacio")]))
+
             linies_energia_f1_ids = gffl_obj.search(cursor, uid, ([("factura_id", "=", f1_id),
                                                                    ("tipus", "=", "energia")]))
 
@@ -72,6 +71,8 @@ class WizardCalculateGurbSavings(osv.osv_memory):
                                                                       owner_product_id])]))
             linies_energia_ids = gffl_obj.search(cursor, uid, ([("factura_id", "=", gff_id),
                                                                 ("tipus", "=", "energia")]))
+            linies_generacio_ids = gffl_obj.search(cursor, uid, ([("factura_id", "=", gff_id),
+                                                                  ("tipus", "=", "generacio")]))
 
             # buscar la gff a partir del date to i from del f1?
 
@@ -109,7 +110,7 @@ class WizardCalculateGurbSavings(osv.osv_memory):
 
             # al gurb se li han d'aplicar els impostos? si és empresa dona igual?
             if linies_gurb:
-                profit_untaxed += (profit_fact + total_generacio - cost_gurb)
+                profit_untaxed += (profit_fact + abs(total_generacio) - cost_gurb)
 
             if linies_energia:
                 profit_fact_taxed = prod_obj.add_taxes(cursor, uid, linies_energia[0].product_id.id,
@@ -121,7 +122,7 @@ class WizardCalculateGurbSavings(osv.osv_memory):
                                                      )
 
             if linies_energia and linies_gurb:
-                profit += (profit_fact_taxed + total_generacio - cost_gurb_taxed)
+                profit += (profit_fact_taxed + abs(total_generacio) - cost_gurb_taxed)
 
         info = "L'estalvi sense impostos ha estat de {}€ i amb impostos de {}€".format(
             str(profit_untaxed), str(profit))
