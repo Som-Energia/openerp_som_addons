@@ -216,7 +216,7 @@ creation_date_str = creation_date.strftime(_('%d/%m/%Y a les %T'))
 </div>
 </%def>
 <div>
-    <img class="logo" src="${addons_path}/som_inversions/report/logo2.jpg" width="150" height="150"/>
+    <img class="logo" src="${addons_path}/som_inversions/report/logo2.png" width="150" height="150"/>
 </div>
 <div class="contracte">
     <h1>${_(u'CONTRACTE D’ADHESIÓ AL SISTEMA D’AUTOPRODUCCIÓ COL·LECTIVA D’ENERGIA ELÈCTRICA PROVINENT DE FONTS RENOVABLES')}</h1>
