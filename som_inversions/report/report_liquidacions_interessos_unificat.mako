@@ -100,7 +100,7 @@
     }
     .TitolCaixa {
       margin-top: 50px;
-      background: #4D4D4D;
+      background: #0B2E34;
     }
     .TitolCaixa h2, .CaixaTit h3, .CaixaTitNum h3 {
       font-size: 0.55em;

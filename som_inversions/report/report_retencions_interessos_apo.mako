@@ -94,7 +94,7 @@
       font-size: 1em;
     }
     .TitolCaixa {
-      background: #4D4D4D;
+      background: #0B2E34;
     }
     .TitolCaixa h2, .CaixaTitTitular h3,.CaixaTitAportacio h3, .InfoAddTitol h3 {
       font-weight: 900;
