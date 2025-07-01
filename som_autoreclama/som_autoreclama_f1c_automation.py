@@ -10,18 +10,38 @@ class SomAutoreclamaF1cAutomation(osv.osv_memory):
 
     _name = "som.autoreclama.f1c.automation"
 
+    tag = u"ATC generat automàticament ref F1 C"
+
     def get_f1c_candidates_to_reclaim(self, cursor, uid, context=None):
+        f1_obj = self.pool.get("giscedata.facturacio.importacio.linia")
+        atc_obj = self.pool.get("giscedata.atc")
+
+        subtipus_id = self.pool.get('ir.model.data').get_object_reference(
+            cursor, uid, 'giscedata_subtipus_reclamacio', 'subtipus_reclamacio_010')[1]
+
         if not context:
             context = {}
         hours_back = context.get('hours_back', 24)
         last_24_hours = datetime.now() - timedelta(hours=hours_back)
-        f1_obj = self.pool.get("giscedata.facturacio.importacio.linia")
         f1_ids = f1_obj.search(cursor, uid, [
             ('data_carrega', '>=', last_24_hours.strftime("%Y-%m-%d %H:%M:%S")),
             ('type_factura', '=', 'C'),
         ])
 
-        return f1_ids
+        found = []
+        for f1_id in f1_ids:
+            f1 = f1_obj.browse(cursor, uid, f1_id, context)
+            atc_ids = atc_obj.search(cursor, uid, [
+                ('subtipus_id', '=', subtipus_id),
+                ('cups_id', '=', f1.cups_id.id),
+                ('name', '=', u"R per defecte expedient"),
+                ('description', 'like', '%{}%'.format(f1.invoice_number_text)),
+                ('description', 'like', '%{}%'.format(self.tag)),
+            ], context={"active_test": False})
+            if len(atc_ids) == 0:
+                found.append(f1_id)
+
+        return found
 
     def reclaim_f1c(self, cursor, uid, f1_ids, context=None):
         atc_obj = self.pool.get("giscedata.atc")
@@ -31,10 +51,18 @@ class SomAutoreclamaF1cAutomation(osv.osv_memory):
         error_ids = []
         msg = u""
         for f1_id in f1_ids:
-            f1_name = f1_obj.read(cursor, uid, f1_id, ["name"])["name"]
+            data = f1_obj.read(cursor, uid, f1_id, ["name", "invoice_number_text"])
+            f1_name = data["name"]
             try:
                 atc_id = atc_obj.create_ATC_R1_010_from_f1_via_wizard(
                     cursor, uid, f1_id, context=context)
+
+                line = u"{} {} id({}) per factura {}".format(
+                    self.tag, f1_name, f1_id, data["invoice_number_text"]
+                )
+                description = atc_obj.read(cursor, uid, atc_id, ["description"])["description"]
+                new_description = u"{}\n{}".format(line, description or u"")
+                atc_obj.write(cursor, uid, atc_id, {"description": new_description})
 
                 msg += u"F1 {} ha generat cas ATC 010 amb id {}\n\n".format(f1_name, atc_id)
                 ok_ids.append(f1_id)
