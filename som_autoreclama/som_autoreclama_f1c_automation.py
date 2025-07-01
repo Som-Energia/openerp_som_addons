@@ -3,14 +3,12 @@ from osv import osv
 from tools.translate import _
 from tools import email_send
 import traceback
-from datetime import datetime, timedelta, date
+from datetime import datetime, timedelta
 
 
 class SomAutoreclamaF1cAutomation(osv.osv_memory):
 
     _name = "som.autoreclama.f1c.automation"
-
-    tag = u"Generat cas atc r1 010 automàtic amb id"
 
     def get_f1c_candidates_to_reclaim(self, cursor, uid, context=None):
         if not context:
@@ -23,38 +21,25 @@ class SomAutoreclamaF1cAutomation(osv.osv_memory):
             ('type_factura', '=', 'C'),
         ])
 
-        found = []
-        for f1 in f1_obj.read(cursor, uid, f1_ids, ['user_observations']):
-            if not f1['user_observations'] or self.tag not in f1['user_observations']:
-                found.append(f1['id'])
-
-        return found
+        return f1_ids
 
     def reclaim_f1c(self, cursor, uid, f1_ids, context=None):
         atc_obj = self.pool.get("giscedata.atc")
         f1_obj = self.pool.get("giscedata.facturacio.importacio.linia")
 
-        today = date.today().strftime("%Y-%m-%d")
         ok_ids = []
         error_ids = []
         msg = u""
         for f1_id in f1_ids:
+            f1_name = f1_obj.read(cursor, uid, f1_id, ["name"])["name"]
             try:
                 atc_id = atc_obj.create_ATC_R1_010_from_f1_via_wizard(
                     cursor, uid, f1_id, context=context)
 
-                data = f1_obj.read(
-                    cursor, uid, f1_id, ["user_observations", "name"])
-                observations = data["user_observations"] or u""
-                f1_name = data["name"]
-                line = u"{} {} {}".format(today, self.tag, atc_id)
-                new_observations = u"{}\n{}".format(line, observations)
-                f1_obj.write(cursor, uid, f1_id, {"user_observations": new_observations})
                 msg += u"F1 {} ha generat cas ATC 010 amb id {}\n\n".format(f1_name, atc_id)
                 ok_ids.append(f1_id)
             except Exception as e:
-                name = f1_obj.read(cursor, uid, f1_id, ["name"])["name"]
-                msg += u"F1 {} no ha pogut generar cas ATC 010 per el motiu:\n".format(name)
+                msg += u"F1 {} no ha pogut generar cas ATC 010 per el motiu:\n".format(f1_name)
                 msg += u"  ERROR: {}\n".format(e.message)
                 msg += u"{}\n\n".format(traceback.format_exc())
                 error_ids.append(f1_id)
