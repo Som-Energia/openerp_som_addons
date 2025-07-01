@@ -129,7 +129,7 @@ class WizardCalculateGurbSavings(osv.osv_memory):
         info = "L'estalvi sense impostos ha estat de {}€ i amb impostos de {}€".format(
             str(profit_untaxed), str(profit))
         if bad_f1s:
-            info += "No s'han tingut en compte {} f1s ja que no quadren amb cap factura".format(
+            info += "\nNo s'han tingut en compte {} f1s ja que no quadren amb cap factura".format(
                 str(bad_f1s)
             )
 
