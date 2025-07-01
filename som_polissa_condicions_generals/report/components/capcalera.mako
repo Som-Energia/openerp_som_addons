@@ -1,7 +1,7 @@
 <%def name="capcalera(polissa)">
     <div id="capcelera">
         <div id="logo_capcelera">
-            <img id="logo" src="${addons_path}/som_polissa_condicions_generals/report/assets/logo.png"/>
+            <img id="logo" src="${addons_path}/som_polissa_condicions_generals/report/assets/logo2.png"/>
         </div>
         <div id="address_capcelera">
             <b>${_(u"Som Energia, SCCL")}</b><br/>
