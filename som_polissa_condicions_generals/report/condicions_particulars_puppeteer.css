@@ -1,5 +1,5 @@
 body{
-    color: #5b5b5f;
+    color: #0b2e34;
     font-family: "Roboto";
     font-size: 11px;
 }
@@ -163,7 +163,7 @@ table td{
 }
 
 a {
-   color: #747474;
+   color: #0b2e34;
 }
 
 .new_taula_custom tr .bold {
@@ -199,7 +199,7 @@ a {
 
 .styled_box {
     background: #f7f7f8;
-    border-bottom: 2px solid #5b5b5f;
+    border-bottom: 2px solid #0b2e34;
     margin-bottom: 10px;
     break-inside: avoid;
 }
@@ -212,7 +212,7 @@ a {
 }
 
 .styled_box h5 {
-    background: #5b5b5f;
+    background: #0b2e34;
     color: white;
     padding-left: 0.8em;
     padding-top: 0.4em;
@@ -422,7 +422,7 @@ ol.decimal-list > li:before {
     line-height: 1.7em;
 }
 .index li h4 {
-    color: #747474;
+    color: #0b2e34;
 }
 p.sagnia {
 	text-indent: -24px;
