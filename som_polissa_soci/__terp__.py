@@ -20,7 +20,9 @@
         "giscedata_tarifas_peajes_20180101",
     ],
     "init_xml": ["res_partner_data.xml"],
-    "demo_xml": ["res_partner_demo_data.xml"],
+    "demo_xml": [
+        "demo/res_partner_demo_data.xml",
+    ],
     "update_xml": [
         "giscedata_polissa_view.xml",
         "giscedata_facturacio_data.xml",
