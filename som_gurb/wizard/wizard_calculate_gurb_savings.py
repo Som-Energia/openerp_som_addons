@@ -43,6 +43,7 @@ class WizardCalculateGurbSavings(osv.osv_memory):
 
         profit_untaxed = 0
         profit = 0
+        bad_f1s = 0
 
         for f1_id in f1_ids:
             # del f1
@@ -62,7 +63,8 @@ class WizardCalculateGurbSavings(osv.osv_memory):
             if gff_ids:
                 gff_id = gff_ids[0]
             else:
-                raise osv.except_osv("Error ", "No coincideixen els F1s i les factures per calcular l'estalvi")  # noqa: E501
+                bad_f1s += 1
+                continue
             linies_gurb_ids = gffl_obj.search(cursor,
                                               uid,
                                               ([("factura_id", "=", gff_id),
@@ -126,6 +128,10 @@ class WizardCalculateGurbSavings(osv.osv_memory):
 
         info = "L'estalvi sense impostos ha estat de {}€ i amb impostos de {}€".format(
             str(profit_untaxed), str(profit))
+        if bad_f1s:
+            info += "No s'han tingut en compte {} f1s ja que no quadren amb cap factura".format(
+                str(bad_f1s)
+            )
 
         wiz.write(
             {
