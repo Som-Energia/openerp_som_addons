@@ -57,8 +57,8 @@ class WizardCalculateGurbSavings(osv.osv_memory):
             # de la gff
             gff_ids = gff_obj.search(cursor, uid, (
                 [("polissa_id", "=", polissa_id),
-                 ("data_inici", ">=", f1.data_inici),
-                    ("data_final", "<=", f1.data_final),
+                 ("data_inici", "=", f1.data_inici),
+                    ("data_final", "=", f1.data_final),
                     ("type", "=", "out_invoice")]))
             if gff_ids:
                 gff_id = gff_ids[0]
