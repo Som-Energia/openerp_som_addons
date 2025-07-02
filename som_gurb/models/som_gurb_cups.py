@@ -343,8 +343,9 @@ class SomGurbCups(osv.osv):
         gurb_o = self.pool.get("som.gurb")
         wiz_service_o = self.pool.get("wizard.create.service")
         service_o = self.pool.get("giscedata.facturacio.services")
+        polissa_o = self.pool.get("giscedata.polissa")
 
-        read_vals = ["cups_id", "gurb_id", "owner_cups", "quota_product_id"]
+        read_vals = ["owner_cups", "gurb_id", "cups_id"]
 
         gurb_cups_vals = self.read(cursor, uid, gurb_cups_id, read_vals, context=context)
 
@@ -362,21 +363,37 @@ class SomGurbCups(osv.osv):
             cursor, uid, gurb_cups_id, context=context
         )
 
-        if not gurb_cups_vals["quota_product_id"]:
-            gurb_cups_vals["quota_product_id"] = gurb_o.read(
-                cursor, uid, gurb_cups_vals["gurb_id"][0], ["quota_product_id"]
-            )["quota_product_id"][0]
+        imd_obj = self.pool.get("ir.model.data")
+
+        gurb_product_id = imd_obj.get_object_reference(
+            cursor, uid, "som_gurb", "product_gurb"
+        )[1]
+        owner_product_id = imd_obj.get_object_reference(
+            cursor, uid, "som_gurb", "product_owner_gurb"
+        )[1]
+        enterprise_product_id = imd_obj.get_object_reference(
+            cursor, uid, "som_gurb", "product_enterprise_gurb"
+        )[1]
+
+        read_vals = ["tarifa_codi"]
+        quota_product_id = False
+        pol_vals = polissa_o.read(cursor, uid, pol_id, read_vals, context=context)
+        if gurb_cups_vals["owner_cups"]:
+            quota_product_id = owner_product_id
+        elif pol_vals["tarifa_codi"] == "2.0TD":
+            quota_product_id = gurb_product_id
+        elif pol_vals["tarifa_codi"] == "3.0TD":
+            quota_product_id = enterprise_product_id
+        else:
+            raise osv.except_osv("Error tarifa accés", "la tarifa d'accés no és 2.0TD ni 3.0TD")
 
         read_vals = ["pricelist_id"]
-        if not gurb_cups_vals["quota_product_id"]:
-            read_vals.append("quota_product_id")
 
         gurb_vals = gurb_o.read(
             cursor, uid, gurb_cups_vals["gurb_id"][0], read_vals, context=context
         )
 
         pricelist_id = gurb_vals["pricelist_id"][0]
-        quota_product_id = gurb_cups_vals["quota_product_id"] or gurb_vals["quota_product_id"]
 
         # Afegim el servei
         creation_vals = {

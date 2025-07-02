@@ -96,7 +96,7 @@ class TestsGurbServices(TestsGurbBase):
         pol_br = pol_o.browse(self.cursor, self.uid, polissa_id)
 
         self.assertEqual(pol_br.serveis[0].llista_preus.id, vals['pricelist_id'])
-        self.assertEqual(pol_br.serveis[0].producte.id, vals['product_id'])
+        self.assertEqual(pol_br.serveis[0].producte.id, vals['owner_product_id'])
         self.assertEqual(pol_br.serveis[0].polissa_id.state, "esborrany")
         self.assertEqual(pol_br.serveis[0].polissa_id.id, polissa_id)
 
