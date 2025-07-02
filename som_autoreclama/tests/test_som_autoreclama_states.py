@@ -2220,13 +2220,67 @@ class SomAutoreclamaf1cAutomationTest(SomAutoreclamaEzATC_Test):
         self.assertEqual(len(found_ids), 1)
         self.assertEqual(found_ids[0], f1_id)
 
+    def test__get_f1c_candidates_to_reclaim__find_one_c_already_reclaimed(self):
+        atc_obj = self.get_model("giscedata.atc")
+        pol_obj = self.get_model("giscedata.polissa")
+        f1_obj = self.get_model("giscedata.facturacio.importacio.linia")
+        ff_obj = self.get_model("giscedata.facturacio.importacio.linia.factura")
+        aut_obj = self.get_model("som.autoreclama.f1c.automation")
+
+        self.create_tags()
+        _, polissa_id = self.get_object_reference(
+            "giscedata_polissa", "polissa_0004"
+        )
+        pol_obj.write(self.cursor, self.uid, polissa_id, {"state": 'activa'})
+        pol = pol_obj.browse(self.cursor, self.uid, polissa_id)
+        f1_ids = f1_obj.search(self.cursor, self.uid, [("cups_id", "in", [pol.cups.id])])
+        self.assertGreater(len(f1_ids), 0)
+        f1_id = f1_ids[0]
+        f1 = f1_obj.browse(self.cursor, self.uid, f1_id)
+        self.assertEqual(f1.cups_id.name, pol.cups.name)
+
         f1_obj.write(self.cursor, self.uid, f1_id, {
-            "user_observations": "bla bla bla \n\nGenerat cas atc r1 010 automàtic amb id \n test test",  # noqa: E501
+            "fecha_factura_desde": "2015-01-01",
+            "invoice_number_text": "1234567890ABCD",
+            "type_factura": "C",
+        })
+        f1 = f1_obj.browse(self.cursor, self.uid, f1_id)
+        self.assertEqual(f1.polissa_id.id, pol.id)
+        ff_obj.create(self.cursor, self.uid, {
+            'linia_id': f1_id,
+            'tipo_factura': '06',
+            'importacio_id': 1,
+            'address_invoice_id': pol.direccio_pagament.id,
+            'partner_id': pol.titular.id,
+            'account_id': 1,
+            'polissa_id': polissa_id,
+            'tarifa_acces_id': pol.tarifa.id,
+            'cups_id': pol.cups.id,
+            'factura_id': 1,
+            'llista_preu': pol.llista_preu.id,
+        })
+        last_hours = (datetime.now() - timedelta(hours=12)).strftime("%Y-%m-%d %H:%M:%S")
+        ssql = '''update giscedata_facturacio_importacio_linia set create_date = %s where id = %s'''
+        self.cursor.execute(ssql, (last_hours, f1_id,))
+
+        new_atc_id = atc_obj.create_ATC_R1_010_from_f1_via_wizard(
+            self.cursor, self.uid, f1_id, {}
+        )
+
+        found_ids = aut_obj.get_f1c_candidates_to_reclaim(self.cursor, self.uid, {})
+
+        self.assertTrue(f1_id in found_ids)
+
+        atc_obj.write(self.cursor, self.uid, new_atc_id, {
+            'description': u"cosa {} mes cosa {} altre cosa.".format(
+                aut_obj.tag,
+                f1.invoice_number_text,
+            )
         })
 
         found_ids = aut_obj.get_f1c_candidates_to_reclaim(self.cursor, self.uid, {})
 
-        self.assertEqual(len(found_ids), 0)
+        self.assertTrue(f1_id not in found_ids)
 
     def test__reclaim_f1c__none(self):
         aut_obj = self.get_model("som.autoreclama.f1c.automation")
