@@ -60,7 +60,7 @@ class GiscedataFacturacioFactura(osv.osv):
                 if not new_mail_id:  # no new mail
                     continue
 
-                new_mail = mail_obj.browse(cursor, uid, new_mail_id)
+                new_mail = mail_obj.simple_browse(cursor, uid, new_mail_id)
                 if (new_mail.pem_attachments_ids
                         and new_mail.pem_attachments_ids[0].datas_fname == fact_number + '.pdf'):
                     self.write(cursor, uid, fact_id, {'enviat_mail_id': new_mail_id})
