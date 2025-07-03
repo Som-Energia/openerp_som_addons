@@ -35,7 +35,7 @@
         <td class="bold">${_(u"percentatge assignat")}</td>
         <td class="center" colspan="6">
             <span class="">
-                ${("%s") % prices['auvi_name']} ${formatLang(prices['auvi_percent'], digits=2)} ${_(u"%")}
+                ${("%s") % prices['auvi_name']} ${formatLang(prices['auvi_percent'], digits=6)} ${_(u"%")}
             </span>
         </td>
     </tr>
