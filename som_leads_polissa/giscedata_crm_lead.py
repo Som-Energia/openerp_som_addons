@@ -377,12 +377,14 @@ class GiscedataCrmLead(osv.OsvInherits):
         "referral_source": fields.char("Com ens ha conegut", size=255),
         "birthdate": fields.date("Data de naixement"),
         "gender": fields.selection(GENDER_SELECTION, "Gènere"),
+        "comercial_info_accepted": fields.boolean("Accepta informació comercial (SomServeis)"),
     }
 
     _defaults = {
         "tipus_tarifa_lead": lambda *a: "tarifa_existent",
         "set_custom_potencia": lambda *a: False,
         "donation": lambda *a: False,
+        "comercial_info_accepted": lambda *a: False,
     }
 
 

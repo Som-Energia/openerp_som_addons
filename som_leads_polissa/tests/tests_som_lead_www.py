@@ -1004,3 +1004,22 @@ class TestsSomLeadWww(testing.OOTestCase):
             www_lead_o.activate_lead(self.cursor, self.uid, result["lead_id"])
 
         self.assertIn("CNAE", e.exception.value)
+
+    def test_create_simple_comercial_info_accepted_lead(self):
+        www_lead_o = self.get_model("som.lead.www")
+        lead_o = self.get_model("giscedata.crm.lead")
+
+        values = self._basic_values
+        values["new_member_info"]["is_juridic"] = True
+        values["new_member_info"]["vat"] = "C81837452"
+        values["new_member_info"]["name"] = "PEC COOP SCCL"
+        values["new_member_info"]["proxy_name"] = "Pepito Palotes"
+        values["new_member_info"]["proxy_vat"] = "40323835M"
+        values["new_member_info"]["comercial_info_accepted"] = True
+
+        result = www_lead_o.create_lead(self.cursor, self.uid, values)
+        www_lead_o.activate_lead(self.cursor, self.uid, result["lead_id"])
+
+        lead = lead_o.browse(self.cursor, self.uid, result["lead_id"])
+        # Check that the name is correctly set
+        self.assertEqual(lead.comercial_info_accepted, True)
