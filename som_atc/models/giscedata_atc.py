@@ -40,11 +40,15 @@ class GiscedataAtc(osv.osv):
         for line in stack:
             ps += u"File '{}', line {}, in {}\n".format(line[0], line[1], line[2])
             ps += u"  " + line[3] + u"\n"
+        vars = u"Arguments de crida: "
+        for arg in args:
+            vars += u"{}, ".format(arg)
         for atc_id in ids:
-            track = u"ATC id -> {} de {}\nData execució {}\n\n{}\n".format(
+            track = u"ATC id -> {} de {}\nData execució {}\n{}\n\n{}\n".format(
                 atc_id,
                 len(ids),
                 now,
+                vars,
                 ps)
             description = self.read(cursor, uid, atc_id, ['description'])['description']
             if description:
