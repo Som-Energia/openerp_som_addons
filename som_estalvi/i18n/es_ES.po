@@ -9,7 +9,7 @@ msgstr ""
 "Project-Id-Version: Som Energia\n"
 "Report-Msgid-Bugs-To: support@openerp.com\n"
 "POT-Creation-Date: 2025-07-07 13:39+0000\n"
-"PO-Revision-Date: 2025-07-07 11:44+0000\n"
+"PO-Revision-Date: 2025-07-08 13:03+0000\n"
 "Last-Translator: Som Energia <itcrowd@somenergia.coop>\n"
 "Language-Team: Spanish (Spain) (http://trad.gisce.net/projects/p/somenergia/language/es_ES/)\n"
 "MIME-Version: 1.0\n"
@@ -473,7 +473,7 @@ msgstr "Reactiva"
 
 #: rml:som_estalvi/report/components/new_web_section_eie.mako:8
 msgid "Ja tenim disponible l’"
-msgstr "Ya tenemos disponible el"
+msgstr "Ya tenemos disponible el "
 
 #: rml:som_estalvi/report/components/new_web_section_eie.mako:8
 msgid ""
