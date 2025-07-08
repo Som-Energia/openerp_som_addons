@@ -175,7 +175,7 @@ class Tests_FacturacioFacturaReport_logo_component(Tests_FacturacioFacturaReport
         self.assertYamlfy(result)
         self.assertEquals(
             result,
-            {"logo": "logo_som.png", "has_agreement_partner": False, "has_auvi": False},
+            {"logo": "logo_som2.png", "has_agreement_partner": False, "has_auvi": False},
         )
 
     @unittest.skip(reason="WIP using mock")
@@ -206,7 +206,7 @@ class Tests_FacturacioFacturaReport_logo_component(Tests_FacturacioFacturaReport
             self.assertEquals(
                 result,
                 {
-                    "logo": "logo_som.png",
+                    "logo": "logo_som2.png",
                     "has_agreement_partner": True,
                     "logo_agreement_partner": "logo_S019753.png",
                 },
@@ -228,7 +228,7 @@ class Tests_FacturacioFacturaReport_logo_component(Tests_FacturacioFacturaReport
         self.assertYamlfy(result)
         self.assertEquals(
             result,
-            {"logo": "logo_som.png", "has_agreement_partner": False, "has_auvi": False})
+            {"logo": "logo_som2.png", "has_agreement_partner": False, "has_auvi": False})
 
     @mock.patch.object(
         giscedata_facturacio_report.GiscedataFacturacioFacturaReport, "get_auvi_data"
@@ -247,7 +247,7 @@ class Tests_FacturacioFacturaReport_logo_component(Tests_FacturacioFacturaReport
         self.assertEquals(
             result,
             {
-                "logo": "logo_som.png",
+                "logo": "logo_som2.png",
                 "has_agreement_partner": True,
                 "logo_agreement_partner": "logo_S019753.png",
                 "has_auvi": False,
