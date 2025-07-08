@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OpenERP Server 5.0.14\n"
 "Report-Msgid-Bugs-To: support@openerp.com\n"
-"POT-Creation-Date: 2024-05-15 11:20+0000\n"
-"PO-Revision-Date: 2024-05-15 11:20+0000\n"
+"POT-Creation-Date: 2025-07-07 13:39+0000\n"
+"PO-Revision-Date: 2025-07-07 13:39+0000\n"
 "Last-Translator: <>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -51,8 +51,28 @@ msgid "Potència P6"
 msgstr ""
 
 #. module: som_estalvi
-#: field:wizard.contract.power.optimization,excess_price:0
-msgid "Preu excés maxímetre"
+#: field:wizard.contract.power.optimization,excess_price_p5:0
+msgid "Preu excés maxímetre P5"
+msgstr ""
+
+#. module: som_estalvi
+#: field:wizard.contract.power.optimization,excess_price_p4:0
+msgid "Preu excés maxímetre P4"
+msgstr ""
+
+#. module: som_estalvi
+#: field:wizard.contract.power.optimization,excess_price_p6:0
+msgid "Preu excés maxímetre P6"
+msgstr ""
+
+#. module: som_estalvi
+#: field:wizard.contract.power.optimization,excess_price_p1:0
+msgid "Preu excés maxímetre P1"
+msgstr ""
+
+#. module: som_estalvi
+#: field:wizard.contract.power.optimization,excess_price_p3:0
+msgid "Preu excés maxímetre P3"
 msgstr ""
 
 #. module: som_estalvi
@@ -201,6 +221,11 @@ msgid "Potència amb decimals P2"
 msgstr ""
 
 #. module: som_estalvi
+#: field:wizard.contract.power.optimization,excess_price_p2:0
+msgid "Preu excés maxímetre P2"
+msgstr ""
+
+#. module: som_estalvi
 #: field:wizard.contract.power.optimization,current_cost:0
 msgid "Cost actual"
 msgstr ""
@@ -280,7 +305,7 @@ msgstr ""
 msgid "Optimització de potències maximetre"
 msgstr ""
 
-#: rml:som_estalvi/report/som_estalvi.mako:17
+#: rml:som_estalvi/report/som_estalvi.mako:19
 msgid "SomEnergia informe anual"
 msgstr ""
 
@@ -413,13 +438,6 @@ msgstr ""
 msgid "INFORME ANUAL"
 msgstr ""
 
-#: rml:som_estalvi/report/components/footer.mako:8
-msgid ""
-"Fins al juny del 2024, es manté la possibilitat de fer més d'una "
-"modificació de potències per als contractes d'empreses i treballadors/es "
-"autònoms/es, així com la gratuïtat del tràmit."
-msgstr ""
-
 #: rml:som_estalvi/report/components/footer.mako:13
 msgid "Som Energia, SCCL - CIF F55091367 | Pic de Peguera, 9 - 17003 - Girona | "
 msgstr ""
@@ -448,8 +466,28 @@ msgstr ""
 msgid "Reactiva"
 msgstr ""
 
+#: rml:som_estalvi/report/components/new_web_section_eie.mako:8
+msgid "Ja tenim disponible l’"
+msgstr ""
+
+#: rml:som_estalvi/report/components/new_web_section_eie.mako:8
+msgid ""
+"https://www.somenergia.coop/ca/serveis-i-tarifes-de-llum-"
+"entitats-i-empreses/"
+msgstr ""
+
+#: rml:som_estalvi/report/components/new_web_section_eie.mako:8
+msgid "apartat web per a entitats i empreses"
+msgstr ""
+
+#: rml:som_estalvi/report/components/new_web_section_eie.mako:8
+msgid ""
+": descobriu tots els serveis que oferim des de la cooperativa a entitats "
+"i empreses com la vostra!"
+msgstr ""
+
 #: rml:som_estalvi/report/components/resum_facturacio_anual.mako:4
-msgid "RESUM DE LA TEVA FACTURACIÓ ANUAL"
+msgid "RESUM DE LA VOSTRA FACTURACIÓ ANUAL"
 msgstr ""
 
 #: rml:som_estalvi/report/components/resum_facturacio_anual.mako:16
@@ -522,34 +560,26 @@ msgstr ""
 msgid "Més informació."
 msgstr ""
 
-#: rml:som_estalvi/report/components/resum_facturacio_anual.mako:53
-msgid "Descompte pels excedents:"
-msgstr ""
-
-#: rml:som_estalvi/report/components/resum_facturacio_anual.mako:54
-msgid "Inclou la compensació i el Flux Solar descomptats."
-msgstr ""
-
 #: rml:som_estalvi/report/components/resum_facturacio_anual.mako:64
 msgid ""
 "No incloem el lloguer del comptador i els impostos. Dades dels últims 12 "
 "mesos facturats."
 msgstr ""
 
-#: rml:som_estalvi/report/components/resum_facturacio_anual.mako:74
+#: rml:som_estalvi/report/components/som_serveis_box.mako:8
+msgid "Coneixeu el "
+msgstr ""
+
+#: rml:som_estalvi/report/components/som_serveis_box.mako:8
+msgid "https://somserveis.coop/"
+msgstr ""
+
+#: rml:som_estalvi/report/components/som_serveis_box.mako:8
+msgid "projecte Som Serveis"
+msgstr ""
+
+#: rml:som_estalvi/report/components/som_serveis_box.mako:8
 msgid ""
-"Pots consultar i descarregar les corbes horàries d'ús d'energia per dies,"
-" setmanes, mesos i anys, i fer comparatives entre aquests períodes a l'"
-msgstr ""
-
-#: rml:som_estalvi/report/components/resum_facturacio_anual.mako:74
-msgid "https://oficinavirtual.somenergia.coop/ca/"
-msgstr ""
-
-#: rml:som_estalvi/report/components/resum_facturacio_anual.mako:74
-msgid "Oficina Virtual"
-msgstr ""
-
-#: rml:som_estalvi/report/components/resum_facturacio_anual.mako:74
-msgid "a l'apartat Infoenergia > Veure l'ús de l'energia"
+"Energia renovable, telefonia conscient i mobilitat sostenible per a "
+"empreses amb propòsit"
 msgstr ""
