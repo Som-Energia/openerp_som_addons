@@ -91,6 +91,7 @@ class WizardCalculateGurbSavings(osv.osv_memory):
             total_energia = {'P1': 0, 'P2': 0, 'P3': 0, 'P4': 0, 'P5': 0, 'P6': 0}
             price_energia = {'P1': 0, 'P2': 0, 'P3': 0, 'P4': 0, 'P5': 0, 'P6': 0}
             for linia_energia in linies_energia:
+                total_energia[linia_energia.name] = linia_energia.quantity
                 price_energia[linia_energia.name] = linia_energia.price_unit
             energia_kwh = sum(total_energia.values())
 
@@ -133,7 +134,7 @@ class WizardCalculateGurbSavings(osv.osv_memory):
             str(profit_untaxed), str(profit)
         )
         info += "\ns'han produit {}kwh, s'ha autoconsumit {}kwh i s'ha consumit {}kwh".format(
-            str(kwh_produced), str(kwh_auto), str(kwh_consumed)
+            str(abs(kwh_produced) + kwh_auto), str(kwh_auto), str(kwh_consumed)
         )
         if bad_f1s:
             info += "\nNo s'han tingut en compte {} f1s ja que no quadren amb cap factura".format(
