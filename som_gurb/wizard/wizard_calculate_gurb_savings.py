@@ -44,14 +44,14 @@ class WizardCalculateGurbSavings(osv.osv_memory):
         profit_untaxed = 0
         profit = 0
         bad_f1s = 0
+        kwh_auto = 0
+        kwh_consumed = 0
+        kwh_produced = 0
 
         for f1_id in f1_ids:
             # del f1
             linies_autoconsum_ids = gffl_obj.search(cursor, uid, ([("factura_id", "=", f1_id),
                                                                    ("tipus", "=", "autoconsum")]))
-
-            linies_energia_f1_ids = gffl_obj.search(cursor, uid, ([("factura_id", "=", f1_id),
-                                                                   ("tipus", "=", "energia")]))
 
             f1 = gff_obj.browse(cursor, uid, f1_id)
             # de la gff
@@ -80,7 +80,6 @@ class WizardCalculateGurbSavings(osv.osv_memory):
 
             linies_autoconsum = gffl_obj.browse(cursor, uid, linies_autoconsum_ids)
             linies_generacio = gffl_obj.browse(cursor, uid, linies_generacio_ids)
-            linies_energia_f1 = gffl_obj.browse(cursor, uid, linies_energia_f1_ids)
             linies_gurb = gffl_obj.browse(cursor, uid, linies_gurb_ids)
             linies_energia = gffl_obj.browse(cursor, uid, linies_energia_ids)
 
@@ -88,14 +87,12 @@ class WizardCalculateGurbSavings(osv.osv_memory):
             for linia_autoconsum in linies_autoconsum:
                 total_auto[linia_autoconsum.name] += linia_autoconsum.quantity
 
+            auto_kwh = sum(total_auto.values())
             total_energia = {'P1': 0, 'P2': 0, 'P3': 0, 'P4': 0, 'P5': 0, 'P6': 0}
-            # el price_energia ha de ser de la factura i no del f1
             price_energia = {'P1': 0, 'P2': 0, 'P3': 0, 'P4': 0, 'P5': 0, 'P6': 0}
-            for linia_energia_f1 in linies_energia_f1:
-                total_energia[linia_energia_f1.name] += linia_energia_f1.quantity
-
             for linia_energia in linies_energia:
                 price_energia[linia_energia.name] = linia_energia.price_unit
+            energia_kwh = sum(total_energia.values())
 
             profit_fact = 0
             for k in total_auto:
@@ -103,8 +100,10 @@ class WizardCalculateGurbSavings(osv.osv_memory):
                 profit_fact += ((total_energia[k] * price_energia[k]) - ((total_energia[k] - total_auto[k]) * price_energia[k]))  # noqa: E501
 
             total_generacio = 0
+            generacio_kwh = 0
             for linia_generacio in linies_generacio:
                 total_generacio += (linia_generacio.quantity * linia_generacio.price_unit)
+                generacio_kwh += linia_generacio.quantity
 
             cost_gurb = 0
             for linia_gurb in linies_gurb:
@@ -126,8 +125,16 @@ class WizardCalculateGurbSavings(osv.osv_memory):
             if linies_energia and linies_gurb:
                 profit += (profit_fact_taxed + abs(total_generacio) - cost_gurb_taxed)
 
+            kwh_produced += generacio_kwh
+            kwh_auto += auto_kwh
+            kwh_consumed += energia_kwh
+
         info = "L'estalvi sense impostos ha estat de {}€ i amb impostos de {}€".format(
-            str(profit_untaxed), str(profit))
+            str(profit_untaxed), str(profit)
+        )
+        info += "\ns'han produit {}kwh, s'ha autoconsumit {}kwh i s'ha consumit {}kwh".format(
+            str(kwh_produced), str(kwh_auto), str(kwh_consumed)
+        )
         if bad_f1s:
             info += "\nNo s'han tingut en compte {} f1s ja que no quadren amb cap factura".format(
                 str(bad_f1s)
