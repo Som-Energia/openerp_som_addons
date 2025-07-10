@@ -15,6 +15,8 @@ class GiscedataFacturacioFacturadorEnergetica(osv.osv):
 
         if polissa_obj.is_energetica(cursor, uid, polissa_id, context=context):
             return product_obj.search(cursor, uid, [("default_code", "=", "DN02")])[0]
+        elif polissa_obj.is_candela(cursor, uid, polissa_id, context=context):
+            return product_obj.search(cursor, uid, [("default_code", "=", "DN03")])[0]
         else:
             return super(GiscedataFacturacioFacturadorEnergetica, self).get_donatiu_product(
                 cursor, uid, polissa_id, context=context

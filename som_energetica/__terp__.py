@@ -15,7 +15,9 @@
         "som_polissa_administradora",
     ],
     "init_xml": [],
-    "demo_xml": [],
+    "demo_xml": [
+        "demo/som_energetica_demo.xml",
+    ],
     "update_xml": [
         "som_energetica_view.xml",
         "som_energetica_data.xml",
