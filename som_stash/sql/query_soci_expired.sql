@@ -55,6 +55,14 @@ and not exists
 
         union all
 
+        --COM A PAGADOR
+        select gp2.pagador as partner_id
+        from giscedata_polissa gp2
+        where gp2.pagador is not null and
+        (gp2.state = 'activa' or (gp2.state = 'baixa' and gp2.data_baixa > %(data_limit)s))
+
+        union all
+
         --INVERSIONS, APORTACIONS, GNKWH
         select ss.partner_id as partner_id
         from generationkwh_investment gi
