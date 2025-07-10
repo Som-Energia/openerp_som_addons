@@ -1,0 +1,8 @@
+<openerp>
+    <data>
+        <record id="res_partner_candela_demo" model="res.partner">
+            <field name="name">Sociedad Cooperativa Candela</field>
+            <field name="ref">S076331</field>
+        </record>
+    </data>
+</openerp>

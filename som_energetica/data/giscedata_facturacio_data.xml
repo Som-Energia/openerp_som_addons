@@ -1,0 +1,43 @@
+<?xml version="1.0"?>
+<openerp>
+    <data>
+        <!-- Donatiu Energética -->
+        <record model="product.product" id="dona_DN02">
+            <field name="name">Donativo</field>
+            <field name="default_code">DN02</field>
+            <field name="categ_id" ref="som_polissa_soci.categ_donacions"/>
+            <field name="type">service</field>
+            <field name="uom_id" ref="giscedata_polissa.uom_eneg_elec"/>
+            <field name="uom_po_id" ref="giscedata_polissa.uom_eneg_elec"/>
+            <field name="property_account_income" model="account.account" search="[('code','=','521000000000')]"/>
+            <field name="procure_method">make_to_stock</field>
+            <field name="supply_method">buy</field>
+            <field name="description">Donativo voluntario (0,01€/kWh)</field>
+        </record>
+        <!-- Donatiu Candela -->
+        <record id="account_donatiu_candela" model="account.account">
+            <field name="name">DONATIU CANDELA</field>
+            <field name="code">521000000001</field>
+            <field name="type">other</field>
+            <field name="parent_id" search="[('name','=','521 Deudas a corto plazo')]"/>
+            <field name="company_id" ref="base.main_company"/>
+            <field name="reconcile" eval="False"/>
+            <field name="user_type" ref="l10n_chart_ES.financieras"/>
+            <field name="note">
+                Compte comptable per gestinar el donatiu voluntari de Candela.
+            </field>
+        </record>
+        <record model="product.product" id="dona_DN03">
+            <field name="name">Donativo</field>
+            <field name="default_code">DN03</field>
+            <field name="categ_id" ref="som_polissa_soci.categ_donacions"/>
+            <field name="type">service</field>
+            <field name="uom_id" ref="giscedata_polissa.uom_eneg_elec"/>
+            <field name="uom_po_id" ref="giscedata_polissa.uom_eneg_elec"/>
+            <field name="property_account_income" model="account.account" search="[('code','=','521000000001')]"/>
+            <field name="procure_method">make_to_stock</field>
+            <field name="supply_method">buy</field>
+            <field name="description">Donativo voluntario (0,01€/kWh)</field>
+        </record>
+    </data>
+</openerp>
