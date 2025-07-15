@@ -789,6 +789,46 @@ class TestsSomLeadWww(testing.OOTestCase):
         for invoice in payment_line_ids:
             self.assertEqual(invoice.ml_inv_ref.state, 'paid')
 
+    def test_create_lead_with_remesa_payment_but_not_new_member(self):
+        www_lead_o = self.get_model("som.lead.www")
+        account_invoice_o = self.get_model("account.invoice")
+        lead_o = self.get_model("giscedata.crm.lead")
+        member_o = self.get_model("somenergia.soci")
+        mandate_o = self.get_model("payment.mandate")
+        ir_model_o = self.get_model("ir.model.data")
+
+        member_id = ir_model_o.get_object_reference(
+            self.cursor, self.uid, "som_polissa_soci", "soci_0001"
+        )[1]
+        member = member_o.browse(self.cursor, self.uid, member_id)
+        vat = member.partner_id.vat.replace("ES", "")
+
+        values = self._basic_values
+        values["linked_member"] = "sponsored"
+        values["contract_owner"] = values.pop("new_member_info")
+        values["linked_member_info"] = {
+            "vat": vat,
+            "code": member.partner_id.ref.replace("S", ""),
+        }
+        values["member_payment_type"] = "remesa"
+
+        result = www_lead_o.create_lead(self.cursor, self.uid, values)
+        www_lead_o.activate_lead(self.cursor, self.uid, result["lead_id"])
+
+        lead = lead_o.browse(self.cursor, self.uid, result["lead_id"])
+        titular_id = lead.polissa_id.titular.id
+
+        mandate_id = mandate_o.search(
+            self.cursor, self.uid, [("reference", "=", "res.partner,{}".format(titular_id))])
+
+        # No mandate should be created for the titular
+        self.assertEqual(len(mandate_id), 0)
+
+        # No invoice should be created for the titular
+        invoice_id = account_invoice_o.search(
+            self.cursor, self.uid, [("partner_id", "=", titular_id)])
+        self.assertEqual(len(invoice_id), 0)
+
     def test_create_simple_domestic_lead_already_member(self):
         www_lead_o = self.get_model("som.lead.www")
         lead_o = self.get_model("giscedata.crm.lead")
