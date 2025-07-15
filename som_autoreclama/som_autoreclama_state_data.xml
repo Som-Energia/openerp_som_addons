@@ -702,6 +702,8 @@
             <field name="function" eval="'_cronjob_state_updater_mail_text'"/>
             <field name="args" eval="({'emails_to': ''},)"/>
         </record>
+    </data>
+    <data noupdate="0">
         <record id="ir_cron_autoreclama_ifc_automation" model="ir.cron" forcecreate="1">
             <field name="name">Apply autoreclama f1c automations</field>
             <field name="user_id" ref="base.user_admin"/>
