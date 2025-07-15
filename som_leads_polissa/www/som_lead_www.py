@@ -129,6 +129,7 @@ class SomLeadWww(osv.osv_memory):
             "gender": member.get("gender"),
             "birthdate": member.get("birthdate"),
             "referral_source": member.get("referral_source"),
+            "comercial_info_accepted": member.get("comercial_info_accepted", False),
         }
 
         values["user_id"] = ir_model_o.get_object_reference(
