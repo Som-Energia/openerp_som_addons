@@ -4,6 +4,7 @@ import sys
 from osv import osv
 from datetime import datetime
 import yaml
+from oorq.decorators import job
 
 from som_leads_polissa.giscedata_crm_lead import WWW_DATA_FORM_HEADER
 
@@ -322,6 +323,7 @@ class SomLeadWww(osv.osv_memory):
                 "Member has been not found: {} not match with VAT {}".format(number, vat)
             )
 
+    @job(queue="poweremail_sender")
     def _send_mail(self, cr, uid, lead_id, context=None):
         if context is None:
             context = {}
