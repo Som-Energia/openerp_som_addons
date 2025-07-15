@@ -18,7 +18,7 @@ def up(cursor, installed_version):
             cursor,
             'som_autoreclama',
             'som_autoreclama_state_data.xml',
-            ["ir_cron_autoreclama_ifc_automation"],
+            ["ir_cron_autoreclama_f1c_automation"],
             mode='update'
         )
 
