@@ -13,6 +13,7 @@
     "init_xml": [],
     "demo_xml": [],
     "update_xml": [
+        "views/giscedata_polissa_view.xml",
         "security/ir.model.access.csv"
     ],
     "active": False,
