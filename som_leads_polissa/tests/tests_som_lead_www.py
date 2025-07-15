@@ -785,9 +785,11 @@ class TestsSomLeadWww(testing.OOTestCase):
 
         po = payment_order_o.browse(self.cursor, self.uid, payment_order.id)
         payment_line_ids = po.line_ids
-        # Verify the state of the invoices is 'paid'
-        for invoice in payment_line_ids:
-            self.assertEqual(invoice.ml_inv_ref.state, 'paid')
+
+        # Verify the payment lines after the payment
+        for payment_line in payment_line_ids:
+            self.assertEqual(payment_line.bank_id.iban, 'ES7712341234161234567890')
+            self.assertEqual(payment_line.ml_inv_ref.state, 'paid')
 
     def test_create_lead_with_remesa_payment_but_not_new_member(self):
         www_lead_o = self.get_model("som.lead.www")

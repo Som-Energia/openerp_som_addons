@@ -156,7 +156,17 @@ class GiscedataCrmLead(osv.OsvInherits):
         res = super(GiscedataCrmLead, self).create_entity_titular(
             cursor, uid, crml_id, context=context
         )
+        return res
 
+    def create_entity_iban(self, cursor, uid, crml_id, context=None):
+        if context is None:
+            context = {}
+
+        res = super(GiscedataCrmLead, self).create_entity_iban(
+            cursor, uid, crml_id, context=context
+        )
+
+        lead = self.browse(cursor, uid, crml_id, context=context)
         if lead.create_new_member and lead.member_quota_payment_type == 'remesa':
             self.create_entity_member_bank_payment(cursor, uid, crml_id, context=context)
 
@@ -229,6 +239,7 @@ class GiscedataCrmLead(osv.OsvInherits):
         payment_mode_o = self.pool.get("payment.mode")
         payment_order_o = self.pool.get("payment.order")
         mandate_o = self.pool.get("payment.mandate")
+        bank_o = self.pool.get("res.partner.bank")
         currency_o = self.pool.get("res.currency")
         conf_o = self.pool.get("res.config")
         ir_model_o = self.pool.get("ir.model.data")
@@ -237,6 +248,13 @@ class GiscedataCrmLead(osv.OsvInherits):
 
         if lead.initial_invoice_id:
             raise osv.except_osv('Error', 'Ja existeix una factura de remesa inicial')
+
+        # TODO: Improve this without the context hack
+        context['bank_id'] = bank_o.search(
+            cursor, uid,
+            [("iban", "=", lead.iban), ("partner_id", "=", lead.partner_id.id)],
+            limit=1, context=context
+        )[0]
 
         partner_id = lead.partner_id.id
         mandate_id = mandate_o.get_or_create_payment_mandate(
@@ -305,7 +323,7 @@ class GiscedataCrmLead(osv.OsvInherits):
         payment_order_id = payment_order_o.get_or_create_open_payment_order(
             cursor, uid, payment_mode_name, use_invoice=True, context=context
         )
-        invoice_o.afegeix_a_remesa(cursor, uid, [invoice_id], payment_order_id)
+        invoice_o.afegeix_a_remesa(cursor, uid, [invoice_id], payment_order_id, context=context)
 
     def create(self, cursor, uid, vals, context=None):
         if context is None:
