@@ -82,6 +82,8 @@ som_polissa_soci:
 -  som_polissa_soci/**
 som_poweremail_common_templates:
 -  som_poweremail_common_templates/**
+som_sortida:
+-  som_sortida/**
 somre_giscere_facturacio:
 -  somre_giscere_facturacio/**
 somre_giscere_oferta:
