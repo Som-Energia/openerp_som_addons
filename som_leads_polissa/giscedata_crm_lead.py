@@ -157,7 +157,7 @@ class GiscedataCrmLead(osv.OsvInherits):
             cursor, uid, crml_id, context=context
         )
 
-        if lead.member_quota_payment_type == 'remesa':
+        if lead.create_new_member and lead.member_quota_payment_type == 'remesa':
             self.create_entity_member_bank_payment(cursor, uid, crml_id, context=context)
 
         return res
