@@ -703,4 +703,18 @@
             <field name="args" eval="({'emails_to': ''},)"/>
         </record>
     </data>
+    <data>
+        <record id="ir_cron_autoreclama_f1c_automation" model="ir.cron" forcecreate="1">
+            <field name="name">Apply autoreclama f1c automations</field>
+            <field name="user_id" ref="base.user_admin"/>
+            <field name="interval_number">1</field>
+            <field name="interval_type">days</field>
+            <field name="numbercall">-1</field>
+            <field name="doall" eval="False"/>
+            <field name="active" eval="False"/>
+            <field name="model" eval="'som.autoreclama.f1c.automation'"/>
+            <field name="function" eval="'_cronjob_f1c_automation_mail_text'"/>
+            <field name="args" eval="({'emails_to': ''},)"/>
+        </record>
+    </data>
 </openerp>

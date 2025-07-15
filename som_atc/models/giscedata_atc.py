@@ -34,6 +34,8 @@ class GiscedataAtc(osv.osv):
         return atc_ids
 
     def case_close_pre_hook(self, cursor, uid, ids, *args):
+        if type(ids) not in (list, tuple):
+            ids = [ids]
         now = str(datetime.today())
         stack = traceback.extract_stack()
         ps = u"Traça del tancament del cac\n"
