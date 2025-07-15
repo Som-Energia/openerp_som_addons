@@ -14,7 +14,7 @@
                 <tr>
                     <td>
                         <p><b>${_(u"Cost de l'electricitat utilitzada:")}</b></p>
-                        <p class="secondary-text">${_(u"Oferim 2 tarifes diferents:")} <a href="${_(u"https://www.somenergia.coop/ca/tarifes-delectricitat-que-oferim/tarifa-periodes/")}">${_(u"períodes")}</a> ${_(u"i")} <a href="${_(u"https://www.somenergia.coop/ca/tarifes-delectricitat-que-oferim/tarifa-indexada/")}">${_(u"indexada")}</a>.</p>
+                        <p class="secondary-text">${_(u"Oferim 2 tarifes diferents:")} <a href="${_(u"https://www.somenergia.coop/ca/tarifes-delectricitat-que-oferim/tarifa-periodes/")}">${_(u"períodes")}</a> ${_(u"i")} <a href="${_(u"https://www.somenergia.coop/ca/tarifes-llum/empresa-indexada/")}">${_(u"indexada")}</a>.</p>
                     </td>
                     <td><b><span style="color: #4d4d4d">${costs['energia']} €</span></b></td>
                 </tr>
