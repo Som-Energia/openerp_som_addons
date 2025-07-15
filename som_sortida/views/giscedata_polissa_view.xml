@@ -1,0 +1,16 @@
+<openerp>
+    <data>
+        <record model="ir.ui.view" id="view_giscedata_polissa_form">
+            <field name="name">giscedata.polissa.form</field>
+            <field name="model">giscedata.polissa</field>
+            <field name="inherit_id" ref="som_polissa_soci.view_giscedata_polissa_form"/>
+            <field name="priority">100</field>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='soci_nif']" position="after">
+                    <field name="sortida_state_id" attrs="{'invisible' : [('sense_socia_vinculada', '=', False)] }"/>
+                    <field name="sortida_history_ids" widget="one2many_list" attrs="{'invisible' : [('sense_socia_vinculada', '=', False)] }" options="{'limit': 5}"/>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</openerp>
