@@ -25,6 +25,21 @@ class GiscedataPolissa(osv.osv):
             cursor, uid, "som_energetica", "res_partner_energetica"
         )[1]
 
+    @cache()
+    def get_soci_candela(self, cursor, uid, ids, context=None):
+        """
+        Returns Candela soci id
+        :param cursor:
+        :param uid:
+        :param ids:
+        :param context:
+        :return: id soci Candela
+        """
+        rp_obj = self.pool.get("res.partner")
+        return rp_obj.search(
+            cursor, uid, [("ref", "=", "S076331")], limit=1, context=context
+        )[0]
+
     def is_energetica(self, cursor, uid, contract_id, context=None):
         """
         Detecta si un contracte és d'energética si el seu soci és d'energética
@@ -39,6 +54,23 @@ class GiscedataPolissa(osv.osv):
         if soci_id:
             id_soci_energetica = self.get_soci_energetica(cursor, uid, [])
             return soci_id[0] == id_soci_energetica
+
+        return False
+
+    def is_candela(self, cursor, uid, contract_id, context=None):
+        """
+        Detecta si un contracte és de Candela si el seu soci és de Candela
+        :param cursor:
+        :param uid:
+        :param contract_id: id del contracte
+        :param context:
+        :return: True o False si és de Candela o no
+        """
+        soci_id = self.read(cursor, uid, contract_id, ["soci"])["soci"]
+
+        if soci_id:
+            id_soci_candela = self.get_soci_candela(cursor, uid, [])
+            return soci_id[0] == id_soci_candela
 
         return False
 
