@@ -238,6 +238,7 @@ class GiscedataCrmLead(osv.OsvInherits):
         payment_type_o = self.pool.get("payment.type")
         payment_mode_o = self.pool.get("payment.mode")
         payment_order_o = self.pool.get("payment.order")
+        payment_line_o = self.pool.get("payment.line")
         mandate_o = self.pool.get("payment.mandate")
         bank_o = self.pool.get("res.partner.bank")
         currency_o = self.pool.get("res.currency")
@@ -323,6 +324,20 @@ class GiscedataCrmLead(osv.OsvInherits):
             cursor, uid, payment_mode_name, use_invoice=True, context=context
         )
         invoice_o.afegeix_a_remesa(cursor, uid, [invoice_id], payment_order_id, context=context)
+
+        # set the member number as the payment line name
+        invoice = invoice_o.browse(cursor, uid, invoice_id)
+        payment_line_id = payment_line_o.search(
+            cursor, uid,
+            [
+                ("partner_id", "=", partner_id),
+                ("communication", "=", invoice.number),
+                ("order_id", "=", payment_order_id),
+            ],
+            context=context
+        )
+        payment_line_o.write(
+            cursor, uid, payment_line_id, {"name": lead.member_number}, context=context)
 
     def create(self, cursor, uid, vals, context=None):
         if context is None:
