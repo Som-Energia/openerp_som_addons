@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Som Energia\n"
 "Report-Msgid-Bugs-To: support@openerp.com\n"
-"POT-Creation-Date: 2025-07-07 13:39+0000\n"
-"PO-Revision-Date: 2025-07-08 13:03+0000\n"
+"POT-Creation-Date: 2025-07-16 09:16+0000\n"
+"PO-Revision-Date: 2025-07-16 07:14+0000\n"
 "Last-Translator: Som Energia <itcrowd@somenergia.coop>\n"
 "Language-Team: Spanish (Spain) (http://trad.gisce.net/projects/p/somenergia/language/es_ES/)\n"
 "MIME-Version: 1.0\n"
@@ -518,10 +518,8 @@ msgid "i"
 msgstr "y"
 
 #: rml:som_estalvi/report/components/resum_facturacio_anual.mako:17
-msgid ""
-"https://www.somenergia.coop/ca/tarifes-delectricitat-que-oferim/tarifa-"
-"indexada/"
-msgstr "https://www.somenergia.coop/es/tarifas-de-electricidad-que-ofrecemos/tarifa-indexada/"
+msgid "https://www.somenergia.coop/ca/tarifes-llum/empresa-indexada/"
+msgstr "https://www.somenergia.coop/es/tarifas-luz/empresa-indexada"
 
 #: rml:som_estalvi/report/components/resum_facturacio_anual.mako:17
 msgid "indexada"
