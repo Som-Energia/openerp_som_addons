@@ -238,6 +238,7 @@ class GiscedataCrmLead(osv.OsvInherits):
         payment_type_o = self.pool.get("payment.type")
         payment_mode_o = self.pool.get("payment.mode")
         payment_order_o = self.pool.get("payment.order")
+        payment_line_o = self.pool.get("payment.line")
         mandate_o = self.pool.get("payment.mandate")
         bank_o = self.pool.get("res.partner.bank")
         currency_o = self.pool.get("res.currency")
@@ -248,13 +249,6 @@ class GiscedataCrmLead(osv.OsvInherits):
 
         if lead.initial_invoice_id:
             raise osv.except_osv('Error', 'Ja existeix una factura de remesa inicial')
-
-        # TODO: Improve this without the context hack
-        context['bank_id'] = bank_o.search(
-            cursor, uid,
-            [("iban", "=", lead.iban), ("partner_id", "=", lead.partner_id.id)],
-            limit=1, context=context
-        )[0]
 
         partner_id = lead.partner_id.id
         mandate_id = mandate_o.get_or_create_payment_mandate(
@@ -279,6 +273,11 @@ class GiscedataCrmLead(osv.OsvInherits):
         }
 
         # Create invoice
+        bank_id = bank_o.search(
+            cursor, uid,
+            [("iban", "=", lead.iban), ("partner_id", "=", lead.partner_id.id)],
+            limit=1, context=context
+        )[0]
         journal_ids = journal_o.search(
             cursor, uid, [("code", "=", "SOCIS")], context=context
         )
@@ -302,6 +301,7 @@ class GiscedataCrmLead(osv.OsvInherits):
             cursor, uid, [], "out_invoice", partner_id).get("value", {})
         )
         invoice_vals.update({"payment_type": payment_type_id})
+        invoice_vals.update({"partner_bank": bank_id})
 
         invoice_id = invoice_o.create(cursor, uid, invoice_vals, context=context)
         invoice_o.button_reset_taxes(cursor, uid, [invoice_id])
@@ -324,6 +324,20 @@ class GiscedataCrmLead(osv.OsvInherits):
             cursor, uid, payment_mode_name, use_invoice=True, context=context
         )
         invoice_o.afegeix_a_remesa(cursor, uid, [invoice_id], payment_order_id, context=context)
+
+        # set the member number as the payment line name
+        invoice = invoice_o.browse(cursor, uid, invoice_id)
+        payment_line_id = payment_line_o.search(
+            cursor, uid,
+            [
+                ("partner_id", "=", partner_id),
+                ("communication", "=", invoice.number),
+                ("order_id", "=", payment_order_id),
+            ],
+            context=context
+        )
+        payment_line_o.write(
+            cursor, uid, payment_line_id, {"name": lead.member_number}, context=context)
 
     def create(self, cursor, uid, vals, context=None):
         if context is None:

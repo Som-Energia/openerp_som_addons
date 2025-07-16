@@ -788,6 +788,7 @@ class TestsSomLeadWww(testing.OOTestCase):
 
         # Verify the payment lines after the payment
         for payment_line in payment_line_ids:
+            self.assertEqual(payment_line.name, lead.member_number)
             self.assertEqual(payment_line.bank_id.iban, 'ES7712341234161234567890')
             self.assertEqual(payment_line.ml_inv_ref.state, 'paid')
 
