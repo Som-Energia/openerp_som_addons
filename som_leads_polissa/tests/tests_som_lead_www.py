@@ -105,7 +105,7 @@ class TestsSomLeadWww(testing.OOTestCase):
         result = www_lead_o.create_lead(self.cursor, self.uid, self._basic_values)
         self.assertFalse(result["error"])
 
-        www_lead_o.activate_lead(self.cursor, self.uid, result["lead_id"])
+        www_lead_o.activate_lead(self.cursor, self.uid, result["lead_id"], context={"sync": True})
 
         lead = lead_o.browse(self.cursor, self.uid, result["lead_id"])
         # Check that the name is correctly set
@@ -184,7 +184,7 @@ class TestsSomLeadWww(testing.OOTestCase):
         values["contract_info"]["indexed_contract_terms_accepted"] = True
 
         result = www_lead_o.create_lead(self.cursor, self.uid, values)
-        www_lead_o.activate_lead(self.cursor, self.uid, result["lead_id"])
+        www_lead_o.activate_lead(self.cursor, self.uid, result["lead_id"], context={"sync": True})
 
         lead = lead_o.browse(self.cursor, self.uid, result["lead_id"])
 
@@ -207,7 +207,7 @@ class TestsSomLeadWww(testing.OOTestCase):
         values["new_member_info"]["proxy_vat"] = "40323835M"
 
         result = www_lead_o.create_lead(self.cursor, self.uid, values)
-        www_lead_o.activate_lead(self.cursor, self.uid, result["lead_id"])
+        www_lead_o.activate_lead(self.cursor, self.uid, result["lead_id"], context={"sync": True})
 
         lead = lead_o.browse(self.cursor, self.uid, result["lead_id"])
         # Check that the name is correctly set
@@ -239,7 +239,7 @@ class TestsSomLeadWww(testing.OOTestCase):
         values["new_member_info"]["proxy_vat"] = existing_partner_vat
 
         result = www_lead_o.create_lead(self.cursor, self.uid, values)
-        www_lead_o.activate_lead(self.cursor, self.uid, result["lead_id"])
+        www_lead_o.activate_lead(self.cursor, self.uid, result["lead_id"], context={"sync": True})
 
         lead = lead_o.browse(self.cursor, self.uid, result["lead_id"])
 
@@ -260,7 +260,7 @@ class TestsSomLeadWww(testing.OOTestCase):
         values["contract_info"]["powers"] = ["4400", "4900", "5000", "6000", "7000", "15001"]
 
         result = www_lead_o.create_lead(self.cursor, self.uid, values)
-        www_lead_o.activate_lead(self.cursor, self.uid, result["lead_id"])
+        www_lead_o.activate_lead(self.cursor, self.uid, result["lead_id"], context={"sync": True})
 
         lead = lead_o.browse(self.cursor, self.uid, result["lead_id"])
 
@@ -276,7 +276,7 @@ class TestsSomLeadWww(testing.OOTestCase):
         values["donation"] = True
 
         result = www_lead_o.create_lead(self.cursor, self.uid, values)
-        www_lead_o.activate_lead(self.cursor, self.uid, result["lead_id"])
+        www_lead_o.activate_lead(self.cursor, self.uid, result["lead_id"], context={"sync": True})
 
         lead = lead_o.browse(self.cursor, self.uid, result["lead_id"])
         self.assertIs(lead.polissa_id.donatiu, True)
@@ -290,7 +290,7 @@ class TestsSomLeadWww(testing.OOTestCase):
         values["contract_info"]['process'] = 'C2'
 
         result = www_lead_o.create_lead(self.cursor, self.uid, values)
-        www_lead_o.activate_lead(self.cursor, self.uid, result["lead_id"])
+        www_lead_o.activate_lead(self.cursor, self.uid, result["lead_id"], context={"sync": True})
 
         lead = lead_o.browse(self.cursor, self.uid, result["lead_id"])
 
@@ -324,7 +324,7 @@ class TestsSomLeadWww(testing.OOTestCase):
         values["contract_info"]["powers"] = ["4400", "4900", "5000", "6000", "7000", "15001"]
 
         result = www_lead_o.create_lead(self.cursor, self.uid, values)
-        www_lead_o.activate_lead(self.cursor, self.uid, result["lead_id"])
+        www_lead_o.activate_lead(self.cursor, self.uid, result["lead_id"], context={"sync": True})
 
         lead = lead_o.browse(self.cursor, self.uid, result["lead_id"])
 
@@ -356,7 +356,7 @@ class TestsSomLeadWww(testing.OOTestCase):
         values["contract_info"]['process'] = 'A3'
 
         result = www_lead_o.create_lead(self.cursor, self.uid, values)
-        www_lead_o.activate_lead(self.cursor, self.uid, result["lead_id"])
+        www_lead_o.activate_lead(self.cursor, self.uid, result["lead_id"], context={"sync": True})
 
         lead = lead_o.browse(self.cursor, self.uid, result["lead_id"])
 
@@ -402,7 +402,7 @@ class TestsSomLeadWww(testing.OOTestCase):
         cfg_o.set(self.cursor, self.uid, "fp_canarias_vivienda_id", canarian_posicio_id)
 
         result = www_lead_o.create_lead(self.cursor, self.uid, values)
-        www_lead_o.activate_lead(self.cursor, self.uid, result["lead_id"])
+        www_lead_o.activate_lead(self.cursor, self.uid, result["lead_id"], context={"sync": True})
 
         lead = lead_o.browse(self.cursor, self.uid, result["lead_id"])
 
@@ -431,7 +431,7 @@ class TestsSomLeadWww(testing.OOTestCase):
         values["contract_info"]["cups_address"]["state_id"] = balears_state_id
 
         result = www_lead_o.create_lead(self.cursor, self.uid, values)
-        www_lead_o.activate_lead(self.cursor, self.uid, result["lead_id"])
+        www_lead_o.activate_lead(self.cursor, self.uid, result["lead_id"], context={"sync": True})
 
         lead = lead_o.browse(self.cursor, self.uid, result["lead_id"])
 
@@ -458,7 +458,7 @@ class TestsSomLeadWww(testing.OOTestCase):
         }
 
         result = www_lead_o.create_lead(self.cursor, self.uid, values)
-        www_lead_o.activate_lead(self.cursor, self.uid, result["lead_id"])
+        www_lead_o.activate_lead(self.cursor, self.uid, result["lead_id"], context={"sync": True})
 
         lead = lead_o.browse(self.cursor, self.uid, result["lead_id"])
 
@@ -502,7 +502,7 @@ class TestsSomLeadWww(testing.OOTestCase):
         }
 
         result = www_lead_o.create_lead(self.cursor, self.uid, values)
-        www_lead_o.activate_lead(self.cursor, self.uid, result["lead_id"])
+        www_lead_o.activate_lead(self.cursor, self.uid, result["lead_id"], context={"sync": True})
 
         lead = lead_o.browse(self.cursor, self.uid, result["lead_id"])
 
@@ -546,7 +546,7 @@ class TestsSomLeadWww(testing.OOTestCase):
         }
 
         result = www_lead_o.create_lead(self.cursor, self.uid, values)
-        www_lead_o.activate_lead(self.cursor, self.uid, result["lead_id"])
+        www_lead_o.activate_lead(self.cursor, self.uid, result["lead_id"], context={"sync": True})
 
         lead = lead_o.browse(self.cursor, self.uid, result["lead_id"])
 
@@ -590,7 +590,7 @@ class TestsSomLeadWww(testing.OOTestCase):
         }
 
         result = www_lead_o.create_lead(self.cursor, self.uid, values)
-        www_lead_o.activate_lead(self.cursor, self.uid, result["lead_id"])
+        www_lead_o.activate_lead(self.cursor, self.uid, result["lead_id"], context={"sync": True})
 
         lead = lead_o.browse(self.cursor, self.uid, result["lead_id"])
 
@@ -660,7 +660,7 @@ class TestsSomLeadWww(testing.OOTestCase):
         )[1]
 
         result = www_lead_o.create_lead(self.cursor, self.uid, values)
-        www_lead_o.activate_lead(self.cursor, self.uid, result["lead_id"])
+        www_lead_o.activate_lead(self.cursor, self.uid, result["lead_id"], context={"sync": True})
 
         lead = lead_o.browse(self.cursor, self.uid, result["lead_id"])
 
@@ -679,7 +679,7 @@ class TestsSomLeadWww(testing.OOTestCase):
         lead_o = self.get_model("giscedata.crm.lead")
 
         result = www_lead_o.create_lead(self.cursor, self.uid, self._basic_values)
-        www_lead_o.activate_lead(self.cursor, self.uid, result["lead_id"])
+        www_lead_o.activate_lead(self.cursor, self.uid, result["lead_id"], context={"sync": True})
 
         lead = lead_o.browse(self.cursor, self.uid, result["lead_id"])
 
@@ -712,7 +712,7 @@ class TestsSomLeadWww(testing.OOTestCase):
 
         # we need to reload the browse record because the cache
         lead = lead_o.browse(self.cursor, self.uid, result["lead_id"])
-        www_lead_o.activate_lead(self.cursor, self.uid, result["lead_id"])
+        www_lead_o.activate_lead(self.cursor, self.uid, result["lead_id"], context={"sync": True})
         self.assertEqual(lead.crm_id.stage_id.id, webform_stage_converted_id)
         self.assertEqual(lead.crm_id.state, 'done')
 
@@ -738,7 +738,7 @@ class TestsSomLeadWww(testing.OOTestCase):
         values["member_payment_type"] = "remesa"
 
         result = www_lead_o.create_lead(self.cursor, self.uid, values)
-        www_lead_o.activate_lead(self.cursor, self.uid, result["lead_id"])
+        www_lead_o.activate_lead(self.cursor, self.uid, result["lead_id"], context={"sync": True})
 
         lead = lead_o.browse(self.cursor, self.uid, result["lead_id"])
         titular_id = lead.polissa_id.titular.id
@@ -854,7 +854,7 @@ class TestsSomLeadWww(testing.OOTestCase):
         }
 
         result = www_lead_o.create_lead(self.cursor, self.uid, values)
-        www_lead_o.activate_lead(self.cursor, self.uid, result["lead_id"])
+        www_lead_o.activate_lead(self.cursor, self.uid, result["lead_id"], context={"sync": True})
 
         lead = lead_o.browse(self.cursor, self.uid, result["lead_id"])
 
@@ -899,7 +899,7 @@ class TestsSomLeadWww(testing.OOTestCase):
         }
 
         result = www_lead_o.create_lead(self.cursor, self.uid, values)
-        www_lead_o.activate_lead(self.cursor, self.uid, result["lead_id"])
+        www_lead_o.activate_lead(self.cursor, self.uid, result["lead_id"], context={"sync": True})
 
         lead = lead_o.browse(self.cursor, self.uid, result["lead_id"])
 
@@ -996,7 +996,7 @@ class TestsSomLeadWww(testing.OOTestCase):
         values["new_member_info"]["vat"] = vat
 
         result = www_lead_o.create_lead(self.cursor, self.uid, values)
-        www_lead_o.activate_lead(self.cursor, self.uid, result["lead_id"])
+        www_lead_o.activate_lead(self.cursor, self.uid, result["lead_id"], context={"sync": True})
 
         gisce_br = partner_o.browse(self.cursor, self.uid, gisce_id)
         contract_member_id = pol_o.read(
@@ -1022,7 +1022,7 @@ class TestsSomLeadWww(testing.OOTestCase):
         values["new_member_info"]["referral_source"] = "opcions"
 
         result = www_lead_o.create_lead(self.cursor, self.uid, values)
-        www_lead_o.activate_lead(self.cursor, self.uid, result["lead_id"])
+        www_lead_o.activate_lead(self.cursor, self.uid, result["lead_id"], context={"sync": True})
 
         lead = lead_o.browse(self.cursor, self.uid, result["lead_id"])
 
@@ -1044,7 +1044,8 @@ class TestsSomLeadWww(testing.OOTestCase):
         self.assertIn("cnae: '5612'", lead.history_line[1].description)
 
         with self.assertRaises(osv.except_osv) as e:
-            www_lead_o.activate_lead(self.cursor, self.uid, result["lead_id"])
+            www_lead_o.activate_lead(self.cursor, self.uid,
+                                     result["lead_id"], context={"sync": True})
 
         self.assertIn("CNAE", e.exception.value)
 
@@ -1061,7 +1062,7 @@ class TestsSomLeadWww(testing.OOTestCase):
         values["new_member_info"]["comercial_info_accepted"] = True
 
         result = www_lead_o.create_lead(self.cursor, self.uid, values)
-        www_lead_o.activate_lead(self.cursor, self.uid, result["lead_id"])
+        www_lead_o.activate_lead(self.cursor, self.uid, result["lead_id"], context={"sync": True})
 
         lead = lead_o.browse(self.cursor, self.uid, result["lead_id"])
         # Check that the name is correctly set
