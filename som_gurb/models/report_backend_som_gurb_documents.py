@@ -62,7 +62,7 @@ class ReportBackendSomGurbAcordRepartiment(ReportBackend):
                 cursor, uid, gurb_cups_id, ["cups_id"]
             )
 
-            coef = gurb_cups_o.get_beta_percentatge(
+            coef = gurb_cups_o.get_new_beta_percentatge(
                 cursor, uid, gurb_cups_id, context=context
             )[gurb_cups_id]
 
