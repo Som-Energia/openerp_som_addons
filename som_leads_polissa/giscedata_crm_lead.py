@@ -249,13 +249,6 @@ class GiscedataCrmLead(osv.OsvInherits):
         if lead.initial_invoice_id:
             raise osv.except_osv('Error', 'Ja existeix una factura de remesa inicial')
 
-        # TODO: Improve this without the context hack
-        context['bank_id'] = bank_o.search(
-            cursor, uid,
-            [("iban", "=", lead.iban), ("partner_id", "=", lead.partner_id.id)],
-            limit=1, context=context
-        )[0]
-
         partner_id = lead.partner_id.id
         mandate_id = mandate_o.get_or_create_payment_mandate(
             cursor, uid, partner_id, lead.iban, _MEMBER_FEE_PURPOSE,
@@ -279,6 +272,11 @@ class GiscedataCrmLead(osv.OsvInherits):
         }
 
         # Create invoice
+        bank_id = bank_o.search(
+            cursor, uid,
+            [("iban", "=", lead.iban), ("partner_id", "=", lead.partner_id.id)],
+            limit=1, context=context
+        )[0]
         journal_ids = journal_o.search(
             cursor, uid, [("code", "=", "SOCIS")], context=context
         )
@@ -302,6 +300,7 @@ class GiscedataCrmLead(osv.OsvInherits):
             cursor, uid, [], "out_invoice", partner_id).get("value", {})
         )
         invoice_vals.update({"payment_type": payment_type_id})
+        invoice_vals.update({"partner_bank": bank_id})
 
         invoice_id = invoice_o.create(cursor, uid, invoice_vals, context=context)
         invoice_o.button_reset_taxes(cursor, uid, [invoice_id])
