@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OpenERP Server 5.0.14\n"
 "Report-Msgid-Bugs-To: support@openerp.com\n"
-"POT-Creation-Date: 2025-07-07 13:39+0000\n"
-"PO-Revision-Date: 2025-07-07 13:39+0000\n"
+"POT-Creation-Date: 2025-07-16 11:43+0000\n"
+"PO-Revision-Date: 2025-07-16 11:43+0000\n"
 "Last-Translator: <>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -499,9 +499,7 @@ msgid "Oferim 2 tarifes diferents:"
 msgstr ""
 
 #: rml:som_estalvi/report/components/resum_facturacio_anual.mako:17
-msgid ""
-"https://www.somenergia.coop/ca/tarifes-delectricitat-que-oferim/tarifa-"
-"periodes/"
+msgid "https://www.somenergia.coop/ca/tarifes-llum/empresa-periodes/"
 msgstr ""
 
 #: rml:som_estalvi/report/components/resum_facturacio_anual.mako:17
@@ -513,9 +511,7 @@ msgid "i"
 msgstr ""
 
 #: rml:som_estalvi/report/components/resum_facturacio_anual.mako:17
-msgid ""
-"https://www.somenergia.coop/ca/tarifes-delectricitat-que-oferim/tarifa-"
-"indexada/"
+msgid "https://www.somenergia.coop/ca/tarifes-llum/empresa-indexada/"
 msgstr ""
 
 #: rml:som_estalvi/report/components/resum_facturacio_anual.mako:17
