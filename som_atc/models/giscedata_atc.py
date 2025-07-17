@@ -59,7 +59,7 @@ class GiscedataAtc(osv.osv):
                 new_msg = track
             self.write(cursor, uid, atc_id, {'description': new_msg})
 
-        return True
+        return super(GiscedataAtc, self).case_close_pre_hook(cursor, uid, ids, *args)
 
     _columns = {
         "tarifa": fields.related(
