@@ -137,71 +137,47 @@ class GiscedataCrmLead(osv.OsvInherits):
 
         partner_o = self.pool.get("res.partner")
 
-        lead = self.browse(cursor, uid, crml_id, context=context)
-        partner_ids = partner_o.search(cursor, uid, [('vat', '=', lead.titular_vat)])
-
-        if lead.create_new_member and not partner_ids:
-            context["create_member"] = True
-        elif lead.create_new_member and partner_ids:
-            self._convert_customer_to_member(
-                cursor, uid, partner_ids[0], lead.member_number, context=context
-            )
-
-        representative_id = self._create_or_get_representative(
-            cursor, uid, lead.persona_firmant_vat, lead.persona_nom, context=context
-        )
-        if representative_id:
-            context["partner_representantive_id"] = representative_id
-
         res = super(GiscedataCrmLead, self).create_entity_titular(
             cursor, uid, crml_id, context=context
         )
-        return res
-
-    def create_entity_iban(self, cursor, uid, crml_id, context=None):
-        if context is None:
-            context = {}
-
-        res = super(GiscedataCrmLead, self).create_entity_iban(
-            cursor, uid, crml_id, context=context
-        )
 
         lead = self.browse(cursor, uid, crml_id, context=context)
-        if lead.create_new_member and lead.member_quota_payment_type == 'remesa':
-            self.create_entity_member_bank_payment(cursor, uid, crml_id, context=context)
+
+        rep_id = self._create_or_get_representative(
+            cursor, uid, lead.persona_firmant_vat, lead.persona_nom, context=context
+        )
+        if rep_id:
+            partner_o.write(
+                cursor, uid, lead.partner_id.id, {"representante_id": rep_id}, context=context)
+
+        # We set again the lang because if it existed before, the base code dont write it
+        partner_o.write(cursor, uid, lead.partner_id.id, {"lang": lead.lang}, context=context)
+
+        if lead.create_new_member:
+            # become_member will keep the member number we set here
+            partner_o.write(
+                cursor, uid, lead.partner_id.id, {"ref": lead.member_number}, context=context)
+            partner_o.become_member(cursor, uid, lead.partner_id.id, context=context)
+            partner_o.adopt_contracts_as_member(cursor, uid, lead.partner_id.id, context=context)
 
         return res
 
-    def _convert_customer_to_member(self, cursor, uid, partner_id, member_number, context=None):
+    def create_partner(self, cursor, uid, create_vals, crml_id, context=None):
         if context is None:
             context = {}
 
-        partner_o = self.pool.get("res.partner")
-        ir_model_o = self.pool.get("ir.model.data")
-        polissa_o = self.pool.get("giscedata.polissa")
+        lead = self.browse(cursor, uid, crml_id)
+        if lead.titular_number:
+            create_vals['ref'] = lead.titular_number
 
-        member_category_id = ir_model_o.get_object_reference(
-            cursor, uid, "som_partner_account", "res_partner_category_soci")[1]
-        partner_o.write(cursor, uid, partner_id, {
-            'ref': member_number,
-            'category_id': [(6, 0, [member_category_id])]
-        }, context=context)
+        create_vals["gender"] = lead.gender
+        create_vals["birthdate"] = lead.birthdate
+        create_vals["referral_source"] = lead.referral_source
 
-        # Adopt contracts as member
-        polissa_ids = polissa_o.search(cursor, uid, ['|',
-                                                     ('titular', '=', partner_id),
-                                                     ('pagador', '=', partner_id),
-                                                     ])
-        fields = ['soci', 'titular', 'pagador']
-        for pol in polissa_o.read(cursor, uid, polissa_ids, fields):
-            # if sponsor member is already the payer or owner, don't
-            if pol['soci']:
-                soci_id = pol['soci'][0]
-                if pol['titular'][0] == soci_id:
-                    continue
-                if pol['pagador'][0] == soci_id:
-                    continue
-            polissa_o.write(cursor, uid, pol['id'], {'soci': partner_id})
+        partner_id = super(GiscedataCrmLead, self).create_partner(
+            cursor, uid, create_vals, crml_id, context=context)
+
+        return partner_id
 
     def _create_or_get_representative(self, cursor, uid, vat, name, context=None):
         if context is None:
@@ -227,6 +203,20 @@ class GiscedataCrmLead(osv.OsvInherits):
                     context=context
                 )
         return representative_id
+
+    def create_entity_iban(self, cursor, uid, crml_id, context=None):
+        if context is None:
+            context = {}
+
+        res = super(GiscedataCrmLead, self).create_entity_iban(
+            cursor, uid, crml_id, context=context
+        )
+
+        lead = self.browse(cursor, uid, crml_id, context=context)
+        if lead.create_new_member and lead.member_quota_payment_type == 'remesa':
+            self.create_entity_member_bank_payment(cursor, uid, crml_id, context=context)
+
+        return res
 
     def create_entity_member_bank_payment(self, cursor, uid, crml_id, context=None):
         if context is None:
@@ -345,6 +335,7 @@ class GiscedataCrmLead(osv.OsvInherits):
         seq_o = self.pool.get("ir.sequence")
 
         if vals.get("create_new_member"):
+            # TODO: we have to keep the old number or not? By the moment, we assign a new one
             vals["member_number"] = seq_o.get_next(cursor, uid, "res.partner.soci")
         elif context.get("sponsored_titular"):
             vals["titular_number"] = seq_o.get_next(cursor, uid, "res.partner.titular")
@@ -352,37 +343,6 @@ class GiscedataCrmLead(osv.OsvInherits):
         lead_id = super(GiscedataCrmLead, self).create(cursor, uid, vals, context=context)
 
         return lead_id
-
-    def create_partner(self, cursor, uid, create_vals, crml_id, context=None):
-        if context is None:
-            context = {}
-
-        member_o = self.pool.get("somenergia.soci")
-        ir_model_o = self.pool.get("ir.model.data")
-
-        lead = self.browse(cursor, uid, crml_id)
-        if context.get("create_member"):
-            member_category_id = ir_model_o.get_object_reference(
-                cursor, uid, "som_partner_account", "res_partner_category_soci")[1]
-            create_vals['ref'] = lead.member_number
-            create_vals['category_id'] = [(6, 0, [member_category_id])]
-        elif lead.titular_number:
-            create_vals['ref'] = lead.titular_number
-
-        if context.get("partner_representantive_id"):
-            create_vals["representante_id"] = context["partner_representantive_id"]
-
-        create_vals["gender"] = lead.gender
-        create_vals["birthdate"] = lead.birthdate
-        create_vals["referral_source"] = lead.referral_source
-
-        partner_id = super(GiscedataCrmLead, self).create_partner(
-            cursor, uid, create_vals, crml_id, context=context)
-
-        if context.get("create_member"):
-            member_o.create_one_soci(cursor, uid, partner_id, context=context)
-
-        return partner_id
 
     _columns = {
         "tipus_tarifa_lead": fields.selection(_tipus_tarifes_lead, "Tipus de tarifa del contracte"),

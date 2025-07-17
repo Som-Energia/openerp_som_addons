@@ -990,6 +990,7 @@ class TestsSomLeadWww(testing.OOTestCase):
         partner_o = self.get_model("res.partner")
         ir_model_o = self.get_model("ir.model.data")
         pol_o = self.get_model("giscedata.polissa")
+        member_o = self.get_model("somenergia.soci")
 
         gisce_id = ir_model_o.get_object_reference(
             self.cursor, self.uid, "base", "res_partner_gisce"
@@ -1024,6 +1025,12 @@ class TestsSomLeadWww(testing.OOTestCase):
 
         # Check that the existing contract is adopted by the new member
         self.assertEqual(contract_member_id, gisce_id)
+
+        # Check that the member record is created
+        member_ids = member_o.search(
+            self.cursor, self.uid, [("partner_id", "=", gisce_id)]
+        )
+        self.assertEqual(len(member_ids), 1)
 
     def test_lead_with_demographic_data(self):
         www_lead_o = self.get_model("som.lead.www")
