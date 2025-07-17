@@ -674,6 +674,9 @@ class TestsSomLeadWww(testing.OOTestCase):
 
         self.assertEqual(len(ir_attach_ids), 1)
 
+        # check that the attachment data is not stored in the log
+        self.assertNotIn("datas:", lead.polissa_id.observacions)
+
     def test_www_form_data_and_create_entites_log_is_stored(self):
         www_lead_o = self.get_model("som.lead.www")
         lead_o = self.get_model("giscedata.crm.lead")
