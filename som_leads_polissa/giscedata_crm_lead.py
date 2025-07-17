@@ -321,7 +321,7 @@ class GiscedataCrmLead(osv.OsvInherits):
             cursor, uid, payment_mode_id, ["name"], context=context
         )["name"]
         payment_order_id = payment_order_o.get_or_create_open_payment_order(
-            cursor, uid, payment_mode_name, use_invoice=True, context=context
+            cursor, uid, payment_mode_name, use_invoice=True, context={'type': 'receivable'}
         )
         invoice_o.afegeix_a_remesa(cursor, uid, [invoice_id], payment_order_id, context=context)
 

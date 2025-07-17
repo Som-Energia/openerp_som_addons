@@ -1,6 +1,7 @@
 # -*- encoding: utf-8 -*-
 import os
 import base64
+from datetime import datetime
 from destral import testing
 from destral.transaction import Transaction
 from destral.patch import PatchNewCursors
@@ -736,6 +737,14 @@ class TestsSomLeadWww(testing.OOTestCase):
         ir_model_o = self.get_model("ir.model.data")
         payment_order_o = self.get_model("payment.order")
         wiz_pay_o = self.get_model('pagar.remesa.wizard')
+        ir_sequence_o = self.get_model("ir.sequence")
+
+        # Receveivable payment order should have a different prefix
+        rec_payment_order_seq_id = ir_model_o.get_object_reference(
+            self.cursor, self.uid, "account_payment_extension", "seq_rec_payment_order"
+        )[1]
+        ir_sequence_o.write(
+            self.cursor, self.uid, rec_payment_order_seq_id, {'prefix': 'R%(year)s/'})
 
         values = self._basic_values
         values["member_payment_type"] = "remesa"
@@ -794,6 +803,7 @@ class TestsSomLeadWww(testing.OOTestCase):
             self.assertEqual(payment_line.name, lead.member_number)
             self.assertEqual(payment_line.bank_id.iban, 'ES7712341234161234567890')
             self.assertEqual(payment_line.ml_inv_ref.state, 'paid')
+            self.assertEqual(payment_line.order_id.reference, 'R{}/001'.format(datetime.now().year))
 
     def test_create_lead_with_remesa_payment_but_not_new_member(self):
         www_lead_o = self.get_model("som.lead.www")
