@@ -3929,6 +3929,8 @@ class GiscedataFacturacioFacturaReport(osv.osv):
             data[p] = {}
 
         for linia in linies:
+            if linia.name not in data and linia.quantity == 0.0:
+                continue
             data[linia.name][linia.tipus] = linia.quantity
             data["initial_date"] = dateformat(linia.data_desde)
             data["final_date"] = dateformat(linia.data_fins)
