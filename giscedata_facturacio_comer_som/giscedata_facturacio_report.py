@@ -3897,16 +3897,17 @@ class GiscedataFacturacioFacturaReport(osv.osv):
                 ('linia_id', 'in', f1_cups_ids),
                 ('data_inici', '=', fact.data_inici),
                 ('data_final', '=', fact.data_final),
+                ('type', '=', 'in_invoice'),
             ]
-        )
-        f1_lf = f1_lf_obj.browse(
-            self.cursor,
-            self.uid,
-            f1_lf_ids[-1] if f1_lf_ids else []
         )
 
         linies = []
-        if f1_lf:
+        if f1_lf_ids:
+            f1_lf = f1_lf_obj.browse(
+                self.cursor,
+                self.uid,
+                f1_lf_ids[-1]
+            )
             linies = [
                 linia for linia in f1_lf.factura_id.linia_ids if linia.tipus in [
                     'generacio_neta', 'generacio', 'autoconsum',
