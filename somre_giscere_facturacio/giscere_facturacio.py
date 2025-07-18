@@ -13,7 +13,9 @@ from tools.translate import _
 TIMEZONE = timezone('Europe/Madrid')
 
 REGANECU_LIQUIDACIO = {'H2': 'C2',
-                       'H3': 'C3', }
+                       'H3': 'C3',
+                       'HC': 'C5',
+                       }
 
 
 class GiscereFacturacioFacturador(osv.osv):
@@ -137,7 +139,7 @@ class GiscereFacturacioFacturador(osv.osv):
         maturity = 'qualsevol'
 
         # Patch maturity according to liquidacio
-        if not use_newest_reganecu and maduresa in ('H2', 'H3'):
+        if not use_newest_reganecu and maduresa in ('H2', 'H3', 'HC'):
             maturity = REGANECU_LIQUIDACIO[maduresa]
             search_vals += [("maturity", "=", maturity)]
 
