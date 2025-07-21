@@ -4,6 +4,7 @@ import sys
 from osv import osv
 from datetime import datetime
 import yaml
+import copy
 from oorq.decorators import job
 
 from som_leads_polissa.giscedata_crm_lead import WWW_DATA_FORM_HEADER
@@ -254,6 +255,11 @@ class SomLeadWww(osv.osv_memory):
 
         lead_o = self.pool.get("giscedata.crm.lead")
         lead = lead_o.browse(cr, uid, lead_id, context=context)
+
+        www_vals = copy.deepcopy(www_vals)  # Avoid modifying the original dict
+        for attachment in www_vals.get("attachments", []):
+            # Remove the attachment base64 data from the log
+            attachment.pop("datas", None)
 
         data = yaml.safe_dump(www_vals, indent=2)
         msg = "{header}\n{data}".format(header=WWW_DATA_FORM_HEADER, data=data)

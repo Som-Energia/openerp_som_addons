@@ -1,6 +1,7 @@
 # -*- encoding: utf-8 -*-
 import os
 import base64
+from datetime import datetime
 from destral import testing
 from destral.transaction import Transaction
 from destral.patch import PatchNewCursors
@@ -674,6 +675,9 @@ class TestsSomLeadWww(testing.OOTestCase):
 
         self.assertEqual(len(ir_attach_ids), 1)
 
+        # check that the attachment data is not stored in the log
+        self.assertNotIn("datas:", lead.polissa_id.observacions)
+
     def test_www_form_data_and_create_entites_log_is_stored(self):
         www_lead_o = self.get_model("som.lead.www")
         lead_o = self.get_model("giscedata.crm.lead")
@@ -733,6 +737,14 @@ class TestsSomLeadWww(testing.OOTestCase):
         ir_model_o = self.get_model("ir.model.data")
         payment_order_o = self.get_model("payment.order")
         wiz_pay_o = self.get_model('pagar.remesa.wizard')
+        ir_sequence_o = self.get_model("ir.sequence")
+
+        # Receveivable payment order should have a different prefix
+        rec_payment_order_seq_id = ir_model_o.get_object_reference(
+            self.cursor, self.uid, "account_payment_extension", "seq_rec_payment_order"
+        )[1]
+        ir_sequence_o.write(
+            self.cursor, self.uid, rec_payment_order_seq_id, {'prefix': 'R%(year)s/'})
 
         values = self._basic_values
         values["member_payment_type"] = "remesa"
@@ -791,6 +803,7 @@ class TestsSomLeadWww(testing.OOTestCase):
             self.assertEqual(payment_line.name, lead.member_number)
             self.assertEqual(payment_line.bank_id.iban, 'ES7712341234161234567890')
             self.assertEqual(payment_line.ml_inv_ref.state, 'paid')
+            self.assertEqual(payment_line.order_id.reference, 'R{}/001'.format(datetime.now().year))
 
     def test_create_lead_with_remesa_payment_but_not_new_member(self):
         www_lead_o = self.get_model("som.lead.www")
@@ -816,7 +829,7 @@ class TestsSomLeadWww(testing.OOTestCase):
         values["member_payment_type"] = "remesa"
 
         result = www_lead_o.create_lead(self.cursor, self.uid, values)
-        www_lead_o.activate_lead(self.cursor, self.uid, result["lead_id"])
+        www_lead_o.activate_lead(self.cursor, self.uid, result["lead_id"], context={"sync": True})
 
         lead = lead_o.browse(self.cursor, self.uid, result["lead_id"])
         titular_id = lead.polissa_id.titular.id
@@ -977,6 +990,7 @@ class TestsSomLeadWww(testing.OOTestCase):
         partner_o = self.get_model("res.partner")
         ir_model_o = self.get_model("ir.model.data")
         pol_o = self.get_model("giscedata.polissa")
+        member_o = self.get_model("somenergia.soci")
 
         gisce_id = ir_model_o.get_object_reference(
             self.cursor, self.uid, "base", "res_partner_gisce"
@@ -1011,6 +1025,12 @@ class TestsSomLeadWww(testing.OOTestCase):
 
         # Check that the existing contract is adopted by the new member
         self.assertEqual(contract_member_id, gisce_id)
+
+        # Check that the member record is created
+        member_ids = member_o.search(
+            self.cursor, self.uid, [("partner_id", "=", gisce_id)]
+        )
+        self.assertEqual(len(member_ids), 1)
 
     def test_lead_with_demographic_data(self):
         www_lead_o = self.get_model("som.lead.www")
