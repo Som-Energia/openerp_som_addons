@@ -365,11 +365,6 @@ class SomGurbCups(osv.osv):
             cursor, uid, gurb_cups_id, context=context
         )
 
-        if not gurb_cups_vals["quota_product_id"]:
-            gurb_cups_vals["quota_product_id"] = gurb_cau_o.read(
-                cursor, uid, gurb_cups_vals["gurb_cau_id"][0], ["quota_product_id"]
-            )["quota_product_id"][0]
-
         imd_obj = self.pool.get("ir.model.data")
 
         gurb_product_id = imd_obj.get_object_reference(
