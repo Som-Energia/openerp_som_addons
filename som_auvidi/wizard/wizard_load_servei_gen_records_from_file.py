@@ -7,6 +7,14 @@ class WizardLoadServeiGenRecordsFromFile(osv.osv_memory):
     _name = 'wizard.load.servei.gen.records.from.file'
     _inherit = 'wizard.load.servei.gen.records.from.file'
 
+    def get_dict_key_from_row(self, cursor, uid, row, tipus='contracte', context=None):
+        if context is None:
+            context = {}
+
+        # By default dict key must be CUPS and it's on possition 1 on the row
+        dict_key = row[1]
+        return dict_key
+
     def get_aux_dict_from_row(self, cursor, uid, row, tipus='contracte', context=None):
         if context is None:
             context = {}
