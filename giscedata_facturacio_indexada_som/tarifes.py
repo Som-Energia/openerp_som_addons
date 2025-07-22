@@ -88,6 +88,65 @@ class TarifaPoolSOM(TarifaPool):
 
         return res
 
+    def get_alter_prmdiari(self):
+
+        # Obtenir el fitxer
+        file_path = self.conf['pdbc_path']
+        file_name = 'marginalpdbc_%s.1' % date
+        marginal_path = file_path + '/' + file_name
+        try:
+            fdata = open(marginal_path, 'r')
+        except:
+            raise osv.except_osv('Error', "No se ha encontrado MarginalPDBC para el período {}".format(date))
+        csv_reader = csv.reader(fdata, delimiter=';')
+
+        # Formatarlo obtenint dia-hora i preu
+        year = int(date[:4])
+        month = int(date[4:6])
+        comp_start_date = TIMEZONE.normalize(
+            TIMEZONE.localize(datetime(year, month, 1) + timedelta(hours=1)))
+
+        # APliquem el preu pel dia
+        res = Component(comp_start_date)
+        next(csv_reader)
+        for row in csv_reader:
+            if row[0] == '*':
+                break
+            else:
+                day = int(row[2])
+                hour = int(row[3])
+                price = float(row[5].strip())
+                res.set(day, hour - 1, price)  # El index que ens arriba com a hora comença a 1
+        res.file_version = 'PDBC'
+        return res
+
+    def get_component_class(self, component):
+        try:
+            res = globals()[component]
+        except KeyError:
+            raise ValueError('Component %s not found' % component)
+        return res
+
+    def get_component_with_fallback(self, component, data_inici, data_final, day, fallback=False):
+
+        try:
+            component_class = self.get_component_class(component.title())
+            postfix = ('%s_%s' % (data_inici, data_final))
+            component_inst = component_class('C2_%(component)s_%(postfix)s)' % locals(), self.conf['esios_token'])
+            if component == 'prmdiari' and fallback and day:
+                if sum(component_inst.matrix[int(datetime.strptime(day, '%Y-%m-%d').day) - 1]) == 0:
+                    raise REECoeficientsNotFound('Prmdiari for day %(day)s not found' % locals())
+        except REECoeficientsNotFound as e:
+            if fallback:
+                if component == 'prmdiari':
+                    component_inst = self.get_alter_prmdiari()
+                else:
+                    component_inst = Component(datetime.strptime(data_inici, "%Y-%m-%d"))
+            else:
+                raise e
+
+        return component_inst
+
     def get_available_audit_coefs_gen(self):
         """
         changes 'pvpc_gen' to 'prmdiari'
@@ -345,6 +404,15 @@ class TarifaPoolSOM(TarifaPool):
         end_date = datetime(
             start_date.year, start_date.month, num_days
         ).date()
+        day = False
+
+        start_date_str = start_date.strftime("%Y%m%d")
+        end_date_str = end_date.strftime("%Y%m%d")
+
+        # Comprovem si estem calculant el preu de demà
+        preu_dema = self.conf.get('preu_dema', False)
+        if preu_dema:
+            day = self.conf['preu_dema']['day']
 
         esios_token = self.conf['esios_token']
         holidays = self.conf['holidays']
@@ -378,7 +446,7 @@ class TarifaPoolSOM(TarifaPool):
         # REE
         postfix = ('%s_%s' % (start_date.strftime("%Y%m%d"),
                               end_date.strftime("%Y%m%d")))
-        prmdiari = Prmdiari('C2_prmdiari_%(postfix)s' % locals(), esios_token)  # [€/MWh]
+        prmdiari = self.get_component_with_fallback('prmdiari', start_date_str, end_date_str, day, fallback=preu_dema)  # [€/MWh]
 
         # Pérdidas
         if start_date.year < 2024 or (start_date.year == 2024 and start_date.month < 12):
@@ -389,15 +457,19 @@ class TarifaPoolSOM(TarifaPool):
             perdues = self.perdclassqh('C2_%(fname)s_%(postfix)s' % locals(), esios_token)  # [%]
 
         # Prdemcad
-        prdemcad = Prdemcad('C2_prdemcad_%(postfix)s' % locals(), esios_token)  # prdemcad [€/MWh]
+        prdemcad = self.get_component_with_fallback('prdemcad', start_date_str, end_date_str, day, fallback=preu_dema)  # [€/MWh]
 
         # Componentes Desvios
         if start_date.year < 2024 or (start_date.year == 2024 and start_date.month < 12):
-            csdvbaj = Codsvbaj('C2_codsvbaj_%(postfix)s' % locals(), esios_token)  # [€/MWh]
-            csdvsub = Codsvsub('C2_codsvsub_%(postfix)s' % locals(), esios_token)  # [€/MWh]
+            csdvbaj = self.get_component_with_fallback('csdvbaj', start_date_str, end_date_str, esios_token, day,
+                                                        fallback=preu_dema)  # [€/MWh]
+            csdvsub = self.get_component_with_fallback('csdvsub', start_date_str, end_date_str, esios_token, day,
+                                                        fallback=preu_dema)  # [€/MWh]
         else:
-            csdvbaj = Codsvbaqh('C2_codsvbaqh_%(postfix)s' % locals(), esios_token)  # [€/MWh]
-            csdvsub = Codsvsuqh('C2_codsvsuqh_%(postfix)s' % locals(), esios_token)  # [€/MWh]
+            csdvbaj = self.get_component_with_fallback('codsvbaqh', start_date_str, end_date_str, esios_token, day,
+                                                       fallback=preu_dema)  # [€/MWh]
+            csdvsub = self.get_component_with_fallback('codsvsuqh', start_date_str, end_date_str, esios_token, day,
+                                                        fallback=preu_dema)  # [€/MWh]
 
         # get first version date on version
         first_version = self.conf.get('versions', {}).keys()[0]
