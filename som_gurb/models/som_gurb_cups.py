@@ -3,8 +3,19 @@ from osv import osv, fields
 from datetime import datetime, timedelta
 from tools.translate import _
 import logging
+import netsvc
 
 logger = logging.getLogger("openerp.{}".format(__name__))
+
+_GURB_CUPS_STATES = [
+    ("comming_registration", "Alta pendent al GURB"),
+    ("comming_modification", "Modificació pendent al GURB"),
+    ("comming_cancellation", "Baixa pendent al GURB"),
+    ("active", "Activa"),
+    ("cancel", "Baixa"),
+    ("draft", "Esborrany"),
+    ("atr_pending", "ATR Obert"),
+]
 
 
 class SomGurbGeneralConditions(osv.osv):
@@ -82,17 +93,25 @@ class SomGurbCups(osv.osv):
 
         return res
 
-    def get_beta_percentatge(self, cursor, uid, ids, context=None):
+    def get_new_beta_percentatge(self, cursor, uid, ids, context=None):
         if not isinstance(ids, list):
             ids = [ids]
-        return self._ff_get_beta_percentage(cursor, uid, ids, [], [], context=context)
+        res = self._ff_get_future_beta_percentage(cursor, uid, ids, [], [], context=context)
+        for gurb_cups_id in ids:
+            if res[gurb_cups_id] == 0:
+                res[gurb_cups_id] = self._ff_get_beta_percentage(
+                    cursor, uid, [gurb_cups_id], [], [], context=context
+                )[gurb_cups_id]
+        return res
 
-    def _ff_get_beta_percentage(self, cursor, uid, ids, field_name, arg, context=None):
+    def _ff_get_future_beta_percentage(self, cursor, uid, ids, field_name, arg, context=None):
         if context is None:
             context = {}
         gurb_obj = self.pool.get("som.gurb")
         res = dict.fromkeys(ids, False)
-        for gurb_cups_vals in self.read(cursor, uid, ids, ["gurb_id", "beta_kw", "extra_beta_kw"]):
+        for gurb_cups_vals in self.read(cursor, uid, ids, [
+            "gurb_id", "future_beta_kw", "future_extra_beta_kw", "future_gift_beta_kw"
+        ]):
             gurb_id = gurb_cups_vals.get("gurb_id", False)
             if gurb_id:
                 generation_power = gurb_obj.read(
@@ -102,7 +121,33 @@ class SomGurbCups(osv.osv):
                 if generation_power:
                     beta_kw = gurb_cups_vals.get("beta_kw", 0)
                     extra_beta_kw = gurb_cups_vals.get("extra_beta_kw", 0)
-                    res[gurb_cups_vals["id"]] = (extra_beta_kw + beta_kw) * 100 / generation_power
+                    gift_beta_kw = gurb_cups_vals.get("gift_beta_kw", 0)
+                    res[gurb_cups_vals["id"]] = (
+                        extra_beta_kw + beta_kw + gift_beta_kw) * 100 / generation_power
+                else:
+                    res[gurb_cups_vals["id"]] = 0
+        return res
+
+    def _ff_get_beta_percentage(self, cursor, uid, ids, field_name, arg, context=None):
+        if context is None:
+            context = {}
+        gurb_obj = self.pool.get("som.gurb")
+        res = dict.fromkeys(ids, False)
+        for gurb_cups_vals in self.read(cursor, uid, ids, [
+            "gurb_id", "beta_kw", "extra_beta_kw", "gift_beta_kw"
+        ]):
+            gurb_id = gurb_cups_vals.get("gurb_id", False)
+            if gurb_id:
+                generation_power = gurb_obj.read(
+                    cursor, uid, gurb_id[0], ["generation_power"]
+                )["generation_power"]
+
+                if generation_power:
+                    beta_kw = gurb_cups_vals.get("beta_kw", 0)
+                    extra_beta_kw = gurb_cups_vals.get("extra_beta_kw", 0)
+                    gift_beta_kw = gurb_cups_vals.get("gift_beta_kw", 0)
+                    res[gurb_cups_vals["id"]] = (
+                        extra_beta_kw + beta_kw + gift_beta_kw) * 100 / generation_power
                 else:
                     res[gurb_cups_vals["id"]] = 0
         return res
@@ -116,13 +161,15 @@ class SomGurbCups(osv.osv):
         for gurb_cups_id in ids:
             search_params = [
                 ("active", "=", True),
+                ("future_beta", "=", False),
                 ("gurb_cups_id", "=", gurb_cups_id)
             ]
             active_beta_id = gurb_cups_beta_o.search(cursor, uid, search_params, context=context)
-            read_vals = ["beta_kw", "extra_beta_kw"]
+            read_vals = ["beta_kw", "extra_beta_kw", "gift_beta_kw"]
             active_beta_vals = {
                 "beta_kw": 0.0,
-                "extra_beta_kw": 0.0
+                "extra_beta_kw": 0.0,
+                "gift_beta_kw": 0.0,
             }
             if active_beta_id:
                 active_beta_vals = gurb_cups_beta_o.read(
@@ -130,6 +177,38 @@ class SomGurbCups(osv.osv):
                 )
 
             res[gurb_cups_id] = active_beta_vals
+
+        return res
+
+    def _ff_future_beta(self, cursor, uid, ids, field_name, arg, context=None):
+        if context is None:
+            context = {}
+
+        gurb_cups_beta_o = self.pool.get("som.gurb.cups.beta")
+        res = dict.fromkeys(ids, False)
+        for gurb_cups_id in ids:
+            search_params = [
+                ("active", "=", True),
+                ("future_beta", "=", True),
+                ("gurb_cups_id", "=", gurb_cups_id)
+            ]
+            future_beta_id = gurb_cups_beta_o.search(cursor, uid, search_params, context=context)
+            read_vals = ["beta_kw", "extra_beta_kw", "gift_beta_kw"]
+            future_beta_vals = {
+                "future_beta_kw": 0.0,
+                "future_extra_beta_kw": 0.0,
+                "future_gift_beta_kw": 0.0,
+            }
+
+            if future_beta_id:
+                future_beta_id = gurb_cups_beta_o.read(
+                    cursor, uid, future_beta_id[0], read_vals, context=context
+                )
+                future_beta_vals["future_beta_kw"] = future_beta_id["beta_kw"]
+                future_beta_vals["future_extra_beta_kw"] = future_beta_id["extra_beta_kw"]
+                future_beta_vals["future_gift_beta_kw"] = future_beta_id["gift_beta_kw"]
+
+            res[gurb_cups_id] = future_beta_vals
 
         return res
 
@@ -205,7 +284,7 @@ class SomGurbCups(osv.osv):
         if len(gurb_cups_ids) == 1:
             return gurb_cups_ids[0]
 
-    def activate_gurb_cups(self, cursor, uid, gurb_cups_id, data_inici, context=None):
+    def activate_or_modify_gurb_cups(self, cursor, uid, gurb_cups_id, data_inici, context=None):
         if context is None:
             context = {}
 
@@ -217,6 +296,9 @@ class SomGurbCups(osv.osv):
                 "start_date": data_inici
             }
             self.write(cursor, uid, gurb_cups_id, write_vals, context=context)
+            self.add_service_to_contract(
+                cursor, uid, gurb_cups_id, data_inici, context=context
+            )
 
         search_params = [
             ("future_beta", "=", True),
@@ -229,9 +311,30 @@ class SomGurbCups(osv.osv):
                 cursor, uid, future_beta[0], data_inici, context=context
             )
 
-        self.add_service_to_contract(
-            cursor, uid, gurb_cups_id, data_inici, context=context
-        )
+        self.send_signal(cursor, uid, [gurb_cups_id], "button_activate_cups")
+
+    def check_only_one_gurb_service(self, cursor, uid, gurb_cups_id, context=None):
+        if context is None:
+            context = {}
+
+        gurb_o = self.pool.get("som.gurb")
+        service_o = self.pool.get("giscedata.facturacio.services")
+
+        pol_id = self.get_polissa_gurb_cups(cursor, uid, gurb_cups_id, context=context)
+        products_ids = gurb_o.get_gurb_products_ids(cursor, uid, context=context)
+
+        search_params = [
+            ("polissa_id", "=", pol_id),
+            ("producte", "in", products_ids)
+        ]
+
+        service_ids = service_o.search(cursor, uid, search_params, context=context)
+
+        if service_ids:
+            raise osv.except_osv(
+                _("Error"),
+                _("Ja hi ha un servei GURB actiu associat. No es pot afegir un altre.")
+            )
 
     def add_service_to_contract(self, cursor, uid, gurb_cups_id, data_inici, context=None):
         if context is None:
@@ -240,8 +343,9 @@ class SomGurbCups(osv.osv):
         gurb_o = self.pool.get("som.gurb")
         wiz_service_o = self.pool.get("wizard.create.service")
         service_o = self.pool.get("giscedata.facturacio.services")
+        polissa_o = self.pool.get("giscedata.polissa")
 
-        read_vals = ["cups_id", "gurb_id", "owner_cups", "quota_product_id"]
+        read_vals = ["owner_cups", "gurb_id", "cups_id"]
 
         gurb_cups_vals = self.read(cursor, uid, gurb_cups_id, read_vals, context=context)
 
@@ -255,21 +359,41 @@ class SomGurbCups(osv.osv):
             )
             raise osv.except_osv(error_title, error_info)
 
-        if not gurb_cups_vals["quota_product_id"]:
-            gurb_cups_vals["quota_product_id"] = gurb_o.read(
-                cursor, uid, gurb_cups_vals["gurb_id"][0], ["quota_product_id"]
-            )["quota_product_id"][0]
+        self.check_only_one_gurb_service(
+            cursor, uid, gurb_cups_id, context=context
+        )
+
+        imd_obj = self.pool.get("ir.model.data")
+
+        gurb_product_id = imd_obj.get_object_reference(
+            cursor, uid, "som_gurb", "product_gurb"
+        )[1]
+        owner_product_id = imd_obj.get_object_reference(
+            cursor, uid, "som_gurb", "product_owner_gurb"
+        )[1]
+        enterprise_product_id = imd_obj.get_object_reference(
+            cursor, uid, "som_gurb", "product_enterprise_gurb"
+        )[1]
+
+        read_vals = ["tarifa_codi"]
+        quota_product_id = False
+        pol_vals = polissa_o.read(cursor, uid, pol_id, read_vals, context=context)
+        if gurb_cups_vals["owner_cups"]:
+            quota_product_id = owner_product_id
+        elif pol_vals["tarifa_codi"] == "2.0TD":
+            quota_product_id = gurb_product_id
+        elif pol_vals["tarifa_codi"] == "3.0TD":
+            quota_product_id = enterprise_product_id
+        else:
+            raise osv.except_osv("Error tarifa accés", "la tarifa d'accés no és 2.0TD ni 3.0TD")
 
         read_vals = ["pricelist_id"]
-        if not gurb_cups_vals["quota_product_id"]:
-            read_vals.append("quota_product_id")
 
         gurb_vals = gurb_o.read(
             cursor, uid, gurb_cups_vals["gurb_id"][0], read_vals, context=context
         )
 
         pricelist_id = gurb_vals["pricelist_id"][0]
-        quota_product_id = gurb_cups_vals["quota_product_id"] or gurb_vals["quota_product_id"]
 
         # Afegim el servei
         creation_vals = {
@@ -298,12 +422,67 @@ class SomGurbCups(osv.osv):
             context = {}
 
         # Donar de baixa Servei Contractat
+        self.send_signal(cursor, uid, [gurb_cups_id], "button_coming_cancellation")
+        self.write(cursor, uid, gurb_cups_id, {
+            "ens_ha_avisat": context.get('ens_ha_avisat', False)})
 
-        # Tancar beta
+    def get_gurb_products(self, cursor, uid, context=None):
+        if context is None:
+            context = {}
 
-        # Desactivar Gurb CUPS
+        imd_o = self.pool.get("ir.model.data")
 
-        # Enviar mail (?)
+        base_product_id = imd_o.get_object_reference(
+            cursor, uid, "som_gurb", "product_gurb"
+        )[1]
+        owner_product_id = imd_o.get_object_reference(
+            cursor, uid, "som_gurb", "product_owner_gurb"
+        )[1]
+        enterprise_product_id = imd_o.get_object_reference(
+            cursor, uid, "som_gurb", "product_enterprise_gurb"
+        )[1]
+
+        products_ids = [base_product_id, owner_product_id, enterprise_product_id]
+
+        return products_ids
+
+    def cancel_gurb_cups(self, cursor, uid, gurb_cups_id, end_date, context=None):
+        if context is None:
+            context = {}
+
+        state = self.read(cursor, uid, gurb_cups_id, ["state"])["state"]
+
+        if state == "active":
+            self.send_signal(cursor, uid, [gurb_cups_id], "button_atr_pending")
+        else:
+            # Desactivate GURB CUPS, Close Beta, Unsubscribe Service
+            self.send_signal(cursor, uid, [gurb_cups_id], "button_cancel_cups")
+            self.write(cursor, uid, gurb_cups_id, {"active": False, "end_date": end_date})
+            self.terminate_service_gurb_cups(
+                cursor, uid, gurb_cups_id, end_date, context=context
+            )
+
+    def terminate_service_gurb_cups(self, cursor, uid, gurb_cups_id, end_date, context=None):
+        if context is None:
+            context = {}
+
+        service_o = self.pool.get("giscedata.facturacio.services")
+        wiz_terminate_o = self.pool.get("wizard.terminate.service")
+
+        pol_id = self.get_polissa_gurb_cups(cursor, uid, gurb_cups_id, context=context)
+        products_ids = self.get_gurb_products(cursor, uid, context=context)
+
+        search_params = [
+            ("polissa_id", "=", pol_id),
+            ("producte", "in", products_ids),
+            ("data_fi", "=", False)
+        ]
+
+        service_ids = service_o.search(cursor, uid, search_params, context=context)
+
+        wiz_id = wiz_terminate_o.create(cursor, uid, {'data_final': end_date}, context=context)
+        context["active_ids"] = service_ids
+        wiz_terminate_o.terminate_services(cursor, uid, [wiz_id], context=context)
 
     def create_initial_invoice(self, cursor, uid, gurb_cups_id, context=None):
         if context is None:
@@ -496,6 +675,25 @@ class SomGurbCups(osv.osv):
 
         return res
 
+    def change_state(self, cursor, uid, ids, new_state, context=None):
+        write_values = {
+            "state": new_state,
+            "state_date": datetime.now().strftime("%Y-%m-%d")
+        }
+        for record_id in ids:
+            self.write(cursor, uid, ids, write_values, context=context)
+
+    def send_signal(self, cursor, uid, ids, signals):
+        """Enviem el signal al workflow del som_gurb_cups.
+        """
+        wf_service = netsvc.LocalService('workflow')
+        if not isinstance(signals, list) and not isinstance(signals, tuple):
+            signals = [signals]
+        for p_id in ids:
+            for signal in signals:
+                wf_service.trg_validate(uid, 'som.gurb.cups', p_id, signal, cursor)
+        return True
+
     _columns = {
         "active": fields.boolean("Actiu"),
         "start_date": fields.date("Data activació al GURB"),
@@ -539,8 +737,47 @@ class SomGurbCups(osv.osv):
             method=True,
             multi="betas",
         ),
+        "gift_beta_kw": fields.function(
+            _ff_active_beta,
+            string="Beta regal (kW)",
+            type="float",
+            digits=(10, 3),
+            method=True,
+            multi="betas",
+        ),
+        "future_beta_kw": fields.function(
+            _ff_future_beta,
+            string="Beta futur (kW)",
+            type="float",
+            digits=(10, 3),
+            method=True,
+            multi="future_betas",
+        ),
+        "future_extra_beta_kw": fields.function(
+            _ff_future_beta,
+            string="Extra Beta futur (kW)",
+            type="float",
+            digits=(10, 3),
+            method=True,
+            multi="future_betas",
+        ),
+        "future_gift_beta_kw": fields.function(
+            _ff_future_beta,
+            string="Beta regal futur (kW)",
+            type="float",
+            digits=(10, 3),
+            method=True,
+            multi="future_betas",
+        ),
         "beta_percentage": fields.function(
             _ff_get_beta_percentage,
+            type="float",
+            string="Total Beta (%)",
+            digits=(12, 4),
+            method=True,
+        ),
+        "future_beta_percentage": fields.function(
+            _ff_get_future_beta_percentage,
             type="float",
             string="Total Beta (%)",
             digits=(12, 4),
@@ -569,12 +806,20 @@ class SomGurbCups(osv.osv):
         ),
         "signed": fields.boolean("Signed", readonly=1),
         "quota_product_id": fields.many2one("product.product", "Produce quota mensual"),
+        "state": fields.selection(_GURB_CUPS_STATES, "Estat del titular", readonly=True),
+        "state_date": fields.date("Data de l'estat"),
+        "ens_ha_avisat": fields.boolean(
+            "Ens ha avisat",
+            help="No és un canvi sobrevingut, sinó que estem informats i ho hem gestionat."),
     }
 
     _defaults = {
         "active": lambda *a: True,
         "extra_beta_kw": lambda *a: 0,
+        "gift_beta_kw": lambda *a: 0,
         "start_date": lambda *a: str(datetime.today()),
+        "ens_ha_avisat": lambda *a: False,
+        "state": lambda *a: "draft",
     }
 
 
@@ -595,8 +840,8 @@ class SomGurbCupsBeta(osv.osv):
         mod_number = int(beta_browse.name)
         previous_mod_number = mod_number - 1
 
-        if previous_mod_number - 1 > 0:
-            gurb_cups_id = beta_browse.gurb_cups_id
+        if previous_mod_number > 0:
+            gurb_cups_id = beta_browse.gurb_cups_id.id
             search_vals = [
                 ("gurb_cups_id", "=", gurb_cups_id),
                 ("name", "=", previous_mod_number)
@@ -613,12 +858,11 @@ class SomGurbCupsBeta(osv.osv):
             }
             self.write(cursor, uid, actual_beta, write_vals, context=context)
 
-            write_vals = {
-                "start_date": data_inici,
-                "future_beta": False,
-                "active": True
-            }
-            self.write(cursor, uid, future_beta_id, write_vals, context=context)
+        write_vals = {
+            "start_date": data_inici,
+            "future_beta": False,
+        }
+        self.write(cursor, uid, future_beta_id, write_vals, context=context)
 
     def create(self, cursor, uid, vals, context=None):
         if context is None:
@@ -651,6 +895,11 @@ class SomGurbCupsBeta(osv.osv):
         ),
         "extra_beta_kw": fields.float(
             "Extra Beta (kW)",
+            digits=(10, 3),
+            required=True,
+        ),
+        "gift_beta_kw": fields.float(
+            "Beta regal (kW)",
             digits=(10, 3),
             required=True,
         ),

@@ -29,12 +29,6 @@
             <field name="type">form</field>
             <field name="arch" type="xml">
                 <form string="GURB">
-                    <group colspan="2" string="Betes assignades" icon="alphabet-greek">
-                        <field nolabel="1" name="assigned_betas_percentage" widget="progressbar" />
-                    </group>
-                    <group colspan="2" string="Betes assignades + extres" icon="alphabet-greek">
-                        <field nolabel="1" name="assigned_extra_betas_percentage" widget="progressbar" />
-                    </group>
                     <group col="6" colspan="4" string="Estats" icon="123">
                         <field name="state_date" colspan="1" />
                         <field name="state" select="1" colspan="1" />
@@ -86,6 +80,7 @@
                                 <field name="assigned_betas_kw" colspan="4"/>
                                 <field name="available_betas_percentage" colspan="4"/>
                                 <field name="extra_betas_kw" colspan="4"/>
+                                <field name="gift_betas_kw" colspan="4"/>
                             </group>
                             <separator string="CUPS del GURB" colspan="4"/>
                             <field name="gurb_cups_ids" nolabel="1" colspan="4"/>
@@ -119,7 +114,10 @@
         <!-- Menú per llistar els GURBs-->
         <menuitem id="menu_llistar_gurbs" parent="menu_gurbs" action="action_gurbs" />
         <!-- Menú per llistar els GURB CUPS-->
-        <menuitem id="menu_llistar_gurbs_cups" parent="menu_gurbs" action="action_gurb_cups" />
+        <menuitem id="menu_llistar_gurbs_cups_all" parent="menu_gurbs" action="action_gurb_cups_all" />
+        <menuitem id="menu_llistar_gurbs_cups_cancel" parent="menu_gurbs" action="action_gurb_cups_cancel" />
+        <menuitem id="menu_llistar_gurbs_cups_comming" parent="menu_gurbs" action="action_gurb_cups_comming" />
+        <menuitem id="menu_llistar_gurbs_cups_atr_pending" parent="menu_gurbs" action="action_gurb_cups_atr_pending" />
         <!-- Accés directe a la pestanya amb llistat dels som.gurb.cups del GURB -->
         <record id="action_som_gurb_cups_tree" model="ir.actions.act_window">
             <field name="name">Tots els CUPS del GURB</field>

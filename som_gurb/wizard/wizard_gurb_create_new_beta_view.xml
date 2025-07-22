@@ -10,6 +10,7 @@
                     <group colspan="4">
                         <field name="beta_kw" />
                         <field name="extra_beta_kw" />
+                        <field name="gift_beta_kw" />
                         <field name="start_date" />
                     </group>
                     <group colspan="4">
