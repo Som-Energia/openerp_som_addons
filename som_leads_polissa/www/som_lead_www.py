@@ -2,7 +2,6 @@
 import traceback
 import sys
 from osv import osv
-from datetime import datetime
 import yaml
 import copy
 from oorq.decorators import job
@@ -95,7 +94,6 @@ class SomLeadWww(osv.osv_memory):
             "cups_pu": contract_address.get("door"),
             "cups_bq": contract_address.get("block"),
             "cnae": cnae_id,
-            "data_alta_prevista": datetime.today().strftime('%Y-%m-%d'),
             "tarifa": tarifa_id,
             "facturacio_potencia": 'max' if contract_info["tariff"] == '3.0TD' else 'icp',
             "tensio_normalitzada": tensio_230,
