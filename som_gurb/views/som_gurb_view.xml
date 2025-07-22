@@ -104,7 +104,7 @@
             </field>
         </record>
         <!-- Acció per obrir el llistat de GURB CAUs-->
-        <record model="ir.actions.act_window" id="action_gurbs">
+        <record model="ir.actions.act_window" id="action_gurbs_cau">
             <field name="name">GURB CAUs</field>
             <field name="view_id" ref="view_gurbs_cau_tree" />
             <field name="res_model">som.gurb.cau</field>
@@ -112,7 +112,7 @@
             <field name="view_mode">tree,form</field>
         </record>
         <!-- Menú per llistar els GURB CAUs-->
-        <menuitem id="menu_llistar_gurbs" parent="menu_gurb_cau" action="action_cau_gurbs" />
+        <menuitem id="menu_llistar_gurbs" parent="menu_gurb_cau" action="action_gurbs_cau" />
         <!-- Menú per llistar els GURB CUPS-->
         <menuitem id="menu_llistar_gurbs_cups_all" parent="menu_gurb_cau" action="action_gurb_cups_all" />
         <menuitem id="menu_llistar_gurbs_cups_cancel" parent="menu_gurb_cau" action="action_gurb_cups_cancel" />
