@@ -1,7 +1,7 @@
 <?xml version="1.0" ?>
 <openerp>
     <data>
-        <record id="gurb_0001" model="som.gurb">
+        <record id="gurb_0001" model="som.gurb.cau">
             <field name="name">GURB 001</field>
             <field name="code">GURB_001</field>
             <field name="roof_owner_id" ref="base.res_partner_c2c" />

@@ -5,7 +5,7 @@
             <field name="name">som.gurb.form</field>
             <field name="inherit_id" ref="view_gurbs_form"/>
             <field name="version" eval="2"/>
-            <field name="model">som.gurb</field>
+            <field name="model">som.gurb.cau</field>
             <field name="type">form</field>
             <field name="arch" type="xml">
                 <xpath expr="//group[@string='Estats']" position="before">

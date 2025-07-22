@@ -52,7 +52,7 @@ class WizardCreateCoeficicientsFile(osv.osv_memory):
 
         current_gurb = context.get('active_id')
 
-        gurb_o = self.pool.get('som.gurb')
+        gurb_o = self.pool.get('som.gurb.cau')
         self_cons_name = gurb_o.read(
             cursor, uid, current_gurb, ['self_consumption_id']
         )['self_consumption_id'][1]

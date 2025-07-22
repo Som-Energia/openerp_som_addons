@@ -3,7 +3,7 @@
     <data>
         <record id="wkf_gurb" model="workflow">
             <field name="name">GURB Workflow</field>
-            <field name="osv">som.gurb</field>
+            <field name="osv">som.gurb.cau</field>
             <field name="on_create">True</field>
         </record>
 

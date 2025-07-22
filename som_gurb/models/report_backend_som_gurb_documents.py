@@ -21,7 +21,7 @@ MONTHS = {
 
 
 class ReportBackendSomGurbAcordRepartiment(ReportBackend):
-    _source_model = "som.gurb"
+    _source_model = "som.gurb.cau"
     _name = "report.backend.som.gurb.acord.repartiment"
 
     @report_browsify

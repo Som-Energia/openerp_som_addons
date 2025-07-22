@@ -183,7 +183,7 @@ class TestsGurbServices(TestsGurbBase):
         fact_services_o = self.openerp.pool.get("giscedata.facturacio.services")
         fact_o = self.openerp.pool.get("giscedata.facturacio.factura")
         gurb_cups_o = self.openerp.pool.get("som.gurb.cups")
-        gurb_o = self.openerp.pool.get("som.gurb")
+        gurb_o = self.openerp.pool.get("som.gurb.cau")
 
         ref = self.get_references()
         pol_br = pol_o.browse(self.cursor, self.uid, ref['pol_id'], context=context)
@@ -229,7 +229,7 @@ class TestsGurbServices(TestsGurbBase):
         fact_services_o = self.openerp.pool.get("giscedata.facturacio.services")
         fact_o = self.openerp.pool.get("giscedata.facturacio.factura")
         gurb_cups_o = self.openerp.pool.get("som.gurb.cups")
-        gurb_o = self.openerp.pool.get("som.gurb")
+        gurb_o = self.openerp.pool.get("som.gurb.cau")
 
         ref = self.get_references()
         pol_br = pol_o.browse(self.cursor, self.uid, ref['pol_id'], context=context)
@@ -282,7 +282,7 @@ class TestsGurbServices(TestsGurbBase):
         fact_services_o = self.openerp.pool.get("giscedata.facturacio.services")
         fact_o = self.openerp.pool.get("giscedata.facturacio.factura")
         gurb_cups_o = self.openerp.pool.get("som.gurb.cups")
-        gurb_o = self.openerp.pool.get("som.gurb")
+        gurb_o = self.openerp.pool.get("som.gurb.cau")
 
         ref = self.get_references()
         pol_br = pol_o.browse(self.cursor, self.uid, ref['pol_id'], context=context)
