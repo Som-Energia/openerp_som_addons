@@ -17,7 +17,7 @@ class WizardCreateCoeficicientsFile(osv.osv_memory):
         gurb_cups_o = self.pool.get('som.gurb.cups')
 
         search_params = [
-            ("gurb_id", "=", current_gurb),
+            ("gurb_cau_id", "=", current_gurb),
             ("active", "=", True),
             ("start_date", "<=", today),
             ("state", "in", [

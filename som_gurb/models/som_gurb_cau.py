@@ -373,12 +373,12 @@ class SomGurbCau(osv.osv):
             context = {}
         res = dict.fromkeys(ids, False)
         attach_obj = self.pool.get("ir.attachment")
-        for gurb_id in ids:
+        for gurb_cau_id in ids:
             attach_ids = attach_obj.search(cursor, uid, [
                 ("res_model", "=", "som.gurb.cau"),
-                ("res_id", "=", gurb_id)
+                ("res_id", "=", gurb_cau_id)
             ])
-            res[gurb_id] = list(set(attach_ids))
+            res[gurb_cau_id] = list(set(attach_ids))
         return res
 
     _columns = {
@@ -409,7 +409,7 @@ class SomGurbCau(osv.osv):
         "activation_date": fields.date("Data activació GURB CAU"),
         "state": fields.selection(_GURB_STATES, "Estat del GURB CAU", readonly=True),
         "state_date": fields.date("Data activació estat", readonly=True),
-        "gurb_cups_ids": fields.one2many("som.gurb.cups", "gurb_id", "Betes", readonly=False),
+        "gurb_cups_ids": fields.one2many("som.gurb.cups", "gurb_cau_id", "Betes", readonly=False),
         "max_power": fields.float("Topall max. per contracte (kW)"),
         "min_power": fields.float("Topall min. per contracte (kW)"),
         "critical_incomplete_state": fields.integer("Estat crític incomplet (%)"),

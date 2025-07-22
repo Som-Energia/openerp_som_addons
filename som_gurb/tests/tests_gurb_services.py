@@ -194,12 +194,12 @@ class TestsGurbServices(TestsGurbBase):
         self.add_service_to_contract(start_date="2016-01-01")
 
         gurb_cups_id = ref["gurb_cups_id"]
-        gurb_id = gurb_cups_o.read(
-            self.cursor, self.uid, gurb_cups_id, ["gurb_id"], context=context
-        )["gurb_id"][0]
+        gurb_cau_id = gurb_cups_o.read(
+            self.cursor, self.uid, gurb_cups_id, ["gurb_cau_id"], context=context
+        )["gurb_cau_id"][0]
 
         pricelist_id = gurb_o.read(
-            self.cursor, self.uid, gurb_id, ["pricelist_id"], context=context
+            self.cursor, self.uid, gurb_cau_id, ["pricelist_id"], context=context
         )["pricelist_id"][0]
 
         self.create_new_pricelist_version("2016-02-15", pricelist_id)
@@ -241,12 +241,12 @@ class TestsGurbServices(TestsGurbBase):
         self.add_service_to_contract(start_date="2016-01-01")
 
         gurb_cups_id = ref["gurb_cups_id"]
-        gurb_id = gurb_cups_o.read(
-            self.cursor, self.uid, gurb_cups_id, ["gurb_id"], context=context
-        )["gurb_id"][0]
+        gurb_cau_id = gurb_cups_o.read(
+            self.cursor, self.uid, gurb_cups_id, ["gurb_cau_id"], context=context
+        )["gurb_cau_id"][0]
 
         pricelist_id = gurb_o.read(
-            self.cursor, self.uid, gurb_id, ["pricelist_id"], context=context
+            self.cursor, self.uid, gurb_cau_id, ["pricelist_id"], context=context
         )["pricelist_id"][0]
 
         self.create_new_pricelist_version("2016-02-15", pricelist_id)
@@ -294,12 +294,12 @@ class TestsGurbServices(TestsGurbBase):
         self.add_service_to_contract(start_date="2016-01-01")
 
         gurb_cups_id = ref["gurb_cups_id"]
-        gurb_id = gurb_cups_o.read(
-            self.cursor, self.uid, gurb_cups_id, ["gurb_id"], context=context
-        )["gurb_id"][0]
+        gurb_cau_id = gurb_cups_o.read(
+            self.cursor, self.uid, gurb_cups_id, ["gurb_cau_id"], context=context
+        )["gurb_cau_id"][0]
 
         pricelist_id = gurb_o.read(
-            self.cursor, self.uid, gurb_id, ["pricelist_id"], context=context
+            self.cursor, self.uid, gurb_cau_id, ["pricelist_id"], context=context
         )["pricelist_id"][0]
 
         self.create_new_pricelist_version("2016-02-15", pricelist_id)

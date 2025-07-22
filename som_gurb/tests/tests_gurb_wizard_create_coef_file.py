@@ -10,7 +10,7 @@ class TestsGurbWizardCreateCoefFile(TestsGurbBase):
         self.activate_gurb_cups()
 
         ctx = {
-            "active_id": self.get_references()["gurb_id"]
+            "active_id": self.get_references()["gurb_cau_id"]
         }
 
         wiz_obj = self.openerp.pool.get("wizard.create.coeficients.file")
@@ -32,7 +32,7 @@ class TestsGurbWizardCreateCoefFile(TestsGurbBase):
         self.activate_gurb_cups()
 
         ctx = {
-            "active_id": self.get_references()["gurb_id"]
+            "active_id": self.get_references()["gurb_cau_id"]
         }
 
         gurb_cups_id = self.get_references()['gurb_cups_id']

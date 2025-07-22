@@ -136,7 +136,7 @@ class SomGurbCups(osv.osv):
         gurb_cau_obj = self.pool.get("som.gurb.cau")
         res = dict.fromkeys(ids, False)
         for gurb_cups_vals in self.read(cursor, uid, ids, [
-            "gurb_id", "beta_kw", "extra_beta_kw", "gift_beta_kw"
+            "gurb_cau_id", "beta_kw", "extra_beta_kw", "gift_beta_kw"
         ]):
             gurb_cau_id = gurb_cups_vals.get("gurb_cau_id", False)
             if gurb_cau_id:
@@ -347,7 +347,7 @@ class SomGurbCups(osv.osv):
         service_o = self.pool.get("giscedata.facturacio.services")
         polissa_o = self.pool.get("giscedata.polissa")
 
-        read_vals = ["owner_cups", "gurb_id", "cups_id"]
+        read_vals = ["owner_cups", "gurb_cau_id", "cups_id"]
 
         gurb_cups_vals = self.read(cursor, uid, gurb_cups_id, read_vals, context=context)
 
@@ -532,10 +532,10 @@ class SomGurbCups(osv.osv):
         price_unit = pricelist_o.price_get(
             cursor,
             uid,
-            [gurb_cups_br.gurb_id.pricelist_id.id],
+            [gurb_cups_br.gurb_cau_id.pricelist_id.id],
             product_id,
             gurb_cups_br.beta_kw,
-        )[gurb_cups_br.gurb_id.pricelist_id.id]
+        )[gurb_cups_br.gurb_cau_id.pricelist_id.id]
 
         # Create invoice line
         gurb_line = invoice_line_o.product_id_change(  # Get line default values
