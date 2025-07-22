@@ -706,7 +706,7 @@ class SomGurbCups(osv.osv):
         "start_date": fields.date("Data activació al GURB"),
         "end_date": fields.date("Data sortida GURB"),
         "inscription_date": fields.date("Data d'inscripció al GURB"),
-        "gurb_id": fields.many2one("som.gurb", "GURB", required=True, ondelete="cascade"),
+        "gurb_cau_id": fields.many2one("som.gurb.cau", "GURB", required=True, ondelete="cascade"),
         "cups_id": fields.many2one("giscedata.cups.ps", "CUPS", required=True),
         "polissa_id": fields.many2one("giscedata.polissa", "Pòlissa", readonly=False),
         "partner_id": fields.related(
