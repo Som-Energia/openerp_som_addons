@@ -539,7 +539,7 @@ class SomGurbCau(osv.osv):
     _sql_constraints = [(
         "self_consumption_id_uniq",
         "unique(self_consumption_id)",
-        "Ja existeix un GURB per aquest autoconsum"
+        "Ja existeix un GURB CAU per aquest autoconsum"
     )]
 
 

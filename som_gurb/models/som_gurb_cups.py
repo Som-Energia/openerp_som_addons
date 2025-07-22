@@ -335,7 +335,7 @@ class SomGurbCups(osv.osv):
         if service_ids:
             raise osv.except_osv(
                 _("Error"),
-                _("Ja hi ha un servei GURB actiu associat. No es pot afegir un altre.")
+                _("Ja hi ha un servei GURB CAU actiu associat. No es pot afegir un altre.")
             )
 
     def add_service_to_contract(self, cursor, uid, gurb_cups_id, data_inici, context=None):
