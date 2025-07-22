@@ -14,12 +14,12 @@
         % endfor
         <td></td>
     </tr>
-    <tr>
-        % if meter.last_visible and meter.hide_total_surplus:
-            <td class="detall_td">${_(u"Lectura final (%s) (%s)") % (meter.final_date, _(meter.final_type))}</td>
-        % else:
-            <td class="detall_td last_row">${_(u"Lectura final (%s) (%s)") % (meter.final_date, _(meter.final_type))}</td>
-        % endif
+    %if meter.hide_total_surplus and not meter.last_visible:
+        <tr class="last_row">
+    % else:
+        <tr>
+    % endif
+        <td class="detall_td">${_(u"Lectura final (%s) (%s)") % (meter.final_date, _(meter.final_type))}</td>
         % for p in meter.showing_periods:
             % if p in meter:
                 <td class="periods_td">${_(u"%s") %(int(meter[p]["final"]))}</td>
