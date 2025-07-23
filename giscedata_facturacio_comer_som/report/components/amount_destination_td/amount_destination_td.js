@@ -84,7 +84,7 @@ var option = {
     ],
     graphic: {
         elements: [
-            getDashedLine(320, 100, 400, 100),
+            getDashedLine(300, 100, 400, 100),
             getDashedLine(400, 100, 510, 30),
             getDashedLine(400, 100, 510, 170),
         ]
@@ -93,13 +93,16 @@ var option = {
     {
         type: 'pie',
         radius: '50%',
-        center: ['25%', '50%'],
+        center: ['20%', '50%'],
         data: pie_data,
         label: {
             formatter: function(params){return toCommaNumber(params.value)+' €\n'+params.name},
             color: '#333',  // needed for wkhtmltopdf
-            fontSize: 11,
+            fontSize: 10,
             overflow: 'break',
+        },
+        labelLayout: {
+            hideOverlap: false,
         },
         startAngle: 15,
         animation: false,
@@ -114,5 +117,4 @@ var option = {
     },
     ].concat(stackBarSeries),
 };
-
 chartDesi.setOption(option);
