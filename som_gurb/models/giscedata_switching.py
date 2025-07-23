@@ -167,8 +167,9 @@ class GiscedataSwitchingM1_01(osv.osv):
         if context is None:
             context = {}
 
-        if type(pas_id) in (int, long):
-            pas = self.browse(cursor, uid, pas_id, context)
+        if isinstance(pas_id, (list, tuple)):
+            pas_id = pas_id[0]
+        pas = self.browse(cursor, uid, pas_id, context)
 
         sgc_obj = self.pool.get("som.gurb.cups")
 
