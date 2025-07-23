@@ -168,7 +168,7 @@ class GiscedataSwitchingM1_01(osv.osv):
             context = {}
 
         if type(pas_id) in (int, long):
-            pas = self.browse(cursor, uid, pas_id, context)[0]
+            pas = self.browse(cursor, uid, pas_id, context)
 
         sgc_obj = self.pool.get("som.gurb.cups")
 
