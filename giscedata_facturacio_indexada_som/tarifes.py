@@ -411,6 +411,7 @@ class TarifaPoolSOM(TarifaPool):
 
         # Comprovem si estem calculant el preu de demà
         preu_dema = self.conf.get('preu_dema', False)
+        day = False
         if preu_dema:
             day = self.conf['preu_dema']['day']
 
@@ -461,15 +462,11 @@ class TarifaPoolSOM(TarifaPool):
 
         # Componentes Desvios
         if start_date.year < 2024 or (start_date.year == 2024 and start_date.month < 12):
-            csdvbaj = self.get_component_with_fallback('csdvbaj', start_date_str, end_date_str, esios_token, day,
-                                                        fallback=preu_dema)  # [€/MWh]
-            csdvsub = self.get_component_with_fallback('csdvsub', start_date_str, end_date_str, esios_token, day,
-                                                        fallback=preu_dema)  # [€/MWh]
+            csdvbaj = self.get_component_with_fallback('csdvbaj', start_date_str, end_date_str, day, fallback=preu_dema)  # [€/MWh]
+            csdvsub = self.get_component_with_fallback('csdvsub', start_date_str, end_date_str, day, fallback=preu_dema)  # [€/MWh]
         else:
-            csdvbaj = self.get_component_with_fallback('codsvbaqh', start_date_str, end_date_str, esios_token, day,
-                                                       fallback=preu_dema)  # [€/MWh]
-            csdvsub = self.get_component_with_fallback('codsvsuqh', start_date_str, end_date_str, esios_token, day,
-                                                        fallback=preu_dema)  # [€/MWh]
+            csdvbaj = self.get_component_with_fallback('codsvbaqh', start_date_str, end_date_str, day, fallback=preu_dema)  # [€/MWh]
+            csdvsub = self.get_component_with_fallback('codsvsuqh', start_date_str, end_date_str, day, fallback=preu_dema)  # [€/MWh]
 
         # get first version date on version
         first_version = self.conf.get('versions', {}).keys()[0]
