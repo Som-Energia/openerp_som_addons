@@ -42,6 +42,22 @@ var stackBarSeries = dades_reparto.map(function(item, index) {
     };
 });
 
+function getDashedLine(x1, y1, x2, y2) {
+    return {
+        type: 'line',
+        shape: { x1: x1, y1: y1, x2: x2, y2: y2 },
+        style: {
+            stroke: '#333',
+            lineWidth: 0.5,
+            lineDash: "dashed",
+            opacity: 1,
+        },
+        z: -1,
+        silent: true,
+        animation: false,
+    };
+}
+
 // Render
 var option = {
     grid: {
@@ -60,21 +76,19 @@ var option = {
         max: 100,
         show: false
     },
-    title: {
-        text: "Desglose de cargos",
-        right: 60,
-        // borderWidth: 0,
-        borderColor: 'transparent',
-        textStyle: {
-            fontSize: 12,
-        }
-    },
     color: [
         '#E3E8DF',
         '#D4DAD1',
         '#CED5D0',
         '#777777',
     ],
+    graphic: {
+        elements: [
+            getDashedLine(320, 100, 400, 100),
+            getDashedLine(400, 100, 510, 30),
+            getDashedLine(400, 100, 510, 170),
+        ]
+    },
     series: [
     {
         type: 'pie',
@@ -85,7 +99,7 @@ var option = {
             formatter: function(params){return toCommaNumber(params.value)+' €\n'+params.name},
             color: '#333',  // needed for wkhtmltopdf
         },
-        startAngle: 20,  // TODO: pensar be aixo
+        startAngle: 15,
         animation: false,
         silent: true,
         color: [
