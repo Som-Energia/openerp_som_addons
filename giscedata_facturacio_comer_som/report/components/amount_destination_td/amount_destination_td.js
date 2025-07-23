@@ -98,6 +98,8 @@ var option = {
         label: {
             formatter: function(params){return toCommaNumber(params.value)+' €\n'+params.name},
             color: '#333',  // needed for wkhtmltopdf
+            fontSize: 11,
+            overflow: 'break',
         },
         startAngle: 15,
         animation: false,
