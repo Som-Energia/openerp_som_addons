@@ -3,7 +3,7 @@ from destral import testing
 
 
 class TestsGiscedataPolissa(testing.OOTestCaseWithCursor):
-    def test_giscedata_polissa_sense_socia_vinculada(self):
+    def test_giscedata_polissa_te_socia_real_vinculada(self):
         cursor = self.cursor
         uid = self.uid
         imd_obj = self.openerp.pool.get('ir.model.data')
@@ -12,11 +12,16 @@ class TestsGiscedataPolissa(testing.OOTestCaseWithCursor):
             cursor, uid, 'giscedata_polissa', 'polissa_0001'
         )[1]
         pol = pol_obj.browse(cursor, uid, polissa_id)
-        self.assertTrue(pol.sense_socia_vinculada, "La pòlissa hauria de ser sense sòcia vinculada")
+        self.assertFalse(pol.te_socia_real_vinculada,
+                         "La pòlissa no hauria de tenir sòcia real vinculada")
 
-        pol_obj.write(cursor, uid, [polissa_id], {'soci_nif': 'ES12345678Z'})
+        soci_id = imd_obj.get_object_reference(
+            cursor, uid, 'som_polissa_soci', 'soci_0001'
+        )[1]
+        pol_obj.write(cursor, uid, [polissa_id], {'soci': soci_id})
         pol = pol_obj.browse(cursor, uid, polissa_id)
-        self.assertFalse(pol.sense_socia_vinculada, "La pòlissa hauria de ser amb sòcia vinculada")
+        self.assertTrue(pol.te_socia_real_vinculada,
+                        "La pòlissa hauria de ser amb sòcia real vinculada")
 
     def test_giscedata_polissa_sortida_state(self):
         cursor = self.cursor

@@ -1,16 +1,50 @@
 <openerp>
     <data>
+        <!-- Afegim camps som_sortida a form de giscedata.polissa -->
         <record model="ir.ui.view" id="view_giscedata_polissa_form">
-            <field name="name">giscedata.polissa.form</field>
+            <field name="name">giscedata.polissa.sortida.form</field>
             <field name="model">giscedata.polissa</field>
             <field name="inherit_id" ref="som_polissa_soci.view_giscedata_polissa_form"/>
             <field name="priority">100</field>
             <field name="arch" type="xml">
                 <xpath expr="//field[@name='soci_nif']" position="after">
-                    <field name="sortida_state_id" attrs="{'invisible' : [('sense_socia_vinculada', '=', False)] }"/>
-                    <field name="sortida_history_ids" widget="one2many_list" attrs="{'invisible' : [('sense_socia_vinculada', '=', False)] }" options="{'limit': 5}"/>
+                    <field name="te_socia_real_vinculada" invisible="1"/>
+                    <group colspan="4" col="4" attrs="{'invisible':[('te_socia_real_vinculada','=',True)]}">
+                        <field name="sortida_state_id" />
+                        <field name="sortida_history_ids" widget="one2many_list"/>
+                    </group>
                 </xpath>
             </field>
         </record>
+        <!-- Afegim vista de pòlisses amb estat de sortida -->
+        <record model="ir.ui.view" id="view_polisses_en_proces_de_sortida_tree">
+            <field name="name">giscedata.polissa.polisses_en_proces_de_sortida.tree</field>
+            <field name="model">giscedata.polissa</field>
+            <field name="type">tree</field>
+            <field name="arch" type="xml">
+                <tree string="Pòlisses en procés de sortida">
+                    <field name="name" select="1"/>
+                    <field name="cups" select="1"/>
+                    <field name="state" select="1"/>
+                    <field name="titular" select="1"/>
+                    <field name="cups_direccio" select="1"/>
+                    <field name="tarifa" select="1"/>
+                    <field name="data_alta" select="1"/>
+                    <field name="soci" select="1"/>
+                    <field name="sortida_state_id" select="1"/>
+                    <field name="te_socia_real_vinculada" select="1"/>
+                    <field name="en_process_de_sortida" select="1"/>
+                </tree>
+            </field>
+        </record>
+        <record model="ir.actions.act_window" id="action_polisses_en_proces_de_sortida">
+            <field name="name">Pòlisses en procés de sortida</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">giscedata.polissa</field>
+            <field name="view_type">form</field>
+            <field name="domain">[('en_process_de_sortida', '=', True)]</field>
+            <field name="view_id" ref="view_polisses_en_proces_de_sortida_tree"/>
+        </record>
+        <menuitem name="Pòlisses en procés de sortida" action="action_polisses_en_proces_de_sortida" id="menu_polisses_en_proces_de_sortida" parent="giscedata_polissa.menu_principal"/>
     </data>
 </openerp>

@@ -1,12 +1,12 @@
 <?xml version="1.0"?>
 <openerp>
     <data>
-		<record model="res.config" id="config_llista_nifs_socia_promocional">
-			<field name="description">Llista de NIFs de sòcies promocionals de 1 any de durada</field>
-			<field name="name">llista_nifs_socia_promocional</field>
-			<field name="value">["99999998T"]</field>
-		</record>
-		<!-- Estats del flux de sortida -->
+        <record model="res.config" id="config_llista_nifs_socia_promocional">
+            <field name="description">Llista de NIFs de sòcies promocionals de 1 any de durada</field>
+            <field name="name">llista_nifs_socia_promocional</field>
+            <field name="value">["99999998T"]</field>
+        </record>
+        <!-- Estats del flux de sortida -->
         <record model="account.invoice.pending.state.process" id="enviar_cor_state_process">
             <field name="name">Enviar a la COR</field>
             <field name="days_type">natural</field>
@@ -48,6 +48,7 @@
             <field name="name">Pendent crear cas B1</field>
             <field name="weight">50</field>
             <field name="process_id" ref="enviar_cor_state_process"/>
+            <field name="b2_02_create">True</field>
         </record>
         <record model="som.sortida.state" id="enviar_cor_cas_b1_creat_pending_state">
             <field name="name">Cas B1 creat</field>
