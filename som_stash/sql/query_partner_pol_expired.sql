@@ -3,7 +3,8 @@
  * COM A TITULAR d'alguna pòlissa activa o de baixa menys després de la data_limit
  * COM A ADMINISTRADORA d'alguna pòlissa activa o de baixa després de la data_limit
  * COM A SOCI d'alguna pòlissa activa o de baixa després de la data_limit
- * COM A NOTIFICACIÓ d'alguna pòlissa activa o de baixa després de la data_limit
+ * COM A ADREÇA NOTIFICACIÓ d'alguna pòlissa activa o de baixa menys després de la data_limit
+ * COM A PAGADOR d'alguna pòlissa activa o de baixa menys després de la data_limit
  * AMB INVERSIONS, APORTACIONS, GNKWH amb darrera data efectiva després de la data_limit
  */
 select partner_id, date_expiry
@@ -58,10 +59,19 @@ from
 
 			union all
 
-			--COM A NOTIFICACIÓ
+			--COM A CONTACTE ALTERNATIU
 			select gp2.altre_p as partner_id
 			from giscedata_polissa gp2
 			where gp2.altre_p is not null and
+			(gp2.state = 'activa' or (gp2.state = 'baixa' and gp2.data_baixa > %(data_limit)s))
+
+			union all
+
+			--COM A ADREÇA NOTIFICACIÓ
+			select rpa.partner_id as partner_id
+			from giscedata_polissa gp2
+			inner join res_partner_address rpa on rpa.id = gp2.direccio_notificacio
+			where gp2.direccio_notificacio is not null and
 			(gp2.state = 'activa' or (gp2.state = 'baixa' and gp2.data_baixa > %(data_limit)s))
 
 			union all
