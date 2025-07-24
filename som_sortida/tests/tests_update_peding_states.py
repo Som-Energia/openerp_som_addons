@@ -26,9 +26,7 @@ class TestUpdatePendingStates(testing.OOTestCaseWithCursor):
         wiz_id = upd_obj.create(cursor, uid, {}, context=None)
         wiz = upd_obj.browse(cursor, uid, wiz_id)
         history_values = {
-            'pending_state_id': imd_obj.get_object_reference(
-                cursor, uid, 'som_sortida', 'enviar_cor_contrate_sense_socia_pending_state'
-            )[1],
+            'pending_state_id': estat_sense_socia,
             'change_date': '2023-10-01'
         }
         wiz.update_state(polissa_id, history_values)

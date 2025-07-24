@@ -28,7 +28,7 @@ class TestsGiscedataPolissa(testing.OOTestCaseWithCursor):
         uid = self.uid
         imd_obj = self.openerp.pool.get('ir.model.data')
         pol_obj = self.openerp.pool.get('giscedata.polissa')
-        state_obj = self.openerp.pool.get('som.sortida.state')
+        self.openerp.pool.get('som.sortida.state')
 
         polissa_id = imd_obj.get_object_reference(
             cursor, uid, 'giscedata_polissa', 'polissa_0001'
@@ -36,18 +36,25 @@ class TestsGiscedataPolissa(testing.OOTestCaseWithCursor):
         pol = pol_obj.browse(cursor, uid, polissa_id)
         # Check initial state
         self.assertEqual(
-            pol.sortida_state_id.name, 'Correcte',
-            "L'estat inicial hauria de ser 'Correcte' en comptes de {}".format(
+            pol.sortida_state_id.name, 'Contrate sense sòcia',
+            "L'estat inicial hauria de ser 'Contrate sense sòcia' en comptes de {}".format(
                 pol.sortida_state_id.name
             ))
 
-        # Change state
-        new_state_id = state_obj.search(cursor, uid, [('name', '=', 'En procés')], limit=1)[0]
-        pol_obj.write(cursor, uid, [polissa_id], {'sortida_state_id': new_state_id})
-        pol = pol_obj.browse(cursor, uid, polissa_id)
+    def tests_gicedata_polissa_history(self):
+        cursor = self.cursor
+        uid = self.uid
+        imd_obj = self.openerp.pool.get('ir.model.data')
+        hist_obj = self.openerp.pool.get('som.sortida.history')
+        pol_obj = self.openerp.pool.get('giscedata.polissa')
 
-        self.assertEqual(
-            pol.sortida_state_id.name, 'En procés',
-            "L'estat hauria de ser 'En procés' en comptes de {}".format(
-                pol.sortida_state_id.name
-            ))
+        polissa_id = imd_obj.get_object_reference(
+            cursor, uid, 'giscedata_polissa', 'polissa_0001'
+        )[1]
+        pol_obj.write(cursor, uid, polissa_id, {'soci': False})
+        hist_id = hist_obj.search(cursor, uid, [('polissa_id', '=', polissa_id)])
+        self.assertTrue(hist_id, "No s'ha trobat cap historial per a la pòlissa")
+
+        hist_data = hist_obj.read(cursor, uid, hist_id, ['polissa_id'])
+        self.assertEqual(hist_data[0]['polissa_id'][0], polissa_id,
+                         "L'historial hauria de correspondre a la pòlissa correcta")
