@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 from osv import osv, fields
 import json
+from osv.expression import OOQuery
+from datetime import datetime
 
 
 class GiscedataPolissa(osv.osv):
@@ -96,6 +98,136 @@ class GiscedataPolissa(osv.osv):
             help="Indica si la pòlissa està en procés de sortida",
         ),
     }
+
+    def go_on_pending(self, cursor, uid, ids, context=None):
+        if context is None:
+            context = {}
+        if not isinstance(ids, list):
+            ids = [ids]
+        if not ids:
+            return False
+        pstate_obj = self.pool.get('som.sortida.state')
+        only_active = context.get('only_active', True)
+        q = OOQuery(self, cursor, uid)
+        sql = q.select([
+            'id', 'sortida_state_id.weight',
+            'sortida_state_id.process_id', 'sortida_state_id.active',
+        ], only_active=only_active).where([('id', 'in', ids)])
+        cursor.execute(*sql)
+        res = cursor.dictfetchall()
+        for pol in res:
+            weight = pol['sortida_state_id.weight']
+            process_id = pol['sortida_state_id.process_id']
+            active = pol['sortida_state_id.active']
+            ctx = context.copy()
+            if not active:
+                ctx.update({'current_state_deactivated': True})
+            pstate_id = pstate_obj.get_next(cursor, uid, weight, process_id, context=ctx)
+            self.set_pending(cursor, uid, [pol['id']], pstate_id)
+        return True
+
+    def set_pending(self, cursor, uid, ids, pending_id, context=None):
+        """ A history line will be created and the pending_state field will
+        be changed with the last history line pending_state value."""
+        if context is None:
+            context = {}
+        context.update({'history_pending_state': pending_id})
+        self.write(cursor, uid, ids, {'sortida_state_id': pending_id}, context=context)
+        res = self.create_history_line(cursor, uid, ids, context)
+        return res
+
+    def create_history_line(self, cursor, uid, ids, context=None):
+        """
+        :param cursor: database cursor
+        :param uid: user identifier
+        :param ids: ids of the polissas changed
+        :param context: dictionary with the context which must
+                        include the pending_stat id
+        :return: Returns True if some record has been created
+        """
+        if context is None:
+            context = {}
+
+        # Custom change date format
+        # Careful ids should be account_polissa todo convert on facturacio.set_pending?
+        # [(polissa_id, 'YYYY-MM-DD %H:%M:%S'), (polissa_id_2, 'YYYY-MM-DD)]
+        custom_change_dates = dict(context.get('custom_change_dates', []) or [])
+
+        if not isinstance(ids, list):
+            ids = [ids]
+        pending_history_obj = self.pool.get('som.sortida.history')
+        imd_obj = self.pool.get('ir.model.data')
+        process_id = imd_obj.get_object_reference(
+            cursor, uid, 'som_sortida', 'enviar_cor_state_process')[1]
+        next_state = context.get(
+            'history_pending_state', self._get_default_pending(cursor, uid, process_id=process_id)
+        )
+        registers_created = 0
+        last_lines = self.get_current_pending_state_info(cursor, uid, ids)
+        for current_pol_id in ids:
+            default_change_date = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+            change_date = default_change_date
+            custom_change_d = custom_change_dates.get(current_pol_id, False)
+            if custom_change_d and custom_change_d >= last_lines[current_pol_id]['change_date']:
+                change_date = custom_change_d
+            if last_lines[current_pol_id]:
+                pending_history_obj.write(
+                    cursor, uid, last_lines[current_pol_id]['id'], {
+                        'end_date': change_date
+                    }
+                )
+            res = pending_history_obj.create(cursor, uid, {
+                'pending_state_id': next_state,
+                'change_date': change_date,
+                'polissa_id': current_pol_id
+            })
+            if res:
+                registers_created += 1
+        return registers_created > 0
+
+    def _get_default_pending(self, cursor, uid, process_id=None, context=None):
+        """Get the default pending state for a polissa."""
+        imd_obj = self.pool.get('ir.model.data')
+        state_id = imd_obj.get_object_reference(
+            cursor, uid, 'som_sortida', 'enviar_cor_state_process'
+        )[1]
+        return state_id
+
+    def get_current_pending_state_info(self, cursor, uid, ids, context=None):
+        """
+            Get the info of the last history line by polissa id.
+        :return: a dict containing the info of the last history line of the
+                 polissa indexed by its id.
+                 ==== Fields of the dict for each polissa ===
+                 'id': if of the last account.polissa.pending.history
+                 'pending_state_id': id of its pending_state
+                 'change_date': date of change (also, date of the creation of
+                                the line)
+        """
+        if context is None:
+            context = {}
+        if not isinstance(ids, list):
+            ids = [ids]
+        pending_history_obj = self.pool.get('som.sortida.history')
+        result = dict.fromkeys(ids, False)
+        fields_to_read = ['pending_state_id', 'change_date', 'polissa_id']
+        for id in ids:
+            res = pending_history_obj.search(
+                cursor, uid, [('polissa_id', '=', id)]
+            )
+            if res:
+                # We consider the last record the first one due to order
+                # statement in the model definition.
+                values = pending_history_obj.read(
+                    cursor, uid, res[0], fields_to_read)
+                result[id] = {
+                    'id': values['id'],
+                    'pending_state_id': values['pending_state_id'][0],
+                    'change_date': values['change_date'],
+                }
+            else:
+                result[id] = False
+        return result
 
 
 GiscedataPolissa()
