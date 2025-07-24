@@ -81,7 +81,6 @@ class SomLeadWww(osv.osv_memory):
         values = {
             "state": "open",
             "name": "{} / {}".format(member["vat"].upper(), contract_info["cups"]),
-            "lang": member.get("lang"),
             "cups": contract_info["cups"],
             "codigoEmpresaDistribuidora": distri_ref,
             "cups_ref_catastral": contract_info.get("cups_cadastral_reference"),
@@ -150,6 +149,9 @@ class SomLeadWww(osv.osv_memory):
 
         for i, power in enumerate(contract_info["powers"]):
             values["potenciasContratadasEnKWP%s" % str(i + 1)] = float(power) / 1000
+
+        if www_vals.get("lang"):
+            values["lang"] = member["lang"]
 
         if www_vals.get("self_consumption"):
             values["seccio_registre"] = self._127_WITH_SURPLUSES

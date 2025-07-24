@@ -151,7 +151,8 @@ class GiscedataCrmLead(osv.OsvInherits):
                 cursor, uid, lead.partner_id.id, {"representante_id": rep_id}, context=context)
 
         # We set again the lang because if it existed before, the base code dont write it
-        partner_o.write(cursor, uid, lead.partner_id.id, {"lang": lead.lang}, context=context)
+        if lead.lang:
+            partner_o.write(cursor, uid, lead.partner_id.id, {"lang": lead.lang}, context=context)
 
         if lead.create_new_member:
             # become_member will keep the member number we set here
