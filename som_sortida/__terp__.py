@@ -4,14 +4,16 @@
     "description": """Aquest mòdul gestiona les comunicacions de sortida a contractres
       que no són sòcies de Som Energia.
     """,
-    "version": "24.5.0",
-    "author": "Som Energia",
-    "category": "Master",
+    "version": "0-dev",
+    "author": "Som Energia SCCL",
+    "category": "SomEnergia",
     "depends": [
         "som_account_invoice_pending",
     ],
     "init_xml": [],
-    "demo_xml": [],
+    "demo_xml": [
+        "demo/som_sortida_demo.xml",
+    ],
     "update_xml": [
         "data/som_sortida_data.xml",
         "views/som_sortida_state_view.xml",

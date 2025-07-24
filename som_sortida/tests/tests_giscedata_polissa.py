@@ -35,13 +35,19 @@ class TestsGiscedataPolissa(testing.OOTestCaseWithCursor):
         )[1]
         pol = pol_obj.browse(cursor, uid, polissa_id)
         # Check initial state
-        self.assertEqual(pol.sortida_state_id.name, 'Correcte',
-                         "L'estat inicial hauria de ser 'Correcte'")
+        self.assertEqual(
+            pol.sortida_state_id.name, 'Correcte',
+            "L'estat inicial hauria de ser 'Correcte' en comptes de {}".format(
+                pol.sortida_state_id.name
+            ))
 
         # Change state
         new_state_id = state_obj.search(cursor, uid, [('name', '=', 'En procés')], limit=1)[0]
         pol_obj.write(cursor, uid, [polissa_id], {'sortida_state_id': new_state_id})
         pol = pol_obj.browse(cursor, uid, polissa_id)
 
-        self.assertEqual(pol.sortida_state_id.name, 'En procés',
-                         "L'estat hauria de ser 'En procés'")
+        self.assertEqual(
+            pol.sortida_state_id.name, 'En procés',
+            "L'estat hauria de ser 'En procés' en comptes de {}".format(
+                pol.sortida_state_id.name
+            ))
