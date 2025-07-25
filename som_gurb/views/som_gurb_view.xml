@@ -54,8 +54,6 @@
                     </group>
                     <group col="6" colspan="4" string="Característiques" icon="tool">
                         <field name="activation_date" select="1" />
-                        <field name="first_opening_days" />
-                        <field name="reopening_days" />
                         <field name="critical_incomplete_state" />
                         <field name="pricelist_id" select="2" />
                         <field name="initial_product_id" />

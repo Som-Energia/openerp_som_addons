@@ -1,7 +1,7 @@
 # -*- encoding: utf-8 -*-
 from osv import osv, fields
 from tools.translate import _
-from datetime import datetime, date, timedelta
+from datetime import datetime
 
 import logging
 
@@ -30,8 +30,6 @@ _REQUIRED_FIRST_OPENING_FIELDS = [
     "pricelist_id",
     "max_power",
     "min_power",
-    "first_opening_days",
-    "reopening_days",
     "critical_incomplete_state",
     "generation_power",
     "pricelist_id",
@@ -242,51 +240,17 @@ class SomGurbCau(osv.osv):
         for record_id in ids:
             self.write(cursor, uid, ids, write_values, context=context)
 
-    def _is_reopening_end_date(self, cursor, uid, record, context=None):
-        state_date = datetime.strptime(record.state_date, '%Y-%m-%d').date()
-        reopening_end_date = state_date + timedelta(days=record.reopening_days)
-        today = date.today()
-
-        return today >= reopening_end_date
-
-    def _is_first_opening_end_date(self, cursor, uid, record, context=None):
-        state_date = datetime.strptime(record.state_date, '%Y-%m-%d').date()
-        opening_end_date = state_date + timedelta(days=record.first_opening_days)
-        today = date.today()
-
-        return today >= opening_end_date
-
-    def validate_first_opening_complete(self, cursor, uid, ids, context=None):
+    def validate_complete(self, cursor, uid, ids, context=None):
         for record in self.browse(cursor, uid, ids, context=context):
             return (
-                self._is_first_opening_end_date(cursor, uid, record)
-                and record.assigned_betas_kw == record.generation_power
+                record.assigned_betas_kw == record.generation_power
             )
 
-    def validate_first_opening_incomplete(self, cursor, uid, ids, context=None):
+    def validate_incomplete(self, cursor, uid, ids, context=None):
         for record in self.browse(cursor, uid, ids, context=context):
             return (
-                self._is_first_opening_end_date(cursor, uid, record)
-                and record.assigned_betas_kw != record.generation_power
+                record.assigned_betas_kw != record.generation_power
             )
-
-    def validate_reopening_complete(self, cursor, uid, ids, context=None):
-        for record in self.browse(cursor, uid, ids, context=context):
-            return (
-                self._is_reopening_end_date(cursor, uid, record)
-                or record.assigned_betas_kw == record.generation_power
-            )
-
-    def validate_reopening_incomplete(self, cursor, uid, ids, context=None):
-        for record in self.browse(cursor, uid, ids, context=context):
-            return (
-                self._is_reopening_end_date(cursor, uid, record)
-                and record.assigned_betas_kw != record.generation_power
-            )
-
-    def validate_incomplete_complete(self, cursor, uid, ids, context=None):
-        for record in self.browse(cursor, uid, ids, context=context):
-            return record.assigned_betas_kw == record.generation_power
 
     def validate_draft_first_opening(self, cursor, uid, ids, context=None):
         for record in self.read(cursor, uid, ids, _REQUIRED_FIRST_OPENING_FIELDS, context=context):
@@ -297,10 +261,6 @@ class SomGurbCau(osv.osv):
                         _("Per poder obrir el GURB CAU s'ha d'omplir el camp: {}".format(k))
                     )
             return True
-
-    def validate_active_incomplete(self, cursor, uid, ids, context=None):
-        for record in self.browse(cursor, uid, ids, context=context):
-            return record.assigned_betas_kw != record.generation_power
 
     def validate_active_critic_incomplete(self, cursor, uid, ids, context=None):
         for record in self.browse(cursor, uid, ids, context=context):
@@ -413,8 +373,6 @@ class SomGurbCau(osv.osv):
         "max_power": fields.float("Topall max. per contracte (kW)"),
         "min_power": fields.float("Topall min. per contracte (kW)"),
         "critical_incomplete_state": fields.integer("Estat crític incomplet (%)"),
-        "first_opening_days": fields.integer("Dies primera obertura"),
-        "reopening_days": fields.integer("Dies reobertura"),
         "notes": fields.text("Observacions"),
         "history_box": fields.text("Històric del GURB CAU", readonly=True),
         "has_compensation": fields.boolean("Amb compensació"),  # Selection?
