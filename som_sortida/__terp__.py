@@ -18,6 +18,7 @@
         "data/som_sortida_data.xml",
         "views/som_sortida_state_view.xml",
         "views/giscedata_polissa_view.xml",
+        "views/som_sortida_history_view.xml",
         "security/ir.model.access.csv",
     ],
     "active": False,
