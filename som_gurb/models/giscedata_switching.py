@@ -338,7 +338,7 @@ class GiscedataSwitchingM1_05(osv.osv):
         )
 
         sw_obj = self.pool.get("giscedata.switching")
-        gurb_obj = self.pool.get("som.gurb")
+        gurb_obj = self.pool.get("som.gurb.cau")
         sgc_obj = self.pool.get("som.gurb.cups")
         step_m101_obj = self.pool.get("giscedata.switching.m1.01")
         sw_step_header_obj = self.pool.get("giscedata.switching.step.header")
