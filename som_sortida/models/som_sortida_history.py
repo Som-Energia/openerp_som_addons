@@ -11,11 +11,10 @@ class SomSortidaHistory(osv.osv):
         "polissa_id": fields.many2one(
             "giscedata.polissa",
             "Pòlissa",
-            required=True,
             help="Pòlissa de la qual s'ha fet la sortida",
         ),
         "pending_state_id": fields.many2one(
-            "som.sortida.pending.state",
+            "som.sortida.state",
             "Estat de sortida pendent",
             help="Estat de sortida pendent assignat a la pòlissa",
         ),
