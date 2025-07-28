@@ -102,6 +102,7 @@ class TestsSomLeadWww(testing.OOTestCase):
         sw_o = self.get_model("giscedata.switching")
         ir_model_o = self.get_model("ir.model.data")
         mailbox_o = self.get_model('poweremail.mailbox')
+        partner_o = self.get_model("res.partner")
 
         result = www_lead_o.create_lead(self.cursor, self.uid, self._basic_values)
         self.assertFalse(result["error"])
@@ -174,6 +175,13 @@ class TestsSomLeadWww(testing.OOTestCase):
             ]
         )
         self.assertEqual(len(mails), 1)
+
+        # Check partner lang
+        self.assertEqual(lead.partner_id.lang, "es_ES")
+        self.assertEqual(
+            partner_o.read(self.cursor, self.uid, lead.partner_id.id, ['lang'])['lang'],
+            "es_ES"
+        )
 
     def test_create_simple_domestic_lead_indexada(self):
         www_lead_o = self.get_model("som.lead.www")

@@ -174,6 +174,7 @@ class GiscedataCrmLead(osv.OsvInherits):
         create_vals["gender"] = lead.gender
         create_vals["birthdate"] = lead.birthdate
         create_vals["referral_source"] = lead.referral_source
+        create_vals["date"] = datetime.today().strftime("%Y-%m-%d")
 
         partner_id = super(GiscedataCrmLead, self).create_partner(
             cursor, uid, create_vals, crml_id, context=context)
