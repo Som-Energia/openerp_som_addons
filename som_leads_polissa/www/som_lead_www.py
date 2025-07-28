@@ -150,7 +150,7 @@ class SomLeadWww(osv.osv_memory):
         for i, power in enumerate(contract_info["powers"]):
             values["potenciasContratadasEnKWP%s" % str(i + 1)] = float(power) / 1000
 
-        if www_vals.get("lang"):
+        if member.get("lang", False):
             values["lang"] = member["lang"]
 
         if www_vals.get("self_consumption"):
