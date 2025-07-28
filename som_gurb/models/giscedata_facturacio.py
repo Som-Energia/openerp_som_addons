@@ -16,10 +16,10 @@ class GiscedataFacturacioServices(osv.osv):
 
         context["dont_group_lines"] = True
 
-        gurb_o = self.pool.get("som.gurb")
+        gurb_cau_o = self.pool.get("som.gurb.cau")
         gurb_cups_beta_o = self.pool.get("som.gurb.cups.beta")
 
-        products_ids = gurb_o.get_gurb_products_ids(cursor, uid, context=context)
+        products_ids = gurb_cau_o.get_gurb_products_ids(cursor, uid, context=context)
 
         for vals in super(GiscedataFacturacioServices, self)._get_vals_linia(
             cursor, uid, service, inv, context=context
