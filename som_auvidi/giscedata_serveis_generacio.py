@@ -11,7 +11,9 @@ class GiscedataServeiGeneracio(osv.osv):
             context = {}
 
         facturador.phf_function = 'phf_calc_auvi'
-        res = super(GiscedataServeiGeneracio, self).config_facturador_autoconsumida(cursor, uid, facturador, context=context)
+        res = super(GiscedataServeiGeneracio, self).config_facturador_autoconsumida(
+                cursor, uid, facturador, context=context
+                )
 
         return res
 
