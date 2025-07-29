@@ -26,6 +26,8 @@ report_data = r_obj.get_report_data(cursor, uid, objects)
 <script src="${addons_path}/giscedata_facturacio_indexada/report/js/d3.min.js"></script>
 <script src="${addons_path}/giscedata_facturacio_indexada/report/js/c3.min.js"></script>
 
+<script src="${addons_path}/giscedata_facturacio_comer_som/report/echarts5.min.js"></script>
+
 %for comptador_factures, factura in enumerate(objects):
 <%
     setLang(factura.lang_partner)
