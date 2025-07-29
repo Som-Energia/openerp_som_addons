@@ -451,6 +451,9 @@ class TestsSomLeadWww(testing.OOTestCase):
         self.assertEqual(c2.canvi_titular, "T")
         self.assertEqual(c2.control_potencia, "1")
 
+        # check default 'contratacion_incondicional_bs'
+        self.assertEqual(c2.contratacion_incondicional_bs, "S")
+
     def test_create_lead_with_owner_change_C2_30TD(self):
         www_lead_o = self.get_model("som.lead.www")
         sw_o = self.get_model("giscedata.switching")
@@ -484,6 +487,9 @@ class TestsSomLeadWww(testing.OOTestCase):
         self.assertEqual(c2.sollicitudadm, "S")
         self.assertEqual(c2.canvi_titular, "T")
         self.assertEqual(c2.control_potencia, "2")
+
+        # check default contratacion_incondicional_bs
+        self.assertEqual(c2.contratacion_incondicional_bs, "S")
 
     def test_create_lead_with_new_cups_A3(self):
         www_lead_o = self.get_model("som.lead.www")
