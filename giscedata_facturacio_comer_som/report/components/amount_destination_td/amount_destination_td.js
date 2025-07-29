@@ -58,6 +58,13 @@ function getDashedLine(x1, y1, x2, y2) {
     };
 }
 
+var total_pie = 0;
+pie_data.forEach(function(item) {
+    total_pie += item.value;
+});
+cargos_percentage = (pie_data[0].value / total_pie) * 100;
+dashed_line_y = 85 + cargos_percentage*2; // to put the dashed line at the right height
+
 // Render
 var option = {
     grid: {
@@ -84,9 +91,9 @@ var option = {
     ],
     graphic: {
         elements: [
-            getDashedLine(300, 100, 400, 100),
-            getDashedLine(400, 100, 510, 30),
-            getDashedLine(400, 100, 510, 170),
+            getDashedLine(300, dashed_line_y, 400, dashed_line_y),
+            getDashedLine(400, dashed_line_y, 510, 30),
+            getDashedLine(400, dashed_line_y, 510, 170),
         ]
     },
     series: [
@@ -108,7 +115,7 @@ var option = {
         animation: false,
         silent: true,
         color: [
-            '#CDFF80',
+            '#FFC107',
             '#0B2E34',
             '#FF632B',
             '#0C4C27',
