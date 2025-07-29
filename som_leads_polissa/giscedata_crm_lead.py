@@ -157,6 +157,7 @@ class GiscedataCrmLead(osv.OsvInherits):
         if lead.create_new_member:
             # become_member will keep the member number we set here
             values["ref"] = lead.member_number
+            values["date"] = datetime.today().strftime("%Y-%m-%d")
             partner_o.write(cursor, uid, lead.partner_id.id, values, context=context)
             partner_o.become_member(cursor, uid, lead.partner_id.id, context=context)
             partner_o.adopt_contracts_as_member(cursor, uid, lead.partner_id.id, context=context)
@@ -176,7 +177,6 @@ class GiscedataCrmLead(osv.OsvInherits):
         create_vals["gender"] = lead.gender
         create_vals["birthdate"] = lead.birthdate
         create_vals["referral_source"] = lead.referral_source
-        create_vals["date"] = datetime.today().strftime("%Y-%m-%d")
 
         partner_id = super(GiscedataCrmLead, self).create_partner(
             cursor, uid, create_vals, crml_id, context=context)
