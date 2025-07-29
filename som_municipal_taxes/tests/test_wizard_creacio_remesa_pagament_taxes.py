@@ -188,7 +188,9 @@ class TestWizardCreacioRemesaPagamentTaxes(testing.OOTestCaseWithCursor):
         for invoice in payment_line_ids:
             self.assertEqual(invoice.ml_inv_ref.state, 'open')
             self.assertEqual(invoice.ml_inv_ref.account_id.id, invoice_account_id)
-            self.assertEqual(invoice.ml_inv_ref.currency_id.code, 'EUR')
+            for line_id in invoice.ml_inv_ref.move_id.line_id:
+                self.assertFalse(line_id.currency_id)
+            self.assertEqual(invoice.ml_inv_ref.residual, invoice.ml_inv_ref.amount_total)
         # Verify the info message
         self.assertIn("S'ha creat la remesa amb", info)
 
@@ -209,9 +211,11 @@ class TestWizardCreacioRemesaPagamentTaxes(testing.OOTestCaseWithCursor):
 
         po = order_o.browse(self.cursor, self.uid, order_id)
         payment_line_ids = po.line_ids
-        # Verify the stete of the invoices is 'paid'
+        # Verify the state of the invoices is 'paid' and residual is 0.0
         for invoice in payment_line_ids:
             self.assertEqual(invoice.ml_inv_ref.state, 'paid')
+            self.assertIsInstance(invoice.ml_inv_ref.residual, float)
+            self.assertEqual(invoice.ml_inv_ref.residual, 0.0)
 
     def test_get_dates_from_quarter(self):
         assert get_dates_from_quarter(2024, 1) == (
