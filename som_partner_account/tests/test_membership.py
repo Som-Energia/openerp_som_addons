@@ -90,7 +90,7 @@ class TestAccountAccountSom(testing.OOTestCase):
             "S[0-9]{6}",
         )
 
-    def test__become_member__withPreviousMemberRef_keepsIt(self):
+    def test__become_member__withPreviousMemberRef_renewsIt(self):
         Partner = self.openerp.pool.get("res.partner")
 
         Partner.write(
@@ -103,6 +103,29 @@ class TestAccountAccountSom(testing.OOTestCase):
         )
 
         Partner.become_member(self.cursor, self.uid, self.partner_id)
+
+        partner = Partner.read(self.cursor, self.uid, self.partner_id, ["ref"])
+
+        self.assertNotEqual(partner["ref"], "S666666")
+        self.assertRegexpMatches(
+            partner["ref"],
+            "S[0-9]{6}",
+        )
+
+    def test__become_member__withForcedMemberRef_usesIt(self):
+        Partner = self.openerp.pool.get("res.partner")
+
+        Partner.write(
+            self.cursor,
+            self.uid,
+            self.partner_id,
+            dict(
+                ref="",  # No ref
+            ),
+        )
+
+        Partner.become_member(
+            self.cursor, self.uid, self.partner_id, context={"force_ref": "S666666"})
 
         partner = Partner.read(self.cursor, self.uid, self.partner_id, ["ref"])
 

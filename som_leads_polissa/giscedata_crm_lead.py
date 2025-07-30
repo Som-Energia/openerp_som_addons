@@ -156,12 +156,12 @@ class GiscedataCrmLead(osv.OsvInherits):
 
         if lead.create_new_member:
             # become_member will keep the member number we set here
-            values["ref"] = lead.member_number
+            context["force_ref"] = lead.member_number
             values["date"] = datetime.today().strftime("%Y-%m-%d")
             partner_o.write(cursor, uid, lead.partner_id.id, values, context=context)
             partner_o.become_member(cursor, uid, lead.partner_id.id, context=context)
             partner_o.adopt_contracts_as_member(cursor, uid, lead.partner_id.id, context=context)
-        else:
+        elif values:
             partner_o.write(cursor, uid, lead.partner_id.id, values, context=context)
 
         return res
@@ -338,8 +338,8 @@ class GiscedataCrmLead(osv.OsvInherits):
             context = {}
         seq_o = self.pool.get("ir.sequence")
 
+        # We assing here the new numbers to show it in the contract to be signed
         if vals.get("create_new_member"):
-            # TODO: we have to keep the old number or not? By the moment, we assign a new one
             vals["member_number"] = seq_o.get_next(cursor, uid, "res.partner.soci")
         elif context.get("sponsored_titular"):
             vals["titular_number"] = seq_o.get_next(cursor, uid, "res.partner.titular")
