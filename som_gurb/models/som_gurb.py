@@ -162,6 +162,13 @@ class SomGurb(osv.osv):
 
             assigned_betas_percentage = 0
             assigned_extra_betas_percentage = 0
+            assigned_extra_gift_betas_percentage = 0
+            assigned_gift_betas_percentage = 0
+            extra_betas_percentage = 0
+            future_betas_percentage = 0
+            future_extra_betas_percentage = 0
+            future_gift_betas_percentage = 0
+            future_assigned_betas_percentage = 0
             if gen_power:
                 assigned_betas_percentage = (
                     assigned_betas_kw
