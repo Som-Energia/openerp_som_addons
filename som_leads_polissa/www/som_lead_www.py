@@ -205,7 +205,6 @@ class SomLeadWww(osv.osv_memory):
             context = {}
 
         context["create_draft_atr"] = True
-        context["contratacion_incondicional_bs"] = True
 
         lead_o = self.pool.get("giscedata.crm.lead")
 
