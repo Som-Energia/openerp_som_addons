@@ -130,14 +130,21 @@ class TestsSomLeadWww(testing.OOTestCase):
         self.assertEqual(lead.polissa_id.facturacio_potencia, "icp")
 
         # Check that the ATR is created with C1 process
-        atr_case = sw_o.search(
+        atr_case_ids = sw_o.search(
             self.cursor, self.uid, [
                 ("proces_id.name", "=", "C1"),
                 ("cups_polissa_id", "=", lead.polissa_id.id),
                 ("cups_input", "=", lead.polissa_id.cups.name),
             ]
         )
-        self.assertEqual(len(atr_case), 1)
+        self.assertEqual(len(atr_case_ids), 1)
+
+        atr_case = sw_o.browse(self.cursor, self.uid, atr_case_ids[0])
+        self.assertEqual(atr_case.state, "draft")
+
+        # check default 'contratacion_incondicional_bs'
+        c1 = sw_o.get_pas(self.cursor, self.uid, atr_case_ids)
+        self.assertEqual(c1.contratacion_incondicional_bs, "N")
 
         # Check the pricelist and mode facturacio
         peninsular_pricelist_id = ir_model_o.get_object_reference(
