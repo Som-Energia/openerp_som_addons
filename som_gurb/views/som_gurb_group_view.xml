@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+        <!-- Menú de GURBs mòdul pòlisses -->
+        <!-- <menuitem id="menu_gurb_group" name="Gestió GURB GRUP" parent="menu_agrupacions" sequence="99" /> -->
+        <!-- Llistat per defecte dels GURBs-->
+        <record model="ir.ui.view" id="view_gurbs_group_tree">
+            <field name="name">som.gurbs.group.tree</field>
+            <field name="version" eval="1" />
+            <field name="model">som.gurb.group</field>
+            <field name="type">tree</field>
+            <field name="arch" type="xml">
+                <tree string="GURB GRUPs">
+                    <field name="name" />
+                    <field name="code" />
+                    <!-- <field name="activation_date" /> -->
+                    <!-- <field name="self_consumption_id" /> -->
+                    <field name="generation_power" />
+                    <!-- <field name="has_compensation" /> -->
+                </tree>
+            </field>
+        </record>
+        <!-- Formulari per defecte dels GURB CAUs -->
+        <record model="ir.ui.view" id="view_gurb_groups_form">
+            <field name="name">som.gurb.group.form</field>
+            <field name="version" eval="1" />
+            <field name="model">som.gurb.group</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <form string="GURB GRUP">
+                    <!-- <group col="6" colspan="4" string="Estats" icon="123">
+                        <field name="state_date" colspan="1" />
+                        <field name="state" select="1" colspan="1" />
+                        <button string="Obrir GURB CAU" name="button_open" states="draft" type="workflow" confirm="Vols obrir el GURB CAU?" />
+                        <button string="Tancar primera obertura" name="button_close_first_opening" states="first_opening" type="workflow" confirm="Vols tancar la primera obertura del GURB CAU?" />
+                        <button string="Registrar" name="button_register" states="complete" type="workflow" confirm="Vols registar el GURB CAU?" />
+                        <button string="Tornar a primera obertura" name="button_first_reopening" states="incomplete" type="workflow" confirm="Vols tornar a la primera obertura?" />
+                        <button string="Tramitar" name="button_process" states="registered" type="workflow" confirm="Vols tramitar el GURB CAU?" />
+                        <button string="Activar" name="button_activate" states="in_process" type="workflow" confirm="Vols activar el GURB CAU?" />
+                        <button string="Reobrir" name="button_reopen_active_incomplete" states="active_inc" type="workflow" confirm="Vols reobrir el GURB CAU?" />
+                        <button string="Reobrir" name="button_reopen_active_critical_incomplete" states="active_crit_inc" type="workflow" confirm="Vols reobrir el GURB CAU?" />
+                        <button string="Tancar reobertura" name="button_close_reopening" states="reopened" type="workflow" confirm="Vols tancar la reobertura del GURB CAU?" />
+                    </group> -->
+                    <group col="6" colspan="4" string="General" icon="building-cottage">
+                        <field name="name" select="1" />
+                        <field name="code" select="1" />
+                        <field name="roof_owner_id" />
+                        <field name="address_id" domain="[('partner_id','=', roof_owner_id)]" />
+                        <field name="province" select="2" />
+                        <field name="zip_code" select="2" />
+                        <!-- <field name="sig_data" /> -->
+                        <!-- <field name="logo" select="2" /> -->
+                    </group>
+                    <!-- <group col="6" colspan="4" string="Característiques" icon="tool">
+                        <field name="activation_date" select="1" />
+                        <field name="critical_incomplete_state" />
+                        <field name="pricelist_id" select="2" />
+                        <field name="initial_product_id" />
+                        <field name="quota_product_id" />
+                        <field name="max_power" />
+                        <field name="min_power" />
+                        <field name="cil" />
+                        <field name="producer" />
+                    </group> -->
+                    <!-- <group col="6" colspan="4" string="Autoconsum" icon="solar-panel">
+                        <field name="self_consumption_id" select="1" />
+                        <field name="self_consumption_state" />
+                        <field name="generation_power" select="1" />
+                        <field name="has_compensation" select="1" />
+                        <field name="self_consumption_start_date" />
+                        <field name="self_consumption_end_date" />
+                    </group> -->
+                    <notebook colspan="4">
+                        <page string="Betes (Tots els CAUs)" icon="beta">
+                            <group colspan="4">
+                                <!-- <field name="available_betas_kw" colspan="4"/> -->
+                                <field name="assigned_betas_kw" colspan="4"/>
+                                <field name="available_betas_percentage" colspan="4"/>
+                                <field name="extra_betas_kw" colspan="4"/>
+                                <field name="gift_betas_kw" colspan="4"/>
+                            </group>
+                            <separator string="CAUs del GURB Grup" colspan="4"/>
+                            <field name="gurb_cau_ids" nolabel="1" colspan="4"/>
+                        </page>
+                        <page string="Observacions" icon="edit">
+                            <separator string="Observacions sobre el GURB grup" colspan="4" icon="edit" />
+                            <field name="notes" colspan="4" height="600" nolabel="1" />
+                        </page>
+                    </notebook>
+                </form>
+            </field>
+        </record>
+        <!-- Acció per obrir el llistat de GURB groups-->
+        <record model="ir.actions.act_window" id="action_gurbs_group">
+            <field name="name">GURB Grups</field>
+            <field name="view_id" ref="view_gurbs_group_tree" />
+            <field name="res_model">som.gurb.group</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+        <!-- Menú per llistar els GURB Groups-->
+        <menuitem id="menu_llistar_gurb_groups" parent="menu_gurb_cau" action="action_gurbs_group" />
+    </data>
+</openerp>

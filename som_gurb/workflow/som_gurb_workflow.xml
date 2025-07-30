@@ -146,7 +146,7 @@
         <record id="trans_reopened_incomplete" model="workflow.transition">
             <field name="act_from" ref="act_reopened"/>
             <field name="act_to" ref="act_incomplete"/>
-            <field name="condition">validate_complete()</field>
+            <field name="condition">validate_incomplete()</field>
             <field name="signal">button_close_reopening</field>
         </record>
 
@@ -160,7 +160,7 @@
         <record id="trans_reopened_complete" model="workflow.transition">
             <field name="act_from" ref="act_reopened"/>
             <field name="act_to" ref="act_complete"/>
-            <field name="condition">validate_incomplete()</field>
+            <field name="condition">validate_complete()</field>
             <field name="signal">button_close_reopening</field>
         </record>
 

@@ -38,13 +38,22 @@ _REQUIRED_FIRST_OPENING_FIELDS = [
 
 class SomGurbCau(osv.osv):
     _name = "som.gurb.cau"
-    _description = _("Grup generació urbana")
+    _description = _("CAU generació urbana")
 
     def create(self, cursor, uid, vals, context=None):
         res_id = super(SomGurbCau, self).create(cursor, uid, vals, context=context)
 
-        ir_seq = self.pool.get("ir.sequence")
-        code = ir_seq.get_next(cursor, uid, "som.gurb.cau")
+        group_id = vals.get('group_id')
+        if group_id:
+            group_obj = self.pool.get('som.gurb.group')
+            group = group_obj.browse(cursor, uid, group_id, context=context)
+
+            code = False
+            if group.sequence_id:
+                seq_obj = self.pool.get('ir.sequence')
+                code_grup = group.code
+                code_cau = seq_obj.get_id(cursor, uid, group.sequence_id.id, context=context)
+                code = code_grup + "/" + code_cau
 
         self.write(cursor, uid, res_id, {"code": code}, context=context)
 
@@ -487,6 +496,7 @@ class SomGurbCau(osv.osv):
         "pricelist_id": fields.many2one("product.pricelist", "Preus del GURB CAU"),
         "initial_product_id": fields.many2one("product.product", "Producte quota inicial"),
         "quota_product_id": fields.many2one("product.product", "Producte base quota mensual"),
+        "gurb_group_id": fields.many2one("som.gurb.group", "GURB grup", required=True),
     }
 
     _defaults = {

@@ -50,7 +50,6 @@
                         <field name="province" select="2" />
                         <field name="zip_code" select="2" />
                         <field name="sig_data" />
-                        <!-- <field name="logo" select="2" /> -->
                     </group>
                     <group col="6" colspan="4" string="Característiques" icon="tool">
                         <field name="activation_date" select="1" />
@@ -62,6 +61,7 @@
                         <field name="min_power" />
                         <field name="cil" />
                         <field name="producer" />
+                        <field name="gurb_group_id" />
                     </group>
                     <group col="6" colspan="4" string="Autoconsum" icon="solar-panel">
                         <field name="self_consumption_id" select="1" />
