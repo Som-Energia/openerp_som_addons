@@ -102,7 +102,6 @@ class TestsSomLeadWww(testing.OOTestCase):
         sw_o = self.get_model("giscedata.switching")
         ir_model_o = self.get_model("ir.model.data")
         mailbox_o = self.get_model('poweremail.mailbox')
-        partner_o = self.get_model("res.partner")
 
         result = www_lead_o.create_lead(self.cursor, self.uid, self._basic_values)
         self.assertFalse(result["error"])
@@ -176,141 +175,9 @@ class TestsSomLeadWww(testing.OOTestCase):
         )
         self.assertEqual(len(mails), 1)
 
-        # Check partner lang
+        # Check partner lang and member date
         self.assertEqual(lead.partner_id.lang, "es_ES")
-        self.assertEqual(
-            partner_o.read(self.cursor, self.uid, lead.partner_id.id, ['lang'])['lang'],
-            "es_ES"
-        )
-
-    def test_create_simple_domestic_lead_existing_partner(self):
-        www_lead_o = self.get_model("som.lead.www")
-        lead_o = self.get_model("giscedata.crm.lead")
-        sw_o = self.get_model("giscedata.switching")
-        ir_model_o = self.get_model("ir.model.data")
-        mailbox_o = self.get_model('poweremail.mailbox')
-        partner_o = self.get_model("res.partner")
-
-        partner_id = ir_model_o.get_object_reference(
-            self.cursor, self.uid, "som_polissa_soci", "res_partner_soci"
-        )[1]
-        partner_o.write(self.cursor, self.uid, partner_id, {'lang': 'ca_ES'})
-        partner_data = partner_o.read(self.cursor, self.uid, partner_id, ['ref', 'vat'])
-        self._basic_values = {
-            "linked_member": "already_member",
-            "contract_info": {
-                "cups": "ES0177000000000000LR",
-                "is_indexed": False,
-                "tariff": "2.0TD",
-                "powers": ["4400", "8000"],
-                "cnae": "9820",
-                "process": "C1",
-                "cups_cadastral_reference": "9872023VH5797S0001WX",
-                "cups_address": {
-                    "state_id": 20,
-                    "city_id": 5386,
-                    "postal_code": "08178",
-                    "street": "Carrer Falsa",
-                    "number": "123",
-                    "floor": "5",
-                    "stair": "A",
-                    "door": "C",
-                    "block": "B",
-                },
-            },
-            "iban": "ES7712341234161234567890",
-            "member_payment_type": "remesa",
-            "privacy_conditions": True,
-            "sepa_accepted": True,
-            "statutes_accepted": False,
-            "donation": False,
-            "general_contract_terms_accepted": True,
-            "particular_contract_terms_accepted": True,
-            "sepa_conditions": True,
-            "linked_member_info": {
-                "code": '{}'.format(partner_data['ref'][1:]),
-                "vat": partner_data['vat'][2:],
-            },
-        }
-
-        result = www_lead_o.create_lead(self.cursor, self.uid, self._basic_values)
-        self.assertFalse(result["error"])
-
-        www_lead_o.activate_lead(self.cursor, self.uid, result["lead_id"], context={"sync": True})
-
-        lead = lead_o.browse(self.cursor, self.uid, result["lead_id"])
-        # Check that the name is correctly set
-        self.assertEqual(lead.name, "97053918J / ES0177000000000000LR")
-
-        # Check that the lead has a valid member number and is the same as the titular
-        self.assertTrue(lead.member_number)
-        self.assertEqual(lead.polissa_id.titular.ref, lead.member_number)
-
-        # Check the member category
-        member_category_id = ir_model_o.get_object_reference(
-            self.cursor, self.uid, "som_partner_account", "res_partner_category_soci"
-        )[1]
-        self.assertIn(member_category_id, [c.id for c in lead.polissa_id.soci.category_id])
-
-        # Check that the contract has the member field filled correctly
-        self.assertEqual(lead.polissa_id.soci, lead.polissa_id.titular)
-
-        # Check the invoicing mode
-        self.assertEqual(lead.polissa_id.facturacio_potencia, "icp")
-
-        # Check that the ATR is created with C1 process
-        atr_case = sw_o.search(
-            self.cursor, self.uid, [
-                ("proces_id.name", "=", "C1"),
-                ("cups_polissa_id", "=", lead.polissa_id.id),
-                ("cups_input", "=", lead.polissa_id.cups.name),
-            ]
-        )
-        self.assertEqual(len(atr_case), 1)
-
-        # Check the pricelist and mode facturacio
-        peninsular_pricelist_id = ir_model_o.get_object_reference(
-            self.cursor, self.uid, "som_indexada", "pricelist_periodes_20td_peninsula"
-        )[1]
-        self.assertEqual(lead.polissa_id.llista_preu.id, peninsular_pricelist_id)
-        self.assertEqual(lead.polissa_id.mode_facturacio, 'atr')
-
-        # Check that don't have self consumption
-        self.assertEqual(lead.polissa_id.autoconsumo, '00')
-
-        # Check if user_id ("comercial") is created on polissa
-        webforms_user_id = ir_model_o.get_object_reference(
-            self.cursor, self.uid, "base_extended_som", "res_users_webforms"
-        )[1]
-        self.assertEqual(lead.polissa_id.user_id.id, webforms_user_id)
-
-        # Check that the direccio_notificacio is the already existing partner address
-        self.assertEqual(
-            lead.polissa_id.direccio_notificacio.street,
-            "Major, 32"
-        )
-
-        # Check the catastral reference
-        self.assertEqual(lead.polissa_id.cups.ref_catastral, "9872023VH5797S0001WX")
-
-        # Check that the mail was sent
-        template_name = "email_contracte_esborrany"
-        template_id = ir_model_o.get_object_reference(
-            self.cursor, self.uid, 'som_polissa_soci', template_name)[1]
-        mails = mailbox_o.search(
-            self.cursor, self.uid, [
-                ("template_id", "=", template_id),
-                ("folder", "=", "outbox"),
-            ]
-        )
-        self.assertEqual(len(mails), 1)
-
-        # Check partner lang
-        self.assertEqual(lead.partner_id.lang, "ca_ES")
-        self.assertEqual(
-            partner_o.read(self.cursor, self.uid, lead.partner_id.id, ['lang'])['lang'],
-            "ca_ES"
-        )
+        self.assertEqual(lead.partner_id.date, datetime.today().strftime("%Y-%m-%d"))
 
     def test_create_simple_domestic_lead_indexada(self):
         www_lead_o = self.get_model("som.lead.www")
@@ -988,11 +855,14 @@ class TestsSomLeadWww(testing.OOTestCase):
         member_o = self.get_model("somenergia.soci")
         ir_model_o = self.get_model("ir.model.data")
         mailbox_o = self.get_model('poweremail.mailbox')
+        partner_o = self.get_model("res.partner")
 
         member_id = ir_model_o.get_object_reference(
             self.cursor, self.uid, "som_polissa_soci", "soci_0001"
         )[1]
         member = member_o.browse(self.cursor, self.uid, member_id)
+        partner_o.write(self.cursor, self.uid, member.partner_id.id, {'lang': 'ca_ES'})
+
         vat = member.partner_id.vat.replace("ES", "")
 
         values = self._basic_values
@@ -1015,6 +885,12 @@ class TestsSomLeadWww(testing.OOTestCase):
         self.assertEqual(lead.polissa_id.titular.ref, lead.member_number)
         self.assertEqual(lead.polissa_id.soci, lead.polissa_id.titular)
 
+        # Check that the direccio_notificacio is the already existing partner address
+        self.assertEqual(
+            lead.polissa_id.direccio_notificacio.street,
+            "Major, 32"
+        )
+
         # Check that the mail was sent
         template_name = "email_contracte_esborrany"
         template_id = ir_model_o.get_object_reference(
@@ -1026,6 +902,9 @@ class TestsSomLeadWww(testing.OOTestCase):
             ]
         )
         self.assertEqual(len(mails), 1)
+
+        # Check partner lang
+        self.assertEqual(lead.partner_id.lang, "ca_ES")
 
     def test_create_simple_domestic_lead_sponsored(self):
         www_lead_o = self.get_model("som.lead.www")
