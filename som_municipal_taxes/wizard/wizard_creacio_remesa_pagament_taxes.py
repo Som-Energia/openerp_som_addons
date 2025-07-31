@@ -73,8 +73,13 @@ class WizardCreacioRemesaPagamentTaxes(osv.osv_memory):
         except Exception as e:
             raise e
         finally:
+            import pooler
+            db = pooler.get_db_only(cursor.dbname)
+            new_cr = db.cursor()
             if var_config_v:
-                res_config.set(cursor, uid, 'do_empty_vat_or_name_func', 1)
+                res_config.set(new_cr, uid, 'do_empty_vat_or_name_func', 1)
+            new_cr.commit()
+            new_cr.close()
 
         if not order_id:
             vals = {
@@ -189,7 +194,7 @@ class WizardCreacioRemesaPagamentTaxes(osv.osv_memory):
                 partner_id=config_data['partner_id'][0],
                 date_invoice=datetime.datetime.now(),
                 account_id=invoice_account_id,
-                # currency_id=euro_id,
+                # currency_id=None,
                 payment_mode_id=payment_mode_id,
                 payment_type_id=payment_type_id,
                 state='draft',
@@ -216,10 +221,10 @@ class WizardCreacioRemesaPagamentTaxes(osv.osv_memory):
             wf_service.trg_validate(uid, 'account.invoice', invoice_id, 'invoice_open', cursor)
 
             # Incidència residual != 0
-            move_ids = invoice_obj.browse(cursor, uid, invoice_id).move_id.line_id
-            for move_line in move_ids:
-                if move_line.currency_id:
-                    move_line.write({'currency_id': False})
+            # move_ids = invoice_obj.browse(cursor, uid, invoice_id).move_id.line_id
+            # for move_line in move_ids:
+            #     if move_line.currency_id:
+            #         move_line.write({'currency_id': False})
 
             linia_creada.append(city_name)
             invoice_ids.append(invoice_id)
