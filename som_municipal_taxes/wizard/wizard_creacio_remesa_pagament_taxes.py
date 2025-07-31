@@ -72,14 +72,9 @@ class WizardCreacioRemesaPagamentTaxes(osv.osv_memory):
                 invoice_account_id, line_account_id, wizard.year, context)
         except Exception as e:
             raise e
-        finally:
-            import pooler
-            db = pooler.get_db_only(cursor.dbname)
-            new_cr = db.cursor()
-            if var_config_v:
-                res_config.set(new_cr, uid, 'do_empty_vat_or_name_func', 1)
-            new_cr.commit()
-            new_cr.close()
+
+        if var_config_v:
+            res_config.set(cursor, uid, 'do_empty_vat_or_name_func', 1)
 
         if not order_id:
             vals = {
@@ -143,12 +138,10 @@ class WizardCreacioRemesaPagamentTaxes(osv.osv_memory):
                        invoice_account_id, line_account_id, year, context=None):
         config_obj = self.pool.get('som.municipal.taxes.config')
         order_obj = self.pool.get('payment.order')
-        self.pool.get('res.currency')
         mun_obj = self.pool.get('res.municipi')
         invoice_obj = self.pool.get('account.invoice')
         invoice_line_obj = self.pool.get('account.invoice.line')
         payment_type_o = self.pool.get("payment.type")
-        # euro_id = currency_obj.search(cursor, uid, [('code', '=', 'EUR')])[0]
         journal_id = self.pool.get('ir.model.data').get_object_reference(
             cursor, uid, 'som_municipal_taxes', 'municipal_tax_journal')[1]
         payment_type_id = payment_type_o.search(
@@ -194,7 +187,6 @@ class WizardCreacioRemesaPagamentTaxes(osv.osv_memory):
                 partner_id=config_data['partner_id'][0],
                 date_invoice=datetime.datetime.now(),
                 account_id=invoice_account_id,
-                # currency_id=None,
                 payment_mode_id=payment_mode_id,
                 payment_type_id=payment_type_id,
                 state='draft',
@@ -214,17 +206,10 @@ class WizardCreacioRemesaPagamentTaxes(osv.osv_memory):
                 price_unit=city_tax,
                 quantity=1,
                 uom_id=1,
-                # company_currency_id=euro_id,
             ))
             invoice_obj.write(cursor, uid, [invoice_id], {'check_total': city_tax})
             wf_service = netsvc.LocalService("workflow")
             wf_service.trg_validate(uid, 'account.invoice', invoice_id, 'invoice_open', cursor)
-
-            # Incidència residual != 0
-            # move_ids = invoice_obj.browse(cursor, uid, invoice_id).move_id.line_id
-            # for move_line in move_ids:
-            #     if move_line.currency_id:
-            #         move_line.write({'currency_id': False})
 
             linia_creada.append(city_name)
             invoice_ids.append(invoice_id)
@@ -236,7 +221,7 @@ class WizardCreacioRemesaPagamentTaxes(osv.osv_memory):
                 state='draft',
                 mode=payment_mode_id,
                 type='payable',
-                create_account_moves='direct-payment',
+                create_account_moves='bank-statement',
             ))
             invoice_obj.afegeix_a_remesa(cursor, uid, invoice_ids, order_id)
             info = "S'ha creat la remesa amb {} línies\n\n".format(len(linia_creada))

@@ -12,7 +12,6 @@
     'installable': True,
     'depends': [
         'base',
-        'account',
         'giscedata_municipal_taxes_comer',
         'res_municipi_dir3',
         'som_crawlers',
