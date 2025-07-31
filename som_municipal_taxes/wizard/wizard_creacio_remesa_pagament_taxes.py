@@ -63,15 +63,12 @@ class WizardCreacioRemesaPagamentTaxes(osv.osv_memory):
             res_config.get(cursor, uid, 'do_empty_vat_or_name_func', 0)
         )
 
-        try:
-            if var_config_v:
-                res_config.set(cursor, uid, 'do_empty_vat_or_name_func', 0)
+        if var_config_v:
+            res_config.set(cursor, uid, 'do_empty_vat_or_name_func', 0)
 
-            order_id, info = self.crear_factures(
-                cursor, uid, ids, totals_by_city, wizard.payment_mode.id,
-                invoice_account_id, line_account_id, wizard.year, context)
-        except Exception as e:
-            raise e
+        order_id, info = self.crear_factures(
+            cursor, uid, ids, totals_by_city, wizard.payment_mode.id,
+            invoice_account_id, line_account_id, wizard.year, context)
 
         if var_config_v:
             res_config.set(cursor, uid, 'do_empty_vat_or_name_func', 1)

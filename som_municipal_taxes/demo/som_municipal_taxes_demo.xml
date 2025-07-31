@@ -19,6 +19,16 @@
             <field name="iban">ES6514651298606461177215</field>
             <field name="default_bank">True</field>
         </record>
+        <record id="res_partner_bank_0001" model="res.partner.bank">
+            <field name="iban">ES3100814996804537214772</field>
+            <field name="bank_id" ref="base.partner_bank"/>
+        </record>
+        <record id="account_invoice_som.payment_mode_0001" model="payment.mode">
+            <field name="tipo">SEPA 34</field>
+            <field name="partner_id" ref="giscedata_switching.sw_ccaa_03_asturias"/>
+            <field name="sepa_creditor_code">ES6700011111111H</field>
+            <field name="nombre">Asturias</field>
+        </record>
         <record id="ajuntament_girona" model="som.municipal.taxes.config">
             <field name="name">Ajuntament Alegría-Dulantzi</field>
             <field name="municipi_id" ref="base_extended.ine_01001" />

@@ -45,6 +45,80 @@ class TestWizardCreacioRemesaPagamentTaxes(testing.OOTestCaseWithCursor):
         self.assertEqual(len(po.line_ids), 1)
 
     @mock.patch.object(FacturacioExtra, "get_states_invoiced")
+    def test_create_remesa_pagaments__i_pagarla(self, get_states_invoiced_mock):
+        get_states_invoiced_mock.return_value = ['draft', 'open', 'paid']
+        wiz_o = self.pool.get("wizard.creacio.remesa.pagament.taxes")
+        order_o = self.pool.get("payment.order")
+
+        payment_mode_id = self.pool.get("ir.model.data").get_object_reference(
+            self.cursor, self.uid, "account_invoice_som", "payment_mode_0001"
+        )[1]
+
+        wiz_init = {
+            "payment_mode": payment_mode_id,
+            "year": 2016,
+            "quarter": 1,
+        }
+        wiz_id = wiz_o.create(
+            self.cursor,
+            self.uid,
+            wiz_init,
+            context={},
+        )
+        order_id = wiz_o.create_remesa_pagaments(
+            self.cursor,
+            self.uid,
+            [wiz_id],
+            {},
+        )
+
+        state = wiz_o.read(self.cursor, self.uid, wiz_id, ['state'])[0]['state']
+        self.assertEqual(state, 'done')
+        po = order_o.browse(self.cursor, self.uid, order_id)
+        self.assertEqual(len(po.line_ids), 1)
+
+        # Exportar la remesa
+        context_export = {'active_ids': [order_id], 'active_id': order_id}
+        wiz_exp_o = self.pool.get('wizard.payment.file.spain')
+        wiz_exp_id = wiz_exp_o.create(
+            self.cursor,
+            self.uid,
+            {},
+        )
+        wiz_exp_o.create_payment_file(self.cursor, self.uid, [wiz_exp_id], context=context_export)
+        wiz_exp = wiz_exp_o.browse(self.cursor, self.uid, wiz_exp_id)
+        self.assertEqual('end', wiz_exp.state)
+        self.assertTrue('Successfully' in wiz_exp.note)
+        self.assertFalse(wiz_exp.error)
+        # Comprovem que les factures segueixen obertes
+        invoice_ids = [line.ml_inv_ref.id for line in po.line_ids]
+        for invoice_id in invoice_ids:
+            invoice = self.pool.get('account.invoice').browse(self.cursor, self.uid, invoice_id)
+            self.assertEqual(invoice.state, 'open')
+
+        # Pagar la remesa
+        order_o.action_open(self.cursor, self.uid, [order_id])
+        wiz_pay_o = self.pool.get('pagar.remesa.wizard')
+        from destral.patch import PatchNewCursors
+        with PatchNewCursors():
+            context = {'active_ids': [order_id], 'active_id': order_id}
+            wiz_pay_id = wiz_pay_o.create(
+                self.cursor,
+                self.uid,
+                {'work_async': False},
+                context=context,
+            )
+            wiz_pay_o.action_pagar_remesa_threaded(self.cursor.dbname, self.uid, [
+                                                   wiz_pay_id], context=context)
+
+        # Comprovem que les factures estan pagades
+        invoice_ids = [line.ml_inv_ref.id for line in po.line_ids]
+        for invoice_id in invoice_ids:
+            invoice = self.pool.get('account.invoice').browse(self.cursor, self.uid, invoice_id)
+            self.assertEqual(invoice.state, 'paid')
+            self.assertEqual(invoice.residual, 0)
+
+    @mock.patch.object(FacturacioExtra, "get_states_invoiced")
     def test_create_remesa_pagaments__error_ja_pagat(self, get_states_invoiced_mock):
         get_states_invoiced_mock.return_value = ['draft', 'open', 'paid']
         self.pool.get("payment.order")
