@@ -59,7 +59,7 @@ class TestsGurbBase(testing.OOTestCase):
         vals = {}
 
         vals['gurb_cau_id'] = imd_o.get_object_reference(
-            self.cursor, self.uid, "som_gurb", "gurb_0001"
+            self.cursor, self.uid, "som_gurb", "gurb_cau_0001"
         )[1]
         vals['owner_gurb_cups_id'] = imd_o.get_object_reference(
             self.cursor, self.uid, "som_gurb", "gurb_cups_0001"

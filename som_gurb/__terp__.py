@@ -21,7 +21,8 @@
     ],
     "demo_xml": [
         "demo/som_gurb_service_demo.xml",
-        "demo/som_gurb_demo.xml",
+        "demo/som_gurb_group_demo.xml",
+        "demo/som_gurb_cau_demo.xml",
         "demo/som_gurb_cups_demo.xml",
     ],
     "update_xml": [

@@ -6,9 +6,19 @@
             <field name="code">som.gurb.group</field>
         </record>
         <record id="seq_gurb_group" model="ir.sequence">
-            <field name="name">GURB</field>
+            <field name="name">Sequence GURB group</field>
             <field name="code">som.gurb.group</field>
             <field name="prefix">G</field>
+            <field name="padding">3</field>
+            <field name="number_increment">1</field>
+        </record>
+        <record id="seq_gurb_type" model="ir.sequence.type">
+            <field name="name">Seqüència de GURB cau</field>
+            <field name="code">som.gurb.cau</field>
+        </record>
+        <record id="seq_gurb" model="ir.sequence">
+            <field name="name">Sequence Gurb CAU</field>
+            <field name="code">som.gurb.cau</field>
             <field name="padding">3</field>
             <field name="number_increment">1</field>
         </record>

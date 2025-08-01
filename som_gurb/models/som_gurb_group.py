@@ -14,10 +14,11 @@ class SomGurbGroup(osv.osv):
     def create(self, cursor, uid, vals, context=None):
         res_id = super(SomGurbGroup, self).create(cursor, uid, vals, context=context)
 
-        ir_seq = self.pool.get("ir.sequence")
-        code = ir_seq.get_next(cursor, uid, "som.gurb.group")
+        ir_seq_obj = self.pool.get("ir.sequence")
+        code = ir_seq_obj.get_next(cursor, uid, "som.gurb.group")
+        seq_id = ir_seq_obj.search(cursor, uid, [('name', '=', 'Sequence Gurb CAU')])[0]
 
-        self.write(cursor, uid, res_id, {"code": code}, context=context)
+        self.write(cursor, uid, res_id, {"code": code, "sequence_id": seq_id}, context=context)
 
         return res_id
 
