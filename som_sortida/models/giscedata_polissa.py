@@ -104,7 +104,7 @@ class GiscedataPolissa(osv.osv):
 
         for pol in pol_data:
             if not pol['soci'] or not pol['soci_nif']:
-                res[pol['id']] = False
+                res[pol['id']] = True
             elif self._es_socia_promocional(cr, uid, ids, pol['soci_nif']):
                 res[pol['id']] = False
             else:
