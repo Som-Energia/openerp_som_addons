@@ -261,6 +261,10 @@ class SomLeadWww(osv.osv_memory):
             # Remove the attachment base64 data from the log
             attachment.pop("datas", None)
 
+        # giscedata_switching/giscedata_polissa.crear_cas_atr reads the contract observations
+        # and looks for the key 'proces: XX' :O
+        www_vals['contract_info']['proces'] = www_vals['contract_info']['process']
+
         data = yaml.safe_dump(www_vals, indent=2)
         msg = "{header}\n{data}".format(header=WWW_DATA_FORM_HEADER, data=data)
         lead.historize_msg(msg, context=context)
