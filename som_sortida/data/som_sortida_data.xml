@@ -1,0 +1,64 @@
+<?xml version="1.0"?>
+<openerp>
+    <data>
+        <record model="res.config" id="config_llista_nifs_socia_promocional">
+            <field name="description">Llista de NIFs de sòcies promocionals de 1 any de durada</field>
+            <field name="name">llista_nifs_socia_promocional</field>
+            <field name="value">["99999998T"]</field>
+        </record>
+        <!-- Estats del flux de sortida -->
+        <record model="account.invoice.pending.state.process" id="enviar_cor_state_process">
+            <field name="name">Enviar a la COR</field>
+            <field name="days_type">natural</field>
+        </record>
+        <record model="som.sortida.state" id="enviar_cor_correcte_pending_state">
+            <field name="name">Correcte</field>
+            <field name="weight">0</field>
+            <field name="process_id" ref="enviar_cor_state_process"/>
+        </record>
+        <record model="som.sortida.state" id="enviar_cor_contrate_sense_socia_pending_state">
+            <field name="name">Contrate sense sòcia</field>
+            <field name="weight">10</field>
+            <field name="process_id" ref="enviar_cor_state_process"/>
+            <field name="pending_days_type">natural</field>
+            <field name="pending_days">335</field>
+        </record>
+        <record model="som.sortida.state" id="enviar_cor_falta_un_mes_pending_state">
+            <field name="name">Falta un mes</field>
+            <field name="weight">20</field>
+            <field name="process_id" ref="enviar_cor_state_process"/>
+            <field name="pending_days_type">natural</field>
+            <field name="pending_days">15</field>
+        </record>
+        <record model="som.sortida.state" id="enviar_cor_falta_15_dies_pending_state">
+            <field name="name">Falta 15 dies</field>
+            <field name="weight">30</field>
+            <field name="process_id" ref="enviar_cor_state_process"/>
+            <field name="pending_days_type">natural</field>
+            <field name="pending_days">8</field>
+        </record>
+        <record model="som.sortida.state" id="enviar_cor_falta_7_dies_pending_state">
+            <field name="name">Falta 7 dies</field>
+            <field name="weight">40</field>
+            <field name="process_id" ref="enviar_cor_state_process"/>
+            <field name="pending_days_type">natural</field>
+            <field name="pending_days">7</field>
+        </record>
+        <record model="som.sortida.state" id="enviar_cor_pendent_crear_b1_dies_pending_state">
+            <field name="name">Pendent crear cas B1</field>
+            <field name="weight">50</field>
+            <field name="process_id" ref="enviar_cor_state_process"/>
+            <field name="b2_02_create">True</field>
+        </record>
+        <record model="som.sortida.state" id="enviar_cor_cas_b1_creat_pending_state">
+            <field name="name">Cas B1 creat</field>
+            <field name="weight">60</field>
+            <field name="process_id" ref="enviar_cor_state_process"/>
+        </record>
+        <record model="som.sortida.state" id="enviar_cor_enviat_cor_pending_state">
+            <field name="name">Enviat a la COR</field>
+            <field name="weight">70</field>
+            <field name="process_id" ref="enviar_cor_state_process"/>
+        </record>
+    </data>
+</openerp>

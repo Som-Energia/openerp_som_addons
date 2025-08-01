@@ -1,0 +1,8 @@
+<openerp>
+    <data>
+        <!-- Afegim camp sortida_state_id a la pòlissa demo 1 -->
+        <record id="giscedata_polissa.polissa_0001" model="giscedata.polissa">
+            <field name="sortida_state_id" ref="enviar_cor_contrate_sense_socia_pending_state"/>
+        </record>
+    </data>
+</openerp>
