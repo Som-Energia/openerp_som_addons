@@ -12,8 +12,9 @@ class TestsGiscedataPolissa(testing.OOTestCaseWithCursor):
             cursor, uid, 'giscedata_polissa', 'polissa_0001'
         )[1]
         pol = pol_obj.browse(cursor, uid, polissa_id)
-        self.assertFalse(pol.te_socia_real_vinculada,
-                         "La pòlissa no hauria de tenir sòcia real vinculada")
+        # Considerem sense sòcia com a socia real vinculada
+        self.assertTrue(pol.te_socia_real_vinculada,
+                        "La pòlissa hauria de tenir sòcia real vinculada")
 
         soci_id = imd_obj.get_object_reference(
             cursor, uid, 'som_polissa_soci', 'soci_0001'
