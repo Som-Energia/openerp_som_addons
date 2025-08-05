@@ -81,7 +81,6 @@ class SomLeadWww(osv.osv_memory):
         values = {
             "state": "open",
             "name": "{} / {}".format(member["vat"].upper(), contract_info["cups"]),
-            "lang": member.get("lang"),
             "cups": contract_info["cups"],
             "codigoEmpresaDistribuidora": distri_ref,
             "cups_ref_catastral": contract_info.get("cups_cadastral_reference"),
@@ -150,6 +149,9 @@ class SomLeadWww(osv.osv_memory):
 
         for i, power in enumerate(contract_info["powers"]):
             values["potenciasContratadasEnKWP%s" % str(i + 1)] = float(power) / 1000
+
+        if member.get("lang", False):
+            values["lang"] = member["lang"]
 
         if www_vals.get("self_consumption"):
             values["seccio_registre"] = self._127_WITH_SURPLUSES
@@ -258,6 +260,10 @@ class SomLeadWww(osv.osv_memory):
         for attachment in www_vals.get("attachments", []):
             # Remove the attachment base64 data from the log
             attachment.pop("datas", None)
+
+        # giscedata_switching/giscedata_polissa.crear_cas_atr reads the contract observations
+        # and looks for the key 'proces: XX' :O
+        www_vals['contract_info']['proces'] = www_vals['contract_info']['process']
 
         data = yaml.safe_dump(www_vals, indent=2)
         msg = "{header}\n{data}".format(header=WWW_DATA_FORM_HEADER, data=data)

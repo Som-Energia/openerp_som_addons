@@ -142,23 +142,27 @@ class GiscedataCrmLead(osv.OsvInherits):
         )
 
         lead = self.browse(cursor, uid, crml_id, context=context)
+        values = {}
 
         rep_id = self._create_or_get_representative(
             cursor, uid, lead.persona_firmant_vat, lead.persona_nom, context=context
         )
         if rep_id:
-            partner_o.write(
-                cursor, uid, lead.partner_id.id, {"representante_id": rep_id}, context=context)
+            values["representante_id"] = rep_id
 
         # We set again the lang because if it existed before, the base code dont write it
-        partner_o.write(cursor, uid, lead.partner_id.id, {"lang": lead.lang}, context=context)
+        if lead.lang:
+            values["lang"] = lead.lang
 
         if lead.create_new_member:
             # become_member will keep the member number we set here
-            partner_o.write(
-                cursor, uid, lead.partner_id.id, {"ref": lead.member_number}, context=context)
+            context["force_ref"] = lead.member_number
+            values["date"] = datetime.today().strftime("%Y-%m-%d")
+            partner_o.write(cursor, uid, lead.partner_id.id, values, context=context)
             partner_o.become_member(cursor, uid, lead.partner_id.id, context=context)
             partner_o.adopt_contracts_as_member(cursor, uid, lead.partner_id.id, context=context)
+        elif values:
+            partner_o.write(cursor, uid, lead.partner_id.id, values, context=context)
 
         return res
 
@@ -334,8 +338,8 @@ class GiscedataCrmLead(osv.OsvInherits):
             context = {}
         seq_o = self.pool.get("ir.sequence")
 
+        # We assing here the new numbers to show it in the contract to be signed
         if vals.get("create_new_member"):
-            # TODO: we have to keep the old number or not? By the moment, we assign a new one
             vals["member_number"] = seq_o.get_next(cursor, uid, "res.partner.soci")
         elif context.get("sponsored_titular"):
             vals["titular_number"] = seq_o.get_next(cursor, uid, "res.partner.titular")

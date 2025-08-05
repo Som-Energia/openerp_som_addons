@@ -129,14 +129,21 @@ class TestsSomLeadWww(testing.OOTestCase):
         self.assertEqual(lead.polissa_id.facturacio_potencia, "icp")
 
         # Check that the ATR is created with C1 process
-        atr_case = sw_o.search(
+        atr_case_ids = sw_o.search(
             self.cursor, self.uid, [
                 ("proces_id.name", "=", "C1"),
                 ("cups_polissa_id", "=", lead.polissa_id.id),
                 ("cups_input", "=", lead.polissa_id.cups.name),
             ]
         )
-        self.assertEqual(len(atr_case), 1)
+        self.assertEqual(len(atr_case_ids), 1)
+
+        atr_case = sw_o.browse(self.cursor, self.uid, atr_case_ids[0])
+        self.assertEqual(atr_case.state, "draft")
+
+        # check default 'contratacion_incondicional_bs'
+        c1 = sw_o.get_pas(self.cursor, self.uid, atr_case_ids)
+        self.assertEqual(c1.contratacion_incondicional_bs, "N")
 
         # Check the pricelist and mode facturacio
         peninsular_pricelist_id = ir_model_o.get_object_reference(
@@ -174,6 +181,10 @@ class TestsSomLeadWww(testing.OOTestCase):
             ]
         )
         self.assertEqual(len(mails), 1)
+
+        # Check partner lang and member date
+        self.assertEqual(lead.partner_id.lang, "es_ES")
+        self.assertEqual(lead.partner_id.date, datetime.today().strftime("%Y-%m-%d"))
 
     def test_create_simple_domestic_lead_indexada(self):
         www_lead_o = self.get_model("som.lead.www")
@@ -314,6 +325,9 @@ class TestsSomLeadWww(testing.OOTestCase):
         self.assertEqual(c2.canvi_titular, "T")
         self.assertEqual(c2.control_potencia, "1")
 
+        # check default 'contratacion_incondicional_bs'
+        self.assertEqual(c2.contratacion_incondicional_bs, "S")
+
     def test_create_lead_with_owner_change_C2_30TD(self):
         www_lead_o = self.get_model("som.lead.www")
         sw_o = self.get_model("giscedata.switching")
@@ -347,6 +361,9 @@ class TestsSomLeadWww(testing.OOTestCase):
         self.assertEqual(c2.sollicitudadm, "S")
         self.assertEqual(c2.canvi_titular, "T")
         self.assertEqual(c2.control_potencia, "2")
+
+        # check default contratacion_incondicional_bs
+        self.assertEqual(c2.contratacion_incondicional_bs, "S")
 
     def test_create_lead_with_new_cups_A3(self):
         www_lead_o = self.get_model("som.lead.www")
@@ -851,11 +868,14 @@ class TestsSomLeadWww(testing.OOTestCase):
         member_o = self.get_model("somenergia.soci")
         ir_model_o = self.get_model("ir.model.data")
         mailbox_o = self.get_model('poweremail.mailbox')
+        partner_o = self.get_model("res.partner")
 
         member_id = ir_model_o.get_object_reference(
             self.cursor, self.uid, "som_polissa_soci", "soci_0001"
         )[1]
         member = member_o.browse(self.cursor, self.uid, member_id)
+        partner_o.write(self.cursor, self.uid, member.partner_id.id, {'lang': 'ca_ES'})
+
         vat = member.partner_id.vat.replace("ES", "")
 
         values = self._basic_values
@@ -878,6 +898,12 @@ class TestsSomLeadWww(testing.OOTestCase):
         self.assertEqual(lead.polissa_id.titular.ref, lead.member_number)
         self.assertEqual(lead.polissa_id.soci, lead.polissa_id.titular)
 
+        # Check that the direccio_notificacio is the already existing partner address
+        self.assertEqual(
+            lead.polissa_id.direccio_notificacio.street,
+            "Major, 32"
+        )
+
         # Check that the mail was sent
         template_name = "email_contracte_esborrany"
         template_id = ir_model_o.get_object_reference(
@@ -889,6 +915,9 @@ class TestsSomLeadWww(testing.OOTestCase):
             ]
         )
         self.assertEqual(len(mails), 1)
+
+        # Check partner lang
+        self.assertEqual(lead.partner_id.lang, "ca_ES")
 
     def test_create_simple_domestic_lead_sponsored(self):
         www_lead_o = self.get_model("som.lead.www")

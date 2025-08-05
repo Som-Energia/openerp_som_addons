@@ -166,12 +166,16 @@ class GiscedataSwitchingM1_01(osv.osv):
     def generar_xml(self, cursor, uid, pas_id, context=None):
         if context is None:
             context = {}
+
+        if isinstance(pas_id, (list, tuple)):
+            pas_id = pas_id[0]
+        pas = self.browse(cursor, uid, pas_id, context)
+
         sgc_obj = self.pool.get("som.gurb.cups")
 
         xml = super(GiscedataSwitchingM1_01, self).generar_xml(
             cursor, uid, pas_id, context=context
         )
-        pas = self.browse(cursor, uid, pas_id, context)
         sw = pas.sw_id
         if sw and _cups_contract_has_gurb_cups(
             cursor, uid, self.pool, sw.cups_polissa_id.id, context=context
