@@ -191,7 +191,9 @@ class SomGurbGroup(osv.osv):
         "critical_incomplete_state": fields.integer("Estat crític incomplet (%)"),
         "available_20_power": fields.float("potència a ofertar 2.0"),
         "avilable_30_power": fields.float("potència a ofertar 3.0"),
-        "pricelist_30_id": fields.many2one("product.pricelist", "Preus 3.0 del GURB CAU"),
+        "product_20_id": fields.many2one("product.product", "Preus 2.0 del GURB grup"),
+        "product_30_id": fields.many2one("product.product", "Preus 3.0 del GURB grup"),
+        "pricelist_id": fields.many2one("product.pricelist", "Preus del GURB grup"),
         "initial_product_id": fields.many2one("product.product", "Producte quota inicial"),
         "generation_power": fields.float("Potència generació", digits=(10, 3)),
         "assigned_betas_kw": fields.function(

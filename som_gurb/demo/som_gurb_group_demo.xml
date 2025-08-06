@@ -3,7 +3,6 @@
     <data>
         <record id="gurb_group_0001" model="som.gurb.group">
             <field name="name">GURB GRUP 001</field>
-            <field name="code">DEMO_GURB_GRUP_001</field>
         </record>
     </data>
 </openerp>
