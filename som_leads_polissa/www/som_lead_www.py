@@ -35,7 +35,7 @@ class SomLeadWww(osv.osv_memory):
         contract_address = contract_info["cups_address"]
 
         tensio_xml_id = 'tensio_230'
-        if contract_info.get("voltage") == "3x230/400":
+        if contract_info.get("phase") == "3x230/400":
             tensio_xml_id = 'tensio_3x230_400'
         tensio_id = imd_o.get_object_reference(cr, uid, 'giscedata_tensions', tensio_xml_id)[1]
 

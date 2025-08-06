@@ -67,7 +67,7 @@ class TestsSomLeadWww(testing.OOTestCase):
                 "is_indexed": False,
                 "tariff": "2.0TD",
                 "powers": ["4400", "8000"],
-                "voltage": "230",
+                "phase": "230",
                 "cnae": "9820",
                 "process": "C1",
                 "cups_cadastral_reference": "9872023VH5797S0001WX",
@@ -1129,7 +1129,7 @@ class TestsSomLeadWww(testing.OOTestCase):
         ir_model_o = self.get_model("ir.model.data")
 
         values = self._basic_values
-        values["contract_info"]["voltage"] = "3x230/400"
+        values["contract_info"]["phase"] = "3x230/400"
 
         result = www_lead_o.create_lead(self.cursor, self.uid, values)
         www_lead_o.activate_lead(self.cursor, self.uid, result["lead_id"], context={"sync": True})
