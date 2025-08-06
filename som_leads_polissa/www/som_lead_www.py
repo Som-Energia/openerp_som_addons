@@ -34,7 +34,10 @@ class SomLeadWww(osv.osv_memory):
         contract_info = www_vals["contract_info"]
         contract_address = contract_info["cups_address"]
 
-        tensio_230 = imd_o.get_object_reference(cr, uid, 'giscedata_tensions', 'tensio_230')[1]
+        tensio_xml_id = 'tensio_230'
+        if contract_info.get("voltage") == "3x230/400":
+            tensio_xml_id = 'tensio_3x230_400'
+        tensio_id = imd_o.get_object_reference(cr, uid, 'giscedata_tensions', tensio_xml_id)[1]
 
         tarifa_id = tarifa_o.search(cr, uid, [("name", "=", contract_info["tariff"])])[0]
         payment_mode_id = payment_mode_o.search(cr, uid, [("name", "=", "ENGINYERS")])[0]
@@ -95,7 +98,7 @@ class SomLeadWww(osv.osv_memory):
             "cnae": cnae_id,
             "tarifa": tarifa_id,
             "facturacio_potencia": 'max' if contract_info["tariff"] == '3.0TD' else 'icp',
-            "tensio_normalitzada": tensio_230,
+            "tensio_normalitzada": tensio_id,
             "atr_proces_name": contract_info['process'],
             "change_adm": contract_info['process'] == 'C2',
             "contract_type": self._CONTRACT_TYPE_ANUAL,

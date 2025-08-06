@@ -67,6 +67,7 @@ class TestsSomLeadWww(testing.OOTestCase):
                 "is_indexed": False,
                 "tariff": "2.0TD",
                 "powers": ["4400", "8000"],
+                "voltage": "230",
                 "cnae": "9820",
                 "process": "C1",
                 "cups_cadastral_reference": "9872023VH5797S0001WX",
@@ -154,6 +155,11 @@ class TestsSomLeadWww(testing.OOTestCase):
 
         # Check that don't have self consumption
         self.assertEqual(lead.polissa_id.autoconsumo, '00')
+
+        # Check the tension (default is 230)
+        tensio_230 = ir_model_o.get_object_reference(
+            self.cursor, self.uid, 'giscedata_tensions', 'tensio_230')[1]
+        self.assertEqual(lead.polissa_id.tensio_normalitzada.id, tensio_230)
 
         # Check if user_id ("comercial") is created on polissa
         webforms_user_id = ir_model_o.get_object_reference(
@@ -1116,3 +1122,20 @@ class TestsSomLeadWww(testing.OOTestCase):
         lead = lead_o.browse(self.cursor, self.uid, result["lead_id"])
         # Check that the name is correctly set
         self.assertEqual(lead.comercial_info_accepted, True)
+
+    def test_create_lead_trifasic_tension(self):
+        www_lead_o = self.get_model("som.lead.www")
+        lead_o = self.get_model("giscedata.crm.lead")
+        ir_model_o = self.get_model("ir.model.data")
+
+        values = self._basic_values
+        values["contract_info"]["voltage"] = "3x230/400"
+
+        result = www_lead_o.create_lead(self.cursor, self.uid, values)
+        www_lead_o.activate_lead(self.cursor, self.uid, result["lead_id"], context={"sync": True})
+
+        lead = lead_o.browse(self.cursor, self.uid, result["lead_id"])
+
+        tensio_trifasica = ir_model_o.get_object_reference(
+            self.cursor, self.uid, 'giscedata_tensions', 'tensio_3x230_400')[1]
+        self.assertEqual(lead.polissa_id.tensio_normalitzada.id, tensio_trifasica)
