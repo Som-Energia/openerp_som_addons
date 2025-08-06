@@ -92,9 +92,4 @@ Les lectures, comptadors, linies extra, F1 i factures de proveidor posteriors a 
             <field name="sequence">999</field>
         </record>
     </data>
-    <data noupdate="1">
-        <record model="giscedata.switching.activation.config" id="sw_act_r105_cac">
-            <field name="is_automatic" eval="True"/>
-        </record>
-    </data>
 </openerp>
