@@ -7,6 +7,7 @@ import copy
 from oorq.decorators import job
 
 from som_leads_polissa.giscedata_crm_lead import WWW_DATA_FORM_HEADER
+from giscedata_cups.giscedata_cups import get_dso
 
 
 class SomLeadWww(osv.osv_memory):
@@ -27,7 +28,7 @@ class SomLeadWww(osv.osv_memory):
         polissa_o = self.pool.get("giscedata.polissa")
         tarifa_o = self.pool.get("giscedata.polissa.tarifa")
         cnae_o = self.pool.get("giscemisc.cnae")
-        cups_ps_o = self.pool.get("giscedata.cups.ps")
+        self.pool.get("giscedata.cups.ps")
         selfcons_o = self.pool.get("giscedata.autoconsum")
         ir_model_o = self.pool.get("ir.model.data")
 
@@ -47,8 +48,7 @@ class SomLeadWww(osv.osv_memory):
         except IndexError:
             cnae_id = None  # TODO: Probably new CNAE 2025, by the moment we avoid to fail
 
-        distri_ref = cups_ps_o.partner_map_from_cups(
-            cr, uid, contract_info["cups"], context=context)
+        distri_ref = get_dso(contract_info["cups"])
 
         member_type = www_vals["linked_member"]
 
