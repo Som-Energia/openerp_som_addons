@@ -748,7 +748,7 @@ class TestsGurbSwitching(TestsGurbBase):
             "<CodigoDeSolicitud>{0}".format(codi_sollicitud)
         )
         m1_05_xml = m1_05_xml.replace(
-            "<CUPS>ES1234000000000001JN0F",
+            "<CUPS>ES0021126262693495FV",
             "<CUPS>{0}".format(cups.name)
         )
 

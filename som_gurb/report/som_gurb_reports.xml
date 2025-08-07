@@ -61,7 +61,7 @@
         <record model="ir.actions.report.xml" id="action_report_som_gurb_acord_repartiment">
             <field name="report_name">report_som_gurb_acord_repartiment</field>
             <field name="name">Generar acord repartiment GURB</field>
-            <field name="model">som.gurb</field>
+            <field name="model">som.gurb.cau</field>
             <field name="report_type">pdf</field>
             <field name="report_webkit" eval=""/>
             <field name="header" eval="0"/>
@@ -72,14 +72,14 @@
             <field name="object" eval="1"/>
            <field name="name">Generar acord repartiment GURB</field>
            <field name="key2">client_print_multi</field>
-           <field name="model">som.gurb</field>
+           <field name="model">som.gurb.cau</field>
            <field name="value" eval="'ir.actions.report.xml,'+str(ref('action_report_som_gurb_acord_repartiment'))"/>
         </record>
 
         <record model="ir.actions.report.xml" id="action_report_som_gurb_representant">
             <field name="report_name">report_som_gurb_representant</field>
             <field name="name">Fitxers de representació</field>
-            <field name="model">som.gurb</field>
+            <field name="model">som.gurb.cau</field>
             <field name="report_type">pdf</field>
             <field name="report_webkit" eval=""/>
             <field name="header" eval="0"/>
@@ -90,7 +90,7 @@
             <field name="object" eval="1"/>
            <field name="name">Fitxers de representació</field>
            <field name="key2">client_print_multi</field>
-           <field name="model">som.gurb</field>
+           <field name="model">som.gurb.cau</field>
            <field name="value" eval="'ir.actions.report.xml,'+str(ref('action_report_som_gurb_representant'))"/>
         </record>
     </data>
