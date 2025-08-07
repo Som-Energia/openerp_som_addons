@@ -70,8 +70,8 @@ class SomGurbGroup(osv.osv):
                 gurb_cups_data = gurb_cups_obj.read(
                     cursor, uid, gurb_cups_ids, ["beta_kw", "extra_beta_kw", "gift_beta_kw"]
                 )
-                gen_power += self.read(
-                    cursor, uid, gurb_cau_id, ["generation_power"])["generation_power"]
+                gen_power += gurb_cau_obj.read(
+                    cursor, uid, gurb_cau_id, ["generation_power"])["generation_power"] or 0
 
                 assigned_betas_kw = sum(gurb_cups["beta_kw"] for gurb_cups in gurb_cups_data)
                 extra_betas_kw += sum(
@@ -161,7 +161,7 @@ class SomGurbGroup(osv.osv):
                 "extra_betas_percentage": extra_betas_percentage,
                 "gift_betas_kw": gift_betas_kw,
                 "future_assigned_betas_percentage": future_assigned_betas_percentage,
-
+                "generation_power": gen_power,
             }
 
         return res
@@ -195,7 +195,13 @@ class SomGurbGroup(osv.osv):
         "product_30_id": fields.many2one("product.product", "Preus 3.0 del GURB grup"),
         "pricelist_id": fields.many2one("product.pricelist", "Preus del GURB grup"),
         "initial_product_id": fields.many2one("product.product", "Producte quota inicial"),
-        "generation_power": fields.float("Potència generació", digits=(10, 3)),
+        "generation_power": fields.function(
+            _ff_total_betas,
+            string="Potència de generació",
+            type="float",
+            method=True,
+            multi="betas",
+        ),
         "assigned_betas_kw": fields.function(
             _ff_total_betas,
             string="Betes assignades (kW)",
