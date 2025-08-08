@@ -2,6 +2,8 @@
 from libfacturacioatr.pool.tarifes import *
 from libfacturacioatr.tarifes import *
 
+import osv.osv
+
 EXTRAPENINSULAR_FORMULAS = [
     'phf_calc_balears',
     'phf_calc_canaries',
@@ -31,6 +33,8 @@ class TarifaPoolSOM(TarifaPool):
             res['dsv'] = 'dsv'
             res['gdos'] = 'gdos'
             res['pmd'] = 'prmdiari'
+            res['k'] = 'k'
+            res['d'] = 'd'
             if 'ajom' in res:
                 del res['ajom']
             if 'peninsula' in self.phf_function:
@@ -384,7 +388,7 @@ class TarifaPoolSOM(TarifaPool):
         prmdiari = Prmdiari('C2_prmdiari_%(postfix)s' % locals(), esios_token)  # [€/MWh]
 
         # Pérdidas
-        if start_date.year <= 2024 and start_date.month < 12:
+        if start_date.year < 2024 or (start_date.year == 2024 and start_date.month < 12):
             fname = self.perdclass.name
             perdues = self.perdclass('C2_%(fname)s_%(postfix)s' % locals(), esios_token)  # [%]
         else:
@@ -395,16 +399,25 @@ class TarifaPoolSOM(TarifaPool):
         prdemcad = Prdemcad('C2_prdemcad_%(postfix)s' % locals(), esios_token)  # prdemcad [€/MWh]
 
         # Componentes Desvios
-        if start_date.year <= 2024 and start_date.month < 12:
+        if start_date.year < 2024 or (start_date.year == 2024 and start_date.month < 12):
             csdvbaj = Codsvbaj('C2_codsvbaj_%(postfix)s' % locals(), esios_token)  # [€/MWh]
             csdvsub = Codsvsub('C2_codsvsub_%(postfix)s' % locals(), esios_token)  # [€/MWh]
         else:
             csdvbaj = Codsvbaqh('C2_codsvbaqh_%(postfix)s' % locals(), esios_token)  # [€/MWh]
             csdvsub = Codsvsuqh('C2_codsvsuqh_%(postfix)s' % locals(), esios_token)  # [€/MWh]
 
-        compodem = MonthlyCompodem('C2_monthlycompodem_%(postfix)s' % locals(), esios_token)
-        rad3 = compodem.get_component("RAD3")
-        bs3 = compodem.get_component("BS3")
+        # get first version date on version
+        first_version = self.conf.get('versions', {}).keys()[0]
+
+        # BS3 format QH from REGANECU
+        all_bs3 = self.conf.get('versions', {})[first_version]['bs3qh']
+        current_bs3 = [x for x in all_bs3 if x.start_date == start_date]
+        bs3 = current_bs3[0]
+
+        # RAD3 format QH from REGANECU
+        all_rad3 = self.conf.get('versions', {})[first_version]['rad3qh']
+        current_rad3 = [x for x in all_rad3 if x.start_date == start_date]
+        rad3 = current_rad3[0]
 
         # Let's transform them in ComponentsQH
         # First, which components must be divided by 4
@@ -560,7 +573,7 @@ class TarifaPoolSOM(TarifaPool):
         fname = self.perdclass.name
 
         # Pérdidas
-        if start_date.year <= 2024 and start_date.month < 12:
+        if start_date.year < 2024 or (start_date.year == 2024 and start_date.month < 12):
             fname = self.perdclass.name
             perdues = self.perdclass('C2_%(fname)s_%(postfix)s' % locals(), esios_token)  # [%]
         else:
@@ -739,7 +752,7 @@ class TarifaPoolSOM(TarifaPool):
         fname = self.perdclass.name
 
         # Pérdidas
-        if start_date.year <= 2024 and start_date.month < 12:
+        if start_date.year < 2024 or (start_date.year == 2024 and start_date.month < 12):
             fname = self.perdclass.name
             perdues = self.perdclass('C2_%(fname)s_%(postfix)s' % locals(), esios_token)  # [%]
         else:
@@ -853,7 +866,7 @@ class TarifaPoolSOM(TarifaPool):
         si = SI('C2_si_%(postfix)s' % locals(), esios_token)  # [€/MWh]
 
         # Pérdidas
-        if start_date.year <= 2024 and start_date.month < 12:
+        if start_date.year < 2024 or (start_date.year == 2024 and start_date.month < 12):
             fname = self.perdclass.name
             perdues = self.perdclass('C2_%(fname)s_%(postfix)s' % locals(), esios_token)  # [%]
         else:
