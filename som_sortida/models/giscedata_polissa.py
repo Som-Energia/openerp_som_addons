@@ -3,6 +3,9 @@ from osv import osv, fields
 import json
 from osv.expression import OOQuery
 from datetime import datetime
+import logging
+
+logger = logging.getLogger('openerp' + __name__)
 
 
 class GiscedataPolissa(osv.osv):
@@ -46,29 +49,47 @@ class GiscedataPolissa(osv.osv):
 
         if 'soci' in vals:
             imd_obj = self.pool.get('ir.model.data')
+            soci_obj = self.pool.get('somenergia.soci')
             state_correcte_id = imd_obj.get_object_reference(
                 cr, uid, 'som_sortida', 'enviar_cor_correcte_pending_state'
             )[1]
             state_sense_socia_id = imd_obj.get_object_reference(
                 cr, uid, 'som_sortida', 'enviar_cor_contrate_sense_socia_pending_state'
             )[1]
-            for _id in ids:
-                if vals.get('soci', False) and vals.get('soci_nif') and \
-                    not self._es_socia_promocional(
-                        cr, uid, [_id], vals['soci_nif'], context=context
-                ):
-                    vals['sortida_state_id'] = state_correcte_id
+            if vals.get('soci', False):
+                soci_id = soci_obj.search(cr, uid, [('partner_id', '=', vals.get('soci'))])
+                if not soci_id:
+                    soci_nif = False
+                    logger.info("Log: La socia del contracte no es socia, ojut. Polissa: %s", ids)
                 else:
-                    vals['sortida_state_id'] = state_sense_socia_id
-                change_date = context.get('change_date', False) or \
-                    datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-                vals['sortida_history_ids'] = [
-                    (0, 0, {
-                        'pending_state_id': state_sense_socia_id,
-                        'change_date': change_date,
-                        'polissa_id': _id,
-                    })
-                ]
+                    soci_id = soci_id[0]
+                    soci_nif = soci_obj.read(cr, uid, soci_id, ['vat'], context=context)
+                    soci_nif = soci_nif['vat'] if soci_nif else False
+            else:
+                soci_nif = False
+
+            for _id in ids:
+                current_state_id = self.read(cr, uid, _id, ['sortida_state_id'], context=context)[
+                    'sortida_state_id']
+                if not vals.get('soci', False) or \
+                    (vals.get('soci', False) and not soci_nif) or \
+                    (soci_nif and not self._es_socia_promocional(
+                        cr, uid, [_id], soci_nif, context=context)
+                     ):
+                    if current_state_id != state_correcte_id:
+                        vals['sortida_state_id'] = state_correcte_id
+                        context['history_pending_state'] = state_correcte_id
+                        self.create_history_line(
+                            cr, uid, [_id], context=context
+                        )
+                else:
+                    if current_state_id == state_correcte_id:
+                        vals['sortida_state_id'] = state_sense_socia_id
+                        context['history_pending_state'] = state_sense_socia_id
+                        self.create_history_line(
+                            cr, uid, [_id], context=context
+                        )
+
         return super(GiscedataPolissa, self).write(cr, uid, ids, vals, context=context)
 
     def _es_socia_promocional(self, cr, uid, ids, socia_nif, context=None):
