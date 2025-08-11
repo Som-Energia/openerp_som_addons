@@ -2,7 +2,8 @@
 from osv import osv, fields
 import json
 from osv.expression import OOQuery
-from datetime import datetime
+
+from datetime import datetime, timedelta
 import logging
 
 logger = logging.getLogger('openerp' + __name__)
@@ -118,9 +119,6 @@ class GiscedataPolissa(osv.osv):
     def _get_socia_real_vinculada(self, cr, uid, ids, field_name, arg, context=None):
         """Get the default value for 'te_socia_real_vinculada'."""
         res = dict.fromkeys(ids, True)
-        config_obj = self.pool.get('res.config')
-        nifs_promocionals = config_obj.get(cr, uid, 'llista_nifs_socia_promocional', '[]')
-        nifs_promocionals = json.loads(nifs_promocionals)
         pol_data = self.read(cr, uid, ids, ['soci', 'soci_nif'], context=context)
 
         for pol in pol_data:
@@ -142,6 +140,34 @@ class GiscedataPolissa(osv.osv):
                 res[polissa.id] = True
             else:
                 res[polissa.id] = False
+        return res
+
+    def _get_cor_submission_date(self, cr, uid, ids, field_name, arg, context=None):
+        """Date when the polissa is going to be sent to the COR."""
+        imd_obj = self.pool.get('ir.model.data')
+        correcte_state_id = imd_obj.get_object_reference(
+            cr, uid, 'som_sortida', 'enviar_cor_correcte_pending_state')[1]
+        state_id_to_days = {
+            imd_obj.get_object_reference(
+                cr, uid, 'som_sortida', 'enviar_cor_contrate_sense_socia_pending_state')[1]: 365,
+            imd_obj.get_object_reference(
+                cr, uid, 'som_sortida', 'enviar_cor_falta_un_mes_pending_state')[1]: 30,
+            imd_obj.get_object_reference(
+                cr, uid, 'som_sortida', 'enviar_cor_falta_15_dies_pending_state')[1]: 15,
+            imd_obj.get_object_reference(
+                cr, uid, 'som_sortida', 'enviar_cor_falta_7_dies_pending_state')[1]: 7,
+        }
+        res = dict.fromkeys(ids, False)
+        current_pending_state_info = self.get_current_pending_state_info(
+            cr, uid, ids, context=context)
+        for polissa in self.browse(cr, uid, ids, context=context):
+            if not polissa.sortida_state_id or polissa.sortida_state_id.id == correcte_state_id:
+                continue
+            state_initial_date = datetime.strptime(
+                current_pending_state_info[polissa.id]['change_date'], "%Y-%m-%d")
+            # If not in state_id_to_days, is in process to be sent so just return the initial date
+            days_to_add = state_id_to_days.get(polissa.sortida_state_id.id, 0)
+            res[polissa.id] = (state_initial_date + timedelta(days=days_to_add))
         return res
 
     _STORE_SOCIA_VINCULADA = {
@@ -173,6 +199,10 @@ class GiscedataPolissa(osv.osv):
             _get_en_process_de_sortida, method=True, string='En procés de sortida',
             type="boolean", store=_STORE_PROCESS_DE_SORTIDA,
             help="Indica si la pòlissa està en procés de sortida",
+        ),
+        'cor_submission_date': fields.function(
+            _get_cor_submission_date, method=True, string='Data enviament a la COR',
+            type="date"
         ),
     }
 
@@ -245,7 +275,12 @@ class GiscedataPolissa(osv.osv):
             default_change_date = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
             change_date = default_change_date
             custom_change_d = custom_change_dates.get(current_pol_id, False)
-            if custom_change_d and custom_change_d >= last_lines[current_pol_id]['change_date']:
+            if (
+                custom_change_d and (
+                    not last_lines[current_pol_id]
+                    or custom_change_d >= last_lines[current_pol_id]['change_date']
+                )
+            ):
                 change_date = custom_change_d
             if last_lines[current_pol_id]:
                 pending_history_obj.write(

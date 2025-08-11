@@ -60,5 +60,25 @@
             <field name="weight">70</field>
             <field name="process_id" ref="enviar_cor_state_process"/>
         </record>
+        <!-- Emails -->
+        <record model="poweremail.templates" id="email_ct_ss_1mes">
+            <field name="name">Campanya CT SS falta 1 mes</field>
+            <field name="object_name" model="ir.model"
+                search="[('name', '=', 'giscedata.polisa')]" />
+            <field eval="0" name="save_to_drafts" />
+            <field name="model_int_name">giscedata.polisa</field>
+            <field eval="0" name="use_filter" />
+            <field name="def_to">${object.titular.address[0].email}</field>
+            <field name="def_bcc">support.17062.b8d9f4469fa4d856@helpscout.net</field>
+            <field eval="0" name="auto_email" />
+            <field eval="0" name="use_sign" />
+            <field name="def_subject">Ja fa quasi un any! 🎂</field>
+            <field name="template_language">mako</field>
+            <field eval="0" name="send_on_create" />
+            <field name="lang">${object.titular.lang}</field>
+            <field eval="0" name="send_on_write" />
+            <field name="enforce_from_account" model="poweremail.core_accounts" search="[('name','=', 'Comercialització Som Energia')]"/>
+            <field name="def_body_text"><![CDATA[text_to_replace]]></field>
+        </record>
     </data>
 </openerp>
