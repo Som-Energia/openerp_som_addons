@@ -46,12 +46,11 @@ class SomGurbCau(osv.osv):
         if gurb_group_id:
             group_obj = self.pool.get('som.gurb.group')
             group = group_obj.browse(cursor, uid, gurb_group_id, context=context)
-
-            if group.sequence_id:
-                seq_obj = self.pool.get('ir.sequence')
-                code_grup = group.code
-                code_cau = seq_obj.get_id(cursor, uid, group.sequence_id.id, context=context)
-                code = code_grup + "/" + code_cau
+            code_grup = group.code
+            caus = self.search(cursor, uid, [("gurb_group_id", "=", gurb_group_id)])
+            n_caus = len(caus)
+            code_cau = str(n_caus).zfill(3)
+            code = code_grup + "/" + code_cau
 
         self.write(cursor, uid, res_id, {"code": code}, context=context)
 

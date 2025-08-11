@@ -16,9 +16,8 @@ class SomGurbGroup(osv.osv):
 
         ir_seq_obj = self.pool.get("ir.sequence")
         code = ir_seq_obj.get_next(cursor, uid, "som.gurb.group")
-        seq_id = ir_seq_obj.search(cursor, uid, [('name', '=', 'Sequence Gurb CAU')])[0]
 
-        self.write(cursor, uid, res_id, {"code": code, "sequence_id": seq_id}, context=context)
+        self.write(cursor, uid, res_id, {"code": code}, context=context)
 
         return res_id
 
@@ -258,7 +257,6 @@ class SomGurbGroup(osv.osv):
             method=True,
             multi="betas",
         ),
-        "sequence_id": fields.many2one('ir.sequence', string='CAU Sequence'),
         "max_power_20": fields.float("Topall max. per contracte 2.0 (kW)"),
         "min_power_20": fields.float("Topall min. per contracte 2.0 (kW)"),
         "max_power_30": fields.float("Topall max. per contracte 3.0 (kW)"),
