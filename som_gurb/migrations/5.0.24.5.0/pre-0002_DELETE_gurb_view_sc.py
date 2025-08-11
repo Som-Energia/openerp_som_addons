@@ -16,7 +16,7 @@ def up(cursor, installed_version):
     ui_view_o = pool.get("ir.ui.view")
 
     gurb_tree_id = ui_view_o.search(cursor, 1, [("name", "=", "som.gurbs.tree")])[0]
-    query = "DELETE FROM ui_view_sc_o WHERE view_id = %s"
+    query = "DELETE FROM ir_ui_view_sc WHERE view_id = %s"
     cursor.execute(query, (gurb_tree_id,))
 
     logger.info("NICE!! SERVERS UP!!")
