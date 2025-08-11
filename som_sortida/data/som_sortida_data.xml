@@ -64,9 +64,9 @@
         <record model="poweremail.templates" id="email_ct_ss_1mes">
             <field name="name">Campanya CT SS falta 1 mes</field>
             <field name="object_name" model="ir.model"
-                search="[('name', '=', 'giscedata.polisa')]" />
+                search="[('name', '=', 'giscedata.polissa')]" />
             <field eval="0" name="save_to_drafts" />
-            <field name="model_int_name">giscedata.polisa</field>
+            <field name="model_int_name">giscedata.polissa</field>
             <field eval="0" name="use_filter" />
             <field name="def_to">${object.titular.address[0].email}</field>
             <field name="def_bcc">support.17062.b8d9f4469fa4d856@helpscout.net</field>
