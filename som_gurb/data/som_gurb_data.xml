@@ -12,16 +12,6 @@
             <field name="padding">3</field>
             <field name="number_increment">1</field>
         </record>
-        <record id="seq_gurb_type" model="ir.sequence.type">
-            <field name="name">Seqüència de GURB cau</field>
-            <field name="code">som.gurb.cau</field>
-        </record>
-        <record id="seq_gurb" model="ir.sequence">
-            <field name="name">Sequence Gurb CAU</field>
-            <field name="code">som.gurb.cau</field>
-            <field name="padding">3</field>
-            <field name="number_increment">1</field>
-        </record>
         <record model="product.category" id="categ_product_gurb">
             <field name="name">Categoria GURB</field>
             <field name="parent_id" ref="giscedata_facturacio.categ_extra" />
