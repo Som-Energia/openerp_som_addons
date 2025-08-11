@@ -60,6 +60,10 @@
                         <field name="available_20_power" />
                         <field name="avilable_30_power" />
                         <field name="generation_power"/>
+                        <field name="max_power_20" />
+                        <field name="min_power_20" />
+                        <field name="max_power_30" />
+                        <field name="min_power_30" />
                     </group>
                     <!-- <group col="6" colspan="4" string="Autoconsum" icon="solar-panel">
                         <field name="self_consumption_id" select="1" />

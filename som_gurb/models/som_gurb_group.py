@@ -259,6 +259,10 @@ class SomGurbGroup(osv.osv):
             multi="betas",
         ),
         "sequence_id": fields.many2one('ir.sequence', string='CAU Sequence'),
+        "max_power_20": fields.float("Topall max. per contracte 2.0 (kW)"),
+        "min_power_20": fields.float("Topall min. per contracte 2.0 (kW)"),
+        "max_power_30": fields.float("Topall max. per contracte 3.0 (kW)"),
+        "min_power_30": fields.float("Topall min. per contracte 3.0 (kW)"),
     }
 
 

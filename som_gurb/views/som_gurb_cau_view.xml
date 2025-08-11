@@ -57,8 +57,6 @@
                         <field name="pricelist_id" select="2" />
                         <field name="initial_product_id" />
                         <field name="quota_product_id" />
-                        <field name="max_power" />
-                        <field name="min_power" />
                         <field name="cil" />
                         <field name="producer" />
                         <field name="gurb_group_id" />
