@@ -116,7 +116,7 @@
         <menuitem id="menu_llistar_gurbs_cups_atr_pending" parent="menu_gurb_cau" action="action_gurb_cups_atr_pending" />
         <!-- Accés directe a la pestanya amb llistat dels som.gurb.cups del GURB -->
         <record id="action_som_gurb_cups_tree" model="ir.actions.act_window">
-            <field name="name">Tots els CUPS del GURB</field>
+            <field name="name">Tots els CUPS del GURB CAU</field>
             <field name="src_model">som.gurb.cau</field>
             <field name="res_model">som.gurb.cups</field>
             <field name="view_type">form</field>
@@ -127,7 +127,7 @@
         </record>
         <record id="value_som_gurb_cups_in_gurb" model="ir.values">
             <field name="object" eval="1"/>
-            <field name="name">Tots els CUPS del GURB</field>
+            <field name="name">Tots els CUPS del GURB CAU</field>
             <field name="key2">client_action_relate</field>
             <field name="key">action</field>
             <field name="model">som.gurb.cau</field>

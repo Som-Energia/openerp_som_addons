@@ -155,7 +155,7 @@ class SomGurbCau(osv.osv):
             mod_gurb_cups_beta_ids = gurb_cups_beta_obj.search(
                 cursor, uid, search_params, context=context
             )
-            mod_future_gurb_cups_data = gurb_cups_obj.read(
+            mod_future_gurb_cups_data = gurb_cups_beta_obj.read(
                 cursor, uid, mod_gurb_cups_beta_ids, ["beta_kw", "extra_beta_kw", "gift_beta_kw"]
             )
 
