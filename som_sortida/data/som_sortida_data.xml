@@ -60,6 +60,8 @@
             <field name="weight">70</field>
             <field name="process_id" ref="enviar_cor_state_process"/>
         </record>
+    </data>
+    <data noupdate="1">
         <!-- Emails -->
         <record model="poweremail.templates" id="email_ct_ss_1mes">
             <field name="name">Campanya CT SS falta 1 mes</field>
@@ -98,6 +100,37 @@
             <field eval="0" name="send_on_write" />
             <field name="enforce_from_account" model="poweremail.core_accounts" search="[('name','=', 'Comercialització Som Energia')]"/>
             <field name="def_body_text"><![CDATA[text_to_replace]]></field>
+        </record>
+        <!-- SMS -->
+        <record model="powersms.templates" id="sms_ct_ss_7dies">
+            <field name="name">Campanya CT SS falten 7 dies</field>
+            <field name="object_name" model="ir.model" search="[('model', '=', 'giscedata.polissa')]"/>
+            <field name="def_from">Info</field>
+            <field name="model_int_name">giscedata.polissa</field>
+            <field name="def_to">${object.titular.www_phone}, ${object.titular.www_mobile}</field>
+            <field eval="0" name="auto_sms"/>
+            <field eval="0" name="certificate"/>
+            <field eval="0" name="send_on_create"/>
+            <field name="lang">${object.titular.lang}</field>
+            <field eval="0" name="send_on_write"/>
+            <field name="enforce_from_account" model="powersms.core_accounts" search="[('name','=', 'SMS Account')]"/>
+            <field name="def_body_text"><![CDATA[
+<%
+p_obj = object.pool.get('res.partner')
+nom_titular = ', ' + p_obj.separa_cognoms(
+    object._cr, object._uid, object.titular.name
+)['nom'] if not p_obj.vat_es_empresa(object._cr, object._uid, object.titular.vat) else ""
+
+data_enviament_cor = object.cor_submission_date.strftime('%d/%m/%Y') if object.cor_submission_date else "????"
+%>
+
+% if object.titular.lang == "ca_ES":
+    Hola${nom_titular}, Tal com t’hem comunicat per email, et recordem que, si no t’associes a Som Energia o vincules el teu contracte de llum a altra persona socia abans del ${data_enviament_cor}, no et podrem renovar el contracte i aquest passarà a la comercialitzadora de referència. Per a dubtes: info@somenergia.coop, 872202550. Salutacions, Som Energia.
+% else:
+    Hola${nom_titular}, tal como te hemos comunicado por email, te recordamos que si no te asocias a Som Energia o vinculas tu contrato de luz a otra persona socia antes del ${data_enviament_cor}, no podremos renovarte el contrato, que pasará a la comercializadora de referencia. Si tienes dudas: info@somenergia.coop, 872202550. Saludos, Som Energia.
+% endif
+]]>
+            </field>
         </record>
     </data>
 </openerp>
