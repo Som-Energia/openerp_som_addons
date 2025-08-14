@@ -466,6 +466,13 @@ class SomGurbCau(osv.osv):
             method=True,
             multi="betas",
         ),
+        "future_extra_betas_percentage": fields.function(
+            _ff_total_betas,
+            string="Betes extres (%) propera reobertura",
+            type="float",
+            method=True,
+            multi="betas",
+        ),
         "self_consumption_state": fields.function(
             _ff_get_self_consumption_fields,
             type="char",

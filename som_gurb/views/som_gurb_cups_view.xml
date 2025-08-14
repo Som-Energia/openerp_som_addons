@@ -57,6 +57,9 @@
                     <field name="beta_kw" select="2" />
                     <field name="extra_beta_kw" select="2" />
                     <field name="gift_beta_kw" select="2" />
+                    <field name="future_beta_kw" select="2" />
+                    <field name="future_extra_beta_kw" select="2" />
+                    <field name="future_gift_beta_kw" select="2" />
                     <field name="beta_percentage" select="2" />
                     <field name="partner_id" select="1" />
                     <field name="start_date" select="1" />

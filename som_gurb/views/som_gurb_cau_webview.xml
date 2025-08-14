@@ -17,6 +17,8 @@
                     <group colspan="2" string="Ocupació del GURB-CAU propera re-obertura" icon="hourglass-low">
                         <field name="future_assigned_betas_percentage" widget="indicator"
                         widget_props="{'card': true, 'suffix': '%%', 'icon': 'warning:value&lt;80;check:value&gt;79', 'color': 'red:value&lt;80;green:value&gt;79'}"/>
+                        <field name="future_extra_betas_percentage" widget="indicator"
+                        widget_props="{'card': true, 'suffix': '%%', 'icon': 'warning:value&gt;10;check:value&lt;5', 'color': 'red:value&gt;10;green:value&lt;5'}"/>
                     </group>
                 </xpath>
                 <xpath expr="//field[@name='history_box']" position="replace">
