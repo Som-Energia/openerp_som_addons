@@ -19,9 +19,6 @@
                         widget_props="{'card': true, 'suffix': '%%', 'icon': 'warning:value&lt;80;check:value&gt;79', 'color': 'red:value&lt;80;green:value&gt;79'}"/>
                     </group>
                 </xpath>
-                <xpath expr="//field[@name='history_box']" position="replace">
-                    <field name="history_box" colspan="4" height="600" nolabel="1" widget="markdown" />
-                </xpath>
             </field>
         </record>
     </data>
