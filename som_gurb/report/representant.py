@@ -17,11 +17,11 @@ class RepresentantGurbReport(report_int):
         gurb_cups_o = pool.get("som.gurb.cups")
         ir_attachment_o = pool.get("ir.attachment")
 
-        for gurb_id in ids:
+        for gurb_cau_id in ids:
             reports = []
 
             search_params = [
-                ("gurb_id", "=", gurb_id),
+                ("gurb_cau_id", "=", gurb_cau_id),
                 ("active", "=", True)
             ]
 

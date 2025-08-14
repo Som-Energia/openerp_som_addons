@@ -15,7 +15,7 @@
                         <field name="start_date" readonly="1" />
                         <field name="inscription_date" />
                         <field name="end_date" />
-                        <field name="gurb_id" />
+                        <field name="gurb_cau_id" />
                         <field name="beta_kw" />
                         <field name="extra_beta_kw" />
                         <field name="gift_beta_kw" />
@@ -57,6 +57,9 @@
                     <field name="beta_kw" select="2" />
                     <field name="extra_beta_kw" select="2" />
                     <field name="gift_beta_kw" select="2" />
+                    <field name="future_beta_kw" select="2" />
+                    <field name="future_extra_beta_kw" select="2" />
+                    <field name="future_gift_beta_kw" select="2" />
                     <field name="beta_percentage" select="2" />
                     <field name="partner_id" select="1" />
                     <field name="start_date" select="1" />
@@ -78,7 +81,7 @@
             <field name="type">tree</field>
             <field name="arch" type="xml">
                 <tree string="CUPS GURB" colors="red:active == False">
-                    <field name="gurb_id" select="1" />
+                    <field name="gurb_cau_id" select="1" />
                     <field name="cups_id" select="1" />
                     <field name="polissa_id" select="1" />
                     <field name="beta_kw" select="2" />

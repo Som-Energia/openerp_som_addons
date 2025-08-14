@@ -140,11 +140,13 @@ class TestsGurbCups(TestsGurbBase):
 
         gurb_cups_o.write(self.cursor, self.uid, gurb_cups_id, {"start_date": False})
         gurb_cups_beta_o.write(self.cursor, self.uid, gurb_cups_beta_id, {"future_beta": True})
+        gurb_cups_o.send_signal(self.cursor, self.uid, [gurb_cups_id], "button_create_cups")
         gurb_cups_o.activate_or_modify_gurb_cups(self.cursor, self.uid, gurb_cups_id, "2024-01-01")
 
         pol_id = gurb_cups_o.read(
             self.cursor, self.uid, gurb_cups_id, ["polissa_id"]
         )["polissa_id"][0]
+
         pol_br = pol_o.browse(self.cursor, self.uid, pol_id)
         gurb_cups_br = gurb_cups_o.browse(self.cursor, self.uid, gurb_cups_id)
         gurb_cups_beta_br = gurb_cups_beta_o.browse(self.cursor, self.uid, gurb_cups_id)
@@ -152,4 +154,5 @@ class TestsGurbCups(TestsGurbBase):
         self.assertEqual(len(pol_br.serveis), 1)
         self.assertEqual(pol_br.serveis[0].polissa_id.id, pol_id)
         self.assertEqual(gurb_cups_br.start_date, "2024-01-01")
+        self.assertEqual(gurb_cups_br.state, "active")
         self.assertEqual(gurb_cups_beta_br.future_beta, False)
