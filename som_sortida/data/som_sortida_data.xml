@@ -126,8 +126,7 @@ Hola${nom_titular}, tal com t’hem comunicat per email, et recordem que, si no 
 % else:
 Hola${nom_titular}, tal como te hemos comunicado por email, te recordamos que si no te asocias a Som Energia o vinculas tu contrato de luz a otra persona socia antes del ${data_enviament_cor}, no podremos renovarte el contrato, que pasará a la comercializadora de referencia. Si tienes dudas: info@somenergia.coop, 872202550. Saludos, Som Energia.\
 % endif
-]]>
-            </field>
+]]></field> <!-- This is needed to avoid extra spaces in the SMS -->
         </record>
     </data>
 </openerp>
