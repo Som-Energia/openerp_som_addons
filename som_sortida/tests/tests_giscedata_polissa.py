@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from destral import testing
+from datetime import datetime
 
 
 class TestsGiscedataPolissa(testing.OOTestCaseWithCursor):
@@ -29,7 +30,6 @@ class TestsGiscedataPolissa(testing.OOTestCaseWithCursor):
         uid = self.uid
         imd_obj = self.openerp.pool.get('ir.model.data')
         pol_obj = self.openerp.pool.get('giscedata.polissa')
-        self.openerp.pool.get('som.sortida.state')
 
         polissa_id = imd_obj.get_object_reference(
             cursor, uid, 'giscedata_polissa', 'polissa_0001'
@@ -59,3 +59,46 @@ class TestsGiscedataPolissa(testing.OOTestCaseWithCursor):
         hist_data = hist_obj.read(cursor, uid, hist_id, ['polissa_id'])
         self.assertEqual(hist_data[0]['polissa_id'][0], polissa_id,
                          "L'historial hauria de correspondre a la pòlissa correcta")
+
+    def test_gicedata_polissa_to_cor_date(self):
+        cursor = self.cursor
+        uid = self.uid
+        imd_obj = self.openerp.pool.get('ir.model.data')
+        pol_obj = self.openerp.pool.get('giscedata.polissa')
+
+        polissa_id = imd_obj.get_object_reference(
+            cursor, uid, 'giscedata_polissa', 'polissa_0001'
+        )[1]
+        estat_sense_socia = imd_obj.get_object_reference(
+            cursor, uid, 'som_sortida', 'enviar_cor_contrate_sense_socia_pending_state'
+        )[1]
+        estat_15d = imd_obj.get_object_reference(
+            cursor, uid, 'som_sortida', 'enviar_cor_falta_15_dies_pending_state'
+        )[1]
+        estat_enivat = imd_obj.get_object_reference(
+            cursor, uid, 'som_sortida', 'enviar_cor_enviat_cor_pending_state'
+        )[1]
+
+        pol_obj.set_pending(cursor, uid, polissa_id, estat_sense_socia, {
+            'custom_change_dates': {polissa_id: '2023-10-01'},
+        })
+        cor_submission_date = pol_obj.read(
+            cursor, uid, polissa_id, ['cor_submission_date']
+        )['cor_submission_date']
+        self.assertEqual(cor_submission_date, datetime(2024, 9, 30, 0, 0))
+
+        pol_obj.set_pending(cursor, uid, polissa_id, estat_15d, {
+            'custom_change_dates': {polissa_id: '2024-10-01'},
+        })
+        cor_submission_date = pol_obj.read(
+            cursor, uid, polissa_id, ['cor_submission_date']
+        )['cor_submission_date']
+        self.assertEqual(cor_submission_date, datetime(2024, 10, 16, 0, 0))
+
+        pol_obj.set_pending(cursor, uid, polissa_id, estat_enivat, {
+            'custom_change_dates': {polissa_id: '2024-11-01'},
+        })
+        cor_submission_date = pol_obj.read(
+            cursor, uid, polissa_id, ['cor_submission_date']
+        )['cor_submission_date']
+        self.assertEqual(cor_submission_date, datetime(2024, 11, 1, 0, 0))
