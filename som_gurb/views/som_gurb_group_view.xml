@@ -28,19 +28,6 @@
             <field name="type">form</field>
             <field name="arch" type="xml">
                 <form string="GURB GRUP">
-                    <!-- <group col="6" colspan="4" string="Estats" icon="123">
-                        <field name="state_date" colspan="1" />
-                        <field name="state" select="1" colspan="1" />
-                        <button string="Obrir GURB CAU" name="button_open" states="draft" type="workflow" confirm="Vols obrir el GURB CAU?" />
-                        <button string="Tancar primera obertura" name="button_close_first_opening" states="first_opening" type="workflow" confirm="Vols tancar la primera obertura del GURB CAU?" />
-                        <button string="Registrar" name="button_register" states="complete" type="workflow" confirm="Vols registar el GURB CAU?" />
-                        <button string="Tornar a primera obertura" name="button_first_reopening" states="incomplete" type="workflow" confirm="Vols tornar a la primera obertura?" />
-                        <button string="Tramitar" name="button_process" states="registered" type="workflow" confirm="Vols tramitar el GURB CAU?" />
-                        <button string="Activar" name="button_activate" states="in_process" type="workflow" confirm="Vols activar el GURB CAU?" />
-                        <button string="Reobrir" name="button_reopen_active_incomplete" states="active_inc" type="workflow" confirm="Vols reobrir el GURB CAU?" />
-                        <button string="Reobrir" name="button_reopen_active_critical_incomplete" states="active_crit_inc" type="workflow" confirm="Vols reobrir el GURB CAU?" />
-                        <button string="Tancar reobertura" name="button_close_reopening" states="reopened" type="workflow" confirm="Vols tancar la reobertura del GURB CAU?" />
-                    </group> -->
                     <group col="6" colspan="4" string="General" icon="building-cottage">
                         <field name="name" select="1" />
                         <field name="code" select="1" />
@@ -48,31 +35,11 @@
                         <field name="address_id" domain="[('partner_id','=', roof_owner_id)]" />
                         <field name="province" select="2" />
                         <field name="zip_code" select="2" />
-                        <!-- <field name="sig_data" /> -->
-                        <!-- <field name="logo" select="2" /> -->
                     </group>
                     <group col="6" colspan="4" string="Característiques" icon="tool">
                         <field name="critical_incomplete_state" />
-                        <field name="product_20_id" select="2" />
-                        <field name="product_30_id" select="2" />
-                        <field name="initial_product_id" />
-                        <field name="pricelist_id" />
-                        <field name="available_20_power" />
-                        <field name="avilable_30_power" />
                         <field name="generation_power"/>
-                        <field name="max_power_20" />
-                        <field name="min_power_20" />
-                        <field name="max_power_30" />
-                        <field name="min_power_30" />
                     </group>
-                    <!-- <group col="6" colspan="4" string="Autoconsum" icon="solar-panel">
-                        <field name="self_consumption_id" select="1" />
-                        <field name="self_consumption_state" />
-                        <field name="generation_power" select="1" />
-                        <field name="has_compensation" select="1" />
-                        <field name="self_consumption_start_date" />
-                        <field name="self_consumption_end_date" />
-                    </group> -->
                     <notebook colspan="4">
                         <page string="Betes (Tots els CAUs)" icon="beta">
                             <group colspan="4">
@@ -84,6 +51,19 @@
                             </group>
                             <separator string="CAUs del GURB Grup" colspan="4"/>
                             <field name="gurb_cau_ids" nolabel="1" colspan="4"/>
+                        </page>
+                        <page string="Preus i Topalls" icon="credit-card">
+                            <group col="6" colspan="4" string="Contractes 2.0" icon="home">
+                                <field name="min_power_20" />
+                                <field name="max_power_20" />
+                            </group>
+                            <group col="6" colspan="4" string="Contractes 3.0" icon="building-factory-2">
+                                <field name="min_power_30" />
+                                <field name="max_power_30" />
+                            </group>
+                            <group col="6" colspan="4" string="Llista de preus del Gurb Grup" icon="receipt">
+                                <field name="pricelist_id" nolabel="1"/>
+                            </group>
                         </page>
                         <page string="Observacions" icon="edit">
                             <separator string="Observacions sobre el GURB grup" colspan="4" icon="edit" />

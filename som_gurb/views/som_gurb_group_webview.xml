@@ -8,7 +8,7 @@
             <field name="model">som.gurb.group</field>
             <field name="type">form</field>
             <field name="arch" type="xml">
-                <xpath expr="//group[@string='Estats']" position="before">
+                <xpath expr="//group[@string='General']" position="before">
                     <group colspan="2" string="Ocupació del GURB grup actual" icon="hourglass-high">
                         <field name="assigned_gift_betas_percentage" widget="indicator"
                         widget_props="{'card': true, 'suffix': '%%', 'icon': 'warning:value&lt;80;check:value&gt;79', 'color': 'red:value&lt;80;green:value&gt;79'}"/>
