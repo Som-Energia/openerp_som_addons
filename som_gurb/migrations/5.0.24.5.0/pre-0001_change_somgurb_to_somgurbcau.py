@@ -17,6 +17,8 @@ def up(cursor, installed_version):
                                    ('som_gurb', 'max_power'),
                                    ('som_gurb', 'min_power')])
     oopgrade.rename_tables(cursor, [('som_gurb', 'som_gurb_cau')])
+    oopgrade.rename_models(cursor, [('som_gurb', 'som_gurb_cau')])
+    oopgrade.rename_columns(cursor, {'som_gurb_cups': [('gurb_id', 'gurb_cau_id')]})
 
     logger.info("NICE!! SERVERS UP!!")
 
