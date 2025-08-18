@@ -52,7 +52,7 @@
                             <separator string="CAUs del GURB Grup" colspan="4"/>
                             <field name="gurb_cau_ids" nolabel="1" colspan="4"/>
                         </page>
-                        <page string="Preus i Topalls" icon="credit-card">
+                        <page string="Preus i Topalls" icon="briefcase">
                             <group col="6" colspan="4" string="Contractes 2.0" icon="home">
                                 <field name="min_power_20" />
                                 <field name="max_power_20" />
