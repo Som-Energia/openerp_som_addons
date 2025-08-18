@@ -1,5 +1,5 @@
 <%page args="d" />
-<img src="https://oficinavirtual.somenergia.coop/static/front/img/logo.png" alt="Logo SomEnergia"  width="200px"><br />
+<img src="https://www.somenergia.coop/logo/logo_fosc.png" alt="Logo SomEnergia"  width="200px"><br />
 <h1>${_(u"INFORME TÈCNIC")}</h1>
     <br />
     ${_(u"<b>Contracte Som Energia:</b>")} ${d.contract_number}<br />
