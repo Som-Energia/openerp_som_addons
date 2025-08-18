@@ -20,6 +20,7 @@ polisses_correctes = []
 polisses_no_soci = []
 
 
+# Promocional is the same as ct ss, just used in this script
 def es_socia_promocional(socia_nif):
     """
     Check if the polissa is linked to a promotional socia.

@@ -16,8 +16,8 @@ class GiscedataPolissa(osv.osv):
 
     def create(self, cr, uid, vals, context=None):
         _id = super(GiscedataPolissa, self).create(cr, uid, vals, context=context)
-        vals = self.browse(cr, uid, _id)
-        if not vals.sortida_state_id:
+        polissa = self.browse(cr, uid, _id)
+        if not polissa.sortida_state_id:
             imd_obj = self.pool.get('ir.model.data')
             state_correcte_id = imd_obj.get_object_reference(
                 cr, uid, 'som_sortida', 'enviar_cor_correcte_pending_state'
@@ -25,15 +25,15 @@ class GiscedataPolissa(osv.osv):
             state_sense_socia_id = imd_obj.get_object_reference(
                 cr, uid, 'som_sortida', 'enviar_cor_contrate_sense_socia_pending_state'
             )[1]
-            if vals.soci and vals.soci_nif and not self._es_socia_promocional(
-                cr, uid, [], vals.soci_nif, context=context
+            if polissa.soci and polissa.soci_nif and not self._es_socia_ct_ss(
+                cr, uid, [], polissa.soci_nif, context=context
             ):
-                vals.sortida_state_id = state_correcte_id
+                polissa.sortida_state_id = state_correcte_id
             else:
-                vals.sortida_state_id = state_sense_socia_id
+                polissa.sortida_state_id = state_sense_socia_id
 
-        if not vals.sortida_history_ids and vals.sortida_state_id == state_sense_socia_id:
-            vals.sortida_history_ids = [
+        if not polissa.sortida_history_ids and polissa.sortida_state_id == state_sense_socia_id:
+            polissa.sortida_history_ids = [
                 (0, 0, {
                     'pending_state_id': state_sense_socia_id,
                     'change_date': datetime.now().strftime('%Y-%m-%d %H:%M:%S')
@@ -74,7 +74,7 @@ class GiscedataPolissa(osv.osv):
                     'sortida_state_id']
                 if not vals.get('soci', False) or \
                     (vals.get('soci', False) and not soci_nif) or \
-                    (soci_nif and not self._es_socia_promocional(
+                    (soci_nif and not self._es_socia_ct_ss(
                         cr, uid, [_id], soci_nif, context=context)
                      ):
                     if current_state_id != state_correcte_id:
@@ -93,41 +93,25 @@ class GiscedataPolissa(osv.osv):
 
         return super(GiscedataPolissa, self).write(cr, uid, ids, vals, context=context)
 
-    def _es_socia_promocional(self, cr, uid, ids, socia_nif, context=None):
+    def _es_socia_ct_ss(self, cr, uid, ids, socia_nif, context=None):
         """
-        Check if the polissa is linked to a promotional socia.
+        Check if the polissa is linked to a ct ss socia.
         :param socia_nif: NIF of the socia
-        :return: True if the socia is promotional, False otherwise
+        :return: True if the socia is in the ct ss, False otherwise
         """
         config_obj = self.pool.get('res.config')
-        nifs_promocionals = config_obj.get(cr, uid, 'llista_nifs_socia_promocional', '[]')
-        nifs_promocionals = json.loads(nifs_promocionals)
-        return socia_nif in nifs_promocionals
+        nifs_ct_ss = config_obj.get(cr, uid, 'llista_nifs_socia_ct_ss', '[]')
+        nifs_ct_ss = json.loads(nifs_ct_ss)
+        return socia_nif in nifs_ct_ss
 
-    def _get_initial_sortida_state(self, cr, uid, context=None):
-        """Get the initial state for a new sortida."""
-        imd_obj = self.pool.get('ir.model.data')
-        state_id = imd_obj.get_object_reference(
-            cr, uid, 'som_sortida', 'enviar_cor_correcte_pending_state'
-        )[1]
-
-        if state_id:
-            return state_id
-        else:
-            return False
-
-    def _get_socia_real_vinculada(self, cr, uid, ids, field_name, arg, context=None):
+    def _get_te_socia_real_vinculada(self, cr, uid, ids, field_name, arg, context=None):
         """Get the default value for 'te_socia_real_vinculada'."""
         res = dict.fromkeys(ids, True)
         pol_data = self.read(cr, uid, ids, ['soci', 'soci_nif'], context=context)
 
         for pol in pol_data:
-            if not pol['soci'] or not pol['soci_nif']:
-                res[pol['id']] = True
-            elif self._es_socia_promocional(cr, uid, ids, pol['soci_nif']):
+            if self._es_socia_ct_ss(cr, uid, ids, pol.get('soci_nif')):
                 res[pol['id']] = False
-            else:
-                res[pol['id']] = True
         return res
 
     def _get_en_process_de_sortida(self, cr, uid, ids, field_name, arg, context=None):
@@ -191,9 +175,9 @@ class GiscedataPolissa(osv.osv):
             help='Historial de sortides relacionades amb aquesta pòlissa',
         ),
         'te_socia_real_vinculada': fields.function(
-            _get_socia_real_vinculada, method=True, string='Sòcia real vinculada',
+            _get_te_socia_real_vinculada, method=True, string='Sòcia real vinculada',
             type="boolean", store=_STORE_SOCIA_VINCULADA,
-            help="Indica si la pòlissa té sòcia real vinculada o és promocional",
+            help="Indica si la pòlissa té sòcia real vinculada o és de la campanya CT SS",
         ),
         'en_process_de_sortida': fields.function(
             _get_en_process_de_sortida, method=True, string='En procés de sortida',
