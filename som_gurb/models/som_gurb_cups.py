@@ -217,29 +217,13 @@ class SomGurbCups(osv.osv):
     def get_polissa_gurb_cups(self, cursor, uid, gurb_cups_id, context=None):
         if context is None:
             context = {}
-
-        pol_o = self.pool.get("giscedata.polissa")
-
-        gurb_vals = self.read(cursor, uid, gurb_cups_id, ["cups_id", "gurb_cau_id", "owner_cups"])
-
-        search_params = [
-            ("state", "in", ["activa", "esborrany"]),
-            ("cups", "=", gurb_vals["cups_id"][0]),
-        ]
-        pol_ids = pol_o.search(cursor, uid, search_params, context=context, limit=1)
-
-        return pol_ids[0] if pol_ids else False
+        pol_id = self.read(cursor, uid, gurb_cups_id, ["polissa_id"])["polissa_id"]
+        return pol_id
 
     def get_titular_gurb_cups(self, cursor, uid, gurb_cups_id, context=None):
         if context is None:
             context = {}
-        pol_o = self.pool.get("giscedata.polissa")
-        pol_id = self.get_polissa_gurb_cups(cursor, uid, gurb_cups_id, context=context)
-        if not pol_id:
-            return False
-        partner_id = pol_o.read(cursor, uid, pol_id, ["titular"], context=context)
-        if partner_id:
-            partner_id = partner_id["titular"][0]
+        partner_id = self.read(cursor, uid, gurb_cups_id, ["partner_id"])["partner_id"][0]
         return partner_id
 
     def send_gurb_activation_email(self, cursor, uid, ids, context=None):
