@@ -37,19 +37,6 @@ class SomGurbCups(osv.osv):
     _rec_name = "cups_id"
     _description = _("CUPS en grup de generació urbana")
 
-    def create(self, cursor, uid, vals, context=None):
-        if context is None:
-            context = {}
-
-        gurb_cups_id = super(SomGurbCups, self).create(cursor, uid, vals, context=context)
-
-        if "cups_id" in vals:
-            gurb_cups_o = self.pool.get("som.gurb.cups")
-            polissa_id = gurb_cups_o.get_polissa_gurb_cups(cursor, uid, gurb_cups_id)
-            gurb_cups_o.write(cursor, uid, gurb_cups_id, {"polissa_id": polissa_id})
-
-        return gurb_cups_id
-
     def write(self, cursor, uid, ids, vals, context=None):
         if context is None:
             context = {}
