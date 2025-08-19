@@ -204,7 +204,7 @@ class SomGurbCups(osv.osv):
     def get_polissa_gurb_cups(self, cursor, uid, gurb_cups_id, context=None):
         if context is None:
             context = {}
-        pol_id = self.read(cursor, uid, gurb_cups_id, ["polissa_id"])["polissa_id"]
+        pol_id = self.read(cursor, uid, gurb_cups_id, ["polissa_id"])["polissa_id"][0]
         return pol_id
 
     def get_titular_gurb_cups(self, cursor, uid, gurb_cups_id, context=None):
@@ -324,6 +324,16 @@ class SomGurbCups(osv.osv):
 
         pol_id = self.get_polissa_gurb_cups(cursor, uid, gurb_cups_id, context=context)
         if not pol_id:
+            error_title = _("No hi ha pòlisses per aquest CUPS"),
+            error_info = _(
+                "El CUPS id {} no té pòlissa. No es pot afegir.".format(
+                    gurb_cups_vals["cups_id"][0]
+                )
+            )
+            raise osv.except_osv(error_title, error_info)
+
+        pol_state = polissa_o.read(cursor, uid, pol_id, ["state"], context=context)["state"]
+        if pol_state not in ["activa", "esborrany"]:
             error_title = _("No hi ha pòlisses actives o en esborrany per aquest CUPS"),
             error_info = _(
                 "El CUPS id {} no té pòlisses actives o en esborrany. No es pot afegir.".format(
