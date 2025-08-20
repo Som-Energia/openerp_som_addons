@@ -325,5 +325,38 @@ class GiscedataPolissa(osv.osv):
                 result[id] = False
         return result
 
+    def request_submission_to_cor(self, cursor, uid, pol_id, context=None):
+        """
+        Request the submission of the polissa to the COR.
+        :param pol_id: id of the polissa to submit
+        :return: ATR case ID
+        """
+        if context is None:
+            context = {}
+        polissa_obj = self.pool.get("giscedata.polissa")
+
+        polissa = polissa_obj.browse(cursor, uid, pol_id, context=context)
+
+        ctx = context.copy()
+        ctx.update({"sector": "energia"})
+        data_accio = datetime.today()
+
+        config = dict(
+            data_accio=data_accio.strftime("%Y-%m-%d"),
+            motiu="02",
+            activacio="A",
+            phone_pre="0034",  # FIXME: Use new ERP prefixes when available
+            phone_num=polissa.titular.address[0].phone,
+        )
+        res = polissa_obj.crear_cas_atr(cursor, uid, pol_id, "B1", config, context=ctx)
+
+        sw_id = res[2]
+        if not sw_id:
+            raise osv.except_osv(
+                "Error!", "Polissa {}: {}".format(polissa.name, res[1])
+            )
+
+        return sw_id
+
 
 GiscedataPolissa()

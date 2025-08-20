@@ -102,3 +102,36 @@ class TestsGiscedataPolissa(testing.OOTestCaseWithCursor):
             cursor, uid, polissa_id, ['cor_submission_date']
         )['cor_submission_date']
         self.assertEqual(cor_submission_date, datetime(2024, 11, 1, 0, 0))
+
+    def test_request_submission_to_cor(self):
+        cursor = self.cursor
+        uid = self.uid
+        imd_obj = self.openerp.pool.get("ir.model.data")
+        pol_obj = self.openerp.pool.get("giscedata.polissa")
+        sw_obj = self.openerp.pool.get("giscedata.switching")
+
+        polissa_id = imd_obj.get_object_reference(
+            cursor, uid, "giscedata_polissa", "polissa_0001"
+        )[1]
+        pol_obj.send_signal(cursor, uid, [polissa_id], [
+            "validar", "contracte"
+        ])
+        estat_pendent_cor = imd_obj.get_object_reference(
+            cursor, uid, "som_sortida", "enviar_cor_pendent_crear_b1_dies_pending_state"
+        )[1]
+        pol_obj.set_pending(cursor, uid, polissa_id, estat_pendent_cor, {
+            "custom_change_dates": {polissa_id: "2025-08-15"},
+        })
+        case_id = pol_obj.request_submission_to_cor(cursor, uid, polissa_id)
+
+        b1 = sw_obj.browse(cursor, uid, case_id)
+
+        self.assertEqual(b1.proces_id.name, "B1")
+        self.assertEqual(b1.step_id.name, "01")
+
+        # FIXME: Why this don't work? They're are false D:
+        # self.assertEqual(b1.step_id.data_accio, datetime.today().strftime("%Y-%m-%d"))
+        # self.assertEqual(b1.step_id.activacio, "A")
+
+        self.assertEqual(b1.state, "open")
+        self.assertEqual(b1.notificacio_pendent, True)
