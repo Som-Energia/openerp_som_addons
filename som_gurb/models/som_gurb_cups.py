@@ -108,9 +108,9 @@ class SomGurbCups(osv.osv):
                 )["generation_power"]
 
                 if generation_power:
-                    beta_kw = gurb_cups_vals.get("beta_kw", 0)
-                    extra_beta_kw = gurb_cups_vals.get("extra_beta_kw", 0)
-                    gift_beta_kw = gurb_cups_vals.get("gift_beta_kw", 0)
+                    beta_kw = gurb_cups_vals.get("future_beta_kw", 0)
+                    extra_beta_kw = gurb_cups_vals.get("future_extra_beta_kw", 0)
+                    gift_beta_kw = gurb_cups_vals.get("future_gift_beta_kw", 0)
                     res[gurb_cups_vals["id"]] = (
                         extra_beta_kw + beta_kw + gift_beta_kw) * 100 / generation_power
                 else:
