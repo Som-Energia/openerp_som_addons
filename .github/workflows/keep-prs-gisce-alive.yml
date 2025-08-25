@@ -2,8 +2,8 @@ name: Keep PRs alive
 
 on:
   schedule:
-    # Cada 60 dies
-    - cron: "0 3 */60 * *"
+    # Cada 91 dies
+    - cron: "0 3 */91 * *"
   workflow_dispatch:
 
 jobs:
@@ -44,7 +44,7 @@ jobs:
 
                 # Afegir comentari
                 curl -s -X POST -H "Authorization: token $TOKEN" \
-                  -d '{"body":"👋 Encara vigent"}' \
+                  -d '{"body":"👋 Encara vigent @egarciadiaz "}' \
                   "$API/issues/$pr/comments" > /dev/null
 
                 # Treure etiqueta 'Stale'
