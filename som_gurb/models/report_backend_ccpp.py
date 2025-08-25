@@ -37,8 +37,8 @@ class ReportBackendCondicionsParticulars(ReportBackend):
         gurb_cups_id = gurb_cups_obj.search(cursor, uid, [("cups_id", "=", pol.cups.id)])
         if gurb_cups_id:
             gurb_cups_br = gurb_cups_obj.browse(cursor, uid, gurb_cups_id[0])
-            initial_product_id = gurb_cups_br.gurb_id.initial_product_id.id
-            grub_pricelist_id = gurb_cups_br.gurb_id.pricelist_id.id
+            initial_product_id = gurb_cups_br.gurb_cau_id.initial_product_id.id
+            grub_pricelist_id = gurb_cups_br.gurb_cau_id.pricelist_id.id
 
             initial_product_price = pricelist_obj.price_get(
                 cursor,
@@ -65,14 +65,14 @@ class ReportBackendCondicionsParticulars(ReportBackend):
                 "day": datetime.now().day,
                 "month": str(datetime.now().month).zfill(2),
                 "year": datetime.now().year,
-                "cau": gurb_cups_browse.gurb_id.self_consumption_id.cau,
+                "cau": gurb_cups_browse.gurb_cau_id.self_consumption_id.cau,
                 "beta_kw": gurb_cups_browse.beta_kw,
                 "beta_percentage": gurb_cups_browse.beta_percentage,
                 "is_enterprise": partner_obj.is_enterprise_vat(pol.titular.vat)
             }
 
             res = {
-                "nom": gurb_cups_br.gurb_id.name,
+                "nom": gurb_cups_br.gurb_cau_id.name,
                 "cost": float_round(initial_product_price_with_taxes, 2),
                 "potencia": gurb_cups_br.beta_kw,
                 "quota": 0.35,  # TODO: Use pricelist

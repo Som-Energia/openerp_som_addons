@@ -1,26 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <openerp>
     <data>
-        <record model="ir.ui.view" id="webview_gurbs_form">
+        <record model="ir.ui.view" id="webview_gurbs_group_form">
             <field name="name">som.gurb.form</field>
-            <field name="inherit_id" ref="view_gurbs_form"/>
+            <field name="inherit_id" ref="view_gurb_groups_form"/>
             <field name="version" eval="2"/>
-            <field name="model">som.gurb</field>
+            <field name="model">som.gurb.group</field>
             <field name="type">form</field>
             <field name="arch" type="xml">
-                <xpath expr="//group[@string='Estats']" position="before">
-                    <group colspan="2" string="Ocupació del GURB-CAU actual" icon="hourglass-high">
+                <xpath expr="//group[@string='General']" position="before">
+                    <group colspan="2" string="Ocupació del GURB grup actual" icon="hourglass-high">
                         <field name="assigned_gift_betas_percentage" widget="indicator"
                         widget_props="{'card': true, 'suffix': '%%', 'icon': 'warning:value&lt;80;check:value&gt;79', 'color': 'red:value&lt;80;green:value&gt;79'}"/>
                         <field name="extra_betas_percentage" widget="indicator" widget_props="{'card': true, 'suffix': '%%', 'icon': 'warning:value&gt;10;check:value&lt;5', 'color': 'red:value&gt;10;green:value&lt;5'}" />
                     </group>
-                    <group colspan="2" string="Ocupació del GURB-CAU propera re-obertura" icon="hourglass-low">
+                    <group colspan="2" string="Ocupació del GURB grup propera re-obertura" icon="hourglass-low">
                         <field name="future_assigned_betas_percentage" widget="indicator"
                         widget_props="{'card': true, 'suffix': '%%', 'icon': 'warning:value&lt;80;check:value&gt;79', 'color': 'red:value&lt;80;green:value&gt;79'}"/>
                     </group>
-                </xpath>
-                <xpath expr="//field[@name='history_box']" position="replace">
-                    <field name="history_box" colspan="4" height="600" nolabel="1" widget="markdown" />
                 </xpath>
             </field>
         </record>

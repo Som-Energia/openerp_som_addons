@@ -3,13 +3,15 @@
     <data>
         <record id="gurb_cups_0001" model="som.gurb.cups">
             <field name="start_date">2016-01-01</field>
-            <field name="gurb_id" ref="gurb_0001" />
+            <field name="gurb_cau_id" ref="gurb_cau_0001" />
             <field name="cups_id" ref="giscedata_cups.cups_01" />
+            <field name="polissa_id" ref="giscedata_polissa.polissa_0001" />
         </record>
         <record id="gurb_cups_0002" model="som.gurb.cups">
             <field name="start_date">2016-01-01</field>
-            <field name="gurb_id" ref="gurb_0001" />
+            <field name="gurb_cau_id" ref="gurb_cau_0001" />
             <field name="cups_id" ref="giscedata_cups.cups_tarifa_018" />
+            <field name="polissa_id" ref="giscedata_polissa.polissa_tarifa_018" />
         </record>
         <record id="gurb_cups_beta_0001" model="som.gurb.cups.beta">
             <field name="active">True</field>

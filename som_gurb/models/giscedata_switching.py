@@ -342,7 +342,7 @@ class GiscedataSwitchingM1_05(osv.osv):
         )
 
         sw_obj = self.pool.get("giscedata.switching")
-        gurb_obj = self.pool.get("som.gurb")
+        gurb_obj = self.pool.get("som.gurb.cau")
         sgc_obj = self.pool.get("som.gurb.cups")
         step_m101_obj = self.pool.get("giscedata.switching.m1.01")
         sw_step_header_obj = self.pool.get("giscedata.switching.step.header")
@@ -525,7 +525,7 @@ class GiscedataSwitchingHelpers(osv.osv):
         if context is None:
             context = {}
 
-        gurb_obj = self.pool.get("som.gurb")
+        gurb_obj = self.pool.get("som.gurb.cau")
         sw_step_header_obj = self.pool.get("giscedata.switching.step.header")
         sw_obj = self.pool.get("giscedata.switching")
 
@@ -561,7 +561,7 @@ class GiscedataSwitchingHelpers(osv.osv):
 
         sw_obj = self.pool.get('giscedata.switching')
         sw_step_header_obj = self.pool.get("giscedata.switching.step.header")
-        gurb_obj = self.pool.get("som.gurb")
+        gurb_obj = self.pool.get("som.gurb.cau")
 
         res = super(GiscedataSwitchingHelpers, self).m105_acord_repartiment_autoconsum(
             cursor, uid, sw_id, context=context
@@ -605,7 +605,7 @@ class GiscedataSwitchingM2_05(osv.osv):
         )
 
         sw_obj = self.pool.get("giscedata.switching")
-        gurb_obj = self.pool.get("som.gurb")
+        gurb_obj = self.pool.get("som.gurb.cau")
         gurb_cups_obj = self.pool.get("som.gurb.cups")
         sw_step_header_obj = self.pool.get("giscedata.switching.step.header")
         sw = sw_obj.browse(cursor, uid, sw_id, context=context)
