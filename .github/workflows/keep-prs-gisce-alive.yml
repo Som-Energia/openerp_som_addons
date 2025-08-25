@@ -32,8 +32,9 @@ jobs:
               break
             fi
 
-            prs=$(echo "$pulls" | jq -r '.[] | select(.user.login=="oriolpiera" or .user.login=="FranciscoCubero" or .user.login=="PauBoix"  or .user.login=="xavierteres"  or .user.login=="XavierBonetViura"  or .user.login=="DCa23"  or .user.login=="susu105" or .user.login=="MariteSomEnergia"  or .user.login=="samuelpedrajas"  ) ) | .number')
-
+            prs=$(echo "$pulls" | jq -r '
+              .[] | select(.user.login as $u | ["oriolpiera","FranciscoCubero","PauBoix","xavierteres","XavierBonetViura","DCa23","susu105","MariteSomEnergia","samuelpedrajas"] | index($u)) | .number
+            ')
             for pr in $prs; do
               echo "Comprovant PR #$pr"
               issue=$(curl -s -H "Authorization: token $TOKEN" "$API/issues/$pr")
