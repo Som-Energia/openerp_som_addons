@@ -349,7 +349,7 @@ class GiscedataCrmLead(osv.OsvInherits):
 
         return lead_id
 
-    @job(queue="poweremail_>sender")
+    @job(queue="poweremail_sender")
     def _send_mail_async(self, cr, uid, lead_id, context=None):
         self._send_mail(cr, uid, lead_id, context=context)
 
