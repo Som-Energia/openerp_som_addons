@@ -12,7 +12,7 @@ jobs:
     steps:
       - name: Ping and un-stale PRs
         env:
-          GITHUB_TOKEN: ${{ secrets.ERP_PAT }}
+          GITHUB_TOKEN: ${{ secrets.ACCESS_TOKEN_GA }}
         run: |
           REPO="gisce/erp"
           TOKEN="$GITHUB_TOKEN"
