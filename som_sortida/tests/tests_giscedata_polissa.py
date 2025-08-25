@@ -127,11 +127,10 @@ class TestsGiscedataPolissa(testing.OOTestCaseWithCursor):
         b1 = sw_obj.browse(cursor, uid, case_id)
 
         self.assertEqual(b1.proces_id.name, "B1")
-        self.assertEqual(b1.step_id.name, "01")
-
-        # FIXME: Why this don't work? They're are false D:
-        # self.assertEqual(b1.step_id.data_accio, datetime.today().strftime("%Y-%m-%d"))
-        # self.assertEqual(b1.step_id.activacio, "A")
-
         self.assertEqual(b1.state, "open")
         self.assertEqual(b1.notificacio_pendent, True)
+        self.assertEqual(b1.step_id.name, "01")
+
+        b101 = sw_obj.get_pas(cursor, uid, b1)
+        self.assertEqual(b101.data_accio, datetime.today().strftime("%Y-%m-%d"))
+        self.assertEqual(b101.activacio, "A")
