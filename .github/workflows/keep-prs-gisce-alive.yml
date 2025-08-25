@@ -2,8 +2,8 @@ name: Keep PRs alive
 
 on:
   schedule:
-    # Cada 91 dies
-    - cron: "0 3 */91 * *"
+    # Cada 90 dies
+    - cron: "0 3 */90 * *"
   workflow_dispatch:
 
 jobs:
@@ -32,7 +32,7 @@ jobs:
               break
             fi
 
-            prs=$(echo "$pulls" | jq -r '.[] | select(.user.login=="oriolpiera" or .user.login=="FranciscoCubero") | .number')
+            prs=$(echo "$pulls" | jq -r '.[] | select(.user.login=="oriolpiera" or .user.login=="FranciscoCubero" or .user.login=="PauBoix"  or .user.login=="xavierteres"  or .user.login=="XavierBonetViura"  or .user.login=="DCa23"  or .user.login=="susu105" or .user.login=="MariteSomEnergia"  or .user.login=="samuelpedrajas"  ) ) | .number')
 
             for pr in $prs; do
               echo "Comprovant PR #$pr"
