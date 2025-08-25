@@ -2,7 +2,7 @@ name: Keep PRs alive
 
 on:
   schedule:
-    # Cada 85 dies aprox. (segurament vols una mica menys, per exemple cada 60 dies)
+    # Cada 60 dies (millor marge que 85/90)
     - cron: "0 3 */60 * *"
   workflow_dispatch:
 
@@ -18,27 +18,39 @@ jobs:
           TOKEN="$GITHUB_TOKEN"
           API="https://api.github.com/repos/$REPO"
 
-          # Buscar pulls (PRs) obertes amb label 'Stale'
+          # Buscar totes les PRs obertes (100 per pàgina)
           pulls=$(curl -s -H "Authorization: token $TOKEN" \
-            "$API/pulls?state=open&labels=Stale")
+            "$API/pulls?state=open&per_page=100")
 
-          # Filtrar només PRs de dos usuaris
+          # Filtrar només les PRs d'aquests usuaris
           prs=$(echo "$pulls" | jq -r '.[] | select(.user.login=="oriolpiera" or .user.login=="FranciscoCubero") | .number')
 
           if [ -z "$prs" ]; then
-            echo "Cap PR stale trobada d'aquests usuaris."
+            echo "No hi ha PRs obertes d'aquests usuaris."
             exit 0
           fi
 
           for pr in $prs; do
-            echo "Comentant i traient 'Stale' de la PR #$pr"
+            echo "Comprovant PR #$pr"
 
-            # Afegir comentari
-            curl -s -X POST -H "Authorization: token $TOKEN" \
-              -d '{"body":"👋 Encara vigent"}' \
-              "$API/pulls/$pr/comments" > /dev/null
+            # Obtenir informació de la PR com a issue (aquí sí hi ha labels)
+            issue=$(curl -s -H "Authorization: token $TOKEN" \
+              "$API/issues/$pr")
 
-            # Treure etiqueta 'Stale'
-            curl -s -X DELETE -H "Authorization: token $TOKEN" \
-              "$API/pulls/$pr/labels/Stale" > /dev/null
+            has_stale=$(echo "$issue" | jq -r '.labels[]?.name' | grep -x "Stale" || true)
+
+            if [ -n "$has_stale" ]; then
+              echo " -> PR #$pr té label Stale. Afegint comentari i eliminant label."
+
+              # Afegir comentari
+              curl -s -X POST -H "Authorization: token $TOKEN" \
+                -d '{"body":"👋 Encara vigent"}' \
+                "$API/issues/$pr/comments" > /dev/null
+
+              # Treure etiqueta 'Stale'
+              curl -s -X DELETE -H "Authorization: token $TOKEN" \
+                "$API/issues/$pr/labels/Stale" > /dev/null
+            else
+              echo " -> PR #$pr no té label Stale."
+            fi
           done
