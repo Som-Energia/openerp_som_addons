@@ -28,7 +28,6 @@ _REQUIRED_FIRST_OPENING_FIELDS = [
     "zip_code",
     "roof_owner_id",
     "pricelist_id",
-    "critical_incomplete_state",
     "generation_power",
     "pricelist_id",
 ]
@@ -383,7 +382,6 @@ class SomGurbCau(osv.osv):
         "state": fields.selection(_GURB_STATES, "Estat del GURB CAU", readonly=True),
         "state_date": fields.date("Data activació estat", readonly=True),
         "gurb_cups_ids": fields.one2many("som.gurb.cups", "gurb_cau_id", "Betes", readonly=False),
-        "critical_incomplete_state": fields.integer("Estat crític incomplet (%)"),
         "notes": fields.text("Observacions"),
         "history_box": fields.text("Històric del GURB CAU", readonly=True),
         "has_compensation": fields.boolean("Amb compensació"),  # Selection?
