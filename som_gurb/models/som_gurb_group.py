@@ -191,7 +191,7 @@ class SomGurbGroup(osv.osv):
         "pricelist_id": fields.many2one("product.pricelist", "Preus del GURB grup"),
         "generation_power": fields.function(
             _ff_total_betas,
-            string="Potència de generació",
+            string="Potència de generació total (kW)",
             type="float",
             method=True,
             multi="betas",
