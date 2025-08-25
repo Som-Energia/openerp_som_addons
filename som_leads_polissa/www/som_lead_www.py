@@ -4,7 +4,6 @@ import sys
 from osv import osv
 import yaml
 import copy
-from oorq.decorators import job
 
 from som_leads_polissa.giscedata_crm_lead import WWW_DATA_FORM_HEADER
 from giscedata_cups.giscedata_cups import get_dso
@@ -217,9 +216,9 @@ class SomLeadWww(osv.osv_memory):
         lead_o.stage_next(cr, uid, [lead_id], context=context)
 
         if context.get('sync'):
-            self._send_mail(cr, uid, lead_id, context=context)
+            lead_o._send_mail(cr, uid, lead_id, context=context)
         else:
-            self._send_mail_async(cr, uid, lead_id, context=context)
+            lead_o._send_mail_async(cr, uid, lead_id, context=context)
 
         return True
 
@@ -338,44 +337,6 @@ class SomLeadWww(osv.osv_memory):
                 "INVALID_MEMBER",
                 "Member has been not found: {} not match with VAT {}".format(number, vat)
             )
-
-    @job(queue="poweremail_sender")
-    def _send_mail_async(self, cr, uid, lead_id, context=None):
-        self._send_mail(cr, uid, lead_id, context=context)
-
-    def _send_mail(self, cr, uid, lead_id, context=None):
-        if context is None:
-            context = {}
-
-        lead_o = self.pool.get("giscedata.crm.lead")
-        ir_model_o = self.pool.get('ir.model.data')
-        template_o = self.pool.get('poweremail.templates')
-
-        lead = lead_o.read(cr, uid, lead_id, ['create_new_member', 'polissa_id'], context=context)
-
-        template_name = "email_contracte_esborrany"
-        if lead["create_new_member"]:
-            template_name = "email_contracte_esborrany_nou_soci"
-        template_id = ir_model_o.get_object_reference(cr, uid, 'som_polissa_soci', template_name)[1]
-
-        polissa_id = lead["polissa_id"][0]
-        from_id = template_o.read(cr, uid, template_id)['enforce_from_account'][0]
-
-        wiz_send_obj = self.pool.get("poweremail.send.wizard")
-        context.update({
-            "active_ids": [polissa_id],
-            "active_id": polissa_id,
-            "template_id": template_id,
-            "src_model": "giscedata.polissa",
-            "src_rec_ids": [polissa_id],
-            "from": from_id,
-            "state": "single",
-            "priority": "0",
-        })
-
-        params = {"state": "single", "priority": "0", "from": context["from"]}
-        wiz_id = wiz_send_obj.create(cr, uid, params, context)
-        return wiz_send_obj.send_mail(cr, uid, [wiz_id], context)
 
 
 SomLeadWww()
