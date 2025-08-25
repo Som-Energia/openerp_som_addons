@@ -334,8 +334,26 @@ class GiscedataPolissa(osv.osv):
         if context is None:
             context = {}
         polissa_obj = self.pool.get("giscedata.polissa")
+        sw_obj = self.pool.get("giscedata.switching")
 
         polissa = polissa_obj.browse(cursor, uid, pol_id, context=context)
+
+        has_open_atr_cases = bool(sw_obj.search(
+            cursor, uid, [
+                ("cups_polissa_id", "=", polissa.id),
+                ("state", "in", ["draft", "open", "pending"]),
+            ]
+        ))
+
+        if (
+            polissa.te_socia_real_vinculada
+            or not polissa.state == 'activa'
+            or polissa.unpaid_invoices > 0
+            or has_open_atr_cases
+        ):
+            raise osv.except_osv(
+                "Error!", "La polissa {} no és enviable a la COR".format(polissa.name)
+            )
 
         ctx = context.copy()
         ctx.update({"sector": "energia"})

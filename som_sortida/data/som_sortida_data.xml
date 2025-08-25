@@ -4,7 +4,7 @@
         <record model="res.config" id="config_llista_nifs_socia_ct_ss">
             <field name="description">Llista de NIFs de sòcies de la campanya CT SS de 1 any de durada</field>
             <field name="name">llista_nifs_socia_ct_ss</field>
-            <field name="value">["99999998T"]</field>
+            <field name="value">["ES99999998T"]</field>
         </record>
         <!-- Estats del flux de sortida -->
         <record model="account.invoice.pending.state.process" id="enviar_cor_state_process">

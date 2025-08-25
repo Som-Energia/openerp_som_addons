@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from osv import osv
 from destral import testing
 from datetime import datetime
 
@@ -116,6 +117,12 @@ class TestsGiscedataPolissa(testing.OOTestCaseWithCursor):
         pol_obj.send_signal(cursor, uid, [polissa_id], [
             "validar", "contracte"
         ])
+
+        partner_soci_id = imd_obj.get_object_reference(
+            cursor, uid, 'som_polissa_soci', 'res_partner_soci_ct'
+        )[1]
+        pol_obj.write(cursor, uid, [polissa_id], {'soci': partner_soci_id})
+
         estat_pendent_cor = imd_obj.get_object_reference(
             cursor, uid, "som_sortida", "enviar_cor_pendent_crear_b1_dies_pending_state"
         )[1]
@@ -134,3 +141,34 @@ class TestsGiscedataPolissa(testing.OOTestCaseWithCursor):
         b101 = sw_obj.get_pas(cursor, uid, b1)
         self.assertEqual(b101.data_accio, datetime.today().strftime("%Y-%m-%d"))
         self.assertEqual(b101.activacio, "A")
+
+    def test_request_submission_to_cor_not_possible(self):
+        cursor = self.cursor
+        uid = self.uid
+        imd_obj = self.openerp.pool.get("ir.model.data")
+        pol_obj = self.openerp.pool.get("giscedata.polissa")
+
+        polissa_id = imd_obj.get_object_reference(
+            cursor, uid, "giscedata_polissa", "polissa_0001"
+        )[1]
+        pol_obj.send_signal(cursor, uid, [polissa_id], [
+            "validar", "contracte"
+        ])
+
+        partner_soci_id = imd_obj.get_object_reference(
+            cursor, uid, 'som_polissa_soci', 'res_partner_soci_ct'
+        )[1]
+        pol_obj.write(cursor, uid, [polissa_id], {'soci': partner_soci_id})
+
+        estat_pendent_cor = imd_obj.get_object_reference(
+            cursor, uid, "som_sortida", "enviar_cor_pendent_crear_b1_dies_pending_state"
+        )[1]
+        pol_obj.set_pending(cursor, uid, polissa_id, estat_pendent_cor, {
+            "custom_change_dates": {polissa_id: "2025-08-15"},
+        })
+
+        # With an open ATR case it can't be submitted to COR
+        pol_obj.crear_cas_atr(cursor, uid, polissa_id, proces="M1")
+
+        with self.assertRaises(osv.except_osv):
+            pol_obj.request_submission_to_cor(cursor, uid, polissa_id)
