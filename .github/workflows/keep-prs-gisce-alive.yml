@@ -2,7 +2,7 @@ name: Keep PRs alive
 
 on:
   schedule:
-    # Cada 60 dies (millor marge que 85/90)
+    # Cada 60 dies
     - cron: "0 3 */60 * *"
   workflow_dispatch:
 
@@ -18,39 +18,44 @@ jobs:
           TOKEN="$GITHUB_TOKEN"
           API="https://api.github.com/repos/$REPO"
 
-          # Buscar totes les PRs obertes (100 per pàgina)
-          pulls=$(curl -s -H "Authorization: token $TOKEN" \
-            "$API/pulls?state=open&per_page=100")
+          page=1
+          found=0
 
-          # Filtrar només les PRs d'aquests usuaris
-          prs=$(echo "$pulls" | jq -r '.[] | select(.user.login=="oriolpiera" or .user.login=="FranciscoCubero") | .number')
+          while :; do
+            echo "Descarregant pàgina $page de PRs..."
+            pulls=$(curl -s -H "Authorization: token $TOKEN" \
+              "$API/pulls?state=open&per_page=100&page=$page")
 
-          if [ -z "$prs" ]; then
-            echo "No hi ha PRs obertes d'aquests usuaris."
-            exit 0
-          fi
-
-          for pr in $prs; do
-            echo "Comprovant PR #$pr"
-
-            # Obtenir informació de la PR com a issue (aquí sí hi ha labels)
-            issue=$(curl -s -H "Authorization: token $TOKEN" \
-              "$API/issues/$pr")
-
-            has_stale=$(echo "$issue" | jq -r '.labels[]?.name' | grep -x "Stale" || true)
-
-            if [ -n "$has_stale" ]; then
-              echo " -> PR #$pr té label Stale. Afegint comentari i eliminant label."
-
-              # Afegir comentari
-              curl -s -X POST -H "Authorization: token $TOKEN" \
-                -d '{"body":"👋 Encara vigent"}' \
-                "$API/issues/$pr/comments" > /dev/null
-
-              # Treure etiqueta 'Stale'
-              curl -s -X DELETE -H "Authorization: token $TOKEN" \
-                "$API/issues/$pr/labels/Stale" > /dev/null
-            else
-              echo " -> PR #$pr no té label Stale."
+            count=$(echo "$pulls" | jq '. | length')
+            if [ "$count" -eq 0 ]; then
+              echo "No queden més PRs."
+              break
             fi
+
+            prs=$(echo "$pulls" | jq -r '.[] | select(.user.login=="oriolpiera" or .user.login=="FranciscoCubero") | .number')
+
+            for pr in $prs; do
+              echo "Comprovant PR #$pr"
+              issue=$(curl -s -H "Authorization: token $TOKEN" "$API/issues/$pr")
+              has_stale=$(echo "$issue" | jq -r '.labels[]?.name' | grep -x "Stale" || true)
+
+              if [ -n "$has_stale" ]; then
+                echo " -> PR #$pr té label Stale. Afegint comentari i eliminant label."
+
+                # Afegir comentari
+                curl -s -X POST -H "Authorization: token $TOKEN" \
+                  -d '{"body":"👋 Encara vigent"}' \
+                  "$API/issues/$pr/comments" > /dev/null
+
+                # Treure etiqueta 'Stale'
+                curl -s -X DELETE -H "Authorization: token $TOKEN" \
+                  "$API/issues/$pr/labels/Stale" > /dev/null
+
+                found=$((found+1))
+              fi
+            done
+
+            page=$((page+1))
           done
+
+          echo "Processades $found PRs amb label Stale d'aquests usuaris."
