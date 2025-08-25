@@ -53,9 +53,6 @@
                     </group>
                     <group col="6" colspan="4" string="Característiques" icon="tool">
                         <field name="activation_date" select="1" />
-                        <field name="pricelist_id" select="2" />
-                        <field name="initial_product_id" />
-                        <field name="quota_product_id" />
                         <field name="cil" />
                         <field name="producer" />
                         <field name="gurb_group_id" />

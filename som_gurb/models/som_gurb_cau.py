@@ -27,9 +27,7 @@ _REQUIRED_FIRST_OPENING_FIELDS = [
     "province",
     "zip_code",
     "roof_owner_id",
-    "pricelist_id",
     "generation_power",
-    "pricelist_id",
 ]
 
 
@@ -500,9 +498,6 @@ class SomGurbCau(osv.osv):
             type="one2many",
             relation="ir.attachment"
         ),
-        "pricelist_id": fields.many2one("product.pricelist", "Preus del GURB CAU"),
-        "initial_product_id": fields.many2one("product.product", "Producte quota inicial"),
-        "quota_product_id": fields.many2one("product.product", "Producte base quota mensual"),
         "gurb_group_id": fields.many2one(
             "som.gurb.group", "GURB grup", required=True, ondelete="cascade"),
     }
