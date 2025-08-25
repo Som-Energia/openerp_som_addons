@@ -18,12 +18,12 @@ jobs:
           TOKEN="$GITHUB_TOKEN"
           API="https://api.github.com/repos/$REPO"
 
-          # Buscar issues (PRs) obertes amb label 'Stale'
-          issues=$(curl -s -H "Authorization: token $TOKEN" \
-            "$API/issues?state=open&labels=Stale")
+          # Buscar pulls (PRs) obertes amb label 'Stale'
+          pulls=$(curl -s -H "Authorization: token $TOKEN" \
+            "$API/pulls?state=open&labels=Stale")
 
           # Filtrar només PRs de dos usuaris
-          prs=$(echo "$issues" | jq -r '.[] | select(.user.login=="oriolpiera" or .user.login=="FranciscoCubero") | .number')
+          prs=$(echo "$pulls" | jq -r '.[] | select(.user.login=="oriolpiera" or .user.login=="FranciscoCubero") | .number')
 
           if [ -z "$prs" ]; then
             echo "Cap PR stale trobada d'aquests usuaris."
@@ -36,9 +36,9 @@ jobs:
             # Afegir comentari
             curl -s -X POST -H "Authorization: token $TOKEN" \
               -d '{"body":"👋 Encara vigent"}' \
-              "$API/issues/$pr/comments" > /dev/null
+              "$API/pulls/$pr/comments" > /dev/null
 
             # Treure etiqueta 'Stale'
             curl -s -X DELETE -H "Authorization: token $TOKEN" \
-              "$API/issues/$pr/labels/Stale" > /dev/null
+              "$API/pulls/$pr/labels/Stale" > /dev/null
           done
