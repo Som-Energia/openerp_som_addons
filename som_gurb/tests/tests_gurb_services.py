@@ -183,7 +183,8 @@ class TestsGurbServices(TestsGurbBase):
         fact_services_o = self.openerp.pool.get("giscedata.facturacio.services")
         fact_o = self.openerp.pool.get("giscedata.facturacio.factura")
         gurb_cups_o = self.openerp.pool.get("som.gurb.cups")
-        gurb_o = self.openerp.pool.get("som.gurb.cau")
+        gurb_cau_o = self.openerp.pool.get("som.gurb.cau")
+        gurb_group_o = self.openerp.pool.get("som.gurb.group")
 
         ref = self.get_references()
         pol_br = pol_o.browse(self.cursor, self.uid, ref['pol_id'], context=context)
@@ -197,9 +198,14 @@ class TestsGurbServices(TestsGurbBase):
         gurb_cau_id = gurb_cups_o.read(
             self.cursor, self.uid, gurb_cups_id, ["gurb_cau_id"], context=context
         )["gurb_cau_id"][0]
+        gurb_vals = gurb_cau_o.read(
+            self.cursor, self.uid, gurb_cau_id, ["gurb_group_id"], context=context
+        )
 
-        pricelist_id = gurb_o.read(
-            self.cursor, self.uid, gurb_cau_id, ["pricelist_id"], context=context
+        gurb_group_id = gurb_vals["gurb_group_id"][0]
+
+        pricelist_id = gurb_group_o.read(
+            self.cursor, self.uid, gurb_group_id, ["pricelist_id"], context=context
         )["pricelist_id"][0]
 
         self.create_new_pricelist_version("2016-02-15", pricelist_id)
@@ -229,7 +235,8 @@ class TestsGurbServices(TestsGurbBase):
         fact_services_o = self.openerp.pool.get("giscedata.facturacio.services")
         fact_o = self.openerp.pool.get("giscedata.facturacio.factura")
         gurb_cups_o = self.openerp.pool.get("som.gurb.cups")
-        gurb_o = self.openerp.pool.get("som.gurb.cau")
+        gurb_cau_o = self.openerp.pool.get("som.gurb.cau")
+        gurb_group_o = self.openerp.pool.get("som.gurb.group")
 
         ref = self.get_references()
         pol_br = pol_o.browse(self.cursor, self.uid, ref['pol_id'], context=context)
@@ -245,8 +252,14 @@ class TestsGurbServices(TestsGurbBase):
             self.cursor, self.uid, gurb_cups_id, ["gurb_cau_id"], context=context
         )["gurb_cau_id"][0]
 
-        pricelist_id = gurb_o.read(
-            self.cursor, self.uid, gurb_cau_id, ["pricelist_id"], context=context
+        gurb_vals = gurb_cau_o.read(
+            self.cursor, self.uid, gurb_cau_id, ["gurb_group_id"], context=context
+        )
+
+        gurb_group_id = gurb_vals["gurb_group_id"][0]
+
+        pricelist_id = gurb_group_o.read(
+            self.cursor, self.uid, gurb_group_id, ["pricelist_id"], context=context
         )["pricelist_id"][0]
 
         self.create_new_pricelist_version("2016-02-15", pricelist_id)
@@ -282,7 +295,8 @@ class TestsGurbServices(TestsGurbBase):
         fact_services_o = self.openerp.pool.get("giscedata.facturacio.services")
         fact_o = self.openerp.pool.get("giscedata.facturacio.factura")
         gurb_cups_o = self.openerp.pool.get("som.gurb.cups")
-        gurb_o = self.openerp.pool.get("som.gurb.cau")
+        gurb_cau_o = self.openerp.pool.get("som.gurb.cau")
+        gurb_group_o = self.openerp.pool.get("som.gurb.group")
 
         ref = self.get_references()
         pol_br = pol_o.browse(self.cursor, self.uid, ref['pol_id'], context=context)
@@ -298,8 +312,14 @@ class TestsGurbServices(TestsGurbBase):
             self.cursor, self.uid, gurb_cups_id, ["gurb_cau_id"], context=context
         )["gurb_cau_id"][0]
 
-        pricelist_id = gurb_o.read(
-            self.cursor, self.uid, gurb_cau_id, ["pricelist_id"], context=context
+        gurb_vals = gurb_cau_o.read(
+            self.cursor, self.uid, gurb_cau_id, ["gurb_group_id"], context=context
+        )
+
+        gurb_group_id = gurb_vals["gurb_group_id"][0]
+
+        pricelist_id = gurb_group_o.read(
+            self.cursor, self.uid, gurb_group_id, ["pricelist_id"], context=context
         )["pricelist_id"][0]
 
         self.create_new_pricelist_version("2016-02-15", pricelist_id)

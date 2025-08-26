@@ -371,16 +371,14 @@ class SomGurbCups(osv.osv):
         else:
             raise osv.except_osv("Error tarifa accés", "la tarifa d'accés no és 2.0TD ni 3.0TD")
 
-        read_vals = ["gurb_group_id"]
-
         gurb_vals = gurb_cau_o.read(
-            cursor, uid, gurb_cups_vals["gurb_cau_id"][0], read_vals, context=context
+            cursor, uid, gurb_cups_vals["gurb_cau_id"][0], ["gurb_group_id"], context=context
         )
 
         gurb_group_id = gurb_vals["gurb_group_id"][0]
 
         pricelist_id = gurb_group_o.read(
-            cursor, uid, gurb_group_id, read_vals, context=context
+            cursor, uid, gurb_group_id, ["pricelist_id"], context=context
         )["pricelist_id"][0]
 
         # Afegim el servei
@@ -513,7 +511,7 @@ class SomGurbCups(osv.osv):
         price_unit = pricelist_o.price_get(
             cursor,
             uid,
-            [gurb_cups_br.gurb_cau_id.pricelist_id.id],
+            [gurb_cups_br.gurb_cau_id.gurb_group_id.pricelist_id.id],
             product_id,
             gurb_cups_br.beta_kw,
         )[gurb_cups_br.gurb_cau_id.gurb_group_id.pricelist_id.id]
