@@ -349,6 +349,13 @@ class GiscedataCrmLead(osv.OsvInherits):
 
         return lead_id
 
+    def button_send_mail(self, cr, uid, ids, context=None):
+        if context is None:
+            context = {}
+
+        lead_id = context["active_id"]
+        self._send_mail(cr, uid, lead_id, context=context)
+
     @job(queue="poweremail_sender")
     def _send_mail_async(self, cr, uid, lead_id, context=None):
         self._send_mail(cr, uid, lead_id, context=context)
