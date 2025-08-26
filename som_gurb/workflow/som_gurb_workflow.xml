@@ -3,7 +3,7 @@
     <data>
         <record id="wkf_gurb" model="workflow">
             <field name="name">GURB Workflow</field>
-            <field name="osv">som.gurb</field>
+            <field name="osv">som.gurb.cau</field>
             <field name="on_create">True</field>
         </record>
 
@@ -92,14 +92,14 @@
         <record id="trans_first_opening_complete" model="workflow.transition">
             <field name="act_from" ref="act_first_opening"/>
             <field name="act_to" ref="act_complete"/>
-            <field name="condition">validate_first_opening_complete()</field>
+            <field name="condition">validate_complete()</field>
             <field name="signal">button_close_first_opening</field>
         </record>
 
         <record id="trans_first_opening_incomplete" model="workflow.transition">
             <field name="act_from" ref="act_first_opening"/>
             <field name="act_to" ref="act_incomplete"/>
-            <field name="condition">validate_first_opening_incomplete()</field>
+            <field name="condition">validate_incomplete()</field>
             <field name="signal">button_close_first_opening</field>
         </record>
 
@@ -127,7 +127,7 @@
         <record id="trans_active_active_inc" model="workflow.transition">
             <field name="act_from" ref="act_active"/>
             <field name="act_to" ref="act_active_inc"/>
-            <field name="condition">validate_active_incomplete()</field>
+            <field name="condition">validate_incomplete()</field>
         </record>
 
         <record id="trans_active_inc_active_crit_inc" model="workflow.transition">
@@ -146,7 +146,7 @@
         <record id="trans_reopened_incomplete" model="workflow.transition">
             <field name="act_from" ref="act_reopened"/>
             <field name="act_to" ref="act_incomplete"/>
-            <field name="condition">validate_reopening_complete()</field>
+            <field name="condition">validate_incomplete()</field>
             <field name="signal">button_close_reopening</field>
         </record>
 
@@ -160,14 +160,14 @@
         <record id="trans_reopened_complete" model="workflow.transition">
             <field name="act_from" ref="act_reopened"/>
             <field name="act_to" ref="act_complete"/>
-            <field name="condition">validate_reopening_incomplete()</field>
+            <field name="condition">validate_complete()</field>
             <field name="signal">button_close_reopening</field>
         </record>
 
         <record id="trans_incomplete_complete" model="workflow.transition">
             <field name="act_from" ref="act_incomplete"/>
             <field name="act_to" ref="act_complete"/>
-            <field name="condition">validate_incomplete_complete()</field>
+            <field name="condition">validate_complete()</field>
         </record>
 
         <record id="trans_incomplete_first_opening" model="workflow.transition">

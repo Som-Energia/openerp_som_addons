@@ -1,0 +1,9 @@
+<?xml version="1.0" ?>
+<openerp>
+    <data>
+        <record id="gurb_group_0001" model="som.gurb.group">
+            <field name="name">GURB GRUP 001</field>
+            <field name="pricelist_id" ref="pricelist_gurb_demo"></field>
+        </record>
+    </data>
+</openerp>

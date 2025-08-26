@@ -24,7 +24,7 @@
             <field name="name">Tots els casos ATR del GURB</field>
             <field name="key2">client_action_multi</field>
             <field name="key">action</field>
-            <field name="model">som.gurb</field>
+            <field name="model">som.gurb.cau</field>
             <field name="value"
                 eval="'ir.actions.act_window,'+str(ref('action_wizard_atr_gurb_model_form'))" />
         </record>

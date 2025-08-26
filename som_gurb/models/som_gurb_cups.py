@@ -37,19 +37,6 @@ class SomGurbCups(osv.osv):
     _rec_name = "cups_id"
     _description = _("CUPS en grup de generació urbana")
 
-    def create(self, cursor, uid, vals, context=None):
-        if context is None:
-            context = {}
-
-        gurb_cups_id = super(SomGurbCups, self).create(cursor, uid, vals, context=context)
-
-        if "cups_id" in vals:
-            gurb_cups_o = self.pool.get("som.gurb.cups")
-            polissa_id = gurb_cups_o.get_polissa_gurb_cups(cursor, uid, gurb_cups_id)
-            gurb_cups_o.write(cursor, uid, gurb_cups_id, {"polissa_id": polissa_id})
-
-        return gurb_cups_id
-
     def write(self, cursor, uid, ids, vals, context=None):
         if context is None:
             context = {}
@@ -70,12 +57,14 @@ class SomGurbCups(osv.osv):
         if context is None:
             context = {}
 
-        gurb_obj = self.pool.get("som.gurb")
+        gurb_cau_obj = self.pool.get("som.gurb.cau")
         pol_obj = self.pool.get("giscedata.polissa")
 
         res = dict.fromkeys(ids, False)
-        for gurb_cups_vals in self.read(cursor, uid, ids, ["gurb_id"]):
-            gurb_vals = gurb_obj.read(cursor, uid, gurb_cups_vals["gurb_id"][0], ["roof_owner_id"])
+        for gurb_cups_vals in self.read(cursor, uid, ids, ["gurb_cau_id"]):
+            gurb_vals = gurb_cau_obj.read(
+                cursor, uid, gurb_cups_vals["gurb_cau_id"][0], ["roof_owner_id"]
+            )
             cups_id = self.read(cursor, uid, gurb_cups_vals["id"], ["cups_id"])["cups_id"][0]
 
             if not gurb_vals["roof_owner_id"]:
@@ -107,21 +96,21 @@ class SomGurbCups(osv.osv):
     def _ff_get_future_beta_percentage(self, cursor, uid, ids, field_name, arg, context=None):
         if context is None:
             context = {}
-        gurb_obj = self.pool.get("som.gurb")
+        gurb_obj = self.pool.get("som.gurb.cau")
         res = dict.fromkeys(ids, False)
         for gurb_cups_vals in self.read(cursor, uid, ids, [
-            "gurb_id", "future_beta_kw", "future_extra_beta_kw", "future_gift_beta_kw"
+            "gurb_cau_id", "future_beta_kw", "future_extra_beta_kw", "future_gift_beta_kw"
         ]):
-            gurb_id = gurb_cups_vals.get("gurb_id", False)
-            if gurb_id:
+            gurb_cau_id = gurb_cups_vals.get("gurb_cau_id", False)
+            if gurb_cau_id:
                 generation_power = gurb_obj.read(
-                    cursor, uid, gurb_id[0], ["generation_power"]
+                    cursor, uid, gurb_cau_id[0], ["generation_power"]
                 )["generation_power"]
 
                 if generation_power:
-                    beta_kw = gurb_cups_vals.get("beta_kw", 0)
-                    extra_beta_kw = gurb_cups_vals.get("extra_beta_kw", 0)
-                    gift_beta_kw = gurb_cups_vals.get("gift_beta_kw", 0)
+                    beta_kw = gurb_cups_vals.get("future_beta_kw", 0)
+                    extra_beta_kw = gurb_cups_vals.get("future_extra_beta_kw", 0)
+                    gift_beta_kw = gurb_cups_vals.get("future_gift_beta_kw", 0)
                     res[gurb_cups_vals["id"]] = (
                         extra_beta_kw + beta_kw + gift_beta_kw) * 100 / generation_power
                 else:
@@ -131,15 +120,15 @@ class SomGurbCups(osv.osv):
     def _ff_get_beta_percentage(self, cursor, uid, ids, field_name, arg, context=None):
         if context is None:
             context = {}
-        gurb_obj = self.pool.get("som.gurb")
+        gurb_cau_obj = self.pool.get("som.gurb.cau")
         res = dict.fromkeys(ids, False)
         for gurb_cups_vals in self.read(cursor, uid, ids, [
-            "gurb_id", "beta_kw", "extra_beta_kw", "gift_beta_kw"
+            "gurb_cau_id", "beta_kw", "extra_beta_kw", "gift_beta_kw"
         ]):
-            gurb_id = gurb_cups_vals.get("gurb_id", False)
-            if gurb_id:
-                generation_power = gurb_obj.read(
-                    cursor, uid, gurb_id[0], ["generation_power"]
+            gurb_cau_id = gurb_cups_vals.get("gurb_cau_id", False)
+            if gurb_cau_id:
+                generation_power = gurb_cau_obj.read(
+                    cursor, uid, gurb_cau_id[0], ["generation_power"]
                 )["generation_power"]
 
                 if generation_power:
@@ -215,29 +204,13 @@ class SomGurbCups(osv.osv):
     def get_polissa_gurb_cups(self, cursor, uid, gurb_cups_id, context=None):
         if context is None:
             context = {}
-
-        pol_o = self.pool.get("giscedata.polissa")
-
-        gurb_vals = self.read(cursor, uid, gurb_cups_id, ["cups_id", "gurb_id", "owner_cups"])
-
-        search_params = [
-            ("state", "in", ["activa", "esborrany"]),
-            ("cups", "=", gurb_vals["cups_id"][0]),
-        ]
-        pol_ids = pol_o.search(cursor, uid, search_params, context=context, limit=1)
-
-        return pol_ids[0] if pol_ids else False
+        pol_id = self.read(cursor, uid, gurb_cups_id, ["polissa_id"])["polissa_id"][0]
+        return pol_id
 
     def get_titular_gurb_cups(self, cursor, uid, gurb_cups_id, context=None):
         if context is None:
             context = {}
-        pol_o = self.pool.get("giscedata.polissa")
-        pol_id = self.get_polissa_gurb_cups(cursor, uid, gurb_cups_id, context=context)
-        if not pol_id:
-            return False
-        partner_id = pol_o.read(cursor, uid, pol_id, ['titular'], context=context)
-        if partner_id:
-            partner_id = partner_id["titular"][0]
+        partner_id = self.read(cursor, uid, gurb_cups_id, ["partner_id"])["partner_id"][0]
         return partner_id
 
     def send_gurb_activation_email(self, cursor, uid, ids, context=None):
@@ -317,11 +290,11 @@ class SomGurbCups(osv.osv):
         if context is None:
             context = {}
 
-        gurb_o = self.pool.get("som.gurb")
+        gurb_cau_o = self.pool.get("som.gurb.cau")
         service_o = self.pool.get("giscedata.facturacio.services")
 
         pol_id = self.get_polissa_gurb_cups(cursor, uid, gurb_cups_id, context=context)
-        products_ids = gurb_o.get_gurb_products_ids(cursor, uid, context=context)
+        products_ids = gurb_cau_o.get_gurb_products_ids(cursor, uid, context=context)
 
         search_params = [
             ("polissa_id", "=", pol_id),
@@ -333,24 +306,35 @@ class SomGurbCups(osv.osv):
         if service_ids:
             raise osv.except_osv(
                 _("Error"),
-                _("Ja hi ha un servei GURB actiu associat. No es pot afegir un altre.")
+                _("Ja hi ha un servei GURB CAU actiu associat. No es pot afegir un altre.")
             )
 
     def add_service_to_contract(self, cursor, uid, gurb_cups_id, data_inici, context=None):
         if context is None:
             context = {}
 
-        gurb_o = self.pool.get("som.gurb")
+        gurb_cau_o = self.pool.get("som.gurb.cau")
         wiz_service_o = self.pool.get("wizard.create.service")
         service_o = self.pool.get("giscedata.facturacio.services")
         polissa_o = self.pool.get("giscedata.polissa")
+        gurb_group_o = self.pool.get("som.gurb.group")
 
-        read_vals = ["owner_cups", "gurb_id", "cups_id"]
+        read_vals = ["owner_cups", "gurb_cau_id", "cups_id"]
 
         gurb_cups_vals = self.read(cursor, uid, gurb_cups_id, read_vals, context=context)
 
         pol_id = self.get_polissa_gurb_cups(cursor, uid, gurb_cups_id, context=context)
         if not pol_id:
+            error_title = _("No hi ha pòlisses per aquest CUPS"),
+            error_info = _(
+                "El CUPS id {} no té pòlissa. No es pot afegir.".format(
+                    gurb_cups_vals["cups_id"][0]
+                )
+            )
+            raise osv.except_osv(error_title, error_info)
+
+        pol_state = polissa_o.read(cursor, uid, pol_id, ["state"], context=context)["state"]
+        if pol_state not in ["activa", "esborrany"]:
             error_title = _("No hi ha pòlisses actives o en esborrany per aquest CUPS"),
             error_info = _(
                 "El CUPS id {} no té pòlisses actives o en esborrany. No es pot afegir.".format(
@@ -387,13 +371,15 @@ class SomGurbCups(osv.osv):
         else:
             raise osv.except_osv("Error tarifa accés", "la tarifa d'accés no és 2.0TD ni 3.0TD")
 
-        read_vals = ["pricelist_id"]
-
-        gurb_vals = gurb_o.read(
-            cursor, uid, gurb_cups_vals["gurb_id"][0], read_vals, context=context
+        gurb_vals = gurb_cau_o.read(
+            cursor, uid, gurb_cups_vals["gurb_cau_id"][0], ["gurb_group_id"], context=context
         )
 
-        pricelist_id = gurb_vals["pricelist_id"][0]
+        gurb_group_id = gurb_vals["gurb_group_id"][0]
+
+        pricelist_id = gurb_group_o.read(
+            cursor, uid, gurb_group_id, ["pricelist_id"], context=context
+        )["pricelist_id"][0]
 
         # Afegim el servei
         creation_vals = {
@@ -525,10 +511,10 @@ class SomGurbCups(osv.osv):
         price_unit = pricelist_o.price_get(
             cursor,
             uid,
-            [gurb_cups_br.gurb_id.pricelist_id.id],
+            [gurb_cups_br.gurb_cau_id.gurb_group_id.pricelist_id.id],
             product_id,
             gurb_cups_br.beta_kw,
-        )[gurb_cups_br.gurb_id.pricelist_id.id]
+        )[gurb_cups_br.gurb_cau_id.gurb_group_id.pricelist_id.id]
 
         # Create invoice line
         gurb_line = invoice_line_o.product_id_change(  # Get line default values
@@ -699,7 +685,7 @@ class SomGurbCups(osv.osv):
         "start_date": fields.date("Data activació al GURB"),
         "end_date": fields.date("Data sortida GURB"),
         "inscription_date": fields.date("Data d'inscripció al GURB"),
-        "gurb_id": fields.many2one("som.gurb", "GURB", required=True, ondelete="cascade"),
+        "gurb_cau_id": fields.many2one("som.gurb.cau", "GURB", required=True, ondelete="cascade"),
         "cups_id": fields.many2one("giscedata.cups.ps", "CUPS", required=True),
         "polissa_id": fields.many2one("giscedata.polissa", "Pòlissa", readonly=False),
         "partner_id": fields.related(
