@@ -333,27 +333,10 @@ class GiscedataPolissa(osv.osv):
         """
         if context is None:
             context = {}
+
         polissa_obj = self.pool.get("giscedata.polissa")
-        sw_obj = self.pool.get("giscedata.switching")
-
         polissa = polissa_obj.browse(cursor, uid, pol_id, context=context)
-
-        has_open_atr_cases = bool(sw_obj.search(
-            cursor, uid, [
-                ("cups_polissa_id", "=", polissa.id),
-                ("state", "in", ["draft", "open", "pending"]),
-            ]
-        ))
-
-        if (
-            polissa.te_socia_real_vinculada
-            or not polissa.state == 'activa'
-            or polissa.unpaid_invoices > 0
-            or has_open_atr_cases
-        ):
-            raise osv.except_osv(
-                "Error!", "La polissa {} no és enviable a la COR".format(polissa.name)
-            )
+        self._check_submittable_to_cor(cursor, uid, polissa, context=context)
 
         ctx = context.copy()
         ctx.update({"sector": "energia"})
@@ -375,6 +358,36 @@ class GiscedataPolissa(osv.osv):
             )
 
         return sw_id
+
+    def _check_submittable_to_cor(self, cursor, uid, polissa, context=None):
+        if context is None:
+            context = {}
+        sw_obj = self.pool.get("giscedata.switching")
+        pstate_obj = self.pool.get('account.invoice.pending.state')
+        imd_obj = self.pool.get('ir.model.data')
+
+        correct_state_id = imd_obj.get_object_reference(
+            cursor, uid, 'account_invoice_pending',
+            'default_invoice_pending_state'
+        )[1]
+        correct = pstate_obj.read(cursor, uid, correct_state_id, ['name'])['name']
+
+        has_open_atr_cases = bool(sw_obj.search(
+            cursor, uid, [
+                ("cups_polissa_id", "=", polissa.id),
+                ("state", "in", ["draft", "open", "pending"]),
+            ]
+        ))
+
+        if (
+            polissa.te_socia_real_vinculada
+            or not polissa.state == 'activa'
+            or polissa.pending_state != correct
+            or has_open_atr_cases
+        ):
+            raise osv.except_osv(
+                "Error!", "La polissa {} no és enviable a la COR".format(polissa.name)
+            )
 
 
 GiscedataPolissa()
