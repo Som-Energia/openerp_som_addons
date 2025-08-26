@@ -516,7 +516,7 @@ class SomGurbCups(osv.osv):
             [gurb_cups_br.gurb_cau_id.pricelist_id.id],
             product_id,
             gurb_cups_br.beta_kw,
-        )[gurb_cups_br.gurb_cau_id.pricelist_id.id]
+        )[gurb_cups_br.gurb_cau_id.gurb_group_id.pricelist_id.id]
 
         # Create invoice line
         gurb_line = invoice_line_o.product_id_change(  # Get line default values
