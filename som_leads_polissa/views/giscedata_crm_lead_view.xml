@@ -7,6 +7,11 @@
             <field name="type">form</field>
             <field name="inherit_id" ref="giscedata_crm_leads.giscedata_crm_leads_view_form"/>
             <field name="arch" type="xml">
+                <xpath expr="//field[@name='polissa_id']" position="after">
+                    <group colspan="2" attrs="{'invisible': [('polissa_id', '=', False)]}">
+                        <button name="button_send_mail" type="object" string="Enviar correu conforme ha contractat" icon="send" colspan="2" confirm="Aquesta acció enviarà un correu electrònic, vols procedir?"/>
+                    </group>
+                </xpath>
                 <xpath expr="//field[@name='llista_preu']" position="replace">
                 </xpath>
                 <xpath expr="//page[@string='Sobre el Pago']" position="after">
