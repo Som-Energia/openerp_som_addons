@@ -317,6 +317,7 @@ class SomGurbCups(osv.osv):
         wiz_service_o = self.pool.get("wizard.create.service")
         service_o = self.pool.get("giscedata.facturacio.services")
         polissa_o = self.pool.get("giscedata.polissa")
+        gurb_group_o = self.pool.get("som.gurb.group")
 
         read_vals = ["owner_cups", "gurb_cau_id", "cups_id"]
 
@@ -370,13 +371,17 @@ class SomGurbCups(osv.osv):
         else:
             raise osv.except_osv("Error tarifa accés", "la tarifa d'accés no és 2.0TD ni 3.0TD")
 
-        read_vals = ["pricelist_id"]
+        read_vals = ["gurb_group_id"]
 
         gurb_vals = gurb_cau_o.read(
             cursor, uid, gurb_cups_vals["gurb_cau_id"][0], read_vals, context=context
         )
 
-        pricelist_id = gurb_vals["pricelist_id"][0]
+        gurb_group_id = gurb_vals["gurb_group_id"][0]
+
+        pricelist_id = gurb_group_o.read(
+            cursor, uid, gurb_group_id, read_vals, context=context
+        )["pricelist_id"][0]
 
         # Afegim el servei
         creation_vals = {
