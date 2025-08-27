@@ -193,7 +193,7 @@ class RepresentaSom(Representa):
              + desviaments_df['desviament_bajar_sistema']) > 0,
             desviaments_df['desviament_bajar_sistema']
             / (desviaments_df['desviament_subir_sistema']
-             + desviaments_df['desviament_bajar_sistema']),
+               + desviaments_df['desviament_bajar_sistema']),
             0)
         desviaments_df['pct_rep_baj_2'] = np.where(
             (desviaments_df['subir_rep_net']
@@ -547,9 +547,9 @@ class RepresentaSom(Representa):
 
         rad3_df = rad3_df.merge(desv_sistema_per_hora, on=['timestamp'], how='left')
         rad3_df['preu_rad3_sistema'] = (
-                (rad3_df['desviament_subir_sistema']
-                 + rad3_df['desviament_bajar_sistema'])
-                * rad3_df['preu_rad3'])
+            (rad3_df['desviament_subir_sistema']
+             + rad3_df['desviament_bajar_sistema'])
+            * rad3_df['preu_rad3'])
 
         rad3_df = rad3_df.merge(desviaments_representacio_net_df, on=['timestamp'], how='left')
         rad3_df = rad3_df.merge(desviaments_comercialitzadora_net_df, on=['timestamp'], how='left')
