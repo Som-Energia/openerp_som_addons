@@ -91,13 +91,17 @@ class RepresentaSom(Representa):
         esios_token = self.conf['esios_token']
 
         if is_isp15:
-            desvio_bajar = REEcurveQH('Codsvbaqh', self.data_inici, self.data_final, esios_token)  # €/MWh
-            desvio_subir = REEcurveQH('Codsvsuqh', self.data_inici, self.data_final, esios_token)  # €/MWh
+            desvio_bajar = REEcurveQH('Codsvbaqh', self.data_inici,
+                                      self.data_final, esios_token)  # €/MWh
+            desvio_subir = REEcurveQH('Codsvsuqh', self.data_inici,
+                                      self.data_final, esios_token)  # €/MWh
             desvio_bajar_curve = desvio_bajar.get_curve()
             desvio_subir_curve = desvio_subir.get_curve()
         else:
-            desvio_bajar = REEcurve('Codsvbaj', self.data_inici, self.data_final, esios_token)  # €/MWh
-            desvio_subir = REEcurve('Codsvsub', self.data_inici, self.data_final, esios_token)  # €/MWh
+            desvio_bajar = REEcurve('Codsvbaj', self.data_inici,
+                                    self.data_final, esios_token)  # €/MWh
+            desvio_subir = REEcurve('Codsvsub', self.data_inici,
+                                    self.data_final, esios_token)  # €/MWh
             desvio_bajar_curve = desvio_bajar.get_curve()
             desvio_subir_curve = desvio_subir.get_curve()
 
@@ -131,14 +135,14 @@ class RepresentaSom(Representa):
         desviaments_df = desviaments_df.sort_values(by=['timestamp'])
 
         desviaments_df['preu_desv_instalacio'] = (
-                (desviaments_df['subir'] * desviaments_df['preu_desvio_subir']) +
-                (desviaments_df['bajar'] * desviaments_df['preu_desvio_bajar']))
+            (desviaments_df['subir'] * desviaments_df['preu_desvio_subir'])
+            + (desviaments_df['bajar'] * desviaments_df['preu_desvio_bajar']))
 
         desviaments_df = desviaments_df.merge(desv_sistema_per_hora, on=['timestamp'], how='left')
-        desviaments_df['preu_desv_sistema'] = ((desviaments_df['desviament_subir_sistema'] *
-                                                desviaments_df['preu_desvio_subir']) +
-                                               (desviaments_df['desviament_bajar_sistema'] *
-                                                desviaments_df['preu_desvio_bajar']))
+        desviaments_df['preu_desv_sistema'] = ((desviaments_df['desviament_subir_sistema']
+                                                * desviaments_df['preu_desvio_subir'])
+                                               + (desviaments_df['desviament_bajar_sistema']
+                                                  * desviaments_df['preu_desvio_bajar']))
 
         desviaments_df = desviaments_df.merge(
             desviaments_representacio_net_df, on=['timestamp'], how='left')
@@ -154,30 +158,30 @@ class RepresentaSom(Representa):
         (dsv_rep_net_sub - dsv_com_net_baj)/(dsv_rep_brut_sub)
         """
         desviaments_df['pct_rep_sub_1'] = np.where(
-            (desviaments_df['desviament_subir_sistema'] +
-             desviaments_df['desviament_bajar_sistema']) > 0,
+            (desviaments_df['desviament_subir_sistema']
+             + desviaments_df['desviament_bajar_sistema']) > 0,
             desviaments_df['desviament_subir_sistema'] / (
-                    desviaments_df['desviament_subir_sistema'] +
-                    desviaments_df['desviament_bajar_sistema']),
+                desviaments_df['desviament_subir_sistema']
+                + desviaments_df['desviament_bajar_sistema']),
             0)
 
         desviaments_df['pct_rep_sub_2'] = np.where(
-            (desviaments_df['subir_rep_net'] +
-             desviaments_df['bajar_rep_net']) > 0,
+            (desviaments_df['subir_rep_net']
+             + desviaments_df['bajar_rep_net']) > 0,
             desviaments_df['subir_rep_net'] / (
-                    desviaments_df['subir_rep_net'] +
-                    desviaments_df['bajar_rep_net']),
+                desviaments_df['subir_rep_net']
+                + desviaments_df['bajar_rep_net']),
             0)
 
         desviaments_df['pct_rep_sub_3'] = np.where(
             desviaments_df['desviament_subir_instalacions'] > 0,
-            (desviaments_df['subir_rep_net'] - desviaments_df['bajar_com_net']) /
-            desviaments_df['desviament_subir_instalacions'],
+            (desviaments_df['subir_rep_net'] - desviaments_df['bajar_com_net'])
+            / desviaments_df['desviament_subir_instalacions'],
             0)
 
-        desviaments_df['pct_rep_sub'] = (desviaments_df['pct_rep_sub_1'] *
-                                         desviaments_df['pct_rep_sub_2'] *
-                                         desviaments_df['pct_rep_sub_3'])
+        desviaments_df['pct_rep_sub'] = (desviaments_df['pct_rep_sub_1']
+                                         * desviaments_df['pct_rep_sub_2']
+                                         * desviaments_df['pct_rep_sub_3'])
 
         """
         pct_rep_baj = (dsv_brp_baj/ (dsv_brp_sub + dsv_brp_baj))*
@@ -185,43 +189,44 @@ class RepresentaSom(Representa):
         (dsv_rep_net_baj - dsv_com_net_sub)/(dsv_rep_brut_baj)
         """
         desviaments_df['pct_rep_baj_1'] = np.where(
-            (desviaments_df['desviament_subir_sistema'] +
-             desviaments_df['desviament_bajar_sistema']) > 0,
-            desviaments_df['desviament_bajar_sistema'] /
-            (desviaments_df['desviament_subir_sistema'] +
-             desviaments_df['desviament_bajar_sistema']),
+            (desviaments_df['desviament_subir_sistema']
+             + desviaments_df['desviament_bajar_sistema']) > 0,
+            desviaments_df['desviament_bajar_sistema']
+            / (desviaments_df['desviament_subir_sistema']
+             + desviaments_df['desviament_bajar_sistema']),
             0)
         desviaments_df['pct_rep_baj_2'] = np.where(
-            (desviaments_df['subir_rep_net'] +
-             desviaments_df['bajar_rep_net']) > 0,
-            desviaments_df['bajar_rep_net'] /
-            (desviaments_df['subir_rep_net'] + desviaments_df['bajar_rep_net']),
+            (desviaments_df['subir_rep_net']
+             + desviaments_df['bajar_rep_net']) > 0,
+            desviaments_df['bajar_rep_net']
+            / (desviaments_df['subir_rep_net']
+               + desviaments_df['bajar_rep_net']),
             0)
         desviaments_df['pct_rep_baj_3'] = np.where(
             desviaments_df['desviament_bajar_instalacions'] > 0,
-            (desviaments_df['bajar_rep_net'] -
-             desviaments_df['subir_com_net']) /
-            desviaments_df['desviament_bajar_instalacions'],
+            (desviaments_df['bajar_rep_net']
+             - desviaments_df['subir_com_net'])
+            / desviaments_df['desviament_bajar_instalacions'],
             0)
 
-        desviaments_df['pct_rep_baj'] = (desviaments_df['pct_rep_baj_1'] *
-                                         desviaments_df['pct_rep_baj_2'] *
-                                         desviaments_df['pct_rep_baj_3'])
+        desviaments_df['pct_rep_baj'] = (desviaments_df['pct_rep_baj_1']
+                                         * desviaments_df['pct_rep_baj_2']
+                                         * desviaments_df['pct_rep_baj_3'])
 
         # Desviament ponderat segons pes
         desviaments_df['desviament_instalacio_apantallat_subir'] = (
-                desviaments_df['pct_rep_sub'] * desviaments_df['subir']
+            desviaments_df['pct_rep_sub'] * desviaments_df['subir']
         )
         desviaments_df['desviament_instalacio_apantallat_bajar'] = (
-                desviaments_df['pct_rep_baj'] * desviaments_df['bajar']
+            desviaments_df['pct_rep_baj'] * desviaments_df['bajar']
         )
 
         # Preu de desviament
         desviaments_df['preu_desviament_apantallat'] = (
-                (desviaments_df['desviament_instalacio_apantallat_subir'] *
-                 desviaments_df['preu_desvio_subir']) +
-                (desviaments_df['desviament_instalacio_apantallat_bajar'] *
-                 desviaments_df['preu_desvio_bajar'])
+            (desviaments_df['desviament_instalacio_apantallat_subir']
+             * desviaments_df['preu_desvio_subir'])
+            + (desviaments_df['desviament_instalacio_apantallat_bajar']
+               * desviaments_df['preu_desvio_bajar'])
         )
 
         # Preparem adjunts per a auditar
@@ -351,17 +356,17 @@ class RepresentaSom(Representa):
         banda_secundaria_df = banda_secundaria_df.sort_values(by=['timestamp'])
 
         banda_secundaria_df['preu_bs3_instalacio'] = (
-                (banda_secundaria_df['subir'] +
-                 banda_secundaria_df['bajar']) *
-                banda_secundaria_df['preu_bs3']
+            (banda_secundaria_df['subir']
+             + banda_secundaria_df['bajar'])
+            * banda_secundaria_df['preu_bs3']
         )
 
         banda_secundaria_df = banda_secundaria_df.merge(
             desv_sistema_per_hora, on=['timestamp'], how='left')
         banda_secundaria_df['preu_bs3_sistema'] = (
-                (banda_secundaria_df['desviament_subir_sistema'] +
-                 banda_secundaria_df['desviament_subir_sistema']) *
-                banda_secundaria_df['preu_bs3']
+            (banda_secundaria_df['desviament_subir_sistema']
+             + banda_secundaria_df['desviament_subir_sistema'])
+            * banda_secundaria_df['preu_bs3']
         )
 
         banda_secundaria_df = banda_secundaria_df.merge(
@@ -378,31 +383,31 @@ class RepresentaSom(Representa):
         (dsv_rep_net_sub - dsv_com_net_baj)/(dsv_rep_brut_sub)
         """
         banda_secundaria_df['pct_rep_sub_1'] = np.where(
-            (banda_secundaria_df['desviament_subir_sistema'] +
-             banda_secundaria_df['desviament_bajar_sistema']) > 0,
-            banda_secundaria_df['desviament_subir_sistema'] /
-            (banda_secundaria_df['desviament_subir_sistema'] +
-             banda_secundaria_df['desviament_bajar_sistema']),
+            (banda_secundaria_df['desviament_subir_sistema']
+             + banda_secundaria_df['desviament_bajar_sistema']) > 0,
+            banda_secundaria_df['desviament_subir_sistema']
+            / (banda_secundaria_df['desviament_subir_sistema']
+               + banda_secundaria_df['desviament_bajar_sistema']),
             0)
 
         banda_secundaria_df['pct_rep_sub_2'] = np.where(
-            (banda_secundaria_df['subir_rep_net'] +
-             banda_secundaria_df['bajar_rep_net']) > 0,
-            banda_secundaria_df['subir_rep_net'] /
-            (banda_secundaria_df['subir_rep_net'] +
-             banda_secundaria_df['bajar_rep_net']),
+            (banda_secundaria_df['subir_rep_net']
+             + banda_secundaria_df['bajar_rep_net']) > 0,
+            banda_secundaria_df['subir_rep_net']
+            / (banda_secundaria_df['subir_rep_net']
+               + banda_secundaria_df['bajar_rep_net']),
             0)
 
         banda_secundaria_df['pct_rep_sub_3'] = np.where(
             banda_secundaria_df['desviament_subir_instalacions'] > 0,
-            (banda_secundaria_df['subir_rep_net'] -
-             banda_secundaria_df['bajar_com_net']) /
-            banda_secundaria_df['desviament_subir_instalacions'],
+            (banda_secundaria_df['subir_rep_net']
+             - banda_secundaria_df['bajar_com_net'])
+            / banda_secundaria_df['desviament_subir_instalacions'],
             0)
 
-        banda_secundaria_df['pct_rep_sub'] = (banda_secundaria_df['pct_rep_sub_1'] *
-                                              banda_secundaria_df['pct_rep_sub_2'] *
-                                              banda_secundaria_df['pct_rep_sub_3'])
+        banda_secundaria_df['pct_rep_sub'] = (banda_secundaria_df['pct_rep_sub_1']
+                                              * banda_secundaria_df['pct_rep_sub_2']
+                                              * banda_secundaria_df['pct_rep_sub_3'])
 
         """
         pct_rep_baj = (dsv_brp_baj/ (dsv_brp_sub + dsv_brp_baj))*
@@ -410,43 +415,43 @@ class RepresentaSom(Representa):
         (dsv_rep_net_baj - dsv_com_net_sub)/(dsv_rep_brut_baj)
         """
         banda_secundaria_df['pct_rep_baj_1'] = np.where(
-            (banda_secundaria_df['desviament_subir_sistema'] +
-             banda_secundaria_df['desviament_bajar_sistema']) > 0,
-            banda_secundaria_df['desviament_bajar_sistema'] /
-            (banda_secundaria_df['desviament_subir_sistema'] +
-             banda_secundaria_df['desviament_bajar_sistema']),
+            (banda_secundaria_df['desviament_subir_sistema']
+             + banda_secundaria_df['desviament_bajar_sistema']) > 0,
+            banda_secundaria_df['desviament_bajar_sistema']
+            / (banda_secundaria_df['desviament_subir_sistema']
+               + banda_secundaria_df['desviament_bajar_sistema']),
             0)
 
         banda_secundaria_df['pct_rep_baj_2'] = np.where(
-            (banda_secundaria_df['subir_rep_net'] +
-             banda_secundaria_df['bajar_rep_net']) > 0,
-            banda_secundaria_df['bajar_rep_net'] /
-            (banda_secundaria_df['subir_rep_net'] +
-             banda_secundaria_df['bajar_rep_net']),
+            (banda_secundaria_df['subir_rep_net']
+             + banda_secundaria_df['bajar_rep_net']) > 0,
+            banda_secundaria_df['bajar_rep_net']
+            / (banda_secundaria_df['subir_rep_net']
+               + banda_secundaria_df['bajar_rep_net']),
             0)
 
         banda_secundaria_df['pct_rep_baj_3'] = np.where(
             banda_secundaria_df['desviament_bajar_instalacions'] > 0,
-            (banda_secundaria_df['bajar_rep_net'] -
-             banda_secundaria_df['subir_com_net']) /
-            banda_secundaria_df['desviament_bajar_instalacions'],
+            (banda_secundaria_df['bajar_rep_net']
+             - banda_secundaria_df['subir_com_net'])
+            / banda_secundaria_df['desviament_bajar_instalacions'],
             0)
 
-        banda_secundaria_df['pct_rep_baj'] = (banda_secundaria_df['pct_rep_baj_1'] *
-                                              banda_secundaria_df['pct_rep_baj_2'] *
-                                              banda_secundaria_df['pct_rep_baj_3'])
+        banda_secundaria_df['pct_rep_baj'] = (banda_secundaria_df['pct_rep_baj_1']
+                                              * banda_secundaria_df['pct_rep_baj_2']
+                                              * banda_secundaria_df['pct_rep_baj_3'])
 
         # Desviament ponderat segons pes
         banda_secundaria_df['desviament_instalacio_apantallat_subir'] = (
-                banda_secundaria_df['pct_rep_sub'] * banda_secundaria_df['subir'])
+            banda_secundaria_df['pct_rep_sub'] * banda_secundaria_df['subir'])
 
         banda_secundaria_df['desviament_instalacio_apantallat_bajar'] = (
-                banda_secundaria_df['pct_rep_baj'] * banda_secundaria_df['bajar'])
+            banda_secundaria_df['pct_rep_baj'] * banda_secundaria_df['bajar'])
 
         banda_secundaria_df['preu_bs3_apantallat'] = (
-                (banda_secundaria_df['desviament_instalacio_apantallat_subir'] +
-                 banda_secundaria_df['desviament_instalacio_apantallat_bajar']) *
-                banda_secundaria_df['preu_bs3'])
+            (banda_secundaria_df['desviament_instalacio_apantallat_subir']
+             + banda_secundaria_df['desviament_instalacio_apantallat_bajar'])
+            * banda_secundaria_df['preu_bs3'])
 
         if is_isp15:
             bs3 = ComponentQH(self.data_inici)
@@ -537,14 +542,14 @@ class RepresentaSom(Representa):
 
         rad3_df = rad3_df.sort_values(by=['timestamp'])
 
-        rad3_df['preu_rad3_instalacio'] = ((rad3_df['subir'] + rad3_df['bajar']) *
-                                           rad3_df['preu_rad3'])
+        rad3_df['preu_rad3_instalacio'] = ((rad3_df['subir'] + rad3_df['bajar'])
+                                           * rad3_df['preu_rad3'])
 
         rad3_df = rad3_df.merge(desv_sistema_per_hora, on=['timestamp'], how='left')
         rad3_df['preu_rad3_sistema'] = (
-                (rad3_df['desviament_subir_sistema'] +
-                 rad3_df['desviament_bajar_sistema']) *
-                rad3_df['preu_rad3'])
+                (rad3_df['desviament_subir_sistema']
+                 + rad3_df['desviament_bajar_sistema'])
+                * rad3_df['preu_rad3'])
 
         rad3_df = rad3_df.merge(desviaments_representacio_net_df, on=['timestamp'], how='left')
         rad3_df = rad3_df.merge(desviaments_comercialitzadora_net_df, on=['timestamp'], how='left')
@@ -558,31 +563,31 @@ class RepresentaSom(Representa):
         (dsv_rep_net_sub - dsv_com_net_baj)/(dsv_rep_brut_sub)
         """
         rad3_df['pct_rep_sub_1'] = np.where(
-            (rad3_df['desviament_subir_sistema'] +
-             rad3_df['desviament_bajar_sistema']) > 0,
-            rad3_df['desviament_subir_sistema'] /
-            (rad3_df['desviament_subir_sistema'] +
-             rad3_df['desviament_bajar_sistema']),
+            (rad3_df['desviament_subir_sistema']
+             + rad3_df['desviament_bajar_sistema']) > 0,
+            rad3_df['desviament_subir_sistema']
+            / (rad3_df['desviament_subir_sistema']
+               + rad3_df['desviament_bajar_sistema']),
             0)
 
         rad3_df['pct_rep_sub_2'] = np.where(
-            (rad3_df['subir_rep_net'] +
-             rad3_df['bajar_rep_net']) > 0,
-            rad3_df['subir_rep_net'] /
-            (rad3_df['subir_rep_net'] +
-             rad3_df['bajar_rep_net']),
+            (rad3_df['subir_rep_net']
+             + rad3_df['bajar_rep_net']) > 0,
+            rad3_df['subir_rep_net']
+            / (rad3_df['subir_rep_net']
+               + rad3_df['bajar_rep_net']),
             0)
 
         rad3_df['pct_rep_sub_3'] = np.where(
             rad3_df['desviament_subir_instalacions'] > 0,
-            (rad3_df['subir_rep_net'] -
-             rad3_df['bajar_com_net']) /
-            rad3_df['desviament_subir_instalacions'],
+            (rad3_df['subir_rep_net']
+             - rad3_df['bajar_com_net'])
+            / rad3_df['desviament_subir_instalacions'],
             0)
 
-        rad3_df['pct_rep_sub'] = (rad3_df['pct_rep_sub_1'] *
-                                  rad3_df['pct_rep_sub_2'] *
-                                  rad3_df['pct_rep_sub_3'])
+        rad3_df['pct_rep_sub'] = (rad3_df['pct_rep_sub_1']
+                                  * rad3_df['pct_rep_sub_2']
+                                  * rad3_df['pct_rep_sub_3'])
 
         """
         pct_rep_baj = (dsv_brp_baj/ (dsv_brp_sub + dsv_brp_baj))*
@@ -590,42 +595,42 @@ class RepresentaSom(Representa):
         (dsv_rep_net_baj - dsv_com_net_sub)/(dsv_rep_brut_baj)
         """
         rad3_df['pct_rep_baj_1'] = np.where(
-            (rad3_df['desviament_subir_sistema'] +
-             rad3_df['desviament_bajar_sistema']) > 0,
-            rad3_df['desviament_bajar_sistema'] /
-            (rad3_df['desviament_subir_sistema'] +
-             rad3_df['desviament_bajar_sistema']),
+            (rad3_df['desviament_subir_sistema']
+             + rad3_df['desviament_bajar_sistema']) > 0,
+            rad3_df['desviament_bajar_sistema']
+            / (rad3_df['desviament_subir_sistema']
+               + rad3_df['desviament_bajar_sistema']),
             0)
 
         rad3_df['pct_rep_baj_2'] = np.where(
-            (rad3_df['subir_rep_net'] +
-             rad3_df['bajar_rep_net']) > 0,
-            rad3_df['bajar_rep_net'] /
-            (rad3_df['subir_rep_net'] +
-             rad3_df['bajar_rep_net']),
+            (rad3_df['subir_rep_net']
+             + rad3_df['bajar_rep_net']) > 0,
+            rad3_df['bajar_rep_net']
+            / (rad3_df['subir_rep_net']
+               + rad3_df['bajar_rep_net']),
             0)
 
         rad3_df['pct_rep_baj_3'] = np.where(
             rad3_df['desviament_bajar_instalacions'] > 0,
-            (rad3_df['bajar_rep_net'] -
-             rad3_df['subir_com_net']) /
-            rad3_df['desviament_bajar_instalacions'],
+            (rad3_df['bajar_rep_net']
+             - rad3_df['subir_com_net'])
+            / rad3_df['desviament_bajar_instalacions'],
             0)
 
-        rad3_df['pct_rep_baj'] = (rad3_df['pct_rep_baj_1'] *
-                                  rad3_df['pct_rep_baj_2'] *
-                                  rad3_df['pct_rep_baj_3'])
+        rad3_df['pct_rep_baj'] = (rad3_df['pct_rep_baj_1']
+                                  * rad3_df['pct_rep_baj_2']
+                                  * rad3_df['pct_rep_baj_3'])
 
         # Desviament ponderat segons pes
-        rad3_df['desviament_instalacio_apantallat_subir'] = (rad3_df['pct_rep_sub'] *
-                                                             rad3_df['subir'])
+        rad3_df['desviament_instalacio_apantallat_subir'] = (rad3_df['pct_rep_sub']
+                                                             * rad3_df['subir'])
 
-        rad3_df['desviament_instalacio_apantallat_bajar'] = (rad3_df['pct_rep_baj'] *
-                                                             rad3_df['bajar'])
+        rad3_df['desviament_instalacio_apantallat_bajar'] = (rad3_df['pct_rep_baj']
+                                                             * rad3_df['bajar'])
 
-        rad3_df['preu_rad3_apantallat'] = ((rad3_df['desviament_instalacio_apantallat_subir'] +
-                                            rad3_df['desviament_instalacio_apantallat_bajar']) *
-                                           rad3_df['preu_rad3'])
+        rad3_df['preu_rad3_apantallat'] = ((rad3_df['desviament_instalacio_apantallat_subir']
+                                            + rad3_df['desviament_instalacio_apantallat_bajar'])
+                                           * rad3_df['preu_rad3'])
 
         postfix = ('%s_%s' % (self.data_inici.strftime(
             "%Y%m%d"), self.data_final.strftime("%Y%m%d")))
