@@ -19,7 +19,7 @@
             <field name="target">new</field>
             <field name="view_id" ref="view_wizard_atr_gurb_model_form" />
         </record>
-        <record id="values_wizard_create_gurb_coeficients_file_form" model="ir.values">
+        <record id="values_wizard_atr_gurb_model_form" model="ir.values">
             <field name="object" eval="1" />
             <field name="name">Tots els casos ATR del GURB</field>
             <field name="key2">client_action_multi</field>
