@@ -23,22 +23,45 @@
             <field name="pending_days_type">natural</field>
             <field name="pending_days">335</field>
         </record>
+        <record model="som.sortida.state" id="enviar_cor_pendent_falta_un_mes_pending_state">
+            <field name="name">Pendent enviar falta un mes</field>
+            <field name="weight">19</field>
+            <field name="process_id" ref="enviar_cor_state_process"/>
+            <field name="pending_days_type">natural</field>
+            <field name="pending_days">0</field>
+            <field name="template_id" ref="email_ct_ss_1mes"/>
+        </record>
         <record model="som.sortida.state" id="enviar_cor_falta_un_mes_pending_state">
-            <field name="name">Falta un mes</field>
+            <field name="name">Enviat falta un mes</field>
             <field name="weight">20</field>
             <field name="process_id" ref="enviar_cor_state_process"/>
             <field name="pending_days_type">natural</field>
             <field name="pending_days">15</field>
         </record>
+        <record model="som.sortida.state" id="enviar_cor_pendent_falta_15_dies_pending_state">
+            <field name="name">Pendent enviar falten 15 dies</field>
+            <field name="weight">29</field>
+            <field name="process_id" ref="enviar_cor_state_process"/>
+            <field name="pending_days_type">natural</field>
+            <field name="pending_days">0</field>
+            <field name="template_id" ref="email_ct_ss_15dies"/>
+        </record>
         <record model="som.sortida.state" id="enviar_cor_falta_15_dies_pending_state">
-            <field name="name">Falta 15 dies</field>
+            <field name="name">Enviat falten 15 dies</field>
             <field name="weight">30</field>
             <field name="process_id" ref="enviar_cor_state_process"/>
             <field name="pending_days_type">natural</field>
             <field name="pending_days">8</field>
         </record>
+        <record model="som.sortida.state" id="enviar_cor_pendent_falta_7_dies_pending_state">
+            <field name="name">Pendent enviar falten 7 dies</field>
+            <field name="weight">39</field>
+            <field name="process_id" ref="enviar_cor_state_process"/>
+            <field name="pending_days_type">natural</field>
+            <field name="pending_days">0</field>
+        </record>
         <record model="som.sortida.state" id="enviar_cor_falta_7_dies_pending_state">
-            <field name="name">Falta 7 dies</field>
+            <field name="name">Enviat falten 7 dies</field>
             <field name="weight">40</field>
             <field name="process_id" ref="enviar_cor_state_process"/>
             <field name="pending_days_type">natural</field>
@@ -49,6 +72,13 @@
             <field name="weight">50</field>
             <field name="process_id" ref="enviar_cor_state_process"/>
             <field name="b2_02_create">True</field>
+            <field name="pending_days">0</field>
+        </record>
+        <record model="som.sortida.state" id="enviar_cor_cas_b1_error_pending_state">
+            <field name="name">No es pot crear el cas B1</field>
+            <field name="weight">51</field>
+            <field name="process_id" ref="enviar_cor_state_process"/>
+            <field name="pending_days">0</field>
         </record>
         <record model="som.sortida.state" id="enviar_cor_cas_b1_creat_pending_state">
             <field name="name">Cas B1 creat</field>

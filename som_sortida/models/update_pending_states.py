@@ -11,7 +11,7 @@ class UpdatePendingStates(osv.osv_memory):
 
     _inherit = 'update.pending.states'
 
-    def update_state(self, cursor, uid, ids, polissa_id, history_values, context=None):
+    def update_state(self, cursor, uid, polissa_id, history_values, context=None):
         """
         If the pending days have passed, the pending_state of the polissa
         will change
@@ -41,13 +41,10 @@ class UpdatePendingStates(osv.osv_memory):
         if current_date >= due_date and not pstate['is_last']:
             polissa_obj.go_on_pending(cursor, uid, [polissa_id])
 
-    def get_polisses_to_update(self, cursor, uid, ids):
-        polissa_obj = self.pool.get('giscedata.polissa')
-        search_params = [('sortida_state_id.weigh', '>', 0),
-                         ('sortida_state_id.pending_days', '>', 0)]
-        return polissa_obj.search(cursor, uid, search_params)
-
     def update_polisses(self, cursor, uid, context=None):
+        self._update_polisses(cursor, uid, context=context)
+
+    def _update_polisses(self, cursor, uid, context=None):
 
         if context is None:
             context = {}
@@ -95,6 +92,12 @@ class UpdatePendingStates(osv.osv_memory):
                 tmp_cursor.close()
 
         return True
+
+    def get_polisses_to_update(self, cursor, uid):
+        polissa_obj = self.pool.get('giscedata.polissa')
+        search_params = [('sortida_state_id.weight', '>', 0),
+                         ('sortida_state_id.pending_days', '>', 0)]
+        return polissa_obj.search(cursor, uid, search_params)
 
 
 UpdatePendingStates()
