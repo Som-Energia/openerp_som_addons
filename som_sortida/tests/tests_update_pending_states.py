@@ -40,12 +40,13 @@ class TestUpdatePendingStates(testing.OOTestCaseWithCursor):
         hist_data = hist_obj.read(cursor, uid, hist_id, ['pending_state_id', 'change_date'])
         self.assertEqual(hist_data[-1]['pending_state_id'][0], estat_falta_un_mes)
 
-    def test_gicedata_updateXXX_workflow(self):
+    def test_gicedata_update_workflow_30d(self):
         cursor = self.cursor
         uid = self.uid
         imd_obj = self.openerp.pool.get('ir.model.data')
         pol_obj = self.openerp.pool.get('giscedata.polissa')
         upd_obj = self.openerp.pool.get('update.pending.states')
+        mailbox_obj = self.openerp.pool.get('poweremail.mailbox')
 
         polissa_id = imd_obj.get_object_reference(
             cursor, uid, 'giscedata_polissa', 'polissa_0001'
@@ -53,8 +54,12 @@ class TestUpdatePendingStates(testing.OOTestCaseWithCursor):
         estat_sense_socia_id = imd_obj.get_object_reference(
             cursor, uid, 'som_sortida', 'enviar_cor_contrate_sense_socia_pending_state'
         )[1]
-        estat_1m_id = imd_obj.get_object_reference(  # FIXME remove pendent
-            cursor, uid, 'som_sortida', 'enviar_cor_pendent_falta_un_mes_pending_state'
+        estat_1m_id = imd_obj.get_object_reference(
+            cursor, uid, 'som_sortida', 'enviar_cor_falta_un_mes_pending_state'
+        )[1]
+
+        email_ct_ss_1mes_id = imd_obj.get_object_reference(
+            cursor, uid, 'som_sortida', 'email_ct_ss_1mes'
         )[1]
 
         pol_obj.set_pending(cursor, uid, polissa_id, estat_sense_socia_id, {
@@ -70,3 +75,51 @@ class TestUpdatePendingStates(testing.OOTestCaseWithCursor):
         pol = pol_obj.browse(cursor, uid, polissa_id)
 
         self.assertEqual(pol.sortida_state_id.id, estat_1m_id)
+
+        outbox_mail_ids = mailbox_obj.search(cursor, uid, [
+            ('template_id', '=', email_ct_ss_1mes_id),
+            ('folder', '=', 'outbox'),
+        ])
+        self.assertTrue(len(outbox_mail_ids) > 0)
+
+    def test_gicedata_update_workflow_15d(self):
+        cursor = self.cursor
+        uid = self.uid
+        imd_obj = self.openerp.pool.get('ir.model.data')
+        pol_obj = self.openerp.pool.get('giscedata.polissa')
+        upd_obj = self.openerp.pool.get('update.pending.states')
+        mailbox_obj = self.openerp.pool.get('poweremail.mailbox')
+
+        polissa_id = imd_obj.get_object_reference(
+            cursor, uid, 'giscedata_polissa', 'polissa_0001'
+        )[1]
+        estat_1m_id = imd_obj.get_object_reference(
+            cursor, uid, 'som_sortida', 'enviar_cor_falta_un_mes_pending_state'
+        )[1]
+        estat_15d_id = imd_obj.get_object_reference(
+            cursor, uid, 'som_sortida', 'enviar_cor_falta_15_dies_pending_state'
+        )[1]
+
+        email_ct_ss_15dies_id = imd_obj.get_object_reference(
+            cursor, uid, 'som_sortida', 'email_ct_ss_15dies'
+        )[1]
+
+        pol_obj.set_pending(cursor, uid, polissa_id, estat_1m_id, {
+            'custom_change_dates': {polissa_id: '2023-10-01'},
+        })
+
+        wiz_id = upd_obj.create(cursor, uid, {}, context=None)
+        wiz = upd_obj.browse(cursor, uid, wiz_id)
+
+        with avoid_creating_subcursors(cursor):
+            wiz.update_polisses()
+
+        pol = pol_obj.browse(cursor, uid, polissa_id)
+
+        self.assertEqual(pol.sortida_state_id.id, estat_15d_id)
+
+        outbox_mail_ids = mailbox_obj.search(cursor, uid, [
+            ('template_id', '=', email_ct_ss_15dies_id),
+            ('folder', '=', 'outbox'),
+        ])
+        self.assertTrue(len(outbox_mail_ids) > 0)
