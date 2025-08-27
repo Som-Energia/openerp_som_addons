@@ -6,6 +6,7 @@ from giscere_facturacio.defs import ISP15_start_date
 from osv import osv
 from pytz import timezone, utc
 import pandas as pd
+import numpy as np
 
 from tools.translate import _
 
@@ -76,10 +77,12 @@ class GiscereFacturacioFacturador(osv.osv):
         dsv_com_net = dsv_com_net.merge(dsv_rep_net, on=['local_timestamp', 'timestamp'])
         dsv_com_net = dsv_com_net.rename(columns={'value': 'value_dsv_rep'})
         dsv_com_net['value'] = dsv_com_net['value_dsv_brp'] - dsv_com_net['value_dsv_rep']
-        dsv_com_net['subir'] = dsv_com_net.apply(
-            lambda row: row['value'] if row['value'] > 0 else 0, axis=1)
-        dsv_com_net['bajar'] = dsv_com_net.apply(lambda row: abs(
-            row['value']) if row['value'] < 0 else 0, axis=1)
+        dsv_com_net['subir'] = np.where(dsv_com_net['value'] > 0,
+                                        dsv_com_net['value'],
+                                        0)
+        dsv_com_net['bajar'] = np.where(dsv_com_net['value'] < 0,
+                                        dsv_com_net['value'].abs(),
+                                        0)
         fields_to_keep = ['local_timestamp', 'timestamp', 'value', 'subir', 'bajar']
         dsv_com_net = dsv_com_net[fields_to_keep]
 
@@ -161,10 +164,8 @@ class GiscereFacturacioFacturador(osv.osv):
         reganecu = reganecu_o.read(cursor, uid, reganecu_ids, read_fields, context=context)
 
         df = pd.DataFrame(data=reganecu)
-        df['energia_amb_signe'] = df.apply(lambda row: float(
-            row['energia']) * int(row['signo_magnitud']), axis=1)
-        df['energia_amb_signe'] = df.apply(
-            lambda row: row['energia_amb_signe'] * 1000.0, axis=1)  # from MWh to kWh
+        df['energia_amb_signe'] = df['energia'].astype(float) * df['signo_magnitud'].astype(int)
+        df['energia_amb_signe'] = df['energia_amb_signe'] * 1000.0  # from MWh to kWh
 
         df = df.groupby(
             ['timestamp', 'local_timestamp']
@@ -173,8 +174,12 @@ class GiscereFacturacioFacturador(osv.osv):
         ).reset_index()
 
         df = df.rename(columns={"energia_amb_signe": "value"})
-        df['subir'] = df.apply(lambda row: row['value'] if row['value'] >= 0 else 0, axis=1)
-        df['bajar'] = df.apply(lambda row: abs(row['value']) if row['value'] < 0 else 0, axis=1)
+        df['subir'] = np.where(df['value'] > 0,
+                               df['value'],
+                               0)
+        df['bajar'] = np.where(df['value'] < 0,
+                               df['value'].abs(),
+                               0)
 
         reganecu_filtered = df.to_dict('records')
 
