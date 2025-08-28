@@ -5,7 +5,7 @@
             <field name="sortida_state_id" ref="enviar_cor_contrate_sense_socia_pending_state"/>
         </record>
         <record id="som_polissa_soci.res_partner_address_soci" model="res.partner.address">
-            <field name="phone">938412345</field>
+            <field name="phone">612345678</field>
         </record>
     </data>
 </openerp>

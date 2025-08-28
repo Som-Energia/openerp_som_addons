@@ -44,9 +44,9 @@ class UpdatePendingStates(osv.osv_memory):
     def update_polisses(self, cursor, uid, context=None):
         self._update_polisses(cursor, uid, context=context)
         self._send_pending_emails_and_update_states(cursor, uid, context=context)
+        self._send_7days_sms_and_update_state(cursor, uid, context=context)
 
     def _update_polisses(self, cursor, uid, context=None):
-
         if context is None:
             context = {}
         logger = logging.getLogger('openerp.crontab.update_polisses')
@@ -127,7 +127,37 @@ class UpdatePendingStates(osv.osv_memory):
                     )
                 )
 
-    def _send_polissa_email(self, cursor, uid, polissa_id, template):
+    def _send_7days_sms_and_update_state(self, cursor, uid, context=None):
+        logger = logging.getLogger("openerp.powersms")
+        polissa_obj = self.pool.get('giscedata.polissa')
+        sms_templates_obj = self.pool.get('powersms.templates')
+
+        waiting_sms_7dies = self.get_object_id(
+            cursor, uid, "som_sortida", "enviar_cor_pendent_falta_7_dies_pending_state")
+        sms_7dies_template_id = self.get_object_id(cursor, uid, "som_sortida", "sms_ct_ss_7dies")
+
+        sms_template = sms_templates_obj.browse(cursor, uid, sms_7dies_template_id)
+
+        polissa_ids = polissa_obj.search(
+            cursor, uid, [("sortida_state_id.id", "=", waiting_sms_7dies)])
+        for polissa in polissa_obj.browse(cursor, uid, polissa_ids):
+
+            try:
+                ret_value = self._send_polissa_sms(cursor, uid, polissa.id, sms_template)
+                polissa_obj.go_on_pending(cursor, uid, [polissa.id])
+                logger.info(
+                    "Sending SMS for {polissa_id} polissa with result: {ret_value}".format(
+                        polissa_id=polissa.id, ret_value=ret_value
+                    )
+                )
+            except Exception:
+                logger.info(
+                    "ERROR: Sending SMS for {polissa_id} polissa error.".format(
+                        polissa_id=polissa.id,
+                    )
+                )
+
+    def _send_polissa_email(self, cursor, uid, polissa_id, template, context=None):
         logger = logging.getLogger("openerp.poweremail")
 
         try:
@@ -154,6 +184,33 @@ class UpdatePendingStates(osv.osv_memory):
                 )
             )
             return -1
+
+    def _send_polissa_sms(self, cursor, uid, polissa_id, template, context=None):
+        logger = logging.getLogger("openerp.powersms")
+
+        try:
+            wiz_send_obj = self.pool.get("powersms.send.wizard")
+            params = {
+                "account": template.enforce_from_account.id,
+            }
+            ctx = {
+                "active_ids": [polissa_id],
+                "active_id": polissa_id,
+                "template_id": template.id,
+                "src_model": "giscedata.polissa",
+                "src_rec_ids": [polissa_id],
+            }
+            wiz_id = wiz_send_obj.create(cursor, uid, params, ctx)
+
+            return wiz_send_obj.send_sms(cursor, uid, [wiz_id], ctx)
+
+        except Exception as e:
+            logger.info(
+                "ERROR sending sms to polissa {polissa_id}: {exc}".format(
+                    polissa_id=polissa_id, exc=e.message
+                )
+            )
+            raise e
 
 
 UpdatePendingStates()
