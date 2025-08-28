@@ -45,6 +45,7 @@ class UpdatePendingStates(osv.osv_memory):
         self._update_polisses(cursor, uid, context=context)
         self._send_pending_emails_and_update_states(cursor, uid, context=context)
         self._send_7days_sms_and_update_state(cursor, uid, context=context)
+        self._request_submission_to_cor_and_update_state(cursor, uid, context=context)
 
     def _update_polisses(self, cursor, uid, context=None):
         if context is None:
@@ -154,6 +155,39 @@ class UpdatePendingStates(osv.osv_memory):
                 logger.info(
                     "ERROR: Sending SMS for {polissa_id} polissa error.".format(
                         polissa_id=polissa.id,
+                    )
+                )
+
+    def _request_submission_to_cor_and_update_state(self, cursor, uid, context=None):
+        logger = logging.getLogger("openerp.poweremail")
+        polissa_obj = self.pool.get('giscedata.polissa')
+        estat_waiting_submission_to_cor_id = self.get_object_id(
+            cursor, uid, "som_sortida", "enviar_cor_pendent_crear_b1_dies_pending_state")
+        estat_b1_creat_id = self.get_object_id(
+            cursor, uid, 'som_sortida', 'enviar_cor_cas_b1_creat_pending_state')
+        estat_b1_error_id = self.get_object_id(
+            cursor, uid, 'som_sortida', 'enviar_cor_cas_b1_error_pending_state')
+
+        polissa_ids = polissa_obj.search(
+            cursor, uid, [("sortida_state_id.id", "=", estat_waiting_submission_to_cor_id)])
+        for polissa_id in polissa_ids:
+            try:
+                # Here we would do the actual submission to COR system
+                # For now we just log and change state
+                polissa_obj.request_submission_to_cor(cursor, uid, polissa_id, context=context)
+                polissa_obj.set_pending(
+                    cursor, uid, [polissa_id], estat_b1_creat_id, context=context)
+                logger.info(
+                    "Submission to COR for {polissa_id} polissa requested.".format(
+                        polissa_id=polissa_id,
+                    )
+                )
+            except Exception:
+                polissa_obj.set_pending(
+                    cursor, uid, [polissa_id], estat_b1_error_id, context=context)
+                logger.info(
+                    "ERROR Requesting submission to COR for {polissa_id} polissa.".format(
+                        polissa_id=polissa_id,
                     )
                 )
 

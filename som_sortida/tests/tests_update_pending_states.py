@@ -74,11 +74,8 @@ class TestUpdatePendingStates(testing.OOTestCaseWithCursor):
             'custom_change_dates': {polissa_id: '2023-10-01'},
         })
 
-        wiz_id = upd_obj.create(cursor, uid, {}, context=None)
-        wiz = upd_obj.browse(cursor, uid, wiz_id)
-
         with avoid_creating_subcursors(cursor):
-            wiz.update_polisses()
+            upd_obj.update_polisses(cursor, uid)
 
         pol = pol_obj.browse(cursor, uid, polissa_id)
 
@@ -120,11 +117,8 @@ class TestUpdatePendingStates(testing.OOTestCaseWithCursor):
             'custom_change_dates': {polissa_id: '2023-10-01'},
         })
 
-        wiz_id = upd_obj.create(cursor, uid, {}, context=None)
-        wiz = upd_obj.browse(cursor, uid, wiz_id)
-
         with avoid_creating_subcursors(cursor):
-            wiz.update_polisses()
+            upd_obj.update_polisses(cursor, uid)
 
         pol = pol_obj.browse(cursor, uid, polissa_id)
 
@@ -162,18 +156,15 @@ class TestUpdatePendingStates(testing.OOTestCaseWithCursor):
             ('folder', '=', 'outbox'),
         ])
 
-        # We need a soci with valid phone number
+        # We need a titular with valid phone number
         pol_obj.write(cursor, uid, [polissa_id], {'titular': partner_soci_id})
 
         pol_obj.set_pending(cursor, uid, polissa_id, estat_15d_id, {
             'custom_change_dates': {polissa_id: '2023-10-01'},
         })
 
-        wiz_id = upd_obj.create(cursor, uid, {}, context=None)
-        wiz = upd_obj.browse(cursor, uid, wiz_id)
-
         with avoid_creating_subcursors(cursor):
-            wiz.update_polisses()
+            upd_obj.update_polisses(cursor, uid)
 
         pol = pol_obj.browse(cursor, uid, polissa_id)
 
@@ -184,3 +175,85 @@ class TestUpdatePendingStates(testing.OOTestCaseWithCursor):
             ('folder', '=', 'outbox'),
         ])
         self.assertGreater(new_total_outbox_sms, old_total_outbox_sms)
+
+    def test_gicedata_update_workflow_b1(self):
+        cursor = self.cursor
+        uid = self.uid
+        imd_obj = self.openerp.pool.get('ir.model.data')
+        pol_obj = self.openerp.pool.get('giscedata.polissa')
+        upd_obj = self.openerp.pool.get('update.pending.states')
+        sw_obj = self.openerp.pool.get('giscedata.switching')
+
+        polissa_id = imd_obj.get_object_reference(
+            cursor, uid, 'giscedata_polissa', 'polissa_0001'
+        )[1]
+        estat_7d_id = imd_obj.get_object_reference(
+            cursor, uid, 'som_sortida', 'enviar_cor_falta_7_dies_pending_state'
+        )[1]
+        estat_b1_creat_id = imd_obj.get_object_reference(
+            cursor, uid, 'som_sortida', 'enviar_cor_cas_b1_creat_pending_state'
+        )[1]
+
+        partner_soci_id = imd_obj.get_object_reference(
+            cursor, uid, 'som_polissa_soci', 'res_partner_soci_ct'
+        )[1]
+        pol_obj.write(cursor, uid, [polissa_id], {'soci': partner_soci_id}, context={
+            'custom_change_dates': {polissa_id: '2023-09-01'},
+        })
+        pol_obj.send_signal(cursor, uid, [polissa_id], [
+            "validar", "contracte"
+        ])
+
+        pol_obj.set_pending(cursor, uid, polissa_id, estat_7d_id, {
+            'custom_change_dates': {polissa_id: '2023-10-01'},
+        })
+
+        with avoid_creating_subcursors(cursor):
+            upd_obj.update_polisses(cursor, uid)
+
+        pol = pol_obj.browse(cursor, uid, polissa_id)
+
+        self.assertEqual(pol.sortida_state_id.id, estat_b1_creat_id)
+
+        atr_case = sw_obj.search(
+            cursor, uid, [
+                ("cups_polissa_id", "=", polissa_id),
+                ("proces_id.name", "=", "B1"),
+                ("state", "in", ["draft", "open"]),
+            ]
+        )
+        self.assertEqual(len(atr_case), 1)
+
+    def test_gicedata_update_workflow_b1_fails(self):
+        cursor = self.cursor
+        uid = self.uid
+        imd_obj = self.openerp.pool.get('ir.model.data')
+        pol_obj = self.openerp.pool.get('giscedata.polissa')
+        upd_obj = self.openerp.pool.get('update.pending.states')
+
+        polissa_id = imd_obj.get_object_reference(
+            cursor, uid, 'giscedata_polissa', 'polissa_0001'
+        )[1]
+        estat_7d_id = imd_obj.get_object_reference(
+            cursor, uid, 'som_sortida', 'enviar_cor_falta_7_dies_pending_state'
+        )[1]
+        estat_b1_error_id = imd_obj.get_object_reference(
+            cursor, uid, 'som_sortida', 'enviar_cor_cas_b1_error_pending_state'
+        )[1]
+
+        pol_obj.set_pending(cursor, uid, polissa_id, estat_7d_id, {
+            'custom_change_dates': {polissa_id: '2023-10-01'},
+        })
+
+        # draft polissa and no CT SS soci, it will fail
+        with avoid_creating_subcursors(cursor):
+            upd_obj.update_polisses(cursor, uid)
+
+        pol = pol_obj.browse(cursor, uid, polissa_id)
+
+        self.assertEqual(pol.sortida_state_id.id, estat_b1_error_id)
+
+        # When updating again, it should stay in the same state
+        with avoid_creating_subcursors(cursor):
+            upd_obj.update_polisses(cursor, uid)
+        self.assertEqual(pol.sortida_state_id.id, estat_b1_error_id)
