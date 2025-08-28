@@ -21,42 +21,25 @@ jobs:
           page=1
           found=0
 
+          page=1
           while :; do
-            echo "Descarregant pàgina $page de PRs..."
-            pulls=$(curl -s -H "Authorization: token $TOKEN" \
-              "$API/pulls?state=open&per_page=100&page=$page")
+            echo "Desubscrivint pàgina $page de notifactions..."
+            notifications=$(curl -s -H "Authorization: token $TOKEN" \
+              "$API/notifications")
 
-            count=$(echo "$pulls" | jq '. | length')
+            count=$(echo "$notifications" | jq '. | length')
             if [ "$count" -eq 0 ]; then
-              echo "No queden més PRs."
+              echo "No queden més notifications."
               break
             fi
-
-            prs=$(echo "$pulls" | jq -r '
-              .[] | select(.user.login as $u | ["oriolpiera","FranciscoCubero","PauBoix","xavierteres","XavierBonetViura","DCa23","susu105","MariteSomEnergia","samuelpedrajas"] | index($u)) | .number
+            threads_id=$(echo "$notifications" | jq -r '
+              .[] | select(.repository.full_name == "'$REPO'" and .subject.type == "PullRequest") | .id
             ')
-            for pr in $prs; do
-              echo "Comprovant PR #$pr"
-              issue=$(curl -s -H "Authorization: token $TOKEN" "$API/issues/$pr")
-              has_stale=$(echo "$issue" | jq -r '.labels[]?.name' | grep -x "Stale" || true)
-
-              if [ -n "$has_stale" ]; then
-                echo " -> PR #$pr té label Stale. Afegint comentari i eliminant label."
-
-                # Afegir comentari
-                curl -s -X POST -H "Authorization: token $TOKEN" \
-                  -d '{"body":"👋 Encara vigent @egarciadiaz "}' \
-                  "$API/issues/$pr/comments" > /dev/null
-
-                # Treure etiqueta 'Stale'
-                curl -s -X DELETE -H "Authorization: token $TOKEN" \
-                  "$API/issues/$pr/labels/Stale" > /dev/null
-
-                found=$((found+1))
-              fi
+            for thread_id in $threads_id; do
+              echo "Desubscrivint thread $thread_id"
+              curl -s -X DELETE -H "Authorization: token $TOKEN" \
+                "$API/notifications/threads/$thread_id/subscription" > /dev/null
             done
-
             page=$((page+1))
           done
-
           echo "Processades $found PRs amb label Stale d'aquests usuaris."
