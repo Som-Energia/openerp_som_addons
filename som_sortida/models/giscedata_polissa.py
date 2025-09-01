@@ -135,9 +135,15 @@ class GiscedataPolissa(osv.osv):
             imd_obj.get_object_reference(
                 cr, uid, 'som_sortida', 'enviar_cor_contrate_sense_socia_pending_state')[1]: 365,
             imd_obj.get_object_reference(
+                cr, uid, 'som_sortida', 'enviar_cor_pendent_falta_un_mes_pending_state')[1]: 30,
+            imd_obj.get_object_reference(
                 cr, uid, 'som_sortida', 'enviar_cor_falta_un_mes_pending_state')[1]: 30,
             imd_obj.get_object_reference(
+                cr, uid, 'som_sortida', 'enviar_cor_pendent_falta_15_dies_pending_state')[1]: 15,
+            imd_obj.get_object_reference(
                 cr, uid, 'som_sortida', 'enviar_cor_falta_15_dies_pending_state')[1]: 15,
+            imd_obj.get_object_reference(
+                cr, uid, 'som_sortida', 'enviar_cor_pendent_falta_7_dies_pending_state')[1]: 7,
             imd_obj.get_object_reference(
                 cr, uid, 'som_sortida', 'enviar_cor_falta_7_dies_pending_state')[1]: 7,
         }
