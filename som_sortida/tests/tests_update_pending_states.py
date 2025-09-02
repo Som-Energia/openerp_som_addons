@@ -64,6 +64,10 @@ class TestUpdatePendingStates(testing.OOTestCaseWithCursor):
             ('folder', '=', 'outbox'),
         ])
 
+        pol_obj.send_signal(cursor, uid, [polissa_id], [
+            "validar", "contracte"
+        ])
+
         # Soci with valid phone number
         partner_soci_id = imd_obj.get_object_reference(
             cursor, uid, 'som_polissa_soci', 'res_partner_soci_ct'
@@ -113,6 +117,10 @@ class TestUpdatePendingStates(testing.OOTestCaseWithCursor):
             ('folder', '=', 'outbox'),
         ])
 
+        pol_obj.send_signal(cursor, uid, [polissa_id], [
+            "validar", "contracte"
+        ])
+
         pol_obj.set_pending(cursor, uid, polissa_id, estat_1m_id, {
             'custom_change_dates': {polissa_id: '2023-10-01'},
         })
@@ -150,6 +158,10 @@ class TestUpdatePendingStates(testing.OOTestCaseWithCursor):
         estat_7d_id = imd_obj.get_object_reference(
             cursor, uid, 'som_sortida', 'enviar_cor_falta_7_dies_pending_state'
         )[1]
+
+        pol_obj.send_signal(cursor, uid, [polissa_id], [
+            "validar", "contracte"
+        ])
 
         old_total_outbox_sms = smsbox_obj.search_count(cursor, uid, [
             ('psms_body_text', 'like', '%renovar%'),
@@ -240,6 +252,10 @@ class TestUpdatePendingStates(testing.OOTestCaseWithCursor):
         estat_b1_error_id = imd_obj.get_object_reference(
             cursor, uid, 'som_sortida', 'enviar_cor_cas_b1_error_pending_state'
         )[1]
+
+        pol_obj.send_signal(cursor, uid, [polissa_id], [
+            "validar", "contracte"
+        ])
 
         pol_obj.set_pending(cursor, uid, polissa_id, estat_7d_id, {
             'custom_change_dates': {polissa_id: '2023-10-01'},

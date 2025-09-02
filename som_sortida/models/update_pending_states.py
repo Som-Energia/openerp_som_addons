@@ -98,7 +98,8 @@ class UpdatePendingStates(osv.osv_memory):
 
     def _get_polisses_to_update(self, cursor, uid):
         polissa_obj = self.pool.get('giscedata.polissa')
-        search_params = [('sortida_state_id.weight', '>', 0),
+        search_params = [('state', '=', 'activa'),
+                         ('sortida_state_id.weight', '>', 0),
                          ('sortida_state_id.pending_days', '>', 0)]
         return polissa_obj.search(cursor, uid, search_params)
 

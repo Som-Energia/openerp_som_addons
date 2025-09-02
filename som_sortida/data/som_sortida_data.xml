@@ -52,7 +52,7 @@
             <field eval="0" name="send_on_create"/>
             <field name="lang">${object.titular.lang}</field>
             <field eval="0" name="send_on_write"/>
-            <field name="enforce_from_account" model="powersms.core_accounts" search="[('name','=', 'SMS Account')]"/>
+            <field name="enforce_from_account" model="powersms.core_accounts" search="[('name','=', 'Som Energia')]"/>
             <!-- \ are added to avoid line breaks https://docs.makotemplates.org/en/latest/syntax.html#newline-filters -->
             <field name="def_body_text"><![CDATA[\
 <%
