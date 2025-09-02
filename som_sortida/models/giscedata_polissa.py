@@ -15,16 +15,17 @@ class GiscedataPolissa(osv.osv):
     _description = 'Estats d\'una pòlissa en el procés de sortida'
 
     def create(self, cr, uid, vals, context=None):
+        imd_obj = self.pool.get('ir.model.data')
+
         _id = super(GiscedataPolissa, self).create(cr, uid, vals, context=context)
         polissa = self.browse(cr, uid, _id)
+        state_correcte_id = imd_obj.get_object_reference(
+            cr, uid, 'som_sortida', 'enviar_cor_correcte_pending_state'
+        )[1]
+        state_sense_socia_id = imd_obj.get_object_reference(
+            cr, uid, 'som_sortida', 'enviar_cor_contrate_sense_socia_pending_state'
+        )[1]
         if not polissa.sortida_state_id:
-            imd_obj = self.pool.get('ir.model.data')
-            state_correcte_id = imd_obj.get_object_reference(
-                cr, uid, 'som_sortida', 'enviar_cor_correcte_pending_state'
-            )[1]
-            state_sense_socia_id = imd_obj.get_object_reference(
-                cr, uid, 'som_sortida', 'enviar_cor_contrate_sense_socia_pending_state'
-            )[1]
             if polissa.soci and polissa.soci_nif and not self._es_socia_ct_ss(
                 cr, uid, [], polissa.soci_nif, context=context
             ):
@@ -32,7 +33,7 @@ class GiscedataPolissa(osv.osv):
             else:
                 polissa.sortida_state_id = state_sense_socia_id
 
-        if not polissa.sortida_history_ids and polissa.sortida_state_id == state_sense_socia_id:
+        if not polissa.sortida_history_ids and polissa.sortida_state_id.id == state_sense_socia_id:
             polissa.sortida_history_ids = [
                 (0, 0, {
                     'pending_state_id': state_sense_socia_id,
