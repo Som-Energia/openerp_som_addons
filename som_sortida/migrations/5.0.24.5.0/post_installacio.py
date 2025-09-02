@@ -87,12 +87,8 @@ for pol_id in tqdm(polisses_penents, desc="Actualitzant polisses"):
         )
         if not pol.sortida_state_id:
             if not c.model('som.sortida.history').search([('polissa_id', '=', pol_id)]):
-                # Si no hi ha historial, crear-lo
-                c.model('som.sortida.history').create({
-                    'polissa_id': pol_id,
-                    'pending_state_id': state_sense_socia_id,
-                    'change_date': data_inici.strftime('%Y-%m-%d')
-                })
+                assignar_estat_i_historic(pol_id, state_sense_socia_id, data_inici)
+
         dies_restants = (data_inici + timedelta(days=365) - datetime.now().date()).days
         if dies_restants < 7:
             assignar_estat_i_historic(pol_id, state_7d_id)
@@ -104,7 +100,6 @@ for pol_id in tqdm(polisses_penents, desc="Actualitzant polisses"):
             assignar_estat_i_historic(pol_id, state_30d_id)
             polisses_segons_estat['30 dies'].append(pol_id)
         else:
-            assignar_estat_i_historic(pol_id, state_sense_socia_id, data_inici)
             polisses_segons_estat['sense socia'].append(pol_id)
     else:
         # Assignar l'estat de sortida correcte
