@@ -11,7 +11,7 @@ class UpdatePendingStates(osv.osv_memory):
 
     _inherit = 'update.pending.states'
 
-    def update_state(self, cursor, uid, ids, polissa_id, history_values, context=None):
+    def update_sortida_state(self, cursor, uid, polissa_id, history_values, context=None):
         """
         If the pending days have passed, the pending_state of the polissa
         will change
@@ -41,21 +41,20 @@ class UpdatePendingStates(osv.osv_memory):
         if current_date >= due_date and not pstate['is_last']:
             polissa_obj.go_on_pending(cursor, uid, [polissa_id])
 
-    def get_polisses_to_update(self, cursor, uid, ids):
-        polissa_obj = self.pool.get('giscedata.polissa')
-        search_params = [('sortida_state_id.weigh', '>', 0),
-                         ('sortida_state_id.pending_days', '>', 0)]
-        return polissa_obj.search(cursor, uid, search_params)
-
     def update_polisses(self, cursor, uid, context=None):
+        self._update_polisses(cursor, uid, context=context)
+        self._send_pending_emails_and_update_states(cursor, uid, context=context)
+        self._send_7days_sms_and_update_state(cursor, uid, context=context)
+        self._request_submission_to_cor_and_update_state(cursor, uid, context=context)
 
+    def _update_polisses(self, cursor, uid, context=None):
         if context is None:
             context = {}
         logger = logging.getLogger('openerp.crontab.update_polisses')
         polissa_obj = self.pool.get('giscedata.polissa')
-        logger.info('get_polisses_to_update called')
-        polissa_ids = self.get_polisses_to_update(cursor, uid)
-        logger.info('get_polisses_to_update returned {} polisses'.format(len(polissa_ids)))
+        logger.info('_get_polisses_to_update called')
+        polissa_ids = self._get_polisses_to_update(cursor, uid)
+        logger.info('_get_polisses_to_update returned {} polisses'.format(len(polissa_ids)))
 
         db = pooler.get_db(cursor.dbname)
         last_lines_by_polissa = {}
@@ -83,18 +82,171 @@ class UpdatePendingStates(osv.osv_memory):
 
         for polissa_id, history_values in last_lines_by_polissa.items():
             tmp_cursor = db.cursor()
-            logger.info('update_state called for polissa with id {}'.format(polissa_id))
+            logger.info('update_sortida_state called for polissa with id {}'.format(polissa_id))
             try:
-                self.update_state(tmp_cursor, uid, polissa_id, history_values)
+                self.update_sortida_state(tmp_cursor, uid, polissa_id, history_values)
                 tmp_cursor.commit()
-                logger.info('update_state succeed for polissa with id {}'.format(polissa_id))
+                logger.info(
+                    'update_sortida_state succeed for polissa with id {}'.format(polissa_id))
             except Exception:
                 tmp_cursor.rollback()
-                logger.info('update_state failed for polissa with id {}'.format(polissa_id))
+                logger.info('update_sortida_state failed for polissa with id {}'.format(polissa_id))
             finally:
                 tmp_cursor.close()
 
         return True
+
+    def _get_polisses_to_update(self, cursor, uid):
+        polissa_obj = self.pool.get('giscedata.polissa')
+        search_params = [('state', '=', 'activa'),
+                         ('sortida_state_id.weight', '>', 0),
+                         ('sortida_state_id.pending_days', '>', 0)]
+        return polissa_obj.search(cursor, uid, search_params)
+
+    def _send_pending_emails_and_update_states(self, cursor, uid, context=None):
+        logger = logging.getLogger("openerp.poweremail")
+        polissa_obj = self.pool.get('giscedata.polissa')
+        polissa_ids = polissa_obj.search(cursor, uid, [
+            ('sortida_state_id.weight', '>', 0),
+            ('sortida_state_id.template_id', '!=', False),
+        ])
+
+        for polissa in polissa_obj.browse(cursor, uid, polissa_ids):
+            ret_value = self._send_polissa_email(
+                cursor, uid, polissa.id, polissa.sortida_state_id.template_id
+            )
+
+            if ret_value == -1:
+                logger.info(
+                    "ERROR: Sending email for {polissa_id} polissa error.".format(
+                        polissa_id=polissa.id,
+                    )
+                )
+            else:
+                polissa_obj.go_on_pending(cursor, uid, [polissa.id])
+                logger.info(
+                    "Sending email for {polissa_id} polissa with result: {ret_value}".format(
+                        polissa_id=polissa.id, ret_value=ret_value
+                    )
+                )
+
+    def _send_7days_sms_and_update_state(self, cursor, uid, context=None):
+        logger = logging.getLogger("openerp.powersms")
+        polissa_obj = self.pool.get('giscedata.polissa')
+        sms_templates_obj = self.pool.get('powersms.templates')
+
+        waiting_sms_7dies = self.get_object_id(
+            cursor, uid, "som_sortida", "enviar_cor_pendent_falta_7_dies_pending_state")
+        sms_7dies_template_id = self.get_object_id(cursor, uid, "som_sortida", "sms_ct_ss_7dies")
+
+        sms_template = sms_templates_obj.browse(cursor, uid, sms_7dies_template_id)
+
+        polissa_ids = polissa_obj.search(
+            cursor, uid, [("sortida_state_id.id", "=", waiting_sms_7dies)])
+        for polissa in polissa_obj.browse(cursor, uid, polissa_ids):
+
+            try:
+                ret_value = self._send_polissa_sms(cursor, uid, polissa.id, sms_template)
+                polissa_obj.go_on_pending(cursor, uid, [polissa.id])
+                logger.info(
+                    "Sending SMS for {polissa_id} polissa with result: {ret_value}".format(
+                        polissa_id=polissa.id, ret_value=ret_value
+                    )
+                )
+            except Exception:
+                logger.info(
+                    "ERROR: Sending SMS for {polissa_id} polissa error.".format(
+                        polissa_id=polissa.id,
+                    )
+                )
+
+    def _request_submission_to_cor_and_update_state(self, cursor, uid, context=None):
+        logger = logging.getLogger("openerp.poweremail")
+        polissa_obj = self.pool.get('giscedata.polissa')
+        estat_waiting_submission_to_cor_id = self.get_object_id(
+            cursor, uid, "som_sortida", "enviar_cor_pendent_crear_b1_dies_pending_state")
+        estat_b1_creat_id = self.get_object_id(
+            cursor, uid, 'som_sortida', 'enviar_cor_cas_b1_creat_pending_state')
+        estat_b1_error_id = self.get_object_id(
+            cursor, uid, 'som_sortida', 'enviar_cor_cas_b1_error_pending_state')
+
+        polissa_ids = polissa_obj.search(
+            cursor, uid, [("sortida_state_id.id", "=", estat_waiting_submission_to_cor_id)])
+        for polissa_id in polissa_ids:
+            try:
+                # Here we would do the actual submission to COR system
+                # For now we just log and change state
+                polissa_obj.request_submission_to_cor(cursor, uid, polissa_id, context=context)
+                polissa_obj.set_pending(
+                    cursor, uid, [polissa_id], estat_b1_creat_id, context=context)
+                logger.info(
+                    "Submission to COR for {polissa_id} polissa requested.".format(
+                        polissa_id=polissa_id,
+                    )
+                )
+            except Exception:
+                polissa_obj.set_pending(
+                    cursor, uid, [polissa_id], estat_b1_error_id, context=context)
+                logger.info(
+                    "ERROR Requesting submission to COR for {polissa_id} polissa.".format(
+                        polissa_id=polissa_id,
+                    )
+                )
+
+    def _send_polissa_email(self, cursor, uid, polissa_id, template, context=None):
+        logger = logging.getLogger("openerp.poweremail")
+
+        try:
+            wiz_send_obj = self.pool.get("poweremail.send.wizard")
+            ctx = {
+                "active_ids": [polissa_id],
+                "active_id": polissa_id,
+                "template_id": template.id,
+                "src_model": "giscedata.polissa",
+                "src_rec_ids": [polissa_id],
+                "from": template.enforce_from_account.id,
+                "state": "single",
+                "priority": "0",
+            }
+
+            params = {"state": "single", "priority": "0", "from": ctx["from"]}
+            wiz_id = wiz_send_obj.create(cursor, uid, params, ctx)
+            return wiz_send_obj.send_mail(cursor, uid, [wiz_id], ctx)
+
+        except Exception as e:
+            logger.info(
+                "ERROR sending email to polissa {polissa_id}: {exc}".format(
+                    polissa_id=polissa_id, exc=e.message
+                )
+            )
+            return -1
+
+    def _send_polissa_sms(self, cursor, uid, polissa_id, template, context=None):
+        logger = logging.getLogger("openerp.powersms")
+
+        try:
+            wiz_send_obj = self.pool.get("powersms.send.wizard")
+            params = {
+                "account": template.enforce_from_account.id,
+            }
+            ctx = {
+                "active_ids": [polissa_id],
+                "active_id": polissa_id,
+                "template_id": template.id,
+                "src_model": "giscedata.polissa",
+                "src_rec_ids": [polissa_id],
+            }
+            wiz_id = wiz_send_obj.create(cursor, uid, params, ctx)
+
+            return wiz_send_obj.send_sms(cursor, uid, [wiz_id], ctx)
+
+        except Exception as e:
+            logger.info(
+                "ERROR sending sms to polissa {polissa_id}: {exc}".format(
+                    polissa_id=polissa_id, exc=e.message
+                )
+            )
+            raise e
 
 
 UpdatePendingStates()

@@ -2,7 +2,8 @@
 from osv import osv, fields
 import json
 from osv.expression import OOQuery
-from datetime import datetime
+
+from datetime import datetime, timedelta
 import logging
 
 logger = logging.getLogger('openerp' + __name__)
@@ -15,8 +16,8 @@ class GiscedataPolissa(osv.osv):
 
     def create(self, cr, uid, vals, context=None):
         _id = super(GiscedataPolissa, self).create(cr, uid, vals, context=context)
-        vals = self.browse(cr, uid, _id)
-        if not vals.sortida_state_id:
+        polissa = self.browse(cr, uid, _id)
+        if not polissa.sortida_state_id:
             imd_obj = self.pool.get('ir.model.data')
             state_correcte_id = imd_obj.get_object_reference(
                 cr, uid, 'som_sortida', 'enviar_cor_correcte_pending_state'
@@ -24,15 +25,15 @@ class GiscedataPolissa(osv.osv):
             state_sense_socia_id = imd_obj.get_object_reference(
                 cr, uid, 'som_sortida', 'enviar_cor_contrate_sense_socia_pending_state'
             )[1]
-            if vals.soci and vals.soci_nif and not self._es_socia_promocional(
-                cr, uid, [], vals.soci_nif, context=context
+            if polissa.soci and polissa.soci_nif and not self._es_socia_ct_ss(
+                cr, uid, [], polissa.soci_nif, context=context
             ):
-                vals.sortida_state_id = state_correcte_id
+                polissa.sortida_state_id = state_correcte_id
             else:
-                vals.sortida_state_id = state_sense_socia_id
+                polissa.sortida_state_id = state_sense_socia_id
 
-        if not vals.sortida_history_ids and vals.sortida_state_id == state_sense_socia_id:
-            vals.sortida_history_ids = [
+        if not polissa.sortida_history_ids and polissa.sortida_state_id == state_sense_socia_id:
+            polissa.sortida_history_ids = [
                 (0, 0, {
                     'pending_state_id': state_sense_socia_id,
                     'change_date': datetime.now().strftime('%Y-%m-%d %H:%M:%S')
@@ -73,7 +74,7 @@ class GiscedataPolissa(osv.osv):
                     'sortida_state_id']
                 if not vals.get('soci', False) or \
                     (vals.get('soci', False) and not soci_nif) or \
-                    (soci_nif and not self._es_socia_promocional(
+                    (soci_nif and not self._es_socia_ct_ss(
                         cr, uid, [_id], soci_nif, context=context)
                      ):
                     if current_state_id != state_correcte_id:
@@ -92,44 +93,25 @@ class GiscedataPolissa(osv.osv):
 
         return super(GiscedataPolissa, self).write(cr, uid, ids, vals, context=context)
 
-    def _es_socia_promocional(self, cr, uid, ids, socia_nif, context=None):
+    def _es_socia_ct_ss(self, cr, uid, ids, socia_nif, context=None):
         """
-        Check if the polissa is linked to a promotional socia.
+        Check if the polissa is linked to a ct ss socia.
         :param socia_nif: NIF of the socia
-        :return: True if the socia is promotional, False otherwise
+        :return: True if the socia is in the ct ss, False otherwise
         """
         config_obj = self.pool.get('res.config')
-        nifs_promocionals = config_obj.get(cr, uid, 'llista_nifs_socia_promocional', '[]')
-        nifs_promocionals = json.loads(nifs_promocionals)
-        return socia_nif in nifs_promocionals
+        nifs_ct_ss = config_obj.get(cr, uid, 'llista_nifs_socia_ct_ss', '[]')
+        nifs_ct_ss = json.loads(nifs_ct_ss)
+        return socia_nif in nifs_ct_ss
 
-    def _get_initial_sortida_state(self, cr, uid, context=None):
-        """Get the initial state for a new sortida."""
-        imd_obj = self.pool.get('ir.model.data')
-        state_id = imd_obj.get_object_reference(
-            cr, uid, 'som_sortida', 'enviar_cor_correcte_pending_state'
-        )[1]
-
-        if state_id:
-            return state_id
-        else:
-            return False
-
-    def _get_socia_real_vinculada(self, cr, uid, ids, field_name, arg, context=None):
+    def _get_te_socia_real_vinculada(self, cr, uid, ids, field_name, arg, context=None):
         """Get the default value for 'te_socia_real_vinculada'."""
         res = dict.fromkeys(ids, True)
-        config_obj = self.pool.get('res.config')
-        nifs_promocionals = config_obj.get(cr, uid, 'llista_nifs_socia_promocional', '[]')
-        nifs_promocionals = json.loads(nifs_promocionals)
         pol_data = self.read(cr, uid, ids, ['soci', 'soci_nif'], context=context)
 
         for pol in pol_data:
-            if not pol['soci'] or not pol['soci_nif']:
-                res[pol['id']] = True
-            elif self._es_socia_promocional(cr, uid, ids, pol['soci_nif']):
+            if self._es_socia_ct_ss(cr, uid, ids, pol.get('soci_nif')):
                 res[pol['id']] = False
-            else:
-                res[pol['id']] = True
         return res
 
     def _get_en_process_de_sortida(self, cr, uid, ids, field_name, arg, context=None):
@@ -142,6 +124,40 @@ class GiscedataPolissa(osv.osv):
                 res[polissa.id] = True
             else:
                 res[polissa.id] = False
+        return res
+
+    def _get_cor_submission_date(self, cr, uid, ids, field_name, arg, context=None):
+        """Date when the polissa is going to be sent to the COR."""
+        imd_obj = self.pool.get('ir.model.data')
+        correcte_state_id = imd_obj.get_object_reference(
+            cr, uid, 'som_sortida', 'enviar_cor_correcte_pending_state')[1]
+        state_id_to_days = {
+            imd_obj.get_object_reference(
+                cr, uid, 'som_sortida', 'enviar_cor_contrate_sense_socia_pending_state')[1]: 365,
+            imd_obj.get_object_reference(
+                cr, uid, 'som_sortida', 'enviar_cor_pendent_falta_un_mes_pending_state')[1]: 30,
+            imd_obj.get_object_reference(
+                cr, uid, 'som_sortida', 'enviar_cor_falta_un_mes_pending_state')[1]: 30,
+            imd_obj.get_object_reference(
+                cr, uid, 'som_sortida', 'enviar_cor_pendent_falta_15_dies_pending_state')[1]: 15,
+            imd_obj.get_object_reference(
+                cr, uid, 'som_sortida', 'enviar_cor_falta_15_dies_pending_state')[1]: 15,
+            imd_obj.get_object_reference(
+                cr, uid, 'som_sortida', 'enviar_cor_pendent_falta_7_dies_pending_state')[1]: 7,
+            imd_obj.get_object_reference(
+                cr, uid, 'som_sortida', 'enviar_cor_falta_7_dies_pending_state')[1]: 7,
+        }
+        res = dict.fromkeys(ids, False)
+        current_pending_state_info = self.get_current_pending_state_info(
+            cr, uid, ids, context=context)
+        for polissa in self.browse(cr, uid, ids, context=context):
+            if not polissa.sortida_state_id or polissa.sortida_state_id.id == correcte_state_id:
+                continue
+            state_initial_date = datetime.strptime(
+                current_pending_state_info[polissa.id]['change_date'], "%Y-%m-%d")
+            # If not in state_id_to_days, is in process to be sent so just return the initial date
+            days_to_add = state_id_to_days.get(polissa.sortida_state_id.id, 0)
+            res[polissa.id] = (state_initial_date + timedelta(days=days_to_add))
         return res
 
     _STORE_SOCIA_VINCULADA = {
@@ -165,14 +181,18 @@ class GiscedataPolissa(osv.osv):
             help='Historial de sortides relacionades amb aquesta pòlissa',
         ),
         'te_socia_real_vinculada': fields.function(
-            _get_socia_real_vinculada, method=True, string='Sòcia real vinculada',
+            _get_te_socia_real_vinculada, method=True, string='Sòcia real vinculada',
             type="boolean", store=_STORE_SOCIA_VINCULADA,
-            help="Indica si la pòlissa té sòcia real vinculada o és promocional",
+            help="Indica si la pòlissa té sòcia real vinculada o és de la campanya CT SS",
         ),
         'en_process_de_sortida': fields.function(
             _get_en_process_de_sortida, method=True, string='En procés de sortida',
             type="boolean", store=_STORE_PROCESS_DE_SORTIDA,
             help="Indica si la pòlissa està en procés de sortida",
+        ),
+        'cor_submission_date': fields.function(
+            _get_cor_submission_date, method=True, string='Data enviament a la COR',
+            type="date"
         ),
     }
 
@@ -245,7 +265,12 @@ class GiscedataPolissa(osv.osv):
             default_change_date = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
             change_date = default_change_date
             custom_change_d = custom_change_dates.get(current_pol_id, False)
-            if custom_change_d and custom_change_d >= last_lines[current_pol_id]['change_date']:
+            if (
+                custom_change_d and (
+                    not last_lines[current_pol_id]
+                    or custom_change_d >= last_lines[current_pol_id]['change_date']
+                )
+            ):
                 change_date = custom_change_d
             if last_lines[current_pol_id]:
                 pending_history_obj.write(
@@ -305,6 +330,70 @@ class GiscedataPolissa(osv.osv):
             else:
                 result[id] = False
         return result
+
+    def request_submission_to_cor(self, cursor, uid, pol_id, context=None):
+        """
+        Request the submission of the polissa to the COR.
+        :param pol_id: id of the polissa to submit
+        :return: ATR case ID
+        """
+        if context is None:
+            context = {}
+
+        polissa_obj = self.pool.get("giscedata.polissa")
+        polissa = polissa_obj.browse(cursor, uid, pol_id, context=context)
+        self._check_submittable_to_cor(cursor, uid, polissa, context=context)
+
+        ctx = context.copy()
+        ctx.update({"sector": "energia"})
+        data_accio = datetime.today()
+
+        config = dict(
+            data_accio=data_accio.strftime("%Y-%m-%d"),
+            motiu="02",
+            activacio="A",
+            phone_pre="0034",  # FIXME: Use new ERP prefixes when available
+            phone_num=polissa.titular.address[0].phone,
+        )
+        res = polissa_obj.crear_cas_atr(cursor, uid, pol_id, "B1", config, context=ctx)
+
+        sw_id = res[2]
+        if not sw_id:
+            raise osv.except_osv(
+                "Error!", "Polissa {}: {}".format(polissa.name, res[1])
+            )
+
+        return sw_id
+
+    def _check_submittable_to_cor(self, cursor, uid, polissa, context=None):
+        if context is None:
+            context = {}
+        sw_obj = self.pool.get("giscedata.switching")
+        pstate_obj = self.pool.get('account.invoice.pending.state')
+        imd_obj = self.pool.get('ir.model.data')
+
+        correct_state_id = imd_obj.get_object_reference(
+            cursor, uid, 'account_invoice_pending',
+            'default_invoice_pending_state'
+        )[1]
+        correct = pstate_obj.read(cursor, uid, correct_state_id, ['name'])['name']
+
+        has_open_atr_cases = bool(sw_obj.search(
+            cursor, uid, [
+                ("cups_polissa_id", "=", polissa.id),
+                ("state", "in", ["draft", "open", "pending"]),
+            ]
+        ))
+
+        if (
+            polissa.te_socia_real_vinculada
+            or not polissa.state == 'activa'
+            or polissa.pending_state != correct
+            or has_open_atr_cases
+        ):
+            raise osv.except_osv(
+                "Error!", "La polissa {} no és enviable a la COR".format(polissa.name)
+            )
 
 
 GiscedataPolissa()
