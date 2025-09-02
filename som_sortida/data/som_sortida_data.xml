@@ -159,4 +159,18 @@ Hola${nom_titular}, tal como te hemos comunicado por email, te recordamos que si
             <field name="process_id" ref="enviar_cor_state_process"/>
         </record>
     </data>
+    <data noupdate="1">
+        <record id="ir_cron_update_som_sortida_states" model="ir.cron" forcecreate="1">
+            <field name="name">Update som_sortida polisses states</field>
+            <field name="user_id" ref="base.user_root"/>
+            <field name="interval_number">1</field>
+            <field name="interval_type">days</field>
+            <field name="numbercall">-1</field>
+            <field eval="False" name="doall"/>
+            <field eval="False" name="active"/>
+            <field eval="'update.pending.states'" name="model"/>
+            <field eval="'update_polisses'" name="function"/>
+            <field eval="'({},)'" name="args"/>
+        </record>
+    </data>
 </openerp>
