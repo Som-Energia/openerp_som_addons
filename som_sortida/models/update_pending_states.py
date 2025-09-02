@@ -11,7 +11,7 @@ class UpdatePendingStates(osv.osv_memory):
 
     _inherit = 'update.pending.states'
 
-    def update_state(self, cursor, uid, polissa_id, history_values, context=None):
+    def update_sortida_state(self, cursor, uid, polissa_id, history_values, context=None):
         """
         If the pending days have passed, the pending_state of the polissa
         will change
@@ -82,14 +82,15 @@ class UpdatePendingStates(osv.osv_memory):
 
         for polissa_id, history_values in last_lines_by_polissa.items():
             tmp_cursor = db.cursor()
-            logger.info('update_state called for polissa with id {}'.format(polissa_id))
+            logger.info('update_sortida_state called for polissa with id {}'.format(polissa_id))
             try:
-                self.update_state(tmp_cursor, uid, polissa_id, history_values)
+                self.update_sortida_state(tmp_cursor, uid, polissa_id, history_values)
                 tmp_cursor.commit()
-                logger.info('update_state succeed for polissa with id {}'.format(polissa_id))
+                logger.info(
+                    'update_sortida_state succeed for polissa with id {}'.format(polissa_id))
             except Exception:
                 tmp_cursor.rollback()
-                logger.info('update_state failed for polissa with id {}'.format(polissa_id))
+                logger.info('update_sortida_state failed for polissa with id {}'.format(polissa_id))
             finally:
                 tmp_cursor.close()
 

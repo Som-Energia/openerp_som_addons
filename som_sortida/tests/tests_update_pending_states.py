@@ -4,7 +4,7 @@ from base_extended_som.tests.utils import avoid_creating_subcursors
 
 class TestUpdatePendingStates(testing.OOTestCaseWithCursor):
 
-    def test_update_state(self):
+    def test_update_sortida_state(self):
         cursor = self.cursor
         uid = self.uid
         imd_obj = self.openerp.pool.get('ir.model.data')
@@ -28,7 +28,7 @@ class TestUpdatePendingStates(testing.OOTestCaseWithCursor):
             'pending_state_id': estat_sense_socia,
             'change_date': '2023-10-01'
         }
-        upd_obj.update_state(cursor, uid, polissa_id, history_values)
+        upd_obj.update_sortida_state(cursor, uid, polissa_id, history_values)
 
         # Assert the expected outcome
         pol = pol_obj.browse(cursor, uid, polissa_id)
