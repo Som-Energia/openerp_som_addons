@@ -21,6 +21,10 @@ def up(cursor, installed_version):
         cursor, context={'module': 'report_tester'}
     )
 
+    pool.get("report.tester.automation")._auto_init(
+        cursor, context={'module': 'report_tester'}
+    )
+
     logger.info("Updating XML files")
     data_files = [
         'data/report_tester_data.xml',
