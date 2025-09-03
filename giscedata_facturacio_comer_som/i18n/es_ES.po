@@ -12,7 +12,7 @@ msgstr ""
 "Project-Id-Version: Som Energia\n"
 "Report-Msgid-Bugs-To: support@openerp.com\n"
 "POT-Creation-Date: 2025-09-03 14:45+0000\n"
-"PO-Revision-Date: 2025-09-03 12:59+0000\n"
+"PO-Revision-Date: 2025-09-03 13:38+0000\n"
 "Last-Translator: Som Energia <itcrowd@somenergia.coop>\n"
 "Language-Team: Spanish (Spain) (http://trad.gisce.net/projects/p/somenergia/language/es_ES/)\n"
 "MIME-Version: 1.0\n"
@@ -849,7 +849,7 @@ msgid ""
 "plana, pots contactar igualment al %s, sense cap cost.<br />Adreça "
 "electrònica: reclama@somenergia.coop<br />Adreça postal: C/ Riu Güell, 68 - "
 "17005 - Girona<br />"
-msgstr "RECLAMACIONES COMERCIALIZACIÓN (SOM ENERGIA): Horario de atención de 9 a 14 h. 900 103 605 (coste de la llamada para la cooperativa).<br />Si tienes tarifa plana de telefonía, también puedes llamarnos al %s.<br />Correo electrónico: reclama@somenergia.coop<br />Dirección C/ Riu Güell, 68 - 17005 - Girona<br />"
+msgstr "RECLAMACIONES COMERCIALIZACIÓN (SOM ENERGIA): Horario de atención de 9 a 14 h. 900 103 605 (coste de la llamada para la cooperativa).<br />Si tienes tarifa plana de telefonía, también puedes llamarnos al %s.<br />Correo electrónico: reclama@somenergia.coop<br />Dirección: C/ Riu Güell, 68 - 17005 - Girona<br />"
 
 #: rml:giscedata_facturacio_comer_som/report/components/emergency_complaints/emergency_complaints.mako:40
 #: rml:giscedata_facturacio_comer_som/report/components/emergency_complaints_td/emergency_complaints_td.mako:31
@@ -893,7 +893,7 @@ msgid ""
 "cooperativa).<br />Si tens tarifa plana de telefonia, també pots trucar-nos "
 "al %s.<br />Adreça electrònica: reclama@somenergia.coop<br />Adreça postal: "
 "C/ Riu Güell, 68 - 17005 - Girona<br />"
-msgstr "Horario de 9 a 14 h. 900103605 (Gratuito. Coste de la llamada para la cooperativa).<br />Si tienes tarifa plana de telefonía, también puedes llamarnos al %s.<br />Correo electrónico: reclama@somenergia.coop<br />Dirección C/ Riu Güell, 68 - 17005 - Girona<br />"
+msgstr "Horario de 9 a 14 h. 900103605 (Gratuito. Coste de la llamada para la cooperativa).<br />Si tienes tarifa plana de telefonía, también puedes llamarnos al %s.<br />Correo electrónico: reclama@somenergia.coop<br />Dirección: C/ Riu Güell, 68 - 17005 - Girona<br />"
 
 #: rml:giscedata_facturacio_comer_som/report/components/emergency_complaints_td/emergency_complaints_td.mako:34
 msgid "Pots obtenir més informació sobre reclamacions en aquest "
