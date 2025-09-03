@@ -6,7 +6,7 @@
         <div id="address_capcelera">
             <b>${_(u"Som Energia, SCCL")}</b><br/>
             <b>${_(u"CIF:")}</b> ${_(u" F55091367")}<br/>
-            <b>${_(u"Domicili:")}</b> ${_(u" C/Riu Güell, 9 (1a planta)<br/>17003, Girona")}<br/>
+            <b>${_(u"Domicili:")}</b> ${_(u" C/Riu Güell, 68<br/>17005, Girona")}<br/>
             <b>${_(u"Adreça electrònica:")} </b> ${_(u" info@somenergia.coop")}
         </div>
         <div id="dades_capcelera">
