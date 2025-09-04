@@ -1293,7 +1293,7 @@ class Investment_Test(unittest.TestCase):
             partner = self.ResPartner.browse(self.personalData.partnerid)
             nom_complet = self.personalData.surname + ", " + self.personalData.name
             self.assertNsEqual(mandate, u"""\
-                creditor_address: CL. PIC DE PEGUERA, 11 A 2 8  17003 GIRONA (ESPAÑA)
+                creditor_address: CL. Riu Güell, 68  17005 GIRONA (ESPAÑA)
                 creditor_code: CREDITORCODE
                 creditor_id: SOM ENERGIA SCCL
                 date: '{today}'

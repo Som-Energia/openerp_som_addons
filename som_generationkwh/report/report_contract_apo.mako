@@ -232,7 +232,7 @@ interest_rate = float(conf_obj.get(inv._cr, inv._uid, 'som_aportacions_interest'
     <div class="LogoPpal">
     <a href="https://www.somenergia.coop" target="_blank">
       <img src="https://www.somenergia.coop/iconespdf/logo_som_energia.svg" alt="Logo Som Energia" width="200" height="100" /></a><br>
-      <p class="sotalogo"><b>${_(u"Som Energia, SCCL")}</b><br>${_(u"CIF: F55091367")}<br>${_(u"Domicili: C/Pic de Peguera, 11. 17003- Girona")}<br>
+      <p class="sotalogo"><b>${_(u"Som Energia, SCCL")}</b><br>${_(u"CIF: F55091367")}<br>${_(u"Domicili: C/Riu Güell, 68. 17005- Girona")}<br>
 ${_(u"Adreça electrònica: aporta@somenergia.coop")}
   </div>
     <div class="TitolHeader">
@@ -356,7 +356,7 @@ ${_(u"Adreça electrònica: aporta@somenergia.coop")}
 <p class="sagnia">${_(u"8.3 La contractant té dret a accedir, rectificar i suprimir les dades, així com altres drets, indicats en la informació addicional que figura a la política de privacitat de SOM ENERGIA, SCCL, disponible al seu espai web d’internet www.somenergia.coop, i que pot exercir els drets o trobar la informació addicional dirigint-se al responsable de tractament de les seves dades de SOM ENERGIA, SCCL:")}</p> 
 
 <ul class="punts">
-<li>${_(u"Per correu postal dirigit a l’adreça:<br>Parc Científic i Tecnològic de la UDG. Edifici Giroemprèn.</br>C/ Pic de Peguera, 11 17003 Girona.")}</li>
+<li>${_(u"Per correu postal dirigit a l’adreça:<br>C/ Riu Güell, 68 17005 Girona.")}</li>
   <li>${_(u"Per correu electrònic dirigit a gdpr@somenergia.coop")}</li>
   <li>${_(u"Per telèfon al número gratuït: 900 103 605 o bé al 872 202 550")}</li>
 </ul>

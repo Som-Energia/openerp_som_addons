@@ -222,7 +222,7 @@
 </div>
 <div>
   <div class="footer">
-    <p class="TextPeu">${_(u"Som Energia, SCCL, CIF F55091367 | Domicili Pic de Peguera, 11 A 28 - 17003 - Girona | generationkwh@somenergia.coop | www.somenergia.coop")}</p>
+    <p class="TextPeu">${_(u"Som Energia, SCCL, CIF F55091367 | Domicili Riu Güell, 68 - 17005 - Girona | generationkwh@somenergia.coop | www.somenergia.coop")}</p>
   </div>
 </div>
 
