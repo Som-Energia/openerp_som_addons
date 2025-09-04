@@ -91,7 +91,7 @@
             %>
             <div id="outer">
                 <p id="vertical_text">
-                    ${_("SOM ENERGIA SCCL Amb seu social a CL. Pic de Peguera, 9 1a · 17003 - Girona - Inscrita al Registre General de Cooperatives, full 13936, Inscripció 1a CIF: F55091367")}
+                    ${_("SOM ENERGIA SCCL Amb seu social a CL. C/ Riu Güell, 68 · 17005 - Girona - Inscrita al Registre General de Cooperatives, full 13936, Inscripció 1a CIF: F55091367")}
                 </p>
             </div>
             <div id="header" class="row-fluid">

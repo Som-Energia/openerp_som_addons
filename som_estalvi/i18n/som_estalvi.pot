@@ -439,7 +439,7 @@ msgid "INFORME ANUAL"
 msgstr ""
 
 #: rml:som_estalvi/report/components/footer.mako:13
-msgid "Som Energia, SCCL - CIF F55091367 | Pic de Peguera, 9 - 17003 - Girona | "
+msgid "Som Energia, SCCL - CIF F55091367 | Riu Güell, 68 - 17005 - Girona | "
 msgstr ""
 
 #: rml:som_estalvi/report/components/graphic.mako:14
