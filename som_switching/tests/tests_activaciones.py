@@ -220,7 +220,7 @@ class TestsAutoActiva(testing.OOTestCase):
         case_d = sw_obj.browse(cursor, uid, case_id)
         return case_d, step_d
 
-    def test_se_cierra_caso_cac_activacion_automatica_009_open(self):
+    def test_no_se_cierra_caso_cac_activacion_automatica_009_open(self):
         cursor = self.txn.cursor
         uid = self.txn.user
         self.switch(self.txn, "comer")
@@ -295,12 +295,6 @@ class TestsAutoActiva(testing.OOTestCase):
 
         partner_id = imd_obj.get_object_reference(cursor, uid, "base", "main_partner")[1]
 
-        activ_custom_id = imd_obj.get_object_reference(
-            cursor, uid, "som_switching", "sw_act_r105_cac"
-        )[1]
-
-        self.assertIn(activ_custom_id, activations_ids)
-
         sw_obj = self.model("giscedata.switching")
         sw_obj.write(cursor, uid, r1_id, {"codi_sollicitud": "201602231255"})
         # El creem ara perque la data sigui posterior a la posada al r101
@@ -367,14 +361,14 @@ class TestsAutoActiva(testing.OOTestCase):
         cas = atc_obj.browse(cursor, uid, cas.id)
         self.assertEqual(cas.subtipus_id.name, "009")
         self.assertEqual(cas.resultat, "01")
-        self.assertTrue(cas.tancar_cac_al_finalitzar_r1)
-        self.assertEqual(cas.state, "done")
+        self.assertFalse(cas.tancar_cac_al_finalitzar_r1)
+        self.assertEqual(cas.state, "open")
         r1_state = r1.read(["state"])[0]["state"]
-        self.assertEqual(r1_state, "done")
+        self.assertEqual(r1_state, "open")
         pol = pol_obj.browse(cursor, uid, pol_id)
         self.assertFalse(pol.refacturacio_pendent)
 
-    def test_se_cierra_caso_cac_activacion_automatica_009_pending(self):
+    def test_no_se_cierra_caso_cac_activacion_automatica_009_pending(self):
         cursor = self.txn.cursor
         uid = self.txn.user
         self.switch(self.txn, "comer")
@@ -449,12 +443,6 @@ class TestsAutoActiva(testing.OOTestCase):
 
         partner_id = imd_obj.get_object_reference(cursor, uid, "base", "main_partner")[1]
 
-        activ_custom_id = imd_obj.get_object_reference(
-            cursor, uid, "som_switching", "sw_act_r105_cac"
-        )[1]
-
-        self.assertIn(activ_custom_id, activations_ids)
-
         sw_obj = self.model("giscedata.switching")
         sw_obj.write(cursor, uid, r1_id, {"codi_sollicitud": "201602231255"})
         # El creem ara perque la data sigui posterior a la posada al r101
@@ -520,10 +508,10 @@ class TestsAutoActiva(testing.OOTestCase):
         cas = atc_obj.browse(cursor, uid, cas.id)
         self.assertEqual(cas.subtipus_id.name, "009")
         self.assertEqual(cas.resultat, "01")
-        self.assertTrue(cas.tancar_cac_al_finalitzar_r1)
-        self.assertEqual(cas.state, "done")
+        self.assertFalse(cas.tancar_cac_al_finalitzar_r1)
+        self.assertEqual(cas.state, "open")
         r1_state = r1.read(["state"])[0]["state"]
-        self.assertEqual(r1_state, "done")
+        self.assertEqual(r1_state, "open")
         pol = pol_obj.browse(cursor, uid, pol_id)
         self.assertFalse(pol.refacturacio_pendent)
 

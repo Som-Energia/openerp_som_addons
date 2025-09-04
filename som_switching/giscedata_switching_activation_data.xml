@@ -1,19 +1,6 @@
 <?xml version="1.0"?>
 <openerp>
     <data>
-        <!--R1-->
-        <record model="giscedata.switching.activation.config" id="sw_act_r105_cac">
-            <field name="proces_id" ref="giscedata_switching.sw_proces_r1"/>
-            <field name="step_id" ref="giscedata_switching.sw_step_r1_05"/>
-            <field name="description">Quan s'importa o activa un R1-05 que sigui dels subtipus 009 o 036,
-                sigui procedent, estigui en estat obert i el seu contracte no tingui refacturacio pendent,
-                es treu facturacio suspesa i refacturacio pendent. A més es marca el CAC com a
-                "Tancar al finalitzar CAC", cosa que provoca que el propi cas CAC es passi a finalitzat i
-                el R1 també.</field>
-            <field name="method">tancar_reclamacio_cac</field>
-            <field name="conditions">Aplica sempre</field>
-            <field name="comerdist">comer</field>
-        </record>
         <!--M1-->
         <record model="giscedata.switching.activation.config" id="sw_act_m102_ct_subrogacio_mailchimp">
             <field name="proces_id" ref="giscedata_switching.sw_proces_m1"/>
@@ -103,11 +90,6 @@ Les lectures, comptadors, linies extra, F1 i factures de proveidor posteriors a 
             <field name="conditions">Aplica sempre</field>
             <field name="comerdist">comer</field>
             <field name="sequence">999</field>
-        </record>
-    </data>
-    <data noupdate="1">
-        <record model="giscedata.switching.activation.config" id="sw_act_r105_cac">
-            <field name="is_automatic" eval="True"/>
         </record>
     </data>
 </openerp>
