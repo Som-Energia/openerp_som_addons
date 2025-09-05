@@ -161,7 +161,7 @@ class SomreOvUsersTests(testing.OOTestCase):
             vat=username,
             name='Hari, Mata',
             email='matahari@somenergia.coop',
-            address='Carrer Pic de Peguera, 9',
+            address='Carrer Riu Güell, 68',
             city='Girona',
             zip='17002',
             state='Girona',

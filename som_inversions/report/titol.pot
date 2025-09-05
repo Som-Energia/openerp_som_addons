@@ -29,7 +29,7 @@ msgstr ""
 msgid "I.- Que SOM ENERGIA SCCL és una Cooperativa de Consumidors/es i Usuaris/es que té per objecte la comercialització i producció d’energia elèctrica i calorífica provinent de fonts renovables, així com la prestació de serveis i distribució de productes relacionats."
 msgstr ""
 
-msgid "Per una part, en Gijsbert Huijink, amb NIE X6963738M, i domicili als efectes del present contracte a l'Edifici Jaume Casademont, al carrer Pic de Peguera, 15, despatx 16, de Girona."
+msgid "Per una part, en Gijsbert Huijink, amb NIE X6963738M, i domicili als efectes del present contracte al carrer Riu Güell, 68, de Girona."
 msgstr ""
 
 msgid "I- REUNITS"
@@ -53,7 +53,7 @@ msgstr ""
 msgid "Política de privacitat"
 msgstr ""
 
-msgid "Gijsbert Huijink, en nom i representació de SOM ENERGIA SCCL, amb NIF F550911367, i domiciliada a Girona, a l'Edifici Jaume Casademont, al carrer Pic de Peguera, 15, despatx 16, inscrita al Registre de Cooperatives de Girona amb el número d’assentament 1 en el full 13936. Està especialment facultat per aquest acte per acord del Consell Rector de Som Energia SCCL en data 18 de juny de 2012, en endavant Som Energia SCCL."
+msgid "Gijsbert Huijink, en nom i representació de SOM ENERGIA SCCL, amb NIF F550911367, i domiciliada a Girona, al carrer Riu Güell, 68, inscrita al Registre de Cooperatives de Girona amb el número d’assentament 1 en el full 13936. Està especialment facultat per aquest acte per acord del Consell Rector de Som Energia SCCL en data 18 de juny de 2012, en endavant Som Energia SCCL."
 msgstr ""
 
 msgid "Les parts aproven i accepten totes i cadascuna de les estipulacions del contracte, que malgrat sigui privat, volen que tingui tota la força legal d’obligar com si en document públic l’haguessin atorgat, i el signen, en doble exemplar a un sol efecte, a Girona el {0}."
@@ -62,7 +62,7 @@ msgstr ""
 msgid "4.3.- En el cas de que no hi hagi nous subscriptors/es interessats/des, SOM ENERGIA SCCL recomprarà, i fins a un màxim anual del 10 % del total de l’emissió, els títols el retorn dels quals hagi estat sol·licitat a {0} pel seu import nominal, que es pagarà mitjançant ingrés de la quantitat resultant al compte bancari, indicat per {0}, dins el termini, màxim, de dos mesos des de la data de recepció de sol·licitud de devolució"
 msgstr ""
 
-msgid "Les dades que ens ha proporcionat a través de la sol·licitud seran incorporades a un fitxer de titularitat de SOM ENERGIA, SCCL creat amb la finalitat de ser utilitzades en la gestió administrativa i comercial de la seva sol·licitud i de la nostra eventual relació contractual. En qualsevol moment pot exercir els seus drets d'accés, rectificació, oposició i cancel·lació dirigint-se a les oficines del carrer Pic de Peguera, 15, despatx 16 del Parc Científic i Tecnològic de la UdG, 17003 - Girona o bé escriure al mail <u>info@somenergia.coop.</u>"
+msgid "Les dades que ens ha proporcionat a través de la sol·licitud seran incorporades a un fitxer de titularitat de SOM ENERGIA, SCCL creat amb la finalitat de ser utilitzades en la gestió administrativa i comercial de la seva sol·licitud i de la nostra eventual relació contractual. En qualsevol moment pot exercir els seus drets d'accés, rectificació, oposició i cancel·lació dirigint-se a les oficines del carrer Riu Güell, 68, 17005 - Girona o bé escriure al mail <u>info@somenergia.coop.</u>"
 msgstr ""
 
 msgid "II.- Que en data 23/09/12 SOM ENERGIA SCCL ha fet una emissió de títols participatius a 5 anys per import de 1.500.000 € (títols de 1.000 € cadascun) amb l’objecte de finançar instal·lacions de producció d’energia elèctrica i calorífica provinent de fonts renovables i projectes d’eficiència i estalvi energètic."

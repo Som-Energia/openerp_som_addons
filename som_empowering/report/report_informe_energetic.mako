@@ -41,8 +41,8 @@ def get_base_locale(locale):
             <div id="logo"><img src="${addons_path}/som_empowering/report/logo.jpg" width="150" height="80" alt=""/></div>
             <div id="dades">
             <p class="bold">Som Energia, SCCL</p>
-			<p>C/Pic de Peguera, 11. </p>
-                        <p>17003- Girona</p>
+			<p>C/Riu Güell, 68. </p>
+                        <p>17005- Girona</p>
 			<p>infoenergia@somenergia.coop</p>
             </div>
         </div>

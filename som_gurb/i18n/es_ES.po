@@ -1026,11 +1026,11 @@ msgstr "AUTORIZO A:"
 
 #: rml:som_gurb/report/som_gurb_autoritzacio_representant.mako:43
 msgid ""
-"SOM ENERGIA, SCCL, amb NIF F55091367 i domicili social al carrer  Pic de "
-"Peguera 11, planta, 17003 Girona (“Autoritzada”) a actuar com a representant"
+"SOM ENERGIA, SCCL, amb NIF F55091367 i domicili social al carrer  Riu Güell, 68 "
+", 17005 Girona (“Autoritzada”) a actuar com a representant"
 "  integral del meu CUPS en tant que associat a l'autoconsum col·lectiu CAU "
 "provisional"
-msgstr "SOM ENERGIA, SCCL, con NIF F55091367 y domicilio social en la calle Pic de Peguera 11, planta, 17003 Girona (“Autorizada”) a actuar como representante integral del mi CUPS como asociado al autoconsumo colectivo CAU provisional"
+msgstr "SOM ENERGIA, SCCL, con NIF F55091367 y domicilio social en la calle Riu Güell, 68, 17005 Girona (“Autorizada”) a actuar como representante integral del mi CUPS como asociado al autoconsumo colectivo CAU provisional"
 
 #: rml:som_gurb/report/som_gurb_autoritzacio_representant.mako:43
 msgid ""

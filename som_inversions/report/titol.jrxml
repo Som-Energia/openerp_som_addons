@@ -63,9 +63,8 @@
 					<font size="6"/>
 				</textElement>
 				<text><![CDATA[Som Energia SCCL
-PCiT UdG - Edifici Jaume Casademont
-C/Pic de Peguera, 15
-17003 Girona]]></text>
+C/Riu Güell, 68
+17005 Girona]]></text>
 			</staticText>
 			<textField>
 				<reportElement x="440" y="30" width="110" height="20"/>
@@ -114,7 +113,7 @@ C/Pic de Peguera, 15
 				<textElement textAlignment="Justified" lineSpacing="Single">
 					<font size="10"/>
 				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA[tr($V{L},"Per una part, en Gijsbert Huijink, amb NIE X6963738M, i domicili als efectes del present contracte a l'Edifici Jaume Casademont, al carrer Pic de Peguera, 15, despatx 16, de Girona.")]]></textFieldExpression>
+				<textFieldExpression class="java.lang.String"><![CDATA[tr($V{L},"Per una part, en Gijsbert Huijink, amb NIE X6963738M, i domicili als efectes del present contracte a al carrer Riu Güell, 68, de Girona.")]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="0" y="151" width="555" height="26"/>
@@ -135,7 +134,7 @@ C/Pic de Peguera, 15
 				<textElement textAlignment="Justified" lineSpacing="Single">
 					<font size="10"/>
 				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA[tr($V{L},"Gijsbert Huijink, en nom i representació de SOM ENERGIA SCCL, amb NIF F550911367, i domiciliada a Girona, a l'Edifici Jaume Casademont, al carrer Pic de Peguera, 15, despatx 16, inscrita al Registre de Cooperatives de Girona amb el número d’assentament 1 en el full 13936. Està especialment facultat per aquest acte per acord del Consell Rector de Som Energia SCCL en data 18 de juny de 2012, en endavant Som Energia SCCL.")]]></textFieldExpression>
+				<textFieldExpression class="java.lang.String"><![CDATA[tr($V{L},"Gijsbert Huijink, en nom i representació de SOM ENERGIA SCCL, amb NIF F550911367, i domiciliada a Girona, al carrer Riu Güell, 68, inscrita al Registre de Cooperatives de Girona amb el número d’assentament 1 en el full 13936. Està especialment facultat per aquest acte per acord del Consell Rector de Som Energia SCCL en data 18 de juny de 2012, en endavant Som Energia SCCL.")]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="0" y="308" width="385" height="15"/>
@@ -388,7 +387,7 @@ C/Pic de Peguera, 15
 				<textElement verticalAlignment="Middle" lineSpacing="Single" markup="html">
 					<font size="6"/>
 				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA[tr($V{L},"Les dades que ens ha proporcionat a través de la sol·licitud seran incorporades a un fitxer de titularitat de SOM ENERGIA, SCCL creat amb la finalitat de ser utilitzades en la gestió administrativa i comercial de la seva sol·licitud i de la nostra eventual relació contractual. En qualsevol moment pot exercir els seus drets d'accés, rectificació, oposició i cancel·lació dirigint-se a les oficines del carrer Pic de Peguera, 15, despatx 16 del Parc Científic i Tecnològic de la UdG, 17003 - Girona o bé escriure al mail <u>info@somenergia.coop.</u>")]]></textFieldExpression>
+				<textFieldExpression class="java.lang.String"><![CDATA[tr($V{L},"Les dades que ens ha proporcionat a través de la sol·licitud seran incorporades a un fitxer de titularitat de SOM ENERGIA, SCCL creat amb la finalitat de ser utilitzades en la gestió administrativa i comercial de la seva sol·licitud i de la nostra eventual relació contractual. En qualsevol moment pot exercir els seus drets d'accés, rectificació, oposició i cancel·lació dirigint-se a les oficines del carrer Riu Güell, 68, 17005 - Girona o bé escriure al mail <u>info@somenergia.coop.</u>")]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="0" y="0" width="165" height="17"/>

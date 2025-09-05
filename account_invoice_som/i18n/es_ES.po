@@ -37,10 +37,10 @@ msgstr "Factura SomEnergia"
 
 #: rml:account_invoice_som/report/account_invoice_som.mako:72
 msgid ""
-"SOM ENERGIA SCCL Amb seu social a CL. Pic de Peguera, 9 1a · 17003 - Girona "
+"SOM ENERGIA SCCL Amb seu social a CL. C/ Riu Güell, 68 · 17005 - Girona "
 "- Inscrita al Registre General de Cooperatives, full 13936, Inscripció 1a "
 "CIF: F55091367"
-msgstr "SOM ENERGIA SCCL Con sede social en CL. Pic de Peguera, 9 1a · 17003 - Girona - Inscrita en el Registro General de Cooperativas, hoja 13936, Inscripción 1a CIF: F55091367"
+msgstr "SOM ENERGIA SCCL Con sede social en CL. C/ Riu Güell, 68 · 17005 - Girona - Inscrita en el Registro General de Cooperativas, hoja 13936, Inscripción 1a CIF: F55091367"
 
 #: rml:account_invoice_som/report/account_invoice_som.mako:88
 msgid "CIF:"

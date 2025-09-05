@@ -375,8 +375,8 @@ msgstr ""
 
 #: rml:som_inversions/report/report_generationkwh_doc.mako:228
 msgid ""
-"SOM ENERGIA, S.C.C.L., amb domicili a carrer Pic de Peguera, 15, Parc "
-"Científic i Tecnològic de la UdG, 17003 - Girona i amb NIF F55091367."
+"SOM ENERGIA, S.C.C.L., amb domicili a carrer Riu Güell, 68, "
+"17005 - Girona i amb NIF F55091367."
 msgstr ""
 
 #: rml:som_inversions/report/report_generationkwh_doc.mako:231
@@ -1884,6 +1884,6 @@ msgstr ""
 
 #: rml:som_inversions/report/report_retencions_interessos.mako:228
 msgid ""
-"Som Energia, SCCL, CIF F55091367 | Domicili Pic de Peguera, 11 A 28 - 17003 "
+"Som Energia, SCCL, CIF F55091367 | Domicili Riu Güell, 68 - 17005 "
 "- Girona | aporta@somenergia.coop | www.somenergia.coop"
 msgstr ""

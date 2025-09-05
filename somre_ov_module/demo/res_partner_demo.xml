@@ -98,7 +98,7 @@
             <field name="name">Hari, Mata</field>
             <field name="email">matahari@somenergia.coop</field>
             <field name="partner_id" ref="res_partner_res_users_already_staff"/>
-            <field name="street">Carrer Pic de Peguera, 9</field>
+            <field name="street">Carrer Riu Güell, 68</field>
             <field name="city">Girona</field>
             <field name="zip">17002</field>
             <field name="state_id">20</field>
