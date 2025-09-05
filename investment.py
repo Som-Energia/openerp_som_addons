@@ -304,7 +304,8 @@ class GenerationkwhInvestment(osv.osv):
         amount = 0
 
         for id in investment_ids:
-            amount += self.read(cursor, uid, id, ['nshares'])['nshares'] * gkwh.shareValue
+            inv_data = self.read(cursor, uid, id, ['nshares', 'amortized_amount'])
+            amount += (inv_data['nshares'] * gkwh.shareValue) - inv_data['amortized_amount']
 
         return amount
 
