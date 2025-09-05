@@ -27,7 +27,7 @@
         <b> AUTORITZO: </b>
     </p>
     <p>
-        SOM ENERGIA, SCCL, amb NIF F55091367 i domicili social al carrer  Pic de Peguera 11, planta, 17003 Girona (“Autoritzada”) a actuar com a representant  integral del meu CUPS en tant que associat a l'autoconsum col·lectiu CAU provisional ${informe["cau"]}, per termini il·limitat, a fi que pugui dur a terme les ACTUACIONS següents:
+        SOM ENERGIA, SCCL, amb NIF F55091367 i domicili social al carrer  Riu Güell 68, 17005 Girona (“Autoritzada”) a actuar com a representant  integral del meu CUPS en tant que associat a l'autoconsum col·lectiu CAU provisional ${informe["cau"]}, per termini il·limitat, a fi que pugui dur a terme les ACTUACIONS següents:
     </p>
     <ul>
         <li>
@@ -89,7 +89,7 @@
         <b> AUTORIZO A: </b>
     </p>
     <p>
-        SOM ENERGIA, SCCL, con NIF F55091367 y domicilio social en la calle Pic de Peguera 11, planta, 17003 Girona (“Autorizada”) a actuar como representante integral del mi CUPS como asociado al autoconsumo colectivo CAU provisional ${informe["cau"]}, por plazo ilimitado, a fin de que pueda realizar las siguientes ACTUACIONES:
+        SOM ENERGIA, SCCL, con NIF F55091367 y domicilio social en la calle Riu Güell 68, 17005 Girona (“Autorizada”) a actuar como representante integral del mi CUPS como asociado al autoconsumo colectivo CAU provisional ${informe["cau"]}, por plazo ilimitado, a fin de que pueda realizar las siguientes ACTUACIONES:
     </p>
     <ul>
         <li>
