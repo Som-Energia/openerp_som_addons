@@ -24,6 +24,7 @@
         "views/report_test_view.xml",
         "views/report_test_group_view.xml",
         "security/ir.model.access.csv",
+        "data/report_tester_data.xml",
     ],
     "active": False,
     "installable": True,
