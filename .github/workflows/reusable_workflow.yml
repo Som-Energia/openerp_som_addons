@@ -107,7 +107,6 @@ jobs:
             git clone --depth 1 https://github.com/gisce/oorq.git -b api_v5 $ROOT_DIR_SRC/oorq
           fi
           git clone --depth 1 https://github.com/gisce/poweremail.git $ROOT_DIR_SRC/poweremail2
-          git clone --depth 1 https://github.com/gisce/openerp-sentry.git -b v5_legacy $ROOT_DIR_SRC/openerp-sentry
           git clone --depth 1 https://github.com/gisce/ws_transactions.git $ROOT_DIR_SRC/ws_transactions
           git clone --depth 1 https://github.com/gisce/ir_attachment_mongodb.git $ROOT_DIR_SRC/ir_attachment_mongodb
           git clone --depth 1 https://github.com/gisce/mongodb_backend.git -b gisce $ROOT_DIR_SRC/mongodb_backend
