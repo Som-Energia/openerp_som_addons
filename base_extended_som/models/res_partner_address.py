@@ -81,8 +81,8 @@ class ResPartnerAddress(osv.osv):
         if context is None:
             context = {}
         res = self.pool.get('res.phone.national.code').search(
-            cr, uid, [('name', '=', '+34')], limit=1, context=context)[0]
-        return res
+            cr, uid, [('name', '=', '+34')], limit=1, context=context)
+        return res and res[0] or None
 
     _defaults = {
         'phone_prefix': _get_default_prefix,

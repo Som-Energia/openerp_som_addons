@@ -58,7 +58,7 @@ class TestsSomLeadWww(testing.OOTestCase):
                     "block": "B",
                 },
                 "email": "pepito@foo.bar",
-                "phone": "972123456",
+                "phone": "+34 972123456",
                 "lang": "es_ES",
                 "privacy_conditions": True,
             },
@@ -1139,3 +1139,46 @@ class TestsSomLeadWww(testing.OOTestCase):
         tensio_trifasica = ir_model_o.get_object_reference(
             self.cursor, self.uid, 'giscedata_tensions', 'tensio_3x230_400')[1]
         self.assertEqual(lead.polissa_id.tensio_normalitzada.id, tensio_trifasica)
+
+    def test_lead_with_phone_without_prefix_dont_fail(self):
+        www_lead_o = self.get_model("som.lead.www")
+        lead_o = self.get_model("giscedata.crm.lead")
+
+        values = self._basic_values
+        values["new_member_info"]["phone"] = "612345678"
+
+        result = www_lead_o.create_lead(self.cursor, self.uid, self._basic_values)
+        self.assertFalse(result["error"])
+
+        www_lead_o.activate_lead(self.cursor, self.uid, result["lead_id"], context={"sync": True})
+
+        lead = lead_o.browse(self.cursor, self.uid, result["lead_id"])
+
+        # Check that the phone and prefix are correctly set
+        self.assertEqual(lead.titular_phone, "612345678")
+        self.assertEqual(lead.titular_phone_prefix, False)
+
+        # +34 is the default value in the res.partner.address
+        self.assertEqual(lead.polissa_id.direccio_notificacio.phone, "612345678")
+        self.assertEqual(lead.polissa_id.direccio_notificacio.phone_prefix.name, "+34")
+
+    def test_new_lead_with_phone_prefix(self):
+        www_lead_o = self.get_model("som.lead.www")
+        lead_o = self.get_model("giscedata.crm.lead")
+
+        values = self._basic_values
+        values["new_member_info"]["phone"] = "+850 612345678"
+
+        result = www_lead_o.create_lead(self.cursor, self.uid, self._basic_values)
+        self.assertFalse(result["error"])
+
+        www_lead_o.activate_lead(self.cursor, self.uid, result["lead_id"], context={"sync": True})
+
+        lead = lead_o.browse(self.cursor, self.uid, result["lead_id"])
+
+        # Check that the phone and prefix are correctly set
+        self.assertEqual(lead.titular_phone, "612345678")
+        self.assertEqual(lead.titular_phone_prefix.name, "+850")
+
+        self.assertEqual(lead.polissa_id.direccio_notificacio.phone, "612345678")
+        self.assertEqual(lead.polissa_id.direccio_notificacio.phone_prefix.name, "+850")
