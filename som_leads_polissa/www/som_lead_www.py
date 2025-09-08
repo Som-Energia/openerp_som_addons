@@ -352,7 +352,7 @@ class SomLeadWww(osv.osv_memory):
         """Splits (if possible) the phone number and prefix using the prefixes table"""
         phone_prefix_o = self.pool.get('res.phone.national.code')
         if not phone_full:
-            return None, ''
+            return None, None
         parts = phone_full.split(' ', 1)
         if len(parts) == 2 and parts[0].startswith('+'):
             prefix_res = phone_prefix_o.search(cursor, uid, [('name', '=', parts[0])], limit=1)
