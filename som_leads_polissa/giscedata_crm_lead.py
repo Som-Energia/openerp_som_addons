@@ -188,6 +188,25 @@ class GiscedataCrmLead(osv.OsvInherits):
 
         return partner_id
 
+    def _get_values_titular(self, cursor, uid, vat, context=None):
+        partner_o = self.pool.get("res.partner")
+        address_o = self.pool.get("res.partner.address")
+
+        vals = super(GiscedataCrmLead, self)._get_values_titular(cursor, uid, vat, context=context)
+
+        # We add the phone prefix if found
+        pids = partner_o.search(cursor, uid, [('vat', '=', vals['titular_vat'])])
+        if len(pids):
+            addrs = partner_o.address_get(cursor, uid, pids[0], adr_pref=['default'])
+            if addrs.get("default"):
+                ad_id = addrs.get("default")
+                adr_info = address_o.read(
+                    cursor, uid, ad_id, ['phone_prefix', 'mobile_prefix'], context=context)
+                vals["titular_phone_prefix"] = adr_info.get("phone_prefix", [False])[0]
+                vals["titular_mobile_prefix"] = adr_info.get("mobile_prefix", [False])[0]
+
+        return vals
+
     def _create_or_get_representative(self, cursor, uid, vat, name, context=None):
         if context is None:
             context = {}
