@@ -22,8 +22,12 @@ _MEMBER_FEE_PURPOSE = 'QUOTA SOCI'
 
 
 class GiscedataCrmLead(osv.OsvInherits):
-
     _inherit = "giscedata.crm.lead"
+
+    def __init__(self, *args, **kwargs):
+        super(GiscedataCrmLead, self).__init__(*args, **kwargs)
+        self.lead_titular_adr_to_adr["titular_phone_prefix"] = "phone_prefix"
+        self.lead_titular_adr_to_adr["titular_mobile_prefix"] = "mobile_prefix"
 
     def contract_pdf(self, cursor, uid, ids, context=None):
         if context is None:
@@ -420,7 +424,11 @@ class GiscedataCrmLead(osv.OsvInherits):
         "birthdate": fields.date("Data de naixement"),
         "gender": fields.selection(GENDER_SELECTION, "Gènere"),
         "comercial_info_accepted": fields.boolean("Accepta informació comercial (SomServeis)"),
-        "crm_lead_id": fields.integer("ID del lead al CRM"),
+	"crm_lead_id": fields.integer("ID del lead al CRM"),
+        'titular_phone_prefix': fields.many2one(
+            'res.phone.national.code', 'Prefix', required=False),
+        'titular_mobile_prefix': fields.many2one(
+            'res.phone.national.code', 'Prefix', required=False),
     }
 
     _defaults = {

@@ -80,6 +80,12 @@ class SomLeadWww(osv.osv_memory):
                 "linked_member value not valid: %s" % member_type
             )
 
+        # Split phone and prefix
+        member["phone_prefix"], member["phone"] = self._split_phone_prefix(
+            cr, uid, member.get("phone"))
+        member["mobile_prefix"], member["phone2"] = self._split_phone_prefix(
+            cr, uid, member.get("phone2"))
+
         values = {
             "state": "open",
             "name": "{} / {}".format(member["vat"].upper(), contract_info["cups"]),
@@ -124,6 +130,8 @@ class SomLeadWww(osv.osv_memory):
             "titular_email": member.get("email"),
             "titular_phone": member.get("phone"),
             "titular_mobile": member.get("phone2"),
+            "titular_phone_prefix": member.get("phone_prefix"),
+            "titular_mobile_prefix": member.get("mobile_prefix"),
             "use_cont_address": False,
             "donation": www_vals.get("donation", False),
             "member_quota_payment_type": www_vals.get("member_payment_type"),
@@ -339,6 +347,17 @@ class SomLeadWww(osv.osv_memory):
                 "INVALID_MEMBER",
                 "Member has been not found: {} not match with VAT {}".format(number, vat)
             )
+
+    def _split_phone_prefix(self, cursor, uid, phone_full, context=None):
+        """Splits (if possible) the phone number and prefix using the prefixes table"""
+        phone_prefix_o = self.pool.get('res.phone.national.code')
+        if not phone_full:
+            return None, ''
+        parts = phone_full.split(' ', 1)
+        if len(parts) == 2 and parts[0].startswith('+'):
+            prefix_res = phone_prefix_o.search(cursor, uid, [('name', '=', parts[0])], limit=1)
+            return prefix_res and prefix_res[0] or None, parts[1]
+        return None, phone_full
 
 
 SomLeadWww()
