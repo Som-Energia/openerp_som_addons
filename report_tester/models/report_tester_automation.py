@@ -15,7 +15,7 @@ class ReportTesterAutomation(osv.osv_memory):
         exe_info = rtg_obj.execute_tests(cursor, uid, rtg_ids, context)
         acc_info = rtg_obj.accept_tests(cursor, uid, rtg_ids, context)
         results = rtg_obj.get_active_results(cursor, uid, rtg_ids, context)
-        results = set(results)
+        results = list(set(results))
         error = len(results) != 1 or results[0] != 'equals'
 
         return error, exe_info, acc_info, rtg_ids
