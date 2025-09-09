@@ -7,7 +7,7 @@ class TestsGurbWww(TestsGurbBase):
     def test_get_info_gurb__bad_gurb_code(self):
         gurb_www_o = self.openerp.pool.get("som.gurb.www")
 
-        bad_gurb_name = "gurb_group_0001_erroni"
+        bad_gurb_name = "erroneus_code"
         result = gurb_www_o.get_info_gurb(
             self.cursor, self.uid,
             bad_gurb_name,
@@ -24,10 +24,23 @@ class TestsGurbWww(TestsGurbBase):
         bad_access_tariff = "6.1TD"
         result = gurb_www_o.get_info_gurb(
             self.cursor, self.uid,
-            'gurb_group_0001',
+            'G001',
             bad_access_tariff
         )
 
         msg = u"Tarifa d'accés no suportada '{}'".format(bad_access_tariff)
         self.assertEqual(result["error"], msg)
         self.assertEqual(result["code"], "UnsuportedAccessTariff")
+
+    # TODO: Wip, this test should be reviewed
+
+    def test_get_info_gurb__available_betas(self):
+        gurb_www_o = self.openerp.pool.get("som.gurb.www")
+
+        result = gurb_www_o.get_info_gurb(
+            self.cursor, self.uid,
+            'G001',
+            "2.0TD"
+        )
+
+        self.assertEqual(result["available_betas"], [x / 10.0 for x in range(5, 105, 5)])
