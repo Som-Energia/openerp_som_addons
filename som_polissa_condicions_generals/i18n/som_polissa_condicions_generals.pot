@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OpenERP Server 5.0.14\n"
 "Report-Msgid-Bugs-To: support@openerp.com\n"
-"POT-Creation-Date: 2025-06-10 11:25+0000\n"
-"PO-Revision-Date: 2025-06-10 11:25+0000\n"
+"POT-Creation-Date: 2025-09-03 17:02+0000\n"
+"PO-Revision-Date: 2025-09-03 17:02+0000\n"
 "Last-Translator: <>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -380,7 +380,7 @@ msgid "Domicili:"
 msgstr ""
 
 #: rml:som_polissa_condicions_generals/report/components/capcalera.mako:9
-msgid " C/Pic de Peguera, 9 (1a planta)<br/>17003, Girona"
+msgid " C/Riu Güell, 68<br/>17005, Girona"
 msgstr ""
 
 #: rml:som_polissa_condicions_generals/report/components/capcalera.mako:10
