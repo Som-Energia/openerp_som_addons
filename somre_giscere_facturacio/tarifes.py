@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import
 from libfacturacioatr.pool.generation import (Representa, pd, REEcurve, REEcurveQH,
-                                              Codsvbaj, Codsvbaqh, Component, ComponentQH, Codsvsub, Codsvsuqh)
+                                              Codsvbaj, Codsvbaqh, Component, ComponentQH,
+                                              Codsvsub, Codsvsuqh)
 import numpy as np
 
 class RepresentaSom(Representa):
@@ -26,14 +27,15 @@ class RepresentaSom(Representa):
         desired_audit_components = ('desvios_bajar', 'desvios_subir',
                                     'desvio_bruto_subir', 'desvio_bruto_bajar',
                                     'desvio_com', 'desvio_rep')
-        return dict([x for x in self.get_available_audit_coefs_all().items() if x[0] in desired_audit_components])  # noqa: E501
+        return dict([x for x in self.get_available_audit_coefs_all().items()
+                     if x[0] in desired_audit_components])
 
     # Desviaments
     def factura_desviaments(self):
         is_isp15 = self.conf.get('ISP15', False)
 
         desv_instalacio = self.corbes.get('desviament_instalacio', [])
-        desv_sistema_per_hora = self.corbes.get('desviaments_sistema_per_hora', [])  # unitat oferta
+        desv_sistema_per_hora = self.corbes.get('desviaments_sistema_per_hora', [])  # UoF
 
         desviaments_df = pd.DataFrame(data=desv_instalacio)
         desviaments_df.rename(columns={'value': 'desviament_instalacio'}, inplace=True)  # KWh
@@ -42,7 +44,8 @@ class RepresentaSom(Representa):
         desviaments_instalacions_df = pd.DataFrame(data=desv_instalacions)
         desviaments_instalacions_df.rename(columns={'value': 'desviament_instalacions',
                                                     'subir': 'desviament_subir_instalacions',
-                                                    'bajar': 'desviament_bajar_instalacions'}, inplace=True)  # KWh  # noqa: E501
+                                                    'bajar': 'desviament_bajar_instalacions'},
+                                           inplace=True)  # KWh
         desviaments_instalacions_df = desviaments_instalacions_df.groupby([
             'local_timestamp',
             'timestamp'
@@ -55,10 +58,11 @@ class RepresentaSom(Representa):
         desv_instalacions_actual = self.corbes.get('desviament_instalacions_actual', [])
         if len(desv_instalacions_actual):
             desviaments_instalacions_actual_df = pd.DataFrame(data=desv_instalacions_actual)
-            desviaments_instalacions_actual_df.rename(columns={'value': 'desviament_instalacions_actual',  # noqa: E501
-                                                               'subir': 'desviament_subir_instalacions_actual',  # noqa: E501
-                                                               'bajar': 'desviament_bajar_instalacions_actual'},  # noqa: E501
-                                                      inplace=True)  # KWh
+            desviaments_instalacions_actual_df.rename(
+                columns={'value': 'desviament_instalacions_actual',
+                         'subir': 'desviament_subir_instalacions_actual',
+                         'bajar': 'desviament_bajar_instalacions_actual'},
+                inplace=True)  # KWh
             desviaments_instalacions_actual_df = desviaments_instalacions_actual_df.groupby([
                 'local_timestamp',
                 'timestamp'
@@ -70,7 +74,8 @@ class RepresentaSom(Representa):
 
         desv_sistema_per_hora.rename(columns={'value': 'desviament_sistema',
                                               'subir': 'desviament_subir_sistema',
-                                              'bajar': 'desviament_bajar_sistema'}, inplace=True)  # KWh  # noqa: E501
+                                              'bajar': 'desviament_bajar_sistema'},
+                                     inplace=True)  # KWh
 
         desviaments_representacio_net = self.corbes.get('desviament_representacio_net')
         desviaments_representacio_net_df = pd.DataFrame(data=desviaments_representacio_net)
@@ -245,15 +250,20 @@ class RepresentaSom(Representa):
             desvios_cils = desviaments_instalacions_actual_df.to_dict('records')
             desvios_cils = sorted(desvios_cils, key=lambda d: d['timestamp'])
             if is_isp15:
-                desvio_bruto_subir = self.get_componentQH_from_dict_list(desvios_cils, self.data_inici,
-                                                                         magn='desviament_subir_instalacions_actual')  # noqa: E501
-                desvio_bruto_bajar = self.get_componentQH_from_dict_list(desvios_cils, self.data_inici,
-                                                                         magn='desviament_bajar_instalacions_actual')  # noqa: E501
+                desvio_bruto_subir = self.get_componentQH_from_dict_list(
+                    desvios_cils, self.data_inici,
+                    magn='desviament_subir_instalacions_actual'
+                )
+                desvio_bruto_bajar = self.get_componentQH_from_dict_list(
+                    desvios_cils, self.data_inici,  magn='desviament_bajar_instalacions_actual'
+                )
             else:
-                desvio_bruto_subir = self.get_component_from_dict_list(desvios_cils, self.data_inici,
-                                                                       magn='desviament_subir_instalacions_actual')  # noqa: E501
-                desvio_bruto_bajar = self.get_component_from_dict_list(desvios_cils, self.data_inici,
-                                                                       magn='desviament_bajar_instalacions_actual')  # noqa: E501
+                desvio_bruto_subir = self.get_component_from_dict_list(
+                    desvios_cils, self.data_inici, magn='desviament_subir_instalacions_actual'
+                )
+                desvio_bruto_bajar = self.get_component_from_dict_list(
+                    desvios_cils, self.data_inici, magn='desviament_bajar_instalacions_actual'
+                )
         else:
             if is_isp15:
                 desvio_bruto_subir = ComponentQH(self.data_inici)
@@ -300,7 +310,7 @@ class RepresentaSom(Representa):
         is_isp15 = self.conf.get('ISP15', False)
 
         desv_instalacio = self.corbes.get('desviament_instalacio', [])
-        desv_sistema_per_hora = self.corbes.get('desviaments_sistema_per_hora', [])  # unitat oferta
+        desv_sistema_per_hora = self.corbes.get('desviaments_sistema_per_hora', [])  # UoF
         bs3_curve = self.corbes.get('bs3', [])
 
         banda_secundaria_df = pd.DataFrame(data=desv_instalacio)
@@ -310,7 +320,8 @@ class RepresentaSom(Representa):
         desviaments_instalacions_df = pd.DataFrame(data=desv_instalacions)
         desviaments_instalacions_df.rename(columns={'value': 'desviament_instalacions',
                                                     'subir': 'desviament_subir_instalacions',
-                                                    'bajar': 'desviament_bajar_instalacions'}, inplace=True)  # KWh  # noqa: E501
+                                                    'bajar': 'desviament_bajar_instalacions'},
+                                           inplace=True)  # KWh
         desviaments_instalacions_df = desviaments_instalacions_df.groupby([
             'local_timestamp',
             'timestamp'
@@ -324,7 +335,8 @@ class RepresentaSom(Representa):
             columns={'value': 'desviament_instalacio', }, inplace=True)  # KWh
         desv_sistema_per_hora.rename(columns={'value': 'desviament_sistema',
                                               'subir': 'desviament_subir_sistema',
-                                              'bajar': 'desviament_bajar_sistema'}, inplace=True)  # KWh  # noqa: E501
+                                              'bajar': 'desviament_bajar_sistema'},
+                                     inplace=True)  # KWh
         bs3_curve_df = pd.DataFrame(data=bs3_curve)
         bs3_version = bs3_curve_df.maturity.max()
 
@@ -486,7 +498,7 @@ class RepresentaSom(Representa):
         is_isp15 = self.conf.get('ISP15', False)
 
         desv_instalacio = self.corbes.get('desviament_instalacio', [])
-        desv_sistema_per_hora = self.corbes.get('desviaments_sistema_per_hora', [])  # unitat oferta
+        desv_sistema_per_hora = self.corbes.get('desviaments_sistema_per_hora', [])  # UoF
         rad3_curve = self.corbes.get('rad3', [])
 
         rad3_df = pd.DataFrame(data=desv_instalacio)
@@ -510,7 +522,8 @@ class RepresentaSom(Representa):
         rad3_df.rename(columns={'value': 'desviament_instalacio', }, inplace=True)  # KWh
         desv_sistema_per_hora.rename(columns={'value': 'desviament_sistema',
                                               'subir': 'desviament_subir_sistema',
-                                              'bajar': 'desviament_bajar_sistema'}, inplace=True)  # KWh  # noqa: E501
+                                              'bajar': 'desviament_bajar_sistema'},
+                                     inplace=True)  # KWh
 
         desviaments_representacio_net = self.corbes.get('desviament_representacio_net')
         desviaments_representacio_net_df = pd.DataFrame(data=desviaments_representacio_net)
@@ -639,16 +652,16 @@ class RepresentaSom(Representa):
             rad3 = ComponentQH(self.data_inici)
             if len(rad3_curve):
                 rad3_curve = sorted(rad3_curve, key=lambda d: d['timestamp'])
-                rad3 = self.get_componentQH_from_dict_list(rad3_curve, self.data_inici, version=rad3_version,
-                                                           # noqa: E501
-                                                           magn='precio')
+                rad3 = self.get_componentQH_from_dict_list(
+                    rad3_curve, self.data_inici, version=rad3_version, magn='precio'
+                )
         else:
             rad3 = Component(self.data_inici)
             if len(rad3_curve):
                 rad3_curve = sorted(rad3_curve, key=lambda d: d['timestamp'])
-                rad3 = self.get_component_from_dict_list(rad3_curve, self.data_inici, version=rad3_version,
-                                                         # noqa: E501
-                                                         magn='precio')
+                rad3 = self.get_component_from_dict_list(
+                    rad3_curve, self.data_inici, version=rad3_version, magn='precio'
+                )
 
         audit_keys = self.get_available_audit_coefs_srad3()
         for key in self.conf.get('audit', []):
