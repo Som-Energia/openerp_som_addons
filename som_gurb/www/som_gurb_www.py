@@ -7,6 +7,17 @@ class SomGurbWww(osv.osv_memory):
 
     _name = "som.gurb.www"
 
+    supported_access_tariff = {
+        '2.0TD': {
+            'max_power': 'max_power_20',
+            'min_power': 'min_power_20',
+        },
+        '3.0TD': {
+            'max_power': 'max_power_30',
+            'min_power': 'min_power_30',
+        },
+    }
+
     def get_info_gurb(self, cursor, uid, gurb_code, tarifa_acces, context=None):
 
         gurb_group_obj = self.pool.get("som.gurb.group")
@@ -19,7 +30,7 @@ class SomGurbWww(osv.osv_memory):
             }
         gurb_group_id = gurb_group_ids[0]
 
-        if tarifa_acces not in ['2.0TD', '3.0TD']:
+        if tarifa_acces not in self.supported_access_tariff.keys():
             return {
                 "error": _("Tarifa d'accés no suportada '{}'").format(tarifa_acces),
                 "code": "UnsuportedAccessTariff",
@@ -47,12 +58,16 @@ class SomGurbWww(osv.osv_memory):
                     beta_remaining -= gcups.future_gift_beta_kw
             available_betas.append(beta_remaining)
 
-        max_available_beta = max(available_betas)
-        max_power = ggroup.max_power_20 if tarifa_acces == '2.0TD' else ggroup.max_power_30
-        power_limit = min(max_available_beta, max_power) if max_power else max_available_beta
+        best_available_beta = max(available_betas)
+        # TODO: get a more intelligent selector between available betas
 
-        min_power = ggroup.min_power_20 if tarifa_acces == '2.0TD' else ggroup.min_power_30
-        step = max(min_power, 0.05)
+        max_power_name = self.supported_access_tariff[tarifa_acces]['max_power']
+        max_power = getattr(ggroup, max_power_name)
+        min_power_name = self.supported_access_tariff[tarifa_acces]['min_power']
+        min_power = getattr(ggroup, min_power_name)
+
+        power_limit = min(best_available_beta, max_power) if max_power else best_available_beta
+        step = max(min_power, 0.05)  # TODO: set the minimum step possible
 
         betas = []
         while min_power <= power_limit:
