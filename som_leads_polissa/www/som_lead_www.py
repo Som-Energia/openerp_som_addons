@@ -163,7 +163,7 @@ class SomLeadWww(osv.osv_memory):
             values["cau"] = www_vals["self_consumption"]["cau"]
             values["collectiu"] = www_vals["self_consumption"]["collective_installation"]
             values["tec_generador"] = www_vals["self_consumption"]["technology"]
-            values["pot_instalada_gen"] = www_vals["self_consumption"]["installation_power"]
+            values["pot_instalada_gen"] = www_vals["self_consumption"]["installation_power"] / 1000
             values["tipus_installacio"] = www_vals["self_consumption"]["installation_type"]
             values["ssaa"] = 'S' if www_vals["self_consumption"]['aux_services'] else 'N'
 
