@@ -2692,8 +2692,8 @@ msgid "CIF: F55091367"
 msgstr "CIF: F55091367"
 
 #: rml:som_generationkwh/report/report_contract_apo.mako:232
-msgid "Domicili: C/Pic de Peguera, 11. 17003- Girona"
-msgstr "Domicilio: C/Pic de Peguera, 11. 17003- Girona"
+msgid "Domicili: C/Riu Güell, 68. 17005- Girona"
+msgstr "Domicilio: C/Riu Güell, 68. 17005- Girona"
 
 #: rml:som_generationkwh/report/report_contract_apo.mako:233
 msgid "Adreça electrònica: aporta@somenergia.coop"
@@ -3113,9 +3113,9 @@ msgstr "8.3 La contratante tiene derecho a acceder, rectificar y suprimir sus da
 
 #: rml:som_generationkwh/report/report_contract_apo.mako:356
 msgid ""
-"Per correu postal dirigit a l’adreça:<br>Parc Científic i Tecnològic de la "
-"UDG. Edifici Giroemprèn.</br>C/ Pic de Peguera, 11 17003 Girona."
-msgstr "Por correo postal dirigido a la dirección:<br>\nParc Científic i Tecnològic de la UDG. Edifici Giroemprèn.<br>\nC/ Pic de Peguera, 11 17003 Girona."
+"Per correu postal dirigit a l’adreça:<br>"
+"C/ Riu Güell, 68 17005 Girona."
+msgstr "Por correo postal dirigido a la dirección:<br>\nC/ Riu Güell, 68 17005 Girona."
 
 #: rml:som_generationkwh/report/report_contract_apo.mako:357
 msgid "Per correu electrònic dirigit a gdpr@somenergia.coop"
@@ -3240,6 +3240,6 @@ msgstr "Ganancia en especie"
 
 #: rml:som_generationkwh/report/report_retencions_gkwh.mako:225
 msgid ""
-"Som Energia, SCCL, CIF F55091367 | Domicili Pic de Peguera, 11 A 28 - 17003 "
+"Som Energia, SCCL, CIF F55091367 | Domicili Riu Güell, 68 - 17005 "
 "- Girona | generationkwh@somenergia.coop | www.somenergia.coop"
-msgstr "Som Energia, SCCL, CIF F55091367 | Domicilio Pic de Peguera, 11 A 28 - 17003 - Girona | generationkwh@somenergia.coop | www.somenergia.coop"
+msgstr "Som Energia, SCCL, CIF F55091367 | Domicilio Riu Güell, 68 - 17005 - Girona | generationkwh@somenergia.coop | www.somenergia.coop"
