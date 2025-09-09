@@ -5,6 +5,7 @@ from libfacturacioatr.pool.generation import (Representa, pd, REEcurve, REEcurve
                                               Codsvsub, Codsvsuqh)
 import numpy as np
 
+
 class RepresentaSom(Representa):
 
     def get_available_audit_coefs_all(self):
@@ -255,7 +256,7 @@ class RepresentaSom(Representa):
                     magn='desviament_subir_instalacions_actual'
                 )
                 desvio_bruto_bajar = self.get_componentQH_from_dict_list(
-                    desvios_cils, self.data_inici,  magn='desviament_bajar_instalacions_actual'
+                    desvios_cils, self.data_inici, magn='desviament_bajar_instalacions_actual'
                 )
             else:
                 desvio_bruto_subir = self.get_component_from_dict_list(
