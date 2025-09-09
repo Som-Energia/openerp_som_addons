@@ -4,7 +4,7 @@ from osv import fields, osv
 import netsvc
 from oorq.decorators import job
 
-from base_extended_som.res_partner import GENDER_SELECTION
+from base_extended_som.models.res_partner import GENDER_SELECTION
 
 
 _tipus_tarifes_lead = [
