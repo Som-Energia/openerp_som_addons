@@ -39,8 +39,9 @@ class SomGurbWww(osv.osv_memory):
 
         info = {}
         info['available_betas'] = self._get_available_betas(
-            cursor, uid, gurb_group_id, tarifa_acces, context)
-        # info['surplus_compensation'] = self._get_surplus_compensation(cursor, uid, gurb_group_id)
+            cursor, uid, gurb_group_id, tarifa_acces, context=context)
+        info['surplus_compensation'] = self._get_surplus_compensation(
+            cursor, uid, gurb_group_id, context=context)
         # info['initial_quota'] = self._get_initial_quota(cursor, uid, tarifa_acces, context)
         # info['quota'] = self._get_gurb_quota(cursor, uid, tarifa_acces, context)
         return info
@@ -74,6 +75,18 @@ class SomGurbWww(osv.osv_memory):
             betas.append(min_power)
             min_power += step
         return betas
+
+    def _get_surplus_compensation(self, cursor, uid, gurb_group_id, context=None):
+        gurb_group_obj = self.pool.get("som.gurb.group")
+        ggroup = gurb_group_obj.browse(cursor, uid, gurb_group_id, context=context)
+
+        surplus_compensation = []
+        for gcau in ggroup.gurb_cau_ids:
+            for gcups in gcau.gurb_cups_ids:
+                if gcups.state in ["active", "atr_pending"]:
+                    surplus_compensation.append(gcups.has_compensation)
+
+        return any(surplus_compensation) if surplus_compensation else False
 
 
 SomGurbWww()
