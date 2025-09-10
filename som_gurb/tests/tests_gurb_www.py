@@ -72,3 +72,22 @@ class TestsGurbWww(TestsGurbBase):
         )
 
         self.assertTrue(result["surplus_compensation"])
+
+    def test_get_info_gurb__quotas(self):
+        gurb_www_o = self.openerp.pool.get("som.gurb.www")
+
+        result = gurb_www_o.get_info_gurb(
+            self.cursor, self.uid,
+            'G001',
+            "2.0TD"
+        )
+
+        self.assertEqual(result["initial_quota"], 3.75)
+        self.assertEqual(result["quota"], 5)
+
+        result = gurb_www_o.get_info_gurb(
+            self.cursor, self.uid,
+            'G001',
+            "3.0TD"
+        )
+        self.assertEqual(result["quota"], 4)

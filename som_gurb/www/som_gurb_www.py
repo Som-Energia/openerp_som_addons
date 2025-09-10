@@ -105,9 +105,9 @@ class SomGurbWww(osv.osv_memory):
             cursor, uid, "som_gurb", "initial_quota_gurb"
         )[1]
 
-        quota_prod_name = self.supported_access_tariff[tarifa_acces]['quota_product_name']
+        quota_product_name = self.supported_access_tariff[tarifa_acces]['quota_product_name']
         quota_product_id = imd_obj.get_object_reference(
-            cursor, uid, "som_gurb", quota_prod_name
+            cursor, uid, "som_gurb", quota_product_name
         )[1]
 
         initial = ggroup.pricelist_id.get_atr_price('tp', initial_product_id, False)
