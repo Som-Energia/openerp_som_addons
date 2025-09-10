@@ -11,10 +11,12 @@ class SomGurbWww(osv.osv_memory):
         '2.0TD': {
             'max_power': 'max_power_20',
             'min_power': 'min_power_20',
+            'quota_product_name': 'product_gurb',
         },
         '3.0TD': {
             'max_power': 'max_power_30',
             'min_power': 'min_power_30',
+            'quota_product_name': 'product_enterprise_gurb',
         },
     }
 
@@ -37,13 +39,12 @@ class SomGurbWww(osv.osv_memory):
                 "trace": "",
             }
 
-        info = {}
+        info = self._get_quotas(
+            cursor, uid, gurb_group_id, tarifa_acces, context=context)
         info['available_betas'] = self._get_available_betas(
             cursor, uid, gurb_group_id, tarifa_acces, context=context)
         info['surplus_compensation'] = self._get_surplus_compensation(
             cursor, uid, gurb_group_id, context=context)
-        # info['initial_quota'] = self._get_initial_quota(cursor, uid, tarifa_acces, context)
-        # info['quota'] = self._get_gurb_quota(cursor, uid, tarifa_acces, context)
         return info
 
     def _get_available_betas(self, cursor, uid, gurb_group_id, tarifa_acces, context=None):
@@ -87,6 +88,37 @@ class SomGurbWww(osv.osv_memory):
                     surplus_compensation.append(gcups.has_compensation)
 
         return any(surplus_compensation) if surplus_compensation else False
+
+    def _get_quotas(self, cursor, uid, gurb_group_id, tarifa_acces, context=None):
+
+        gurb_group_obj = self.pool.get("som.gurb.group")
+        imd_obj = self.pool.get("ir.model.data")
+
+        ggroup = gurb_group_obj.browse(cursor, uid, gurb_group_id, context=context)
+
+        if not ggroup.pricelist_id:
+            return {
+                "error": _("Agurbació no te llista de preus {}").format(ggroup.code),
+                "code": "GurbGroupWithoutPriceList",
+                "trace": "",
+            }
+
+        initial_product_id = imd_obj.get_object_reference(
+            cursor, uid, "som_gurb", "initial_quota_gurb"
+        )[1]
+
+        quota_prod_name = self.supported_access_tariff[tarifa_acces]['quota_product_name']
+        quota_product_id = imd_obj.get_object_reference(
+            cursor, uid, "som_gurb", quota_prod_name
+        )[1]
+
+        initial = ggroup.pricelist_id.get_atr_price('tp', initial_product_id, False)
+        quota = ggroup.pricelist_id.get_atr_price('tp', quota_product_id, False)
+
+        return {
+            'initial_quota': initial[0],
+            'quota': quota[0],
+        }
 
 
 SomGurbWww()
