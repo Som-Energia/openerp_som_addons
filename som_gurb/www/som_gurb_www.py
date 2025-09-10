@@ -59,7 +59,7 @@ class SomGurbWww(osv.osv_memory):
                     beta_remaining -= gcups.future_gift_beta_kw
             available_betas.append(beta_remaining)
 
-        best_available_beta = max(available_betas)
+        best_available_beta = max(available_betas) if available_betas else 0
 
         max_power_name = self.supported_access_tariff[tarifa_acces]['max_power']
         max_power = getattr(ggroup, max_power_name)
