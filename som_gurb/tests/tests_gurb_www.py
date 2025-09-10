@@ -32,10 +32,20 @@ class TestsGurbWww(TestsGurbBase):
         self.assertEqual(result["error"], msg)
         self.assertEqual(result["code"], "UnsuportedAccessTariff")
 
-    # TODO: Wip, this test should be reviewed
-
     def test_get_info_gurb__available_betas(self):
+        imd_o = self.openerp.pool.get("ir.model.data")
         gurb_www_o = self.openerp.pool.get("som.gurb.www")
+        gurb_cups_o = self.openerp.pool.get("som.gurb.cups")
+
+        # GURB CUPS must be active
+        gurb_cups_id_1 = imd_o.get_object_reference(
+            self.cursor, self.uid, "som_gurb", "gurb_cups_0001"
+        )[1]
+        gurb_cups_id_2 = imd_o.get_object_reference(
+            self.cursor, self.uid, "som_gurb", "gurb_cups_0002"
+        )[1]
+        gurb_cups_o.write(self.cursor, self.uid, gurb_cups_id_1, {"state": "active"})
+        gurb_cups_o.write(self.cursor, self.uid, gurb_cups_id_2, {"state": "active"})
 
         result = gurb_www_o.get_info_gurb(
             self.cursor, self.uid,
@@ -43,4 +53,22 @@ class TestsGurbWww(TestsGurbBase):
             "2.0TD"
         )
 
-        self.assertEqual(result["available_betas"], [x / 10.0 for x in range(5, 105, 5)])
+        self.assertEqual(result["available_betas"], [x / 10.0 for x in range(5, 55, 5)])
+
+    def test_get_info_gurb__surplus_comensation(self):
+        imd_o = self.openerp.pool.get("ir.model.data")
+        gurb_www_o = self.openerp.pool.get("som.gurb.www")
+        gurb_cau_o = self.openerp.pool.get("som.gurb.cau")
+
+        gurb_cau_id = imd_o.get_object_reference(
+            self.cursor, self.uid, "som_gurb", "gurb_cau_0001"
+        )[1]
+        gurb_cau_o.write(self.cursor, self.uid, gurb_cau_id, {"has_compensation": True})
+
+        result = gurb_www_o.get_info_gurb(
+            self.cursor, self.uid,
+            'G001',
+            "2.0TD"
+        )
+
+        self.assertTrue(result["surplus_compensation"])

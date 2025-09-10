@@ -83,11 +83,9 @@ class SomGurbWww(osv.osv_memory):
 
         surplus_compensation = []
         for gcau in ggroup.gurb_cau_ids:
-            for gcups in gcau.gurb_cups_ids:
-                if gcups.state in ["active", "atr_pending"]:
-                    surplus_compensation.append(gcups.has_compensation)
+            surplus_compensation.append(gcau.has_compensation)
 
-        return any(surplus_compensation) if surplus_compensation else False
+        return any(surplus_compensation)
 
     def _get_quotas(self, cursor, uid, gurb_group_id, tarifa_acces, context=None):
 
