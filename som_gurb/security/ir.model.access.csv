@@ -34,3 +34,6 @@
 "access_som_gurb_group_rcwd","som.gurb.group","model_som_gurb_group","giscedata_polissa.group_giscedata_polissa_u",1,1,1,1
 "access_som_gurb_group_r","som.gurb.group","model_som_gurb_group","giscedata_polissa.group_giscedata_polissa_r",1,0,0,0
 "access_som_gurb_group_rcw","som.gurb.group","model_som_gurb_group","giscedata_polissa.group_giscedata_polissa_w",1,1,1,0
+"access_som_gurb_www_r","wizard.deactivate.gurb.cups","model_som_gurb_www","giscedata_polissa.group_giscedata_polissa_r",0,0,0,0
+"access_som_gurb_www_w","wizard.deactivate.gurb.cups","model_som_gurb_www","giscedata_polissa.group_giscedata_polissa_w",1,1,1,1
+"access_som_gurb_www_u","wizard.deactivate.gurb.cups","model_som_gurb_www","giscedata_polissa.group_giscedata_polissa_u",1,1,1,1
