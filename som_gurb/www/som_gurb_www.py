@@ -54,12 +54,12 @@ class SomGurbWww(osv.osv_memory):
             beta_remaining = gcau.generation_power
             for gcups in gcau.gurb_cups_ids:
                 if gcups.state in ["active", "atr_pending"]:
+                    beta_remaining -= gcups.beta_kw
                     beta_remaining -= gcups.future_beta_kw
                     beta_remaining -= gcups.future_gift_beta_kw
             available_betas.append(beta_remaining)
 
         best_available_beta = max(available_betas)
-        # TODO: get a more intelligent selector between available betas
 
         max_power_name = self.supported_access_tariff[tarifa_acces]['max_power']
         max_power = getattr(ggroup, max_power_name)
@@ -67,7 +67,7 @@ class SomGurbWww(osv.osv_memory):
         min_power = getattr(ggroup, min_power_name)
 
         power_limit = min(best_available_beta, max_power) if max_power else best_available_beta
-        step = max(min_power, 0.05)  # TODO: set the minimum step possible
+        step = max(min_power, 0.5)
 
         betas = []
         while min_power <= power_limit:
