@@ -1,0 +1,2 @@
+"id","name","model_id:id","group_id:id","perm_read","perm_write","perm_create","perm_unlink"
+"access_wizard_reprint_invoice_som_u","wizard.reprint.invoice.som","model_wizard_reprint_invoice_som","giscedata_facturacio_comer_som.group_reprint_invoice_som",1,1,1,1
