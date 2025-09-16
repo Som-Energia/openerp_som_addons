@@ -3,6 +3,7 @@ import logging
 import pooler
 from oopgrade.oopgrade import load_data
 
+
 def up(cursor, installed_version):
     if not installed_version:
         return
