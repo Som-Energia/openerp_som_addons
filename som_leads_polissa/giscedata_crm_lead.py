@@ -420,6 +420,7 @@ class GiscedataCrmLead(osv.OsvInherits):
         "birthdate": fields.date("Data de naixement"),
         "gender": fields.selection(GENDER_SELECTION, "Gènere"),
         "comercial_info_accepted": fields.boolean("Accepta informació comercial (SomServeis)"),
+        "crm_lead_id": fields.integer("ID del lead al CRM"),
     }
 
     _defaults = {
