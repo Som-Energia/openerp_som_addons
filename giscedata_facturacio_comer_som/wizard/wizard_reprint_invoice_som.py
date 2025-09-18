@@ -2,7 +2,6 @@
 from osv import osv, fields
 import netsvc
 import traceback
-import base64
 
 
 class WizardReprintInvoiceSom(osv.osv_memory):
@@ -12,10 +11,24 @@ class WizardReprintInvoiceSom(osv.osv_memory):
         if context is None:
             context = {}
 
-        f_id = ids[0]
-        ok, pdf = self._generate_pdf(cursor, uid, f_id, context=context)
-        if ok:
-            return (base64.encodestring(pdf), u'pdf')
+        res_ids = context.get('active_ids', None)
+        if res_ids:
+            res_id = res_ids[0]
+        else:
+            res_id = context.get('active_id', None)
+
+        ctx = context.copy()
+        ctx['force_store_pdf_disabled'] = True
+
+        return {
+            'type': 'ir.actions.report.xml',
+            'model': 'giscedata.facturacio.factura',
+            'report_name': 'giscedata.facturacio.factura',
+            'datas': {
+                'ids': [res_id],
+                'context': ctx,
+            }
+        }
 
     def reprint_and_store(self, cursor, uid, ids, context=None):
         if context is None:
