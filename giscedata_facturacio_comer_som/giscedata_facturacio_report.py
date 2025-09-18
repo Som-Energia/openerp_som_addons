@@ -1629,16 +1629,32 @@ class GiscedataFacturacioFacturaReport(osv.osv):
                 "11": "Nov",
                 "12": "Des",
             },
+            "en_US": {
+                "01": "Jan",
+                "02": "Feb",
+                "03": "Mar",
+                "04": "Apr",
+                "05": "May",
+                "06": "Jun",
+                "07": "Jul",
+                "08": "Aug",
+                "09": "Sep",
+                "10": "Oct",
+                "11": "Nov",
+                "12": "Dec",
+            },
         }
 
         labels = {
             "es_ES": {"P1": "Punta", "P2": "Llano", "P3": "Valle"},
             "ca_ES": {"P1": "Punta", "P2": "Pla", "P3": "Vall"},
+            "en_US": {"P1": "Peak", "P2": "Llano", "P3": "Off-peak"},
         }
 
         average_text = {
             "es_ES": "Media",
             "ca_ES": "Mitjana",
+            "en_US": "Average",
         }
 
         (historic, historic_js) = self.get_historic_data(fact)
