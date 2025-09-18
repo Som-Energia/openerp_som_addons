@@ -43,14 +43,31 @@ class WizardReprintInvoiceSom(osv.osv_memory):
             else:
                 fact_ids = []
 
+        msg = u''
         storer = InvoicePdfStorer(cursor, uid, context)
         for fact_id in fact_ids:
             result = self._generate_pdf(cursor, uid, fact_id, context=context)
             fact_number = storer.get_storable_fact_number(fact_id)
             if fact_number and result[0]:
                 file_name = storer.get_store_filename(fact_number)
-                if not storer.exists_file(file_name, fact_id):
-                    storer.store_file(result[1], file_name, fact_id)
+                stored_ids = storer.exists_file(file_name, fact_id)
+                storer.mark_as_old_file(stored_ids)
+                storer.store_file(result[1], file_name, fact_id)
+                msg += u'Factura {} generada i guardada com adjunt de id: {}\n\n'.format(
+                    fact_number, fact_id
+                )
+            if not fact_number:
+                msg += u'Factura amb id {} no té numero\n'.format(
+                    fact_id
+                )
+            if not result[0]:
+                msg += u'Factura amb id {} i numero {} te errors en generar:\n'.format(
+                    fact_id, fact_number
+                )
+                msg += result[1]
+                msg += '\n\n'
+
+        self.write(cursor, uid, ids, {"state": "end", "info": msg})
 
     def _generate_pdf(self, cursor, uid, res_id, context=None):
         report_name = 'report.giscedata.facturacio.factura'
@@ -73,10 +90,13 @@ class WizardReprintInvoiceSom(osv.osv_memory):
             return False, tb
 
     _columns = {
-        "info": fields.text("Description"),
+        "state": fields.selection([("init", "Init"), ("end", "End")], "State"),
+        "info": fields.text("Informació", readonly=True),
     }
 
     _defaults = {
+        "state": lambda *a: "init",
+        "info": lambda *a: "",
     }
 
 

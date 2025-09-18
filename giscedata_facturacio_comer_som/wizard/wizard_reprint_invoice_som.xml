@@ -9,12 +9,12 @@
                 <form string="Reimpressió de pdf's de factura:">
                     <group>
                         <group colspan="4">
-                            <field name="info" colspan="4" readonly="1" />
-                        </group>
-                        <group colspan="4">
                             <button name="reprint_pdf" type="object" string="Reimprimir Pdf (no caché)" icon="gtk-print" />
                             <button name="reprint_and_store" type="object" string="Reimprimir Pdf i adjuntar-ho a la factura" icon="gtk-save" />
                             <button special="cancel" string="Sortir" icon="gtk-ok" />
+                        </group>
+                        <group colspan="4" col="2" attrs="{'invisible':[('state', '!=', 'end')]}">
+                            <field name="info" colspan="4" readonly="1" nolabel="1" height="400" attrs="{'invisible':[('state', '!=', 'end')]}"/>
                         </group>
                     </group>
                 </form>

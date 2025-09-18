@@ -117,6 +117,22 @@ class InvoicePdfStorer():
         )
         return att_ids
 
+    def mark_as_old_file(self, att_ids):
+        for att_id in att_ids:
+            filename = self.att_obj.read(
+                self.cursor,
+                self.uid,
+                att_id,
+                ['name'],
+                context=self.context)['name']
+            old_filename = filename.replace(u'pdf', u'old.pdf')
+            self.att_obj.write(
+                self.cursor,
+                self.uid,
+                att_id,
+                {'name': old_filename},
+                context=self.context)
+
     def store_file(self, content, file_name, fact_id):
         if 'Dont_store' in self.flags:
             return False
