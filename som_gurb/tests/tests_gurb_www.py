@@ -53,7 +53,7 @@ class TestsGurbWww(TestsGurbBase):
             "2.0TD"
         )
 
-        self.assertEqual(result["available_betas"], [x / 10.0 for x in range(5, 55, 5)])
+        self.assertEqual(result["available_betas"], [x / 10.0 for x in range(5, 25, 5)])
 
     def test_get_info_gurb__surplus_comensation(self):
         imd_o = self.openerp.pool.get("ir.model.data")
