@@ -145,15 +145,15 @@ class GiscedataCrmLead(osv.OsvInherits):
         lead = self.browse(cursor, uid, crml_id, context=context)
         values = {}
 
+        # We set again the lang because if it existed before, the base code dont write it
+        if lead.lang:
+            values["lang"] = lead.lang or ""
+
         rep_id = self._create_or_get_representative(
-            cursor, uid, lead.persona_firmant_vat, lead.persona_nom, context=context
+            cursor, uid, lead.persona_firmant_vat, lead.persona_nom, values["lang"], context=context
         )
         if rep_id:
             values["representante_id"] = rep_id
-
-        # We set again the lang because if it existed before, the base code dont write it
-        if lead.lang:
-            values["lang"] = lead.lang
 
         if lead.create_new_member:
             # become_member will keep the member number we set here
@@ -184,7 +184,7 @@ class GiscedataCrmLead(osv.OsvInherits):
 
         return partner_id
 
-    def _create_or_get_representative(self, cursor, uid, vat, name, context=None):
+    def _create_or_get_representative(self, cursor, uid, vat, name, lang, context=None):
         if context is None:
             context = {}
 
@@ -204,6 +204,7 @@ class GiscedataCrmLead(osv.OsvInherits):
                     cursor, uid, {
                         "vat": vat,
                         "name": name,
+                        "lang": lang,
                     },
                     context=context
                 )
