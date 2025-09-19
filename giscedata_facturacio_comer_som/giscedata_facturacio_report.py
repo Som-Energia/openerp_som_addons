@@ -1648,7 +1648,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
         labels = {
             "es_ES": {"P1": "Punta", "P2": "Llano", "P3": "Valle"},
             "ca_ES": {"P1": "Punta", "P2": "Pla", "P3": "Vall"},
-            "en_US": {"P1": "Peak", "P2": "Llano", "P3": "Off-peak"},
+            "en_US": {"P1": "Peak", "P2": "Mid-peak", "P3": "Off-peak"},
         }
 
         average_text = {
