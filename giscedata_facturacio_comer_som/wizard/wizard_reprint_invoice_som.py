@@ -8,15 +8,17 @@ from ..invoice_pdf_storer import InvoicePdfStorer
 class WizardReprintInvoiceSom(osv.osv_memory):
     _name = "wizard.reprint.invoice.som"
 
-    def reprint_pdf(self, cursor, uid, ids, context=None):  # noqa: C901
+    def reprint_pdf(self, cursor, uid, ids, context=None):
         if context is None:
             context = {}
 
-        res_ids = context.get('active_ids', None)
-        if res_ids:
-            res_id = res_ids[0]
-        else:
+        fact_ids = context.get('active_ids', None)
+        if not fact_ids:
             res_id = context.get('active_id', None)
+            if res_id:
+                fact_ids = [res_id]
+            else:
+                fact_ids = []
 
         ctx = context.copy()
         ctx['force_store_pdf_disabled'] = True
@@ -26,7 +28,7 @@ class WizardReprintInvoiceSom(osv.osv_memory):
             'model': 'giscedata.facturacio.factura',
             'report_name': 'giscedata.facturacio.factura',
             'datas': {
-                'ids': [res_id],
+                'ids': fact_ids,
                 'context': ctx,
             }
         }
