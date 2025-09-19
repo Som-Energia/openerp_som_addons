@@ -19,8 +19,6 @@ class NoResultsException(CrawlingProcessException):
             tag = "SENSE RESULTATS: "
         super(NoResultsException, self).__init__(tag + msg)
 
-    def __repr__(self):
-        return self.msg
 
-    def __str__(self):
-        return self.msg
+class CrawlingLoginException(CrawlingProcessException):
+    pass
