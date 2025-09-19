@@ -253,9 +253,9 @@ class SomGurbGroup(osv.osv):
             multi="betas",
         ),
         "min_power_20": fields.float("Topall min. per contracte 2.0 (kW)"),
-        "max_power_20": fields.float("Topall max. per contracte 2.0 (kW)"),
+        "max_power_20": fields.float("Topall max. per contracte 2.0 (kW)", required=True),
         "min_power_30": fields.float("Topall min. per contracte 3.0 (kW)"),
-        "max_power_30": fields.float("Topall max. per contracte 3.0 (kW)"),
+        "max_power_30": fields.float("Topall max. per contracte 3.0 (kW)", required=True),
     }
 
     _defaults = {
