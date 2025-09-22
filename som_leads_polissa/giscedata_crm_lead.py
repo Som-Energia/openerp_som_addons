@@ -147,7 +147,7 @@ class GiscedataCrmLead(osv.OsvInherits):
 
         # We set again the lang because if it existed before, the base code dont write it
         if lead.lang:
-            values["lang"] = lead.lang or ""
+            values["lang"] = lead.lang
 
         rep_id = self._create_or_get_representative(
             cursor, uid, lead.persona_firmant_vat, lead.persona_nom, lead.lang, context=context
