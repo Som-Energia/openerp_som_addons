@@ -428,6 +428,7 @@ class GiscedataCrmLead(osv.OsvInherits):
         "set_custom_potencia": lambda *a: False,
         "donation": lambda *a: False,
         "comercial_info_accepted": lambda *a: False,
+        "crm_lead_id": lambda *a: 0,
     }
 
 
