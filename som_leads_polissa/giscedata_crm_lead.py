@@ -145,15 +145,15 @@ class GiscedataCrmLead(osv.OsvInherits):
         lead = self.browse(cursor, uid, crml_id, context=context)
         values = {}
 
-        rep_id = self._create_or_get_representative(
-            cursor, uid, lead.persona_firmant_vat, lead.persona_nom, context=context
-        )
-        if rep_id:
-            values["representante_id"] = rep_id
-
         # We set again the lang because if it existed before, the base code dont write it
         if lead.lang:
             values["lang"] = lead.lang
+
+        rep_id = self._create_or_get_representative(
+            cursor, uid, lead.persona_firmant_vat, lead.persona_nom, lead.lang, context=context
+        )
+        if rep_id:
+            values["representante_id"] = rep_id
 
         if lead.create_new_member:
             # become_member will keep the member number we set here
@@ -184,7 +184,7 @@ class GiscedataCrmLead(osv.OsvInherits):
 
         return partner_id
 
-    def _create_or_get_representative(self, cursor, uid, vat, name, context=None):
+    def _create_or_get_representative(self, cursor, uid, vat, name, lang, context=None):
         if context is None:
             context = {}
 
@@ -200,13 +200,13 @@ class GiscedataCrmLead(osv.OsvInherits):
             if representative_ids:
                 representative_id = representative_ids[0]
             else:
-                representative_id = partner_o.create(
-                    cursor, uid, {
-                        "vat": vat,
-                        "name": name,
-                    },
-                    context=context
-                )
+                values = {
+                    "vat": vat,
+                    "name": name,
+                }
+                if lang:
+                    values["lang"] = lang
+                representative_id = partner_o.create(cursor, uid, values, context=context)
         return representative_id
 
     def create_entity_iban(self, cursor, uid, crml_id, context=None):
