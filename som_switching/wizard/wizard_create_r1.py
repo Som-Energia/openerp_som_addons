@@ -166,7 +166,7 @@ class WizardSubtypeR1(osv.osv_memory):
         subtipus_obj = self.pool.get('giscedata.subtipus.reclamacio')
         subtipus = subtipus_obj.browse(cursor, uid, context.get('subtipus_id'))
         if subtipus.name == "048":
-            res.update({'comentaris': """ """})
+            res.update({'comentaris': """Buenos días, solicitamos que nos aclaren en detalle el motivo de rechazo de esta solicitud. Gracias, un saludo."""})  # noqa: E501
         return res
 
     _columns = {
