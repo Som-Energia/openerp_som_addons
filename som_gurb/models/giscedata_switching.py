@@ -627,23 +627,21 @@ class GiscedataSwitchingM2_05(osv.osv):
                 )
             # GURB Possible contractual change Codes
             elif step.motiu_modificacio == "02":
-                sw_step_header_id = self.read(cursor, uid, step_id, ['header_id'])['header_id'][0]
-                sw_step_header_obj.write(
-                    cursor, uid, sw_step_header_id, {'notificacio_pendent': False}
-                )
                 gurb_cups_obj.activate_or_modify_gurb_cups(
                     cursor, uid, gurb_cups_id, step.data_activacio, context=context
                 )
             # GURB Activation Codes
             elif step.motiu_modificacio in ["04", "15", "19"]:
-                sw_step_header_id = self.read(cursor, uid, step_id, ['header_id'])['header_id'][0]
-                sw_step_header_obj.write(
-                    cursor, uid, sw_step_header_id, {'notificacio_pendent': False}
-                )
                 data_activacio = xml.datos_activacion.fecha
                 gurb_obj.activate_gurb_from_m1_05(
                     cursor, uid, sw_id, data_activacio, context=context
                 )
+
+            # Don't notify if GURB
+            sw_step_header_id = self.read(cursor, uid, step_id, ['header_id'])['header_id'][0]
+            sw_step_header_obj.write(
+                cursor, uid, sw_step_header_id, {'notificacio_pendent': False}
+            )
 
         return step_id
 
