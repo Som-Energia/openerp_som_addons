@@ -548,7 +548,7 @@ class GiscedataSwitchingHelpers(osv.osv):
             gurb_obj.activate_gurb_from_m1_05(
                 cursor, uid, sw_id, data_activacio, context=context
             )
-            sw_step_header_id = self.read(cursor, uid, step_id, ['header_id'])['header_id'][0]
+            sw_step_header_id = step_obj.read(cursor, uid, step_id, ['header_id'])['header_id'][0]
             sw_step_header_obj.write(
                 cursor, uid, sw_step_header_id, {'notificacio_pendent': False}
             )
@@ -561,7 +561,6 @@ class GiscedataSwitchingHelpers(osv.osv):
 
         sw_obj = self.pool.get('giscedata.switching')
         sw_step_header_obj = self.pool.get("giscedata.switching.step.header")
-        sw_m105 = self.pool.get("giscedata.switching.m1.05")
         gurb_obj = self.pool.get("som.gurb.cau")
 
         res = super(GiscedataSwitchingHelpers, self).m105_acord_repartiment_autoconsum(
@@ -583,7 +582,7 @@ class GiscedataSwitchingHelpers(osv.osv):
             gurb_obj.activate_gurb_from_m1_05(
                 cursor, uid, sw_id, data_activacio, context=context
             )
-            sw_step_header_id = sw_m105.read(cursor, uid, step_id, ['header_id'])['header_id'][0]
+            sw_step_header_id = step_obj.read(cursor, uid, step_id, ['header_id'])['header_id'][0]
             sw_step_header_obj.write(
                 cursor, uid, sw_step_header_id, {'notificacio_pendent': False}
             )
