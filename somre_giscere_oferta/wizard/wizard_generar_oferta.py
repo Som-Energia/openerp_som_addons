@@ -73,7 +73,9 @@ class WizardGisceReGenerarOfertaSom(osv.osv_memory):
             cursor, uid, 'representacio_auto_publicar_oferta_omie', '0'))
         auto_mail_notify = literal_eval(conf_obj.get(
             cursor, uid, 'representacio_auto_omie_mail_notification', '0'))
-        data_inici_previsions_qh = conf_obj.get(cursor, uid, 'giscere_oferta_utilitzar_previsions_qh', '2025-10-01')
+        data_inici_previsions_qh = conf_obj.get(cursor, uid,
+                                                'giscere_oferta_utilitzar_previsions_qh',
+                                                '2025-10-01')
 
         info = []
         energia = []
