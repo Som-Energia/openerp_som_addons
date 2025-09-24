@@ -73,6 +73,7 @@ class WizardGisceReGenerarOfertaSom(osv.osv_memory):
             cursor, uid, 'representacio_auto_publicar_oferta_omie', '0'))
         auto_mail_notify = literal_eval(conf_obj.get(
             cursor, uid, 'representacio_auto_omie_mail_notification', '0'))
+        data_inici_previsions_qh = conf_obj.get(cursor, uid, 'giscere_oferta_utilitzar_previsions_qh', '2025-10-01')
 
         info = []
         energia = []
@@ -92,9 +93,11 @@ class WizardGisceReGenerarOfertaSom(osv.osv_memory):
                 unitat_oferta = unitat_obj.read(cursor, uid, unitat, ['name'])['name']
                 try:
                     # Generem l'Oferta de Representació
-                    wiz_id = self.create(
-                        cursor, uid, {'data_oferta': data_oferta, 'unitat_oferta': unitat})
-                    wiz_oferta = self.browse(cursor, uid, wiz_id, context=context)
+                    wiz_vals = {'data_oferta': data_oferta, 'unitat_oferta': unitat}
+                    if data_oferta >= data_inici_previsions_qh:
+                        wiz_vals.update({'qh_forecast': True, 'use_qh_forecasts': True})
+                    wiz_id = self.create(cursor, uid, wiz_vals)
+                    wiz_oferta = self.simple_browse(cursor, uid, wiz_id, context=context)
                     oferta_id = wiz_oferta.action_generar()
                     if oferta_id:
                         msg = "S'ha creat l'oferta diària amb ID {} per la Unitat d'Oferta {} pel día {}".format(  # noqa: E501
