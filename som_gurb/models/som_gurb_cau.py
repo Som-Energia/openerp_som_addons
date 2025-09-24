@@ -500,6 +500,8 @@ class SomGurbCau(osv.osv):
         ),
         "gurb_group_id": fields.many2one(
             "som.gurb.group", "GURB grup", required=True, ondelete="cascade"),
+        "coordenada_latitud": fields.char("Latitud (X)", size=128),
+        "coordenada_longitud": fields.char("Longitud (Y)", size=128),
     }
 
     _defaults = {
