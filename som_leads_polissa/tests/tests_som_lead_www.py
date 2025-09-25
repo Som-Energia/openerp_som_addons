@@ -1140,10 +1140,11 @@ class TestsSomLeadWww(testing.OOTestCase):
             self.cursor, self.uid, 'giscedata_tensions', 'tensio_3x230_400')[1]
         self.assertEqual(lead.polissa_id.tensio_normalitzada.id, tensio_trifasica)
 
-    def test_member_number_error(self):
+    def test_manual_member_number_error(self):
         www_lead_o = self.get_model("som.lead.www")
         member_o = self.get_model("somenergia.soci")
         ir_model_o = self.get_model("ir.model.data")
+        lead_o = self.get_model("giscedata.crm.lead")
         partner_o = self.get_model("res.partner")
 
         member_id = ir_model_o.get_object_reference(
@@ -1155,12 +1156,17 @@ class TestsSomLeadWww(testing.OOTestCase):
         vat = member.partner_id.vat.replace("ES", "")
 
         values = self._basic_values
-        del values["new_member_info"]
-        values["linked_member"] = "already_member"
+        values["linked_member"] = "sponsored"
+        values["contract_owner"] = values.pop("new_member_info")
         values["linked_member_info"] = {
             "vat": vat,
-            "code": "WRONGCODE",
+            "code": member.partner_id.ref.replace("S", ""),
         }
 
+        lead_id = www_lead_o.create_lead(self.cursor, self.uid, values)["lead_id"]
+        lead_o.write(
+            self.cursor, self.uid, lead_id, {"member_number": "WRONGCODE", "titular_number": ""}
+        )
+
         with self.assertRaises(osv.except_osv):
-            www_lead_o.create_lead(self.cursor, self.uid, values)
+            lead_o.create_entities(self.cursor, self.uid, lead_id)
