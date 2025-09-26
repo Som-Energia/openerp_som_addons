@@ -111,3 +111,17 @@ class TestsGurbWww(TestsGurbBase):
         )
 
         self.assertFalse(result)
+
+    def test__create_new_gurb_cups(self):
+        gurb_www_obj = self.get_model("som.gurb.www")
+
+        form_payload = {
+            "gurb_code": "G001",
+            "access_tariff": "2.0TD",
+            "cups": "ES0021000000000001",
+        }
+        result = gurb_www_obj.create_new_gurb_cups(
+            self.cursor, self.uid, form_payload
+        )
+
+        self.assertTrue(result["success"])
