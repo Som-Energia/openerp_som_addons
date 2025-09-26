@@ -421,6 +421,7 @@ class GiscedataCrmLead(osv.OsvInherits):
         "gender": fields.selection(GENDER_SELECTION, "Gènere"),
         "comercial_info_accepted": fields.boolean("Accepta informació comercial (SomServeis)"),
         "crm_lead_id": fields.integer("ID del lead al CRM"),
+        "is_juridic": fields.boolean("És una persona jurídica"),
     }
 
     _defaults = {
@@ -429,6 +430,7 @@ class GiscedataCrmLead(osv.OsvInherits):
         "donation": lambda *a: False,
         "comercial_info_accepted": lambda *a: False,
         "crm_lead_id": lambda *a: 0,
+        "is_juridic": lambda *a: False,
     }
 
 

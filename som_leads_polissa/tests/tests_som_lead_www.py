@@ -192,6 +192,9 @@ class TestsSomLeadWww(testing.OOTestCase):
         self.assertEqual(lead.partner_id.lang, "es_ES")
         self.assertEqual(lead.partner_id.date, datetime.today().strftime("%Y-%m-%d"))
 
+        # Check is not juridic
+        self.assertFalse(lead.is_juridic)
+
     def test_create_simple_domestic_lead_indexada(self):
         www_lead_o = self.get_model("som.lead.www")
         lead_o = self.get_model("giscedata.crm.lead")
@@ -234,6 +237,7 @@ class TestsSomLeadWww(testing.OOTestCase):
         # Check that the representative is created and correctly linked
         rep_id = partner_o.search(self.cursor, self.uid, [("vat", "=", "ES40323835M")])[0]
         self.assertEqual(lead.polissa_id.titular.representante_id.id, rep_id)
+        self.assertTrue(lead.is_juridic)
 
     def test_create_simple_juridic_lead_with_existing_representative(self):
         www_lead_o = self.get_model("som.lead.www")
