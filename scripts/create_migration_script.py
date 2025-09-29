@@ -186,17 +186,13 @@ def create_migration_script(module_name, files):  # noqa: C901
         os.remove(existing_branch_script)
 
     with open(script_path, 'w') as f:
-        f.write('''# -*- coding: utf-8 -*-
-import logging
-''')
+        f.write('''# -*- coding: utf-8 -*-\nimport logging\n''')
         if files.get('data') or files.get('security'):
-            f.write('''from oopgrade.oopgrade import load_data''')
+            f.write('''from oopgrade.oopgrade import load_data\n''')
         if models_to_init:
-            f.write('''import pooler''')
+            f.write('''import pooler\n''')
         if files.get('po'):
-            f.write('''from tools.translate import trans_load
-from tools import config
-''')
+            f.write('''from tools.translate import trans_load\nfrom tools import config\n''')
         f.write('''
 
 def up(cursor, installed_version):
@@ -212,7 +208,7 @@ def up(cursor, installed_version):
             for model in models_to_init:
                 f.write('''    pool.get("{0}")._auto_init(
         cursor, context={{'module': '{1}'}}
-    )\n\n'''.format(model, module_name))
+    )\n'''.format(model, module_name))
 
         # Afegir load_data per XMLs modificats
         if files['data']:
@@ -225,7 +221,7 @@ def up(cursor, installed_version):
         load_data(
             cursor, '{0}', data_file,
             idref=None, mode='update'
-        )\n\n'''.format(module_name))
+        )\n'''.format(module_name))
 
         # Afegir load_data per CSVs security modificats
         if files['security']:
@@ -238,7 +234,7 @@ def up(cursor, installed_version):
         load_data(
             cursor, '{0}', security_file,
             idref=None, mode='update'
-        )\n\n'''.format(module_name))
+        )\n'''.format(module_name))
 
         # Afegir bloc per traduccions si hi ha .po
         if files.get('po'):
