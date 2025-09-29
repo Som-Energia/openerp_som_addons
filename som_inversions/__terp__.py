@@ -9,29 +9,29 @@
           bancari on es cobraran els interessos de les inversions
         * Creació d'impost per representar el % de retorn d'inversió
     """,
-    "version": "0-dev",
+    "version": "24.5.0",
     "author": "GISCE",
     "category": "SomEnergia",
-    "depends":[
+    "depends": [
         "base",
         "som_partner_account",
         "account_payment",
         "l10n_ES_remesas",
         "account",
         "c2c_webkit_report",
-        "giscedata_facturacio"
+        "giscedata_facturacio",
     ],
     "init_xml": [],
     "demo_xml": [],
-    "update_xml":[
+    "update_xml": [
         "partner_view.xml",
         "som_inversions_data.xml",
         "som_inversions_report.xml",
         "payment_view.xml",
         "wizard/wizard_liquidacio_interessos_view.xml",
         "security/som_inversions_security.xml",
-        "security/ir.model.access.csv"
+        "security/ir.model.access.csv",
     ],
     "active": False,
-    "installable": True
+    "installable": True,
 }

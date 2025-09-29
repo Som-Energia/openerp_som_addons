@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+ 	<data>
+        <record model="res.partner.bank" id="catalunya_bank">
+            <field name="name">Banc partner Catalunya</field>
+            <field name="acc_number">213796191838</field>
+            <field name="partner_id" ref="giscedata_switching.sw_ccaa_09_catalunya"/>
+            <field name="state">iban</field>
+            <field name="bank" ref="base.partner_bank"/>
+            <field name="iban">ES7620382201213796191838</field>
+            <field name="default_bank">True</field>
+        </record>
+        <record model="res.partner.bank" id="castilla_bank">
+            <field name="name">Banc partner Castilla Mancha</field>
+            <field name="acc_number">14651298606461177215</field>
+            <field name="partner_id" ref="giscedata_switching.sw_ccaa_08_castilla_la_mancha"/>
+            <field name="state">iban</field>
+            <field name="bank" ref="base.partner_bank"/>
+            <field name="iban">ES6514651298606461177215</field>
+            <field name="default_bank">True</field>
+        </record>
+        <record id="base.res_partner_bank_0001" model="res.partner.bank">
+            <field name="iban">ES3100814996804537214772</field>
+            <field name="bank" ref="base.partner_bank"/>
+            <field name="state">iban</field>
+        </record>
+        <record id="account_invoice_som.payment_mode_0001" model="payment.mode">
+            <field name="tipo">sepa34</field>
+            <field name="partner_id" ref="giscedata_switching.sw_ccaa_03_asturias"/>
+            <field name="sepa_creditor_code">ES6700011111111H</field>
+            <field name="nombre">Asturias</field>
+        </record>
+        <record id="ajuntament_girona" model="som.municipal.taxes.config">
+            <field name="name">Ajuntament Alegría-Dulantzi</field>
+            <field name="municipi_id" ref="base_extended.ine_01001" />
+            <field name="partner_id" ref="giscedata_switching.sw_ccaa_09_catalunya" />
+            <field name="payment_order" eval="1" />
+            <field name="red_sara" eval="1" />
+            <field name="active" eval="1" />
+            <field name="payment">quarter</field>
+            <field name="bank_id" ref="catalunya_bank" />
+        </record>
+        <record id="ajuntament_olot" model="som.municipal.taxes.config">
+            <field name="name">Ajuntament Olot</field>
+            <field name="municipi_id" ref="base_extended.ine_17114" />
+            <field name="partner_id" ref="giscedata_switching.sw_ccaa_08_castilla_la_mancha" />
+            <field name="payment_order" eval="1" />
+            <field name="red_sara" eval="0" />
+            <field name="active" eval="1" />
+            <field name="payment">quarter</field>
+            <field name="bank_id" ref="catalunya_bank" />
+        </record>
+        <record id="tax_account" model="account.account">
+            <field name="name">Taxa 1,5%</field>
+            <field name="code">410000000000</field>
+            <field name="type">payable</field>
+            <field eval="ref('account.minimal_0')" name="parent_id"/>
+            <field name="company_id" ref="base.main_company"/>
+            <field eval="True" name="reconcile"/>
+            <field name="user_type" ref="l10n_chart_ES.terceros - pay"/>
+            <field name="note">
+                Compte comptable de les taxes
+            </field>
+        </record>
+        <record id="debt_account" model="account.account">
+            <field name="name">Taxa 1,5%</field>
+            <field name="code">600000000300</field>
+            <field name="type">other</field>
+            <field eval="ref('account.minimal_0')" name="parent_id"/>
+            <field name="company_id" ref="base.main_company"/>
+            <field eval="False" name="reconcile"/>
+            <field name="user_type" ref="account.account_type_expense"/>
+            <field name="note">
+                Compte comptable de despesa
+            </field>
+        </record>
+    </data>
+</openerp>

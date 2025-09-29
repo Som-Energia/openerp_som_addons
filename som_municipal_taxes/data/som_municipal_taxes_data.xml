@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+ 	<data>
+        <record model="res.partner.category" id="res_partner_category_ajuntament">
+            <field name="name">Ajuntament</field>
+        </record>
+        <record model="ir.sequence.type" id="seq_type_som_aportacions">
+            <field name="name">Tipus de seqüència per a les factures d'impostos municipals</field>
+            <field name="code">seq.som.municipal.taxes</field>
+        </record>
+        <record model="ir.sequence" id="seq_som_aportacions">
+            <field name="name">Seq. Factures Impost municipal taxa 1,5%</field>
+            <field name="code">seq.som.municipal.taxes</field>
+            <field name="padding">6</field>
+            <field name="number_increment">1</field>
+            <field name="prefix">MUN_TAX</field>
+        </record>
+        <record model="account.journal" id="municipal_tax_journal">
+            <field name="account_control_ids" eval="[(6,0,[])]"/>
+            <field name="active" eval="1"/>
+            <field name="cash_journal" eval="0"/>
+            <field name="centralisation" eval="0"/>
+            <field name="code">MUN_TAX</field>
+            <field name="default_credit_account_id" model="account.account" search="[('code','=','600000000300')]"/>
+            <field name="default_debit_account_id" model="account.account" search="[('code','=','600000000300')]"/>
+            <field name="entry_posted" eval="1"/>
+            <field name="group_invoice_lines" eval="0"/>
+            <field name="include_to_iva_book" eval="0"/>
+            <field name="invoice_sequence_id" eval="seq_som_aportacions"/>
+            <field name="name">Factures impost municipal 1,5%</field>
+            <field name="refund_journal" eval="0"/>
+            <field name="sequence_id" ref="account.sequence_journal"/>
+            <field name="sii_to_send" eval="False"/>
+            <field name="type">purchase</field>
+            <field name="type_control_ids" eval="[(6,0,[])]"/>
+            <field name="update_posted" eval="1"/>
+            <field name="user_id" ref="base.user_root"/>
+            <field name="view_id" ref="account.account_journal_bank_view"/>
+        </record>
+    </data>
+</openerp>

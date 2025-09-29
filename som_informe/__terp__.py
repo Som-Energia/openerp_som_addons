@@ -3,10 +3,10 @@
     "name": "Mòdul per crear informes per Consum",
     "description": """
     """,
-    "version": "0-dev",
+    "version": "24.5.0",
     "author": "SomEnergia",
     "category": "SomEnergia",
-    "depends":[
+    "depends": [
         "base",
         "c2c_webkit_report",
         "crm",
@@ -19,11 +19,11 @@
     "demo_xml": [
         "tests/som_informe_demo.xml",
     ],
-    "update_xml":[
+    "update_xml": [
         "data/som_informe_data.xml",
         "wizard/wizard_create_technical_report_view.xml",
         "security/ir.model.access.csv",
     ],
     "active": False,
-    "installable": True
+    "installable": True,
 }

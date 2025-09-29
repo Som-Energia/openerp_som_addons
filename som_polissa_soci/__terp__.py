@@ -5,21 +5,25 @@
     This module provide :
         * Camp de soci per relacionar un contracte amb un soci.
     """,
-    "version": "0-dev",
+    "version": "24.5.0",
     "author": "GISCE",
     "category": "SomEnergia",
-    "depends":[
+    "depends": [
         "giscedata_facturacio_comer",
         "giscedata_lectures_estimacio",
         "giscedata_polissa_category",
     ],
-    "init_xml": [
-        "res_partner_data.xml"
+    "test_depends": [
+        "giscedata_tarifas_peajes_20150101",
+        "giscedata_tarifas_peajes_20160101",
+        "giscedata_tarifas_peajes_20170101",
+        "giscedata_tarifas_peajes_20180101",
     ],
+    "init_xml": ["res_partner_data.xml"],
     "demo_xml": [
-        "res_partner_demo_data.xml"
+        "demo/res_partner_demo_data.xml",
     ],
-    "update_xml":[
+    "update_xml": [
         "giscedata_polissa_view.xml",
         "giscedata_facturacio_data.xml",
         "giscedata_polissa_category_data.xml",
@@ -32,7 +36,8 @@
         "wizard/wizard_subscribe_client_mailchimp.xml",
         "wizard/wizard_subscribe_soci_mailchimp.xml",
         "wizard/wizard_unsubscribe_soci_mailchimp.xml",
+        "somenergia_soci_data.xml",
     ],
     "active": False,
-    "installable": True
+    "installable": True,
 }

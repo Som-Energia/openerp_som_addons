@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<openerp>
+	<data>
+        <record id="view_wizard_report_test_group_view_tests_form" model="ir.ui.view">
+            <field name="name">wizard.report.test.group.view.tests.form</field>
+            <field name="model">wizard.report.test.group.view.tests</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <form string="Veure diferències">
+                    <group colspan="4" col="4">
+                        <button name="view_all_test" string="Tots els Tests" icon="gtk-ok" type="object" />
+                        <button name="view_error_test" string="Tests amb error" icon="gtk-dialog-error" type="object" />
+                        <button name="view_diffs" string="Tests amb diferències" icon="gtk-dialog-question" type="object" />
+                    </group>
+                    <group colspan="4" col="4">
+                        <button name="view_attach_all_test" string="Tots els adjunts" icon="gtk-ok" type="object" />
+                        <button name="view_attach_error_test" string="Adjunts d'errors" icon="gtk-dialog-error" type="object" />
+                        <button name="view_attach_diffs" string="Adjunts de diferències" icon="gtk-dialog-question" type="object" />
+                    </group>
+                    <group colspan="4" col="4">
+                    </group>
+                    <group colspan="4" col="4">
+                        <button name="delete_all_attachs" string="Esborrar tots els adjunts dels tests" icon="gtk-dialog-warning" type="object" />
+                    </group>
+                </form>
+            </field>
+        </record>
+        <record id="action_wizard_report_test_group_view_tests" model="ir.actions.act_window">
+            <field name="name">Veure diferències</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">wizard.report.test.group.view.tests</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="view_wizard_report_test_group_view_tests_form"/>
+            <field name="target">new</field>
+        </record>
+    </data>
+</openerp>

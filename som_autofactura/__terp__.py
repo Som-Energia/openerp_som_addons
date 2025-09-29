@@ -5,7 +5,7 @@
     Aquest mòdul fa:
         * Poder definir un workflow de tasques, activades o no, per automatitzar el procés de facturació.
     """,  # noqa: E501
-    "version": "0.dev",
+    "version": "24.5.0",
     "author": "SOM ENERGIA",
     "category": "SomEnergia",
     "depends": [

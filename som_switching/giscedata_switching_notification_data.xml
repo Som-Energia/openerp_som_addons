@@ -14,16 +14,52 @@
             <field name="description">Activa les notificacions per els passos de rebuig M1-02 amb canvis tècnics per a tots els motius excepte el 57</field>
             <field name="conditions">[('01', 'sollicitudadm', '!=', 'S'),('02', 'rebuig', '==', True),('02', 'rebuig_ids[0].motiu_rebuig.name', '!=', '57')]</field>
         </record>
-        <record model="giscedata.switching.notificacio.config" id="giscedata_switching.sw_not_m1_altres_02">
+        <!--m1-02-->
+        <record model="giscedata.switching.notificacio.config" id="sw_not_m1_altres_02_acceptacio">
+            <field name="proces_id" ref="giscedata_switching.sw_proces_m1"/>
+            <field name="step_id" ref="giscedata_switching.sw_step_m1_02"/>
+            <field name="description">Activa les notificacions per els pasos M1-02 acceptats, excepte quan son de canvis de titular.</field>
             <field name="conditions">[('01', 'sollicitudadm', '!=', 'S'),('02', 'rebuig', '==', False)]</field>
         </record>
         <!--b1-07-->
-        <record model="giscedata.switching.notificacio.config" id="giscedata_switching.sw_not_b107">
+        <record model="giscedata.switching.notificacio.config" id="sw_not_b107_motiu_01">
+            <field name="proces_id" ref="giscedata_switching.sw_proces_b1"/>
+            <field name="step_id" ref="giscedata_switching.sw_step_b1_07"/>
+            <field name="description">Activa les notificacions per tots els passos b1-07 en cas de motiu baixa 01</field>
             <field name="conditions">[('01', 'motiu', '==', '01')]</field>
         </record>
-        <!--b1-02-->
-        <record model="giscedata.switching.notificacio.config" id="giscedata_switching.sw_not_b102">
+        <!--b1-02 motiu 01-->
+        <record model="giscedata.switching.notificacio.config" id="sw_not_b102_motiu_01">
+            <field name="proces_id" ref="giscedata_switching.sw_proces_b1"/>
+            <field name="step_id" ref="giscedata_switching.sw_step_b1_02"/>
+            <field name="description">Activa les notificacions per tots els passos b1-02 en cas de motiu baixa 01</field>
             <field name="conditions">[('01', 'motiu', '==', '01')]</field>
+        </record>
+        <!--b1-02 rebuig-->
+        <record model="giscedata.switching.notificacio.config" id="sw_not_b102_rebuig">
+            <field name="proces_id" ref="giscedata_switching.sw_proces_b1"/>
+            <field name="step_id" ref="giscedata_switching.sw_step_b1_02"/>
+            <field name="description">Activa les notificacions per tots els passos b1-02 que siguin rebuig.</field>
+            <field name="conditions">[('02', 'rebuig', '==', True)]</field>
+        </record>
+        <!--m2-02-->
+        <record model="giscedata.switching.notificacio.config" id="sw_not_m2_05_motius_nofiticar">
+            <field name="proces_id" ref="giscedata_switching.sw_proces_m2"/>
+            <field name="step_id" ref="giscedata_switching.sw_step_m2_05"/>
+            <field name="description">Activa les notificacions per els pasos M2-05 on els motius siguin 01, 02, 03, 04, 05 i 08</field>
+            <field name="conditions">[('05', 'motiu_modificacio', 'in', ['01', '02', '03', '04', '05', '08'])]</field>
+        </record>
+        <record model="giscedata.switching.notificacio.config" id="sw_not_m2_05_motiu_06">
+            <field name="proces_id" ref="giscedata_switching.sw_proces_m2"/>
+            <field name="step_id" ref="giscedata_switching.sw_step_m2_05"/>
+            <field name="description">Activa les notificacions per els pasos M2-05 motiu 06</field>
+            <field name="conditions">[('05', 'motiu_modificacio', '==', '06')]</field>
+        </record>
+        <record model="giscedata.switching.notificacio.config" id="sw_not_m2_05_motiu_07">
+            <field name="proces_id" ref="giscedata_switching.sw_proces_m2"/>
+            <field name="step_id" ref="giscedata_switching.sw_step_m2_05"/>
+            <field name="description">Activa les notificacions per els pasos M2-05 motiu 07</field>
+            <field name="conditions">[('05', 'motiu_modificacio', '==', '07')]</field>
         </record>
     </data>
 </openerp>

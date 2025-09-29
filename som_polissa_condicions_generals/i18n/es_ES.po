@@ -1,16 +1,16 @@
 # Translation of OpenERP Server.
 # This file contains the translation of the following modules:
 # * som_polissa_condicions_generals
-# 
+#
 # Translators:
 #   <>, 2019, 2020.
-# Som Energia  <itcrowd@somenergia.coop>, 2020, 2021, 2022, 2023.
+# Som Energia  <itcrowd@somenergia.coop>, 2020, 2021, 2022, 2023, 2024, 2025.
 msgid ""
 msgstr ""
 "Project-Id-Version: Som Energia\n"
 "Report-Msgid-Bugs-To: support@openerp.com\n"
-"POT-Creation-Date: 2023-08-31 16:11+0000\n"
-"PO-Revision-Date: 2023-08-31 14:16+0000\n"
+"POT-Creation-Date: 2025-09-03 17:02+0000\n"
+"PO-Revision-Date: 2025-09-03 15:03+0000\n"
 "Last-Translator: Som Energia <itcrowd@somenergia.coop>\n"
 "Language-Team: Spanish (Spain) (http://trad.gisce.net/projects/p/somenergia/language/es_ES/)\n"
 "MIME-Version: 1.0\n"
@@ -21,19 +21,250 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #. module: som_polissa_condicions_generals
-#: model:ir.actions.report.xml,name:som_polissa_condicions_generals.report_contracte_canvi_preus
-msgid "Condicions particulars canvi preus"
-msgstr "Condiciones particulares cambio precios"
+#: model:ir.model,name:som_polissa_condicions_generals.model_report_backend_condicions_particulars_m1
+msgid "report.backend.condicions.particulars.m1"
+msgstr "report.backend.condicions.particulars.m1"
+
+#. module: som_polissa_condicions_generals
+#: constraint:ir.model:0
+msgid ""
+"The Object name must start with x_ and not contain any special character !"
+msgstr "The Object name must start with x_ and not contain any special character !"
+
+#. module: som_polissa_condicions_generals
+#: model:poweremail.templates,def_subject:som_polissa_condicions_generals.notification_atr_M1_01_SS
+msgid ""
+"Som Energia: Canvi de titular. Verificació de dades. Contracte "
+"${object.cups_polissa_id.name} / Cambio de titular. Verificación de datos. "
+"Contrato ${object.cups_polissa_id.name}"
+msgstr "Som Energia: Canvi de titular. Verificació de dades. Contracte ${object.cups_polissa_id.name} / Cambio de titular. Verificación de datos. Contrato ${object.cups_polissa_id.name}"
+
+#. module: som_polissa_condicions_generals
+#: constraint:product.pricelist.version:0
+msgid "You cannot have 2 pricelist versions that overlap!"
+msgstr "You cannot have 2 pricelist versions that overlap!"
+
+#. module: som_polissa_condicions_generals
+#: model:product.pricelist.version,name:som_polissa_condicions_generals.product_pricelist_version_tarifas_electridad
+msgid "Versio 1"
+msgstr "Version 1"
+
+#. module: som_polissa_condicions_generals
+#: model:poweremail.templates,def_body_text:som_polissa_condicions_generals.notification_atr_M1_01_SS
+#, python-format
+msgid ""
+"<!doctype html>\n"
+"<%!\n"
+"    from mako.template import Template\n"
+"    from datetime import datetime, timedelta\n"
+"\n"
+"\n"
+"    def render(text_to_render, object_):\n"
+"        templ = Template(text_to_render)\n"
+"        return templ.render_unicode(\n"
+"            object=object_,\n"
+"            format_exceptions=True\n"
+"    )\n"
+"\n"
+"\n"
+"    def get_nom_cognoms(object_, owner):\n"
+"        partner_obj = object_.pool.get('res.partner')\n"
+"        name_dict = partner_obj.separa_cognoms(object_._cr, object_._uid, owner.name)\n"
+"\n"
+"        if partner_obj.vat_es_empresa(object_._cr, object_._uid, owner.vat):\n"
+"            return name_dict['nom']\n"
+"\n"
+"        return \"{0} {1}\".format(name_dict['nom'], ' '.join(name_dict['cognoms']))\n"
+"\n"
+"\n"
+"    def hide_code(code, start, hidden_factor):\n"
+"        return code[start:].replace(code[-hidden_factor:], '*' * hidden_factor)\n"
+"\n"
+"\n"
+"    def is_soci(object_, partner_id):\n"
+"        soci_obj = object_.pool.get('somenergia.soci')\n"
+"        return bool(search([\n"
+"            ('partner_id','=',partner_id),\n"
+"        ]))\n"
+"\n"
+"%>\n"
+"\n"
+"<%\n"
+"    pas01 = object.step_ids[0].pas_id if len(object.step_ids) > 0 else None\n"
+"    nom_antic_tiular = get_nom_cognoms(object, object.cups_polissa_id.titular)\n"
+"\n"
+"    nom_nou_titular = get_nom_cognoms(object, pas01.dades_client)\n"
+"\n"
+"    nom_soci = get_nom_cognoms(object, object.polissa_ref_id.soci) if object.polissa_ref_id.soci else False\n"
+"\n"
+"    cut_vat = hide_code(pas01.codi_document, 0, 4)\n"
+"    cut_iban = hide_code(pas01.bank.iban, 0, 8)\n"
+"\n"
+"    t_obj = object.pool.get('poweremail.templates')\n"
+"    md_obj = object.pool.get('ir.model.data')\n"
+"\n"
+"    template_id = md_obj.get_object_reference(\n"
+"        object._cr, object._uid,  'som_poweremail_common_templates', 'common_template_legal_footer'\n"
+"    )[1]\n"
+"\n"
+"    text_legal = render(\n"
+"        t_obj.read(object._cr, object._uid, [template_id], ['def_body_text'])[0]['def_body_text'],\n"
+"        object\n"
+"    )\n"
+"%>\n"
+"\n"
+"<!doctype html>\n"
+"<html>\n"
+"    <head>\n"
+"        <meta charset='utf-8'>\n"
+"    </head>\n"
+"    % if pas01.dades_client and pas01.dades_client.lang == \"ca_ES\":\n"
+"        ${correu_cat()}\n"
+"    % else:\n"
+"        ${correu_es()}\n"
+"    % endif\n"
+"    ${text_legal}\n"
+"</html>\n"
+"\n"
+"\n"
+"<%def name=\"correu_cat()\">\n"
+"    <body>\n"
+"        <table width=\"100%\" frame=\"below\" bgcolor=\"#E8F1D4\">\n"
+"            <tr>\n"
+"                <td height=2px>\n"
+"                    <font size=2><strong> Contracte Som Energia nº ${object.cups_polissa_id.name}</strong></font>\n"
+"                </td>\n"
+"                <td valign=top rowspan=\"4\" align=\"right\">\n"
+"                    <img width='130' height='65' src=\"https://www.somenergia.coop/wp-content/uploads/2014/11/logo-somenergia.png\">\n"
+"                </td>\n"
+"            </tr>\n"
+"            <tr>\n"
+"                <td height=2px>\n"
+"                    <font size=1> Adreça punt subministrament: ${object.cups_id.direccio}</font>\n"
+"                </td>\n"
+"            </tr>\n"
+"            <tr>\n"
+"                <td height=2px>\n"
+"                    <font size=1> Codi CUPS: ${object.cups_id.name}</font>\n"
+"                </td>\n"
+"            </tr>\n"
+"        </table>\n"
+"        <p>\n"
+"            Benvolguts/des,\n"
+"        </p>\n"
+"        <p>\n"
+"            Us informem que hem rebut correctament la sol·licitud d'un canvi de titular pel contracte número ${object.cups_polissa_id.name} amb el CUPS: ${object.cups_id.name} i del qual, fins ara, el titular és en/na ${object.cups_polissa_id.titular.name}.\n"
+"        </p>\n"
+"        <p>\n"
+"            Si es tracta d'un canvi de titularitat degut a la defunció de la persona titular actual o bé detecteu un error en el resum de dades següent, contesteu aquest correu.<br>\n"
+"            <b>Si tot és correcte no és necessari que contesteu</b> i la gestió es durà a terme en un màxim de cinc dies hàbils.<br>\n"
+"            És important tenir en compte que en les properes setmanes, la persona que ha estat titular fins ara, rebrà una última factura fins a la data d’activació del contracte amb la nova persona titular.<br>\n"
+"        </p>\n"
+"            <p>\n"
+"                Les dades de la nova persona titular són:<br>\n"
+"                - Nom: ${nom_nou_titular}<br/>\n"
+"                - NIF, NIE o CIF: ${cut_vat}<br>\n"
+"                - Número de compte: ${cut_iban}<br>\n"
+"            </p>\n"
+"        <br>\n"
+"        Salutacions,<br>\n"
+"        <br>\n"
+"        Equip de Som Energia<br>\n"
+"        <a href=\"mailto:modifica@somenergia.coop\">modifica@somenergia.coop</a><br>\n"
+"        <a href=\"http://www.somenergia.coop/ca\">www.somenergia.coop</a>\n"
+"    </body>\n"
+"</%def>\n"
+"\n"
+"\n"
+"<%def name=\"correu_es()\">\n"
+"    <body>\n"
+"        <table width=\"100%\" frame=\"below\" bgcolor=\"#E8F1D4\">\n"
+"            <tr>\n"
+"                <td height=2px>\n"
+"                    <font size=2><strong> Contracte Som Energia nº ${object.cups_polissa_id.name}</strong></font>\n"
+"                </td>\n"
+"                <td valign=top rowspan=\"4\" align=\"right\">\n"
+"                    <img width='130' height='65' src=\"https://www.somenergia.coop/wp-content/uploads/2014/11/logo-somenergia.png\">\n"
+"                </td>\n"
+"            </tr>\n"
+"            <tr>\n"
+"                <td height=2px>\n"
+"                    <font size=1> Dirección del punto de suministro: ${object.cups_id.direccio}</font>\n"
+"                </td>\n"
+"            </tr>\n"
+"            <tr>\n"
+"                <td height=2px>\n"
+"                    <font size=1> Codigo CUPS: ${object.cups_id.name}</font>\n"
+"                </td>\n"
+"            </tr>\n"
+"        </table>\n"
+"        <p>\n"
+"            Estimados/as,\n"
+"        </p>\n"
+"        <p>\n"
+"                Os informamos que hemos recibido correctamente la solicitud de cambio de titular del contrato número ${object.cups_polissa_id.name} con el CUPS: ${object.cups_id.name} y del cual, hasta ahora el titular es ${object.cups_polissa_id.titular.name}.\n"
+"            </p>\n"
+"        <p>\n"
+"                Si se trata de un cambio de titularidad debido a la defunción de la persona titular actual o bien detectáis un error en el resumen de datos siguiente, contestad este correo.<br/>\n"
+"                <b>Si todo es correcto no es necesario que lo hagáis</b> y la gestión se llevará a cabo en un plazo máximo de cinco días hábiles.<br/>\n"
+"                Es importante tener en cuenta que en las próximas semanas, la persona que ha sido titular hasta ahora, recibirá una última factura hasta la fecha de activación del contrato con la nueva persona titular.<br/>\n"
+"        </p>\n"
+"        <p>\n"
+"                Los datos de la nueva persona titular son:<br/>\n"
+"                - Nombre: ${nom_nou_titular}<br/>\n"
+"                - NIF, NIE o CIF: ${cut_vat}<br/>\n"
+"                - Número de cuenta: ${cut_iban}<br/>\n"
+"        </p>\n"
+"        <br>\n"
+"            Saludos,<br/>\n"
+"            <br/>\n"
+"        Equipo de Som Energia<br>\n"
+"        <a href=\"mailto:modifica@somenergia.coop\">modifica@somenergia.coop</a><br>\n"
+"        <a href=\"http://www.somenergia.coop/es\">www.somenergia.coop</a>\n"
+"    </body>\n"
+"</%def>\n"
+msgstr "<!doctype html>\n<%!\n    from mako.template import Template\n    from datetime import datetime, timedelta\n\n\n    def render(text_to_render, object_):\n        templ = Template(text_to_render)\n        return templ.render_unicode(\n            object=object_,\n            format_exceptions=True\n    )\n\n\n    def get_nom_cognoms(object_, owner):\n        partner_obj = object_.pool.get('res.partner')\n        name_dict = partner_obj.separa_cognoms(object_._cr, object_._uid, owner.name)\n\n        if partner_obj.vat_es_empresa(object_._cr, object_._uid, owner.vat):\n            return name_dict['nom']\n\n        return \"{0} {1}\".format(name_dict['nom'], ' '.join(name_dict['cognoms']))\n\n\n    def hide_code(code, start, hidden_factor):\n        return code[start:].replace(code[-hidden_factor:], '*' * hidden_factor)\n\n\n    def is_soci(object_, partner_id):\n        soci_obj = object_.pool.get('somenergia.soci')\n        return bool(search([\n            ('partner_id','=',partner_id),\n        ]))\n\n%>\n\n<%\n    pas01 = object.step_ids[0].pas_id if len(object.step_ids) > 0 else None\n    nom_antic_tiular = get_nom_cognoms(object, object.cups_polissa_id.titular)\n\n    nom_nou_titular = get_nom_cognoms(object, pas01.dades_client)\n\n    nom_soci = get_nom_cognoms(object, object.polissa_ref_id.soci) if object.polissa_ref_id.soci else False\n\n    cut_vat = hide_code(pas01.codi_document, 0, 4)\n    cut_iban = hide_code(pas01.bank.iban, 0, 8)\n\n    t_obj = object.pool.get('poweremail.templates')\n    md_obj = object.pool.get('ir.model.data')\n\n    template_id = md_obj.get_object_reference(\n        object._cr, object._uid,  'som_poweremail_common_templates', 'common_template_legal_footer'\n    )[1]\n\n    text_legal = render(\n        t_obj.read(object._cr, object._uid, [template_id], ['def_body_text'])[0]['def_body_text'],\n        object\n    )\n%>\n\n<!doctype html>\n<html>\n    <head>\n        <meta charset='utf-8'>\n    </head>\n    % if pas01.dades_client and pas01.dades_client.lang == \"ca_ES\":\n        ${correu_cat()}\n    % else:\n        ${correu_es()}\n    % endif\n    ${text_legal}\n</html>\n\n\n<%def name=\"correu_cat()\">\n    <body>\n        <table width=\"100%\" frame=\"below\" bgcolor=\"#E8F1D4\">\n            <tr>\n                <td height=2px>\n                    <font size=2><strong> Contracte Som Energia nº ${object.cups_polissa_id.name}</strong></font>\n                </td>\n                <td valign=top rowspan=\"4\" align=\"right\">\n                    <img width='130' height='65' src=\"https://www.somenergia.coop/wp-content/uploads/2014/11/logo-somenergia.png\">\n                </td>\n            </tr>\n            <tr>\n                <td height=2px>\n                    <font size=1> Adreça punt subministrament: ${object.cups_id.direccio}</font>\n                </td>\n            </tr>\n            <tr>\n                <td height=2px>\n                    <font size=1> Codi CUPS: ${object.cups_id.name}</font>\n                </td>\n            </tr>\n        </table>\n        <p>\n            Benvolguts/des,\n        </p>\n        <p>\n            Us informem que hem rebut correctament la sol·licitud d'un canvi de titular pel contracte número ${object.cups_polissa_id.name} amb el CUPS: ${object.cups_id.name} i del qual, fins ara, el titular és en/na ${object.cups_polissa_id.titular.name}.\n        </p>\n        <p>\n            Si es tracta d'un canvi de titularitat degut a la defunció de la persona titular actual o bé detecteu un error en el resum de dades següent, contesteu aquest correu.<br>\n            <b>Si tot és correcte no és necessari que contesteu</b> i la gestió es durà a terme en un màxim de cinc dies hàbils.<br>\n            És important tenir en compte que en les properes setmanes, la persona que ha estat titular fins ara, rebrà una última factura fins a la data d’activació del contracte amb la nova persona titular.<br>\n        </p>\n            <p>\n                Les dades de la nova persona titular són:<br>\n                - Nom: ${nom_nou_titular}<br/>\n                - NIF, NIE o CIF: ${cut_vat}<br>\n                - Número de compte: ${cut_iban}<br>\n            </p>\n        <br>\n        Salutacions,<br>\n        <br>\n        Equip de Som Energia<br>\n        <a href=\"mailto:modifica@somenergia.coop\">modifica@somenergia.coop</a><br>\n        <a href=\"http://www.somenergia.coop/ca\">www.somenergia.coop</a>\n    </body>\n</%def>\n\n\n<%def name=\"correu_es()\">\n    <body>\n        <table width=\"100%\" frame=\"below\" bgcolor=\"#E8F1D4\">\n            <tr>\n                <td height=2px>\n                    <font size=2><strong> Contracte Som Energia nº ${object.cups_polissa_id.name}</strong></font>\n                </td>\n                <td valign=top rowspan=\"4\" align=\"right\">\n                    <img width='130' height='65' src=\"https://www.somenergia.coop/wp-content/uploads/2014/11/logo-somenergia.png\">\n                </td>\n            </tr>\n            <tr>\n                <td height=2px>\n                    <font size=1> Dirección del punto de suministro: ${object.cups_id.direccio}</font>\n                </td>\n            </tr>\n            <tr>\n                <td height=2px>\n                    <font size=1> Codigo CUPS: ${object.cups_id.name}</font>\n                </td>\n            </tr>\n        </table>\n        <p>\n            Estimados/as,\n        </p>\n        <p>\n                Os informamos que hemos recibido correctamente la solicitud de cambio de titular del contrato número ${object.cups_polissa_id.name} con el CUPS: ${object.cups_id.name} y del cual, hasta ahora el titular es ${object.cups_polissa_id.titular.name}.\n            </p>\n        <p>\n                Si se trata de un cambio de titularidad debido a la defunción de la persona titular actual o bien detectáis un error en el resumen de datos siguiente, contestad este correo.<br/>\n                <b>Si todo es correcto no es necesario que lo hagáis</b> y la gestión se llevará a cabo en un plazo máximo de cinco días hábiles.<br/>\n                Es importante tener en cuenta que en las próximas semanas, la persona que ha sido titular hasta ahora, recibirá una última factura hasta la fecha de activación del contrato con la nueva persona titular.<br/>\n        </p>\n        <p>\n                Los datos de la nueva persona titular son:<br/>\n                - Nombre: ${nom_nou_titular}<br/>\n                - NIF, NIE o CIF: ${cut_vat}<br/>\n                - Número de cuenta: ${cut_iban}<br/>\n        </p>\n        <br>\n            Saludos,<br/>\n            <br/>\n        Equipo de Som Energia<br>\n        <a href=\"mailto:modifica@somenergia.coop\">modifica@somenergia.coop</a><br>\n        <a href=\"http://www.somenergia.coop/es\">www.somenergia.coop</a>\n    </body>\n</%def>\n"
+
+#. module: som_polissa_condicions_generals
+#: model:poweremail.templates,file_name:som_polissa_condicions_generals.notification_atr_M1_01_SS
+msgid "${object.codi_sollicitud}"
+msgstr "${object.codi_sollicitud}"
+
+#. module: som_polissa_condicions_generals
+#: model:ir.model,name:som_polissa_condicions_generals.model_report_backend_mailcanvipreus
+msgid "report.backend.mailcanvipreus"
+msgstr "report.backend.mailcanvipreus"
+
+#. module: som_polissa_condicions_generals
+#: model:ir.actions.report.xml,name:som_polissa_condicions_generals.report_contracte_m101
+msgid "Contracte"
+msgstr "Contrato"
+
+#. module: som_polissa_condicions_generals
+#: code:addons/som_polissa_condicions_generals/models/report_backend_ccpp.py:374
+msgid "(vigents a partir del {})"
+msgstr "(vigentes a partir del {})"
+
+#. module: som_polissa_condicions_generals
+#: model:poweremail.templates,def_subject:som_polissa_condicions_generals.canviPreusBackend
+msgid "Al gener actualitzarem les tarifes d’electricitat"
+msgstr "En enero actualizamos las tarifas de electricidad"
+
+#. module: som_polissa_condicions_generals
+#: code:addons/som_polissa_condicions_generals/models/report_backend_ccpp.py:368
+#: code:addons/som_polissa_condicions_generals/models/report_backend_ccpp.py:371
+msgid "(vigents fins al {})"
+msgstr "(vigentes hasta el {})"
+
+#. module: som_polissa_condicions_generals
+#: model:ir.model,name:som_polissa_condicions_generals.model_report_backend_condicions_particulars
+msgid "report.backend.condicions.particulars"
+msgstr "report.backend.condicions.particulars"
 
 #. module: som_polissa_condicions_generals
 #: model:ir.module.module,shortdesc:som_polissa_condicions_generals.module_meta_information
 msgid "Condicions generals Somenergia"
 msgstr "Condiciones generales Somenergia"
-
-#. module: som_polissa_condicions_generals
-#: model:ir.actions.report.xml,name:som_polissa_condicions_generals.report_contracte_condicions_generals_dummy
-msgid "Condicions generals"
-msgstr "Condiciones generales"
 
 #. module: som_polissa_condicions_generals
 #: model:ir.module.module,description:som_polissa_condicions_generals.module_meta_information
@@ -48,934 +279,404 @@ msgstr "Este módulo añade las siguientes funcionalidades:\n    * Condiciones g
 msgid "IVA Reduït (IVA 5%)"
 msgstr "IVA Reducido (IVA 5%)"
 
-#: rml:som_polissa_condicions_generals/report/condicions_particulars.mako:41
-#: rml:som_polissa_condicions_generals/report/condicions_particulars_canvi_preus.mako:11
-#: rml:som_polissa_condicions_generals/report/condicions_particulars_nous_peatges_temporal.mako:13
-msgid "Sense Autoconsum"
-msgstr "Sin autoconsumo"
+#: rml:som_polissa_condicions_generals/report/components/auvi.mako:3
+#: rml:som_polissa_condicions_generals/report/components/prices_info.mako:114
+#: rml:som_polissa_condicions_generals/report/components/prices_info.mako:326
+msgid "Terme energia (€/kWh)"
+msgstr "Término energía (€/kWh)"
 
-#: rml:som_polissa_condicions_generals/report/condicions_particulars.mako:42
-#: rml:som_polissa_condicions_generals/report/condicions_particulars_canvi_preus.mako:12
-#: rml:som_polissa_condicions_generals/report/condicions_particulars_nous_peatges_temporal.mako:14
-msgid "Autoconsum Tipus 1"
-msgstr "Autoconsumo Tipo 1"
+#: rml:som_polissa_condicions_generals/report/components/auvi.mako:6
+msgid "Tarifa autoconsum virtual"
+msgstr "Tarifa autoconsumo virtual"
 
-#: rml:som_polissa_condicions_generals/report/condicions_particulars.mako:43
-#: rml:som_polissa_condicions_generals/report/condicions_particulars_canvi_preus.mako:13
-#: rml:som_polissa_condicions_generals/report/condicions_particulars_nous_peatges_temporal.mako:15
-msgid "Autoconsum tipus 2 (segons l'Art. 13. 2. a) RD 900/2015)"
-msgstr "Autoconsumo tipo 2 (segun Art. 13. 2. a) RD 900/2015)"
+#: rml:som_polissa_condicions_generals/report/components/auvi.mako:6
+#: rml:som_polissa_condicions_generals/report/components/prices_info.mako:118
+#: rml:som_polissa_condicions_generals/report/components/prices_info.mako:330
+msgid "(2) - el preu horari (PH) es calcula d'acord amb la fórmula:"
+msgstr "(2) - el precio horario (PH) se calcula de acuerdo con la fórmula:"
 
-#: rml:som_polissa_condicions_generals/report/condicions_particulars.mako:44
-#: rml:som_polissa_condicions_generals/report/condicions_particulars_canvi_preus.mako:14
-#: rml:som_polissa_condicions_generals/report/condicions_particulars_nous_peatges_temporal.mako:16
-msgid "Autoconsum tipus 2 (segons l'Art. 13. 2. b) RD 900/2015)"
-msgstr "Autoconsumo tipo 2 (segun Art. 13. 2. a) RD 900/2015)"
-
-#: rml:som_polissa_condicions_generals/report/condicions_particulars.mako:45
-#: rml:som_polissa_condicions_generals/report/condicions_particulars_canvi_preus.mako:15
-#: rml:som_polissa_condicions_generals/report/condicions_particulars_nous_peatges_temporal.mako:17
-msgid "Serveis auxiliars de generació lligada a un autoconsum tipus 2"
-msgstr "Servicios auxiliares de generación ligada a un autoconsumo tipo 2"
-
-#: rml:som_polissa_condicions_generals/report/condicions_particulars.mako:46
-#: rml:som_polissa_condicions_generals/report/condicions_particulars_canvi_preus.mako:16
-#: rml:som_polissa_condicions_generals/report/condicions_particulars_nous_peatges_temporal.mako:18
-msgid "Sense Excedents Individual - Consum"
-msgstr "Sin Excedentes Individual – Consumo"
-
-#: rml:som_polissa_condicions_generals/report/condicions_particulars.mako:47
-#: rml:som_polissa_condicions_generals/report/condicions_particulars_canvi_preus.mako:17
-#: rml:som_polissa_condicions_generals/report/condicions_particulars_nous_peatges_temporal.mako:19
-msgid "Sense Excedents Col·lectiu - Consum"
-msgstr "Sin Excedentes Colectivo – Consumo"
-
-#: rml:som_polissa_condicions_generals/report/condicions_particulars.mako:48
-#: rml:som_polissa_condicions_generals/report/condicions_particulars_canvi_preus.mako:18
-#: rml:som_polissa_condicions_generals/report/condicions_particulars_nous_peatges_temporal.mako:20
-msgid "Sense Excedents Col·lectiu amb acord de compensació – Consum"
-msgstr "Sin Excedentes Colectivo con acuerdo de compensación – Consumo"
-
-#: rml:som_polissa_condicions_generals/report/condicions_particulars.mako:49
-#: rml:som_polissa_condicions_generals/report/condicions_particulars_canvi_preus.mako:19
-#: rml:som_polissa_condicions_generals/report/condicions_particulars_nous_peatges_temporal.mako:21
-msgid "Amb excedents i compensació Individual-Consum"
-msgstr "Con excedentes y compensación Individual - Consumo"
-
-#: rml:som_polissa_condicions_generals/report/condicions_particulars.mako:50
-#: rml:som_polissa_condicions_generals/report/condicions_particulars_canvi_preus.mako:20
-#: rml:som_polissa_condicions_generals/report/condicions_particulars_nous_peatges_temporal.mako:22
-msgid "Amb excedents i compensació Col·lectiu-Consum"
-msgstr "Con excedentes y compensación Colectivo– Consumo"
-
-#: rml:som_polissa_condicions_generals/report/condicions_particulars.mako:51
-#: rml:som_polissa_condicions_generals/report/condicions_particulars_canvi_preus.mako:21
-#: rml:som_polissa_condicions_generals/report/condicions_particulars_nous_peatges_temporal.mako:23
-msgid "Amb excedents i compensació Col·lectiu a través de xarxa - Consum"
-msgstr "Con excedentes y compensación Colectivo a través de red– Consumo"
-
-#: rml:som_polissa_condicions_generals/report/condicions_particulars.mako:52
-#: rml:som_polissa_condicions_generals/report/condicions_particulars_canvi_preus.mako:22
-#: rml:som_polissa_condicions_generals/report/condicions_particulars_nous_peatges_temporal.mako:24
+#: rml:som_polissa_condicions_generals/report/components/auvi.mako:10
 msgid ""
-"Amb excedents sense compensació Individual sense cte. de Serv. Aux. en Xarxa"
-" Interior - Consum"
-msgstr "Con excedentes sin compensación Individual sin cto de SSAA en Red Interior– Consumo"
+"PHAUVI = 1,015 * [(PAUVI + Pc + Sc + Dsv + GdO + POsOm) (1 + Perd) + FE + F]"
+" + PTD + CA"
+msgstr "PHAUVI = 1,015 * [(PAUVI + Pc + Sc + Dsv + GdO + POsOm) (1 + Perd) + FE + F] + PTD + CA"
 
-#: rml:som_polissa_condicions_generals/report/condicions_particulars.mako:53
-#: rml:som_polissa_condicions_generals/report/condicions_particulars_canvi_preus.mako:23
-#: rml:som_polissa_condicions_generals/report/condicions_particulars_nous_peatges_temporal.mako:25
-msgid ""
-"Amb excedents sense compensació Col·lectiu sense cte. de Serv. Aux. en Xarxa"
-" Interior - Consum"
-msgstr "Con excedentes sin compensación Colectivo sin cto de SSAA en Red Interior– Consumo"
+#: rml:som_polissa_condicions_generals/report/components/auvi.mako:14
+#: rml:som_polissa_condicions_generals/report/components/auvi.mako:19
+#: rml:som_polissa_condicions_generals/report/components/auvi.mako:44
+#: rml:som_polissa_condicions_generals/report/components/prices_info.mako:126
+#: rml:som_polissa_condicions_generals/report/components/prices_info.mako:136
+#: rml:som_polissa_condicions_generals/report/components/prices_info.mako:335
+msgid "on la franja de la cooperativa"
+msgstr "donde la franja de la cooperativa"
 
-#: rml:som_polissa_condicions_generals/report/condicions_particulars.mako:54
-#: rml:som_polissa_condicions_generals/report/condicions_particulars_canvi_preus.mako:24
-#: rml:som_polissa_condicions_generals/report/condicions_particulars_nous_peatges_temporal.mako:26
-msgid ""
-"Amb excedents sense compensació Individual amb cte. de Serv. Aux. en Xarxa "
-"Interior - Consum"
-msgstr "Con excedentes sin compensación Individual con cto SSAA en Red Interior– Consumo"
+#: rml:som_polissa_condicions_generals/report/components/auvi.mako:26
+msgid "on PAUVI"
+msgstr "donde PAUVI"
 
-#: rml:som_polissa_condicions_generals/report/condicions_particulars.mako:55
-#: rml:som_polissa_condicions_generals/report/condicions_particulars_canvi_preus.mako:25
-#: rml:som_polissa_condicions_generals/report/condicions_particulars_nous_peatges_temporal.mako:27
-msgid ""
-"Amb excedents sense compensació individual amb cte. de Serv. Aux. en Xarxa "
-"Interior - Serv. Aux."
-msgstr "Con excedentes sin compensación individual con cto SSAA en Red Interior– SSAA"
+#: rml:som_polissa_condicions_generals/report/components/auvi.mako:31
+msgid " €/MWh"
+msgstr " €/MWh"
 
-#: rml:som_polissa_condicions_generals/report/condicions_particulars.mako:56
-#: rml:som_polissa_condicions_generals/report/condicions_particulars_canvi_preus.mako:26
-#: rml:som_polissa_condicions_generals/report/condicions_particulars_nous_peatges_temporal.mako:28
-msgid ""
-"Amb excedents sense compensació Col·lectiu / en Xarxa Interior - Consum"
-msgstr "Con excedentes sin compensación Colectivo/en Red Interior– Consumo"
+#: rml:som_polissa_condicions_generals/report/components/auvi.mako:35
+msgid "percentatge assignat"
+msgstr "porcentaje asignado"
 
-#: rml:som_polissa_condicions_generals/report/condicions_particulars.mako:57
-#: rml:som_polissa_condicions_generals/report/condicions_particulars_canvi_preus.mako:27
-#: rml:som_polissa_condicions_generals/report/condicions_particulars_nous_peatges_temporal.mako:29
-msgid ""
-"Amb excedents sense compensació Col·lectiu / en Xarxa Interior - Serv. Aux."
-msgstr "Con excedentes sin compensación Colectivo/en Red Interior - SSAA"
+#: rml:som_polissa_condicions_generals/report/components/auvi.mako:38
+msgid "%"
+msgstr "%"
 
-#: rml:som_polissa_condicions_generals/report/condicions_particulars.mako:58
-#: rml:som_polissa_condicions_generals/report/condicions_particulars_canvi_preus.mako:28
-#: rml:som_polissa_condicions_generals/report/condicions_particulars_nous_peatges_temporal.mako:30
-msgid ""
-"Amb excedents sense compensació Individual amb cte. de Serv. Aux. a través "
-"de xarxa - Consum"
-msgstr "Con excedentes sin compensación Individual con cto SSAA a través de red – Consumo"
-
-#: rml:som_polissa_condicions_generals/report/condicions_particulars.mako:59
-#: rml:som_polissa_condicions_generals/report/condicions_particulars_canvi_preus.mako:29
-#: rml:som_polissa_condicions_generals/report/condicions_particulars_nous_peatges_temporal.mako:31
-msgid ""
-"Amb excedents sense compensació individual amb cte. de Serv. Aux. a través "
-"de xarxa - Serv. Aux."
-msgstr "Con excedentes sin compensación individual con cto SSAA a través de red – SSAA"
-
-#: rml:som_polissa_condicions_generals/report/condicions_particulars.mako:60
-#: rml:som_polissa_condicions_generals/report/condicions_particulars_canvi_preus.mako:30
-#: rml:som_polissa_condicions_generals/report/condicions_particulars_nous_peatges_temporal.mako:32
-msgid "Amb excedents sense compensació Col·lectiu a través de xarxa - Consum"
-msgstr "Con excedentes sin compensación Colectivo a través de red – Consumo"
-
-#: rml:som_polissa_condicions_generals/report/condicions_particulars.mako:61
-#: rml:som_polissa_condicions_generals/report/condicions_particulars_canvi_preus.mako:31
-#: rml:som_polissa_condicions_generals/report/condicions_particulars_nous_peatges_temporal.mako:33
-msgid ""
-"Amb excedents sense compensació Col·lectiu a través de xarxa - Serv. Aux."
-msgstr "Con excedentes sin compensación Colectivo a través de red - SSAA"
-
-#: rml:som_polissa_condicions_generals/report/condicions_particulars.mako:62
-#: rml:som_polissa_condicions_generals/report/condicions_particulars_canvi_preus.mako:32
-#: rml:som_polissa_condicions_generals/report/condicions_particulars_nous_peatges_temporal.mako:34
-msgid ""
-"Amb excedents sense compensació Individual amb cte. de Serv. Aux. a través "
-"de xarxa i xarxa interior - Consum"
-msgstr "Con excedentes sin compensación Individual con cto SSAA a través de red y red interior – Consumo"
-
-#: rml:som_polissa_condicions_generals/report/condicions_particulars.mako:63
-#: rml:som_polissa_condicions_generals/report/condicions_particulars_canvi_preus.mako:33
-#: rml:som_polissa_condicions_generals/report/condicions_particulars_nous_peatges_temporal.mako:35
-msgid ""
-"Amb excedents sense compensació individual amb cte. de Serv. Aux. a través "
-"de xarxa i xarxa interior - Serv. Aux."
-msgstr "Con excedentes sin compensación individual con cto SSAA a través de red y red interior – SSAA"
-
-#: rml:som_polissa_condicions_generals/report/condicions_particulars.mako:64
-#: rml:som_polissa_condicions_generals/report/condicions_particulars_canvi_preus.mako:34
-#: rml:som_polissa_condicions_generals/report/condicions_particulars_nous_peatges_temporal.mako:36
-msgid ""
-"Amb excedents sense compensació Col·lectiu amb cte. de Serv. Aux. a través "
-"de xarxa i xarxa interior - Consum"
-msgstr "Con excedentes sin compensación Colectivo con cto de SSAA  a través de red y red interior – Consumo"
-
-#: rml:som_polissa_condicions_generals/report/condicions_particulars.mako:65
-#: rml:som_polissa_condicions_generals/report/condicions_particulars_canvi_preus.mako:35
-#: rml:som_polissa_condicions_generals/report/condicions_particulars_nous_peatges_temporal.mako:37
-msgid ""
-"Amb excedents sense compensació Col·lectiu amb cte. de Serv. Aux. a través "
-"de xarxa i xarxa interior - SSAA"
-msgstr "Con excedentes sin compensación Colectivo con cto de SSAA a través de red y red interior - SSAA"
-
-#: rml:som_polissa_condicions_generals/report/condicions_particulars.mako:138
-#: rml:som_polissa_condicions_generals/report/condicions_particulars_canvi_preus.mako:226
-#: rml:som_polissa_condicions_generals/report/condicions_particulars_nous_peatges_temporal.mako:216
+#: rml:som_polissa_condicions_generals/report/components/capcalera.mako:7
 msgid "Som Energia, SCCL"
 msgstr "Som Energia, SCCL"
 
-#: rml:som_polissa_condicions_generals/report/condicions_particulars.mako:139
-#: rml:som_polissa_condicions_generals/report/condicions_particulars_canvi_preus.mako:227
-#: rml:som_polissa_condicions_generals/report/condicions_particulars_nous_peatges_temporal.mako:217
+#: rml:som_polissa_condicions_generals/report/components/capcalera.mako:8
 msgid "CIF:"
 msgstr "CIF:"
 
-#: rml:som_polissa_condicions_generals/report/condicions_particulars.mako:139
-#: rml:som_polissa_condicions_generals/report/condicions_particulars_canvi_preus.mako:227
-#: rml:som_polissa_condicions_generals/report/condicions_particulars_nous_peatges_temporal.mako:217
+#: rml:som_polissa_condicions_generals/report/components/capcalera.mako:8
 msgid " F55091367"
 msgstr "F55091367"
 
-#: rml:som_polissa_condicions_generals/report/condicions_particulars.mako:140
-#: rml:som_polissa_condicions_generals/report/condicions_particulars_canvi_preus.mako:228
-#: rml:som_polissa_condicions_generals/report/condicions_particulars_nous_peatges_temporal.mako:218
+#: rml:som_polissa_condicions_generals/report/components/capcalera.mako:9
 msgid "Domicili:"
 msgstr "Domicilio:"
 
-#: rml:som_polissa_condicions_generals/report/condicions_particulars.mako:140
-#: rml:som_polissa_condicions_generals/report/condicions_particulars_canvi_preus.mako:228
-#: rml:som_polissa_condicions_generals/report/condicions_particulars_nous_peatges_temporal.mako:218
-msgid " C/Pic de Peguera, 9 (1a planta)<br/>17003, Girona"
-msgstr "C/Pic de Peguera, 9 (1a planta)<br/>17003, Girona"
+#: rml:som_polissa_condicions_generals/report/components/capcalera.mako:9
+msgid " C/Riu Güell, 68<br/>17005, Girona"
+msgstr " C/Riu Güell, 68<br/>17005, Girona"
 
-#: rml:som_polissa_condicions_generals/report/condicions_particulars.mako:141
-#: rml:som_polissa_condicions_generals/report/condicions_particulars_canvi_preus.mako:229
-#: rml:som_polissa_condicions_generals/report/condicions_particulars_canvi_preus.mako:294
-#: rml:som_polissa_condicions_generals/report/condicions_particulars_canvi_preus.mako:346
-#: rml:som_polissa_condicions_generals/report/condicions_particulars_nous_peatges_temporal.mako:219
+#: rml:som_polissa_condicions_generals/report/components/capcalera.mako:10
 msgid "Adreça electrònica:"
 msgstr "Dirección electrónica:"
 
-#: rml:som_polissa_condicions_generals/report/condicions_particulars.mako:141
-#: rml:som_polissa_condicions_generals/report/condicions_particulars_canvi_preus.mako:229
-#: rml:som_polissa_condicions_generals/report/condicions_particulars_nous_peatges_temporal.mako:219
+#: rml:som_polissa_condicions_generals/report/components/capcalera.mako:10
 msgid " info@somenergia.coop"
 msgstr "info@somenergia.coop"
 
-#: rml:som_polissa_condicions_generals/report/condicions_particulars.mako:145
-#: rml:som_polissa_condicions_generals/report/condicions_particulars_canvi_preus.mako:233
-#: rml:som_polissa_condicions_generals/report/condicions_particulars_nous_peatges_temporal.mako:223
+#: rml:som_polissa_condicions_generals/report/components/capcalera.mako:14
 msgid "DADES DEL CONTRACTE"
 msgstr "DATOS DEL CONTRATO"
 
-#: rml:som_polissa_condicions_generals/report/condicions_particulars.mako:152
-#: rml:som_polissa_condicions_generals/report/condicions_particulars_nous_peatges_temporal.mako:230
+#: rml:som_polissa_condicions_generals/report/components/capcalera.mako:17
 msgid "Contracte núm.: "
 msgstr "Contrato núm.: "
 
-#: rml:som_polissa_condicions_generals/report/condicions_particulars.mako:153
-#: rml:som_polissa_condicions_generals/report/condicions_particulars_nous_peatges_temporal.mako:231
+#: rml:som_polissa_condicions_generals/report/components/capcalera.mako:18
 msgid "Data d'inici del subministrament: "
 msgstr "Fecha de inicio del suministro: "
 
-#: rml:som_polissa_condicions_generals/report/condicions_particulars.mako:160
-#: rml:som_polissa_condicions_generals/report/condicions_particulars_nous_peatges_temporal.mako:238
+#: rml:som_polissa_condicions_generals/report/components/capcalera.mako:25
 msgid "Data de renovació del subministrament: "
 msgstr "Fecha de renovación del suministro: "
 
-#: rml:som_polissa_condicions_generals/report/condicions_particulars.mako:171
-#: rml:som_polissa_condicions_generals/report/condicions_particulars_canvi_preus.mako:259
-#: rml:som_polissa_condicions_generals/report/condicions_particulars_nous_peatges_temporal.mako:249
+#: rml:som_polissa_condicions_generals/report/components/capcalera.mako:36
 msgid ""
 "CONDICIONS PARTICULARS DEL CONTRACTE DE SUBMINISTRAMENT D'ENERGIA ELÈCTRICA"
 msgstr "CONDICIONES PARTICULARES DEL CONTRATO DE SUMINISTRO DE ENERGÍA ELÉCTRICA"
 
-#: rml:som_polissa_condicions_generals/report/condicions_particulars.mako:178
-#: rml:som_polissa_condicions_generals/report/condicions_particulars_canvi_preus.mako:266
-#: rml:som_polissa_condicions_generals/report/condicions_particulars_nous_peatges_temporal.mako:256
+#: rml:som_polissa_condicions_generals/report/components/capcalera.mako:42
 msgid "LES DADES D'AQUEST CONTRACTE ESTAN PENDENTS DE VALIDACIÓ."
 msgstr "LOS DATOS DE ESTE CONTRATO ESTÁN PENDIENTES DE VALIDACIÓN."
 
-#: rml:som_polissa_condicions_generals/report/condicions_particulars.mako:181
-#: rml:som_polissa_condicions_generals/report/condicions_particulars_canvi_preus.mako:269
-#: rml:som_polissa_condicions_generals/report/condicions_particulars_nous_peatges_temporal.mako:259
-msgid "Tarifes vigents en el moment d’activació del contracte."
-msgstr "Tarifas vigentes en el momento de activación del contrato."
+#: rml:som_polissa_condicions_generals/report/components/capcalera.mako:45
+msgid ""
+"Les tarifes que s’aplicaran seran les vigents al moment d'activar el "
+"contracte."
+msgstr "Las tarifas que se aplicaran serán las vigentes en el momento de activar el contracto."
 
-#: rml:som_polissa_condicions_generals/report/condicions_particulars.mako:201
-#: rml:som_polissa_condicions_generals/report/condicions_particulars_canvi_preus.mako:282
-#: rml:som_polissa_condicions_generals/report/condicions_particulars_nous_peatges_temporal.mako:272
+#: rml:som_polissa_condicions_generals/report/components/contact_info.mako:4
 msgid "PERSONA TITULAR"
 msgstr "PERSONA TITULAR"
 
-#: rml:som_polissa_condicions_generals/report/condicions_particulars.mako:203
-#: rml:som_polissa_condicions_generals/report/condicions_particulars.mako:249
-#: rml:som_polissa_condicions_generals/report/condicions_particulars_nous_peatges_temporal.mako:274
-#: rml:som_polissa_condicions_generals/report/condicions_particulars_nous_peatges_temporal.mako:320
+#: rml:som_polissa_condicions_generals/report/components/contact_info.mako:6
+#: rml:som_polissa_condicions_generals/report/components/contact_info.mako:52
 msgid "Nom/Raó social: "
 msgstr "Nombre/Razón social: "
 
-#: rml:som_polissa_condicions_generals/report/condicions_particulars.mako:205
-#: rml:som_polissa_condicions_generals/report/condicions_particulars_nous_peatges_temporal.mako:276
+#: rml:som_polissa_condicions_generals/report/components/contact_info.mako:8
 msgid "NIF/CIF: "
 msgstr "NIF/CIF: "
 
-#: rml:som_polissa_condicions_generals/report/condicions_particulars.mako:207
-#: rml:som_polissa_condicions_generals/report/condicions_particulars.mako:226
-#: rml:som_polissa_condicions_generals/report/condicions_particulars.mako:251
-#: rml:som_polissa_condicions_generals/report/condicions_particulars_nous_peatges_temporal.mako:278
-#: rml:som_polissa_condicions_generals/report/condicions_particulars_nous_peatges_temporal.mako:297
-#: rml:som_polissa_condicions_generals/report/condicions_particulars_nous_peatges_temporal.mako:322
+#: rml:som_polissa_condicions_generals/report/components/contact_info.mako:10
+#: rml:som_polissa_condicions_generals/report/components/contact_info.mako:29
+#: rml:som_polissa_condicions_generals/report/components/contact_info.mako:54
 msgid "Adreça: "
 msgstr "Dirección: "
 
-#: rml:som_polissa_condicions_generals/report/condicions_particulars.mako:209
-#: rml:som_polissa_condicions_generals/report/condicions_particulars.mako:253
-#: rml:som_polissa_condicions_generals/report/condicions_particulars_nous_peatges_temporal.mako:280
-#: rml:som_polissa_condicions_generals/report/condicions_particulars_nous_peatges_temporal.mako:324
+#: rml:som_polissa_condicions_generals/report/components/contact_info.mako:12
+#: rml:som_polissa_condicions_generals/report/components/contact_info.mako:56
 msgid "Codi postal i municipi: "
 msgstr "Código postal y municipio: "
 
-#: rml:som_polissa_condicions_generals/report/condicions_particulars.mako:211
-#: rml:som_polissa_condicions_generals/report/condicions_particulars.mako:228
-#: rml:som_polissa_condicions_generals/report/condicions_particulars.mako:259
-#: rml:som_polissa_condicions_generals/report/condicions_particulars_nous_peatges_temporal.mako:282
-#: rml:som_polissa_condicions_generals/report/condicions_particulars_nous_peatges_temporal.mako:299
-#: rml:som_polissa_condicions_generals/report/condicions_particulars_nous_peatges_temporal.mako:330
+#: rml:som_polissa_condicions_generals/report/components/contact_info.mako:14
+#: rml:som_polissa_condicions_generals/report/components/contact_info.mako:31
+#: rml:som_polissa_condicions_generals/report/components/contact_info.mako:58
 msgid "Província i país: "
 msgstr "Provincia y país: "
 
-#: rml:som_polissa_condicions_generals/report/condicions_particulars.mako:213
-#: rml:som_polissa_condicions_generals/report/condicions_particulars.mako:265
-#: rml:som_polissa_condicions_generals/report/condicions_particulars_nous_peatges_temporal.mako:284
-#: rml:som_polissa_condicions_generals/report/condicions_particulars_nous_peatges_temporal.mako:336
+#: rml:som_polissa_condicions_generals/report/components/contact_info.mako:16
+#: rml:som_polissa_condicions_generals/report/components/contact_info.mako:60
 msgid "Adreça electrònica: "
 msgstr "Correo electrónico: "
 
-#: rml:som_polissa_condicions_generals/report/condicions_particulars.mako:215
-#: rml:som_polissa_condicions_generals/report/condicions_particulars.mako:271
-#: rml:som_polissa_condicions_generals/report/condicions_particulars_nous_peatges_temporal.mako:286
-#: rml:som_polissa_condicions_generals/report/condicions_particulars_nous_peatges_temporal.mako:342
+#: rml:som_polissa_condicions_generals/report/components/contact_info.mako:18
+#: rml:som_polissa_condicions_generals/report/components/contact_info.mako:62
 msgid "Telèfon: "
 msgstr "Teléfono: "
 
-#: rml:som_polissa_condicions_generals/report/condicions_particulars.mako:217
-#: rml:som_polissa_condicions_generals/report/condicions_particulars.mako:277
-#: rml:som_polissa_condicions_generals/report/condicions_particulars_nous_peatges_temporal.mako:288
-#: rml:som_polissa_condicions_generals/report/condicions_particulars_nous_peatges_temporal.mako:348
+#: rml:som_polissa_condicions_generals/report/components/contact_info.mako:20
+#: rml:som_polissa_condicions_generals/report/components/contact_info.mako:64
 msgid "Telèfon 2: "
 msgstr "Teléfono 2: "
 
-#: rml:som_polissa_condicions_generals/report/condicions_particulars.mako:223
-#: rml:som_polissa_condicions_generals/report/condicions_particulars_canvi_preus.mako:304
-#: rml:som_polissa_condicions_generals/report/condicions_particulars_nous_peatges_temporal.mako:294
+#: rml:som_polissa_condicions_generals/report/components/contact_info.mako:26
 msgid "DADES DEL PUNT DE SUBMINISTRAMENT"
 msgstr "DATOS DEL PUNTO DE SUMINISTRO"
 
-#: rml:som_polissa_condicions_generals/report/condicions_particulars.mako:230
-#: rml:som_polissa_condicions_generals/report/condicions_particulars_nous_peatges_temporal.mako:301
+#: rml:som_polissa_condicions_generals/report/components/contact_info.mako:33
 msgid "CUPS: "
 msgstr "CUPS: "
 
-#: rml:som_polissa_condicions_generals/report/condicions_particulars.mako:232
-#: rml:som_polissa_condicions_generals/report/condicions_particulars_nous_peatges_temporal.mako:303
+#: rml:som_polissa_condicions_generals/report/components/contact_info.mako:35
 msgid "CNAE: "
 msgstr "CNAE: "
 
-#: rml:som_polissa_condicions_generals/report/condicions_particulars.mako:234
-#: rml:som_polissa_condicions_generals/report/condicions_particulars_nous_peatges_temporal.mako:305
+#: rml:som_polissa_condicions_generals/report/components/contact_info.mako:37
 msgid "Contracte d'accés: "
 msgstr "Contrato de acceso: "
 
-#: rml:som_polissa_condicions_generals/report/condicions_particulars.mako:236
-#: rml:som_polissa_condicions_generals/report/condicions_particulars_nous_peatges_temporal.mako:307
+#: rml:som_polissa_condicions_generals/report/components/contact_info.mako:39
 msgid "Activitat principal: "
 msgstr "Actividad principal: "
 
-#: rml:som_polissa_condicions_generals/report/condicions_particulars.mako:238
-#: rml:som_polissa_condicions_generals/report/condicions_particulars_nous_peatges_temporal.mako:309
+#: rml:som_polissa_condicions_generals/report/components/contact_info.mako:41
 msgid "Empresa distribuïdora: "
 msgstr "Empresa distribuidora: "
 
-#: rml:som_polissa_condicions_generals/report/condicions_particulars.mako:240
-#: rml:som_polissa_condicions_generals/report/condicions_particulars_nous_peatges_temporal.mako:311
+#: rml:som_polissa_condicions_generals/report/components/contact_info.mako:43
 msgid "Tensió Nominal (V): "
 msgstr "Tension Nominal (V): "
 
-#: rml:som_polissa_condicions_generals/report/condicions_particulars.mako:247
-#: rml:som_polissa_condicions_generals/report/condicions_particulars_canvi_preus.mako:328
-#: rml:som_polissa_condicions_generals/report/condicions_particulars_nous_peatges_temporal.mako:318
+#: rml:som_polissa_condicions_generals/report/components/contact_info.mako:50
 msgid "DADES DE CONTACTE"
 msgstr "DATOS DE CONTACTO"
 
-#: rml:som_polissa_condicions_generals/report/condicions_particulars.mako:289
-#: rml:som_polissa_condicions_generals/report/condicions_particulars_canvi_preus.mako:370
-#: rml:som_polissa_condicions_generals/report/condicions_particulars_nous_peatges_temporal.mako:360
-msgid ""
-"PEATGE I CÀRRECS (definits a la Circular de la CNMC 3/2020 i al Reial decret"
-" 148/2021)"
-msgstr "PEAJE Y CARGOS (definidos en la Circular de la CNMC 3/2020 y el Real Decreto 148/2021)"
-
-#: rml:som_polissa_condicions_generals/report/condicions_particulars.mako:307
-msgid "Peatge de transport i distribució: "
-msgstr "Peaje de transporte y distribución:"
-
-#: rml:som_polissa_condicions_generals/report/condicions_particulars.mako:308
-#: rml:som_polissa_condicions_generals/report/condicions_particulars_canvi_preus.mako:446
-#: rml:som_polissa_condicions_generals/report/condicions_particulars_nous_peatges_temporal.mako:426
-msgid "Tipus de contracte: "
-msgstr "Tipo de contrato: "
-
-#: rml:som_polissa_condicions_generals/report/condicions_particulars.mako:309
-msgid "Tarifa: "
-msgstr "Tarifa: "
-
-#: rml:som_polissa_condicions_generals/report/condicions_particulars.mako:314
-#: rml:som_polissa_condicions_generals/report/condicions_particulars.mako:468
-#: rml:som_polissa_condicions_generals/report/condicions_particulars.mako:533
-#: rml:som_polissa_condicions_generals/report/condicions_particulars_canvi_preus.mako:379
-#: rml:som_polissa_condicions_generals/report/condicions_particulars_canvi_preus.mako:463
-#: rml:som_polissa_condicions_generals/report/condicions_particulars_canvi_preus.mako:527
-msgid "Punta"
-msgstr "Punta"
-
-#: rml:som_polissa_condicions_generals/report/condicions_particulars.mako:316
-#: rml:som_polissa_condicions_generals/report/condicions_particulars.mako:470
-#: rml:som_polissa_condicions_generals/report/condicions_particulars.mako:535
-#: rml:som_polissa_condicions_generals/report/condicions_particulars_canvi_preus.mako:381
-#: rml:som_polissa_condicions_generals/report/condicions_particulars_canvi_preus.mako:465
-#: rml:som_polissa_condicions_generals/report/condicions_particulars_canvi_preus.mako:529
-msgid "Vall"
-msgstr "Valle"
-
-#: rml:som_polissa_condicions_generals/report/condicions_particulars.mako:330
-#: rml:som_polissa_condicions_generals/report/condicions_particulars_canvi_preus.mako:395
-#: rml:som_polissa_condicions_generals/report/condicions_particulars_nous_peatges_temporal.mako:376
-msgid "Potència contractada (kW):"
-msgstr "Potencia contratada (kW):"
-
-#: rml:som_polissa_condicions_generals/report/condicions_particulars.mako:412
-#: rml:som_polissa_condicions_generals/report/condicions_particulars.mako:414
-msgid "(vigents fins al {})"
-msgstr "(vigentes hasta el {})"
-
-#: rml:som_polissa_condicions_generals/report/condicions_particulars.mako:416
-msgid "(vigents a partir del {})"
-msgstr "(vigentes a partir del {})"
-
-#: rml:som_polissa_condicions_generals/report/condicions_particulars.mako:431
-#: rml:som_polissa_condicions_generals/report/condicions_particulars.mako:433
-#: rml:som_polissa_condicions_generals/report/condicions_particulars_canvi_preus.mako:451
-#: rml:som_polissa_condicions_generals/report/condicions_particulars_nous_peatges_temporal.mako:431
-msgid "TARIFES D'ELECTRICITAT"
-msgstr "TARIFAS DE ELECTRICIDAD"
-
-#: rml:som_polissa_condicions_generals/report/condicions_particulars.mako:484
-#: rml:som_polissa_condicions_generals/report/condicions_particulars_canvi_preus.mako:479
-#: rml:som_polissa_condicions_generals/report/condicions_particulars_nous_peatges_temporal.mako:450
-msgid "Terme potència (€/kW i any)"
-msgstr "Término potencia (€/kW y año) "
-
-#: rml:som_polissa_condicions_generals/report/condicions_particulars.mako:534
-#: rml:som_polissa_condicions_generals/report/condicions_particulars_canvi_preus.mako:528
-msgid "Pla"
-msgstr "Llano"
-
-#: rml:som_polissa_condicions_generals/report/condicions_particulars.mako:542
-#: rml:som_polissa_condicions_generals/report/condicions_particulars_canvi_preus.mako:536
-#: rml:som_polissa_condicions_generals/report/condicions_particulars_nous_peatges_temporal.mako:479
-msgid "Terme energia (€/kWh)"
-msgstr "Término energía (€/kWh)"
-
-#: rml:som_polissa_condicions_generals/report/condicions_particulars.mako:546
-msgid "Tarifa indexada"
-msgstr "Tarifa indexada"
-
-#: rml:som_polissa_condicions_generals/report/condicions_particulars.mako:546
-msgid "(2) - el preu horari (PH) es calcula d'acord amb la fórmula:"
-msgstr "(2) - el precio horario (PH) se calcula de acuerdo con la fórmula:"
-
-#: rml:som_polissa_condicions_generals/report/condicions_particulars.mako:549
-msgid ""
-"PH = 1,015 * [(PHM + PHMA + Pc + Sc + I + POsOm) (1 + Perd) + FE + F] + PTD "
-"+ CA"
-msgstr "PH = 1,015 * [(PHM + PHMA + Pc + Sc + I + POsOm) (1 + Perd) + FE + F] + PTD + CA"
-
-#: rml:som_polissa_condicions_generals/report/condicions_particulars.mako:551
-msgid "on la franja de la cooperativa"
-msgstr "donde la franja de la cooperativa"
-
-#: rml:som_polissa_condicions_generals/report/condicions_particulars.mako:598
-#: rml:som_polissa_condicions_generals/report/condicions_particulars_canvi_preus.mako:551
-#: rml:som_polissa_condicions_generals/report/condicions_particulars_nous_peatges_temporal.mako:494
-msgid "(1) GenerationkWh (€/kWh)"
-msgstr "(1) GenerationkWh (€/kWh)"
-
-#: rml:som_polissa_condicions_generals/report/condicions_particulars.mako:621
-msgid "Excedents d'autoconsum (€/kWh)"
-msgstr "Excedentes de autoconsumo (€/kWh)"
-
-#: rml:som_polissa_condicions_generals/report/condicions_particulars.mako:624
-msgid ""
-"Tarifa indexada(2) - el preu horari de la compensació d'excedents és igual "
-"al PHM"
-msgstr "Tarifa indexada(2) - el precio horario de la compensación de excedentes es igual al PHM"
-
-#: rml:som_polissa_condicions_generals/report/condicions_particulars.mako:642
-#: rml:som_polissa_condicions_generals/report/condicions_particulars_canvi_preus.mako:573
-#: rml:som_polissa_condicions_generals/report/condicions_particulars_nous_peatges_temporal.mako:516
-msgid ""
-"Terme d'energia en cas de participar-hi, segons condicions del contracte "
-"GenerationkWh."
-msgstr "Termino de energía en caso de participar, según condiciones del contrato GenerationkWh."
-
-#: rml:som_polissa_condicions_generals/report/condicions_particulars.mako:645
-msgid ""
-"Pots consultar el significat de les variables a les condicions específiques "
-"que trobaràs a continuació."
-msgstr "Puedes consultar el significado de las variables en las condiciones específicas que encontrarás a continuación."
-
-#: rml:som_polissa_condicions_generals/report/condicions_particulars.mako:651
-msgid ""
-"A més del preu fix associat al cost de l'energia, establert per Som Energia "
-"i publicat a la nostra pàgina web, la factura inclourà un import variable "
-"associat al mecanisme d'ajust establert al"
-msgstr "Además del precio fijo asociado al coste de la energía, establecido por Som Energia y publicado en nuestra página web, la factura incluirá un importe variable asociado al mecanismo de ajuste establecido en el"
-
-#: rml:som_polissa_condicions_generals/report/condicions_particulars.mako:653
-msgid ""
-"Aquest import el calcularem per a cada període de facturació. Ponderarem el "
-"preu de cada hora del mecanisme d'ajust ("
-msgstr "Este importe lo calcularemos para cada periodo de facturación. Ponderaremos el precio de cada hora del mecanismo de ajuste ("
-
-#: rml:som_polissa_condicions_generals/report/condicions_particulars.mako:653
-msgid "publicat per OMIE"
-msgstr "publicado por OMIE"
-
-#: rml:som_polissa_condicions_generals/report/condicions_particulars.mako:654
-msgid ") en funció del repartiment horari energètic d'un consumidor/a tipus ("
-msgstr ") en función del reparto horario energético de un consumidor/a tipo ("
-
-#: rml:som_polissa_condicions_generals/report/condicions_particulars.mako:654
-msgid "publicat per Red Eléctrica de"
-msgstr "publicado por Red Eléctrica de"
-
-#: rml:som_polissa_condicions_generals/report/condicions_particulars.mako:656
-msgid "segons la"
-msgstr "según la"
-
-#: rml:som_polissa_condicions_generals/report/condicions_particulars.mako:656
-msgid "Resolució de 23/12/2021"
-msgstr "Resolución de 23/12/2021"
-
-#: rml:som_polissa_condicions_generals/report/condicions_particulars.mako:657
-msgid ""
-"). El preu obtingut el multiplicarem, en cada factura, per l'energia total "
-"consumida en el període de facturació. El mecanisme d’ajust al gas no aplica"
-" per als contractes de les Illes Canàries ni Balears, i tampoc aplica a la "
-"tarifa Generation kWh."
-msgstr "). El precio obtenido lo multiplicaremos, en cada factura, por la energía total consumida en el período de facturación. El mecanismo de ajuste del gas no aplica para los contratos de Baleares y Canarias, y tampoco aplica a la tarifa Generation kWh."
-
-#: rml:som_polissa_condicions_generals/report/condicions_particulars.mako:666
-msgid "Els preus del terme de potència"
-msgstr "Los precios del término de potencia"
-
-#: rml:som_polissa_condicions_generals/report/condicions_particulars.mako:668
-msgid "Tots els preus que apareixen en aquest contracte"
-msgstr "Todos los precios que aparecen en este contrato"
-
-#: rml:som_polissa_condicions_generals/report/condicions_particulars.mako:670
-msgid ""
-"inclouen l'impost elèctric i l'IVA (IGIC a Canàries), amb el tipus impositiu"
-" vigent en cada moment per a cada tipus de contracte sense perjudici de les "
-"exempcions o bonificacions que puguin ser d'aplicació."
-msgstr "incluyen el impuesto eléctrico y el IVA (IGIC en Canarias), con el tipo impositivo vigente en cada momento para cada tipo de contrato sin perjuicio de las exenciones o bonificaciones que puedan ser de aplicación."
-
-#: rml:som_polissa_condicions_generals/report/condicions_particulars.mako:693
-#: rml:som_polissa_condicions_generals/report/condicions_particulars_canvi_preus.mako:600
-#: rml:som_polissa_condicions_generals/report/condicions_particulars_nous_peatges_temporal.mako:543
-msgid "DADES DE PAGAMENT"
-msgstr "DATOS DE PAGO"
-
-#: rml:som_polissa_condicions_generals/report/condicions_particulars.mako:696
-msgid "Nº de compte bancari (IBAN): **** **** **** ****"
-msgstr "Nº de cuenta bancaria (IBAN): **** **** **** ****"
-
-#: rml:som_polissa_condicions_generals/report/condicions_particulars.mako:701
-msgid "Al contractar s’accepten aquestes "
+#: rml:som_polissa_condicions_generals/report/components/disclaimers.mako:4
+msgid "Al contractar s'accepten aquestes "
 msgstr "Al contratar se aceptan estas "
 
-#: rml:som_polissa_condicions_generals/report/condicions_particulars.mako:703
+#: rml:som_polissa_condicions_generals/report/components/disclaimers.mako:6
 msgid "Condicions Particulars, Específiques i les Condicions Generals,"
 msgstr "Condiciones Particulares, Específicas y las Condiciones Generales,"
 
-#: rml:som_polissa_condicions_generals/report/condicions_particulars.mako:705
-msgid "Condicions Particulars i les Condicions Generals"
-msgstr "Condiciones Particulares y las Condiciones Generales"
+#: rml:som_polissa_condicions_generals/report/components/disclaimers.mako:8
+msgid ""
+"Condicions Particulars, Específiques de l'Autoconsum Virtual, Específiques "
+"de la tarifa Indexada i les Condicions Generals,"
+msgstr "Condiciones Particulares, Específicas del Autoconsumo Virtual, Específicas de la tarifa Indexada y las Condiciones Generales,"
 
-#: rml:som_polissa_condicions_generals/report/condicions_particulars.mako:707
+#: rml:som_polissa_condicions_generals/report/components/disclaimers.mako:10
+msgid "Condicions Particulars i les Condicions Generals,"
+msgstr "Condiciones Particulares y las Condiciones Generales,"
+
+#: rml:som_polissa_condicions_generals/report/components/disclaimers.mako:12
 msgid ""
 "que es poden consultar a les pàgines següents. Si ens cal modificar-les, a "
-"la clàusula 9 de les Condicions Generals s’explica el procediment que "
+"la clàusula 9 de les Condicions Generals s'explica el procediment que "
 "seguirem. En cas que hi hagi alguna discrepància, prevaldrà el que estigui "
 "previst en aquestes Condicions Particulars."
-msgstr "que se pueden consultar en las siguientes páginas. Si es necesario modificarlas, en la cláusula 9 de las Condiciones Generales se explica el procedimiento que seguiremos. En caso de que exista alguna discrepancia, prevalecerá lo que esté previsto en estas Condiciones Particulares."
+msgstr "que se pueden consultar en las siguientes páginas. Si es necesario modificarlos, en la cláusula 9 de las Condiciones Generales se explica el procedimiento que seguiremos. En caso de que exista alguna discrepancia, prevalecerá lo que esté previsto en estas Condiciones Particulares."
 
-#: rml:som_polissa_condicions_generals/report/condicions_particulars.mako:722
-#: rml:som_polissa_condicions_generals/report/condicions_particulars_canvi_preus.mako:618
-#: rml:som_polissa_condicions_generals/report/condicions_particulars_nous_peatges_temporal.mako:561
+#: rml:som_polissa_condicions_generals/report/components/footer.mako:6
 msgid "a {0}"
 msgstr "a {0}"
 
-#: rml:som_polissa_condicions_generals/report/condicions_particulars.mako:726
+#: rml:som_polissa_condicions_generals/report/components/footer.mako:10
 msgid "La contractant"
 msgstr "La contratante"
 
-#: rml:som_polissa_condicions_generals/report/condicions_particulars.mako:728
-#: rml:som_polissa_condicions_generals/report/condicions_particulars_canvi_preus.mako:621
-#: rml:som_polissa_condicions_generals/report/condicions_particulars_nous_peatges_temporal.mako:564
+#: rml:som_polissa_condicions_generals/report/components/footer.mako:12
 msgid "La persona clienta:"
 msgstr "La persona clienta:"
 
-#: rml:som_polissa_condicions_generals/report/condicions_particulars.mako:734
+#: rml:som_polissa_condicions_generals/report/components/footer.mako:20
 msgid "Signat digitalment"
 msgstr "Firmado digitalmente"
 
-#: rml:som_polissa_condicions_generals/report/condicions_particulars.mako:736
-#: rml:som_polissa_condicions_generals/report/condicions_particulars_nous_peatges_temporal.mako:566
+#: rml:som_polissa_condicions_generals/report/components/footer.mako:22
 msgid "Acceptat digitalment via formulari web"
 msgstr "Aceptado digitalmente vía formulario web"
 
-#: rml:som_polissa_condicions_generals/report/condicions_particulars.mako:742
-#: rml:som_polissa_condicions_generals/report/condicions_particulars_canvi_preus.mako:628
-#: rml:som_polissa_condicions_generals/report/condicions_particulars_nous_peatges_temporal.mako:571
+#: rml:som_polissa_condicions_generals/report/components/footer.mako:28
 msgid "La comercialitzadora"
 msgstr "La comercializadora"
 
-#: rml:som_polissa_condicions_generals/report/condicions_particulars.mako:753
-#: rml:som_polissa_condicions_generals/report/condicions_particulars_canvi_preus.mako:639
-#: rml:som_polissa_condicions_generals/report/condicions_particulars_nous_peatges_temporal.mako:582
+#: rml:som_polissa_condicions_generals/report/components/footer.mako:39
 msgid ""
 "Aquestes Condicions Particulars estan condicionades a possibles "
 "modificacions amb la finalitat d'ajustar-les a les condicions tècniques "
 "d'accés a xarxa segons la clàusula 6.3 de les Condicions Generals."
 msgstr "Estas Condiciones Particulares están condicionadas a posibles modificaciones con el fin de ajustarlas a las condiciones técnicas de acceso a red según la cláusula 6.3 de las Condiciones Generales."
 
-#: rml:som_polissa_condicions_generals/report/condicions_particulars_canvi_preus.mako:240
-msgid "Contracte núm."
-msgstr "Contrato núm."
+#: rml:som_polissa_condicions_generals/report/components/payment_info.mako:4
+msgid "DADES DE PAGAMENT"
+msgstr "DATOS DE PAGO"
 
-#: rml:som_polissa_condicions_generals/report/condicions_particulars_canvi_preus.mako:241
-msgid "Data d'inici del subministrament:"
-msgstr "Fecha de inicio del suministro:"
+#: rml:som_polissa_condicions_generals/report/components/payment_info.mako:6
+msgid "Nº de compte bancari (IBAN): **** **** **** ****"
+msgstr "Nº de cuenta bancaria (IBAN): **** **** **** ****"
 
-#: rml:som_polissa_condicions_generals/report/condicions_particulars_canvi_preus.mako:248
-msgid "Data de renovació del subministrament:"
-msgstr "Fecha de renovación del suministro:"
-
-#: rml:som_polissa_condicions_generals/report/condicions_particulars_canvi_preus.mako:284
-#: rml:som_polissa_condicions_generals/report/condicions_particulars_canvi_preus.mako:330
-msgid "Nom/Raó social:"
-msgstr "Nombre/Razón social:"
-
-#: rml:som_polissa_condicions_generals/report/condicions_particulars_canvi_preus.mako:286
-#: rml:som_polissa_condicions_generals/report/contracte.mako:111
-msgid "NIF/CIF:"
-msgstr "NIF/CIF:"
-
-#: rml:som_polissa_condicions_generals/report/condicions_particulars_canvi_preus.mako:288
-#: rml:som_polissa_condicions_generals/report/condicions_particulars_canvi_preus.mako:307
-#: rml:som_polissa_condicions_generals/report/condicions_particulars_canvi_preus.mako:332
-msgid "Adreça:"
-msgstr "Dirección:"
-
-#: rml:som_polissa_condicions_generals/report/condicions_particulars_canvi_preus.mako:290
-#: rml:som_polissa_condicions_generals/report/condicions_particulars_canvi_preus.mako:334
-msgid "Codi postal i municipi:"
-msgstr "Código postal y municipio:"
-
-#: rml:som_polissa_condicions_generals/report/condicions_particulars_canvi_preus.mako:292
-#: rml:som_polissa_condicions_generals/report/condicions_particulars_canvi_preus.mako:309
-#: rml:som_polissa_condicions_generals/report/condicions_particulars_canvi_preus.mako:340
-msgid "Província i país:"
-msgstr "Provincia y país:"
-
-#: rml:som_polissa_condicions_generals/report/condicions_particulars_canvi_preus.mako:296
-#: rml:som_polissa_condicions_generals/report/condicions_particulars_canvi_preus.mako:352
-msgid "Telèfon:"
-msgstr "Teléfono:"
-
-#: rml:som_polissa_condicions_generals/report/condicions_particulars_canvi_preus.mako:298
-#: rml:som_polissa_condicions_generals/report/condicions_particulars_canvi_preus.mako:358
-msgid "Telèfon 2:"
-msgstr "Teléfono 2:"
-
-#: rml:som_polissa_condicions_generals/report/condicions_particulars_canvi_preus.mako:311
-#: rml:som_polissa_condicions_generals/report/contracte.mako:293
-msgid "CUPS:"
-msgstr "CUPS:"
-
-#: rml:som_polissa_condicions_generals/report/condicions_particulars_canvi_preus.mako:313
-#: rml:som_polissa_condicions_generals/report/contracte.mako:120
-msgid "CNAE:"
-msgstr "CNAE:"
-
-#: rml:som_polissa_condicions_generals/report/condicions_particulars_canvi_preus.mako:315
-msgid "Contracte d'accés:"
-msgstr "Contrato de acceso:"
-
-#: rml:som_polissa_condicions_generals/report/condicions_particulars_canvi_preus.mako:317
-msgid "Activitat principal:"
-msgstr "Actividad principal:"
-
-#: rml:som_polissa_condicions_generals/report/condicions_particulars_canvi_preus.mako:319
-msgid "Empresa distribuïdora:"
-msgstr "Empresa distribuidora:"
-
-#: rml:som_polissa_condicions_generals/report/condicions_particulars_canvi_preus.mako:321
-msgid "Tensió Nominal (V):"
-msgstr "Tensión Nominal (V):"
-
-#: rml:som_polissa_condicions_generals/report/condicions_particulars_canvi_preus.mako:373
-#: rml:som_polissa_condicions_generals/report/condicions_particulars_nous_peatges_temporal.mako:363
-msgid "Tarifa contractada: "
-msgstr "Tarifa contratada: "
-
-#: rml:som_polissa_condicions_generals/report/condicions_particulars_canvi_preus.mako:566
-#: rml:som_polissa_condicions_generals/report/condicions_particulars_nous_peatges_temporal.mako:509
-msgid "(2) Autoconsum (€/kWh)"
-msgstr "(2) Autoconsumo (€/kWh) "
-
-#: rml:som_polissa_condicions_generals/report/condicions_particulars_canvi_preus.mako:574
-#: rml:som_polissa_condicions_generals/report/condicions_particulars_nous_peatges_temporal.mako:517
-msgid "Preu de la compensació d'excedents, si és aplicable."
-msgstr "Precio de la compensación de excedentes, si es aplicable."
-
-#: rml:som_polissa_condicions_generals/report/condicions_particulars_canvi_preus.mako:576
-#: rml:som_polissa_condicions_generals/report/condicions_particulars_nous_peatges_temporal.mako:519
+#: rml:som_polissa_condicions_generals/report/components/potencies_info.mako:3
 msgid ""
-"Aquests preus inclouen l'impost elèctric i l'IVA sense prejudici de les "
-"exempcions o bonificacions que puguin ser d'aplicació. Pots consultar altres"
-" conceptes que poden ser d'aplicació, com ara, el lloguer de comptador, el "
-"recàrrec per potència demandada o el recàrrec per energia reactiva, a la "
-msgstr "Estos precios incluyen el impuesto eléctrico y el IVA sin perjuicio de las exenciones o bonificaciones que puedan ser de aplicación. Puedes consultar otros conceptos que pueden ser de aplicación, tales como, el alquiler de contador, el recargo por potencia demandada o el recargo por energía reactiva, a la "
+"PEATGE I CÀRRECS (definits a la Circular de la CNMC 3/2020 i al Reial decret"
+" 148/2021)"
+msgstr "PEAJE Y CARGOS (definidos en la Circular de la CNMC 3/2020 y el Real Decreto 148/2021)"
 
-#: rml:som_polissa_condicions_generals/report/condicions_particulars_canvi_preus.mako:578
-#: rml:som_polissa_condicions_generals/report/condicions_particulars_nous_peatges_temporal.mako:521
-msgid "pàgina de tarifes"
-msgstr "página de tarifas"
+#: rml:som_polissa_condicions_generals/report/components/potencies_info.mako:5
+msgid "Peatge de transport i distribució: "
+msgstr "Peaje de transporte y distribución:"
 
-#: rml:som_polissa_condicions_generals/report/condicions_particulars_canvi_preus.mako:580
-#: rml:som_polissa_condicions_generals/report/condicions_particulars_nous_peatges_temporal.mako:523
-msgid "página de tarifas"
-msgstr "página de tarifas"
+#: rml:som_polissa_condicions_generals/report/components/potencies_info.mako:6
+msgid "Tipus de contracte: "
+msgstr "Tipo de contrato: "
 
-#: rml:som_polissa_condicions_generals/report/condicions_particulars_canvi_preus.mako:582
-#: rml:som_polissa_condicions_generals/report/condicions_particulars_nous_peatges_temporal.mako:525
+#: rml:som_polissa_condicions_generals/report/components/potencies_info.mako:7
+msgid "Tarifa: "
+msgstr "Tarifa: "
+
+#: rml:som_polissa_condicions_generals/report/components/potencies_info.mako:12
+#: rml:som_polissa_condicions_generals/report/components/prices_info.mako:21
+#: rml:som_polissa_condicions_generals/report/components/prices_info.mako:24
+#: rml:som_polissa_condicions_generals/report/components/prices_info.mako:94
+#: rml:som_polissa_condicions_generals/report/components/prices_info.mako:97
+msgid "Punta"
+msgstr "Punta"
+
+#: rml:som_polissa_condicions_generals/report/components/potencies_info.mako:14
+#: rml:som_polissa_condicions_generals/report/components/prices_info.mako:23
+#: rml:som_polissa_condicions_generals/report/components/prices_info.mako:26
+#: rml:som_polissa_condicions_generals/report/components/prices_info.mako:96
+#: rml:som_polissa_condicions_generals/report/components/prices_info.mako:99
+msgid "Vall"
+msgstr "Valle"
+
+#: rml:som_polissa_condicions_generals/report/components/potencies_info.mako:28
+msgid "Potència contractada (kW):"
+msgstr "Potencia contratada (kW):"
+
+#: rml:som_polissa_condicions_generals/report/components/prices_info.mako:5
+msgid "TARIFES D'ELECTRICITAT"
+msgstr "TARIFAS DE ELECTRICIDAD"
+
+#: rml:som_polissa_condicions_generals/report/components/prices_info.mako:7
+msgid "TARIFES D'ELECTRICITAT SENSE IMPOSTOS"
+msgstr "TARIFAS DE ELECTRICIDAD SIN IMPUESTOS"
+
+#: rml:som_polissa_condicions_generals/report/components/prices_info.mako:14
+msgid "Sense impostos"
+msgstr "Sin impuestos"
+
+#: rml:som_polissa_condicions_generals/report/components/prices_info.mako:15
+msgid "Amb impostos"
+msgstr "Con impuestos"
+
+#: rml:som_polissa_condicions_generals/report/components/prices_info.mako:37
+#: rml:som_polissa_condicions_generals/report/components/prices_info.mako:302
+msgid "Terme potència (€/kW i any)"
+msgstr "Término potencia (€/kW y año) "
+
+#: rml:som_polissa_condicions_generals/report/components/prices_info.mako:95
+#: rml:som_polissa_condicions_generals/report/components/prices_info.mako:98
+msgid "Pla"
+msgstr "Llano"
+
+#: rml:som_polissa_condicions_generals/report/components/prices_info.mako:118
+#: rml:som_polissa_condicions_generals/report/components/prices_info.mako:330
+msgid "Tarifa indexada"
+msgstr "Tarifa indexada"
+
+#: rml:som_polissa_condicions_generals/report/components/prices_info.mako:121
+#: rml:som_polissa_condicions_generals/report/components/prices_info.mako:333
 msgid ""
-" del nostre web, on també trobaràs més informació sobre els períodes "
-"tarifaris."
-msgstr "de nuestra web, donde también encontrarás más información sobre los períodos tarifarios. "
+"PH = 1,015 * [(PHM + Pc + Sc + Dsv + GdO + POsOm) (1 + Perd) + FE + F] + PTD"
+" + CA"
+msgstr "PH = 1,015 * [(PHM + Pc + Sc + Dsv + GdO + POsOm) (1 + Perd) + FE + F] + PTD + CA"
 
-#: rml:som_polissa_condicions_generals/report/condicions_particulars_canvi_preus.mako:596
-#: rml:som_polissa_condicions_generals/report/condicions_particulars_nous_peatges_temporal.mako:539
+#: rml:som_polissa_condicions_generals/report/components/prices_info.mako:196
+#: rml:som_polissa_condicions_generals/report/components/prices_info.mako:360
+msgid "(1) GenerationkWh (€/kWh)"
+msgstr "(1) GenerationkWh (€/kWh)"
+
+#: rml:som_polissa_condicions_generals/report/components/prices_info.mako:235
+#: rml:som_polissa_condicions_generals/report/components/prices_info.mako:376
+msgid "Excedents d'autoconsum (€/kWh)"
+msgstr "Excedentes de autoconsumo (€/kWh)"
+
+#: rml:som_polissa_condicions_generals/report/components/prices_info.mako:238
+#: rml:som_polissa_condicions_generals/report/components/prices_info.mako:379
 msgid ""
-"Al contractar s’accepten aquestes Condicions Particulars i les Condicions "
-"Generals, que es poden consultar a les pàgines següents. Si ens cal "
-"modificar-les, a la clàusula 9 de les Condicions Generals s’explica el "
-"procediment que seguirem. En cas que hi hagi alguna discrepància, prevaldrà "
-"el que estigui previst en aquestes Condicions Particulars."
-msgstr "Al contratar aceptan estas Condiciones Particulares y las Condiciones Generales, que se pueden consultar en las páginas siguientes. Si necesitamos modificarlas, en la cláusula 9 de las Condiciones Generales se explica el procedimiento que seguiremos. En caso de que haya alguna discrepancia, prevalecerá lo que esté previsto en estas Condiciones Particulares."
+"Tarifa indexada(2) - el preu horari de la compensació d'excedents és igual "
+"al PHM"
+msgstr "Tarifa indexada(2) - el precio horario de la compensación de excedentes es igual al PHM"
 
-#: rml:som_polissa_condicions_generals/report/condicions_particulars_canvi_preus.mako:604
-msgid "Persona titular del compte:"
-msgstr "Persona titular de la cuenta:"
-
-#: rml:som_polissa_condicions_generals/report/condicions_particulars_canvi_preus.mako:605
-msgid "NIF:"
-msgstr "NIF:"
-
-#: rml:som_polissa_condicions_generals/report/condicions_particulars_canvi_preus.mako:608
-msgid "Nº de compte bancari (IBAN):"
-msgstr "Nº de cuenta bancaria (IBAN):"
-
-#: rml:som_polissa_condicions_generals/report/condicions_particulars_nous_peatges_temporal.mako:547
-msgid "Persona titular del compte: "
-msgstr "Persona titular de la cuenta: "
-
-#: rml:som_polissa_condicions_generals/report/condicions_particulars_nous_peatges_temporal.mako:548
-msgid "NIF: "
-msgstr "NIF: "
-
-#: rml:som_polissa_condicions_generals/report/condicions_particulars_nous_peatges_temporal.mako:551
-msgid "Nº de compte bancari (IBAN): "
-msgstr "Nº de cuenta bancaria (IBAN): "
-
-#: rml:som_polissa_condicions_generals/report/contracte.mako:65
-msgid "Vigència"
-msgstr "Vigencia"
-
-#: rml:som_polissa_condicions_generals/report/contracte.mako:83
-msgid "Des de"
-msgstr "Desde"
-
-#: rml:som_polissa_condicions_generals/report/contracte.mako:86
-msgid "Fins a"
-msgstr "Hasta a"
-
-#: rml:som_polissa_condicions_generals/report/contracte.mako:93
+#: rml:som_polissa_condicions_generals/report/components/prices_info.mako:275
+#: rml:som_polissa_condicions_generals/report/components/prices_info.mako:397
 msgid ""
-"CONDICIONS PARTICULARS DEL CONTRACTE DE SUBMINISTRAMENTS D'ENERGIA ELÈCTRICA"
-" DE BAIXA TENSIÓ"
-msgstr "CONDICIONES PARTICULARES DEL CONTRATO DE SUMINISTROS DE ENERGÍA ELÉCTRICA DE BAJA TENSIÓN"
+"Terme d'energia en cas de participar-hi, segons condicions del contracte "
+"GenerationkWh."
+msgstr "Termino de energía en caso de participar, según condiciones del contrato GenerationkWh."
 
-#: rml:som_polissa_condicions_generals/report/contracte.mako:101
-msgid "DADES DEL CLIENT"
-msgstr "DATOS DEL CLIENTE"
-
-#: rml:som_polissa_condicions_generals/report/contracte.mako:107
-#: rml:som_polissa_condicions_generals/report/contracte.mako:183
-msgid "Nom/Motiu Social:"
-msgstr "Nombre/Motivo Social:"
-
-#: rml:som_polissa_condicions_generals/report/contracte.mako:126
-msgid "Activitat Principal:"
-msgstr "Actividad Principal:"
-
-#: rml:som_polissa_condicions_generals/report/contracte.mako:135
-#: rml:som_polissa_condicions_generals/report/contracte.mako:191
-#: rml:som_polissa_condicions_generals/report/contracte.mako:269
-msgid "Direcció:"
-msgstr "Dirección:"
-
-#: rml:som_polissa_condicions_generals/report/contracte.mako:141
-#: rml:som_polissa_condicions_generals/report/contracte.mako:197
-#: rml:som_polissa_condicions_generals/report/contracte.mako:275
-msgid "Codi Postal/Població:"
-msgstr "Código Postal/Población:"
-
-#: rml:som_polissa_condicions_generals/report/contracte.mako:145
-#: rml:som_polissa_condicions_generals/report/contracte.mako:205
-#: rml:som_polissa_condicions_generals/report/contracte.mako:279
-msgid "Provincia/País:"
-msgstr "Provincia/País:"
-
-#: rml:som_polissa_condicions_generals/report/contracte.mako:153
-#: rml:som_polissa_condicions_generals/report/contracte.mako:217
-msgid "Teléfon:"
-msgstr "Teléfono:"
-
-#: rml:som_polissa_condicions_generals/report/contracte.mako:157
-#: rml:som_polissa_condicions_generals/report/contracte.mako:225
-msgid "Teléfon 2:"
-msgstr "Teléfono 2:"
-
-#: rml:som_polissa_condicions_generals/report/contracte.mako:161
-#: rml:som_polissa_condicions_generals/report/contracte.mako:233
-msgid "Fax:"
-msgstr "Fax:"
-
-#: rml:som_polissa_condicions_generals/report/contracte.mako:167
-#: rml:som_polissa_condicions_generals/report/contracte.mako:243
-msgid "E-Mail:"
-msgstr "E-mail:"
-
-#: rml:som_polissa_condicions_generals/report/contracte.mako:174
+#: rml:som_polissa_condicions_generals/report/components/prices_info.mako:278
+#: rml:som_polissa_condicions_generals/report/components/prices_info.mako:400
 msgid ""
-"DADES DEL CONTACTE (Enviament factura, Altres comunicacions... Ometre "
-"únicament si no difereix de les dades del client)"
-msgstr "DATOS DE CONTACTO (Envío factura, Otras comunicaciones... Omitir únicamente si no difiere de los datos del cliente)"
+"Pots consultar el significat de les variables a les condicions específiques "
+"que trobaràs a continuació."
+msgstr "Puedes consultar el significado de las variables en las condiciones específicas que encontrarás a continuación."
 
-#: rml:som_polissa_condicions_generals/report/contracte.mako:254
-msgid "CONDICIONS TÉCNIC-ECONÓMIQUES"
-msgstr "CONDICIONES TÉCNICO-ECONÓMICAS"
+#: rml:som_polissa_condicions_generals/report/components/prices_info.mako:289
+msgid "TARIFES D'ELECTRICITAT AMB IMPOSTOS"
+msgstr "TARIFAS DE ELECTRICIDAD CON IMPUESTOS"
 
-#: rml:som_polissa_condicions_generals/report/contracte.mako:257
+#: rml:som_polissa_condicions_generals/report/components/prices_info.mako:415
+msgid "Els preus del terme de potència"
+msgstr "Los precios del término de potencia"
+
+#: rml:som_polissa_condicions_generals/report/components/prices_info.mako:417
+msgid "Tots els preus que apareixen en aquest contracte"
+msgstr "Todos los precios que aparecen en este contrato"
+
+#: rml:som_polissa_condicions_generals/report/components/prices_info.mako:419
 msgid ""
-"DADES DEL PUNT DE SUBMINISTRAMENT (Ometre únicament si no difereix de les "
-"dades del client)"
-msgstr "DATOS DEL PUNTO DE SUMINISTRO (omitir únicamente si no difiere de los datos del cliente)"
+"inclouen l'impost elèctric i l'IVA (IGIC a Canàries), amb el tipus impositiu"
+" vigent actualment per a cada tipus de contracte sense perjudici de les "
+"exempcions o bonificacions que puguin ser d'aplicació."
+msgstr "incluyen el impuesto eléctrico e IVA (IGIC en Canarias), con el tipo impositivo vigente actualmente para cada tipo de contrato sin perjuicio de las exenciones o bonificaciones que pudieran ser de aplicación."
 
-#: rml:som_polissa_condicions_generals/report/contracte.mako:287
-msgid "Ref.Catastral:"
-msgstr "Ref.Catastral:"
+#: rml:som_polissa_condicions_generals/report/components/gurb/gurb.mako:3
+msgid "SERVEI CONTRACTAT:"
+msgstr "SERVICIO CONTRATADO:"
 
-#: rml:som_polissa_condicions_generals/report/contracte.mako:297
-msgid "Contracte Nº:"
-msgstr "Contrato Nº:"
+#: rml:som_polissa_condicions_generals/report/components/gurb/gurb.mako:3
+msgid "(21 % IVA)"
+msgstr "(21 % IVA)"
 
-#: rml:som_polissa_condicions_generals/report/contracte.mako:305
-msgid "Empresa Distribuidora:"
-msgstr "Empresa Distribuidora:"
+#: rml:som_polissa_condicions_generals/report/components/gurb/gurb.mako:5
+msgid "Cost d'adhesió:"
+msgstr "Coste de adhesión:"
 
-#: rml:som_polissa_condicions_generals/report/contracte.mako:309
-msgid "Tensió Nominal(V):"
-msgstr "Tensión Nominal(V):"
+#: rml:som_polissa_condicions_generals/report/components/gurb/gurb.mako:6
+msgid "Potència GURB (kW):"
+msgstr "Potencia GURB (kW):"
 
-#: rml:som_polissa_condicions_generals/report/contracte.mako:316
-msgid ""
-"TARIFA D'ACCÈS (Definides al R.D. 1164/2001 del 26 de octubre de 2001):"
-msgstr "TARIFA DE ACCESO (Definidas al R.D. 1164/2001 del 26 de octubre de 2001):"
+#: rml:som_polissa_condicions_generals/report/components/gurb/gurb.mako:7
+msgid "Quota GURB (€/kW/dia):"
+msgstr "Cuota GURB (€/kW/día):"
 
-#: rml:som_polissa_condicions_generals/report/contracte.mako:321
-msgid "Tarifa:"
-msgstr "Tarifa:"
+#: rml:som_polissa_condicions_generals/report/components/gurb/gurb.mako:7
+msgid "€/kW/dia"
+msgstr "€/kW/día"
 
-#: rml:som_polissa_condicions_generals/report/contracte.mako:325
-msgid "Potència Contractada(kW):"
-msgstr "Potencia Contratada(kW):"
-
-#: rml:som_polissa_condicions_generals/report/contracte.mako:355
-msgid "Eventual tipus alçat, consum pactat:"
-msgstr "Eventual tipo alzado, consumo pactado:"
-
-#: rml:som_polissa_condicions_generals/report/contracte.mako:365
-msgid "PRODUCTE CONTRACTAT AMB "
-msgstr "PRODUCTO CONTRATADO CON "
-
-#: rml:som_polissa_condicions_generals/report/contracte.mako:372
-msgid "Producte:"
-msgstr "Producto:"
-
-#: rml:som_polissa_condicions_generals/report/contracte.mako:390
-msgid "N. Sèrie equip de mesura:"
-msgstr "N. Serie de equipo de mesura:"
-
-#: rml:som_polissa_condicions_generals/report/contracte.mako:398
-msgid "DADES DEL PAGADOR:"
-msgstr "DATOS DEL PAGADOR:"
-
-#: rml:som_polissa_condicions_generals/report/contracte.mako:408
-msgid "Titular del Compte:"
-msgstr "Titular de la cuenta:"
-
-#: rml:som_polissa_condicions_generals/report/contracte.mako:412
-msgid "NIF.:"
-msgstr "NIF.:"
-
-#: rml:som_polissa_condicions_generals/report/contracte.mako:432
-msgid "Entitat Financera:"
-msgstr "Entidad Financiera:"
-
-#: rml:som_polissa_condicions_generals/report/contracte.mako:436
-msgid "Sucursal:"
-msgstr "Sucursal:"
-
-#: rml:som_polissa_condicions_generals/report/contracte.mako:440
-msgid "DC:"
-msgstr "DC:"
-
-#: rml:som_polissa_condicions_generals/report/contracte.mako:444
-msgid "Nº Compte:"
-msgstr "Nº Cuenta:"
-
-#: rml:som_polissa_condicions_generals/report/contracte.mako:466
-msgid ", a {0}"
-msgstr ", a {0}"
-
-#: rml:som_polissa_condicions_generals/report/contracte.mako:470
-msgid "EL CLIENT"
-msgstr "EL CLIENTE"
+#: rml:som_polissa_condicions_generals/report/components/gurb/gurb.mako:8
+msgid "Beta contractada (%):"
+msgstr "Beta contratada (%):"

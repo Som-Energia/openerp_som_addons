@@ -246,7 +246,7 @@ class SomCrawlersTaskStep(osv.osv):
                 output = self.import_xml_files(cursor, uid, id, result_id, nivell - 1, context)
                 return output
             except Exception as e:
-                raise Exception("IMPORTANT: {}: {}".format(type(e).__name__, str(e)))
+                raise Exception("IMPORTANT: " + str(e))
 
         task_step_obj.task_id.write(
             {
@@ -260,8 +260,9 @@ class SomCrawlersTaskStep(osv.osv):
         return output
 
     def recursive_extract_zip(self, zip_path, destination_path):
-        with zipfile.ZipFile(zip_path, "r") as zip_file:
-            zip_file.extractall(path=destination_path)
+        if os.path.getsize(zip_path) > 0:
+            with zipfile.ZipFile(zip_path, "r") as zip_file:
+                zip_file.extractall(path=destination_path)
         os.remove(zip_path)
 
         for root, dirs, files in os.walk(destination_path):
@@ -270,6 +271,13 @@ class SomCrawlersTaskStep(osv.osv):
                     new_zip_path = os.path.join(root, filename)
                     self.recursive_extract_zip(new_zip_path, root)
                     return True
+            for sub in dirs:
+                sub_path = os.path.join(root, sub)
+                for f in os.listdir(sub_path):
+                    src = os.path.join(sub_path, f)
+                    dst = os.path.join(root, f)
+                    shutil.move(src, dst)
+                os.rmdir(sub_path)
 
         for root, dirs, files in os.walk(destination_path):
             for filename in files:
@@ -370,7 +378,11 @@ class SomCrawlersTaskStep(osv.osv):
             if import_wizard.state == "load":
                 import_wizard.action_send_xmls(context=context)
 
-            return WizardImportAtrF1.browse(cursor, uid, import_wizard_id).info
+            res = WizardImportAtrF1.browse(cursor, uid, import_wizard_id).info
+            if WizardImportAtrF1.browse(cursor, uid, import_wizard_id).state == "done":
+                return res
+            else:
+                raise Exception("No ha acabat el procés d'importació: " + res)
         else:
             raise Exception("El fitxer no té format ZIP")
 
@@ -388,7 +400,7 @@ class SomCrawlersTaskStep(osv.osv):
 
     # test ok
     def create_script_args(
-        self, config_obj, task_step_params, execution_restult_file, file_path=None
+        self, config_obj, task_step_params, execution_restult_file, file_path=None, context=None
     ):
         args = {
             "-n": str(config_obj.name),
@@ -409,6 +421,8 @@ class SomCrawlersTaskStep(osv.osv):
 
         if "process" in task_step_params:
             args.update({"-pr": str(task_step_params["process"])})
+        if context:
+            args.update({"-context": base64.b64encode(json.dumps(context))})
 
         return " ".join(["{} {}".format(k, v) for k, v in args.iteritems()])
 
@@ -702,6 +716,60 @@ class SomCrawlersTaskStep(osv.osv):
         except Exception as e:
             raise Exception("DESCARREGANT: " + str(e))
 
+        return output
+
+    def upload_form_registre_general(self, cursor, uid, id, result_id, context=None):
+        classresult = self.pool.get("som.crawlers.result")
+        task_step_obj = self.browse(cursor, uid, id)
+        task_step_params = json.loads(task_step_obj.params)
+        path = os.path.join(os.path.dirname(os.path.realpath(__file__)), "../")
+
+        output = ""
+        if "nom_fitxer" in task_step_params:
+            config_obj = self.pool.get("som.crawlers.task").id_del_portal_config(
+                cursor, uid, task_step_obj.task_id.id, context
+            )
+            script_path = os.path.join(path, "scripts/" + task_step_params["nom_fitxer"])
+            if os.path.exists(script_path):
+                cfg_obj = self.pool.get("res.config")
+                path_python = cfg_obj.get(
+                    cursor,
+                    uid,
+                    "som_crawlers_massive_importer_python_path",
+                    "/home/erp/.virtualenvs/massive/bin/python",
+                )
+                if not os.path.exists(path_python):
+                    raise Exception("Not virtualenv of massive importer found")
+                file_name = (
+                    "output_"
+                    + config_obj.name
+                    + "_"
+                    + datetime.now().strftime("%Y-%m-%d_%H_%M_%S_%f")
+                    + ".txt"
+                )
+                args_str = self.create_script_args(
+                    config_obj, task_step_params, file_name, context=context
+                )
+                os.system("{} {} {}".format(path_python, script_path, args_str))
+                output_path = self.get_output_path(cursor, uid)
+                output = self.readOutputFile(cursor, uid, output_path, file_name)
+                if output != "Files have been successfully downloaded":
+                    self.attach_files_screenshot(
+                        cursor, uid, config_obj, path, result_id, task_step_params, context
+                    )
+                    raise Exception("Error al penjar el fitxer al Registre General: %s" % output)
+            else:
+                output = "File or directory doesn't exist"
+        else:
+            output = "Falta especificar nom fitxer"
+        task_step_obj.task_id.write(
+            {
+                "ultima_tasca_executada": str(task_step_obj.name)
+                + " - "
+                + str(datetime.now().strftime("%Y-%m-%d_%H:%M:%S"))
+            }
+        )
+        classresult.write(cursor, uid, result_id, {"resultat_bool": True})
         return output
 
 

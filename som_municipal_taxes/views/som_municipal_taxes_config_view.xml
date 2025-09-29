@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+    <data>
+        <record model="ir.ui.view" id="view_som_municipal_taxes_config_form">
+            <field name="name">som.municipal.taxes.config.form</field>
+            <field name="model">som.municipal.taxes.config</field>
+            <field name="type">form</field>
+            <field name="priority">16</field>
+            <field name="arch" type="xml">
+                <form string="Configuració pagaments municipals">
+                    <field name="name"/>
+                    <field name="municipi_id"/>
+                    <field name="partner_id" on_change="on_change_parnter_get_bank(partner_id)"/>
+                    <field name="bank_id" domain="[('partner_id', '=', partner_id)]"/>
+                    <field name="payment"/>
+                    <field name="lang"/>
+                    <group colspan="2" col="2" string="Opcions">
+                        <field name="payment_order"/>
+                        <field name="red_sara"/>
+                        <field name="active"/>
+                    </group>
+                </form>
+            </field>
+        </record>
+         <record model="ir.ui.view" id="view_som_municipal_taxes_config_tree">
+            <field name="name">som.municipal.taxes.config.tree</field>
+            <field name="model">som.municipal.taxes.config</field>
+            <field name="type">tree</field>
+            <field name="priority">16</field>
+            <field name="arch" type="xml">
+                <tree string="Configuració pagament municipal">
+                    <field name="name" select="1"/>
+                    <field name="municipi_id" select="1"/>
+                    <field name="partner_id" select="1"/>
+                    <field name="payment_order" select="1"/>
+                    <field name="red_sara" select="1"/>
+                    <field name="active" select="1"/>
+                    <field name="lang" select="1"/>
+                    <field name="payment" select="1"/>
+                </tree>
+            </field>
+        </record>
+         <record id="action_som_municipal_taxes_config_tree" model="ir.actions.act_window">
+            <field name="name">Configuració pagament municipal</field>
+            <field name="res_model">som.municipal.taxes.config</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="view_id" ref="view_som_municipal_taxes_config_tree"/>
+            <field name="context">{'active_test': False}</field>
+        </record>
+        <menuitem action="action_som_municipal_taxes_config_tree" id="menu_municipal_taxes_config_tree" parent="giscedata_municipal_taxes.menu_admin_pub_municipal_taxes"/>
+    </data>
+</openerp>

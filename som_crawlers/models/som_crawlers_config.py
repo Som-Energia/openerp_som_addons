@@ -15,7 +15,7 @@ class SomCrawlersConfig(osv.osv):
         ),
         "usuari": fields.char(
             "Usuari del portal",
-            size=20,
+            size=100,
             unique=True,
             help="Usuari del portal web o servidor FTP/SFTP",
         ),
@@ -195,9 +195,9 @@ class SomCrawlersConfig(osv.osv):
 
             return days
 
-    def change_field_value(self, cursor, uid, ids,
-                           field_name, field_label, new_value, is_numeric=False,
-                           context=None):
+    def change_field_value(
+        self, cursor, uid, ids, field_name, field_label, new_value, is_numeric=False, context=None
+    ):
         old_value = self.browse(cursor, uid, ids, context=context).read()[0][field_name]
 
         if not old_value:
@@ -211,7 +211,9 @@ class SomCrawlersConfig(osv.osv):
         else:
             self.write(cursor, uid, ids, {field_name: new_value}, context=None)
             message = (
-                "S'ha actualitzat el valor: " + field_label + ": \""
+                "S'ha actualitzat el valor: "
+                + field_label
+                + ': "'
                 + str(old_value)
                 + '" -> "'
                 + str(new_value)

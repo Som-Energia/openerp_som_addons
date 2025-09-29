@@ -32,10 +32,40 @@
             <field name="name">Tarifa Empresa</field>
             <field name="code">TE </field>
         </record>
+        <record id="categ_flux_solar_ocult_ov" model="giscedata.polissa.category">
+            <field name="name">Flux Solar ocult a la OV</field>
+            <field name="code">HIDEFLUXOV</field>
+        </record>
+        <record id="fp_canarias_vivienda_id" model="res.config">
+            <field name="name">fp_canarias_vivienda_id</field>
+            <field name="value">48</field>
+            <field name="description">ID de la posició fiscal canarias vivienda</field>
+        </record>
+        <record id="fp_canarias_id" model="res.config">
+            <field name="name">fp_canarias_id</field>
+            <field name="value">47</field>
+            <field name="description">ID de la posició fiscal canarias </field>
+        </record>
+        <record id="fp_pdlc_vivienda_id" model="res.config">
+            <field name="name">fp_pdlc_vivienda_id</field>
+            <field name="value">53</field>
+            <field name="description">ID de la posició fiscal de Puerto de la Cruz vivienda</field>
+        </record>
+        <record id="fp_pdlc_id" model="res.config">
+            <field name="name">fp_pdlc_id</field>
+            <field name="value">52</field>
+            <field name="description">ID de la posició fiscal de Puerto de la Cruz</field>
+        </record>
     </data>
     <data>
         <record id="giscedata_facturacio_bateria_virtual.categ_desestiment" model="giscedata.polissa.category">
             <field name="name">DESESTIMENT (Moure Flux Solar)</field>
+        </record>
+    </data>
+    <data>
+        <record id="ir_attachment_vat_dni_category" model="ir.attachment.category">
+            <field name="code">vat_dni_attachment_category</field>
+            <field name="name">Document d'Identitat</field>
         </record>
     </data>
 </openerp>

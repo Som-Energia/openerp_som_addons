@@ -1,163 +1,127 @@
-var w = 750;
-var h = 200;
-
-var marges = {left: 5, right: 5 , top: 5 , bottom: 5};
-
-var graf_h = h - marges.top - marges.bottom;
-var graf_w = w - marges.left - marges.right;
-
-var dades_chart = [];
-var acum = 0;
-
-// pie border
-var pie_border = 5;
-
-//pie start_position
-var pie_left = 130;
-
-var bar_margin = 100;
-var bar_border = 5;
-var bar_width = 65;
-
-var pie_center = [(pie_left + (h / 2) - marges.top - marges.bottom), (h/2)]
-var bar_offset = (pie_center[0] + (h / 2) - marges.top - marges.bottom + bar_margin)
-
-dades_chart.push({perc0:0, perc1:100, codi: 'FONS', text:'', w:0});
-for(var i=0;i<pie_data.length;i++){
-    perc = (pie_data[i].val / pie_total) * 100
-    dades_chart.push({perc0: acum,
-                      perc1: (acum + perc),
-                      codi: (pie_data[i].code),
-                      //text: " " + perc + "%:",
-                      text: pie_etiquetes[pie_data[i].code].t,
-                      w: pie_etiquetes[pie_data[i].code].w})
-
-    acum += perc;
+function toCommaNumber(value) {
+    return value.toFixed(2).replace('.', ',');
 }
 
-var svg = d3_antic.select("#chart_desti_" + factura_id)
-        .append("svg")
-        .attr("width", w)
-        .attr("height", h +10);
+var total_reparto = 0;
+dades_reparto.forEach(function(item) {
+    total_reparto += item.value;
+});
 
-var escala = d3_antic.scale.linear().domain([0, 100]).range([0, 2 * Math.PI]);
+var chartDesi = echarts.init(document.getElementById('chart_desti'), null, {
+    renderer: 'svg',  // needed for wkhtmltopdf
+});
 
-var arc = d3_antic.svg.arc()
-        .innerRadius('0')
-        .outerRadius(function (d) {return (h / 2) - marges.top - marges.bottom - (d.codi=='FONS' ? 0 : pie_border)})
-        .startAngle(function (d){return escala(d.perc0)}) // alert(escala(d['perc0']))
-        .endAngle(function (d){ return escala(d.perc1)});
+var stackBarSeries = dades_reparto.map(function(item, index) {
+    return {
+    name: item.name,
+    type: 'bar',
+    stack: 'cargos',
+    barWidth: 30,
+    data: [item.value/total_reparto*100],
+    label: {
+        show: true,
+        position: 'right',
+        distance: 10,
+        formatter: ' '+toCommaNumber(item.value)+'€: '+item.name,
+        color: '#333',  // needed for wkhtmltopdf
+        fontSize: 10,
+        overflow: 'break',
+    },
+    labelLine: {
+        show: true,
+    },
+    labelLayout: function() {
+        return {
+        moveOverlap: 'shiftY',
+        width: 200,
+        dy: (stackBarSeries.length-index)*5,  // improve separation between labels
+        }
+    },
+    animation: false,
+    silent: true,
+    };
+});
 
-var fons = d3_antic.svg.arc()
-        .innerRadius('0')
-        .outerRadius(function (d) {return (h / 2) - marges.top - marges.bottom})
-        .startAngle(0)
-        .endAngle(360)
-
-var porcions = svg.selectAll("path")
-    .data(dades_chart)
-        .enter()
-    .append("g");
-
-porcions.append("path")
-        .attr("d", arc)
-        .attr("transform", function (d) {return "translate(" + pie_center[0] + " , " + pie_center[1] + ")"})
-        .attr("class", function(d) {return("porcio " + d.codi)});
-
-function label_pos(d) {
-    c = arc.centroid(d);
-    return "translate(" + (c[0] + (c[0]<0 || c[1]<0 ? c[0] : 0) + pie_center[0] - (c[0]<0 ? d.w : 0)) + ", " + (c[1] + (c[0]<0 || c[1]<0 ? c[1] : 0) + pie_center[1] ) + ")"
+function getDashedLine(x1, y1, x2, y2) {
+    return {
+        type: 'line',
+        shape: { x1: x1, y1: y1, x2: x2, y2: y2 },
+        style: {
+            stroke: '#333',
+            lineWidth: 0.5,
+            lineDash: "dashed",
+            opacity: 1,
+        },
+        z: -1,
+        silent: true,
+        animation: false,
+    };
 }
 
-function label_reparto_pos(d) {
-    return "translate(" + (bar_width - (bar_border)) + ", 0)"
-}
+var total_pie = 0;
+pie_data.forEach(function(item) {
+    total_pie += item.value;
+});
+cargos_percentage = (pie_data[0].value / total_pie) * 100;
+dashed_line_y = 85 + cargos_percentage*2; // to put the dashed line at the right height
 
-var pie_etiquetes = porcions.append("foreignObject")
-         .attr("class",function(d) {return(d.codi)})
-         .attr("transform", label_pos)
-         .attr("width", function(d) {return d.w})
-         .attr("height", "100%")
-         .append("xhtml:body")
-         .append("div")
-         .attr("class","etiqueta ")
-         .selectAll("p")
-            .data(function(d) {return(d.text)})
-            .enter()
-         .append("p")
-            .text(function(d) {return d})
-
-// BAR DATA
-var y = d3_antic.scale.linear()
-        .range([0, graf_h - bar_border * 2 ])
-        .domain([0, 100])
-
-svg.append("g")
-      .attr("transform", function(d) {return "translate(" + bar_offset + "," + (marges.top + bar_border) + ")"})
-      .append("rect")
-      .attr("width", bar_width + 2 * bar_border)
-      .attr("x",0)
-      .attr("y",-marges.bottom)
-      .attr("height",graf_h)
-      .attr("class", "bar_f");
-
-var barra = svg.selectAll("g .reparto")
-              .data(dades_reparto)
-            .enter()
-            .append("g")
-            .attr("transform", function(d){return "translate(" + bar_offset + "," + (marges.top + bar_border) + ")"})
-
-barra.append("rect")
-            .attr("width", bar_width)
-            .attr("y",function(d) {return y(d[0][0])})
-            .attr("height",function(d) {return y((d[0][1] - d[0][0]))})
-            .attr("x", bar_border)
-            .attr("class", function (d) {return "bar_" + d[1]})
-
-barra.append("text")
-            .attr("y",function(d){return y(d[0][0] + ((d[0][1] - d[0][0])/2))})
-            .attr("x", bar_width / 2)
-            .attr("class", function (d) {return "bar_t_" + d[1]})
-            .text(function(d){return d[3] + "€"})
-            .style("fill", "#ffffff")
-            .style("text-anchor", "middle")
-
-reparto_etiquetes = barra.append("foreignObject")
-         .attr("class",function(d) {return(d.codi)})
-         .attr("transform", label_reparto_pos)
-         .attr("width", 300)
-         .attr("height", "100%")
-         .attr("y", function(d){return y(d[0][0] + ((d[0][1] - d[0][0])/2)) - d[4]})
-         .append("xhtml:body")
-         .append("div")
-         .attr("class","etiqueta_reparto")
-         .append("p")
-            .text(function(d) {return d[2]})
-
-// LINIES
-svg.append("g")
-    .append("line")
-    .attr("x1", pie_center[0])
-    .attr("x2", bar_offset + bar_border)
-    .attr("y1", marges.top + pie_border + pie_border)
-    .attr("y2", marges.top + bar_border + 1)
-    .style("stroke", "#000000")
-    .style("stroke-width", 1)
-
-
-var x_norm = Math.sin(escala(dades_chart[1].perc1))
-var y_norm = Math.cos(escala(dades_chart[1].perc1))
-
-svg.append("g")
-    .append("line")
-    .attr("x1", pie_center[0] + x_norm * ((h / 2) - marges.top - marges.bottom - pie_border))
-    .attr("x2", bar_offset + bar_border)
-    .attr("y1", pie_center[1] - (y_norm * ((h / 2) - marges.top - marges.bottom - pie_border)))
-    .attr("y2", graf_h)
-    .style("stroke", "#000000")
-    .style("stroke-width", 1)
-
-
-
-
-
+// Render
+var option = {
+    grid: {
+        right: '35%',
+        left: '75%',
+        top: '15%',
+        bottom: '15%'
+    },
+    xAxis: {
+        type: 'category',
+        data: [''],
+        show: false
+    },
+    yAxis: {
+        type: 'value',
+        max: 100,
+        show: false
+    },
+    color: [
+        '#E3E8DF',
+        '#D4DAD1',
+        '#CED5D0',
+        '#777777',
+    ],
+    graphic: {
+        elements: [
+            getDashedLine(300, dashed_line_y, 400, dashed_line_y),
+            getDashedLine(400, dashed_line_y, 510, 30),
+            getDashedLine(400, dashed_line_y, 510, 170),
+        ]
+    },
+    series: [
+    {
+        type: 'pie',
+        radius: '50%',
+        center: ['20%', '50%'],
+        data: pie_data,
+        label: {
+            formatter: function(params){return toCommaNumber(params.value)+' €\n'+params.name},
+            color: '#333',  // needed for wkhtmltopdf
+            fontSize: 10,
+            overflow: 'break',
+        },
+        labelLayout: {
+            hideOverlap: false,
+        },
+        startAngle: 15,
+        animation: false,
+        silent: true,
+        color: [
+            '#FFC107',
+            '#0B2E34',
+            '#FF632B',
+            '#0C4C27',
+            '#AFB5E8',
+        ],
+    },
+    ].concat(stackBarSeries),
+};
+chartDesi.setOption(option);

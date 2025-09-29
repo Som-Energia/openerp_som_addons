@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+        <record model="ir.ui.view" id="view_giscedata_polissa_facturacio_bloquejada_form">
+            <field name="name">giscedata.polissa.facturacio.bloquejada.form</field>
+            <field name="model">giscedata.polissa</field>
+            <field name="inherit_id" ref="giscedata_facturacio.view_giscedata_polissa_form"/>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <field name="lot_facturacio" position="after">
+                    <group colspan="2" col="2" attrs="{'invisible': [('cobrament_bloquejat','=',False)]}">
+                        <field name="estat_pendent_cobrament" domain="[('process_id','=',process_id)]"/>
+                        <field name="observacions_cobrament" height="50" widget="text"/>
+                    </group>
+                    <field name="cobrament_bloquejat" colspan="2" select="2" on_change="onchange_bloquejat(cobrament_bloquejat)"/>
+                </field>
+            </field>
+        </record>
+
+        <record model="ir.ui.view" id="view_giscedata_polissa_facturacio_bloquejada_tree">
+            <field name="name">giscedata.polissa.facturacio.bloquejada.tree</field>
+            <field name="model">giscedata.polissa</field>
+            <field name="type">tree</field>
+            <field name="inherit_id" ref="giscedata_facturacio.giscedata_polissa_facturacio_tree"/>
+            <field name="arch" type="xml">
+                <field name="lot_facturacio" position="after">
+                    <field name="cobrament_bloquejat"/>
+                    <field name="observacions_cobrament"/>
+                    <field name="estat_pendent_cobrament"/>
+                </field>
+            </field>
+        </record>
+    </data>
+</openerp>

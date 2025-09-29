@@ -58,7 +58,7 @@ div.back{
         <field name="active">True</field>
     </record>
     </data>
-        <data noupdate="1">
+    <data noupdate="0">
         <record model="res.config" id="first_date_qr_pot_max">
             <field name="name">first_date_qr_pot_max</field>
             <field name="description">Data d'emisió de la factura a partir de la qual ha d'aparèixer el codi QR i potències màximes demandades a la factura</field>
@@ -66,23 +66,40 @@ div.back{
         </record>
         <record model="res.config" id="gdo_and_impact_yearly_switch_date">
             <field name="name">gdo_and_impact_yearly_switch_date</field>
-            <field name="description">Darrera data de publicació de canvi annual dels valors de Impacte Ambiental i de Garantia d'Origen. Alerta: cal modificar també: 1) Valors de la taula d'impacto ambiental de Som Energia, 2) Valors de la taula d'impacto ambiental mitjana nacional i 3) Valors de la taula de Garantia d'Origen (gdo)</field>
-            <field name="value">2023-04-27</field>
+            <field name="description">Data a partir de la cual es fa servir el nou widget i els valors de Impacte Ambiental i de Garantia d'Origen que hi ha al xml data.</field>
+            <field name="value">2022-05-01</field>
         </record>
         <record model="res.config" id="som_environmental_impact_data">
             <field name="name">som_environmental_impact_data</field>
             <field name="description">Valors de la taula d'impacto ambiental de Som Energia</field>
-            <field name="value">{'renovable':100.0,'cae':0.0,'gasNatural':0.0,'carbo':0.0,'fuelGas': 0.0,'nuclear': 0.0,'altres': 0.0,'emisionCo2': 0.0,'residuRadio': 0.0,'year': '2022'}</field>
+            <field name="value">{'renovable':100.0,'cae':0.0,'gasNatural':0.0,'carbo':0.0,'fuelGas': 0.0,'nuclear': 0.0,'altres': 0.0,'emisionCo2': 0.0,'residuRadio': 0.0,'year': '2024'}</field>
         </record>
         <record model="res.config" id="mitjana_environmental_impact_data">
             <field name="name">mitjana_environmental_impact_data</field>
             <field name="description">Valors de la taula d'impacto ambiental mitjana nacional</field>
-            <field name="value">{'renovable':42.3,'cae':2.1,'gasNatural':25.7,'carbo':2.9,'fuelGas': 1.1,'nuclear': 20.7,'altres': 5.2,'emisionCo2': 162,'residuRadio': 452,'year': '2022'}</field>
+            <field name="value">{'renovable':56.5,'cae':1.7,'gasNatural':14.2,'carbo':1.1,'fuelGas': 1.1,'nuclear': 20.2,'altres': 5.2,'emisionCo2': 102,'residuRadio': 446,'year': '2024'}</field>
         </record>
         <record model="res.config" id="component_gdo_data">
             <field name="name">component_gdo_data</field>
             <field name="description">Valors de la taula de Garantia d'Origen (gdo)</field>
-            <field name="value">{'wind_power':311913,'photovoltaic':115113,'hydraulics':61134,'biomassa':5974,'biogas':0,'total': 494134,'year': '2022'}</field>
+            <field name="value">{'wind_power':142579,'photovoltaic':163406,'hydraulics':50120,'biomassa':6843,'biogas':0,'total': 362948,'year': '2024'}</field>
+        </record>
+        <record model="res.config" id="rep_boe_data">
+            <field name="name">rep_boe_data</field>
+            <field name="description">Repartiment de què es destinen els càrrecs</field>
+            <field name="value">{"r": 13.06, "d": 63.92, "t": 22.36, "o": 0.66}</field>
+        </record>
+    </data>
+    <data noupdate="1">
+        <record model="res.config" id="factura_pdf_cache_flags">
+            <field name="name">factura_pdf_cache_flags</field>
+            <field name="description">Flags per activar/desactivar el guardat de factures via adjunts del correus o adjunts de les factures\n - Enabled --> Activat, sense aquest flag no funciona el sistema de cache, la factura es genera i s'entrega on the fly\n - No_mongo --> No hi ha base de dades documental present, no tenim fitxers (per desenvolupar/testejar)\n - Dont_store --> No guarda la factura en pdf com adjunt directe de la factura </field>
+            <field name="value">['Disabled']</field>
+        </record>
+        <record model="res.config" id="factura_pdf_unsent_store_days">
+            <field name="name">factura_pdf_unsent_store_days</field>
+            <field name="description">Dies que poden passar abans de que es forci guardar el PDF d'una factura que no s'ha enviat i guardat</field>
+            <field name="value">60</field>
         </record>
     </data>
 </openerp>

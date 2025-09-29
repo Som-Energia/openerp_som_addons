@@ -5,24 +5,20 @@
     This module provide :
         * Creació de comptes comptables per partner.
     """,
-    "version": "0-dev",
+    "version": "24.5.0",
     "author": "GISCE",
     "category": "SomEnergia",
-    "depends":[
+    "depends": [
         "base",
         "base_extended",
         "account_payment_extension",
         "som_partner_seq",
         "som_polissa_soci",
-        "l10n_chart_ES"
+        "l10n_chart_ES",
     ],
     "init_xml": [],
     "demo_xml": [],
-    "update_xml":[
-        "partner_view.xml",
-        "account_chart.xml",
-        "partner_data.xml"
-    ],
+    "update_xml": ["partner_view.xml", "account_chart.xml", "partner_data.xml"],
     "active": False,
-    "installable": True
+    "installable": True,
 }

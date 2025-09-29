@@ -1,0 +1,82 @@
+<?xml version="1.0"?>
+<openerp>
+    <data>
+        <record id="view_wizard_contract_power_optimization_view" model="ir.ui.view">
+            <field name="name">wizard_contract_power_optimization.form</field>
+            <field name="model">wizard.contract.power.optimization</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <form string="Optimitzador de potències">
+                    <field name="state" invisible="1"/>
+                    <group attrs="{'invisible': [('state', 'not in', ('one','multiple'))]}" colspan="4">
+                        <separator string="Dates del Càlcul" colspan="4"/>
+                        <label string="És recomanable posar el primer dia de l'any" colspan="4"/>
+                        <field name="start_date" on_change="onchange_start_date(start_date)"/>
+                        <field name="end_date" readonly="1"/>
+                    </group>
+                    <group attrs="{'invisible': [('state', '!=', 'one')]}" colspan="4">
+                        <notebook colspan="4">
+                            <page string="Dades actuals pel càlcul">
+                                <separator string="Potències Actuals" colspan="4"/>
+                                <field name="float_p1"/>
+                                <field name="float_p2"/>
+                                <field name="float_p3"/>
+                                <field name="float_p4"/>
+                                <field name="float_p5"/>
+                                <field name="float_p6"/>
+                                <separator string="Preus Potències Actuals" colspan="4"/>
+                                <field name="power_price_p1"/>
+                                <field name="power_price_p2"/>
+                                <field name="power_price_p3"/>
+                                <field name="power_price_p4"/>
+                                <field name="power_price_p5"/>
+                                <field name="power_price_p6"/>
+                                <separator string="Preu Exces de potència" colspan="4"/>
+                                <field name="excess_price_p1"/>
+                                <field name="excess_price_p2"/>
+                                <field name="excess_price_p3"/>
+                                <field name="excess_price_p4"/>
+                                <field name="excess_price_p5"/>
+                                <field name="excess_price_p6"/>
+                            </page>
+                            <page string="Potencies maximetres">
+                               <separator string="Nombre de mesos estimats" colspan="4"/>
+                               <field nolabel="1" name="nEstimates"/>
+                               <separator string="Maxímetres de 12 mesos" colspan="4"/>
+                                <field nolabel="1" name="maximeters_powers"/>
+                            </page>
+                        </notebook>
+                        <button type="object" string="Obtenir informació de la pòlissa" name="button_get_optimization_required_data" icon="gtk-refresh" colspan="4"/>
+                        <button type="object" string="Executar optimització" name="button_execute_optimization_script" icon="gtk-ok" colspan="4"/>
+                    </group>
+                    <group colspan="1" attrs="{'invisible': [('state', '!=', 'multiple')]}" >
+                        <label string="Calcular optimització per a tots els contractes seleccionats" colspan="4"/>
+                        <button type="object" string="Calcular" name="get_optimization" icon="gtk-ok" colspan="4"/>
+                    </group>
+                    <group colspan="1" attrs="{'invisible': [('state', '!=', 'result')]}" >
+                        <field name="filename_report"/>
+                        <field name="report" filename="filename_report" readonly="1"/>
+                    </group>
+               </form>
+            </field>
+        </record>
+        <record id="action_wizard_contract_power_optimization_form" model="ir.actions.act_window">
+            <field name="name">Optimització de potències maximetre</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">wizard.contract.power.optimization</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">form</field>
+            <field name="target">new</field>
+            <field name="context">{'from_model': 'giscedata.polissa'}</field>
+            <field name="view_id" ref="view_wizard_contract_power_optimization_view"/>
+        </record>
+        <record id="value_wizard_contract_power_optimization_form" model="ir.values">
+            <field name="object" eval="1"/>
+            <field name="name">Optimització de potències maximetre</field>
+            <field name="key2">client_action_multi</field>
+            <field name="key">action</field>
+            <field name="model">giscedata.polissa</field>
+            <field name="value" eval="'ir.actions.act_window,'+str(ref('action_wizard_contract_power_optimization_form'))"/>
+        </record>
+    </data>
+</openerp>

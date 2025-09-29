@@ -11,3 +11,5 @@ import giscedata_switching_wizard_b1
 import wizard_import_atr_and_f1
 import wizard_close_obsolete_cases
 import wizard_validate_d101
+import giscedata_switching_log_reexport_wizard
+import wizard_switching_multi_change

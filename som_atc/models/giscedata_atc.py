@@ -1,15 +1,35 @@
 # -*- coding: utf-8 -*-
 from osv import osv, fields
+from gestionatr.defs import TABLA_133
 
-from gestionatr.defs import TABLA_113
-
-TIPO_AUTOCONSUMO_SEL = [(ac[0], "[{}] - {}".format(ac[0], ac[1])) for ac in TABLA_113]
+TIPO_SUBSECCION_SEL = [
+    (ac[0], u'[{}] - {}'.format(ac[0], ac[1])) for ac in TABLA_133
+]
 
 
 class GiscedataAtc(osv.osv):
 
     _name = "giscedata.atc"
     _inherit = "giscedata.atc"
+
+    def _ff_get_process_step(self, cursor, uid, ids, field_name, arg, context):
+        return super(GiscedataAtc, self)._ff_get_process_step(
+            cursor, uid, ids, field_name, arg, context
+        )
+
+    def _trg_switching(self, cursor, uid, ids, context=None):
+        """
+        Funció per especificar els IDs a recalcular
+        """
+        sw_obj = self.pool.get("giscedata.switching")
+        sw_vals = sw_obj.read(cursor, uid, ids, ["ref", "ref2"])
+        atc_ids = []
+        for sw_val in sw_vals:
+            if sw_val["ref"] and sw_val["ref"].split(",")[0] == "giscedata.atc":
+                atc_ids.append(int(sw_val["ref"].split(",")[1]))
+            elif sw_val["ref2"] and sw_val["ref2"].split(",")[0] == "giscedata.atc":
+                atc_ids.append(int(sw_val["ref2"].split(",")[1]))
+        return atc_ids
 
     _columns = {
         "tarifa": fields.related(
@@ -22,10 +42,17 @@ class GiscedataAtc(osv.osv):
         ),
         "tipus_autoconsum": fields.related(
             "polissa_id",
-            "autoconsumo",
+            "tipus_subseccio",
             type="selection",
-            selection=TIPO_AUTOCONSUMO_SEL,
+            selection=TIPO_SUBSECCION_SEL,
             string="tipus autoconsum",
+            readonly=True,
+        ),
+        "collectiu": fields.related(
+            "polissa_id",
+            "is_autoconsum_collectiu",
+            type="boolean",
+            string="Col·lectiu",
             readonly=True,
         ),
         "te_generation": fields.related(
@@ -40,6 +67,21 @@ class GiscedataAtc(osv.osv):
         ),
         "polissa_active": fields.related(
             "polissa_id", "active", type="boolean", string="polissa activa", readonly=True
+        ),
+        "process_step": fields.function(
+            _ff_get_process_step,
+            method=True,
+            string=u"Pas del R1",
+            type="char",
+            size=10,
+            store={
+                "giscedata.atc": (
+                    lambda self, cr, uid, ids, c={}: ids,
+                    ["ref", "ref2", "history_line"],
+                    10,
+                ),
+                "giscedata.switching": (_trg_switching, ["step_id", "step_ids"], 10),
+            },
         ),
     }
 

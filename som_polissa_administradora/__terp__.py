@@ -5,7 +5,7 @@
     This module provide :
         * Camp d'administradora per relacionar un contracte amb una administradora.
     """,
-    "version": "0-dev",
+    "version": "24.5.0",
     "author": "GISCE",
     "category": "SomEnergia",
     "depends": [
@@ -13,7 +13,7 @@
         "l10n_ES_partner",
         "giscedata_polissa",
         "som_partner_account",
-        "poweremail"
+        "poweremail",
     ],
     "init_xml": [],
     "demo_xml": [
@@ -27,8 +27,8 @@
         "security/ir.model.access.csv",
         "som_polissa_administradora_data.xml",
         "som_administradora_notification_view.xml",
-        "wizard/wizard_notify_ov_admin_view.xml"
+        "wizard/wizard_notify_ov_admin_view.xml",
     ],
     "active": False,
-    "installable": True
+    "installable": True,
 }

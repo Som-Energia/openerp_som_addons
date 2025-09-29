@@ -1,0 +1,1 @@
+import wizard_afegir_contracte_bateria_virtual

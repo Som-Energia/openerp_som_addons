@@ -1,0 +1,62 @@
+<?xml version="1.0" ?>
+<openerp>
+    <data>
+        <record id="giscedata_crm_leads_som_view" model="ir.ui.view">
+            <field name="name">giscedata.crm.lead.som</field>
+            <field name="model">giscedata.crm.lead</field>
+            <field name="type">form</field>
+            <field name="inherit_id" ref="giscedata_crm_leads.giscedata_crm_leads_view_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='polissa_id']" position="after">
+                    <group colspan="2" attrs="{'invisible': [('polissa_id', '=', False)]}">
+                        <button name="button_send_mail" type="object" string="Enviar correu conforme ha contractat" icon="send" colspan="2" confirm="Aquesta acció enviarà un correu electrònic, vols procedir?"/>
+                    </group>
+                </xpath>
+                <xpath expr="//field[@name='llista_preu']" position="replace">
+                </xpath>
+                <xpath expr="//page[@string='Sobre el Pago']" position="after">
+                    <page string="Sobre la Tarifa">
+                        <field name="llista_preu" colspan="4" col="4"/>
+                        <field name="tipus_tarifa_lead" colspan="4" col="4"/>
+                        <group string=""  colspan="4" col="4"
+                            attrs="{'invisible':[('tipus_tarifa_lead','=', 'tarifa_existent')]}">
+                            <separator string="Preus Tarifa Provisional (es veuran al PDF sobreescrivint els de la tarifa de venda)" colspan="4" col="4"/>
+                        </group>
+                        <group string="Preus d'energia"  colspan="2" col="4"
+                            attrs="{'invisible':[('tipus_tarifa_lead','=', 'tarifa_existent')]}">
+                            <field name="preu_fix_energia_p1" colspan="4"/>
+                            <field name="preu_fix_energia_p2" colspan="4"/>
+                            <field name="preu_fix_energia_p3" colspan="4"/>
+                            <field name="preu_fix_energia_p4" colspan="4"/>
+                            <field name="preu_fix_energia_p5" colspan="4"/>
+                            <field name="preu_fix_energia_p6" colspan="4"/>
+                        </group>
+                        <group string="Preus de potència"  colspan="2" col="4"
+                            attrs="{'invisible':[('tipus_tarifa_lead', '=', 'tarifa_existent')], 'readonly':[('set_custom_potencia', '=', False)]}">
+                            <field name="preu_fix_potencia_p1" colspan="4"/>
+                            <field name="preu_fix_potencia_p2" colspan="4"/>
+                            <field name="preu_fix_potencia_p3" colspan="4"/>
+                            <field name="preu_fix_potencia_p4" colspan="4"/>
+                            <field name="preu_fix_potencia_p5" colspan="4"/>
+                            <field name="preu_fix_potencia_p6" colspan="4"/>
+                        </group>
+                        <group string="Preus de potència"  colspan="4" col="4"
+                            attrs="{'invisible':[('tipus_tarifa_lead', '=', 'tarifa_existent')]}">
+                            <field name="set_custom_potencia" colspan="4" on_change="onchange_set_custom_potencia(set_custom_potencia)"/>
+                        </group>
+                    </page>
+                    <page string="Sobre la Sòcia">
+                        <field name="create_new_member" colspan="4" col="4"/>
+                        <field name="member_number" colspan="4" col="4"/>
+                        <field name="titular_number" colspan="4" col="4"/>
+                        <field name="donation" colspan="4" col="4"/>
+                        <field name="member_quota_payment_type" colspan="4" col="4"/>
+                        <field name="initial_invoice_id" colspan="4" col="4"/>
+                        <field name="comercial_info_accepted" colspan="4" col="4"/>
+                        <field name="crm_lead_id" colspan="4" col="4" readonly="1"/>
+                    </page>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</openerp>

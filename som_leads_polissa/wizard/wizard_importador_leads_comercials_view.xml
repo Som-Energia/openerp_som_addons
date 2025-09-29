@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+    <data>
+        <record id="view_wizard_importar_leads_som" model="ir.ui.view">
+            <field name="name">wizard.importador.leads.view.som</field>
+            <field name="model">wizard.importador.leads.comercials</field>
+            <field name="type">form</field>
+            <field name="inherit_id" ref="giscedata_crm_importador.view_wizard_importar_leads"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='activate_leads']" position="after">
+                    <field name="llista_preus" colspan="2"/>
+                    <field name="atr_proces_name" colspan="2"/>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</openerp>

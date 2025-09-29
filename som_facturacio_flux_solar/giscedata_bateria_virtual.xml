@@ -7,12 +7,54 @@
             <field name="type">tree</field>
             <field name="inherit_id" ref="giscedata_facturacio_bateria_virtual.view_bateries_virtuals_tree"/>
             <field name="arch" type="xml">
-                <field name="total_descompte_bateria" position="after">
+                <field name="total_descompte_bateria" position="replace">
+                    <field name="total_descompte_bateria" sum="Total descomptes"/>
                     <field name="receptor_info"/>
                     <field name="origen_info"/>
                     <field name="data_inici_descomptes"/>
+                    <field name="data_inici_app_descomptes"/>
+                    <field name="data_final_app_descomptes"/>
+                    <field name="activa"/>
                 </field>
             </field>
+        </record>
+
+        <record model="ir.ui.view" id="view_som_bateria_virtual_form">
+            <field name="name">view.som.bateria.virtual.tree</field>
+            <field name="model">giscedata.bateria.virtual</field>
+            <field name="type">tree</field>
+            <field name="inherit_id" ref="giscedata_facturacio_bateria_virtual.view_bateries_virtuals_form"/>
+            <field name="arch" type="xml">
+                <field name="total_descompte_bateria" position="after">
+                    <field name="activa" select="1"/>
+                </field>
+            </field>
+        </record>
+        <record id="view_giscedata_import_bateria_virtual_tree_inherit" model="ir.ui.view">
+            <field name="name">view_giscedata_import_bateria_virtual_tree_inherit</field>
+            <field name="model">giscedata.bateria.virtual.resum.facturacio</field>
+            <field name="inherit_id" ref="giscedata_facturacio_bateria_virtual.view_giscedata_import_bateria_virtual_tree"/>
+            <field name="arch" type="xml">
+                <xpath expr="/tree[@string=&quot;Detalls d'import de bateria virtual&quot;]" position="attributes">
+                     <attribute name="string">Detall sols generats i aplicats</attribute>
+                </xpath>
+            </field>
+        </record>
+
+        <record id="giscedata_facturacio_bateria_virtual.act_giscedata_import_bateria_virtual" model="ir.actions.act_window">
+            <field name="name">Detall sols generats i aplicats</field>
+        </record>
+
+        <record id="giscedata_facturacio_bateria_virtual.value_giscedata_import_bateria_virtual" model="ir.values">
+            <field name="name">Detall sols generats i aplicats</field>
+        </record>
+
+        <record id="giscedata_facturacio_bateria_virtual.act_giscedata_import_bateria_virtual_polissa" model="ir.actions.act_window">
+            <field name="name">Detall sols generats i aplicats</field>
+        </record>
+
+        <record id="giscedata_facturacio_bateria_virtual.value_giscedata_import_bateria_virtual_polissa" model="ir.values">
+            <field name="name">Detall sols generats i aplicats</field>
         </record>
     </data>
 </openerp>

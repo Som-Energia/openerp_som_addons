@@ -1,0 +1,243 @@
+/* REPORT STYLE */
+table {
+    border-spacing: 0;
+}
+
+body {
+    font-family: 'Montserrat-Medium';
+    color: #4d4d4d;
+    font-size: 9pt;
+}
+
+.container {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.dades-titular {
+    width: 70%;
+    padding-bottom: 4mm;
+    /* border-right: 1px solid #4d4d4d; */
+}
+
+.dades-titular table td {
+    padding-bottom: 1mm;
+}
+
+.titol {
+    width: 30%;
+}
+
+.dades-resum {
+    width: 50%;
+}
+
+.distribucio-costos {
+    width: 50%;
+}
+
+.distribucio-costos-title {
+    width: 100%;
+    padding-bottom: 3mm;
+    text-align: center;
+}
+
+.seccio {
+    width: 100%;
+    font-size: 11pt;
+    font-weight: 600;
+}
+
+.section span {
+    padding-left: 5mm;
+}
+
+.estimacio {
+    width: 33%;
+    font-weight: 600;
+    text-align: center;
+}
+
+.logo {
+    height: 16mm;
+    padding: 3mm 17mm;
+}
+
+.secondary-text {
+    color: #9d9d9d;
+    font-size: 7pt;
+}
+
+.titol span {
+    font-size: 14pt;
+    font-weight: 800;
+    padding-left: 10mm;
+}
+
+.dades-titular table tr td:first-child {
+    width: 20mm;
+}
+
+.dades-resum table tr td p, .descomptes-excedents tr td p {
+    margin: 0;
+    padding: 0;
+}
+
+.descomptes-excedents table tr td:last-child, .dades-resum table tr td:last-child {
+    text-align: right;
+    font-size: 11pt;
+    padding-left: 0;
+}
+
+.dades-resum table tr:not(:first-child) td {
+    padding-top: 5mm;
+}
+
+.descomptes-excedents {
+    width: 100%;
+    border-top: 1px solid #4d4d4d;
+    border-bottom: 1px solid #4d4d4d;
+    background-color: #ededed;
+    margin-top: 1mm;
+    padding: 1mm 0 1mm 0;
+}
+
+.descomptes-excedents table{
+    width: 50%;
+}
+
+.note {
+    text-align: center;
+    font-size: 8pt;
+    width: 100%;
+    padding-top: 1mm;
+    font-weight: 500;
+}
+
+.alert {
+    background-color: #c7d1b0;
+    padding: 2mm;
+    margin: 5mm 0 5mm 0;
+}
+
+/* .alert .exclamation{
+    font-size: 25pt;
+    color: white;
+    font-weight: bold;
+    padding-right: 3mm;
+} */
+
+.alert .emoji{
+    padding-right: 3mm;
+}
+
+.alert-text {
+    padding: 0;
+    margin: 0;
+    margin-top: 1mm;
+}
+
+.alert-text a {
+    color: #71805b;
+}
+
+.text-descompte {
+    color: #25b2a4;
+}
+
+.taula-potencies th, .taula-potencies td {
+    border-collapse: collapse;
+    padding: 2mm 1mm;
+    text-align: center;
+    font-size: 7pt;
+    min-width: 9mm;
+}
+
+.taula-potencies tr:not(:last-child) td {
+    border-bottom: 1px solid #ddd;
+}
+
+.taula-potencies tr:nth-child(2) td:first-child {
+    border-right: 1mm solid #E9425B;
+    color: #E9425B;
+}
+
+.taula-potencies tr:nth-child(3) td:first-child {
+    border-right: 1mm solid #F39D25;
+    color: #F39D25;
+}
+
+.taula-potencies tr:nth-child(4) td:first-child {
+    border-right: 1mm solid #7D4E24;
+    color: #7D4E24;
+}
+
+.taula-potencies tr:nth-child(5) td:first-child {
+    border-right: 1mm solid #4BB8C3;
+    color: #4BB8C3;
+}
+
+.taula-potencies tr:nth-child(6) td:first-child {
+    border-right: 1mm solid #F39CAC;
+    color: #F39CAC;
+}
+
+.taula-potencies tr:nth-child(7) td:first-child {
+    border-right: 1mm solid #7D7D7D;
+    color: #7D7D7D;
+}
+
+.taula-potencies tr td:nth-child(2) {
+    background-color: #F3F3F3;
+}
+
+.taula-potencies tr td:nth-child(3) {
+    background-color: #C7D1B0;
+}
+
+.taula-potencies tr:last-child td {
+    background-color: transparent;
+}
+
+.taula-potencies th td:nth-child(2) {
+    width: 18mm;
+}
+
+.taula-potencies th td:nth-child(3) {
+    width: 18mm;
+}
+
+.text-negre{
+    color:black;
+}
+
+.text-estimacio {
+    font-weight: 600;
+    text-align: center;
+    margin: 2mm 0 4mm 0;
+}
+
+.footer {
+    display:inline-block;
+    width:100%;
+    text-align: center;
+    font-size: 8pt;
+}
+
+.subratllar{
+    text-decoration: underline;
+}
+
+.text-grafic {
+    font-size: 5pt;
+}
+
+#grafic-costos {
+    height: 60mm;
+    width: 95mm;
+}
+
+.container-resum {
+    margin-top: 1mm;
+}

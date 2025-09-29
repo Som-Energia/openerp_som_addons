@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<openerp>
+    <data>
+        <record id="giscere_mhcil_E0_MH3" model="giscere.mhcil">
+            <field name="type_measure">E</field>
+            <field name="ae">0</field>
+            <field name="r2">0</field>
+            <field name="r3">0</field>
+            <field name="local_timestamp">2022-01-01 01:00:00.000</field>
+            <field name="timestamp">2022-01-01 00:00:00.000</field>
+            <field name="cil">ES1234000000000001JK1F001</field>
+            <field name="maturity">H3</field>
+            <field name="version">0</field>
+        </record>
+        <record id="giscere_mhcil_E0_MHP" model="giscere.mhcil">
+            <field name="type_measure">E</field>
+            <field name="ae">0</field>
+            <field name="r2">0</field>
+            <field name="r3">0</field>
+            <field name="local_timestamp">2022-01-01 01:00:00.000</field>
+            <field name="timestamp">2022-01-01 00:00:00.000</field>
+            <field name="cil">ES1234000000000001JK1F001</field>
+            <field name="maturity">HP</field>
+            <field name="version">0</field>
+        </record>
+        <record id="giscere_mhcil_E0_MHC" model="giscere.mhcil">
+            <field name="type_measure">E</field>
+            <field name="ae">0</field>
+            <field name="r2">0</field>
+            <field name="r3">0</field>
+            <field name="local_timestamp">2022-01-01 01:00:00.000</field>
+            <field name="timestamp">2022-01-01 00:00:00.000</field>
+            <field name="cil">ES1234000000000001JK1F001</field>
+            <field name="maturity">HC</field>
+            <field name="version">0</field>
+        </record>
+        <record id="giscere_mhcil_E1_MHP" model="giscere.mhcil">
+            <field name="type_measure">E</field>
+            <field name="ae">0</field>
+            <field name="r2">0</field>
+            <field name="r3">0</field>
+            <field name="local_timestamp">2023-01-01 01:00:00.000</field>
+            <field name="timestamp">2023-01-01 00:00:00.000</field>
+            <field name="cil">ES1234000000000001JK1F001</field>
+            <field name="maturity">HP</field>
+            <field name="version">0</field>
+        </record>
+        <record id="giscere_mhcil_E1_MHC" model="giscere.mhcil">
+            <field name="type_measure">E</field>
+            <field name="ae">0</field>
+            <field name="r2">0</field>
+            <field name="r3">0</field>
+            <field name="local_timestamp">2023-01-01 01:00:00.000</field>
+            <field name="timestamp">2023-01-01 00:00:00.000</field>
+            <field name="cil">ES1234000000000001JK1F001</field>
+            <field name="maturity">HC</field>
+            <field name="version">0</field>
+        </record>
+        <record id="giscere_mhcil_R0" model="giscere.mhcil">
+            <field name="type_measure">R</field>
+            <field name="ae">80</field>
+            <field name="r2">0</field>
+            <field name="r3">0</field>
+            <field name="local_timestamp">2022-01-01 01:00:00.000</field>
+            <field name="timestamp">2022-01-01 00:00:00.000</field>
+            <field name="cil">ES1234000000000001JK1F001</field>
+            <field name="maturity">H2</field>
+            <field name="version">0</field>
+        </record>
+        <record id="giscere_mhcil_E0" model="giscere.mhcil">
+            <field name="type_measure">E</field>
+            <field name="ae">22</field>
+            <field name="r2">0</field>
+            <field name="r3">0</field>
+            <field name="local_timestamp">2022-01-01 02:00:00.000</field>
+            <field name="timestamp">2022-01-01 01:00:00.000</field>
+            <field name="cil">ES1234000000000001JK1F001</field>
+            <field name="maturity">H3</field>
+            <field name="version">0</field>
+        </record>
+    </data>
+</openerp>

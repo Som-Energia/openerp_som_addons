@@ -61,5 +61,60 @@
             <field name="view_id" ref="account.account_journal_bank_view"/>
             <field name="sequence_id" ref="account.sequence_journal"/>
         </record>
+        <record id="factura_00011" model="giscedata.facturacio.factura">
+            <field name="name">0002DP</field>
+<!--            <field name="number">0002/F</field>-->
+            <field name="date_invoice">2016-05-01</field>
+            <!--<field name="invoice_id" ref="account.invoice_0002"/>-->
+            <field name="type">out_invoice</field>
+            <field name="polissa_id" ref="giscedata_polissa.polissa_0001"/>
+            <field name="account_id" search="[('code', '=', 430000)]" model="account.account"/>
+            <field name="company_id">1</field>
+            <field name="date_boe">2016-01-01</field>
+            <field name="reference_type">none</field>
+            <field name="journal_id" ref="giscedata_facturacio.facturacio_journal_energia"/>
+            <field name="cups_id" ref="giscedata_cups.cups_01"/>
+            <field name="facturacio" eval="1"/>
+            <field name="currency_id">1</field>
+            <field name="address_invoice_id" ref="base.res_partner_address_8"/>
+            <field name="potencia">6.0</field>
+            <field name="tarifa_acces_id" ref="giscedata_polissa.tarifa_20A_new"/>
+            <field name="llista_preu" ref="giscedata_facturacio.pricelist_tarifas_electricidad"/>
+            <field name="partner_id" ref="base.res_partner_agrolait"/>
+            <field name="periode_liquidacio">1</field>
+            <field name="data_inici">2016-03-01</field>
+            <field name="data_final">2016-04-30</field>
+            <field name="pending_state" ref="som_account_invoice_pending.fue_default_pending_state"/>
+            <field name="pending_state_date">2023-05-01 00:00:00</field>
+        </record>
+        <record id="factura_00012" model="giscedata.facturacio.factura">
+            <field name="name">0002BS</field>
+<!--            <field name="number">0002/F</field>-->
+            <field name="date_invoice">2016-05-01</field>
+            <!--<field name="invoice_id" ref="account.invoice_0002"/>-->
+            <field name="type">out_invoice</field>
+            <field name="polissa_id" ref="giscedata_polissa.polissa_0001"/>
+            <field name="account_id" search="[('code', '=', 430000)]" model="account.account"/>
+            <field name="company_id">1</field>
+            <field name="date_boe">2016-01-01</field>
+            <field name="reference_type">none</field>
+            <field name="journal_id" ref="giscedata_facturacio.facturacio_journal_energia"/>
+            <field name="cups_id" ref="giscedata_cups.cups_01"/>
+            <field name="facturacio" eval="1"/>
+            <field name="currency_id">1</field>
+            <field name="address_invoice_id" ref="base.res_partner_address_8"/>
+            <field name="potencia">6.0</field>
+            <field name="tarifa_acces_id" ref="giscedata_polissa.tarifa_20A_new"/>
+            <field name="llista_preu" ref="giscedata_facturacio.pricelist_tarifas_electricidad"/>
+            <field name="partner_id" ref="base.res_partner_agrolait"/>
+            <field name="periode_liquidacio">1</field>
+            <field name="data_inici">2016-03-01</field>
+            <field name="data_final">2016-04-30</field>
+            <field name="pending_state" ref="som_account_invoice_pending.fue_bo_social_pending_state"/>
+            <field name="pending_state_date">2023-05-01 00:00:00</field>
+        </record>
+        <record id="giscedata_polissa.polissa_0001" model="giscedata.polissa">
+            <field name="process_id" ref="giscedata_facturacio_comer_bono_social.bono_social_pending_state_process"/>
+        </record>
     </data>
 </openerp>

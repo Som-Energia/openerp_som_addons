@@ -1,4 +1,4 @@
 # -*- coding: utf-8 -*-
-import account_account
-import wizard
-import account_payment_term
+from __future__ import absolute_import
+from . import models
+from . import wizard

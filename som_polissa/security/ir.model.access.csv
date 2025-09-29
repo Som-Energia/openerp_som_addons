@@ -1,3 +1,6 @@
 "id","name","model_id:id","group_id:id","perm_read","perm_write","perm_create","perm_unlink"
 "access_wizard_gestio_text_to_polissa_rcwd","wizard.gestio.text.to.polissa","model_wizard_gestio_text_to_polissa","giscedata_facturacio.group_giscedata_facturacio_u",1,1,1,1
 "access_wizard_massive_category_to_polissa_rcwd","wizard.massive.category.to.polissa","model_wizard_massive_category_to_polissa","giscedata_facturacio.group_giscedata_facturacio_u",1,1,1,1
+"access_som_polissa_webforms_helpers_rcwd","som.polissa.webforms.helpers","model_som_polissa_webforms_helpers","giscedata_facturacio.group_giscedata_facturacio_u",1,1,1,1
+"access_wizard_import_ref_cadastral_from_csv_rcwd","wizard.import.ref.cadastral.from.csv","model_wizard_import_ref_cadastral_from_csv","giscedata_facturacio.group_giscedata_facturacio_u",1,1,1,1
+"access_wizard_add_cut_off_to_polissa_from_csv_rcwd","wizard.add.cut.off.to.polissa.from.csv","model_wizard_add_cut_off_to_polissa_from_csv","giscedata_facturacio.group_giscedata_facturacio_u",1,1,1,1

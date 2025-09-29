@@ -3,7 +3,6 @@ from datetime import datetime, timedelta
 from osv import osv, fields
 from tools.translate import _
 from oorq.decorators import job
-from enerdata.calendars import REECalendar
 from . import exceptions
 
 
@@ -128,8 +127,14 @@ class SomCrawlersTask(osv.osv):
         self.executar_tasca(cursor, uid, id, context=context)
 
     def executar_tasca(self, cursor, uid, id, context=None):
+        if not context:
+            context = {}
         classresult = self.pool.get("som.crawlers.result")
         classTaskStep = self.pool.get("som.crawlers.task.step")
+        sch_obj = self.pool.get("som.crawlers.holiday")
+
+        if sch_obj.is_leaving_day(cursor, uid, datetime.today()):
+            self.schedule_next_execution(cursor, uid, id, context)
         task_obj = self.browse(cursor, uid, id)
         task_steps_list = task_obj.task_step_ids
         task_steps_list.sort(key=lambda x: x.sequence)
@@ -143,8 +148,11 @@ class SomCrawlersTask(osv.osv):
         resultat_correcte = False
         for taskStep in task_steps_list:
             resultat = "[" + taskStep.name + "]: "
+            if 'nom_municipi' in context:
+                resultat += "[{}] ".format(context['nom_municipi'])
             try:
-                resultat += classTaskStep.executar_steps(cursor, uid, taskStep.id, result_id)
+                resultat += classTaskStep.executar_steps(cursor,
+                                                         uid, taskStep.id, result_id, context)
                 resultat_correcte = True
             except exceptions.NoResultsException as e:
                 resultat += str(e)
@@ -182,14 +190,6 @@ class SomCrawlersTask(osv.osv):
     def get_next_execution_date(self, cursor, uid, prev_date, context=None):
 
         sch_obj = self.pool.get("som.crawlers.holiday")
-        ree_calendar = REECalendar()
-
-        def workable_day(date):
-            return (
-                ree_calendar.is_working_day(date)
-                and date.weekday() in [0, 1, 2, 3, 4]
-                and sch_obj.is_working_day(cursor, uid, date.strftime("%Y-%m-%d"))
-            )
 
         if context and "datetime_now" in context:
             now = context["datetime_now"]
@@ -197,7 +197,7 @@ class SomCrawlersTask(osv.osv):
             now = datetime.now()
         date = now + timedelta(days=1)
 
-        while not workable_day(date):
+        while not sch_obj.is_working_day(cursor, uid, date):
             date += timedelta(days=1)
 
         date_proxima_exec = prev_date.replace(

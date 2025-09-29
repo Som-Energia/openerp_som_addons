@@ -1,7 +1,7 @@
 # Translation of OpenERP Server.
 # This file contains the translation of the following modules:
 # * som_inversions
-# 
+#
 # Translators:
 #   <>, 2018.
 # Agustí Fita <afita@gisce.net>, 2017.
@@ -384,9 +384,9 @@ msgstr ", en adelante, el <b>Socio/a.</b>."
 
 #: rml:som_inversions/report/report_generationkwh_doc.mako:228
 msgid ""
-"SOM ENERGIA, S.C.C.L., amb domicili a carrer Pic de Peguera, 15, Parc "
-"Científic i Tecnològic de la UdG, 17003 - Girona i amb NIF F55091367."
-msgstr "SOM ENERGIA, S.C.C.L., con domicilio en calle Pic de Peguera, 15, Parc Científic i Tecnològic de la UdG, 17003 - Girona y con NIF F55091367."
+"SOM ENERGIA, S.C.C.L., amb domicili a carrer Riu Güell, 68, "
+"17005 - Girona i amb NIF F55091367."
+msgstr "SOM ENERGIA, S.C.C.L., con domicilio en calle Riu Güell, 68, 17005 - Girona y con NIF F55091367."
 
 #: rml:som_inversions/report/report_generationkwh_doc.mako:231
 msgid ""
@@ -1893,6 +1893,6 @@ msgstr "Saldo a "
 
 #: rml:som_inversions/report/report_retencions_interessos.mako:228
 msgid ""
-"Som Energia, SCCL, CIF F55091367 | Domicili Pic de Peguera, 11 A 28 - 17003 "
+"Som Energia, SCCL, CIF F55091367 | Domicili Riu Güell, 68 - 17005 "
 "- Girona | aporta@somenergia.coop | www.somenergia.coop"
-msgstr "Som Energia, SCCL, CIF F55091367 | Domicilio Pic de Peguera, 11 A 28 - 17003 - Girona | aporta@somenergia.coop | www.somenergia.coop"
+msgstr "Som Energia, SCCL, CIF F55091367 | Domicilio Riu Güell, 68 - 17005 - Girona | aporta@somenergia.coop | www.somenergia.coop"

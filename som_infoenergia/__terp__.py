@@ -7,7 +7,7 @@
         * Model lot enviament
         * Acció d'enviament
     """,
-    "version": "0-dev",
+    "version": "24.5.0",
     "author": "SomEnergia",
     "category": "SomEnergia",
     "depends": [
@@ -16,9 +16,7 @@
         "som_generationkwh",
     ],
     "init_xml": [],
-    "demo_xml": [
-        "tests/som_infoenergia_demo.xml"
-    ],
+    "demo_xml": ["tests/som_infoenergia_demo.xml"],
     "update_xml": [
         "som_infoenergia_report.xml",
         "som_infoenergia_sepa.xml",
@@ -40,5 +38,5 @@
         "wizard/wizard_create_attachments_from_zip_view.xml",
     ],
     "active": False,
-    "installable": True
+    "installable": True,
 }

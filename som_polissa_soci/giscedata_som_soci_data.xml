@@ -18,7 +18,49 @@
             <field name="copyvalue">${object.partner_id.lang}</field>
             <field eval="0" name="send_on_write"/>
             <field name="def_body_text"><![CDATA[text_to_replace]]></field>
-            <field name="enforce_from_account" model="poweremail.core_accounts" search="[('name','=', 'Info Som Energia')]"/> 
+            <field name="enforce_from_account" model="poweremail.core_accounts" search="[('name','=', 'Info Som Energia')]"/>
+        </record>
+        <record model="poweremail.templates" id="email_contracte_esborrany">
+            <field name="name">Nou contracte en esborrany (webforms)</field>
+            <field name="object_name" model="ir.model" search="[('model', '=', 'giscedata.polissa')]"/>
+            <field eval="0" name="save_to_drafts"/>
+            <field name="model_int_name">giscedata.polissa</field>
+            <field name="def_to">${object.direccio_pagament.email}</field>
+            <field name="def_bcc">support.17062.b8d9f4469fa4d856@helpscout.net</field>
+            <field eval="0" name="auto_email"/>
+            <field eval="0" name="single_email"/>
+            <field eval="0" name="use_sign"/>
+            <field name="def_subject">Contractació Som Energia ${object.name} / Contratación Som Energia ${object.name}</field>
+            <field name="file_name">CondicionsContracte_${object.name}</field>
+            <field name="template_language">mako</field>
+            <field eval="0" name="send_on_create"/>
+            <field name="lang">${object.titular.lang}</field>
+            <field name="copyvalue">${object.titular.lang}</field>
+            <field eval="0" name="send_on_write"/>
+            <field name="filter">uid == 4</field>
+            <field name="def_body_text"><![CDATA[text_to_replace]]></field>
+            <field name="enforce_from_account" model="poweremail.core_accounts" search="[('name','=', 'Comercialització Som Energia')]"/>
+        </record>
+        <record model="poweremail.templates" id="email_contracte_esborrany_nou_soci">
+            <field name="name">Nou soci + nou contracte en esborrany (webforms)</field>
+            <field name="object_name" model="ir.model" search="[('model', '=', 'giscedata.polissa')]"/>
+            <field eval="0" name="save_to_drafts"/>
+            <field name="model_int_name">giscedata.polissa</field>
+            <field name="def_to">${object.direccio_pagament.email}</field>
+            <field name="def_bcc">support.17062.b8d9f4469fa4d856@helpscout.net</field>
+            <field eval="0" name="auto_email"/>
+            <field eval="0" name="single_email"/>
+            <field eval="0" name="use_sign"/>
+            <field name="def_subject">Contractació Som Energia ${object.name} / Contratación Som Energia ${object.name}</field>
+            <field name="file_name">CondicionsContracte_${object.name}</field>
+            <field name="template_language">mako</field>
+            <field eval="0" name="send_on_create"/>
+            <field name="lang">${object.titular.lang}</field>
+            <field name="copyvalue">${object.titular.lang}</field>
+            <field eval="0" name="send_on_write"/>
+            <field name="filter">uid == 4</field>
+            <field name="def_body_text"><![CDATA[text_to_replace]]></field>
+            <field name="enforce_from_account" model="poweremail.core_accounts" search="[('name','=', 'Comercialització Som Energia')]"/>
         </record>
     </data>
 </openerp>

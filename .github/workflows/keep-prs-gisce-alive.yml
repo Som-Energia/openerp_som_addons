@@ -1,0 +1,62 @@
+name: Keep PRs alive
+
+on:
+  schedule:
+    # Cada 90 dies
+    - cron: "0 3 */90 * *"
+  workflow_dispatch:
+
+jobs:
+  ping-stale-prs:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping and un-stale PRs
+        env:
+          GITHUB_TOKEN: ${{ secrets.ACCESS_TOKEN_GA }}
+        run: |
+          REPO="gisce/erp"
+          TOKEN="$GITHUB_TOKEN"
+          API="https://api.github.com/repos/$REPO"
+
+          page=1
+          found=0
+
+          while :; do
+            echo "Descarregant pàgina $page de PRs..."
+            pulls=$(curl -s -H "Authorization: token $TOKEN" \
+              "$API/pulls?state=open&per_page=100&page=$page")
+
+            count=$(echo "$pulls" | jq '. | length')
+            if [ "$count" -eq 0 ]; then
+              echo "No queden més PRs."
+              break
+            fi
+
+            prs=$(echo "$pulls" | jq -r '
+              .[] | select(.user.login as $u | ["oriolpiera","FranciscoCubero","PauBoix","xavierteres","XavierBonetViura","DCa23","susu105","MariteSomEnergia","samuelpedrajas"] | index($u)) | .number
+            ')
+            for pr in $prs; do
+              echo "Comprovant PR #$pr"
+              issue=$(curl -s -H "Authorization: token $TOKEN" "$API/issues/$pr")
+              has_stale=$(echo "$issue" | jq -r '.labels[]?.name' | grep -x "Stale" || true)
+
+              if [ -n "$has_stale" ]; then
+                echo " -> PR #$pr té label Stale. Afegint comentari i eliminant label."
+
+                # Afegir comentari
+                curl -s -X POST -H "Authorization: token $TOKEN" \
+                  -d '{"body":"👋 Encara vigent @egarciadiaz "}' \
+                  "$API/issues/$pr/comments" > /dev/null
+
+                # Treure etiqueta 'Stale'
+                curl -s -X DELETE -H "Authorization: token $TOKEN" \
+                  "$API/issues/$pr/labels/Stale" > /dev/null
+
+                found=$((found+1))
+              fi
+            done
+
+            page=$((page+1))
+          done
+
+          echo "Processades $found PRs amb label Stale d'aquests usuaris."

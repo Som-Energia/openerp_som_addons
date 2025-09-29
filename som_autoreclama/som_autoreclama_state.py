@@ -11,9 +11,9 @@ class SomAutoreclamaState(osv.osv):
     _name = "som.autoreclama.state"
     _order = "priority"
 
-    def do_action(self, cursor, uid, state_id, atc_id, context=None):
+    def do_action(self, cursor, uid, state_id, item_id, namespace, context=None):
         logger = logging.getLogger("openerp.som_autoreclama")
-        msg_head = _(u"Acció canvi d'estat per cas ATC {}, ").format(atc_id)
+        msg_head = _(u"Acció canvi d'estat per {} {}, ").format(namespace.capitalize(), item_id)
 
         state_data = self.read(cursor, uid, state_id, ["name", "active", "generate_atc_parameters"])
         state_actv = state_data["active"]
@@ -36,9 +36,9 @@ class SomAutoreclamaState(osv.osv):
             model_obj = self.pool.get(model)
             model_method = getattr(model_obj, method)
             if params:
-                new_atc_id = model_method(cursor, uid, params, context)
+                new_atc_id = model_method(cursor, uid, item_id, params, context)
             else:
-                new_atc_id = model_method(cursor, uid, atc_id, context)
+                new_atc_id = model_method(cursor, uid, item_id, context)
         except Exception as e:
             tb = traceback.format_exc()
             msg = _(u"Execució d'accions del estat {} genera ERROR {}").format(

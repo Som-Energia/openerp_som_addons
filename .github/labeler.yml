@@ -1,0 +1,106 @@
+account_account_som:
+-  account_account_som/**
+account_invoice_som:
+-  account_invoice_som/**
+base_extended_som:
+-  base_extended_som/**
+giscedata_facturacio_comer_som:
+-  giscedata_facturacio_comer_som/**
+giscedata_facturacio_som:
+-  giscedata_facturacio_som/**
+GithubActions:
+-  .github/**
+powersms:
+-  powersms/**
+report_tester:
+-  report_tester/**
+scripts:
+-  scripts/**
+som_account_invoice_pending:
+-  som_account_invoice_pending/**
+som_atc:
+-  som_atc/**
+som_autofactura:
+-  som_autofactura/**
+som_autoreclama:
+-  som_autoreclama/**
+som_auvidi:
+-  som_auvidi/**
+som_control_reports:
+-  som_control_reports/**
+som_crawlers:
+-  som_crawlers/**
+som_custom_views:
+-  som_custom_views/**
+som_dashboard:
+-  som_dashboard/**
+som_documents_sensibles:
+-  som_documents_sensibles/**
+som_empowering:
+-  som_empowering/**
+som_facturacio_comer:
+-  som_facturacio_comer/**
+som_energetica:
+-  som_energetica/**
+som_estalvi:
+-  som_estalvi/**
+som_extend_facturacio_comer:
+-  som_extend_facturacio_comer/**
+som_extend_facturacio_facturae:
+-  som_extend_facturacio_facturae/**
+som_facturacio_calculada:
+-  som_facturacio_calculada/**
+som_facturacio_flux_solar:
+-  som_facturacio_flux_solar/**
+som_facturacio_switching:
+-  som_facturacio_switching/**
+som_factures_paper:
+-  som_factures_paper/**
+som_gurb:
+-  som_gurb/**
+som_indexada:
+-  som_indexada/**
+som_infoenergia:
+-  som_infoenergia/**
+som_informe:
+-  som_informe/**
+som_inversions:
+-  som_inversions/**
+som_l10n_ES_aeat_mod347:
+-  som_l10n_ES_aeat_mod347/**
+som_leads_polissa:
+-  som_leads_polissa/**
+som_municipal_taxes:
+-  som_municipal_taxes/**
+som_polissa:
+-  som_polissa/**
+som_polissa_administradora:
+-  som_polissa_administradora/**
+som_polissa_condicions_generals:
+-  som_polissa_condicions_generals/**
+som_polissa_soci:
+-  som_polissa_soci/**
+som_poweremail_common_templates:
+-  som_poweremail_common_templates/**
+som_sortida:
+-  som_sortida/**
+somre_giscere_facturacio:
+-  somre_giscere_facturacio/**
+somre_giscere_oferta:
+-  somre_giscere_oferta/**
+somre_ov_module:
+-  somre_ov_module/**
+som_remeses_base:
+-  som_remeses_base/**
+som_stash:
+-  som_stash/**
+som_switching:
+-  som_switching/**
+som_telemesura:
+-  som_telemesura/**
+som_webforms_helpers:
+-  som_webforms_helpers/**
+uiqmako_helpers:
+-  uiqmako_helpers/**
+www_som:
+-  www_som/**

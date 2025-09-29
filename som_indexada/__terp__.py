@@ -3,13 +3,14 @@
     "name": "Mòdul per gestionar els canvis a facturació indexada",
     "description": """
     """,
-    "version": "0-dev",
+    "version": "24.5.0",
     "author": "SomEnergia",
     "category": "SomEnergia",
-    "depends":[
+    "depends": [
         "base",
         "base_extended_som",
         "giscedata_facturacio_indexada_som",
+        "som_polissa",
         "giscedata_polissa",
         "giscedata_polissa_comer",
         "giscedata_polissa_category",
@@ -30,7 +31,8 @@
         "data/res_config_data.xml",
         "security/ir.model.access.csv",
         "wizard/wizard_massive_k_change.xml",
+        "wizard/wizard_change_to_indexada_multi.xml",
     ],
     "active": False,
-    "installable": True
+    "installable": True,
 }

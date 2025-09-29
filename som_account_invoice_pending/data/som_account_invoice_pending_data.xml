@@ -1,0 +1,795 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<openerp>
+    <data noupdate="1">
+        <!-- SomEnergia specific pending states -->
+        <record model="account.invoice.pending.state" id="som_account_invoice_pending.default_pacte_transferencia_pending_state">
+            <field name="name">PACTE TRANSFER</field>
+            <field name="weight">1105</field>
+            <field name="pending_days">0</field>
+            <field name="process_id" ref="account_invoice_pending.default_pending_state_process"/>
+            <field name="pending_days_type">natural</field>
+        </record>
+
+        <record model="account.invoice.pending.state" id="som_account_invoice_pending.avis_impagament_enviat_pending_state">
+            <field name="name">Enviat primer email</field>
+            <field name="weight">12</field>
+            <field name="pending_days">7</field>
+            <field name="process_id" ref="giscedata_facturacio_comer_bono_social.bono_social_pending_state_process"/>
+            <field name="pending_days_type">natural</field>
+        </record>
+        <record model="account.invoice.pending.state" id="som_account_invoice_pending.pendent_avis_previ_inici_procediment_pending_state">
+            <field name="name">Pendent enviar annex II</field>
+            <field name="weight">16</field>
+            <field name="pending_days">0</field>
+            <field name="process_id" ref="giscedata_facturacio_comer_bono_social.bono_social_pending_state_process"/>
+            <field name="pending_days_type">business</field>
+        </record>
+        <record model="account.invoice.pending.state" id="som_account_invoice_pending.avis_previ_inici_procediment_enviat_pending_state">
+            <field name="name">Enviat annex II</field>
+            <field name="weight">17</field>
+            <field name="pending_days">7</field>
+            <field name="process_id" ref="giscedata_facturacio_comer_bono_social.bono_social_pending_state_process"/>
+            <field name="pending_days_type">natural</field>
+        </record>
+        <record model="account.invoice.pending.state" id="som_account_invoice_pending.pendent_consulta_probresa_pending_state">
+            <field name="name">Pendent consulta pobresa</field>
+            <field name="weight">55</field>
+            <field name="pending_days">0</field>
+            <field name="process_id" ref="giscedata_facturacio_comer_bono_social.bono_social_pending_state_process"/>
+        </record>
+        <record model="account.invoice.pending.state" id="som_account_invoice_pending.esperant_segona_factura_impagada_pending_state">
+            <field name="name">Pendent 2a factura impagada</field>
+            <field name="weight">82</field>
+            <field name="pending_days">0</field>
+            <field name="process_id" ref="giscedata_facturacio_comer_bono_social.bono_social_pending_state_process"/>
+        </record>
+        <record model="account.invoice.pending.state" id="som_account_invoice_pending.pendent_notificacio_tall_imminent_pending_state">
+            <field name="name">Pendent enviar email tall i SMS tall 48h</field>
+            <field name="weight">83</field>
+            <field name="pending_days">0</field>
+            <field name="process_id" ref="giscedata_facturacio_comer_bono_social.bono_social_pending_state_process"/>
+        </record>
+        <record model="account.invoice.pending.state" id="som_account_invoice_pending.notificacio_tall_imminent_enviada_pending_state">
+            <field name="name">Enviat email i SMS 48h</field>
+            <field name="weight">85</field>
+            <field name="pending_days">2</field>
+            <field name="process_id" ref="giscedata_facturacio_comer_bono_social.bono_social_pending_state_process"/>
+            <field name="pending_days_type">business</field>
+        </record>
+        <record model="account.invoice.pending.state" id="som_account_invoice_pending.pendent_execucio_tall_pending_state">
+            <field name="name">Pendent crear tall</field>
+            <field name="weight">88</field>
+            <field name="pending_days">0</field>
+            <field name="process_id" ref="giscedata_facturacio_comer_bono_social.bono_social_pending_state_process"/>
+        </record>
+        <record model="account.invoice.pending.state" id="som_account_invoice_pending.traspassat_advocats_pending_state">
+            <field name="name">Advocats</field>
+            <field name="weight">1001</field>
+            <field name="pending_days">0</field>
+            <field name="process_id" ref="giscedata_facturacio_comer_bono_social.bono_social_pending_state_process"/>
+        </record>
+        <record model="account.invoice.pending.state" id="som_account_invoice_pending.probresa_energetica_certificada_pending_state">
+            <field name="name">Pobresa energètica</field>
+            <field name="weight">1002</field>
+            <field name="pending_days">0</field>
+            <field name="process_id" ref="giscedata_facturacio_comer_bono_social.bono_social_pending_state_process"/>
+        </record>
+        <record model="account.invoice.pending.state" id="som_account_invoice_pending.pacte_fraccio_pending_state">
+            <field name="name">Fraccionament Extralines</field>
+            <field name="weight">1003</field>
+            <field name="pending_days">0</field>
+            <field name="process_id" ref="giscedata_facturacio_comer_bono_social.bono_social_pending_state_process"/>
+        </record>
+        <record model="account.invoice.pending.state" id="som_account_invoice_pending.pacte_girar_pending_state">
+            <field name="name">Pacte girar</field>
+            <field name="weight">1004</field>
+            <field name="pending_days">0</field>
+            <field name="process_id" ref="giscedata_facturacio_comer_bono_social.bono_social_pending_state_process"/>
+        </record>
+        <record model="account.invoice.pending.state" id="som_account_invoice_pending.pacte_transferencia_pending_state">
+            <field name="name">Pacte transfer</field>
+            <field name="weight">1005</field>
+            <field name="pending_days">0</field>
+            <field name="process_id" ref="giscedata_facturacio_comer_bono_social.bono_social_pending_state_process"/>
+        </record>
+        <record model="account.invoice.pending.state" id="som_account_invoice_pending.reclamacio_en_curs_pending_state">
+            <field name="name">R1 RECLAMACIÓ</field>
+            <field name="weight">1006</field>
+            <field name="pending_days">0</field>
+            <field name="process_id" ref="giscedata_facturacio_comer_bono_social.bono_social_pending_state_process"/>
+        </record>
+        <record model="account.invoice.pending.state" id="som_account_invoice_pending.no_reclamable_pending_state">
+            <field name="name">No reclamar - Altres</field>
+            <field name="weight">1007</field>
+            <field name="pending_days">0</field>
+            <field name="process_id" ref="giscedata_facturacio_comer_bono_social.bono_social_pending_state_process"/>
+        </record>
+        <record model="account.invoice.pending.state" id="som_account_invoice_pending.default_avis_impagament_pending_state">
+            <field name="name">Pendent enviament email impagament</field>
+            <field name="weight">110</field>
+            <field name="pending_days">0</field>
+            <field name="process_id" ref="account_invoice_pending.default_pending_state_process"/>
+        </record>
+        <record model="account.invoice.pending.state" id="som_account_invoice_pending.default_avis_impagament_enviat_pending_state">
+            <field name="name">Email impagament enviat</field>
+            <field name="weight">120</field>
+            <field name="pending_days">7</field>
+            <field name="process_id" ref="account_invoice_pending.default_pending_state_process"/>
+            <field name="pending_days_type">natural</field>
+        </record>
+        <record model="account.invoice.pending.state" id="som_account_invoice_pending.default_esperant_segona_factura_impagada_pending_state">
+            <field name="name">Pendent 2a factura impagada</field>
+            <field name="weight">185</field>
+            <field name="pending_days">0</field>
+            <field name="process_id" ref="account_invoice_pending.default_pending_state_process"/>
+        </record>
+        <record model="account.invoice.pending.state" id="som_account_invoice_pending.default_pendent_carta_avis_tall_pending_state">
+            <field name="name">Pendent enviament mail Annex IV i SMS</field>
+            <field name="weight">160</field>
+            <field name="pending_days">0</field>
+            <field name="process_id" ref="account_invoice_pending.default_pending_state_process"/>
+        </record>
+        <record model="account.invoice.pending.state" id="som_account_invoice_pending.default_carta_avis_tall_pending_state">
+            <field name="name">Enviat annex IV i SMS</field>
+            <field name="weight">180</field>
+            <field name="pending_days">13</field>
+            <field name="process_id" ref="account_invoice_pending.default_pending_state_process"/>
+            <field name="pending_days_type">business</field>
+        </record>
+        <record model="account.invoice.pending.state" id="som_account_invoice_pending.default_pendent_notificacio_tall_imminent_pending_state">
+            <field name="name">Pendent enviament email tall i SMS 48 hores</field>
+            <field name="weight">190</field>
+            <field name="pending_days">0</field>
+            <field name="process_id" ref="account_invoice_pending.default_pending_state_process"/>
+        </record>
+        <record model="account.invoice.pending.state" id="som_account_invoice_pending.default_notificacio_tall_imminent_enviada_pending_state">
+            <field name="name">Enviat email i SMS 48 hores</field>
+            <field name="weight">210</field>
+            <field name="pending_days">2</field>
+            <field name="process_id" ref="account_invoice_pending.default_pending_state_process"/>
+            <field name="pending_days_type">business</field>
+        </record>
+        <record model="account.invoice.pending.state" id="som_account_invoice_pending.default_tall_pending_state">
+            <field name="name">Tall</field>
+            <field name="weight">220</field>
+            <field name="pending_days">0</field>
+            <field name="process_id" ref="account_invoice_pending.default_pending_state_process"/>
+        </record>
+        <record model="account.invoice.pending.state" id="som_account_invoice_pending.default_pacte_girar_pending_state">
+            <field name="name">Pacte girar</field>
+            <field name="weight">1106</field>
+            <field name="pending_days">0</field>
+            <field name="process_id" ref="account_invoice_pending.default_pending_state_process"/>
+            <field name="pending_days_type">natural</field>
+        </record>
+        <record model="account.invoice.pending.state" id="som_account_invoice_pending.default_traspassat_advocats_pending_state">
+            <field name="name">Advocats</field>
+            <field name="weight">1101</field>
+            <field name="pending_days">0</field>
+            <field name="process_id" ref="account_invoice_pending.default_pending_state_process"/>
+        </record>
+        <record model="account.invoice.pending.state" id="som_account_invoice_pending.default_pacte_fraccio_pending_state">
+            <field name="name">Fraccionament Extralines</field>
+            <field name="weight">1102</field>
+            <field name="pending_days">0</field>
+            <field name="process_id" ref="account_invoice_pending.default_pending_state_process"/>
+        </record>
+        <record model="account.invoice.pending.state" id="som_account_invoice_pending.default_reclamacio_en_curs_pending_state">
+            <field name="name">R1 RECLAMACIÓ</field>
+            <field name="weight">1103</field>
+            <field name="pending_days">0</field>
+            <field name="process_id" ref="account_invoice_pending.default_pending_state_process"/>
+        </record>
+        <record model="account.invoice.pending.state" id="som_account_invoice_pending.default_no_reclamable_pending_state">
+            <field name="name">No reclamar - Altres</field>
+            <field name="weight">1104</field>
+            <field name="pending_days">0</field>
+            <field name="process_id" ref="account_invoice_pending.default_pending_state_process"/>
+        </record>
+        <record model="account.invoice.pending.state" id="som_account_invoice_pending.default_pendent_execucio_tall_pending_state">
+            <field name="name">Pendent crear tall</field>
+            <field name="weight">215</field>
+            <field name="pending_days">0</field>
+            <field name="process_id" ref="account_invoice_pending.default_pending_state_process"/>
+            <field name="pending_days_type">natural</field>
+        </record>
+        <record model="account.invoice.pending.state" id="som_account_invoice_pending.pendent_traspas_advocats_pending_state">
+            <field name="name">Pendent consulta advocats</field>
+            <field name="weight">1008</field>
+            <field name="pending_days">0</field>
+            <field name="process_id" ref="giscedata_facturacio_comer_bono_social.bono_social_pending_state_process"/>
+            <field name="pending_days_type">natural</field>
+        </record>
+        <record model="account.invoice.pending.state" id="som_account_invoice_pending.bo_social_fraccionament_covid">
+            <field name="name">Pendent consulta advocats</field>
+            <field name="weight">1009</field>
+            <field name="pending_days">0</field>
+            <field name="process_id" ref="giscedata_facturacio_comer_bono_social.bono_social_pending_state_process"/>
+            <field name="pending_days_type">natural</field>
+        </record>
+        <record model="account.invoice.pending.state" id="som_account_invoice_pending.default_pendent_traspas_advocats_pending_state">
+            <field name="name">Pendent consulta advocats</field>
+            <field name="weight">1108</field>
+            <field name="pending_days">0</field>
+            <field name="process_id" ref="account_invoice_pending.default_pending_state_process"/>
+            <field name="pending_days_type">natural</field>
+        </record>
+        <record model="account.invoice.pending.state" id="som_account_invoice_pending.default_fraccionament_covid">
+            <field name="name">Pendent consulta advocats</field>
+            <field name="weight">1109</field>
+            <field name="pending_days">0</field>
+            <field name="process_id" ref="account_invoice_pending.default_pending_state_process"/>
+            <field name="pending_days_type">natural</field>
+        </record>
+        <record model="account.invoice.pending.state" id="som_account_invoice_pending.monitori_bo_social_pending_state">
+            <field name="name">Monitori (Bo Social)</field>
+            <field name="weight">1010</field>
+            <field name="pending_days">0</field>
+            <field name="process_id" ref="giscedata_facturacio_comer_bono_social.bono_social_pending_state_process"/>
+            <field name="pending_days_type">natural</field>
+        </record>
+        <record model="account.invoice.pending.state" id="som_account_invoice_pending.perdues_bo_social_pending_state">
+            <field name="name">Pèrdues (Bo Social)</field>
+            <field name="weight">1011</field>
+            <field name="pending_days">0</field>
+            <field name="process_id" ref="giscedata_facturacio_comer_bono_social.bono_social_pending_state_process"/>
+            <field name="pending_days_type">natural</field>
+        </record>
+        <record model="account.invoice.pending.state" id="som_account_invoice_pending.concurs_pending_state">
+            <field name="name">Concurs</field>
+            <field name="weight">1110</field>
+            <field name="pending_days">0</field>
+            <field name="process_id" ref="account_invoice_pending.default_pending_state_process"/>
+            <field name="pending_days_type">natural</field>
+        </record>
+        <record model="account.invoice.pending.state" id="som_account_invoice_pending.default_monitori_pending_state">
+            <field name="name">Monitori (Default Process)</field>
+            <field name="weight">1111</field>
+            <field name="pending_days">0</field>
+            <field name="process_id" ref="account_invoice_pending.default_pending_state_process"/>
+            <field name="pending_days_type">natural</field>
+        </record>
+        <record model="account.invoice.pending.state" id="som_account_invoice_pending.default_perdues_pending_state">
+            <field name="name">Pèrdues (Default Process)</field>
+	          <field name="weight">1112</field>
+            <field name="pending_days">0</field>
+            <field name="process_id" ref="account_invoice_pending.default_pending_state_process"/>
+            <field name="pending_days_type">natural</field>
+        </record>
+        <record model="account.invoice.pending.state" id="som_account_invoice_pending.paymefy_bo_social_pending_state">
+            <field name="name">Paymefy (Bo Social)</field>
+            <field name="weight">1012</field>
+            <field name="pending_days">0</field>
+            <field name="process_id" ref="giscedata_facturacio_comer_bono_social.bono_social_pending_state_process"/>
+            <field name="pending_days_type">natural</field>
+        </record>
+        <record model="account.invoice.pending.state" id="som_account_invoice_pending.paymefy_default_pending_state">
+            <field name="name">Paymefy (Default Process)</field>
+            <field name="weight">1113</field>
+            <field name="pending_days">0</field>
+            <field name="process_id" ref="account_invoice_pending.default_pending_state_process"/>
+            <field name="pending_days_type">natural</field>
+        </record>
+        <record model="account.invoice.pending.state" id="pendent_monitori_bo_social_pending_state">
+            <field name="name">Pendent Monitori (Bo Social)</field>
+            <field name="weight">1065</field>
+            <field name="pending_days">0</field>
+            <field name="process_id" ref="giscedata_facturacio_comer_bono_social.bono_social_pending_state_process"/>
+            <field name="pending_days_type">natural</field>
+        </record>
+        <record model="account.invoice.pending.state" id="pendent_monitori_default_pending_state">
+            <field name="name">Pendent Monitori (Default Process)</field>
+            <field name="weight">1165</field>
+            <field name="pending_days">0</field>
+            <field name="process_id" ref="account_invoice_pending.default_pending_state_process"/>
+            <field name="pending_days_type">natural</field>
+        </record>
+        <record model="account.invoice.pending.state" id="som_account_invoice_pending.fracc_manual_bo_social_pending_state">
+            <field name="name">Fraccionament manual (Bo Social)</field>
+            <field name="weight">1022</field>
+            <field name="pending_days">0</field>
+            <field name="process_id" ref="giscedata_facturacio_comer_bono_social.bono_social_pending_state_process"/>
+            <field name="pending_days_type">natural</field>
+        </record>
+        <record model="account.invoice.pending.state" id="som_account_invoice_pending.fracc_manual_default_pending_state">
+            <field name="name">Fraccionament manual (Default Process)</field>
+            <field name="weight">1123</field>
+            <field name="pending_days">0</field>
+            <field name="process_id" ref="account_invoice_pending.default_pending_state_process"/>
+            <field name="pending_days_type">natural</field>
+        </record>
+        <record model="account.invoice.pending.state" id="som_account_invoice_pending.electrodependencia_bo_social_pending_state">
+            <field name="name">Electrodependència</field>
+            <field name="weight">1023</field>
+            <field name="pending_days">0</field>
+            <field name="process_id" ref="giscedata_facturacio_comer_bono_social.bono_social_pending_state_process"/>
+            <field name="pending_days_type">natural</field>
+        </record>
+        <record model="account.invoice.pending.state" id="som_account_invoice_pending.pending_tugesto_bo_social_pending_state">
+            <field name="name">Pendent Tugesto (Bo Social)</field>
+            <field name="weight">1030</field>
+            <field name="pending_days">0</field>
+            <field name="process_id" ref="giscedata_facturacio_comer_bono_social.bono_social_pending_state_process"/>
+            <field name="pending_days_type">natural</field>
+        </record>
+        <record model="account.invoice.pending.state" id="som_account_invoice_pending.pending_tugesto_default_pending_state">
+            <field name="name">Pendent Tugesto (Default Process)</field>
+            <field name="weight">1130</field>
+            <field name="pending_days">0</field>
+            <field name="process_id" ref="account_invoice_pending.default_pending_state_process"/>
+            <field name="pending_days_type">natural</field>
+        </record>
+        <record model="account.invoice.pending.state" id="som_account_invoice_pending.tugesto_bo_social_pending_state">
+            <field name="name">Tugesto (Bo Social)</field>
+            <field name="weight">1035</field>
+            <field name="pending_days">0</field>
+            <field name="process_id" ref="giscedata_facturacio_comer_bono_social.bono_social_pending_state_process"/>
+            <field name="pending_days_type">natural</field>
+        </record>
+        <record model="account.invoice.pending.state" id="som_account_invoice_pending.tugesto_default_pending_state">
+            <field name="name">Tugesto (Default Process)</field>
+            <field name="weight">1135</field>
+            <field name="pending_days">0</field>
+            <field name="process_id" ref="account_invoice_pending.default_pending_state_process"/>
+            <field name="pending_days_type">natural</field>
+        </record>
+        <record model="account.invoice.pending.state" id="som_account_invoice_pending.fue_bo_social_pending_state">
+            <field name="name">FUE (Bo Social)</field>
+            <field name="weight">1136</field>
+            <field name="pending_days">0</field>
+            <field name="process_id" ref="giscedata_facturacio_comer_bono_social.bono_social_pending_state_process"/>
+            <field name="pending_days_type">natural</field>
+        </record>
+        <record model="account.invoice.pending.state" id="som_account_invoice_pending.fue_default_pending_state">
+            <field name="name">FUE (Default Process)</field>
+            <field name="weight">1137</field>
+            <field name="pending_days">0</field>
+            <field name="process_id" ref="account_invoice_pending.default_pending_state_process"/>
+            <field name="pending_days_type">natural</field>
+        </record>
+        <record model="account.invoice.pending.state" id="som_account_invoice_pending.perdues_fact_bo_social_pending_state">
+            <field name="name">Pèrdues FACT (Bo Social)</field>
+            <field name="weight">1138</field>
+            <field name="pending_days">0</field>
+            <field name="process_id" ref="giscedata_facturacio_comer_bono_social.bono_social_pending_state_process"/>
+            <field name="pending_days_type">natural</field>
+        </record>
+        <record model="account.invoice.pending.state" id="som_account_invoice_pending.perdues_fact_default_pending_state">
+            <field name="name">Pèrdues FACT (Default Process)</field>
+            <field name="weight">1139</field>
+            <field name="pending_days">0</field>
+            <field name="process_id" ref="account_invoice_pending.default_pending_state_process"/>
+            <field name="pending_days_type">natural</field>
+        </record>
+
+        <!-- Template de annex 2 Bo social -->
+        <record model="poweremail.templates" id="email_impagats_annex2">
+            <field name="name">Impagats: Procediment tall de llum Annex 2</field>
+	        <field name="object_name" model="ir.model" search="[('model', '=', 'giscedata.facturacio.factura')]"/>
+            <field eval="0" name="save_to_drafts"/>
+            <field name="model_int_name">giscedata.facturacio.factura</field>
+            <field name="def_to">${object.address_invoice_id.email}, ${object.polissa_id.direccio_notificacio.email}</field>
+            <field eval="0" name="auto_email"/>
+            <field eval="0" name="single_email"/>
+            <field eval="0" name="use_sign"/>
+            <field name="def_subject">Procedimiento corte de luz (Anexo II) / Procediment tall de llum (Annex II)</field>
+            <field name="template_language">mako</field>
+            <field eval="0" name="send_on_create"/>
+            <field name="lang"/>
+            <field eval="0" name="send_on_write"/>
+            <field name="def_bcc">support.17062.b8d9f4469fa4d856@helpscout.net</field>
+            <field name="enforce_from_account" model="poweremail.core_accounts" search="[('name','=', 'Gestió de Cobraments')]"/>
+            <field name="def_body_text"><![CDATA[<!doctype html>
+                <html>
+                <head></head>
+                <body>
+                Este correo ha estado generado automáticamente.
+                </body>
+                </html>
+                ]]></field>
+        </record>
+
+         <!-- Template de annex 3 Bo social -->
+        <record model="poweremail.templates" id="email_impagats_annex3">
+            <field name="name">Impagats: Procediment tall de llum Annex 3</field>
+            <field name="object_name" model="ir.model" search="[('model', '=', 'giscedata.facturacio.factura')]"/>
+            <field eval="0" name="save_to_drafts"/>
+            <field name="model_int_name">giscedata.facturacio.factura</field>
+            <field name="def_to">${object.address_invoice_id.email}, ${object.polissa_id.direccio_notificacio.email}</field>
+            <field eval="0" name="auto_email"/>
+            <field eval="0" name="single_email"/>
+            <field eval="0" name="use_sign"/>
+            <field name="def_subject">Procedimiento corte de luz (Anexo III) / Procediment tall de llum (Annex III)</field>
+            <field name="template_language">mako</field>
+            <field eval="0" name="send_on_create"/>
+            <field name="lang">${object.invoice_id.partner_id.lang}</field>
+            <field eval="0" name="send_on_write"/>
+            <field name="def_bcc">support.17062.b8d9f4469fa4d856@helpscout.net</field>
+            <field name="def_cc">correo@certificado.lleida.net</field>
+            <field name="enforce_from_account" model="poweremail.core_accounts" search="[('name','=', 'Gestió de Cobraments')]"/>
+            <field name="def_body_text"><![CDATA[<!doctype html>
+                <html>
+                <head></head>
+                <body>
+                Este correo ha estado generado automáticamente.
+                </body>
+                </html>
+                ]]></field>
+        </record>
+        <record model="poweremail.templates" id="email_impagats_annex4">
+            <field name="name">Impagats: Procediment tall de llum Annex 4</field>
+            <field name="object_name" model="ir.model" search="[('model', '=', 'giscedata.facturacio.factura')]"/>
+            <field eval="0" name="save_to_drafts"/>
+            <field name="model_int_name">giscedata.facturacio.factura</field>
+            <field name="def_to">${object.address_invoice_id.email}, ${object.polissa_id.direccio_notificacio.email}}</field>
+            <field eval="0" name="auto_email"/>
+            <field eval="0" name="single_email"/>
+            <field eval="0" name="use_sign"/>
+            <field name="def_subject">Corte de luz (Anexo IV) / Tall de llum (Annex IV)</field>
+            <field name="template_language">mako</field>
+            <field eval="0" name="send_on_create"/>
+            <field name="lang"/>
+            <field eval="0" name="send_on_write"/>
+            <field name="def_bcc">support.17062.b8d9f4469fa4d856@helpscout.net</field>
+            <field name="def_cc">${object.polissa_id.titular.www_email}, correo@certificado.lleida.net</field>
+            <field name="enforce_from_account" model="poweremail.core_accounts" search="[('name','=', 'Gestió de Cobraments')]"/>
+            <field name="def_body_text"><![CDATA[<!doctype html>
+                <html>
+                <head></head>
+                <body>
+                Este correo ha estado generado automáticamente.
+                </body>
+                </html>
+                ]]></field>
+        </record>
+        <record model="powersms.templates" id="sms_template_annex4">
+            <field name="name">SMS Annex 4</field>
+            <field name="object_name" model="ir.model" search="[('model', '=', 'giscedata.facturacio.factura')]"/>
+            <field name="def_from">Info</field>
+            <field name="model_int_name">giscedata.facturacio.factura</field>
+            <field name="def_to">${object.partner_id.www_phone}, ${object.partner_id.www_mobile}</field>
+            <field eval="0" name="auto_sms"/>
+            <field eval="0" name="certificate"/>
+            <field eval="0" name="send_on_create"/>
+            <field name="lang">${object.invoice_id.partner_id.lang}</field>
+            <field eval="0" name="send_on_write"/>
+            <field name="enforce_from_account" model="powersms.core_accounts" search="[('name','=', 'SMS Account')]"/>
+            <field name="def_body_text"><![CDATA[
+<%
+import datetime
+md_obj = object.pool.get('ir.model.data')
+fact_obj = object.pool.get('giscedata.facturacio.factura')
+
+exclosos = [('giscedata_facturacio_comer_bono_social', 'correct_bono_social_pending_state'),
+('account_invoice_pending', 'default_invoice_pending_state'),
+('som_account_invoice_pending', 'pacte_fraccio_pending_state'),
+('som_account_invoice_pending', 'default_pacte_fraccio_pending_state'),
+('som_account_invoice_pending', 'probresa_energetica_certificada_pending_state'),
+('som_account_invoice_pending', 'no_reclamable_pending_state'),
+('som_account_invoice_pending', 'paymefy_default_pending_state'),
+('som_account_invoice_pending', 'paymefy_bo_social_pending_state'),
+('som_account_invoice_pending', 'fracc_manual_bo_social_pending_state'),
+('som_account_invoice_pending', 'fracc_manual_default_pending_state'),
+('som_account_invoice_pending', 'electrodependencia_bo_social_pending_state'),
+('som_account_invoice_pending', 'default_fraccionament_covid'),
+('som_account_invoice_pending', 'bo_social_fraccionament_covid')]
+
+ids_exclosos = []
+for module, sem_id in exclosos:
+    ids_exclosos.append(md_obj.get_object_reference(object._cr, object._uid, module, sem_id)[1])
+
+polissa_id = object.polissa_id.id
+
+factures_pendents = len(fact_obj.search(object._cr, object._uid, [
+    ('polissa_id', '=', polissa_id),
+    ('type', 'in', ['out_invoice', 'out_refund']),
+    ('pending_state', '!=', False),
+    ('pending_state', 'not in', ids_exclosos)]))
+
+data_venciment = (datetime.date.today() + datetime.timedelta(days=20)).strftime("%d-%m-%Y")
+%>
+
+% if object.invoice_id.partner_id.lang == "ca_ES":
+SOM ENERGIA. ${factures_pendents} factura/es pendent/s de pagament. Tall de subministrament previst per ${data_venciment}. Contacte: 900.103.605
+% else:
+SOM ENERGIA. ${factures_pendents} factura/as pendiente/es de pago. Corte de suministro previsto para ${data_venciment}. Contacto: 900.103.605
+% endif
+]]>
+            </field>
+        </record>
+        <record model="powersms.templates" id="sms_template_48h_tall">
+            <field name="name">SMS 48h tall</field>
+            <field name="object_name" model="ir.model" search="[('model', '=', 'giscedata.facturacio.factura')]"/>
+            <field name="def_from">Info</field>
+            <field name="model_int_name">giscedata.facturacio.factura</field>
+            <field name="def_to">${object.partner_id.www_phone}, ${object.partner_id.www_mobile}</field>
+            <field eval="0" name="auto_sms"/>
+            <field eval="0" name="certificate"/>
+            <field eval="0" name="send_on_create"/>
+            <field name="lang">${object.invoice_id.partner_id.lang}</field>
+            <field eval="0" name="send_on_write"/>
+            <field name="enforce_from_account" model="powersms.core_accounts" search="[('name','=', 'SMS Account')]"/>
+            <field name="def_body_text"><![CDATA[
+<%
+md_obj = object.pool.get('ir.model.data')
+fact_obj = object.pool.get('giscedata.facturacio.factura')
+
+exclosos = [('giscedata_facturacio_comer_bono_social', 'correct_bono_social_pending_state'),
+('account_invoice_pending', 'default_invoice_pending_state'),
+('som_account_invoice_pending', 'pacte_fraccio_pending_state'),
+('som_account_invoice_pending', 'default_pacte_fraccio_pending_state'),
+('som_account_invoice_pending', 'probresa_energetica_certificada_pending_state'),
+('som_account_invoice_pending', 'no_reclamable_pending_state'),
+('som_account_invoice_pending', 'paymefy_default_pending_state'),
+('som_account_invoice_pending', 'paymefy_bo_social_pending_state'),
+('som_account_invoice_pending', 'fracc_manual_bo_social_pending_state'),
+('som_account_invoice_pending', 'fracc_manual_default_pending_state'),
+('som_account_invoice_pending', 'electrodependencia_bo_social_pending_state'),
+('som_account_invoice_pending', 'default_fraccionament_covid'),
+('som_account_invoice_pending', 'bo_social_fraccionament_covid')]
+
+ids_exclosos = []
+for module, sem_id in exclosos:
+    ids_exclosos.append(md_obj.get_object_reference(object._cr, object._uid, module, sem_id)[1])
+
+polissa = object.polissa_id.name
+
+factures_pendents = fact_obj.search(object._cr, object._uid, [
+    ('polissa_id', '=', object.polissa_id.id),
+    ('type', 'in', ['out_invoice', 'out_refund']),
+    ('pending_state', '!=', False),
+    ('pending_state', 'not in', ids_exclosos)
+    ])
+
+import_pendent = sum([item['amount_total'] for item in fact_obj.read(object._cr, object._uid, factures_pendents, ['amount_total'])])
+%>
+
+% if object.invoice_id.partner_id.lang == "ca_ES":
+SOM ENERGIA. TALL LLUM PER IMPAGAMENT EN 48h. Import pendent: ${import_pendent}€. Contracte: ${polissa}. Per contactar: 900.103.605
+% else:
+SOM ENERGIA. CORTE LUZ POR IMPAGO EN 48h. Importe pendiente: ${import_pendent}€. Contrato: ${polissa} Para contactar: 900.103.605
+% endif
+]]>
+            </field>
+        </record>
+        <record model="poweremail.templates" id="email_generic_N57">
+            <field name="name">Impagats: Plantilla genèrica pagament per N57 (codi de barres)</field>
+            <field name="object_name" model="ir.model" search="[('name', '=', 'giscedata.facturacio.factura')]"/>
+            <field eval="0" name="save_to_drafts"/>
+            <field name="model_int_name">giscedata.facturacio.factura</field>
+            <field name="def_to">${object.address_invoice_id.email}, ${object.polissa_id.direccio_notificacio.email}</field>
+            <field eval="0" name="auto_email"/>
+            <field eval="0" name="single_email"/>
+            <field eval="0" name="use_sign"/>
+            <field name="def_subject">Pagament factura / Pago Factura ${object.number} de Som Energia</field>
+            <field name="template_language">mako</field>
+            <field eval="0" name="send_on_create"/>
+            <field name="lang"/>
+            <field eval="0" name="send_on_write"/>
+            <field name="file_name">Recibo_${object.number}_N57.pdf</field>
+            <field name="def_bcc">support.17062.b8d9f4469fa4d856@helpscout.net</field>
+            <field name="enforce_from_account" model="poweremail.core_accounts" search="[('name','=', 'Gestió de Cobraments')]"/>
+            <field name="def_body_text"><![CDATA[<!doctype html><html>Missatge generat automaticament</html>]]>
+            </field>
+        </record>
+        <record model="poweremail.templates" id="email_generic_previ_advocats">
+            <field name="name">Impagats: Correu previ advocats</field>
+            <field name="object_name" model="ir.model" search="[('name', '=', 'giscedata.facturacio.factura')]"/>
+            <field eval="0" name="save_to_drafts"/>
+            <field name="model_int_name">giscedata.facturacio.factura</field>
+            <field name="def_to">${object.address_invoice_id.email}, ${object.polissa_id.direccio_notificacio.email}</field>
+            <field eval="0" name="auto_email"/>
+            <field eval="0" name="single_email"/>
+            <field eval="0" name="use_sign"/>
+            <field name="def_subject">Pagament factura / Pago Factura ${object.number} de Som Energia</field>
+            <field name="template_language">mako</field>
+            <field eval="0" name="send_on_create"/>
+            <field name="lang"/>
+            <field eval="0" name="send_on_write"/>
+            <field name="file_name">Recibo_${object.number}_N57.pdf</field>
+            <field name="def_bcc">support.17062.b8d9f4469fa4d856@helpscout.net</field>
+            <field name="enforce_from_account" model="poweremail.core_accounts" search="[('name','=', 'Gestió de Cobraments')]"/>
+            <field name="def_body_text"><![CDATA[<!doctype html><html>Missatge generat automaticament</html>]]>
+            </field>
+        </record>
+        <record model="poweremail.templates" id="email_impagats_48h">
+            <field name="name">Impagats: Avui et tallem la llum</field>
+            <field name="object_name" model="ir.model" search="[('model', '=', 'giscedata.facturacio.factura')]"/>
+            <field eval="0" name="save_to_drafts"/>
+            <field name="model_int_name">giscedata.facturacio.factura</field>
+            <field name="def_to">${object.address_invoice_id.email}, ${object.polissa_id.direccio_notificacio.email}}</field>
+            <field eval="0" name="auto_email"/>
+            <field eval="0" name="single_email"/>
+            <field eval="0" name="use_sign"/>
+            <field name="def_subject">Corte de luz / Tall de llum</field>
+            <field name="template_language">mako</field>
+            <field eval="0" name="send_on_create"/>
+            <field name="lang">${object.invoice_id.partner_id.lang}</field>
+            <field eval="0" name="send_on_write"/>
+            <field name="def_bcc">support.17062.b8d9f4469fa4d856@helpscout.net</field>
+            <field name="def_cc">${object.polissa_id.titular.www_email}, correo@certificado.lleida.net</field>
+            <field name="enforce_from_account" model="poweremail.core_accounts" search="[('name','=', 'Gestió de Cobraments')]"/>
+            <field name="def_body_text"><![CDATA[<!doctype html>
+                <html>
+                <head></head>
+                <body>
+                Este correo ha estado generado automáticamente.
+                </body>
+                </html>
+                ]]></field>
+        </record>
+        <record model="powersms.templates" id="sms_template_recordatori_pendent">
+            <field name="name">Enviament SMS Recordatori factura pendent</field>
+            <field name="object_name" model="ir.model" search="[('model', '=', 'giscedata.facturacio.factura')]"/>
+            <field name="def_from">Info</field>
+            <field name="model_int_name">giscedata.facturacio.factura</field>
+            <field name="def_to">${object.partner_id.www_phone}, ${object.partner_id.www_mobile}</field>
+            <field eval="0" name="auto_sms"/>
+            <field eval="0" name="certificate"/>
+            <field eval="0" name="send_on_create"/>
+            <field name="lang">${object.invoice_id.partner_id.lang}</field>
+            <field eval="0" name="send_on_write"/>
+            <field name="enforce_from_account" model="powersms.core_accounts" search="[('name','=', 'SMS Account')]"/>
+            <field name="def_body_text"><![CDATA[
+<%
+num_factura = object.number
+import_factura = False
+polissa = object.polissa_id.name
+import_factura = object.residual
+%>
+
+% if object.invoice_id.partner_id.lang == "ca_ES":
+      SOM ENERGIA. Factura ${num_factura} PENDENT DE PAGAMENT. Import pendent: ${import_factura} €. Contracte: ${polissa}. Per contactar: 900.103.605 / cobraments@somenergia.coop
+% else:
+      SOM ENERGIA. Factura ${num_factura} PENDIENTE DE PAGO. Importe pendiente: ${import_factura} €. Contrato: ${polissa}. Para contactar: 900.103.605 / cobros@somenergia.coop
+% endif
+]]>
+            </field>
+        </record>
+
+        <record model="powersms.templates" id="sms_template_previ_advocats">
+            <field name="name">Enviament SMS Previ advocats</field>
+            <field name="object_name" model="ir.model" search="[('model', '=', 'giscedata.facturacio.factura')]"/>
+            <field name="def_from">Info</field>
+            <field name="model_int_name">giscedata.facturacio.factura</field>
+            <field name="def_to">${object.partner_id.www_phone}, ${object.partner_id.www_mobile}</field>
+            <field eval="0" name="auto_sms"/>
+            <field eval="0" name="certificate"/>
+            <field eval="0" name="send_on_create"/>
+            <field name="lang">${object.invoice_id.partner_id.lang}</field>
+            <field eval="0" name="send_on_write"/>
+            <field name="enforce_from_account" model="powersms.core_accounts" search="[('name','=', 'SMS Account')]"/>
+            <field name="def_body_text"><![CDATA[
+            <%
+            import datetime
+            polissa = object.polissa_id.name
+            fact_obj = object.pool.get('giscedata.facturacio.factura')
+            factures_pendents = fact_obj.search(object._cr, object._uid, [
+            ('polissa_id', '=', object.polissa_id.id),
+            ('type', 'in', ['out_invoice', 'out_refund']),
+            ('pending_state', '!=', False),
+            ('pending_state', 'not in', ids_exclosos)
+            ])
+
+            import_pendent = sum([item['amount_total'] for item in fact_obj.read(object._cr, object._uid, factures_pendents, ['amount_total'])])
+            data_venciment = (datetime.date.today() + datetime.timedelta(days=7)).strftime("%d-%m-%Y")
+            %>
+
+            % if object.invoice_id.partner_id.lang == "ca_ES":
+                SOM ENERGIA Baixa contracte. Pendent: ${import_pendent}€. El ${data_venciment} passarem al Servei extern de Recobrament. Fer transferència: ES8214910001292027098223 Ref:${polissa}
+            % else:
+                SOM ENERGIA Baja contrato. Pendiente: ${import_pendent}€. El ${data_venciment} pasaremos al Servicio de Recobros, hacer transferencia: ES8214910001292027098223 Ref:${polissa}
+            % endif
+            ]]>
+            </field>
+        </record>
+
+        <record model="poweremail.templates" id="tpv_pay_alert_template_som">
+            <field name="name">Gestió de cobraments - Avís Factura pagada per TPV</field>
+            <field name="object_name" model="ir.model" search="[('model', '=', 'giscedata.facturacio.factura')]"/>
+            <field eval="0" name="save_to_drafts"/>
+            <field name="model_int_name">giscedata.facturacio.factura</field>
+            <field name="def_to">cobraments@somenergia.coop</field>
+            <field eval="0" name="auto_email"/>
+            <field eval="0" name="single_email"/>
+            <field eval="0" name="use_sign"/>
+            <field name="def_subject">Avís Factura pagada per TPV</field>
+            <field name="template_language">mako</field>
+            <field eval="0" name="send_on_create"/>
+            <field name="lang"/>
+            <field eval="0" name="send_on_write"/>
+            <field name="def_bcc"></field>
+            <field name="def_cc"></field>
+            <field name="enforce_from_account" model="poweremail.core_accounts" search="[('name','=', 'Gestió de Cobraments')]"/>
+            <field name="def_body_text"><![CDATA[<!doctype html>
+                <html>
+                <head></head>
+                <body>
+                Este correo ha estado generado automáticamente.
+                </body>
+                </html>
+                ]]></field>
+        </record>
+
+        <record model="poweremail.templates" id="email_fue_reminder">
+            <field name="name">Impagats: Plantilla recordatori factura en estat FUE</field>
+            <field name="object_name" model="ir.model" search="[('name', '=', 'giscedata.facturacio.factura')]"/>
+            <field eval="0" name="save_to_drafts"/>
+            <field name="model_int_name">giscedata.facturacio.factura</field>
+            <field name="def_to">${object.address_invoice_id.email}, ${object.polissa_id.direccio_notificacio.email}</field>
+            <field eval="0" name="auto_email"/>
+            <field eval="0" name="single_email"/>
+            <field eval="0" name="use_sign"/>
+            <field name="def_subject">Recordatori factura aturada pendent resolució Organisme competent / Recordatorio factura parada pendiente resolución Organismo competente</field>
+            <field name="template_language">mako</field>
+            <field eval="0" name="send_on_create"/>
+            <field name="lang"/>
+            <field eval="0" name="send_on_write"/>
+            <field name="def_bcc">support.17062.b8d9f4469fa4d856@helpscout.net</field>
+            <field name="def_cc">correo@certificado.lleida.net</field>
+            <field name="enforce_from_account" model="poweremail.core_accounts" search="[('name','=', 'Gestió de Cobraments')]"/>
+            <field name="def_body_text"><![CDATA[<!doctype html><html>Missatge generat automaticament</html>]]>
+            </field>
+        </record>
+
+        <record model="poweremail.templates" id="email_impagament_1er_avis_fraccionament_cancelat">
+            <field name="name">Impagament 1r Avís - Fraccionament cancel·lat</field>
+            <field name="object_name" model="ir.model" search="[('model', '=', 'giscedata.facturacio.factura')]"/>
+            <field name="model_int_name">giscedata.facturacio.factura</field>
+            <field name="save_to_drafts" eval="0"/>
+            <field name="use_filter" eval="0"/>
+            <field name="file_name">Recibo_${object.number}_N57.pdf</field>
+            <field name="def_to">${object.address_invoice_id.email}, ${object.polissa_id.direccio_notificacio.email}</field>
+            <field name="def_bcc">support.17062.b8d9f4469fa4d856@helpscout.net</field>
+            <field name="auto_email" eval="0"/>
+            <field name="single_email" eval="0"/>
+            <field name="report_template" ref="giscedata_facturacio.report_rebut"/>
+            <field name="use_sign" eval="0"/>
+            <field name="def_subject">[FACTURA IMPAGADA - FRACCIONAMENT CANCEL·LAT] Som Energia factura ${object.polissa_id.name}</field>
+            <field name="template_language">mako</field>
+            <field name="send_on_create" eval="0"/>
+            <field name="lang">${object.invoice_id.partner_id.lang}</field>
+            <field name="send_on_write" eval="0"/>
+            <field name="def_body_text"><![CDATA[<!doctype html><html>Missatge generat automaticament</html>]]>
+            </field>
+        </record>
+
+        <record model="poweremail.templates" id="email_interessos_aportacions_retornat">
+            <field name="name">Factura interessos aportacions retornat</field>
+            <field name="object_name" model="ir.model" search="[('model', '=', 'account.invoice')]"/>
+            <field eval="0" name="save_to_drafts"/>
+            <field name="model_int_name">account.invoice</field>
+            <field name="def_to">${object.partner_id.address[0].email}</field>
+            <field eval="0" name="auto_email"/>
+            <field eval="0" name="single_email"/>
+            <field eval="0" name="use_sign"/>
+            <field name="def_subject">Devolució transferència ${object.number} / Devolución transferencia ${object.number}</field>
+            <field name="template_language">mako</field>
+            <field eval="0" name="send_on_create"/>
+            <field name="lang">${object.partner_id.lang}</field>
+            <field eval="0" name="send_on_write"/>
+            <field name="def_bcc">support.17062.b8d9f4469fa4d856@helpscout.net</field>
+            <field name="enforce_from_account" model="poweremail.core_accounts" search="[('name','=', 'Som Energia Aporta')]"/>
+            <field name="def_body_text"><![CDATA[<!doctype html><html>Missatge generat automaticament</html>]]>
+            </field>
+        </record>
+    </data>
+
+    <data noupdate="1">
+        <record model="res.config" id="pay_alert_pending_states_som" forcecreate="1">
+            <field name="name">pay_alert_pending_states_som</field>
+            <field name="value">[]</field>
+            <field name="description">Estats pendents on volem rebre avís en rebre un pagament per TPV.\n(ids d'estats pendents) Ex: [3,12,33]</field>
+        </record>
+        <!-- Account journal for TPV payments -->
+        <record model="account.journal" id="tpv_journal">
+            <field name="name">TPV</field>
+            <field name="code">TPV</field>
+            <field name="type">cash</field>
+            <field name="view_id" ref="account.account_journal_bank_view"/>
+            <field name="sequence_id" ref="account.sequence_journal"/>
+            <!--field name="default_debit_account_id" model="account.account" search="[('type','=','cash')]"/-->
+            <!--field name="default_credit_account_id" model="account.account" search="[('type','=','cash')]"/-->
+        </record>
+    </data>
+</openerp>
