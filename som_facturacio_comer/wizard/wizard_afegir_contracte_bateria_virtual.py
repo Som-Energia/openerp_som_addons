@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
-from osv import osv
+import time
+from osv import fields, osv
 from tools.translate import _
+from datetime import datetime
 
 
 class WizardAfegirContracteBateriaVirtual(osv.osv_memory):
