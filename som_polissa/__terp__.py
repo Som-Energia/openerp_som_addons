@@ -26,6 +26,7 @@
         "l10n_ES_remesas",
         "www_base",
         "giscedata_repercussio_mecanismo_ajuste_gas",
+        "powersms",
     ],
     "init_xml": [],
     "demo_xml": ["tests/som_polissa_demo.xml"],
