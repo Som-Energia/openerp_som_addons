@@ -31,6 +31,7 @@
     "demo_xml": ["tests/som_polissa_demo.xml"],
     "update_xml": [
         "data/som_polissa_data.xml",
+        "data/som_polissa_templates.xml",
         "report/som_polissa_report.xml",
         "views/giscedata_autoconsum_view.xml",
         "views/giscedata_cups_view.xml",

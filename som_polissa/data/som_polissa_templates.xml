@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<openerp>
+    <data noupdate="1">
+        <record model="powersms.templates" id="sms_template_annex4">
+            <field name="name">SMS regularització contracte</field>
+            <field name="object_name" model="ir.model" search="[('model', '=', 'giscedata.polissa')]"/>
+            <field name="def_from">Info</field>
+            <field name="model_int_name">giscedata.polissa</field>
+            <field name="def_to">${object.titular_id.www_phone}, ${object.titular_id.www_mobile}</field>
+            <field eval="0" name="auto_sms"/>
+            <field eval="0" name="certificate"/>
+            <field eval="0" name="send_on_create"/>
+            <field name="lang">${object.titular_id.lang}</field>
+            <field eval="0" name="send_on_write"/>
+            <field name="enforce_from_account" model="powersms.core_accounts" search="[('name','=', 'SMS Account')]"/>
+            <field name="def_body_text"><![CDATA[
+<%
+pol_obj = object.pool.get('giscedata.polissa')
+num_pol = pol_obj.read(object._cr, object._uid, object.id, ['name'])['name']
+%>
+
+% if object.invoice_id.partner_id.lang == "ca_ES":
+SOM ENERGIA sol·licita que contactis amb la cooperativa per regularitzar la situació del teu contracte de llum: ${num_pol}. Truca al 900 103 605 o a través del correu electrònic modifica@somenergia.coop
+% else:
+SOM ENERGIA solicita que contactes con la cooperativa para regularizar la situación de tu contrato de luz: ${num_pol}. Llama al 900 103 605 o a través del correo electrónico modifica@somenergia.coop
+% endif
+]]>
+            </field>
+        </record>
+    </data>
+</openerp>
