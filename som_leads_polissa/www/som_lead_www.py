@@ -30,6 +30,7 @@ class SomLeadWww(osv.osv_memory):
         self.pool.get("giscedata.cups.ps")
         selfcons_o = self.pool.get("giscedata.autoconsum")
         ir_model_o = self.pool.get("ir.model.data")
+        partner_o = self.pool.get("res.partner")
 
         contract_info = www_vals["contract_info"]
         contract_address = contract_info["cups_address"]
@@ -169,6 +170,18 @@ class SomLeadWww(osv.osv_memory):
                 values["seccio_registre"], values["subseccio"], int(values["collectiu"]),
                 int(values["tipus_cups"]), int(values["tipus_installacio"]), context=context
             )
+
+        if member_type == "new_member":
+            values["is_new_contact"] = True
+        elif member_type == "already_member":
+            values["is_new_contact"] = False
+        elif member_type == "sponsored":
+            partner_id = partner_o.search(cr, uid, [('vat', '=', values["titular_vat"])])
+            if partner_id:
+                polissa_o.search(cr, uid, [("titular", "=", partner_id[0])])
+                values["is_new_contact"] = False
+        else:
+            values["is_new_contact"] = False
 
         # Remove None values to let the lead get them if exists in the bbdd
         for field, value in values.items():

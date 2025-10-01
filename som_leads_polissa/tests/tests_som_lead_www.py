@@ -1019,6 +1019,7 @@ class TestsSomLeadWww(testing.OOTestCase):
 
     def test_existing_customer_converts_as_member(self):
         www_lead_o = self.get_model("som.lead.www")
+        lead_o = self.get_model("giscedata.crm.lead")
         partner_o = self.get_model("res.partner")
         ir_model_o = self.get_model("ir.model.data")
         pol_o = self.get_model("giscedata.polissa")
@@ -1042,6 +1043,8 @@ class TestsSomLeadWww(testing.OOTestCase):
         values["new_member_info"]["vat"] = vat
 
         result = www_lead_o.create_lead(self.cursor, self.uid, values)
+        lead = lead_o.browse(self.cursor, self.uid, result["lead_id"])
+        self.assertEqual(lead.is_new_contact, False)
         www_lead_o.activate_lead(self.cursor, self.uid, result["lead_id"], context={"sync": True})
 
         gisce_br = partner_o.browse(self.cursor, self.uid, gisce_id)
