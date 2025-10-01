@@ -1090,18 +1090,18 @@ class TestsSomLeadWww(testing.OOTestCase):
         self.assertEqual(lead.polissa_id.titular.birthdate, "1990-01-01")
         self.assertEqual(lead.polissa_id.titular.referral_source, "opcions")
 
-    def test_cnae_2025_dont_fail(self):
+    def test_cnae_random_dont_fail(self):
         www_lead_o = self.get_model("som.lead.www")
         lead_o = self.get_model("giscedata.crm.lead")
 
         values = self._basic_values
-        values["contract_info"]["cnae"] = "5612"
+        values["contract_info"]["cnae"] = "123456789"
 
         result = www_lead_o.create_lead(self.cursor, self.uid, values)
 
         lead = lead_o.browse(self.cursor, self.uid, result["lead_id"])
         self.assertEqual(lead.cnae, None)
-        self.assertIn("cnae: '5612'", lead.history_line[1].description)
+        self.assertIn("cnae: '123456789'", lead.history_line[1].description)
 
         with self.assertRaises(osv.except_osv) as e:
             www_lead_o.activate_lead(self.cursor, self.uid,
