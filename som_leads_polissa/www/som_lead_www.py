@@ -145,11 +145,6 @@ class SomLeadWww(osv.osv_memory):
             cr, uid, "som_leads_polissa", "webform_section"
         )[1]
 
-        if member.get("is_juridic"):
-            values["persona_firmant_vat"] = member["proxy_vat"]
-            values["persona_nom"] = member["proxy_name"]
-            values["is_juridic"] = True
-
         for i, power in enumerate(contract_info["powers"]):
             values["potenciasContratadasEnKWP%s" % str(i + 1)] = float(power) / 1000
 

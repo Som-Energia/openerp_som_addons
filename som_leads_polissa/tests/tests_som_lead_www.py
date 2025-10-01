@@ -45,7 +45,6 @@ class TestsSomLeadWww(testing.OOTestCase):
                 "vat": "40323835M",
                 "name": "Pepito",
                 "surname": "Palotes",
-                "is_juridic": False,
                 "address": {
                     "state_id": 20,
                     "city_id": 5386,
@@ -192,9 +191,6 @@ class TestsSomLeadWww(testing.OOTestCase):
         self.assertEqual(lead.partner_id.lang, "es_ES")
         self.assertEqual(lead.partner_id.date, datetime.today().strftime("%Y-%m-%d"))
 
-        # Check is not juridic
-        self.assertFalse(lead.is_juridic)
-
     def test_create_simple_domestic_lead_indexada(self):
         www_lead_o = self.get_model("som.lead.www")
         lead_o = self.get_model("giscedata.crm.lead")
@@ -221,7 +217,6 @@ class TestsSomLeadWww(testing.OOTestCase):
         partner_o = self.get_model("res.partner")
 
         values = self._basic_values
-        values["new_member_info"]["is_juridic"] = True
         values["new_member_info"]["vat"] = "C81837452"
         values["new_member_info"]["name"] = "PEC COOP SCCL"
         values["new_member_info"]["proxy_name"] = "Pepito Palotes"
@@ -237,7 +232,6 @@ class TestsSomLeadWww(testing.OOTestCase):
         # Check that the representative is created and correctly linked
         rep_id = partner_o.search(self.cursor, self.uid, [("vat", "=", "ES40323835M")])[0]
         self.assertEqual(lead.polissa_id.titular.representante_id.id, rep_id)
-        self.assertTrue(lead.is_juridic)
 
     def test_create_simple_juridic_lead_with_existing_representative(self):
         www_lead_o = self.get_model("som.lead.www")
@@ -254,7 +248,6 @@ class TestsSomLeadWww(testing.OOTestCase):
         )['vat']
 
         values = self._basic_values
-        values["new_member_info"]["is_juridic"] = True
         values["new_member_info"]["vat"] = "C81837452"
         values["new_member_info"]["name"] = "PEC COOP SCCL"
         values["new_member_info"]["proxy_name"] = "Pepito Palotes"
@@ -1113,7 +1106,6 @@ class TestsSomLeadWww(testing.OOTestCase):
         lead_o = self.get_model("giscedata.crm.lead")
 
         values = self._basic_values
-        values["new_member_info"]["is_juridic"] = True
         values["new_member_info"]["vat"] = "C81837452"
         values["new_member_info"]["name"] = "PEC COOP SCCL"
         values["new_member_info"]["proxy_name"] = "Pepito Palotes"
