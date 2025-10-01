@@ -45,6 +45,7 @@ class TestsSomLeadWww(testing.OOTestCase):
                 "vat": "40323835M",
                 "name": "Pepito",
                 "surname": "Palotes",
+                "is_juridic": False,
                 "address": {
                     "state_id": 20,
                     "city_id": 5386,
@@ -217,6 +218,7 @@ class TestsSomLeadWww(testing.OOTestCase):
         partner_o = self.get_model("res.partner")
 
         values = self._basic_values
+        values["new_member_info"]["is_juridic"] = True
         values["new_member_info"]["vat"] = "C81837452"
         values["new_member_info"]["name"] = "PEC COOP SCCL"
         values["new_member_info"]["proxy_name"] = "Pepito Palotes"
@@ -250,6 +252,7 @@ class TestsSomLeadWww(testing.OOTestCase):
         )['vat']
 
         values = self._basic_values
+        values["new_member_info"]["is_juridic"] = True
         values["new_member_info"]["vat"] = "C81837452"
         values["new_member_info"]["name"] = "PEC COOP SCCL"
         values["new_member_info"]["proxy_name"] = "Pepito Palotes"
@@ -1111,6 +1114,7 @@ class TestsSomLeadWww(testing.OOTestCase):
         lead_o = self.get_model("giscedata.crm.lead")
 
         values = self._basic_values
+        values["new_member_info"]["is_juridic"] = True
         values["new_member_info"]["vat"] = "C81837452"
         values["new_member_info"]["name"] = "PEC COOP SCCL"
         values["new_member_info"]["proxy_name"] = "Pepito Palotes"
