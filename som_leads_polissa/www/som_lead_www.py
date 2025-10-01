@@ -175,6 +175,14 @@ class SomLeadWww(osv.osv_memory):
                 int(values["tipus_cups"]), int(values["tipus_installacio"]), context=context
             )
 
+        if member_type in ["new_member", "sponsored"]:
+            if self._already_has_contract(cr, uid, values["titular_vat"], context=context):
+                values["is_new_contact"] = False
+            else:
+                values["is_new_contact"] = True
+        else:
+            values["is_new_contact"] = False
+
         # Remove None values to let the lead get them if exists in the bbdd
         for field, value in values.items():
             if value is None:
@@ -298,6 +306,18 @@ class SomLeadWww(osv.osv_memory):
             )
 
         return error
+
+    def _already_has_contract(self, cr, uid, vat, context=None):
+        if context is None:
+            context = {}
+        partner_o = self.pool.get("res.partner")
+        polissa_o = self.pool.get("giscedata.polissa")
+        result = False
+        partner_id = partner_o.search(cr, uid, [('vat', '=', vat)])
+        if partner_id:
+            if polissa_o.search(cr, uid, [("titular", "=", partner_id[0])]):
+                result = True
+        return result
 
     def _check_member_vat_dont_exists(self, cr, uid, vat, context=None):
         if context is None:
