@@ -223,6 +223,8 @@ class TestsSomLeadWww(testing.OOTestCase):
         values["new_member_info"]["proxy_vat"] = "40323835M"
 
         result = www_lead_o.create_lead(self.cursor, self.uid, values)
+        lead = lead_o.browse(self.cursor, self.uid, result["lead_id"])
+        self.assertEqual(lead.is_new_contact, True)
         www_lead_o.activate_lead(self.cursor, self.uid, result["lead_id"], context={"sync": True})
 
         lead = lead_o.browse(self.cursor, self.uid, result["lead_id"])

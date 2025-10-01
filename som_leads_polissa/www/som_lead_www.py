@@ -30,7 +30,6 @@ class SomLeadWww(osv.osv_memory):
         self.pool.get("giscedata.cups.ps")
         selfcons_o = self.pool.get("giscedata.autoconsum")
         ir_model_o = self.pool.get("ir.model.data")
-        partner_o = self.pool.get("res.partner")
 
         contract_info = www_vals["contract_info"]
         contract_address = contract_info["cups_address"]
@@ -171,15 +170,11 @@ class SomLeadWww(osv.osv_memory):
                 int(values["tipus_cups"]), int(values["tipus_installacio"]), context=context
             )
 
-        if member_type == "new_member":
-            values["is_new_contact"] = True
-        elif member_type == "already_member":
-            values["is_new_contact"] = False
-        elif member_type == "sponsored":
-            partner_id = partner_o.search(cr, uid, [('vat', '=', values["titular_vat"])])
-            if partner_id:
-                polissa_o.search(cr, uid, [("titular", "=", partner_id[0])])
+        if member_type in ["new_member", "sponsored"]:
+            if self._already_has_contract(cr, uid, values["titular_vat"], context=context):
                 values["is_new_contact"] = False
+            else:
+                values["is_new_contact"] = True
         else:
             values["is_new_contact"] = False
 
@@ -306,6 +301,18 @@ class SomLeadWww(osv.osv_memory):
             )
 
         return error
+
+    def _already_has_contract(self, cr, uid, vat, context=None):
+        if context is None:
+            context = {}
+        partner_o = self.pool.get("res.partner")
+        polissa_o = self.pool.get("giscedata.polissa")
+        result = False
+        partner_id = partner_o.search(cr, uid, [('vat', '=', vat)])
+        if partner_id:
+            if polissa_o.search(cr, uid, [("titular", "=", partner_id[0])]):
+                result = True
+        return result
 
     def _check_member_vat_dont_exists(self, cr, uid, vat, context=None):
         if context is None:
