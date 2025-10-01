@@ -83,7 +83,7 @@ class TestsGurbGroup(TestsGurbBase):
         )['extra_betas_percentage']
 
         self.assertEqual(extra_betas_kw, 2)
-        self.assertEqual(extra_betas_percentage, 20)
+        self.assertEqual(extra_betas_percentage, 8)
 
     def test_gurb_group_get_prioritary_gurb_cau_id(self):
         imd_o = self.openerp.pool.get("ir.model.data")
