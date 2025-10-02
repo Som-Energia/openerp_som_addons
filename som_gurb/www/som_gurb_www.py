@@ -169,5 +169,109 @@ class SomGurbWww(osv.osv_memory):
             'quota': quota[0],
         }
 
+    def _get_cups_id(self, cursor, uid, cups_name, context=None):
+        if context is None:
+            context = {}
+        cups_obj = self.pool.get("giscedata.cups.ps")
+        if not cups_obj.check_cups_code(cursor, uid, cups_name, context=context):
+            return False
+        cups_id = cups_obj.search(cursor, uid, [("name", "like", cups_name[:20])], limit=1)
+        if cups_id:
+            return cups_id[0]
+        return None
+
+    def _get_polissa_id(self, cursor, uid, cups_id, context=None):
+        if context is None:
+            context = {}
+        polissa_obj = self.pool.get("giscedata.polissa")
+        sw_obj = self.pool.get("giscedata.switching")
+        search_params = [
+            ("cups_id", "=", cups_id),
+            ("state", "in", ["active", "draft"]),
+        ]
+        polissa_ids = polissa_obj.search(
+            cursor, uid, search_params, order="create_date DESC", limit=1
+        )
+        if polissa_ids:
+            polissa_br = polissa_obj.browse(cursor, uid, polissa_ids[0], context=context)
+            if polissa_br.state == "active":
+                sw_ids = sw_obj.search([
+                    ('cups_polissa_id', '=', polissa_br.id),
+                    ('state', '=', 'open'),
+                    ('proces_id', 'not in', ["R1"])
+                ])
+                if sw_ids:
+                    return False
+            return polissa_ids[0]
+        return None
+
+    # def activate_gurb_cups_lead(self, cursor, uid, gurb_lead_id, context=None):
+
+    def create_new_gurb_cups(self, cursor, uid, form_payload, context=None):
+        if context is None:
+            context = {}
+
+        gurb_group_obj = self.pool.get("som.gurb.group")
+        # gurb_cups_obj = self.pool.get("som.gurb.cups")
+
+        beta = form_payload.get('beta', 0)
+        if beta <= 0:
+            return {
+                "error": _("La beta ha de ser major que 0"),
+                "code": "BadBeta",
+                "trace": "",
+            }
+
+        gurb_group_ids = gurb_group_obj.search(
+            cursor, uid, [('code', '=', form_payload['gurb_code'])]
+        )
+        if len(gurb_group_ids) == 0:
+            return {
+                "error": _("Cap Gurb Group amb el codi {}").format(form_payload['gurb_code']),
+                "code": "BadGurbCode",
+                "trace": "",
+            }
+        gurb_group_id = gurb_group_ids[0]
+
+        gurb_cau_id = gurb_group_obj.get_prioritary_gurb_cau_id(
+            cursor, uid, gurb_group_id, beta, context=context
+        )
+        if not gurb_cau_id:
+            return {
+                "error": _("El gurb grup no de caus! {}").format(form_payload['gurb_code']),
+                "code": "BadGurbGroup",
+                "trace": "",
+            }
+
+        cups_id = self._get_cups_id(cursor, uid, form_payload["cups"], context=context)
+        if not cups_id:
+            return {
+                "error": _("No s'ha trobat el CUPS {}").format(form_payload["cups"]),
+                "code": "BadCups",
+                "trace": "",
+            }
+
+        polissa_id = self._get_polissa_id(cursor, uid, cups_id, context=context)
+        if not polissa_id:
+            return {
+                "error": _("No hi ha polissa o no està disponible"),
+                "code": "ContractERROR",
+                "trace": "",
+            }
+
+        # We create the new gurb cups and beta
+        # create_vals = {
+        #     "active": True,
+        #     "inscription_date": datetime.strftime(datetime.today(), "%Y-%m-%d"),
+        #     "gurb_cau_id": gurb_cau_id,
+        #     "cups_id": cups_id,
+        #     "polissa_id": polissa_id,
+        #     "betas_ids": "?",
+        #     "initial_invoice_id": "?",
+        #     "general_conditions_id": "?",
+        #     "quota_product_id": "?",
+        # }
+        # gurb_cups_id = gurb_cups_obj.create(cursor, uid, create_vals, context=context)
+
 
 SomGurbWww()
