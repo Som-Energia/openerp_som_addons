@@ -4,7 +4,7 @@ import mock
 from destral import testing
 from destral.transaction import Transaction
 
-from .. import res_partner_address
+from ..models import res_partner_address
 
 
 class FakeMailchimpLists:
@@ -80,7 +80,7 @@ class TestsPartnerAddress(testing.OOTestCase):
             },
         )
 
-    @mock.patch("som_polissa_soci.res_partner_address.md5")
+    @mock.patch("som_polissa_soci.models.res_partner_address.md5")
     @mock.patch("som_polissa_soci.tests.tests_partner_address.fake_mchimp_client.lists")
     def test_update_client_email_in_all_lists(self, mock_fakemailchimp, mock_md5):
         subscriber_hash = "12345"
@@ -122,7 +122,7 @@ class TestsPartnerAddress(testing.OOTestCase):
         archieve_mail_in_list_sync_mock_function.assert_called()
 
     @mock.patch.object(res_partner_address.ResPartnerAddress, "read")
-    @mock.patch("som_polissa_soci.res_partner_address.md5")
+    @mock.patch("som_polissa_soci.models.res_partner_address.md5")
     @mock.patch("som_polissa_soci.tests.tests_partner_address.fake_mchimp_client.lists")
     def test_archieve_mail_in_list_sync(
         self, mock_fakemailchimp, mock_md5, res_partner_address_read_mock_function

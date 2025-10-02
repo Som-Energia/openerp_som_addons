@@ -2,8 +2,6 @@
 
 from osv import osv, fields
 from tools.translate import _
-import mailchimp_marketing as MailchimpMarketing
-from tools import config
 
 
 class WizardSubscribeClientMailchimp(osv.osv_memory):
@@ -27,12 +25,7 @@ class WizardSubscribeClientMailchimp(osv.osv_memory):
 
         list_name = conf_obj.get(cursor, uid, "mailchimp_clients_list", None)
 
-        MAILCHIMP_CLIENT = MailchimpMarketing.Client(
-            dict(
-                api_key=config.options.get("mailchimp_apikey"),
-                server=config.options.get("mailchimp_server_prefix"),
-            )
-        )
+        MAILCHIMP_CLIENT = address_obj._get_mailchimp_client()
         try:
             list_client_id = address_obj.get_mailchimp_list_id(list_name, MAILCHIMP_CLIENT)
         except Exception as e:

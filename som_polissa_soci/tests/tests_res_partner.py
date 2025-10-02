@@ -19,8 +19,10 @@ class SomenergiaSociTests(testing.OOTestCase):
     def tearDown(self):
         self.txn.stop()
 
-    @mock.patch("som_polissa_soci.res_partner_address.ResPartnerAddress.archieve_mail_in_list")
-    @mock.patch("som_polissa_soci.res_partner_address.ResPartnerAddress.get_mailchimp_list_id")
+    @mock.patch(
+        "som_polissa_soci.models.res_partner_address.ResPartnerAddress.archieve_mail_in_list")
+    @mock.patch(
+        "som_polissa_soci.models.res_partner_address.ResPartnerAddress.get_mailchimp_list_id")
     @mock.patch.object(mailchimp_marketing, "Client")
     def test__arxiva_client_mailchimp__withAddress(
         self, mock_mailchimp_client, mock_get_list_id, mock_archieve
@@ -42,8 +44,12 @@ class SomenergiaSociTests(testing.OOTestCase):
             self.cursor, self.uid, address_list, "id", "MAILCHIMP_CLIENT"
         )
 
-    @mock.patch("som_polissa_soci.res_partner_address.ResPartnerAddress.archieve_mail_in_list")
-    @mock.patch("som_polissa_soci.res_partner_address.ResPartnerAddress.get_mailchimp_list_id")
+    @mock.patch(
+        "som_polissa_soci.models.res_partner_address.ResPartnerAddress.archieve_mail_in_list"
+    )
+    @mock.patch(
+        "som_polissa_soci.models.res_partner_address.ResPartnerAddress.get_mailchimp_list_id"
+    )
     @mock.patch.object(mailchimp_marketing, "Client")
     def test__arxiva_client_mailchimp__withManyAddress(
         self, mock_mailchimp_client, mock_get_list_id, mock_archieve
@@ -64,8 +70,12 @@ class SomenergiaSociTests(testing.OOTestCase):
             self.cursor, self.uid, sorted(address_list), "id", "MAILCHIMP_CLIENT"
         )
 
-    @mock.patch("som_polissa_soci.res_partner_address.ResPartnerAddress.archieve_mail_in_list")
-    @mock.patch("som_polissa_soci.res_partner_address.ResPartnerAddress.get_mailchimp_list_id")
+    @mock.patch(
+        "som_polissa_soci.models.res_partner_address.ResPartnerAddress.archieve_mail_in_list"
+    )
+    @mock.patch(
+        "som_polissa_soci.models.res_partner_address.ResPartnerAddress.get_mailchimp_list_id"
+    )
     @mock.patch.object(mailchimp_marketing, "Client")
     def test__arxiva_client_mailchimp__isMember(
         self, mock_mailchimp_client, mock_get_list_id, mock_archieve
