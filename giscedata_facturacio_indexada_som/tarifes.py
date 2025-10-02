@@ -2,7 +2,6 @@
 from libfacturacioatr.pool.tarifes import *
 from libfacturacioatr.tarifes import *
 
-import osv.osv
 
 EXTRAPENINSULAR_FORMULAS = [
     'phf_calc_balears',
@@ -126,8 +125,14 @@ class TarifaPoolSOM(TarifaPool):
 
         # REE
         postfix = ('%s_%s' % (start_date.strftime("%Y%m%d"), end_date.strftime("%Y%m%d")))
-        if self.geom_zone == '1' or not self.geom_zone:  # Peninsula
-            prmdiari = Prmdiari('C2_prmdiari_%(postfix)s' % locals(), esios_token)  # [€/MWh]
+        if self.geom_zone == '1' or not self.geom_zone:
+            # Precio medio diario
+            # A partir de l'1 d'Octubre passa a ser QH
+            if start_date.year > 2025 or (start_date.year == 2025 and start_date.month >= 10):
+                pmd_qh = Pmdiario('C2_pmdiario_%(postfix)s' % locals(), esios_token)  # [€/MWh]
+                prmdiari = pmd_qh.get_component_mean()
+            else:
+                prmdiari = Prmdiari('C2_prmdiari_%(postfix)s' % locals(), esios_token)  # [€/MWh]
         else:
             # Subsystems are the same for SPHDEM and SPHAUTO
             subsystem = SUBSYSTEMS_SPHDEM[self.geom_zone]
@@ -383,9 +388,14 @@ class TarifaPoolSOM(TarifaPool):
         imu = self.get_coeficient_component(start_date, 'imu')  # [%]
 
         # REE
-        postfix = ('%s_%s' % (start_date.strftime("%Y%m%d"),
-                              end_date.strftime("%Y%m%d")))
-        prmdiari = Prmdiari('C2_prmdiari_%(postfix)s' % locals(), esios_token)  # [€/MWh]
+        postfix = ('%s_%s' % (start_date.strftime("%Y%m%d"), end_date.strftime("%Y%m%d")))
+
+        # Precio medio diario
+        # A partir de l'1 d'Octubre passa a ser QH
+        if start_date.year > 2025 or (start_date.year == 2025 and start_date.month >= 10):
+            prmdiari = Pmdiario('C2_pmdiario_%(postfix)s' % locals(), esios_token)  # [€/MWh]
+        else:
+            prmdiari = Prmdiari('C2_prmdiari_%(postfix)s' % locals(), esios_token)  # [€/MWh]
 
         # Pérdidas
         if start_date.year < 2024 or (start_date.year == 2024 and start_date.month < 12):
@@ -860,9 +870,15 @@ class TarifaPoolSOM(TarifaPool):
         imu = self.get_coeficient_component(start_date, 'imu')  # [%]
 
         # REE
-        postfix = ('%s_%s' % (start_date.strftime("%Y%m%d"),
-                              end_date.strftime("%Y%m%d")))
-        prmdiari = Prmdiari('C2_prmdiari_%(postfix)s' % locals(), esios_token)  # [€/MWh]
+        postfix = ('%s_%s' % (start_date.strftime("%Y%m%d"), end_date.strftime("%Y%m%d")))
+
+        # Precio medio diario
+        # A partir de l'1 d'Octubre passa a ser QH
+        if start_date.year > 2025 or (start_date.year == 2025 and start_date.month >= 10):
+            prmdiari = Pmdiario('C2_pmdiario_%(postfix)s' % locals(), esios_token)  # [€/MWh]
+        else:
+            prmdiari = Prmdiari('C2_prmdiari_%(postfix)s' % locals(), esios_token)  # [€/MWh]
+
         si = SI('C2_si_%(postfix)s' % locals(), esios_token)  # [€/MWh]
 
         # Pérdidas
@@ -973,7 +989,13 @@ class TarifaPoolSOM(TarifaPool):
 
         # REE
         postfix = ('%s_%s' % (start_date.strftime("%Y%m%d"), end_date.strftime("%Y%m%d")))
-        prmdiari = Prmdiari('C2_prmdiari_%(postfix)s' % locals(), esios_token)  # [€/MWh]
+
+        # Precio medio diario
+        # A partir de l'1 d'Octubre passa a ser QH
+        if start_date.year > 2025 or (start_date.year == 2025 and start_date.month >= 10):
+            prmdiari = Pmdiario('C2_pmdiario_%(postfix)s' % locals(), esios_token)  # [€/MWh]
+        else:
+            prmdiari = Prmdiari('C2_prmdiari_%(postfix)s' % locals(), esios_token)  # [€/MWh]
 
         # Prdemcad
         prdemcad = Prdemcad('C2_prdemcad_%(postfix)s' % locals(), esios_token)  # [€/MWh]
