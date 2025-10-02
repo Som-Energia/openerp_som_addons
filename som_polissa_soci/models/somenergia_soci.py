@@ -8,7 +8,6 @@ from osv.expression import OOQuery
 from osv.orm import browse_record
 import logging
 import pooler
-from tools import config
 
 
 class SomenergiaSoci(osv.osv):
@@ -105,22 +104,14 @@ class SomenergiaSoci(osv.osv):
 
         res_partner_obj = self.pool.get("res.partner")
         soci_obj = self.pool.get("somenergia.soci")
+        res_partner_address_obj = self.pool.get("res.partner.address")
+        conf_obj = self.pool.get("res.config")
+
         is_member = soci_obj.search(cursor, uid, [("partner_id", "=", ids), ("baixa", "=", False)])
         if is_member:
             return
 
-        import mailchimp_marketing as MailchimpMarketing
-
-        MAILCHIMP_CLIENT = MailchimpMarketing.Client(
-            dict(
-                api_key=config.options.get("mailchimp_apikey"),
-                server=config.options.get("mailchimp_server_prefix"),
-            )
-        )
-
-        res_partner_address_obj = self.pool.get("res.partner.address")
-        conf_obj = self.pool.get("res.config")
-
+        MAILCHIMP_CLIENT = res_partner_address_obj._get_mailchimp_client()
         list_name = conf_obj.get(cursor, uid, "mailchimp_socis_list", None)
 
         list_id = res_partner_address_obj.get_mailchimp_list_id(list_name, MAILCHIMP_CLIENT)

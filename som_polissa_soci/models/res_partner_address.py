@@ -54,6 +54,14 @@ class ResPartnerAddress(osv.osv):
     _name = "res.partner.address"
     _inherit = "res.partner.address"
 
+    def _get_mailchimp_client(self):
+        return MailchimpMarketing.Client(
+            dict(
+                api_key=config.options.get("mailchimp_apikey"),
+                server=config.options.get("mailchimp_server_prefix"),
+            )
+        )
+
     def write(self, cursor, uid, ids, vals, context=None):
         """ Override write to detect email changes and update Mailchimp """
         if context is None:
@@ -62,12 +70,7 @@ class ResPartnerAddress(osv.osv):
         if not isinstance(ids, (list, tuple)):
             ids = [ids]
 
-        MAILCHIMP_CLIENT = MailchimpMarketing.Client(
-            dict(
-                api_key=config.options.get("mailchimp_apikey"),
-                server=config.options.get("mailchimp_server_prefix"),
-            )
-        )
+        MAILCHIMP_CLIENT = self._get_mailchimp_client()
         if "email" in vals:
             for _id in ids:
                 old_email = self.read(cursor, uid, _id, ["email"])["email"]

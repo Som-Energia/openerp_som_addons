@@ -1,9 +1,6 @@
 # -*- coding: utf-8 -*-
-
 from osv import osv
-
 from oorq.decorators import job
-from tools import config
 
 
 class ResPartner(osv.osv):
@@ -25,22 +22,14 @@ class ResPartner(osv.osv):
 
         res_partner_obj = self.pool.get("res.partner")
         soci_obj = self.pool.get("somenergia.soci")
+        conf_obj = self.pool.get("res.config")
+        res_partner_address_obj = self.pool.get("res.partner.address")
+
         is_member = soci_obj.search(cursor, uid, [("partner_id", "=", ids), ("baixa", "=", False)])
         if is_member:
             return
 
-        import mailchimp_marketing as MailchimpMarketing
-
-        MAILCHIMP_CLIENT = MailchimpMarketing.Client(
-            dict(
-                api_key=config.options.get("mailchimp_apikey"),
-                server=config.options.get("mailchimp_server_prefix"),
-            )
-        )
-
-        res_partner_address_obj = self.pool.get("res.partner.address")
-        conf_obj = self.pool.get("res.config")
-
+        MAILCHIMP_CLIENT = res_partner_address_obj._get_mailchimp_client()
         list_name = conf_obj.get(cursor, uid, "mailchimp_clients_list", None)
 
         list_id = res_partner_address_obj.get_mailchimp_list_id(list_name, MAILCHIMP_CLIENT)
@@ -63,22 +52,13 @@ class ResPartner(osv.osv):
 
         res_partner_obj = self.pool.get("res.partner")
         soci_obj = self.pool.get("somenergia.soci")
-        is_member = soci_obj.search(cursor, uid, [("partner_id", "=", ids), ("baixa", "=", False)])
-        if is_member:
-            return
-
-        import mailchimp_marketing as MailchimpMarketing
-
-        MAILCHIMP_CLIENT = MailchimpMarketing.Client(
-            dict(
-                api_key=config.options.get("mailchimp_apikey"),
-                server=config.options.get("mailchimp_server_prefix"),
-            )
-        )
-
         res_partner_address_obj = self.pool.get("res.partner.address")
         conf_obj = self.pool.get("res.config")
 
+        is_member = soci_obj.search(cursor, uid, [("partner_id", "=", ids), ("baixa", "=", False)])
+        if not is_member:
+            return
+        MAILCHIMP_CLIENT = res_partner_address_obj._get_mailchimp_client()
         list_name = conf_obj.get(cursor, uid, "mailchimp_clients_list", None)
 
         list_id = res_partner_address_obj.get_mailchimp_list_id(list_name, MAILCHIMP_CLIENT)
