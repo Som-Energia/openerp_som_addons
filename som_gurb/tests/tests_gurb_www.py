@@ -111,3 +111,41 @@ class TestsGurbWww(TestsGurbBase):
         )
 
         self.assertFalse(result)
+
+    def test__create_new_gurb_cups(self):
+        gurb_www_obj = self.get_model("som.gurb.www")
+
+        form_payload = {
+            "gurb_code": "G001",
+            "access_tariff": "2.0TD",
+            "cups": "ES0021000000000001",
+            "beta": 2.0,
+        }
+        result = gurb_www_obj.create_new_gurb_cups(
+            self.cursor, self.uid, form_payload
+        )
+
+        self.assertTrue(result["success"])
+
+    def test__private_fnc_get_cups_id(self):
+        gurb_www_obj = self.get_model("som.gurb.www")
+        imd_o = self.openerp.pool.get("ir.model.data")
+
+        gurb_cups_id = imd_o.get_object_reference(
+            self.cursor, self.uid, "giscedata_cups", "cups_tarifa_018"
+        )[1]
+
+        fnc_gurb_cups_id = gurb_www_obj._get_cups_id(
+            self.cursor, self.uid, "ES0021126262693495FV"
+        )
+
+        self.assertEqual(gurb_cups_id, fnc_gurb_cups_id)
+
+        fnc_gurb_cups_id = gurb_www_obj._get_cups_id(
+            self.cursor, self.uid, "Nye he he he"
+        )
+        self.assertFalse(fnc_gurb_cups_id)
+        fnc_gurb_cups_id = gurb_www_obj._get_cups_id(
+            self.cursor, self.uid, "ES0396705156982945JF"
+        )
+        self.assertIsNone(fnc_gurb_cups_id)
