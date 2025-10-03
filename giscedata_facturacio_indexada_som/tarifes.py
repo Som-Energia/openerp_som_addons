@@ -28,7 +28,9 @@ class TarifaPoolSOM(TarifaPool):
         """
         res = super(TarifaPoolSOM, self).get_available_audit_coefs()
         if '2024' in self.phf_function:
-            res['curve'] = 'curve'
+            res['curve'] = 'curve_real'
+            res['corba_real_qh'] = 'curve_real_qh'
+            res['corba_fact'] = 'curve_fact'
             res['corba_qh'] = 'H'
             res['dsv'] = 'dsv'
             res['gdos'] = 'gdos'
@@ -71,8 +73,10 @@ class TarifaPoolSOM(TarifaPool):
 
         if self.phf_function == 'phf_calc_esmasa':
             # only if 'phf_calc_esmasa' formula is used
-            res['curve'] = 'curve'
-            res['corba_qh'] = 'curve_qh'
+            res['curve'] = 'curve_real'
+            res['corba_real_qh'] = 'curve_real_qh'
+            res['corba_fact'] = 'curve_fact'
+            res['corba_qh'] = 'H'
             res['pmd'] = 'prmdiari'
             del res['pc3_ree']
             res['peatges'] = 'pa'
@@ -356,9 +360,14 @@ class TarifaPoolSOM(TarifaPool):
         esios_token = self.conf['esios_token']
         holidays = self.conf['holidays']
 
+        # Curva de consumo real
+        curve_real = self.get_curve_from_consum_magn(start_date, magn='activa_real')
+        curve_real = curve_real * 0.001 # in kW
+        curve_real_qh = curve_real.get_component_qh_divided()
+
         # Curva cuarto-horaria
         curve_qh = curve.get_component_qh_divided()
-        curve = curve * 0.001
+        curve_fact = curve * 0.001
 
         # peajes
         pa = self.get_peaje_component(start_date, holidays)    # [€/kWh]
@@ -550,9 +559,14 @@ class TarifaPoolSOM(TarifaPool):
         esios_token = self.conf['esios_token']
         holidays = self.conf['holidays']
 
+        # Curva de consumo real
+        curve_real = self.get_curve_from_consum_magn(start_date, magn='activa_real')
+        curve_real = curve_real * 0.001  # in kW
+        curve_real_qh = curve_real.get_component_qh_divided()
+
         # Curva cuarto-horaria
         curve_qh = curve.get_component_qh_divided()
-        curve = curve * 0.001
+        curve_fact = curve * 0.001
 
         # REE
         # Precio horario demanda aplicable sistema no peninsular
@@ -729,9 +743,14 @@ class TarifaPoolSOM(TarifaPool):
         esios_token = self.conf['esios_token']
         holidays = self.conf['holidays']
 
+        # Curva de consumo real
+        curve_real = self.get_curve_from_consum_magn(start_date, magn='activa_real')
+        curve_real = curve_real * 0.001 # in kW
+        curve_real_qh = curve_real.get_component_qh_divided()
+
         # Curva cuarto-horaria
         curve_qh = curve.get_component_qh_divided()
-        curve = curve * 0.001
+        curve_fact = curve * 0.001
 
         # REE
         # Precio horario demanda aplicable sistema no peninsular
@@ -839,9 +858,14 @@ class TarifaPoolSOM(TarifaPool):
         esios_token = self.conf['esios_token']
         holidays = self.conf['holidays']
 
+        # Curva de consumo real
+        curve_real = self.get_curve_from_consum_magn(start_date, magn='activa_real')
+        curve_real = curve_real * 0.001 # in kW
+        curve_real_qh = curve_real.get_component_qh_divided()
+
         # Curva cuarto-horaria
         curve_qh = curve.get_component_qh_divided()
-        curve = curve * 0.001
+        curve_fact = curve * 0.001
 
         # peajes
         pa = self.get_peaje_component(start_date, holidays)    # [€/kWh]
