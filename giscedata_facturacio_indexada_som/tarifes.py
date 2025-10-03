@@ -28,7 +28,9 @@ class TarifaPoolSOM(TarifaPool):
         """
         res = super(TarifaPoolSOM, self).get_available_audit_coefs()
         if '2024' in self.phf_function:
-            res['curve'] = 'curve'
+            res['curve'] = 'curve_real'
+            res['corba_real_qh'] = 'curve_real_qh'
+            res['corba_fact'] = 'curve_fact'
             res['corba_qh'] = 'H'
             res['dsv'] = 'dsv'
             res['gdos'] = 'gdos'
@@ -71,8 +73,10 @@ class TarifaPoolSOM(TarifaPool):
 
         if self.phf_function == 'phf_calc_esmasa':
             # only if 'phf_calc_esmasa' formula is used
-            res['curve'] = 'curve'
-            res['corba_qh'] = 'curve_qh'
+            res['curve'] = 'curve_real'
+            res['corba_real_qh'] = 'curve_real_qh'
+            res['corba_fact'] = 'curve_fact'
+            res['corba_qh'] = 'H'
             res['pmd'] = 'prmdiari'
             del res['pc3_ree']
             res['peatges'] = 'pa'
@@ -85,6 +89,13 @@ class TarifaPoolSOM(TarifaPool):
             res['si'] = 'si'
             res['dsv'] = 'dsv'
             res['prdemcad'] = 'prdemcad'
+
+        if self.phf_function == 'phf_calc_auvi':
+            # only if 'phf_calc_auvi' formula is used
+            res = {}
+            res['curve_auvi'] = 'curve_autocons'
+            res['ph_auvi'] = 'G'
+            res['pauvi'] = 'pauvi'
 
         return res
 
@@ -418,9 +429,14 @@ class TarifaPoolSOM(TarifaPool):
         esios_token = self.conf['esios_token']
         holidays = self.conf['holidays']
 
+        # Curva de consumo real
+        curve_real = self.get_curve_from_consum_magn(start_date, magn='activa_real')
+        curve_real = curve_real * 0.001 # in kWh
+        curve_real_qh = curve_real.get_component_qh_divided()
+
         # Curva cuarto-horaria
         curve_qh = curve.get_component_qh_divided()
-        curve = curve * 0.001
+        curve_fact = curve * 0.001 # in kWh
 
         # peajes
         pa = self.get_peaje_component(start_date, holidays)    # [€/kWh]
@@ -485,7 +501,7 @@ class TarifaPoolSOM(TarifaPool):
         # First, which components must be divided by 4
         # (the rest will set same value on each quarter)
         divided_var_names = []
-        excluded_var_names = ['curve']
+        excluded_var_names = ['curve_real', 'curve_fact']
 
         for key, var in locals().items():
             if (isinstance(var, Component)
@@ -612,9 +628,14 @@ class TarifaPoolSOM(TarifaPool):
         esios_token = self.conf['esios_token']
         holidays = self.conf['holidays']
 
+        # Curva de consumo real
+        curve_real = self.get_curve_from_consum_magn(start_date, magn='activa_real')
+        curve_real = curve_real * 0.001 # in kWh
+        curve_real_qh = curve_real.get_component_qh_divided()
+
         # Curva cuarto-horaria
         curve_qh = curve.get_component_qh_divided()
-        curve = curve * 0.001
+        curve_fact = curve * 0.001 # in kWh
 
         # REE
         # Precio horario demanda aplicable sistema no peninsular
@@ -669,7 +690,7 @@ class TarifaPoolSOM(TarifaPool):
         # First, which components must be divided by 4
         # (the rest will set same value on each quarter)
         divided_var_names = []
-        excluded_var_names = ['curve']
+        excluded_var_names = ['curve_real', 'curve_fact']
 
         for key, var in locals().items():
             if (isinstance(var, Component)
@@ -791,9 +812,14 @@ class TarifaPoolSOM(TarifaPool):
         esios_token = self.conf['esios_token']
         holidays = self.conf['holidays']
 
+        # Curva de consumo real
+        curve_real = self.get_curve_from_consum_magn(start_date, magn='activa_real')
+        curve_real = curve_real * 0.001 # in kWh
+        curve_real_qh = curve_real.get_component_qh_divided()
+
         # Curva cuarto-horaria
         curve_qh = curve.get_component_qh_divided()
-        curve = curve * 0.001
+        curve_fact = curve * 0.001 # in kWh
 
         # REE
         # Precio horario demanda aplicable sistema no peninsular
@@ -848,7 +874,7 @@ class TarifaPoolSOM(TarifaPool):
         # First, which components must be divided by 4
         # (the rest will set same value on each quarter)
         divided_var_names = []
-        excluded_var_names = ['curve']
+        excluded_var_names = ['curve_real', 'curve_fact']
 
         for key, var in locals().items():
             if (isinstance(var, Component)
@@ -901,9 +927,14 @@ class TarifaPoolSOM(TarifaPool):
         esios_token = self.conf['esios_token']
         holidays = self.conf['holidays']
 
+        # Curva de consumo real
+        curve_real = self.get_curve_from_consum_magn(start_date, magn='activa_real')
+        curve_real = curve_real * 0.001 # in kWh
+        curve_real_qh = curve_real.get_component_qh_divided()
+
         # Curva cuarto-horaria
         curve_qh = curve.get_component_qh_divided()
-        curve = curve * 0.001
+        curve_fact = curve * 0.001 # in kWh
 
         # peajes
         pa = self.get_peaje_component(start_date, holidays)    # [€/kWh]
@@ -956,7 +987,7 @@ class TarifaPoolSOM(TarifaPool):
         # First, which components must be divided by 4
         # (the rest will set same value on each quarter)
         divided_var_names = []
-        excluded_var_names = ['curve']
+        excluded_var_names = ['curve_real', 'curve_fact']
 
         for key, var in locals().items():
             if (isinstance(var, Component)
@@ -992,6 +1023,117 @@ class TarifaPoolSOM(TarifaPool):
             )
 
         return component
+    
+    def phf_calc_auvi(self, curve, start_date):
+        """
+        Fòrmula pels kWh AUVI:
+        PHAUVI = 1,015 * [PAUVI + PHM(Perd) + (Pc + Sc + Dsv + GdO + POsOm) (1 + Perd) + FE + F] + PTD + CA
+        PHM(Perd) = prmdiari * % perdues.
+        """
+        num_days = calendar.monthrange(start_date.year, start_date.month)[1]
+        end_date = datetime(
+            start_date.year, start_date.month, num_days
+        ).date()
+
+        esios_token = self.conf['esios_token']
+        holidays = self.conf['holidays']
+
+        # Guardem la corba d'autoconsumida per l'adjunt
+        curve_autocons = curve
+
+        # Curva cuarto-horaria
+        curve = self.get_coeficient_component(start_date, 1000)
+        curve.get_sub_component(curve_autocons.start_date.day, curve_autocons.end_date.day)
+        curve_qh = curve.get_component_qh_divided()
+
+        # peajes
+        pa = self.get_peaje_component(start_date, holidays)  # [€/kWh]
+        # Payments by capacity (PC3) BOE
+        pc3_boe = self.get_pricexperiod_component(start_date, 'pc', holidays)  # [€/kWh]
+
+        # From pricelist
+        factor_dsv = self.get_coeficient_component(start_date, 'factor_dsv')  # [%]
+        gdos = self.get_coeficient_component(start_date, 'gdos')  # [€/MWh]
+        pauvi = self.get_coeficient_component(start_date, 'pauvi')  # [€/MWh]
+        f = self.get_coeficient_component(start_date, 'k')  # [€/MWh]
+
+        # Coste remuneración OMIE REE
+        omie = self.get_coeficient_component(start_date, 'omie')  # [€/MWh]
+        # Fondo de Eficiencia
+        fe = self.get_coeficient_component(start_date, 'fe')  # [€/MWh]
+        # Municipal fee
+        imu = self.get_coeficient_component(start_date, 'imu')  # [%]
+
+        # REE
+        postfix = ('%s_%s' % (start_date.strftime("%Y%m%d"), end_date.strftime("%Y%m%d")))
+        prmdiari = Prmdiari('C2_prmdiari_%(postfix)s' % locals(), esios_token)  # [€/MWh]
+
+        # Prdemcad
+        prdemcad = Prdemcad('C2_prdemcad_%(postfix)s' % locals(), esios_token)  # [€/MWh]
+
+        # Pérdidas
+        if start_date.year <= 2024 or (start_date.year == 2024 and start_date.month < 12):
+            fname = self.perdclass.name
+            perdues = self.perdclass('C2_%(fname)s_%(postfix)s' % locals(), esios_token)  # [%]
+        else:
+            fname = self.perdclassqh.name
+            perdues = self.perdclassqh('C2_%(fname)s_%(postfix)s' % locals(), esios_token)  # [%]
+
+        # Componentes Desvios
+        if start_date.year <= 2024 or (start_date.year == 2024 and start_date.month < 12):
+            csdvbaj = Codsvbaj('C2_codsvbaj_%(postfix)s' % locals(), esios_token)  # [€/MWh]
+            csdvsub = Codsvsub('C2_codsvsub_%(postfix)s' % locals(), esios_token)  # [€/MWh]
+        else:
+            csdvbaj = Codsvbaqh('C2_codsvbaqh_%(postfix)s' % locals(), esios_token)  # [€/MWh]
+            csdvsub = Codsvsuqh('C2_codsvsuqh_%(postfix)s' % locals(), esios_token)  # [€/MWh]
+
+        compodem = MonthlyCompodem('C2_monthlycompodem_%(postfix)s' % locals(), esios_token)
+        rad3 = compodem.get_component("RAD3")
+        bs3 = compodem.get_component("BS3")
+
+        # Let's transform them in ComponentsQH
+        # First, which components must be divided by 4
+        # (the rest will set same value on each quarter)
+        divided_var_names = ['curve_autocons']
+        excluded_var_names = ['curve']
+
+        for key, var in locals().items():
+            if (isinstance(var, Component)
+                    and not isinstance(var, ComponentQH)
+                    and key not in excluded_var_names
+            ):
+                new_var = self.transform_local_to_qh(var, key, divided_var_names)
+                exec('{} = new_var'.format(key))
+
+        dsv = (0.5 * (csdvbaj + csdvsub) + rad3 + bs3) * (factor_dsv * 0.01)
+        phm = prmdiari * (perdues * 0.01)
+
+        A = ((pauvi + phm) * 0.001)
+        B = (pc3_boe + (prdemcad + dsv + gdos + omie) * 0.001)
+        C = A + B * (1 + perdues * 0.01)
+        D = (fe * 0.001) + f
+        E = C + D
+        F = E * (1 + (imu * 0.01))
+        G = F + pa
+        H = curve_qh * 0.001
+        component = H * G
+
+        # Let's return component as an hourly Component
+        component = component.get_component()
+
+        audit_keys = self.get_available_audit_coefs()
+        for key in self.conf.get('audit', []):
+            if key not in self.audit_data.keys():
+                self.audit_data[key] = []
+            var_name = audit_keys[key]
+            com = locals()[var_name]
+            if com is None:
+                continue
+            self.audit_data[key].extend(
+                com.get_audit_data(start=start_date.day)
+            )
+
+        return component
 
     def get_available_indexed_formulas(self):
         """
@@ -1008,6 +1150,7 @@ class TarifaPoolSOM(TarifaPool):
             u'Indexada Península 2024': 'phf_calc_peninsula_2024',
             u'Indexada Balears 2024': 'phf_calc_balears_2024',
             u'Indexada Canàries 2024': 'phf_calc_canaries_2024',
+            u'Indexada AUVI': 'phf_calc_auvi',
         }
 
 
