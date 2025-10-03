@@ -126,3 +126,26 @@ class TestsGurbWww(TestsGurbBase):
         )
 
         self.assertTrue(result["success"])
+
+    def test__private_fnc_get_cups_id(self):
+        gurb_www_obj = self.get_model("som.gurb.www")
+        imd_o = self.openerp.pool.get("ir.model.data")
+
+        gurb_cups_id = imd_o.get_object_reference(
+            self.cursor, self.uid, "giscedata_cups", "cups_tarifa_018"
+        )[1]
+
+        fnc_gurb_cups_id = gurb_www_obj._get_cups_id(
+            self.cursor, self.uid, "ES0021126262693495FV"
+        )
+
+        self.assertEqual(gurb_cups_id, fnc_gurb_cups_id)
+
+        fnc_gurb_cups_id = gurb_www_obj._get_cups_id(
+            self.cursor, self.uid, "Nye he he he"
+        )
+        self.assertFalse(fnc_gurb_cups_id)
+        fnc_gurb_cups_id = gurb_www_obj._get_cups_id(
+            self.cursor, self.uid, "ES0396705156982945JF"
+        )
+        self.assertIsNone(fnc_gurb_cups_id)

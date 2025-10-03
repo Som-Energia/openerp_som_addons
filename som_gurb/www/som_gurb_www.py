@@ -173,7 +173,9 @@ class SomGurbWww(osv.osv_memory):
         if context is None:
             context = {}
         cups_obj = self.pool.get("giscedata.cups.ps")
-        if not cups_obj.check_cups_code(cursor, uid, cups_name, context=context):
+        try:
+            cups_obj.check_cups_code(cursor, uid, cups_name, context=context)
+        except osv.except_osv:
             return False
         cups_id = cups_obj.search(cursor, uid, [("name", "like", cups_name[:20])], limit=1)
         if cups_id:
