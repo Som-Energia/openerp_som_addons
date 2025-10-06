@@ -152,7 +152,7 @@ class TarifaPoolSOM(TarifaPool):
             if component == 'prmdiari' and (start_date.year > 2025 or (start_date.year == 2025 and start_date.month >= 10)):
                 component_inst = Pmdiario('C2_pmdiario_%(postfix)s' % locals(), self.conf['esios_token'])
             else:
-                component_inst = component_class('C2_%(component)s_%(postfix)s)' % locals(), self.conf['esios_token'])
+                component_inst = component_class('C2_%(component)s_%(postfix)s' % locals(), self.conf['esios_token'])
             if component == 'prmdiari' and fallback and day:
                 if sum(component_inst.matrix[int(datetime.strptime(day, '%Y-%m-%d').day) - 1]) == 0:
                     raise REECoeficientsNotFound('Prmdiari for day %(day)s not found' % locals())
