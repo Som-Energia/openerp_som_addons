@@ -447,10 +447,10 @@ class TarifaPoolSOM(TarifaPool):
         # Curva de consumo real
         curve_real = self.get_curve_from_consum_magn(start_date, magn='activa_real')
         curve_real = curve_real * 0.001 # in kWh
-        curve_real_qh = curve_real.get_component_qh_divided()
+        curve_real_qh = curve_real.get_component_qh_interpolated()
 
         # Curva cuarto-horaria
-        curve_qh = curve.get_component_qh_divided()
+        curve_qh = curve.get_component_qh_interpolated()
         curve_fact = curve * 0.001 # in kWh
 
         # peajes
@@ -646,10 +646,10 @@ class TarifaPoolSOM(TarifaPool):
         # Curva de consumo real
         curve_real = self.get_curve_from_consum_magn(start_date, magn='activa_real')
         curve_real = curve_real * 0.001 # in kWh
-        curve_real_qh = curve_real.get_component_qh_divided()
+        curve_real_qh = curve_real.get_component_qh_interpolated()
 
         # Curva cuarto-horaria
-        curve_qh = curve.get_component_qh_divided()
+        curve_qh = curve.get_component_qh_interpolated()
         curve_fact = curve * 0.001 # in kWh
 
         # REE
@@ -830,10 +830,10 @@ class TarifaPoolSOM(TarifaPool):
         # Curva de consumo real
         curve_real = self.get_curve_from_consum_magn(start_date, magn='activa_real')
         curve_real = curve_real * 0.001 # in kWh
-        curve_real_qh = curve_real.get_component_qh_divided()
+        curve_real_qh = curve_real.get_component_qh_interpolated()
 
         # Curva cuarto-horaria
-        curve_qh = curve.get_component_qh_divided()
+        curve_qh = curve.get_component_qh_interpolated()
         curve_fact = curve * 0.001 # in kWh
 
         # REE
@@ -945,10 +945,10 @@ class TarifaPoolSOM(TarifaPool):
         # Curva de consumo real
         curve_real = self.get_curve_from_consum_magn(start_date, magn='activa_real')
         curve_real = curve_real * 0.001 # in kWh
-        curve_real_qh = curve_real.get_component_qh_divided()
+        curve_real_qh = curve_real.get_component_qh_interpolated()
 
         # Curva cuarto-horaria
-        curve_qh = curve.get_component_qh_divided()
+        curve_qh = curve.get_component_qh_interpolated()
         curve_fact = curve * 0.001 # in kWh
 
         # peajes
@@ -1063,7 +1063,7 @@ class TarifaPoolSOM(TarifaPool):
         # Curva cuarto-horaria
         curve = self.get_coeficient_component(start_date, 1000)
         curve.get_sub_component(curve_autocons.start_date.day, curve_autocons.end_date.day)
-        curve_qh = curve.get_component_qh_divided()
+        curve_qh = curve.get_component_qh_interpolated()
 
         # peajes
         pa = self.get_peaje_component(start_date, holidays)  # [€/kWh]
