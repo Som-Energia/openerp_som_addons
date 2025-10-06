@@ -362,7 +362,7 @@ class TarifaPoolSOM(TarifaPool):
         holidays = self.conf['holidays']
 
         # Curva cuarto-horaria
-        curve_qh = curve.get_component_qh_divided()
+        curve_qh = curve.get_component_qh_interpolated()
         curve = curve * 0.001
 
         # peajes
@@ -561,7 +561,7 @@ class TarifaPoolSOM(TarifaPool):
         holidays = self.conf['holidays']
 
         # Curva cuarto-horaria
-        curve_qh = curve.get_component_qh_divided()
+        curve_qh = curve.get_component_qh_interpolated()
         curve = curve * 0.001
 
         # REE
@@ -740,7 +740,7 @@ class TarifaPoolSOM(TarifaPool):
         holidays = self.conf['holidays']
 
         # Curva cuarto-horaria
-        curve_qh = curve.get_component_qh_divided()
+        curve_qh = curve.get_component_qh_interpolated()
         curve = curve * 0.001
 
         # REE
@@ -850,7 +850,7 @@ class TarifaPoolSOM(TarifaPool):
         holidays = self.conf['holidays']
 
         # Curva cuarto-horaria
-        curve_qh = curve.get_component_qh_divided()
+        curve_qh = curve.get_component_qh_interpolated()
         curve = curve * 0.001
 
         # peajes
@@ -967,7 +967,7 @@ class TarifaPoolSOM(TarifaPool):
         # Curva cuarto-horaria
         curve = self.get_coeficient_component(start_date, 1000)
         curve.get_sub_component(curve_autocons.start_date.day, curve_autocons.end_date.day)
-        curve_qh = curve.get_component_qh_divided()
+        curve_qh = curve.get_component_qh_interpolated()
 
         # peajes
         pa = self.get_peaje_component(start_date, holidays)  # [€/kWh]
