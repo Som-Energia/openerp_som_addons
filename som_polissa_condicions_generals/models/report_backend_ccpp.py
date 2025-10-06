@@ -8,7 +8,7 @@ from giscedata_facturacio.report.utils import get_atr_price, get_comming_atr_pri
 from som_extend_facturacio_comer.utils import get_gkwh_atr_price
 from tools.translate import _
 from giscedata_polissa.report.utils import localize_period
-from som_polissa.giscedata_cups import TABLA_113_dict
+from som_polissa.models.giscedata_cups import TABLA_113_dict
 
 CONTRACT_TYPES = dict(TABLA_9)
 
