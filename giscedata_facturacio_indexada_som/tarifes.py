@@ -368,7 +368,7 @@ class TarifaPoolSOM(TarifaPool):
         # Curva de consumo real
         curve_real = self.get_curve_from_consum_magn(start_date, magn='activa_real')
         curve_real = curve_real * 0.001 # in kWh
-        curve_real_qh = curve_real.get_component_qh_divided()
+        curve_real_qh = curve_real.get_component_qh_interpolated()
 
         # Curva cuarto-horaria
         curve_qh = curve.get_component_qh_interpolated()
@@ -572,7 +572,7 @@ class TarifaPoolSOM(TarifaPool):
         # Curva de consumo real
         curve_real = self.get_curve_from_consum_magn(start_date, magn='activa_real')
         curve_real = curve_real * 0.001 # in kWh
-        curve_real_qh = curve_real.get_component_qh_divided()
+        curve_real_qh = curve_real.get_component_qh_interpolated()
 
         # Curva cuarto-horaria
         curve_qh = curve.get_component_qh_interpolated()
@@ -756,7 +756,7 @@ class TarifaPoolSOM(TarifaPool):
         # Curva de consumo real
         curve_real = self.get_curve_from_consum_magn(start_date, magn='activa_real')
         curve_real = curve_real * 0.001 # in kWh
-        curve_real_qh = curve_real.get_component_qh_divided()
+        curve_real_qh = curve_real.get_component_qh_interpolated()
 
         # Curva cuarto-horaria
         curve_qh = curve.get_component_qh_interpolated()
@@ -871,7 +871,7 @@ class TarifaPoolSOM(TarifaPool):
         # Curva de consumo real
         curve_real = self.get_curve_from_consum_magn(start_date, magn='activa_real')
         curve_real = curve_real * 0.001 # in kWh
-        curve_real_qh = curve_real.get_component_qh_divided()
+        curve_real_qh = curve_real.get_component_qh_interpolated()
 
         # Curva cuarto-horaria
         curve_qh = curve.get_component_qh_interpolated()
