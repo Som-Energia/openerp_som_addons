@@ -2,7 +2,6 @@
 from libfacturacioatr.pool.tarifes import *
 from libfacturacioatr.tarifes import *
 
-import osv.osv
 
 EXTRAPENINSULAR_FORMULAS = [
     'phf_calc_balears',
@@ -130,8 +129,14 @@ class TarifaPoolSOM(TarifaPool):
 
         # REE
         postfix = ('%s_%s' % (start_date.strftime("%Y%m%d"), end_date.strftime("%Y%m%d")))
-        if self.geom_zone == '1' or not self.geom_zone:  # Peninsula
-            prmdiari = Prmdiari('C2_prmdiari_%(postfix)s' % locals(), esios_token)  # [€/MWh]
+        if self.geom_zone == '1' or not self.geom_zone:
+            # Precio medio diario
+            # A partir de l'1 d'Octubre passa a ser QH
+            if start_date.year > 2025 or (start_date.year == 2025 and start_date.month >= 10):
+                pmd_qh = Pmdiario('C2_pmdiario_%(postfix)s' % locals(), esios_token)  # [€/MWh]
+                prmdiari = pmd_qh.get_component_mean()
+            else:
+                prmdiari = Prmdiari('C2_prmdiari_%(postfix)s' % locals(), esios_token)  # [€/MWh]
         else:
             # Subsystems are the same for SPHDEM and SPHAUTO
             subsystem = SUBSYSTEMS_SPHDEM[self.geom_zone]
@@ -363,10 +368,10 @@ class TarifaPoolSOM(TarifaPool):
         # Curva de consumo real
         curve_real = self.get_curve_from_consum_magn(start_date, magn='activa_real')
         curve_real = curve_real * 0.001 # in kWh
-        curve_real_qh = curve_real.get_component_qh_divided()
+        curve_real_qh = curve_real.get_component_qh_interpolated()
 
         # Curva cuarto-horaria
-        curve_qh = curve.get_component_qh_divided()
+        curve_qh = curve.get_component_qh_interpolated()
         curve_fact = curve * 0.001 # in kWh
 
         # peajes
@@ -392,9 +397,14 @@ class TarifaPoolSOM(TarifaPool):
         imu = self.get_coeficient_component(start_date, 'imu')  # [%]
 
         # REE
-        postfix = ('%s_%s' % (start_date.strftime("%Y%m%d"),
-                              end_date.strftime("%Y%m%d")))
-        prmdiari = Prmdiari('C2_prmdiari_%(postfix)s' % locals(), esios_token)  # [€/MWh]
+        postfix = ('%s_%s' % (start_date.strftime("%Y%m%d"), end_date.strftime("%Y%m%d")))
+
+        # Precio medio diario
+        # A partir de l'1 d'Octubre passa a ser QH
+        if start_date.year > 2025 or (start_date.year == 2025 and start_date.month >= 10):
+            prmdiari = Pmdiario('C2_pmdiario_%(postfix)s' % locals(), esios_token)  # [€/MWh]
+        else:
+            prmdiari = Prmdiari('C2_prmdiari_%(postfix)s' % locals(), esios_token)  # [€/MWh]
 
         # Pérdidas
         if start_date.year < 2024 or (start_date.year == 2024 and start_date.month < 12):
@@ -562,10 +572,10 @@ class TarifaPoolSOM(TarifaPool):
         # Curva de consumo real
         curve_real = self.get_curve_from_consum_magn(start_date, magn='activa_real')
         curve_real = curve_real * 0.001 # in kWh
-        curve_real_qh = curve_real.get_component_qh_divided()
+        curve_real_qh = curve_real.get_component_qh_interpolated()
 
         # Curva cuarto-horaria
-        curve_qh = curve.get_component_qh_divided()
+        curve_qh = curve.get_component_qh_interpolated()
         curve_fact = curve * 0.001 # in kWh
 
         # REE
@@ -746,10 +756,10 @@ class TarifaPoolSOM(TarifaPool):
         # Curva de consumo real
         curve_real = self.get_curve_from_consum_magn(start_date, magn='activa_real')
         curve_real = curve_real * 0.001 # in kWh
-        curve_real_qh = curve_real.get_component_qh_divided()
+        curve_real_qh = curve_real.get_component_qh_interpolated()
 
         # Curva cuarto-horaria
-        curve_qh = curve.get_component_qh_divided()
+        curve_qh = curve.get_component_qh_interpolated()
         curve_fact = curve * 0.001 # in kWh
 
         # REE
@@ -861,10 +871,10 @@ class TarifaPoolSOM(TarifaPool):
         # Curva de consumo real
         curve_real = self.get_curve_from_consum_magn(start_date, magn='activa_real')
         curve_real = curve_real * 0.001 # in kWh
-        curve_real_qh = curve_real.get_component_qh_divided()
+        curve_real_qh = curve_real.get_component_qh_interpolated()
 
         # Curva cuarto-horaria
-        curve_qh = curve.get_component_qh_divided()
+        curve_qh = curve.get_component_qh_interpolated()
         curve_fact = curve * 0.001 # in kWh
 
         # peajes
@@ -884,9 +894,15 @@ class TarifaPoolSOM(TarifaPool):
         imu = self.get_coeficient_component(start_date, 'imu')  # [%]
 
         # REE
-        postfix = ('%s_%s' % (start_date.strftime("%Y%m%d"),
-                              end_date.strftime("%Y%m%d")))
-        prmdiari = Prmdiari('C2_prmdiari_%(postfix)s' % locals(), esios_token)  # [€/MWh]
+        postfix = ('%s_%s' % (start_date.strftime("%Y%m%d"), end_date.strftime("%Y%m%d")))
+
+        # Precio medio diario
+        # A partir de l'1 d'Octubre passa a ser QH
+        if start_date.year > 2025 or (start_date.year == 2025 and start_date.month >= 10):
+            prmdiari = Pmdiario('C2_pmdiario_%(postfix)s' % locals(), esios_token)  # [€/MWh]
+        else:
+            prmdiari = Prmdiari('C2_prmdiari_%(postfix)s' % locals(), esios_token)  # [€/MWh]
+
         si = SI('C2_si_%(postfix)s' % locals(), esios_token)  # [€/MWh]
 
         # Pérdidas
@@ -975,7 +991,7 @@ class TarifaPoolSOM(TarifaPool):
         # Curva cuarto-horaria
         curve = self.get_coeficient_component(start_date, 1000)
         curve.get_sub_component(curve_autocons.start_date.day, curve_autocons.end_date.day)
-        curve_qh = curve.get_component_qh_divided()
+        curve_qh = curve.get_component_qh_interpolated()
 
         # peajes
         pa = self.get_peaje_component(start_date, holidays)  # [€/kWh]
@@ -997,7 +1013,13 @@ class TarifaPoolSOM(TarifaPool):
 
         # REE
         postfix = ('%s_%s' % (start_date.strftime("%Y%m%d"), end_date.strftime("%Y%m%d")))
-        prmdiari = Prmdiari('C2_prmdiari_%(postfix)s' % locals(), esios_token)  # [€/MWh]
+
+        # Precio medio diario
+        # A partir de l'1 d'Octubre passa a ser QH
+        if start_date.year > 2025 or (start_date.year == 2025 and start_date.month >= 10):
+            prmdiari = Pmdiario('C2_pmdiario_%(postfix)s' % locals(), esios_token)  # [€/MWh]
+        else:
+            prmdiari = Prmdiari('C2_prmdiari_%(postfix)s' % locals(), esios_token)  # [€/MWh]
 
         # Prdemcad
         prdemcad = Prdemcad('C2_prdemcad_%(postfix)s' % locals(), esios_token)  # [€/MWh]
