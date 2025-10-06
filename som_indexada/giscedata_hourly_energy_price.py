@@ -386,7 +386,13 @@ class GiscedataNextDaysEnergyPrice(osv.osv):
         postfix = '%s_%s' % (data_inici.replace("-", ""), data_final.replace("-", ""))
         maturity_res = False
         try:
-            prmdiari = Prmdiari('A1_prmdiari_{}'.format(postfix), esios_token)  # noqa: F405
+            # Precio medio diario
+            # A partir de l'1 d'Octubre passa a ser QH
+            if data_inici_dt.year > 2025 or (data_inici_dt.year == 2025 and data_inici_dt.month >= 10):
+                prm_qh = Pmdiario('C2_pmdiario_%(postfix)s' % locals(), esios_token)  # [€/MWh]
+                prmdiari = prm_qh.get_component_mean()
+            else:
+                prmdiari = Prmdiari('C2_prmdiari_%(postfix)s' % locals(), esios_token)  # [€/MWh]
         except REECoeficientsNotFound as e:
             marginal_date = day.replace('-', '')
             marginalpdbc = self.get_marginalpbdc(cursor, uid, marginal_date, context=context)
