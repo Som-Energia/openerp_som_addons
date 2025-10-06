@@ -118,7 +118,10 @@ class TarifaPoolSOM(TarifaPool):
             TIMEZONE.localize(datetime(year, month, 1) + timedelta(hours=1)))
 
         # APliquem el preu pel dia
-        res = Component(comp_start_date)
+        if comp_start_date.year > 2025 or (comp_start_date.year == 2025 and comp_start_date.month >= 10):
+            res = Component(comp_start_date)
+        else:
+            res = ComponentQH(comp_start_date)
         next(csv_reader)
         for row in csv_reader:
             if row[0] == '*':
@@ -129,6 +132,8 @@ class TarifaPoolSOM(TarifaPool):
                 price = float(row[5].strip())
                 res.set(day, hour - 1, price)  # El index que ens arriba com a hora comença a 1
         res.file_version = 'PDBC'
+        if isinstance(res, ComponentQH):
+            res = res.get_component_mean()
         return res
 
     def get_component_class(self, component):
@@ -142,8 +147,12 @@ class TarifaPoolSOM(TarifaPool):
 
         try:
             component_class = self.get_component_class(component.title())
+            start_date = datetime.strptime(data_inici, '%Y-%m-%d')
             postfix = ('%s_%s' % (data_inici, data_final))
-            component_inst = component_class('C2_%(component)s_%(postfix)s)' % locals(), self.conf['esios_token'])
+            if component == 'prmdiari' and (start_date.year > 2025 or (start_date.year == 2025 and start_date.month >= 10)):
+                component_inst = Pmdiario('C2_pmdiario_%(postfix)s' % locals(), self.conf['esios_token'])
+            else:
+                component_inst = component_class('C2_%(component)s_%(postfix)s)' % locals(), self.conf['esios_token'])
             if component == 'prmdiari' and fallback and day:
                 if sum(component_inst.matrix[int(datetime.strptime(day, '%Y-%m-%d').day) - 1]) == 0:
                     raise REECoeficientsNotFound('Prmdiari for day %(day)s not found' % locals())
@@ -189,8 +198,14 @@ class TarifaPoolSOM(TarifaPool):
 
         # REE
         postfix = ('%s_%s' % (start_date.strftime("%Y%m%d"), end_date.strftime("%Y%m%d")))
-        if self.geom_zone == '1' or not self.geom_zone:  # Peninsula
-            prmdiari = Prmdiari('C2_prmdiari_%(postfix)s' % locals(), esios_token)  # [€/MWh]
+        if self.geom_zone == '1' or not self.geom_zone:
+            # Precio medio diario
+            # A partir de l'1 d'Octubre passa a ser QH
+            if start_date.year > 2025 or (start_date.year == 2025 and start_date.month >= 10):
+                pmd_qh = Pmdiario('C2_pmdiario_%(postfix)s' % locals(), esios_token)  # [€/MWh]
+                prmdiari = pmd_qh.get_component_mean()
+            else:
+                prmdiari = Prmdiari('C2_prmdiari_%(postfix)s' % locals(), esios_token)  # [€/MWh]
         else:
             # Subsystems are the same for SPHDEM and SPHAUTO
             subsystem = SUBSYSTEMS_SPHDEM[self.geom_zone]
@@ -953,9 +968,13 @@ class TarifaPoolSOM(TarifaPool):
         imu = self.get_coeficient_component(start_date, 'imu')  # [%]
 
         # REE
-        postfix = ('%s_%s' % (start_date.strftime("%Y%m%d"),
-                              end_date.strftime("%Y%m%d")))
-        prmdiari = Prmdiari('C2_prmdiari_%(postfix)s' % locals(), esios_token)  # [€/MWh]
+        postfix = ('%s_%s' % (start_date.strftime("%Y%m%d"), end_date.strftime("%Y%m%d")))
+        # Precio medio diario
+        # A partir de l'1 d'Octubre passa a ser QH
+        if start_date.year > 2025 or (start_date.year == 2025 and start_date.month >= 10):
+            prmdiari = Pmdiario('C2_pmdiario_%(postfix)s' % locals(), esios_token)  # [€/MWh]
+        else:
+            prmdiari = Prmdiari('C2_prmdiari_%(postfix)s' % locals(), esios_token)  # [€/MWh]
         si = SI('C2_si_%(postfix)s' % locals(), esios_token)  # [€/MWh]
 
         # Pérdidas
@@ -1066,7 +1085,12 @@ class TarifaPoolSOM(TarifaPool):
 
         # REE
         postfix = ('%s_%s' % (start_date.strftime("%Y%m%d"), end_date.strftime("%Y%m%d")))
-        prmdiari = Prmdiari('C2_prmdiari_%(postfix)s' % locals(), esios_token)  # [€/MWh]
+        # Precio medio diario
+        # A partir de l'1 d'Octubre passa a ser QH
+        if start_date.year > 2025 or (start_date.year == 2025 and start_date.month >= 10):
+            prmdiari = Pmdiario('C2_pmdiario_%(postfix)s' % locals(), esios_token)  # [€/MWh]
+        else:
+            prmdiari = Prmdiari('C2_prmdiari_%(postfix)s' % locals(), esios_token)  # [€/MWh]
 
         # Prdemcad
         prdemcad = Prdemcad('C2_prdemcad_%(postfix)s' % locals(), esios_token)  # [€/MWh]
