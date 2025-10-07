@@ -3,8 +3,7 @@ from osv import osv
 from tools.translate import _
 from tools import config
 
-from libfacturacioatr.pool.tarifes import *
-from libfacturacioatr.pool import REECoeficientsNotFound
+from libfacturacioatr.pool import REECoeficientsNotFound, tarifes
 from enerdata.datetime.holidays import get_holidays
 from datetime import datetime
 
@@ -46,7 +45,7 @@ class GiscedataNextDaysEnergyPrice(osv.osv):
         # PRPARE DATES
         ctx = {'date': data_inici}
         data_inici_dt = datetime.strptime(data_inici, '%Y-%m-%d')
-        num_days = calendar.monthrange(data_inici_dt.year, data_inici_dt.month)[1]  # noqa:F405
+        num_days = tarifes.calendar.monthrange(data_inici_dt.year, data_inici_dt.month)[1]
         data_final_dt = datetime(
             data_inici_dt.year, data_inici_dt.month, num_days
         ).date()
@@ -137,18 +136,18 @@ class GiscedataNextDaysEnergyPrice(osv.osv):
         # COMPONENTS
         postfix = '%s_%s' % (data_inici.replace("-", ""), data_final.replace("-", ""))
         filename = 'SphdemDD_BALEARES'
-        sphdem = SphdemDD_BALEARES('A1_%(filename)s_%(postfix)s' % locals(), esios_token)  # noqa: F405, E501 [€/MWh]
+        sphdem = tarifes.SphdemDD_BALEARES('A1_%(filename)s_%(postfix)s' % locals(), esios_token)  # noqa: E501 [€/MWh]
 
         filename = 'Sprpcap{}_{}'.format(Tarifa.code.replace('.', ''), 'BALEARES')
         classname = globals()[filename]
-        pc3_ree = classname('A1_%(filename)s_%(postfix)s' % locals(), esios_token)  # noqa: F405, E501 [€/MWh]
-        si = SIFree('A1_sifree_%(postfix)s' % locals(), esios_token)  # noqa: F405 [€/MWh]
+        pc3_ree = classname('A1_%(filename)s_%(postfix)s' % locals(), esios_token)  # [€/MWh]
+        si = tarifes.SIFree('A1_sifree_%(postfix)s' % locals(), esios_token)  # [€/MWh]
         ree = Tarifa.get_coeficient_component(data_inici_dt, 'om')  # [€/MWh]
         perdfname = Tarifa.perdclass.name
         perdues = Tarifa.perdclass('A1_%(perdfname)s_%(postfix)s' % locals(), esios_token)  # [%]
 
         # Desvios
-        scdsvdem = Scdsvdem('C2_Scdsvdem_%(postfix)s' % locals(), esios_token)  # noqa: F405 [€/MWh]
+        scdsvdem = tarifes.Scdsvdem('C2_Scdsvdem_%(postfix)s' % locals(), esios_token)  # [€/MWh]
         factor_dsv = Tarifa.get_coeficient_component(data_inici_dt, 'factor_dsv')  # [%]
         dsv = scdsvdem * (factor_dsv * 0.01)
 
@@ -210,7 +209,7 @@ class GiscedataNextDaysEnergyPrice(osv.osv):
         # PRPARE DATES
         ctx = {'date': data_inici}
         data_inici_dt = datetime.strptime(data_inici, '%Y-%m-%d')
-        num_days = calendar.monthrange(data_inici_dt.year, data_inici_dt.month)[1]  # noqa: F405
+        num_days = tarifes.calendar.monthrange(data_inici_dt.year, data_inici_dt.month)[1]
         data_final_dt = datetime(
             data_inici_dt.year, data_inici_dt.month, num_days
         ).date()
@@ -302,17 +301,17 @@ class GiscedataNextDaysEnergyPrice(osv.osv):
         # COMPONENTS
         postfix = '%s_%s' % (data_inici.replace("-", ""), data_final.replace("-", ""))
         filename = 'SphdemDD_CANARIAS'
-        sphdem = SphdemDD_CANARIAS('A1_%(filename)s_%(postfix)s' % locals(), esios_token)  # noqa: F405, E501 [€/MWh]
+        sphdem = tarifes.SphdemDD_CANARIAS('A1_%(filename)s_%(postfix)s' % locals(), esios_token)
 
         # Desvios
-        scdsvdem = Scdsvdem('C2_Scdsvdem_%(postfix)s' % locals())  # noqa: F405 [€/MWh]
+        scdsvdem = tarifes.Scdsvdem('C2_Scdsvdem_%(postfix)s' % locals())
         factor_dsv = Tarifa.get_coeficient_component(data_inici_dt, 'factor_dsv')  # [%]
         dsv = scdsvdem * (factor_dsv * 0.01)
 
-        filename = 'Sprpcap{}_{}'.format(Tarifa.code.replace('.', ''), 'CANARIAS')
+        filename = 'Sprpcap{0}_{1}'.format(Tarifa.code.replace('.', ''), 'CANARIAS')
         classname = globals()[filename]
         pc3_ree = classname('A1_%(filename)s_%(postfix)s' % locals(), esios_token)  # [€/MWh]
-        si = SIFree('A1_sifree_%(postfix)s' % locals(), esios_token)  # noqa: F405 [€/MWh]
+        si = tarifes.SIFree('A1_sifree_%(postfix)s' % locals(), esios_token)  # [€/MWh]
         ree = Tarifa.get_coeficient_component(data_inici_dt, 'om')  # [€/MWh]
         Tarifa.get_perdclass()
         perdfname = Tarifa.perdclass.name
@@ -375,7 +374,7 @@ class GiscedataNextDaysEnergyPrice(osv.osv):
 
         # PRPARE DATES
         data_inici_dt = datetime.strptime(data_inici, '%Y-%m-%d')
-        num_days = calendar.monthrange(data_inici_dt.year, data_inici_dt.month)[1]  # noqa: F405
+        num_days = tarifes.calendar.monthrange(data_inici_dt.year, data_inici_dt.month)[1]
         data_final_dt = datetime(
             data_inici_dt.year, data_inici_dt.month, num_days
         ).date()
@@ -388,11 +387,13 @@ class GiscedataNextDaysEnergyPrice(osv.osv):
         try:
             # Precio medio diario
             # A partir de l'1 d'Octubre passa a ser QH
-            if data_inici_dt.year > 2025 or (data_inici_dt.year == 2025 and data_inici_dt.month >= 10):
-                prm_qh = Pmdiario('C2_pmdiario_%(postfix)s' % locals(), esios_token)  # [€/MWh]
+            if data_inici_dt.year > 2025 or (data_inici_dt.year == 2025 and data_inici_dt.month >= 10):  # noqa: E501
+                prm_qh = tarifes.Pmdiario('C2_pmdiario_%(postfix)s' %
+                                          locals(), esios_token)  # [€/MWh]
                 prmdiari = prm_qh.get_component_mean()
             else:
-                prmdiari = Prmdiari('C2_prmdiari_%(postfix)s' % locals(), esios_token)  # [€/MWh]
+                prmdiari = tarifes.Prmdiari('C2_prmdiari_%(postfix)s' %
+                                            locals(), esios_token)  # [€/MWh]
         except REECoeficientsNotFound as e:
             marginal_date = day.replace('-', '')
             marginalpdbc = self.get_marginalpbdc(cursor, uid, marginal_date, context=context)
@@ -403,11 +404,11 @@ class GiscedataNextDaysEnergyPrice(osv.osv):
                 maturity_res = 'PDBC'
         # DESV
         try:
-            csdvbaj = Codsvbaj('C2_codsvbaj_%(postfix)s' % locals(), esios_token)  # noqa: F405, E501 [€/MWh]
-            csdvsub = Codsvsub('C2_codsvsub_%(postfix)s' % locals(), esios_token)  # noqa: F405, E501 [€/MWh]
+            csdvbaj = tarifes.Codsvbaj('C2_codsvbaj_%(postfix)s' % locals(), esios_token)  # [€/MWh]
+            csdvsub = tarifes.Codsvsub('C2_codsvsub_%(postfix)s' % locals(), esios_token)  # [€/MWh]
         except REECoeficientsNotFound as e:
-            csdvbaj = Component(datetime.strptime(data_inici, "%Y-%m-%d"))  # noqa: F405
-            csdvsub = Component(datetime.strptime(data_inici, "%Y-%m-%d"))  # noqa: F405
+            csdvbaj = tarifes.Component(datetime.strptime(data_inici, "%Y-%m-%d"))
+            csdvsub = tarifes.Component(datetime.strptime(data_inici, "%Y-%m-%d"))
 
         # IN CASE OF A SINGLE DAY CALCULATION WE CHECK FOR THE DAY'S PRICE
         if day is not None:
@@ -423,18 +424,18 @@ class GiscedataNextDaysEnergyPrice(osv.osv):
 
         try:
             # COMPODEM
-            compodem = MonthlyCompodem('A1_monthlycompodem_%(postfix)s' % locals(), esios_token)  # noqa: F405, E501
+            compodem = tarifes.MonthlyCompodem('A1_monthlycompodem_%(postfix)s' % locals(), esios_token)  # noqa: E501
             rad3 = compodem.get_component("RAD3")
             bs3 = compodem.get_component("BS3")
         except REECoeficientsNotFound as e:
-            rad3 = Component(datetime.strptime(data_inici, "%Y-%m-%d"))  # noqa: F405
-            bs3 = Component(datetime.strptime(data_inici, "%Y-%m-%d"))  # noqa: F405
+            rad3 = tarifes.Component(datetime.strptime(data_inici, "%Y-%m-%d"))
+            bs3 = tarifes.Component(datetime.strptime(data_inici, "%Y-%m-%d"))
 
         try:
             # SOBRECOSTOS
-            sobrecostos = Prdemcad('C2_prdemcad_%(postfix)s' % locals(), esios_token)  # noqa: F405
+            sobrecostos = tarifes.Prdemcad('C2_prdemcad_%(postfix)s' % locals(), esios_token)
         except REECoeficientsNotFound as e:
-            sobrecostos = Component(datetime.strptime(data_inici, "%Y-%m-%d"))  # noqa: F405
+            sobrecostos = tarifes.Component(datetime.strptime(data_inici, "%Y-%m-%d"))
 
         # CONFIGURATION
         config_data = eval(config_obj.get(cursor, uid, 'custom_component_pricelist_id', '{}'))
