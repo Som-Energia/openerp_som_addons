@@ -138,7 +138,7 @@ class ResPartnerAddress(osv.osv):
                         _("Error"), _("Error archieving email {}:\n{}".format(email, error.text))
                     )
             else:
-                logger.info("Email arxivat: {}".format(email))
+                logger.info("Mailchimp: Email arxivat a la llista {}: {}".format(list_id, email))
 
     def fill_merge_fields_clients(self, cursor, uid, id, context=None):
         """
@@ -256,7 +256,8 @@ class ResPartnerAddress(osv.osv):
                         ),
                     )
             else:
-                logger.info("Email subscrit: {}".format(client_data["email_address"]))
+                logger.info("Mailchimp: Email subscrit a la llista {}: {}".format(
+                    list_id, client_data["email_address"]))
 
     @job(queue="mailchimp_tasks")
     def update_client_email_in_all_lists_async(
@@ -312,7 +313,7 @@ class ResPartnerAddress(osv.osv):
                         },
                     )
                     logger.info(
-                        "L'email {} s'ha actualitzat en la llista {}".format(
+                        "Mailchimp: L'email {} s'ha actualitzat en la llista {}".format(
                             client_data["email_address"], mchimp_list["name"]
                         )
                     )
