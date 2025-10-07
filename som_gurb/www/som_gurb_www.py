@@ -2,6 +2,7 @@
 from osv import osv
 from tools.translate import _
 from math import radians, cos, sin, asin, sqrt
+from datetime import datetime
 
 
 def compute_haversine_distance(lat_gurb, long_gurb, lat_address, long_address):
@@ -188,8 +189,8 @@ class SomGurbWww(osv.osv_memory):
         polissa_obj = self.pool.get("giscedata.polissa")
         sw_obj = self.pool.get("giscedata.switching")
         search_params = [
-            ("cups_id", "=", cups_id),
-            ("state", "in", ["active", "draft"]),
+            ("cups", "=", cups_id),
+            ("state", "in", ["activa", "esborrany"]),
         ]
         polissa_ids = polissa_obj.search(
             cursor, uid, search_params, order="create_date DESC", limit=1
@@ -214,7 +215,7 @@ class SomGurbWww(osv.osv_memory):
             context = {}
 
         gurb_group_obj = self.pool.get("som.gurb.group")
-        # gurb_cups_obj = self.pool.get("som.gurb.cups")
+        gurb_cups_obj = self.pool.get("som.gurb.cups")
 
         beta = form_payload.get('beta', 0)
         if beta <= 0:
@@ -261,19 +262,35 @@ class SomGurbWww(osv.osv_memory):
                 "trace": "",
             }
 
+        beta_ids = [(0, 0, {
+            "start_date": datetime.strftime(datetime.today(), "%Y-%m-%d"),
+            "beta_kw": beta,
+            "extra_beta_kw": 0,
+            "gift_beta_kw": 0,
+            "future_beta": True
+        })]
+
         # We create the new gurb cups and beta
-        # create_vals = {
-        #     "active": True,
-        #     "inscription_date": datetime.strftime(datetime.today(), "%Y-%m-%d"),
-        #     "gurb_cau_id": gurb_cau_id,
-        #     "cups_id": cups_id,
-        #     "polissa_id": polissa_id,
-        #     "betas_ids": "?",
-        #     "initial_invoice_id": "?",
-        #     "general_conditions_id": "?",
-        #     "quota_product_id": "?",
-        # }
-        # gurb_cups_id = gurb_cups_obj.create(cursor, uid, create_vals, context=context)
+        create_vals = {
+            "active": True,
+            "inscription_date": datetime.strftime(datetime.today(), "%Y-%m-%d"),
+            "gurb_cau_id": gurb_cau_id,
+            "cups_id": cups_id,
+            "polissa_id": polissa_id,
+            "betas_ids": beta_ids,
+        }
+        gurb_cups_id = gurb_cups_obj.create(cursor, uid, create_vals, context=context)
+        if gurb_cups_id:
+            return {
+                "success": True,
+                "gurb_cups_id": gurb_cups_id,
+            }
+        else:
+            return {
+                "error": _("No s'ha pogut crear el GURB CUPS"),
+                "code": "CreateGurbCupsError",
+                "trace": "",
+            }
 
 
 SomGurbWww()

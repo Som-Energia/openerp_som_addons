@@ -118,7 +118,7 @@ class TestsGurbWww(TestsGurbBase):
         form_payload = {
             "gurb_code": "G001",
             "access_tariff": "2.0TD",
-            "cups": "ES0021000000000001",
+            "cups": "ES0021126262693495FV",
             "beta": 2.0,
         }
         result = gurb_www_obj.create_new_gurb_cups(
