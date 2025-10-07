@@ -255,6 +255,8 @@ class ResPartnerAddress(osv.osv):
                             )
                         ),
                     )
+            else:
+                logger.info("Email subscrit: {}".format(client_data["email_address"]))
 
     @job(queue="mailchimp_tasks")
     def update_client_email_in_all_lists_async(
