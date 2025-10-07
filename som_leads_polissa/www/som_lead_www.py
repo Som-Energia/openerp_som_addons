@@ -212,7 +212,7 @@ class SomLeadWww(osv.osv_memory):
 
         lead_o = self.pool.get("giscedata.crm.lead")
         soci_obj = self.pool.get("somenergia.soci")
-        rpa_obj = self.pool.get("res.partner.address")
+        rp_obj = self.pool.get("res.partner")
 
         msg = lead_o.create_entities(cr, uid, lead_id, context=context)
 
@@ -227,7 +227,7 @@ class SomLeadWww(osv.osv_memory):
         # Si no és sòcia, arxiva mail a mailchimp
         partner = lead_o.browse(cr, uid, lead_id).partner_id
         if not soci_obj.search(cr, uid, [("partner_id", "=", partner.id)]):
-            rpa_obj.subscriu_client_mailchimp_async(cr, uid, partner.id, context=context)
+            rp_obj.subscribe_client_mailchimp_async(cr, uid, partner.id, context=context)
 
         return True
 

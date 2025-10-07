@@ -8,6 +8,7 @@ from destral.patch import PatchNewCursors
 from oopgrade import oopgrade
 from tools import config
 from osv import osv
+import mock
 
 
 class TestsSomLeadWww(testing.OOTestCase):
@@ -97,7 +98,10 @@ class TestsSomLeadWww(testing.OOTestCase):
     def get_model(self, model_name):
         return self.openerp.pool.get(model_name)
 
-    def test_create_simple_domestic_lead(self):
+    @mock.patch("som_polissa_soci.models.res_partner.ResPartner.arxiva_client_mailchimp_async")
+    @mock.patch(
+        "som_polissa_soci.models.somenergia_soci.SomenergiaSoci.subscriu_socia_mailchimp_async")
+    def test_create_simple_domestic_lead(self, mock_subscriu, mock_arxiva):
         www_lead_o = self.get_model("som.lead.www")
         lead_o = self.get_model("giscedata.crm.lead")
         sw_o = self.get_model("giscedata.switching")
@@ -191,8 +195,13 @@ class TestsSomLeadWww(testing.OOTestCase):
         # Check partner lang and member date
         self.assertEqual(lead.partner_id.lang, "es_ES")
         self.assertEqual(lead.partner_id.date, datetime.today().strftime("%Y-%m-%d"))
+        mock_subscriu.assert_called()
+        mock_arxiva.assert_called()
 
-    def test_create_simple_domestic_lead_indexada(self):
+    @mock.patch("som_polissa_soci.models.res_partner.ResPartner.arxiva_client_mailchimp_async")
+    @mock.patch(
+        "som_polissa_soci.models.somenergia_soci.SomenergiaSoci.subscriu_socia_mailchimp_async")
+    def test_create_simple_domestic_lead_indexada(self, mock_subscriu, mock_arxiva):
         www_lead_o = self.get_model("som.lead.www")
         lead_o = self.get_model("giscedata.crm.lead")
         ir_model_o = self.get_model("ir.model.data")
@@ -211,8 +220,13 @@ class TestsSomLeadWww(testing.OOTestCase):
         )[1]
         self.assertEqual(lead.polissa_id.llista_preu.id, peninsular_pricelist_id)
         self.assertEqual(lead.polissa_id.mode_facturacio, 'index')
+        mock_subscriu.assert_called()
+        mock_arxiva.assert_called()
 
-    def test_create_simple_juridic_lead(self):
+    @mock.patch("som_polissa_soci.models.res_partner.ResPartner.arxiva_client_mailchimp_async")
+    @mock.patch(
+        "som_polissa_soci.models.somenergia_soci.SomenergiaSoci.subscriu_socia_mailchimp_async")
+    def test_create_simple_juridic_lead(self, mock_subscriu, mock_arxiva):
         www_lead_o = self.get_model("som.lead.www")
         lead_o = self.get_model("giscedata.crm.lead")
         partner_o = self.get_model("res.partner")
@@ -234,8 +248,14 @@ class TestsSomLeadWww(testing.OOTestCase):
         # Check that the representative is created and correctly linked
         rep_id = partner_o.search(self.cursor, self.uid, [("vat", "=", "ES40323835M")])[0]
         self.assertEqual(lead.polissa_id.titular.representante_id.id, rep_id)
+        mock_subscriu.assert_called()
+        mock_arxiva.assert_called()
 
-    def test_create_simple_juridic_lead_with_existing_representative(self):
+    @mock.patch("som_polissa_soci.models.res_partner.ResPartner.arxiva_client_mailchimp_async")
+    @mock.patch(
+        "som_polissa_soci.models.somenergia_soci.SomenergiaSoci.subscriu_socia_mailchimp_async")
+    def test_create_simple_juridic_lead_with_existing_representative(
+            self, mock_subscriu, mock_arxiva):
         www_lead_o = self.get_model("som.lead.www")
         lead_o = self.get_model("giscedata.crm.lead")
         partner_o = self.get_model("res.partner")
@@ -268,8 +288,13 @@ class TestsSomLeadWww(testing.OOTestCase):
 
         # Check that the representative is correctly linked
         self.assertEqual(lead.polissa_id.titular.representante_id.id, existing_partner_id)
+        mock_subscriu.assert_called()
+        mock_arxiva.assert_called()
 
-    def test_create_lead_30TD(self):
+    @mock.patch("som_polissa_soci.models.res_partner.ResPartner.arxiva_client_mailchimp_async")
+    @mock.patch(
+        "som_polissa_soci.models.somenergia_soci.SomenergiaSoci.subscriu_socia_mailchimp_async")
+    def test_create_lead_30TD(self, mock_subscriu, mock_arxiva):
         www_lead_o = self.get_model("som.lead.www")
         lead_o = self.get_model("giscedata.crm.lead")
 
@@ -285,8 +310,13 @@ class TestsSomLeadWww(testing.OOTestCase):
         self.assertEqual(len(lead.polissa_id.potencies_periode), 6)
         self.assertEqual(lead.polissa_id.tarifa.name, "3.0TD")
         self.assertEqual(lead.polissa_id.facturacio_potencia, "max")
+        mock_subscriu.assert_called()
+        mock_arxiva.assert_called()
 
-    def test_create_lead_with_donatiu(self):
+    @mock.patch("som_polissa_soci.models.res_partner.ResPartner.arxiva_client_mailchimp_async")
+    @mock.patch(
+        "som_polissa_soci.models.somenergia_soci.SomenergiaSoci.subscriu_socia_mailchimp_async")
+    def test_create_lead_with_donatiu(self, mock_subscriu, mock_arxiva):
         www_lead_o = self.get_model("som.lead.www")
         lead_o = self.get_model("giscedata.crm.lead")
 
@@ -298,8 +328,13 @@ class TestsSomLeadWww(testing.OOTestCase):
 
         lead = lead_o.browse(self.cursor, self.uid, result["lead_id"])
         self.assertIs(lead.polissa_id.donatiu, True)
+        mock_subscriu.assert_called()
+        mock_arxiva.assert_called()
 
-    def test_create_lead_with_owner_change_C2_20TD(self):
+    @mock.patch("som_polissa_soci.models.res_partner.ResPartner.arxiva_client_mailchimp_async")
+    @mock.patch(
+        "som_polissa_soci.models.somenergia_soci.SomenergiaSoci.subscriu_socia_mailchimp_async")
+    def test_create_lead_with_owner_change_C2_20TD(self, mock_subscriu, mock_arxiva):
         www_lead_o = self.get_model("som.lead.www")
         sw_o = self.get_model("giscedata.switching")
         lead_o = self.get_model("giscedata.crm.lead")
@@ -333,8 +368,13 @@ class TestsSomLeadWww(testing.OOTestCase):
 
         # check default 'contratacion_incondicional_bs'
         self.assertEqual(c2.contratacion_incondicional_bs, "S")
+        mock_subscriu.assert_called()
+        mock_arxiva.assert_called()
 
-    def test_create_lead_with_owner_change_C2_30TD(self):
+    @mock.patch("som_polissa_soci.models.res_partner.ResPartner.arxiva_client_mailchimp_async")
+    @mock.patch(
+        "som_polissa_soci.models.somenergia_soci.SomenergiaSoci.subscriu_socia_mailchimp_async")
+    def test_create_lead_with_owner_change_C2_30TD(self, mock_subscriu, mock_arxiva):
         www_lead_o = self.get_model("som.lead.www")
         sw_o = self.get_model("giscedata.switching")
         lead_o = self.get_model("giscedata.crm.lead")
@@ -370,8 +410,13 @@ class TestsSomLeadWww(testing.OOTestCase):
 
         # check default contratacion_incondicional_bs
         self.assertEqual(c2.contratacion_incondicional_bs, "S")
+        mock_subscriu.assert_called()
+        mock_arxiva.assert_called()
 
-    def test_create_lead_with_new_cups_A3(self):
+    @mock.patch("som_polissa_soci.models.res_partner.ResPartner.arxiva_client_mailchimp_async")
+    @mock.patch(
+        "som_polissa_soci.models.somenergia_soci.SomenergiaSoci.subscriu_socia_mailchimp_async")
+    def test_create_lead_with_new_cups_A3(self, mock_subscriu, mock_arxiva):
         www_lead_o = self.get_model("som.lead.www")
         sw_o = self.get_model("giscedata.switching")
         lead_o = self.get_model("giscedata.crm.lead")
@@ -400,8 +445,13 @@ class TestsSomLeadWww(testing.OOTestCase):
         self.assertEqual(a3.control_potencia, "1")
         self.assertEqual(atr_case.state, "draft")
         self.assertEqual(a3.cnae.name, values["contract_info"]["cnae"])
+        mock_subscriu.assert_called()
+        mock_arxiva.assert_called()
 
-    def test_create_lead_from_canarias(self):
+    @mock.patch("som_polissa_soci.models.res_partner.ResPartner.arxiva_client_mailchimp_async")
+    @mock.patch(
+        "som_polissa_soci.models.somenergia_soci.SomenergiaSoci.subscriu_socia_mailchimp_async")
+    def test_create_lead_from_canarias(self, mock_subscriu, mock_arxiva):
         ir_model_o = self.get_model("ir.model.data")
         cfg_o = self.get_model("res.config")
         www_lead_o = self.get_model("som.lead.www")
@@ -436,8 +486,13 @@ class TestsSomLeadWww(testing.OOTestCase):
 
         self.assertEqual(lead.polissa_id.fiscal_position_id.id, canarian_posicio_id)
         self.assertEqual(lead.polissa_id.llista_preu.id, insular_pricelist_id)
+        mock_subscriu.assert_called()
+        mock_arxiva.assert_called()
 
-    def test_create_lead_from_balears(self):
+    @mock.patch("som_polissa_soci.models.res_partner.ResPartner.arxiva_client_mailchimp_async")
+    @mock.patch(
+        "som_polissa_soci.models.somenergia_soci.SomenergiaSoci.subscriu_socia_mailchimp_async")
+    def test_create_lead_from_balears(self, mock_subscriu, mock_arxiva):
         ir_model_o = self.get_model("ir.model.data")
         www_lead_o = self.get_model("som.lead.www")
         lead_o = self.get_model("giscedata.crm.lead")
@@ -464,8 +519,13 @@ class TestsSomLeadWww(testing.OOTestCase):
         )[1]
 
         self.assertEqual(lead.polissa_id.llista_preu.id, insular_pricelist_id)
+        mock_subscriu.assert_called()
+        mock_arxiva.assert_called()
 
-    def test_create_self_consumption_lead(self):
+    @mock.patch("som_polissa_soci.models.res_partner.ResPartner.arxiva_client_mailchimp_async")
+    @mock.patch(
+        "som_polissa_soci.models.somenergia_soci.SomenergiaSoci.subscriu_socia_mailchimp_async")
+    def test_create_self_consumption_lead(self, mock_subscriu, mock_arxiva):
         www_lead_o = self.get_model("som.lead.www")
         lead_o = self.get_model("giscedata.crm.lead")
         self_consumption_o = self.get_model("giscedata.autoconsum")
@@ -508,8 +568,13 @@ class TestsSomLeadWww(testing.OOTestCase):
         # Check Contract fields
         self.assertNotEqual(lead.polissa_id.tipus_subseccio, "00")
         self.assertEqual(lead.polissa_id.autoconsumo, '41')
+        mock_subscriu.assert_called()
+        mock_arxiva.assert_called()
 
-    def test_create_collective_self_consumption_lead(self):
+    @mock.patch("som_polissa_soci.models.res_partner.ResPartner.arxiva_client_mailchimp_async")
+    @mock.patch(
+        "som_polissa_soci.models.somenergia_soci.SomenergiaSoci.subscriu_socia_mailchimp_async")
+    def test_create_collective_self_consumption_lead(self, mock_subscriu, mock_arxiva):
         www_lead_o = self.get_model("som.lead.www")
         lead_o = self.get_model("giscedata.crm.lead")
         self_consumption_o = self.get_model("giscedata.autoconsum")
@@ -552,8 +617,14 @@ class TestsSomLeadWww(testing.OOTestCase):
         # Check Contract fields
         self.assertNotEqual(lead.polissa_id.tipus_subseccio, "00")
         self.assertEqual(lead.polissa_id.autoconsumo, '42')
+        mock_subscriu.assert_called()
+        mock_arxiva.assert_called()
 
-    def test_create_colective_multiconsumption_self_consumption_lead(self):
+    @mock.patch("som_polissa_soci.models.res_partner.ResPartner.arxiva_client_mailchimp_async")
+    @mock.patch(
+        "som_polissa_soci.models.somenergia_soci.SomenergiaSoci.subscriu_socia_mailchimp_async")
+    def test_create_colective_multiconsumption_self_consumption_lead(
+            self, mock_subscriu, mock_arxiva):
         www_lead_o = self.get_model("som.lead.www")
         lead_o = self.get_model("giscedata.crm.lead")
         self_consumption_o = self.get_model("giscedata.autoconsum")
@@ -596,8 +667,13 @@ class TestsSomLeadWww(testing.OOTestCase):
         # Check Contract fields
         self.assertNotEqual(lead.polissa_id.tipus_subseccio, "00")
         self.assertEqual(lead.polissa_id.autoconsumo, '42')
+        mock_subscriu.assert_called()
+        mock_arxiva.assert_called()
 
-    def test_create_collective_net_self_consumption_lead(self):
+    @mock.patch("som_polissa_soci.models.res_partner.ResPartner.arxiva_client_mailchimp_async")
+    @mock.patch(
+        "som_polissa_soci.models.somenergia_soci.SomenergiaSoci.subscriu_socia_mailchimp_async")
+    def test_create_collective_net_self_consumption_lead(self, mock_subscriu, mock_arxiva):
         www_lead_o = self.get_model("som.lead.www")
         lead_o = self.get_model("giscedata.crm.lead")
         self_consumption_o = self.get_model("giscedata.autoconsum")
@@ -640,6 +716,8 @@ class TestsSomLeadWww(testing.OOTestCase):
         # Check Contract fields
         self.assertNotEqual(lead.polissa_id.tipus_subseccio, "00")
         self.assertEqual(lead.polissa_id.autoconsumo, '43')
+        mock_subscriu.assert_called()
+        mock_arxiva.assert_called()
 
     def test_create_individual_net_self_consumption_lead_fails(self):
         www_lead_o = self.get_model("som.lead.www")
@@ -657,7 +735,10 @@ class TestsSomLeadWww(testing.OOTestCase):
         result = www_lead_o.create_lead(self.cursor, self.uid, values)
         self.assertTrue(result["error"])
 
-    def test_add_attachments_to_simple_lead(self):
+    @mock.patch("som_polissa_soci.models.res_partner.ResPartner.arxiva_client_mailchimp_async")
+    @mock.patch(
+        "som_polissa_soci.models.somenergia_soci.SomenergiaSoci.subscriu_socia_mailchimp_async")
+    def test_add_attachments_to_simple_lead(self, mock_subscriu, mock_arxiva):
         www_lead_o = self.get_model("som.lead.www")
         lead_o = self.get_model("giscedata.crm.lead")
         ir_model_o = self.get_model("ir.model.data")
@@ -701,7 +782,13 @@ class TestsSomLeadWww(testing.OOTestCase):
         # check that the attachment data is not stored in the log
         self.assertNotIn("datas:", lead.polissa_id.observacions)
 
-    def test_www_form_data_and_create_entites_log_is_stored(self):
+        mock_subscriu.assert_called()
+        mock_arxiva.assert_called()
+
+    @mock.patch("som_polissa_soci.models.res_partner.ResPartner.arxiva_client_mailchimp_async")
+    @mock.patch(
+        "som_polissa_soci.models.somenergia_soci.SomenergiaSoci.subscriu_socia_mailchimp_async")
+    def test_www_form_data_and_create_entites_log_is_stored(self, mock_subscriu, mock_arxiva):
         www_lead_o = self.get_model("som.lead.www")
         lead_o = self.get_model("giscedata.crm.lead")
 
@@ -714,8 +801,13 @@ class TestsSomLeadWww(testing.OOTestCase):
 
         # we check the second line because the first has the stage change
         self.assertIn("ES40323835M", lead.history_line[1].description)
+        mock_subscriu.assert_called()
+        mock_arxiva.assert_called()
 
-    def test_create_lead_crm_stages_and_section(self):
+    @mock.patch("som_polissa_soci.models.res_partner.ResPartner.arxiva_client_mailchimp_async")
+    @mock.patch(
+        "som_polissa_soci.models.somenergia_soci.SomenergiaSoci.subscriu_socia_mailchimp_async")
+    def test_create_lead_crm_stages_and_section(self, mock_subscriu, mock_arxiva):
         www_lead_o = self.get_model("som.lead.www")
         lead_o = self.get_model("giscedata.crm.lead")
         ir_model_o = self.get_model("ir.model.data")
@@ -751,8 +843,13 @@ class TestsSomLeadWww(testing.OOTestCase):
         self.assertTrue(result["error"])
         self.assertEqual(lead.crm_id.state, 'pending')
         self.assertEqual(lead.crm_id.stage_id.id, webform_stage_error_id)
+        mock_subscriu.assert_called()
+        mock_arxiva.assert_called()
 
-    def test_create_lead_with_remesable_member(self):
+    @mock.patch("som_polissa_soci.models.res_partner.ResPartner.arxiva_client_mailchimp_async")
+    @mock.patch(
+        "som_polissa_soci.models.somenergia_soci.SomenergiaSoci.subscriu_socia_mailchimp_async")
+    def test_create_lead_with_remesable_member(self, mock_subscriu, mock_arxiva):
         www_lead_o = self.get_model("som.lead.www")
         account_invoice_o = self.get_model("account.invoice")
         lead_o = self.get_model("giscedata.crm.lead")
@@ -827,6 +924,8 @@ class TestsSomLeadWww(testing.OOTestCase):
             self.assertEqual(payment_line.bank_id.iban, 'ES7712341234161234567890')
             self.assertEqual(payment_line.ml_inv_ref.state, 'paid')
             self.assertEqual(payment_line.order_id.reference, 'R{}/001'.format(datetime.now().year))
+        mock_subscriu.assert_called()
+        mock_arxiva.assert_called()
 
     def test_create_lead_with_remesa_payment_but_not_new_member(self):
         www_lead_o = self.get_model("som.lead.www")
@@ -925,7 +1024,8 @@ class TestsSomLeadWww(testing.OOTestCase):
         # Check partner lang
         self.assertEqual(lead.partner_id.lang, "ca_ES")
 
-    def test_create_simple_domestic_lead_sponsored(self):
+    @mock.patch("som_polissa_soci.models.res_partner.ResPartner.subscribe_client_mailchimp_async")
+    def test_create_simple_domestic_lead_sponsored(self, mock_subscriu):
         www_lead_o = self.get_model("som.lead.www")
         lead_o = self.get_model("giscedata.crm.lead")
         member_o = self.get_model("somenergia.soci")
@@ -971,6 +1071,7 @@ class TestsSomLeadWww(testing.OOTestCase):
             ]
         )
         self.assertEqual(len(mails), 1)
+        mock_subscriu.assert_called()
 
     def test_bad_linked_member_fails(self):
         www_lead_o = self.get_model("som.lead.www")
@@ -1020,7 +1121,10 @@ class TestsSomLeadWww(testing.OOTestCase):
         with self.assertRaises(osv.except_osv):
             www_lead_o.create_lead(self.cursor, self.uid, values)
 
-    def test_existing_customer_converts_as_member(self):
+    @mock.patch("som_polissa_soci.models.res_partner.ResPartner.arxiva_client_mailchimp_async")
+    @mock.patch(
+        "som_polissa_soci.models.somenergia_soci.SomenergiaSoci.subscriu_socia_mailchimp_async")
+    def test_existing_customer_converts_as_member(self, mock_subscriu, mock_arxiva):
         www_lead_o = self.get_model("som.lead.www")
         partner_o = self.get_model("res.partner")
         ir_model_o = self.get_model("ir.model.data")
@@ -1066,8 +1170,13 @@ class TestsSomLeadWww(testing.OOTestCase):
             self.cursor, self.uid, [("partner_id", "=", gisce_id)]
         )
         self.assertEqual(len(member_ids), 1)
+        mock_subscriu.assert_called()
+        mock_arxiva.assert_called()
 
-    def test_lead_with_demographic_data(self):
+    @mock.patch("som_polissa_soci.models.res_partner.ResPartner.arxiva_client_mailchimp_async")
+    @mock.patch(
+        "som_polissa_soci.models.somenergia_soci.SomenergiaSoci.subscriu_socia_mailchimp_async")
+    def test_lead_with_demographic_data(self, mock_subscriu, mock_arxiva):
         www_lead_o = self.get_model("som.lead.www")
         lead_o = self.get_model("giscedata.crm.lead")
 
@@ -1084,8 +1193,13 @@ class TestsSomLeadWww(testing.OOTestCase):
         self.assertEqual(lead.polissa_id.titular.gender, "non_binary")
         self.assertEqual(lead.polissa_id.titular.birthdate, "1990-01-01")
         self.assertEqual(lead.polissa_id.titular.referral_source, "opcions")
+        mock_subscriu.assert_called()
+        mock_arxiva.assert_called()
 
-    def test_cnae_2025_dont_fail(self):
+    @mock.patch("som_polissa_soci.models.res_partner.ResPartner.arxiva_client_mailchimp_async")
+    @mock.patch(
+        "som_polissa_soci.models.somenergia_soci.SomenergiaSoci.subscriu_socia_mailchimp_async")
+    def test_cnae_2025_dont_fail(self, mock_subscriu, mock_arxiva):
         www_lead_o = self.get_model("som.lead.www")
         lead_o = self.get_model("giscedata.crm.lead")
 
@@ -1095,16 +1209,18 @@ class TestsSomLeadWww(testing.OOTestCase):
         result = www_lead_o.create_lead(self.cursor, self.uid, values)
 
         lead = lead_o.browse(self.cursor, self.uid, result["lead_id"])
-        self.assertEqual(lead.cnae, None)
-        self.assertIn("cnae: '5612'", lead.history_line[1].description)
+        self.assertEqual(lead.cnae.name, '5612')
+        self.assertIn("cnae: '5612'", lead.history_line[-1].description)
 
-        with self.assertRaises(osv.except_osv) as e:
-            www_lead_o.activate_lead(self.cursor, self.uid,
-                                     result["lead_id"], context={"sync": True})
+        www_lead_o.activate_lead(self.cursor, self.uid, result["lead_id"], context={"sync": True})
 
-        self.assertIn("CNAE", e.exception.value)
+        mock_subscriu.assert_called()
+        mock_arxiva.assert_called()
 
-    def test_create_simple_comercial_info_accepted_lead(self):
+    @mock.patch("som_polissa_soci.models.res_partner.ResPartner.arxiva_client_mailchimp_async")
+    @mock.patch(
+        "som_polissa_soci.models.somenergia_soci.SomenergiaSoci.subscriu_socia_mailchimp_async")
+    def test_create_simple_comercial_info_accepted_lead(self, mock_subscriu, mock_arxiva):
         www_lead_o = self.get_model("som.lead.www")
         lead_o = self.get_model("giscedata.crm.lead")
 
@@ -1122,8 +1238,13 @@ class TestsSomLeadWww(testing.OOTestCase):
         lead = lead_o.browse(self.cursor, self.uid, result["lead_id"])
         # Check that the name is correctly set
         self.assertEqual(lead.comercial_info_accepted, True)
+        mock_subscriu.assert_called()
+        mock_arxiva.assert_called()
 
-    def test_create_lead_trifasic_tension(self):
+    @mock.patch("som_polissa_soci.models.res_partner.ResPartner.arxiva_client_mailchimp_async")
+    @mock.patch(
+        "som_polissa_soci.models.somenergia_soci.SomenergiaSoci.subscriu_socia_mailchimp_async")
+    def test_create_lead_trifasic_tension(self, mock_subscriu, mock_arxiva):
         www_lead_o = self.get_model("som.lead.www")
         lead_o = self.get_model("giscedata.crm.lead")
         ir_model_o = self.get_model("ir.model.data")
@@ -1139,3 +1260,5 @@ class TestsSomLeadWww(testing.OOTestCase):
         tensio_trifasica = ir_model_o.get_object_reference(
             self.cursor, self.uid, 'giscedata_tensions', 'tensio_3x230_400')[1]
         self.assertEqual(lead.polissa_id.tensio_normalitzada.id, tensio_trifasica)
+        mock_subscriu.assert_called()
+        mock_arxiva.assert_called()
