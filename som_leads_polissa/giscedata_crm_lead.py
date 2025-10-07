@@ -89,7 +89,17 @@ class GiscedataCrmLead(osv.OsvInherits):
         polissa_id = lead.polissa_id.id
         member_number = lead.member_number
 
-        values["soci"] = partner_o.search(cursor, uid, [("ref", "=", member_number)], limit=1)[0]
+        member_id = partner_o.search(
+            cursor, uid, [("ref", "=", member_number)], limit=1
+        )
+
+        if not member_id:
+            raise osv.except_osv(
+                "Error - Sòcia no trobada",
+                "Prova de posar el número {} amb la lletra i els zeros".format(member_number),
+            )
+
+        values["soci"] = member_id[0]
         values["donatiu"] = lead.donation
 
         for line in lead.history_line:
@@ -421,6 +431,7 @@ class GiscedataCrmLead(osv.OsvInherits):
         "gender": fields.selection(GENDER_SELECTION, "Gènere"),
         "comercial_info_accepted": fields.boolean("Accepta informació comercial (SomServeis)"),
         "crm_lead_id": fields.integer("ID del lead al CRM"),
+        "is_new_contact": fields.boolean("És una persona nova per la cooperativa"),
     }
 
     _defaults = {
@@ -429,6 +440,7 @@ class GiscedataCrmLead(osv.OsvInherits):
         "donation": lambda *a: False,
         "comercial_info_accepted": lambda *a: False,
         "crm_lead_id": lambda *a: 0,
+        "is_new_contact": lambda *a: False,
     }
 
 

@@ -29,8 +29,8 @@ class WizardReprintInvoiceSom(osv.osv_memory):
             'report_name': 'giscedata.facturacio.factura',
             'datas': {
                 'ids': fact_ids,
-                'context': ctx,
-            }
+            },
+            'context': ctx
         }
 
     def reprint_and_store(self, cursor, uid, ids, context=None):
