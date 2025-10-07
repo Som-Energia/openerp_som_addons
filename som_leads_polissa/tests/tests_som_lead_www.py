@@ -8,6 +8,7 @@ from destral.patch import PatchNewCursors
 from oopgrade import oopgrade
 from tools import config
 from osv import osv
+import mock
 
 
 class TestsSomLeadWww(testing.OOTestCase):
@@ -91,7 +92,24 @@ class TestsSomLeadWww(testing.OOTestCase):
             "sepa_conditions": True,
         }
 
+        # 1. Crear els patchers per a Mailchimp
+        self.patch_subscriu = mock.patch(
+            "som_polissa_soci.models.somenergia_soci.SomenergiaSoci.subscriu_socia_mailchimp_async"
+        )
+        self.patch_arxiva = mock.patch(
+            "som_polissa_soci.models.res_partner.ResPartner.arxiva_client_mailchimp_async"
+        )
+        self.patch_subscriu_client = mock.patch(
+            "som_polissa_soci.models.res_partner.ResPartner.subscribe_client_mailchimp_async"
+        )
+        self.mock_subscriu = self.patch_subscriu.start()
+        self.mock_arxiva = self.patch_arxiva.start()
+        self.mock_subscriu_client = self.patch_subscriu_client.start()
+
     def tearDown(self):
+        self.patch_subscriu.stop()
+        self.patch_arxiva.stop()
+        self.patch_subscriu_client.stop()
         self.txn.stop()
 
     def get_model(self, model_name):
@@ -191,6 +209,8 @@ class TestsSomLeadWww(testing.OOTestCase):
         # Check partner lang and member date
         self.assertEqual(lead.partner_id.lang, "es_ES")
         self.assertEqual(lead.partner_id.date, datetime.today().strftime("%Y-%m-%d"))
+        self.mock_subscriu.assert_called()
+        self.mock_arxiva.assert_called()
 
     def test_create_simple_domestic_lead_indexada(self):
         www_lead_o = self.get_model("som.lead.www")
@@ -211,6 +231,8 @@ class TestsSomLeadWww(testing.OOTestCase):
         )[1]
         self.assertEqual(lead.polissa_id.llista_preu.id, peninsular_pricelist_id)
         self.assertEqual(lead.polissa_id.mode_facturacio, 'index')
+        self.mock_subscriu.assert_called()
+        self.mock_arxiva.assert_called()
 
     def test_create_simple_juridic_lead(self):
         www_lead_o = self.get_model("som.lead.www")
@@ -236,8 +258,11 @@ class TestsSomLeadWww(testing.OOTestCase):
         # Check that the representative is created and correctly linked
         rep_id = partner_o.search(self.cursor, self.uid, [("vat", "=", "ES40323835M")])[0]
         self.assertEqual(lead.polissa_id.titular.representante_id.id, rep_id)
+        self.mock_subscriu.assert_called()
+        self.mock_arxiva.assert_called()
 
-    def test_create_simple_juridic_lead_with_existing_representative(self):
+    def test_create_simple_juridic_lead_with_existing_representative(
+            self):
         www_lead_o = self.get_model("som.lead.www")
         lead_o = self.get_model("giscedata.crm.lead")
         partner_o = self.get_model("res.partner")
@@ -270,6 +295,8 @@ class TestsSomLeadWww(testing.OOTestCase):
 
         # Check that the representative is correctly linked
         self.assertEqual(lead.polissa_id.titular.representante_id.id, existing_partner_id)
+        self.mock_subscriu.assert_called()
+        self.mock_arxiva.assert_called()
 
     def test_create_lead_30TD(self):
         www_lead_o = self.get_model("som.lead.www")
@@ -287,6 +314,8 @@ class TestsSomLeadWww(testing.OOTestCase):
         self.assertEqual(len(lead.polissa_id.potencies_periode), 6)
         self.assertEqual(lead.polissa_id.tarifa.name, "3.0TD")
         self.assertEqual(lead.polissa_id.facturacio_potencia, "max")
+        self.mock_subscriu.assert_called()
+        self.mock_arxiva.assert_called()
 
     def test_create_lead_with_donatiu(self):
         www_lead_o = self.get_model("som.lead.www")
@@ -300,6 +329,8 @@ class TestsSomLeadWww(testing.OOTestCase):
 
         lead = lead_o.browse(self.cursor, self.uid, result["lead_id"])
         self.assertIs(lead.polissa_id.donatiu, True)
+        self.mock_subscriu.assert_called()
+        self.mock_arxiva.assert_called()
 
     def test_create_lead_with_owner_change_C2_20TD(self):
         www_lead_o = self.get_model("som.lead.www")
@@ -335,6 +366,8 @@ class TestsSomLeadWww(testing.OOTestCase):
 
         # check default 'contratacion_incondicional_bs'
         self.assertEqual(c2.contratacion_incondicional_bs, "S")
+        self.mock_subscriu.assert_called()
+        self.mock_arxiva.assert_called()
 
     def test_create_lead_with_owner_change_C2_30TD(self):
         www_lead_o = self.get_model("som.lead.www")
@@ -372,6 +405,8 @@ class TestsSomLeadWww(testing.OOTestCase):
 
         # check default contratacion_incondicional_bs
         self.assertEqual(c2.contratacion_incondicional_bs, "S")
+        self.mock_subscriu.assert_called()
+        self.mock_arxiva.assert_called()
 
     def test_create_lead_with_new_cups_A3(self):
         www_lead_o = self.get_model("som.lead.www")
@@ -402,6 +437,8 @@ class TestsSomLeadWww(testing.OOTestCase):
         self.assertEqual(a3.control_potencia, "1")
         self.assertEqual(atr_case.state, "draft")
         self.assertEqual(a3.cnae.name, values["contract_info"]["cnae"])
+        self.mock_subscriu.assert_called()
+        self.mock_arxiva.assert_called()
 
     def test_create_lead_from_canarias(self):
         ir_model_o = self.get_model("ir.model.data")
@@ -438,6 +475,8 @@ class TestsSomLeadWww(testing.OOTestCase):
 
         self.assertEqual(lead.polissa_id.fiscal_position_id.id, canarian_posicio_id)
         self.assertEqual(lead.polissa_id.llista_preu.id, insular_pricelist_id)
+        self.mock_subscriu.assert_called()
+        self.mock_arxiva.assert_called()
 
     def test_create_lead_from_balears(self):
         ir_model_o = self.get_model("ir.model.data")
@@ -466,6 +505,8 @@ class TestsSomLeadWww(testing.OOTestCase):
         )[1]
 
         self.assertEqual(lead.polissa_id.llista_preu.id, insular_pricelist_id)
+        self.mock_subscriu.assert_called()
+        self.mock_arxiva.assert_called()
 
     def test_create_self_consumption_lead(self):
         www_lead_o = self.get_model("som.lead.www")
@@ -510,6 +551,8 @@ class TestsSomLeadWww(testing.OOTestCase):
         # Check Contract fields
         self.assertNotEqual(lead.polissa_id.tipus_subseccio, "00")
         self.assertEqual(lead.polissa_id.autoconsumo, '41')
+        self.mock_subscriu.assert_called()
+        self.mock_arxiva.assert_called()
 
     def test_create_collective_self_consumption_lead(self):
         www_lead_o = self.get_model("som.lead.www")
@@ -554,8 +597,11 @@ class TestsSomLeadWww(testing.OOTestCase):
         # Check Contract fields
         self.assertNotEqual(lead.polissa_id.tipus_subseccio, "00")
         self.assertEqual(lead.polissa_id.autoconsumo, '42')
+        self.mock_subscriu.assert_called()
+        self.mock_arxiva.assert_called()
 
-    def test_create_colective_multiconsumption_self_consumption_lead(self):
+    def test_create_colective_multiconsumption_self_consumption_lead(
+            self):
         www_lead_o = self.get_model("som.lead.www")
         lead_o = self.get_model("giscedata.crm.lead")
         self_consumption_o = self.get_model("giscedata.autoconsum")
@@ -598,6 +644,8 @@ class TestsSomLeadWww(testing.OOTestCase):
         # Check Contract fields
         self.assertNotEqual(lead.polissa_id.tipus_subseccio, "00")
         self.assertEqual(lead.polissa_id.autoconsumo, '42')
+        self.mock_subscriu.assert_called()
+        self.mock_arxiva.assert_called()
 
     def test_create_collective_net_self_consumption_lead(self):
         www_lead_o = self.get_model("som.lead.www")
@@ -642,6 +690,8 @@ class TestsSomLeadWww(testing.OOTestCase):
         # Check Contract fields
         self.assertNotEqual(lead.polissa_id.tipus_subseccio, "00")
         self.assertEqual(lead.polissa_id.autoconsumo, '43')
+        self.mock_subscriu.assert_called()
+        self.mock_arxiva.assert_called()
 
     def test_create_individual_net_self_consumption_lead_fails(self):
         www_lead_o = self.get_model("som.lead.www")
@@ -703,6 +753,9 @@ class TestsSomLeadWww(testing.OOTestCase):
         # check that the attachment data is not stored in the log
         self.assertNotIn("datas:", lead.polissa_id.observacions)
 
+        self.mock_subscriu.assert_called()
+        self.mock_arxiva.assert_called()
+
     def test_www_form_data_and_create_entites_log_is_stored(self):
         www_lead_o = self.get_model("som.lead.www")
         lead_o = self.get_model("giscedata.crm.lead")
@@ -716,6 +769,8 @@ class TestsSomLeadWww(testing.OOTestCase):
 
         # we check the second line because the first has the stage change
         self.assertIn("ES40323835M", lead.history_line[1].description)
+        self.mock_subscriu.assert_called()
+        self.mock_arxiva.assert_called()
 
     def test_create_lead_crm_stages_and_section(self):
         www_lead_o = self.get_model("som.lead.www")
@@ -753,6 +808,8 @@ class TestsSomLeadWww(testing.OOTestCase):
         self.assertTrue(result["error"])
         self.assertEqual(lead.crm_id.state, 'pending')
         self.assertEqual(lead.crm_id.stage_id.id, webform_stage_error_id)
+        self.mock_subscriu.assert_called()
+        self.mock_arxiva.assert_called()
 
     def test_create_lead_with_remesable_member(self):
         www_lead_o = self.get_model("som.lead.www")
@@ -829,6 +886,8 @@ class TestsSomLeadWww(testing.OOTestCase):
             self.assertEqual(payment_line.bank_id.iban, 'ES7712341234161234567890')
             self.assertEqual(payment_line.ml_inv_ref.state, 'paid')
             self.assertEqual(payment_line.order_id.reference, 'R{}/001'.format(datetime.now().year))
+        self.mock_subscriu.assert_called()
+        self.mock_arxiva.assert_called()
 
     def test_create_lead_with_remesa_payment_but_not_new_member(self):
         www_lead_o = self.get_model("som.lead.www")
@@ -973,6 +1032,7 @@ class TestsSomLeadWww(testing.OOTestCase):
             ]
         )
         self.assertEqual(len(mails), 1)
+        self.mock_subscriu_client.assert_called()
 
     def test_bad_linked_member_fails(self):
         www_lead_o = self.get_model("som.lead.www")
@@ -1071,6 +1131,8 @@ class TestsSomLeadWww(testing.OOTestCase):
             self.cursor, self.uid, [("partner_id", "=", gisce_id)]
         )
         self.assertEqual(len(member_ids), 1)
+        self.mock_subscriu.assert_called()
+        self.mock_arxiva.assert_called()
 
     def test_lead_with_demographic_data(self):
         www_lead_o = self.get_model("som.lead.www")
@@ -1089,8 +1151,10 @@ class TestsSomLeadWww(testing.OOTestCase):
         self.assertEqual(lead.polissa_id.titular.gender, "non_binary")
         self.assertEqual(lead.polissa_id.titular.birthdate, "1990-01-01")
         self.assertEqual(lead.polissa_id.titular.referral_source, "opcions")
+        self.mock_subscriu.assert_called()
+        self.mock_arxiva.assert_called()
 
-    def test_cnae_random_dont_fail(self):
+    def test_cnae_random_contract_not_created(self):
         www_lead_o = self.get_model("som.lead.www")
         lead_o = self.get_model("giscedata.crm.lead")
 
@@ -1106,8 +1170,9 @@ class TestsSomLeadWww(testing.OOTestCase):
         with self.assertRaises(osv.except_osv) as e:
             www_lead_o.activate_lead(self.cursor, self.uid,
                                      result["lead_id"], context={"sync": True})
-
         self.assertIn("CNAE", e.exception.value)
+        self.mock_subscriu.assert_called()
+        self.mock_arxiva.assert_called()
 
     def test_create_simple_comercial_info_accepted_lead(self):
         www_lead_o = self.get_model("som.lead.www")
@@ -1127,6 +1192,8 @@ class TestsSomLeadWww(testing.OOTestCase):
         lead = lead_o.browse(self.cursor, self.uid, result["lead_id"])
         # Check that the name is correctly set
         self.assertEqual(lead.comercial_info_accepted, True)
+        self.mock_subscriu.assert_called()
+        self.mock_arxiva.assert_called()
 
     def test_create_lead_trifasic_tension(self):
         www_lead_o = self.get_model("som.lead.www")
@@ -1144,6 +1211,8 @@ class TestsSomLeadWww(testing.OOTestCase):
         tensio_trifasica = ir_model_o.get_object_reference(
             self.cursor, self.uid, 'giscedata_tensions', 'tensio_3x230_400')[1]
         self.assertEqual(lead.polissa_id.tensio_normalitzada.id, tensio_trifasica)
+        self.mock_subscriu.assert_called()
+        self.mock_arxiva.assert_called()
 
     def test_manual_member_number_error(self):
         www_lead_o = self.get_model("som.lead.www")
