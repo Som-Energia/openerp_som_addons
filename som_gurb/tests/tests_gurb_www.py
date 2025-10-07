@@ -165,3 +165,24 @@ class TestsGurbWww(TestsGurbBase):
             self.cursor, self.uid, "ES0396705156982945JF"
         )
         self.assertIsNone(fnc_gurb_cups_id)
+
+    def test_get_prioritary_gurb_cau_id_no_capacity(self):
+        gurb_group_o = self.openerp.pool.get("som.gurb.group")
+        imd_o = self.openerp.pool.get("ir.model.data")
+        gurb_group_id = imd_o.get_object_reference(
+            self.cursor, self.uid, "som_gurb", "gurb_group_0001"
+        )[1]
+        beta = 100000
+        result = gurb_group_o.get_prioritary_gurb_cau_id(self.cursor, self.uid, gurb_group_id, beta)
+        self.assertFalse(result)
+
+    def test_create_new_gurb_cups_bad_beta(self):
+        gurb_www_obj = self.get_model("som.gurb.www")
+        form_payload = {
+            "gurb_code": "G001",
+            "access_tariff": "2.0TD",
+            "cups": "ES0021000000000001",
+            "beta": 0,
+        }
+        result = gurb_www_obj.create_new_gurb_cups(self.cursor, self.uid, form_payload)
+        self.assertEqual(result["code"], "BadBeta")
