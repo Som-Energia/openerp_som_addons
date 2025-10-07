@@ -64,3 +64,7 @@ tests | coverage | name | description
 ## Other folders
 * [scripts](scripts/): Set of scripts
 * [docs](docs/): Documentation and [stack of technologies](https://github.com/Som-Energia/openerp_som_addons/tree/main/docs/tech.md)
+
+## Key dates
+* 18/03/2021: First PR
+* 25/09/2025: 4 and a half years later, 1000 PR!!!
