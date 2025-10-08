@@ -125,11 +125,10 @@ class SomCrawlersConfig(osv.osv):
         else:
             self.write(cursor, uid, ids, {"contrasenya": contrasenya}, context=None)
             message = (
-                "S'ha actualitzat la contrasenya: \""
+                "S'ha actualitzat la contrasenya: "
                 + str(contrasenya_antiga)
-                + '" -> "'
+                + ' -> '
                 + str(contrasenya)
-                + '"'
             )
             self._log(cursor, uid, ids, message)
 

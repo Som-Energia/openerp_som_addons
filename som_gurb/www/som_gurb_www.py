@@ -1,6 +1,24 @@
 # -*- encoding: utf-8 -*-
 from osv import osv
 from tools.translate import _
+from math import radians, cos, sin, asin, sqrt
+
+
+def compute_haversine_distance(lat_gurb, long_gurb, lat_address, long_address):
+    # Convert degrees to radians.
+    long_address = radians(float(long_address))
+    lat_address = radians(float(lat_address))
+
+    long_gurb = radians(float(long_gurb))
+    lat_gurb = radians(float(lat_gurb))
+
+    # Haversine formula
+    delta_long = long_address - long_gurb
+    delta_lat = lat_address - lat_gurb
+    hav = sin(delta_lat / 2)**2 + cos(lat_gurb) * cos(lat_address) * sin(delta_long / 2)**2
+
+    # 6371 es el radi de la tierra en km
+    return 2 * asin(sqrt(hav)) * 6371
 
 
 class SomGurbWww(osv.osv_memory):
@@ -46,6 +64,39 @@ class SomGurbWww(osv.osv_memory):
         info['surplus_compensation'] = self._get_surplus_compensation(
             cursor, uid, gurb_group_id, context=context)
         return info
+
+    def check_coordinates_2km_validation(
+        self, cursor, uid, lat_address, long_address, gurb_code, context=None
+    ):
+        if context is None:
+            context = {}
+
+        gurb_group_obj = self.pool.get("som.gurb.group")
+        gurb_cau_obj = self.pool.get("som.gurb.cau")
+        gurb_group_ids = gurb_group_obj.search(cursor, uid, [('code', '=', gurb_code)])
+        if len(gurb_group_ids) == 0:
+            return {
+                "error": _("Cap Gurb Group amb el codi {}").format(gurb_code),
+                "code": "BadGurbCode",
+                "trace": "",
+            }
+        gurb_group_id = gurb_group_ids[0]
+
+        gurb_cau_ids = gurb_cau_obj.search(cursor, uid, [('gurb_group_id', '=', gurb_group_id)])
+
+        for gurb_cau_id in gurb_cau_ids:
+            gurb_cau_br = gurb_cau_obj.browse(cursor, uid, gurb_cau_id, context=context)
+
+            lat_gurb = gurb_cau_br.coordenada_latitud
+            long_gurb = gurb_cau_br.coordenada_longitud
+
+            distance_from_gurb = compute_haversine_distance(
+                lat_gurb, long_gurb, lat_address, long_address
+            )
+            if distance_from_gurb < 1.9:
+                return True
+
+        return False
 
     def _get_available_betas(self, cursor, uid, gurb_group_id, tarifa_acces, context=None):
         gurb_group_obj = self.pool.get("som.gurb.group")

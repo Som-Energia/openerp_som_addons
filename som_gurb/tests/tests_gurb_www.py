@@ -53,7 +53,7 @@ class TestsGurbWww(TestsGurbBase):
             "2.0TD"
         )
 
-        self.assertEqual(result["available_betas"], [x / 10.0 for x in range(5, 55, 5)])
+        self.assertEqual(result["available_betas"], [x / 10.0 for x in range(5, 25, 5)])
 
     def test_get_info_gurb__surplus_comensation(self):
         imd_o = self.openerp.pool.get("ir.model.data")
@@ -91,3 +91,23 @@ class TestsGurbWww(TestsGurbBase):
             "3.0TD"
         )
         self.assertEqual(result["quota"], 4)
+
+    def test__check_coordinates_2km_validation__inside2km(self):
+        gurb_www_obj = self.get_model("som.gurb.www")
+
+        gurb_code = "G001"
+        result = gurb_www_obj.check_coordinates_2km_validation(
+            self.cursor, self.uid, -3.064674264239092, 37.35812464702857, gurb_code
+        )
+
+        self.assertTrue(result)
+
+    def test__check_coordinates_2km_validation__outside2km(self):
+        gurb_www_obj = self.get_model("som.gurb.www")
+
+        gurb_code = "G001"
+        result = gurb_www_obj.check_coordinates_2km_validation(
+            self.cursor, self.uid, 37.35812464702857, -3.064674264239092, gurb_code
+        )
+
+        self.assertFalse(result)

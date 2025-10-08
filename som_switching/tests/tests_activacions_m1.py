@@ -117,7 +117,7 @@ class TestActivacioM1(TestSwitchingImport):
 
         return m1
 
-    @mock.patch("som_polissa_soci.res_partner.ResPartner.arxiva_client_mailchimp_async")
+    @mock.patch("som_polissa_soci.models.res_partner.ResPartner.arxiva_client_mailchimp_async")
     def test_ct_subrogacio_baixa_mailchimp_ok(self, mock_function):
         with Transaction().start(self.database) as txn:
             cursor = txn.cursor
@@ -150,7 +150,7 @@ class TestActivacioM1(TestSwitchingImport):
             history_line_desc = [line["description"] for line in m1.history_line]
             self.assertTrue(any([expected_result in desc for desc in history_line_desc]))
 
-    @mock.patch("som_polissa_soci.res_partner.ResPartner.arxiva_client_mailchimp_async")
+    @mock.patch("som_polissa_soci.models.res_partner.ResPartner.arxiva_client_mailchimp_async")
     def test_ct_subrogacio_baixa_mailchimp_error__more_than_one_contract(self, mock_function):
         with Transaction().start(self.database) as txn:
             cursor = txn.cursor
@@ -176,7 +176,7 @@ class TestActivacioM1(TestSwitchingImport):
             history_line_desc = [line["description"] for line in m1.history_line]
             self.assertTrue(any([expected_result in desc for desc in history_line_desc]))
 
-    @mock.patch("som_polissa_soci.res_partner.ResPartner.arxiva_client_mailchimp_async")
+    @mock.patch("som_polissa_soci.models.res_partner.ResPartner.arxiva_client_mailchimp_async")
     @mock.patch(
         "giscedata_lectures_switching.giscedata_lectures.GiscedataLecturesSwitchingHelper.move_meters_of_contract"  # noqa: E501
     )
@@ -215,7 +215,7 @@ class TestActivacioM1(TestSwitchingImport):
             history_line_desc = [line["description"] for line in m1.history_line]
             self.assertTrue(any([expected_result in desc for desc in history_line_desc]))
 
-    @mock.patch("som_polissa_soci.res_partner.ResPartner.arxiva_client_mailchimp_async")
+    @mock.patch("som_polissa_soci.models.res_partner.ResPartner.arxiva_client_mailchimp_async")
     @mock.patch(
         "giscedata_lectures_switching.giscedata_lectures.GiscedataLecturesSwitchingHelper.move_meters_of_contract"  # noqa: E501
     )

@@ -548,7 +548,7 @@ class GiscedataSwitchingHelpers(osv.osv):
             gurb_obj.activate_gurb_from_m1_05(
                 cursor, uid, sw_id, data_activacio, context=context
             )
-            sw_step_header_id = self.read(cursor, uid, step_id, ['header_id'])['header_id'][0]
+            sw_step_header_id = step_obj.read(cursor, uid, step_id, ['header_id'])['header_id'][0]
             sw_step_header_obj.write(
                 cursor, uid, sw_step_header_id, {'notificacio_pendent': False}
             )
@@ -582,7 +582,7 @@ class GiscedataSwitchingHelpers(osv.osv):
             gurb_obj.activate_gurb_from_m1_05(
                 cursor, uid, sw_id, data_activacio, context=context
             )
-            sw_step_header_id = self.read(cursor, uid, step_id, ['header_id'])['header_id'][0]
+            sw_step_header_id = step_obj.read(cursor, uid, step_id, ['header_id'])['header_id'][0]
             sw_step_header_obj.write(
                 cursor, uid, sw_step_header_id, {'notificacio_pendent': False}
             )
@@ -632,14 +632,16 @@ class GiscedataSwitchingM2_05(osv.osv):
                 )
             # GURB Activation Codes
             elif step.motiu_modificacio in ["04", "15", "19"]:
-                sw_step_header_id = self.read(cursor, uid, step_id, ['header_id'])['header_id'][0]
-                sw_step_header_obj.write(
-                    cursor, uid, sw_step_header_id, {'notificacio_pendent': False}
-                )
                 data_activacio = xml.datos_activacion.fecha
                 gurb_obj.activate_gurb_from_m1_05(
                     cursor, uid, sw_id, data_activacio, context=context
                 )
+
+            # Don't notify if GURB
+            sw_step_header_id = self.read(cursor, uid, step_id, ['header_id'])['header_id'][0]
+            sw_step_header_obj.write(
+                cursor, uid, sw_step_header_id, {'notificacio_pendent': False}
+            )
 
         return step_id
 

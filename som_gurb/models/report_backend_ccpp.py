@@ -29,6 +29,7 @@ class ReportBackendCondicionsParticulars(ReportBackend):
             context = {}
 
         res = False
+        imd_obj = self.pool.get("ir.model.data")
         partner_obj = self.pool.get("res.partner")
         gurb_cups_obj = self.pool.get("som.gurb.cups")
         product_obj = self.pool.get("product.product")
@@ -37,8 +38,10 @@ class ReportBackendCondicionsParticulars(ReportBackend):
         gurb_cups_id = gurb_cups_obj.search(cursor, uid, [("cups_id", "=", pol.cups.id)])
         if gurb_cups_id:
             gurb_cups_br = gurb_cups_obj.browse(cursor, uid, gurb_cups_id[0])
-            initial_product_id = gurb_cups_br.gurb_cau_id.initial_product_id.id
-            grub_pricelist_id = gurb_cups_br.gurb_cau_id.pricelist_id.id
+            grub_pricelist_id = gurb_cups_br.gurb_cau_id.gurb_group_id.pricelist_id.id
+            initial_product_id = imd_obj.get_object_reference(
+                cursor, uid, "som_gurb", "initial_quota_gurb"
+            )[1]
 
             initial_product_price = pricelist_obj.price_get(
                 cursor,
