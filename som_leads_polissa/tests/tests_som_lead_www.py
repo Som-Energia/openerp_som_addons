@@ -1262,7 +1262,7 @@ class TestsSomLeadWww(testing.OOTestCase):
         ir_model_o = self.get_model("ir.model.data")
         partner_o = self.get_model("res.partner")
         address_o = self.get_model("res.partner.address")
-        
+
         member_id = ir_model_o.get_object_reference(
             self.cursor, self.uid, "som_polissa_soci", "soci_0001"
         )[1]
@@ -1270,7 +1270,7 @@ class TestsSomLeadWww(testing.OOTestCase):
         partner_o.write(self.cursor, self.uid, member.partner_id.id, {'lang': 'ca_ES'})
 
         vat = member.partner_id.vat.replace("ES", "")
-        
+
         # +34 is the default so we only change the phone
         address_o.write(
             self.cursor, self.uid, member.partner_id.address[0].id, {'phone': "612345678"})
@@ -1282,7 +1282,7 @@ class TestsSomLeadWww(testing.OOTestCase):
             "vat": vat,
             "code": member.partner_id.ref.replace("S", ""),
         }
-        
+
         result = www_lead_o.create_lead(self.cursor, self.uid, values)
 
         lead = lead_o.browse(self.cursor, self.uid, result["lead_id"])
@@ -1303,21 +1303,17 @@ class TestsSomLeadWww(testing.OOTestCase):
 
         self.assertEqual(lead.polissa_id.direccio_notificacio.phone, "699999999")
         self.assertEqual(lead.polissa_id.direccio_notificacio.phone_prefix.name, "+850")
-        
+
         self.mock_subscriu.assert_called()
         self.mock_arxiva.assert_called()
 
     def test_manual_member_number_error(self):
         www_lead_o = self.get_model("som.lead.www")
-        member_o = self.get_model("somenergia.soci")
-        ir_model_o = self.get_model("ir.model.data")
         lead_o = self.get_model("giscedata.crm.lead")
-        partner_o = self.get_model("res.partner")
-        
         values = self._basic_values
         values["linked_member"] = "sponsored"
         values["contract_owner"] = values.pop("new_member_info")
-        
+
         lead_id = www_lead_o.create_lead(self.cursor, self.uid, values)["lead_id"]
         lead_o.write(
             self.cursor, self.uid, lead_id, {"member_number": "WRONGCODE", "titular_number": ""}
