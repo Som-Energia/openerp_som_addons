@@ -56,6 +56,15 @@
                         <field name="crm_lead_id" colspan="4" col="4" readonly="1"/>
                     </page>
                 </xpath>
+                <xpath expr="//field[@name='titular_phone']" position="replace">
+                    <field name="titular_phone_prefix" colspan="4"/>
+                    <field name="titular_phone" colspan="4"/>
+                    <newline/>
+                </xpath>
+                <xpath expr="//field[@name='titular_mobile']" position="replace">
+                    <field name="titular_mobile_prefix" colspan="4"/>
+                    <field name="titular_mobile" colspan="4"/>
+                </xpath>
             </field>
         </record>
     </data>
