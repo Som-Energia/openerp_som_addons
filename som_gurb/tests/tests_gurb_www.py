@@ -137,6 +137,13 @@ class TestsGurbWww(TestsGurbBase):
     @mock.patch(_signature_fnc, return_value=True)
     def test__create_new_gurb_cups_on_active_contract(self, start_mock):
         gurb_www_obj = self.get_model("som.gurb.www")
+        imd_obj = self.openerp.pool.get("ir.model.data")
+        res_partner_obj = self.openerp.pool.get("res.partner")
+
+        titular_id = imd_obj.get_object_reference(
+            self.cursor, self.uid, "som_polissa", "res_partner_domestic"
+        )[1]
+        res_partner_obj.write(self.cursor, self.uid, titular_id, {"lang": "en_US"})
 
         self.activar_polissa_CUPS()
         form_payload = {
@@ -145,6 +152,7 @@ class TestsGurbWww(TestsGurbBase):
             "cups": "ES0021126262693495FV",
             "beta": 2.0,
         }
+
         result = gurb_www_obj.create_new_gurb_cups(
             self.cursor, self.uid, form_payload
         )

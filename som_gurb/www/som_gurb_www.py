@@ -210,6 +210,33 @@ class SomGurbWww(osv.osv_memory):
 
     # def activate_gurb_cups_lead(self, cursor, uid, gurb_lead_id, context=None):
 
+    def _get_gurb_conditions_id(self, cursor, uid, pol_id, context=None):
+        if context is None:
+            context = {}
+        pol_o = self.pool.get("giscedata.polissa")
+        som_conditions_obj = self.pool.get("som.gurb.general.conditions")
+
+        pol_br = pol_o.browse(cursor, uid, pol_id, context=context)
+        lang_code = pol_br.titular.lang
+
+        search_params = [("active", "=", True), ("lang_id.code", "=", lang_code)]
+
+        conditions_ids = som_conditions_obj.search(
+            cursor, uid, search_params, order="create_date DESC", limit=1
+        )
+        return conditions_ids[0] if conditions_ids else None
+
+    def _get_signature_url(self, cursor, uid, gurb_cups_id, context=None):
+        if context is None:
+            context = {}
+
+        wiz_obj = self.pool.get("wizard.create.gurb.cups.signature")
+        context["active_id"] = gurb_cups_id
+        context["delivery_type"] = "url"
+
+        wiz_id = wiz_obj.create(cursor, uid, {}, context=context)
+        wiz_obj.start_signature_process(cursor, uid, [wiz_id], context=context)
+
     def create_new_gurb_cups(self, cursor, uid, form_payload, context=None):
         if context is None:
             context = {}
@@ -278,8 +305,16 @@ class SomGurbWww(osv.osv_memory):
             "cups_id": cups_id,
             "polissa_id": polissa_id,
             "betas_ids": beta_ids,
+            "general_conditions_id": self._get_gurb_conditions_id(
+                cursor, uid, polissa_id, context=context
+            ),
         }
         gurb_cups_id = gurb_cups_obj.create(cursor, uid, create_vals, context=context)
+
+        self._get_signature_url(
+            cursor, uid, gurb_cups_id, context=context
+        )
+
         if gurb_cups_id:
             return {
                 "success": True,
