@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 import logging
-from oopgrade.oopgrade import load_data
+from oopgrade.oopgrade import load_data, column_exists, add_columns_fk
 import pooler
 
 
@@ -16,6 +16,21 @@ def up(cursor, installed_version):
     pool.get("res.phone.national.code")._auto_init(
         cursor, context={'module': 'base_extended_som'}
     )
+
+    # We add the column previusly to aviod the slow default values calculation
+    if not column_exists(
+        cursor, 'res_partner_address', 'phone_prefix'
+    ):
+        add_columns_fk(cursor, {'res_partner_address': [
+            ('phone_prefix', 'int', 'res_phone_national_code', 'id', 'restrict')
+        ]})
+    if not column_exists(
+        cursor, 'res_partner_address', 'mobile_prefix'
+    ):
+        add_columns_fk(cursor, {'res_partner_address': [
+            ('mobile_prefix', 'int', 'res_phone_national_code', 'id', 'restrict')
+        ]})
+
     pool.get("res.partner.address")._auto_init(
         cursor, context={'module': 'base_extended_som'}
     )
