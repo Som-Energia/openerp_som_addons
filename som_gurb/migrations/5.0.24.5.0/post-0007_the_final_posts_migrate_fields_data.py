@@ -24,6 +24,7 @@ def up(cursor, installed_version):
     logger.info("Updating XML files")
     data_files = [
         'views/som_gurb_cau_view.xml',
+        'wizard/wizard_create_gurb_cups_signature_view.xml',
     ]
     for data_file in data_files:
         load_data(
