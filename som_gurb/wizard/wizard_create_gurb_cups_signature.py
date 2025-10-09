@@ -161,6 +161,14 @@ class WizardGurbCreateGurbCupsSignature(osv.osv_memory):
 
         # Executar l'inici del proces
         pro_obj.start(cursor, uid, [process_id], context=None)
+
+        return process_id
+
+    def button_start_signature_process(self, cursor, uid, ids, context=None):
+        if context is None:
+            context = {}
+
+        process_id = self.start_signature_process(cursor, uid, ids, context=context)
         res = {
             'view_type': 'form',
             'view_mode': 'tree,form',
