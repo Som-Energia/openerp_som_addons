@@ -119,7 +119,8 @@ class TestsGurbWww(TestsGurbBase):
 
         self.assertFalse(result)
 
-    def test__create_new_gurb_cups_on_draft_contract(self):
+    @mock.patch(_signature_fnc, return_value=True)
+    def test__create_new_gurb_cups_on_draft_contract(self, start_mock):
         gurb_www_obj = self.get_model("som.gurb.www")
 
         form_payload = {
