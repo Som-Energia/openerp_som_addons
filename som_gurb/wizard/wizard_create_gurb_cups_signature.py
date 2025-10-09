@@ -41,7 +41,8 @@ class WizardGurbCreateGurbCupsSignature(osv.osv_memory):
         if context is None:
             context = {}
 
-        gurb_cups = self.browse(cursor, uid, gurb_cups_id, context=context)
+        grub_cups_obj = self.pool.get("som.gurb.cups")
+        gurb_cups = grub_cups_obj.browse(cursor, uid, gurb_cups_id, context=context)
 
         if not gurb_cups.general_conditions_id or len(gurb_cups.betas_ids) <= 0:
             osv.except_osv("Betes i condicons", "Falten les condicions del gurb i/o les betes")
