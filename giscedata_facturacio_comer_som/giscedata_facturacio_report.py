@@ -1984,11 +1984,14 @@ class GiscedataFacturacioFacturaReport(osv.osv):
                 return "excempcio"
             return "5.11percent"
 
+        compl_cat = "Facturació Complementaria imputada per part de la Distribuïdora"
+        compl_cas = "Facturación Complementaria imputada por parte de la Distribuidora"
         lines_extra_ids = self.get_lines_in_extralines(fact, pol)
         lloguer_lines = []
         bosocial_lines = []
         donatiu_lines = []
         altres_lines = []
+        compl_lines = []
         iva_energia = None
         iva_potencia = None
         for l in fact.linia_ids:  # noqa: E741
@@ -2040,11 +2043,26 @@ class GiscedataFacturacioFacturaReport(osv.osv):
                     }
                 )
             if l.tipus in "energia" and l.id in lines_extra_ids:
-                altres_lines.append(
+                if compl_cat not in l.name and compl_cas not in l.name:
+                    altres_lines.append(
+                        {
+                            "name": l.name,
+                            "price_subtotal": l.price_subtotal,
+                            "iva": get_iva_line(l),
+                        }
+                    )
+            if l.id in lines_extra_ids and (compl_cat in l.name or compl_cas in l.name):
+                compl_lines.append(
                     {
+                        "id": l.id,
+                        "period": l.product_id.name,
                         "name": l.name,
+                        "quantity": l.quantity,
+                        "multi": l.price_unit_multi,
                         "price_subtotal": l.price_subtotal,
                         "iva": get_iva_line(l),
+                        "data_desde": l.data_desde,
+                        "data_fins": l.data_fins,
                     }
                 )
 
@@ -2140,6 +2158,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
             "bosocial_lines": bosocial_lines,
             "donatiu_lines": donatiu_lines,
             "altres_lines": altres_lines,
+            "compl_lines": compl_lines,
             "iese_lines": iese_lines,
             "iva_lines": iva_lines,
             "igic_lines": igic_lines,
@@ -3299,10 +3318,55 @@ class GiscedataFacturacioFacturaReport(osv.osv):
             if len(data["donatiu_lines"])
             else "altres"
             if len(data["altres_lines"])
+            else "compl"
+            if len(data["compl_lines"])
             else "bosocial"
         )
         data["number_of_columns"] = len(self.get_matrix_show_periods(pol)) + 1
         data["iva_column"] = has_iva_column(fact)
+
+        if data['compl_lines']:
+            extra_obj = fact.pool.get("giscedata.facturacio.extra")
+            f1_obj = fact.pool.get("giscedata.facturacio.importacio.linia")
+
+            compl_info = {}
+            data['compl_info'] = compl_info
+            compl_ids = [x['id'] for x in data['compl_lines']]
+            extra_ids = extra_obj.search(
+                self.cursor,
+                self.uid,
+                [
+                    ("polissa_id", "=", pol.id),
+                    ("factura_ids", "in", fact.id),
+                    ("factura_linia_ids", "in", compl_ids)
+                ],
+            )
+            extra_data = extra_obj.read(
+                self.cursor,
+                self.uid,
+                extra_ids,
+                ['origin_invoice']
+            )
+            origins = list(set([x['origin_invoice'] for x in extra_data]))
+            f1_ids = f1_obj.search(
+                self.cursor,
+                self.uid,
+                [
+                    ("cups_id", "=", pol.cups.id),
+                    ("invoice_number_text", "in", origins),
+                    ("type_factura", "=", "C")
+                ]
+            )
+            expedients = set()
+            dates = set()
+            types = set()
+            for f1 in f1_obj.browse(self.cursor, self.uid, f1_ids):
+                expedients.add(f1.num_expedient)
+                dates.add((f1.fecha_factura_desde, f1.fecha_factura_hasta))
+                for f1_invoice in f1.liniafactura_id:
+                    types.add(f1_invoice.tipo_factura)
+
+            # WIP
         return data
 
     def get_sub_component_invoice_details_td_excess_power_maximeter(self, fact, pol):
