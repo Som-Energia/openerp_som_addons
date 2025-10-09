@@ -5,7 +5,7 @@ from osv import osv
 import yaml
 import copy
 
-from som_leads_polissa.giscedata_crm_lead import WWW_DATA_FORM_HEADER
+from som_leads_polissa.models.giscedata_crm_lead import WWW_DATA_FORM_HEADER
 from giscedata_cups.giscedata_cups import get_dso
 
 
