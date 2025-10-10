@@ -11,7 +11,7 @@
                         <field name="email" />
                     </group>
                     <group colspan="4">
-                        <button name="start_signature_process" type="object" string="Enviar documents a signar!" icon="gtk-execute" />
+                        <button name="button_start_signature_process" type="object" string="Enviar documents a signar!" icon="gtk-execute" />
                     </group>
                 </form>
             </field>

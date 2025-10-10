@@ -41,7 +41,8 @@ class WizardGurbCreateGurbCupsSignature(osv.osv_memory):
         if context is None:
             context = {}
 
-        gurb_cups = self.browse(cursor, uid, gurb_cups_id, context=context)
+        grub_cups_obj = self.pool.get("som.gurb.cups")
+        gurb_cups = grub_cups_obj.browse(cursor, uid, gurb_cups_id, context=context)
 
         if not gurb_cups.general_conditions_id or len(gurb_cups.betas_ids) <= 0:
             osv.except_osv("Betes i condicons", "Falten les condicions del gurb i/o les betes")
@@ -161,6 +162,14 @@ class WizardGurbCreateGurbCupsSignature(osv.osv_memory):
 
         # Executar l'inici del proces
         pro_obj.start(cursor, uid, [process_id], context=None)
+
+        return process_id
+
+    def button_start_signature_process(self, cursor, uid, ids, context=None):
+        if context is None:
+            context = {}
+
+        process_id = self.start_signature_process(cursor, uid, ids, context=context)
         res = {
             'view_type': 'form',
             'view_mode': 'tree,form',
