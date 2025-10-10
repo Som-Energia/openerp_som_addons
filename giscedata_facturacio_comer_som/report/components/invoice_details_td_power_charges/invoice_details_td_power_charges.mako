@@ -1,5 +1,6 @@
 <%page args="id" />
 <%import locale %>
+% if 'P1' in id:
 <tr>
     <td class="td_third concepte_td" rowspan=${id.header_multi}>${_(u"Càrrecs")}</td>
     <td class="td_bold detall_td">${_(u"Preu càrrecs per potència contractada [€/kW i any]")}</td>
@@ -59,3 +60,4 @@
         <td></td>
     % endif
 </tr>
+% endif
