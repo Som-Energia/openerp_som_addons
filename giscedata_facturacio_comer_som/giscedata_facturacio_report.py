@@ -705,6 +705,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
                     f.data_inici >= date_trunc('month', date %(data_final)s) - interval '%(interval)s month'
                     AND (fl.isdiscount IS NULL OR NOT fl.isdiscount)
                     AND i.type IN ('out_invoice','out_refund')
+                    AND il.name not like '%%Facturaci%%Compleme%%Distri%%'
                     AND pt.name like 'P%%'
             GROUP BY
                     f.polissa_id, pt.name, f.data_inici
