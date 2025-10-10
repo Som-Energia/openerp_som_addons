@@ -94,13 +94,13 @@ class TestsSomLeadWww(testing.OOTestCase):
 
         # 1. Crear els patchers per a Mailchimp
         self.patch_subscriu = mock.patch(
-            "som_polissa_soci.models.somenergia_soci.SomenergiaSoci.subscriu_socia_mailchimp_async"
+            "som_polissa_soci.models.res_partner_address.ResPartnerAddress.subscribe_partner_in_members_lists"  # noqa: E501
         )
         self.patch_arxiva = mock.patch(
-            "som_polissa_soci.models.res_partner.ResPartner.arxiva_client_mailchimp_async"
+            "som_polissa_soci.models.res_partner_address.ResPartnerAddress.unsubscribe_partner_in_customers_no_members_lists"  # noqa: E501
         )
         self.patch_subscriu_client = mock.patch(
-            "som_polissa_soci.models.res_partner.ResPartner.subscribe_client_mailchimp_async"
+            "som_polissa_soci.models.res_partner_address.ResPartnerAddress.subscribe_partner_in_customers_no_members_lists"  # noqa: E501
         )
         self.mock_subscriu = self.patch_subscriu.start()
         self.mock_arxiva = self.patch_arxiva.start()
