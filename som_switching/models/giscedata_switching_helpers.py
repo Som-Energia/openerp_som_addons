@@ -149,8 +149,8 @@ class GiscedataSwitchingHelpers(osv.osv):
 
             return "OK", info
 
-        partner_obj = self.pool.get("res.partner")
-        partner_obj.arxiva_client_mailchimp_async(cursor, uid, titular_id)
+        partner_obj = self.pool.get("res.partner.address")
+        partner_obj.unsubscribe_partner_in_customers_no_members_lists(cursor, uid, titular_id)
 
         info = _(
             u"[Baixa Mailchimp] S'ha iniciat el procés de baixa " u"per l'antic titular (ID %d)"

@@ -59,7 +59,7 @@ class TestActivacioCn(TestSwitchingImport):
 
         return cn
 
-    @mock.patch("som_polissa_soci.models.res_partner.ResPartner.arxiva_client_mailchimp_async")
+    @mock.patch("som_polissa_soci.models.res_partner_address.ResPartnerAddress.unsubscribe_partner_in_customers_no_members_lists")  # noqa: E501
     def test_c1_06_baixa_mailchimp_ok(self, mock_function):
         with Transaction().start(self.database) as txn:
             cursor = txn.cursor
@@ -88,7 +88,7 @@ class TestActivacioCn(TestSwitchingImport):
             history_line_desc = [line["description"] for line in c1.history_line]
             self.assertTrue(any([expected_result in desc for desc in history_line_desc]))
 
-    @mock.patch("som_polissa_soci.models.res_partner.ResPartner.arxiva_client_mailchimp_async")
+    @mock.patch("som_polissa_soci.models.res_partner_address.ResPartnerAddress.unsubscribe_partner_in_customers_no_members_lists")  # noqa: E501
     def test_c1_06_baixa_mailchimp_error__more_than_one_contract(self, mock_function):
         with Transaction().start(self.database) as txn:
             cursor = txn.cursor
@@ -110,7 +110,7 @@ class TestActivacioCn(TestSwitchingImport):
             history_line_desc = [line["description"] for line in c1.history_line]
             self.assertTrue(any([expected_result in desc for desc in history_line_desc]))
 
-    @mock.patch("som_polissa_soci.models.res_partner.ResPartner.arxiva_client_mailchimp_async")
+    @mock.patch("som_polissa_soci.models.res_partner_address.ResPartnerAddress.unsubscribe_partner_in_customers_no_members_lists")  # noqa: E501
     def test_c2_06_baixa_mailchimp_ok(self, mock_mailchimp_function):
         with Transaction().start(self.database) as txn:
             cursor = txn.cursor
@@ -140,7 +140,7 @@ class TestActivacioCn(TestSwitchingImport):
             history_line_desc = [line["description"] for line in c2.history_line]
             self.assertTrue(any([expected_result in desc for desc in history_line_desc]))
 
-    @mock.patch("som_polissa_soci.models.res_partner.ResPartner.arxiva_client_mailchimp_async")
+    @mock.patch("som_polissa_soci.models.res_partner_address.ResPartnerAddress.unsubscribe_partner_in_customers_no_members_lists")  # noqa: E501
     def test_c2_06_baixa_mailchimp_error__more_than_one_contract(self, mock_function):
         with Transaction().start(self.database) as txn:
             cursor = txn.cursor
@@ -163,7 +163,7 @@ class TestActivacioCn(TestSwitchingImport):
             history_line_desc = [line["description"] for line in c2.history_line]
             self.assertTrue(any([expected_result in desc for desc in history_line_desc]))
 
-    @mock.patch("som_polissa_soci.models.res_partner.ResPartner.arxiva_client_mailchimp_async")
+    @mock.patch("som_polissa_soci.models.res_partner_address.ResPartnerAddress.unsubscribe_partner_in_customers_no_members_lists")  # noqa: E501
     def test_c1_06_baixa_mailchimp_error__active_contract(self, mock_function):
         with Transaction().start(self.database) as txn:
             cursor = txn.cursor
