@@ -80,24 +80,6 @@ TABLA_101 = {
             <td>${_(u"%s") % (id.compl_info.iva) }</td>
         % endif
     </tr>
-
-
-
-
-
-##     % for l in id.compl_lines:
-##         <tr class= "${'last_row' if id.last_row == 'compl' else ''}">
-##             % if first_pass:
-##                 <td class="td_first concepte_td" rowspan="${id.header_multi}">${_(u"Altres conceptes")}</td>
-##                 <%first_pass = False%>
-##             % endif
-##             <td class="detall_td" colspan="${id.number_of_columns}">${l['name']}</td>
-##             <td class="subtotal">${_(u"%s €") % formatLang(l['price_subtotal'])}</td>
-##             % if id.iva_column:
-##                 <td class="detall_td periods_td">${_(u"%s") % (l['iva']) }</td>
-##             % endif
-##         </tr>
-##     % endfor
 % endif
 % for l in id.donatiu_lines:
     <tr class= "${'last_row' if id.last_row == 'donatiu' else ''}">
