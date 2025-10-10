@@ -1,17 +1,34 @@
 <?xml version="1.0" ?>
 <openerp>
     <data>
+        <record model="ir.attachment" id="gurb_general_conditions_0001_attachment">
+            <field name="name">Condicions Generals Demo Català adjunt</field>
+            <field name="res_model">som.gurb.cups</field>
+            <field name="res_id" ref="som_gurb.gurb_cups_0001"/>
+        </record>
+        <record id="gurb_general_conditions_0001" model="som.gurb.general.conditions">
+            <field name="active">True</field>
+            <field name="name">Condicions Generals Demo Català</field>
+            <field name="attachment_id" ref="gurb_general_conditions_0001_attachment"/>
+            <field name="lang_id" ref="base.lang_en"/>
+        </record>
+        <record model="ir.attachment" id="gurb_general_conditions_0001_attachment">
+            <field name="res_model">som.gurb.general.conditions</field>
+            <field name="res_id" ref="som_gurb.gurb_general_conditions_0001"/>
+        </record>
         <record id="gurb_cups_0001" model="som.gurb.cups">
             <field name="start_date">2016-01-01</field>
             <field name="gurb_cau_id" ref="gurb_cau_0001" />
             <field name="cups_id" ref="giscedata_cups.cups_01" />
             <field name="polissa_id" ref="giscedata_polissa.polissa_0001" />
+            <field name="general_conditions_id" ref="gurb_general_conditions_0001" />
         </record>
         <record id="gurb_cups_0002" model="som.gurb.cups">
             <field name="start_date">2016-01-01</field>
             <field name="gurb_cau_id" ref="gurb_cau_0001" />
             <field name="cups_id" ref="giscedata_cups.cups_tarifa_018" />
             <field name="polissa_id" ref="giscedata_polissa.polissa_tarifa_018" />
+            <field name="general_conditions_id" ref="gurb_general_conditions_0001" />
         </record>
         <record id="gurb_cups_beta_0001" model="som.gurb.cups.beta">
             <field name="active">True</field>
@@ -28,21 +45,6 @@
             <field name="extra_beta_kw">1</field>
             <field name="gift_beta_kw">0</field>
             <field name="gurb_cups_id" ref="gurb_cups_0002" />
-        </record>
-        <record model="ir.attachment" id="gurb_general_conditions_0001_attachment">
-            <field name="name">Condicions Generals Demo Català adjunt</field>
-            <field name="res_model">som.gurb.cups</field>
-            <field name="res_id" ref="som_gurb.gurb_cups_0001"/>
-        </record>
-        <record id="gurb_general_conditions_0001" model="som.gurb.general.conditions">
-            <field name="active">True</field>
-            <field name="name">Condicions Generals Demo Català</field>
-            <field name="attachment_id" ref="gurb_general_conditions_0001_attachment"/>
-            <field name="lang_id" ref="base.lang_en"/>
-        </record>
-        <record model="ir.attachment" id="gurb_general_conditions_0001_attachment">
-            <field name="res_model">som.gurb.general.conditions</field>
-            <field name="res_id" ref="som_gurb.gurb_general_conditions_0001"/>
         </record>
     </data>
 </openerp>
