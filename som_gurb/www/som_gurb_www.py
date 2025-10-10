@@ -208,7 +208,22 @@ class SomGurbWww(osv.osv_memory):
             return polissa_ids[0]
         return None
 
-    # def activate_gurb_cups_lead(self, cursor, uid, gurb_lead_id, context=None):
+    def activate_gurb_cups_lead(self, cursor, uid, gurb_lead_id, context=None):
+        if context is None:
+            context = {}
+
+        gurb_cups_obj = self.pool.get("som.gurb.cups")
+
+        gurb_lead = gurb_cups_obj.browse(cursor, uid, gurb_lead_id, context=context)
+        if gurb_lead.state != "draft":
+            return {
+                "error": _("El gurb cups no està en estat esborrany"),
+                "code": "GurbCupsNotDraft",
+                "trace": "",
+            }
+        else:
+            gurb_cups_obj.send_signal(cursor, uid, [gurb_lead_id], "button_create_cups")
+            return {"success": True}
 
     def _get_gurb_conditions_id(self, cursor, uid, pol_id, context=None):
         if context is None:

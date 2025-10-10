@@ -208,3 +208,32 @@ class TestsGurbWww(TestsGurbBase):
         }
         result = gurb_www_obj.create_new_gurb_cups(self.cursor, self.uid, form_payload)
         self.assertEqual(result["code"], "BadBeta")
+
+    def test_activate_gurb_cups_lead(self):
+        gurb_www_obj = self.get_model("som.gurb.www")
+        imd_o = self.openerp.pool.get("ir.model.data")
+        gurb_cups_obj = self.get_model("som.gurb.cups")
+
+        gurb_cups_id = imd_o.get_object_reference(
+            self.cursor, self.uid, "som_gurb", "gurb_cups_0001"
+        )[1]
+
+        result = gurb_www_obj.activate_gurb_cups_lead(self.cursor, self.uid, gurb_cups_id)
+
+        gurb_cups_br = gurb_cups_obj.browse(self.cursor, self.uid, gurb_cups_id)
+        self.assertEqual(gurb_cups_br.state, "comming_registration")
+        self.assertTrue(result["success"])
+
+    def test_activate_gurb_cups_lead_fail(self):
+        gurb_www_obj = self.get_model("som.gurb.www")
+        imd_o = self.openerp.pool.get("ir.model.data")
+        gurb_cups_obj = self.get_model("som.gurb.cups")
+
+        gurb_cups_id = imd_o.get_object_reference(
+            self.cursor, self.uid, "som_gurb", "gurb_cups_0001"
+        )[1]
+        gurb_cups_obj.send_signal(self.cursor, self.uid, [gurb_cups_id], "button_create_cups")
+
+        result = gurb_www_obj.activate_gurb_cups_lead(self.cursor, self.uid, gurb_cups_id)
+
+        self.assertEqual(result["code"], "GurbCupsNotDraft")
