@@ -230,12 +230,18 @@ class SomGurbWww(osv.osv_memory):
         if context is None:
             context = {}
 
+        pro_obj = self.pool.get("giscedata.signatura.process")
         wiz_obj = self.pool.get("wizard.create.gurb.cups.signature")
         context["active_id"] = gurb_cups_id
         context["delivery_type"] = "url"
 
         wiz_id = wiz_obj.create(cursor, uid, {}, context=context)
-        wiz_obj.start_signature_process(cursor, uid, [wiz_id], context=context)
+        process_id = wiz_obj.start_signature_process(cursor, uid, [wiz_id], context=context)
+
+        if process_id:
+            pro_br = pro_obj.browse(cursor, uid, process_id, context=context)
+            return pro_br.signature_url
+        return None
 
     def create_new_gurb_cups(self, cursor, uid, form_payload, context=None):
         if context is None:
@@ -311,7 +317,7 @@ class SomGurbWww(osv.osv_memory):
         }
         gurb_cups_id = gurb_cups_obj.create(cursor, uid, create_vals, context=context)
 
-        self._get_signature_url(
+        signature_url = self._get_signature_url(
             cursor, uid, gurb_cups_id, context=context
         )
 
@@ -319,6 +325,7 @@ class SomGurbWww(osv.osv_memory):
             return {
                 "success": True,
                 "gurb_cups_id": gurb_cups_id,
+                "signature_url": signature_url,
             }
         else:
             return {
