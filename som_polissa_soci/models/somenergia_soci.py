@@ -102,13 +102,14 @@ class SomenergiaSoci(osv.osv):
         if isinstance(ids, (list, tuple)):
             ids = ids[0]
 
-        res_partner_obj = self.pool.get("res.partner")
         soci_obj = self.pool.get("somenergia.soci")
         res_partner_address_obj = self.pool.get("res.partner.address")
         conf_obj = self.pool.get("res.config")
 
-        is_member = soci_obj.search(cursor, uid, [("partner_id", "=", ids), ("baixa", "=", False)])
-        if is_member:
+        rpa_data = res_partner_address_obj.read(cursor, uid, ids, ['partner_id'])
+        is_member = soci_obj.search(
+            cursor, uid, [("partner_id", "=", rpa_data['partner_id'][0]), ("baixa", "=", False)])
+        if not is_member:
             return
 
         MAILCHIMP_CLIENT = res_partner_address_obj._get_mailchimp_client()
@@ -116,9 +117,9 @@ class SomenergiaSoci(osv.osv):
 
         list_id = res_partner_address_obj.get_mailchimp_list_id(list_name, MAILCHIMP_CLIENT)
 
-        address_list = res_partner_obj.read(cursor, uid, ids, ["address"])["address"]
+        soci_data = res_partner_address_obj.fill_merge_fields_soci_from_partner(cursor, uid, ids)
         res_partner_address_obj.subscribe_mail_in_list(
-            cursor, uid, address_list, list_id, MAILCHIMP_CLIENT
+            cursor, uid, [soci_data], list_id, MAILCHIMP_CLIENT
         )
 
     def count_active_socis(self, cursor, uid):
