@@ -99,21 +99,21 @@ class TarifaPoolSOM(TarifaPool):
 
         return res
 
-    def get_alter_prmdiari(self):
+    def get_alter_prmdiari(self, check_date):
 
         # Obtenir el fitxer
         file_path = self.conf['pdbc_path']
-        file_name = 'marginalpdbc_%s.1' % date
+        file_name = 'marginalpdbc_%s.1' % check_date.replace('-', '')
         marginal_path = file_path + '/' + file_name
         try:
             fdata = open(marginal_path, 'r')
         except:
-            raise osv.except_osv('Error', "No se ha encontrado MarginalPDBC para el período {}".format(date))
+            raise osv.except_osv('Error', "No se ha encontrado MarginalPDBC para el período {}".format(check_date))
         csv_reader = csv.reader(fdata, delimiter=';')
 
         # Formatarlo obtenint dia-hora i preu
-        year = int(date[:4])
-        month = int(date[4:6])
+        year = int(check_date[:4])
+        month = int(check_date[4:6])
         comp_start_date = TIMEZONE.normalize(
             TIMEZONE.localize(datetime(year, month, 1) + timedelta(hours=1)))
 
@@ -159,7 +159,7 @@ class TarifaPoolSOM(TarifaPool):
         except REECoeficientsNotFound as e:
             if fallback:
                 if component == 'prmdiari':
-                    component_inst = self.get_alter_prmdiari()
+                    component_inst = self.get_alter_prmdiari(day)
                 else:
                     component_inst = Component(datetime.strptime(data_inici, "%Y-%m-%d"))
             else:
