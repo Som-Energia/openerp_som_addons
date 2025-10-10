@@ -2043,7 +2043,16 @@ class GiscedataFacturacioFacturaReport(osv.osv):
                     }
                 )
             if l.tipus in "energia" and l.id in lines_extra_ids:
-                if compl_cat not in l.name and compl_cas not in l.name:
+                if compl_cat in l.name or compl_cas in l.name:
+                    compl_lines.append(
+                        {
+                            "id": l.id,
+                            "name": l.name,
+                            "price_subtotal": l.price_subtotal,
+                            "iva": get_iva_line(l),
+                        }
+                    )
+                else:
                     altres_lines.append(
                         {
                             "name": l.name,
@@ -2051,15 +2060,6 @@ class GiscedataFacturacioFacturaReport(osv.osv):
                             "iva": get_iva_line(l),
                         }
                     )
-            if l.id in lines_extra_ids and (compl_cat in l.name or compl_cas in l.name):
-                compl_lines.append(
-                    {
-                        "id": l.id,
-                        "name": l.name,
-                        "price_subtotal": l.price_subtotal,
-                        "iva": get_iva_line(l),
-                    }
-                )
 
         iva_iese = ""
         if iva_potencia:
