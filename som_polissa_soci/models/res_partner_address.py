@@ -9,6 +9,7 @@ import mailchimp_marketing as MailchimpMarketing
 from mailchimp_marketing.api_client import ApiClientError
 from oorq.decorators import job
 from tools import config
+import ast
 
 FIELDS_NO_MEMBERS = {
     "zip_code": "MMERGE10",
@@ -114,9 +115,10 @@ class ResPartnerAddress(osv.osv):
         """
         Prepare the fields with the data of a non-member client, to be sent to Mailchimp
         """
+        if isinstance(id, (list, tuple)):
+            id = id[0]
         partner_obj = self.pool.get("res.partner")
         municipi_obj = self.pool.get("res.municipi")
-        self.pool.get("res.comunitat.autonoma")
         partner_data = self.read(cursor, uid, id, ["partner_id", "email", "zip", "id_municipi"])
         partner_fields = partner_obj.read(
             cursor, uid, partner_data["partner_id"][0], ["name", "lang"]
@@ -165,9 +167,10 @@ class ResPartnerAddress(osv.osv):
         Prepare the fields with the data of a member, to be sent to Mailchimp
         from res.partner.address id
         """
+        if isinstance(id, (list, tuple)):
+            id = id[0]
         partner_obj = self.pool.get("res.partner")
         municipi_obj = self.pool.get("res.municipi")
-        self.pool.get("res.comunitat.autonoma")
         partner_data = self.read(
             cursor, uid, id, ["partner_id", "email", "zip", "id_municipi", "mobile", "phone"]
         )
@@ -256,7 +259,7 @@ class ResPartnerAddress(osv.osv):
             try:
                 mailchimp_conn.lists.add_list_member(list_id, client_data)
             except ApiClientError as e:
-                if e.status_code == 400 and e.text.title == "Member Exists":
+                if e.status_code == 400 and ast.literal_eval(e.text)['title'] == 'Member Exists':
                     logger.warning(
                         "El correu {} que intentem subscriure ja esta subscrit."
                         "Error de l'API: {}".format(client_data["email_address"], e.text)
@@ -344,9 +347,8 @@ class ResPartnerAddress(osv.osv):
         list_id = self.get_mailchimp_list_id(list_name, MAILCHIMP_CLIENT)
 
         for _id in partner_ids:
-            client_data = self.fill_merge_fields_clients_from_partner(cursor, uid, _id)
             self.archieve_mail_in_list(
-                cursor, uid, [client_data], list_id, MAILCHIMP_CLIENT
+                cursor, uid, _id, list_id, MAILCHIMP_CLIENT
             )
 
     def unsubscribe_partner_in_members_lists(self, cursor, uid, partner_ids, context=None):
@@ -359,9 +361,8 @@ class ResPartnerAddress(osv.osv):
         list_id = self.get_mailchimp_list_id(list_name, MAILCHIMP_CLIENT)
 
         for _id in partner_ids:
-            client_data = self.fill_merge_fields_soci_from_partner(cursor, uid, _id)
             self.archieve_mail_in_list(
-                cursor, uid, [client_data], list_id, MAILCHIMP_CLIENT
+                cursor, uid, _id, list_id, MAILCHIMP_CLIENT
             )
 
     @job(queue="mailchimp_tasks")
