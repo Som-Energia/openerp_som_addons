@@ -2055,14 +2055,9 @@ class GiscedataFacturacioFacturaReport(osv.osv):
                 compl_lines.append(
                     {
                         "id": l.id,
-                        "period": l.product_id.name,
                         "name": l.name,
-                        "quantity": l.quantity,
-                        "multi": l.price_unit_multi,
                         "price_subtotal": l.price_subtotal,
                         "iva": get_iva_line(l),
-                        "data_desde": l.data_desde,
-                        "data_fins": l.data_fins,
                     }
                 )
 
@@ -2859,10 +2854,19 @@ class GiscedataFacturacioFacturaReport(osv.osv):
         lines_data = [lines_data[k] for k in sorted(lines_data.keys())]
         return lines_data
 
-    def get_sub_component_invoice_details_td_accumulative(self, fact, pol, linies):
+    def get_sub_component_invoice_details_td_accumulative(self, fact, pol, linies, name=None):
         lines_data = {}
         total = 0
         iva = 0
+        if not name:
+            name = 'name'
+
+        def get_the_name(line, complex_name):
+            names = complex_name.split('.')
+            lobj = line
+            for name in names:
+                lobj = getattr(lobj, name)
+            return lobj
 
         for l in linies:  # noqa: E741
             l_count = Counter(
@@ -2872,15 +2876,16 @@ class GiscedataFacturacioFacturaReport(osv.osv):
                 }
             )
 
-            if l.name not in lines_data:
-                lines_data[l.name] = l_count
-                lines_data[l.name].update(
+            l_name = get_the_name(l, name)
+            if l_name not in lines_data:
+                lines_data[l_name] = l_count
+                lines_data[l_name].update(
                     {
                         "price_unit_multi": l.price_unit_multi,
                     }
                 )
             else:
-                lines_data[l.name] += l_count
+                lines_data[l_name] += l_count
 
             total += l.price_subtotal
             iva = get_iva_line(l)
@@ -3324,49 +3329,67 @@ class GiscedataFacturacioFacturaReport(osv.osv):
         )
         data["number_of_columns"] = len(self.get_matrix_show_periods(pol)) + 1
         data["iva_column"] = has_iva_column(fact)
+        data["showing_periods"] = self.get_matrix_show_periods(pol)
 
         if data['compl_lines']:
-            extra_obj = fact.pool.get("giscedata.facturacio.extra")
-            f1_obj = fact.pool.get("giscedata.facturacio.importacio.linia")
+            data['compl_info'] = self.get_sub_component_expedient_data(
+                fact, pol, data['compl_lines'])
+        return data
 
-            compl_info = {}
-            data['compl_info'] = compl_info
-            compl_ids = [x['id'] for x in data['compl_lines']]
-            extra_ids = extra_obj.search(
-                self.cursor,
-                self.uid,
-                [
-                    ("polissa_id", "=", pol.id),
-                    ("factura_ids", "in", fact.id),
-                    ("factura_linia_ids", "in", compl_ids)
-                ],
-            )
-            extra_data = extra_obj.read(
-                self.cursor,
-                self.uid,
-                extra_ids,
-                ['origin_invoice']
-            )
-            origins = list(set([x['origin_invoice'] for x in extra_data]))
-            f1_ids = f1_obj.search(
-                self.cursor,
-                self.uid,
-                [
-                    ("cups_id", "=", pol.cups.id),
-                    ("invoice_number_text", "in", origins),
-                    ("type_factura", "=", "C")
-                ]
-            )
-            expedients = set()
-            dates = set()
-            types = set()
-            for f1 in f1_obj.browse(self.cursor, self.uid, f1_ids):
-                expedients.add(f1.num_expedient)
-                dates.add((f1.fecha_factura_desde, f1.fecha_factura_hasta))
-                for f1_invoice in f1.liniafactura_id:
-                    types.add(f1_invoice.tipo_factura)
+    def get_sub_component_expedient_data(self, fact, pol, lines):
+        extra_obj = fact.pool.get("giscedata.facturacio.extra")
+        f1_obj = fact.pool.get("giscedata.facturacio.importacio.linia")
+        l_obj = fact.pool.get("giscedata.facturacio.factura.linia")
 
-            # WIP
+        compl_ids = [x['id'] for x in lines]
+        extra_ids = extra_obj.search(
+            self.cursor,
+            self.uid,
+            [
+                ("polissa_id", "=", pol.id),
+                ("factura_ids", "in", fact.id),
+                ("factura_linia_ids", "in", compl_ids)
+            ],
+        )
+        extra_data = extra_obj.read(
+            self.cursor,
+            self.uid,
+            extra_ids,
+            ['origin_invoice']
+        )
+        origins = list(set([x['origin_invoice'] for x in extra_data]))
+        f1_ids = f1_obj.search(
+            self.cursor,
+            self.uid,
+            [
+                ("cups_id", "=", pol.cups.id),
+                ("invoice_number_text", "in", origins),
+                ("type_factura", "=", "C")
+            ]
+        )
+        if len(f1_ids) != 1:
+            raise osv.except_osv(
+                "Error !",
+                _(
+                    u"Trobats {} F1's d'expedient de anomalia/frau al generar pdf per {}"
+                ).format(len(f1_ids), fact.number),
+            )
+        f1 = f1_obj.browse(self.cursor, self.uid, f1_ids[0])
+        types = set()
+        for f1_invoice in f1.liniafactura_id:
+            types.add(f1_invoice.tipo_factura)
+
+        data = {
+            'expedient': f1.num_expedient,
+            'data_inici': f1.fecha_factura_desde,
+            'data_fi': f1.fecha_factura_hasta,
+            'tipus': '06' if '06' in types else '11'
+        }
+
+        compl_lines = l_obj.browse(self.cursor, self.uid, compl_ids)
+        lines = self.get_sub_component_invoice_details_td_accumulative(
+            fact, pol, compl_lines, name='product_id.name')
+        data.update(lines)
         return data
 
     def get_sub_component_invoice_details_td_excess_power_maximeter(self, fact, pol):
