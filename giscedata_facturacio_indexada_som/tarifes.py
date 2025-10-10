@@ -108,6 +108,8 @@ class TarifaPoolSOM(TarifaPool):
         }
         """
         res = super(TarifaPoolSOM, self).get_available_audit_coefs_gen()
+        res['curve_gen'] = 'curve'
+        res['curve_gen_qh'] = 'B'
         res['pvpc_gen'] = 'prmdiari'
         res['sphdem'] = 'sphdem'
         res['sphauto'] = 'sphauto'
@@ -127,14 +129,17 @@ class TarifaPoolSOM(TarifaPool):
         esios_token = self.conf['esios_token']
         holidays = self.conf['holidays']
 
+        # Curva cuarto-horaria
+        curve_qh = curve.get_component_qh_interpolated()
+        curve = curve * 0.001 # in kWh
+
         # REE
         postfix = ('%s_%s' % (start_date.strftime("%Y%m%d"), end_date.strftime("%Y%m%d")))
         if self.geom_zone == '1' or not self.geom_zone:
             # Precio medio diario
             # A partir de l'1 d'Octubre passa a ser QH
             if start_date.year > 2025 or (start_date.year == 2025 and start_date.month >= 10):
-                pmd_qh = Pmdiario('C2_pmdiario_%(postfix)s' % locals(), esios_token)  # [€/MWh]
-                prmdiari = pmd_qh.get_component_mean()
+                prmdiari = Pmdiario('C2_pmdiario_%(postfix)s' % locals(), esios_token)  # [€/MWh]
             else:
                 prmdiari = Prmdiari('C2_prmdiari_%(postfix)s' % locals(), esios_token)  # [€/MWh]
         else:
@@ -151,9 +156,25 @@ class TarifaPoolSOM(TarifaPool):
 
             prmdiari = sphdem - sphauto
 
+        # Let's transform them in ComponentsQH
+        # First, which components must be divided by 4
+        # (the rest will set same value on each quarter)
+        divided_var_names = []
+        excluded_var_names = ['curve']
+
+        for key, var in locals().items():
+            if (isinstance(var, Component)
+                    and not isinstance(var, ComponentQH)
+                    and key not in excluded_var_names
+            ):
+                new_var = self.transform_local_to_qh(var, key, divided_var_names)
+                exec('{} = new_var'.format(key))
+
         A = (prmdiari * 0.001)
-        B = curve * 0.001
+        B = curve_qh * 0.001
         component = A * B
+
+        component = component.get_component()
 
         audit_keys = self.get_available_audit_coefs_gen()
         for key in self.conf.get('audit_gen', []):
