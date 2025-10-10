@@ -353,6 +353,11 @@ class SomGurbCau(osv.osv):
 
     _columns = {
         "name": fields.char("Nom GURB CAU", size=60, required=True),
+        "priority": fields.integer(
+            "Prioritat",
+            help="Prioritat del GURBCAU per l'assignació de les betes, més baix més prioritat",
+            required=True,
+        ),
         "self_consumption_id": fields.many2one("giscedata.autoconsum", "CAU"),
         "code": fields.char("Codi GURB CAU", size=60, readonly=True),
         "producer": fields.many2one("res.partner", "Productora"),
