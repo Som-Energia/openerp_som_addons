@@ -274,7 +274,7 @@ class SomGurbWww(osv.osv_memory):
         )
         if not gurb_cau_id:
             return {
-                "error": _("El gurb grup no de caus! {}").format(form_payload['gurb_code']),
+                "error": _("El gurb no té caus disponibles! {}").format(form_payload['gurb_code']),
                 "code": "BadGurbGroup",
                 "trace": "",
             }
@@ -296,6 +296,7 @@ class SomGurbWww(osv.osv_memory):
             }
 
         beta_ids = [(0, 0, {
+            "active": True,
             "start_date": datetime.strftime(datetime.today(), "%Y-%m-%d"),
             "beta_kw": beta,
             "extra_beta_kw": 0,
