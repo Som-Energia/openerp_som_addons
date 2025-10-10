@@ -259,6 +259,7 @@ class ResPartner(osv.osv):
         imd_obj = self.pool.get("ir.model.data")
         soci_obj = self.pool.get("somenergia.soci")
         ir_seq = self.pool.get("ir.sequence")
+        rpa_obj = self.pool.get("res.partner.address")
         soci_cat = imd_obj._get_obj(cursor, uid, "som_partner_account", "res_partner_category_soci")
 
         # Assign Member category and ref code
@@ -321,9 +322,9 @@ class ResPartner(osv.osv):
         if not soci_ids:
             soci_ids = [soci_obj.create_one_soci(cursor, uid, partner["id"])]
 
-        soci = soci_obj.browse(cursor, uid, soci_ids[0])
-        soci.subscriu_socia_mailchimp_async(cursor, uid, soci_ids[0], context=context)
-        self.arxiva_client_mailchimp_async(cursor, uid, id, context=context)
+        rpa_obj.subscribe_partner_in_members_lists(cursor, uid, partner["id"], context=context)
+        rpa_obj.unsubscribe_partner_in_customers_no_members_lists(
+            cursor, uid, partner["id"], context=context)
 
         return soci_ids[0]
 
