@@ -34,52 +34,54 @@ TABLA_101 = {
     </tr>
 % endfor
 % if 'compl_info' in id and id.compl_info:
-    <tr >
-        <td class="td_second concepte_td" rowspan="3">${_(u"Altres conceptes")}</td>
-        <td class="td_bold detall_td">${_(u"Facturació Complementaria imputada per part de la Distribuïdora [kWh]")}<br>
-        ${_(u"Número d'expedient: %s") % id.compl_info.expedient}<br>
-        ${_(u"Tipus d'expedient: %s") % TABLA_101[id.compl_info.tipus]}
-        </td>
-        % for p in id.showing_periods:
-            % if p in id.compl_info:
-                <td>${_(u"%s") %(formatLang(id.compl_info[p]["quantity"], digits=2))}</td>
-            % else:
-                <td></td>
-            % endif
-        % endfor
-        <td></td>
-        % if id.iva_column:
+    % for energy_lines_data in id.compl_info.energy_lines_data:
+        <tr >
+            <td class="td_second concepte_td" rowspan="3">${_(u"Altres conceptes")}</td>
+            <td class="td_bold detall_td">${_(u"Facturació Complementaria imputada per part de la Distribuïdora [kWh]")}<br>
+            ${_(u"Número d'expedient: %s") % id.compl_info.expedient}<br>
+            ${_(u"Tipus d'expedient: %s") % TABLA_101[id.compl_info.tipus]}
+            </td>
+            % for p in id.showing_periods:
+                % if p in energy_lines_data:
+                    <td>${_(u"%s") %(formatLang(energy_lines_data[p]["quantity"], digits=2))}</td>
+                % else:
+                    <td></td>
+                % endif
+            % endfor
             <td></td>
-        % endif
-    </tr>
-    <tr>
-        <td class="td_bold detall_td">${_(u"Preu energia [€/kWh]")}</td>
-        % for p in id.showing_periods:
-            % if p in id.compl_info:
-                <td>${_(u"%s") %(locale.str(locale.atof(formatLang(id.compl_info[p]["price_unit_multi"], digits=6))))}</td>
-            % else:
+            % if id.iva_column:
                 <td></td>
             % endif
-        % endfor
-        <td></td>
-        % if id.iva_column:
+        </tr>
+        <tr>
+            <td class="td_bold detall_td">${_(u"Preu energia [€/kWh]")}</td>
+            % for p in id.showing_periods:
+                % if p in energy_lines_data:
+                    <td>${_(u"%s") %(locale.str(locale.atof(formatLang(energy_lines_data[p]["price_unit_multi"], digits=6))))}</td>
+                % else:
+                    <td></td>
+                % endif
+            % endfor
             <td></td>
-        % endif
-    </tr>
-    <tr class="tr_bold ${'last_row' if id.last_row == 'compl' else ''}">
-        <td class="detall_td">${_(u"kWh x €/kWh (del %s al %s)") % (id.compl_info.data_inici, id.compl_info.data_fi)}</td>
-        % for p in id.showing_periods:
-            % if p in id.compl_info:
-                <td>${_(u"%s €") %(formatLang(id.compl_info[p]["price_subtotal"]))}</td>
-            % else:
+            % if id.iva_column:
                 <td></td>
             % endif
-        % endfor
-        <td><span class="subtotal">${_(u"%s €") %(formatLang(id.compl_info.total))}</span></td>
-        % if id.iva_column:
-            <td>${_(u"%s") % (id.compl_info.iva) }</td>
-        % endif
-    </tr>
+        </tr>
+        <tr class="tr_bold ${'last_row' if id.last_row == 'compl' else ''}">
+            <td class="detall_td">${_(u"kWh x €/kWh (del %s al %s)") % (energy_lines_data.data_inici, energy_lines_data.data_fi)}</td>
+            % for p in id.showing_periods:
+                % if p in energy_lines_data:
+                    <td>${_(u"%s €") %(formatLang(energy_lines_data[p]["price_subtotal"]))}</td>
+                % else:
+                    <td></td>
+                % endif
+            % endfor
+            <td><span class="subtotal">${_(u"%s €") %(formatLang(energy_lines_data.total))}</span></td>
+            % if id.iva_column:
+                <td>${_(u"%s") % (energy_lines_data.iva) }</td>
+            % endif
+        </tr>
+    % endfor
 % endif
 % for l in id.donatiu_lines:
     <tr class= "${'last_row' if id.last_row == 'donatiu' else ''}">

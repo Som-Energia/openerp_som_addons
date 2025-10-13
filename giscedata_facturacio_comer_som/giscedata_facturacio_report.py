@@ -3388,9 +3388,15 @@ class GiscedataFacturacioFacturaReport(osv.osv):
         }
 
         compl_lines = l_obj.browse(self.cursor, self.uid, compl_ids)
-        lines = self.get_sub_component_invoice_details_td_accumulative(
-            fact, pol, compl_lines, name='product_id.name')
-        data.update(lines)
+        block = []
+        for start_date in sorted(set([x.data_desde for x in compl_lines])):
+            date_lines = [x for x in compl_lines if x.data_desde == start_date]
+            lines = self.get_sub_component_invoice_details_td_accumulative(
+                fact, pol, date_lines, name='product_id.name')
+            lines['data_inici'] = start_date
+            lines['data_fi'] = date_lines[0].data_fins
+            block.append(lines)
+        data['energy_lines_data'] = block
         return data
 
     def get_sub_component_invoice_details_td_excess_power_maximeter(self, fact, pol):
