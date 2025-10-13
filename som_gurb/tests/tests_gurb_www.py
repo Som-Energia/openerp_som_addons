@@ -8,7 +8,7 @@ class TestsGurbWww(TestsGurbBase):
 
     _start_signature_fnc = (
         "giscedata_signatura_documents_signaturit.giscedata_signatura_documents."
-        "GiscedataSignaturaProcess.start"
+        "GiscedataSignaturaProcess.start_sync"
     )
     _update_signature_fnc = (
         "giscedata_signatura_documents_signaturit.giscedata_signatura_documents."
