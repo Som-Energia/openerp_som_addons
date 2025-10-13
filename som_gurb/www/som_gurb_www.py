@@ -266,6 +266,7 @@ class SomGurbWww(osv.osv_memory):
         wiz_obj = self.pool.get("wizard.create.gurb.cups.signature")
         context["active_id"] = gurb_cups_id
         context["delivery_type"] = "url"
+        context["sync"] = True
 
         wiz_id = wiz_obj.create(cursor, uid, {}, context=context)
         process_id = wiz_obj.start_signature_process(cursor, uid, [wiz_id], context=context)
