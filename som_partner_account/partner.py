@@ -321,8 +321,7 @@ class ResPartner(osv.osv):
         if not soci_ids:
             soci_ids = [soci_obj.create_one_soci(cursor, uid, partner["id"])]
 
-        soci = soci_obj.browse(cursor, uid, soci_ids[0])
-        soci.subscriu_socia_mailchimp_async(cursor, uid, soci_ids[0], context=context)
+        soci_obj.subscriu_socia_mailchimp_async(cursor, uid, soci_ids[0], context=context)
         self.arxiva_client_mailchimp_async(cursor, uid, id, context=context)
 
         return soci_ids[0]
