@@ -8,13 +8,10 @@
             <field name="priority" eval="30"/>
             <field name="arch" type="xml">
                 <xpath expr="//field[@name='phone']" position="replace">
-                    <field name="phone" invisible="1"/>
                 </xpath>
                 <xpath expr="//field[@name='fax']" position="replace">
-                    <field name="fax" invisible="1"/>
                 </xpath>
                 <xpath expr="//field[@name='email']" position="replace">
-                    <field name="email" invisible="1"/>
                 </xpath>
                 <xpath expr="//field[@name='mobile']" position="replace">
                     <group col="16" colspan="4">
