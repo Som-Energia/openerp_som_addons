@@ -37,9 +37,9 @@ class TestsGurbBase(testing.OOTestCase):
         uid = self.uid
         imd_obj = self.openerp.pool.get("ir.model.data")
         polissa_obj = self.openerp.pool.get("giscedata.polissa")
-        polissa_id = imd_obj.get_object_reference(
-            cursor, uid, "giscedata_polissa", context.get("polissa_xml_id", "polissa_tarifa_018")
-        )[1]
+        polissa_ref = context.get("polissa_xml_id", "polissa_tarifa_018")
+        module_ref = context.get("polissa_module", "giscedata_polissa")
+        polissa_id = imd_obj.get_object_reference(cursor, uid, module_ref, polissa_ref)[1]
         polissa_obj.send_signal(cursor, uid, [polissa_id], [
             "validar", "contracte"
         ])

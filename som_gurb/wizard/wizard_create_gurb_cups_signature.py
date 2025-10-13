@@ -161,7 +161,10 @@ class WizardGurbCreateGurbCupsSignature(osv.osv_memory):
         process_id = pro_obj.create(cursor, uid, values, context)
 
         # Executar l'inici del proces
-        pro_obj.start(cursor, uid, [process_id], context=None)
+        if context.get("sync"):
+            pro_obj.start_sync(cursor, uid, [process_id], context=None)
+        else:
+            pro_obj.start(cursor, uid, [process_id], context=None)
 
         return process_id
 

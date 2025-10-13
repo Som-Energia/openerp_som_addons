@@ -197,8 +197,8 @@ class SomGurbWww(osv.osv_memory):
         )
         if polissa_ids:
             polissa_br = polissa_obj.browse(cursor, uid, polissa_ids[0], context=context)
-            if polissa_br.state == "active":
-                sw_ids = sw_obj.search([
+            if polissa_br.state == "activa":
+                sw_ids = sw_obj.search(cursor, uid, [
                     ('cups_polissa_id', '=', polissa_br.id),
                     ('state', '=', 'open'),
                     ('proces_id', 'not in', ["R1"])
@@ -208,7 +208,39 @@ class SomGurbWww(osv.osv_memory):
             return polissa_ids[0]
         return None
 
-    # def activate_gurb_cups_lead(self, cursor, uid, gurb_lead_id, context=None):
+    def activate_gurb_cups_lead(self, cursor, uid, gurb_lead_id, context=None):
+        if context is None:
+            context = {}
+
+        gurb_cups_obj = self.pool.get("som.gurb.cups")
+        sign_docs_obj = self.pool.get("giscedata.signatura.documents")
+        sign_process_obj = self.pool.get("giscedata.signatura.process")
+
+        gurb_lead = gurb_cups_obj.browse(cursor, uid, gurb_lead_id, context=context)
+        search_vals = [("model", "=", "som.gurb.cups,{}".format(gurb_lead_id))]
+        doc_id = sign_docs_obj.search(cursor, uid, search_vals, limit=1)[0]
+        process_id = sign_docs_obj.read(cursor, uid, doc_id, ["process_id"])["process_id"][0]
+
+        sign_process_obj.update(cursor, uid, [process_id], context=context)
+
+        sign_status = sign_process_obj.read(
+            cursor, uid, process_id, ["status"], context=context
+        )["status"]
+        if gurb_lead.state != "draft":
+            return {
+                "success": False,
+                "error": _("El gurb cups no està en estat esborrany"),
+                "code": "GurbCupsNotDraft",
+            }
+        elif sign_status != "completed":
+            return {
+                "success": False,
+                "error": _("La signatura no està completada"),
+                "code": "SignatureNotCompleted",
+            }
+        else:
+            gurb_cups_obj.send_signal(cursor, uid, [gurb_lead_id], "button_create_cups")
+            return {"success": True}
 
     def _get_gurb_conditions_id(self, cursor, uid, pol_id, context=None):
         if context is None:
@@ -234,6 +266,7 @@ class SomGurbWww(osv.osv_memory):
         wiz_obj = self.pool.get("wizard.create.gurb.cups.signature")
         context["active_id"] = gurb_cups_id
         context["delivery_type"] = "url"
+        context["sync"] = True
 
         wiz_id = wiz_obj.create(cursor, uid, {}, context=context)
         process_id = wiz_obj.start_signature_process(cursor, uid, [wiz_id], context=context)
@@ -250,52 +283,57 @@ class SomGurbWww(osv.osv_memory):
         gurb_group_obj = self.pool.get("som.gurb.group")
         gurb_cups_obj = self.pool.get("som.gurb.cups")
 
-        beta = form_payload.get('beta', 0)
-        if beta <= 0:
-            return {
-                "error": _("La beta ha de ser major que 0"),
-                "code": "BadBeta",
-                "trace": "",
-            }
-
         gurb_group_ids = gurb_group_obj.search(
             cursor, uid, [('code', '=', form_payload['gurb_code'])]
         )
+
         if len(gurb_group_ids) == 0:
             return {
+                "success": False,
                 "error": _("Cap Gurb Group amb el codi {}").format(form_payload['gurb_code']),
                 "code": "BadGurbCode",
-                "trace": "",
             }
         gurb_group_id = gurb_group_ids[0]
+        beta = form_payload.get('beta', 0)
 
         gurb_cau_id = gurb_group_obj.get_prioritary_gurb_cau_id(
             cursor, uid, gurb_group_id, beta, context=context
         )
         if not gurb_cau_id:
             return {
-                "error": _("El gurb grup no de caus! {}").format(form_payload['gurb_code']),
+                "success": False,
+                "error": _("El gurb no té caus disponibles! {}").format(form_payload['gurb_code']),
                 "code": "BadGurbGroup",
-                "trace": "",
+            }
+
+        available_betas = self._get_available_betas(
+            cursor, uid, gurb_group_id, form_payload['access_tariff'], context=context
+        )
+        if beta <= 0 or beta not in available_betas:
+            return {
+                "success": False,
+                "error": _("La beta és incorrecta! {}").format(form_payload['beta']),
+                "code": "BadBeta",
             }
 
         cups_id = self._get_cups_id(cursor, uid, form_payload["cups"], context=context)
         if not cups_id:
             return {
+                "success": False,
                 "error": _("No s'ha trobat el CUPS {}").format(form_payload["cups"]),
                 "code": "BadCups",
-                "trace": "",
             }
 
         polissa_id = self._get_polissa_id(cursor, uid, cups_id, context=context)
         if not polissa_id:
             return {
+                "success": False,
                 "error": _("No hi ha polissa o no està disponible"),
                 "code": "ContractERROR",
-                "trace": "",
             }
 
         beta_ids = [(0, 0, {
+            "active": True,
             "start_date": datetime.strftime(datetime.today(), "%Y-%m-%d"),
             "beta_kw": beta,
             "extra_beta_kw": 0,
@@ -329,9 +367,9 @@ class SomGurbWww(osv.osv_memory):
             }
         else:
             return {
+                "success": False,
                 "error": _("No s'ha pogut crear el GURB CUPS"),
                 "code": "CreateGurbCupsError",
-                "trace": "",
             }
 
 
