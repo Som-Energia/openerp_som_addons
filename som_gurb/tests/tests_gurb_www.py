@@ -10,6 +10,10 @@ class TestsGurbWww(TestsGurbBase):
         "giscedata_signatura_documents_signaturit.giscedata_signatura_documents."
         "GiscedataSignaturaProcess.start"
     )
+    _update_signature_fnc = (
+        "giscedata_signatura_documents_signaturit.giscedata_signatura_documents."
+        "GiscedataSignaturaProcess.update"
+    )
     _www_signature_fnc = "som_gurb.www.som_gurb_www.SomGurbWww._get_signature_url"
 
     def test_get_info_gurb__bad_gurb_code(self):
@@ -121,7 +125,7 @@ class TestsGurbWww(TestsGurbBase):
         self.assertFalse(result)
 
     @mock.patch(_start_signature_fnc, return_value=True)
-    def test__create_new_gurb_cups_on_draft_contract(self, start_mock):
+    def test_create_new_gurb_cups_on_draft_contract(self, start_mock):
         gurb_www_obj = self.get_model("som.gurb.www")
 
         form_payload = {
@@ -137,7 +141,7 @@ class TestsGurbWww(TestsGurbBase):
         self.assertTrue(result["success"])
 
     @mock.patch(_www_signature_fnc)
-    def test__create_new_gurb_cups_on_active_contract(self, helper_mock):
+    def test_create_new_gurb_cups_on_active_contract(self, helper_mock):
         helper_mock.return_value = "https://signaturit.com/signing/abcdefg1234567"
 
         gurb_www_obj = self.get_model("som.gurb.www")
@@ -165,7 +169,7 @@ class TestsGurbWww(TestsGurbBase):
         self.assertEqual(result["signature_url"], "https://signaturit.com/signing/abcdefg1234567")
         self.assertTrue(helper_mock.called)
 
-    def test__private_fnc_get_cups_id(self):
+    def test_private_fnc_get_cups_id(self):
         gurb_www_obj = self.get_model("som.gurb.www")
         imd_o = self.openerp.pool.get("ir.model.data")
 
@@ -209,31 +213,70 @@ class TestsGurbWww(TestsGurbBase):
         result = gurb_www_obj.create_new_gurb_cups(self.cursor, self.uid, form_payload)
         self.assertEqual(result["code"], "BadBeta")
 
-    def test_activate_gurb_cups_lead(self):
+    @mock.patch(_start_signature_fnc, return_value=True)
+    @mock.patch(_update_signature_fnc, return_value=True)
+    def test_activate_gurb_cups_lead(self, start_mock, update_mock):
         gurb_www_obj = self.get_model("som.gurb.www")
-        imd_o = self.openerp.pool.get("ir.model.data")
         gurb_cups_obj = self.get_model("som.gurb.cups")
+        sign_docs_obj = self.get_model("giscedata.signatura.documents")
+        sign_process_obj = self.get_model("giscedata.signatura.process")
 
-        gurb_cups_id = imd_o.get_object_reference(
-            self.cursor, self.uid, "som_gurb", "gurb_cups_0001"
-        )[1]
-
+        form_payload = {
+            "gurb_code": "G001",
+            "access_tariff": "2.0TD",
+            "cups": "ES0021126262693495FV",
+            "beta": 2.0,
+        }
+        gurb_cups_id = gurb_www_obj.create_new_gurb_cups(
+            self.cursor, self.uid, form_payload
+        )["gurb_cups_id"]
+        search_vals = [("model", "=", "som.gurb.cups,{}".format(gurb_cups_id))]
+        doc_id = sign_docs_obj.search(self.cursor, self.uid, search_vals, limit=1)[0]
+        process_id = sign_docs_obj.browse(self.cursor, self.uid, doc_id).process_id.id
+        sign_process_obj.write(self.cursor, self.uid, [process_id], {'status': 'completed'})
         result = gurb_www_obj.activate_gurb_cups_lead(self.cursor, self.uid, gurb_cups_id)
 
         gurb_cups_br = gurb_cups_obj.browse(self.cursor, self.uid, gurb_cups_id)
         self.assertEqual(gurb_cups_br.state, "comming_registration")
         self.assertTrue(result["success"])
 
-    def test_activate_gurb_cups_lead_fail(self):
+    @mock.patch(_start_signature_fnc, return_value=True)
+    @mock.patch(_update_signature_fnc, return_value=True)
+    def test_activate_gurb_cups_lead_fail_state(self, start_mock, update_mock):
         gurb_www_obj = self.get_model("som.gurb.www")
-        imd_o = self.openerp.pool.get("ir.model.data")
         gurb_cups_obj = self.get_model("som.gurb.cups")
 
-        gurb_cups_id = imd_o.get_object_reference(
-            self.cursor, self.uid, "som_gurb", "gurb_cups_0001"
-        )[1]
+        form_payload = {
+            "gurb_code": "G001",
+            "access_tariff": "2.0TD",
+            "cups": "ES0021126262693495FV",
+            "beta": 2.0,
+        }
+        gurb_cups_id = gurb_www_obj.create_new_gurb_cups(
+            self.cursor, self.uid, form_payload
+        )["gurb_cups_id"]
         gurb_cups_obj.send_signal(self.cursor, self.uid, [gurb_cups_id], "button_create_cups")
-
         result = gurb_www_obj.activate_gurb_cups_lead(self.cursor, self.uid, gurb_cups_id)
 
         self.assertEqual(result["code"], "GurbCupsNotDraft")
+
+    @mock.patch(_start_signature_fnc, return_value=True)
+    @mock.patch(_update_signature_fnc, return_value=True)
+    def test_activate_gurb_cups_lead_fail_sign(self, start_mock, update_mock):
+        gurb_www_obj = self.get_model("som.gurb.www")
+        gurb_cups_obj = self.get_model("som.gurb.cups")
+
+        form_payload = {
+            "gurb_code": "G001",
+            "access_tariff": "2.0TD",
+            "cups": "ES0021126262693495FV",
+            "beta": 2.0,
+        }
+        gurb_cups_id = gurb_www_obj.create_new_gurb_cups(
+            self.cursor, self.uid, form_payload
+        )["gurb_cups_id"]
+        result = gurb_www_obj.activate_gurb_cups_lead(self.cursor, self.uid, gurb_cups_id)
+
+        gurb_cups_br = gurb_cups_obj.browse(self.cursor, self.uid, gurb_cups_id)
+        self.assertEqual(gurb_cups_br.state, "draft")
+        self.assertEqual(result["code"], "SignatureNotCompleted")
