@@ -3387,15 +3387,33 @@ class GiscedataFacturacioFacturaReport(osv.osv):
             'tipus': '06' if '06' in types else '11'
         }
 
+        tarifa_cargos = self.get_tarifa_elect_atr(fact, "pricelist_tarifas_cargos_electricidad")
+        tarifa_peajes = self.get_tarifa_elect_atr(fact, "pricelist_tarifas_peajes_electricidad")
         compl_lines = l_obj.browse(self.cursor, self.uid, compl_ids)
         block = []
         for start_date in sorted(set([x.data_desde for x in compl_lines])):
             date_lines = [x for x in compl_lines if x.data_desde == start_date]
-            lines = self.get_sub_component_invoice_details_td_accumulative(
-                fact, pol, date_lines, name='product_id.name')
-            lines['data_inici'] = start_date
-            lines['data_fi'] = date_lines[0].data_fins
+            lines = {}
+            total = 0.0
+            for l in date_lines:  # noqa: E741
+                atr_tolls = self.get_atr_price(fact, tarifa_peajes, l)
+                atr_charges = self.get_atr_price(fact, tarifa_cargos, l)
+                lines[l.product_id.name] = {
+                    "quantity": l["quantity"],
+                    "price_subtotal": l["price_subtotal"],
+                    "price_unit_multi": l["price_unit_multi"],
+                    "price_tolls": atr_tolls,
+                    "price_charges": atr_charges,
+                    "tolls": atr_tolls * l["quantity"],
+                    "charges": atr_charges * l["quantity"],
+                }
+                total += l["price_subtotal"]
+            lines["total"] = total
+            lines["iva"] = get_iva_line(l)
+            lines["data_inici"] = start_date
+            lines["data_fi"] = l.data_fins
             block.append(lines)
+
         data['energy_lines_data'] = block
         return data
 

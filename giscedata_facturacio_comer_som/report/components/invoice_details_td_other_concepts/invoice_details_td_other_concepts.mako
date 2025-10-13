@@ -36,8 +36,8 @@ TABLA_101 = {
 % if 'compl_info' in id and id.compl_info:
     % for energy_lines_data in id.compl_info.energy_lines_data:
         <tr >
-            <td class="td_second concepte_td" rowspan="3">${_(u"Altres conceptes")}</td>
-            <td class="td_bold detall_td">${_(u"Facturació Complementaria imputada per part de la Distribuïdora [kWh]")}<br>
+            <td class="td_first concepte_td" rowspan="3">${_(u"Facturació Complementaria imputada per part de la Distribuïdora")}</td>
+            <td class="td_bold detall_td">${_(u"Energia [kWh]")}<br>
             ${_(u"Número d'expedient: %s") % id.compl_info.expedient}<br>
             ${_(u"Tipus d'expedient: %s") % TABLA_101[id.compl_info.tipus]}
             </td>
@@ -67,7 +67,7 @@ TABLA_101 = {
                 <td></td>
             % endif
         </tr>
-        <tr class="tr_bold ${'last_row' if id.last_row == 'compl' else ''}">
+        <tr class="td_bold">
             <td class="detall_td">${_(u"kWh x €/kWh (del %s al %s)") % (energy_lines_data.data_inici, energy_lines_data.data_fi)}</td>
             % for p in id.showing_periods:
                 % if p in energy_lines_data:
@@ -79,6 +79,64 @@ TABLA_101 = {
             <td><span class="subtotal">${_(u"%s €") %(formatLang(energy_lines_data.total))}</span></td>
             % if id.iva_column:
                 <td>${_(u"%s") % (energy_lines_data.iva) }</td>
+            % endif
+        </tr>
+        <tr>
+            <td class="td_second concepte_td" rowspan="2">${_(u"Peatges")}</td>
+            <td class="td_bold detall_td">${_(u"Preu peatges per electricitat utilitzada [€/kWh]")}</td>
+            % for p in id.showing_periods:
+                % if p in energy_lines_data:
+                    <td>${_(u"%s") %(formatLang(energy_lines_data[p]["price_tolls"], digits=6))}</td>
+                % else:
+                    <td></td>
+                % endif
+            % endfor
+            <td></td>
+            % if id.iva_column:
+                <td></td>
+            % endif
+        </tr>
+        <tr>
+            <td class="td_bold detall_td">${_(u"kWh x €/kWh")}</td>
+            % for p in id.showing_periods:
+                % if p in energy_lines_data:
+                    <td>${_(u"%s €") %(locale.str(locale.atof(formatLang(energy_lines_data[p]["tolls"], digits=6))))}</td>
+                % else:
+                    <td></td>
+                % endif
+            % endfor
+            <td></td>
+            % if id.iva_column:
+                <td></td>
+            % endif
+        </tr>
+        <tr>
+            <td class="td_third concepte_td" rowspan=2>${_(u"Càrrecs")}</td>
+            <td class="td_bold detall_td">${_(u"Preu càrrecs per electricitat utilitzades [€/kWh]")}</td>
+            % for p in id.showing_periods:
+                % if p in energy_lines_data:
+                    <td>${_(u"%s") %(formatLang(energy_lines_data[p]["price_charges"], digits=6))}</td>
+                % else:
+                    <td></td>
+                % endif
+            % endfor
+            <td></td>
+            % if id.iva_column:
+                <td></td>
+            % endif
+        </tr>
+        <tr class="${'last_row' if id.last_row == 'compl' else ''}">
+            <td class="td_bold detall_td">${_(u"kWh x €/kWh")}</td>
+            % for p in id.showing_periods:
+                % if p in energy_lines_data:
+                    <td>${_(u"%s €") %(locale.str(locale.atof(formatLang(energy_lines_data[p]["charges"], digits=2))))}</td>
+                % else:
+                    <td></td>
+                % endif
+            % endfor
+            <td></td>
+            % if id.iva_column:
+                <td></td>
             % endif
         </tr>
     % endfor
