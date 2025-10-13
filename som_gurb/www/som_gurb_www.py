@@ -197,8 +197,8 @@ class SomGurbWww(osv.osv_memory):
         )
         if polissa_ids:
             polissa_br = polissa_obj.browse(cursor, uid, polissa_ids[0], context=context)
-            if polissa_br.state == "active":
-                sw_ids = sw_obj.search([
+            if polissa_br.state == "activa":
+                sw_ids = sw_obj.search(cursor, uid, [
                     ('cups_polissa_id', '=', polissa_br.id),
                     ('state', '=', 'open'),
                     ('proces_id', 'not in', ["R1"])
@@ -282,17 +282,10 @@ class SomGurbWww(osv.osv_memory):
         gurb_group_obj = self.pool.get("som.gurb.group")
         gurb_cups_obj = self.pool.get("som.gurb.cups")
 
-        beta = form_payload.get('beta', 0)
-        if beta <= 0:
-            return {
-                "success": False,
-                "error": _("La beta ha de ser major que 0"),
-                "code": "BadBeta",
-            }
-
         gurb_group_ids = gurb_group_obj.search(
             cursor, uid, [('code', '=', form_payload['gurb_code'])]
         )
+
         if len(gurb_group_ids) == 0:
             return {
                 "success": False,
@@ -300,6 +293,7 @@ class SomGurbWww(osv.osv_memory):
                 "code": "BadGurbCode",
             }
         gurb_group_id = gurb_group_ids[0]
+        beta = form_payload.get('beta', 0)
 
         gurb_cau_id = gurb_group_obj.get_prioritary_gurb_cau_id(
             cursor, uid, gurb_group_id, beta, context=context
@@ -309,6 +303,16 @@ class SomGurbWww(osv.osv_memory):
                 "success": False,
                 "error": _("El gurb no té caus disponibles! {}").format(form_payload['gurb_code']),
                 "code": "BadGurbGroup",
+            }
+
+        available_betas = self._get_available_betas(
+            cursor, uid, gurb_group_id, form_payload['access_tariff'], context=context
+        )
+        if beta <= 0 or beta not in available_betas:
+            return {
+                "success": False,
+                "error": _("La beta és incorrecta! {}").format(form_payload['beta']),
+                "code": "BadBeta",
             }
 
         cups_id = self._get_cups_id(cursor, uid, form_payload["cups"], context=context)

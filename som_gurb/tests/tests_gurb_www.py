@@ -153,7 +153,11 @@ class TestsGurbWww(TestsGurbBase):
             self.cursor, self.uid, "som_polissa", "res_partner_domestic"
         )[1]
         res_partner_obj.write(self.cursor, self.uid, titular_id, {"lang": "en_US"})
-        self.activar_polissa_CUPS()
+        ctx = {
+            "polissa_module": "som_polissa",
+            "polissa_xml_id": "polissa_domestica_0100"
+        }
+        self.activar_polissa_CUPS(context=ctx)
         gurb_cups_id = imd_obj.get_object_reference(
             self.cursor, self.uid, "som_gurb", "gurb_cups_0001"
         )[1]
@@ -240,6 +244,28 @@ class TestsGurbWww(TestsGurbBase):
         }
         result = gurb_www_obj.create_new_gurb_cups(self.cursor, self.uid, form_payload)
         self.assertEqual(result["code"], "ContractERROR")
+
+    def test_create_new_gurb_cups_no_gurb_group(self):
+        gurb_www_obj = self.get_model("som.gurb.www")
+        form_payload = {
+            "gurb_code": "G123",
+            "access_tariff": "2.0TD",
+            "cups": "ES0021000000000001",
+            "beta": 1,
+        }
+        result = gurb_www_obj.create_new_gurb_cups(self.cursor, self.uid, form_payload)
+        self.assertEqual(result["code"], "BadGurbCode")
+
+    def test_create_new_gurb_cups_bad_gurb_group(self):
+        gurb_www_obj = self.get_model("som.gurb.www")
+        form_payload = {
+            "gurb_code": "G002",
+            "access_tariff": "2.0TD",
+            "cups": "ES0021000000000001",
+            "beta": 1,
+        }
+        result = gurb_www_obj.create_new_gurb_cups(self.cursor, self.uid, form_payload)
+        self.assertEqual(result["code"], "BadGurbGroup")
 
     @mock.patch(_start_signature_fnc, return_value=True)
     @mock.patch(_update_signature_fnc, return_value=True)
