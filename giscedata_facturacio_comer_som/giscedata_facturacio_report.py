@@ -904,6 +904,21 @@ class GiscedataFacturacioFacturaReport(osv.osv):
             factura_linia_ids.extend(eld["factura_linia_ids"])
         return factura_linia_ids
 
+    def get_all_lines_in_extralines(self, pol):
+        extra_obj = pol.pool.get("giscedata.facturacio.extra")
+        extra_ids = extra_obj.search(
+            self.cursor,
+            self.uid,
+            [("polissa_id", "=", pol.id), ],
+            context={"active_test": False}
+        )
+        extra_linia_datas = extra_obj.read(self.cursor, self.uid, extra_ids, ["factura_linia_ids"])
+
+        factura_linia_ids = []
+        for eld in extra_linia_datas:
+            factura_linia_ids.extend(eld["factura_linia_ids"])
+        return factura_linia_ids
+
     def get_real_energy_lines(self, fact, pol):
         real_energy = []
         lines_extra_ids = self.get_lines_in_extralines(fact, pol)
@@ -1987,7 +2002,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
 
         compl_cat = "Facturació Complementaria imputada per part de la Distribuïdora"
         compl_cas = "Facturación Complementaria imputada por parte de la Distribuidora"
-        lines_extra_ids = self.get_lines_in_extralines(fact, pol)
+        lines_extra_ids = self.get_all_lines_in_extralines(pol)
         lloguer_lines = []
         bosocial_lines = []
         donatiu_lines = []
@@ -3340,6 +3355,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
     def get_sub_component_expedient_data(self, fact, pol, lines):
         extra_obj = fact.pool.get("giscedata.facturacio.extra")
         f1_obj = fact.pool.get("giscedata.facturacio.importacio.linia")
+        f1f_obj = fact.pool.get("giscedata.facturacio.importacio.linia.factura")
         l_obj = fact.pool.get("giscedata.facturacio.factura.linia")
 
         compl_ids = [x['id'] for x in lines]
@@ -3351,6 +3367,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
                 ("factura_ids", "in", fact.id),
                 ("factura_linia_ids", "in", compl_ids)
             ],
+            context={"active_test": False}
         )
         extra_data = extra_obj.read(
             self.cursor,
@@ -3366,24 +3383,39 @@ class GiscedataFacturacioFacturaReport(osv.osv):
                 ("cups_id", "=", pol.cups.id),
                 ("invoice_number_text", "in", origins),
                 ("type_factura", "=", "C")
-            ]
+            ],
+            context={"active_test": False}
         )
-        if len(f1_ids) != 1:
+        if len(f1_ids) == 0:
             raise osv.except_osv(
                 "Error !",
                 _(
-                    u"Trobats {} F1's d'expedient de anomalia/frau al generar pdf per {}"
+                    u"No s'han trobats F1's d'expedient de anomalia/frau al generar pdf per {}"
                 ).format(len(f1_ids), fact.number),
             )
-        f1 = f1_obj.browse(self.cursor, self.uid, f1_ids[0])
-        types = set()
-        for f1_invoice in f1.liniafactura_id:
-            types.add(f1_invoice.tipo_factura)
 
+        f1_datas = f1_obj.read(
+            self.cursor,
+            self.uid,
+            f1_ids,
+            ['num_expedient']
+        )
+        expedient = ','.join(list(set([f1_data['num_expedient'] for f1_data in f1_datas])))
+        f1f_ids = f1f_obj.search(
+            self.cursor,
+            self.uid,
+            [('linia_id', 'in', f1_ids)]
+        )
+        f1f_datas = f1f_obj.read(
+            self.cursor,
+            self.uid,
+            f1f_ids,
+            ['tipo_factura']
+        )
+        types = list(set([f1f_data['tipo_factura']
+                     for f1f_data in f1f_datas if f1f_data['tipo_factura']]))
         data = {
-            'expedient': f1.num_expedient,
-            'data_inici': f1.fecha_factura_desde,
-            'data_fi': f1.fecha_factura_hasta,
+            'expedient': expedient,
             'tipus': '06' if '06' in types else '11'
         }
 
