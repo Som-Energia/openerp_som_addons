@@ -42,6 +42,7 @@ class SomenergiaSoci(osv.osv):
         """Creates only one soci (member) from a partner"""
         if isinstance(partner_id, (tuple, list)):
             partner_id[0]
+        rpa_obj = self.pool.get("res.partner.address")
 
         vals = {"partner_id": partner_id}
         soci_id = self.search(cursor, uid, [("partner_id", "=", partner_id)], context=context)
@@ -50,12 +51,18 @@ class SomenergiaSoci(osv.osv):
         else:
             soci_id = self.create(cursor, uid, vals, context=context)
 
+        if soci_id:
+            rpa_obj.unsubscribe_partner_in_customers_no_members_lists(
+                cursor, uid, partner_id, context=context
+            )
+            rpa_obj.subscribe_partner_in_members_lists(
+                cursor, uid, partner_id, context=context
+            )
         return soci_id
 
     def create_socis(self, cr_orig, uid, ids, context=None):
         """creates a soci from a partner"""
         partner_obj = self.pool.get("res.partner")
-        address_obj = self.pool.get("res.partner.address")
         logger = logging.getLogger("openerp.{0}.create_soci".format(__name__))
 
         if not isinstance(ids, (tuple, list)):
@@ -75,10 +82,6 @@ class SomenergiaSoci(osv.osv):
                     u"Created soci {0} ({1}) from partner {2} ({3})".format(
                         soci_id, partner_vals["ref"], partner_vals["name"], partner_id
                     )
-                )
-                address_obj.subscribe_partner_in_members_lists(cursor, uid, [partner_id], context)
-                address_obj.unsubscribe_partner_in_customers_no_members_lists(
-                    cursor, uid, [partner_id], context
                 )
                 cursor.commit()
             except Exception as e:
