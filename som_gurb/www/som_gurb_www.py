@@ -162,8 +162,12 @@ class SomGurbWww(osv.osv_memory):
             cursor, uid, "som_gurb", quota_product_name
         )[1]
 
-        initial = ggroup.pricelist_id.get_atr_price('tp', initial_product_id, False)
-        quota = ggroup.pricelist_id.get_atr_price('tp', quota_product_id, False)
+        initial = ggroup.pricelist_id.get_atr_price(
+            'tp', initial_product_id, False, with_taxes=True
+        )
+        quota = ggroup.pricelist_id.get_atr_price(
+            'tp', quota_product_id, False, with_taxes=True
+        )
 
         return {
             'initial_quota': initial[0],
