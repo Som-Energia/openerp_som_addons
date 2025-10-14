@@ -278,6 +278,44 @@ class ResPartnerAddress(osv.osv):
                     list_id, client_data["email_address"]))
 
     @job(queue="mailchimp_tasks")
+    def update_members_data_mailchimp_async(self, cursor, uid, partner_ids, context=None):
+        self.update_members_data_mailchimp_sync(cursor, uid, partner_ids, context=context)
+
+    def update_members_data_mailchimp_sync(self, cursor, uid, partner_ids, context=None):
+        if not isinstance(partner_ids, (list, tuple)):
+            partner_ids = [partner_ids]
+        logger = logging.getLogger("openerp.{0}.update_members_data_mailchimp".format(__name__))
+        MAILCHIMP_CLIENT = self._get_mailchimp_client()
+        conf_obj = self.pool.get("res.config")
+        list_name = conf_obj.get(cursor, uid, "mailchimp_socis_list", None)
+        list_id = self.get_mailchimp_list_id(list_name, MAILCHIMP_CLIENT)
+
+        for _id in partner_ids:
+            client_data = self.fill_merge_fields_soci_from_partner(cursor, uid, _id)
+            try:
+                subscriber_hash = md5(client_data["email_address"].lower()).hexdigest()
+                MAILCHIMP_CLIENT.lists.update_list_member(list_id, subscriber_hash, client_data)
+            except ApiClientError as e:
+                if e.status_code == 404:
+                    logger.warning(
+                        "L'API no ha permès actualitzar l'email {}. "
+                        "Error comú quan el mail no es troba a la llista: "
+                        "Error de l'API: {}".format(client_data["email_address"], e.text)
+                    )
+                else:
+                    raise osv.except_osv(
+                        _("Error"),
+                        _(
+                            "Error en actualitzar l'email {}:\n{}".format(
+                                client_data["email_address"], e.text
+                            )
+                        ),
+                    )
+            else:
+                logger.info("Mailchimp: Email actualitzat a la llista {}: {}".format(
+                    list_id, client_data["email_address"]))
+
+    @job(queue="mailchimp_tasks")
     def update_client_email_in_all_lists_async(
         self, cursor, uid, ids, old_email, email, mailchimp_conn, context=None
     ):
