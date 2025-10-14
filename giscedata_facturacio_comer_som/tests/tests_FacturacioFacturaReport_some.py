@@ -1720,6 +1720,7 @@ class Tests_FacturacioFacturaReport_invoice_details_other_concepts(
                 "lloguer_lines": [],
                 "bosocial_lines": [],
                 "donatiu_lines": [],
+                "compl_lines": [],
                 "altres_lines": [],
                 "iese_lines": [],
                 "iva_lines": [],
@@ -1729,7 +1730,7 @@ class Tests_FacturacioFacturaReport_invoice_details_other_concepts(
                 "percentatges_exempcio_splitted": None,
                 "percentatges_exempcio": None,
                 "is_excempcio_IE_base": None,
-                "donatiu": 0.0,
+                "donatiu": 0,
                 "amount_total": 10.0,
             },
         )
@@ -1783,6 +1784,7 @@ class Tests_FacturacioFacturaReport_invoice_details_other_concepts(
                     }
                 ],
                 "bosocial_lines": [],
+                "compl_lines": [],
                 "donatiu_lines": [],
                 "altres_lines": [],
                 "iese_lines": [],

@@ -5,7 +5,7 @@ from osv import osv
 import yaml
 import copy
 
-from som_leads_polissa.giscedata_crm_lead import WWW_DATA_FORM_HEADER
+from som_leads_polissa.models.giscedata_crm_lead import WWW_DATA_FORM_HEADER
 from giscedata_cups.giscedata_cups import get_dso
 
 
@@ -127,7 +127,7 @@ class SomLeadWww(osv.osv_memory):
             "titular_pu": member["address"].get("door"),
             "titular_bq": member["address"].get("block"),
             "titular_id_municipi": member["address"].get("city_id"),
-            "titular_email": member.get("email"),
+            "titular_email": member.get("email", "").lower(),
             "titular_phone": member.get("phone"),
             "titular_mobile": member.get("phone2"),
             "titular_phone_prefix": member.get("phone_prefix"),
