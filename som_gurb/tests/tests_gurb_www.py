@@ -94,15 +94,15 @@ class TestsGurbWww(TestsGurbBase):
             "2.0TD"
         )
 
-        self.assertEqual(result["initial_quota"], 3.75)
-        self.assertEqual(result["quota"], 5)
+        self.assertEqual(result["initial_quota"], 3.75 * 1.21)
+        self.assertEqual(result["quota"], 5 * 1.21)
 
         result = gurb_www_o.get_info_gurb(
             self.cursor, self.uid,
             'G001',
             "3.0TD"
         )
-        self.assertEqual(result["quota"], 4)
+        self.assertEqual(result["quota"], 4 * 1.21)
 
     def test__check_coordinates_2km_validation__inside2km(self):
         gurb_www_obj = self.get_model("som.gurb.www")
