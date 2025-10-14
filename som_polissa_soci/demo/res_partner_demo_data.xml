@@ -67,5 +67,22 @@
                 <field name="type">default</field>
                 <field name="partner_id" ref="res_partner_nosoci2"/>
         </record>
+        <record id="res_partner_address_domestic" model="res.partner.address">
+            <field name="city">Berga</field>
+            <field name="name">Adreça Física, Persona</field>
+            <field name="zip">17800</field>
+            <field name="title">M.</field>
+            <field name="country_id" model="res.country" search="[('name','=','Espanya')]"/>
+            <field name="street">Major, 32</field>
+            <field name="type">default</field>
+            <field name="email">test@test.test</field>
+            <field name="partner_id" ref="som_polissa.res_partner_domestic"/>
+            <field name="mobile">600000000</field>
+        </record>
+        <record id="soci_0002" model="somenergia.soci">
+            <field name="partner_id" ref="som_polissa.res_partner_domestic"/>
+            <field name="ref">S0002</field>
+            <field name="lang">en_US</field>
+        </record>
      </data>
 </openerp>
