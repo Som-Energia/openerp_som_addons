@@ -2870,19 +2870,10 @@ class GiscedataFacturacioFacturaReport(osv.osv):
         lines_data = [lines_data[k] for k in sorted(lines_data.keys())]
         return lines_data
 
-    def get_sub_component_invoice_details_td_accumulative(self, fact, pol, linies, name=None):
+    def get_sub_component_invoice_details_td_accumulative(self, fact, pol, linies):
         lines_data = {}
         total = 0
         iva = 0
-        if not name:
-            name = 'name'
-
-        def get_the_name(line, complex_name):
-            names = complex_name.split('.')
-            lobj = line
-            for name in names:
-                lobj = getattr(lobj, name)
-            return lobj
 
         for l in linies:  # noqa: E741
             l_count = Counter(
@@ -2892,16 +2883,15 @@ class GiscedataFacturacioFacturaReport(osv.osv):
                 }
             )
 
-            l_name = get_the_name(l, name)
-            if l_name not in lines_data:
-                lines_data[l_name] = l_count
-                lines_data[l_name].update(
+            if l.name not in lines_data:
+                lines_data[l.name] = l_count
+                lines_data[l.name].update(
                     {
                         "price_unit_multi": l.price_unit_multi,
                     }
                 )
             else:
-                lines_data[l_name] += l_count
+                lines_data[l.name] += l_count
 
             total += l.price_subtotal
             iva = get_iva_line(l)
