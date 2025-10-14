@@ -18,6 +18,13 @@ _GURB_CUPS_STATES = [
 ]
 
 
+def parse_datetime(date_string):
+    try:
+        return datetime.strptime(date_string, "%Y-%m-%d %H:%M:%S")
+    except ValueError:
+        return datetime.strptime(date_string, "%Y-%m-%d")
+
+
 class SomGurbGeneralConditions(osv.osv):
     _name = "som.gurb.general.conditions"
 
@@ -283,7 +290,7 @@ class SomGurbCups(osv.osv):
             som_gurb_beta_o.activate_future_beta(
                 cursor, uid, future_beta[0], data_inici, context=context
             )
-
+        self.send_signal(cursor, uid, [gurb_cups_id], "button_activate_modification")
         self.send_signal(cursor, uid, [gurb_cups_id], "button_activate_cups")
 
     def check_only_one_gurb_service(self, cursor, uid, gurb_cups_id, context=None):
@@ -835,7 +842,7 @@ class SomGurbCupsBeta(osv.osv):
             actual_beta = self.search(cursor, uid, search_vals, context=context, limit=1)
 
             end_date = (
-                datetime.strptime(data_inici, "%Y-%m-%d") - timedelta(days=1)
+                parse_datetime(data_inici) - timedelta(days=1)
             ).strftime("%Y-%m-%d")
 
             write_vals = {
