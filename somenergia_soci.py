@@ -139,17 +139,13 @@ class SomenergiaSoci(osv.osv):
 
 
     def arxiva_socia_mailchimp(self, cursor, uid, ids, context=None):
-        import mailchimp_marketing as MailchimpMarketing
         if not isinstance(ids, (list, tuple)):
             ids = [ids]
-        MAILCHIMP_CLIENT = MailchimpMarketing.Client(
-            dict(api_key=config.options.get('mailchimp_apikey'),
-                 server=config.options.get('mailchimp_server_prefix')
-            ))
 
         conf_obj = self.pool.get('res.config')
         res_partner_obj = self.pool.get('res.partner')
         res_partner_address_obj = self.pool.get('res.partner.address')
+        MAILCHIMP_CLIENT = res_partner_address_obj._get_mailchimp_client()
 
         list_name = conf_obj.get(
             cursor, uid, 'mailchimp_socis_list', None)
