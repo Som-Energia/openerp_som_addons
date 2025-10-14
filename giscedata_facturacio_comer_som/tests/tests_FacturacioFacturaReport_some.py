@@ -1691,13 +1691,13 @@ class Tests_FacturacioFacturaReport_invoice_details_other_concepts(
     Tests_FacturacioFacturaReport_base
 ):
     @mock.patch.object(
-        giscedata_facturacio_report.GiscedataFacturacioFacturaReport, "get_lines_in_extralines"
+        giscedata_facturacio_report.GiscedataFacturacioFacturaReport, "get_all_lines_in_extralines"
     )
     def test__som_report_comp_invoice_details_other_concepts__without_other_lines(
-        self, get_lines_in_extralines_mock_function
+        self, get_all_lines_in_extralines_mock_function
     ):
 
-        get_lines_in_extralines_mock_function.return_value = []
+        get_all_lines_in_extralines_mock_function.return_value = []
         f_id = self.get_fixture("giscedata_facturacio", "factura_0001")
         fiscal_pos_obj = self.model("account.fiscal.position")
         fiscal_pos_ids = fiscal_pos_obj.search(self.cursor, self.uid, [], limit=1)
@@ -1736,13 +1736,13 @@ class Tests_FacturacioFacturaReport_invoice_details_other_concepts(
         )
 
     @mock.patch.object(
-        giscedata_facturacio_report.GiscedataFacturacioFacturaReport, "get_lines_in_extralines"
+        giscedata_facturacio_report.GiscedataFacturacioFacturaReport, "get_all_lines_in_extralines"
     )
     def test__som_report_comp_invoice_details_other_concepts__with_lloguer(
-        self, get_lines_in_extralines_mock_function
+        self, get_all_lines_in_extralines_mock_function
     ):
 
-        get_lines_in_extralines_mock_function.return_value = []
+        get_all_lines_in_extralines_mock_function.return_value = []
         f_id = self.get_fixture("giscedata_facturacio", "factura_0008")
         fiscal_pos_obj = self.model("account.fiscal.position")
         fiscal_pos_ids = fiscal_pos_obj.search(self.cursor, self.uid, [], limit=1)
