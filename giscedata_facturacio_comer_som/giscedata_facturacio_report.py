@@ -207,7 +207,8 @@ def clean_tax_name(tax_name):
 
 
 def get_reactive_lines_clean(fact):
-    return [l for l in fact.linies_reactiva if compl_cat not in l.name and compl_cas not in l.name]  # noqa: E741,E501
+    return [l for l in fact.linies_reactiva if  # noqa: E741
+            compl_cat not in l.name and compl_cas not in l.name]  # noqa: E741
 
 
 class GiscedataFacturacioFacturaReport(osv.osv):
