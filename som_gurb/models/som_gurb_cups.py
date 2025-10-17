@@ -290,8 +290,11 @@ class SomGurbCups(osv.osv):
             som_gurb_beta_o.activate_future_beta(
                 cursor, uid, future_beta[0], data_inici, context=context
             )
-        self.send_signal(cursor, uid, [gurb_cups_id], "button_confirm_atr")
-        self.send_signal(cursor, uid, [gurb_cups_id], "button_activate_cups")
+        gurb_cups = self.browse(cursor, uid, gurb_cups_id, context=context)
+        if gurb_cups.state == "atr_pending":
+            gurb_cups.send_signal(["button_confirm_atr"])
+        elif gurb_cups.state == "comming_registration":
+            gurb_cups.send_signal(["button_activate_cups"])
 
     def check_only_one_gurb_service(self, cursor, uid, gurb_cups_id, context=None):
         if context is None:
