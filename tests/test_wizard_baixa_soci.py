@@ -21,7 +21,7 @@ class TestWizardBaixaSoci(testing.OOTestCase):
     def tearDown(self):
         self.txn.stop()
 
-    @mock.patch("som_generationkwh.somenergia_soci.SomenergiaSoci.arxiva_socia_mailchimp_async")
+    @mock.patch("som_polissa_soci.models.res_partner_address.ResPartnerAddress.unsubscribe_partner_in_members_lists")  # noqa: E501
     def test__baixa_soci__allowed(self, mailchimp_mock):
         member_id = self.IrModelData.get_object_reference(
             self.cursor, self.uid, 'som_generationkwh', 'soci_0003'
@@ -34,7 +34,8 @@ class TestWizardBaixaSoci(testing.OOTestCase):
 
         baixa = self.Soci.read(self.cursor, self.uid, member_id, ['baixa'])['baixa']
         self.assertTrue(baixa)
-        mailchimp_mock.assert_called_with(self.cursor, self.uid, member_id)
+        partner_id = self.Soci.read(self.cursor, self.uid, member_id, ['partner_id'])['partner_id'][0]
+        mailchimp_mock.assert_called_with(self.cursor, self.uid, [partner_id], context=context)
 
     def test__baixa_soci__notAllowed(self):
         member_id = self.IrModelData.get_object_reference(
@@ -49,7 +50,7 @@ class TestWizardBaixaSoci(testing.OOTestCase):
         baixa = self.Soci.read(self.cursor, self.uid, member_id, ['baixa'])['baixa']
         self.assertFalse(baixa)
 
-    @mock.patch("som_generationkwh.somenergia_soci.SomenergiaSoci.arxiva_socia_mailchimp_async")
+    @mock.patch("som_polissa_soci.models.res_partner_address.ResPartnerAddress.unsubscribe_partner_in_members_lists")  # noqa: E501
     @mock.patch("poweremail.poweremail_send_wizard.poweremail_send_wizard.send_mail")
     def test__baixa_soci_and_send_mail__allowed(self, mocked_send_mail, mailchimp_mock):
         member_id = self.IrModelData.get_object_reference(
@@ -81,7 +82,8 @@ class TestWizardBaixaSoci(testing.OOTestCase):
             }
 
         mocked_send_mail.assert_called_with(self.cursor, self.uid, mock.ANY, expected_ctx)
-        mailchimp_mock.assert_called_with(self.cursor, self.uid, member_id)
+        partner_id = self.Soci.read(self.cursor, self.uid, member_id, ['partner_id'])['partner_id'][0]
+        mailchimp_mock.assert_called_with(self.cursor, self.uid, [partner_id], context=context)
 
     @mock.patch("poweremail.poweremail_send_wizard.poweremail_send_wizard.send_mail")
     def test__baixa_soci_and_send_mail__notAllowed(self, mocked_send_mail):
