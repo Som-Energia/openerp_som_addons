@@ -1,4 +1,5 @@
 from osv import osv
+from som_polissa_soci.models.res_partner_address import FIELDS_SOCIS
 
 
 class ResPartnerAddress(osv.osv):
@@ -22,4 +23,17 @@ class ResPartnerAddress(osv.osv):
 
         return soci_data
     
+    def fill_merge_fields_soci(self, cursor, uid, id, context=None):
+        mailchimp_member = super(ResPartnerAddress, self).fill_merge_fields_soci(
+            cursor, uid, id, context=context)
+
+        soci_data = self._get_contract_data(cursor, uid, id, context=context)
+        mailchimp_member["merge_fields"].update(
+            {
+                FIELDS_SOCIS["Generation"]: soci_data['generationkwh'], #  True or False            }
+            }
+        )
+
+        return mailchimp_member
+
 ResPartnerAddress()

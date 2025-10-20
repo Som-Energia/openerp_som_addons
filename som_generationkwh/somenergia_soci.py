@@ -146,14 +146,12 @@ class SomenergiaSoci(osv.osv):
         res_partner_obj = self.pool.get('res.partner')
         res_partner_address_obj = self.pool.get('res.partner.address')
         MAILCHIMP_CLIENT = res_partner_address_obj._get_mailchimp_client()
-
-        list_name = conf_obj.get(
-            cursor, uid, 'mailchimp_socis_list', None)
-
-        list_id = res_partner_address_obj.get_mailchimp_list_id(list_name, MAILCHIMP_CLIENT)
+        list_names = res_partner_obj._get_members_mailchimp_lists(cursor, uid, ids, context=context)
+        list_ids = [self.get_mailchimp_list_id(name, MAILCHIMP_CLIENT) for name in list_names]
         for partner_id in self.read(cursor, uid, ids,['partner_id']):
             address_list = res_partner_obj.read(cursor, uid, partner_id['partner_id'][0], ['address'])['address']
-            res_partner_address_obj.archieve_mail_in_list(cursor, uid, address_list, list_id, MAILCHIMP_CLIENT)
+            for list_id in list_ids:
+                res_partner_address_obj.archieve_mail_in_list(cursor, uid, address_list, list_id, MAILCHIMP_CLIENT)
 
 
     def verifica_baixa_soci(self, cursor, uid, ids, context=None):
