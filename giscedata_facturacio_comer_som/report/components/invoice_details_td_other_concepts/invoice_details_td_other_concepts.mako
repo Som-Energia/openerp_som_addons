@@ -73,7 +73,7 @@ TABLA_101 = {
                 <td></td>
             % endif
         </tr>
-        <tr class="td_bold">
+        <tr class="td_bold ${'last_row' if id.last_row == 'compl' and lines_data.type == 'reactiva' else ''}">
             <td class="detall_td">${_(u"%s x €/%s (del %s al %s)") % (lines_data.units, lines_data.units, lines_data.data_inici, lines_data.data_fi)}</td>
             % for p in id.showing_periods:
                 % if p in lines_data:
@@ -87,6 +87,7 @@ TABLA_101 = {
                 <td>${_(u"%s") % (lines_data.iva) }</td>
             % endif
         </tr>
+        %if lines_data.type != "reactiva":
         <tr>
             <td class="td_second concepte_td" rowspan="2">${_(u"Peatges")}</td>
             <td class="td_bold detall_td">${_(u"Preu peatges [€/%s]") % lines_data.units}</td>
@@ -145,6 +146,7 @@ TABLA_101 = {
                 <td></td>
             % endif
         </tr>
+        % endif
     % endfor
 % endif
 % for l in id.donatiu_lines:
