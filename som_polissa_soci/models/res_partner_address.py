@@ -179,6 +179,13 @@ class ResPartnerAddress(osv.osv):
 
         return soci_data
 
+    def _get_members_mailchimp_lists(self, cursor, uid, ids, context=None):
+        conf_obj = self.pool.get("res.config")
+        list_name_1 = conf_obj.get(cursor, uid, "mailchimp_socis_list", None)
+        list_name_2 = conf_obj.get(cursor, uid, "mailchimp_socis_crinforma_list", None)
+        members_list_names = [list_name_1, list_name_2]
+        return members_list_names
+
     def write(self, cursor, uid, ids, vals, context=None):
         """ Override write to detect email changes and update Mailchimp """
         if context is None:
@@ -356,15 +363,15 @@ class ResPartnerAddress(osv.osv):
             partner_ids = [partner_ids]
 
         MAILCHIMP_CLIENT = self._get_mailchimp_client()
-        conf_obj = self.pool.get("res.config")
-        list_name = conf_obj.get(cursor, uid, "mailchimp_socis_list", None)
-        list_id = self.get_mailchimp_list_id(list_name, MAILCHIMP_CLIENT)
+        list_names = self._get_members_mailchimp_lists(cursor, uid, partner_ids, context=context)
+        list_ids = [self.get_mailchimp_list_id(name, MAILCHIMP_CLIENT) for name in list_names]
 
         for _id in partner_ids:
             client_data = self.fill_merge_fields_soci_from_partner(cursor, uid, _id)
-            self.subscribe_mail_in_list_async(
-                cursor, uid, [client_data], list_id, MAILCHIMP_CLIENT
-            )
+            for list_id in list_ids:
+                self.subscribe_mail_in_list_async(
+                    cursor, uid, [client_data], list_id, MAILCHIMP_CLIENT
+                )
 
     @job(queue="mailchimp_tasks")
     def subscribe_mail_in_list_async(
@@ -409,15 +416,15 @@ class ResPartnerAddress(osv.osv):
             partner_ids = [partner_ids]
         logger = logging.getLogger("openerp.{0}.update_members_data_mailchimp".format(__name__))
         MAILCHIMP_CLIENT = self._get_mailchimp_client()
-        conf_obj = self.pool.get("res.config")
-        list_name = conf_obj.get(cursor, uid, "mailchimp_socis_list", None)
-        list_id = self.get_mailchimp_list_id(list_name, MAILCHIMP_CLIENT)
+        list_names = self._get_members_mailchimp_lists(cursor, uid, partner_ids, context=context)
+        list_ids = [self.get_mailchimp_list_id(name, MAILCHIMP_CLIENT) for name in list_names]
 
         for _id in partner_ids:
             client_data = self.fill_merge_fields_soci_from_partner(cursor, uid, _id)
             try:
                 subscriber_hash = md5(client_data["email_address"].lower()).hexdigest()
-                MAILCHIMP_CLIENT.lists.update_list_member(list_id, subscriber_hash, client_data)
+                for list_id in list_ids:
+                    MAILCHIMP_CLIENT.lists.update_list_member(list_id, subscriber_hash, client_data)
             except ApiClientError as e:
                 if e.status_code == 404:
                     logger.warning(
@@ -517,14 +524,14 @@ class ResPartnerAddress(osv.osv):
             partner_ids = [partner_ids]
 
         MAILCHIMP_CLIENT = self._get_mailchimp_client()
-        conf_obj = self.pool.get("res.config")
-        list_name = conf_obj.get(cursor, uid, "mailchimp_socis_list", None)
-        list_id = self.get_mailchimp_list_id(list_name, MAILCHIMP_CLIENT)
+        list_names = self._get_members_mailchimp_lists(cursor, uid, partner_ids, context=context)
+        list_ids = [self.get_mailchimp_list_id(name, MAILCHIMP_CLIENT) for name in list_names]
 
         for _id in partner_ids:
-            self.archieve_mail_in_list(
-                cursor, uid, _id, list_id, MAILCHIMP_CLIENT
-            )
+            for list_id in list_ids:
+                self.archieve_mail_in_list(
+                    cursor, uid, _id, list_id, MAILCHIMP_CLIENT
+                )
 
     @job(queue="mailchimp_tasks")
     def archieve_mail_in_list(self, cursor, uid, ids, list_id, mailchimp_conn, context=None):
