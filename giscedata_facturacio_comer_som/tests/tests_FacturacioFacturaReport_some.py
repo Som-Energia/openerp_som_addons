@@ -2156,12 +2156,16 @@ class Tests_FacturacioFacturaReport_invoice_summary(Tests_FacturacioFacturaRepor
     @mock.patch.object(
         giscedata_facturacio_report.GiscedataFacturacioFacturaReport, "get_extra_energy_lines"
     )
+    @mock.patch.object(
+        giscedata_facturacio_report.GiscedataFacturacioFacturaReport, "get_extra_reactive_lines"
+    )
     @mock.patch.object(giscedata_facturacio_report, "te_autoconsum")
     def test__som_report_comp_invoice_summary__only_energy(
-        self, te_autoconsum_mock_function, get_extra_energy_lines_mock_function
+        self, te_autoconsum_mock_function, get_extra_energy_lines_mock_function, get_extra_reactive_lines_mock_function  # noqa: E501
     ):
         te_autoconsum_mock_function.return_value = False
         get_extra_energy_lines_mock_function.return_value = []
+        get_extra_reactive_lines_mock_function.return_value = []
 
         f_id = self.get_fixture("giscedata_facturacio", "factura_0001")
 
