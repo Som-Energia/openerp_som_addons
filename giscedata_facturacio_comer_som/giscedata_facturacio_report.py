@@ -944,6 +944,14 @@ class GiscedataFacturacioFacturaReport(osv.osv):
                 real_energy.append(l)
         return real_energy
 
+    def get_extra_reactive_lines(self, fact, pol):
+        extra_reactive = []
+        lines_extra_ids = self.get_lines_in_extralines(fact, pol)
+        for l in fact.linies_reactiva:  # noqa: E741
+            if l.id in lines_extra_ids:
+                extra_reactive.append(l)
+        return extra_reactive
+
     def max_requested_powers(self, pol, fact):
         conf_obj = fact.pool.get("res.config")
         first_date_qr_pot_max = conf_obj.get(
@@ -2478,6 +2486,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
         ]
 
         extra_energy_lines = self.get_extra_energy_lines(fact, pol)
+        extra_reactive_lines = self.get_extra_reactive_lines(fact, pol)
 
         donatiu = sum([l.price_subtotal for l in donatiu_lines])  # noqa: E741
 
@@ -2485,12 +2494,13 @@ class GiscedataFacturacioFacturaReport(osv.osv):
 
         total_altres = sum([l.price_subtotal for l in altres_lines])  # noqa: E741
 
-        total_extra = sum([l.price_subtotal for l in extra_energy_lines])  # noqa: E741
+        total_extra_energy = sum([l.price_subtotal for l in extra_energy_lines])  # noqa: E741
+        total_extra_reactive = sum([l.price_subtotal for l in extra_reactive_lines])  # noqa: E741
 
-        total_altres += total_extra
+        total_altres += total_extra_energy + total_extra_reactive
 
         total_energia = sum([l.price_subtotal for l in fact.linies_energia])  # noqa: E741
-        total_energia = total_energia - total_extra
+        total_energia = total_energia - total_extra_energy
 
         data = {
             "total_exces_consumida": total_exces_consumida,
