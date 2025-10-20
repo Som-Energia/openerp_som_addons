@@ -42,10 +42,13 @@ class TestsPartnerAddress(testing.OOTestCase):
     def test_fill_merge_fields_soci__withoutContract(self):
         rpa_obj = self.pool.get("res.partner.address")
         imd_obj = self.pool.get("ir.model.data")
-
         address_id = imd_obj.get_object_reference(
             self.cursor, self.uid, "som_polissa_soci", "res_partner_address_soci"
         )[1]
+        municipi_id = imd_obj.get_object_reference(
+            self.cursor, self.uid, "base_extended", "ine_17160"
+        )[1]
+        rpa_obj.write(self.cursor, self.uid, address_id, {"id_municipi": municipi_id})
 
         merge_fields = rpa_obj.fill_merge_fields_soci(
             self.cursor, self.uid, address_id
@@ -69,7 +72,11 @@ class TestsPartnerAddress(testing.OOTestCase):
                     'MMERGE7': u'08600',
                     'MMERGE8': False,
                     'MMERGE9': '',
-                    'N_PILA': 'Pere',
+                    'N_PILA': u'Pere',
+                    'MMERGE3': u'Sant Feliu de Gu\xedxols',
+                    'MMERGE11': u'Baix Empord\xe0',
+                    'MMERGE13': u'Catalu\xf1a',
+                    'MMERGE6': u'Girona',
                 },
                 'status': 'subscribed',
             },
@@ -78,7 +85,6 @@ class TestsPartnerAddress(testing.OOTestCase):
     def test_fill_merge_fields_soci__withContract(self):
         rpa_obj = self.pool.get("res.partner.address")
         imd_obj = self.pool.get("ir.model.data")
-
         address_id = imd_obj.get_object_reference(
             self.cursor, self.uid, "som_polissa_soci", "res_partner_address_domestic"
         )[1]
