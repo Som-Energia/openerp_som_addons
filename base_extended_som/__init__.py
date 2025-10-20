@@ -1,2 +1,1 @@
-import res_partner
-import poweremail_template
+from models import *
