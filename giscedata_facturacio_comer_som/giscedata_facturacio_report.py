@@ -938,7 +938,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
 
     def get_extra_energy_lines(self, fact, pol):
         real_energy = []
-        lines_extra_ids = self.get_lines_in_extralines(fact, pol)
+        lines_extra_ids = self.get_all_lines_in_extralines(fact, pol)
         for l in fact.linies_energia:  # noqa: E741
             if l.id in lines_extra_ids:
                 real_energy.append(l)
@@ -946,7 +946,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
 
     def get_extra_reactive_lines(self, fact, pol):
         extra_reactive = []
-        lines_extra_ids = self.get_lines_in_extralines(fact, pol)
+        lines_extra_ids = self.get_all_lines_in_extralines(fact, pol)
         for l in fact.linies_reactiva:  # noqa: E741
             if l.id in lines_extra_ids:
                 extra_reactive.append(l)
