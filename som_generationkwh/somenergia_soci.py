@@ -130,30 +130,6 @@ class SomenergiaSoci(osv.osv):
 
         return True
 
-    @job(queue="mailchimp_tasks")
-    def arxiva_socia_mailchimp_async(self, cursor, uid, ids, context=None):
-        """
-        Archive member async method
-        """
-        return self.arxiva_socia_mailchimp(cursor, uid, ids, context=context)
-
-
-    def arxiva_socia_mailchimp(self, cursor, uid, ids, context=None):
-        if not isinstance(ids, (list, tuple)):
-            ids = [ids]
-
-        conf_obj = self.pool.get('res.config')
-        res_partner_obj = self.pool.get('res.partner')
-        res_partner_address_obj = self.pool.get('res.partner.address')
-        MAILCHIMP_CLIENT = res_partner_address_obj._get_mailchimp_client()
-        list_names = res_partner_obj._get_members_mailchimp_lists(cursor, uid, ids, context=context)
-        list_ids = [self.get_mailchimp_list_id(name, MAILCHIMP_CLIENT) for name in list_names]
-        for partner_id in self.read(cursor, uid, ids,['partner_id']):
-            address_list = res_partner_obj.read(cursor, uid, partner_id['partner_id'][0], ['address'])['address']
-            for list_id in list_ids:
-                res_partner_address_obj.archieve_mail_in_list(cursor, uid, address_list, list_id, MAILCHIMP_CLIENT)
-
-
     def verifica_baixa_soci(self, cursor, uid, ids, context=None):
         # - Comprovar si té generationkwh: Existeix atribut al model generation que ho indica. Altrament es poden buscar les inversions.
         # - Comprovar si té inversions vigents: Buscar inversions vigents.
@@ -177,6 +153,8 @@ class SomenergiaSoci(osv.osv):
         pol_obj = self.pool.get('giscedata.polissa')
         fact_obj = self.pool.get('giscedata.facturacio.factura')
         soci_obj = self.pool.get('somenergia.soci')
+        rpa_obj = self.pool.get('res.partner.address')
+
         today = datetime.today().strftime('%Y-%m-%d')
         member_id = ids[0]
         res_partner_id = soci_obj.read(cursor, uid, member_id, ['partner_id'])['partner_id'][0]
@@ -234,8 +212,9 @@ class SomenergiaSoci(osv.osv):
                                                 'comment': comment })
         delete_rel(cursor, uid, soci_category_id, res_partner_id)
 
-        self.arxiva_socia_mailchimp_async(cursor, uid, member_id)
-
+        rpa_obj.unsubscribe_partner_in_members_lists(
+            cursor, uid, [res_partner_id], context=context
+        )
         return True
 
 
