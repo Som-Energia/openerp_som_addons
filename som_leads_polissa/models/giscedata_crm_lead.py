@@ -455,10 +455,10 @@ class GiscedataCrmLead(osv.OsvInherits):
         "comercial_info_accepted": fields.boolean("Accepta informació comercial (SomServeis)"),
         "crm_lead_id": fields.integer("ID del lead al CRM"),
         "is_new_contact": fields.boolean("És una persona nova per la cooperativa"),
-         'titular_phone_prefix': fields.many2one(
-            'res.phone.national.code', 'Prefix', required=False),
-        'titular_mobile_prefix': fields.many2one(
-            'res.phone.national.code', 'Prefix', required=False),
+        "titular_phone_prefix": fields.many2one(
+            'res.phone.national.code', "Prefix", required=False),
+        "titular_mobile_prefix": fields.many2one(
+            'res.phone.national.code', "Prefix", required=False),
     }
 
     _defaults = {
