@@ -3410,3 +3410,22 @@ class Tests_FacturacioFacturaReport_invoice_details_td(Tests_FacturacioFacturaRe
                 ],
             },
         )
+
+    @mock.patch.object(
+        giscedata_facturacio_report.GiscedataFacturacioFacturaReport, "get_atr_price"
+    )
+    def test__get_sub_component_expedient_data__no_f1(
+        self, get_atr_price_mock_function
+    ):
+        get_atr_price_mock_function.return_value = 10.0
+
+        f_id = self.get_fixture("giscedata_facturacio", "factura_0001")
+        data = self.bfp(f_id)
+        self.r_obj.cursor = self.cursor
+        self.r_obj.uid = self.uid
+
+        with self.assertRaises(Exception) as context:
+            self.r_obj.get_sub_component_expedient_data(data['fact'], data['pol'], [])
+
+        msg = u"No s'han trobats F1's d'expedient de anomalia/frau al generar pdf per"
+        self.assertTrue(msg in context.exception.message)

@@ -3399,7 +3399,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
                 "Error !",
                 _(
                     u"No s'han trobats F1's d'expedient de anomalia/frau al generar pdf per {}"
-                ).format(len(f1_ids), fact.number),
+                ).format(fact.number),
             )
 
         f1_datas = f1_obj.read(
