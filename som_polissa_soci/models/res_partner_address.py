@@ -92,7 +92,6 @@ class ResPartnerAddress(osv.osv):
         cat_pol_obj = self.pool.get('giscedata.polissa.category')
         tar_obj = self.pool.get('giscedata.polissa.tarifa')
         soc_obj = self.pool.get('somenergia.soci')
-
         soci_id = soc_obj.search(cursor, uid, [('partner_id', '=', partner_id)])[0]
         soci = soc_obj.read(cursor, uid, soci_id, ['name', 'vat'])
 
@@ -297,7 +296,7 @@ class ResPartnerAddress(osv.osv):
         partner_fields = partner_obj.read(
             cursor, uid, partner_data["partner_id"][0], ["name", "lang", "vat", "ref"]
         )
-        soci_data = self._get_contract_data(cursor, uid, partner_data["partner_id"][0])
+        soci_data = self._get_contract_data(cursor, uid, partner_data["partner_id"][0], context)
         mailchimp_member = {
             "email_address": partner_data["email"],
             "status": "subscribed",

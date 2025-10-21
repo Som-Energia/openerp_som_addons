@@ -63,7 +63,7 @@ class TestsPartnerAddress(testing.OOTestCase):
                     'AUTO': 'sense autoproducci\xc3\xb3',
                     'EMAIL': u'test@test.test',
                     'MMERGE1': u'ES97053918J',
-                    'MMERGE10': u'972123456',
+                    'MMERGE10': False,
                     'MMERGE18': '',
                     'MMERGE19': 'No CCVV',
                     'MMERGE22': 'sense_contracte',
@@ -92,7 +92,6 @@ class TestsPartnerAddress(testing.OOTestCase):
             self.cursor, self.uid, "base_extended", "ine_17160"
         )[1]
         rpa_obj.write(self.cursor, self.uid, address_id, {"id_municipi": municipi_id})
-
         merge_fields = rpa_obj.fill_merge_fields_soci(
             self.cursor, self.uid, address_id
         )
@@ -105,12 +104,12 @@ class TestsPartnerAddress(testing.OOTestCase):
                 'merge_fields': {
                     'AUTO': 'sense autoproducci\xc3\xb3',
                     'EMAIL': u'test@test.test',
-                    'MMERGE1': u'ES78106306P',
+                    'MMERGE1': u'ES37692879L',
                     'MMERGE10': u'600000000',
                     'MMERGE18': 'no \xc3\xa9s empresa',
                     'MMERGE19': 'No CCVV',
                     'MMERGE22': 'contracte_esborrany',
-                    'MMERGE4': u'S0002',
+                    'MMERGE4': u'S0004',
                     'MMERGE5': u'F\xedsica, Persona',
                     'MMERGE7': u'17800',
                     'MMERGE8': u'en_US',
