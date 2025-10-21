@@ -17,9 +17,9 @@ class ResPartnerAddress(osv.osv):
 
         gen_data = gen_obj.search(cursor, uid, [('member_id','=',soci_id)])
         if gen_data:
-            soci_data['generationkwh'] = True
+            soci_data['generationkwh'] = "si"
         else:
-            soci_data['generationkwh'] = False
+            soci_data['generationkwh'] = "no"
 
         return soci_data
     
