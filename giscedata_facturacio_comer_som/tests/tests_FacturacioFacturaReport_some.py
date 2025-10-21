@@ -3506,3 +3506,101 @@ class Tests_FacturacioFacturaReport_invoice_details_td(Tests_FacturacioFacturaRe
                 'expedient': expedient
             }
         )
+
+    @mock.patch.object(
+        giscedata_facturacio_report.GiscedataFacturacioFacturaReport, "get_atr_price"
+    )
+    def test__get_sub_component_expedient_data__find_the_f1_wrong_type(
+        self, get_atr_price_mock_function
+    ):
+        get_atr_price_mock_function.return_value = 10.0
+
+        extra_obj = self.model("giscedata.facturacio.extra")
+        f1_obj = self.model("giscedata.facturacio.importacio.linia")
+        f1_extra_obj = self.model("giscedata.facturacio.importacio.linia.extra")
+
+        f_id = self.get_fixture("giscedata_facturacio", "factura_0001")
+        fact = self.factura_obj.browse(
+            self.cursor,
+            self.uid,
+            f_id
+        )
+        pol = self.polissa_obj.browse(
+            self.cursor,
+            self.uid,
+            fact.polissa_id.id
+        )
+
+        origin = 'expedient de anomalia/frau 12345'
+        expedient = "12345"
+
+        l0_id = self.linia_f_obj.create(
+            self.cursor,
+            self.uid,
+            {
+                "name": "cosa rara",
+                "quantity": 1.0,
+                "price_subtotal": 10.0,
+                "price_unit_multi": 1,
+                "price_unit": 1,
+                "extra": 1,
+                "multi": 1,
+                "factura_id": f_id,
+                "tipus": "lloguer",
+                "product_id": 0,
+                "account_id": 1,
+                "data_desde": fact.data_inici,
+                "data_fins": fact.data_final,
+            },
+        )
+        l_ids = [l0_id]
+        l_data = self.linia_f_obj.browse(
+            self.cursor,
+            self.uid,
+            l_ids
+        )
+
+        extra_id = extra_obj.create(
+            self.cursor,
+            self.uid,
+            {
+                "polissa_id": pol.id,
+                "factura_ids": [(6, 0, [f_id])],
+                "factura_linia_ids": [(6, 0, l_ids)],
+                "price_unit": 123,
+                "date_from": fact.data_inici,
+                "date_to": fact.data_final,
+            },
+        )
+
+        f1_id = f1_obj.search(self.cursor, self.uid, [])[0]
+        f1_obj.write(
+            self.cursor,
+            self.uid,
+            f1_id,
+            {
+                "cups_id": pol.cups.id,
+                "invoice_number_text": origin,
+                "type_factura": "C",
+                "num_expedient": expedient,
+            }
+        )
+
+        f1_extra_obj.create(
+            self.cursor,
+            self.uid,
+            {
+                "extra_id": extra_id,
+                "linia_id": f1_id,
+            },
+        )
+
+        data = self.bfp(f_id)
+        self.r_obj.cursor = self.cursor
+        self.r_obj.uid = self.uid
+
+        with self.assertRaises(Exception) as context:
+            self.r_obj.get_sub_component_expedient_data(data['fact'], data['pol'], l_data)
+
+        msg = u"Factura amb linies complementaries de tipus desconegut"
+        self.assertTrue(msg in context.exception.message)
