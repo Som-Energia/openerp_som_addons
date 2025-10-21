@@ -227,7 +227,7 @@ class ResPartnerAddress(osv.osv):
         """Prepare the fields with the data of a member, to be sent to Mailchimp
         from res.partner id
         """
-        partner_address_id = self.search(cursor, uid, [("partner_id", "=", partner_id)], limit=1)
+        partner_address_id = self.search(cursor, uid, [("partner_id", "=", partner_id)], limit=1)[0]
         return self.fill_merge_fields_clients(cursor, uid, partner_address_id, context=context)
 
     def fill_merge_fields_clients(self, cursor, uid, id, context=None):
@@ -278,7 +278,7 @@ class ResPartnerAddress(osv.osv):
         """Prepare the fields with the data of a member, to be sent to Mailchimp
         from res.partner id
         """
-        partner_address_id = self.search(cursor, uid, [("partner_id", "=", partner_id)], limit=1)
+        partner_address_id = self.search(cursor, uid, [("partner_id", "=", partner_id)], limit=1)[0]
         return self.fill_merge_fields_soci(cursor, uid, partner_address_id, context=context)
 
     def fill_merge_fields_soci(self, cursor, uid, id, context=None):
