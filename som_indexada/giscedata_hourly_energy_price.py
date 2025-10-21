@@ -1,11 +1,5 @@
 # -*- coding: utf-8 -*-
 from osv import osv
-from tools.translate import _
-from tools import config
-
-from libfacturacioatr.pool import REECoeficientsNotFound, tarifes
-from enerdata.datetime.holidays import get_holidays
-from datetime import datetime
 
 import logging
 
@@ -19,7 +13,9 @@ class GiscedataNextDaysEnergyPrice(osv.osv):
         if context is None:
             context = {}
 
-        res = super(GiscedataNextDaysEnergyPrice, self).get_versions(cursor, uid, tarifa, data_inici, geom_zone, context=context)
+        res = super(GiscedataNextDaysEnergyPrice, self).get_versions(
+            cursor, uid, tarifa, data_inici, geom_zone, context=context
+        )
 
         config_obj = self.pool.get('res.config')
         imd_obj = self.pool.get('ir.model.data')
@@ -46,5 +42,6 @@ class GiscedataNextDaysEnergyPrice(osv.osv):
         res[data_inici].update({'factor_dsv': factor_dsv, 'gdos': gdos})
 
         return res
+
 
 GiscedataNextDaysEnergyPrice()
