@@ -16,6 +16,17 @@ class GiscedataServeiGeneracio(osv.osv):
     _name = "giscedata.servei.generacio"
     _inherit = "giscedata.servei.generacio"
 
+    def config_facturador_autoconsumida(self, cursor, uid, facturador, context=None):
+        if context is None:
+            context = {}
+
+        facturador.phf_function = 'phf_calc_auvi'
+        res = super(GiscedataServeiGeneracio, self).config_facturador_autoconsumida(
+            cursor, uid, facturador, context=context
+        )
+
+        return res
+
     def create(self, cursor, uid, vals, context=None):
         if context is None:
             context = {}

@@ -54,19 +54,23 @@ class ResPartnerAddress(osv.osv):
     _name = "res.partner.address"
     _inherit = "res.partner.address"
 
+    def _get_mailchimp_client(self):
+        return MailchimpMarketing.Client(
+            dict(
+                api_key=config.options.get("mailchimp_apikey"),
+                server=config.options.get("mailchimp_server_prefix"),
+            )
+        )
+
     def write(self, cursor, uid, ids, vals, context=None):
+        """ Override write to detect email changes and update Mailchimp """
         if context is None:
             context = {}
 
         if not isinstance(ids, (list, tuple)):
             ids = [ids]
 
-        MAILCHIMP_CLIENT = MailchimpMarketing.Client(
-            dict(
-                api_key=config.options.get("mailchimp_apikey"),
-                server=config.options.get("mailchimp_server_prefix"),
-            )
-        )
+        MAILCHIMP_CLIENT = self._get_mailchimp_client()
         if "email" in vals:
             for _id in ids:
                 old_email = self.read(cursor, uid, _id, ["email"])["email"]
@@ -101,6 +105,9 @@ class ResPartnerAddress(osv.osv):
         self.archieve_mail_in_list_sync(cursor, uid, ids, list_id, mailchimp_conn, context=None)
 
     def archieve_mail_in_list_sync(self, cursor, uid, ids, list_id, mailchimp_conn, context=None):
+        """
+        Archive an email in a Mailchimp list
+        """
         if not isinstance(ids, (list, tuple)):
             ids = [ids]
 
@@ -131,9 +138,12 @@ class ResPartnerAddress(osv.osv):
                         _("Error"), _("Error archieving email {}:\n{}".format(email, error.text))
                     )
             else:
-                logger.info("Email arxivat: {}".format(email))
+                logger.info("Mailchimp: Email arxivat a la llista {}: {}".format(list_id, email))
 
     def fill_merge_fields_clients(self, cursor, uid, id, context=None):
+        """
+        Prepare the fields with the data of a non-member client, to be sent to Mailchimp
+        """
         partner_obj = self.pool.get("res.partner")
         municipi_obj = self.pool.get("res.municipi")
         self.pool.get("res.comunitat.autonoma")
@@ -174,6 +184,9 @@ class ResPartnerAddress(osv.osv):
         return mailchimp_member
 
     def fill_merge_fields_soci(self, cursor, uid, id, context=None):
+        """
+        Prepare the fields with the data of a member, to be sent to Mailchimp
+        """
         partner_obj = self.pool.get("res.partner")
         municipi_obj = self.pool.get("res.municipi")
         self.pool.get("res.comunitat.autonoma")
@@ -222,6 +235,7 @@ class ResPartnerAddress(osv.osv):
     def subscribe_mail_in_list(
         self, cursor, uid, clients_data, list_id, mailchimp_conn, context=None
     ):
+        """ Subscribe a list of clients to a Mailchimp list """
         logger = logging.getLogger("openerp.{0}.subscribe_mail_in_list".format(__name__))
         for client_data in clients_data:
             try:
@@ -241,6 +255,9 @@ class ResPartnerAddress(osv.osv):
                             )
                         ),
                     )
+            else:
+                logger.info("Mailchimp: Email subscrit a la llista {}: {}".format(
+                    list_id, client_data["email_address"]))
 
     @job(queue="mailchimp_tasks")
     def update_client_email_in_all_lists_async(
@@ -253,6 +270,7 @@ class ResPartnerAddress(osv.osv):
     def update_client_email_in_all_lists(
         self, cursor, uid, ids, old_email, email, mailchimp_conn, context=None
     ):
+        ''' Update email of a client in all Mailchimp lists where it is subscribed '''
         if not isinstance(ids, (list, tuple)):
             ids = [ids]
         logger = logging.getLogger("openerp.{0}.update_client_email_in_all_lists".format(__name__))
@@ -295,7 +313,7 @@ class ResPartnerAddress(osv.osv):
                         },
                     )
                     logger.info(
-                        "L'email {} s'ha actualitzat en la llista {}".format(
+                        "Mailchimp: L'email {} s'ha actualitzat en la llista {}".format(
                             client_data["email_address"], mchimp_list["name"]
                         )
                     )
@@ -311,6 +329,7 @@ class ResPartnerAddress(osv.osv):
     def unsubscribe_client_email_in_all_lists(
         self, cursor, uid, ids, old_email, mailchimp_conn, context=None
     ):
+        ''' Unsubscribe email of a client in all Mailchimp lists where it is subscribed '''
         if not isinstance(ids, (list, tuple)):
             ids = [ids]
 

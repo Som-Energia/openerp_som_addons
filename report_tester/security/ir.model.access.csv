@@ -8,6 +8,7 @@
 "access_wizard_report_test_group_view_tests_r","wizard.report.test.group.view.tests","model_wizard_report_test_group_view_tests","base_extended.group_base_extended_r",1,0,0,0
 "access_wizard_report_test_attach_to_invoice_r","wizard.report.test.attach.to.invoice","model_wizard_report_test_attach_to_invoice","base_extended.group_base_extended_r",1,0,0,0
 "access_wizard_report_test_view_attached_r","wizard.report.test.view.attached","model_wizard_report_test_view_attached","base_extended.group_base_extended_r",1,0,0,0
+"access_report_tester_automation_r","report.tester.automation","model_report_tester_automation","base_extended.group_base_extended_r",1,0,0,0
 "access_report_test_group_rcw","report.test.group","model_report_test_group","base_extended.group_base_extended_w",1,1,1,0
 "access_report_test_rcw","report.test","model_report_test","base_extended.group_base_extended_w",1,1,1,0
 "access_wizard_report_test_group_accept_tests_rcw","wizard.report.test.group.accept.tests","model_wizard_report_test_group_accept_tests","base_extended.group_base_extended_w",1,1,1,0
@@ -17,6 +18,7 @@
 "access_wizard_report_test_group_view_tests_rcw","wizard.report.test.group.view.tests","model_wizard_report_test_group_view_tests","base_extended.group_base_extended_w",1,1,1,0
 "access_wizard_report_test_attach_to_invoice_rcw","wizard.report.test.attach.to.invoice","model_wizard_report_test_attach_to_invoice","base_extended.group_base_extended_w",1,1,1,0
 "access_wizard_report_test_view_attached_rcw","wizard.report.test.view.attached","model_wizard_report_test_view_attached","base_extended.group_base_extended_w",1,1,1,0
+"access_report_tester_automation_rcw","report.tester.automation","model_report_tester_automation","base_extended.group_base_extended_w",1,1,1,0
 "access_report_test_group_rcwd","report.test.group","model_report_test_group","base_extended.group_base_extended_u",1,1,1,1
 "access_report_test_rcwd","report.test","model_report_test","base_extended.group_base_extended_u",1,1,1,1
 "access_wizard_report_test_group_accept_tests_rcwd","wizard.report.test.group.accept.tests","model_wizard_report_test_group_accept_tests","base_extended.group_base_extended_u",1,1,1,1
@@ -26,3 +28,4 @@
 "access_wizard_report_test_group_view_tests_rcwd","wizard.report.test.group.view.tests","model_wizard_report_test_group_view_tests","base_extended.group_base_extended_u",1,1,1,1
 "access_wizard_report_test_attach_to_invoice_rcwd","wizard.report.test.attach.to.invoice","model_wizard_report_test_attach_to_invoice","base_extended.group_base_extended_u",1,1,1,1
 "access_wizard_report_test_view_attached_rcwd","wizard.report.test.view.attached","model_wizard_report_test_view_attached","base_extended.group_base_extended_u",1,1,1,1
+"access_report_tester_automation_rcwd","report.tester.automation","model_report_tester_automation","base_extended.group_base_extended_u",1,1,1,1

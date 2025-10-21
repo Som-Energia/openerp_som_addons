@@ -23,7 +23,10 @@
     "update_xml": [
         "giscedata_facturacio_comer_data.xml",
         "giscedata_facturacio_comer_report.xml",
-        "giscedata_facturacio_factura.xml"
+        "giscedata_facturacio_factura.xml",
+        "security/giscedata_facturacio_comer_som.xml",
+        "security/ir.model.access.csv",
+        "wizard/wizard_reprint_invoice_som.xml",
     ],
     "active": False,
     "installable": True,

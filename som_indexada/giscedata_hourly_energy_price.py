@@ -3,8 +3,7 @@ from osv import osv
 from tools.translate import _
 from tools import config
 
-from libfacturacioatr.pool.tarifes import *
-from libfacturacioatr.pool import REECoeficientsNotFound
+from libfacturacioatr.pool import REECoeficientsNotFound, tarifes
 from enerdata.datetime.holidays import get_holidays
 from datetime import datetime
 

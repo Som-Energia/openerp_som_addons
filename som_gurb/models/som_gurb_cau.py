@@ -1,7 +1,7 @@
 # -*- encoding: utf-8 -*-
 from osv import osv, fields
 from tools.translate import _
-from datetime import datetime, date, timedelta
+from datetime import datetime
 
 import logging
 
@@ -27,26 +27,27 @@ _REQUIRED_FIRST_OPENING_FIELDS = [
     "province",
     "zip_code",
     "roof_owner_id",
-    "pricelist_id",
-    "max_power",
-    "min_power",
-    "first_opening_days",
-    "reopening_days",
-    "critical_incomplete_state",
     "generation_power",
-    "pricelist_id",
 ]
 
 
-class SomGurb(osv.osv):
-    _name = "som.gurb"
-    _description = _("Grup generació urbana")
+class SomGurbCau(osv.osv):
+    _name = "som.gurb.cau"
+    _description = _("CAU generació urbana")
 
     def create(self, cursor, uid, vals, context=None):
-        res_id = super(SomGurb, self).create(cursor, uid, vals, context=context)
+        res_id = super(SomGurbCau, self).create(cursor, uid, vals, context=context)
 
-        ir_seq = self.pool.get("ir.sequence")
-        code = ir_seq.get_next(cursor, uid, "som.gurb")
+        code = False
+        gurb_group_id = vals.get('gurb_group_id')
+        if gurb_group_id:
+            group_obj = self.pool.get('som.gurb.group')
+            group = group_obj.browse(cursor, uid, gurb_group_id, context=context)
+            code_grup = group.code
+            caus = self.search(cursor, uid, [("gurb_group_id", "=", gurb_group_id)])
+            n_caus = len(caus)
+            code_cau = str(n_caus).zfill(3)
+            code = code_grup + "/" + code_cau
 
         self.write(cursor, uid, res_id, {"code": code}, context=context)
 
@@ -98,15 +99,18 @@ class SomGurb(osv.osv):
         gurb_cups_obj = self.pool.get("som.gurb.cups")
         gurb_cups_beta_obj = self.pool.get("som.gurb.cups.beta")
         res = {}
-        for gurb_id in ids:
-            search_params = [("gurb_id", "=", gurb_id), ("state", "not in", ["cancel", "draft"])]
+        for gurb_cau_id in ids:
+            search_params = [
+                ("gurb_cau_id", "=", gurb_cau_id), ("state", "not in", ["cancel", "draft"])
+            ]
             gurb_cups_ids = gurb_cups_obj.search(
                 cursor, uid, search_params, context=context
             )
             gurb_cups_data = gurb_cups_obj.read(
                 cursor, uid, gurb_cups_ids, ["beta_kw", "extra_beta_kw", "gift_beta_kw"]
             )
-            gen_power = self.read(cursor, uid, gurb_id, ["generation_power"])["generation_power"]
+            gen_power = self.read(
+                cursor, uid, gurb_cau_id, ["generation_power"])["generation_power"]
 
             assigned_betas_kw = sum(gurb_cups["beta_kw"] for gurb_cups in gurb_cups_data)
             extra_betas_kw = sum(
@@ -116,7 +120,9 @@ class SomGurb(osv.osv):
                 gurb_cups["gift_beta_kw"] for gurb_cups in gurb_cups_data
             )
 
-            search_params = [("gurb_id", "=", gurb_id), ("state", "in", ["active", "atr_pending"])]
+            search_params = [
+                ("gurb_cau_id", "=", gurb_cau_id), ("state", "in", ["active", "atr_pending"])
+            ]
             active_gurb_cups_ids = gurb_cups_obj.search(cursor, uid, search_params, context=context)
 
             future_gurb_cups_data = gurb_cups_obj.read(
@@ -134,7 +140,7 @@ class SomGurb(osv.osv):
             )
 
             search_params = [
-                ("gurb_id", "=", gurb_id),
+                ("gurb_cau_id", "=", gurb_cau_id),
                 ("state", "in", ["comming_modification", "comming_registration"])
             ]
             mod_gurb_cups_ids = gurb_cups_obj.search(cursor, uid, search_params, context=context)
@@ -146,7 +152,7 @@ class SomGurb(osv.osv):
             mod_gurb_cups_beta_ids = gurb_cups_beta_obj.search(
                 cursor, uid, search_params, context=context
             )
-            mod_future_gurb_cups_data = gurb_cups_obj.read(
+            mod_future_gurb_cups_data = gurb_cups_beta_obj.read(
                 cursor, uid, mod_gurb_cups_beta_ids, ["beta_kw", "extra_beta_kw", "gift_beta_kw"]
             )
 
@@ -162,6 +168,13 @@ class SomGurb(osv.osv):
 
             assigned_betas_percentage = 0
             assigned_extra_betas_percentage = 0
+            assigned_extra_gift_betas_percentage = 0
+            assigned_gift_betas_percentage = 0
+            extra_betas_percentage = 0
+            future_betas_percentage = 0
+            future_extra_betas_percentage = 0
+            future_gift_betas_percentage = 0
+            future_assigned_betas_percentage = 0
             if gen_power:
                 assigned_betas_percentage = (
                     assigned_betas_kw
@@ -182,8 +195,11 @@ class SomGurb(osv.osv):
                 future_assigned_betas_percentage = (
                     future_gift_betas_percentage + future_betas_percentage
                 )
+                gift_betas_percentage = gift_betas_kw * 100 / gen_power
+                available_betas_percentage = 100 - assigned_betas_percentage - gift_betas_percentage
 
-            res[gurb_id] = {
+            res[gurb_cau_id] = {
+                "gift_betas_percentage": gift_betas_percentage,
                 "assigned_betas_kw": assigned_betas_kw,
                 "available_betas_kw": gen_power - assigned_betas_kw,
                 "assigned_betas_percentage": assigned_betas_percentage,
@@ -193,7 +209,7 @@ class SomGurb(osv.osv):
                 "gift_betas_kw": gift_betas_kw,
                 "assigned_extra_betas_percentage": assigned_extra_betas_percentage,
                 "assigned_extra_gift_betas_percentage": assigned_extra_gift_betas_percentage,
-                "available_betas_percentage": 100 - assigned_betas_percentage,
+                "available_betas_percentage": available_betas_percentage,
                 "future_betas_kw": future_betas_kw,
                 "future_extra_betas_kw": future_extra_betas_kw,
                 "future_gift_betas_kw": future_gift_betas_kw,
@@ -237,51 +253,17 @@ class SomGurb(osv.osv):
         for record_id in ids:
             self.write(cursor, uid, ids, write_values, context=context)
 
-    def _is_reopening_end_date(self, cursor, uid, record, context=None):
-        state_date = datetime.strptime(record.state_date, '%Y-%m-%d').date()
-        reopening_end_date = state_date + timedelta(days=record.reopening_days)
-        today = date.today()
-
-        return today >= reopening_end_date
-
-    def _is_first_opening_end_date(self, cursor, uid, record, context=None):
-        state_date = datetime.strptime(record.state_date, '%Y-%m-%d').date()
-        opening_end_date = state_date + timedelta(days=record.first_opening_days)
-        today = date.today()
-
-        return today >= opening_end_date
-
-    def validate_first_opening_complete(self, cursor, uid, ids, context=None):
+    def validate_complete(self, cursor, uid, ids, context=None):
         for record in self.browse(cursor, uid, ids, context=context):
             return (
-                self._is_first_opening_end_date(cursor, uid, record)
-                and record.assigned_betas_kw == record.generation_power
+                record.assigned_betas_kw == record.generation_power
             )
 
-    def validate_first_opening_incomplete(self, cursor, uid, ids, context=None):
+    def validate_incomplete(self, cursor, uid, ids, context=None):
         for record in self.browse(cursor, uid, ids, context=context):
             return (
-                self._is_first_opening_end_date(cursor, uid, record)
-                and record.assigned_betas_kw != record.generation_power
+                record.assigned_betas_kw != record.generation_power
             )
-
-    def validate_reopening_complete(self, cursor, uid, ids, context=None):
-        for record in self.browse(cursor, uid, ids, context=context):
-            return (
-                self._is_reopening_end_date(cursor, uid, record)
-                or record.assigned_betas_kw == record.generation_power
-            )
-
-    def validate_reopening_incomplete(self, cursor, uid, ids, context=None):
-        for record in self.browse(cursor, uid, ids, context=context):
-            return (
-                self._is_reopening_end_date(cursor, uid, record)
-                and record.assigned_betas_kw != record.generation_power
-            )
-
-    def validate_incomplete_complete(self, cursor, uid, ids, context=None):
-        for record in self.browse(cursor, uid, ids, context=context):
-            return record.assigned_betas_kw == record.generation_power
 
     def validate_draft_first_opening(self, cursor, uid, ids, context=None):
         for record in self.read(cursor, uid, ids, _REQUIRED_FIRST_OPENING_FIELDS, context=context):
@@ -289,13 +271,9 @@ class SomGurb(osv.osv):
                 if not v:
                     raise osv.except_osv(
                         _("Error al canviar d'estat"),
-                        _("Per poder obrir el GURB s'ha d'omplir el camp: {}".format(k))
+                        _("Per poder obrir el GURB CAU s'ha d'omplir el camp: {}".format(k))
                     )
             return True
-
-    def validate_active_incomplete(self, cursor, uid, ids, context=None):
-        for record in self.browse(cursor, uid, ids, context=context):
-            return record.assigned_betas_kw != record.generation_power
 
     def validate_active_critic_incomplete(self, cursor, uid, ids, context=None):
         for record in self.browse(cursor, uid, ids, context=context):
@@ -307,17 +285,17 @@ class SomGurb(osv.osv):
 
         gurb_cups_obj = self.pool.get("som.gurb.cups")
 
-        gurb_id = self.get_gurb_from_sw_id(cursor, uid, sw_id, context=context)
+        gurb_cau_id = self.get_gurb_from_sw_id(cursor, uid, sw_id, context=context)
         gurb_cups_id = gurb_cups_obj.get_gurb_cups_from_sw_id(cursor, uid, sw_id, context=context)
         gurb_cups_obj.activate_or_modify_gurb_cups(
             cursor, uid, gurb_cups_id, activation_date, context=context)
         gurb_cups_obj.send_gurb_activation_email(cursor, uid, [gurb_cups_id], context=None)
-        gurb_date = self.read(cursor, uid, gurb_id, ["activation_date"])["activation_date"]
+        gurb_date = self.read(cursor, uid, gurb_cau_id, ["activation_date"])["activation_date"]
         if not gurb_date:
             write_vals = {
                 "activation_date": activation_date
             }
-            self.write(cursor, uid, gurb_id, write_vals, context=context)
+            self.write(cursor, uid, gurb_cau_id, write_vals, context=context)
 
     def get_gurb_from_sw_id(self, cursor, uid, sw_id, context=None):
         if context is None:
@@ -343,11 +321,11 @@ class SomGurb(osv.osv):
         gurb_cups_ids = gurb_cups_obj.search(cursor, uid, search_params, context=context)
 
         if len(gurb_cups_ids) == 1:
-            gurb_id = gurb_cups_obj.read(
-                cursor, uid, gurb_cups_ids[0], ["gurb_id"], context=context
-            )["gurb_id"][0]
+            gurb_cau_id = gurb_cups_obj.read(
+                cursor, uid, gurb_cups_ids[0], ["gurb_cau_id"], context=context
+            )["gurb_cau_id"][0]
 
-        return gurb_id
+        return gurb_cau_id
 
     def add_services_to_gurb_contracts(self, cursor, uid, ids, activation_date, context=None):
         if context is None:
@@ -355,8 +333,8 @@ class SomGurb(osv.osv):
 
         gurb_cups_obj = self.pool.get("som.gurb.cups")
 
-        for gurb_id in ids:
-            search_params = [("gurb_id", "=", gurb_id)]
+        for gurb_cups_id in ids:
+            search_params = [("gurb_cups_id", "=", gurb_cups_id)]
             gurb_cups_ids = gurb_cups_obj.search(cursor, uid, search_params, context=context)
             gurb_cups_obj.add_service_to_contract(
                 cursor, uid, gurb_cups_ids, activation_date, context=context)
@@ -368,18 +346,23 @@ class SomGurb(osv.osv):
             context = {}
         res = dict.fromkeys(ids, False)
         attach_obj = self.pool.get("ir.attachment")
-        for gurb_id in ids:
+        for gurb_cau_id in ids:
             attach_ids = attach_obj.search(cursor, uid, [
-                ("res_model", "=", "som.gurb"),
-                ("res_id", "=", gurb_id)
+                ("res_model", "=", "som.gurb.cau"),
+                ("res_id", "=", gurb_cau_id)
             ])
-            res[gurb_id] = list(set(attach_ids))
+            res[gurb_cau_id] = list(set(attach_ids))
         return res
 
     _columns = {
-        "name": fields.char("Nom GURB", size=60, required=True),
+        "name": fields.char("Nom GURB CAU", size=60, required=True),
+        "priority": fields.integer(
+            "Prioritat",
+            help="Prioritat del GURBCAU per l'assignació de les betes, més baix més prioritat",
+            required=True,
+        ),
         "self_consumption_id": fields.many2one("giscedata.autoconsum", "CAU"),
-        "code": fields.char("Codi GURB", size=60, readonly=True),
+        "code": fields.char("Codi GURB CAU", size=60, readonly=True),
         "producer": fields.many2one("res.partner", "Productora"),
         "cil": fields.char("Codi CIL", size=60),
         "roof_owner_id": fields.many2one("res.partner", "Propietari teulada"),
@@ -401,17 +384,12 @@ class SomGurb(osv.osv):
             multi="address",
         ),
         "sig_data": fields.char("Dades SIG", size=60),
-        "activation_date": fields.date("Data activació GURB"),
-        "state": fields.selection(_GURB_STATES, "Estat del GURB", readonly=True),
+        "activation_date": fields.date("Data activació GURB CAU"),
+        "state": fields.selection(_GURB_STATES, "Estat del GURB CAU", readonly=True),
         "state_date": fields.date("Data activació estat", readonly=True),
-        "gurb_cups_ids": fields.one2many("som.gurb.cups", "gurb_id", "Betes", readonly=False),
-        "max_power": fields.float("Topall max. per contracte (kW)"),
-        "min_power": fields.float("Topall min. per contracte (kW)"),
-        "critical_incomplete_state": fields.integer("Estat crític incomplet (%)"),
-        "first_opening_days": fields.integer("Dies primera obertura"),
-        "reopening_days": fields.integer("Dies reobertura"),
+        "gurb_cups_ids": fields.one2many("som.gurb.cups", "gurb_cau_id", "Betes", readonly=False),
         "notes": fields.text("Observacions"),
-        "history_box": fields.text("Històric del GURB", readonly=True),
+        "history_box": fields.text("Històric del GURB CAU", readonly=True),
         "has_compensation": fields.boolean("Amb compensació"),  # Selection?
         "generation_power": fields.float("Potència generació", digits=(10, 3)),
         "meter_id": fields.many2one("giscedata.registrador", "Registrador (comptador)"),
@@ -492,6 +470,13 @@ class SomGurb(osv.osv):
             method=True,
             multi="betas",
         ),
+        "future_extra_betas_percentage": fields.function(
+            _ff_total_betas,
+            string="Betes extres (%) propera reobertura",
+            type="float",
+            method=True,
+            multi="betas",
+        ),
         "self_consumption_state": fields.function(
             _ff_get_self_consumption_fields,
             type="char",
@@ -521,9 +506,10 @@ class SomGurb(osv.osv):
             type="one2many",
             relation="ir.attachment"
         ),
-        "pricelist_id": fields.many2one("product.pricelist", "Preus del GURB"),
-        "initial_product_id": fields.many2one("product.product", "Producte quota inicial"),
-        "quota_product_id": fields.many2one("product.product", "Producte base quota mensual"),
+        "gurb_group_id": fields.many2one(
+            "som.gurb.group", "GURB grup", required=True, ondelete="cascade"),
+        "coordenada_latitud": fields.char("Latitud (X)", size=128),
+        "coordenada_longitud": fields.char("Longitud (Y)", size=128),
     }
 
     _defaults = {
@@ -534,8 +520,8 @@ class SomGurb(osv.osv):
     _sql_constraints = [(
         "self_consumption_id_uniq",
         "unique(self_consumption_id)",
-        "Ja existeix un GURB per aquest autoconsum"
+        "Ja existeix un GURB CAU per aquest autoconsum"
     )]
 
 
-SomGurb()
+SomGurbCau()

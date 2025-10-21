@@ -2,6 +2,7 @@
 from datetime import datetime
 from osv import fields, osv
 import netsvc
+from oorq.decorators import job
 
 from base_extended_som.res_partner import GENDER_SELECTION
 
@@ -88,7 +89,17 @@ class GiscedataCrmLead(osv.OsvInherits):
         polissa_id = lead.polissa_id.id
         member_number = lead.member_number
 
-        values["soci"] = partner_o.search(cursor, uid, [("ref", "=", member_number)], limit=1)[0]
+        member_id = partner_o.search(
+            cursor, uid, [("ref", "=", member_number)], limit=1
+        )
+
+        if not member_id:
+            raise osv.except_osv(
+                "Error - Sòcia no trobada",
+                "Prova de posar el número {} amb la lletra i els zeros".format(member_number),
+            )
+
+        values["soci"] = member_id[0]
         values["donatiu"] = lead.donation
 
         for line in lead.history_line:
@@ -142,23 +153,27 @@ class GiscedataCrmLead(osv.OsvInherits):
         )
 
         lead = self.browse(cursor, uid, crml_id, context=context)
-
-        rep_id = self._create_or_get_representative(
-            cursor, uid, lead.persona_firmant_vat, lead.persona_nom, context=context
-        )
-        if rep_id:
-            partner_o.write(
-                cursor, uid, lead.partner_id.id, {"representante_id": rep_id}, context=context)
+        values = {}
 
         # We set again the lang because if it existed before, the base code dont write it
-        partner_o.write(cursor, uid, lead.partner_id.id, {"lang": lead.lang}, context=context)
+        if lead.lang:
+            values["lang"] = lead.lang
+
+        rep_id = self._create_or_get_representative(
+            cursor, uid, lead.persona_firmant_vat, lead.persona_nom, lead.lang, context=context
+        )
+        if rep_id:
+            values["representante_id"] = rep_id
 
         if lead.create_new_member:
             # become_member will keep the member number we set here
-            partner_o.write(
-                cursor, uid, lead.partner_id.id, {"ref": lead.member_number}, context=context)
+            context["force_ref"] = lead.member_number
+            values["date"] = datetime.today().strftime("%Y-%m-%d")
+            partner_o.write(cursor, uid, lead.partner_id.id, values, context=context)
             partner_o.become_member(cursor, uid, lead.partner_id.id, context=context)
             partner_o.adopt_contracts_as_member(cursor, uid, lead.partner_id.id, context=context)
+        elif values:
+            partner_o.write(cursor, uid, lead.partner_id.id, values, context=context)
 
         return res
 
@@ -179,7 +194,7 @@ class GiscedataCrmLead(osv.OsvInherits):
 
         return partner_id
 
-    def _create_or_get_representative(self, cursor, uid, vat, name, context=None):
+    def _create_or_get_representative(self, cursor, uid, vat, name, lang, context=None):
         if context is None:
             context = {}
 
@@ -195,13 +210,13 @@ class GiscedataCrmLead(osv.OsvInherits):
             if representative_ids:
                 representative_id = representative_ids[0]
             else:
-                representative_id = partner_o.create(
-                    cursor, uid, {
-                        "vat": vat,
-                        "name": name,
-                    },
-                    context=context
-                )
+                values = {
+                    "vat": vat,
+                    "name": name,
+                }
+                if lang:
+                    values["lang"] = lang
+                representative_id = partner_o.create(cursor, uid, values, context=context)
         return representative_id
 
     def create_entity_iban(self, cursor, uid, crml_id, context=None):
@@ -334,8 +349,8 @@ class GiscedataCrmLead(osv.OsvInherits):
             context = {}
         seq_o = self.pool.get("ir.sequence")
 
+        # We assing here the new numbers to show it in the contract to be signed
         if vals.get("create_new_member"):
-            # TODO: we have to keep the old number or not? By the moment, we assign a new one
             vals["member_number"] = seq_o.get_next(cursor, uid, "res.partner.soci")
         elif context.get("sponsored_titular"):
             vals["titular_number"] = seq_o.get_next(cursor, uid, "res.partner.titular")
@@ -343,6 +358,51 @@ class GiscedataCrmLead(osv.OsvInherits):
         lead_id = super(GiscedataCrmLead, self).create(cursor, uid, vals, context=context)
 
         return lead_id
+
+    def button_send_mail(self, cr, uid, ids, context=None):
+        if context is None:
+            context = {}
+
+        lead_id = context["active_id"]
+        self._send_mail(cr, uid, lead_id, context=context)
+
+    @job(queue="poweremail_sender")
+    def _send_mail_async(self, cr, uid, lead_id, context=None):
+        self._send_mail(cr, uid, lead_id, context=context)
+
+    def _send_mail(self, cr, uid, lead_id, context=None):
+        if context is None:
+            context = {}
+
+        lead_o = self.pool.get("giscedata.crm.lead")
+        ir_model_o = self.pool.get('ir.model.data')
+        template_o = self.pool.get('poweremail.templates')
+
+        lead = lead_o.read(cr, uid, lead_id, ['create_new_member', 'polissa_id'], context=context)
+
+        template_name = "email_contracte_esborrany"
+        if lead["create_new_member"]:
+            template_name = "email_contracte_esborrany_nou_soci"
+        template_id = ir_model_o.get_object_reference(cr, uid, 'som_polissa_soci', template_name)[1]
+
+        polissa_id = lead["polissa_id"][0]
+        from_id = template_o.read(cr, uid, template_id)['enforce_from_account'][0]
+
+        wiz_send_obj = self.pool.get("poweremail.send.wizard")
+        context.update({
+            "active_ids": [polissa_id],
+            "active_id": polissa_id,
+            "template_id": template_id,
+            "src_model": "giscedata.polissa",
+            "src_rec_ids": [polissa_id],
+            "from": from_id,
+            "state": "single",
+            "priority": "0",
+        })
+
+        params = {"state": "single", "priority": "0", "from": context["from"]}
+        wiz_id = wiz_send_obj.create(cr, uid, params, context)
+        return wiz_send_obj.send_mail(cr, uid, [wiz_id], context)
 
     _columns = {
         "tipus_tarifa_lead": fields.selection(_tipus_tarifes_lead, "Tipus de tarifa del contracte"),
@@ -370,6 +430,8 @@ class GiscedataCrmLead(osv.OsvInherits):
         "birthdate": fields.date("Data de naixement"),
         "gender": fields.selection(GENDER_SELECTION, "Gènere"),
         "comercial_info_accepted": fields.boolean("Accepta informació comercial (SomServeis)"),
+        "crm_lead_id": fields.integer("ID del lead al CRM"),
+        "is_new_contact": fields.boolean("És una persona nova per la cooperativa"),
     }
 
     _defaults = {
@@ -377,6 +439,8 @@ class GiscedataCrmLead(osv.OsvInherits):
         "set_custom_potencia": lambda *a: False,
         "donation": lambda *a: False,
         "comercial_info_accepted": lambda *a: False,
+        "crm_lead_id": lambda *a: 0,
+        "is_new_contact": lambda *a: False,
     }
 
 

@@ -4,9 +4,9 @@ import sys
 from osv import osv
 import yaml
 import copy
-from oorq.decorators import job
 
-from som_leads_polissa.giscedata_crm_lead import WWW_DATA_FORM_HEADER
+from som_leads_polissa.models.giscedata_crm_lead import WWW_DATA_FORM_HEADER
+from giscedata_cups.giscedata_cups import get_dso
 
 
 class SomLeadWww(osv.osv_memory):
@@ -27,14 +27,17 @@ class SomLeadWww(osv.osv_memory):
         polissa_o = self.pool.get("giscedata.polissa")
         tarifa_o = self.pool.get("giscedata.polissa.tarifa")
         cnae_o = self.pool.get("giscemisc.cnae")
-        cups_ps_o = self.pool.get("giscedata.cups.ps")
+        self.pool.get("giscedata.cups.ps")
         selfcons_o = self.pool.get("giscedata.autoconsum")
         ir_model_o = self.pool.get("ir.model.data")
 
         contract_info = www_vals["contract_info"]
         contract_address = contract_info["cups_address"]
 
-        tensio_230 = imd_o.get_object_reference(cr, uid, 'giscedata_tensions', 'tensio_230')[1]
+        tensio_xml_id = 'tensio_230'
+        if contract_info.get("phase") == "3x230/400":
+            tensio_xml_id = 'tensio_3x230_400'
+        tensio_id = imd_o.get_object_reference(cr, uid, 'giscedata_tensions', tensio_xml_id)[1]
 
         tarifa_id = tarifa_o.search(cr, uid, [("name", "=", contract_info["tariff"])])[0]
         payment_mode_id = payment_mode_o.search(cr, uid, [("name", "=", "ENGINYERS")])[0]
@@ -47,8 +50,7 @@ class SomLeadWww(osv.osv_memory):
         except IndexError:
             cnae_id = None  # TODO: Probably new CNAE 2025, by the moment we avoid to fail
 
-        distri_ref = cups_ps_o.partner_map_from_cups(
-            cr, uid, contract_info["cups"], context=context)
+        distri_ref = get_dso(contract_info["cups"])
 
         member_type = www_vals["linked_member"]
 
@@ -81,7 +83,6 @@ class SomLeadWww(osv.osv_memory):
         values = {
             "state": "open",
             "name": "{} / {}".format(member["vat"].upper(), contract_info["cups"]),
-            "lang": member.get("lang"),
             "cups": contract_info["cups"],
             "codigoEmpresaDistribuidora": distri_ref,
             "cups_ref_catastral": contract_info.get("cups_cadastral_reference"),
@@ -96,7 +97,7 @@ class SomLeadWww(osv.osv_memory):
             "cnae": cnae_id,
             "tarifa": tarifa_id,
             "facturacio_potencia": 'max' if contract_info["tariff"] == '3.0TD' else 'icp',
-            "tensio_normalitzada": tensio_230,
+            "tensio_normalitzada": tensio_id,
             "atr_proces_name": contract_info['process'],
             "change_adm": contract_info['process'] == 'C2',
             "contract_type": self._CONTRACT_TYPE_ANUAL,
@@ -120,7 +121,7 @@ class SomLeadWww(osv.osv_memory):
             "titular_pu": member["address"].get("door"),
             "titular_bq": member["address"].get("block"),
             "titular_id_municipi": member["address"].get("city_id"),
-            "titular_email": member.get("email"),
+            "titular_email": member.get("email", "").lower(),
             "titular_phone": member.get("phone"),
             "titular_mobile": member.get("phone2"),
             "use_cont_address": False,
@@ -147,9 +148,13 @@ class SomLeadWww(osv.osv_memory):
         if member.get("is_juridic"):
             values["persona_firmant_vat"] = member["proxy_vat"]
             values["persona_nom"] = member["proxy_name"]
+            values["is_juridic"] = True
 
         for i, power in enumerate(contract_info["powers"]):
             values["potenciasContratadasEnKWP%s" % str(i + 1)] = float(power) / 1000
+
+        if member.get("lang", False):
+            values["lang"] = member["lang"]
 
         if www_vals.get("self_consumption"):
             values["seccio_registre"] = self._127_WITH_SURPLUSES
@@ -159,7 +164,9 @@ class SomLeadWww(osv.osv_memory):
             values["cau"] = www_vals["self_consumption"]["cau"]
             values["collectiu"] = www_vals["self_consumption"]["collective_installation"]
             values["tec_generador"] = www_vals["self_consumption"]["technology"]
-            values["pot_instalada_gen"] = www_vals["self_consumption"]["installation_power"]
+            values["pot_instalada_gen"] = float(
+                www_vals["self_consumption"]["installation_power"]
+            ) / 1000
             values["tipus_installacio"] = www_vals["self_consumption"]["installation_type"]
             values["ssaa"] = 'S' if www_vals["self_consumption"]['aux_services'] else 'N'
 
@@ -167,6 +174,14 @@ class SomLeadWww(osv.osv_memory):
                 values["seccio_registre"], values["subseccio"], int(values["collectiu"]),
                 int(values["tipus_cups"]), int(values["tipus_installacio"]), context=context
             )
+
+        if member_type in ["new_member", "sponsored"]:
+            if self._already_has_contract(cr, uid, values["titular_vat"], context=context):
+                values["is_new_contact"] = False
+            else:
+                values["is_new_contact"] = True
+        else:
+            values["is_new_contact"] = False
 
         # Remove None values to let the lead get them if exists in the bbdd
         for field, value in values.items():
@@ -205,6 +220,8 @@ class SomLeadWww(osv.osv_memory):
         context["create_draft_atr"] = True
 
         lead_o = self.pool.get("giscedata.crm.lead")
+        soci_obj = self.pool.get("somenergia.soci")
+        rp_obj = self.pool.get("res.partner")
 
         msg = lead_o.create_entities(cr, uid, lead_id, context=context)
 
@@ -212,9 +229,14 @@ class SomLeadWww(osv.osv_memory):
         lead_o.stage_next(cr, uid, [lead_id], context=context)
 
         if context.get('sync'):
-            self._send_mail(cr, uid, lead_id, context=context)
+            lead_o._send_mail(cr, uid, lead_id, context=context)
         else:
-            self._send_mail_async(cr, uid, lead_id, context=context)
+            lead_o._send_mail_async(cr, uid, lead_id, context=context)
+
+        # Si no és sòcia, arxiva mail a mailchimp
+        partner = lead_o.browse(cr, uid, lead_id).partner_id
+        if not soci_obj.search(cr, uid, [("partner_id", "=", partner.id)]):
+            rp_obj.subscribe_client_mailchimp_async(cr, uid, partner.id, context=context)
 
         return True
 
@@ -259,6 +281,10 @@ class SomLeadWww(osv.osv_memory):
             # Remove the attachment base64 data from the log
             attachment.pop("datas", None)
 
+        # giscedata_switching/giscedata_polissa.crear_cas_atr reads the contract observations
+        # and looks for the key 'proces: XX' :O
+        www_vals['contract_info']['proces'] = www_vals['contract_info']['process']
+
         data = yaml.safe_dump(www_vals, indent=2)
         msg = "{header}\n{data}".format(header=WWW_DATA_FORM_HEADER, data=data)
         lead.historize_msg(msg, context=context)
@@ -287,6 +313,18 @@ class SomLeadWww(osv.osv_memory):
             )
 
         return error
+
+    def _already_has_contract(self, cr, uid, vat, context=None):
+        if context is None:
+            context = {}
+        partner_o = self.pool.get("res.partner")
+        polissa_o = self.pool.get("giscedata.polissa")
+        result = False
+        partner_id = partner_o.search(cr, uid, [('vat', '=', vat)])
+        if partner_id:
+            if polissa_o.search(cr, uid, [("titular", "=", partner_id[0])]):
+                result = True
+        return result
 
     def _check_member_vat_dont_exists(self, cr, uid, vat, context=None):
         if context is None:
@@ -329,44 +367,6 @@ class SomLeadWww(osv.osv_memory):
                 "INVALID_MEMBER",
                 "Member has been not found: {} not match with VAT {}".format(number, vat)
             )
-
-    @job(queue="poweremail_sender")
-    def _send_mail_async(self, cr, uid, lead_id, context=None):
-        self._send_mail(cr, uid, lead_id, context=context)
-
-    def _send_mail(self, cr, uid, lead_id, context=None):
-        if context is None:
-            context = {}
-
-        lead_o = self.pool.get("giscedata.crm.lead")
-        ir_model_o = self.pool.get('ir.model.data')
-        template_o = self.pool.get('poweremail.templates')
-
-        lead = lead_o.read(cr, uid, lead_id, ['create_new_member', 'polissa_id'], context=context)
-
-        template_name = "email_contracte_esborrany"
-        if lead["create_new_member"]:
-            template_name = "email_contracte_esborrany_nou_soci"
-        template_id = ir_model_o.get_object_reference(cr, uid, 'som_polissa_soci', template_name)[1]
-
-        polissa_id = lead["polissa_id"][0]
-        from_id = template_o.read(cr, uid, template_id)['enforce_from_account'][0]
-
-        wiz_send_obj = self.pool.get("poweremail.send.wizard")
-        context.update({
-            "active_ids": [polissa_id],
-            "active_id": polissa_id,
-            "template_id": template_id,
-            "src_model": "giscedata.polissa",
-            "src_rec_ids": [polissa_id],
-            "from": from_id,
-            "state": "single",
-            "priority": "0",
-        })
-
-        params = {"state": "single", "priority": "0", "from": context["from"]}
-        wiz_id = wiz_send_obj.create(cr, uid, params, context)
-        return wiz_send_obj.send_mail(cr, uid, [wiz_id], context)
 
 
 SomLeadWww()

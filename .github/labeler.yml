@@ -72,6 +72,8 @@ som_leads_polissa:
 -  som_leads_polissa/**
 som_municipal_taxes:
 -  som_municipal_taxes/**
+som_partner_account:
+-  som_partner_account/**
 som_polissa:
 -  som_polissa/**
 som_polissa_administradora:
@@ -82,6 +84,8 @@ som_polissa_soci:
 -  som_polissa_soci/**
 som_poweremail_common_templates:
 -  som_poweremail_common_templates/**
+som_sortida:
+-  som_sortida/**
 somre_giscere_facturacio:
 -  somre_giscere_facturacio/**
 somre_giscere_oferta:

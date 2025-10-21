@@ -9,7 +9,7 @@
 	<div class="wpb_text_column wpb_content_element ">
 		<div class="wpb_wrapper">
 			<p>SOM ENERGIA SCCL es una Sociedad Cooperativa de personas consumidoras y usuarias, sin ánimo de lucro, inscrita en el Registro de Cooperativas de Catalunya y sujeta a los principios y disposiciones de la Ley 12/2015, de 9 de julio, de cooperativas, cuyo objeto social principal es la comercialización y producción de energía eléctrica y calorífica proveniente de fuentes renovables.</p>
-<p>SOM ENERGIA SCCL se encuentra inscrita en el registro de comercializadoras de energía eléctrica con el código R2-415. Tiene su domicilio social en C/ Pic de Peguera, 11, 17003 – Girona siendo su web corporativa www.somenergia.coop.</p>
+<p>SOM ENERGIA SCCL se encuentra inscrita en el registro de comercializadoras de energía eléctrica con el código R2-415. Tiene su domicilio social en C/ Ru Güell, 68, 17005 – Girona siendo su web corporativa www.somenergia.coop.</p>
 
 		</div>
 	</div>
@@ -427,8 +427,7 @@
 <ul>
 <li>Por correo electrónico dirigido a <a href="mailto:info@somenergia.coop" alt="Enviar un correo">info@somenergia.coop</a></li>
 <li>Por correo postal dirigido a la dirección:<br>
-<em>Parque Científico y Tecnológico de la UDG. Edificio Giroemprèn.<br>
-C / Pic de Peguera, 11 17003 Girona</em></li>
+<em>C/ Riu Güell, 68 17005 Girona</em></li>
 <li>Vía formulario electrónico: <a href="https://es.support.somenergia.coop/" target="blank" rel="noopener">https://es.support.somenergia.coop/</a> – Contacto</li>
 <li>Por teléfono al número gratuito: <a href="tel:900103605" target="_blank" rel="noopener">900 103 605</a> o bien al <a href="tel:872202550" target="_blank" rel="noopener">872.202.550</a></li>
 </ul>

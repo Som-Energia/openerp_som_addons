@@ -11,8 +11,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Som Energia\n"
 "Report-Msgid-Bugs-To: support@openerp.com\n"
-"POT-Creation-Date: 2025-06-19 15:55+0000\n"
-"PO-Revision-Date: 2025-06-19 13:58+0000\n"
+"POT-Creation-Date: 2025-09-03 14:45+0000\n"
+"PO-Revision-Date: 2025-09-03 13:38+0000\n"
 "Last-Translator: Som Energia <itcrowd@somenergia.coop>\n"
 "Language-Team: Spanish (Spain) (http://trad.gisce.net/projects/p/somenergia/language/es_ES/)\n"
 "MIME-Version: 1.0\n"
@@ -96,8 +96,8 @@ msgid "real"
 msgstr "real"
 
 #. module: giscedata_facturacio_comer_som
-#: code:addons/giscedata_facturacio_comer_som/giscedata_facturacio_report.py:3919
-#: code:addons/giscedata_facturacio_comer_som/giscedata_facturacio_report.py:3947
+#: code:addons/giscedata_facturacio_comer_som/giscedata_facturacio_report.py:3920
+#: code:addons/giscedata_facturacio_comer_som/giscedata_facturacio_report.py:3950
 #: rml:giscedata_facturacio_comer_som/report/components/energy_consumption_detail_td_collective/energy_consumption_detail_td_collective.mako:11
 msgid "Autoconsum compartit (kWh)"
 msgstr "Autoconsumo compartido (kWh)"
@@ -167,17 +167,17 @@ msgstr "E-Mail factura adjunta"
 msgid "(real)"
 msgstr "(real)"
 
-#: rml:giscedata_facturacio_comer_som/report/report_giscedata_facturacio_factura_comer.mako:52
+#: rml:giscedata_facturacio_comer_som/report/report_giscedata_facturacio_factura_comer.mako:54
 msgid "INFORMACIÓ DE L'ELECTRICITAT UTILITZADA"
 msgstr "INFORMACIÓN DE LA ELECTRICIDAD UTILIZADA"
 
-#: rml:giscedata_facturacio_comer_som/report/report_giscedata_facturacio_factura_comer.mako:69
-#: rml:giscedata_facturacio_comer_som/report/report_giscedata_facturacio_factura_comer.mako:142
+#: rml:giscedata_facturacio_comer_som/report/report_giscedata_facturacio_factura_comer.mako:71
+#: rml:giscedata_facturacio_comer_som/report/report_giscedata_facturacio_factura_comer.mako:144
 msgid "DETALL DE LA FACTURA"
 msgstr "DETALLE DE LA FACTURA"
 
-#: rml:giscedata_facturacio_comer_som/report/report_giscedata_facturacio_factura_comer.mako:82
-#: rml:giscedata_facturacio_comer_som/report/report_giscedata_facturacio_factura_comer.mako:168
+#: rml:giscedata_facturacio_comer_som/report/report_giscedata_facturacio_factura_comer.mako:84
+#: rml:giscedata_facturacio_comer_som/report/report_giscedata_facturacio_factura_comer.mako:170
 msgid ""
 "Informació sobre protecció de dades: Les dades personals tractades per "
 "gestionar la relació contractual i, si s'escau, remetre informació comercial"
@@ -187,7 +187,7 @@ msgid ""
 "datos.com ."
 msgstr "Información sobre protección de datos: Los datos personales tratados para gestionar la relación contractual y, en su caso, remitir información comercial por medios electrónicos, se conservarán hasta el fin de la relación, baja comercial o los plazos de retención legales. Puedes ejercer tus derechos en la dirección postal de Som Energia como responsable o en somenergia@delegado-datos.com ."
 
-#: rml:giscedata_facturacio_comer_som/report/report_giscedata_facturacio_factura_comer.mako:100
+#: rml:giscedata_facturacio_comer_som/report/report_giscedata_facturacio_factura_comer.mako:102
 msgid "INFORMACIÓ DEL CONSUM ELÈCTRIC"
 msgstr "INFORMACIÓN DEL CONSUMO ELÉCTRICO"
 
@@ -262,7 +262,7 @@ msgid "Costos regulats"
 msgstr "Costes regulados"
 
 #: rml:giscedata_facturacio_comer_som/report/components/amount_destination/amount_destination.mako:27
-#: rml:giscedata_facturacio_comer_som/report/components/amount_destination_td/amount_destination_td.mako:37
+#: rml:giscedata_facturacio_comer_som/report/components/amount_destination_td/amount_destination_td.mako:12
 msgid "Impostos aplicats"
 msgstr "Impuestos aplicados"
 
@@ -271,12 +271,12 @@ msgid "Costos de producció electricitat"
 msgstr "Costes de producción de electricidad"
 
 #: rml:giscedata_facturacio_comer_som/report/components/amount_destination/amount_destination.mako:36
-#: rml:giscedata_facturacio_comer_som/report/components/amount_destination_td/amount_destination_td.mako:48
+#: rml:giscedata_facturacio_comer_som/report/components/amount_destination_td/amount_destination_td.mako:25
 msgid "DESTÍ DE L'IMPORT DE LA FACTURA"
 msgstr "DESTINO DEL IMPORTE DE LA FACTURA"
 
 #: rml:giscedata_facturacio_comer_som/report/components/amount_destination/amount_destination.mako:37
-#: rml:giscedata_facturacio_comer_som/report/components/amount_destination_td/amount_destination_td.mako:52
+#: rml:giscedata_facturacio_comer_som/report/components/amount_destination_td/amount_destination_td.mako:29
 #, python-format
 msgid "El destí de l'import de la teva factura, %s euros, és el següent:"
 msgstr "El destino del importe de tu factura, %s euros, es el siguiente:"
@@ -288,43 +288,43 @@ msgid ""
 "dels equips de mesura i control: %s €."
 msgstr "A los importes indicados en el diagrama debe añadirse, en su caso, el alquiler de los equipos de medida y control: %s €."
 
-#: rml:giscedata_facturacio_comer_som/report/components/amount_destination_td/amount_destination_td.mako:21
-msgid "Anualitat del dèficit"
-msgstr "Anualidad del déficit"
-
-#: rml:giscedata_facturacio_comer_som/report/components/amount_destination_td/amount_destination_td.mako:22
-msgid "RECORE: retribució a les renovables, cogeneració i residus"
-msgstr "RECORE: retribución a las renovables, cogeneración y residuos"
-
-#: rml:giscedata_facturacio_comer_som/report/components/amount_destination_td/amount_destination_td.mako:23
-msgid "Sobrecost de generació a territoris no peninsulars (TNP)"
-msgstr "Sobrecoste de generación en territorios no peninsulares (TNP)"
-
-#: rml:giscedata_facturacio_comer_som/report/components/amount_destination_td/amount_destination_td.mako:24
-msgid "Altres costos regulats"
-msgstr "Otros costes regulados"
-
-#: rml:giscedata_facturacio_comer_som/report/components/amount_destination_td/amount_destination_td.mako:36
-#: rml:giscedata_facturacio_comer_som/report/components/invoice_details_other_concepts/invoice_details_other_concepts.mako:40
-#: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_other_concepts/invoice_details_td_other_concepts.mako:112
-msgid "Lloguer de comptador"
-msgstr "Alquiler de contador"
-
-#: rml:giscedata_facturacio_comer_som/report/components/amount_destination_td/amount_destination_td.mako:38
-msgid "Peatges de transport i distribució"
-msgstr "Peajes de transporte y distribución"
-
-#: rml:giscedata_facturacio_comer_som/report/components/amount_destination_td/amount_destination_td.mako:39
+#: rml:giscedata_facturacio_comer_som/report/components/amount_destination_td/amount_destination_td.mako:8
 #: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_energy_charges/invoice_details_td_energy_charges.mako:4
 #: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_power_charges/invoice_details_td_power_charges.mako:4
 msgid "Càrrecs"
 msgstr "Cargos"
 
-#: rml:giscedata_facturacio_comer_som/report/components/amount_destination_td/amount_destination_td.mako:40
+#: rml:giscedata_facturacio_comer_som/report/components/amount_destination_td/amount_destination_td.mako:9
+msgid "Peatges de transport i distribució"
+msgstr "Peajes de transporte y distribución"
+
+#: rml:giscedata_facturacio_comer_som/report/components/amount_destination_td/amount_destination_td.mako:10
+#: rml:giscedata_facturacio_comer_som/report/components/invoice_details_other_concepts/invoice_details_other_concepts.mako:40
+#: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_other_concepts/invoice_details_td_other_concepts.mako:112
+msgid "Lloguer de comptador"
+msgstr "Alquiler de contador"
+
+#: rml:giscedata_facturacio_comer_som/report/components/amount_destination_td/amount_destination_td.mako:11
 msgid "Energia"
 msgstr "Energía"
 
-#: rml:giscedata_facturacio_comer_som/report/components/amount_destination_td/amount_destination_td.mako:50
+#: rml:giscedata_facturacio_comer_som/report/components/amount_destination_td/amount_destination_td.mako:16
+msgid "Anualitat del dèficit"
+msgstr "Anualidad del déficit"
+
+#: rml:giscedata_facturacio_comer_som/report/components/amount_destination_td/amount_destination_td.mako:17
+msgid "RECORE: retribució a les renovables, cogeneració i residus"
+msgstr "RECORE: retribución a las renovables, cogeneración y residuos"
+
+#: rml:giscedata_facturacio_comer_som/report/components/amount_destination_td/amount_destination_td.mako:18
+msgid "Sobrecost de generació a territoris no peninsulars (TNP)"
+msgstr "Sobrecoste de generación en territorios no peninsulares (TNP)"
+
+#: rml:giscedata_facturacio_comer_som/report/components/amount_destination_td/amount_destination_td.mako:19
+msgid "Altres costos regulats"
+msgstr "Otros costes regulados"
+
+#: rml:giscedata_facturacio_comer_som/report/components/amount_destination_td/amount_destination_td.mako:27
 #, python-format
 msgid ""
 "El destí de l'import de la teva factura sense flux solar, %s euros, és el "
@@ -847,9 +847,9 @@ msgid ""
 "RECLAMACIONS COMERCIALITZACIÓ (SOM ENERGIA): Horari d'atenció de 9 a 14 h. "
 "900 103 605 (cost de la trucada per a la cooperativa).<br />Si tens tarifa "
 "plana, pots contactar igualment al %s, sense cap cost.<br />Adreça "
-"electrònica: reclama@somenergia.coop<br />Adreça postal: C/ Pic de Peguera, "
-"11, A 2 8. Edifici Giroemprèn. 17003 - Girona<br />"
-msgstr "RECLAMACIONES COMERCIALIZACIÓN (SOM ENERGIA): Horario de atención de 9 a 14h. 900 103 605 (coste de la llamada para la cooperativa) <br />Si tienes tarifa plana, puedes contactar igualmente al %s, sin ningún coste. <br />E-mail: reclama@somenergia.coop<br />Dirección postal: C/ Pic de Peguera, 11, A 2 8. Edifici Giroemprèn. 17003 - Girona<br />"
+"electrònica: reclama@somenergia.coop<br />Adreça postal: C/ Riu Güell, 68 - "
+"17005 - Girona<br />"
+msgstr "RECLAMACIONES COMERCIALIZACIÓN (SOM ENERGIA): Horario de atención de 9 a 14 h. 900 103 605 (coste de la llamada para la cooperativa).<br />Si tienes tarifa plana de telefonía, también puedes llamarnos al %s.<br />Correo electrónico: reclama@somenergia.coop<br />Dirección: C/ Riu Güell, 68 - 17005 - Girona<br />"
 
 #: rml:giscedata_facturacio_comer_som/report/components/emergency_complaints/emergency_complaints.mako:40
 #: rml:giscedata_facturacio_comer_som/report/components/emergency_complaints_td/emergency_complaints_td.mako:31
@@ -892,8 +892,8 @@ msgid ""
 "Horari de 9 a 14 h. 900 103 605 (Gratuït. cost de la trucada per a la "
 "cooperativa).<br />Si tens tarifa plana de telefonia, també pots trucar-nos "
 "al %s.<br />Adreça electrònica: reclama@somenergia.coop<br />Adreça postal: "
-"C/ Pic de Peguera, 11, A 2 8. Edifici Giroemprèn. 17003 - Girona<br />"
-msgstr "Horario de 9 a 14 h. 900103605 (Gratuito. Coste de la llamada para la cooperativa).<br />Si tienes tarifa plana de telefonía, también puedes llamarnos al %s.<br />Correo electrónico: reclama@somenergia.coop<br />Dirección C / Pic de Peguera, 11, A 2 8. Edificio Giroemprèn. 17003 - Girona<br />"
+"C/ Riu Güell, 68 - 17005 - Girona<br />"
+msgstr "Horario de 9 a 14 h. 900103605 (Gratuito. Coste de la llamada para la cooperativa).<br />Si tienes tarifa plana de telefonía, también puedes llamarnos al %s.<br />Correo electrónico: reclama@somenergia.coop<br />Dirección: C/ Riu Güell, 68 - 17005 - Girona<br />"
 
 #: rml:giscedata_facturacio_comer_som/report/components/emergency_complaints_td/emergency_complaints_td.mako:34
 msgid "Pots obtenir més informació sobre reclamacions en aquest "
@@ -1038,8 +1038,7 @@ msgid "Lectura inicial (%s) (%s)"
 msgstr "Lectura inicial (%s) (%s)"
 
 #: rml:giscedata_facturacio_comer_som/report/components/energy_consumption_detail_td_base/energy_consumption_detail_td_base.mako:28
-#: rml:giscedata_facturacio_comer_som/report/components/energy_consumption_detail_td_surplus/energy_consumption_detail_td_surplus.mako:19
-#: rml:giscedata_facturacio_comer_som/report/components/energy_consumption_detail_td_surplus/energy_consumption_detail_td_surplus.mako:21
+#: rml:giscedata_facturacio_comer_som/report/components/energy_consumption_detail_td_surplus/energy_consumption_detail_td_surplus.mako:22
 #, python-format
 msgid "Lectura final (%s) (%s)"
 msgstr "Lectura final (%s) (%s)"
@@ -1086,26 +1085,25 @@ msgid ""
 msgstr "(2) Esta energía utilizada incluye los ajustes correspondientes a la energía autoconsumida."
 
 #: rml:giscedata_facturacio_comer_som/report/components/energy_consumption_detail_td_info/energy_consumption_detail_td_info.mako:18
-#: rml:giscedata_facturacio_comer_som/report/components/energy_consumption_detail_td_info/energy_consumption_detail_td_info.mako:21
-#: rml:giscedata_facturacio_comer_som/report/components/energy_consumption_detail_td_info/energy_consumption_detail_td_info.mako:23
-#: rml:giscedata_facturacio_comer_som/report/components/readings_text/readings_text.mako:12
-msgid "(més informació)."
-msgstr "(más información)."
-
-#: rml:giscedata_facturacio_comer_som/report/components/energy_consumption_detail_td_info/energy_consumption_detail_td_info.mako:19
 msgid ""
 "(2) Aquesta energia utilitzada inclou els ajustos corresponents al balanç "
 "horari "
 msgstr "(2) Esta energía utilizada incluye los ajustes correspondientes al balance horario "
 
-#: rml:giscedata_facturacio_comer_som/report/components/energy_consumption_detail_td_info/energy_consumption_detail_td_info.mako:28
+#: rml:giscedata_facturacio_comer_som/report/components/energy_consumption_detail_td_info/energy_consumption_detail_td_info.mako:20
+#: rml:giscedata_facturacio_comer_som/report/components/energy_consumption_detail_td_info/energy_consumption_detail_td_info.mako:22
+#: rml:giscedata_facturacio_comer_som/report/components/readings_text/readings_text.mako:12
+msgid "(més informació)."
+msgstr "(más información)."
+
+#: rml:giscedata_facturacio_comer_som/report/components/energy_consumption_detail_td_info/energy_consumption_detail_td_info.mako:27
 msgid ""
 "(2) Aquesta energia utilitzada inclou ajustos perquè les lectures informades"
 " per la companyia distribuïdora no concorden amb els consums informats per a"
 " cada període."
 msgstr "(2) Esta energía utilizada incluye ajustes porque las lecturas informadas por la compañía distribuidora no concuerdan con los consumos informados para cada período."
 
-#: rml:giscedata_facturacio_comer_som/report/components/energy_consumption_detail_td_info/energy_consumption_detail_td_info.mako:31
+#: rml:giscedata_facturacio_comer_som/report/components/energy_consumption_detail_td_info/energy_consumption_detail_td_info.mako:30
 #: rml:giscedata_facturacio_comer_som/report/components/invoice_details_comments/invoice_details_comments.mako:9
 msgid ""
 "Si vols conèixer el detall de les teves dades horàries d’ús d’electricitat i"
@@ -1114,7 +1112,7 @@ msgid ""
 "distribuïdora: "
 msgstr "Si quieres conocer el detalle tus datos horarios de uso de electricidad y de potencia y dispones de un contador con la telegestión activada, te animamos a registrarte y acceder gratuitamente al portal web de tu empresa distribuidora:"
 
-#: rml:giscedata_facturacio_comer_som/report/components/energy_consumption_detail_td_info/energy_consumption_detail_td_info.mako:35
+#: rml:giscedata_facturacio_comer_som/report/components/energy_consumption_detail_td_info/energy_consumption_detail_td_info.mako:34
 #: rml:giscedata_facturacio_comer_som/report/components/invoice_details_comments/invoice_details_comments.mako:13
 #, python-format
 msgid "(Ho sentim, %s encara no ens ha facilitat l’enllaç al portal)"

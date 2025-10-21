@@ -21,7 +21,7 @@ MONTHS = {
 
 
 class ReportBackendSomGurbAcordRepartiment(ReportBackend):
-    _source_model = "som.gurb"
+    _source_model = "som.gurb.cau"
     _name = "report.backend.som.gurb.acord.repartiment"
 
     @report_browsify
@@ -47,7 +47,7 @@ class ReportBackendSomGurbAcordRepartiment(ReportBackend):
         }
 
         search_params = [
-            ("gurb_id", "=", gurb.id),
+            ("gurb_cau_id", "=", gurb.id),
             ("active", "=", True)
         ]
 
@@ -124,7 +124,7 @@ class ReportBackendSomGurbDocuments(ReportBackend):
             "day": datetime.now().day,
             "month": MONTHS[str(datetime.now().month)],
             "year": datetime.now().year,
-            "cau": gurb_cups.gurb_id.self_consumption_id.cau,
+            "cau": gurb_cups.gurb_cau_id.self_consumption_id.cau,
             "beta_kw": gurb_cups.beta_kw,
             "beta_percentage": gurb_cups.beta_percentage,
         }

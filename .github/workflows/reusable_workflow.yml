@@ -92,6 +92,7 @@ jobs:
           git clone --depth 1 https://$GITHUB_TOKEN@github.com/Som-Energia/erp.git -b ${{ inputs.erpbranch }} $ROOT_DIR_SRC/erp
           git clone --depth 1 https://$GITHUB_TOKEN@github.com/Som-Energia/libFacturacioATR.git $ROOT_DIR_SRC/libFacturacioATR
           git clone --depth 1 https://$GITHUB_TOKEN@github.com/Som-Energia/omie-modules.git $ROOT_DIR_SRC/omie-modules
+          git clone --depth 1 https://$GITHUB_TOKEN@github.com/Som-Energia/OMIE.git $ROOT_DIR_SRC/OMIE
           if [ ! -d "$ROOT_DIR_SRC/openerp_som_addons" ]; then
             git clone --depth 1 https://github.com/Som-Energia/openerp_som_addons.git $ROOT_DIR_SRC/openerp_som_addons
           fi
@@ -122,6 +123,9 @@ jobs:
           git checkout $(git describe --tags `git rev-list --tags --max-count=1`)
           pip install -e .
           cd $ROOT_DIR_SRC/ooop
+          git checkout $(git describe --tags `git rev-list --tags --max-count=1`)
+          pip install -e .
+          cd $ROOT_DIR_SRC/OMIE
           git checkout $(git describe --tags `git rev-list --tags --max-count=1`)
           pip install -e .
           cd $ROOT_DIR_SRC/somenergia-generationkwh
@@ -199,11 +203,3 @@ jobs:
           token: ${{ secrets.CODECOV_TOKEN }}
         if: ${{ inputs.all_modules == 'true' }}
 
-      - name: Coveralls
-        env:
-          GITHUB_TOKEN: ${{ secrets.ACCESS_TOKEN_GA }}
-        uses: coverallsapp/github-action@v2
-        with:
-          format: cobertura
-          fail-on-error: false
-          flag-name: ${{ inputs.module }}

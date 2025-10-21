@@ -253,20 +253,22 @@ class ResPartner(osv.osv):
             return False
 
     def become_member(self, cursor, uid, id, context=None):
+        if not context:
+            context = {}
+
         imd_obj = self.pool.get("ir.model.data")
         soci_obj = self.pool.get("somenergia.soci")
         ir_seq = self.pool.get("ir.sequence")
         soci_cat = imd_obj._get_obj(cursor, uid, "som_partner_account", "res_partner_category_soci")
 
-        # Assign Member category
+        # Assign Member category and ref code
+        partner_vals = {}
         partner = self.read(cursor, uid, id, ["ref", "category_id"])
         if soci_cat.id not in partner["category_id"]:
-            self.write(cursor, uid, partner["id"], {"category_id": [(4, soci_cat.id)]})
+            partner_vals["category_id"] = [(4, soci_cat.id)]
 
-        # Assign Member ref code
-        if not partner["ref"] or partner["ref"][0] != "S":
-            codi = ir_seq.get(cursor, uid, "res.partner.soci")
-            self.write(cursor, uid, partner["id"], {"ref": codi})
+        partner_vals['ref'] = context.get('force_ref', ir_seq.get(cursor, uid, "res.partner.soci"))
+        self.write(cursor, uid, partner["id"], partner_vals)
 
         # Create Member instance
         soci_ids = soci_obj.search(
@@ -316,9 +318,13 @@ class ResPartner(osv.osv):
                 ),
             )
 
-            return soci_id
+        if not soci_ids:
+            soci_ids = [soci_obj.create_one_soci(cursor, uid, partner["id"])]
 
-        return soci_obj.create_one_soci(cursor, uid, partner["id"])
+        soci_obj.subscriu_socia_mailchimp_async(cursor, uid, soci_ids[0], context=context)
+        self.arxiva_client_mailchimp_async(cursor, uid, id, context=context)
+
+        return soci_ids[0]
 
     def adopt_contracts_as_member(self, cursor, uid, partner_id, context=None):
         contract_obj = self.pool.get("giscedata.polissa")

@@ -166,12 +166,16 @@ class GiscedataSwitchingM1_01(osv.osv):
     def generar_xml(self, cursor, uid, pas_id, context=None):
         if context is None:
             context = {}
+
+        if isinstance(pas_id, (list, tuple)):
+            pas_id = pas_id[0]
+        pas = self.browse(cursor, uid, pas_id, context)
+
         sgc_obj = self.pool.get("som.gurb.cups")
 
         xml = super(GiscedataSwitchingM1_01, self).generar_xml(
             cursor, uid, pas_id, context=context
         )
-        pas = self.browse(cursor, uid, pas_id, context)
         sw = pas.sw_id
         if sw and _cups_contract_has_gurb_cups(
             cursor, uid, self.pool, sw.cups_polissa_id.id, context=context
@@ -338,7 +342,7 @@ class GiscedataSwitchingM1_05(osv.osv):
         )
 
         sw_obj = self.pool.get("giscedata.switching")
-        gurb_obj = self.pool.get("som.gurb")
+        gurb_obj = self.pool.get("som.gurb.cau")
         sgc_obj = self.pool.get("som.gurb.cups")
         step_m101_obj = self.pool.get("giscedata.switching.m1.01")
         sw_step_header_obj = self.pool.get("giscedata.switching.step.header")
@@ -521,7 +525,7 @@ class GiscedataSwitchingHelpers(osv.osv):
         if context is None:
             context = {}
 
-        gurb_obj = self.pool.get("som.gurb")
+        gurb_obj = self.pool.get("som.gurb.cau")
         sw_step_header_obj = self.pool.get("giscedata.switching.step.header")
         sw_obj = self.pool.get("giscedata.switching")
 
@@ -544,7 +548,7 @@ class GiscedataSwitchingHelpers(osv.osv):
             gurb_obj.activate_gurb_from_m1_05(
                 cursor, uid, sw_id, data_activacio, context=context
             )
-            sw_step_header_id = self.read(cursor, uid, step_id, ['header_id'])['header_id'][0]
+            sw_step_header_id = step_obj.read(cursor, uid, step_id, ['header_id'])['header_id'][0]
             sw_step_header_obj.write(
                 cursor, uid, sw_step_header_id, {'notificacio_pendent': False}
             )
@@ -557,7 +561,7 @@ class GiscedataSwitchingHelpers(osv.osv):
 
         sw_obj = self.pool.get('giscedata.switching')
         sw_step_header_obj = self.pool.get("giscedata.switching.step.header")
-        gurb_obj = self.pool.get("som.gurb")
+        gurb_obj = self.pool.get("som.gurb.cau")
 
         res = super(GiscedataSwitchingHelpers, self).m105_acord_repartiment_autoconsum(
             cursor, uid, sw_id, context=context
@@ -578,7 +582,7 @@ class GiscedataSwitchingHelpers(osv.osv):
             gurb_obj.activate_gurb_from_m1_05(
                 cursor, uid, sw_id, data_activacio, context=context
             )
-            sw_step_header_id = self.read(cursor, uid, step_id, ['header_id'])['header_id'][0]
+            sw_step_header_id = step_obj.read(cursor, uid, step_id, ['header_id'])['header_id'][0]
             sw_step_header_obj.write(
                 cursor, uid, sw_step_header_id, {'notificacio_pendent': False}
             )
@@ -601,7 +605,7 @@ class GiscedataSwitchingM2_05(osv.osv):
         )
 
         sw_obj = self.pool.get("giscedata.switching")
-        gurb_obj = self.pool.get("som.gurb")
+        gurb_obj = self.pool.get("som.gurb.cau")
         gurb_cups_obj = self.pool.get("som.gurb.cups")
         sw_step_header_obj = self.pool.get("giscedata.switching.step.header")
         sw = sw_obj.browse(cursor, uid, sw_id, context=context)
@@ -628,14 +632,16 @@ class GiscedataSwitchingM2_05(osv.osv):
                 )
             # GURB Activation Codes
             elif step.motiu_modificacio in ["04", "15", "19"]:
-                sw_step_header_id = self.read(cursor, uid, step_id, ['header_id'])['header_id'][0]
-                sw_step_header_obj.write(
-                    cursor, uid, sw_step_header_id, {'notificacio_pendent': False}
-                )
                 data_activacio = xml.datos_activacion.fecha
                 gurb_obj.activate_gurb_from_m1_05(
                     cursor, uid, sw_id, data_activacio, context=context
                 )
+
+            # Don't notify if GURB
+            sw_step_header_id = self.read(cursor, uid, step_id, ['header_id'])['header_id'][0]
+            sw_step_header_obj.write(
+                cursor, uid, sw_step_header_id, {'notificacio_pendent': False}
+            )
 
         return step_id
 
