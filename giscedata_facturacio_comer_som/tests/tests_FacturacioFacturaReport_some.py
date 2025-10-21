@@ -1731,7 +1731,7 @@ class Tests_FacturacioFacturaReport_invoice_details_other_concepts(
                 "percentatges_exempcio": None,
                 "is_excempcio_IE_base": None,
                 "donatiu": 0,
-                "amount_total": 10.0,
+                "amount_total": 28.0,
             },
         )
 
@@ -1872,12 +1872,12 @@ class Tests_FacturacioFacturaReport_amount_destination(Tests_FacturacioFacturaRe
             {
                 "is_visible": True,
                 "factura_id": 1,
-                "amount_total": 10.0,
+                "amount_total": 28.0,
                 "total_lloguers": 0.0,
-                "pie_total": 10.0,
+                "pie_total": 28.0,
                 "pie_regulats": 0.0,
                 "pie_impostos": 0.0,
-                "pie_costos": 10.0,
+                "pie_costos": 28.0,
                 "rep_BOE": {"i": 39.44, "c": 40.33, "o": 20.23},
             },
         )
@@ -2137,7 +2137,7 @@ class Tests_FacturacioFacturaReport_invoice_info(Tests_FacturacioFacturaReport_b
             result,
             {
                 "has_agreement_partner": False,
-                "amount_total": 10.0,
+                "amount_total": 28.0,
                 "type": u"out_invoice",
                 "number": u"0001/F",
                 "ref": False,
@@ -2176,11 +2176,11 @@ class Tests_FacturacioFacturaReport_invoice_summary(Tests_FacturacioFacturaRepor
             {
                 "total_exces_consumida": 0.0,
                 "has_exces_potencia": False,
-                "total_energy": 10.0,
+                "total_energy": 28.0,
                 "total_power": 0.0,
                 "total_ractive": 0.0,
                 "total_rent": 0.0,
-                "total_amount": 10.0,
+                "total_amount": 28.0,
                 "has_autoconsum": False,
                 "autoconsum_total_compensada": 0,
                 "impostos": {},
@@ -2219,8 +2219,8 @@ class Tests_FacturacioFacturaReport_partner_info(Tests_FacturacioFacturaReport_b
         self.assertEquals(
             result,
             {
-                "pol_name": u"Camptocamp",
-                "vat": u"B82420654",
+                "pol_name": u"Gil, Pere",
+                "vat": u"13900056Y",
                 "is_out_refund": False,
                 "payment_type": u"TRANSFERENCIA_SBC",
                 "cc_name": u"**** **** **** **** **** 1234",
