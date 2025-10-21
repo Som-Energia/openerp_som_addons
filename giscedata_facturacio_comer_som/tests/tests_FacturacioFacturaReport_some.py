@@ -3429,3 +3429,80 @@ class Tests_FacturacioFacturaReport_invoice_details_td(Tests_FacturacioFacturaRe
 
         msg = u"No s'han trobats F1's d'expedient de anomalia/frau al generar pdf per"
         self.assertTrue(msg in context.exception.message)
+
+    @mock.patch.object(
+        giscedata_facturacio_report.GiscedataFacturacioFacturaReport, "get_atr_price"
+    )
+    def test__get_sub_component_expedient_data__find_the_f1_but_empty(
+        self, get_atr_price_mock_function
+    ):
+        get_atr_price_mock_function.return_value = 10.0
+
+        extra_obj = self.model("giscedata.facturacio.extra")
+        f1_obj = self.model("giscedata.facturacio.importacio.linia")
+        f1_extra_obj = self.model("giscedata.facturacio.importacio.linia.extra")
+
+        f_id = self.get_fixture("giscedata_facturacio", "factura_0001")
+        fact = self.factura_obj.browse(
+            self.cursor,
+            self.uid,
+            f_id
+        )
+        pol = self.polissa_obj.browse(
+            self.cursor,
+            self.uid,
+            fact.polissa_id.id
+        )
+
+        origin = 'expedient de anomalia/frau 12345'
+        expedient = "12345"
+
+        extra_id = extra_obj.create(
+            self.cursor,
+            self.uid,
+            {
+                "polissa_id": pol.id,
+                "factura_ids": [(6, 0, [f_id])],
+                "factura_linia_ids": [],
+                "price_unit": 123,
+                "date_from": fact.data_inici,
+                "date_to": fact.data_final,
+            },
+        )
+
+        f1_id = f1_obj.search(self.cursor, self.uid, [])[0]
+        f1_obj.write(
+            self.cursor,
+            self.uid,
+            f1_id,
+            {
+                "cups_id": pol.cups.id,
+                "invoice_number_text": origin,
+                "type_factura": "C",
+                "num_expedient": expedient,
+            }
+        )
+
+        f1_extra_obj.create(
+            self.cursor,
+            self.uid,
+            {
+                "extra_id": extra_id,
+                "linia_id": f1_id,
+            },
+        )
+
+        data = self.bfp(f_id)
+        self.r_obj.cursor = self.cursor
+        self.r_obj.uid = self.uid
+        result = self.r_obj.get_sub_component_expedient_data(data['fact'], data['pol'], [])
+
+        self.assertYamlfy(result)
+        self.assertEquals(
+            result,
+            {
+                'energy_lines_data': [],
+                'tipus': '11',
+                'expedient': expedient
+            }
+        )
