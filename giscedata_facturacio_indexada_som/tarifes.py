@@ -147,8 +147,9 @@ class TarifaPoolSOM(TarifaPool):
 
         try:
             component_class = self.get_component_class(component.title())
-            start_date = datetime.strptime(data_inici, '%Y%m%d')
-            postfix = ('%s_%s' % (data_inici, data_final))
+            start_date = datetime.strptime(data_inici, '%Y-%m-%d')
+            component = component.lower()
+            postfix = ('%s_%s' % (data_inici, data_final)).replace('-', '')
             if component == 'prmdiari' and (start_date.year > 2025 or (start_date.year == 2025 and start_date.month >= 10)):
                 component_inst = Pmdiario('C2_pmdiario_%(postfix)s' % locals(), self.conf['esios_token'])
             else:
@@ -432,8 +433,8 @@ class TarifaPoolSOM(TarifaPool):
         ).date()
         day = False
 
-        start_date_str = start_date.strftime("%Y%m%d")
-        end_date_str = end_date.strftime("%Y%m%d")
+        start_date_str = start_date.strftime("%Y-%m-%d")
+        end_date_str = end_date.strftime("%Y-%m-%d")
 
         # Comprovem si estem calculant el preu de demà
         preu_dema = self.conf.get('preu_dema', False)
