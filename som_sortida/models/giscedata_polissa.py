@@ -98,7 +98,25 @@ class GiscedataPolissa(osv.osv):
                             cr, uid, [_id], context=context
                         )
 
-        return super(GiscedataPolissa, self).write(cr, uid, ids, vals, context=context)
+        res = super(GiscedataPolissa, self).write(cr, uid, ids, vals, context=context)
+
+        """Si s'afegeix la categoria origen_ct_sense_socia_category a la pòlissa,
+        subscribim a llista mailchimp_clients_ctss_list al titular de la pòlissa."""
+        if "categoria_ids" in vals:
+            for polissa in self.browse(cr, uid, ids, context=context):
+                imd_obj = self.pool.get("ir.model.data")
+                partner_address_obj = self.pool.get("res.partner.address")
+
+                categoria_ids = vals["categoria_ids"]
+                cat_id = imd_obj.get_object_reference(
+                    cr, uid, "som_sortida", "origen_ct_sense_socia_category"
+                )
+                if cat_id in categoria_ids:
+                    partner_address_obj.subscribe_polissa_titular_in_ctss_lists(
+                        cr, uid, [polissa.id], context=context,
+                    )
+
+        return res
 
     def _es_socia_ct_ss(self, cr, uid, ids, socia_nif, context=None):
         """
