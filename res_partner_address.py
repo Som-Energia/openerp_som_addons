@@ -13,7 +13,7 @@ class ResPartnerAddress(osv.osv):
         # Generationkwh
         gen_obj = self.pool.get('generationkwh.investment')
         soc_obj = self.pool.get('somenergia.soci')
-        soci_id = soc_obj.search([('partner_id','=',partner_id)])
+        soci_id = soc_obj.search(cursor, uid, [('partner_id','=',partner_id)])
 
         gen_data = gen_obj.search(cursor, uid, [('member_id','=',soci_id)])
         if gen_data:
@@ -23,11 +23,11 @@ class ResPartnerAddress(osv.osv):
 
         return soci_data
     
-    def fill_merge_fields_soci(self, cursor, uid, id, context=None):
+    def fill_merge_fields_soci(self, cursor, uid, address_id, context=None):
         mailchimp_member = super(ResPartnerAddress, self).fill_merge_fields_soci(
-            cursor, uid, id, context=context)
-
-        soci_data = self._get_contract_data(cursor, uid, id, context=context)
+            cursor, uid, address_id, context=context)
+        partner_id = self.read(cursor, uid, address_id, ['partner_id'])['partner_id'][0]
+        soci_data = self._get_contract_data(cursor, uid, partner_id, context=context)
         mailchimp_member["merge_fields"].update(
             {
                 FIELDS_SOCIS["Generation"]: soci_data['generationkwh'], #  True or False            }
