@@ -147,7 +147,7 @@ class TarifaPoolSOM(TarifaPool):
 
         try:
             component_class = self.get_component_class(component.title())
-            start_date = datetime.strptime(data_inici, '%Y-%m-%d')
+            start_date = datetime.strptime(data_inici, '%Y%m%d')
             postfix = ('%s_%s' % (data_inici, data_final))
             if component == 'prmdiari' and (start_date.year > 2025 or (start_date.year == 2025 and start_date.month >= 10)):
                 component_inst = Pmdiario('C2_pmdiario_%(postfix)s' % locals(), self.conf['esios_token'])
