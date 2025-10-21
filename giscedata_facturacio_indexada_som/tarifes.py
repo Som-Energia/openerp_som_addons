@@ -148,7 +148,8 @@ class TarifaPoolSOM(TarifaPool):
         try:
             component_class = self.get_component_class(component.title())
             start_date = datetime.strptime(data_inici, '%Y-%m-%d')
-            postfix = ('%s_%s' % (data_inici, data_final))
+            component = component.lower()
+            postfix = ('%s_%s' % (data_inici, data_final)).replace('-', '')
             if component == 'prmdiari' and (start_date.year > 2025 or (start_date.year == 2025 and start_date.month >= 10)):
                 component_inst = Pmdiario('C2_pmdiario_%(postfix)s' % locals(), self.conf['esios_token'])
             else:
@@ -432,8 +433,8 @@ class TarifaPoolSOM(TarifaPool):
         ).date()
         day = False
 
-        start_date_str = start_date.strftime("%Y%m%d")
-        end_date_str = end_date.strftime("%Y%m%d")
+        start_date_str = start_date.strftime("%Y-%m-%d")
+        end_date_str = end_date.strftime("%Y-%m-%d")
 
         # Comprovem si estem calculant el preu de demà
         preu_dema = self.conf.get('preu_dema', False)
@@ -445,9 +446,10 @@ class TarifaPoolSOM(TarifaPool):
         holidays = self.conf['holidays']
 
         # Curva de consumo real
-        curve_real = self.get_curve_from_consum_magn(start_date, magn='activa_real')
-        curve_real = curve_real * 0.001 # in kWh
-        curve_real_qh = curve_real.get_component_qh_interpolated()
+        if not preu_dema:
+            curve_real = self.get_curve_from_consum_magn(start_date, magn='activa_real')
+            curve_real = curve_real * 0.001 # in kWh
+            curve_real_qh = curve_real.get_component_qh_interpolated()
 
         # Curva cuarto-horaria
         curve_qh = curve.get_component_qh_interpolated()
@@ -639,13 +641,19 @@ class TarifaPoolSOM(TarifaPool):
             start_date.year, start_date.month, num_days
         ).date()
 
+        # Comprovem si estem calculant el preu de demà
+        preu_dema = self.conf.get('preu_dema', False)
+        if preu_dema:
+            day = self.conf['preu_dema']['day']
+
         esios_token = self.conf['esios_token']
         holidays = self.conf['holidays']
 
         # Curva de consumo real
-        curve_real = self.get_curve_from_consum_magn(start_date, magn='activa_real')
-        curve_real = curve_real * 0.001 # in kWh
-        curve_real_qh = curve_real.get_component_qh_interpolated()
+        if not preu_dema:
+            curve_real = self.get_curve_from_consum_magn(start_date, magn='activa_real')
+            curve_real = curve_real * 0.001 # in kWh
+            curve_real_qh = curve_real.get_component_qh_interpolated()
 
         # Curva cuarto-horaria
         curve_qh = curve.get_component_qh_interpolated()
@@ -823,13 +831,19 @@ class TarifaPoolSOM(TarifaPool):
             start_date.year, start_date.month, num_days
         ).date()
 
+        # Comprovem si estem calculant el preu de demà
+        preu_dema = self.conf.get('preu_dema', False)
+        if preu_dema:
+            day = self.conf['preu_dema']['day']
+
         esios_token = self.conf['esios_token']
         holidays = self.conf['holidays']
 
         # Curva de consumo real
-        curve_real = self.get_curve_from_consum_magn(start_date, magn='activa_real')
-        curve_real = curve_real * 0.001 # in kWh
-        curve_real_qh = curve_real.get_component_qh_interpolated()
+        if not preu_dema:
+            curve_real = self.get_curve_from_consum_magn(start_date, magn='activa_real')
+            curve_real = curve_real * 0.001 # in kWh
+            curve_real_qh = curve_real.get_component_qh_interpolated()
 
         # Curva cuarto-horaria
         curve_qh = curve.get_component_qh_interpolated()

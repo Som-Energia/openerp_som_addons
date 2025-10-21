@@ -79,7 +79,7 @@ GiscedataFacturacioFacturador()
 
 
 class GiscedataNextDaysEnergyPrice(osv.osv):
-    _inhierit = 'giscedata.next.days.energy.price'
+    _inherit = 'giscedata.next.days.energy.price'
 
     def get_tarifa_class(self, cursor, uid, tarifa_name, context=None):
         return TARIFFS_FACT[tarifa_name]
