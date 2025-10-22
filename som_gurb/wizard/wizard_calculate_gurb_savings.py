@@ -3,7 +3,6 @@ from __future__ import absolute_import
 from osv import osv, fields
 from datetime import datetime
 from StringIO import StringIO
-
 import csv
 import base64
 
