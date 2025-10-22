@@ -55,8 +55,13 @@ class GiscedataPolissa(osv.osv):
         if not isinstance(ids, list):
             ids = [ids]
 
+        imd_obj = self.pool.get('ir.model.data')
+        partner_address_obj = self.pool.get("res.partner.address")
+        cat_ss_id = imd_obj.get_object_reference(
+            cr, uid, "som_polissa_soci", "origen_ct_sense_socia_category"
+        )[1]
+
         if 'soci' in vals:
-            imd_obj = self.pool.get('ir.model.data')
             soci_obj = self.pool.get('somenergia.soci')
             state_correcte_id = imd_obj.get_object_reference(
                 cr, uid, 'som_sortida', 'enviar_cor_correcte_pending_state'
@@ -97,6 +102,12 @@ class GiscedataPolissa(osv.osv):
                         self.create_history_line(
                             cr, uid, [_id], context=context
                         )
+                category_ids = self.read(cr, uid, _id, ['category_id'])['category_id']
+                if cat_ss_id in category_ids and not self._es_socia_ct_ss(
+                        cr, uid, [_id], soci_nif, context=context):
+                    partner_address_obj.update_polissa_titular_in_ctss_lists(
+                        cr, uid, [_id], context=context,
+                    )
 
         res = super(GiscedataPolissa, self).write(cr, uid, ids, vals, context=context)
 
@@ -104,14 +115,8 @@ class GiscedataPolissa(osv.osv):
         subscribim a llista mailchimp_clients_ctss_list al titular de la pòlissa."""
         if "category_id" in vals:
             for polissa in self.browse(cr, uid, ids, context=context):
-                imd_obj = self.pool.get("ir.model.data")
-                partner_address_obj = self.pool.get("res.partner.address")
-
                 category_ids = list(vals["category_id"][0])
-                cat_id = imd_obj.get_object_reference(
-                    cr, uid, "som_polissa_soci", "origen_ct_sense_socia_category"
-                )[1]
-                if cat_id in category_ids:
+                if cat_ss_id in category_ids:
                     partner_address_obj.subscribe_polissa_titular_in_ctss_lists(
                         cr, uid, [polissa.id], context=context,
                     )

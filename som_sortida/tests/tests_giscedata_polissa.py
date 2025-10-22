@@ -189,9 +189,40 @@ class TestsGiscedataPolissa(testing.OOTestCaseWithCursor):
         )[1]
 
         pol_obj.write(cursor, uid, [polissa_id], {
-            'category_id': [(3, category_cts_sense_socia_id)]
+            'category_id': [(4, category_cts_sense_socia_id)]
         })
 
+        mocked_subscribe.assert_called_once_with(
+            cursor, uid, [polissa_id], context={}
+        )
+
+    @mock.patch('som_sortida.models.res_partner_address.ResPartnerAddress.subscribe_polissa_titular_in_ctss_lists')  # noqa: E501
+    @mock.patch('som_sortida.models.res_partner_address.ResPartnerAddress.update_polissa_titular_in_ctss_lists')  # noqa: E501
+    def test__write__remove_socia_ct_sense_socia(self, mocked_update, mocked_subscribe):
+        cursor = self.cursor
+        uid = self.uid
+        imd_obj = self.openerp.pool.get("ir.model.data")
+        pol_obj = self.openerp.pool.get("giscedata.polissa")
+        polissa_id = imd_obj.get_object_reference(
+            cursor, uid, "giscedata_polissa", "polissa_0002"
+        )[1]
+        # Add category CT sense sòcia
+        category_cts_sense_socia_id = imd_obj.get_object_reference(
+            cursor, uid, "som_polissa_soci", "origen_ct_sense_socia_category"
+        )[1]
+        pol_obj.write(cursor, uid, [polissa_id], {
+            'category_id': [(4, category_cts_sense_socia_id)]
+        })
+        # Change soci to one that is not a CT sense sòcia
+        partner_soci_id = imd_obj.get_object_reference(
+            cursor, uid, 'som_generationkwh', 'res_partner_inversor1'
+        )[1]
+
+        pol_obj.write(cursor, uid, [polissa_id], {
+            'soci': partner_soci_id
+        })
+
+        mocked_update.assert_called_once()
         mocked_subscribe.assert_called_once_with(
             cursor, uid, [polissa_id], context={}
         )

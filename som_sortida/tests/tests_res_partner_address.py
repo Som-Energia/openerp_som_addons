@@ -34,7 +34,8 @@ class TestsPartnerAddress(testing.OOTestCaseWithCursor):
 
         self.assertEqual(res, {
             'num_socia': 'S202129',
-            'situacio_socia': 'Apadrinada'
+            'situacio_socia': 'Apadrinada',
+            'category_id': None,
         })
 
     def test__fill_merge_fields_titular_polissa_ctss__ok(self):

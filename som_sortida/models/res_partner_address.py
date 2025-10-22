@@ -40,12 +40,27 @@ class ResPartnerAddress(osv.osv):
                 cursor, uid, [client_data], list_name, MAILCHIMP_CLIENT
             )
 
+    def update_polissa_titular_in_ctss_lists(self, cursor, uid, polissa_ids, context=None):
+        if not isinstance(polissa_ids, (list, tuple)):
+            polissa_ids = [polissa_ids]
+
+        MAILCHIMP_CLIENT = self._get_mailchimp_client()
+        conf_obj = self.pool.get("res.config")
+        list_name = conf_obj.get(cursor, uid, "mailchimp_clients_ctss_list", None)
+
+        for _id in polissa_ids:
+            client_data = self.fill_merge_fields_titular_polissa_ctss(cursor, uid, _id)
+            self.update_mail_in_list_async(
+                cursor, uid, [client_data], list_name, MAILCHIMP_CLIENT
+            )
+
     def _get_polissa_data(self, cursor, uid, polissa_id, context=None):
         pol_obj = self.pool.get("giscedata.polissa")
         polissa = pol_obj.browse(cursor, uid, polissa_id, context=context)
         polissa_data = {
             "num_socia": polissa.soci.ref,
-            "situacio_socia": "Apadrinada" if polissa.soci.id != polissa.titular.id else "Socia propia"  # noqa: E501
+            "situacio_socia": "Apadrinada" if polissa.soci.id != polissa.titular.id else "Socia propia",  # noqa: E501
+            "category_id": polissa.category_id and polissa.category_id[0] or None,
         }
         return polissa_data
 
@@ -63,14 +78,15 @@ class ResPartnerAddress(osv.osv):
         partner_fields = partner_obj.read(
             cursor, uid, partner_data["partner_id"][0], ["name", "lang", "vat", "ref"]
         )
-        soci_data = self._get_contract_data(cursor, uid, partner_data["partner_id"][0], context)
         pol_data = self._get_polissa_data(cursor, uid, polissa_id, context=context)
+        empresa = self._es_empresa(cursor, uid, pol_data, context)
+        nom_pila = self._get_nom_pila(cursor, uid, partner_data["partner_id"][0], partner_fields, empresa, context)  # noqa: E501
         mailchimp_member = {
             "email_address": partner_data["email"],
             "status": "subscribed",
             "merge_fields": {
                 FIELDS_CTSS["email"]: partner_data["email"],
-                FIELDS_CTSS["Nom"]: soci_data['nom_pila'],
+                FIELDS_CTSS["Nom"]: nom_pila,
                 FIELDS_CTSS["Idioma"]: partner_fields["lang"],
                 FIELDS_CTSS["Origen"]: "Origen vinculat al CT sense socia",
                 # FIELDS_CTSS["Cognoms_Nom"]: partner_fields["name"],
