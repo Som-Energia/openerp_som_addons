@@ -102,16 +102,16 @@ class GiscedataPolissa(osv.osv):
 
         """Si s'afegeix la categoria origen_ct_sense_socia_category a la pòlissa,
         subscribim a llista mailchimp_clients_ctss_list al titular de la pòlissa."""
-        if "categoria_ids" in vals:
+        if "category_id" in vals:
             for polissa in self.browse(cr, uid, ids, context=context):
                 imd_obj = self.pool.get("ir.model.data")
                 partner_address_obj = self.pool.get("res.partner.address")
 
-                categoria_ids = vals["categoria_ids"]
+                category_ids = list(vals["category_id"][0])
                 cat_id = imd_obj.get_object_reference(
-                    cr, uid, "som_sortida", "origen_ct_sense_socia_category"
-                )
-                if cat_id in categoria_ids:
+                    cr, uid, "som_polissa_soci", "origen_ct_sense_socia_category"
+                )[1]
+                if cat_id in category_ids:
                     partner_address_obj.subscribe_polissa_titular_in_ctss_lists(
                         cr, uid, [polissa.id], context=context,
                     )

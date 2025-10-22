@@ -2,6 +2,7 @@
 from osv import osv
 from destral import testing
 from datetime import datetime
+import mock
 
 
 class TestsGiscedataPolissa(testing.OOTestCaseWithCursor):
@@ -172,3 +173,25 @@ class TestsGiscedataPolissa(testing.OOTestCaseWithCursor):
 
         with self.assertRaises(osv.except_osv):
             pol_obj.request_submission_to_cor(cursor, uid, polissa_id)
+
+    @mock.patch('som_sortida.models.res_partner_address.ResPartnerAddress.subscribe_polissa_titular_in_ctss_lists')  # noqa: E501
+    def test__write__add_category_ct_sense_socia(self, mocked_subscribe):
+        cursor = self.cursor
+        uid = self.uid
+        imd_obj = self.openerp.pool.get("ir.model.data")
+        pol_obj = self.openerp.pool.get("giscedata.polissa")
+        polissa_id = imd_obj.get_object_reference(
+            cursor, uid, "giscedata_polissa", "polissa_0001"
+        )[1]
+        # Put category CT sense sòcia
+        category_cts_sense_socia_id = imd_obj.get_object_reference(
+            cursor, uid, "som_polissa_soci", "origen_ct_sense_socia_category"
+        )[1]
+
+        pol_obj.write(cursor, uid, [polissa_id], {
+            'category_id': [(3, category_cts_sense_socia_id)]
+        })
+
+        mocked_subscribe.assert_called_once_with(
+            cursor, uid, [polissa_id], context={}
+        )
