@@ -1,9 +1,43 @@
 # -*- coding: utf-8 -*-
+import mock
 from destral import testing
 
 
 class TestsPartnerAddress(testing.OOTestCaseWithCursor):
-    def test_fill_merge_fields_titular_polissa_ctss(self):
+
+    @mock.patch('som_polissa_soci.models.res_partner_address.ResPartnerAddress.subscribe_mail_in_list_async')  # noqa: E501
+    def test__subscribe_polissa_titular_in_ctss_lists__ok(self, mocked_subscribe):
+        cursor = self.cursor
+        uid = self.uid
+        rpa_obj = self.pool.get("res.partner.address")
+        self.pool.get("giscedata.polissa")
+        imd_obj = self.openerp.pool.get('ir.model.data')
+        polissa_id = imd_obj.get_object_reference(
+            cursor, uid, 'giscedata_polissa', 'polissa_0001'
+        )[1]
+
+        rpa_obj.subscribe_polissa_titular_in_ctss_lists(cursor, uid, polissa_id)
+
+        mocked_subscribe.assert_called_once()
+
+    def test__get_polissa_data__ok(self):
+        cursor = self.cursor
+        uid = self.uid
+        rpa_obj = self.pool.get("res.partner.address")
+        self.pool.get("giscedata.polissa")
+        imd_obj = self.openerp.pool.get('ir.model.data')
+        polissa_id = imd_obj.get_object_reference(
+            cursor, uid, 'giscedata_polissa', 'polissa_0001'
+        )[1]
+
+        res = rpa_obj._get_polissa_data(cursor, uid, polissa_id)
+
+        self.assertEqual(res, {
+            'num_socia': 'S202129',
+            'situacio_socia': 'Apadrinada'
+        })
+
+    def test__fill_merge_fields_titular_polissa_ctss__ok(self):
         cursor = self.cursor
         uid = self.uid
         rpa_obj = self.pool.get("res.partner.address")
