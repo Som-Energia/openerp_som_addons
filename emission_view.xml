@@ -61,12 +61,12 @@
                         <field name="amortization_payment_mode_id" attrs="{'readonly':[('state','in',['open','cancel','done'])]}"/>
                         <field name="bridge_account_payments_id" attrs="{'readonly':[('state','in',['open','cancel','done'])]}"/>
                     </group>
-                    <group col="4" colspan="2">
-                        <separator string="Operacions" colspan="4"/>
+                    <group col="6" colspan="4">
+                        <separator string="Operacions" colspan="6"/>
                         <field name="state"/>
                         <button name="action_open" states="draft" string="Confirm" type="object"/>
                         <button name="set_done" states="open" string="Set to done" type="object"/>
-                        <button name="cancel" states="draft,open" string="Cancel"/>
+                        <button name="cancel" states="draft,open" string="Cancel" type="object"/>
                         <button name="set_to_draft" states="cancel" string="Set to draft" type="object"/>
                     </group>
                 </form>
