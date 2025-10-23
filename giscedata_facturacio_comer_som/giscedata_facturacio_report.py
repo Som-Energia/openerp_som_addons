@@ -3472,16 +3472,20 @@ class GiscedataFacturacioFacturaReport(osv.osv):
                 lines = {}
                 total = 0.0
                 for l in date_lines:  # noqa: E741
-                    atr_tolls = self.get_atr_price(fact, tarifa_peajes, l)
-                    atr_charges = self.get_atr_price(fact, tarifa_cargos, l)
+                    if type != 'reactiva':
+                        atr_tolls = self.get_atr_price(fact, tarifa_peajes, l)
+                        atr_charges = self.get_atr_price(fact, tarifa_cargos, l)
+                    else:
+                        atr_tolls = 0.0
+                        atr_charges = 0.0
                     lines[l.product_id.name] = {
                         "quantity": l["quantity"],
                         "price_subtotal": l["price_subtotal"],
                         "price_unit_multi": l["price_unit_multi"],
                         "price_tolls": atr_tolls,
                         "price_charges": atr_charges,
-                        "tolls": (atr_tolls * l["quantity"]) if type != 'reactiva' else 0.0,
-                        "charges": (atr_charges * l["quantity"]) if type != 'reactiva' else 0.0,
+                        "tolls": (atr_tolls * l["quantity"]),
+                        "charges": (atr_charges * l["quantity"]),
                     }
                     total += l["price_subtotal"]
                 lines["total"] = total
