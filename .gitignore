@@ -139,3 +139,6 @@ patches/
 
 # Jasper binaries
 *.jasper
+
+# VSCode
+.vscode/
