@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import som_generationkwh
 import res_partner
+import res_partner_address
 import giscedata_facturacio
 import giscedata_polissa
 import somenergia_soci
