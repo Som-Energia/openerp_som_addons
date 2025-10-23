@@ -80,7 +80,7 @@ class ResPartnerAddress(osv.osv):
         else:
             return soci['name'].split(',')[-1].strip()
 
-    def _es_empresa(self, cursor, uid, polissa_data, context):
+    def _es_empresa(self, cursor, uid, polissa_data, context=None):
         cat_pol_obj = self.pool.get('giscedata.polissa.category')
         category_names = cat_pol_obj.read(cursor, uid, polissa_data['category_id'], ['name'])
         for category in category_names:

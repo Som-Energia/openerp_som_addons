@@ -60,7 +60,7 @@ class ResPartnerAddress(osv.osv):
         polissa_data = {
             "num_socia": polissa.soci.ref,
             "situacio_socia": "Apadrinada" if polissa.soci.id != polissa.titular.id else "Socia propia",  # noqa: E501
-            "category_id": polissa.category_id and polissa.category_id[0] or None,
+            "category_id": [cat.id for cat in polissa.category_id or []],
         }
         return polissa_data
 

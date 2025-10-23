@@ -8,11 +8,6 @@
         <record id="som_polissa_soci.res_partner_address_soci" model="res.partner.address">
             <field name="phone">612345678</field>
         </record>
-        <record id="socia_campanya_ctss" model="res.partner">
-            <field name="name">Socia Campanya CTSS</field>
-            <field name="ref">SCTSS001</field>
-            <field name="vat">ES99999998T</field>
-        </record>
         <record id="socia_campanya_ctss_address" model="res.partner.address">
             <field name="partner_id" ref="base.res_partner_c2c"/>
             <field name="street">Carrer Falsa, 123</field>
@@ -24,6 +19,10 @@
         </record>
         <record id="som_generationkwh.res_partner_address_inversor1" model="res.partner.address">
             <field name="id_municipi" ref="base_extended.ine_08022"/>
+        </record>
+        <record id="giscedata_polissa.polissa_0004" model="giscedata.polissa">
+            <field name="sortida_state_id" ref="enviar_cor_contrate_sense_socia_pending_state"/>
+            <field name="soci" ref="som_polissa_soci.res_partner_soci_ct"/>
         </record>
     </data>
 </openerp>

@@ -34,7 +34,7 @@ class TestsGiscedataPolissa(testing.OOTestCaseWithCursor):
         pol_obj = self.openerp.pool.get('giscedata.polissa')
 
         polissa_id = imd_obj.get_object_reference(
-            cursor, uid, 'giscedata_polissa', 'polissa_0001'
+            cursor, uid, 'giscedata_polissa', 'polissa_0004'
         )[1]
         pol = pol_obj.browse(cursor, uid, polissa_id)
         # Check initial state
@@ -80,30 +80,29 @@ class TestsGiscedataPolissa(testing.OOTestCaseWithCursor):
         estat_enivat = imd_obj.get_object_reference(
             cursor, uid, 'som_sortida', 'enviar_cor_enviat_cor_pending_state'
         )[1]
-
         pol_obj.set_pending(cursor, uid, polissa_id, estat_sense_socia, {
-            'custom_change_dates': {polissa_id: '2023-10-01'},
+            'custom_change_dates': {polissa_id: '2031-10-01'},
         })
         cor_submission_date = pol_obj.read(
             cursor, uid, polissa_id, ['cor_submission_date']
         )['cor_submission_date']
-        self.assertEqual(cor_submission_date, datetime(2024, 9, 30, 0, 0))
+        self.assertEqual(cor_submission_date, datetime(2032, 9, 30, 0, 0))
 
         pol_obj.set_pending(cursor, uid, polissa_id, estat_15d, {
-            'custom_change_dates': {polissa_id: '2024-10-01'},
+            'custom_change_dates': {polissa_id: '2032-10-01'},
         })
         cor_submission_date = pol_obj.read(
             cursor, uid, polissa_id, ['cor_submission_date']
         )['cor_submission_date']
-        self.assertEqual(cor_submission_date, datetime(2024, 10, 16, 0, 0))
+        self.assertEqual(cor_submission_date, datetime(2032, 10, 16, 0, 0))
 
         pol_obj.set_pending(cursor, uid, polissa_id, estat_enivat, {
-            'custom_change_dates': {polissa_id: '2024-11-01'},
+            'custom_change_dates': {polissa_id: '2032-11-01'},
         })
         cor_submission_date = pol_obj.read(
             cursor, uid, polissa_id, ['cor_submission_date']
         )['cor_submission_date']
-        self.assertEqual(cor_submission_date, datetime(2024, 11, 1, 0, 0))
+        self.assertEqual(cor_submission_date, datetime(2032, 11, 1, 0, 0))
 
     def test_request_submission_to_cor(self):
         cursor = self.cursor

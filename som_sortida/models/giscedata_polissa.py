@@ -114,9 +114,21 @@ class GiscedataPolissa(osv.osv):
         """Si s'afegeix la categoria origen_ct_sense_socia_category a la pòlissa,
         subscribim a llista mailchimp_clients_ctss_list al titular de la pòlissa."""
         if "category_id" in vals:
-            for polissa in self.browse(cr, uid, ids, context=context):
-                category_ids = list(vals["category_id"][0])
-                if cat_ss_id in category_ids:
+            # Comprovar si s'està afegint la categoria cat_ss_id
+            # Les operacions (4, id) i (6, 0, [ids]) afegeixen categories
+            is_adding_cat_ss = False
+            for operation in vals["category_id"]:
+                if operation[0] == 4 and operation[1] == cat_ss_id:
+                    # Operació (4, id): afegir relació
+                    is_adding_cat_ss = True
+                    break
+                elif operation[0] == 6 and cat_ss_id in operation[2]:
+                    # Operació (6, 0, [ids]): reemplaçar amb llista d'ids
+                    is_adding_cat_ss = True
+                    break
+
+            if is_adding_cat_ss:
+                for polissa in self.browse(cr, uid, ids, context=context):
                     partner_address_obj.subscribe_polissa_titular_in_ctss_lists(
                         cr, uid, [polissa.id], context=context,
                     )
