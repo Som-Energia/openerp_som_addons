@@ -107,7 +107,7 @@ TABLA_101 = {
             <td class="td_bold detall_td">${_(u"%s x €/%s") % (lines_data.units, lines_data.units)}</td>
             % for p in id.showing_periods:
                 % if p in lines_data:
-                    <td>${_(u"%s €") %(locale.str(locale.atof(formatLang(lines_data[p]["tolls"], digits=6))))}</td>
+                    <td>${_(u"%s €") %(locale.str(locale.atof(formatLang(lines_data[p]["tolls"], digits=2))))}</td>
                 % else:
                     <td></td>
                 % endif

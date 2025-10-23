@@ -3480,8 +3480,8 @@ class GiscedataFacturacioFacturaReport(osv.osv):
                         "price_unit_multi": l["price_unit_multi"],
                         "price_tolls": atr_tolls,
                         "price_charges": atr_charges,
-                        "tolls": atr_tolls * l["quantity"],
-                        "charges": atr_charges * l["quantity"],
+                        "tolls": (atr_tolls * l["quantity"]) if type != 'reactiva' else 0.0,
+                        "charges": (atr_charges * l["quantity"]) if type != 'reactiva' else 0.0,
                     }
                     total += l["price_subtotal"]
                 lines["total"] = total
@@ -3781,13 +3781,23 @@ class GiscedataFacturacioFacturaReport(osv.osv):
         for e_charge in e_charges.keys():
             if e_charge.startswith(u"P"):
                 all_charges += round(e_charges[e_charge]["atr_cargos"], 2)
-        pie_tolls = round(all_tolls, 2)
+
+        other_data = self.get_sub_component_invoice_details_td_other_concepts_data(fact, pol)
+        if 'compl_info' in other_data and 'energy_lines_data' in other_data['compl_info']:
+            periods = self.get_matrix_show_periods(pol)
+            for block in other_data['compl_info']['energy_lines_data']:
+                for period in periods:
+                    if period in block:
+                        data = block[period]
+                        all_tolls += round(data.get('tolls', 0.0), 2)
+                        all_charges += round(data.get('charges', 0.0), 2)
 
         # BOE17/2021 wrong calculations in the invoice charges needs to remove twice the discount
         all_charges += discount_power["total"]
         all_charges += discount_energy["total"]
-        pie_charges = round(all_charges, 2)
         # END of TODO
+        pie_charges = round(all_charges, 2)
+        pie_tolls = round(all_tolls, 2)
 
         pie_energy = round(pie_total - pie_renting - pie_taxes - pie_tolls - pie_charges, 2)
         data = {
