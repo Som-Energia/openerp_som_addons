@@ -88,7 +88,8 @@ class SomenergiaSociTests(testing.OOTestCase):
         self.assertEqual(ctx.exception.message,
             "warning -- El soci no pot ser donat de baixa!\n\nEl soci té factures pendents.")
 
-    def test_cancel_member_with_active_contract__Allowed(self):
+    @mock.patch("som_polissa_soci.models.res_partner_address.ResPartnerAddress.unsubscribe_partner_in_members_lists")  # noqa: E501
+    def test_cancel_member_with_active_contract__Allowed(self, mailchimp_mock):
         partner_id = self.IrModelData.get_object_reference(
             self.cursor, self.uid, 'som_generationkwh', 'res_partner_inversor1'
             )[1]
@@ -107,6 +108,8 @@ class SomenergiaSociTests(testing.OOTestCase):
         self.Polissa.write(self.cursor, self.uid, [polissa_id], {'titular': partner_id})
 
         self.assertEqual(self.Soci.verifica_baixa_soci(self.cursor, self.uid, member_id), True)
+        partner_id = self.Soci.read(self.cursor, self.uid, member_id, ['partner_id'])['partner_id'][0]
+        mailchimp_mock.assert_called_with(self.cursor, self.uid, [partner_id], context={})
 
     def test_cancel_member_with_related_contract__notAllowed(self):
         partner_id = self.IrModelData.get_object_reference(
@@ -131,59 +134,3 @@ class SomenergiaSociTests(testing.OOTestCase):
 
         self.assertEqual(ctx.exception.message,
             "warning -- El soci no pot ser donat de baixa!\n\nEl soci té al menys un contracte vinculat.")
-
-
-    @mock.patch("som_polissa_soci.res_partner_address.ResPartnerAddress.archieve_mail_in_list")
-    @mock.patch("som_polissa_soci.res_partner_address.ResPartnerAddress.get_mailchimp_list_id")
-    @mock.patch.object(mailchimp_marketing, "Client")
-    def test__arxiva_socia_mailchimp__withAddress(self, mock_mailchimp_client, mock_get_list_id, mock_archieve):
-        soci_id = self.IrModelData.get_object_reference(
-            self.cursor, self.uid, 'som_generationkwh', 'soci_0001'
-            )[1]
-        partner_id = self.Soci.read(self.cursor, self.uid, soci_id, ['partner_id'])['partner_id'][0]
-        address_list = self.ResPartner.read(self.cursor, self.uid, partner_id, ['address'])['address']
-
-        mock_get_list_id.return_value = 'id'
-        mock_mailchimp_client.return_value = 'MAILCHIMP_CLIENT'
-
-        self.Soci.arxiva_socia_mailchimp(self.cursor, self.uid, soci_id)
-
-        mock_archieve.assert_called_with(self.cursor, self.uid, address_list, 'id', 'MAILCHIMP_CLIENT')
-
-    @mock.patch("som_polissa_soci.res_partner_address.ResPartnerAddress.archieve_mail_in_list")
-    @mock.patch("som_polissa_soci.res_partner_address.ResPartnerAddress.get_mailchimp_list_id")
-    @mock.patch.object(mailchimp_marketing, "Client")
-    def test__arxiva_socia_mailchimp__withManyAddress(self, mock_mailchimp_client, mock_get_list_id, mock_archieve):
-        soci_id = self.IrModelData.get_object_reference(
-            self.cursor, self.uid, 'som_generationkwh', 'soci_0001'
-            )[1]
-        partner_id = self.Soci.read(self.cursor, self.uid, soci_id, ['partner_id'])['partner_id'][0]
-        address_list = self.ResPartner.read(self.cursor, self.uid, partner_id, ['address'])['address']
-        other_address_id = self.ResPartnerAddress.search(self.cursor, self.uid, [('partner_id', '!=', partner_id)])[0]
-        self.ResPartnerAddress.write(self.cursor, self.uid, other_address_id, {'partner_id': partner_id, 'email':'other@mail.com'})
-
-        mock_get_list_id.return_value = 'id'
-        mock_mailchimp_client.return_value = 'MAILCHIMP_CLIENT'
-
-        self.Soci.arxiva_socia_mailchimp(self.cursor, self.uid, soci_id)
-
-        address_list.append(other_address_id)
-        mock_archieve.assert_called_with(self.cursor, self.uid, sorted(address_list), 'id', 'MAILCHIMP_CLIENT')
-
-    @mock.patch("som_polissa_soci.res_partner_address.ResPartnerAddress.archieve_mail_in_list")
-    @mock.patch("som_polissa_soci.res_partner_address.ResPartnerAddress.get_mailchimp_list_id")
-    @mock.patch.object(mailchimp_marketing, "Client")
-    def test__arxiva_socia_mailchimp__withoutMail(self, mock_mailchimp_client, mock_get_list_id, mock_archieve):
-        #agafem un soci que no té email
-        soci_id = self.IrModelData.get_object_reference(
-            self.cursor, self.uid, 'som_generationkwh', 'soci_0003'
-            )[1]
-        partner_id = self.Soci.read(self.cursor, self.uid, soci_id, ['partner_id'])['partner_id'][0]
-        address_list = self.ResPartner.read(self.cursor, self.uid, partner_id, ['address'])['address']
-        mock_get_list_id.return_value = 'id'
-        mock_mailchimp_client.return_value = 'MAILCHIMP_CLIENT'
-
-        self.Soci.arxiva_socia_mailchimp(self.cursor, self.uid, soci_id)
-
-        mock_archieve.assert_called_with(self.cursor, self.uid, address_list,  'id', 'MAILCHIMP_CLIENT')
-
