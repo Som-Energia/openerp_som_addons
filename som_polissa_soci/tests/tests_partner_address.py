@@ -39,6 +39,92 @@ class TestsPartnerAddress(testing.OOTestCase):
     def tearDown(self):
         self.txn.stop()
 
+    def test_fill_merge_fields_soci__withoutContract(self):
+        rpa_obj = self.pool.get("res.partner.address")
+        imd_obj = self.pool.get("ir.model.data")
+        address_id = imd_obj.get_object_reference(
+            self.cursor, self.uid, "som_polissa_soci", "res_partner_address_soci"
+        )[1]
+        municipi_id = imd_obj.get_object_reference(
+            self.cursor, self.uid, "base_extended", "ine_17160"
+        )[1]
+        rpa_obj.write(self.cursor, self.uid, address_id, {"id_municipi": municipi_id})
+
+        merge_fields = rpa_obj.fill_merge_fields_soci(
+            self.cursor, self.uid, address_id
+        )
+
+        self.maxDiff = None
+        self.assertDictEqual(
+            merge_fields,
+            {
+                'email_address': u'test@test.test',
+                'merge_fields': {
+                    'AUTO': 'sense autoproducci\xc3\xb3',
+                    'EMAIL': u'test@test.test',
+                    'MMERGE1': u'ES97053918J',
+                    'MMERGE10': False,
+                    'MMERGE18': '',
+                    'MMERGE19': 'No CCVV',
+                    'MMERGE22': 'sense_contracte',
+                    'MMERGE4': u'S202129',
+                    'MMERGE5': u'Pi, Pere',
+                    'MMERGE7': u'08600',
+                    'MMERGE8': False,
+                    'MMERGE9': '',
+                    'N_PILA': u'Pere',
+                    'MMERGE3': u'Sant Feliu de Gu\xedxols',
+                    'MMERGE11': u'Baix Empord\xe0',
+                    'MMERGE13': u'Catalu\xf1a',
+                    'MMERGE6': u'Girona',
+                },
+                'status': 'subscribed',
+            },
+        )
+
+    def test_fill_merge_fields_soci__withContract(self):
+        rpa_obj = self.pool.get("res.partner.address")
+        imd_obj = self.pool.get("ir.model.data")
+        address_id = imd_obj.get_object_reference(
+            self.cursor, self.uid, "som_polissa_soci", "res_partner_address_domestic"
+        )[1]
+        municipi_id = imd_obj.get_object_reference(
+            self.cursor, self.uid, "base_extended", "ine_17160"
+        )[1]
+        rpa_obj.write(self.cursor, self.uid, address_id, {"id_municipi": municipi_id})
+        merge_fields = rpa_obj.fill_merge_fields_soci(
+            self.cursor, self.uid, address_id
+        )
+
+        self.maxDiff = None
+        self.assertDictEqual(
+            merge_fields,
+            {
+                'email_address': u'test@test.test',
+                'merge_fields': {
+                    'AUTO': 'sense autoproducci\xc3\xb3',
+                    'EMAIL': u'test@test.test',
+                    'MMERGE1': u'ES37692879L',
+                    'MMERGE10': u'600000000',
+                    'MMERGE18': 'no \xc3\xa9s empresa',
+                    'MMERGE19': 'No CCVV',
+                    'MMERGE22': 'contracte_esborrany',
+                    'MMERGE4': u'S0004',
+                    'MMERGE5': u'F\xedsica, Persona',
+                    'MMERGE7': u'17800',
+                    'MMERGE8': u'en_US',
+                    'MMERGE9': 'domestic',
+                    'N_PILA': u'Persona',
+                    'MMERGE3': u'Sant Feliu de Gu\xedxols',
+                    'MMERGE11': u'Baix Empord\xe0',
+                    'MMERGE13': u'Catalu\xf1a',
+                    'MMERGE6': u'Girona',
+
+                },
+                'status': 'subscribed',
+            },
+        )
+
     def test_fill_merge_fields_clients(self):
         partner_address_o = self.pool.get("res.partner.address")
         partner_o = self.pool.get("res.partner")
