@@ -4322,21 +4322,21 @@ class Tests_FacturacioFacturaReport_invoice_details_td(Tests_FacturacioFacturaRe
                         'type': 'potencia'
                     }, {
                         'P1': {
-                            'price_tolls': 10.0,
-                            'price_charges': 10.0,
+                            'price_tolls': 0.0,
+                            'price_charges': 0.0,
                             'price_subtotal': 1.0,
                             'price_unit_multi': 1.0,
-                            'tolls': 10.0,
-                            'charges': 10.0,
+                            'tolls': 0.0,
+                            'charges': 0.0,
                             'quantity': 1.0
                         },
                         'P3': {
-                            'price_tolls': 10.0,
-                            'price_charges': 10.0,
+                            'price_tolls': 0.0,
+                            'price_charges': 0.0,
                             'price_subtotal': 9.0,
                             'price_unit_multi': 3.0,
-                            'tolls': 30.0,
-                            'charges': 30.0,
+                            'tolls': 0.0,
+                            'charges': 0.0,
                             'quantity': 3.0
                         },
                         'iva': '',
@@ -4347,30 +4347,30 @@ class Tests_FacturacioFacturaReport_invoice_details_td(Tests_FacturacioFacturaRe
                         'type': 'reactiva'
                     }, {
                         'P4': {
-                            'price_tolls': 10.0,
-                            'price_charges': 10.0,
+                            'price_tolls': 0.0,
+                            'price_charges': 0.0,
                             'price_subtotal': 16.0,
                             'price_unit_multi': 4.0,
-                            'tolls': 40.0,
-                            'charges': 40.0,
+                            'tolls': 0.0,
+                            'charges': 0.0,
                             'quantity': 4.0
                         },
                         'P5': {
-                            'price_tolls': 10.0,
-                            'price_charges': 10.0,
+                            'price_tolls': 0.0,
+                            'price_charges': 0.0,
                             'price_subtotal': 25.0,
                             'price_unit_multi': 5.0,
-                            'tolls': 50.0,
-                            'charges': 50.0,
+                            'tolls': 0.0,
+                            'charges': 0.0,
                             'quantity': 5.0
                         },
                         'P6': {
-                            'price_tolls': 10.0,
-                            'price_charges': 10.0,
+                            'price_tolls': 0.0,
+                            'price_charges': 0.0,
                             'price_subtotal': 36.0,
                             'price_unit_multi': 6.0,
-                            'tolls': 60.0,
-                            'charges': 60.0,
+                            'tolls': 0.0,
+                            'charges': 0.0,
                             'quantity': 6.0
                         },
                         'iva': '',
