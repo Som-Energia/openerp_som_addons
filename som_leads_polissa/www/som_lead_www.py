@@ -121,7 +121,7 @@ class SomLeadWww(osv.osv_memory):
             "titular_pu": member["address"].get("door"),
             "titular_bq": member["address"].get("block"),
             "titular_id_municipi": member["address"].get("city_id"),
-            "titular_email": member.get("email", "").lower(),
+            "titular_email": member.get("email", "").lower() or None,
             "titular_phone": member.get("phone"),
             "titular_mobile": member.get("phone2"),
             "use_cont_address": False,

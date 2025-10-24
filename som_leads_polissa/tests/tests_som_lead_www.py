@@ -936,6 +936,7 @@ class TestsSomLeadWww(testing.OOTestCase):
         ir_model_o = self.get_model("ir.model.data")
         mailbox_o = self.get_model('poweremail.mailbox')
         partner_o = self.get_model("res.partner")
+        address_o = self.get_model("res.partner.address")
 
         member_id = ir_model_o.get_object_reference(
             self.cursor, self.uid, "som_polissa_soci", "soci_0001"
@@ -969,6 +970,13 @@ class TestsSomLeadWww(testing.OOTestCase):
         self.assertEqual(
             lead.polissa_id.direccio_notificacio.street,
             "Major, 32"
+        )
+
+        # Check that the address is not copied to a new address record
+        self.assertEqual(
+            address_o.search_count(self.cursor, self.uid, [
+                ('partner_id', '=', member.partner_id.id)
+            ]), 1
         )
 
         # Check that the mail was sent
