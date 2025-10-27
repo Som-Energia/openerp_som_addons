@@ -24,10 +24,13 @@ class WizardCalculateGurbSavings(osv.osv_memory):
         invoice_ids = gff_obj.search(cursor, uid, search_vals, context=context)
 
         for invoice_id in invoice_ids:
+
+            invoice = gff_obj.browse(cursor, uid, invoice_id, context=context)
+
             search_params = [
                 ("polissa_id", "=", polissa_id),
-                ("data_inici", "=", invoice_id.data_inici),
-                ("data_final", "=", invoice_id.data_final),
+                ("data_inici", "=", invoice.data_inici),
+                ("data_final", "=", invoice.data_final),
                 ("type", "=", "out_invoice")
             ]
 
@@ -35,8 +38,8 @@ class WizardCalculateGurbSavings(osv.osv_memory):
             if gff_ids:
                 search_params = [
                     ("polissa_id", "=", polissa_id),
-                    ("data_inici", ">=", invoice_id.data_inici),
-                    ("data_final", "<=", invoice_id.data_inici),
+                    ("data_inici", ">=", invoice.data_inici),
+                    ("data_final", "<=", invoice.data_inici),
                     ("type", "=", "in_invoice")
                 ]
                 provider_invoice = gff_obj.search(
