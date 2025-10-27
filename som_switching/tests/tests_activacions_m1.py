@@ -17,6 +17,7 @@ class TestActivacioM1(TestSwitchingImport):
         self.ResConfig = self.openerp.pool.get("res.config")
         self.IrModelData = self.openerp.pool.get("ir.model.data")
         self.SwitchingHelpers = self.pool.get("giscedata.switching.helpers")
+        self.SomenergiaSoci = self.pool.get("somenergia.soci")
 
     def get_m1_01_ct(self, txn, contract_id, tipus, context=None):
         if not context:
@@ -681,6 +682,9 @@ class TestActivacioM1(TestSwitchingImport):
             ])
             m1 = self.get_m1_02_ct(
                 txn, contract_id, "S", context={"data_activacio": "2016-08-15"})
+            self.SomenergiaSoci.create(
+                cursor, uid, {'partner_id': m1.cups_polissa_id.titular.id}
+            )
 
             result = self.SwitchingHelpers.subscribe_new_owner(cursor, uid, m1.id)
 
