@@ -245,7 +245,7 @@ class GiscedataSwitchingHelpers(osv.osv):
         soci_obj = self.pool.get("somenergia.soci")
         partner_id = sw.cups_polissa_id.titular.id
         is_soci = soci_obj.search(cursor, uid, [("partner_id", "=", partner_id)], context=context)
-        if not is_soci:
+        if is_soci:
             partner_address_obj.update_members_data_mailchimp_async(
                 cursor, uid, [partner_id], context=context
             )
