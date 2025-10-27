@@ -202,6 +202,7 @@ class WizardCalculateGurbSavings(osv.osv_memory):
 
             profit_fact = 0
             for k in total_auto:
+                # en aquesta linia no hi ha impostos, també deixaràs de pagar iva, com ho calculem?
                 profit_fact += total_auto[k] * price_energia[k]
 
             generacio_kwh = 0
