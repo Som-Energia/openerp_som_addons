@@ -16,6 +16,7 @@ class TestActivacioM1(TestSwitchingImport):
         self.M101 = self.openerp.pool.get("giscedata.switching.m1.01")
         self.ResConfig = self.openerp.pool.get("res.config")
         self.IrModelData = self.openerp.pool.get("ir.model.data")
+        self.SwitchingHelpers = self.pool.get("giscedata.switching.helpers")
 
     def get_m1_01_ct(self, txn, contract_id, tipus, context=None):
         if not context:
@@ -661,3 +662,55 @@ class TestActivacioM1(TestSwitchingImport):
             )
             history_line_desc = [line["description"] for line in m1.history_line]
             self.assertFalse(any([not_expected_result in desc for desc in history_line_desc]))
+
+    @mock.patch("som_polissa_soci.models.res_partner_address.ResPartnerAddress.update_members_data_mailchimp_async")  # noqa: E501
+    def test__subscribe_new_owner__member(self, mock_subscribe):
+        with Transaction().start(self.database) as txn:
+            uid = txn.user
+            cursor = txn.cursor
+            contract_id = self.get_contract_id(txn)
+            # remove all other contracts
+            old_partner_id = self.Polissa.read(cursor, uid, contract_id, ["titular"])["titular"][0]
+            pol_ids = self.Polissa.search(
+                cursor, uid, [("id", "!=", contract_id), ("titular", "=", old_partner_id)]
+            )
+            self.Polissa.write(cursor, uid, pol_ids, {"titular": False})
+            # activate contract
+            self.Polissa.send_signal(cursor, uid, [contract_id], [
+                'validar', 'contracte'
+            ])
+            m1 = self.get_m1_02_ct(
+                txn, contract_id, "S", context={"data_activacio": "2016-08-15"})
+
+            result = self.SwitchingHelpers.subscribe_new_owner(cursor, uid, m1.id)
+
+            self.assertEqual(result[0], 'OK')
+            mock_subscribe.assert_called_once_with(
+                cursor, uid, [m1.cups_polissa_id.titular.id], context=None
+            )
+
+    @mock.patch("som_polissa_soci.models.res_partner_address.ResPartnerAddress.subscribe_partner_in_customers_no_members_lists")  # noqa: E501
+    def test__subscribe_new_owner__no_member(self, mock_subscribe):
+        with Transaction().start(self.database) as txn:
+            uid = txn.user
+            cursor = txn.cursor
+            contract_id = self.get_contract_id(txn, xml_id="polissa_0004")
+            # remove all other contracts
+            old_partner_id = self.Polissa.read(cursor, uid, contract_id, ["titular"])["titular"][0]
+            pol_ids = self.Polissa.search(
+                cursor, uid, [("id", "!=", contract_id), ("titular", "=", old_partner_id)]
+            )
+            self.Polissa.write(cursor, uid, pol_ids, {"titular": False})
+            # activate contract
+            self.Polissa.send_signal(cursor, uid, [contract_id], [
+                'validar', 'contracte'
+            ])
+            m1 = self.get_m1_02_ct(
+                txn, contract_id, "S", context={"data_activacio": "2016-08-15"})
+
+            result = self.SwitchingHelpers.subscribe_new_owner(cursor, uid, m1.id)
+
+            self.assertEqual(result[0], 'OK')
+            mock_subscribe.assert_called_once_with(
+                cursor, uid, [m1.cups_polissa_id.titular.id], context=None
+            )
