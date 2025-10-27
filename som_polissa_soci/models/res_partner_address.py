@@ -431,6 +431,7 @@ class ResPartnerAddress(osv.osv):
                         "Error comú quan el mail no es troba a la llista: "
                         "Error de l'API: {}".format(client_data["email_address"], e.text)
                     )
+                    self.subscribe_partner_in_members_lists(cursor, uid, partner_ids, context)
                 else:
                     raise osv.except_osv(
                         _("Error"),
