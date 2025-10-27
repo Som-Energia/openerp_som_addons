@@ -547,6 +547,10 @@ class ResPartnerAddress(osv.osv):
 
         email_addresses = self.read(cursor, uid, ids, ["email"])
         for email in email_addresses:
+            if not email["email"]:
+                logger.info("Mailchimp: No s'ha pogut arxivar perquè la fitxa del client"
+                            "no te email. res.partner.address id = {}".format(email["id"]))
+                continue
             subscriber_hash = md5(email["email"].lower()).hexdigest()
             try:
                 mailchimp_conn.lists.delete_list_member(
