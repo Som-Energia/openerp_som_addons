@@ -97,7 +97,7 @@ class WizardCalculateGurbSavings(osv.osv_memory):
             else:
                 for linia_genneta in linies_genneta:
                     total_auto[linia_genneta.name] += (
-                        linia_genneta.quantity - linies_gen_dict[linia_genneta.name]
+                        linia_genneta.quantity + linies_gen_dict[linia_genneta.name]
                     )
 
             auto_kwh = sum(total_auto.values())
@@ -111,7 +111,7 @@ class WizardCalculateGurbSavings(osv.osv_memory):
             profit_fact = 0
             for k in total_auto:
                 # en aquesta linia no hi ha impostos, també deixaràs de pagar iva, com ho calculem?
-                profit_fact += ((total_energia[k] * price_energia[k]) - ((total_energia[k] - total_auto[k]) * price_energia[k]))  # noqa: E501
+                profit_fact += total_auto[k] * price_energia[k]
 
             total_generacio = 0
             generacio_kwh = 0
