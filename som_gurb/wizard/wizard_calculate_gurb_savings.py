@@ -7,6 +7,45 @@ class WizardCalculateGurbSavings(osv.osv_memory):
     _name = "wizard.calculate.gurb.savings"
     _description = "Wizard per calcular l'estalvi d'un Gurb Cups"
 
+    def get_only_relevant_invoices(self, cursor, uid, polissa_id, date_from, date_to, context=None):
+        if context is None:
+            context = {}
+
+        gff_obj = self.pool.get("giscedata.facturacio.factura")
+        trimed_list = []
+
+        search_vals = [
+            ("polissa_id", "=", polissa_id),
+            ("data_inici", ">=", date_from),
+            ("data_final", "<=", date_to),
+            ("type", "=", "in_invoice"),
+            ("rectificative_type", "not in", ["N", "R"])
+        ]
+        invoice_ids = gff_obj.search(cursor, uid, search_vals, context=context)
+
+        for invoice_id in invoice_ids:
+            search_params = [
+                ("polissa_id", "=", polissa_id),
+                ("data_inici", "=", invoice_id.data_inici),
+                ("data_final", "=", invoice_id.data_final),
+                ("type", "=", "out_invoice")
+            ]
+
+            gff_ids = gff_obj.search(cursor, uid, search_params, context=context)
+            if gff_ids:
+                search_params = [
+                    ("polissa_id", "=", polissa_id),
+                    ("data_inici", ">=", invoice_id.data_inici),
+                    ("data_final", "<=", invoice_id.data_inici),
+                    ("type", "=", "in_invoice")
+                ]
+                provider_invoice = gff_obj.search(
+                    cursor, uid, search_params, order='create_date DESC', limit=1, context=context)
+                if provider_invoice and provider_invoice[0] not in trimed_list:
+                    trimed_list.append(provider_invoice[0])
+
+        return trimed_list
+
     def calculate_gurb_savings(self, cursor, uid, ids, context=None):  # noqa: C901
         if context is None:
             context = {}
@@ -35,11 +74,9 @@ class WizardCalculateGurbSavings(osv.osv_memory):
 
         polissa_id = gurb_cups_obj.get_polissa_gurb_cups(cursor, uid, gurb_cups_id, context=context)
 
-        f1_ids = gff_obj.search(cursor, uid, (
-            [("polissa_id", "=", polissa_id),
-             ("data_inici", ">=", wiz.date_from),
-                ("data_final", "<=", wiz.date_to),
-                ("type", "=", "in_invoice")]))
+        f1_ids = self.get_only_relevant_invoices(
+            cursor, uid, polissa_id, wiz.date_from, wiz.date_to, context=context
+        )
 
         profit_untaxed = 0
         profit = 0
