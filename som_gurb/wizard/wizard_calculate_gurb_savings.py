@@ -39,11 +39,11 @@ class WizardCalculateGurbSavings(osv.osv_memory):
                 search_params = [
                     ("polissa_id", "=", polissa_id),
                     ("data_inici", ">=", invoice.data_inici),
-                    ("data_final", "<=", invoice.data_inici),
+                    ("data_final", "<=", invoice.data_final),
                     ("type", "=", "in_invoice")
                 ]
                 provider_invoice = gff_obj.search(
-                    cursor, uid, search_params, order='create_date DESC', limit=1, context=context)
+                    cursor, uid, search_params, order="date_invoice DESC", limit=1, context=context)
                 if provider_invoice and provider_invoice[0] not in trimed_list:
                     trimed_list.append(provider_invoice[0])
 
