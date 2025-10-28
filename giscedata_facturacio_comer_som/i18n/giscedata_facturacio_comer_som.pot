@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OpenERP Server 5.0.14\n"
 "Report-Msgid-Bugs-To: support@openerp.com\n"
-"POT-Creation-Date: 2025-09-03 14:45+0000\n"
-"PO-Revision-Date: 2025-09-03 14:45+0000\n"
+"POT-Creation-Date: 2025-10-27 17:04+0000\n"
+"PO-Revision-Date: 2025-10-27 17:04+0000\n"
 "Last-Translator: <>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -16,7 +16,7 @@ msgstr ""
 "Generated-By: Babel 2.9.1\n"
 
 #. module: giscedata_facturacio_comer_som
-#: code:addons/giscedata_facturacio_comer_som/giscedata_facturacio_report.py:3794
+#: code:addons/giscedata_facturacio_comer_som/giscedata_facturacio_report.py:4016
 #: rml:giscedata_facturacio_comer_som/report/components/energy_consumption_detail_td_base/energy_consumption_detail_td_base.mako:7
 msgid "Energia Reactiva Capacitiva (kVArh)"
 msgstr ""
@@ -28,21 +28,55 @@ msgid "Signar Factures"
 msgstr ""
 
 #. module: giscedata_facturacio_comer_som
-#: constraint:ir.ui.view:0
-msgid "Invalid XML for View Architecture!"
+#: selection:wizard.reprint.invoice.som,state:0
+msgid "End"
 msgstr ""
 
 #. module: giscedata_facturacio_comer_som
-#: code:addons/giscedata_facturacio_comer_som/giscedata_facturacio_report.py:2763
-#: code:addons/giscedata_facturacio_comer_som/giscedata_facturacio_report.py:2767
+#: view:wizard.reprint.invoice.som:0
+msgid "Reimprimir Pdf (no caché)"
+msgstr ""
+
+#. module: giscedata_facturacio_comer_som
+#: code:addons/giscedata_facturacio_comer_som/giscedata_facturacio_report.py:3457
+msgid "Factura amb linies complementaries de tipus desconegut {}"
+msgstr ""
+
+#. module: giscedata_facturacio_comer_som
+#: model:ir.actions.act_window,name:giscedata_facturacio_comer_som.action_wizard_reprint_invoice_som
+msgid "Reimprimir factura en pdf"
+msgstr ""
+
+#. module: giscedata_facturacio_comer_som
+#: code:addons/giscedata_facturacio_comer_som/giscedata_facturacio_report.py:2827
+#: code:addons/giscedata_facturacio_comer_som/giscedata_facturacio_report.py:2831
 #: rml:giscedata_facturacio_comer_som/report/components/energy_consumption_detail_td_base/energy_consumption_detail_td_base.mako:11
 msgid "calculada"
 msgstr ""
 
 #. module: giscedata_facturacio_comer_som
-#: code:addons/giscedata_facturacio_comer_som/giscedata_facturacio_report.py:3763
-#: rml:giscedata_facturacio_comer_som/report/components/energy_consumption_detail_td_base/energy_consumption_detail_td_base.mako:6
-msgid "Energia Reactiva Inductiva (kVArh)"
+#: selection:wizard.reprint.invoice.som,state:0
+msgid "Init"
+msgstr ""
+
+#. module: giscedata_facturacio_comer_som
+#: view:wizard.reprint.invoice.som:0
+msgid "Reimprimir Pdf i adjuntar-ho a la factura"
+msgstr ""
+
+#. module: giscedata_facturacio_comer_som
+#: field:wizard.reprint.invoice.som,info:0
+msgid "Informació"
+msgstr ""
+
+#. module: giscedata_facturacio_comer_som
+#: constraint:ir.actions.act_window:0
+msgid "Invalid model name in the action definition."
+msgstr ""
+
+#. module: giscedata_facturacio_comer_som
+#: constraint:ir.model:0
+msgid "The Object name must start with x_ and not contain any special character !"
 msgstr ""
 
 #. module: giscedata_facturacio_comer_som
@@ -52,14 +86,14 @@ msgid "Reports Facturació SOM (Comercialitzadora)"
 msgstr ""
 
 #. module: giscedata_facturacio_comer_som
-#: code:addons/giscedata_facturacio_comer_som/giscedata_facturacio_report.py:3824
+#: code:addons/giscedata_facturacio_comer_som/giscedata_facturacio_report.py:4046
 #: rml:giscedata_facturacio_comer_som/report/components/energy_consumption_detail_td_base/energy_consumption_detail_td_base.mako:8
 #: rml:giscedata_facturacio_comer_som/report/components/energy_consumption_detail_td_maximetre/energy_consumption_detail_td_maximetre.mako:7
 msgid "Maxímetre (kW)"
 msgstr ""
 
 #. module: giscedata_facturacio_comer_som
-#: code:addons/giscedata_facturacio_comer_som/giscedata_facturacio_report.py:2807
+#: code:addons/giscedata_facturacio_comer_som/giscedata_facturacio_report.py:2871
 #: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_energy/invoice_details_td_energy.mako:7
 msgid "sense lectura"
 msgstr ""
@@ -70,57 +104,87 @@ msgid "La llista de preu no és compatible amb la tarifa d'accés."
 msgstr ""
 
 #. module: giscedata_facturacio_comer_som
-#: code:addons/giscedata_facturacio_comer_som/giscedata_facturacio_report.py:2574
-msgid "(sense lectura)"
-msgstr ""
-
-#. module: giscedata_facturacio_comer_som
-#: code:addons/giscedata_facturacio_comer_som/giscedata_facturacio_report.py:216
-#: code:addons/giscedata_facturacio_comer_som/giscedata_facturacio_report.py:355
-#: rml:giscedata_facturacio_comer_som/report/components/energy_consumption_detail_td_base/energy_consumption_detail_td_base.mako:12
-msgid "estimada distribuïdora"
-msgstr ""
-
-#. module: giscedata_facturacio_comer_som
-#: code:addons/giscedata_facturacio_comer_som/giscedata_facturacio_report.py:215
-#: code:addons/giscedata_facturacio_comer_som/giscedata_facturacio_report.py:2759
-#: rml:giscedata_facturacio_comer_som/report/components/energy_consumption_detail_td_base/energy_consumption_detail_td_base.mako:9
-msgid "real"
-msgstr ""
-
-#. module: giscedata_facturacio_comer_som
-#: code:addons/giscedata_facturacio_comer_som/giscedata_facturacio_report.py:3920
-#: code:addons/giscedata_facturacio_comer_som/giscedata_facturacio_report.py:3950
-#: rml:giscedata_facturacio_comer_som/report/components/energy_consumption_detail_td_collective/energy_consumption_detail_td_collective.mako:11
-msgid "Autoconsum compartit (kWh)"
-msgstr ""
-
-#. module: giscedata_facturacio_comer_som
-#: code:addons/giscedata_facturacio_comer_som/giscedata_facturacio_report.py:3694
-#: rml:giscedata_facturacio_comer_som/report/components/energy_consumption_detail_td_base/energy_consumption_detail_td_base.mako:4
-msgid "Energia Activa (kWh)"
-msgstr ""
-
-#. module: giscedata_facturacio_comer_som
-#: code:addons/giscedata_facturacio_comer_som/giscedata_facturacio_report.py:1002
+#: code:addons/giscedata_facturacio_comer_som/giscedata_facturacio_report.py:1035
 msgid ""
 "Variables que marquen l'inici i/o final de l'aplicació del mecanisme del "
 "topall de gas no estàn configurades"
 msgstr ""
 
 #. module: giscedata_facturacio_comer_som
-#: code:addons/giscedata_facturacio_comer_som/giscedata_facturacio_report.py:2505
+#: code:addons/giscedata_facturacio_comer_som/giscedata_facturacio_report.py:2638
+msgid "(sense lectura)"
+msgstr ""
+
+#. module: giscedata_facturacio_comer_som
+#: view:wizard.reprint.invoice.som:0
+msgid "Sortir"
+msgstr ""
+
+#. module: giscedata_facturacio_comer_som
+#: code:addons/giscedata_facturacio_comer_som/giscedata_facturacio_report.py:224
+#: code:addons/giscedata_facturacio_comer_som/giscedata_facturacio_report.py:2823
+#: rml:giscedata_facturacio_comer_som/report/components/energy_consumption_detail_td_base/energy_consumption_detail_td_base.mako:9
+msgid "real"
+msgstr ""
+
+#. module: giscedata_facturacio_comer_som
+#: code:addons/giscedata_facturacio_comer_som/giscedata_facturacio_report.py:4142
+#: code:addons/giscedata_facturacio_comer_som/giscedata_facturacio_report.py:4172
+#: rml:giscedata_facturacio_comer_som/report/components/energy_consumption_detail_td_collective/energy_consumption_detail_td_collective.mako:11
+msgid "Autoconsum compartit (kWh)"
+msgstr ""
+
+#. module: giscedata_facturacio_comer_som
+#: constraint:ir.ui.view:0
+msgid "Invalid XML for View Architecture!"
+msgstr ""
+
+#. module: giscedata_facturacio_comer_som
+#: code:addons/giscedata_facturacio_comer_som/giscedata_facturacio_report.py:3916
+#: rml:giscedata_facturacio_comer_som/report/components/energy_consumption_detail_td_base/energy_consumption_detail_td_base.mako:4
+msgid "Energia Activa (kWh)"
+msgstr ""
+
+#. module: giscedata_facturacio_comer_som
+#: code:addons/giscedata_facturacio_comer_som/giscedata_facturacio_report.py:2821
+msgid "estimada"
+msgstr ""
+
+#. module: giscedata_facturacio_comer_som
+#: code:addons/giscedata_facturacio_comer_som/giscedata_facturacio_report.py:3400
+msgid "No s'han trobats F1's d'expedient de anomalia/frau al generar pdf per {}"
+msgstr ""
+
+#. module: giscedata_facturacio_comer_som
+#: view:wizard.reprint.invoice.som:0
+msgid "Reimpressió de pdf's de factura:"
+msgstr ""
+
+#. module: giscedata_facturacio_comer_som
+#: code:addons/giscedata_facturacio_comer_som/giscedata_facturacio_report.py:2569
 msgid " (Som Energia, SCCL)"
 msgstr ""
 
 #. module: giscedata_facturacio_comer_som
-#: code:addons/giscedata_facturacio_comer_som/giscedata_facturacio_report.py:3726
+#: code:addons/giscedata_facturacio_comer_som/giscedata_facturacio_report.py:225
+#: code:addons/giscedata_facturacio_comer_som/giscedata_facturacio_report.py:364
+#: rml:giscedata_facturacio_comer_som/report/components/energy_consumption_detail_td_base/energy_consumption_detail_td_base.mako:12
+msgid "estimada distribuïdora"
+msgstr ""
+
+#. module: giscedata_facturacio_comer_som
+#: code:addons/giscedata_facturacio_comer_som/giscedata_facturacio_report.py:3948
 #: rml:giscedata_facturacio_comer_som/report/components/energy_consumption_detail_td_base/energy_consumption_detail_td_base.mako:5
 msgid "Energia Excedentària (kWh)"
 msgstr ""
 
 #. module: giscedata_facturacio_comer_som
-#: code:addons/giscedata_facturacio_comer_som/giscedata_facturacio_report.py:2572
+#: model:ir.model,name:giscedata_facturacio_comer_som.model_wizard_reprint_invoice_som
+msgid "wizard.reprint.invoice.som"
+msgstr ""
+
+#. module: giscedata_facturacio_comer_som
+#: code:addons/giscedata_facturacio_comer_som/giscedata_facturacio_report.py:2636
 msgid "(estimada)"
 msgstr ""
 
@@ -130,17 +194,23 @@ msgid "Error ! You can not create recursive categories."
 msgstr ""
 
 #. module: giscedata_facturacio_comer_som
-#: code:addons/giscedata_facturacio_comer_som/giscedata_facturacio_report.py:2757
-msgid "estimada"
+#: field:wizard.reprint.invoice.som,state:0
+msgid "State"
 msgstr ""
 
 #. module: giscedata_facturacio_comer_som
-#: code:addons/giscedata_facturacio_comer_som/giscedata_facturacio_report.py:2506
+#: code:addons/giscedata_facturacio_comer_som/giscedata_facturacio_report.py:3985
+#: rml:giscedata_facturacio_comer_som/report/components/energy_consumption_detail_td_base/energy_consumption_detail_td_base.mako:6
+msgid "Energia Reactiva Inductiva (kVArh)"
+msgstr ""
+
+#. module: giscedata_facturacio_comer_som
+#: code:addons/giscedata_facturacio_comer_som/giscedata_facturacio_report.py:2570
 msgid "TRANSFERÈNCIA"
 msgstr ""
 
 #. module: giscedata_facturacio_comer_som
-#: code:addons/giscedata_facturacio_comer_som/giscedata_facturacio_report.py:217
+#: code:addons/giscedata_facturacio_comer_som/giscedata_facturacio_report.py:226
 #: rml:giscedata_facturacio_comer_som/report/components/energy_consumption_detail_td_base/energy_consumption_detail_td_base.mako:10
 msgid "calculada per Som Energia"
 msgstr ""
@@ -156,7 +226,7 @@ msgid "E-Mail factura adjunta"
 msgstr ""
 
 #. module: giscedata_facturacio_comer_som
-#: code:addons/giscedata_facturacio_comer_som/giscedata_facturacio_report.py:2576
+#: code:addons/giscedata_facturacio_comer_som/giscedata_facturacio_report.py:2640
 msgid "(real)"
 msgstr ""
 
@@ -282,8 +352,9 @@ msgid ""
 msgstr ""
 
 #: rml:giscedata_facturacio_comer_som/report/components/amount_destination_td/amount_destination_td.mako:8
-#: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_energy_charges/invoice_details_td_energy_charges.mako:4
-#: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_power_charges/invoice_details_td_power_charges.mako:4
+#: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_energy_charges/invoice_details_td_energy_charges.mako:5
+#: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_other_concepts/invoice_details_td_other_concepts.mako:121
+#: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_power_charges/invoice_details_td_power_charges.mako:5
 msgid "Càrrecs"
 msgstr ""
 
@@ -293,7 +364,7 @@ msgstr ""
 
 #: rml:giscedata_facturacio_comer_som/report/components/amount_destination_td/amount_destination_td.mako:10
 #: rml:giscedata_facturacio_comer_som/report/components/invoice_details_other_concepts/invoice_details_other_concepts.mako:40
-#: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_other_concepts/invoice_details_td_other_concepts.mako:112
+#: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_other_concepts/invoice_details_td_other_concepts.mako:232
 msgid "Lloguer de comptador"
 msgstr ""
 
@@ -959,13 +1030,13 @@ msgstr ""
 #: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_energy/invoice_details_td_energy.mako:152
 #: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_energy_auvi/invoice_details_td_energy_auvi.mako:14
 #: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_energy_auvi/invoice_details_td_energy_auvi.mako:29
-#: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_energy_charges/invoice_details_td_energy_charges.mako:8
+#: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_energy_charges/invoice_details_td_energy_charges.mako:9
 #: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_energy_discount_BOE17_2021/invoice_details_td_energy_discount_BOE17_2021.mako:8
 #: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_energy_discount_BOE17_2021/invoice_details_td_energy_discount_BOE17_2021.mako:33
 #: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_energy_generationkwh/invoice_details_td_energy_generationkwh.mako:14
 #: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_energy_generationkwh/invoice_details_td_energy_generationkwh.mako:29
 #: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_energy_generationkwh/invoice_details_td_energy_generationkwh.mako:51
-#: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_energy_tolls/invoice_details_td_energy_tolls.mako:8
+#: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_energy_tolls/invoice_details_td_energy_tolls.mako:9
 #: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_excess_power_maximeter/invoice_details_td_excess_power_maximeter.mako:19
 #: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_excess_power_maximeter/invoice_details_td_excess_power_maximeter.mako:22
 #: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_excess_power_maximeter/invoice_details_td_excess_power_maximeter.mako:43
@@ -989,11 +1060,16 @@ msgstr ""
 #: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_inductive/invoice_details_td_inductive.mako:15
 #: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_inductive/invoice_details_td_inductive.mako:29
 #: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_inductive/invoice_details_td_inductive.mako:50
-#: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_other_concepts/invoice_details_td_other_concepts.mako:15
-#: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_other_concepts/invoice_details_td_other_concepts.mako:28
-#: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_other_concepts/invoice_details_td_other_concepts.mako:81
-#: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_other_concepts/invoice_details_td_other_concepts.mako:105
-#: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_other_concepts/invoice_details_td_other_concepts.mako:116
+#: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_other_concepts/invoice_details_td_other_concepts.mako:19
+#: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_other_concepts/invoice_details_td_other_concepts.mako:32
+#: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_other_concepts/invoice_details_td_other_concepts.mako:52
+#: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_other_concepts/invoice_details_td_other_concepts.mako:66
+#: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_other_concepts/invoice_details_td_other_concepts.mako:87
+#: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_other_concepts/invoice_details_td_other_concepts.mako:96
+#: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_other_concepts/invoice_details_td_other_concepts.mako:125
+#: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_other_concepts/invoice_details_td_other_concepts.mako:201
+#: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_other_concepts/invoice_details_td_other_concepts.mako:225
+#: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_other_concepts/invoice_details_td_other_concepts.mako:236
 #: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_power/invoice_details_td_power.mako:18
 #: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_power/invoice_details_td_power.mako:21
 #: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_power/invoice_details_td_power.mako:30
@@ -1001,16 +1077,16 @@ msgstr ""
 #: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_power/invoice_details_td_power.mako:50
 #: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_power/invoice_details_td_power.mako:59
 #: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_power/invoice_details_td_power.mako:96
-#: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_power_charges/invoice_details_td_power_charges.mako:10
-#: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_power_charges/invoice_details_td_power_charges.mako:13
-#: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_power_charges/invoice_details_td_power_charges.mako:22
+#: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_power_charges/invoice_details_td_power_charges.mako:11
+#: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_power_charges/invoice_details_td_power_charges.mako:14
+#: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_power_charges/invoice_details_td_power_charges.mako:23
 #: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_power_discount_BOE17_2021/invoice_details_td_power_discount_BOE17_2021.mako:10
 #: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_power_discount_BOE17_2021/invoice_details_td_power_discount_BOE17_2021.mako:13
 #: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_power_discount_BOE17_2021/invoice_details_td_power_discount_BOE17_2021.mako:22
 #: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_power_discount_BOE17_2021/invoice_details_td_power_discount_BOE17_2021.mako:63
-#: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_power_tolls/invoice_details_td_power_tolls.mako:10
-#: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_power_tolls/invoice_details_td_power_tolls.mako:13
-#: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_power_tolls/invoice_details_td_power_tolls.mako:22
+#: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_power_tolls/invoice_details_td_power_tolls.mako:11
+#: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_power_tolls/invoice_details_td_power_tolls.mako:14
+#: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_power_tolls/invoice_details_td_power_tolls.mako:23
 #: rml:giscedata_facturacio_comer_som/report/components/simplified_enviromental_impact/simplified_enviromental_impact.mako:85
 #: rml:giscedata_facturacio_comer_som/report/components/simplified_enviromental_impact/simplified_enviromental_impact.mako:89
 #: rml:giscedata_facturacio_comer_som/report/components/simplified_enviromental_impact/simplified_enviromental_impact.mako:99
@@ -1350,7 +1426,7 @@ msgstr ""
 
 #: rml:giscedata_facturacio_comer_som/report/components/invoice_details_energy/invoice_details_energy.mako:16
 #: rml:giscedata_facturacio_comer_som/report/components/invoice_details_generation/invoice_details_generation.mako:18
-#: rml:giscedata_facturacio_comer_som/report/components/invoice_details_other_concepts/invoice_details_other_concepts.mako:69
+#: rml:giscedata_facturacio_comer_som/report/components/invoice_details_other_concepts/invoice_details_other_concepts.mako:76
 #, python-format
 msgid "%s kWh x %s €/kWh"
 msgstr ""
@@ -1363,11 +1439,12 @@ msgstr ""
 #: rml:giscedata_facturacio_comer_som/report/components/invoice_details_other_concepts/invoice_details_other_concepts.mako:34
 #: rml:giscedata_facturacio_comer_som/report/components/invoice_details_other_concepts/invoice_details_other_concepts.mako:42
 #: rml:giscedata_facturacio_comer_som/report/components/invoice_details_other_concepts/invoice_details_other_concepts.mako:49
-#: rml:giscedata_facturacio_comer_som/report/components/invoice_details_other_concepts/invoice_details_other_concepts.mako:55
 #: rml:giscedata_facturacio_comer_som/report/components/invoice_details_other_concepts/invoice_details_other_concepts.mako:56
 #: rml:giscedata_facturacio_comer_som/report/components/invoice_details_other_concepts/invoice_details_other_concepts.mako:62
 #: rml:giscedata_facturacio_comer_som/report/components/invoice_details_other_concepts/invoice_details_other_concepts.mako:63
+#: rml:giscedata_facturacio_comer_som/report/components/invoice_details_other_concepts/invoice_details_other_concepts.mako:69
 #: rml:giscedata_facturacio_comer_som/report/components/invoice_details_other_concepts/invoice_details_other_concepts.mako:70
+#: rml:giscedata_facturacio_comer_som/report/components/invoice_details_other_concepts/invoice_details_other_concepts.mako:77
 #: rml:giscedata_facturacio_comer_som/report/components/invoice_details_power/invoice_details_power.mako:12
 #: rml:giscedata_facturacio_comer_som/report/components/invoice_details_power/invoice_details_power.mako:32
 #: rml:giscedata_facturacio_comer_som/report/components/invoice_details_reactive/invoice_details_reactive.mako:13
@@ -1380,12 +1457,12 @@ msgstr ""
 #: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_energy/invoice_details_td_energy.mako:127
 #: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_energy/invoice_details_td_energy.mako:132
 #: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_energy/invoice_details_td_energy.mako:150
-#: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_energy_charges/invoice_details_td_energy_charges.mako:22
+#: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_energy_charges/invoice_details_td_energy_charges.mako:23
 #: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_energy_discount_BOE17_2021/invoice_details_td_energy_discount_BOE17_2021.mako:22
 #: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_energy_discount_BOE17_2021/invoice_details_td_energy_discount_BOE17_2021.mako:29
 #: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_energy_generationkwh/invoice_details_td_energy_generationkwh.mako:44
 #: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_energy_generationkwh/invoice_details_td_energy_generationkwh.mako:49
-#: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_energy_tolls/invoice_details_td_energy_tolls.mako:22
+#: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_energy_tolls/invoice_details_td_energy_tolls.mako:23
 #: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_excess_power_maximeter/invoice_details_td_excess_power_maximeter.mako:95
 #: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_excess_power_maximeter/invoice_details_td_excess_power_maximeter.mako:98
 #: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_excess_power_maximeter/invoice_details_td_excess_power_maximeter.mako:104
@@ -1399,28 +1476,32 @@ msgstr ""
 #: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_generation/invoice_details_td_generation.mako:68
 #: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_inductive/invoice_details_td_inductive.mako:43
 #: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_inductive/invoice_details_td_inductive.mako:48
-#: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_other_concepts/invoice_details_td_other_concepts.mako:13
-#: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_other_concepts/invoice_details_td_other_concepts.mako:26
-#: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_other_concepts/invoice_details_td_other_concepts.mako:39
-#: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_other_concepts/invoice_details_td_other_concepts.mako:79
-#: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_other_concepts/invoice_details_td_other_concepts.mako:103
-#: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_other_concepts/invoice_details_td_other_concepts.mako:114
-#: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_other_concepts/invoice_details_td_other_concepts.mako:130
-#: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_other_concepts/invoice_details_td_other_concepts.mako:140
+#: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_other_concepts/invoice_details_td_other_concepts.mako:17
+#: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_other_concepts/invoice_details_td_other_concepts.mako:30
+#: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_other_concepts/invoice_details_td_other_concepts.mako:80
+#: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_other_concepts/invoice_details_td_other_concepts.mako:85
+#: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_other_concepts/invoice_details_td_other_concepts.mako:110
+#: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_other_concepts/invoice_details_td_other_concepts.mako:139
+#: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_other_concepts/invoice_details_td_other_concepts.mako:159
+#: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_other_concepts/invoice_details_td_other_concepts.mako:199
+#: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_other_concepts/invoice_details_td_other_concepts.mako:223
+#: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_other_concepts/invoice_details_td_other_concepts.mako:234
+#: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_other_concepts/invoice_details_td_other_concepts.mako:250
+#: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_other_concepts/invoice_details_td_other_concepts.mako:260
 #: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_power/invoice_details_td_power.mako:76
 #: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_power/invoice_details_td_power.mako:79
 #: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_power/invoice_details_td_power.mako:88
 #: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_power/invoice_details_td_power.mako:94
-#: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_power_charges/invoice_details_td_power_charges.mako:39
-#: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_power_charges/invoice_details_td_power_charges.mako:42
-#: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_power_charges/invoice_details_td_power_charges.mako:51
+#: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_power_charges/invoice_details_td_power_charges.mako:40
+#: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_power_charges/invoice_details_td_power_charges.mako:43
+#: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_power_charges/invoice_details_td_power_charges.mako:52
 #: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_power_discount_BOE17_2021/invoice_details_td_power_discount_BOE17_2021.mako:39
 #: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_power_discount_BOE17_2021/invoice_details_td_power_discount_BOE17_2021.mako:42
 #: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_power_discount_BOE17_2021/invoice_details_td_power_discount_BOE17_2021.mako:51
 #: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_power_discount_BOE17_2021/invoice_details_td_power_discount_BOE17_2021.mako:59
-#: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_power_tolls/invoice_details_td_power_tolls.mako:39
-#: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_power_tolls/invoice_details_td_power_tolls.mako:42
-#: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_power_tolls/invoice_details_td_power_tolls.mako:51
+#: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_power_tolls/invoice_details_td_power_tolls.mako:40
+#: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_power_tolls/invoice_details_td_power_tolls.mako:43
+#: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_power_tolls/invoice_details_td_power_tolls.mako:52
 #, python-format
 msgid "%s €"
 msgstr ""
@@ -1570,7 +1651,7 @@ msgstr ""
 #: rml:giscedata_facturacio_comer_som/report/components/invoice_details_other_concepts/invoice_details_other_concepts.mako:11
 #: rml:giscedata_facturacio_comer_som/report/components/invoice_details_other_concepts/invoice_details_other_concepts.mako:41
 #: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_bo_social_2023/invoice_details_td_bo_social_2023.mako:13
-#: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_other_concepts/invoice_details_td_other_concepts.mako:113
+#: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_other_concepts/invoice_details_td_other_concepts.mako:233
 #, python-format
 msgid "%s dies x %s €/dia"
 msgstr ""
@@ -1593,34 +1674,34 @@ msgid " (amb l'exempció del {} sobre el {}% de Base Imposable IE)"
 msgstr ""
 
 #: rml:giscedata_facturacio_comer_som/report/components/invoice_details_other_concepts/invoice_details_other_concepts.mako:27
-#: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_other_concepts/invoice_details_td_other_concepts.mako:75
+#: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_other_concepts/invoice_details_td_other_concepts.mako:195
 msgid " (amb l'exempció del "
 msgstr ""
 
 #: rml:giscedata_facturacio_comer_som/report/components/invoice_details_other_concepts/invoice_details_other_concepts.mako:32
-#: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_other_concepts/invoice_details_td_other_concepts.mako:48
-#: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_other_concepts/invoice_details_td_other_concepts.mako:84
+#: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_other_concepts/invoice_details_td_other_concepts.mako:168
+#: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_other_concepts/invoice_details_td_other_concepts.mako:204
 msgid "Impost de l'electricitat"
 msgstr ""
 
-#: rml:giscedata_facturacio_comer_som/report/components/invoice_details_other_concepts/invoice_details_other_concepts.mako:55
 #: rml:giscedata_facturacio_comer_som/report/components/invoice_details_other_concepts/invoice_details_other_concepts.mako:62
-#: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_other_concepts/invoice_details_td_other_concepts.mako:123
-#: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_other_concepts/invoice_details_td_other_concepts.mako:139
+#: rml:giscedata_facturacio_comer_som/report/components/invoice_details_other_concepts/invoice_details_other_concepts.mako:69
+#: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_other_concepts/invoice_details_td_other_concepts.mako:243
+#: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_other_concepts/invoice_details_td_other_concepts.mako:259
 msgid "(BASE IMPOSABLE)"
 msgstr ""
 
-#: rml:giscedata_facturacio_comer_som/report/components/invoice_details_other_concepts/invoice_details_other_concepts.mako:68
+#: rml:giscedata_facturacio_comer_som/report/components/invoice_details_other_concepts/invoice_details_other_concepts.mako:75
 msgid "Donatiu voluntari (exempt d'IVA)"
 msgstr ""
 
-#: rml:giscedata_facturacio_comer_som/report/components/invoice_details_other_concepts/invoice_details_other_concepts.mako:77
+#: rml:giscedata_facturacio_comer_som/report/components/invoice_details_other_concepts/invoice_details_other_concepts.mako:84
 #: rml:giscedata_facturacio_comer_som/report/components/invoice_summary/invoice_summary.mako:30
 #: rml:giscedata_facturacio_comer_som/report/components/invoice_summary_td/invoice_summary_td.mako:42
 msgid "TOTAL IMPORT FACTURA"
 msgstr ""
 
-#: rml:giscedata_facturacio_comer_som/report/components/invoice_details_other_concepts/invoice_details_other_concepts.mako:79
+#: rml:giscedata_facturacio_comer_som/report/components/invoice_details_other_concepts/invoice_details_other_concepts.mako:86
 #, python-format
 msgid "%s &euro;"
 msgstr ""
@@ -1778,13 +1859,13 @@ msgid ""
 "Decret-llei 10/2022, del 13 de maig. (%s kWh x %s €/kWh)"
 msgstr ""
 
-#: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_energy_charges/invoice_details_td_energy_charges.mako:5
+#: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_energy_charges/invoice_details_td_energy_charges.mako:6
 msgid "Preu càrrecs per electricitat utilitzades [€/kWh]"
 msgstr ""
 
-#: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_energy_charges/invoice_details_td_energy_charges.mako:19
+#: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_energy_charges/invoice_details_td_energy_charges.mako:20
 #: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_energy_discount_BOE17_2021/invoice_details_td_energy_discount_BOE17_2021.mako:19
-#: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_energy_tolls/invoice_details_td_energy_tolls.mako:19
+#: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_energy_tolls/invoice_details_td_energy_tolls.mako:20
 msgid "kWh x €/kWh"
 msgstr ""
 
@@ -1801,12 +1882,13 @@ msgstr ""
 msgid "Preu GenerationkWh [€/kWh]"
 msgstr ""
 
-#: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_energy_tolls/invoice_details_td_energy_tolls.mako:4
-#: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_power_tolls/invoice_details_td_power_tolls.mako:4
+#: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_energy_tolls/invoice_details_td_energy_tolls.mako:5
+#: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_other_concepts/invoice_details_td_other_concepts.mako:92
+#: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_power_tolls/invoice_details_td_power_tolls.mako:5
 msgid "Peatges"
 msgstr ""
 
-#: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_energy_tolls/invoice_details_td_energy_tolls.mako:5
+#: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_energy_tolls/invoice_details_td_energy_tolls.mako:6
 msgid "Preu peatges per electricitat utilitzada [€/kWh]"
 msgstr ""
 
@@ -1917,115 +1999,175 @@ msgstr ""
 msgid "Preu energia reactiva inductiva [€/kVArh]"
 msgstr ""
 
-#: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_other_concepts/invoice_details_td_other_concepts.mako:9
-#: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_other_concepts/invoice_details_td_other_concepts.mako:22
-#: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_other_concepts/invoice_details_td_other_concepts.mako:35
+#: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_other_concepts/invoice_details_td_other_concepts.mako:6
+msgid "Inspecció - Anomalia"
+msgstr ""
+
+#: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_other_concepts/invoice_details_td_other_concepts.mako:7
+msgid "Inspecció - Frau"
+msgstr ""
+
+#: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_other_concepts/invoice_details_td_other_concepts.mako:13
+#: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_other_concepts/invoice_details_td_other_concepts.mako:26
+#: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_other_concepts/invoice_details_td_other_concepts.mako:155
 #: rml:giscedata_facturacio_comer_som/report/components/invoice_summary/invoice_summary.mako:22
 #: rml:giscedata_facturacio_comer_som/report/components/invoice_summary_td/invoice_summary_td.mako:31
 msgid "Altres conceptes"
 msgstr ""
 
-#: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_other_concepts/invoice_details_td_other_concepts.mako:12
+#: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_other_concepts/invoice_details_td_other_concepts.mako:16
 #, python-format
 msgid "Bo social (RD 7/2016 23 desembre) %s dies x %s €/dia"
 msgstr ""
 
-#: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_other_concepts/invoice_details_td_other_concepts.mako:38
+#: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_other_concepts/invoice_details_td_other_concepts.mako:39
+msgid "Facturació Complementaria imputada per part de la Distribuïdora"
+msgstr ""
+
+#: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_other_concepts/invoice_details_td_other_concepts.mako:41
+msgid "Energia [kWh]"
+msgstr ""
+
+#: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_other_concepts/invoice_details_td_other_concepts.mako:43
+msgid "Energia reactiva [kVArh]"
+msgstr ""
+
+#: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_other_concepts/invoice_details_td_other_concepts.mako:45
+msgid "Potència [kW]"
+msgstr ""
+
+#: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_other_concepts/invoice_details_td_other_concepts.mako:47
+#, python-format
+msgid "Número d'expedient: %s"
+msgstr ""
+
+#: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_other_concepts/invoice_details_td_other_concepts.mako:48
+#, python-format
+msgid "Tipus d'expedient: %s"
+msgstr ""
+
+#: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_other_concepts/invoice_details_td_other_concepts.mako:63
+#, python-format
+msgid "Preu [€/%s]"
+msgstr ""
+
+#: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_other_concepts/invoice_details_td_other_concepts.mako:77
+#, python-format
+msgid "%s x €/%s (del %s al %s)"
+msgstr ""
+
+#: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_other_concepts/invoice_details_td_other_concepts.mako:93
+#, python-format
+msgid "Preu peatges [€/%s]"
+msgstr ""
+
+#: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_other_concepts/invoice_details_td_other_concepts.mako:107
+#: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_other_concepts/invoice_details_td_other_concepts.mako:136
+#, python-format
+msgid "%s x €/%s"
+msgstr ""
+
+#: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_other_concepts/invoice_details_td_other_concepts.mako:122
+#, python-format
+msgid "Preu càrrecs [€/%s]"
+msgstr ""
+
+#: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_other_concepts/invoice_details_td_other_concepts.mako:158
 #, python-format
 msgid "Donatiu voluntari (exempt d'IVA) %s kWh x %s €/kWh"
 msgstr ""
 
-#: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_other_concepts/invoice_details_td_other_concepts.mako:51
-#: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_other_concepts/invoice_details_td_other_concepts.mako:64
-#: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_other_concepts/invoice_details_td_other_concepts.mako:87
+#: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_other_concepts/invoice_details_td_other_concepts.mako:171
+#: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_other_concepts/invoice_details_td_other_concepts.mako:184
+#: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_other_concepts/invoice_details_td_other_concepts.mako:207
 #, python-format
 msgid "%s € x 0,5%%"
 msgstr ""
 
-#: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_other_concepts/invoice_details_td_other_concepts.mako:52
-#: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_other_concepts/invoice_details_td_other_concepts.mako:88
+#: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_other_concepts/invoice_details_td_other_concepts.mako:172
+#: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_other_concepts/invoice_details_td_other_concepts.mako:208
 msgid ""
 "En virtut del Reial Decret-llei 17/2021, del 14 de setembre, l'impost "
 "especial sobre l'electricitat aplicable a la factura es troba reduït del "
 "5,11269632% al 0,5%."
 msgstr ""
 
-#: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_other_concepts/invoice_details_td_other_concepts.mako:54
-#: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_other_concepts/invoice_details_td_other_concepts.mako:90
+#: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_other_concepts/invoice_details_td_other_concepts.mako:174
+#: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_other_concepts/invoice_details_td_other_concepts.mako:210
 #, python-format
 msgid "%s € x 2,5%%"
 msgstr ""
 
-#: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_other_concepts/invoice_details_td_other_concepts.mako:55
-#: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_other_concepts/invoice_details_td_other_concepts.mako:91
+#: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_other_concepts/invoice_details_td_other_concepts.mako:175
+#: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_other_concepts/invoice_details_td_other_concepts.mako:211
 msgid ""
 "En virtut del Reial Decret-llei 8/2023, del 27 de desembre, l'impost "
 "especial sobre l'electricitat aplicable a la factura es troba reduït del "
 "5,11269632% al 2,5%."
 msgstr ""
 
-#: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_other_concepts/invoice_details_td_other_concepts.mako:57
-#: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_other_concepts/invoice_details_td_other_concepts.mako:93
+#: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_other_concepts/invoice_details_td_other_concepts.mako:177
+#: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_other_concepts/invoice_details_td_other_concepts.mako:213
 #, python-format
 msgid "%s € x 3,8%%"
 msgstr ""
 
-#: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_other_concepts/invoice_details_td_other_concepts.mako:58
-#: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_other_concepts/invoice_details_td_other_concepts.mako:94
+#: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_other_concepts/invoice_details_td_other_concepts.mako:178
+#: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_other_concepts/invoice_details_td_other_concepts.mako:214
 msgid ""
 "En virtut del Reial Decret-llei 8/2023, del 27 de desembre, l'impost "
 "especial sobre l'electricitat aplicable a la factura es troba reduït del "
 "5,11269632% al 3,8%."
 msgstr ""
 
-#: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_other_concepts/invoice_details_td_other_concepts.mako:60
+#: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_other_concepts/invoice_details_td_other_concepts.mako:180
 #, python-format
 msgid ""
 "%s kWh x 0,001 €/kWh (aplicant Art 99.2 de la Llei 28/2014 sense "
 "bonificació del 85%%)"
 msgstr ""
 
-#: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_other_concepts/invoice_details_td_other_concepts.mako:62
+#: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_other_concepts/invoice_details_td_other_concepts.mako:182
 #, python-format
 msgid ""
 "%s kWh x 0,0005 €/kWh (aplicant Art 99.2 de la Llei 28/2014 sense "
 "bonificació del 85%%)"
 msgstr ""
 
-#: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_other_concepts/invoice_details_td_other_concepts.mako:66
-#: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_other_concepts/invoice_details_td_other_concepts.mako:100
+#: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_other_concepts/invoice_details_td_other_concepts.mako:186
+#: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_other_concepts/invoice_details_td_other_concepts.mako:220
 #, python-format
 msgid "%s € x 5,11269%%"
 msgstr ""
 
-#: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_other_concepts/invoice_details_td_other_concepts.mako:70
+#: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_other_concepts/invoice_details_td_other_concepts.mako:190
 #, python-format
 msgid " (amb l'exempció del {}% sobre el {}% de Base Imposable IE)"
 msgstr ""
 
-#: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_other_concepts/invoice_details_td_other_concepts.mako:96
+#: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_other_concepts/invoice_details_td_other_concepts.mako:216
 #, python-format
 msgid "%s kWh x 0,001 €/kWh (aplicant Art 99.2 de la Llei 28/2014)"
 msgstr ""
 
-#: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_other_concepts/invoice_details_td_other_concepts.mako:98
+#: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_other_concepts/invoice_details_td_other_concepts.mako:218
 #, python-format
 msgid "%s kWh x 0,0005 €/kWh (aplicant Art 99.2 de la Llei 28/2014)"
 msgstr ""
 
-#: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_other_concepts/invoice_details_td_other_concepts.mako:123
-#: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_other_concepts/invoice_details_td_other_concepts.mako:139
+#: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_other_concepts/invoice_details_td_other_concepts.mako:243
+#: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_other_concepts/invoice_details_td_other_concepts.mako:259
 #, python-format
 msgid "%s € "
 msgstr ""
 
-#: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_other_concepts/invoice_details_td_other_concepts.mako:125
+#: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_other_concepts/invoice_details_td_other_concepts.mako:245
 msgid ""
 "En virtut del Reial Decret-llei 12/2021, del 24 de juny, l'IVA aplicable "
 "a la factura es troba reduït del 21% al 5%."
 msgstr ""
 
-#: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_other_concepts/invoice_details_td_other_concepts.mako:127
+#: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_other_concepts/invoice_details_td_other_concepts.mako:247
 msgid ""
 "En virtut del Reial Decret-llei 8/2023, del 27 de desembre, l’IVA aplicat"
 " a la factura es troba reduït del 21% al 10%"
@@ -2043,13 +2185,13 @@ msgstr ""
 msgid "Preu potència contractada [€/kW i any]"
 msgstr ""
 
-#: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_power_charges/invoice_details_td_power_charges.mako:5
+#: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_power_charges/invoice_details_td_power_charges.mako:6
 msgid "Preu càrrecs per potència contractada [€/kW i any]"
 msgstr ""
 
-#: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_power_charges/invoice_details_td_power_charges.mako:34
+#: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_power_charges/invoice_details_td_power_charges.mako:35
 #: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_power_discount_BOE17_2021/invoice_details_td_power_discount_BOE17_2021.mako:34
-#: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_power_tolls/invoice_details_td_power_tolls.mako:34
+#: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_power_tolls/invoice_details_td_power_tolls.mako:35
 #, python-format
 msgid "kW x €/kW x (%s/%s) dies"
 msgstr ""
@@ -2058,7 +2200,7 @@ msgstr ""
 msgid "Descompte sobre els càrrecs (RDL 17/2021) [€/kW i any]"
 msgstr ""
 
-#: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_power_tolls/invoice_details_td_power_tolls.mako:5
+#: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_power_tolls/invoice_details_td_power_tolls.mako:6
 msgid "Preu peatges per potència contractada [€/kW i any]"
 msgstr ""
 

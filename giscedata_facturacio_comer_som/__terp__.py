@@ -17,6 +17,7 @@
         "jasper_reports",
         # "giscedata_omie_comer",
         "som_auvidi",
+        "som_facturacio_switching"
     ],
     "init_xml": [],
     "demo_xml": ["giscedata_facturacio_comer_som_demo.xml"],

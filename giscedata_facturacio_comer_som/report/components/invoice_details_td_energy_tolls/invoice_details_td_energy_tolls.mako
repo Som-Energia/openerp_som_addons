@@ -1,5 +1,6 @@
 <%page args="id" />
 <%import locale%>
+% if 'P1' in id:
 <tr>
     <td class="td_second concepte_td" rowspan="2">${_(u"Peatges")}</td>
     <td class="td_bold detall_td">${_(u"Preu peatges per electricitat utilitzada [€/kWh]")}</td>
@@ -29,3 +30,4 @@
         <td></td>
     % endif
 </tr>
+% endif
