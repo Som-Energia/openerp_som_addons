@@ -14,7 +14,7 @@
                         <button name="button_calculate" type="object" string="Calcular estalvi GURB!" icon="gtk-execute" colspan="4"/>
                     </group>
                     <group attrs="{'invisible': [('state', '!=', 'end')]}">
-                        <field name="report" colspan="4"/>
+                        <field name="report" colspan="4" filename="filename_report"/>
                         <field name="filename_report" colspan="4"/>
                         <field name="info" colspan="4" readonly="1" nolabel="1"/>
                         <button special="cancel" string="Sortir" icon="gtk-ok" />

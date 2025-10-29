@@ -1,14 +1,16 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import
-from StringIO import StringIO
 from osv import osv, fields
+from datetime import datetime
+from StringIO import StringIO
 
 import csv
 import base64
 
+
 HEADER = [
-    "polissa", "cups", "estalvi_sense_impostos", "estalvi_amb_impostos", "kwh_produits",
-    "kwh_autoconsumits", "kwh_consumits"
+    "polissa", "estalvi_sense_impostos", "estalvi_amb_impostos", "kwh_excedents",
+    "kwh_generacio_neta", "kwh_autoconsumits", "kwh_consumits"
 ]
 
 
@@ -64,10 +66,13 @@ class WizardCalculateGurbSavings(osv.osv_memory):
             context = {}
 
         savings = []
+        wiz = self.browse(cursor, uid, ids[0], context=context)
 
         active_ids = context.get("active_ids")
         for gurb_cups_id in active_ids:
-            saving = self.calculate_gurb_savings(cursor, uid, gurb_cups_id, context=context)
+            saving = self.calculate_gurb_cups_savings(
+                cursor, uid, gurb_cups_id, wiz.date_from, wiz.date_to, context=context
+            )
             savings.append(saving)
         self.generate_savings_csv(cursor, uid, ids[0], savings, context=context)
 
@@ -85,16 +90,20 @@ class WizardCalculateGurbSavings(osv.osv_memory):
         wizard = self.browse(cursor, uid, wiz_id, context=context)
 
         csv_file = StringIO()
-        writer = csv.DictWriter(csv_file, fieldnames=values[0].keys())
+        writer = csv.DictWriter(csv_file, fieldnames=HEADER)
         writer.writeheader()
         writer.writerows(values)
 
         res_file = csv_file.getvalue()
+        timestamp = datetime.today().strftime("%Y-%m-%d-%H:%M")
+        filename = "estalvis-{}.csv".format(timestamp)
         wizard.write(
-            {"report": base64.b64encode(res_file), "filename_report": "estalvis" + ".csv"}
+            {"report": base64.b64encode(res_file), "filename_report": filename}
         )
 
-    def calculate_gurb_cups_savings(self, cursor, uid, ids, context=None):
+    def calculate_gurb_cups_savings(   # noqa: C901
+        self, cursor, uid, gurb_cups_id, date_from, date_to, context=None
+    ):
         if context is None:
             context = {}
 
@@ -115,16 +124,13 @@ class WizardCalculateGurbSavings(osv.osv_memory):
             cursor, uid, "som_gurb", "product_enterprise_gurb"
         )[1]
 
-        wiz = self.browse(cursor, uid, ids[0], context=context)
-        gurb_cups_id = context.get("active_id", False)
-
         if not gurb_cups_id:
             raise osv.except_osv("Registre actiu", "Aquest assistent necessita un registre actiu!")
 
         polissa_id = gurb_cups_obj.get_polissa_gurb_cups(cursor, uid, gurb_cups_id, context=context)
 
         f1_ids = self.get_only_relevant_invoices(
-            cursor, uid, polissa_id, wiz.date_from, wiz.date_to, context=context
+            cursor, uid, polissa_id, date_from, date_to, context=context
         )
 
         profit_untaxed = 0
@@ -196,35 +202,46 @@ class WizardCalculateGurbSavings(osv.osv_memory):
 
             profit_fact = 0
             for k in total_auto:
-                # en aquesta linia no hi ha impostos, també deixaràs de pagar iva, com ho calculem?
                 profit_fact += total_auto[k] * price_energia[k]
 
-            total_generacio = 0
             generacio_kwh = 0
+            total_generacio = {'P1': 0, 'P2': 0, 'P3': 0, 'P4': 0, 'P5': 0, 'P6': 0}
+            price_generacio = {'P1': 0, 'P2': 0, 'P3': 0, 'P4': 0, 'P5': 0, 'P6': 0}
             for linia_generacio in linies_generacio:
-                total_generacio += (linia_generacio.quantity * linia_generacio.price_unit)
                 generacio_kwh += linia_generacio.quantity
+                total_generacio[linia_generacio.name] += linia_generacio.quantity
+                price_generacio[linia_generacio.name] += linia_generacio.price_unit
+            generacio_fact = 0
+            for k in total_generacio:
+                generacio_fact += total_generacio[k] * price_generacio[k]
 
             cost_gurb = 0
             for linia_gurb in linies_gurb:
                 cost_gurb += linia_gurb.price_subtotal
 
-            # al gurb se li han d'aplicar els impostos? si és empresa dona igual?
             if linies_gurb:
-                profit_untaxed += (profit_fact + abs(total_generacio) - cost_gurb)
+                profit_untaxed += (profit_fact + abs(generacio_fact) - cost_gurb)
 
+            profit_fact_taxed = 0
             if linies_energia:
                 energy_prod_id = linies_energia[0].product_id.id
                 profit_fact_taxed = prod_obj.add_taxes(
                     cursor, uid, energy_prod_id, profit_fact, False, context=context,
                 )
+
+            if linies_generacio:
+                generacio_prod_id = linies_generacio[0].product_id.id
+                profit_fact_taxed += abs(prod_obj.add_taxes(
+                    cursor, uid, generacio_prod_id, generacio_fact, False, context=context,
+                ))
+
             if linies_gurb:
                 cost_gurb_taxed = prod_obj.add_taxes(
                     cursor, uid, linies_gurb[0].product_id.id, cost_gurb, False, context=context
                 )
 
             if linies_energia and linies_gurb:
-                profit += (profit_fact_taxed + abs(total_generacio) - cost_gurb_taxed)
+                profit += (profit_fact_taxed - cost_gurb_taxed)
 
             kwh_produced += generacio_kwh
             kwh_auto += auto_kwh
@@ -234,10 +251,10 @@ class WizardCalculateGurbSavings(osv.osv_memory):
 
         result = {
             "polissa": polissa.name,
-            "cups": polissa.cups_id.name,
             "estalvi_sense_impostos": round(profit_untaxed, 2),
             "estalvi_amb_impostos": round(profit, 2),
-            "kwh_produits": round(abs(kwh_produced + kwh_auto), 2),
+            "kwh_excedents": round(abs(kwh_produced), 2),
+            "kwh_generacio_neta": round(abs(kwh_produced) + kwh_auto, 2),
             "kwh_autoconsumits": round(kwh_auto, 2),
             "kwh_consumits": round(kwh_consumed, 2),
         }
