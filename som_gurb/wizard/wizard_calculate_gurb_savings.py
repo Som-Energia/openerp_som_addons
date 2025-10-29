@@ -1,6 +1,15 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import
+from StringIO import StringIO
 from osv import osv, fields
+
+import csv
+import base64
+
+HEADER = [
+    "polissa", "cups", "estalvi_sense_impostos", "estalvi_amb_impostos", "kwh_produits",
+    "kwh_autoconsumits", "kwh_consumits"
+]
 
 
 class WizardCalculateGurbSavings(osv.osv_memory):
@@ -12,14 +21,14 @@ class WizardCalculateGurbSavings(osv.osv_memory):
             context = {}
 
         gff_obj = self.pool.get("giscedata.facturacio.factura")
-        trimed_list = []
+        trimmed_list = []
 
         search_vals = [
             ("polissa_id", "=", polissa_id),
             ("data_inici", ">=", date_from),
             ("data_final", "<=", date_to),
             ("type", "=", "in_invoice"),
-            ("rectificative_type", "not in", ["N", "R"])
+            ("rectificative_type", "in", ["N", "R", "RA"])
         ]
         invoice_ids = gff_obj.search(cursor, uid, search_vals, context=context)
 
@@ -40,22 +49,59 @@ class WizardCalculateGurbSavings(osv.osv_memory):
                     ("polissa_id", "=", polissa_id),
                     ("data_inici", ">=", invoice.data_inici),
                     ("data_final", "<=", invoice.data_final),
-                    ("type", "=", "in_invoice")
+                    ("type", "=", "in_invoice"),
+                    ("rectificative_type", "in", ["N", "R", "RA"])
                 ]
                 provider_invoice = gff_obj.search(
-                    cursor, uid, search_params, order="date_invoice DESC", limit=1, context=context)
-                if provider_invoice and provider_invoice[0] not in trimed_list:
-                    trimed_list.append(provider_invoice[0])
+                    cursor, uid, search_params, order='date_invoice DESC', limit=1, context=context)
+                if provider_invoice and provider_invoice[0] not in trimmed_list:
+                    trimmed_list.append(provider_invoice[0])
 
-        return trimed_list
+        return trimmed_list
 
-    def calculate_gurb_savings(self, cursor, uid, ids, context=None):  # noqa: C901
+    def button_calculate(self, cursor, uid, ids, context=None):
+        if context is None:
+            context = {}
+
+        savings = []
+
+        active_ids = context.get("active_ids")
+        for gurb_cups_id in active_ids:
+            saving = self.calculate_gurb_savings(cursor, uid, gurb_cups_id, context=context)
+            savings.append(saving)
+        self.generate_savings_csv(cursor, uid, ids[0], savings, context=context)
+
+        result = {
+            "state": "end",
+            "info": "S'ha generat el fitxer d'estalvis correctament.",
+        }
+
+        self.write(cursor, uid, ids, result, context=context)
+
+    def generate_savings_csv(self, cursor, uid, wiz_id, values, context=None):
+        if context is None:
+            context = {}
+
+        wizard = self.browse(cursor, uid, wiz_id, context=context)
+
+        csv_file = StringIO()
+        writer = csv.DictWriter(csv_file, fieldnames=values[0].keys())
+        writer.writeheader()
+        writer.writerows(values)
+
+        res_file = csv_file.getvalue()
+        wizard.write(
+            {"report": base64.b64encode(res_file), "filename_report": "estalvis" + ".csv"}
+        )
+
+    def calculate_gurb_cups_savings(self, cursor, uid, ids, context=None):
         if context is None:
             context = {}
 
         gurb_cups_obj = self.pool.get("som.gurb.cups")
         gff_obj = self.pool.get("giscedata.facturacio.factura")
         gffl_obj = self.pool.get("giscedata.facturacio.factura.linia")
+        polissa_obj = self.pool.get("giscedata.polissa")
         prod_obj = self.pool.get("product.product")
         imd_o = self.pool.get("ir.model.data")
 
@@ -168,13 +214,14 @@ class WizardCalculateGurbSavings(osv.osv_memory):
                 profit_untaxed += (profit_fact + abs(total_generacio) - cost_gurb)
 
             if linies_energia:
-                profit_fact_taxed = prod_obj.add_taxes(cursor, uid, linies_energia[0].product_id.id,
-                                                       profit_fact, False, context=context,
-                                                       )
+                energy_prod_id = linies_energia[0].product_id.id
+                profit_fact_taxed = prod_obj.add_taxes(
+                    cursor, uid, energy_prod_id, profit_fact, False, context=context,
+                )
             if linies_gurb:
-                cost_gurb_taxed = prod_obj.add_taxes(cursor, uid, linies_gurb[0].product_id.id,
-                                                     cost_gurb, False, context=context,
-                                                     )
+                cost_gurb_taxed = prod_obj.add_taxes(
+                    cursor, uid, linies_gurb[0].product_id.id, cost_gurb, False, context=context
+                )
 
             if linies_energia and linies_gurb:
                 profit += (profit_fact_taxed + abs(total_generacio) - cost_gurb_taxed)
@@ -183,26 +230,19 @@ class WizardCalculateGurbSavings(osv.osv_memory):
             kwh_auto += auto_kwh
             kwh_consumed += energia_kwh
 
-        info = "L'estalvi sense impostos ha estat de {}€ i amb impostos de {}€".format(
-            str(profit_untaxed), str(profit)
-        )
-        info += "\ns'han produit {}kwh, s'ha autoconsumit {}kwh i s'ha consumit {}kwh".format(
-            str(abs(kwh_produced) + kwh_auto), str(kwh_auto), str(kwh_consumed)
-        )
-        if bad_f1s:
-            info += "\nNo s'han tingut en compte {} f1s ja que no quadren amb cap factura".format(
-                str(bad_f1s)
-            )
+        polissa = polissa_obj.browse(cursor, uid, polissa_id, context=context)
 
-        wiz.write(
-            {
-                "state": "end",
-                "info": info,
+        result = {
+            "polissa": polissa.name,
+            "cups": polissa.cups_id.name,
+            "estalvi_sense_impostos": round(profit_untaxed, 2),
+            "estalvi_amb_impostos": round(profit, 2),
+            "kwh_produits": round(abs(kwh_produced + kwh_auto), 2),
+            "kwh_autoconsumits": round(kwh_auto, 2),
+            "kwh_consumits": round(kwh_consumed, 2),
+        }
 
-            }
-        )
-
-        return True
+        return result
 
     _columns = {
         "date_from": fields.date("Data desde", required=True),
@@ -212,6 +252,8 @@ class WizardCalculateGurbSavings(osv.osv_memory):
             [("init", "Init"), ("end", "End")],
             "State",
         ),
+        'report': fields.binary('Resultat'),
+        'filename_report': fields.char('Nom fitxer exportat', size=256),
     }
 
     _defaults = {
