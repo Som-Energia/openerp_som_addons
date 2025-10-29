@@ -9,6 +9,7 @@ from som_extend_facturacio_comer.utils import get_gkwh_atr_price
 from tools.translate import _
 from giscedata_polissa.report.utils import localize_period
 from som_indexada.utils import get_fs_from_k_change
+
 CONTRACT_TYPES = dict(TABLA_9)
 
 # def clean_text(text):
