@@ -55,8 +55,13 @@ class GiscedataPolissa(osv.osv):
         if not isinstance(ids, list):
             ids = [ids]
 
+        imd_obj = self.pool.get('ir.model.data')
+        partner_address_obj = self.pool.get("res.partner.address")
+        cat_ss_id = imd_obj.get_object_reference(
+            cr, uid, "som_polissa_soci", "origen_ct_sense_socia_category"
+        )[1]
+
         if 'soci' in vals:
-            imd_obj = self.pool.get('ir.model.data')
             soci_obj = self.pool.get('somenergia.soci')
             state_correcte_id = imd_obj.get_object_reference(
                 cr, uid, 'som_sortida', 'enviar_cor_correcte_pending_state'
@@ -97,8 +102,38 @@ class GiscedataPolissa(osv.osv):
                         self.create_history_line(
                             cr, uid, [_id], context=context
                         )
+                category_ids = self.read(cr, uid, _id, ['category_id'])['category_id']
+                if cat_ss_id in category_ids and not self._es_socia_ct_ss(
+                        cr, uid, [_id], soci_nif, context=context):
+                    partner_address_obj.update_polissa_titular_in_ctss_lists(
+                        cr, uid, [_id], context=context,
+                    )
 
-        return super(GiscedataPolissa, self).write(cr, uid, ids, vals, context=context)
+        res = super(GiscedataPolissa, self).write(cr, uid, ids, vals, context=context)
+
+        """Si s'afegeix la categoria origen_ct_sense_socia_category a la pòlissa,
+        subscribim a llista mailchimp_clients_ctss_list al titular de la pòlissa."""
+        if "category_id" in vals:
+            # Comprovar si s'està afegint la categoria cat_ss_id
+            # Les operacions (4, id) i (6, 0, [ids]) afegeixen categories
+            is_adding_cat_ss = False
+            for operation in vals["category_id"]:
+                if operation[0] == 4 and operation[1] == cat_ss_id:
+                    # Operació (4, id): afegir relació
+                    is_adding_cat_ss = True
+                    break
+                elif operation[0] == 6 and cat_ss_id in operation[2]:
+                    # Operació (6, 0, [ids]): reemplaçar amb llista d'ids
+                    is_adding_cat_ss = True
+                    break
+
+            if is_adding_cat_ss:
+                for polissa in self.browse(cr, uid, ids, context=context):
+                    partner_address_obj.subscribe_polissa_titular_in_ctss_lists(
+                        cr, uid, [polissa.id], context=context,
+                    )
+
+        return res
 
     def _es_socia_ct_ss(self, cr, uid, ids, socia_nif, context=None):
         """

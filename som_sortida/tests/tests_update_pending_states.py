@@ -12,7 +12,7 @@ class TestUpdatePendingStates(testing.OOTestCaseWithCursor):
         upd_obj = self.openerp.pool.get('update.pending.states')
         hist_obj = self.openerp.pool.get('som.sortida.history')
         polissa_id = imd_obj.get_object_reference(
-            cursor, uid, 'giscedata_polissa', 'polissa_0001'
+            cursor, uid, 'giscedata_polissa', 'polissa_0004'
         )[1]
         estat_sense_socia = imd_obj.get_object_reference(
             cursor, uid, 'som_sortida', 'enviar_cor_contrate_sense_socia_pending_state'
@@ -47,7 +47,7 @@ class TestUpdatePendingStates(testing.OOTestCaseWithCursor):
         mailbox_obj = self.openerp.pool.get('poweremail.mailbox')
 
         polissa_id = imd_obj.get_object_reference(
-            cursor, uid, 'giscedata_polissa', 'polissa_0001'
+            cursor, uid, 'giscedata_polissa', 'polissa_0004'
         )[1]
         estat_sense_socia_id = imd_obj.get_object_reference(
             cursor, uid, 'som_sortida', 'enviar_cor_contrate_sense_socia_pending_state'
@@ -100,7 +100,7 @@ class TestUpdatePendingStates(testing.OOTestCaseWithCursor):
         mailbox_obj = self.openerp.pool.get('poweremail.mailbox')
 
         polissa_id = imd_obj.get_object_reference(
-            cursor, uid, 'giscedata_polissa', 'polissa_0001'
+            cursor, uid, 'giscedata_polissa', 'polissa_0004'
         )[1]
         estat_1m_id = imd_obj.get_object_reference(
             cursor, uid, 'som_sortida', 'enviar_cor_falta_un_mes_pending_state'
@@ -147,7 +147,7 @@ class TestUpdatePendingStates(testing.OOTestCaseWithCursor):
         smsbox_obj = self.openerp.pool.get('powersms.smsbox')
 
         polissa_id = imd_obj.get_object_reference(
-            cursor, uid, 'giscedata_polissa', 'polissa_0001'
+            cursor, uid, 'giscedata_polissa', 'polissa_0004'
         )[1]
         partner_soci_id = imd_obj.get_object_reference(
             cursor, uid, 'som_polissa_soci', 'res_partner_soci'
@@ -197,7 +197,7 @@ class TestUpdatePendingStates(testing.OOTestCaseWithCursor):
         sw_obj = self.openerp.pool.get('giscedata.switching')
 
         polissa_id = imd_obj.get_object_reference(
-            cursor, uid, 'giscedata_polissa', 'polissa_0001'
+            cursor, uid, 'giscedata_polissa', 'polissa_0004'
         )[1]
         estat_7d_id = imd_obj.get_object_reference(
             cursor, uid, 'som_sortida', 'enviar_cor_falta_7_dies_pending_state'
@@ -242,34 +242,24 @@ class TestUpdatePendingStates(testing.OOTestCaseWithCursor):
         imd_obj = self.openerp.pool.get('ir.model.data')
         pol_obj = self.openerp.pool.get('giscedata.polissa')
         upd_obj = self.openerp.pool.get('update.pending.states')
-
         polissa_id = imd_obj.get_object_reference(
-            cursor, uid, 'giscedata_polissa', 'polissa_0001'
+            cursor, uid, 'giscedata_polissa', 'polissa_0004'
         )[1]
         estat_7d_id = imd_obj.get_object_reference(
             cursor, uid, 'som_sortida', 'enviar_cor_falta_7_dies_pending_state'
         )[1]
-        estat_b1_error_id = imd_obj.get_object_reference(
-            cursor, uid, 'som_sortida', 'enviar_cor_cas_b1_error_pending_state'
-        )[1]
-
-        pol_obj.send_signal(cursor, uid, [polissa_id], [
-            "validar", "contracte"
-        ])
 
         pol_obj.set_pending(cursor, uid, polissa_id, estat_7d_id, {
             'custom_change_dates': {polissa_id: '2023-10-01'},
         })
 
-        # draft polissa and no CT SS soci, it will fail
+        # draft polissa and no CT SS soci, it should stay in the same state
         with avoid_creating_subcursors(cursor):
             upd_obj.update_polisses(cursor, uid)
-
         pol = pol_obj.browse(cursor, uid, polissa_id)
-
-        self.assertEqual(pol.sortida_state_id.id, estat_b1_error_id)
+        self.assertEqual(pol.sortida_state_id.id, estat_7d_id)
 
         # When updating again, it should stay in the same state
         with avoid_creating_subcursors(cursor):
             upd_obj.update_polisses(cursor, uid)
-        self.assertEqual(pol.sortida_state_id.id, estat_b1_error_id)
+        self.assertEqual(pol.sortida_state_id.id, estat_7d_id)

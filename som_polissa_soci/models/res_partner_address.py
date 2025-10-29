@@ -80,7 +80,8 @@ class ResPartnerAddress(osv.osv):
         else:
             return soci['name'].split(',')[-1].strip()
 
-    def _es_empresa(self, cursor, uid, cat_pol_obj, polissa_data):
+    def _es_empresa(self, cursor, uid, polissa_data, context=None):
+        cat_pol_obj = self.pool.get('giscedata.polissa.category')
         category_names = cat_pol_obj.read(cursor, uid, polissa_data['category_id'], ['name'])
         for category in category_names:
             if category['name'] == 'Entitat o Empresa':
@@ -89,7 +90,6 @@ class ResPartnerAddress(osv.osv):
 
     def _get_contract_data(self, cursor, uid, partner_id, context=None):  # noqa: C901
         pol_obj = self.pool.get("giscedata.polissa")
-        cat_pol_obj = self.pool.get('giscedata.polissa.category')
         tar_obj = self.pool.get('giscedata.polissa.tarifa')
         soc_obj = self.pool.get('somenergia.soci')
         soci_id = soc_obj.search(cursor, uid, [('partner_id', '=', partner_id)])[0]
@@ -107,11 +107,11 @@ class ResPartnerAddress(osv.osv):
                                         'state', 'category_id', 'tarifa', 'potencia'])
             if polissa_data['state'] == 'activa':
                 contracte_actiu = True
-                empresa = empresa or self._es_empresa(cursor, uid, cat_pol_obj, polissa_data)
+                empresa = empresa or self._es_empresa(cursor, uid, polissa_data, context)
                 break
             if polissa_data['state'] == 'esborrany':
                 contracte_esborrany = True
-                empresa = empresa or self._es_empresa(cursor, uid, cat_pol_obj, polissa_data)
+                empresa = empresa or self._es_empresa(cursor, uid, polissa_data, context)
 
         if contracte_actiu:
             soci_data['contracte'] = 'contracte_actiu'
@@ -137,7 +137,7 @@ class ResPartnerAddress(osv.osv):
             polissa_data = pol_obj.read(
                 cursor, uid, polissa_id, [
                     'state', 'category_id', 'tarifa', 'potencia', 'autoconsumo'])
-            empresa = empresa or self._es_empresa(cursor, uid, cat_pol_obj, polissa_data)
+            empresa = empresa or self._es_empresa(cursor, uid, polissa_data, context)
             tarifa_ids = tar_obj.search(cursor, uid, [('name', 'in', TARIFES_MAXIMETRE)])
             if (polissa_data['tarifa']
                 and polissa_data['tarifa'][0] in tarifa_ids
@@ -548,6 +548,10 @@ class ResPartnerAddress(osv.osv):
 
         email_addresses = self.read(cursor, uid, ids, ["email"])
         for email in email_addresses:
+            if not email["email"]:
+                logger.info("Mailchimp: No s'ha pogut arxivar perquè la fitxa del client"
+                            "no te email. res.partner.address id = {}".format(email["id"]))
+                continue
             subscriber_hash = md5(email["email"].lower()).hexdigest()
             try:
                 mailchimp_conn.lists.delete_list_member(
