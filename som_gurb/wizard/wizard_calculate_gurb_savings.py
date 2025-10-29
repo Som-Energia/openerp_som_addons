@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import
+from StringIO import StringIO
 from osv import osv, fields
 from datetime import datetime
 from StringIO import StringIO
@@ -12,6 +13,14 @@ import base64
 HEADER = [
     "polissa", "estalvi_sense_impostos", "estalvi_amb_impostos", "kwh_excedents",
     "kwh_generacio_neta", "kwh_autoconsumits", "kwh_consumits"
+]
+
+import csv
+import base64
+
+HEADER = [
+    "polissa", "cups", "estalvi_sense_impostos", "estalvi_amb_impostos", "kwh_produits",
+    "kwh_autoconsumits", "kwh_consumits"
 ]
 
 
