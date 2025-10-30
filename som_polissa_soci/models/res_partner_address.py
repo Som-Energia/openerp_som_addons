@@ -504,6 +504,38 @@ class ResPartnerAddress(osv.osv):
                         )
                     )
 
+    @job(queue="mailchimp_tasks")
+    def update_or_create_data_in_list_mailchimp_async(self, cursor, uid, clients_data, list_name, context=None):  # noqa: E501
+        self.update_or_create_data_in_list_mailchimp(
+            cursor, uid, clients_data, list_name, context=context)
+
+    def update_or_create_data_in_list_mailchimp(self, cursor, uid, clients_data, list_name, context=None):  # noqa: E501
+        if not isinstance(clients_data, (list, tuple)):
+            clients_data = [clients_data]
+        logger = logging.getLogger("openerp.{0}.update_data_in_list_mailchimp".format(__name__))
+        MAILCHIMP_CLIENT = self._get_mailchimp_client()
+        list_ids = [self.get_mailchimp_list_id(list_name, MAILCHIMP_CLIENT)]
+
+        for client_data in clients_data:
+            try:
+                if client_data.get("email_address", False):
+                    subscriber_hash = md5(client_data["email_address"].lower()).hexdigest()
+                    for list_id in list_ids:
+                        MAILCHIMP_CLIENT.lists.set_list_member(
+                            list_id, subscriber_hash, client_data)
+            except ApiClientError as e:
+                raise osv.except_osv(
+                    _("Error"),
+                    _(
+                        "Error en actualitzar l'email {}:\n{}".format(
+                            client_data["email_address"], e.text
+                        )
+                    ),
+                )
+            else:
+                logger.info("Mailchimp: Email actualitzat a la llista {}: {}".format(
+                    list_id, client_data["email_address"]))
+
     def unsubscribe_partner_in_customers_no_members_lists(
             self, cursor, uid, partner_ids, context=None):
         if not isinstance(partner_ids, (list, tuple)):

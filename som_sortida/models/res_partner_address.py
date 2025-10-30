@@ -50,7 +50,7 @@ class ResPartnerAddress(osv.osv):
 
         for _id in polissa_ids:
             client_data = self.fill_merge_fields_titular_polissa_ctss(cursor, uid, _id)
-            self.update_mail_in_list_async(
+            self.update_or_create_data_in_list_mailchimp_async(
                 cursor, uid, [client_data], list_name, MAILCHIMP_CLIENT
             )
 
