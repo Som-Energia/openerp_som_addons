@@ -6,7 +6,8 @@ from destral import testing
 class TestsPartnerAddress(testing.OOTestCaseWithCursor):
 
     @mock.patch('som_polissa_soci.models.res_partner_address.ResPartnerAddress.subscribe_mail_in_list_async')  # noqa: E501
-    def test__subscribe_polissa_titular_in_ctss_lists__ok(self, mocked_subscribe):
+    @mock.patch('som_polissa_soci.models.res_partner_address.ResPartnerAddress.get_mailchimp_list_id')  # noqa: E501
+    def test__subscribe_polissa_titular_in_ctss_lists__ok(self, mocked_subscribe, mocked_get_mailchimp_list_id):  # noqa: E501
         cursor = self.cursor
         uid = self.uid
         rpa_obj = self.pool.get("res.partner.address")
@@ -19,6 +20,7 @@ class TestsPartnerAddress(testing.OOTestCaseWithCursor):
         rpa_obj.subscribe_polissa_titular_in_ctss_lists(cursor, uid, polissa_id)
 
         mocked_subscribe.assert_called_once()
+        mocked_get_mailchimp_list_id.assert_called_once()
 
     def test__get_polissa_data__ok(self):
         cursor = self.cursor
