@@ -33,11 +33,11 @@ class ResPartnerAddress(osv.osv):
         MAILCHIMP_CLIENT = self._get_mailchimp_client()
         conf_obj = self.pool.get("res.config")
         list_name = conf_obj.get(cursor, uid, "mailchimp_clients_ctss_list", None)
-
+        list_id = self.get_mailchimp_list_id(list_name, MAILCHIMP_CLIENT)
         for _id in polissa_ids:
             client_data = self.fill_merge_fields_titular_polissa_ctss(cursor, uid, _id)
             self.subscribe_mail_in_list_async(
-                cursor, uid, [client_data], list_name, MAILCHIMP_CLIENT
+                cursor, uid, [client_data], list_id, MAILCHIMP_CLIENT
             )
 
     def update_polissa_titular_in_ctss_lists(self, cursor, uid, polissa_ids, context=None):
@@ -47,11 +47,11 @@ class ResPartnerAddress(osv.osv):
         MAILCHIMP_CLIENT = self._get_mailchimp_client()
         conf_obj = self.pool.get("res.config")
         list_name = conf_obj.get(cursor, uid, "mailchimp_clients_ctss_list", None)
-
+        list_id = self.get_mailchimp_list_id(list_name, MAILCHIMP_CLIENT)
         for _id in polissa_ids:
             client_data = self.fill_merge_fields_titular_polissa_ctss(cursor, uid, _id)
             self.update_or_create_data_in_list_mailchimp_async(
-                cursor, uid, [client_data], list_name, MAILCHIMP_CLIENT
+                cursor, uid, [client_data], list_id, MAILCHIMP_CLIENT
             )
 
     def _get_polissa_data(self, cursor, uid, polissa_id, context=None):

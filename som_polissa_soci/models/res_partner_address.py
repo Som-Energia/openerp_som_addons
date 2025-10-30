@@ -505,16 +505,15 @@ class ResPartnerAddress(osv.osv):
                     )
 
     @job(queue="mailchimp_tasks")
-    def update_or_create_data_in_list_mailchimp_async(self, cursor, uid, clients_data, list_name, context=None):  # noqa: E501
+    def update_or_create_data_in_list_mailchimp_async(self, cursor, uid, clients_data, list_ids, context=None):  # noqa: E501
         self.update_or_create_data_in_list_mailchimp(
-            cursor, uid, clients_data, list_name, context=context)
+            cursor, uid, clients_data, list_ids, context=context)
 
-    def update_or_create_data_in_list_mailchimp(self, cursor, uid, clients_data, list_name, context=None):  # noqa: E501
+    def update_or_create_data_in_list_mailchimp(self, cursor, uid, clients_data, list_ids, context=None):  # noqa: E501
         if not isinstance(clients_data, (list, tuple)):
             clients_data = [clients_data]
         logger = logging.getLogger("openerp.{0}.update_data_in_list_mailchimp".format(__name__))
         MAILCHIMP_CLIENT = self._get_mailchimp_client()
-        list_ids = [self.get_mailchimp_list_id(list_name, MAILCHIMP_CLIENT)]
 
         for client_data in clients_data:
             try:
