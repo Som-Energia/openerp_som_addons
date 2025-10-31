@@ -51,13 +51,20 @@ class SomenergiaSoci(osv.osv):
         else:
             soci_id = self.create(cursor, uid, vals, context=context)
 
-        if soci_id:
-            rpa_obj.unsubscribe_partner_in_customers_no_members_lists(
-                cursor, uid, partner_id, context=context
-            )
-            rpa_obj.subscribe_partner_in_members_lists(
-                cursor, uid, partner_id, context=context
-            )
+        try:
+            if soci_id:
+                rpa_obj.unsubscribe_partner_in_customers_no_members_lists(
+                    cursor, uid, partner_id, context=context
+                )
+                rpa_obj.subscribe_partner_in_members_lists(
+                    cursor, uid, partner_id, context=context
+                )
+        except Exception as e:
+            sentry = self.pool.get('sentry.setup')
+            if sentry:
+                sentry.client.captureException()
+            logger = logging.getLogger("openerp.{0}.create_one_soci".format(__name__))
+            logger.warning("Error al comunicar amb Mailchimp {}".format(e.text))
         return soci_id
 
     def create_socis(self, cr_orig, uid, ids, context=None):

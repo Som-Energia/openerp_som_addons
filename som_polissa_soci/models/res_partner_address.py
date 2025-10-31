@@ -193,23 +193,29 @@ class ResPartnerAddress(osv.osv):
         if not isinstance(ids, (list, tuple)):
             ids = [ids]
 
-        MAILCHIMP_CLIENT = self._get_mailchimp_client()
-        if "email" in vals:
-            for _id in ids:
-                old_email = self.read(cursor, uid, _id, ["email"])["email"]
-                email = vals["email"]
-                if not old_email or old_email == email:
-                    continue
+        try:
+            MAILCHIMP_CLIENT = self._get_mailchimp_client()
+            if "email" in vals:
+                for _id in ids:
+                    old_email = self.read(cursor, uid, _id, ["email"])["email"]
+                    email = vals["email"]
+                    if not old_email or old_email == email:
+                        continue
 
-                if not email:
-                    self.unsubscribe_client_email_in_all_lists_async(
-                        cursor, uid, _id, old_email, MAILCHIMP_CLIENT
-                    )
-                else:
-                    self.update_client_email_in_all_lists_async(
-                        cursor, uid, _id, old_email, email, MAILCHIMP_CLIENT
-                    )
-
+                    if not email:
+                        self.unsubscribe_client_email_in_all_lists_async(
+                            cursor, uid, _id, old_email, MAILCHIMP_CLIENT
+                        )
+                    else:
+                        self.update_client_email_in_all_lists_async(
+                            cursor, uid, _id, old_email, email, MAILCHIMP_CLIENT
+                        )
+        except Exception as e:
+            sentry = self.pool.get('sentry.setup')
+            if sentry:
+                sentry.client.captureException()
+            logger = logging.getLogger("openerp.{0}.res_partner_address.write".format(__name__))
+            logger.warning("Error al comunicar amb Mailchimp {}".format(e.text))
         return super(ResPartnerAddress, self).write(cursor, uid, ids, vals, context=context)
 
     @staticmethod
