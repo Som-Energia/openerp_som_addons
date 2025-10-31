@@ -1,4 +1,5 @@
 # -*- encoding: utf-8 -*-
+import logging
 import traceback
 import sys
 from osv import osv
@@ -233,11 +234,18 @@ class SomLeadWww(osv.osv_memory):
         else:
             lead_o._send_mail_async(cr, uid, lead_id, context=context)
 
-        # Si no és sòcia, subscriu mail a mailchimp com a client sense ser soci
-        partner = lead_o.browse(cr, uid, lead_id).partner_id
-        if not soci_obj.search(cr, uid, [("partner_id", "=", partner.id)]):
-            rpa_obj.subscribe_partner_in_customers_no_members_lists(
-                cr, uid, partner.id, context=context)
+        try:
+            # Si no és sòcia, subscriu mail a mailchimp com a client sense ser soci
+            partner = lead_o.browse(cr, uid, lead_id).partner_id
+            if not soci_obj.search(cr, uid, [("partner_id", "=", partner.id)]):
+                rpa_obj.subscribe_partner_in_customers_no_members_lists(
+                    cr, uid, partner.id, context=context)
+        except Exception as e:
+            sentry = self.pool.get('sentry.setup')
+            if sentry:
+                sentry.client.captureException()
+            logger = logging.getLogger("openerp.{0}.activate_lead".format(__name__))
+            logger.warning("Error al comunicar amb Mailchimp {}".format(e.text))
 
         return True
 

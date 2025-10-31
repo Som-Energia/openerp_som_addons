@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import logging
 from osv import osv
 from datetime import datetime, timedelta
 from tools.translate import _
@@ -110,80 +111,89 @@ class GiscedataSwitchingHelpers(osv.osv):
         m101_obj = self.pool.get("giscedata.switching.m1.01")
         conf_obj = self.pool.get("res.config")
         pol_obj = self.pool.get("giscedata.polissa")
-
-        sw = sw_obj.browse(cursor, uid, sw_id)
-        pas_actual = sw.get_pas()
-        use_new_contract = bool(
-            int(conf_obj.get(cursor, uid, "sw_m1_owner_change_subrogacio_new_contract", "1"))
-        )
-
-        step_name = sw.step_id.name
-        if not sw.finalitzat:
-            info = _(
-                u"[Alta Mailchimp] Com que el cas (M1-%s) no està finalitzat "
-                u"no s'ha donat de alta el nou titular."
-            ) % (step_name)
-            return (_(u"OK"), info)
-
-        if sw.rebuig or step_name == "04":
-            info = _(
-                u"[Alta Mailchimp] Aquest cas (M1-%s) està finalitzat però és un "
-                u"rebuig. No es dona de alta el nou titular."
-            ) % (step_name)
-            return (_(u"OK"), info)
-
-        pas01_info = m101_obj.read(
-            cursor,
-            uid,
-            m101_obj.search(cursor, uid, [("sw_id", "=", sw_id)])[0],
-            ["sollicitudadm", "canvi_titular"],
-        )
-
-        if pas01_info["sollicitudadm"] not in ("S", "A") or pas01_info["canvi_titular"] not in (
-            "S",
-            "T",
-        ):
-            info = _(u"[Alta Mailchimp] Aquest cas (M1-%s) no és d'un canvi de titular.") % (
-                step_name
+        try:
+            sw = sw_obj.browse(cursor, uid, sw_id)
+            pas_actual = sw.get_pas()
+            use_new_contract = bool(
+                int(conf_obj.get(cursor, uid, "sw_m1_owner_change_subrogacio_new_contract", "1"))
             )
-            return (_(u"OK"), info)
-        elif pas01_info["canvi_titular"] == "S" and not use_new_contract:
-            # si es subrogació sense nou contracte, mirem que el titular abans i
-            # després de la data d'activació són diferents
-            model_name = sw.get_pas_model_name()
-            # 'giscedata.switching.m1.02' or 'giscedata.switching.m1.05' expected
-            m10X_obj = self.pool.get(model_name)
 
-            data_activacio = m10X_obj.read(cursor, uid, pas_actual.id, ["data_activacio"])[
-                "data_activacio"
-            ]
-            data_activacio = datetime.strptime(data_activacio, "%Y-%m-%d")
-            data_previa = datetime.strftime(data_activacio - timedelta(days=1), "%Y-%m-%d")
+            step_name = sw.step_id.name
+            if not sw.finalitzat:
+                info = _(
+                    u"[Alta Mailchimp] Com que el cas (M1-%s) no està finalitzat "
+                    u"no s'ha donat de alta el nou titular."
+                ) % (step_name)
+                return (_(u"OK"), info)
 
-            old_titular_id = pol_obj.read(
-                cursor, uid, sw.cups_polissa_id.id, ["titular"], context={"date": data_previa}
-            )["titular"][0]
-            actual_titular_id = sw.titular_polissa.id
+            if sw.rebuig or step_name == "04":
+                info = _(
+                    u"[Alta Mailchimp] Aquest cas (M1-%s) està finalitzat però és un "
+                    u"rebuig. No es dona de alta el nou titular."
+                ) % (step_name)
+                return (_(u"OK"), info)
 
-            if old_titular_id == actual_titular_id:
+            pas01_info = m101_obj.read(
+                cursor,
+                uid,
+                m101_obj.search(cursor, uid, [("sw_id", "=", sw_id)])[0],
+                ["sollicitudadm", "canvi_titular"],
+            )
+
+            if pas01_info["sollicitudadm"] not in ("S", "A") or pas01_info["canvi_titular"] not in (
+                "S",
+                "T",
+            ):
+                info = _(u"[Alta Mailchimp] Aquest cas (M1-%s) no és d'un canvi de titular.") % (
+                    step_name
+                )
+                return (_(u"OK"), info)
+            elif pas01_info["canvi_titular"] == "S" and not use_new_contract:
+                # si es subrogació sense nou contracte, mirem que el titular abans i
+                # després de la data d'activació són diferents
+                model_name = sw.get_pas_model_name()
+                # 'giscedata.switching.m1.02' or 'giscedata.switching.m1.05' expected
+                m10X_obj = self.pool.get(model_name)
+
+                data_activacio = m10X_obj.read(cursor, uid, pas_actual.id, ["data_activacio"])[
+                    "data_activacio"
+                ]
+                data_activacio = datetime.strptime(data_activacio, "%Y-%m-%d")
+                data_previa = datetime.strftime(data_activacio - timedelta(days=1), "%Y-%m-%d")
+
+                old_titular_id = pol_obj.read(
+                    cursor, uid, sw.cups_polissa_id.id, ["titular"], context={"date": data_previa}
+                )["titular"][0]
+                actual_titular_id = sw.titular_polissa.id
+
+                if old_titular_id == actual_titular_id:
+                    info = _(
+                        u"[Alta Mailchimp] El canvi pel cas (M1-%s) encara no "
+                        u"s'ha activat. No es dona de alta el nou titular."
+                    ) % (step_name)
+                    return (_(u"OK"), info)
+            elif (
+                pas01_info["canvi_titular"] == "T" or use_new_contract
+            ) and not sw.polissa_ref_id.active:
+                # encara no s'ha activat el canvi
                 info = _(
                     u"[Alta Mailchimp] El canvi pel cas (M1-%s) encara no "
                     u"s'ha activat. No es dona de alta el nou titular."
                 ) % (step_name)
                 return (_(u"OK"), info)
-        elif (
-            pas01_info["canvi_titular"] == "T" or use_new_contract
-        ) and not sw.polissa_ref_id.active:
-            # encara no s'ha activat el canvi
-            info = _(
-                u"[Alta Mailchimp] El canvi pel cas (M1-%s) encara no "
-                u"s'ha activat. No es dona de alta el nou titular."
-            ) % (step_name)
-            return (_(u"OK"), info)
-        else:
-            old_titular_id = sw.cups_polissa_id.titular.id
+            else:
+                old_titular_id = sw.cups_polissa_id.titular.id
 
-        return self.subscribe_new_owner(cursor, uid, sw_id, context)
+            res = self.subscribe_new_owner(cursor, uid, sw_id, context)
+        except Exception as e:
+            sentry = self.pool.get('sentry.setup')
+            if sentry:
+                sentry.client.captureException()
+            logger = logging.getLogger("openerp.{0}.ct_alta_mailchimp".format(__name__))
+            logger.warning("Error al comunicar amb Mailchimp {}".format(e.text))
+            res = (_(u"ERROR"), _(u"S'ha produït un error desconegut donant d'alta el nou titular a Mailchimp."))  # noqa: E501
+        finally:
+            return res
 
     def cn06_bn05_baixa_mailchimp(self, cursor, uid, sw_id, context=None):
         sw_obj = self.pool.get("giscedata.switching")
@@ -228,15 +238,21 @@ class GiscedataSwitchingHelpers(osv.osv):
             )
 
             return "OK", info
+        try:
+            partner_obj = self.pool.get("res.partner.address")
+            partner_obj.unsubscribe_partner_in_customers_no_members_lists(cursor, uid, titular_id)
 
-        partner_obj = self.pool.get("res.partner.address")
-        partner_obj.unsubscribe_partner_in_customers_no_members_lists(cursor, uid, titular_id)
+            info = _(
+                u"[Baixa Mailchimp] S'ha iniciat el procés de baixa per l'antic titular (ID %d)"
+            ) % (titular_id)
 
-        info = _(
-            u"[Baixa Mailchimp] S'ha iniciat el procés de baixa per l'antic titular (ID %d)"
-        ) % (titular_id)
-
-        return "OK", info
+            return "OK", info
+        except Exception as e:
+            sentry = self.pool.get('sentry.setup')
+            if sentry:
+                sentry.client.captureException()
+            logger = logging.getLogger("openerp.{0}._check_and_archive_old_owner".format(__name__))
+            logger.warning("Error al comunicar amb Mailchimp {}".format(e.text))
 
     def subscribe_new_owner(self, cursor, uid, sw_id, context=None):
         sw_obj = self.pool.get("giscedata.switching")
