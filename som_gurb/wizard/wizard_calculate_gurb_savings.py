@@ -196,8 +196,9 @@ class WizardCalculateGurbSavings(osv.osv_memory):
             total_energia = {'P1': 0, 'P2': 0, 'P3': 0, 'P4': 0, 'P5': 0, 'P6': 0}
             price_energia = {'P1': 0, 'P2': 0, 'P3': 0, 'P4': 0, 'P5': 0, 'P6': 0}
             for linia_energia in linies_energia:
-                total_energia[linia_energia.name] = linia_energia.quantity
-                price_energia[linia_energia.name] = linia_energia.price_unit
+                if linia_energia.name in total_energia.keys():
+                    total_energia[linia_energia.name] = linia_energia.quantity
+                    price_energia[linia_energia.name] = linia_energia.price_unit
             energia_kwh = sum(total_energia.values())
 
             profit_fact = 0
