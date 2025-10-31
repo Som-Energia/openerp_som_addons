@@ -208,9 +208,10 @@ class WizardCalculateGurbSavings(osv.osv_memory):
             total_generacio = {'P1': 0, 'P2': 0, 'P3': 0, 'P4': 0, 'P5': 0, 'P6': 0}
             price_generacio = {'P1': 0, 'P2': 0, 'P3': 0, 'P4': 0, 'P5': 0, 'P6': 0}
             for linia_generacio in linies_generacio:
-                generacio_kwh += linia_generacio.quantity
-                total_generacio[linia_generacio.name] += linia_generacio.quantity
-                price_generacio[linia_generacio.name] += linia_generacio.price_unit
+                if linia_generacio.name in total_generacio.keys():
+                    generacio_kwh += linia_generacio.quantity
+                    total_generacio[linia_generacio.name] += linia_generacio.quantity
+                    price_generacio[linia_generacio.name] += linia_generacio.price_unit
             generacio_fact = 0
             for k in total_generacio:
                 generacio_fact += total_generacio[k] * price_generacio[k]
@@ -219,8 +220,7 @@ class WizardCalculateGurbSavings(osv.osv_memory):
             for linia_gurb in linies_gurb:
                 cost_gurb += linia_gurb.price_subtotal
 
-            if linies_gurb:
-                profit_untaxed += (profit_fact + abs(generacio_fact) - cost_gurb)
+            profit_untaxed += (profit_fact + abs(generacio_fact) - cost_gurb)
 
             profit_fact_taxed = 0
             if linies_energia:
@@ -235,12 +235,13 @@ class WizardCalculateGurbSavings(osv.osv_memory):
                     cursor, uid, generacio_prod_id, generacio_fact, False, context=context,
                 ))
 
+            cost_gurb_taxed = 0
             if linies_gurb:
                 cost_gurb_taxed = prod_obj.add_taxes(
                     cursor, uid, linies_gurb[0].product_id.id, cost_gurb, False, context=context
                 )
 
-            if linies_energia and linies_gurb:
+            if linies_energia:
                 profit += (profit_fact_taxed - cost_gurb_taxed)
 
             kwh_produced += generacio_kwh
