@@ -512,6 +512,8 @@ class ResPartnerAddress(osv.osv):
     def update_or_create_data_in_list_mailchimp(self, cursor, uid, clients_data, list_names, context=None):  # noqa: E501
         if not isinstance(clients_data, (list, tuple)):
             clients_data = [clients_data]
+        if not isinstance(list_names, (list, tuple)):
+            list_names = [list_names]
         logger = logging.getLogger("openerp.{0}.update_data_in_list_mailchimp".format(__name__))
         MAILCHIMP_CLIENT = self._get_mailchimp_client()
         list_ids = [self.get_mailchimp_list_id(name, MAILCHIMP_CLIENT) for name in list_names]
