@@ -49,7 +49,7 @@ class GiscedataPolissa(osv.osv):
 
         return _id
 
-    def write(self, cr, uid, ids, vals, context=None):
+    def write(self, cr, uid, ids, vals, context=None):  # noqa: C901
         if context is None:
             context = {}
         if not isinstance(ids, list):
@@ -60,6 +60,7 @@ class GiscedataPolissa(osv.osv):
         cat_ss_id = imd_obj.get_object_reference(
             cr, uid, "som_polissa_soci", "origen_ct_sense_socia_category"
         )[1]
+        logger = logging.getLogger("openerp.{0}.giscedata_polissa.write".format(__name__))
 
         if 'soci' in vals:
             soci_obj = self.pool.get('somenergia.soci')
@@ -102,12 +103,18 @@ class GiscedataPolissa(osv.osv):
                         self.create_history_line(
                             cr, uid, [_id], context=context
                         )
-                category_ids = self.read(cr, uid, _id, ['category_id'])['category_id']
-                if cat_ss_id in category_ids and not self._es_socia_ct_ss(
-                        cr, uid, [_id], soci_nif, context=context):
-                    partner_address_obj.update_polissa_titular_in_ctss_lists(
-                        cr, uid, [_id], context=context,
-                    )
+                try:
+                    category_ids = self.read(cr, uid, _id, ['category_id'])['category_id']
+                    if cat_ss_id in category_ids and not self._es_socia_ct_ss(
+                            cr, uid, [_id], soci_nif, context=context):
+                        partner_address_obj.update_polissa_titular_in_ctss_lists(
+                            cr, uid, [_id], context=context,
+                        )
+                except Exception as e:
+                    sentry = self.pool.get('sentry.setup')
+                    if sentry:
+                        sentry.client.captureException()
+                    logger.warning("Error al comunicar amb Mailchimp {}".format(e.text))
 
         res = super(GiscedataPolissa, self).write(cr, uid, ids, vals, context=context)
 
@@ -128,11 +135,16 @@ class GiscedataPolissa(osv.osv):
                     break
 
             if is_adding_cat_ss:
-                for polissa in self.browse(cr, uid, ids, context=context):
-                    partner_address_obj.subscribe_polissa_titular_in_ctss_lists(
-                        cr, uid, [polissa.id], context=context,
-                    )
-
+                try:
+                    for polissa in self.browse(cr, uid, ids, context=context):
+                        partner_address_obj.subscribe_polissa_titular_in_ctss_lists(
+                            cr, uid, [polissa.id], context=context,
+                        )
+                except Exception as e:
+                    sentry = self.pool.get('sentry.setup')
+                    if sentry:
+                        sentry.client.captureException()
+                    logger.warning("Error al comunicar amb Mailchimp {}".format(e.text))
         return res
 
     def _es_socia_ct_ss(self, cr, uid, ids, socia_nif, context=None):
