@@ -444,18 +444,13 @@ class GiscedataFacturacioImportacioLinia(osv.osv):
         res = super(GiscedataFacturacioImportacioLinia, self).process_line_sync(
             cursor, uid, line_id, context=context
         )
-        return res
-
-    def process_phase_4_post_hook(self, cursor, uid, line_id, f1_xml, context=None):
-        res = super(GiscedataFacturacioImportacioLinia, self).process_phase_4_post_hook(
-            cursor, uid, line_id, f1_xml, context=context
-        )
+        self.detect_and_tag_non_reinvoicing_f1_R(cursor, uid, line_id, context=context)
         return res
 
     def detect_and_tag_non_reinvoicing_f1_R(self, cursor, uid, line_id, context=None):
         f1n_id = self._find_rectified_by_f1(cursor, uid, line_id, context=context)
         if f1n_id and self._is_non_rectificative_f1R(cursor, uid, line_id, f1n_id, context=context):
-            self._tag_non_rectificative_f1(cursor, uid, line_id, context=context)
+            self._tag_non_rectificative_f1R(cursor, uid, line_id, context=context)
 
     def _find_rectified_by_f1(self, cursor, uid, f1r_id, context=None):
         f1r = self.browse(cursor, uid, f1r_id, context=context)
@@ -528,7 +523,7 @@ class GiscedataFacturacioImportacioLinia(osv.osv):
             # Diferent número de linies
             return False
 
-        to_find = set(fn.linia_ids.id)
+        to_find = set([linia.id for linia in fn.linia_ids])
         for line_r in fr.linia_ids:
             line_n = search_equal_line(line_r, fn.linia_ids, to_find)
             if not line_n:
@@ -571,7 +566,6 @@ class GiscedataFacturacioImportacioLinia(osv.osv):
             new_text = u'{}\n{}'.format(wmsg, user_observations)
         else:
             new_text = wmsg
-
         self.write(cursor, uid, f1r_id, {'user_observations': new_text})
 
     def _get_last_history_line(self, cr, uid, ids, name, arg, context=None):
