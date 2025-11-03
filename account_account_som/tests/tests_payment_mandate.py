@@ -26,6 +26,7 @@ class TestPaymentMandateSom(testing.OOTestCase):
         partner_o = self.model("res.partner")
         partner_o.write(self.cursor, self.uid, partner_id, {'vat': 'ES69324303A'})
         self.partner = partner_o.browse(self.cursor, self.uid, partner_id)
+        self.maxDiff = None
 
     def tearDown(self):
         self.txn.stop()
@@ -77,12 +78,12 @@ class TestPaymentMandateSom(testing.OOTestCase):
         mandate.creditor_id = mandate.creditor_id[1]
         nom_complet = self.partner.name
         self.assertNsEqual(mandate, u"""\
-                creditor_address: CHAUSSEE DE NAMUR 40 1367 GEROMPONT (BELGIUM)
+                creditor_address: CHAUSSEE DE NAMUR 40  1367 GEROMPONT (BELGIUM)
                 creditor_code: CREDITORCODE
                 creditor_id: Tiny sprl
                 date: '{today}'
                 date_end: false
-                debtor_address: 'TANG, 31 HONG KONG STREET 23410 TAIWAN'
+                debtor_address: 'TANG, 31 HONG KONG STREET  23410 TAIWAN'
                 debtor_country: 'TAIWAN'
                 debtor_iban: {iban}
                 debtor_iban_print: {format_iban}
