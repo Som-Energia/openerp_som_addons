@@ -1,2 +1,4 @@
-import res_partner
-import poweremail_template
+# -*- coding: utf-8 -*-
+from __future__ import absolute_import
+from . import res_partner
+from . import poweremail_template

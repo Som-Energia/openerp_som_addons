@@ -1,3 +1,6 @@
+# -*- coding: utf-8 -*-
+from __future__ import absolute_import
+
 import som_autoreclama_state_workflow
 import som_autoreclama_state
 import som_autoreclama_state_condition
