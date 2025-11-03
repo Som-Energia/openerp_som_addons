@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+from __future__ import absolute_import
 from tests_polissa import *
 from tests_factura import *
 from tests_indexada_helpers import *

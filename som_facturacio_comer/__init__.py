@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+from __future__ import absolute_import
 import giscedata_facturacio
 import giscedata_facturacio_validation
 import giscedata_facturacio_contracte_lot

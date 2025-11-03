@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from __future__ import absolute_import
 from tests_activaciones import *
 from tests_activacions_m1 import *
 from tests_activacions_cn import *

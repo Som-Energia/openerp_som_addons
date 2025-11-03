@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from __future__ import absolute_import
 import wizard_create_r1
 import wizard_generate_R1_from_F1_erroni
 import wizard_create_r1_from_multiple_contracts

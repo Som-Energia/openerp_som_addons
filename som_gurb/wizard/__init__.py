@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+from __future__ import absolute_import
 import wizard_create_coef_file
 import wizard_gurb_create_new_beta
 import wizard_create_gurb_cups_signature

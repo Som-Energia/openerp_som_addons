@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+from __future__ import absolute_import
 from test_polissa import *
 from test_wizard_gestio_text_to_polissa import *
 from test_import_f1 import *
