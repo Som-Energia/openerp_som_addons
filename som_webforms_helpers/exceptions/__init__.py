@@ -1,3 +1,3 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import
-import som_webforms_exceptions
+from . import som_webforms_exceptions

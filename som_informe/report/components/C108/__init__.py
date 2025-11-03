@@ -1,3 +1,3 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import
-import C108
+from . import C108

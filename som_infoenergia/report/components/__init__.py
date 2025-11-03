@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import
-import first_page
-import header
-import antecedents
-import objecte
-import cond_contr
-import power_prices
-import energy_prices
-import tail_text
-import conclusions
-import main
+from . import first_page
+from . import header
+from . import antecedents
+from . import objecte
+from . import cond_contr
+from . import power_prices
+from . import energy_prices
+from . import tail_text
+from . import conclusions
+from . import main

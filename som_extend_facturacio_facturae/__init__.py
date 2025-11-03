@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import
-import giscedata_facturacio
-import wizard
-import facturae_module
+from . import giscedata_facturacio
+from . import wizard
+from . import facturae_module

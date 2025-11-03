@@ -1,3 +1,3 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import
-import report_backend_som_estalvi
+from . import report_backend_som_estalvi

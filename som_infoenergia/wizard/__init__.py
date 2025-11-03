@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import
-import wizard_download_pdf
-import wizard_download_csv
-import wizard_send_reports
-import wizard_create_enviaments_from_object
-import wizard_multiple_state_change
-import wizard_add_contracts_lot
-import wizard_cancel_from_csv
-import wizard_create_enviaments_from_csv
-import wizard_create_enviaments_from_partner
-import wizard_create_attachments_from_zip
+from . import wizard_download_pdf
+from . import wizard_download_csv
+from . import wizard_send_reports
+from . import wizard_create_enviaments_from_object
+from . import wizard_multiple_state_change
+from . import wizard_add_contracts_lot
+from . import wizard_cancel_from_csv
+from . import wizard_create_enviaments_from_csv
+from . import wizard_create_enviaments_from_partner
+from . import wizard_create_attachments_from_zip

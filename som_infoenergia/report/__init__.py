@@ -1,4 +1,4 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import
-import report_indexed_offer
-import sepa_report
+from . import report_indexed_offer
+from . import sepa_report

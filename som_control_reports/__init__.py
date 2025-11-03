@@ -1,4 +1,4 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import
-import res_company
-import report
+from . import res_company
+from . import report

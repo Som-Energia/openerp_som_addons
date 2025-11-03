@@ -1,4 +1,4 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import
-import report_som_informe
-import components
+from . import report_som_informe
+from . import components
