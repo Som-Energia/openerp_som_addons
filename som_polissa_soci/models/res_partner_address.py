@@ -314,7 +314,7 @@ class ResPartnerAddress(osv.osv):
             "status": "subscribed",
             "merge_fields": {
                 FIELDS_SOCIS["Cognoms_Nom"]: partner_fields["name"],
-                FIELDS_SOCIS["Idioma"]: partner_fields["lang"],
+                FIELDS_SOCIS["Idioma"]: partner_fields["lang"] or '',
                 FIELDS_SOCIS["E-mail"]: partner_data["email"],
                 FIELDS_SOCIS["CodiPostal"]: partner_data["zip"] or '',
                 FIELDS_SOCIS["NIF"]: partner_fields["vat"],
