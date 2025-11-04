@@ -48,21 +48,23 @@ class TestNonRectificativeF1Tag(TestSwitchingImport):
         if not lines:
             return f_id
 
-        f_data = self.f1f_obj.browse(self.cursor, self.uid, f_id)
         for line in lines:
-            line_data = {
-                'factura_id': f_data.factura_id.id,
-                'account_id': f_data.account_id.id,
-                'quantity': line.get('quantity', 1),
-                'tipus': line.get('tipus', 'energia'),
-                'name': line.get('name', 'P1'),
-                'price_unit_multi': line.get('price_unit_multi', 1),
-                'uos_id': line.get('uos', 1),
-                'product_id': line.get('product', 1),
-            }
-            self.l_obj.create(self.cursor, self.uid, line_data)
-
+            self.create_dummy_F1_invoice_line(f_id, line)
         return f_id
+
+    def create_dummy_F1_invoice_line(self, f_id, line):
+        f_data = self.f1f_obj.browse(self.cursor, self.uid, f_id)
+        line_data = {
+            'factura_id': f_data.factura_id.id,
+            'account_id': f_data.account_id.id,
+            'quantity': line.get('quantity', 1),
+            'tipus': line.get('tipus', 'energia'),
+            'name': line.get('name', 'P1'),
+            'price_unit_multi': line.get('price_unit_multi', 1),
+            'uos_id': line.get('uos', 1),
+            'product_id': line.get('product', 1),
+        }
+        return self.l_obj.create(self.cursor, self.uid, line_data)
 
     def test__non_rectificative_f1R__not_F1_R(self):
         f1_id = self.get_oref("giscedata_facturacio_switching", "line_02_f1_import_01")
@@ -221,3 +223,228 @@ class TestNonRectificativeF1Tag(TestSwitchingImport):
         self.create_dummy_F1_invoice(f1N.id, '2022-01-01', '2022-01-31', [{}])
         match = self.f1_obj._is_non_rectificative_f1R(self.cursor, self.uid, f1R_id, f1N_id)
         self.assertTrue(match)
+
+    def test__non_rectificative_f1R__different_lines(self):
+        f1N_id = self.get_oref("giscedata_facturacio_switching", "line_02_f1_import_01")
+        f1R_id = self.get_oref("giscedata_facturacio_switching", "line_03_f1_import_01")
+        f1N = self.f1_obj.browse(self.cursor, self.uid, f1N_id)
+        f1R = self.f1_obj.browse(self.cursor, self.uid, f1R_id)
+        txt = '12345N54321'
+        self.f1_obj.write(
+            self.cursor, self.uid, f1R.id,
+            {
+                'type_factura': 'R',
+                'factura_rectificada': txt,
+                'cups_id': f1N.cups_id.id,
+            }
+        )
+        self.f1_obj.write(
+            self.cursor, self.uid, f1N.id,
+            {
+                'invoice_number_text': txt,
+            }
+        )
+
+        f1R_inv_id = self.create_dummy_F1_invoice(f1R.id, '2022-01-01', '2022-01-31',
+                                                  [{
+                                                      'tipus': 'energia',
+                                                      'name': 'P1',
+                                                      'price_unit_multi': 3.1415269,
+                                                  }]
+                                                  )
+        f1N_inv_id = self.create_dummy_F1_invoice(f1N.id, '2022-01-01', '2022-01-31',
+                                                  [{
+                                                      'tipus': 'potencia',
+                                                      'name': 'P2',
+                                                      'price_unit_multi': 2.7182814,
+                                                  }]
+                                                  )
+        match = self.f1_obj._is_non_rectificative_f1R(self.cursor, self.uid, f1R_id, f1N_id)
+        self.assertFalse(match)
+
+        self.create_dummy_F1_invoice_line(f1R_inv_id,
+                                          {
+                                              'tipus': 'potencia',
+                                              'name': 'P2',
+                                              'price_unit_multi': 2.7182814,
+                                          }
+                                          )
+        self.create_dummy_F1_invoice_line(f1N_inv_id,
+                                          {
+                                              'tipus': 'energia',
+                                              'name': 'P1',
+                                              'price_unit_multi': 3.1415269,
+                                          }
+                                          )
+        match = self.f1_obj._is_non_rectificative_f1R(self.cursor, self.uid, f1R_id, f1N_id)
+        self.assertTrue(match)
+
+        self.create_dummy_F1_invoice_line(f1R_inv_id,
+                                          {
+                                              'tipus': 'altres',
+                                              'name': 'Lloguer equip de mesura',
+                                              'price_unit_multi': 123,
+                                          }
+                                          )
+        self.create_dummy_F1_invoice_line(f1N_inv_id,
+                                          {
+                                              'tipus': 'altres',
+                                              'name': 'Alquiler equipo de medida',
+                                              'price_unit_multi': 123,
+                                          }
+                                          )
+        match = self.f1_obj._is_non_rectificative_f1R(self.cursor, self.uid, f1R_id, f1N_id)
+        self.assertTrue(match)
+
+        self.create_dummy_F1_invoice_line(f1R_inv_id,
+                                          {
+                                              'tipus': 'altres',
+                                              'name': 'concepte 1',
+                                              'price_unit_multi': 123,
+                                          }
+                                          )
+        self.create_dummy_F1_invoice_line(f1N_inv_id,
+                                          {
+                                              'tipus': 'altres',
+                                              'name': 'concepte 1',
+                                              'price_unit_multi': 321,
+                                          }
+                                          )
+        match = self.f1_obj._is_non_rectificative_f1R(self.cursor, self.uid, f1R_id, f1N_id)
+        self.assertFalse(match)
+
+    def test__detect_and_tag_non_reinvoicing_f1_R__no_text(self):
+        f1N_id = self.get_oref("giscedata_facturacio_switching", "line_02_f1_import_01")
+        f1R_id = self.get_oref("giscedata_facturacio_switching", "line_03_f1_import_01")
+        f1N = self.f1_obj.browse(self.cursor, self.uid, f1N_id)
+        f1R = self.f1_obj.browse(self.cursor, self.uid, f1R_id)
+        txt = '12345N54321'
+        self.f1_obj.write(
+            self.cursor, self.uid, f1R.id,
+            {
+                'type_factura': 'R',
+                'factura_rectificada': txt,
+                'cups_id': f1N.cups_id.id,
+                'user_observations': 'Lorem ipsum dolor sit amet, consectetur adipiscing elit,'
+                                     + ' sed do eiusmod tempor incididunt ut',
+            }
+        )
+        self.f1_obj.write(
+            self.cursor, self.uid, f1N.id,
+            {
+                'invoice_number_text': txt,
+            }
+        )
+
+        self.create_dummy_F1_invoice(f1R.id, '2022-01-01', '2022-01-31',
+                                     [{
+                                         'tipus': 'energia',
+                                         'name': 'P1',
+                                         'price_unit_multi': 3.1415269,
+                                     }, {
+                                         'tipus': 'potencia',
+                                         'name': 'P2',
+                                         'price_unit_multi': 2.7182814,
+                                     }, {
+                                         'tipus': 'altres',
+                                         'name': 'Lloguer equip de mesura',
+                                         'price_unit_multi': 123,
+                                     }, {
+                                         'tipus': 'altres',
+                                         'name': 'concepte 1',
+                                         'price_unit_multi': 123,
+                                     }]
+                                     )
+        self.create_dummy_F1_invoice(f1N.id, '2022-02-01', '2022-02-28',
+                                     [{
+                                         'tipus': 'potencia',
+                                         'name': 'P2',
+                                         'price_unit_multi': 2.7182814,
+                                     }, {
+                                         'tipus': 'energia',
+                                         'name': 'P1',
+                                         'price_unit_multi': 3.1415269,
+                                     }, {
+                                         'tipus': 'altres',
+                                         'name': 'Alquiler equipo de medida',
+                                         'price_unit_multi': 123,
+                                     }, {
+                                         'tipus': 'altres',
+                                         'name': 'concepte 1',
+                                         'price_unit_multi': 123,
+                                     }]
+                                     )
+
+        self.f1_obj.detect_and_tag_non_reinvoicing_f1_R(self.cursor, self.uid, f1R_id)
+
+        f1R = self.f1_obj.browse(self.cursor, self.uid, f1R_id)
+        msg = u"Script: No refacturar aquest F1, diferència 0 amb l'F1 que rectifica"
+        self.assertTrue(msg not in f1R.user_observations)
+
+    def test__detect_and_tag_non_reinvoicing_f1_R__yes_text(self):
+        f1N_id = self.get_oref("giscedata_facturacio_switching", "line_02_f1_import_01")
+        f1R_id = self.get_oref("giscedata_facturacio_switching", "line_03_f1_import_01")
+        f1N = self.f1_obj.browse(self.cursor, self.uid, f1N_id)
+        f1R = self.f1_obj.browse(self.cursor, self.uid, f1R_id)
+        txt = '12345N54321'
+        self.f1_obj.write(
+            self.cursor, self.uid, f1R.id,
+            {
+                'type_factura': 'R',
+                'factura_rectificada': txt,
+                'cups_id': f1N.cups_id.id,
+                'user_observations': 'Lorem ipsum dolor sit amet, consectetur adipiscing elit,'
+                                     + ' sed do eiusmod tempor incididunt ut',
+            }
+        )
+        self.f1_obj.write(
+            self.cursor, self.uid, f1N.id,
+            {
+                'invoice_number_text': txt,
+            }
+        )
+
+        self.create_dummy_F1_invoice(f1R.id, '2022-01-01', '2022-01-31',
+                                     [{
+                                         'tipus': 'energia',
+                                         'name': 'P1',
+                                         'price_unit_multi': 3.1415269,
+                                     }, {
+                                         'tipus': 'potencia',
+                                         'name': 'P2',
+                                         'price_unit_multi': 2.7182814,
+                                     }, {
+                                         'tipus': 'altres',
+                                         'name': 'Lloguer equip de mesura',
+                                         'price_unit_multi': 123,
+                                     }, {
+                                         'tipus': 'altres',
+                                         'name': 'concepte 1',
+                                         'price_unit_multi': 123,
+                                     }]
+                                     )
+        self.create_dummy_F1_invoice(f1N.id, '2022-01-01', '2022-01-31',
+                                     [{
+                                         'tipus': 'potencia',
+                                         'name': 'P2',
+                                         'price_unit_multi': 2.7182814,
+                                     }, {
+                                         'tipus': 'energia',
+                                         'name': 'P1',
+                                         'price_unit_multi': 3.1415269,
+                                     }, {
+                                         'tipus': 'altres',
+                                         'name': 'Alquiler equipo de medida',
+                                         'price_unit_multi': 123,
+                                     }, {
+                                         'tipus': 'altres',
+                                         'name': 'concepte 1',
+                                         'price_unit_multi': 123,
+                                     }]
+                                     )
+
+        self.f1_obj.detect_and_tag_non_reinvoicing_f1_R(self.cursor, self.uid, f1R_id)
+
+        f1R = self.f1_obj.browse(self.cursor, self.uid, f1R_id)
+        msg = u"Script: No refacturar aquest F1, diferència 0 amb l'F1 que rectifica"
+        self.assertTrue(msg in f1R.user_observations)
