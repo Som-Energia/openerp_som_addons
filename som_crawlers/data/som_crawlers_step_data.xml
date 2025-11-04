@@ -176,6 +176,14 @@
             <field name="params">{}</field>
             <field name="task_id" ref="descargar_serrania"/>
         </record>
+        <!--Iberdrola API-->
+        <record model="som.crawlers.task.step" id="pas_api_descarregar_iberdrola_c2">
+            <field name="name">Descarregar fitxers API</field>
+            <field name="sequence">1</field>
+            <field name="function">download_api_files</field>
+            <field name="params">{"process": "c2"}</field>
+            <field name="task_id" ref="descargar_iberdrola_c2"/>
+        </record>
         <!--Iberdrola-->
         <record model="som.crawlers.task.step" id="pas_descarregar_iberdrola_a1">
             <field name="name">Descarregar fitxers</field>
