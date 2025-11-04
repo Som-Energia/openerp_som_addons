@@ -1,0 +1,84 @@
+<?xml version="1.0"?>
+<openerp>
+    <data noupdate="0">
+        <record model="ir.ui.view" id="view_gkwh_member_info_form">
+            <field name="name">generationkwh.member.info.form</field>
+            <field name="model">somenergia.soci</field>
+            <field name="inherit_id" ref="som_polissa_soci.view_somenergia_soci_form"/>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <page string="Soci" position="after">
+                    <page string="Generation kWh" attrs="{'invisible': [('has_gkwh','=', 0)]}">
+                        <field name="has_gkwh" select="1"/>
+                        <separator string="Resum Generation kWh" colspan="4"/>
+                        <field name="active_shares"/>
+                        <field name="estimated_anual_kwh"/>
+                        <separator string="Assignacions" colspan="4"/>
+                        <field name="assignment_ids" colspan="4" nolabel="1" height="100"
+                               context="{'active_test': False, 'member_id':active_id}"/>
+                        <field name="gkwh_assignment_notified" readonly="1" select="2"/>
+                        <separator string="Inversions" colspan="4"/>
+                        <field name="investment_ids" colspan="4" nolabel="1" height="100"/>
+                        <separator string="Historial Generation kWh" colspan="4"/>
+                        <field colspan="4" name="gkwh_comments" nolabel="1"/>
+                    </page>
+                </page>
+            </field>
+        </record>
+        <record model="ir.ui.view" id="view_gkwh_member_info_tree">
+            <field name="name">generationkwh.member.info.tree</field>
+            <field name="model">somenergia.soci</field>
+            <field name="inherit_id" ref="som_polissa_soci.view_somenergia_soci_tree"/>
+            <field name="type">tree</field>
+            <field name="arch" type="xml">
+                <field name="partner_id" position="after">
+                    <field name="has_gkwh"/>
+                    <field name="gkwh_assignment_notified" select="2"/>
+                </field>
+            </field>
+        </record>
+        <record id="action_gkwh_member_info_tree" model="ir.actions.act_window">
+            <field name="name">Socis amb Generation kWh</field>
+            <field name="res_model">somenergia.soci</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="view_id" ref="view_gkwh_member_info_tree"/>
+            <field name="domain">[('has_gkwh', '=', 1)]</field>
+        </record>
+        <menuitem action="action_gkwh_member_info_tree" id="menu_gkwh_member_info_tree" parent="menu_gkwh_base"/>
+        <!-- Share to kWh -->
+        <record model="ir.ui.view" id="view_generationkwh_kwh_per_share_tree">
+            <field name="name">generationkwh.kwh.per.share.tree</field>
+            <field name="model">generationkwh.kwh.per.share</field>
+            <field name="type">tree</field>
+            <field name="arch" type="xml">
+                <tree string="kWh per Acció">
+                    <field name="version_start_date" select="1"/>
+                    <field name="kwh"/>
+                </tree>
+            </field>
+        </record>
+        <record id="action_generationkwh_kwh_per_share_tree" model="ir.actions.act_window">
+            <field name="name">kWh per Acció</field>
+            <field name="res_model">generationkwh.kwh.per.share</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="view_id" ref="view_generationkwh_kwh_per_share_tree"/>
+        </record>
+        <menuitem action="action_generationkwh_kwh_per_share_tree" id="menu_generationkwh_kwh_per_share_tree" parent="menu_gkwh_base"/>
+
+        <record id="view_soci_form_account_fields_bank" model="ir.ui.view">
+            <field name="name">somenergia.soci.som.form.bank.interessos</field>
+            <field name="model">somenergia.soci</field>
+            <field name="type">form</field>
+            <field name="priority">90</field>
+            <field name="inherit_id" ref="som_inversions.view_partner_form_account_fields_bank"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='bank_inversions']"
+                       position="replace">
+                        <field name="bank_inversions" domain="[('partner_id', '=', partner_id)]"/>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</openerp>
