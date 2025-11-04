@@ -2,9 +2,9 @@
 from osv import osv
 import logging
 
-from decorators import www_entry_point
+from .decorators import www_entry_point
 
-from exceptions import (
+from .exceptions import (
     ContractWithoutInstallation,
     ContractNotExists,
     UnauthorizedAccess,

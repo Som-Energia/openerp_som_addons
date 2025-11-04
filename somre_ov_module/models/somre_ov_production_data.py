@@ -2,8 +2,8 @@
 from osv import osv
 
 
-from decorators import www_entry_point
-from exceptions import (
+from .decorators import www_entry_point
+from .exceptions import (
     NoSuchUser,
     UnauthorizedAccess,
     ContractNotExists,

@@ -26,6 +26,7 @@ class TestPaymentMandateSom(testing.OOTestCase):
         partner_o = self.model("res.partner")
         partner_o.write(self.cursor, self.uid, partner_id, {'vat': 'ES69324303A'})
         self.partner = partner_o.browse(self.cursor, self.uid, partner_id)
+        self.maxDiff = None
 
     def tearDown(self):
         self.txn.stop()

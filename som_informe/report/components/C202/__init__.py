@@ -1,1 +1,3 @@
-import C202
+# -*- coding: utf-8 -*-
+from __future__ import absolute_import
+from . import C202

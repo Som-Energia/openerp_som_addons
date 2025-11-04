@@ -10,8 +10,8 @@ try:
 except ImportError:
     import StringIO
 
-from decorators import www_entry_point
-from exceptions import NoSuchUser, NoSuchInvoice, UnauthorizedAccess
+from .decorators import www_entry_point
+from .exceptions import NoSuchUser, NoSuchInvoice, UnauthorizedAccess
 
 
 class SomreOvInvoices(osv.osv_memory):
