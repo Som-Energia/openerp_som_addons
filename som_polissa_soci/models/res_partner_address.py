@@ -314,14 +314,11 @@ class ResPartnerAddress(osv.osv):
             "status": "subscribed",
             "merge_fields": {
                 FIELDS_SOCIS["Cognoms_Nom"]: partner_fields["name"],
-                FIELDS_SOCIS["Idioma"]: partner_fields["lang"],
+                FIELDS_SOCIS["Idioma"]: partner_fields["lang"] or '',
                 FIELDS_SOCIS["E-mail"]: partner_data["email"],
-                FIELDS_SOCIS["CodiPostal"]: partner_data["zip"],
+                FIELDS_SOCIS["CodiPostal"]: partner_data["zip"] or '',
                 FIELDS_SOCIS["NIF"]: partner_fields["vat"],
                 FIELDS_SOCIS["NumSoci"]: partner_fields["ref"],
-                FIELDS_SOCIS["Telefon"]: partner_data["phone"]
-                if partner_data["phone"]
-                else partner_data["mobile"],
                 # "domestic", "empresa", blanc (no té contractes)
                 FIELDS_SOCIS["DomesticEmpresa"]: soci_data['domestic_empresa'],
                 # "contracte_actiu", "contracte_esborrany", "sense_contracte"
@@ -334,6 +331,12 @@ class ResPartnerAddress(osv.osv):
                 FIELDS_SOCIS["ccvv"]: soci_data['ccvv'],  # "CCVV","No CCVV"
             },
         }
+        if partner_data["phone"]:
+            mailchimp_member["merge_fields"][FIELDS_SOCIS["Telefon"]] = partner_data["phone"]
+        elif partner_data["mobile"]:
+            mailchimp_member["merge_fields"][FIELDS_SOCIS["Telefon"]] = partner_data["mobile"]
+        else:
+            mailchimp_member["merge_fields"][FIELDS_SOCIS["Telefon"]] = ''
 
         if partner_data["id_municipi"]:
             municipi_data = municipi_obj.browse(cursor, uid, partner_data["id_municipi"][0])
