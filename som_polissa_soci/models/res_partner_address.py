@@ -444,6 +444,13 @@ class ResPartnerAddress(osv.osv):
                         "Error de l'API: {}".format(client_data["email_address"], e.text)
                     )
                     self.subscribe_partner_in_members_lists(cursor, uid, partner_ids, context)
+                elif (e.status_code == 400
+                      and ast.literal_eval(e.text)['title'] == 'Member In Compliance State'):
+                    logger.warning(
+                        "L'API no ha permès actualitzar l'email {}. "
+                        "Error comú quan el mail està en estat de compliment: "
+                        "Error de l'API: {}".format(client_data["email_address"], e.text)
+                    )
                 else:
                     raise osv.except_osv(
                         _("Error"),
