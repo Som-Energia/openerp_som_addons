@@ -729,7 +729,7 @@ class GenerationkwhInvestment(osv.osv):
 
     def amortize(self, cursor, uid, current_date, ids=None, context=None):
         User = self.pool.get('res.users')
-        Soci = self.pool.get('somenergia.soci')
+        Emission = self.pool.get('generationkwh.emission')
         username = User.read(cursor, uid, uid, ['name'])['name']
         amortization_ids = []
         amortization_errors = []
@@ -742,6 +742,7 @@ class GenerationkwhInvestment(osv.osv):
             'log',
             'actions_log',
             'member_id',
+            'emission_id',
             ])
         for inv in investments:
             investment_id = inv['id']
@@ -787,10 +788,14 @@ class GenerationkwhInvestment(osv.osv):
 
                 self.open_invoices(cursor, uid, [amortization_id])
 
-                payment_mode_name = gkwh.amortizationPaymentMode
+                emission = Emission.browse(cursor, uid, inv['emission_id'][0])
                 if to_be_amortized < irpf_amount:
                     payment_mode_name = gkwh.amortizationReceivablePaymentMode
-
+                else:
+                    if emission.amortization_payment_mode_id:
+                        payment_mode_name = emission.amortization_payment_mode_id.name
+                    else:
+                        payment_mode_name = gkwh.amortizationPaymentMode
                 self.invoices_to_payment_order(cursor, uid,
                     [amortization_id], payment_mode_name)
                 self.send_mail(cursor, uid, amortization_id,
@@ -1544,28 +1549,30 @@ class GenerationkwhInvestment(osv.osv):
         Called from the investment_payment_wizard.
         """
         Invoice = self.pool.get('account.invoice')
+        Emission = self.pool.get('generationkwh.emission')
 
         invoice_ids, errors = self.create_initial_invoices(cursor,uid, investment_ids)
         if invoice_ids:
             self.open_invoices(cursor, uid, invoice_ids)
             InvestmentActions = self.investment_actions(cursor, uid, investment_ids[0])
-            payment_mode = InvestmentActions.get_payment_mode_name(cursor, uid)
-            self.invoices_to_payment_order(cursor, uid,
-                invoice_ids, payment_mode)
-
             investment =  self.browse(cursor, uid, investment_ids[0])
-            emission_id = investment.emission_id.id
             member_id = investment.member_id.id
+            emission = Emission.browse(cursor, uid, investment.emission_id.id)
+            if emission.investment_payment_mode_id:
+                payment_mode_name = emission.investment_payment_mode_id.name
+            else:
+                payment_mode_name = InvestmentActions.get_payment_mode_name(cursor, uid)
+            self.invoices_to_payment_order(cursor, uid, invoice_ids, payment_mode_name)
             for invoice_id in invoice_ids:
                 invoice_data = Invoice.read(cursor, uid, invoice_id, ['origin','partner_id'])
                 investment_ids = self.search(cursor, uid,[
                     ('name','=',invoice_data['origin'])])
                 partner_id = invoice_data['partner_id'][0]
-                total_amount_in_emission = self.get_investments_amount(cursor, uid, member_id, emission_id=emission_id)
+                total_amount_in_emission = self.get_investments_amount(cursor, uid, member_id, emission_id=emission.id)
 
                 mail_context = {}
                 if total_amount_in_emission > gkwh.amountForlegalAtt:
-                    attachment_id = InvestmentActions.get_investment_legal_attachment(cursor, uid, partner_id, emission_id)
+                    attachment_id = InvestmentActions.get_investment_legal_attachment(cursor, uid, partner_id, emission.id)
                     if attachment_id:
                         mail_context.update({'attachment_ids': [(6, 0, [attachment_id])]})
 
