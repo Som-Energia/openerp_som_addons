@@ -177,12 +177,243 @@
             <field name="task_id" ref="descargar_serrania"/>
         </record>
         <!--Iberdrola API-->
-        <record model="som.crawlers.task.step" id="pas_api_descarregar_iberdrola_c2">
-            <field name="name">Descarregar fitxers API</field>
+        <record model="som.crawlers.task.step" id="pas_descarregar_iberdrola_api_a1">
+            <field name="name">Descarregar fitxers</field>
+            <field name="sequence">1</field>
+            <field name="function">download_api_files</field>
+            <field name="params">{"process": "a1"}</field>
+            <field name="task_id" ref="descargar_iberdrola_api_a1"/>
+        </record>
+        <record model="som.crawlers.task.step" id="pas_importar_iberdrola_api_a1">
+            <field name="name">Importar fitxers XML</field>
+            <field name="sequence">2</field>
+            <field name="function">import_xml_files</field>
+            <field name="params">{}</field>
+            <field name="task_id" ref="descargar_iberdrola_api_a1"/>
+        </record>
+        <record model="som.crawlers.task.step" id="pas_descarregar_iberdrola_api_a3">
+            <field name="name">Descarregar fitxers</field>
+            <field name="sequence">1</field>
+            <field name="function">download_api_files</field>
+            <field name="params">{"process": "a3"}</field>
+            <field name="task_id" ref="descargar_iberdrola_api_a3"/>
+        </record>
+        <record model="som.crawlers.task.step" id="pas_importar_iberdrola_api_a3">
+            <field name="name">Importar fitxers XML</field>
+            <field name="sequence">2</field>
+            <field name="function">import_xml_files</field>
+            <field name="params">{}</field>
+            <field name="task_id" ref="descargar_iberdrola_api_a3"/>
+        </record>
+        <record model="som.crawlers.task.step" id="pas_descarregar_iberdrola_api_b1">
+            <field name="name">Descarregar fitxers</field>
+            <field name="sequence">1</field>
+            <field name="function">download_api_files</field>
+            <field name="params">{"process": "b1"}</field>
+            <field name="task_id" ref="descargar_iberdrola_api_b1"/>
+        </record>
+        <record model="som.crawlers.task.step" id="pas_importar_iberdrola_api_b1">
+            <field name="name">Importar fitxers XML</field>
+            <field name="sequence">2</field>
+            <field name="function">import_xml_files</field>
+            <field name="params">{}</field>
+            <field name="task_id" ref="descargar_iberdrola_api_b1"/>
+        </record>
+        <record model="som.crawlers.task.step" id="pas_descarregar_iberdrola_api_b2">
+            <field name="name">Descarregar fitxers</field>
+            <field name="sequence">1</field>
+            <field name="function">download_api_files</field>
+            <field name="params">{"process": "b2"}</field>
+            <field name="task_id" ref="descargar_iberdrola_api_b2"/>
+        </record>
+        <record model="som.crawlers.task.step" id="pas_importar_iberdrola_api_b2">
+            <field name="name">Importar fitxers XML</field>
+            <field name="sequence">2</field>
+            <field name="function">import_xml_files</field>
+            <field name="params">{}</field>
+            <field name="task_id" ref="descargar_iberdrola_api_b2"/>
+        </record>
+        <record model="som.crawlers.task.step" id="pas_descarregar_iberdrola_api_c1">
+            <field name="name">Descarregar fitxers</field>
+            <field name="sequence">1</field>
+            <field name="function">download_api_files</field>
+            <field name="params">{"process": "c1"}</field>
+            <field name="task_id" ref="descargar_iberdrola_api_c1"/>
+        </record>
+        <record model="som.crawlers.task.step" id="pas_importar_iberdrola_api_c1">
+            <field name="name">Importar fitxers XML</field>
+            <field name="sequence">2</field>
+            <field name="function">import_xml_files</field>
+            <field name="params">{}</field>
+            <field name="task_id" ref="descargar_iberdrola_api_c1"/>
+        </record>
+        <record model="som.crawlers.task.step" id="pas_descarregar_iberdrola_api_c2">
+            <field name="name">Descarregar fitxers</field>
             <field name="sequence">1</field>
             <field name="function">download_api_files</field>
             <field name="params">{"process": "c2"}</field>
-            <field name="task_id" ref="descargar_iberdrola_c2"/>
+            <field name="task_id" ref="descargar_iberdrola_api_c2"/>
+        </record>
+        <record model="som.crawlers.task.step" id="pas_importar_iberdrola_api_c2">
+            <field name="name">Importar fitxers XML</field>
+            <field name="sequence">2</field>
+            <field name="function">import_xml_files</field>
+            <field name="params">{}</field>
+            <field name="task_id" ref="descargar_iberdrola_api_c2"/>
+        </record>
+        <record model="som.crawlers.task.step" id="pas_descarregar_iberdrola_api_d1">
+            <field name="name">Descarregar fitxers</field>
+            <field name="sequence">1</field>
+            <field name="function">download_api_files</field>
+            <field name="params">{"process": "d1"}</field>
+            <field name="task_id" ref="descargar_iberdrola_api_d1"/>
+        </record>
+        <record model="som.crawlers.task.step" id="pas_importar_iberdrola_api_d1">
+            <field name="name">Importar fitxers XML</field>
+            <field name="sequence">2</field>
+            <field name="function">import_xml_files</field>
+            <field name="params">{}</field>
+            <field name="task_id" ref="descargar_iberdrola_api_d1"/>
+        </record>
+        <record model="som.crawlers.task.step" id="pas_descarregar_iberdrola_api_e1">
+            <field name="name">Descarregar fitxers</field>
+            <field name="sequence">1</field>
+            <field name="function">download_api_files</field>
+            <field name="params">{"process": "e1"}</field>
+            <field name="task_id" ref="descargar_iberdrola_api_e1"/>
+        </record>
+        <record model="som.crawlers.task.step" id="pas_importar_iberdrola_api_e1">
+            <field name="name">Importar fitxers XML</field>
+            <field name="sequence">2</field>
+            <field name="function">import_xml_files</field>
+            <field name="params">{}</field>
+            <field name="task_id" ref="descargar_iberdrola_api_e1"/>
+        </record>
+        <record model="som.crawlers.task.step" id="pas_descarregar_iberdrola_api_e2">
+            <field name="name">Descarregar fitxers</field>
+            <field name="sequence">1</field>
+            <field name="function">download_api_files</field>
+            <field name="params">{"process": "e2"}</field>
+            <field name="task_id" ref="descargar_iberdrola_api_e2"/>
+        </record>
+        <record model="som.crawlers.task.step" id="pas_importar_iberdrola_api_e2">
+            <field name="name">Importar fitxers XML</field>
+            <field name="sequence">2</field>
+            <field name="function">import_xml_files</field>
+            <field name="params">{}</field>
+            <field name="task_id" ref="descargar_iberdrola_api_e2"/>
+        </record>
+        <record model="som.crawlers.task.step" id="pas_descarregar_iberdrola_api_f1">
+            <field name="name">Descarregar fitxers</field>
+            <field name="sequence">1</field>
+            <field name="function">download_api_files</field>
+            <field name="params">{"process": "f1"}</field>
+            <field name="task_id" ref="descargar_iberdrola_api_f1"/>
+        </record>
+        <record model="som.crawlers.task.step" id="pas_importar_iberdrola_api_f1">
+            <field name="name">Importar fitxers XML</field>
+            <field name="sequence">2</field>
+            <field name="function">import_xml_files</field>
+            <field name="params">{}</field>
+            <field name="task_id" ref="descargar_iberdrola_api_f1"/>
+        </record>
+        <record model="som.crawlers.task.step" id="pas_descarregar_iberdrola_api_j1">
+            <field name="name">Descarregar fitxers</field>
+            <field name="sequence">1</field>
+            <field name="function">download_api_files</field>
+            <field name="params">{"process": "j1"}</field>
+            <field name="task_id" ref="descargar_iberdrola_api_j1"/>
+        </record>
+        <record model="som.crawlers.task.step" id="pas_importar_iberdrola_api_j1">
+            <field name="name">Importar fitxers XML</field>
+            <field name="sequence">2</field>
+            <field name="function">import_xml_files</field>
+            <field name="params">{}</field>
+            <field name="task_id" ref="descargar_iberdrola_api_j1"/>
+        </record>
+        <record model="som.crawlers.task.step" id="pas_descarregar_iberdrola_api_m1">
+            <field name="name">Descarregar fitxers</field>
+            <field name="sequence">1</field>
+            <field name="function">download_api_files</field>
+            <field name="params">{"process": "m1"}</field>
+            <field name="task_id" ref="descargar_iberdrola_api_m1"/>
+        </record>
+        <record model="som.crawlers.task.step" id="pas_importar_iberdrola_api_m1">
+            <field name="name">Importar fitxers XML</field>
+            <field name="sequence">2</field>
+            <field name="function">import_xml_files</field>
+            <field name="params">{}</field>
+            <field name="task_id" ref="descargar_iberdrola_api_m1"/>
+        </record>
+        <record model="som.crawlers.task.step" id="pas_descarregar_iberdrola_api_m2">
+            <field name="name">Descarregar fitxers</field>
+            <field name="sequence">1</field>
+            <field name="function">download_api_files</field>
+            <field name="params">{"process": "m2"}</field>
+            <field name="task_id" ref="descargar_iberdrola_api_m2"/>
+        </record>
+        <record model="som.crawlers.task.step" id="pas_importar_iberdrola_api_m2">
+            <field name="name">Importar fitxers XML</field>
+            <field name="sequence">2</field>
+            <field name="function">import_xml_files</field>
+            <field name="params">{}</field>
+            <field name="task_id" ref="descargar_iberdrola_api_m2"/>
+        </record>
+        <record model="som.crawlers.task.step" id="pas_descarregar_iberdrola_api_p0">
+            <field name="name">Descarregar fitxers</field>
+            <field name="sequence">1</field>
+            <field name="function">download_api_files</field>
+            <field name="params">{"process": "p0"}</field>
+            <field name="task_id" ref="descargar_iberdrola_api_p0"/>
+        </record>
+        <record model="som.crawlers.task.step" id="pas_importar_iberdrola_api_p0">
+            <field name="name">Importar fitxers XML</field>
+            <field name="sequence">2</field>
+            <field name="function">import_xml_files</field>
+            <field name="params">{}</field>
+            <field name="task_id" ref="descargar_iberdrola_api_p0"/>
+        </record>
+        <record model="som.crawlers.task.step" id="pas_descarregar_iberdrola_api_r0">
+            <field name="name">Descarregar fitxers</field>
+            <field name="sequence">1</field>
+            <field name="function">download_api_files</field>
+            <field name="params">{"process": "r0"}</field>
+            <field name="task_id" ref="descargar_iberdrola_api_r0"/>
+        </record>
+        <record model="som.crawlers.task.step" id="pas_importar_iberdrola_api_r0">
+            <field name="name">Importar fitxers XML</field>
+            <field name="sequence">2</field>
+            <field name="function">import_xml_files</field>
+            <field name="params">{}</field>
+            <field name="task_id" ref="descargar_iberdrola_api_r0"/>
+        </record>
+        <record model="som.crawlers.task.step" id="pas_descarregar_iberdrola_api_r1">
+            <field name="name">Descarregar fitxers</field>
+            <field name="sequence">1</field>
+            <field name="function">download_api_files</field>
+            <field name="params">{"process": "r1"}</field>
+            <field name="task_id" ref="descargar_iberdrola_api_r1"/>
+        </record>
+        <record model="som.crawlers.task.step" id="pas_importar_iberdrola_api_r1">
+            <field name="name">Importar fitxers XML</field>
+            <field name="sequence">2</field>
+            <field name="function">import_xml_files</field>
+            <field name="params">{}</field>
+            <field name="task_id" ref="descargar_iberdrola_api_r1"/>
+        </record>
+        <record model="som.crawlers.task.step" id="pas_descarregar_iberdrola_api_t1">
+            <field name="name">Descarregar fitxers</field>
+            <field name="sequence">1</field>
+            <field name="function">download_api_files</field>
+            <field name="params">{"process": "t1"}</field>
+            <field name="task_id" ref="descargar_iberdrola_api_t1"/>
+        </record>
+        <record model="som.crawlers.task.step" id="pas_importar_iberdrola_api_t1">
+            <field name="name">Importar fitxers XML</field>
+            <field name="sequence">2</field>
+            <field name="function">import_xml_files</field>
+            <field name="params">{}</field>
+            <field name="task_id" ref="descargar_iberdrola_api_t1"/>
         </record>
         <!--Iberdrola-->
         <record model="som.crawlers.task.step" id="pas_descarregar_iberdrola_a1">

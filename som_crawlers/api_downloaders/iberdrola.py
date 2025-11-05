@@ -23,9 +23,9 @@ def instance(_config):
 
 class Iberdrola(BaseApiDownloader):
     name = 'iberdrola'
+    process = None
 
-    def start(self, process=None):
-        self.process = process
+    def start(self):
         self.login()
         self.download_files()
 
@@ -62,7 +62,7 @@ class Iberdrola(BaseApiDownloader):
 
         download_body = {
             "loginUsuario": self.config.usuari,
-            "marcados": False,
+            "marcados": True,  # this mark the files as downloaded
             "firmados": False,
             "filtros": {
                 "fechaDesde": inici.strftime("%d/%m/%Y %H:%M:%S"),

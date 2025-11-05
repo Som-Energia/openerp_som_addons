@@ -98,6 +98,14 @@
             <field name="browser">chrome</field>
             <field name="user_ultima_modificacio" ref="base.user_admin"/>
         </record>
+        <record model="som.crawlers.config" id="iberdrola_api_conf">
+            <field name="name">iberdrola</field>
+            <field name="crawler">API</field>
+            <field name="days_of_margin">7</field>
+            <field name="pending_files_only" eval="True"/>
+            <field name="browser">api</field>
+            <field name="user_ultima_modificacio" ref="base.user_admin"/>
+        </record>
         <record model="som.crawlers.config" id="guadassuar_conf">
             <field name="name">guadassuar</field>
             <field name="crawler">Selenium</field>

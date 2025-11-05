@@ -3,9 +3,9 @@ from som_crawlers.api_downloaders.iberdrola import Iberdrola
 
 
 def instance(_config):
-    return Iberdrola_C2(_config)
+    return Iberdrola_R0(_config)
 
 
-class Iberdrola_C2(Iberdrola):
-    name = 'iberdrola_c2'
-    process = 'C2'
+class Iberdrola_R0(Iberdrola):
+    name = 'iberdrola_r0'
+    process = 'R0'

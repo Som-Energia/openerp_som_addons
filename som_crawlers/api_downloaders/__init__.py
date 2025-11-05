@@ -32,7 +32,7 @@ class BaseApiDownloader(object):
         if self.is_production():
             final = datetime.now()
         else:
-            final = datetime(2024, 8, 15)
+            final = datetime(2025, 8, 15)
         inici = final - timedelta(self.config.days_of_margin)
 
         return inici, final
