@@ -113,15 +113,15 @@ class TarifaPoolSOM(TarifaPool):
 
         # Formatarlo obtenint dia-hora i preu
         year = int(check_date[:4])
-        month = int(check_date[4:6])
+        month = int(check_date[5:7])
         comp_start_date = TIMEZONE.normalize(
             TIMEZONE.localize(datetime(year, month, 1) + timedelta(hours=1)))
 
         # APliquem el preu pel dia
         if comp_start_date.year > 2025 or (comp_start_date.year == 2025 and comp_start_date.month >= 10):
-            res = Component(comp_start_date)
-        else:
             res = ComponentQH(comp_start_date)
+        else:
+            res = Component(comp_start_date)
         next(csv_reader)
         for row in csv_reader:
             if row[0] == '*':
