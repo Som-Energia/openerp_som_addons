@@ -64,7 +64,7 @@ class SomenergiaSoci(osv.osv):
             if sentry:
                 sentry.client.captureException()
             logger = logging.getLogger("openerp.{0}.create_one_soci".format(__name__))
-            logger.warning("Error al comunicar amb Mailchimp {}".format(e.text))
+            logger.warning("Error al comunicar amb Mailchimp {}".format(str(e)))
         return soci_id
 
     def create_socis(self, cr_orig, uid, ids, context=None):

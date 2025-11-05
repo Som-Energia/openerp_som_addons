@@ -29,7 +29,7 @@ class GiscedataSwitchingHelpers(osv.osv):
             if sentry:
                 sentry.client.captureException()
             logger = logging.getLogger("openerp.{0}.activa_polissa_from_cn".format(__name__))
-            logger.warning("Error al comunicar amb Mailchimp {}".format(e.text))
+            logger.warning("Error al comunicar amb Mailchimp {}".format(str(e)))
         return res
 
 
