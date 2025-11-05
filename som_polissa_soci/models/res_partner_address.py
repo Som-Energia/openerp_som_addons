@@ -356,6 +356,7 @@ class ResPartnerAddress(osv.osv):
 
         return mailchimp_member
 
+    @job(queue="mailchimp_tasks")
     def subscribe_partner_in_customers_no_members_lists(
             self, cursor, uid, partner_ids, context=None):
         if not isinstance(partner_ids, (list, tuple)):
@@ -368,10 +369,11 @@ class ResPartnerAddress(osv.osv):
 
         for _id in partner_ids:
             client_data = self.fill_merge_fields_clients_from_partner(cursor, uid, _id)
-            self.subscribe_mail_in_list_async(
+            self.subscribe_mail_in_list(
                 cursor, uid, [client_data], list_id, MAILCHIMP_CLIENT
             )
 
+    @job(queue="mailchimp_tasks")
     def subscribe_partner_in_members_lists(self, cursor, uid, partner_ids, context=None):
         if not isinstance(partner_ids, (list, tuple)):
             partner_ids = [partner_ids]
@@ -383,7 +385,7 @@ class ResPartnerAddress(osv.osv):
         for _id in partner_ids:
             client_data = self.fill_merge_fields_soci_from_partner(cursor, uid, _id)
             for list_id in list_ids:
-                self.subscribe_mail_in_list_async(
+                self.subscribe_mail_in_list(
                     cursor, uid, [client_data], list_id, MAILCHIMP_CLIENT
                 )
 
@@ -559,6 +561,7 @@ class ResPartnerAddress(osv.osv):
                 logger.info("Mailchimp: Email actualitzat a la llista {}: {}".format(
                     list_id, client_data["email_address"]))
 
+    @job(queue="mailchimp_tasks")
     def unsubscribe_partner_in_customers_no_members_lists(
             self, cursor, uid, partner_ids, context=None):
         if not isinstance(partner_ids, (list, tuple)):
@@ -570,10 +573,11 @@ class ResPartnerAddress(osv.osv):
         list_id = self.get_mailchimp_list_id(list_name, MAILCHIMP_CLIENT)
 
         for _id in partner_ids:
-            self.archieve_mail_in_list(
+            self.archieve_mail_in_list_sync(
                 cursor, uid, _id, list_id, MAILCHIMP_CLIENT
             )
 
+    @job(queue="mailchimp_tasks")
     def unsubscribe_partner_in_members_lists(self, cursor, uid, partner_ids, context=None):
         if not isinstance(partner_ids, (list, tuple)):
             partner_ids = [partner_ids]
@@ -584,7 +588,7 @@ class ResPartnerAddress(osv.osv):
 
         for _id in partner_ids:
             for list_id in list_ids:
-                self.archieve_mail_in_list(
+                self.archieve_mail_in_list_sync(
                     cursor, uid, _id, list_id, MAILCHIMP_CLIENT
                 )
 
