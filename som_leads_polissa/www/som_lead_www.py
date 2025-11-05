@@ -229,11 +229,6 @@ class SomLeadWww(osv.osv_memory):
         lead_o.historize_msg(cr, uid, [lead_id], msg, context=context)
         lead_o.stage_next(cr, uid, [lead_id], context=context)
 
-        if context.get('sync'):
-            lead_o._send_mail(cr, uid, lead_id, context=context)
-        else:
-            lead_o._send_mail_async(cr, uid, lead_id, context=context)
-
         try:
             # Si no és sòcia, subscriu mail a mailchimp com a client sense ser soci
             partner = lead_o.browse(cr, uid, lead_id).partner_id
@@ -246,6 +241,11 @@ class SomLeadWww(osv.osv_memory):
                 sentry.client.captureException()
             logger = logging.getLogger("openerp.{0}.activate_lead".format(__name__))
             logger.warning("Error al comunicar amb Mailchimp {}".format(e.text))
+
+        if context.get('sync'):
+            lead_o._send_mail(cr, uid, lead_id, context=context)
+        else:
+            lead_o._send_mail_async(cr, uid, lead_id, context=context)
 
         return True
 
