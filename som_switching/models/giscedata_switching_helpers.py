@@ -190,7 +190,7 @@ class GiscedataSwitchingHelpers(osv.osv):
             if sentry:
                 sentry.client.captureException()
             logger = logging.getLogger("openerp.{0}.ct_alta_mailchimp".format(__name__))
-            logger.warning("Error al comunicar amb Mailchimp {}".format(e.text))
+            logger.warning("Error al comunicar amb Mailchimp {}".format(str(e)))
             res = (_(u"ERROR"), _(u"S'ha produït un error desconegut donant d'alta el nou titular a Mailchimp."))  # noqa: E501
         finally:
             return res
@@ -252,7 +252,7 @@ class GiscedataSwitchingHelpers(osv.osv):
             if sentry:
                 sentry.client.captureException()
             logger = logging.getLogger("openerp.{0}._check_and_archive_old_owner".format(__name__))
-            logger.warning("Error al comunicar amb Mailchimp {}".format(e.text))
+            logger.warning("Error al comunicar amb Mailchimp {}".format(str(e)))
 
     def subscribe_new_owner(self, cursor, uid, sw_id, context=None):
         sw_obj = self.pool.get("giscedata.switching")

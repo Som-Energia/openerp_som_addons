@@ -240,7 +240,7 @@ class SomLeadWww(osv.osv_memory):
             if sentry:
                 sentry.client.captureException()
             logger = logging.getLogger("openerp.{0}.activate_lead".format(__name__))
-            logger.warning("Error al comunicar amb Mailchimp {}".format(e.text))
+            logger.warning("Error al comunicar amb Mailchimp {}".format(str(e)))
 
         if context.get('sync'):
             lead_o._send_mail(cr, uid, lead_id, context=context)

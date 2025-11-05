@@ -114,7 +114,7 @@ class GiscedataPolissa(osv.osv):
                     sentry = self.pool.get('sentry.setup')
                     if sentry:
                         sentry.client.captureException()
-                    logger.warning("Error al comunicar amb Mailchimp {}".format(e.text))
+                    logger.warning("Error al comunicar amb Mailchimp {}".format(str(e)))
 
         res = super(GiscedataPolissa, self).write(cr, uid, ids, vals, context=context)
 
@@ -144,7 +144,7 @@ class GiscedataPolissa(osv.osv):
                     sentry = self.pool.get('sentry.setup')
                     if sentry:
                         sentry.client.captureException()
-                    logger.warning("Error al comunicar amb Mailchimp {}".format(e.text))
+                    logger.warning("Error al comunicar amb Mailchimp {}".format(str(e)))
         return res
 
     def _es_socia_ct_ss(self, cr, uid, ids, socia_nif, context=None):
