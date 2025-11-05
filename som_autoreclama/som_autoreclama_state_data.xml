@@ -3,7 +3,7 @@
     <data noupdate="1">
         <!-- SomEnergia autoreclama  states -->
         <record model="som.autoreclama.state.workflow" id="workflow_atc">
-            <field name="name">Reclamació per no resposta cas ATC (auto029)</field>
+            <field name="name">Reclamació per no resposta cas ATC</field>
             <field name="model">ATC</field>
         </record>
         <record model="som.autoreclama.state.workflow" id="workflow_F1">
@@ -11,7 +11,7 @@
             <field name="model">F1</field>
         </record>
         <record model="som.autoreclama.state.workflow" id="workflow_polissa">
-            <field name="name">Reclamació per falta F1 a pòlissa (auto006)</field>
+            <field name="name">Reclamació per falta F1 a pòlissa</field>
             <field name="model">polissa</field>
         </record>
         <record model="som.autoreclama.state" id="correct_state_workflow_atc">
