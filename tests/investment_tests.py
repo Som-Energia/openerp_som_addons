@@ -2900,4 +2900,108 @@ class InvestmentTests(testing.OOTestCase):
             self.assertTrue(investment.signed_date)
             mocked_update_sign.assert_called()
 
+    @mock.patch("generationkwh.investmentstate.InvestmentState.addAction")
+    def test__create_from_transfer__allOk(self, add_action_mock):
+        add_action_mock.return_value = ''
+        with Transaction().start(self.database) as txn:
+            cursor = txn.cursor
+            uid = txn.user
+
+            old_partner_id = self.IrModelData.get_object_reference(
+                cursor, uid, 'som_generationkwh', 'res_partner_inversor1'
+                )[1]
+            new_partner_id = self.IrModelData.get_object_reference(
+                cursor, uid, 'som_generationkwh', 'res_partner_inversor2'
+                )[1]
+
+            old_member_id = self.IrModelData.get_object_reference(
+                cursor, uid, 'som_generationkwh', 'soci_0001'
+                )[1]
+            old_member = self.Soci.browse(cursor, uid, old_member_id)
+
+            new_member_id = self.IrModelData.get_object_reference(
+                cursor, uid, 'som_generationkwh', 'soci_0002'
+                )[1]
+            new_member = self.Soci.browse(cursor, uid, new_member_id)
+
+            with freeze_time("2017-01-01"):
+                old_investment_id = self.Investment.create_from_form(
+                    cursor, uid,
+                    old_partner_id,
+                    '2017-01-01', # order_date
+                    1000,
+                    '10.10.23.123',
+                    'ES7712341234161234567890',
+                    )
+
+            self.Investment.mark_as_signed(cursor, uid, old_investment_id, '2017-01-03')
+            self.Investment.mark_as_invoiced(cursor, uid, old_investment_id)
+            self.Investment.mark_as_paid(cursor, uid, [old_investment_id], '2017-01-02')
+
+            with freeze_time("2019-05-01"):
+                new_investment_id = self.Investment.create_from_transfer(
+                    cursor, uid,
+                    old_investment_id,
+                    new_partner_id,
+                    '2019-05-01',
+                    'ES7712341234161234567890',
+                    )
+
+            old_investment = ns(self.Investment.read(cursor, uid, old_investment_id, []))
+            _ = old_investment.pop('log')
+            _ = old_investment.pop('name')
+            _ = old_investment.pop('actions_log')
+            _, name_emission = old_investment.pop('emission_id')
+
+            self.assertEqual(name_emission, "GenerationkWH")
+            self.assertNsEqual(old_investment, u"""
+                id: {id}
+                member_id:
+                - {member.id}
+                - {member.name}
+                order_date: '2017-01-01'
+                purchase_date: '2017-01-02'
+                first_effective_date: '2018-01-02'
+                last_effective_date: '2019-05-01'
+                last_interest_paid_date: false
+                nshares: 10
+                amortized_amount: 1000.0
+                move_line_id: false
+                active: true
+                draft: false
+                signed_date: '2017-01-03'
+                """.format(
+                    id=old_investment_id,
+                    member = old_member,
+                ))
+
+
+            investment = ns(self.Investment.read(cursor, uid, new_investment_id, []))
+            _ = investment.pop('log')
+            _ = investment.pop('name')
+            _ = investment.pop('actions_log')
+            _, name_emission = investment.pop('emission_id')
+            self.assertEqual(name_emission, "GenerationkWH")
+            self.assertNsEqual(investment, u"""
+                id: {id}
+                member_id:
+                - {member.id}
+                - {member.name}
+                order_date: '2017-01-01'
+                purchase_date: '2017-01-02'
+                first_effective_date: '2019-05-02'
+                last_effective_date: '2042-01-02'
+                last_interest_paid_date: false
+                nshares: 10
+                amortized_amount: 0.0
+                move_line_id: false
+                active: true
+                draft: false
+                signed_date: false
+                """.format(
+                    id=new_investment_id,
+                    member = new_member,
+                ))
+
+
 # vim: et ts=4 sw=4

@@ -174,7 +174,6 @@
             <field name="ref">S202004</field>
             <field name="vat">ES93646384K</field>
             <field name="date">2017-01-01</field>
-            <field name="data_baixa">2022-01-01</field>
         </record>
         <record id="res_partner_address_generation" model="res.partner.address">
             <field name="city">Arbeca</field>
@@ -305,16 +304,28 @@
             <field name="date_stop">2017-12-31</field>
             <field name="state">draft</field>
         </record>
+        <record id="fiscalyear_2019" model="account.fiscalyear">
+            <field name="name">Fiscal Year 2019</field>
+            <field name="code">FY2019</field>
+            <field name="date_start">2019-01-01</field>
+            <field name="date_stop">2019-12-31</field>
+            <field name="state">draft</field>
+        </record>
         <record id="period_012017" model="account.period">
-            <field name="view_id">1</field>
-            <field name="name">Jan.2017</field>
+            <field name="name">01/2017</field>
             <field name="date_start">2017-01-01</field>
             <field name="date_stop">2017-01-31</field>
             <field name="state">draft</field>
             <field name="fiscalyear_id" ref="fiscalyear_2017"></field>
         </record>
+        <record id="period_052019" model="account.period">
+            <field name="name">05/2019</field>
+            <field name="date_start">2019-05-01</field>
+            <field name="date_stop">2019-05-31</field>
+            <field name="state">draft</field>
+            <field name="fiscalyear_id" ref="fiscalyear_2019"></field>
+        </record>
         <record id="journal_old_investments" model="account.journal">
-            <field name="view_id">1</field>
             <field name="sequence_id" ref="account.sequence_journal"/>
             <field name="name">ENGINYERS - INVERSIONS</field>
             <field name="type">cash</field>
@@ -322,7 +333,6 @@
             <field name="active">True</field>
         </record>
         <record id="journal_aportacions" model="account.journal">
-            <field name="view_id">1</field>
             <field name="sequence_id" ref="account.sequence_journal"/>
             <field name="name">Factures Liquidació Aportacions</field>
             <field name="type">cash</field>
@@ -346,7 +356,6 @@
             <field name="type">other</field>
         </record>
         <record id="account_move_old_investment1" model="account.move">
-            <field name="account_id" ref="account_res_partner_inversor2"></field>
             <field name="partner_id" ref="res_partner_inversor2"></field>
             <field name="period_id" ref="period_012017" />
             <field name="date">2017-01-15</field>

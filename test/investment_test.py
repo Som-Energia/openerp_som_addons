@@ -2267,7 +2267,7 @@ class Investment_Test(unittest.TestCase):
     def getAMember(self):
         return ns(self.erp.SomenergiaSoci.read(1))
 
-    def test__create_from_transfer__allOk(self):
+    def test__create_from_transfer__allOk(self): # Test moved to destral ;)
         newMember = self.getAMember()
 
         old_id = self.Investment.create_from_form(
