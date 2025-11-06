@@ -250,6 +250,189 @@
             <field name="active">True</field>
             <field name="configuracio_id" ref="iberdrola_api_conf"/>
         </record>
+        <!-- Conquense API -->
+        <record model="som.crawlers.task" id="descargar_conquense_api_a1">
+            <field name="name">Descarregar Conquense API A1</field>
+            <field name="active">True</field>
+            <field name="configuracio_id" ref="conquense_api_conf"/>
+        </record>
+        <record model="som.crawlers.task" id="descargar_conquense_api_a3">
+            <field name="name">Descarregar Conquense API A3</field>
+            <field name="active">True</field>
+            <field name="configuracio_id" ref="conquense_api_conf"/>
+        </record>
+        <record model="som.crawlers.task" id="descargar_conquense_api_b1">
+            <field name="name">Descarregar Conquense API B1</field>
+            <field name="active">True</field>
+            <field name="configuracio_id" ref="conquense_api_conf"/>
+        </record>
+        <record model="som.crawlers.task" id="descargar_conquense_api_b2">
+            <field name="name">Descarregar Conquense API B2</field>
+            <field name="active">True</field>
+            <field name="configuracio_id" ref="conquense_api_conf"/>
+        </record>
+        <record model="som.crawlers.task" id="descargar_conquense_api_c1">
+            <field name="name">Descarregar Conquense API C1</field>
+            <field name="active">True</field>
+            <field name="configuracio_id" ref="conquense_api_conf"/>
+        </record>
+        <record model="som.crawlers.task" id="descargar_conquense_api_c2">
+            <field name="name">Descarregar Conquense API C2</field>
+            <field name="active">True</field>
+            <field name="configuracio_id" ref="conquense_api_conf"/>
+        </record>
+        <record model="som.crawlers.task" id="descargar_conquense_api_d1">
+            <field name="name">Descarregar Conquense API D1</field>
+            <field name="active">True</field>
+            <field name="configuracio_id" ref="conquense_api_conf"/>
+        </record>
+        <record model="som.crawlers.task" id="descargar_conquense_api_e1">
+            <field name="name">Descarregar Conquense API E1</field>
+            <field name="active">True</field>
+            <field name="configuracio_id" ref="conquense_api_conf"/>
+        </record>
+        <record model="som.crawlers.task" id="descargar_conquense_api_e2">
+            <field name="name">Descarregar Conquense API E2</field>
+            <field name="active">True</field>
+            <field name="configuracio_id" ref="conquense_api_conf"/>
+        </record>
+        <record model="som.crawlers.task" id="descargar_conquense_api_f1">
+            <field name="name">Descarregar Conquense API F1</field>
+            <field name="active">True</field>
+            <field name="configuracio_id" ref="conquense_api_conf"/>
+        </record>
+        <record model="som.crawlers.task" id="descargar_conquense_api_j1">
+            <field name="name">Descarregar Conquense API J1</field>
+            <field name="active">True</field>
+            <field name="configuracio_id" ref="conquense_api_conf"/>
+        </record>
+        <record model="som.crawlers.task" id="descargar_conquense_api_m1">
+            <field name="name">Descarregar Conquense API M1</field>
+            <field name="active">True</field>
+            <field name="configuracio_id" ref="conquense_api_conf"/>
+        </record>
+        <record model="som.crawlers.task" id="descargar_conquense_api_m2">
+            <field name="name">Descarregar Conquense API M2</field>
+            <field name="active">True</field>
+            <field name="configuracio_id" ref="conquense_api_conf"/>
+        </record>
+        <record model="som.crawlers.task" id="descargar_conquense_api_p0">
+            <field name="name">Descarregar Conquense API P0</field>
+            <field name="active">True</field>
+            <field name="configuracio_id" ref="conquense_api_conf"/>
+        </record>
+        <record model="som.crawlers.task" id="descargar_conquense_api_q1">
+            <field name="name">Descarregar Conquense API Q1</field>
+            <field name="active">True</field>
+            <field name="configuracio_id" ref="conquense_api_conf"/>
+        </record>
+        <record model="som.crawlers.task" id="descargar_conquense_api_r0">
+            <field name="name">Descarregar Conquense API R0</field>
+            <field name="active">True</field>
+            <field name="configuracio_id" ref="conquense_api_conf"/>
+        </record>
+        <record model="som.crawlers.task" id="descargar_conquense_api_r1">
+            <field name="name">Descarregar Conquense API R1</field>
+            <field name="active">True</field>
+            <field name="configuracio_id" ref="conquense_api_conf"/>
+        </record>
+        <record model="som.crawlers.task" id="descargar_conquense_api_t1">
+            <field name="name">Descarregar Conquense API T1</field>
+            <field name="active">True</field>
+            <field name="configuracio_id" ref="conquense_api_conf"/>
+        </record>
+
+        <!-- Anselmo API -->
+        <record model="som.crawlers.task" id="descargar_anselmo_api_a1">
+            <field name="name">Descarregar Anselmo API A1</field>
+            <field name="active">True</field>
+            <field name="configuracio_id" ref="anselmo_api_conf"/>
+        </record>
+        <record model="som.crawlers.task" id="descargar_anselmo_api_a3">
+            <field name="name">Descarregar Anselmo API A3</field>
+            <field name="active">True</field>
+            <field name="configuracio_id" ref="anselmo_api_conf"/>
+        </record>
+        <record model="som.crawlers.task" id="descargar_anselmo_api_b1">
+            <field name="name">Descarregar Anselmo API B1</field>
+            <field name="active">True</field>
+            <field name="configuracio_id" ref="anselmo_api_conf"/>
+        </record>
+        <record model="som.crawlers.task" id="descargar_anselmo_api_b2">
+            <field name="name">Descarregar Anselmo API B2</field>
+            <field name="active">True</field>
+            <field name="configuracio_id" ref="anselmo_api_conf"/>
+        </record>
+        <record model="som.crawlers.task" id="descargar_anselmo_api_c1">
+            <field name="name">Descarregar Anselmo API C1</field>
+            <field name="active">True</field>
+            <field name="configuracio_id" ref="anselmo_api_conf"/>
+        </record>
+        <record model="som.crawlers.task" id="descargar_anselmo_api_c2">
+            <field name="name">Descarregar Anselmo API C2</field>
+            <field name="active">True</field>
+            <field name="configuracio_id" ref="anselmo_api_conf"/>
+        </record>
+        <record model="som.crawlers.task" id="descargar_anselmo_api_d1">
+            <field name="name">Descarregar Anselmo API D1</field>
+            <field name="active">True</field>
+            <field name="configuracio_id" ref="anselmo_api_conf"/>
+        </record>
+        <record model="som.crawlers.task" id="descargar_anselmo_api_e1">
+            <field name="name">Descarregar Anselmo API E1</field>
+            <field name="active">True</field>
+            <field name="configuracio_id" ref="anselmo_api_conf"/>
+        </record>
+        <record model="som.crawlers.task" id="descargar_anselmo_api_e2">
+            <field name="name">Descarregar Anselmo API E2</field>
+            <field name="active">True</field>
+            <field name="configuracio_id" ref="anselmo_api_conf"/>
+        </record>
+        <record model="som.crawlers.task" id="descargar_anselmo_api_f1">
+            <field name="name">Descarregar Anselmo API F1</field>
+            <field name="active">True</field>
+            <field name="configuracio_id" ref="anselmo_api_conf"/>
+        </record>
+        <record model="som.crawlers.task" id="descargar_anselmo_api_j1">
+            <field name="name">Descarregar Anselmo API J1</field>
+            <field name="active">True</field>
+            <field name="configuracio_id" ref="anselmo_api_conf"/>
+        </record>
+        <record model="som.crawlers.task" id="descargar_anselmo_api_m1">
+            <field name="name">Descarregar Anselmo API M1</field>
+            <field name="active">True</field>
+            <field name="configuracio_id" ref="anselmo_api_conf"/>
+        </record>
+        <record model="som.crawlers.task" id="descargar_anselmo_api_m2">
+            <field name="name">Descarregar Anselmo API M2</field>
+            <field name="active">True</field>
+            <field name="configuracio_id" ref="anselmo_api_conf"/>
+        </record>
+        <record model="som.crawlers.task" id="descargar_anselmo_api_p0">
+            <field name="name">Descarregar Anselmo API P0</field>
+            <field name="active">True</field>
+            <field name="configuracio_id" ref="anselmo_api_conf"/>
+        </record>
+        <record model="som.crawlers.task" id="descargar_anselmo_api_q1">
+            <field name="name">Descarregar Anselmo API Q1</field>
+            <field name="active">True</field>
+            <field name="configuracio_id" ref="anselmo_api_conf"/>
+        </record>
+        <record model="som.crawlers.task" id="descargar_anselmo_api_r0">
+            <field name="name">Descarregar Anselmo API R0</field>
+            <field name="active">True</field>
+            <field name="configuracio_id" ref="anselmo_api_conf"/>
+        </record>
+        <record model="som.crawlers.task" id="descargar_anselmo_api_r1">
+            <field name="name">Descarregar Anselmo API R1</field>
+            <field name="active">True</field>
+            <field name="configuracio_id" ref="anselmo_api_conf"/>
+        </record>
+        <record model="som.crawlers.task" id="descargar_anselmo_api_t1">
+            <field name="name">Descarregar Anselmo API T1</field>
+            <field name="active">True</field>
+            <field name="configuracio_id" ref="anselmo_api_conf"/>
+        </record>
         <!-- Endesa -->
         <record model="som.crawlers.task" id="descargar_A3_endesa">
             <field name="name">Endesa descargar A3</field>
