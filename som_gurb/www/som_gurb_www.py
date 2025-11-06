@@ -280,6 +280,14 @@ class SomGurbWww(osv.osv_memory):
             return pro_br.signature_url
         return None
 
+    def _validate_titular_cups(self, cursor, uid, vat, polissa_id, context=None):
+        if context is None:
+            context = {}
+        polissa_obj = self.pool.get("giscedata.polissa")
+        polissa_br = polissa_obj.browse(cursor, uid, polissa_id, context=context)
+        titular_vat = polissa_br.titular.vat.replace(" ", "").replace("ES", "").upper()
+        return titular_vat == vat
+
     def create_new_gurb_cups(self, cursor, uid, form_payload, context=None):
         if context is None:
             context = {}
@@ -334,6 +342,17 @@ class SomGurbWww(osv.osv_memory):
                 "success": False,
                 "error": _("No hi ha polissa o no està disponible"),
                 "code": "ContractERROR",
+            }
+
+        titular_vat = form_payload.get('vat', '').upper()
+        vat_check = self._validate_titular_cups(
+            cursor, uid, titular_vat, polissa_id, context=context
+        )
+        if not vat_check:
+            return {
+                "success": False,
+                "error": _("El DNI no s'ha validat {}").format(titular_vat),
+                "code": "BadVAT",
             }
 
         beta_ids = [(0, 0, {

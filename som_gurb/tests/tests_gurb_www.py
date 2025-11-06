@@ -133,6 +133,7 @@ class TestsGurbWww(TestsGurbBase):
             "access_tariff": "2.0TD",
             "cups": "ES0021126262693495FV",
             "beta": 2.0,
+            "vat": "37692879L"
         }
         result = gurb_www_obj.create_new_gurb_cups(
             self.cursor, self.uid, form_payload
@@ -169,6 +170,7 @@ class TestsGurbWww(TestsGurbBase):
             "access_tariff": "2.0TD",
             "cups": "ES0021126262693495FV",
             "beta": 2.0,
+            "vat": "78106306P"
         }
 
         result = gurb_www_obj.create_new_gurb_cups(
@@ -269,6 +271,43 @@ class TestsGurbWww(TestsGurbBase):
 
     @mock.patch(_start_signature_fnc, return_value=True)
     @mock.patch(_update_signature_fnc, return_value=True)
+    def test_create_new_gurb_cups_correct_vat(self, start_mock, update_mock):
+        gurb_www_obj = self.get_model("som.gurb.www")
+        form_payload = {
+            "gurb_code": "G001",
+            "access_tariff": "2.0TD",
+            "cups": "ES0021126262693495FV",
+            "beta": 1,
+            "vat": "37692879L"
+        }
+        result = gurb_www_obj.create_new_gurb_cups(self.cursor, self.uid, form_payload)
+        self.assertTrue(result["success"])
+
+    def test_create_new_gurb_cups_incorrect_vat(self):
+        gurb_www_obj = self.get_model("som.gurb.www")
+        form_payload = {
+            "gurb_code": "G001",
+            "access_tariff": "2.0TD",
+            "cups": "ES0021126262693495FV",
+            "beta": 1,
+            "vat": "93105281Q"
+        }
+        result = gurb_www_obj.create_new_gurb_cups(self.cursor, self.uid, form_payload)
+        self.assertEqual(result["code"], "BadVAT")
+
+    def test_create_new_gurb_cups_no_vat(self):
+        gurb_www_obj = self.get_model("som.gurb.www")
+        form_payload = {
+            "gurb_code": "G001",
+            "access_tariff": "2.0TD",
+            "cups": "ES0021126262693495FV",
+            "beta": 1,
+        }
+        result = gurb_www_obj.create_new_gurb_cups(self.cursor, self.uid, form_payload)
+        self.assertEqual(result["code"], "BadVAT")
+
+    @mock.patch(_start_signature_fnc, return_value=True)
+    @mock.patch(_update_signature_fnc, return_value=True)
     def test_activate_gurb_cups_lead(self, start_mock, update_mock):
         gurb_www_obj = self.get_model("som.gurb.www")
         gurb_cups_obj = self.get_model("som.gurb.cups")
@@ -280,6 +319,7 @@ class TestsGurbWww(TestsGurbBase):
             "access_tariff": "2.0TD",
             "cups": "ES0021126262693495FV",
             "beta": 2.0,
+            "vat": "37692879L"
         }
         self.activar_polissa_CUPS()
         gurb_cups_id = gurb_www_obj.create_new_gurb_cups(
@@ -306,6 +346,7 @@ class TestsGurbWww(TestsGurbBase):
             "access_tariff": "2.0TD",
             "cups": "ES0021126262693495FV",
             "beta": 2.0,
+            "vat": "37692879L"
         }
         gurb_cups_id = gurb_www_obj.create_new_gurb_cups(
             self.cursor, self.uid, form_payload
@@ -326,6 +367,7 @@ class TestsGurbWww(TestsGurbBase):
             "access_tariff": "2.0TD",
             "cups": "ES0021126262693495FV",
             "beta": 2.0,
+            "vat": "37692879L"
         }
         gurb_cups_id = gurb_www_obj.create_new_gurb_cups(
             self.cursor, self.uid, form_payload
