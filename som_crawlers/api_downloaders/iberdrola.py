@@ -8,8 +8,6 @@ from som_crawlers.api_downloaders import BaseApiDownloader
 from som_crawlers.models.exceptions import (
     CrawlingProcessException, CrawlingLoginException, NoResultsException)
 
-_COD_PORTAL = "0021"
-
 
 def is_empty_zip(bytes_zip):
     bio = io.BytesIO(bytes_zip)
@@ -23,6 +21,7 @@ def instance(_config):
 
 class Iberdrola(BaseApiDownloader):
     name = 'iberdrola'
+    cod_portal = '0021'
     process = None
 
     def start(self):
@@ -32,7 +31,7 @@ class Iberdrola(BaseApiDownloader):
     def login(self):
         login_url = self.config.url_portal + "LoginAPI"
         login_auth = HTTPBasicAuth(self.config.usuari, self.config.contrasenya)
-        login_body = {"codPortal": _COD_PORTAL}
+        login_body = {"codPortal": self.cod_portal}
 
         try:
             res = requests.post(login_url, json=login_body, auth=login_auth)
@@ -48,7 +47,7 @@ class Iberdrola(BaseApiDownloader):
         res_obj = res.json()
         self._auth_headers = {
             "jwt": res_obj["jwt"],
-            "Portal": _COD_PORTAL,
+            "Portal": self.cod_portal,
             "NOMBRETOKEN": res_obj["nombreCookie"],
             "IDEAUTH": res_obj["tokenSeguridad"],
         }
