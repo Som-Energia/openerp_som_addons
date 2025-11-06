@@ -230,6 +230,11 @@
             <field name="active">True</field>
             <field name="configuracio_id" ref="iberdrola_api_conf"/>
         </record>
+        <record model="som.crawlers.task" id="descargar_iberdrola_api_q1">
+            <field name="name">Descarregar Iberdrola API Q1</field>
+            <field name="active">True</field>
+            <field name="configuracio_id" ref="iberdrola_api_conf"/>
+        </record>
         <record model="som.crawlers.task" id="descargar_iberdrola_api_r0">
             <field name="name">Descarregar Iberdrola API R0</field>
             <field name="active">True</field>
