@@ -58,27 +58,15 @@ class GiscedataFacturacioFactura(osv.osv):
         if context is None:
             context = {}
 
-        for fact_id in ids:
-            polissa_id = self.read(cursor, uid, fact_id, ['polissa_id'])['polissa_id'][0]
-            polissa_obj = self.pool.get('giscedata.polissa')
-            pol_data = polissa_obj.read(cursor, uid, polissa_id, [
-                                        'cobrament_bloquejat', 'estat_pendent_cobrament'])
-            if pol_data['cobrament_bloquejat']:
-                ptype_obj = self.pool.get('payment.type')
-                ptype_id = ptype_obj.search(cursor, uid, [('name', '=', 'No remesables')])[0]
-                now = datetime.today().strftime('%Y-%m-%d')
-                observations = (
-                    now + "EQUIP FACTURA - Pólissa en estat Facturació amb cobrament bloquejat")
-                write_vals = {'payment_type': ptype_id,
-                              'pending_state': pol_data['estat_pendent_cobrament'],
-                              'comment': observations}
-                self.write(cursor, uid, fact_id, write_vals)
-
         res = super(GiscedataFacturacioFactura,
                     self).invoice_open(cursor, uid, ids, context)
 
         for fact_id in ids:
-            polissa_id = self.read(cursor, uid, fact_id, ['polissa_id'])['polissa_id'][0]
+            fact_data = self.read(cursor, uid, fact_id, ['polissa_id', 'type'], context=context)
+            # Només per factures de client
+            if fact_data['type'] != 'out_invoice':
+                continue
+            polissa_id = fact_data['polissa_id'][0]
             polissa_obj = self.pool.get('giscedata.polissa')
             pol_data = polissa_obj.read(cursor, uid, polissa_id, [
                                         'cobrament_bloquejat', 'estat_pendent_cobrament'])
