@@ -43,6 +43,8 @@ class ReportBackendCondicionsParticulars(ReportBackend):
                 cursor, uid, "som_gurb", "initial_quota_gurb"
             )[1]
 
+            context["date"] = gurb_cups_br.inscription_date or datetime.now().strftime("%Y-%m-%d")
+
             initial_product_price = pricelist_obj.price_get(
                 cursor,
                 uid,
