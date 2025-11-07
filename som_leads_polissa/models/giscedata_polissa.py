@@ -1,4 +1,5 @@
 from osv import osv
+import logging
 
 
 class GiscedataPolissa(osv.osv):
@@ -8,6 +9,8 @@ class GiscedataPolissa(osv.osv):
         if context is None:
             context = {}
 
+        logger = logging.getLogger('openerp.' + __name__)
+        logger.debug("crear_cas_atr() config_vals: {}".format(config_vals or {}))
         sw_o = self.pool.get("giscedata.switching")
 
         res = super(GiscedataPolissa, self).crear_cas_atr(
