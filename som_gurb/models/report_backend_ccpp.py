@@ -38,7 +38,7 @@ class ReportBackendCondicionsParticulars(ReportBackend):
         gurb_cups_id = gurb_cups_obj.search(cursor, uid, [("cups_id", "=", pol.cups.id)])
         if gurb_cups_id:
             gurb_cups_br = gurb_cups_obj.browse(cursor, uid, gurb_cups_id[0])
-            grub_pricelist_id = gurb_cups_br.gurb_cau_id.gurb_group_id.pricelist_id.id
+            gurb_pricelist_id = gurb_cups_br.gurb_cau_id.gurb_group_id.pricelist_id.id
             initial_product_id = imd_obj.get_object_reference(
                 cursor, uid, "som_gurb", "initial_quota_gurb"
             )[1]
@@ -54,18 +54,18 @@ class ReportBackendCondicionsParticulars(ReportBackend):
             context["date"] = gurb_cups_br.inscription_date or datetime.now().strftime("%Y-%m-%d")
 
             initial_product_price = pricelist_obj.price_get(
-                cursor, uid, [grub_pricelist_id], initial_product_id,
+                cursor, uid, [gurb_pricelist_id], initial_product_id,
                 gurb_cups_br.beta_kw, context=context,
-            )[grub_pricelist_id]
+            )[gurb_pricelist_id]
 
             initial_product_price_with_taxes = product_obj.add_taxes(
                 cursor, uid, initial_product_id, initial_product_price, False, context=context
             )
 
             quota_price = pricelist_obj.price_get(
-                cursor, uid, [grub_pricelist_id], quota_product_id,
+                cursor, uid, [gurb_pricelist_id], quota_product_id,
                 gurb_cups_br.beta_kw, context=context
-            )
+            )[gurb_pricelist_id]
 
             quota_with_taxes = product_obj.add_taxes(
                 cursor, uid, quota_product_id, quota_price, False, context=context
