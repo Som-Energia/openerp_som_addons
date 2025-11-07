@@ -42,19 +42,33 @@ class ReportBackendCondicionsParticulars(ReportBackend):
             initial_product_id = imd_obj.get_object_reference(
                 cursor, uid, "som_gurb", "initial_quota_gurb"
             )[1]
+            if pol.tarifa.name == "2.0TD":
+                quota_product_id = imd_obj.get_object_reference(
+                    cursor, uid, "som_gurb", "product_gurb"
+                )[1]
+            elif pol.tarifa.name == "3.0TD":
+                quota_product_id = imd_obj.get_object_reference(
+                    cursor, uid, "som_gurb", "product_enterprise_gurb"
+                )[1]
 
             context["date"] = gurb_cups_br.inscription_date or datetime.now().strftime("%Y-%m-%d")
 
             initial_product_price = pricelist_obj.price_get(
-                cursor,
-                uid,
-                [grub_pricelist_id],
-                initial_product_id,
-                gurb_cups_br.beta_kw,
-                context=context,
-            )[grub_pricelist_id] * gurb_cups_br.beta_kw
+                cursor, uid, [grub_pricelist_id], initial_product_id,
+                gurb_cups_br.beta_kw, context=context,
+            )[grub_pricelist_id]
+
             initial_product_price_with_taxes = product_obj.add_taxes(
                 cursor, uid, initial_product_id, initial_product_price, False, context=context
+            )
+
+            quota_price = pricelist_obj.price_get(
+                cursor, uid, [grub_pricelist_id], quota_product_id,
+                gurb_cups_br.beta_kw, context=context
+            )
+
+            quota_with_taxes = product_obj.add_taxes(
+                cursor, uid, quota_product_id, quota_price, False, context=context
             )
 
             gurb_cups_id = gurb_cups_obj.search(
@@ -80,7 +94,7 @@ class ReportBackendCondicionsParticulars(ReportBackend):
                 "nom": gurb_cups_br.gurb_cau_id.name,
                 "cost": float_round(initial_product_price_with_taxes, 2),
                 "potencia": gurb_cups_br.beta_kw,
-                "quota": 0.35,  # TODO: Use pricelist
+                "quota": quota_with_taxes,
                 "beta_percentatge": gurb_cups_br.beta_percentage,
                 "annex": annex
             }
