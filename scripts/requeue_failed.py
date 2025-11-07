@@ -22,6 +22,8 @@ EXECINFO_TO_DELETE = [
     "RepresenterError: ('cannot represent an object', <osv.orm.browse_null object at 0x7f3148f11a90>)",  # noqa: E501
     "You try to write on an record that doesn't exist",
     "cursor, uid, line_id, ['import_phase'])['import_phase']\nTypeError: 'bool' object has no attribute '__getitem__'",  # noqa: E501
+    "Partner address not found. Partner ID:",
+
 ]
 QUEUES_TO_DELETE_AFETER_REQUE = ["sii", "cups_cch"]
 
@@ -71,10 +73,20 @@ def main(redis_conn, interval, max_attempts):
                         print("deleting: %s from %s (Requeue)" % (job.id, job.origin))
                         key_registry = fq.key
                         redis_conn.zrem(key_registry, job_id)
-                    continue
+                        continue
                 else:
                     ago = (times.now() - job.enqueued_at).seconds
                     if ago >= interval:
+                        if any(substring in job.exc_info for substring in EXECINFO_TO_DELETE):
+                            try:
+                                print("deleting: %s from %s (Requeue)" % (job.id, job.origin))
+                                print(job.exc_info)
+                                key_registry = fq.key
+                                redis_conn.zrem(key_registry, job_id)
+                                continue
+                            except Exception as e:
+                                print("We cannot delete job %s in FailedJobRegistry" % job.id)
+                                print(e)
                         print(
                             "%s: attemps: %s enqueued: %ss ago on %s (Requeue)"
                             % (job.id, job.meta["attempts"], ago, job.origin)
