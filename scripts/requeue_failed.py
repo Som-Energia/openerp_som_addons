@@ -11,7 +11,7 @@ import argparse
 
 INTERVAL = 1200  # Seconds
 MAX_ATTEMPTS = 5
-QUEUES_TO_REQUEUE = ["cups_cch", "sii"]
+QUEUES_TO_REQUEUE = ["cups_cch", "sii", "mailchimp_tasks"]
 QUEUES_TO_DELETE = ["jobspool-autoworker", "profiling", "make_invoices", "tm_validate", "cch_loaderX"]  # noqa: E501
 EXECINFO_TO_DELETE = [
     "Work-horse process was terminated unexpectedly",
@@ -23,7 +23,7 @@ EXECINFO_TO_DELETE = [
     "You try to write on an record that doesn't exist",
     "cursor, uid, line_id, ['import_phase'])['import_phase']\nTypeError: 'bool' object has no attribute '__getitem__'",  # noqa: E501
 ]
-QUEUES_TO_DELETE_AFETER_REQUE = ["sii"]
+QUEUES_TO_DELETE_AFETER_REQUE = ["sii", "cups_cch"]
 
 redis_conn = from_url(sys.argv[1])
 use_connection(redis_conn)
