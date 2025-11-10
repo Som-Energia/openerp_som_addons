@@ -326,6 +326,7 @@
             <field name="fiscalyear_id" ref="fiscalyear_2019"></field>
         </record>
         <record id="journal_old_investments" model="account.journal">
+            <field name="view_id">1</field>
             <field name="sequence_id" ref="account.sequence_journal"/>
             <field name="name">ENGINYERS - INVERSIONS</field>
             <field name="type">cash</field>
@@ -333,6 +334,7 @@
             <field name="active">True</field>
         </record>
         <record id="journal_aportacions" model="account.journal">
+            <field name="view_id">1</field>
             <field name="sequence_id" ref="account.sequence_journal"/>
             <field name="name">Factures Liquidació Aportacions</field>
             <field name="type">cash</field>
