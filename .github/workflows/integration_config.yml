@@ -77,6 +77,7 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       erp_branch: ${{ steps.set_erp_branch.outputs.erpbranch }}
+      python_version: ${{ steps.set_erp_branch.outputs.python_version }}
     steps:
       - name: Set ERP Branch
         id: set_erp_branch
@@ -86,14 +87,19 @@ jobs:
           json_tags='${{ env.PR_LABEL_LIST }}'
           array_tags=$(echo "$json_tags" | jq -r '.[]')
           branch="rolling_erp01"  # default branch
+          python_version='["2.7"]'  # default python version
           for tag in $array_tags; do
             if [[ $tag == GHA_branch_* ]]; then
               branch=${tag#GHA_branch_}
-              break
+            fi
+            if [[ $tag == GHA_py3 ]]; then
+              python_version='["2.7","3.10"]'
             fi
           done
           echo "Using ERP branch $branch"
+          echo "Using ERP Python version $python_version"
           echo "erpbranch=$branch" >> $GITHUB_OUTPUT
+          echo "python_version=$python_version" >> $GITHUB_OUTPUT
 
   erp-tests-module:
     name: Run test PR
@@ -103,4 +109,5 @@ jobs:
     with:
       module: ${{needs.get-pr-modified-files.outputs.module_list}}
       erpbranch: ${{needs.set-erp-branch.outputs.erp_branch}}
+      pyversion: ${{needs.set-erp-branch.outputs.python_version}}
     secrets: inherit
