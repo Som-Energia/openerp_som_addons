@@ -76,6 +76,12 @@ class ReportBackendCondicionsParticulars(ReportBackend):
             gurb_cups_browse = gurb_cups_obj.browse(
                 cursor, uid, gurb_cups_id, context=context)
 
+            beta_kw = gurb_cups_browse.beta_kw
+            beta_percentage = gurb_cups_browse.beta_percentage
+            if gurb_cups_browse.future_beta_kw:
+                beta_kw = gurb_cups_browse.future_beta_kw
+                beta_percentage = gurb_cups_browse.future_beta_percentage
+
             annex = {
                 "name": pol.titular.name,
                 "address": pol.cups.direccio,
@@ -85,8 +91,8 @@ class ReportBackendCondicionsParticulars(ReportBackend):
                 "month": str(datetime.now().month).zfill(2),
                 "year": datetime.now().year,
                 "cau": gurb_cups_browse.gurb_cau_id.self_consumption_id.cau,
-                "beta_kw": gurb_cups_browse.beta_kw,
-                "beta_percentage": gurb_cups_browse.beta_percentage,
+                "beta_kw": beta_kw,
+                "beta_percentage": beta_percentage,
                 "is_enterprise": partner_obj.is_enterprise_vat(pol.titular.vat)
             }
 
