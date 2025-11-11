@@ -91,6 +91,7 @@ def calculate_new_indexed_prices(cursor, uid, pol, context=None):
     dict_preus_nova = get_preus(
         cursor, uid, pol, with_taxes=False, context=context_preus_nous
     )
+    fs = get_fs(cursor, uid, pol, context=context)
 
     fs = get_fs_from_k_change(cursor, uid, pol, context=context)
 
