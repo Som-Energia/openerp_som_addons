@@ -378,6 +378,55 @@ class TestAccountInvoiceSetPendingAutomations(testing.OOTestCase):
         self.assertEqual(f_data.payment_type.id, previous_payment_type_7)
         self.assertEqual(f_data.comment, previous_comment[idx])
 
+    def test_set_pending__back_to_correct(self):
+        r1_bs_state_id = self.getref(
+            "som_account_invoice_pending", "reclamacio_en_curs_pending_state"
+        )
+        r1_df_state_id = self.getref(
+            "som_account_invoice_pending", "default_reclamacio_en_curs_pending_state"
+        )
+        corr_bs_state_id = self.getref(
+            "giscedata_facturacio_comer_bono_social", "correct_bono_social_pending_state"
+        )
+
+        corr_df_state_id = self.getref(
+            "account_invoice_pending", "default_invoice_pending_state"
+        )
+
+        fact_ids, inv_ids = self._load_data_unpaid_invoices(
+            [corr_df_state_id, corr_df_state_id]
+        )
+
+        no_remesa_pt_id = self.create_no_remesable()
+
+        inv_obj = self.pool.get("account.invoice")
+        fact_obj = self.pool.get("giscedata.facturacio.factura")
+        pt_obj = self.pool.get("payment.type")
+        par_obj = self.pool.get("res.partner")
+
+        tr_id = pt_obj.search(self.cursor, self.uid, [('code', '=', u'TRANSFERENCIA_CSB')])[0]
+        re_id = pt_obj.search(self.cursor, self.uid, [('code', '=', u'RECIBO_CSB')])[0]
+
+        p_id = inv_obj.read(self.cursor, self.uid, inv_ids[0], ['partner_id'])['partner_id'][0]
+        par_obj.write(self.cursor, self.uid, p_id, {'payment_type_customer': tr_id})
+        inv_obj.set_pending(self.cursor, self.uid, [inv_ids[0]], r1_bs_state_id)
+        pre_payment_type_1 = self.read_one(fact_obj, fact_ids[0], 'payment_type')
+        inv_obj.set_pending(self.cursor, self.uid, [inv_ids[0]], corr_bs_state_id)
+        post_payment_type_1 = self.read_one(fact_obj, fact_ids[0], 'payment_type')
+
+        self.assertEqual(pre_payment_type_1[0], no_remesa_pt_id)
+        self.assertEqual(post_payment_type_1[0], tr_id)
+
+        p_id = inv_obj.read(self.cursor, self.uid, inv_ids[1], ['partner_id'])['partner_id'][0]
+        par_obj.write(self.cursor, self.uid, p_id, {'payment_type_customer': re_id})
+        inv_obj.set_pending(self.cursor, self.uid, [inv_ids[1]], r1_df_state_id)
+        pre_payment_type_2 = self.read_one(fact_obj, fact_ids[1], 'payment_type')
+        inv_obj.set_pending(self.cursor, self.uid, [inv_ids[1]], corr_df_state_id)
+        post_payment_type_2 = self.read_one(fact_obj, fact_ids[1], 'payment_type')
+
+        self.assertEqual(pre_payment_type_2[0], no_remesa_pt_id)
+        self.assertEqual(post_payment_type_2[0], re_id)
+
 
 class TestAccountInvoiceProviderUnpaidAutomations(testing.OOTestCase):
     def setUp(self):
