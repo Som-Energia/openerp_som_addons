@@ -195,8 +195,11 @@ class SomGurbCau(osv.osv):
                 future_assigned_betas_percentage = (
                     future_gift_betas_percentage + future_betas_percentage
                 )
+                gift_betas_percentage = gift_betas_kw * 100 / gen_power
+                available_betas_percentage = 100 - assigned_betas_percentage - gift_betas_percentage
 
             res[gurb_cau_id] = {
+                "gift_betas_percentage": gift_betas_percentage,
                 "assigned_betas_kw": assigned_betas_kw,
                 "available_betas_kw": gen_power - assigned_betas_kw,
                 "assigned_betas_percentage": assigned_betas_percentage,
@@ -206,7 +209,7 @@ class SomGurbCau(osv.osv):
                 "gift_betas_kw": gift_betas_kw,
                 "assigned_extra_betas_percentage": assigned_extra_betas_percentage,
                 "assigned_extra_gift_betas_percentage": assigned_extra_gift_betas_percentage,
-                "available_betas_percentage": 100 - assigned_betas_percentage,
+                "available_betas_percentage": available_betas_percentage,
                 "future_betas_kw": future_betas_kw,
                 "future_extra_betas_kw": future_extra_betas_kw,
                 "future_gift_betas_kw": future_gift_betas_kw,
@@ -353,6 +356,11 @@ class SomGurbCau(osv.osv):
 
     _columns = {
         "name": fields.char("Nom GURB CAU", size=60, required=True),
+        "priority": fields.integer(
+            "Prioritat",
+            help="Prioritat del GURBCAU per l'assignació de les betes, més baix més prioritat",
+            required=True,
+        ),
         "self_consumption_id": fields.many2one("giscedata.autoconsum", "CAU"),
         "code": fields.char("Codi GURB CAU", size=60, readonly=True),
         "producer": fields.many2one("res.partner", "Productora"),

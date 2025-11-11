@@ -2,7 +2,6 @@
 
 from __future__ import absolute_import
 
-from oorq.decorators import job
 from osv import osv, fields
 from osv.expression import OOQuery
 from osv.orm import browse_record
@@ -43,6 +42,7 @@ class SomenergiaSoci(osv.osv):
         """Creates only one soci (member) from a partner"""
         if isinstance(partner_id, (tuple, list)):
             partner_id[0]
+        rpa_obj = self.pool.get("res.partner.address")
 
         vals = {"partner_id": partner_id}
         soci_id = self.search(cursor, uid, [("partner_id", "=", partner_id)], context=context)
@@ -51,6 +51,20 @@ class SomenergiaSoci(osv.osv):
         else:
             soci_id = self.create(cursor, uid, vals, context=context)
 
+        try:
+            if soci_id:
+                rpa_obj.unsubscribe_partner_in_customers_no_members_lists(
+                    cursor, uid, partner_id, context=context
+                )
+                rpa_obj.subscribe_partner_in_members_lists(
+                    cursor, uid, partner_id, context=context
+                )
+        except Exception as e:
+            sentry = self.pool.get('sentry.setup')
+            if sentry:
+                sentry.client.captureException()
+            logger = logging.getLogger("openerp.{0}.create_one_soci".format(__name__))
+            logger.warning("Error al comunicar amb Mailchimp {}".format(str(e)))
         return soci_id
 
     def create_socis(self, cr_orig, uid, ids, context=None):
@@ -76,7 +90,6 @@ class SomenergiaSoci(osv.osv):
                         soci_id, partner_vals["ref"], partner_vals["name"], partner_id
                     )
                 )
-                self.subscriu_socia_mailchimp_async(cursor, uid, soci_id, context=context)
                 cursor.commit()
             except Exception as e:
                 logger.error(
@@ -90,36 +103,6 @@ class SomenergiaSoci(osv.osv):
                     cursor.close()
 
         return soci_ids
-
-    @job(queue="mailchimp_tasks")
-    def subscriu_socia_mailchimp_async(self, cursor, uid, ids, context=None):
-        """
-        Archive member async method
-        """
-        return self.subscriu_socia_mailchimp(cursor, uid, ids, context=context)
-
-    def subscriu_socia_mailchimp(self, cursor, uid, ids, context=None):
-        if isinstance(ids, (list, tuple)):
-            ids = ids[0]
-
-        res_partner_obj = self.pool.get("res.partner")
-        soci_obj = self.pool.get("somenergia.soci")
-        res_partner_address_obj = self.pool.get("res.partner.address")
-        conf_obj = self.pool.get("res.config")
-
-        is_member = soci_obj.search(cursor, uid, [("partner_id", "=", ids), ("baixa", "=", False)])
-        if is_member:
-            return
-
-        MAILCHIMP_CLIENT = res_partner_address_obj._get_mailchimp_client()
-        list_name = conf_obj.get(cursor, uid, "mailchimp_socis_list", None)
-
-        list_id = res_partner_address_obj.get_mailchimp_list_id(list_name, MAILCHIMP_CLIENT)
-
-        address_list = res_partner_obj.read(cursor, uid, ids, ["address"])["address"]
-        res_partner_address_obj.subscribe_mail_in_list(
-            cursor, uid, address_list, list_id, MAILCHIMP_CLIENT
-        )
 
     def count_active_socis(self, cursor, uid):
         q = OOQuery(self, cursor, uid)

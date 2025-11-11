@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from datetime import datetime
+from time import sleep
 from osv import fields, osv
 import netsvc
 from oorq.decorators import job
@@ -408,7 +409,13 @@ class GiscedataCrmLead(osv.OsvInherits):
             template_name = "email_contracte_esborrany_nou_soci"
         template_id = ir_model_o.get_object_reference(cr, uid, 'som_polissa_soci', template_name)[1]
 
+        attempts = 5
+        while not lead["polissa_id"] and attempts > 0:
+            sleep(5)
+            lead = lead_o.read(cr, uid, lead_id, ['polissa_id'], context=context)
+            attempts -= 1
         polissa_id = lead["polissa_id"][0]
+
         from_id = template_o.read(cr, uid, template_id)['enforce_from_account'][0]
 
         wiz_send_obj = self.pool.get("poweremail.send.wizard")

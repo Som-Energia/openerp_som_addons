@@ -150,11 +150,14 @@ class SomGurbGroup(osv.osv):
                 future_assigned_betas_percentage = (
                     future_gift_betas_percentage + future_betas_percentage
                 )
+                gift_betas_percentage = gift_betas_kw * 100 / gen_power
+                available_betas_percentage = 100 - assigned_betas_percentage - gift_betas_percentage
 
             res[gurb_group_id] = {
+                "gift_betas_percentage": gift_betas_percentage,
                 "assigned_betas_kw": assigned_betas_kw,
                 "assigned_betas_percentage": assigned_betas_percentage,
-                "available_betas_percentage": 100 - assigned_betas_percentage,
+                "available_betas_percentage": available_betas_percentage,
                 "assigned_gift_betas_percentage": assigned_gift_betas_percentage,
                 "extra_betas_kw": extra_betas_kw,
                 "extra_betas_percentage": extra_betas_percentage,
@@ -164,6 +167,31 @@ class SomGurbGroup(osv.osv):
             }
 
         return res
+
+    def get_prioritary_gurb_cau_id(self, cursor, uid, gurb_group_id, beta, context=None):
+        if context is None:
+            context = {}
+
+        gurb_cau_obj = self.pool.get("som.gurb.cau")
+        gurb_cau_ids = gurb_cau_obj.search(cursor, uid, [('gurb_group_id', '=', gurb_group_id)])
+
+        best_gurb_cau_id = False
+        best_cups_cau_priority = 9999
+
+        for gurb_cau_id in gurb_cau_ids:
+            gurb_cau_br = gurb_cau_obj.browse(cursor, uid, gurb_cau_id, context=context)
+            beta_remaining = gurb_cau_br.generation_power
+            if best_cups_cau_priority > gurb_cau_br.priority:
+                for gurb_cups_br in gurb_cau_br.gurb_cups_ids:
+                    if gurb_cups_br.state in ["active", "atr_pending"]:
+                        beta_remaining -= gurb_cups_br.beta_kw
+                        beta_remaining -= gurb_cups_br.future_beta_kw
+                        beta_remaining -= gurb_cups_br.future_gift_beta_kw
+                if beta_remaining >= beta:
+                    best_gurb_cau_id = gurb_cau_id
+                    best_cups_cau_priority = gurb_cau_br.priority
+
+        return best_gurb_cau_id
 
     _columns = {
         "gurb_cau_ids": fields.one2many("som.gurb.cau", "gurb_group_id", "Betes", readonly=False),

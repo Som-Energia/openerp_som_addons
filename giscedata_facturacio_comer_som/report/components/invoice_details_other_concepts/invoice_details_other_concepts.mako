@@ -49,6 +49,13 @@
         <div class="detail_description_subtotal">${_(u"%s €") % formatLang(l['price_subtotal'])}</div>
     </div>
     % endfor
+    % for l in id_other.compl_lines:
+    <div class="detail_line">
+        <div class="detail_description_line">${l['name']}</div>
+        <div class="detail_description_line">&nbsp;</div>
+        <div class="detail_description_subtotal">${_(u"%s €") % formatLang(l['price_subtotal'])}</div>
+    </div>
+    % endfor
     % for l in id_other.iva_lines:
     <div class="detail_line">
         <div class="detail_description_line">${l['name']}</div>

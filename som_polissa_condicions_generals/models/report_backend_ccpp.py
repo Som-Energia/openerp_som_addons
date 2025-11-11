@@ -8,7 +8,6 @@ from giscedata_facturacio.report.utils import get_atr_price, get_comming_atr_pri
 from som_extend_facturacio_comer.utils import get_gkwh_atr_price
 from tools.translate import _
 from giscedata_polissa.report.utils import localize_period
-from som_polissa.models.giscedata_cups import TABLA_113_dict
 
 CONTRACT_TYPES = dict(TABLA_9)
 
@@ -126,8 +125,10 @@ class ReportBackendCondicionsParticulars(ReportBackend):
             es_canvi_tecnic = False
         pots = pas.pot_ids if es_canvi_tecnic else pol.potencies_periode
         res['autoconsum'] = pas.tipus_autoconsum if es_canvi_tecnic else pol.tipus_subseccio
-        if res['autoconsum'] and res['autoconsum'] in TABLA_113_dict:
-            res['autoconsum'] = TABLA_113_dict[res['autoconsum']]
+        if res['autoconsum']:
+            cups_obj = self.pool.get("giscedata.cups.ps")
+            res['autoconsum'] = cups_obj.get_auto_tipus_subseccio_description(
+                cursor, uid, res['autoconsum'], pol.titular.lang)
         res['es_canvi_tecnic'] = es_canvi_tecnic
         periodes = []
         for i in range(0, 6):

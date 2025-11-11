@@ -1,4 +1,5 @@
 # -*- encoding: utf-8 -*-
+import logging
 import traceback
 import sys
 from osv import osv
@@ -127,7 +128,7 @@ class SomLeadWww(osv.osv_memory):
             "titular_pu": member["address"].get("door"),
             "titular_bq": member["address"].get("block"),
             "titular_id_municipi": member["address"].get("city_id"),
-            "titular_email": member.get("email", "").lower(),
+            "titular_email": member.get("email", "").lower() or None,
             "titular_phone": member.get("phone"),
             "titular_mobile": member.get("phone2"),
             "titular_phone_prefix": member.get("phone_prefix"),
@@ -229,22 +230,30 @@ class SomLeadWww(osv.osv_memory):
 
         lead_o = self.pool.get("giscedata.crm.lead")
         soci_obj = self.pool.get("somenergia.soci")
-        rp_obj = self.pool.get("res.partner")
+        rpa_obj = self.pool.get("res.partner.address")
 
         msg = lead_o.create_entities(cr, uid, lead_id, context=context)
 
         lead_o.historize_msg(cr, uid, [lead_id], msg, context=context)
         lead_o.stage_next(cr, uid, [lead_id], context=context)
 
+        try:
+            # Si no és sòcia, subscriu mail a mailchimp com a client sense ser soci
+            partner = lead_o.browse(cr, uid, lead_id).partner_id
+            if not soci_obj.search(cr, uid, [("partner_id", "=", partner.id)]):
+                rpa_obj.subscribe_partner_in_customers_no_members_lists(
+                    cr, uid, partner.id, context=context)
+        except Exception as e:
+            sentry = self.pool.get('sentry.setup')
+            if sentry:
+                sentry.client.captureException()
+            logger = logging.getLogger("openerp.{0}.activate_lead".format(__name__))
+            logger.warning("Error al comunicar amb Mailchimp {}".format(str(e)))
+
         if context.get('sync'):
             lead_o._send_mail(cr, uid, lead_id, context=context)
         else:
             lead_o._send_mail_async(cr, uid, lead_id, context=context)
-
-        # Si no és sòcia, arxiva mail a mailchimp
-        partner = lead_o.browse(cr, uid, lead_id).partner_id
-        if not soci_obj.search(cr, uid, [("partner_id", "=", partner.id)]):
-            rp_obj.subscribe_client_mailchimp_async(cr, uid, partner.id, context=context)
 
         return True
 

@@ -24,6 +24,30 @@
             <field name="comerdist">comer</field>
             <field name="sequence">999</field>
         </record>
+        <record model="giscedata.switching.activation.config" id="sw_act_m102_ct_subrogacio_mailchimp_subscription">
+            <field name="proces_id" ref="giscedata_switching.sw_proces_m1"/>
+            <field name="step_id" ref="giscedata_switching.sw_step_m1_02"/>
+            <field name="description">Dóna d'alta a la llista de Mailchimp indicada a la variable
+            de configuració "mailchimp_clients_list" al nou. Si el nou titular és soci, actualitza
+            les dades de la llista de la variable "mailchimp_members_list".
+            Aplica pels canvis de titular per subrogació en activar el pas 02.</field>
+            <field name="method">ct_alta_mailchimp</field>
+            <field name="conditions">[('01', 'sollicitudadm', 'in', ['A', 'S'])]</field>
+            <field name="comerdist">comer</field>
+            <field name="sequence">999</field>
+        </record>
+        <record model="giscedata.switching.activation.config" id="sw_act_m105_ct_traspas_mailchimp_subscription">
+            <field name="proces_id" ref="giscedata_switching.sw_proces_m1"/>
+            <field name="step_id" ref="giscedata_switching.sw_step_m1_05"/>
+            <field name="description">Dóna d'alta a la llista de Mailchimp indicada a la variable
+            de configuració "mailchimp_clients_list" al nou. Si el nou titular és soci, actualitza
+            les dades de la llista de la variable "mailchimp_members_list".
+            Aplica pels canvis de titular per transpàs en activar el pas 05.</field>
+            <field name="method">ct_alta_mailchimp</field>
+            <field name="conditions">[('01', 'sollicitudadm','in', ['A', 'S'])]</field>
+            <field name="comerdist">comer</field>
+            <field name="sequence">999</field>
+        </record>
         <record model="giscedata.switching.activation.config" id="som_sw_act_m105_ct_traspas">
             <field name="proces_id" ref="giscedata_switching.sw_proces_m1"/>
             <field name="step_id" ref="giscedata_switching.sw_step_m1_05"/>

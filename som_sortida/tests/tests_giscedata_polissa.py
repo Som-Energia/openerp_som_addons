@@ -2,6 +2,7 @@
 from osv import osv
 from destral import testing
 from datetime import datetime
+import mock
 
 
 class TestsGiscedataPolissa(testing.OOTestCaseWithCursor):
@@ -33,7 +34,7 @@ class TestsGiscedataPolissa(testing.OOTestCaseWithCursor):
         pol_obj = self.openerp.pool.get('giscedata.polissa')
 
         polissa_id = imd_obj.get_object_reference(
-            cursor, uid, 'giscedata_polissa', 'polissa_0001'
+            cursor, uid, 'giscedata_polissa', 'polissa_0004'
         )[1]
         pol = pol_obj.browse(cursor, uid, polissa_id)
         # Check initial state
@@ -79,30 +80,29 @@ class TestsGiscedataPolissa(testing.OOTestCaseWithCursor):
         estat_enivat = imd_obj.get_object_reference(
             cursor, uid, 'som_sortida', 'enviar_cor_enviat_cor_pending_state'
         )[1]
-
         pol_obj.set_pending(cursor, uid, polissa_id, estat_sense_socia, {
-            'custom_change_dates': {polissa_id: '2023-10-01'},
+            'custom_change_dates': {polissa_id: '2031-10-01'},
         })
         cor_submission_date = pol_obj.read(
             cursor, uid, polissa_id, ['cor_submission_date']
         )['cor_submission_date']
-        self.assertEqual(cor_submission_date, datetime(2024, 9, 30, 0, 0))
+        self.assertEqual(cor_submission_date, datetime(2032, 9, 30, 0, 0))
 
         pol_obj.set_pending(cursor, uid, polissa_id, estat_15d, {
-            'custom_change_dates': {polissa_id: '2024-10-01'},
+            'custom_change_dates': {polissa_id: '2032-10-01'},
         })
         cor_submission_date = pol_obj.read(
             cursor, uid, polissa_id, ['cor_submission_date']
         )['cor_submission_date']
-        self.assertEqual(cor_submission_date, datetime(2024, 10, 16, 0, 0))
+        self.assertEqual(cor_submission_date, datetime(2032, 10, 16, 0, 0))
 
         pol_obj.set_pending(cursor, uid, polissa_id, estat_enivat, {
-            'custom_change_dates': {polissa_id: '2024-11-01'},
+            'custom_change_dates': {polissa_id: '2032-11-01'},
         })
         cor_submission_date = pol_obj.read(
             cursor, uid, polissa_id, ['cor_submission_date']
         )['cor_submission_date']
-        self.assertEqual(cor_submission_date, datetime(2024, 11, 1, 0, 0))
+        self.assertEqual(cor_submission_date, datetime(2032, 11, 1, 0, 0))
 
     def test_request_submission_to_cor(self):
         cursor = self.cursor
@@ -172,3 +172,56 @@ class TestsGiscedataPolissa(testing.OOTestCaseWithCursor):
 
         with self.assertRaises(osv.except_osv):
             pol_obj.request_submission_to_cor(cursor, uid, polissa_id)
+
+    @mock.patch('som_sortida.models.res_partner_address.ResPartnerAddress.subscribe_polissa_titular_in_ctss_lists')  # noqa: E501
+    def test__write__add_category_ct_sense_socia(self, mocked_subscribe):
+        cursor = self.cursor
+        uid = self.uid
+        imd_obj = self.openerp.pool.get("ir.model.data")
+        pol_obj = self.openerp.pool.get("giscedata.polissa")
+        polissa_id = imd_obj.get_object_reference(
+            cursor, uid, "giscedata_polissa", "polissa_0001"
+        )[1]
+        # Put category CT sense sòcia
+        category_cts_sense_socia_id = imd_obj.get_object_reference(
+            cursor, uid, "som_polissa_soci", "origen_ct_sense_socia_category"
+        )[1]
+
+        pol_obj.write(cursor, uid, [polissa_id], {
+            'category_id': [(4, category_cts_sense_socia_id)]
+        })
+
+        mocked_subscribe.assert_called_once_with(
+            cursor, uid, [polissa_id], context={}
+        )
+
+    @mock.patch('som_sortida.models.res_partner_address.ResPartnerAddress.subscribe_polissa_titular_in_ctss_lists')  # noqa: E501
+    @mock.patch('som_sortida.models.res_partner_address.ResPartnerAddress.update_polissa_titular_in_ctss_lists')  # noqa: E501
+    def test__write__remove_socia_ct_sense_socia(self, mocked_update, mocked_subscribe):
+        cursor = self.cursor
+        uid = self.uid
+        imd_obj = self.openerp.pool.get("ir.model.data")
+        pol_obj = self.openerp.pool.get("giscedata.polissa")
+        polissa_id = imd_obj.get_object_reference(
+            cursor, uid, "giscedata_polissa", "polissa_0002"
+        )[1]
+        # Add category CT sense sòcia
+        category_cts_sense_socia_id = imd_obj.get_object_reference(
+            cursor, uid, "som_polissa_soci", "origen_ct_sense_socia_category"
+        )[1]
+        pol_obj.write(cursor, uid, [polissa_id], {
+            'category_id': [(4, category_cts_sense_socia_id)]
+        })
+        # Change soci to one that is not a CT sense sòcia
+        partner_soci_id = imd_obj.get_object_reference(
+            cursor, uid, 'som_generationkwh', 'res_partner_inversor1'
+        )[1]
+
+        pol_obj.write(cursor, uid, [polissa_id], {
+            'soci': partner_soci_id
+        })
+
+        mocked_update.assert_called_once()
+        mocked_subscribe.assert_called_once_with(
+            cursor, uid, [polissa_id], context={}
+        )

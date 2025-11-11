@@ -33,6 +33,10 @@ show_iva_column_date = "2023-10-10"
 
 auvi_logo_attachment_name = "auvi_logo.png"
 
+compl_cat = "Facturació Complementaria imputada per part de la Distribuïdora"
+compl_cas = "Facturación Complementaria imputada por parte de la Distribuidora"
+
+
 # -----------------------------------
 # helper functions
 # -----------------------------------
@@ -200,6 +204,11 @@ def get_iva_line(line):
 
 def clean_tax_name(tax_name):
     return tax_name.replace("(Vendes)", "").strip()
+
+
+def get_reactive_lines_clean(fact):
+    return [l for l in fact.linies_reactiva if  # noqa: E741
+            compl_cat not in l.name and compl_cas not in l.name]  # noqa: E741
 
 
 class GiscedataFacturacioFacturaReport(osv.osv):
@@ -705,6 +714,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
                     f.data_inici >= date_trunc('month', date %(data_final)s) - interval '%(interval)s month'
                     AND (fl.isdiscount IS NULL OR NOT fl.isdiscount)
                     AND i.type IN ('out_invoice','out_refund')
+                    AND il.name not like '%%Facturaci%%Compleme%%Distri%%'
                     AND pt.name like 'P%%'
             GROUP BY
                     f.polissa_id, pt.name, f.data_inici
@@ -903,6 +913,21 @@ class GiscedataFacturacioFacturaReport(osv.osv):
             factura_linia_ids.extend(eld["factura_linia_ids"])
         return factura_linia_ids
 
+    def get_all_lines_in_extralines(self, pol):
+        extra_obj = pol.pool.get("giscedata.facturacio.extra")
+        extra_ids = extra_obj.search(
+            self.cursor,
+            self.uid,
+            [("polissa_id", "=", pol.id), ],
+            context={"active_test": False}
+        )
+        extra_linia_datas = extra_obj.read(self.cursor, self.uid, extra_ids, ["factura_linia_ids"])
+
+        factura_linia_ids = []
+        for eld in extra_linia_datas:
+            factura_linia_ids.extend(eld["factura_linia_ids"])
+        return factura_linia_ids
+
     def get_real_energy_lines(self, fact, pol):
         real_energy = []
         lines_extra_ids = self.get_lines_in_extralines(fact, pol)
@@ -913,11 +938,19 @@ class GiscedataFacturacioFacturaReport(osv.osv):
 
     def get_extra_energy_lines(self, fact, pol):
         real_energy = []
-        lines_extra_ids = self.get_lines_in_extralines(fact, pol)
+        lines_extra_ids = self.get_all_lines_in_extralines(pol)
         for l in fact.linies_energia:  # noqa: E741
             if l.id in lines_extra_ids:
                 real_energy.append(l)
         return real_energy
+
+    def get_extra_reactive_lines(self, fact, pol):
+        extra_reactive = []
+        lines_extra_ids = self.get_all_lines_in_extralines(pol)
+        for l in fact.linies_reactiva:  # noqa: E741
+            if l.id in lines_extra_ids:
+                extra_reactive.append(l)
+        return extra_reactive
 
     def max_requested_powers(self, pol, fact):
         conf_obj = fact.pool.get("res.config")
@@ -1949,7 +1982,8 @@ class GiscedataFacturacioFacturaReport(osv.osv):
         tarifa_elect_atr = self.get_tarifa_elect_atr(fact)
         reactive_lines = []
         for l in sorted(  # noqa: E741
-            sorted(fact.linies_reactiva, key=attrgetter("data_desde")), key=attrgetter("name")
+            sorted(get_reactive_lines_clean(fact), key=attrgetter("data_desde")),
+            key=attrgetter("name")
         ):
             reactive_lines.append(
                 {
@@ -1984,11 +2018,12 @@ class GiscedataFacturacioFacturaReport(osv.osv):
                 return "excempcio"
             return "5.11percent"
 
-        lines_extra_ids = self.get_lines_in_extralines(fact, pol)
+        lines_extra_ids = self.get_all_lines_in_extralines(pol)
         lloguer_lines = []
         bosocial_lines = []
         donatiu_lines = []
         altres_lines = []
+        compl_lines = []
         iva_energia = None
         iva_potencia = None
         for l in fact.linia_ids:  # noqa: E741
@@ -2040,8 +2075,18 @@ class GiscedataFacturacioFacturaReport(osv.osv):
                     }
                 )
             if l.tipus in "energia" and l.id in lines_extra_ids:
-                altres_lines.append(
+                if compl_cat not in l.name and compl_cas not in l.name:
+                    altres_lines.append(
+                        {
+                            "name": l.name,
+                            "price_subtotal": l.price_subtotal,
+                            "iva": get_iva_line(l),
+                        }
+                    )
+            if l.id in lines_extra_ids and (compl_cat in l.name or compl_cas in l.name):
+                compl_lines.append(
                     {
+                        "id": l.id,
                         "name": l.name,
                         "price_subtotal": l.price_subtotal,
                         "iva": get_iva_line(l),
@@ -2140,6 +2185,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
             "bosocial_lines": bosocial_lines,
             "donatiu_lines": donatiu_lines,
             "altres_lines": altres_lines,
+            "compl_lines": compl_lines,
             "iese_lines": iese_lines,
             "iva_lines": iva_lines,
             "igic_lines": igic_lines,
@@ -2440,6 +2486,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
         ]
 
         extra_energy_lines = self.get_extra_energy_lines(fact, pol)
+        extra_reactive_lines = self.get_extra_reactive_lines(fact, pol)
 
         donatiu = sum([l.price_subtotal for l in donatiu_lines])  # noqa: E741
 
@@ -2447,12 +2494,13 @@ class GiscedataFacturacioFacturaReport(osv.osv):
 
         total_altres = sum([l.price_subtotal for l in altres_lines])  # noqa: E741
 
-        total_extra = sum([l.price_subtotal for l in extra_energy_lines])  # noqa: E741
+        total_extra_energy = sum([l.price_subtotal for l in extra_energy_lines])  # noqa: E741
+        total_extra_reactive = sum([l.price_subtotal for l in extra_reactive_lines])  # noqa: E741
 
-        total_altres += total_extra
+        total_altres += total_extra_energy + total_extra_reactive
 
         total_energia = sum([l.price_subtotal for l in fact.linies_energia])  # noqa: E741
-        total_energia = total_energia - total_extra
+        total_energia = total_energia - total_extra_energy
 
         data = {
             "total_exces_consumida": total_exces_consumida,
@@ -3299,10 +3347,156 @@ class GiscedataFacturacioFacturaReport(osv.osv):
             if len(data["donatiu_lines"])
             else "altres"
             if len(data["altres_lines"])
+            else "compl"
+            if len(data["compl_lines"])
             else "bosocial"
         )
         data["number_of_columns"] = len(self.get_matrix_show_periods(pol)) + 1
         data["iva_column"] = has_iva_column(fact)
+        data["showing_periods"] = self.get_matrix_show_periods(pol)
+
+        if data['compl_lines']:
+            data['compl_info'] = self.get_sub_component_expedient_data(
+                fact, pol, data['compl_lines'])
+        return data
+
+    def get_sub_component_expedient_data(self, fact, pol, lines):
+        extra_obj = fact.pool.get("giscedata.facturacio.extra")
+        f1_obj = fact.pool.get("giscedata.facturacio.importacio.linia")
+        f1f_obj = fact.pool.get("giscedata.facturacio.importacio.linia.factura")
+        l_obj = fact.pool.get("giscedata.facturacio.factura.linia")
+
+        compl_ids = [x['id'] for x in lines]
+        extra_ids = extra_obj.search(
+            self.cursor,
+            self.uid,
+            [
+                ("polissa_id", "=", pol.id),
+                ("factura_ids", "in", fact.id),
+                ("factura_linia_ids", "in", compl_ids)
+            ],
+            context={"active_test": False}
+        )
+        extra_data = extra_obj.read(
+            self.cursor,
+            self.uid,
+            extra_ids,
+            ['origin_invoice']
+        )
+        origins = list(set([x['origin_invoice'] for x in extra_data]))
+        f1_ids = f1_obj.search(
+            self.cursor,
+            self.uid,
+            [
+                ("cups_id", "=", pol.cups.id),
+                ("invoice_number_text", "in", origins),
+                ("type_factura", "=", "C")
+            ],
+            context={"active_test": False}
+        )
+        if len(f1_ids) == 0:
+            raise osv.except_osv(
+                "Error !",
+                _(
+                    u"No s'han trobats F1's d'expedient de anomalia/frau al generar pdf per {}"
+                ).format(fact.number),
+            )
+
+        f1_datas = f1_obj.read(
+            self.cursor,
+            self.uid,
+            f1_ids,
+            ['num_expedient']
+        )
+        expedient = ','.join(list(set([f1_data['num_expedient'] for f1_data in f1_datas])))
+        f1f_ids = f1f_obj.search(
+            self.cursor,
+            self.uid,
+            [('linia_id', 'in', f1_ids)]
+        )
+        f1f_datas = f1f_obj.read(
+            self.cursor,
+            self.uid,
+            f1f_ids,
+            ['tipo_factura']
+        )
+        types = list(set([f1f_data['tipo_factura']
+                     for f1f_data in f1f_datas if f1f_data['tipo_factura']]))
+        data = {
+            'expedient': expedient,
+            'tipus': '06' if '06' in types else '11'
+        }
+
+        tarifa_cargos = self.get_tarifa_elect_atr(fact, "pricelist_tarifas_cargos_electricidad")
+        tarifa_peajes = self.get_tarifa_elect_atr(fact, "pricelist_tarifas_peajes_electricidad")
+        compl_lines = l_obj.browse(self.cursor, self.uid, compl_ids)
+
+        compl_lines_energia = []
+        compl_lines_reactiva = []
+        compl_lines_potencia = []
+
+        for compl_line in compl_lines:
+            if compl_line.tipus == 'energia':
+                compl_lines_energia.append(compl_line)
+            elif compl_line.tipus == 'reactiva':
+                compl_lines_reactiva.append(compl_line)
+            elif compl_line.tipus == 'potencia':
+                compl_lines_potencia.append(compl_line)
+            elif compl_line.tipus == 'altres':
+                if 'Energia' in compl_line.name:
+                    compl_lines_energia.append(compl_line)
+                elif 'Reactiva' in compl_line.name:
+                    compl_lines_reactiva.append(compl_line)
+                elif 'Potencia' in compl_line.name:
+                    compl_lines_potencia.append(compl_line)
+                else:
+                    compl_lines_energia.append(compl_line)
+            else:
+                raise osv.except_osv(
+                    "Error !",
+                    _(
+                        u"Factura amb linies complementaries de tipus desconegut {}"
+                    ).format(fact.number),
+                )
+
+        compl_matrix = [
+            ("energia", "kWh", compl_lines_energia),
+            ("potencia", "kW", compl_lines_potencia),
+            ("reactiva", "kVArh", compl_lines_reactiva),
+        ]
+
+        block = []
+        for type, units, compl_lines_x in compl_matrix:
+            for start_date in sorted(set([x.data_desde for x in compl_lines_x])):
+                date_lines = [x for x in compl_lines_x if x.data_desde == start_date]
+                lines = {}
+                total = 0.0
+                for l in date_lines:  # noqa: E741
+                    if type != 'reactiva':
+                        atr_tolls = self.get_atr_price(fact, tarifa_peajes, l)
+                        atr_charges = self.get_atr_price(fact, tarifa_cargos, l)
+                    else:
+                        atr_tolls = 0.0
+                        atr_charges = 0.0
+                    lines[l.product_id.name] = {
+                        "quantity": l["quantity"],
+                        "price_subtotal": l["price_subtotal"],
+                        "price_unit_multi": l["price_unit_multi"],
+                        "price_tolls": atr_tolls,
+                        "price_charges": atr_charges,
+                        "tolls": (atr_tolls * l["quantity"]),
+                        "charges": (atr_charges * l["quantity"]),
+                    }
+                    total += l["price_subtotal"]
+                lines["total"] = total
+                lines["iva"] = get_iva_line(l)
+                lines["data_inici"] = start_date
+                lines["data_fi"] = l.data_fins
+                lines["type"] = type
+                lines["units"] = units
+                block.append(lines)
+
+        data['energy_lines_data'] = block
         return data
 
     def get_sub_component_invoice_details_td_excess_power_maximeter(self, fact, pol):
@@ -3489,10 +3683,11 @@ class GiscedataFacturacioFacturaReport(osv.osv):
         return (False, 0.0)
 
     def get_sub_component_invoice_details_td_inductive_data(self, fact, pol):
+        linies_reactiva = get_reactive_lines_clean(fact)
         if is_6XTD(pol):
-            linies_inductiva = [l for l in fact.linies_reactiva if l.name not in (u"P6")]  # noqa: E741, E501
+            linies_inductiva = [l for l in linies_reactiva if l.name not in (u"P6")]  # noqa: E741, E501
         else:
-            linies_inductiva = fact.linies_reactiva
+            linies_inductiva = linies_reactiva
         if not linies_inductiva:
             return {"is_visible": False}
 
@@ -3514,7 +3709,8 @@ class GiscedataFacturacioFacturaReport(osv.osv):
         return (False, 0.0)
 
     def get_sub_component_invoice_details_td_capacitive_data(self, fact, pol):
-        linies_capacitiva = [l for l in fact.linies_reactiva if l.name in (u"P6")]  # noqa: E741
+        linies_reactiva = get_reactive_lines_clean(fact)
+        linies_capacitiva = [l for l in linies_reactiva if l.name in (u"P6")]  # noqa: E741
 
         if not linies_capacitiva or not is_6XTD(pol):
             return {"is_visible": False}
@@ -3589,13 +3785,23 @@ class GiscedataFacturacioFacturaReport(osv.osv):
         for e_charge in e_charges.keys():
             if e_charge.startswith(u"P"):
                 all_charges += round(e_charges[e_charge]["atr_cargos"], 2)
-        pie_tolls = round(all_tolls, 2)
+
+        other_data = self.get_sub_component_invoice_details_td_other_concepts_data(fact, pol)
+        if 'compl_info' in other_data and 'energy_lines_data' in other_data['compl_info']:
+            periods = self.get_matrix_show_periods(pol)
+            for block in other_data['compl_info']['energy_lines_data']:
+                for period in periods:
+                    if period in block:
+                        data = block[period]
+                        all_tolls += round(data.get('tolls', 0.0), 2)
+                        all_charges += round(data.get('charges', 0.0), 2)
 
         # BOE17/2021 wrong calculations in the invoice charges needs to remove twice the discount
         all_charges += discount_power["total"]
         all_charges += discount_energy["total"]
-        pie_charges = round(all_charges, 2)
         # END of TODO
+        pie_charges = round(all_charges, 2)
+        pie_tolls = round(all_tolls, 2)
 
         pie_energy = round(pie_total - pie_renting - pie_taxes - pie_tolls - pie_charges, 2)
         data = {

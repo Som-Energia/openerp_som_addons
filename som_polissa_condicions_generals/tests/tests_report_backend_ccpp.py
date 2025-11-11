@@ -80,7 +80,7 @@ class TestReportBackendCCPP(testing.OOTestCase):
         p2 = pol_20td.potencies_periode[0].potencia
         p3 = pol_20td.potencies_periode[1].potencia
         self.assertEqual(result, {
-            u'autoconsum': u'Sense Autoconsum',
+            u'autoconsum': u'00 - Sin autoconsumo',
             u'es_canvi_tecnic': False,
             u'periodes': [
                 (1, p2), False, (2, p3),

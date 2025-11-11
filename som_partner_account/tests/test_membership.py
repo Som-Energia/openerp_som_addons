@@ -44,9 +44,8 @@ class TestAccountAccountSom(testing.OOTestCase):
         )
         return partner["category_id"]
 
-    @mock.patch(
-        "som_polissa_soci.models.somenergia_soci.SomenergiaSoci.subscriu_socia_mailchimp_async")
-    @mock.patch("som_polissa_soci.models.res_partner.ResPartner.arxiva_client_mailchimp_async")
+    @mock.patch("som_polissa_soci.models.res_partner_address.ResPartnerAddress.subscribe_partner_in_members_lists")  # noqa: E501
+    @mock.patch("som_polissa_soci.models.res_partner_address.ResPartnerAddress.unsubscribe_partner_in_customers_no_members_lists")  # noqa: E501
     def test__become_member__addsCategory(
             self, mock_subscribe, mock_arxiva_client_mailchimp_async):
         Partner = self.openerp.pool.get("res.partner")
@@ -62,10 +61,8 @@ class TestAccountAccountSom(testing.OOTestCase):
         mock_subscribe.assert_called()
         mock_arxiva_client_mailchimp_async.assert_called()
 
-    @mock.patch(
-        "som_polissa_soci.models.somenergia_soci.SomenergiaSoci.subscriu_socia_mailchimp_async"
-    )
-    @mock.patch("som_polissa_soci.models.res_partner.ResPartner.arxiva_client_mailchimp_async")
+    @mock.patch("som_polissa_soci.models.res_partner_address.ResPartnerAddress.subscribe_partner_in_members_lists")  # noqa: E501
+    @mock.patch("som_polissa_soci.models.res_partner_address.ResPartnerAddress.unsubscribe_partner_in_customers_no_members_lists")  # noqa: E501
     def test__become_member__doNotAddCategoryTwice(
             self, mock_subscribe, mock_arxiva_client_mailchimp_async):
         Partner = self.openerp.pool.get("res.partner")
@@ -83,10 +80,8 @@ class TestAccountAccountSom(testing.OOTestCase):
         mock_subscribe.assert_called()
         mock_arxiva_client_mailchimp_async.assert_called()
 
-    @mock.patch(
-        "som_polissa_soci.models.somenergia_soci.SomenergiaSoci.subscriu_socia_mailchimp_async"
-    )
-    @mock.patch("som_polissa_soci.models.res_partner.ResPartner.arxiva_client_mailchimp_async")
+    @mock.patch("som_polissa_soci.models.res_partner_address.ResPartnerAddress.subscribe_partner_in_members_lists")  # noqa: E501
+    @mock.patch("som_polissa_soci.models.res_partner_address.ResPartnerAddress.unsubscribe_partner_in_customers_no_members_lists")  # noqa: E501
     def test__become_member__withNoPreviousRef(
             self, mock_subscribe, mock_arxiva_client_mailchimp_async):
         Partner = self.openerp.pool.get("res.partner")
@@ -111,10 +106,8 @@ class TestAccountAccountSom(testing.OOTestCase):
         mock_subscribe.assert_called()
         mock_arxiva_client_mailchimp_async.assert_called()
 
-    @mock.patch(
-        "som_polissa_soci.models.somenergia_soci.SomenergiaSoci.subscriu_socia_mailchimp_async"
-    )
-    @mock.patch("som_polissa_soci.models.res_partner.ResPartner.arxiva_client_mailchimp_async")
+    @mock.patch("som_polissa_soci.models.res_partner_address.ResPartnerAddress.subscribe_partner_in_members_lists")  # noqa: E501
+    @mock.patch("som_polissa_soci.models.res_partner_address.ResPartnerAddress.unsubscribe_partner_in_customers_no_members_lists")  # noqa: E501
     def test__become_member__withPreviousMemberRef_renewsIt(
             self, mock_subscribe, mock_arxiva_client_mailchimp_async):
         Partner = self.openerp.pool.get("res.partner")
@@ -140,10 +133,8 @@ class TestAccountAccountSom(testing.OOTestCase):
         mock_subscribe.assert_called()
         mock_arxiva_client_mailchimp_async.assert_called()
 
-    @mock.patch(
-        "som_polissa_soci.models.somenergia_soci.SomenergiaSoci.subscriu_socia_mailchimp_async"
-    )
-    @mock.patch("som_polissa_soci.models.res_partner.ResPartner.arxiva_client_mailchimp_async")
+    @mock.patch("som_polissa_soci.models.res_partner_address.ResPartnerAddress.subscribe_partner_in_members_lists")  # noqa: E501
+    @mock.patch("som_polissa_soci.models.res_partner_address.ResPartnerAddress.unsubscribe_partner_in_customers_no_members_lists")  # noqa: E501
     def test__become_member__withForcedMemberRef_usesIt(
             self, mock_subscribe, mock_arxiva_client_mailchimp_async):
         Partner = self.openerp.pool.get("res.partner")
@@ -166,10 +157,8 @@ class TestAccountAccountSom(testing.OOTestCase):
         mock_subscribe.assert_called()
         mock_arxiva_client_mailchimp_async.assert_called()
 
-    @mock.patch(
-        "som_polissa_soci.models.somenergia_soci.SomenergiaSoci.subscriu_socia_mailchimp_async"
-    )
-    @mock.patch("som_polissa_soci.models.res_partner.ResPartner.arxiva_client_mailchimp_async")
+    @mock.patch("som_polissa_soci.models.res_partner_address.ResPartnerAddress.subscribe_partner_in_members_lists")  # noqa: E501
+    @mock.patch("som_polissa_soci.models.res_partner_address.ResPartnerAddress.unsubscribe_partner_in_customers_no_members_lists")  # noqa: E501
     def test__become_member__withNonMemberRef_changesIt(
             self, mock_subscribe, mock_arxiva_client_mailchimp_async):
         Partner = self.openerp.pool.get("res.partner")
@@ -196,10 +185,8 @@ class TestAccountAccountSom(testing.OOTestCase):
 
     from plantmeter.testutils import assertNsEqual
 
-    @mock.patch(
-        "som_polissa_soci.models.somenergia_soci.SomenergiaSoci.subscriu_socia_mailchimp_async"
-    )
-    @mock.patch("som_polissa_soci.models.res_partner.ResPartner.arxiva_client_mailchimp_async")
+    @mock.patch("som_polissa_soci.models.res_partner_address.ResPartnerAddress.subscribe_partner_in_members_lists")  # noqa: E501
+    @mock.patch("som_polissa_soci.models.res_partner_address.ResPartnerAddress.unsubscribe_partner_in_customers_no_members_lists")  # noqa: E501
     def test__become_member__createsMember(
             self, mock_subscribe, mock_arxiva_client_mailchimp_async):
         Partner = self.openerp.pool.get("res.partner")
@@ -235,10 +222,8 @@ class TestAccountAccountSom(testing.OOTestCase):
         mock_subscribe.assert_called()
         mock_arxiva_client_mailchimp_async.assert_called()
 
-    @mock.patch(
-        "som_polissa_soci.models.somenergia_soci.SomenergiaSoci.subscriu_socia_mailchimp_async"
-    )
-    @mock.patch("som_polissa_soci.models.res_partner.ResPartner.arxiva_client_mailchimp_async")
+    @mock.patch("som_polissa_soci.models.res_partner_address.ResPartnerAddress.subscribe_partner_in_members_lists")  # noqa: E501
+    @mock.patch("som_polissa_soci.models.res_partner_address.ResPartnerAddress.unsubscribe_partner_in_customers_no_members_lists")  # noqa: E501
     def test__become_member__whenMemberExist_keeps(
             self, mock_subscribe, mock_arxiva_client_mailchimp_async):
         Partner = self.openerp.pool.get("res.partner")
@@ -255,10 +240,8 @@ class TestAccountAccountSom(testing.OOTestCase):
         mock_subscribe.assert_called()
         mock_arxiva_client_mailchimp_async.assert_called()
 
-    @mock.patch(
-        "som_polissa_soci.models.somenergia_soci.SomenergiaSoci.subscriu_socia_mailchimp_async"
-    )
-    @mock.patch("som_polissa_soci.models.res_partner.ResPartner.arxiva_client_mailchimp_async")
+    @mock.patch("som_polissa_soci.models.res_partner_address.ResPartnerAddress.subscribe_partner_in_members_lists")  # noqa: E501
+    @mock.patch("som_polissa_soci.models.res_partner_address.ResPartnerAddress.unsubscribe_partner_in_customers_no_members_lists")  # noqa: E501
     def test__become_member__whenMemberDroppedOut(
             self, mock_subscribe, mock_arxiva_client_mailchimp_async):
         Partner = self.openerp.pool.get("res.partner")
@@ -304,10 +287,8 @@ class TestAccountAccountSom(testing.OOTestCase):
         mock_subscribe.assert_called()
         mock_arxiva_client_mailchimp_async.assert_called()
 
-    @mock.patch(
-        "som_polissa_soci.models.somenergia_soci.SomenergiaSoci.subscriu_socia_mailchimp_async"
-    )
-    @mock.patch("som_polissa_soci.models.res_partner.ResPartner.arxiva_client_mailchimp_async")
+    @mock.patch("som_polissa_soci.models.res_partner_address.ResPartnerAddress.subscribe_partner_in_members_lists")  # noqa: E501
+    @mock.patch("som_polissa_soci.models.res_partner_address.ResPartnerAddress.unsubscribe_partner_in_customers_no_members_lists")  # noqa: E501
     def test__become_member__whenMemberDroppedOut_withPreviousComment_appends(
             self, mock_subscribe, mock_arxiva_client_mailchimp_async):
         Partner = self.openerp.pool.get("res.partner")
@@ -345,10 +326,8 @@ class TestAccountAccountSom(testing.OOTestCase):
         mock_subscribe.assert_called()
         mock_arxiva_client_mailchimp_async.assert_called()
 
-    @mock.patch(
-        "som_polissa_soci.models.somenergia_soci.SomenergiaSoci.subscriu_socia_mailchimp_async"
-    )
-    @mock.patch("som_polissa_soci.models.res_partner.ResPartner.arxiva_client_mailchimp_async")
+    @mock.patch("som_polissa_soci.models.res_partner_address.ResPartnerAddress.subscribe_partner_in_members_lists")  # noqa: E501
+    @mock.patch("som_polissa_soci.models.res_partner_address.ResPartnerAddress.unsubscribe_partner_in_customers_no_members_lists")  # noqa: E501
     def test__become_member__whenCommentExists_doNotInsertNewLine(
             self, mock_subscribe, mock_arxiva_client_mailchimp_async):
         Partner = self.openerp.pool.get("res.partner")
@@ -366,10 +345,8 @@ class TestAccountAccountSom(testing.OOTestCase):
         mock_subscribe.assert_called()
         mock_arxiva_client_mailchimp_async.assert_called()
 
-    @mock.patch(
-        "som_polissa_soci.models.somenergia_soci.SomenergiaSoci.subscriu_socia_mailchimp_async"
-    )
-    @mock.patch("som_polissa_soci.models.res_partner.ResPartner.arxiva_client_mailchimp_async")
+    @mock.patch("som_polissa_soci.models.res_partner_address.ResPartnerAddress.subscribe_partner_in_members_lists")  # noqa: E501
+    @mock.patch("som_polissa_soci.models.res_partner_address.ResPartnerAddress.unsubscribe_partner_in_customers_no_members_lists")  # noqa: E501
     def test__become_member__whenInactive(self, mock_subscribe, mock_arxiva_client_mailchimp_async):
         Partner = self.openerp.pool.get("res.partner")
         Member = self.openerp.pool.get("somenergia.soci")
@@ -623,10 +600,8 @@ class TestAccountAccountSom(testing.OOTestCase):
             member=self.adopter,
         )
 
-    @mock.patch(
-        "som_polissa_soci.models.somenergia_soci.SomenergiaSoci.subscriu_socia_mailchimp_async"
-    )
-    @mock.patch("som_polissa_soci.models.res_partner.ResPartner.arxiva_client_mailchimp_async")
+    @mock.patch("som_polissa_soci.models.res_partner_address.ResPartnerAddress.subscribe_partner_in_members_lists")  # noqa: E501
+    @mock.patch("som_polissa_soci.models.res_partner_address.ResPartnerAddress.unsubscribe_partner_in_customers_no_members_lists")  # noqa: E501
     def test__button_assign_soci_seq__createsMember(
             self, mock_subscriu_socia_mailchimp_async, mock_arxiva_client_mailchimp_async):
         Partner = self.openerp.pool.get("res.partner")
@@ -670,10 +645,8 @@ class TestAccountAccountSom(testing.OOTestCase):
         mock_subscriu_socia_mailchimp_async.assert_called()
         mock_arxiva_client_mailchimp_async.assert_called()
 
-    @mock.patch(
-        "som_polissa_soci.models.somenergia_soci.SomenergiaSoci.subscriu_socia_mailchimp_async"
-    )
-    @mock.patch("som_polissa_soci.models.res_partner.ResPartner.arxiva_client_mailchimp_async")
+    @mock.patch("som_polissa_soci.models.res_partner_address.ResPartnerAddress.subscribe_partner_in_members_lists")  # noqa: E501
+    @mock.patch("som_polissa_soci.models.res_partner_address.ResPartnerAddress.unsubscribe_partner_in_customers_no_members_lists")  # noqa: E501
     def test__button_assign_soci_seq__adoptsContract(
             self, mock_subscriu_socia_mailchimp_async, mock_arxiva_client_mailchimp_async):
         Partner = self.openerp.pool.get("res.partner")
@@ -701,10 +674,8 @@ class TestAccountAccountSom(testing.OOTestCase):
         mock_subscriu_socia_mailchimp_async.assert_called()
         mock_arxiva_client_mailchimp_async.assert_called()
 
-    @mock.patch(
-        "som_polissa_soci.models.somenergia_soci.SomenergiaSoci.subscriu_socia_mailchimp_async"
-    )
-    @mock.patch("som_polissa_soci.models.res_partner.ResPartner.arxiva_client_mailchimp_async")
+    @mock.patch("som_polissa_soci.models.res_partner_address.ResPartnerAddress.subscribe_partner_in_members_lists")  # noqa: E501
+    @mock.patch("som_polissa_soci.models.res_partner_address.ResPartnerAddress.unsubscribe_partner_in_customers_no_members_lists")  # noqa: E501
     def test__button_assign_soci_seq__withManyMembers(
             self, mock_subscriu_socia_mailchimp_async, mock_arxiva_client_mailchimp_async):
         Partner = self.openerp.pool.get("res.partner")
