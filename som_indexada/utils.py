@@ -117,6 +117,7 @@ def calculate_new_indexed_prices(cursor, uid, pol, context=None):
     preu_sense_F = indexada_consum_tipus[tarifa_acces][key_price_name]
     preu_mitja_antic = (1.015 * f_antiga + preu_sense_F)
     preu_mitja_nou = (1.015 * f_nova + preu_sense_F)
+    key_price_name = "preu_eie_sense_F" if is_eie else "preu_sense_F"
 
     conany = pol.cups.conany_kwh if pol.cups.conany_kwh > 0 else 1
 
@@ -166,6 +167,7 @@ def calculate_new_indexed_prices(cursor, uid, pol, context=None):
         "f_nova": f_nova,
         "f_antiga_kwh": f_antiga_kwh,
         "f_nova_kwh": f_nova_kwh,
+        "f_eie": f_nova,
         "preu_mig_anual_antiga": preu_mitja_antic,
         "preu_mig_anual_nova": preu_mitja_nou,
         "import_potencia_anual_antiga": import_potencia_anual_antiga,
@@ -181,7 +183,4 @@ def calculate_new_indexed_prices(cursor, uid, pol, context=None):
         "impacte_import_amb_impost": impacte_import_amb_impost,
         "impacte_perc_amb_impost": impacte_perc_amb_impost * 100,
     }
-
-
-
     return dades_index
