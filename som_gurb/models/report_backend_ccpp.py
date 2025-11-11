@@ -100,7 +100,7 @@ class ReportBackendCondicionsParticulars(ReportBackend):
                 "nom": gurb_cups_br.gurb_cau_id.name,
                 "cost": float_round(initial_product_price_with_taxes, 2),
                 "potencia": gurb_cups_br.beta_kw,
-                "quota": quota_with_taxes,
+                "quota": str(quota_with_taxes),
                 "beta_percentatge": gurb_cups_br.beta_percentage,
                 "annex": annex
             }
