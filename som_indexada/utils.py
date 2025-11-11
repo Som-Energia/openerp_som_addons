@@ -182,4 +182,6 @@ def calculate_new_indexed_prices(cursor, uid, pol, context=None):
         "impacte_perc_amb_impost": impacte_perc_amb_impost * 100,
     }
 
+
+
     return dades_index
