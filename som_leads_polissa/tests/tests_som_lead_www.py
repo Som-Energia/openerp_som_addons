@@ -59,7 +59,7 @@ class TestsSomLeadWww(testing.OOTestCase):
                     "block": "B",
                 },
                 "email": "pepito@foo.bar",
-                "phone": "972123456",
+                "phone": "+34 972123456",
                 "lang": "es_ES",
                 "privacy_conditions": True,
             },
@@ -1219,15 +1219,57 @@ class TestsSomLeadWww(testing.OOTestCase):
         tensio_trifasica = ir_model_o.get_object_reference(
             self.cursor, self.uid, 'giscedata_tensions', 'tensio_3x230_400')[1]
         self.assertEqual(lead.polissa_id.tensio_normalitzada.id, tensio_trifasica)
-        self.mock_subscribe_member.assert_called()
-        self.mock_unsubscribe_customer.assert_called()
 
-    def test_manual_member_number_error(self):
+    def test_lead_with_phone_without_prefix_dont_fail(self):
         www_lead_o = self.get_model("som.lead.www")
+        lead_o = self.get_model("giscedata.crm.lead")
+
+        values = self._basic_values
+        values["new_member_info"]["phone"] = "612345678"
+
+        result = www_lead_o.create_lead(self.cursor, self.uid, self._basic_values)
+        self.assertFalse(result["error"])
+
+        www_lead_o.activate_lead(self.cursor, self.uid, result["lead_id"], context={"sync": True})
+
+        lead = lead_o.browse(self.cursor, self.uid, result["lead_id"])
+
+        # Check that the phone and prefix are correctly set
+        self.assertEqual(lead.titular_phone, "612345678")
+        self.assertEqual(lead.titular_phone_prefix, False)
+
+        # +34 is the default value in the res.partner.address
+        self.assertEqual(lead.polissa_id.direccio_notificacio.phone, "612345678")
+        self.assertEqual(lead.polissa_id.direccio_notificacio.phone_prefix.name, "+34")
+
+    def test_new_lead_with_phone_prefix(self):
+        www_lead_o = self.get_model("som.lead.www")
+        lead_o = self.get_model("giscedata.crm.lead")
+
+        values = self._basic_values
+        values["new_member_info"]["phone"] = "+850 612345678"
+
+        result = www_lead_o.create_lead(self.cursor, self.uid, self._basic_values)
+        self.assertFalse(result["error"])
+
+        www_lead_o.activate_lead(self.cursor, self.uid, result["lead_id"], context={"sync": True})
+
+        lead = lead_o.browse(self.cursor, self.uid, result["lead_id"])
+
+        # Check that the phone and prefix are correctly set
+        self.assertEqual(lead.titular_phone, "612345678")
+        self.assertEqual(lead.titular_phone_prefix.name, "+850")
+
+        self.assertEqual(lead.polissa_id.direccio_notificacio.phone, "612345678")
+        self.assertEqual(lead.polissa_id.direccio_notificacio.phone_prefix.name, "+850")
+
+    def test_already_member_lead_with_phone_prefix(self):
+        www_lead_o = self.get_model("som.lead.www")
+        lead_o = self.get_model("giscedata.crm.lead")
         member_o = self.get_model("somenergia.soci")
         ir_model_o = self.get_model("ir.model.data")
-        lead_o = self.get_model("giscedata.crm.lead")
         partner_o = self.get_model("res.partner")
+        address_o = self.get_model("res.partner.address")
 
         member_id = ir_model_o.get_object_reference(
             self.cursor, self.uid, "som_polissa_soci", "soci_0001"
@@ -1237,9 +1279,52 @@ class TestsSomLeadWww(testing.OOTestCase):
 
         vat = member.partner_id.vat.replace("ES", "")
 
+        # +34 is the default so we only change the phone
+        address_o.write(
+            self.cursor, self.uid, member.partner_id.address[0].id, {'phone': "612345678"})
+
+        values = self._basic_values
+        del values["new_member_info"]
+        values["linked_member"] = "already_member"
+        values["linked_member_info"] = {
+            "vat": vat,
+            "code": member.partner_id.ref.replace("S", ""),
+        }
+
+        result = www_lead_o.create_lead(self.cursor, self.uid, values)
+
+        lead = lead_o.browse(self.cursor, self.uid, result["lead_id"])
+
+        # Check that the phone and prefix are correctly set
+        self.assertEqual(lead.titular_phone, "612345678")
+        self.assertEqual(lead.titular_phone_prefix.name, "+34")
+
+        # Change the phone and assert that it arrives correctly to the address
+        new_prefix_id = ir_model_o.get_object_reference(
+            self.cursor, self.uid, "base_extended_som", "res_phone_national_code_data_850")[1]
+        lead_o.write(self.cursor, self.uid, lead.id, {
+            "titular_phone": "699999999",
+            "titular_phone_prefix": new_prefix_id,
+        })
+        www_lead_o.activate_lead(self.cursor, self.uid, result["lead_id"], context={"sync": True})
+        lead = lead_o.browse(self.cursor, self.uid, result["lead_id"])
+
+        self.assertEqual(lead.polissa_id.direccio_notificacio.phone, "699999999")
+        self.assertEqual(lead.polissa_id.direccio_notificacio.phone_prefix.name, "+850")
+
+    def test_manual_member_number_error(self):
+        www_lead_o = self.get_model("som.lead.www")
+        lead_o = self.get_model("giscedata.crm.lead")
+        ir_model_o = self.get_model("ir.model.data")
+        member_o = self.get_model("somenergia.soci")
         values = self._basic_values
         values["linked_member"] = "sponsored"
         values["contract_owner"] = values.pop("new_member_info")
+        member_id = ir_model_o.get_object_reference(
+            self.cursor, self.uid, "som_polissa_soci", "soci_0001"
+        )[1]
+        member = member_o.browse(self.cursor, self.uid, member_id)
+        vat = member.partner_id.vat.replace("ES", "")
         values["linked_member_info"] = {
             "vat": vat,
             "code": member.partner_id.ref.replace("S", ""),

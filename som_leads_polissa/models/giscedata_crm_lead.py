@@ -5,7 +5,7 @@ from osv import fields, osv
 import netsvc
 from oorq.decorators import job
 
-from base_extended_som.res_partner import GENDER_SELECTION
+from base_extended_som.models.res_partner import GENDER_SELECTION
 
 
 _tipus_tarifes_lead = [
@@ -23,8 +23,12 @@ _MEMBER_FEE_PURPOSE = 'QUOTA SOCI'
 
 
 class GiscedataCrmLead(osv.OsvInherits):
-
     _inherit = "giscedata.crm.lead"
+
+    def __init__(self, *args, **kwargs):
+        super(GiscedataCrmLead, self).__init__(*args, **kwargs)
+        self.lead_titular_adr_to_adr["titular_phone_prefix"] = "phone_prefix"
+        self.lead_titular_adr_to_adr["titular_mobile_prefix"] = "mobile_prefix"
 
     def contract_pdf(self, cursor, uid, ids, context=None):
         if context is None:
@@ -194,6 +198,25 @@ class GiscedataCrmLead(osv.OsvInherits):
             cursor, uid, create_vals, crml_id, context=context)
 
         return partner_id
+
+    def _get_values_titular(self, cursor, uid, vat, context=None):
+        partner_o = self.pool.get("res.partner")
+        address_o = self.pool.get("res.partner.address")
+
+        vals = super(GiscedataCrmLead, self)._get_values_titular(cursor, uid, vat, context=context)
+
+        # We add the phone prefix if found
+        pids = partner_o.search(cursor, uid, [('vat', '=', vals['titular_vat'])])
+        if len(pids):
+            addrs = partner_o.address_get(cursor, uid, pids[0], adr_pref=['default'])
+            if addrs.get("default"):
+                ad_id = addrs.get("default")
+                adr_info = address_o.read(
+                    cursor, uid, ad_id, ['phone_prefix', 'mobile_prefix'], context=context)
+                vals["titular_phone_prefix"] = adr_info.get("phone_prefix", [False])[0]
+                vals["titular_mobile_prefix"] = adr_info.get("mobile_prefix", [False])[0]
+
+        return vals
 
     def _create_or_get_representative(self, cursor, uid, vat, name, lang, context=None):
         if context is None:
@@ -439,6 +462,10 @@ class GiscedataCrmLead(osv.OsvInherits):
         "comercial_info_accepted": fields.boolean("Accepta informació comercial (SomServeis)"),
         "crm_lead_id": fields.integer("ID del lead al CRM"),
         "is_new_contact": fields.boolean("És una persona nova per la cooperativa"),
+        "titular_phone_prefix": fields.many2one(
+            'res.phone.national.code', "Prefix", required=False),
+        "titular_mobile_prefix": fields.many2one(
+            'res.phone.national.code', "Prefix", required=False),
     }
 
     _defaults = {
