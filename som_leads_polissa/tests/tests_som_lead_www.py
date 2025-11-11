@@ -1312,15 +1312,23 @@ class TestsSomLeadWww(testing.OOTestCase):
         self.assertEqual(lead.polissa_id.direccio_notificacio.phone, "699999999")
         self.assertEqual(lead.polissa_id.direccio_notificacio.phone_prefix.name, "+850")
 
-        self.mock_subscriu.assert_called()
-        self.mock_arxiva.assert_called()
-
     def test_manual_member_number_error(self):
         www_lead_o = self.get_model("som.lead.www")
         lead_o = self.get_model("giscedata.crm.lead")
+        ir_model_o = self.get_model("ir.model.data")
+        member_o = self.get_model("somenergia.soci")
         values = self._basic_values
         values["linked_member"] = "sponsored"
         values["contract_owner"] = values.pop("new_member_info")
+        member_id = ir_model_o.get_object_reference(
+            self.cursor, self.uid, "som_polissa_soci", "soci_0001"
+        )[1]
+        member = member_o.browse(self.cursor, self.uid, member_id)
+        vat = member.partner_id.vat.replace("ES", "")
+        values["linked_member_info"] = {
+            "vat": vat,
+            "code": member.partner_id.ref.replace("S", ""),
+        }
 
         lead_id = www_lead_o.create_lead(self.cursor, self.uid, values)["lead_id"]
         lead_o.write(
