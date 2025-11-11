@@ -3478,15 +3478,21 @@ class GiscedataFacturacioFacturaReport(osv.osv):
                     else:
                         atr_tolls = 0.0
                         atr_charges = 0.0
-                    lines[l.product_id.name] = {
-                        "quantity": l["quantity"],
-                        "price_subtotal": l["price_subtotal"],
-                        "price_unit_multi": l["price_unit_multi"],
-                        "price_tolls": atr_tolls,
-                        "price_charges": atr_charges,
-                        "tolls": (atr_tolls * l["quantity"]),
-                        "charges": (atr_charges * l["quantity"]),
-                    }
+                    if l.product_id.name in lines:
+                        lines[l.product_id.name]["quantity"] += l["quantity"]
+                        lines[l.product_id.name]["price_subtotal"] += l["price_subtotal"]
+                        lines[l.product_id.name]["tolls"] += (atr_tolls * l["quantity"])
+                        lines[l.product_id.name]["charges"] += (atr_charges * l["quantity"])
+                    else:
+                        lines[l.product_id.name] = {
+                            "quantity": l["quantity"],
+                            "price_subtotal": l["price_subtotal"],
+                            "price_unit_multi": l["price_unit_multi"],
+                            "price_tolls": atr_tolls,
+                            "price_charges": atr_charges,
+                            "tolls": (atr_tolls * l["quantity"]),
+                            "charges": (atr_charges * l["quantity"]),
+                        }
                     total += l["price_subtotal"]
                 lines["total"] = total
                 lines["iva"] = get_iva_line(l)
