@@ -27,8 +27,8 @@ def up(cursor, installed_version):
     if n_facts_no_processades:
         logger.info("Per {} factures anulladores no s'ha pogut crear les linies de descompte de "
                     "bateteria virtual, els ids son: {}".format(
-            n_facts_no_processades, facts_no_processades
-        ))
+                        n_facts_no_processades, facts_no_processades
+                    ))
 
 
 def down(cursor, installed_version):
