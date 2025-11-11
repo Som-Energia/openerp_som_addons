@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import, unicode_literals
 from report_backend.report_backend import ReportBackend, report_browsify
-from som_indexada.utils import calculate_new_indexed_prices
+from som_indexada.utils import calculate_new_eie_indexed_prices
 
 
 class ReportBackendMailcanvipreusEiE(ReportBackend):
@@ -40,6 +40,13 @@ class ReportBackendMailcanvipreusEiE(ReportBackend):
         env_br = env_o.browse(cursor, uid, record_id, context=context)
 
         return env_br.polissa_id.titular.lang
+    def is_eie(self, cursor, uid, env, context=None):
+        if context is None:
+            context = {}
+
+        pol_llista = env.polissa_id.llista_preu.id
+
+        return pol_llista in [150, 153, 154]
 
     def get_data_eie(self, cursor, uid, env, context=None):
         if context is None:
@@ -82,10 +89,12 @@ class ReportBackendMailcanvipreusEiE(ReportBackend):
             "lang": env.polissa_id.titular.lang,
         }
 
-        data['dades_index'] = calculate_new_indexed_prices(
-            cursor, uid, env.polissa_id, context=context
-        )
-        data['contract'] = self.get_data_eie(cursor, uid, env, context=context)
+        eie = self.is_eie(cursor, uid, env, context=context)
+        if eie:
+            data['dades_index'] = calculate_new_eie_indexed_prices(
+                cursor, uid, env.polissa_id, context=context
+            )
+            data['contract'] = self.get_data_eie(cursor, uid, env, context=context)
 
         return data
 
