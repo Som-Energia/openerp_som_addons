@@ -213,8 +213,9 @@ class GiscedataCrmLead(osv.OsvInherits):
                 ad_id = addrs.get("default")
                 adr_info = address_o.read(
                     cursor, uid, ad_id, ['phone_prefix', 'mobile_prefix'], context=context)
-                vals["titular_phone_prefix"] = adr_info.get("phone_prefix", [False])[0]
-                vals["titular_mobile_prefix"] = adr_info.get("mobile_prefix", [False])[0]
+                if adr_info:
+                    vals["titular_phone_prefix"] = adr_info.get("phone_prefix", [False])[0]
+                    vals["titular_mobile_prefix"] = adr_info.get("mobile_prefix", [False])[0]
 
         return vals
 
