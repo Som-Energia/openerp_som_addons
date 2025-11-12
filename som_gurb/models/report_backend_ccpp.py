@@ -99,7 +99,7 @@ class ReportBackendCondicionsParticulars(ReportBackend):
             res = {
                 "nom": gurb_cups_br.gurb_cau_id.name,
                 "cost": float_round(initial_product_price_with_taxes, 2),
-                "potencia": gurb_cups_br.beta_kw,
+                "potencia": gurb_cups_br.gurb_cau_id.generation_power,
                 "quota": str(quota_with_taxes),
                 "beta_percentatge": gurb_cups_br.beta_percentage,
                 "annex": annex
