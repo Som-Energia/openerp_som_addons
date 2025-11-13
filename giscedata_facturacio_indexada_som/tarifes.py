@@ -113,15 +113,15 @@ class TarifaPoolSOM(TarifaPool):
 
         # Formatarlo obtenint dia-hora i preu
         year = int(check_date[:4])
-        month = int(check_date[4:6])
+        month = int(check_date[5:7])
         comp_start_date = TIMEZONE.normalize(
             TIMEZONE.localize(datetime(year, month, 1) + timedelta(hours=1)))
 
         # APliquem el preu pel dia
         if comp_start_date.year > 2025 or (comp_start_date.year == 2025 and comp_start_date.month >= 10):
-            res = Component(comp_start_date)
-        else:
             res = ComponentQH(comp_start_date)
+        else:
+            res = Component(comp_start_date)
         next(csv_reader)
         for row in csv_reader:
             if row[0] == '*':
@@ -494,8 +494,8 @@ class TarifaPoolSOM(TarifaPool):
 
         # Componentes Desvios
         if start_date.year < 2024 or (start_date.year == 2024 and start_date.month < 12):
-            csdvbaj = self.get_component_with_fallback('csdvbaj', start_date_str, end_date_str, day, fallback=preu_dema)  # [€/MWh]
-            csdvsub = self.get_component_with_fallback('csdvsub', start_date_str, end_date_str, day, fallback=preu_dema)  # [€/MWh]
+            csdvbaj = self.get_component_with_fallback('codsvbaj', start_date_str, end_date_str, day, fallback=preu_dema)  # [€/MWh]
+            csdvsub = self.get_component_with_fallback('codsvsub', start_date_str, end_date_str, day, fallback=preu_dema)  # [€/MWh]
         else:
             csdvbaj = self.get_component_with_fallback('codsvbaqh', start_date_str, end_date_str, day, fallback=preu_dema)  # [€/MWh]
             csdvsub = self.get_component_with_fallback('codsvsuqh', start_date_str, end_date_str, day, fallback=preu_dema)  # [€/MWh]
