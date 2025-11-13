@@ -59,7 +59,7 @@ class TestsPartnerAddress(testing.OOTestCaseWithCursor):
                 'EMAIL': u'test@test.test',
                 'FNAME': u'Pere',
                 'MMERGE11': u'08600',
-                'MMERGE3': False,
+                'MMERGE3': '',
                 'MMERGE4': 'Origen vinculat al CT sense socia',
                 'MMERGE5': u'S202129',
                 'MMERGE6': 'Apadrinada',
