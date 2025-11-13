@@ -10,5 +10,14 @@
             <field name="state">approved</field>
             <field name="smtpport">587</field>
         </record>
+        <record model="poweremail.core_accounts" id="comer_from_email">
+            <field name="email_id">comercialitzacio@somenergia.coop</field>
+            <field name="company">yes</field>
+            <field name="smtpserver">test.com</field>
+            <field name="send_pref">html</field>
+            <field name="name">Comercialització Som Energia</field>
+            <field name="state">approved</field>
+            <field name="smtpport">587</field>
+        </record>
     </data>
 </openerp>

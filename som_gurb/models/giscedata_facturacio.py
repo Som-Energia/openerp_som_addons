@@ -16,21 +16,17 @@ class GiscedataFacturacioServices(osv.osv):
 
         context["dont_group_lines"] = True
 
+        gurb_cau_o = self.pool.get("som.gurb.cau")
         gurb_cups_beta_o = self.pool.get("som.gurb.cups.beta")
-        imd_o = self.pool.get("ir.model.data")
-        gurb_product_id = imd_o.get_object_reference(
-            cursor, uid, "som_gurb", "product_gurb"
-        )[1]
-        owner_product_id = imd_o.get_object_reference(
-            cursor, uid, "som_gurb", "product_owner_gurb"
-        )[1]
+
+        products_ids = gurb_cau_o.get_gurb_products_ids(cursor, uid, context=context)
 
         for vals in super(GiscedataFacturacioServices, self)._get_vals_linia(
             cursor, uid, service, inv, context=context
         ):
+            product_id = vals.get("product_id", False)
             if (
-                gurb_product_id == vals.get("product_id", False)
-                or owner_product_id == vals.get("product_id", False)
+                product_id in products_ids
             ):
                 line_start_date = _str_to_date(vals["data_desde"])
                 line_end_date = _str_to_date(vals["data_fins"])
@@ -63,6 +59,13 @@ class GiscedataFacturacioServices(osv.osv):
                     res_vals["multi"] = days if days > 0 else 0
 
                     yield res_vals
+
+                    if gurb_cups_beta_br.gift_beta_kw > 0:
+                        gift_values = res_vals.copy()
+                        gift_values["multi"] = 0
+                        gift_values["quantity"] = gurb_cups_beta_br.gift_beta_kw
+                        gift_values["name"] = "{} {}".format(gift_values["name"], " (beta regal)")
+                        yield gift_values
             else:
                 yield vals
 
@@ -95,6 +98,7 @@ class GiscedataFacturacioServices(osv.osv):
             ("gurb_cups_id", "=", gurb_cups_ids[0]),
             ("start_date", "<=", vals["data_fins"]),
             ("end_date", "=", False),
+            ("future_beta", "=", False),
         ]
         gurb_cups_beta_ids = gurb_cups_beta_o.search(cursor, uid, search_params, context=context)
 
@@ -102,6 +106,7 @@ class GiscedataFacturacioServices(osv.osv):
             ("gurb_cups_id", "=", gurb_cups_ids[0]),
             ("start_date", "<=", vals["data_fins"]),
             ("end_date", ">=", vals["data_desde"]),
+            ("future_beta", "=", False),
         ]
         gurb_cups_beta_ids += gurb_cups_beta_o.search(cursor, uid, search_params, context=context)
 

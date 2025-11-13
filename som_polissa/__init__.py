@@ -1,8 +1,6 @@
-import giscedata_polissa
-import report
-import wizard
-import som_polissa_webforms_helpers
-import exceptions
-import giscedata_switching_helpers
-import giscedata_cups
-import giscedata_autoconsum
+# -*- coding: utf-8 -*-
+from __future__ import absolute_import
+from . import exceptions
+from . import models
+from . import report
+from . import wizard

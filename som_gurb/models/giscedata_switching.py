@@ -37,19 +37,25 @@ def is_unidirectional_colective_autocons_change(cursor, uid, pool, step_obj, ste
     return res
 
 
-def _contract_has_gurb_category(cursor, uid, pool, pol_id, context=None):
+def _cups_contract_has_gurb_cups(cursor, uid, pool, pol_id, context=None):
     if context is None:
         context = {}
 
-    ir_model_obj = pool.get("ir.model.data")
     pol_obj = pool.get("giscedata.polissa")
 
-    pol_category_ids = pol_obj.read(cursor, uid, pol_id, ["category_id"])["category_id"]
-    gurb_categ_id = ir_model_obj.get_object_reference(
-        cursor, uid, "som_gurb", "categ_gurb_pilot"  # TODO: Use the real category
-    )[1]
+    cups_id = pol_obj.read(cursor, uid, pol_id, ["cups"])["cups"][1]
 
-    return gurb_categ_id in pol_category_ids
+    activated_gurb_states = [
+        "comming_registration", "comming_modification",
+        "comming_cancellation", "active", "atr_pending"
+    ]
+    sgc_obj = pool.get("som.gurb.cups")
+    gurb_cups_id = sgc_obj.search(
+        cursor, uid,
+        [('cups_id', '=', cups_id), ("state", "in", activated_gurb_states)], context=context
+    )
+
+    return bool(gurb_cups_id)
 
 
 def _is_m1_closable(cursor, uid, pool, sw, context=None):
@@ -83,7 +89,7 @@ def _is_case_cancellable(cursor, uid, pool, sw, context=None):
         not sw
         or sw.proces_id.name not in _GURB_CANCEL_CASES
         or sw.step_id.name not in _GURB_CANCEL_CASES[sw.proces_id.name]
-        or not _contract_has_gurb_category(cursor, uid, pool, sw.cups_polissa_id.id)
+        or not _cups_contract_has_gurb_cups(cursor, uid, pool, sw.cups_polissa_id.id)
     ):
         return False
 
@@ -101,7 +107,7 @@ def _is_case_closable(cursor, uid, pool, sw, context=None):
         not sw
         or sw.proces_id.name not in _GURB_CLOSE_CASES
         or sw.step_id.name not in _GURB_CLOSE_CASES[sw.proces_id.name]
-        or not _contract_has_gurb_category(cursor, uid, pool, sw.cups_polissa_id.id)
+        or not _cups_contract_has_gurb_cups(cursor, uid, pool, sw.cups_polissa_id.id)
     ):
         return False
 
@@ -154,6 +160,37 @@ class GiscedataSwitching(osv.osv):
 GiscedataSwitching()
 
 
+class GiscedataSwitchingM1_01(osv.osv):
+    _inherit = "giscedata.switching.m1.01"
+
+    def generar_xml(self, cursor, uid, pas_id, context=None):
+        if context is None:
+            context = {}
+
+        if isinstance(pas_id, (list, tuple)):
+            pas_id = pas_id[0]
+        pas = self.browse(cursor, uid, pas_id, context)
+
+        sgc_obj = self.pool.get("som.gurb.cups")
+
+        xml = super(GiscedataSwitchingM1_01, self).generar_xml(
+            cursor, uid, pas_id, context=context
+        )
+        sw = pas.sw_id
+        if sw and _cups_contract_has_gurb_cups(
+            cursor, uid, self.pool, sw.cups_polissa_id.id, context=context
+        ):
+            gurb_cups_id = sgc_obj.search(
+                cursor, uid, [('cups_id', '=', sw.cups_polissa_id.cups.id)], context=context)
+            if gurb_cups_id:
+                gurb_cups = sgc_obj.browse(cursor, uid, gurb_cups_id[0], context=context)
+                gurb_cups.send_signal(['button_atr_pending'])
+        return xml
+
+
+GiscedataSwitchingM1_01()
+
+
 class GiscedataSwitchingM1_02(osv.osv):
     _inherit = "giscedata.switching.m1.02"
 
@@ -168,26 +205,42 @@ class GiscedataSwitchingM1_02(osv.osv):
         sw_obj = self.pool.get("giscedata.switching")
         step_m101_obj = self.pool.get("giscedata.switching.m1.01")
         sw_step_header_obj = self.pool.get("giscedata.switching.step.header")
+        sgc_obj = self.pool.get("som.gurb.cups")
         sw = sw_obj.browse(cursor, uid, sw_id, context=context)
 
-        if sw and _contract_has_gurb_category(
+        if sw and _cups_contract_has_gurb_cups(
             cursor, uid, self.pool, sw.cups_polissa_id.id, context=context
         ):
-            step_m101_auto = step_m101_obj.search(
-                cursor,
-                uid,
-                [("sw_id", "=", sw.id), ("solicitud_autoconsum", "=", "S")],
-                context=context
-            )
-            unidirectional_change = is_unidirectional_colective_autocons_change(
-                cursor, uid, self.pool, "giscedata.switching.m1.02", step_id, context=context
-            )
+            gurb_cups_id = sgc_obj.search(
+                cursor, uid, [('cups_id', '=', sw.cups_polissa_id.cups.id)], context=context)
+            if sw.rebuig and gurb_cups_id:
+                gurb_cups = sgc_obj.browse(cursor, uid, gurb_cups_id[0], context=context)
+                gurb_cups.send_signal(['button_reject_atr'])
 
-            if step_m101_auto or unidirectional_change:
-                sw_step_header_id = self.read(cursor, uid, step_id, ['header_id'])['header_id'][0]
-                sw_step_header_obj.write(
-                    cursor, uid, sw_step_header_id, {'notificacio_pendent': False}
+            canvi_titular_ss = step_m101_obj.search(cursor, uid, [
+                ('sw_id', '=', sw.id),
+                ('sollicitudadm', '=', 'S'),
+                ('canvi_titular', '=', 'S')])
+            if canvi_titular_ss and gurb_cups_id:
+                gurb_cups = sgc_obj.browse(cursor, uid, gurb_cups_id[0], context=context)
+                gurb_cups.send_signal(['button_confirm_atr'])
+            else:
+                step_m101_auto = step_m101_obj.search(
+                    cursor,
+                    uid,
+                    [("sw_id", "=", sw.id), ("solicitud_autoconsum", "=", "S")],
+                    context=context
                 )
+                unidirectional_change = is_unidirectional_colective_autocons_change(
+                    cursor, uid, self.pool, "giscedata.switching.m1.02", step_id, context=context
+                )
+
+                if step_m101_auto or unidirectional_change:
+                    sw_step_header_id = self.read(cursor, uid, step_id, ['header_id'])[
+                        'header_id'][0]
+                    sw_step_header_obj.write(
+                        cursor, uid, sw_step_header_id, {'notificacio_pendent': False}
+                    )
 
         return step_id
 
@@ -211,7 +264,7 @@ class GiscedataSwitchingM1_03(osv.osv):
         sw_step_header_obj = self.pool.get("giscedata.switching.step.header")
         sw = sw_obj.browse(cursor, uid, sw_id, context=context)
 
-        if sw and _contract_has_gurb_category(
+        if sw and _cups_contract_has_gurb_cups(
             cursor, uid, self.pool, sw.cups_polissa_id.id, context=context
         ):
             step_m101_auto = step_m101_obj.search(
@@ -252,7 +305,7 @@ class GiscedataSwitchingM1_04(osv.osv):
         sw_step_header_obj = self.pool.get("giscedata.switching.step.header")
         sw = sw_obj.browse(cursor, uid, sw_id, context=context)
 
-        if sw and _contract_has_gurb_category(
+        if sw and _cups_contract_has_gurb_cups(
             cursor, uid, self.pool, sw.cups_polissa_id.id, context=context
         ):
             step_m101_auto = step_m101_obj.search(
@@ -289,29 +342,49 @@ class GiscedataSwitchingM1_05(osv.osv):
         )
 
         sw_obj = self.pool.get("giscedata.switching")
-        gurb_obj = self.pool.get("som.gurb")
+        gurb_obj = self.pool.get("som.gurb.cau")
+        sgc_obj = self.pool.get("som.gurb.cups")
         step_m101_obj = self.pool.get("giscedata.switching.m1.01")
         sw_step_header_obj = self.pool.get("giscedata.switching.step.header")
         sw = sw_obj.browse(cursor, uid, sw_id, context=context)
 
-        if sw and _contract_has_gurb_category(
+        if sw and _cups_contract_has_gurb_cups(
             cursor, uid, self.pool, sw.cups_polissa_id.id, context=context
         ):
-            search_params = [("sw_id", "=", sw.id), ("solicitud_autoconsum", "=", "S")]
-            step_m101_auto = step_m101_obj.search(cursor, uid, search_params, context=context)
-            unidirectional_change = is_unidirectional_colective_autocons_change(
-                cursor, uid, self.pool, "giscedata.switching.m1.05", step_id, context=context
-            )
+            canvi_titular_traspas = step_m101_obj.search(cursor, uid, [
+                ('sw_id', '=', sw.id),
+                ('sollicitudadm', '=', 'S'),
+                ('canvi_titular', '=', 'T')])
+            if canvi_titular_traspas:
+                gurb_cups_id = sgc_obj.search(
+                    cursor, uid, [('cups_id', '=', sw.cups_polissa_id.cups.id)], context=context)
+                if gurb_cups_id:
+                    gurb_cups = sgc_obj.browse(cursor, uid, gurb_cups_id[0], context=context)
+                    gurb_cups.send_signal(['button_confirm_atr'])
+            else:
+                search_params = [("sw_id", "=", sw.id), ("solicitud_autoconsum", "=", "S")]
+                step_m101_auto = step_m101_obj.search(cursor, uid, search_params, context=context)
+                unidirectional_change = is_unidirectional_colective_autocons_change(
+                    cursor, uid, self.pool, "giscedata.switching.m1.05", step_id, context=context
+                )
 
-            if step_m101_auto or unidirectional_change:
-                sw_step_header_id = self.read(cursor, uid, step_id, ['header_id'])['header_id'][0]
-                sw_step_header_obj.write(
-                    cursor, uid, sw_step_header_id, {'notificacio_pendent': False}
-                )
-                data_activacio = xml.datos_activacion.fecha
-                gurb_obj.activate_gurb_from_m1_05(
-                    cursor, uid, sw_id, data_activacio, context=context
-                )
+                if step_m101_auto or unidirectional_change:
+                    sw_step_header_id = self.read(cursor, uid, step_id, ['header_id'])[
+                        'header_id'][0]
+                    sw_step_header_obj.write(
+                        cursor, uid, sw_step_header_id, {'notificacio_pendent': False}
+                    )
+                    data_activacio = xml.datos_activacion.fecha
+                    gurb_obj.activate_gurb_from_m1_05(
+                        cursor, uid, sw_id, data_activacio, context=context
+                    )
+                    gurb_cups_id = sgc_obj.search(
+                        cursor, uid, [('cups_id', '=', sw.cups_polissa_id.cups.id)], context=context
+                    )
+                    if gurb_cups_id:
+                        gurb_cups = sgc_obj.browse(cursor, uid, gurb_cups_id[0], context=context)
+                        gurb_cups.send_signal(['button_activate_modification'])
+                        gurb_cups.send_signal(['button_activate_cups'])
 
         return step_id
 
@@ -330,17 +403,25 @@ class GiscedataSwitchingD1_01(osv.osv):
             cursor, uid, sw_id, xml, context=context
         )
 
+        sgc_obj = self.pool.get("som.gurb.cups")
         sw_obj = self.pool.get("giscedata.switching")
         sw_step_header_obj = self.pool.get("giscedata.switching.step.header")
         sw = sw_obj.browse(cursor, uid, sw_id, context=context)
 
-        if sw and _contract_has_gurb_category(
+        excluded_motiu_canvi = ["01", "02", "03", "09", "10"]
+
+        if sw and _cups_contract_has_gurb_cups(
             cursor, uid, self.pool, sw.cups_polissa_id.id, context=context
-        ):
+        ) and sw.step_id.motiu_canvi not in excluded_motiu_canvi:
             sw_step_header_id = self.read(cursor, uid, step_id, ['header_id'])['header_id'][0]
             sw_step_header_obj.write(
                 cursor, uid, sw_step_header_id, {'notificacio_pendent': False}
             )
+            gurb_cups_id = sgc_obj.search(
+                cursor, uid, [('cups_id', '=', sw.cups_polissa_id.cups.id)], context=context)
+            if gurb_cups_id:
+                gurb_cups = sgc_obj.browse(cursor, uid, gurb_cups_id[0], context=context)
+                gurb_cups.send_signal(['button_atr_pending'])
 
         return step_id
 
@@ -363,7 +444,7 @@ class GiscedataSwitchingD1_02(osv.osv):
         sw_step_header_obj = self.pool.get("giscedata.switching.step.header")
         sw = sw_obj.browse(cursor, uid, sw_id, context=context)
 
-        if sw and _contract_has_gurb_category(
+        if sw and _cups_contract_has_gurb_cups(
             cursor, uid, self.pool, sw.cups_polissa_id.id, context=context
         ):
             sw_step_header_id = self.read(cursor, uid, step_id, ['header_id'])['header_id'][0]
@@ -377,6 +458,66 @@ class GiscedataSwitchingD1_02(osv.osv):
 GiscedataSwitchingD1_02()
 
 
+class GiscedataSwitchingC1_06(osv.osv):
+    _inherit = "giscedata.switching.c1.06"
+
+    def create_from_xml(self, cursor, uid, sw_id, xml, context=None):
+        if context is None:
+            context = {}
+        step_id = super(GiscedataSwitchingC1_06, self).create_from_xml(
+            cursor, uid, sw_id, xml, context=context
+        )
+
+        sgc_obj = self.pool.get("som.gurb.cups")
+        sw_obj = self.pool.get("giscedata.switching")
+        self.pool.get("giscedata.switching.step.header")
+        sw = sw_obj.browse(cursor, uid, sw_id, context=context)
+
+        if sw and _cups_contract_has_gurb_cups(
+            cursor, uid, self.pool, sw.cups_polissa_id.id, context=context
+        ):
+            gurb_cups_id = sgc_obj.search(
+                cursor, uid, [('cups_id', '=', sw.cups_polissa_id.cups.id)], context=context)
+            if gurb_cups_id:
+                gurb_cups = sgc_obj.browse(cursor, uid, gurb_cups_id[0], context=context)
+                gurb_cups.send_signal(['button_coming_cancellation'])
+
+        return step_id
+
+
+GiscedataSwitchingC1_06()
+
+
+class GiscedataSwitchingC2_06(osv.osv):
+    _inherit = "giscedata.switching.c2.06"
+
+    def create_from_xml(self, cursor, uid, sw_id, xml, context=None):
+        if context is None:
+            context = {}
+        step_id = super(GiscedataSwitchingC2_06, self).create_from_xml(
+            cursor, uid, sw_id, xml, context=context
+        )
+
+        sgc_obj = self.pool.get("som.gurb.cups")
+        sw_obj = self.pool.get("giscedata.switching")
+        self.pool.get("giscedata.switching.step.header")
+        sw = sw_obj.browse(cursor, uid, sw_id, context=context)
+
+        if sw and _cups_contract_has_gurb_cups(
+            cursor, uid, self.pool, sw.cups_polissa_id.id, context=context
+        ):
+            gurb_cups_id = sgc_obj.search(
+                cursor, uid, [('cups_id', '=', sw.cups_polissa_id.cups.id)], context=context)
+            if gurb_cups_id:
+                gurb_cups = sgc_obj.browse(cursor, uid, gurb_cups_id[0], context=context)
+                gurb_cups.send_signal(['button_coming_cancellation'])
+
+        return step_id
+
+
+GiscedataSwitchingC2_06()
+
+
 class GiscedataSwitchingHelpers(osv.osv):
     _inherit = 'giscedata.switching.helpers'
 
@@ -384,7 +525,8 @@ class GiscedataSwitchingHelpers(osv.osv):
         if context is None:
             context = {}
 
-        gurb_obj = self.pool.get("som.gurb")
+        gurb_obj = self.pool.get("som.gurb.cau")
+        sw_step_header_obj = self.pool.get("giscedata.switching.step.header")
         sw_obj = self.pool.get("giscedata.switching")
 
         res = super(GiscedataSwitchingHelpers, self).activar_polissa_from_m1(
@@ -395,18 +537,113 @@ class GiscedataSwitchingHelpers(osv.osv):
         if (
             sw.proces_id.name == "M1"
             and sw.step_id.name == "05"
-            and _contract_has_gurb_category(cursor, uid, self.pool, sw.cups_polissa_id.id)
+            and _cups_contract_has_gurb_cups(cursor, uid, self.pool, sw.cups_polissa_id.id)
         ):
             step_obj = self.pool.get("giscedata.switching.m1.05")
-            pas_id = int(sw.step_ids[-1].pas_id.split(",")[1])
+            step_id = int(sw.step_ids[-1].pas_id.split(",")[1])
 
             data_activacio = step_obj.read(
-                cursor, uid, pas_id, ["data_activacio"])["data_activacio"]
+                cursor, uid, step_id, ["data_activacio"])["data_activacio"]
 
             gurb_obj.activate_gurb_from_m1_05(
                 cursor, uid, sw_id, data_activacio, context=context
             )
+            sw_step_header_id = step_obj.read(cursor, uid, step_id, ['header_id'])['header_id'][0]
+            sw_step_header_obj.write(
+                cursor, uid, sw_step_header_id, {'notificacio_pendent': False}
+            )
+
+        return res
+
+    def m105_acord_repartiment_autoconsum(self, cursor, uid, sw_id, context=None):
+        if context is None:
+            context = {}
+
+        sw_obj = self.pool.get('giscedata.switching')
+        sw_step_header_obj = self.pool.get("giscedata.switching.step.header")
+        gurb_obj = self.pool.get("som.gurb.cau")
+
+        res = super(GiscedataSwitchingHelpers, self).m105_acord_repartiment_autoconsum(
+            cursor, uid, sw_id, context=context
+        )
+
+        sw = sw_obj.browse(cursor, uid, sw_id, context=context)
+        if (
+            sw.proces_id.name == "M1"
+            and sw.step_id.name == "05"
+            and _cups_contract_has_gurb_cups(cursor, uid, self.pool, sw.cups_polissa_id.id)
+        ):
+            step_obj = self.pool.get("giscedata.switching.m1.05")
+            step_id = int(sw.step_ids[-1].pas_id.split(",")[1])
+
+            data_activacio = step_obj.read(
+                cursor, uid, step_id, ["data_activacio"])["data_activacio"]
+
+            gurb_obj.activate_gurb_from_m1_05(
+                cursor, uid, sw_id, data_activacio, context=context
+            )
+            sw_step_header_id = step_obj.read(cursor, uid, step_id, ['header_id'])['header_id'][0]
+            sw_step_header_obj.write(
+                cursor, uid, sw_step_header_id, {'notificacio_pendent': False}
+            )
+
         return res
 
 
 GiscedataSwitchingHelpers()
+
+
+class GiscedataSwitchingM2_05(osv.osv):
+    _inherit = "giscedata.switching.m2.05"
+
+    def create_from_xml(self, cursor, uid, sw_id, xml, context=None):
+        if context is None:
+            context = {}
+
+        step_id = super(GiscedataSwitchingM2_05, self).create_from_xml(
+            cursor, uid, sw_id, xml, context=context
+        )
+
+        sw_obj = self.pool.get("giscedata.switching")
+        gurb_obj = self.pool.get("som.gurb.cau")
+        gurb_cups_obj = self.pool.get("som.gurb.cups")
+        sw_step_header_obj = self.pool.get("giscedata.switching.step.header")
+        sw = sw_obj.browse(cursor, uid, sw_id, context=context)
+
+        if sw and _cups_contract_has_gurb_cups(
+            cursor, uid, self.pool, sw.cups_polissa_id.id, context=context
+        ):
+
+            step = self.browse(cursor, uid, step_id, context=context)
+
+            gurb_cups_id = gurb_cups_obj.get_gurb_cups_from_sw_id(
+                cursor, uid, sw_id, context=context
+            )
+
+            # GURB Leaving Codes
+            if step.motiu_modificacio == "06":
+                gurb_cups_obj.cancel_gurb_cups(
+                    cursor, uid, gurb_cups_id, step.data_activacio, context=context
+                )
+            # GURB Possible contractual change Codes
+            elif step.motiu_modificacio == "02":
+                gurb_cups_obj.activate_or_modify_gurb_cups(
+                    cursor, uid, gurb_cups_id, step.data_activacio, context=context
+                )
+            # GURB Activation Codes
+            elif step.motiu_modificacio in ["04", "15", "19"]:
+                data_activacio = xml.datos_activacion.fecha
+                gurb_obj.activate_gurb_from_m1_05(
+                    cursor, uid, sw_id, data_activacio, context=context
+                )
+
+            # Don't notify if GURB
+            sw_step_header_id = self.read(cursor, uid, step_id, ['header_id'])['header_id'][0]
+            sw_step_header_obj.write(
+                cursor, uid, sw_step_header_id, {'notificacio_pendent': False}
+            )
+
+        return step_id
+
+
+GiscedataSwitchingM2_05()

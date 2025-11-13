@@ -3,7 +3,7 @@
 {
     'name': 'Som municipal taxes',
     'description': 'Mòdul per gestionar el pagament del impost municipal',
-    'version': '0.1',
+    "version": "24.5.0",
     'category': 'Som Energia module',
     'website': 'https://github.com/Som-Energia/openerp-som-addons',
     'author': 'Som Energia SCCL',
@@ -12,10 +12,13 @@
     'installable': True,
     'depends': [
         'base',
-        'giscedata_municipal_taxes',
+        'giscedata_municipal_taxes_comer',
         'res_municipi_dir3',
         'som_crawlers',
         'account_invoice_som',
+        'l10n_ES_aeat_mod347',
+        'giscedata_informes_comptables',
+        'l10n_ES_aeat_sii',
     ],
     'init_xml': [],
     'update_xml': [
@@ -27,6 +30,6 @@
         'security/ir.model.access.csv',
     ],
     'demo_xml': [
-        'tests/som_municipal_taxes_demo.xml',
+        'demo/som_municipal_taxes_demo.xml',
     ]
 }

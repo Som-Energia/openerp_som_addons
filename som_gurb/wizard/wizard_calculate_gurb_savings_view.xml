@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+    <data>
+        <record model="ir.ui.view" id="view_wizard_calculate_gurb_savings_form">
+            <field name="name">Calcular estalvi GURB</field>
+            <field name="model">wizard.calculate.gurb.savings</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <form string="Calcular l'estalvi d'aquest GURB CUPS">
+                    <field name="state" invisible="1" />
+                    <group attrs="{'invisible': [('state', '!=', 'init')]}">
+                        <field name="date_from" colspan="4"/>
+                        <field name="date_to" colspan="4"/>
+                        <button name="button_calculate" type="object" string="Calcular estalvi GURB!" icon="gtk-execute" colspan="4"/>
+                    </group>
+                    <group attrs="{'invisible': [('state', '!=', 'end')]}">
+                        <field name="report" colspan="4" filename="filename_report"/>
+                        <field name="filename_report" colspan="4"/>
+                        <field name="info" colspan="4" readonly="1" nolabel="1"/>
+                        <button special="cancel" string="Sortir" icon="gtk-ok" />
+                    </group>
+                </form>
+            </field>
+        </record>
+        <record model="ir.actions.act_window" id="action_wizard_calculate_gurb_savings_form">
+            <field name="name">Calcular estalvi GURB</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">wizard.calculate.gurb.savings</field>
+            <field name="view_type">form</field>
+            <field name="target">new</field>
+            <field name="view_id" ref="view_wizard_calculate_gurb_savings_form" />
+        </record>
+        <record id="values_wizard_calculate_gurb_savings_form" model="ir.values">
+            <field name="object" eval="1" />
+            <field name="name">Calcular estalvi GURB</field>
+            <field name="key2">client_action_multi</field>
+            <field name="key">action</field>
+            <field name="model">som.gurb.cups</field>
+            <field name="value"
+                eval="'ir.actions.act_window,'+str(ref('action_wizard_calculate_gurb_savings_form'))" />
+        </record>
+    </data>
+</openerp>

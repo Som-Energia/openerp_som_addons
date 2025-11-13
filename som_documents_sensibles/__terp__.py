@@ -4,7 +4,7 @@
     "description": """Aquest mòdul afegeix les següents funcionalitats:
   * Afegeix el model de dades per a clients electrodependents
 """,
-    "version": "2.103.13",
+    "version": "24.5.0",
     "author": "SOMEnergia",
     "category": "Master",
     "depends": [

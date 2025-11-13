@@ -1,3 +1,3 @@
 # -*- coding: utf-8 -*-
-import giscedata_polissa
-import giscedata_facturacio
+from __future__ import absolute_import
+from . import models

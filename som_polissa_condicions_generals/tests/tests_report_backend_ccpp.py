@@ -80,7 +80,7 @@ class TestReportBackendCCPP(testing.OOTestCase):
         p2 = pol_20td.potencies_periode[0].potencia
         p3 = pol_20td.potencies_periode[1].potencia
         self.assertEqual(result, {
-            u'autoconsum': u'Sense Autoconsum',
+            u'autoconsum': u'00 - Sin autoconsumo',
             u'es_canvi_tecnic': False,
             u'periodes': [
                 (1, p2), False, (2, p3),
@@ -102,6 +102,7 @@ class TestReportBackendCCPP(testing.OOTestCase):
             u'data_inici': '2021-06-01',
             u'is_business': False,
             u'lead': False,
+            u'modcon_pendent_auvi': False,
             u'modcon_pendent_indexada': False,
             u'modcon_pendent_periodes': False,
             u'mode_facturacio': u'atr',
@@ -123,6 +124,10 @@ class TestReportBackendCCPP(testing.OOTestCase):
         result = self.backend_obj.get_prices_data(self.cursor, self.uid, pol_20td, context={})
 
         self.assertEqual(result, {
+            u'auvi': False,
+            u'auvi_name': u'',
+            u'auvi_pauvi': 0.0,
+            u'auvi_percent': 0.0,
             u'coeficient_k': False,
             u'coeficient_k_untaxed': 0.0,
             u'dict_preus_tp_energia': False,

@@ -586,6 +586,33 @@
             <field name="priority">600</field>
             <field name="active" eval="True"/>
         </record>
+        <record model="som.autoreclama.state.condition" id="conditions_075_correct_state_workflow_atc">
+            <field name="subtype_id" ref="giscedata_subtipus_reclamacio.subtipus_reclamacio_075"/>
+            <field name="days">15</field>
+            <field name="condition_code">ATC</field>
+            <field name="state_id" ref="correct_state_workflow_atc"/>
+            <field name="next_state_id" ref="first_state_workflow_atc"/>
+            <field name="priority">610</field>
+            <field name="active" eval="True"/>
+        </record>
+        <record model="som.autoreclama.state.condition" id="conditions_080_correct_state_workflow_atc">
+            <field name="subtype_id" ref="giscedata_subtipus_reclamacio.subtipus_reclamacio_080"/>
+            <field name="days">20</field>
+            <field name="condition_code">ATC</field>
+            <field name="state_id" ref="correct_state_workflow_atc"/>
+            <field name="next_state_id" ref="first_state_workflow_atc"/>
+            <field name="priority">620</field>
+            <field name="active" eval="True"/>
+        </record>
+        <record model="som.autoreclama.state.condition" id="conditions_081_correct_state_workflow_atc">
+            <field name="subtype_id" ref="giscedata_subtipus_reclamacio.subtipus_reclamacio_081"/>
+            <field name="days">20</field>
+            <field name="condition_code">ATC</field>
+            <field name="state_id" ref="correct_state_workflow_atc"/>
+            <field name="next_state_id" ref="first_state_workflow_atc"/>
+            <field name="priority">630</field>
+            <field name="active" eval="True"/>
+        </record>
         <record model="som.autoreclama.state" id="correct_state_workflow_polissa">
             <field name="name">Correcte</field>
             <field name="priority">10</field>
@@ -700,6 +727,18 @@
             <field name="active" eval="False"/>
             <field name="model" eval="'som.autoreclama.state.updater'"/>
             <field name="function" eval="'_cronjob_state_updater_mail_text'"/>
+            <field name="args" eval="({'emails_to': ''},)"/>
+        </record>
+        <record id="ir_cron_autoreclama_f1c_automation" model="ir.cron" forcecreate="1">
+            <field name="name">Apply autoreclama f1c automations</field>
+            <field name="user_id" ref="base.user_admin"/>
+            <field name="interval_number">1</field>
+            <field name="interval_type">days</field>
+            <field name="numbercall">-1</field>
+            <field name="doall" eval="False"/>
+            <field name="active" eval="False"/>
+            <field name="model" eval="'som.autoreclama.f1c.automation'"/>
+            <field name="function" eval="'_cronjob_f1c_automation_mail_text'"/>
             <field name="args" eval="({'emails_to': ''},)"/>
         </record>
     </data>

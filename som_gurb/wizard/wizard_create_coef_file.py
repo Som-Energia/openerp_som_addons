@@ -17,9 +17,12 @@ class WizardCreateCoeficicientsFile(osv.osv_memory):
         gurb_cups_o = self.pool.get('som.gurb.cups')
 
         search_params = [
-            ("gurb_id", "=", current_gurb),
+            ("gurb_cau_id", "=", current_gurb),
             ("active", "=", True),
             ("start_date", "<=", today),
+            ("state", "in", [
+                "comming_registration", "comming_modification", "active", "atr_pending"
+            ]),
         ]
 
         gurb_cups_ids = gurb_cups_o.search(cursor, uid, search_params, context=context)
@@ -35,7 +38,7 @@ class WizardCreateCoeficicientsFile(osv.osv_memory):
                     "El GURB CUPS amb id {} no té CUPS definit".format(item["id"])
                 )
 
-            beta = gurb_cups_o.get_beta_percentatge(
+            beta = gurb_cups_o.get_new_beta_percentatge(
                 cursor, uid, item["id"], context=context
             )[item["id"]] / 100
 
@@ -49,7 +52,7 @@ class WizardCreateCoeficicientsFile(osv.osv_memory):
 
         current_gurb = context.get('active_id')
 
-        gurb_o = self.pool.get('som.gurb')
+        gurb_o = self.pool.get('som.gurb.cau')
         self_cons_name = gurb_o.read(
             cursor, uid, current_gurb, ['self_consumption_id']
         )['self_consumption_id'][1]

@@ -38,7 +38,10 @@ class GiscedataSwitchingHelpers(osv.osv):
         atc_ids = super(GiscedataSwitchingHelpers, self).create_crm_case_titular_autoconsum(
             cursor, uid, partner_vals, step
         )
-        self._tmp_atc_ids = atc_ids  # Trick to temporally save the ATC_IDS
+        _tmp_atc_ids = getattr(self, '_tmp_atc_ids', None)
+        if not isinstance(_tmp_atc_ids, list):
+            self._tmp_atc_ids = []
+        self._tmp_atc_ids.extend(atc_ids)  # Trick to temporally save the ATC_IDS
         return atc_ids
 
     def _crear_autoconsum_from_datos_cau(self, cursor, uid, step, dades_cau=None, context=None):

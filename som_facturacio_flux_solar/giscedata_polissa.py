@@ -7,6 +7,36 @@ class GiscedataPolissa(osv.osv):
     _name = "giscedata.polissa"
     _inherit = "giscedata.polissa"
 
+    def search_factura(self, cursor, uid, ids, data_inici, data_final, context=None):
+        if context is None:
+            context = {}
+        origen_obj = self.pool.get("giscedata.bateria.virtual.origen")
+        origen_data = (
+            origen_obj.q(cursor, uid)
+            .read(["data_inici_descomptes"])
+            .where([("origen_ref", "=", "giscedata.polissa,{}".format(str(ids[0])))])
+        )
+
+        if len(origen_data):
+            data_inici_origen = origen_data[0].get("data_inici_descomptes")
+        else:
+            data_inici_origen = data_inici
+
+        factura_obj = self.pool.get("giscedata.facturacio.factura")
+        factura_ids = factura_obj.search(
+            cursor,
+            uid,
+            [
+                ("polissa_id", "=", ids[0]),
+                ("data_inici", ">=", data_inici_origen),
+                ("data_inici", "<=", data_final),
+                ("state", "in", ("paid", "open")),
+                ("type", "in", ("out_invoice", "out_refund")),
+            ],
+            context=context,
+        )
+        return factura_ids
+
     def get_auto_bat_name(self, cursor, uid, polissa_id, polissa_name, context=None):
         if context is None:
             context = {}

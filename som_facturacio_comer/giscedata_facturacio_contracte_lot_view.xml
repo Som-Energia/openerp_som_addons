@@ -10,6 +10,7 @@
                 <field name="n_factures" position="after">
                     <field name="polissa_distribuidora"/>
                     <field name="autoconsum" />
+                    <field name="collectiu" />
                     <field name="tarifaATR" />
                     <field name="llista_preu" />
                     <field name="n_retrocedir_lot"/>
@@ -27,6 +28,7 @@
                 <field name="n_factures" position="after">
                     <field name="polissa_distribuidora" select="1"/>
                     <field name="autoconsum" select="1"/>
+                    <field name="collectiu" select="1"/>
                     <field name="tarifaATR" select="1"/>
                     <field name="llista_preu" select="1"/>
                     <field name="date_invoice" select="1"/>

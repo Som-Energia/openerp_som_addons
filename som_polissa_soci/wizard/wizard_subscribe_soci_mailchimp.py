@@ -2,8 +2,6 @@
 
 from osv import osv, fields
 from tools.translate import _
-import mailchimp_marketing as MailchimpMarketing
-from tools import config
 
 
 class WizardSubscribeSociMailchimp(osv.osv_memory):
@@ -23,18 +21,13 @@ class WizardSubscribeSociMailchimp(osv.osv_memory):
 
         address_obj = self.pool.get("res.partner.address")
         soci_obj = self.pool.get("somenergia.soci")
-        conf_obj = self.pool.get("res.config")
+        self.pool.get("res.config")
 
-        list_name = conf_obj.get(cursor, uid, "mailchimp_socis_list", None)
+        MAILCHIMP_CLIENT = address_obj._get_mailchimp_client()
+        list_names = self._get_members_mailchimp_lists(cursor, uid, ids, context=context)
 
-        MAILCHIMP_CLIENT = MailchimpMarketing.Client(
-            dict(
-                api_key=config.options.get("mailchimp_apikey"),
-                server=config.options.get("mailchimp_server_prefix"),
-            )
-        )
         try:
-            list_client_id = address_obj.get_mailchimp_list_id(list_name, MAILCHIMP_CLIENT)
+            list_ids = [self.get_mailchimp_list_id(name, MAILCHIMP_CLIENT) for name in list_names]
         except Exception as e:
             raise osv.except_osv(u"Error", str(e))
 
@@ -50,9 +43,10 @@ class WizardSubscribeSociMailchimp(osv.osv_memory):
             )
             if is_member:
                 soci_data = address_obj.fill_merge_fields_soci(cursor, uid, address)
-                address_obj.subscribe_mail_in_list(
-                    cursor, uid, [soci_data], list_client_id, MAILCHIMP_CLIENT
-                )
+                for list_client_id in list_ids:
+                    address_obj.subscribe_mail_in_list(
+                        cursor, uid, [soci_data], list_client_id, MAILCHIMP_CLIENT
+                    )
 
                 info_wizard += address_data["email"] + "\n"
 

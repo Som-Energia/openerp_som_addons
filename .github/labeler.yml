@@ -32,6 +32,8 @@ som_crawlers:
 -  som_crawlers/**
 som_custom_views:
 -  som_custom_views/**
+som_dashboard:
+-  som_dashboard/**
 som_documents_sensibles:
 -  som_documents_sensibles/**
 som_empowering:
@@ -70,6 +72,8 @@ som_leads_polissa:
 -  som_leads_polissa/**
 som_municipal_taxes:
 -  som_municipal_taxes/**
+som_partner_account:
+-  som_partner_account/**
 som_polissa:
 -  som_polissa/**
 som_polissa_administradora:
@@ -80,6 +84,8 @@ som_polissa_soci:
 -  som_polissa_soci/**
 som_poweremail_common_templates:
 -  som_poweremail_common_templates/**
+som_sortida:
+-  som_sortida/**
 somre_giscere_facturacio:
 -  somre_giscere_facturacio/**
 somre_giscere_oferta:
@@ -88,6 +94,8 @@ somre_ov_module:
 -  somre_ov_module/**
 som_remeses_base:
 -  som_remeses_base/**
+som_stash:
+-  som_stash/**
 som_switching:
 -  som_switching/**
 som_telemesura:

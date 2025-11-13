@@ -13,6 +13,10 @@
                         <field name="user_observations" nolabel="1"/>
                     </page>
                 </xpath>
+                <field name="data_sollicitud" position="after">
+                    <field name="collectiu_atr"/>
+                    <field name="collectiu_polissa"/>
+                </field>
             </field>
         </record>
 
@@ -50,6 +54,13 @@
                 <field name="validacio_pendent" position="after">
                     <field name="data_accio" select="2"/>
                 </field>
+                <field name="additional_info" position="after">
+                    <field name="collectiu_atr" select="2"/>
+                    <field name="collectiu_polissa" select="2"/>
+                </field>
+                <xpath expr="//tree" position="attributes">
+                    <attribute name="colors">red:date_deadline&lt;current_date and state=='open';blue:enviament_pendent==1 and state!='cancel';gray:state=='cancel';</attribute>
+                </xpath>
             </field>
         </record>
 
@@ -107,7 +118,6 @@
             <field name="view_id" ref="giscedata_switching.giscedata_switching_tree_view"/>
         </record>
         <menuitem sequence="41" action="sw_crm_case_pendents_enviar_01_act_tree" id="menu_sw_crm_case_pendents_enviar_01_section_act_tree" parent="giscedata_switching.menu_sw"/>
-
         <!-- Llistat de passos C2-01 amb filtres -->
         <record id="giscedata_switching.sw_crm_case_c2_01" model="ir.actions.act_window">
             <field name="view_id" ref="giscedata_switching.c2_01_sw_crm_case-tree"></field>

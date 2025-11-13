@@ -1,13 +1,13 @@
 <?xml version="1.0"?>
 <openerp>
     <data noupdate="1">
-        <record id="seq_gurb_type" model="ir.sequence.type">
-            <field name="name">Seqüència de GURB</field>
-            <field name="code">som.gurb</field>
+        <record id="seq_gurb_group_type" model="ir.sequence.type">
+            <field name="name">Seqüència de GURB grup</field>
+            <field name="code">som.gurb.group</field>
         </record>
-        <record id="seq_gurb" model="ir.sequence">
-            <field name="name">GURB</field>
-            <field name="code">som.gurb</field>
+        <record id="seq_gurb_group" model="ir.sequence">
+            <field name="name">Sequence GURB group</field>
+            <field name="code">som.gurb.group</field>
             <field name="prefix">G</field>
             <field name="padding">3</field>
             <field name="number_increment">1</field>
@@ -28,6 +28,16 @@
         </record>
         <record model="product.product" id="product_owner_gurb">
             <field name="name">Producte GURB beta extra</field>
+            <field name="categ_id" ref="categ_product_gurb"/>
+            <field name="type">service</field>
+            <field name="procure_method">make_to_stock</field>
+            <field name="list_price">0</field>
+            <field name="supply_method">buy</field>
+            <field model="account.tax" name="taxes_id" search="[('name','=','IVA 21%')]"/>
+            <field model="account.account" name="property_account_income" search="[('code','=','705000')]"/>
+        </record>
+        <record model="product.product" id="product_gift_gurb">
+            <field name="name">Producte GURB beta regal</field>
             <field name="categ_id" ref="categ_product_gurb"/>
             <field name="type">service</field>
             <field name="procure_method">make_to_stock</field>

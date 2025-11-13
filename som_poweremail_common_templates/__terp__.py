@@ -6,7 +6,7 @@
         * Common templates to be used in the rest of poweremail templates,
     p.e. header with customer data, logo, footer, legal texts... etc.
     """,
-    "version": "0-dev",
+    "version": "24.5.0",
     "author": "SOM ENERGIA",
     "category": "SomEnergia",
     "depends": [

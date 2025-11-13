@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+    <data>
+        <record model="ir.ui.view" id="view_partner_lang_required_form">
+		    <field name="name">res.partner.lang.inherit</field>
+		    <field name="model">res.partner</field>
+            <field name="type">form</field>
+		    <field name="inherit_id" ref="base.view_partner_form"/>
+		    <field name="arch" type="xml">
+                <field name="lang" position="replace">
+                    <field name="lang" required="True" select="2"/>
+                </field>
+            </field>
+        </record>
+        <!--Polisses com a titular-->
+        <record model="ir.actions.act_window" id="action_abrir_polisses_soci">
+            <field name="name">Com a Soci</field>
+            <field name="res_model">giscedata.polissa</field>
+            <field name="src_model">res.partner</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="domain">[('soci', '=', active_id)]</field>
+            <field name="view_id" ref="giscedata_polissa.view_polisses_tree"/>
+        </record>
+
+        <record id="value_action_abrir_polisses_soci" model="ir.values">
+			<field name="object" eval="1"/>
+			<field name="name">Com a Soci</field>
+            <field name="key2">client_action_relate</field>
+			<field name="key">action</field>
+			<field name="model">res.partner</field>
+			<field name="value" eval="'ir.actions.act_window,'+str(ref('action_abrir_polisses_soci'))" />
+		</record>
+
+        <!-- Llistat de socis -->
+        <record id="view_wizard_llistat_socis_form" model="ir.ui.view">
+            <field name="name">wizard.llistat.socis.form</field>
+            <field name="model">wizard.llistat.socis</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+            <form string="Generació CSV Llistat de socis">
+                <field name="state" invisible="1"/>
+                <field name="name" invisible="1"/>
+                <group colspan="4">
+                    <label>Generació de CSV de socis. Útil per carregar al mailchimp</label>
+                </group>
+                <group colspan="4" attrs="{'readonly': [('state', '!=', 'done')]}">
+                    <field name="file" editable="False"/>
+                </group>
+                <button name="action_genera_csv" string="Generar el fitxer" type="object" icon="gtk-execute"/>
+                <button string="Tanca" special="cancel" type="object" icon="gtk-cancel"/>
+            </form>
+            </field>
+        </record>
+        <record id="action_wizard_llistat_socis_form" model="ir.actions.act_window">
+            <field name="name">Generació CSV llistat de socis</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">wizard.llistat.socis</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">form</field>
+            <field name="target">new</field>
+        </record>
+        <menuitem name="Generar llistat Socis" action="action_wizard_llistat_socis_form" id="menu_action_wizard_llistat_socis"
+            parent="base.menu_base_partner" sequence="20"/>
+        <!-- email al cercador de partner_address-->
+        <record model="ir.ui.view" id="view_partner_address_email_search_form">
+            <field name="name">res.partner.address.email.search</field>
+            <field name="model">res.partner.address</field>
+            <field name="type">form</field>
+            <field name="inherit_id" ref="base.view_partner_address_form1"/>
+            <field name="arch" type="xml">
+                <field name="email" position="replace">
+                    <field name="email" widget="email" select="1"/>
+                </field>
+            </field>
+        </record>
+    </data>
+</openerp>

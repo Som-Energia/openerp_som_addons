@@ -2,7 +2,7 @@
 {
     "name": "som_assets",
     "description": "Assets per fer servir a les comunicacions amb les sòcies",
-    "version": "0-dev",
+    "version": "24.5.0",
     "author": "SomEnergia",
     "category": "SomEnergia",
     "depends": [

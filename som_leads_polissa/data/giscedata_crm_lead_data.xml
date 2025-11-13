@@ -1,0 +1,79 @@
+<?xml version="1.0" ?>
+<openerp>
+    <data noupdate="1">
+        <record model="res.config" id="giscedata_crm_leads_switching.configurable_lead_owner_change_type_atr">
+            <field name="name">lead_owner_change_type</field>
+            <field name="value">T</field>
+        </record>
+    </data>
+    <data noupdate="1">
+        <record id="ir_attachment_lead_old_invoice" model="ir.attachment.category">
+            <field name="code">lead_old_invoice</field>
+            <field name="name">Factura prèvia a SomEnergia</field>
+        </record>
+        <record id="ir_attachment_lead_a3_documentation" model="ir.attachment.category">
+            <field name="code">lead_a3_documentation</field>
+            <field name="name">Documentació per activar el subministrament (A3)</field>
+        </record>
+        <record id="ir_attachment_lead_autoconsum" model="ir.attachment.category">
+            <field name="code">lead_autoconsum</field>
+            <field name="name">Documents relacionats amb l'Autoconsum</field>
+        </record>
+    </data>
+    <data noupdate="1">
+        <record id="webform_section" model="crm.case.section">
+            <field name="code">WEBFORMS</field>
+            <field name="name">Formularis web</field>
+        </record>
+        <record id="webform_stage_recieved" model="crm.case.stage">
+            <field name="name">Formulari web rebut (i validat)</field>
+            <field name="section_id" ref="webform_section"/>
+            <field name="section_ids" eval="[(6,0,[ref('webform_section')])]"/>
+            <field name="sequence">10</field>
+        </record>
+        <record id="webform_stage_converted" model="crm.case.stage">
+            <field name="name">Formulari web convertit</field>
+            <field name="section_id" ref="webform_section"/>
+            <field name="section_ids" eval="[(6,0,[ref('webform_section')])]"/>
+            <field name="sequence">20</field>
+        </record>
+        <record id="webform_stage_error" model="crm.case.stage">
+            <field name="name">Formulari web amb error</field>
+            <field name="section_id" ref="webform_section"/>
+            <field name="section_ids" eval="[(6,0,[ref('webform_section')])]"/>
+            <field name="sequence">99</field>
+        </record>
+    </data>
+    <data noupdate="1">
+        <record model="account.journal" id="member_fee_journal">
+            <field name="account_control_ids" eval="[(6,0,[])]"/>
+            <field name="active" eval="1"/>
+            <field name="cash_journal" eval="0"/>
+            <field name="centralisation" eval="0"/>
+            <field name="code">SOCIS</field>
+            <field name="default_credit_account_id" model="account.account" search="[('code','=','555000000003')]"/>
+            <field name="default_debit_account_id" model="account.account" search="[('code','=','555000000003')]"/>
+            <field name="property_writeoff_account_id" model="account.account" search="[('code','=','659000000000')]"/>
+            <field name="entry_posted" eval="1"/>
+            <field name="group_invoice_lines" eval="0"/>
+            <field name="include_to_iva_book" eval="0"/>
+            <field name="name">SOCIS</field>
+            <field name="refund_journal" eval="0"/>
+            <field name="sequence_id" ref="account.sequence_statement"/>
+            <field name="sii_to_send" eval="False"/>
+            <field name="type">sale</field>
+            <field name="type_control_ids" eval="[(6,0,[])]"/>
+            <field name="update_posted" eval="1"/>
+            <field name="user_id" ref="base.user_root"/>
+            <field name="view_id" ref="account.account_journal_bank_view"/>
+        </record>
+    </data>
+    <data noupdate="1">
+        <record model="res.config" id="socia_member_fee_amount">
+            <!-- We use socia and member to make easy the search -->
+            <field name="name">socia_member_fee_amount</field>
+            <field name="value">100</field>
+            <field name="description">Import de la quota de sòcia</field>
+        </record>
+    </data>
+</openerp>

@@ -4,7 +4,7 @@
     import logging
     logger = logging.getLogger('openerp')
     report = objects[0]
-    data = report.report_retencions_data_apo()
+    data = report.report_retencions_data(is_generationkwh=False)
     setLang(data.lang)
 %>
 
@@ -208,7 +208,7 @@
       </div>
       <div class="CaixaDadesAportacio">
         <p class="ContingutDades"><b>${_(u"Rendiments bruts:")}</b> ${formatLang(data.amount_untaxed, monetary=True)} €<br>
-        <b>${_(u"19% Retenció sobre l'estalvi:")}</b> ${formatLang(data.amount_tax, monetary=True)} €<br>
+        <b>${_(u"19% IRPF:")}</b> ${formatLang(data.amount_tax, monetary=True)} €<br>
         <b>${_(u"Tipus percepció:")}</b> ${_(u"Dinerària")}</p>
       </div>
     </div>
@@ -217,7 +217,7 @@
 </div>
 <div>
   <div class="footer">
-    <p class="TextPeu">${_(u"Som Energia, SCCL, CIF F55091367 | Domicili Pic de Peguera, 11 A 28 - 17003 - Girona | aporta@somenergia.coop | www.somenergia.coop")}</p>
+    <p class="TextPeu">${_(u"Som Energia, SCCL, CIF F55091367 | Domicili Riu Güell, 68 - 17005 - Girona | aporta@somenergia.coop | www.somenergia.coop")}</p>
   </div>
 </div>
 </body>

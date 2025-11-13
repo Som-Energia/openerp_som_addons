@@ -44,10 +44,11 @@ class ReportBackendInvoiceEmail(ReportBackend):
 
         if energetica:
             data[
-                "logo"
-            ] = "https://blog.somenergia.coop/wp-content/uploads/2018/10/som-energia-energetica-logos.jpg"  # noqa: E501
-        else:
-            data["logo"] = "http://www.somenergia.coop/wp-content/uploads/2014/07/logo.png"
+                "dark_logo"
+            ] = "https://www.somenergia.coop/factura/logo-factura-energetica-fosc.png"  # noqa: E501
+            data[
+                "light_logo"
+            ] = "https://www.somenergia.coop/factura/logo-factura-energetica-clar.png"  # noqa: E501
 
         return data
 
@@ -92,6 +93,11 @@ class ReportBackendInvoiceEmail(ReportBackend):
         data = report_o.get_factura(cursor, uid, fra, context=context)
 
         data["isTariffChange"] = self._isTariffChange(cursor, uid, fra, context=context)
+
+        polissa_o = self.pool.get("giscedata.polissa")
+        ctxt = {"date": fra.data_final.val}
+        pol = polissa_o.browse(cursor, uid, fra.polissa_id.id, context=ctxt)
+        data["has_autoconsum_pdf_flag"] = pol.te_autoconsum(amb_o_sense_excedents=2, context=ctxt)
 
         return data
 

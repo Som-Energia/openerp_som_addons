@@ -2,6 +2,10 @@
 <%
 import locale
 first_pass = True
+TABLA_101 = {
+    '06': _(u'Inspecció - Anomalia'),
+    '11': _(u'Inspecció - Frau'),
+}
 %>
 % for l in id.bosocial_lines:
     <tr class= "${'last_row' if id.last_row == 'bosocial' else ''}">
@@ -29,6 +33,122 @@ first_pass = True
         % endif
     </tr>
 % endfor
+% if 'compl_info' in id and id.compl_info:
+    % for lines_data in id.compl_info.energy_lines_data:
+        <tr >
+            <td class="td_first concepte_td" rowspan="3">${_(u"Facturació Complementaria imputada per part de la Distribuïdora")}</td>
+            % if lines_data.type == "energia":
+                <td class="td_bold detall_td">${_(u"Energia [kWh]")}<br>
+            % elif lines_data.type == "reactiva":
+                <td class="td_bold detall_td">${_(u"Energia reactiva [kVArh]")}<br>
+            % else:  ## lines_data.type == "potencia":
+                <td class="td_bold detall_td">${_(u"Potència [kW]")}<br>
+            % endif
+            ${_(u"Número d'expedient: %s") % id.compl_info.expedient}<br>
+            ${_(u"Tipus d'expedient: %s") % TABLA_101[id.compl_info.tipus]}
+            </td>
+            % for p in id.showing_periods:
+                % if p in lines_data:
+                    <td>${_(u"%s") %(formatLang(lines_data[p]["quantity"], digits=2))}</td>
+                % else:
+                    <td></td>
+                % endif
+            % endfor
+            <td></td>
+            % if id.iva_column:
+                <td></td>
+            % endif
+        </tr>
+        <tr>
+            <td class="td_bold detall_td">${_(u"Preu [€/%s]") % lines_data.units}</td>
+            % for p in id.showing_periods:
+                % if p in lines_data:
+                    <td>${_(u"%s") %(locale.str(locale.atof(formatLang(lines_data[p]["price_unit_multi"], digits=6))))}</td>
+                % else:
+                    <td></td>
+                % endif
+            % endfor
+            <td></td>
+            % if id.iva_column:
+                <td></td>
+            % endif
+        </tr>
+        <tr class="td_bold ${'last_row' if id.last_row == 'compl' and lines_data.type == 'reactiva' else ''}">
+            <td class="detall_td">${_(u"%s x €/%s (del %s al %s)") % (lines_data.units, lines_data.units, lines_data.data_inici, lines_data.data_fi)}</td>
+            % for p in id.showing_periods:
+                % if p in lines_data:
+                    <td>${_(u"%s €") %(formatLang(lines_data[p]["price_subtotal"]))}</td>
+                % else:
+                    <td></td>
+                % endif
+            % endfor
+            <td><span class="subtotal">${_(u"%s €") %(formatLang(lines_data.total))}</span></td>
+            % if id.iva_column:
+                <td>${_(u"%s") % (lines_data.iva) }</td>
+            % endif
+        </tr>
+        %if lines_data.type != "reactiva":
+        <tr>
+            <td class="td_second concepte_td" rowspan="2">${_(u"Peatges")}</td>
+            <td class="td_bold detall_td">${_(u"Preu peatges [€/%s]") % lines_data.units}</td>
+            % for p in id.showing_periods:
+                % if p in lines_data:
+                    <td>${_(u"%s") %(formatLang(lines_data[p]["price_tolls"], digits=6))}</td>
+                % else:
+                    <td></td>
+                % endif
+            % endfor
+            <td></td>
+            % if id.iva_column:
+                <td></td>
+            % endif
+        </tr>
+        <tr>
+            <td class="td_bold detall_td">${_(u"%s x €/%s") % (lines_data.units, lines_data.units)}</td>
+            % for p in id.showing_periods:
+                % if p in lines_data:
+                    <td>${_(u"%s €") %(locale.str(locale.atof(formatLang(lines_data[p]["tolls"], digits=2))))}</td>
+                % else:
+                    <td></td>
+                % endif
+            % endfor
+            <td></td>
+            % if id.iva_column:
+                <td></td>
+            % endif
+        </tr>
+        <tr>
+            <td class="td_third concepte_td" rowspan=2>${_(u"Càrrecs")}</td>
+            <td class="td_bold detall_td">${_(u"Preu càrrecs [€/%s]") % lines_data.units}</td>
+            % for p in id.showing_periods:
+                % if p in lines_data:
+                    <td>${_(u"%s") %(formatLang(lines_data[p]["price_charges"], digits=6))}</td>
+                % else:
+                    <td></td>
+                % endif
+            % endfor
+            <td></td>
+            % if id.iva_column:
+                <td></td>
+            % endif
+        </tr>
+        <tr class="${'last_row' if id.last_row == 'compl' else ''}">
+            <td class="td_bold detall_td">${_(u"%s x €/%s") % (lines_data.units, lines_data.units)}</td>
+            % for p in id.showing_periods:
+                % if p in lines_data:
+                    <td>${_(u"%s €") %(locale.str(locale.atof(formatLang(lines_data[p]["charges"], digits=2))))}</td>
+                % else:
+                    <td></td>
+                % endif
+            % endfor
+            <td></td>
+            % if id.iva_column:
+                <td></td>
+            % endif
+        </tr>
+        % endif
+    % endfor
+% endif
 % for l in id.donatiu_lines:
     <tr class= "${'last_row' if id.last_row == 'donatiu' else ''}">
         % if first_pass:
