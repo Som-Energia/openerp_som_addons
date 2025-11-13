@@ -8,13 +8,13 @@ class ReportBackendMailcanvipreusEiE(ReportBackend):
     _source_model = "som.enviament.massiu"
     _name = "report.backend.mailcanvipreus.eie"
 
-    def is_eie(self, cursor, uid, env, context=None):
-        if context is None:
-            context = {}
+    # def is_eie(self, cursor, uid, env, context=None):
+    #     if context is None:
+    #         context = {}
 
-        pol_llista = env.polissa_id.llista_preu.id
+    #     pol_llista = env.polissa_id.llista_preu.id
 
-        return pol_llista in [150, 153, 154]
+    #     return pol_llista in [150, 153, 154]
 
     def get_data_eie(self, cursor, uid, env, context=None):
         if context is None:
