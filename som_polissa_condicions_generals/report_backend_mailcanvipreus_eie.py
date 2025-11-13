@@ -57,12 +57,10 @@ class ReportBackendMailcanvipreusEiE(ReportBackend):
             "lang": env.polissa_id.titular.lang,
         }
 
-        eie = self.is_eie(cursor, uid, env, context=context)
-        if eie:
-            data['dades_index'] = calculate_new_indexed_prices(
-                cursor, uid, env.polissa_id, is_eie=True, context=context
-            )
-            data['contract'] = self.get_data_eie(cursor, uid, env, context=context)
+        data['dades_index'] = calculate_new_indexed_prices(
+            cursor, uid, env.polissa_id, context=context
+        )
+        data['contract'] = self.get_data_eie(cursor, uid, env, context=context)
 
         return data
 

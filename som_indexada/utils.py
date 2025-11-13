@@ -7,18 +7,15 @@ from datetime import date, timedelta
 indexada_consum_tipus = {
     "2.0TD": {
         "preu_sense_F": 37.5486987,
-        "preu_eie_sense_F": 137.5486987,
     },
     "3.0TD": {
         "preu_sense_F": 21.0485735,
-        "preu_eie_sense_F": 121.0485735,
     },
     "6.1TD": {
         "preu_sense_F": 5.7246103,
-        "preu_eie_sense_F": 105.7246103,
     },
     "3.0TDVE": {
-        "preu_eie_sense_F": 0,
+        "preu_sense_F": 0,
     },
 }
 
@@ -81,7 +78,7 @@ def get_preus(cursor, uid, pol, with_taxes=False, context=None):
     return result
 
 
-def calculate_new_indexed_prices(cursor, uid, pol, is_eie=False, context=None):
+def calculate_new_indexed_prices(cursor, uid, pol, context=None):
     if context is None:
         context = {}
 
@@ -92,7 +89,7 @@ def calculate_new_indexed_prices(cursor, uid, pol, is_eie=False, context=None):
 
     # Preus energia
     tarifa_acces = pol.tarifa.name
-    key_price_name = "preu_eie_sense_F" if is_eie else "preu_sense_F"
+    key_price_name = "preu_sense_F"
     preu_sense_F = indexada_consum_tipus[tarifa_acces][key_price_name]
     preu_mitja_antic = (1.015 * f_antiga + preu_sense_F) / 1000
     preu_mitja_nou = (1.015 * f_nova + preu_sense_F) / 1000

@@ -29,7 +29,7 @@ class SomPolissaKChange(osv.osv):
                 context['partner_id'] = partner_id
                 pol = pol_obj.browse(cursor, uid, pol, context=context)
                 data = calculate_new_indexed_prices(
-                    cursor, uid, pol, is_eie=True, context=context
+                    cursor, uid, pol, context=context
                 )
                 import_total_anual_nova_amb_impost += data['import_total_anual_nova_amb_impost']
                 import_total_anual_antiga_amb_impost += data['import_total_anual_antiga_amb_impost']
