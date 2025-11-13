@@ -6,13 +6,13 @@ from datetime import date, timedelta
 
 indexada_consum_tipus = {
     "2.0TD": {
-        "preu_sense_F": 37.5486987,
+        "preu_sense_F": 137.5486987,
     },
     "3.0TD": {
-        "preu_sense_F": 21.0485735,
+        "preu_sense_F": 121.0485735,
     },
     "6.1TD": {
-        "preu_sense_F": 5.7246103,
+        "preu_sense_F": 105.7246103,
     },
     "3.0TDVE": {
         "preu_sense_F": 0,
@@ -91,13 +91,13 @@ def calculate_new_indexed_prices(cursor, uid, pol, context=None):
     tarifa_acces = pol.tarifa.name
     key_price_name = "preu_sense_F"
     preu_sense_F = indexada_consum_tipus[tarifa_acces][key_price_name]
-    preu_mitja_antic = (1.015 * f_antiga + preu_sense_F) / 1000
-    preu_mitja_nou = (1.015 * f_nova + preu_sense_F) / 1000
+    preu_mitja_antic = (1.015 * f_antiga + preu_sense_F)
+    preu_mitja_nou = (1.015 * f_nova + preu_sense_F)
 
     conany = pol.cups.conany_kwh if pol.cups.conany_kwh > 0 else 1
 
-    import_energia_anual_antiga = (preu_mitja_antic * conany)
-    import_energia_anual_nova = (preu_mitja_nou * conany)
+    import_energia_anual_antiga = (preu_mitja_antic / 1000) * conany
+    import_energia_anual_nova = (preu_mitja_nou / 1000) * conany
 
     # Preus potència
     context_preus_antics = dict(context)
@@ -107,15 +107,26 @@ def calculate_new_indexed_prices(cursor, uid, pol, context=None):
     context_preus_nous["date"] = (date.today() + timedelta(days=60)).strftime("%Y-%m-%d")
 
     potencia = pol.potencia
-    preu_potencia_nova = sum(get_preus(
-        cursor, uid, pol, with_taxes=True, context=context_preus_nous
-    )['tp'].values())
+    dict_potencies_pol = {p.periode_id.name: p.potencia for p in pol.potencies_periode}
 
-    preu_potencia_antiga = sum(get_preus(
-        cursor, uid, pol, with_taxes=True, context=context_preus_antics
-    )['tp'].values())
-    import_potencia_anual_antiga = preu_potencia_antiga * potencia
-    import_potencia_anual_nova = preu_potencia_nova * potencia
+    dict_preus_potencia_antiga = get_preus(
+        cursor, uid, pol, with_taxes=False, context=context_preus_antics
+    )
+    dict_preu_potencia_antiga = dict_preus_potencia_antiga['tp']
+    preu_potencia_antiga = 0
+    for k in dict_preu_potencia_antiga.keys():
+        preu_potencia_antiga += dict_potencies_pol.get(k, 0) * dict_preu_potencia_antiga.get(k, 0)
+
+    dict_preus_potencia_nova = get_preus(
+        cursor, uid, pol, with_taxes=False, context=context_preus_nous
+    )
+    dict_preu_potencia_nova = dict_preus_potencia_nova['tp']
+    preu_potencia_nova = 0
+    for k in dict_preu_potencia_nova.keys():
+        preu_potencia_nova += dict_potencies_pol.get(k, 0) * dict_preu_potencia_nova.get(k, 0)
+
+    import_potencia_anual_antiga = preu_potencia_antiga
+    import_potencia_anual_nova = preu_potencia_nova
 
     # Imports totals
     import_total_anual_antiga = import_energia_anual_antiga + import_potencia_anual_antiga
