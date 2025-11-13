@@ -213,9 +213,17 @@ class GiscedataCrmLead(osv.OsvInherits):
                 ad_id = addrs.get("default")
                 adr_info = address_o.read(
                     cursor, uid, ad_id, ['phone_prefix', 'mobile_prefix'], context=context)
-                if adr_info:
-                    vals["titular_phone_prefix"] = adr_info.get("phone_prefix", [False])[0]
-                    vals["titular_mobile_prefix"] = adr_info.get("mobile_prefix", [False])[0]
+                # Quick fix to ensure no more exceptions on new contracts
+                phone_prefix = adr_info.get("phone_prefix", False)
+                mobile_prefix = adr_info.get("mobile_prefix", False)
+                if isinstance(phone_prefix, list) or isinstance(phone_prefix, tuple):
+                    phone_prefix = phone_prefix[0]
+                if isinstance(mobile_prefix, list) or isinstance(phone_prefix, tuple):
+                    mobile_prefix = mobile_prefix[0]
+                if phone_prefix:
+                    vals["titular_phone_prefix"] = phone_prefix
+                if mobile_prefix:
+                    vals["titular_mobile_prefix"] = mobile_prefix
 
         return vals
 
