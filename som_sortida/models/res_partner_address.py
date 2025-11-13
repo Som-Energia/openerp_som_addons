@@ -82,15 +82,15 @@ class ResPartnerAddress(osv.osv):
             "email_address": partner_data["email"],
             "status": "subscribed",
             "merge_fields": {
-                FIELDS_CTSS["email"]: partner_data["email"],
-                FIELDS_CTSS["Nom"]: nom_pila,
-                FIELDS_CTSS["Idioma"]: partner_fields["lang"],
+                FIELDS_CTSS["email"]: partner_data["email"] or '',
+                FIELDS_CTSS["Nom"]: nom_pila or '',
+                FIELDS_CTSS["Idioma"]: partner_fields["lang"] or '',
                 FIELDS_CTSS["Origen"]: "Origen vinculat al CT sense socia",
                 # FIELDS_CTSS["Cognoms_Nom"]: partner_fields["name"],
-                FIELDS_CTSS["num_socia"]: pol_data["num_socia"],  # ojo, obtenir de polissa
+                FIELDS_CTSS["num_socia"]: pol_data["num_socia"] or '',  # ojo, obtenir de polissa
                 # TODO: obtenir de polissa
-                FIELDS_CTSS["situacio_socia"]: pol_data['situacio_socia'],
-                FIELDS_CTSS["codi_postal"]: partner_data["zip"],
+                FIELDS_CTSS["situacio_socia"]: pol_data['situacio_socia'] or '',
+                FIELDS_CTSS["codi_postal"]: partner_data["zip"] or '',
             },
         }
 

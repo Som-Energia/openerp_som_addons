@@ -256,12 +256,12 @@ class ResPartnerAddress(osv.osv):
             "email_address": partner_data["email"],
             "status": "subscribed",
             "merge_fields": {
-                FIELDS_NO_MEMBERS["name"]: partner_fields["name"],
-                FIELDS_NO_MEMBERS["lang"]: partner_fields["lang"],
-                FIELDS_NO_MEMBERS["surname"]: partner_fields["name"].split(",")[0],
-                FIELDS_NO_MEMBERS["firstname"]: partner_fields["name"].split(",")[-1].strip(),
-                FIELDS_NO_MEMBERS["email"]: partner_data["email"],
-                FIELDS_NO_MEMBERS["zip_code"]: partner_data["zip"],
+                FIELDS_NO_MEMBERS["name"]: partner_fields["name"] or '',
+                FIELDS_NO_MEMBERS["lang"]: partner_fields["lang"] or '',
+                FIELDS_NO_MEMBERS["surname"]: partner_fields["name"].split(",")[0] if partner_fields["name"] else '',  # noqa: E501
+                FIELDS_NO_MEMBERS["firstname"]: partner_fields["name"].split(",")[-1].strip() if partner_fields["name"] else '',  # noqa: E501
+                FIELDS_NO_MEMBERS["email"]: partner_data["email"] or '',
+                FIELDS_NO_MEMBERS["zip_code"]: partner_data["zip"] or '',
             },
         }
 
@@ -274,10 +274,10 @@ class ResPartnerAddress(osv.osv):
             ccaa_name = municipi_data.state.comunitat_autonoma.name
             mailchimp_member["merge_fields"].update(
                 {
-                    FIELDS_NO_MEMBERS["province"]: provincia_name,
-                    FIELDS_NO_MEMBERS["region"]: ccaa_name,
-                    FIELDS_NO_MEMBERS["comarca"]: comarca_name,
-                    FIELDS_NO_MEMBERS["municipality"]: municipi_data.name,
+                    FIELDS_NO_MEMBERS["province"]: provincia_name or '',
+                    FIELDS_NO_MEMBERS["region"]: ccaa_name or '',
+                    FIELDS_NO_MEMBERS["comarca"]: comarca_name or '',
+                    FIELDS_NO_MEMBERS["municipality"]: municipi_data.name or '',
                 }
             )
 
@@ -313,22 +313,22 @@ class ResPartnerAddress(osv.osv):
             "email_address": partner_data["email"],
             "status": "subscribed",
             "merge_fields": {
-                FIELDS_SOCIS["Cognoms_Nom"]: partner_fields["name"],
+                FIELDS_SOCIS["Cognoms_Nom"]: partner_fields["name"] or '',
                 FIELDS_SOCIS["Idioma"]: partner_fields["lang"] or '',
-                FIELDS_SOCIS["E-mail"]: partner_data["email"],
+                FIELDS_SOCIS["E-mail"]: partner_data["email"] or '',
                 FIELDS_SOCIS["CodiPostal"]: partner_data["zip"] or '',
-                FIELDS_SOCIS["NIF"]: partner_fields["vat"],
-                FIELDS_SOCIS["NumSoci"]: partner_fields["ref"],
+                FIELDS_SOCIS["NIF"]: partner_fields["vat"] or '',
+                FIELDS_SOCIS["NumSoci"]: partner_fields["ref"] or '',
                 # "domestic", "empresa", blanc (no té contractes)
-                FIELDS_SOCIS["DomesticEmpresa"]: soci_data['domestic_empresa'],
+                FIELDS_SOCIS["DomesticEmpresa"]: soci_data['domestic_empresa'] or '',
                 # "contracte_actiu", "contracte_esborrany", "sense_contracte"
-                FIELDS_SOCIS["contracte"]: soci_data['contracte'],
+                FIELDS_SOCIS["contracte"]: soci_data['contracte'] or '',
                 # "amb autorpoduccio altres", "amb autoproduccio comp.simp.", "sense autoproduccio"
-                FIELDS_SOCIS["autoproduccio"]: soci_data['autoproduccio'],
-                FIELDS_SOCIS["nom_pila"]: soci_data['nom_pila'],
+                FIELDS_SOCIS["autoproduccio"]: soci_data['autoproduccio'] or '',
+                FIELDS_SOCIS["nom_pila"]: soci_data['nom_pila'] or '',
                 # blanc (no té contractes), "empresa amb maximetre", "empresa sense maximetre", "no es empresa" # noqa: E501
-                FIELDS_SOCIS["maximetre"]: soci_data['maximetre'],
-                FIELDS_SOCIS["ccvv"]: soci_data['ccvv'],  # "CCVV","No CCVV"
+                FIELDS_SOCIS["maximetre"]: soci_data['maximetre'] or '',
+                FIELDS_SOCIS["ccvv"]: soci_data['ccvv'] or '',  # "CCVV","No CCVV"
             },
         }
         if partner_data["phone"]:
@@ -347,10 +347,10 @@ class ResPartnerAddress(osv.osv):
             ccaa_name = municipi_data.state.comunitat_autonoma.name
             mailchimp_member["merge_fields"].update(
                 {
-                    FIELDS_SOCIS["Provincia"]: provincia_name,
-                    FIELDS_SOCIS["comunitat_autonoma"]: ccaa_name,
-                    FIELDS_SOCIS["Comarca"]: comarca_name,
-                    FIELDS_SOCIS["Ciutat"]: municipi_data.name,
+                    FIELDS_SOCIS["Provincia"]: provincia_name or '',
+                    FIELDS_SOCIS["comunitat_autonoma"]: ccaa_name or '',
+                    FIELDS_SOCIS["Comarca"]: comarca_name or '',
+                    FIELDS_SOCIS["Ciutat"]: municipi_data.name or '',
                 }
             )
 
