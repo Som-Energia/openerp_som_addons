@@ -218,7 +218,7 @@ class GiscedataCrmLead(osv.OsvInherits):
                 mobile_prefix = adr_info.get("mobile_prefix", False)
                 if isinstance(phone_prefix, list) or isinstance(phone_prefix, tuple):
                     phone_prefix = phone_prefix[0]
-                if isinstance(mobile_prefix, list) or isinstance(phone_prefix, tuple):
+                if isinstance(mobile_prefix, list) or isinstance(mobile_prefix, tuple):
                     mobile_prefix = mobile_prefix[0]
                 if phone_prefix:
                     vals["titular_phone_prefix"] = phone_prefix
