@@ -500,18 +500,24 @@ class TarifaPoolSOM(TarifaPool):
             csdvbaj = self.get_component_with_fallback('codsvbaqh', start_date_str, end_date_str, day, fallback=preu_dema)  # [€/MWh]
             csdvsub = self.get_component_with_fallback('codsvsuqh', start_date_str, end_date_str, day, fallback=preu_dema)  # [€/MWh]
 
-        # get first version date on version
-        first_version = self.conf.get('versions', {}).keys()[0]
+        # RAD3 and BS3
+        compodem = MonthlyCompodem('C2_monthlycompodem_%(postfix)s' % locals(), esios_token)
+        rad3 = compodem.get_component("RAD3")
+        bs3 = compodem.get_component("BS3")
 
-        # BS3 format QH from REGANECU
-        all_bs3 = self.conf.get('versions', {})[first_version]['bs3qh']
-        current_bs3 = [x for x in all_bs3 if x.start_date == start_date]
-        bs3 = current_bs3[0]
-
-        # RAD3 format QH from REGANECU
-        all_rad3 = self.conf.get('versions', {})[first_version]['rad3qh']
-        current_rad3 = [x for x in all_rad3 if x.start_date == start_date]
-        rad3 = current_rad3[0]
+        # NOT YET es comenta fins que es decideixi pasar a producció.
+        # # get first version date on version
+        # first_version = self.conf.get('versions', {}).keys()[0]
+        #
+        # # BS3 format QH from REGANECU
+        # all_bs3 = self.conf.get('versions', {})[first_version]['bs3qh']
+        # current_bs3 = [x for x in all_bs3 if x.start_date == start_date]
+        # bs3 = current_bs3[0]
+        #
+        # # RAD3 format QH from REGANECU
+        # all_rad3 = self.conf.get('versions', {})[first_version]['rad3qh']
+        # current_rad3 = [x for x in all_rad3 if x.start_date == start_date]
+        # rad3 = current_rad3[0]
 
         # Let's transform them in ComponentsQH
         # First, which components must be divided by 4
