@@ -6,5 +6,12 @@
             <field name="value">0</field>
             <field name="description">Permet el canvi de tarifa mode switching des de OV</field>
         </record>
+
+        <record model="res.config" id="som_indexada_consum_tipus">
+            <field name="name">som_indexada_consum_tipus</field>
+            <field name="value">{'2.0TD': {'preu_sense_F': 137.5486987},'3.0TD': {'preu_sense_F': 121.0485735},
+                '6.1TD': {'preu_sense_F': 105.7246103},'3.0TDVE': {'preu_sense_F': 0}}</field>
+            <field name="description">Consums tipus per potència definits pel càlcul de simulacions en canvis de tarifes y Fs.</field>
+        </record>
     </data>
 </openerp>

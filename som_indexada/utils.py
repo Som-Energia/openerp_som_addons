@@ -4,22 +4,6 @@ from giscedata_facturacio.report.utils import get_atr_price
 from datetime import date, timedelta
 
 
-indexada_consum_tipus = {
-    "2.0TD": {
-        "preu_sense_F": 137.5486987,
-    },
-    "3.0TD": {
-        "preu_sense_F": 121.0485735,
-    },
-    "6.1TD": {
-        "preu_sense_F": 105.7246103,
-    },
-    "3.0TDVE": {
-        "preu_sense_F": 0,
-    },
-}
-
-
 def get_fs(cursor, uid, pol, context=None):
     if context is None:
         context = {}
@@ -88,8 +72,18 @@ def calculate_new_indexed_prices(cursor, uid, pol, context=None):
     f_nova = fs.get('k_new', 0)
 
     # Preus energia
+    indexada_consum_tipus = eval(
+        pol.pool.get("res.config").get(cursor, uid, "som_indexada_consum_tipus", "{}"))
+    if indexada_consum_tipus == {}:
+        raise Exception("No s'han definit els consums tipus per càlculs d'indexació")
     tarifa_acces = pol.tarifa.name
     key_price_name = "preu_sense_F"
+
+    if tarifa_acces not in indexada_consum_tipus:
+        raise Exception(
+            "La tarifa d'accés %s no té definit un consum tipus per càlculs d'indexació"
+            % tarifa_acces
+        )
     preu_sense_F = indexada_consum_tipus[tarifa_acces][key_price_name]
     preu_mitja_antic = (1.015 * f_antiga + preu_sense_F)
     preu_mitja_nou = (1.015 * f_nova + preu_sense_F)
