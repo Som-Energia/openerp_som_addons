@@ -59,6 +59,18 @@ def get_preus(cursor, uid, pol, with_taxes=False, context=None):
                 cursor, uid, pol, periode, terme, context=context, with_taxes=with_taxes
             )[0]
             result[terme][periode] = preu_periode
+
+    # Factor K
+    try:
+        imd_obj = pol.pool.get('ir.model.data')
+        pl_obj = pol.pool.get('product.pricelist')
+        factor_k = imd_obj.get_object_reference(
+            cursor, uid, 'giscedata_facturacio_indexada', 'product_factor_k')
+        price_factor_k = pl_obj.price_get(
+            cursor, uid, [pol.llista_preu.id], factor_k[1], 1, context=context)
+        result['factor_k'] = price_factor_k.get(pol.llista_preu.id, 0.0)
+    except Exception:
+        result['factor_k'] = 0.0
     return result
 
 
@@ -66,10 +78,24 @@ def calculate_new_indexed_prices(cursor, uid, pol, context=None):
     if context is None:
         context = {}
 
+    context_preus_antics = dict(context)
+    context_preus_antics["date"] = date.today().strftime("%Y-%m-%d")
+
+    context_preus_nous = dict(context)
+    context_preus_nous["date"] = (date.today() + timedelta(days=60)).strftime("%Y-%m-%d")
+
+    dict_preus_antiga = get_preus(
+        cursor, uid, pol, with_taxes=False, context=context_preus_antics
+    )
+
+    dict_preus_nova = get_preus(
+        cursor, uid, pol, with_taxes=False, context=context_preus_nous
+    )
+
     fs = get_fs(cursor, uid, pol, context=context)
 
-    f_antiga = fs.get('k_old', 0)
-    f_nova = fs.get('k_new', 0)
+    f_antiga = fs.get('k_old', dict_preus_antiga.get('factor_k', 0))
+    f_nova = fs.get('k_new', dict_preus_nova.get('factor_k', 0))
 
     # Preus energia
     indexada_consum_tipus = eval(
@@ -94,27 +120,15 @@ def calculate_new_indexed_prices(cursor, uid, pol, context=None):
     import_energia_anual_nova = (preu_mitja_nou / 1000) * conany
 
     # Preus potència
-    context_preus_antics = dict(context)
-    context_preus_antics["date"] = date.today().strftime("%Y-%m-%d")
-
-    context_preus_nous = dict(context)
-    context_preus_nous["date"] = (date.today() + timedelta(days=60)).strftime("%Y-%m-%d")
-
     potencia = pol.potencia
     dict_potencies_pol = {p.periode_id.name: p.potencia for p in pol.potencies_periode}
 
-    dict_preus_potencia_antiga = get_preus(
-        cursor, uid, pol, with_taxes=False, context=context_preus_antics
-    )
-    dict_preu_potencia_antiga = dict_preus_potencia_antiga['tp']
+    dict_preu_potencia_antiga = dict_preus_antiga['tp']
     preu_potencia_antiga = 0
     for k in dict_preu_potencia_antiga.keys():
         preu_potencia_antiga += dict_potencies_pol.get(k, 0) * dict_preu_potencia_antiga.get(k, 0)
 
-    dict_preus_potencia_nova = get_preus(
-        cursor, uid, pol, with_taxes=False, context=context_preus_nous
-    )
-    dict_preu_potencia_nova = dict_preus_potencia_nova['tp']
+    dict_preu_potencia_nova = dict_preus_nova['tp']
     preu_potencia_nova = 0
     for k in dict_preu_potencia_nova.keys():
         preu_potencia_nova += dict_potencies_pol.get(k, 0) * dict_preu_potencia_nova.get(k, 0)
