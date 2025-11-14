@@ -227,6 +227,7 @@ class GiscedataSwitchingHelpers(osv.osv):
 
     def _check_and_archive_old_owner(self, cursor, uid, titular_id, context=None):
         pol_obj = self.pool.get("giscedata.polissa")
+        address_obj = self.pool.get("res.partner.address")
 
         pol_actives = pol_obj.search(
             cursor, uid, [("titular", "=", titular_id)]
@@ -239,8 +240,12 @@ class GiscedataSwitchingHelpers(osv.osv):
 
             return "OK", info
         try:
-            partner_obj = self.pool.get("res.partner.address")
-            partner_obj.unsubscribe_partner_in_customers_no_members_lists(cursor, uid, titular_id)
+            address_obj.unsubscribe_partner_in_customers_no_members_lists(
+                cursor, uid, [titular_id], context=context
+            )
+            address_obj.update_members_data_mailchimp_async(
+                cursor, uid, [titular_id], context=context
+            )
 
             info = _(
                 u"[Baixa Mailchimp] S'ha iniciat el procés de baixa per l'antic titular (ID %d)"

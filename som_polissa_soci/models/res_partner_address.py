@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-
 from osv import osv
 from tools.translate import _
 
@@ -60,6 +59,8 @@ class ResPartnerAddress(osv.osv):
     """
     Class to manage Mailchimp lists subscriptions
     This is the only class that should connect to Mailchimp API
+    Functional documentation:
+    https://docs.google.com/document/d/18_TBwCGGLJtC3m77uxiKOEVwQr7sDNlbxs96ajpqtas/edit?tab=t.0
     """
 
     _name = "res.partner.address"
@@ -117,7 +118,7 @@ class ResPartnerAddress(osv.osv):
             soci_data['contracte'] = 'contracte_actiu'
         elif contracte_esborrany:
             soci_data['contracte'] = 'contracte_esborrany'
-        if not polisses_ids:
+        else:
             soci_data['contracte'] = 'sense_contracte'
 
         # Domèstic o empresa
@@ -375,6 +376,10 @@ class ResPartnerAddress(osv.osv):
 
     @job(queue="mailchimp_tasks")
     def subscribe_partner_in_members_lists(self, cursor, uid, partner_ids, context=None):
+        return self.subscribe_partner_in_members_lists_sync(
+            cursor, uid, partner_ids, context=context)
+
+    def subscribe_partner_in_members_lists_sync(self, cursor, uid, partner_ids, context=None):
         if not isinstance(partner_ids, (list, tuple)):
             partner_ids = [partner_ids]
 
@@ -448,7 +453,7 @@ class ResPartnerAddress(osv.osv):
                         "Error comú quan el mail no es troba a la llista: "
                         "Error de l'API: {}".format(client_data["email_address"], e.text)
                     )
-                    self.subscribe_partner_in_members_lists(cursor, uid, partner_ids, context)
+                    self.subscribe_partner_in_members_lists_sync(cursor, uid, [_id], context=context)  # noqa: E501
                 elif (e.status_code == 400
                       and ast.literal_eval(e.text)['title'] == 'Member In Compliance State'):
                     logger.warning(

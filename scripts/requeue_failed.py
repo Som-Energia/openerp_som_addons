@@ -22,8 +22,6 @@ EXECINFO_TO_DELETE = [
     "RepresenterError: ('cannot represent an object', <osv.orm.browse_null object at 0x7f3148f11a90>)",  # noqa: E501
     "You try to write on an record that doesn't exist",
     "cursor, uid, line_id, ['import_phase'])['import_phase']\nTypeError: 'bool' object has no attribute '__getitem__'",  # noqa: E501
-    "Partner address not found. Partner ID:",
-
 ]
 QUEUES_TO_DELETE_AFETER_REQUE = ["sii", "cups_cch"]
 
