@@ -79,7 +79,7 @@ class TestActivacioCn(TestSwitchingImport):
             with PatchNewCursors():
                 self.Switching.activa_cas_atr(cursor, uid, c1)
 
-            mock_function.assert_called_with(mock.ANY, uid, old_partner_id)
+            mock_function.assert_called_with(mock.ANY, uid, old_partner_id, context=mock.ANY)
 
             expected_result = (
                 u"[Baixa Mailchimp] S'ha iniciat el procés de baixa "
@@ -93,16 +93,13 @@ class TestActivacioCn(TestSwitchingImport):
         with Transaction().start(self.database) as txn:
             cursor = txn.cursor
             uid = txn.user
-
             self.ResConfig.set(cursor, uid, "sw_allow_baixa_polissa_from_cn_without_invoice", "1")
             contract_id = self.get_contract_id(txn, "polissa_tarifa_018")
-
             c1 = self.get_cn_06(txn, contract_id, "C1", {"polissa_xml_id": "polissa_tarifa_018"})
             with PatchNewCursors():
                 self.Switching.activa_cas_atr(cursor, uid, c1)
 
             self.assertTrue(not mock_function.called)
-
             expected_result = (
                 u"[Baixa Mailchimp] No s'ha iniciat el procés de baixa "
                 u"perque l'antic titular encara té pòlisses associades"
@@ -115,9 +112,7 @@ class TestActivacioCn(TestSwitchingImport):
         with Transaction().start(self.database) as txn:
             cursor = txn.cursor
             uid = txn.user
-
             self.ResConfig.set(cursor, uid, "sw_allow_baixa_polissa_from_cn_without_invoice", "1")
-
             contract_id = self.get_contract_id(txn)
             # remove all other contracts
             old_partner_id = self.Polissa.read(cursor, uid, contract_id, ["titular"])["titular"][0]
@@ -125,14 +120,12 @@ class TestActivacioCn(TestSwitchingImport):
                 cursor, uid, [("id", "!=", contract_id), ("titular", "=", old_partner_id)]
             )
             self.Polissa.write(cursor, uid, pol_ids, {"titular": False})
-
             c2 = self.get_cn_06(txn, contract_id, "C2")
 
             with PatchNewCursors():
                 self.Switching.activa_cas_atr(cursor, uid, c2)
 
-            mock_mailchimp_function.assert_called_with(mock.ANY, uid, old_partner_id)
-
+            mock_mailchimp_function.assert_called_with(mock.ANY, uid, old_partner_id, context=mock.ANY)  # noqa: E501
             expected_result = (
                 u"[Baixa Mailchimp] S'ha iniciat el procés de baixa "
                 u"per l'antic titular (ID %d)" % (old_partner_id)

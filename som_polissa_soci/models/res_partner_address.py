@@ -360,6 +360,11 @@ class ResPartnerAddress(osv.osv):
     @job(queue="mailchimp_tasks")
     def subscribe_partner_in_customers_no_members_lists(
             self, cursor, uid, partner_ids, context=None):
+        return self.subscribe_partner_in_customers_no_members_lists_sync(
+            cursor, uid, partner_ids, context=context)
+
+    def subscribe_partner_in_customers_no_members_lists_sync(
+            self, cursor, uid, partner_ids, context=None):
         if not isinstance(partner_ids, (list, tuple)):
             partner_ids = [partner_ids]
 

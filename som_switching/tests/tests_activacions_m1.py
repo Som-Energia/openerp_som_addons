@@ -124,7 +124,6 @@ class TestActivacioM1(TestSwitchingImport):
         with Transaction().start(self.database) as txn:
             cursor = txn.cursor
             uid = txn.user
-
             contract_id = self.get_contract_id(txn)
             # remove all other contracts
             old_partner_id = self.Polissa.read(cursor, uid, contract_id, ["titular"])["titular"][0]
@@ -132,19 +131,17 @@ class TestActivacioM1(TestSwitchingImport):
                 cursor, uid, [("id", "!=", contract_id), ("titular", "=", old_partner_id)]
             )
             self.Polissa.write(cursor, uid, pol_ids, {"titular": False})
-
             # activate contract
             self.Polissa.send_signal(cursor, uid, [contract_id], [
                 'validar', 'contracte'
             ])
-
             m1 = self.get_m1_02_ct(
                 txn, contract_id, "S", context={"data_activacio": "2016-08-15"})
+
             with PatchNewCursors():
                 self.Switching.activa_cas_atr(cursor, uid, m1)
 
-            mock_function.assert_called_with(mock.ANY, uid, old_partner_id)
-
+            mock_function.assert_called_with(mock.ANY, uid, old_partner_id, context=mock.ANY)
             expected_result = (
                 u"[Baixa Mailchimp] S'ha iniciat el procés de baixa "
                 u"per l'antic titular (ID %d)" % (old_partner_id)
@@ -182,9 +179,9 @@ class TestActivacioM1(TestSwitchingImport):
     @mock.patch(
         "giscedata_lectures_switching.giscedata_lectures.GiscedataLecturesSwitchingHelper.move_meters_of_contract"  # noqa: E501
     )
-    def test_ct_traspas_baixa_mailchimp_ok(self, mock_lectures, mock_mailchimp_function):
+    @mock.patch("som_polissa_soci.models.res_partner_address.ResPartnerAddress.subscribe_partner_in_customers_no_members_lists")  # noqa: E501
+    def test_ct_traspas_baixa_mailchimp_ok(self, mock_subscribe, mock_lectures, mock_mailchimp_function):  # noqa: E501
         with Transaction().start(self.database) as txn:
-
             cursor = txn.cursor
             uid = txn.user
 
@@ -194,10 +191,8 @@ class TestActivacioM1(TestSwitchingImport):
             )[1]
             act_o = self.openerp.pool.get("giscedata.switching.activation.config")
             act_o.write(cursor, uid, act_sw_act_m105_ct_traspas_old_id, {"active": False})
-
             mock_lectures.return_value = []
             contract_id = self.get_contract_id(txn)
-
             old_partner_id = self.Polissa.read(cursor, uid, contract_id, ["titular"])["titular"][0]
             pol_ids = self.Polissa.search(
                 cursor, uid, [("id", "!=", contract_id), ("titular", "=", old_partner_id)]
@@ -208,8 +203,8 @@ class TestActivacioM1(TestSwitchingImport):
             with PatchNewCursors():
                 self.Switching.activa_cas_atr(cursor, uid, m1)
 
-            mock_mailchimp_function.assert_called_with(mock.ANY, uid, old_partner_id)
-
+            mock_mailchimp_function.assert_called()
+            mock_subscribe.assert_called()
             expected_result = (
                 u"[Baixa Mailchimp] S'ha iniciat el procés de baixa "
                 u"per l'antic titular (ID %d)" % (old_partner_id)
@@ -221,8 +216,9 @@ class TestActivacioM1(TestSwitchingImport):
     @mock.patch(
         "giscedata_lectures_switching.giscedata_lectures.GiscedataLecturesSwitchingHelper.move_meters_of_contract"  # noqa: E501
     )
+    @mock.patch("som_polissa_soci.models.res_partner_address.ResPartnerAddress.subscribe_partner_in_customers_no_members_lists")  # noqa: E501
     def test_ct_traspas_baixa_mailchimp_error__more_than_one_contract(
-        self, mock_lectures, mock_function
+        self, mock_subscribe, mock_lectures, mock_function
     ):
         with Transaction().start(self.database) as txn:
             cursor = txn.cursor
@@ -243,6 +239,7 @@ class TestActivacioM1(TestSwitchingImport):
                 self.Switching.activa_cas_atr(cursor, uid, m1)
 
             self.assertTrue(not mock_function.called)
+            self.assertTrue(not mock_subscribe.called)
 
             expected_result = (
                 u"[Baixa Mailchimp] No s'ha iniciat el procés de baixa "

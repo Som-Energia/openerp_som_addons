@@ -94,7 +94,7 @@ class TestActivacioB1(TestSwitchingImport):
             with PatchNewCursors():
                 self.Switching.activa_cas_atr(cursor, uid, b1)
 
-            mock_function.assert_called_with(mock.ANY, uid, old_partner_id)
+            mock_function.assert_called_with(mock.ANY, uid, old_partner_id, context=mock.ANY)
 
             expected_result = (
                 u"[Baixa Mailchimp] S'ha iniciat el procés de baixa "
