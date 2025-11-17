@@ -60,7 +60,7 @@ class TestActivacioCn(TestSwitchingImport):
         return cn
 
     @mock.patch("som_polissa_soci.models.res_partner_address.ResPartnerAddress.unsubscribe_partner_in_customers_no_members_lists")  # noqa: E501
-    def test_c1_06_baixa_mailchimp_ok(self, mock_function):
+    def test_c1_06_baixa_mailchimp_ok(self, mock_unsubscribe):
         with Transaction().start(self.database) as txn:
             cursor = txn.cursor
             uid = txn.user
@@ -79,7 +79,7 @@ class TestActivacioCn(TestSwitchingImport):
             with PatchNewCursors():
                 self.Switching.activa_cas_atr(cursor, uid, c1)
 
-            mock_function.assert_called_with(mock.ANY, uid, old_partner_id, context=mock.ANY)
+            mock_unsubscribe.assert_called_with(mock.ANY, uid, old_partner_id, context=mock.ANY)
 
             expected_result = (
                 u"[Baixa Mailchimp] S'ha iniciat el procés de baixa "
@@ -89,7 +89,7 @@ class TestActivacioCn(TestSwitchingImport):
             self.assertTrue(any([expected_result in desc for desc in history_line_desc]))
 
     @mock.patch("som_polissa_soci.models.res_partner_address.ResPartnerAddress.unsubscribe_partner_in_customers_no_members_lists")  # noqa: E501
-    def test_c1_06_baixa_mailchimp_error__more_than_one_contract(self, mock_function):
+    def test_c1_06_baixa_mailchimp_error__more_than_one_contract(self, mock_unsubscribe):
         with Transaction().start(self.database) as txn:
             cursor = txn.cursor
             uid = txn.user
@@ -99,7 +99,7 @@ class TestActivacioCn(TestSwitchingImport):
             with PatchNewCursors():
                 self.Switching.activa_cas_atr(cursor, uid, c1)
 
-            self.assertTrue(not mock_function.called)
+            self.assertTrue(not mock_unsubscribe.called)
             expected_result = (
                 u"[Baixa Mailchimp] No s'ha iniciat el procés de baixa "
                 u"perque l'antic titular encara té pòlisses associades"
@@ -108,7 +108,7 @@ class TestActivacioCn(TestSwitchingImport):
             self.assertTrue(any([expected_result in desc for desc in history_line_desc]))
 
     @mock.patch("som_polissa_soci.models.res_partner_address.ResPartnerAddress.unsubscribe_partner_in_customers_no_members_lists")  # noqa: E501
-    def test_c2_06_baixa_mailchimp_ok(self, mock_mailchimp_function):
+    def test_c2_06_baixa_mailchimp_ok(self, mock_unsubscribe):
         with Transaction().start(self.database) as txn:
             cursor = txn.cursor
             uid = txn.user
@@ -125,7 +125,7 @@ class TestActivacioCn(TestSwitchingImport):
             with PatchNewCursors():
                 self.Switching.activa_cas_atr(cursor, uid, c2)
 
-            mock_mailchimp_function.assert_called_with(mock.ANY, uid, old_partner_id, context=mock.ANY)  # noqa: E501
+            mock_unsubscribe.assert_called_with(mock.ANY, uid, old_partner_id, context=mock.ANY)  # noqa: E501
             expected_result = (
                 u"[Baixa Mailchimp] S'ha iniciat el procés de baixa "
                 u"per l'antic titular (ID %d)" % (old_partner_id)
@@ -157,7 +157,7 @@ class TestActivacioCn(TestSwitchingImport):
             self.assertTrue(any([expected_result in desc for desc in history_line_desc]))
 
     @mock.patch("som_polissa_soci.models.res_partner_address.ResPartnerAddress.unsubscribe_partner_in_customers_no_members_lists")  # noqa: E501
-    def test_c1_06_baixa_mailchimp_error__active_contract(self, mock_function):
+    def test_c1_06_baixa_mailchimp_error__active_contract(self, mock_unsubscribe):
         with Transaction().start(self.database) as txn:
             cursor = txn.cursor
             uid = txn.user
@@ -177,7 +177,7 @@ class TestActivacioCn(TestSwitchingImport):
             with PatchNewCursors():
                 self.Switching.activa_cas_atr(cursor, uid, c1)
 
-            self.assertTrue(not mock_function.called)
+            self.assertTrue(not mock_unsubscribe.called)
 
             expected_result = u"[Baixa Mailchimp] No s'ha donat de baixa el titular perquè la pòlissa està activa."  # noqa: E501
             history_line_desc = [line["description"] for line in c1.history_line]

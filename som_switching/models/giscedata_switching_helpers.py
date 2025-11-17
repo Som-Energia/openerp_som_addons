@@ -31,7 +31,6 @@ class GiscedataSwitchingHelpers(osv.osv):
         m101_obj = self.pool.get("giscedata.switching.m1.01")
         conf_obj = self.pool.get("res.config")
         pol_obj = self.pool.get("giscedata.polissa")
-
         sw = sw_obj.browse(cursor, uid, sw_id)
         pas_actual = sw.get_pas()
         use_new_contract = bool(
