@@ -4,7 +4,7 @@ from giscedata_facturacio.report.utils import get_atr_price
 from datetime import date, timedelta
 
 
-def get_fs(cursor, uid, pol, context=None):
+def get_fs_from_k_change(cursor, uid, pol, context=None):
     if context is None:
         context = {}
 
@@ -92,7 +92,7 @@ def calculate_new_indexed_prices(cursor, uid, pol, context=None):
         cursor, uid, pol, with_taxes=False, context=context_preus_nous
     )
 
-    fs = get_fs(cursor, uid, pol, context=context)
+    fs = get_fs_from_k_change(cursor, uid, pol, context=context)
 
     f_antiga = fs.get('k_old', dict_preus_antiga.get('factor_k', 0))
     f_nova = fs.get('k_new', dict_preus_nova.get('factor_k', 0))
