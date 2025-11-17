@@ -18,6 +18,7 @@ class TestActivacioB2(TestSwitchingImport):
         self.B205 = self.openerp.pool.get("giscedata.switching.b2.05")
         self.ResConfig = self.openerp.pool.get("res.config")
         self.IrModelData = self.openerp.pool.get("ir.model.data")
+        self.Soci = self.openerp.pool.get("somenergia.soci")
 
     def get_b2_05(self, txn, contract_id, context=None):
         if not context:
@@ -55,13 +56,12 @@ class TestActivacioB2(TestSwitchingImport):
         return b2
 
     @mock.patch("som_polissa_soci.models.res_partner_address.ResPartnerAddress.unsubscribe_partner_in_customers_no_members_lists")  # noqa: E501
-    def test_b2_05_baixa_mailchimp_ok(self, mock_function):
+    @mock.patch("som_polissa_soci.models.res_partner_address.ResPartnerAddress.update_members_data_mailchimp_async")  # noqa: E501
+    def test_b2_05_baixa_mailchimp_ok(self, mock_update_members_data, mock_unsubscribe_partner):
         with Transaction().start(self.database) as txn:
             cursor = txn.cursor
             uid = txn.user
-
             self.ResConfig.set(cursor, uid, "sw_allow_baixa_polissa_from_cn_without_invoice", "1")
-
             contract_id = self.get_contract_id(txn)
             # remove all other contracts
             old_partner_id = self.Polissa.read(cursor, uid, contract_id, ["titular"])["titular"][0]
@@ -69,14 +69,19 @@ class TestActivacioB2(TestSwitchingImport):
                 cursor, uid, [("id", "!=", contract_id), ("titular", "=", old_partner_id)]
             )
             self.Polissa.write(cursor, uid, pol_ids, {"titular": False})
-
             b2 = self.get_b2_05(txn, contract_id)
 
             with PatchNewCursors():
                 self.Switching.activa_cas_atr(cursor, uid, b2)
 
-            mock_function.assert_called_with(mock.ANY, uid, old_partner_id)
-
+            mock_unsubscribe_partner.assert_called_with(
+                mock.ANY, uid, old_partner_id, context=mock.ANY
+            )
+            es_soci = self.Soci.search(cursor, uid, [("partner_id", "=", old_partner_id)])
+            if es_soci:
+                mock_update_members_data.assert_called_with(
+                    mock.ANY, uid, old_partner_id, context=mock.ANY
+                )
             expected_result = (
                 u"[Baixa Mailchimp] S'ha iniciat el procés de baixa "
                 u"per l'antic titular (ID %d)" % (old_partner_id)
@@ -85,7 +90,7 @@ class TestActivacioB2(TestSwitchingImport):
             self.assertTrue(any([expected_result in desc for desc in history_line_desc]))
 
     @mock.patch("som_polissa_soci.models.res_partner_address.ResPartnerAddress.unsubscribe_partner_in_customers_no_members_lists")  # noqa: E501
-    def test_b2_05_baixa_mailchimp_error__more_than_one_contract(self, mock_function):
+    def test_b2_05_baixa_mailchimp_error__more_than_one_contract(self, mock_unsubscribe):
         with Transaction().start(self.database) as txn:
             cursor = txn.cursor
             uid = txn.user
@@ -98,7 +103,7 @@ class TestActivacioB2(TestSwitchingImport):
             with PatchNewCursors():
                 self.Switching.activa_cas_atr(cursor, uid, b2)
 
-            self.assertTrue(not mock_function.called)
+            self.assertTrue(not mock_unsubscribe.called)
 
             expected_result = (
                 u"[Baixa Mailchimp] No s'ha iniciat el procés de baixa "
@@ -108,7 +113,7 @@ class TestActivacioB2(TestSwitchingImport):
             self.assertTrue(any([expected_result in desc for desc in history_line_desc]))
 
     @mock.patch("som_polissa_soci.models.res_partner_address.ResPartnerAddress.unsubscribe_partner_in_customers_no_members_lists")  # noqa: E501
-    def test_b2_05_baixa_mailchimp_error__active_contract(self, mock_function):
+    def test_b2_05_baixa_mailchimp_error__active_contract(self, mock_unsubscribe):
         with Transaction().start(self.database) as txn:
             cursor = txn.cursor
             uid = txn.user
@@ -128,7 +133,7 @@ class TestActivacioB2(TestSwitchingImport):
             with PatchNewCursors():
                 self.Switching.activa_cas_atr(cursor, uid, b2)
 
-            self.assertTrue(not mock_function.called)
+            self.assertTrue(not mock_unsubscribe.called)
 
             expected_result = u"[Baixa Mailchimp] No s'ha donat de baixa el titular perquè la pòlissa està activa."  # noqa: E501
             history_line_desc = [line["description"] for line in b2.history_line]

@@ -41,7 +41,7 @@ class SomenergiaSoci(osv.osv):
     def create_one_soci(self, cursor, uid, partner_id, context=None):
         """Creates only one soci (member) from a partner"""
         if isinstance(partner_id, (tuple, list)):
-            partner_id[0]
+            partner_id = partner_id[0]
         rpa_obj = self.pool.get("res.partner.address")
 
         vals = {"partner_id": partner_id}
