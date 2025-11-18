@@ -18,7 +18,7 @@ FROM (
                 WHEN POL.PAGADOR!=soci.id AND POL.TITULAR=soci.id THEN cups.conany_kwh
                 ELSE NULL END)
             ) AS consumprioritario,
-        FALSE
+        FALSE::boolean
     FROM res_partner AS soci
     LEFT JOIN
         giscedata_polissa AS pol ON 
@@ -41,7 +41,7 @@ FROM (
 INNER JOIN giscedata_polissa pol ON CASE
     WHEN PRIORIDAD = 2 THEN POL.PAGADOR=SOCI_ID
     WHEN PRIORIDAD=1 THEN POL.TITULAR=SOCI_ID
-    ELSE FALSE
+    ELSE FALSE::boolean
     END
 INNER JOIN giscedata_cups_ps cups ON
     cups.conany_kwh=consumprioritario AND

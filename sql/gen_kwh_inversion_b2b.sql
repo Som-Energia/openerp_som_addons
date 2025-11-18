@@ -14,7 +14,7 @@ SELECT
             CEIL((0-inversion)/100) as acciones,
             already_invested AS already_invested,
             ARRAY[8] @> categories AS essoci,
-            FALSE
+            FALSE::boolean
         FROM (
             SELECT DISTINCT ON (sub.soci_id)
                 sub.soci_id as soci_id,
@@ -30,7 +30,7 @@ SELECT
 		sub.polizas_socio as polizas_socio,                
 		address.email,
                 categories,
-                FALSE
+                FALSE::boolean
             FROM (
                 SELECT
                     soci.id AS soci_id,
@@ -48,7 +48,7 @@ SELECT
                     ARRAY_AGG(cat.category_id) as categories,
                     SUM(CASE WHEN POL.PAGADOR=soci.id then 1 ELSE 0 end) AS polizas_pagador,
                     SUM(CASE WHEN POL.PAGADOR!=soci.id AND POL.TITULAR!=soci.id AND POL.SOCI=soci.id then 1 ELSE 0 end) AS polizas_socio,
-                    FALSE
+                    FALSE::boolean
                 FROM res_partner AS soci
                 LEFT JOIN
                     giscedata_polissa AS pol ON 

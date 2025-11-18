@@ -14,7 +14,7 @@ LEFT JOIN
     giscedata_polissa AS pol ON
         pol.pagador = partner.id OR
         pol.titular = partner.id OR
-        FALSE
+        FALSE::boolean
 LEFT JOIN
     giscedata_cups_ps AS cups ON
         cups.id = pol.cups
@@ -25,10 +25,10 @@ WHERE
     pol.state = 'activa' AND
     pol.active AND
     cups.active AND
-    TRUE
+    TRUE::boolean
 ORDER BY
     partner.id,
     payerOwner ASC,
     annual_use DESC,
     pol.id,
-    TRUE
+    TRUE::boolean

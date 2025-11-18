@@ -30,7 +30,7 @@ SELECT
     MAX(cups.conany_kwh) AS maxconsumannual,
     STRING_AGG(pol.id::text,',') AS polizas,
     string_agg(tar.name,',') AS tarifas,
-    TRUE
+    TRUE::boolean
 FROM somenergia_soci AS soci
 LEFT JOIN giscedata_polissa AS pol ON
     (
@@ -40,7 +40,7 @@ LEFT JOIN giscedata_polissa AS pol ON
         ) AND
     pol.active AND 
     pol.state = 'activa' AND
-    TRUE
+    TRUE::boolean
 LEFT JOIN giscedata_polissa_tarifa AS tar ON
     tar.id = pol.tarifa
 LEFT JOIN giscedata_cups_ps AS cups ON
@@ -60,4 +60,4 @@ GROUP BY
     soci.id,
     partner_id,
     acciones,
-    TRUE
+    TRUE::boolean

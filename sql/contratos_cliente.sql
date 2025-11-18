@@ -15,8 +15,8 @@
                 WHERE
                     soci.id=4364 AND
                     pol.state = 'activa' and
-                    pol.active
-                    tRUE
+                    pol.active AND
+                    TRUE::boolean
                 ORDER BY
 		    PRIORIDAD DESC,
 		    CONSUMO DESC;

@@ -10,7 +10,7 @@ SELECT
         MIN(contracte.last_usable_date),
         DATE(NOW()) /* no peers, so now */
     ) AS last_usable_date,
-    FALSE
+    FALSE::boolean
 FROM generationkwh_assignment AS ass
 LEFT JOIN generationkwh_assignment AS peer
     ON ass.member_id = peer.member_id
@@ -38,7 +38,7 @@ WHERE
 GROUP BY
     ass.id,
     ass.member_id,
-    FALSE
+    FALSE::boolean
 ORDER BY
     ass.id,
-    FALSE
+    FALSE::boolean
