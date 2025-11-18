@@ -187,31 +187,6 @@ class SomGurbWww(osv.osv_memory):
             return cups_id[0]
         return None
 
-    def _get_polissa_id(self, cursor, uid, cups_id, context=None):
-        if context is None:
-            context = {}
-        polissa_obj = self.pool.get("giscedata.polissa")
-        sw_obj = self.pool.get("giscedata.switching")
-        search_params = [
-            ("cups", "=", cups_id),
-            ("state", "in", ["activa", "esborrany"]),
-        ]
-        polissa_ids = polissa_obj.search(
-            cursor, uid, search_params, order="create_date DESC", limit=1
-        )
-        if polissa_ids:
-            polissa_br = polissa_obj.browse(cursor, uid, polissa_ids[0], context=context)
-            if polissa_br.state == "activa":
-                sw_ids = sw_obj.search(cursor, uid, [
-                    ('cups_polissa_id', '=', polissa_br.id),
-                    ('state', '=', 'open'),
-                    ('proces_id', 'not in', ["R1"])
-                ])
-                if sw_ids:
-                    return False
-            return polissa_ids[0]
-        return None
-
     def activate_gurb_cups_lead(self, cursor, uid, gurb_lead_id, context=None):
         if context is None:
             context = {}
@@ -294,6 +269,7 @@ class SomGurbWww(osv.osv_memory):
 
         gurb_group_obj = self.pool.get("som.gurb.group")
         gurb_cups_obj = self.pool.get("som.gurb.cups")
+        cups_helper_obj = self.pool.get("cups.helper")
 
         gurb_group_ids = gurb_group_obj.search(
             cursor, uid, [('code', '=', form_payload['gurb_code'])]
@@ -336,7 +312,7 @@ class SomGurbWww(osv.osv_memory):
                 "code": "BadCups",
             }
 
-        polissa_id = self._get_polissa_id(cursor, uid, cups_id, context=context)
+        polissa_id = cups_helper_obj._get_polissa_id(cursor, uid, cups_id, context=context)
         if not polissa_id:
             return {
                 "success": False,
