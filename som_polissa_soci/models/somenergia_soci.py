@@ -42,6 +42,9 @@ class SomenergiaSoci(osv.osv):
         """Creates only one soci (member) from a partner"""
         if isinstance(partner_id, (tuple, list)):
             partner_id = partner_id[0]
+        if not context:
+            context = {}
+        context['mailchimp_from'] = 'create_one_soci: partner_id {}'.format(partner_id)
         rpa_obj = self.pool.get("res.partner.address")
 
         vals = {"partner_id": partner_id}
