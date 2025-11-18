@@ -46,7 +46,7 @@ jobs:
         python-version: ${{ fromJSON(inputs.pyversion) }}
     services:
       postgres:
-        image: timescale/timescaledb-postgis:latest-pg12
+        image: timescale/timescaledb:latest-pg17
         env:
           POSTGRES_USER: erp
           POSTGRES_PASSWORD: erp
