@@ -270,6 +270,7 @@ class SomGurbWww(osv.osv_memory):
         gurb_group_obj = self.pool.get("som.gurb.group")
         gurb_cups_obj = self.pool.get("som.gurb.cups")
         cups_helper_obj = self.pool.get("cups.helper")
+        polissa_obj = self.pool.get("giscedata.polissa")
 
         gurb_group_ids = gurb_group_obj.search(
             cursor, uid, [('code', '=', form_payload['gurb_code'])]
@@ -318,6 +319,22 @@ class SomGurbWww(osv.osv_memory):
                 "success": False,
                 "error": _("No hi ha polissa o no està disponible"),
                 "code": "ContractERROR",
+            }
+
+        polissa_br = polissa_obj.browse(cursor, uid, polissa_id, context=context)
+        if polissa_br.es_autoconsum:
+            return {
+                "success": False,
+                "error": _("El CUPS ja és d'un autoconsum"),
+                "code": "CupsIsAutoconsum",
+            }
+
+        gurb_cups = gurb_cups_obj.search(cursor, uid, [("cups_id", "=", cups_id)], limit=1)
+        if gurb_cups:
+            return {
+                "success": False,
+                "error": _("El CUPS ja està assignat a un altre GURB CUPS"),
+                "code": "CupsAlreadyAssigned",
             }
 
         titular_vat = form_payload.get('vat', '').upper()
