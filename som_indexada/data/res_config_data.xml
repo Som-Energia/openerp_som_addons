@@ -9,8 +9,8 @@
 
         <record model="res.config" id="som_indexada_consum_tipus">
             <field name="name">som_indexada_consum_tipus</field>
-            <field name="value">{'2.0TD': {'preu_sense_F': 137.5486987},'3.0TD': {'preu_sense_F': 121.0485735},'6.1TD': {'preu_sense_F': 105.7246103},'3.0TDVE': {'preu_sense_F': 0}}</field>
-            <field name="description">Consums tipus per potència definits pel càlcul de simulacions en canvis de tarifes y Fs.</field>
+            <field name="value">{'2.0TD': {'preu_sense_F': 141.040813},'3.0TD': {'preu_sense_F': 124.513594},'6.1TD': {'preu_sense_F': 108.8907065},'3.0TDVE': {'preu_sense_F': 161.7511729}}</field>
+            <field name="description">Consums tipus per potència definits pel càlcul de simulacions en canvis de tarifes i Fs.</field>
         </record>
     </data>
 </openerp>
