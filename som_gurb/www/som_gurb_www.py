@@ -107,7 +107,7 @@ class SomGurbWww(osv.osv_memory):
         for gcau in ggroup.gurb_cau_ids:
             beta_remaining = gcau.generation_power
             for gcups in gcau.gurb_cups_ids:
-                if gcups.state in ["active", "atr_pending"]:
+                if gcups.state in ["active", "atr_pending", "draft"]:
                     beta_remaining -= gcups.beta_kw
                     beta_remaining -= gcups.future_beta_kw
                     beta_remaining -= gcups.future_gift_beta_kw
