@@ -15,17 +15,27 @@ class TestsCupsHelper(testing.OOTestCase):
     def tearDown(self):
         pass
 
-    def test_check_cups(self):
+    def test_check_inexistent_cups(self):
         cups_helper_obj = self.pool.get("cups.helper")
-        cups_obj = self.pool.get("giscedata.cups.ps")
 
         # CUPS no existent
         cups_name = "ES0000000000000000"
         status = cups_helper_obj.check_cups(
             self.cursor, self.uid, cups_name, context={}
         )
-        self.assertFalse(status)
+        resulting_dictionary = {
+            "cups": cups_name,
+            "status": "",
+            "tariff_type": "",
+            "tariff_name": "",
+            "address": "",
+            "knowledge_of_distri": None,
+        }
+        self.assertEqual(status, resulting_dictionary)
 
+    def test_check_existent_cups(self):
+        cups_helper_obj = self.pool.get("cups.helper")
+        cups_obj = self.pool.get("giscedata.cups.ps")
         cups_id = self.imd_obj.get_object_reference(
             self.cursor, self.uid, "giscedata_cups", "cups_01"
         )[1]
@@ -42,8 +52,10 @@ class TestsCupsHelper(testing.OOTestCase):
         resulting_dictionary = {
             "cups": cups.name,
             "status": "active",
-            "tariff_type": u"atr",
+            "tariff_type": "atr",
             "knowledge_of_distri": None,
+            "address": "carrer inventat",
+            "tariff_name": "2.0A",
         }
 
         self.assertEqual(result, resulting_dictionary)

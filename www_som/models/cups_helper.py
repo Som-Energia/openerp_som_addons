@@ -63,11 +63,16 @@ class CupsHelper(osv.osv_memory):
             return 'busy'
         return 'active'
 
-    def _get_tariff_type(self, cursor, uid, cups_id, context=None):
+    def _get_cups_data(self, cursor, uid, cups_id, context=None):
         if context is None:
             context = {}
 
         pol_obj = self.pool.get("giscedata.polissa")
+        cups_obj = self.pool.get("giscedata.cups.ps")
+
+        result = {}
+
+        result["address"] = cups_obj.read(cursor, uid, cups_id, ["nv"], context=context)["nv"]
 
         search_params = [
             ("cups", "=", cups_id),
@@ -78,35 +83,38 @@ class CupsHelper(osv.osv_memory):
 
         pol_br = pol_obj.browse(cursor, uid, pol_ids[0], context=context)
 
-        return pol_br.mode_facturacio
+        result["tariff_type"] = pol_br.mode_facturacio
+        result["tariff_name"] = pol_br.tarifa.name
+
+        return result
 
     def check_cups(self, cursor, uid, cups_name, context=None):
         if context is None:
             context = {}
-
-        context["active_test"] = False
-
         cups_obj = self.pool.get("giscedata.cups.ps")
         pol_obj = self.pool.get("giscedata.polissa")
+
+        result = {
+            "cups": cups_name,
+            "status": "",
+            "tariff_type": "",
+            "tariff_name": "",
+            "address": ""
+        }
+
+        context["active_test"] = False
 
         cups_id = cups_obj.search(
             cursor, uid, [("name", "like", cups_name[:20])], context=context
         )
-        if not cups_id:
-            return False
 
-        knowledge_of_distri = pol_obj.www_get_distributor_id(cursor, uid, cups_name)
-        tariff_type = self._get_tariff_type(
-            cursor, uid, cups_id[0], context=context
-        )
-        cups_status = self._cups_status(cursor, uid, cups_id[0], context=context)
-
-        result = {
-            "cups": cups_name,
-            "status": cups_status,
-            "tariff_type": tariff_type,
-            "knowledge_of_distri": knowledge_of_distri
-        }
+        result["knowledge_of_distri"] = pol_obj.www_get_distributor_id(cursor, uid, cups_name)
+        if cups_id:
+            cups_data = self._get_cups_data(
+                cursor, uid, cups_id[0], context=context
+            )
+            result.update(cups_data)
+            result["status"] = self._cups_status(cursor, uid, cups_id[0], context=context)
 
         return result
 
