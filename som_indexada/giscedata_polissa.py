@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from osv import osv
 from som_polissa.exceptions import exceptions
+from som_indexada.utils import calculate_new_indexed_prices as calculate_new_indexed_prices_util
 
 
 _TARIFA_CODIS_INDEXADA = {
@@ -105,6 +106,10 @@ class GiscedataPolissa(osv.osv):
                     if price_list_id == standard_price_list_id.id:
                         return True
         return False
+
+    def calculate_new_indexed_prices(self, cursor, uid, id, context=None):
+        pol = self.browse(cursor, uid, id)
+        return calculate_new_indexed_prices_util(cursor, uid, pol, context=context)
 
 
 GiscedataPolissa()
