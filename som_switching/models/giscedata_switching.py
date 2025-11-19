@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from osv import osv, fields
-from datetime import datetime
+from datetime import datetime, date
 from tools.translate import _
 import pooler
 
@@ -439,6 +439,134 @@ class GiscedataFacturacioImportacioLinia(osv.osv):
 
     _name = "giscedata.facturacio.importacio.linia"
     _inherit = "giscedata.facturacio.importacio.linia"
+
+    def process_line_sync(self, cursor, uid, line_id, context=None):
+        res = super(GiscedataFacturacioImportacioLinia, self).process_line_sync(
+            cursor, uid, line_id, context=context
+        )
+        self.detect_and_tag_non_reinvoicing_f1_R(cursor, uid, line_id, context=context)
+        return res
+
+    def detect_and_tag_non_reinvoicing_f1_R(self, cursor, uid, line_id, context=None):
+        f1n_id = self._find_rectified_by_f1(cursor, uid, line_id, context=context)
+        if f1n_id and self._is_non_rectificative_f1R(cursor, uid, line_id, f1n_id, context=context):
+            self._tag_non_rectificative_f1R(cursor, uid, line_id, context=context)
+
+    def _find_rectified_by_f1(self, cursor, uid, f1r_id, context=None):
+        f1r = self.browse(cursor, uid, f1r_id, context=context)
+        if f1r.type_factura != 'R' or not f1r.factura_rectificada:
+            return None
+
+        params = [
+            ('invoice_number_text', '=', f1r.factura_rectificada),
+            ('cups_id', '=', f1r.cups_id.id),
+        ]
+        f1n_ids = self.search(cursor, uid, params, context=context)
+        if f1n_ids:
+            return f1n_ids[0]
+        return None
+
+    def _is_non_rectificative_f1R(self, cursor, uid, f1r_id, f1n_id, context=None):  # noqa: C901
+        def get_name(name):
+            if name == u'Lloguer equip de mesura' or name == u'Alquiler equipo de medida':
+                return 'LLOG_EQ_MES'
+            return name
+
+        def search_equal_line(r_line, n_lines, valid_n_lines_ids):
+            name = get_name(r_line.name)
+            type = r_line.tipus
+            prod = r_line.uos_id.id if r_line.uos_id else None
+            quant = r_line.quantity
+            price = r_line.price_unit_multi
+            for n_line in n_lines:
+                if n_line.id not in valid_n_lines_ids:
+                    continue
+                if n_line.quantity != quant:
+                    continue
+                if n_line.tipus != type:
+                    continue
+                if get_name(n_line.name) != name:
+                    continue
+                if prod:
+                    if n_line.uos_id:
+                        if n_line.uos_id.id != prod:
+                            continue
+                    else:
+                        continue
+                if type not in ['energia', 'subtotal_xml_ene', 'potencia', 'subtotal_xml_pow']:
+                    if n_line.price_unit_multi != price:
+                        continue
+
+                return n_line
+            return None
+
+        def has_no_energy_power_lines(lines):
+            for line in lines:
+                if line.tipus in ['energia', 'subtotal_xml_ene', 'potencia', 'subtotal_xml_pow']:
+                    return False
+            return True
+
+        f1r = self.browse(cursor, uid, f1r_id, context=context)
+        f1n = self.browse(cursor, uid, f1n_id, context=context)
+
+        if len(f1r.liniafactura_id) == 0:
+            # Factura de la F1 que rectifica no existeix
+            return False
+
+        if len(f1n.liniafactura_id) == 0:
+            # Factura de la F1 que es rectificada no existeix
+            return False
+
+        fr = f1r.liniafactura_id[0]
+        fn = f1n.liniafactura_id[0]
+        if len(fr.linia_ids) != len(fn.linia_ids):
+            # Diferent número de linies
+            return False
+
+        to_find = set([linia.id for linia in fn.linia_ids])
+        for line_r in fr.linia_ids:
+            line_n = search_equal_line(line_r, fn.linia_ids, to_find)
+            if not line_n:
+                # Trobada una linia diferent
+                return False
+            to_find.remove(line_n.id)
+
+        if to_find:
+            # Trobades linies a la factura origen sense contrapart a la factura rectificativa
+            return False
+
+        if has_no_energy_power_lines(fr.linia_ids):
+            if fr.amount_total != fn.amount_total:
+                # Diferent Total factura
+                return False
+
+        if fr.data_inici != fn.data_inici:
+            # Diferent data inici factura
+            return False
+
+        if fr.data_final != fn.data_final:
+            # Diferent data final factura
+            return False
+
+        return True
+
+    def _tag_non_rectificative_f1R(self, cursor, uid, f1r_id, context=None):
+        msg = u"Script: No refacturar aquest F1, diferència 0 amb l'F1 que rectifica"
+        wmsg = u"{} {}".format(date.today().strftime("%Y/%m/%d"), msg)
+
+        user_observations = self.read(
+            cursor, uid, f1r_id,
+            ['user_observations']
+        )['user_observations']
+
+        if user_observations and msg in user_observations:
+            return
+
+        if user_observations:
+            new_text = u'{}\n{}'.format(wmsg, user_observations)
+        else:
+            new_text = wmsg
+        self.write(cursor, uid, f1r_id, {'user_observations': new_text})
 
     def _get_last_history_line(self, cr, uid, ids, name, arg, context=None):
         """Nom de la situació de la instal·lació"""
