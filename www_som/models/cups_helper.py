@@ -81,7 +81,8 @@ class CupsHelper(osv.osv_memory):
 
         pol_br = pol_obj.browse(cursor, uid, pol_ids[0], context=context)
 
-        result["tariff_type"] = pol_br.mode_facturacio
+        if pol_br.state == "activa":
+            result["tariff_type"] = pol_br.mode_facturacio
         result["tariff_name"] = pol_br.tarifa.name
 
         return result
@@ -106,7 +107,7 @@ class CupsHelper(osv.osv_memory):
             cursor, uid, [("name", "like", cups_name[:20])], context=context
         )
 
-        result["knowledge_of_distri"] = pol_obj.www_get_distributor_id(cursor, uid, cups_name)
+        result["knowledge_of_distri"] = bool(pol_obj.www_get_distributor_id(cursor, uid, cups_name))
         if cups_id:
             cups_data = self._get_cups_data(
                 cursor, uid, cups_id[0], context=context
