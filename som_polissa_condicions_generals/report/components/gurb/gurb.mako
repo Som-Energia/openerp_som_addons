@@ -6,7 +6,7 @@
             <b>${_(u"Potència GURB (kW):")}</b> ${gurb['potencia']} kW <br/>
             <b>${_(u"Quota GURB (€/kW/dia):")}</b> ${gurb['quota']} ${_(u"€/kW/dia")} <br/>
             <b>${_(u"Beta contractada (%):")}</b> ${gurb['beta_percentatge']} %<br/>
-            <b>${_(u"Beta contractada (kW):")}</b> ${gurb['beta_kw']} %<br/>
+            <b>${_(u"Beta contractada (kW):")}</b> ${gurb['beta_kw']} kW<br/>
         </div>
     </div>
 </%def>
