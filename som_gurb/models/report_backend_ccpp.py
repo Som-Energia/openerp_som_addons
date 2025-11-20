@@ -95,6 +95,16 @@ class ReportBackendCondicionsParticulars(ReportBackend):
                 "beta_percentage": beta_percentage,
                 "is_enterprise": partner_obj.is_enterprise_vat(pol.titular.vat)
             }
+            if annex["is_enterprise"]:
+                representative = pol.representante_id
+                address = ""
+                if representative and representative.address[0]:
+                    address = representative.address[0].street
+                annex["representative"] = {
+                    "name": representative.name or "",
+                    "vat": representative.vat or "",
+                    "address": address or ""
+                }
 
             res = {
                 "nom": gurb_cups_br.gurb_cau_id.name,
