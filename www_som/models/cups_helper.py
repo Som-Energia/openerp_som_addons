@@ -113,7 +113,7 @@ class CupsHelper(osv.osv_memory):
                 cursor, uid, cups_id[0], context=context
             )
             result.update(cups_data)
-            result["status"] = self._cups_status(cursor, uid, cups_id[0], context=context)
+            result["status"] = self._cups_status(cursor, uid, cups_id[0])
         else:
             result["status"] = "new"
 
