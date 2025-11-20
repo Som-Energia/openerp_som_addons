@@ -46,8 +46,6 @@ class CupsHelper(osv.osv_memory):
 
         pol_obj = self.pool.get("giscedata.polissa")
 
-        if not cups_id:
-            return 'new'
         contract_ids = pol_obj.search(cursor, uid, [('cups', '=', cups_id)], context=context)
         if not contract_ids:
             return 'inactive'
@@ -115,6 +113,8 @@ class CupsHelper(osv.osv_memory):
             )
             result.update(cups_data)
             result["status"] = self._cups_status(cursor, uid, cups_id[0], context=context)
+        else:
+            result["status"] = "new"
 
         return result
 
