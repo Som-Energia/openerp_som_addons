@@ -25,11 +25,11 @@ class TestsCupsHelper(testing.OOTestCase):
         )
         resulting_dictionary = {
             "cups": cups_name,
-            "status": "",
+            "status": "new",
             "tariff_type": "",
             "tariff_name": "",
             "address": "",
-            "knowledge_of_distri": None,
+            "knowledge_of_distri": False,
         }
         self.assertEqual(status, resulting_dictionary)
 
@@ -53,7 +53,7 @@ class TestsCupsHelper(testing.OOTestCase):
             "cups": cups.name,
             "status": "active",
             "tariff_type": "atr",
-            "knowledge_of_distri": None,
+            "knowledge_of_distri": False,
             "address": "carrer inventat",
             "tariff_name": "2.0A",
         }
