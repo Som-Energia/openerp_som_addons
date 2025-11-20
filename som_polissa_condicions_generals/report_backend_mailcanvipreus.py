@@ -348,6 +348,7 @@ class ReportBackendMailcanvipreus(ReportBackend):
             "canaries": canaries,
             "balears": balears,
             "tarifa_acces": env.polissa_id.tarifa.name,
+            "mode_facturacio": env.polissa_id.mode_facturacio,
             "text_legal": self.get_text_legal(cursor, uid, env, context=context),
             "lang": env.polissa_id.titular.lang,
             "nom_titular": self.getPartnerName(cursor, uid, env),
