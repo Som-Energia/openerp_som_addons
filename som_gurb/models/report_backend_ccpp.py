@@ -102,6 +102,7 @@ class ReportBackendCondicionsParticulars(ReportBackend):
                 "potencia": gurb_cups_br.gurb_cau_id.generation_power,
                 "quota": str(quota_with_taxes),
                 "beta_percentatge": beta_percentage,
+                "beta_contractada_kw": beta_kw,
                 "annex": annex
             }
 
