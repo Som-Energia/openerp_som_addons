@@ -16,6 +16,19 @@ class TestsGurbWww(TestsGurbBase):
     )
     _www_signature_fnc = "som_gurb.www.som_gurb_www.SomGurbWww._get_signature_url"
 
+    def _eliminar_GURB_CUPS(self):
+        imd_o = self.openerp.pool.get("ir.model.data")
+        gurb_cups_o = self.openerp.pool.get("som.gurb.cups")
+
+        gurb_cups_id_1 = imd_o.get_object_reference(
+            self.cursor, self.uid, "som_gurb", "gurb_cups_0001"
+        )[1]
+        gurb_cups_id_2 = imd_o.get_object_reference(
+            self.cursor, self.uid, "som_gurb", "gurb_cups_0002"
+        )[1]
+
+        gurb_cups_o.unlink(self.cursor, self.uid, [gurb_cups_id_1, gurb_cups_id_2])
+
     def test_get_info_gurb__bad_gurb_code(self):
         gurb_www_o = self.openerp.pool.get("som.gurb.www")
 
@@ -135,6 +148,7 @@ class TestsGurbWww(TestsGurbBase):
             "beta": 2.0,
             "vat": "37692879L"
         }
+        self._eliminar_GURB_CUPS()
         result = gurb_www_obj.create_new_gurb_cups(
             self.cursor, self.uid, form_payload
         )
@@ -172,6 +186,7 @@ class TestsGurbWww(TestsGurbBase):
             "beta": 2.0,
             "vat": "78106306P"
         }
+        self._eliminar_GURB_CUPS()
 
         result = gurb_www_obj.create_new_gurb_cups(
             self.cursor, self.uid, form_payload
@@ -269,6 +284,27 @@ class TestsGurbWww(TestsGurbBase):
         result = gurb_www_obj.create_new_gurb_cups(self.cursor, self.uid, form_payload)
         self.assertEqual(result["code"], "BadGurbGroup")
 
+    def test_create_new_gurb_cups_with_self_consumption(self):
+        gurb_www_obj = self.get_model("som.gurb.www")
+        imd_obj = self.openerp.pool.get("ir.model.data")
+        polissa_obj = self.openerp.pool.get("giscedata.polissa")
+        form_payload = {
+            "gurb_code": "G001",
+            "access_tariff": "2.0TD",
+            "cups": "ES0021126262693495FV",
+            "beta": 1,
+            "vat": "37692879L"
+        }
+        self._eliminar_GURB_CUPS()
+        polissa_id = imd_obj.get_object_reference(
+            self.cursor, self.uid, "som_polissa_soci", "polissa_domestica_0109"
+        )[1]
+        polissa_obj.write(
+            self.cursor, self.uid, polissa_id, {"tipus_subseccio": "10"}
+        )
+        result = gurb_www_obj.create_new_gurb_cups(self.cursor, self.uid, form_payload)
+        self.assertEqual(result["code"], "CupsIsAutoconsum")
+
     @mock.patch(_start_signature_fnc, return_value=True)
     @mock.patch(_update_signature_fnc, return_value=True)
     def test_create_new_gurb_cups_correct_vat(self, start_mock, update_mock):
@@ -280,6 +316,7 @@ class TestsGurbWww(TestsGurbBase):
             "beta": 1,
             "vat": "37692879L"
         }
+        self._eliminar_GURB_CUPS()
         result = gurb_www_obj.create_new_gurb_cups(self.cursor, self.uid, form_payload)
         self.assertTrue(result["success"])
 
@@ -292,6 +329,7 @@ class TestsGurbWww(TestsGurbBase):
             "beta": 1,
             "vat": "93105281Q"
         }
+        self._eliminar_GURB_CUPS()
         result = gurb_www_obj.create_new_gurb_cups(self.cursor, self.uid, form_payload)
         self.assertEqual(result["code"], "BadVAT")
 
@@ -303,6 +341,7 @@ class TestsGurbWww(TestsGurbBase):
             "cups": "ES0021126262693495FV",
             "beta": 1,
         }
+        self._eliminar_GURB_CUPS()
         result = gurb_www_obj.create_new_gurb_cups(self.cursor, self.uid, form_payload)
         self.assertEqual(result["code"], "BadVAT")
 
@@ -321,6 +360,7 @@ class TestsGurbWww(TestsGurbBase):
             "beta": 2.0,
             "vat": "37692879L"
         }
+        self._eliminar_GURB_CUPS()
         self.activar_polissa_CUPS()
         gurb_cups_id = gurb_www_obj.create_new_gurb_cups(
             self.cursor, self.uid, form_payload
@@ -348,6 +388,7 @@ class TestsGurbWww(TestsGurbBase):
             "beta": 2.0,
             "vat": "37692879L"
         }
+        self._eliminar_GURB_CUPS()
         gurb_cups_id = gurb_www_obj.create_new_gurb_cups(
             self.cursor, self.uid, form_payload
         )["gurb_cups_id"]
@@ -369,6 +410,7 @@ class TestsGurbWww(TestsGurbBase):
             "beta": 2.0,
             "vat": "37692879L"
         }
+        self._eliminar_GURB_CUPS()
         gurb_cups_id = gurb_www_obj.create_new_gurb_cups(
             self.cursor, self.uid, form_payload
         )["gurb_cups_id"]
