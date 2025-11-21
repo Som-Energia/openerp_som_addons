@@ -17,7 +17,8 @@
         "som_poweremail_common_templates",
         "giscedata_signatura_documents_signaturit",
         "som_switching",
-        "som_polissa_condicions_generals"
+        "som_polissa_condicions_generals",
+        "www_som",
     ],
     "demo_xml": [
         "demo/som_gurb_service_demo.xml",

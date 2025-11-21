@@ -38,27 +38,49 @@ class ReportBackendCondicionsParticulars(ReportBackend):
         gurb_cups_id = gurb_cups_obj.search(cursor, uid, [("cups_id", "=", pol.cups.id)])
         if gurb_cups_id:
             gurb_cups_br = gurb_cups_obj.browse(cursor, uid, gurb_cups_id[0])
-            grub_pricelist_id = gurb_cups_br.gurb_cau_id.gurb_group_id.pricelist_id.id
+            gurb_pricelist_id = gurb_cups_br.gurb_cau_id.gurb_group_id.pricelist_id.id
             initial_product_id = imd_obj.get_object_reference(
                 cursor, uid, "som_gurb", "initial_quota_gurb"
             )[1]
+            if pol.tarifa.name == "2.0TD":
+                quota_product_id = imd_obj.get_object_reference(
+                    cursor, uid, "som_gurb", "product_gurb"
+                )[1]
+            elif pol.tarifa.name == "3.0TD":
+                quota_product_id = imd_obj.get_object_reference(
+                    cursor, uid, "som_gurb", "product_enterprise_gurb"
+                )[1]
+
+            context["date"] = gurb_cups_br.inscription_date or datetime.now().strftime("%Y-%m-%d")
 
             initial_product_price = pricelist_obj.price_get(
-                cursor,
-                uid,
-                [grub_pricelist_id],
-                initial_product_id,
-                gurb_cups_br.beta_kw,
-                context=context,
-            )[grub_pricelist_id] * gurb_cups_br.beta_kw
+                cursor, uid, [gurb_pricelist_id], initial_product_id,
+                gurb_cups_br.beta_kw, context=context,
+            )[gurb_pricelist_id]
+
             initial_product_price_with_taxes = product_obj.add_taxes(
                 cursor, uid, initial_product_id, initial_product_price, False, context=context
+            )
+
+            quota_price = pricelist_obj.price_get(
+                cursor, uid, [gurb_pricelist_id], quota_product_id,
+                gurb_cups_br.beta_kw, context=context
+            )[gurb_pricelist_id]
+
+            quota_with_taxes = product_obj.add_taxes(
+                cursor, uid, quota_product_id, quota_price, False, context=context
             )
 
             gurb_cups_id = gurb_cups_obj.search(
                 cursor, uid, [("polissa_id", "=", pol.id)], context=context)[0]
             gurb_cups_browse = gurb_cups_obj.browse(
                 cursor, uid, gurb_cups_id, context=context)
+
+            beta_kw = gurb_cups_browse.beta_kw
+            beta_percentage = gurb_cups_browse.beta_percentage
+            if gurb_cups_browse.future_beta_kw:
+                beta_kw = gurb_cups_browse.future_beta_kw
+                beta_percentage = gurb_cups_browse.future_beta_percentage
 
             annex = {
                 "name": pol.titular.name,
@@ -69,17 +91,28 @@ class ReportBackendCondicionsParticulars(ReportBackend):
                 "month": str(datetime.now().month).zfill(2),
                 "year": datetime.now().year,
                 "cau": gurb_cups_browse.gurb_cau_id.self_consumption_id.cau,
-                "beta_kw": gurb_cups_browse.beta_kw,
-                "beta_percentage": gurb_cups_browse.beta_percentage,
+                "beta_kw": beta_kw,
+                "beta_percentage": beta_percentage,
                 "is_enterprise": partner_obj.is_enterprise_vat(pol.titular.vat)
             }
+            if annex["is_enterprise"]:
+                representative = pol.representante_id
+                address = ""
+                if representative and representative.address[0]:
+                    address = representative.address[0].street
+                annex["representative"] = {
+                    "name": representative.name or "",
+                    "vat": representative.vat or "",
+                    "address": address or ""
+                }
 
             res = {
                 "nom": gurb_cups_br.gurb_cau_id.name,
                 "cost": float_round(initial_product_price_with_taxes, 2),
-                "potencia": gurb_cups_br.beta_kw,
-                "quota": 0.35,  # TODO: Use pricelist
-                "beta_percentatge": gurb_cups_br.beta_percentage,
+                "potencia": gurb_cups_br.gurb_cau_id.generation_power,
+                "quota": str(quota_with_taxes),
+                "beta_percentatge": beta_percentage,
+                "beta_kw": beta_kw,
                 "annex": annex
             }
 

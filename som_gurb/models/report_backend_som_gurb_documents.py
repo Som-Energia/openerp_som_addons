@@ -136,9 +136,9 @@ class ReportBackendSomGurbDocuments(ReportBackend):
             if representative and representative.address[0]:
                 address = representative.address[0].street
             data["representative"] = {
-                "name": representative.name,
-                "vat": representative.vat,
-                "address": address
+                "name": representative.name or "",
+                "vat": representative.vat or "",
+                "address": address or ""
             }
 
         return data
