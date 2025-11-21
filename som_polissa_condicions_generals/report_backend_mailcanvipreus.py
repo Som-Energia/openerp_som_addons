@@ -348,6 +348,7 @@ class ReportBackendMailcanvipreus(ReportBackend):
             "canaries": canaries,
             "balears": balears,
             "tarifa_acces": env.polissa_id.tarifa.name,
+            "mode_facturacio": env.polissa_id.mode_facturacio,
             "text_legal": self.get_text_legal(cursor, uid, env, context=context),
             "lang": env.polissa_id.titular.lang,
             "nom_titular": self.getPartnerName(cursor, uid, env),
@@ -356,7 +357,7 @@ class ReportBackendMailcanvipreus(ReportBackend):
             # ),
             "potencia": env.polissa_id.potencia,
             "iva_reduit": env.polissa_id.potencia <= 10 and not canaries,
-            # "te_gkwh": env.polissa_id.te_assignacio_gkwh,
+            "te_gkwh": env.polissa_id.te_assignacio_gkwh,
             "preus_antics": preus_antics,
             "preus_nous": preus_nous,
             "preus_antics_imp": preus_antics_imp,
@@ -399,19 +400,19 @@ class ReportBackendMailcanvipreus(ReportBackend):
             data['preu_auto_antic_imp'] = preu_auto_antic_imp
             data['preu_auto_nou_imp'] = preu_auto_nou_imp
 
-        # if data["te_gkwh"]:
-        #     data["preus_antics_generation"] = self.get_preus_gkwh(
-        #         cursor, uid, env.polissa_id, with_taxes=False, context=context_preus_antics
-        #     )
-        #     data["preus_antics_generation_imp"] = self.get_preus_gkwh(
-        #         cursor, uid, env.polissa_id, with_taxes=True, context=context_preus_antics
-        #     )
-        #     data["preus_nous_generation"] = self.get_preus_gkwh(
-        #         cursor, uid, env.polissa_id, with_taxes=False, context=context_preus_nous
-        #     )
-        #     data["preus_nous_generation_imp"] = self.get_preus_gkwh(
-        #         cursor, uid, env.polissa_id, with_taxes=True, context=context_preus_nous
-        #     )
+        if data["te_gkwh"]:
+            data["preus_antics_generation"] = self.get_preus_gkwh(
+                cursor, uid, env.polissa_id, with_taxes=False, context=context_preus_antics
+            )
+            data["preus_antics_generation_imp"] = self.get_preus_gkwh(
+                cursor, uid, env.polissa_id, with_taxes=True, context=context_preus_antics
+            )
+            data["preus_nous_generation"] = self.get_preus_gkwh(
+                cursor, uid, env.polissa_id, with_taxes=False, context=context_preus_nous
+            )
+            data["preus_nous_generation_imp"] = self.get_preus_gkwh(
+                cursor, uid, env.polissa_id, with_taxes=True, context=context_preus_nous
+            )
 
         data.update(self.getEstimacioData(cursor, uid, env, context=context_preus_nous))
         data.update(self.getTarifaCorreu(cursor, uid, env, context))
