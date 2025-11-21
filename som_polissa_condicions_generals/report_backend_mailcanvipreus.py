@@ -357,7 +357,7 @@ class ReportBackendMailcanvipreus(ReportBackend):
             # ),
             "potencia": env.polissa_id.potencia,
             "iva_reduit": env.polissa_id.potencia <= 10 and not canaries,
-            # "te_gkwh": env.polissa_id.te_assignacio_gkwh,
+            "te_gkwh": env.polissa_id.te_assignacio_gkwh,
             "preus_antics": preus_antics,
             "preus_nous": preus_nous,
             "preus_antics_imp": preus_antics_imp,
