@@ -76,5 +76,24 @@
             <field name="file_date">2023-05-03 00:00:00</field>
             <field name="initial_file_date">2023-05-03 00:00:00</field>
         </record>
+        <record model="product.pricelist" id="pricelist_tarifa_social">
+            <field name="name">2.0TD_SOM_SOCIAL</field>
+            <field name="type">sale</field>
+            <field name="compatible_invoicing_modes" eval="[(4, ref('giscedata_facturacio.mode_facturacio_atr'))]"/>
+            <field name="tarifes_atr_compatibles" eval="[(4, ref('tarifa_20TD_test'))]"/>
+            <field name="next_pricelist_id" ref="som_indexada.pricelist_periodes_20td_peninsula"/>
+        </record>
+        <record model="product.pricelist.version" id="version_pricelist_tarifa_social">
+            <field name="name">Versio 1</field>
+            <field name="date_start">2021-01-01</field>
+            <field name="date_end" eval="False"/>
+            <field name="pricelist_id" ref="pricelist_tarifa_social"/>
+        </record>
+        <record model="giscedata.polissa.mode.facturacio" id="giscedata_facturacio.mode_facturacio_atr">
+            <field name="compatible_price_lists" eval="[(4, ref('pricelist_tarifa_social'))]"/>
+        </record>
+        <record id="giscedata_polissa.polissa_tarifa_018" model="giscedata.polissa">
+            <field name="process_id" ref="giscedata_facturacio_comer_bono_social.bono_social_pending_state_process"/>
+        </record>
     </data>
 </openerp>
