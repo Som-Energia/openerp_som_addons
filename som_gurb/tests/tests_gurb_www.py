@@ -168,10 +168,12 @@ class TestsGurbWww(TestsGurbBase):
             self.cursor, self.uid, "som_polissa", "res_partner_domestic"
         )[1]
         res_partner_obj.write(self.cursor, self.uid, titular_id, {"lang": "en_US"})
+
         ctx = {
-            "polissa_module": "som_polissa",
-            "polissa_xml_id": "polissa_domestica_0100"
+            "polissa_xml_id": "polissa_domestica_0109",
+            "polissa_module": "som_polissa_soci"
         }
+
         self.activar_polissa_CUPS(context=ctx)
         gurb_cups_id = imd_obj.get_object_reference(
             self.cursor, self.uid, "som_gurb", "gurb_cups_0001"
@@ -184,10 +186,9 @@ class TestsGurbWww(TestsGurbBase):
             "access_tariff": "2.0TD",
             "cups": "ES0021126262693495FV",
             "beta": 2.0,
-            "vat": "78106306P"
+            "vat": "37692879L"
         }
         self._eliminar_GURB_CUPS()
-
         result = gurb_www_obj.create_new_gurb_cups(
             self.cursor, self.uid, form_payload
         )
