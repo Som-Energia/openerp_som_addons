@@ -34,8 +34,9 @@ class TestsCupsHelper(testing.OOTestCase):
         self.assertEqual(status, resulting_dictionary)
 
     def test_check_existent_cups(self):
-        cups_helper_obj = self.pool.get("cups.helper")
         cups_obj = self.pool.get("giscedata.cups.ps")
+        cups_helper_obj = self.pool.get("cups.helper")
+        polissa_obj = self.pool.get("giscedata.polissa")
         cups_id = self.imd_obj.get_object_reference(
             self.cursor, self.uid, "giscedata_cups", "cups_01"
         )[1]
@@ -43,6 +44,13 @@ class TestsCupsHelper(testing.OOTestCase):
         cups = cups_obj.browse(
             self.cursor, self.uid, cups_id, context={}
         )
+        polissa_id = self.imd_obj.get_object_reference(
+            self.cursor, self.uid, "giscedata_polissa", "polissa_0001"
+        )[1]
+
+        polissa_obj.send_signal(self.cursor, self.uid, [polissa_id], [
+            "validar", "contracte"
+        ])
 
         # CUPS existent
         result = cups_helper_obj.check_cups(
@@ -54,7 +62,7 @@ class TestsCupsHelper(testing.OOTestCase):
             "status": "active",
             "tariff_type": "atr",
             "knowledge_of_distri": False,
-            "address": "carrer inventat",
+            "address": u"carrer inventat",
             "tariff_name": "2.0A",
         }
 
