@@ -39,20 +39,6 @@ class WizardChangeTariff(osv.osv_memory):
 
         return new_pricelist_browse
 
-    def calculate_new_pricelist(self, cursor, uid, polissa, tarifa_codi, context=None):
-        polissa_obj = self.pool.get("giscedata.polissa")
-        mode_fact_obj = self.pool.get("giscedata.polissa.mode.facturacio")
-        municipi_id = polissa.cups.id_municipi.id
-
-        # Choose price list dict
-        mode_fact_obj.search
-        mode_facturacio = 'atr'  # TODO: From mode_fact_obj
-
-        new_pricelist_browse = polissa_obj.get_pricelist_from_tariff_and_location(
-            cursor, uid, tarifa_codi, mode_facturacio, municipi_id, context=context
-        )
-        return new_pricelist_browse.id
-
     def validate_polissa_can_change(
         self, cursor, uid, polissa, only_standard_prices=False, context=None
     ):
@@ -118,24 +104,17 @@ class WizardChangeTariff(osv.osv_memory):
 
         wizard = self.browse(cursor, uid, ids[0])
         polissa = wizard.polissa_id
-        wizard.pricelist_id
         if not context:
             context = {}
 
         self.validate_polissa_can_change(cursor, uid, polissa)
 
-        new_pricelist_id = context.get("business_pricelist", False)
-        if not new_pricelist_id:
-            new_pricelist_id = self.calculate_new_pricelist(cursor, uid, polissa)
-        coeficient_k = context.get("coeficient_k", False)
-
+        new_pricelist_id = wizard.pricelist_id.id
+        mode_facturacio = wizard.pricelist_id.compatible_invoicing_modes[0].name.lower()
         new_modcon_vals = {
-            "mode_facturacio": '',  # TODO CHANGE_AUX_VALUES[change_type]["invoicing_type"],
-            # TODO CHANGE_AUX_VALUES[change_type]["invoicing_type"],
-            "mode_facturacio_generacio": '',
+            "mode_facturacio": mode_facturacio,
+            "mode_facturacio_generacio": mode_facturacio,
             "llista_preu": new_pricelist_id,
-            "coeficient_k": coeficient_k,
-            "coeficient_d": False,
         }
         if context.get("te_auvidi", False):
             new_modcon_vals['te_auvidi'] = True
@@ -169,8 +148,6 @@ class WizardChangeTariff(osv.osv_memory):
 
                 with AsyncMode("sync"):
                     wiz.action_crear_contracte()
-                    if not coeficient_k:
-                        self.send_indexada_modcon_created_email(cursor, uid, polissa)
         except Exception:
             polissa.send_signal("undo_modcontractual")
             raise exceptions.UnexpectedException()
@@ -181,7 +158,7 @@ class WizardChangeTariff(osv.osv_memory):
     _columns = {
         "state": fields.selection([("init", "Init"), ("end", "End")], "State"),
         "polissa_id": fields.many2one("giscedata.polissa", "Contracte", required=True),
-        "pricelist": fields.many2one("product.pricelist", "Tarifa"),
+        "pricelist_id": fields.many2one("product.pricelist", "Tarifa"),
     }
 
     _defaults = {
