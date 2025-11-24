@@ -218,7 +218,9 @@ class SomGurbWww(osv.osv_memory):
                 "code": "SignatureNotCompleted",
             }
         else:
-            gurb_cups_obj.send_signal(cursor, uid, [gurb_lead_id], "button_create_cups")
+            gurb_cups_obj.form_activate_gurb_cups_lead(
+                cursor, uid, [gurb_lead_id], context=context
+            )
             return {"success": True}
 
     def _get_gurb_conditions_id(self, cursor, uid, pol_id, context=None):

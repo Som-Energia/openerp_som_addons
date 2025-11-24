@@ -234,7 +234,6 @@ class SomGurbCups(osv.osv):
         # Adjuntem la factura al Gurb CUPS
         gurb_cups_br = self.browse(cursor, uid, gurb_cups_id, context=context)
         if gurb_cups_br.initial_invoice_id:
-
             service = netsvc.LocalService("report.account.invoice")
             (result, format) = service.create(
                 cursor, uid, [gurb_cups_br.initial_invoice_id.id], {}, context
