@@ -107,7 +107,7 @@ class SomGurbWww(osv.osv_memory):
         for gcau in ggroup.gurb_cau_ids:
             beta_remaining = gcau.generation_power
             for gcups in gcau.gurb_cups_ids:
-                if gcups.state in ["active", "atr_pending"]:
+                if gcups.state in ["active", "atr_pending", "draft"]:
                     beta_remaining -= gcups.beta_kw
                     beta_remaining -= gcups.future_beta_kw
                     beta_remaining -= gcups.future_gift_beta_kw
@@ -187,31 +187,6 @@ class SomGurbWww(osv.osv_memory):
             return cups_id[0]
         return None
 
-    def _get_polissa_id(self, cursor, uid, cups_id, context=None):
-        if context is None:
-            context = {}
-        polissa_obj = self.pool.get("giscedata.polissa")
-        sw_obj = self.pool.get("giscedata.switching")
-        search_params = [
-            ("cups", "=", cups_id),
-            ("state", "in", ["activa", "esborrany"]),
-        ]
-        polissa_ids = polissa_obj.search(
-            cursor, uid, search_params, order="create_date DESC", limit=1
-        )
-        if polissa_ids:
-            polissa_br = polissa_obj.browse(cursor, uid, polissa_ids[0], context=context)
-            if polissa_br.state == "activa":
-                sw_ids = sw_obj.search(cursor, uid, [
-                    ('cups_polissa_id', '=', polissa_br.id),
-                    ('state', '=', 'open'),
-                    ('proces_id', 'not in', ["R1"])
-                ])
-                if sw_ids:
-                    return False
-            return polissa_ids[0]
-        return None
-
     def activate_gurb_cups_lead(self, cursor, uid, gurb_lead_id, context=None):
         if context is None:
             context = {}
@@ -280,12 +255,22 @@ class SomGurbWww(osv.osv_memory):
             return pro_br.signature_url
         return None
 
+    def _validate_titular_cups(self, cursor, uid, vat, polissa_id, context=None):
+        if context is None:
+            context = {}
+        polissa_obj = self.pool.get("giscedata.polissa")
+        polissa_br = polissa_obj.browse(cursor, uid, polissa_id, context=context)
+        titular_vat = polissa_br.titular.vat.replace(" ", "").replace("ES", "").upper()
+        return titular_vat == vat
+
     def create_new_gurb_cups(self, cursor, uid, form_payload, context=None):
         if context is None:
             context = {}
 
         gurb_group_obj = self.pool.get("som.gurb.group")
         gurb_cups_obj = self.pool.get("som.gurb.cups")
+        cups_helper_obj = self.pool.get("cups.helper")
+        polissa_obj = self.pool.get("giscedata.polissa")
 
         gurb_group_ids = gurb_group_obj.search(
             cursor, uid, [('code', '=', form_payload['gurb_code'])]
@@ -328,12 +313,39 @@ class SomGurbWww(osv.osv_memory):
                 "code": "BadCups",
             }
 
-        polissa_id = self._get_polissa_id(cursor, uid, cups_id, context=context)
+        polissa_id = cups_helper_obj._get_polissa_id(cursor, uid, cups_id, context=context)
         if not polissa_id:
             return {
                 "success": False,
                 "error": _("No hi ha polissa o no està disponible"),
                 "code": "ContractERROR",
+            }
+
+        polissa_br = polissa_obj.browse(cursor, uid, polissa_id, context=context)
+        if polissa_br.es_autoconsum:
+            return {
+                "success": False,
+                "error": _("El CUPS ja és d'un autoconsum"),
+                "code": "CupsIsAutoconsum",
+            }
+
+        gurb_cups = gurb_cups_obj.search(cursor, uid, [("cups_id", "=", cups_id)], limit=1)
+        if gurb_cups:
+            return {
+                "success": False,
+                "error": _("El CUPS ja està assignat a un altre GURB CUPS"),
+                "code": "CupsAlreadyAssigned",
+            }
+
+        titular_vat = form_payload.get('vat', '').upper()
+        vat_check = self._validate_titular_cups(
+            cursor, uid, titular_vat, polissa_id, context=context
+        )
+        if not vat_check:
+            return {
+                "success": False,
+                "error": _("El DNI no s'ha validat {}").format(titular_vat),
+                "code": "BadVAT",
             }
 
         beta_ids = [(0, 0, {

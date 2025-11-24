@@ -6,3 +6,4 @@ from . import giscedata_facturacio
 from . import wizard
 from . import som_indexada_webforms_helpers
 from . import ir_attachment
+from . import models
