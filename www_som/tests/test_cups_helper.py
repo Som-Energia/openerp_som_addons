@@ -59,7 +59,7 @@ class TestsCupsHelper(testing.OOTestCase):
 
         resulting_dictionary = {
             "cups": cups.name,
-            "status": "active",
+            "status": "busy",
             "tariff_type": "atr",
             "knowledge_of_distri": False,
             "address": u"carrer inventat",
