@@ -8,7 +8,6 @@ Mòdul per la integració de l'oficina virtual
     "author": "GISCE-TI, S.L.",
     "category": "www",
     "depends": [
-        "base_extended",
         "base_extended_som",
         "www_base",
         "som_polissa_soci",
@@ -26,6 +25,7 @@ Mòdul per la integració de l'oficina virtual
         "demo/res_partner_demo.xml",
         "demo/indexed_prices_demo.xml",
         "demo/ov_attachment_demo.xml",
+        "demo/polissa_demo.xml",
     ],
     "update_xml": [
         "www_som_data.xml",
