@@ -169,7 +169,7 @@ class ReportBackendMailcanvipreus(ReportBackend):
             },
         }
 
-        if data['autoconsum']['compensacio']:
+        if data['autoconsum']['compensacio'] and data['mode_facturacio'] == 'atr':
             preu_auto_antic = get_atr_price(
                 cursor, uid, env.polissa_id, 'P1', 'ac', context_preus_antics, with_taxes=False)[0]
 
