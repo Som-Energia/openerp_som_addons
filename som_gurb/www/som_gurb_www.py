@@ -1,4 +1,5 @@
 # -*- encoding: utf-8 -*-
+import time
 from osv import osv
 from tools.translate import _
 from math import radians, cos, sin, asin, sqrt
@@ -392,3 +393,17 @@ class SomGurbWww(osv.osv_memory):
 
 
 SomGurbWww()
+
+
+class GiscedataSignaturaDocuments(osv.osv):
+    _name = 'giscedata.signatura.documents'
+    _inherit = 'giscedata.signatura.documents'
+
+    def generate_report(self, cursor, uid, ids, context=None):
+        if context is None:
+            context = {}
+        super(GiscedataSignaturaDocuments, self).generate_report(cursor, uid, ids, context=context)
+        time.sleep(3)
+
+
+GiscedataSignaturaDocuments()

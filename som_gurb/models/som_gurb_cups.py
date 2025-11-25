@@ -233,6 +233,8 @@ class SomGurbCups(osv.osv):
         # Creem factura
         context["tpv"] = True
         inv_id = self.create_initial_invoice(cursor, uid, gurb_cups_id, context=context)[0]
+        wf_service = netsvc.LocalService("workflow")
+        wf_service.trg_validate(uid, 'account.invoice', inv_id, 'invoice_open', cursor)
 
         # Adjuntem la factura al Gurb CUPS
         gurb_cups_br = self.browse(cursor, uid, gurb_cups_id, context=context)
@@ -597,7 +599,7 @@ class SomGurbCups(osv.osv):
         ).get("value", {})
         gurb_line["invoice_line_tax_id"] = [(6, 0, gurb_line.get("invoice_line_tax_id", []))]
         gurb_line.update({
-            "name": "Quota inicial {}".format(gurb_cups_br.gurb_cau_id.gurb_group_id.name),
+            "name": "Cost d'adhesió {}".format(gurb_cups_br.gurb_cau_id.gurb_group_id.name),
             "product_id": product_id,
             "price_unit": price_unit,
             "quantity": 1,
