@@ -573,7 +573,7 @@ class ReportBackendMailcanvipreus(ReportBackend):
         try:
             p_obj = env.pool.get("res.partner")
             if not p_obj.vat_es_empresa(env._cr, env._uid, env.polissa_id.titular.vat):
-                nom_titular = " " + env.polissa_id.titular.name.split(",")[1].lstrip() + ","
+                nom_titular = " " + env.polissa_id.titular.name.split(",")[1].strip() + ","
             else:
                 nom_titular = ","
         except Exception:
