@@ -225,18 +225,21 @@ class SomGurbCups(osv.osv):
         if context is None:
             context = {}
 
+        if isinstance(gurb_cups_id, list):
+            gurb_cups_id = gurb_cups_id[0]
+
         attach_obj = self.pool.get('ir.attachment')
 
         # Creem factura
         context["tpv"] = True
-        self.create_initial_invoice(cursor, uid, gurb_cups_id, context=context)
+        inv_id = self.create_initial_invoice(cursor, uid, gurb_cups_id, context=context)[0]
 
         # Adjuntem la factura al Gurb CUPS
         gurb_cups_br = self.browse(cursor, uid, gurb_cups_id, context=context)
-        if gurb_cups_br.initial_invoice_id:
+        if inv_id:
             service = netsvc.LocalService("report.account.invoice")
             (result, format) = service.create(
-                cursor, uid, [gurb_cups_br.initial_invoice_id.id], {}, context
+                cursor, uid, [inv_id], {}, context
             )
             result_base64 = base64.b64encode(result)
 
