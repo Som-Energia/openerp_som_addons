@@ -1,4 +1,5 @@
 # -*- encoding: utf-8 -*-
+import time
 from osv import osv
 from tools.translate import _
 from math import radians, cos, sin, asin, sqrt
@@ -218,7 +219,9 @@ class SomGurbWww(osv.osv_memory):
                 "code": "SignatureNotCompleted",
             }
         else:
-            gurb_cups_obj.send_signal(cursor, uid, [gurb_lead_id], "button_create_cups")
+            gurb_cups_obj.form_activate_gurb_cups_lead(
+                cursor, uid, [gurb_lead_id], context=context
+            )
             return {"success": True}
 
     def _get_gurb_conditions_id(self, cursor, uid, pol_id, context=None):
@@ -390,3 +393,17 @@ class SomGurbWww(osv.osv_memory):
 
 
 SomGurbWww()
+
+
+class GiscedataSignaturaDocuments(osv.osv):
+    _name = 'giscedata.signatura.documents'
+    _inherit = 'giscedata.signatura.documents'
+
+    def generate_report(self, cursor, uid, ids, context=None):
+        if context is None:
+            context = {}
+        super(GiscedataSignaturaDocuments, self).generate_report(cursor, uid, ids, context=context)
+        time.sleep(3)
+
+
+GiscedataSignaturaDocuments()
