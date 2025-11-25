@@ -145,9 +145,8 @@ class GiscedataPolissa(osv.osv):
 
         return None
 
-    def get_pricelist_from_tariff_and_location(
+    def get_pricelist_from_tariff_and_location_no_social(
             self, cursor, uid, mode_facturacio, id_municipi, context=None):
-        self.pool.get("ir.model.data")
         pp_obj = self.pool.get("product.pricelist")
 
         pp_periodes_regular_id = pp_obj.search(cursor, uid, [('name', '=', '2.0TD_SOM')])[0]
@@ -175,9 +174,7 @@ class GiscedataPolissa(osv.osv):
             elif location == 'insular':
                 new_pricelist_id = pp_periodes_insular_id
 
-        new_pricelist_browse = pp_obj.browse(cursor, uid, new_pricelist_id, context=context)
-
-        return new_pricelist_browse
+        return new_pricelist_id
 
     def mapping_tarifa_social(self, cursor, uid, context=None):
         pp_obj = self.pool.get("product.pricelist")
@@ -208,7 +205,7 @@ class GiscedataPolissa(osv.osv):
     def mapping_tarifa_no_social(self, cursor, uid, polissa_id, context=None):
 
         polissa = self.browse(cursor, uid, polissa_id, context=context)
-        new_pricelist_id = self.get_pricelist_from_tariff_and_location(
+        new_pricelist_id = self.get_pricelist_from_tariff_and_location_no_social(
             cursor, uid, polissa.mode_facturacio,
             polissa.cups.id_municipi.id, context)
 
@@ -220,15 +217,17 @@ class GiscedataPolissa(osv.osv):
         polissa = self.browse(cursor, uid, polissa_id, context=context)
 
         if change_type == "to_social":
-            new_pricelist_id = self.mapping_tarifa_social(cursor, uid, context=context)[
-                polissa.llista_preu.id]
-            if not new_pricelist_id:
-                raise exceptions.PolissaCannotChangeToSocialTariff(polissa.name)
+            new_pricelist_dict = self.mapping_tarifa_social(cursor, uid, context=context)
+            if not new_pricelist_dict.get(polissa.llista_preu.id, False):
+                raise exceptions.PolissaCannotChangeSocialTariff(polissa.name, change_type)
+            new_pricelist_id = new_pricelist_dict[polissa.llista_preu.id]
         elif change_type == "to_regular":
             new_pricelist_id = self.mapping_tarifa_no_social(
                 cursor, uid, polissa_id, context=context)
             if not new_pricelist_id:
-                raise exceptions.PolissaCannotChangeToRegularTariff(polissa.name)
+                raise exceptions.PolissaCannotChangeSocialTariff(polissa.name, change_type)
+        else:
+            raise exceptions.PolissaCannotChangeSocialTariff(polissa.name, change_type)
         return new_pricelist_id
 
     _columns = {
