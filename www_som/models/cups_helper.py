@@ -52,12 +52,7 @@ class CupsHelper(osv.osv_memory):
         has_open_cases = self._has_open_cases(
             cursor, uid, contract_ids[0], context=context
         )
-        ctx = context.copy()
-        ctx['active_test'] = False
-        unactive_ids = pol_obj.search(
-            cursor, uid, [('cups', '=', cups_id), ("state", "!=", "activa")], context=ctx
-        )
-        if has_open_cases or unactive_ids:
+        if has_open_cases:
             return 'busy'
         return 'active'
 
