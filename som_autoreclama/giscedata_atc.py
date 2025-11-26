@@ -256,8 +256,15 @@ class GiscedataAtc(osv.osv):
                       'num_factura': f1.invoice_number_text}, context=context)
         return atc_id
 
-    # Automatic ATC + [R1] from dictonary / Entry poiut
+    def create_ATC_R1_009_from_polissa_via_wizard(self, cursor, uid, polissa_id, context=None):
 
+        new_case_data = {}
+
+        atc_id = self.create_general_atc_r1_case_via_wizard(cursor, uid, new_case_data, context)
+
+        return atc_id
+
+    # Automatic ATC + [R1] from dictonary / Entry point
     def create_general_atc_r1_case_via_wizard(self, cursor, uid, case_data, context=None):
         if not context:
             ctx = {}
