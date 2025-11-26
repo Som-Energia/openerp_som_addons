@@ -40,7 +40,7 @@
         </record>
 
         <record model="ir.ui.view" id="view_bs_endarrerits01_dashboard">
-            <field name="name">B’s endarrerits (01)</field>
+            <field name="name">B1 (01) Cese Actividad Endarrerides</field>
             <field name="model">giscedata.switching</field>
             <field name="type">graph</field>
             <field name="priority" eval="16"/>
@@ -50,7 +50,7 @@
             </field>
         </record>
         <record model="ir.actions.act_window" id="action_bs_endarrerits01_dashboard">
-            <field name="name">B’s endarrerits (01)</field>
+            <field name="name">B1 (01) Cese Actividad Endarrerides</field>
             <field name="type">ir.actions.act_window</field>
             <field name="view_type">form</field>
             <field name="view_mode">graph,tree,form</field>
@@ -67,14 +67,14 @@
             <field name="act_window_id" ref="action_bs_endarrerits01_dashboard"/>
         </record>
         <record model="board.board.line" id="board_bs_endarrerits01_dashboard">
-            <field name="name">Taulell - B’s endarrerits (01)</field>
+            <field name="name">Taulell - B1 (01) Cese Actividad Endarrerides</field>
             <field name="board_id" ref="dashboard_som_gc_endarrerits"/>
             <field name="sequence" eval="0"/>
             <field name="action_id" ref="action_bs_endarrerits01_dashboard"/>
         </record>
 
         <record model="ir.ui.view" id="view_bs_endarrerits03_dashboard">
-            <field name="name">B’s endarrerits (03)</field>
+            <field name="name">B1 (03) Corte de suministro Endarrerides</field>
             <field name="model">giscedata.switching</field>
             <field name="type">graph</field>
             <field name="priority" eval="16"/>
@@ -84,7 +84,7 @@
             </field>
         </record>
         <record model="ir.actions.act_window" id="action_bs_endarrerits03_dashboard">
-            <field name="name">B’s endarrerits (03)</field>
+            <field name="name">B1 (03) Corte de suministro Endarrerides</field>
             <field name="type">ir.actions.act_window</field>
             <field name="view_type">form</field>
             <field name="view_mode">graph,tree,form</field>
@@ -101,14 +101,14 @@
             <field name="act_window_id" ref="action_bs_endarrerits03_dashboard"/>
         </record>
         <record model="board.board.line" id="board_bs_endarrerits03_dashboard">
-            <field name="name">Taulell - B’s endarrerits (03)</field>
+            <field name="name">Taulell - B1 (03) Corte de suministro Endarrerides</field>
             <field name="board_id" ref="dashboard_som_gc_endarrerits"/>
             <field name="sequence" eval="0"/>
             <field name="action_id" ref="action_bs_endarrerits03_dashboard"/>
         </record>
 
         <record model="ir.ui.view" id="view_as_endarrerides_01_dashboard">
-            <field name="name">A’s endarrerides 01</field>
+            <field name="name">A3 pas 01 endarrerides</field>
             <field name="model">giscedata.switching</field>
             <field name="type">graph</field>
             <field name="priority" eval="16"/>
@@ -118,7 +118,7 @@
             </field>
         </record>
         <record model="ir.actions.act_window" id="action_as_endarrerides_01_dashboard">
-            <field name="name">A’s endarrerides 01</field>
+            <field name="name">A3 pas 01 endarrerides</field>
             <field name="type">ir.actions.act_window</field>
             <field name="view_type">form</field>
             <field name="view_mode">graph,tree,form</field>
@@ -135,14 +135,14 @@
             <field name="act_window_id" ref="action_as_endarrerides_01_dashboard"/>
         </record>
         <record model="board.board.line" id="board_as_endarrerides_01_dashboard">
-            <field name="name">Taulell - A’s endarrerides 01</field>
+            <field name="name">Taulell - A3 pas 01 endarrerides</field>
             <field name="board_id" ref="dashboard_som_gc_endarrerits"/>
             <field name="sequence" eval="0"/>
             <field name="action_id" ref="action_as_endarrerides_01_dashboard"/>
         </record>
 
         <record model="ir.ui.view" id="view_as_endarrerides_02_dashboard">
-            <field name="name">A’s endarrerides 02</field>
+            <field name="name">A3 pas 02 endarrerides</field>
             <field name="model">giscedata.switching</field>
             <field name="type">graph</field>
             <field name="priority" eval="16"/>
@@ -152,7 +152,7 @@
             </field>
         </record>
         <record model="ir.actions.act_window" id="action_as_endarrerides_02_dashboard">
-            <field name="name">A’s endarrerides 02</field>
+            <field name="name">A3 pas 02 endarrerides</field>
             <field name="type">ir.actions.act_window</field>
             <field name="view_type">form</field>
             <field name="view_mode">graph,tree,form</field>
@@ -169,7 +169,7 @@
             <field name="act_window_id" ref="action_as_endarrerides_02_dashboard"/>
         </record>
         <record model="board.board.line" id="board_as_endarrerides_02_dashboard">
-            <field name="name">Taulell - A’s endarrerides 02</field>
+            <field name="name">Taulell - A3 pas 02 endarrerides</field>
             <field name="board_id" ref="dashboard_som_gc_endarrerits"/>
             <field name="sequence" eval="0"/>
             <field name="action_id" ref="action_as_endarrerides_02_dashboard"/>
