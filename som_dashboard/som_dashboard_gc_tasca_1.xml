@@ -1,0 +1,144 @@
+<?xml version="1.0"?>
+<openerp>
+    <data>
+        <record model="board.board" id="dashboard_som_gc_tasca_1">
+            <field name="name" eval="'Gestió de Contractes - Tasca 1'"/>
+        </record>
+
+        <record model="ir.ui.view" id="view_ds_rebuig_dades_autoconsum_dashboard">
+            <field name="name">D’s: rebutjos dades d’autoconsum</field>
+            <field name="model">giscedata.switching</field>
+            <field name="type">graph</field>
+            <field name="priority" eval="16"/>
+            <field name="version" eval="2"/>
+            <field name="arch" type="xml">
+                <graph type="indicator"/>
+            </field>
+        </record>
+        <record model="ir.actions.act_window" id="action_ds_rebuig_dades_autoconsum_dashboard">
+            <field name="name">D’s: rebutjos dades d’autoconsum</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">graph,tree,form</field>
+            <field name="limit" eval="0"/>
+            <field name="res_model">giscedata.switching</field>
+            <field name="domain">
+                [("state", "=", "draft"), ("enviament_pendent", "=", True), ("proces_id.name", "=", "D1"), ("step_id.name", "=", "02"), ('date', '&lt;=', (datetime.datetime.today()-datetime.timedelta(days=2)).strftime('%Y-%m-%d'))]
+            </field>
+        </record>
+        <record model="ir.actions.act_window.view" id="action_view_ds_rebuig_dades_autoconsum_dashboard">
+            <field name="sequence" eval="1"/>
+            <field name="view_mode">graph</field>
+            <field name="view_id" ref="view_ds_rebuig_dades_autoconsum_dashboard"/>
+            <field name="act_window_id" ref="action_ds_rebuig_dades_autoconsum_dashboard"/>
+        </record>
+        <record model="board.board.line" id="board_ds_rebuig_dades_autoconsum_dashboard">
+            <field name="name">Taulell - D’s: rebutjos dades d’autoconsum</field>
+            <field name="board_id" ref="dashboard_som_gc_tasca_1"/>
+            <field name="sequence" eval="0"/>
+            <field name="action_id" ref="action_ds_rebuig_dades_autoconsum_dashboard"/>
+        </record>
+
+        <record model="ir.ui.view" id="view_draft_atr_cases_dashboard">
+            <field name="name">Buscar casos ATR en esborrany</field>
+            <field name="model">giscedata.switching</field>
+            <field name="type">graph</field>
+            <field name="priority" eval="16"/>
+            <field name="version" eval="2"/>
+            <field name="arch" type="xml">
+                <graph type="indicator"/>
+            </field>
+        </record>
+        <record model="ir.actions.act_window" id="action_draft_atr_cases_dashboard">
+            <field name="name">Buscar casos ATR en esborrany</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">graph,tree,form</field>
+            <field name="limit" eval="0"/>
+            <field name="res_model">giscedata.switching</field>
+            <field name="domain">
+                [("state", "=", "draft"), ("enviament_pendent", "=", True), ("proces_id.name", "like", "C"), ("step_id.name", "=", "01"), ('date','&lt;=', (datetime.datetime.today()-datetime.timedelta(days=2)).strftime('%Y-%m-%d'))]
+            </field>
+        </record>
+        <record model="ir.actions.act_window.view" id="action_view_draft_atr_cases_dashboard">
+            <field name="sequence" eval="1"/>
+            <field name="view_mode">graph</field>
+            <field name="view_id" ref="view_draft_atr_cases_dashboard"/>
+            <field name="act_window_id" ref="action_draft_atr_cases_dashboard"/>
+        </record>
+        <record model="board.board.line" id="board_draft_atr_cases_dashboard">
+            <field name="name">Taulell - Buscar casos ATR en esborrany</field>
+            <field name="board_id" ref="dashboard_som_gc_tasca_1"/>
+            <field name="sequence" eval="0"/>
+            <field name="action_id" ref="action_draft_atr_cases_dashboard"/>
+        </record>
+
+        <record model="ir.ui.view" id="view_ms_with_attachments_dashboard">
+            <field name="name">M's amb documentació adjunta</field>
+            <field name="model">giscedata.switching</field>
+            <field name="type">graph</field>
+            <field name="priority" eval="16"/>
+            <field name="version" eval="2"/>
+            <field name="arch" type="xml">
+                <graph type="indicator"/>
+            </field>
+        </record>
+        <record model="ir.actions.act_window" id="action_ms_with_attachments_dashboard">
+            <field name="name">M's amb documentació adjunta</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">graph,tree,form</field>
+            <field name="limit" eval="0"/>
+            <field name="res_model">giscedata.switching</field>
+            <field name="domain">
+                [("state", "=", "draft"), ("enviament_pendent", "=", True), ("validacio_pendent", "=", True), ("proces_id.name", "like", "M"), ("step_id.name", "=", "01"), ('date','&lt;=', (datetime.datetime.today()-datetime.timedelta(days=2)).strftime('%Y-%m-%d'))]
+            </field>
+        </record>
+        <record model="ir.actions.act_window.view" id="action_view_ms_with_attachments_dashboard">
+            <field name="sequence" eval="1"/>
+            <field name="view_mode">graph</field>
+            <field name="view_id" ref="view_ms_with_attachments_dashboard"/>
+            <field name="act_window_id" ref="action_ms_with_attachments_dashboard"/>
+        </record>
+        <record model="board.board.line" id="board_ms_with_attachments_dashboard">
+            <field name="name">Taulell - M's amb documentació adjunta</field>
+            <field name="board_id" ref="dashboard_som_gc_tasca_1"/>
+            <field name="sequence" eval="0"/>
+            <field name="action_id" ref="action_ms_with_attachments_dashboard"/>
+        </record>
+
+        <record model="ir.ui.view" id="view_ms_without_attachments_dashboard">
+            <field name="name">M's sense documentació adjunta</field>
+            <field name="model">giscedata.switching</field>
+            <field name="type">graph</field>
+            <field name="priority" eval="16"/>
+            <field name="version" eval="2"/>
+            <field name="arch" type="xml">
+                <graph type="indicator"/>
+            </field>
+        </record>
+        <record model="ir.actions.act_window" id="action_ms_without_attachments_dashboard">
+            <field name="name">M's sense documentació adjunta</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">graph,tree,form</field>
+            <field name="limit" eval="0"/>
+            <field name="res_model">giscedata.switching</field>
+            <field name="domain">
+                [("state", "=", "draft"), ("enviament_pendent", "=", True), ("proces_id.name", "like", "M"), ("step_id.name", "=", "01"), ('date','&lt;=', (datetime.datetime.today()-datetime.timedelta(days=2)).strftime('%Y-%m-%d'))]
+            </field>
+        </record>
+        <record model="ir.actions.act_window.view" id="action_view_ms_without_attachments_dashboard">
+            <field name="sequence" eval="1"/>
+            <field name="view_mode">graph</field>
+            <field name="view_id" ref="view_ms_without_attachments_dashboard"/>
+            <field name="act_window_id" ref="action_ms_without_attachments_dashboard"/>
+        </record>
+        <record model="board.board.line" id="board_ms_without_attachments_dashboard">
+            <field name="name">Taulell - M's sense documentació adjunta</field>
+            <field name="board_id" ref="dashboard_som_gc_tasca_1"/>
+            <field name="sequence" eval="0"/>
+            <field name="action_id" ref="action_ms_without_attachments_dashboard"/>
+        </record>
+    </data>
+</openerp>
