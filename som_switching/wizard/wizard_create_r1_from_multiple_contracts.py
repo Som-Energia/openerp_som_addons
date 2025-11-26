@@ -12,9 +12,9 @@ class WizardR101FromMultipleContracts(osv.osv_memory):
             context = {}
 
         ctx = context.copy()
-        info = self.read(
-            cursor, uid, ids, ["facturacio_suspesa", "refacturacio_pendent"], context=context
-        )[0]
+        info = self.read(cursor, uid, ids, [
+            "facturacio_suspesa", "refacturacio_pendent", "reclamacio_disconformidad_autoconsumo"
+        ], context=context)[0]
         info.pop("id")
         ctx.update({"extra_r1_vals": info})
 
@@ -35,11 +35,21 @@ class WizardR101FromMultipleContracts(osv.osv_memory):
             subinfo = subtipus_obj.read(cursor, uid, subtipus, ["name"], context=context)
             if subinfo["name"] in ("036", "009"):
                 res["value"].update({"facturacio_suspesa": True, "refacturacio_pendent": True})
+            res["value"].update({'subtipus_code': subinfo['name']})
         return res
 
     _columns = {
         "facturacio_suspesa": fields.boolean("Marcar contracte amb facturació suspesa"),
         "refacturacio_pendent": fields.boolean("Marcar contracte amb refacturacio pendent"),
+        "subtipus_code": fields.char('Codi subtipus', size=4),
+        'reclamacio_disconformidad_autoconsumo': fields.many2many(
+            'giscedata.disconformidad.autoconsumo', 'rel_disconformitat_wiz_create_r1',
+            'wiz_id', 'disconformitat_id', 'Disconformitat autoconsum'
+        ),
+    }
+
+    _defaults = {
+        "subtipus_code": lambda *a: '000',
     }
 
 
