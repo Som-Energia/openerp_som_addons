@@ -9,7 +9,7 @@ from time import sleep
 from . import som_sftp, som_ftp, exceptions
 import zipfile
 import shutil
-import StringIO
+from io import StringIO
 from gridfs.errors import CorruptGridFile, NoFile
 
 # Class Task Step that describes the module and the task step fields
@@ -424,7 +424,7 @@ class SomCrawlersTaskStep(osv.osv):
         if context:
             args.update({"-context": base64.b64encode(json.dumps(context))})
 
-        return " ".join(["{} {}".format(k, v) for k, v in args.iteritems()])
+        return " ".join(["{} {}".format(k, v) for k, v in getattr(args, 'items', args.items())()])
 
     def upload_files(self, cursor, uid, id, result_id, context=None):
         classresult = self.pool.get("som.crawlers.result")
