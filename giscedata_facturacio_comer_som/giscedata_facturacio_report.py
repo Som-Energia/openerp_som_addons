@@ -147,6 +147,10 @@ def is_indexed(fact):
     return "Indexada" in fact.llista_preu.name
 
 
+def is_abonadora(fact):
+    return fact.type == 'out_refund'
+
+
 def has_iva_column(fact):
     return val(fact.date_invoice) >= show_iva_column_date
 
@@ -2704,7 +2708,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
         return data
 
     def get_component_hourly_curve_data(self, fact, pol):
-        is_visible = is_6X(pol) or is_6XTD(pol) or is_indexed(fact)
+        is_visible = (is_6X(pol) or is_6XTD(pol) or is_indexed(fact)) and is_abonadora(fact) is False  # noqa: E501
         data = {
             "is_visible": is_visible,
             "has_agreement_partner": pol.soci.ref in agreementPartners.keys(),
@@ -2723,6 +2727,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
             "is_TD": is_TD(pol),
             "is_6xTD": is_6XTD(pol),
             "is_indexed": is_indexed(fact),
+            "is_abonadora": is_abonadora(fact),
         }
         return data
 
