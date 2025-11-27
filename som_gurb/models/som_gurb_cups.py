@@ -598,23 +598,24 @@ class SomGurbCups(osv.osv):
             type="out_invoice",
         ).get("value", {})
         gurb_line["invoice_line_tax_id"] = [(6, 0, gurb_line.get("invoice_line_tax_id", []))]
+        invoice_line_account_ids = account_o.search(
+            cursor, uid, [("code", "=", invoice_account_code)], context=context
+        )
         gurb_line.update({
             "name": "Cost d'adhesió {}".format(gurb_cups_br.gurb_cau_id.gurb_group_id.name),
             "product_id": product_id,
             "price_unit": price_unit,
             "quantity": 1,
+            "account_id": invoice_line_account_ids,
         })
-
         # Create invoice
-        invoice_account_ids = account_o.search(
-            cursor, uid, [("code", "=", invoice_account_code)], context=context
-        )
         journal_ids = journal_o.search(
             cursor, uid, [("code", "=", journal_code)], context=context
         )
         payment_type_id = payment_type_o.search(
             cursor, uid, [("code", "=", payment_type_code)], context=context
         )[0]
+
         invoice_lines = [
             (0, 0, gurb_line)
         ]
@@ -631,6 +632,9 @@ class SomGurbCups(osv.osv):
         )
         invoice_vals.update({"payment_type": payment_type_id})
 
+        invoice_account_ids = account_o.search(
+            cursor, uid, [("code", "=", '430000000000')], context=context
+        )
         if invoice_account_ids:
             invoice_vals.update({"account_id": invoice_account_ids[0]})
         if journal_ids:
