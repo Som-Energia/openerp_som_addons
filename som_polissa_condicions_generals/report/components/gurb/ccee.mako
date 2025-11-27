@@ -238,20 +238,20 @@
 <div class="content_generals">
 
 <h3>1. DEFINICIONES</h3>
-    <p>Todos los términos en mayúsculas incluidos en este documento (<strong>Condiciones Específicas de GURB</strong>) serán interpretados conforme se definen en el mismo, y, en ausencia de definición, tal como están definidos en el Contrato de Suministro de energía eléctrica subscrito entre la Contratante y SOM ENERGIA, SCCL.</p>
+    <p>Todos los términos en mayúsculas incluidos en este documento (Condiciones Específicas de GURB) serán interpretados conforme se definen en el mismo, y, en ausencia de definición, tal como están definidos en el Contrato de Suministro de energía eléctrica suscrito entre la Contratante y SOM ENERGIA, SCCL.</p>
 
 <h3>2. OBJETO</h3>
     <p>
-        La Contratante ha solicitado a SOM ENERGIA, SCCL, contratar el servicio GURB (en adelante, <strong>GURB</strong>), que consiste en asociar un punto de suministro de su titularidad a una instalación de autoconsumo colectivo gestionada y representada por SOM ENERGIA, SCCL.
+        La Contratante ha solicitado a SOM ENERGIA, SCCL, contratar el servicio GURB (en adelante, GURB), que consiste en asociar un punto de suministro de su titularidad a una instalación de autoconsumo colectivo gestionada y representada por SOM ENERGIA, SCCL.
     </p>
     <p>
-        SOM ENERGIA, SCCL, es gestora y titular de derechos de explotación de instalaciones fotovoltaicas legalizadas en régimen de autoconsumo colectivo con excedentes y ubicada, respecto al punto de suministro de la Contratante, en un radio que cumple la normativa aplicable al autoconsumo colectivo, y ha subscrito los correspondientes contratos con el propietario y titular de cada una de ellas (en  adelante, la "<strong>Instalación</strong>").
+        El producto GURB consiste en la asignación a la Contratante, por parte de SOM ENERGIA, SCCL, del derecho de aprovechamiento parcial de una Instalación en régimen de autoconsumo colectivo, en el que participan la Contratante y otras consumidoras asociadas a la Instalación (en adelante, las “Participantes”), a cambio de una contraprestación económica.
     </p>
     <p>
         El producto <strong>GURB</strong> consiste en la asignación a la Contratante, por parte de SOM ENERGIA, SCCL, del derecho de aprovechamiento parcial de una Instalación en régimen d´autoconsumo colectivo, en el que participan la Contratante y otras consumidoras asociadas a la Instalación (en adelante, las "<strong>Participantes</strong>"), a cambio de una contraprestación económica.
     </p>
     <p>
-        La tipología de autoconsumo de la Instalación depende de si esta se conecta físicamente a la red interior del edificio donde se ubica o bien se conecta a la red exterior. En función de esta conexión, el autoconsumo colectivo asociado a la Instalación es con excedentes y compensación simplificada o simplemente con excedentes (sin compensación simplificada).
+        La tipología de autoconsumo de la Instalación depende de si esta se conecta físicamente a la red interior del edificio donde se ubica o bien se conecta a la red exterior. En función de esta conexión, el autoconsumo colectivo asociado a la Instalación será con excedentes y compensación simplificada o simplemente con excedentes (sin compensación simplificada).
     </p>
     <p>
         En el caso de acogerse a la modalidad de autoconsumo con excedentes sin compensación simplificada, la Contratante asume y entiende que la energía producida por la Instalación y que no es consumida durante el horario asociado al CUPS no puede ser considerada energía horaria autoconsumida, y, por lo tanto, corresponde en exclusiva al gestor y titular de la instalación, tanto su propiedad, como su valorización, formas de aprovechamiento y en general cualquier otro aspecto relativo a la energía generada.
@@ -260,16 +260,16 @@
         En el formulario de contratación del servicio GURB se informa de la tipología de autoconsumo de cada Instalación.
     </p>
     <p>
-        Del total de la potencia de la Instalación (expresado en kW), la Contratante indicará a SOM ENERGIA, SCCL, en el formulario de contratación del servicio GURB, qué potencia de autoproducción quiere contratar de entre las opciones disponibles (en adelante, la "<strong>Potencia GURB</strong>").
+        Del total de la potencia de la Instalación (expresado en kW), la Contratante indicará a SOM ENERGIA, SCCL, en el formulario de contratación del servicio GURB, qué potencia de autoproducción quiere contratar de entre las opciones disponibles (en adelante, la “Potencia GURB)”.
     </p>
     <p>
         Las características del servicio GURB contratado, como la Potencia GURB y si el autoconsumo colectivo al que quedará asociado el CUPS de la Contratante es con compensación simplificada o sin, quedan recogidas en las Condiciones Particulares.
     </p>
     <p>
-        Son <strong>condiciones esenciales para la contratación del servicio GURB</strong>: (i) la contratación previa o simultánea con SOM ENERGIA, SCCL, del Contrato de Suministro, en relación con un CUPS no asociado a ninguna instalación de autoconsumo (ni individual ni colectiva) y (ii) el cumplimiento de todas las obligaciones recogidas en este documento de Condiciones Específicas. No es, por lo tanto, compatible con el servicio GURB estar asociado a otra instalación de autoconsumo ni tener contratado el suministro eléctrico con una comercializadora diferente de SOM ENERGIA, SCCL.
+        Son condiciones esenciales para la contratación del servicio GURB: (i) la contratación previa o simultánea con SOM ENERGIA, SCCL, del Contrato de Suministro, en relación con un CUPS no asociado a ninguna instalación de autoconsumo (ni individual ni colectiva) y (ii) el cumplimiento de todas las obligaciones recogidas en este documento de Condiciones Específicas. No es, por lo tanto, compatible con el servicio GURB esta asociado a otra instalación de autoconsumo ni tener contratado el suministro eléctrico con una comercializadora diferente de SOM ENERGIA, SCCL.
     </p>
     <p>
-        El objeto de estas <strong>Condiciones Específicas de GURB</strong> es adaptar la aplicación de las condiciones acordadas en el Contrato de Suministro como consecuencia de la contratación del servicio <strong>GURB</strong>. Así pues, estas <strong>Condiciones Específicas de GURB</strong> se integran y forman parte inseparable del Contrato de Suministro, y su contenido prevalecerá por encima de lo que se recoge en sus Condiciones Generales. En caso de que la Contratante haya contratado más de un producto adicional en el Contrato de Suministro, y las Condiciones Específicas entren en contradicción, siempre prevalecerá la de fecha de las condiciones más recientes.
+        El objeto de estas Condiciones Específicas de GURB es adaptar la aplicación de las condiciones acordadas en el Contrato de Suministro como consecuencia de la contratación  el servicio GURB. Así pues, estas Condiciones Específicas de GURB se integran y forman  arte inseparable del Contrato de Suministro, y su contenido prevalecerá por encima de lo que se recoge en sus Condiciones Generales. En caso de que la Contratante haya contratado más de un producto adicional en el Contrato de Suministro, y las Condiciones Específicas entren en contradicción, siempre prevalecerá la de fecha de las condiciones más recientes.
     </p>
 
 <h3>3. ENTRADA EN VIGOR I VIGENCIA</h3>
@@ -281,54 +281,54 @@
         3.2. La vigencia del Contrato de Suministro y de las presentes Condiciones Específicas estará sujeta a lo que prevén las cláusulas 3.3 y 3.4 de las Condiciones Generales del Contrato de Suministro. Por lo que, si la compañía distribuidora propietaria de la red a la que se conecta la Contratante deniega el alta del punto de suministro o bien no autoriza los cambios en el contrato de acceso a la red necesarios para hacer efectivo el Contrato de Suministro o las Condiciones Específicas, bien el Contrato de Suministro, bien las Condiciones Específicas o ambos, en caso de contratación simultánea, se considerarán resueltos automáticamente sin derecho a indemnización por ninguna de las Partes. En todo caso, SOM ENERGIA, SCCL, devolverá el Coste de Adhesión a la Contratante en el plazo de 30 días.
     </p>
     <p>
-        3.3. Igualmente, la resolución por cualquier causa del Contrato de Suministro o el incumplimiento de cualquiera de las condiciones esenciales indicadas en el apartado 2 comportan automáticamente la resolución de estas Condiciones Específicas, porque son una de las condiciones esenciales para poder contratar <strong>GURB</strong>.
+        3.3. Igualmente, la resolución por cualquier causa del Contrato de Suministro o el incumplimiento de cualquiera de las condiciones esenciales indicadas en el apartado 2 comportan automáticamente la resolución de estas Condiciones Específicas, porque son una de las condiciones esenciales para poder contratar GURB.
     </p>
     <p>
-        3.4. La duración del Contrato de Suministro establecida en las Condiciones Generales queda modificada con la contratación de <strong>GURB</strong>. El cómputo del periodo de uno (1) año empezará en la fecha de estas Condiciones Específicas, o la más tardía de las fechas (en caso de contratar más de un producto adicional) que figure en el Contrato de Suministro.
+        3.4. La duración del Contrato de Suministro establecida en las Condiciones Generales queda modificada con la contratación de GURB. El cómputo del periodo de uno (1) año empezará en la fecha de estas Condiciones Específicas, o la más tardía de las fechas (en caso de contratar más de un producto adicional) que figure en el Contrato de Suministro.
     </p>
 
 <h3>4. CONDICIONES DEL SERVICIO GURB</h3>
     <p>
-        4.1. Las características del servicio GURB contratado, como por ejemplo la Potencia GURB y si el autoconsumo colectivo al que quedará asociado el CUPS de la Contratante será con compensación simplificada o sin, quedarán recogidas en las Condiciones Particulares. Una vez rellenado el formulario de contratación, la Contratante recibirá —en el correo electrónico queconsta en el Contrato de Suministro— las Condiciones Particulares actualizadas, que, junto con estas Condiciones Específicas y las Condiciones Generales, integran el Contrato de Suministro.
+        4.1. Las características del servicio GURB contratado, como por ejemplo la Potencia GURB y si el autoconsumo colectivo al que quedará asociado el CUPS de la Contratante será con compensación simplificada o sin, quedarán recogidas en las Condiciones Particulares. Una vez rellenado el formulario de contratación, la Contratante recibirá —en el correo electrónico que consta en el Contrato de Suministro— las Condiciones Particulares actualizadas, que, junto con estas Condiciones Específicas y las Condiciones Generales, integran el Contrato de Suministro.
     </p>
     <p>
-        4.2. SOM ENERGIA, SCCL, presta el servicio <strong>GURB</strong> en el marco de la normativa vigente del autoconsumo (actualmente el Real Decreto 244/2019). Las Partes declaran conocer esta circunstancia, y se comprometen a colaborar de buena fe y a realizar todas las gestiones que, de acuerdo con la normativa aplicable, sean necesarias o recomendables para la correcta materialización de este negocio jurídico. En particular, las Partes declaran que conocen y han sido debidamente informadas del contenido de estas Condiciones Específicas.
+        4.2. SOM ENERGIA, SCCL, presta el servicio GURB en el marco de la normativa vigente del autoconsumo (actualmente el Real Decreto 244/2019). Las Partes declaran conocer esta circunstancia, y se comprometen a colaborar de buena fe y a realizar todas las gestiones que, de acuerdo con la normativa aplicable, sean necesarias o recomendables para la correcta materialización de este negocio jurídico. En particular, las Partes declaran que conocen y han sido debidamente informadas del contenido de estas Condiciones Específicas.
     </p>
     <p>
-        4.3. Para poder activar el autoconsumo colectivo es imprescindible elaborar, firmar y comunicar a la empresa distribuidora propietaria de la red a la que se conecten, tanto la Instalación como la Contratante, un acuerdo de coeficientes de reparto (en adelante, el "<strong>Acuerdo de Reparto</strong>"), para que la empresa distribuidora pueda asignar al CUPS de cada participante la Potencia GURB correspondiente. Se acompaña el modelo de Acuerdo de Reparto como <strong>Anexo I</strong>.
+        4.3. Para poder activar el autoconsumo colectivo es imprescindible elaborar, firmar y comunicar a la empresa distribuidora propietaria de la red a la que se conecten, tanto la Instalación como la Contratante, un acuerdo de coeficientes de reparto (en adelante, el “Acuerdo de Reparto”), para que la empresa distribuidora pueda asignar al CUPS de cada participante la Potencia GURB correspondiente. Se acompaña el modelo de Acuerdo de Reparto como Anexo I.
     </p>
     <p>
-        SOM ENERGIA, SCCL, rellenará este <strong>Anexo I</strong> con el porcentaje de la potencia de la Instalación (𝜷) correspondiente a la Potencia GURB indicada por la Contratante en el formulario de contratación del servicio.
-    </p>
-    <p>
-        Antes de acabar el formulario de contratación, la Contratante verá el Acuerdo de Reparto rellenado con la (𝜷) correspondiente a la Potencia GURB, que, una vez revisado, tendrá que aceptar para poder finalizar la contratación.
+        SOM ENERGIA, SCCL, rellenará este Anexo I con el porcentaje de la potencia de la Instalación (𝜷) correspondiente a la Potencia GURB indicada por la Contratante en el formulario de contratación del servicio.
     </p>
     <p>
         El Acuerdo de Reparto aceptado por la Contratante es firmado por SOM ENERGÍA, SCCL, en calidad de representante del autoconsumo colectivo.
     </p>
     <p>
-        SOM ENERGIA, SCCL, tiene que informar a la Contratante de cualquier modificación del Acuerdo de Reparto por correo electrónico y la Contratante se obliga a revisarlo, y aceptarlo o rechazarlo <strong>en el plazo máximo de CINCO (5) días hábiles</strong> mediante respuesta al correo electrónico recibido. El cumplimiento de este plazo es necesario para poder modificar el autoconsumo colectivo y su incumplimiento perjudica al resto de Participantes; por esta razón, el rechazo por parte de la Contratante de la modificación del Acuerdo de Reparto enviado o su falta de respuesta en el plazo indicado es una causa de resolución automática del servicio GURB, de manera que la Contratante acepta que se le dé de baja del autoconsumo colectivo. En este caso, no se devuelve el Coste de Adhesión.
+        La Contratante autoriza expresamente a SOM ENERGIA, SCCL, a atribuirle un (𝜷) superior al contratado en caso de que fuese necesario para que todos los coeficientes asignados en el Acuerdo de Reparto sumen 1. En ningún caso esto supondrá un coste adicional para la Contratante.
+    </p>
+    <p>
+        En caso de modificar la 𝜷) en beneficio de la Contratante (incrementar este coeficiente a su favor sin que suponga ningún coste adicional), una vez aceptado el Acuerdo de Reparto, SOM ENERGIA, SCCL, le enviará su Contrato de Suministro actualizado. La reducción de la 𝜷) requerirá en todo caso el consentimiento de la Contratante, dicho consentimiento se otorgará mediante la firma por parte de la Contratante del Contrato de Suministro actualizado.
     </p>
     <p>
         En caso de que la compañía distribuidora requiera una acción directa por parte de la Contratante para activar o modificar el autoconsumo colectivo, como por ejemplo firmar directamente el Acuerdo de Reparto, SOM ENERGIA, SCCL, debe informar a la Contratante, que debe firmar en el plazo máximo de 5 días hábiles el Acuerdo de Reparto, o bien cualquier modificación del mismo previamente aceptada.
     </p>
     <p>
-        4.4. Para poder activar la participación de la Contratante en el autoconsumo colectivo, las Partes acuerdan la designación de SOM ENERGIA, SCCL, como <strong>representante del autoconsumo colectivo</strong>. A este fin, la Contratante se obliga a firmar el documento de designación de representante que se acompaña como <strong>Anexo II</strong> y adjuntar copia de su documento identificativo (DNI o NIE) para que SOM ENERGIA, SCCL, pueda en nombre y por cuenta de la Contratante: (i) Firmar el Acuerdo de Reparto aceptado por la Contratante. (ii) Comunicar a la distribuidora el Acuerdo de Reparto y los archivos asociados (txt u otros indicados por la normativa aplicable). (iii) Realizar todas las gestiones y comunicaciones necesarias para activar o modificar el autoconsumo colectivo. (iv) Otras actuaciones necesarias para mantener este Acuerdo operativo y optimizado.
+        4.4. Para poder activar la participación de la Contratante en el autoconsumo colectivo, las Partes acuerdan la designación de SOM ENERGIA, SCCL, como representante del autoconsumo colectivo. A este fin, la Contratante se obliga a firmar el documento de designación de representante que se acompaña como Anexo II para que SOM ENERGIA, SCCL, pueda en nombre y por cuenta de la Contratante: (i) Firmar el Acuerdo de Reparto aceptado por la Contratante. (ii) Comunicar a la distribuidora el Acuerdo de Reparto y los archivos asociados (archivos en formato txt u otros indicados por la normativa aplicable). (iii) Realizar todas las gestiones y comunicaciones necesarias para activar o modificar el autoconsumo colectivo. (iv) Otras actuaciones necesarias para mantener este Acuerdo operativo y optimizado, como enviar copia del documento identificativo (DNI o NIE) si fuera necesario y requerido por SOM ENERGIA como su representante de autoconsumo ante la distribuidora.
     </p>
     <p>
-        Asimismo, se acompaña como <strong>Anexo III</strong> la autorización a favor de SOM ENERGIA, SCCL, para dar de baja el CUPS de la Contratante del Acuerdo de Reparto firmado y del autoconsumo colectivo asociado en los casos de resolución del servicio GURB según previsto en la cláusula 5: "Finalización del servicio GURB".
+        Asimismo, se acompaña como Anexo III la autorización a favor de SOM ENERGIA, SCCL, para dar de baja el CUPS de la Contratante del Acuerdo de Reparto firmado y del autoconsumo colectivo asociado en los casos de resolución del servicio GURB según previsto en la cláusula 5: “Finalización del servicio GURB”.
     </p>
     <p>
         4.5. SOM ENERGIA, SCCL, es responsable de redactar el Acuerdo de Reparto y los archivos asociados, de recabar la aceptación de la Contratante y del resto de Participantes, de firmarlo en su nombre y de trasladarlo, en representación de todos los Participantes, a la distribuidora propietaria de la red a la que se conecta el autoconsumo colectivo, así como realizar todas las gestiones necesarias para activarlo o mantener su vigencia y actualización.
     </p>
     <p>
-        Cuando SOM ENERGIA, SCCL, solicite a la compañía distribuidora la activación del autoconsumo colectivo (con el envío del Acuerdo de Reparto y el fichero de coeficientes cumplimentado y firmado, así como el resto de documentos que la distribuidora pueda requerir), depende de la distribuidora que se active. La activación se tiene que llevar a cabo según las resoluciones de la CNMC en vigor que regulan el formato de los ficheros de intercambio de información entre distribuidoras y comercializadoras (de ahora en adelante la "<strong>Fecha de Activación</strong>"). Esta Fecha de Activación solo se puede producir una vez se ha aportado el Acuerdo de Reparto firmado por todos los Participantes.
+        Cuando SOM ENERGIA, SCCL, solicite a la compañía distribuidora la activación del autoconsumo colectivo (con el envío del Acuerdo de Reparto y el fichero de coeficientes cumplimentado y firmado, así como el resto de documentos que la distribuidora pueda requerir), depende de la distribuidora que se active. La activación se tiene que llevar a cabo según las resoluciones de la CNMC en vigor que regulan el formato de los ficheros de intercambio de información entre distribuidoras y comercializadoras (de ahora en adelante la “Fecha de Activación”). Esta Fecha de Activación solo se puede producir una vez se ha aportado el Acuerdo de Reparto firmado por todos los Participantes.
     </p>
     <p>
         SOM ENERGIA, SCCL, informará a la Contratante de la Fecha de Activación tan pronto como le sea notificada por parte de la distribuidora.
     </p>
     <p>
-        4.6. Una vez activado el autoconsumo colectivo, la normativa aplicable al autoconsumo colectivo no permite el cambio de modalidad (ni la baja del autoconsumo colectivo) ni tampoco modificar los coeficientes de reparto hasta <strong>pasados cuatro (4) meses desde la Fecha de Activación</strong> (art. 8.5 Real Decreto 244/2019 y Orden TED/1247/2021).
+        4.6. Una vez activado el autoconsumo colectivo, la normativa aplicable al autoconsumo colectivo no permite el cambio de modalidad (ni la baja del autoconsumo colectivo) ni tampoco modificar los coeficientes de reparto hasta pasados cuatro (4) meses desde la Fecha de Activación (art. 8.5 Real Decreto 244/2019 y Orden TED/1247/2021). Esto significa que el punto de suministro (CUPS) asociado a un autoconsumo colectivo seguirá asociado durante un tiempo que depende de la compañía distribuidora aún cuando la Contratante haya solicitado su baja o incluso dejado de ser titular de este CUPS).
     </p>
     <p>
         4.7. De acuerdo con el Real Decreto 244/2019, la Contratante ha sido informada de que, una vez activado el autoconsumo colectivo, las consumidoras y productoras responderán solidariamente si se incumple el Real Decreto, aceptando las consecuencias que la desconexión del citado punto pudiera comportar (en particular la imposibilidad del consumidor de adquirir energía).
@@ -337,31 +337,37 @@
         4.8. En todo caso, SOM ENERGIA, SCCL, será responsable ante la Contratante de que la Instalación cumpla con la normativa aplicable, así como disponer de las licencias, autorizaciones, derechos, contratos y seguros propios del sector. En este sentido, se compromete a velar para que el mantenimiento y operación de la Instalación se lleve a cabo con el objetivo de maximizar las horas de funcionamiento. En todo caso, la producción de la Instalación dependerá de su disponibilidad y de las horas de radiación solar, por lo que variará en el tiempo. En caso de que la indisponibilidad de la Instalación supere los 15 días naturales consecutivos, SOM ENERGIA, SCCL, no facturará a la Contratante la Cuota GURB del mes siguiente.
     </p>
     <p>
-        4.9. SOM ENERGIA, SCCL, no será responsable ante la Contratante del incumplimiento de sus obligaciones si es debido a una causa de fuerza mayor, entendiendo por "fuerza mayor" aquellos fenómenos (incluidos los casos fortuitos) naturales, artificiales, accidentes inevitables, incendios, revuelta o motín popular, actos de guerra, por imposición, norma, orden o acto de cualquier gobierno o agencia gubernamental (estatal, autonómica o local), así como de cualquier otra autoridad competente, o cualquier otra causa similar imprevisible, o si previsible, fuera inevitable, irresistible y que escape del control de SOM ENERGIA, SCCL.
+        4.9. SOM ENERGIA, SCCL, no será responsable ante la Contratante del incumplimiento de sus obligaciones si es debido a una causa de fuerza mayor, entendiendo por “fuerza mayor” aquellos fenómenos (incluidos los casos fortuitos) naturales, artificiales, accidentes inevitables, incendios, revuelta o motín popular, actos de guerra, por imposición, norma, orden o acto de cualquier gobierno o agencia gubernamental (estatal, autonómica o local), así como de cualquier otra autoridad competente, o cualquier otra causa similar imprevisible, o si previsible, fuera inevitable, irresistible y que escape del control de SOM ENERGIA, SCCL.
     </p>
 
-<h3>5. FINALITZACIÓ DEL SERVICIO GURB</h3>
+<h3>5. FINALITZACIÓN DEL SERVICIO GURB</h3>
 
     <p>
-        5.1. La Contratante puede resolver unilateralmente el servicio GURB notificando esta circunstancia a SOM ENERGIA, SCCL, con TRES (3) MESES de antelación a la fecha deseada mediante el envío de comunicación a la dirección <strong><a href="mailto:gurb@somenergia.coop">gurb@somenergia.coop</a></strong>.
+        5.1. La Contratante puede resolver unilateralmente el servicio GURB notificando esta circunstancia a SOM ENERGIA, SCCL, con TRES (3) MESES de antelación a la fecha deseada mediante el envío de comunicación a la dirección gurb@somenergia.coop. Este preaviso garantiza que SOM ENERGIA, SCCL, sólo cobrará a la Contratante la Cuota GURB durante estos 3 meses, independientemente del tiempo que la compañía distribuidora tarde en dar de baja el autoconsumo colectivo. Este importe se facturará en una única factura (la última que reciba).
     </p>
     <p>
-        SOM ENERGIA, SCCL, responderá a esta solicitud de baja informando a la Contratante de la fecha en que es posible tramitarla según los plazos previstos en el Real Decreto 244/2019 y Orden TED/1247/2021 (véase la cláusula 4.6). La fecha efectiva en que el CUPS de la Contratante se desvinculará del autoconsumo colectivo (en adelante, "<strong>Fecha de Baja</strong>") dependerá de que la Contratante aporte toda la documentación firmada que sea requerida por la distribuidora. Esta Fecha de Baja será comunicada por SOM ENERGIA, SCCL, a la Contratante tan pronto le sea notificada por la compañía distribuidora. La Contratante acepta abonar la Cuota GURB hasta la Fecha de Baja.
+        En caso de no efectuar este preaviso y llevar a cabo un cambio de comercializadora o aceptar un cambio de titular del CUPS, la Contratante abonará la Cuota GURB hasta que el autoconsumo se haya dado efectivamente de baja o el nuevo titular del CUPS haya contratado el servicio GURB.
     </p>
     <p>
-        Para que SOM ENERGIA, SCCL, pueda tramitar esta baja unilateral es un requisito esencial que la Contratante envíe la autorización de baja que se acompaña como <strong>Anexo III</strong> actualizada, así como cualquier otra documentación requerida por la compañía distribuidora como necesaria para formalizar la salida de la Contratante del autoconsumo colectivo.
+        SOM ENERGIA, SCCL, responderá a la solicitud de baja informando a la Contratante de la fecha en que es posible tramitarla según los plazos previstos en la normativa vigente (véase la cláusula 4.6).
+    </p>
+    <p>
+        La fecha efectiva en que el CUPS de la Contratante se desvinculará del autoconsumo colectivo (en adelante, “Fecha de Baja”) dependerá de que la Contratante aporte toda la documentación firmada que sea requerida por la distribuidora así como de los plazos de gestión de la propia distribuidora. Esta Fecha de Baja será comunicada por SOM ENERGIA, SCCL, a la Contratante tan pronto le sea notificada por la compañía distribuidora. La Contratante acepta abonar la Cuota GURB hasta la Fecha de Baja en caso de no haber preaviso por parte de la Contratante.
+    </p>
+    <p>
+        Para que SOM ENERGIA, SCCL, pueda tramitar esta baja unilateral es un requisito esencial que la Contratante envíe la autorización de baja que se acompaña como Anexo III actualizada, así como cualquier otra documentación requerida por la compañía distribuidora como necesaria para formalizar la salida de la Contratante del autoconsumo colectivo.
     </p>
     <p>
         5.2 Sin perjuicio de lo que indica la cláusula anterior en relación con la resolución unilateral por parte de la Contratante, son causas automáticas de resolución del servicio GURB las siguientes:
     </p>
     <p>
-        a. En caso de resolución del contrato de suministro de la Contratante con SOM ENERGIA, SCCL: en este caso, la Comercializadora informará de esta circunstancia a la Contratante, así como del inicio de los trámites para dar de baja el CUPS de la Contratante del autoconsumo colectivo. La Contratante se obliga a aportar toda la documentación que sea necesaria para materializar esta baja, así como a dar instrucciones a su nueva comercializadora, y está obligada a abonar la Cuota GURB hasta que la baja sea efectiva.
+        a. En caso de resolución del contrato de suministro de la Contratante con SOM ENERGIA, SCCL,: en este caso, la Comercializadora informará de esta circunstancia a la Contratante, así como del inicio de los trámites para dar de baja el CUPS de la Contratante del autoconsumo colectivo. La Contratante se obliga a aportar toda la documentación que sea necesaria para materializar esta baja, así como a dar instrucciones a su nueva comercializadora, y está obligada a abonar la Cuota GURB hasta que la baja sea efectiva.
     </p>
     <p>
         b. En caso de que la Contratante solicite a la compañía distribuidora la asociación de su CUPS a otra instalación de autoconsumo (individual o colectiva). En este caso, la Comercializadora informará de esta circunstancia a la Contratante, así como el inicio de los trámites para dar de baja el CUPS de la Contratante del autoconsumo colectivo. La Contratante se obliga a aportar toda la documentación que sea necesaria para materializar esta baja, así como a dar instrucciones a su nueva comercializadora, y está obligada a abonar la Cuota GURB hasta que la baja sea efectiva.
     </p>
     <p>
-        c. En caso de incumplimiento por cualquiera de las Partes de sus obligaciones, según las presentes Condiciones Específicas o según el Contrato de Suministro, en particular el incumplimiento de todas las obligaciones necesarias para activar o modificar el autoconsumo colectivo dentro de los plazos establecidos. En el supuesto de que sea la Contratante quien haya incumplido sus obligaciones, SOM ENERGIA, SCCL, no le devolverá el Coste de Adhesión y la Contratante estará obligada a abonar la Cuota GURB hasta que la baja del servicio sea efectiva.
+        c. En caso de incumplimiento por cualquiera de las Partes de sus obligaciones, según las presentes Condiciones Específicas o según el Contrato de Suministro, en particular el incumplimiento de todas o algunas de las obligaciones necesarias para activar o modificar el autoconsumo colectivo dentro de los plazos establecidos. En el supuesto de que sea la Contratante quien haya incumplido sus obligaciones, SOM ENERGIA, SCCL, no le devolverá el Coste de Adhesión y la Contratante estará obligada a abonar la Cuota GURB hasta que la baja del servicio sea efectiva.
     </p>
     <p>
         d. Cualquier otro caso previsto en este contrato o en la legislación aplicable.
@@ -373,30 +379,41 @@
 <h3>6. ADAPTACIÓN DE LA CLÁUSULA 5 "PRECIO I ACTUALITZACIÓN"</h3>
     <p>
         Las Partes acuerdan modificar la cláusula 5 del Contrato de Suministro, añadiendo un nuevo apartado 5.1 (bis) a fin de incluir el precio del servicio GURB:
+    <p>
+        “5. (bis) En caso de haber contratado el servicio GURB, la Contratante abonará, adicionalmente a la contraprestación por el suministro contratado, el precio que se detalla a continuación como contraprestación del servicio GURB, al que se deberán añadir los impuestos aplicables al tipo vigente en cada momento, así como todas las prestaciones patrimoniales y/u otras legalmente exigibles.
     </p>
     <p>
-        "En caso de haber contratado el servicio <strong>GURB</strong>, la Contratante abonará, adicionalmente a la contraprestación por el suministro contratado, el precio que se detalla a continuación como contraprestación del servicio GURB, al que se deberán añadir los impuestos aplicables al tipo vigente en cada momento, así como todas las prestaciones patrimoniales y/u otras legalmente exigibles.
-    </p>
-    <p>
-        La contraprestación por el servicio GURB consiste en un coste de adhesión (en adelante, el "<strong>Coste de Adhesión</strong>") y una cuota de servicio anual (en adelante, "<strong>Cuota GURB</strong>").
+        La contraprestación por el servicio GURB consiste en un coste de adhesión (en adelante, el “Coste de Adhesión”) y una cuota de servicio mensual (en adelante, “Cuota GURB”).
     </p>
     <p>
         1. El Coste de Adhesión es único y estará vinculado a cada Instalación. La Contratante será informada del importe de este Coste de Adhesión en el momento de la contratación del servicio GURB, y quedará recogido en las Condiciones Particulares. Este importe se devuelve solamente en los casos previstos en estas Condiciones Específicas.
     </p>
     <p>
-        El Coste de Adhesión es abonado por la Contratante mediante tarjeta bancaria para poder acabar el formulario de contratación, y la factura se tiene que acompañar al correo electrónico de bienvenida que recibe una vez acabada la contratación.
+        La Contratante ha de abonar el Coste de Adhesión para poder acabar el formulario de contratación, de acuerdo con las instrucciones de pago recogidas en el propio formulario. Recibirá la factura correspondiente adjunta al correo electrónico de bienvenida que recibirá una vez acabada la contratación.
     </p>
     <p>
-        2. El importe de la Cuota GURB depende de la Potencia GURB contratada (kW contratados) y de la tipología de autoconsumo colectivo de la Instalación. La Contratante tiene que ser informada del importe de esta Cuota GURB en el momento de la contratación del servicio GURB, y tiene que quedar recogida a las Condiciones Particulares.
+        La Contratante estará exenta de abonar el Coste de Adhesión en 2 casos:
     </p>
     <p>
-        La Cuota GURB es exigible a partir de la primera factura a emitir (según el Contrato de Suministro) posterior a la Fecha de Activación, y se facturará prorrateada por el número de días que incluya la factura de suministro, considerando el día inicial de lectura a facturar excluido y el de lectura final incluido.
+        (i) El CUPS objeto del Contrato de Suministro ya está asociado a un autoconsumo colectivo GURB.
+    </p>
+    <p>
+        (ii) La Contratante informa a SOM ENERGIA, SCCL, de su voluntad de resolver el Contrato de Suministro debido a un cambio de domicilio y solicita que su nuevo suministro se asocie al autoconsumo colectivo de la Instalación (por encontrarse dentro del perímetro de 2 kms), SOM ENERGIA, SCCL, no le cobrará de nuevo el Coste de Adhesión. En todo caso, la Contratante deberá continuar abonando la Cuota GURB respecto al CUPS inicial en las mismas condiciones que cualquier otra baja (tres meses si ha preavisado o bien hasta que la baja del CUPS sea efectiva).
+    </p>
+    <p>
+        2. El importe de la Cuota GURB depende de la Potencia GURB contratada (kW contratados) y de la tipología de autoconsumo colectivo de la Instalación. La Contratante será informada del importe de esta Cuota GURB en el momento de la contratación del servicio GURB, y tiene que quedar recogida a las Condiciones Particulares.
+    </p>
+    <p>
+        La Cuota GURB es exigible a partir de la primera factura a emitir (según el Contrato de Suministro) posterior a la Fecha de Activación, y se facturará prorrateada por el número de días que incluya la factura de suministro, considerando el día inicial de lectura a facturar excluido y el de lectura final incluido y, conforme la cláusula 7 de las Condiciones Generales de Contratación.
     </p>
     <p>
         La Cuota GURB puede variar durante la vigencia del Contrato de Suministro en los términos establecidos en la cláusula 5.3 (ii) de las Condiciones Generales.
     </p>
     <p>
-        El Coste de Adhesión, la Cuota GURB, las características del servicio GURB contratado (la Potencia GURB, la tipología del autoconsumo colectivo al que quedará asociado el CUPS de la Contratante y la beta), aceptadas por la Contratante en el formulario de contratación serán las recogidas en las Condiciones Particulares. Así mismo, los impuestos y todas las prestaciones patrimoniales y/u otros exigibles legalmente."
+        El Coste de Adhesión, la Cuota GURB, las características del servicio GURB contratado (la Potencia GURB, la tipología del autoconsumo colectivo al que quedará asociado el CUPS de la Contratante y la 𝜷), aceptadas por la Contratante en el formulario de contratación serán las recogidas en las Condiciones Particulares. Así mismo, los impuestos y todas las prestaciones patrimoniales y/u otros exigibles legalmente.
+    </p>
+    <p>
+        En caso de que el CUPS contratado esté también asociado al Precio Generation kWh éste será de aplicación prioritaria respecto a cualquier otra tarifa contratada, si bien se aplicará únicamente al consumo (kWh) proveniente del sistema Generation kWh. La facturación del Precio Generation kWh se hará sobre el consumo correspondiente expresado en kWh enteros, sin decimales.”
     </p>
 
 <h3>7. INCORPORACIÓN DE UNA NUEVA CLÀUSULA 7.1 (BIS) "FACTURACIÓN Y PAGO"</h3>
@@ -404,19 +421,19 @@
         Las Partes acuerdan modificar la cláusula 7 del Contrato de Suministro, añadiendo un nuevo apartado 7.1 (bis) a fin de regular la facturación del servicio GURB:
     </p>
     <p>
-        "<strong>7.1 (bis)</strong> La energía correspondiente al coeficiente de reparto asignado a la Contratante aparecerá en su factura de suministro eléctrico a partir del primer día del ciclo de facturación posterior a la Fecha de Activación, de acuerdo con las lecturas reales informadas por el encargado de la lectura.
+        “7.1 (bis) La energía correspondiente al coeficiente de reparto asignado a la Contratante aparecerá en su factura de suministro eléctrico a partir del primer día del ciclo de facturación posterior a la Fecha de Activación, de acuerdo con las lecturas reales informadas por el encargado de la lectura.
     </p>
     <p>
         Esta factura incluirá también la Cuota GURB, los importes a abonar por la utilización de la red propiedad de la distribuidora, de acuerdo con el artículo 9.5 de la Ley 24/2013, de 26 de diciembre, así como otros importes regulados que se puedan regular a cargo de cada punto de suministro como consecuencia de la activación, modificación o baja del autoconsumo.
     </p>
     <p>
-        Estos importes se repercutirán en la factura a la Contratante según las lecturas reales informadas por el encargado de la lectura. En caso de falta de lecturas reales más allá de CUATRO (4) meses, SOM ENERGIA, SCCL, podrá facturar estos importes según un cálculo estimado basado en la información facilitada directamente por el equipo de medida de la Instalación."
+        Estos importes se repercutirán en la factura a la Contratante según las lecturas reales informadas por el encargado de la lectura. En caso de falta de lecturas reales más allá de CUATRO (4) meses, SOM ENERGIA, SCCL, podrá facturar estos importes según un cálculo estimado basado en la información facilitada directamente por el equipo de medida de la Instalación.”
     </p>
 
 <h3>8. PREVALENCIA DE LAS PRESENTES CONDICIONES ESPECÍFICAS SOBRE LA CLÁUSULA 8: "AUTOCONSUMO"</h3>
 
     <p>
-        La cláusula 8, "Autoconsumo", de las Condiciones Generales del Contrato de Suministro regula la relación de SOM ENERGIA, SCCL, y la Contratante en relación con las instalaciones de autoconsumo titularidad de esta última. Esta cláusula se aplica de manera subsidiaria al contenido de estas Condiciones Específicas.
+        La cláusula 8, “Autoconsumo”, de las Condiciones Generales del Contrato de Suministro regula la relación de SOM ENERGIA, SCCL, y la Contratante en relación con las instalaciones de autoconsumo titularidad de esta última. Esta cláusula se aplica de manera subsidiaria al contenido de estas Condiciones Específicas.
     </p>
     <p>
         En todo caso, cuando en las Condiciones Particulares conste que la Instalación de autoconsumo colectivo sea con compensación simplificada de excedentes, se aplicarán a la Contratante las cláusulas (i) 8.5, que regula la aplicación de la compensación simplificada, y que damos por reproducida, y (ii) 8.6 en relación con el descuento Flux Solar.
@@ -429,10 +446,10 @@
     </p>
 
     <p>
-        "15.2.(bis) A fin de poder hacer efectiva la contratación del servicio GURB solicitado por la Contratante, la normativa aplicable exige entregar a la distribuidora un Acuerdo de Reparto de excedentes donde consten el nombre completo, DNI, CUPS y firma de todos los participantes. La Contratante acepta expresamente la cesión de estos datos personales al resto de participantes y a la distribuidora, y se obliga igualmente a mantener absoluta confidencialidad sobre los datos personales a los que tendrá acceso con motivo de la firma de este Acuerdo de Reparto.
+        “15.2.(bis) A fin de poder hacer efectiva la contratación del servicio GURB solicitado por la Contratante, la normativa aplicable exige entregar a la distribuidora un Acuerdo de Reparto de excedentes donde consten el nombre completo, DNI, CUPS y firma de todos los participantes. La Contratante acepta expresamente la cesión de estos datos personales al resto de participantes y a la distribuidora, y se obliga igualmente a mantener absoluta confidencialidad sobre los datos personales a los que tendrá acceso con motivo de la firma de este Acuerdo de Reparto.
     </p>
     <p>
-        Así mismo, se informa a la Contratante de que el responsable del tratamiento de tus datos es SOM ENERGIA, SCCL, y que la finalidad de su tratamiento es gestionar y tramitar el autoconsumo contratado sobre la base del acuerdo contractual firmado entre ambas partes. Excepto la obligada cesión indicada, sus datos no serán cedidos, excepto en los supuestos legalmente exigidos y solo se conservarán mientras la relación contractual esté vigente y, una vez finalizada esta, dentro de los plazos legales previstos. Puede retirar su consentimiento en cualquier momento y ejercer su derecho de acceso, rectificación, supresión, portabilidad, limitación y oposición dirigiéndose a somenergia@delegado-datos.com (delegado de protección de datos). En caso de divergencias, puede presentar una reclamación ante la Agencia de Protección de Datos (www.aepd.es)."
+        Así mismo, se informa a la Contratante de que el responsable del tratamiento de sus datos es SOM ENERGIA, SCCL, y que la finalidad de su tratamiento es gestionar y tramitar el autoconsumo contratado sobre la base del acuerdo contractual firmado entre ambas partes. Excepto la obligada cesión indicada, sus datos no serán cedidos, excepto en los supuestos legalmente exigidos y solo se conservarán mientras la relación contractual esté vigente y, una vez finalizada esta, dentro de los plazos legales previstos. Puede retirar su consentimiento en cualquier momento y ejercer su derecho de acceso, rectificación, supresión, portabilidad, limitación y oposición dirigiéndose a somenergia@delegado-datos.com (delegado de protección de datos). En caso de divergencias, puede presentar una reclamación ante la Agencia de Protección de Datos (www.aepd.es).”
     </p>
     <p>
         SOM ENERGIA, SCCL, ha puesto a disposición de la Contratante estas Condiciones Específicas previamente a su contratación a través de su página web www.somenergia.coop. Estas han sido subscritas mediante sistemas de contratación electrónica, y se ha emitido un ejemplar en soporte duradero a la Contratante una vez finalizada la contratación.
