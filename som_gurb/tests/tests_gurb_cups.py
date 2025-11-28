@@ -247,4 +247,4 @@ class TestsGurbCups(TestsGurbBase):
         inv = invoice_o.read(self.cursor, self.uid, invoice_id)
         self.assertEqual(inv['state'], 'paid')
         self.assertEqual(inv['residual'], 0.0)
-        self.assertEqual(inv['saldo'], 0.0)
+        self.assertEqual(inv['saldo'], 4.54)

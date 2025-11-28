@@ -253,7 +253,7 @@ class SomGurbCups(osv.osv):
 
         # Creem factura
         context["tpv"] = True
-        inv_id, err = self.create_initial_invoice(cursor, uid, gurb_cups_id, context=context)[0]
+        inv_id, err = self.create_initial_invoice(cursor, uid, gurb_cups_id, context=context)
         invoice_o.browse(cursor, uid, inv_id)
 
         # Paguem factura
