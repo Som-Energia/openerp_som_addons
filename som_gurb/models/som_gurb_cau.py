@@ -53,6 +53,20 @@ class SomGurbCau(osv.osv):
 
         return res_id
 
+    def unlink(self, cursor, uid, ids, context={}):
+        gurb_cups_obj = self.pool.get("som.gurb.cups")
+        for gurb_cau_id in ids:
+            gurb_cups_ids = gurb_cups_obj.search(
+                cursor, uid, [("gurb_cau_id", "=", gurb_cau_id)], context=context
+            )
+            if gurb_cups_ids:
+                raise osv.except_osv(
+                    _('Error !'),
+                    _('No pots eliminar un GURB CAU amb GURB CUPS!')
+                )
+            else:
+                return super(SomGurbCau, self).unlink(cursor, uid, ids, context=context)
+
     def get_gurb_products_ids(self, cursor, uid, context=None):
         if context is None:
             context = {}
