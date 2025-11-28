@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+    <data>
+        <record model="product.pricelist" id="pricelist_tarifas_electricidad_20TD_SOM_test">
+            <field name="name">2.0TD_SOM</field>
+            <field name="type">sale</field>
+            <field name="active">True</field>
+            <field name="tarifes_atr_compatibles" eval="[(4, ref('giscedata_polissa.tarifa_20TD'))]"/>
+            <field name="compatible_invoicing_modes" eval="[(4, ref('giscedata_facturacio.mode_facturacio_atr'))]"/>
+            <field name="next_pricelist_id" ref="som_indexada.pricelist_periodes_20td_peninsula"/>
+        </record>
+        <record model="product.pricelist" id="pricelist_tarifas_electricidad_20TD_SOM_INSULAR_test">
+            <field name="name">2.0TD_SOM_INSULAR</field>
+            <field name="type">sale</field>
+            <field name="active">True</field>
+            <field name="tarifes_atr_compatibles" eval="[(4, ref('giscedata_polissa.tarifa_20TD'))]"/>
+            <field name="compatible_invoicing_modes" eval="[(4, ref('giscedata_facturacio.mode_facturacio_atr'))]"/>
+            <field name="next_pricelist_id" ref="som_indexada.pricelist_periodes_20td_peninsula"/>
+        </record>
+        <record model="product.pricelist" id="pricelist_indexada_20TD_peninsula_test">
+            <field name="name">Indexada 2.0TD Península</field>
+            <field name="type">sale</field>
+            <field name="active">True</field>
+            <field name="tarifes_atr_compatibles" eval="[(4, ref('giscedata_polissa.tarifa_20TD'))]"/>
+            <field name="compatible_invoicing_modes" eval="[(4, ref('giscedata_facturacio_indexada.mode_facturacio_index'))]"/>
+            <field name="next_pricelist_id" ref="som_indexada.pricelist_indexada_20td_peninsula"/>
+        </record>
+        <record model="product.pricelist" id="pricelist_indexada_20TD_balears_test">
+            <field name="name">Indexada 2.0TD Balears</field>
+            <field name="type">sale</field>
+            <field name="active">True</field>
+            <field name="tarifes_atr_compatibles" eval="[(4, ref('giscedata_polissa.tarifa_20TD'))]"/>
+            <field name="compatible_invoicing_modes" eval="[(4, ref('giscedata_facturacio_indexada.mode_facturacio_index'))]"/>
+            <field name="next_pricelist_id" ref="som_indexada.pricelist_indexada_20td_peninsula"/>
+        </record>
+        <record model="product.pricelist" id="pricelist_indexada_20TD_canaries_test">
+            <field name="name">Indexada 2.0TD Canàries</field>
+            <field name="type">sale</field>
+            <field name="active">True</field>
+            <field name="tarifes_atr_compatibles" eval="[(4, ref('giscedata_polissa.tarifa_20TD'))]"/>
+            <field name="compatible_invoicing_modes" eval="[(4, ref('giscedata_facturacio_indexada.mode_facturacio_index'))]"/>
+            <field name="next_pricelist_id" ref="som_indexada.pricelist_indexada_20td_peninsula"/>
+        </record>
+        <!-- Tarifes socials -->
+        <record model="product.pricelist" id="pricelist_tarifas_electricidad_20TD_SOM_SOCIAL_test">
+            <field name="name">2.0TD_SOM_SOCIAL</field>
+            <field name="type">sale</field>
+            <field name="active">True</field>
+            <field name="tarifes_atr_compatibles" eval="[(4, ref('giscedata_polissa.tarifa_20TD'))]"/>
+            <field name="compatible_invoicing_modes" eval="[(4, ref('giscedata_facturacio.mode_facturacio_atr'))]"/>
+            <field name="next_pricelist_id" ref="som_indexada.pricelist_periodes_20td_peninsula"/>
+        </record>
+        <record model="product.pricelist" id="pricelist_indexada_20TD_peninsula_social_test">
+            <field name="name">2.Indexada 2.0TD Península SOCIAL</field>
+            <field name="type">sale</field>
+            <field name="active">True</field>
+            <field name="tarifes_atr_compatibles" eval="[(4, ref('giscedata_polissa.tarifa_20TD'))]"/>
+            <field name="compatible_invoicing_modes" eval="[(4, ref('giscedata_facturacio_indexada.mode_facturacio_index'))]"/>
+            <field name="next_pricelist_id" ref="som_indexada.pricelist_indexada_20td_peninsula"/>
+        </record>
+    </data>
+</openerp>

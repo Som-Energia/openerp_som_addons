@@ -248,7 +248,6 @@ def contractes_estimats_no_refactures(cur):
              ('origen_comer_id','=', 6)])
         if not l_ids:
             continue
-        import pudb;pu.db
         pol_ids.append(pol_id)"""
 
     return len(pol_ids)
