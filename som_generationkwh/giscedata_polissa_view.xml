@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+<openerp>
+    <data>
+        <record model="ir.ui.view" id="view_polissa_te_gkwh_form">
+            <field name="name">giscedata.polissa.te.gkwh.form</field>
+            <field name="model">giscedata.polissa</field>
+            <field name="inherit_id" ref="som_polissa_soci.view_giscedata_polissa_form_donatiu"/>
+            <field name="type">form</field>
+            <field name="priority">100</field>
+            <field name="arch" type="xml">
+                <field name="donatiu" position="after">
+                    <field name="te_assignacio_gkwh" readonly="1" select="2"/>
+                </field>
+            </field>
+        </record>
+        <record model="ir.ui.view" id="giscedata_polissa_gkwh_auto_tree">
+            <field name="name">giscedata.polissa.gkwh.auto.tree</field>
+            <field name="model">giscedata.polissa</field>
+            <field name="type">tree</field>
+            <field name="inherit_id" ref="giscedata_facturacio.giscedata_polissa_facturacio_tree"/>
+            <field name="arch" type="xml">
+                <field name="lectura_en_baja" position="after" >
+                    <field name="te_assignacio_gkwh"/>
+                </field>
+            </field>
+        </record>
+    </data>
+</openerp>

@@ -1,0 +1,473 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<openerp>
+    <data>
+        <!--Emissions-->
+        <record id="emissio_0001" model="generationkwh.emission">
+            <field name="name">GenerationkWH</field>
+            <field name="code">GKWH_201506</field>
+            <field name="start_date">2015-06-19</field>
+            <field name="amount_emission">0</field>
+            <field name="state">open</field>
+            <field name="type">genkwh</field>
+            <field name="grace_period">2</field>
+            <field name="expiration_years">25</field>
+            <field name="waiting_days">365</field>
+            <field name="mandate_name">PRESTEC GENERATION kWh</field>
+            <field name="journal_id" model="account.journal"
+                search="[('code','=','GENKWH')]" />
+            <field name="investment_product_id" model="product.product"
+                search="[('default_code','=','GENKWH_AE')]" />
+            <field name="amortization_product_id" model="product.product"
+                search="[('default_code','=','GENKWH_AMOR')]" />
+            <field name="irpf_product_id" model="product.product"
+                search="[('default_code','=','GENKWH_IRPF')]" />
+                <field name="investment_payment_mode_id" model="payment.mode"
+                search="[('name','=','GENERATION kWh')]" />
+            <field name="amortization_payment_mode_id" model="payment.mode"
+                search="[('name','=','GENERATION kWh AMOR')]" />
+            <field name="bridge_account_payments_id" model="account.account"
+                search="[('code','=','555000000004')]" />
+        </record>
+        <record id="emissio_apo2" model="generationkwh.emission">
+            <field name="name">Aportacions Juny</field>
+            <field name="code">APO_202006</field>
+            <field name="start_date">2020-06-01</field>
+            <field name="amount_emission">3000000</field>
+            <field name="state">open</field>
+            <field name="type">apo</field>
+            <field name="grace_period">1</field>
+            <field name="expiration_years">0</field>
+            <field name="waiting_days">0</field>
+            <field name="mandate_name">PRESTEC Aportacions</field>
+            <field name="journal_id" model="account.journal"
+                   search="[('code','=','APO')]" />
+            <field name="investment_product_id" model="product.product"
+                   search="[('default_code','=','APO_AE')]" />
+            <field name="investment_payment_mode_id" model="payment.mode"
+                   search="[('name','=','APORTACIONS (Enginyers)')]" />
+            <field name="bridge_account_payments_id" ref="pgc_555000000011" />
+        </record>
+
+        <!-- Partner -->
+        <record id="res_partner_inversor1" model="res.partner">
+            <field name="name">Gil, Pere</field>
+            <field name="ref">S202001</field>
+            <field name="vat">ES13900056Y</field>
+            <field name="date">2017-01-01</field>
+        </record>
+        <record id="res_partner_address_inversor1" model="res.partner.address">
+            <field name="city">Berga</field>
+            <field name="name">Adreça Pere Gil</field>
+            <field name="zip">08600</field>
+            <field name="title">M.</field>
+            <field name="country_id" model="res.country" search="[('name','=','Espanya')]"/>
+            <field name="street">Major, 3</field>
+            <field name="type">default</field>
+            <field name="email">test@test.test</field>
+            <field name="partner_id" ref="res_partner_inversor1"/>
+        </record>
+        <record model="res.partner.bank" id="partner_bank1">
+            <field name="iban">ES7712341234161234567890</field>
+            <field name="state">iban</field>
+            <field name="partner_id" ref="res_partner_inversor1"></field>
+        </record>
+        <record id="soci_0001" model="somenergia.soci">
+            <field name="partner_id" ref="res_partner_inversor1"/>
+            <field name="baixa">False</field>
+        </record>
+
+        <!-- Clienta no sòcia -->
+        <record id="res_partner_noinversor1" model="res.partner">
+            <field name="name">Puig, Anna</field>
+        </record>
+        <record id="res_partner_address_noinversor1" model="res.partner.address">
+                <field name="city">Solsona</field>
+                <field name="name">Adreça Anna Puig</field>
+                <field name="zip">25280</field>
+                <field name="title">Ms.</field>
+                <field name="country_id" model="res.country" search="[('name','=','Espanya')]"/>
+                <field name="street">Major, 3</field>
+                <field name="type">default</field>
+                <field name="partner_id" ref="res_partner_noinversor1"/>
+        </record>
+
+        <!-- Sòcia no inversora -->
+        <record id="res_partner_noinversor2" model="res.partner">
+            <field name="name">Lovelace, Ada</field>
+            <field name="ref">S202003</field>
+            <field name="vat">ES27686262N</field>
+        </record>
+        <record id="res_partner_address_noinversor2" model="res.partner.address">
+            <field name="city">Atzeneta del Maestrat</field>
+            <field name="name">Adreça Ada Lovelace</field>
+            <field name="zip">12132</field>
+            <field name="title">Ms.</field>
+            <field name="country_id" model="res.country" search="[('name','=','Espanya')]"/>
+            <field name="street">Avinguda de Meanes, 2</field>
+            <field name="type">default</field>
+            <field name="partner_id" ref="res_partner_noinversor2"/>
+        </record>
+        <record id="soci_0003" model="somenergia.soci">
+            <field name="partner_id" ref="res_partner_noinversor2"/>
+            <field name="baixa">False</field>
+        </record>
+
+        <!-- Sòcia inversora 2 -->
+        <record id="res_partner_inversor2" model="res.partner">
+            <field name="name">Associació Morera Montsant</field>
+            <field name="ref">S202002</field>
+            <field name="vat">ESG57756397</field>
+        </record>
+        <record id="res_partner_address_inversor2" model="res.partner.address">
+            <field name="city">La Morera de Montsant</field>
+            <field name="name">Adreça Maria Pi</field>
+            <field name="zip">43361</field>
+            <field name="title">Ms.</field>
+            <field name="country_id" model="res.country" search="[('name','=','Espanya')]"/>
+            <field name="street">Carrer Major, 6</field>
+            <field name="type">default</field>
+            <field name="partner_id" ref="res_partner_inversor2"/>
+        </record>
+        <record model="res.partner.bank" id="partner_bank2">
+            <field name="iban">ES7712341234161234567890</field>
+            <field name="state">iban</field>
+            <field name="partner_id" ref="res_partner_inversor2"></field>
+        </record>
+        <record id="soci_0002" model="somenergia.soci">
+            <field name="partner_id" ref="res_partner_inversor2"/>
+            <field name="baixa">False</field>
+       </record>
+
+        <!-- Sòcia inversora de només aportacions -->
+        <record id="res_partner_aportacions" model="res.partner">
+            <field name="name">Alina Aníssimova</field>
+            <field name="ref">S202003</field>
+            <field name="vat">ES16405474B</field>
+            <field name="date">2017-01-01</field>
+        </record>
+        <record id="res_partner_address_aportacions" model="res.partner.address">
+            <field name="city">Deltebre</field>
+            <field name="name">Esperança, 8</field>
+            <field name="zip">43580</field>
+            <field name="title">Ms.</field>
+            <field name="country_id" model="res.country" search="[('name','=','Espanya')]"/>
+            <field name="street">Esperança, 8</field>
+            <field name="type">default</field>
+            <field name="partner_id" ref="res_partner_aportacions"/>
+        </record>
+        <record model="res.partner.bank" id="partner_bank_aportacions">
+            <field name="iban">ES3701517119600211219240</field>
+            <field name="state">iban</field>
+            <field name="partner_id" ref="res_partner_aportacions"></field>
+        </record>
+        <record id="res_partner_aportacions" model="res.partner">
+            <field name="bank_inversions" ref="partner_bank_aportacions" />
+        </record>
+        <record id="soci_aportacions" model="somenergia.soci">
+            <field name="partner_id" ref="res_partner_aportacions"/>
+            <field name="baixa">False</field>
+       </record>
+
+        <!-- Sòcia inversora de només generationkwh -->
+        <record id="res_partner_generation" model="res.partner">
+            <field name="name">Kathleen McNulty Mauchly Antonelli</field>
+            <field name="ref">S202004</field>
+            <field name="vat">ES93646384K</field>
+            <field name="date">2017-01-01</field>
+            <field name="data_baixa">2022-01-01</field>
+        </record>
+        <record id="res_partner_address_generation" model="res.partner.address">
+            <field name="city">Arbeca</field>
+            <field name="name">Carrer de Lleida, 32</field>
+            <field name="zip">25140</field>
+            <field name="title">Ms.</field>
+            <field name="country_id" model="res.country" search="[('name','=','Espanya')]"/>
+            <field name="street">Carrer de Lleida, 32</field>
+            <field name="type">default</field>
+            <field name="partner_id" ref="res_partner_generation"/>
+        </record>
+        <record model="res.partner.bank" id="partner_bank_generation">
+            <field name="iban">ES3502243156350965980326</field>
+            <field name="state">iban</field>
+            <field name="partner_id" ref="res_partner_aportacions"></field>
+        </record>
+        <record id="soci_generation" model="somenergia.soci">
+            <field name="partner_id" ref="res_partner_generation"/>
+            <field name="baixa">False</field>
+       </record>
+
+        <!--Inversions-->
+        <record id="genkwh_0001" model="generationkwh.investment">
+            <field name="name">GKWH00001</field>
+            <field name="nshares">10</field>
+            <field name="member_id" ref="soci_0001"/>
+            <field name="active">False</field>
+            <field name="order_date">2019-10-01</field>
+            <field name="emission_id" ref='emissio_genkwh' />
+        </record>
+        <record id="genkwh_0002" model="generationkwh.investment">
+            <field name="name">GKWH00002</field>
+            <field name="nshares">10</field>
+            <field name="member_id" ref="soci_0001"/>
+            <field name="active">True</field>
+            <field name="draft">False</field>
+            <field name="amortized_amount">0</field>
+            <field name="order_date">2019-10-01</field>
+            <field name="signed_date">2019-10-02</field>
+            <field name="purchase_date">2019-10-12</field>
+            <field name="first_effective_date">2020-10-12</field>
+            <field name="last_effective_date">2044-10-12</field>
+            <field name="emission_id" ref='emissio_genkwh' />
+        </record>
+        <record id="genkwh_0003" model="generationkwh.investment">
+            <field name="name">GKWH00003</field>
+            <field name="nshares">5</field>
+            <field name="member_id" ref="soci_generation"/>
+            <field name="active">True</field>
+            <field name="draft">False</field>
+            <field name="amortized_amount">0</field>
+            <field name="order_date">2019-11-01</field>
+            <field name="signed_date">2019-11-02</field>
+            <field name="purchase_date">2019-11-12</field>
+            <field name="first_effective_date">2020-11-12</field>
+            <field name="last_effective_date">2044-11-12</field>
+            <field name="emission_id" ref='emissio_genkwh' />
+        </record>
+        <record id="apo_0001" model="generationkwh.investment">
+            <field name="name">APO00001</field>
+            <field name="nshares">10</field>
+            <field name="member_id" ref="soci_0001"/>
+            <field name="active">False</field>
+            <field name="order_date">2020-03-04</field>
+            <field name="draft">False</field>
+            <field name="emission_id" ref='emissio_apo' />
+        </record>
+        <record id="apo_0002" model="generationkwh.investment">
+            <field name="name">APO00002</field>
+            <field name="nshares">50</field>
+            <field name="member_id" ref="soci_0001"/>
+            <field name="active">False</field>
+            <field name="order_date">2020-06-01</field>
+            <field name="emission_id" ref='emissio_apo2' />
+        </record>
+        <record id="apo_0003" model="generationkwh.investment">
+            <field name="name">APO00003</field>
+            <field name="nshares">10</field>
+            <field name="member_id" ref="soci_aportacions"/>
+            <field name="active">True</field>
+            <field name="order_date">2020-03-04</field>
+            <field name="purchase_date">2020-03-12</field>
+            <field name="first_effective_date">2020-03-12</field>
+            <field name="draft">False</field>
+            <field name="emission_id" ref='emissio_apo' />
+        </record>
+        <record id="res_bank_1234" model="res.bank">
+            <field name="name">TestBank</field>
+            <field name="lname">TestBank</field>
+            <field name="code">1234</field>
+            <field name="vat">Q2170296D</field>
+            <field name="bic">TESTBANKXXX</field>
+            <field name="street">Street test</field>
+            <field name="city">Olot</field>
+            <field name="zip">17800</field>
+            <field name="active">True</field>
+            <field name="state" ref="l10n_ES_toponyms.ES17"/>
+            <field name="country" ref="base.es"/>
+        </record>
+        <record id="assignment_0001" model="generationkwh.assignment">
+            <field name="contract_id" ref="giscedata_polissa.polissa_0001"/>
+            <field name="member_id" ref="soci_0001"/>
+            <field name="priority">1</field>
+        </record>
+        <!-- Per crear mandatos -->
+        <record model="res.request.link" id="res_partner_document">
+            <field name="name">Partner</field>
+            <field name="object">res.partner</field>
+        </record>
+        <record model="poweremail.core_accounts" id="generation_mail_account">
+            <field name="email_id">generationkwh@somenergia.coop</field>
+            <field name="company">yes</field>
+            <field name="smtpserver">smtp.mandrillapp.com</field>
+            <field name="send_pref">html</field>
+            <field name="name">Generation kWh</field>
+            <field name="state">approved</field>
+            <field name="smtpport">587</field>
+        </record>
+
+        <record id="res_partner_inversor1" model="res.partner">
+            <field name="bank_inversions" ref="partner_bank1"></field>
+        </record>
+        <!-- Inversions velles -->
+        <record id="fiscalyear_2017" model="account.fiscalyear">
+            <field name="name">Fiscal Year 2017</field>
+            <field name="code">FY2017</field>
+            <field name="date_start">2017-01-01</field>
+            <field name="date_stop">2017-12-31</field>
+            <field name="state">draft</field>
+        </record>
+        <record id="period_012017" model="account.period">
+            <field name="view_id">1</field>
+            <field name="name">Jan.2017</field>
+            <field name="date_start">2017-01-01</field>
+            <field name="date_stop">2017-01-31</field>
+            <field name="state">draft</field>
+            <field name="fiscalyear_id" ref="fiscalyear_2017"></field>
+        </record>
+        <record id="journal_old_investments" model="account.journal">
+            <field name="view_id">1</field>
+            <field name="sequence_id" ref="account.sequence_journal"/>
+            <field name="name">ENGINYERS - INVERSIONS</field>
+            <field name="type">cash</field>
+            <field name="code">ENGI-INVERSIONS</field>
+            <field name="active">True</field>
+        </record>
+        <record id="journal_aportacions" model="account.journal">
+            <field name="view_id">1</field>
+            <field name="sequence_id" ref="account.sequence_journal"/>
+            <field name="name">Factures Liquidació Aportacions</field>
+            <field name="type">cash</field>
+            <field name="code">APO</field>
+            <field name="active">True</field>
+        </record>
+        <record id="account_res_partner_inversor2" model="account.account">
+            <field name="code">163000202002</field>
+            <field name="user_type">1</field>
+            <field name="name">Associació Morera Montsant</field>
+            <field name="company_id">1</field>
+            <field name="currency_mode">current</field>
+            <field name="type">other</field>
+        </record>
+        <record id="account_caixa_aportacions" model="account.account">
+            <field name="code">572000000008</field>
+            <field name="user_type">1</field>
+            <field name="name">ENGINYERS (inversions)</field>
+            <field name="company_id">1</field>
+            <field name="currency_mode">current</field>
+            <field name="type">other</field>
+        </record>
+        <record id="account_move_old_investment1" model="account.move">
+            <field name="account_id" ref="account_res_partner_inversor2"></field>
+            <field name="partner_id" ref="res_partner_inversor2"></field>
+            <field name="period_id" ref="period_012017" />
+            <field name="date">2017-01-15</field>
+            <field name="name">/</field>
+            <field name="state">draft</field>
+            <field name="journal_id" ref="journal_old_investments"/>
+        </record>
+        <record id="account_move_line_old_investment1_d" model="account.move.line">
+            <field name="account_id" ref="account_res_partner_inversor2"></field>
+            <field name="partner_id" ref="res_partner_inversor2"></field>
+            <field name="move_id" ref="account_move_old_investment1"></field>
+            <field name="period_id" ref="period_012017"></field>
+            <field name="name">/</field>
+            <field name="date">2017-01-15</field>
+            <field name="credit">5000.0</field>
+            <field name="debit">0.0</field>
+            <field name="journal_id" ref="journal_old_investments"/>
+        </record>
+        <record id="account_move_line_old_investment1_h" model="account.move.line">
+            <field name="account_id" ref="account_caixa_aportacions"></field>
+            <field name="partner_id" ref="res_partner_inversor2"></field>
+            <field name="move_id" ref="account_move_old_investment1"></field>
+            <field name="period_id" ref="period_012017"></field>
+            <field name="name">/</field>
+            <field name="date">2017-01-15</field>
+            <field name="debit">5000.0</field>
+            <field name="credit">0.0</field>
+            <field name="journal_id" ref="journal_old_investments"/>
+        </record>
+        <record id="giscedata_polissa.polissa_0001" model="giscedata.polissa">
+            <field name="titular" ref="res_partner_inversor1"></field>
+        </record>
+        <record id="invoice_GKWH00002" model="account.invoice">
+            <field name="name">GKWH00002-JUST</field>
+            <field name="origin">GKWH00002</field>
+            <field name="type">out_invoice</field>
+            <field name="state">paid</field>
+            <field name="date_invoice">2016-02-29</field>
+            <field name="partner_id" ref="res_partner_inversor1"/>
+            <field name="address_invoice_id" ref="res_partner_address_inversor1"/>
+            <field name="period_id" ref="account.period_1"/>
+            <field name="account_id" ref="account.a_recv"/>
+            <field name="origin_date_invoice">2015-10-09</field>
+            <field name="reference">GISCE</field>
+        </record>
+        <record id="invoice_APO00003_INT2020" model="account.invoice">
+            <field name="name">APO00003-INT2020</field>
+            <field name="number">APO00003-INT2020</field>
+            <field name="origin">APO00003</field>
+            <field name="type">out_invoice</field>
+            <field name="state">paid</field>
+            <field name="date_invoice">2020-06-30</field>
+            <field name="partner_id" ref="res_partner_aportacions"/>
+            <field name="address_invoice_id" ref="res_partner_address_aportacions"/>
+            <field name="period_id" ref="account.period_1"/>
+            <field name="account_id" ref="account.a_recv"/>
+            <field name="origin_date_invoice">2020-06-30</field>
+            <field name="reference">GISCE</field>
+        </record>
+        <record id="linia_factura_01" model="giscedata.facturacio.factura.linia">
+            <field name="name">Linia 01</field>
+            <field name="product_id" ref="giscedata_polissa.p1_e_tarifa_20TD_product_product"/>
+            <field name="account_id" search="[('code', '=', '700000')]" model="account.account"/>
+            <field name="tipus">energia</field>
+            <field name="price_unit_multi" eval="10.0"/>
+            <field name="multi" eval="1"/>
+            <!--<field name="uom_multi_id"></field>-->
+            <field name="factura_id" ref="giscedata_facturacio.factura_0001"/>
+            <!--<field name="invoice_line_id"></field>-->
+            <!--<field name="cosfi"></field>-->
+            <field name="data_desde">2016-01-01</field>
+            <!--<field name="data_fins"></field>-->
+        </record>
+        <record id="linia_factura_gkwh_0001" model="giscedata.facturacio.factura.linia">
+            <field name="name">Linia 1 GKWH</field>
+            <field name="product_id" ref="p1_gkwh_tarifa_20TD"/>
+            <field name="tipus">energia</field>
+            <field name="price_unit_multi" eval="8.0"/>
+            <field name="multi" eval="1"/>
+            <field name="account_id" search="[('code', '=', '700000')]" model="account.account"/>
+            <!--<field name="uom_multi_id"></field>-->
+            <field name="factura_id" ref="giscedata_facturacio.factura_0001"/>
+            <!--<field name="invoice_line_id"></field>-->
+            <!--<field name="cosfi"></field>-->
+            <field name="data_desde">2016-01-01</field>
+            <!--<field name="data_fins"></field>-->
+        </record>
+        <record id="lineowner_001" model="generationkwh.invoice.line.owner">
+            <field name="factura_id" ref="giscedata_facturacio.factura_0001"/>
+            <field name="factura_line_id" ref="linia_factura_gkwh_0001"/>
+            <field name="owner_id" ref="res_partner_inversor1"/>
+            <field name="saving_gkw_amount">0.5</field>
+        </record>
+        <record id="right_usage_001" model="generationkwh.right.usage.line">
+            <field name="datetime">2016-01-01 06:00:00</field>
+            <field name="quantity">1</field>
+            <field name="line_owner" ref="lineowner_001"/>
+        </record>
+        <record id="pgc_99900000_demo" model="account.account">
+            <field name="code">99900000</field>
+            <field name="reconcile" eval="True"/>
+            <field name="parent_id" model="account.account" search="[('code','=','163')]"/>
+            <field name="type">other</field>
+            <field name="name">Capital social demo</field>
+            <field name="user_type" ref="l10n_chart_ES.financieras"/>
+        </record>
+        <!-- we use the Caixa account and demo account because it's created in the same module, and this is demo -->
+        <record id="property_gkwh_account_demo" model="ir.property">
+            <field name="name">property_account_gkwh</field>
+            <field name="fields_id" search="[('model','=','res.partner'),('name','=','property_account_gkwh')]"/>
+            <field eval="'account.account,'+str(pgc_555000000004)" name="value"/>
+        </record>
+        <record id="property_apo_account_demo" model="ir.property">
+            <field name="name">property_account_aportacions</field>
+            <field name="fields_id" search="[('model','=','res.partner'),('name','=','property_account_aportacions')]"/>
+            <field eval="'account.account,'+str(pgc_555000000011)" name="value"/>
+        </record>
+        <record id="property_liq_account_demo" model="ir.property">
+            <field name="name">property_account_liquidacio</field>
+            <field name="fields_id" search="[('model','=','res.partner'),('name','=','property_account_liquidacio')]"/>
+            <field eval="'account.account,'+str(pgc_99900000_demo)" name="value"/>
+        </record>
+    </data>
+</openerp>

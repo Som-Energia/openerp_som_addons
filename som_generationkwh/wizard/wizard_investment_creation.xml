@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+    <data>
+        <record model="ir.ui.view" id="wizard_generationkwh_investment_creation_view">
+            <field name="name">wizard.generationkwh.investment.creation.view</field>
+            <field name="model">wizard.generationkwh.investment.creation</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <form string="Creació de inversion">
+                    <field name="state" invisible="1"/>
+                    <group colspan="4" col="4" attrs="{'readonly':[('state', '!=', 'init')]}">
+                        <field name="partner_id_alt" colspan="4" />
+                        <field name="order_date" colspan="4" />
+                        <field name="amount_in_euros" colspan="4" />
+                        <field name="ip" colspan="4" />
+                        <field name="iban" colspan="4" />
+                        <field name="emission_id" colspan="4" />
+                    </group>
+                    <field name="info" nolabel="1" size="300" colspan="4" readonly="1"/>
+                    <button name="do_create" string="Crear" type="object" icon="gtk-execute" colspan="4" attrs="{'enabled':[('state', '!=', 'init')]}"/>
+                </form>
+            </field>
+        </record>
+         <record model="ir.actions.act_window" id="action_wizard_investment_creation_form">
+            <field name="name">Creació d'inversió</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">wizard.generationkwh.investment.creation</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">form</field>
+            <field name="target">new</field>
+            <field name="view_id" ref="wizard_generationkwh_investment_creation_view"/>
+        </record>
+        <record model="ir.values" id="value_wizard_generationkwh_investment_creation">
+            <field name="object" eval="1"/>
+            <field name="name">Creació d'inversió</field>
+            <field name="key2">client_action_multi</field>
+            <field name="key">action</field>
+            <field name="model">generationkwh.investment</field>
+            <field name="value" eval="'ir.actions.act_window,'+str(ref('action_wizard_investment_creation_form'))" />
+        </record>
+    </data>
+</openerp>
