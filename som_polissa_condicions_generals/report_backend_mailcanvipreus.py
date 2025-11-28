@@ -458,6 +458,7 @@ class ReportBackendMailcanvipreus(ReportBackend):
         tarifa = env.polissa_id.tarifa.name
         consums = ""
         origen = ""
+        potencia = env.polissa_id.potencia
         if "index" in env.polissa_id.mode_facturacio:
             origen = "indexada"
             consums = self.getConanyDict(cursor, uid, env)
@@ -523,6 +524,7 @@ class ReportBackendMailcanvipreus(ReportBackend):
             "preu_vell_imp": preu_vell_imp,
             "preu_nou_imp": preu_nou_imp,
             "consum_total": consum_total,
+            "potencia": potencia,
         }
 
     def esCanaries(self, cursor, uid, env, context=False):
