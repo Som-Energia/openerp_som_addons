@@ -70,7 +70,7 @@
         <record id="mode_pagament_socis_factura" model="payment.mode">
             <field name="name">QUOTA SOCIS amb Factura</field>
             <field name="type" search="[('code', '=', 'RECIBO_CSB')]"/>
-            <field name="journal" search="[('code', '=', 'CAJA')]"/>
+            <field name="journal" ref="member_fee_journal"/>
             <field name="bank_id" search="[('partner_id', '=', 1)]"/>
             <field name="tipo">sepa19</field>
             <field name="nombre">Som Energia</field>
