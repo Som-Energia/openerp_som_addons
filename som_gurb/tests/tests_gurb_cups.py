@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import mock
 from tests_gurb_base import TestsGurbBase
 from osv import osv
 from datetime import datetime, timedelta
@@ -158,7 +159,19 @@ class TestsGurbCups(TestsGurbBase):
         self.assertEqual(gurb_cups_br.state, "active")
         self.assertEqual(gurb_cups_beta_br.future_beta, False)
 
-    def test_create_initial__invoice_bank_transfer(self):
+    @mock.patch("som_gurb.models.som_gurb_cups.SomGurbCups.generate_gurb_invoice_base64")
+    def test_create_initial__invoice_bank_transfer(
+        self, generate_gurb_invoice_base64_mock_function
+    ):
+        generate_gurb_invoice_base64_mock_function.return_value = (
+            "JVBERi0xLjAKMSAwIG9iajw8L1R5cGUvQ2F0YWxvZy9QYWdlcyAyIDAgUj4+"
+            "ZW5kb2JqCjIgMCBvYmo8PC9UeXBlL1BhZ2VzL0tpZHNbMyAwIFJdL0NvdW50"
+            "IDE+PmVuZG9iagozIDAgb2JqPDwvVHlwZS9QYWdlL1BhcmVudCAyIDAgUi9S"
+            "ZXNvdXJjZXM8PD4+L01lZGlhQm94WzAgMCA5IDldPj5lbmRvYmoKeHJlZgow"
+            "IDQKMDAwMDAwMDAwMCA2NTUzNSBmIAowMDAwMDAwMDA5IDAwMDAwIG4gCjAw"
+            "MDAwMDAwNTIgMDAwMDAgbiAKMDAwMDAwMDEwMSAwMDAwMCBuIAp0cmFpbGVy"
+            "PDwvUm9vdCAxIDAgUi9TaXplIDQ+PgpzdGFydHhyZWYKMTc0CiUlRU9G"
+        )
         gurb_cups_o = self.openerp.pool.get("som.gurb.cups")
         invoice_o = self.openerp.pool.get("account.invoice")
         line_o = self.openerp.pool.get("account.invoice.line")
@@ -194,7 +207,19 @@ class TestsGurbCups(TestsGurbBase):
         self.assertEqual(line['price_unit'], 3.75)
         self.assertEqual(line['account_id'][1], '705000000104 Gurb')
 
-    def test_create_initial_invoice__invoice_tpv_payment(self):
+    @mock.patch("som_gurb.models.som_gurb_cups.SomGurbCups.generate_gurb_invoice_base64")
+    def test_create_initial_invoice__invoice_tpv_payment(
+        self, generate_gurb_invoice_base64_mock_function
+    ):
+        generate_gurb_invoice_base64_mock_function.return_value = (
+            "JVBERi0xLjAKMSAwIG9iajw8L1R5cGUvQ2F0YWxvZy9QYWdlcyAyIDAgUj4+"
+            "ZW5kb2JqCjIgMCBvYmo8PC9UeXBlL1BhZ2VzL0tpZHNbMyAwIFJdL0NvdW50"
+            "IDE+PmVuZG9iagozIDAgb2JqPDwvVHlwZS9QYWdlL1BhcmVudCAyIDAgUi9S"
+            "ZXNvdXJjZXM8PD4+L01lZGlhQm94WzAgMCA5IDldPj5lbmRvYmoKeHJlZgow"
+            "IDQKMDAwMDAwMDAwMCA2NTUzNSBmIAowMDAwMDAwMDA5IDAwMDAwIG4gCjAw"
+            "MDAwMDAwNTIgMDAwMDAgbiAKMDAwMDAwMDEwMSAwMDAwMCBuIAp0cmFpbGVy"
+            "PDwvUm9vdCAxIDAgUi9TaXplIDQ+PgpzdGFydHhyZWYKMTc0CiUlRU9G"
+        )
         gurb_cups_o = self.openerp.pool.get("som.gurb.cups")
         invoice_o = self.openerp.pool.get("account.invoice")
         line_o = self.openerp.pool.get("account.invoice.line")

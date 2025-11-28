@@ -241,6 +241,15 @@ class SomGurbCups(osv.osv):
             None, None, None, context=context
         )
 
+    def generate_gurb_invoice_base64(self, cursor, uid, inv_id, context=None):
+        if context is None:
+            context = {}
+        service = netsvc.LocalService("report.account.invoice")
+        (result, doc_format) = service.create(
+            cursor, uid, [inv_id], {}, context
+        )
+        return base64.b64encode(result)
+
     def form_activate_gurb_cups_lead(self, cursor, uid, gurb_cups_id, context=None):
         if context is None:
             context = {}
@@ -262,15 +271,10 @@ class SomGurbCups(osv.osv):
         # Adjuntem la factura al Gurb CUPS
         gurb_cups_br = self.browse(cursor, uid, gurb_cups_id, context=context)
         if inv_id:
-            service = netsvc.LocalService("report.account.invoice")
-            (result, format) = service.create(
-                cursor, uid, [inv_id], {}, context
-            )
-            result_base64 = base64.b64encode(result)
-
+            invoice_pdf = self.generate_gurb_invoice_base64(cursor, uid, inv_id, context=context)
             vals = {
                 'name': "Fatura inicial GURB CUPS - {}".format(gurb_cups_br.id),
-                'datas': result_base64,
+                'datas': invoice_pdf,
                 'datas_fname': "factura_inicial_gurb_cups_{}.pdf".format(gurb_cups_br.id),
                 'res_model': 'som.gurb.cups',
                 'res_id': gurb_cups_id,
