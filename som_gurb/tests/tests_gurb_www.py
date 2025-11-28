@@ -348,7 +348,12 @@ class TestsGurbWww(TestsGurbBase):
 
     @mock.patch(_start_signature_fnc, return_value=True)
     @mock.patch(_update_signature_fnc, return_value=True)
-    def test_activate_gurb_cups_lead(self, start_mock, update_mock):
+    @mock.patch(
+        "som_gurb.models.som_gurb_cups.SomGurbCups.generate_gurb_invoice_base64", return_value="AA")
+    @mock.patch(
+        "poweremail.poweremail_template.poweremail_templates.generate_mail_sync", return_value=True
+    )
+    def test_activate_gurb_cups_lead(self, start_mock, update_mock, invoice_mock, mail_mock):
         gurb_www_obj = self.get_model("som.gurb.www")
         gurb_cups_obj = self.get_model("som.gurb.cups")
         sign_docs_obj = self.get_model("giscedata.signatura.documents")
