@@ -67,6 +67,17 @@
             <field name="user_id" ref="base.user_root"/>
             <field name="view_id" ref="account.account_journal_bank_view"/>
         </record>
+        <record id="mode_pagament_socis_factura" model="payment.mode">
+            <field name="name">QUOTA SOCIS amb Factura</field>
+            <field name="type" search="[('code', '=', 'RECIBO_CSB')]"/>
+            <field name="journal" search="[('code', '=', 'CAJA')]"/>
+            <field name="bank_id" search="[('partner_id', '=', 1)]"/>
+            <field name="tipo">sepa19</field>
+            <field name="nombre">Som Energia</field>
+            <field name="sufijo">000</field>
+            <field name="require_bank_account" eval="True"/>
+            <field name="partner_id">1</field>
+        </record>
     </data>
     <data noupdate="1">
         <record model="res.config" id="socia_member_fee_amount">
