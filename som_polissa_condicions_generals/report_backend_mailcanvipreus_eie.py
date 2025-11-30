@@ -8,13 +8,38 @@ class ReportBackendMailcanvipreusEiE(ReportBackend):
     _source_model = "som.enviament.massiu"
     _name = "report.backend.mailcanvipreus.eie"
 
-    # def is_eie(self, cursor, uid, env, context=None):
-    #     if context is None:
-    #         context = {}
+    _decimals = {
+        ("conany"): 0,
+        ("dades_index", "f_antiga"): 3,
+        ("dades_index", "f_nova"): 3,
+        ("dades_index", "f_antiga_kwh"): 6,
+        ("dades_index", "f_nova_kwh"): 6,
+        ("dades_index", "ie"): 2,
+        ("dades_index", "impacte_import"): 2,
+        ("dades_index", "impacte_import_amb_impost"): 2,
+        ("dades_index", "import_energia_anual_antiga"): 2,
+        ("dades_index", "import_energia_anual_nova"): 2,
+        ("dades_index", "import_potencia_anual_antiga"): 2,
+        ("dades_index", "import_potencia_anual_nova"): 2,
+        ("dades_index", "import_total_anual_antiga"): 2,
+        ("dades_index", "import_total_anual_antiga_amb_impost"): 2,
+        ("dades_index", "import_total_anual_nova"): 2,
+        ("dades_index", "import_total_anual_nova_amb_impost"): 2,
+        ("dades_index", "iva"): 2,
+        ("dades_index", "pot_contractada"): 2,
+        ("dades_index", "preu_mig_anual_antiga"): 2,
+        ("dades_index", "preu_mig_anual_nova"): 2,
+        ("dades_index", "preu_sense_F"): 2,
+    }
 
-    #     pol_llista = env.polissa_id.llista_preu.id
+    def get_lang(self, cursor, uid, record_id, context=None):
+        if context is None:
+            context = {}
 
-    #     return pol_llista in [150, 153, 154]
+        env_o = self.pool.get("som.enviament.massiu")
+        env_br = env_o.browse(cursor, uid, record_id, context=context)
+
+        return env_br.polissa_id.titular.lang
 
     def get_data_eie(self, cursor, uid, env, context=None):
         if context is None:
