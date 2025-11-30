@@ -97,6 +97,9 @@ def calculate_new_indexed_prices(cursor, uid, pol, context=None):
     f_antiga = fs.get('k_old', dict_preus_antiga.get('factor_k', 0))
     f_nova = fs.get('k_new', dict_preus_nova.get('factor_k', 0))
 
+    f_antiga_kwh = f_antiga / 1000
+    f_nova_kwh = f_nova / 1000
+
     # Preus energia
     indexada_consum_tipus = eval(
         pol.pool.get("res.config").get(cursor, uid, "som_indexada_consum_tipus", "{}"))
@@ -160,6 +163,8 @@ def calculate_new_indexed_prices(cursor, uid, pol, context=None):
         "preu_sense_F": preu_sense_F,
         "f_antiga": f_antiga,
         "f_nova": f_nova,
+        "f_antiga_kwh": f_antiga_kwh,
+        "f_nova_kwh": f_nova_kwh,
         "preu_mig_anual_antiga": preu_mitja_antic,
         "preu_mig_anual_nova": preu_mitja_nou,
         "import_potencia_anual_antiga": import_potencia_anual_antiga,
