@@ -5,7 +5,7 @@ from datetime import date, timedelta, datetime
 from addons import get_module_resource
 import mock
 
-from .. import giscedata_atc, giscedata_polissa, som_autoreclama_state_history
+from ..models import giscedata_atc, giscedata_polissa, som_autoreclama_state_history
 
 
 def today_str():
@@ -1845,7 +1845,7 @@ class SomAutoreclamaUpdaterTest(SomAutoreclamaEzATC_Test):
             'CACR1006s_in_last_conf_days': 1,
         })
         with mock.patch(
-            'som_autoreclama.giscedata_polissa.GiscedataPolissa.get_autoreclama_data',
+            'som_autoreclama.models.giscedata_polissa.GiscedataPolissa.get_autoreclama_data',
             mock_funcion
         ):
             updtr_obj = self.get_model("som.autoreclama.state.updater")
@@ -1882,7 +1882,7 @@ class SomAutoreclamaUpdaterTest(SomAutoreclamaEzATC_Test):
             'CACR1006s_in_last_conf_days': 1,
         })
         with mock.patch(
-            'som_autoreclama.giscedata_polissa.GiscedataPolissa.get_autoreclama_data',
+            'som_autoreclama.models.giscedata_polissa.GiscedataPolissa.get_autoreclama_data',
             mock_funcion
         ):
             updtr_obj = self.get_model("som.autoreclama.state.updater")
