@@ -17,7 +17,7 @@
                         <field name="refacturacio_pendent" colspan="4" nolabel="1"/>
                     </group>
                     <group string="Disconformitats autoconsum (Aplicarà a totes les reclamacions):" colspan="8" col="8" attrs="{'invisible':[('subtipus_code','!=','075')]}">
-                        <field name="reclamacio_disconformidad_autoconsumo" colspan="8" nolabel="1"/>
+                        <field name="reclamacio_disconformidad_autoconsumo" colspan="8" nolabel="1" attrs="{'required':[('subtipus_code','=','075')]}"/>
                     </group>
                     <label string="" colspan="8"/>
 				</field>
