@@ -1,0 +1,36 @@
+# -*- coding: utf-8 -*-
+from destral import testing
+from datetime import date, timedelta
+
+
+class TestsModContractual(testing.OOTestCaseWithCursor):
+
+    def test_renovar_modcontractual(self):
+        pol_obj = self.openerp.pool.get('giscedata.polissa')
+        modcon_obj = self.openerp.pool.get('giscedata.polissa.modcontractual')
+        imd_obj = self.openerp.pool.get("ir.model.data")
+        pol_id = imd_obj.get_object_reference(
+            self.cursor, 1, "giscedata_polissa", "polissa_tarifa_018"
+        )[1]
+        tarifa_social_id = imd_obj.get_object_reference(
+            self.cursor, 1, "www_som", "pricelist_tarifas_electricidad_20TD_SOM_SOCIAL_test"
+        )[1]
+        pol_obj.send_signal(self.cursor, self.uid, [pol_id], ["validar", "contracte"])
+        modcon_ids = modcon_obj.search(
+            self.cursor, self.uid, [("polissa_id", "=", pol_id)]
+        )
+        year_ago = (date.today() - timedelta(days=365)).strftime("%Y-%m-%d")
+        tommorrow = (date.today() + timedelta(days=1)).strftime("%Y-%m-%d")
+        modcon_obj.write(self.cursor, self.uid, [modcon_ids[-1]], {
+            'modcon_renovation_type': 'automatic',
+            'llista_preu': tarifa_social_id,
+            'data_final': tommorrow,
+            'data_inici': year_ago,
+        })
+
+        modcon_obj.renovar(self.cursor, self.uid, [modcon_ids[-1]])
+
+        modcon_ids_after = modcon_obj.search(
+            self.cursor, self.uid, [("polissa_id", "=", pol_id)]
+        )
+        self.assertEqual(len(modcon_ids_after), len(modcon_ids) + 1)
