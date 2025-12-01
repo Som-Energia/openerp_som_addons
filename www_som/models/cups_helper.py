@@ -74,7 +74,7 @@ class CupsHelper(osv.osv_memory):
         if not pol_ids:
             return ''
 
-        pol_br = pol_obj.browse(cursor, uid, pol_ids[0], context=context)
+        pol_br = pol_obj.browse(cursor, uid, pol_ids[-1], context=context)
 
         if pol_br.state == "activa":
             result["tariff_type"] = pol_br.mode_facturacio

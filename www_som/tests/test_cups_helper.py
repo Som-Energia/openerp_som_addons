@@ -45,7 +45,7 @@ class TestsCupsHelper(testing.OOTestCase):
             self.cursor, self.uid, cups_id, context={}
         )
         polissa_id = self.imd_obj.get_object_reference(
-            self.cursor, self.uid, "giscedata_polissa", "polissa_0001"
+            self.cursor, self.uid, "giscedata_polissa", "polissa_0006"
         )[1]
 
         polissa_obj.send_signal(self.cursor, self.uid, [polissa_id], [
@@ -60,10 +60,10 @@ class TestsCupsHelper(testing.OOTestCase):
         resulting_dictionary = {
             "cups": cups.name,
             "status": "active",
-            "tariff_type": "atr",
+            "tariff_type": u"atr",
             "knowledge_of_distri": False,
             "address": u"carrer inventat",
-            "tariff_name": "2.0A",
+            "tariff_name": u"2.0A",
         }
 
         self.assertEqual(result, resulting_dictionary)
