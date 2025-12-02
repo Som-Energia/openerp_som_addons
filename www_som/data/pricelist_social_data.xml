@@ -4,43 +4,43 @@
         <!-- Tarifes socials -->
         <record model="product.pricelist" id="tarifa_20TD_SOM_SOCIAL">
             <field name="name">2.0TD_SOM_SOCIAL</field>
+            <field name="nom_comercial">2.0TD Períodes Península Social</field>
             <field name="type">sale</field>
             <field name="active">True</field>
             <field name="tarifes_atr_compatibles" eval="[(4, ref('giscedata_polissa.tarifa_20TD'))]"/>
             <field name="compatible_invoicing_modes" eval="[(4, ref('giscedata_facturacio.mode_facturacio_atr'))]"/>
-            <field name="next_pricelist_id" ref="som_indexada.pricelist_periodes_20td_peninsula"/>
         </record>
         <record model="product.pricelist" id="tarifa_20TD_SOM_INSULAR_SOCIAL">
             <field name="name">2.0TD_SOM_INSULAR_SOCIAL</field>
+            <field name="nom_comercial">2.0TD Períodes Insular Social</field>
             <field name="type">sale</field>
             <field name="active">True</field>
             <field name="tarifes_atr_compatibles" eval="[(4, ref('giscedata_polissa.tarifa_20TD'))]"/>
             <field name="compatible_invoicing_modes" eval="[(4, ref('giscedata_facturacio.mode_facturacio_atr'))]"/>
-            <field name="next_pricelist_id" ref="som_indexada.pricelist_periodes_20td_insular"/>
         </record>
         <record model="product.pricelist" id="tarifa_indexada_20TD_peninsula_social">
             <field name="name">Indexada 2.0TD Península SOCIAL</field>
+            <field name="nom_comercial">2.0TD Indexada Península SOCIAL</field>
             <field name="type">sale</field>
             <field name="active">True</field>
             <field name="tarifes_atr_compatibles" eval="[(4, ref('giscedata_polissa.tarifa_20TD'))]"/>
             <field name="compatible_invoicing_modes" eval="[(4, ref('giscedata_facturacio_indexada.mode_facturacio_index'))]"/>
-            <field name="next_pricelist_id" ref="som_indexada.pricelist_indexada_20td_peninsula"/>
         </record>
         <record model="product.pricelist" id="tarifa_indexada_20TD_balears_social">
             <field name="name">Indexada 2.0TD Balears SOCIAL</field>
+            <field name="nom_comercial">2.0TD Indexada Balears SOCIAL</field>
             <field name="type">sale</field>
             <field name="active">True</field>
             <field name="tarifes_atr_compatibles" eval="[(4, ref('giscedata_polissa.tarifa_20TD'))]"/>
             <field name="compatible_invoicing_modes" eval="[(4, ref('giscedata_facturacio_indexada.mode_facturacio_index'))]"/>
-            <field name="next_pricelist_id" ref="som_indexada.pricelist_indexada_20td_balears"/>
         </record>
         <record model="product.pricelist" id="tarifa_indexada_20TD_canaries_social">
             <field name="name">Indexada 2.0TD Canàries SOCIAL</field>
+            <field name="nom_comercial">2.0TD Indexada Canarias SOCIAL</field>
             <field name="type">sale</field>
             <field name="active">True</field>
             <field name="tarifes_atr_compatibles" eval="[(4, ref('giscedata_polissa.tarifa_20TD'))]"/>
             <field name="compatible_invoicing_modes" eval="[(4, ref('giscedata_facturacio_indexada.mode_facturacio_index'))]"/>
-            <field name="next_pricelist_id" ref="som_indexada.pricelist_indexada_20td_canaries"/>
         </record>
     </data>
 </openerp>
