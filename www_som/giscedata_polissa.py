@@ -4,8 +4,7 @@ from som_polissa.exceptions import exceptions
 from www_som.helpers import www_entry_point
 from giscedata_cups.dso_cups.cups import get_dso
 
-from osv import osv
-from osv import fields
+from osv import osv, fields
 
 
 class GiscedataPolissa(osv.osv):
@@ -146,6 +145,91 @@ class GiscedataPolissa(osv.osv):
             return distributor_ids[0]
 
         return None
+
+    def get_pricelist_from_tariff_and_location_no_social(
+            self, cursor, uid, mode_facturacio, id_municipi, context=None):
+        pp_obj = self.pool.get("product.pricelist")
+
+        pp_periodes_regular_id = pp_obj.search(cursor, uid, [('name', '=', '2.0TD_SOM')])[0]
+        pp_periodes_insular_id = pp_obj.search(cursor, uid, [('name', '=', '2.0TD_SOM_INSULAR')])[0]
+        pp_indexada_peninsula_id = pp_obj.search(
+            cursor, uid, [('name', '=', 'Indexada 2.0TD Península')])[0]
+        pp_indexada_balears_id = pp_obj.search(
+            cursor, uid, [('name', '=', 'Indexada 2.0TD Balears')])[0]
+        pp_indexada_canaries_id = pp_obj.search(
+            cursor, uid, [('name', '=', 'Indexada 2.0TD Canàries')])[0]
+
+        location = self._get_tariff_zone_from_location(cursor, uid, id_municipi)
+
+        new_pricelist_id = 0
+        if mode_facturacio == 'index':
+            if location == 'peninsula':
+                new_pricelist_id = pp_indexada_peninsula_id
+            elif location == 'balears':
+                new_pricelist_id = pp_indexada_balears_id
+            elif location == 'canaries':
+                new_pricelist_id = pp_indexada_canaries_id
+        elif mode_facturacio == 'atr':
+            if location == 'peninsula':
+                new_pricelist_id = pp_periodes_regular_id
+            elif location == 'insular':
+                new_pricelist_id = pp_periodes_insular_id
+
+        return new_pricelist_id
+
+    def mapping_tarifa_social(self, cursor, uid, context=None):
+        pp_obj = self.pool.get("product.pricelist")
+
+        # Tarifes normals
+        pp_periodes_regular_id = pp_obj.search(cursor, uid, [('name', '=', '2.0TD_SOM')])[0]
+        pp_periodes_insular_id = pp_obj.search(cursor, uid, [('name', '=', '2.0TD_SOM_INSULAR')])[0]
+        pp_indexada_peninsula_id = pp_obj.search(
+            cursor, uid, [('name', '=', 'Indexada 2.0TD Península')])[0]
+        pp_indexada_balears_id = pp_obj.search(
+            cursor, uid, [('name', '=', 'Indexada 2.0TD Balears')])[0]
+        pp_indexada_canaries_id = pp_obj.search(
+            cursor, uid, [('name', '=', 'Indexada 2.0TD Canàries')])[0]
+
+        # Tarifes socials
+        pp_social_periodes_id = pp_obj.search(cursor, uid, [('name', '=', '2.0TD_SOM_SOCIAL')])[0]
+        pp_social_indexada_id = pp_obj.search(
+            cursor, uid, [('name', '=', '2.Indexada 2.0TD Península SOCIAL')])[0]
+
+        return {
+            pp_periodes_regular_id: pp_social_periodes_id,
+            pp_periodes_insular_id: pp_social_periodes_id,
+            pp_indexada_peninsula_id: pp_social_indexada_id,
+            pp_indexada_balears_id: pp_social_indexada_id,
+            pp_indexada_canaries_id: pp_social_indexada_id,
+        }
+
+    def mapping_tarifa_no_social(self, cursor, uid, polissa_id, context=None):
+
+        polissa = self.browse(cursor, uid, polissa_id, context=context)
+        new_pricelist_id = self.get_pricelist_from_tariff_and_location_no_social(
+            cursor, uid, polissa.mode_facturacio,
+            polissa.cups.id_municipi.id, context)
+
+        return new_pricelist_id
+
+    def get_new_tariff_change_social_or_regular(self, cursor, uid, polissa_id, change_type, context):  # noqa E501
+        """Donada una pòlissa i un tipus de canvi, retorna la nova tarifa a assignar.
+        """
+        polissa = self.browse(cursor, uid, polissa_id, context=context)
+
+        if change_type == "to_social":
+            new_pricelist_dict = self.mapping_tarifa_social(cursor, uid, context=context)
+            if not new_pricelist_dict.get(polissa.llista_preu.id, False):
+                raise exceptions.PolissaCannotChangeSocialTariff(polissa.name, change_type)
+            new_pricelist_id = new_pricelist_dict[polissa.llista_preu.id]
+        elif change_type == "to_regular":
+            new_pricelist_id = self.mapping_tarifa_no_social(
+                cursor, uid, polissa_id, context=context)
+            if not new_pricelist_id:
+                raise exceptions.PolissaCannotChangeSocialTariff(polissa.name, change_type)
+        else:
+            raise exceptions.PolissaCannotChangeSocialTariff(polissa.name, change_type)
+        return new_pricelist_id
 
     _columns = {
         "www_current_pagament": fields.function(
