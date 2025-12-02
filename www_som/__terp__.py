@@ -32,6 +32,7 @@ Mòdul per la integració de l'oficina virtual
         "wizard/wizard_model_list_from_file_data.xml",
         "security/ir.model.access.csv",
         "ir_attachment_view.xml",
+        "data/pricelist_social_data.xml",
     ],
     "active": False,
     "installable": True,
