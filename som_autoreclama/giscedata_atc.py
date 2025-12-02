@@ -342,7 +342,24 @@ class GiscedataAtc(osv.osv):
             "autoreclama_history_initial_state_id": initial_state_id,
         }
 
-        return self.create_general_atc_r1_case_via_wizard(cursor, uid, new_case_data, context)
+        atc_id = self.create_general_atc_r1_case_via_wizard(cursor, uid, new_case_data, context)
+
+        f1_invoice_number_text = "TODO"
+
+        atc_obj = self.pool.get("giscedata.atc")
+        ref = atc_obj.read(cursor, uid, atc_id, ['ref'], context=context)['ref'].split(',')
+
+        sw_obj = self.pool.get(ref[0])
+        sw = sw_obj.browse(cursor, uid, int(ref[1]), context=context)
+        ref2 = sw.step_ids[0].pas_id.split(',')
+
+        r101_obj = self.pool.get(ref2[0])
+        r101 = r101_obj.browse(cursor, uid, int(ref2[1]), context=context)
+
+        rec_obj = self.pool.get("giscedata.switching.reclamacio")
+        rec_obj.write(cursor, uid, r101.reclamacio_ids[0].id, {
+                      'num_factura': f1_invoice_number_text}, context=context)
+        return atc_id
 
     # Automatic ATC + [R1] from dictonary / Entry point
     def create_general_atc_r1_case_via_wizard(self, cursor, uid, case_data, context=None):
