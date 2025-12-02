@@ -34,3 +34,10 @@ class TestsModContractual(testing.OOTestCaseWithCursor):
             self.cursor, self.uid, [("polissa_id", "=", pol_id)]
         )
         self.assertEqual(len(modcon_ids_after), len(modcon_ids) + 1)
+        new_modcon = modcon_obj.browse(
+            self.cursor, self.uid, list(set(modcon_ids_after) - set(modcon_ids))
+        )[0]
+        self.assertNotEqual(new_modcon.llista_preu.id, tarifa_social_id)
+        self.assertEqual(new_modcon.data_inici, tommorrow)
+        self.assertEqual(new_modcon.state, 'pendent')
+        self.assertEqual(new_modcon.modcontractual_ant.id, modcon_ids[0])
