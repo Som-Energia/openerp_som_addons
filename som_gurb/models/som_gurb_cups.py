@@ -221,6 +221,35 @@ class SomGurbCups(osv.osv):
         partner_id = self.read(cursor, uid, gurb_cups_id, ["partner_id"])["partner_id"][0]
         return partner_id
 
+    def pay_invoice_gurb(self, cursor, uid, inv_id, context=None):
+        if context is None:
+            context = {}
+        account_o = self.pool.get("account.account")
+        invoice_o = self.pool.get("account.invoice")
+
+        # Open before paying
+        wf_service = netsvc.LocalService("workflow")
+        wf_service.trg_validate(uid, 'account.invoice', inv_id, 'invoice_open', cursor)
+        inv = invoice_o.browse(cursor, uid, inv_id)
+
+        # Paguem factura
+        pay_account_id = account_o.search(
+            cursor, uid, [('code', '=', '5572000000007')], context=context
+        )[0]
+        invoice_o.pay_and_reconcile(
+            cursor, uid, [inv_id], inv.saldo, pay_account_id, inv.period_id.id, inv.journal_id.id,
+            None, None, None, context=context
+        )
+
+    def generate_gurb_invoice_base64(self, cursor, uid, inv_id, context=None):
+        if context is None:
+            context = {}
+        service = netsvc.LocalService("report.account.invoice")
+        (result, doc_format) = service.create(
+            cursor, uid, [inv_id], {}, context
+        )
+        return base64.b64encode(result)
+
     def form_activate_gurb_cups_lead(self, cursor, uid, gurb_cups_id, context=None):
         if context is None:
             context = {}
@@ -229,25 +258,23 @@ class SomGurbCups(osv.osv):
             gurb_cups_id = gurb_cups_id[0]
 
         attach_obj = self.pool.get('ir.attachment')
+        invoice_o = self.pool.get("account.invoice")
 
         # Creem factura
         context["tpv"] = True
-        inv_id = self.create_initial_invoice(cursor, uid, gurb_cups_id, context=context)[0]
-        wf_service = netsvc.LocalService("workflow")
-        wf_service.trg_validate(uid, 'account.invoice', inv_id, 'invoice_open', cursor)
+        inv_id, err = self.create_initial_invoice(cursor, uid, gurb_cups_id, context=context)
+        invoice_o.browse(cursor, uid, inv_id)
+
+        # Paguem factura
+        self.pay_invoice_gurb(cursor, uid, inv_id, context=context)
 
         # Adjuntem la factura al Gurb CUPS
         gurb_cups_br = self.browse(cursor, uid, gurb_cups_id, context=context)
         if inv_id:
-            service = netsvc.LocalService("report.account.invoice")
-            (result, format) = service.create(
-                cursor, uid, [inv_id], {}, context
-            )
-            result_base64 = base64.b64encode(result)
-
+            invoice_pdf = self.generate_gurb_invoice_base64(cursor, uid, inv_id, context=context)
             vals = {
                 'name': "Fatura inicial GURB CUPS - {}".format(gurb_cups_br.id),
-                'datas': result_base64,
+                'datas': invoice_pdf,
                 'datas_fname': "factura_inicial_gurb_cups_{}.pdf".format(gurb_cups_br.id),
                 'res_model': 'som.gurb.cups',
                 'res_id': gurb_cups_id,
@@ -545,13 +572,11 @@ class SomGurbCups(osv.osv):
         product_o = self.pool.get("product.product")
         pricelist_o = self.pool.get("product.pricelist")
 
-        invoice_account_code = "430000000000"
-        journal_code = "VENTA"
+        invoice_account_code = "705000000104"
+        journal_code = "FACT_GURB"
         payment_type_code = "TRANSFERENCIA_CSB"
 
         if context.get("tpv"):
-            invoice_account_code = "705000000104"
-            journal_code = "TPV_Laboral"
             payment_type_code = "COBRAMENT_TARGETA"
 
         gurb_cups_br = self.browse(cursor, uid, gurb_cups_id, context=context)
@@ -598,23 +623,24 @@ class SomGurbCups(osv.osv):
             type="out_invoice",
         ).get("value", {})
         gurb_line["invoice_line_tax_id"] = [(6, 0, gurb_line.get("invoice_line_tax_id", []))]
+        invoice_line_account_ids = account_o.search(
+            cursor, uid, [("code", "=", invoice_account_code)], context=context
+        )[0]
         gurb_line.update({
             "name": "Cost d'adhesió {}".format(gurb_cups_br.gurb_cau_id.gurb_group_id.name),
             "product_id": product_id,
             "price_unit": price_unit,
             "quantity": 1,
+            "account_id": invoice_line_account_ids,
         })
-
         # Create invoice
-        invoice_account_ids = account_o.search(
-            cursor, uid, [("code", "=", invoice_account_code)], context=context
-        )
         journal_ids = journal_o.search(
             cursor, uid, [("code", "=", journal_code)], context=context
         )
         payment_type_id = payment_type_o.search(
             cursor, uid, [("code", "=", payment_type_code)], context=context
         )[0]
+
         invoice_lines = [
             (0, 0, gurb_line)
         ]
@@ -631,6 +657,9 @@ class SomGurbCups(osv.osv):
         )
         invoice_vals.update({"payment_type": payment_type_id})
 
+        invoice_account_ids = account_o.search(
+            cursor, uid, [("code", "=", '430000000000')], context=context
+        )
         if invoice_account_ids:
             invoice_vals.update({"account_id": invoice_account_ids[0]})
         if journal_ids:
