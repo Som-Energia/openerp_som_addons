@@ -257,12 +257,92 @@ class GiscedataAtc(osv.osv):
         return atc_id
 
     def create_ATC_R1_009_from_polissa_via_wizard(self, cursor, uid, polissa_id, context=None):
+        subtr_obj = self.pool.get("giscedata.subtipus.reclamacio")
+        subtr009_id = subtr_obj.search(cursor, uid, [("name", "=", "009")], context=context)[0]
+        subtr036_id = subtr_obj.search(cursor, uid, [("name", "=", "036")], context=context)[0]
 
-        new_case_data = {}
+        # Do not create a 009 if there is an 009 or 036 active yet
+        params = [
+            ("polissa_id", "=", polissa_id),
+            ("state", "in", ["open", "pending"]),
+        ]
+        atc_ids = self.search(cursor, uid,
+                              params + [("subtipus_id", "=", subtr009_id)],
+                              context=context)
+        if atc_ids:
+            raise Exception(
+                _(
+                    u"Error en la creació del CAC amb R1 009, ja n'hi ha un CAC  009 en estat obert o pendent amb id {}!!!"  # noqa: E501
+                ).format(",".join([str(atc_id) for atc_id in atc_ids]))
+            )
+        atc_ids = self.search(cursor, uid,
+                              params + [("subtipus_id", "=", subtr036_id)],
+                              context=context)
+        if atc_ids:
+            raise Exception(
+                _(
+                    u"Error en la creació del CAC amb R1 009, ja n'hi ha un CAC 036 en estat obert o pendent amb id {}!!!"  # noqa: E501
+                ).format(",".join([str(atc_id) for atc_id in atc_ids]))
+            )
 
-        atc_id = self.create_general_atc_r1_case_via_wizard(cursor, uid, new_case_data, context)
+        pol_obj = self.pool.get("giscedata.polissa")
+        pol = pol_obj.browse(cursor, uid, polissa_id, context=context)
 
-        return atc_id
+        if pol.mode_facturacio == 'index':  # indexada
+            tag_name = u"[GEGC] Autocac 009"
+        elif pol.tarifa.name != '2.0TD':  # si 3.X o 6.X o 3.0VE
+            tag_name = u"[GEGC] Autocac 009"
+        elif pol.autoconsumo != '00':  # autoconsumo
+            tag_name = u"[GEA] Autocac 009"
+        else:  # resta
+            tag_name = u"[GET] Autocac 009"
+        tag_obj = self.pool.get("giscedata.atc.tag")
+        tag_ids = tag_obj.search(
+            cursor, uid, [('name', '=', tag_name)], context=context
+        )[0]
+
+        channel_obj = self.pool.get("res.partner.canal")
+        canal_id = channel_obj.search(
+            cursor, uid, [("name", "ilike", "intercambi")], context=context
+        )[0]
+
+        channel_obj = self.pool.get("res.partner.canal")
+        if self._has_no_NF_readings(cursor, uid, polissa_id, context):
+            canal_id = channel_obj.search(
+                cursor, uid, [("name", "ilike", "intercambi")], context=context
+            )[0]
+            tanca_al_finalitzar_r1 = True
+        else:
+            canal_id = channel_obj.search(
+                cursor, uid, [('name', 'ilike', u'tel%fono')], context=context
+            )[0]
+            tanca_al_finalitzar_r1 = False
+
+        imd_obj = self.pool.get("ir.model.data")
+        section_id = imd_obj.get_object_reference(
+            cursor, uid, "som_switching", "atc_section_factura"
+        )[1]
+        initial_state_id = imd_obj.get_object_reference(
+            cursor, uid, "som_autoreclama", "correct_state_workflow_atc"
+        )[1]
+
+        new_case_data = {
+            "polissa_id": polissa_id,
+            "atc_tag_id": tag_ids,
+            "canal_id": canal_id,
+            "descripcio": u"AUTOCAC 009",
+            "tanca_al_finalitzar_r1": tanca_al_finalitzar_r1,
+            "crear_cas_r1": True,
+            "subtipus_reclamacio_id": subtr009_id,
+
+            "section_id": section_id,
+            "comentaris": u"",
+            "sense_responsable": True,
+
+            "autoreclama_history_initial_state_id": initial_state_id,
+        }
+
+        return self.create_general_atc_r1_case_via_wizard(cursor, uid, new_case_data, context)
 
     # Automatic ATC + [R1] from dictonary / Entry point
     def create_general_atc_r1_case_via_wizard(self, cursor, uid, case_data, context=None):
