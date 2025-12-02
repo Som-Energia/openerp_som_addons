@@ -148,16 +148,24 @@ class GiscedataPolissa(osv.osv):
 
     def get_pricelist_from_tariff_and_location_no_social(
             self, cursor, uid, mode_facturacio, id_municipi, context=None):
-        pp_obj = self.pool.get("product.pricelist")
+        imd_obj = self.pool.get("ir.model.data")
 
-        pp_periodes_regular_id = pp_obj.search(cursor, uid, [('name', '=', '2.0TD_SOM')])[0]
-        pp_periodes_insular_id = pp_obj.search(cursor, uid, [('name', '=', '2.0TD_SOM_INSULAR')])[0]
-        pp_indexada_peninsula_id = pp_obj.search(
-            cursor, uid, [('name', '=', 'Indexada 2.0TD Península')])[0]
-        pp_indexada_balears_id = pp_obj.search(
-            cursor, uid, [('name', '=', 'Indexada 2.0TD Balears')])[0]
-        pp_indexada_canaries_id = pp_obj.search(
-            cursor, uid, [('name', '=', 'Indexada 2.0TD Canàries')])[0]
+        # Tarifes normals
+        pp_periodes_peninsula_id = imd_obj.get_object_reference(
+            cursor, uid, "som_indexada", "pricelist_periodes_20td_peninsula"
+        )[1]
+        pp_periodes_insular_id = imd_obj.get_object_reference(
+            cursor, uid, "som_indexada", "pricelist_periodes_20td_insular"
+        )[1]
+        pp_indexada_peninsula_id = imd_obj.get_object_reference(
+            cursor, uid, "som_indexada", "pricelist_indexada_20td_peninsula"
+        )[1]
+        pp_indexada_balears_id = imd_obj.get_object_reference(
+            cursor, uid, "som_indexada", "pricelist_indexada_20td_balears"
+        )[1]
+        pp_indexada_canaries_id = imd_obj.get_object_reference(
+            cursor, uid, "som_indexada", "pricelist_indexada_20td_canaries"
+        )[1]
 
         location = self._get_tariff_zone_from_location(cursor, uid, id_municipi)
 
@@ -171,36 +179,54 @@ class GiscedataPolissa(osv.osv):
                 new_pricelist_id = pp_indexada_canaries_id
         elif mode_facturacio == 'atr':
             if location == 'peninsula':
-                new_pricelist_id = pp_periodes_regular_id
+                new_pricelist_id = pp_periodes_peninsula_id
             elif location == 'insular':
                 new_pricelist_id = pp_periodes_insular_id
 
         return new_pricelist_id
 
     def mapping_tarifa_social(self, cursor, uid, context=None):
-        pp_obj = self.pool.get("product.pricelist")
+        imd_obj = self.pool.get("ir.model.data")
 
         # Tarifes normals
-        pp_periodes_regular_id = pp_obj.search(cursor, uid, [('name', '=', '2.0TD_SOM')])[0]
-        pp_periodes_insular_id = pp_obj.search(cursor, uid, [('name', '=', '2.0TD_SOM_INSULAR')])[0]
-        pp_indexada_peninsula_id = pp_obj.search(
-            cursor, uid, [('name', '=', 'Indexada 2.0TD Península')])[0]
-        pp_indexada_balears_id = pp_obj.search(
-            cursor, uid, [('name', '=', 'Indexada 2.0TD Balears')])[0]
-        pp_indexada_canaries_id = pp_obj.search(
-            cursor, uid, [('name', '=', 'Indexada 2.0TD Canàries')])[0]
-
+        pp_periodes_peninsula_id = imd_obj.get_object_reference(
+            cursor, uid, "som_indexada", "pricelist_periodes_20td_peninsula"
+        )[1]
+        pp_periodes_insular_id = imd_obj.get_object_reference(
+            cursor, uid, "som_indexada", "pricelist_periodes_20td_insular"
+        )[1]
+        pp_indexada_peninsula_id = imd_obj.get_object_reference(
+            cursor, uid, "som_indexada", "pricelist_indexada_20td_peninsula"
+        )[1]
+        pp_indexada_balears_id = imd_obj.get_object_reference(
+            cursor, uid, "som_indexada", "pricelist_indexada_20td_balears"
+        )[1]
+        pp_indexada_canaries_id = imd_obj.get_object_reference(
+            cursor, uid, "som_indexada", "pricelist_indexada_20td_canaries"
+        )[1]
         # Tarifes socials
-        pp_social_periodes_id = pp_obj.search(cursor, uid, [('name', '=', '2.0TD_SOM_SOCIAL')])[0]
-        pp_social_indexada_id = pp_obj.search(
-            cursor, uid, [('name', '=', '2.Indexada 2.0TD Península SOCIAL')])[0]
+        pp_social_periodes_id = imd_obj.get_object_reference(
+            cursor, uid, "www_som", "tarifa_20TD_SOM_SOCIAL"
+        )[1]
+        pp_social_periodes_insular_id = imd_obj.get_object_reference(
+            cursor, uid, "www_som", "tarifa_20TD_SOM_INSULAR_SOCIAL"
+        )[1]
+        pp_social_indexada_id = imd_obj.get_object_reference(
+            cursor, uid, "www_som", "tarifa_indexada_20TD_peninsula_social"
+        )[1]
+        pp_social_indexada_balears_id = imd_obj.get_object_reference(
+            cursor, uid, "www_som", "tarifa_indexada_20TD_balears_social"
+        )[1]
+        pp_social_indexada_canaries_id = imd_obj.get_object_reference(
+            cursor, uid, "www_som", "tarifa_indexada_20TD_canaries_social"
+        )[1]
 
         return {
-            pp_periodes_regular_id: pp_social_periodes_id,
-            pp_periodes_insular_id: pp_social_periodes_id,
+            pp_periodes_peninsula_id: pp_social_periodes_id,
+            pp_periodes_insular_id: pp_social_periodes_insular_id,
             pp_indexada_peninsula_id: pp_social_indexada_id,
-            pp_indexada_balears_id: pp_social_indexada_id,
-            pp_indexada_canaries_id: pp_social_indexada_id,
+            pp_indexada_balears_id: pp_social_indexada_balears_id,
+            pp_indexada_canaries_id: pp_social_indexada_canaries_id,
         }
 
     def mapping_tarifa_no_social(self, cursor, uid, polissa_id, context=None):

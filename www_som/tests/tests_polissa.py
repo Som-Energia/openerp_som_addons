@@ -320,22 +320,38 @@ class TestPolissa(testing.OOTestCaseWithCursor):
         super(TestPolissa, self).setUp()
 
         # Tarifes normals
-        self.pp_periodes_regular_id = self.pp_obj.search(
-            self.cursor, self.uid, [('name', '=', '2.0TD_SOM')])[0]
-        self.pp_periodes_insular_id = self.pp_obj.search(
-            self.cursor, self.uid, [('name', '=', '2.0TD_SOM_INSULAR')])[0]
-        self.pp_indexada_peninsula_id = self.pp_obj.search(
-            self.cursor, self.uid, [('name', '=', 'Indexada 2.0TD Península')])[0]
-        self.pp_indexada_balears_id = self.pp_obj.search(
-            self.cursor, self.uid, [('name', '=', 'Indexada 2.0TD Balears')])[0]
-        self.pp_indexada_canaries_id = self.pp_obj.search(
-            self.cursor, self.uid, [('name', '=', 'Indexada 2.0TD Canàries')])[0]
+        self.pp_periodes_peninsula_id = self.imd_obj.get_object_reference(
+            self.cursor, self.uid, "som_indexada", "pricelist_periodes_20td_peninsula"
+        )[1]
+        self.pp_periodes_insular_id = self.imd_obj.get_object_reference(
+            self.cursor, self.uid, "som_indexada", "pricelist_periodes_20td_insular"
+        )[1]
+        self.pp_indexada_peninsula_id = self.imd_obj.get_object_reference(
+            self.cursor, self.uid, "som_indexada", "pricelist_indexada_20td_peninsula"
+        )[1]
+        self.pp_indexada_balears_id = self.imd_obj.get_object_reference(
+            self.cursor, self.uid, "som_indexada", "pricelist_indexada_20td_balears"
+        )[1]
+        self.pp_indexada_canaries_id = self.imd_obj.get_object_reference(
+            self.cursor, self.uid, "som_indexada", "pricelist_indexada_20td_canaries"
+        )[1]
 
         # Tarifes socials
-        self.pp_social_periodes_id = self.pp_obj.search(
-            self.cursor, self.uid, [('name', '=', '2.0TD_SOM_SOCIAL')])[0]
-        self.pp_social_indexada_id = self.pp_obj.search(
-            self.cursor, self.uid, [('name', '=', '2.Indexada 2.0TD Península SOCIAL')])[0]
+        self.pp_social_periodes_id = self.imd_obj.get_object_reference(
+            self.cursor, self.uid, "www_som", "tarifa_20TD_SOM_SOCIAL"
+        )[1]
+        self.pp_social_periodes_insular_id = self.imd_obj.get_object_reference(
+            self.cursor, self.uid, "www_som", "tarifa_20TD_SOM_INSULAR_SOCIAL"
+        )[1]
+        self.pp_social_indexada_id = self.imd_obj.get_object_reference(
+            self.cursor, self.uid, "www_som", "tarifa_indexada_20TD_peninsula_social"
+        )[1]
+        self.pp_social_indexada_balears_id = self.imd_obj.get_object_reference(
+            self.cursor, self.uid, "www_som", "tarifa_indexada_20TD_balears_social"
+        )[1]
+        self.pp_social_indexada_canaries_id = self.imd_obj.get_object_reference(
+            self.cursor, self.uid, "www_som", "tarifa_indexada_20TD_canaries_social"
+        )[1]
 
         self.tarifa = self.imd_obj.get_object_reference(
             self.cursor, self.uid, 'giscedata_polissa', 'tarifa_20TD'
@@ -346,7 +362,7 @@ class TestPolissa(testing.OOTestCaseWithCursor):
             self.cursor, self.uid, 'giscedata_polissa', "polissa_tarifa_018"
         )[1]
         self.pol_obj.write(self.cursor, self.uid, pol_id, {
-            'llista_preu': self.pp_periodes_regular_id,
+            'llista_preu': self.pp_periodes_peninsula_id,
             'tarifa': self.tarifa,
             'mode_facturacio': 'atr',
         })
@@ -359,11 +375,11 @@ class TestPolissa(testing.OOTestCaseWithCursor):
 
         pol = self.pol_obj.browse(self.cursor, self.uid, pol_id)
         expected_mapping = {
-            self.pp_periodes_regular_id: self.pp_social_periodes_id,
-            self.pp_periodes_insular_id: self.pp_social_periodes_id,
+            self.pp_periodes_peninsula_id: self.pp_social_periodes_id,
+            self.pp_periodes_insular_id: self.pp_social_periodes_insular_id,
             self.pp_indexada_peninsula_id: self.pp_social_indexada_id,
-            self.pp_indexada_balears_id: self.pp_social_indexada_id,
-            self.pp_indexada_canaries_id: self.pp_social_indexada_id,
+            self.pp_indexada_balears_id: self.pp_social_indexada_balears_id,
+            self.pp_indexada_canaries_id: self.pp_social_indexada_canaries_id,
         }
         expected_result = expected_mapping[pol.llista_preu.id]
         self.assertEqual(result, expected_result)
@@ -384,14 +400,14 @@ class TestPolissa(testing.OOTestCaseWithCursor):
             self.cursor, self.uid, pol_id, change_type, context=None
         )
 
-        self.assertEqual(result, self.pp_periodes_regular_id)
+        self.assertEqual(result, self.pp_periodes_peninsula_id)
 
     def test_get_new_tariff_change_social_or_regular__invalid_change(self):
         pol_id = self.imd_obj.get_object_reference(
             self.cursor, self.uid, 'giscedata_polissa', "polissa_tarifa_018"
         )[1]
         self.pol_obj.write(self.cursor, self.uid, pol_id, {
-            'llista_preu': self.pp_periodes_regular_id,
+            'llista_preu': self.pp_periodes_peninsula_id,
             'tarifa': self.tarifa,
             'mode_facturacio': 'atr',
         })

@@ -10,7 +10,7 @@
             <field name="compatible_invoicing_modes" eval="[(4, ref('giscedata_facturacio.mode_facturacio_atr'))]"/>
             <field name="next_pricelist_id" ref="som_indexada.pricelist_periodes_20td_peninsula"/>
         </record>
-        <record model="product.pricelist" id="tarifa_20TD_SOM_SOCIAL">
+        <record model="product.pricelist" id="tarifa_20TD_SOM_INSULAR_SOCIAL">
             <field name="name">2.0TD_SOM_INSULAR_SOCIAL</field>
             <field name="type">sale</field>
             <field name="active">True</field>
