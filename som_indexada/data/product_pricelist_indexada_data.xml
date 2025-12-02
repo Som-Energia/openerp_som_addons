@@ -89,36 +89,42 @@
             <field name="name">Indexada 3.0TD Península 2024</field>
             <field name="type">sale</field>
             <field name="currency_id" ref="base.EUR"/>
+            <field name="tarifes_atr_compatibles" eval="[(4, ref('giscedata_polissa.tarifa_30TD'))]"/>
             <field name="compatible_invoicing_modes" eval="[(4, ref('giscedata_facturacio_indexada.mode_facturacio_index'))]"/>
         </record>
         <record model="product.pricelist" id="pricelist_indexada_30td_balears_2024">
             <field name="name">Indexada 3.0TD Balears 2024</field>
             <field name="type">sale</field>
             <field name="currency_id" ref="base.EUR"/>
+            <field name="tarifes_atr_compatibles" eval="[(4, ref('giscedata_polissa.tarifa_30TD'))]"/>
             <field name="compatible_invoicing_modes" eval="[(4, ref('giscedata_facturacio_indexada.mode_facturacio_index'))]"/>
         </record>
         <record model="product.pricelist" id="pricelist_indexada_30td_canaries_2024">
             <field name="name">Indexada 3.0TD Canàries 2024</field>
             <field name="type">sale</field>
             <field name="currency_id" ref="base.EUR"/>
+            <field name="tarifes_atr_compatibles" eval="[(4, ref('giscedata_polissa.tarifa_30TD'))]"/>
             <field name="compatible_invoicing_modes" eval="[(4, ref('giscedata_facturacio_indexada.mode_facturacio_index'))]"/>
         </record>
         <record model="product.pricelist" id="pricelist_indexada_61td_peninsula_2024">
             <field name="name">Indexada 6.1TD Península 2024</field>
             <field name="type">sale</field>
             <field name="currency_id" ref="base.EUR"/>
+            <field name="tarifes_atr_compatibles" eval="[(4, ref('giscedata_polissa.tarifa_61TD'))]"/>
             <field name="compatible_invoicing_modes" eval="[(4, ref('giscedata_facturacio_indexada.mode_facturacio_index'))]"/>
         </record>
         <record model="product.pricelist" id="pricelist_indexada_61td_balears_2024">
             <field name="name">Indexada 6.1TD Balears 2024</field>
             <field name="type">sale</field>
             <field name="currency_id" ref="base.EUR"/>
+            <field name="tarifes_atr_compatibles" eval="[(4, ref('giscedata_polissa.tarifa_61TD'))]"/>
             <field name="compatible_invoicing_modes" eval="[(4, ref('giscedata_facturacio_indexada.mode_facturacio_index'))]"/>
         </record>
         <record model="product.pricelist" id="pricelist_indexada_61td_canaries_2024">
             <field name="name">Indexada 6.1TD Canàries 2024</field>
             <field name="type">sale</field>
             <field name="currency_id" ref="base.EUR"/>
+            <field name="tarifes_atr_compatibles" eval="[(4, ref('giscedata_polissa.tarifa_61TD'))]"/>
             <field name="compatible_invoicing_modes" eval="[(4, ref('giscedata_facturacio_indexada.mode_facturacio_index'))]"/>
         </record>
         <record model="product.pricelist" id="pricelist_indexada_empresa_peninsula_non_standard_2024">
@@ -143,6 +149,7 @@
             <field name="name">Indexada 3.0TDVE Península 2024</field>
             <field name="type">sale</field>
             <field name="currency_id" ref="base.EUR"/>
+            <field name="tarifes_atr_compatibles" eval="[(4, ref('giscedata_polissa.tarifa_30TD'))]"/>
             <field name="compatible_invoicing_modes" eval="[(4, ref('giscedata_facturacio_indexada.mode_facturacio_index'))]"/>
         </record>
     </data>
