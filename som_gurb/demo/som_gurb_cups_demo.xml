@@ -93,7 +93,7 @@
         </record>
         <record model="account.account" id="account_caja_laboral">
             <field name="name">CAJA LABORAL</field>
-            <field name="code">5572000000007</field>
+            <field name="code">572000000007</field>
             <field name="type">receivable</field>
             <field eval="ref('account.minimal_0')" name="parent_id"/>
             <field name="company_id" ref="base.main_company"/>
