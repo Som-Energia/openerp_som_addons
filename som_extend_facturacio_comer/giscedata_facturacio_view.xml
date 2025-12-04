@@ -46,7 +46,7 @@
             <field name="inherit_id" ref="giscedata_facturacio.view_factura_tree"/>
             <field name="arch" type="xml">
                 <xpath expr="//tree" position="attributes">
-                    <attribute name="status">green:type=='out_invoice';orange:type=='in_invoice'</attribute>
+                    <attribute name="status">green:type in ('out_invoice','out_refund');orange:type in ('in_invoice','in_refund')</attribute>
                 </xpath>
             </field>
         </record>
