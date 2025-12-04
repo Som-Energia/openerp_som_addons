@@ -353,7 +353,7 @@ class GiscedataCrmLead(osv.OsvInherits):
         # fer un tipus de pagament especial per a la quota de soci i despres buscar una remesa
         # oberta o crearla de nou com fa generation a get_or_create_open_payment_order
         payment_mode_id = ir_model_o.get_object_reference(
-            cursor, uid, "som_polissa_soci", "mode_pagament_socis"
+            cursor, uid, "som_leads_polissa", "mode_pagament_socis_factura"
         )[1]
         payment_mode_name = payment_mode_o.read(
             cursor, uid, payment_mode_id, ["name"], context=context
