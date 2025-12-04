@@ -76,5 +76,8 @@
             <field name="file_date">2023-05-03 00:00:00</field>
             <field name="initial_file_date">2023-05-03 00:00:00</field>
         </record>
+        <record id="giscedata_polissa.polissa_tarifa_018" model="giscedata.polissa">
+            <field name="process_id" ref="giscedata_facturacio_comer_bono_social.bono_social_pending_state_process"/>
+        </record>
     </data>
 </openerp>
