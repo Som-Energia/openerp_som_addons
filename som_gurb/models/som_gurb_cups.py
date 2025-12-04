@@ -234,7 +234,7 @@ class SomGurbCups(osv.osv):
 
         # Paguem factura
         pay_account_id = account_o.search(
-            cursor, uid, [('code', '=', '5572000000007')], context=context
+            cursor, uid, [('code', '=', '572000000007')], context=context
         )[0]
         invoice_o.pay_and_reconcile(
             cursor, uid, [inv_id], inv.saldo, pay_account_id, inv.period_id.id, inv.journal_id.id,
