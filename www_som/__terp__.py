@@ -26,7 +26,6 @@ Mòdul per la integració de l'oficina virtual
         "demo/res_partner_demo.xml",
         "demo/indexed_prices_demo.xml",
         "demo/ov_attachment_demo.xml",
-        "demo/polissa_demo.xml",
     ],
     "update_xml": [
         "www_som_data.xml",

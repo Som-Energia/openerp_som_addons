@@ -13,7 +13,7 @@ class TestsModContractual(testing.OOTestCaseWithCursor):
             self.cursor, 1, "giscedata_polissa", "polissa_tarifa_018"
         )[1]
         tarifa_social_id = imd_obj.get_object_reference(
-            self.cursor, 1, "www_som", "pricelist_tarifas_electricidad_20TD_SOM_SOCIAL_test"
+            self.cursor, 1, "www_som", "tarifa_20TD_SOM_INSULAR_SOCIAL"
         )[1]
         pol_obj.send_signal(self.cursor, self.uid, [pol_id], ["validar", "contracte"])
         modcon_ids = modcon_obj.search(
