@@ -50,7 +50,7 @@ class WizardGisceReGenerarOfertaSom(osv.osv_memory):
         self.pool.get('poweremail.templates').generate_mail(
             cursor, uid, template_id, [1], context=ctx)
 
-    def _cron_giscere_daily_offer(self, cursor, uid, context=None):
+    def _cron_giscere_daily_offer(self, cursor, uid, context=None):  # noqa: C901
         """
         CREATE a daily offer for day D+1 for each Offer Unit
         :param cursor: OpenERP DB cursor
