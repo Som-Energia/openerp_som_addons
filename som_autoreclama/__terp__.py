@@ -33,6 +33,7 @@
         "security/ir.model.access.csv",
         "wizard/wizard_massive_create_r1029_view.xml",
         "data/res_config_data.xml",
+        "data/giscedata_atc_tag_data.xml",
     ],
     "active": False,
     "installable": True,
