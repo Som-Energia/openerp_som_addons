@@ -256,6 +256,10 @@ class GiscedataAtc(osv.osv):
                       'num_factura': f1.invoice_number_text}, context=context)
         return atc_id
 
+    def _has_no_NF_readings(self, cursor, uid, polissa_id, context=None):
+        # TODO: under developement
+        return False
+
     def create_ATC_R1_009_from_polissa_via_wizard(self, cursor, uid, polissa_id, context=None):
         subtr_obj = self.pool.get("giscedata.subtipus.reclamacio")
         subtr009_id = subtr_obj.search(cursor, uid, [("name", "=", "009")], context=context)[0]
@@ -289,22 +293,17 @@ class GiscedataAtc(osv.osv):
         pol = pol_obj.browse(cursor, uid, polissa_id, context=context)
 
         if pol.mode_facturacio == 'index':  # indexada
-            tag_name = u"[GEGC] Autocac 009"
+            tag_semantic_id = "tag_som_autoreclama_009_GEGC"
         elif pol.tarifa.name != '2.0TD':  # si 3.X o 6.X o 3.0VE
-            tag_name = u"[GEGC] Autocac 009"
+            tag_semantic_id = "tag_som_autoreclama_009_GEGC"
         elif pol.autoconsumo != '00':  # autoconsumo
-            tag_name = u"[GEA] Autocac 009"
+            tag_semantic_id = "tag_som_autoreclama_009_GEA"
         else:  # resta
-            tag_name = u"[GET] Autocac 009"
-        tag_obj = self.pool.get("giscedata.atc.tag")
-        tag_ids = tag_obj.search(
-            cursor, uid, [('name', '=', tag_name)], context=context
-        )[0]
-
-        channel_obj = self.pool.get("res.partner.canal")
-        canal_id = channel_obj.search(
-            cursor, uid, [("name", "ilike", "intercambi")], context=context
-        )[0]
+            tag_semantic_id = "tag_som_autoreclama_009_GET"
+        imd_obj = self.pool.get("ir.model.data")
+        tag_id = imd_obj.get_object_reference(
+            cursor, uid, "som_autoreclama", tag_semantic_id
+        )[1]
 
         channel_obj = self.pool.get("res.partner.canal")
         if self._has_no_NF_readings(cursor, uid, polissa_id, context):
@@ -318,7 +317,6 @@ class GiscedataAtc(osv.osv):
             )[0]
             tanca_al_finalitzar_r1 = False
 
-        imd_obj = self.pool.get("ir.model.data")
         section_id = imd_obj.get_object_reference(
             cursor, uid, "som_switching", "atc_section_factura"
         )[1]
@@ -328,7 +326,7 @@ class GiscedataAtc(osv.osv):
 
         new_case_data = {
             "polissa_id": polissa_id,
-            "atc_tag_id": tag_ids,
+            "atc_tag_id": tag_id,
             "canal_id": canal_id,
             "descripcio": u"AUTOCAC 009",
             "tanca_al_finalitzar_r1": tanca_al_finalitzar_r1,
