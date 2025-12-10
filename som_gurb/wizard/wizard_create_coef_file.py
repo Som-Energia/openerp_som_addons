@@ -19,7 +19,7 @@ class WizardCreateCoeficicientsFile(osv.osv_memory):
         search_params = [
             ("gurb_cau_id", "=", current_gurb),
             ("active", "=", True),
-            ("start_date", "<=", today),
+            ("inscription_date", "<=", today),
             ("state", "in", [
                 "comming_registration", "comming_modification", "active", "atr_pending"
             ]),

@@ -46,9 +46,14 @@ class ReportBackendSomGurbAcordRepartiment(ReportBackend):
             "cau": gurb.self_consumption_id.cau
         }
 
+        today = datetime.today().strftime('%Y-%m-%d')
         search_params = [
             ("gurb_cau_id", "=", gurb.id),
-            ("active", "=", True)
+            ("active", "=", True),
+            ("inscription_date", "<=", today),
+            ("state", "in", [
+                "comming_registration", "comming_modification", "active", "atr_pending"
+            ]),
         ]
 
         gurb_cups_ids = gurb_cups_o.search(cursor, uid, search_params, context=context)
