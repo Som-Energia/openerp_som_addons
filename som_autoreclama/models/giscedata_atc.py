@@ -321,7 +321,6 @@ class GiscedataAtc(osv.osv):
                 _(u"Error en la creació del CAC R1 009, no s'ha trobat F1 adient!!!")
             )
         f1 = f1_obj.browse(cursor, uid, f1_ids[0], context=context)
-        f1_invoice_number_text = f1.invoice_number_text
 
         if not f1.liniafactura_id:
             raise Exception(
@@ -381,9 +380,9 @@ class GiscedataAtc(osv.osv):
         r101_obj = self.pool.get(ref2[0])
         r101 = r101_obj.browse(cursor, uid, int(ref2[1]), context=context)
 
-        rec_obj = self.pool.get("giscedata.switching.reclamacio")
-        rec_obj.write(cursor, uid, r101.reclamacio_ids[0].id, {
-                      'num_factura': f1_invoice_number_text}, context=context)
+        nf_readings_data.update({'type': '02', 'subtype': '009'})
+        r101_obj.config_step(cursor, uid, r101.id, nf_readings_data, context=context)
+
         return atc_id
 
     # Automatic ATC + [R1] from dictonary / Entry point
