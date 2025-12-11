@@ -256,11 +256,10 @@ class GiscedataAtc(osv.osv):
                       'num_factura': f1.invoice_number_text}, context=context)
         return atc_id
 
-    def _has_no_NF_readings(self, cursor, uid, polissa_id, context=None):
-        # TODO: under developement
-        return False
-
     def create_ATC_R1_009_from_polissa_via_wizard(self, cursor, uid, polissa_id, context=None):
+        if context is None:
+            context = {}
+
         subtr_obj = self.pool.get("giscedata.subtipus.reclamacio")
         subtr009_id = subtr_obj.search(cursor, uid, [("name", "=", "009")], context=context)[0]
         subtr036_id = subtr_obj.search(cursor, uid, [("name", "=", "036")], context=context)[0]
@@ -276,7 +275,7 @@ class GiscedataAtc(osv.osv):
         if atc_ids:
             raise Exception(
                 _(
-                    u"Error en la creació del CAC amb R1 009, ja n'hi ha un CAC  009 en estat obert o pendent amb id {}!!!"  # noqa: E501
+                    u"Error en la creació del CAC R1 009, ja n'hi ha un CAC  009 en estat obert o pendent amb id {}!!!"  # noqa: E501
                 ).format(",".join([str(atc_id) for atc_id in atc_ids]))
             )
         atc_ids = self.search(cursor, uid,
@@ -285,7 +284,7 @@ class GiscedataAtc(osv.osv):
         if atc_ids:
             raise Exception(
                 _(
-                    u"Error en la creació del CAC amb R1 009, ja n'hi ha un CAC 036 en estat obert o pendent amb id {}!!!"  # noqa: E501
+                    u"Error en la creació del CAC R1 009, ja n'hi ha un CAC 036 en estat obert o pendent amb id {}!!!"  # noqa: E501
                 ).format(",".join([str(atc_id) for atc_id in atc_ids]))
             )
 
@@ -305,17 +304,47 @@ class GiscedataAtc(osv.osv):
             cursor, uid, "som_autoreclama", tag_semantic_id
         )[1]
 
-        channel_obj = self.pool.get("res.partner.canal")
-        if self._has_no_NF_readings(cursor, uid, polissa_id, context):
-            canal_id = channel_obj.search(
-                cursor, uid, [("name", "ilike", "intercambi")], context=context
-            )[0]
-            tanca_al_finalitzar_r1 = True
-        else:
-            canal_id = channel_obj.search(
-                cursor, uid, [('name', 'ilike', u'tel%fono')], context=context
-            )[0]
+        f1_obj = self.pool.get("giscedata.facturacio.importacio.linia")
+        f1_ids = f1_obj.search(cursor, uid,
+                               [
+                                   ('cups_id', '=', pol.cups.id),
+                                   ('polissa_id', '=', polissa_id),
+                                   ('import_phase', 'in', [30, 40, 50]),
+                                   ('type_factura', 'in', ['N', 'R', 'G']),
+                                   ('fecha_factura_desde', '!=', None),
+                                   ('fecha_factura_hasta', '!=', None),
+                               ],
+                               order='fecha_factura_hasta DESC',
+                               limit=1)
+        if not f1_ids:
+            raise Exception(
+                _(u"Error en la creació del CAC R1 009, no s'ha trobat F1 adient!!!")
+            )
+        f1 = f1_obj.browse(cursor, uid, f1_ids[0], context=context)
+        f1_invoice_number_text = f1.invoice_number_text
+
+        if not f1.liniafactura_id:
+            raise Exception(
+                _(
+                    u"Error en la creació del CAC R1 009, l'F1 trobat no té factura de proveïdor id f1 {}!!!"  # noqa: E501
+                ).format(f1_ids[0])
+            )
+
+        fact_prov_id = f1.liniafactura_id[0].factura_id.id
+        fact_obj = self.pool.get("giscedata.facturacio.factura")
+        nf_readings_data = fact_obj.get_r101_invoicing_info(
+            cursor, uid, fact_prov_id, context=context)
+
+        if nf_readings_data.get('measures', None):
+            canal_name = u'tel%fono'
             tanca_al_finalitzar_r1 = False
+        else:
+            canal_name = u'intercambi'
+            tanca_al_finalitzar_r1 = True
+        channel_obj = self.pool.get("res.partner.canal")
+        canal_id = channel_obj.search(
+            cursor, uid, [('name', 'ilike', canal_name)], context=context
+        )[0]
 
         section_id = imd_obj.get_object_reference(
             cursor, uid, "som_switching", "atc_section_factura"
@@ -341,8 +370,6 @@ class GiscedataAtc(osv.osv):
         }
 
         atc_id = self.create_general_atc_r1_case_via_wizard(cursor, uid, new_case_data, context)
-
-        f1_invoice_number_text = "TODO"
 
         atc_obj = self.pool.get("giscedata.atc")
         ref = atc_obj.read(cursor, uid, atc_id, ['ref'], context=context)['ref'].split(',')
