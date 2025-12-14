@@ -1,0 +1,2239 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<openerp>
+    <data>
+        <record model="giscedata.signatura.models" id="signatura_model_gkwh_investment">
+            <field name="name" ref="som_generationkwh.model_generationkwh_investment"/>
+        </record>
+        <!-- TODO: See if the old signature code can be erased -->
+        <!--Incloem account.model_account_invoice com a signable-->
+        <record model="giscedata.signatura.models" id="signatura_model_generationkwh_investment">
+            <field name="name" ref="account.model_account_invoice"/>
+        </record>
+
+    </data>
+    <data noupdate="1">
+        <record model="product.category" id="categ_inversions">
+            <field name="name">Inversions</field>
+        </record>
+        <record model="poweremail.core_accounts" id="generation_mail_account">
+            <field name="email_id">generationkwh@somenergia.coop</field>
+            <field name="company">yes</field>
+            <field name="smtpserver">smtp.mandrillapp.com</field>
+            <field name="send_pref">html</field>
+            <field name="name">Generation kWh</field>
+            <field name="state">approved</field>
+            <field name="smtpport">587</field>
+        </record>
+        <record model="poweremail.core_accounts" id="inversions_mail_account">
+            <field name="email_id">invertir@somenergia.coop</field>
+            <field name="company">yes</field>
+            <field name="smtpserver">smtp.mandrillapp.com</field>
+            <field name="send_pref">html</field>
+            <field name="name">Som Energia Invertir</field>
+            <field name="state">approved</field>
+            <field name="smtpport">587</field>
+        </record>
+        <record model="poweremail.core_accounts" id="aportacions_mail_account">
+            <field name="email_id">aporta@somenergia.coop</field>
+            <field name="company">yes</field>
+            <field name="smtpserver">smtp.mandrillapp.com</field>
+            <field name="send_pref">html</field>
+            <field name="name">Som Energia Aporta</field>
+            <field name="state">approved</field>
+            <field name="smtpport">587</field>
+        </record>
+    </data>
+    <data>
+        <!-- GKWH Nous peatges-->
+        <!-- 2.0TD -->
+        <record model="product.category" id="categ_gkwh_t20TD">
+            <field name="name">Generation kWh</field>
+            <field name="parent_id" ref="giscedata_polissa.categ_t20TD"/>
+        </record>
+        <record model="product.product" id="p1_gkwh_tarifa_20TD">
+            <field name="name">P1</field>
+            <field name="categ_id" ref="categ_gkwh_t20TD"/>
+            <field name="type">service</field>
+            <field name="procure_method">make_to_stock</field>
+            <field name="supply_method">buy</field>
+            <field name="uom_id" ref="giscedata_polissa.uom_eneg_elec"/>
+            <field name="uom_po_id" ref="giscedata_polissa.uom_eneg_elec"/>
+        </record>
+        <record model="giscedata.polissa.tarifa.periodes" id="giscedata_polissa.p1_e_tarifa_20TD">
+            <field name="product_gkwh_id" ref="p1_gkwh_tarifa_20TD"/>
+        </record>
+        <record model="product.product" id="p2_gkwh_tarifa_20TD">
+            <field name="name">P2</field>
+            <field name="categ_id" ref="categ_gkwh_t20TD"/>
+            <field name="type">service</field>
+            <field name="procure_method">make_to_stock</field>
+            <field name="supply_method">buy</field>
+            <field name="uom_id" ref="giscedata_polissa.uom_eneg_elec"/>
+            <field name="uom_po_id" ref="giscedata_polissa.uom_eneg_elec"/>
+        </record>
+        <record model="giscedata.polissa.tarifa.periodes" id="giscedata_polissa.p2_e_tarifa_20TD">
+            <field name="product_gkwh_id" ref="p2_gkwh_tarifa_20TD"/>
+        </record>
+        <record model="product.product" id="p3_gkwh_tarifa_20TD">
+            <field name="name">P3</field>
+            <field name="categ_id" ref="categ_gkwh_t20TD"/>
+            <field name="type">service</field>
+            <field name="procure_method">make_to_stock</field>
+            <field name="supply_method">buy</field>
+            <field name="uom_id" ref="giscedata_polissa.uom_eneg_elec"/>
+            <field name="uom_po_id" ref="giscedata_polissa.uom_eneg_elec"/>
+        </record>
+        <record model="giscedata.polissa.tarifa.periodes" id="giscedata_polissa.p3_e_tarifa_20TD">
+            <field name="product_gkwh_id" ref="p3_gkwh_tarifa_20TD"/>
+        </record>
+        <!-- 3.0TD -->
+        <record model="product.category" id="categ_gkwh_t30TD">
+            <field name="name">Generation kWh</field>
+            <field name="parent_id" ref="giscedata_polissa.categ_t30TD"/>
+        </record>
+        <record model="product.product" id="p1_gkwh_tarifa_30TD">
+            <field name="name">P1</field>
+            <field name="categ_id" ref="categ_gkwh_t30TD"/>
+            <field name="type">service</field>
+            <field name="procure_method">make_to_stock</field>
+            <field name="supply_method">buy</field>
+            <field name="uom_id" ref="giscedata_polissa.uom_eneg_elec"/>
+            <field name="uom_po_id" ref="giscedata_polissa.uom_eneg_elec"/>
+        </record>
+        <record model="giscedata.polissa.tarifa.periodes" id="giscedata_polissa.p1_e_tarifa_30TD">
+            <field name="product_gkwh_id" ref="p1_gkwh_tarifa_30TD"/>
+        </record>
+        <record model="product.product" id="p2_gkwh_tarifa_30TD">
+            <field name="name">P2</field>
+            <field name="categ_id" ref="categ_gkwh_t30TD"/>
+            <field name="type">service</field>
+            <field name="procure_method">make_to_stock</field>
+            <field name="supply_method">buy</field>
+            <field name="uom_id" ref="giscedata_polissa.uom_eneg_elec"/>
+            <field name="uom_po_id" ref="giscedata_polissa.uom_eneg_elec"/>
+        </record>
+        <record model="giscedata.polissa.tarifa.periodes" id="giscedata_polissa.p2_e_tarifa_30TD">
+            <field name="product_gkwh_id" ref="p2_gkwh_tarifa_30TD"/>
+        </record>
+        <record model="product.product" id="p3_gkwh_tarifa_30TD">
+            <field name="name">P3</field>
+            <field name="categ_id" ref="categ_gkwh_t30TD"/>
+            <field name="type">service</field>
+            <field name="procure_method">make_to_stock</field>
+            <field name="supply_method">buy</field>
+            <field name="uom_id" ref="giscedata_polissa.uom_eneg_elec"/>
+            <field name="uom_po_id" ref="giscedata_polissa.uom_eneg_elec"/>
+        </record>
+        <record model="giscedata.polissa.tarifa.periodes" id="giscedata_polissa.p3_e_tarifa_30TD">
+            <field name="product_gkwh_id" ref="p3_gkwh_tarifa_30TD"/>
+        </record>
+        <record model="product.product" id="p4_gkwh_tarifa_30TD">
+            <field name="name">P4</field>
+            <field name="categ_id" ref="categ_gkwh_t30TD"/>
+            <field name="type">service</field>
+            <field name="procure_method">make_to_stock</field>
+            <field name="supply_method">buy</field>
+            <field name="uom_id" ref="giscedata_polissa.uom_eneg_elec"/>
+            <field name="uom_po_id" ref="giscedata_polissa.uom_eneg_elec"/>
+        </record>
+        <record model="giscedata.polissa.tarifa.periodes" id="giscedata_polissa.p4_e_tarifa_30TD">
+            <field name="product_gkwh_id" ref="p4_gkwh_tarifa_30TD"/>
+        </record>
+        <record model="product.product" id="p5_gkwh_tarifa_30TD">
+            <field name="name">P5</field>
+            <field name="categ_id" ref="categ_gkwh_t30TD"/>
+            <field name="type">service</field>
+            <field name="procure_method">make_to_stock</field>
+            <field name="supply_method">buy</field>
+            <field name="uom_id" ref="giscedata_polissa.uom_eneg_elec"/>
+            <field name="uom_po_id" ref="giscedata_polissa.uom_eneg_elec"/>
+        </record>
+        <record model="giscedata.polissa.tarifa.periodes" id="giscedata_polissa.p5_e_tarifa_30TD">
+            <field name="product_gkwh_id" ref="p5_gkwh_tarifa_30TD"/>
+        </record>
+        <record model="product.product" id="p6_gkwh_tarifa_30TD">
+            <field name="name">P6</field>
+            <field name="categ_id" ref="categ_gkwh_t30TD"/>
+            <field name="type">service</field>
+            <field name="procure_method">make_to_stock</field>
+            <field name="supply_method">buy</field>
+            <field name="uom_id" ref="giscedata_polissa.uom_eneg_elec"/>
+            <field name="uom_po_id" ref="giscedata_polissa.uom_eneg_elec"/>
+        </record>
+        <record model="giscedata.polissa.tarifa.periodes" id="giscedata_polissa.p6_e_tarifa_30TD">
+            <field name="product_gkwh_id" ref="p6_gkwh_tarifa_30TD"/>
+        </record>
+        <!-- 6.1TD -->
+        <record model="product.category" id="categ_gkwh_t61TD">
+            <field name="name">Generation kWh</field>
+            <field name="parent_id" ref="giscedata_polissa.categ_t61TD"/>
+        </record>
+        <record model="product.product" id="p1_gkwh_tarifa_61TD">
+            <field name="name">P1</field>
+            <field name="categ_id" ref="categ_gkwh_t61TD"/>
+            <field name="type">service</field>
+            <field name="procure_method">make_to_stock</field>
+            <field name="supply_method">buy</field>
+            <field name="uom_id" ref="giscedata_polissa.uom_eneg_elec"/>
+            <field name="uom_po_id" ref="giscedata_polissa.uom_eneg_elec"/>
+        </record>
+        <record model="giscedata.polissa.tarifa.periodes" id="giscedata_polissa.p1_e_tarifa_61TD">
+            <field name="product_gkwh_id" ref="p1_gkwh_tarifa_61TD"/>
+        </record>
+        <record model="product.product" id="p2_gkwh_tarifa_61TD">
+            <field name="name">P2</field>
+            <field name="categ_id" ref="categ_gkwh_t61TD"/>
+            <field name="type">service</field>
+            <field name="procure_method">make_to_stock</field>
+            <field name="supply_method">buy</field>
+            <field name="uom_id" ref="giscedata_polissa.uom_eneg_elec"/>
+            <field name="uom_po_id" ref="giscedata_polissa.uom_eneg_elec"/>
+        </record>
+        <record model="giscedata.polissa.tarifa.periodes" id="giscedata_polissa.p2_e_tarifa_61TD">
+            <field name="product_gkwh_id" ref="p2_gkwh_tarifa_61TD"/>
+        </record>
+        <record model="product.product" id="p3_gkwh_tarifa_61TD">
+            <field name="name">P3</field>
+            <field name="categ_id" ref="categ_gkwh_t61TD"/>
+            <field name="type">service</field>
+            <field name="procure_method">make_to_stock</field>
+            <field name="supply_method">buy</field>
+            <field name="uom_id" ref="giscedata_polissa.uom_eneg_elec"/>
+            <field name="uom_po_id" ref="giscedata_polissa.uom_eneg_elec"/>
+        </record>
+        <record model="giscedata.polissa.tarifa.periodes" id="giscedata_polissa.p3_e_tarifa_61TD">
+            <field name="product_gkwh_id" ref="p3_gkwh_tarifa_61TD"/>
+        </record>
+        <record model="product.product" id="p4_gkwh_tarifa_61TD">
+            <field name="name">P4</field>
+            <field name="categ_id" ref="categ_gkwh_t61TD"/>
+            <field name="type">service</field>
+            <field name="procure_method">make_to_stock</field>
+            <field name="supply_method">buy</field>
+            <field name="uom_id" ref="giscedata_polissa.uom_eneg_elec"/>
+            <field name="uom_po_id" ref="giscedata_polissa.uom_eneg_elec"/>
+        </record>
+        <record model="giscedata.polissa.tarifa.periodes" id="giscedata_polissa.p4_e_tarifa_61TD">
+            <field name="product_gkwh_id" ref="p4_gkwh_tarifa_61TD"/>
+        </record>
+        <record model="product.product" id="p5_gkwh_tarifa_61TD">
+            <field name="name">P5</field>
+            <field name="categ_id" ref="categ_gkwh_t61TD"/>
+            <field name="type">service</field>
+            <field name="procure_method">make_to_stock</field>
+            <field name="supply_method">buy</field>
+            <field name="uom_id" ref="giscedata_polissa.uom_eneg_elec"/>
+            <field name="uom_po_id" ref="giscedata_polissa.uom_eneg_elec"/>
+        </record>
+        <record model="giscedata.polissa.tarifa.periodes" id="giscedata_polissa.p5_e_tarifa_61TD">
+            <field name="product_gkwh_id" ref="p5_gkwh_tarifa_61TD"/>
+        </record>
+        <record model="product.product" id="p6_gkwh_tarifa_61TD">
+            <field name="name">P6</field>
+            <field name="categ_id" ref="categ_gkwh_t61TD"/>
+            <field name="type">service</field>
+            <field name="procure_method">make_to_stock</field>
+            <field name="supply_method">buy</field>
+            <field name="uom_id" ref="giscedata_polissa.uom_eneg_elec"/>
+            <field name="uom_po_id" ref="giscedata_polissa.uom_eneg_elec"/>
+        </record>
+        <record model="giscedata.polissa.tarifa.periodes" id="giscedata_polissa.p6_e_tarifa_61TD">
+            <field name="product_gkwh_id" ref="p6_gkwh_tarifa_61TD"/>
+        </record>
+        <!-- 3.0TDVE -->
+        <record model="product.category" id="categ_gkwh_t30TDVE">
+            <field name="name">Generation kWh</field>
+            <field name="parent_id" ref="giscedata_polissa.categ_t30TDVE"/>
+        </record>
+        <record model="product.product" id="p1_gkwh_tarifa_30TDVE">
+            <field name="name">P1</field>
+            <field name="categ_id" ref="categ_gkwh_t30TDVE"/>
+            <field name="type">service</field>
+            <field name="procure_method">make_to_stock</field>
+            <field name="supply_method">buy</field>
+            <field name="uom_id" ref="giscedata_polissa.uom_eneg_elec"/>
+            <field name="uom_po_id" ref="giscedata_polissa.uom_eneg_elec"/>
+        </record>
+        <record model="giscedata.polissa.tarifa.periodes" id="giscedata_polissa.p1_e_tarifa_30TDVE">
+            <field name="product_gkwh_id" ref="p1_gkwh_tarifa_30TDVE"/>
+        </record>
+        <record model="product.product" id="p2_gkwh_tarifa_30TDVE">
+            <field name="name">P2</field>
+            <field name="categ_id" ref="categ_gkwh_t30TDVE"/>
+            <field name="type">service</field>
+            <field name="procure_method">make_to_stock</field>
+            <field name="supply_method">buy</field>
+            <field name="uom_id" ref="giscedata_polissa.uom_eneg_elec"/>
+            <field name="uom_po_id" ref="giscedata_polissa.uom_eneg_elec"/>
+        </record>
+        <record model="giscedata.polissa.tarifa.periodes" id="giscedata_polissa.p2_e_tarifa_30TDVE">
+            <field name="product_gkwh_id" ref="p2_gkwh_tarifa_30TDVE"/>
+        </record>
+        <record model="product.product" id="p3_gkwh_tarifa_30TDVE">
+            <field name="name">P3</field>
+            <field name="categ_id" ref="categ_gkwh_t30TDVE"/>
+            <field name="type">service</field>
+            <field name="procure_method">make_to_stock</field>
+            <field name="supply_method">buy</field>
+            <field name="uom_id" ref="giscedata_polissa.uom_eneg_elec"/>
+            <field name="uom_po_id" ref="giscedata_polissa.uom_eneg_elec"/>
+        </record>
+        <record model="giscedata.polissa.tarifa.periodes" id="giscedata_polissa.p3_e_tarifa_30TDVE">
+            <field name="product_gkwh_id" ref="p3_gkwh_tarifa_30TDVE"/>
+        </record>
+        <record model="product.product" id="p4_gkwh_tarifa_30TDVE">
+            <field name="name">P4</field>
+            <field name="categ_id" ref="categ_gkwh_t30TDVE"/>
+            <field name="type">service</field>
+            <field name="procure_method">make_to_stock</field>
+            <field name="supply_method">buy</field>
+            <field name="uom_id" ref="giscedata_polissa.uom_eneg_elec"/>
+            <field name="uom_po_id" ref="giscedata_polissa.uom_eneg_elec"/>
+        </record>
+        <record model="giscedata.polissa.tarifa.periodes" id="giscedata_polissa.p4_e_tarifa_30TDVE">
+            <field name="product_gkwh_id" ref="p4_gkwh_tarifa_30TDVE"/>
+        </record>
+        <record model="product.product" id="p5_gkwh_tarifa_30TDVE">
+            <field name="name">P5</field>
+            <field name="categ_id" ref="categ_gkwh_t30TDVE"/>
+            <field name="type">service</field>
+            <field name="procure_method">make_to_stock</field>
+            <field name="supply_method">buy</field>
+            <field name="uom_id" ref="giscedata_polissa.uom_eneg_elec"/>
+            <field name="uom_po_id" ref="giscedata_polissa.uom_eneg_elec"/>
+        </record>
+        <record model="giscedata.polissa.tarifa.periodes" id="giscedata_polissa.p5_e_tarifa_30TDVE">
+            <field name="product_gkwh_id" ref="p5_gkwh_tarifa_30TDVE"/>
+        </record>
+        <record model="product.product" id="p6_gkwh_tarifa_30TDVE">
+            <field name="name">P6</field>
+            <field name="categ_id" ref="categ_gkwh_t30TDVE"/>
+            <field name="type">service</field>
+            <field name="procure_method">make_to_stock</field>
+            <field name="supply_method">buy</field>
+            <field name="uom_id" ref="giscedata_polissa.uom_eneg_elec"/>
+            <field name="uom_po_id" ref="giscedata_polissa.uom_eneg_elec"/>
+        </record>
+        <record model="giscedata.polissa.tarifa.periodes" id="giscedata_polissa.p6_e_tarifa_30TDVE">
+            <field name="product_gkwh_id" ref="p6_gkwh_tarifa_30TDVE"/>
+        </record>
+        <!-- 6.1TDVE -->
+        <record model="product.category" id="categ_gkwh_t61TDVE">
+            <field name="name">Generation kWh</field>
+            <field name="parent_id" ref="giscedata_polissa.categ_t61TDVE"/>
+        </record>
+        <record model="product.product" id="p1_gkwh_tarifa_61TDVE">
+            <field name="name">P1</field>
+            <field name="categ_id" ref="categ_gkwh_t61TDVE"/>
+            <field name="type">service</field>
+            <field name="procure_method">make_to_stock</field>
+            <field name="supply_method">buy</field>
+            <field name="uom_id" ref="giscedata_polissa.uom_eneg_elec"/>
+            <field name="uom_po_id" ref="giscedata_polissa.uom_eneg_elec"/>
+        </record>
+        <record model="giscedata.polissa.tarifa.periodes" id="giscedata_polissa.p1_e_tarifa_61TDVE">
+            <field name="product_gkwh_id" ref="p1_gkwh_tarifa_61TDVE"/>
+        </record>
+        <record model="product.product" id="p2_gkwh_tarifa_61TDVE">
+            <field name="name">P2</field>
+            <field name="categ_id" ref="categ_gkwh_t61TDVE"/>
+            <field name="type">service</field>
+            <field name="procure_method">make_to_stock</field>
+            <field name="supply_method">buy</field>
+            <field name="uom_id" ref="giscedata_polissa.uom_eneg_elec"/>
+            <field name="uom_po_id" ref="giscedata_polissa.uom_eneg_elec"/>
+        </record>
+        <record model="giscedata.polissa.tarifa.periodes" id="giscedata_polissa.p2_e_tarifa_61TDVE">
+            <field name="product_gkwh_id" ref="p2_gkwh_tarifa_61TDVE"/>
+        </record>
+        <record model="product.product" id="p3_gkwh_tarifa_61TDVE">
+            <field name="name">P3</field>
+            <field name="categ_id" ref="categ_gkwh_t61TDVE"/>
+            <field name="type">service</field>
+            <field name="procure_method">make_to_stock</field>
+            <field name="supply_method">buy</field>
+            <field name="uom_id" ref="giscedata_polissa.uom_eneg_elec"/>
+            <field name="uom_po_id" ref="giscedata_polissa.uom_eneg_elec"/>
+        </record>
+        <record model="giscedata.polissa.tarifa.periodes" id="giscedata_polissa.p3_e_tarifa_61TDVE">
+            <field name="product_gkwh_id" ref="p3_gkwh_tarifa_61TDVE"/>
+        </record>
+        <record model="product.product" id="p4_gkwh_tarifa_61TDVE">
+            <field name="name">P4</field>
+            <field name="categ_id" ref="categ_gkwh_t61TDVE"/>
+            <field name="type">service</field>
+            <field name="procure_method">make_to_stock</field>
+            <field name="supply_method">buy</field>
+            <field name="uom_id" ref="giscedata_polissa.uom_eneg_elec"/>
+            <field name="uom_po_id" ref="giscedata_polissa.uom_eneg_elec"/>
+        </record>
+        <record model="giscedata.polissa.tarifa.periodes" id="giscedata_polissa.p4_e_tarifa_61TDVE">
+            <field name="product_gkwh_id" ref="p4_gkwh_tarifa_61TDVE"/>
+        </record>
+        <record model="product.product" id="p5_gkwh_tarifa_61TDVE">
+            <field name="name">P5</field>
+            <field name="categ_id" ref="categ_gkwh_t61TDVE"/>
+            <field name="type">service</field>
+            <field name="procure_method">make_to_stock</field>
+            <field name="supply_method">buy</field>
+            <field name="uom_id" ref="giscedata_polissa.uom_eneg_elec"/>
+            <field name="uom_po_id" ref="giscedata_polissa.uom_eneg_elec"/>
+        </record>
+        <record model="giscedata.polissa.tarifa.periodes" id="giscedata_polissa.p5_e_tarifa_61TDVE">
+            <field name="product_gkwh_id" ref="p5_gkwh_tarifa_61TDVE"/>
+        </record>
+        <record model="product.product" id="p6_gkwh_tarifa_61TDVE">
+            <field name="name">P6</field>
+            <field name="categ_id" ref="categ_gkwh_t61TDVE"/>
+            <field name="type">service</field>
+            <field name="procure_method">make_to_stock</field>
+            <field name="supply_method">buy</field>
+            <field name="uom_id" ref="giscedata_polissa.uom_eneg_elec"/>
+            <field name="uom_po_id" ref="giscedata_polissa.uom_eneg_elec"/>
+        </record>
+        <record model="giscedata.polissa.tarifa.periodes" id="giscedata_polissa.p6_e_tarifa_61TDVE">
+            <field name="product_gkwh_id" ref="p6_gkwh_tarifa_61TDVE"/>
+        </record>
+    </data>
+    <data>
+        <!-- GKWH Products-->
+        <!-- Products categories to invoice  GkWh -->
+        <record model="product.category" id="categ_gkwh_t20A_new">
+            <field name="name">Generation kWh</field>
+            <field name="parent_id" ref="giscedata_polissa.categ_t20A_new"/>
+        </record>
+        <record model="product.category" id="categ_gkwh_t20DHA_new">
+            <field name="name">Generation kWh</field>
+            <field name="parent_id" ref="giscedata_polissa.categ_t20DHA_new"/>
+        </record>
+        <record model="product.category" id="categ_gkwh_t20DHS">
+            <field name="name">Generation kWh</field>
+            <field name="parent_id" ref="giscedata_polissa.categ_t20DHS"/>
+        </record>
+        <record model="product.category" id="categ_gkwh_t20A">
+            <field name="name">Generation kWh</field>
+            <field name="parent_id" ref="giscedata_polissa.categ_t20A"/>
+        </record>
+        <record model="product.category" id="categ_gkwh_t20DHA">
+            <field name="name">Generation kWh</field>
+            <field name="parent_id" ref="giscedata_polissa.categ_t20DHA"/>
+        </record>
+        <record model="product.category" id="categ_gkwh_t21DHS">
+            <field name="name">Generation kWh</field>
+            <field name="parent_id" ref="giscedata_polissa.categ_t21DHS"/>
+        </record>
+        <record model="product.category" id="categ_gkwh_t30A">
+            <field name="name">Generation kWh</field>
+            <field name="parent_id" ref="giscedata_polissa.categ_t30A"/>
+        </record>
+        <record model="product.category" id="categ_gkwh_t31A">
+            <field name="name">Generation kWh</field>
+            <field name="parent_id" ref="giscedata_polissa.categ_t31A"/>
+        </record>
+        <record model="product.category" id="categ_gkwh_t31A_LB">
+            <field name="name">Generation kWh</field>
+            <field name="parent_id" ref="giscedata_polissa.categ_t31A_LB"/>
+        </record>
+        <record model="product.category" id="categ_gkwh_t61">
+            <field name="name">Generation kWh</field>
+            <field name="parent_id" ref="giscedata_polissa.categ_t61"/>
+        </record>
+        <record model="product.category" id="categ_gkwh_t61a">
+            <field name="name">Generation kWh</field>
+            <field name="parent_id" ref="giscedata_polissa.categ_t61a"/>
+        </record>
+        <record model="product.category" id="categ_gkwh_t61b">
+            <field name="name">Generation kWh</field>
+            <field name="parent_id" ref="giscedata_polissa.categ_t61b"/>
+        </record>
+        <record model="product.category" id="categ_gkwh_t63">
+            <field name="name">Generation kWh</field>
+            <field name="parent_id" ref="giscedata_polissa.categ_t61b"/>
+        </record>
+        <record model="product.category" id="categ_gkwh_t62">
+            <field name="name">Generation kWh</field>
+            <field name="parent_id" ref="giscedata_polissa.categ_t62"/>
+        </record>
+        <record model="product.category" id="categ_gkwh_t63">
+            <field name="name">Generation kWh</field>
+            <field name="parent_id" ref="giscedata_polissa.categ_t63"/>
+        </record>
+        <record model="product.category" id="categ_gkwh_t64">
+            <field name="name">Generation kWh</field>
+            <field name="parent_id" ref="giscedata_polissa.categ_t64"/>
+        </record>
+        <record model="product.category" id="categ_gkwh_t65">
+            <field name="name">Generation kWh</field>
+            <field name="parent_id" ref="giscedata_polissa.categ_t65"/>
+        </record>
+        <!-- Generation kWh Products -->
+        <!-- TARIFA 2.0A -->
+        <record model="product.product" id="p1_gkwh_tarifa_20A_new">
+            <field name="name">P1</field>
+            <field name="categ_id" ref="categ_gkwh_t20A_new"/>
+            <field name="type">service</field>
+            <field name="procure_method">make_to_stock</field>
+            <field name="supply_method">buy</field>
+            <field name="uom_id" ref="giscedata_polissa.uom_eneg_elec"/>
+            <field name="uom_po_id" ref="giscedata_polissa.uom_eneg_elec"/>
+        </record>
+        <record model="giscedata.polissa.tarifa.periodes" id="giscedata_polissa.p1_e_tarifa_20A_new">
+            <field name="product_gkwh_id" ref="p1_gkwh_tarifa_20A_new"/>
+        </record>
+        <!-- TARIFA 2.1A -->
+        <record model="product.product" id="p1_gkwh_tarifa_20A">
+            <field name="name">P1</field>
+            <field name="categ_id" ref="categ_gkwh_t20A"/>
+            <field name="type">service</field>
+            <field name="procure_method">make_to_stock</field>
+            <field name="supply_method">buy</field>
+            <field name="uom_id" ref="giscedata_polissa.uom_eneg_elec"/>
+            <field name="uom_po_id" ref="giscedata_polissa.uom_eneg_elec"/>
+        </record>
+        <record model="giscedata.polissa.tarifa.periodes" id="giscedata_polissa.p1_e_tarifa_20A">
+            <field name="product_gkwh_id" ref="p1_gkwh_tarifa_20A"/>
+        </record>
+        <!-- TARIFA 2.0DHA -->
+        <record model="product.product" id="p1_gkwh_tarifa_20DHA_new">
+            <field name="name">P1</field>
+            <field name="categ_id" ref="categ_gkwh_t20DHA_new"/>
+            <field name="type">service</field>
+            <field name="procure_method">make_to_stock</field>
+            <field name="supply_method">buy</field>
+            <field name="uom_id" ref="giscedata_polissa.uom_eneg_elec"/>
+            <field name="uom_po_id" ref="giscedata_polissa.uom_eneg_elec"/>
+        </record>
+        <record model="giscedata.polissa.tarifa.periodes" id="giscedata_polissa.p1_e_tarifa_20DHA_new">
+            <field name="product_gkwh_id" ref="p1_gkwh_tarifa_20DHA_new"/>
+        </record>
+        <record model="product.product" id="p2_gkwh_tarifa_20DHA_new">
+            <field name="name">P2</field>
+            <field name="categ_id" ref="categ_gkwh_t20DHA_new"/>
+            <field name="type">service</field>
+            <field name="procure_method">make_to_stock</field>
+            <field name="supply_method">buy</field>
+            <field name="uom_id" ref="giscedata_polissa.uom_eneg_elec"/>
+            <field name="uom_po_id" ref="giscedata_polissa.uom_eneg_elec"/>
+        </record>
+        <record model="giscedata.polissa.tarifa.periodes" id="giscedata_polissa.p2_e_tarifa_20DHA_new">
+            <field name="product_gkwh_id" ref="p2_gkwh_tarifa_20DHA_new"/>
+        </record>
+        <!-- TARIFA 2.0DHS -->
+        <record model="product.product" id="p1_gkwh_tarifa_20DHS">
+            <field name="name">P1</field>
+            <field name="categ_id" ref="categ_gkwh_t20DHS"/>
+            <field name="type">service</field>
+            <field name="procure_method">make_to_stock</field>
+            <field name="supply_method">buy</field>
+            <field name="uom_id" ref="giscedata_polissa.uom_eneg_elec"/>
+            <field name="uom_po_id" ref="giscedata_polissa.uom_eneg_elec"/>
+        </record>
+        <record model="giscedata.polissa.tarifa.periodes" id="giscedata_polissa.p1_e_tarifa_20DHS">
+            <field name="product_gkwh_id" ref="p1_gkwh_tarifa_20DHS"/>
+        </record>
+        <record model="product.product" id="p2_gkwh_tarifa_20DHS">
+            <field name="name">P2</field>
+            <field name="categ_id" ref="categ_gkwh_t20DHS"/>
+            <field name="type">service</field>
+            <field name="procure_method">make_to_stock</field>
+            <field name="supply_method">buy</field>
+            <field name="uom_id" ref="giscedata_polissa.uom_eneg_elec"/>
+            <field name="uom_po_id" ref="giscedata_polissa.uom_eneg_elec"/>
+        </record>
+        <record model="giscedata.polissa.tarifa.periodes" id="giscedata_polissa.p2_e_tarifa_20DHS">
+            <field name="product_gkwh_id" ref="p2_gkwh_tarifa_20DHS"/>
+        </record>
+        <record model="product.product" id="p3_gkwh_tarifa_20DHS">
+            <field name="name">P3</field>
+            <field name="categ_id" ref="categ_gkwh_t20DHS"/>
+            <field name="type">service</field>
+            <field name="procure_method">make_to_stock</field>
+            <field name="supply_method">buy</field>
+            <field name="uom_id" ref="giscedata_polissa.uom_eneg_elec"/>
+            <field name="uom_po_id" ref="giscedata_polissa.uom_eneg_elec"/>
+        </record>
+        <record model="giscedata.polissa.tarifa.periodes" id="giscedata_polissa.p3_e_tarifa_20DHS">
+            <field name="product_gkwh_id" ref="p3_gkwh_tarifa_20DHS"/>
+        </record>
+        <!-- TARIFA 2.1DHA -->
+        <record model="product.product" id="p1_gkwh_tarifa_20DHA">
+            <field name="name">P1</field>
+            <field name="categ_id" ref="categ_gkwh_t20DHA"/>
+            <field name="type">service</field>
+            <field name="procure_method">make_to_stock</field>
+            <field name="supply_method">buy</field>
+            <field name="uom_id" ref="giscedata_polissa.uom_eneg_elec"/>
+            <field name="uom_po_id" ref="giscedata_polissa.uom_eneg_elec"/>
+        </record>
+        <record model="giscedata.polissa.tarifa.periodes" id="giscedata_polissa.p1_e_tarifa_20DHA">
+            <field name="product_gkwh_id" ref="p1_gkwh_tarifa_20DHA"/>
+        </record>
+        <record model="product.product" id="p2_gkwh_tarifa_20DHA">
+            <field name="name">P2</field>
+            <field name="categ_id" ref="categ_gkwh_t20DHA"/>
+            <field name="type">service</field>
+            <field name="procure_method">make_to_stock</field>
+            <field name="supply_method">buy</field>
+            <field name="uom_id" ref="giscedata_polissa.uom_eneg_elec"/>
+            <field name="uom_po_id" ref="giscedata_polissa.uom_eneg_elec"/>
+        </record>
+        <record model="giscedata.polissa.tarifa.periodes" id="giscedata_polissa.p2_e_tarifa_20DHA">
+            <field name="product_gkwh_id" ref="p2_gkwh_tarifa_20DHA"/>
+        </record>
+        <!-- TARIFA 2.1DHS -->
+        <record model="product.product" id="p1_gkwh_tarifa_21DHS">
+            <field name="name">P1</field>
+            <field name="categ_id" ref="categ_gkwh_t21DHS"/>
+            <field name="type">service</field>
+            <field name="procure_method">make_to_stock</field>
+            <field name="supply_method">buy</field>
+            <field name="uom_id" ref="giscedata_polissa.uom_eneg_elec"/>
+            <field name="uom_po_id" ref="giscedata_polissa.uom_eneg_elec"/>
+        </record>
+        <record model="giscedata.polissa.tarifa.periodes" id="giscedata_polissa.p1_e_tarifa_21DHS">
+            <field name="product_gkwh_id" ref="p1_gkwh_tarifa_21DHS"/>
+        </record>
+        <record model="product.product" id="p2_gkwh_tarifa_21DHS">
+            <field name="name">P2</field>
+            <field name="categ_id" ref="categ_gkwh_t21DHS"/>
+            <field name="type">service</field>
+            <field name="procure_method">make_to_stock</field>
+            <field name="supply_method">buy</field>
+            <field name="uom_id" ref="giscedata_polissa.uom_eneg_elec"/>
+            <field name="uom_po_id" ref="giscedata_polissa.uom_eneg_elec"/>
+        </record>
+        <record model="giscedata.polissa.tarifa.periodes" id="giscedata_polissa.p2_e_tarifa_21DHS">
+            <field name="product_gkwh_id" ref="p2_gkwh_tarifa_21DHS"/>
+        </record>
+        <record model="product.product" id="p3_gkwh_tarifa_21DHS">
+            <field name="name">P3</field>
+            <field name="categ_id" ref="categ_gkwh_t21DHS"/>
+            <field name="type">service</field>
+            <field name="procure_method">make_to_stock</field>
+            <field name="supply_method">buy</field>
+            <field name="uom_id" ref="giscedata_polissa.uom_eneg_elec"/>
+            <field name="uom_po_id" ref="giscedata_polissa.uom_eneg_elec"/>
+        </record>
+        <record model="giscedata.polissa.tarifa.periodes" id="giscedata_polissa.p3_e_tarifa_21DHS">
+            <field name="product_gkwh_id" ref="p3_gkwh_tarifa_21DHS"/>
+        </record>
+        <!-- TARIFA 3.0A -->
+        <record model="product.product" id="p1_gkwh_tarifa_30A">
+            <field name="name">P1</field>
+            <field name="categ_id" ref="categ_gkwh_t30A"/>
+            <field name="type">service</field>
+            <field name="procure_method">make_to_stock</field>
+            <field name="supply_method">buy</field>
+            <field name="uom_id" ref="giscedata_polissa.uom_eneg_elec"/>
+            <field name="uom_po_id" ref="giscedata_polissa.uom_eneg_elec"/>
+        </record>
+        <record model="giscedata.polissa.tarifa.periodes" id="giscedata_polissa.p1_e_tarifa_30A">
+            <field name="product_gkwh_id" ref="p1_gkwh_tarifa_30A"/>
+        </record>
+        <record model="product.product" id="p2_gkwh_tarifa_30A">
+            <field name="name">P2</field>
+            <field name="categ_id" ref="categ_gkwh_t30A"/>
+            <field name="type">service</field>
+            <field name="procure_method">make_to_stock</field>
+            <field name="supply_method">buy</field>
+            <field name="uom_id" ref="giscedata_polissa.uom_eneg_elec"/>
+            <field name="uom_po_id" ref="giscedata_polissa.uom_eneg_elec"/>
+        </record>
+        <record model="giscedata.polissa.tarifa.periodes" id="giscedata_polissa.p2_e_tarifa_30A">
+            <field name="product_gkwh_id" ref="p2_gkwh_tarifa_30A"/>
+        </record>
+        <record model="product.product" id="p3_gkwh_tarifa_30A">
+            <field name="name">P3</field>
+            <field name="categ_id" ref="categ_gkwh_t30A"/>
+            <field name="type">service</field>
+            <field name="procure_method">make_to_stock</field>
+            <field name="supply_method">buy</field>
+            <field name="uom_id" ref="giscedata_polissa.uom_eneg_elec"/>
+            <field name="uom_po_id" ref="giscedata_polissa.uom_eneg_elec"/>
+        </record>
+        <record model="giscedata.polissa.tarifa.periodes" id="giscedata_polissa.p3_e_tarifa_30A">
+            <field name="product_gkwh_id" ref="p3_gkwh_tarifa_30A"/>
+        </record>
+        <record model="product.product" id="p4_gkwh_tarifa_30A">
+            <field name="name">P4</field>
+            <field name="categ_id" ref="categ_gkwh_t30A"/>
+            <field name="type">service</field>
+            <field name="procure_method">make_to_stock</field>
+            <field name="supply_method">buy</field>
+            <field name="uom_id" ref="giscedata_polissa.uom_eneg_elec"/>
+            <field name="uom_po_id" ref="giscedata_polissa.uom_eneg_elec"/>
+        </record>
+        <record model="giscedata.polissa.tarifa.periodes" id="giscedata_polissa.p4_e_tarifa_30A">
+            <field name="product_gkwh_id" ref="p4_gkwh_tarifa_30A"/>
+        </record>
+        <record model="product.product" id="p5_gkwh_tarifa_30A">
+            <field name="name">P5</field>
+            <field name="categ_id" ref="categ_gkwh_t30A"/>
+            <field name="type">service</field>
+            <field name="procure_method">make_to_stock</field>
+            <field name="supply_method">buy</field>
+            <field name="uom_id" ref="giscedata_polissa.uom_eneg_elec"/>
+            <field name="uom_po_id" ref="giscedata_polissa.uom_eneg_elec"/>
+        </record>
+        <record model="giscedata.polissa.tarifa.periodes" id="giscedata_polissa.p5_e_tarifa_30A">
+            <field name="product_gkwh_id" ref="p5_gkwh_tarifa_30A"/>
+        </record>
+        <record model="product.product" id="p6_gkwh_tarifa_30A">
+            <field name="name">P6</field>
+            <field name="categ_id" ref="categ_gkwh_t30A"/>
+            <field name="type">service</field>
+            <field name="procure_method">make_to_stock</field>
+            <field name="supply_method">buy</field>
+            <field name="uom_id" ref="giscedata_polissa.uom_eneg_elec"/>
+            <field name="uom_po_id" ref="giscedata_polissa.uom_eneg_elec"/>
+        </record>
+        <record model="giscedata.polissa.tarifa.periodes" id="giscedata_polissa.p6_e_tarifa_30A">
+            <field name="product_gkwh_id" ref="p6_gkwh_tarifa_30A"/>
+        </record>
+        <!-- TARIFA 3.1A -->
+        <record model="product.product" id="p1_gkwh_tarifa_31A">
+            <field name="name">P1</field>
+            <field name="categ_id" ref="categ_gkwh_t31A"/>
+            <field name="type">service</field>
+            <field name="procure_method">make_to_stock</field>
+            <field name="supply_method">buy</field>
+            <field name="uom_id" ref="giscedata_polissa.uom_eneg_elec"/>
+            <field name="uom_po_id" ref="giscedata_polissa.uom_eneg_elec"/>
+        </record>
+        <record model="giscedata.polissa.tarifa.periodes" id="giscedata_polissa.p1_e_tarifa_31A">
+            <field name="product_gkwh_id" ref="p1_gkwh_tarifa_31A"/>
+        </record>
+        <record model="product.product" id="p2_gkwh_tarifa_31A">
+            <field name="name">P2</field>
+            <field name="categ_id" ref="categ_gkwh_t31A"/>
+            <field name="type">service</field>
+            <field name="procure_method">make_to_stock</field>
+            <field name="supply_method">buy</field>
+            <field name="uom_id" ref="giscedata_polissa.uom_eneg_elec"/>
+            <field name="uom_po_id" ref="giscedata_polissa.uom_eneg_elec"/>
+        </record>
+        <record model="giscedata.polissa.tarifa.periodes" id="giscedata_polissa.p2_e_tarifa_31A">
+            <field name="product_gkwh_id" ref="p2_gkwh_tarifa_31A"/>
+        </record>
+        <record model="product.product" id="p3_gkwh_tarifa_31A">
+            <field name="name">P3</field>
+            <field name="categ_id" ref="categ_gkwh_t31A"/>
+            <field name="type">service</field>
+            <field name="procure_method">make_to_stock</field>
+            <field name="supply_method">buy</field>
+            <field name="uom_id" ref="giscedata_polissa.uom_eneg_elec"/>
+            <field name="uom_po_id" ref="giscedata_polissa.uom_eneg_elec"/>
+        </record>
+        <record model="giscedata.polissa.tarifa.periodes" id="giscedata_polissa.p3_e_tarifa_31A">
+            <field name="product_gkwh_id" ref="p3_gkwh_tarifa_31A"/>
+        </record>
+        <record model="product.product" id="p4_gkwh_tarifa_31A">
+            <field name="name">P4</field>
+            <field name="categ_id" ref="categ_gkwh_t31A"/>
+            <field name="type">service</field>
+            <field name="procure_method">make_to_stock</field>
+            <field name="supply_method">buy</field>
+            <field name="uom_id" ref="giscedata_polissa.uom_eneg_elec"/>
+            <field name="uom_po_id" ref="giscedata_polissa.uom_eneg_elec"/>
+        </record>
+        <record model="giscedata.polissa.tarifa.periodes" id="giscedata_polissa.p4_e_tarifa_31A">
+            <field name="product_gkwh_id" ref="p4_gkwh_tarifa_31A"/>
+        </record>
+        <record model="product.product" id="p5_gkwh_tarifa_31A">
+            <field name="name">P5</field>
+            <field name="categ_id" ref="categ_gkwh_t31A"/>
+            <field name="type">service</field>
+            <field name="procure_method">make_to_stock</field>
+            <field name="supply_method">buy</field>
+            <field name="uom_id" ref="giscedata_polissa.uom_eneg_elec"/>
+            <field name="uom_po_id" ref="giscedata_polissa.uom_eneg_elec"/>
+        </record>
+        <record model="giscedata.polissa.tarifa.periodes" id="giscedata_polissa.p5_e_tarifa_31A">
+            <field name="product_gkwh_id" ref="p5_gkwh_tarifa_31A"/>
+        </record>
+        <record model="product.product" id="p6_gkwh_tarifa_31A">
+            <field name="name">P6</field>
+            <field name="categ_id" ref="categ_gkwh_t31A"/>
+            <field name="type">service</field>
+            <field name="procure_method">make_to_stock</field>
+            <field name="supply_method">buy</field>
+            <field name="uom_id" ref="giscedata_polissa.uom_eneg_elec"/>
+            <field name="uom_po_id" ref="giscedata_polissa.uom_eneg_elec"/>
+        </record>
+        <record model="giscedata.polissa.tarifa.periodes" id="giscedata_polissa.p6_e_tarifa_31A">
+            <field name="product_gkwh_id" ref="p6_gkwh_tarifa_31A"/>
+        </record>
+        <!-- TARIFA 3.1A LB-->
+        <record model="product.product" id="p1_gkwh_tarifa_31A_LB">
+            <field name="name">P1</field>
+            <field name="categ_id" ref="categ_gkwh_t31A_LB"/>
+            <field name="type">service</field>
+            <field name="procure_method">make_to_stock</field>
+            <field name="supply_method">buy</field>
+            <field name="uom_id" ref="giscedata_polissa.uom_eneg_elec"/>
+            <field name="uom_po_id" ref="giscedata_polissa.uom_eneg_elec"/>
+        </record>
+        <record model="giscedata.polissa.tarifa.periodes" id="giscedata_polissa.p1_e_tarifa_31A_LB">
+            <field name="product_gkwh_id" ref="p1_gkwh_tarifa_31A_LB"/>
+        </record>
+        <record model="product.product" id="p2_gkwh_tarifa_31A_LB">
+            <field name="name">P2</field>
+            <field name="categ_id" ref="categ_gkwh_t31A_LB"/>
+            <field name="type">service</field>
+            <field name="procure_method">make_to_stock</field>
+            <field name="supply_method">buy</field>
+            <field name="uom_id" ref="giscedata_polissa.uom_eneg_elec"/>
+            <field name="uom_po_id" ref="giscedata_polissa.uom_eneg_elec"/>
+        </record>
+        <record model="giscedata.polissa.tarifa.periodes" id="giscedata_polissa.p2_e_tarifa_31A_LB">
+            <field name="product_gkwh_id" ref="p2_gkwh_tarifa_31A_LB"/>
+        </record>
+        <record model="product.product" id="p3_gkwh_tarifa_31A_LB">
+            <field name="name">P3</field>
+            <field name="categ_id" ref="categ_gkwh_t31A_LB"/>
+            <field name="type">service</field>
+            <field name="procure_method">make_to_stock</field>
+            <field name="supply_method">buy</field>
+            <field name="uom_id" ref="giscedata_polissa.uom_eneg_elec"/>
+            <field name="uom_po_id" ref="giscedata_polissa.uom_eneg_elec"/>
+        </record>
+        <record model="giscedata.polissa.tarifa.periodes" id="giscedata_polissa.p3_e_tarifa_31A_LB">
+            <field name="product_gkwh_id" ref="p3_gkwh_tarifa_31A_LB"/>
+        </record>
+        <record model="product.product" id="p4_gkwh_tarifa_31A_LB">
+            <field name="name">P4</field>
+            <field name="categ_id" ref="categ_gkwh_t31A_LB"/>
+            <field name="type">service</field>
+            <field name="procure_method">make_to_stock</field>
+            <field name="supply_method">buy</field>
+            <field name="uom_id" ref="giscedata_polissa.uom_eneg_elec"/>
+            <field name="uom_po_id" ref="giscedata_polissa.uom_eneg_elec"/>
+        </record>
+        <record model="giscedata.polissa.tarifa.periodes" id="giscedata_polissa.p4_e_tarifa_31A_LB">
+            <field name="product_gkwh_id" ref="p4_gkwh_tarifa_31A_LB"/>
+        </record>
+        <record model="product.product" id="p5_gkwh_tarifa_31A_LB">
+            <field name="name">P5</field>
+            <field name="categ_id" ref="categ_gkwh_t31A_LB"/>
+            <field name="type">service</field>
+            <field name="procure_method">make_to_stock</field>
+            <field name="supply_method">buy</field>
+            <field name="uom_id" ref="giscedata_polissa.uom_eneg_elec"/>
+            <field name="uom_po_id" ref="giscedata_polissa.uom_eneg_elec"/>
+        </record>
+        <record model="giscedata.polissa.tarifa.periodes" id="giscedata_polissa.p5_e_tarifa_31A_LB">
+            <field name="product_gkwh_id" ref="p5_gkwh_tarifa_31A_LB"/>
+        </record>
+        <record model="product.product" id="p6_gkwh_tarifa_31A_LB">
+            <field name="name">P6</field>
+            <field name="categ_id" ref="categ_gkwh_t31A_LB"/>
+            <field name="type">service</field>
+            <field name="procure_method">make_to_stock</field>
+            <field name="supply_method">buy</field>
+            <field name="uom_id" ref="giscedata_polissa.uom_eneg_elec"/>
+            <field name="uom_po_id" ref="giscedata_polissa.uom_eneg_elec"/>
+        </record>
+        <record model="giscedata.polissa.tarifa.periodes" id="giscedata_polissa.p6_e_tarifa_31A_LB">
+            <field name="product_gkwh_id" ref="p6_gkwh_tarifa_31A_LB"/>
+        </record>
+        <!-- TARIFA 6.1-->
+        <record model="product.product" id="p1_gkwh_tarifa_61">
+            <field name="name">P1</field>
+            <field name="categ_id" ref="categ_gkwh_t61"/>
+            <field name="type">service</field>
+            <field name="procure_method">make_to_stock</field>
+            <field name="supply_method">buy</field>
+            <field name="uom_id" ref="giscedata_polissa.uom_eneg_elec"/>
+            <field name="uom_po_id" ref="giscedata_polissa.uom_eneg_elec"/>
+        </record>
+        <record model="giscedata.polissa.tarifa.periodes" id="giscedata_polissa.p1_e_tarifa_61">
+            <field name="product_gkwh_id" ref="p1_gkwh_tarifa_61"/>
+        </record>
+        <record model="product.product" id="p2_gkwh_tarifa_61">
+            <field name="name">P2</field>
+            <field name="categ_id" ref="categ_gkwh_t61"/>
+            <field name="type">service</field>
+            <field name="procure_method">make_to_stock</field>
+            <field name="supply_method">buy</field>
+            <field name="uom_id" ref="giscedata_polissa.uom_eneg_elec"/>
+            <field name="uom_po_id" ref="giscedata_polissa.uom_eneg_elec"/>
+        </record>
+        <record model="giscedata.polissa.tarifa.periodes" id="giscedata_polissa.p2_e_tarifa_61">
+            <field name="product_gkwh_id" ref="p2_gkwh_tarifa_61"/>
+        </record>
+        <record model="product.product" id="p3_gkwh_tarifa_61">
+            <field name="name">P3</field>
+            <field name="categ_id" ref="categ_gkwh_t61"/>
+            <field name="type">service</field>
+            <field name="procure_method">make_to_stock</field>
+            <field name="supply_method">buy</field>
+            <field name="uom_id" ref="giscedata_polissa.uom_eneg_elec"/>
+            <field name="uom_po_id" ref="giscedata_polissa.uom_eneg_elec"/>
+        </record>
+        <record model="giscedata.polissa.tarifa.periodes" id="giscedata_polissa.p3_e_tarifa_61">
+            <field name="product_gkwh_id" ref="p3_gkwh_tarifa_61"/>
+        </record>
+        <record model="product.product" id="p4_gkwh_tarifa_61">
+            <field name="name">P4</field>
+            <field name="categ_id" ref="categ_gkwh_t61"/>
+            <field name="type">service</field>
+            <field name="procure_method">make_to_stock</field>
+            <field name="supply_method">buy</field>
+            <field name="uom_id" ref="giscedata_polissa.uom_eneg_elec"/>
+            <field name="uom_po_id" ref="giscedata_polissa.uom_eneg_elec"/>
+        </record>
+        <record model="giscedata.polissa.tarifa.periodes" id="giscedata_polissa.p4_e_tarifa_61">
+            <field name="product_gkwh_id" ref="p4_gkwh_tarifa_61"/>
+        </record>
+        <record model="product.product" id="p5_gkwh_tarifa_61">
+            <field name="name">P5</field>
+            <field name="categ_id" ref="categ_gkwh_t61"/>
+            <field name="type">service</field>
+            <field name="procure_method">make_to_stock</field>
+            <field name="supply_method">buy</field>
+            <field name="uom_id" ref="giscedata_polissa.uom_eneg_elec"/>
+            <field name="uom_po_id" ref="giscedata_polissa.uom_eneg_elec"/>
+        </record>
+        <record model="giscedata.polissa.tarifa.periodes" id="giscedata_polissa.p5_e_tarifa_61">
+            <field name="product_gkwh_id" ref="p5_gkwh_tarifa_61"/>
+        </record>
+        <record model="product.product" id="p6_gkwh_tarifa_61">
+            <field name="name">P6</field>
+            <field name="categ_id" ref="categ_gkwh_t61"/>
+            <field name="type">service</field>
+            <field name="procure_method">make_to_stock</field>
+            <field name="supply_method">buy</field>
+            <field name="uom_id" ref="giscedata_polissa.uom_eneg_elec"/>
+            <field name="uom_po_id" ref="giscedata_polissa.uom_eneg_elec"/>
+        </record>
+        <record model="giscedata.polissa.tarifa.periodes" id="giscedata_polissa.p6_e_tarifa_61">
+            <field name="product_gkwh_id" ref="p6_gkwh_tarifa_61"/>
+        </record>
+        <!-- TARIFA 6.1A -->
+        <record model="product.product" id="p1_gkwh_tarifa_61a">
+            <field name="name">P1</field>
+            <field name="categ_id" ref="categ_gkwh_t61a"/>
+            <field name="type">service</field>
+            <field name="procure_method">make_to_stock</field>
+            <field name="supply_method">buy</field>
+            <field name="uom_id" ref="giscedata_polissa.uom_eneg_elec"/>
+            <field name="uom_po_id" ref="giscedata_polissa.uom_eneg_elec"/>
+        </record>
+        <record model="giscedata.polissa.tarifa.periodes" id="giscedata_polissa.p1_e_tarifa_61a">
+            <field name="product_gkwh_id" ref="p1_gkwh_tarifa_61a"/>
+        </record>
+        <record model="product.product" id="p2_gkwh_tarifa_61a">
+            <field name="name">P2</field>
+            <field name="categ_id" ref="categ_gkwh_t61a"/>
+            <field name="type">service</field>
+            <field name="procure_method">make_to_stock</field>
+            <field name="supply_method">buy</field>
+            <field name="uom_id" ref="giscedata_polissa.uom_eneg_elec"/>
+            <field name="uom_po_id" ref="giscedata_polissa.uom_eneg_elec"/>
+        </record>
+        <record model="giscedata.polissa.tarifa.periodes" id="giscedata_polissa.p2_e_tarifa_61a">
+            <field name="product_gkwh_id" ref="p2_gkwh_tarifa_61a"/>
+        </record>
+        <record model="product.product" id="p3_gkwh_tarifa_61a">
+            <field name="name">P3</field>
+            <field name="categ_id" ref="categ_gkwh_t61a"/>
+            <field name="type">service</field>
+            <field name="procure_method">make_to_stock</field>
+            <field name="supply_method">buy</field>
+            <field name="uom_id" ref="giscedata_polissa.uom_eneg_elec"/>
+            <field name="uom_po_id" ref="giscedata_polissa.uom_eneg_elec"/>
+        </record>
+        <record model="giscedata.polissa.tarifa.periodes" id="giscedata_polissa.p3_e_tarifa_61a">
+            <field name="product_gkwh_id" ref="p3_gkwh_tarifa_61a"/>
+        </record>
+        <record model="product.product" id="p4_gkwh_tarifa_61a">
+            <field name="name">P4</field>
+            <field name="categ_id" ref="categ_gkwh_t61a"/>
+            <field name="type">service</field>
+            <field name="procure_method">make_to_stock</field>
+            <field name="supply_method">buy</field>
+            <field name="uom_id" ref="giscedata_polissa.uom_eneg_elec"/>
+            <field name="uom_po_id" ref="giscedata_polissa.uom_eneg_elec"/>
+        </record>
+        <record model="giscedata.polissa.tarifa.periodes" id="giscedata_polissa.p4_e_tarifa_61a">
+            <field name="product_gkwh_id" ref="p4_gkwh_tarifa_61a"/>
+        </record>
+        <record model="product.product" id="p5_gkwh_tarifa_61a">
+            <field name="name">P5</field>
+            <field name="categ_id" ref="categ_gkwh_t61a"/>
+            <field name="type">service</field>
+            <field name="procure_method">make_to_stock</field>
+            <field name="supply_method">buy</field>
+            <field name="uom_id" ref="giscedata_polissa.uom_eneg_elec"/>
+            <field name="uom_po_id" ref="giscedata_polissa.uom_eneg_elec"/>
+        </record>
+        <record model="giscedata.polissa.tarifa.periodes" id="giscedata_polissa.p5_e_tarifa_61a">
+            <field name="product_gkwh_id" ref="p5_gkwh_tarifa_61a"/>
+        </record>
+        <record model="product.product" id="p6_gkwh_tarifa_61a">
+            <field name="name">P6</field>
+            <field name="categ_id" ref="categ_gkwh_t61a"/>
+            <field name="type">service</field>
+            <field name="procure_method">make_to_stock</field>
+            <field name="supply_method">buy</field>
+            <field name="uom_id" ref="giscedata_polissa.uom_eneg_elec"/>
+            <field name="uom_po_id" ref="giscedata_polissa.uom_eneg_elec"/>
+        </record>
+        <record model="giscedata.polissa.tarifa.periodes" id="giscedata_polissa.p6_e_tarifa_61a">
+            <field name="product_gkwh_id" ref="p6_gkwh_tarifa_61a"/>
+        </record>
+        <!-- TARIFA 6.1B -->
+        <record model="product.product" id="p1_gkwh_tarifa_61b">
+            <field name="name">P1</field>
+            <field name="categ_id" ref="categ_gkwh_t61b"/>
+            <field name="type">service</field>
+            <field name="procure_method">make_to_stock</field>
+            <field name="supply_method">buy</field>
+            <field name="uom_id" ref="giscedata_polissa.uom_eneg_elec"/>
+            <field name="uom_po_id" ref="giscedata_polissa.uom_eneg_elec"/>
+        </record>
+        <record model="giscedata.polissa.tarifa.periodes" id="giscedata_polissa.p1_e_tarifa_61b">
+            <field name="product_gkwh_id" ref="p1_gkwh_tarifa_61b"/>
+        </record>
+        <record model="product.product" id="p2_gkwh_tarifa_61b">
+            <field name="name">P2</field>
+            <field name="categ_id" ref="categ_gkwh_t61b"/>
+            <field name="type">service</field>
+            <field name="procure_method">make_to_stock</field>
+            <field name="supply_method">buy</field>
+            <field name="uom_id" ref="giscedata_polissa.uom_eneg_elec"/>
+            <field name="uom_po_id" ref="giscedata_polissa.uom_eneg_elec"/>
+        </record>
+        <record model="giscedata.polissa.tarifa.periodes" id="giscedata_polissa.p2_e_tarifa_61b">
+            <field name="product_gkwh_id" ref="p2_gkwh_tarifa_61b"/>
+        </record>
+        <record model="product.product" id="p3_gkwh_tarifa_61b">
+            <field name="name">P3</field>
+            <field name="categ_id" ref="categ_gkwh_t61b"/>
+            <field name="type">service</field>
+            <field name="procure_method">make_to_stock</field>
+            <field name="supply_method">buy</field>
+            <field name="uom_id" ref="giscedata_polissa.uom_eneg_elec"/>
+            <field name="uom_po_id" ref="giscedata_polissa.uom_eneg_elec"/>
+        </record>
+        <record model="giscedata.polissa.tarifa.periodes" id="giscedata_polissa.p3_e_tarifa_61b">
+            <field name="product_gkwh_id" ref="p3_gkwh_tarifa_61b"/>
+        </record>
+        <record model="product.product" id="p4_gkwh_tarifa_61b">
+            <field name="name">P4</field>
+            <field name="categ_id" ref="categ_gkwh_t61b"/>
+            <field name="type">service</field>
+            <field name="procure_method">make_to_stock</field>
+            <field name="supply_method">buy</field>
+            <field name="uom_id" ref="giscedata_polissa.uom_eneg_elec"/>
+            <field name="uom_po_id" ref="giscedata_polissa.uom_eneg_elec"/>
+        </record>
+        <record model="giscedata.polissa.tarifa.periodes" id="giscedata_polissa.p4_e_tarifa_61b">
+            <field name="product_gkwh_id" ref="p4_gkwh_tarifa_61b"/>
+        </record>
+        <record model="product.product" id="p5_gkwh_tarifa_61b">
+            <field name="name">P5</field>
+            <field name="categ_id" ref="categ_gkwh_t61b"/>
+            <field name="type">service</field>
+            <field name="procure_method">make_to_stock</field>
+            <field name="supply_method">buy</field>
+            <field name="uom_id" ref="giscedata_polissa.uom_eneg_elec"/>
+            <field name="uom_po_id" ref="giscedata_polissa.uom_eneg_elec"/>
+        </record>
+        <record model="giscedata.polissa.tarifa.periodes" id="giscedata_polissa.p5_e_tarifa_61b">
+            <field name="product_gkwh_id" ref="p5_gkwh_tarifa_61b"/>
+        </record>
+        <record model="product.product" id="p6_gkwh_tarifa_61b">
+            <field name="name">P6</field>
+            <field name="categ_id" ref="categ_gkwh_t61b"/>
+            <field name="type">service</field>
+            <field name="procure_method">make_to_stock</field>
+            <field name="supply_method">buy</field>
+            <field name="uom_id" ref="giscedata_polissa.uom_eneg_elec"/>
+            <field name="uom_po_id" ref="giscedata_polissa.uom_eneg_elec"/>
+        </record>
+        <record model="giscedata.polissa.tarifa.periodes" id="giscedata_polissa.p6_e_tarifa_61b">
+            <field name="product_gkwh_id" ref="p6_gkwh_tarifa_61b"/>
+        </record>
+        <!-- TARIFA 6.2 -->
+        <record model="product.product" id="p1_gkwh_tarifa_62">
+            <field name="name">P1</field>
+            <field name="categ_id" ref="categ_gkwh_t62"/>
+            <field name="type">service</field>
+            <field name="procure_method">make_to_stock</field>
+            <field name="supply_method">buy</field>
+            <field name="uom_id" ref="giscedata_polissa.uom_eneg_elec"/>
+            <field name="uom_po_id" ref="giscedata_polissa.uom_eneg_elec"/>
+        </record>
+        <record model="giscedata.polissa.tarifa.periodes" id="giscedata_polissa.p1_e_tarifa_62">
+            <field name="product_gkwh_id" ref="p1_gkwh_tarifa_62"/>
+        </record>
+        <record model="product.product" id="p2_gkwh_tarifa_62">
+            <field name="name">P2</field>
+            <field name="categ_id" ref="categ_gkwh_t62"/>
+            <field name="type">service</field>
+            <field name="procure_method">make_to_stock</field>
+            <field name="supply_method">buy</field>
+            <field name="uom_id" ref="giscedata_polissa.uom_eneg_elec"/>
+            <field name="uom_po_id" ref="giscedata_polissa.uom_eneg_elec"/>
+        </record>
+        <record model="giscedata.polissa.tarifa.periodes" id="giscedata_polissa.p2_e_tarifa_62">
+            <field name="product_gkwh_id" ref="p2_gkwh_tarifa_62"/>
+        </record>
+        <record model="product.product" id="p3_gkwh_tarifa_62">
+            <field name="name">P3</field>
+            <field name="categ_id" ref="categ_gkwh_t62"/>
+            <field name="type">service</field>
+            <field name="procure_method">make_to_stock</field>
+            <field name="supply_method">buy</field>
+            <field name="uom_id" ref="giscedata_polissa.uom_eneg_elec"/>
+            <field name="uom_po_id" ref="giscedata_polissa.uom_eneg_elec"/>
+        </record>
+        <record model="giscedata.polissa.tarifa.periodes" id="giscedata_polissa.p3_e_tarifa_62">
+            <field name="product_gkwh_id" ref="p3_gkwh_tarifa_62"/>
+        </record>
+        <record model="product.product" id="p4_gkwh_tarifa_62">
+            <field name="name">P4</field>
+            <field name="categ_id" ref="categ_gkwh_t62"/>
+            <field name="type">service</field>
+            <field name="procure_method">make_to_stock</field>
+            <field name="supply_method">buy</field>
+            <field name="uom_id" ref="giscedata_polissa.uom_eneg_elec"/>
+            <field name="uom_po_id" ref="giscedata_polissa.uom_eneg_elec"/>
+        </record>
+        <record model="giscedata.polissa.tarifa.periodes" id="giscedata_polissa.p4_e_tarifa_62">
+            <field name="product_gkwh_id" ref="p4_gkwh_tarifa_62"/>
+        </record>
+        <record model="product.product" id="p5_gkwh_tarifa_62">
+            <field name="name">P5</field>
+            <field name="categ_id" ref="categ_gkwh_t62"/>
+            <field name="type">service</field>
+            <field name="procure_method">make_to_stock</field>
+            <field name="supply_method">buy</field>
+            <field name="uom_id" ref="giscedata_polissa.uom_eneg_elec"/>
+            <field name="uom_po_id" ref="giscedata_polissa.uom_eneg_elec"/>
+        </record>
+        <record model="giscedata.polissa.tarifa.periodes" id="giscedata_polissa.p5_e_tarifa_62">
+            <field name="product_gkwh_id" ref="p5_gkwh_tarifa_62"/>
+        </record>
+        <record model="product.product" id="p6_gkwh_tarifa_62">
+            <field name="name">P6</field>
+            <field name="categ_id" ref="categ_gkwh_t62"/>
+            <field name="type">service</field>
+            <field name="procure_method">make_to_stock</field>
+            <field name="supply_method">buy</field>
+            <field name="uom_id" ref="giscedata_polissa.uom_eneg_elec"/>
+            <field name="uom_po_id" ref="giscedata_polissa.uom_eneg_elec"/>
+        </record>
+        <record model="giscedata.polissa.tarifa.periodes" id="giscedata_polissa.p6_e_tarifa_62">
+            <field name="product_gkwh_id" ref="p6_gkwh_tarifa_62"/>
+        </record>
+        <!-- TARIFA 6.3 -->
+        <record model="product.product" id="p1_gkwh_tarifa_63">
+            <field name="name">P1</field>
+            <field name="categ_id" ref="categ_gkwh_t63"/>
+            <field name="type">service</field>
+            <field name="procure_method">make_to_stock</field>
+            <field name="supply_method">buy</field>
+            <field name="uom_id" ref="giscedata_polissa.uom_eneg_elec"/>
+            <field name="uom_po_id" ref="giscedata_polissa.uom_eneg_elec"/>
+        </record>
+        <record model="giscedata.polissa.tarifa.periodes" id="giscedata_polissa.p1_e_tarifa_63">
+            <field name="product_gkwh_id" ref="p1_gkwh_tarifa_63"/>
+        </record>
+        <record model="product.product" id="p2_gkwh_tarifa_63">
+            <field name="name">P2</field>
+            <field name="categ_id" ref="categ_gkwh_t63"/>
+            <field name="type">service</field>
+            <field name="procure_method">make_to_stock</field>
+            <field name="supply_method">buy</field>
+            <field name="uom_id" ref="giscedata_polissa.uom_eneg_elec"/>
+            <field name="uom_po_id" ref="giscedata_polissa.uom_eneg_elec"/>
+        </record>
+        <record model="giscedata.polissa.tarifa.periodes" id="giscedata_polissa.p2_e_tarifa_63">
+            <field name="product_gkwh_id" ref="p2_gkwh_tarifa_63"/>
+        </record>
+        <record model="product.product" id="p3_gkwh_tarifa_63">
+            <field name="name">P3</field>
+            <field name="categ_id" ref="categ_gkwh_t63"/>
+            <field name="type">service</field>
+            <field name="procure_method">make_to_stock</field>
+            <field name="supply_method">buy</field>
+            <field name="uom_id" ref="giscedata_polissa.uom_eneg_elec"/>
+            <field name="uom_po_id" ref="giscedata_polissa.uom_eneg_elec"/>
+        </record>
+        <record model="giscedata.polissa.tarifa.periodes" id="giscedata_polissa.p3_e_tarifa_63">
+            <field name="product_gkwh_id" ref="p3_gkwh_tarifa_63"/>
+        </record>
+        <record model="product.product" id="p4_gkwh_tarifa_63">
+            <field name="name">P4</field>
+            <field name="categ_id" ref="categ_gkwh_t63"/>
+            <field name="type">service</field>
+            <field name="procure_method">make_to_stock</field>
+            <field name="supply_method">buy</field>
+            <field name="uom_id" ref="giscedata_polissa.uom_eneg_elec"/>
+            <field name="uom_po_id" ref="giscedata_polissa.uom_eneg_elec"/>
+        </record>
+        <record model="giscedata.polissa.tarifa.periodes" id="giscedata_polissa.p4_e_tarifa_63">
+            <field name="product_gkwh_id" ref="p4_gkwh_tarifa_63"/>
+        </record>
+        <record model="product.product" id="p5_gkwh_tarifa_63">
+            <field name="name">P5</field>
+            <field name="categ_id" ref="categ_gkwh_t63"/>
+            <field name="type">service</field>
+            <field name="procure_method">make_to_stock</field>
+            <field name="supply_method">buy</field>
+            <field name="uom_id" ref="giscedata_polissa.uom_eneg_elec"/>
+            <field name="uom_po_id" ref="giscedata_polissa.uom_eneg_elec"/>
+        </record>
+        <record model="giscedata.polissa.tarifa.periodes" id="giscedata_polissa.p5_e_tarifa_63">
+            <field name="product_gkwh_id" ref="p5_gkwh_tarifa_63"/>
+        </record>
+        <record model="product.product" id="p6_gkwh_tarifa_63">
+            <field name="name">P6</field>
+            <field name="categ_id" ref="categ_gkwh_t63"/>
+            <field name="type">service</field>
+            <field name="procure_method">make_to_stock</field>
+            <field name="supply_method">buy</field>
+            <field name="uom_id" ref="giscedata_polissa.uom_eneg_elec"/>
+            <field name="uom_po_id" ref="giscedata_polissa.uom_eneg_elec"/>
+        </record>
+        <record model="giscedata.polissa.tarifa.periodes" id="giscedata_polissa.p6_e_tarifa_63">
+            <field name="product_gkwh_id" ref="p6_gkwh_tarifa_63"/>
+        </record>
+        <!-- TARIFA 6.4 -->
+        <record model="product.product" id="p1_gkwh_tarifa_64">
+            <field name="name">P1</field>
+            <field name="categ_id" ref="categ_gkwh_t64"/>
+            <field name="type">service</field>
+            <field name="procure_method">make_to_stock</field>
+            <field name="supply_method">buy</field>
+            <field name="uom_id" ref="giscedata_polissa.uom_eneg_elec"/>
+            <field name="uom_po_id" ref="giscedata_polissa.uom_eneg_elec"/>
+        </record>
+        <record model="giscedata.polissa.tarifa.periodes" id="giscedata_polissa.p1_e_tarifa_64">
+            <field name="product_gkwh_id" ref="p1_gkwh_tarifa_64"/>
+        </record>
+        <record model="product.product" id="p2_gkwh_tarifa_64">
+            <field name="name">P2</field>
+            <field name="categ_id" ref="categ_gkwh_t64"/>
+            <field name="type">service</field>
+            <field name="procure_method">make_to_stock</field>
+            <field name="supply_method">buy</field>
+            <field name="uom_id" ref="giscedata_polissa.uom_eneg_elec"/>
+            <field name="uom_po_id" ref="giscedata_polissa.uom_eneg_elec"/>
+        </record>
+        <record model="giscedata.polissa.tarifa.periodes" id="giscedata_polissa.p2_e_tarifa_64">
+            <field name="product_gkwh_id" ref="p2_gkwh_tarifa_64"/>
+        </record>
+        <record model="product.product" id="p3_gkwh_tarifa_64">
+            <field name="name">P3</field>
+            <field name="categ_id" ref="categ_gkwh_t64"/>
+            <field name="type">service</field>
+            <field name="procure_method">make_to_stock</field>
+            <field name="supply_method">buy</field>
+            <field name="uom_id" ref="giscedata_polissa.uom_eneg_elec"/>
+            <field name="uom_po_id" ref="giscedata_polissa.uom_eneg_elec"/>
+        </record>
+        <record model="giscedata.polissa.tarifa.periodes" id="giscedata_polissa.p3_e_tarifa_64">
+            <field name="product_gkwh_id" ref="p3_gkwh_tarifa_64"/>
+        </record>
+        <record model="product.product" id="p4_gkwh_tarifa_64">
+            <field name="name">P4</field>
+            <field name="categ_id" ref="categ_gkwh_t64"/>
+            <field name="type">service</field>
+            <field name="procure_method">make_to_stock</field>
+            <field name="supply_method">buy</field>
+            <field name="uom_id" ref="giscedata_polissa.uom_eneg_elec"/>
+            <field name="uom_po_id" ref="giscedata_polissa.uom_eneg_elec"/>
+        </record>
+        <record model="giscedata.polissa.tarifa.periodes" id="giscedata_polissa.p4_e_tarifa_64">
+            <field name="product_gkwh_id" ref="p4_gkwh_tarifa_64"/>
+        </record>
+        <record model="product.product" id="p5_gkwh_tarifa_64">
+            <field name="name">P5</field>
+            <field name="categ_id" ref="categ_gkwh_t64"/>
+            <field name="type">service</field>
+            <field name="procure_method">make_to_stock</field>
+            <field name="supply_method">buy</field>
+            <field name="uom_id" ref="giscedata_polissa.uom_eneg_elec"/>
+            <field name="uom_po_id" ref="giscedata_polissa.uom_eneg_elec"/>
+        </record>
+        <record model="giscedata.polissa.tarifa.periodes" id="giscedata_polissa.p5_e_tarifa_64">
+            <field name="product_gkwh_id" ref="p5_gkwh_tarifa_64"/>
+        </record>
+        <record model="product.product" id="p6_gkwh_tarifa_64">
+            <field name="name">P6</field>
+            <field name="categ_id" ref="categ_gkwh_t64"/>
+            <field name="type">service</field>
+            <field name="procure_method">make_to_stock</field>
+            <field name="supply_method">buy</field>
+            <field name="uom_id" ref="giscedata_polissa.uom_eneg_elec"/>
+            <field name="uom_po_id" ref="giscedata_polissa.uom_eneg_elec"/>
+        </record>
+        <record model="giscedata.polissa.tarifa.periodes" id="giscedata_polissa.p6_e_tarifa_64">
+            <field name="product_gkwh_id" ref="p6_gkwh_tarifa_64"/>
+        </record>
+        <!-- TARIFA 6.5 -->
+        <record model="product.product" id="p1_gkwh_tarifa_65">
+            <field name="name">P1</field>
+            <field name="categ_id" ref="categ_gkwh_t65"/>
+            <field name="type">service</field>
+            <field name="procure_method">make_to_stock</field>
+            <field name="supply_method">buy</field>
+            <field name="uom_id" ref="giscedata_polissa.uom_eneg_elec"/>
+            <field name="uom_po_id" ref="giscedata_polissa.uom_eneg_elec"/>
+        </record>
+        <record model="giscedata.polissa.tarifa.periodes" id="giscedata_polissa.p1_e_tarifa_65">
+            <field name="product_gkwh_id" ref="p1_gkwh_tarifa_65"/>
+        </record>
+        <record model="product.product" id="p2_gkwh_tarifa_65">
+            <field name="name">P2</field>
+            <field name="categ_id" ref="categ_gkwh_t65"/>
+            <field name="type">service</field>
+            <field name="procure_method">make_to_stock</field>
+            <field name="supply_method">buy</field>
+            <field name="uom_id" ref="giscedata_polissa.uom_eneg_elec"/>
+            <field name="uom_po_id" ref="giscedata_polissa.uom_eneg_elec"/>
+        </record>
+        <record model="giscedata.polissa.tarifa.periodes" id="giscedata_polissa.p2_e_tarifa_65">
+            <field name="product_gkwh_id" ref="p2_gkwh_tarifa_65"/>
+        </record>
+        <record model="product.product" id="p3_gkwh_tarifa_65">
+            <field name="name">P3</field>
+            <field name="categ_id" ref="categ_gkwh_t65"/>
+            <field name="type">service</field>
+            <field name="procure_method">make_to_stock</field>
+            <field name="supply_method">buy</field>
+            <field name="uom_id" ref="giscedata_polissa.uom_eneg_elec"/>
+            <field name="uom_po_id" ref="giscedata_polissa.uom_eneg_elec"/>
+        </record>
+        <record model="giscedata.polissa.tarifa.periodes" id="giscedata_polissa.p3_e_tarifa_65">
+            <field name="product_gkwh_id" ref="p3_gkwh_tarifa_65"/>
+        </record>
+        <record model="product.product" id="p4_gkwh_tarifa_65">
+            <field name="name">P4</field>
+            <field name="categ_id" ref="categ_gkwh_t65"/>
+            <field name="type">service</field>
+            <field name="procure_method">make_to_stock</field>
+            <field name="supply_method">buy</field>
+            <field name="uom_id" ref="giscedata_polissa.uom_eneg_elec"/>
+            <field name="uom_po_id" ref="giscedata_polissa.uom_eneg_elec"/>
+        </record>
+        <record model="giscedata.polissa.tarifa.periodes" id="giscedata_polissa.p4_e_tarifa_65">
+            <field name="product_gkwh_id" ref="p4_gkwh_tarifa_65"/>
+        </record>
+        <record model="product.product" id="p5_gkwh_tarifa_65">
+            <field name="name">P5</field>
+            <field name="categ_id" ref="categ_gkwh_t65"/>
+            <field name="type">service</field>
+            <field name="procure_method">make_to_stock</field>
+            <field name="supply_method">buy</field>
+            <field name="uom_id" ref="giscedata_polissa.uom_eneg_elec"/>
+            <field name="uom_po_id" ref="giscedata_polissa.uom_eneg_elec"/>
+        </record>
+        <record model="giscedata.polissa.tarifa.periodes" id="giscedata_polissa.p5_e_tarifa_65">
+            <field name="product_gkwh_id" ref="p5_gkwh_tarifa_65"/>
+        </record>
+        <record model="product.product" id="p6_gkwh_tarifa_65">
+            <field name="name">P6</field>
+            <field name="categ_id" ref="categ_gkwh_t65"/>
+            <field name="type">service</field>
+            <field name="procure_method">make_to_stock</field>
+            <field name="supply_method">buy</field>
+            <field name="uom_id" ref="giscedata_polissa.uom_eneg_elec"/>
+            <field name="uom_po_id" ref="giscedata_polissa.uom_eneg_elec"/>
+        </record>
+        <record model="giscedata.polissa.tarifa.periodes" id="giscedata_polissa.p6_e_tarifa_65">
+            <field name="product_gkwh_id" ref="p6_gkwh_tarifa_65"/>
+        </record>
+        <record id="pgc_555000000004" model="account.account">
+            <field name="code">555000000004</field>
+            <field name="reconcile" eval="True"/>
+            <field name="parent_id" model="account.account" search="[('code','=','555')]"/>
+            <field name="type">other</field>
+            <field name="name">CAIXA GKWH</field>
+            <field name="user_type" ref="l10n_chart_ES.financieras"/>
+        </record>
+        <record id="genkwh_journal" model="account.journal">
+            <field name="code">GENKWH</field>
+            <field eval="[(6,0,[])]" name="account_control_ids"/>
+            <field name="user_id" ref="base.user_root"/>
+            <field eval="0" name="centralisation"/>
+            <field eval="0" name="group_invoice_lines"/>
+            <field name="type">sale</field>
+            <field name="default_credit_account_id" model="account.account" search="[('code','=','555000000004')]"/>
+            <field name="default_debit_account_id" model="account.account" search="[('code','=','555000000004')]"/>
+            <field name="view_id" ref="account.account_journal_bank_view"/>
+            <field eval="[(6,0,[])]" name="type_control_ids"/>
+            <field name="sequence_id" ref="account.sequence_journal"/>
+            <field eval="1" name="active"/>
+            <field eval="1" name="update_posted"/>
+            <field name="name">Factures GenerationkWh</field>
+            <field eval="0" name="refund_journal"/>
+            <field eval="1" name="entry_posted"/>
+        </record>
+        <record id="genkwh_amor_journal" model="account.journal">
+            <field name="code">GENKWH_AMOR</field>
+            <field eval="[(6,0,[])]" name="account_control_ids"/>
+            <field name="user_id" ref="base.user_root"/>
+            <field eval="0" name="centralisation"/>
+            <field eval="0" name="group_invoice_lines"/>
+            <field name="type">purchase</field>
+            <field name="default_credit_account_id" model="account.account" search="[('code','=','163500000000')]"/>
+            <field name="default_debit_account_id" model="account.account" search="[('code','=','163500000000')]"/>
+            <field name="view_id" ref="account.account_journal_bank_view"/>
+            <field eval="[(6,0,[])]" name="type_control_ids"/>
+            <field name="sequence_id" ref="account.sequence_journal"/>
+            <field eval="1" name="active"/>
+            <field eval="1" name="update_posted"/>
+            <field name="name">Amortització GenerationkWh</field>
+            <field eval="0" name="refund_journal"/>
+            <field eval="1" name="entry_posted"/>
+        </record>
+        <record id="genkwh_product_amortization" model="product.product">
+            <field name="name">Amortització Generation kWh</field>
+            <field name="default_code">GENKWH_AMOR</field>
+            <field name="categ_id" model='product.category' search="[('name','=','Inversions')]"/>
+            <field name="property_account_expense" model="account.account" search="[('code','=','163500000000')]"/>
+        </record>
+        <record id="genkwh_product_ae" model="product.product">
+            <field name="name">Accions Energètiques Generation kWh</field>
+            <field name="default_code">GENKWH_AE</field>
+            <field name="categ_id" model='product.category' search="[('name','=','Inversions')]"/>
+            <field name="property_account_expense" model="account.account" search="[('code','=','163500000000')]"/>
+        </record>
+        <record id="pgc_475119000001" model="account.account">
+            <field name="code">475119000001</field>
+            <field name="reconcile" eval="True"/>
+            <field name="parent_id" model="account.account" search="[('code','=','4751')]"/>
+            <field name="type">other</field>
+            <field name="name">IRPF 19% GENERATION KWh</field>
+            <field name="user_type" ref="l10n_chart_ES.tax"/>
+        </record>
+        <record id="genkwh_product_irpf" model="product.product">
+            <field name="name">Retenció IRPF estalvi Generation kWh</field>
+            <field name="default_code">GENKWH_IRPF</field>
+            <field name="categ_id" model='product.category' search="[('name','=','Inversions')]"/>
+            <field name="property_account_expense" model="account.account" search="[('code','=','475119000001')]"/>
+            <field name="property_account_income" model="account.account" search="[('code','=','475119000001')]"/>
+            <field name="type">service</field>
+        </record>
+    </data>
+
+   <!-- Poweremail templates -->
+    <data noupdate="1">
+       <record model="poweremail.templates" id="generationkwh_assignment_notification_mail">
+            <field name="name">Generation kWh - Assignació a contractes per defecte</field>
+            <field name="object_name" model="ir.model" search="[('model', '=', 'somenergia.soci')]"/>
+            <field eval="0" name="save_to_drafts"/>
+            <field name="model_int_name">somenergia.soci</field>
+            <field eval="0" name="use_filter"/>
+            <field name="def_to">${object.www_email}</field>
+            <field name="def_bcc">support.17062.b8d9f4469fa4d856@helpscout.net</field>
+            <field eval="0" name="auto_email"/>
+            <field eval="0" name="single_email"/>
+            <field eval="0" name="use_sign"/>
+            <field name="def_subject">Generation kWh: Comencem a rebre energia! [${object.ref[1:]}]</field>
+            <field name="template_language">mako</field>
+            <field eval="0" name="send_on_create"/>
+            <field name="lang">${object.partner_id.lang}</field>
+            <field name="copyvalue">${object.partner_id.lang}</field>
+            <field eval="0" name="send_on_write"/>
+            <field name="def_body_text"><![CDATA[text_to_replace]]></field>
+            <field name="enforce_from_account" model="poweremail.core_accounts" search="[('name','=', 'Generation kWh')]"/>
+        </record>
+        <record model="poweremail.templates" id="generationkwh_mail_creacio">
+            <field name="name">Generation kWh - Creació de la inversió</field>
+            <field name="object_name" model="ir.model" search="[('model', '=', 'generationkwh.investment')]"/>
+            <field eval="0" name="save_to_drafts"/>
+            <field name="model_int_name">generationkwh.investment</field>
+            <field name="file_name">${object.name}</field>
+            <field eval="1" name="use_filter"/>
+            <field name="def_to">${object.member_id.partner_id.address[0].email}</field>
+            <field name="def_bcc">support.17062.b8d9f4469fa4d856@helpscout.net</field>
+            <field eval="0" name="auto_email"/>
+            <field eval="0" name="single_email"/>
+            <field eval="0" name="use_sign"/>
+            <field name="def_subject">Generation kWh Som Enegia Ref. ${object.name}</field>
+            <field name="template_language">mako</field>
+            <field eval="0" name="send_on_create"/>
+            <field name="lang">${object.member_id.partner_id.lang}</field>
+            <field name="copyvalue">${object.member_id.partner_id.lang}</field>
+            <field eval="0" name="send_on_write"/>
+            <field name="def_body_text"><![CDATA[text_to_replace]]></field>
+            <field name="enforce_from_account" model="poweremail.core_accounts" search="[('name','=', 'Generation kWh')]"/>
+        </record>
+        <record model="poweremail.templates" id="generationkwh_mail_pagament">
+            <field name="name">Generation kWh - Pagament inversió</field>
+            <field name="object_name" model="ir.model" search="[('model', '=', 'account.invoice')]"/>
+            <field eval="0" name="save_to_drafts"/>
+            <field name="model_int_name">account.invoice</field>
+            <field name="file_name">${object.name}</field>
+            <field eval="1" name="use_filter"/>
+            <field name="def_to">${object.partner_id.address[0].email}</field>
+            <field name="def_bcc">support.17062.b8d9f4469fa4d856@helpscout.net</field>
+            <field eval="0" name="auto_email"/>
+            <field eval="0" name="single_email"/>
+            <field eval="0" name="use_sign"/>
+            <field name="def_subject">Cargo / Càrrec Generation kWh Ref. ${object.name}</field>
+            <field name="template_language">mako</field>
+            <field eval="0" name="send_on_create"/>
+            <field name="lang">${object.partner_id.lang}</field>
+            <field name="copyvalue">${object.partner_id.lang}</field>
+            <field eval="0" name="send_on_write"/>
+            <field name="def_body_text"><![CDATA[text_to_replace]]></field>
+            <field name="enforce_from_account" model="poweremail.core_accounts" search="[('name','=', 'Generation kWh')]"/>
+        </record>
+        <record model="poweremail.templates" id="generationkwh_mail_impagament">
+            <field name="name">Generation kWh - Impagament inversió</field>
+            <field name="object_name" model="ir.model" search="[('model', '=', 'account.invoice')]"/>
+            <field eval="0" name="save_to_drafts"/>
+            <field name="model_int_name">account.invoice</field>
+            <field eval="1" name="use_filter"/>
+            <field name="def_to">${object.partner_id.address[0].email}</field>
+            <field name="def_bcc">support.17062.b8d9f4469fa4d856@helpscout.net</field>
+            <field eval="0" name="auto_email"/>
+            <field eval="0" name="single_email"/>
+            <field eval="0" name="use_sign"/>
+            <field name="def_subject">Recibo devuelto inversión / Rebut retornat inversió Generation kWh ${object.name}</field>
+            <field name="template_language">mako</field>
+            <field eval="0" name="send_on_create"/>
+            <field name="lang">${object.partner_id.lang}</field>
+            <field name="copyvalue">${object.partner_id.lang}</field>
+            <field eval="0" name="send_on_write"/>
+            <field name="def_body_text"><![CDATA[text_to_replace]]></field>
+            <field name="enforce_from_account" model="poweremail.core_accounts" search="[('name','=', 'Generation kWh')]"/>
+        </record>
+        <record model="poweremail.templates" id="generationkwh_mail_amortitzacio">
+            <field name="name">Generation kWh - Amortització</field>
+            <field name="object_name" model="ir.model" search="[('model', '=', 'account.invoice')]"/>
+            <field eval="0" name="save_to_drafts"/>
+            <field name="model_int_name">account.invoice</field>
+            <field name="def_to">${object.partner_id.address[0].email}</field>
+            <field name="def_bcc">support.17062.b8d9f4469fa4d856@helpscout.net</field>
+            <field eval="0" name="auto_email"/>
+            <field eval="0" name="single_email"/>
+            <field eval="0" name="use_sign"/>
+            <field name="def_subject">Generation kWh Som Enegia Ref. ${object.number or ''}</field>
+            <field name="template_language">mako</field>
+            <field name="report_template" ref="report_amortization_gkwh"/>
+            <field eval="0" name="send_on_create"/>
+            <field name="lang">${object.partner_id.lang}</field>
+            <field name="copyvalue"></field>
+            <field eval="0" name="send_on_write"/>
+            <field name="def_body_text"><![CDATA[text_to_replace]]></field>
+            <field name="enforce_from_account" model="poweremail.core_accounts" search="[('name','=', 'Generation kWh')]"/>
+        </record>
+        <record model="poweremail.templates" id="generationkwh_investment_activated_notification_mail">
+            <field name="name">Generation kWh - Investment Activated</field>
+            <field name="object_name" model="ir.model" search="[('model', '=', 'generationkwh.investment')]"/>
+            <field eval="0" name="save_to_drafts"/>
+            <field name="model_int_name">generationkwh.investment</field>
+            <field name="def_to">${object.member_id.partner_id.address[0].email}</field>
+            <field name="def_bcc">support.17062.b8d9f4469fa4d856@helpscout.net</field>
+            <field eval="0" name="auto_email"/>
+            <field eval="0" name="single_email"/>
+            <field eval="0" name="use_sign"/>
+            <field name="def_subject">Generation kWh Som Enegia ${object.name} activat</field>
+            <field name="template_language">mako</field>
+            <field eval="0" name="send_on_create"/>
+            <field name="lang">${object.member_id.partner_id.lang}</field>
+            <field name="copyvalue"></field>
+            <field eval="0" name="send_on_write"/>
+            <field name="def_body_text"><![CDATA[text_to_replace]]></field>
+            <field name="enforce_from_account" model="poweremail.core_accounts" search="[('name','=', 'Generation kWh')]"/>
+        </record>
+
+        <record model="poweremail.templates" id="aportacio_mail_pagament">
+            <field name="name">Aportacions - Pagament inversió</field>
+            <field name="object_name" model="ir.model" search="[('model', '=', 'account.invoice')]"/>
+            <field eval="0" name="save_to_drafts"/>
+            <field name="model_int_name">account.invoice</field>
+            <field name="file_name">${object.name}</field>
+            <field eval="1" name="use_filter"/>
+            <field name="def_to">${object.partner_id.address[0].email}</field>
+            <field name="def_bcc">support.17062.b8d9f4469fa4d856@helpscout.net</field>
+            <field eval="0" name="auto_email"/>
+            <field eval="0" name="single_email"/>
+            <field eval="0" name="use_sign"/>
+            <field name="def_subject">Cargo / Càrrec Capital Social Ref. ${object.name}</field>
+            <field name="template_language">mako</field>
+            <field name="report_template" ref="report_contract_apo"/>
+            <field eval="0" name="send_on_create"/>
+            <field name="lang">${object.partner_id.lang}</field>
+            <field name="copyvalue">${object.partner_id.lang}</field>
+            <field eval="0" name="send_on_write"/>
+	    <field name="def_body_text"><![CDATA[<!doctype html>
+<html>
+<body>
+<img width='130' height='65' src="https://www.somenergia.coop/wp-content/uploads/2014/11/logo-somenergia.png">
+<br/><br/>
+<%
+from mako.template import Template
+def render(text_to_render, object_):
+    templ = Template(text_to_render)
+    return templ.render_unicode(
+        object=object_,
+        format_exceptions=True
+    )
+t_obj = object.pool.get('poweremail.templates')
+md_obj = object.pool.get('ir.model.data')
+template_id = md_obj.get_object_reference(
+                    object._cr, object._uid,  'som_poweremail_common_templates', 'common_template_legal_footer'
+                )[1]
+text_legal = render(t_obj.read(
+    object._cr, object._uid, [template_id], ['def_body_text'])[0]['def_body_text'],
+    object
+)
+%>
+% if object.partner_id.lang != "es_ES":
+<br/>
+Benvolgut/da ${object.partner_id.name.split(',')[-1]},<br/>
+<br/>
+Volem informar-te que a data d'avui hem girat l'import ${int(abs(object.amount_total))} € corresponent a la teva aportació voluntària al capital social de la cooperativa Som Energia SCCL i per tant, en dos o tres dies (laborables) es realitzarà el càrrec al teu compte. <br/>
+<br/>
+T'adjuntem les condicions de la teva aportació i et recordem que per a qualsevol dubte o aclariment en relació a l’aportació realitzada pots enviar una mail a <a href="mailto:aporta@somenergia.coop">aporta@somenergia.coop</a> o consultar el web <a href="https://www.somenergia.coop/ca">www.somenergia.coop</a>. <br/>
+<br/>
+Aprofitem per agrair-te, una vegada més, la teva implicació amb l’objectiu compartit d’assolir un model energètic 100% renovable!<br/>
+<br/>
+Pots fer córrer la veu explicant el projecte a familiars i amics/gues. Com més siguem, més energia verda generarem!<br/>
+<br/>
+Moltes gràcies i bona energia!<br/>
+<br/>
+Atentament,<br/>
+<br/>
+Som Energia, SCCL<br/>
+<a href="https://www.somenergia.coop/ca">www.somenergia.coop</a><br/>
+% endif
+% if  object.partner_id.lang != "ca_ES" and  object.partner_id.lang != "es_ES":
+<br/><HR align="LEFT" size="1" width="400" color="Black" noshade><br/>
+% endif
+% if  object.partner_id.lang != "ca_ES":
+<br/>
+Apreciado/a ${object.partner_id.name.split(',')[-1]},<br/>
+<br/>
+Queremos informarte que a fecha de hoy hemos girado el importe de ${int(abs(object.amount_total))} € correspondiente a tu aportación voluntaria al capital social de la cooperativa Som EnergiaSCCL y en dos o tres días (laborables) se realizará el cargo a tu cuenta.<br/>
+<br/>
+Adjuntamos el contrato con las condiciones de tu aportación y te recordamos que para cualquier duda o aclaración en relación a la aportación realizada puedes enviar una mail a <a href="mailto:aporta@somenergia.coop">aporta@somenergia.coop</a> o consultar la web <a href="https://www.somenergia.coop">www.somenergia.coop</a>. <br/>
+<br/>
+Aprovechamos para agradecerte, una vez más, tu implicación con el objetivo compartido de lograr un modelo energético 100% renovable.<br/>
+<br/>
+Haz que corra la voz explicando el proyecto a familiares y amigos. Cuantos/as más seamos, más energía verde generaremos.<br/>
+<br/>
+¡Muchas gracias y buena energía!<br/>
+<br/>
+Atentamente,<br/>
+<br/>
+Som Energia, SCCL<br/>
+<a href="https://www.somenergia.coop">www.somenergia.coop</a><br/>
+% endif
+<br/>
+${text_legal}
+</body>
+</html>]]></field>
+            <field name="enforce_from_account" ref="aportacions_mail_account"/>
+        </record>
+        <record model="poweremail.templates" id="aportacio_mail_creacio">
+            <field name="name">Aportacions - Creació de la inversió</field>
+            <field name="object_name" model="ir.model" search="[('model', '=', 'generationkwh.investment')]"/>
+            <field eval="0" name="save_to_drafts"/>
+            <field name="model_int_name">generationkwh.investment</field>
+            <field name="file_name">${object.name}</field>
+            <field eval="1" name="use_filter"/>
+            <field name="def_to">${object.member_id.partner_id.address[0].email}</field>
+            <field name="def_bcc">support.17062.b8d9f4469fa4d856@helpscout.net</field>
+            <field eval="0" name="auto_email"/>
+            <field eval="0" name="single_email"/>
+            <field eval="0" name="use_sign"/>
+            <field name="def_subject">Aportació / Aportación al capital social Som Enegia Ref. ${object.name}</field>
+            <field name="template_language">mako</field>
+            <field eval="0" name="send_on_create"/>
+            <field name="lang">${object.member_id.partner_id.lang}</field>
+            <field name="copyvalue">${object.member_id.partner_id.lang}</field>
+            <field eval="0" name="send_on_write"/>
+	    <field name="def_body_text"><![CDATA[
+<!doctype html>
+<html>
+<body>
+<img width='130' height='65' src="https://www.somenergia.coop/wp-content/uploads/2014/11/logo-somenergia.png">
+<br/><br/>
+<%
+Soci = object.pool.get('somenergia.soci')
+Partner = object.pool.get('res.partner')
+PartnerBank = object.pool.get('res.partner.bank')
+soci_id = object.member_id.id
+soci_obj = Soci.read(object._cr, object._uid, soci_id)
+part_obj = Partner.read(object._cr,object._uid,soci_obj['partner_id'][0])
+bank_obj = PartnerBank.read(object._cr, object._uid, part_obj['bank_inversions'][0])
+lang = part_obj['lang']
+name = part_obj['name']
+iban = bank_obj['iban']
+amount_currency= int(object.nshares) * 100
+
+nom_pagador = ''
+es_empresa = Partner.vat_es_empresa(object._cr, object._uid, object.member_id.vat)
+if not es_empresa:
+    nom_pagador =' ' + Partner.separa_cognoms(object._cr, object._uid, object.member_id.name)['nom']
+%>
+
+<%
+from mako.template import Template
+def render(text_to_render, object_):
+    templ = Template(text_to_render)
+    return templ.render_unicode(
+        object=object_,
+        format_exceptions=True
+    )
+t_obj = object.pool.get('poweremail.templates')
+md_obj = object.pool.get('ir.model.data')
+template_id = md_obj.get_object_reference(
+                    object._cr, object._uid,  'som_poweremail_common_templates', 'common_template_legal_footer'
+                )[1]
+text_legal = render(t_obj.read(
+    object._cr, object._uid, [template_id], ['def_body_text'])[0]['def_body_text'],
+    object
+)
+%>
+<br/>
+% if lang != "es_ES":
+Benvolgut/da${nom_pagador},<br/>
+<br/>
+Et confirmem que hem rebut correctament la teva sol•licitud per fer una aportació voluntària al capital social de Som Energia, amb les següents dades:<br/>
+<br/>
+Soci/Sòcia: ${name}<br/>
+Compte de càrrec: ${iban[:-4]}****<br/>
+Import aportació: ${int(abs(amount_currency))} €<br/>
+<br/>
+% if es_empresa:
+<p>Et recordem que per fer l'aportació en nom d'una persona jurídica has d'estar documentalment acreditat. </p>
+<p>Per aquesta raó, necessitem que ens responguis aquest correu adjuntant la següent documentació addicional:</p>
+<ul>
+    <li>el teu DNI (en tant que persona representant de la persona jurídica) </li>
+    <li>escriptures de poders de representació vigents </li>
+    <li>escriptura constitutiva i, si escau, escriptura de titularitat real </li>
+    <li>número CNAE activitat econòmica </li>
+</ul>
+<p>Un cop rebuda i verificada la documentació, procedirem a realitzar el corresponent càrrec en compte per l'import que ens has sol.licitat.</p>
+% else:
+En els propers dies rebràs el càrrec bancari en aquest compte, siusplau verifica que totes les dades facilitades són correctes i que disposes dels diners, per tal que no hi hagi cap incidència en el gir del rebut.<br/>
+<br/>
+Un cop verificada la validesa del pagament realitzat rebràs una nova notificació confirmant l'aportació realitzada i detallant les condicions particulars de la teva aportació.<br/>
+<br/>
+Agrair la teva implicació amb la cooperativa i informar-te que per a qualsevol dubte o aclariment pots consultar el web <a href="https://www.somenergia.coop/ca">www.somenergia.coop</a> o bé mitjançant un mail a <a href="mailto:aporta@somenergia.coop">aporta@somenergia.coop</a>.<br/>
+<br/>
+Recorda que també pots participar de la Generació kWh per generar la teva energia a partir de nous projectes col•lectius de generació. Consulta el web <a href="https://www.generationkwh.org/ca">www.generationkwh.org</a>.<br/>
+<br/>
+Pots fer córrer la veu explicant el projecte a familiars i amics/gues. Com més siguem, més energia verda generarem!<br/>
+<br/>
+% endif
+Moltes gràcies i bona energia!<br/>
+<br/>
+Atentament,<br/>
+<br/>
+<br/>
+Som Energia, SCCL<br/>
+<a href="https://www.somenergia.coop/ca">www.somenergia.coop</a><br/>
+% endif
+% if lang != "ca_ES" and lang != "es_ES":
+<br/><HR align="LEFT" size="1" width="400" color="Black" noshade><br/>
+% endif
+% if lang != "ca_ES":
+Apreciado/a${nom_pagador},<br/>
+<br/>
+Te confirmamos que hemos recibido correctamente tu solicitud para realizar una aportación voluntaria al capital social de Som Energia, con los siguientes datos:<br/>
+<br/>
+Socio/a: ${name}<br/>
+Cuenta de cargo: ${iban[:-4]}****<br/>
+Importe aportación: ${int(abs(amount_currency))} €<br/>
+<br/>
+% if es_empresa:
+<p>Te recordamos que para hacer la aportación en nombre de una persona jurídica tienes que estar documentalmente acreditado.</p>
+<p>Es por esta razón que necesitamos que respondas este correo adjuntando la siguiente documentación:</p>
+<ul>
+    <li>tu DNI (en tanto que persona representante de la persona jurídica)</li>
+    <li>escrituras de poderes de representación vigentes</li>
+    <li>escritura constitutiva y si procede, escritura de titularidad real</li>
+    <li>número CNAE actividad económica</li>
+</ul>
+<p>Una vez recibida y verificada la doncumentación, procederemos a realizar el correspondiente cargo en cuenta por el importe que nos has solicitado.</p>
+% else:
+En los próximos dias recibirás el cargo bancario en esta cuenta, por favor verifica que todos los datos facilitados sean correctos y dispones del dinero, para evitar cualquier incidencia en el giro del recibo.<br/>
+<br/>
+Una vez verificada la validez del pago realizado recibirás una nueva notificación confirmando la aportación realizada y detallando las condiciones particulares de tu aportación.<br/>
+Agradecer tu implicación con la cooperativa y informarte que para cualquier duda o aclaración puedes consultar nuestra web <a href="https://www.somenergia.coop">www.somenergia.coop</a> o enviarnos un correo electrónico a <a href="mailto:aporta@somenergia.coop">aporta@somenergia.coop</a><br/>
+<br/>
+Recuerda que también puedes participar de la Generación kWh para generar tu energía con nuevos proyectos colectivos de generación. Consulta la web <a href="https://www.generationkwh.org/es">www.generationkwh.org</a>.<br/>
+<br/>
+Haz que corra la voz explicando el proyecto a familiares y amigos. Cuantos más seamos, más energía verde generaremos!<br/>
+<br/>
+% endif
+¡Muchas gracias y buena energía!<br/>
+<br/>
+Atentamente,<br/>
+<br/>
+<br/>
+Som Energia, SCCL<br/>
+<a href="https://www.somenergia.coop">www.somenergia.coop</a><br/>
+% endif
+<br/>
+${text_legal}
+</body>
+</html>
+]]></field>
+            <field name="enforce_from_account" ref="aportacions_mail_account"/>
+        </record>
+        <record model="poweremail.templates" id="aportacio_mail_impagament">
+            <field name="name">Aportacions - Impagament inversió</field>
+            <field name="object_name" model="ir.model" search="[('model', '=', 'account.invoice')]"/>
+            <field eval="0" name="save_to_drafts"/>
+            <field name="model_int_name">account.invoice</field>
+            <field eval="1" name="use_filter"/>
+            <field name="def_to">${object.partner_id.address[0].email}</field>
+            <field name="def_bcc">support.17062.b8d9f4469fa4d856@helpscout.net</field>
+            <field eval="0" name="auto_email"/>
+            <field eval="0" name="single_email"/>
+            <field eval="0" name="use_sign"/>
+            <field name="def_subject">Recibo devuelto inversión / Rebut retornat inversió ${object.name}</field>
+            <field name="template_language">mako</field>
+            <field eval="0" name="send_on_create"/>
+            <field name="lang">${object.partner_id.lang}</field>
+            <field name="copyvalue">${object.partner_id.lang}</field>
+            <field eval="0" name="send_on_write"/>
+            <field name="def_body_text"><![CDATA[text_to_replace]]></field>
+            <field name="enforce_from_account" ref="aportacions_mail_account"/>
+            <field name="def_body_text"><![CDATA[
+            <!doctype html>
+<html>
+<body>
+<img width='130' height='65' src="https://www.somenergia.coop/wp-content/uploads/2014/11/logo-somenergia.png"><br>
+<%
+from mako.template import Template
+def render(text_to_render, object_):
+    templ = Template(text_to_render)
+    return templ.render_unicode(
+        object=object_,
+        format_exceptions=True
+    )
+t_obj = object.pool.get('poweremail.templates')
+md_obj = object.pool.get('ir.model.data')
+template_id = md_obj.get_object_reference(
+                    object._cr, object._uid,  'som_poweremail_common_templates', 'common_template_legal_footer'
+                )[1]
+text_legal = render(t_obj.read(
+    object._cr, object._uid, [template_id], ['def_body_text'])[0]['def_body_text'],
+    object
+)
+%>
+% if object.partner_id.lang != "es_ES":
+<br>
+Hola ${object.partner_id.name.split(',')[-1]},<br>
+<br>
+Avui ens ha vingut retornat el rebut de ${object.amount_total} euros corresponent a la teva aportació voluntària al capital social de SOM ENERGIA. Si segueixes interessat/da en fer-la, t'agrairem que ens facis una transferència al següent número de compte: ES19 3025 0016 12 1400005159<br>
+<br>
+Si pel contrari has canviat d'idea i ja la vols fer, t'agrairem que ens ho comuniquis contestant aquest mateix correu.<br>
+<br>
+Salutacions,<br>
+<br>
+<br>
+Som Energia, SCCL<br>
+<a href="http://www.somenergia.coop/ca/">www.somenergia.coop</a><br>
+% endif
+% if  object.partner_id.lang != "ca_ES" and  object.partner_id.lang != "es_ES":
+<br><HR align="LEFT" size="1" width="400" color="Black" noshade><br>
+% endif
+% if  object.partner_id.lang != "ca_ES":
+<br>
+Hola ${object.partner_id.name.split(',')[-1]},<br>
+<br>
+Hoy nos ha venido devuelto el recibo de ${object.amount_total} euros correspondiente a tu aportación voluntaria al capital social de SOM ENERGIA. Si sigues interesado/a en participar, tendrás que realizar-nos una transferencia al siguiente número de cuenta: ES19 3025 0016 12 1400005159.<br>
+<br>
+Si por el contrario ya no te interesa aportar al capital social de Som Energia te agradeceremos que nos lo comuniques contestando este correo.<br>
+<br>
+Un saludo,<br>
+<br>
+<br>
+Som Energia, SCCL<br>
+<a href="http://www.somenergia.coop">www.somenergia.coop</a><br>
+% endif
+<br>
+${text_legal}
+</body>
+</html>]]></field>
+        </record>
+
+        <record model="poweremail.templates" id="certificat_retencio_rendiment_generationkwh">
+            <field name="name">Retenció sobre el rendiment Generationkwh</field>
+            <field name="object_name" model="ir.model" search="[('model', '=', 'somenergia.soci')]"/>
+            <field eval="0" name="save_to_drafts"/>
+            <field name="model_int_name">somenergia.soci</field>
+            <field eval="1" name="use_filter"/>
+            <field name="def_to">${object.partner_id.address[0].email}</field>
+            <field name="def_bcc">support.17062.b8d9f4469fa4d856@helpscout.net</field>
+            <field eval="0" name="auto_email"/>
+            <field eval="0" name="single_email"/>
+            <field eval="0" name="use_sign"/>
+            <field name="def_subject">Certificat de retenció sobre el rendiment de GenerationkWh</field>
+            <field name="template_language">mako</field>
+            <field eval="0" name="send_on_create"/>
+            <field name="lang">${object.partner_id.lang}</field>
+            <field name="copyvalue">${object.partner_id.lang}</field>
+            <field eval="0" name="send_on_write"/>
+            <field name="enforce_from_account" ref="generation_mail_account"/>
+            <field name="def_body_text"><![CDATA[
+<!doctype html>
+<html><body>
+<img src="https://www.somenergia.coop/wp-content/uploads/2014/07/logo.png">
+<%
+from datetime import datetime, timedelta
+from mako.template import Template
+def render(text_to_render, object_):
+    templ = Template(text_to_render)
+    return templ.render_unicode(
+        object=object_,
+        format_exceptions=True
+    )
+t_obj = object.pool.get('poweremail.templates')
+md_obj = object.pool.get('ir.model.data')
+template_id = md_obj.get_object_reference(
+                    object._cr, object._uid,  'som_poweremail_common_templates', 'common_template_legal_footer'
+                )[1]
+text_legal = render(t_obj.read(
+    object._cr, object._uid, [template_id], ['def_body_text'])[0]['def_body_text'],
+    object
+)
+year = (datetime.now() - timedelta(days=365)).year
+%>
+% if object.partner_id.lang != "es_ES":
+<br />
+Benvolgut/da,<br />
+<br />
+Com cada any per aquestes dates, ha començat la campanya de la Renda ${year}.<br />
+T’enviem, per si és del teu interès, el comunicat dels rendiments en espècie obtinguts i les retencions aplicades en relació al projecte GenerationkWh de SOM ENERGIA durant l’any ${year}.<br />
+Aprofitem per agrair-te una vegada més la teva implicació en el nostre projecte.<br />
+Atentament,<br />
+<br />
+Equip Som Energia<br />
+generationkwh@somenergia.coop<br />
+<a href="https://www.somenergia.coop/ca">www.somenergia.coop</a><br />
+% endif
+% if object.partner_id.lang != "ca_ES" and object.partner_id.lang != "es_ES":
+----------------------------------------------------------------------------------------------------
+% endif
+% if object.partner_id.lang != "ca_ES":
+<br />
+Apreciado/a,<br />
+<br />
+Como cada año por estas fechas, ha empezado la campaña de Renta ${year}.<br />
+Te enviamos, por si es de tu interés, comunicado de los rendimientos en especie obtenidos y retenciones aplicadas en relación al proyecto GenerationKWh de SOM ENERGIA durante el año ${year}.<br />
+Aprovechamos una vez más para agradecer tu implicación en nuestro proyecto.<br />
+Atentamente,<br />
+<br />
+Equipo de Som Energia<br />
+generationkwh@somenergia.coop<br />
+<a href="https://www.somenergia.coop">www.somenergia.coop</a><br />
+% endif
+<br />
+${text_legal}
+</body>
+</html>]]></field>
+        </record>
+        <record model="poweremail.templates" id="aportacio_interest_notification_mail">
+            <field name="name">Liquidació aportació voluntaria</field>
+            <field name="object_name" model="ir.model" search="[('model', '=', 'account.invoice')]"/>
+            <field eval="0" name="save_to_drafts"/>
+            <field name="model_int_name">account.invoice</field>
+            <field eval="0" name="use_filter"/>
+            <field name="def_to">${object.address_invoice_id.email}</field>
+            <field name="def_subject">Liquidació interessos aportació voluntària</field>
+            <field name="template_language">mako</field>
+            <field eval="0" name="send_on_create"/>
+            <field name="lang">${object.partner_id.lang}</field>
+            <field eval="0" name="send_on_write"/>
+            <field name="def_body_text"><![CDATA[text_to_replace]]></field>
+            <field name="enforce_from_account" model="poweremail.core_accounts" search="[('email_id','=', 'aporta@somenergia.coop')]"/> 
+        </record>
+        <record model="poweremail.templates" id="aportacio_mail_transmissio">
+            <field name="name">Aportacions - Transmissió</field>
+            <field name="object_name" model="ir.model" search="[('model', '=', 'generationkwh.investment')]"/>
+            <field eval="0" name="save_to_drafts"/>
+            <field name="model_int_name">generationkwh.investment</field>
+            <field name="file_name">${object.name}</field>
+            <field eval="1" name="use_filter"/>
+            <field name="def_to">${object.member_id.partner_id.address[0].email}</field>
+            <field name="def_bcc">support.17062.b8d9f4469fa4d856@helpscout.net</field>
+            <field eval="0" name="auto_email"/>
+            <field eval="0" name="single_email"/>
+            <field eval="0" name="use_sign"/>
+            <field name="def_subject">Transmissió d'aportació / Transmisión de aportación al capital social Som Enegia Ref. ${object.name}</field>
+            <field name="template_language">mako</field>
+            <field eval="0" name="send_on_create"/>
+            <field name="lang">${object.member_id.partner_id.lang}</field>
+            <field name="copyvalue">${object.member_id.partner_id.lang}</field>
+            <field eval="0" name="send_on_write"/>
+            <field name="enforce_from_account" ref="aportacions_mail_account"/>
+	          <field name="def_body_text"><![CDATA[
+<!doctype html>
+<html><body>Text per defecte</body>
+</html>]]></field>
+        </record>
+    </data>
+    <data noupdate="1">
+        <record id="genkwh_investment_payment_mode" model="payment.mode">
+            <field name="name">GENERATION kWh</field>
+            <field name="type" search="[('code', '=', 'RECIBO_CSB')]"/>
+            <field name="journal" ref="genkwh_journal"/>
+            <field name="bank_id" search="[('partner_id', '=', 1)]"/>
+            <field name="tipo">sepa19</field>
+            <field name="nombre">Som Energia SCCL</field>
+            <field name="sufijo">000</field>
+            <field name="require_bank_account" eval="True"/>
+            <field name="partner_id">1</field>
+            <field name="sepa_creditor_code">ES24000F55091367</field>
+        </record>
+        <record id="genkwh_amortization_payment_mode" model="payment.mode">
+            <field name="name">GENERATION kWh AMOR</field>
+            <field name="type" search="[('code', '=', 'TRANSFERENCIA_CSB')]"/>
+            <field name="journal" ref="genkwh_journal"/>
+            <field name="bank_id" search="[('partner_id', '=', 1)]"/>
+            <field name="tipo">sepa34</field>
+            <field name="nombre">Som Energia SCCL</field>
+            <field name="sufijo">000</field>
+            <field name="require_bank_account" eval="True"/>
+            <field name="partner_id">1</field>
+            <field name="sepa_creditor_code">ES24000F55091367</field>
+        </record>
+        <record id="genkwh_amortization_negative_payment_mode" model="payment.mode">
+            <field name="name">GENERATION kWh AMOR Cobrar</field>
+            <field name="type" search="[('code', '=', 'RECIBO_CSB')]"/>
+            <field name="journal" ref="genkwh_journal"/>
+            <field name="bank_id" search="[('partner_id', '=', 1)]"/>
+            <field name="tipo">sepa19</field>
+            <field name="nombre">Som Energia SCCL</field>
+            <field name="sufijo">000</field>
+            <field name="require_bank_account" eval="True"/>
+            <field name="partner_id">1</field>
+            <field name="sepa_creditor_code">ES24000F55091367</field>
+        </record>
+        <record id="emissio_genkwh" model="generationkwh.emission">
+            <field name="name">GenerationkWH</field>
+            <field name="start_date">2015-06-19</field>
+            <field name="amount_emission">0</field>
+            <field name="state">draft</field>
+            <field name="type">genkwh</field>
+            <field name="code">GKWH</field>
+            <field name="grace_period">2</field>
+            <field name="expiration_years">25</field>
+            <field name="waiting_days">365</field>
+            <field name="mandate_name">PRESTEC GENERATION kWh</field>
+            <field name="journal_id" model="account.journal"
+		        search="[('code','=','GENKWH')]" />
+            <field name="investment_product_id" model="product.product"
+		        search="[('default_code','=','GENKWH_AE')]" />
+            <field name="amortization_product_id" model="product.product"
+		        search="[('default_code','=','GENKWH_AMOR')]" />
+            <field name="irpf_product_id" model="product.product"
+		        search="[('default_code','=','GENKWH_IRPF')]" />
+            <field name="investment_payment_mode_id" model="payment.mode"
+		        search="[('name','=','GENERATION kWh')]" />
+            <field name="amortization_payment_mode_id" model="payment.mode"
+		        search="[('name','=','GENERATION kWh AMOR')]" />
+            <field name="bridge_account_payments_id" model="account.account"
+		        search="[('code','=','555000000004')]" />
+        </record>
+        <record id="pgc_555000000011" model="account.account">
+            <field name="code">555000000011</field>
+            <field name="reconcile" eval="True"/>
+            <field name="parent_id" model="account.account" search="[('code','=','555')]"/>
+            <field name="type">other</field>
+            <field name="name">CAIXA Aportacions</field>
+            <field name="user_type" ref="l10n_chart_ES.financieras"/>
+        </record>
+        <record id="apo_journal" model="account.journal">
+            <field name="code">APO</field>
+            <field eval="[(6,0,[])]" name="account_control_ids"/>
+            <field name="user_id" ref="base.user_root"/>
+            <field eval="0" name="centralisation"/>
+            <field eval="0" name="group_invoice_lines"/>
+            <field name="type">purchase</field>
+            <field name="default_credit_account_id" model="account.account" search="[('code','=','662000000001')]"/>
+            <field name="default_debit_account_id" model="account.account" search="[('code','=','662000000001')]"/>
+            <field name="view_id" ref="account.account_journal_bank_view"/>
+            <field eval="[(6,0,[])]" name="type_control_ids"/>
+            <field name="sequence_id" ref="account.sequence_journal"/>
+            <field eval="1" name="active"/>
+            <field eval="1" name="update_posted"/>
+            <field name="name">Factures Liquidació Aportacions</field>
+            <field eval="0" name="refund_journal"/>
+            <field eval="1" name="entry_posted"/>
+        </record>
+        <record id="apo_fact_journal" model="account.journal">
+            <field name="code">APO_FACT</field>
+            <field eval="[(6,0,[])]" name="account_control_ids"/>
+            <field name="user_id" ref="base.user_root"/>
+            <field eval="0" name="centralisation"/>
+            <field eval="0" name="group_invoice_lines"/>
+            <field name="type">sale</field>
+            <field name="default_credit_account_id" ref="pgc_555000000011" />
+            <field name="default_debit_account_id" ref="pgc_555000000011" />
+            <field name="view_id" ref="account.account_journal_bank_view"/>
+            <field eval="[(6,0,[])]" name="type_control_ids"/>
+            <field name="sequence_id" ref="account.sequence_journal"/>
+            <field eval="1" name="active"/>
+            <field eval="1" name="update_posted"/>
+            <field name="name">Factures Aportacions</field>
+            <field eval="0" name="refund_journal"/>
+            <field eval="1" name="entry_posted"/>
+        </record>
+        <record id="apo_product_ae" model="product.product">
+            <field name="name">Aportacions</field>
+            <field name="default_code">APO_AE</field>
+            <field name="categ_id" model='product.category' search="[('name','=','Inversions')]"/>
+            <field name="property_account_expense" model="account.account" search="[('code','=','163000000000')]"/>
+        </record>
+        <record id="apo_product_int" model="product.product">
+            <field name="name">Interessos Aportacions</field>
+            <field name="default_code">APO_INT</field>
+            <field name="categ_id" model='product.category' search="[('name','=','Inversions')]"/>
+            <field name="property_account_expense" model="account.account" search="[('code','=','662000000001')]"/>
+            <field name="taxes_id" model="account.tax" search="[('name','=', 'Retenciones IRPF 19%')]"/>
+            <field name="supplier_taxes_id" model="account.tax" search="[('name','=', 'Retenciones IRPF 19%')]"/>
+        </record>
+        <record id="apo_investment_payment_mode" model="payment.mode">
+            <field name="name">APORTACIONS (Enginyers)</field>
+            <field name="type" search="[('code', '=', 'RECIBO_CSB')]"/>
+            <field name="journal" ref="apo_fact_journal"/>
+            <field name="bank_id" search="[('partner_id', '=', 1)]"/>
+            <field name="tipo">sepa19</field>
+            <field name="nombre">Som Energia SCCL</field>
+            <field name="sufijo">000</field>
+            <field name="require_bank_account" eval="True"/>
+            <field name="partner_id">1</field>
+            <field name="sepa_creditor_code">ES24000F55091367</field>
+        </record>
+        <record id="apo_investment_interest_payment_mode" model="payment.mode">
+            <field name="name">APORTACIONS INT</field>
+            <field name="type" search="[('code', '=', 'TRANSFERENCIA_CSB')]"/>
+            <field name="journal" ref="apo_journal"/>
+           <field name="bank_id" search="[('partner_id', '=', 1)]"/>
+           <field name="tipo">sepa34</field>
+           <field name="nombre">Som Energia SCCL</field>
+           <field name="sufijo">000</field>
+           <field name="require_bank_account" eval="True"/>
+           <field name="partner_id">1</field>
+           <field name="sepa_creditor_code">ES24000F55091367</field>
+       </record>
+        <record id="apo_divestment_payment_mode" model="payment.mode">
+            <field name="name">RETORN APORTACIONS (Enginyers)</field>
+            <field name="type" search="[('code', '=', 'RECIBO_CSB')]"/>
+            <field name="journal" ref="apo_fact_journal"/>
+            <field name="bank_id" search="[('partner_id', '=', 1)]"/>
+            <field name="tipo">sepa34</field>
+            <field name="nombre">Som Energia SCCL</field>
+            <field name="sufijo">000</field>
+            <field name="require_bank_account" eval="True"/>
+            <field name="partner_id">1</field>
+            <field name="sepa_creditor_code">ES24000F55091367</field>
+        </record>
+        <record id="emissio_apo_2021" model="generationkwh.emission">
+            <field name="name">Aportacions</field>
+            <field name="code">APO_202110</field>
+            <field name="start_date">2021-10-21-</field>
+            <field name="amount_emission">15000000</field>
+            <field name="state">draft</field>
+            <field name="type">apo</field>
+            <field name="grace_period">1</field>
+            <field name="expiration_years">0</field>
+            <field name="waiting_days">0</field>
+            <field name="mandate_name">PRESTEC Aportacions</field>
+            <field name="journal_id" ref="apo_fact_journal"/>
+            <field name="investment_product_id" ref="apo_product_ae" />
+            <field name="investment_payment_mode_id" ref="apo_investment_payment_mode" />
+            <field name="bridge_account_payments_id" ref="pgc_555000000011" />
+        </record>
+        <record id="emissio_apo" model="generationkwh.emission">
+            <field name="name">Aportacions</field>
+            <field name="code">APO_202003</field>
+            <field name="start_date">2020-03-03</field>
+            <field name="amount_emission">5000000</field>
+            <field name="state">draft</field>
+            <field name="type">apo</field>
+            <field name="grace_period">1</field>
+            <field name="expiration_years">0</field>
+            <field name="waiting_days">0</field>
+            <field name="mandate_name">PRESTEC Aportacions</field>
+            <field name="journal_id" ref="apo_fact_journal"/>
+            <field name="investment_product_id" ref="apo_product_ae" />
+            <field name="investment_payment_mode_id" ref="apo_investment_payment_mode" />
+            <field name="bridge_account_payments_id" ref="pgc_555000000011" />
+        </record>
+        <record model="ir.sequence.type" id="seq_type_som_aportacions">
+            <field name="name">Seq. Aportacions al Capital Social</field>
+            <field name="code">seq.som.aportacions</field>
+        </record>
+        <record model="ir.sequence" id="seq_som_aportacions">
+            <field name="name">Seq. Aportacions al Capital Social</field>
+            <field name="code">seq.som.aportacions</field>
+            <field name="padding">6</field>
+            <field name="number_increment">1</field>
+            <field name="prefix">APO</field>
+        </record>
+
+        <record id="emissio_apo_2012" model="generationkwh.emission">
+            <field name="name">Aportacions 2012</field>
+            <field name="code">APO_201205</field>
+            <field name="start_date">2012-05-01</field>
+            <field name="amount_emission">2030000</field>
+            <field name="state">done</field>
+            <field name="type">apo</field>
+            <field name="grace_period">1</field>
+            <field name="expiration_years">0</field>
+            <field name="waiting_days">0</field>
+            <field name="mandate_name">PRESTEC Aportacions</field>
+            <field name="journal_id" ref="apo_fact_journal"/>
+            <field name="investment_product_id" ref="apo_product_ae" />
+            <field name="investment_payment_mode_id" ref="apo_investment_payment_mode"/>
+        </record>
+
+        <record id="emissio_apo_2015" model="generationkwh.emission">
+            <field name="name">Aportacions 2015</field>
+            <field name="code">APO_201509</field>
+            <field name="start_date">2015-09-01</field>
+            <field name="amount_emission">1000000</field>
+            <field name="state">done</field>
+            <field name="type">apo</field>
+            <field name="grace_period">1</field>
+            <field name="expiration_years">0</field>
+            <field name="waiting_days">0</field>
+            <field name="mandate_name">PRESTEC Aportacions</field>
+            <field name="journal_id" ref="apo_fact_journal"/>
+            <field name="investment_product_id" ref="apo_product_ae" />
+            <field name="investment_payment_mode_id" ref="apo_investment_payment_mode"/>
+        </record>
+
+        <record id="emissio_apo_2017" model="generationkwh.emission">
+            <field name="name">Aportacions 2017</field>
+            <field name="code">APO_201710</field>
+            <field name="start_date">2017-10-01</field>
+            <field name="amount_emission">5200000</field>
+            <field name="state">done</field>
+            <field name="type">apo</field>
+            <field name="grace_period">1</field>
+            <field name="expiration_years">0</field>
+            <field name="waiting_days">0</field>
+            <field name="mandate_name">PRESTEC Aportacions</field>
+            <field name="journal_id" ref="apo_fact_journal"/>
+            <field name="investment_product_id" ref="apo_product_ae" />
+            <field name="investment_payment_mode_id" ref="apo_investment_payment_mode"/>
+        </record>
+
+        <record model="res.config" id="som_aportacions_interest">
+            <field name="name">som_aportacions_interest</field>
+            <field name="value">1.0</field>
+            <field name="description">
+                Definim l'interes aplicat actualment en les aportacions fetes al capital social.
+                Decimal definit amb punt. Exemple: "1.5"
+            </field>
+        </record>
+    </data>
+</openerp>

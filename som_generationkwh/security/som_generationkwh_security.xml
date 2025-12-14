@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+        <!-- Definim els grups -->
+        <record model="res.groups" id="group_som_generationkwh_r">
+            <field name="name">GenerationKwh / ReadOnly</field>
+        </record>
+        <record model="res.groups" id="group_som_generationkwh_w">
+            <field name="name">GenerationKwh / User</field>
+        </record>
+        <record model="res.groups" id="group_som_generationkwh_u">
+            <field name="name">GenerationKwh / Manager</field>
+        </record>
+     </data>
+</openerp>

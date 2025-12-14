@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+    <data>
+		<record id="view_wizard_llibre_registre_socis_form" model="ir.ui.view">
+            <field name="name">wizard.llibre.registre.socis.form</field>
+            <field name="model">wizard.llibre.registre.socis</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <form string="Imprimeix Llibre Registre Socis">
+                    <field name="state" invisible="1"/>
+                    <group colspan="4" attrs="{}">
+                         <field name="date_from"/>
+                         <field name="date_to"/>
+                    </group>
+                    <group colspan="4" attrs="{}">
+                        <button icon="gtk-cancel" special="cancel" string="Cancel·la" type="object"/>
+                        <button icon="gtk-print" name="generate_report"
+                            string="Imprimeix el Llibre" type="object"/>
+                    </group>
+		        </form>
+	        </field>
+	    </record>
+		<record id="action_wizard_llibre_registre_socis_form" model="ir.actions.act_window">
+			<field name="name">Genera Llibre Registre de Socis</field>
+			<field name="type">ir.actions.act_window</field>
+			<field name="res_model">wizard.llibre.registre.socis</field>
+			<field name="view_type">form</field>
+			<field name="view_mode">form</field>
+			<field name="target">new</field>
+		</record>
+		<menuitem name="Genera Llibre Registre de Socis"
+            action="action_wizard_llibre_registre_socis_form" id="registre_socis_form"
+			parent="base.menu_base_partner" sequence="21"/>
+	</data>
+</openerp>
