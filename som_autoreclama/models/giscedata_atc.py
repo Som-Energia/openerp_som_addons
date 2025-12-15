@@ -383,6 +383,10 @@ class GiscedataAtc(osv.osv):
         nf_readings_data.update({'type': '02', 'subtype': '009'})
         r101_obj.config_step(cursor, uid, r101.id, nf_readings_data, context=context)
 
+        rec_obj = self.pool.get("giscedata.switching.reclamacio")
+        rec_obj.write(cursor, uid, r101.reclamacio_ids[0].id, {
+                      'num_factura': f1.invoice_number_text}, context=context)
+
         return atc_id
 
     # Automatic ATC + [R1] from dictonary / Entry point
