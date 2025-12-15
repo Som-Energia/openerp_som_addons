@@ -38,6 +38,7 @@ class TestPoweremail(testing.OOTestCaseWithCursor):
         self.template_obj.write(
             self.cursor, self.uid, template_id, {
                 "sendgrid_category_ids": [(6, 0, [cat_a_id, cat_b_id])],
+                "enforce_from_account": 1,
             },
         )
 
