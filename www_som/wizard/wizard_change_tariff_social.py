@@ -23,6 +23,18 @@ class WizardChangeTariffSocial(osv.osv_memory):
             change_type = context.get("change_type", "to_social")
         return change_type
 
+    def change_to_social(self, cursor, uid, ids, context=None):
+        """canvi a tarifa social"""
+        return self.change_tariff(
+            cursor, uid, ids, "to_social", context=context
+        )
+
+    def change_to_regular(self, cursor, uid, ids, context=None):
+        """canvi a tarifa normal"""
+        return self.change_tariff(
+            cursor, uid, ids, "to_regular", context=context
+        )
+
     def change_tariff(self, cursor, uid, ids, change_type, context):
         """canvi a tarifa social"""
         polissa_obj = self.pool.get("giscedata.polissa")

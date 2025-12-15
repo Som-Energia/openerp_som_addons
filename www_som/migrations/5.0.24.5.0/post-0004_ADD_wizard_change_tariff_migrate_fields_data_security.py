@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import logging
 from oopgrade.oopgrade import load_data
+import pooler
 
 
 def up(cursor, installed_version):
@@ -8,6 +9,14 @@ def up(cursor, installed_version):
         return
 
     logger = logging.getLogger('openerp.migration')
+
+    logger.info("Initializing new fields")
+
+    pool = pooler.get_pool(cursor.dbname)
+    pool.get("wizard.change.tariff.social")._auto_init(
+        cursor, context={'module': 'www_som'}
+    )
+    logger.info("Migration completed successfully.")
 
     logger.info("Updating XML files")
     data_files = [
