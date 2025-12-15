@@ -4,7 +4,7 @@ from destral.transaction import Transaction
 from datetime import date, timedelta, datetime
 from addons import get_module_resource
 import mock
-
+import unittest
 from ..models import giscedata_atc, giscedata_polissa, som_autoreclama_state_history
 
 
@@ -3019,14 +3019,13 @@ class SomAutoreclama009AutomationTest(SomAutoreclamaEzATC_Test):
         _, section_id = self.get_object_reference(
             "som_switching", "atc_section_factura"
         )
-        tag_id = self.search_in("giscedata.atc.tag", [("name", "ilike", "%Autocac 009")])
 
         self.assertEqual(atc.name, u"AUTOCAC 009")
         self.assertEqual(atc.canal_id.id, channel_id)
         self.assertEqual(atc.section_id.id, section_id)
         self.assertEqual(atc.subtipus_id.id, subtipus_id)
         self.assertEqual(atc.polissa_id.id, polissa_id)
-        self.assertEqual(atc.tag.id, tag_id)
+        self.assertTrue(u"Autocac 009" in atc.tag.name)
 
         self.assertEqual(atc.tancar_cac_al_finalitzar_r1, True)
         self.assertEqual(atc.state, "pending")
@@ -3250,4 +3249,237 @@ class SomAutoreclama009AutomationTest(SomAutoreclamaEzATC_Test):
         atc = atc_obj.browse(self.cursor, self.uid, atc_id)
         self.assertEqual(atc.name, u"AUTOCAC 009")
 
-    # TODO: test atc.tag, NF readings
+    def test_create_ATC_R1_009_from_polissa_via_wizard__tag_one_indexed(self):
+        atc_obj = self.get_model("giscedata.atc")
+        pol_obj = self.get_model("giscedata.polissa")
+        f1_obj = self.get_model("giscedata.facturacio.importacio.linia")
+        ff_obj = self.get_model("giscedata.facturacio.importacio.linia.factura")
+
+        _, polissa_id = self.get_object_reference(
+            "giscedata_polissa", "polissa_0004"
+        )
+        pol_obj.write(self.cursor, self.uid, polissa_id, {'mode_facturacio': 'index'})
+
+        pol = pol_obj.browse(self.cursor, self.uid, polissa_id)
+        f1_ids = f1_obj.search(self.cursor, self.uid, [("cups_id", "in", [pol.cups.id])])
+        self.assertGreater(len(f1_ids), 0)
+        f1_id = f1_ids[0]
+
+        f1 = f1_obj.browse(self.cursor, self.uid, f1_id)
+        self.assertEqual(f1.cups_id.name, pol.cups.name)
+
+        f1_obj.write(self.cursor, self.uid, f1_id, {
+            "invoice_number_text": "1234567890ABCD",
+            "type_factura": "R",
+            "polissa_id": pol.id,
+            "fecha_factura_desde": "2015-01-01",
+            "fecha_factura_hasta": "2015-01-31",
+            "import_phase": 50,
+        })
+        ff_obj.create(self.cursor, self.uid, {
+            'linia_id': f1_id,
+            'tipo_factura': '04',
+            'importacio_id': 1,
+            'address_invoice_id': pol.direccio_pagament.id,
+            'partner_id': pol.titular.id,
+            'account_id': 3,
+            'polissa_id': polissa_id,
+            'tarifa_acces_id': pol.tarifa.id,
+            'cups_id': pol.cups.id,
+            'factura_id': 3,
+            'llista_preu': pol.llista_preu.id,
+        })
+
+        atc_id = atc_obj.create_ATC_R1_009_from_polissa_via_wizard(
+            self.cursor, self.uid, polissa_id, {}
+        )
+
+        atc = atc_obj.browse(self.cursor, self.uid, atc_id)
+
+        tag_id = self.get_object_reference('som_autoreclama', 'tag_som_autoreclama_009_GEGC')[1]
+
+        self.assertEqual(atc.name, u"AUTOCAC 009")
+        self.assertEqual(atc.polissa_id.id, polissa_id)
+        self.assertEqual(atc.tag.id, tag_id)
+
+    def test_create_ATC_R1_009_from_polissa_via_wizard__tag_one_non_20TD(self):
+        atc_obj = self.get_model("giscedata.atc")
+        pol_obj = self.get_model("giscedata.polissa")
+        tar_obj = self.get_model("giscedata.polissa.tarifa")
+        f1_obj = self.get_model("giscedata.facturacio.importacio.linia")
+        ff_obj = self.get_model("giscedata.facturacio.importacio.linia.factura")
+
+        _, polissa_id = self.get_object_reference(
+            "giscedata_polissa", "polissa_0004"
+        )
+
+        tar_ids = tar_obj.search(self.cursor, self.uid, [("name", "!=", "2.0TD")])
+        pol_obj.write(self.cursor, self.uid, polissa_id, {
+            'mode_facturacio': 'atr',
+            'tarifa': tar_ids[0],
+        })
+
+        pol = pol_obj.browse(self.cursor, self.uid, polissa_id)
+        f1_ids = f1_obj.search(self.cursor, self.uid, [("cups_id", "in", [pol.cups.id])])
+        self.assertGreater(len(f1_ids), 0)
+        f1_id = f1_ids[0]
+
+        f1 = f1_obj.browse(self.cursor, self.uid, f1_id)
+        self.assertEqual(f1.cups_id.name, pol.cups.name)
+
+        f1_obj.write(self.cursor, self.uid, f1_id, {
+            "invoice_number_text": "1234567890ABCD",
+            "type_factura": "R",
+            "polissa_id": pol.id,
+            "fecha_factura_desde": "2015-01-01",
+            "fecha_factura_hasta": "2015-01-31",
+            "import_phase": 50,
+        })
+        ff_obj.create(self.cursor, self.uid, {
+            'linia_id': f1_id,
+            'tipo_factura': '04',
+            'importacio_id': 1,
+            'address_invoice_id': pol.direccio_pagament.id,
+            'partner_id': pol.titular.id,
+            'account_id': 3,
+            'polissa_id': polissa_id,
+            'tarifa_acces_id': pol.tarifa.id,
+            'cups_id': pol.cups.id,
+            'factura_id': 3,
+            'llista_preu': pol.llista_preu.id,
+        })
+
+        atc_id = atc_obj.create_ATC_R1_009_from_polissa_via_wizard(
+            self.cursor, self.uid, polissa_id, {}
+        )
+
+        atc = atc_obj.browse(self.cursor, self.uid, atc_id)
+
+        tag_id = self.get_object_reference('som_autoreclama', 'tag_som_autoreclama_009_GEGC')[1]
+
+        self.assertEqual(atc.name, u"AUTOCAC 009")
+        self.assertEqual(atc.polissa_id.id, polissa_id)
+        self.assertEqual(atc.tag.id, tag_id)
+
+    @unittest.skip(reason="WIP using mock")
+    @mock.patch.object(giscedata_polissa.GiscedataPolissa, "autoconsumo")
+    def __test_create_ATC_R1_009_from_polissa_via_wizard__tag_two_auto(self, mock_autoconsumo):
+        atc_obj = self.get_model("giscedata.atc")
+        pol_obj = self.get_model("giscedata.polissa")
+        tar_obj = self.get_model("giscedata.polissa.tarifa")
+        f1_obj = self.get_model("giscedata.facturacio.importacio.linia")
+        ff_obj = self.get_model("giscedata.facturacio.importacio.linia.factura")
+
+        mock_autoconsumo.return_value = 42
+        _, polissa_id = self.get_object_reference(
+            "giscedata_polissa", "polissa_0004"
+        )
+
+        tar_ids = tar_obj.search(self.cursor, self.uid, [("name", "=", "2.0TD")])
+        pol_obj.write(self.cursor, self.uid, polissa_id, {
+            'mode_facturacio': 'atr',
+            'tarifa': tar_ids[0],
+        })
+
+        pol = pol_obj.browse(self.cursor, self.uid, polissa_id)
+        f1_ids = f1_obj.search(self.cursor, self.uid, [("cups_id", "in", [pol.cups.id])])
+        self.assertGreater(len(f1_ids), 0)
+        f1_id = f1_ids[0]
+
+        f1 = f1_obj.browse(self.cursor, self.uid, f1_id)
+        self.assertEqual(f1.cups_id.name, pol.cups.name)
+
+        f1_obj.write(self.cursor, self.uid, f1_id, {
+            "invoice_number_text": "1234567890ABCD",
+            "type_factura": "R",
+            "polissa_id": pol.id,
+            "fecha_factura_desde": "2015-01-01",
+            "fecha_factura_hasta": "2015-01-31",
+            "import_phase": 50,
+        })
+        ff_obj.create(self.cursor, self.uid, {
+            'linia_id': f1_id,
+            'tipo_factura': '04',
+            'importacio_id': 1,
+            'address_invoice_id': pol.direccio_pagament.id,
+            'partner_id': pol.titular.id,
+            'account_id': 3,
+            'polissa_id': polissa_id,
+            'tarifa_acces_id': pol.tarifa.id,
+            'cups_id': pol.cups.id,
+            'factura_id': 3,
+            'llista_preu': pol.llista_preu.id,
+        })
+
+        atc_id = atc_obj.create_ATC_R1_009_from_polissa_via_wizard(
+            self.cursor, self.uid, polissa_id, {}
+        )
+
+        atc = atc_obj.browse(self.cursor, self.uid, atc_id)
+
+        tag_id = self.get_object_reference('som_autoreclama', 'tag_som_autoreclama_009_GEA')[1]
+
+        self.assertEqual(atc.name, u"AUTOCAC 009")
+        self.assertEqual(atc.polissa_id.id, polissa_id)
+        self.assertEqual(atc.tag.id, tag_id)
+
+    def test_create_ATC_R1_009_from_polissa_via_wizard__tag_tree_2_0TD_periods_auto(self):
+        atc_obj = self.get_model("giscedata.atc")
+        pol_obj = self.get_model("giscedata.polissa")
+        tar_obj = self.get_model("giscedata.polissa.tarifa")
+        f1_obj = self.get_model("giscedata.facturacio.importacio.linia")
+        ff_obj = self.get_model("giscedata.facturacio.importacio.linia.factura")
+
+        _, polissa_id = self.get_object_reference(
+            "giscedata_polissa", "polissa_0004"
+        )
+
+        tar_ids = tar_obj.search(self.cursor, self.uid, [("name", "=", "2.0TD")])
+        pol_obj.write(self.cursor, self.uid, polissa_id, {
+            'mode_facturacio': 'atr',
+            'tarifa': tar_ids[0],
+        })
+
+        pol = pol_obj.browse(self.cursor, self.uid, polissa_id)
+        f1_ids = f1_obj.search(self.cursor, self.uid, [("cups_id", "in", [pol.cups.id])])
+        self.assertGreater(len(f1_ids), 0)
+        f1_id = f1_ids[0]
+
+        f1 = f1_obj.browse(self.cursor, self.uid, f1_id)
+        self.assertEqual(f1.cups_id.name, pol.cups.name)
+
+        f1_obj.write(self.cursor, self.uid, f1_id, {
+            "invoice_number_text": "1234567890ABCD",
+            "type_factura": "R",
+            "polissa_id": pol.id,
+            "fecha_factura_desde": "2015-01-01",
+            "fecha_factura_hasta": "2015-01-31",
+            "import_phase": 50,
+        })
+        ff_obj.create(self.cursor, self.uid, {
+            'linia_id': f1_id,
+            'tipo_factura': '04',
+            'importacio_id': 1,
+            'address_invoice_id': pol.direccio_pagament.id,
+            'partner_id': pol.titular.id,
+            'account_id': 3,
+            'polissa_id': polissa_id,
+            'tarifa_acces_id': pol.tarifa.id,
+            'cups_id': pol.cups.id,
+            'factura_id': 3,
+            'llista_preu': pol.llista_preu.id,
+        })
+
+        atc_id = atc_obj.create_ATC_R1_009_from_polissa_via_wizard(
+            self.cursor, self.uid, polissa_id, {}
+        )
+
+        atc = atc_obj.browse(self.cursor, self.uid, atc_id)
+
+        tag_id = self.get_object_reference('som_autoreclama', 'tag_som_autoreclama_009_GET')[1]
+
+        self.assertEqual(atc.name, u"AUTOCAC 009")
+        self.assertEqual(atc.polissa_id.id, polissa_id)
+        self.assertEqual(atc.tag.id, tag_id)
+
+    # TODO: test NF readings
