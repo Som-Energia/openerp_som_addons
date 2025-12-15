@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data noupdate="1">
+        <record model="product.pricelist" id="pricelist_periodes_20td_peninsula">
+            <field name="name">2.0TD_SOM</field>
+            <field name="nom_comercial">2.0TD Periodes Península</field>
+            <field name="type">sale</field>
+            <field name="currency_id" ref="base.EUR"/>
+            <field name="tarifes_atr_compatibles" eval="[(4, ref('giscedata_polissa.tarifa_20TD'))]"/>
+            <field name="compatible_invoicing_modes" eval="[(4, ref('giscedata_facturacio_indexada.mode_facturacio_index'))]"/>
+        </record>
+        <record model="product.pricelist" id="pricelist_periodes_20td_insular">
+            <field name="name">2.0TD_SOM_INSULAR</field>
+            <field name="nom_comercial">2.0TD Periodes Insular</field>
+            <field name="type">sale</field>
+            <field name="currency_id" ref="base.EUR"/>
+            <field name="tarifes_atr_compatibles" eval="[(4, ref('giscedata_polissa.tarifa_20TD'))]"/>
+            <field name="compatible_invoicing_modes" eval="[(4, ref('giscedata_facturacio_indexada.mode_facturacio_index'))]"/>
+        </record>
+        <record model="product.pricelist" id="pricelist_periodes_30td_peninsula">
+            <field name="name">3.0TD_SOM</field>
+            <field name="nom_comercial">3.0TD Periodes Península</field>
+            <field name="type">sale</field>
+            <field name="currency_id" ref="base.EUR"/>
+            <field name="tarifes_atr_compatibles" eval="[(4, ref('giscedata_polissa.tarifa_30TD'))]"/>
+            <field name="compatible_invoicing_modes" eval="[(4, ref('giscedata_facturacio_indexada.mode_facturacio_index'))]"/>
+        </record>
+        <record model="product.pricelist" id="pricelist_periodes_30td_insular">
+            <field name="name">3.0TD_SOM_INSULAR</field>
+            <field name="nom_comercial">3.0TD Periodes Insular</field>
+            <field name="type">sale</field>
+            <field name="currency_id" ref="base.EUR"/>
+            <field name="tarifes_atr_compatibles" eval="[(4, ref('giscedata_polissa.tarifa_30TD'))]"/>
+            <field name="compatible_invoicing_modes" eval="[(4, ref('giscedata_facturacio_indexada.mode_facturacio_index'))]"/>
+        </record>
+        <record model="product.pricelist" id="pricelist_periodes_61td_peninsula">
+            <field name="name">6.1TD_SOM</field>
+            <field name="nom_comercial">6.1TD Periodes Península</field>
+            <field name="type">sale</field>
+            <field name="currency_id" ref="base.EUR"/>
+            <field name="tarifes_atr_compatibles" eval="[(4, ref('giscedata_polissa.tarifa_61TD'))]"/>
+            <field name="compatible_invoicing_modes" eval="[(4, ref('giscedata_facturacio_indexada.mode_facturacio_index'))]"/>
+        </record>
+        <record model="product.pricelist" id="pricelist_periodes_61td_insular">
+            <field name="name">6.1TD_SOM_INSULAR</field>
+            <field name="nom_comercial">6.1TD Periodes Insular</field>
+            <field name="type">sale</field>
+            <field name="currency_id" ref="base.EUR"/>
+            <field name="tarifes_atr_compatibles" eval="[(4, ref('giscedata_polissa.tarifa_61TD'))]"/>
+            <field name="compatible_invoicing_modes" eval="[(4, ref('giscedata_facturacio_indexada.mode_facturacio_index'))]"/>
+        </record>
+    </data>
+</openerp>

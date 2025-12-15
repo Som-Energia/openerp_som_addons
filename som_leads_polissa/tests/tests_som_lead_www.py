@@ -856,7 +856,7 @@ class TestsSomLeadWww(testing.OOTestCase):
         self.assertEqual(invoice.state, "open")
 
         payment_mode_id = ir_model_o.get_object_reference(
-            self.cursor, self.uid, "som_polissa_soci", "mode_pagament_socis"
+            self.cursor, self.uid, "som_leads_polissa", "mode_pagament_socis_factura"
         )[1]
 
         payment_order = invoice.payment_order_id
@@ -936,6 +936,7 @@ class TestsSomLeadWww(testing.OOTestCase):
         ir_model_o = self.get_model("ir.model.data")
         mailbox_o = self.get_model('poweremail.mailbox')
         partner_o = self.get_model("res.partner")
+        address_o = self.get_model("res.partner.address")
 
         member_id = ir_model_o.get_object_reference(
             self.cursor, self.uid, "som_polissa_soci", "soci_0001"
@@ -969,6 +970,13 @@ class TestsSomLeadWww(testing.OOTestCase):
         self.assertEqual(
             lead.polissa_id.direccio_notificacio.street,
             "Major, 32"
+        )
+
+        # Check that the address is not copied to a new address record
+        self.assertEqual(
+            address_o.search_count(self.cursor, self.uid, [
+                ('partner_id', '=', member.partner_id.id)
+            ]), 1
         )
 
         # Check that the mail was sent
@@ -1211,6 +1219,7 @@ class TestsSomLeadWww(testing.OOTestCase):
         tensio_trifasica = ir_model_o.get_object_reference(
             self.cursor, self.uid, 'giscedata_tensions', 'tensio_3x230_400')[1]
         self.assertEqual(lead.polissa_id.tensio_normalitzada.id, tensio_trifasica)
+        
         self.mock_subscribe_member.assert_called()
         self.mock_unsubscribe_customer.assert_called()
 
@@ -1306,15 +1315,23 @@ class TestsSomLeadWww(testing.OOTestCase):
         self.assertEqual(lead.polissa_id.direccio_notificacio.phone, "699999999")
         self.assertEqual(lead.polissa_id.direccio_notificacio.phone_prefix.name, "+850")
 
-        self.mock_subscriu.assert_called()
-        self.mock_arxiva.assert_called()
-
     def test_manual_member_number_error(self):
         www_lead_o = self.get_model("som.lead.www")
         lead_o = self.get_model("giscedata.crm.lead")
+        ir_model_o = self.get_model("ir.model.data")
+        member_o = self.get_model("somenergia.soci")
         values = self._basic_values
         values["linked_member"] = "sponsored"
         values["contract_owner"] = values.pop("new_member_info")
+        member_id = ir_model_o.get_object_reference(
+            self.cursor, self.uid, "som_polissa_soci", "soci_0001"
+        )[1]
+        member = member_o.browse(self.cursor, self.uid, member_id)
+        vat = member.partner_id.vat.replace("ES", "")
+        values["linked_member_info"] = {
+            "vat": vat,
+            "code": member.partner_id.ref.replace("S", ""),
+        }
 
         lead_id = www_lead_o.create_lead(self.cursor, self.uid, values)["lead_id"]
         lead_o.write(

@@ -4,6 +4,10 @@ from ast import literal_eval
 from datetime import datetime, timedelta
 from osv import osv
 import logging
+import time
+
+
+MAX_RETRIES = 3  # OMIE send retries by offer
 
 
 class WizardGisceReGenerarOfertaSom(osv.osv_memory):
@@ -46,7 +50,7 @@ class WizardGisceReGenerarOfertaSom(osv.osv_memory):
         self.pool.get('poweremail.templates').generate_mail(
             cursor, uid, template_id, [1], context=ctx)
 
-    def _cron_giscere_daily_offer(self, cursor, uid, context=None):
+    def _cron_giscere_daily_offer(self, cursor, uid, context=None):  # noqa: C901
         """
         CREATE a daily offer for day D+1 for each Offer Unit
         :param cursor: OpenERP DB cursor
@@ -130,8 +134,16 @@ class WizardGisceReGenerarOfertaSom(osv.osv_memory):
                                     if auto_publish_omie:
                                         omie_oferta_id = oferta_data.get('oferta_omie_id')
                                         omie_oferta_id = int(omie_oferta_id.split(',')[1])
-                                        omie_oferta_obj.enviar_oferta(
-                                            cursor, uid, [omie_oferta_id], context=context)
+                                        for attempt in range(1, MAX_RETRIES + 1):
+                                            try:
+                                                omie_oferta_obj.enviar_oferta(
+                                                    cursor, uid, [omie_oferta_id], context=context)
+                                                break
+                                            except Exception as e:
+                                                if attempt == MAX_RETRIES:
+                                                    raise
+                                                sleep_time = attempt * 3
+                                                time.sleep(sleep_time)
                                         oferta_new_state = oferta_obj.read(
                                             cursor, uid, oferta_id, ['oferta_a_omie'])
                                         if oferta_new_state.get('oferta_a_omie', 'generada') == 'enviada':  # noqa: E501

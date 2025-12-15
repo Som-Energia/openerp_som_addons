@@ -8,3 +8,6 @@
 "access_report_backend_condicions_particulars_m1_r","report.backend.condicions.particulars.m1","model_report_backend_condicions_particulars_m1","giscedata_facturacio.group_giscedata_facturacio_r",1,0,0,0
 "access_report_backend_condicions_particulars_m1_u","report.backend.condicions.particulars.m1","model_report_backend_condicions_particulars_m1","giscedata_facturacio.group_giscedata_facturacio_u",1,1,1,1
 "access_report_backend_condicions_particulars_m1_w","report.backend.condicions.particulars.m1","model_report_backend_condicions_particulars_m1","giscedata_facturacio.group_giscedata_facturacio_w",1,1,1,0
+"access_report_backend_mailcanvipreus_eie_r","report.backend.mailcanvipreus_eie","model_report_backend_mailcanvipreus_eie","giscedata_facturacio.group_giscedata_facturacio_r",1,0,0,0
+"access_report_backend_mailcanvipreus_eie_u","report.backend.mailcanvipreus_eie","model_report_backend_mailcanvipreus_eie","giscedata_facturacio.group_giscedata_facturacio_u",1,1,1,1
+"access_report_backend_mailcanvipreus_eie_w","report.backend.mailcanvipreus_eie","model_report_backend_mailcanvipreus_eie","giscedata_facturacio.group_giscedata_facturacio_w",1,1,1,0

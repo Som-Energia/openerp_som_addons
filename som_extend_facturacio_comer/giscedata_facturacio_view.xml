@@ -61,6 +61,17 @@
                 </xpath>
             </field>
         </record>
-
+        <record model="ir.ui.view" id="view_factura_form_comment">
+            <field name="name">giscedata.facturacio.factura.form</field>
+            <field name="model">giscedata.facturacio.factura</field>
+            <field name="type">form</field>
+            <field name="priority">99</field>
+            <field name="inherit_id" ref="giscedata_facturacio.view_factura_form"/>
+            <field name="arch" type="xml">
+                <field name="comment" position="replace">
+                    <field  name="comment" colspan="4" nolabel="1" select="2"/>
+                </field>
+            </field>
+        </record>
     </data>
 </openerp>

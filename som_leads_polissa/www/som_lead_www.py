@@ -1,4 +1,5 @@
 # -*- encoding: utf-8 -*-
+import logging
 import traceback
 import sys
 from osv import osv
@@ -127,7 +128,7 @@ class SomLeadWww(osv.osv_memory):
             "titular_pu": member["address"].get("door"),
             "titular_bq": member["address"].get("block"),
             "titular_id_municipi": member["address"].get("city_id"),
-            "titular_email": member.get("email", "").lower(),
+            "titular_email": member.get("email", "").lower() or None,
             "titular_phone": member.get("phone"),
             "titular_mobile": member.get("phone2"),
             "titular_phone_prefix": member.get("phone_prefix"),
@@ -183,13 +184,8 @@ class SomLeadWww(osv.osv_memory):
                 int(values["tipus_cups"]), int(values["tipus_installacio"]), context=context
             )
 
-        if member_type in ["new_member", "sponsored"]:
-            if self._already_has_contract(cr, uid, values["titular_vat"], context=context):
-                values["is_new_contact"] = False
-            else:
-                values["is_new_contact"] = True
-        else:
-            values["is_new_contact"] = False
+        values["is_new_contact"] = (
+            not self._already_has_contract(cr, uid, values["titular_vat"], context=context))
 
         # Remove None values to let the lead get them if exists in the bbdd
         for field, value in values.items():
@@ -236,16 +232,23 @@ class SomLeadWww(osv.osv_memory):
         lead_o.historize_msg(cr, uid, [lead_id], msg, context=context)
         lead_o.stage_next(cr, uid, [lead_id], context=context)
 
+        try:
+            # Si no és sòcia, subscriu mail a mailchimp com a client sense ser soci
+            partner = lead_o.browse(cr, uid, lead_id).partner_id
+            if not soci_obj.search(cr, uid, [("partner_id", "=", partner.id)]):
+                rpa_obj.subscribe_partner_in_customers_no_members_lists(
+                    cr, uid, partner.id, context=context)
+        except Exception as e:
+            sentry = self.pool.get('sentry.setup')
+            if sentry:
+                sentry.client.captureException()
+            logger = logging.getLogger("openerp.{0}.activate_lead".format(__name__))
+            logger.warning("Error al comunicar amb Mailchimp {}".format(str(e)))
+
         if context.get('sync'):
             lead_o._send_mail(cr, uid, lead_id, context=context)
         else:
             lead_o._send_mail_async(cr, uid, lead_id, context=context)
-
-        # Si no és sòcia, subscriu mail a mailchimp com a client sense ser soci
-        partner = lead_o.browse(cr, uid, lead_id).partner_id
-        if not soci_obj.search(cr, uid, [("partner_id", "=", partner.id)]):
-            rpa_obj.subscribe_partner_in_customers_no_members_lists(
-                cr, uid, partner.id, context=context)
 
         return True
 
@@ -331,7 +334,8 @@ class SomLeadWww(osv.osv_memory):
         result = False
         partner_id = partner_o.search(cr, uid, [('vat', '=', vat)])
         if partner_id:
-            if polissa_o.search(cr, uid, [("titular", "=", partner_id[0])]):
+            context["active_test"] = False
+            if polissa_o.search(cr, uid, [("titular", "=", partner_id[0])], context=context):
                 result = True
         return result
 

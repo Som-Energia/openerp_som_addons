@@ -273,28 +273,30 @@
 
                         %if inv.payment_type.code == 'RECIBO_CSB':
                             <p style="font-size: .8em">${_(u"L'import d'aquesta factura es carregarà al teu compte. El seu pagament quedarà justificat amb l'apunt bancari corresponent")}</p>
-                        <p class="center"><b>${bank_acc}</b></p>
+                            <p class="center"><b>${bank_acc}</b></p>
                         %elif inv.payment_type.code == 'N57' :
-			<table class="space">
-                    	<tr>
-                        <td align="center">
-                        ${ recibo507.svg(writer_options={
-                        'background':'transparent',
-                        'module_height': 7,
-                        'font_size': 7,
-                        'text_distance': 3,
-                        'module_width': 0.25})
-                        }
-                        </td>
-                    	</tr>
-                    	<tr>
-                    	<td align="center">
-                        ${_("Per fer el pagament online, pots entrar a <a href='https://www.caixabank.es/particular/pagos/impuestosrecibosmatriculas_ca.html'>https://www.caixabank.es/particular/pagos/impuestosrecibosmatriculas_ca.html</a>")}
-                        </td>
-	                </tr>
-        	        </table>
+			                <table class="space">
+                                <tr>
+                                    <td align="center">
+                                    ${ recibo507.svg(writer_options={
+                                    'background':'transparent',
+                                    'module_height': 7,
+                                    'font_size': 7,
+                                    'text_distance': 3,
+                                    'module_width': 0.25})
+                                    }
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td align="center">
+                                    ${_("Per fer el pagament online, pots entrar a <a href='https://www.caixabank.es/particular/pagos/impuestosrecibosmatriculas_ca.html'>https://www.caixabank.es/particular/pagos/impuestosrecibosmatriculas_ca.html</a>")}
+                                    </td>
+                                </tr>
+                            </table>
 
-			%else:
+                        %elif inv.payment_type.code == "COBRAMENT_TARGETA":
+                            ${_("L'import d'aquesta factura s'ha de pagat mitjançant tarjeta de crèdit")}
+			            %else:
                             ${_("L'import d'aquesta factura s'ha de pagar mitjançant transferència bancària al compte indicat:")}
                             <%
                                 bank_list = company.partner_id.bank_ids

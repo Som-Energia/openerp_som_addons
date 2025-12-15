@@ -1,1 +1,3 @@
-import InvoiceF1A
+# -*- coding: utf-8 -*-
+from __future__ import absolute_import
+from . import InvoiceF1A

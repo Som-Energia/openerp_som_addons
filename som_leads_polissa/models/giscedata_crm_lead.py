@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from datetime import datetime
+from time import sleep
 from osv import fields, osv
 import netsvc
 from oorq.decorators import job
@@ -212,8 +213,17 @@ class GiscedataCrmLead(osv.OsvInherits):
                 ad_id = addrs.get("default")
                 adr_info = address_o.read(
                     cursor, uid, ad_id, ['phone_prefix', 'mobile_prefix'], context=context)
-                vals["titular_phone_prefix"] = adr_info.get("phone_prefix", [False])[0]
-                vals["titular_mobile_prefix"] = adr_info.get("mobile_prefix", [False])[0]
+                # Quick fix to ensure no more exceptions on new contracts
+                phone_prefix = adr_info.get("phone_prefix", False)
+                mobile_prefix = adr_info.get("mobile_prefix", False)
+                if isinstance(phone_prefix, list) or isinstance(phone_prefix, tuple):
+                    phone_prefix = phone_prefix[0]
+                if isinstance(mobile_prefix, list) or isinstance(mobile_prefix, tuple):
+                    mobile_prefix = mobile_prefix[0]
+                if phone_prefix:
+                    vals["titular_phone_prefix"] = phone_prefix
+                if mobile_prefix:
+                    vals["titular_mobile_prefix"] = mobile_prefix
 
         return vals
 
@@ -343,7 +353,7 @@ class GiscedataCrmLead(osv.OsvInherits):
         # fer un tipus de pagament especial per a la quota de soci i despres buscar una remesa
         # oberta o crearla de nou com fa generation a get_or_create_open_payment_order
         payment_mode_id = ir_model_o.get_object_reference(
-            cursor, uid, "som_polissa_soci", "mode_pagament_socis"
+            cursor, uid, "som_leads_polissa", "mode_pagament_socis_factura"
         )[1]
         payment_mode_name = payment_mode_o.read(
             cursor, uid, payment_mode_id, ["name"], context=context
@@ -408,7 +418,13 @@ class GiscedataCrmLead(osv.OsvInherits):
             template_name = "email_contracte_esborrany_nou_soci"
         template_id = ir_model_o.get_object_reference(cr, uid, 'som_polissa_soci', template_name)[1]
 
+        attempts = 5
+        while not lead["polissa_id"] and attempts > 0:
+            sleep(5)
+            lead = lead_o.read(cr, uid, lead_id, ['polissa_id'], context=context)
+            attempts -= 1
         polissa_id = lead["polissa_id"][0]
+
         from_id = template_o.read(cr, uid, template_id)['enforce_from_account'][0]
 
         wiz_send_obj = self.pool.get("poweremail.send.wizard")
@@ -455,10 +471,10 @@ class GiscedataCrmLead(osv.OsvInherits):
         "comercial_info_accepted": fields.boolean("Accepta informació comercial (SomServeis)"),
         "crm_lead_id": fields.integer("ID del lead al CRM"),
         "is_new_contact": fields.boolean("És una persona nova per la cooperativa"),
-         'titular_phone_prefix': fields.many2one(
-            'res.phone.national.code', 'Prefix', required=False),
-        'titular_mobile_prefix': fields.many2one(
-            'res.phone.national.code', 'Prefix', required=False),
+        "titular_phone_prefix": fields.many2one(
+            'res.phone.national.code', "Prefix", required=False),
+        "titular_mobile_prefix": fields.many2one(
+            'res.phone.national.code', "Prefix", required=False),
     }
 
     _defaults = {

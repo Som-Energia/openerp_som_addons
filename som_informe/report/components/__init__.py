@@ -1,64 +1,66 @@
-import R101
-import R102
-import R103
-import R104
-import R105
-import R108
-import R109
-import A301
-import A302
-import A303
-import A304
-import A305
-import A306
-import A307
-import A313
-import C101
-import C102
-import C104
-import C105
-import C106
-import C108
-import C109
-import C110
-import C111
-import C112
-import C201
-import C202
-import C204
-import C205
-import C206
-import C208
-import C209
-import C210
-import C211
-import C212
-import C213
-import M101
-import M102
-import M103
-import M104
-import M105
-import M106
-import M107
-import B101
-import B102
-import B103
-import B104
-import B105
-import B106
-import B107
-import B116
-import header
-import footer
-import CollectHeader
-import CollectDetailsInvoices
-import atrHeader
-import atrFooter
-import CollectContractData
-import InvoiceFE
-import InvoiceF1NG
-import InvoiceF1A
-import InvoiceF1R
-import InvoiceF1C
-import InvoiceF1Unsupported
+# -*- coding: utf-8 -*-
+from __future__ import absolute_import
+from . import R101
+from . import R102
+from . import R103
+from . import R104
+from . import R105
+from . import R108
+from . import R109
+from . import A301
+from . import A302
+from . import A303
+from . import A304
+from . import A305
+from . import A306
+from . import A307
+from . import A313
+from . import C101
+from . import C102
+from . import C104
+from . import C105
+from . import C106
+from . import C108
+from . import C109
+from . import C110
+from . import C111
+from . import C112
+from . import C201
+from . import C202
+from . import C204
+from . import C205
+from . import C206
+from . import C208
+from . import C209
+from . import C210
+from . import C211
+from . import C212
+from . import C213
+from . import M101
+from . import M102
+from . import M103
+from . import M104
+from . import M105
+from . import M106
+from . import M107
+from . import B101
+from . import B102
+from . import B103
+from . import B104
+from . import B105
+from . import B106
+from . import B107
+from . import B116
+from . import header
+from . import footer
+from . import CollectHeader
+from . import CollectDetailsInvoices
+from . import atrHeader
+from . import atrFooter
+from . import CollectContractData
+from . import InvoiceFE
+from . import InvoiceF1NG
+from . import InvoiceF1A
+from . import InvoiceF1R
+from . import InvoiceF1C
+from . import InvoiceF1Unsupported

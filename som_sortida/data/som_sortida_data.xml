@@ -172,5 +172,10 @@ Hola${nom_titular}, tal como te hemos comunicado por email, te recordamos que si
             <field eval="'update_polisses'" name="function"/>
             <field eval="'({},)'" name="args"/>
         </record>
+        <record model="res.config" id="mailchimp_clients_ctss_list">
+            <field name="name">mailchimp_clients_ctss_list</field>
+            <field name="value">[arco] Butlletí usuàries</field>
+            <field name="description">Nom exacte de la llista de mailchimp on es subscriuen o actualizen l'estat les persones titulars no sòcies que venen d'un Canvi de Titular sense sòcia (Campanya CTSS).</field>
+        </record>
     </data>
 </openerp>

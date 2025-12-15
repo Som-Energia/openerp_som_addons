@@ -34,5 +34,9 @@
             <field name="company_id" ref="base.main_company"/>
             <field name="user_type" ref="l10n_chart_ES.gastos"/>
         </record>
+        <record model="account.journal" id="member_fee_journal">
+            <field name="default_credit_account_id" ref="member_cash"/>
+            <field name="default_debit_account_id" ref="member_cash"/>
+        </record>
     </data>
 </openerp>

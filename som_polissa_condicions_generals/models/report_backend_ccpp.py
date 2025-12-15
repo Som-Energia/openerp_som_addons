@@ -8,7 +8,7 @@ from giscedata_facturacio.report.utils import get_atr_price, get_comming_atr_pri
 from som_extend_facturacio_comer.utils import get_gkwh_atr_price
 from tools.translate import _
 from giscedata_polissa.report.utils import localize_period
-from som_polissa.models.giscedata_cups import TABLA_113_dict
+from som_indexada.utils import get_fs_from_k_change
 
 CONTRACT_TYPES = dict(TABLA_9)
 
@@ -126,8 +126,10 @@ class ReportBackendCondicionsParticulars(ReportBackend):
             es_canvi_tecnic = False
         pots = pas.pot_ids if es_canvi_tecnic else pol.potencies_periode
         res['autoconsum'] = pas.tipus_autoconsum if es_canvi_tecnic else pol.tipus_subseccio
-        if res['autoconsum'] and res['autoconsum'] in TABLA_113_dict:
-            res['autoconsum'] = TABLA_113_dict[res['autoconsum']]
+        if res['autoconsum']:
+            cups_obj = self.pool.get("giscedata.cups.ps")
+            res['autoconsum'] = cups_obj.get_auto_tipus_subseccio_description(
+                cursor, uid, res['autoconsum'], pol.titular.lang)
         res['es_canvi_tecnic'] = es_canvi_tecnic
         periodes = []
         for i in range(0, 6):
@@ -452,7 +454,11 @@ class ReportBackendCondicionsParticulars(ReportBackend):
 
             res['pricelists'].append(pricelist)
 
-        coeficient_k_untaxed = (pol.coeficient_k + pol.coeficient_d) / 1000
+        fs_data = get_fs_from_k_change(cursor, uid, pol, context)
+        if fs_data and fs_data.get('k_new', False):
+            coeficient_k_untaxed = fs_data['k_new'] / 1000
+        else:
+            coeficient_k_untaxed = (pol.coeficient_k + pol.coeficient_d) / 1000
         coeficient_k = False
         res['mostra_indexada'] = False
         fp_k_id = polissa.fiscal_position_id.id if pol.fiscal_position_id else ctx.get(
@@ -475,6 +481,7 @@ class ReportBackendCondicionsParticulars(ReportBackend):
                     tarifes_ids = pricelist_obj.search(cursor, uid, [])
                     pricelist_index = pol_obj.escull_llista_preus(
                         cursor, uid, pol.id, tarifes_ids, context=context)
+
                 coeficient_k_untaxed = pricelist_index.get_atr_price(
                     tipus='', product_id=coeficient_id, fiscal_position=fp_k,
                     with_taxes=False)[0]

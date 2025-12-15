@@ -21,6 +21,20 @@ class SomGurbGroup(osv.osv):
 
         return res_id
 
+    def unlink(self, cursor, uid, ids, context={}):
+        gurb_cau_obj = self.pool.get("som.gurb.cau")
+        for gurb_group_id in ids:
+            gurb_cuau_ids = gurb_cau_obj.search(
+                cursor, uid, [("gurb_group_id", "=", gurb_group_id)], context=context
+            )
+            if gurb_cuau_ids:
+                raise osv.except_osv(
+                    _('Error !'),
+                    _('No pots eliminar un GURB Grup amb GURB Caus!')
+                )
+            else:
+                return super(SomGurbGroup, self).unlink(cursor, uid, ids, context=context)
+
     def _ff_get_address_fields(self, cursor, uid, ids, field_name, arg, context=None):
         if context is None:
             context = {}
@@ -150,11 +164,14 @@ class SomGurbGroup(osv.osv):
                 future_assigned_betas_percentage = (
                     future_gift_betas_percentage + future_betas_percentage
                 )
+                gift_betas_percentage = gift_betas_kw * 100 / gen_power
+                available_betas_percentage = 100 - assigned_betas_percentage - gift_betas_percentage
 
             res[gurb_group_id] = {
+                "gift_betas_percentage": gift_betas_percentage,
                 "assigned_betas_kw": assigned_betas_kw,
                 "assigned_betas_percentage": assigned_betas_percentage,
-                "available_betas_percentage": 100 - assigned_betas_percentage,
+                "available_betas_percentage": available_betas_percentage,
                 "assigned_gift_betas_percentage": assigned_gift_betas_percentage,
                 "extra_betas_kw": extra_betas_kw,
                 "extra_betas_percentage": extra_betas_percentage,

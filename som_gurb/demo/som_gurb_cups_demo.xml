@@ -17,12 +17,14 @@
             <field name="distribuidora_id" ref="base.main_partner"/>
         </record>
         <record id="gurb_cups_0001" model="som.gurb.cups">
+            <field name="inscription_date">2016-01-01</field>
             <field name="start_date">2016-01-01</field>
             <field name="gurb_cau_id" ref="gurb_cau_0001" />
             <field name="cups_id" ref="giscedata_cups.cups_01" />
             <field name="polissa_id" ref="giscedata_polissa.polissa_0001" />
         </record>
         <record id="gurb_cups_0002" model="som.gurb.cups">
+            <field name="inscription_date">2016-01-01</field>
             <field name="start_date">2016-01-01</field>
             <field name="gurb_cau_id" ref="gurb_cau_0001" />
             <field name="cups_id" ref="giscedata_cups.cups_tarifa_018" />
@@ -64,6 +66,48 @@
         </record>
         <record id="gurb_cups_0002" model="som.gurb.cups">
             <field name="general_conditions_id" ref="gurb_general_conditions_0001" />
+        </record>
+        <record id="payment_type_demo" model="payment.type">
+            <field name="code">COBRAMENT_TARGETA</field>
+            <field name="name">Cobrament Targeta</field>
+            <field eval="[(6,0,[ref('base.bank_normal')])]"
+                   name="suitable_bank_types"/>
+            <field name="note">Cobrament Targeta</field>
+            <field eval="1" name="active"/>
+        </record>
+        <record model="account.account" id="account_clients_gurb">
+            <field name="name">Clients</field>
+            <field name="code">430000000000</field>
+            <field name="type">receivable</field>
+            <field eval="ref('account.minimal_0')" name="parent_id"/>
+            <field name="company_id" ref="base.main_company"/>
+            <field eval="True" name="reconcile"/>
+            <field name="user_type" ref="account.account_type_income"/>
+        </record>
+        <record model="account.account" id="account_gurb_sales">
+            <field name="name">Gurb</field>
+            <field name="code">705000000104</field>
+            <field name="type">receivable</field>
+            <field eval="ref('account.minimal_0')" name="parent_id"/>
+            <field name="company_id" ref="base.main_company"/>
+            <field eval="True" name="reconcile"/>
+            <field name="user_type" ref="account.account_type_income"/>
+        </record>
+        <record model="account.account" id="account_caja_laboral">
+            <field name="name">CAJA LABORAL</field>
+            <field name="code">572000000007</field>
+            <field name="type">receivable</field>
+            <field eval="ref('account.minimal_0')" name="parent_id"/>
+            <field name="company_id" ref="base.main_company"/>
+            <field eval="True" name="reconcile"/>
+            <field name="user_type" ref="account.account_type_income"/>
+        </record>
+        <record model="account.journal" id="journal_gurb">
+            <field name="name">Factures GURB</field>
+            <field name="code">FACT_GURB</field>
+            <field name="type">sale</field>
+            <field name="view_id" ref="account.account_journal_bank_view"/>
+            <field name="sequence_id" ref="account.sequence_journal"/>
         </record>
     </data>
 </openerp>

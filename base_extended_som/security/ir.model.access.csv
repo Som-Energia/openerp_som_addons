@@ -1,3 +1,6 @@
 "id","name","model_id:id","group_id:id","perm_read","perm_write","perm_create","perm_unlink"
 "access_res_phone_national_code_rcw","res.phone.national.code","model_res_phone_national_code","base.group_partner_manager",1,1,1,0
 "access_res_phone_national_code_r","res.phone.national.code","model_res_phone_national_code","base.group_user",1,0,0,0
+"access_poweremail_sendgrid_category_manager","poweremail.sendgrid.category","model_poweremail_sendgrid_category","poweremail.res_groups_pemanager",1,1,1,1
+"access_poweremail_sendgrid_category_external_users","poweremail.sendgrid.category","model_poweremail_sendgrid_category","poweremail.res_groups_peuserse",1,1,1,0
+"access_poweremail_sendgrid_category_internal_users","poweremail.sendgrid.category","model_poweremail_sendgrid_category","poweremail.res_groups_peusersi",1,1,1,0

@@ -94,6 +94,11 @@ class ReportBackendInvoiceEmail(ReportBackend):
 
         data["isTariffChange"] = self._isTariffChange(cursor, uid, fra, context=context)
 
+        polissa_o = self.pool.get("giscedata.polissa")
+        ctxt = {"date": fra.data_final.val}
+        pol = polissa_o.browse(cursor, uid, fra.polissa_id.id, context=ctxt)
+        data["has_autoconsum_pdf_flag"] = pol.te_autoconsum(amb_o_sense_excedents=2, context=ctxt)
+
         return data
 
     def get_linies(self, cursor, uid, fra, context=None):

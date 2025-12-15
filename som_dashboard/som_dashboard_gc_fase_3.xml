@@ -2,11 +2,11 @@
 <openerp>
     <data>
         <record model="board.board" id="dashboard_som_gc_fase_3">
-            <field name="name" eval="'Gestió de Contractes - Fase 3'"/>
+            <field name="name" eval="'Gestió de Contractes - Tasca 3'"/>
         </record>
 
         <record model="ir.ui.view" id="view_notifiable_accepted_cases_equip_dashboard">
-            <field name="name">1a Notificar Acceptats</field>
+            <field name="name">Notificar Acceptats</field>
             <field name="model">giscedata.switching</field>
             <field name="type">graph</field>
             <field name="priority" eval="16"/>
@@ -16,7 +16,7 @@
             </field>
         </record>
         <record model="ir.actions.act_window" id="action_notifiable_accepted_cases_equip_dashboard">
-            <field name="name">1a Notificar Acceptats</field>
+            <field name="name">Notificar Acceptats</field>
             <field name="type">ir.actions.act_window</field>
             <field name="view_type">form</field>
             <field name="view_mode">graph,tree,form</field>
@@ -32,16 +32,15 @@
             <field name="view_id" ref="view_notifiable_accepted_cases_equip_dashboard"/>
             <field name="act_window_id" ref="action_notifiable_accepted_cases_equip_dashboard"/>
         </record>
-
         <record model="board.board.line" id="board_notifiable_accepted_cases_equip_dashboard">
-            <field name="name">Taulell - 1a Notificar Acceptats</field>
+            <field name="name">Taulell - Notificar Acceptats</field>
             <field name="board_id" ref="dashboard_som_gc_fase_3"/>
             <field name="sequence" eval="0"/>
             <field name="action_id" ref="action_notifiable_accepted_cases_equip_dashboard"/>
         </record>
 
         <record model="ir.ui.view" id="view_notifiable_rejected_cases_equip_dashboard">
-            <field name="name">2a Notificar Rebutjats</field>
+            <field name="name">Notificar Rebutjats</field>
             <field name="model">giscedata.switching</field>
             <field name="type">graph</field>
             <field name="priority" eval="16"/>
@@ -51,7 +50,7 @@
             </field>
         </record>
         <record model="ir.actions.act_window" id="action_notifiable_rejected_cases_equip_dashboard">
-            <field name="name">2a Notificar Rebutjats</field>
+            <field name="name">Notificar Rebutjats</field>
             <field name="type">ir.actions.act_window</field>
             <field name="view_type">form</field>
             <field name="view_mode">graph,tree,form</field>
@@ -67,16 +66,15 @@
             <field name="view_id" ref="view_notifiable_rejected_cases_equip_dashboard"/>
             <field name="act_window_id" ref="action_notifiable_rejected_cases_equip_dashboard"/>
         </record>
-
         <record model="board.board.line" id="board_notifiable_rejected_cases_equip_dashboard">
-            <field name="name">Taulell - 2a Notificar Rebutjats</field>
+            <field name="name">Taulell - Notificar Rebutjats</field>
             <field name="board_id" ref="dashboard_som_gc_fase_3"/>
             <field name="sequence" eval="0"/>
             <field name="action_id" ref="action_notifiable_rejected_cases_equip_dashboard"/>
         </record>
 
         <record model="ir.ui.view" id="view_notifiable_other_cases_equip_dashboard">
-            <field name="name">3a Notificar els que no tenen el “txec pendent notificar”</field>
+            <field name="name">Notificar els que no tenen el “txec pendent notificar”</field>
             <field name="model">giscedata.switching</field>
             <field name="type">graph</field>
             <field name="priority" eval="16"/>
@@ -86,7 +84,7 @@
             </field>
         </record>
         <record model="ir.actions.act_window" id="action_notifiable_other_cases_equip_dashboard">
-            <field name="name">3a Notificar els que no tenen el “txec pendent notificar”</field>
+            <field name="name">Notificar els que no tenen el “txec pendent notificar”</field>
             <field name="type">ir.actions.act_window</field>
             <field name="view_type">form</field>
             <field name="view_mode">graph,tree,form</field>
@@ -102,12 +100,45 @@
             <field name="view_id" ref="view_notifiable_other_cases_equip_dashboard"/>
             <field name="act_window_id" ref="action_notifiable_other_cases_equip_dashboard"/>
         </record>
-
         <record model="board.board.line" id="board_notifiable_other_cases_equip_dashboard">
-            <field name="name">Taulell - 3a Notificar els que no tenen el “txec pendent notificar”</field>
+            <field name="name">Taulell - Notificar els que no tenen el “txec pendent notificar”</field>
             <field name="board_id" ref="dashboard_som_gc_fase_3"/>
             <field name="sequence" eval="0"/>
             <field name="action_id" ref="action_notifiable_other_cases_equip_dashboard"/>
+        </record>
+
+        <record model="ir.ui.view" id="view_bustiatron_dashboard">
+            <field name="name">ESPECIAL BUSTIATRON - Notificar els que no tenen el “txec pendent notificar”</field>
+            <field name="model">giscedata.switching</field>
+            <field name="type">graph</field>
+            <field name="priority" eval="16"/>
+            <field name="version" eval="2"/>
+            <field name="arch" type="xml">
+                <graph type="indicator" icon="skull:value&gt;19;meh:value&gt;10 and value &lt; 20;smile:value&lt;10" color="red:value&gt;19;orange:value&gt;10 and value &lt; 20;green:value&lt;10"/>
+            </field>
+        </record>
+        <record model="ir.actions.act_window" id="action_bustiatron_dashboard">
+            <field name="name">ESPECIAL BUSTIATRON - Notificar els que no tenen el “txec pendent notificar”</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">graph,tree,form</field>
+            <field name="limit" eval="0"/>
+            <field name="res_model">giscedata.switching</field>
+            <field name="domain">
+                [("state", "=", "open"), ("enviament_pendent", "=", False), ("notificacio_pendent", "=", False), ('date','>=', (datetime.datetime.today()-datetime.timedelta(days=1)).strftime('%Y-%m-%d'))]
+            </field>
+        </record>
+        <record model="ir.actions.act_window.view" id="action_view_bustiatron_dashboard">
+            <field name="sequence" eval="1"/>
+            <field name="view_mode">graph</field>
+            <field name="view_id" ref="view_bustiatron_dashboard"/>
+            <field name="act_window_id" ref="action_bustiatron_dashboard"/>
+        </record>
+        <record model="board.board.line" id="board_bustiatron_dashboard">
+            <field name="name">Taulell - ESPECIAL BUSTIATRON - Notificar els que no tenen el “txec pendent notificar”</field>
+            <field name="board_id" ref="dashboard_som_gc_fase_3"/>
+            <field name="sequence" eval="0"/>
+            <field name="action_id" ref="action_bustiatron_dashboard"/>
         </record>
     </data>
 </openerp>

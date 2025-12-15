@@ -53,6 +53,20 @@ class SomGurbCau(osv.osv):
 
         return res_id
 
+    def unlink(self, cursor, uid, ids, context={}):
+        gurb_cups_obj = self.pool.get("som.gurb.cups")
+        for gurb_cau_id in ids:
+            gurb_cups_ids = gurb_cups_obj.search(
+                cursor, uid, [("gurb_cau_id", "=", gurb_cau_id)], context=context
+            )
+            if gurb_cups_ids:
+                raise osv.except_osv(
+                    _('Error !'),
+                    _('No pots eliminar un GURB CAU amb GURB CUPS!')
+                )
+            else:
+                return super(SomGurbCau, self).unlink(cursor, uid, ids, context=context)
+
     def get_gurb_products_ids(self, cursor, uid, context=None):
         if context is None:
             context = {}
@@ -195,8 +209,11 @@ class SomGurbCau(osv.osv):
                 future_assigned_betas_percentage = (
                     future_gift_betas_percentage + future_betas_percentage
                 )
+                gift_betas_percentage = gift_betas_kw * 100 / gen_power
+                available_betas_percentage = 100 - assigned_betas_percentage - gift_betas_percentage
 
             res[gurb_cau_id] = {
+                "gift_betas_percentage": gift_betas_percentage,
                 "assigned_betas_kw": assigned_betas_kw,
                 "available_betas_kw": gen_power - assigned_betas_kw,
                 "assigned_betas_percentage": assigned_betas_percentage,
@@ -206,7 +223,7 @@ class SomGurbCau(osv.osv):
                 "gift_betas_kw": gift_betas_kw,
                 "assigned_extra_betas_percentage": assigned_extra_betas_percentage,
                 "assigned_extra_gift_betas_percentage": assigned_extra_gift_betas_percentage,
-                "available_betas_percentage": 100 - assigned_betas_percentage,
+                "available_betas_percentage": available_betas_percentage,
                 "future_betas_kw": future_betas_kw,
                 "future_extra_betas_kw": future_extra_betas_kw,
                 "future_gift_betas_kw": future_gift_betas_kw,

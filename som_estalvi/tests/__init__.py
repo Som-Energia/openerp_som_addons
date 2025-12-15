@@ -1,2 +1,3 @@
 # -*- coding: utf-8 -*-
-from test_som_estalvi_report_backend import *
+from __future__ import absolute_import
+from .test_som_estalvi_report_backend import *
