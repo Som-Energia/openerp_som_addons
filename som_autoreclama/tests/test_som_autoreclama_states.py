@@ -1304,6 +1304,7 @@ class SomAutoreclamaConditionsTest(SomAutoreclamaEzATC_Test):
             if cond.subtype_id.name in ["006", "009", "036"]:  # unsuported
                 continue
 
+
             # test more
             atc_id = self.build_atc(subtype=cond.subtype_id.name, log_days=cond.days * 2, r1=True)
             atc_data = atc_obj.get_autoreclama_data(self.cursor, self.uid, atc_id, {})
