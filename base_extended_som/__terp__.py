@@ -21,6 +21,7 @@
         "views/res_partner_view.xml",
         "views/res_partner_address_view.xml",
         "views/res_phone_national_code_view.xml",
+        "views/poweremail_sendgrid_category_view.xml",
         "security/ir.model.access.csv",
     ],
     "active": False,
