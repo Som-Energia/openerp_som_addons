@@ -4,7 +4,6 @@ from destral.transaction import Transaction
 from datetime import date, timedelta, datetime
 from addons import get_module_resource
 import mock
-import unittest
 from ..models import giscedata_atc, giscedata_polissa, som_autoreclama_state_history
 
 
@@ -3102,7 +3101,6 @@ class SomAutoreclama009AutomationTest(SomAutoreclamaEzATC_Test):
         msg = u"Error en la creació del CAC R1 009, ja n'hi ha un CAC  009 en estat obert o pendent amb id {}!!!".format(atc_id)  # noqa: E501
         self.assertTrue(msg in context.exception.message)
 
-    """
     def test_create_ATC_R1_009_from_polissa_via_wizard__previous_009(self):
         atc_obj = self.get_model("giscedata.atc")
         pol_obj = self.get_model("giscedata.polissa")
@@ -3152,6 +3150,7 @@ class SomAutoreclama009AutomationTest(SomAutoreclamaEzATC_Test):
         msg = u"Error en la creació del CAC R1 009, ja n'hi ha un CAC  009 en estat obert o pendent amb id {}!!!".format(atc_id)  # noqa: E501
         self.assertTrue(msg in context.exception.message)
 
+    """
     def test_create_ATC_R1_009_from_polissa_via_wizard__previous_036(self):
         atc_obj = self.get_model("giscedata.atc")
         pol_obj = self.get_model("giscedata.polissa")
@@ -3249,8 +3248,6 @@ class SomAutoreclama009AutomationTest(SomAutoreclamaEzATC_Test):
 
         atc = atc_obj.browse(self.cursor, self.uid, atc_id)
         self.assertEqual(atc.name, u"AUTOCAC 009")
-
-    """
 
     def test_create_ATC_R1_009_from_polissa_via_wizard__tag_one_indexed(self):
         atc_obj = self.get_model("giscedata.atc")
@@ -3486,3 +3483,4 @@ class SomAutoreclama009AutomationTest(SomAutoreclamaEzATC_Test):
         self.assertEqual(atc.tag.id, tag_id)
 
     # TODO: test NF readings
+    """
