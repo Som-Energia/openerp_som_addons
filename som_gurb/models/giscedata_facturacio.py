@@ -52,8 +52,7 @@ class GiscedataFacturacioServices(osv.osv):
                     start_date = max(line_start_date, gurb_cups_start_date)
 
                     days = (end_date - start_date).days + 1
-
-                    gurb_name = gurb_cups_beta_br.gurb_cups_id.gurb_cau_id.name.split(" ")[1]
+                    gurb_name = gurb_cups_beta_br.gurb_cups_id.gurb_cau_id.gurb_group_id.name.split(" ")[1]  # noqa: E501
 
                     res_vals["data_desde"] = datetime.strftime(start_date, "%Y-%m-%d")
                     res_vals["data_fins"] = datetime.strftime(end_date, "%Y-%m-%d")
