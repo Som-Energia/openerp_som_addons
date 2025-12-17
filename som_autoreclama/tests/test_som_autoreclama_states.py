@@ -3,7 +3,7 @@ from datetime import timedelta, datetime
 from addons import get_module_resource
 import mock
 from ..models import giscedata_atc, giscedata_polissa, som_autoreclama_state_history
-from test_som_autoreclama_base import SomAutoreclamaBaseTests, SomAutoreclamaEzATC_Test, today_str, today_minus_str  # noqa: E501
+from test_som_autoreclama_base import SomAutoreclamaBaseTests, today_str, today_minus_str
 
 
 class SomAutoreclamaStatesTest(SomAutoreclamaBaseTests):
@@ -986,7 +986,7 @@ class SomAutoreclamaCreationWizardTest(SomAutoreclamaBaseTests):
         self.assertEqual(pas.comentaris, legal_txt)
 
 
-class SomAutoreclamaConditionsTest(SomAutoreclamaEzATC_Test):
+class SomAutoreclamaConditionsTest(SomAutoreclamaBaseTests):
     def test_fit_atc_condition__001_c_no(self):
         atc_obj = self.get_model("giscedata.atc")
         cond_obj = self.get_model("som.autoreclama.state.condition")
@@ -1251,7 +1251,7 @@ class SomAutoreclamaConditionsTest(SomAutoreclamaEzATC_Test):
         self.assertEqual(ok, False)
 
 
-class SomAutoreclamaUpdaterTest(SomAutoreclamaEzATC_Test):
+class SomAutoreclamaUpdaterTest(SomAutoreclamaBaseTests):
     def test_get_atc_candidates_to_update__all(self):
         atc_ids = []
 
@@ -1846,7 +1846,7 @@ class SomAutoreclamaUpdaterTest(SomAutoreclamaEzATC_Test):
         self.assertEqual(error, [])
 
 
-class SomAutoreclamaDoActionTest(SomAutoreclamaEzATC_Test):
+class SomAutoreclamaDoActionTest(SomAutoreclamaBaseTests):
     def test_do_action__deactivated(self):
         atc_obj = self.get_model("giscedata.atc")
         state_obj = self.get_model("som.autoreclama.state")
@@ -1976,7 +1976,7 @@ class SomAutoreclamaDoActionTest(SomAutoreclamaEzATC_Test):
         self.assertEqual(pre_atc_data, str(atc.read()))
 
 
-class SomAutoreclamaf1cAutomationTest(SomAutoreclamaEzATC_Test):
+class SomAutoreclamaf1cAutomationTest(SomAutoreclamaBaseTests):
     def test__get_f1c_candidates_to_reclaim__find_none(self):
         aut_obj = self.get_model("som.autoreclama.f1c.automation")
 
