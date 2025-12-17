@@ -3,10 +3,10 @@
 import mock
 import unittest
 from ..models import giscedata_polissa
-from test_som_autoreclama_base import SomAutoreclamaEzATC_Test
+from test_som_autoreclama_base import SomAutoreclamaBaseTests
 
 
-class SomAutoreclama009AutomationTest(SomAutoreclamaEzATC_Test):
+class SomAutoreclama009AutomationTest(SomAutoreclamaBaseTests):
 
     def test_create_ATC_R1_009_from_polissa_via_wizard__bad_f1(self):
         atc_obj = self.get_model("giscedata.atc")

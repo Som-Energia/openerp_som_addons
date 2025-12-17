@@ -53,8 +53,6 @@ class SomAutoreclamaBaseTests(testing.OOTestCase):
             'description': "Bla bla bla",
         })
 
-
-class SomAutoreclamaEzATC_Test(SomAutoreclamaBaseTests):
     def build_atc(
         self,
         subtype="029",
