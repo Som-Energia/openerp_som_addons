@@ -8,9 +8,10 @@ class SomAutoreclamaStateWorkflow(osv.osv):
     _name = "som.autoreclama.state.workflow"
 
     WORKFLOW_MODELS = [
-        ("ATC", "Cas ATC"),
-        ("F1", "F1"),
-        ("polissa", "Pòlissa"),
+        ("ATC", "Cas ATC 029"),
+        ("F1", "F1 010"),
+        ("polissa", "Pòlissa 006"),
+        ("polissa009", "Pòlissa 009"),
     ]
     _columns = {
         "name": fields.char(_("Name"), size=64, required=True),
