@@ -1556,7 +1556,7 @@ class SomAutoreclamaUpdaterTest(SomAutoreclamaBaseTests):
 
         text = pol.info_gestio_endarrerida.split("/n")[0]
         self.assertEqual(text[:10], today_str())
-        self.assertEqual(text[20:], "Autoreclama passat a estat 'Revisar'")
+        self.assertEqual(text[20:], "Autoreclama 006 passat a estat 'Revisar'")
 
     def test_update_polissa_if_possible__on_correct__nof1_review_between__do_action_full(self):
         pol_obj = self.get_model("giscedata.polissa")
