@@ -631,7 +631,7 @@ class GiscedataSwitchingM2_05(osv.osv):
                     cursor, uid, gurb_cups_id, step.data_activacio, context=context
                 )
             # GURB Activation Codes
-            elif step.motiu_modificacio in ["04", "15", "19"]:
+            elif step.motiu_modificacio == "04":
                 data_activacio = xml.datos_activacion.fecha
                 gurb_obj.activate_gurb_from_m1_05(
                     cursor, uid, sw_id, data_activacio, context=context
