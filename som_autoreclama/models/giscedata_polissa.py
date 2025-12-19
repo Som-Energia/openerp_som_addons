@@ -131,50 +131,58 @@ class GiscedataPolissa(osv.osv):
 
     def create(self, cursor, uid, vals, context=None):
         polissa_id = super(GiscedataPolissa, self).create(cursor, uid, vals, context=context)
-        self.subcreate_006(cursor, uid, polissa_id, context=context)
-        self.subcreate_009(cursor, uid, polissa_id, context=context)
+        self._create_autoreclama_history_006(cursor, uid, polissa_id, context=context)
+        self._create_autoreclama_history_009(cursor, uid, polissa_id, context=context)
         return polissa_id
 
-    def subcreate_006(self, cursor, uid, polissa_id, context=None):
+    def _create_autoreclama_history_006(self, cursor, uid, polissa_id, context=None):
         if not context:
             context = {}
 
-        imd_obj = self.pool.get("ir.model.data")
-        initial_state_id = imd_obj.get_object_reference(
-            cursor, uid, "som_autoreclama", "correct_state_workflow_polissa"
-        )[1]
+        initial_state_id = None
+        if "autoreclama_history_initial_state_id" in context:
+            initial_state_id = context["autoreclama_history_initial_state_id"]
+        else:
 
-        initial_state_id = context.get("autoreclama_history_initial_state_id", initial_state_id)
+            imd_obj = self.pool.get("ir.model.data")
+            initial_state_id = imd_obj.get_object_reference(
+                cursor, uid, "som_autoreclama", "correct_state_workflow_polissa"
+            )[1]
+
+        self._create_autoreclama_history_gen(cursor, uid,
+                                             polissa_id,
+                                             initial_state_id,
+                                             "som.autoreclama.state.history.polissa",
+                                             context=context)
+
+    def _create_autoreclama_history_009(self, cursor, uid, polissa_id, context=None):
+        if not context:
+            context = {}
+
+        initial_state_id = None
+        if "autoreclama_009_history_initial_state_id" in context:
+            initial_state_id = context["autoreclama_009_history_initial_state_id"]
+        else:
+            imd_obj = self.pool.get("ir.model.data")
+            initial_state_id = imd_obj.get_object_reference(
+                cursor, uid, "som_autoreclama", "correct_state_workflow_polissa009"
+            )[1]
+
+        self._create_autoreclama_history_gen(cursor, uid,
+                                             polissa_id,
+                                             initial_state_id,
+                                             "som.autoreclama.state.history.polissa009",
+                                             context=context)
+
+    def _create_autoreclama_history_gen(self, cursor, uid, polissa_id, initial_state_id, model, context=None):  # noqa: E501
+        if not context:
+            context = {}
+
         initial_date = context.get(
             "autoreclama_history_initial_date", date.today().strftime("%Y-%m-%d")
         )
 
-        polh_obj = self.pool.get("som.autoreclama.state.history.polissa")
-        polh_obj.create(
-            cursor,
-            uid,
-            {
-                "polissa_id": polissa_id,
-                "state_id": initial_state_id,
-                "change_date": initial_date,
-            },
-        )
-
-    def subcreate_009(self, cursor, uid, polissa_id, context=None):
-        if not context:
-            context = {}
-
-        imd_obj = self.pool.get("ir.model.data")
-        initial_state_id = imd_obj.get_object_reference(
-            cursor, uid, "som_autoreclama", "correct_state_workflow_polissa009"
-        )[1]
-
-        initial_state_id = context.get("autoreclama_009_history_initial_state_id", initial_state_id)
-        initial_date = context.get(
-            "autoreclama_history_initial_date", date.today().strftime("%Y-%m-%d")
-        )
-
-        polh_obj = self.pool.get("som.autoreclama.state.history.polissa009")
+        polh_obj = self.pool.get(model)
         polh_obj.create(
             cursor,
             uid,
