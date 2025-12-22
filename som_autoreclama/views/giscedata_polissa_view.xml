@@ -30,8 +30,9 @@
                                     <button string="Executa pas d'autoreclama" type="action" icon="gtk-execute" name="%(action_wizard_som_autoreclama_execute_step)d" context="{'namespace': 'polissa'}"/>
                                     <button string="Selecció manual d'estat" type="action" icon="gtk-convert" name="%(action_wizard_som_autoreclama_set_manual_state)d" context="{'namespace': 'polissa'}"/>
                                 </group>
-                                <group colspan="4" string="Accions d'autoreclama">
+                                <group colspan="6" string="Accions d'autoreclama">
                                     <button string="Desactivar autoreclama" type="action" icon="gtk-disconnect" name="%(action_wizard_som_autoreclama_set_disable_state)d" context="{'namespace': 'polissa'}"/>
+                                    <button string="Posar estat correcte" type="action" icon="gtk-connect" name="%(action_wizard_som_autoreclama_set_correct_state)d" context="{'namespace': 'polissa'}"/>
                                     <button string="Casos ATC generats" type="action" icon="gtk-find" name="%(action_wizard_som_autoreclama_generated_atc)d" context="{'namespace': 'polissa'}"/>
                                 </group>
                                 <field name="autoreclama_history_ids" nolabel="1" colspan="4"/>
@@ -43,8 +44,9 @@
                                     <button string="Executa pas d'autoreclama" type="action" icon="gtk-execute" name="%(action_wizard_som_autoreclama_execute_step)d" context="{'namespace': 'polissa009'}"/>
                                     <button string="Selecció manual d'estat" type="action" icon="gtk-convert" name="%(action_wizard_som_autoreclama_set_manual_state)d" context="{'namespace': 'polissa009'}"/>
                                 </group>
-                                <group colspan="4" string="Accions d'autoreclama">
+                                <group colspan="6" string="Accions d'autoreclama">
                                     <button string="Desactivar autoreclama" type="action" icon="gtk-disconnect" name="%(action_wizard_som_autoreclama_set_disable_state)d" context="{'namespace': 'polissa009'}"/>
+                                    <button string="Posar estat correcte" type="action" icon="gtk-connect" name="%(action_wizard_som_autoreclama_set_correct_state)d" context="{'namespace': 'polissa009'}"/>
                                     <button string="Casos ATC generats" type="action" icon="gtk-find" name="%(action_wizard_som_autoreclama_generated_atc)d" context="{'namespace': 'polissa009'}"/>
                                 </group>
                                 <field name="autoreclama009_history_ids" nolabel="1" colspan="4"/>

@@ -27,6 +27,7 @@
         "wizard/wizard_som_autoreclama_set_manual_state_view.xml",
         "wizard/wizard_som_autoreclama_generated_atc_view.xml",
         "wizard/wizard_som_autoreclama_set_disable_state_view.xml",
+        "wizard/wizard_som_autoreclama_set_correct_state_view.xml",
         "views/giscedata_atc_view.xml",
         "views/giscedata_polissa_view.xml",
         "security/som_autoreclama.xml",
