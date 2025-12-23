@@ -273,8 +273,12 @@ class WizardCalculateGurbSavings(osv.osv_memory):
             kwh_consumed += energia_kwh
 
         polissa = polissa_obj.browse(cursor, uid, polissa_id, context=context)
+        kwh_generacio_neta = abs(kwh_produced) + kwh_auto
         percentatge_autoconsum = (
             kwh_auto * 100 / (kwh_consumed + kwh_auto) if (kwh_consumed + kwh_auto) else 0
+        )
+        percentatge_autoconsumida = (
+            kwh_auto * 100 / kwh_generacio_neta if kwh_generacio_neta else 0
         )
 
         result = {
@@ -287,6 +291,7 @@ class WizardCalculateGurbSavings(osv.osv_memory):
             "kwh_autoconsumits": round(kwh_auto, 2),
             "kwh_consumits": round(kwh_consumed, 2),
             "percentatge_autoconsum": round(percentatge_autoconsum, 2),
+            "percentatge_autoconsumida": round(percentatge_autoconsumida, 2)
         }
 
         return result
