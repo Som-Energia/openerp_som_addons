@@ -576,10 +576,12 @@ class SomGurbCups(osv.osv):
         journal_code = "FACT_GURB"
         payment_type_code = "TRANSFERENCIA_CSB"
 
+        gurb_cups_br = self.browse(cursor, uid, gurb_cups_id, context=context)
+
         if context.get("tpv"):
             payment_type_code = "COBRAMENT_TARGETA"
-
-        gurb_cups_br = self.browse(cursor, uid, gurb_cups_id, context=context)
+        else:
+            context["date"] = gurb_cups_br.inscription_date
 
         if gurb_cups_br.initial_invoice_id:
             error = "[GURB CUPS ID {}]: La factura d'inscripció ja existeix.".format(
@@ -610,6 +612,7 @@ class SomGurbCups(osv.osv):
             [gurb_cups_br.gurb_cau_id.gurb_group_id.pricelist_id.id],
             product_id,
             gurb_cups_br.beta_kw,
+            context=context
         )[gurb_cups_br.gurb_cau_id.gurb_group_id.pricelist_id.id]
 
         # Create invoice line

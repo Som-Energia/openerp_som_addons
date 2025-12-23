@@ -12,16 +12,16 @@ class poweremail_core_accounts(osv.osv):
         context = context or {}
         logger = netsvc.Logger()
 
+        mail_obj = self.pool.get('poweremail.mailbox')
+
         try:
             mail_id = context.get('poweremail_id')
             context = self.add_sendgrid_category_headers_to_context(
                 cr, uid, mail_id, context=context)
         except Exception as error:
-            logger.notifyChannel(
-                "Power Email",
-                netsvc.LOG_WARNING,
-                "Error adding SendGrid categories to email: {}".format(error)
-            )
+            error_txt = "Error adding SendGrid categories to email: {}".format(error)
+            mail_obj.historise(cr, uid, [mail_id], error_txt)
+            logger.notifyChannel("Power Email", netsvc.LOG_WARNING, error_txt)
 
         return super(poweremail_core_accounts, self).send_mail(
             cr, uid, ids, addresses, subject, body, payload, context)

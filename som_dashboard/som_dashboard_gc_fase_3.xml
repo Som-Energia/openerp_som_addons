@@ -91,7 +91,7 @@
             <field name="limit" eval="0"/>
             <field name="res_model">giscedata.switching</field>
             <field name="domain">
-                [("state", "=", "open"), ("enviament_pendent", "=", False), ("notificacio_pendent", "=", False), ('date','>=', datetime.datetime.today().strftime('%Y-%m-%d'))]
+                [("proces_id", "!=", "R1"), ("state", "=", "open"), ("enviament_pendent", "=", False), ("notificacio_pendent", "=", False), ('date','>=', datetime.datetime.today().strftime('%Y-%m-%d'))]
             </field>
         </record>
         <record model="ir.actions.act_window.view" id="action_view_notifiable_other_cases_equip_dashboard">
@@ -125,7 +125,7 @@
             <field name="limit" eval="0"/>
             <field name="res_model">giscedata.switching</field>
             <field name="domain">
-                [("state", "=", "open"), ("enviament_pendent", "=", False), ("notificacio_pendent", "=", False), ('date','>=', (datetime.datetime.today()-datetime.timedelta(days=1)).strftime('%Y-%m-%d'))]
+                [("proces_id", "!=", "R1"), ("state", "=", "open"), ("enviament_pendent", "=", False), ("notificacio_pendent", "=", False), ('date','>=', (datetime.datetime.today()-datetime.timedelta(days=1)).strftime('%Y-%m-%d'))]
             </field>
         </record>
         <record model="ir.actions.act_window.view" id="action_view_bustiatron_dashboard">
