@@ -3,7 +3,7 @@
 import mock
 import unittest
 from ..models import giscedata_polissa
-from test_som_autoreclama_base import SomAutoreclamaBaseTests
+from test_som_autoreclama_base import SomAutoreclamaBaseTests, today_str
 
 
 class SomAutoreclama009AutomationTest(SomAutoreclamaBaseTests):
@@ -845,3 +845,149 @@ class SomAutoreclama009AutomationTest(SomAutoreclamaBaseTests):
         self.assertEqual(atc.tag.id, tag_id)
 
     # TODO: test NF readings
+
+    def test_create_polissa__test_now(self):
+        pol_obj = self.get_model("giscedata.polissa")
+
+        pol_id = pol_obj.create(self.cursor, self.uid, {
+            'name': '0001234',
+            'cups': 1,
+            'titular': 1,
+        })
+
+        initial006_state_id = self.get_object_reference(
+            "som_autoreclama", "correct_state_workflow_polissa"
+        )[1]
+
+        initial009_state_id = self.get_object_reference(
+            "som_autoreclama", "correct_state_workflow_polissa009"
+        )[1]
+
+        pol = pol_obj.browse(self.cursor, self.uid, pol_id)
+        self.assertEqual(pol.name, '0001234')
+        self.assertEqual(pol.cups.name, 'ES1234000000000001JN0F')
+        self.assertEqual(pol.autoreclama_state.id, initial006_state_id)
+        self.assertEqual(pol.autoreclama_state_date, today_str())
+        self.assertEqual(pol.autoreclama009_state.id, initial009_state_id)
+        self.assertEqual(pol.autoreclama009_state_date, today_str())
+
+    def test_create_polissa__test_other(self):
+        pol_obj = self.get_model("giscedata.polissa")
+        state006_id = self.get_object_reference(
+            "som_autoreclama", "loop_state_workflow_polissa"
+        )[1]
+
+        state009_id = self.get_object_reference(
+            "som_autoreclama", "disabled_state_workflow_polissa009"
+        )[1]
+
+        pol_id = pol_obj.create(self.cursor, self.uid, {
+            'name': '0001234',
+            'cups': 1,
+            'titular': 1,
+        }, context={
+            'autoreclama_history_initial_state_id': state006_id,
+            'autoreclama_history_initial_date': '2022-08-01',
+            'autoreclama_009_history_initial_state_id': state009_id,
+        })
+
+        pol = pol_obj.browse(self.cursor, self.uid, pol_id)
+        self.assertEqual(pol.name, '0001234')
+        self.assertEqual(pol.cups.name, 'ES1234000000000001JN0F')
+        self.assertEqual(pol.autoreclama_state.id, state006_id)
+        self.assertEqual(pol.autoreclama_state_date, '2022-08-01')
+        self.assertEqual(pol.autoreclama009_state.id, state009_id)
+        self.assertEqual(pol.autoreclama009_state_date, '2022-08-01')
+
+    def test__wizard_set_manual_state__2_changes_2_machines(self):
+        pol_obj = self.get_model("giscedata.polissa")
+        w_obj = self.get_model("wizard.som.autoreclama.set.manual.state")
+
+        correct006_state_id = self.get_object_reference(
+            "som_autoreclama", "correct_state_workflow_polissa"
+        )[1]
+        loop006_state_id = self.get_object_reference(
+            "som_autoreclama", "loop_state_workflow_polissa"
+        )[1]
+        disabled006_state_id = self.get_object_reference(
+            "som_autoreclama", "disabled_state_workflow_polissa"
+        )[1]
+
+        correct009_state_id = self.get_object_reference(
+            "som_autoreclama", "correct_state_workflow_polissa009"
+        )[1]
+        disabled009_state_id = self.get_object_reference(
+            "som_autoreclama", "disabled_state_workflow_polissa009"
+        )[1]
+        loop009_state_id = self.get_object_reference(
+            "som_autoreclama", "loop_state_workflow_polissa009"
+        )[1]
+
+        pol_id = pol_obj.create(self.cursor, self.uid, {
+            'name': '0001234',
+            'cups': 1,
+            'titular': 1,
+        }, context={
+            'autoreclama_history_initial_date': '2022-08-01',
+        })
+
+        pol = pol_obj.browse(self.cursor, self.uid, pol_id)
+        self.assertEqual(pol.name, '0001234')
+        self.assertEqual(pol.cups.name, 'ES1234000000000001JN0F')
+        self.assertEqual(pol.autoreclama_state.id, correct006_state_id)
+        self.assertEqual(pol.autoreclama_state_date, '2022-08-01')
+        self.assertEqual(pol.autoreclama009_state.id, correct009_state_id)
+        self.assertEqual(pol.autoreclama009_state_date, '2022-08-01')
+
+        ctxt = {'namespace': "polissa", 'active_ids': [pol_id]}
+        wiz_id = w_obj.create(self.cursor, self.uid, {}, context=ctxt)
+        w_obj.write(self.cursor, self.uid, [wiz_id], {
+            'next_state_id': loop006_state_id,
+            'change_date': '2022-09-15',
+            'attached_atc': 1,
+        })
+        w_obj.assign_state(self.cursor, self.uid, [wiz_id], context=ctxt)
+
+        pol = pol_obj.browse(self.cursor, self.uid, pol_id)
+        self.assertEqual(pol.autoreclama_state.id, loop006_state_id)
+        self.assertEqual(pol.autoreclama_state_date, '2022-09-15')
+        self.assertEqual(pol.autoreclama009_state.id, correct009_state_id)
+        self.assertEqual(pol.autoreclama009_state_date, '2022-08-01')
+
+        ctxt = {'namespace': "polissa009", 'active_ids': [pol_id]}
+        wiz_id = w_obj.create(self.cursor, self.uid, {}, context=ctxt)
+        w_obj.write(self.cursor, self.uid, [wiz_id], {
+            'next_state_id': loop009_state_id,
+            'change_date': '2022-09-20',
+            'attached_atc': 1,
+        })
+        w_obj.assign_state(self.cursor, self.uid, [wiz_id], context=ctxt)
+
+        pol = pol_obj.browse(self.cursor, self.uid, pol_id)
+        self.assertEqual(pol.autoreclama_state.id, loop006_state_id)
+        self.assertEqual(pol.autoreclama_state_date, '2022-09-15')
+        self.assertEqual(pol.autoreclama009_state.id, loop009_state_id)
+        self.assertEqual(pol.autoreclama009_state_date, '2022-09-20')
+
+        ctxt = {'namespace': "polissa", 'active_ids': [pol_id]}
+        wiz_id = w_obj.create(self.cursor, self.uid, {}, context=ctxt)
+        w_obj.write(self.cursor, self.uid, [wiz_id], {
+            'next_state_id': disabled006_state_id,
+            'change_date': '2022-10-01',
+            'attached_atc': 1,
+        })
+        w_obj.assign_state(self.cursor, self.uid, [wiz_id], context=ctxt)
+        ctxt = {'namespace': "polissa009", 'active_ids': [pol_id]}
+        wiz_id = w_obj.create(self.cursor, self.uid, {}, context=ctxt)
+        w_obj.write(self.cursor, self.uid, [wiz_id], {
+            'next_state_id': disabled009_state_id,
+            'change_date': '2022-10-01',
+            'attached_atc': 1,
+        })
+        w_obj.assign_state(self.cursor, self.uid, [wiz_id], context=ctxt)
+
+        pol = pol_obj.browse(self.cursor, self.uid, pol_id)
+        self.assertEqual(pol.autoreclama_state.id, disabled006_state_id)
+        self.assertEqual(pol.autoreclama_state_date, '2022-10-01')
+        self.assertEqual(pol.autoreclama009_state.id, disabled009_state_id)
+        self.assertEqual(pol.autoreclama009_state_date, '2022-10-01')
