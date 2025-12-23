@@ -9,14 +9,36 @@ import base64
 
 
 HEADER = [
-    "polissa", "estalvi_sense_impostos", "estalvi_amb_impostos", "kwh_excedents",
-    "kwh_generacio_neta", "kwh_autoconsumits", "kwh_consumits"
+    "gurb_cups_id", "polissa", "estalvi_sense_impostos", "estalvi_amb_impostos", "kwh_excedents",
+    "kwh_generacio_neta", "kwh_autoconsumits", "kwh_consumits", "percentatge_autoconsum",
+    "percentatge_autoconsumida"
 ]
 
 
 class WizardCalculateGurbSavings(osv.osv_memory):
     _name = "wizard.calculate.gurb.savings"
     _description = "Wizard per calcular l'estalvi d'un Gurb Cups"
+
+    def button_send_mails(self, cursor, uid, ids, context=None):
+        if context is None:
+            context = {}
+
+        tmpl_obj = self.pool.get("poweremail.templates")
+        imd_o = self.pool.get("ir.model.data")
+
+        wiz = self.browse(cursor, uid, ids[0], context=context)
+        savings = wiz.savings
+
+        tmpl = imd_o.get_object_reference(cursor, uid, "som_gurb", "email_gurb_cups_savings")[1]
+
+        ctx = context.copy()
+        ctx['prefetch'] = False
+        for saving in savings:
+            resource = saving["gurb_cups_id"]
+            ctx['saving'] = saving
+            tmpl_obj.generate_mail(cursor, uid, tmpl, resource, context=ctx)
+
+        return True
 
     def get_only_relevant_invoices(self, cursor, uid, polissa_id, date_from, date_to, context=None):
         if context is None:
@@ -79,7 +101,10 @@ class WizardCalculateGurbSavings(osv.osv_memory):
         result = {
             "state": "end",
             "info": "S'ha generat el fitxer d'estalvis correctament.",
+            "savings": savings
         }
+
+        wiz.savings = savings
 
         self.write(cursor, uid, ids, result, context=context)
 
@@ -250,8 +275,16 @@ class WizardCalculateGurbSavings(osv.osv_memory):
             kwh_consumed += energia_kwh
 
         polissa = polissa_obj.browse(cursor, uid, polissa_id, context=context)
+        kwh_generacio_neta = abs(kwh_produced) + kwh_auto
+        percentatge_autoconsum = (
+            kwh_auto * 100 / (kwh_consumed + kwh_auto) if (kwh_consumed + kwh_auto) else 0
+        )
+        percentatge_autoconsumida = (
+            kwh_auto * 100 / kwh_generacio_neta if kwh_generacio_neta else 0
+        )
 
         result = {
+            "gurb_cups_id": gurb_cups_id,
             "polissa": polissa.name,
             "estalvi_sense_impostos": round(profit_untaxed, 2),
             "estalvi_amb_impostos": round(profit, 2),
@@ -259,6 +292,8 @@ class WizardCalculateGurbSavings(osv.osv_memory):
             "kwh_generacio_neta": round(abs(kwh_produced) + kwh_auto, 2),
             "kwh_autoconsumits": round(kwh_auto, 2),
             "kwh_consumits": round(kwh_consumed, 2),
+            "percentatge_autoconsum": round(percentatge_autoconsum, 2),
+            "percentatge_autoconsumida": round(percentatge_autoconsumida, 2)
         }
 
         return result
@@ -273,6 +308,7 @@ class WizardCalculateGurbSavings(osv.osv_memory):
         ),
         'report': fields.binary('Resultat'),
         'filename_report': fields.char('Nom fitxer exportat', size=256),
+        'savings': fields.json("Estalvis"),
     }
 
     _defaults = {
