@@ -42,6 +42,9 @@ class SomAutoreclamaStateCondition(osv.osv):
                 and data["agent_actual"] == "10"
                 and data["state"] == "pending"
             )
+        if namespace == "polissa009":
+            # Currently no conditions for polissa009
+            return False
         return False
 
     _columns = {
