@@ -10,7 +10,8 @@ import base64
 
 HEADER = [
     "polissa", "estalvi_sense_impostos", "estalvi_amb_impostos", "kwh_excedents",
-    "kwh_generacio_neta", "kwh_autoconsumits", "kwh_consumits"
+    "kwh_generacio_neta", "kwh_autoconsumits", "kwh_consumits", "percentatge_autoconsum",
+    "percentatge_autoconsumida"
 ]
 
 
