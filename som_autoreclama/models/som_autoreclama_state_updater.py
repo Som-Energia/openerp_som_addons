@@ -99,6 +99,8 @@ class SomAutoreclamaStateUpdater(osv.osv_memory):
         return []
 
     def update_items_if_possible(self, cursor, uid, ids, namespace, verbose=True, context=None):
+        cnd_obj = self.pool.get("som.autoreclama.state.condition")
+
         updated = []
         not_updated = []
         errors = []
@@ -121,7 +123,8 @@ class SomAutoreclamaStateUpdater(osv.osv_memory):
                     cursor, uid, item_id, namespace, context)
                 msg += _("{} amb id {} ha canviat d'estat: {} --> {} => condició {}\n").format(
                     _namespaces[namespace]['name'],
-                    item_name, actual_state, next_state, condition_id
+                    item_name, actual_state, next_state,
+                    cnd_obj.get_string(cursor, uid, condition_id)
                 )
                 msg += _(" - {}\n").format(message)
                 if next_state_id in review_states:
@@ -137,7 +140,8 @@ class SomAutoreclamaStateUpdater(osv.osv_memory):
                 errors.append(item_id)
                 msg += _(
                     "{} amb id {} no ha canviat d'estat per error, estat actual: {} => condició {}\n"  # noqa: E501
-                ).format(_namespaces[namespace]['name'], item_name, actual_state, condition_id)
+                ).format(_namespaces[namespace]['name'], item_name, actual_state,
+                         cnd_obj.get_string(cursor, uid, condition_id))
                 msg += _(" - {}\n").format(message)
 
         summary = _("Sumari {}\n").format(block_name)

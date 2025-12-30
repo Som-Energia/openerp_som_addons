@@ -47,6 +47,28 @@ class SomAutoreclamaStateCondition(osv.osv):
             return False
         return False
 
+    def get_string(self, cursor, uid, cnd_id):
+        cond_data = self.read(cursor, uid, cnd_id, ["days", "condition_code", "subtype_id"])
+        cond_code = cond_data.get('condition_code', 'ATC')
+
+        if cond_code == 'noF1':
+            return _("id {}, Falta F1 a pòlissa més de {} dies").format(cnd_id, cond_data["days"])
+        if cond_code == 'F1ok':
+            return _("id {}, F1 a data correcta a pòlissa").format(cnd_id)
+        if cond_code == 'CACR1006closed':
+            return _("id {}, Dies des de ATC R1 006 actual tancat més de {} dies").format(
+                cnd_id, cond_data["days"])
+        if cond_code == 'oldPolissa':
+            return _("id {}, Polissa de baixa o baixa facturada des de més de {} dies").format(
+                cnd_id, cond_data["days"])
+        if cond_code == '2_006_in_a_row':
+            return _("id {}, Dues 006 seguides en {} dies").format(cnd_id, cond_data["days"])
+        if cond_code == "ATC":
+            return _(
+                "id {}, Reclamació de subtipus {} sense resposta de la distribuïdora més de {} dies"
+            ).format(cnd_id, cond_data["subtype_id"][1], cond_data["days"])
+        return "id {}, Condició desconeguda".format(cnd_id)
+
     _columns = {
         "priority": fields.integer(_("Order"), required=True),
         "active": fields.boolean(string=_(u"Activa"), help=_(u"Indica si la condició esta activa")),
