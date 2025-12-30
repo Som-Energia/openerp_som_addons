@@ -2,6 +2,7 @@
 from destral import testing
 from destral.transaction import Transaction
 from datetime import date, timedelta
+import os
 
 
 def today_str():
@@ -18,9 +19,13 @@ class SomAutoreclamaBaseTests(testing.OOTestCase):
 
         self.cursor = self.txn.cursor
         self.uid = self.txn.user
+        self.old_oorq_async = os.environ.get('OORQ_ASYNC')
+        os.environ['OORQ_ASYNC'] = 'True'
 
     def tearDown(self):
         self.txn.stop()
+        if self.old_oorq_async:
+            os.environ['OORQ_ASYNC'] = self.old_oorq_async
 
     def get_model(self, model_name):
         return self.openerp.pool.get(model_name)
@@ -207,3 +212,20 @@ class SomAutoreclamaBaseTests(testing.OOTestCase):
         )[1]
         polh_obj.historize(
             self.cursor, self.uid, pol_id, review_state_id, today_minus_str(days), atc_id)
+
+    def get_number_of_db_connections(self):
+        sql = "SELECT count(*) FROM pg_stat_activity;"
+        self.cursor.execute(sql)
+        vals = self.cursor.fetchall()
+        return vals[0][0]
+
+    def get_db_connections_list(self):
+        fields = ['pid', 'datid', 'datname', 'usename', 'application_name', 'wait_event_type',
+                  'wait_event', 'state', 'query', 'backend_type']
+        sql = "SELECT {} FROM pg_stat_activity;".format(", ".join(fields))
+        self.cursor.execute(sql)
+        vals = self.cursor.fetchall()
+        res = []
+        for val in vals:
+            res.append(dict(zip(fields, val)))
+        return res
