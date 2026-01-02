@@ -19,6 +19,12 @@
                     <group string="Disconformitats autoconsum (Aplicarà a totes les reclamacions):" colspan="8" col="8" attrs="{'invisible':[('subtipus_code','!=','075')]}">
                         <field name="reclamacio_disconformidad_autoconsumo" colspan="8" nolabel="1" attrs="{'required':[('subtipus_code','=','075')]}"/>
                     </group>
+                    <group string="Tipus concepte facturat (Aplicarà a totes les reclamacions):" colspan="8" col="8" attrs="{'invisible':[('subtipus_code','!=','008')]}">
+                        <field name="reclamacio_tipus_concepte_facturat" colspan="8" nolabel="1" attrs="{'required':[('subtipus_code','=','008')]}"/>
+                    </group>
+                    <group string="Tipus atenció incorrecte (Aplicarà a totes les reclamacions):" colspan="8" col="8" attrs="{'invisible':[('subtipus_code','!=','001')]}">
+                        <field name="reclamacio_tipus_atencio_incorrecte" colspan="8" nolabel="1" attrs="{'required':[('subtipus_code','=','001')]}"/>
+                    </group>
                     <label string="" colspan="8"/>
 				</field>
                 <button name="create_r1_from_contracts" position="replace">
