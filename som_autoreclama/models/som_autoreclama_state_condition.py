@@ -16,6 +16,10 @@ class SomAutoreclamaStateCondition(osv.osv):
         ("CACR1006closed", _("Dies des de ATC R1 006 actual tancat")),
         ("oldPolissa", _("Polissa de baixa x dies o baixa facturada")),
         ("2_006_in_a_row", _("Dues 006 seguides en X dies")),
+        ("noRealReadings", _("Sense lectures reals a pòlissa en X cicles de facturació")),
+        ("realReadings_ok", _("Amb lectures reals a pòlissa en X cicles de facturació")),
+        ("CACR1009closed", _("Dies des de ATC R1 009 actual tancat sense lectures reals")),
+        ("2_009_in_a_row", _("Dues 009 tancades seguides en X dies sense lectures reals")),
     ]
 
     def fit_condition(self, cursor, uid, id, data, namespace, context=None):
@@ -43,8 +47,20 @@ class SomAutoreclamaStateCondition(osv.osv):
                 and data["state"] == "pending"
             )
         if namespace == "polissa009":
-            # Currently no conditions for polissa009
-            return False
+            cond_data = self.read(cursor, uid, id, ["days", "condition_code"], context=context)
+            if cond_data['condition_code'] == 'CACR1009closed':
+                return data["days_since_current_CACR1009_closed"] > cond_data["days"]
+            if cond_data['condition_code'] == '2_009_in_a_row':
+                return (
+                    data["days_since_current_CACR1009_closed"] > cond_data["days"]
+                    and data["CACR1009s_in_last_conf_days"] >= 2
+                )
+            if cond_data['condition_code'] == 'noRealReadings':
+                return data["invoicing_cyles_with_estimate_readings"] > cond_data["days"]
+            if cond_data['condition_code'] == 'realReadings_ok':
+                return data["invoicing_cyles_with_estimate_readings"] <= cond_data["days"]
+            if cond_data['condition_code'] == 'oldPolissa':
+                return data["days_since_baixa"] >= cond_data["days"] or data["baixa_facturada"]
         return False
 
     def get_string(self, cursor, uid, cnd_id):
