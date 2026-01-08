@@ -23,11 +23,38 @@ class GiscedataPolissa(osv.osv):
         self.write(cursor, uid, pol_id, {'info_gestio_endarrerida': line + text})
 
     def get_autoreclama_data(self, cursor, uid, id, namespace, context=None):
+        vals = self._get_autoreclama_data_common(cursor, uid, id, context=context)
         if namespace == "polissa":
-            return self._get_autoreclama_data_006(cursor, uid, id, context=context)
+            vals.update(self._get_autoreclama_data_006(cursor, uid, id, context=context))
         if namespace == "polissa009":
-            return self._get_autoreclama_data_009(cursor, uid, id, context=context)
-        return {}
+            vals.update(self._get_autoreclama_data_009(cursor, uid, id, context=context))
+        return vals
+
+    def _get_autoreclama_data_common(self, cursor, uid, id, context=None):
+        data = self.read(
+            cursor,
+            uid,
+            id,
+            ["data_ultima_lectura_f1", "data_baixa", "state"],
+            context,
+        )
+
+        baixa = data['state'] == 'baixa'
+        if data["data_ultima_lectura_f1"] and data["data_baixa"]:
+            facturada = data["data_baixa"] <= data["data_ultima_lectura_f1"]
+        else:
+            facturada = False
+
+        if data["data_baixa"]:
+            baixa_dt = datetime.strptime(data["data_baixa"], "%Y-%m-%d")
+            days_baixa = (datetime.today() - baixa_dt).days
+        else:
+            days_baixa = 0
+
+        return {
+            'days_since_baixa': days_baixa,
+            'baixa_facturada': baixa and facturada,
+        }
 
     def _get_autoreclama_data_006(self, cursor, uid, id, context=None):
         atc_obj = self.pool.get("giscedata.atc")
@@ -37,7 +64,7 @@ class GiscedataPolissa(osv.osv):
             cursor,
             uid,
             id,
-            ["data_ultima_lectura_f1", "data_alta", "data_baixa", "state"],
+            ["data_ultima_lectura_f1", "data_alta", "state"],
             context,
         )
 
@@ -51,18 +78,6 @@ class GiscedataPolissa(osv.osv):
             days_since_last_f1 = (datetime.today() - last_date_dt).days
         else:
             days_since_last_f1 = 0
-
-        baixa = data['state'] == 'baixa'
-        if data["data_ultima_lectura_f1"] and data["data_baixa"]:
-            facturada = data["data_baixa"] <= data["data_ultima_lectura_f1"]
-        else:
-            facturada = False
-
-        if data["data_baixa"]:
-            baixa_dt = datetime.strptime(data["data_baixa"], "%Y-%m-%d")
-            days_baixa = (datetime.today() - baixa_dt).days
-        else:
-            days_baixa = 0
 
         history_obj = self.pool.get("som.autoreclama.state.history.polissa")
         h_ids = history_obj.search(cursor, uid, [("polissa_id", "=", id)])
@@ -104,7 +119,6 @@ class GiscedataPolissa(osv.osv):
             review_state_id = data_obj.get_object_reference(
                 cursor, uid, "som_autoreclama", "review_state_workflow_polissa"
             )[1]
-            history_obj = self.pool.get("som.autoreclama.state.history.polissa")
             h_ids = history_obj.search(cursor, uid, [
                 ("polissa_id", "=", id),
                 ("state_id", "=", review_state_id),
@@ -129,13 +143,106 @@ class GiscedataPolissa(osv.osv):
         return {
             'days_without_F1': days_since_last_f1,
             'days_since_current_CACR1006_closed': days_since_current_cacr1006,
-            'days_since_baixa': days_baixa,
-            'baixa_facturada': baixa and facturada,
             'CACR1006s_in_last_conf_days': len(atc_006_ids),
         }
 
     def _get_autoreclama_data_009(self, cursor, uid, id, context=None):
-        return {}
+        atc_obj = self.pool.get("giscedata.atc")
+        data_obj = self.pool.get("ir.model.data")
+        l_obj = self.pool.get("giscedata.lectures.lectura.pool")
+        per_obj = self.pool.get("giscedata.polissa.tarifa.periodes")
+        origins_obj = self.pool.get("giscedata.lectures.origen")
+
+        real_origins_ids = origins_obj.search(cursor, uid, [
+            ('codi', 'in', ['10', '20', '30', '60', 'LC']),
+        ], context=context)
+        meter_ids = self.read(cursor, uid, id, ["comptadors"], context)['comptadors']
+        last_real_reading_ids = l_obj.search(cursor, uid, [
+            ('comptador_id', 'in', meter_ids),
+            ('origen_id', 'in', real_origins_ids),
+        ], order='name DESC', limit=1, context=context)
+
+        p1_ids = per_obj.search(cursor, uid, [
+            ('name', '=', 'P1'),
+        ])
+        params = [
+            ('comptador_id', 'in', meter_ids),
+            ('periode', 'in', p1_ids),
+        ]
+        if last_real_reading_ids:
+            last_real_reading_date = l_obj.read(cursor, uid, last_real_reading_ids[0], [
+                                                'name'], context=context)['name']
+            params.append(('name', '<', last_real_reading_date))
+
+        reading_ids = l_obj.search(cursor, uid, params, context=context)
+        invoicing_cyles_with_estimate_readings = len(reading_ids)
+
+        history_obj = self.pool.get("som.autoreclama.state.history.polissa009")
+        h_ids = history_obj.search(cursor, uid, [("polissa_id", "=", id)])
+
+        days_since_current_cacr1009 = 0
+        if h_ids:
+            cacr1009_closed = None
+            values = history_obj.read(
+                cursor, uid,
+                h_ids[0],
+                ["generated_atc_id", "change_date"],
+                context=context
+            )
+            if values['generated_atc_id']:
+                atc_data = atc_obj.read(
+                    cursor, uid,
+                    values['generated_atc_id'][0],
+                    ["state", "date_closed"],
+                    context=context
+                )
+                if atc_data["state"] == 'done' and atc_data["date_closed"]:
+                    cacr1009_closed = atc_data["date_closed"][:10]
+
+            elif values['change_date']:  # no cac, change_state created manually
+                cacr1009_closed = values['change_date']
+
+            if cacr1009_closed:
+                cacr1009_closed_dt = datetime.strptime(cacr1009_closed, "%Y-%m-%d")
+                days_since_current_cacr1009 = (datetime.today() - cacr1009_closed_dt).days
+
+        atc_009_ids = []
+        if 'days_ago_R1009' in context:
+            days_ago = context.get('days_ago_R1009', 0)
+            str_date_limit = (date.today() - timedelta(days=days_ago)).strftime("%Y-%m-%d")
+
+            id_r1_009 = data_obj.get_object_reference(
+                cursor, uid, "giscedata_subtipus_reclamacio", "subtipus_reclamacio_009"
+            )[1]
+            review_state_id = data_obj.get_object_reference(
+                cursor, uid, "som_autoreclama", "review_state_workflow_polissa009"
+            )[1]
+            h_ids = history_obj.search(cursor, uid, [
+                ("polissa_id", "=", id),
+                ("state_id", "=", review_state_id),
+            ])
+            if h_ids:
+                last_date_review = history_obj.read(
+                    cursor, uid, h_ids[0], ['change_date']
+                )['change_date']
+                if last_date_review and last_date_review > str_date_limit:
+                    str_date_limit = last_date_review
+
+            atc_009_ids = atc_obj.search(
+                cursor, uid,
+                [
+                    ('polissa_id', '=', id),
+                    ('subtipus_id', '=', id_r1_009),
+                    ('date', '>', str_date_limit),
+                ],
+                context={'active_test': False}
+            )
+
+        return {
+            'invoicing_cyles_with_estimate_readings': invoicing_cyles_with_estimate_readings,
+            'days_since_current_CACR1009_closed': days_since_current_cacr1009,
+            'CACR1009s_in_last_conf_days': len(atc_009_ids),
+        }
 
     # Create and setup autoreclama history to the new created polissa object
 
