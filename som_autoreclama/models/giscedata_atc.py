@@ -11,7 +11,7 @@ class GiscedataAtc(osv.osv):
     _inherit = "giscedata.atc"
     _order = "id desc"
 
-    def get_autoreclama_data(self, cursor, uid, id, context=None):
+    def get_autoreclama_data(self, cursor, uid, id, namespace, context=None):
         data = self.read(
             cursor,
             uid,

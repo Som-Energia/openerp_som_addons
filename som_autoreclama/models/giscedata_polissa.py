@@ -22,7 +22,14 @@ class GiscedataPolissa(osv.osv):
 
         self.write(cursor, uid, pol_id, {'info_gestio_endarrerida': line + text})
 
-    def get_autoreclama_data(self, cursor, uid, id, context=None):
+    def get_autoreclama_data(self, cursor, uid, id, namespace, context=None):
+        if namespace == "polissa":
+            return self._get_autoreclama_data_006(cursor, uid, id, context=context)
+        if namespace == "polissa009":
+            return self._get_autoreclama_data_009(cursor, uid, id, context=context)
+        return {}
+
+    def _get_autoreclama_data_006(self, cursor, uid, id, context=None):
         atc_obj = self.pool.get("giscedata.atc")
         data_obj = self.pool.get("ir.model.data")
 
@@ -126,6 +133,9 @@ class GiscedataPolissa(osv.osv):
             'baixa_facturada': baixa and facturada,
             'CACR1006s_in_last_conf_days': len(atc_006_ids),
         }
+
+    def _get_autoreclama_data_009(self, cursor, uid, id, context=None):
+        return {}
 
     # Create and setup autoreclama history to the new created polissa object
 

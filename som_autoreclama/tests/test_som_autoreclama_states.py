@@ -992,7 +992,7 @@ class SomAutoreclamaConditionsTest(SomAutoreclamaBaseTests):
         cond_obj = self.get_model("som.autoreclama.state.condition")
 
         atc_id = self.build_atc(subtype="001", log_days=10)
-        atc_data = atc_obj.get_autoreclama_data(self.cursor, self.uid, atc_id, {})
+        atc_data = atc_obj.get_autoreclama_data(self.cursor, self.uid, atc_id, "atc", {})
 
         _, cond_id = self.get_object_reference(
             "som_autoreclama", "conditions_001_correct_state_workflow_atc"
@@ -1006,7 +1006,7 @@ class SomAutoreclamaConditionsTest(SomAutoreclamaBaseTests):
         cond_obj = self.get_model("som.autoreclama.state.condition")
 
         atc_id = self.build_atc(subtype="001", log_days=50, r1=True)
-        atc_data = atc_obj.get_autoreclama_data(self.cursor, self.uid, atc_id, {})
+        atc_data = atc_obj.get_autoreclama_data(self.cursor, self.uid, atc_id, "atc", {})
 
         _, cond_id = self.get_object_reference(
             "som_autoreclama", "conditions_001_correct_state_workflow_atc"
@@ -1074,7 +1074,7 @@ class SomAutoreclamaConditionsTest(SomAutoreclamaBaseTests):
             atc_id = self.build_atc(
                 subtype=test_data["subtype"], log_days=test_data["log_days"], r1=True
             )
-            atc_data = atc_obj.get_autoreclama_data(self.cursor, self.uid, atc_id, {})
+            atc_data = atc_obj.get_autoreclama_data(self.cursor, self.uid, atc_id, "atc", {})
 
             _, cond_id = self.get_object_reference(
                 "som_autoreclama", test_data["cond"]
@@ -1097,13 +1097,13 @@ class SomAutoreclamaConditionsTest(SomAutoreclamaBaseTests):
 
             # test more
             atc_id = self.build_atc(subtype=cond.subtype_id.name, log_days=cond.days * 2, r1=True)
-            atc_data = atc_obj.get_autoreclama_data(self.cursor, self.uid, atc_id, {})
+            atc_data = atc_obj.get_autoreclama_data(self.cursor, self.uid, atc_id, "atc", {})
             ok = cond_obj.fit_condition(self.cursor, self.uid, cond_id, atc_data, "atc", {})
             self.assertEqual(ok, True, "Error on More than for condition id {}".format(cond_id))
 
             # test less
             atc_id = self.build_atc(subtype=cond.subtype_id.name, log_days=cond.days / 2, r1=True)
-            atc_data = atc_obj.get_autoreclama_data(self.cursor, self.uid, atc_id, {})
+            atc_data = atc_obj.get_autoreclama_data(self.cursor, self.uid, atc_id, "atc", {})
             ok = cond_obj.fit_condition(self.cursor, self.uid, cond_id, atc_data, "atc", {})
             self.assertEqual(ok, False, "Error on Less than for condition id {}".format(cond_id))
 
@@ -1112,7 +1112,7 @@ class SomAutoreclamaConditionsTest(SomAutoreclamaBaseTests):
         cond_obj = self.get_model("som.autoreclama.state.condition")
 
         pol_id = self.build_polissa(f1_date_days_from_today=75 + 1)
-        pol_data = polissa_obj.get_autoreclama_data(self.cursor, self.uid, pol_id, {})
+        pol_data = polissa_obj.get_autoreclama_data(self.cursor, self.uid, pol_id, "polissa", {})
 
         _, cond_id = self.get_object_reference(
             "som_autoreclama",
@@ -1127,7 +1127,7 @@ class SomAutoreclamaConditionsTest(SomAutoreclamaBaseTests):
         cond_obj = self.get_model("som.autoreclama.state.condition")
 
         pol_id = self.build_polissa(f1_date_days_from_today=75)
-        pol_data = polissa_obj.get_autoreclama_data(self.cursor, self.uid, pol_id, {})
+        pol_data = polissa_obj.get_autoreclama_data(self.cursor, self.uid, pol_id, "polissa", {})
 
         _, cond_id = self.get_object_reference(
             "som_autoreclama",
@@ -1142,7 +1142,7 @@ class SomAutoreclamaConditionsTest(SomAutoreclamaBaseTests):
         cond_obj = self.get_model("som.autoreclama.state.condition")
 
         pol_id = self.build_polissa(f1_date_days_from_today=60)
-        pol_data = polissa_obj.get_autoreclama_data(self.cursor, self.uid, pol_id, {})
+        pol_data = polissa_obj.get_autoreclama_data(self.cursor, self.uid, pol_id, "polissa", {})
 
         _, cond_id = self.get_object_reference(
             "som_autoreclama",
@@ -1157,7 +1157,7 @@ class SomAutoreclamaConditionsTest(SomAutoreclamaBaseTests):
         cond_obj = self.get_model("som.autoreclama.state.condition")
 
         pol_id = self.build_polissa(f1_date_days_from_today=61)
-        pol_data = polissa_obj.get_autoreclama_data(self.cursor, self.uid, pol_id, {})
+        pol_data = polissa_obj.get_autoreclama_data(self.cursor, self.uid, pol_id, "polissa", {})
 
         _, cond_id = self.get_object_reference(
             "som_autoreclama",
@@ -1178,7 +1178,8 @@ class SomAutoreclamaConditionsTest(SomAutoreclamaBaseTests):
         self.add_correct_to_history(pol_id, 85, atc1_id)
         self.add_correct_to_history(pol_id, 80, atc2_id)
 
-        pol_data = polissa_obj.get_autoreclama_data(self.cursor, self.uid, pol_id, context)
+        pol_data = polissa_obj.get_autoreclama_data(
+            self.cursor, self.uid, pol_id, "polissa", context)
         _, cond_id = self.get_object_reference(
             "som_autoreclama",
             "conditions_correct_2_006_inarow_review_state_workflow_polissa"
@@ -1199,7 +1200,8 @@ class SomAutoreclamaConditionsTest(SomAutoreclamaBaseTests):
         self.add_correct_to_history(pol_id, 85, atc1_id)
         self.add_correct_to_history(pol_id, 20, atc2_id)
 
-        pol_data = polissa_obj.get_autoreclama_data(self.cursor, self.uid, pol_id, context)
+        pol_data = polissa_obj.get_autoreclama_data(
+            self.cursor, self.uid, pol_id, "polissa", context)
         _, cond_id = self.get_object_reference(
             "som_autoreclama",
             "conditions_correct_2_006_inarow_review_state_workflow_polissa"
@@ -1220,7 +1222,8 @@ class SomAutoreclamaConditionsTest(SomAutoreclamaBaseTests):
         self.add_correct_to_history(pol_id, 85, atc1_id)
         self.add_correct_to_history(pol_id, 80, atc2_id)
 
-        pol_data = polissa_obj.get_autoreclama_data(self.cursor, self.uid, pol_id, context)
+        pol_data = polissa_obj.get_autoreclama_data(
+            self.cursor, self.uid, pol_id, "polissa", context)
         _, cond_id = self.get_object_reference(
             "som_autoreclama",
             "conditions_correct_2_006_inarow_review_state_workflow_polissa"
@@ -1241,7 +1244,8 @@ class SomAutoreclamaConditionsTest(SomAutoreclamaBaseTests):
         self.add_review_to_history(pol_id, 82)
         self.add_correct_to_history(pol_id, 80, atc2_id)
 
-        pol_data = polissa_obj.get_autoreclama_data(self.cursor, self.uid, pol_id, context)
+        pol_data = polissa_obj.get_autoreclama_data(
+            self.cursor, self.uid, pol_id, "polissa", context)
         _, cond_id = self.get_object_reference(
             "som_autoreclama",
             "conditions_correct_2_006_inarow_review_state_workflow_polissa"

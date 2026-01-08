@@ -193,7 +193,7 @@ class SomAutoreclamaStateUpdater(osv.osv_memory):
         context['days_ago_R1006'] = int(cfg_obj.get(
             cursor, uid, "som_autoreclama_2_006_in_a_row_days_ago", "120")
         )
-        item_data = item_obj.get_autoreclama_data(cursor, uid, item_id, context)
+        item_data = item_obj.get_autoreclama_data(cursor, uid, item_id, namespace, context)
 
         autoreclama_state = _namespaces[namespace]['state_field']
         state = item_obj.read(cursor, uid, item_id, [autoreclama_state], context)
