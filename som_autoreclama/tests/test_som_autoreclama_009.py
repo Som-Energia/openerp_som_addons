@@ -991,3 +991,381 @@ class SomAutoreclama009AutomationTest(SomAutoreclamaBaseTests):
         self.assertEqual(pol.autoreclama_state_date, '2022-10-01')
         self.assertEqual(pol.autoreclama009_state.id, disabled009_state_id)
         self.assertEqual(pol.autoreclama009_state_date, '2022-10-01')
+
+
+class SomAutoreclamaConditions009Test(SomAutoreclamaBaseTests):
+    def test_fit_polissa_condition__2_009_in_a_row_yes(self):
+        polissa_obj = self.get_model("giscedata.polissa")
+        cond_obj = self.get_model("som.autoreclama.state.condition")
+
+        context = {'days_ago_R1009': 120}
+        pol_id = self.build_polissa(f1_date_days_from_today=76)
+        atc1_id = self.add_done_009_to_polissa(pol_id, 85)
+        atc2_id = self.add_done_009_to_polissa(pol_id, 80)
+        self.add_correct_to_history009(pol_id, 85, atc1_id)
+        self.add_correct_to_history009(pol_id, 80, atc2_id)
+
+        pol_data = polissa_obj.get_autoreclama_data(
+            self.cursor, self.uid, pol_id, "polissa009", context)
+        _, cond_id = self.get_object_reference(
+            "som_autoreclama",
+            "conditions_bucle_2_009_inarow_review_state_workflow_polissa009"
+        )
+
+        ok = cond_obj.fit_condition(self.cursor, self.uid, cond_id, pol_data, "polissa009", {})
+        self.assertEqual(ok, True)
+
+    def test_fit_polissa_condition__2_009_in_a_row_no(self):
+        polissa_obj = self.get_model("giscedata.polissa")
+        cond_obj = self.get_model("som.autoreclama.state.condition")
+
+        context = {'days_ago_R1009': 120}
+        pol_id = self.build_polissa(f1_date_days_from_today=76)
+
+        atc1_id = self.add_done_009_to_polissa(pol_id, 85)
+        atc2_id = self.add_done_009_to_polissa(pol_id, 20)
+        self.add_correct_to_history009(pol_id, 85, atc1_id)
+        self.add_correct_to_history009(pol_id, 20, atc2_id)
+
+        pol_data = polissa_obj.get_autoreclama_data(
+            self.cursor, self.uid, pol_id, "polissa009", context)
+        _, cond_id = self.get_object_reference(
+            "som_autoreclama",
+            "conditions_bucle_2_009_inarow_review_state_workflow_polissa009"
+        )
+
+        ok = cond_obj.fit_condition(self.cursor, self.uid, cond_id, pol_data, "polissa009", {})
+        self.assertEqual(ok, False)
+
+    def test_fit_polissa_condition__2_009_in_a_row_with_previous_review_state_yes(self):
+        polissa_obj = self.get_model("giscedata.polissa")
+        cond_obj = self.get_model("som.autoreclama.state.condition")
+
+        context = {'days_ago_R1009': 120}
+        pol_id = self.build_polissa(f1_date_days_from_today=76)
+        atc1_id = self.add_done_009_to_polissa(pol_id, 85)
+        atc2_id = self.add_done_009_to_polissa(pol_id, 80)
+        self.add_review_to_history009(pol_id, 90)
+        self.add_correct_to_history009(pol_id, 85, atc1_id)
+        self.add_correct_to_history009(pol_id, 80, atc2_id)
+
+        pol_data = polissa_obj.get_autoreclama_data(
+            self.cursor, self.uid, pol_id, "polissa009", context)
+        _, cond_id = self.get_object_reference(
+            "som_autoreclama",
+            "conditions_bucle_2_009_inarow_review_state_workflow_polissa009"
+        )
+
+        ok = cond_obj.fit_condition(self.cursor, self.uid, cond_id, pol_data, "polissa009", {})
+        self.assertEqual(ok, True)
+
+    def test_fit_polissa_condition__2_009_in_a_row_with_previous_review_state_no(self):
+        polissa_obj = self.get_model("giscedata.polissa")
+        cond_obj = self.get_model("som.autoreclama.state.condition")
+
+        context = {'days_ago_R1009': 120}
+        pol_id = self.build_polissa(f1_date_days_from_today=76)
+        atc1_id = self.add_done_009_to_polissa(pol_id, 85)
+        atc2_id = self.add_done_009_to_polissa(pol_id, 80)
+        self.add_correct_to_history009(pol_id, 85, atc1_id)
+        self.add_review_to_history009(pol_id, 82)
+        self.add_correct_to_history009(pol_id, 80, atc2_id)
+
+        pol_data = polissa_obj.get_autoreclama_data(
+            self.cursor, self.uid, pol_id, "polissa009", context)
+        _, cond_id = self.get_object_reference(
+            "som_autoreclama",
+            "conditions_bucle_2_009_inarow_review_state_workflow_polissa009"
+        )
+
+        ok = cond_obj.fit_condition(self.cursor, self.uid, cond_id, pol_data, "polissa009", {})
+        self.assertEqual(ok, False)
+
+    def test_fit_polissa_condition__cycles_estimate_bucle_state_yes(self):
+        polissa_obj = self.get_model("giscedata.polissa")
+        cond_obj = self.get_model("som.autoreclama.state.condition")
+        pol_id = self.build_polissa(pool_readings=[
+            {'date': '2020-01-08', 'origen': '40'},
+            {'date': '2020-02-09', 'origen': '40'},
+            {'date': '2020-03-08', 'origen': '10'},
+            {'date': '2020-04-09', 'origen': '40'},
+            {'date': '2020-05-07', 'origen': '40'},
+            {'date': '2020-06-09', 'origen': '40'},
+            {'date': '2020-07-10', 'origen': '40'},
+            {'date': '2020-08-06', 'origen': '40'},
+        ])
+        pol_data = polissa_obj.get_autoreclama_data(
+            self.cursor, self.uid, pol_id, "polissa009", {})
+        _, cond_id = self.get_object_reference(
+            "som_autoreclama",
+            "conditions_cycles_estimate_correct_state_workflow_polissa009"
+        )
+        ok = cond_obj.fit_condition(self.cursor, self.uid, cond_id, pol_data, "polissa009", {})
+        self.assertEqual(ok, False)
+
+    def test_fit_polissa_condition__cycles_estimate_bucle_state_no(self):
+        polissa_obj = self.get_model("giscedata.polissa")
+        cond_obj = self.get_model("som.autoreclama.state.condition")
+        pol_id = self.build_polissa(pool_readings=[
+            {'date': '2020-01-08', 'origen': '40'},
+            {'date': '2020-02-09', 'origen': '40'},
+            {'date': '2020-03-08', 'origen': '40'},
+            {'date': '2020-04-09', 'origen': '40'},
+            {'date': '2020-05-07', 'origen': '10'},
+            {'date': '2020-06-09', 'origen': '40'},
+            {'date': '2020-07-10', 'origen': '40'},
+            {'date': '2020-08-06', 'origen': '40'},
+        ])
+        pol_data = polissa_obj.get_autoreclama_data(
+            self.cursor, self.uid, pol_id, "polissa009", {})
+        _, cond_id = self.get_object_reference(
+            "som_autoreclama",
+            "conditions_cycles_estimate_correct_state_workflow_polissa009"
+        )
+        ok = cond_obj.fit_condition(self.cursor, self.uid, cond_id, pol_data, "polissa009", {})
+        self.assertEqual(ok, False)
+
+    def test_fit_polissa_condition__cycles_estimate_bucle_state_low_readings_real_no(self):
+        polissa_obj = self.get_model("giscedata.polissa")
+        cond_obj = self.get_model("som.autoreclama.state.condition")
+        pol_id = self.build_polissa(pool_readings=[
+            {'date': '2020-06-09', 'origen': '10'},
+            {'date': '2020-07-10', 'origen': '10'},
+            {'date': '2020-08-06', 'origen': '10'},
+        ])
+        pol_data = polissa_obj.get_autoreclama_data(
+            self.cursor, self.uid, pol_id, "polissa009", {})
+        _, cond_id = self.get_object_reference(
+            "som_autoreclama",
+            "conditions_cycles_estimate_correct_state_workflow_polissa009"
+        )
+        ok = cond_obj.fit_condition(self.cursor, self.uid, cond_id, pol_data, "polissa009", {})
+        self.assertEqual(ok, False)
+
+    def test_fit_polissa_condition__cycles_estimate_bucle_state_low_readings_estimated_no(self):
+        polissa_obj = self.get_model("giscedata.polissa")
+        cond_obj = self.get_model("som.autoreclama.state.condition")
+        pol_id = self.build_polissa(pool_readings=[
+            {'date': '2020-06-09', 'origen': 'est'},
+            {'date': '2020-07-10', 'origen': '40'},
+            {'date': '2020-08-06', 'origen': '40'},
+        ])
+        pol_data = polissa_obj.get_autoreclama_data(
+            self.cursor, self.uid, pol_id, "polissa009", {})
+        _, cond_id = self.get_object_reference(
+            "som_autoreclama",
+            "conditions_cycles_estimate_correct_state_workflow_polissa009"
+        )
+        ok = cond_obj.fit_condition(self.cursor, self.uid, cond_id, pol_data, "polissa009", {})
+        self.assertEqual(ok, False)
+
+    def test_fit_polissa_condition__cycles_estimate_bucle_state_high_readings_mix_no(self):
+        polissa_obj = self.get_model("giscedata.polissa")
+        cond_obj = self.get_model("som.autoreclama.state.condition")
+        pol_id = self.build_polissa(pool_readings=[
+            {'date': '2020-01-08', 'origen': '10'},
+            {'date': '2020-02-09', 'origen': '20'},
+            {'date': '2020-03-08', 'origen': '30'},
+            {'date': '2020-04-09', 'origen': '10'},
+            {'date': '2020-05-07', 'origen': 'est'},
+            {'date': '2020-06-09', 'origen': '30'},
+            {'date': '2020-07-10', 'origen': '10'},
+            {'date': '2020-08-06', 'origen': '20'},
+            {'date': '2020-09-06', 'origen': 'est'},
+            {'date': '2020-10-05', 'origen': '10'},
+            {'date': '2020-11-07', 'origen': 'est'},
+            {'date': '2020-12-08', 'origen': '30'},
+        ])
+        pol_data = polissa_obj.get_autoreclama_data(
+            self.cursor, self.uid, pol_id, "polissa009", {})
+        _, cond_id = self.get_object_reference(
+            "som_autoreclama",
+            "conditions_cycles_estimate_correct_state_workflow_polissa009"
+        )
+        ok = cond_obj.fit_condition(self.cursor, self.uid, cond_id, pol_data, "polissa009", {})
+        self.assertEqual(ok, False)
+
+    def test_fit_polissa_condition__loop_to_correct_yes_far(self):
+        polissa_obj = self.get_model("giscedata.polissa")
+        cond_obj = self.get_model("som.autoreclama.state.condition")
+        pol_id = self.build_polissa(pool_readings=[
+            {'date': '2020-01-08', 'origen': 'est'},
+            {'date': '2020-02-09', 'origen': 'est'},
+            {'date': '2020-03-08', 'origen': 'est'},
+            {'date': '2020-04-09', 'origen': 'est'},
+            {'date': '2020-05-07', 'origen': 'est'},
+            {'date': '2020-06-09', 'origen': 'est'},
+            {'date': '2020-07-10', 'origen': 'est'},
+            {'date': '2020-08-06', 'origen': 'real'},
+            {'date': '2020-09-06', 'origen': 'est'},
+            {'date': '2020-10-05', 'origen': 'est'},
+            {'date': '2020-11-07', 'origen': 'est'},
+            {'date': '2020-12-08', 'origen': 'est'},
+        ])
+        pol_data = polissa_obj.get_autoreclama_data(
+            self.cursor, self.uid, pol_id, "polissa009", {})
+        _, cond_id = self.get_object_reference(
+            "som_autoreclama",
+            "conditions_loop_to_correct_state_workflow_polissa009"
+        )
+        ok = cond_obj.fit_condition(self.cursor, self.uid, cond_id, pol_data, "polissa009", {})
+        self.assertEqual(ok, True)
+        _, cond_id = self.get_object_reference(
+            "som_autoreclama",
+            "conditions_revisar_to_correct_state_workflow_polissa009"
+        )
+        ok = cond_obj.fit_condition(self.cursor, self.uid, cond_id, pol_data, "polissa009", {})
+        self.assertEqual(ok, True)
+
+    def test_fit_polissa_condition__loop_to_correct_yes_near(self):
+        polissa_obj = self.get_model("giscedata.polissa")
+        cond_obj = self.get_model("som.autoreclama.state.condition")
+        pol_id = self.build_polissa(pool_readings=[
+            {'date': '2020-01-08', 'origen': 'est'},
+            {'date': '2020-02-09', 'origen': 'est'},
+            {'date': '2020-03-08', 'origen': 'est'},
+            {'date': '2020-04-09', 'origen': 'est'},
+            {'date': '2020-05-07', 'origen': 'est'},
+            {'date': '2020-06-09', 'origen': 'est'},
+            {'date': '2020-07-10', 'origen': 'est'},
+            {'date': '2020-08-06', 'origen': 'est'},
+            {'date': '2020-09-06', 'origen': 'est'},
+            {'date': '2020-10-05', 'origen': 'est'},
+            {'date': '2020-11-07', 'origen': '10'},
+            {'date': '2020-12-08', 'origen': 'est'},
+        ])
+        pol_data = polissa_obj.get_autoreclama_data(
+            self.cursor, self.uid, pol_id, "polissa009", {})
+        _, cond_id = self.get_object_reference(
+            "som_autoreclama",
+            "conditions_loop_to_correct_state_workflow_polissa009"
+        )
+        ok = cond_obj.fit_condition(self.cursor, self.uid, cond_id, pol_data, "polissa009", {})
+        self.assertEqual(ok, True)
+        _, cond_id = self.get_object_reference(
+            "som_autoreclama",
+            "conditions_revisar_to_correct_state_workflow_polissa009"
+        )
+        ok = cond_obj.fit_condition(self.cursor, self.uid, cond_id, pol_data, "polissa009", {})
+        self.assertEqual(ok, True)
+
+    def test_fit_polissa_condition__loop_to_correct_yes_now(self):
+        polissa_obj = self.get_model("giscedata.polissa")
+        cond_obj = self.get_model("som.autoreclama.state.condition")
+        pol_id = self.build_polissa(pool_readings=[
+            {'date': '2020-01-08', 'origen': 'est'},
+            {'date': '2020-02-09', 'origen': 'est'},
+            {'date': '2020-03-08', 'origen': 'est'},
+            {'date': '2020-04-09', 'origen': 'est'},
+            {'date': '2020-05-07', 'origen': 'est'},
+            {'date': '2020-06-09', 'origen': 'est'},
+            {'date': '2020-07-10', 'origen': 'est'},
+            {'date': '2020-08-06', 'origen': 'est'},
+            {'date': '2020-09-06', 'origen': 'est'},
+            {'date': '2020-10-05', 'origen': 'est'},
+            {'date': '2020-11-07', 'origen': 'est'},
+            {'date': '2020-12-08', 'origen': 'real'},
+        ])
+        pol_data = polissa_obj.get_autoreclama_data(
+            self.cursor, self.uid, pol_id, "polissa009", {})
+        _, cond_id = self.get_object_reference(
+            "som_autoreclama",
+            "conditions_loop_to_correct_state_workflow_polissa009"
+        )
+        ok = cond_obj.fit_condition(self.cursor, self.uid, cond_id, pol_data, "polissa009", {})
+        self.assertEqual(ok, True)
+        _, cond_id = self.get_object_reference(
+            "som_autoreclama",
+            "conditions_revisar_to_correct_state_workflow_polissa009"
+        )
+        ok = cond_obj.fit_condition(self.cursor, self.uid, cond_id, pol_data, "polissa009", {})
+        self.assertEqual(ok, True)
+
+    def test_fit_polissa_condition__loop_to_correct_no(self):
+        polissa_obj = self.get_model("giscedata.polissa")
+        cond_obj = self.get_model("som.autoreclama.state.condition")
+        pol_id = self.build_polissa(pool_readings=[
+            {'date': '2020-01-08', 'origen': 'est'},
+            {'date': '2020-02-09', 'origen': 'est'},
+            {'date': '2020-03-08', 'origen': 'est'},
+            {'date': '2020-04-09', 'origen': 'est'},
+            {'date': '2020-05-07', 'origen': 'est'},
+            {'date': '2020-06-09', 'origen': 'est'},
+            {'date': '2020-07-10', 'origen': 'real'},
+            {'date': '2020-08-06', 'origen': 'est'},
+            {'date': '2020-09-06', 'origen': 'est'},
+            {'date': '2020-10-05', 'origen': 'est'},
+            {'date': '2020-11-07', 'origen': 'est'},
+            {'date': '2020-12-08', 'origen': 'est'},
+        ])
+        pol_data = polissa_obj.get_autoreclama_data(
+            self.cursor, self.uid, pol_id, "polissa009", {})
+        _, cond_id = self.get_object_reference(
+            "som_autoreclama",
+            "conditions_loop_to_correct_state_workflow_polissa009"
+        )
+        ok = cond_obj.fit_condition(self.cursor, self.uid, cond_id, pol_data, "polissa009", {})
+        _, cond_id = self.get_object_reference(
+            "som_autoreclama",
+            "conditions_revisar_to_correct_state_workflow_polissa009"
+        )
+        ok = cond_obj.fit_condition(self.cursor, self.uid, cond_id, pol_data, "polissa009", {})
+        self.assertEqual(ok, False)
+
+    def test_fit_polissa_condition__cac009_closed_yes(self):
+        polissa_obj = self.get_model("giscedata.polissa")
+        cond_obj = self.get_model("som.autoreclama.state.condition")
+
+        context = {'days_ago_R1009': 120}
+        pol_id = self.build_polissa(f1_date_days_from_today=76)
+        atc1_id = self.add_done_009_to_polissa(pol_id, 30)
+        self.add_correct_to_history009(pol_id, 30, atc1_id)
+
+        pol_data = polissa_obj.get_autoreclama_data(
+            self.cursor, self.uid, pol_id, "polissa009", context)
+        _, cond_id = self.get_object_reference(
+            "som_autoreclama",
+            "conditions_CACR1009_closed_loop_state_workflow_polissa009"
+        )
+
+        ok = cond_obj.fit_condition(self.cursor, self.uid, cond_id, pol_data, "polissa009", {})
+        self.assertEqual(ok, True)
+
+    def test_fit_polissa_condition__cac009_closed_yes_near(self):
+        polissa_obj = self.get_model("giscedata.polissa")
+        cond_obj = self.get_model("som.autoreclama.state.condition")
+
+        context = {'days_ago_R1009': 120}
+        pol_id = self.build_polissa(f1_date_days_from_today=76)
+        atc1_id = self.add_done_009_to_polissa(pol_id, 30)
+        self.add_correct_to_history009(pol_id, 21, atc1_id)
+
+        pol_data = polissa_obj.get_autoreclama_data(
+            self.cursor, self.uid, pol_id, "polissa009", context)
+        _, cond_id = self.get_object_reference(
+            "som_autoreclama",
+            "conditions_CACR1009_closed_loop_state_workflow_polissa009"
+        )
+
+        ok = cond_obj.fit_condition(self.cursor, self.uid, cond_id, pol_data, "polissa009", {})
+        self.assertEqual(ok, True)
+
+    def test_fit_polissa_condition__cac009_closed_no(self):
+        polissa_obj = self.get_model("giscedata.polissa")
+        cond_obj = self.get_model("som.autoreclama.state.condition")
+
+        context = {'days_ago_R1009': 120}
+        pol_id = self.build_polissa(f1_date_days_from_today=76)
+
+        atc1_id = self.add_done_009_to_polissa(pol_id, 20)
+        self.add_correct_to_history009(pol_id, 20, atc1_id)
+
+        pol_data = polissa_obj.get_autoreclama_data(
+            self.cursor, self.uid, pol_id, "polissa009", context)
+        _, cond_id = self.get_object_reference(
+            "som_autoreclama",
+            "conditions_CACR1009_closed_loop_state_workflow_polissa009"
+        )
+
+        ok = cond_obj.fit_condition(self.cursor, self.uid, cond_id, pol_data, "polissa009", {})
+        self.assertEqual(ok, False)
