@@ -794,7 +794,7 @@
             <field name="priority">10</field>
             <field name="active" eval="True"/>
         </record>
-        <record model="som.autoreclama.state.condition" id="conditions_invoicing_cyles_with_estimate_readings_correct_state_workflow_polissa009">
+        <record model="som.autoreclama.state.condition" id="conditions_cycles_estimate_correct_state_workflow_polissa009">
             <field name="days">6</field>
             <field name="condition_code">noRealReadings</field>
             <field name="state_id" ref="correct_state_workflow_polissa009"/>

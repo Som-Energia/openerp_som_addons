@@ -158,7 +158,7 @@ class GiscedataPolissa(osv.osv):
         ], context=context)
         meter_ids = self.read(cursor, uid, id, ["comptadors"], context)['comptadors']
         last_real_reading_ids = l_obj.search(cursor, uid, [
-            ('comptador_id', 'in', meter_ids),
+            ('comptador', 'in', meter_ids),
             ('origen_id', 'in', real_origins_ids),
         ], order='name DESC', limit=1, context=context)
 
@@ -166,13 +166,13 @@ class GiscedataPolissa(osv.osv):
             ('name', '=', 'P1'),
         ])
         params = [
-            ('comptador_id', 'in', meter_ids),
+            ('comptador', 'in', meter_ids),
             ('periode', 'in', p1_ids),
         ]
         if last_real_reading_ids:
             last_real_reading_date = l_obj.read(cursor, uid, last_real_reading_ids[0], [
                                                 'name'], context=context)['name']
-            params.append(('name', '<', last_real_reading_date))
+            params.append(('name', '>', last_real_reading_date))
 
         reading_ids = l_obj.search(cursor, uid, params, context=context)
         invoicing_cyles_with_estimate_readings = len(reading_ids)
