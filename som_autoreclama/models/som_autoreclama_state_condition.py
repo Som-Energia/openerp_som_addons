@@ -16,8 +16,8 @@ class SomAutoreclamaStateCondition(osv.osv):
         ("CACR1006closed", _("Dies des de ATC R1 006 actual tancat")),
         ("oldPolissa", _("Polissa de baixa x dies o baixa facturada")),
         ("2_006_in_a_row", _("Dues 006 seguides en X dies")),
-        ("noRealReadings", _("Sense lectures reals a pòlissa en X cicles de facturació")),
-        ("realReadings_ok", _("Amb lectures reals a pòlissa en X cicles de facturació")),
+        ("noRealReadings", _("Sense lectures reals a pòlissa en X cicles de facturació o mes")),
+        ("realReadings_ok", _("Amb lectures reals a pòlissa en X cicles de facturació o menys")),
         ("CACR1009closed", _("Dies des de ATC R1 009 actual tancat sense lectures reals")),
         ("2_009_in_a_row", _("Dues 009 tancades seguides en X dies sense lectures reals")),
     ]
@@ -56,7 +56,7 @@ class SomAutoreclamaStateCondition(osv.osv):
                     and data["CACR1009s_in_last_conf_days"] >= 2
                 )
             if cond_data['condition_code'] == 'noRealReadings':
-                return data["invoicing_cyles_with_estimate_readings"] > cond_data["days"]
+                return data["invoicing_cyles_with_estimate_readings"] >= cond_data["days"]
             if cond_data['condition_code'] == 'realReadings_ok':
                 return data["invoicing_cyles_with_estimate_readings"] <= cond_data["days"]
             if cond_data['condition_code'] == 'oldPolissa':
@@ -83,6 +83,17 @@ class SomAutoreclamaStateCondition(osv.osv):
             return _(
                 "id {}, Reclamació de subtipus {} sense resposta de la distribuïdora més de {} dies"
             ).format(cnd_id, cond_data["subtype_id"][1], cond_data["days"])
+        if cond_code == 'noRealReadings':
+            return _("id {}, Sense lectures reals a pòlissa en {} cicles de facturació o més"
+                     ).format(cnd_id, cond_data["days"])
+        if cond_code == 'realReadings_ok':
+            return _("id {}, Amb lectures reals a pòlissa en {} cicles de facturació o menys"
+                     ).format(cnd_id, cond_data["days"])
+        if cond_code == 'CACR1009closed':
+            return _("id {}, Dies des de ATC R1 009 actual tancat més de {} dies").format(
+                cnd_id, cond_data["days"])
+        if cond_code == '2_009_in_a_row':
+            return _("id {}, Dues 009 seguides en {} dies").format(cnd_id, cond_data["days"])
         return "id {}, Condició desconeguda".format(cnd_id)
 
     _columns = {
