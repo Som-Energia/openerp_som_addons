@@ -778,5 +778,61 @@
             <field name="active" eval="True"/>
             <field name="generate_atc_parameters_text">{"model": "giscedata.polissa", "method": "som_autoreclama_add_to_info_gestio_endarrerida", "params": {"message": "Autoreclama 009 passat a estat 'Revisar'"}}</field>
         </record>
+        <record model="som.autoreclama.state.condition" id="conditions_old_polissa_correct_state_workflow_polissa009">
+            <field name="days">300</field>
+            <field name="condition_code">oldPolissa</field>
+            <field name="state_id" ref="correct_state_workflow_polissa009"/>
+            <field name="next_state_id" ref="disabled_state_workflow_polissa009"/>
+            <field name="priority">10</field>
+            <field name="active" eval="True"/>
+        </record>
+        <record model="som.autoreclama.state.condition" id="conditions_old_polissa_loop_state_workflow_polissa009">
+            <field name="days">300</field>
+            <field name="condition_code">oldPolissa</field>
+            <field name="state_id" ref="loop_state_workflow_polissa009"/>
+            <field name="next_state_id" ref="disabled_state_workflow_polissa009"/>
+            <field name="priority">10</field>
+            <field name="active" eval="True"/>
+        </record>
+        <record model="som.autoreclama.state.condition" id="conditions_invoicing_cyles_with_estimate_readings_correct_state_workflow_polissa009">
+            <field name="days">6</field>
+            <field name="condition_code">noRealReadings</field>
+            <field name="state_id" ref="correct_state_workflow_polissa009"/>
+            <field name="next_state_id" ref="loop_state_workflow_polissa009"/>
+            <field name="priority">20</field>
+            <field name="active" eval="True"/>
+        </record>
+        <record model="som.autoreclama.state.condition" id="conditions_CACR1009_closed_loop_state_workflow_polissa009">
+            <field name="days">20</field>
+            <field name="condition_code">CACR1009closed</field>
+            <field name="state_id" ref="loop_state_workflow_polissa009"/>
+            <field name="next_state_id" ref="loop_state_workflow_polissa009"/>
+            <field name="priority">30</field>
+            <field name="active" eval="True"/>
+        </record>
+        <record model="som.autoreclama.state.condition" id="conditions_bucle_2_009_inarow_review_state_workflow_polissa009">
+            <field name="days">20</field>
+            <field name="condition_code">2_009_in_a_row</field>
+            <field name="state_id" ref="loop_state_workflow_polissa009"/>
+            <field name="next_state_id" ref="review_state_workflow_polissa009"/>
+            <field name="priority">25</field>
+            <field name="active" eval="True"/>
+        </record>
+        <record model="som.autoreclama.state.condition" id="conditions_loop_to_correct_state_workflow_polissa009">
+            <field name="days">5</field>
+            <field name="condition_code">realReadings_ok</field>
+            <field name="state_id" ref="loop_state_workflow_polissa009"/>
+            <field name="next_state_id" ref="correct_state_workflow_polissa009"/>
+            <field name="priority">20</field>
+            <field name="active" eval="True"/>
+        </record>
+        <record model="som.autoreclama.state.condition" id="conditions_revisar_to_correct_state_workflow_polissa009">
+            <field name="days">5</field>
+            <field name="condition_code">realReadings_ok</field>
+            <field name="state_id" ref="review_state_workflow_polissa009"/>
+            <field name="next_state_id" ref="correct_state_workflow_polissa009"/>
+            <field name="priority">10</field>
+            <field name="active" eval="True"/>
+        </record>
     </data>
 </openerp>
