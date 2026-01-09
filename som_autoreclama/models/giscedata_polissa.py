@@ -154,7 +154,7 @@ class GiscedataPolissa(osv.osv):
         origins_obj = self.pool.get("giscedata.lectures.origen")
 
         real_origins_ids = origins_obj.search(cursor, uid, [
-            ('codi', 'in', ['10', '20', '30', '60', 'LC']),
+            ('codi', 'in', ['10', '20', '30', '50', '60', '70', 'LC']),
         ], context=context)
         meter_ids = self.read(cursor, uid, id, ["comptadors"], context)['comptadors']
         last_real_reading_ids = l_obj.search(cursor, uid, [
