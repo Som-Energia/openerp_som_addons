@@ -23,7 +23,7 @@ _namespaces = {
     'polissa009': {
         'model': 'giscedata.polissa',
         'history_model': 'som.autoreclama.state.history.polissa009',
-        'state_field': 'autoreclama_state009',
+        'state_field': 'autoreclama009_state',
         'name': _('Pòlissa'),
         'block_name': _('Pòlisses ATC 009'),
     },
