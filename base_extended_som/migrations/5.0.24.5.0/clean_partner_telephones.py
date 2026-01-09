@@ -1,3 +1,4 @@
+# -*- encoding: utf-8 -*-
 from __future__ import print_function
 import configdb
 from erppeek import Client
@@ -25,12 +26,16 @@ def clean_partner_telephones(partner_address_id, phone_number):
     phone_number = phone_number.replace("(", "")
     phone_number = phone_number.replace(")", "")
     phone_number = phone_number.replace("+34", "")
-    if phone_number.startswith("34"):
-        phone_number = phone_number[2:]
     while phone_number.startswith("0"):
         phone_number = phone_number[1:]
-    # Remove all non-numeric characters
-    phone_number = ''.join(filter(str.isdigit, str(phone_number)))
+    if phone_number.startswith("34"):
+        phone_number = phone_number[2:]
+
+    # Search for a non-numeric character found in phone number
+    for char in phone_number:
+        if not char.isdigit():
+            phones_not_valid.append(phone_number)
+            return None
 
     if len(phone_number) == 9:
         # print("new phone {}".format(phone_number))
