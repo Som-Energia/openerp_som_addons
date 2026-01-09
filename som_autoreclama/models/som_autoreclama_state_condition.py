@@ -58,7 +58,7 @@ class SomAutoreclamaStateCondition(osv.osv):
             if cond_data['condition_code'] == 'noRealReadings':
                 return data["invoicing_cyles_with_estimate_readings"] >= cond_data["days"]
             if cond_data['condition_code'] == 'realReadings_ok':
-                return data["invoicing_cyles_with_estimate_readings"] <= cond_data["days"]
+                return data["invoicing_cyles_with_estimate_readings"] < cond_data["days"]
             if cond_data['condition_code'] == 'oldPolissa':
                 return data["days_since_baixa"] >= cond_data["days"] or data["baixa_facturada"]
         return False
