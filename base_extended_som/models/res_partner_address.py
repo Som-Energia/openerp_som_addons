@@ -17,7 +17,7 @@ class ResPartnerAddress(osv.osv):
     }
 
     @staticmethod
-    def check_mobile_or_landline(number):
+    def check_mobile_or_landline(cursor, uid, number):
         """docstring
         Check if the spanish phone number is a valid landline or mobile number in Spain.
         Valid landline numbers start with 8 or 9 and have 9 digits.
