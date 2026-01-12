@@ -580,8 +580,8 @@ class SomGurbCups(osv.osv):
 
         if context.get("tpv"):
             payment_type_code = "COBRAMENT_TARGETA"
-        else:
-            context["date"] = gurb_cups_br.inscription_date
+
+        context["date"] = gurb_cups_br.inscription_date
 
         if gurb_cups_br.initial_invoice_id:
             error = "[GURB CUPS ID {}]: La factura d'inscripció ja existeix.".format(
