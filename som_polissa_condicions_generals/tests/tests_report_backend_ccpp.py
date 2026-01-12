@@ -179,3 +179,17 @@ class TestReportBackendCCPP(testing.OOTestCase):
                 u'text_impostos': u' (IVA 21%, IE 5,11%)',
                 u'text_vigencia': u''}]
         })
+
+    def test_get_prices_data_with_modcon_ok(self):
+        self.pol_obj.send_signal(
+            self.cursor, self.uid, [self.contract_20TD_id], ["validar", "contracte"])
+        context = {"active_id": self.contract_20TD_id, "change_type": "from_period_to_index"}
+        wiz_id = self.wiz_change_to_index_obj.create(self.cursor, self.uid, {}, context=context)
+        self.wiz_change_to_index_obj.change_to_indexada(
+            self.cursor, self.uid, [wiz_id], context=context)
+
+        pol_20td = self.pol_obj.browse(self.cursor, self.uid, self.contract_20TD_id)
+
+        result = self.backend_obj.get_prices_data(self.cursor, self.uid, pol_20td, context={})
+
+        self.assertEqual(result['mostra_indexada'], True)

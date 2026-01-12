@@ -316,6 +316,7 @@ class ReportBackendCondicionsParticulars(ReportBackend):
         return res
 
     def get_prices_data(self, cursor, uid, pol, context=None):  # noqa: C901
+        context = context or {}
         res = {}
         lead = context.get('lead')
         dict_preus_tp_potencia = False
@@ -340,7 +341,8 @@ class ReportBackendCondicionsParticulars(ReportBackend):
         ctx = {'date': datetime.today()}
         modcon_pendent_indexada = False
         modcon_pendent_periodes = False
-        if pol.state != 'esborrany':
+        use_modcon_pricelist = not context.get('ignore_modcon_pricelist', False)
+        if use_modcon_pricelist and pol.state != 'esborrany':
             ultima_modcon = pol.modcontractuals_ids[0]
             modcon_pendent_indexada = ultima_modcon.state == 'pendent' and \
                 ultima_modcon.mode_facturacio == 'index'
