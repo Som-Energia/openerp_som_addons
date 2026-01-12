@@ -93,12 +93,12 @@ for partner_address_id in tqdm(partner_address_list, desc="Processing partner ad
     mobile_misplaced = False
     landline_misplaced = False
     if partner_address.phone:
-        if c.ResPartnerAddress.check_mobile_or_landline(partner_address.phone) == 'landline':
+        if c.ResPartnerAddress.check_mobile_or_landline_peek(partner_address.phone) == 'landline':
             pass
         else:
             mobile_misplaced = partner_address.phone
     if partner_address.mobile:
-        if c.ResPartnerAddress.check_mobile_or_landline(partner_address.mobile) == 'mobile':
+        if c.ResPartnerAddress.check_mobile_or_landline_peek(partner_address.mobile) == 'mobile':
             pass
         else:
             landline_misplaced = partner_address.mobile
