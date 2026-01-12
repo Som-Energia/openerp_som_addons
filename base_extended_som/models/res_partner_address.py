@@ -17,6 +17,10 @@ class ResPartnerAddress(osv.osv):
     }
 
     @staticmethod
+    def check_mobile_or_landline_peek(cursor, uid, number):
+        return ResPartnerAddress.check_mobile_or_landline(number)
+
+    @staticmethod
     def check_mobile_or_landline(number):
         """docstring
         Check if the spanish phone number is a valid landline or mobile number in Spain.
