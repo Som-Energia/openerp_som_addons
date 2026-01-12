@@ -147,6 +147,8 @@ class ReportBackendCondicionsParticulars(ReportBackend):
         return res
 
     def get_polissa_data(self, cursor, uid, pol, context=None):
+        context = context or {}
+
         pol_o = self.pool.get('giscedata.polissa')
         llista_preu_o = self.pool.get('product.pricelist')
         imd_obj = self.pool.get('ir.model.data')
@@ -196,7 +198,9 @@ class ReportBackendCondicionsParticulars(ReportBackend):
             res['modcon_pendent_periodes'] = res['last_modcon_state'] == 'pendent' and res['last_modcon_facturacio'] == 'atr'  # noqa: E501
             res['modcon_pendent_auvi'] = res['last_modcon_state'] == 'pendent' and res['last_modcon_auvi']  # noqa: E501
 
-        if res['modcon_pendent_indexada'] or res['modcon_pendent_periodes']:
+        use_modcon_pricelist = not context.get('ignore_modcon_pricelist', False)
+        has_some_modcon = res['modcon_pendent_indexada'] or res['modcon_pendent_periodes']
+        if use_modcon_pricelist and has_some_modcon:
             res['pricelist'] = pol.modcontractuals_ids[0].llista_preu
         elif pol.llista_preu:
             res['pricelist'] = pol.llista_preu

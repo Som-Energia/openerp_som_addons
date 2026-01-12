@@ -26,6 +26,7 @@
         "data/giscedata_switching_data_m1.xml",
         "report/giscedata_polissa_condicions_generals_report.xml",
         "report/giscedata_polissa_condicions_generals_m101_report.xml",
+        "report/giscedata_polissa_condicions_generals_ignore_modcon_report.xml",
         "security/ir.model.access.csv",
     ],
     "active": False,

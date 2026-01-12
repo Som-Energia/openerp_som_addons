@@ -9,7 +9,7 @@ import base64
 
 
 HEADER = [
-    "polissa", "estalvi_sense_impostos", "estalvi_amb_impostos", "kwh_excedents",
+    "gurb_cups_id", "polissa", "estalvi_sense_impostos", "estalvi_amb_impostos", "kwh_excedents",
     "kwh_generacio_neta", "kwh_autoconsumits", "kwh_consumits", "percentatge_autoconsum",
     "percentatge_autoconsumida"
 ]
@@ -101,6 +101,7 @@ class WizardCalculateGurbSavings(osv.osv_memory):
         result = {
             "state": "end",
             "info": "S'ha generat el fitxer d'estalvis correctament.",
+            "savings": savings
         }
 
         wiz.savings = savings
