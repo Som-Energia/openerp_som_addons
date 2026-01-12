@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import logging
 from oopgrade.oopgrade import load_data
+import pooler
 
 
 def up(cursor, installed_version):
@@ -8,6 +9,12 @@ def up(cursor, installed_version):
         return
 
     logger = logging.getLogger('openerp.migration')
+
+    logger.info("Creating models")
+    pool = pooler.get_pool(cursor.dbname)
+    pool.get("report.backend.condicions.particulars.ignore.modcon")._auto_init(
+        cursor, context={'module': 'som_polissa_condicions_generals'}
+    )
 
     logger.info("Updating XML files")
     data_files = [
