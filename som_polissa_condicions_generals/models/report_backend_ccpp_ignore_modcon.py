@@ -13,6 +13,13 @@ class ReportBackendCondicionsParticularsIgnoreModcon(ReportBackendCondicionsPart
             cursor, uid, pol, context=context)
         return res
 
+    def get_prices_data(self, cursor, uid, pol, context=None):
+        context = context or {}
+        context.update({'ignore_modcon_pricelist': True})
+        res = super(ReportBackendCondicionsParticularsIgnoreModcon, self).get_prices_data(
+            cursor, uid, pol, context=context)
+        return res
+
 
 ReportBackendCondicionsParticularsIgnoreModcon()
 
