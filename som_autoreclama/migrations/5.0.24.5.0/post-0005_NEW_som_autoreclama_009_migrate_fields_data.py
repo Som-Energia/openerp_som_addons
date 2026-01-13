@@ -42,10 +42,10 @@ def up(cursor, installed_version):
     data_files = [
         'data/giscedata_atc_tag_data.xml',
         'data/som_autoreclama_state_data.xml',
+        'wizard/wizard_som_autoreclama_set_correct_state_view.xml',
         'views/giscedata_atc_view.xml',
         'views/giscedata_polissa_view.xml',
         'views/som_autoreclama_state_view.xml',
-        'wizard/wizard_som_autoreclama_set_correct_state_view.xml',
     ]
     for data_file in data_files:
         load_data(
