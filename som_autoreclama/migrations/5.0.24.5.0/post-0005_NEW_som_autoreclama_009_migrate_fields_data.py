@@ -63,7 +63,7 @@ def up(cursor, installed_version):
     load_data_records(
         cursor, 'som_autoreclama', 'data/som_autoreclama_state_data.xml',
         update_records,
-        mode='update'
+        mode='init'
     )
 
     logger.info("Updating CSV security files")
