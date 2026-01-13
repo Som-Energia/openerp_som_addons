@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 import logging
-from oopgrade.oopgrade import load_data
+from oopgrade.oopgrade import load_data, load_data_records
 import pooler
 
 
@@ -52,6 +52,19 @@ def up(cursor, installed_version):
             cursor, 'som_autoreclama', data_file,
             idref=None, mode='update'
         )
+
+    logger.info("Updating records from XML file")
+    update_records = [
+        'workflow_atc',
+        'workflow_F1',
+        'workflow_polissa',
+        'review_state_workflow_polissa',
+    ]
+    load_data_records(
+        cursor, 'som_autoreclama', 'data/som_autoreclama_state_data.xml',
+        update_records,
+        mode='update'
+    )
 
     logger.info("Updating CSV security files")
     security_files = [
