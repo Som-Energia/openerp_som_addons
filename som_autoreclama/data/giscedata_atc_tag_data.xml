@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+<openerp>
+    <data noupdate="1">
+        <record model="giscedata.atc.tag" id="tag_som_autoreclama_009_GEGC">
+            <field name="name">[GEGC] Autocac 009</field>
+            <field name="titol">[GEGC] Autocac 009</field>
+            <field name="description">no description</field>
+            <field name="creation_date">2026-01-01</field>
+            <field name="text_R1">no text </field>
+            <field name="active">True</field>
+        </record>
+        <record model="giscedata.atc.tag" id="tag_som_autoreclama_009_GEA">
+            <field name="name">[GEA] Autocac 009</field>
+            <field name="titol">[GEA] Autocac 009</field>
+            <field name="description">no description</field>
+            <field name="creation_date">2026-01-01</field>
+            <field name="text_R1">no text </field>
+            <field name="active">True</field>
+        </record>
+        <record model="giscedata.atc.tag" id="tag_som_autoreclama_009_GET">
+            <field name="name">[GET] Autocac 009</field>
+            <field name="titol">[GET] Autocac 009</field>
+            <field name="description">no description</field>
+            <field name="creation_date">2026-01-01</field>
+            <field name="text_R1">no text </field>
+            <field name="active">True</field>
+        </record>
+    </data>
+</openerp>

@@ -139,7 +139,7 @@
             <field name="type">tree</field>
             <field name="priority">16</field>
             <field name="arch" type="xml">
-                <tree string="Accions realitzades per autoreclama">
+                <tree string="Accions realitzades per autoreclama 006">
                     <field name="state_id"/>
                     <field name="change_date"/>
                     <field name="end_date"/>
@@ -153,7 +153,40 @@
             <field name="type">form</field>
             <field name="priority">16</field>
             <field name="arch" type="xml">
-                <form string="Historic d'autoreclama">
+                <form string="Historic d'autoreclama 006">
+                    <group colspan="2" col="4">
+                        <field name="state_id" colspan="4" select="1"/>
+                        <field name="polissa_id" colspan="4" select="1"/>
+                        <group colspan="4" col="2" string="Dates">
+                            <field name="change_date" select="1"/>
+                            <field name="end_date" select="2"/>
+                            <field name="generated_atc_id" colspan="4" select="1"/>
+                        </group>
+                    </group>
+                </form>
+            </field>
+        </record>
+        <record model="ir.ui.view" id="view_som_autoreclam_state_history_polissa009_tree">
+            <field name="name">som.autoreclama.state.history.polissa009.tree</field>
+            <field name="model">som.autoreclama.state.history.polissa009</field>
+            <field name="type">tree</field>
+            <field name="priority">16</field>
+            <field name="arch" type="xml">
+                <tree string="Accions realitzades per autoreclama 009">
+                    <field name="state_id"/>
+                    <field name="change_date"/>
+                    <field name="end_date"/>
+                    <field name="generated_atc_id"/>
+                </tree>
+            </field>
+        </record>
+        <record model="ir.ui.view" id="view_som_autoreclam_state_history_polissa009_form">
+            <field name="name">som.autoreclama.state.history.polissa009.form</field>
+            <field name="model">som.autoreclama.state.history.polissa009</field>
+            <field name="type">form</field>
+            <field name="priority">16</field>
+            <field name="arch" type="xml">
+                <form string="Historic d'autoreclama 009">
                     <group colspan="2" col="4">
                         <field name="state_id" colspan="4" select="1"/>
                         <field name="polissa_id" colspan="4" select="1"/>
