@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from destral import testing
 from destral.transaction import Transaction
 
@@ -17,6 +18,7 @@ class TestReportBackendCCPP(testing.OOTestCase):
         self.backend_obj = self.openerp.pool.get("report.backend.condicions.particulars")
         self.rpa_obj = self.openerp.pool.get("res.partner.address")
         self.pricelist_obj = self.openerp.pool.get("product.pricelist")
+        self.wiz_change_to_index_obj = self.openerp.pool.get("wizard.change.to.indexada")
         self.contract1_id = self.get_ref("giscedata_polissa", "polissa_0001")
         self.contract_20TD_id = self.get_ref("giscedata_polissa", "polissa_tarifa_018")
         self.contract_30TD_id = self.get_ref("giscedata_polissa", "polissa_tarifa_019")
@@ -92,7 +94,8 @@ class TestReportBackendCCPP(testing.OOTestCase):
 
         result = self.backend_obj.get_polissa_data(self.cursor, self.uid, pol_20td, context={})
 
-        pricelist = 12
+        pricelist_id = self.get_ref("giscedata_facturacio", "pricelist_tarifas_electricidad_venda")
+        pricelist_name = self.pricelist_obj.browse(self.cursor, self.uid, pricelist_id).name
         self.assertEqual(result, {
             u'auto': u'00',
             u'bank': False,
@@ -110,13 +113,31 @@ class TestReportBackendCCPP(testing.OOTestCase):
             u'periodes_energia': [u'P1', u'P2', u'P3'],
             u'periodes_potencia': [u'P1', u'P2'],
             u'potencia_max': 4.6,
-            u'pricelist': pricelist,
+            u'pricelist': pricelist_id,
             u'printable_iban': u'',
             u'state': u'esborrany',
             u'tarifa': u'2.0TD',
-            u'tarifa_mostrar': u'TARIFAS ELECTRICIDAD VENDA',
+            u'tarifa_mostrar': pricelist_name,
             u'te_assignacio_gkwh': False}
         )
+
+    def test_get_polissa_data_with_modcon_ok(self):
+        self.pol_obj.send_signal(
+            self.cursor, self.uid, [self.contract_20TD_id], ["validar", "contracte"])
+        context = {"active_id": self.contract_20TD_id, "change_type": "from_period_to_index"}
+        wiz_id = self.wiz_change_to_index_obj.create(self.cursor, self.uid, {}, context=context)
+        self.wiz_change_to_index_obj.change_to_indexada(
+            self.cursor, self.uid, [wiz_id], context=context)
+
+        pol_20td = self.pol_obj.browse(self.cursor, self.uid, self.contract_20TD_id)
+
+        result = self.backend_obj.get_polissa_data(self.cursor, self.uid, pol_20td, context={})
+
+        pricelist_id = self.get_ref("som_indexada", "pricelist_indexada_20td_peninsula_2024")
+        pricelist_name = self.pricelist_obj.browse(self.cursor, self.uid, pricelist_id).name
+
+        self.assertEqual(result['pricelist'], pricelist_id)
+        self.assertEqual(result['tarifa_mostrar'], pricelist_name)
 
     def test_get_prices_data_ok(self):
         pol_20td = self.pol_obj.browse(self.cursor, self.uid, self.contract_20TD_id)
@@ -158,3 +179,17 @@ class TestReportBackendCCPP(testing.OOTestCase):
                 u'text_impostos': u' (IVA 21%, IE 5,11%)',
                 u'text_vigencia': u''}]
         })
+
+    def test_get_prices_data_with_modcon_ok(self):
+        self.pol_obj.send_signal(
+            self.cursor, self.uid, [self.contract_20TD_id], ["validar", "contracte"])
+        context = {"active_id": self.contract_20TD_id, "change_type": "from_period_to_index"}
+        wiz_id = self.wiz_change_to_index_obj.create(self.cursor, self.uid, {}, context=context)
+        self.wiz_change_to_index_obj.change_to_indexada(
+            self.cursor, self.uid, [wiz_id], context=context)
+
+        pol_20td = self.pol_obj.browse(self.cursor, self.uid, self.contract_20TD_id)
+
+        result = self.backend_obj.get_prices_data(self.cursor, self.uid, pol_20td, context={})
+
+        self.assertEqual(result['mostra_indexada'], True)
