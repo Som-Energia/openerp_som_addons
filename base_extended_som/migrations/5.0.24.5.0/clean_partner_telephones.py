@@ -8,7 +8,7 @@ from tqdm import tqdm
 # Connect to ERP
 c = Client(**configdb.erppeek)
 
-doit = False
+doit = True
 phones_to_change = []
 phones_changed = []
 phones_not_valid = []
@@ -26,6 +26,7 @@ def clean_partner_telephones(partner_address_id, phone_number):
     phone_number = phone_number.replace("(", "")
     phone_number = phone_number.replace(")", "")
     phone_number = phone_number.replace("+34", "")
+
     while phone_number.startswith("0"):
         phone_number = phone_number[1:]
     if phone_number.startswith("34"):
@@ -47,7 +48,8 @@ def clean_partner_telephones(partner_address_id, phone_number):
         return ''
 
 
-partner_address_list = c.ResPartnerAddress.search([])
+partner_address_list = c.ResPartnerAddress.search([])[224000:]
+partner_address_list = [283313]
 
 rows = []
 for partner_address_id in tqdm(partner_address_list, desc="Processing partner addresses"):  # noqa:C901,E501
@@ -63,7 +65,7 @@ for partner_address_id in tqdm(partner_address_list, desc="Processing partner ad
         if old_phone != new_phone:
             # print("New phone number of {0}: {1}".format(partner_address_id, new_phone))
             if doit:
-                previous_notes = partner_address.notes if partner_address.notes else ''
+                previous_notes = partner_address.notes if partner_address.notes  else ''
                 c.ResPartnerAddress.write(partner_address_id, {
                     'notes': previous_notes + "\n2025/06/20: Procés de neteja de telèfons, el telèfon antic era: {}".format(old_phone),  # noqa:E501
                     'phone': new_phone,

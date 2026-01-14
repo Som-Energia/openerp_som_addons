@@ -20,9 +20,9 @@ def up(cursor, installed_version):
     for aml_id in tqdm(aml_ids):
         aml = account_move_line_o.browse(cursor, 1, aml_id)
         if "empresa" in aml.name:
-            account_move_line_o.write(cursor, 1, aml_id, vals_empresa)
+            account_move_line_o.write(cursor, 1, [aml_id], vals_empresa)
         else:
-            account_move_line_o.write(cursor, 1, aml_id, vals)
+            account_move_line_o.write(cursor, 1, [aml_id], vals)
     logger.info("Migration completed successfully.")
 
 
