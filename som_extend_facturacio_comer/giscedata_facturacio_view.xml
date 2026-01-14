@@ -40,6 +40,17 @@
             </field>
         </record>
 
+        <record id="view_factura_tree_more_colors" model="ir.ui.view">
+            <field name="name">giscedata.facturacio.factura.tree</field>
+            <field name="model">giscedata.facturacio.factura</field>
+            <field name="inherit_id" ref="giscedata_facturacio.view_factura_tree"/>
+            <field name="arch" type="xml">
+                <xpath expr="//tree" position="attributes">
+                    <attribute name="colors">blue:state=='draft';red:polissa_state=='tall';black:type in ('out_invoice','out_refund');#444444:type in ('in_invoice','in_refund')</attribute>
+                </xpath>
+            </field>
+        </record>
+
         <record id="view_factura_impagades_add_comment_tree" model="ir.ui.view">
             <field name="name">giscedata.facturacio.factura.impagades.add.comment.tree</field>
             <field name="model">giscedata.facturacio.factura</field>
