@@ -3807,8 +3807,9 @@ class GiscedataFacturacioFacturaReport(osv.osv):
                         all_tolls += round(data.get('tolls', 0.0), 2)
                         all_charges += round(data.get('charges', 0.0), 2)
         pie_rights = 0.0
+        right_codes = ("CON02", "CON03", "CON04", "CON05", "CON08", "CON13", "CON20")
         for line in fact.linia_ids:  # noqa: E741
-            if line.product_id.code in ("CON02", "CON03", "CON04", "CON05"):
+            if line.product_id.code in right_codes:
                 pie_rights += line.price_subtotal
         pie_rights = round(pie_rights, 2)
 
