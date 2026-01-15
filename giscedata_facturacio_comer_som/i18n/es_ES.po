@@ -6,13 +6,13 @@
 #   <>, 2017, 2018, 2019, 2020.
 # Agustí Fita <afita@gisce.net>, 2018.
 # GISCE-TI, S.L. <devel@gisce.net>, 2014, 2017.
-# Som Energia  <itcrowd@somenergia.coop>, 2020, 2021, 2022, 2023, 2024, 2025.
+# Som Energia  <itcrowd@somenergia.coop>, 2020, 2021, 2022, 2023, 2024, 2025, 2026.
 msgid ""
 msgstr ""
 "Project-Id-Version: Som Energia\n"
 "Report-Msgid-Bugs-To: support@openerp.com\n"
-"POT-Creation-Date: 2025-10-27 17:04+0000\n"
-"PO-Revision-Date: 2025-10-27 16:13+0000\n"
+"POT-Creation-Date: 2026-01-15 11:13+0000\n"
+"PO-Revision-Date: 2026-01-15 10:16+0000\n"
 "Last-Translator: Som Energia <itcrowd@somenergia.coop>\n"
 "Language-Team: Spanish (Spain) (http://trad.gisce.net/projects/p/somenergia/language/es_ES/)\n"
 "MIME-Version: 1.0\n"
@@ -23,7 +23,7 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #. module: giscedata_facturacio_comer_som
-#: code:addons/giscedata_facturacio_comer_som/giscedata_facturacio_report.py:4016
+#: code:addons/giscedata_facturacio_comer_som/giscedata_facturacio_report.py:4035
 #: rml:giscedata_facturacio_comer_som/report/components/energy_consumption_detail_td_base/energy_consumption_detail_td_base.mako:7
 msgid "Energia Reactiva Capacitiva (kVArh)"
 msgstr "Energía Reactiva Capacitiva (kVArh)"
@@ -45,7 +45,7 @@ msgid "Reimprimir Pdf (no caché)"
 msgstr "Reimprimir Pdf (no caché)"
 
 #. module: giscedata_facturacio_comer_som
-#: code:addons/giscedata_facturacio_comer_som/giscedata_facturacio_report.py:3457
+#: code:addons/giscedata_facturacio_comer_som/giscedata_facturacio_report.py:3462
 msgid "Factura amb linies complementaries de tipus desconegut {}"
 msgstr "Factura con líneas complementarias de tipo desconocido {}"
 
@@ -55,8 +55,8 @@ msgid "Reimprimir factura en pdf"
 msgstr "Reimprimir factura en pdf"
 
 #. module: giscedata_facturacio_comer_som
-#: code:addons/giscedata_facturacio_comer_som/giscedata_facturacio_report.py:2827
-#: code:addons/giscedata_facturacio_comer_som/giscedata_facturacio_report.py:2831
+#: code:addons/giscedata_facturacio_comer_som/giscedata_facturacio_report.py:2832
+#: code:addons/giscedata_facturacio_comer_som/giscedata_facturacio_report.py:2836
 #: rml:giscedata_facturacio_comer_som/report/components/energy_consumption_detail_td_base/energy_consumption_detail_td_base.mako:11
 msgid "calculada"
 msgstr "calculada"
@@ -94,14 +94,14 @@ msgid "Reports Facturació SOM (Comercialitzadora)"
 msgstr "Reports Facturación SOM (Comercializadora)"
 
 #. module: giscedata_facturacio_comer_som
-#: code:addons/giscedata_facturacio_comer_som/giscedata_facturacio_report.py:4046
+#: code:addons/giscedata_facturacio_comer_som/giscedata_facturacio_report.py:4065
 #: rml:giscedata_facturacio_comer_som/report/components/energy_consumption_detail_td_base/energy_consumption_detail_td_base.mako:8
 #: rml:giscedata_facturacio_comer_som/report/components/energy_consumption_detail_td_maximetre/energy_consumption_detail_td_maximetre.mako:7
 msgid "Maxímetre (kW)"
 msgstr "Maxímetro (kW)"
 
 #. module: giscedata_facturacio_comer_som
-#: code:addons/giscedata_facturacio_comer_som/giscedata_facturacio_report.py:2871
+#: code:addons/giscedata_facturacio_comer_som/giscedata_facturacio_report.py:2876
 #: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_energy/invoice_details_td_energy.mako:7
 msgid "sense lectura"
 msgstr "sin lectura"
@@ -112,14 +112,14 @@ msgid "La llista de preu no és compatible amb la tarifa d'accés."
 msgstr "La lista de precio no es compatible con la tarifa de acceso."
 
 #. module: giscedata_facturacio_comer_som
-#: code:addons/giscedata_facturacio_comer_som/giscedata_facturacio_report.py:1035
+#: code:addons/giscedata_facturacio_comer_som/giscedata_facturacio_report.py:1039
 msgid ""
 "Variables que marquen l'inici i/o final de l'aplicació del mecanisme del "
 "topall de gas no estàn configurades"
 msgstr "Variables que marcan el inicio y/o final de la aplicación del mecanismo del tope de gas no están configuradas"
 
 #. module: giscedata_facturacio_comer_som
-#: code:addons/giscedata_facturacio_comer_som/giscedata_facturacio_report.py:2638
+#: code:addons/giscedata_facturacio_comer_som/giscedata_facturacio_report.py:2642
 msgid "(sense lectura)"
 msgstr "(sin lectura)"
 
@@ -129,15 +129,15 @@ msgid "Sortir"
 msgstr "Salir"
 
 #. module: giscedata_facturacio_comer_som
-#: code:addons/giscedata_facturacio_comer_som/giscedata_facturacio_report.py:224
-#: code:addons/giscedata_facturacio_comer_som/giscedata_facturacio_report.py:2823
+#: code:addons/giscedata_facturacio_comer_som/giscedata_facturacio_report.py:228
+#: code:addons/giscedata_facturacio_comer_som/giscedata_facturacio_report.py:2828
 #: rml:giscedata_facturacio_comer_som/report/components/energy_consumption_detail_td_base/energy_consumption_detail_td_base.mako:9
 msgid "real"
 msgstr "real"
 
 #. module: giscedata_facturacio_comer_som
-#: code:addons/giscedata_facturacio_comer_som/giscedata_facturacio_report.py:4142
-#: code:addons/giscedata_facturacio_comer_som/giscedata_facturacio_report.py:4172
+#: code:addons/giscedata_facturacio_comer_som/giscedata_facturacio_report.py:4161
+#: code:addons/giscedata_facturacio_comer_som/giscedata_facturacio_report.py:4191
 #: rml:giscedata_facturacio_comer_som/report/components/energy_consumption_detail_td_collective/energy_consumption_detail_td_collective.mako:11
 msgid "Autoconsum compartit (kWh)"
 msgstr "Autoconsumo compartido (kWh)"
@@ -148,18 +148,18 @@ msgid "Invalid XML for View Architecture!"
 msgstr "Invalid XML for View Architecture!"
 
 #. module: giscedata_facturacio_comer_som
-#: code:addons/giscedata_facturacio_comer_som/giscedata_facturacio_report.py:3916
+#: code:addons/giscedata_facturacio_comer_som/giscedata_facturacio_report.py:3935
 #: rml:giscedata_facturacio_comer_som/report/components/energy_consumption_detail_td_base/energy_consumption_detail_td_base.mako:4
 msgid "Energia Activa (kWh)"
 msgstr "Energía Activa (kWh)"
 
 #. module: giscedata_facturacio_comer_som
-#: code:addons/giscedata_facturacio_comer_som/giscedata_facturacio_report.py:2821
+#: code:addons/giscedata_facturacio_comer_som/giscedata_facturacio_report.py:2826
 msgid "estimada"
 msgstr "estimada"
 
 #. module: giscedata_facturacio_comer_som
-#: code:addons/giscedata_facturacio_comer_som/giscedata_facturacio_report.py:3400
+#: code:addons/giscedata_facturacio_comer_som/giscedata_facturacio_report.py:3405
 msgid ""
 "No s'han trobats F1's d'expedient de anomalia/frau al generar pdf per {}"
 msgstr "No se han encontrado F1's de expediente de anomalía/fraude al generar pdf por {}"
@@ -170,19 +170,19 @@ msgid "Reimpressió de pdf's de factura:"
 msgstr "Reimpresión de pdf's de factura:"
 
 #. module: giscedata_facturacio_comer_som
-#: code:addons/giscedata_facturacio_comer_som/giscedata_facturacio_report.py:2569
+#: code:addons/giscedata_facturacio_comer_som/giscedata_facturacio_report.py:2573
 msgid " (Som Energia, SCCL)"
 msgstr "(Som Energia, SCCL)"
 
 #. module: giscedata_facturacio_comer_som
-#: code:addons/giscedata_facturacio_comer_som/giscedata_facturacio_report.py:225
-#: code:addons/giscedata_facturacio_comer_som/giscedata_facturacio_report.py:364
+#: code:addons/giscedata_facturacio_comer_som/giscedata_facturacio_report.py:229
+#: code:addons/giscedata_facturacio_comer_som/giscedata_facturacio_report.py:368
 #: rml:giscedata_facturacio_comer_som/report/components/energy_consumption_detail_td_base/energy_consumption_detail_td_base.mako:12
 msgid "estimada distribuïdora"
 msgstr "estimada distribuidora"
 
 #. module: giscedata_facturacio_comer_som
-#: code:addons/giscedata_facturacio_comer_som/giscedata_facturacio_report.py:3948
+#: code:addons/giscedata_facturacio_comer_som/giscedata_facturacio_report.py:3967
 #: rml:giscedata_facturacio_comer_som/report/components/energy_consumption_detail_td_base/energy_consumption_detail_td_base.mako:5
 msgid "Energia Excedentària (kWh)"
 msgstr "Energía Excedentaria (kWh)"
@@ -193,7 +193,7 @@ msgid "wizard.reprint.invoice.som"
 msgstr "wizard.reprint.invoice.som"
 
 #. module: giscedata_facturacio_comer_som
-#: code:addons/giscedata_facturacio_comer_som/giscedata_facturacio_report.py:2636
+#: code:addons/giscedata_facturacio_comer_som/giscedata_facturacio_report.py:2640
 msgid "(estimada)"
 msgstr "(estimada)"
 
@@ -208,18 +208,18 @@ msgid "State"
 msgstr "State"
 
 #. module: giscedata_facturacio_comer_som
-#: code:addons/giscedata_facturacio_comer_som/giscedata_facturacio_report.py:3985
+#: code:addons/giscedata_facturacio_comer_som/giscedata_facturacio_report.py:4004
 #: rml:giscedata_facturacio_comer_som/report/components/energy_consumption_detail_td_base/energy_consumption_detail_td_base.mako:6
 msgid "Energia Reactiva Inductiva (kVArh)"
 msgstr "Energía Reactiva Inductiva (kVArh)"
 
 #. module: giscedata_facturacio_comer_som
-#: code:addons/giscedata_facturacio_comer_som/giscedata_facturacio_report.py:2570
+#: code:addons/giscedata_facturacio_comer_som/giscedata_facturacio_report.py:2574
 msgid "TRANSFERÈNCIA"
 msgstr "TRANSFERENCIA"
 
 #. module: giscedata_facturacio_comer_som
-#: code:addons/giscedata_facturacio_comer_som/giscedata_facturacio_report.py:226
+#: code:addons/giscedata_facturacio_comer_som/giscedata_facturacio_report.py:230
 #: rml:giscedata_facturacio_comer_som/report/components/energy_consumption_detail_td_base/energy_consumption_detail_td_base.mako:10
 msgid "calculada per Som Energia"
 msgstr "calculada por Som Energía"
@@ -235,7 +235,7 @@ msgid "E-Mail factura adjunta"
 msgstr "E-Mail factura adjunta"
 
 #. module: giscedata_facturacio_comer_som
-#: code:addons/giscedata_facturacio_comer_som/giscedata_facturacio_report.py:2640
+#: code:addons/giscedata_facturacio_comer_som/giscedata_facturacio_report.py:2644
 msgid "(real)"
 msgstr "(real)"
 
@@ -343,12 +343,12 @@ msgid "Costos de producció electricitat"
 msgstr "Costes de producción de electricidad"
 
 #: rml:giscedata_facturacio_comer_som/report/components/amount_destination/amount_destination.mako:36
-#: rml:giscedata_facturacio_comer_som/report/components/amount_destination_td/amount_destination_td.mako:25
+#: rml:giscedata_facturacio_comer_som/report/components/amount_destination_td/amount_destination_td.mako:29
 msgid "DESTÍ DE L'IMPORT DE LA FACTURA"
 msgstr "DESTINO DEL IMPORTE DE LA FACTURA"
 
 #: rml:giscedata_facturacio_comer_som/report/components/amount_destination/amount_destination.mako:37
-#: rml:giscedata_facturacio_comer_som/report/components/amount_destination_td/amount_destination_td.mako:29
+#: rml:giscedata_facturacio_comer_som/report/components/amount_destination_td/amount_destination_td.mako:33
 #, python-format
 msgid "El destí de l'import de la teva factura, %s euros, és el següent:"
 msgstr "El destino del importe de tu factura, %s euros, es el siguiente:"
@@ -382,22 +382,26 @@ msgid "Energia"
 msgstr "Energía"
 
 #: rml:giscedata_facturacio_comer_som/report/components/amount_destination_td/amount_destination_td.mako:16
+msgid "Drets"
+msgstr "Derechos"
+
+#: rml:giscedata_facturacio_comer_som/report/components/amount_destination_td/amount_destination_td.mako:20
 msgid "Anualitat del dèficit"
 msgstr "Anualidad del déficit"
 
-#: rml:giscedata_facturacio_comer_som/report/components/amount_destination_td/amount_destination_td.mako:17
+#: rml:giscedata_facturacio_comer_som/report/components/amount_destination_td/amount_destination_td.mako:21
 msgid "RECORE: retribució a les renovables, cogeneració i residus"
 msgstr "RECORE: retribución a las renovables, cogeneración y residuos"
 
-#: rml:giscedata_facturacio_comer_som/report/components/amount_destination_td/amount_destination_td.mako:18
+#: rml:giscedata_facturacio_comer_som/report/components/amount_destination_td/amount_destination_td.mako:22
 msgid "Sobrecost de generació a territoris no peninsulars (TNP)"
 msgstr "Sobrecoste de generación en territorios no peninsulares (TNP)"
 
-#: rml:giscedata_facturacio_comer_som/report/components/amount_destination_td/amount_destination_td.mako:19
+#: rml:giscedata_facturacio_comer_som/report/components/amount_destination_td/amount_destination_td.mako:23
 msgid "Altres costos regulats"
 msgstr "Otros costes regulados"
 
-#: rml:giscedata_facturacio_comer_som/report/components/amount_destination_td/amount_destination_td.mako:27
+#: rml:giscedata_facturacio_comer_som/report/components/amount_destination_td/amount_destination_td.mako:31
 #, python-format
 msgid ""
 "El destí de l'import de la teva factura sense flux solar, %s euros, és el "

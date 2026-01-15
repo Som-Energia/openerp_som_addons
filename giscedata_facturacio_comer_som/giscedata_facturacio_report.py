@@ -3806,6 +3806,12 @@ class GiscedataFacturacioFacturaReport(osv.osv):
                         data = block[period]
                         all_tolls += round(data.get('tolls', 0.0), 2)
                         all_charges += round(data.get('charges', 0.0), 2)
+        pie_rights = 0.0
+        right_codes = ("CON02", "CON03", "CON04", "CON05", "CON08", "CON13", "CON20")
+        for line in fact.linia_ids:  # noqa: E741
+            if line.product_id.code in right_codes:
+                pie_rights += line.price_subtotal
+        pie_rights = round(pie_rights, 2)
 
         # BOE17/2021 wrong calculations in the invoice charges needs to remove twice the discount
         all_charges += discount_power["total"]
@@ -3814,7 +3820,8 @@ class GiscedataFacturacioFacturaReport(osv.osv):
         pie_charges = round(all_charges, 2)
         pie_tolls = round(all_tolls, 2)
 
-        pie_energy = round(pie_total - pie_renting - pie_taxes - pie_tolls - pie_charges, 2)
+        pie_energy = round(pie_total - pie_renting - pie_taxes
+                           - pie_tolls - pie_charges - pie_rights, 2)
         data = {
             "is_visible": is_TD(pol),
             "factura_id": fact.id,
@@ -3825,6 +3832,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
             "pie_charges": pie_charges,
             "pie_energy": pie_energy,
             "pie_total": pie_total,
+            "pie_rights": pie_rights,
             "rep_BOE": rep_BOE,
             "has_flux": has_flux,
         }
