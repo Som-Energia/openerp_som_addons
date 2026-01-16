@@ -12,6 +12,10 @@ var pie_data = [
     {value: ${ad.pie_taxes}, name: '${_(u"Impostos aplicats")}'},
 ];
 
+if (${ad.pie_rights} > 0) {
+    pie_data.push({value: ${ad.pie_rights}, name: '${_(u"Drets")}'});
+}
+
 var dades_reparto = [
     { value: ${float((ad.pie_charges * ad.rep_BOE['d'])/100)}, name: '${_(u"Anualitat del dèficit")}' },
     { value: ${float((ad.pie_charges * ad.rep_BOE['r'])/100)}, name: '${_(u"RECORE: retribució a les renovables, cogeneració i residus")}' },
