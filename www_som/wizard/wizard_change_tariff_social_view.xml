@@ -24,9 +24,24 @@
                     <group attrs="{'invisible': [('state','!=','end')]}">
                         <group colspan="4" attrs="{'invisible': [('change_type','!=','to_regular')]}">
                             <label string="S'ha passat la polissa a no social"/>
+                            <newline/>
+                            <button name="send_social_mail"
+                                    attrs="{'invisible': [('change_type','!=','to_regular')]}"
+                                    icon="gtk-ok" string="Enviar correu (info+condicions)" type="object"/>
                         </group>
                         <group colspan="4" attrs="{'invisible': [('change_type','!=','to_social')]}">
                             <label string="S'ha passat la polissa a social"/>
+                            <newline/>
+                            <button name="send_social_mail"
+                                    attrs="{'invisible': [('change_type','!=','to_regular')]}"
+                                    icon="gtk-ok" string="Enviar correu (info+condicions)" type="object"/>
+                        </group>
+                        <newline/>
+                        <button icon="gtk-close" special="cancel" string="Finalitzar" type="object" colspan="4"/>
+                    </group>
+                    <group attrs="{'invisible': [('state','!=','email_send')]}">
+                        <group colspan="4" attrs="{'invisible': [('change_type','!=','to_regular')]}">
+                            <label string="E-mail enviat"/>
                         </group>
                         <newline/>
                         <button icon="gtk-close" special="cancel" string="Finalitzar" type="object" colspan="4"/>
