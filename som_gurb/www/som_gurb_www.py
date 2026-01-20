@@ -117,11 +117,11 @@ class SomGurbWww(osv.osv_memory):
         best_available_beta = max(available_betas) if available_betas else 0
 
         max_power_name = self.supported_access_tariff[tarifa_acces]['max_power']
-        max_power = getattr(ggroup, max_power_name)
+        max_power = getattr(ggroup, max_power_name) or 0
         min_power_name = self.supported_access_tariff[tarifa_acces]['min_power']
-        min_power = getattr(ggroup, min_power_name)
+        min_power = getattr(ggroup, min_power_name) or 0
 
-        power_limit = min(best_available_beta, max_power) if max_power else best_available_beta
+        power_limit = min(best_available_beta, max_power)
         step = max(min_power, 0.5)
 
         betas = []
