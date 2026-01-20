@@ -8,7 +8,6 @@ Mòdul per la integració de l'oficina virtual
     "author": "GISCE-TI, S.L.",
     "category": "www",
     "depends": [
-        "base_extended",
         "base_extended_som",
         "www_base",
         "som_polissa_soci",
@@ -20,6 +19,7 @@ Mòdul per la integració de l'oficina virtual
         "giscedata_facturacio_impagat_comer",
         "giscedata_atc_switching",
         "som_account_invoice_pending",
+        "giscedata_crm_leads",
     ],
     "init_xml": [],
     "demo_xml": [
@@ -30,6 +30,7 @@ Mòdul per la integració de l'oficina virtual
     "update_xml": [
         "www_som_data.xml",
         "wizard/wizard_model_list_from_file_data.xml",
+        "wizard/wizard_change_tariff_social_view.xml",
         "security/ir.model.access.csv",
         "ir_attachment_view.xml",
         "data/pricelist_social_data.xml",
