@@ -258,6 +258,10 @@ class GiscedataSwitchingHelpers(osv.osv):
                     cursor, uid, titular_id, context=context
                 )
 
+            self.unsubscribe_extra_mailchimp_lists_hook(
+                cursor, uid, titular_id, context=context
+            )
+
             info = _(
                 u"[Baixa Mailchimp] S'ha iniciat el procés de baixa per l'antic titular (ID %d)"
             ) % (titular_id)
@@ -269,6 +273,10 @@ class GiscedataSwitchingHelpers(osv.osv):
                 sentry.client.captureException()
             logger = logging.getLogger("openerp.{0}._check_and_archive_old_owner".format(__name__))
             logger.warning("Error al comunicar amb Mailchimp {}".format(str(e)))
+
+    def unsubscribe_extra_mailchimp_lists_hook(self, cursor, uid, titular_id, context=None):
+        """This method is intended to be overridden in other modules"""
+        return
 
     def subscribe_new_owner(self, cursor, uid, sw_id, context=None):
         sw_obj = self.pool.get("giscedata.switching")

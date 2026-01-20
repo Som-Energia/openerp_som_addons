@@ -9,6 +9,8 @@
     "category": "SomEnergia",
     "depends": [
         "som_account_invoice_pending",
+        "som_polissa_soci",
+        "som_switching",
     ],
     "init_xml": [],
     "demo_xml": [
