@@ -65,11 +65,18 @@ class WizardCalculateGurbSavings(osv.osv_memory):
         if context is None:
             context = {}
 
+        gurb_cups_obj = self.pool.get("som.gurb.cups")
+
         savings = []
         wiz = self.browse(cursor, uid, ids[0], context=context)
+        date_from = wiz.date_from
 
         active_ids = context.get("active_ids")
         for gurb_cups_id in active_ids:
+            if not date_from:
+                date_from = gurb_cups_obj.read(
+                    cursor, uid, gurb_cups_id, ["start_date"], context=context
+                )["start_date"]
             saving = self.calculate_gurb_cups_savings(
                 cursor, uid, gurb_cups_id, wiz.date_from, wiz.date_to, context=context
             )

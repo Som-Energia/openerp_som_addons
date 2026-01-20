@@ -1,8 +1,11 @@
 # -*- coding: utf-8 -*-
+import logging
 from osv import osv, fields
 from datetime import timedelta, date
 from oorq.oorq import AsyncMode
 from som_polissa.exceptions import exceptions
+
+logger = logging.getLogger("openerp.{}".format(__name__))
 
 
 class WizardChangeTariffSocial(osv.osv_memory):
@@ -92,8 +95,35 @@ class WizardChangeTariffSocial(osv.osv_memory):
         wizard.write({"state": "end"})
         return polissa.modcontractuals_ids[0].id
 
+    def send_social_mail(self, cursor, uid, ids, context=None):
+        if context is None:
+            context = {}
+
+        wizard = self.browse(cursor, uid, ids[0])
+        polissa = wizard.polissa_id
+
+        tmpl_obj = self.pool.get("poweremail.templates")
+        imd_o = self.pool.get("ir.model.data")
+
+        if wizard.change_type == "to_social":
+            tmpl = imd_o.get_object_reference(cursor, uid, "www_som", "social_email")[1]
+        elif wizard.change_type == "to_regular":
+            tmpl = imd_o.get_object_reference(cursor, uid, "www_som", "anti_social_email")[1]
+
+        ctx = context.copy()
+        ctx['prefetch'] = False
+
+        logger.debug(
+            "Generating poweremail template (id: {}) resource: {}, resource_id: {}".format(
+                tmpl, "giscedata.polissa", polissa
+            )
+        )
+        wizard.write({"state": "email_send"})
+        return tmpl_obj.generate_mail_sync(cursor, uid, tmpl, polissa, context=ctx)
+
     _columns = {
-        "state": fields.selection([("init", "Init"), ("end", "End")], "State"),
+        "state": fields.selection(
+            [("init", "Init"), ("end", "End"), ("email_send", "Email")], "State"),
         "polissa_id": fields.many2one("giscedata.polissa", "Contracte", required=True),
         "pricelist_id": fields.many2one("product.pricelist", "Tarifa"),
         "change_type": fields.selection(
