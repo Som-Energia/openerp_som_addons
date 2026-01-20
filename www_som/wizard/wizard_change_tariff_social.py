@@ -100,7 +100,7 @@ class WizardChangeTariffSocial(osv.osv_memory):
             context = {}
 
         wizard = self.browse(cursor, uid, ids[0])
-        polissa = wizard.polissa_id
+        polissa = wizard.polissa_id.id
 
         tmpl_obj = self.pool.get("poweremail.templates")
         imd_o = self.pool.get("ir.model.data")
