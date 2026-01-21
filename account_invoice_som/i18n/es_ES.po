@@ -3,117 +3,644 @@
 # * account_invoice_som
 #
 # Translators:
-#   <>, 2018.
+#   <>, 2018, 2025.
 msgid ""
 msgstr ""
 "Project-Id-Version: GISCE-ERP\n"
 "Report-Msgid-Bugs-To: https://github.com/gisce/erp/issues\n"
-"POT-Creation-Date: 2018-09-06 10:36+0000\n"
-"PO-Revision-Date: 2018-09-06 08:55+0000\n"
+"POT-Creation-Date: 2025-03-10 15:16+0000\n"
+"PO-Revision-Date: 2025-03-10 14:15+0000\n"
 "Last-Translator: destanyol <>\n"
 "Language-Team: Spanish (Spain) <erp@dev.gisce.net>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
-"Generated-By: Babel 2.5.3\n"
+"Generated-By: Babel 2.9.1\n"
 "Language: es_ES\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #. module: account_invoice_som
+#: model:poweremail.templates,file_name:account_invoice_som.email_notif_account_invoice_pagada
+#: model:poweremail.templates,file_name:account_invoice_som.email_self_consumption_registration
+msgid "${object.number}"
+msgstr "${object.number}"
+
+#. module: account_invoice_som
+#: constraint:ir.model:0
+msgid ""
+"The Object name must start with x_ and not contain any special character !"
+msgstr ""
+
+#. module: account_invoice_som
+#: view:wizard.payment.order.add.invoices:0
+msgid "Seleccionar factures per afegir a la remesa"
+msgstr "Seleccionar facturas para añadir a la remesa"
+
+#. module: account_invoice_som
+#: view:wizard.payment.order.add.invoices:0
+msgid "Filtra factures per afegir a la remesa:"
+msgstr "Filtra facturas para añadir a la remesa:"
+
+#. module: account_invoice_som
+#: code:addons/account_invoice_som/wizard/wizard_payment_order_add_invoices.py:127
+#: field:wizard.payment.order.add.invoices,invoice_state:0
+msgid "Estat"
+msgstr "Estado"
+
+#. module: account_invoice_som
+#: field:wizard.payment.order.add.invoices,len_result:0
+msgid "Resultat de la cerca"
+msgstr "Resultado de la búsqueda"
+
+#. module: account_invoice_som
+#: constraint:ir.actions.act_window:0
+msgid "Invalid model name in the action definition."
+msgstr ""
+
+#. module: account_invoice_som
+#: selection:wizard.payment.order.add.invoices,state:0
+msgid "Estat Final"
+msgstr "Estado Final"
+
+#. module: account_invoice_som
+#: model:poweremail.templates,def_subject:account_invoice_som.email_self_consumption_registration
+msgid "Factura inscripció compra autoproducció"
+msgstr "Factura inscripción compra autoproducción"
+
+#. module: account_invoice_som
+#: field:wizard.payment.order.add.invoices,allow_grouped:0
+msgid "Permetre agrupacions"
+msgstr "Permitir agrupaciones"
+
+#. module: account_invoice_som
+#: help:wizard.payment.order.add.invoices,allow_re:0
+msgid "Activar aquesta opció admet factures rectificadores"
+msgstr "Activar esta opción admite facturas rectificadoras"
+
+#. module: account_invoice_som
+#: code:addons/account_invoice_som/wizard/wizard_payment_order_add_invoices.py:97
+msgid "Remesa {} - afegint {} factures a la remesa"
+msgstr "Remesa {} - añadiendo {} facturas a la remesa"
+
+#. module: account_invoice_som
+#: view:wizard.payment.order.add.invoices:0
+msgid "Nombre màxim per afegir:"
+msgstr "Número máximo para añadir:"
+
+#. module: account_invoice_som
+#: view:wizard.payment.order.add.invoices:0
+msgid "Mostra progrés"
+msgstr "Muestra progreso"
+
+#. module: account_invoice_som
+#: help:wizard.payment.order.add.invoices,allow_grouped:0
+msgid "Activar aquesta opció admet factures agrupades"
+msgstr "Activar esta opción admite facturas agrupadas"
+
+#. module: account_invoice_som
+#: view:wizard.payment.order.add.invoices:0
+msgid "Sortir"
+msgstr "Salir"
+
+#. module: account_invoice_som
+#: field:wizard.payment.order.add.invoices,pending_state_text:0
+msgid "Estat pendent"
+msgstr "Estado pendiente"
+
+#. module: account_invoice_som
+#: field:wizard.payment.order.add.invoices,fiscal_position:0
+msgid "Posició Fiscal"
+msgstr "Posición Fiscal"
+
+#. module: account_invoice_som
+#: view:wizard.payment.order.add.invoices:0
+msgid "Afegeix"
+msgstr "Añade"
+
+#. module: account_invoice_som
+#: field:wizard.payment.order.add.invoices,payment_type:0
+msgid "Tipus de pagament"
+msgstr "Tipo de pago"
+
+#. module: account_invoice_som
+#: selection:wizard.payment.order.add.invoices,state:0
+msgid "Estat Inicial"
+msgstr "Estado Inicial"
+
+#. module: account_invoice_som
+#: view:wizard.payment.order.add.invoices:0
+msgid "Data"
+msgstr "Fecha"
+
+#. module: account_invoice_som
+#: code:addons/account_invoice_som/wizard/wizard_payment_order_add_invoices.py:128
+#: field:wizard.payment.order.add.invoices,invoice_type:0
+msgid "Tipus"
+msgstr "Tipo"
+
+#. module: account_invoice_som
+#: model:poweremail.templates,def_subject:account_invoice_som.email_notif_account_invoice_pagada
+msgid "Factura pagada ${object.number}"
+msgstr "Factura pagada ${object.number}"
+
+#. module: account_invoice_som
+#: constraint:ir.ui.view:0
+msgid "Invalid XML for View Architecture!"
+msgstr ""
+
+#. module: account_invoice_som
+#: model:ir.model,name:account_invoice_som.model_wizard_payment_order_add_invoices
+msgid "wizard.payment.order.add.invoices"
+msgstr "wizard.payment.order.add.invoices"
+
+#. module: account_invoice_som
+#: model:poweremail.templates,def_body_text:account_invoice_som.email_notif_account_invoice_pagada
+#, python-format
+msgid ""
+"\n"
+"                \n"
+"                    <!doctype html><html><head><meta charset=\"utf-8\"/><html>\n"
+"<%\n"
+"  pol_obj = object.pool.get('giscedata.polissa')\n"
+"  polissa_id = pol_obj.search(object._cr, object._uid, [('name', '=', object.name)], context={'active_test': False})\n"
+"  polissa = pol_obj.browse(object._cr, object._uid, polissa_id[0])\n"
+"%>\n"
+"% if object.lang_partner == \"ca_ES\":\n"
+"<head><meta charset=\"utf-8\" /><table width=\"100%\" frame=\"below\" BGCOLOR=\"#E8F1D4\"><tr><td height = 2px><FONT SIZE=2><strong>Contracte Som Energia nº ${polissa.name}:</strong></font></td><td VALIGN=TOP rowspan=\"4\"><align=\"right\"><align=\"right\"><img width='130' height='65' src=\"https://www.somenergia.coop/wp-content/uploads/2014/11/logo-somenergia.png\"></td></tr><tr><td height = 2px><FONT SIZE=1>Adreça punt subministrament: ${polissa.cups.direccio}</font></td></tr><tr><td height = 2px><FONT SIZE=1>Codi CUPS: ${polissa.cups.name}</font></td></tr><tr><td height = 2px width=100%><FONT SIZE=1>Titular: ${polissa.titular.name}</font></td></tr></table></head><body>\n"
+"% else:\n"
+"<head><meta charset=\"utf-8\" /><table width=\"100%\" frame=\"below\" BGCOLOR=\"#E8F1D4\"><tr><td height = 2px><FONT SIZE=2><strong>Contrato Som Energia nº ${polissa.name}: </strong></font></td><td VALIGN=TOP rowspan=\"4\"><align=\"right\"><align=\"right\"><img width='130' height='65' src=\"https://www.somenergia.coop/wp-content/uploads/2014/11/logo-somenergia.png\"></td></tr><tr><td height = 2px><FONT SIZE=1>Dirección punto suministro: ${polissa.cups.direccio}</font></td></tr><tr><td height = 2px><FONT SIZE=1>Código CUPS: ${polissa.cups.name}</font></td></tr><tr><td height = 2px width=100%><FONT SIZE=1>Titular: ${polissa.titular.name}</font></td></tr></table></head><body>\n"
+"% endif\n"
+"<%\n"
+"try:\n"
+"  p_obj = object.pool.get('res.partner')\n"
+"  if not p_obj.vat_es_empresa(object._cr, object._uid, polissa.pagador.vat):\n"
+"    nom_pagador =' ' + p_obj.separa_cognoms(object._cr, object._uid, polissa.pagador.name)['nom']\n"
+"  else:\n"
+"    nom_pagador = ''\n"
+"except:\n"
+"  nom_pagador = ''\n"
+"%>\n"
+"Hola${nom_pagador},\n"
+"\n"
+"% if object.lang_partner != \"es_ES\":\n"
+"Avui hem rebut la teva transferència com a pagament de la factura <b>${object.number}</b>. Aquesta factura ha quedat regularitzada.\n"
+"\n"
+"Per a qualsevol consulta seguim en contacte.\n"
+"\n"
+"Salutacions,\n"
+"\n"
+"Equip de Som Energia\n"
+"<a href=\"http://ca.support.somenergia.coop/category/183-ja-tinc-la-llum-contractada\">Centre de Suport</a>\n"
+"cobraments@somenergia.coop\n"
+"<a href=\"www.somenergia.coop/ca\">www.somenergia.coop</a>\n"
+"% endif\n"
+"% if object.lang_partner != \"ca_ES\" and object.lang_partner != \"es_ES\":\n"
+"----------------------------------------------------------------------------------------------------\n"
+"% endif\n"
+"% if object.lang_partner != \"ca_ES\":\n"
+"Hoy hemos recibido tu transferencia como pago de la factura <b>${object.number}</b>. Esta factura ha quedado regularizada.\n"
+"\n"
+"Para cualquier duda o consulta seguimos en contacto.\n"
+"\n"
+"Un saludo,\n"
+"Equipo de Som Energia\n"
+"<a href=\"http://es.support.somenergia.coop/category/139-ya-tengo-la-luz-contratada\">Centro de Ayuda</a>\n"
+"cobraments@somenergia.coop\n"
+"<a href=\"http://www.somenergia.coop\">www.somenergia.coop</a>\n"
+"% endif\n"
+"</body>\n"
+"</html>\n"
+"                \n"
+"            "
+msgstr ""
+
+#. module: account_invoice_som
+#: code:addons/account_invoice_som/wizard/wizard_payment_order_add_invoices.py:125
+#: field:wizard.payment.order.add.invoices,init_date:0
+msgid "Data inici"
+msgstr "Fecha inicio"
+
+#. module: account_invoice_som
 #: model:ir.module.module,description:account_invoice_som.module_meta_information
 msgid ""
-"Este módulo añade las siguientes funcionalidades: \n"
+"Este módulo añade las siguientes funcionalidades:\n"
 "    * Extiende account_invoice"
-msgstr "Este módulo añade las siguientes funcionalidades:\n    * Extiende account_invoice"
+msgstr ""
+
+#. module: account_invoice_som
+#: code:addons/account_invoice_som/wizard/wizard_payment_order_add_invoices.py:126
+#: field:wizard.payment.order.add.invoices,end_date:0
+msgid "Data final"
+msgstr "Fecha final"
+
+#. module: account_invoice_som
+#: model:ir.actions.act_window,name:account_invoice_som.action_payment_order_add_invoices_jobs_group_list
+#: model:ir.ui.menu,name:account_invoice_som.wizard_payment_order_add_invoices_jobs_groups
+msgid "Tasques de comptabilitat"
+msgstr "Tareas de contabilidad"
+
+#. module: account_invoice_som
+#: selection:wizard.payment.order.add.invoices,invoice_type:0
+msgid "Factura de client (abonadora)"
+msgstr "Factura de cliente (abonadora)"
+
+#. module: account_invoice_som
+#: model:ir.actions.act_window,name:account_invoice_som.action_wizard_payment_order_add_invoices
+msgid "Seleccionar factures per afegir a remeses"
+msgstr "Seleccionar facturas para añadir a remesas"
+
+#. module: account_invoice_som
+#: selection:wizard.payment.order.add.invoices,invoice_type:0
+msgid "Factura de proveïdor (abonadora)"
+msgstr "Factura de proveedor (abonadora)"
+
+#. module: account_invoice_som
+#: code:addons/account_invoice_som/wizard/wizard_payment_order_add_invoices.py:18
+#: selection:wizard.payment.order.add.invoices,invoice_state:0
+msgid "Esborrany"
+msgstr "Borrador"
+
+#. module: account_invoice_som
+#: field:wizard.payment.order.add.invoices,order:0
+#: view:wizard.payment.order.add.invoices:0
+msgid "Remesa"
+msgstr "Remesa"
+
+#. module: account_invoice_som
+#: selection:wizard.payment.order.add.invoices,state:0
+msgid "Estat Segon"
+msgstr "Estado Segundo"
+
+#. module: account_invoice_som
+#: code:addons/account_invoice_som/wizard/wizard_payment_order_add_invoices.py:20
+#: selection:wizard.payment.order.add.invoices,invoice_state:0
+msgid "Realitzades"
+msgstr "Realizadas"
+
+#. module: account_invoice_som
+#: field:wizard.payment.order.add.invoices,res_ids:0
+msgid "Dades d'us per l'assistent"
+msgstr "Datos de uso par a l'asistente"
+
+#. module: account_invoice_som
+#: field:wizard.payment.order.add.invoices,allow_re:0
+msgid "Permetre rectificadores"
+msgstr "Permitir rectificadoras"
+
+#. module: account_invoice_som
+#: code:addons/account_invoice_som/wizard/wizard_payment_order_add_invoices.py:21
+#: selection:wizard.payment.order.add.invoices,invoice_state:0
+msgid "Cancel·lades"
+msgstr "Canceladas"
+
+#. module: account_invoice_som
+#: view:wizard.payment.order.add.invoices:0
+msgid "--"
+msgstr "--"
+
+#. module: account_invoice_som
+#: code:addons/account_invoice_som/wizard/wizard_payment_order_add_invoices.py:121
+#: field:wizard.payment.order.add.invoices,total_facts_to_add:0
+msgid "Num. de factures a incloure"
+msgstr ""
+
+#. module: account_invoice_som
+#: view:wizard.payment.order.add.invoices:0
+msgid "Cancelar"
+msgstr ""
+
+#. module: account_invoice_som
+#: constraint:payment.mode:0
+msgid "The SEPA creditor code is not correct"
+msgstr ""
+
+#. module: account_invoice_som
+#: code:addons/account_invoice_som/wizard/wizard_payment_order_add_invoices.py:22
+#: selection:wizard.payment.order.add.invoices,invoice_state:0
+msgid "Totes"
+msgstr "Todas"
+
+#. module: account_invoice_som
+#: selection:wizard.payment.order.add.invoices,invoice_type:0
+msgid "Factura de proveïdor"
+msgstr "Factura de proveedor"
 
 #. module: account_invoice_som
 #: model:ir.module.module,shortdesc:account_invoice_som.module_meta_information
 msgid "Account invoice comer (SomEnergia)"
 msgstr "Account invoice comer (SomEnergia)"
 
-#: rml:account_invoice_som/report/account_invoice_som.mako:25
+#. module: account_invoice_som
+#: selection:wizard.payment.order.add.invoices,invoice_type:0
+msgid "Factura de client"
+msgstr "Factura de cliente"
+
+#. module: account_invoice_som
+#: model:poweremail.templates,def_body_text:account_invoice_som.email_self_consumption_registration
+#, python-format
+msgid ""
+"\n"
+"                \n"
+"<!doctype html>\n"
+"<html>\n"
+"<head><meta charset='utf8'></head><body>\n"
+"<%\n"
+"from mako.template import Template\n"
+"def render(text_to_render, object_):\n"
+"    templ = Template(text_to_render)\n"
+"    return templ.render_unicode(\n"
+"        object=object_,\n"
+"        format_exceptions=True\n"
+"    )\n"
+"t_obj = object.pool.get('poweremail.templates')\n"
+"md_obj = object.pool.get('ir.model.data')\n"
+"template_id = md_obj.get_object_reference(\n"
+"                    object._cr, object._uid,  'som_poweremail_common_templates', 'common_template_legal_footer'\n"
+"                )[1]\n"
+"text_legal = render(t_obj.read(\n"
+"    object._cr, object._uid, [template_id], ['def_body_text'])[0]['def_body_text'],\n"
+"    object\n"
+")\n"
+"%>\n"
+"<div align=\"right\"><img src=\"http://www.somenergia.coop/wp-content/uploads/2014/07/logo.png\"></div>\n"
+"% if object.partner_id.lang != \"es_ES\":\n"
+"<p><br>\n"
+"Hola, <br>\n"
+"<br>\n"
+"Enhorabona, ja estàs formalment inscrit a la compra col·lectiva de Som Energia.<br>\n"
+"<br>\n"
+"Hem rebut el teu pagament de 150 € del qual t’adjuntem la factura en aquest mateix correu. A la factura posa forma de pagament mitjançant transferència, no en feu cas si us plau, aquest missatge surt a totes les factures per defecte i per ara no ho podem treure. Si rebeu la factura és que ja hem rebut el pagament.<br>\n"
+"<br>\n"
+"Et recordem quins seran els següents passos a partir d’ara:<br>\n"
+"<ol>\n"
+"    <li>\n"
+"        <b>Preinforme:</b> D’aquí uns dies o setmanes (depenent de l’estat de les inscripcions) l’empresa instal·ladora adjudicatària de la compra col·lectiva es posarà en contacte amb tu per fer-te arribar un <b>preinforme</b> on es contrasta el model fotovoltaic que has escollit amb el teu ús de l’energia, l’orientació de la seva teulada i possibles ombres que afectin el rendiment de les plaques solars.<br>\n"
+"    </li>\n"
+"    <li>\n"
+"        <b>Visita tècnica:</b> Haureu d’acordar una data per que els tècnics de l’empresa instal·ladora vinguin a conèixer de primera mà l’emplaçament on s’ha de fer el muntage de la instal·lació. Aquest és un moment important per resoldre dubtes i rebre l’assessorament dels experts.<br>\n"
+"    </li>\n"
+"    <li>\n"
+"        <b>Contracte Clau en Mà:</b> Desprès d’acceptar la oferta definitiva, haureu de signar el contracte clau en mà per la ue l’empresa instal·ladora pugui iniciar la tramitació dels permisos d’obra. En aquest moment haureu de fer el pagament del 50% de la instal·lació. És important que no demoreu la signatura!<br>\n"
+"    </li>\n"
+"    <li>\n"
+"        <b>Muntatge i posada en marxa:</b> En tenir la llicència municipal caldrà acordar una data d’obra. Les obres com a molt han de durar un màxim de 5 dies i una vegada finalitzades, quan tot estigui al seu lloc i en funcionament, haureu de signar l’acta de recepció. Serà el moment de fer un pagament del 40% de la instal·lació.<br>\n"
+"    </li>\n"
+"    <li>\n"
+"        <b>Legalització:</b> Finalment l’empresa instal·ladora s’encarregarà de fer la inscripció al registre d’autoconsum autonòmic. Serà el moment de fer el pagament del 10% restant.<br>\n"
+"    </li>\n"
+"</ol>\n"
+"\n"
+"És important prendre consciència que en participar d’una compra col·lectiva, el servei no es rep de forma instantània i cal que les persones participants s’adaptin a les temporalitats i ritmes establerts. Per altra banda, l’empresa instal·ladora es compromet a informar de forma regular i atendre totes les consultes, dubtes i incidències amb diligència, agilitat i qualitat.<br>\n"
+"<br>\n"
+"Per qualsevol dubte, consulta o proposta, restem a la vostra disposició.<br>\n"
+"<br>\n"
+"Salut i bona energia!<br>\n"
+"<br>\n"
+"Equip de Som Energia<br>\n"
+"<a href=\"mailto:auto@somenergia.coop\">auto@somenergia.coop</a><br>\n"
+"<a href=\"https://www.somenergia.coop/ca\">www.somenergia.coop</a><br>\n"
+"% endif\n"
+"% if object.partner_id.lang != \"ca_ES\":\n"
+"<p><br>\n"
+"Hola,<br>\n"
+"<br>\n"
+"Enhorabuena, ya estás formalmente inscrito a la compra colectiva de Som Energia.<br>\n"
+"<br>\n"
+"Hemos recibido tu pago de 150 € del que te adjuntamos la factura en este mismo correo. (En la factura pone forma de pago mediante transferencia, no hagáis caso por favor, este mensaje sale en todas las facturas por defecto.)<br>\n"
+"<br>\n"
+"Te recordamos cuáles serán los siguientes pasos a partir de ahora:<br>\n"
+"<ol>\n"
+"    <li>\n"
+"        <b>Preinforme</b>: Dentro de unos días o semanas (dependiendo del estado de las inscripciones) la empresa instaladora adjudicataria de la compra colectiva se pondrá en contacto contigo para hacerte llegar un <b>preinforme</b> donde se contrasta el modelo fotovoltaico que has escogido con tu uso de la energía, la orientación de su tejado y posibles sombras que afecten el rendimiento de las placas solares.<br>\n"
+"    </li>\n"
+"    <li>\n"
+"        <b>Visita técnica</b>: Deberéis acordar una fecha con los técnicos de la empresa instaladora para que vengan a conocer de primera mano el emplazamiento donde se hará el montaje de la instalación. Este es un momento importante para resolver dudas y recibir el asesoramiento de los expertos.<br>\n"
+"    </li>\n"
+"    <li>\n"
+"        <b>Contrato Llave en Mano</b>: Después de aceptar la oferta definitiva, deberéis firmar el contrato llave en mano para la que la empresa instaladora pueda iniciar la tramitación de los permisos de obra. En este momento deberéis  hacer el pago del 50% de la instalación. Para el buen funcionamiento de la campaña és importante que no demoréis esta firma!<br>\n"
+"    </li>\n"
+"    <li>\n"
+"        <b>Montaje y puesta en marcha</b>: Al tener la licencia municipal deberéis acordar una fecha de obra. Las obras como mucho deben durar un máximo de 5 días y una vez finalizadas, cuando todo esté en su sitio y en funcionamiento, deberéis firmar el acta de recepción. Será el momento de hacer un pago del 40% de la instalación.<br>\n"
+"    </li>\n"
+"    <li>\n"
+"        <b>Legalización</b>: Finalmente la empresa instaladora se encargará de hacer la inscripción en el registro de autoconsumo autonómico. Será el momento de hacer el pago del 10% restante.<br>\n"
+"    </li>\n"
+"</ol>\n"
+"Es importante tomar conciencia de que al participar de una compra colectiva, el servicio no se recibe de forma instantánea y es necesario que las personas participantes se adapten a las temporalidades y ritmos establecidos. Por otra parte, la empresa instaladora se compromete a informar de forma regular y atender todas las consultas, dudas e incidencias con diligencia, agilidad y calidad.<br>\n"
+"<br>\n"
+"Para cualquier duda, consulta o propuesta, quedamos a su disposición.<br>\n"
+"<br>\n"
+"Salud y buena energía!<br>\n"
+"<br>\n"
+"Equipo de Som Energia<br>\n"
+"<a href=\"mailto:auto@somenergia.coop\">auto@somenergia.coop</a><br>\n"
+"<a href=\"https://www.somenergia.coop/es\">www.somenergia.coop</a><br>\n"
+"% endif\n"
+"${text_legal}\n"
+"</body>\n"
+"</html>\n"
+"                \n"
+"            "
+msgstr ""
+
+#. module: account_invoice_som
+#: code:addons/account_invoice_som/wizard/wizard_payment_order_add_invoices.py:117
+#: field:wizard.payment.order.add.invoices,state:0
+msgid "Estat del wizard"
+msgstr ""
+
+#. module: account_invoice_som
+#: code:addons/account_invoice_som/wizard/wizard_payment_order_add_invoices.py:19
+#: selection:wizard.payment.order.add.invoices,invoice_state:0
+msgid "Obertes"
+msgstr "Abiertas"
+
+#. module: account_invoice_som
+#: help:wizard.payment.order.add.invoices,total_facts_to_add:0
+msgid "Numero de factures per afegir a la remesa"
+msgstr "Numero de facturas para añadir a la remesa"
+
+#: rml:account_invoice_som/report/account_invoice_som.mako:27
 msgid "Factura SomEnergia"
 msgstr "Factura SomEnergia"
 
-#: rml:account_invoice_som/report/account_invoice_som.mako:72
+#: rml:account_invoice_som/report/account_invoice_som.mako:94
 msgid ""
 "SOM ENERGIA SCCL Amb seu social a CL. C/ Riu Güell, 68 · 17005 - Girona "
 "- Inscrita al Registre General de Cooperatives, full 13936, Inscripció 1a "
 "CIF: F55091367"
 msgstr "SOM ENERGIA SCCL Con sede social en CL. C/ Riu Güell, 68 · 17005 - Girona - Inscrita en el Registro General de Cooperativas, hoja 13936, Inscripción 1a CIF: F55091367"
 
-#: rml:account_invoice_som/report/account_invoice_som.mako:88
+#: rml:account_invoice_som/report/account_invoice_som.mako:110
 msgid "CIF:"
 msgstr "CIF:"
 
-#: rml:account_invoice_som/report/account_invoice_som.mako:89
+#: rml:account_invoice_som/report/account_invoice_som.mako:111
 msgid "Domicili:"
 msgstr "Domicilio:"
 
-#: rml:account_invoice_som/report/account_invoice_som.mako:112
+#: rml:account_invoice_som/report/account_invoice_som.mako:134
 msgid "DADES DE LA FACTURA"
 msgstr "DATOS DE LA FACTURA"
 
-#: rml:account_invoice_som/report/account_invoice_som.mako:116
+#: rml:account_invoice_som/report/account_invoice_som.mako:138
 msgid "Data:"
 msgstr "Fecha:"
 
-#: rml:account_invoice_som/report/account_invoice_som.mako:118
+#: rml:account_invoice_som/report/account_invoice_som.mako:140
 msgid "Nom:"
 msgstr "Nombre:"
 
-#: rml:account_invoice_som/report/account_invoice_som.mako:119
+#: rml:account_invoice_som/report/account_invoice_som.mako:141
 msgid "NIF/CIF:"
 msgstr "NIF/CIF:"
 
-#: rml:account_invoice_som/report/account_invoice_som.mako:120
+#: rml:account_invoice_som/report/account_invoice_som.mako:142
 msgid "Adreça:"
 msgstr "Dirección:"
 
-#: rml:account_invoice_som/report/account_invoice_som.mako:129
+#: rml:account_invoice_som/report/account_invoice_som.mako:151
 msgid "Unitats"
 msgstr "Uds."
 
-#: rml:account_invoice_som/report/account_invoice_som.mako:132
+#: rml:account_invoice_som/report/account_invoice_som.mako:154
+#: rml:account_invoice_som/report/nota_carrec/components/detall_nota.mako:30
 msgid "Concepte"
 msgstr "Concepto"
 
-#: rml:account_invoice_som/report/account_invoice_som.mako:135
+#: rml:account_invoice_som/report/account_invoice_som.mako:157
 msgid "Preu unitari"
 msgstr "Precio unitario"
 
-#: rml:account_invoice_som/report/account_invoice_som.mako:138
+#: rml:account_invoice_som/report/account_invoice_som.mako:160
 msgid "Import"
 msgstr "Importe"
 
-#: rml:account_invoice_som/report/account_invoice_som.mako:182
+#: rml:account_invoice_som/report/account_invoice_som.mako:204
 msgid "Base"
 msgstr "Base"
 
-#: rml:account_invoice_som/report/account_invoice_som.mako:185
+#: rml:account_invoice_som/report/account_invoice_som.mako:207
 msgid "Impost"
 msgstr "Impuesto"
 
-#: rml:account_invoice_som/report/account_invoice_som.mako:188
+#: rml:account_invoice_som/report/account_invoice_som.mako:210
 msgid "Quota"
 msgstr "Quota"
 
-#: rml:account_invoice_som/report/account_invoice_som.mako:191
+#: rml:account_invoice_som/report/account_invoice_som.mako:213
 msgid "TOTAL"
 msgstr "TOTAL"
 
-#: rml:account_invoice_som/report/account_invoice_som.mako:246
+#: rml:account_invoice_som/report/account_invoice_som.mako:268
 msgid "MÈTODE DE PAGAMENT"
 msgstr "MÉTODO DE PAGO"
 
-#: rml:account_invoice_som/report/account_invoice_som.mako:253
+#: rml:account_invoice_som/report/account_invoice_som.mako:275
 msgid ""
 "L'import d'aquesta factura es carregarà al teu compte. El seu pagament "
 "quedarà justificat amb l'apunt bancari corresponent"
 msgstr "El importe de esta factura se cargará en su cuenta. El pago quedará justificado con el apunte bancario correspondiente."
 
-#: rml:account_invoice_som/report/account_invoice_som.mako:256
+#: rml:account_invoice_som/report/account_invoice_som.mako:292
+msgid ""
+"Per fer el pagament online, pots entrar a <a "
+"href='https://www.caixabank.es/particular/pagos/impuestosrecibosmatriculas_ca.html'>https://www.caixabank.es/particular/pagos/impuestosrecibosmatriculas_ca.html</a>"
+msgstr ""
+
+#: rml:account_invoice_som/report/account_invoice_som.mako:298
 msgid ""
 "L'import d'aquesta factura s'ha de pagar mitjançant transferència bancària "
 "al compte indicat:"
 msgstr "El importe de esta factura se debe pagar a través de transferencia bancaria en la cuenta indicada:"
+
+#: rml:account_invoice_som/report/nota_carrec/components/capcalera.mako:12
+#: rml:account_invoice_som/report/nota_carrec/index.mako:13
+msgid "NOTA DE CÀRREC/ABONAMENT"
+msgstr "NOTA DE CARGO/ABONO"
+
+#: rml:account_invoice_som/report/nota_carrec/components/capcalera.mako:21
+msgid "EMISSORA"
+msgstr "EMISORA"
+
+#: rml:account_invoice_som/report/nota_carrec/components/capcalera.mako:51
+msgid "DESTINATÀRIA"
+msgstr "DESTINATARIA"
+
+#: rml:account_invoice_som/report/nota_carrec/components/dades_nota.mako:7
+msgid "DADES DE LA NOTA DE CÀRREC/ABONAMENT"
+msgstr "DATOS DE LA NOTA DE CARGO/ABONO"
+
+#: rml:account_invoice_som/report/nota_carrec/components/dades_nota.mako:14
+msgid "Referència nota de càrrec"
+msgstr "Referencia nota de cargo"
+
+#: rml:account_invoice_som/report/nota_carrec/components/dades_nota.mako:18
+msgid "Data de la nota de càrrec"
+msgstr "Fecha de la nota de cargo"
+
+#: rml:account_invoice_som/report/nota_carrec/components/dades_nota.mako:22
+msgid "Resum de la nota de càrrec"
+msgstr "Resum de la nota de càrrec"
+
+#: rml:account_invoice_som/report/nota_carrec/components/dades_nota.mako:24
+msgid "A Cobrar"
+msgstr "A Cobrar"
+
+#: rml:account_invoice_som/report/nota_carrec/components/dades_nota.mako:26
+msgid "A Pagar"
+msgstr "A Pagar"
+
+#: rml:account_invoice_som/report/nota_carrec/components/dades_nota.mako:31
+msgid "Data Bancàries"
+msgstr "Fecha Bancarias"
+
+#: rml:account_invoice_som/report/nota_carrec/components/dades_nota.mako:39
+msgid "Forma de pagament"
+msgstr "Forma de pago"
+
+#: rml:account_invoice_som/report/nota_carrec/components/dades_nota.mako:41
+msgid "Transferència"
+msgstr "Transferencia"
+
+#: rml:account_invoice_som/report/nota_carrec/components/dades_nota.mako:43
+msgid "Rebut domiciliat"
+msgstr "Recibo domiciliado"
+
+#: rml:account_invoice_som/report/nota_carrec/components/detall_nota.mako:7
+msgid "DETALL DE LA NOTA DE CÀRREC/ABONAMENT"
+msgstr "DETALLE DE LA NOTA DE CARGO/ABONO"
+
+#: rml:account_invoice_som/report/nota_carrec/components/detall_nota.mako:20
+msgid "Nº Factura"
+msgstr "N.º Factura"
+
+#: rml:account_invoice_som/report/nota_carrec/components/detall_nota.mako:25
+msgid "Data factura"
+msgstr "Data factura"
+
+#: rml:account_invoice_som/report/nota_carrec/components/detall_nota.mako:35
+msgid "Tipus factura"
+msgstr "Tipo factura"
+
+#: rml:account_invoice_som/report/nota_carrec/components/detall_nota.mako:40
+msgid "Moviment"
+msgstr "Movimiento"
+
+#: rml:account_invoice_som/report/nota_carrec/components/detall_nota.mako:45
+msgid "Total Factura"
+msgstr "Total Factura"
+
+#: rml:account_invoice_som/report/nota_carrec/components/detall_nota.mako:84
+msgid "Total"
+msgstr "Total"
+
+#: rml:account_invoice_som/report/nota_carrec/components/extra_data.mako:3
+msgid ""
+"INFORMACIÓ SOBRE PROTECCIÓ DE DADES DE SOM RENOVABLES S.L.U<br>Les dades "
+"personals tractades per gestionar la relació contractual i, si s'escau, "
+"remetre informació comercial per mitjans electrònics, es conservaran fins a "
+"la fi de la relació, baixa comercial o els terminis de retenció legals. Pots"
+" exercir els teus drets a l'adreça indicada del responsable o a "
+"gdpr@somenergia.coop."
+msgstr "INFORMACIÓN SOBRE PROTECCIÓN DE DATOS DE SOM RENOVABLES S.L.U<br>Los datos personales tratados para gestionar la relación contractual y, si se tercia, remitir información comercial por medios electrónicos, se conservarán hasta el fin de la relación, baja comercial o los plazos de retención legales. Puedes ejercer tus derechos en la dirección indicada del responsable o a gdpr@somenergia.coop."
