@@ -4,7 +4,11 @@ max-complexity = 18
 select = C,E,F,W
 # W503: line break before binary operator
 # F403: ‘from module import *’ used; unable to detect undefined names
-ignore = W503,F403
+# F405: name may be undefined, or defined from star imports
+ignore = W503,F403,F405
 per-file-ignores=
     # F401: module imported but unused
     __init__.py:F401
+    # F821: undefined name
+    # Ignore in all files for `basestring` and other Py2/3 compatibility names
+    *.py:F821

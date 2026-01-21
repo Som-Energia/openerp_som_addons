@@ -10,7 +10,7 @@ on:
       pyversion:
         required: false
         type: string
-        default: '["2.7"]'
+        default: '["2.7", "3.10"]'
       erpbranch:
         required: false
         type: string
@@ -137,6 +137,7 @@ jobs:
           pip install -e . || "Not installing plantmeter Python package"
           pip install -r $ROOT_DIR_SRC/erp/requirements-dev.txt
           pip install -r $ROOT_DIR_SRC/erp/requirements.txt
+          pip install -r ${{github.workspace}}/requirements-compat.txt
 
       - name: Install dependecies for Python 3
         if: matrix.python-version != '2.7'
