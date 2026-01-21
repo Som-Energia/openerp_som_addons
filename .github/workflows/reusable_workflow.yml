@@ -10,7 +10,7 @@ on:
       pyversion:
         required: false
         type: string
-        default: '["2.7"]'
+        default: '["2.7.18"]'
       erpbranch:
         required: false
         type: string
@@ -117,6 +117,7 @@ jobs:
           git clone --depth 1 https://github.com/gisce/poweremail-modules.git $ROOT_DIR_SRC/poweremail-modules
           git clone --depth 1 https://github.com/gisce/crm_poweremail.git $ROOT_DIR_SRC/crm_poweremail
           git clone --depth 1 https://github.com/gisce/ooop.git $ROOT_DIR_SRC/ooop
+          git clone --depth 1 https://github.com/Som-Energia/cchloader $ROOT_DIR_SRC/cchloader
 
       - name: Install dependencies
         run: |
@@ -137,15 +138,17 @@ jobs:
           pip install -e . || "Not installing plantmeter Python package"
           pip install -r $ROOT_DIR_SRC/erp/requirements-dev.txt
           pip install -r $ROOT_DIR_SRC/erp/requirements.txt
+          cd $ROOT_DIR_SRC/cchloader
+          pip install -e .
 
       - name: Install dependecies for Python 3
-        if: matrix.python-version != '2.7'
+        if: matrix.python-version != '2.7.18'
         run: |
           pip install somutils
           pip install dm.xmlsec.binding
 
       - name: Install dependencies for Python 2.7
-        if: matrix.python-version == '2.7'
+        if: matrix.python-version == '2.7.18'
         run: |
           git clone --depth 1 https://github.com/Som-Energia/somenergia-utils.git -b py2 $ROOT_DIR_SRC/somenergia-utils
           cd $ROOT_DIR_SRC/somenergia-utils
@@ -182,7 +185,7 @@ jobs:
           destral --report-coverage --enable-coverage --report-junitxml ${{github.workspace}}/test-results/destral -m ${{ inputs.module }}
 
       - name: Publish Unit Test Results
-        if: (success() || failure()) && matrix.python-version == '2.7'
+        if: (success() || failure()) && matrix.python-version == '2.7.18'
         uses: EnricoMi/publish-unit-test-result-action@v2
         with:
           files: test-results/destral/*.xml
