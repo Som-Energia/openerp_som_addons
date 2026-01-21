@@ -10,8 +10,8 @@ class TestsPartnerAddress(testing.OOTestCaseWithCursor):
     def test__subscribe_polissa_titular_in_ctss_lists__ok(self, mocked_subscribe, mocked_get_mailchimp_list_id):  # noqa: E501
         cursor = self.cursor
         uid = self.uid
-        rpa_obj = self.pool.get("res.partner.address")
-        self.pool.get("giscedata.polissa")
+        rpa_obj = self.openerp.pool.get("res.partner.address")
+        self.openerp.pool.get("giscedata.polissa")
         imd_obj = self.openerp.pool.get('ir.model.data')
         polissa_id = imd_obj.get_object_reference(
             cursor, uid, 'giscedata_polissa', 'polissa_0001'
@@ -25,8 +25,8 @@ class TestsPartnerAddress(testing.OOTestCaseWithCursor):
     def test__get_polissa_data__ok(self):
         cursor = self.cursor
         uid = self.uid
-        rpa_obj = self.pool.get("res.partner.address")
-        self.pool.get("giscedata.polissa")
+        rpa_obj = self.openerp.pool.get("res.partner.address")
+        self.openerp.pool.get("giscedata.polissa")
         imd_obj = self.openerp.pool.get('ir.model.data')
         polissa_id = imd_obj.get_object_reference(
             cursor, uid, 'giscedata_polissa', 'polissa_0001'
@@ -43,8 +43,8 @@ class TestsPartnerAddress(testing.OOTestCaseWithCursor):
     def test__fill_merge_fields_titular_polissa_ctss__ok(self):
         cursor = self.cursor
         uid = self.uid
-        rpa_obj = self.pool.get("res.partner.address")
-        self.pool.get("giscedata.polissa")
+        rpa_obj = self.openerp.pool.get("res.partner.address")
+        self.openerp.pool.get("giscedata.polissa")
         imd_obj = self.openerp.pool.get('ir.model.data')
         polissa_id = imd_obj.get_object_reference(
             cursor, uid, 'giscedata_polissa', 'polissa_0001'

@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from osv import osv
+from oorq.decorators import job
 
 FIELDS_CTSS = {
     "email": "EMAIL",
@@ -111,6 +112,21 @@ class ResPartnerAddress(osv.osv):
             )
 
         return mailchimp_member
+
+    @job(queue="mailchimp_tasks")
+    def unsubscribe_titular_in_ctss_lists(self, cursor, uid, partner_ids, context=None):
+        if not isinstance(partner_ids, (list, tuple)):
+            partner_ids = [partner_ids]
+
+        MAILCHIMP_CLIENT = self._get_mailchimp_client()
+        conf_obj = self.pool.get("res.config")
+        list_name = conf_obj.get(cursor, uid, "mailchimp_clients_ctss_list", None)
+        list_id = self.get_mailchimp_list_id(list_name, MAILCHIMP_CLIENT)
+
+        for _id in partner_ids:
+            self.archieve_mail_in_list_sync(
+                cursor, uid, _id, list_id, MAILCHIMP_CLIENT
+            )
 
 
 ResPartnerAddress()
