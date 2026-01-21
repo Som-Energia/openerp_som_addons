@@ -198,10 +198,12 @@ jobs:
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           flags: ${{ inputs.module }}
+          gcov_ignore: "*/tests/*"
         if: ${{ inputs.all_modules == 'false' }}
 
       - name: Upload coverage reports to Codecov all modules
         uses: codecov/codecov-action@v5
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
+          gcov_ignore: "*/tests/*"
         if: ${{ inputs.all_modules == 'true' }}
