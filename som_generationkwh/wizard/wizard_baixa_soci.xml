@@ -1,0 +1,64 @@
+<?xml version="1.0"?>
+<openerp>
+    <data noupdate="0">
+	<record model="ir.ui.view" id="view_wizard_confirm_soci_baixa">
+        <field name="name">wizard.soci.baixa.form</field>
+        <field name="model">wizard.baixa.soci</field>
+        <field name="type">form</field>
+        <field name="arch" type="xml" >
+            <form string="Add a comment">
+                <field name="state" invisible="1"/>
+                <group attrs="{'invisible': [('state', '!=', 'init')]}">
+                    <group colspan="4" >
+                        <label string="ATENCIÓ!" colspan="4" />
+                        <label string="Aquesta acció donarà de baixa el soci seleccionat" colspan="4" />
+                    </group>
+                    <group colspan="4" >
+                        <group colspan="4" >
+                            <field name="skip_pending_check"/>
+                            <button string="Baixa" type="object" name="baixa_soci" icon="gtk-yes" confirm="Estas segur?" colspan="4"/>
+                            <button string="Baixa i enviament de correu" type="object" name="baixa_soci_and_send_mail" icon="gtk-yes" confirm="Estas segur?" colspan="4"/>
+                        </group>
+                    <separator colspan="4" />
+                        <group colspan="4">
+                            <button string="Cancel·lar" special="cancel" type="object" icon="gtk-cancel" colspan="4"/>
+                        </group>
+                    </group>
+                </group>
+
+                <group attrs="{'invisible': [('state', '!=', 'ok')]}">
+                    <label colspan="4" string="La baixa s'ha efectuat correctament"/>
+                    <separator colspan="4" />
+                    <button string="Tancar" special="cancel" type="object"/>
+                </group>
+
+                <group attrs="{'invisible': [('state', '!=', 'error')]}">  
+                    <label colspan="4" string="No s'ha pogut efectuar la baixa"/>
+                    <separator colspan="4" />
+                    <field name="info" nolabel="1" readonly="1" colspan="4"/>
+                    <button string="Tancar" special="cancel" type="object" colspan="4"/>
+                </group>
+            </form>
+        </field>
+    </record> 
+
+	
+	<record model="ir.actions.act_window" id="action_wizard_confirm_soci_baixa">
+	    <field name="name">Baixa de sòcia</field>
+	    <field name="res_model">wizard.baixa.soci</field>
+	    <field name="view_type">form</field>
+	    <field name="view_mode">form</field>
+	    <field name="target">new</field>
+	    <field name="view_id" ref="view_wizard_confirm_soci_baixa"/>
+	</record>
+
+	<record id="value_wizard_confirm_soci_baixa" model="ir.values">
+            <field name="object" eval="1"/>
+            <field name="name">Baixa de sòcia</field>
+            <field name="key2">client_action_multi</field>
+            <field name="key">action</field>
+            <field name="model">somenergia.soci</field>
+            <field name="value" eval="'ir.actions.act_window,'+str(ref('action_wizard_confirm_soci_baixa'))" />
+        </record>
+    </data>
+</openerp>
