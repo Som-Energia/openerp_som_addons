@@ -130,6 +130,57 @@ class SomenergiaSoci(osv.osv):
 
         return True
 
+    def get_baixa_blocking_reasons(self, cursor, uid, member_id, context=None):
+        if not context:
+            context = {}
+            
+        reasons = []
+        
+        invest_obj = self.pool.get('generationkwh.investment')
+        emi_obj = self.pool.get('generationkwh.emission')
+        pol_obj = self.pool.get('giscedata.polissa')
+        fact_obj = self.pool.get('giscedata.facturacio.factura')
+        soci_obj = self.pool.get('somenergia.soci')
+        
+        today = datetime.today().strftime('%Y-%m-%d')
+        res_partner_id = soci_obj.read(cursor, uid, member_id, ['partner_id'])['partner_id'][0]
+
+        baixa = soci_obj.read(cursor, uid, [member_id], ['baixa'])[0]['baixa']
+
+        if baixa:
+            reasons.append(_('Ja ha estat donat de baixa anteriorment!'))
+
+        genkwh_emission_ids = emi_obj.search(cursor, uid, [('type','=','genkwh')])
+        gen_invest = invest_obj.search(cursor, uid, [('member_id', '=', member_id),
+                                                     ('emission_id', 'in', genkwh_emission_ids),
+                                                     ('last_effective_date', '>=', today)])
+        if gen_invest:
+            reasons.append(_('El soci té inversions de generation actives.'))
+
+        aportacions_ids = emi_obj.search(cursor, uid, [('type','=','apo')])
+        apo_invest = invest_obj.search(cursor, uid, [('member_id', '=', member_id),
+                                                     ('emission_id', 'in', aportacions_ids),
+                                                     '|', ('last_effective_date', '=', False),
+                                                     ('last_effective_date', '>=', today)])
+        if apo_invest:
+            reasons.append(_('El soci té aportacions actives.'))
+
+        factures_pendents = fact_obj.search(cursor, uid, [('partner_id', '=', res_partner_id),
+                                                          ('state', 'not in', ['cancel', 'paid']),
+                                                          ('type', '=', 'out_invoice')])
+
+        if factures_pendents and not context.get('skip_pending_check', False):
+            reasons.append(_('El soci té factures pendents.'))
+
+        polisses = pol_obj.search(cursor, uid,
+                                  [('soci', '=', res_partner_id),
+                                   ('state', '!=', 'baixa'),
+                                   ('state', '!=', 'cancelada')])
+        if polisses:
+            reasons.append(_('El soci té al menys un contracte vinculat.'))
+            
+        return reasons
+
     def verifica_baixa_soci(self, cursor, uid, ids, context=None):
         # - Comprovar si té generationkwh: Existeix atribut al model generation que ho indica. Altrament es poden buscar les inversions.
         # - Comprovar si té inversions vigents: Buscar inversions vigents.
@@ -147,53 +198,19 @@ class SomenergiaSoci(osv.osv):
         if len(ids) != 1:
             raise osv.except_osv(_('Com ha minim es necessita un soci'))
 
+        member_id = ids[0]
+        
+        reasons = self.get_baixa_blocking_reasons(cursor, uid, member_id, context=context)
+        if reasons:
+            raise osv.except_osv(_('El soci no pot ser donat de baixa!\n\n'), 
+                                 '\n'.join(reasons))
+
         imd_obj = self.pool.get('ir.model.data')
-        invest_obj = self.pool.get('generationkwh.investment')
-        emi_obj = self.pool.get('generationkwh.emission')
-        pol_obj = self.pool.get('giscedata.polissa')
-        fact_obj = self.pool.get('giscedata.facturacio.factura')
         soci_obj = self.pool.get('somenergia.soci')
         rpa_obj = self.pool.get('res.partner.address')
 
         today = datetime.today().strftime('%Y-%m-%d')
-        member_id = ids[0]
         res_partner_id = soci_obj.read(cursor, uid, member_id, ['partner_id'])['partner_id'][0]
-
-        baixa = soci_obj.read(cursor, uid, [member_id], ['baixa'])[0]['baixa']
-
-        if baixa:
-            raise osv.except_osv(_('El soci no pot ser donat de baixa!'),
-                                 _('Ja ha estat donat de baixa anteriorment!'))
-
-        genkwh_emission_ids = emi_obj.search(cursor, uid, [('type','=','genkwh')])
-        gen_invest = invest_obj.search(cursor, uid, [('member_id', '=', member_id),
-                                                     ('emission_id', 'in', genkwh_emission_ids),
-                                                     ('last_effective_date', '>=', today)])
-        if gen_invest:
-            raise osv.except_osv(_('El soci no pot ser donat de baixa!'),
-                                 _('El soci té inversions de generation actives.'))
-
-        aportacions_ids = emi_obj.search(cursor, uid, [('type','=','apo')])
-        apo_invest = invest_obj.search(cursor, uid, [('member_id', '=', member_id),
-                                                     ('emission_id', 'in', aportacions_ids),
-                                                     '|', ('last_effective_date', '=', False),
-                                                     ('last_effective_date', '>=', today)])
-        if apo_invest:
-            raise osv.except_osv(_('El soci no pot ser donat de baixa!'), _('El soci té aportacions actives.'))
-
-        factures_pendents = fact_obj.search(cursor, uid, [('partner_id', '=', res_partner_id),
-                                                          ('state', 'not in', ['cancel', 'paid']),
-                                                          ('type', '=', 'out_invoice')])
-
-        if factures_pendents and not context.get('skip_pending_check', False):
-            raise osv.except_osv(_('El soci no pot ser donat de baixa!'), _('El soci té factures pendents.'))
-
-        polisses = pol_obj.search(cursor, uid,
-                                  [('soci', '=', res_partner_id),
-                                   ('state', '!=', 'baixa'),
-                                   ('state', '!=', 'cancelada')])
-        if polisses:
-            raise osv.except_osv(_('El soci no pot ser donat de baixa!'), _('El soci té al menys un contracte vinculat.'))
 
         soci_category_id = imd_obj.get_object_reference(
             cursor, uid, 'som_partner_account', 'res_partner_category_soci'

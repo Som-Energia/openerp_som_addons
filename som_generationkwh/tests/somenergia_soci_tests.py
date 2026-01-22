@@ -43,8 +43,7 @@ class SomenergiaSociTests(testing.OOTestCase):
         with self.assertRaises(except_osv) as ctx:
             self.Soci.verifica_baixa_soci(self.cursor, self.uid, member_id)
 
-        self.assertEqual(ctx.exception.message,
-            "warning -- El soci no pot ser donat de baixa!\n\nEl soci té inversions de generation actives.")
+        self.assertIn("El soci té inversions de generation actives", ctx.exception.message)
 
     def test_cancel_member_with_active_apo__notAllowed(self):
         invest_id = self.IrModelData.get_object_reference(
@@ -60,8 +59,7 @@ class SomenergiaSociTests(testing.OOTestCase):
         with self.assertRaises(except_osv) as ctx:
             self.Soci.verifica_baixa_soci(self.cursor, self.uid, member_id)
 
-        self.assertEqual(ctx.exception.message,
-            "warning -- El soci no pot ser donat de baixa!\n\nEl soci té aportacions actives.")
+        self.assertIn("El soci té aportacions actives", ctx.exception.message)
     
     def test_cancel_member_with_pending_invoices__notAllowed(self):
         fact_id = self.IrModelData.get_object_reference(
@@ -85,8 +83,7 @@ class SomenergiaSociTests(testing.OOTestCase):
         with self.assertRaises(except_osv) as ctx:
             self.Soci.verifica_baixa_soci(self.cursor, self.uid, member_id)
 
-        self.assertEqual(ctx.exception.message,
-            "warning -- El soci no pot ser donat de baixa!\n\nEl soci té factures pendents.")
+        self.assertIn("El soci té factures pendents", ctx.exception.message)
 
     @mock.patch("som_polissa_soci.models.res_partner_address.ResPartnerAddress.unsubscribe_partner_in_members_lists")  # noqa: E501
     def test_cancel_member_with_active_contract__Allowed(self, mailchimp_mock):
@@ -132,5 +129,4 @@ class SomenergiaSociTests(testing.OOTestCase):
         with self.assertRaises(except_osv) as ctx:
             self.Soci.verifica_baixa_soci(self.cursor, self.uid, member_id)
 
-        self.assertEqual(ctx.exception.message,
-            "warning -- El soci no pot ser donat de baixa!\n\nEl soci té al menys un contracte vinculat.")
+        self.assertIn("El soci té al menys un contracte vinculat", ctx.exception.message)

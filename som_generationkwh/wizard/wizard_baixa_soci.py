@@ -11,23 +11,39 @@ class WizardBaixaSoci(osv.osv_memory):
         'state': fields.char('State', size=16),
         'info': fields.text('Info'),
         'skip_pending_check': fields.boolean('Salta la comprovació de factures pendents'),
+        'verification_result': fields.text('Resultat verificació'),
     }
     _defaults = {
         'state': 'init'
     }
 
-    def baixa_soci(self, cursor, uid, ids, context=None, send_mail=False):
+
+    def verify(self, cursor, uid, ids, context=None):
         soci_obj = self.pool.get('somenergia.soci')
-        soci_id = context['active_ids']
+        soci_id = self._get_soci_from_context(context)
         if isinstance(ids, list):
             ids = ids[0]
+
         wizard = self.browse(cursor, uid, ids, context)
+            
+        # We enforce skip_pending_check=False during verification to show all issues
+        reasons = soci_obj.get_baixa_blocking_reasons(cursor, uid, soci_id[0], context={
+            'skip_pending_check': False
+        })
+        
+        result_text = _("Tot correcte. Es pot procedir a la baixa.")
+        if reasons:
+            result_text = _("Hi ha motius que impedeixen la baixa:\n") + "\n".join(reasons)
+            
+        wizard.write({'state': 'checklist', 'verification_result': result_text})
 
-        if not isinstance(soci_id, list):
-            soci_id = [soci_id]
-        if len(soci_id) != 1:
-            raise "Has de seleccionar un sol soci"
+    def baixa_soci(self, cursor, uid, ids, context=None, send_mail=False):
+        soci_obj = self.pool.get('somenergia.soci')
+        soci_id = self._get_soci_from_context(context)
+        if isinstance(ids, list):
+            ids = ids[0]
 
+        wizard = self.browse(cursor, uid, ids, context)
         try:
             if wizard.skip_pending_check:
                 context['skip_pending_check'] = True
@@ -38,6 +54,15 @@ class WizardBaixaSoci(osv.osv_memory):
             if send_mail:
                 self.send_mail(cursor, uid, soci_id[0])
             wizard.write({'state':'ok'})
+    
+
+    def _get_soci_from_context(self, context):
+        soci_id = context['active_ids']
+        if not isinstance(soci_id, list):
+            soci_id = [soci_id]
+        if len(soci_id) != 1:
+            raise "Has de seleccionar un sol soci"
+        return soci_id
 
 
     def baixa_soci_and_send_mail(self, cursor, uid, ids, context=None):
