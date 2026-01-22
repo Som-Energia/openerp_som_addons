@@ -6,39 +6,26 @@
         <field name="model">wizard.baixa.soci</field>
         <field name="type">form</field>
         <field name="arch" type="xml" >
-            <form string="Add a comment">
+            <form string="Baixa de sòcia">
                 <field name="state" invisible="1"/>
                 <group attrs="{'invisible': [('state', '!=', 'init')]}">
+                    <label string="Aquesta acció només verificarà si es pot donar de baixa (sense modificar res encara)" colspan="4" />
                     <group colspan="4" >
-                        <label string="ATENCIÓ!" colspan="4" />
-                        <label string="Aquesta acció donarà de baixa el soci seleccionat" colspan="4" />
-                    </group>
-                    <group colspan="4" >
-                        <group colspan="4" >
-                            <button string="Verificar" type="object" name="verify" icon="gtk-go-forward" colspan="4"/>
-                        </group>
-                    <separator colspan="4" />
-                        <group colspan="4">
-                            <button string="Cancel·lar" special="cancel" type="object" icon="gtk-cancel" colspan="4"/>
-                        </group>
+                        <button string="Verificar" type="object" name="verify" icon="gtk-go-forward" colspan="2"/>
+                        <button string="Cancel·lar" special="cancel" type="object" icon="gtk-cancel" colspan="2"/>
                     </group>
                 </group>
 
                 <group attrs="{'invisible': [('state', '!=', 'checklist')]}">
-                    <group colspan="4" >
-                        <field name="verification_result" nolabel="1" readonly="1" colspan="4"/>
-                    </group>
-                    <group colspan="4" >
-                        <group colspan="4" >
-                            <field name="skip_pending_check"/>
-                            <button string="Baixa" type="object" name="baixa_soci" icon="gtk-yes" confirm="Estas segur?" colspan="4"/>
-                            <button string="Baixa i enviament de correu" type="object" name="baixa_soci_and_send_mail" icon="gtk-yes" confirm="Estas segur?" colspan="4"/>
-                        </group>
+                    <field name="info" nolabel="1" readonly="1" colspan="4" widget="markdown"/>
                     <separator colspan="4" />
-                        <group colspan="4">
-                            <button string="Cancel·lar" special="cancel" type="object" icon="gtk-cancel" colspan="4"/>
-                        </group>
+                    <label string="ATENCIÓ: Si continues, donaràs de baixa la sòcia seleccionada" colspan="4" />
+                    <field name="skip_pending_check"/>
+                    <group colspan="4" >
+                        <button string="Baixa" type="object" name="baixa_soci" icon="gtk-yes" confirm="Estas segur?" colspan="2"/>
+                        <button string="Baixa i enviament de correu" type="object" name="baixa_soci_and_send_mail" icon="gtk-yes" confirm="Estas segur?" colspan="2"/>
                     </group>
+                    <button string="Cancel·lar" special="cancel" type="object" icon="gtk-cancel" colspan="4"/>
                 </group>
 
                 <group attrs="{'invisible': [('state', '!=', 'ok')]}">
@@ -48,7 +35,7 @@
                 </group>
 
                 <group attrs="{'invisible': [('state', '!=', 'error')]}">  
-                    <label colspan="4" string="No s'ha pogut efectuar la baixa"/>
+                    <label colspan="4" string="Error: No s'ha pogut efectuar la baixa"/>
                     <separator colspan="4" />
                     <field name="info" nolabel="1" readonly="1" colspan="4"/>
                     <button string="Tancar" special="cancel" type="object" colspan="4"/>

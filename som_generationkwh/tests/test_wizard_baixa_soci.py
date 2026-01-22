@@ -113,7 +113,7 @@ class TestWizardBaixaSoci(testing.OOTestCase):
 
         wiz = self.WizardBaixaSoci.browse(self.cursor, self.uid, wiz_id)
         self.assertEqual(wiz.state, 'checklist')
-        self.assertIn('Tot correcte', wiz.verification_result)
+        self.assertIn('Tot correcte', wiz.info)
 
 
     def test__verify__with_issues(self):
@@ -128,4 +128,4 @@ class TestWizardBaixaSoci(testing.OOTestCase):
 
         wiz = self.WizardBaixaSoci.browse(self.cursor, self.uid, wiz_id)
         self.assertEqual(wiz.state, 'checklist')
-        self.assertNotIn('Tot correcte', wiz.verification_result)
+        self.assertNotIn('Tot correcte', wiz.info)

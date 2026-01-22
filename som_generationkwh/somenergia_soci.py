@@ -202,8 +202,7 @@ class SomenergiaSoci(osv.osv):
         
         reasons = self.get_baixa_blocking_reasons(cursor, uid, member_id, context=context)
         if reasons:
-            raise osv.except_osv(_('El soci no pot ser donat de baixa!\n\n'), 
-                                 '\n'.join(reasons))
+            raise osv.except_osv(_('El soci no pot ser donat de baixa!'), '\n'.join(reasons))
 
         imd_obj = self.pool.get('ir.model.data')
         soci_obj = self.pool.get('somenergia.soci')

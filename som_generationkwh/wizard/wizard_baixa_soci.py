@@ -11,7 +11,6 @@ class WizardBaixaSoci(osv.osv_memory):
         'state': fields.char('State', size=16),
         'info': fields.text('Info'),
         'skip_pending_check': fields.boolean('Salta la comprovació de factures pendents'),
-        'verification_result': fields.text('Resultat verificació'),
     }
     _defaults = {
         'state': 'init'
@@ -31,11 +30,11 @@ class WizardBaixaSoci(osv.osv_memory):
             'skip_pending_check': False
         })
         
-        result_text = _("Tot correcte. Es pot procedir a la baixa.")
+        result_text = _("### Tot correcte.\nEs pot procedir a la baixa.")
         if reasons:
-            result_text = _("Hi ha motius que impedeixen la baixa:\n") + "\n".join(reasons)
+            result_text = _("### Hi ha motius que impedeixen la baixa:\n* ") + "\n* ".join(reasons)
             
-        wizard.write({'state': 'checklist', 'verification_result': result_text})
+        wizard.write({'state': 'checklist', 'info': result_text})
 
     def baixa_soci(self, cursor, uid, ids, context=None, send_mail=False):
         soci_obj = self.pool.get('somenergia.soci')
@@ -55,7 +54,6 @@ class WizardBaixaSoci(osv.osv_memory):
                 self.send_mail(cursor, uid, soci_id[0])
             wizard.write({'state':'ok'})
     
-
     def _get_soci_from_context(self, context):
         soci_id = context['active_ids']
         if not isinstance(soci_id, list):
@@ -63,7 +61,6 @@ class WizardBaixaSoci(osv.osv_memory):
         if len(soci_id) != 1:
             raise "Has de seleccionar un sol soci"
         return soci_id
-
 
     def baixa_soci_and_send_mail(self, cursor, uid, ids, context=None):
         self.baixa_soci(cursor, uid, ids, context, send_mail=True)
