@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+import datetime
 from osv import fields, osv
 
 
@@ -74,9 +75,9 @@ class ResPartnerAddress(osv.osv):
 
     _constraints = [
         (_check_phone_number,
-         'El número de telèfon ha de tenir exactament 9 dígits numèrics.', ['phone']),
+         'El número de telèfon ha de tenir exactament 9 dígits numèrics i començar per 9 o 8.', ['phone']),  # noqa:E501
         (_check_mobile_number,
-         'El número de mòbil ha de tenir exactament 9 dígits numèrics.', ['mobile']),
+         'El número de mòbil ha de tenir exactament 9 dígits numèrics i començar per 6 o 7.', ['mobile']),  # noqa:E501
     ]
 
     # This method is used to set default values for phone and mobile prefixes to Spain's codes
@@ -87,6 +88,102 @@ class ResPartnerAddress(osv.osv):
         res = self.pool.get('res.phone.national.code').search(
             cr, uid, [('name', '=', '+34')], limit=1, context=context)
         return res and res[0] or None
+
+    def write(self, cr, uid, ids, vals, context=None):
+        """Override write method to set default prefixes if not provided and
+        to ensure phone and mobile numbers are in their correct fields."""
+
+        if 'phone' in vals and 'phone_prefix' not in vals:
+            if not self.browse(cr, uid, ids, context=context)[0].phone_prefix:
+                vals['phone_prefix'] = self._get_default_prefix(cr, uid, context)
+        if 'mobile' in vals and 'mobile_prefix' not in vals:
+            if not self.browse(cr, uid, ids, context=context)[0].mobile_prefix:
+                vals['mobile_prefix'] = self._get_default_prefix(cr, uid, context)
+
+        if not int(self.pool.get('res.config').get(cr, uid, 'auto_correct_phone_and_mobile_number', '0')):  # noqa:E501
+            return super(ResPartnerAddress, self).write(
+                cr, uid, ids, vals, context=context)
+
+        if 'phone' in vals and vals['phone']:
+            phone_number = vals['phone']
+            actual_mobile_number = self.browse(cr, uid, ids, context=context)[0].mobile
+            if self.check_mobile_or_landline(phone_number) == 'mobile':
+                if actual_mobile_number == phone_number:
+                    vals.pop('phone')
+                    vals.pop('phone_prefix', None)
+                elif not actual_mobile_number:
+                    vals['mobile'] = phone_number
+                    vals['mobile_prefix'] = vals.get('phone_prefix', None)
+                    vals.pop('phone')
+                    vals.pop('phone_prefix', None)
+                else:
+                    # Estem intentant posar un telèfon fix en el camp de mòbil, que és diferent
+                    # al telèfon fix que ja hi ha posat. El sobrescrivim i afegim una nota amb el vell  # noqa:E501
+                    actual_notes = self.browse(cr, uid, ids, context=context)[0].notes or ''
+                    today = datetime.date.today().strftime("%Y/%m/%d")
+                    vals['notes'] = actual_notes + "\n{}: Telèfon mòbil substituit, l'antic mòbil era: {}".format(today, actual_mobile_number)  # noqa:E501
+                    vals['mobile'] = phone_number
+                    vals['mobile_prefix'] = vals.get('phone_prefix', None)
+                    vals.pop('phone')
+                    vals.pop('phone_prefix', None)
+
+        if 'mobile' in vals and vals['mobile']:
+            mobile_number = vals['mobile']
+            actual_phone_number = self.browse(cr, uid, ids, context=context)[0].phone
+            if self.check_mobile_or_landline(mobile_number) == 'landline':
+                if actual_phone_number == mobile_number:
+                    vals.pop('mobile')
+                    vals.pop('mobile_prefix', None)
+                elif not actual_phone_number:
+                    vals['phone'] = mobile_number
+                    vals['phone_prefix'] = vals.get('mobile_prefix', None)
+                    vals.pop('mobile')
+                    vals.pop('mobile_prefix', None)
+                else:
+                    # Estem intentant posar un telèfon fix en el camp de mòbil, que és diferent
+                    # al telèfon fix que ja hi ha posat. El sobrescrivim i afegim una nota amb el vell  # noqa:E501
+                    actual_notes = self.browse(cr, uid, ids, context=context)[0].notes or ''
+                    today = datetime.date.today().strftime("%Y/%m/%d")
+                    vals['notes'] = actual_notes + "\n{}: Telèfon fix substituit, l'antic telèfon era: {}".format(today, actual_phone_number)  # noqa:E501
+                    vals['phone'] = mobile_number
+                    vals['phone_prefix'] = vals.get('mobile_prefix', None)
+                    vals.pop('mobile')
+                    vals.pop('mobile_prefix', None)
+
+        return super(ResPartnerAddress, self).write(
+            cr, uid, ids, vals, context=context)
+
+    def create(self, cr, uid, vals, context=None):
+        """Override create method to set default prefixes if not provided and
+        to ensure phone and mobile numbers are in their correct fields."""
+
+        if 'phone' in vals and 'phone_prefix' not in vals:
+            vals['phone_prefix'] = self._get_default_prefix(cr, uid, context)
+        if 'mobile' in vals and 'mobile_prefix' not in vals:
+            vals['mobile_prefix'] = self._get_default_prefix(cr, uid, context)
+
+        if not int(self.pool.get('res.config').get(cr, uid, 'auto_correct_phone_and_mobile_number', '0')):  # noqa:E501
+            return super(ResPartnerAddress, self).create(
+                cr, uid, vals, context=context)
+
+        if 'phone' in vals and vals['phone']:
+            phone_number = vals['phone']
+            if self.check_mobile_or_landline(phone_number) == 'mobile':
+                vals['mobile'] = phone_number
+                vals['mobile_prefix'] = vals.get('phone_prefix', None)
+                vals.pop('phone')
+                vals.pop('phone_prefix')
+
+        if 'mobile' in vals and vals['mobile']:
+            mobile_number = vals['mobile']
+            if self.check_mobile_or_landline(mobile_number) == 'landline':
+                vals['phone'] = mobile_number
+                vals['phone_prefix'] = vals.get('mobile_prefix', None)
+                vals.pop('mobile')
+                vals.pop('mobile_prefix')
+
+        return super(ResPartnerAddress, self).create(
+            cr, uid, vals, context=context)
 
     _defaults = {
         'phone_prefix': _get_default_prefix,

@@ -12,6 +12,7 @@
     "init_xml": [],
     "demo_xml": [
         "demo/poweremail_demo_data.xml",
+        "demo/res_partner_address_demo_data.xml",
     ],
     "update_xml": [
         "data/res_users_data.xml",

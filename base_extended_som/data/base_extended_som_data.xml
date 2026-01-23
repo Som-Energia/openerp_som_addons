@@ -10,5 +10,13 @@
             <field name="value">0</field>
             <field name="description">Activar la validació de dígits del número de mòbil</field>
         </record>
+        <record id="res_config_auto_correct_phone_and_mobile_number" model="res.config">
+            <field name="name">auto_correct_phone_and_mobile_number</field>
+            <field name="value">1</field>
+            <field name="description">Activar la correcció automàtica del número de telèfon.
+                Per exemple, si posen un telèfon mòbil al camp de telèfon fix, el corregeix automàticament.
+                Si el camp on es vol corretgir ja està ocupat, es guarda l'antic a les notes
+            </field>
+        </record>
     </data>
 </openerp>
