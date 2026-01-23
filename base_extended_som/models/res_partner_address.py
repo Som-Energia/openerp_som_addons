@@ -85,7 +85,7 @@ class ResPartnerAddress(osv.osv):
             cr, uid, [('name', '=', '+34')], limit=1, context=context)
         return res and res[0] or None
 
-    def write(self, cr, uid, ids, vals, context=None, check=True):
+    def write(self, cr, uid, ids, vals, context=None):
         """Override write method to set default prefixes if not provided and
         to ensure phone and mobile numbers are in their correct fields."""
 
@@ -129,7 +129,7 @@ class ResPartnerAddress(osv.osv):
                     vals['phone'] = mobile_number
 
         return super(ResPartnerAddress, self).write(
-            cr, uid, ids, vals, context=context, check=check)
+            cr, uid, ids, vals, context=context)
 
     _defaults = {
         'phone_prefix': _get_default_prefix,

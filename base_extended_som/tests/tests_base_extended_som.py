@@ -206,7 +206,51 @@ class TestBaseExtendedSom(testing.OOTestCaseWithCursor):
             "Mobile prefix should be retained as US prefix."
         )
 
-    def test_write_mobile_phone_in_phone_filed(self):
+    def test_write_landline_phone_in_phone_field(self):
+        """Test that writing a landline number into the phone field is handled correctly."""
+        self.spanish_prefix = self.ir_obj.get_object_reference(
+            self.cursor, self.uid, "base_extended_som", "res_phone_national_code_data_34"
+        )[1]
+
+        rp_id = self.rpa_obj.create(self.cursor, self.uid, {
+            "name": "Test Address",
+            "phone": "972000000",
+            "phone_prefix": self.spanish_prefix,
+        })
+
+        rp = self.rpa_obj.browse(self.cursor, self.uid, rp_id)
+        self.assertEqual(
+            rp.phone, "972000000",
+            "Phone field should contain the landline number written into it."
+        )
+        self.assertEqual(
+            rp.mobile, False,
+            "Mobile field should remain empty when a landline number is written into phone field."
+        )
+
+    def test_write_mobile_phone_in_mobile_field(self):
+        """Test that writing a mobile number into the mobile field is handled correctly."""
+        self.spanish_prefix = self.ir_obj.get_object_reference(
+            self.cursor, self.uid, "base_extended_som", "res_phone_national_code_data_34"
+        )[1]
+
+        rp_id = self.rpa_obj.create(self.cursor, self.uid, {
+            "name": "Test Address",
+            "mobile": "600000000",
+            "mobile_prefix": self.spanish_prefix,
+        })
+
+        rp = self.rpa_obj.browse(self.cursor, self.uid, rp_id)
+        self.assertEqual(
+            rp.mobile, "600000000",
+            "Mobile field should contain the mobile number written into it."
+        )
+        self.assertEqual(
+            rp.phone, False,
+            "Phone field should remain empty when a mobile number is written into mobile field."
+        )
+
+    def test_write_mobile_phone_in_phone_field(self):
         """Test that writing a mobile number into the phone field is handled correctly."""
         self.spanish_prefix = self.ir_obj.get_object_reference(
             self.cursor, self.uid, "base_extended_som", "res_phone_national_code_data_34"
@@ -351,4 +395,36 @@ class TestBaseExtendedSom(testing.OOTestCaseWithCursor):
         self.assertEqual(
             rp.notes, "{}: Telèofn fix substituit, l'antic telèfon era: 972000000".format(today),
             "Notes should contain information about the phone number change."
+        )
+
+    def test_write_mobile_phone_in_phone_field_with_existing_mobile(self):
+        """Test that writing a mobile number into the phone field with existing mobile is handled correctly."""  # noqa:E501
+        self.spanish_prefix = self.ir_obj.get_object_reference(
+            self.cursor, self.uid, "base_extended_som", "res_phone_national_code_data_34"
+        )[1]
+
+        rp_id = self.rpa_obj.create(self.cursor, self.uid, {
+            "name": "Test Address",
+            "mobile": "600000000",
+            "mobile_prefix": self.spanish_prefix,
+        })
+
+        # Now write a mobile number into the phone field
+        self.rpa_obj.write(self.cursor, self.uid, [rp_id], {
+            "phone": "700000000",
+        })
+
+        rp = self.rpa_obj.browse(self.cursor, self.uid, rp_id)
+        self.assertEqual(
+            rp.phone, False,
+            "Phone field should be cleared when a mobile number is written into it."
+        )
+        self.assertEqual(
+            rp.mobile, "700000000",
+            "Mobile field should contain the mobile number written into phone field."
+        )
+        today = datetime.date.today().strftime("%Y/%m/%d")
+        self.assertEqual(
+            rp.notes, "{}: Telèofn mòbil substituit, l'antic mòbil era: 600000000".format(today),
+            "Notes should contain information about the mobile number change."
         )
