@@ -2,6 +2,7 @@
 
 from destral import testing
 from osv.orm import FieldsValidationException
+import datetime
 
 
 class TestBaseExtendedSom(testing.OOTestCaseWithCursor):
@@ -133,4 +134,221 @@ class TestBaseExtendedSom(testing.OOTestCaseWithCursor):
         self.assertFalse(
             self.rpa_obj.check_mobile_or_landline("+34 972000000"),
             "+34 972000000 should not be recognized as a valid number."
+        )
+
+    def test_write_without_prefixes(self):
+        """Test that writing without prefixes sets default prefixes."""
+        self.spanish_prefix = self.ir_obj.get_object_reference(
+            self.cursor, self.uid, "base_extended_som", "res_phone_national_code_data_34"
+        )[1]
+
+        rp_id = self.rpa_obj.create(self.cursor, self.uid, {
+            "name": "Test Address",
+            "phone": "972000000",
+            "mobile": "600000000",
+        })
+
+        rp = self.rpa_obj.browse(self.cursor, self.uid, rp_id)
+        self.assertEqual(
+            rp.phone_prefix.id, self.spanish_prefix,
+            "Phone prefix should be set to Spanish prefix."
+        )
+        self.assertEqual(
+            rp.mobile_prefix.id, self.spanish_prefix,
+            "Mobile prefix should be set to Spanish prefix."
+        )
+
+    def test_write_with_prefixes_spain(self):
+        """Test that writing with prefixes retains provided prefixes."""
+        self.spanish_prefix = self.ir_obj.get_object_reference(
+            self.cursor, self.uid, "base_extended_som", "res_phone_national_code_data_34"
+        )[1]
+
+        rp_id = self.rpa_obj.create(self.cursor, self.uid, {
+            "name": "Test Address",
+            "phone": "972000000",
+            "mobile": "600000000",
+            "phone_prefix": self.spanish_prefix,
+            "mobile_prefix": self.spanish_prefix,
+        })
+
+        rp = self.rpa_obj.browse(self.cursor, self.uid, rp_id)
+        self.assertEqual(
+            rp.phone_prefix.id, self.spanish_prefix,
+            "Phone prefix should be retained as Spanish prefix."
+        )
+        self.assertEqual(
+            rp.mobile_prefix.id, self.spanish_prefix,
+            "Mobile prefix should be retained as Spanish prefix."
+        )
+
+    def test_write_with_prefixes_other(self):
+        """Test that writing with non-Spanish prefixes retains provided prefixes."""
+        self.us_prefix = self.ir_obj.get_object_reference(
+            self.cursor, self.uid, "base", "res_phone_national_code_data_1"
+        )[1]
+
+        rp_id = self.rpa_obj.create(self.cursor, self.uid, {
+            "name": "Test Address",
+            "phone": "5551234567",
+            "mobile": "5557654321",
+            "phone_prefix": self.us_prefix,
+            "mobile_prefix": self.us_prefix,
+        })
+
+        rp = self.rpa_obj.browse(self.cursor, self.uid, rp_id)
+        self.assertEqual(
+            rp.phone_prefix.id, self.us_prefix,
+            "Phone prefix should be retained as US prefix."
+        )
+        self.assertEqual(
+            rp.mobile_prefix.id, self.us_prefix,
+            "Mobile prefix should be retained as US prefix."
+        )
+
+    def test_write_mobile_phone_in_phone_filed(self):
+        """Test that writing a mobile number into the phone field is handled correctly."""
+        self.spanish_prefix = self.ir_obj.get_object_reference(
+            self.cursor, self.uid, "base_extended_som", "res_phone_national_code_data_34"
+        )[1]
+
+        rp_id = self.rpa_obj.create(self.cursor, self.uid, {
+            "name": "Test Address",
+            "phone": "600000000",
+            "phone_prefix": self.spanish_prefix,
+        })
+
+        rp = self.rpa_obj.browse(self.cursor, self.uid, rp_id)
+        self.assertEqual(
+            rp.phone, False,
+            "Phone field should be cleared when a mobile number is written into it."
+        )
+        self.assertEqual(
+            rp.mobile, "600000000",
+            "Mobile field should contain the mobile number written into phone field."
+        )
+
+    def test_write_phone_landline_in_mobile_field(self):
+        """Test that writing a landline number into the mobile field is handled correctly."""
+        self.spanish_prefix = self.ir_obj.get_object_reference(
+            self.cursor, self.uid, "base_extended_som", "res_phone_national_code_data_34"
+        )[1]
+
+        rp_id = self.rpa_obj.create(self.cursor, self.uid, {
+            "name": "Test Address",
+            "mobile": "972000000",
+            "mobile_prefix": self.spanish_prefix,
+        })
+
+        rp = self.rpa_obj.browse(self.cursor, self.uid, rp_id)
+        self.assertEqual(
+            rp.mobile, False,
+            "Mobile field should be cleared when a landline number is written into it."
+        )
+        self.assertEqual(
+            rp.phone, "972000000",
+            "Phone field should contain the landline number written into mobile field."
+        )
+
+    def test_write_phone_mobile_in_mobile_field(self):
+        """Test that writing a mobile number into the mobile field is handled correctly."""
+        self.spanish_prefix = self.ir_obj.get_object_reference(
+            self.cursor, self.uid, "base_extended_som", "res_phone_national_code_data_34"
+        )[1]
+
+        rp_id = self.rpa_obj.create(self.cursor, self.uid, {
+            "name": "Test Address",
+            "mobile": "600000000",
+            "mobile_prefix": self.spanish_prefix,
+        })
+
+        rp = self.rpa_obj.browse(self.cursor, self.uid, rp_id)
+        self.assertEqual(
+            rp.mobile, "600000000",
+            "Mobile field should contain the mobile number written into it."
+        )
+        self.assertEqual(
+            rp.phone, False,
+            "Phone field should remain empty when a mobile number is written into mobile field."
+        )
+
+    def test_write_phone_landline_in_phone_field(self):
+        """Test that writing a landline number into the phone field is handled correctly."""
+        self.spanish_prefix = self.ir_obj.get_object_reference(
+            self.cursor, self.uid, "base_extended_som", "res_phone_national_code_data_34"
+        )[1]
+
+        rp_id = self.rpa_obj.create(self.cursor, self.uid, {
+            "name": "Test Address",
+            "phone": "972000000",
+            "phone_prefix": self.spanish_prefix,
+        })
+
+        rp = self.rpa_obj.browse(self.cursor, self.uid, rp_id)
+        self.assertEqual(
+            rp.phone, "972000000",
+            "Phone field should contain the landline number written into it."
+        )
+        self.assertEqual(
+            rp.mobile, False,
+            "Mobile field should remain empty when a landline number is written into phone field."
+        )
+
+    def test_write_landline_phone_in_mobile_field_with_existing_mobile(self):
+        """Test that writing a landline number into the mobile field with existing mobile is handled correctly."""  # noqa:E501
+        self.spanish_prefix = self.ir_obj.get_object_reference(
+            self.cursor, self.uid, "base_extended_som", "res_phone_national_code_data_34"
+        )[1]
+
+        rp_id = self.rpa_obj.create(self.cursor, self.uid, {
+            "name": "Test Address",
+            "mobile": "600000000",
+            "mobile_prefix": self.spanish_prefix,
+        })
+
+        # Now write a landline number into the mobile field
+        self.rpa_obj.write(self.cursor, self.uid, [rp_id], {
+            "mobile": "972000000",
+        })
+
+        rp = self.rpa_obj.browse(self.cursor, self.uid, rp_id)
+        self.assertEqual(
+            rp.mobile, False,
+            "Mobile field should be cleared when a landline number is written into it."
+        )
+        self.assertEqual(
+            rp.phone, "972000000",
+            "Phone field should contain the landline number written into mobile field."
+        )
+
+    def test_write_landline_phone_in_mobile_field_with_existing_phone(self):
+        """Test that writing a landline number into the mobile field with existing phone is handled correctly."""  # noqa:E501
+        self.spanish_prefix = self.ir_obj.get_object_reference(
+            self.cursor, self.uid, "base_extended_som", "res_phone_national_code_data_34"
+        )[1]
+
+        rp_id = self.rpa_obj.create(self.cursor, self.uid, {
+            "name": "Test Address",
+            "phone": "972000000",
+            "phone_prefix": self.spanish_prefix,
+        })
+
+        # Now write a landline number into the mobile field
+        self.rpa_obj.write(self.cursor, self.uid, [rp_id], {
+            "mobile": "872000000",
+        })
+
+        rp = self.rpa_obj.browse(self.cursor, self.uid, rp_id)
+        self.assertEqual(
+            rp.mobile, False,
+            "Mobile field should be cleared when a landline number is written into it."
+        )
+        self.assertEqual(
+            rp.phone, "872000000",
+            "Phone field should contain the landline number written into mobile field."
+        )
+        today = datetime.date.today().strftime("%Y/%m/%d")
+        self.assertEqual(
+            rp.notes, "{}: Telèofn fix substituit, l'antic telèfon era: 972000000".format(today),
+            "Notes should contain information about the phone number change."
         )
