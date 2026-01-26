@@ -171,13 +171,22 @@ class SomenergiaSoci(osv.osv):
 
         if factures_pendents and not context.get('skip_pending_check', False):
             reasons.append(_('El soci té factures pendents.'))
-
-        polisses = pol_obj.search(cursor, uid,
+        
+        polisses_as_titular = pol_obj.search(cursor, uid,
                                   [('soci', '=', res_partner_id),
+                                   ('titular', '=', res_partner_id),
                                    ('state', '!=', 'baixa'),
                                    ('state', '!=', 'cancelada')])
-        if polisses:
-            reasons.append(_('El soci té al menys un contracte vinculat.'))
+        if polisses_as_titular:
+            reasons.append(_('El soci té al menys un contracte vinculat com a soci i titular.'))
+
+        polisses_apadrinades = pol_obj.search(cursor, uid,
+                                  [('soci', '=', res_partner_id),
+                                   ('titular', '!=', res_partner_id),
+                                   ('state', '!=', 'baixa'),
+                                   ('state', '!=', 'cancelada')])
+        if polisses_apadrinades and not context.get('skip_sponsored_check', False):
+            reasons.append(_('El soci té al menys un contracte apadrinat.'))
             
         return reasons
 
@@ -228,10 +237,32 @@ class SomenergiaSoci(osv.osv):
                                                 'comment': comment })
         delete_rel(cursor, uid, soci_category_id, res_partner_id)
 
+        self._unlink_sponsored_contracts(cursor, uid, res_partner_id, context)
         rpa_obj.unsubscribe_partner_in_members_lists(
             cursor, uid, [res_partner_id], context=context
         )
         return True
+
+    def _unlink_sponsored_contracts(self, cursor, uid, res_partner_id, context=None):
+        polissa_obj = self.pool.get('giscedata.polissa')
+        res_partner_obj = self.pool.get('res.partner')
+
+        dni_soci = res_partner_obj.read(cursor, uid, res_partner_id, ['vat'])['vat']
+        polisses_apadrinades = polissa_obj.search(cursor, uid, [
+            ('soci', '=', res_partner_id), ('titular', '!=', res_partner_id)
+        ])
+        for polissa_id in polisses_apadrinades:
+            polissa_vals = polissa_obj.read(cursor, uid, polissa_id, ['titular', 'name'])
+            titular_id = polissa_vals['titular'][0]
+            titular_notes = res_partner_obj.read(
+                cursor, uid, titular_id, ['comment'])['comment'] or ''
+            titular_notes = (
+                "{} Contracte {} apadrinat per {},"
+                " soci es dona de baixa i treiem apadrinament."
+                .format(datetime.now().strftime('%Y-%m-%d'), polissa_vals['name'], dni_soci)
+            )
+            polissa_obj.write(cursor, uid, polissa_id, {'soci': False})
+            res_partner_obj.write(cursor, uid, titular_id, {'comment': titular_notes})
 
 
     _columns = {

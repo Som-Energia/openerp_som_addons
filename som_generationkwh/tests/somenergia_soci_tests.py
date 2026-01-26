@@ -130,3 +130,67 @@ class SomenergiaSociTests(testing.OOTestCase):
             self.Soci.verifica_baixa_soci(self.cursor, self.uid, member_id)
 
         self.assertIn("El soci té al menys un contracte vinculat", ctx.exception.message)
+
+    def test_cancel_member_with_sponsored_contract__notAllowed(self):
+        member_id = self.IrModelData.get_object_reference(
+            self.cursor, self.uid, 'som_generationkwh', 'soci_0001'
+        )[1]
+        partner_id = self.IrModelData.get_object_reference(
+            self.cursor, self.uid, 'som_generationkwh', 'res_partner_inversor1'
+        )[1]
+        sponsored_partner_id = self.IrModelData.get_object_reference(
+            self.cursor, self.uid, 'som_generationkwh', 'res_partner_noinversor2'
+        )[1]
+        self.Soci.write(
+            self.cursor, self.uid, [member_id], {'baixa': False, 'data_baixa_soci': None})
+        invs = self.Investment.search(self.cursor, self.uid, [('member_id','=', member_id)])
+
+        self.Investment.write(self.cursor, self.uid, invs, {'active':False})
+
+        polissa_id = self.IrModelData.get_object_reference(
+            self.cursor, self.uid, 'giscedata_polissa', 'polissa_0001'
+        )[1]
+
+        self.Polissa.write(self.cursor, self.uid, [polissa_id], {
+            'soci': partner_id, 'titular': sponsored_partner_id
+        })
+
+        res = self.Soci.get_baixa_blocking_reasons(self.cursor, self.uid, member_id)
+
+        self.assertEqual(res, ["El soci té al menys un contracte apadrinat."])
+
+    @mock.patch("som_polissa_soci.models.res_partner_address.ResPartnerAddress.unsubscribe_partner_in_members_lists")  # noqa: E501
+    def test_cancel_member_with_sponsored_contract_with_context__Allowed(self, mailchimp_mock):
+        member_id = self.IrModelData.get_object_reference(
+            self.cursor, self.uid, 'som_generationkwh', 'soci_0001'
+        )[1]
+        partner_id = self.IrModelData.get_object_reference(
+            self.cursor, self.uid, 'som_generationkwh', 'res_partner_inversor1'
+        )[1]
+        sponsored_partner_id = self.IrModelData.get_object_reference(
+            self.cursor, self.uid, 'som_generationkwh', 'res_partner_noinversor2'
+        )[1]
+        self.Soci.write(
+            self.cursor, self.uid, [member_id], {'baixa': False, 'data_baixa_soci': None})
+        invs = self.Investment.search(self.cursor, self.uid, [('member_id','=', member_id)])
+
+        self.Investment.write(self.cursor, self.uid, invs, {'active':False})
+
+        polissa_id = self.IrModelData.get_object_reference(
+            self.cursor, self.uid, 'giscedata_polissa', 'polissa_0001'
+        )[1]
+
+        self.Polissa.write(self.cursor, self.uid, [polissa_id], {
+            'soci': partner_id, 'titular': sponsored_partner_id
+        })
+
+        self.Soci.verifica_baixa_soci(
+            self.cursor, self.uid, member_id, context={'skip_sponsored_check': True})
+
+        polissa = self.Polissa.browse(self.cursor, self.uid, polissa_id)
+        self.assertFalse(polissa.soci)
+        self.assertEqual(polissa.state, 'esborrany')
+        self.assertEqual(polissa.titular.id, sponsored_partner_id)
+        self.assertIn('treiem apadrinament', polissa.titular.comment)
+        mailchimp_mock.assert_called_with(
+            self.cursor, self.uid, [partner_id], context={'skip_sponsored_check': True})

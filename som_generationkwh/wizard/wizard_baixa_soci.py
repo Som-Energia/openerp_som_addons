@@ -11,6 +11,7 @@ class WizardBaixaSoci(osv.osv_memory):
         'state': fields.char('State', size=16),
         'info': fields.text('Info'),
         'skip_pending_check': fields.boolean('Salta la comprovació de factures pendents'),
+        'skip_sponsored_check': fields.boolean('Desvincular pòlisses apadrinades'),
     }
     _defaults = {
         'state': 'init'
@@ -27,7 +28,8 @@ class WizardBaixaSoci(osv.osv_memory):
             
         # We enforce skip_pending_check=False during verification to show all issues
         reasons = soci_obj.get_baixa_blocking_reasons(cursor, uid, soci_id[0], context={
-            'skip_pending_check': False
+            'skip_pending_check': False,
+            'skip_sponsored_check': False
         })
         
         result_text = _("### Tot correcte.\nEs pot procedir a la baixa.")
@@ -46,6 +48,8 @@ class WizardBaixaSoci(osv.osv_memory):
         try:
             if wizard.skip_pending_check:
                 context['skip_pending_check'] = True
+            if wizard.skip_sponsored_check:
+                context['skip_sponsored_check'] = True
             soci_obj.verifica_baixa_soci(cursor, uid, soci_id[0], context)
         except osv.except_osv as e:
             wizard.write({'state':'error', 'info': e.message})
