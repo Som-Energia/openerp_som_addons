@@ -7,16 +7,28 @@ import logging
 class WizardBaixaSoci(osv.osv_memory):
 
     _name = 'wizard.baixa.soci'
+
     _columns = {
         'state': fields.char('State', size=16),
         'info': fields.text('Info'),
+        'partner_id': fields.many2one('res.partner', 'Partner', readonly=True),
+        'bank_account_id': fields.many2one(
+            'res.partner.bank', 'Compte bancari per devolució', required=True,
+        ),
         'skip_pending_check': fields.boolean('Salta la comprovació de factures pendents'),
-        'skip_sponsored_check': fields.boolean('Desvincular pòlisses apadrinades'),
-    }
-    _defaults = {
-        'state': 'init'
+        'skip_sponsored_check': fields.boolean('Desvincula pòlisses apadrinades'),
     }
 
+    def _get_default_partner_id(self, cursor, uid, context=None):
+        soci_id = self._get_soci_from_context(context)
+        soci_obj = self.pool.get('somenergia.soci')
+        soci = soci_obj.read(cursor, uid, soci_id[0], ['partner_id'])
+        return soci['partner_id'][0]
+
+    _defaults = {
+        'state': 'init',
+        'partner_id': _get_default_partner_id,
+    }
 
     def verify(self, cursor, uid, ids, context=None):
         soci_obj = self.pool.get('somenergia.soci')
@@ -63,7 +75,7 @@ class WizardBaixaSoci(osv.osv_memory):
         if not isinstance(soci_id, list):
             soci_id = [soci_id]
         if len(soci_id) != 1:
-            raise "Has de seleccionar un sol soci"
+            raise osv.except_osv("Error", "Has de seleccionar un sol soci")
         return soci_id
 
     def baixa_soci_and_send_mail(self, cursor, uid, ids, context=None):

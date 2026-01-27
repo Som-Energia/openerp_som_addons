@@ -20,8 +20,10 @@
                     <field name="info" nolabel="1" readonly="1" colspan="4" widget="markdown"/>
                     <separator colspan="4" />
                     <label string="ATENCIÓ: Si continues, donaràs de baixa la sòcia seleccionada" colspan="4" />
-                    <field name="skip_pending_check"/>
-                    <field name="skip_sponsored_check"/>
+                    <field name="partner_id" invisible="1"/>
+                    <field name="bank_account_id" colspan="4" domain="[('partner_id', '=', partner_id)]"/>
+                    <field name="skip_pending_check" colspan="4"/>
+                    <field name="skip_sponsored_check" colspan="4"/>
                     <group colspan="4" >
                         <button string="Baixa" type="object" name="baixa_soci" icon="gtk-yes" confirm="Estas segur?" colspan="2"/>
                         <button string="Baixa i enviament de correu" type="object" name="baixa_soci_and_send_mail" icon="gtk-yes" confirm="Estas segur?" colspan="2"/>
