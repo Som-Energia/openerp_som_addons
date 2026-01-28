@@ -7,7 +7,8 @@
         <field name="type">form</field>
         <field name="arch" type="xml" >
             <form string="Baixa de sòcia">
-                <field name="state" invisible="1"/>
+                <field name="state" widget="steps" colspan="4" nolabel="1" widget_props="{'error_field': 'error'}"/>
+                <separator colspan="4" />
                 <group attrs="{'invisible': [('state', '!=', 'init')]}">
                     <label string="Aquesta acció només verificarà si es pot donar de baixa (sense modificar res encara)" colspan="4" />
                     <group colspan="4" >
@@ -17,11 +18,17 @@
                 </group>
 
                 <group attrs="{'invisible': [('state', '!=', 'checklist')]}">
-                    <field name="info" nolabel="1" readonly="1" colspan="4" widget="markdown"/>
+                    <field name="error" invisible="1"/>
+                    <group colspan="4" col="1" attrs="{'invisible': [('error', '!=', '')]}">
+                        <field name="info" nolabel="1" readonly="1" widget="markdown"/>
+                    </group>
+                    <group colspan="4" col="1" attrs="{'invisible': [('error', '=', '')]}" widget_props="{'backgroundColor': '#FF0000'}">
+                        <field name="info" nolabel="1" readonly="1"/>
+                    </group>
                     <separator colspan="4" />
-                    <label string="ATENCIÓ: Si continues, donaràs de baixa la sòcia seleccionada" colspan="4" />
+                    <label string="ATENCIÓ: Si continues, donaràs de baixa la sòcia seleccionada" colspan="4" widget_props="{'label_type': 'warning'}"/>
                     <field name="partner_id" invisible="1"/>
-                    <field name="bank_account_id" colspan="4" domain="[('partner_id', '=', partner_id)]"/>
+                    <field name="bank_account_id" colspan="4" domain="[('partner_id', '=', partner_id)]" widget="many2one_lazy"/>
                     <field name="skip_pending_check" colspan="4"/>
                     <field name="skip_sponsored_check" colspan="4"/>
                     <group colspan="4" >
@@ -31,16 +38,8 @@
                     <button string="Cancel·lar" special="cancel" type="object" icon="gtk-cancel" colspan="4"/>
                 </group>
 
-                <group attrs="{'invisible': [('state', '!=', 'ok')]}">
-                    <label colspan="4" string="La baixa s'ha efectuat correctament"/>
-                    <separator colspan="4" />
-                    <button string="Tancar" special="cancel" type="object"/>
-                </group>
-
-                <group attrs="{'invisible': [('state', '!=', 'error')]}">  
-                    <label colspan="4" string="Error: No s'ha pogut efectuar la baixa"/>
-                    <separator colspan="4" />
-                    <field name="info" nolabel="1" readonly="1" colspan="4"/>
+                <group attrs="{'invisible': [('state', '!=', 'done')]}">
+                    <label string="La baixa s'ha efectuat correctament." colspan="4" widget_props="{'label_type': 'success'}"/>
                     <button string="Tancar" special="cancel" type="object" colspan="4"/>
                 </group>
             </form>

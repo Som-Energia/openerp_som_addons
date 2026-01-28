@@ -9,7 +9,12 @@ class WizardBaixaSoci(osv.osv_memory):
     _name = 'wizard.baixa.soci'
 
     _columns = {
-        'state': fields.char('State', size=16),
+        'state': fields.selection([
+            ('init', 'Inici'),
+            ('checklist', 'Verificació'),
+            ('done', 'Resultat'),
+        ], string='Estat'),
+        'error': fields.text('Error'),
         'info': fields.text('Info'),
         'partner_id': fields.many2one('res.partner', 'Partner', readonly=True),
         'bank_account_id': fields.many2one(
@@ -26,7 +31,8 @@ class WizardBaixaSoci(osv.osv_memory):
         return soci['partner_id'][0]
 
     _defaults = {
-        'state': 'init',
+        'state': lambda *a: 'init',
+        'error': lambda *a: '',
         'partner_id': _get_default_partner_id,
     }
 
@@ -44,9 +50,9 @@ class WizardBaixaSoci(osv.osv_memory):
             'skip_sponsored_check': False
         })
         
-        result_text = _("### Tot correcte.\nEs pot procedir a la baixa.")
+        result_text = _("##### Tot correcte.\nEs pot procedir a la baixa.")
         if reasons:
-            result_text = _("### Hi ha motius que impedeixen la baixa:\n* ") + "\n* ".join(reasons)
+            result_text = _("##### Hi ha motius que impedeixen la baixa:\n* ") + "\n* ".join(reasons)
             
         wizard.write({'state': 'checklist', 'info': result_text})
 
@@ -64,11 +70,11 @@ class WizardBaixaSoci(osv.osv_memory):
                 context['skip_sponsored_check'] = True
             soci_obj.verifica_baixa_soci(cursor, uid, soci_id[0], context)
         except osv.except_osv as e:
-            wizard.write({'state':'error', 'info': e.message})
+            wizard.write({'info': e.message, 'error': "No es pot donar de baixa"})
         else:
             if send_mail:
                 self.send_mail(cursor, uid, soci_id[0])
-            wizard.write({'state':'ok'})
+            wizard.write({'state':'done'})
     
     def _get_soci_from_context(self, context):
         soci_id = context['active_ids']
