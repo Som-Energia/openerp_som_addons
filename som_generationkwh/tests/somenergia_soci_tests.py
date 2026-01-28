@@ -2,6 +2,7 @@
 import unittest
 from destral import testing
 from destral.transaction import Transaction
+from destral.patch import PatchNewCursors
 import netsvc
 from datetime import datetime, timedelta, date
 from osv import osv, fields
@@ -25,6 +26,10 @@ class SomenergiaSociTests(testing.OOTestCase):
         self.Factura = self.openerp.pool.get('giscedata.facturacio.factura')
         self.Polissa = self.openerp.pool.get('giscedata.polissa')
         self.Soci = self.openerp.pool.get('somenergia.soci')
+        self.PaymentOrder = self.openerp.pool.get('payment.order')
+        self.WizPayRemesa = self.openerp.pool.get('pagar.remesa.wizard')
+
+        self.bank_account_id = 1  # just for tests
 
     def tearDown(self):
         self.txn.stop()
@@ -38,10 +43,11 @@ class SomenergiaSociTests(testing.OOTestCase):
         future_date = (today + timedelta(days=365)).strftime('%Y-%m-%d')
         investment.write({'last_effective_date': future_date})
         member_id = investment.member_id.id
-        self.Soci.write(self.cursor, self.uid, [member_id], {'baixa': False, 'data_baixa_soci': None})
+        self.Soci.write(
+            self.cursor, self.uid, [member_id], {'baixa': False, 'data_baixa_soci': None})
 
         with self.assertRaises(except_osv) as ctx:
-            self.Soci.verifica_baixa_soci(self.cursor, self.uid, member_id)
+            self.Soci.do_baixa_soci(self.cursor, self.uid, member_id, self.bank_account_id)
 
         self.assertIn("El soci té inversions de generation actives", ctx.exception.message)
 
@@ -51,13 +57,15 @@ class SomenergiaSociTests(testing.OOTestCase):
             )[1]
         investment = self.Investment.browse(self.cursor, self.uid, invest_id)
         member_id = investment.member_id.id
-        self.Soci.write(self.cursor, self.uid, [member_id], {'baixa': False, 'data_baixa_soci': None})
+        self.Soci.write(
+            self.cursor, self.uid, [member_id], {'baixa': False, 'data_baixa_soci': None})
         investment.write({'last_effective_date': False, 'draft': False})
-        generation_invs = self.Investment.search(self.cursor, self.uid, [('member_id','=', member_id),('emission_id','=',1)])
+        generation_invs = self.Investment.search(
+            self.cursor, self.uid, [('member_id','=', member_id),('emission_id','=',1)])
         self.Investment.write(self.cursor, self.uid, generation_invs, {'active':False})
 
         with self.assertRaises(except_osv) as ctx:
-            self.Soci.verifica_baixa_soci(self.cursor, self.uid, member_id)
+            self.Soci.do_baixa_soci(self.cursor, self.uid, member_id, self.bank_account_id)
 
         self.assertIn("El soci té aportacions actives", ctx.exception.message)
     
@@ -71,17 +79,19 @@ class SomenergiaSociTests(testing.OOTestCase):
         member_id = self.IrModelData.get_object_reference(
             self.cursor, self.uid, 'som_generationkwh', 'soci_0001' 
             )[1]
-        self.Soci.write(self.cursor, self.uid, [member_id], {'baixa': False, 'data_baixa_soci': None})
+        self.Soci.write(
+            self.cursor, self.uid, [member_id], {'baixa': False, 'data_baixa_soci': None})
 
         invs = self.Investment.search(self.cursor, self.uid, [('member_id','=', member_id)])
         self.Investment.write(self.cursor, self.uid, invs, {'active':False})
 
-        invoice_id = self.Factura.read(self.cursor, self.uid, fact_id, ['invoice_id'])['invoice_id'][0]
-        self.Invoice.write(self.cursor, self.uid, invoice_id, {'partner_id': partner_id,
-                                                       'state': 'open'})
+        invoice_id = self.Factura.read(
+            self.cursor, self.uid, fact_id, ['invoice_id'])['invoice_id'][0]
+        self.Invoice.write(
+            self.cursor, self.uid, invoice_id, {'partner_id': partner_id, 'state': 'open'})
     
         with self.assertRaises(except_osv) as ctx:
-            self.Soci.verifica_baixa_soci(self.cursor, self.uid, member_id)
+            self.Soci.do_baixa_soci(self.cursor, self.uid, member_id, self.bank_account_id)
 
         self.assertIn("El soci té factures pendents", ctx.exception.message)
 
@@ -93,7 +103,8 @@ class SomenergiaSociTests(testing.OOTestCase):
         member_id = self.IrModelData.get_object_reference(
             self.cursor, self.uid, 'som_generationkwh', 'soci_0001'
             )[1]
-        self.Soci.write(self.cursor, self.uid, [member_id], {'baixa': False, 'data_baixa_soci': None})
+        self.Soci.write(
+            self.cursor, self.uid, [member_id], {'baixa': False, 'data_baixa_soci': None})
         invs = self.Investment.search(self.cursor, self.uid, [('member_id','=', member_id)])
 
         self.Investment.write(self.cursor, self.uid, invs, {'active':False})
@@ -104,8 +115,10 @@ class SomenergiaSociTests(testing.OOTestCase):
 
         self.Polissa.write(self.cursor, self.uid, [polissa_id], {'titular': partner_id})
 
-        self.assertEqual(self.Soci.verifica_baixa_soci(self.cursor, self.uid, member_id), True)
-        partner_id = self.Soci.read(self.cursor, self.uid, member_id, ['partner_id'])['partner_id'][0]
+        self.assertEqual(
+            self.Soci.do_baixa_soci(self.cursor, self.uid, member_id, self.bank_account_id), True)
+        partner_id = self.Soci.read(
+            self.cursor, self.uid, member_id, ['partner_id'])['partner_id'][0]
         mailchimp_mock.assert_called_with(self.cursor, self.uid, [partner_id], context={})
 
     def test_cancel_member_with_related_contract__notAllowed(self):
@@ -115,7 +128,8 @@ class SomenergiaSociTests(testing.OOTestCase):
         member_id = self.IrModelData.get_object_reference(
             self.cursor, self.uid, 'som_generationkwh', 'soci_0001'
             )[1]
-        self.Soci.write(self.cursor, self.uid, [member_id], {'baixa': False, 'data_baixa_soci': None})
+        self.Soci.write(
+            self.cursor, self.uid, [member_id], {'baixa': False, 'data_baixa_soci': None})
         invs = self.Investment.search(self.cursor, self.uid, [('member_id','=', member_id)])
 
         self.Investment.write(self.cursor, self.uid, invs, {'active':False})
@@ -127,7 +141,7 @@ class SomenergiaSociTests(testing.OOTestCase):
         self.Polissa.write(self.cursor, self.uid, [polissa_id], {'soci': partner_id})
 
         with self.assertRaises(except_osv) as ctx:
-            self.Soci.verifica_baixa_soci(self.cursor, self.uid, member_id)
+            self.Soci.do_baixa_soci(self.cursor, self.uid, member_id, self.bank_account_id)
 
         self.assertIn("El soci té al menys un contracte vinculat", ctx.exception.message)
 
@@ -184,8 +198,10 @@ class SomenergiaSociTests(testing.OOTestCase):
             'soci': partner_id, 'titular': sponsored_partner_id
         })
 
-        self.Soci.verifica_baixa_soci(
-            self.cursor, self.uid, member_id, context={'skip_sponsored_check': True})
+        self.Soci.do_baixa_soci(
+            self.cursor, self.uid, member_id,
+            self.bank_account_id, context={'skip_sponsored_check': True}
+        )
 
         polissa = self.Polissa.browse(self.cursor, self.uid, polissa_id)
         self.assertFalse(polissa.soci)
@@ -194,3 +210,43 @@ class SomenergiaSociTests(testing.OOTestCase):
         self.assertIn('treiem apadrinament', polissa.titular.comment)
         mailchimp_mock.assert_called_with(
             self.cursor, self.uid, [partner_id], context={'skip_sponsored_check': True})
+
+    @mock.patch("som_polissa_soci.models.res_partner_address.ResPartnerAddress.unsubscribe_partner_in_members_lists")  # noqa: E501
+    def test_cancel_member_with_active_contract_creates_payment_order(self, mailchimp_mock):
+        partner_id = self.IrModelData.get_object_reference(
+            self.cursor, self.uid, 'som_generationkwh', 'res_partner_inversor1'
+            )[1]
+        member_id = self.IrModelData.get_object_reference(
+            self.cursor, self.uid, 'som_generationkwh', 'soci_0001'
+            )[1]
+        return_payment_mode_id = self.IrModelData.get_object_reference(
+            self.cursor, self.uid, 'som_generationkwh', 'soci_return_payment_mode'
+        )[1]
+        self.Soci.write(
+            self.cursor, self.uid, [member_id], {'baixa': False, 'data_baixa_soci': None})
+        invs = self.Investment.search(self.cursor, self.uid, [('member_id','=', member_id)])
+
+        self.Investment.write(self.cursor, self.uid, invs, {'active':False})
+
+        polissa_id = self.IrModelData.get_object_reference(
+            self.cursor, self.uid, 'giscedata_polissa', 'polissa_0001'
+        )[1]
+        self.Polissa.write(self.cursor, self.uid, [polissa_id], {'titular': partner_id})
+
+        payment_order_ids = self.PaymentOrder.search(
+            self.cursor, self.uid, [('mode', '=', return_payment_mode_id)])
+        self.assertEqual(len(payment_order_ids), 0)
+
+        self.assertEqual(
+            self.Soci.do_baixa_soci(self.cursor, self.uid, member_id, self.bank_account_id), True)
+        partner_id = self.Soci.read(
+            self.cursor, self.uid, member_id, ['partner_id'])['partner_id'][0]
+        mailchimp_mock.assert_called_with(self.cursor, self.uid, [partner_id], context={})
+
+        payment_order_ids = self.PaymentOrder.search(
+            self.cursor, self.uid, [('mode', '=', return_payment_mode_id)])
+        self.assertEqual(len(payment_order_ids), 1)
+        payment_order_id = payment_order_ids[0]
+        payment_order = self.PaymentOrder.browse(self.cursor, self.uid, payment_order_id)
+        self.assertEqual(payment_order.state, 'draft')
+        self.assertEqual(payment_order.total, 100)

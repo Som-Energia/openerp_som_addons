@@ -190,24 +190,14 @@ class SomenergiaSoci(osv.osv):
             
         return reasons
 
-    def verifica_baixa_soci(self, cursor, uid, ids, context=None):
+    def do_baixa_soci(self, cursor, uid, member_id, bank_account_id, context=None):
         # - Comprovar si té generationkwh: Existeix atribut al model generation que ho indica. Altrament es poden buscar les inversions.
         # - Comprovar si té inversions vigents: Buscar inversions vigents.
         # - Comprovar si té contractes actius: Buscar contractes vigents.
         # - Comprovar si té Factures pendents de pagament: Per a aquesta comprovació hi ha una tasca feta a la OV que ens pot ajudar feta per en Fran a la següent PR: https://github.com/gisce/erp/pull/7997/files
 
-        """Mètode per donar de baixa un soci.
-        """
-        if not context:
-            context = {}
-        if not ids:
-            return
-        if isinstance(ids, (int, long)):
-            ids = [ids]
-        if len(ids) != 1:
-            raise osv.except_osv(_('Com ha minim es necessita un soci'))
-
-        member_id = ids[0]
+        """Mètode per donar de baixa un soci."""
+        context = context or {}
         
         reasons = self.get_baixa_blocking_reasons(cursor, uid, member_id, context=context)
         if reasons:
@@ -241,6 +231,7 @@ class SomenergiaSoci(osv.osv):
         rpa_obj.unsubscribe_partner_in_members_lists(
             cursor, uid, [res_partner_id], context=context
         )
+        self._create_payment_line(cursor, uid, member_id, bank_account_id, context)
         return True
 
     def _unlink_sponsored_contracts(self, cursor, uid, res_partner_id, context=None):
@@ -264,6 +255,41 @@ class SomenergiaSoci(osv.osv):
             polissa_obj.write(cursor, uid, polissa_id, {'soci': False})
             res_partner_obj.write(cursor, uid, titular_id, {'comment': titular_notes})
 
+    def _create_payment_line(self, cursor, uid, member_id, bank_account_id, context=None):
+        conf_o = self.pool.get("res.config")
+        imd_o = self.pool.get("ir.model.data")
+        payment_mode_o = self.pool.get("payment.mode")
+        payment_order_o = self.pool.get("payment.order")
+        currency_o = self.pool.get("res.currency")
+        soci_o = self.pool.get("somenergia.soci")
+        account_o = self.pool.get("account.account")
+
+        socia_fee_amount = conf_o.get(cursor, uid, "socia_member_fee_amount", "100")
+        currency_id = currency_o.search(cursor, uid, [("name", "=", "EUR")])[0]
+        payment_mode_id = imd_o.get_object_reference(
+            cursor, uid, "som_generationkwh", "soci_return_payment_mode")[1]
+        payment_mode_name = payment_mode_o.read(cursor, uid, payment_mode_id, ["name"])["name"]
+        payment_order_id = payment_order_o.get_or_create_open_payment_order(
+            cursor, uid,  payment_mode_name, use_invoice=False, context=context
+        )
+        # FIXME: Put the right account code, this is just a test
+        acc_id = account_o.search(cursor, uid, [("code", "=", "410000")])[0]
+        soci = soci_o.browse(cursor, uid, member_id, context=context)
+        self.pool.get("payment.line").create(
+            cursor, uid, {
+                "name": soci.ref,
+                "order_id": payment_order_id,
+                "currency": currency_id,
+                "partner_id": soci.partner_id.id,
+                "company_currency": currency_id,
+                "bank_id": bank_account_id,
+                "state": "normal",
+                "amount_currency": socia_fee_amount,
+                "account_id": acc_id,
+                "communication": "RETORN QUOTA SOCI",
+                "comm_text": "RETORN QUOTA SOCI",
+            }
+        )
 
     _columns = {
         'has_gkwh': fields.function(

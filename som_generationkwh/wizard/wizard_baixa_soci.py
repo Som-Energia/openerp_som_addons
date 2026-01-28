@@ -68,7 +68,7 @@ class WizardBaixaSoci(osv.osv_memory):
                 context['skip_pending_check'] = True
             if wizard.skip_sponsored_check:
                 context['skip_sponsored_check'] = True
-            soci_obj.verifica_baixa_soci(cursor, uid, soci_id[0], context)
+            soci_obj.do_baixa_soci(cursor, uid, soci_id[0], wizard.bank_account_id.id, context)
         except osv.except_osv as e:
             wizard.write({'info': e.message, 'error': "No es pot donar de baixa"})
         else:

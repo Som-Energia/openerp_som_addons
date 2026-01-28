@@ -25,6 +25,7 @@
     'custom_search',
     'giscedata_facturacio_impagat_comer',
     'account_account_som',
+    'som_leads_polissa',
     ],
   "init_xml": [],
   "demo_xml": [
