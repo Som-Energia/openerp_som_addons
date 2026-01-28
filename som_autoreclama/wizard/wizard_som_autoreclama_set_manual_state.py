@@ -21,7 +21,7 @@ class WizardSomAutoreclamaSetManualState(osv.osv_memory):
             atc_obj = self.pool.get("giscedata.atc")
             datas = atc_obj.read(cursor, uid, item_ids, ['polissa_id'])
             return list(set([data['polissa_id'][0] for data in datas]))[0]
-        elif namespace == "polissa":
+        elif namespace in ["polissa", "polissa009"]:
             return context["active_ids"][0]
         return None
 
@@ -31,6 +31,8 @@ class WizardSomAutoreclamaSetManualState(osv.osv_memory):
             return '029'
         elif namespace == "polissa":
             return '006'
+        elif namespace == "polissa009":
+            return '009'
         return ''
 
     def assign_state(self, cursor, uid, ids, context=None):
