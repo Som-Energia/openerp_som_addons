@@ -272,8 +272,7 @@ class SomenergiaSoci(osv.osv):
         payment_order_id = payment_order_o.get_or_create_open_payment_order(
             cursor, uid,  payment_mode_name, use_invoice=False, context=context
         )
-        # FIXME: Put the right account code, this is just a test
-        acc_id = account_o.search(cursor, uid, [("code", "=", "410000")])[0]
+        acc_id = account_o.search(cursor, uid, [("code", "=", "100000000000")])[0]
         soci = soci_o.browse(cursor, uid, member_id, context=context)
         self.pool.get("payment.line").create(
             cursor, uid, {
