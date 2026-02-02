@@ -13,14 +13,14 @@
                 <xpath expr="//field[@name='mobile']" position="replace" />
                 <xpath expr="//separator[@string='Comunication channels']" position="after">
                     <group col="16" colspan="4">
-                        <field name="phone_prefix" colspan="2" widget_props="{'showMenu': false, 'showFolder': false}"/>
-                        <field name="phone" colspan="6"/>
-                        <field name="fax"  colspan="6" />
-                    </group>
-                    <group col="16" colspan="4">
                         <field name="mobile_prefix" colspan="2" widget_props="{'showMenu': false, 'showFolder': false}"/>
                         <field name="mobile" colspan="6"/>
                         <field name="email" colspan="6" widget="email"/>
+                    </group>
+                    <group col="16" colspan="4">
+                        <field name="phone_prefix" colspan="2" widget_props="{'showMenu': false, 'showFolder': false}"/>
+                        <field name="phone" colspan="6" string="Fix"/>
+                        <field name="fax"  colspan="6" />
                     </group>
                     <group colspan="4">
                         <field name="notes" colspan="4"/>
@@ -43,14 +43,14 @@
                 <xpath expr="//field[@name='mobile']" position="replace" />
                 <xpath expr="//separator[@string='Comunication channels']" position="after">
                     <group col="16" colspan="4">
-                        <field name="phone_prefix" colspan="2" widget_props="{'showMenu': false, 'showFolder': false}"/>
-                        <field name="phone" colspan="6"/>
-                        <field name="fax"  colspan="6" />
-                    </group>
-                    <group col="16" colspan="4">
                         <field name="mobile_prefix" colspan="2" widget_props="{'showMenu': false, 'showFolder': false}"/>
                         <field name="mobile" colspan="6"/>
                         <field name="email" colspan="6" widget="email"/>
+                    </group>
+                    <group col="16" colspan="4">
+                        <field name="phone_prefix" colspan="2" widget_props="{'showMenu': false, 'showFolder': false}"/>
+                        <field name="phone" colspan="6" string="Fix"/>
+                        <field name="fax"  colspan="6" />
                     </group>
                     <group colspan="4">
                         <field name="notes" colspan="4"/>

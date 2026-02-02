@@ -20,6 +20,7 @@ def up(cursor, installed_version):
     logger.info("Updating XML files")
     data_files = [
         'data/base_extended_som_data.xml',
+        'views/res_partner_address_view.xml',
     ]
     for data_file in data_files:
         load_data(
