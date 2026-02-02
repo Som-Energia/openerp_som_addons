@@ -192,6 +192,9 @@ class SomLeadWww(osv.osv_memory):
             if value is None:
                 del values[field]
 
+        # Avoid filling poblacio from existing values because it can be wrong
+        values["titular_id_poblacio"] = None
+
         lead_id = lead_o.create(cr, uid, values, context=context)
         self._create_attachments(cr, uid, lead_id, www_vals.get("attachments", []), context=context)
         self._save_www_data_in_history(cr, uid, lead_id, www_vals, context=context)
