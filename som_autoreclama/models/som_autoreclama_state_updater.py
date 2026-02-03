@@ -89,7 +89,7 @@ class SomAutoreclamaStateUpdater(osv.osv_memory):
         else:
             url = self._generate_polissa_webclient_url_view(cursor, uid, item_ids, title, context)
 
-        return "<a href={}>obrir llista</a>".format(url)
+        return "<a href={}>obrir llista al client web</a>".format(url)
 
     def _generate_ATC_webclient_url_view(self, cursor, uid, item_ids, title, context=None):
         data_obj = self.pool.get("ir.model.data")
@@ -216,9 +216,7 @@ class SomAutoreclamaStateUpdater(osv.osv_memory):
 
         summary = _("Sumari {}\n").format(block_name)
         summary += _("{} que han canviat d'estat: .................. {}\n".format(block_name, len(updated)))  # noqa: E501
-        summary += _(
-            "{} que no han canviat d'estat: ............... {}\n".format(block_name, len(not_updated))  # noqa: E501
-        )
+        summary += _("{} que no han canviat d'estat: ............... {}\n".format(block_name, len(not_updated)))  # noqa: E501
         summary += _("{} que no han pogut canviar per un error: .... {}\n".format(block_name, len(errors)))  # noqa: E501
         summary += _("\n")
 
@@ -229,6 +227,7 @@ class SomAutoreclamaStateUpdater(osv.osv_memory):
                 summary += _("Número de les pòlisses que han canviat d'estat\n").format(block_name)
             updated_names = self.get_names(cursor, uid, updated, namespace, context)
             summary += ", ".join(str(upd) for upd in updated_names)
+            summary += "  " + self.get_names_as_link(cursor, uid, updated, namespace, "Han canviat d'estat", context)  # noqa: E501
             summary += _("\n\n")
 
         if errors:
@@ -238,6 +237,7 @@ class SomAutoreclamaStateUpdater(osv.osv_memory):
                 summary += _("Número de les pòlisses que han donat error (REVISAR)\n").format(block_name)  # noqa: E501
             error_names = self.get_names(cursor, uid, errors, namespace, context)
             summary += ", ".join(str(error) for error in error_names)
+            summary += "  " + self.get_names_as_link(cursor, uid, errors, namespace, "Errors (no han canviat d'estat)", context)  # noqa: E501
             summary += _("\n\n")
 
         if reviews:
@@ -247,6 +247,7 @@ class SomAutoreclamaStateUpdater(osv.osv_memory):
                 summary += _("Número de les pòlisses que han passat a estat 'Revisar'\n").format(block_name)  # noqa: E501
             review_names = self.get_names(cursor, uid, reviews, namespace, context)
             summary += ", ".join(str(review) for review in review_names)
+            summary += "  " + self.get_names_as_link(cursor, uid, reviews, namespace, "Per Revisar", context)  # noqa: E501
             summary += _("\n\n")
 
         return updated, not_updated, errors, msg, summary
