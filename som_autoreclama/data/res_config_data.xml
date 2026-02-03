@@ -6,5 +6,10 @@
             <field name="value">120</field>
             <field name="description">Dies a cercar cap en radera els R1 006 d'una polissa per el sistema autoreclama</field>
         </record>
+        <record model="res.config" id="som_autoreclama_web_client_base_url" forcecreate="1">
+            <field name="name">som_autoreclama_web_client_base_url</field>
+            <field name="value">https://somenergia.coop/</field>
+            <field name="description">Adreça base del client web</field>
+        </record>
     </data>
 </openerp>
