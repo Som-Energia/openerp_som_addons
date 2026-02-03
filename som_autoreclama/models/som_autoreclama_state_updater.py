@@ -3,6 +3,8 @@ from osv import osv
 from tqdm import tqdm
 from tools.translate import _
 from tools import email_send
+import json
+import urllib
 
 
 _namespaces = {
@@ -80,6 +82,74 @@ class SomAutoreclamaStateUpdater(osv.osv_memory):
         pol_obj = self.pool.get('giscedata.polissa')
         pol_datas = pol_obj.read(cursor, uid, item_ids, ['name'], context=context)
         return [pol_data['name'] for pol_data in pol_datas]
+
+    def get_names_as_link(self, cursor, uid, item_ids, namespace, title, context=None):
+        if namespace == 'atc':
+            url = self._generate_ATC_webclient_url_view(cursor, uid, item_ids, title, context)
+        else:
+            url = self._generate_polissa_webclient_url_view(cursor, uid, item_ids, title, context)
+
+        return "<a href={}>obrir llista</a>".format(url)
+
+    def _generate_ATC_webclient_url_view(self, cursor, uid, item_ids, title, context=None):
+        data_obj = self.pool.get("ir.model.data")
+        tree_id = data_obj.get_object_reference(
+            cursor, uid, "giscedata_atc", "giscedata_atc_tree-view"
+        )[1]
+        form_id = data_obj.get_object_reference(
+            cursor, uid, "giscedata_atc", "giscedata_atc-view"
+        )[1]
+        action_id = data_obj.get_object_reference(
+            cursor, uid, "giscedata_atc", "all_atc_case-act"
+        )[1]
+        model = 'giscedata.atc'
+        return self._generate_webclient_url_view(
+            cursor, uid, model, title, tree_id, form_id, action_id, item_ids, context=context
+        )
+
+    def _generate_polissa_webclient_url_view(self, cursor, uid, item_ids, title, context=None):
+        data_obj = self.pool.get("ir.model.data")
+        tree_id = data_obj.get_object_reference(
+            cursor, uid, "giscedata_polissa", "view_polisses_tree"
+        )[1]
+        form_id = data_obj.get_object_reference(
+            cursor, uid, "giscedata_polissa", "view_polisses_form"
+        )[1]
+        action_id = data_obj.get_object_reference(
+            cursor, uid, "giscedata_polissa", "action_polisses"
+        )[1]
+        model = 'giscedata.polissa'
+        return self._generate_webclient_url_view(
+            cursor, uid, model, title, tree_id, form_id, action_id, item_ids, context=context
+        )
+
+    def _generate_webclient_url_view(self, cursor, uid, model, title, tree_id, form_id, action_id, item_ids, context=None):  # noqa: E501
+        cfg_obj = self.pool.get('res.config')
+        actions = {
+            'model': model,
+            'views': [[tree_id, "tree"], [form_id, "form"]],
+            'title': title,
+            'initialView': {'id': tree_id, 'type': 'tree'},
+            'action_id': action_id,
+            'action_type': 'ir.actions.act_window',
+            'res_id': item_ids[0],
+            'limit': 0,
+            'searchParams': [['id', 'in', item_ids]],
+            'actionRawData': {"context": "{'active_test': False}"}
+        }
+
+        actionj = {}
+        for action in actions.iteritems():
+            if isinstance(action[1], (list, dict)):
+                actionj[action[0]] = json.dumps(action[1])
+            else:
+                actionj[action[0]] = action[1]
+
+        url_params = urllib.urlencode(actionj)
+        base_url = cfg_obj.get(
+            cursor, uid, "som_autoreclama_web_client_base_url", "https://somenergia.coop/")
+        action = u'/action?'
+        return u'{}{}{}'.format(base_url, action, url_params)
 
     def get_review_states(self, cursor, uid, namespace):
         data_obj = self.pool.get("ir.model.data")
