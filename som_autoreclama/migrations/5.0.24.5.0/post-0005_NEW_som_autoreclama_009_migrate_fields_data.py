@@ -40,6 +40,7 @@ def up(cursor, installed_version):
 
     logger.info("Updating XML files")
     data_files = [
+        'data/res_config_data.xml',
         'data/giscedata_atc_tag_data.xml',
         'data/som_autoreclama_state_data.xml',
         'wizard/wizard_som_autoreclama_set_correct_state_view.xml',
