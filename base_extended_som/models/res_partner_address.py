@@ -16,6 +16,12 @@ class ResPartnerAddress(osv.osv):
             'res.phone.national.code', 'Prefix', required=False),
     }
 
+    def write(self, cursor, uid, ids, vals, context=None):
+        """Empty poblacio if not specified"""
+        vals['id_poblacio'] = vals.get('id_poblacio', None)
+        res = super(ResPartnerAddress, self).write(cursor, uid, ids, vals, context)
+        return res
+
     @staticmethod
     def check_mobile_or_landline_peek(cursor, uid, number):
         return ResPartnerAddress.check_mobile_or_landline(number)
