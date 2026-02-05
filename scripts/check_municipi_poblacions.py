@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import argparse
 import requests
 import csv
 from collections import defaultdict
@@ -31,7 +32,8 @@ def get_db_data(dbcur):
         mun_pob.ine as mun_pob_ine,
         mun_addr.name as mun_addr_name,
         mun_pob.name as mun_pob_name,
-        addr.street as street
+        addr.street as street,
+        addr.id_poblacio
         from res_partner_address addr
         inner join res_poblacio pob on addr.id_poblacio = pob.id
         inner join res_municipi mun_addr on addr.id_municipi = mun_addr.id
@@ -54,6 +56,7 @@ def get_db_data(dbcur):
             'mun_addr_name': record[4],
             'mun_pob_name': record[5],
             'street': record[6],
+            'id_pobacio': record[7]
         } for record in dbcur.fetchall()
     ]
     step("{} adreçes amb municipi i poblacions diferents trobades a la BBDD", len(db_data))
@@ -82,16 +85,18 @@ def get_cp_ine_from_csv(cp_to_ines, cp, candidats):
     return coincidencies
 
 
-def main():
+def main(output_path):
     cp_to_ines = get_cp_ines_dict()
     cur = get_db_cursor()
     db_data = get_db_data(cur)
     municipi_ok_addr_ids = []
+    out_csv_data = []
     for data in db_data:
         candidats = {data['mun_addr_ine'], data['mun_pob_ine']}
         res_ine = get_cp_ine_from_csv(cp_to_ines, data['zip'], candidats)
         if data['mun_addr_ine'] in res_ine:
             municipi_ok_addr_ids.append(data['addr_id'])
+            data['type'] = 'municipi OK'
         elif data['mun_pob_ine'] in res_ine:
             warn(
                 "({}) CP {} coincideix amb poblacio {} en comptes de municipi {}, mirar carrer: {}",
@@ -99,6 +104,7 @@ def main():
                 data['mun_pob_name'].decode('utf-8'), data['mun_addr_name'].decode('utf-8'),
                 data['street'].decode('utf-8'),
             )
+            data['type'] = 'CP coincideix amb poblacio'
         else:
             warn(
                 "({}) CP {} no coincideix ni amb municipi {} ni amb poblacio {}, mirar carrer: {}",
@@ -106,12 +112,39 @@ def main():
                 data['mun_addr_name'].decode('utf-8'), data['mun_pob_name'].decode('utf-8'),
                 data['street'].decode('utf-8'),
             )
+            data['type'] = 'CP no coincideix amb res'
+        out_csv_data.append(data)
 
     success(str(len(municipi_ok_addr_ids))
             + " adreces amb l'adreça del municipi correcte. Per arreglar-les, executar:")
     formatted_ids = ', '.join((str(id_) for id_ in municipi_ok_addr_ids))
     print("update res_partner_address set id_poblacio = null where id in (" + formatted_ids + ");")
 
+    if output_path:
+        fieldnames = sorted(out_csv_data[0].keys())
+        with open(output_path, "wb") as f:
+            writer = csv.DictWriter(f, fieldnames=fieldnames)
+            writer.writeheader()
+            for row in out_csv_data:
+                clean_row = {}
+                for k, v in row.items():
+                    if isinstance(v, unicode):
+                        clean_row[k] = v.encode("utf-8")
+                    else:
+                        clean_row[k] = v
+                writer.writerow(clean_row)
+        success("CSV escrit correctament")
+
 
 if __name__ == "__main__":
-    main()
+    parser = argparse.ArgumentParser(
+        description="Check address with different municipi - poblacions")
+    parser.add_argument(
+        "--output_path",
+        dest="output_path",
+        type=str,
+        default=None,
+        help="Path for a detailed CSV output",
+    )
+    args = parser.parse_args()
+    main(args.output_path)
