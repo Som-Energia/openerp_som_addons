@@ -18,7 +18,8 @@ class ResPartnerAddress(osv.osv):
 
     def write(self, cursor, uid, ids, vals, context=None):
         """Empty poblacio if not specified"""
-        vals['id_poblacio'] = vals.get('id_poblacio', None)
+        if vals.get('id_municipi'):
+            vals['id_poblacio'] = vals.get('id_poblacio', None)
         res = super(ResPartnerAddress, self).write(cursor, uid, ids, vals, context)
         return res
 
