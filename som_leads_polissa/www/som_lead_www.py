@@ -310,10 +310,12 @@ class SomLeadWww(osv.osv_memory):
         savepoint = 'savepoint_check_lead_can_be_activated_{}'.format(id(cr))
         cr.savepoint(savepoint)
 
+        ctxt = context.copy()
+        ctxt['in_rollback_transaction'] = True
         error = None
         try:
-            lead_o.force_validation(cr, uid, [lead_id], context=context)
-            lead_o.create_entities(cr, uid, lead_id, context=context)
+            lead_o.force_validation(cr, uid, [lead_id], context=ctxt)
+            lead_o.create_entities(cr, uid, lead_id, context=ctxt)
             cr.rollback(savepoint)
         except Exception as e:
             cr.rollback(savepoint)
