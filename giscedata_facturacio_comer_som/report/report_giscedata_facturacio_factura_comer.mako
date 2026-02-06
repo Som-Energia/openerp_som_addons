@@ -18,7 +18,6 @@ report_data = r_obj.get_report_data(cursor, uid, objects)
     ajust_fet = False
     motiu_ajust = ''
 %>
-<script src="${addons_path}/giscedata_facturacio_comer_som/report/d3.min.js"></script>
 <script>
     d3_antic = d3
     window.d3 = null
