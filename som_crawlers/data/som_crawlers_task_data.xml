@@ -651,5 +651,11 @@
             <field name="active">True</field>
             <field name="configuracio_id" ref="coelca_conf"/>
         </record>
+        <!-- ALGINET -->
+        <record model="som.crawlers.task" id="descarregar_alginet">
+            <field name="name">Descarregar ALGINET</field>
+            <field name="active">True</field>
+            <field name="configuracio_id" ref="alginet_conf"/>
+        </record>
     </data>
 </openerp>
