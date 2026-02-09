@@ -135,6 +135,7 @@ jobs:
           pip install -e . || "Not installing somenergia-generation Python package"
           cd $ROOT_DIR_SRC/plantmeter
           pip install -e . || "Not installing plantmeter Python package"
+          pip install lazy-object-proxy<1.7.0
           pip install -r $ROOT_DIR_SRC/erp/requirements-dev.txt
           pip install -r $ROOT_DIR_SRC/erp/requirements.txt
 
