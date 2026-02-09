@@ -130,7 +130,7 @@ jobs:
           pip install -e .
           cd $ROOT_DIR_SRC/OMIE
           git checkout $(git describe --tags `git rev-list --tags --max-count=1`)
-          pip install -e .
+          pip install --no-build-isolation -e .
           cd $ROOT_DIR_SRC/somenergia-generationkwh
           pip install -e . || "Not installing somenergia-generation Python package"
           cd $ROOT_DIR_SRC/plantmeter
