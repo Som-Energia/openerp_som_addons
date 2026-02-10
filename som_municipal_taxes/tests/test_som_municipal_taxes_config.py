@@ -45,7 +45,7 @@ class TestSomMunicipalTaxesConfig(testing.OOTestCaseWithCursor):
             self.cursor, self.uid, [], municipal_id, context)
 
         # check if the file path is correct
-        self.assertEqual(file_path, '/tmp/municipal_taxes_1.xlsx')
+        self.assertEqual(file_path, '/tmp/municipal_taxes_{}.xlsx'.format(municipal_id))
         # check if the file is not empty
         with open(file_path, 'rb') as f:
             content = f.read()
