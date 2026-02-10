@@ -5,3 +5,6 @@
 "access_cups_helper_rcwd","cups.helper","model_cups_helper","giscedata_facturacio.group_giscedata_facturacio_u",1,1,1,1
 "access_cups_helper_rcwd","cups.helper","model_cups_helper","giscedata_facturacio.group_giscedata_facturacio_r",1,1,1,1
 "access_cups_helper_rcwd","cups.helper","model_cups_helper","giscedata_facturacio.group_giscedata_facturacio_w",1,1,1,1
+"access_wizard_change_tariff_social_rcwd","wizard.change.tariff.social","model_wizard_change_tariff_social","giscedata_facturacio.group_giscedata_facturacio_u",1,1,1,1
+"access_wizard_change_tariff_social_rcwd","wizard.change.tariff.social","model_wizard_change_tariff_social","giscedata_facturacio.group_giscedata_facturacio_r",1,1,1,1
+"access_wizard_change_tariff_social_rcwd","wizard.change.tariff.social","model_wizard_change_tariff_social","giscedata_facturacio.group_giscedata_facturacio_w",1,1,1,1
