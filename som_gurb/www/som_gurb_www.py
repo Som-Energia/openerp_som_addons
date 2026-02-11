@@ -196,33 +196,18 @@ class SomGurbWww(osv.osv_memory):
         sign_docs_obj = self.pool.get("giscedata.signatura.documents")
         sign_process_obj = self.pool.get("giscedata.signatura.process")
 
-        gurb_lead = gurb_cups_obj.browse(cursor, uid, gurb_lead_id, context=context)
+        gurb_cups_obj.write(cursor, uid, gurb_lead_id, {"webform_payment": True})
         search_vals = [("model", "=", "som.gurb.cups,{}".format(gurb_lead_id))]
         doc_id = sign_docs_obj.search(cursor, uid, search_vals, limit=1)[0]
         process_id = sign_docs_obj.read(cursor, uid, doc_id, ["process_id"])["process_id"][0]
 
         sign_process_obj.update(cursor, uid, [process_id], context=context)
 
-        sign_status = sign_process_obj.read(
-            cursor, uid, process_id, ["status"], context=context
-        )["status"]
-        if gurb_lead.state != "draft":
-            return {
-                "success": False,
-                "error": _("El gurb cups no està en estat esborrany"),
-                "code": "GurbCupsNotDraft",
-            }
-        elif sign_status != "completed":
-            return {
-                "success": False,
-                "error": _("La signatura no està completada"),
-                "code": "SignatureNotCompleted",
-            }
-        else:
-            gurb_cups_obj.form_activate_gurb_cups_lead(
-                cursor, uid, [gurb_lead_id], context=context
-            )
-            return {"success": True}
+        gurb_cups_obj.form_activate_gurb_cups_lead(
+            cursor, uid, [gurb_lead_id], context=context
+        )
+
+        return {"success": True}
 
     def _get_gurb_conditions_id(self, cursor, uid, pol_id, context=None):
         if context is None:

@@ -1,10 +1,12 @@
 # -*- encoding: utf-8 -*-
 from osv import osv, fields
+from oorq.decorators import job
 from datetime import datetime, timedelta
 from tools.translate import _
 import base64
 import logging
 import netsvc
+import time
 
 logger = logging.getLogger("openerp.{}".format(__name__))
 
@@ -250,12 +252,15 @@ class SomGurbCups(osv.osv):
         )
         return base64.b64encode(result)
 
+    @job(queue="leads")
     def form_activate_gurb_cups_lead(self, cursor, uid, gurb_cups_id, context=None):
         if context is None:
             context = {}
 
         if isinstance(gurb_cups_id, list):
             gurb_cups_id = gurb_cups_id[0]
+
+        time.sleep(3)
 
         attach_obj = self.pool.get('ir.attachment')
         invoice_o = self.pool.get("account.invoice")
@@ -900,6 +905,9 @@ class SomGurbCups(osv.osv):
         "ens_ha_avisat": fields.boolean(
             "Ens ha avisat",
             help="No és un canvi sobrevingut, sinó que estem informats i ho hem gestionat."),
+        "webform_payment": fields.boolean(
+            "Ha pagat", help="Es marca si ha pagat des del formulari"
+        ),
     }
 
     _defaults = {
@@ -907,6 +915,7 @@ class SomGurbCups(osv.osv):
         "extra_beta_kw": lambda *a: 0,
         "gift_beta_kw": lambda *a: 0,
         "ens_ha_avisat": lambda *a: False,
+        "webform_payment": lambda *a: False,
         "state": lambda *a: "draft",
     }
 
