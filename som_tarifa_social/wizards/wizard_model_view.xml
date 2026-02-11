@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<openerp>
+    <data>
+
+        <!-- Declaració de la vista -->
+        <record model="ir.ui.view" id="wizard_model_view_form">
+            <field name="name">wizard.model.view.form</field>
+            <field name="model">wizard.model</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <form string="Canviar contrasenya">
+                    <group col="4" colspan="4">
+                        <field name="template_field" string="Nova contrasenya" colspan="4" width="250"/>
+                    </group>
+                    <group>
+                        <button special="cancel" string="Cancel·lar" icon="gtk-cancel"/>
+                        <button name="action_template" type="object" icon="gtk-ok" string="Do it"/>
+                    </group>
+                </form>
+            </field>
+        </record>
+
+        <!-- Declaració de l'acció que obra la vista -->
+        <record model="ir.actions.act_window" id="action_wizard_template">
+            <field name="name">Example wizard</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">wizard.model</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">form</field>
+            <field name="target">new</field>
+            <field name="view_id" ref="wizard_model_view_form"/>
+        </record>
+
+        <!-- Afegim l'accio al model ResPartner-->
+        <record id="values_canviar_contrasenya_form" model="ir.values">
+            <field name="object" eval="1"/>
+            <field name="name">Example wizard</field>
+            <field name="key2">client_action_multi</field>
+            <field name="key">action</field>
+            <field name="model">res.partner</field>
+            <field name="value" eval="'ir.actions.act_window,'+str(ref('action_wizard_template'))"/>
+        </record>
+
+        <!-- Afegim una nova entrade de menú que obre el wizard -->
+        <menuitem action="action_wizard_template" id="menu_wizard_template_function_form" parent="partner.menu_base_partner"/>
+    </data>
+</openerp>
