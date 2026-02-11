@@ -153,11 +153,11 @@ class ResPartnerAddress(osv.osv):
                 auto = True
 
         if auto and compensacio:
-            soci_data['autoproduccio'] = 'amb autoproducció comp.simp.'
+            soci_data['autoproduccio'] = 'amb autoproduccio comp.simp.'  # without accent on purpose
         elif auto and not compensacio:
-            soci_data['autoproduccio'] = 'amb autoproducció altres'
+            soci_data['autoproduccio'] = 'amb autoproduccio altres'  # without accent on purpose
         else:
-            soci_data['autoproduccio'] = 'sense autoproducció'
+            soci_data['autoproduccio'] = 'sense autoproduccio'  # without accent on purpose
 
         if empresa:
             if amb_maximetre:
