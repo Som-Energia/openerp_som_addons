@@ -540,9 +540,13 @@ class tarifes_tests(testing.OOTestCase):
                 cursor, uid, 10000, "2022-06-15", "2022-06-30"
             )
 
+            fiscal_position_id = self.imd_obj.get_object_reference(
+                cursor, uid, "som_polissa_condicions_generals", "fp_iva_reduit"
+            )[1]
+
             self.assertEqual(result[0][0], u'2021-06-01')
             self.assertEqual(result[0][1], u'2024-12-31')
-            self.assertEqual(result[0][2].id, 31)
+            self.assertEqual(result[0][2].id, fiscal_position_id)
 
     def test___get_fiscal_position_reduced__max_power_gt_10000__NOTapply(self):
         with Transaction().start(self.database) as txn:
