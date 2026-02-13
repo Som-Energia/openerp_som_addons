@@ -1,10 +1,12 @@
 # -*- encoding: utf-8 -*-
 from osv import osv, fields
+from oorq.decorators import job
 from datetime import datetime, timedelta
 from tools.translate import _
 import base64
 import logging
 import netsvc
+import time
 
 logger = logging.getLogger("openerp.{}".format(__name__))
 
@@ -250,15 +252,47 @@ class SomGurbCups(osv.osv):
         )
         return base64.b64encode(result)
 
+    def get_sign_status(self, cursor, uid, gurb_cups_id, context=None):
+        if context is None:
+            context = {}
+
+        sign_docs_obj = self.pool.get("giscedata.signatura.documents")
+        sign_process_obj = self.pool.get("giscedata.signatura.process")
+
+        search_vals = [("model", "=", "som.gurb.cups,{}".format(gurb_cups_id))]
+        doc_id = sign_docs_obj.search(cursor, uid, search_vals, limit=1)[0]
+        process_id = sign_docs_obj.read(cursor, uid, doc_id, ["process_id"])["process_id"][0]
+
+        sign_status = sign_process_obj.read(
+            cursor, uid, process_id, ["status"], context=context
+        )["status"]
+
+        return sign_status
+
+    @job(queue="leads")
     def form_activate_gurb_cups_lead(self, cursor, uid, gurb_cups_id, context=None):
+        return self.form_activate_gurb_cups_lead_sync(cursor, uid, gurb_cups_id, context=context)
+
+    def form_activate_gurb_cups_lead_sync(self, cursor, uid, gurb_cups_id, context=None):
         if context is None:
             context = {}
 
         if isinstance(gurb_cups_id, list):
             gurb_cups_id = gurb_cups_id[0]
 
+        time.sleep(10)
+
         attach_obj = self.pool.get('ir.attachment')
         invoice_o = self.pool.get("account.invoice")
+
+        gurb_cups_br = self.browse(cursor, uid, gurb_cups_id, context=context)
+        sign_status = self.get_sign_status(cursor, uid, gurb_cups_id, context=context)
+
+        if sign_status != "completed":
+            raise Exception("The GURB CUPS is not SIGNED!!!")
+
+        if gurb_cups_br.state != "draft":
+            raise Exception("The GURB CUPS is not DRAFT!!!")
 
         # Creem factura
         context["tpv"] = True
@@ -269,7 +303,6 @@ class SomGurbCups(osv.osv):
         self.pay_invoice_gurb(cursor, uid, inv_id, context=context)
 
         # Adjuntem la factura al Gurb CUPS
-        gurb_cups_br = self.browse(cursor, uid, gurb_cups_id, context=context)
         if inv_id:
             invoice_pdf = self.generate_gurb_invoice_base64(cursor, uid, inv_id, context=context)
             vals = {
@@ -900,6 +933,9 @@ class SomGurbCups(osv.osv):
         "ens_ha_avisat": fields.boolean(
             "Ens ha avisat",
             help="No és un canvi sobrevingut, sinó que estem informats i ho hem gestionat."),
+        "webform_payment": fields.boolean(
+            "Ha pagat", help="Es marca si ha pagat des del formulari"
+        ),
     }
 
     _defaults = {
@@ -907,6 +943,7 @@ class SomGurbCups(osv.osv):
         "extra_beta_kw": lambda *a: 0,
         "gift_beta_kw": lambda *a: 0,
         "ens_ha_avisat": lambda *a: False,
+        "webform_payment": lambda *a: False,
         "state": lambda *a: "draft",
     }
 
