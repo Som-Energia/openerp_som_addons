@@ -220,7 +220,7 @@ class Tests_FacturacioFacturaReport_logo_component(Tests_FacturacioFacturaReport
         f = self.factura_obj.browse(self.cursor, self.uid, f_id)
         get_auvi_data_mock_function.return_value = False
 
-        p_id = 23
+        p_id = self.get_fixture("base", "res_partner_agrolait")
         self.partner_obj.write(self.cursor, self.uid, p_id, {"ref": "S12345"})
         self.polissa_obj.write(self.cursor, self.uid, f.polissa_id.id, {"soci": p_id})
 
@@ -238,7 +238,7 @@ class Tests_FacturacioFacturaReport_logo_component(Tests_FacturacioFacturaReport
         f = self.factura_obj.browse(self.cursor, self.uid, f_id)
         get_auvi_data_mock_function.return_value = False
 
-        p_id = 23
+        p_id = self.get_fixture("base", "res_partner_agrolait")
         self.partner_obj.write(self.cursor, self.uid, p_id, {"ref": "S019753"})
         self.polissa_obj.write(self.cursor, self.uid, f.polissa_id.id, {"soci": p_id})
 
@@ -266,7 +266,7 @@ class Tests_FacturacioFacturaReport_company_component(Tests_FacturacioFacturaRep
             {
                 "cif": u"A31896889",
                 "city": u"Gerompont",
-                "email": False,
+                "email": 'Fabien.Pinckaers@tinysprl.com',
                 "name": u"Tiny sprl",
                 "street": u"Chaussee de Namur 40",
                 "zip": u"1367",
@@ -667,7 +667,7 @@ class Tests_FacturacioFacturaReport_contract_data_component(Tests_FacturacioFact
                 "pricelist": u"TARIFAS ELECTRICIDAD",
                 "autoconsum_cau": "",
                 "is_autoconsum_colectiu": False,
-                "cups_direction": u"carrer inventat ,  1  ESC.  1 1 1 aclaridor 00001 (Poble de Prova)",  # noqa: E501
+                "cups_direction": u"carrer inventat, 1 ESC. 1 1 1 aclaridor 00001 (Poble de Prova)",  # noqa: E501
                 "autoconsum_colectiu_repartiment": 100.0,
                 "cnae": u"0111",
                 "power_invoicing_type": True,
@@ -720,7 +720,7 @@ class Tests_FacturacioFacturaReport_contract_data_component(Tests_FacturacioFact
             "pricelist": u"TARIFAS ELECTRICIDAD",
             "autoconsum_cau": u"ES0318363477145938GEA000",
             "is_autoconsum_colectiu": False,
-            "cups_direction": u"carrer inventat ,  1  ESC.  1 1 1 aclaridor 00001 (Poble de Prova)",  # noqa: E501
+            "cups_direction": u"carrer inventat, 1 ESC. 1 1 1 aclaridor 00001 (Poble de Prova)",  # noqa: E501
             "autoconsum_colectiu_repartiment": 100.0,
             "cnae": u"0111",
             "power_invoicing_type": False,
@@ -1181,7 +1181,7 @@ class Tests_FacturacioFacturaReport_emergency_complaints(Tests_FacturacioFactura
         f_id = self.get_fixture("giscedata_facturacio", "factura_0001")
         f = self.factura_obj.browse(self.cursor, self.uid, f_id)
 
-        p_id = 23
+        p_id = self.get_fixture("base", "res_partner_agrolait")
         self.partner_obj.write(self.cursor, self.uid, p_id, {"ref": "S12345"})
         self.polissa_obj.write(
             self.cursor,
@@ -1246,7 +1246,7 @@ class Tests_FacturacioFacturaReport_emergency_complaints(Tests_FacturacioFactura
         f_id = self.get_fixture("giscedata_facturacio", "factura_0001")
         f = self.factura_obj.browse(self.cursor, self.uid, f_id)
 
-        p_id = 23
+        p_id = self.get_fixture("base", "res_partner_agrolait")
         self.partner_obj.write(self.cursor, self.uid, p_id, {"ref": "S019753"})
         self.polissa_obj.write(
             self.cursor, self.uid, f.polissa_id.id, {"ref_dist": "ref_dist", "soci": p_id}
@@ -1265,7 +1265,7 @@ class Tests_FacturacioFacturaReport_emergency_complaints(Tests_FacturacioFactura
                 "distri_contract": u"ref_dist",
                 "distri_phone": "123.456.789",
                 "has_agreement_partner": True,
-                "agreement_partner_name": u"ENDESA DISTRIBUCI\xd3N EL\xc9CTRICA S. L.",
+                "agreement_partner_name": u"Agrolait",
                 "is_energetica": True,
                 "comer_phone": u"(+32).81.81.37.00",
             },
@@ -2146,7 +2146,7 @@ class Tests_FacturacioFacturaReport_invoice_info(Tests_FacturacioFacturaReport_b
                 "start_date": "01/01/2016",
                 "end_date": "29/02/2016",
                 "contract_number": u"0001C",
-                "address": u"carrer inventat ,  1  ESC.  1 1 1 aclaridor 00001 (Poble de Prova)",
+                "address": u"carrer inventat, 1 ESC. 1 1 1 aclaridor 00001 (Poble de Prova)",
                 "due_date": "01/01/2016",
             },
         )

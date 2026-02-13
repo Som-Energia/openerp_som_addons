@@ -10,6 +10,7 @@
     "depends": [
         "giscedata_atc_switching",
         "giscedata_atc_electricitat",
+        "partner_canal_cnmc",
     ],
     "init_xml": [],
     "demo_xml": [],
