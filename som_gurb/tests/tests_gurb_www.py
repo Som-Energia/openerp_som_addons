@@ -14,6 +14,10 @@ class TestsGurbWww(TestsGurbBase):
         "giscedata_signatura_documents_signaturit.giscedata_signatura_documents."
         "GiscedataSignaturaProcess.update"
     )
+    _search_signature_fnc = (
+        "giscedata_signatura_documents_signaturit.giscedata_signatura_documents."
+        "GiscedataSignaturaProcess.update"
+    )
     _www_signature_fnc = "som_gurb.www.som_gurb_www.SomGurbWww._get_signature_url"
 
     def _eliminar_GURB_CUPS(self):
@@ -349,11 +353,15 @@ class TestsGurbWww(TestsGurbBase):
     @mock.patch(_start_signature_fnc, return_value=True)
     @mock.patch(_update_signature_fnc, return_value=True)
     @mock.patch(
+        "som_gurb.models.som_gurb_cups.SomGurbCups.get_sign_status", return_value="completed")
+    @mock.patch(
         "som_gurb.models.som_gurb_cups.SomGurbCups.generate_gurb_invoice_base64", return_value="AA")
     @mock.patch(
         "poweremail.poweremail_template.poweremail_templates.generate_mail_sync", return_value=True
     )
-    def test_activate_gurb_cups_lead(self, start_mock, update_mock, invoice_mock, mail_mock):
+    def test_activate_gurb_cups_lead(
+        self, start_mock, update_mock, sign_status_mock, invoice_mock, mail_mock
+    ):
         gurb_www_obj = self.get_model("som.gurb.www")
         gurb_cups_obj = self.get_model("som.gurb.cups")
         sign_docs_obj = self.get_model("giscedata.signatura.documents")
@@ -375,11 +383,14 @@ class TestsGurbWww(TestsGurbBase):
         doc_id = sign_docs_obj.search(self.cursor, self.uid, search_vals, limit=1)[0]
         process_id = sign_docs_obj.browse(self.cursor, self.uid, doc_id).process_id.id
         sign_process_obj.write(self.cursor, self.uid, [process_id], {'status': 'completed'})
-        result = gurb_www_obj.activate_gurb_cups_lead(self.cursor, self.uid, gurb_cups_id)
+
+        gurb_cups_obj.form_activate_gurb_cups_lead_sync(
+            self.cursor, self.uid, [gurb_cups_id]
+        )
 
         gurb_cups_br = gurb_cups_obj.browse(self.cursor, self.uid, gurb_cups_id)
         self.assertEqual(gurb_cups_br.state, "comming_registration")
-        self.assertTrue(result["success"])
+        self.assertIsNotNone(gurb_cups_br.initial_invoice_id.id)
 
     @mock.patch(_start_signature_fnc, return_value=True)
     @mock.patch(_update_signature_fnc, return_value=True)
@@ -399,9 +410,11 @@ class TestsGurbWww(TestsGurbBase):
             self.cursor, self.uid, form_payload
         )["gurb_cups_id"]
         gurb_cups_obj.send_signal(self.cursor, self.uid, [gurb_cups_id], "button_create_cups")
-        result = gurb_www_obj.activate_gurb_cups_lead(self.cursor, self.uid, gurb_cups_id)
 
-        self.assertEqual(result["code"], "GurbCupsNotDraft")
+        with self.assertRaises(Exception):
+            gurb_cups_obj.form_activate_gurb_cups_lead_sync(
+                self.cursor, self.uid, [gurb_cups_id]
+            )
 
     @mock.patch(_start_signature_fnc, return_value=True)
     @mock.patch(_update_signature_fnc, return_value=True)
@@ -420,8 +433,11 @@ class TestsGurbWww(TestsGurbBase):
         gurb_cups_id = gurb_www_obj.create_new_gurb_cups(
             self.cursor, self.uid, form_payload
         )["gurb_cups_id"]
-        result = gurb_www_obj.activate_gurb_cups_lead(self.cursor, self.uid, gurb_cups_id)
 
         gurb_cups_br = gurb_cups_obj.browse(self.cursor, self.uid, gurb_cups_id)
         self.assertEqual(gurb_cups_br.state, "draft")
-        self.assertEqual(result["code"], "SignatureNotCompleted")
+
+        with self.assertRaises(Exception):
+            gurb_cups_obj.form_activate_gurb_cups_lead_sync(
+                self.cursor, self.uid, [gurb_cups_id]
+            )
