@@ -67,17 +67,6 @@ class TestsEscullLlistaPreus(testing.OOTestCase):
         pricelist_electricidad_id = imd_obj.get_object_reference(
             self.cursor, self.uid, "giscedata_facturacio", "pricelist_tarifas_electricidad"
         )[1]
-
-        pricelist_som_indexada_id = imd_obj.get_object_reference(
-            self.cursor, self.uid, "som_indexada", "pricelist_indexada_20td_peninsula"
-        )[1]
-        pricelist_som_indexada_balears_id = imd_obj.get_object_reference(
-            self.cursor, self.uid, "som_indexada", "pricelist_indexada_20td_balears"
-        )[1]
-        pricelist_som_indexada_canaries_id = imd_obj.get_object_reference(
-            self.cursor, self.uid, "som_indexada", "pricelist_indexada_20td_canaries"
-        )[1]
-
         pricelist_som_indexada_2024_id = imd_obj.get_object_reference(
             self.cursor, self.uid, "som_indexada", "pricelist_indexada_20td_peninsula_2024"
         )[1]
@@ -92,9 +81,6 @@ class TestsEscullLlistaPreus(testing.OOTestCase):
             pricelist_som_id,
             pricelist_som_insular_id,
             pricelist_electricidad_id,
-            pricelist_som_indexada_id,
-            pricelist_som_indexada_balears_id,
-            pricelist_som_indexada_canaries_id,
             pricelist_som_indexada_2024_id,
             pricelist_som_indexada_balears_2024_id,
             pricelist_som_indexada_canaries_2024_id,

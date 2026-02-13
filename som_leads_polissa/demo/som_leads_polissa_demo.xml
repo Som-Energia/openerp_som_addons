@@ -10,7 +10,7 @@
         <record id="som_polissa_soci.res_partner_soci" model="res.partner">
             <field name="category_id" eval="[(6,0,[ref('som_partner_account.res_partner_category_soci')])]"/>
         </record>
-        <record id="mandatory_social_capital" model="account.account">
+        <record id="mandatory_social_capital" model="account.account.template">
             <field name="name">Demo: Das Kapital Social Obligatòri</field>
             <field name="code">100000000000</field>
             <field name="type">other</field>
@@ -18,7 +18,7 @@
             <field name="company_id" ref="base.main_company"/>
             <field name="user_type" ref="l10n_chart_ES.capital"/>
         </record>
-        <record id="member_cash" model="account.account">
+        <record id="member_cash" model="account.account.template">
             <field name="name">Demo: Caixa Socis</field>
             <field name="code">555000000003</field>
             <field name="type">other</field>
@@ -26,7 +26,7 @@
             <field name="company_id" ref="base.main_company"/>
             <field name="user_type" ref="l10n_chart_ES.financieras"/>
         </record>
-        <record id="other_loss_current_managament" model="account.account">
+        <record id="other_loss_current_managament" model="account.account.template">
             <field name="name">Demo: Otras pérdidas en gestión corriente</field>
             <field name="code">659000000000</field>
             <field name="type">other</field>
@@ -35,8 +35,10 @@
             <field name="user_type" ref="l10n_chart_ES.gastos"/>
         </record>
         <record model="account.journal" id="member_fee_journal">
-            <field name="default_credit_account_id" ref="member_cash"/>
-            <field name="default_debit_account_id" ref="member_cash"/>
+            <!-- <field name="default_credit_account_id" ref="member_cash"/>
+            <field name="default_debit_account_id" ref="member_cash"/> -->
+            <field name="default_credit_account_id" model="account.account" search="[('code','=','555000000003')]"/>
+            <field name="default_debit_account_id" model="account.account" search="[('code','=','555000000003')]"/>
         </record>
     </data>
 </openerp>
