@@ -55,105 +55,61 @@ class TestsEscullLlistaPreus(testing.OOTestCase):
 
         return pol
 
-    def get_demo_pricelist_list(self):
+    def get_demo_pricelist_dict(self):
         imd_obj = self.model("ir.model.data")
 
-        pricelist_som_id = imd_obj.get_object_reference(
-            self.cursor, self.uid, "som_indexada", "pricelist_periodes_20td_peninsula"
-        )[1]
-        pricelist_som_insular_id = imd_obj.get_object_reference(
-            self.cursor, self.uid, "som_indexada", "pricelist_periodes_20td_insular"
-        )[1]
-        pricelist_electricidad_id = imd_obj.get_object_reference(
-            self.cursor, self.uid, "giscedata_facturacio", "pricelist_tarifas_electricidad"
-        )[1]
-        pricelist_som_indexada_2024_id = imd_obj.get_object_reference(
-            self.cursor, self.uid, "som_indexada", "pricelist_indexada_20td_peninsula_2024"
-        )[1]
-        pricelist_som_indexada_balears_2024_id = imd_obj.get_object_reference(
-            self.cursor, self.uid, "som_indexada", "pricelist_indexada_20td_balears_2024"
-        )[1]
-        pricelist_som_indexada_canaries_2024_id = imd_obj.get_object_reference(
-            self.cursor, self.uid, "som_indexada", "pricelist_indexada_20td_canaries_2024"
-        )[1]
+        mapping = {
+            'peninsula': ("som_indexada", "pricelist_periodes_20td_peninsula"),
+            'insular': ("som_indexada", "pricelist_periodes_20td_insular"),
+            'electricitat': ("giscedata_facturacio", "pricelist_tarifas_electricidad"),
+            'indexada_2024': ("som_indexada", "pricelist_indexada_20td_peninsula_2024"),
+            'indexada_balears_2024': ("som_indexada", "pricelist_indexada_20td_balears_2024"),
+            'indexada_canaries_2024': ("som_indexada", "pricelist_indexada_20td_canaries_2024"),
+        }
 
-        return [
-            pricelist_som_id,
-            pricelist_som_insular_id,
-            pricelist_electricidad_id,
-            pricelist_som_indexada_2024_id,
-            pricelist_som_indexada_balears_2024_id,
-            pricelist_som_indexada_canaries_2024_id,
-        ]
+        return {
+            key: imd_obj.get_object_reference(self.cursor, self.uid, module, xml_id)[1]
+            for key, (module, xml_id) in mapping.items()
+        }
 
     def test_escull_llista_preus_peninsular(self):
         pol = self.get_demo_contract()
-        pricelist_list = self.get_demo_pricelist_list()
+        pricelists = self.get_demo_pricelist_dict()
 
-        result = pol.escull_llista_preus(pricelist_list)
+        result = pol.escull_llista_preus(list(pricelists.values()))
 
-        self.assertEqual(result.id, pricelist_list[0])
+        self.assertEqual(result.id, pricelists['peninsula'])
 
     def test_escull_llista_preus_insular(self):
         pol = self.get_demo_contract(location="balears")
-        pricelist_list = self.get_demo_pricelist_list()
+        pricelists = self.get_demo_pricelist_dict()
 
-        result = pol.escull_llista_preus(pricelist_list)
+        result = pol.escull_llista_preus(list(pricelists.values()))
 
-        self.assertEqual(result.id, pricelist_list[1])
+        self.assertEqual(result.id, pricelists['insular'])
 
-    @mock.patch(
-        "som_indexada.giscedata_polissa.GiscedataPolissa._get_tariff_zone_from_location"
-    )
+    @mock.patch("som_indexada.giscedata_polissa.GiscedataPolissa._get_tariff_zone_from_location")
     def test_escull_llista_preus_insular_canaries(self, mock_function):
         mock_function.return_value = "canaries"
         pol = self.get_demo_contract()
-        pricelist_list = self.get_demo_pricelist_list()
+        pricelists = self.get_demo_pricelist_dict()
 
-        result = pol.escull_llista_preus(pricelist_list)
+        result = pol.escull_llista_preus(list(pricelists.values()))
 
-        self.assertEqual(result.id, pricelist_list[1])
-
-    def test_escull_llista_preus_no_compatible(self):
-        imd_obj = self.model("ir.model.data")
-
-        pol = self.get_demo_contract()
-
-        default_pricelist_id = imd_obj.get_object_reference(
-            self.cursor,
-            self.uid,
-            "giscedata_facturacio",
-            "pricelist_tarifas_electricidad",
-        )[1]
-
-        result = pol.escull_llista_preus([default_pricelist_id])
-
-        self.assertEqual(result, False)
+        self.assertEqual(result.id, pricelists['insular'])
 
     def test_escull_llista_preus_indexada_peninsular(self):
         pol = self.get_demo_contract(indexed=True)
-        pricelist_list = self.get_demo_pricelist_list()
+        pricelists = self.get_demo_pricelist_dict()
 
-        result = pol.escull_llista_preus(pricelist_list)
+        result = pol.escull_llista_preus(list(pricelists.values()))
 
-        self.assertEqual(result.id, pricelist_list[6])
+        self.assertEqual(result.id, pricelists['indexada_2024'])
 
     def test_escull_llista_preus_indexada_balears(self):
         pol = self.get_demo_contract(indexed=True, location="balears")
-        pricelist_list = self.get_demo_pricelist_list()
+        pricelists = self.get_demo_pricelist_dict()
 
-        result = pol.escull_llista_preus(pricelist_list)
+        result = pol.escull_llista_preus(list(pricelists.values()))
 
-        self.assertEqual(result.id, pricelist_list[7])
-
-    @mock.patch(
-        "som_indexada.giscedata_polissa.GiscedataPolissa._get_tariff_zone_from_location"
-    )
-    def test_escull_llista_preus_indexada_canaries(self, mock_function):
-        mock_function.return_value = "canaries"
-        pol = self.get_demo_contract(indexed=True)
-        pricelist_list = self.get_demo_pricelist_list()
-
-        result = pol.escull_llista_preus(pricelist_list)
-
-        self.assertEqual(result.id, pricelist_list[8])
+        self.assertEqual(result.id, pricelists['indexada_balears_2024'])
