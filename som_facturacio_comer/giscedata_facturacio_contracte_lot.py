@@ -260,13 +260,6 @@ class GiscedataFacturacioContracteLot(osv.osv):
         "data_alta_contracte": fields.related(
             "polissa_id", "data_alta", type="date", string=_("Data alta contracte"), readonly=True
         ),
-        "data_ultima_lectura": fields.related(
-            "polissa_id",
-            "data_ultima_lectura",
-            type="date",
-            string=_("Data ultima lectura real facturada"),
-            readonly=True,
-        ),
         "info_gestions_massives": fields.related(
             "polissa_id",
             "info_gestions_massives",
