@@ -2,12 +2,17 @@
 
 from __future__ import absolute_import
 
+import netsvc
 from osv import osv, fields
 from tools.translate import _
 from tools import config
 from oorq.decorators import job
 
 from datetime import datetime, date
+
+
+_MEMBER_FEE_RETURN_PURPOSE = 'RETORN QUOTA SOCI'
+
 
 def field_function(ff_func):
     def string_key(*args, **kwargs):
@@ -263,32 +268,84 @@ class SomenergiaSoci(osv.osv):
         currency_o = self.pool.get("res.currency")
         soci_o = self.pool.get("somenergia.soci")
         account_o = self.pool.get("account.account")
+        invoice_o = self.pool.get("account.invoice")
+        journal_o = self.pool.get("account.journal")
+        payment_type_o = self.pool.get("payment.type")
+        payment_line_o = self.pool.get("payment.line")
 
         socia_fee_amount = conf_o.get(cursor, uid, "socia_member_fee_amount", "100")
         currency_id = currency_o.search(cursor, uid, [("name", "=", "EUR")])[0]
         payment_mode_id = imd_o.get_object_reference(
             cursor, uid, "som_generationkwh", "soci_return_payment_mode")[1]
         payment_mode_name = payment_mode_o.read(cursor, uid, payment_mode_id, ["name"])["name"]
-        payment_order_id = payment_order_o.get_or_create_open_payment_order(
-            cursor, uid,  payment_mode_name, use_invoice=False, context=context
-        )
         acc_id = account_o.search(cursor, uid, [("code", "=", "100000000000")])[0]
+        journal_id = journal_o.search(
+            cursor, uid, [("code", "=", "SOCIS_RETURN")], context=context
+        )[0]
+        payment_type_id = payment_type_o.search(
+            cursor, uid, [("code", "=", "TRANSFERENCIA_CSB")], context=context
+        )[0]
         soci = soci_o.browse(cursor, uid, member_id, context=context)
-        self.pool.get("payment.line").create(
-            cursor, uid, {
-                "name": soci.ref,
-                "order_id": payment_order_id,
-                "currency": currency_id,
-                "partner_id": soci.partner_id.id,
-                "company_currency": currency_id,
-                "bank_id": bank_account_id,
-                "state": "normal",
-                "amount_currency": socia_fee_amount,
-                "account_id": acc_id,
-                "communication": "RETORN QUOTA SOCI",
-                "comm_text": "RETORN QUOTA SOCI",
-            }
+
+        # Create invoice line
+        inv_line = {
+            "name": _MEMBER_FEE_RETURN_PURPOSE,
+            "account_id": acc_id,
+            "price_unit": socia_fee_amount,
+            "quantity": 1,
+            "uom_id": 1,
+            "company_currency_id": currency_id,
+        }
+
+        # Create invoice
+        invoice_name = "RETORN-QUOTA-SOCIS-{}".format(soci.partner_id.ref)
+        invoice_vals = {
+            "name": invoice_name,
+            "number": invoice_name,
+            "partner_id": soci.partner_id.id,
+            "type": "in_invoice",
+            "invoice_line": [(0, 0, inv_line)],
+            "origin_date_invoice": datetime.today().strftime("%Y-%m-%d"),
+            "date_invoice": datetime.today().strftime("%Y-%m-%d"),
+            "account_id": acc_id,
+            "journal_id": journal_id,
+            "origin": invoice_name,
+            "reference": invoice_name,
+            "check_total": socia_fee_amount,
+            "sii_to_send": False,
+        }
+        invoice_vals.update(invoice_o.onchange_partner_id(  # Get invoice default values
+            cursor, uid, [], "in_invoice", soci.partner_id.id).get("value", {})
         )
+        invoice_vals.update({
+            "payment_type": payment_type_id,
+            "partner_bank": bank_account_id,
+        })
+
+        invoice_id = invoice_o.create(cursor, uid, invoice_vals, context=context)
+        invoice_o.button_reset_taxes(cursor, uid, [invoice_id])
+
+        # open the invoice
+        wf_service = netsvc.LocalService("workflow")
+        wf_service.trg_validate(uid, 'account.invoice', invoice_id, 'invoice_open', cursor)
+
+        payment_order_id = payment_order_o.get_or_create_open_payment_order(
+            cursor, uid,  payment_mode_name, use_invoice=True, context=context
+        )
+        invoice_o.afegeix_a_remesa(cursor, uid, [invoice_id], payment_order_id, context=context)
+
+        # set the member number as the payment line name
+        payment_line_id = payment_line_o.search(
+            cursor, uid,
+            [
+                ("partner_id", "=", soci.partner_id.id),
+                ("communication", "=", "{}. {}".format(invoice_name, invoice_name)),
+                ("order_id", "=", payment_order_id),
+            ],
+            context=context
+        )
+        payment_line_o.write(
+            cursor, uid, payment_line_id, {"name": soci.partner_id.ref}, context=context)
 
     _columns = {
         'has_gkwh': fields.function(

@@ -28,6 +28,7 @@ class SomenergiaSociTests(testing.OOTestCase):
         self.Soci = self.openerp.pool.get('somenergia.soci')
         self.PaymentOrder = self.openerp.pool.get('payment.order')
         self.WizPayRemesa = self.openerp.pool.get('pagar.remesa.wizard')
+        self.ResPartnerBank = self.openerp.pool.get('res.partner.bank')
 
         self.bank_account_id = 1  # just for tests
 
@@ -68,7 +69,7 @@ class SomenergiaSociTests(testing.OOTestCase):
             self.Soci.do_baixa_soci(self.cursor, self.uid, member_id, self.bank_account_id)
 
         self.assertIn("El soci té aportacions actives", ctx.exception.message)
-    
+
     def test_cancel_member_with_pending_invoices__notAllowed(self):
         fact_id = self.IrModelData.get_object_reference(
             self.cursor, self.uid, 'giscedata_facturacio', 'factura_0001'
@@ -89,7 +90,7 @@ class SomenergiaSociTests(testing.OOTestCase):
             self.cursor, self.uid, fact_id, ['invoice_id'])['invoice_id'][0]
         self.Invoice.write(
             self.cursor, self.uid, invoice_id, {'partner_id': partner_id, 'state': 'open'})
-    
+
         with self.assertRaises(except_osv) as ctx:
             self.Soci.do_baixa_soci(self.cursor, self.uid, member_id, self.bank_account_id)
 
@@ -224,9 +225,8 @@ class SomenergiaSociTests(testing.OOTestCase):
         )[1]
         self.Soci.write(
             self.cursor, self.uid, [member_id], {'baixa': False, 'data_baixa_soci': None})
-        invs = self.Investment.search(self.cursor, self.uid, [('member_id','=', member_id)])
-
-        self.Investment.write(self.cursor, self.uid, invs, {'active':False})
+        invs = self.Investment.search(self.cursor, self.uid, [('member_id', '=', member_id)])
+        self.Investment.write(self.cursor, self.uid, invs, {'active': False})
 
         polissa_id = self.IrModelData.get_object_reference(
             self.cursor, self.uid, 'giscedata_polissa', 'polissa_0001'
@@ -237,11 +237,26 @@ class SomenergiaSociTests(testing.OOTestCase):
             self.cursor, self.uid, [('mode', '=', return_payment_mode_id)])
         self.assertEqual(len(payment_order_ids), 0)
 
+        self.ResPartnerBank.write(self.cursor, self.uid, self.bank_account_id, {
+            'iban': 'ES7712341234161234567890',
+        })
+
         self.assertEqual(
             self.Soci.do_baixa_soci(self.cursor, self.uid, member_id, self.bank_account_id), True)
-        partner_id = self.Soci.read(
-            self.cursor, self.uid, member_id, ['partner_id'])['partner_id'][0]
         mailchimp_mock.assert_called_with(self.cursor, self.uid, [partner_id], context={})
+
+        # Check the payment order and invoice
+        ref_soci = self.ResPartner.read(self.cursor, self.uid, partner_id, ['ref'])['ref']
+        invoice_id = self.Invoice.search(
+            self.cursor, self.uid, [("partner_id", "=", partner_id), ("type", "=", "in_invoice")])[0]
+
+        invoice = self.Invoice.browse(self.cursor, self.uid, invoice_id)
+
+        self.assertFalse(invoice.sii_to_send)
+
+        self.assertEqual(invoice.number, "RETORN-QUOTA-SOCIS-{}".format(ref_soci))
+        self.assertEqual(invoice.amount_total, 100)
+        self.assertEqual(invoice.state, "open")
 
         payment_order_ids = self.PaymentOrder.search(
             self.cursor, self.uid, [('mode', '=', return_payment_mode_id)])
@@ -250,3 +265,26 @@ class SomenergiaSociTests(testing.OOTestCase):
         payment_order = self.PaymentOrder.browse(self.cursor, self.uid, payment_order_id)
         self.assertEqual(payment_order.state, 'draft')
         self.assertEqual(payment_order.total, 100)
+
+        # Pay payment order
+        self.PaymentOrder.action_open(self.cursor, self.uid, [payment_order.id])
+        with PatchNewCursors():
+            context = {'active_ids': [payment_order.id], 'active_id': payment_order.id}
+            wiz_pay_id = self.WizPayRemesa.create(
+                self.cursor,
+                self.uid,
+                {'work_async': False},
+                context=context,
+            )
+            self.WizPayRemesa.action_pagar_remesa_threaded(self.cursor.dbname, self.uid, [
+                                                   wiz_pay_id], context=context)
+
+        po = self.PaymentOrder.browse(self.cursor, self.uid, payment_order.id)
+        payment_line_ids = po.line_ids
+
+        # Verify the payment lines after the payment
+        for payment_line in payment_line_ids:
+            self.assertEqual(payment_line.name, ref_soci)
+            self.assertEqual(payment_line.bank_id.iban, 'ES7712341234161234567890')
+            self.assertEqual(payment_line.ml_inv_ref.state, 'paid')
+            self.assertEqual(payment_line.order_id.reference, '{}/001'.format(datetime.now().year))
