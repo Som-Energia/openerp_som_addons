@@ -35,7 +35,6 @@
                     <field name="consum_facturat" select="2"/>
                     <field name="total_incidencies" select="1"/>
                     <field name="data_alta_contracte" select="2"/>
-                    <field name="data_ultima_lectura" select="2"/>
                     <field name="mode_facturacio" select="2"/>
                     <field name="n_retrocedir_lot" select="1"/>
                     <field name="canal_enviament" select="2"/>
