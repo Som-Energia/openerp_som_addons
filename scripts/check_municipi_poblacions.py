@@ -75,6 +75,11 @@ def get_cp_ines_dict():
             cp, ine = row[0].strip(), row[1].strip()
             cp_to_ines[cp].add(ine)
 
+    # There is a zipcode.py with this structure, if in the future we want to use it:
+    # for cp, lines in ZIPCODES.items():
+    #     for vals in lines:
+    #         cp_to_ines[cp].add(vals['ine'])
+
     step("{} CP del CSV carregats", len(cp_to_ines))
     return cp_to_ines
 
