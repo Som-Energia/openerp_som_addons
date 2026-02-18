@@ -703,7 +703,15 @@ class TestBaseExtendedSom(testing.OOTestCaseWithCursor):
         self.assertEqual(test_municipi_id, vals['id_municipi'][0])
         self.assertEqual(test_poblacio_id, vals['id_poblacio'][0])
 
-        # If not specified, must be emptied
+        # If not editing municipi or poblacio, must be untouched
+        self.rpa_obj.write(self.cursor, self.uid, [1], {
+            "notes": 'abc',
+        })
+        vals = self.rpa_obj.read(self.cursor, self.uid, 1, ['id_municipi', 'id_poblacio'])
+        self.assertEqual(test_municipi_id, vals['id_municipi'][0])
+        self.assertEqual(test_poblacio_id, vals['id_poblacio'][0])
+
+        # If editing municipi and not specified, must be emptied
         self.rpa_obj.write(self.cursor, self.uid, [1], {
             "id_municipi": test_other_municipi_id,
         })
