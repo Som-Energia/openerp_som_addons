@@ -86,31 +86,42 @@ class WizardRefundRectifyFromOrigin(osv.osv_memory):
         return facts_cli_ids, msg
 
     def recarregar_lectures_between_dates(
-        self, cursor, uid, ids, pol_id, data_inici, data_final, context={}
+        self, cursor, uid, f1_meters, pol_id, data_inici, data_final, context={}
     ):
-        pol_obj = self.pool.get("giscedata.polissa")
         lect_pool_obj = self.pool.get("giscedata.lectures.lectura.pool")
+        meter_obj = self.pool.get("giscedata.lectures.comptador")
         copia_lect_wiz_o = self.pool.get("wizard.copiar.lectura.pool.a.fact")
 
-        polissa = pol_obj.browse(cursor, uid, pol_id)
         data_lectura_anterior = (
             datetime.strptime(data_inici, "%Y-%m-%d") - timedelta(days=1)
         ).strftime("%Y-%m-%d")
+
+        meter_ids = meter_obj.search(
+            cursor,
+            uid,
+            [
+                ("polissa", "=", pol_id),
+                ('name', 'in', f1_meters)
+            ],
+            context={"active_test": False}
+        )
 
         lect_prev_id = lect_pool_obj.search(
             cursor,
             uid,
             [
-                ("comptador", "in", [x.id for x in polissa.comptadors]),
+                ("comptador", "in", meter_ids),
                 ("name", "in", [data_lectura_anterior, data_inici]),
             ],
             limit=1,
         )
-
         lect_final_id = lect_pool_obj.search(
             cursor,
             uid,
-            [("comptador", "in", [x.id for x in polissa.comptadors]), ("name", "=", data_final)],
+            [
+                ("comptador", "in", meter_ids),
+                ("name", "=", data_final)
+            ],
             limit=1,
         )
 
@@ -482,10 +493,15 @@ class WizardRefundRectifyFromOrigin(osv.osv_memory):
                     )
                     continue
 
+                meters = []
+                for lect in f1.importacio_lectures_ids:
+                    meters.append(lect.comptador)
+                meters = list(set(meters))
+
                 n_lect_del = self.recarregar_lectures_between_dates(
                     cursor,
                     uid,
-                    ids,
+                    meters,
                     pol_id,
                     f1.fecha_factura_desde,
                     f1.fecha_factura_hasta,
