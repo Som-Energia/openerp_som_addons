@@ -85,7 +85,7 @@ class WizardRefundRectifyFromOrigin(osv.osv_memory):
             facts_cli_ids = list(set(facts_cli_ids) - set(f_cli_rectificar_draft))
         return facts_cli_ids, msg
 
-    def Import_readings_from_f1_to_pool(self, cursor, uid, f1_id, context):
+    def import_readings_from_f1_to_pool(self, cursor, uid, f1_id, context):
         wiz_pool_o = self.pool.get("wizard.load.lectures.pool.from.f1.multi")
         ctx = {
             'active_id': f1_id,
@@ -514,8 +514,8 @@ class WizardRefundRectifyFromOrigin(osv.osv_memory):
                     )
                     continue
 
-                if f1.import_phase != 40:
-                    self.Import_readings_from_f1_to_pool(cursor, uid, _id, context)
+                if f1.import_phase == 50:
+                    self.import_readings_from_f1_to_pool(cursor, uid, _id, context)
 
                 meters = []
                 for lect in f1.importacio_lectures_ids:
