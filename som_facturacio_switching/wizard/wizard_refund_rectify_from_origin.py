@@ -85,6 +85,27 @@ class WizardRefundRectifyFromOrigin(osv.osv_memory):
             facts_cli_ids = list(set(facts_cli_ids) - set(f_cli_rectificar_draft))
         return facts_cli_ids, msg
 
+    def Import_readings_from_f1_to_pool(self, cursor, uid, f1_id, context):
+        wiz_pool_o = self.pool.get("wizard.load.lectures.pool.from.f1.multi")
+        ctx = {
+            'active_id': f1_id,
+        }
+        wiz_pool_id = wiz_pool_o.create({}, context=ctx)
+        wiz_pool_o.write(cursor, uid, [wiz_pool_id],
+                         {
+            'overwrite': True,
+            'overwrite_from': True,
+            'force_ajust': True,
+            'set_phase_5': False,
+        }, context=ctx
+        )
+        wiz_pool_o.import_pool_readings_from_f1([wiz_pool_id], context=ctx)
+
+        data = wiz_pool_o.read(cursor, uid, [wiz_pool_id], ['state', 'incorrect_ids'], context=ctx)
+        if data['state'] != 'end':
+            return False, data['incorrect_ids']
+        return True, []
+
     def recarregar_lectures_between_dates(
         self, cursor, uid, f1_meters, pol_id, data_inici, data_final, context={}
     ):
@@ -492,6 +513,9 @@ class WizardRefundRectifyFromOrigin(osv.osv_memory):
                         context,
                     )
                     continue
+
+                if f1.import_phase != 40:
+                    self.Import_readings_from_f1_to_pool(cursor, uid, _id, context)
 
                 meters = []
                 for lect in f1.importacio_lectures_ids:
