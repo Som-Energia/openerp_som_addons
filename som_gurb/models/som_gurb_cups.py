@@ -269,6 +269,21 @@ class SomGurbCups(osv.osv):
 
         return sign_status
 
+    @job(queue="signaturit")
+    def update_signature(self, cursor, uid, gurb_lead_ids, context=None):
+        sign_docs_obj = self.pool.get("giscedata.signatura.documents")
+        sign_process_obj = self.pool.get("giscedata.signatura.process")
+
+        for gurb_lead_id in gurb_lead_ids:
+            search_vals = [("model", "=", "som.gurb.cups,{}".format(gurb_lead_id))]
+            doc_id = sign_docs_obj.search(cursor, uid, search_vals, limit=1)[0]
+            process_id = sign_docs_obj.read(cursor, uid, doc_id, ["process_id"])["process_id"][0]
+            status = sign_process_obj.read(
+                cursor, uid, process_id, ["status"], context=context
+            )["status"]
+            if status != "completed":
+                sign_process_obj.update(cursor, uid, [process_id], context=context)
+
     @job(queue="leads")
     def form_activate_gurb_cups_lead(self, cursor, uid, gurb_cups_id, context=None):
         return self.form_activate_gurb_cups_lead_sync(cursor, uid, gurb_cups_id, context=context)
