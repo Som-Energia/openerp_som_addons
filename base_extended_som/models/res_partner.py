@@ -285,6 +285,9 @@ class ResPartner(osv.osv):
                     res[partner_id] = empty_num_soci
         return res
 
+    def _fnct_has_debt_dummy(self, cursor, uid, ids, field_name, arg, context=None):
+        return dict.fromkeys(ids, False)
+
     _columns = {
         "www_email": fields.function(
             _www_email,
@@ -342,6 +345,12 @@ class ResPartner(osv.osv):
         ),
         "birthdate": fields.date("Data de naixement"),
         "gender": fields.selection(GENDER_SELECTION, "Gènere"),
+        'has_debt': fields.function(
+            _fnct_has_debt_dummy,
+            type='boolean',
+            method=True,
+            string='Has debt VOID',
+        ),
     }
 
 
