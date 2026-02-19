@@ -8,6 +8,7 @@
     "depends": [
         "base_extended",
         "poweremail",
+        "impagat_base"
     ],
     "init_xml": [],
     "demo_xml": [
