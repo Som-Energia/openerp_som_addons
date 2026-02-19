@@ -90,7 +90,7 @@ class WizardRefundRectifyFromOrigin(osv.osv_memory):
         ctx = {
             'active_id': f1_id,
         }
-        wiz_pool_id = wiz_pool_o.create({}, context=ctx)
+        wiz_pool_id = wiz_pool_o.create(cursor, uid, {}, context=ctx)
         wiz_pool_o.write(cursor, uid, [wiz_pool_id],
                          {
             'overwrite': True,
@@ -99,9 +99,9 @@ class WizardRefundRectifyFromOrigin(osv.osv_memory):
             'set_phase_5': False,
         }, context=ctx
         )
-        wiz_pool_o.import_pool_readings_from_f1([wiz_pool_id], context=ctx)
+        wiz_pool_o.import_pool_readings_from_f1(cursor, uid, [wiz_pool_id], context=ctx)
 
-        data = wiz_pool_o.read(cursor, uid, [wiz_pool_id], ['state', 'incorrect_ids'], context=ctx)
+        data = wiz_pool_o.read(cursor, uid, wiz_pool_id, ['state', 'incorrect_ids'], context=ctx)[0]
         if data['state'] != 'end':
             return False, data['incorrect_ids']
         return True, []
