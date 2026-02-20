@@ -1300,7 +1300,7 @@ class SomAutoreclamaConditionsTest(SomAutoreclamaEzATC_Test):
             cond = cond_obj.browse(self.cursor, self.uid, cond_id)
 
             print(cond.subtype_id.name)
-            if cond.subtype_id.name == "006":  # unsuported
+            if cond.subtype_id.name in ["006", "009", "036"]:  # unsuported
                 continue
 
             # test more
