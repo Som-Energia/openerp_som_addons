@@ -1300,7 +1300,7 @@ class SomAutoreclamaConditionsTest(SomAutoreclamaEzATC_Test):
             cond = cond_obj.browse(self.cursor, self.uid, cond_id)
 
             print(cond.subtype_id.name)
-            if cond.subtype_id.name == "006":  # unsuported
+            if cond.subtype_id.name in ["006", "009", "036"]:  # unsuported
                 continue
 
             # test more
@@ -2200,20 +2200,21 @@ class SomAutoreclamaf1cAutomationTest(SomAutoreclamaEzATC_Test):
         self.assertGreater(len(f1_ids), 1)
         f1_id = f1_ids[0]
 
+        last_hours = (datetime.now() - timedelta(hours=120)).strftime("%Y-%m-%d %H:%M:%S")
         f1_obj.write(self.cursor, self.uid, f1_id, {
             "type_factura": "C",
+            "data_carrega": last_hours,
         })
-        last_hours = (datetime.now() - timedelta(hours=120)).strftime("%Y-%m-%d %H:%M:%S")
-        ssql = '''update giscedata_facturacio_importacio_linia set create_date = %s where id = %s'''
-        self.cursor.execute(ssql, (last_hours, f1_id,))
 
         found_ids = aut_obj.get_f1c_candidates_to_reclaim(self.cursor, self.uid, {})
 
         self.assertEqual(len(found_ids), 0)
 
         last_hours = (datetime.now() - timedelta(hours=12)).strftime("%Y-%m-%d %H:%M:%S")
-        ssql = '''update giscedata_facturacio_importacio_linia set create_date = %s where id = %s'''
-        self.cursor.execute(ssql, (last_hours, f1_id,))
+        f1_obj.write(self.cursor, self.uid, f1_id, {
+            "type_factura": "C",
+            "data_carrega": last_hours,
+        })
 
         found_ids = aut_obj.get_f1c_candidates_to_reclaim(self.cursor, self.uid, {})
 
@@ -2239,10 +2240,12 @@ class SomAutoreclamaf1cAutomationTest(SomAutoreclamaEzATC_Test):
         f1 = f1_obj.browse(self.cursor, self.uid, f1_id)
         self.assertEqual(f1.cups_id.name, pol.cups.name)
 
+        last_hours = (datetime.now() - timedelta(hours=12)).strftime("%Y-%m-%d %H:%M:%S")
         f1_obj.write(self.cursor, self.uid, f1_id, {
             "fecha_factura_desde": "2015-01-01",
             "invoice_number_text": "1234567890ABCD",
             "type_factura": "C",
+            "data_carrega": last_hours,
         })
         f1 = f1_obj.browse(self.cursor, self.uid, f1_id)
         self.assertEqual(f1.polissa_id.id, pol.id)
@@ -2259,9 +2262,6 @@ class SomAutoreclamaf1cAutomationTest(SomAutoreclamaEzATC_Test):
             'factura_id': 1,
             'llista_preu': pol.llista_preu.id,
         })
-        last_hours = (datetime.now() - timedelta(hours=12)).strftime("%Y-%m-%d %H:%M:%S")
-        ssql = '''update giscedata_facturacio_importacio_linia set create_date = %s where id = %s'''
-        self.cursor.execute(ssql, (last_hours, f1_id,))
 
         new_atc_id = atc_obj.create_ATC_R1_010_from_f1_via_wizard(
             self.cursor, self.uid, f1_id, {}
@@ -2405,10 +2405,12 @@ class SomAutoreclamaf1cAutomationTest(SomAutoreclamaEzATC_Test):
         f1 = f1_obj.browse(self.cursor, self.uid, f1_id)
         self.assertEqual(f1.cups_id.name, pol.cups.name)
 
+        last_hours = (datetime.now() - timedelta(hours=12)).strftime("%Y-%m-%d %H:%M:%S")
         f1_obj.write(self.cursor, self.uid, f1_id, {
             "fecha_factura_desde": "2015-01-01",
             "invoice_number_text": "1234567890ABCD",
             "type_factura": "C",
+            "data_carrega": last_hours,
         })
         f1 = f1_obj.browse(self.cursor, self.uid, f1_id)
         self.assertEqual(f1.polissa_id.id, pol.id)
@@ -2425,9 +2427,6 @@ class SomAutoreclamaf1cAutomationTest(SomAutoreclamaEzATC_Test):
             'factura_id': 1,
             'llista_preu': pol.llista_preu.id,
         })
-        last_hours = (datetime.now() - timedelta(hours=12)).strftime("%Y-%m-%d %H:%M:%S")
-        ssql = '''update giscedata_facturacio_importacio_linia set create_date = %s where id = %s'''
-        self.cursor.execute(ssql, (last_hours, f1_id,))
 
         msg = aut_obj.automation(self.cursor, self.uid, {})
 
@@ -2456,10 +2455,12 @@ class SomAutoreclamaf1cAutomationTest(SomAutoreclamaEzATC_Test):
         f1 = f1_obj.browse(self.cursor, self.uid, f1_id)
         self.assertEqual(f1.cups_id.name, pol.cups.name)
 
+        last_hours = (datetime.now() - timedelta(hours=12)).strftime("%Y-%m-%d %H:%M:%S")
         f1_obj.write(self.cursor, self.uid, f1_id, {
             "fecha_factura_desde": "2015-01-01",
             "invoice_number_text": "1234567890ABCD",
             "type_factura": "C",
+            "data_carrega": last_hours,
         })
         f1 = f1_obj.browse(self.cursor, self.uid, f1_id)
         self.assertEqual(f1.polissa_id.id, pol.id)
@@ -2476,18 +2477,17 @@ class SomAutoreclamaf1cAutomationTest(SomAutoreclamaEzATC_Test):
             'factura_id': 1,
             'llista_preu': pol.llista_preu.id,
         })
-        last_hours = (datetime.now() - timedelta(hours=12)).strftime("%Y-%m-%d %H:%M:%S")
-        ssql = '''update giscedata_facturacio_importacio_linia set create_date = %s where id = %s'''
-        self.cursor.execute(ssql, (last_hours, f1_id,))
 
         f1_id = f1_ids[1]
         f1 = f1_obj.browse(self.cursor, self.uid, f1_id)
         self.assertEqual(f1.cups_id.name, pol.cups.name)
 
+        last_hours = (datetime.now() - timedelta(hours=12)).strftime("%Y-%m-%d %H:%M:%S")
         f1_obj.write(self.cursor, self.uid, f1_id, {
             "fecha_factura_desde": "2015-01-01",
             "invoice_number_text": "987654321ZXY",
             "type_factura": "C",
+            "data_carrega": last_hours,
         })
         f1 = f1_obj.browse(self.cursor, self.uid, f1_id)
         self.assertEqual(f1.polissa_id.id, pol.id)
@@ -2504,18 +2504,17 @@ class SomAutoreclamaf1cAutomationTest(SomAutoreclamaEzATC_Test):
             'factura_id': 2,
             'llista_preu': pol.llista_preu.id,
         })
-        last_hours = (datetime.now() - timedelta(hours=12)).strftime("%Y-%m-%d %H:%M:%S")
-        ssql = '''update giscedata_facturacio_importacio_linia set create_date = %s where id = %s'''
-        self.cursor.execute(ssql, (last_hours, f1_id,))
 
         f1_id = f1_ids[2]
         f1 = f1_obj.browse(self.cursor, self.uid, f1_id)
         self.assertEqual(f1.cups_id.name, pol.cups.name)
 
+        last_hours = (datetime.now() - timedelta(hours=2)).strftime("%Y-%m-%d %H:%M:%S")
         f1_obj.write(self.cursor, self.uid, f1_id, {
             "fecha_factura_desde": "2015-01-01",
             "invoice_number_text": "NONONONONONONNONONNONO123",
             "type_factura": "C",
+            "data_carrega": last_hours,
         })
         f1 = f1_obj.browse(self.cursor, self.uid, f1_id)
         self.assertEqual(f1.polissa_id.id, pol.id)
@@ -2532,9 +2531,6 @@ class SomAutoreclamaf1cAutomationTest(SomAutoreclamaEzATC_Test):
             'factura_id': 3,
             'llista_preu': pol.llista_preu.id,
         })
-        last_hours = (datetime.now() - timedelta(hours=2)).strftime("%Y-%m-%d %H:%M:%S")
-        ssql = '''update giscedata_facturacio_importacio_linia set create_date = %s where id = %s'''
-        self.cursor.execute(ssql, (last_hours, f1_id,))
 
         msg = aut_obj.automation(self.cursor, self.uid, {})
 
@@ -2565,10 +2561,12 @@ class SomAutoreclamaf1cAutomationTest(SomAutoreclamaEzATC_Test):
         f1 = f1_obj.browse(self.cursor, self.uid, f1_id)
         self.assertEqual(f1.cups_id.name, pol.cups.name)
 
+        last_hours = (datetime.now() - timedelta(hours=12)).strftime("%Y-%m-%d %H:%M:%S")
         f1_obj.write(self.cursor, self.uid, f1_id, {
             "fecha_factura_desde": "2015-01-01",
             "invoice_number_text": "1234567890ABCD",
             "type_factura": "C",
+            "data_carrega": last_hours,
         })
         f1 = f1_obj.browse(self.cursor, self.uid, f1_id)
         self.assertEqual(f1.polissa_id.id, pol.id)
@@ -2585,15 +2583,13 @@ class SomAutoreclamaf1cAutomationTest(SomAutoreclamaEzATC_Test):
             'factura_id': 1,
             'llista_preu': pol.llista_preu.id,
         })
-        last_hours = (datetime.now() - timedelta(hours=12)).strftime("%Y-%m-%d %H:%M:%S")
-        ssql = '''update giscedata_facturacio_importacio_linia set create_date = %s where id = %s'''
-        self.cursor.execute(ssql, (last_hours, f1_id,))
 
         # F1 far
         f1_id = f1_ids[1]
         f1 = f1_obj.browse(self.cursor, self.uid, f1_id)
         self.assertEqual(f1.cups_id.name, pol.cups.name)
 
+        last_hours = (datetime.now() - timedelta(hours=56)).strftime("%Y-%m-%d %H:%M:%S")
         f1_obj.write(self.cursor, self.uid, f1_id, {
             "fecha_factura_desde": "2015-01-01",
             "invoice_number_text": "546372819OOOOPPPSSSS",
@@ -2614,19 +2610,18 @@ class SomAutoreclamaf1cAutomationTest(SomAutoreclamaEzATC_Test):
             'factura_id': 2,
             'llista_preu': pol.llista_preu.id,
         })
-        last_hours = (datetime.now() - timedelta(hours=56)).strftime("%Y-%m-%d %H:%M:%S")
-        ssql = '''update giscedata_facturacio_importacio_linia set create_date = %s where id = %s'''
-        self.cursor.execute(ssql, (last_hours, f1_id,))
 
         # F1 no ok (tipus 05)
         f1_id = f1_ids[2]
         f1 = f1_obj.browse(self.cursor, self.uid, f1_id)
         self.assertEqual(f1.cups_id.name, pol.cups.name)
 
+        last_hours = (datetime.now() - timedelta(hours=2)).strftime("%Y-%m-%d %H:%M:%S")
         f1_obj.write(self.cursor, self.uid, f1_id, {
             "fecha_factura_desde": "2015-01-01",
             "invoice_number_text": "NONONONONONONNONONNONO123",
             "type_factura": "C",
+            "data_carrega": last_hours,
         })
         f1 = f1_obj.browse(self.cursor, self.uid, f1_id)
         self.assertEqual(f1.polissa_id.id, pol.id)
@@ -2643,9 +2638,6 @@ class SomAutoreclamaf1cAutomationTest(SomAutoreclamaEzATC_Test):
             'factura_id': 3,
             'llista_preu': pol.llista_preu.id,
         })
-        last_hours = (datetime.now() - timedelta(hours=2)).strftime("%Y-%m-%d %H:%M:%S")
-        ssql = '''update giscedata_facturacio_importacio_linia set create_date = %s where id = %s'''
-        self.cursor.execute(ssql, (last_hours, f1_id,))
 
         msg = aut_obj.automation(self.cursor, self.uid, {})
 

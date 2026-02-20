@@ -7,7 +7,8 @@
             <field name="type">sale</field>
             <field name="currency_id" ref="base.EUR"/>
             <field name="tarifes_atr_compatibles" eval="[(4, ref('giscedata_polissa.tarifa_20TD'))]"/>
-            <field name="compatible_invoicing_modes" eval="[(4, ref('giscedata_facturacio_indexada.mode_facturacio_index'))]"/>
+            <field name="compatible_invoicing_modes" eval="[(4, ref('giscedata_facturacio.mode_facturacio_atr'))]"/>
+            <field name="compatible_invoicing_generation_modes" eval="[(4, ref('giscedata_facturacio.mode_facturacio_generacio_atr'))]"/>
         </record>
         <record model="product.pricelist" id="pricelist_periodes_20td_insular">
             <field name="name">2.0TD_SOM_INSULAR</field>
@@ -15,7 +16,8 @@
             <field name="type">sale</field>
             <field name="currency_id" ref="base.EUR"/>
             <field name="tarifes_atr_compatibles" eval="[(4, ref('giscedata_polissa.tarifa_20TD'))]"/>
-            <field name="compatible_invoicing_modes" eval="[(4, ref('giscedata_facturacio_indexada.mode_facturacio_index'))]"/>
+            <field name="compatible_invoicing_modes" eval="[(4, ref('giscedata_facturacio.mode_facturacio_atr'))]"/>
+            <field name="compatible_invoicing_generation_modes" eval="[(4, ref('giscedata_facturacio.mode_facturacio_generacio_atr'))]"/>
         </record>
         <record model="product.pricelist" id="pricelist_periodes_30td_peninsula">
             <field name="name">3.0TD_SOM</field>
@@ -23,7 +25,8 @@
             <field name="type">sale</field>
             <field name="currency_id" ref="base.EUR"/>
             <field name="tarifes_atr_compatibles" eval="[(4, ref('giscedata_polissa.tarifa_30TD'))]"/>
-            <field name="compatible_invoicing_modes" eval="[(4, ref('giscedata_facturacio_indexada.mode_facturacio_index'))]"/>
+            <field name="compatible_invoicing_modes" eval="[(4, ref('giscedata_facturacio.mode_facturacio_atr'))]"/>
+            <field name="compatible_invoicing_generation_modes" eval="[(4, ref('giscedata_facturacio.mode_facturacio_generacio_atr'))]"/>
         </record>
         <record model="product.pricelist" id="pricelist_periodes_30td_insular">
             <field name="name">3.0TD_SOM_INSULAR</field>
@@ -31,7 +34,8 @@
             <field name="type">sale</field>
             <field name="currency_id" ref="base.EUR"/>
             <field name="tarifes_atr_compatibles" eval="[(4, ref('giscedata_polissa.tarifa_30TD'))]"/>
-            <field name="compatible_invoicing_modes" eval="[(4, ref('giscedata_facturacio_indexada.mode_facturacio_index'))]"/>
+            <field name="compatible_invoicing_modes" eval="[(4, ref('giscedata_facturacio.mode_facturacio_atr'))]"/>
+            <field name="compatible_invoicing_generation_modes" eval="[(4, ref('giscedata_facturacio.mode_facturacio_generacio_atr'))]"/>
         </record>
         <record model="product.pricelist" id="pricelist_periodes_61td_peninsula">
             <field name="name">6.1TD_SOM</field>
@@ -39,7 +43,8 @@
             <field name="type">sale</field>
             <field name="currency_id" ref="base.EUR"/>
             <field name="tarifes_atr_compatibles" eval="[(4, ref('giscedata_polissa.tarifa_61TD'))]"/>
-            <field name="compatible_invoicing_modes" eval="[(4, ref('giscedata_facturacio_indexada.mode_facturacio_index'))]"/>
+            <field name="compatible_invoicing_modes" eval="[(4, ref('giscedata_facturacio.mode_facturacio_atr'))]"/>
+            <field name="compatible_invoicing_generation_modes" eval="[(4, ref('giscedata_facturacio.mode_facturacio_generacio_atr'))]"/>
         </record>
         <record model="product.pricelist" id="pricelist_periodes_61td_insular">
             <field name="name">6.1TD_SOM_INSULAR</field>
@@ -47,7 +52,8 @@
             <field name="type">sale</field>
             <field name="currency_id" ref="base.EUR"/>
             <field name="tarifes_atr_compatibles" eval="[(4, ref('giscedata_polissa.tarifa_61TD'))]"/>
-            <field name="compatible_invoicing_modes" eval="[(4, ref('giscedata_facturacio_indexada.mode_facturacio_index'))]"/>
+            <field name="compatible_invoicing_modes" eval="[(4, ref('giscedata_facturacio.mode_facturacio_atr'))]"/>
+            <field name="compatible_invoicing_generation_modes" eval="[(4, ref('giscedata_facturacio.mode_facturacio_generacio_atr'))]"/>
         </record>
     </data>
 </openerp>

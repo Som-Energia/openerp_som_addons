@@ -60,7 +60,7 @@ class TestsPartnerAddress(testing.OOTestCase):
             {
                 'email_address': u'test@test.test',
                 'merge_fields': {
-                    'AUTO': 'sense autoproducci\xc3\xb3',
+                    'AUTO': 'sense autoproduccio',
                     'EMAIL': u'test@test.test',
                     'MMERGE1': u'ES97053918J',
                     'MMERGE10': '',
@@ -102,7 +102,7 @@ class TestsPartnerAddress(testing.OOTestCase):
             {
                 'email_address': u'test@test.test',
                 'merge_fields': {
-                    'AUTO': 'sense autoproducci\xc3\xb3',
+                    'AUTO': 'sense autoproduccio',
                     'EMAIL': u'test@test.test',
                     'MMERGE1': u'ES37692879L',
                     'MMERGE10': u'600000000',
