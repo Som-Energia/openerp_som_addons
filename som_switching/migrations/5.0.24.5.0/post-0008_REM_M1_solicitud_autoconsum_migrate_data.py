@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 import logging
-from oopgrade.oopgrade import load_data
+from oopgrade.oopgrade import delete_record
 
 
 def up(cursor, installed_version):
@@ -9,15 +9,13 @@ def up(cursor, installed_version):
 
     logger = logging.getLogger('openerp.migration')
 
-    logger.info("Updating XML files")
-    data_files = [
-        'giscedata_switching_notification_data.xml',
-    ]
-    for data_file in data_files:
-        load_data(
-            cursor, 'som_switching', data_file,
-            idref=None, mode='update'
-        )
+    logger.info("Deleting deprecated records")
+    list_of_records = ["sw_not_m1_02_rebuig_57"]
+    delete_record(
+        cursor,
+        'som_switching',
+        list_of_records,
+    )
     logger.info("Migration completed successfully.")
 
 
