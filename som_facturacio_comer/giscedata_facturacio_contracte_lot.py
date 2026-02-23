@@ -267,7 +267,7 @@ class GiscedataFacturacioContracteLot(osv.osv):
             string=_("Gestions Massives"),
             readonly=True,
         ),
-        "mode_facturacio": fields.related(
+        "facturacio_potencia": fields.related(
             "polissa_id",
             "facturacio_potencia",
             type="char",
