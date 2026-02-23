@@ -25,6 +25,7 @@
             <field name="model">giscedata.facturacio.contracte_lot</field>
             <field name="inherit_id" ref="giscedata_facturacio.view_facturacio_contracte_lot_tree"/>
             <field name="arch" type="xml">
+                <field name="pricelist_id" position="replace"/>
                 <field name="n_factures" position="after">
                     <field name="polissa_distribuidora" select="1"/>
                     <field name="autoconsum" select="1"/>
