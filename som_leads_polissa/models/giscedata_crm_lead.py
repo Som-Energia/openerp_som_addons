@@ -106,6 +106,7 @@ class GiscedataCrmLead(osv.OsvInherits):
 
         values["soci"] = member_id[0]
         values["donatiu"] = lead.donation
+        values["data_firma_contracte"] = datetime.today().strftime("%Y-%m-%d %H:%M:%S")
 
         for line in lead.history_line:
             if line.description and line.description.startswith(WWW_DATA_FORM_HEADER):
