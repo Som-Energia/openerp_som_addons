@@ -327,13 +327,13 @@ class TestPolissa(testing.OOTestCaseWithCursor):
             self.cursor, self.uid, "som_indexada", "pricelist_periodes_20td_insular"
         )[1]
         self.pp_indexada_peninsula_id = self.imd_obj.get_object_reference(
-            self.cursor, self.uid, "som_indexada", "pricelist_indexada_20td_peninsula"
+            self.cursor, self.uid, "som_indexada", "pricelist_indexada_20td_peninsula_2024"
         )[1]
         self.pp_indexada_balears_id = self.imd_obj.get_object_reference(
-            self.cursor, self.uid, "som_indexada", "pricelist_indexada_20td_balears"
+            self.cursor, self.uid, "som_indexada", "pricelist_indexada_20td_balears_2024"
         )[1]
         self.pp_indexada_canaries_id = self.imd_obj.get_object_reference(
-            self.cursor, self.uid, "som_indexada", "pricelist_indexada_20td_canaries"
+            self.cursor, self.uid, "som_indexada", "pricelist_indexada_20td_canaries_2024"
         )[1]
 
         # Tarifes socials

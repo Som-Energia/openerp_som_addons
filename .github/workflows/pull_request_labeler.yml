@@ -16,5 +16,5 @@ jobs:
         count: 1
         labels: ".*"
         add_comment: true
-        message: "No s'ha pogut posar cap etiqueta. Potser et falta algun dels passos següents: [docs/crear_nou_modul.md](docs/crear_nou_modul.md)"
+        message: "No s'ha pogut posar cap etiqueta. Potser et falta algun dels passos següents: [docs/crear_nou_modul.md](https://github.com/Som-Energia/openerp_som_addons/blob/main/docs/crear_nou_modul.md)"
         use_regex: true
