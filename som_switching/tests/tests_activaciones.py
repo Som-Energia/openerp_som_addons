@@ -407,6 +407,7 @@ class TestsAutoActiva(testing.OOTestCase):
         self.assertEqual(extra_values["ref_model"], "giscedata.atc")
 
         # Cridem l'assistent de crear R1 amb el context obringut.
+        context["reclamacio_num_factura_text"] = {str(pol.id): "123456789ABCDEFG"}
         wiz_o = self.openerp.pool.get("wizard.subtype.r1")
         wiz_id = wiz_o.create(cursor, uid, {"comentaris": "TEST"}, context)
         res = wiz_o.action_create_r1_case(cursor, uid, [wiz_id], context)
