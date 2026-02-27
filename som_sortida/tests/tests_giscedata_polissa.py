@@ -128,6 +128,8 @@ class TestsGiscedataPolissa(testing.OOTestCaseWithCursor):
         pol_obj.set_pending(cursor, uid, polissa_id, estat_pendent_cor, {
             "custom_change_dates": {polissa_id: "2025-08-15"},
         })
+        # This line is needed because state "Correte macu" from
+        # demo data from psala breaks everything
         self.cursor.execute(
             "UPDATE giscedata_polissa SET pending_state = 'Correct' WHERE id = %s", (polissa_id,))
 
