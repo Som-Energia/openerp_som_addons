@@ -38,7 +38,7 @@ class TestUpdatePendingStates(testing.OOTestCaseWithCursor):
         hist_data = hist_obj.read(cursor, uid, hist_id, ['pending_state_id', 'change_date'])
         self.assertEqual(hist_data[-1]['pending_state_id'][0], estat_pendent_falta_un_mes)
 
-    def test_gicedata_update_workflow_30d(self):
+    def test_giscedata_update_workflow_30d(self):
         cursor = self.cursor
         uid = self.uid
         imd_obj = self.openerp.pool.get('ir.model.data')
@@ -91,7 +91,7 @@ class TestUpdatePendingStates(testing.OOTestCaseWithCursor):
         ])
         self.assertGreater(new_total_outbox_mails, old_total_outbox_mails)
 
-    def test_gicedata_update_workflow_15d(self):
+    def test_giscedata_update_workflow_15d(self):
         cursor = self.cursor
         uid = self.uid
         imd_obj = self.openerp.pool.get('ir.model.data')
@@ -138,7 +138,7 @@ class TestUpdatePendingStates(testing.OOTestCaseWithCursor):
         ])
         self.assertGreater(new_total_outbox_mails, old_total_outbox_mails)
 
-    def test_gicedata_update_workflow_7d(self):
+    def test_giscedata_update_workflow_7d(self):
         cursor = self.cursor
         uid = self.uid
         imd_obj = self.openerp.pool.get('ir.model.data')
@@ -188,16 +188,15 @@ class TestUpdatePendingStates(testing.OOTestCaseWithCursor):
         ])
         self.assertGreater(new_total_outbox_sms, old_total_outbox_sms)
 
-    def test_gicedata_update_workflow_b1(self):
+    def test_giscedata_update_workflow_b1(self):
         cursor = self.cursor
         uid = self.uid
         imd_obj = self.openerp.pool.get('ir.model.data')
         pol_obj = self.openerp.pool.get('giscedata.polissa')
         upd_obj = self.openerp.pool.get('update.pending.states')
         sw_obj = self.openerp.pool.get('giscedata.switching')
-
         polissa_id = imd_obj.get_object_reference(
-            cursor, uid, 'giscedata_polissa', 'polissa_0004'
+            cursor, uid, 'giscedata_polissa', 'polissa_0005'
         )[1]
         estat_7d_id = imd_obj.get_object_reference(
             cursor, uid, 'som_sortida', 'enviar_cor_falta_7_dies_pending_state'
@@ -205,7 +204,6 @@ class TestUpdatePendingStates(testing.OOTestCaseWithCursor):
         estat_b1_creat_id = imd_obj.get_object_reference(
             cursor, uid, 'som_sortida', 'enviar_cor_cas_b1_creat_pending_state'
         )[1]
-
         partner_soci_id = imd_obj.get_object_reference(
             cursor, uid, 'som_polissa_soci', 'res_partner_soci_ct'
         )[1]
@@ -219,14 +217,14 @@ class TestUpdatePendingStates(testing.OOTestCaseWithCursor):
         pol_obj.set_pending(cursor, uid, polissa_id, estat_7d_id, {
             'custom_change_dates': {polissa_id: '2023-10-01'},
         })
+        self.cursor.execute(
+            "UPDATE giscedata_polissa SET pending_state = 'Correct' WHERE id = %s", (polissa_id,))
 
         with avoid_creating_subcursors(cursor):
             upd_obj.update_polisses(cursor, uid)
 
         pol = pol_obj.browse(cursor, uid, polissa_id)
-
         self.assertEqual(pol.sortida_state_id.id, estat_b1_creat_id)
-
         atr_case = sw_obj.search(
             cursor, uid, [
                 ("cups_polissa_id", "=", polissa_id),
