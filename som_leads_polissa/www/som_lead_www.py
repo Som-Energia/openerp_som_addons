@@ -339,6 +339,7 @@ class SomLeadWww(osv.osv_memory):
             context["active_test"] = False
             if polissa_o.search(cr, uid, [("titular", "=", partner_id[0])], context=context):
                 result = True
+            context.pop("active_test")
         return result
 
     def _check_member_vat_dont_exists(self, cr, uid, vat, context=None):
