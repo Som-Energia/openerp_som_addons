@@ -85,32 +85,64 @@ class WizardRefundRectifyFromOrigin(osv.osv_memory):
             facts_cli_ids = list(set(facts_cli_ids) - set(f_cli_rectificar_draft))
         return facts_cli_ids, msg
 
+    def import_readings_from_f1_to_pool(self, cursor, uid, f1_id, context):
+        wiz_pool_o = self.pool.get("wizard.load.lectures.pool.from.f1.multi")
+        ctx = {
+            'active_id': f1_id,
+        }
+        wiz_pool_id = wiz_pool_o.create(cursor, uid, {}, context=ctx)
+        wiz_pool_o.write(cursor, uid, [wiz_pool_id],
+                         {
+            'overwrite': True,
+            'overwrite_from': True,
+            'force_ajust': True,
+            'set_phase_5': False,
+        }, context=ctx
+        )
+        wiz_pool_o.import_pool_readings_from_f1(cursor, uid, [wiz_pool_id], context=ctx)
+
+        data = wiz_pool_o.read(cursor, uid, wiz_pool_id, ['state', 'incorrect_ids'], context=ctx)[0]
+        if data['state'] != 'end':
+            return False, data['incorrect_ids']
+        return True, []
+
     def recarregar_lectures_between_dates(
-        self, cursor, uid, ids, pol_id, data_inici, data_final, context={}
+        self, cursor, uid, f1_meters, pol_id, data_inici, data_final, context={}
     ):
-        pol_obj = self.pool.get("giscedata.polissa")
         lect_pool_obj = self.pool.get("giscedata.lectures.lectura.pool")
+        meter_obj = self.pool.get("giscedata.lectures.comptador")
         copia_lect_wiz_o = self.pool.get("wizard.copiar.lectura.pool.a.fact")
 
-        polissa = pol_obj.browse(cursor, uid, pol_id)
         data_lectura_anterior = (
             datetime.strptime(data_inici, "%Y-%m-%d") - timedelta(days=1)
         ).strftime("%Y-%m-%d")
+
+        meter_ids = meter_obj.search(
+            cursor,
+            uid,
+            [
+                ("polissa", "=", pol_id),
+                ('name', 'in', f1_meters)
+            ],
+            context={"active_test": False}
+        )
 
         lect_prev_id = lect_pool_obj.search(
             cursor,
             uid,
             [
-                ("comptador", "in", [x.id for x in polissa.comptadors]),
+                ("comptador", "in", meter_ids),
                 ("name", "in", [data_lectura_anterior, data_inici]),
             ],
             limit=1,
         )
-
         lect_final_id = lect_pool_obj.search(
             cursor,
             uid,
-            [("comptador", "in", [x.id for x in polissa.comptadors]), ("name", "=", data_final)],
+            [
+                ("comptador", "in", meter_ids),
+                ("name", "=", data_final)
+            ],
             limit=1,
         )
 
@@ -482,10 +514,18 @@ class WizardRefundRectifyFromOrigin(osv.osv_memory):
                     )
                     continue
 
+                if f1.import_phase == 50:
+                    self.import_readings_from_f1_to_pool(cursor, uid, _id, context)
+
+                meters = []
+                for lect in f1.importacio_lectures_ids:
+                    meters.append(lect.comptador)
+                meters = list(set(meters))
+
                 n_lect_del = self.recarregar_lectures_between_dates(
                     cursor,
                     uid,
-                    ids,
+                    meters,
                     pol_id,
                     f1.fecha_factura_desde,
                     f1.fecha_factura_hasta,
