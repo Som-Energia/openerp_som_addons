@@ -159,6 +159,11 @@
             <field name="active">True</field>
             <field name="configuracio_id" ref="iberdrola_conf"/>
         </record>
+        <record model="som.crawlers.task" id="descargar_iberdrola_w1">
+            <field name="name">Descarregar Iberdrola W1</field>
+            <field name="active">True</field>
+            <field name="configuracio_id" ref="iberdrola_conf"/>
+        </record>
         <!-- Endesa -->
         <record model="som.crawlers.task" id="descargar_A3_endesa">
             <field name="name">Endesa descargar A3</field>
@@ -222,6 +227,11 @@
         </record>
         <record model="som.crawlers.task" id="descargar_T1_endesa">
             <field name="name">Endesa descargar T1</field>
+            <field name="active">True</field>
+            <field name="configuracio_id" ref="endesa_conf"/>
+        </record>
+        <record model="som.crawlers.task" id="descargar_W1_endesa">
+            <field name="name">Endesa descargar W1</field>
             <field name="active">True</field>
             <field name="configuracio_id" ref="endesa_conf"/>
         </record>
@@ -313,6 +323,11 @@
         </record>
         <record model="som.crawlers.task" id="descargar_anselmo_t1">
             <field name="name">Descarregar Anselmo T1</field>
+            <field name="active">True</field>
+            <field name="configuracio_id" ref="anselmo_conf"/>
+        </record>
+        <record model="som.crawlers.task" id="descargar_anselmo_w1">
+            <field name="name">Descarregar Anselmo W1</field>
             <field name="active">True</field>
             <field name="configuracio_id" ref="anselmo_conf"/>
         </record>
@@ -476,6 +491,11 @@
         </record>
         <record model="som.crawlers.task" id="descargar_conquense_t1">
             <field name="name">Descarregar Conquense T1</field>
+            <field name="active">True</field>
+            <field name="configuracio_id" ref="conquense_conf"/>
+        </record>
+        <record model="som.crawlers.task" id="descargar_conquense_w1">
+            <field name="name">Descarregar Conquense W1</field>
             <field name="active">True</field>
             <field name="configuracio_id" ref="conquense_conf"/>
         </record>
