@@ -230,7 +230,7 @@
             <field name="active">True</field>
             <field name="configuracio_id" ref="endesa_conf"/>
         </record>
-        <record model="som.crawlers.task" id="descargar_W1_endesa">
+        <record model="som.crawlers.task" id="descargar_w1_endesa">
             <field name="name">Endesa descargar W1</field>
             <field name="active">True</field>
             <field name="configuracio_id" ref="endesa_conf"/>
