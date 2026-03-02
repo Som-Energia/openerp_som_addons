@@ -208,7 +208,7 @@ jobs:
         if: ${{ inputs.all_modules == 'true' }}
 
       - name: Upload coverage.xml artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: coverage-xml
           path: coverage.xml
