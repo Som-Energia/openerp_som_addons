@@ -93,6 +93,10 @@ class ResPartnerAddress(osv.osv):
         """Override write method to set default prefixes if not provided and
         to ensure phone and mobile numbers are in their correct fields."""
 
+        # Empty poblacio if not specified
+        if vals.get('id_municipi'):
+            vals['id_poblacio'] = vals.get('id_poblacio', None)
+
         if 'phone' in vals and 'phone_prefix' not in vals:
             if not self.browse(cr, uid, ids, context=context)[0].phone_prefix:
                 vals['phone_prefix'] = self._get_default_prefix(cr, uid, context)
