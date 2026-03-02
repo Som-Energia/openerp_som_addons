@@ -5,7 +5,7 @@
     This module provide :
         * Afegir o modificar funcionalitats dels leads base
     """,
-    "version": "24.5.0",
+    "version": "0-dev",
     "author": "SomEnergia",
     "category": "SomEnergia",
     "depends": [

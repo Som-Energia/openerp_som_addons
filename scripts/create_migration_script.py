@@ -12,7 +12,7 @@ per actualitzar els camps i vistes dels models afectats.
 Execució des de l'arrel del repositori:
     python scripts/create_migration_script.py
 """
-TARGET_VERSION = "5.0.24.5.0"
+TARGET_VERSION = "5.0.25.5.0"
 
 
 def get_modified_files():

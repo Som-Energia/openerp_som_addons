@@ -3,7 +3,7 @@
     "name": "SOM Tg Comer Provider",
     "description": """
     """,
-    "version": "24.5.0",
+    "version": "0-dev",
     "author": "SomEnergia",
     "category": "",
     "depends": [
