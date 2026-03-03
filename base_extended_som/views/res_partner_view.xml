@@ -18,5 +18,8 @@
                 </xpath>
             </field>
         </record>
+        <record id="impagat_base.menu_res_partner_debt_tree" model="ir.ui.menu">
+            <field name="parent_id" eval="False"/>
+        </record>
     </data>
 </openerp>
