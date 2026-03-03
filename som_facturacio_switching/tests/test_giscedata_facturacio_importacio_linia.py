@@ -5,7 +5,6 @@ from tools.misc import cache
 import mock
 from mock import call
 from datetime import datetime, timedelta
-import unittest
 
 
 class TestGiscedataFacturacioImportacioLinia(testing.OOTestCaseWithCursor):
@@ -90,14 +89,14 @@ class TestGiscedataFacturacioImportacioLinia(testing.OOTestCaseWithCursor):
             self.cursor, self.uid, "giscedata_facturacio_switching", "line_01_f1_import_01"
         )[1]
 
-        fecha_factura = (datetime.today() - timedelta(days=10)).strftime("%Y-%m-%d")
+        data_carrega = (datetime.today() - timedelta(days=10)).strftime("%Y-%m-%d")
         self.f1_obj.write(
             self.cursor,
             self.uid,
             f1_id,
             {
                 "info": "* [2999] Undefined error: no file in gridfs collection Collection(Database(MongoClient('', ), u''), u'fs') with _id ObjectId('5')",  # noqa: E501
-                "fecha_factura": fecha_factura,
+                "data_carrega": data_carrega,
             },
         )
 
@@ -106,7 +105,6 @@ class TestGiscedataFacturacioImportacioLinia(testing.OOTestCaseWithCursor):
 
         mock_function.assert_called_with(self.cursor, self.uid, [f1_id], context={})
 
-    @unittest.skip("Pending PR 19431 to be deployed")
     @mock.patch(
         "som_facturacio_switching.giscedata_facturacio_importacio_linia.GiscedataFacturacioImportacioLinia.reimport_f1_by_cups"  # noqa: E501
     )
@@ -119,8 +117,7 @@ class TestGiscedataFacturacioImportacioLinia(testing.OOTestCaseWithCursor):
             self.cursor, self.uid, f1_id,
             {
                 "info": "* [2999] Undefined error: no file in gridfs collection Collection(Database(MongoClient('', ), u''), u'fs') with _id ObjectId('5')",  # noqa: E501
-                "create_date": test_date,  # data_carrega _ff de create_date #PR 19431
-                "fecha_factura": test_date,
+                "data_carrega": test_date,
             },
         )
         data = {"error_codes": [{"code": "2999", "text": "no file in gridfs"}], "days_to_check": 30}
@@ -143,10 +140,10 @@ class TestGiscedataFacturacioImportacioLinia(testing.OOTestCaseWithCursor):
             self.cursor, self.uid, "giscedata_cups", "cups_04"
         )[1]
         cups_text = self.cups_obj.read(self.cursor, self.uid, cups_id, ['name'])['name']
-        fecha_factura = (datetime.today() - timedelta(days=30)).strftime("%Y-%m-%d")
+        data_carrega = (datetime.today() - timedelta(days=30)).strftime("%Y-%m-%d")
         vals = {
             "info": "* [2999] Undefined error: no file in gridfs collection Collection(Database(MongoClient('', ), u''), u'fs') with _id ObjectId('5')",  # noqa: E501
-            "fecha_factura": fecha_factura,
+            "data_carrega": data_carrega,
             "cups_text": cups_text,
         }
         self.f1_obj.write(self.cursor, self.uid, [f1_id, f2_id], vals)
@@ -179,10 +176,10 @@ class TestGiscedataFacturacioImportacioLinia(testing.OOTestCaseWithCursor):
         cups2_id = self.imd_obj.get_object_reference(
             self.cursor, self.uid, "giscedata_cups", "cups_04"
         )[1]
-        fecha_factura = (datetime.today() - timedelta(days=30)).strftime("%Y-%m-%d")
+        data_carrega = (datetime.today() - timedelta(days=30)).strftime("%Y-%m-%d")
         vals = {
             "info": "* [2999] Undefined error: no file in gridfs collection Collection(Database(MongoClient('', ), u''), u'fs') with _id ObjectId('5')",  # noqa: E501
-            "fecha_factura": fecha_factura,
+            "data_carrega": data_carrega,
         }
         cups_text_1 = self.cups_obj.read(self.cursor, self.uid, cups1_id, ['name'])['name']
         cups_text_2 = self.cups_obj.read(self.cursor, self.uid, cups2_id, ['name'])['name']
