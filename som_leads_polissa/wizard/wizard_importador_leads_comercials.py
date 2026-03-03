@@ -58,5 +58,8 @@ class WizardImportarLeadsComercials(osv.osv_memory):
         'activate_leads': lambda *a: False,
     }
 
+    _sql_constraints = [
+    ]
+
 
 WizardImportarLeadsComercials()
