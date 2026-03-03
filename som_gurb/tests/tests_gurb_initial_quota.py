@@ -5,10 +5,10 @@ class TestsGurbInitialQuota(TestsGurbBase):
     def test_gurb_cups_initial_invoice(self):
         context = {}
 
-        imd_o = self.openerp.pool.get("ir.model.data")
         gurb_cups_o = self.openerp.pool.get("som.gurb.cups")
         invoice_o = self.openerp.pool.get("account.invoice")
         pol_o = self.openerp.pool.get("giscedata.polissa")
+        tax_o = self.openerp.pool.get("account.tax")
 
         references = self.get_references()
         gurb_cups_id = references["owner_gurb_cups_id"]
@@ -24,9 +24,8 @@ class TestsGurbInitialQuota(TestsGurbBase):
         pol_br = pol_o.browse(self.cursor, self.uid, pol_id, context=context)
         invoice_br = invoice_o.browse(self.cursor, self.uid, invoice_id, context=context)
 
-        iva_21_tax_id = imd_o.get_object_reference(
-            self.cursor, self.uid, "l10n_chart_ES", "iva_rep_21"
-        )[1]
+        iva_21_tax_id = tax_o.search(
+            self.cursor, self.uid, [("name", "=", "IVA 21%")], context=context)[0]
 
         self.assertEqual(len(errors), 0)
         self.assertEqual(len(invoice_ids), 1)
