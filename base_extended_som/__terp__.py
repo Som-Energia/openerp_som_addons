@@ -8,7 +8,7 @@
     "depends": [
         "base_extended",
         "poweremail",
-        "impagat_base"
+        "impagat_base",
         "partner_address_tipovia",
     ],
     "init_xml": [],
