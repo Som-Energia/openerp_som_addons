@@ -65,7 +65,7 @@ def _is_m1_closable(cursor, uid, pool, sw, context=None):
     step_m101_obj = pool.get("giscedata.switching.m1.01")
     step_m102_obj = pool.get("giscedata.switching.m1.02")
     step_m101_auto = step_m101_obj.search(
-        cursor, uid, [("sw_id", "=", sw.id), ("solicitud_autoconsum", "=", "S")], context=context
+        cursor, uid, [("sw_id", "=", sw.id), ("dades_cau", "!=", [])], context=context
     )
 
     if "unidireccional" in sw.additional_info.lower():
@@ -228,7 +228,7 @@ class GiscedataSwitchingM1_02(osv.osv):
                 step_m101_auto = step_m101_obj.search(
                     cursor,
                     uid,
-                    [("sw_id", "=", sw.id), ("solicitud_autoconsum", "=", "S")],
+                    [("sw_id", "=", sw.id), ("dades_cau", "!=", [])],
                     context=context
                 )
                 unidirectional_change = is_unidirectional_colective_autocons_change(
@@ -270,7 +270,7 @@ class GiscedataSwitchingM1_03(osv.osv):
             step_m101_auto = step_m101_obj.search(
                 cursor,
                 uid,
-                [("sw_id", "=", sw.id), ("solicitud_autoconsum", "=", "S")],
+                [("sw_id", "=", sw.id), ("dades_cau", "!=", [])],
                 context=context
             )
             unidirectional_change = is_unidirectional_colective_autocons_change(
@@ -311,7 +311,7 @@ class GiscedataSwitchingM1_04(osv.osv):
             step_m101_auto = step_m101_obj.search(
                 cursor,
                 uid,
-                [("sw_id", "=", sw.id), ("solicitud_autoconsum", "=", "S")],
+                [("sw_id", "=", sw.id), ("dades_cau", "!=", [])],
                 context=context
             )
             unidirectional_change = is_unidirectional_colective_autocons_change(
@@ -362,7 +362,7 @@ class GiscedataSwitchingM1_05(osv.osv):
                     gurb_cups = sgc_obj.browse(cursor, uid, gurb_cups_id[0], context=context)
                     gurb_cups.send_signal(['button_confirm_atr'])
             else:
-                search_params = [("sw_id", "=", sw.id), ("solicitud_autoconsum", "=", "S")]
+                search_params = [("sw_id", "=", sw.id), ("dades_cau", "!=", [])]
                 step_m101_auto = step_m101_obj.search(cursor, uid, search_params, context=context)
                 unidirectional_change = is_unidirectional_colective_autocons_change(
                     cursor, uid, self.pool, "giscedata.switching.m1.05", step_id, context=context
