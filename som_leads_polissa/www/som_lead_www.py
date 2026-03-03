@@ -27,6 +27,7 @@ class SomLeadWww(osv.osv_memory):
         payment_mode_o = self.pool.get("payment.mode")
         polissa_o = self.pool.get("giscedata.polissa")
         tarifa_o = self.pool.get("giscedata.polissa.tarifa")
+        partner_o = self.pool.get("res.partner")
         cnae_o = self.pool.get("giscemisc.cnae")
         self.pool.get("giscedata.cups.ps")
         selfcons_o = self.pool.get("giscedata.autoconsum")
@@ -87,6 +88,16 @@ class SomLeadWww(osv.osv_memory):
         member["mobile_prefix"], member["phone2"] = self._split_phone_prefix(
             cr, uid, member.get("phone2"))
 
+        # Prepare name and surname for the ERP standards
+        if member.get("name") and member.get("surname"):
+            names = partner_o.separa_cognoms(
+                cr, uid, "{}, {}".format(member["surname"], member["name"]))
+            member.update({
+                'name': names['nom'],
+                'surname': names['cognoms'][0],
+                'surname2': names['cognoms'][1],
+            })
+
         values = {
             "state": "open",
             "name": "{} / {}".format(member["vat"].upper(), contract_info["cups"]),
@@ -119,6 +130,7 @@ class SomLeadWww(osv.osv_memory):
             "titular_vat": 'ES%s' % member["vat"].upper(),
             "titular_nom": member.get("name"),
             "titular_cognom1": member.get("surname"),
+            "titular_cognom2": member.get("surname2"),
             "tipus_vivenda": 'habitual',
             "titular_zip": member["address"].get("postal_code"),
             "titular_nv": member["address"].get("street"),
@@ -191,6 +203,9 @@ class SomLeadWww(osv.osv_memory):
         for field, value in values.items():
             if value is None:
                 del values[field]
+
+        # Avoid filling poblacio from existing values because it can be wrong
+        values["titular_id_poblacio"] = None
 
         lead_id = lead_o.create(cr, uid, values, context=context)
         self._create_attachments(cr, uid, lead_id, www_vals.get("attachments", []), context=context)

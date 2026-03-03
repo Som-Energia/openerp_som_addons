@@ -682,3 +682,39 @@ class TestBaseExtendedSom(testing.OOTestCaseWithCursor):
             rp.mobile, "5557654321",
             "Mobile number should be retained correctly."
         )
+
+    def test_empty_poblacio_on_write(self):
+        test_municipi_id = self.ir_obj.get_object_reference(
+            self.cursor, self.uid, "base_extended", "ine_01001"
+        )[1]
+        test_other_municipi_id = self.ir_obj.get_object_reference(
+            self.cursor, self.uid, "base_extended", "ine_17079"
+        )[1]
+        test_poblacio_id = self.ir_obj.get_object_reference(
+            self.cursor, self.uid, "base_extended", "poble_01"
+        )[1]
+
+        # If specified, must be written
+        self.rpa_obj.write(self.cursor, self.uid, [1], {
+            "id_municipi": test_municipi_id,
+            "id_poblacio": test_poblacio_id,
+        })
+        vals = self.rpa_obj.read(self.cursor, self.uid, 1, ['id_municipi', 'id_poblacio'])
+        self.assertEqual(test_municipi_id, vals['id_municipi'][0])
+        self.assertEqual(test_poblacio_id, vals['id_poblacio'][0])
+
+        # If not editing municipi or poblacio, must be untouched
+        self.rpa_obj.write(self.cursor, self.uid, [1], {
+            "notes": 'abc',
+        })
+        vals = self.rpa_obj.read(self.cursor, self.uid, 1, ['id_municipi', 'id_poblacio'])
+        self.assertEqual(test_municipi_id, vals['id_municipi'][0])
+        self.assertEqual(test_poblacio_id, vals['id_poblacio'][0])
+
+        # If editing municipi and not specified, must be emptied
+        self.rpa_obj.write(self.cursor, self.uid, [1], {
+            "id_municipi": test_other_municipi_id,
+        })
+        vals = self.rpa_obj.read(self.cursor, self.uid, 1, ['id_municipi', 'id_poblacio'])
+        self.assertEqual(test_other_municipi_id, vals['id_municipi'][0])
+        self.assertFalse(vals['id_poblacio'])

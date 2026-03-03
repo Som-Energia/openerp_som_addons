@@ -8,6 +8,7 @@
     "depends": [
         "base_extended",
         "poweremail",
+        "partner_address_tipovia",
     ],
     "init_xml": [],
     "demo_xml": [
