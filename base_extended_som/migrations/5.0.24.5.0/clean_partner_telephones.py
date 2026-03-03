@@ -12,6 +12,7 @@ doit = False
 phones_to_change = []
 phones_changed = []
 phones_not_valid = []
+phones_moved = []
 
 
 def clean_partner_telephones(partner_address_id, phone_number):
@@ -85,9 +86,6 @@ for partner_address_id in tqdm(partner_address_list, desc="Processing partner ad
                     'mobile': new_mobile,
                 })
 
-    if len(row.keys()) > 1:
-        rows.append(row)
-
     # Check if we phone and mobile are on their propper field
     partner_address = c.ResPartnerAddress.browse(partner_address_id)
     mobile_misplaced = False
@@ -103,43 +101,70 @@ for partner_address_id in tqdm(partner_address_list, desc="Processing partner ad
         else:
             landline_misplaced = partner_address.mobile
     if mobile_misplaced or landline_misplaced:
-        print("Telefons mobil {} o fixe {} mal posat:".format(mobile_misplaced, landline_misplaced))
+        # print("Telefons mobil {} o fixe {} mal posat:".format(mobile_misplaced, landline_misplaced))  # noqa:E501
+        pass
     if doit:
-        if mobile_misplaced:
+        if mobile_misplaced and landline_misplaced:
+            previous_notes = partner_address.notes if partner_address.notes else ''
+            c.ResPartnerAddress.write(partner_address_id, {
+                'mobile': mobile_misplaced,
+                'phone': landline_misplaced,
+                'notes': previous_notes + "\n2025/06/20: Procés de neteja de telèfons, s'ha intercanviat el telefon amb el mòbil",  # noqa:E501
+            })
+            row['moved'] = "Telèfons intercanviats {}->{} i {}->{}".format(
+                partner_address.phone, landline_misplaced, partner_address.mobile, mobile_misplaced)
+
+        elif mobile_misplaced:
             if not partner_address.mobile:
                 c.ResPartnerAddress.write(partner_address_id, {
                     'mobile': mobile_misplaced,
                     'phone': '',
                 })
+                row['moved'] = "Telèfons mogut de 'phone' a 'mobile' {}->{}".format(
+                    partner_address.phone, mobile_misplaced)
             elif partner_address.mobile == mobile_misplaced:
                 c.ResPartnerAddress.write(partner_address_id, {
                     'phone': '',
                 })
+                row['moved'] = "Telèfons 'phone' esborrat, estava als dos camps {}->{}".format(
+                    partner_address.phone, mobile_misplaced)
             else:
                 previous_notes = partner_address.notes if partner_address.notes else ''
                 c.ResPartnerAddress.write(partner_address_id, {
                     'notes': previous_notes + "\n2025/06/20: Procés de neteja de telèfons, hi havia dos mòbils, l'atre era: {}\n".format(mobile_misplaced),  # noqa:E501
                 })
+                row['moved'] = "Hi havia dos mòbils, l'altre no hi cap {} i {}".format(
+                    partner_address.phone, partner_address.mobile)
 
-        if landline_misplaced:
+        elif landline_misplaced:
             if not partner_address.phone:
                 c.ResPartnerAddress.write(partner_address_id, {
                     'phone': landline_misplaced,
                     'mobile': '',
                 })
+                row['moved'] = "Telèfons mogut de 'mobile' a 'phone' {}->{}".format(
+                    partner_address.mobile, landline_misplaced)
             elif partner_address.phone == landline_misplaced:
                 c.ResPartnerAddress.write(partner_address_id, {
                     'mobile': '',
                 })
+                row['moved'] = "Telèfons 'mobile' esborrat, estava als dos camps {}->{}".format(
+                    partner_address.mobile, landline_misplaced)
             else:
                 previous_notes = partner_address.notes if partner_address.notes else ''
                 c.ResPartnerAddress.write(partner_address_id, {
                     'notes': previous_notes + "\n2025/06/20: Procés de neteja de telèfons, hi havia dos fixes, l'atre era: {}\n".format(landline_misplaced),  # noqa:E501
                 })
+                row['moved'] = "Hi havia dos fixes, l'altre no hi cap {} i {}".format(
+                    partner_address.phone, partner_address.mobile)
+
+    if len(row.keys()) > 1:
+        rows.append(row)
 
 print("Telèfons a canviar: {}".format(len(phones_to_change)))
 print("Telèfons canviats: {}".format(len(phones_changed)))
 print("Telèfons eliminats: {}".format(len(phones_not_valid)))
+print("Telèfons moguts de camp: {}".format(len(phones_moved)))
 
 
 with open('canvis_telefon.csv', 'w') as csvfile:
