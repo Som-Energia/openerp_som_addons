@@ -41,7 +41,21 @@ class ResPartner(osv.osv):
         data.amount_tax = abs(aeat193_record[0].amount_tax) if aeat193_record else 0
         data.date_last_date_previous_year = "{}-12-31".format(data.year)
         data.balance = 0
-        if not is_generationkwh:
+        if is_generationkwh:
+            search_params = [
+                ("emission_id.type", "=", "genkwh"),
+                ("member_id.partner_id.id", "=", ids[0]),
+                ("purchase_date", "<=", data.date_last_date_previous_year),
+                "|",
+                ("last_effective_date", ">", data.date_last_date_previous_year),
+                ("last_effective_date", "=", False),
+            ]
+            gkwh_member_ids = investment_obj.search(cursor, uid, search_params)
+            gkwh_member = investment_obj.browse(cursor, uid, gkwh_member_ids)
+            total_remaining = sum(
+                [(item.nshares * gkwh.shareValue) - item.amortized_amount for item in gkwh_member])
+            data.balance = total_remaining
+        else:
             search_params = [
                 ("emission_id.type", "=", "apo"),
                 ("member_id.partner_id.id", "=", ids[0]),
