@@ -3,7 +3,7 @@
     "name": "Account invoice comer (SomEnergia)",
     "description": """Este módulo añade las siguientes funcionalidades:
     * Extiende account_invoice""",
-    "version": "24.5.0",
+    "version": "0-dev",
     "author": "GISCE",
     "category": "GISCEMaster",
     "depends": [

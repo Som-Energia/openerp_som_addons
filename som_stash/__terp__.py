@@ -7,7 +7,7 @@
         * Vistes associades
         * Scripts recurrents
     """,
-    "version": "24.5.0",
+    "version": "0-dev",
     "author": "SOM ENERGIA",
     "category": "SomEnergia",
     "depends": [

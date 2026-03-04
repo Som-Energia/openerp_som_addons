@@ -5,7 +5,7 @@
     This module provide :
         * Camp de soci per relacionar un contracte amb un soci.
     """,
-    "version": "24.5.0",
+    "version": "0-dev",
     "author": "GISCE",
     "category": "SomEnergia",
     "depends": [
