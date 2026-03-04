@@ -8,3 +8,4 @@ from fareperiodcurve_tests import *
 from wizard_llibre_tests import *
 from investment_strategy_tests import *
 from wizard_generate_mandate_tests import *
+from report_tests import *

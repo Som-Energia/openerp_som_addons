@@ -218,6 +218,7 @@
         <b>${_(u"Tipus percepció:")}</b> ${_(u"Guany en espècie")}</p>
       </div>
     </div>
+    <p style="padding-top:15px;"><b>${_(u"Saldo a dia d'avui")}:</b> ${formatLang(data.balance, monetary=True)} €</p>
   </div>
 </div>
 <div>
