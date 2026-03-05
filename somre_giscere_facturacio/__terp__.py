@@ -6,7 +6,8 @@
     "author": "GISCE",
     "category": "RE",
     "depends": [
-        "giscere_facturacio"
+        "giscere_facturacio",
+        "giscere_remeses",
     ],
     "init_xml": [],
     "demo_xml": [],
