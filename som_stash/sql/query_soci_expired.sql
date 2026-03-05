@@ -1,5 +1,5 @@
 /* Partners vinculats a sòcies de baixa abans de la data_limit i que NO son o estan:
- * SOCIS ACTIUS
+ * SOCIS ACTIUS o socis de baixa amb data_baixa posterior a la data_limit
  * COM A TITULAR d'alguna pòlissa activa o de baixa després de la data_limit
  * COM A ADMINISTRADORA d'alguna pòlissa activa o de baixa després de la data_limit
  * COM A SOCI d'alguna pòlissa activa o de baixa menys després de la data_limit
@@ -18,14 +18,6 @@ and not exists
     select distinct partner_id
     from
     (
-        --SOCIS ACTIUS
-        select
-            partner_id
-        from somenergia_soci ss
-        where ss.baixa = false
-
-        union all
-
         --COM A TITULAR
         select gp2.titular as partner_id
         from giscedata_polissa gp2
