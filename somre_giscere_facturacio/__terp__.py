@@ -10,7 +10,9 @@
     ],
     "init_xml": [],
     "demo_xml": [],
-    "update_xml": [],
+    "update_xml": [
+        "views/somre_facturacio_views.xml",
+    ],
     "active": False,
     "installable": True
 }
