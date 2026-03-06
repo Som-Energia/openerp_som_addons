@@ -318,8 +318,8 @@ class TestsGurbSwitching(TestsGurbBase):
 
         self.change_polissa_comer(self.txn)
         self.update_polissa_distri(self.txn)
-        self.activar_polissa_CUPS(set_gurb_category=True, context={
-                                  "polissa_xml_id": "polissa_0001"})
+        self.activar_polissa_CUPS(
+            set_gurb_category=True, context={"polissa_xml_id": "polissa_0001"})
 
         step_id = self.create_case_and_step(
             self.cursor, self.uid, contract_id, "M1", "01"
@@ -380,8 +380,8 @@ class TestsGurbSwitching(TestsGurbBase):
 
         self.change_polissa_comer(self.txn)
         self.update_polissa_distri(self.txn)
-        self.activar_polissa_CUPS(set_gurb_category=False, context={
-                                  "polissa_xml_id": "polissa_0001"})
+        self.activar_polissa_CUPS(
+            set_gurb_category=False, context={"polissa_xml_id": "polissa_0001"})
 
         step_id = self.create_case_and_step(
             self.cursor, self.uid, contract_id, "M1", "01"
@@ -441,8 +441,8 @@ class TestsGurbSwitching(TestsGurbBase):
 
         self.change_polissa_comer(self.txn)
         self.update_polissa_distri(self.txn)
-        self.activar_polissa_CUPS(set_gurb_category=True, context={
-                                  "polissa_xml_id": "polissa_0001"})
+        self.activar_polissa_CUPS(
+            set_gurb_category=True, context={"polissa_xml_id": "polissa_0001"})
 
         step_id = self.create_case_and_step(
             self.cursor, self.uid, contract_id, "M1", "01"
@@ -509,8 +509,8 @@ class TestsGurbSwitching(TestsGurbBase):
         sgc_0002.send_signal("button_activate_cups")
 
         self.switch(self.txn, "comer")
-        self.activar_polissa_CUPS(set_gurb_category=True, context={
-                                  "polissa_xml_id": "polissa_0001"})
+        self.activar_polissa_CUPS(
+            set_gurb_category=True, context={"polissa_xml_id": "polissa_0001"})
 
         # Import XML
         sw_obj.importar_xml(
@@ -563,8 +563,8 @@ class TestsGurbSwitching(TestsGurbBase):
 
         self.change_polissa_comer(self.txn)
         self.update_polissa_distri(self.txn)
-        self.activar_polissa_CUPS(set_gurb_category=True, context={
-                                  "polissa_xml_id": "polissa_0001"})
+        self.activar_polissa_CUPS(
+            set_gurb_category=True, context={"polissa_xml_id": "polissa_0001"})
 
         step_id = self.create_case_and_step(
             self.cursor, self.uid, contract_id, "M1", "01"
@@ -630,8 +630,8 @@ class TestsGurbSwitching(TestsGurbBase):
 
         self.change_polissa_comer(self.txn)
         self.update_polissa_distri(self.txn)
-        self.activar_polissa_CUPS(set_gurb_category=False, context={
-                                  "polissa_xml_id": "polissa_tarifa_019"})
+        self.activar_polissa_CUPS(
+            set_gurb_category=False, context={"polissa_xml_id": "polissa_tarifa_019"})
 
         step_id = self.create_case_and_step(
             self.cursor, self.uid, contract_id, "M1", "01"
@@ -754,8 +754,8 @@ class TestsGurbSwitching(TestsGurbBase):
 
         self.change_polissa_comer(self.txn, pol_id='polissa_tarifa_018')
         self.update_polissa_distri(self.txn, pol_ref='polissa_tarifa_018')
-        self.activar_polissa_CUPS(set_gurb_category=True, context={
-                                  "polissa_xml_id": "polissa_tarifa_018"})
+        self.activar_polissa_CUPS(
+            set_gurb_category=True, context={"polissa_xml_id": "polissa_tarifa_018"})
 
         cups = pol_obj.browse(self.cursor, self.uid, contract_id).cups
 
@@ -870,8 +870,8 @@ class TestsGurbSwitching(TestsGurbBase):
 
         self.change_polissa_comer(self.txn, pol_id='polissa_tarifa_018')
         self.update_polissa_distri(self.txn, pol_ref='polissa_tarifa_018')
-        self.activar_polissa_CUPS(set_gurb_category=True, context={
-                                  "polissa_xml_id": "polissa_tarifa_018"})
+        self.activar_polissa_CUPS(
+            set_gurb_category=True, context={"polissa_xml_id": "polissa_tarifa_018"})
         cups = pol_obj.browse(self.cursor, self.uid, contract_id).cups.name
 
         step_id = self.create_case_and_step(
@@ -969,8 +969,8 @@ class TestsGurbSwitching(TestsGurbBase):
 
         self.change_polissa_comer(self.txn, pol_id='polissa_tarifa_018')
         self.update_polissa_distri(self.txn, pol_ref='polissa_tarifa_018')
-        self.activar_polissa_CUPS(set_gurb_category=True, context={
-                                  "polissa_xml_id": "polissa_tarifa_018"})
+        self.activar_polissa_CUPS(
+            set_gurb_category=True, context={"polissa_xml_id": "polissa_tarifa_018"})
         cups = pol_obj.browse(self.cursor, self.uid, contract_id).cups.name
 
         step_id = self.create_case_and_step(
