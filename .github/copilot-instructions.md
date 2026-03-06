@@ -9,7 +9,7 @@ Aquest repositori conté addons per a OpenERP 5.0 utilitzats per Som Energia. Aq
 
 ## Estil de programació
 - Seguir les guies definides a `.github/docs/estil.md`.
-- Python senzill, compatible amb OpenERP 5 (Python 2.7).
+- Python senzill, compatible amb OpenERP 5 (Python 2.7 però comptabile amb Python 3.11).
 - Evitar decoradors i API nova (`@api.model`, `@api.depends`, etc.).
 - Utilitzar l’ORM antic: `osv.osv`, `osv.osv_memory`, `_columns`, `fields.*`.
 - Evitar comprensions complexes, patrons avançats o sintaxi moderna.
@@ -26,6 +26,8 @@ Aquest repositori conté addons per a OpenERP 5.0 utilitzats per Som Energia. Aq
   - `security/`
   - `data/`
   - `i18n/`
+  - `tests/`
+  - `demo/`
 - No crear carpetes noves sense justificació.
 - No introduir dependències externes no aprovades.
 
