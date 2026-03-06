@@ -1,6 +1,9 @@
 # -*- coding: utf-8 -*-
 from osv import osv
 from tools.translate import _
+from rq.job import Job
+from rq.registry import StartedJobRegistry
+from rq import get_current_connection
 
 
 class WizardAutofactura(osv.osv_memory):
@@ -13,6 +16,28 @@ class WizardAutofactura(osv.osv_memory):
             cursor, uid, "som_autofactura", "som_autofactura_task_facturacio"
         )[1]
         task_obj.action_execute_task(cursor, uid, autofact_id, context)
+
+        return {"type": "ir.actions.act_window_close"}
+
+    def unlock(self, cursor, uid, ids, context=None):
+        redis_conn = get_current_connection()
+        jobs_ids = StartedJobRegistry('background_somenergia', connection=redis_conn).get_job_ids()
+
+        if len(jobs_ids) == 0:
+            raise osv.except_osv(
+                _('Error'),
+                _("No hi ha cap procés automàtic de facturació en execució")
+            )
+
+        if len(jobs_ids) > 1:
+            raise osv.except_osv(
+                _('Error'),
+                _("Hi han mes d'una tasca en execució, contacta amb IT")
+            )
+
+        if len(jobs_ids) == 1:
+            job = Job.fetch(jobs_ids[0], connection=redis_conn)
+            job.delete()
 
         return {"type": "ir.actions.act_window_close"}
 
