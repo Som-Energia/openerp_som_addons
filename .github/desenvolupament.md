@@ -165,6 +165,49 @@ L'entorn ERP depèn de diversos repositoris clonats al mateix nivell que aquest 
 
 ---
 
+## Convenció de commits
+
+Els missatges de commit segueixen el format:
+
+```
+<emoji> (<modul o context>) Cosa que fa el commit
+```
+
+Emojis disponibles (basats en [gitmoji](https://gitmoji.dev/)):
+
+| Emoji | Tipus |
+|-------|-------|
+| ✨ | Nova funcionalitat (feat) |
+| 🐛 | Correcció de bug (fix) |
+| 🩹 | Correcció menor (mini-fix) |
+| 👔 | Lògica de negoci (business logic) |
+| 🗃️ | Dades XML (data xml) |
+| 🏗️ | Build / estructura |
+| 🔧 | CI / configuració |
+| 📝 | Documentació |
+| ⚡️ | Rendiment (perf) |
+| ♻️ | Refactorització |
+| 🎨 | Estil de codi |
+| 🧹 | Neteja (cleanup) |
+| 🦺 | Codi robust |
+| ✅ | Testos |
+| 🚧 | Treball en curs (WIP) |
+| 🌐 | Traduccions (i18n) |
+| 💄 | Visual |
+| 🏳️ | Abandonat (giveup) |
+| 🐬 | Informes (reports) |
+| 🔨 | Script de migració |
+
+Exemples:
+```
+🐛 (som_polissa) Fix error en càlcul de factura
+✨ (gurb) Afegir camp assigned_betas_kw al CAU
+♻️ (switching) Refactoritzar _is_m1_closable
+✅ (som_gurb) Afegir test per a totals de betes
+```
+
+---
+
 ## Desplegament
 
 - **Producció (erp01)**: `git pull` a la branca `main`.
