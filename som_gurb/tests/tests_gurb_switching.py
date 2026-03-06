@@ -288,7 +288,7 @@ class TestsGurbSwitching(TestsGurbBase):
             "tipus_subseccio": autoconsumo_mode,
         })
 
-    @mock.patch("_config_step_validation_fnc")
+    @mock.patch(_config_step_validation_fnc)
     def test_do_not_notify_m1_02_auto_gurb_category(self, config_step_validation_mock):
         """
         Test that M102"s are not notified when:
@@ -362,7 +362,7 @@ class TestsGurbSwitching(TestsGurbBase):
         self.assertEqual(m1.state, "open")
         self.assertEqual(m1.notificacio_pendent, False)
 
-    @mock.patch("_config_step_validation_fnc")
+    @mock.patch(_config_step_validation_fnc)
     def test_notify_m1_02_auto_no_gurb_category(self, config_step_validation_mock):
         """
         Test that self-consumption M102"s are notified when contract does not have GURB category
@@ -534,7 +534,7 @@ class TestsGurbSwitching(TestsGurbBase):
         self.assertEqual(m1.state, "cancel")
         self.assertEqual(m1.notificacio_pendent, False)
 
-    @mock.patch("_config_step_validation_fnc")
+    @mock.patch(_config_step_validation_fnc)
     def test_close_m1_02_rej_auto_gurb_category(self, config_step_validation_mock):
         """
         Test that rejection self-consumption M1"s are closed when contract has GURB category
@@ -609,7 +609,7 @@ class TestsGurbSwitching(TestsGurbBase):
         self.assertEqual(m1.state, "cancel")
         self.assertEqual(m1.notificacio_pendent, False)
 
-    @mock.patch("_config_step_validation_fnc")
+    @mock.patch(_config_step_validation_fnc)
     def test_do_not_close_m1_02_rej_auto_no_gurb_category(self, config_step_validation_mock):
         """
         Test that rejection self-consumption M1"s are not closed when
@@ -715,7 +715,7 @@ class TestsGurbSwitching(TestsGurbBase):
         self.assertEqual(d1.notificacio_pendent, False)
         self.assertEqual(sgc_0002.state, "atr_pending")
 
-    @mock.patch("_config_step_validation_fnc")
+    @mock.patch(_config_step_validation_fnc)
     @mock.patch('poweremail.poweremail_template.poweremail_templates.generate_mail')
     @mock.patch(
         'giscedata_switching.giscedata_switching.GiscedataSwitchingActivacionsConfig.get_activation_method'  # noqa: F821, E501
@@ -833,7 +833,7 @@ class TestsGurbSwitching(TestsGurbBase):
         gurb_cups = sgc_obj.browse(self.cursor, self.uid, gurb_cups_id)
         self.assertEqual(gurb_cups.state, 'active')
 
-    @mock.patch("_config_step_validation_fnc")
+    @mock.patch(_config_step_validation_fnc)
     def test_notify_m1_03_gurb_category(self, config_step_validation_mock):
         pol_obj = self.openerp.pool.get("giscedata.polissa")
         sw_obj = self.openerp.pool.get("giscedata.switching")
@@ -934,7 +934,7 @@ class TestsGurbSwitching(TestsGurbBase):
         self.assertEqual(m1.state, "cancel")
         self.assertEqual(m1.notificacio_pendent, False)
 
-    @mock.patch("_config_step_validation_fnc")
+    @mock.patch(_config_step_validation_fnc)
     def test_notify_m1_04_gurb_category(self, config_step_validation_mock):
         pol_obj = self.openerp.pool.get("giscedata.polissa")
         sw_obj = self.openerp.pool.get("giscedata.switching")
