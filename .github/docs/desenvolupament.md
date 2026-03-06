@@ -125,20 +125,15 @@ def up(cursor, installed_version):
 from destral import testing
 from destral.transaction import Transaction
 
-class TestsMyModule(testing.OOTestCase):
+class TestsMyModule(testing.OOTestCaseWithCursor):
     def setUp(self):
-        self.txn = Transaction().start(self.database)
-        self.cursor = self.txn.cursor
-        self.uid = self.txn.user
-
-    def tearDown(self):
-        self.txn.stop()
+        super(TestsMyModule, self).setUp()
+        self.imd_obj = self.openerp.pool.get("ir.model.data")
 ```
 
 Referència a fixtures via `ir.model.data`:
 ```python
-imd_o = self.openerp.pool.get("ir.model.data")
-record_id = imd_o.get_object_reference(self.cursor, self.uid, "module_name", "xml_id")[1]
+record_id = self.imd_obj.get_object_reference(self.cursor, self.uid, "module_name", "xml_id")[1]
 ```
 
 ---
