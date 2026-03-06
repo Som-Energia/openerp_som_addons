@@ -11,6 +11,8 @@
 - `security/`: control d’accés (`ir.model.access.csv`).
 - `migrations/`: scripts de migració per versió.
 - `i18n/`: traduccions `.po`.
+- `tests/`: carpeta amb els fitxers de tests.
+- `demo/`: fitxers de demo data pels tests.
 
 ## Models
 - Definits amb `osv.osv`.
