@@ -37,13 +37,6 @@ Aquest repositori conté addons per a OpenERP 5.0 utilitzats per Som Energia. Aq
 - Evitar SQL cru si es pot utilitzar l’ORM antic.
 - Evitar sobreescriptures massives de mètodes base.
 
-## Coses que NO vull que Copilot faci
-- No proposar API moderna d’Odoo (8.0+).
-- No suggerir frameworks o llibreries alienes a OpenERP 5.
-- No generar receptes, exemples irrelevants o contingut no tècnic.
-- No suggerir patrons OOP complexos (factory, strategy, etc.).
-- No utilitzar sintaxi moderna de Python 3.
-
 ## Fitxers de suport
 Copilot ha de tenir en compte els fitxers següents quan existeixin:
 
