@@ -23,6 +23,18 @@ class WizardAutofactura(osv.osv_memory):
         redis_conn = get_current_connection()
         jobs_ids = StartedJobRegistry('background_somenergia', connection=redis_conn).get_job_ids()
 
+        if len(jobs_ids) == 0:
+            raise osv.except_osv(
+                _('Error'),
+                _("No hi ha cap procés automàtic de facturació en execució")
+            )
+
+        if len(jobs_ids) > 1:
+            raise osv.except_osv(
+                _('Error'),
+                _("Hi han mes d'una tasca en execució, contacta amb IT")
+            )
+
         if len(jobs_ids) == 1:
             job = Job.fetch(jobs_ids[0], connection=redis_conn)
             job.delete()
