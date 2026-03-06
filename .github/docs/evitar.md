@@ -17,3 +17,6 @@
 - No generar receptes, exemples no relacionats amb el projecte.
 - No proposar patrons de disseny complexos.
 - No generar codi massa màgic o difícil de mantenir.
+
+## Suggerències a evitar:
+- Quan posem `import pudb;pu.db` és per interrompre execució en mode debug, ja està ve com està. Sobretot volem que NO ens suggereixi `import pu`.
