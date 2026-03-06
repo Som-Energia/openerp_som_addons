@@ -159,9 +159,145 @@ Els fitxers de vistes s’han de declarar a `update_xml` del `__terp__.py`:
 ```
 
 ## Wizards
-- Basats en `osv.osv_memory`.
-- Flux simple i clar.
-- Evitar lògica massa complexa.
+
+Els wizards hereten de `osv.osv_memory` (les dades no es persisten a la BD un cop tancat).
+
+### Wizard simple
+
+```python
+class WizardMyAction(osv.osv_memory):
+    _name = "wizard.my.action"
+
+    _columns = {
+        "name": fields.char("Name", size=64, required=True),
+    }
+
+    def action_confirm(self, cursor, uid, ids, context=None):
+        if context is None:
+            context = {}
+        wiz = self.browse(cursor, uid, ids[0], context=context)
+        # lògica aquí...
+        return True
+
+WizardMyAction()
+```
+
+Vista i acció per obrir-lo com a popup:
+
+```xml
+<record id="view_wizard_my_action_form" model="ir.ui.view">
+    <field name="name">wizard.my.action.form</field>
+    <field name="model">wizard.my.action</field>
+    <field name="type">form</field>
+    <field name="arch" type="xml">
+        <form string="My Action">
+            <field name="name"/>
+            <group colspan="4">
+                <button special="cancel" string="Cancel·lar" icon="gtk-no" colspan="1"/>
+                <button name="action_confirm" string="Confirmar" type="object" icon="gtk-ok" primary="1" colspan="1"/>
+            </group>
+        </form>
+    </field>
+</record>
+
+<record id="action_wizard_my_action" model="ir.actions.act_window">
+    <field name="name">My Action</field>
+    <field name="type">ir.actions.act_window</field>
+    <field name="res_model">wizard.my.action</field>
+    <field name="view_type">form</field>
+    <field name="view_mode">form</field>
+    <field name="target">new</field>
+</record>
+```
+
+### Wizard paginated (multi-pas)
+
+El patró per a wizards amb passos és un camp `state` de tipus `selection` que controla quina secció es mostra. La vista usa `attrs` amb `invisible` per amagar/mostrar grups segons l'estat. Cada botó crida un mètode que escriu el nou estat.
+
+**Model:**
+
+```python
+class WizardMultiStep(osv.osv_memory):
+    _name = "wizard.multi.step"
+
+    def _state(self, cursor, uid, context=None):
+        return [
+            ("step1", "Pas 1"),
+            ("res_step1", "Resultat pas 1"),
+            ("step2", "Pas 2"),
+            ("done", "Fet"),
+        ]
+
+    _columns = {
+        "state": fields.selection(_state, "Estat"),
+        "log": fields.text("Log", readonly=True),
+    }
+
+    _defaults = {
+        "state": lambda *a: "step1",
+    }
+
+    def action_step1(self, cursor, uid, ids, context=None):
+        if context is None:
+            context = {}
+        wiz = self.browse(cursor, uid, ids[0], context=context)
+        # processar pas 1...
+        wiz.write({"state": "res_step1", "log": "Pas 1 completat"})
+        return True
+
+    def go_to_step2(self, cursor, uid, ids, context=None):
+        wiz = self.browse(cursor, uid, ids[0])
+        wiz.write({"state": "step2"})
+        return True
+
+    def action_step2(self, cursor, uid, ids, context=None):
+        wiz = self.browse(cursor, uid, ids[0])
+        # processar pas 2...
+        wiz.write({"state": "done"})
+        return True
+
+WizardMultiStep()
+```
+
+**Vista:** cada pas és un `<group>` amb `attrs="{'invisible': [('state', '!=', 'step1')]}"`. El camp `state` amb `widget="steps"` mostra una barra de progrés visual dels passos.
+
+```xml
+<form string="Multi Step Wizard">
+    <field name="state" widget="steps"/>
+
+    <group attrs="{'invisible': [('state', '!=', 'step1')]}">
+        <!-- contingut del pas 1 -->
+        <group colspan="4">
+            <button special="cancel" string="Cancel·lar" icon="gtk-no" colspan="1"/>
+            <button name="action_step1" string="Executar" type="object" primary="1" colspan="1"/>
+        </group>
+    </group>
+
+    <group attrs="{'invisible': [('state', '!=', 'res_step1')]}">
+        <!-- resultat del pas 1 -->
+        <field name="log" nolabel="1" colspan="4" readonly="1"/>
+        <group colspan="4">
+            <button special="cancel" string="Tancar" icon="gtk-no" colspan="1"/>
+            <button name="go_to_step2" string="Següent" type="object" primary="1" colspan="1" icon="arrow-right"/>
+        </group>
+    </group>
+
+    <group attrs="{'invisible': [('state', '!=', 'step2')]}">
+        <!-- contingut del pas 2 -->
+        <group colspan="4">
+            <button special="cancel" string="Cancel·lar" icon="gtk-no" colspan="1"/>
+            <button name="action_step2" string="Finalitzar" type="object" primary="1" colspan="1"/>
+        </group>
+    </group>
+
+    <group attrs="{'invisible': [('state', '!=', 'done')]}">
+        <!-- resultat final -->
+        <group colspan="4">
+            <button special="cancel" string="Tancar" icon="gtk-no" colspan="4"/>
+        </group>
+    </group>
+</form>
+```
 
 ## Reports
 - RML o Python.
