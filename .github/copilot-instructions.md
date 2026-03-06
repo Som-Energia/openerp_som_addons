@@ -8,14 +8,14 @@ Aquest repositori conté addons per a OpenERP 5.0 utilitzats per Som Energia. Aq
 - No introduir API, patrons o mòduls que no existeixen a OpenERP 5.
 
 ## Estil de programació
-- Seguir les guies definides a `.github/estil.md`.
+- Seguir les guies definides a `.github/docs/estil.md`.
 - Python senzill, compatible amb OpenERP 5 (Python 2.7).
 - Evitar decoradors i API nova (`@api.model`, `@api.depends`, etc.).
 - Utilitzar l’ORM antic: `osv.osv`, `osv.osv_memory`, `_columns`, `fields.*`.
 - Evitar comprensions complexes, patrons avançats o sintaxi moderna.
 
 ## Arquitectura i estructura
-- Seguir les directrius de `.github/arquitectura.md`.
+- Seguir les directrius de `.github/docs/arquitectura.md`.
 - Respectar l’estructura típica d’un mòdul OpenERP 5:
   - `__terp__.py`
   - `__init__.py`
@@ -40,10 +40,10 @@ Aquest repositori conté addons per a OpenERP 5.0 utilitzats per Som Energia. Aq
 ## Fitxers de suport
 Copilot ha de tenir en compte els fitxers següents quan existeixin:
 
-- `.github/estil.md`
-- `.github/evitar.md`
-- `.github/arquitectura.md`
-- `.github/desenvolupament.md`
+- `.github/docs/estil.md`
+- `.github/docs/evitar.md`
+- `.github/docs/arquitectura.md`
+- `.github/docs/desenvolupament.md`
 
 ## Notes finals
 Aquestes instruccions són prioritàries per sobre de qualsevol suggeriment general del model.
