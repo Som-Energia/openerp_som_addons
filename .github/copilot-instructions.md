@@ -8,22 +8,23 @@ Aquest repositori conté addons per a OpenERP 5.0 utilitzats per Som Energia. Aq
 - No introduir API, patrons o mòduls que no existeixen a OpenERP 5.
 
 ## Estil de programació
-- Seguir les guies definides a `/prompts/estil.md`.
-- Python senzill, compatible amb OpenERP 5 (Python 2.5/2.6).
+- Seguir les guies definides a `.github/estil.md`.
+- Python senzill, compatible amb OpenERP 5 (Python 2.7).
 - Evitar decoradors i API nova (`@api.model`, `@api.depends`, etc.).
 - Utilitzar l’ORM antic: `osv.osv`, `osv.osv_memory`, `_columns`, `fields.*`.
 - Evitar comprensions complexes, patrons avançats o sintaxi moderna.
 
 ## Arquitectura i estructura
-- Seguir les directrius de `/prompts/arquitectura.md`.
+- Seguir les directrius de `.github/arquitectura.md`.
 - Respectar l’estructura típica d’un mòdul OpenERP 5:
-  - `__openerp__.py`
+  - `__terp__.py`
   - `__init__.py`
+  - `models/`
+  - `views/`
   - `wizard/`
   - `report/`
   - `security/`
   - `data/`
-  - `view/`
   - `i18n/`
 - No crear carpetes noves sense justificació.
 - No introduir dependències externes no aprovades.
@@ -32,7 +33,7 @@ Aquest repositori conté addons per a OpenERP 5.0 utilitzats per Som Energia. Aq
 - Utilitzar `osv.osv` i `osv.osv_memory` correctament.
 - Definir `_columns` amb `fields.char`, `fields.many2one`, etc.
 - Utilitzar `_defaults` en lloc de `@api.model`.
-- Utilitzar `cr`, `uid`, `ids`, `context` en tots els mètodes.
+- Utilitzar `cursor`, `uid`, `ids`, `context` en tots els mètodes.
 - Evitar SQL cru si es pot utilitzar l’ORM antic.
 - Evitar sobreescriptures massives de mètodes base.
 
@@ -46,9 +47,10 @@ Aquest repositori conté addons per a OpenERP 5.0 utilitzats per Som Energia. Aq
 ## Fitxers de suport
 Copilot ha de tenir en compte els fitxers següents quan existeixin:
 
-- `/prompts/estil.md`
-- `/prompts/evitar.md`
-- `/prompts/arquitectura.md`
+- `.github/estil.md`
+- `.github/evitar.md`
+- `.github/arquitectura.md`
+- `.github/desenvolupament.md`
 
 ## Notes finals
 Aquestes instruccions són prioritàries per sobre de qualsevol suggeriment general del model.
