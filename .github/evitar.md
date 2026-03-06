@@ -6,8 +6,8 @@
 - No utilitzar Python 3 (print(), f-strings, dict comprehensions, etc.).
 
 ## Arquitectura moderna d’Odoo
-- No crear carpetes com `models/`, `views/`, `security/` amb estructura Odoo 8+.
 - No utilitzar QWeb, assets, web controllers, ni res relacionat amb Odoo Web.
+- No introduir patrons propis d’Odoo 8+ (nous decoradors, nou ORM, etc.).
 
 ## Llibreries externes
 - No afegir dependències no aprovades.
