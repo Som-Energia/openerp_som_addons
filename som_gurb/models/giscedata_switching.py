@@ -64,19 +64,31 @@ def _is_m1_closable(cursor, uid, pool, sw, context=None):
 
     step_m101_obj = pool.get("giscedata.switching.m1.01")
     step_m102_obj = pool.get("giscedata.switching.m1.02")
+    step_m101 = step_m101_obj.search(
+        cursor, uid, [("sw_id", "=", sw.id)], context=context
+    )
     step_m101_auto = step_m101_obj.search(
         cursor, uid, [("sw_id", "=", sw.id), ("dades_cau", "!=", [])], context=context
     )
+    step_m102_rebuig = step_m102_obj.search(
+        cursor, uid, [("sw_id", "=", sw.id), ("rebuig", "=", True)], context=context
+    )
 
-    if "unidireccional" in sw.additional_info.lower():
-        return True
-    elif "(S)[R]" in sw.additional_info and sw.step_id.name == "05":
-        return True
-    elif step_m101_auto and sw.step_id.name == "02":
-        step_m102_rebuig = step_m102_obj.search(
-            cursor, uid, [("sw_id", "=", sw.id), ("rebuig", "=", True)], context=context
+    repartment_modification = False
+    if step_m101_auto:
+        step_m1_01 = step_m101_obj.browse(cursor, uid, step_m101_auto[0], context=context)
+        repartment_modification = (
+            step_m1_01.sollicitudadm in ['S', 'A'] and step_m1_01.canvi_titular == 'R'
         )
-        return step_m102_rebuig and step_m101_auto
+
+    if step_m102_rebuig and not step_m101:
+        return True
+    elif step_m102_rebuig and step_m101_auto:
+        return True
+    elif sw.step_id.name not in ["03", "04", "05"] and not step_m102_rebuig and step_m101_auto:
+        return False
+    elif sw.step_id.name == "05" and repartment_modification:
+        return True
     else:
         return bool(step_m101_auto)
 
