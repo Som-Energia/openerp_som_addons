@@ -200,10 +200,10 @@ Emojis disponibles (basats en [gitmoji](https://gitmoji.dev/)):
 
 Exemples:
 ```
-🐛 (som_polissa) Fix error en càlcul de factura
+🐛 (polissa) Fix error en càlcul de factura
 ✨ (gurb) Afegir camp assigned_betas_kw al CAU
 ♻️ (switching) Refactoritzar _is_m1_closable
-✅ (som_gurb) Afegir test per a totals de betes
+✅ (gurb) Afegir test per a totals de betes
 ```
 
 ---
