@@ -71,6 +71,40 @@ _columns = {
 }
 ```
 
+Els camps `fields.related` exposen un camp d'un model relacionat de forma directa, sense haver d'escriure una funció:
+
+```python
+_columns = {
+    # Accedeix a partner_id.name sense funció manual
+    "partner_name": fields.related(
+        "partner_id", "name",
+        type="char",
+        string="Partner Name",
+        readonly=True,
+    ),
+    # Pot navegar múltiples nivells
+    "country_id": fields.related(
+        "partner_id", "country_id",
+        type="many2one",
+        relation="res.country",
+        string="Country",
+        readonly=True,
+    ),
+}
+```
+
+Amb `store=True` el valor es desa a la base de dades i és cercable:
+
+```python
+"partner_name": fields.related(
+    "partner_id", "name",
+    type="char",
+    string="Partner Name",
+    readonly=True,
+    store=True,
+),
+```
+
 Els dominis de cerca segueixen el format `[(camp, operador, valor)]`:
 
 ```python
