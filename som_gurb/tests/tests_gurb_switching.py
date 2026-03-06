@@ -228,6 +228,52 @@ class TestsGurbSwitching(TestsGurbBase):
             )
         return int(model_id)
 
+    def _config_m101_autoconsum(self, m101, config_step_validation_mock=None):
+        imd_obj = self.openerp.pool.get('ir.model.data')
+        generador_obj = self.openerp.pool.get('giscedata.autoconsum.generador')
+        partner_address_obj = self.openerp.pool.get('res.partner.address')
+        dades_cau_obj = self.pool.get('giscedata.switching.datos.cau')
+        autoconsum_obj = self.openerp.pool.get('giscedata.autoconsum')
+
+        partner_id = imd_obj.get_object_reference(
+            self.cursor, self.uid, 'base', 'res_partner_gisce')[1]
+        hist_autoconsum_id = imd_obj.get_object_reference(
+            self.cursor, self.uid,
+            'giscedata_cups', 'rel_autoconsum_cups_tarifa_018_autoconsum_41')[1]
+        autoconsum_id = imd_obj.get_object_reference(
+            self.cursor, self.uid,
+            'giscedata_cups', 'autoconsum_cups_tarifa_018_autoconsum_41')[1]
+        generador_id = imd_obj.get_object_reference(
+            self.cursor, self.uid,
+            'giscedata_cups', 'generador_autoconsum_cups_tarifa_018_autoconsum_41')[1]
+
+        if config_step_validation_mock is not None:
+            config_step_validation_mock.return_value = True
+
+        autoconsum_obj.send_signal(self.cursor, self.uid, [autoconsum_id], ['validar', 'crear'])
+        partner_generador_id = generador_obj.read(
+            self.cursor, self.uid, generador_id, ['partner_id'])['partner_id'][0]
+        partner_address_obj.create(self.cursor, self.uid, {
+            'phone': 666999222, 'partner_id': partner_generador_id})
+        dades_cau_ids = dades_cau_obj.crear_datos_cau_sense_sw(
+            self.cursor, self.uid, hist_autoconsum_id, "modificar")
+        vals = {
+            'dades_cau': dades_cau_ids,
+            'change_type': 'tarpot',
+            'tariff': '018',
+            'contact': partner_id,
+            'phone_num': '666888555',
+            'phone_pre': '034',
+            'con_name': '0018_A41',
+            'con_sur1': 'asdfg',
+            'con_sur2': 'gfdsa',
+            'power_p1': 4600,
+            'power_p2': 4600,
+            'power_p3': 4600,
+            'power_invoicing': '1',
+        }
+        m101.config_step(vals)
+
     def set_autoconsumo(self, txn, autoconsumo_mode="00"):
         polissa_obj = self.openerp.pool.get("giscedata.polissa")
         imd_obj = self.openerp.pool.get("ir.model.data")
@@ -289,50 +335,7 @@ class TestsGurbSwitching(TestsGurbBase):
         sw_obj = self.openerp.pool.get("giscedata.switching")
         m101 = step_obj.browse(self.cursor, self.uid, step_id)
 
-        # Set self-consumption modification
-        # step_obj.write(self.cursor, self.uid, step_id, {"solicitud_autoconsum": "S"})
-        generador_obj = self.openerp.pool.get('giscedata.autoconsum.generador')
-        partner_address_obj = self.openerp.pool.get('res.partner.address')
-
-        imd_obj = self.openerp.pool.get('ir.model.data')
-        partner_id = imd_obj.get_object_reference(
-            self.cursor, self.uid, 'base', 'res_partner_gisce')[1]
-        config_step_validation_mock.return_value = True
-        dades_cau_obj = self.pool.get('giscedata.switching.datos.cau')
-        autoconsum_obj = self.openerp.pool.get('giscedata.autoconsum')
-        hist_autoconsum_id = imd_obj.get_object_reference(
-            self.cursor, self.uid, 'giscedata_cups', 'rel_autoconsum_cups_tarifa_018_autoconsum_41'
-        )[1]
-        autoconsum_id = imd_obj.get_object_reference(self.cursor, self.uid, 'giscedata_cups',
-                                                     'autoconsum_cups_tarifa_018_autoconsum_41')[1]
-        generador_id = imd_obj.get_object_reference(
-            self.cursor, self.uid, 'giscedata_cups',
-            'generador_autoconsum_cups_tarifa_018_autoconsum_41'
-        )[1]
-        autoconsum_obj.send_signal(self.cursor, self.uid, [autoconsum_id], ['validar', 'crear'])
-        partner_generador_id = generador_obj.read(self.cursor, self.uid, generador_id, [
-                                                  'partner_id'])['partner_id'][0]
-        partner_address_obj.create(self.cursor, self.uid, {
-                                   'phone': 666999222, 'partner_id': partner_generador_id})
-        dades_cau_ids = dades_cau_obj.crear_datos_cau_sense_sw(
-            self.cursor, self.uid, hist_autoconsum_id, "modificar")
-        # datos_cau_ids = dades_cau_obj.dummy_create(self.cursor, self.uid, m101.sw_id)
-        vals = {
-            'dades_cau': dades_cau_ids,
-            'change_type': 'tarpot',
-            'tariff': '018',
-            'contact': partner_id,
-            'phone_num': '666888555',
-            'phone_pre': '034',
-            'con_name': '0018_A41',
-            'con_sur1': 'asdfg',
-            'con_sur2': 'gfdsa',
-            'power_p1': 4600,
-            'power_p2': 4600,
-            'power_p3': 4600,
-            'power_invoicing': '1',
-        }
-        m101.config_step(vals)
+        self._config_m101_autoconsum(m101, config_step_validation_mock)
 
         # Change "CodigoDeSolicitud" in XML
         m1 = sw_obj.browse(self.cursor, self.uid, m101.sw_id.id)
@@ -355,7 +358,6 @@ class TestsGurbSwitching(TestsGurbBase):
         m1 = sw_obj.browse(self.cursor, self.uid, res[0])
         self.assertEqual(m1.proces_id.name, "M1")
         self.assertEqual(m1.step_id.name, "02")
-        # self.assertEqual(m101.solicitud_autoconsum, "S")
 
         self.assertEqual(m1.state, "open")
         self.assertEqual(m1.notificacio_pendent, False)
@@ -395,50 +397,7 @@ class TestsGurbSwitching(TestsGurbBase):
         sw_obj = self.openerp.pool.get("giscedata.switching")
         m101 = step_obj.browse(self.cursor, self.uid, step_id)
 
-        # Set self-consumption modification
-        # step_obj.write(self.cursor, self.uid, step_id, {"solicitud_autoconsum": "S"})
-        generador_obj = self.openerp.pool.get('giscedata.autoconsum.generador')
-        partner_address_obj = self.openerp.pool.get('res.partner.address')
-
-        imd_obj = self.openerp.pool.get('ir.model.data')
-        partner_id = imd_obj.get_object_reference(
-            self.cursor, self.uid, 'base', 'res_partner_gisce')[1]
-        config_step_validation_mock.return_value = True
-        dades_cau_obj = self.pool.get('giscedata.switching.datos.cau')
-        autoconsum_obj = self.openerp.pool.get('giscedata.autoconsum')
-        hist_autoconsum_id = imd_obj.get_object_reference(
-            self.cursor, self.uid, 'giscedata_cups', 'rel_autoconsum_cups_tarifa_018_autoconsum_41'
-        )[1]
-        autoconsum_id = imd_obj.get_object_reference(self.cursor, self.uid, 'giscedata_cups',
-                                                     'autoconsum_cups_tarifa_018_autoconsum_41')[1]
-        generador_id = imd_obj.get_object_reference(
-            self.cursor, self.uid, 'giscedata_cups',
-            'generador_autoconsum_cups_tarifa_018_autoconsum_41'
-        )[1]
-        autoconsum_obj.send_signal(self.cursor, self.uid, [autoconsum_id], ['validar', 'crear'])
-        partner_generador_id = generador_obj.read(self.cursor, self.uid, generador_id, [
-                                                  'partner_id'])['partner_id'][0]
-        partner_address_obj.create(self.cursor, self.uid, {
-                                   'phone': 666999222, 'partner_id': partner_generador_id})
-        dades_cau_ids = dades_cau_obj.crear_datos_cau_sense_sw(
-            self.cursor, self.uid, hist_autoconsum_id, "modificar")
-        # datos_cau_ids = dades_cau_obj.dummy_create(self.cursor, self.uid, m101.sw_id)
-        vals = {
-            'dades_cau': dades_cau_ids,
-            'change_type': 'tarpot',
-            'tariff': '018',
-            'contact': partner_id,
-            'phone_num': '666888555',
-            'phone_pre': '034',
-            'con_name': '0018_A41',
-            'con_sur1': 'asdfg',
-            'con_sur2': 'gfdsa',
-            'power_p1': 4600,
-            'power_p2': 4600,
-            'power_p3': 4600,
-            'power_invoicing': '1',
-        }
-        m101.config_step(vals)
+        self._config_m101_autoconsum(m101, config_step_validation_mock)
 
         # Change "CodigoDeSolicitud" in XML
         m1 = sw_obj.browse(self.cursor, self.uid, m101.sw_id.id)
@@ -461,7 +420,6 @@ class TestsGurbSwitching(TestsGurbBase):
         m1 = sw_obj.browse(self.cursor, self.uid, res[0])
         self.assertEqual(m1.proces_id.name, "M1")
         self.assertEqual(m1.step_id.name, "02")
-        # self.assertEqual(m101.solicitud_autoconsum, "S")
 
         self.assertEqual(m1.state, "open")
         self.assertEqual(m1.notificacio_pendent, True)
@@ -622,50 +580,7 @@ class TestsGurbSwitching(TestsGurbBase):
         sw_obj = self.openerp.pool.get("giscedata.switching")
         m101 = step_obj.browse(self.cursor, self.uid, step_id)
 
-        # Set self-consumption modification
-        # step_obj.write(self.cursor, self.uid, step_id, {"solicitud_autoconsum": "S"})
-        generador_obj = self.openerp.pool.get('giscedata.autoconsum.generador')
-        partner_address_obj = self.openerp.pool.get('res.partner.address')
-
-        imd_obj = self.openerp.pool.get('ir.model.data')
-        partner_id = imd_obj.get_object_reference(
-            self.cursor, self.uid, 'base', 'res_partner_gisce')[1]
-        config_step_validation_mock.return_value = True
-        dades_cau_obj = self.pool.get('giscedata.switching.datos.cau')
-        autoconsum_obj = self.openerp.pool.get('giscedata.autoconsum')
-        hist_autoconsum_id = imd_obj.get_object_reference(
-            self.cursor, self.uid, 'giscedata_cups', 'rel_autoconsum_cups_tarifa_018_autoconsum_41'
-        )[1]
-        autoconsum_id = imd_obj.get_object_reference(self.cursor, self.uid, 'giscedata_cups',
-                                                     'autoconsum_cups_tarifa_018_autoconsum_41')[1]
-        generador_id = imd_obj.get_object_reference(
-            self.cursor, self.uid, 'giscedata_cups',
-            'generador_autoconsum_cups_tarifa_018_autoconsum_41'
-        )[1]
-        autoconsum_obj.send_signal(self.cursor, self.uid, [autoconsum_id], ['validar', 'crear'])
-        partner_generador_id = generador_obj.read(self.cursor, self.uid, generador_id, [
-                                                  'partner_id'])['partner_id'][0]
-        partner_address_obj.create(self.cursor, self.uid, {
-                                   'phone': 666999222, 'partner_id': partner_generador_id})
-        dades_cau_ids = dades_cau_obj.crear_datos_cau_sense_sw(
-            self.cursor, self.uid, hist_autoconsum_id, "modificar")
-        # datos_cau_ids = dades_cau_obj.dummy_create(self.cursor, self.uid, m101.sw_id)
-        vals = {
-            'dades_cau': dades_cau_ids,
-            'change_type': 'tarpot',
-            'tariff': '018',
-            'contact': partner_id,
-            'phone_num': '666888555',
-            'phone_pre': '034',
-            'con_name': '0018_A41',
-            'con_sur1': 'asdfg',
-            'con_sur2': 'gfdsa',
-            'power_p1': 4600,
-            'power_p2': 4600,
-            'power_p3': 4600,
-            'power_invoicing': '1',
-        }
-        m101.config_step(vals)
+        self._config_m101_autoconsum(m101, config_step_validation_mock)
 
         # Change "CodigoDeSolicitud" in XML
         m1 = sw_obj.browse(self.cursor, self.uid, m101.sw_id.id)
@@ -690,7 +605,6 @@ class TestsGurbSwitching(TestsGurbBase):
         m1 = sw_obj.browse(self.cursor, self.uid, res[0])
         self.assertEqual(m1.proces_id.name, "M1")
         self.assertEqual(m1.step_id.name, "02")
-        # self.assertEqual(m101.solicitud_autoconsum, "S")
 
         self.assertEqual(m1.state, "cancel")
         self.assertEqual(m1.notificacio_pendent, False)
@@ -733,50 +647,7 @@ class TestsGurbSwitching(TestsGurbBase):
         sw_obj = self.openerp.pool.get("giscedata.switching")
         m101 = step_obj.browse(self.cursor, self.uid, step_id)
 
-        # Set self-consumption modification
-        # step_obj.write(self.cursor, self.uid, step_id, {"solicitud_autoconsum": "S"})
-        generador_obj = self.openerp.pool.get('giscedata.autoconsum.generador')
-        partner_address_obj = self.openerp.pool.get('res.partner.address')
-
-        imd_obj = self.openerp.pool.get('ir.model.data')
-        partner_id = imd_obj.get_object_reference(
-            self.cursor, self.uid, 'base', 'res_partner_gisce')[1]
-        config_step_validation_mock.return_value = True
-        dades_cau_obj = self.pool.get('giscedata.switching.datos.cau')
-        autoconsum_obj = self.openerp.pool.get('giscedata.autoconsum')
-        hist_autoconsum_id = imd_obj.get_object_reference(
-            self.cursor, self.uid, 'giscedata_cups', 'rel_autoconsum_cups_tarifa_018_autoconsum_41'
-        )[1]
-        autoconsum_id = imd_obj.get_object_reference(self.cursor, self.uid, 'giscedata_cups',
-                                                     'autoconsum_cups_tarifa_018_autoconsum_41')[1]
-        generador_id = imd_obj.get_object_reference(
-            self.cursor, self.uid, 'giscedata_cups',
-            'generador_autoconsum_cups_tarifa_018_autoconsum_41'
-        )[1]
-        autoconsum_obj.send_signal(self.cursor, self.uid, [autoconsum_id], ['validar', 'crear'])
-        partner_generador_id = generador_obj.read(self.cursor, self.uid, generador_id, [
-                                                  'partner_id'])['partner_id'][0]
-        partner_address_obj.create(self.cursor, self.uid, {
-                                   'phone': 666999222, 'partner_id': partner_generador_id})
-        dades_cau_ids = dades_cau_obj.crear_datos_cau_sense_sw(
-            self.cursor, self.uid, hist_autoconsum_id, "modificar")
-        # datos_cau_ids = dades_cau_obj.dummy_create(self.cursor, self.uid, m101.sw_id)
-        vals = {
-            'dades_cau': dades_cau_ids,
-            'change_type': 'tarpot',
-            'tariff': '018',
-            'contact': partner_id,
-            'phone_num': '666888555',
-            'phone_pre': '034',
-            'con_name': '0018_A41',
-            'con_sur1': 'asdfg',
-            'con_sur2': 'gfdsa',
-            'power_p1': 4600,
-            'power_p2': 4600,
-            'power_p3': 4600,
-            'power_invoicing': '1',
-        }
-        m101.config_step(vals)
+        self._config_m101_autoconsum(m101, config_step_validation_mock)
 
         # Change "CodigoDeSolicitud" in XML
         m1 = sw_obj.browse(self.cursor, self.uid, m101.sw_id.id)
@@ -801,7 +672,6 @@ class TestsGurbSwitching(TestsGurbBase):
         m1 = sw_obj.browse(self.cursor, self.uid, res[0])
         self.assertEqual(m1.proces_id.name, "M1")
         self.assertEqual(m1.step_id.name, "02")
-        # self.assertEqual(m101.solicitud_autoconsum, "S")
 
         self.assertEqual(m1.state, "open")
         self.assertEqual(m1.notificacio_pendent, True)
@@ -907,50 +777,7 @@ class TestsGurbSwitching(TestsGurbBase):
         )
         m101 = step_obj.browse(self.cursor, self.uid, step_id)
 
-        # Set self-consumption modification
-        # step_obj.write(self.cursor, self.uid, step_id, {"solicitud_autoconsum": "S"})
-        generador_obj = self.openerp.pool.get('giscedata.autoconsum.generador')
-        partner_address_obj = self.openerp.pool.get('res.partner.address')
-
-        imd_obj = self.openerp.pool.get('ir.model.data')
-        partner_id = imd_obj.get_object_reference(
-            self.cursor, self.uid, 'base', 'res_partner_gisce')[1]
-        config_step_validation_mock.return_value = True
-        dades_cau_obj = self.pool.get('giscedata.switching.datos.cau')
-        autoconsum_obj = self.openerp.pool.get('giscedata.autoconsum')
-        hist_autoconsum_id = imd_obj.get_object_reference(
-            self.cursor, self.uid, 'giscedata_cups', 'rel_autoconsum_cups_tarifa_018_autoconsum_41'
-        )[1]
-        autoconsum_id = imd_obj.get_object_reference(self.cursor, self.uid, 'giscedata_cups',
-                                                     'autoconsum_cups_tarifa_018_autoconsum_41')[1]
-        generador_id = imd_obj.get_object_reference(
-            self.cursor, self.uid, 'giscedata_cups',
-            'generador_autoconsum_cups_tarifa_018_autoconsum_41'
-        )[1]
-        autoconsum_obj.send_signal(self.cursor, self.uid, [autoconsum_id], ['validar', 'crear'])
-        partner_generador_id = generador_obj.read(self.cursor, self.uid, generador_id, [
-                                                  'partner_id'])['partner_id'][0]
-        partner_address_obj.create(self.cursor, self.uid, {
-                                   'phone': 666999222, 'partner_id': partner_generador_id})
-        dades_cau_ids = dades_cau_obj.crear_datos_cau_sense_sw(
-            self.cursor, self.uid, hist_autoconsum_id, "modificar")
-        # datos_cau_ids = dades_cau_obj.dummy_create(self.cursor, self.uid, m101.sw_id)
-        vals = {
-            'dades_cau': dades_cau_ids,
-            'change_type': 'tarpot',
-            'tariff': '018',
-            'contact': partner_id,
-            'phone_num': '666888555',
-            'phone_pre': '034',
-            'con_name': '0018_A41',
-            'con_sur1': 'asdfg',
-            'con_sur2': 'gfdsa',
-            'power_p1': 4600,
-            'power_p2': 4600,
-            'power_p3': 4600,
-            'power_invoicing': '1',
-        }
-        m101.config_step(vals)
+        self._config_m101_autoconsum(m101, config_step_validation_mock)
 
         # Change "CodigoDeSolicitud" in XML
         m1 = sw_obj.browse(self.cursor, self.uid, m101.sw_id.id)
@@ -1059,50 +886,7 @@ class TestsGurbSwitching(TestsGurbBase):
         )
         m101 = step_obj.browse(self.cursor, self.uid, step_id)
 
-        # Set self-consumption modification
-        # step_obj.write(self.cursor, self.uid, step_id, {"solicitud_autoconsum": "S"})
-        generador_obj = self.openerp.pool.get('giscedata.autoconsum.generador')
-        partner_address_obj = self.openerp.pool.get('res.partner.address')
-
-        imd_obj = self.openerp.pool.get('ir.model.data')
-        partner_id = imd_obj.get_object_reference(
-            self.cursor, self.uid, 'base', 'res_partner_gisce')[1]
-        config_step_validation_mock.return_value = True
-        dades_cau_obj = self.pool.get('giscedata.switching.datos.cau')
-        autoconsum_obj = self.openerp.pool.get('giscedata.autoconsum')
-        hist_autoconsum_id = imd_obj.get_object_reference(
-            self.cursor, self.uid, 'giscedata_cups', 'rel_autoconsum_cups_tarifa_018_autoconsum_41'
-        )[1]
-        autoconsum_id = imd_obj.get_object_reference(self.cursor, self.uid, 'giscedata_cups',
-                                                     'autoconsum_cups_tarifa_018_autoconsum_41')[1]
-        generador_id = imd_obj.get_object_reference(
-            self.cursor, self.uid, 'giscedata_cups',
-            'generador_autoconsum_cups_tarifa_018_autoconsum_41'
-        )[1]
-        autoconsum_obj.send_signal(self.cursor, self.uid, [autoconsum_id], ['validar', 'crear'])
-        partner_generador_id = generador_obj.read(self.cursor, self.uid, generador_id, [
-                                                  'partner_id'])['partner_id'][0]
-        partner_address_obj.create(self.cursor, self.uid, {
-                                   'phone': 666999222, 'partner_id': partner_generador_id})
-        dades_cau_ids = dades_cau_obj.crear_datos_cau_sense_sw(
-            self.cursor, self.uid, hist_autoconsum_id, "modificar")
-        # datos_cau_ids = dades_cau_obj.dummy_create(self.cursor, self.uid, m101.sw_id)
-        vals = {
-            'dades_cau': dades_cau_ids,
-            'change_type': 'tarpot',
-            'tariff': '018',
-            'contact': partner_id,
-            'phone_num': '666888555',
-            'phone_pre': '034',
-            'con_name': '0018_A41',
-            'con_sur1': 'asdfg',
-            'con_sur2': 'gfdsa',
-            'power_p1': 4600,
-            'power_p2': 4600,
-            'power_p3': 4600,
-            'power_invoicing': '1',
-        }
-        m101.config_step(vals)
+        self._config_m101_autoconsum(m101, config_step_validation_mock)
 
         # Change "CodigoDeSolicitud" in XML
         m1 = sw_obj.browse(self.cursor, self.uid, m101.sw_id.id)
@@ -1200,50 +984,7 @@ class TestsGurbSwitching(TestsGurbBase):
         )
         m101 = step_obj.browse(self.cursor, self.uid, step_id)
 
-        # Set self-consumption modification
-        # step_obj.write(self.cursor, self.uid, step_id, {"solicitud_autoconsum": "S"})
-        generador_obj = self.openerp.pool.get('giscedata.autoconsum.generador')
-        partner_address_obj = self.openerp.pool.get('res.partner.address')
-
-        imd_obj = self.openerp.pool.get('ir.model.data')
-        partner_id = imd_obj.get_object_reference(
-            self.cursor, self.uid, 'base', 'res_partner_gisce')[1]
-        config_step_validation_mock.return_value = True
-        dades_cau_obj = self.pool.get('giscedata.switching.datos.cau')
-        autoconsum_obj = self.openerp.pool.get('giscedata.autoconsum')
-        hist_autoconsum_id = imd_obj.get_object_reference(
-            self.cursor, self.uid, 'giscedata_cups', 'rel_autoconsum_cups_tarifa_018_autoconsum_41'
-        )[1]
-        autoconsum_id = imd_obj.get_object_reference(self.cursor, self.uid, 'giscedata_cups',
-                                                     'autoconsum_cups_tarifa_018_autoconsum_41')[1]
-        generador_id = imd_obj.get_object_reference(
-            self.cursor, self.uid, 'giscedata_cups',
-            'generador_autoconsum_cups_tarifa_018_autoconsum_41'
-        )[1]
-        autoconsum_obj.send_signal(self.cursor, self.uid, [autoconsum_id], ['validar', 'crear'])
-        partner_generador_id = generador_obj.read(self.cursor, self.uid, generador_id, [
-                                                  'partner_id'])['partner_id'][0]
-        partner_address_obj.create(self.cursor, self.uid, {
-                                   'phone': 666999222, 'partner_id': partner_generador_id})
-        dades_cau_ids = dades_cau_obj.crear_datos_cau_sense_sw(
-            self.cursor, self.uid, hist_autoconsum_id, "modificar")
-        # datos_cau_ids = dades_cau_obj.dummy_create(self.cursor, self.uid, m101.sw_id)
-        vals = {
-            'dades_cau': dades_cau_ids,
-            'change_type': 'tarpot',
-            'tariff': '018',
-            'contact': partner_id,
-            'phone_num': '666888555',
-            'phone_pre': '034',
-            'con_name': '0018_A41',
-            'con_sur1': 'asdfg',
-            'con_sur2': 'gfdsa',
-            'power_p1': 4600,
-            'power_p2': 4600,
-            'power_p3': 4600,
-            'power_invoicing': '1',
-        }
-        m101.config_step(vals)
+        self._config_m101_autoconsum(m101, config_step_validation_mock)
 
         # Change "CodigoDeSolicitud" in XML
         m1 = sw_obj.browse(self.cursor, self.uid, m101.sw_id.id)
