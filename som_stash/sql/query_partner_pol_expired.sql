@@ -1,5 +1,5 @@
 /* Partners titular d'una pòlissa que està de baixa abans de la data_limit i que NO son o estan:
- * SOCIS ACTIUS
+ * SOCIS ACTIUS o socis de baixa amb data_baixa_soci posterior a la data_limit
  * COM A TITULAR d'alguna pòlissa activa o de baixa menys després de la data_limit
  * COM A ADMINISTRADORA d'alguna pòlissa activa o de baixa després de la data_limit
  * COM A SOCI d'alguna pòlissa activa o de baixa després de la data_limit
@@ -28,11 +28,11 @@ from
 		select distinct partner_id
 		from
 		(
-			--SOCIS ACTIUS
+			--SOCIS ACTIUS o socis de baixa amb data_baixa_soci posterior a la data_limit
 			select
 			 partner_id
 			from somenergia_soci ss
-			where ss.baixa = false
+			where ss.baixa = false or (ss.baixa = true and ss.data_baixa_soci > %(data_limit)s)
 
 			union all
 

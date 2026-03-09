@@ -19,6 +19,10 @@ on:
         required: false
         type: string
         default: 'false'
+      upload_coverage:
+        required: false
+        type: string
+        default: 'false'
     secrets:
         ACCESS_TOKEN_GA:
             required: true
@@ -206,3 +210,10 @@ jobs:
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
         if: ${{ inputs.all_modules == 'true' }}
+
+      - name: Upload coverage.xml artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-xml
+          path: coverage.xml
+        if: ${{ inputs.upload_coverage == 'true' }}

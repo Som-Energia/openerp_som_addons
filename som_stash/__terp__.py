@@ -19,7 +19,9 @@
     ],
     "init_xml": [
     ],
-    "demo_xml": [],
+    "demo_xml": [
+        "demo/som_stash_demo.xml",
+    ],
     "update_xml": [
         "data/res_config_data.xml",
         "security/som_stash.xml",
