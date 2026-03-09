@@ -11,7 +11,7 @@ class GiscedataAtc(osv.osv):
     _inherit = "giscedata.atc"
     _order = "id desc"
 
-    def get_autoreclama_data(self, cursor, uid, id, context=None):
+    def get_autoreclama_data(self, cursor, uid, id, namespace, context=None):
         data = self.read(
             cursor,
             uid,
@@ -256,8 +256,140 @@ class GiscedataAtc(osv.osv):
                       'num_factura': f1.invoice_number_text}, context=context)
         return atc_id
 
-    # Automatic ATC + [R1] from dictonary / Entry poiut
+    def create_ATC_R1_009_from_polissa_via_wizard(self, cursor, uid, polissa_id, context=None):
+        if context is None:
+            context = {}
 
+        subtr_obj = self.pool.get("giscedata.subtipus.reclamacio")
+        subtr009_id = subtr_obj.search(cursor, uid, [("name", "=", "009")], context=context)[0]
+        subtr036_id = subtr_obj.search(cursor, uid, [("name", "=", "036")], context=context)[0]
+
+        # Do not create a 009 if there is an 009 or 036 active yet
+        params = [
+            ("polissa_id", "=", polissa_id),
+            ("state", "in", ["open", "pending"]),
+        ]
+        atc_ids = self.search(cursor, uid,
+                              params + [("subtipus_id", "=", subtr009_id)],
+                              context=context)
+        if atc_ids:
+            raise Exception(
+                _(
+                    u"Error en la creació del CAC R1 009, ja n'hi ha un CAC  009 en estat obert o pendent amb id {}!!!"  # noqa: E501
+                ).format(",".join([str(atc_id) for atc_id in atc_ids]))
+            )
+        atc_ids = self.search(cursor, uid,
+                              params + [("subtipus_id", "=", subtr036_id)],
+                              context=context)
+        if atc_ids:
+            raise Exception(
+                _(
+                    u"Error en la creació del CAC R1 009, ja n'hi ha un CAC 036 en estat obert o pendent amb id {}!!!"  # noqa: E501
+                ).format(",".join([str(atc_id) for atc_id in atc_ids]))
+            )
+
+        pol_obj = self.pool.get("giscedata.polissa")
+        pol = pol_obj.browse(cursor, uid, polissa_id, context=context)
+
+        if pol.mode_facturacio == 'index':  # indexada
+            tag_semantic_id = "tag_som_autoreclama_009_GEGC"
+        elif pol.tarifa.name != '2.0TD':  # si 3.X o 6.X o 3.0VE
+            tag_semantic_id = "tag_som_autoreclama_009_GEGC"
+        elif pol.autoconsumo != '00':  # autoconsumo
+            tag_semantic_id = "tag_som_autoreclama_009_GEA"
+        else:  # resta
+            tag_semantic_id = "tag_som_autoreclama_009_GET"
+        imd_obj = self.pool.get("ir.model.data")
+        tag_id = imd_obj.get_object_reference(
+            cursor, uid, "som_autoreclama", tag_semantic_id
+        )[1]
+
+        f1_obj = self.pool.get("giscedata.facturacio.importacio.linia")
+        f1_ids = f1_obj.search(cursor, uid,
+                               [
+                                   ('cups_id', '=', pol.cups.id),
+                                   ('polissa_id', '=', polissa_id),
+                                   ('import_phase', 'in', [30, 40, 50]),
+                                   ('type_factura', 'in', ['N', 'R', 'G']),
+                                   ('fecha_factura_desde', '!=', None),
+                                   ('fecha_factura_hasta', '!=', None),
+                               ],
+                               order='fecha_factura_hasta DESC',
+                               limit=1)
+        if not f1_ids:
+            raise Exception(
+                _(u"Error en la creació del CAC R1 009, no s'ha trobat F1 adient!!!")
+            )
+        f1 = f1_obj.browse(cursor, uid, f1_ids[0], context=context)
+
+        if not f1.liniafactura_id:
+            raise Exception(
+                _(
+                    u"Error en la creació del CAC R1 009, l'F1 trobat no té factura de proveïdor id f1 {}!!!"  # noqa: E501
+                ).format(f1_ids[0])
+            )
+
+        fact_prov_id = f1.liniafactura_id[0].factura_id.id
+        fact_obj = self.pool.get("giscedata.facturacio.factura")
+        nf_readings_data = fact_obj.get_r101_invoicing_info(
+            cursor, uid, fact_prov_id, context=context)
+
+        if nf_readings_data.get('measures', None):
+            canal_name = u'tel%fono'
+            tanca_al_finalitzar_r1 = False
+        else:
+            canal_name = u'intercambi'
+            tanca_al_finalitzar_r1 = True
+        channel_obj = self.pool.get("res.partner.canal")
+        canal_id = channel_obj.search(
+            cursor, uid, [('name', 'ilike', canal_name)], context=context
+        )[0]
+
+        section_id = imd_obj.get_object_reference(
+            cursor, uid, "som_switching", "atc_section_factura"
+        )[1]
+        initial_state_id = imd_obj.get_object_reference(
+            cursor, uid, "som_autoreclama", "correct_state_workflow_atc"
+        )[1]
+
+        new_case_data = {
+            "polissa_id": polissa_id,
+            "atc_tag_id": tag_id,
+            "canal_id": canal_id,
+            "descripcio": u"AUTOCAC 009",
+            "tanca_al_finalitzar_r1": tanca_al_finalitzar_r1,
+            "crear_cas_r1": True,
+            "subtipus_reclamacio_id": subtr009_id,
+
+            "section_id": section_id,
+            "comentaris": u"",
+            "sense_responsable": True,
+
+            "autoreclama_history_initial_state_id": initial_state_id,
+        }
+
+        atc_id = self.create_general_atc_r1_case_via_wizard(cursor, uid, new_case_data, context)
+
+        atc_obj = self.pool.get("giscedata.atc")
+        ref = atc_obj.read(cursor, uid, atc_id, ['ref'], context=context)['ref'].split(',')
+
+        sw_obj = self.pool.get(ref[0])
+        sw = sw_obj.browse(cursor, uid, int(ref[1]), context=context)
+        ref2 = sw.step_ids[0].pas_id.split(',')
+
+        r101_obj = self.pool.get(ref2[0])
+        r101 = r101_obj.browse(cursor, uid, int(ref2[1]), context=context)
+
+        nf_readings_data.update({'type': '02', 'subtype': '009'})
+        r101_obj.config_step(cursor, uid, r101.id, nf_readings_data, context=context)
+
+        rec_obj = self.pool.get("giscedata.switching.reclamacio")
+        rec_obj.write(cursor, uid, r101.reclamacio_ids[0].id, {
+                      'num_factura': f1.invoice_number_text}, context=context)
+
+        return atc_id
+
+    # Automatic ATC + [R1] from dictonary / Entry point
     def create_general_atc_r1_case_via_wizard(self, cursor, uid, case_data, context=None):
         if not context:
             ctx = {}
