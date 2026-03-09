@@ -4,7 +4,9 @@
 name: SOM_ERP
 on:
   pull_request:
-    branches: [ main ]
+    branches:
+      - main
+      - 'rolling_*'
 
 concurrency:
   group: ${{ github.ref }}
