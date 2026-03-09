@@ -23,7 +23,7 @@
             <field name="limit" eval="0"/>
             <field name="res_model">giscedata.switching</field>
             <field name="domain">
-                [("state", "=", "draft"), ("enviament_pendent", "=", True), ("proces_id.name", "=", "D1"), ("step_id.name", "=", "02"), ('date', '&lt;=', (datetime.datetime.today()-datetime.timedelta(days=2)).strftime('%Y-%m-%d'))]
+                [("state", "=", "draft"), ("enviament_pendent", "=", True), ("proces_id.name", "=", "D1"), ("step_id.name", "=", "02")]
             </field>
         </record>
         <record model="ir.actions.act_window.view" id="action_view_ds_rebuig_dades_autoconsum_dashboard">

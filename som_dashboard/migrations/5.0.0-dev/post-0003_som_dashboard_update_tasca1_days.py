@@ -15,6 +15,7 @@ def up(cursor, installed_version):
         'action_draft_atr_cases_dashboard',
         'action_ms_with_attachments_dashboard',
         'action_ms_without_attachments_dashboard',
+        'action_ds_rebuig_dades_autoconsum_dashboard',
     ]
     load_data_records(cursor, 'som_dashboard', data_file, xml_records, mode='update')
     logger.info("Migration completed successfully.")
