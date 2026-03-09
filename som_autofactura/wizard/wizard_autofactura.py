@@ -3,7 +3,7 @@ from osv import osv
 from tools.translate import _
 from rq.job import Job
 from rq.registry import StartedJobRegistry
-from rq import get_current_connection
+from oorq.oorq import setup_redis_connection
 
 
 class WizardAutofactura(osv.osv_memory):
@@ -20,7 +20,7 @@ class WizardAutofactura(osv.osv_memory):
         return {"type": "ir.actions.act_window_close"}
 
     def unlock(self, cursor, uid, ids, context=None):
-        redis_conn = get_current_connection()
+        redis_conn = setup_redis_connection()
         jobs_ids = StartedJobRegistry('background_autofactura', connection=redis_conn).get_job_ids()
 
         if len(jobs_ids) == 0:
@@ -32,7 +32,7 @@ class WizardAutofactura(osv.osv_memory):
         if len(jobs_ids) > 1:
             raise osv.except_osv(
                 _('Error'),
-                _("Hi han mes d'una tasca en execució, contacta amb IT")
+                _("Hi han més d'una tasca en execució, contacta amb IT")
             )
 
         if len(jobs_ids) == 1:
