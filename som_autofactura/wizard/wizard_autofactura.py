@@ -21,7 +21,7 @@ class WizardAutofactura(osv.osv_memory):
 
     def unlock(self, cursor, uid, ids, context=None):
         redis_conn = get_current_connection()
-        jobs_ids = StartedJobRegistry('background_somenergia', connection=redis_conn).get_job_ids()
+        jobs_ids = StartedJobRegistry('background_autofactura', connection=redis_conn).get_job_ids()
 
         if len(jobs_ids) == 0:
             raise osv.except_osv(
