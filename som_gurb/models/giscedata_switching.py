@@ -84,7 +84,7 @@ def _is_m1_closable(cursor, uid, pool, sw, context=None):
 
     if sw.step_id.name == "05":
         step = step_m101_obj.browse(cursor, uid, step_m101_auto[0], context=context)
-        return step.sollicitudadm in ['S', 'A'] and step.canvi_titular == 'R'
+        return (step.sollicitudadm in ['S', 'A'] and step.canvi_titular == 'R') or step_m101_auto
 
     return True
 

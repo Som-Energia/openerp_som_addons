@@ -14,10 +14,6 @@ class TestsGurbWww(TestsGurbBase):
         "giscedata_signatura_documents_signaturit.giscedata_signatura_documents."
         "GiscedataSignaturaProcess.update"
     )
-    _search_signature_fnc = (
-        "giscedata_signatura_documents_signaturit.giscedata_signatura_documents."
-        "GiscedataSignaturaProcess.update"
-    )
     _www_signature_fnc = "som_gurb.www.som_gurb_www.SomGurbWww._get_signature_url"
 
     def _eliminar_GURB_CUPS(self):
