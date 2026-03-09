@@ -8,6 +8,7 @@ import json
 from operator import attrgetter
 from collections import Counter
 import base64
+from decimal import Decimal
 
 SENSE_EXCEDENTS = ["31", "32", "33"]
 
@@ -282,6 +283,20 @@ class GiscedataFacturacioFacturaReport(osv.osv):
         except Exception as e:
             tb = traceback.format_exc()
             return str(e) + str(tb)
+
+    def get_components_data_dict(self, cursor, uid, f_id, context=None):
+        def ns_to_dict(data):
+            if isinstance(data, Decimal):
+                return str(data)
+            if isinstance(data, (list, tuple)):
+                return [ns_to_dict(item) for item in data]
+            if isinstance(data, (dict, ns)):
+                return {key: ns_to_dict(value) for key, value in data.iteritems()}
+            return data
+
+        data = self.get_components_data(cursor, uid, f_id, context=context)[f_id]
+        datad = ns_to_dict(data)
+        return datad
 
     def find_all_components_data(self, context=None):
         """
