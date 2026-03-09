@@ -23,7 +23,7 @@
             <field name="limit" eval="0"/>
             <field name="res_model">giscedata.switching</field>
             <field name="domain">
-                [("state", "=", "draft"), ("enviament_pendent", "=", True), ("proces_id.name", "=", "D1"), ("step_id.name", "=", "02"), ('date', '&lt;=', (datetime.datetime.today()-datetime.timedelta(days=2)).strftime('%Y-%m-%d'))]
+                [("state", "=", "draft"), ("enviament_pendent", "=", True), ("proces_id.name", "=", "D1"), ("step_id.name", "=", "02")]
             </field>
         </record>
         <record model="ir.actions.act_window.view" id="action_view_ds_rebuig_dades_autoconsum_dashboard">
@@ -57,7 +57,7 @@
             <field name="limit" eval="0"/>
             <field name="res_model">giscedata.switching</field>
             <field name="domain">
-                [("state", "=", "draft"), ("enviament_pendent", "=", True), ("proces_id.name", "like", "C"), ("step_id.name", "=", "01"), ('date','&lt;=', (datetime.datetime.today()-datetime.timedelta(days=2)).strftime('%Y-%m-%d'))]
+                [("state", "=", "draft"), ("enviament_pendent", "=", True), ("proces_id.name", "like", "C"), ("step_id.name", "=", "01"), ('date','&lt;=', (datetime.datetime.today()-datetime.timedelta(days=1)).strftime('%Y-%m-%d'))]
             </field>
         </record>
         <record model="ir.actions.act_window.view" id="action_view_draft_atr_cases_dashboard">
@@ -91,7 +91,7 @@
             <field name="limit" eval="0"/>
             <field name="res_model">giscedata.switching</field>
             <field name="domain">
-                [("state", "=", "draft"), ("enviament_pendent", "=", True), ("validacio_pendent", "=", True), ("proces_id.name", "like", "M"), ("step_id.name", "=", "01"), ('date','&lt;=', (datetime.datetime.today()-datetime.timedelta(days=2)).strftime('%Y-%m-%d'))]
+                [("state", "=", "draft"), ("enviament_pendent", "=", True), ("validacio_pendent", "=", True), ("proces_id.name", "like", "M"), ("step_id.name", "=", "01"), ('date','&lt;=', (datetime.datetime.today()-datetime.timedelta(days=1)).strftime('%Y-%m-%d'))]
             </field>
         </record>
         <record model="ir.actions.act_window.view" id="action_view_ms_with_attachments_dashboard">
@@ -125,7 +125,7 @@
             <field name="limit" eval="0"/>
             <field name="res_model">giscedata.switching</field>
             <field name="domain">
-                [("state", "=", "draft"), ("enviament_pendent", "=", True), ("proces_id.name", "like", "M"), ("step_id.name", "=", "01"), ('date','&lt;=', (datetime.datetime.today()-datetime.timedelta(days=2)).strftime('%Y-%m-%d'))]
+                [("state", "=", "draft"), ("enviament_pendent", "=", True), ("proces_id.name", "like", "M"), ("step_id.name", "=", "01"), ('date','&lt;=', (datetime.datetime.today()-datetime.timedelta(days=1)).strftime('%Y-%m-%d'))]
             </field>
         </record>
         <record model="ir.actions.act_window.view" id="action_view_ms_without_attachments_dashboard">
