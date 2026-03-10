@@ -188,7 +188,11 @@ class WizardAccountBalanceReport(osv.osv_memory):
             {
                 "wiz_state": "done",
                 "filename_report": "account_balance.csv",
-                "report": base64.b64encode(result["file"]),
+                "report": base64.b64encode(
+                    result["file"]
+                    if isinstance(result["file"], bytes)
+                    else result["file"].encode("utf-8")
+                ),
             }
         )
 
@@ -205,9 +209,8 @@ class WizardAccountBalanceReport(osv.osv_memory):
         # TODO: Save file to MongoDB to support workers in different server of main instance
         timestamp = datetime.today().strftime("%Y-%m-%d-%H:%M:%S")
         filename = "/tmp/account_balance_" + timestamp
-        file = open(filename, "wr")
-        file.write(result["file"])
-        file.close()
+        with open(filename, "w") as f:
+            f.write(result["file"])
 
         async_obj = self.pool.get("async.reports")
         mail_data = async_obj.get_datas_email_params(cr, uid, datas, context)
@@ -250,7 +253,11 @@ class WizardAccountBalanceReport(osv.osv_memory):
             {
                 "wiz_state": "done",
                 "filename_report": "account_balance.pdf",
-                "report": base64.b64encode(result),
+                "report": base64.b64encode(
+                    result
+                    if isinstance(result, bytes)
+                    else result.encode("utf-8")
+                ),
             }
         )
 
