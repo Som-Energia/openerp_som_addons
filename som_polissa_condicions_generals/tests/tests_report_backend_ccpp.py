@@ -36,7 +36,7 @@ class TestReportBackendCCPP(testing.OOTestCase):
             u'cnae': u'9820',
             u'cnae_des': u'Actividades de los hogares como productores de servicios para uso propio',  # noqa: E501
             u'country': u'Espa\xf1a',
-            u'direccio': u'Pla\xe7a Mela Mutermilch ,  2 1 2 17001 (Girona)',
+            u'direccio': u'Pla\xe7a Mela Mutermilch, 2 1 2 17001 (Girona)',
             u'distri': u'Agrolait',
             u'name': u'ES0021126262693495FV',
             u'provincia': u'Girona',

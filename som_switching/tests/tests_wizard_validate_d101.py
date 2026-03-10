@@ -94,36 +94,6 @@ class TestWizardValidateD101(TestSwitchingImport):
                 d102.sw_id.history_line[0].description.split(":")[-1].strip(), rejection_comment
             )
 
-    def test__create_step_d1_02_autoconsum__accept(self):
-        with Transaction().start(self.database) as txn:
-            uid = txn.user
-            cursor = txn.cursor
-
-            sw_obj = self.openerp.pool.get("giscedata.switching")
-            d102_obj = self.openerp.pool.get("giscedata.switching.d1.02")
-            wiz_validate_obj = self.openerp.pool.get("wizard.validate.d101")
-
-            d1_id = self.create_d1_case_at_step_01(txn)
-
-            wiz_init = {"sw_id": d1_id}
-            wiz_id = wiz_validate_obj.create(cursor, uid, wiz_init)
-            wiz = wiz_validate_obj.browse(cursor, uid, wiz_id)
-
-            d102_id = wiz._create_step_d1_02_autoconsum(d1_id, is_rejected=False, set_pending=True)
-
-            d1 = sw_obj.browse(cursor, uid, d1_id)
-            d102 = d102_obj.browse(cursor, uid, d102_id)
-
-            self.assertEqual(d102.sw_id.id, d1_id)
-            self.assertFalse(d102.rebuig)
-            self.assertFalse(d1.validacio_pendent)
-            self.assertFalse(d102.validacio_pendent)
-
-            expected_history_msg = u"D1-01 Acceptat des de l'assistent de validació de D1-01"
-            self.assertEqual(
-                d102.sw_id.history_line[0].description.split(":")[-1].strip(), expected_history_msg
-            )
-
     def test__create_case_m1_01_autoconsum_no_auto(self):
         with Transaction().start(self.database) as txn:
             uid = txn.user

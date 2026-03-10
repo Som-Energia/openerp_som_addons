@@ -14,10 +14,6 @@ class TestsGurbWww(TestsGurbBase):
         "giscedata_signatura_documents_signaturit.giscedata_signatura_documents."
         "GiscedataSignaturaProcess.update"
     )
-    _search_signature_fnc = (
-        "giscedata_signatura_documents_signaturit.giscedata_signatura_documents."
-        "GiscedataSignaturaProcess.update"
-    )
     _www_signature_fnc = "som_gurb.www.som_gurb_www.SomGurbWww._get_signature_url"
 
     def _eliminar_GURB_CUPS(self):
@@ -150,7 +146,7 @@ class TestsGurbWww(TestsGurbBase):
             "access_tariff": "2.0TD",
             "cups": "ES0021126262693495FV",
             "beta": 2.0,
-            "vat": "37692879L"
+            "vat": "B55129415"
         }
         self._eliminar_GURB_CUPS()
         result = gurb_www_obj.create_new_gurb_cups(
@@ -290,20 +286,19 @@ class TestsGurbWww(TestsGurbBase):
         self.assertEqual(result["code"], "BadGurbGroup")
 
     def test_create_new_gurb_cups_with_self_consumption(self):
-        gurb_www_obj = self.get_model("som.gurb.www")
-        imd_obj = self.openerp.pool.get("ir.model.data")
+        gurb_www_obj = self.openerp.pool.get("som.gurb.www")
         polissa_obj = self.openerp.pool.get("giscedata.polissa")
+        cups_helper_obj = self.openerp.pool.get("cups.helper")
         form_payload = {
             "gurb_code": "G001",
             "access_tariff": "2.0TD",
             "cups": "ES0021126262693495FV",
             "beta": 1,
-            "vat": "37692879L"
+            "vat": "B55129415"
         }
         self._eliminar_GURB_CUPS()
-        polissa_id = imd_obj.get_object_reference(
-            self.cursor, self.uid, "som_polissa_soci", "polissa_domestica_0109"
-        )[1]
+        cups_id = gurb_www_obj._get_cups_id(self.cursor, self.uid, form_payload["cups"])
+        polissa_id = cups_helper_obj._get_polissa_id(self.cursor, self.uid, cups_id)
         polissa_obj.write(
             self.cursor, self.uid, polissa_id, {"tipus_subseccio": "10"}
         )
@@ -319,7 +314,7 @@ class TestsGurbWww(TestsGurbBase):
             "access_tariff": "2.0TD",
             "cups": "ES0021126262693495FV",
             "beta": 1,
-            "vat": "37692879L"
+            "vat": "B55129415"
         }
         self._eliminar_GURB_CUPS()
         result = gurb_www_obj.create_new_gurb_cups(self.cursor, self.uid, form_payload)
@@ -374,8 +369,14 @@ class TestsGurbWww(TestsGurbBase):
             "beta": 2.0,
             "vat": "37692879L"
         }
+
+        ctx = {
+            "polissa_xml_id": "polissa_domestica_0109",
+            "polissa_module": "som_polissa_soci"
+        }
+
         self._eliminar_GURB_CUPS()
-        self.activar_polissa_CUPS()
+        self.activar_polissa_CUPS(context=ctx)
         gurb_cups_id = gurb_www_obj.create_new_gurb_cups(
             self.cursor, self.uid, form_payload
         )["gurb_cups_id"]
@@ -403,7 +404,7 @@ class TestsGurbWww(TestsGurbBase):
             "access_tariff": "2.0TD",
             "cups": "ES0021126262693495FV",
             "beta": 2.0,
-            "vat": "37692879L"
+            "vat": "B55129415"
         }
         self._eliminar_GURB_CUPS()
         gurb_cups_id = gurb_www_obj.create_new_gurb_cups(
@@ -427,7 +428,7 @@ class TestsGurbWww(TestsGurbBase):
             "access_tariff": "2.0TD",
             "cups": "ES0021126262693495FV",
             "beta": 2.0,
-            "vat": "37692879L"
+            "vat": "B55129415"
         }
         self._eliminar_GURB_CUPS()
         gurb_cups_id = gurb_www_obj.create_new_gurb_cups(
