@@ -37,6 +37,6 @@ jobs:
     uses: ./.github/workflows/reusable_workflow.yml
     with:
       module: ${{matrix.module}}
-      erpbranch: rolling_erp01
+      erpbranch: rolling_v25.5-som
       all_modules: true
     secrets: inherit
