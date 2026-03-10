@@ -14,7 +14,7 @@ on:
       erpbranch:
         required: false
         type: string
-        default: rolling_erp01
+        default: rolling_v25.5-som
       all_modules:
         required: false
         type: string
