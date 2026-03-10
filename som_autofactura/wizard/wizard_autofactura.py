@@ -32,7 +32,7 @@ class WizardAutofactura(osv.osv_memory):
         if len(jobs_ids) > 1:
             raise osv.except_osv(
                 _('Error'),
-                _("Hi han més d'una tasca en execució, contacta amb IT")
+                _("Hi ha més d'una tasca en execució, contacta amb IT")
             )
 
         if len(jobs_ids) == 1:
