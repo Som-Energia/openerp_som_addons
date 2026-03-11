@@ -26,7 +26,7 @@ class WizardCreateAtc(osv.osv_memory):
         section_id = res["value"]["section_id"]
         seccio = False
         mostrar_tag = False
-        factura_tag = False
+        require_tag = False
 
         section_obj = self.pool.get("crm.case.section")
         if section_id:
@@ -36,9 +36,9 @@ class WizardCreateAtc(osv.osv_memory):
                 mostrar_tag = True
             else:
                 mostrar_tag = False
-            factura_tag = True if seccio == "ATCF" else False
+            require_tag = True if seccio in ("ATCF", "ATCR") else False
         res["value"]["mostrar_tag"] = mostrar_tag
-        res["value"]["factura_tag"] = factura_tag
+        res["value"]["require_tag"] = require_tag
         return res
 
     def onchange_section(self, cursor, uid, ids, section_id):
