@@ -43,7 +43,7 @@ class WizardCreateAtc(osv.osv_memory):
 
     def onchange_section(self, cursor, uid, ids, section_id):
         mostrar_tag = False
-        factura_tag = False
+        require_tag = False
         section_obj = self.pool.get("crm.case.section")
         seccio = section_obj.read(cursor, uid, section_id, ["code"])["code"]
         if seccio:
@@ -51,9 +51,9 @@ class WizardCreateAtc(osv.osv_memory):
                 mostrar_tag = True
             else:
                 mostrar_tag = False
-            factura_tag = True if seccio == "ATCF" else False
+            require_tag = True if seccio in ("ATCF", "ATCR") else False
         return {
-            "value": {"mostrar_tag": mostrar_tag, "factura_tag": factura_tag},
+            "value": {"mostrar_tag": mostrar_tag, "require_tag": require_tag},
             "domain": {},
             "warning": {},
         }
@@ -61,10 +61,11 @@ class WizardCreateAtc(osv.osv_memory):
     _columns = {
         "tag": fields.many2one("giscedata.atc.tag", "Etiqueta"),
         "mostrar_tag": fields.boolean(u"Mostrar_tag"),
-        "factura_tag": fields.boolean(u"factura_tag"),
+        "require_tag": fields.boolean(u"Requerir tag"),
     }
     _defaults = {
         "mostrar_tag": lambda *a: False,
+        "required_tag": lambda *a: False,
     }
 
 
