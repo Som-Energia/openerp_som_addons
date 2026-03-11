@@ -515,11 +515,17 @@ class WizardRefundRectifyFromOrigin(osv.osv_memory):
                     continue
 
                 if f1.import_phase == 50:
-                    self.import_readings_from_f1_to_pool(cursor, uid, _id, context)
+                    ok, l_ids = self.import_readings_from_f1_to_pool(cursor, uid, _id, context)
+                    if not ok:
+                        msg.append(
+                            "La pòlissa {}, que té l'F1 amb origen {} en fase 5, no s'han pogut importar les lectures associades a l'F1. Lectures amb error: {}, continuem...".format(  # noqa: E501
+                                pol_name, origen, l_ids
+                            )
+                        )
 
                 meters = []
                 for lect in f1.importacio_lectures_ids:
-                    meters.append(lect.comptador)
+                    meters.append(str(lect.comptador))
                 meters = list(set(meters))
 
                 n_lect_del = self.recarregar_lectures_between_dates(
