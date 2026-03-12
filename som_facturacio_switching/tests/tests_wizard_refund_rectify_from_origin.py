@@ -261,7 +261,7 @@ class TestRefundRectifyFromOrigin(testing.OOTestCase):
         mock_lectures.assert_called_with(
             cursor,
             uid,
-            [wiz_id],
+            [],
             fact_info["polissa_id"][0],
             fact_info["data_inici"],
             fact_info["data_final"],
@@ -342,7 +342,7 @@ class TestRefundRectifyFromOrigin(testing.OOTestCase):
         mock_lectures.assert_called_with(
             cursor,
             uid,
-            [wiz_id],
+            [],
             fact_info["polissa_id"][0],
             fact_info["data_inici"],
             fact_info["data_final"],
