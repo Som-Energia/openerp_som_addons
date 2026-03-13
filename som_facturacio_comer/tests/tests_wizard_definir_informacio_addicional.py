@@ -116,5 +116,5 @@ class TestWizardDefinirInformacioAddicional(testing.OOTestCase):
         wiz_id = wiz_obj.create(cursor, uid, {"comment": "Text nou"}, context=context)
         wiz_obj.definir_informacio_addicional(cursor, uid, [wiz_id], context=context)
 
-        wiz = wiz_obj.read(cursor, uid, wiz_id, ["state"])
+        wiz = wiz_obj.read(cursor, uid, [wiz_id], ["state"])[0]
         self.assertEqual(wiz["state"], "end")
