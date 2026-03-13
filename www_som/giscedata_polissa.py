@@ -3,7 +3,6 @@ from datetime import datetime, timedelta
 from som_polissa.exceptions import exceptions
 from www_som.helpers import www_entry_point
 from giscedata_cups.dso_cups.cups import get_dso
-
 from osv import osv, fields
 
 
