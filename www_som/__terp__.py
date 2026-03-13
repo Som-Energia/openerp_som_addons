@@ -4,7 +4,7 @@
     "description": """
 Mòdul per la integració de l'oficina virtual
     """,
-    "version": "24.5.0",
+    "version": "0-dev",
     "author": "GISCE-TI, S.L.",
     "category": "www",
     "depends": [

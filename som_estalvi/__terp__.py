@@ -4,7 +4,7 @@
     "description": """
         Funcions i continguts per millorar l'estalvi dels contractes de SOM
     """,
-    "version": "24.5.0",
+    "version": "0-dev",
     "author": "SomEnergia",
     "category": "SomEnergia",
     "depends": [

@@ -2,7 +2,7 @@
 {
     "name": "Base extension de Som Energia",
     "description": """Base models extensions""",
-    "version": "24.5.0",
+    "version": "0-dev",
     "author": "Som Energia",
     "category": "Generic Modules",
     "depends": [

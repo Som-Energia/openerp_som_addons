@@ -2,7 +2,7 @@
 {
     "name": "Reports Facturació SOM (Comercialitzadora)",
     "description": """Reports Facturació SOM (Comercialitzadora)""",
-    "version": "24.5.0",
+    "version": "0-dev",
     "author": "GISCE",
     "category": "Extrareports",
     "depends": [
