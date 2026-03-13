@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+    <data>
+        <record model="ir.ui.view" id="wizard_aeat193_from_gkwh_invoices_view">
+            <field name="name">wizard.aeat193.from.gkwh.invoices.view</field>
+            <field name="model">wizard.aeat193.from.gkwh.invoices</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <form string="Afegir generation kwh a AEAT mod193">
+                    <field name="state" invisible="1"/>
+                    <field name="tax_id"/>
+                    <field name="info" nolabel="1" size="300" colspan="4" readonly="1"/>
+                    <button name="do_action" string="Executa" type="object" icon="gtk-execute" colspan="4" states="init"/>
+                    <button special="cancel" string="Tancar" icon="gtk-no" colspan="4"/>
+                </form>
+            </field>
+        </record>
+        <record id="action_wizard_aeat193_from_gkwh_invoices" model="ir.actions.act_window">
+            <field name="name">Afegir generation kwh a AEAT mod193</field>
+            <field name="res_model">wizard.aeat193.from.gkwh.invoices</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="view_id" ref="wizard_aeat193_from_gkwh_invoices_view"/>
+            <field name="target">new</field>
+        </record>
+        <record id="value_wizard_aeat193_from_gkwh_invoices" model="ir.values">
+            <field name="object" eval="1"/>
+            <field name="name">Afegir generation kwh a AEAT mod193</field>
+            <field name="key2">client_action_multi</field>
+            <field name="key">action</field>
+			<field name="model">l10n.es.aeat.mod193.report</field>
+			<field name="value" eval="'ir.actions.act_window,'+str(ref('action_wizard_aeat193_from_gkwh_invoices'))" />
+        </record>
+    </data>
+</openerp>
