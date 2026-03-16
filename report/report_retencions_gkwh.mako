@@ -156,8 +156,8 @@
   <div class="fila">
     <div class="LogoPpal">
       <a href="https://www.somenergia.coop" target="_blank">
-        <img src="${addons_path}/som_assets/img/logo.svg" width="150" height="150"/ alt="Logo Som Energia">
-      </a><br>
+        <img src="${addons_path}/som_assets/img/logo.svg" width="228" height="150"/ alt="Logo Som Energia">
+      </a><br><br>
       <p class="sotalogo"><b>${data.somenergia.partner_name}</b><br>${_(u"CIF:")} ${data.somenergia.partner_vat.replace('ES','')}<br>${_(u"Domicili:")} ${data.somenergia.address_street} ${data.somenergia.address_zip} - ${data.somenergia.address_city}<br>
         ${_(u"Adreça electrònica:")} generationkwh@somenergia.coop
     </div>
