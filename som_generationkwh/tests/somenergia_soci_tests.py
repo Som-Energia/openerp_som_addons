@@ -254,7 +254,8 @@ class SomenergiaSociTests(testing.OOTestCase):
 
         self.assertFalse(invoice.sii_to_send)
 
-        self.assertEqual(invoice.number, "RETORN-QUOTA-SOCIS-{}".format(ref_soci))
+        invoice_name = "RETORN-QUOTA-SOCIS-{}".format(ref_soci)
+        self.assertEqual(invoice.number, invoice_name)
         self.assertEqual(invoice.amount_total, 100)
         self.assertEqual(invoice.state, "open")
 
@@ -284,7 +285,7 @@ class SomenergiaSociTests(testing.OOTestCase):
 
         # Verify the payment lines after the payment
         for payment_line in payment_line_ids:
-            self.assertEqual(payment_line.name, ref_soci)
+            self.assertEqual(payment_line.name, invoice_name)
             self.assertEqual(payment_line.bank_id.iban, 'ES7712341234161234567890')
             self.assertEqual(payment_line.ml_inv_ref.state, 'paid')
             self.assertEqual(payment_line.order_id.reference, '{}/001'.format(datetime.now().year))

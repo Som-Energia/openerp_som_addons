@@ -345,7 +345,7 @@ class SomenergiaSoci(osv.osv):
             context=context
         )
         payment_line_o.write(
-            cursor, uid, payment_line_id, {"name": soci.partner_id.ref}, context=context)
+            cursor, uid, payment_line_id, {"name": invoice_name}, context=context)
 
     _columns = {
         'has_gkwh': fields.function(
