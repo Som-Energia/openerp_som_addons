@@ -1410,3 +1410,35 @@ class TestsSomLeadWww(testing.OOTestCase):
         lead = lead_o.browse(self.cursor, self.uid, result["lead_id"])
         self.assertEqual(lead.polissa_id.titular.name, 'Cognom1 Cognom2, Nom')
         self.assertEqual(lead.polissa_id.direccio_notificacio.name, 'Cognom1 Cognom2, Nom')
+
+    def test_prova_soci(self):
+        www_lead_o = self.get_model("som.lead.www")
+        lead_o = self.get_model("giscedata.crm.lead")
+
+        info = {
+            "vat": "40323835M",
+            "name": "Pepito",
+            "surname": "Palotes",
+            "is_juridic": False,
+            "address": {
+                "state_id": 20,
+                "city_id": 5386,
+                "postal_code": "08178",
+                "street": "Carrer Falsa",
+                "number": "123",
+                "floor": "5",
+                "stair": "A",
+                "door": "C",
+                "block": "B",
+            },
+            "email": "pepito@foo.bar",
+            "phone": "+34 972123456",
+            "lang": "es_ES",
+            "privacy_conditions": True,
+        }
+
+        result = www_lead_o.create_soci_lead(self.cursor, self.uid, info)
+
+        res = lead_o.create_entity_titular_json(self.cursor, self.uid, result["lead_id"])
+
+        self.assertEqual(res, 1)

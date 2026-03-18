@@ -410,5 +410,98 @@ class SomLeadWww(osv.osv_memory):
             return prefix_res and prefix_res[0] or None, parts[1]
         return None, phone_full
 
+    def create_soci_lead(self, cr, uid, www_vals, context=None):
+        if context is None:
+            context = {}
+        lead_o = self.pool.get("giscedata.crm.lead")
+        partner_o = self.pool.get("res.partner")
+        ir_model_o = self.pool.get("ir.model.data")
+
+        self._check_member_vat_dont_exists(
+            cr, uid, www_vals["vat"], context=context)
+        member = www_vals
+
+        # Split phone and prefix
+        member["phone_prefix"], member["phone"] = self._split_phone_prefix(
+            cr, uid, member.get("phone"))
+        member["mobile_prefix"], member["phone2"] = self._split_phone_prefix(
+            cr, uid, member.get("phone2"))
+
+        # Prepare name and surname for the ERP standards
+        if member.get("name") and member.get("surname"):
+            names = partner_o.separa_cognoms(
+                cr, uid, "{}, {}".format(member["surname"], member["name"]))
+            member.update({
+                'name': names['nom'],
+                'surname': names['cognoms'][0],
+                'surname2': names['cognoms'][1],
+            })
+
+        values = {
+            "state": "open",
+            "name": "{}".format(member["vat"].upper()),
+            "enviament": "email",
+            "create_new_member": True,
+            "member_number": member.get("number"),
+            "titular_vat": 'ES%s' % member["vat"].upper(),
+            "titular_nom": member.get("name"),
+            "titular_cognom1": member.get("surname"),
+            "titular_cognom2": member.get("surname2"),
+            "tipus_vivenda": 'habitual',
+            "titular_zip": member["address"].get("postal_code"),
+            "titular_nv": member["address"].get("street"),
+            "titular_pnp": member["address"].get("number"),
+            "titular_pt": member["address"].get("floor"),
+            "titular_es": member["address"].get("stair"),
+            "titular_pu": member["address"].get("door"),
+            "titular_bq": member["address"].get("block"),
+            "titular_id_municipi": member["address"].get("city_id"),
+            "titular_email": member.get("email", "").lower() or None,
+            "titular_phone": member.get("phone"),
+            "titular_mobile": member.get("phone2"),
+            "titular_phone_prefix": member.get("phone_prefix"),
+            "titular_mobile_prefix": member.get("mobile_prefix"),
+            "use_cont_address": False,
+            "member_quota_payment_type": "tpv",  # FIXME hehehe
+            "gender": member.get("gender"),
+            "birthdate": member.get("birthdate"),
+            "referral_source": member.get("referral_source"),
+            "comercial_info_accepted": member.get("comercial_info_accepted", False),
+        }
+
+        values["user_id"] = ir_model_o.get_object_reference(
+            cr, uid, "base_extended_som", "res_users_webforms"
+        )[1]
+
+        values["stage_id"] = ir_model_o.get_object_reference(
+            cr, uid, "som_leads_polissa", "webform_stage_recieved"
+        )[1]
+
+        values["section_id"] = ir_model_o.get_object_reference(
+            cr, uid, "som_leads_polissa", "webform_section"
+        )[1]
+
+        if member.get("is_juridic"):
+            values["persona_firmant_vat"] = member["proxy_vat"]
+            values["persona_nom"] = member["proxy_name"]
+            values["is_juridic"] = True
+
+        if member.get("lang", False):
+            values["lang"] = member["lang"]
+
+        # Remove None values to let the lead get them if exists in the bbdd
+        for field, value in values.items():
+            if value is None:
+                del values[field]
+
+        # Avoid filling poblacio from existing values because it can be wrong
+        values["titular_id_poblacio"] = None
+
+        lead_id = lead_o.create(cr, uid, values, context=context)
+
+        return {
+            "lead_id": lead_id,
+        }
+
 
 SomLeadWww()
