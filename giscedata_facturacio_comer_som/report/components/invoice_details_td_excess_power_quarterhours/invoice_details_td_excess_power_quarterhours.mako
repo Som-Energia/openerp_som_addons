@@ -11,7 +11,7 @@ count = 1
             <td class="td_first concepte_td" rowspan="${id.header_multi}">${_(u"Facturacio per excés de potència")}</td>
             <%first_pass = False%>
         % endif
-        <td class="td_bold detall_td">${_(u"Potència excés [kW]")}</td>
+        <td class="td_bold detall_td">${_(u"Excés potència [kW]")}</td>
         % for p in id.showing_periods:
             % if p in excess_data:
                 <td>${_(u"%s") %(locale.str(locale.atof(formatLang(excess_data[p]["power_excess"], digits=3))))}</td>
@@ -26,7 +26,7 @@ count = 1
         <%count += 1%>
     </tr>
     <tr>
-        <td class="td_bold detall_td">${_(u"Preu potència excés [€/kW]")}</td>
+        <td class="td_bold detall_td">${_(u"Preu excés potència [€/kW]")}</td>
         % for p in id.showing_periods:
             % if p in excess_data:
                 <td>${_(u"%s") %(locale.str(locale.atof(formatLang(excess_data[p]["price_excess"], digits=6))))}</td>
@@ -46,9 +46,9 @@ count = 1
     <tr class="tr_bold last_row">
     % endif
         % if excess_data['visible_days_month']:
-            <td class="detall_td">${_(u"Potència excés x Preu excés x (%.f/30) dies (del %s al %s)") %(excess_data['days'],excess_data['date_from'], excess_data['date_to'])}</td>
+            <td class="detall_td">${_(u"Excés potència x Preu excés x (%.f/30) dies (del %s al %s)") %(excess_data['days'],excess_data['date_from'], excess_data['date_to'])}</td>
         % else:
-            <td class="detall_td">${_(u"Potència excés x Preu excés (del %s al %s)") %(excess_data['date_from'], excess_data['date_to'])}</td>
+            <td class="detall_td">${_(u"Excés potència x Preu excés (del %s al %s)") %(excess_data['date_from'], excess_data['date_to'])}</td>
         % endif
         % for p in id.showing_periods:
             % if p in excess_data:

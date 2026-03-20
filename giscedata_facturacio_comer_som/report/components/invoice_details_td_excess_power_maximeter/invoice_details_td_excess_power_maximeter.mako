@@ -33,9 +33,9 @@ count = 1
             </tr>
             <tr>
                 % if excess_data["pre_2025_04_01"]:
-                    <td class="td_bold detall_td">${_(u"2 x (Potència excés (maxímetre - contractada) [kW]) [kW]")}</td>
+                    <td class="td_bold detall_td">${_(u"2 x (Excés potència (maxímetre - contractada) [kW]) [kW]")}</td>
                 % else:
-                    <td class="td_bold detall_td">${_(u"Potència excés (maxímetre - contractada) [kW]")}</td>
+                    <td class="td_bold detall_td">${_(u"Excés potència (maxímetre - contractada) [kW]")}</td>
                 % endif
                 % for p in id.showing_periods[:-1]:
                     % if p in excess_data:
@@ -85,9 +85,9 @@ count = 1
             <tr class="tr_bold last_row">
             % endif
                 % if excess_data['multi'] > 1:
-                    <td class="detall_td">${_(u"Potència excés x Preu excés x %s dies (del %s al %s)") %(int(excess_data['multi']),excess_data['date_from'], excess_data['date_to'])}</td>
+                    <td class="detall_td">${_(u"Excés potència x Preu excés x %s dies (del %s al %s)") %(int(excess_data['multi']),excess_data['date_from'], excess_data['date_to'])}</td>
                 % else:
-                    <td class="detall_td">${_(u"Potència excés x Preu excés")}</td>
+                    <td class="detall_td">${_(u"Excés potència x Preu excés")}</td>
                 % endif
                 % for p in id.showing_periods[:-1]:
                     % if p in excess_data:
@@ -129,9 +129,9 @@ count = 1
             </tr>
             <tr>
                 % if excess_data["pre_2025_04_01"]:
-                    <td class="td_bold detall_td">${_(u"2 x (Potència excés (maxímetre - contractada) [kW]) [kW]")}</td>
+                    <td class="td_bold detall_td">${_(u"2 x (Excés potència (maxímetre - contractada) [kW]) [kW]")}</td>
                 % else:
-                    <td class="td_bold detall_td">${_(u"Potència excés (maxímetre - contractada) [kW]")}</td>
+                    <td class="td_bold detall_td">${_(u"Excés potència (maxímetre - contractada) [kW]")}</td>
                 % endif
                 % for p in id.showing_periods:
                     % if p in excess_data:
@@ -171,9 +171,9 @@ count = 1
             <tr class="tr_bold last_row">
             % endif
                 % if excess_data['multi'] > 1:
-                    <td class="detall_td">${_(u"Potència excés x Preu excés x %s dies (del %s al %s)") %(int(excess_data['multi']),excess_data['date_from'], excess_data['date_to'])}</td>
+                    <td class="detall_td">${_(u"Excés potència x Preu excés x %s dies (del %s al %s)") %(int(excess_data['multi']),excess_data['date_from'], excess_data['date_to'])}</td>
                 % else:
-                    <td class="detall_td">${_(u"Potència excés x Preu excés x (%.f/%d) dies (del %s al %s)") %(int(excess_data['multi']*id.days), id.days,excess_data['date_from'], excess_data['date_to'])}</td>
+                    <td class="detall_td">${_(u"Excés potència x Preu excés x (%.f/%d) dies (del %s al %s)") %(int(excess_data['multi']*id.days), id.days,excess_data['date_from'], excess_data['date_to'])}</td>
                 % endif
                 % for p in id.showing_periods:
                     % if p in excess_data:
