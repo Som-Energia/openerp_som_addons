@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OpenERP Server 5.0.14\n"
 "Report-Msgid-Bugs-To: support@openerp.com\n"
-"POT-Creation-Date: 2026-03-12 17:21+0000\n"
-"PO-Revision-Date: 2026-03-12 17:21+0000\n"
+"POT-Creation-Date: 2026-03-20 15:34+0000\n"
+"PO-Revision-Date: 2026-03-20 15:34+0000\n"
 "Last-Translator: <>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -1908,12 +1908,12 @@ msgstr ""
 
 #: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_excess_power_maximeter/invoice_details_td_excess_power_maximeter.mako:36
 #: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_excess_power_maximeter/invoice_details_td_excess_power_maximeter.mako:132
-msgid "2 x (Potència excés (maxímetre - contractada) [kW]) [kW]"
+msgid "2 x (Excés potència (maxímetre - contractada) [kW]) [kW]"
 msgstr ""
 
 #: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_excess_power_maximeter/invoice_details_td_excess_power_maximeter.mako:38
 #: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_excess_power_maximeter/invoice_details_td_excess_power_maximeter.mako:134
-msgid "Potència excés (maxímetre - contractada) [kW]"
+msgid "Excés potència (maxímetre - contractada) [kW]"
 msgstr ""
 
 #: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_excess_power_maximeter/invoice_details_td_excess_power_maximeter.mako:60
@@ -1929,34 +1929,34 @@ msgstr ""
 #: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_excess_power_maximeter/invoice_details_td_excess_power_maximeter.mako:88
 #: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_excess_power_maximeter/invoice_details_td_excess_power_maximeter.mako:174
 #, python-format
-msgid "Potència excés x Preu excés x %s dies (del %s al %s)"
+msgid "Excés potència x Preu excés x %s dies (del %s al %s)"
 msgstr ""
 
 #: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_excess_power_maximeter/invoice_details_td_excess_power_maximeter.mako:90
-msgid "Potència excés x Preu excés"
+msgid "Excés potència x Preu excés"
 msgstr ""
 
 #: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_excess_power_maximeter/invoice_details_td_excess_power_maximeter.mako:176
 #, python-format
-msgid "Potència excés x Preu excés x (%.f/%d) dies (del %s al %s)"
+msgid "Excés potència x Preu excés x (%.f/%d) dies (del %s al %s)"
 msgstr ""
 
 #: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_excess_power_quarterhours/invoice_details_td_excess_power_quarterhours.mako:14
-msgid "Potència excés [kW]"
+msgid "Excés potència [kW]"
 msgstr ""
 
 #: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_excess_power_quarterhours/invoice_details_td_excess_power_quarterhours.mako:29
-msgid "Preu potència excés [€/kW]"
+msgid "Preu excés potència [€/kW]"
 msgstr ""
 
 #: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_excess_power_quarterhours/invoice_details_td_excess_power_quarterhours.mako:49
 #, python-format
-msgid "Potència excés x Preu excés x (%.f/30) dies (del %s al %s)"
+msgid "Excés potència x Preu excés x (%.f/30) dies (del %s al %s)"
 msgstr ""
 
 #: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_excess_power_quarterhours/invoice_details_td_excess_power_quarterhours.mako:51
 #, python-format
-msgid "Potència excés x Preu excés (del %s al %s)"
+msgid "Excés potència x Preu excés (del %s al %s)"
 msgstr ""
 
 #: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_flux_solar/invoice_details_td_flux_solar.mako:7
