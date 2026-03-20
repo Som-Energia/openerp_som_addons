@@ -3483,7 +3483,7 @@ msgid "Guany en espècie"
 msgstr ""
 
 #: rml:som_generationkwh/report/report_retencions_gkwh.mako:222
-msgid "Saldo a dia d'avui"
+msgid "Saldo a 31 de desembre de "
 msgstr ""
 
 #: rml:som_generationkwh/report/report_retencions_gkwh.mako:227
