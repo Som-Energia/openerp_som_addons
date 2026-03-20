@@ -41,6 +41,39 @@ class ResPartner(osv.osv):
         data.amount_tax = abs(aeat193_record[0].amount_tax) if aeat193_record else 0
         data.date_last_date_previous_year = "{}-12-31".format(data.year)
         data.balance = 0
+
+        def get_amortitzacions_any_en_curs_factures(member_items, partner_id):
+            current_year = int(data.year) + 1
+            start_date = "{}-01-01".format(current_year)
+
+            investment_origins = []
+            for item in member_items:
+                if item.name:
+                    investment_origins.append(item.name)
+
+            if not investment_origins:
+                return 0.0
+
+            account_invoice_obj = self.pool.get('account.invoice')
+            invoice_search_params = [
+                ("partner_id", "=", partner_id),
+                ("date_invoice", ">=", start_date),
+                ("state", "in", ["open", "paid"]),
+                ("origin", "in", investment_origins),
+                "|",
+                ("name", "ilike", "%-AMOR%"),
+                ("name", "ilike", "%-DES%"),
+            ]
+            invoice_ids = account_invoice_obj.search(cursor, uid, invoice_search_params)
+
+            amortitzacions = 0.0
+            if invoice_ids:
+                for invoice in account_invoice_obj.browse(cursor, uid, invoice_ids):
+                    for line in invoice.invoice_line:
+                        if line.product_id and line.product_id.default_code != gkwh.irpfProductCode:
+                            amortitzacions += abs(line.price_subtotal)
+            return amortitzacions
+
         if is_generationkwh:
             search_params = [
                 ("emission_id.type", "=", "genkwh"),
@@ -54,7 +87,9 @@ class ResPartner(osv.osv):
             gkwh_member = investment_obj.browse(cursor, uid, gkwh_member_ids)
             total_remaining = sum(
                 [(item.nshares * gkwh.shareValue) - item.amortized_amount for item in gkwh_member])
-            data.balance = total_remaining
+            amortitzacions_any_en_curs = get_amortitzacions_any_en_curs_factures(
+                gkwh_member, ids[0])
+            data.balance = total_remaining + amortitzacions_any_en_curs
         else:
             search_params = [
                 ("emission_id.type", "=", "apo"),
@@ -66,8 +101,11 @@ class ResPartner(osv.osv):
             ]
             aportacions_member_ids = investment_obj.search(cursor, uid, search_params)
             aportacions_member = investment_obj.browse(cursor, uid, aportacions_member_ids)
-            total_member_nshares = sum([item.nshares for item in aportacions_member])
-            data.balance = total_member_nshares * gkwh.shareValue
+            total_remaining = sum(
+                [(item.nshares * gkwh.shareValue) - item.amortized_amount for item in aportacions_member])  # noqa: E501
+            amortitzacions_any_en_curs = get_amortitzacions_any_en_curs_factures(
+                aportacions_member, ids[0])
+            data.balance = total_remaining + amortitzacions_any_en_curs
 
         return data
 
