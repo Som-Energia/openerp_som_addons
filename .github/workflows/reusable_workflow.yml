@@ -72,7 +72,7 @@ jobs:
         ports:
           - 27017:27017
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6.0.2
         with:
           ref: ${{ github.head_ref }}
           repository: ${{ github.event.pull_request.head.repo.full_name }}
@@ -212,8 +212,9 @@ jobs:
         if: ${{ inputs.all_modules == 'true' }}
 
       - name: Upload coverage.xml artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7.0.0
         with:
           name: coverage-xml
           path: coverage.xml
+          archive: false
         if: ${{ inputs.upload_coverage == 'true' }}
