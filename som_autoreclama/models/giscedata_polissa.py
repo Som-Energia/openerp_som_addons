@@ -260,10 +260,15 @@ class GiscedataPolissa(osv.osv):
         if "autoreclama_history_initial_state_id" in context:
             initial_state_id = context["autoreclama_history_initial_state_id"]
         else:
-
+            cfg_obj = self.pool.get("res.config")
             imd_obj = self.pool.get("ir.model.data")
+            default_creation_state = cfg_obj.get(
+                cursor, uid,
+                "som_autoreclama_polissa_006_default_creation_state",
+                "correct_state_workflow_polissa"
+            )
             initial_state_id = imd_obj.get_object_reference(
-                cursor, uid, "som_autoreclama", "correct_state_workflow_polissa"
+                cursor, uid, "som_autoreclama", default_creation_state
             )[1]
 
         self._create_autoreclama_history_gen(cursor, uid,
@@ -280,9 +285,15 @@ class GiscedataPolissa(osv.osv):
         if "autoreclama_009_history_initial_state_id" in context:
             initial_state_id = context["autoreclama_009_history_initial_state_id"]
         else:
+            cfg_obj = self.pool.get("res.config")
             imd_obj = self.pool.get("ir.model.data")
+            default_creation_state = cfg_obj.get(
+                cursor, uid,
+                "som_autoreclama_polissa_009_default_creation_state",
+                "correct_state_workflow_polissa009"
+            )
             initial_state_id = imd_obj.get_object_reference(
-                cursor, uid, "som_autoreclama", "correct_state_workflow_polissa009"
+                cursor, uid, "som_autoreclama", default_creation_state
             )[1]
 
         self._create_autoreclama_history_gen(cursor, uid,

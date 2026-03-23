@@ -506,9 +506,17 @@ class GiscedataAtc(osv.osv):
         if not context:
             context = {}
 
+        cfg_obj = self.pool.get("res.config")
         imd_obj = self.pool.get("ir.model.data")
+
+        default_creation_state = cfg_obj.get(
+            cursor, uid,
+            "som_autoreclama_cac_029_default_creation_state",
+            "correct_state_workflow_atc"
+        )
+
         initial_state_id = imd_obj.get_object_reference(
-            cursor, uid, "som_autoreclama", "correct_state_workflow_atc"
+            cursor, uid, "som_autoreclama", default_creation_state
         )[1]
 
         initial_state_id = context.get("autoreclama_history_initial_state_id", initial_state_id)

@@ -11,5 +11,20 @@
             <field name="value">https://somenergia.coop/</field>
             <field name="description">Adreça base del client web</field>
         </record>
+        <record model="res.config" id="som_autoreclama_cac_029_default_creation_state" forcecreate="1">
+            <field name="name">som_autoreclama_cac_029_default_creation_state</field>
+            <field name="value">correct_state_workflow_atc</field>
+            <field name="description">Estat inicial per la màquina d'estats de l'autoreclamació 029 quan creem el CAC, 'correct_state_workflow_atc' per activat i 'disabled_state_workflow_atc' per desactivat.</field>
+        </record>
+        <record model="res.config" id="som_autoreclama_polissa_006_default_creation_state" forcecreate="1">
+            <field name="name">som_autoreclama_polissa_006_default_creation_state</field>
+            <field name="value">correct_state_workflow_polissa</field>
+            <field name="description">Estat inicial per la màquina d'estats de l'autoreclamació 006 quan creem la pòlissa, 'correct_state_workflow_polissa' per activat i 'disabled_state_workflow_polissa' per desactivat.</field>
+        </record>
+        <record model="res.config" id="som_autoreclama_polissa_009_default_creation_state" forcecreate="1">
+            <field name="name">som_autoreclama_polissa_009_default_creation_state</field>
+            <field name="value">correct_state_workflow_polissa009</field>
+            <field name="description">Estat inicial per la màquina d'estats de l'autoreclamació 009 quan creem la pòlissa, 'correct_state_workflow_polissa009' per activat i 'disabled_state_workflow_polissa009' per desactivat.</field>
+        </record>
     </data>
 </openerp>
