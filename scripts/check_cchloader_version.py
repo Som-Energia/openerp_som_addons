@@ -28,12 +28,12 @@ def is_version_invalid():
         return False
 
 
-def install_via_pip():
+def install_via_pip(redis_conn, secret):
     try:
         subprocess.check_call([sys.executable, '-m', 'pip', 'install',
                               '--force-reinstall', 'cchloader'])
         print("Paquet 'cchloader' reinstal·lat des de PyPI correctament.")
-        send_harakiri()
+        send_harakiri(redis_conn, secret)
     except subprocess.CalledProcessError:
         print("Error: No s'ha pogut instal·lar 'cchloader' des de PyPI.")
         sys.exit(1)
