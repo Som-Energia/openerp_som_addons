@@ -255,5 +255,20 @@ class GiscedataFacturacioValidationValidator(osv.osv):
             )
         return ret
 
+    def check_exceding_days(self, cursor, uid, fact, parameters):
+        tarifa_acces = fact.tarifa_acces_id.name
+        tarifa_comer = fact.polissa_id.llista_preu.name
+        autoconsum = fact.polissa_id.autoconsum
+        if (fact.dies <= 69
+            and tarifa_acces == '2.0TD'
+            and tarifa_comer == '2.0TD_SOM'
+                and autoconsum == '00'):
+            return None
+
+        return super(
+            GiscedataFacturacioValidationValidator,
+            self
+        ).check_exceding_days(cursor, uid, fact, parameters)
+
 
 GiscedataFacturacioValidationValidator()
