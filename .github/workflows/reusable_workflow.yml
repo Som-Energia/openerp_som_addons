@@ -214,7 +214,6 @@ jobs:
       - name: Upload coverage.xml artifact
         uses: actions/upload-artifact@v7.0.0
         with:
-          name: coverage-xml
+          name: coverage.xml
           path: coverage.xml
-          archive: false
         if: ${{ inputs.upload_coverage }}
