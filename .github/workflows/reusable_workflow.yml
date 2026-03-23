@@ -21,8 +21,8 @@ on:
         default: 'false'
       upload_coverage:
         required: false
-        type: string
-        default: 'false'
+        type: boolean
+        default: false
     secrets:
         ACCESS_TOKEN_GA:
             required: true
@@ -217,4 +217,4 @@ jobs:
           name: coverage-xml
           path: coverage.xml
           archive: false
-        if: ${{ inputs.upload_coverage == 'true' }}
+        if: ${{ inputs.upload_coverage }}
