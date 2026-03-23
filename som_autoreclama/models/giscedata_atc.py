@@ -366,6 +366,7 @@ class GiscedataAtc(osv.osv):
             "sense_responsable": True,
 
             "autoreclama_history_initial_state_id": initial_state_id,
+            "reclamacio_num_factura_text": {str(polissa_id): f1.invoice_number_text},
         }
 
         atc_id = self.create_general_atc_r1_case_via_wizard(cursor, uid, new_case_data, context)
@@ -449,6 +450,9 @@ class GiscedataAtc(osv.osv):
                 r1w_ctx = generate_r1_wiz["context"]
             else:
                 r1w_ctx = eval(generate_r1_wiz["context"])
+
+            if "reclamacio_num_factura_text" in case_data:
+                r1w_ctx["reclamacio_num_factura_text"] = case_data["reclamacio_num_factura_text"]
 
             if generate_r1_wiz["res_model"] == 'wizard.create.r1':
                 r1w_obj = self.pool.get(generate_r1_wiz["res_model"])  # "wizard.create.r1"
