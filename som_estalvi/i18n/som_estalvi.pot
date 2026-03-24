@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OpenERP Server 5.0.14\n"
 "Report-Msgid-Bugs-To: support@openerp.com\n"
-"POT-Creation-Date: 2025-07-16 11:43+0000\n"
-"PO-Revision-Date: 2025-07-16 11:43+0000\n"
+"POT-Creation-Date: 2026-03-24 09:36+0000\n"
+"PO-Revision-Date: 2026-03-24 09:36+0000\n"
 "Last-Translator: <>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -467,23 +467,29 @@ msgid "Reactiva"
 msgstr ""
 
 #: rml:som_estalvi/report/components/new_web_section_eie.mako:8
-msgid "Ja tenim disponible l’"
+msgid "Estrenem nou disseny de la placa del "
+msgstr ""
+
+#: rml:som_estalvi/report/components/new_web_section_eie.mako:8
+msgid "https://www.somenergia.coop/ca/serveis/entitats-i-empreses"
+msgstr ""
+
+#: rml:som_estalvi/report/components/new_web_section_eie.mako:8
+msgid "servei Presumeix de bona energia"
+msgstr ""
+
+#: rml:som_estalvi/report/components/new_web_section_eie.mako:8
+msgid " adaptat a la nova imatge de la cooperativa. Vols presumir? "
 msgstr ""
 
 #: rml:som_estalvi/report/components/new_web_section_eie.mako:8
 msgid ""
-"https://www.somenergia.coop/ca/serveis-i-tarifes-de-llum-"
-"entitats-i-empreses/"
+"https://docs.google.com/forms/d/e/1FAIpQLScgKHBoGEs7RqlT5nfQlERILc3j9bqr-"
+"gi9o3d18uNvY8FL0Q/viewform"
 msgstr ""
 
 #: rml:som_estalvi/report/components/new_web_section_eie.mako:8
-msgid "apartat web per a entitats i empreses"
-msgstr ""
-
-#: rml:som_estalvi/report/components/new_web_section_eie.mako:8
-msgid ""
-": descobriu tots els serveis que oferim des de la cooperativa a entitats "
-"i empreses com la vostra!"
+msgid "Demana-la gratuïtament!"
 msgstr ""
 
 #: rml:som_estalvi/report/components/resum_facturacio_anual.mako:4
@@ -556,6 +562,14 @@ msgstr ""
 msgid "Més informació."
 msgstr ""
 
+#: rml:som_estalvi/report/components/resum_facturacio_anual.mako:53
+msgid "Descompte pels excedents:"
+msgstr ""
+
+#: rml:som_estalvi/report/components/resum_facturacio_anual.mako:54
+msgid "Inclou la compensació i el Flux Solar descomptats."
+msgstr ""
+
 #: rml:som_estalvi/report/components/resum_facturacio_anual.mako:64
 msgid ""
 "No incloem el lloguer del comptador i els impostos. Dades dels últims 12 "
@@ -563,7 +577,7 @@ msgid ""
 msgstr ""
 
 #: rml:som_estalvi/report/components/som_serveis_box.mako:8
-msgid "Coneixeu el "
+msgid "Recordeu que amb el "
 msgstr ""
 
 #: rml:som_estalvi/report/components/som_serveis_box.mako:8
@@ -576,6 +590,6 @@ msgstr ""
 
 #: rml:som_estalvi/report/components/som_serveis_box.mako:8
 msgid ""
-"Energia renovable, telefonia conscient i mobilitat sostenible per a "
-"empreses amb propòsit"
+" podeu transformar la telefonia i la mobilitat de la vostra empresa de la"
+" mà de dues cooperatives amigues."
 msgstr ""

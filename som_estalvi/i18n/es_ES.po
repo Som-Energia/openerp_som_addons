@@ -3,13 +3,13 @@
 # * som_estalvi
 #
 # Translators:
-# Som Energia  <itcrowd@somenergia.coop>, 2024, 2025.
+# Som Energia  <itcrowd@somenergia.coop>, 2024, 2025, 2026.
 msgid ""
 msgstr ""
 "Project-Id-Version: Som Energia\n"
 "Report-Msgid-Bugs-To: support@openerp.com\n"
-"POT-Creation-Date: 2025-07-16 11:43+0000\n"
-"PO-Revision-Date: 2025-07-16 09:42+0000\n"
+"POT-Creation-Date: 2026-03-24 09:36+0000\n"
+"PO-Revision-Date: 2026-03-24 10:57+0000\n"
 "Last-Translator: Som Energia <itcrowd@somenergia.coop>\n"
 "Language-Team: Spanish (Spain) (http://trad.gisce.net/projects/p/somenergia/language/es_ES/)\n"
 "MIME-Version: 1.0\n"
@@ -443,8 +443,7 @@ msgid "INFORME ANUAL"
 msgstr "INFORME ANUAL"
 
 #: rml:som_estalvi/report/components/footer.mako:13
-msgid ""
-"Som Energia, SCCL - CIF F55091367 | Riu Güell, 68 - 17005 - Girona | "
+msgid "Som Energia, SCCL - CIF F55091367 | Riu Güell, 68 - 17005 - Girona | "
 msgstr "Som Energia, SCCL - CIF F55091367 | Riu Güell, 68 - 17005 - Girona | "
 
 #: rml:som_estalvi/report/components/graphic.mako:14
@@ -472,24 +471,30 @@ msgid "Reactiva"
 msgstr "Reactiva"
 
 #: rml:som_estalvi/report/components/new_web_section_eie.mako:8
-msgid "Ja tenim disponible l’"
-msgstr "Ya tenemos disponible el "
+msgid "Estrenem nou disseny de la placa del "
+msgstr "Estrenamos nuevo diseño de la placa del"
+
+#: rml:som_estalvi/report/components/new_web_section_eie.mako:8
+msgid "https://www.somenergia.coop/ca/serveis/entitats-i-empreses"
+msgstr "https://www.somenergia.coop/es/servicios/entidades-y-empresas"
+
+#: rml:som_estalvi/report/components/new_web_section_eie.mako:8
+msgid "servei Presumeix de bona energia"
+msgstr "servicio Presume de buena energía"
+
+#: rml:som_estalvi/report/components/new_web_section_eie.mako:8
+msgid " adaptat a la nova imatge de la cooperativa. Vols presumir? "
+msgstr " adaptado a la nueva imagen de marca. ¿Quieres presumir? "
 
 #: rml:som_estalvi/report/components/new_web_section_eie.mako:8
 msgid ""
-"https://www.somenergia.coop/ca/serveis-i-tarifes-de-llum-"
-"entitats-i-empreses/"
-msgstr "https://www.somenergia.coop/es/servicios-y-tarifas-de-luz-entidades-y-empresas/"
+"https://docs.google.com/forms/d/e/1FAIpQLScgKHBoGEs7RqlT5nfQlERILc3j9bqr-"
+"gi9o3d18uNvY8FL0Q/viewform"
+msgstr "https://docs.google.com/forms/d/e/1FAIpQLSfgaS0aPafGx3J-IL77Enq8T0G9KJogk1pOsZI4inK4Srt5Uw/viewform"
 
 #: rml:som_estalvi/report/components/new_web_section_eie.mako:8
-msgid "apartat web per a entitats i empreses"
-msgstr "apartado web para entidades y empresas"
-
-#: rml:som_estalvi/report/components/new_web_section_eie.mako:8
-msgid ""
-": descobriu tots els serveis que oferim des de la cooperativa a entitats i "
-"empreses com la vostra!"
-msgstr ": ¡descubrid todos los servicios que ofrecemos desde la cooperativa a entidades y empresas como la vuestra!"
+msgid "Demana-la gratuïtament!"
+msgstr "¡Pídela gratuitamente!"
 
 #: rml:som_estalvi/report/components/resum_facturacio_anual.mako:4
 msgid "RESUM DE LA VOSTRA FACTURACIÓ ANUAL"
@@ -562,6 +567,14 @@ msgstr "https://es.support.somenergia.coop/article/180-como-puedo-reducir-el-con
 msgid "Més informació."
 msgstr "Más información."
 
+#: rml:som_estalvi/report/components/resum_facturacio_anual.mako:53
+msgid "Descompte pels excedents:"
+msgstr "Descuento por los excedentes:"
+
+#: rml:som_estalvi/report/components/resum_facturacio_anual.mako:54
+msgid "Inclou la compensació i el Flux Solar descomptats."
+msgstr "Incluye la compensación y el flujo solar descontados."
+
 #: rml:som_estalvi/report/components/resum_facturacio_anual.mako:64
 msgid ""
 "No incloem el lloguer del comptador i els impostos. Dades dels últims 12 "
@@ -569,8 +582,8 @@ msgid ""
 msgstr "No incluimos el alquiler del contador y los impuestos. Datos de los últimos 12 meses facturados."
 
 #: rml:som_estalvi/report/components/som_serveis_box.mako:8
-msgid "Coneixeu el "
-msgstr "¿Conocéis el "
+msgid "Recordeu que amb el "
+msgstr "Recordad que con el "
 
 #: rml:som_estalvi/report/components/som_serveis_box.mako:8
 msgid "https://somserveis.coop/"
@@ -582,6 +595,6 @@ msgstr "proyecto Som Serveis"
 
 #: rml:som_estalvi/report/components/som_serveis_box.mako:8
 msgid ""
-"Energia renovable, telefonia conscient i mobilitat sostenible per a empreses"
-" amb propòsit"
-msgstr "Energía renovable, telefonia consciente y mobilidad sostenible para empresas con propósito."
+" podeu transformar la telefonia i la mobilitat de la vostra empresa de la mà"
+" de dues cooperatives amigues."
+msgstr " podéis transformar la telefonía y la movilidad de vuestra empresa de la mano de dos cooperativas amigas."
