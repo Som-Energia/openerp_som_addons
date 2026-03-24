@@ -259,8 +259,12 @@ class GiscedataFacturacioValidationValidator(osv.osv):
         tarifa_acces = fact.tarifa_acces_id.name
         tarifa_comer = fact.polissa_id.llista_preu.name
         autoconsum = fact.polissa_id.autoconsum
-        limit_days = parameters.get("som_skip_if_20TD_00_and_less_than", False)
-        if (limit_days is not False
+        limit_days = parameters.get("som_skip_if_20TD_00_and_less_than_days", None)
+        try:
+            limit_days = int(limit_days)
+        except (ValueError):
+            limit_days = None
+        if (limit_days is not None
             and fact.dies <= limit_days
             and tarifa_acces == '2.0TD'
             and tarifa_comer == '2.0TD_SOM'
