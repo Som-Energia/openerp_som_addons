@@ -392,10 +392,10 @@ class ReportBackendCondicionsParticulars(ReportBackend):
             pricelist['omie_mon_price_45'] = omie_mon_price_45
 
             start_date_iva_10 = cfg_obj.get(
-                cursor, uid, 'charge_iva_10_percent_when_start_date', '2021-06-01'
+                cursor, uid, 'charge_iva_10_percent_when_start_date', '2026-03-22'
             )
             end_date_iva_10 = cfg_obj.get(
-                cursor, uid, 'iva_reduit_get_tariff_prices_end_date', '2024-12-31'
+                cursor, uid, 'charge_iva_10_percent_end_date', '2026-06-30'
             )
             iva_10_active = eval(cfg_obj.get(
                 cursor, uid, 'charge_iva_10_percent_when_available', '0'
@@ -403,10 +403,10 @@ class ReportBackendCondicionsParticulars(ReportBackend):
 
             text_impostos = ''
             if not pol.fiscal_position_id and not lead:
-                if iva_10_active and pol.potencia <= 10 and dades_tarifa['date_start'] >= start_date_iva_10 and dades_tarifa['date_start'] <= end_date_iva_10 and omie_mon_price_45:  # noqa: E501
+                if iva_10_active and pol.potencia <= 10 and dades_tarifa['date_start'] >= start_date_iva_10 and dades_tarifa['date_start'] <= end_date_iva_10:  # noqa: E501
                     fp_id = imd_obj.get_object_reference(
                         cursor, uid, 'som_polissa_condicions_generals', 'fp_iva_reduit')[1]
-                    text_impostos = " (IVA 10%, IE 5,11%)"
+                    text_impostos = " (IVA 10%, IE 0,5%)"
                     ctx.update({'force_fiscal_position': fp_id})
                 else:
                     text_impostos = " (IVA 21%, IE 5,11%)"
