@@ -219,8 +219,8 @@
         <b>${_(u"Tipus percepció:")}</b> ${_(u"Guany en espècie")}</p>
       </div>
     </div>
-    <p style="padding-top:15px;"><b>${_(u"Saldo a 31 de desembre de ")}${data.year}:</b> ${formatLang(data.balance, monetary=True)} €</p>
   </div>
+  <p style="padding-top:15px;padding-left:10px;padding-bottom:3px;"><b>${_(u"Saldo a 31 de desembre de ")}${data.year}:</b> ${formatLang(data.balance, monetary=True)} €</p>
 </div>
 <div>
   <div class="footer">
