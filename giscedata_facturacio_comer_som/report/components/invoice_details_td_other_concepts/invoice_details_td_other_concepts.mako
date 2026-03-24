@@ -182,6 +182,9 @@ TABLA_101 = {
                     ${_(u"%s kWh x 0,0005 €/kWh (aplicant Art 99.2 de la Llei 28/2014 sense bonificació del 85%%)") % (formatLang(l['base_iese']))}
                 % elif l.tax_type == 'excempcio':
                     ${_(u"%s € x 0,5%%") % (formatLang(l['base_iese']))}
+                % elif l.tax_type == '0.5percent2026':
+                    ${_(u"%s € x 0,5%%") % (formatLang(l['base_iese']))}
+                    ${_(u"En virtut del Reial Decret-llei 7/2026, del 20 de març, l'impost especial sobre l'electricitat aplicable a la factura es troba reduït del 5,11269632% al 0,5% o 1% segons la tipologia d'ús del subministrament.")}
                 % else:
                     ${_(u"%s € x 5,11269%%") % (formatLang(l['base_iese']))}
                 % endif
