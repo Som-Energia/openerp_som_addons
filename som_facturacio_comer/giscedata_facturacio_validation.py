@@ -258,7 +258,7 @@ class GiscedataFacturacioValidationValidator(osv.osv):
     def check_exceding_days(self, cursor, uid, fact, parameters):
         tarifa_acces = fact.tarifa_acces_id.name
         tarifa_comer = fact.polissa_id.llista_preu.name
-        autoconsum = fact.polissa_id.autoconsum
+        autoconsum = fact.polissa_id.autoconsumo
         limit_days = parameters.get("som_skip_if_20TD_00_and_less_than_days", None)
         try:
             limit_days = int(limit_days)
