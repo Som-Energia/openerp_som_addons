@@ -417,6 +417,10 @@
                 ${_(u"Tots els preus que apareixen en aquest contracte")}
             %endif
             ${_(u"inclouen l'impost elèctric i l'IVA (IGIC a Canàries), amb el tipus impositiu vigent actualment per a cada tipus de contracte sense perjudici de les exempcions o bonificacions que puguin ser d'aplicació.")}
+            %if polissa['te_assignacio_gkwh'] or ((polissa['mode_facturacio'] == 'atr' and not polissa['modcon_pendent_indexada']) or polissa['modcon_pendent_periodes']):
+                <br/>
+                ${_(u"Els costos dels Serveis d'Ajust tenen un preu horari variable, fixat per Red Eléctrica Española (REE).")}
+            %endif
         </div>
     </div>
 </%def>
