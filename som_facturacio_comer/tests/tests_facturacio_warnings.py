@@ -9,8 +9,8 @@ from destral.transaction import Transaction
 
 class TestsFacturesValidation(testing.OOTestCase):
     def setUp(self):
-        self.openerp.pool.get("giscedata.facturacio.factura")
-        self.openerp.pool.get("giscedata.facturacio.factura.linia")
+        self.fact_obj = self.openerp.pool.get("giscedata.facturacio.factura")
+        self.fact_linia_obj = self.openerp.pool.get("giscedata.facturacio.factura.linia")
         warn_obj = self.openerp.pool.get("giscedata.facturacio.validation.warning.template")
         self.imd_obj = self.openerp.pool.get("ir.model.data")
         self.pol_obj = self.openerp.pool.get("giscedata.polissa")
@@ -133,10 +133,9 @@ class TestsFacturesValidation(testing.OOTestCase):
         return measure_obj.create(self.txn.cursor, self.txn.user, vals)
 
     def modify_invoice(self, fact_id, pol_id, start, end, amount=1):
-        fact_obj = self.model("giscedata.facturacio.factura")
         attach_obj = self.openerp.pool.get('ir.attachment')
 
-        fact_obj.write(
+        self.fact_obj.write(
             self.txn.cursor,
             self.txn.user,
             fact_id,
@@ -187,14 +186,9 @@ class TestsFacturesValidation(testing.OOTestCase):
         wiz_mod.action_crear_contracte(ctx)
 
     def create_inv_line(self, inv_id, quantity):
-        cursor = self.txn.cursor
-        uid = self.txn.user
-        pool = self.openerp.pool
-        linia_obj = pool.get("giscedata.facturacio.factura.linia")
-
-        linia_obj.create(
-            cursor,
-            uid,
+        self.fact_linia_obj.create(
+            self.txn.cursor,
+            self.txn.user,
             {
                 "name": "Linia 1",
                 "tipus": "energia",
@@ -358,3 +352,90 @@ class TestsFacturesValidation(testing.OOTestCase):
         self.crear_modcon(pol_id, 5, "2017-02-18", "2018-02-17")
         warnings = self.validation_warnings(inv_id)
         expect(warnings).to(contain("SF03"))
+
+    def test_check_exceding_days_overwrite__No(self):
+        pol_id = self.get_fixture("giscedata_polissa", "polissa_0001")
+        self.prepare_contract(pol_id, "2017-01-01", "2017-02-18")
+        inv_id = self.get_fixture("giscedata_facturacio", "factura_0001")
+        self.modify_invoice(inv_id, pol_id, "2017-02-18", "2017-03-17")
+        params = {
+            "inc_days_maximeter": 1,
+            "n_days_bimensual": 10,
+            "n_days_first_invoice": 14,
+            "n_days_mensual": 10,
+            "n_days_not_estimable": 14
+        }
+        fact = self.fact_obj.browse(self.txn.cursor, self.txn.user, inv_id)
+        result = self.vali_obj.check_exceding_days(self.txn.cursor, self.txn.user, fact, params)
+        self.assertEqual(result, None)
+
+    def test_check_exceding_days_overwrite__Yes(self):
+        pol_id = self.get_fixture("giscedata_polissa", "polissa_0001")
+        self.prepare_contract(pol_id, "2017-01-01", "2017-02-18")
+        inv_id = self.get_fixture("giscedata_facturacio", "factura_0001")
+        self.modify_invoice(inv_id, pol_id, "2017-02-11", "2017-03-27")
+        params = {
+            "inc_days_maximeter": 1,
+            "n_days_bimensual": 10,
+            "n_days_first_invoice": 14,
+            "n_days_mensual": 10,
+            "n_days_not_estimable": 14
+        }
+        fact = self.fact_obj.browse(self.txn.cursor, self.txn.user, inv_id)
+        result = self.vali_obj.check_exceding_days(self.txn.cursor, self.txn.user, fact, params)
+        expected = {
+            u'polissa_state': u'activa',
+            u'expected_days': 28,
+            u'margin': 10,
+            u'actual_days': 45
+        }
+        self.assertEqual(result, expected)
+
+    def test_check_exceding_days_overwrite__Yes_but_jumped(self):
+        pol_id = self.get_fixture("giscedata_polissa", "polissa_0001")
+        self.prepare_contract(pol_id, "2017-01-01", "2017-02-18")
+
+        inv_id = self.get_fixture("giscedata_facturacio", "factura_0001")
+        self.modify_invoice(inv_id, pol_id, "2017-02-11", "2017-03-27")
+        params = {
+            "som_skip_if_20TD_00_and_less_than_days": 69,
+            "inc_days_maximeter": 1,
+            "n_days_bimensual": 10,
+            "n_days_first_invoice": 14,
+            "n_days_mensual": 10,
+            "n_days_not_estimable": 14
+        }
+        fact = self.fact_obj.browse(self.txn.cursor, self.txn.user, inv_id)
+        fact.tarifa_acces_id.name = u'2.0TD'
+        fact.polissa_id.llista_preu.name = u'2.0TD_SOM'
+        fact.polissa_id.autoconsumo = u'00'
+        result = self.vali_obj.check_exceding_days(self.txn.cursor, self.txn.user, fact, params)
+        self.assertEqual(result, None)
+
+    def test_check_exceding_days_overwrite__Yes_but_not_jumped(self):
+        pol_id = self.get_fixture("giscedata_polissa", "polissa_0001")
+        self.prepare_contract(pol_id, "2017-01-01", "2017-02-18")
+
+        inv_id = self.get_fixture("giscedata_facturacio", "factura_0001")
+        self.modify_invoice(inv_id, pol_id, "2017-02-11", "2017-03-27")
+        params = {
+            "som_skip_if_20TD_00_and_less_than_days": 33,
+            "inc_days_maximeter": 1,
+            "n_days_bimensual": 10,
+            "n_days_first_invoice": 14,
+            "n_days_mensual": 10,
+            "n_days_not_estimable": 14
+        }
+        fact = self.fact_obj.browse(self.txn.cursor, self.txn.user, inv_id)
+        fact.tarifa_acces_id.name = u'2.0TD'
+        fact.polissa_id.llista_preu.name = u'2.0TD_SOM'
+        fact.polissa_id.autoconsumo = u'00'
+
+        result = self.vali_obj.check_exceding_days(self.txn.cursor, self.txn.user, fact, params)
+        expected = {
+            u'polissa_state': u'activa',
+            u'expected_days': 28,
+            u'margin': 10,
+            u'actual_days': 45
+        }
+        self.assertEqual(result, expected)
