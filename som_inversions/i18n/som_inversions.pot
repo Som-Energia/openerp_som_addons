@@ -1879,7 +1879,7 @@ msgid "Dinerària"
 msgstr ""
 
 #: rml:som_inversions/report/report_retencions_interessos.mako:223
-msgid "Saldo a "
+msgid "Saldo a 31 de desembre de "
 msgstr ""
 
 #: rml:som_inversions/report/report_retencions_interessos.mako:228

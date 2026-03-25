@@ -150,8 +150,8 @@
   <div class="fila">
     <div class="LogoPpal">
       <a href="https://www.somenergia.coop" target="_blank">
-        <img src="${addons_path}/som_assets/img/logo.svg" width="150" height="150"/ alt="Logo Som Energia"></a><br>
-      <p class="sotalogo"><b>${data.somenergia.partner_name}</b><br>${_(u"CIF:")} ${data.somenergia.partner_vat.replace('ES','')}<br>${_(u"Domicili:")} ${data.somenergia.address_street} ${data.somenergia.address_zip} - ${data.somenergia.address_city}<br>
+        <img src="${addons_path}/som_assets/img/logo.svg" width="228" height="150"/ alt="Logo Som Energia"></a><br>
+      <p class="sotalogo"><b><br>${data.somenergia.partner_name}</b><br>${_(u"CIF:")} ${data.somenergia.partner_vat.replace('ES','')}<br>${_(u"Domicili:")} ${data.somenergia.address_street} ${data.somenergia.address_zip} - ${data.somenergia.address_city}<br>
         ${_(u"Adreça electrònica:")} aporta@somenergia.coop
     </div>
   </div>
@@ -212,8 +212,8 @@
         <b>${_(u"Tipus percepció:")}</b> ${_(u"Dinerària")}</p>
       </div>
     </div>
-    <p style="padding-top:15px;"><b>${_(u"Saldo a ")}${formatLang(data.date_last_date_previous_year, date=True)}:</b> ${formatLang(data.balance, monetary=True)} €</p>
   </div>
+  <p style="padding-top:15px;padding-left:10px;padding-bottom:3px;"><b>${_(u"Saldo a 31 de desembre de ")}${data.year}:</b> ${formatLang(data.balance, monetary=True)} €</p>
 </div>
 <div>
   <div class="footer">
