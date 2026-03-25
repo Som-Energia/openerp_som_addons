@@ -411,7 +411,7 @@ class ReportBackendCondicionsParticulars(ReportBackend):
                     text_impostos = " (IVA 10%, IE 0,5%)"
                     ctx.update({'force_fiscal_position': fp_id})
                 else:
-                    text_impostos = " (IVA 21%, IE 5,11%)"
+                    text_impostos = " (IVA 21%, IE 0,5%)"
 
             pricelist['text_impostos'] = text_impostos
 
