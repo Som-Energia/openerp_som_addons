@@ -262,7 +262,7 @@ class GiscedataFacturacioValidationValidator(osv.osv):
         limit_days = parameters.get("som_skip_if_20TD_00_and_less_than_days", None)
         try:
             limit_days = int(limit_days)
-        except (ValueError):
+        except (ValueError, TypeError):
             limit_days = None
         if (limit_days is not None
             and fact.dies <= limit_days
