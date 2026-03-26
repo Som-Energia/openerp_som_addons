@@ -9,7 +9,7 @@
             <field name="inherit_id" ref="giscere_facturacio.view_factura_giscere_tree"/>
             <field name="arch" type="xml">
                 <field name="origin_date_invoice" position="after">
-                    <field name="payment_order_id" select="2"/>
+                    <field name="group_move_id" select="2"/>
                 </field>
             </field>
         </record>
