@@ -445,7 +445,7 @@ class GiscedataPolissa(osv.osv):
             required=False,
             readonly=True,
             store=_STORE_STATE_009,
-            multi="autoreclama",
+            multi="autoreclama009",
         ),
         "autoreclama009_state_date": fields.function(
             _get_last_autoreclama009_state_from_history,
@@ -455,7 +455,7 @@ class GiscedataPolissa(osv.osv):
             required=False,
             readonly=True,
             store=_STORE_STATE_009,
-            multi="autoreclama",
+            multi="autoreclama009",
         ),
         "autoreclama009_history_ids": fields.one2many(
             "som.autoreclama.state.history.polissa009",

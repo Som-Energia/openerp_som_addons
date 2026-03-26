@@ -6,6 +6,11 @@
             <field name="value">120</field>
             <field name="description">Dies a cercar cap en radera els R1 006 d'una polissa per el sistema autoreclama</field>
         </record>
+        <record model="res.config" id="som_autoreclama_2_009_in_a_row_days_ago" forcecreate="1">
+            <field name="name">som_autoreclama_2_009_in_a_row_days_ago</field>
+            <field name="value">120</field>
+            <field name="description">Dies a cercar cap en radera els R1 009 d'una polissa per el sistema autoreclama</field>
+        </record>
         <record model="res.config" id="som_autoreclama_web_client_base_url" forcecreate="1">
             <field name="name">som_autoreclama_web_client_base_url</field>
             <field name="value">https://somenergia.coop/</field>

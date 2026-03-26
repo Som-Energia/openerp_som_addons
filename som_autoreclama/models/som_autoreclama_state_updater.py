@@ -264,6 +264,9 @@ class SomAutoreclamaStateUpdater(osv.osv_memory):
         context['days_ago_R1006'] = int(cfg_obj.get(
             cursor, uid, "som_autoreclama_2_006_in_a_row_days_ago", "120")
         )
+        context['days_ago_R1009'] = int(cfg_obj.get(
+            cursor, uid, "som_autoreclama_2_009_in_a_row_days_ago", "120")
+        )
         item_data = item_obj.get_autoreclama_data(cursor, uid, item_id, namespace, context)
 
         autoreclama_state = _namespaces[namespace]['state_field']
@@ -319,14 +322,14 @@ class SomAutoreclamaStateUpdater(osv.osv_memory):
             cursor, uid, atc_ids, "atc", False, context)
 
         pol_ids = self.get_polissa_candidates_to_update(cursor, uid, "polissa", context)
-        a, b, c, pol_msg, pol_sum = self.update_items_if_possible(
+        a, b, c, pol006_msg, pol006_sum = self.update_items_if_possible(
             cursor, uid, pol_ids, "polissa", False, context)
 
         pol_ids = self.get_polissa_candidates_to_update(cursor, uid, "polissa009", context)
-        a, b, c, pol_msg, pol_sum = self.update_items_if_possible(
+        a, b, c, pol009_msg, pol009_sum = self.update_items_if_possible(
             cursor, uid, pol_ids, "polissa009", False, context)
 
-        return "\n\n".join([atc_sum, pol_sum, atc_msg, pol_msg])
+        return "\n\n".join([atc_sum, pol006_sum, pol009_sum, atc_msg, pol006_msg, pol009_msg])
 
     def _cronjob_state_updater_mail_text(self, cursor, uid, data=None, context=None):
         if not data:

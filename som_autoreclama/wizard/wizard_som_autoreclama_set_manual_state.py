@@ -29,9 +29,9 @@ class WizardSomAutoreclamaSetManualState(osv.osv_memory):
         namespace = context.get("namespace", "atc")
         if namespace == "atc":
             return '029'
-        elif namespace == "polissa":
+        if namespace == "polissa":
             return '006'
-        elif namespace == "polissa009":
+        if namespace == "polissa009":
             return '009'
         return ''
 
