@@ -451,7 +451,7 @@ class ReportBackendMailcanvipreus(ReportBackend):
         return gurb_cups_id
 
     def getEstimacioData(self, cursor, uid, env, context=False):
-        PRICE_CHANGE_DATE = "2026-01-01"
+        PRICE_CHANGE_DATE = "2026-05-01"
 
         potencies = self.getPotenciesPolissa(cursor, uid, env.polissa_id)
 
