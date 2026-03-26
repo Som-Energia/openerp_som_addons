@@ -2035,6 +2035,8 @@ class GiscedataFacturacioFacturaReport(osv.osv):
                 return "0.5euroMWh"
             elif l.tax_id.description and l.tax_id.description.startswith("IESE_RD_17_2021_85"):
                 return "excempcio"
+            elif l.tax_id.description == "IESE_RD_7_2026":
+                return "0.5percent2026"
             return "5.11percent"
 
         lines_extra_ids = self.get_all_lines_in_extralines(pol)
