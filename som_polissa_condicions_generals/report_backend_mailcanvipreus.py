@@ -352,7 +352,8 @@ class ReportBackendMailcanvipreus(ReportBackend):
                 and polissa_id.modcontractuals_ids[0].mode_facturacio == 'atr'):
             ctx["force_pricelist"] = polissa_id.modcontractuals_ids[0].llista_preu.id
         # bo_social_price = 2.299047  # 2024
-        bo_social_price = 4.650987  # 2025
+        # bo_social_price = 4.650987  # 2025
+        bo_social_price = 6.979247  # 2026  # FIXME: Això s'ha d'agafar del ERP D:
         preu_estimat_servei_ajust = 0.028  # FIXME: Això segurament haurà d'anar a un altre lloc
         types = {"tp": potencies or {}, "te": consums or {}}
         imports = 0
