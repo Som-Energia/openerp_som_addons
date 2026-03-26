@@ -422,9 +422,10 @@ class ReportBackendMailcanvipreus(ReportBackend):
             )
         return conany
 
+    # FIMXE: tot hardcoded hahahaha salu2
     def calcularImpostosPerCostAnualEstimat(self, preu, fiscal_position, context=False):
         iva = 0.1 if context and context.get('iva10') else 0.21
-        impost_electric = 0.05112696
+        impost_electric = 0.005
         if fiscal_position:
             if fiscal_position.id in [33, 47, 56, 52, 61, 38, 21, 19, 87, 89, 94, 97, 99, 101]:
                 iva = 0.03
