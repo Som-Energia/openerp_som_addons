@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Som Energia\n"
 "Report-Msgid-Bugs-To: support@openerp.com\n"
-"POT-Creation-Date: 2026-03-24 09:36+0000\n"
-"PO-Revision-Date: 2026-03-24 10:57+0000\n"
+"POT-Creation-Date: 2026-03-27 14:54+0000\n"
+"PO-Revision-Date: 2026-03-27 13:56+0000\n"
 "Last-Translator: Som Energia <itcrowd@somenergia.coop>\n"
 "Language-Team: Spanish (Spain) (http://trad.gisce.net/projects/p/somenergia/language/es_ES/)\n"
 "MIME-Version: 1.0\n"
@@ -582,19 +582,19 @@ msgid ""
 msgstr "No incluimos el alquiler del contador y los impuestos. Datos de los últimos 12 meses facturados."
 
 #: rml:som_estalvi/report/components/som_serveis_box.mako:8
-msgid "Recordeu que amb el "
-msgstr "Recordad que con el "
-
-#: rml:som_estalvi/report/components/som_serveis_box.mako:8
-msgid "https://somserveis.coop/"
-msgstr "https://somserveis.coop/es/home-es/"
-
-#: rml:som_estalvi/report/components/som_serveis_box.mako:8
-msgid "projecte Som Serveis"
-msgstr "proyecto Som Serveis"
+msgid ""
+"El RDL 7/2026 elimina durant el 2026 la limitació d'un canvi de potències "
+"cada 12 mesos pels contractes d'empreses i persones d'alta al RETA. A més, "
+"els canvis són gratuïts excepte si s'augmenta la potència màxima o cal "
+"canviar el comptador. Podeu consultar-ne els detalls "
+msgstr "El RDL 7/2026 elimina durante 2026 la limitación de un cambio de potencias cada 12 meses para los contratos de empresas y personas de alta al RETA. Además, los cambios son gratuitos excepto si se aumenta la potencia máxima o es necesario cambiar el contador. Podéis consultar los detalles "
 
 #: rml:som_estalvi/report/components/som_serveis_box.mako:8
 msgid ""
-" podeu transformar la telefonia i la mobilitat de la vostra empresa de la mà"
-" de dues cooperatives amigues."
-msgstr " podéis transformar la telefonía y la movilidad de vuestra empresa de la mano de dos cooperativas amigas."
+"https://ca.support.somenergia.coop/article/1270-modificacions-temporals-de-"
+"potencia-rdl-7-2026"
+msgstr "https://es.support.somenergia.coop/article/1271-modificaciones-temporales-de-potencia-rdl7-2026"
+
+#: rml:som_estalvi/report/components/som_serveis_box.mako:8
+msgid "aquí"
+msgstr "aquí"

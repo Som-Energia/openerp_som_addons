@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OpenERP Server 5.0.14\n"
 "Report-Msgid-Bugs-To: support@openerp.com\n"
-"POT-Creation-Date: 2026-03-24 09:36+0000\n"
-"PO-Revision-Date: 2026-03-24 09:36+0000\n"
+"POT-Creation-Date: 2026-03-27 14:54+0000\n"
+"PO-Revision-Date: 2026-03-27 14:54+0000\n"
 "Last-Translator: <>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -577,19 +577,19 @@ msgid ""
 msgstr ""
 
 #: rml:som_estalvi/report/components/som_serveis_box.mako:8
-msgid "Recordeu que amb el "
-msgstr ""
-
-#: rml:som_estalvi/report/components/som_serveis_box.mako:8
-msgid "https://somserveis.coop/"
-msgstr ""
-
-#: rml:som_estalvi/report/components/som_serveis_box.mako:8
-msgid "projecte Som Serveis"
+msgid ""
+"El RDL 7/2026 elimina durant el 2026 la limitació d'un canvi de potències"
+" cada 12 mesos pels contractes d'empreses i persones d'alta al RETA. A "
+"més, els canvis són gratuïts excepte si s'augmenta la potència màxima o "
+"cal canviar el comptador. Podeu consultar-ne els detalls "
 msgstr ""
 
 #: rml:som_estalvi/report/components/som_serveis_box.mako:8
 msgid ""
-" podeu transformar la telefonia i la mobilitat de la vostra empresa de la"
-" mà de dues cooperatives amigues."
+"https://ca.support.somenergia.coop/article/1270-modificacions-temporals-"
+"de-potencia-rdl-7-2026"
+msgstr ""
+
+#: rml:som_estalvi/report/components/som_serveis_box.mako:8
+msgid "aquí"
 msgstr ""
