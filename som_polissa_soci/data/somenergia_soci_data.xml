@@ -18,6 +18,7 @@
             <field name="name">Campanya 15 anys</field>
             <field name="ref">S999997</field>
             <field name="vat">ES99999997E</field>
+            <field name="category_id" eval="[(6,0,[ref('som_partner_account.res_partner_category_soci')])]"/>
         </record>
         <!-- Soci -->
         <record id="soci_15_anys" model="somenergia.soci">
