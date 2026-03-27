@@ -472,7 +472,7 @@ msgstr "Reactiva"
 
 #: rml:som_estalvi/report/components/new_web_section_eie.mako:8
 msgid "Estrenem nou disseny de la placa del "
-msgstr "Estrenamos nuevo diseño de la placa del"
+msgstr "Estrenamos nuevo diseño de la placa del "
 
 #: rml:som_estalvi/report/components/new_web_section_eie.mako:8
 msgid "https://www.somenergia.coop/ca/serveis/entitats-i-empreses"
