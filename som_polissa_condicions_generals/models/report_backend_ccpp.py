@@ -342,6 +342,7 @@ class ReportBackendCondicionsParticulars(ReportBackend):
         modcon_pendent_indexada = False
         modcon_pendent_periodes = False
         use_modcon_pricelist = not context.get('ignore_modcon_pricelist', False)
+        res['use_modcon_pricelist'] = use_modcon_pricelist
         if use_modcon_pricelist and pol.state != 'esborrany':
             ultima_modcon = pol.modcontractuals_ids[0]
             modcon_pendent_indexada = ultima_modcon.state == 'pendent' and \
