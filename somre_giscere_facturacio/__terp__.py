@@ -2,7 +2,7 @@
 {
     "name": "GISCE RE Facturacio Som Energia",
     "description": """Mòdul per Facturació de contractes de Representació a Som Energia""",
-    "version": "24.5.0",
+    "version": "0-dev",
     "author": "GISCE",
     "category": "RE",
     "depends": [

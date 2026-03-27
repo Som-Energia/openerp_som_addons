@@ -3,7 +3,7 @@
     "name": "Giscedata Facturació Factura (SomEnergia)",
     "description": """Este módulo añade las siguientes funcionalidades:
     * Extiende giscedata_facturacio""",
-    "version": "24.5.0",
+    "version": "0-dev",
     "author": "SomEnergia",
     "category": "GISCE extend",
     "depends": [

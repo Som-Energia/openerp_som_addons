@@ -3,7 +3,7 @@
     "name": "Mòdul per gestionar els canvis a facturació indexada",
     "description": """
     """,
-    "version": "24.5.0",
+    "version": "0-dev",
     "author": "SomEnergia",
     "category": "SomEnergia",
     "depends": [
