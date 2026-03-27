@@ -3615,7 +3615,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
             "showing_periods": showing_periods,
             "excess_data": excess_data,
             "is_visible": True,
-            "header_multi": 4 * (len(excess_data)),
+            "header_multi": 3 * (len(excess_data)),
             "iva_column": has_iva_column(fact),
         }
         return data
