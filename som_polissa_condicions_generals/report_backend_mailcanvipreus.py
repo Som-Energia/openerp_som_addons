@@ -436,8 +436,12 @@ class ReportBackendMailcanvipreus(ReportBackend):
         imp_value = 21
         if fiscal_position:
             if fiscal_position.id in [33, 47, 56, 52, 61, 38, 21, 19, 87, 89, 94, 97, 99, 101]:
-                imp_str = "IGIC del 3%"
-                imp_value = 3
+                if context and context.get('iva10'):
+                    imp_str = "IGIC del 0%"
+                    imp_value = 0
+                else:
+                    imp_str = "IGIC del 3%"
+                    imp_value = 3
             if fiscal_position.id in [34, 48, 53, 57, 53, 62, 39, 25, 88, 90, 98, 100]:
                 imp_str = "IGIC del 0%"
                 imp_value = 0
