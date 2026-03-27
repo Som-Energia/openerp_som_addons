@@ -441,6 +441,52 @@ class TestsFacturesValidation(testing.OOTestCase):
         }
         self.assertEqual(result, expected)
 
+    def test_check_exceding_days_overwrite__not_jumped_wrong_tarifa(self):
+        """Skip no s'aplica si tarifa_acces != 2.0TD"""
+        pol_id = self.get_fixture("giscedata_polissa", "polissa_0001")
+        self.prepare_contract(pol_id, "2017-01-01", "2017-02-18")
+        inv_id = self.get_fixture("giscedata_facturacio", "factura_0001")
+        self.modify_invoice(inv_id, pol_id, "2017-02-11", "2017-03-27")
+        params = {
+            "som_skip_if_20TD_00_and_less_than_days": 69,
+            "inc_days_maximeter": 1,
+            "n_days_bimensual": 10,
+            "n_days_first_invoice": 14,
+            "n_days_mensual": 10,
+            "n_days_not_estimable": 14
+        }
+        fact = self.fact_obj.browse(self.txn.cursor, self.txn.user, inv_id)
+        fact.tarifa_acces_id.name = u'3.0TD'  # <-- diferent!
+        fact.polissa_id.llista_preu.name = u'2.0TD_SOM'
+        fact.polissa_id.autoconsumo = u'00'
+        result = self.vali_obj.check_exceding_days(
+            self.txn.cursor, self.txn.user, fact, params
+        )
+        self.assertIsNotNone(result)
+
+    def test_check_exceding_days_overwrite__not_jumped_with_autoconsum(self):
+        """Skip no s'aplica si autoconsum != 00"""
+        pol_id = self.get_fixture("giscedata_polissa", "polissa_0001")
+        self.prepare_contract(pol_id, "2017-01-01", "2017-02-18")
+        inv_id = self.get_fixture("giscedata_facturacio", "factura_0001")
+        self.modify_invoice(inv_id, pol_id, "2017-02-11", "2017-03-27")
+        params = {
+            "som_skip_if_20TD_00_and_less_than_days": 69,
+            "inc_days_maximeter": 1,
+            "n_days_bimensual": 10,
+            "n_days_first_invoice": 14,
+            "n_days_mensual": 10,
+            "n_days_not_estimable": 14
+        }
+        fact = self.fact_obj.browse(self.txn.cursor, self.txn.user, inv_id)
+        fact.tarifa_acces_id.name = u'2.0TD'
+        fact.polissa_id.llista_preu.name = u'2.0TD_SOM'
+        fact.polissa_id.autoconsumo = u'41'  # <-- té autoconsum!
+        result = self.vali_obj.check_exceding_days(
+            self.txn.cursor, self.txn.user, fact, params
+        )
+        self.assertIsNotNone(result)
+
     @mock.patch('giscedata_facturacio.giscedata_facturacio.GiscedataFacturacioFactura.get_max_consume_by_contract')  # noqa: E501
     def test_check_consume_by_amount_overwrite__Yes(self, get_max_consume_by_contract_mock_function):  # noqa: E501
         get_max_consume_by_contract_mock_function.return_value = 1.0
@@ -508,3 +554,45 @@ class TestsFacturesValidation(testing.OOTestCase):
             u'maximum_consume': 1.0,
         }
         self.assertEqual(result, expected)
+
+    @mock.patch('giscedata_facturacio.giscedata_facturacio.GiscedataFacturacioFactura.get_max_consume_by_contract')  # noqa: E501
+    def test_check_consume_by_amount_overwrite__not_jumped_wrong_tarifa(self, get_max_consume_by_contract_mock_function):  # noqa: E501
+        """Skip no s'aplica si tarifa_acces != 2.0TD"""
+        get_max_consume_by_contract_mock_function.return_value = 1.0
+        pol_id = self.get_fixture("giscedata_polissa", "polissa_0001")
+        self.prepare_contract(pol_id, "2017-01-01", "2017-02-18")
+        inv_id = self.get_fixture("giscedata_facturacio", "factura_0001")
+        self.modify_invoice(inv_id, pol_id, "2017-02-11", "2017-03-27")
+        params = {
+            "som_skip_if_20TD_00_and_less_than_kWh": 1000,
+            "min_periods": 12,
+            "n_months": 12,
+            "overuse_amount": 1.0,
+        }
+        fact = self.fact_obj.browse(self.txn.cursor, self.txn.user, inv_id)
+        fact.tarifa_acces_id.name = u'3.0TD'  # <-- diferent!
+        fact.polissa_id.llista_preu.name = u'2.0TD_SOM'
+        fact.polissa_id.autoconsumo = u'00'
+        result = self.vali_obj.check_consume_by_amount(self.txn.cursor, self.txn.user, fact, params)
+        self.assertIsNotNone(result)
+
+    @mock.patch('giscedata_facturacio.giscedata_facturacio.GiscedataFacturacioFactura.get_max_consume_by_contract')  # noqa: E501
+    def test_check_consume_by_amount_overwrite__not_jumped_with_autoconsum(self, get_max_consume_by_contract_mock_function):  # noqa: E501
+        """Skip no s'aplica si autoconsum != 00"""
+        get_max_consume_by_contract_mock_function.return_value = 1.0
+        pol_id = self.get_fixture("giscedata_polissa", "polissa_0001")
+        self.prepare_contract(pol_id, "2017-01-01", "2017-02-18")
+        inv_id = self.get_fixture("giscedata_facturacio", "factura_0001")
+        self.modify_invoice(inv_id, pol_id, "2017-02-11", "2017-03-27")
+        params = {
+            "som_skip_if_20TD_00_and_less_than_kWh": 1000,
+            "min_periods": 12,
+            "n_months": 12,
+            "overuse_amount": 1.0,
+        }
+        fact = self.fact_obj.browse(self.txn.cursor, self.txn.user, inv_id)
+        fact.tarifa_acces_id.name = u'2.0TD'
+        fact.polissa_id.llista_preu.name = u'2.0TD_SOM'
+        fact.polissa_id.autoconsumo = u'41'  # <-- té autoconsum!
+        result = self.vali_obj.check_consume_by_amount(self.txn.cursor, self.txn.user, fact, params)
+        self.assertIsNotNone(result)
