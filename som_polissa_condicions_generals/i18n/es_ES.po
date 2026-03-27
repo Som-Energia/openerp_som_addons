@@ -656,8 +656,8 @@ msgstr "incluyen el impuesto eléctrico e IVA (IGIC en Canarias), con el tipo im
 #: rml:som_polissa_condicions_generals/report/components/prices_info.mako:419
 msgid ""
 "Els costos dels Serveis d'Ajust tenen un preu horari variable, fixat per "
-"Red Eléctrica Española (REE)."
-msgstr "Los costes de los Servicios de Ajuste tienen un precio horario variable, fijado por Red Eléctrica de España (REE)."
+"Red Eléctrica Española (REE), no inclosos en el terme d'energia."
+msgstr "Los costes de los Servicios de Ajuste tienen un precio horario variable, fijado por Red Eléctrica de España (REE), no incluidos en el término de energía."
 
 #: rml:som_polissa_condicions_generals/report/components/gurb/gurb.mako:3
 msgid "SERVEI CONTRACTAT:"

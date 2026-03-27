@@ -694,7 +694,7 @@ msgstr ""
 #: rml:som_polissa_condicions_generals/report/components/prices_info.mako:422
 msgid ""
 "Els costos dels Serveis d'Ajust tenen un preu horari variable, fixat per "
-"Red Eléctrica Española (REE)."
+"Red Eléctrica Española (REE), no inclosos en el terme d'energia."
 msgstr ""
 
 #: rml:som_polissa_condicions_generals/report/components/gurb/gurb.mako:3
