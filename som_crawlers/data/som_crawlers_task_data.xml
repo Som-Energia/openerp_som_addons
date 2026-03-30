@@ -618,6 +618,12 @@
             <field name="active">True</field>
             <field name="configuracio_id" ref="chilla_ftp_conf"/>
         </record>
+        <!-- Eriste -->
+        <record model="som.crawlers.task" id="descargar_eriste_ftp">
+            <field name="name">Descarregar FTP Eriste</field>
+            <field name="active">True</field>
+            <field name="configuracio_id" ref="eriste_ftp_conf"/>
+        </record>
         <!-- 6eis (formerly aseme) -->
         <record model="som.crawlers.task" id="descarregar_aseme_ftp">
             <field name="name">Descarregar FTP 6eis (abans aseme)</field>
