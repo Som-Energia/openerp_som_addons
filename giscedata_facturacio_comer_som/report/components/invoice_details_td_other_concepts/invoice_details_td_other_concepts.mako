@@ -191,8 +191,8 @@ TABLA_101 = {
                 % if  l.tax_type in ('excempcio', '5.11percent'):
                     %if id.is_excempcio_IE_base:
                         ${_(u" (amb l'exempció del {}% sobre el {}% de Base Imposable IE)").format(
-                            id.percentatges_exempcio_splitted[2].replace('-', ''),
-                            formatLang(id.percentatges_exempcio[0] * 100, digits=1)
+                            formatLang(id.percentatges_exempcio[1] * 100, digits=0),
+                            formatLang(id.percentatges_exempcio[0] * 100, digits=2)
                         )}
                     %else:
                         ${_(u" (amb l'exempció del ")} ${id.excempcio})
