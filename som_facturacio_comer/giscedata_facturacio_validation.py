@@ -204,6 +204,21 @@ class GiscedataFacturacioValidationValidator(osv.osv):
         if pcat_ids and pcat_ids[0] in [x.id for x in fact.polissa_id.category_id]:
             return None
 
+        tarifa_acces = fact.tarifa_acces_id.name
+        tarifa_comer = fact.polissa_id.llista_preu.name
+        autoconsum = fact.polissa_id.autoconsumo
+        limit_kWh = parameters.get("som_skip_if_20TD_00_and_less_than_kWh", None)
+        try:
+            limit_kWh = int(limit_kWh)
+        except (ValueError, TypeError):
+            limit_kWh = None
+        if (limit_kWh is not None
+            and fact.energia_kwh <= limit_kWh
+            and tarifa_acces == '2.0TD'
+            and tarifa_comer == '2.0TD_SOM'
+                and autoconsum == '00'):
+            return None
+
         return super(GiscedataFacturacioValidationValidator, self).check_consume_by_percentage(
             cursor, uid, fact, parameters
         )
@@ -290,6 +305,38 @@ class GiscedataFacturacioValidationValidator(osv.osv):
             GiscedataFacturacioValidationValidator,
             self
         ).check_exceding_days(cursor, uid, fact, parameters)
+
+    def check_invoice_from_delayed_contract(self, cursor, uid, fact, parameters):
+        tarifa_acces = fact.tarifa_acces_id.name
+        tarifa_comer = fact.polissa_id.llista_preu.name
+        autoconsum = fact.polissa_id.autoconsumo
+        last_origens = set(
+            [lect.origen_id.codi for lect in fact.lectures_energia_ids if lect.magnitud == 'AE'])
+        reals = set([
+            '10',  # telemesura
+            '20',  # TPL
+            '30',  # visual
+            '60',  # telegestio
+        ])
+        last_is_real = last_origens <= reals and len(last_origens) > 0
+
+        limit_days = parameters.get("som_skip_if_20TD_00_and_less_than_days", None)
+        try:
+            limit_days = int(limit_days)
+        except (ValueError, TypeError):
+            limit_days = None
+        if (limit_days is not None
+            and fact.dies <= limit_days
+            and tarifa_acces == '2.0TD'
+            and tarifa_comer == '2.0TD_SOM'
+            and last_is_real
+                and autoconsum == '00'):
+            return None
+
+        return super(
+            GiscedataFacturacioValidationValidator,
+            self
+        ).check_invoice_from_delayed_contract(cursor, uid, fact, parameters)
 
 
 GiscedataFacturacioValidationValidator()
