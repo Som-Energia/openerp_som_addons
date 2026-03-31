@@ -216,6 +216,21 @@ class GiscedataFacturacioValidationValidator(osv.osv):
         if pcat_ids and pcat_ids[0] in [x.id for x in fact.polissa_id.category_id]:
             return None
 
+        tarifa_acces = fact.tarifa_acces_id.name
+        tarifa_comer = fact.polissa_id.llista_preu.name
+        autoconsum = fact.polissa_id.autoconsumo
+        limit_kWh = parameters.get("som_skip_if_20TD_00_and_less_than_kWh", None)
+        try:
+            limit_kWh = int(limit_kWh)
+        except (ValueError, TypeError):
+            limit_kWh = None
+        if (limit_kWh is not None
+            and fact.energia_kwh <= limit_kWh
+            and tarifa_acces == '2.0TD'
+            and tarifa_comer == '2.0TD_SOM'
+                and autoconsum == '00'):
+            return None
+
         return super(GiscedataFacturacioValidationValidator, self).check_consume_by_amount(
             cursor, uid, fact, parameters
         )
@@ -254,6 +269,27 @@ class GiscedataFacturacioValidationValidator(osv.osv):
                 }
             )
         return ret
+
+    def check_exceding_days(self, cursor, uid, fact, parameters):
+        tarifa_acces = fact.tarifa_acces_id.name
+        tarifa_comer = fact.polissa_id.llista_preu.name
+        autoconsum = fact.polissa_id.autoconsumo
+        limit_days = parameters.get("som_skip_if_20TD_00_and_less_than_days", None)
+        try:
+            limit_days = int(limit_days)
+        except (ValueError, TypeError):
+            limit_days = None
+        if (limit_days is not None
+            and fact.dies <= limit_days
+            and tarifa_acces == '2.0TD'
+            and tarifa_comer == '2.0TD_SOM'
+                and autoconsum == '00'):
+            return None
+
+        return super(
+            GiscedataFacturacioValidationValidator,
+            self
+        ).check_exceding_days(cursor, uid, fact, parameters)
 
 
 GiscedataFacturacioValidationValidator()
