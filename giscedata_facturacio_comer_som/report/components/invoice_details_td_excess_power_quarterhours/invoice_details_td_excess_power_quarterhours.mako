@@ -45,11 +45,7 @@ count = 1
     % else:
     <tr class="tr_bold last_row">
     % endif
-        % if excess_data['visible_days_month']:
-            <td class="detall_td">${_(u"Excés potència x Preu excés x (%.f/30) dies (del %s al %s)") %(excess_data['days'],excess_data['date_from'], excess_data['date_to'])}</td>
-        % else:
-            <td class="detall_td">${_(u"Excés potència x Preu excés (del %s al %s)") %(excess_data['date_from'], excess_data['date_to'])}</td>
-        % endif
+        <td class="detall_td">${_(u"Excés potència x Preu excés")}</td>
         % for p in id.showing_periods:
             % if p in excess_data:
                 <td>${_(u"%s €") %(formatLang(excess_data[p]["price_subtotal"]))}</td>
