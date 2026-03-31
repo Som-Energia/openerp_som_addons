@@ -11,7 +11,7 @@ class SomAutofacturaTask(osv.osv):
 
     _name = "som.autofactura.task"
 
-    @MultiprocessBackground.background(queue="background_somenergia")
+    @MultiprocessBackground.background(queue="background_autofactura")
     def action_execute_task(self, cursor, uid, ids, context):
         if isinstance(ids, list):
             ids = ids[0]
