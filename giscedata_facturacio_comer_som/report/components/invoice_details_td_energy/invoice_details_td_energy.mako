@@ -156,7 +156,8 @@ first_energy_line = True
 % if id.adjustement_services:
     <tr class="tr_bold">
         <td class="detall_td">
-            ${_(u"Serveis d'Ajust [CCh x [prdemCAD x (1 + Perdues)]]")}
+            ${_(u"Serveis d'Ajust [CCh x [prdemCAD x (1 + Perdues)]]")}<sup class="sup_bold">(2)</sup>
+
         </td>
         % for p in id.showing_periods:
                 <td></td>
