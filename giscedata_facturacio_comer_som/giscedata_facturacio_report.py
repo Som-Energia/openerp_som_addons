@@ -3185,7 +3185,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
             return {
                 "has_autoconsum": te_autoconsum(fact, pol),
                 "has_mag": has_mag,
-                "adjustment_services": self.get_adjustement_services_data(fact),
+                "adjustment_services": self.get_adjustment_services_data(fact),
             }
 
         ok, mag_info = self.mag_get_ajust_topall_gas_info(fact)
@@ -3194,7 +3194,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
                 "has_autoconsum": te_autoconsum(fact, pol),
                 "has_mag": False,
                 "library_error": mag_info.split("\n"),
-                "adjustment_services": self.get_adjustement_services_data(fact),
+                "adjustment_services": self.get_adjustment_services_data(fact),
             }
 
         if (
@@ -3207,7 +3207,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
                 "has_mag": False,
                 "library_error": "no aplica periode de facturacio",
                 "data": mag_info,
-                "adjustment_services": self.get_adjustement_services_data(fact),
+                "adjustment_services": self.get_adjustment_services_data(fact),
             }
 
         data = {
@@ -3221,7 +3221,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
             + mag_info["periode_facturacio"]["preu_mitja_ajust"],
             "majorista_amb_mag": mag_info["periode_facturacio"]["preu_mitja_omie"]
             + mag_info["periode_facturacio"]["preu_mitja_cost_unitari"],
-            "adjustment_services": self.get_adjustement_services_data(fact),
+            "adjustment_services": self.get_adjustment_services_data(fact),
         }
         return data
 
@@ -3270,13 +3270,13 @@ class GiscedataFacturacioFacturaReport(osv.osv):
             ):
                 e["has_discount"] = True
 
-        adjustement_services = self.get_adjustement_services_data(fact)
+        adjustment_services = self.get_adjustment_services_data(fact)
         header_multi = 3 * (len(energy_lines_data) + len(gkwh_energy_lines_data))
         if mag_line_data:
             header_multi += 1
         if auvi_energy_lines_data:
             header_multi += 3
-        if adjustement_services:
+        if adjustment_services:
             header_multi += 1
         data = {
             "energy_lines_data": energy_lines_data,
@@ -3287,11 +3287,11 @@ class GiscedataFacturacioFacturaReport(osv.osv):
             "indexed": pol.mode_facturacio == "index",
             "iva_column": has_iva_column(fact),
             "auvi_energy_lines_data": auvi_energy_lines_data,
-            "adjustement_services": adjustement_services,
+            "adjustment_services": adjustment_services,
         }
         return data
 
-    def get_adjustement_services_data(self, fact):
+    def get_adjustment_services_data(self, fact):
         total = 0
         iva = None
         count = 0
