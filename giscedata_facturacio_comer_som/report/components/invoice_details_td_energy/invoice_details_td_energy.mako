@@ -153,3 +153,17 @@ first_energy_line = True
         % endif
     </tr>
 % endif
+% if id.adjustement_services:
+    <tr class="tr_bold">
+        <td class="detall_td">
+            ${_(u"Serveis d'Ajust [CCh x [prdemCAD x (1 + Perdues)]]")}
+        </td>
+        % for p in id.showing_periods:
+                <td></td>
+        % endfor
+        <td><span class="subtotal">${_(u"%s €") % (formatLang(id.adjustement_services.total))}</span></td>
+        % if id.iva_column:
+            <td>${_(u"%s") % (id.adjustement_services.iva) }</td>
+        % endif
+    </tr>
+% endif
