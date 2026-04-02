@@ -3266,18 +3266,44 @@ class GiscedataFacturacioFacturaReport(osv.osv):
             ):
                 e["has_discount"] = True
 
+        adjustement_services = self.get_adjustement_services_data(fact)
+        header_multi = 3 * (len(energy_lines_data) + len(gkwh_energy_lines_data))
+        if mag_line_data:
+            header_multi += 1
+        if auvi_energy_lines_data:
+            header_multi += 3
+        if adjustement_services:
+            header_multi += 1
         data = {
             "energy_lines_data": energy_lines_data,
             "gkwh_energy_lines_data": gkwh_energy_lines_data,
-            "header_multi": 3 * (len(energy_lines_data) + len(gkwh_energy_lines_data))
-            + (1 if mag_line_data else 0) + (3 if auvi_energy_lines_data else 0),
+            "header_multi": header_multi,
             "showing_periods": self.get_matrix_show_periods(pol),
             "mag_line_data": mag_line_data,
             "indexed": pol.mode_facturacio == "index",
             "iva_column": has_iva_column(fact),
             "auvi_energy_lines_data": auvi_energy_lines_data,
+            "adjustement_services": adjustement_services,
         }
         return data
+
+    def get_adjustement_services_data(self, fact):
+        total = 0
+        iva = None
+        count = 0
+        for l in fact.linia_ids:  # noqa: E741
+            if l.invoice_line_id.product_id.code in ("SAJU", "DSAJU"):
+                total += l.price_subtotal
+                iva = get_iva_line(l)
+                count += 1
+
+        if count:
+            return {
+                "total": total,
+                "iva": iva
+            }
+        else:
+            return None
 
     def get_sub_component_invoice_details_td_energy_tolls_data(self, fact, pol):
         atr_linies_energia = {}  # ATR Peatges Energia dict
