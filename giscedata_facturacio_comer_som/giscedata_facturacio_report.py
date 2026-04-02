@@ -3185,6 +3185,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
             return {
                 "has_autoconsum": te_autoconsum(fact, pol),
                 "has_mag": has_mag,
+                "adjustment_services": self.get_adjustement_services_data(fact),
             }
 
         ok, mag_info = self.mag_get_ajust_topall_gas_info(fact)
@@ -3193,6 +3194,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
                 "has_autoconsum": te_autoconsum(fact, pol),
                 "has_mag": False,
                 "library_error": mag_info.split("\n"),
+                "adjustment_services": self.get_adjustement_services_data(fact),
             }
 
         if (
@@ -3205,6 +3207,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
                 "has_mag": False,
                 "library_error": "no aplica periode de facturacio",
                 "data": mag_info,
+                "adjustment_services": self.get_adjustement_services_data(fact),
             }
 
         data = {
