@@ -3218,6 +3218,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
             + mag_info["periode_facturacio"]["preu_mitja_ajust"],
             "majorista_amb_mag": mag_info["periode_facturacio"]["preu_mitja_omie"]
             + mag_info["periode_facturacio"]["preu_mitja_cost_unitari"],
+            "adjustment_services": self.get_adjustement_services_data(fact),
         }
         return data
 

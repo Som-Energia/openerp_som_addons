@@ -37,6 +37,12 @@ mes_text = mesos_text[id_info.mes_mag_darrer_mes] if id_info.has_mag and id_info
         <br>
         ${_(u"(1) Segons estableix el Reial Decret 244/2019 aquest import no serà mai superior al l'import per energia utilitzada. En cas que la compensació sigui superior a l'energia utilitzada, el terme d'energia serà igual a 0€")}
     % endif
+    % if id_info.adjustment_services:
+        <br>
+        ${_(u"(2) Els costos dels Serveis d'Ajust tenen un preu horari variable, fixat per Red Eléctrica de España (REE), no inclosos en el terme d'energia. Pots consultar aquests preus a la web <a href='https://www.esios.ree.es'>https://www.esios.ree.es</a>")}
+    % endif
+
+
 </td>
 </tr>
 </table>
