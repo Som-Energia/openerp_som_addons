@@ -30,6 +30,12 @@ class GiscedataCrmLead(osv.OsvInherits):
         self.lead_titular_adr_to_adr["titular_phone_prefix"] = "phone_prefix"
         self.lead_titular_adr_to_adr["titular_mobile_prefix"] = "mobile_prefix"
 
+        # remove check_num_tel constraints because only allows 9 digits phone numbers D:
+        self._constraints = [
+            constraint for constraint in self._constraints
+            if constraint[0].__name__ != "check_num_tel_mob_longitude"
+        ]
+
     def contract_pdf(self, cursor, uid, ids, context=None):
         if context is None:
             context = {}

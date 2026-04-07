@@ -1410,3 +1410,24 @@ class TestsSomLeadWww(testing.OOTestCase):
         lead = lead_o.browse(self.cursor, self.uid, result["lead_id"])
         self.assertEqual(lead.polissa_id.titular.name, 'Cognom1 Cognom2, Nom')
         self.assertEqual(lead.polissa_id.direccio_notificacio.name, 'Cognom1 Cognom2, Nom')
+
+    def test_create_lead_with_andorra_phone(self):
+        www_lead_o = self.get_model("som.lead.www")
+        lead_o = self.get_model("giscedata.crm.lead")
+
+        values = self._basic_values
+        values["new_member_info"]["phone"] = "+376 123456"
+
+        result = www_lead_o.create_lead(self.cursor, self.uid, self._basic_values)
+        self.assertFalse(result["error"])
+
+        www_lead_o.activate_lead(self.cursor, self.uid, result["lead_id"], context={"sync": True})
+
+        lead = lead_o.browse(self.cursor, self.uid, result["lead_id"])
+
+        # Check that the phone and prefix are correctly set
+        self.assertEqual(lead.titular_phone, "123456")
+        self.assertEqual(lead.titular_phone_prefix.name, "+376")
+
+        self.assertEqual(lead.polissa_id.direccio_notificacio.phone, "123456")
+        self.assertEqual(lead.polissa_id.direccio_notificacio.phone_prefix.name, "+376")
