@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from osv import osv
 from .tarifes import TARIFFS_FACT
+from libfacturacioatr.pool.tarifes import *
 
 
 class GiscedataFacturacioFacturador(osv.osv):
@@ -73,6 +74,46 @@ class GiscedataFacturacioFacturador(osv.osv):
                     res[date_version]['h'] = polissa.coeficient_h * 0.001  # H is expressed in €/MWh in contract
 
         return res
+
+    # Serveis d'ajust a preu fix
+    def avoid_creating_zero_lines(self, cursor, uid, factura_id, servei_vals, context=None):
+        return 'data_inici' in servei_vals and servei_vals.get('data_inici') < '2026-05-01'
+
+    def phf_calc_servei_ajust(self, cursor, uid, factura, tariff, esios_token, start_date, end_date,
+                              context=None):
+        if context is None:
+            context = {}
+
+        if start_date.strftime("%Y-%m-%d") >= '2026-05-01':
+            postfix = '%s_%s' % (start_date.strftime("%Y%m%d"), end_date.strftime("%Y%m%d"))
+            fname = tariff.perdclass.name
+            perdues = tariff.perdclass('C2_%(fname)s_%(postfix)s' % locals(), esios_token)
+            prdemcad = Prdemcad('C2_prdemcad_%(postfix)s' % locals(), esios_token)  # prdemcad [€/MWh]
+        else:
+            perdues = Component(start_date)
+            prdemcad = Component(start_date)
+
+        A = (prdemcad * 0.001)
+        B = (1 + (perdues * 0.01))
+        C = A * B
+
+        tarifa_class = TARIFFS_FACT[factura.polissa_id.modcontractual_activa.tarifa.name]
+        tarifa = tarifa_class({}, {}, factura.data_inici, factura.data_final)
+        audit_keys = {'prdemcad_sa': 'prdemcad', 'perdues_sa': 'perdues'}
+        for key in ['prdemcad_sa', 'perdues_sa']:
+            if key not in tarifa.audit_data.keys():
+                tarifa.audit_data[key] = []
+            if key not in tarifa.audit_components.keys():
+                tarifa.audit_components[key] = None
+            var_name = audit_keys[key]
+            com = locals()[var_name]
+            tarifa.audit_components[key] = com
+            tarifa.audit_data[key].extend(
+                com.get_audit_data(start=start_date.day)
+            )
+        self.audit_data(cursor, uid, tarifa, factura.id)
+
+        return C
 
 
 GiscedataFacturacioFacturador()
