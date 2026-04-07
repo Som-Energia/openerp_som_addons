@@ -135,7 +135,7 @@ class SomAutofacturaTaskStep(osv.osv):
                 prev_work_not_finish = oorq_obj.search(
                     cursor,
                     uid,
-                    [("active", "=", True), ("name", "ilike", task.autoworker_task_name)],
+                    [("name", "ilike", task.autoworker_task_name)],
                 )
 
         logger.notifyChannel(
