@@ -3,7 +3,6 @@ from __future__ import absolute_import, unicode_literals
 from report_backend.report_backend import ReportBackend, report_browsify
 from mako.template import Template
 from giscedata_facturacio.report.utils import get_atr_price
-from som_extend_facturacio_comer.utils import get_gkwh_atr_price
 from som_indexada.utils import calculate_new_indexed_prices
 from datetime import date, timedelta
 
@@ -288,8 +287,8 @@ class ReportBackendMailcanvipreus(ReportBackend):
 
         gkwh_periodes = sorted(pol.tarifa.get_periodes("te", context=context).keys())
         for periode in gkwh_periodes:
-            preu_periode = get_gkwh_atr_price(
-                cursor, uid, pol, periode, context=context, with_taxes=with_taxes
+            preu_periode = get_atr_price(
+                cursor, uid, pol, periode, 'gkwh', context=context, with_taxes=with_taxes
             )[0]
             result[periode] = preu_periode
         return result

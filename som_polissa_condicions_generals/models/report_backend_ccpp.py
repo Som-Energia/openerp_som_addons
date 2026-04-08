@@ -5,7 +5,6 @@ from report_puppeteer.report_puppeteer import PuppeteerParser
 from datetime import datetime
 from gestionatr.defs import TABLA_9
 from giscedata_facturacio.report.utils import get_atr_price, get_comming_atr_price
-from som_extend_facturacio_comer.utils import get_gkwh_atr_price
 from tools.translate import _
 from giscedata_polissa.report.utils import localize_period
 from som_indexada.utils import get_fs_from_k_change
@@ -446,14 +445,14 @@ class ReportBackendCondicionsParticulars(ReportBackend):
 
             generation_prices = {}
             for p in periodes_energia:
-                generation_prices[p] = get_gkwh_atr_price(
-                    cursor, uid, pol, p, ctx, with_taxes=True)[0]
+                generation_prices[p] = get_atr_price(
+                    cursor, uid, pol, p, 'gkwh', ctx, with_taxes=True)[0]
             pricelist['generation_prices'] = generation_prices
 
             generation_prices_untaxed = {}
             for p in periodes_energia:
-                generation_prices_untaxed[p] = get_gkwh_atr_price(
-                    cursor, uid, pol, p, ctx, with_taxes=False)[0]
+                generation_prices_untaxed[p] = get_atr_price(
+                    cursor, uid, pol, p, 'gkwh', ctx, with_taxes=False)[0]
             pricelist['generation_prices_untaxed'] = generation_prices_untaxed
 
             pricelist['price_auto'] = get_atr_price(
