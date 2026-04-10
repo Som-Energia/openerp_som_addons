@@ -95,7 +95,7 @@ class SomGurbWww(osv.osv_memory):
             distance_from_gurb = compute_haversine_distance(
                 lat_gurb, long_gurb, lat_address, long_address
             )
-            if distance_from_gurb < 1.9:
+            if distance_from_gurb < 4.95:
                 return True
 
         return False
