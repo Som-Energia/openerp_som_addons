@@ -215,7 +215,7 @@ class SomGurbCau(osv.osv):
             res[gurb_cau_id] = {
                 "gift_betas_percentage": gift_betas_percentage,
                 "assigned_betas_kw": assigned_betas_kw,
-                "available_betas_kw": gen_power - assigned_betas_kw,
+                "available_betas_kw": gen_power - assigned_betas_kw - gift_betas_kw,
                 "assigned_betas_percentage": assigned_betas_percentage,
                 "assigned_gift_betas_percentage": assigned_gift_betas_percentage,
                 "extra_betas_kw": extra_betas_kw,
