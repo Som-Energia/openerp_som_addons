@@ -3395,10 +3395,12 @@ class GiscedataFacturacioFacturaReport(osv.osv):
                 - d,  # TODO switch back when lines comes well calculated
             }
         data = charges_lines_energy
-        data["showing_periods"] = self.get_matrix_show_periods(pol)
+        periods = self.get_matrix_show_periods(pol)
+        data["showing_periods"] = periods
         data["header_multi"] = 4 if discount["is_visible"] else 2
         data["iva_column"] = has_iva_column(fact)
         data["is_visible"] = is_visible
+        data["total"] = sum([charges_lines_energy[period]["atr_cargos"] for period in periods if period in charges_lines_energy])  # noqa: E501
         return data
 
     def get_sub_component_data_blocks(self, fact, pol, linies):
@@ -3468,10 +3470,13 @@ class GiscedataFacturacioFacturaReport(osv.osv):
             return {"is_visible": is_visible}
 
         charges_data = self.get_sub_component_data_blocks(fact, pol, linies_energia)
+        periods = self.get_matrix_show_periods(pol)
+        total_charges = sum([sum([charges[period]["preu_cargos"] for period in periods]) for charges in charges_data])  # noqa: E501
         data = {
             "lines_data": charges_data,
+            "total": total_charges,
             "header_multi": 2 * len(charges_data),
-            "showing_periods": self.get_matrix_show_periods(pol),
+            "showing_periods": periods,
             "is_visible": is_visible,
             "iva_column": has_iva_column(fact),
         }
