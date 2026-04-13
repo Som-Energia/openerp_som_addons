@@ -2813,6 +2813,9 @@ class GiscedataFacturacioFacturaReport(osv.osv):
             "energy_charges": self.get_sub_component_invoice_details_td_energy_charges_data(
                 fact, pol, energy_discount_BOE17_2021
             ),
+            "energy_charges_CT": self.get_sub_component_invoice_details_td_energy_charges_CT_data(
+                fact, pol
+            ),
             "other_concepts": self.get_sub_component_invoice_details_td_other_concepts_data(
                 fact, pol
             ),
@@ -3341,6 +3344,10 @@ class GiscedataFacturacioFacturaReport(osv.osv):
         charges_lines_energy = {}
         tarifa_elect_atr = self.get_tarifa_elect_atr(fact, "pricelist_tarifas_cargos_electricidad")
         linies_energia = self.get_real_energy_lines(fact, pol)
+        is_visible = len(self.get_dates_desde(linies_energia)) == 1
+        if not is_visible:
+            return {"is_visible": is_visible}
+
         for l in linies_energia:  # noqa: E741
             if "price_unit_cargos" in l:
                 l_count = Counter(
@@ -3391,6 +3398,83 @@ class GiscedataFacturacioFacturaReport(osv.osv):
         data["showing_periods"] = self.get_matrix_show_periods(pol)
         data["header_multi"] = 4 if discount["is_visible"] else 2
         data["iva_column"] = has_iva_column(fact)
+        data["is_visible"] = is_visible
+        return data
+
+    def get_sub_component_data_blocks(self, fact, pol, linies):
+        lines_data = {}
+        block = 0
+        sorted_linies = sorted(linies, key=attrgetter("data_desde"))
+        data_desde = sorted_linies[0]["data_desde"] if len(sorted_linies) > 0 else None
+        for l in sorted_linies:  # noqa: E741
+            if data_desde != l["data_desde"]:
+                block += 1
+                data_desde = l["data_desde"]
+
+            if block not in lines_data:
+                lines_data[block] = {"total": 0, "multi": 0, "days_per_year": 0}
+
+            days_per_year = (
+                is_leap_year(datetime.strptime(l.data_desde, "%Y-%m-%d").year) and 366 or 365
+            )
+
+            if lines_data.has_key(block) and lines_data[block].has_key(l.name):  # noqa: W601
+                lines_data[block][l.name]["quantity"] = (
+                    lines_data[block][l.name]["quantity"] + l.quantity
+                )
+                lines_data[block][l.name]["price_subtotal"] = (
+                    lines_data[block][l.name]["price_subtotal"] + l.price_subtotal
+                )
+            else:
+                lines_data[block][l.name] = {
+                    "quantity": l.quantity,
+                    "tolls": l.distribucion_price_subtotal,
+                    "atr_cargos": l.cargos_price_subtotal,
+                    "tolls_price_unit": l.price_unit_distribucion,
+                    "preu_cargos": l.price_unit_cargos,
+                    "price_subtotal": l.price_subtotal,
+                    "price_unit_multi": l.price_unit_multi,
+                    "price_unit": l.price_unit,
+                    "extra": l.multi,
+                }
+            lines_data[block]["multi"] = l.multi
+            lines_data[block]["days_per_year"] = days_per_year
+            lines_data[block]["total"] += l.price_subtotal
+            lines_data[block]["data"] = data_desde
+            lines_data[block]["days"] = (
+                datetime.strptime(l.data_fins, "%Y-%m-%d")
+                - datetime.strptime(l.data_desde, "%Y-%m-%d")
+            ).days + 1
+            lines_data[block]["date_from"] = dateformat(l.data_desde)
+            lines_data[block]["date_to_d"] = (
+                val(l.data_fins)
+                if "date_to_d" not in lines_data[block]
+                or lines_data[block]["date_to_d"] > val(l.data_fins)
+                else lines_data[block]["date_to_d"]
+            )
+            lines_data[block]["date_to"] = dateformat(lines_data[block]["date_to_d"])
+            lines_data[block]["iva"] = get_iva_line(l)
+
+        lines_data = [lines_data[k] for k in sorted(lines_data.keys())]
+        return lines_data
+
+    def get_dates_desde(self, linies):
+        return sorted(list(set([linia.data_desde for linia in linies])))
+
+    def get_sub_component_invoice_details_td_energy_charges_CT_data(self, fact, pol):
+        linies_energia = self.get_real_energy_lines(fact, pol)
+        is_visible = len(self.get_dates_desde(linies_energia)) > 1
+        if not is_visible:
+            return {"is_visible": is_visible}
+
+        charges_data = self.get_sub_component_data_blocks(fact, pol, linies_energia)
+        data = {
+            "lines_data": charges_data,
+            "header_multi": 2 * len(charges_data),
+            "showing_periods": self.get_matrix_show_periods(pol),
+            "is_visible": is_visible,
+            "iva_column": has_iva_column(fact),
+        }
         return data
 
     def get_sub_component_invoice_details_td_other_concepts_data(self, fact, pol):
