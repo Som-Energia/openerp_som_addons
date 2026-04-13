@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import base64
+from decimal import Decimal, ROUND_HALF_UP
 from osv import osv, fields
 from datetime import datetime
 
@@ -29,6 +30,7 @@ class WizardCreateCoeficicientsFile(osv.osv_memory):
 
         items = gurb_cups_o.read(cursor, uid, gurb_cups_ids, ['cups_id'], context=context)
 
+        coefs = []
         for item in items:
             if item.get("cups_id"):
                 item["cups"] = item["cups_id"][1]
@@ -42,7 +44,19 @@ class WizardCreateCoeficicientsFile(osv.osv_memory):
                 cursor, uid, item["id"], context=context
             )[item["id"]] / 100
 
-            item["coef"] = "{:1,.6f}".format(beta).replace(".", ",")
+            coefs.append(
+                Decimal(str(beta)).quantize(Decimal('0.000001'), rounding=ROUND_HALF_UP)
+            )
+
+        # Adjust last coef to ensure the sum is exactly 1 (avoids float rounding errors)
+        if coefs:
+            diff = Decimal('1') - sum(coefs)
+            max_rounding_error = Decimal('0.0000005') * len(coefs)
+            if abs(diff) <= max_rounding_error:
+                coefs[-1] += diff
+
+        for item, coef in zip(items, coefs):
+            item["coef"] = str(coef).replace(".", ",")
 
         return items
 
