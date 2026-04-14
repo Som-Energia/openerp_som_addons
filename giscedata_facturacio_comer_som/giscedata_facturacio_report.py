@@ -3370,7 +3370,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
         data["header_multi"] = 4 if discount["is_visible"] else 2
         data["iva_column"] = has_iva_column(fact)
         data["is_visible"] = is_visible
-        data["total"] = sum([charges_lines_energy[period]["atr_cargos"] for period in periods if period in charges_lines_energy])  # noqa: E501
+        data["total"] = sum([round(charges_lines_energy[period]["atr_cargos"], 2) for period in periods if period in charges_lines_energy])  # noqa: E501
         return data
 
     def get_sub_component_data_blocks(self, fact, pol, linies):
@@ -3441,7 +3441,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
 
         charges_data = self.get_sub_component_data_blocks(fact, pol, linies_energia)
         periods = self.get_matrix_show_periods(pol)
-        total_charges = sum([sum([charges[period]["preu_cargos"] for period in periods]) for charges in charges_data])  # noqa: E501
+        total_charges = sum([sum([round(charges[period]["preu_cargos"], 2) for period in periods]) for charges in charges_data])  # noqa: E501
         data = {
             "lines_data": charges_data,
             "total": total_charges,
@@ -3900,12 +3900,15 @@ class GiscedataFacturacioFacturaReport(osv.osv):
         for p_charge in p_charges.keys():
             if p_charge.startswith(u"P"):
                 all_charges += round(p_charges[p_charge]["atr_cargos"], 2)
+
         e_charges = self.get_sub_component_invoice_details_td_energy_charges_data(
             fact, pol, discount_energy
         )
-        for e_charge in e_charges.keys():
-            if e_charge.startswith(u"P"):
-                all_charges += round(e_charges[e_charge]["atr_cargos"], 2)
+        if not e_charges["is_visible"]:
+            e_charges = self.get_sub_component_invoice_details_td_energy_charges_CT_data(
+                fact, pol, discount_energy
+            )
+        all_charges += e_charges["total"]
 
         other_data = self.get_sub_component_invoice_details_td_other_concepts_data(fact, pol)
         if 'compl_info' in other_data and 'energy_lines_data' in other_data['compl_info']:
