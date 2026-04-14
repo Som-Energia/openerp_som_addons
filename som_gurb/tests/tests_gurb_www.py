@@ -186,7 +186,7 @@ class TestsGurbWww(TestsGurbBase):
             "access_tariff": "2.0TD",
             "cups": "ES0021126262693495FV",
             "beta": 2.0,
-            "vat": "37692879L"
+            "vat": "B55129415"
         }
         self._eliminar_GURB_CUPS()
         result = gurb_www_obj.create_new_gurb_cups(
@@ -367,7 +367,7 @@ class TestsGurbWww(TestsGurbBase):
             "access_tariff": "2.0TD",
             "cups": "ES0021126262693495FV",
             "beta": 2.0,
-            "vat": "37692879L"
+            "vat": "B55129415"
         }
 
         ctx = {

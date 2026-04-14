@@ -232,7 +232,7 @@ class TestsGurbSwitching(TestsGurbBase):
         imd_obj = self.openerp.pool.get('ir.model.data')
         generador_obj = self.openerp.pool.get('giscedata.autoconsum.generador')
         partner_address_obj = self.openerp.pool.get('res.partner.address')
-        dades_cau_obj = self.pool.get('giscedata.switching.datos.cau')
+        dades_cau_obj = self.openerp.pool.get('giscedata.switching.datos.cau')
         autoconsum_obj = self.openerp.pool.get('giscedata.autoconsum')
 
         partner_id = imd_obj.get_object_reference(
