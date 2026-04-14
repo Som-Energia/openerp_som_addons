@@ -38,7 +38,7 @@
     <%include file="/giscedata_facturacio_comer_som/report/components/invoice_details_td_energy_generationkwh/invoice_details_td_energy_generationkwh.mako" args="id=id.energy" />
     <%include file="/giscedata_facturacio_comer_som/report/components/invoice_details_td_energy_tolls/invoice_details_td_energy_tolls.mako" args="id=id.energy_tolls" />
     <%include file="/giscedata_facturacio_comer_som/report/components/invoice_details_td_energy_charges/invoice_details_td_energy_charges.mako" args="id=id.energy_charges" />
-    ##<%include file="/giscedata_facturacio_comer_som/report/components/invoice_details_td_energy_tolls_CT/invoice_details_td_energy_tolls_CT.mako" args="id=id.energy_tolls_CT" />
+    <%include file="/giscedata_facturacio_comer_som/report/components/invoice_details_td_energy_tolls_CT/invoice_details_td_energy_tolls_CT.mako" args="id=id.energy_tolls_CT" />
     <%include file="/giscedata_facturacio_comer_som/report/components/invoice_details_td_energy_charges_CT/invoice_details_td_energy_charges_CT.mako" args="id=id.energy_charges_CT" />
     <%include file="/giscedata_facturacio_comer_som/report/components/invoice_details_td_energy_discount_BOE17_2021/invoice_details_td_energy_discount_BOE17_2021.mako" args="id=id.energy_discount_BOE17_2021" />
     <%include file="/giscedata_facturacio_comer_som/report/components/invoice_details_td_bo_social_2023/invoice_details_td_bo_social_2023.mako" args="bs=id.bo_social_2023" />

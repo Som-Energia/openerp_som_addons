@@ -2813,6 +2813,9 @@ class GiscedataFacturacioFacturaReport(osv.osv):
             "energy_charges": self.get_sub_component_invoice_details_td_energy_charges_data(
                 fact, pol, energy_discount_BOE17_2021
             ),
+            "energy_tolls_CT": self.get_sub_component_invoice_details_td_energy_tolls_CT_data(
+                fact, pol
+            ),
             "energy_charges_CT": self.get_sub_component_invoice_details_td_energy_charges_CT_data(
                 fact, pol
             ),
@@ -3286,6 +3289,10 @@ class GiscedataFacturacioFacturaReport(osv.osv):
         atr_linies_energia = {}  # ATR Peatges Energia dict
         tarifa_elect_atr = self.get_tarifa_elect_atr(fact, "pricelist_tarifas_peajes_electricidad")
         linies_energia = self.get_real_energy_lines(fact, pol)
+        is_visible = len(self.get_dates_desde(linies_energia)) == 1
+        if not is_visible:
+            return {"is_visible": is_visible}
+
         for l in sorted(  # noqa: E741
             sorted(linies_energia, key=attrgetter("data_desde")), key=attrgetter("name")
         ):
@@ -3306,8 +3313,11 @@ class GiscedataFacturacioFacturaReport(osv.osv):
             }
 
         data = atr_linies_energia
-        data["showing_periods"] = self.get_matrix_show_periods(pol)
+        periods = self.get_matrix_show_periods(pol)
+        data["showing_periods"] = periods
         data["iva_column"] = has_iva_column(fact)
+        data["is_visible"] = is_visible
+        data["total"] = sum([round(atr_linies_energia[period]["atr_peatge"], 2) for period in periods if period in atr_linies_energia])  # noqa: E501
         return data
 
     def get_sub_component_invoice_details_td_energy_charges_data(self, fact, pol, discount):
@@ -3400,9 +3410,9 @@ class GiscedataFacturacioFacturaReport(osv.osv):
             else:
                 lines_data[block][l.name] = {
                     "quantity": l.quantity,
-                    "tolls": l.distribucion_price_subtotal,
+                    "tolls": l.distribucion_price_subtotal + l.transporte_price_subtotal,
                     "atr_cargos": l.cargos_price_subtotal,
-                    "tolls_price_unit": l.price_unit_distribucion,
+                    "tolls_price_unit": l.price_unit_distribucion + l.price_unit_transporte,
                     "preu_cargos": l.price_unit_cargos,
                     "price_subtotal": l.price_subtotal,
                     "price_unit_multi": l.price_unit_multi,
@@ -3446,6 +3456,25 @@ class GiscedataFacturacioFacturaReport(osv.osv):
             "lines_data": charges_data,
             "total": total_charges,
             "header_multi": 2 * len(charges_data),
+            "showing_periods": periods,
+            "is_visible": is_visible,
+            "iva_column": has_iva_column(fact),
+        }
+        return data
+
+    def get_sub_component_invoice_details_td_energy_tolls_CT_data(self, fact, pol):
+        linies_energia = self.get_real_energy_lines(fact, pol)
+        is_visible = len(self.get_dates_desde(linies_energia)) > 1
+        if not is_visible:
+            return {"is_visible": is_visible}
+
+        tolls_data = self.get_sub_component_data_blocks(fact, pol, linies_energia)
+        periods = self.get_matrix_show_periods(pol)
+        total_tolls = sum([sum([round(tolls[period]["tolls"], 2) for period in periods]) for tolls in tolls_data])  # noqa: E501
+        data = {
+            "lines_data": tolls_data,
+            "total": total_tolls,
+            "header_multi": 2 * len(tolls_data),
             "showing_periods": periods,
             "is_visible": is_visible,
             "iva_column": has_iva_column(fact),
@@ -3882,10 +3911,11 @@ class GiscedataFacturacioFacturaReport(osv.osv):
         for p_toll in p_tolls.keys():
             if p_toll.startswith(u"P"):
                 all_tolls += round(p_tolls[p_toll]["atr_peatge"], 2)
+
         e_tolls = self.get_sub_component_invoice_details_td_energy_tolls_data(fact, pol)
-        for e_toll in e_tolls.keys():
-            if e_toll.startswith(u"P"):
-                all_tolls += round(e_tolls[e_toll]["atr_peatge"], 2)
+        if not e_tolls["is_visible"]:
+            e_tolls = self.get_sub_component_invoice_details_td_energy_tolls_CT_data(fact, pol)
+        all_tolls += e_tolls["total"]
 
         discount_power = self.get_sub_component_invoice_details_td_power_discount_BOE17_2021_data(
             fact, pol
