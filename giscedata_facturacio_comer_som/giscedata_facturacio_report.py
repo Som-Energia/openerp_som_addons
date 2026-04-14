@@ -3936,7 +3936,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
         )
         if not e_charges["is_visible"]:
             e_charges = self.get_sub_component_invoice_details_td_energy_charges_CT_data(
-                fact, pol, discount_energy
+                fact, pol
             )
         all_charges += e_charges["total"]
 
