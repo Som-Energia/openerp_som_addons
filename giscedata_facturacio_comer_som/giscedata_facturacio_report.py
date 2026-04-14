@@ -2139,20 +2139,20 @@ class GiscedataFacturacioFacturaReport(osv.osv):
             excempcio = fact.fiscal_position.tax_ids[0].tax_dest_id.name
             excempcio = excempcio[excempcio.find("(") + 1: excempcio.find(")")]
             percentatges_exempcio_splitted = excempcio.split(" ")
-            if len(percentatges_exempcio_splitted) == 3:
+            if len(percentatges_exempcio_splitted) > 2:
                 percentatges_exempcio = (
                     abs(float(percentatges_exempcio_splitted[0].replace("%", "")) / 100),
                     abs(float(percentatges_exempcio_splitted[2].replace("%", "")) / 100),
                 )
             is_excempcio_IE_base = (
-                len(percentatges_exempcio_splitted) == 3 and len(percentatges_exempcio) == 2
+                len(percentatges_exempcio_splitted) > 2 and len(percentatges_exempcio) == 2
             )
 
             for l in fact.tax_line:  # noqa: E741
                 tax_type = get_tax_type(l)
                 if "IVA" not in l.name and "IGIC" not in l.name:
                     if (
-                        len(percentatges_exempcio_splitted) == 3
+                        len(percentatges_exempcio_splitted) > 2
                         and tax_type == "excempcio"
                         and is_excempcio_IE_base
                     ):
