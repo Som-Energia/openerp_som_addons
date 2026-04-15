@@ -582,12 +582,14 @@ class ReportBackendMailcanvipreus(ReportBackend):
             )
 
         return {
-            "origen": origen,
-            "preu_vell": preu_vell,
-            "preu_nou": preu_nou,
-            "preu_vell_imp": preu_vell_imp,
-            "preu_nou_imp": preu_nou_imp,
-            "consum_total": consum_total,
+            "gkwh_estimation": {
+                "origen": origen,
+                "preu_vell": preu_vell,
+                "preu_nou": preu_nou,
+                "preu_vell_imp": preu_vell_imp,
+                "preu_nou_imp": preu_nou_imp,
+                "consum_total": consum_total,
+            }
         }
 
     def esCanaries(self, cursor, uid, env, context=False):
