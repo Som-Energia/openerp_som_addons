@@ -39,10 +39,8 @@ mes_text = mesos_text[id_info.mes_mag_darrer_mes] if id_info.has_mag and id_info
     % endif
     % if id_info.adjustment_services:
         <br>
-        ${_(u"(2) Els costos dels Serveis d'Ajust tenen un preu horari variable, fixat per Red Eléctrica de España (REE), no inclosos en el terme d'energia. Pots consultar aquests preus a la web <a href='https://www.esios.ree.es'>https://www.esios.ree.es</a>")}
+        ${_(u"(2) Els costos dels Serveis d'Ajust tenen un preu horari variable, fixat per Red Eléctrica de España (REE), no inclosos en el terme d'energia.")}
     % endif
-
-
 </td>
 </tr>
 </table>
