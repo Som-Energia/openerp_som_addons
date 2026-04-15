@@ -7,6 +7,9 @@ from som_indexada.utils import calculate_new_indexed_prices
 from datetime import date, timedelta
 
 
+PRICE_CHANGE_DATE = "2026-05-01"  # FIXME: This should not be hardcoded
+
+
 class ReportBackendMailcanvipreus(ReportBackend):
     _source_model = "som.enviament.massiu"
     _name = "report.backend.mailcanvipreus"
@@ -198,6 +201,7 @@ class ReportBackendMailcanvipreus(ReportBackend):
             data["preus_nous_generation_imp"] = self.get_preus_gkwh(
                 cursor, uid, env.polissa_id, with_taxes=True, context=context_preus_nous
             )
+            data.update(self.get_gkwh_estimation(cursor, uid, env, context=context_preus_nous))
 
         data.update(self.getEstimacioData(cursor, uid, env, context=context_preus_nous))
         data.update(self.getTarifaCorreu(cursor, uid, env, context))
@@ -329,40 +333,45 @@ class ReportBackendMailcanvipreus(ReportBackend):
         polissa_id,
         consums,
         potencies,
-        tarifa,
         afegir_servei_ajust,
         bo_social_separat,
         date=None,
-        origen="",
+        is_gkwh=False,
         context=None,
     ):
+        # bo_social_price = 2.299047  # 2024
+        # bo_social_price = 4.650987  # 2025
+        bo_social_price = 6.979247  # 2026  # FIXME: Això s'ha d'agafar del ERP D:
+        preu_estimat_servei_ajust = 0.028  # FIXME: Això segurament haurà d'anar a un altre lloc
+
         ctx = context or {}
         if date:
             ctx["date"] = date
         ctx["potencia_anual"] = True
         ctx["sense_agrupar"] = True
-        if (polissa_id.modcontractuals_ids[0].state == "pendent"
-            and polissa_id.mode_facturacio
-            != polissa_id.modcontractuals_ids[0].mode_facturacio
-                and polissa_id.modcontractuals_ids[0].mode_facturacio == 'index'):
-            ctx["force_pricelist"] = polissa_id.modcontractuals_ids[1].llista_preu.id
-        elif(polissa_id.modcontractuals_ids[0].state == "pendent"
-             and polissa_id.mode_facturacio
-             != polissa_id.modcontractuals_ids[0].mode_facturacio
-                and polissa_id.modcontractuals_ids[0].mode_facturacio == 'atr'):
-            ctx["force_pricelist"] = polissa_id.modcontractuals_ids[0].llista_preu.id
-        # bo_social_price = 2.299047  # 2024
-        # bo_social_price = 4.650987  # 2025
-        bo_social_price = 6.979247  # 2026  # FIXME: Això s'ha d'agafar del ERP D:
-        preu_estimat_servei_ajust = 0.028  # FIXME: Això segurament haurà d'anar a un altre lloc
-        types = {"tp": potencies or {}, "te": consums or {}}
+
+        if is_gkwh:
+            types = {'gkwh': consums or {}}
+        else:
+            types = {"tp": potencies or {}, "te": consums or {}}
+            if (polissa_id.modcontractuals_ids[0].state == "pendent"
+                    and polissa_id.mode_facturacio
+                    != polissa_id.modcontractuals_ids[0].mode_facturacio
+                    and polissa_id.modcontractuals_ids[0].mode_facturacio == 'index'):
+                ctx["force_pricelist"] = polissa_id.modcontractuals_ids[1].llista_preu.id
+            elif (polissa_id.modcontractuals_ids[0].state == "pendent"
+                    and polissa_id.mode_facturacio
+                    != polissa_id.modcontractuals_ids[0].mode_facturacio
+                    and polissa_id.modcontractuals_ids[0].mode_facturacio == 'atr'):
+                ctx["force_pricelist"] = polissa_id.modcontractuals_ids[0].llista_preu.id
+
         imports = 0
         for terme, values in types.items():
             for periode, quantity in values.items():
                 preu_periode = get_atr_price(
                     cursor, uid, polissa_id, periode, terme, ctx, with_taxes=False
                 )[0]
-                if afegir_servei_ajust and terme == "te":
+                if afegir_servei_ajust and terme != "tp":
                     preu_periode += preu_estimat_servei_ajust
                 imports += preu_periode * quantity
         if bo_social_separat:
@@ -453,8 +462,6 @@ class ReportBackendMailcanvipreus(ReportBackend):
         return gurb_cups_id
 
     def getEstimacioData(self, cursor, uid, env, context=False):
-        PRICE_CHANGE_DATE = "2026-05-01"
-
         potencies = self.getPotenciesPolissa(cursor, uid, env.polissa_id)
 
         tarifa = env.polissa_id.tarifa.name
@@ -493,11 +500,9 @@ class ReportBackendMailcanvipreus(ReportBackend):
                 env.polissa_id,
                 consums,
                 potencies,
-                tarifa,
                 afegir_servei_ajust=False,
                 bo_social_separat=True,
                 date=date.today().strftime("%Y-%m-%d"),
-                origen=origen,
                 context=context,
             )
             preu_nou = self.calcularPreuTotal(
@@ -506,11 +511,9 @@ class ReportBackendMailcanvipreus(ReportBackend):
                 env.polissa_id,
                 consums,
                 potencies,
-                tarifa,
                 afegir_servei_ajust=True,
                 bo_social_separat=True,
                 date=PRICE_CHANGE_DATE,
-                origen=origen,
                 context=context,
             )
 
@@ -529,6 +532,62 @@ class ReportBackendMailcanvipreus(ReportBackend):
             "preu_nou_imp": preu_nou_imp,
             "consum_total": consum_total,
             "potencia": potencia,
+        }
+
+    def get_gkwh_estimation(self, cursor, uid, env, context=False):
+        pol_o = self.pool.get("giscedata.polissa")
+
+        consums, origen = pol_o.generationkwh_anual_estimation(
+            cursor, uid, env.polissa_id, context=context)
+
+        if origen == 'no_data':
+            consum_total = False
+            preu_vell = False
+            preu_nou = False
+            preu_vell_imp = False
+            preu_nou_imp = False
+        else:
+            consum_total = sum(quantity for _, quantity in consums.items())
+
+            preu_vell = self.calcularPreuTotal(
+                cursor,
+                uid,
+                env.polissa_id,
+                consums,
+                {},
+                afegir_servei_ajust=False,
+                bo_social_separat=True,
+                date=date.today().strftime("%Y-%m-%d"),
+                is_gkwh=True,
+                context=context,
+            )
+            preu_nou = self.calcularPreuTotal(
+                cursor,
+                uid,
+                env.polissa_id,
+                consums,
+                {},
+                afegir_servei_ajust=True,
+                bo_social_separat=True,
+                date=PRICE_CHANGE_DATE,
+                is_gkwh=True,
+                context=context,
+            )
+
+            preu_vell_imp = self.calcularImpostosPerCostAnualEstimat(
+                preu_vell, env.polissa_id.fiscal_position_id, context=context
+            )
+            preu_nou_imp = self.calcularImpostosPerCostAnualEstimat(
+                preu_nou, env.polissa_id.fiscal_position_id, context=context
+            )
+
+        return {
+            "origen": origen,
+            "preu_vell": preu_vell,
+            "preu_nou": preu_nou,
+            "preu_vell_imp": preu_vell_imp,
+            "preu_nou_imp": preu_nou_imp,
+            "consum_total": consum_total,
         }
 
     def esCanaries(self, cursor, uid, env, context=False):
