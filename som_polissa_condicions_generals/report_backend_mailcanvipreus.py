@@ -538,7 +538,7 @@ class ReportBackendMailcanvipreus(ReportBackend):
         pol_o = self.pool.get("giscedata.polissa")
 
         consums, origen = pol_o.generationkwh_anual_estimation(
-            cursor, uid, env.polissa_id, context=context)
+            cursor, uid, env.polissa_id.id, context=context)
 
         if origen == 'no_data':
             consum_total = False
