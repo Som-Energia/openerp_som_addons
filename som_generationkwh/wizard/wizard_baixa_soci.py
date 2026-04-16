@@ -43,17 +43,17 @@ class WizardBaixaSoci(osv.osv_memory):
             ids = ids[0]
 
         wizard = self.browse(cursor, uid, ids, context)
-            
+
         # We enforce skip_pending_check=False during verification to show all issues
         reasons = soci_obj.get_baixa_blocking_reasons(cursor, uid, soci_id[0], context={
             'skip_pending_check': False,
             'skip_sponsored_check': False
         })
-        
+
         result_text = _("##### Tot correcte.\nEs pot procedir a la baixa.")
         if reasons:
             result_text = _("##### Hi ha motius que impedeixen la baixa:\n* ") + "\n* ".join(reasons)
-            
+
         wizard.write({'state': 'checklist', 'info': result_text})
 
     def baixa_soci(self, cursor, uid, ids, context=None, send_mail=False):
@@ -75,7 +75,7 @@ class WizardBaixaSoci(osv.osv_memory):
             if send_mail:
                 self.send_mail(cursor, uid, soci_id[0])
             wizard.write({'state':'done'})
-    
+
     def _get_soci_from_context(self, context):
         soci_id = context['active_ids']
         if not isinstance(soci_id, list):
@@ -140,4 +140,3 @@ class WizardBaixaSoci(osv.osv_memory):
 
 
 WizardBaixaSoci()
-

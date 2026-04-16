@@ -138,15 +138,15 @@ class SomenergiaSoci(osv.osv):
     def get_baixa_blocking_reasons(self, cursor, uid, member_id, context=None):
         if not context:
             context = {}
-            
+
         reasons = []
-        
+
         invest_obj = self.pool.get('generationkwh.investment')
         emi_obj = self.pool.get('generationkwh.emission')
         pol_obj = self.pool.get('giscedata.polissa')
         fact_obj = self.pool.get('giscedata.facturacio.factura')
         soci_obj = self.pool.get('somenergia.soci')
-        
+
         today = datetime.today().strftime('%Y-%m-%d')
         res_partner_id = soci_obj.read(cursor, uid, member_id, ['partner_id'])['partner_id'][0]
 
@@ -176,7 +176,7 @@ class SomenergiaSoci(osv.osv):
 
         if factures_pendents and not context.get('skip_pending_check', False):
             reasons.append(_('El soci té factures pendents.'))
-        
+
         polisses_as_titular = pol_obj.search(cursor, uid,
                                   [('soci', '=', res_partner_id),
                                    ('titular', '=', res_partner_id),
@@ -192,7 +192,7 @@ class SomenergiaSoci(osv.osv):
                                    ('state', '!=', 'cancelada')])
         if polisses_apadrinades and not context.get('skip_sponsored_check', False):
             reasons.append(_('El soci té al menys un contracte apadrinat.'))
-            
+
         return reasons
 
     def do_baixa_soci(self, cursor, uid, member_id, bank_account_id, context=None):
@@ -203,7 +203,7 @@ class SomenergiaSoci(osv.osv):
 
         """Mètode per donar de baixa un soci."""
         context = context or {}
-        
+
         reasons = self.get_baixa_blocking_reasons(cursor, uid, member_id, context=context)
         if reasons:
             raise osv.except_osv("Error", _('El soci no pot ser donat de baixa!'), '\n'.join(reasons))
@@ -220,16 +220,21 @@ class SomenergiaSoci(osv.osv):
         )[1]
 
         def delete_rel(cursor, uid, categ_id, res_partner_id):
-            cursor.execute('delete from res_partner_category_rel where category_id=%s and partner_id=%s',(categ_id, res_partner_id))
+            cursor.execute(
+                'delete from res_partner_category_rel where category_id=%s and partner_id=%s',
+                (categ_id, res_partner_id)
+            )
 
         res_users = self.pool.get('res.users')
         usuari = res_users.read(cursor, uid, uid, ['name'])['name']
         old_comment = soci_obj.read(cursor, uid, [member_id], ['comment'])[0]['comment']
-        old_comment = old_comment + '\n' if old_comment else '' 
-        comment =  "{}Baixa efectuada a data {} per: {}".format(old_comment, today, usuari)
-        soci_obj.write(cursor, uid, [member_id], {'baixa': True,
-                                                'data_baixa_soci': today,
-                                                'comment': comment })
+        old_comment = old_comment + '\n' if old_comment else ''
+        comment = "{}Baixa efectuada a data {} per: {}".format(old_comment, today, usuari)
+        soci_obj.write(cursor, uid, [member_id], {
+            'baixa': True,
+            'data_baixa_soci': today,
+            'comment': comment,
+        })
         delete_rel(cursor, uid, soci_category_id, res_partner_id)
 
         self._unlink_sponsored_contracts(cursor, uid, res_partner_id, context)
@@ -278,7 +283,8 @@ class SomenergiaSoci(osv.osv):
         payment_mode_id = imd_o.get_object_reference(
             cursor, uid, "som_generationkwh", "soci_return_payment_mode")[1]
         payment_mode_name = payment_mode_o.read(cursor, uid, payment_mode_id, ["name"])["name"]
-        acc_id = account_o.search(cursor, uid, [("code", "=", "100000000000")])[0]
+        acc_id_100 = account_o.search(cursor, uid, [("code", "=", "100000000000")])[0]
+        acc_id_430 = account_o.search(cursor, uid, [("code", "=", "430000000000")])[0]
         journal_id = journal_o.search(
             cursor, uid, [("code", "=", "SOCIS_RETURN")], context=context
         )[0]
@@ -290,7 +296,7 @@ class SomenergiaSoci(osv.osv):
         # Create invoice line
         inv_line = {
             "name": _MEMBER_FEE_RETURN_PURPOSE,
-            "account_id": acc_id,
+            "account_id": acc_id_100,
             "price_unit": socia_fee_amount,
             "quantity": 1,
             "uom_id": 1,
@@ -307,7 +313,7 @@ class SomenergiaSoci(osv.osv):
             "invoice_line": [(0, 0, inv_line)],
             "origin_date_invoice": datetime.today().strftime("%Y-%m-%d"),
             "date_invoice": datetime.today().strftime("%Y-%m-%d"),
-            "account_id": acc_id,
+            "account_id": acc_id_430,
             "journal_id": journal_id,
             "origin": invoice_name,
             "reference": invoice_name,
