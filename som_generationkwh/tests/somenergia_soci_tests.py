@@ -1,16 +1,11 @@
 # -*- coding: utf-8 -*-
-import unittest
 from destral import testing
 from destral.transaction import Transaction
 from destral.patch import PatchNewCursors
-import netsvc
 from datetime import datetime, timedelta, date
-from osv import osv, fields
-from osv.orm import ValidateException
 from osv.osv import except_osv
 import mock
-import som_polissa_soci
-import mailchimp_marketing
+
 
 class SomenergiaSociTests(testing.OOTestCase):
 
@@ -62,8 +57,8 @@ class SomenergiaSociTests(testing.OOTestCase):
             self.cursor, self.uid, [member_id], {'baixa': False, 'data_baixa_soci': None})
         investment.write({'last_effective_date': False, 'draft': False})
         generation_invs = self.Investment.search(
-            self.cursor, self.uid, [('member_id','=', member_id),('emission_id','=',1)])
-        self.Investment.write(self.cursor, self.uid, generation_invs, {'active':False})
+            self.cursor, self.uid, [('member_id', '=', member_id), ('emission_id', '=', 1)])
+        self.Investment.write(self.cursor, self.uid, generation_invs, {'active': False})
 
         with self.assertRaises(except_osv) as ctx:
             self.Soci.do_baixa_soci(self.cursor, self.uid, member_id, self.bank_account_id)
@@ -75,16 +70,16 @@ class SomenergiaSociTests(testing.OOTestCase):
             self.cursor, self.uid, 'giscedata_facturacio', 'factura_0001'
             )[1]
         partner_id = self.IrModelData.get_object_reference(
-            self.cursor, self.uid, 'som_generationkwh', 'res_partner_inversor1' 
+            self.cursor, self.uid, 'som_generationkwh', 'res_partner_inversor1'
             )[1]
         member_id = self.IrModelData.get_object_reference(
-            self.cursor, self.uid, 'som_generationkwh', 'soci_0001' 
+            self.cursor, self.uid, 'som_generationkwh', 'soci_0001'
             )[1]
         self.Soci.write(
             self.cursor, self.uid, [member_id], {'baixa': False, 'data_baixa_soci': None})
 
-        invs = self.Investment.search(self.cursor, self.uid, [('member_id','=', member_id)])
-        self.Investment.write(self.cursor, self.uid, invs, {'active':False})
+        invs = self.Investment.search(self.cursor, self.uid, [('member_id', '=', member_id)])
+        self.Investment.write(self.cursor, self.uid, invs, {'active': False})
 
         invoice_id = self.Factura.read(
             self.cursor, self.uid, fact_id, ['invoice_id'])['invoice_id'][0]
@@ -106,9 +101,9 @@ class SomenergiaSociTests(testing.OOTestCase):
             )[1]
         self.Soci.write(
             self.cursor, self.uid, [member_id], {'baixa': False, 'data_baixa_soci': None})
-        invs = self.Investment.search(self.cursor, self.uid, [('member_id','=', member_id)])
+        invs = self.Investment.search(self.cursor, self.uid, [('member_id', '=', member_id)])
 
-        self.Investment.write(self.cursor, self.uid, invs, {'active':False})
+        self.Investment.write(self.cursor, self.uid, invs, {'active': False})
 
         polissa_id = self.IrModelData.get_object_reference(
             self.cursor, self.uid, 'giscedata_polissa', 'polissa_0001'
@@ -131,9 +126,9 @@ class SomenergiaSociTests(testing.OOTestCase):
             )[1]
         self.Soci.write(
             self.cursor, self.uid, [member_id], {'baixa': False, 'data_baixa_soci': None})
-        invs = self.Investment.search(self.cursor, self.uid, [('member_id','=', member_id)])
+        invs = self.Investment.search(self.cursor, self.uid, [('member_id', '=', member_id)])
 
-        self.Investment.write(self.cursor, self.uid, invs, {'active':False})
+        self.Investment.write(self.cursor, self.uid, invs, {'active': False})
 
         polissa_id = self.IrModelData.get_object_reference(
             self.cursor, self.uid, 'giscedata_polissa', 'polissa_0001'
@@ -158,9 +153,9 @@ class SomenergiaSociTests(testing.OOTestCase):
         )[1]
         self.Soci.write(
             self.cursor, self.uid, [member_id], {'baixa': False, 'data_baixa_soci': None})
-        invs = self.Investment.search(self.cursor, self.uid, [('member_id','=', member_id)])
+        invs = self.Investment.search(self.cursor, self.uid, [('member_id', '=', member_id)])
 
-        self.Investment.write(self.cursor, self.uid, invs, {'active':False})
+        self.Investment.write(self.cursor, self.uid, invs, {'active': False})
 
         polissa_id = self.IrModelData.get_object_reference(
             self.cursor, self.uid, 'giscedata_polissa', 'polissa_0001'
@@ -187,9 +182,9 @@ class SomenergiaSociTests(testing.OOTestCase):
         )[1]
         self.Soci.write(
             self.cursor, self.uid, [member_id], {'baixa': False, 'data_baixa_soci': None})
-        invs = self.Investment.search(self.cursor, self.uid, [('member_id','=', member_id)])
+        invs = self.Investment.search(self.cursor, self.uid, [('member_id', '=', member_id)])
 
-        self.Investment.write(self.cursor, self.uid, invs, {'active':False})
+        self.Investment.write(self.cursor, self.uid, invs, {'active': False})
 
         polissa_id = self.IrModelData.get_object_reference(
             self.cursor, self.uid, 'giscedata_polissa', 'polissa_0001'
