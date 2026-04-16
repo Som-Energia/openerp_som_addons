@@ -29,7 +29,7 @@
     <%include file="/giscedata_facturacio_comer_som/report/components/invoice_details_td_power_tolls/invoice_details_td_power_tolls.mako" args="id=id.power_tolls" />
     <%include file="/giscedata_facturacio_comer_som/report/components/invoice_details_td_power_charges/invoice_details_td_power_charges.mako" args="id=id.power_charges" />
     ##<%include file="/giscedata_facturacio_comer_som/report/components/invoice_details_td_power_tolls_CT/invoice_details_td_power_tolls_CT.mako" args="id=id.power_tolls_CT" />
-    ##<%include file="/giscedata_facturacio_comer_som/report/components/invoice_details_td_power_charges_CT/invoice_details_td_power_charges_CT.mako" args="id=id.power_charges_CT" />
+    <%include file="/giscedata_facturacio_comer_som/report/components/invoice_details_td_power_charges_CT/invoice_details_td_power_charges_CT.mako" args="id=id.power_charges_CT" />
     <%include file="/giscedata_facturacio_comer_som/report/components/invoice_details_td_power_discount_BOE17_2021/invoice_details_td_power_discount_BOE17_2021.mako" args="id=id.power_discount_BOE17_2021" />
     <%include file="/giscedata_facturacio_comer_som/report/components/invoice_details_td_excess_power_maximeter/invoice_details_td_excess_power_maximeter.mako" args="id=id.excess_power_maximeter" />
     <%include file="/giscedata_facturacio_comer_som/report/components/invoice_details_td_excess_power_quarterhours/invoice_details_td_excess_power_quarterhours.mako" args="id=id.excess_power_quarterhours" />
