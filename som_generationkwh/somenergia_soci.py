@@ -158,7 +158,7 @@ class SomenergiaSoci(osv.osv):
         genkwh_emission_ids = emi_obj.search(cursor, uid, [('type','=','genkwh')])
         gen_invest = invest_obj.search(cursor, uid, [('member_id', '=', member_id),
                                                      ('emission_id', 'in', genkwh_emission_ids),
-                                                     ('last_effective_date', '>=', today)])
+                                                     ('last_effective_date', '>', today)])
         if gen_invest:
             reasons.append(_('El soci té inversions de generation actives.'))
 
@@ -166,7 +166,7 @@ class SomenergiaSoci(osv.osv):
         apo_invest = invest_obj.search(cursor, uid, [('member_id', '=', member_id),
                                                      ('emission_id', 'in', aportacions_ids),
                                                      '|', ('last_effective_date', '=', False),
-                                                     ('last_effective_date', '>=', today)])
+                                                     ('last_effective_date', '>', today)])
         if apo_invest:
             reasons.append(_('El soci té aportacions actives.'))
 
