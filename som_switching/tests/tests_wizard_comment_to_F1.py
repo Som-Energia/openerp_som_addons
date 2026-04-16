@@ -186,4 +186,4 @@ class TestMultipleCommentF1(testing.OOTestCase):
         new_comment = inv_o.read(self.cursor, self.uid, inv_id, ["user_observations"])[
             "user_observations"
         ]
-        self.assertEqual(new_comment, "")
+        self.assertEqual(new_comment, False)
