@@ -23,7 +23,7 @@ first_pass = True
         % endif
     </tr>
     <tr>
-        <td class="detall_td">${_(u"kWh x €/kWh x (%s/%s) díes (del %s al %s)") % (lines_data.days, lines_data.days_per_year, lines_data.date_from, lines_data.date_to)}</td>
+        <td class="detall_td">${_(u"kWh x €/kWh x (%s/%s) dies (del %s al %s)") % (lines_data.days, lines_data.days_per_year, lines_data.date_from, lines_data.date_to)}</td>
         % for p in id.showing_periods:
             % if p in lines_data:
                 <td>${_(u"%s €") %(formatLang(lines_data[p]["tolls"]))}</td>
