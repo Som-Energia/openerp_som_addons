@@ -313,7 +313,6 @@ class SomenergiaSoci(osv.osv):
             "invoice_line": [(0, 0, inv_line)],
             "origin_date_invoice": datetime.today().strftime("%Y-%m-%d"),
             "date_invoice": datetime.today().strftime("%Y-%m-%d"),
-            "account_id": acc_id_430,
             "journal_id": journal_id,
             "origin": invoice_name,
             "reference": invoice_name,
@@ -326,6 +325,7 @@ class SomenergiaSoci(osv.osv):
         invoice_vals.update({
             "payment_type": payment_type_id,
             "partner_bank": bank_account_id,
+            "account_id": acc_id_430,
         })
 
         invoice_id = invoice_o.create(cursor, uid, invoice_vals, context=context)
