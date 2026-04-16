@@ -2803,6 +2803,9 @@ class GiscedataFacturacioFacturaReport(osv.osv):
             "power_charges": self.get_sub_component_invoice_details_td_power_charges_data(
                 fact, pol, power_discount_BOE17_2021
             ),
+            "power_charges_CT": self.get_sub_component_invoice_details_td_power_charges_CT_data(
+                fact, pol
+            ),
             "energy": self.get_sub_component_invoice_details_td_energy_data(
                 fact, pol, energy_discount_BOE17_2021
             ),
@@ -3183,6 +3186,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
         data["dies_any"] = days_year
         data["header_multi"] = 4 if discount["is_visible"] else 2
         data["iva_column"] = has_iva_column(fact)
+        data["is_visible"] = len(self.get_dates_desde(fact.linies_potencia)) == 1
         return data
 
     def get_component_invoice_details_info_td_data(self, fact, pol):
@@ -3505,6 +3509,25 @@ class GiscedataFacturacioFacturaReport(osv.osv):
             "lines_data": tolls_data,
             "total": total_tolls,
             "header_multi": 2 * len(tolls_data),
+            "showing_periods": periods,
+            "is_visible": is_visible,
+            "iva_column": has_iva_column(fact),
+        }
+        return data
+
+    def get_sub_component_invoice_details_td_power_charges_CT_data(self, fact, pol):
+        linies_potencia = fact.linies_potencia
+        is_visible = len(self.get_dates_desde(linies_potencia)) > 1
+        if not is_visible:
+            return {"is_visible": is_visible}
+
+        charges_data = self.get_sub_component_data_blocks(fact, pol, linies_potencia)
+        periods = self.get_matrix_show_periods(pol)
+        total_charges = sum([sum([round(charges[period]["atr_cargos"], 2) for period in periods if period in charges]) for charges in charges_data])  # noqa: E501
+        data = {
+            "lines_data": charges_data,
+            "total": total_charges,
+            "header_multi": 2 * len(charges_data),
             "showing_periods": periods,
             "is_visible": is_visible,
             "iva_column": has_iva_column(fact),
