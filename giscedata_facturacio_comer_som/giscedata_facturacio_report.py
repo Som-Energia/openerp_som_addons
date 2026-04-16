@@ -3481,7 +3481,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
 
         charges_data = self.get_sub_component_data_blocks(fact, pol, linies_energia)
         periods = self.get_matrix_show_periods(pol)
-        total_charges = sum([sum([round(charges[period]["preu_cargos"], 2) for period in periods]) for charges in charges_data])  # noqa: E501
+        total_charges = sum([sum([round(charges[period]["atr_cargos"], 2) for period in periods if period in charges]) for charges in charges_data])  # noqa: E501
         data = {
             "lines_data": charges_data,
             "total": total_charges,
@@ -3500,7 +3500,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
 
         tolls_data = self.get_sub_component_data_blocks(fact, pol, linies_energia)
         periods = self.get_matrix_show_periods(pol)
-        total_tolls = sum([sum([round(tolls[period]["tolls"], 2) for period in periods]) for tolls in tolls_data])  # noqa: E501
+        total_tolls = sum([sum([round(tolls[period]["tolls"], 2) for period in periods if period in tolls]) for tolls in tolls_data])  # noqa: E501
         data = {
             "lines_data": tolls_data,
             "total": total_tolls,
