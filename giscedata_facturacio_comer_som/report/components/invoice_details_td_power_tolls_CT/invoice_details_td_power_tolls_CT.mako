@@ -11,7 +11,6 @@ first_pass = True
     % endif
         <td class="detall_td">${_(u"Preu peatges per potència contractada [€/kW i any]")}</td>
         % if len(id.showing_periods) == 3:
-            kk
             % for p in id.showing_periods[:-1]:
                 % if p in lines_data and lines_data[p]["tolls_price_unit"]:
                     % if p == 'P1':
