@@ -8,7 +8,7 @@ from osv import osv
 class ContractHelper(osv.osv_memory):
     _name = "contract.helper"
 
-    def get_contract_pdg(self, cursor, uid, pol_id, context=None):
+    def get_contract_pdf(self, cursor, uid, pol_id, context=None):
         if context is None:
             context = {}
         service = netsvc.LocalService('report.giscedata.polissa')

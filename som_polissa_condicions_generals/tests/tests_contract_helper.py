@@ -29,10 +29,10 @@ class TestsContractHelper(testing.OOTestCase):
         fake_pdf = b'%PDF-fake-content'
         mock_local_service.return_value.create.return_value = (fake_pdf, 'pdf')
 
-        result = self.helper.get_contract(
+        result = self.helper.get_contract_pdf(
             self.cursor, self.uid, self.pol_id, context={}
         )
 
-        self.assertIn('contracte', result)
-        decoded = base64.b64decode(result['contracte'])
+        self.assertIn('contract', result)
+        decoded = base64.b64decode(result['contract'])
         self.assertEqual(decoded, fake_pdf)
