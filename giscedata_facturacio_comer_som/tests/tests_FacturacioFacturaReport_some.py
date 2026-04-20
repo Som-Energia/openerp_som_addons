@@ -4867,3 +4867,85 @@ class Tests_FacturacioFacturaReport_invoice_details_td(Tests_FacturacioFacturaRe
                 'expedient': expedient
             }
         )
+
+    def _get_or_create_product(self, code, except_ids=None):
+        prod_obj = self.model("product.product")
+        prod_ids = prod_obj.search(self.cursor, self.uid, [("default_code", "=", code)])
+        if prod_ids:
+            return prod_ids[0]
+
+        params = []
+        if except_ids:
+            params = [
+                ("id", "not in", except_ids),
+            ]
+
+        prod_id = prod_obj.search(self.cursor, self.uid, params, limit=1)[0]
+        prod_obj.write(self.cursor, self.uid, prod_id, {"default_code": code})
+        return prod_id
+
+    def _create_saju_line(self, f_id, product_id, subtotal):
+        fact = self.bf(f_id)
+        inv_line_id = self.model("account.invoice.line").create(self.cursor, self.uid, {
+            "name": "SAJU", "invoice_id": fact.invoice.id,
+            "product_id": product_id, "quantity": 1.0,
+            "price_unit": subtotal, "account_id": 1,
+        })
+        self.linia_f_obj.create(self.cursor, self.uid, {
+            "name": "SAJU", "invoice_line_id": inv_line_id,
+            "factura_id": f_id, "price_subtotal": subtotal,
+            "tipus": "altres", "product_id": product_id,
+            "account_id": 1, "data_desde": "2021-06-01",
+            "data_fins": "2021-06-30",
+        })
+
+    def test__get_adjustment_services_data__no_saju_lines__returns_none(self):
+        f_id = self.get_fixture("giscedata_facturacio", "factura_0001")
+        self.assertIsNone(self.r_obj.get_adjustment_services_data(self.bf(f_id)))
+
+    def test__get_adjustment_services_data__SAJU_and_DSAJU__sum_totals(self):
+        f_id = self.get_fixture("giscedata_facturacio", "factura_0001")
+
+        saju_id = self._get_or_create_product("SAJU")
+        dsaju_id = self._get_or_create_product("DSAJU", except_ids=[saju_id])
+
+        self.linia_f_obj.create(
+            self.cursor,
+            self.uid,
+            {
+                "name": "Serveis d'ajust",
+                "quantity": 12.0,
+                "price_unit_multi": 1,
+                "price_unit": 1,
+                "extra": 1,
+                "multi": 1,
+                "factura_id": f_id,
+                "tipus": "reactiva",
+                "product_id": saju_id,
+                "account_id": 1,
+                "data_desde": '2021-06-01',
+                "data_fins": '2021-06-30',
+            },
+        )
+
+        self.linia_f_obj.create(
+            self.cursor,
+            self.uid,
+            {
+                "name": "D Serveis d'ajust",
+                "quantity": 7.0,
+                "price_unit_multi": -1,
+                "price_unit": 1,
+                "extra": 1,
+                "multi": 1,
+                "factura_id": f_id,
+                "tipus": "reactiva",
+                "product_id": dsaju_id,
+                "account_id": 1,
+                "data_desde": '2021-06-01',
+                "data_fins": '2021-06-30',
+            },
+        )
+
+        result = self.r_obj.get_adjustment_services_data(self.bf(f_id))
+        self.assertEquals(result["total"], 5.0)
