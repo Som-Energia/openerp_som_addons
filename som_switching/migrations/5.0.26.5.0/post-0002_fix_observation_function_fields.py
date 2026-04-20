@@ -20,13 +20,13 @@ def up(cursor, installed_version):
         """SELECT id FROM giscedata_facturacio_importacio_linia WHERE user_observations = ''""")
     results = cursor.dictfetchall()
 
-    gfil_ids = [res[id] for res in results]
+    gfil_ids = [res['id'] for res in results]
 
     gfils = gfil_obj.read(cursor, 1, gfil_ids, ['user_observations'])
 
     for gfil in tqdm(gfils):
         gfil_obj.write(cursor, 1, gfil.get('id'), {
-                       'user_observations': gfil.get('user_observations')})
+                       'user_observations': False})
 
     logger.info("Migration completed successfully.")
 
