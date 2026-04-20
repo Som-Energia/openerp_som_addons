@@ -187,3 +187,34 @@ class TestMultipleCommentF1(testing.OOTestCase):
             "user_observations"
         ]
         self.assertEqual(new_comment, False)
+
+    def test__get_last_history_line__returns_false(self):
+        """
+        Test per quan _get_last_history_line retorna False
+        """
+        imd_obj = self.pool.get("ir.model.data")
+        inv_o = self.pool.get("giscedata.facturacio.importacio.linia")
+
+        inv_id = imd_obj.get_object_reference(
+            self.cursor, self.uid, "giscedata_facturacio_switching", "line_02_f1_import_01"
+        )[1]
+        inv_o.write(self.cursor, self.uid, inv_id, {"user_observations": "\n\n"})
+
+        res = inv_o.read(self.cursor, self.uid, inv_id, ["last_observation_line"])
+        self.assertFalse(res["last_observation_line"])
+
+    def test__get_last_history_line__returns_text(self):
+        """
+        Test per quan _get_last_history_line retorna text
+        """
+        imd_obj = self.pool.get("ir.model.data")
+        inv_o = self.pool.get("giscedata.facturacio.importacio.linia")
+
+        inv_id = imd_obj.get_object_reference(
+            self.cursor, self.uid, "giscedata_facturacio_switching", "line_02_f1_import_01"
+        )[1]
+        inv_o.write(self.cursor, self.uid, inv_id, {
+                    "user_observations": "\n\nPrimera linia text\nSegona linia"})
+
+        res = inv_o.read(self.cursor, self.uid, inv_id, ["last_observation_line"])
+        self.assertEqual(res["last_observation_line"], "Primera linia text")
