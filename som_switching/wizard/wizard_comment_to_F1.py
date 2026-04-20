@@ -18,7 +18,7 @@ class wizard_comment_to_F1(osv.osv_memory):
         model = self.pool.get("giscedata.facturacio.importacio.linia")
 
         if wiz.option == "eliminar":
-            model.write(cursor, uid, active_ids, {"user_observations": ""})
+            model.write(cursor, uid, active_ids, {"user_observations": False})
         elif wiz.option == "substituir":
             model.write(cursor, uid, active_ids, {"user_observations": wiz.comment})
         elif wiz.option == "afegir":
