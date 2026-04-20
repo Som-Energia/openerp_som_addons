@@ -105,10 +105,13 @@ class SomGurbWww(osv.osv_memory):
         ggroup = gurb_group_obj.browse(cursor, uid, gurb_group_id, context=context)
 
         available_betas = []
+        occupying_states = [
+            "active", "atr_pending", "draft", "comming_registration", "comming_modification"
+        ]
         for gcau in ggroup.gurb_cau_ids:
             beta_remaining = gcau.generation_power
             for gcups in gcau.gurb_cups_ids:
-                if gcups.state in ["active", "atr_pending", "draft"]:
+                if gcups.state in occupying_states:
                     beta_remaining -= gcups.beta_kw
                     beta_remaining -= gcups.future_beta_kw
                     beta_remaining -= gcups.future_gift_beta_kw

@@ -80,6 +80,49 @@ class TestsGurbWww(TestsGurbBase):
 
         self.assertEqual(result["available_betas"], [x / 10.0 for x in range(5, 25, 5)])
 
+    def test_get_info_gurb__available_betas_considers_comming_states(self):
+        imd_o = self.openerp.pool.get("ir.model.data")
+        gurb_www_o = self.openerp.pool.get("som.gurb.www")
+        gurb_cups_o = self.openerp.pool.get("som.gurb.cups")
+        gurb_cau_o = self.openerp.pool.get("som.gurb.cau")
+        gurb_cups_beta_o = self.openerp.pool.get("som.gurb.cups.beta")
+
+        gurb_cups_id_1 = imd_o.get_object_reference(
+            self.cursor, self.uid, "som_gurb", "gurb_cups_0001"
+        )[1]
+        gurb_cups_id_2 = imd_o.get_object_reference(
+            self.cursor, self.uid, "som_gurb", "gurb_cups_0002"
+        )[1]
+        gurb_cau_id_2 = imd_o.get_object_reference(
+            self.cursor, self.uid, "som_gurb", "gurb_cau_0002"
+        )[1]
+        beta_id_2 = imd_o.get_object_reference(
+            self.cursor, self.uid, "som_gurb", "gurb_cups_beta_0002"
+        )[1]
+
+        # Shrink the second CAU so it does not become the bottleneck
+        gurb_cau_o.write(self.cursor, self.uid, gurb_cau_id_2, {"generation_power": 0.5})
+
+        # First CUPS stays active with its current beta (2.5 kW)
+        gurb_cups_o.write(self.cursor, self.uid, gurb_cups_id_1, {"state": "active"})
+
+        # Second CUPS is a pending registration with a large future beta (6 kW)
+        gurb_cups_beta_o.write(
+            self.cursor, self.uid, beta_id_2, {"future_beta": True, "beta_kw": 6.0}
+        )
+        gurb_cups_o.write(
+            self.cursor, self.uid, gurb_cups_id_2, {"state": "comming_registration"}
+        )
+
+        result = gurb_www_o.get_info_gurb(
+            self.cursor, self.uid, 'G001', "2.0TD"
+        )
+
+        # CAU 1: 10 - 2.5 (active) - 6.0 (future from comming_registration) = 1.5 kW available
+        # CAU 2: 0.5 kW available
+        # Best available = 1.5, capped at max_power_20 = 2 → [0.5, 1.0, 1.5]
+        self.assertEqual(result["available_betas"], [0.5, 1.0, 1.5])
+
     def test_get_info_gurb__surplus_comensation(self):
         imd_o = self.openerp.pool.get("ir.model.data")
         gurb_www_o = self.openerp.pool.get("som.gurb.www")
