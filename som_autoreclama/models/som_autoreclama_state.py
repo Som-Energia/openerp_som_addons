@@ -9,7 +9,7 @@ import traceback
 class SomAutoreclamaState(osv.osv):
 
     _name = "som.autoreclama.state"
-    _order = "priority"
+    _order = "workflow_id, priority"
 
     def do_action(self, cursor, uid, state_id, item_id, namespace, context=None):
         logger = logging.getLogger("openerp.som_autoreclama")
