@@ -438,6 +438,8 @@ class tarifes_tests(testing.OOTestCase):
             uid = txn.user
             tariff_obj = self.tariff_model
             self.conf_obj.set(cursor, uid, 'charge_iva_10_percent_when_available', 1)
+            self.conf_obj.set(cursor, uid, 'charge_iva_10_percent_when_start_date', '2021-06-01')
+            self.conf_obj.set(cursor, uid, 'charge_iva_10_percent_end_date', '2024-12-31')
             mock_omie_price.return_value = True
 
             result = tariff_obj._get_fiscal_position_reduced(
