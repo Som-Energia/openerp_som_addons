@@ -18,6 +18,7 @@
         "som_infoenergia",
         "giscedata_facturacio_iese",
         "som_indexada",
+        "som_extend_facturacio_comer",
     ],
     "init_xml": [],
     "demo_xml": ["demo/res_partner_demo.xml"],
