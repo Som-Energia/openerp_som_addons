@@ -578,9 +578,9 @@ class GiscedataFacturacioImportacioLinia(osv.osv):
 
                 if len(usr_obs) > 1:
                     usr_obs = [o for o in usr_obs if o]
-                last_line = usr_obs[0] if usr_obs else ""
+                last_line = usr_obs[0] if usr_obs else False
 
-                res[f1["id"]] = last_line[:100]
+                res[f1["id"]] = last_line[:100] if last_line else False
 
         return res
 
