@@ -75,15 +75,6 @@
             <field name="note">Cobrament Targeta</field>
             <field eval="1" name="active"/>
         </record>
-        <record model="account.account" id="account_clients_gurb">
-            <field name="name">Clients</field>
-            <field name="code">430000000000</field>
-            <field name="type">receivable</field>
-            <field eval="ref('account.minimal_0')" name="parent_id"/>
-            <field name="company_id" ref="base.main_company"/>
-            <field eval="True" name="reconcile"/>
-            <field name="user_type" ref="account.account_type_income"/>
-        </record>
         <record model="account.account" id="account_gurb_sales">
             <field name="name">Gurb</field>
             <field name="code">705000000104</field>
