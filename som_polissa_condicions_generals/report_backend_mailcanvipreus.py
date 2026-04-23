@@ -339,9 +339,8 @@ class ReportBackendMailcanvipreus(ReportBackend):
         is_gkwh=False,
         context=None,
     ):
-        # bo_social_price = 2.299047  # 2024
-        # bo_social_price = 4.650987  # 2025
-        bo_social_price = 6.979247  # 2026  # FIXME: Això s'ha d'agafar del ERP D:
+        bo_social_price = self.get_bo_social_price(
+            cursor, uid, polissa_id.llista_preu, context=context)
         preu_estimat_servei_ajust = 0.028  # FIXME: Això segurament haurà d'anar a un altre lloc
 
         ctx = context or {}
@@ -378,6 +377,16 @@ class ReportBackendMailcanvipreus(ReportBackend):
             imports += bo_social_price
 
         return imports
+
+    _bo_social_price = False
+
+    def get_bo_social_price(self, cursor, uid, pricelist, context=None):
+        tarifa_obj = self.pool.get("giscedata.polissa.tarifa")
+        if not self._bo_social_price:
+            self._bo_social_price = (
+                tarifa_obj.get_bo_social_price(cursor, uid, pricelist, context=context)
+            ) * 365
+        return self._bo_social_price
 
     def aplicarCoeficients(self, consum_anual, tarifa):
         coeficients = {
@@ -453,6 +462,38 @@ class ReportBackendMailcanvipreus(ReportBackend):
                 imp_str = "IGIC del 0%"
                 imp_value = 0
         return imp_str, float(imp_value)
+
+    def get_iva_text(self, cursor, uid, polissa, context=False):
+        if context is None:
+            context = {}
+
+        iva_percent = 0.1 if context and context.get('iva10') else 0.21
+
+        fp_obj = self.pool.get('account.fiscal.position')
+        atax_obj = self.pool.get('account.tax')
+        imd_obj = self.pool.get('ir.model.data')
+
+        fiscal_position = polissa.fiscal_position_id
+        if not fiscal_position:
+            fiscal_position = polissa.titular.property_account_position
+
+        try:
+            iva_tax_id = imd_obj.get_object_reference(cursor, uid, 'account', 'tax_iva21')[1]
+            mapped_tax_ids = fp_obj.map_tax(cursor, uid, fiscal_position, [
+                                            iva_tax_id], context=context)
+            if mapped_tax_ids:
+                tax_data = atax_obj.read(cursor, uid, mapped_tax_ids[0], [
+                                         'amount'], context=context)
+                if tax_data:
+                    iva_percent = tax_data['amount']
+        except Exception:
+            pass
+
+        tax_text_map = {
+            0.03: "IGIC del 3%",
+            0.00: "IGIC del 0%",
+        }
+        return tax_text_map.get(iva_percent, "IVA del {}%".format(int(iva_percent * 100)))
 
     def has_gurb(self, cursor, uid, polissa, context=False):
         gurb_cups_obj = self.pool.get("som.gurb.cups")
