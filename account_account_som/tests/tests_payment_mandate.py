@@ -105,6 +105,6 @@ class TestPaymentMandateSom(testing.OOTestCase):
             debtor_name=nom_complet,
             iban=iban,
             format_iban=' '.join(
-                iban[n:n + 4] for n in xrange(0, len(iban), 4)),
+                iban[n:n + 4] for n in range(0, len(iban), 4)),
             today=datetime.today().strftime("%Y-%m-%d"),
         ))
