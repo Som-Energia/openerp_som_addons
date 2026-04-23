@@ -596,3 +596,99 @@ class TestsFacturesValidation(testing.OOTestCase):
         fact.polissa_id.autoconsumo = u'41'  # <-- té autoconsum!
         result = self.vali_obj.check_consume_by_amount(self.txn.cursor, self.txn.user, fact, params)
         self.assertIsNotNone(result)
+
+    def test_check_invoice_from_delayed_contract_overwrite__No(self):
+        pol_id = self.get_fixture("giscedata_polissa", "polissa_0001")
+        self.prepare_contract(pol_id, "2017-01-01", "2017-02-18")
+        inv_id = self.get_fixture("giscedata_facturacio", "factura_0001")
+        self.modify_invoice(inv_id, pol_id, "2017-02-18", "2017-03-17")
+        params = {
+            "max_delayed_days": 70,
+            "today": "2017-05-20",
+        }
+        fact = self.fact_obj.browse(self.txn.cursor, self.txn.user, inv_id)
+        result = self.vali_obj.check_invoice_from_delayed_contract(
+            self.txn.cursor, self.txn.user, fact, params)
+        self.assertEqual(result, None)
+
+    def test_check_invoice_from_delayed_contract_overwrite__Yes(self):
+        pol_id = self.get_fixture("giscedata_polissa", "polissa_0001")
+        self.prepare_contract(pol_id, "2017-01-01", "2017-02-18")
+        inv_id = self.get_fixture("giscedata_facturacio", "factura_0001")
+        self.modify_invoice(inv_id, pol_id, "2017-02-18", "2017-03-17")
+        params = {
+            "max_delayed_days": 70,
+            "today": "2017-05-30",
+        }
+        fact = self.fact_obj.browse(self.txn.cursor, self.txn.user, inv_id)
+        result = self.vali_obj.check_invoice_from_delayed_contract(
+            self.txn.cursor, self.txn.user, fact, params)
+        self.assertIsNotNone(result)
+
+    def test_check_invoice_from_delayed_contract_overwrite__Yes_but_jumped(self):
+        pol_id = self.get_fixture("giscedata_polissa", "polissa_0001")
+        self.prepare_contract(pol_id, "2017-01-01", "2017-02-18")
+        inv_id = self.get_fixture("giscedata_facturacio", "factura_0001")
+        self.modify_invoice(inv_id, pol_id, "2017-02-18", "2017-03-17")
+        params = {
+            "max_delayed_days": 70,
+            "today": "2017-05-30",
+            "som_skip_if_20TD_00_and_less_than_days": 90,
+        }
+        fact = self.fact_obj.browse(self.txn.cursor, self.txn.user, inv_id)
+        fact.tarifa_acces_id.name = u'2.0TD'
+        fact.polissa_id.llista_preu.name = u'2.0TD_SOM'
+        fact.polissa_id.autoconsumo = u'00'
+        result = self.vali_obj.check_invoice_from_delayed_contract(
+            self.txn.cursor, self.txn.user, fact, params)
+        self.assertEqual(result, None)
+
+    def test_check_invoice_from_delayed_contract_overwrite__Yes_but_not_jumped(self):
+        pol_id = self.get_fixture("giscedata_polissa", "polissa_0001")
+        self.prepare_contract(pol_id, "2017-01-01", "2017-02-18")
+        inv_id = self.get_fixture("giscedata_facturacio", "factura_0001")
+        self.modify_invoice(inv_id, pol_id, "2017-02-18", "2017-03-17")
+        params = {
+            "max_delayed_days": 70,
+            "today": "2017-05-30",
+            "som_skip_if_20TD_00_and_less_than_days": 70,
+        }
+        fact = self.fact_obj.browse(self.txn.cursor, self.txn.user, inv_id)
+        fact.tarifa_acces_id.name = u'2.0TD'
+        fact.polissa_id.llista_preu.name = u'2.0TD_SOM'
+        fact.polissa_id.autoconsumo = u'00'
+        result = self.vali_obj.check_invoice_from_delayed_contract(
+            self.txn.cursor, self.txn.user, fact, params)
+        self.assertIsNotNone(result)
+
+    def test_check_consume_by_percentage_overwrite__No(self):
+        pol_id = self.get_fixture("giscedata_polissa", "polissa_0001")
+        self.prepare_contract(pol_id, "2017-01-01", "2017-02-18")
+        inv_id = self.get_fixture("giscedata_facturacio", "factura_0001")
+        self.modify_invoice(inv_id, pol_id, "2017-02-18", "2017-03-17")
+        params = {
+            "min_amount": 0.0,
+            "min_periods": 24,
+            "n_months": 24,
+            "overuse_percentage": 65.0
+        }
+        fact = self.fact_obj.browse(self.txn.cursor, self.txn.user, inv_id)
+        result = self.vali_obj.check_consume_by_percentage(
+            self.txn.cursor, self.txn.user, fact, params)
+        self.assertEqual(result, None)
+
+    def test_check_consume_by_percentage_overwrite__Yes(self):
+        pol_id = self.get_fixture("giscedata_polissa", "polissa_0001")
+        self.prepare_contract(pol_id, "2017-01-01", "2017-02-18")
+        inv_id = self.get_fixture("giscedata_facturacio", "factura_0001")
+        self.modify_invoice(inv_id, pol_id, "2017-02-18", "2017-03-17")
+        params = {
+            "min_amount": 0.0,
+            "min_periods": 24,
+            "n_months": 24,
+            "overuse_percentage": 65.0
+        }
+        fact = self.fact_obj.browse(self.txn.cursor, self.txn.user, inv_id)
+        result = self.vali_obj.check_consume_by_percentage(
+            self.txn.cursor, self.txn.user, fact, params)
+        self.assertIsNotNone(result)
