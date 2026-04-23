@@ -622,7 +622,7 @@ class SomGurbCups(osv.osv):
 
         invoice_account_code = "705000000104"
         journal_code = "FACT_GURB"
-        payment_type_code = "TRANSFERENCIA_CSB"
+        payment_type_code = "RECIBO_CSB"
 
         gurb_cups_br = self.browse(cursor, uid, gurb_cups_id, context=context)
 
