@@ -33,8 +33,9 @@ rules:
 
 testing:
   runner:
-    command: "python -m destral.testing"
+    command: "dodestral <database> -m <module>"
     framework: destral (OOMigration)
+    notes: "Requereix: pyenv activate erp, Docker (PostgreSQL, MongoDB, Redis)"
   layers:
     unit: true
     integration: true
