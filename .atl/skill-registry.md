@@ -11,7 +11,7 @@ See `_shared/skill-resolver.md` for the full resolution protocol.
 | Quan necessites crear una branca nova per treballar | git-branch | ~/.config/opencode/skills/somenergia/git-branch/SKILL.md |
 | Quan necessites fer un commit de codi | git-commit | ~/.config/opencode/skills/somenergia/git-commit/SKILL.md |
 | Quan necessites crear una Pull Request | git-pr | ~/.config/opencode/skills/somenergia/git-pr/SKILL.md |
-| Quan necessites executar tests d'un mòdul Odoo amb destral | erp-test | ~/.config/opencode/skills/somenergia/erp-test/SKILL.md |
+| Quan necessites executar tests d'un mòdul OpenERP amb destral | erp-test | ~/.config/opencode/skills/somenergia/erp-test/SKILL.md |
 | When creating a GitHub issue, reporting a bug, or requesting a feature | issue-creation | ~/.config/opencode/skills/issue-creation/SKILL.md |
 | When creating a pull request, opening a PR, or preparing changes for review | branch-pr | ~/.config/opencode/skills/branch-pr/SKILL.md |
 | When user asks to create a new skill, add agent instructions, or document patterns for AI | skill-creator | ~/.config/opencode/skills/skill-creator/SKILL.md |
@@ -41,7 +41,7 @@ See `_shared/skill-resolver.md` for the full resolution protocol.
 - Títols: Clar i descriptiu
 
 ### erp-test
-- Requisits: Docker (PostgreSQL, MongoDB, Redis), pyenv (`erp`), Odoo a `/home/oriol/somenergia/src/erp/server/bin`
+- Requisits: Docker (PostgreSQL, MongoDB, Redis), pyenv (`erp`), OpenERP a `/home/oriol/somenergia/src/erp/server/bin`
 - Variables d'entorn obligatòries: PYTHONPATH, OPENERP_PRICE_ACCURACY, OORQ_ASYNC, OPENERP_DB_*, OPENERP_MONGODB_HOST, OPENERP_REDIS_URL
 - Command: `dodestral <database> -m <module_name>`
 - Contenidors esperats: src_db_1, src_mongo_1, src_redis_1

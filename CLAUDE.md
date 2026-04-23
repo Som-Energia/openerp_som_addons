@@ -3,7 +3,7 @@
 Treballa amb el repositori `openerp_som_addons`.
 
 ## Tech Stack
-- Odoo/OpenERP 7 (Python 2.7)
+- OpenERP/OpenERP 7 (Python 2.7)
 - Testing: destral
 - Linting: flake8
 
@@ -38,5 +38,5 @@ dodestral <db> -m <modul>
 - `.github/docs/estil.md`
 - `.github/docs/evitar.md`
 - `.github/docs/arquitectura.md`
-- Patterns Odoo 5: `osv.osv`, `_columns`, `fields.*`
+- Patterns OpenERP 5: `osv.osv`, `_columns`, `fields.*`
 - Evitar API nova: `@api.model`, `@api.depends`

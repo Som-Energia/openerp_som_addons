@@ -4,7 +4,7 @@ Aquest fitxer conté les instruccions i convencions que qualsevol agent IA ha de
 
 ## Tech Stack
 
-- **Framework**: Odoo/OpenERP 7 (Som Energia custom modules)
+- **Framework**: OpenERP/OpenERP 7 (Som Energia custom modules)
 - **Python**: 2.7 (compatible amb Python 3)
 - **Testing**: destral (OOMigration test framework)
 - **Linting**: flake8, autopep8, autoflake (via pre-commit)
@@ -55,13 +55,13 @@ Les skills següents estan disponibles al projecte i s'han d'utilitzar quan corr
 **Requisits per executar tests:**
 1. Docker: PostgreSQL, MongoDB, Redis corrent
 2. pyenv: `pyenv activate erp`
-3. Odoo instal·lat a `/home/oriol/somenergia/src/erp/server/bin`
+3. OpenERP instal·lat a `/home/oriol/somenergia/src/erp/server/bin`
 
 ## Estil de Programació
 
 Seguir `.github/docs/estil.md` i `.github/docs/evitar.md`.
 
-### Patterns d'Odoo 5/OERP 7
+### Patterns d'OpenERP 5/OERP 7
 
 - Utilitzar `osv.osv`, `osv.osv_memory`
 - Definir camps amb `_columns` i `fields.*`

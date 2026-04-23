@@ -3,7 +3,7 @@
 Treballa amb el repositori `openerp_som_addons`.
 
 ## Tech Stack
-- Odoo/OpenERP 7 (Python 2.7)
+- OpenERP/OpenERP 7 (Python 2.7)
 - Testing: destral
 - Linting: flake8
 

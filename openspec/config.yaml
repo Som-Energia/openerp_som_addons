@@ -1,8 +1,8 @@
 schema: spec-driven
 
 context: |
-  Tech stack: Odoo/OpenERP (Python 2.7, PostgreSQL) - Som Energia custom modules
-  Architecture: Modular Odoo addon structure (~60 modules), XML models, SQL triggers
+  Tech stack: OpenERP/OpenERP (Python 2.7, PostgreSQL) - Som Energia custom modules
+  Architecture: Modular OpenERP addon structure (~60 modules), XML models, SQL triggers
   Testing: destral framework (OOMigration), unittest, GitHub Actions CI
   Style: flake8 + autopep8 + autoflake via pre-commit
 
