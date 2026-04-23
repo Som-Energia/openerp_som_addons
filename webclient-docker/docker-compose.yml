@@ -1,0 +1,15 @@
+services:
+  webclient:
+    build: .
+    image: gisce-webclient:latest
+    container_name: gisce-webclient
+    restart: unless-stopped
+    network_mode: host
+    environment:
+      CHECK_INTERVAL: "21600"
+      GITHUB_TOKEN: "${GITHUB_TOKEN:-}"
+    volumes:
+      - webclient-state:/var/lib/webclient
+
+volumes:
+  webclient-state:
