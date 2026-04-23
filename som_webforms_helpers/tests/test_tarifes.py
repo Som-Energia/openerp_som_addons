@@ -89,102 +89,6 @@ class tarifes_tests(testing.OOTestCase):
 
             self.assertTrue(result["error"])
 
-    def test__get_tariff_prices__valid_date_range_date_tariff_into_range(self):
-
-        date_start = "2022-12-01"
-        date_end = "2023-01-31"
-
-        date_from = "2021-01-01"
-        date_to = "2023-02-01"
-
-        self.assertTrue(
-            (not date_end or date_from <= date_end) and (not date_start or date_to >= date_start)
-        )
-
-    def test__get_tariff_prices__valid_date_range_date_from_into_tariff(self):
-
-        date_start = "2022-12-01"
-        date_end = "2023-01-31"
-
-        date_from = "2022-12-15"
-        date_to = "2023-02-01"
-
-        self.assertTrue(
-            (not date_end or date_from <= date_end) and (not date_start or date_to >= date_start)
-        )
-
-    def test__get_tariff_prices__valid_date_range_date_to_into_tariff(self):
-
-        date_start = "2022-12-01"
-        date_end = "2023-01-31"
-
-        date_from = "2021-01-01"
-        date_to = "2023-01-15"
-
-        self.assertTrue(
-            (not date_end or date_from <= date_end) and (not date_start or date_to >= date_start)
-        )
-
-    def test__get_tariff_prices__valid_date_range_date_range_into_tariff(self):
-
-        date_start = "2022-12-01"
-        date_end = "2023-01-31"
-
-        date_from = "2021-12-15"
-        date_to = "2023-01-15"
-
-        self.assertTrue(
-            (not date_end or date_from <= date_end) and (not date_start or date_to >= date_start)
-        )
-
-    def test__get_tariff_prices__valid_date_range_date_range_equal_tariff_range(self):
-
-        date_start = "2022-12-01"
-        date_end = "2023-01-31"
-
-        date_from = "2021-12-01"
-        date_to = "2023-01-31"
-
-        self.assertTrue(
-            (not date_end or date_from <= date_end) and (not date_start or date_to >= date_start)
-        )
-
-    def test__get_tariff_prices__valid_date_range_date_range_before_tariff_range(self):
-
-        date_start = "2022-12-01"
-        date_end = "2023-01-31"
-
-        date_from = "2020-12-01"
-        date_to = "2022-01-31"
-
-        self.assertFalse(
-            (not date_end or date_from <= date_end) and (not date_start or date_to >= date_start)
-        )
-
-    def test__get_tariff_prices__valid_date_range_date_range_after_tariff_range(self):
-
-        date_start = "2022-12-01"
-        date_end = "2023-01-31"
-
-        date_from = "2023-12-01"
-        date_to = "2024-01-31"
-
-        self.assertFalse(
-            (not date_end or date_from <= date_end) and (not date_start or date_to >= date_start)
-        )
-
-    def test__get_tariff_prices__valid_date_range_with_active_tariff(self):
-
-        date_start = "2022-12-01"
-        date_end = False
-
-        date_from = "2022-12-15"
-        date_to = "2024-01-31"
-
-        self.assertTrue(
-            (not date_end or date_from <= date_end) and (not date_start or date_to >= date_start)
-        )
-
     def test__get_tariff_prices__without_dates(self):
         """
         Get an active tariff
@@ -534,6 +438,8 @@ class tarifes_tests(testing.OOTestCase):
             uid = txn.user
             tariff_obj = self.tariff_model
             self.conf_obj.set(cursor, uid, 'charge_iva_10_percent_when_available', 1)
+            self.conf_obj.set(cursor, uid, 'charge_iva_10_percent_when_start_date', '2021-06-01')
+            self.conf_obj.set(cursor, uid, 'charge_iva_10_percent_end_date', '2024-12-31')
             mock_omie_price.return_value = True
 
             result = tariff_obj._get_fiscal_position_reduced(
