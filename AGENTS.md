@@ -22,19 +22,13 @@ openerp_som_addons/
     └── copilot-instructions.md
 ```
 
-## Patrons i plantilles
+## Documentació del projecte
 
-Quan treballis amb OpenERP en aquest repositori, consulta les plantilles a `docs/patterns/`:
-
-| Patró | Descripció |
-|------|-----------|
-| [model-inherit](docs/patterns/model-inherit.md) | Com heretar un model existent |
-| [field-add](docs/patterns/field-add.md) | Com afegir un camp nou |
-| [view-extend](docs/patterns/view-extend.md) | Com estendre una vista XML |
-| [wizard](docs/patterns/wizard.md) | Com crear un wizard |
-| [test-basic](docs/patterns/test-basic.md) | Com escriure un test |
-| [demo-data](docs/patterns/demo-data.md) | Com crear dades demo per tests |
-| [module-structure](docs/patterns/module-structure.md) | Estructura d'un mòdul (carpetes i propòsit) |
+| Carpeta | Contingut |
+|---------|-----------|
+| `docs/patterns/` | Receptes: com fer tasques concretes |
+| `docs/guides/` | Guies: conceptes i configuració |
+| `.github/docs/` | Decisions d'arquitectura i estil |
 
 ## Skills Disponibles
 
@@ -105,11 +99,10 @@ Abans de crear PR, verificar:
 - [ ] Linting passen (`flake8 .`)
 - [ ] S'ha seguit l'estil de codi
 
-## Fitxers de Referència
+## Documentació
 
-- `.github/docs/estil.md` - Estil de codi
-- `.github/docs/evitar.md` - Evitar certs patrons
-- `.github/docs/arquitectura.md` - Arquitectura
-- `.github/docs/desenvolupament.md` - Desenvolupament
-- `pull_request_template.md` - Plantilla de PR
-- `docs/patterns/` - Plantilles de patrons
+| Carpeta | Contingut |
+|---------|-----------|
+| `docs/patterns/` | Receptes: com fer tasques concretes |
+| `docs/guides/` | Guies: conceptes i configuració |
+| `.github/docs/` | Decisions d'arquitectura i estil |
