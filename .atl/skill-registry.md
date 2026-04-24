@@ -91,11 +91,11 @@ See `_shared/skill-resolver.md` for the full resolution protocol.
 
 | File | Path | Notes |
 |------|------|-------|
-| AGENTS.md | ~/somenergia/src/openerp_som_addons/AGENTS.md | Index — references files below |
-| .github/docs/estil.md | ~/somenergia/src/openerp_som_addons/.github/docs/estil.md | Estil de codi |
-| .github/docs/evitar.md | ~/somenergia/src/openerp_som_addons/.github/docs/evitar.md | Evitar patrons |
-| .github/docs/arquitectura.md | ~/somenergia/src/openerp_som_addons/.github/docs/arquitectura.md | Arquitectura |
-| .github/docs/desenvolupament.md | ~/somenergia/src/openerp_som_addons/.github/docs/desenvolupament.md | Desenvolupament |
-| pull_request_template.md | ~/somenergia/src/openerp_som_addons/pull_request_template.md | Plantilla PR |
+| AGENTS.md | AGENTS.md | Index — references files below |
+| .github/docs/estil.md | .github/docs/estil.md | Estil de codi |
+| .github/docs/evitar.md | .github/docs/evitar.md | Evitar patrons |
+| .github/docs/arquitectura.md | .github/docs/arquitectura.md | Arquitectura |
+| .github/docs/desenvolupament.md | .github/docs/desenvolupament.md | Desenvolupament |
+| pull_request_template.md | pull_request_template.md | Plantilla PR |
 
 Read the convention files listed above for project-specific patterns and rules. All referenced paths have been extracted — no need to read index files to discover more.

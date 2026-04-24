@@ -64,7 +64,7 @@ Les skills següents estan disponibles al projecte i s'han d'utilitzar quan corr
 **Requisits per executar tests:**
 1. Docker: PostgreSQL, MongoDB, Redis corrent
 2. pyenv: `pyenv activate erp`
-3. OpenERP instal·lat a `/home/oriol/somenergia/src/erp/server/bin`
+3. OpenERP instal·lat a `~/somenergia/src/erp/server/bin`
 
 ## Estil de Programació
 
