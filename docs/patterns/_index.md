@@ -6,6 +6,7 @@ Col.lecció de receptes i patrons recurrents per treballar amb mòduls OpenERP/O
 
 | Patró | Descripció |
 |------|-----------|
+| [inheritance-types](inheritance-types.md) | Class, Prototyping i Delegation — els 3 tipus d'herència |
 | [model-inherit](model-inherit.md) | Com heredar un model existent |
 | [field-add](field-add.md) | Com afegir un camp nou |
 | [view-extend](view-extend.md) | Com estendre una vista XML |
