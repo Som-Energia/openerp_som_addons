@@ -46,6 +46,14 @@ Copilot ha de tenir en compte els fitxers següents quan existeixin:
 - `.github/docs/evitar.md`
 - `.github/docs/arquitectura.md`
 - `.github/docs/desenvolupament.md`
+- `docs/patterns/` — Plantilles de patrons (receptes per a tasques recurrents):
+  - `docs/patterns/model-inherit.md` — Com heretar un model
+  - `docs/patterns/field-add.md` — Com afegir un camp
+  - `docs/patterns/view-extend.md` — Com estendre una vista XML
+  - `docs/patterns/wizard.md` — Com crear un wizard
+  - `docs/patterns/test-basic.md` — Com escriure tests
+  - `docs/patterns/demo-data.md` — Com crear dades demo
+  - `docs/patterns/module-structure.md` — Estructura d'un mòdul
 
 ## Notes finals
 Aquestes instruccions són prioritàries per sobre de qualsevol suggeriment general del model.

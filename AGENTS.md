@@ -4,7 +4,7 @@ Aquest fitxer conté les instruccions i convencions que qualsevol agent IA ha de
 
 ## Tech Stack
 
-- **Framework**: OpenERP/OpenERP 7 (Som Energia custom modules)
+- **Framework**: OpenERP v5 (Som Energia custom modules)
 - **Python**: 2.7 (compatible amb Python 3)
 - **Testing**: destral (OOMigration test framework)
 - **Linting**: flake8, autopep8, autoflake (via pre-commit)
@@ -21,6 +21,20 @@ openerp_som_addons/
     ├── docs/           # Documentació interna
     └── copilot-instructions.md
 ```
+
+## Patrons i plantilles
+
+Quan treballis amb OpenERP en aquest repositori, consulta les plantilles a `docs/patterns/`:
+
+| Patró | Descripció |
+|------|-----------|
+| [model-inherit](docs/patterns/model-inherit.md) | Com heretar un model existent |
+| [field-add](docs/patterns/field-add.md) | Com afegir un camp nou |
+| [view-extend](docs/patterns/view-extend.md) | Com estendre una vista XML |
+| [wizard](docs/patterns/wizard.md) | Com crear un wizard |
+| [test-basic](docs/patterns/test-basic.md) | Com escriure un test |
+| [demo-data](docs/patterns/demo-data.md) | Com crear dades demo per tests |
+| [module-structure](docs/patterns/module-structure.md) | Estructura d'un mòdul (carpetes i propòsit) |
 
 ## Skills Disponibles
 
@@ -41,6 +55,7 @@ Les skills següents estan disponibles al projecte i s'han d'utilitzar quan corr
 - `MOD_<desc>` - Canvi de comportament
 - `REF_<desc>` - Refactorització
 - `TEST_<desc>` - Tests
+- `DOCS_<desc>` - Documentació
 
 **Format de commit:**
 - Emoji + type en anglès: `✨ feat: add user auth`
@@ -61,7 +76,7 @@ Les skills següents estan disponibles al projecte i s'han d'utilitzar quan corr
 
 Seguir `.github/docs/estil.md` i `.github/docs/evitar.md`.
 
-### Patterns d'OpenERP 5/OERP 7
+### Patterns d'OpenERP 5
 
 - Utilitzar `osv.osv`, `osv.osv_memory`
 - Definir camps amb `_columns` i `fields.*`
@@ -97,3 +112,4 @@ Abans de crear PR, verificar:
 - `.github/docs/arquitectura.md` - Arquitectura
 - `.github/docs/desenvolupament.md` - Desenvolupament
 - `pull_request_template.md` - Plantilla de PR
+- `docs/patterns/` - Plantilles de patrons
