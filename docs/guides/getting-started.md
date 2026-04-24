@@ -6,7 +6,10 @@
 
 - Python 2.7 (compatible amb Python 3)
 - Docker (PostgreSQL, MongoDB, Redis)
-- OpenERP instal·lat a `/home/oriol/somenergia/src/erp/server/bin`
+- Docker Compose: `docker-compose.yaml` al arrel del repositori
+
+### Arrancar bases de dades
+- OpenERP instal·lat a `~/somenergia/src/erp/server/bin`
 
 ### Variables d'entorn
 
