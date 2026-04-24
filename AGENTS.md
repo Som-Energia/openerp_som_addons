@@ -4,7 +4,7 @@ Aquest fitxer conté les instruccions i convencions que qualsevol agent IA ha de
 
 ## Tech Stack
 
-- **Framework**: OpenERP/OERP 7 (Som Energia custom modules)
+- **Framework**: OpenERP v5 (Som Energia custom modules)
 - **Python**: 2.7 (compatible amb Python 3)
 - **Testing**: destral (OOMigration test framework)
 - **Linting**: flake8, autopep8, autoflake (via pre-commit)
@@ -24,7 +24,7 @@ openerp_som_addons/
 
 ## Patrons i plantilles
 
-Quan treballis amb OpenERP/Odoo en aquest repositori, consulta les plantilles a `docs/patterns/`:
+Quan treballis amb OpenERP en aquest repositori, consulta les plantilles a `docs/patterns/`:
 
 | Patró | Descripció |
 |------|-----------|
@@ -76,7 +76,7 @@ Les skills següents estan disponibles al projecte i s'han d'utilitzar quan corr
 
 Seguir `.github/docs/estil.md` i `.github/docs/evitar.md`.
 
-### Patterns d'OpenERP 5/OERP 7
+### Patterns d'OpenERP 5
 
 - Utilitzar `osv.osv`, `osv.osv_memory`
 - Definir camps amb `_columns` i `fields.*`
