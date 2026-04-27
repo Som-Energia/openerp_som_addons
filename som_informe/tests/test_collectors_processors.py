@@ -1,143 +1,116 @@
 # -*- coding: utf-8 -*-
 """
 Tests for Collectors and Processors in som_informe module.
-
-Note: Many of these tests require real switching step data to function properly.
-Tests are marked as skip for components that need step objects from the wizard.
 """
-from destral import testing
-import unittest
-from destral.transaction import Transaction
+import inspect
+from som_informe.tests.test_base import BaseTestCase
 
 
-class CollectorTests(testing.OOTestCase):
-    """Tests for collector components.
+COLLECTORS = [
+    "CollectHeader",
+    "CollectContractData",
+    "CollectDetailsInvoices",
+    "CollectExpectedCutOffDate",
+]
 
-    Note: These require specific contract data structure (category_id as list).
-    Tests verify only that factory can instantiate.
-    """
+TABLES = [
+    "TableInvoices",
+    "TableReadings",
+]
 
-    def setUp(self):
-        self.txn = Transaction().start(self.database)
-        self.cursor = self.txn.cursor
-        self.uid = self.txn.user
+PROCESSORS = [
+    "ProcesA3",
+    "ProcesB1",
+    "ProcesB2",
+    "ProcesC1",
+    "ProcesC2",
+    "ProcesM1",
+    "ProcesATR",
+]
 
-    def tearDown(self):
-        self.txn.stop()
 
-    @unittest.skip("Requires contract with category list")
-    def test__CollectHeader__instantiable(self):
-        """Test CollectHeader extractor can be instantiated."""
+class CollectorTests(BaseTestCase):
+    """Tests for collector components."""
+
+    def test_collector_instantiable(self):
         wiz_obj = self.openerp.pool.get("wizard.create.technical.report")
-        extractor = wiz_obj.factory_metadata_extractor("CollectHeader")
-        self.assertIsNotNone(extractor)
+        for name in COLLECTORS:
+            extractor = wiz_obj.factory_metadata_extractor(name)
+            self.assertIsInstance(extractor, object)
+            self.assertTrue(
+                hasattr(extractor, 'get_data'),
+                msg="{} must have 'get_data' attribute".format(name)
+            )
+            self.assertTrue(
+                callable(extractor.get_data),
+                msg="{} 'get_data' must be callable".format(name)
+            )
 
-    @unittest.skip("Requires contract with category list")
-    def test__CollectContractData__instantiable(self):
-        """Test CollectContractData extractor can be instantiated."""
+    def test_collector_signature(self):
+        """Test collectors have expected signature: (cursor, uid, wiz, context)."""
+        for name in COLLECTORS:
+            extractor_class = self._get_extractor_class(name)
+            argspec = inspect.getargspec(extractor_class.get_data)
+            params = argspec.args
+            self.assertIn("cursor", params)
+            self.assertIn("uid", params)
+            self.assertIn("wiz", params)
+            self.assertIn("context", params)
+
+
+class TableComponentsTests(BaseTestCase):
+    """Tests for table components."""
+
+    def test_table_instantiable(self):
         wiz_obj = self.openerp.pool.get("wizard.create.technical.report")
-        extractor = wiz_obj.factory_metadata_extractor("CollectContractData")
-        self.assertIsNotNone(extractor)
+        for name in TABLES:
+            extractor = wiz_obj.factory_metadata_extractor(name)
+            self.assertIsInstance(extractor, object)
+            self.assertTrue(
+                hasattr(extractor, 'get_data'),
+                msg="{} must have 'get_data' attribute".format(name)
+            )
+            self.assertTrue(
+                callable(extractor.get_data),
+                msg="{} 'get_data' must be callable".format(name)
+            )
 
-    @unittest.skip("Requires contract with category list")
-    def test__CollectDetailsInvoices__instantiable(self):
-        """Test CollectDetailsInvoices extractor can be instantiated."""
+    def test_table_signature(self):
+        """Test tables have expected signature: (cursor, uid, wiz, invoice_ids, context)."""
+        for name in TABLES:
+            extractor_class = self._get_extractor_class(name)
+            argspec = inspect.getargspec(extractor_class.get_data)
+            params = argspec.args
+            self.assertIn("cursor", params)
+            self.assertIn("uid", params)
+            self.assertIn("wiz", params)
+            self.assertIn("invoice_ids", params)
+
+
+class ProcessorTests(BaseTestCase):
+    """Tests for processor components."""
+
+    def test_processor_instantiable(self):
         wiz_obj = self.openerp.pool.get("wizard.create.technical.report")
-        extractor = wiz_obj.factory_metadata_extractor("CollectDetailsInvoices")
-        self.assertIsNotNone(extractor)
+        for name in PROCESSORS:
+            extractor = wiz_obj.factory_metadata_extractor(name)
+            self.assertIsInstance(extractor, object)
+            self.assertTrue(
+                hasattr(extractor, 'get_data'),
+                msg="{} must have 'get_data' attribute".format(name)
+            )
+            self.assertTrue(
+                callable(extractor.get_data),
+                msg="{} 'get_data' must be callable".format(name)
+            )
 
-    @unittest.skip("Requires contract with category list")
-    def test__CollectExpectedCutOffDate__instantiable(self):
-        """Test CollectExpectedCutOffDate extractor can be instantiated."""
-        wiz_obj = self.openerp.pool.get("wizard.create.technical.report")
-        extractor = wiz_obj.factory_metadata_extractor("CollectExpectedCutOffDate")
-        self.assertIsNotNone(extractor)
-
-
-class TableComponentsTests(testing.OOTestCase):
-    """Tests for table components (TableInvoices, etc.)."""
-
-    def setUp(self):
-        self.txn = Transaction().start(self.database)
-        self.cursor = self.txn.cursor
-        self.uid = self.txn.user
-
-    def tearDown(self):
-        self.txn.stop()
-
-    def test__TableInvoices__instantiable(self):
-        """Test TableInvoices extractor can be instantiated."""
-        wiz_obj = self.openerp.pool.get("wizard.create.technical.report")
-        extractor = wiz_obj.factory_metadata_extractor("TableInvoices")
-        self.assertIsNotNone(extractor)
-
-    def test__TableReadings__instantiable(self):
-        """Test TableReadings extractor can be instantiated."""
-        wiz_obj = self.openerp.pool.get("wizard.create.technical.report")
-        extractor = wiz_obj.factory_metadata_extractor("TableReadings")
-        self.assertIsNotNone(extractor)
-
-
-class ProcessorsTests(testing.OOTestCase):
-    """Tests for processor components.
-
-    Note: These require real switching step data and are skipped.
-    They verify only that the factory can instantiate the component.
-    """
-
-    def setUp(self):
-        self.txn = Transaction().start(self.database)
-        self.cursor = self.txn.cursor
-        self.uid = self.txn.user
-
-    def tearDown(self):
-        self.txn.stop()
-
-    @unittest.skip("Requires real switching step data")
-    def test__ProcesA3__instantiable(self):
-        """Test ProcesA3 can be instantiated."""
-        wiz_obj = self.openerp.pool.get("wizard.create.technical.report")
-        extractor = wiz_obj.factory_metadata_extractor("ProcesA3")
-        self.assertIsNotNone(extractor)
-
-    @unittest.skip("Requires real switching step data")
-    def test__ProcesB1__instantiable(self):
-        """Test ProcesB1 can be instantiated."""
-        wiz_obj = self.openerp.pool.get("wizard.create.technical.report")
-        extractor = wiz_obj.factory_metadata_extractor("ProcesB1")
-        self.assertIsNotNone(extractor)
-
-    @unittest.skip("Requires real switching step data")
-    def test__ProcesB2__instantiable(self):
-        """Test ProcesB2 can be instantiated."""
-        wiz_obj = self.openerp.pool.get("wizard.create.technical.report")
-        extractor = wiz_obj.factory_metadata_extractor("ProcesB2")
-        self.assertIsNotNone(extractor)
-
-    @unittest.skip("Requires real switching step data")
-    def test__ProcesC1__instantiable(self):
-        """Test ProcesC1 can be instantiated."""
-        wiz_obj = self.openerp.pool.get("wizard.create.technical.report")
-        extractor = wiz_obj.factory_metadata_extractor("ProcesC1")
-        self.assertIsNotNone(extractor)
-
-    @unittest.skip("Requires real switching step data")
-    def test__ProcesC2__instantiable(self):
-        """Test ProcesC2 can be instantiated."""
-        wiz_obj = self.openerp.pool.get("wizard.create.technical.report")
-        extractor = wiz_obj.factory_metadata_extractor("ProcesC2")
-        self.assertIsNotNone(extractor)
-
-    @unittest.skip("Requires real switching step data")
-    def test__ProcesM1__instantiable(self):
-        """Test ProcesM1 can be instantiated."""
-        wiz_obj = self.openerp.pool.get("wizard.create.technical.report")
-        extractor = wiz_obj.factory_metadata_extractor("ProcesM1")
-        self.assertIsNotNone(extractor)
-
-    @unittest.skip("Requires real switching step data")
-    def test__ProcesATR__instantiable(self):
-        """Test ProcesATR can be instantiated."""
-        wiz_obj = self.openerp.pool.get("wizard.create.technical.report")
-        extractor = wiz_obj.factory_metadata_extractor("ProcesATR")
-        self.assertIsNotNone(extractor)
+    def test_processor_signature(self):
+        """Test processors have expected signature: (wiz, cursor, uid, step)."""
+        for name in PROCESSORS:
+            extractor_class = self._get_extractor_class(name)
+            argspec = inspect.getargspec(extractor_class.get_data)
+            params = argspec.args
+            self.assertIn("wiz", params)
+            self.assertIn("cursor", params)
+            self.assertIn("uid", params)
+            self.assertIn("step", params)

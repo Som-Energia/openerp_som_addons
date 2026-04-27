@@ -1,85 +1,64 @@
 # -*- coding: utf-8 -*-
 """
 Tests for Invoice Extractors in som_informe module.
-
-Tests all invoice type extractors: InvoiceF1NG, InvoiceF1A, InvoiceF1C, InvoiceF1R, InvoiceFE
 """
-from destral import testing
-from destral.transaction import Transaction
+import inspect
+from som_informe.tests.test_base import BaseTestCase
 
 
-class InvoiceExtractorsTests(testing.OOTestCase):
+INVOICE_EXTRACTORS = [
+    "InvoiceF1NG",
+    "InvoiceF1A",
+    "InvoiceF1C",
+    "InvoiceF1R",
+    "InvoiceFE",
+]
+
+
+class InvoiceExtractorsTests(BaseTestCase):
     """Tests for InvoiceF1* extractor components."""
 
-    def setUp(self):
-        self.txn = Transaction().start(self.database)
-        self.cursor = self.txn.cursor
-        self.uid = self.txn.user
-
-    def tearDown(self):
-        self.txn.stop()
-
-    def test__InvoiceF1NG__instantiable(self):
-        """Test InvoiceF1NG extractor can be instantiated."""
+    def test_invoice_instantiable(self):
         wiz_obj = self.openerp.pool.get("wizard.create.technical.report")
-        extractor = wiz_obj.factory_metadata_extractor("InvoiceF1NG")
-        self.assertIsNotNone(extractor)
+        for name in INVOICE_EXTRACTORS:
+            extractor = wiz_obj.factory_metadata_extractor(name)
+            self.assertIsInstance(extractor, object)
+            self.assertTrue(
+                hasattr(extractor, 'get_data'),
+                msg="{} must have 'get_data' attribute".format(name)
+            )
+            self.assertTrue(
+                callable(extractor.get_data),
+                msg="{} 'get_data' must be callable".format(name)
+            )
 
-    def test__InvoiceF1A__instantiable(self):
-        """Test InvoiceF1A extractor can be instantiated."""
-        wiz_obj = self.openerp.pool.get("wizard.create.technical.report")
-        extractor = wiz_obj.factory_metadata_extractor("InvoiceF1A")
-        self.assertIsNotNone(extractor)
-
-    def test__InvoiceF1C__instantiable(self):
-        """Test InvoiceF1C extractor can be instantiated."""
-        wiz_obj = self.openerp.pool.get("wizard.create.technical.report")
-        extractor = wiz_obj.factory_metadata_extractor("InvoiceF1C")
-        self.assertIsNotNone(extractor)
-
-    def test__InvoiceF1R__instantiable(self):
-        """Test InvoiceF1R extractor can be instantiated."""
-        wiz_obj = self.openerp.pool.get("wizard.create.technical.report")
-        extractor = wiz_obj.factory_metadata_extractor("InvoiceF1R")
-        self.assertIsNotNone(extractor)
-
-    def test__InvoiceFE__instantiable(self):
-        """Test InvoiceFE extractor can be instantiated."""
-        wiz_obj = self.openerp.pool.get("wizard.create.technical.report")
-        extractor = wiz_obj.factory_metadata_extractor("InvoiceFE")
-        self.assertIsNotNone(extractor)
+    def test_invoice_signature(self):
+        """Test invoice extractors have expected signature: (cursor, uid, wiz, invoice, context)."""
+        for name in INVOICE_EXTRACTORS:
+            extractor_class = self._get_extractor_class(name)
+            argspec = inspect.getargspec(extractor_class.get_data)
+            params = argspec.args
+            self.assertIn("cursor", params)
+            self.assertIn("uid", params)
+            self.assertIn("wiz", params)
+            self.assertIn("invoice", params)
 
 
-class ComponentUtilsTests(testing.OOTestCase):
+class ComponentUtilsTests(BaseTestCase):
     """Tests for component_utils helper functions."""
 
-    def setUp(self):
-        self.txn = Transaction().start(self.database)
-        self.cursor = self.txn.cursor
-        self.uid = self.txn.user
-
-    def tearDown(self):
-        self.txn.stop()
-
-    def test__component_utils__dateformat(self):
-        """Test dateformat utility function."""
+    def test_dateformat(self):
         from som_informe.report.components.component_utils import dateformat
-
-        # Test with date object
         result = dateformat("2021-10-01")
-        self.assertIsNotNone(result)
+        self.assertIsInstance(result, str)
+        self.assertTrue(len(result) > 0)
 
-    def test__component_utils__get_description(self):
-        """Test get_description utility function."""
+    def test_get_description(self):
         from som_informe.report.components.component_utils import get_description
-
-        # Test getting description from a table
         result = get_description("AE", "TABLA_43")
-        self.assertIsNotNone(result)
+        self.assertIsInstance(result, (str, unicode, dict))
 
-    def test__component_utils__get_unit_magnitude(self):
-        """Test get_unit_magnitude utility function."""
+    def test_get_unit_magnitude(self):
         from som_informe.report.components.component_utils import get_unit_magnitude
-
         result = get_unit_magnitude("AE")
-        self.assertIsNotNone(result)
+        self.assertIsInstance(result, (str, dict))

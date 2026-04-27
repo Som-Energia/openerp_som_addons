@@ -1,502 +1,132 @@
 # -*- coding: utf-8 -*-
 """
 Tests for Report Block Components (A, B, C, D, E, M, R series).
-
-Note: These tests verify that all components can be instantiated.
-Many require real switching step data (get_data with step parameter).
 """
-from destral import testing
-import unittest
-from destral.transaction import Transaction
+import inspect
+from som_informe.tests.test_base import BaseTestCase
 
 
-class ReportBlockTests(testing.OOTestCase):
-    """Tests for A/B/C/D/E/M/R series report blocks.
+A_SERIES = ["A301", "A302", "A303", "A304", "A305", "A306", "A307", "A313"]
+B_SERIES = ["B101", "B102", "B103", "B104", "B105", "B106", "B107", "B116", "B205"]
+C_SERIES = [
+    "C101", "C102", "C104", "C105", "C106", "C108", "C109", "C110",
+    "C111", "C112", "C201", "C202", "C203", "C204", "C205", "C208",
+    "C209", "C210", "C212", "C213",
+]
+D_SERIES = ["D101", "D102"]
+E_SERIES = ["E101", "E102", "E103", "E104", "E105",
+            "E106", "E108", "E109", "E110", "E111", "E112", "E113"]
+M_SERIES = ["M101", "M102", "M103", "M104", "M105", "M106", "M107", "M113"]
+R_SERIES = ["R101", "R102", "R103", "R104", "R105", "R108", "R109"]
 
-    These require real switching step data and are skipped.
-    Tests verify only that factory can instantiate the extractors.
-    """
 
-    def setUp(self):
-        self.txn = Transaction().start(self.database)
-        self.cursor = self.txn.cursor
-        self.uid = self.txn.user
+def _test_extractor_instantiable(test_case, wiz_obj, name):
+    extractor = wiz_obj.factory_metadata_extractor(name)
+    test_case.assertIsInstance(extractor, object)
+    test_case.assertTrue(
+        hasattr(extractor, 'get_data'),
+        msg="{} must have 'get_data' attribute".format(name)
+    )
+    test_case.assertTrue(
+        callable(extractor.get_data),
+        msg="{} 'get_data' must be callable".format(name)
+    )
 
-    def tearDown(self):
-        self.txn.stop()
 
-    @unittest.skip("Requires switching step data")
-    def test__A301__instantiable(self):
-        """Test A301 can be instantiated."""
+def _test_signature(test_case, name, required_params):
+    extractor_class = test_case._get_extractor_class(name)
+    argspec = inspect.getargspec(extractor_class.get_data)
+    params = argspec.args
+    for param in required_params:
+        test_case.assertIn(param, params, msg="{} must have '{}' param".format(name, param))
+
+
+class ASeriesTests(BaseTestCase):
+    """Tests for A-series report blocks."""
+
+    def test_a_series_instantiable(self):
         wiz_obj = self.openerp.pool.get("wizard.create.technical.report")
-        extractor = wiz_obj.factory_metadata_extractor("A301")
-        self.assertIsNotNone(extractor)
+        for name in A_SERIES:
+            _test_extractor_instantiable(self, wiz_obj, name)
 
-    @unittest.skip("Requires switching step data")
-    def test__A302__instantiable(self):
-        """Test A302 can be instantiated."""
-        wiz_obj = self.openerp.pool.get("wizard.create.technical.report")
-        extractor = wiz_obj.factory_metadata_extractor("A302")
-        self.assertIsNotNone(extractor)
-
-    @unittest.skip("Requires switching step data")
-    def test__A303__instantiable(self):
-        """Test A303 can be instantiated."""
-        wiz_obj = self.openerp.pool.get("wizard.create.technical.report")
-        extractor = wiz_obj.factory_metadata_extractor("A303")
-        self.assertIsNotNone(extractor)
-
-    @unittest.skip("Requires switching step data")
-    def test__A304__instantiable(self):
-        """Test A304 can be instantiated."""
-        wiz_obj = self.openerp.pool.get("wizard.create.technical.report")
-        extractor = wiz_obj.factory_metadata_extractor("A304")
-        self.assertIsNotNone(extractor)
-
-    @unittest.skip("Requires switching step data")
-    def test__A305__instantiable(self):
-        """Test A305 can be instantiated."""
-        wiz_obj = self.openerp.pool.get("wizard.create.technical.report")
-        extractor = wiz_obj.factory_metadata_extractor("A305")
-        self.assertIsNotNone(extractor)
-
-    @unittest.skip("Requires switching step data")
-    def test__A306__instantiable(self):
-        """Test A306 can be instantiated."""
-        wiz_obj = self.openerp.pool.get("wizard.create.technical.report")
-        extractor = wiz_obj.factory_metadata_extractor("A306")
-        self.assertIsNotNone(extractor)
-
-    @unittest.skip("Requires switching step data")
-    def test__A307__instantiable(self):
-        """Test A307 can be instantiated."""
-        wiz_obj = self.openerp.pool.get("wizard.create.technical.report")
-        extractor = wiz_obj.factory_metadata_extractor("A307")
-        self.assertIsNotNone(extractor)
-
-    @unittest.skip("Requires switching step data")
-    def test__A313__instantiable(self):
-        """Test A313 can be instantiated."""
-        wiz_obj = self.openerp.pool.get("wizard.create.technical.report")
-        extractor = wiz_obj.factory_metadata_extractor("A313")
-        self.assertIsNotNone(extractor)
+    def test_a_series_signature(self):
+        for name in A_SERIES:
+            _test_signature(self, name, ["wiz", "cursor", "uid", "step"])
 
 
-class BillingReportTests(testing.OOTestCase):
+class BSeriesTests(BaseTestCase):
     """Tests for B-series (Billing) report blocks."""
 
-    def setUp(self):
-        self.txn = Transaction().start(self.database)
-        self.cursor = self.txn.cursor
-        self.uid = self.txn.user
-
-    def tearDown(self):
-        self.txn.stop()
-
-    @unittest.skip("Requires switching step data")
-    def test__B101__instantiable(self):
+    def test_b_series_instantiable(self):
         wiz_obj = self.openerp.pool.get("wizard.create.technical.report")
-        extractor = wiz_obj.factory_metadata_extractor("B101")
-        self.assertIsNotNone(extractor)
+        for name in B_SERIES:
+            _test_extractor_instantiable(self, wiz_obj, name)
 
-    @unittest.skip("Requires switching step data")
-    def test__B102__instantiable(self):
-        wiz_obj = self.openerp.pool.get("wizard.create.technical.report")
-        extractor = wiz_obj.factory_metadata_extractor("B102")
-        self.assertIsNotNone(extractor)
-
-    @unittest.skip("Requires switching step data")
-    def test__B103__instantiable(self):
-        wiz_obj = self.openerp.pool.get("wizard.create.technical.report")
-        extractor = wiz_obj.factory_metadata_extractor("B103")
-        self.assertIsNotNone(extractor)
-
-    @unittest.skip("Requires switching step data")
-    def test__B104__instantiable(self):
-        wiz_obj = self.openerp.pool.get("wizard.create.technical.report")
-        extractor = wiz_obj.factory_metadata_extractor("B104")
-        self.assertIsNotNone(extractor)
-
-    @unittest.skip("Requires switching step data")
-    def test__B105__instantiable(self):
-        wiz_obj = self.openerp.pool.get("wizard.create.technical.report")
-        extractor = wiz_obj.factory_metadata_extractor("B105")
-        self.assertIsNotNone(extractor)
-
-    @unittest.skip("Requires switching step data")
-    def test__B106__instantiable(self):
-        wiz_obj = self.openerp.pool.get("wizard.create.technical.report")
-        extractor = wiz_obj.factory_metadata_extractor("B106")
-        self.assertIsNotNone(extractor)
-
-    @unittest.skip("Requires switching step data")
-    def test__B107__instantiable(self):
-        wiz_obj = self.openerp.pool.get("wizard.create.technical.report")
-        extractor = wiz_obj.factory_metadata_extractor("B107")
-        self.assertIsNotNone(extractor)
-
-    @unittest.skip("Requires switching step data")
-    def test__B116__instantiable(self):
-        wiz_obj = self.openerp.pool.get("wizard.create.technical.report")
-        extractor = wiz_obj.factory_metadata_extractor("B116")
-        self.assertIsNotNone(extractor)
-
-    @unittest.skip("Requires switching step data")
-    def test__B205__instantiable(self):
-        wiz_obj = self.openerp.pool.get("wizard.create.technical.report")
-        extractor = wiz_obj.factory_metadata_extractor("B205")
-        self.assertIsNotNone(extractor)
+    def test_b_series_signature(self):
+        for name in B_SERIES:
+            _test_signature(self, name, ["wiz", "cursor", "uid", "step"])
 
 
-class ConsumptionReportTests(testing.OOTestCase):
+class CSeriesTests(BaseTestCase):
     """Tests for C-series (Consumption) report blocks."""
 
-    def setUp(self):
-        self.txn = Transaction().start(self.database)
-        self.cursor = self.txn.cursor
-        self.uid = self.txn.user
-
-    def tearDown(self):
-        self.txn.stop()
-
-    @unittest.skip("Requires switching step data")
-    def test__C101__instantiable(self):
+    def test_c_series_instantiable(self):
         wiz_obj = self.openerp.pool.get("wizard.create.technical.report")
-        extractor = wiz_obj.factory_metadata_extractor("C101")
-        self.assertIsNotNone(extractor)
+        for name in C_SERIES:
+            _test_extractor_instantiable(self, wiz_obj, name)
 
-    @unittest.skip("Requires switching step data")
-    def test__C102__instantiable(self):
-        wiz_obj = self.openerp.pool.get("wizard.create.technical.report")
-        extractor = wiz_obj.factory_metadata_extractor("C102")
-        self.assertIsNotNone(extractor)
-
-    @unittest.skip("Requires switching step data")
-    def test__C104__instantiable(self):
-        wiz_obj = self.openerp.pool.get("wizard.create.technical.report")
-        extractor = wiz_obj.factory_metadata_extractor("C104")
-        self.assertIsNotNone(extractor)
-
-    @unittest.skip("Requires switching step data")
-    def test__C105__instantiable(self):
-        wiz_obj = self.openerp.pool.get("wizard.create.technical.report")
-        extractor = wiz_obj.factory_metadata_extractor("C105")
-        self.assertIsNotNone(extractor)
-
-    @unittest.skip("Requires switching step data")
-    def test__C106__instantiable(self):
-        wiz_obj = self.openerp.pool.get("wizard.create.technical.report")
-        extractor = wiz_obj.factory_metadata_extractor("C106")
-        self.assertIsNotNone(extractor)
-
-    @unittest.skip("Requires switching step data")
-    def test__C108__instantiable(self):
-        wiz_obj = self.openerp.pool.get("wizard.create.technical.report")
-        extractor = wiz_obj.factory_metadata_extractor("C108")
-        self.assertIsNotNone(extractor)
-
-    @unittest.skip("Requires switching step data")
-    def test__C109__instantiable(self):
-        wiz_obj = self.openerp.pool.get("wizard.create.technical.report")
-        extractor = wiz_obj.factory_metadata_extractor("C109")
-        self.assertIsNotNone(extractor)
-
-    @unittest.skip("Requires switching step data")
-    def test__C110__instantiable(self):
-        wiz_obj = self.openerp.pool.get("wizard.create.technical.report")
-        extractor = wiz_obj.factory_metadata_extractor("C110")
-        self.assertIsNotNone(extractor)
-
-    @unittest.skip("Requires switching step data")
-    def test__C111__instantiable(self):
-        wiz_obj = self.openerp.pool.get("wizard.create.technical.report")
-        extractor = wiz_obj.factory_metadata_extractor("C111")
-        self.assertIsNotNone(extractor)
-
-    @unittest.skip("Requires switching step data")
-    def test__C112__instantiable(self):
-        wiz_obj = self.openerp.pool.get("wizard.create.technical.report")
-        extractor = wiz_obj.factory_metadata_extractor("C112")
-        self.assertIsNotNone(extractor)
-
-    @unittest.skip("Requires switching step data")
-    def test__C201__instantiable(self):
-        wiz_obj = self.openerp.pool.get("wizard.create.technical.report")
-        extractor = wiz_obj.factory_metadata_extractor("C201")
-        self.assertIsNotNone(extractor)
-
-    @unittest.skip("Requires switching step data")
-    def test__C202__instantiable(self):
-        wiz_obj = self.openerp.pool.get("wizard.create.technical.report")
-        extractor = wiz_obj.factory_metadata_extractor("C202")
-        self.assertIsNotNone(extractor)
-
-    @unittest.skip("Requires switching step data")
-    def test__C203__instantiable(self):
-        wiz_obj = self.openerp.pool.get("wizard.create.technical.report")
-        extractor = wiz_obj.factory_metadata_extractor("C203")
-        self.assertIsNotNone(extractor)
-
-    @unittest.skip("Requires switching step data")
-    def test__C204__instantiable(self):
-        wiz_obj = self.openerp.pool.get("wizard.create.technical.report")
-        extractor = wiz_obj.factory_metadata_extractor("C204")
-        self.assertIsNotNone(extractor)
-
-    @unittest.skip("Requires switching step data")
-    def test__C205__instantiable(self):
-        wiz_obj = self.openerp.pool.get("wizard.create.technical.report")
-        extractor = wiz_obj.factory_metadata_extractor("C205")
-        self.assertIsNotNone(extractor)
-
-    @unittest.skip("Requires switching step data")
-    def test__C208__instantiable(self):
-        wiz_obj = self.openerp.pool.get("wizard.create.technical.report")
-        extractor = wiz_obj.factory_metadata_extractor("C208")
-        self.assertIsNotNone(extractor)
-
-    @unittest.skip("Requires switching step data")
-    def test__C209__instantiable(self):
-        wiz_obj = self.openerp.pool.get("wizard.create.technical.report")
-        extractor = wiz_obj.factory_metadata_extractor("C209")
-        self.assertIsNotNone(extractor)
-
-    @unittest.skip("Requires switching step data")
-    def test__C210__instantiable(self):
-        wiz_obj = self.openerp.pool.get("wizard.create.technical.report")
-        extractor = wiz_obj.factory_metadata_extractor("C210")
-        self.assertIsNotNone(extractor)
-
-    @unittest.skip("Requires switching step data")
-    def test__C212__instantiable(self):
-        wiz_obj = self.openerp.pool.get("wizard.create.technical.report")
-        extractor = wiz_obj.factory_metadata_extractor("C212")
-        self.assertIsNotNone(extractor)
-
-    @unittest.skip("Requires switching step data")
-    def test__C213__instantiable(self):
-        wiz_obj = self.openerp.pool.get("wizard.create.technical.report")
-        extractor = wiz_obj.factory_metadata_extractor("C213")
-        self.assertIsNotNone(extractor)
+    def test_c_series_signature(self):
+        for name in C_SERIES:
+            _test_signature(self, name, ["wiz", "cursor", "uid", "step"])
 
 
-class MonthlyReportTests(testing.OOTestCase):
-    """Tests for M-series (Monthly) report blocks."""
-
-    def setUp(self):
-        self.txn = Transaction().start(self.database)
-        self.cursor = self.txn.cursor
-        self.uid = self.txn.user
-
-    def tearDown(self):
-        self.txn.stop()
-
-    @unittest.skip("Requires switching step data")
-    def test__M101__instantiable(self):
-        wiz_obj = self.openerp.pool.get("wizard.create.technical.report")
-        extractor = wiz_obj.factory_metadata_extractor("M101")
-        self.assertIsNotNone(extractor)
-
-    @unittest.skip("Requires switching step data")
-    def test__M102__instantiable(self):
-        wiz_obj = self.openerp.pool.get("wizard.create.technical.report")
-        extractor = wiz_obj.factory_metadata_extractor("M102")
-        self.assertIsNotNone(extractor)
-
-    @unittest.skip("Requires switching step data")
-    def test__M103__instantiable(self):
-        wiz_obj = self.openerp.pool.get("wizard.create.technical.report")
-        extractor = wiz_obj.factory_metadata_extractor("M103")
-        self.assertIsNotNone(extractor)
-
-    @unittest.skip("Requires switching step data")
-    def test__M104__instantiable(self):
-        wiz_obj = self.openerp.pool.get("wizard.create.technical.report")
-        extractor = wiz_obj.factory_metadata_extractor("M104")
-        self.assertIsNotNone(extractor)
-
-    @unittest.skip("Requires switching step data")
-    def test__M105__instantiable(self):
-        wiz_obj = self.openerp.pool.get("wizard.create.technical.report")
-        extractor = wiz_obj.factory_metadata_extractor("M105")
-        self.assertIsNotNone(extractor)
-
-    @unittest.skip("Requires switching step data")
-    def test__M106__instantiable(self):
-        wiz_obj = self.openerp.pool.get("wizard.create.technical.report")
-        extractor = wiz_obj.factory_metadata_extractor("M106")
-        self.assertIsNotNone(extractor)
-
-    @unittest.skip("Requires switching step data")
-    def test__M107__instantiable(self):
-        wiz_obj = self.openerp.pool.get("wizard.create.technical.report")
-        extractor = wiz_obj.factory_metadata_extractor("M107")
-        self.assertIsNotNone(extractor)
-
-    @unittest.skip("Requires switching step data")
-    def test__M113__instantiable(self):
-        wiz_obj = self.openerp.pool.get("wizard.create.technical.report")
-        extractor = wiz_obj.factory_metadata_extractor("M113")
-        self.assertIsNotNone(extractor)
-
-
-class EnergyClaimTests(testing.OOTestCase):
-    """Tests for E-series (Energy claims) report blocks."""
-
-    def setUp(self):
-        self.txn = Transaction().start(self.database)
-        self.cursor = self.txn.cursor
-        self.uid = self.txn.user
-
-    def tearDown(self):
-        self.txn.stop()
-
-    @unittest.skip("Requires switching step data")
-    def test__E101__instantiable(self):
-        wiz_obj = self.openerp.pool.get("wizard.create.technical.report")
-        extractor = wiz_obj.factory_metadata_extractor("E101")
-        self.assertIsNotNone(extractor)
-
-    @unittest.skip("Requires switching step data")
-    def test__E102__instantiable(self):
-        wiz_obj = self.openerp.pool.get("wizard.create.technical.report")
-        extractor = wiz_obj.factory_metadata_extractor("E102")
-        self.assertIsNotNone(extractor)
-
-    @unittest.skip("Requires switching step data")
-    def test__E103__instantiable(self):
-        wiz_obj = self.openerp.pool.get("wizard.create.technical.report")
-        extractor = wiz_obj.factory_metadata_extractor("E103")
-        self.assertIsNotNone(extractor)
-
-    @unittest.skip("Requires switching step data")
-    def test__E104__instantiable(self):
-        wiz_obj = self.openerp.pool.get("wizard.create.technical.report")
-        extractor = wiz_obj.factory_metadata_extractor("E104")
-        self.assertIsNotNone(extractor)
-
-    @unittest.skip("Requires switching step data")
-    def test__E105__instantiable(self):
-        wiz_obj = self.openerp.pool.get("wizard.create.technical.report")
-        extractor = wiz_obj.factory_metadata_extractor("E105")
-        self.assertIsNotNone(extractor)
-
-    @unittest.skip("Requires switching step data")
-    def test__E106__instantiable(self):
-        wiz_obj = self.openerp.pool.get("wizard.create.technical.report")
-        extractor = wiz_obj.factory_metadata_extractor("E106")
-        self.assertIsNotNone(extractor)
-
-    @unittest.skip("Requires switching step data")
-    def test__E108__instantiable(self):
-        wiz_obj = self.openerp.pool.get("wizard.create.technical.report")
-        extractor = wiz_obj.factory_metadata_extractor("E108")
-        self.assertIsNotNone(extractor)
-
-    @unittest.skip("Requires switching step data")
-    def test__E109__instantiable(self):
-        wiz_obj = self.openerp.pool.get("wizard.create.technical.report")
-        extractor = wiz_obj.factory_metadata_extractor("E109")
-        self.assertIsNotNone(extractor)
-
-    @unittest.skip("Requires switching step data")
-    def test__E110__instantiable(self):
-        wiz_obj = self.openerp.pool.get("wizard.create.technical.report")
-        extractor = wiz_obj.factory_metadata_extractor("E110")
-        self.assertIsNotNone(extractor)
-
-    @unittest.skip("Requires switching step data")
-    def test__E111__instantiable(self):
-        wiz_obj = self.openerp.pool.get("wizard.create.technical.report")
-        extractor = wiz_obj.factory_metadata_extractor("E111")
-        self.assertIsNotNone(extractor)
-
-    @unittest.skip("Requires switching step data")
-    def test__E112__instantiable(self):
-        wiz_obj = self.openerp.pool.get("wizard.create.technical.report")
-        extractor = wiz_obj.factory_metadata_extractor("E112")
-        self.assertIsNotNone(extractor)
-
-    @unittest.skip("Requires switching step data")
-    def test__E113__instantiable(self):
-        wiz_obj = self.openerp.pool.get("wizard.create.technical.report")
-        extractor = wiz_obj.factory_metadata_extractor("E113")
-        self.assertIsNotNone(extractor)
-
-
-class ClaimsReportTests(testing.OOTestCase):
-    """Tests for R-series (Claims) report blocks."""
-
-    def setUp(self):
-        self.txn = Transaction().start(self.database)
-        self.cursor = self.txn.cursor
-        self.uid = self.txn.user
-
-    def tearDown(self):
-        self.txn.stop()
-
-    @unittest.skip("Requires switching step data")
-    def test__R101__instantiable(self):
-        wiz_obj = self.openerp.pool.get("wizard.create.technical.report")
-        extractor = wiz_obj.factory_metadata_extractor("R101")
-        self.assertIsNotNone(extractor)
-
-    @unittest.skip("Requires switching step data")
-    def test__R102__instantiable(self):
-        wiz_obj = self.openerp.pool.get("wizard.create.technical.report")
-        extractor = wiz_obj.factory_metadata_extractor("R102")
-        self.assertIsNotNone(extractor)
-
-    @unittest.skip("Requires switching step data")
-    def test__R103__instantiable(self):
-        wiz_obj = self.openerp.pool.get("wizard.create.technical.report")
-        extractor = wiz_obj.factory_metadata_extractor("R103")
-        self.assertIsNotNone(extractor)
-
-    @unittest.skip("Requires switching step data")
-    def test__R104__instantiable(self):
-        wiz_obj = self.openerp.pool.get("wizard.create.technical.report")
-        extractor = wiz_obj.factory_metadata_extractor("R104")
-        self.assertIsNotNone(extractor)
-
-    @unittest.skip("Requires switching step data")
-    def test__R105__instantiable(self):
-        wiz_obj = self.openerp.pool.get("wizard.create.technical.report")
-        extractor = wiz_obj.factory_metadata_extractor("R105")
-        self.assertIsNotNone(extractor)
-
-    @unittest.skip("Requires switching step data")
-    def test__R108__instantiable(self):
-        wiz_obj = self.openerp.pool.get("wizard.create.technical.report")
-        extractor = wiz_obj.factory_metadata_extractor("R108")
-        self.assertIsNotNone(extractor)
-
-    @unittest.skip("Requires switching step data")
-    def test__R109__instantiable(self):
-        wiz_obj = self.openerp.pool.get("wizard.create.technical.report")
-        extractor = wiz_obj.factory_metadata_extractor("R109")
-        self.assertIsNotNone(extractor)
-
-
-class DemandReportTests(testing.OOTestCase):
+class DSeriesTests(BaseTestCase):
     """Tests for D-series (Demand) report blocks."""
 
-    def setUp(self):
-        self.txn = Transaction().start(self.database)
-        self.cursor = self.txn.cursor
-        self.uid = self.txn.user
-
-    def tearDown(self):
-        self.txn.stop()
-
-    @unittest.skip("Requires switching step data")
-    def test__D101__instantiable(self):
+    def test_d_series_instantiable(self):
         wiz_obj = self.openerp.pool.get("wizard.create.technical.report")
-        extractor = wiz_obj.factory_metadata_extractor("D101")
-        self.assertIsNotNone(extractor)
+        for name in D_SERIES:
+            _test_extractor_instantiable(self, wiz_obj, name)
 
-    @unittest.skip("Requires switching step data")
-    def test__D102__instantiable(self):
+    def test_d_series_signature(self):
+        for name in D_SERIES:
+            _test_signature(self, name, ["wiz", "cursor", "uid", "step"])
+
+
+class ESeriesTests(BaseTestCase):
+    """Tests for E-series (Energy claims) report blocks."""
+
+    def test_e_series_instantiable(self):
         wiz_obj = self.openerp.pool.get("wizard.create.technical.report")
-        extractor = wiz_obj.factory_metadata_extractor("D102")
-        self.assertIsNotNone(extractor)
+        for name in E_SERIES:
+            _test_extractor_instantiable(self, wiz_obj, name)
+
+    def test_e_series_signature(self):
+        for name in E_SERIES:
+            _test_signature(self, name, ["wiz", "cursor", "uid", "step"])
+
+
+class MSeriesTests(BaseTestCase):
+    """Tests for M-series (Monthly) report blocks."""
+
+    def test_m_series_instantiable(self):
+        wiz_obj = self.openerp.pool.get("wizard.create.technical.report")
+        for name in M_SERIES:
+            _test_extractor_instantiable(self, wiz_obj, name)
+
+    def test_m_series_signature(self):
+        for name in M_SERIES:
+            _test_signature(self, name, ["wiz", "cursor", "uid", "step"])
+
+
+class RSeriesTests(BaseTestCase):
+    """Tests for R-series (Claims) report blocks."""
+
+    def test_r_series_instantiable(self):
+        wiz_obj = self.openerp.pool.get("wizard.create.technical.report")
+        for name in R_SERIES:
+            _test_extractor_instantiable(self, wiz_obj, name)
+
+    def test_r_series_signature(self):
+        for name in R_SERIES:
+            _test_signature(self, name, ["wiz", "cursor", "uid", "step"])
