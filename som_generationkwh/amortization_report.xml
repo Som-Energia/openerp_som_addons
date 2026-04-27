@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+    <data noupdate="1">
+        <record id="report_amortization_gkwh" model="ir.actions.report.xml">
+            <field name="report_type">webkit</field>
+            <field name="report_name">amortization.gkwh</field>
+            <field eval="[(6,0,[])]" name="groups_id"/>
+            <field eval="0" name="multi"/>
+            <field eval="0" name="auto"/>
+            <field eval="0" name="header"/>
+            <field name="model">account.invoice</field>
+            <field name="type">ir.actions.report.xml</field>
+            <field name="name">Amortitzacions GenerationKWh</field>
+            <field name="report_webkit">som_generationkwh/report/report_amortization_gkwh.mako</field>
+        </record>
+        <record model="ir.header_webkit" id="report_header_contract_apo">
+            <field name="format">A4</field>
+            <field name="margin_bottom">5.0</field>
+            <field name="margin_top">5.0</field>
+            <field name="margin_left">1.0</field>
+            <field name="margin_right">1.0</field>
+            <field name="name">Header Contracte Aportacions Capital Social</field>
+            <field name="orientation">Portrait</field>
+            <field name="html"><![CDATA[]]></field>
+            <field name="css" ><![CDATA[]]></field>
+        </record>
+        <record id="report_contract_apo" model="ir.actions.report.xml">
+            <field name="report_type">webkit</field>
+            <field name="report_name">contract.apo</field>
+            <field eval="[(6,0,[])]" name="groups_id"/>
+            <field eval="0" name="multi"/>
+            <field eval="0" name="auto"/>
+            <field eval="0" name="header"/>
+            <field name="model">account.invoice</field>
+            <field name="type">ir.actions.report.xml</field>
+            <field name="name">Contracte Aportacions Capital Social</field>
+            <field name="report_webkit">som_generationkwh/report/report_contract_apo.mako</field>
+            <field name="webkit_header" ref="report_header_contract_apo"/>
+        </record>
+        <record id="report_retencions_rendiment_gkwh" model="ir.actions.report.xml">
+            <field name="report_type">webkit</field>
+            <field name="report_name">retencions.rendiment.gkwh</field>
+            <field eval="[(6,0,[])]" name="groups_id"/>
+            <field eval="0" name="multi"/>
+            <field eval="0" name="auto"/>
+            <field eval="0" name="header"/>
+            <field name="model">res.partner</field>
+            <field name="type">ir.actions.report.xml</field>
+            <field name="name">Retencions sobre el rendiment de GenerationKWh</field>
+            <field name="report_webkit">som_generationkwh/report/report_retencions_gkwh.mako</field>
+            <field name="webkit_header" ref="report_header_contract_apo"/>
+        </record>
+    </data>
+</openerp>

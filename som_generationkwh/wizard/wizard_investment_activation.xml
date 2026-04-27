@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+    <data>
+        <record model="ir.ui.view" id="wizard_generationkwh_investment_activation_view">
+            <field name="name">wizard.generationkwh.investment.activation.view</field>
+            <field name="model">wizard.generationkwh.investment.activation</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <form string="Activació i desactivació de inversions">
+                    <field name="state" invisible="1"/>
+                    <field name="action" colspan="4"/>
+                    <field name="info" nolabel="1" size="300" colspan="4" readonly="1"/>
+                    <button name="do_action" string="Executa" type="object" icon="gtk-execute" colspan="4"/>
+                    <button special="cancel" string="Tancar" icon="gtk-no" colspan="4"/>
+                </form>
+            </field>
+        </record>
+        <record id="action_wizard_generationkwh_investment_activation" model="ir.actions.act_window">
+            <field name="name">(Des)Activació de Inversions en Generation kWh</field>
+            <field name="res_model">wizard.generationkwh.investment.activation</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="view_id" ref="wizard_generationkwh_investment_activation_view"/>
+            <field name="target">new</field>
+        </record>
+        <record id="value_wizard_generationkwh_investment_activation" model="ir.values">
+            <field name="object" eval="1"/>
+            <field name="name">(Des)Activació de Inversions en Generation kWh</field>
+            <field name="key2">client_action_multi</field>
+            <field name="key">action</field>
+            <field name="model">generationkwh.investment</field>
+            <field name="value" eval="'ir.actions.act_window,'+str(ref('action_wizard_generationkwh_investment_activation'))" />
+        </record>
+    </data>
+</openerp>
