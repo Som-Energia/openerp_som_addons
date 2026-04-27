@@ -5,6 +5,7 @@
 ### Requisits
 
 - Python 2.7 (compatible amb Python 3)
+- Virtualenv accessible des de `pyenv activate erp` o `workon erp`
 - Docker (PostgreSQL, MongoDB, Redis)
 - Docker Compose: `docker-compose.yaml` al arrel del repositori
 
@@ -32,6 +33,21 @@ export DESTRAL_TESTING_LANGS="['es_ES']"
 export PYTHONPATH="<ruta_erp>/server/bin:<ruta_erp>/server/bin/addons:<ruta_erp>/server/sitecustomize:$PYTHONPATH"
 export PYTHONIOENCODING="UTF-8"
 export PYTHONUNBUFFERED="1"
+```
+
+## Arrancar un ERP
+```bash
+# Carregar les variables d'entorn i executar
+/home/oriol/somenergia/src/erp/server/bin/openerp-server.py --no-netrpc --price_accuracy=6 --config=$HOME/conf/erp.conf -d <nom_bbdd>
+
+# Normalment tenim un alies
+erpserver -d <nom_bbdd>
+
+# Per actualitzar un mòdul
+erpserver -d <nom_bbdd> --update=<nom_modul>
+
+# Per executar només scripts de migració
+erpserver -d <nom_bbdd> --run-scripts=<nom_modul>
 ```
 
 ## Executar tests
