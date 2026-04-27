@@ -64,6 +64,10 @@ som_infoenergia:
 -  som_infoenergia/**
 som_informe:
 -  som_informe/**
+som_generationkwh:
+ -  som_generationkwh/**
+som_plantmeter:
+ -  som_plantmeter/**
 som_inversions:
 -  som_inversions/**
 som_l10n_ES_aeat_mod347:
