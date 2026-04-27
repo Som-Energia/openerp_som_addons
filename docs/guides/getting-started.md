@@ -40,8 +40,14 @@ export PYTHONUNBUFFERED="1"
 # Tots els testos d'un mòdul
 python <ruta_destral>/destral/cli.py --no-requirements -m <nom_modul>
 
+# Tots els tests d'un fitxer de <nom_modul>/tests/<file_name>
+python <ruta_destral>/destral/cli.py --no-requirements -m <nom_modul> -t <file_name>
+
 # Un test concret
-python <ruta_destral>/destral/cli.py --no-requirements -m <nom_modul> -t TestsClassName.test_method_name
+python <ruta_destral>/destral/cli.py --no-requirements -m <nom_modul> -t <file_name>.<class_name>.<test_name>
+
+# Tenim un alies per executar tests que es diu dodestral i carrega les variables d'entorn
+dodestral --no-requirements -m <nom_modul>
 ```
 
 ## Afegir un nou mòdul

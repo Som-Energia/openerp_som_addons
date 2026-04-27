@@ -1,0 +1,40 @@
+name: opencode-review
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+
+jobs:
+  review:
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+      pull-requests: read
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+
+      - uses: anomalyco/opencode/github@latest
+        env:
+          MINIMAX_API_KEY: ${{ secrets.MINIMAX_API_KEY }}
+        with:
+          model: minimax/minimax-m2.5-free
+          prompt: |
+            Review this pull request following the project's conventions:
+
+            ## Checklist
+            - [ ] Check for code quality issues
+            - [ ] Look for potential bugs
+            - [ ] Verify tests are included
+            - [ ] Check for migration scripts if model/XML changes
+            - [ ] Verify security CSV permissions are correct
+            - [ ] Suggest improvements following OpenERP/Odoo patterns
+
+            ## Project conventions to verify
+            - Use `testing.OOTestCase` without Transaction for pure functions
+            - Use `testing.OOTestCaseWithCursor` only when accessing database
+            - Security CSV: 3-level permissions (read-only, user, manager)
+            - Model changes need migration scripts in migrations/X.XX.X/
+
+            Be concise and constructive. Focus on actionable feedback.
