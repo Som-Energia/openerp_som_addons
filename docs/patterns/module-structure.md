@@ -73,10 +73,73 @@ import report
 
 ### `security/` — Permisos
 
+#### Estructura del fitxer
+
+El fitxer `ir.model.access.csv` segueix el següent format:
+
 ```csv
-# ir.model.access.csv
-id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_delete
-access_model_name,access.model.name,model_model_name,base.group_user,1,1,1,1
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+```
+
+#### Models: 3 nivells de permisos
+
+Per a cada **model**, es defineixen 3 grups:
+
+| Grup | Nom | R | W | C | U | Ús |
+|------|-----|---|---|---|---|---|
+| Read-only | `_r` | 1 | 0 | 0 | 0 | Consultes puntuals |
+| User | `_w` | 1 | 1 | 1 | 0 | Usuari estàndard |
+| Manager | `_u` | 1 | 1 | 1 | 1 | Administrador |
+
+Exemple per a `model_som_my_model`:
+
+```csv
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_som_my_model_r,som.my.model,model_som_my_model,module_name.group_som_my_model_r,1,0,0,0
+access_som_my_model_w,som.my.model,model_som_my_model,module_name.group_som_my_model_w,1,1,1,0
+access_som_my_model_u,som.my.model,model_som_my_model,module_name.group_som_my_model_u,1,1,1,1
+```
+
+**Nota**: El grup manager (`_u`) només s diferencia de user (`_w`) en el permís `unlink`.
+
+#### Wizards: 1-2 grups
+
+Els wizards normalment tenen 1 o 2 grups, ja que solen ser actions puntuals:
+
+```csv
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_wizard_my_action_r,wizard.my.action,model_wizard_my_action,module_name.group_my_action_r,1,0,0,0
+access_wizard_my_action_u,wizard.my.action,model_wizard_my_action,module_name.group_my_action_u,1,1,1,1
+```
+
+#### Grups: creats vs existents
+
+- **Crear grups nous**: Només si és una funcionalitat molt desacoblada
+- **Grups existents**: Utilitzar els del projecte quan sigui possible
+
+Exemples de grups existents:
+- `base.group_user` — Usuari base d'Odoo
+- `base.group_erp_manager` — Administrador ERP
+- `crm.group_crm_user`, `crm.group_crm_manager` — CRM
+- `giscedata_facturacio.group_giscedata_facturacio_u` — Facturació
+- `account.group_account_user`, `account.group_account_manager` — Comptabilitat
+
+#### Definir grups (ir.module.category.csv)
+
+Si cal crear grups nous, primer cal definir la categoria i el grup:
+
+```csv
+# security/ir.module.category.csv
+id,name,parent:id
+module_name.module_category,Module Name,base.module_category_root
+```
+
+```csv
+# security/res.groups.csv
+id,name,category:id,implied_ids:id
+module_name.group_module_name_r,My Model Read Only,module_name.module_category,base.group_user
+module_name.group_module_name_w,My Model User,module_name.module_category,base.group_user
+module_name.group_module_name_u,My Model Manager,module_name.module_category,base.group_user
 ```
 
 ### `data/` — Dades inicials
