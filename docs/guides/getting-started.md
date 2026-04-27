@@ -5,6 +5,7 @@
 ### Requisits
 
 - Python 2.7 (compatible amb Python 3)
+- Virtualenv accessible des de `pyenv activate erp` o `workon erp`
 - Docker (PostgreSQL, MongoDB, Redis)
 - Docker Compose: `docker-compose.yaml` al arrel del repositori
 
@@ -34,14 +35,35 @@ export PYTHONIOENCODING="UTF-8"
 export PYTHONUNBUFFERED="1"
 ```
 
+## Arrancar un ERP
+```bash
+# Carregar les variables d'entorn i executar
+/home/oriol/somenergia/src/erp/server/bin/openerp-server.py --no-netrpc --price_accuracy=6 --config=$HOME/conf/erp.conf -d <nom_bbdd>
+
+# Normalment tenim un alies
+erpserver -d <nom_bbdd>
+
+# Per actualitzar un mòdul
+erpserver -d <nom_bbdd> --update=<nom_modul>
+
+# Per executar només scripts de migració
+erpserver -d <nom_bbdd> --run-scripts=<nom_modul>
+```
+
 ## Executar tests
 
 ```bash
 # Tots els testos d'un mòdul
 python <ruta_destral>/destral/cli.py --no-requirements -m <nom_modul>
 
+# Tots els tests d'un fitxer de <nom_modul>/tests/<file_name>
+python <ruta_destral>/destral/cli.py --no-requirements -m <nom_modul> -t <file_name>
+
 # Un test concret
-python <ruta_destral>/destral/cli.py --no-requirements -m <nom_modul> -t TestsClassName.test_method_name
+python <ruta_destral>/destral/cli.py --no-requirements -m <nom_modul> -t <file_name>.<class_name>.<test_name>
+
+# Tenim un alies per executar tests que es diu dodestral i carrega les variables d'entorn
+dodestral --no-requirements -m <nom_modul>
 ```
 
 ## Afegir un nou mòdul

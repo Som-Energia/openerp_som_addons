@@ -10,6 +10,8 @@ giscedata_facturacio_som:
 -  giscedata_facturacio_som/**
 GithubActions:
 -  .github/**
+docs:
+-  docs/**
 powersms:
 -  powersms/**
 report_tester:
