@@ -12,7 +12,7 @@ first_pass = True
         <td class="detall_td">${_(u"Preu càrrecs per electricitat utilitzades [€/kWh]")}</td>
         % for p in id.showing_periods:
             % if p in lines_data:
-                <td>${_(u"%s") %(locale.str(locale.atof(formatLang(lines_data[p]["preu_cargos"], digits=6))))}</td>
+                <td>${_(u"%s") %(formatLang(lines_data[p]["preu_cargos"], digits=6))}</td>
             % else:
                 <td></td>
             % endif
