@@ -2422,6 +2422,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
             self.cursor, self.uid, "gdo_and_impact_yearly_switch_date", "2099-05-01"
         )
 
+        lang_partner = fact.lang_partner if isinstance(fact.lang_partner, basestring) else 'es_ES'
         data = {
             "is_visible": fact.date_invoice < swich_date,
             "year_graph": 2020,
@@ -2429,7 +2430,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
             "inport_export_value": 1.3,
             "mix_image_som_energia": "electricity_information_mix_som.png",
             "mix_image_rest": "electricity_information_mix_rest_"
-            + fact.lang_partner.lower()
+            + lang_partner.lower()
             + "_2021.png",
             "renovable": {
                 "som_energia": "100%",
