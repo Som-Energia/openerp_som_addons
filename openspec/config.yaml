@@ -35,7 +35,7 @@ testing:
   runner:
     command: "scripts/run-tests.sh <database> -m <module>"
     framework: destral (OOMigration)
-    notes: "Requereix: pyenv activate erp, Docker (PostgreSQL, MongoDB, Redis)"
+    notes: "Requereix: virtualenv activat, Docker (PostgreSQL, MongoDB, Redis)"
   layers:
     unit: true
     integration: true

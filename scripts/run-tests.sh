@@ -1,11 +1,5 @@
 #!/bin/bash
 
-if [ $1 != '-m' ] || [ $1 != '-t' ] || [ $1 != '-a' ]
-then
-    export OPENERP_DB_NAME=$1
-else
-    export OPENERP_DB_NAME="destral_db"
-fi
 
 export PYTHONIOENCODING="UTF-8"
 export PYTHONPATH="$WORKSPACE/erp/server/bin:$WORKSPACE/erp/server/bin/addons:$WORKSPACE/erp/server/sitecustomize:$PYTHONPATH"
@@ -14,6 +8,8 @@ export PYTHONUNBUFFERED="1"
 export DEBUG_ENABLED=0
 export OORQ_ASYNC=0
 export DESTRAL_TESTING_LANGS="['es_ES']"
+
+# export OPENERP_DB_NAME="destral_db"
 
 export OPENERP_ADDONS_PATH="$WORKSPACE/erp/server/bin/addons"
 export OPENERP_DB_HOST="localhost"
@@ -29,4 +25,5 @@ export OPENERP_RUN_SCRIPTS_INTERACTIVE_RESULT=skip
 export OPENERP_ENVIRONMENT=local
 export OPENERP_SII_TEST_MODE=1
 
+# --no-requirements evita que destral intenti instal·lar dependències (recomanat en entorns locals)
 python $WORKSPACE/destral/destral/cli.py "$@"
