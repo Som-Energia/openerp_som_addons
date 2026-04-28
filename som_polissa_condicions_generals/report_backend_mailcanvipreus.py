@@ -340,9 +340,10 @@ class ReportBackendMailcanvipreus(ReportBackend):
         is_gkwh=False,
         context=None,
     ):
+        imd_obj = self.pool.get('ir.model.data')
         bo_social_price = self.get_bo_social_price(
             cursor, uid, polissa_id.llista_preu, context=context)
-        preu_estimat_servei_ajust = float(self.imd_obj.get_object_reference(
+        preu_estimat_servei_ajust = float(imd_obj.get_object_reference(
             cursor, uid, 'som_polissa_condicions_generals', 'serveis_ajust_estimated_kwh_price')[1])
 
         ctx = context or {}
@@ -386,7 +387,7 @@ class ReportBackendMailcanvipreus(ReportBackend):
         tarifa_obj = self.pool.get("giscedata.polissa.tarifa")
         if not self._bo_social_price:
             self._bo_social_price = (
-                tarifa_obj.get_bo_social_price(cursor, uid, pricelist, context=context)
+                tarifa_obj.get_bo_social_price(cursor, uid, pricelist, context=context)[0]
             ) * 365
         return self._bo_social_price
 
