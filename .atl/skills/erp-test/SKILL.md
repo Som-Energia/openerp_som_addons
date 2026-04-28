@@ -12,7 +12,7 @@ metadata:
 ## When to Use
 
 Utilitza aquesta skill quan:
-- Necessites executar tests d'un mòdul Odoo del projecte
+- Necessites executar tests d'un mòdul OpenERP del projecte
 - Vols automatitzar el workflow de testing local
 - Estàs desenvolupant un mòdul i necessites TDD
 
@@ -135,7 +135,7 @@ dodestral $DB_NAME -m $MODULE
 | `Connection refused to localhost:27017` | MongoDB no corrent | `docker-compose up -d` |
 | `Connection refused to localhost:6379` | Redis no corrent | `docker-compose up -d` |
 | `Database does not exist` | DB no creada | destral la crea automàticament |
-| `timeout` | Tests molt lents | Els tests d'Odoo poden trigar 10+ min |
+| `timeout` | Tests molt lents | Els tests d'OpenERP poden trigar 10+ min |
 
 ## Integració amb SDD
 

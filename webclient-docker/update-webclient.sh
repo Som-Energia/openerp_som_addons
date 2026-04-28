@@ -33,7 +33,7 @@ fi
 current_tag=""
 [[ -f "$STATE_FILE" ]] && current_tag=$(cat "$STATE_FILE")
 
-if [[ "$current_tag" == "$tag" ]]; then
+if [[ "$current_tag" == "$tag" && -f "$HTML_DIR/index.html" ]]; then
     echo "[update-webclient] Already at $tag"
     exit 0
 fi

@@ -6,7 +6,7 @@ context: |
   Testing: destral framework (OOMigration), unittest, GitHub Actions CI
   Style: flake8 + autopep8 + autoflake via pre-commit
 
-strict_tdd: false
+strict_tdd: true
 
 rules:
   proposal:
