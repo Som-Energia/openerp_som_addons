@@ -1,0 +1,22 @@
+version: "3.3"
+
+services:
+  db:
+    image: timescale/timescaledb-postgis:latest-pg13
+    ports:
+      - 5432:5432
+    environment:
+     - POSTGRES_USER=erp
+     - POSTGRES_PASSWORD=erp
+    volumes:
+      - ./db:/var/lib/postgresql/data
+
+  mongo:
+    image: mongo:3.0
+    ports:
+      - 27017:27017
+
+  redis:
+    image: redis:5.0
+    ports:
+      - 6379:6379

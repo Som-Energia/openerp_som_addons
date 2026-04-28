@@ -1,0 +1,39 @@
+# Cursor Rules
+
+Treballa amb el repositori `openerp_som_addons` seguint aquestes regles.
+
+## Tech Stack
+- **Framework**: OpenERP/OpenERP 7 (Python 2.7)
+- **Testing**: destral
+- **Linting**: flake8
+
+## Convencions Git
+
+### Branques
+- Format: `<TYPE>_<description>`
+- Types: `ADD_`, `IMP_`, `FIX_`, `MOD_`, `REF_`, `TEST_`, `DOCS_`
+
+### Commits
+- Format: `<emoji> <type>: <description>`
+- Emoji obligatoris (veure skill `git-commit`)
+- Descripció en anglès
+
+### PRs
+- Seguir plantilla: `pull_request_template.md`
+- Totes les seccions obligatòries
+
+## Estil de Codi
+- Veure `.github/docs/estil.md`
+- Patterns OpenERP 5: `osv.osv`, `_columns`, `fields.*`
+- Evitar API nova: `@api.model`, `@api.depends`
+
+## Skills
+Quan l'usuari demani executar tests, usar:
+```
+pyenv activate erp && dodestral <db> -m <modul>
+```
+
+## Referències
+- `.github/docs/estil.md`
+- `.github/docs/evitar.md`
+- `.github/docs/arquitectura.md`

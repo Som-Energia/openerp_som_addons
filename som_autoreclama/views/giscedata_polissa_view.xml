@@ -10,7 +10,6 @@
             <field name="arch" type="xml">
                 <field name="data_ultima_lectura_f1" position="after" >
                     <field name="autoreclama_state" select="2"/>
-                    <field name="autoreclama009_state" select="2"/>
                 </field>
             </field>
         </record>
