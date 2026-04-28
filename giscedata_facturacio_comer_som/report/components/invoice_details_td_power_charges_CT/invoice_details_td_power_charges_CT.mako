@@ -12,12 +12,12 @@ first_pass = True
         <td class="detall_td">${_(u"Preu càrrecs per potència contractada [€/kW i any]")}</td>
         % if len(id.showing_periods) == 3:
             % for p in id.showing_periods[:-1]:
-                % if p in lines_data and "preu_cargos" in lines_data[p]:
+                % if p in lines_data and "calculated_cargos" in lines_data[p]:
                     % if p == 'P1':
-                        <td>${_(u"%s") %(locale.str(locale.atof(formatLang(lines_data[p]["preu_cargos"] * lines_data["days_per_year"], digits=6))))}</td>
+                        <td>${_(u"%s") %(locale.str(locale.atof(formatLang(lines_data[p]["calculated_cargos"], digits=6))))}</td>
                         <td></td>
                     % else:
-                        <td>${_(u"%s") %(locale.str(locale.atof(formatLang(lines_data[p]["preu_cargos"] * lines_data["days_per_year"], digits=6))))}</td>
+                        <td>${_(u"%s") %(locale.str(locale.atof(formatLang(lines_data[p]["calculated_cargos"], digits=6))))}</td>
                     % endif
                 % else:
                     <td></td>
@@ -25,8 +25,8 @@ first_pass = True
             % endfor
         % else:
             % for p in id.showing_periods:
-                % if p in lines_data and "preu_cargos" in lines_data[p]:
-                    <td>${_(u"%s") %(locale.str(locale.atof(formatLang(lines_data[p]["preu_cargos"] * lines_data["days_per_year"], digits=6))))}</td>
+                % if p in lines_data and "calculated_cargos" in lines_data[p]:
+                    <td>${_(u"%s") %(locale.str(locale.atof(formatLang(lines_data[p]["calculated_cargos"], digits=6))))}</td>
                 % else:
                     <td></td>
                 % endif

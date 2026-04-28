@@ -3450,12 +3450,16 @@ class GiscedataFacturacioFacturaReport(osv.osv):
                     lines_data[block][l.name]["price_subtotal"] + l.price_subtotal
                 )
             else:
+                t_tolls = self.get_tarifa_elect_atr(fact, "pricelist_tarifas_peajes_electricidad")
+                t_cargos = self.get_tarifa_elect_atr(fact, "pricelist_tarifas_cargos_electricidad")
                 lines_data[block][l.name] = {
                     "quantity": l.quantity,
                     "tolls": l.distribucion_price_subtotal + l.transporte_price_subtotal,
                     "atr_cargos": l.cargos_price_subtotal,
                     "tolls_price_unit": l.price_unit_distribucion + l.price_unit_transporte,
+                    "calculated_tolls": self.get_atr_price(fact, t_tolls, l),
                     "preu_cargos": l.price_unit_cargos,
+                    "calculated_cargos": self.get_atr_price(fact, t_cargos, l),
                     "price_subtotal": l.price_subtotal,
                     "price_unit_multi": l.price_unit_multi,
                     "price_unit": l.price_unit,
