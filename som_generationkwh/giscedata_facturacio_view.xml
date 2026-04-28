@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+<openerp>
+    <data>
+        <!-- Generation gKwh Tab in energy invoice-->
+        <record model="ir.ui.view" id="view_factura_form_energia_gkwh">
+            <field name="name">giscedata.facturacio.factura.view.gkwh.form</field>
+            <field name="model">giscedata.facturacio.factura</field>
+            <field name="type">form</field>
+            <field name="inherit_id" ref="giscedata_facturacio.view_factura_form"/>
+            <field name="arch" type="xml">
+                <page string="Energia" position="after">
+                    <page string="Generation kWh" attrs="{'invisible': [('is_gkwh', '=', False)]}">
+                        <field name="is_gkwh" invisible="1" select="1"/>
+                        <field name="gkwh_linia_ids" nolabel="1" colspan="4"/>
+                    </page>
+                </page>
+            </field>
+        </record>
+        <record model="ir.ui.view" id="view_factura_tree_energia_gkwh">
+            <field name="name">giscedata.facturacio.factura.view.gkwh.tree</field>
+            <field name="model">giscedata.facturacio.factura</field>
+            <field name="type">form</field>
+            <field name="inherit_id" ref="giscedata_facturacio.view_factura_tree"/>
+            <field name="arch" type="xml">
+                <field name="data_inici" position="before">
+                    <field name="is_gkwh"/>
+                </field>
+            </field>
+        </record>
+    </data>
+</openerp>

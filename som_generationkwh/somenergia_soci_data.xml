@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<openerp>
+    <data noupdate="1">
+        <record model="generationkwh.kwh.per.share" id="gkwh_kwh_per_share_20160301">
+            <field name="version_start_date">2016-03-01</field>
+            <field name="kwh">170</field>
+        </record>
+
+         <!-- Template de baixa de socis- -->
+        <record model="poweremail.templates" id="email_baixa_soci">
+            <field name="name">Email de notificació de baixa d'una sòcia</field>
+            <field name="object_name" model="ir.model" search="[('model', '=', 'somenergia.soci')]"/>
+            <field eval="0" name="save_to_drafts"/>
+            <field name="model_int_name">somenergia.soci</field>
+            <field name="def_to">${object.partner_id.address[0].email}</field>
+            <field eval="0" name="auto_email"/>
+            <field eval="0" name="single_email"/>
+            <field eval="0" name="use_sign"/>
+            <field name="def_subject">Confirmació baixa persona sòcia / Confirmación baja persona socia</field>
+            <field name="template_language">mako</field>
+            <field eval="0" name="send_on_create"/>
+            <field name="lang"/>
+            <field eval="0" name="send_on_write"/>
+            <field name="def_bcc">support.17062.b8d9f4469fa4d856@helpscout.net</field>
+            <field name="enforce_from_account" model="poweremail.core_accounts" search="[('email_id','=', 'info@somenergia.coop')]"/>
+            <field name="def_body_text"><![CDATA[<!doctype html>
+                <html>
+<head><meta charset='utf8'></head><body>
+<%
+from mako.template import Template
+def render(text_to_render, object_):
+    templ = Template(text_to_render)
+    return templ.render_unicode(
+        object=object_,
+        format_exceptions=True
+    )
+t_obj = object.pool.get('poweremail.templates')
+md_obj = object.pool.get('ir.model.data')
+template_id = md_obj.get_object_reference(
+                    object._cr, object._uid,  'som_poweremail_common_templates', 'common_template_legal_footer'
+                )[1]
+text_legal = render(t_obj.read(
+    object._cr, object._uid, [template_id], ['def_body_text'])[0]['def_body_text'],
+    object
+)
+%>
+% if object.partner_id.lang != "es_ES":
+<br>
+Hola,<br>
+<br>
+Ens posem amb contacte amb tu per informar-te que hem tramitat correctament la teva baixa de persona sòcia.<br>
+<br>
+T’agraïm el temps que has passat amb nosaltres ajudant-nos a canviar el model energètic actual.<br>
+<br>
+Desitgem que ens retrobem en un futur.<br>
+<br>
+Salut i bona energia!<br>
+<br>
+Equip de Som Energia<br>
+<a href="www.somenergia.coop/ca">www.somenergia.coop</a>
+info@somenergia.coop
+<a href="http://ca.support.somenergia.coop/article/470-com-puc-contactar-amb-la-cooperativa-mail-telefon-etc">Contactar amb Som Energia</a>
+% endif
+
+% if object.partner_id.lang != "ca_ES" and object.partner_id.lang != "es_ES":
+----------------------------------------------------------------------------------------------------
+% endif
+
+% if object.partner_id.lang != "ca_ES":
+<br>
+Hola,<br>
+<br>
+Nos ponemos en contacto contigo para informarte que hemos tramitado correctamente tu baja de persona socia.<br>
+<br>
+Te agradecemos el tiempo que has pasado con nosotros ayudándonos a cambiar el modelo energético actual.<br>
+<br>
+Deseamos reencontrarnos en un futuro.<br>
+<br>
+Salud y buena energía!<br>
+<br>
+Equipo de Som Energia<br>
+<a href="www.somenergia.coop/ca">www.somenergia.coop</a>
+info@somenergia.coop
+<a href="https://es.support.somenergia.coop/article/471-como-puedo-contactar-con-la-cooperativa-mail-telefono-etc">Contactar con Som Energia</a>
+% endif
+${text_legal}
+</body>
+</html>
+
+                ]]></field>
+        </record>
+
+        <record model="res.config" id="mailchimp_socis_list">
+            <field name="name">mailchimp_socis_list</field>
+            <field name="value">[arco] Soci/a de Som Energia</field>
+            <field name="description">Nom exacte de la llista de mailchimp on es subscriuen o arxiven automàticament les sòcies en donar-se d'alta o baixa respectivament.</field>
+        </record>
+    </data>
+    <data noupdate="0">
+		<record model="ir.header_webkit" id="report_sense_fons_apaisat">
+			<field name="format">A4</field>
+			<field name="margin_bottom">10.0</field>
+			<field name="margin_top">10.00</field>
+			<field name="margin_left">0.01</field>
+			<field name="margin_right">0.01</field>
+			<field name="name">Sense fons header</field>
+			<field name="orientation">Landscape</field>
+			<field name="html"><![CDATA[<html>
+					<head>
+						<script></script>
+					   <style type="text/css">
+							${css}
+					   </style>
+					</head>
+						<body >
+						<br/>
+						${_debug or ''}
+						<br/>
+					</body>
+				</html>]]>
+			</field>
+			<field name="css" ><![CDATA[
+						div.background {
+							display:none;
+						}
+						.new_page img{
+							display:none;
+						}
+						div.back{
+							background: none !important;
+						}
+				]]>
+			</field>
+		</record>
+        <record model="ir.actions.report.xml" id="report_llibre_registre_socis">
+            <field name="report_type">webkit</field>
+            <field name="report_name">somenergia.soci.report_llibre_registre_socis</field>
+            <field eval="[(6,0,[])]" name="groups_id"/>
+            <field eval="0" name="multi"/>
+            <field eval="0" name="auto"/>
+            <field eval="0" name="header"/>
+            <field name="model">somenergia.soci</field>
+            <field name="type">ir.actions.report.xml</field>
+            <field name="name">Llibre Registre Socis</field>
+            <field name="report_webkit"
+                   eval="'som_generationkwh/report/report_llibre_registre_socis.mako'"/>
+            <field name="webkit_header" ref="report_sense_fons_apaisat"/>
+            <field name="report_rml" eval="False"/>
+        </record>
+        <record id="value_report_llibre_registre_socis" model="ir.values">
+            <field name="object" eval="1"/>
+            <field name="name">somenergia.soci.report_llibre_registre_socis</field>
+            <field name="key2">client_print_multi</field>
+            <field name="model">somenergia.soci</field>
+            <field name="value" eval="'ir.actions.report.xml,'+str(ref('report_llibre_registre_socis'))"/>
+        </record>
+        <record model="ir.actions.report.xml" id="report_llibre_registre_socis_summary">
+            <field name="report_type">webkit</field>
+            <field name="report_name">somenergia.soci.report_llibre_registre_socis_summary</field>
+            <field eval="[(6,0,[])]" name="groups_id"/>
+            <field eval="0" name="multi"/>
+            <field eval="0" name="auto"/>
+            <field eval="0" name="header"/>
+            <field name="model">somenergia.soci</field>
+            <field name="type">ir.actions.report.xml</field>
+            <field name="name">Resum del Llibre Registre Socis</field>
+            <field name="report_webkit"
+                   eval="'som_generationkwh/report/report_llibre_registre_socis_summary.mako'"/>
+            <field name="webkit_header" ref="report_sense_fons_apaisat"/>
+            <field name="report_rml" eval="False"/>
+        </record>
+    </data>
+</openerp>
