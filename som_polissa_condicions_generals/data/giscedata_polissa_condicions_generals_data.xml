@@ -48,5 +48,24 @@
             <field name="enforce_from_account" model="poweremail.core_accounts" search="[('email_id','=', 'info@somenergia.coop')]"/>
             <field name="def_body_text"></field>
         </record>
+
+        <!-- Default IVA and IE config variables -->
+        <record model="res.config" id="default_iva_21_tax_id">
+            <field name="name">default_iva_21_tax_id</field>
+            <field name="value"></field>
+            <field name="description">Defineix el ID del IVA 21% per mostrar el text a CCPP i mails</field>
+        </record>
+        <record model="res.config" id="default_iese_tax_id">
+            <field name="name">default_iese_tax_id</field>
+            <field name="value"></field>
+            <field name="description">Defineix el ID del Impost Elèctric (IESE) per mostrar el text a CCPP i mails</field>
+        </record>
+
+        <!-- Serveis d'ajust estimated kwh price -->
+        <record model="res.config" id="serveis_ajust_estimated_kwh_price">
+            <field name="name">serveis_ajust_estimated_kwh_price</field>
+            <field name="value">0.028</field>
+            <field name="description">Preu kWh estimat per al servei d'ajust</field>
+        </record>
     </data>
 </openerp>
