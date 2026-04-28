@@ -7,9 +7,6 @@ from som_indexada.utils import calculate_new_indexed_prices
 from datetime import date, timedelta
 
 
-PRICE_CHANGE_DATE = "2026-05-01"  # FIXME: This should not be hardcoded
-
-
 class ReportBackendMailcanvipreus(ReportBackend):
     _source_model = "som.enviament.massiu"
     _name = "report.backend.mailcanvipreus"
@@ -105,13 +102,13 @@ class ReportBackendMailcanvipreus(ReportBackend):
     @report_browsify
     def get_data(self, cursor, uid, env, context=None):
         imd_obj = self.pool.get('ir.model.data')
-        pol_o = self.pool.get("giscedata.polissa")
+        pol_obj = self.pool.get("giscedata.polissa")
         if context is None:
             context = {}
 
         context['iva10'] = env.polissa_id.potencia < 10
 
-        self.simplified_taxes = pol_o.get_simplified_taxes(
+        self.simplified_taxes = pol_obj.get_simplified_taxes(
             cursor, uid, env.polissa_id.id, context=context)
 
         impostos_str = self.get_iva_text()
@@ -515,7 +512,7 @@ class ReportBackendMailcanvipreus(ReportBackend):
                 potencies,
                 afegir_servei_ajust=True,
                 bo_social_separat=True,
-                date=PRICE_CHANGE_DATE,
+                date=self.get_price_change_date(cursor, uid, env.polissa_id, context),
                 context=context,
             )
 
@@ -567,7 +564,7 @@ class ReportBackendMailcanvipreus(ReportBackend):
                 {},
                 afegir_servei_ajust=True,
                 bo_social_separat=False,
-                date=PRICE_CHANGE_DATE,
+                date=self.get_price_change_date(cursor, uid, env.polissa_id, context),
                 is_gkwh=True,
                 context=context,
             )
@@ -585,6 +582,15 @@ class ReportBackendMailcanvipreus(ReportBackend):
                 "consum_total": consum_total,
             }
         }
+
+    def get_price_change_date(self, cursor, uid, polissa, context=None):
+        today = date.today().strftime("%Y-%m-%d")
+        if polissa.llista_preu:
+            versions = polissa.llista_preu.version_id
+            for version in versions:
+                if version.active and version.date_start and version.date_start > today:
+                    return version.date_start
+        return (date.today() + timedelta(days=60)).strftime("%Y-%m-%d")
 
     def esCanaries(self, cursor, uid, env, context=False):
         return env.polissa_id.cups.id_municipi.subsistema_id.code in [
