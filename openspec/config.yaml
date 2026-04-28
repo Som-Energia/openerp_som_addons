@@ -33,7 +33,7 @@ rules:
 
 testing:
   runner:
-    command: "dodestral <database> -m <module>"
+    command: "scripts/run-tests.sh <database> -m <module>"
     framework: destral (OOMigration)
     notes: "Requereix: pyenv activate erp, Docker (PostgreSQL, MongoDB, Redis)"
   layers:

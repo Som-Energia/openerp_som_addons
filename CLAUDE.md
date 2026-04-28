@@ -29,9 +29,9 @@ Format: `<emoji> <type>: <description>`
 - Totes les seccions obligatòries
 
 ## Testing
+Amb el virtualenv activat:
 ```bash
-pyenv activate erp
-dodestral <db> -m <modul>
+scripts/run-tests.sh <db> -m <modul>
 ```
 
 ## Estil de Codi

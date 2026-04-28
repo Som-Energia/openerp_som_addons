@@ -22,8 +22,9 @@ Types: ADD_, IMP_, FIX_, MOD_, REF_, TEST_
 Tipus: feat, fix, refactor, perf, test, docs, style, chore
 
 ### Tests
+Amb el virtualenv activat:
 ```bash
-pyenv activate erp && dodestral <db> -m <modul>
+scripts/run-tests.sh <db> -m <modul>
 ```
 
 ## Estil de Codi
