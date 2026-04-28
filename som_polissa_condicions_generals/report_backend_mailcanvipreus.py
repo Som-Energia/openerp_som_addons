@@ -105,14 +105,18 @@ class ReportBackendMailcanvipreus(ReportBackend):
     @report_browsify
     def get_data(self, cursor, uid, env, context=None):
         imd_obj = self.pool.get('ir.model.data')
+        pol_o = self.pool.get("giscedata.polissa")
         if context is None:
             context = {}
 
         context['iva10'] = env.polissa_id.potencia < 10
 
-        impostos_str, impostos_value = self.getImpostos(env.polissa_id.fiscal_position_id, context)
+        self.simplified_taxes = pol_o.get_simplified_taxes(
+            cursor, uid, env.polissa_id.id, context=context)
 
-        if impostos_str == 'IVA del 10%':
+        impostos_str = self.get_iva_text()
+
+        if 'IVA' in self.simplified_taxes and self.simplified_taxes['IVA'] < 0.21:
             fp_id = imd_obj.get_object_reference(
                 cursor, uid, 'som_polissa_condicions_generals', 'fp_iva_reduit')[1]
             context.update({'force_fiscal_position': fp_id})
@@ -312,9 +316,9 @@ class ReportBackendMailcanvipreus(ReportBackend):
             != pol.modcontractuals_ids[0].mode_facturacio
                 and pol.modcontractuals_ids[0].mode_facturacio == 'index'):
             context["force_pricelist"] = pol.modcontractuals_ids[1].llista_preu.id
-        elif(pol.modcontractuals_ids[0].state == "pendent"
-             and pol.mode_facturacio
-             != pol.modcontractuals_ids[0].mode_facturacio
+        elif (pol.modcontractuals_ids[0].state == "pendent"
+              and pol.mode_facturacio
+              != pol.modcontractuals_ids[0].mode_facturacio
                 and pol.modcontractuals_ids[0].mode_facturacio == 'atr'):
             context["force_pricelist"] = pol.modcontractuals_ids[0].llista_preu.id
         for terme, values in periods.items():
@@ -341,7 +345,8 @@ class ReportBackendMailcanvipreus(ReportBackend):
     ):
         bo_social_price = self.get_bo_social_price(
             cursor, uid, polissa_id.llista_preu, context=context)
-        preu_estimat_servei_ajust = 0.028  # FIXME: Això segurament haurà d'anar a un altre lloc
+        preu_estimat_servei_ajust = float(self.imd_obj.get_object_reference(
+            cursor, uid, 'som_polissa_condicions_generals', 'serveis_ajust_estimated_kwh_price')[1])
 
         ctx = context or {}
         if date:
@@ -439,61 +444,17 @@ class ReportBackendMailcanvipreus(ReportBackend):
             )
         return conany
 
-    # FIMXE: tot hardcoded hahahaha salu2
-    def calcularImpostosPerCostAnualEstimat(self, preu, fiscal_position, context=False):
-        iva = 0.1 if context and context.get('iva10') else 0.21
-        impost_electric = 0.005
-        if fiscal_position:
-            if fiscal_position.id in [33, 47, 56, 52, 61, 38, 21, 19, 87, 89, 94, 97, 99, 101]:
-                iva = 0.03
-            if fiscal_position.id in [34, 48, 53, 57, 53, 62, 39, 25, 88, 90, 98, 100]:
-                iva = 0.0
+    def calc_tax_for_anual_estimation(self, preu, context=None):
+        iva = self.simplified_taxes.get('IGIC', self.simplified_taxes.get('IVA', 0.21))
+        impost_electric = self.simplified_taxes.get('IE', 0)
         preu_imp = round(preu * (1 + impost_electric), 2)
         return round(preu_imp * (1 + iva))
 
-    def getImpostos(self, fiscal_position, context=False):
-        imp_str = "IVA del 10%" if context and context.get('iva10') else "IVA del 21%"
-        imp_value = 21
-        if fiscal_position:
-            if fiscal_position.id in [33, 47, 56, 52, 61, 38, 21, 19, 87, 89, 94, 97, 99, 101]:
-                imp_str = "IGIC del 3%"
-                imp_value = 3
-            if fiscal_position.id in [34, 48, 53, 57, 53, 62, 39, 25, 88, 90, 98, 100]:
-                imp_str = "IGIC del 0%"
-                imp_value = 0
-        return imp_str, float(imp_value)
-
-    def get_iva_text(self, cursor, uid, polissa, context=False):
-        if context is None:
-            context = {}
-
-        iva_percent = 0.1 if context and context.get('iva10') else 0.21
-
-        fp_obj = self.pool.get('account.fiscal.position')
-        atax_obj = self.pool.get('account.tax')
-        imd_obj = self.pool.get('ir.model.data')
-
-        fiscal_position = polissa.fiscal_position_id
-        if not fiscal_position:
-            fiscal_position = polissa.titular.property_account_position
-
-        try:
-            iva_tax_id = imd_obj.get_object_reference(cursor, uid, 'account', 'tax_iva21')[1]
-            mapped_tax_ids = fp_obj.map_tax(cursor, uid, fiscal_position, [
-                                            iva_tax_id], context=context)
-            if mapped_tax_ids:
-                tax_data = atax_obj.read(cursor, uid, mapped_tax_ids[0], [
-                                         'amount'], context=context)
-                if tax_data:
-                    iva_percent = tax_data['amount']
-        except Exception:
-            pass
-
-        tax_text_map = {
-            0.03: "IGIC del 3%",
-            0.00: "IGIC del 0%",
-        }
-        return tax_text_map.get(iva_percent, "IVA del {}%".format(int(iva_percent * 100)))
+    def get_iva_text(self, context=None):
+        if 'IGIC' in self.simplified_taxes:
+            return 'IGIC del {}%'.format(int(self.simplified_taxes['IGIC'] * 100))
+        else:
+            return 'IVA del {}%'.format(int(self.simplified_taxes['IVA'] * 100))
 
     def has_gurb(self, cursor, uid, polissa, context=False):
         gurb_cups_obj = self.pool.get("som.gurb.cups")
@@ -558,12 +519,8 @@ class ReportBackendMailcanvipreus(ReportBackend):
                 context=context,
             )
 
-            preu_vell_imp = self.calcularImpostosPerCostAnualEstimat(
-                preu_vell, env.polissa_id.fiscal_position_id, context=context
-            )
-            preu_nou_imp = self.calcularImpostosPerCostAnualEstimat(
-                preu_nou, env.polissa_id.fiscal_position_id, context=context
-            )
+            preu_vell_imp = self.calc_tax_for_anual_estimation(preu_vell)
+            preu_nou_imp = self.calc_tax_for_anual_estimation(preu_nou)
 
         return {
             "origen": origen,
@@ -615,12 +572,8 @@ class ReportBackendMailcanvipreus(ReportBackend):
                 context=context,
             )
 
-            preu_vell_imp = self.calcularImpostosPerCostAnualEstimat(
-                preu_vell, env.polissa_id.fiscal_position_id, context=context
-            )
-            preu_nou_imp = self.calcularImpostosPerCostAnualEstimat(
-                preu_nou, env.polissa_id.fiscal_position_id, context=context
-            )
+            preu_vell_imp = self.calc_tax_for_anual_estimation(preu_vell)
+            preu_nou_imp = self.calc_tax_for_anual_estimation(preu_nou)
 
         return {
             "gkwh_estimation": {
