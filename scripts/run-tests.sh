@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# WORKSPACE: carpeta arrel on hi ha tots els repositoris del projecte
+# Ex: export WORKSPACE=/home/<user>/src o /home/<user>/projects
+: "${WORKSPACE:?WORKSPACE no definit. Ex: export WORKSPACE=/home/<user>/src}"
 
 export PYTHONIOENCODING="UTF-8"
 export PYTHONPATH="$WORKSPACE/erp/server/bin:$WORKSPACE/erp/server/bin/addons:$WORKSPACE/erp/server/sitecustomize:$PYTHONPATH"
