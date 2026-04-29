@@ -15,6 +15,9 @@
 - `demo/`: fitxers de demo data pels tests.
 
 ## Models
+
+> Veure [docs/patterns/model-inherit.md](../../docs/patterns/model-inherit.md) per exemples detallats.
+
 - Definits amb `osv.osv`.
 - `_columns` amb `fields.*`.
 - `_defaults` per valors inicials.
@@ -118,6 +121,8 @@ ids = obj.search(cursor, uid, [
 
 ## Vistes XML i herència
 
+> Veure [docs/patterns/view-extend.md](../../docs/patterns/view-extend.md) per exemples detallats d'herència de vistes.
+
 Definició bàsica:
 
 ```xml
@@ -161,6 +166,8 @@ Els fitxers de vistes s’han de declarar a `update_xml` del `__terp__.py`:
 ```
 
 ## Wizards
+
+> Veure [docs/patterns/wizard.md](../../docs/patterns/wizard.md) per exemples detallats.
 
 Els wizards hereten de `osv.osv_memory` (les dades no es persisten a la BD un cop tancat).
 

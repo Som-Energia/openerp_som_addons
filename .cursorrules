@@ -7,6 +7,12 @@ Treballa amb el repositori `openerp_som_addons` seguint aquestes regles.
 - **Testing**: destral
 - **Linting**: flake8
 
+## Skills
+
+Utilitza les skills del projecte. Veure [.agents/skill-registry.md](.agents/skill-registry.md):
+- `git-branch`, `git-commit`, `git-pr` - Git workflow
+- `erp-test`, `erp-start`, `erp-migration` - ERP operations
+
 ## Convencions Git
 
 ### Branques
@@ -26,12 +32,6 @@ Treballa amb el repositori `openerp_som_addons` seguint aquestes regles.
 - Veure `.github/docs/estil.md`
 - Patterns OpenERP 5: `osv.osv`, `_columns`, `fields.*`
 - Evitar API nova: `@api.model`, `@api.depends`
-
-## Skills
-Quan l'usuari demani executar tests, usar (amb el virtualenv activat):
-```bash
-scripts/run-tests.sh <db> -m <modul>
-```
 
 ## Referències
 - `.github/docs/estil.md`

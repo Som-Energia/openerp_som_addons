@@ -194,60 +194,9 @@ SomMyModel()
 
 #### Canvis a models: scripts de migració
 
-Quan es modifica un model (nou camp, canvi de tipus, etc.), cal crear un script de migració per aplicar els canvis a producció.
+Quan es modifica un model (nou camp, canvi de tipus, etc.), cal crear un script de migració.
 
-**Estructura:**
-
-```
-migrations/
-└── X.XX.X/              # Versió actual (ex: 1.2.3)
-    ├── pre.py           # S'executa ABANS de l'_auto_init del model
-    ├── post.py          # S'executa DESPRÉS de l'_auto_init del model
-```
-
-** Quan cal pre.py:**
-- Quan un camp nou pot trigar molt a crear-se (ex: camps calculats/stored)
-- Crear la columna manualment a PostgreSQL abans de l'_auto_init
-
-** Quan cal post.py:**
-- Canvis normals que necessiten executar-se després del model
-- Actualitzar valors de camps nous
-
-** Generar script:**
-
-```bash
-# Script a /scripts per generar la plantilla
-python /scripts/gen_migration.py <nom_modul>
-```
-
-Exemple de pre.py:
-```python
-# -*- coding: utf-8 -*-
-from tools import migrate
-
-
-def migrate(cr, version):
-    # Crear columna manualment si cal
-    cr.execute("""
-        ALTER TABLE som_my_model
-        ADD COLUMN new_field varchar;
-    """)
-```
-
-Exemple de post.py:
-```python
-# -*- coding: utf-8 -*-
-from tools import migrate
-
-
-def migrate(cr, version):
-    # Actualitzar valors del camp nou
-    cr.execute("""
-        UPDATE som_my_model
-        SET new_field = 'default_value'
-        WHERE new_field IS NULL;
-    """)
-```
+Consulta el skill [erp-migration](../../.agents/skills/erp-migration/SKILL.md) per crear scripts de migració automàticament amb `scripts/create_migration_script.py`.
 
 ### `views/` — Vistes XML
 

@@ -1,5 +1,7 @@
 # Estil de programació per a Som Energia (OpenERP 5.0)
 
+> Veure [docs/guides/getting-started.md](../../docs/guides/getting-started.md) per a la configuració de l'entorn de desenvolupament.
+
 ## Python
 - Compatible amb Python 2.7 i Python 3.11.
 - No utilitzar sintaxi moderna (f-strings, comprehensions complexes, decorators).
