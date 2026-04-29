@@ -19,6 +19,7 @@ See `_shared/skill-resolver.md` for the full resolution protocol.
 | Quan necessites fer un commit de codi | git-commit | .agents/skills/git-commit/SKILL.md |
 | Quan necessites crear una Pull Request | git-pr | .agents/skills/git-pr/SKILL.md |
 | Quan necessites executar tests d'un mòdul OpenERP amb destral | erp-test | .agents/skills/erp-test/SKILL.md |
+| Quan necessites arrencar el servei ERP, executar l'ERP, o obrir l'entorn de desenvolupament | erp-start | .agents/skills/erp-start/SKILL.md |
 
 ## Compact Rules
 
@@ -46,6 +47,13 @@ See `_shared/skill-resolver.md` for the full resolution protocol.
 - Requisits: Virtualenv activat + Docker (PostgreSQL, MongoDB, Redis)
 - Command: `scripts/run-tests.sh <database> -m <module_name>`
 - Contenidors esperats: src_db_1, src_mongo_1, src_redis_1
+
+### erp-start
+- Requisits: Virtualenv activat + Docker (PostgreSQL, MongoDB, Redis)
+- Command: `erpserver -d <database>`
+- Full path: `/home/oriol/somenergia/src/erp/server/bin/openerp-server.py --no-netrpc --price_accuracy=6 --config=$HOME/conf/erp.conf -d <database>`
+- Opcions: --update=<module> per actualitzar mòdul, --run-scripts=<module> per migracions
+- Interfície: http://localhost:8069
 
 ## Project Conventions
 
