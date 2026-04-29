@@ -57,9 +57,9 @@ See `_shared/skill-resolver.md` for the full resolution protocol.
 - Interfície: http://localhost:8069
 
 ### erp-migration
-- Estructura: `<modul>/migrations/X.XX.X/{pre,post}.py`
-- pre.py: ABANS de l'_auto_init (crear columna manualment)
-- post.py: DESPRÉS de l'_auto_init (actualitzar valors)
+- Format: `<pre|post>-<0001>_<descripcio>.py`
+- Script automàtic: `python scripts/create_migration_script.py`
+- Estructura: `<modul>/migrations/5.0.25.5.0/post-0001_*.py`
 - Executar: `erpserver -d <db> --run-scripts=<module>` o `--update=<module>`
 
 ## Project Conventions
