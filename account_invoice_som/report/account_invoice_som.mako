@@ -47,7 +47,8 @@
                             )
                         else:
                             entidad_bancaria = inv.partner_bank.name or inv.partner_bank.bank.lname
-                            bank_acc = inv.partner_bank.iban[:-4].replace(' ','')  + '****'
+                            iban_clean = inv.partner_bank.iban.replace(' ', '')
+                            bank_acc = iban_clean[-4:].rjust(len(iban_clean), '*')
 	        elif inv.payment_type.code == 'N57':
 		    fact_id = fact_obj.search(cursor, uid, [('invoice_id','=',inv.id)])[0]
 		    fact = fact_obj.browse(cursor, uid, fact_id)
@@ -71,7 +72,8 @@
                 else:
                     if inv.partner_bank:
                         entidad_bancaria = inv.partner_bank.name or inv.partner_bank.bank.lname
-                        bank_acc = inv.partner_bank.iban[:-4].replace(' ','') + '****'
+                        iban_clean = inv.partner_bank.iban.replace(' ', '')
+                        bank_acc = iban_clean[-4:].rjust(len(iban_clean), '*')
                 altres_lines = [l for l in inv.invoice_line]
                 residual_total = inv.residual
                 base = 0.0
@@ -295,7 +297,7 @@
                             </table>
 
                         %elif inv.payment_type.code == "COBRAMENT_TARGETA":
-                            ${_("L'import d'aquesta factura s'ha de pagat mitjançant tarjeta de crèdit")}
+                            ${_("L'import d'aquesta factura s'ha pagat mitjançant targeta de crèdit")}
 			            %else:
                             ${_("L'import d'aquesta factura s'ha de pagar mitjançant transferència bancària al compte indicat:")}
                             <%

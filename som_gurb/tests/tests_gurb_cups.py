@@ -200,7 +200,7 @@ class TestsGurbCups(TestsGurbBase):
         self.assertEqual(inv["residual"], 4.54)
         self.assertEqual(inv["saldo"], 4.54)
         self.assertEqual(inv['journal_id'][1], u'Factures GURB')
-        self.assertEqual(inv['payment_type'][1], u'Transferencia')
+        self.assertEqual(inv['payment_type'][1], u'Recibo domiciliado')
         line = line_o.read(self.cursor, self.uid, inv['invoice_line'][0])
         self.assertEqual(line['name'], u"Cost d'adhesió GURB GRUP 001")
         self.assertEqual(line['quantity'], 1.0)
