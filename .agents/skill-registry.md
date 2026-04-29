@@ -9,21 +9,16 @@ See `_shared/skill-resolver.md` for the full resolution protocol.
 > **Configuració inicial** (executar una vegada):
 > ```bash
 > cd $HOME/.config/opencode/skills
-> ln -s $HOME/somenergia/src/openerp_som_addons/.atl/skills openerp_som_addons
+> ln -s $HOME/somenergia/src/openerp_som_addons/.agents/skills openerp_som_addons
 > ```
-> OpenCode cercarà `.atl/skills/` dins del projecte.
+> OpenCode cercarà `.agents/skills/` dins del projecte.
 
 | Trigger | Skill | Path |
 |---------|-------|------|
-| Quan necessites crear una branca nova per treballar | git-branch | .atl/skills/git-branch/SKILL.md |
-| Quan necessites fer un commit de codi | git-commit | .atl/skills/git-commit/SKILL.md |
-| Quan necessites crear una Pull Request | git-pr | .atl/skills/git-pr/SKILL.md |
-| Quan necessites executar tests d'un mòdul OpenERP amb destral | erp-test | .atl/skills/erp-test/SKILL.md |
-| When creating a GitHub issue, reporting a bug, or requesting a feature | issue-creation | ~/.config/opencode/skills/issue-creation/SKILL.md |
-| When creating a pull request, opening a PR, or preparing changes for review | branch-pr | ~/.config/opencode/skills/branch-pr/SKILL.md |
-| When user asks to create a new skill, add agent instructions, or document patterns for AI | skill-creator | ~/.config/opencode/skills/skill-creator/SKILL.md |
-| When writing Go tests, using teatest, or adding test coverage | go-testing | ~/.config/opencode/skills/go-testing/SKILL.md |
-| When user says "judgment day", "judgment-day", "review adversarial", "dual review", "doble review", "juzgar", "que lo juzguen" | judgment-day | ~/.config/opencode/skills/judgment-day/SKILL.md |
+| Quan necessites crear una branca nova per treballar | git-branch | .agents/skills/git-branch/SKILL.md |
+| Quan necessites fer un commit de codi | git-commit | .agents/skills/git-commit/SKILL.md |
+| Quan necessites crear una Pull Request | git-pr | .agents/skills/git-pr/SKILL.md |
+| Quan necessites executar tests d'un mòdul OpenERP amb destral | erp-test | .agents/skills/erp-test/SKILL.md |
 
 ## Compact Rules
 
@@ -51,40 +46,6 @@ See `_shared/skill-resolver.md` for the full resolution protocol.
 - Requisits: Virtualenv activat + Docker (PostgreSQL, MongoDB, Redis)
 - Command: `scripts/run-tests.sh <database> -m <module_name>`
 - Contenidors esperats: src_db_1, src_mongo_1, src_redis_1
-
-### issue-creation
-- Blank issues disabled — ALWAYS use template (bug_report.yml o feature_request.yml)
-- Every issue gets status:needs-review automatically
-- Maintainer MUST add status:approved abans de PR
-- Questions → Discussions, NOT issues
-
-### branch-pr
-- EVERY PR MUST link an approved issue — no exceptions
-- Automated checks must pass before merge
-- Branch naming: `type/description` (lowercase, regex: `^(feat|fix|chore|docs|style|refactor|perf|test|build|ci|revert)/[a-z0-9._-]+$`)
-- PR body MUST contain: Linked Issue (Closes #N), PR Type (exactly one type:* label), Summary, Changes Table, Test Plan
-- Conventional commits: `type(scope): description` or `type: description`
-
-### skill-creator
-- Skill structure: `skills/{skill-name}/SKILL.md`, optional assets/, references/
-- Frontmatter obligatori: name, description (inclou trigger), license (Apache-2.0), metadata.author, metadata.version
-- NO duplicar contingut existing (referenciar en lloc)
-- Referencies: LOCAL paths, no URLs externes
-
-### go-testing
-- Table-driven tests: `t.Run(tt.name, func(t *testing.T) { ... })`
-- Bubbletea testing: test Model.Update() directly, no Render()
-- Teatest per flows interactius: `teatest.NewTestModel(t, m)`
-- Golden file testing per output visual
-- Mock dependencies amb interfaces
-
-### judgment-day
-- Launch TWO independent sub-agents via delegate (async, parallel)
-- Pattern 0 OBLIGATORI: Resoldre skill registry abans de llançar judges
-- Classificar warnings: WARNING (real) vs WARNING (theoretical)
-- Verdicte: Confirmed (ambós), Suspect (un), Contradiction (desacord)
-- After 2 fix iterations: ASK user abans de continuar
-- Blocking rules: NO git push/commit fins re-judgment completa
 
 ## Project Conventions
 
