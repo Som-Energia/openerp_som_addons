@@ -99,6 +99,36 @@ class ReportBackendInvoiceEmail(ReportBackend):
         pol = polissa_o.browse(cursor, uid, fra.polissa_id.id, context=ctxt)
         data["has_autoconsum_pdf_flag"] = pol.te_autoconsum(amb_o_sense_excedents=2, context=ctxt)
 
+        if pol.cobrament_bloquejat and fra.pending_state:
+            ir_model_data = self.pool.get("ir.model.data")
+            fue_bs = ir_model_data.get_object_reference(
+                cursor, uid,
+                "som_account_invoice_pending",
+                "fue_bo_social_pending_state"
+            )[1]
+
+            fue_df = ir_model_data.get_object_reference(
+                cursor, uid,
+                "som_account_invoice_pending",
+                "fue_default_pending_state"
+            )[1]
+
+            r1_bs = ir_model_data.get_object_reference(
+                cursor, uid,
+                "som_account_invoice_pending",
+                "reclamacio_en_curs_pending_state"
+            )[1]
+
+            r1_df = ir_model_data.get_object_reference(
+                cursor, uid,
+                "som_account_invoice_pending",
+                "default_reclamacio_en_curs_pending_state"
+            )[1]
+            blocked_payment_states = [fue_bs, fue_df, r1_bs, r1_df]
+            data["hasBlockedPayment"] = fra.pending_state.id in blocked_payment_states
+        else:
+            data["hasBlockedPayment"] = False
+
         return data
 
     def get_linies(self, cursor, uid, fra, context=None):
