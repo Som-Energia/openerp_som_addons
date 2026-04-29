@@ -32,15 +32,15 @@ openerp_som_addons/
 
 ## Skills Disponibles
 
-Les skills següents estan disponibles al projecte i s'han d'utilitzar quan correspongui:
+Les skills següents estan disponibles al projecte i s'han d'utilitzar quan correspongui. Veure [.agents/skill-registry.md](.agents/skill-registry.md) per la llista completa.
 
 ### Git Workflow
 
 | Skill | Quan usar | Com usar |
 |-------|-----------|----------|
-| `git-branch` | Crear branca nova | `git checkout -b <TYPE>_<description>` |
-| `git-commit` | Fer commit | `git commit -m "<emoji> <type>: <description>"` |
-| `git-pr` | Crear PR | `gh pr create --title "..." --body "..."` |
+| `git-branch` | Crear branca nova | Veure [.agents/skills/git-branch/SKILL.md](.agents/skills/git-branch/SKILL.md) |
+| `git-commit` | Fer commit | Veure [.agents/skills/git-commit/SKILL.md](.agents/skills/git-commit/SKILL.md) |
+| `git-pr` | Crear PR | Veure [.agents/skills/git-pr/SKILL.md](.agents/skills/git-pr/SKILL.md) |
 
 **Convencions de branca:**
 - `ADD_<desc>` - Nova funcionalitat
@@ -59,7 +59,9 @@ Les skills següents estan disponibles al projecte i s'han d'utilitzar quan corr
 
 | Skill | Quan usar | Com usar |
 |-------|-----------|----------|
-| `erp-test` | Executar tests | `scripts/run-tests.sh <db> -m <modul>` |
+| `erp-test` | Executar tests | Veure [.agents/skills/erp-test/SKILL.md](.agents/skills/erp-test/SKILL.md) |
+| `erp-start` | Arrencar servei ERP | Veure [.agents/skills/erp-start/SKILL.md](.agents/skills/erp-start/SKILL.md) |
+| `erp-migration` | Crear scripts de migració | Veure [.agents/skills/erp-migration/SKILL.md](.agents/skills/erp-migration/SKILL.md) |
 
 **Requisits per executar tests:**
 1. Docker: PostgreSQL, MongoDB, Redis corrent

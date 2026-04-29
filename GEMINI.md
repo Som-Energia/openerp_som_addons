@@ -7,6 +7,12 @@ Treballa amb el repositori `openerp_som_addons`.
 - Testing: destral
 - Linting: flake8
 
+## Skills
+
+Utilitza les skills del projecte quan correspongui. Veure [.agents/skill-registry.md](.agents/skill-registry.md):
+- `git-branch`, `git-commit`, `git-pr` - Git workflow
+- `erp-test`, `erp-start`, `erp-migration` - ERP operations
+
 ## Convencions
 
 ### Branques
@@ -20,12 +26,6 @@ Types: ADD_, IMP_, FIX_, MOD_, REF_, TEST_
 <emoji> <type>: <description>
 ```
 Tipus: feat, fix, refactor, perf, test, docs, style, chore
-
-### Tests
-Amb el virtualenv activat:
-```bash
-scripts/run-tests.sh <db> -m <modul>
-```
 
 ## Estil de Codi
 - `.github/docs/estil.md`
