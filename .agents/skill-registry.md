@@ -20,6 +20,7 @@ See `_shared/skill-resolver.md` for the full resolution protocol.
 | Quan necessites crear una Pull Request | git-pr | .agents/skills/git-pr/SKILL.md |
 | Quan necessites executar tests d'un mòdul OpenERP amb destral | erp-test | .agents/skills/erp-test/SKILL.md |
 | Quan necessites arrencar el servei ERP, executar l'ERP, o obrir l'entorn de desenvolupament | erp-start | .agents/skills/erp-start/SKILL.md |
+| Quan necessites crear un script de migració, modificar el model, o actualitzar un mòdul a producció | erp-migration | .agents/skills/erp-migration/SKILL.md |
 
 ## Compact Rules
 
@@ -54,6 +55,12 @@ See `_shared/skill-resolver.md` for the full resolution protocol.
 - Full path: `/home/oriol/somenergia/src/erp/server/bin/openerp-server.py --no-netrpc --price_accuracy=6 --config=$HOME/conf/erp.conf -d <database>`
 - Opcions: --update=<module> per actualitzar mòdul, --run-scripts=<module> per migracions
 - Interfície: http://localhost:8069
+
+### erp-migration
+- Estructura: `<modul>/migrations/X.XX.X/{pre,post}.py`
+- pre.py: ABANS de l'_auto_init (crear columna manualment)
+- post.py: DESPRÉS de l'_auto_init (actualitzar valors)
+- Executar: `erpserver -d <db> --run-scripts=<module>` o `--update=<module>`
 
 ## Project Conventions
 
