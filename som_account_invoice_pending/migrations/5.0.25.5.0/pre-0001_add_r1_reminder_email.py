@@ -14,7 +14,7 @@ def up(cursor, installed_version):
     load_data_records(
         cursor,
         'som_account_invoice_pending',
-        'som_account_invoice_pending_data.xml',
+        'data/som_account_invoice_pending_data.xml',
         list_of_records,
         mode='update'
     )
