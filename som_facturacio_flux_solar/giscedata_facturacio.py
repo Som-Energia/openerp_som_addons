@@ -161,9 +161,9 @@ class GiscedataFacturacioFacturador(osv.osv):
 
     def get_avoid_negative_invoice_bv(self, cursor, uid, metode_descompte, context=None):
         """
-            Com que el total a descomptar ja està prèviament calculat tenint en compte l'import final de la factura,
-            desmarquem el check de evitar factures negatives perque sinó fa que s'apliqui menys de l'import calculat,
-            i per tant no queda a 0 la factura
+            Com que el total a descomptar ja està prèviament calculat tenint en compte l'import
+            final de la factura, desmarquem el check de evitar factures negatives perque sinó fa
+            que s'apliqui menys de l'import calculat, i per tant no queda a 0 la factura
         """
         return False
 
