@@ -1815,7 +1815,7 @@ class Tests_FacturacioFacturaReport_invoice_details_comments(Tests_FacturacioFac
                 "invoice_comment": None,
                 "has_web": False,
                 "web_distri": False,
-                "language": False,
+                "language": 'es_ES',
                 "distri_name": u"Agrolait",
             },
         )
@@ -1853,7 +1853,7 @@ class Tests_FacturacioFacturaReport_invoice_details_comments(Tests_FacturacioFac
                 "invoice_comment": u"comment",
                 "has_web": False,
                 "web_distri": False,
-                "language": False,
+                "language": 'es_ES',
                 "distri_name": u"Agrolait",
             },
         )
