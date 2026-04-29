@@ -59,12 +59,11 @@ Les skills següents estan disponibles al projecte i s'han d'utilitzar quan corr
 
 | Skill | Quan usar | Com usar |
 |-------|-----------|----------|
-| `erp-test` | Executar tests | `dodestral <db> -m <modul>` |
+| `erp-test` | Executar tests | `scripts/run-tests.sh <db> -m <modul>` |
 
 **Requisits per executar tests:**
 1. Docker: PostgreSQL, MongoDB, Redis corrent
-2. pyenv: `pyenv activate erp`
-3. OpenERP instal·lat a `~/somenergia/src/erp/server/bin`
+2. Virtualenv activat — nom habitual: `erp` (`pyenv activate erp` o `workon erp`)
 
 ## Estil de Programació
 

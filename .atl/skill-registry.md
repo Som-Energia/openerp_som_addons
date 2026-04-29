@@ -48,9 +48,8 @@ See `_shared/skill-resolver.md` for the full resolution protocol.
 - Títols: Clar i descriptiu
 
 ### erp-test
-- Requisits: Docker (PostgreSQL, MongoDB, Redis), pyenv (`erp`), OpenERP a `~/somenergia/src/erp/server/bin`
-- Variables d'entorn obligatòries: PYTHONPATH, OPENERP_PRICE_ACCURACY, OORQ_ASYNC, OPENERP_DB_*, OPENERP_MONGODB_HOST, OPENERP_REDIS_URL
-- Command: `dodestral <database> -m <module_name>`
+- Requisits: Virtualenv activat + Docker (PostgreSQL, MongoDB, Redis)
+- Command: `scripts/run-tests.sh <database> -m <module_name>`
 - Contenidors esperats: src_db_1, src_mongo_1, src_redis_1
 
 ### issue-creation
