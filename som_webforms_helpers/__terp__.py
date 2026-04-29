@@ -12,6 +12,7 @@
         "som_facturacio_switching",
         "som_generationkwh",
         "som_polissa_condicions_generals",
+        "giscedata_repercusio_bo_social",
     ],
     "init_xml": [],
     "demo_xml": [
