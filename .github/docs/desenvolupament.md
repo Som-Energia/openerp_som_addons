@@ -5,7 +5,7 @@
 Aquest fitxer recull informació d'alt nivell i decisions tècniques. Per a receptes pràctiques:
 
 - **Receptes**: [docs/patterns/](../docs/patterns/)
-- **Guies**: [docs/guides/](../docs/guides/)
+- **Guies**: [Guies](../docs/guides/)
 - **Skills**: [.agents/skill-registry.md](../../.agents/skill-registry.md)
 
 ---
