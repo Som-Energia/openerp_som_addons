@@ -19,7 +19,9 @@ Utilitza aquesta skill quan:
 ## Configuració Requerida
 
 Aquesta skill requereix:
-1. **Virtualenv activat** (pyenv, venv, o equivalent) amb destral instal·lat
+1. **Virtualenv activat** amb destral instal·lat. El nom habitual és `erp`:
+   - pyenv: `pyenv activate erp`
+   - virtualenvwrapper: `workon erp`
 2. **Contenidors Docker**: PostgreSQL, MongoDB, Redis
 
 ## Workflow
@@ -55,7 +57,7 @@ scripts/run-tests.sh test_som_polissa -m som_polissa -t TestsClass.test_method
 
 | Error | Causa | Solució |
 |-------|-------|----------|
-| `destral: command not found` | Virtualenv no activat | Activa el teu virtualenv |
+| `destral: command not found` | Virtualenv no activat | `pyenv activate erp` o `workon erp` |
 | `Connection refused to localhost:5432` | PostgreSQL no corrent | `docker-compose up -d` |
 | `Connection refused to localhost:27017` | MongoDB no corrent | `docker-compose up -d` |
 | `Connection refused to localhost:6379` | Redis no corrent | `docker-compose up -d` |

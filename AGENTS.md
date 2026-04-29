@@ -63,7 +63,7 @@ Les skills següents estan disponibles al projecte i s'han d'utilitzar quan corr
 
 **Requisits per executar tests:**
 1. Docker: PostgreSQL, MongoDB, Redis corrent
-2. Virtualenv activat (pyenv, venv, o equivalent)
+2. Virtualenv activat — nom habitual: `erp` (`pyenv activate erp` o `workon erp`)
 
 ## Estil de Programació
 
