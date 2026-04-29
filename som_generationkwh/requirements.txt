@@ -1,0 +1,8 @@
+https://github.com/mailchimp/mailchimp-marketing-python/archive/master.zip
+# libfacturacioatr
+numpy
+yamlns
+plantmeter
+python-dateutil
+freezegun
+certifi==2021.10.8

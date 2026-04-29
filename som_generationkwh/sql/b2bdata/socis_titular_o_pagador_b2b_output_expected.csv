@@ -1,0 +1,8 @@
+soci_id	name	nsoci	nif	lang	consumannual	consumprioritario	ncontractes	polizas_titular	polizas_pagador	polizas_socio	email	acciones	already_invested	essoci	bool
+400	Minguella Barallat, Albert	S000357	ES40893378E	ca_ES	35120	2500	18	2	3	13	albert.minguella@gencat.cat	10	400	True	False
+4320	Cabello Castillo, José	S003107	ES75341344Z	ca_ES	3400	1900	2	1	1	0	pcabellocastillo@ya.com	8	4320	True	False
+10283	Abad Colás, Antonio 	S007052	ES77102415K	es_ES	12639	4576	3	0	1	2	persianasabad@hotmail.com	8	10283	True	False
+12992	Andersen Andersen, Carsten Busk	S008503	ES47650870E	ca_ES	2700	2700	1	0	0	1	losandersen@gmail.com	11	12992	True	False
+13846	Aguilera Martinez, Javier	S008978	ES74236862S	es_ES	18174	3500	2	1	0	1	aguileramartinez@gmail.com	6	13846	True	False
+24500	Àgueda Càceres, Jesús	S014125	ES40843973K	ca_ES	154144	150044	3	0	2	1	jesagueda@gmail.com	13	24500	True	False
+32922	Armero Garrigós, Eva	S017718	ES23000798Q	ca_ES	14880	12000	2	2	0	0	evaarmero@hotmail.com	15	32922	True	False
