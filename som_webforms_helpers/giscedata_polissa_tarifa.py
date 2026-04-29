@@ -89,7 +89,8 @@ class GiscedataPolissaTarifa(osv.osv):
         imd_obj = self.pool.get("ir.model.data")
         prod_obj = self.pool.get("product.product")
 
-        bs_id = imd_obj.get_object_reference(cursor, uid, "som_polissa_soci", "bosocial_BS01")[1]
+        bs_id = imd_obj.get_object_reference(
+            cursor, uid, "giscedata_repercusio_bo_social", "bosocial_BS01")[1]
         prod = prod_obj.browse(cursor, uid, bs_id)
 
         price = pricelist.price_get(bs_id, 1, 1, context)[pricelist.id]
