@@ -2259,6 +2259,8 @@ class Tests_FacturacioFacturaReport_invoice_details_td(Tests_FacturacioFacturaRe
                 "dies_any": 0,
                 "dies": 0,
                 "iva_column": False,
+                "total": 0,
+                "is_visible": False,
             },
         )
 
@@ -2285,6 +2287,8 @@ class Tests_FacturacioFacturaReport_invoice_details_td(Tests_FacturacioFacturaRe
                 "dies": 0,
                 "header_multi": 2,
                 "iva_column": False,
+                "total": 0,
+                "is_visible": False,
             },
         )
 

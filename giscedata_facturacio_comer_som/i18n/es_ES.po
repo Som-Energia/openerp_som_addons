@@ -11,8 +11,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Som Energia\n"
 "Report-Msgid-Bugs-To: support@openerp.com\n"
-"POT-Creation-Date: 2026-04-17 17:36+0000\n"
-"PO-Revision-Date: 2026-04-17 15:38+0000\n"
+"POT-Creation-Date: 2026-04-29 11:27+0000\n"
+"PO-Revision-Date: 2026-04-29 09:30+0000\n"
 "Last-Translator: Som Energia <itcrowd@somenergia.coop>\n"
 "Language-Team: Spanish (Spain) (http://trad.gisce.net/projects/p/somenergia/language/es_ES/)\n"
 "MIME-Version: 1.0\n"
@@ -23,7 +23,7 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #. module: giscedata_facturacio_comer_som
-#: code:addons/giscedata_facturacio_comer_som/giscedata_facturacio_report.py:4087
+#: code:addons/giscedata_facturacio_comer_som/giscedata_facturacio_report.py:4263
 #: rml:giscedata_facturacio_comer_som/report/components/energy_consumption_detail_td_base/energy_consumption_detail_td_base.mako:7
 msgid "Energia Reactiva Capacitiva (kVArh)"
 msgstr "Energía Reactiva Capacitiva (kVArh)"
@@ -45,7 +45,7 @@ msgid "Reimprimir Pdf (no caché)"
 msgstr "Reimprimir Pdf (no caché)"
 
 #. module: giscedata_facturacio_comer_som
-#: code:addons/giscedata_facturacio_comer_som/giscedata_facturacio_report.py:3513
+#: code:addons/giscedata_facturacio_comer_som/giscedata_facturacio_report.py:3685
 msgid "Factura amb linies complementaries de tipus desconegut {}"
 msgstr "Factura con líneas complementarias de tipo desconocido {}"
 
@@ -55,8 +55,8 @@ msgid "Reimprimir factura en pdf"
 msgstr "Reimprimir factura en pdf"
 
 #. module: giscedata_facturacio_comer_som
-#: code:addons/giscedata_facturacio_comer_som/giscedata_facturacio_report.py:2853
-#: code:addons/giscedata_facturacio_comer_som/giscedata_facturacio_report.py:2857
+#: code:addons/giscedata_facturacio_comer_som/giscedata_facturacio_report.py:2865
+#: code:addons/giscedata_facturacio_comer_som/giscedata_facturacio_report.py:2869
 #: rml:giscedata_facturacio_comer_som/report/components/energy_consumption_detail_td_base/energy_consumption_detail_td_base.mako:11
 msgid "calculada"
 msgstr "calculada"
@@ -94,14 +94,14 @@ msgid "Reports Facturació SOM (Comercialitzadora)"
 msgstr "Reports Facturación SOM (Comercializadora)"
 
 #. module: giscedata_facturacio_comer_som
-#: code:addons/giscedata_facturacio_comer_som/giscedata_facturacio_report.py:4117
+#: code:addons/giscedata_facturacio_comer_som/giscedata_facturacio_report.py:4293
 #: rml:giscedata_facturacio_comer_som/report/components/energy_consumption_detail_td_base/energy_consumption_detail_td_base.mako:8
 #: rml:giscedata_facturacio_comer_som/report/components/energy_consumption_detail_td_maximetre/energy_consumption_detail_td_maximetre.mako:7
 msgid "Maxímetre (kW)"
 msgstr "Maxímetro (kW)"
 
 #. module: giscedata_facturacio_comer_som
-#: code:addons/giscedata_facturacio_comer_som/giscedata_facturacio_report.py:2897
+#: code:addons/giscedata_facturacio_comer_som/giscedata_facturacio_report.py:2909
 #: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_energy/invoice_details_td_energy.mako:7
 msgid "sense lectura"
 msgstr "sin lectura"
@@ -130,14 +130,14 @@ msgstr "Salir"
 
 #. module: giscedata_facturacio_comer_som
 #: code:addons/giscedata_facturacio_comer_som/giscedata_facturacio_report.py:229
-#: code:addons/giscedata_facturacio_comer_som/giscedata_facturacio_report.py:2849
+#: code:addons/giscedata_facturacio_comer_som/giscedata_facturacio_report.py:2861
 #: rml:giscedata_facturacio_comer_som/report/components/energy_consumption_detail_td_base/energy_consumption_detail_td_base.mako:9
 msgid "real"
 msgstr "real"
 
 #. module: giscedata_facturacio_comer_som
-#: code:addons/giscedata_facturacio_comer_som/giscedata_facturacio_report.py:4213
-#: code:addons/giscedata_facturacio_comer_som/giscedata_facturacio_report.py:4243
+#: code:addons/giscedata_facturacio_comer_som/giscedata_facturacio_report.py:4389
+#: code:addons/giscedata_facturacio_comer_som/giscedata_facturacio_report.py:4419
 #: rml:giscedata_facturacio_comer_som/report/components/energy_consumption_detail_td_collective/energy_consumption_detail_td_collective.mako:11
 msgid "Autoconsum compartit (kWh)"
 msgstr "Autoconsumo compartido (kWh)"
@@ -148,18 +148,18 @@ msgid "Invalid XML for View Architecture!"
 msgstr "Invalid XML for View Architecture!"
 
 #. module: giscedata_facturacio_comer_som
-#: code:addons/giscedata_facturacio_comer_som/giscedata_facturacio_report.py:3987
+#: code:addons/giscedata_facturacio_comer_som/giscedata_facturacio_report.py:4163
 #: rml:giscedata_facturacio_comer_som/report/components/energy_consumption_detail_td_base/energy_consumption_detail_td_base.mako:4
 msgid "Energia Activa (kWh)"
 msgstr "Energía Activa (kWh)"
 
 #. module: giscedata_facturacio_comer_som
-#: code:addons/giscedata_facturacio_comer_som/giscedata_facturacio_report.py:2847
+#: code:addons/giscedata_facturacio_comer_som/giscedata_facturacio_report.py:2859
 msgid "estimada"
 msgstr "estimada"
 
 #. module: giscedata_facturacio_comer_som
-#: code:addons/giscedata_facturacio_comer_som/giscedata_facturacio_report.py:3456
+#: code:addons/giscedata_facturacio_comer_som/giscedata_facturacio_report.py:3628
 msgid ""
 "No s'han trobats F1's d'expedient de anomalia/frau al generar pdf per {}"
 msgstr "No se han encontrado F1's de expediente de anomalía/fraude al generar pdf por {}"
@@ -182,7 +182,7 @@ msgid "estimada distribuïdora"
 msgstr "estimada distribuidora"
 
 #. module: giscedata_facturacio_comer_som
-#: code:addons/giscedata_facturacio_comer_som/giscedata_facturacio_report.py:4019
+#: code:addons/giscedata_facturacio_comer_som/giscedata_facturacio_report.py:4195
 #: rml:giscedata_facturacio_comer_som/report/components/energy_consumption_detail_td_base/energy_consumption_detail_td_base.mako:5
 msgid "Energia Excedentària (kWh)"
 msgstr "Energía Excedentaria (kWh)"
@@ -208,7 +208,7 @@ msgid "State"
 msgstr "State"
 
 #. module: giscedata_facturacio_comer_som
-#: code:addons/giscedata_facturacio_comer_som/giscedata_facturacio_report.py:4056
+#: code:addons/giscedata_facturacio_comer_som/giscedata_facturacio_report.py:4232
 #: rml:giscedata_facturacio_comer_som/report/components/energy_consumption_detail_td_base/energy_consumption_detail_td_base.mako:6
 msgid "Energia Reactiva Inductiva (kVArh)"
 msgstr "Energía Reactiva Inductiva (kVArh)"
@@ -362,8 +362,10 @@ msgstr "A los importes indicados en el diagrama debe añadirse, en su caso, el a
 
 #: rml:giscedata_facturacio_comer_som/report/components/amount_destination_td/amount_destination_td.mako:8
 #: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_energy_charges/invoice_details_td_energy_charges.mako:5
+#: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_energy_charges_CT/invoice_details_td_energy_charges_CT.mako:9
 #: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_other_concepts/invoice_details_td_other_concepts.mako:121
 #: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_power_charges/invoice_details_td_power_charges.mako:5
+#: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_power_charges_CT/invoice_details_td_power_charges_CT.mako:9
 msgid "Càrrecs"
 msgstr "Cargos"
 
@@ -1050,12 +1052,14 @@ msgstr "Valle"
 #: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_energy_auvi/invoice_details_td_energy_auvi.mako:14
 #: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_energy_auvi/invoice_details_td_energy_auvi.mako:29
 #: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_energy_charges/invoice_details_td_energy_charges.mako:9
+#: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_energy_charges_CT/invoice_details_td_energy_charges_CT.mako:15
 #: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_energy_discount_BOE17_2021/invoice_details_td_energy_discount_BOE17_2021.mako:8
 #: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_energy_discount_BOE17_2021/invoice_details_td_energy_discount_BOE17_2021.mako:33
 #: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_energy_generationkwh/invoice_details_td_energy_generationkwh.mako:14
 #: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_energy_generationkwh/invoice_details_td_energy_generationkwh.mako:29
 #: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_energy_generationkwh/invoice_details_td_energy_generationkwh.mako:51
 #: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_energy_tolls/invoice_details_td_energy_tolls.mako:9
+#: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_energy_tolls_CT/invoice_details_td_energy_tolls_CT.mako:15
 #: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_excess_power_maximeter/invoice_details_td_excess_power_maximeter.mako:19
 #: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_excess_power_maximeter/invoice_details_td_excess_power_maximeter.mako:22
 #: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_excess_power_maximeter/invoice_details_td_excess_power_maximeter.mako:43
@@ -1098,6 +1102,9 @@ msgstr "Valle"
 #: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_power_charges/invoice_details_td_power_charges.mako:11
 #: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_power_charges/invoice_details_td_power_charges.mako:14
 #: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_power_charges/invoice_details_td_power_charges.mako:23
+#: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_power_charges_CT/invoice_details_td_power_charges_CT.mako:17
+#: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_power_charges_CT/invoice_details_td_power_charges_CT.mako:20
+#: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_power_charges_CT/invoice_details_td_power_charges_CT.mako:29
 #: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_power_discount_BOE17_2021/invoice_details_td_power_discount_BOE17_2021.mako:10
 #: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_power_discount_BOE17_2021/invoice_details_td_power_discount_BOE17_2021.mako:13
 #: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_power_discount_BOE17_2021/invoice_details_td_power_discount_BOE17_2021.mako:22
@@ -1105,6 +1112,9 @@ msgstr "Valle"
 #: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_power_tolls/invoice_details_td_power_tolls.mako:11
 #: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_power_tolls/invoice_details_td_power_tolls.mako:14
 #: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_power_tolls/invoice_details_td_power_tolls.mako:23
+#: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_power_tolls_CT/invoice_details_td_power_tolls_CT.mako:17
+#: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_power_tolls_CT/invoice_details_td_power_tolls_CT.mako:20
+#: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_power_tolls_CT/invoice_details_td_power_tolls_CT.mako:29
 #: rml:giscedata_facturacio_comer_som/report/components/simplified_enviromental_impact/simplified_enviromental_impact.mako:85
 #: rml:giscedata_facturacio_comer_som/report/components/simplified_enviromental_impact/simplified_enviromental_impact.mako:89
 #: rml:giscedata_facturacio_comer_som/report/components/simplified_enviromental_impact/simplified_enviromental_impact.mako:99
@@ -1468,7 +1478,7 @@ msgstr "%s kWh x %s €/kWh"
 #: rml:giscedata_facturacio_comer_som/report/components/invoice_details_power/invoice_details_power.mako:32
 #: rml:giscedata_facturacio_comer_som/report/components/invoice_details_reactive/invoice_details_reactive.mako:13
 #: rml:giscedata_facturacio_comer_som/report/components/invoice_details_reactive/invoice_details_reactive.mako:21
-#: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td/invoice_details_td.mako:48
+#: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td/invoice_details_td.mako:52
 #: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_bo_social_2023/invoice_details_td_bo_social_2023.mako:14
 #: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_capacitive/invoice_details_td_capacitive.mako:43
 #: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_capacitive/invoice_details_td_capacitive.mako:48
@@ -1478,11 +1488,13 @@ msgstr "%s kWh x %s €/kWh"
 #: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_energy/invoice_details_td_energy.mako:150
 #: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_energy/invoice_details_td_energy.mako:164
 #: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_energy_charges/invoice_details_td_energy_charges.mako:23
+#: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_energy_charges_CT/invoice_details_td_energy_charges_CT.mako:29
 #: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_energy_discount_BOE17_2021/invoice_details_td_energy_discount_BOE17_2021.mako:22
 #: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_energy_discount_BOE17_2021/invoice_details_td_energy_discount_BOE17_2021.mako:29
 #: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_energy_generationkwh/invoice_details_td_energy_generationkwh.mako:44
 #: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_energy_generationkwh/invoice_details_td_energy_generationkwh.mako:49
 #: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_energy_tolls/invoice_details_td_energy_tolls.mako:23
+#: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_energy_tolls_CT/invoice_details_td_energy_tolls_CT.mako:29
 #: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_excess_power_maximeter/invoice_details_td_excess_power_maximeter.mako:95
 #: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_excess_power_maximeter/invoice_details_td_excess_power_maximeter.mako:98
 #: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_excess_power_maximeter/invoice_details_td_excess_power_maximeter.mako:104
@@ -1515,6 +1527,9 @@ msgstr "%s kWh x %s €/kWh"
 #: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_power_charges/invoice_details_td_power_charges.mako:40
 #: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_power_charges/invoice_details_td_power_charges.mako:43
 #: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_power_charges/invoice_details_td_power_charges.mako:52
+#: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_power_charges_CT/invoice_details_td_power_charges_CT.mako:46
+#: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_power_charges_CT/invoice_details_td_power_charges_CT.mako:49
+#: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_power_charges_CT/invoice_details_td_power_charges_CT.mako:58
 #: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_power_discount_BOE17_2021/invoice_details_td_power_discount_BOE17_2021.mako:39
 #: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_power_discount_BOE17_2021/invoice_details_td_power_discount_BOE17_2021.mako:42
 #: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_power_discount_BOE17_2021/invoice_details_td_power_discount_BOE17_2021.mako:51
@@ -1522,6 +1537,9 @@ msgstr "%s kWh x %s €/kWh"
 #: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_power_tolls/invoice_details_td_power_tolls.mako:40
 #: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_power_tolls/invoice_details_td_power_tolls.mako:43
 #: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_power_tolls/invoice_details_td_power_tolls.mako:52
+#: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_power_tolls_CT/invoice_details_td_power_tolls_CT.mako:46
+#: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_power_tolls_CT/invoice_details_td_power_tolls_CT.mako:49
+#: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_power_tolls_CT/invoice_details_td_power_tolls_CT.mako:58
 #, python-format
 msgid "%s €"
 msgstr "%s €"
@@ -1795,7 +1813,7 @@ msgstr "IGIC"
 msgid "IVA"
 msgstr "IVA"
 
-#: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td/invoice_details_td.mako:47
+#: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td/invoice_details_td.mako:51
 msgid "TOTAL FACTURA"
 msgstr "TOTAL FACTURA"
 
@@ -1888,6 +1906,7 @@ msgid "Serveis d'Ajust segons preu REE pel periode facturat"
 msgstr "Servicios de Ajuste según precio REE por el período facturado"
 
 #: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_energy_charges/invoice_details_td_energy_charges.mako:6
+#: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_energy_charges_CT/invoice_details_td_energy_charges_CT.mako:12
 msgid "Preu càrrecs per electricitat utilitzades [€/kWh]"
 msgstr "Precio cargos por electricidad utilizada [€/kWh]"
 
@@ -1896,6 +1915,12 @@ msgstr "Precio cargos por electricidad utilizada [€/kWh]"
 #: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_energy_tolls/invoice_details_td_energy_tolls.mako:20
 msgid "kWh x €/kWh"
 msgstr "kWh x €/kWh"
+
+#: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_energy_charges_CT/invoice_details_td_energy_charges_CT.mako:26
+#: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_energy_tolls_CT/invoice_details_td_energy_tolls_CT.mako:26
+#, python-format
+msgid "kWh x €/kWh x (%s/%s) dies (del %s al %s)"
+msgstr "kWh x €/kWh x (%s/%s) días (del %s al %s)"
 
 #: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_energy_discount_BOE17_2021/invoice_details_td_energy_discount_BOE17_2021.mako:5
 msgid "Descompte sobre els càrrecs (RDL 17/2021) [€/kWh]"
@@ -1911,12 +1936,15 @@ msgid "Preu GenerationkWh [€/kWh]"
 msgstr "Precio GenerationkWh [€/kWh]"
 
 #: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_energy_tolls/invoice_details_td_energy_tolls.mako:5
+#: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_energy_tolls_CT/invoice_details_td_energy_tolls_CT.mako:9
 #: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_other_concepts/invoice_details_td_other_concepts.mako:92
 #: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_power_tolls/invoice_details_td_power_tolls.mako:5
+#: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_power_tolls_CT/invoice_details_td_power_tolls_CT.mako:9
 msgid "Peatges"
 msgstr "Peajes"
 
 #: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_energy_tolls/invoice_details_td_energy_tolls.mako:6
+#: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_energy_tolls_CT/invoice_details_td_energy_tolls_CT.mako:12
 msgid "Preu peatges per electricitat utilitzada [€/kWh]"
 msgstr "Precio peajes por electricidad utilizada [€/kWh]"
 
@@ -2217,6 +2245,7 @@ msgid "kW x €/kW x (%.f/%d) dies (del %s al %s)"
 msgstr "kW x €/kW x (%.f/%d) días (del %s al %s)"
 
 #: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_power_charges/invoice_details_td_power_charges.mako:6
+#: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_power_charges_CT/invoice_details_td_power_charges_CT.mako:12
 msgid "Preu càrrecs per potència contractada [€/kW i any]"
 msgstr "Precio cargos por potencia contratada [€/kW y año]"
 
@@ -2227,11 +2256,18 @@ msgstr "Precio cargos por potencia contratada [€/kW y año]"
 msgid "kW x €/kW x (%s/%s) dies"
 msgstr "kW x €/kW x (%s/%s) días"
 
+#: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_power_charges_CT/invoice_details_td_power_charges_CT.mako:41
+#: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_power_tolls_CT/invoice_details_td_power_tolls_CT.mako:41
+#, python-format
+msgid "kW x €/kW x (%s/%s) dies (del %s al %s)"
+msgstr "kW x €/kW x (%s/%s) días (del %s al %s)"
+
 #: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_power_discount_BOE17_2021/invoice_details_td_power_discount_BOE17_2021.mako:5
 msgid "Descompte sobre els càrrecs (RDL 17/2021) [€/kW i any]"
 msgstr "Descuento sobre los cargos (RDL 17/2021) [€/kW y año]"
 
 #: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_power_tolls/invoice_details_td_power_tolls.mako:6
+#: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_power_tolls_CT/invoice_details_td_power_tolls_CT.mako:12
 msgid "Preu peatges per potència contractada [€/kW i any]"
 msgstr "Precio peajes por potencia contratada [€/kW y año]"
 
