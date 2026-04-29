@@ -340,11 +340,11 @@ class ReportBackendMailcanvipreus(ReportBackend):
         is_gkwh=False,
         context=None,
     ):
-        imd_obj = self.pool.get('ir.model.data')
+        conf_obj = self.pool.get('res.config')
         bo_social_price = self.get_bo_social_price(
             cursor, uid, polissa_id.llista_preu, context=context)
-        preu_estimat_servei_ajust = float(imd_obj.get_object_reference(
-            cursor, uid, 'som_polissa_condicions_generals', 'serveis_ajust_estimated_kwh_price')[1])
+        preu_estimat_servei_ajust = float(
+            conf_obj.get(cursor, uid, 'serveis_ajust_estimated_kwh_price'))
 
         ctx = context or {}
         if date:
