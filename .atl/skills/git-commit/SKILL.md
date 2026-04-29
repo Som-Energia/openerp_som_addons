@@ -1,11 +1,11 @@
 ---
 name: git-commit
 description: >
-  Crea commits seguint conventional commits amb emoji.dev.
+  Crea commits seguint les convencions de gitmoji.dev.
   Trigger: Quan necessites fer un commit de codi.
 metadata:
   author: oriol
-  version: "1.0"
+  version: "1.1"
 ---
 
 ## When to Use
@@ -15,39 +15,63 @@ Utilitza aquesta skill quan:
 - Necessites fer un commit seguint Conventional Commits
 - Vols afegir emoji al commit per fer-lo més llegible
 
-## Format de Commit
+## Format de Commit (segons gitmoji.dev)
 
-El format és: `<emoji> <type>: <description>`
+Veure: https://gitmoji.dev/
 
-### Tipus de Commit
+El format és: `<emoji> <description>`
 
-| Type | Emoji | Descripció |
-|------|-------|------------|
-| feat | ✨ | Nova funcionalitat |
-| fix | 🐛 | Bug fix |
-| refactor | ♻️ | Refactorització |
-| perf | ⚡ | Millora de rendiment |
-| test | ✅ | Afegir o corregir tests |
-| docs | 📖 | Documentació |
-| style | 💄 | Estil (formatting, no lògica) |
-| chore | 🔧 | Tasques de manteniment |
-| build | 📦 | Canvis al build o dependències |
-| ci | 👷 | Canvis a CI/CD |
-| revert | ↩️ | Revert de commit anterior |
+L'emoji indica el tipus de commit - no cal duplicar la informació amb el type.
+
+### Emoji i Tipus
+
+| Emoji | Tipus | Descripció |
+|-------|-------|------------|
+| ✨ | feat | Nova funcionalitat |
+| 🐛 | fix | Bug fix |
+| ♻️ | refactor | Refactorització |
+| ⚡️ | perf | Millora de rendiment |
+| ✅ | test | Afegir o corregir tests |
+| 📖 | docs | Documentació |
+| 💄 | style | Estil (formatting, no lògica) |
+| 🔧 | chore | Tasques de manteniment |
+| 📦 | build | Canvis al build o dependències |
+| 👷 | ci | Canvis a CI/CD |
+| ↩️ | revert | Revert de commit anterior |
+| 🎨 | improve | Millora d'estructura/codi |
+| 🔥 | remove | Eliminar codi o funcionalità |
+| 🚚 | move | Moure o renombrar fitxers |
+| 🚀 | deploy | Canvis de deployment |
+| 💡 | int | Introduir nova idea sense canviar codi |
 
 ### Regles
 
 1. **Idioma**: Tota la descripció en anglès
 2. **Length màxima**: 72 caràcters
-3. **Case**: lowercase per al type
-4. **Imperatiu**: Descripció en forma imperativa ("add feature" no "added feature")
-5. **Emoji**: Obligatori, seguit d'un espai
+3. **Imperatiu**: Descripció en forma imperativa ("add feature" no "added feature")
+4. **Emoji**: Obligatori, seguit d'un espai
+5. **No cal type**: L'emoji ja indica el tipus - no escrius "feat:"
 
 ## Workflow
 
+### Pas 0: Prerequisits (OBLIGATORI)
+
+Abans de fer qualsevol commit, cal:
+
+1. **Activar l'entorn virtual erp**:
+   ```bash
+   pyenv activate erp
+   ```
+
+2. **Executar pre-commit** per verificar que el codi passa el linting:
+   ```bash
+   pre-commit run
+   ```
+   Si hi ha errors, pre-commit els corregirà automàticament. Torna a executar fins que passi sense errors.
+
 ### Pas 1: Verificar canvis
 
-```bash
+```
 git status
 git diff
 ```
@@ -63,26 +87,35 @@ git add -A
 ### Pas 3: Crear commit
 
 ```bash
-git commit -m "<emoji> <type>: <description>"
+git commit -m "<emoji> <description>"
 ```
 
 ## Exemples
 
 ```bash
 # Nova funcionalitat
-git commit -m "✨ feat: add user authentication flow"
+git commit -m "✨ add user authentication flow"
 
 # Bug fix
-git commit -m "🐛 fix: resolve null pointer in invoice calculation"
+git commit -m "🐛 resolve null pointer in invoice calculation"
 
 # Refactor
-git commit -m "♻️ refactor: extract payment logic to service"
+git commit -m "♻️ extract payment logic to service"
 
 # Tests
-git commit -m "✅ test: add unit tests for contract validation"
+git commit -m "✅ add unit tests for contract validation"
 
 # Documentació
-git commit -m "📖 docs: update API endpoint documentation"
+git commit -m "📖 update API endpoint documentation"
+
+# Millora de rendiment
+git commit -m "⚡️ optimize database query performance"
+
+# Estil
+git commit -m "💄 format code with autopep8"
+
+# Canvis de build
+git commit -m "📦 update dependencies to latest versions"
 ```
 
 ## Errors Comuns
