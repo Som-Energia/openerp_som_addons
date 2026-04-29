@@ -10,7 +10,7 @@ class TestsFacturacioBoSocial(testing.OOTestCase):
 
         cursor, uid, pool = (self.txn.cursor, self.txn.user, self.openerp.pool)
         pl_item_o = pool.get("product.pricelist.item")
-        product_bs_id = self.get_object_id("som_polissa_soci", "bosocial_BS01")
+        product_bs_id = self.get_object_id("giscedata_repercusio_bo_social", "bosocial_BS01")
         pl_version15_id = self.get_object_id("giscedata_tarifas_peajes_20150101", "boe_312_2014")
         pl_version16_id = self.get_object_id("giscedata_tarifas_peajes_20160101", "boe_302_2015")
         pl_version17_id = self.get_object_id("giscedata_tarifas_peajes_20170101", "boe_314_2016")
@@ -71,7 +71,7 @@ class TestsFacturacioBoSocial(testing.OOTestCase):
         polissa_id = self.get_object_id("giscedata_polissa", "polissa_0001")
         journal_id = self.get_object_id("giscedata_facturacio", "facturacio_journal_energia")
         partner_id = self.get_object_id("base", "res_partner_agrolait")
-        product_bs_id = self.get_object_id("som_polissa_soci", "bosocial_BS01")
+        product_bs_id = self.get_object_id("giscedata_repercusio_bo_social", "bosocial_BS01")
 
         data_lectura_inici = "2016-02-02"
         data_lectura_final = "2016-03-03"
@@ -129,7 +129,7 @@ class TestsFacturacioBoSocial(testing.OOTestCase):
         polissa_id = self.get_object_id("giscedata_polissa", "polissa_0001")
         journal_id = self.get_object_id("giscedata_facturacio", "facturacio_journal_energia")
         partner_id = self.get_object_id("base", "res_partner_agrolait")
-        product_bs_id = self.get_object_id("som_polissa_soci", "bosocial_BS01")
+        product_bs_id = self.get_object_id("giscedata_repercusio_bo_social", "bosocial_BS01")
 
         data_lectura_inici = "2016-02-02"
         data_lectura_final = "2017-01-31"
@@ -198,7 +198,7 @@ class TestsFacturacioBoSocial(testing.OOTestCase):
         journal_id = self.get_object_id("giscedata_facturacio", "facturacio_journal_energia")
         partner_id = self.get_object_id("base", "res_partner_agrolait")
         lectura_id = self.get_object_id("giscedata_facturacio", "lectura_0006")
-        product_bs_id = self.get_object_id("som_polissa_soci", "bosocial_BS01")
+        product_bs_id = self.get_object_id("giscedata_repercusio_bo_social", "bosocial_BS01")
 
         data_lectura_inici = "2016-02-02"
         data_lectura_final = "2018-01-31"
@@ -277,7 +277,7 @@ class TestsFacturacioBoSocial(testing.OOTestCase):
         pl_version16_id = self.get_object_id("giscedata_tarifas_peajes_20160101", "boe_302_2015")
         pl_version17_id = self.get_object_id("giscedata_tarifas_peajes_20170101", "boe_314_2016")
         pl_version18_id = self.get_object_id("giscedata_tarifas_peajes_20180101", "boe_314_2017")
-        product_bs_id = self.get_object_id("som_polissa_soci", "bosocial_BS01")
+        product_bs_id = self.get_object_id("giscedata_repercusio_bo_social", "bosocial_BS01")
 
         data_lectura_inici = "2016-02-02"
         data_lectura_final = "2016-03-03"
@@ -345,7 +345,7 @@ class TestsFacturacioBoSocial(testing.OOTestCase):
         polissa_id = self.get_object_id("giscedata_polissa", "polissa_0001")
         journal_id = self.get_object_id("giscedata_facturacio", "facturacio_journal_energia")
         partner_id = self.get_object_id("base", "res_partner_agrolait")
-        product_bs_id = self.get_object_id("som_polissa_soci", "bosocial_BS01")
+        product_bs_id = self.get_object_id("giscedata_repercusio_bo_social", "bosocial_BS01")
         pl_version17_id = self.get_object_id("giscedata_tarifas_peajes_20170101", "boe_314_2016")
         pl_version18_id = self.get_object_id("giscedata_tarifas_peajes_20180101", "boe_314_2017")
 
@@ -415,7 +415,7 @@ class TestsFacturacioBoSocial(testing.OOTestCase):
         polissa_id = self.get_object_id("giscedata_polissa", "polissa_0001")
         journal_id = self.get_object_id("giscedata_facturacio", "facturacio_journal_energia")
         partner_id = self.get_object_id("base", "res_partner_agrolait")
-        product_bs_id = self.get_object_id("som_polissa_soci", "bosocial_BS01")
+        product_bs_id = self.get_object_id("giscedata_repercusio_bo_social", "bosocial_BS01")
         pl_version16_id = self.get_object_id("giscedata_tarifas_peajes_20160101", "boe_302_2015")
         data_lectura_inici = "2016-02-02"
         data_lectura_final = "2017-01-31"
@@ -484,7 +484,7 @@ class TestsFacturacioBoSocial(testing.OOTestCase):
         polissa_id = self.get_object_id("giscedata_polissa", "polissa_0001")
         journal_id = self.get_object_id("giscedata_facturacio", "facturacio_journal_energia")
         partner_id = self.get_object_id("base", "res_partner_agrolait")
-        product_bs_id = self.get_object_id("som_polissa_soci", "bosocial_BS01")
+        product_bs_id = self.get_object_id("giscedata_repercusio_bo_social", "bosocial_BS01")
         pl_version16_id = self.get_object_id("giscedata_tarifas_peajes_20160101", "boe_302_2015")
         data_lectura_inici = "2016-02-02"
         data_lectura_final = "2017-01-31"
