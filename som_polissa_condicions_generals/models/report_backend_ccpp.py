@@ -410,7 +410,7 @@ class ReportBackendCondicionsParticulars(ReportBackend):
                     fp_id = imd_obj.get_object_reference(
                         cursor, uid, 'som_polissa_condicions_generals', 'fp_iva_reduit')[1]
                     ctx.update({'force_fiscal_position': fp_id, 'iva10': True})
-                simple_taxes = pol_obj.get_simplified_taxes(cursor, uid, pol.id, context=context)
+                simple_taxes = pol_obj.get_simplified_taxes(cursor, uid, pol.id, context=ctx)
                 iva_str = 'IVA' if 'IVA' in simple_taxes else 'IGIC'
                 text_impostos = " ({} {:.0f}%, IE {:.2f}%)".format(
                     iva_str,
