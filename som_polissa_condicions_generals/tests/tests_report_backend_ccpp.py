@@ -20,10 +20,22 @@ class TestReportBackendCCPP(testing.OOTestCase):
         self.rpa_obj = self.openerp.pool.get("res.partner.address")
         self.pricelist_obj = self.openerp.pool.get("product.pricelist")
         self.wiz_change_to_index_obj = self.openerp.pool.get("wizard.change.to.indexada")
+        self.conf_obj = self.openerp.pool.get('res.config')
         self.contract1_id = self.get_ref("giscedata_polissa", "polissa_0001")
         self.contract_20TD_id = self.get_ref("giscedata_polissa", "polissa_tarifa_018")
         self.contract_30TD_id = self.get_ref("giscedata_polissa", "polissa_tarifa_019")
         self.contract_61TD_id = self.get_ref("giscedata_polissa", "polissa_tarifa_020")
+
+        self.conf_obj.set(
+            self.cursor, self.uid, 'default_iva_21_tax_id',
+            self.tax_obj.search(self.cursor, self.uid, [("name", "=", "IVA 21%")])[0],
+        )
+        self.conf_obj.set(
+            self.cursor, self.uid, 'default_iese_tax_id',
+            self.tax_obj.search(self.cursor, self.uid, [
+                ("name", "=", "Impuesto especial sobre la electricidad")
+            ])[0],
+        )
 
     def tearDown(self):
         self.txn.stop()
@@ -110,6 +122,7 @@ class TestReportBackendCCPP(testing.OOTestCase):
             u'modcon_pendent_indexada': False,
             u'modcon_pendent_periodes': False,
             u'mode_facturacio': u'atr',
+            u'mode_facturacio_calculat': u'atr',
             u'name': u'0018',
             u'periodes_energia': [u'P1', u'P2', u'P3'],
             u'periodes_potencia': [u'P1', u'P2'],
