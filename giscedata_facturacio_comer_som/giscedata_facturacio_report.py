@@ -3202,7 +3202,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
         data["header_multi"] = 4 if discount["is_visible"] else 2
         data["iva_column"] = has_iva_column(fact)
         data["is_visible"] = len(self.get_dates_desde(fact.linies_potencia)) == 1
-        data["total"] = sum([round(charges_lines_potencia[period]["preu_cargos"], 2) for period in periods if period in charges_lines_potencia])  # noqa: E501
+        data["total"] = sum([round(charges_lines_potencia[period]["atr_cargos"], 2) for period in periods if period in charges_lines_potencia])  # noqa: E501
         return data
 
     def get_component_invoice_details_info_td_data(self, fact, pol):
