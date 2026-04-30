@@ -412,10 +412,12 @@ class ReportBackendCondicionsParticulars(ReportBackend):
                     ctx.update({'force_fiscal_position': fp_id, 'iva10': True})
             simple_taxes = pol_obj.get_simplified_taxes(cursor, uid, pol.id, context=ctx)
             iva_str = 'IVA' if 'IVA' in simple_taxes else 'IGIC'
-            text_impostos = " ({} {:.0f}%, IE {:.2f}%)".format(
+            ie_percent_str = "{:.2f}".format(
+                simple_taxes['IE'] * 100).rstrip('0').rstrip('.').replace('.', ',')
+            text_impostos = " ({} {:.0f}%, IE {}%)".format(
                 iva_str,
                 simple_taxes[iva_str] * 100,
-                simple_taxes['IE'] * 100,
+                ie_percent_str
             )
 
             pricelist['text_impostos'] = text_impostos
