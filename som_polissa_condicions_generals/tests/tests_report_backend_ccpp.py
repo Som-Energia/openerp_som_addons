@@ -20,6 +20,7 @@ class TestReportBackendCCPP(testing.OOTestCase):
         self.rpa_obj = self.openerp.pool.get("res.partner.address")
         self.pricelist_obj = self.openerp.pool.get("product.pricelist")
         self.wiz_change_to_index_obj = self.openerp.pool.get("wizard.change.to.indexada")
+        self.tax_obj = self.openerp.pool.get('account.tax')
         self.conf_obj = self.openerp.pool.get('res.config')
         self.contract1_id = self.get_ref("giscedata_polissa", "polissa_0001")
         self.contract_20TD_id = self.get_ref("giscedata_polissa", "polissa_tarifa_018")
