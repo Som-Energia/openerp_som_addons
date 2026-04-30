@@ -28,22 +28,10 @@
             <field name="require_bank_account" eval="True"/>
             <field name="partner_id">1</field>
         </record>
-        <record id="som_invoice_active_bo_social" model="res.config">
-            <field name="name">som_invoice_active_bo_social</field>
-            <field name="value">0</field>
-        </record>
-        <record id="som_invoice_start_date_bo_social" model="res.config">
-            <field name="name">som_invoice_start_date_bo_social</field>
-            <field name="value">2017-07-01</field>
-        </record>
+        <!-- Despite the name, is used for donation -->
         <record id="som_invoice_bo_social_journal_codes" model="res.config">
             <field name="name">som_invoice_bo_social_journal_codes</field>
             <field name="value">['ENERGIA', 'ENERGIA.R', 'RECUPERACION_IVA.R']</field>
-        </record>
-        <record id="som_invoice_end_date_bo_social" model="res.config">
-            <field name="name">som_invoice_end_date_bo_social</field>
-            <field name="value">2021-03-31</field>
-            <field name="description">Data final d'aplicació del BO SOCIAL</field>
         </record>
     </data>
 </openerp>
