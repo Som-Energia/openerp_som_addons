@@ -21,6 +21,7 @@
         "giscedata_atc",
         "giscedata_facturacio_comer_som",
         "som_generationkwh",
+        "giscedata_facturacio_som",
     ],
     "init_xml": [
     ],

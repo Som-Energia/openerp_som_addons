@@ -1,12 +1,13 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import, unicode_literals
-from report_backend.report_backend import ReportBackend
+from report_backend.report_backend import ReportBackend, report_browsify
 
 
 class ReportBackendInvoiceEmail(ReportBackend):
     _name = "report.backend.invoice.email"
     _inherit = "report.backend.invoice.email"
 
+    @report_browsify
     def get_factura(self, cursor, uid, fra, context=None):
         if context is None:
             context = {}

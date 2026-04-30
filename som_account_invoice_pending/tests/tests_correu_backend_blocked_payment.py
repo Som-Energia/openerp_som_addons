@@ -9,6 +9,9 @@ class TestCorreuBackendBlockedPayment(testing.OOTestCase):
         self.cursor = self.txn.cursor
         self.uid = self.txn.user
         self.pool = self.openerp.pool
+        lang_o = self.openerp.pool.get("res.lang")
+        lang_o.create(self.cursor, self.uid, {"name": "Català", "code": "ca_ES"})
+        lang_o.create(self.cursor, self.uid, {"name": "Español", "code": "es_ES"})
 
     def tearDown(self):
         self.txn.stop()
@@ -39,8 +42,7 @@ class TestCorreuBackendBlockedPayment(testing.OOTestCase):
         fact_obj.write(cursor, uid, fact_id, {"pending_state": fue_bs_id})
 
         # Instantiate backend and call get_factura
-        backend = backend_obj
-        result = backend.get_factura(cursor, uid, fact, context={})
+        result = backend_obj.get_factura(cursor, uid, fact, context={'lang': 'ca_ES'})
 
         self.assertTrue(result.get("hasBlockedPayment"))
 
@@ -66,8 +68,7 @@ class TestCorreuBackendBlockedPayment(testing.OOTestCase):
         pol_obj.write(cursor, uid, pol_id, {"cobrament_bloquejat": True})
         fact_obj.write(cursor, uid, fact_id, {"pending_state": fue_df_id})
 
-        backend = backend_obj
-        result = backend.get_factura(cursor, uid, fact, context={})
+        result = backend_obj.get_factura(cursor, uid, fact, context={})
 
         self.assertTrue(result.get("hasBlockedPayment"))
 
@@ -91,10 +92,12 @@ class TestCorreuBackendBlockedPayment(testing.OOTestCase):
         )[1]
 
         pol_obj.write(cursor, uid, pol_id, {"cobrament_bloquejat": True})
-        fact_obj.write(cursor, uid, fact_id, {"pending_state": r1_bs_id})
+        fact_obj.write(cursor, uid, fact_id, {
+            "pending_state": r1_bs_id,
+            "data_final": None,
+        })
 
-        backend = backend_obj
-        result = backend.get_factura(cursor, uid, fact, context={})
+        result = backend_obj.get_factura(cursor, uid, fact_id, context={})
 
         self.assertTrue(result.get("hasBlockedPayment"))
 
@@ -120,8 +123,7 @@ class TestCorreuBackendBlockedPayment(testing.OOTestCase):
         pol_obj.write(cursor, uid, pol_id, {"cobrament_bloquejat": True})
         fact_obj.write(cursor, uid, fact_id, {"pending_state": r1_df_id})
 
-        backend = backend_obj
-        result = backend.get_factura(cursor, uid, fact, context={})
+        result = backend_obj.get_factura(cursor, uid, fact, context={})
 
         self.assertTrue(result.get("hasBlockedPayment"))
 
@@ -148,8 +150,7 @@ class TestCorreuBackendBlockedPayment(testing.OOTestCase):
         pol_obj.write(cursor, uid, pol_id, {"cobrament_bloquejat": False})
         fact_obj.write(cursor, uid, fact_id, {"pending_state": fue_bs_id})
 
-        backend = backend_obj
-        result = backend.get_factura(cursor, uid, fact, context={})
+        result = backend_obj.get_factura(cursor, uid, fact, context={})
 
         self.assertFalse(result.get("hasBlockedPayment"))
 
@@ -170,8 +171,7 @@ class TestCorreuBackendBlockedPayment(testing.OOTestCase):
         pol_obj.write(cursor, uid, pol_id, {"cobrament_bloquejat": True})
         fact_obj.write(cursor, uid, fact_id, {"pending_state": False})
 
-        backend = backend_obj
-        result = backend.get_factura(cursor, uid, fact, context={})
+        result = backend_obj.get_factura(cursor, uid, fact, context={})
 
         self.assertFalse(result.get("hasBlockedPayment"))
 
@@ -197,10 +197,6 @@ class TestCorreuBackendBlockedPayment(testing.OOTestCase):
         pol_obj.write(cursor, uid, pol_id, {"cobrament_bloquejat": True})
         fact_obj.write(cursor, uid, fact_id, {"pending_state": pending_id})
 
-        backend = backend_obj
-        result = backend.get_factura(cursor, uid, fact, context={})
+        result = backend_obj.get_factura(cursor, uid, fact, context={})
 
         self.assertFalse(result.get("hasBlockedPayment"))
-
-        # Cleanup
-        pending_obj.unlink(cursor, uid, [pending_id])
