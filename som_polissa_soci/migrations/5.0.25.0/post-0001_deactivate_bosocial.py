@@ -61,7 +61,7 @@ def up(cursor, installed_version):
           AND name IN (
             'som_invoice_active_bo_social',
             'som_invoice_start_date_bo_social',
-            'som_invoice_end_date_bo_social',
+            'som_invoice_end_date_bo_social'
           )
     """)
     logger.info("Deleted ir_model_data entries for bo social configs")
