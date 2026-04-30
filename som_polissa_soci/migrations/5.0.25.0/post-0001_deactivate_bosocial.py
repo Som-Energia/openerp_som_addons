@@ -40,6 +40,32 @@ def up(cursor, installed_version):
 
     logger.info("bosocial_BS01 and product_uom_day deactivated.")
 
+    logger.info("Removing bo social configuration from res.config and ir_model_data")
+
+    config_names = [
+        'som_invoice_active_bo_social',
+        'som_invoice_start_date_bo_social',
+        'som_invoice_end_date_bo_social',
+    ]
+
+    for config_name in config_names:
+        cursor.execute("""
+            DELETE FROM res_config
+            WHERE name = %s
+        """, (config_name,))
+        logger.info("Deleted res_config: %s", config_name)
+
+    cursor.execute("""
+        DELETE FROM ir_model_data
+        WHERE module = 'som_polissa_soci'
+          AND name IN (
+            'som_invoice_active_bo_social',
+            'som_invoice_start_date_bo_social',
+            'som_invoice_end_date_bo_social',
+          )
+    """)
+    logger.info("Deleted ir_model_data entries for bo social configs")
+
 
 def down(cursor, installed_version):
     pass
