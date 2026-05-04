@@ -3596,7 +3596,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
                 fact, pol, data['compl_lines'])
         return data
 
-    def get_sub_component_expedient_data(self, fact, pol, lines):
+    def get_sub_component_expedient_data(self, fact, pol, lines):  # noqa: C901
         extra_obj = fact.pool.get("giscedata.facturacio.extra")
         f1_obj = fact.pool.get("giscedata.facturacio.importacio.linia")
         f1f_obj = fact.pool.get("giscedata.facturacio.importacio.linia.factura")
@@ -3626,7 +3626,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
             [
                 ("cups_id", "=", pol.cups.id),
                 ("invoice_number_text", "in", origins),
-                ("type_factura", "=", "C")
+                ("type_factura", "in", ["C", "R", "A"]),
             ],
             context={"active_test": False}
         )
@@ -3638,13 +3638,34 @@ class GiscedataFacturacioFacturaReport(osv.osv):
                 ).format(fact.number),
             )
 
-        f1_datas = f1_obj.read(
-            self.cursor,
-            self.uid,
-            f1_ids,
-            ['num_expedient']
-        )
-        expedient = ','.join(list(set([f1_data['num_expedient'] for f1_data in f1_datas])))
+        def get_expedient_name_from_ids(cursor, uid, f1_ids):
+            expedients = []
+            for f1_id in f1_ids:
+                f1_data = f1_obj.read(
+                    cursor,
+                    uid,
+                    f1_id,
+                    ['num_expedient', 'type_factura', 'factura_rectificada', 'cups_id']
+                )
+                if "num_expedient" in f1_data and f1_data["num_expedient"]:
+                    expedients.append(f1_data["num_expedient"])
+                elif f1_data["type_factura"] in ["R", "A"] and f1_data["factura_rectificada"]:
+                    f1r_ids = f1_obj.search(
+                        cursor,
+                        uid,
+                        [
+                            ("cups_id", "=", f1_data["cups_id"][1]),
+                            ("invoice_number_text", "in", f1_data["factura_rectificada"]),
+                            ("type_factura", "in", ["C", "R"]),
+                        ],
+                        context={"active_test": False}
+                    )
+                    expedients.extend(get_expedient_name_from_ids(cursor, uid, f1r_ids))
+            return expedients
+
+        expedients = get_expedient_name_from_ids(self.cursor, self.uid, f1_ids)
+        expedient = ','.join(list(set(expedients))) if expedients else ""
+
         f1f_ids = f1f_obj.search(
             self.cursor,
             self.uid,
@@ -3708,6 +3729,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
                 lines = {}
                 total = 0.0
                 for l in date_lines:  # noqa: E741
+                    sign = -1.0 if l.price_subtotal < 0.0 else 1.0
                     if type != 'reactiva':
                         atr_tolls = self.get_atr_price(fact, tarifa_peajes, l)
                         atr_charges = self.get_atr_price(fact, tarifa_cargos, l)
@@ -3717,17 +3739,17 @@ class GiscedataFacturacioFacturaReport(osv.osv):
                     if l.product_id.name in lines:
                         lines[l.product_id.name]["quantity"] += l["quantity"]
                         lines[l.product_id.name]["price_subtotal"] += l["price_subtotal"]
-                        lines[l.product_id.name]["tolls"] += (atr_tolls * l["quantity"])
-                        lines[l.product_id.name]["charges"] += (atr_charges * l["quantity"])
+                        lines[l.product_id.name]["tolls"] += (atr_tolls * l["quantity"] * sign)
+                        lines[l.product_id.name]["charges"] += (atr_charges * l["quantity"] * sign)
                     else:
                         lines[l.product_id.name] = {
                             "quantity": l["quantity"],
                             "price_subtotal": l["price_subtotal"],
                             "price_unit_multi": l["price_unit_multi"],
-                            "price_tolls": atr_tolls,
-                            "price_charges": atr_charges,
-                            "tolls": (atr_tolls * l["quantity"]),
-                            "charges": (atr_charges * l["quantity"]),
+                            "price_tolls": atr_tolls * sign,
+                            "price_charges": atr_charges * sign,
+                            "tolls": (atr_tolls * l["quantity"] * sign),
+                            "charges": (atr_charges * l["quantity"] * sign),
                         }
                     total += l["price_subtotal"]
                 lines["total"] = total
@@ -4002,12 +4024,12 @@ class GiscedataFacturacioFacturaReport(osv.osv):
         p_tolls = self.get_sub_component_invoice_details_td_power_tolls_data(fact, pol)
         if not p_tolls["is_visible"]:
             p_tolls = self.get_sub_component_invoice_details_td_power_tolls_CT_data(fact, pol)
-        all_tolls += p_tolls["total"]
+        all_tolls += p_tolls["total"] if "total" in p_tolls else 0.0
 
         e_tolls = self.get_sub_component_invoice_details_td_energy_tolls_data(fact, pol)
         if not e_tolls["is_visible"]:
             e_tolls = self.get_sub_component_invoice_details_td_energy_tolls_CT_data(fact, pol)
-        all_tolls += e_tolls["total"]
+        all_tolls += e_tolls["total"] if "total" in e_tolls else 0.0
 
         discount_power = self.get_sub_component_invoice_details_td_power_discount_BOE17_2021_data(
             fact, pol
@@ -4021,7 +4043,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
         )
         if not p_charges["is_visible"]:
             p_charges = self.get_sub_component_invoice_details_td_power_charges_CT_data(fact, pol)
-        all_charges += p_charges["total"]
+        all_charges += p_charges["total"] if "total" in p_charges else 0.0
 
         e_charges = self.get_sub_component_invoice_details_td_energy_charges_data(
             fact, pol, discount_energy
@@ -4030,7 +4052,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
             e_charges = self.get_sub_component_invoice_details_td_energy_charges_CT_data(
                 fact, pol
             )
-        all_charges += e_charges["total"]
+        all_charges += e_charges["total"] if "total" in e_charges else 0.0
 
         other_data = self.get_sub_component_invoice_details_td_other_concepts_data(fact, pol)
         if 'compl_info' in other_data and 'energy_lines_data' in other_data['compl_info']:
