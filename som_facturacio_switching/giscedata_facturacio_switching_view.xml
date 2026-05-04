@@ -11,6 +11,9 @@
                 <xpath expr="//field[@name='factura_rectificada']" position="attributes">
                     <attribute name="readonly">1</attribute>
                 </xpath>
+                <xpath expr="//field[@name='factura_abonament']" position="attributes">
+                    <attribute name="readonly">1</attribute>
+                </xpath>
             </field>
         </record>
     </data>
