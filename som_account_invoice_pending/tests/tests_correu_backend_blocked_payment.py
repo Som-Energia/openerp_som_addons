@@ -10,13 +10,6 @@ class TestCorreuBackendBlockedPayment(testing.OOTestCase):
         self.cursor = self.txn.cursor
         self.uid = self.txn.user
         self.pool = self.openerp.pool
-        lang_o = self.pool.get("res.lang")
-        lang_ids = lang_o.search(self.cursor, self.uid, [("code", "=", "ca_ES")])
-        if not lang_ids:
-            lang_o.create(self.cursor, self.uid, {"name": "Català", "code": "ca_ES"})
-        lang_ids = lang_o.search(self.cursor, self.uid, [("code", "=", "es_ES")])
-        if not lang_ids:
-            lang_o.create(self.cursor, self.uid, {"name": "Español", "code": "es_ES"})
 
     def tearDown(self):
         self.txn.stop()
