@@ -164,6 +164,17 @@
             <field name="active">True</field>
             <field name="configuracio_id" ref="iberdrola_conf"/>
         </record>
+        <!-- CIDE -->
+        <record model="som.crawlers.task" id="descargar_cide_switching">
+            <field name="name">Descarregar CIDE Switching</field>
+            <field name="active">True</field>
+            <field name="configuracio_id" ref="cide_switching_conf"/>
+        </record>
+        <record model="som.crawlers.task" id="descargar_cide_f1">
+            <field name="name">Descarregar CIDE F1</field>
+            <field name="active">True</field>
+            <field name="configuracio_id" ref="cide_f1_conf"/>
+        </record>
         <!-- Endesa -->
         <record model="som.crawlers.task" id="descargar_A3_endesa">
             <field name="name">Endesa descargar A3</field>
