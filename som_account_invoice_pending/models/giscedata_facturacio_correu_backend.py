@@ -18,6 +18,28 @@ class ReportBackendInvoiceEmail(ReportBackend):
         ctxt = {"date": fra.data_final.val}
         pol = polissa_o.browse(cursor, uid, fra.polissa_id.id, context=ctxt)
 
+        data["hasBlockedPayment"] = self._invoice_has_blocked_payment(
+            cursor, uid, pol, fra
+        )
+
+        return data
+
+    def _invoice_has_blocked_payment(self, cursor, uid, pol, fra):
+        """Check if invoice has blocked payment.
+
+        Returns True if:
+        - polissa has cobrament_bloquejat flag active
+        - invoice has a pending_state in the blocked payment states list
+
+        Args:
+            cursor: database cursor
+            uid: user id
+            pol: polissa browse object
+            fra: factura browse object
+
+        Returns:
+            bool: True if payment is blocked
+        """
         if pol.cobrament_bloquejat and fra.pending_state:
             ir_model_data = self.pool.get("ir.model.data")
             fue_bs = ir_model_data.get_object_reference(
@@ -44,11 +66,8 @@ class ReportBackendInvoiceEmail(ReportBackend):
                 "default_reclamacio_en_curs_pending_state"
             )[1]
             blocked_payment_states = [fue_bs, fue_df, r1_bs, r1_df]
-            data["hasBlockedPayment"] = fra.pending_state.id in blocked_payment_states
-        else:
-            data["hasBlockedPayment"] = False
-
-        return data
+            return fra.pending_state.id in blocked_payment_states
+        return False
 
 
 ReportBackendInvoiceEmail()
