@@ -7,7 +7,7 @@ on:
 permissions:
   id-token: write
   contents: read
-  pull-requests: read
+  pull-requests: write
 
 jobs:
   review:
@@ -18,6 +18,12 @@ jobs:
         with:
           fetch-depth: 1
           persist-credentials: false
+
+      - name: Assign reviewer
+        run: |
+          gh pr edit ${{ github.event.pull_request.number }} --add-reviewer somenergia-it
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Run OpenCode Review
         uses: anomalyco/opencode/github@latest
