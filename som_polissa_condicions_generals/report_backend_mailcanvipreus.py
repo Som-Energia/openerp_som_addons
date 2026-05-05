@@ -108,7 +108,7 @@ class ReportBackendMailcanvipreus(ReportBackend):
         if context is None:
             context = {}
 
-        context['iva10'] = env.polissa_id.potencia < 10
+        context['iva10'] = env.polissa_id.potencia <= 10
 
         impostos_str, impostos_value = self.getImpostos(env.polissa_id.fiscal_position_id, context)
 
@@ -150,7 +150,7 @@ class ReportBackendMailcanvipreus(ReportBackend):
             "text_legal": self.get_text_legal(cursor, uid, env, context=context),
             "lang": env.polissa_id.titular.lang,
             "nom_titular": self.getPartnerName(cursor, uid, env),
-            "iva_reduit": env.polissa_id.potencia < 10 and not canaries,
+            "iva_reduit": env.polissa_id.potencia <= 10 and not canaries,
             "te_gkwh": env.polissa_id.te_assignacio_gkwh,
             "preus_antics": preus_antics,
             "preus_nous": preus_nous,

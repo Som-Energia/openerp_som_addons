@@ -405,7 +405,7 @@ class ReportBackendCondicionsParticulars(ReportBackend):
 
             text_impostos = ''
             if not pol.fiscal_position_id and not lead:
-                if iva_10_active and pol.potencia < 10 and today_str >= start_date_iva_10 and today_str <= end_date_iva_10:  # noqa: E501
+                if iva_10_active and pol.potencia <= 10 and today_str >= start_date_iva_10 and today_str <= end_date_iva_10:  # noqa: E501
                     fp_id = imd_obj.get_object_reference(
                         cursor, uid, 'som_polissa_condicions_generals', 'fp_iva_reduit')[1]
                     text_impostos = " (IVA 10%, IE 0,5%)"
