@@ -589,8 +589,7 @@ class GiscedataFacturacioImportacioLinia(osv.osv):
         "last_observation_line": fields.function(
             _get_last_history_line,
             method=True,
-            type="char",
-            size=100,
+            type="text",
             string="Última línia de les observacions",
             store={
                 "giscedata.facturacio.importacio.linia": (
