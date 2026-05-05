@@ -1,0 +1,33 @@
+name: OpenCode Auto Review
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+
+permissions:
+  id-token: write
+  contents: read
+  pull-requests: read
+
+jobs:
+  review:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Run OpenCode Review
+        uses: anomalyco/opencode/github@latest
+        with:
+          model: opencode/minimax-m2.5-free
+          prompt: |
+            Review this pull request thoroughly:
+            - Check for code quality issues and best practices
+            - Look for potential bugs, security vulnerabilities, or logic errors
+            - Suggest improvements for readability and maintainability
+            - Identify any missing tests or documentation
+            - Focus on the changes made in this PR, not the entire codebase
+            - Provide constructive feedback with specific suggestions when possible
