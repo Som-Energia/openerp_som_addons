@@ -25,7 +25,7 @@ jobs:
           persist-credentials: false
 
       - name: Run OpenCode Review
-        uses: anomalyco/opencode/github@v1
+        uses: anomalyco/opencode/github@v1.14.38
         with:
           model: opencode/minimax-m2.5-free
           prompt: |
