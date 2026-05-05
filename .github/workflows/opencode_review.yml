@@ -29,10 +29,16 @@ jobs:
         with:
           model: opencode/minimax-m2.5-free
           prompt: |
+            You are reviewing a pull request in the openerp_som_addons repository (custom modules for OpenERP).
+            This repository contains custom modules that depend on the main ERP codebase: https://github.com/Som-Energia/erp/tree/rolling_erp01
+            The branch rolling_erp01 is the production branch.
+
             Review this pull request thoroughly:
             - Check for code quality issues and best practices
             - Look for potential bugs, security vulnerabilities, or logic errors
             - Suggest improvements for readability and maintainability
             - Identify any missing tests or documentation
+            - Be aware of OpenERP/Odoo patterns and conventions (osv.osv, fields.*, _columns, etc.)
+            - Consider Python 2.7/3 compatibility if relevant
             - Focus on the changes made in this PR, not the entire codebase
             - Provide constructive feedback with specific suggestions when possible
