@@ -18,7 +18,7 @@ jobs:
   review:
     runs-on: ubuntu-22.04
     timeout-minutes: 10
-    if: github.event.label.name == 'AI review'
+    if: contains(github.event.pull_request.labels.*.name, 'AI review')
     steps:
       - name: Checkout repository
         uses: actions/checkout@v6
