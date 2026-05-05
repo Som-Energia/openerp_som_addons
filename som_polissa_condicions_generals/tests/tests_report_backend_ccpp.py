@@ -51,6 +51,7 @@ class TestReportBackendCCPP(testing.OOTestCase):
         result = self.backend_obj.get_titular_data(self.cursor, self.uid, pol_20td, None)
 
         self.assertEqual(result, {
+            u'bank': False,
             u'city': u'Girona',
             u'city_envio': u'Bruxelles',
             u'client_name': u'GISCE',
@@ -66,6 +67,7 @@ class TestReportBackendCCPP(testing.OOTestCase):
             u'name_envio': u'Michel Schumacher',
             u'phone': u'',
             u'phone_envio': u'(+32) 2 123 456',
+            u'printable_iban': u'',
             u'sign_date': '',
             u'state': u'',
             u'state_envio': u'',
@@ -99,7 +101,6 @@ class TestReportBackendCCPP(testing.OOTestCase):
         pricelist_name = self.pricelist_obj.browse(self.cursor, self.uid, pricelist_id).name
         self.assertEqual(result, {
             u'auto': u'00',
-            u'bank': False,
             u'contract_type': u'Anual',
             u'data_baixa': '2099-01-01',
             u'data_final': u'',
@@ -115,7 +116,6 @@ class TestReportBackendCCPP(testing.OOTestCase):
             u'periodes_potencia': [u'P1', u'P2'],
             u'potencia_max': 4.6,
             u'pricelist': pricelist_id,
-            u'printable_iban': u'',
             u'state': u'esborrany',
             u'tarifa': u'2.0TD',
             u'tarifa_mostrar': pricelist_name,

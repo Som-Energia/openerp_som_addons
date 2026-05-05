@@ -107,6 +107,9 @@ class ReportBackendCondicionsParticulars(ReportBackend):
         res['phone_envio'] = direccio_envio.phone or ''
         data_firma = datetime.today()
         res['sign_date'] = localize_period(data_firma, pol.titular.lang)
+        res['bank'] = pas.bank if es_ct_subrogacio else pol.bank or False
+        iban = res['bank'] and res['bank'].printable_iban[5:] or ''
+        res['printable_iban'] = iban[-4:]
         res['lang'] = pol.titular.lang
         if context.get("lead") and context.get("lang"):
             res['lang'] = context.get("lang")
@@ -166,9 +169,6 @@ class ReportBackendCondicionsParticulars(ReportBackend):
         res['mode_facturacio'] = pol.mode_facturacio
 
         res['te_assignacio_gkwh'] = pol.te_assignacio_gkwh
-        res['bank'] = pol.bank or False
-        iban = pol.bank and pol.bank.printable_iban[5:] or ''
-        res['printable_iban'] = iban[-4:]
 
         # context['potencia_anual'] = True
         # context['sense_agrupar'] = True
