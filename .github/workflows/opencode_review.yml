@@ -2,7 +2,7 @@ name: OpenCode Auto Review
 
 on:
   pull_request:
-    types: [opened, synchronize, reopened, ready_for_review]
+    types: [labeled]
 
 permissions:
   id-token: write
@@ -12,18 +12,13 @@ permissions:
 jobs:
   review:
     runs-on: ubuntu-latest
+    if: github.event.label.name == 'AI review'
     steps:
       - name: Checkout repository
         uses: actions/checkout@v6
         with:
           fetch-depth: 1
           persist-credentials: false
-
-      - name: Assign reviewer
-        run: |
-          gh pr edit ${{ github.event.pull_request.number }} --add-reviewer somenergia-it
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Run OpenCode Review
         uses: anomalyco/opencode/github@latest
