@@ -3,6 +3,7 @@ import logging
 import traceback
 import sys
 from osv import osv
+from service.security import Sudo
 import yaml
 import copy
 
@@ -409,6 +410,25 @@ class SomLeadWww(osv.osv_memory):
             prefix_res = phone_prefix_o.search(cursor, uid, [('name', '=', parts[0])], limit=1)
             return prefix_res and prefix_res[0] or None, parts[1]
         return None, phone_full
+
+    def sign_lead(self, cr, uid, lead_id, context=None):
+        if context is None:
+            context = {}
+        ctx = context.copy()
+        ctx['delivery_type'] = 'url'
+        ctx['provider'] = 'signaturit'
+
+        lead_o = self.pool.get('giscedata.crm.lead')
+        state, errors = lead_o.check_start_signature_process(cr, uid, [lead_id], context=ctx)
+        if state != 'end':
+            raise osv.except_osv('Error', errors)
+
+        with Sudo(uid=uid, gid=0):
+            with self.api.db.cursor() as sign_cursor:
+                lead_o.start_signature_process(sign_cursor, uid, lead_id, context=ctx)
+
+        lead = lead_o.browse(cr, uid, lead_id)
+        return {'url': lead.signature_process.signature_url}
 
 
 SomLeadWww()
