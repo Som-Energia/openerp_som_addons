@@ -131,7 +131,7 @@ class tarifes_tests(testing.OOTestCase):
             # Assert
             prices = {
                 "current": {
-                    "bo_social": {"unit": "\xe2\x82\xac/dia", "value": 0.0},
+                    "bo_social": {"unit": "\xe2\x82\xac/Dia", "value": 0.0},
                     "comptador": {"unit": "\xe2\x82\xac/mes", "value": 0.0},
                     "end_date": False,
                     "energia": {
@@ -183,7 +183,7 @@ class tarifes_tests(testing.OOTestCase):
             )
             prices = {
                 "current": {
-                    "bo_social": {"unit": "\xe2\x82\xac/dia", "value": 0.0},
+                    "bo_social": {"unit": "\xe2\x82\xac/Dia", "value": 0.0},
                     "comptador": {"unit": "\xe2\x82\xac/mes", "value": 0.0},
                     "end_date": False,
                     "energia": {
@@ -207,7 +207,7 @@ class tarifes_tests(testing.OOTestCase):
                 },
                 "history": [
                     {
-                        "bo_social": {"unit": "\xe2\x82\xac/dia", "value": 0.0},
+                        "bo_social": {"unit": "\xe2\x82\xac/Dia", "value": 0.0},
                         "comptador": {"unit": "\xe2\x82\xac/mes", "value": 0.0},
                         "end_date": "2022-12-31",
                         "energia": {
@@ -403,7 +403,7 @@ class tarifes_tests(testing.OOTestCase):
             )
             # Assert
             prices = {
-                "bo_social": {"uom": "\xe2\x82\xac/dia", "value": 0.0},
+                "bo_social": {"uom": "\xe2\x82\xac/Dia", "value": 0.0},
                 "comptador": {"uom": "\xe2\x82\xac/mes", "value": 0.0},
                 "end_date": "2022-12-31",
                 "gkwh": {
