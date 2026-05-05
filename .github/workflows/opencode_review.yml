@@ -33,12 +33,20 @@ jobs:
             This repository contains custom modules that depend on the main ERP codebase: https://github.com/Som-Energia/erp/tree/rolling_erp01
             The branch rolling_erp01 is the production branch.
 
+            IMPORTANT: Read the file AGENTS.md in the repository root first. It contains all the conventions, patterns, and best practices for this project. From there you can access:
+            - Tech stack and testing patterns (destral)
+            - Code style guidelines (.github/docs/estil.md, .github/docs/evitar.md)
+            - OpenERP patterns (osv.osv, fields.*, _columns)
+            - Git workflow conventions
+            - Testing requirements
+            - SDD (Spec-Driven Development) workflow
+
             Review this pull request thoroughly:
             - Check for code quality issues and best practices
             - Look for potential bugs, security vulnerabilities, or logic errors
             - Suggest improvements for readability and maintainability
             - Identify any missing tests or documentation
-            - Be aware of OpenERP/Odoo patterns and conventions (osv.osv, fields.*, _columns, etc.)
+            - Be aware of OpenERP/Odoo patterns and conventions
             - Consider Python 2.7/3 compatibility if relevant
             - Focus on the changes made in this PR, not the entire codebase
             - Provide constructive feedback with specific suggestions when possible
