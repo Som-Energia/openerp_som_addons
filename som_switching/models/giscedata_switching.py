@@ -570,7 +570,7 @@ class GiscedataFacturacioImportacioLinia(osv.osv):
 
     def _get_last_history_line(self, cr, uid, ids, name, arg, context=None):
         """Nom de la situació de la instal·lació"""
-        res = dict([(i, "") for i in ids])
+        res = dict([(i, False) for i in ids])
 
         for f1 in self.read(cr, uid, ids, ["user_observations"], context=context):
             if f1["user_observations"]:
