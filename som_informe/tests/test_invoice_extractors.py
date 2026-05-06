@@ -56,7 +56,7 @@ class ComponentUtilsTests(BaseTestCase):
     def test_get_description(self):
         from som_informe.report.components.component_utils import get_description
         result = get_description("AE", "TABLA_43")
-        self.assertIsInstance(result, (str, unicode, dict))
+        self.assertIsInstance(result, (str, dict))
 
     def test_get_unit_magnitude(self):
         from som_informe.report.components.component_utils import get_unit_magnitude

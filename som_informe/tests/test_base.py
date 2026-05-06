@@ -19,5 +19,8 @@ class BaseTestCase(testing.OOTestCase):
 
     def _get_extractor_class(self, name):
         """Import and return an extractor class by name."""
-        exec("from som_informe.report.components.{0}.{0} import {0}".format(name))  # noqa: E211
-        return eval(name)  # noqa: F821
+        import importlib
+        module = importlib.import_module(
+            "som_informe.report.components.{0}.{0}".format(name)
+        )
+        return getattr(module, name)
