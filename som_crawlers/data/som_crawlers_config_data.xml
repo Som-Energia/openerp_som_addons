@@ -98,16 +98,8 @@
             <field name="browser">chrome</field>
             <field name="user_ultima_modificacio" ref="base.user_admin"/>
         </record>
-        <record model="som.crawlers.config" id="cide_switching_conf">
-            <field name="name">cide_switching</field>
-            <field name="crawler">API</field>
-            <field name="days_of_margin">5</field>
-            <field name="pending_files_only" eval="False"/>
-            <field name="browser">api</field>
-            <field name="user_ultima_modificacio" ref="base.user_admin"/>
-        </record>
-        <record model="som.crawlers.config" id="cide_f1_conf">
-            <field name="name">cide_f1</field>
+        <record model="som.crawlers.config" id="cide_api_conf">
+            <field name="name">cide</field>
             <field name="crawler">API</field>
             <field name="days_of_margin">5</field>
             <field name="pending_files_only" eval="False"/>

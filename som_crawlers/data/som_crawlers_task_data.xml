@@ -168,12 +168,12 @@
         <record model="som.crawlers.task" id="descargar_cide_api_switching">
             <field name="name">Descarregar CIDE Switching</field>
             <field name="active">True</field>
-            <field name="configuracio_id" ref="cide_switching_conf"/>
+            <field name="configuracio_id" ref="cide_api_conf"/>
         </record>
         <record model="som.crawlers.task" id="descargar_cide_api_f1">
             <field name="name">Descarregar CIDE F1</field>
             <field name="active">True</field>
-            <field name="configuracio_id" ref="cide_f1_conf"/>
+            <field name="configuracio_id" ref="cide_api_conf"/>
         </record>
         <!-- Endesa -->
         <record model="som.crawlers.task" id="descargar_A3_endesa">
