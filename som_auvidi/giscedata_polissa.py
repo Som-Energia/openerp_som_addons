@@ -66,7 +66,7 @@ class GiscedataPolissaModcontractual(osv.osv):
                 polissa_obj.handle_polissa_sg_category(
                     cursor, uid, polissa_id, action='assign', context=context)
                 # Actualitzem data inici si fa falta
-                info = sg_polissa_obj.check_actualitzar_data_inici(
+                info = sg_polissa_obj.actualitzar_data_inici(
                     cursor, uid, sg_pol_id, modcon.data_inici
                 )
             elif cancels_auvidi:
@@ -76,7 +76,7 @@ class GiscedataPolissaModcontractual(osv.osv):
                 data_inici_modcon = datetime.strptime(modcon.data_inici, '%Y-%m-%d')
                 data_sortida_sg = data_inici_modcon - timedelta(days=1)
                 data_sortida_sg_str = data_sortida_sg.strftime('%Y-%m-%d')
-                info = sg_polissa_obj.check_actualitzar_data_sortida(
+                info = sg_polissa_obj.actualitzar_data_sortida(
                     cursor, uid, sg_pol_id, data_sortida_sg_str
                 )
 
