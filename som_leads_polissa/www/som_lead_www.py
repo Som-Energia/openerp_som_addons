@@ -2,6 +2,7 @@
 import logging
 import traceback
 import sys
+import time
 from osv import osv
 from service.security import Sudo
 import yaml
@@ -425,10 +426,38 @@ class SomLeadWww(osv.osv_memory):
 
         with Sudo(uid=uid, gid=0):
             with self.api.db.cursor() as sign_cursor:
-                lead_o.start_signature_process(sign_cursor, uid, lead_id, context=ctx)
+                process_id = lead_o.start_signature_process(
+                    sign_cursor, uid, lead_id, context=ctx
+                )
 
-        lead = lead_o.browse(cr, uid, lead_id)
-        return {'url': lead.signature_process.signature_url}
+        process_o = self.pool.get('giscedata.signatura.process')
+        timeout_seconds = 30.0
+        poll_interval = 0.2
+        deadline = time.time() + timeout_seconds
+        signature_url = False
+
+        while time.time() < deadline:
+            process_data = process_o.read(
+                cr, uid, process_id, ['signature_url', 'status'], context=context
+            )
+            signature_url = process_data.get('signature_url')
+            if signature_url:
+                break
+            if process_data.get('status') == 'error':
+                raise osv.except_osv(
+                    'Error',
+                    'Signature process failed before URL generation (process_id={})'.format(
+                        process_id)
+                )
+            time.sleep(poll_interval)
+
+        if not signature_url:
+            raise osv.except_osv(
+                'Error',
+                'Timeout waiting signature URL (process_id={})'.format(process_id)
+            )
+
+        return {'url': signature_url}
 
 
 SomLeadWww()
