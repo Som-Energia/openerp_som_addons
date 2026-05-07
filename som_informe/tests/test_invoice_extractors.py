@@ -36,7 +36,11 @@ class InvoiceExtractorsTests(BaseTestCase):
         """Test invoice extractors have expected signature: (cursor, uid, wiz, invoice, context)."""
         for name in INVOICE_EXTRACTORS:
             extractor_class = self._get_extractor_class(name)
-            argspec = inspect.getargspec(extractor_class.get_data)
+            try:
+                get_spec = inspect.getfullargspec
+            except AttributeError:
+                get_spec = inspect.getargspec
+            argspec = get_spec(extractor_class.get_data)
             params = argspec.args
             self.assertIn("cursor", params)
             self.assertIn("uid", params)
@@ -56,7 +60,7 @@ class ComponentUtilsTests(BaseTestCase):
     def test_get_description(self):
         from som_informe.report.components.component_utils import get_description
         result = get_description("AE", "TABLA_43")
-        self.assertIsInstance(result, (str, dict))
+        self.assertIsInstance(result, (str, unicode, dict))
 
     def test_get_unit_magnitude(self):
         from som_informe.report.components.component_utils import get_unit_magnitude

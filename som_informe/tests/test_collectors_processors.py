@@ -50,7 +50,11 @@ class CollectorTests(BaseTestCase):
         """Test collectors have expected signature: (cursor, uid, wiz, context)."""
         for name in COLLECTORS:
             extractor_class = self._get_extractor_class(name)
-            argspec = inspect.getfullargspec(extractor_class.get_data)
+            try:
+                get_spec = inspect.getfullargspec
+            except AttributeError:
+                get_spec = inspect.getargspec
+            argspec = get_spec(extractor_class.get_data)
             params = argspec.args
             self.assertIn("cursor", params)
             self.assertIn("uid", params)
@@ -79,7 +83,11 @@ class TableComponentsTests(BaseTestCase):
         """Test tables have expected signature: (cursor, uid, wiz, invoice_ids, context)."""
         for name in TABLES:
             extractor_class = self._get_extractor_class(name)
-            argspec = inspect.getfullargspec(extractor_class.get_data)
+            try:
+                get_spec = inspect.getfullargspec
+            except AttributeError:
+                get_spec = inspect.getargspec
+            argspec = get_spec(extractor_class.get_data)
             params = argspec.args
             self.assertIn("cursor", params)
             self.assertIn("uid", params)
@@ -108,7 +116,11 @@ class ProcessorTests(BaseTestCase):
         """Test processors have expected signature: (wiz, cursor, uid, step)."""
         for name in PROCESSORS:
             extractor_class = self._get_extractor_class(name)
-            argspec = inspect.getfullargspec(extractor_class.get_data)
+            try:
+                get_spec = inspect.getfullargspec
+            except AttributeError:
+                get_spec = inspect.getargspec
+            argspec = get_spec(extractor_class.get_data)
             params = argspec.args
             self.assertIn("wiz", params)
             self.assertIn("cursor", params)
