@@ -446,7 +446,7 @@ class ReportBackendMailcanvipreus(ReportBackend):
 
     def get_iva_text(self, context=None):
         iva_str = 'IVA' if 'IVA' in self.simplified_taxes else 'IGIC'
-        return '{} del {:.2f}%'.format(iva_str, self.simplified_taxes[iva_str] * 100)
+        return '{} del {:.0f}%'.format(iva_str, self.simplified_taxes[iva_str] * 100)
 
     def has_gurb(self, cursor, uid, polissa, context=False):
         gurb_cups_obj = self.pool.get("som.gurb.cups")
