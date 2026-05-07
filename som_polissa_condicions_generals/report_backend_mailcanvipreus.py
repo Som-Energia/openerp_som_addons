@@ -582,9 +582,12 @@ class ReportBackendMailcanvipreus(ReportBackend):
         today = date.today().strftime("%Y-%m-%d")
         if polissa.llista_preu:
             versions = polissa.llista_preu.version_id
-            for version in versions:
-                if version.active and version.date_start and version.date_start > today:
-                    return version.date_start
+            future_version_starts = [
+                v.date_start for v in versions
+                if v.active and v.date_start and v.date_start > today
+            ]
+            if future_version_starts:
+                return min(future_version_starts)
         return (date.today() + timedelta(days=60)).strftime("%Y-%m-%d")
 
     def esCanaries(self, cursor, uid, env, context=False):
