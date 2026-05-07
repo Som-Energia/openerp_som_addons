@@ -58,6 +58,18 @@ def _cups_contract_has_gurb_cups(cursor, uid, pool, pol_id, context=None):
     return bool(gurb_cups_id)
 
 
+def _step_matches_gurb_self_consumption(step, gurb_cups):
+    gurb_cau = getattr(gurb_cups.gurb_cau_id.self_consumption_id, "cau", False)
+    if not gurb_cau:
+        return False
+
+    for dades_cau in getattr(step, "dades_cau", []):
+        if dades_cau.cau == gurb_cau:
+            return True
+
+    return False
+
+
 def _is_m1_closable(cursor, uid, pool, sw, context=None):
     if context is None:
         context = {}
@@ -593,6 +605,10 @@ class GiscedataSwitchingM2_05(osv.osv):
             gurb_cups_id = gurb_cups_obj.get_gurb_cups_from_sw_id(
                 cursor, uid, sw_id, context=context
             )
+            gurb_cups = gurb_cups_obj.browse(cursor, uid, gurb_cups_id, context=context)
+
+            if not _step_matches_gurb_self_consumption(step, gurb_cups):
+                return step_id
 
             # GURB Leaving Codes
             if step.motiu_modificacio == "06":
