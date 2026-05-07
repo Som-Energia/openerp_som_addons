@@ -10,6 +10,7 @@
         "giscedata_telemesures_base",
         "giscedata_facturacio_services",
         "giscedata_polissa_category",
+        "report_banner_poweremail",
         "giscedata_switching",
         "giscedata_facturacio",
         "report_puppeteer",
