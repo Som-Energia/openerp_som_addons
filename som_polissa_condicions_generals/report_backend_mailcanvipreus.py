@@ -381,15 +381,11 @@ class ReportBackendMailcanvipreus(ReportBackend):
 
         return imports
 
-    _bo_social_price = False
-
     def get_bo_social_price(self, cursor, uid, pricelist, context=None):
         tarifa_obj = self.pool.get("giscedata.polissa.tarifa")
-        if not self._bo_social_price:
-            self._bo_social_price = (
-                tarifa_obj.get_bo_social_price(cursor, uid, pricelist, context=context)[0]
-            ) * 365
-        return self._bo_social_price
+        return (
+            tarifa_obj.get_bo_social_price(cursor, uid, pricelist, context=context)[0]
+        ) * 365
 
     def aplicarCoeficients(self, consum_anual, tarifa):
         coeficients = {
