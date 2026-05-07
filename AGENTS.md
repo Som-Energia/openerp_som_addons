@@ -28,6 +28,7 @@ openerp_som_addons/
 |---------|-----------|
 | `docs/patterns/` | Receptes: com fer tasques concretes |
 | `docs/guides/` | Guies: conceptes i configuració |
+| `docs/guides/sentry-triage-workflow.md` | Workflow per triar repo, issue i PR quan una incidència ve de Sentry |
 | `.github/docs/` | Decisions d'arquitectura i estil |
 
 ## Skills Disponibles
@@ -99,11 +100,3 @@ Abans de crear PR, verificar:
 - [ ] Tests passen (`erp-test`)
 - [ ] Linting passen (`flake8 .`)
 - [ ] S'ha seguit l'estil de codi
-
-## Documentació
-
-| Carpeta | Contingut |
-|---------|-----------|
-| `docs/patterns/` | Receptes: com fer tasques concretes |
-| `docs/guides/` | Guies: conceptes i configuració |
-| `.github/docs/` | Decisions d'arquitectura i estil |
