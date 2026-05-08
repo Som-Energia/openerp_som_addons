@@ -10,7 +10,11 @@ class GiscedataPolissa(osv.osv):
     def get_simplified_taxes(self, cursor, uid, polissa_id, context=None):
         context = context or {}
 
-        polissa = self.browse(cursor, uid, polissa_id, context=context)
+        state = self.read(cursor, uid, polissa_id, ["state"], context={})["state"]
+        if state == "esborrany":
+            polissa = self.browse(cursor, uid, polissa_id, context={})
+        else:
+            polissa = self.browse(cursor, uid, polissa_id, context=context)
 
         fp_obj = self.pool.get('account.fiscal.position')
         atax_obj = self.pool.get('account.tax')
