@@ -910,7 +910,7 @@ class TestUnlinkATC(TestSwitchingImport):
             self.cursor,
             self.uid,
             atc_id,
-            {"state": "open", "ref": "giscedata.switching,{}".format(sw_id.id)},
+            {"state": "pending", "ref": "giscedata.switching,{}".format(sw_id.id)},
         )
 
         data_old = "<FechaSolicitud>2016-09-29T09:39:08"
@@ -920,7 +920,7 @@ class TestUnlinkATC(TestSwitchingImport):
             r1_xml = r1_xml.replace(data_old, "<FechaSolicitud>{}".format(data_new))
 
         atc_before = atc_o.browse(self.cursor, self.uid, atc_id)
-        self.assertEqual(atc_before.state, "open")
+        self.assertEqual(atc_before.state, "pending")
 
         sw_obj.importar_xml(self.cursor, self.uid, r1_xml, "r109.xml")
 
