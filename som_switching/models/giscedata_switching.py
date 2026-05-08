@@ -363,6 +363,49 @@ class GiscedataSwitching(osv.osv):
             cac_obj.case_cancel(cursor, uid, cacs_to_cancel, *args)
         return True
 
+    def importar_xml_post_hook(self, cursor, uid, sw_id, context=None):
+        res = super(GiscedataSwitching, self).importar_xml_post_hook(
+            cursor, uid, sw_id, context=context)
+        self._update_cac_on_step_09_import(cursor, uid, sw_id, context=context)
+        return res
+
+    def _update_cac_on_step_09_import(self, cursor, uid, sw_id, context=None):
+        sw = self.browse(cursor, uid, sw_id)
+        if sw.step_id.name != '09':
+            return
+        if sw.proces_id.name not in ['R1']:
+            return
+
+        atc_obj = self.pool.get('giscedata.atc')
+        atc_ids = atc_obj.search(cursor, uid, [
+            ('ref', '=', 'giscedata.switching,{}'.format(sw_id)),
+        ], context=context)
+        if not atc_ids:
+            atc_ids = atc_obj.search(cursor, uid, [
+                ('ref2', '=', 'giscedata.switching,{}'.format(sw_id)),
+            ], context=context)
+
+        if not atc_ids:
+            return
+
+        for atc_id in atc_ids:
+            atc = atc_obj.browse(cursor, uid, atc_id)
+            if atc.process_step == '08' and atc.state in ['open', 'pending']:
+                atc_obj.write(cursor, uid, atc_id, {
+                    'state': 'open',
+                }, context=context)
+                tracking_obj = self.pool.get('crm.time.tracking')
+                tracking_ids = tracking_obj.search(
+                    cursor, uid, [('code', '=', '0')], context=context)
+                tracking_id = tracking_ids[0] if tracking_ids else False
+                vals_log = {
+                    'state': 'open',
+                    'time_tracking_id': tracking_id,
+                    'agent_actual': '06',
+                }
+                atc_obj.write(cursor, uid, atc_id, vals_log, context=context)
+                atc_obj.case_log(cursor, uid, atc_id, context=context)
+
     def case_cancel(self, cursor, uid, ids, *args):
         if not isinstance(ids, (list, tuple)):
             ids = [ids]
