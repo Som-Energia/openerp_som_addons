@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from tests_gurb_base import TestsGurbBase
 from addons import get_module_resource
+from destral.patch import PatchNewCursors
 from tools.misc import cache
 import mock
 from base_extended_som.tests.utils import avoid_creating_subcursors
@@ -832,6 +833,105 @@ class TestsGurbSwitching(TestsGurbBase):
         )[0]
         gurb_cups = sgc_obj.browse(self.cursor, self.uid, gurb_cups_id)
         self.assertEqual(gurb_cups.state, 'active')
+
+    @mock.patch(_config_step_validation_fnc)
+    @mock.patch('poweremail.poweremail_template.poweremail_templates.generate_mail')
+    @mock.patch(
+        'giscedata_switching.giscedata_switching.GiscedataSwitchingActivacionsConfig.get_activation_method'  # noqa: F821, E501
+    )
+    def test_activate_m1_05_sr_gurb_updates_contract_self_consumption(
+            self, get_activation_method, generate_mail, config_step_validation_mock):
+        pol_obj = self.openerp.pool.get("giscedata.polissa")
+        sgc_obj = self.openerp.pool.get("som.gurb.cups")
+        sw_obj = self.openerp.pool.get("giscedata.switching")
+        step_obj = self.openerp.pool.get("giscedata.switching.m1.01")
+        sw_step_header_obj = self.openerp.pool.get("giscedata.switching.step.header")
+
+        generate_mail.return_value = True
+        get_activation_method.return_value = ['activar_polissa_from_m1']
+
+        m1_02_xml_path = get_module_resource(
+            "giscedata_switching", "tests", "fixtures", "m102_new.xml"
+        )
+        with open(m1_02_xml_path, "r") as f:
+            m1_02_xml = f.read()
+
+        m1_05_xml_path = get_module_resource(
+            "giscedata_switching", "tests", "fixtures", "m105_canvi_autoconsum.xml"
+        )
+        with open(m1_05_xml_path, "r") as f:
+            m1_05_xml = f.read()
+
+        self.switch(self.txn, "comer")
+
+        contract_id = self.get_contract_id(self.txn, xml_id="polissa_tarifa_018")
+        self.change_polissa_comer(self.txn, pol_id='polissa_tarifa_018')
+        self.update_polissa_distri(self.txn, pol_ref='polissa_tarifa_018')
+        self.activar_polissa_CUPS(
+            set_gurb_category=True, context={"polissa_xml_id": "polissa_tarifa_018"})
+
+        cups = pol_obj.browse(self.cursor, self.uid, contract_id).cups
+        gurb_cups_id = sgc_obj.search(
+            self.cursor, self.uid, [('cups_id', '=', cups.id)]
+        )[0]
+        gurb_cups = sgc_obj.browse(self.cursor, self.uid, gurb_cups_id)
+        gurb_cups.send_signal('button_create_cups')
+        gurb_cups.send_signal('button_activate_cups')
+
+        step_id = self.create_case_and_step(
+            self.cursor, self.uid, contract_id, "M1", "01"
+        )
+        sw_step_header_id = step_obj.read(
+            self.cursor, self.uid, step_id, ["header_id"]
+        )["header_id"][0]
+        sw_step_header_obj.write(
+            self.cursor, self.uid, sw_step_header_id, {"notificacio_pendent": False}
+        )
+        m101 = step_obj.browse(self.cursor, self.uid, step_id)
+
+        self._config_m101_autoconsum(m101, config_step_validation_mock)
+
+        m1 = sw_obj.browse(self.cursor, self.uid, m101.sw_id.id)
+        codi_sollicitud = m1.codi_sollicitud
+        m1_02_xml = m1_02_xml.replace(
+            "<CodigoDeSolicitud>201412111009",
+            "<CodigoDeSolicitud>{0}".format(codi_sollicitud)
+        )
+        m1_02_xml = m1_02_xml.replace(
+            "<CUPS>ES1234000000000001JN0F",
+            "<CUPS>{0}".format(cups.name)
+        )
+        m1_05_xml = m1_05_xml.replace(
+            "<CodigoDeSolicitud>201607211260",
+            "<CodigoDeSolicitud>{0}".format(codi_sollicitud)
+        )
+        m1_05_xml = m1_05_xml.replace(
+            "<CUPS>ES0021126262693495FV",
+            "<CUPS>{0}".format(cups.name)
+        )
+
+        sw_obj.importar_xml(self.cursor, self.uid, m1_02_xml, "m1_02.xml")
+        sw_obj.importar_xml(self.cursor, self.uid, m1_05_xml, "m1_05.xml")
+
+        m1_id = sw_obj.search(self.cursor, self.uid, [
+            ("proces_id.name", "=", "M1"),
+            ("step_id.name", "=", "05"),
+            ("codi_sollicitud", "=", codi_sollicitud)
+        ])[0]
+        step_obj.write(self.cursor, self.uid, step_id, {
+            "sollicitudadm": "S",
+            "canvi_titular": "R",
+        })
+        m1 = sw_obj.browse(self.cursor, self.uid, m1_id)
+
+        pol_before = pol_obj.read(self.cursor, self.uid, contract_id, ['tipus_subseccio'])
+        self.assertEqual(pol_before['tipus_subseccio'], '00')
+
+        with PatchNewCursors():
+            sw_obj.activa_cas_atr(self.cursor, self.uid, m1)
+
+        pol_after = pol_obj.read(self.cursor, self.uid, contract_id, ['tipus_subseccio'])
+        self.assertEqual(pol_after['tipus_subseccio'], '21')
 
     @mock.patch(_config_step_validation_fnc)
     def test_notify_m1_03_gurb_category(self, config_step_validation_mock):
