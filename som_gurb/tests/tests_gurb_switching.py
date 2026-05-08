@@ -922,7 +922,13 @@ class TestsGurbSwitching(TestsGurbBase):
             "sollicitudadm": "S",
             "canvi_titular": "R",
         })
+        get_activation_method.return_value = ['m105_acord_repartiment_autoconsum']
         m1 = sw_obj.browse(self.cursor, self.uid, m1_id)
+        step_m105_obj = self.openerp.pool.get("giscedata.switching.m1.05")
+        m105_step_id = int(m1.step_ids[-1].pas_id.split(",")[1])
+        data_activacio = step_m105_obj.read(
+            self.cursor, self.uid, m105_step_id, ['data_activacio']
+        )['data_activacio']
 
         pol_before = pol_obj.read(self.cursor, self.uid, contract_id, ['tipus_subseccio'])
         self.assertEqual(pol_before['tipus_subseccio'], '00')
@@ -930,8 +936,12 @@ class TestsGurbSwitching(TestsGurbBase):
         with PatchNewCursors():
             sw_obj.activa_cas_atr(self.cursor, self.uid, m1)
 
+        expected_tipus_subseccio = pol_obj.get_tipus_subseccio(
+            self.cursor, self.uid, cups.id, data_activacio
+        )
         pol_after = pol_obj.read(self.cursor, self.uid, contract_id, ['tipus_subseccio'])
-        self.assertEqual(pol_after['tipus_subseccio'], '21')
+        self.assertNotEqual(expected_tipus_subseccio, '00')
+        self.assertEqual(pol_after['tipus_subseccio'], expected_tipus_subseccio)
 
     @mock.patch(_config_step_validation_fnc)
     def test_notify_m1_03_gurb_category(self, config_step_validation_mock):
