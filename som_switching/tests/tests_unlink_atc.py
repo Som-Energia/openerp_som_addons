@@ -865,3 +865,64 @@ class TestUnlinkATC(TestSwitchingImport):
         atc = atc_o.browse(self.cursor, self.uid, atc_id)
 
         self.assertEqual(atc.state, "done")
+
+    def test__import_r109_on_atc_r108__updates_atc_to_open(self):
+        """
+        Test que en importar un R1-09, el CAC associat en pas 08 s'actualitza a open
+        """
+        atc_o = self.pool.get("giscedata.atc")
+        imd_obj = self.openerp.pool.get("ir.model.data")
+
+        atc_id = imd_obj.get_object_reference(
+            self.cursor, self.uid, "som_switching", "cas_atc_0001"
+        )[1]
+
+        r1_xml_path = get_module_resource(
+            "giscedata_switching", "tests", "fixtures", "r109_new.xml"
+        )
+
+        self.switch(self.txn, "comer")
+
+        r108_obj = self.openerp.pool.get("giscedata.switching.r1.08")
+        sw_obj = self.openerp.pool.get("giscedata.switching")
+
+        act_obj = self.openerp.pool.get("giscedata.switching.activation.config")
+        act_obj.write(
+            self.cursor,
+            self.uid,
+            act_obj.search(self.cursor, self.uid, [], context={"active_test": False}),
+            {"active": True, "is_automatic": True},
+        )
+
+        contract_id = self.get_contract_id(self.txn)
+        self.change_polissa_comer(self.txn)
+        self.update_polissa_distri(self.txn)
+
+        step_id = self.create_case_and_step(self.cursor, self.uid, contract_id, "R1", "08")
+
+        r108 = r108_obj.browse(self.cursor, self.uid, step_id)
+
+        sw_id = sw_obj.browse(self.cursor, self.uid, r108.sw_id.id)
+
+        sw_obj.write(self.cursor, self.uid, sw_id.id, {"codi_sollicitud": "201607211259"})
+
+        atc_o.write(
+            self.cursor,
+            self.uid,
+            atc_id,
+            {"state": "open", "ref": "giscedata.switching,{}".format(sw_id.id)},
+        )
+
+        data_old = "<FechaSolicitud>2016-09-29T09:39:08"
+        with open(r1_xml_path, "r") as f:
+            data_new = datetime.strftime(datetime.now(), "%Y-%m-%dT%H:%M:%S")
+            r1_xml = f.read()
+            r1_xml = r1_xml.replace(data_old, "<FechaSolicitud>{}".format(data_new))
+
+        atc_before = atc_o.browse(self.cursor, self.uid, atc_id)
+        self.assertEqual(atc_before.state, "open")
+
+        sw_obj.importar_xml(self.cursor, self.uid, r1_xml, "r109.xml")
+
+        atc_after = atc_o.browse(self.cursor, self.uid, atc_id)
+        self.assertEqual(atc_after.state, "open")
