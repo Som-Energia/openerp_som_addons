@@ -32,7 +32,11 @@ class TestSignLead(testing.OOTestCase):
         www_lead_o = self.get_model('som.lead.www')
         mock_lead_o = mock.MagicMock()
         mock_lead_o.check_start_signature_process.return_value = ('end', '')
-        mock_lead_o.browse.return_value.signature_process.signature_url = 'http://sign.url'
+        mock_lead_o.start_signature_process.return_value = 123
+        mock_lead_o.read.return_value = {
+            'signature_url': 'http://sign.url',
+            'status': 'done'
+        }
 
         with mock.patch.object(www_lead_o.pool, 'get', return_value=mock_lead_o):
             with mock.patch('som_leads_polissa.www.som_lead_www.Sudo'):
@@ -43,6 +47,9 @@ class TestSignLead(testing.OOTestCase):
         ctx_passed = mock_lead_o.check_start_signature_process.call_args[1]['context']
         self.assertEqual(ctx_passed.get('delivery_type'), 'url')
         self.assertEqual(ctx_passed.get('provider'), 'signaturit')
+        mock_lead_o.read.assert_called_with(
+            self.cursor, self.uid, 123, ['signature_url', 'status'], context={}
+        )
 
     def test_sign_lead_invalid_lead_raises(self):
         www_lead_o = self.get_model('som.lead.www')
@@ -54,3 +61,27 @@ class TestSignLead(testing.OOTestCase):
                 www_lead_o.sign_lead(self.cursor, self.uid, 1)
 
         mock_lead_o.start_signature_process.assert_not_called()
+
+    def test_sign_lead_timeout_raises(self):
+        www_lead_o = self.get_model('som.lead.www')
+        mock_lead_o = mock.MagicMock()
+        mock_lead_o.check_start_signature_process.return_value = ('end', '')
+        mock_lead_o.start_signature_process.return_value = 123
+        mock_lead_o.read.return_value = {
+            'signature_url': False,
+            'status': 'wait'
+        }
+
+        with mock.patch.object(www_lead_o.pool, 'get', return_value=mock_lead_o):
+            with mock.patch('som_leads_polissa.www.som_lead_www.Sudo'):
+                with mock.patch('som_leads_polissa.www.som_lead_www.time.sleep'):
+                    with mock.patch(
+                        'som_leads_polissa.www.som_lead_www.time.time',
+                        side_effect=[0, 1, 31]
+                    ):
+                        with self.assertRaises(osv.except_osv):
+                            www_lead_o.sign_lead(self.cursor, self.uid, 1)
+
+        mock_lead_o.read.assert_called_with(
+            self.cursor, self.uid, 123, ['signature_url', 'status'], context={}
+        )
