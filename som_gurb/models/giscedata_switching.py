@@ -58,18 +58,6 @@ def _cups_contract_has_gurb_cups(cursor, uid, pool, pol_id, context=None):
     return bool(gurb_cups_id)
 
 
-def _step_matches_gurb_self_consumption(step, gurb_cups):
-    gurb_cau = getattr(gurb_cups.gurb_cau_id.self_consumption_id, "cau", False)
-    if not gurb_cau:
-        return False
-
-    for dades_cau in getattr(step, "dades_cau", []):
-        if dades_cau.cau == gurb_cau:
-            return True
-
-    return False
-
-
 def _is_m1_closable(cursor, uid, pool, sw, context=None):
     if context is None:
         context = {}
@@ -582,6 +570,17 @@ GiscedataSwitchingHelpers()
 class GiscedataSwitchingM2_05(osv.osv):
     _inherit = "giscedata.switching.m2.05"
 
+    def _atr_cups_match_gurb_cups(self, cursor, uid, step, gurb_cups):
+        """Returns True if the step's dades_cau contains the same CAU as the GURB cups' self consumption CAU."""  # noqa: E501
+        if not gurb_cups.gurb_cau_id.self_consumption_id.cau:
+            return False
+
+        if step.dades_cau:
+            for dades_cau in step.dades_cau:
+                if dades_cau.cau == gurb_cups.gurb_cau_id.self_consumption_id.cau:
+                    return True
+        return False
+
     def create_from_xml(self, cursor, uid, sw_id, xml, context=None):
         if context is None:
             context = {}
@@ -607,7 +606,10 @@ class GiscedataSwitchingM2_05(osv.osv):
             )
             gurb_cups = gurb_cups_obj.browse(cursor, uid, gurb_cups_id, context=context)
 
-            if not _step_matches_gurb_self_consumption(step, gurb_cups):
+            # Si l'autoconsum del GURB coincideix amb el CAU de la dada_cau del pas, no es notifica
+            # i no es processen les accions de GURB, ja que el canvi és només per l'autoconsum i
+            # no afecta a la resta de potència contractada.
+            if not self._atr_cups_match_gurb_cups(cursor, uid, step, gurb_cups):
                 return step_id
 
             # GURB Leaving Codes
