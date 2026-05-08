@@ -6,11 +6,11 @@
     "author": "SomEnergia",
     "category": "SomEnergia",
     "depends": [
+        "account_invoice_som",  # remove when banners import is fixed in account_invoice_base
         "giscedata_polissa",
         "giscedata_telemesures_base",
         "giscedata_facturacio_services",
         "giscedata_polissa_category",
-        "report_banner_poweremail",
         "giscedata_switching",
         "giscedata_facturacio",
         "report_puppeteer",
