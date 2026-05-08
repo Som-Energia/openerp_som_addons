@@ -390,10 +390,7 @@ class GiscedataSwitching(osv.osv):
 
         for atc_id in atc_ids:
             atc = atc_obj.browse(cursor, uid, atc_id)
-            if atc.process_step == '08' and atc.state in ['open', 'pending']:
-                atc_obj.write(cursor, uid, atc_id, {
-                    'state': 'open',
-                }, context=context)
+            if atc.process_step == '08' and atc.state == 'pending':
                 tracking_obj = self.pool.get('crm.time.tracking')
                 tracking_ids = tracking_obj.search(
                     cursor, uid, [('code', '=', '0')], context=context)
