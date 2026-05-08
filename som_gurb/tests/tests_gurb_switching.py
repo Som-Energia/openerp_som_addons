@@ -1433,6 +1433,7 @@ class TestsGurbSwitching(TestsGurbBase):
     def test_create_from_xml_m2_05_unexpected_leaving_gurb(
             self, mock_is_unidirectional):
         mock_is_unidirectional.return_value = False
+        gurb_cau = "ES0026233884282635YDA000"
 
         sw_obj = self.openerp.pool.get("giscedata.switching")
         sgc_obj = self.openerp.pool.get("som.gurb.cups")
@@ -1466,6 +1467,10 @@ class TestsGurbSwitching(TestsGurbBase):
             "<Motivo>01",
             "<Motivo>{0}".format("06")
         )
+        m2_05_xml = m2_05_xml.replace(
+            "<CAU>ES1234000000000001JN0FA001",
+            "<CAU>{0}".format(gurb_cau)
+        )
 
         # Import XML
         step_id = sw_obj.importar_xml(
@@ -1481,6 +1486,7 @@ class TestsGurbSwitching(TestsGurbBase):
     def test_create_from_xml_m2_05_expected_leaving_gurb(
             self, mock_is_unidirectional):
         mock_is_unidirectional.return_value = False
+        gurb_cau = "ES0026233884282635YDA000"
 
         sw_obj = self.openerp.pool.get("giscedata.switching")
         sgc_obj = self.openerp.pool.get("som.gurb.cups")
@@ -1515,6 +1521,10 @@ class TestsGurbSwitching(TestsGurbBase):
             "<Motivo>01",
             "<Motivo>{0}".format("06")
         )
+        m2_05_xml = m2_05_xml.replace(
+            "<CAU>ES1234000000000001JN0FA001",
+            "<CAU>{0}".format(gurb_cau)
+        )
 
         # Import XML
         step_id = sw_obj.importar_xml(
@@ -1531,6 +1541,7 @@ class TestsGurbSwitching(TestsGurbBase):
             self, mock_send_gurb_activation_email, mock_is_unidirectional):
         mock_send_gurb_activation_email.return_value = False
         mock_is_unidirectional.return_value = False
+        gurb_cau = "ES0026233884282635YDA000"
 
         sw_obj = self.openerp.pool.get("giscedata.switching")
         sgc_obj = self.openerp.pool.get("som.gurb.cups")
@@ -1563,6 +1574,10 @@ class TestsGurbSwitching(TestsGurbBase):
             "<Motivo>01",
             "<Motivo>{0}".format("04")
         )
+        m2_05_xml = m2_05_xml.replace(
+            "<CAU>ES1234000000000001JN0FA001",
+            "<CAU>{0}".format(gurb_cau)
+        )
 
         # Import XML
         step_id = sw_obj.importar_xml(
@@ -1572,6 +1587,57 @@ class TestsGurbSwitching(TestsGurbBase):
         # Assertions
         self.assertIsNotNone(step_id)
         self.assertEqual(sgc_0002.state, "active")
+
+    @mock.patch("som_gurb.models.giscedata_switching.is_unidirectional_colective_autocons_change")
+    @mock.patch("som_gurb.models.som_gurb_cups.SomGurbCups.send_gurb_activation_email")
+    def test_create_from_xml_m2_05_does_not_activate_unrelated_autoconsum(
+            self, mock_send_gurb_activation_email, mock_is_unidirectional):
+        mock_send_gurb_activation_email.return_value = False
+        mock_is_unidirectional.return_value = False
+        unrelated_cau = "ES0031241774219778BJA000"
+
+        sw_obj = self.openerp.pool.get("giscedata.switching")
+        sgc_obj = self.openerp.pool.get("som.gurb.cups")
+        pol_obj = self.openerp.pool.get("giscedata.polissa")
+
+        contract_id = self.get_contract_id(self.txn, xml_id="polissa_tarifa_018")
+
+        sgc_id = self.openerp.pool.get("ir.model.data").get_object_reference(
+            self.cursor, self.uid, "som_gurb", "gurb_cups_0002")[1]
+
+        sgc_0002 = sgc_obj.browse(self.cursor, self.uid, sgc_id)
+        sgc_0002.send_signal("button_create_cups")
+        sgc_0002.send_signal("button_activate_cups")
+
+        m2_05_xml_path = get_module_resource(
+            "som_gurb", "tests", "fixtures", "m205_new.xml"
+        )
+        with open(m2_05_xml_path, "r") as f:
+            m2_05_xml = f.read()
+        self.switch(self.txn, "comer")
+        self.change_polissa_comer(self.txn, pol_id='polissa_tarifa_018')
+        cups = pol_obj.browse(self.cursor, self.uid, contract_id).cups
+
+        m2_05_xml = m2_05_xml.replace(
+            "<CUPS>ES1234000000000001JN0F",
+            "<CUPS>{0}".format(cups.name)
+        )
+        m2_05_xml = m2_05_xml.replace(
+            "<Motivo>01",
+            "<Motivo>{0}".format("04")
+        )
+        m2_05_xml = m2_05_xml.replace(
+            "<CAU>ES1234000000000001JN0FA001",
+            "<CAU>{0}".format(unrelated_cau)
+        )
+
+        step_id = sw_obj.importar_xml(
+            self.cursor, self.uid, m2_05_xml, "m205_new.xml"
+        )
+
+        self.assertIsNotNone(step_id)
+        self.assertEqual(sgc_0002.state, "active")
+        self.assertFalse(mock_send_gurb_activation_email.called)
 
     def test_wizard_atr_gurb_model(self):
         wiz_o = self.openerp.pool.get("wizard.atr.gurb.model")
