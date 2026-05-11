@@ -525,7 +525,7 @@ class WizardRefundRectifyFromOrigin(osv.osv_memory):
 
                 meters = []
                 for lect in f1.importacio_lectures_ids:
-                    meters.append(str(lect.comptador))
+                    meters.append(lect.comptador.name)
                 meters = list(set(meters))
 
                 n_lect_del = self.recarregar_lectures_between_dates(
