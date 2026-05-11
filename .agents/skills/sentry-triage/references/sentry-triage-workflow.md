@@ -1,7 +1,5 @@
 # Sentry Triage Workflow
 
-> **Nota**: Per a execució automatitzada, consulta la skill `sentry-triage` a [.agents/skills/sentry-triage/SKILL.md](../.agents/skills/sentry-triage/SKILL.md)
-
 Guia curta per triar i documentar incidències de Sentry relacionades amb els repositoris ERP de Som Energia.
 
 ## Objectiu
@@ -64,7 +62,7 @@ Exemple de configuració per a OpenCode:
       "environment": {
         "SENTRY_HOST": "<SENTRY_HOST>",
         "SENTRY_ACCESS_TOKEN": "<TOKEN>",
-        "MCP_DISABLE_SKILLS": "seer"
+        "MCP_DISABLE_SKIPS": "seer"
       }
     }
   }

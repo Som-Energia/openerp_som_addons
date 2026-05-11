@@ -64,6 +64,12 @@ Les skills següents estan disponibles al projecte i s'han d'utilitzar quan corr
 | `erp-start` | Arrencar servei ERP | Veure [.agents/skills/erp-start/SKILL.md](.agents/skills/erp-start/SKILL.md) |
 | `erp-migration` | Crear scripts de migració | Veure [.agents/skills/erp-migration/SKILL.md](.agents/skills/erp-migration/SKILL.md) |
 
+### Sentry
+
+| Skill | Quan usar | Com usar |
+|-------|-----------|----------|
+| `sentry-triage` | Fer triage d'incidències de Sentry | Veure [.agents/skills/sentry-triage/SKILL.md](.agents/skills/sentry-triage/SKILL.md) |
+
 **Requisits per executar tests:**
 1. Docker: PostgreSQL, MongoDB, Redis corrent
 2. Virtualenv activat — nom habitual: `erp` (`pyenv activate erp` o `workon erp`)
