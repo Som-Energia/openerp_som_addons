@@ -28,6 +28,7 @@ openerp_som_addons/
 |---------|-----------|
 | `docs/patterns/` | Receptes: com fer tasques concretes |
 | `docs/guides/` | Guies: conceptes i configuració |
+| `docs/guides/sentry-triage-workflow.md` | Workflow per triar repo, issue i PR quan una incidència ve de Sentry |
 | `.github/docs/` | Decisions d'arquitectura i estil |
 
 ## Skills Disponibles
@@ -62,6 +63,12 @@ Les skills següents estan disponibles al projecte i s'han d'utilitzar quan corr
 | `erp-test` | Executar tests | Veure [.agents/skills/erp-test/SKILL.md](.agents/skills/erp-test/SKILL.md) |
 | `erp-start` | Arrencar servei ERP | Veure [.agents/skills/erp-start/SKILL.md](.agents/skills/erp-start/SKILL.md) |
 | `erp-migration` | Crear scripts de migració | Veure [.agents/skills/erp-migration/SKILL.md](.agents/skills/erp-migration/SKILL.md) |
+
+### Sentry
+
+| Skill | Quan usar | Com usar |
+|-------|-----------|----------|
+| `sentry-triage` | Fer triage d'incidències de Sentry | Veure [.agents/skills/sentry-triage/SKILL.md](.agents/skills/sentry-triage/SKILL.md) |
 
 **Requisits per executar tests:**
 1. Docker: PostgreSQL, MongoDB, Redis corrent
@@ -99,11 +106,3 @@ Abans de crear PR, verificar:
 - [ ] Tests passen (`erp-test`)
 - [ ] Linting passen (`flake8 .`)
 - [ ] S'ha seguit l'estil de codi
-
-## Documentació
-
-| Carpeta | Contingut |
-|---------|-----------|
-| `docs/patterns/` | Receptes: com fer tasques concretes |
-| `docs/guides/` | Guies: conceptes i configuració |
-| `.github/docs/` | Decisions d'arquitectura i estil |

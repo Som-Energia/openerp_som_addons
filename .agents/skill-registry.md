@@ -21,6 +21,7 @@ See `_shared/skill-resolver.md` for the full resolution protocol.
 | Quan necessites executar tests d'un mòdul OpenERP amb destral | erp-test | .agents/skills/erp-test/SKILL.md |
 | Quan necessites arrencar el servei ERP, executar l'ERP, o obrir l'entorn de desenvolupament | erp-start | .agents/skills/erp-start/SKILL.md |
 | Quan necessites crear un script de migració, modificar el model, o actualitzar un mòdul a producció | erp-migration | .agents/skills/erp-migration/SKILL.md |
+| Quan necessites fer triage d'incidències de Sentry, "analitzar sentry", "triar incidents" | sentry-triage | .agents/skills/sentry-triage/SKILL.md |
 
 ## Compact Rules
 
@@ -61,6 +62,14 @@ See `_shared/skill-resolver.md` for the full resolution protocol.
 - Script automàtic: `python scripts/create_migration_script.py`
 - Estructura: `<modul>/migrations/5.0.25.5.0/post-0001_*.py`
 - Executar: `erpserver -d <db> --run-scripts=<module>` o `--update=<module>`
+
+### sentry-triage
+- MCP Sentry requerit: Configurar a OpenCode (self-hosted mode)
+- Workflow: 1) Llista incidents → 2) Identifica tipus (error vs slow) → 3) Determina repo (erp vs addons) → 4) Crea issue sense PII → 5) Obrir PR
+- Repo segons stack: `/home/erp/src/erp/...` → gisce/erp (branca developer), `openerp_som_addons/` → openerp_som_addons (branca main)
+- Labels obligatoris: bug + autotask
+- Prohibit: Noms, emails, telèfons, CUPS, dades personals
+- branca PR: developer (gisce/erp) o main (openerp_som_addons), MAI rolling_erp01
 
 ## Project Conventions
 

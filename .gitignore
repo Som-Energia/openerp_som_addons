@@ -145,3 +145,4 @@ patches/
 
 # Agents
 .engram/
+.atl/
