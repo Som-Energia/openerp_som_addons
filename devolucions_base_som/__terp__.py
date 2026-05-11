@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 {
-    "name": "Funcions de facturacio devolucions per SOM",
+    "name": "Funcions que amplien comportament del mòdul devolucions_base de GISCE",
     "description": """
     This module provides:
         * Actualitzar el flag paid de la remesa quan arriba una devolucio
