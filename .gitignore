@@ -142,3 +142,4 @@ patches/
 
 # VSCode
 .vscode/
+.atl/
