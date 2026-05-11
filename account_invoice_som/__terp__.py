@@ -12,6 +12,7 @@
         "poweremail",
         "giscedata_remeses",
         "l10n_ES_remesas",
+        "report_banner_poweremail",  # remove when banners import is fixed in account_invoice_base
         "som_polissa_soci",
     ],
     "init_xml": [],

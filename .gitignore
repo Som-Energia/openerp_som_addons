@@ -142,4 +142,7 @@ patches/
 
 # VSCode
 .vscode/
+
+# Agents
+.engram/
 .atl/
