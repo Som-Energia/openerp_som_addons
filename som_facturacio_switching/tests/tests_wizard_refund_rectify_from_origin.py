@@ -357,6 +357,52 @@ class TestRefundRectifyFromOrigin(testing.OOTestCase):
             ),
         )
 
+    def test_recarregar_lectures_between_dates_filters_by_f1_meters(self):
+        cursor = self.cursor
+        uid = self.uid
+        wiz_obj = self.pool.get("wizard.refund.rectify.from.origin")
+
+        meter_obj = mock.Mock()
+        lect_pool_obj = mock.Mock()
+        copia_lect_wiz_o = mock.Mock()
+
+        meter_obj.search.return_value = [101]
+        lect_pool_obj.search.side_effect = [[201], [202]]
+        copia_lect_wiz_o.create.return_value = 301
+
+        def get_model(model_name):
+            if model_name == "giscedata.lectures.comptador":
+                return meter_obj
+            if model_name == "giscedata.lectures.lectura.pool":
+                return lect_pool_obj
+            if model_name == "wizard.copiar.lectura.pool.a.fact":
+                return copia_lect_wiz_o
+            raise AssertionError("Model inesperat: {}".format(model_name))
+
+        with mock.patch.object(wiz_obj.pool, "get", side_effect=get_model):
+            copied = wiz_obj.recarregar_lectures_between_dates(
+                cursor,
+                uid,
+                ["C-NEW"],
+                999,
+                "2024-01-01",
+                "2024-01-31",
+                context={},
+            )
+
+        self.assertEqual(copied, 2)
+        meter_obj.search.assert_called_with(
+            cursor,
+            uid,
+            [
+                ("polissa", "=", 999),
+                ("name", "in", ["C-NEW"]),
+            ],
+            context={"active_test": False},
+        )
+        self.assertEqual(lect_pool_obj.search.call_count, 2)
+        self.assertEqual(copia_lect_wiz_o.action_copia_lectura.call_count, 2)
+
     def test_get_factures_client_by_dates_toRefundOne(self):
         cursor = self.cursor
         uid = self.uid
