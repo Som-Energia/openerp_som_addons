@@ -229,9 +229,18 @@ class SomLeadWww(osv.osv_memory):
                 context=context
             )
 
+        signature_url = None
+        signature_provider = None
+        if not error_info:
+            sign_result = self.sign_lead(cr, uid, lead_id, context=context)
+            signature_url = sign_result.get('url')
+            signature_provider = 'signaturit'
+
         return {
             "lead_id": lead_id,
             "error": error_info,
+            "signature_url": signature_url,
+            "signature_provider": signature_provider,
         }
 
     def activate_lead(self, cr, uid, lead_id, context=None):

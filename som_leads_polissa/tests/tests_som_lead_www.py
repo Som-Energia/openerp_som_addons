@@ -102,14 +102,20 @@ class TestsSomLeadWww(testing.OOTestCase):
         self.patch_subscribe_customer = mock.patch(
             "som_polissa_soci.models.res_partner_address.ResPartnerAddress.subscribe_partner_in_customers_no_members_lists"  # noqa: E501
         )
+        self.patch_sign_lead = mock.patch(
+            "som_leads_polissa.www.som_lead_www.SomLeadWww.sign_lead",
+            return_value={'url': 'http://sign.url'}
+        )
         self.mock_subscribe_member = self.patch_subscribe_member.start()
         self.mock_unsubscribe_customer = self.patch_unsubscribe_customer.start()
         self.mock_subscribe_customer = self.patch_subscribe_customer.start()
+        self.mock_sign_lead = self.patch_sign_lead.start()
 
     def tearDown(self):
         self.patch_subscribe_member.stop()
         self.patch_unsubscribe_customer.stop()
         self.patch_subscribe_customer.stop()
+        self.patch_sign_lead.stop()
         self.txn.stop()
 
     def get_model(self, model_name):
@@ -124,6 +130,8 @@ class TestsSomLeadWww(testing.OOTestCase):
 
         result = www_lead_o.create_lead(self.cursor, self.uid, self._basic_values)
         self.assertFalse(result["error"])
+        self.assertEqual(result["signature_url"], 'http://sign.url')
+        self.assertEqual(result["signature_provider"], 'signaturit')
 
         www_lead_o.activate_lead(self.cursor, self.uid, result["lead_id"], context={"sync": True})
 
