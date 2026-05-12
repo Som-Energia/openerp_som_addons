@@ -10,5 +10,8 @@ def up(cursor, installed_version):
     mh = MigrationHelper(cursor, 'som_facturacio_switching')
     mh.update_xml('giscedata_facturacio_switching_view.xml')
 
+def down(cursor, installed_version):
+    pass
+
 
 migrate = up
