@@ -15,6 +15,8 @@ class TestReportBackendCCPPIgnoreModcon(testing.OOTestCase):
         self.uid = self.txn.user
 
         self.pol_obj = self.openerp.pool.get("giscedata.polissa")
+        self.tax_obj = self.openerp.pool.get('account.tax')
+        self.conf_obj = self.openerp.pool.get('res.config')
         self.backend_obj = self.openerp.pool.get(
             "report.backend.condicions.particulars.ignore.modcon")
         self.pricelist_obj = self.openerp.pool.get("product.pricelist")
@@ -43,6 +45,18 @@ class TestReportBackendCCPPIgnoreModcon(testing.OOTestCase):
         self.assertEqual(result['tarifa_mostrar'], pricelist_name)
 
     def test_get_prices_data_with_keeps_current(self):
+        # Get prices data needs this configuration setted
+        self.conf_obj.set(
+            self.cursor, self.uid, 'default_iva_21_tax_id',
+            self.tax_obj.search(self.cursor, self.uid, [("name", "=", "IVA 21%")])[0],
+        )
+        self.conf_obj.set(
+            self.cursor, self.uid, 'default_iese_tax_id',
+            self.tax_obj.search(self.cursor, self.uid, [
+                ("name", "=", "Impuesto especial sobre la electricidad")
+            ])[0],
+        )
+
         self.pol_obj.send_signal(
             self.cursor, self.uid, [self.contract_20TD_id], ["validar", "contracte"])
         context = {"active_id": self.contract_20TD_id, "change_type": "from_period_to_index"}

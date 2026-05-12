@@ -2,7 +2,7 @@
     <div class="modi_condicions">
         <p>
             ${_(u"Al contractar s'accepten aquestes ")}
-            %if not prices['auvi'] and ((polissa['mode_facturacio'] == 'index' and not polissa['modcon_pendent_periodes']) or polissa['modcon_pendent_indexada']):
+            %if not prices['auvi'] and polissa['mode_facturacio_calculat'] == 'index':
                 ${_(u"Condicions Particulars, Específiques i les Condicions Generals,")}
             %elif prices['auvi']:
                 ${_(u"Condicions Particulars, Específiques de l'Autoconsum Virtual, Específiques de la tarifa Indexada i les Condicions Generals,")}

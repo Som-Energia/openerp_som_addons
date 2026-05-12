@@ -167,6 +167,7 @@ class ReportBackendCondicionsParticulars(ReportBackend):
         # res['fiscal_position'] = pol.fiscal_position
         res['potencia_max'] = pol.potencia
         res['mode_facturacio'] = pol.mode_facturacio
+        res['mode_facturacio_calculat'] = pol.mode_facturacio
 
         res['te_assignacio_gkwh'] = pol.te_assignacio_gkwh
 
@@ -201,6 +202,7 @@ class ReportBackendCondicionsParticulars(ReportBackend):
         has_some_modcon = res['modcon_pendent_indexada'] or res['modcon_pendent_periodes']
         if use_modcon_pricelist and has_some_modcon:
             res['pricelist'] = pol.modcontractuals_ids[0].llista_preu
+            res['mode_facturacio_calculat'] = pol.modcontractuals_ids[0].mode_facturacio
         elif pol.llista_preu:
             res['pricelist'] = pol.llista_preu
         else:
@@ -341,7 +343,6 @@ class ReportBackendCondicionsParticulars(ReportBackend):
         modcon_pendent_indexada = False
         modcon_pendent_periodes = False
         use_modcon_pricelist = not context.get('ignore_modcon_pricelist', False)
-        res['use_modcon_pricelist'] = use_modcon_pricelist
         if use_modcon_pricelist and pol.state != 'esborrany':
             ultima_modcon = pol.modcontractuals_ids[0]
             modcon_pendent_indexada = ultima_modcon.state == 'pendent' and \
@@ -408,10 +409,16 @@ class ReportBackendCondicionsParticulars(ReportBackend):
                 if iva_10_active and pol.potencia <= 10 and today_str >= start_date_iva_10 and today_str <= end_date_iva_10:  # noqa: E501
                     fp_id = imd_obj.get_object_reference(
                         cursor, uid, 'som_polissa_condicions_generals', 'fp_iva_reduit')[1]
-                    text_impostos = " (IVA 10%, IE 0,5%)"
-                    ctx.update({'force_fiscal_position': fp_id})
-                else:
-                    text_impostos = " (IVA 21%, IE 0,5%)"
+                    ctx.update({'force_fiscal_position': fp_id, 'iva10': True})
+            simple_taxes = pol_obj.get_simplified_taxes(cursor, uid, pol.id, context=ctx)
+            iva_str = 'IVA' if 'IVA' in simple_taxes else 'IGIC'
+            ie_percent_str = "{:.2f}".format(
+                simple_taxes['IE'] * 100).rstrip('0').rstrip('.').replace('.', ',')
+            text_impostos = " ({} {:.0f}%, IE {}%)".format(
+                iva_str,
+                simple_taxes[iva_str] * 100,
+                ie_percent_str
+            )
 
             pricelist['text_impostos'] = text_impostos
 
