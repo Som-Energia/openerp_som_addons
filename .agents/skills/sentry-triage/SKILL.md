@@ -59,7 +59,7 @@ sentry_get_sentry_resource(url="<URL_SENTRY_ISSUE>")
 
 Convencions del repositori:
 * Mòduls de gisce/erp. Codi en anglès, text en castellà. El codi el trobaràs a la branca `rolling_erp01` però les PR han de sortir de la branca `developer`.
-* Mòduls de Som-Energia/openerp_som_addons. Codi en anglès, exts en català, sortir de la branca main.
+* Mòduls de Som-Energia/openerp_som_addons. Codi en anglès, texts en català, sortir de la branca main.
 
 ### Pas 3: Crear la Issue
 
