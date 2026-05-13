@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import requests
 
-from som_crawlers.api_downloaders.cide import Cide
+from som_crawlers.api_downloaders.cide import Cide, REQUEST_TIMEOUT
 from som_crawlers.models.exceptions import CrawlingProcessException, NoResultsException
 
 
@@ -30,7 +30,9 @@ class CideF1(Cide):
             params["downloaded"] = False
 
         try:
-            res = requests.get(list_url, headers=self._auth_headers, params=params)
+            res = requests.get(
+                list_url, headers=self._auth_headers, params=params, timeout=REQUEST_TIMEOUT
+            )
             if res.status_code != 200:
                 raise CrawlingProcessException(
                     "Error en obtenir el llistat d'invoices. Codi d'estat: {}".format(
@@ -59,7 +61,9 @@ class CideF1(Cide):
         params = {"file_id": file_ids}
 
         try:
-            res = requests.get(download_url, headers=self._auth_headers, params=params)
+            res = requests.get(
+                download_url, headers=self._auth_headers, params=params, timeout=REQUEST_TIMEOUT
+            )
             if res.status_code != 200:
                 raise CrawlingProcessException(
                     "Error en la descàrrega d'invoices. Codi d'estat: {}".format(res.status_code)

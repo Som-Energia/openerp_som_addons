@@ -441,7 +441,7 @@
             <field name="name">Descarregar fitxers</field>
             <field name="sequence">1</field>
             <field name="function">download_api_files</field>
-            <field name="params">{}</field>
+            <field name="params">{"process":"switching"}</field>
             <field name="task_id" ref="descargar_cide_api_switching"/>
         </record>
         <record model="som.crawlers.task.step" id="pas_importar_cide_switching">
@@ -455,7 +455,7 @@
             <field name="name">Descarregar fitxers</field>
             <field name="sequence">1</field>
             <field name="function">download_api_files</field>
-            <field name="params">{}</field>
+            <field name="params">{"process":"f1"}</field>
             <field name="task_id" ref="descargar_cide_api_f1"/>
         </record>
         <record model="som.crawlers.task.step" id="pas_importar_cide_api_f1">

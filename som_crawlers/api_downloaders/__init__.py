@@ -21,7 +21,7 @@ class BaseApiDownloader(object):
         if not os.path.exists(target_directory):
             os.makedirs(target_directory)
         self.target_filename = os.path.join(target_directory, "{}.zip".format(
-            datetime.now().strftime("%Y-%m-%dT%H:%M:%S")
+            datetime.now().strftime("%Y-%m-%dT%H-%M-%S")
         ))
 
     def is_production(self):

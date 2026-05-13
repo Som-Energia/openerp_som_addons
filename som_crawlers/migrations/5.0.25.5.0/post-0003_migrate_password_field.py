@@ -20,7 +20,11 @@ def up(cursor, installed_version):
                 ]
             }
         )
-    logger.info("Column type changed to VARCHAR(100) successfully!")
+        logger.info("Column type changed to VARCHAR(100) successfully!")
+    else:
+        logger.info(
+            "Skipping password field migration: column som_crawlers_config.contrasenya not found"
+        )
 
 
 def down(cursor, installed_version):

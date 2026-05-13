@@ -6,6 +6,9 @@ from som_crawlers.api_downloaders import BaseApiDownloader
 from som_crawlers.models.exceptions import (
     CrawlingProcessException, CrawlingLoginException, NoResultsException)
 
+REQUEST_TIMEOUT = 30
+DOWNLOAD_REQUEST_TIMEOUT = 120
+
 
 class Cide(BaseApiDownloader):
     name = 'cide'
@@ -17,7 +20,8 @@ class Cide(BaseApiDownloader):
         try:
             res = requests.get(
                 token_url,
-                auth=HTTPBasicAuth(self.config.usuari, self.config.contrasenya)
+                auth=HTTPBasicAuth(self.config.usuari, self.config.contrasenya),
+                timeout=REQUEST_TIMEOUT,
             )
             if res.status_code != 200:
                 raise CrawlingLoginException(
@@ -39,7 +43,7 @@ class Cide(BaseApiDownloader):
         }
 
     def download_file(self, signed_url):
-        res = requests.get(signed_url)
+        res = requests.get(signed_url, timeout=DOWNLOAD_REQUEST_TIMEOUT)
         if res.status_code != 200:
             raise CrawlingProcessException(
                 "Error en descarregar des de l'URL signat. Codi: {}".format(res.status_code)
