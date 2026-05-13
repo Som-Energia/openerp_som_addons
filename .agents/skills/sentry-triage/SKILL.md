@@ -19,8 +19,8 @@ Utilitza aquesta skill quan:
 
 ## Prerequisits
 
- MCP de Sentry configurat a OpenCode. Consulta la guia:
- [docs/guides/sentry-triage-workflow.md](references/sentry-triage-workflow.md)
+MCP de Sentry configurat a OpenCode. Consulta la guia:
+  [docs/guides/sentry-triage-workflow.md](../docs/guides/sentry-triage-workflow.md)
 
 ## Workflow de Triage
 
@@ -28,8 +28,14 @@ Utilitza aquesta skill quan:
 
 Executa per llistar incidències actives:
 
-```bash
-sentry_list_issues(organizationSlug="somenergia", query="is:unresolved", sort="date", limit=10)
+```python
+sentry_list_issues(
+    organizationSlug="som-energia",
+    regionUrl="<SENTRY_URL>",
+    query="is:unresolved",
+    sort="date",
+    limit=10
+)
 ```
 
 **Decisió**:
@@ -51,7 +57,13 @@ Executa per veure detall de l'error:
 sentry_get_sentry_resource(url="<URL_SENTRY_ISSUE>")
 ```
 
+Convencions del repositori:
+* Mòduls de gisce/erp. Codi en anglès, text en castellà. El codi el trobaràs a la branca `rolling_erp01` però les PR han de sortir de la branca `developer`.
+* Mòduls de Som-Energia/openerp_som_addons. Codi en anglès, exts en català, sortir de la branca main.
+
 ### Pas 3: Crear la Issue
+
+Seguir les convencions del repo objectiu
 
 **Dades obligatòries**:
 - Link directe a Sentry
@@ -66,16 +78,21 @@ sentry_get_sentry_resource(url="<URL_SENTRY_ISSUE>")
 **Per anonimitzar**: Reemplaça valors reals per `<EXAMPLE>` o descripcions generals.
 
 ### Pas 4: Obrir la PR
+Seguir les convencions del repo objectiu
 
 1. Crear branca seguint convencions del repo objectiu
-2. Descriure seguint la plantilla del repo (a `gisce/erp`: castellà)
-3. Obrir contra branca de desenvolupament, NO contra `rolling_erp01`
+2. Descriure seguint la plantilla del repo
+3. Obrir contra branca que toqui.
 
 ## Comandes Ràpides
 
-```bash
-# Llistar incidències Sense resoldre
-sentry_list_issues(organizationSlug="somenergia", query="is:unresolved level:error")
+```python
+# Llistar incidències sense resoldre
+sentry_list_issues(
+    organizationSlug="som-energia",
+    regionUrl="<SENTRY_URL>",
+    query="is:unresolved level:error"
+)
 
 # Veure detalls d'un error específic
 sentry_get_sentry_resource(url="<SENTRY_URL>")
@@ -84,7 +101,12 @@ sentry_get_sentry_resource(url="<SENTRY_URL>")
 sentry_analyze_issue_with_seer(issueUrl="<SENTRY_URL>")
 
 # Actualitzar estat d'una issue
-sentry_update_issue(organizationSlug="somenergia", issueId="<ID>", status="resolved")
+sentry_update_issue(
+    organizationSlug="som-energia",
+    regionUrl="<SENTRY_URL>",
+    issueId="<ID>",
+    status="resolved"
+)
 ```
 
 ## Integració amb SDD
@@ -96,5 +118,5 @@ Aquesta skill s'utilitza a les fases:
 
 ## Referències
 
-- **Guia completa**: Veure [references/sentry-triage-workflow.md](references/sentry-triage-workflow.md)
+- **Guia completa**: Veure [docs/guides/sentry-triage-workflow.md](../docs/guides/sentry-triage-workflow.md)
 - **MCP Sentry**: Configuració a la guia (no versionar tokens reals)
