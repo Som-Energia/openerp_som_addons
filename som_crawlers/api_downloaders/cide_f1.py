@@ -56,7 +56,7 @@ class CideF1(Cide):
         if not file_ids:
             raise NoResultsException("No s'han trobat factures amb identificador")
 
-        params = {"id": file_ids}
+        params = {"file_id": file_ids}
 
         try:
             res = requests.get(download_url, headers=self._auth_headers, params=params)
