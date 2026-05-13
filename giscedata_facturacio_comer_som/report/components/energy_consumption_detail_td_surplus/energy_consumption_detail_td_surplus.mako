@@ -7,7 +7,7 @@
         <td class="detall_td">${_(u"Lectura inicial (%s) (%s)") % (meter.initial_date, _(meter.initial_type))}</td>
         % for p in meter.showing_periods:
             % if p in meter:
-                <td class="periods_td">${_(u"%s") %(int(meter[p]["initial"]))}</td>
+                <td class="periods_td">${_(u"%s") %(formatLang(meter[p]["initial"], digits=3))}</td>
             % else:
                 <td class="periods_td"></td>
             % endif
@@ -22,7 +22,7 @@
         <td class="detall_td">${_(u"Lectura final (%s) (%s)") % (meter.final_date, _(meter.final_type))}</td>
         % for p in meter.showing_periods:
             % if p in meter:
-                <td class="periods_td">${_(u"%s") %(formatLang(meter[p]["final"], digits=2))}</td>
+                <td class="periods_td">${_(u"%s") %(formatLang(meter[p]["final"], digits=3))}</td>
             % else:
                 <td class="periods_td"></td>
             % endif
@@ -42,7 +42,7 @@
             </td>
             % for p in meter.showing_periods:
                 % if p in meter:
-                    <td class="periods_td">${_(u"%s") %(formatLang(meter[p]["total"], digits=2))}</td>
+                    <td class="periods_td">${_(u"%s") %(formatLang(meter[p]["total"], digits=3))}</td>
                 % else:
                     <td class="periods_td"></td>
                 % endif
