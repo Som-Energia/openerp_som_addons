@@ -20,7 +20,7 @@ Utilitza aquesta skill quan:
 ## Prerequisits
 
 MCP de Sentry configurat a OpenCode. Consulta la guia:
-  [docs/guides/sentry-triage-workflow.md](../docs/guides/sentry-triage-workflow.md)
+  [docs/guides/sentry-triage-workflow.md](../../../docs/guides/sentry-triage-workflow.md)
 
 ## Workflow de Triage
 
