@@ -22,6 +22,7 @@ class CideF1(Cide):
 
         params = {
             "limit": -1,
+            "document_type": "F1",
             "generation_date_from": inici.strftime("%Y-%m-%d"),
             "generation_date_to": final.strftime("%Y-%m-%d"),
         }
