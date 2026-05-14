@@ -42,7 +42,9 @@ RUN apt-get update \
 
 RUN locale-gen en_US.UTF-8
 
-RUN git clone --depth 1 https://github.com/pyenv/pyenv.git "$PYENV_ROOT" \
+RUN git clone https://github.com/pyenv/pyenv.git "$PYENV_ROOT" \
+  && cd "$PYENV_ROOT" \
+  && git checkout -q 06fd1ce78890d8f79a0795e0fdfbe9a53916b82e \
   && pyenv install 2.7.18 \
   && pyenv global 2.7.18 \
   && python -m ensurepip \

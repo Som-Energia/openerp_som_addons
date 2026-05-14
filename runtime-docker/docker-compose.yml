@@ -1,6 +1,6 @@
 services:
   postgres:
-    image: timescale/timescaledb:latest-pg17
+    image: timescale/timescaledb:2.18.2-pg17
     environment:
       POSTGRES_USER: erp
       POSTGRES_PASSWORD: erp
