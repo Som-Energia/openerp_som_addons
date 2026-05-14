@@ -39,20 +39,48 @@ git clone --depth 1 https://github.com/gisce/mongodb_backend.git -b gisce "$ROOT
 git clone --depth 1 https://github.com/gisce/poweremail-modules.git "$ROOT_DIR_SRC/poweremail-modules"
 git clone --depth 1 https://github.com/gisce/crm_poweremail.git "$ROOT_DIR_SRC/crm_poweremail"
 git clone --depth 1 https://github.com/gisce/ooop.git "$ROOT_DIR_SRC/ooop"
+git clone --depth 1 "https://${GITHUB_TOKEN}@github.com/Som-Energia/cchloader.git" "$ROOT_DIR_SRC/cchloader"
+git clone --depth 1 "https://${GITHUB_TOKEN}@github.com/Som-Energia/gestionatr.git" "$ROOT_DIR_SRC/gestionatr"
 
-sudo apt-get --allow-releaseinfo-change update
-sudo apt-get install python2-dev python3-dev libxml2-dev libxmlsec1 libxmlsec1-dev libgdal-dev pdftk -y
+
+if [ "${BOOTSTRAP_SKIP_APT:-0}" != "1" ]; then
+  SUDO=""
+  if [ "$(id -u)" -ne 0 ]; then
+    SUDO="sudo"
+  fi
+
+  $SUDO apt-get --allow-releaseinfo-change update
+  $SUDO apt-get install python2-dev python3-dev libxml2-dev libxmlsec1 libxmlsec1-dev libgdal-dev pdftk -y
+fi
 
 cd "$ROOT_DIR_SRC/libFacturacioATR"
-git checkout "$(git describe --tags "$(git rev-list --tags --max-count=1)")"
+if latest_tag=$(git describe --tags "$(git rev-list --tags --max-count=1 2>/dev/null)" 2>/dev/null); then
+  git checkout "$latest_tag"
+fi
 pip install -e .
 
 cd "$ROOT_DIR_SRC/ooop"
-git checkout "$(git describe --tags "$(git rev-list --tags --max-count=1)")"
+if latest_tag=$(git describe --tags "$(git rev-list --tags --max-count=1 2>/dev/null)" 2>/dev/null); then
+  git checkout "$latest_tag"
+fi
 pip install -e .
 
 cd "$ROOT_DIR_SRC/OMIE"
-git checkout "$(git describe --tags "$(git rev-list --tags --max-count=1)")"
+if latest_tag=$(git describe --tags "$(git rev-list --tags --max-count=1 2>/dev/null)" 2>/dev/null); then
+  git checkout "$latest_tag"
+fi
+pip install --no-build-isolation -e .
+
+cd "$ROOT_DIR_SRC/cchloader"
+if latest_tag=$(git describe --tags "$(git rev-list --tags --max-count=1 2>/dev/null)" 2>/dev/null); then
+  git checkout "$latest_tag"
+fi
+pip install --no-build-isolation -e .
+
+cd "$ROOT_DIR_SRC/gestionatr"
+if latest_tag=$(git describe --tags "$(git rev-list --tags --max-count=1 2>/dev/null)" 2>/dev/null); then
+  git checkout "$latest_tag"
+fi
 pip install --no-build-isolation -e .
 
 cd "$ROOT_DIR_SRC/somenergia-generationkwh"
@@ -64,6 +92,18 @@ pip install -e . || true
 pip install lazy-object-proxy==1.6.0
 pip install -r "$ROOT_DIR_SRC/erp/requirements-dev.txt"
 pip install -r "$ROOT_DIR_SRC/erp/requirements.txt"
+
+# Fallback for legacy ERP imports on Python 2
+pip install "rq-scheduler<0.11"
+pip install "Pympler<0.8"
+pip install "Flask-RESTful<0.4"
+pip install "Flask-Login<0.5"
+pip install "Flask-Cors<3"
+pip install "Cerberus<1.3"
+pip install "cachelib<0.2"
+pip install "Mako<1.2"
+pip install "pypdftk<0.5"
+pip install "paramiko<2.8"
 
 if [ "$PYTHON_VERSION" != "2.7" ]; then
   pip install somutils

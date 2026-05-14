@@ -1,0 +1,48 @@
+services:
+  postgres:
+    image: timescale/timescaledb:2.18.2-pg17
+    environment:
+      POSTGRES_USER: erp
+      POSTGRES_PASSWORD: erp
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U erp"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  redis:
+    image: redis:5.0
+
+  mongo:
+    image: mongo:3.0
+
+  erp-runtime:
+    build:
+      context: ..
+      dockerfile: runtime-docker/Dockerfile
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_started
+      mongo:
+        condition: service_started
+    environment:
+      GITHUB_TOKEN: ${GITHUB_TOKEN:?GITHUB_TOKEN is required}
+      ERP_BRANCH: ${ERP_BRANCH:-rolling_erp01}
+      ERP_DATABASE: ${ERP_DATABASE:-erp_runtime}
+      ERP_XMLRPC_PORT: ${ERP_XMLRPC_PORT:-8069}
+      OPENERP_DB_USER: erp
+      OPENERP_DB_PASSWORD: erp
+    ports:
+      - "${ERP_XMLRPC_PORT:-8069}:${ERP_XMLRPC_PORT:-8069}"
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "python -c \"import socket; s=socket.socket(); s.settimeout(2); s.connect(('127.0.0.1', int('${ERP_XMLRPC_PORT:-8069}'))); s.close()\"",
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 20
+      start_period: 60s

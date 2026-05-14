@@ -28,4 +28,4 @@ runs:
         ERP_XMLRPC_PORT: ${{ inputs.xmlrpc-port }}
         ERP_BIND_ADDRESS: ${{ inputs.bind-address }}
         ERP_HEALTH_TIMEOUT: ${{ inputs.health-timeout }}
-      run: ${{ github.action_path }}/../../../scripts/start-erp-runtime.sh
+      run: ${{ github.action_path }}/../../../scripts/build-openerp-server.sh
