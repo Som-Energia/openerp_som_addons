@@ -3,6 +3,7 @@
 set -euo pipefail
 
 ROOT_DIR_SRC="${ROOT_DIR_SRC:-/opt/somenergia/src}"
+export PYENV_VERSION="${PYENV_VERSION:-2.7.18}"
 ERP_DATABASE="${ERP_DATABASE:-erp_runtime}"
 ERP_XMLRPC_PORT="${ERP_XMLRPC_PORT:-8069}"
 ERP_BIND_ADDRESS="${ERP_BIND_ADDRESS:-0.0.0.0}"
@@ -41,6 +42,7 @@ if [ ! -d "${ROOT_DIR_SRC}/erp" ]; then
   echo "Bootstrapping ERP workspace in ${ROOT_DIR_SRC}"
   export PYTHON_VERSION="2.7"
   export ERP_BRANCH="${ERP_BRANCH:-rolling_erp01}"
+  export BOOTSTRAP_SKIP_APT=1
   /opt/somenergia/src/openerp_som_addons/scripts/bootstrap-erp-env.sh
 else
   echo "ERP workspace already bootstrapped, skipping clone/setup"
@@ -57,7 +59,7 @@ export ERP_XMLRPC_PORT
 export ERP_BIND_ADDRESS
 export ERP_HEALTH_TIMEOUT
 
-/opt/somenergia/src/openerp_som_addons/scripts/start-erp-runtime.sh
+/opt/somenergia/src/openerp_som_addons/scripts/build-openerp-server.sh
 
 ERP_PID_FILE="/tmp/erp-${ERP_DATABASE}.pid"
 ERP_LOG_FILE="/tmp/erp-${ERP_DATABASE}.log"
