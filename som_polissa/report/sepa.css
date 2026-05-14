@@ -25,11 +25,10 @@ p {
     width: 620px;
 }
 .extern {
-    border: 2px solid black;
     padding-bottom: 5px;
 }
 .intern {
-    border: 2px solid #17365d;
+    border: 1px solid #17365d;
     padding: 0px 4px;
 
 }
