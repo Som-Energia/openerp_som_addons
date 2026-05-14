@@ -1,0 +1,31 @@
+name: Start ERP runtime
+description: Build ERP model, start ERP server, and wait until runtime is ready
+
+inputs:
+  database:
+    description: Database name used to build model and start ERP
+    required: true
+  xmlrpc-port:
+    description: XML-RPC port exposed for external consumers
+    required: false
+    default: "8069"
+  bind-address:
+    description: Interface where ERP listens
+    required: false
+    default: "0.0.0.0"
+  health-timeout:
+    description: Max seconds to wait for ERP ready signal
+    required: false
+    default: "180"
+
+runs:
+  using: composite
+  steps:
+    - name: Start ERP runtime and wait for readiness
+      shell: bash
+      env:
+        ERP_DATABASE: ${{ inputs.database }}
+        ERP_XMLRPC_PORT: ${{ inputs.xmlrpc-port }}
+        ERP_BIND_ADDRESS: ${{ inputs.bind-address }}
+        ERP_HEALTH_TIMEOUT: ${{ inputs.health-timeout }}
+      run: ${{ github.action_path }}/../../../scripts/start-erp-runtime.sh
