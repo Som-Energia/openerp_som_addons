@@ -30,14 +30,17 @@ export OPENERP_ENVIRONMENT="${OPENERP_ENVIRONMENT:-ci}"
 export OPENERP_RUN_SCRIPTS_INTERACTIVE_RESULT="${OPENERP_RUN_SCRIPTS_INTERACTIVE_RESULT:-skip}"
 export DESTRAL_TESTING_LANGS="${DESTRAL_TESTING_LANGS:-['es_ES']}"
 
-DESTRAL_CLI="${ROOT_DIR_SRC}/destral/destral/cli.py"
 ERP_SERVER="${ROOT_DIR_SRC}/erp/server/bin/openerp-server.py"
 READY_FILE="${RUNNER_TEMP:-/tmp}/erp-ready-${ERP_DATABASE}.flag"
 PID_FILE="${RUNNER_TEMP:-/tmp}/erp-${ERP_DATABASE}.pid"
 LOG_FILE="${RUNNER_TEMP:-/tmp}/erp-${ERP_DATABASE}.log"
 
-if [ ! -f "$DESTRAL_CLI" ]; then
-  echo "Destral CLI not found: $DESTRAL_CLI" >&2
+if command -v destral >/dev/null 2>&1; then
+  DESTRAL_RUN=(destral)
+elif [ -f "${ROOT_DIR_SRC}/destral/destral/cli.py" ]; then
+  DESTRAL_RUN=(python "${ROOT_DIR_SRC}/destral/destral/cli.py")
+else
+  echo "Destral command not found and CLI path is missing" >&2
   exit 1
 fi
 
@@ -47,7 +50,7 @@ if [ ! -f "$ERP_SERVER" ]; then
 fi
 
 echo "Building ERP model in database '$ERP_DATABASE'"
-python "$DESTRAL_CLI" -t OOBaseTests.test_translate_modules -d "$ERP_DATABASE"
+"${DESTRAL_RUN[@]}" -t OOBaseTests.test_translate_modules -d "$ERP_DATABASE"
 
 echo "Starting ERP runtime on ${ERP_BIND_ADDRESS}:${ERP_XMLRPC_PORT}"
 nohup python "$ERP_SERVER" \
@@ -93,9 +96,11 @@ print('ERP runtime did not become ready in {} seconds'.format(timeout))
 sys.exit(1)
 PY
 
-echo "ERP_READY_FILE=$READY_FILE" >> "$GITHUB_ENV"
-echo "ERP_PID_FILE=$PID_FILE" >> "$GITHUB_ENV"
-echo "ERP_LOG_FILE=$LOG_FILE" >> "$GITHUB_ENV"
-echo "ERP_XMLRPC_PORT=$ERP_XMLRPC_PORT" >> "$GITHUB_ENV"
+if [ -n "${GITHUB_ENV:-}" ]; then
+  echo "ERP_READY_FILE=$READY_FILE" >> "$GITHUB_ENV"
+  echo "ERP_PID_FILE=$PID_FILE" >> "$GITHUB_ENV"
+  echo "ERP_LOG_FILE=$LOG_FILE" >> "$GITHUB_ENV"
+  echo "ERP_XMLRPC_PORT=$ERP_XMLRPC_PORT" >> "$GITHUB_ENV"
+fi
 
 echo "ERP runtime exported at ${ERP_BIND_ADDRESS}:${ERP_XMLRPC_PORT}"

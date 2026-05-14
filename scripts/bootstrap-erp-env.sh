@@ -40,8 +40,13 @@ git clone --depth 1 https://github.com/gisce/poweremail-modules.git "$ROOT_DIR_S
 git clone --depth 1 https://github.com/gisce/crm_poweremail.git "$ROOT_DIR_SRC/crm_poweremail"
 git clone --depth 1 https://github.com/gisce/ooop.git "$ROOT_DIR_SRC/ooop"
 
-sudo apt-get --allow-releaseinfo-change update
-sudo apt-get install python2-dev python3-dev libxml2-dev libxmlsec1 libxmlsec1-dev libgdal-dev pdftk -y
+SUDO=""
+if [ "$(id -u)" -ne 0 ]; then
+  SUDO="sudo"
+fi
+
+$SUDO apt-get --allow-releaseinfo-change update
+$SUDO apt-get install python2-dev python3-dev libxml2-dev libxmlsec1 libxmlsec1-dev libgdal-dev pdftk -y
 
 cd "$ROOT_DIR_SRC/libFacturacioATR"
 git checkout "$(git describe --tags "$(git rev-list --tags --max-count=1)")"
