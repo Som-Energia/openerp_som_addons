@@ -9,6 +9,7 @@ from osv import osv, fields
 from osv.expression import OOQuery
 from collections import defaultdict
 
+
 class GiscedataPolissaTarifaPeriodes(osv.osv):
     """Periodes de les Tarifes."""
     _name = 'giscedata.polissa.tarifa.periodes'
@@ -19,6 +20,7 @@ class GiscedataPolissaTarifaPeriodes(osv.osv):
             'product.product', 'Generation kWh', ondelete='restrict'
         ),
     }
+
 
 GiscedataPolissaTarifaPeriodes()
 
@@ -38,14 +40,14 @@ class GiscedataPolissa(osv.osv):
         return [p['contract_id'][0] for p in pol_ids]
 
     def _ff_get_assignacio_gkwh(self, cursor, uid, ids, field_name, arg,
-                              context=None):
+                                context=None):
         if not context:
             context = {}
         assig_obj = self.pool.get('generationkwh.assignment')
         res = dict.fromkeys(ids, False)
 
         for _id in ids:
-            search_params = [('contract_id','=', _id)]
+            search_params = [('contract_id', '=', _id)]
             assigment_id = assig_obj.search(cursor, uid, search_params, limit=1)
             res[_id] = len(assigment_id) > 0
 
@@ -81,7 +83,7 @@ class GiscedataPolissa(osv.osv):
         generation_line_ids = [line[0] for line in res]
 
         response = defaultdict(lambda: defaultdict(int))
-        for gkwh_line in GenerationkWhInvoiceLineOwner.browse(cursor, uid, generation_line_ids, context=context):
+        for gkwh_line in GenerationkWhInvoiceLineOwner.browse(cursor, uid, generation_line_ids, context=context):  # noqa: E501
             invoice = gkwh_line.factura_id
             line = gkwh_line.factura_line_id
             date_invoice = invoice.invoice_id.date_invoice
@@ -127,7 +129,9 @@ class GiscedataPolissa(osv.osv):
     _columns = {
         'te_assignacio_gkwh': fields.function(
             _ff_get_assignacio_gkwh, method=True, type='boolean',
-            string='Té assignacions GWKH', readonly=True, help="El contracte té assignacions de GKWH, sense tenir en compte la prioritat ni data fi.",
+            string='Té assignacions Generation kWh',
+            readonly=True,
+            help="El contracte té assignacions de GKWH, sense tenir en compte la prioritat ni data fi.",  # noqa: E501
             store={'generationkwh.assignment': (
                 get_polisses_from_assignments,
                 ['contract_id'],
