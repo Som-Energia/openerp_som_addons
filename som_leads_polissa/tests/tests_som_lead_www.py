@@ -220,6 +220,25 @@ class TestsSomLeadWww(testing.OOTestCase):
         self.mock_subscribe_member.assert_called()
         self.mock_unsubscribe_customer.assert_called()
 
+    def test_create_lead_propagates_signature_error(self):
+        www_lead_o = self.get_model("som.lead.www")
+        lead_o = self.get_model("giscedata.crm.lead")
+
+        values = self._basic_values
+        lead_domain = [
+            ("cups", "=", values["contract_info"]["cups"]),
+            ("titular_vat", "=", "ES%s" % values["new_member_info"]["vat"]),
+        ]
+
+        leads_before = lead_o.search(self.cursor, self.uid, lead_domain)
+        self.mock_sign_lead.side_effect = osv.except_osv('Error', 'Signature timeout')
+
+        with self.assertRaises(osv.except_osv):
+            www_lead_o.create_lead(self.cursor, self.uid, values)
+
+        leads_after = lead_o.search(self.cursor, self.uid, lead_domain)
+        self.assertEqual(len(leads_after), len(leads_before) + 1)
+
     def test_create_simple_domestic_lead_indexada(self):
         www_lead_o = self.get_model("som.lead.www")
         lead_o = self.get_model("giscedata.crm.lead")

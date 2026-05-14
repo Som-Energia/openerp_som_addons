@@ -7,6 +7,7 @@ from osv import osv
 from service.security import Sudo
 import yaml
 import copy
+from uuid import uuid4
 
 from som_leads_polissa.models.giscedata_crm_lead import WWW_DATA_FORM_HEADER
 from giscedata_cups.giscedata_cups import get_dso
@@ -21,7 +22,7 @@ class SomLeadWww(osv.osv_memory):
     _128_SIMPLIFIED_SURPLUSES = 'a0'
     _131_CONSUMPTION = '01'
 
-    def create_lead(self, cr, uid, www_vals, context=None):
+    def create_lead(self, cr, uid, www_vals, context=None):  # noqa: C901
         if context is None:
             context = {}
         imd_o = self.pool.get("ir.model.data")
@@ -154,6 +155,7 @@ class SomLeadWww(osv.osv_memory):
             "birthdate": member.get("birthdate"),
             "referral_source": member.get("referral_source"),
             "comercial_info_accepted": member.get("comercial_info_accepted", False),
+            "mandate_number": uuid4().hex,
         }
 
         values["user_id"] = ir_model_o.get_object_reference(
@@ -232,9 +234,19 @@ class SomLeadWww(osv.osv_memory):
         signature_url = None
         signature_provider = None
         if not error_info:
-            sign_result = self.sign_lead(cr, uid, lead_id, context=context)
-            signature_url = sign_result.get('url')
-            signature_provider = 'signaturit'
+            # Make the just-created lead visible to the secondary cursor opened
+            # during signature document generation.
+            cr.commit()
+            try:
+                sign_result = self.sign_lead(cr, uid, lead_id, context=context)
+                signature_url = sign_result.get('url')
+                signature_provider = 'signaturit'
+            except Exception:
+                logger = logging.getLogger("openerp.{0}.create_lead".format(__name__))
+                logger.exception(
+                    "Error signing lead after commit (lead_id=%s)", lead_id
+                )
+                raise
 
         return {
             "lead_id": lead_id,

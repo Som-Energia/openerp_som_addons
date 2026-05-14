@@ -40,8 +40,7 @@ class TestSignLead(testing.OOTestCase):
 
         with mock.patch.object(www_lead_o.pool, 'get', return_value=mock_lead_o):
             with mock.patch('som_leads_polissa.www.som_lead_www.Sudo'):
-                with mock.patch('ctx.current_session'):
-                    result = www_lead_o.sign_lead(self.cursor, self.uid, 1)
+                result = www_lead_o.sign_lead(self.cursor, self.uid, 1)
 
         self.assertEqual(result, {'url': 'http://sign.url'})
         ctx_passed = mock_lead_o.check_start_signature_process.call_args[1]['context']
