@@ -118,5 +118,5 @@ Aquesta skill s'utilitza a les fases:
 
 ## Referències
 
-- **Guia completa**: Veure [docs/guides/sentry-triage-workflow.md](../docs/guides/sentry-triage-workflow.md)
+- **Guia completa**: Veure [docs/guides/sentry-triage-workflow.md](../../../docs/guides/sentry-triage-workflow.md)
 - **MCP Sentry**: Configuració a la guia (no versionar tokens reals)
