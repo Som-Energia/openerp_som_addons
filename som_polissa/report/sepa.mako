@@ -13,7 +13,7 @@ data = report.sepa_particulars_data()
 <body>
 <div class="extern margin50">
     <div>
-        <img id="logo" width='105px' src="https://www.somenergia.coop/wp-content/uploads/2014/11/logo-somenergia.png">
+        <img id="logo" width='105px' src="data:image/jpeg;base64,${company.logo}">
         <div class="centered title">
             % if data['is_business']:
             <h1>Orden de domiciliación de adeudo directo SEPA B2B</h1>
