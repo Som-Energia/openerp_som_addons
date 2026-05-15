@@ -17,5 +17,150 @@ class SomSimulacioRequest(osv.osv):
         'result_ids': fields.one2many('som.simulacio.result', 'request_id', 'Results'),
     }
 
+    _HOURS_REF = 8760.0
+
+    def _get_request_powers(self, request_data):
+        return [
+            ('P1', request_data.get('power_p1') or 0.0),
+            ('P2', request_data.get('power_p2') or 0.0),
+            ('P3', request_data.get('power_p3') or 0.0),
+        ]
+
+    def compute_indexed_estimate(self, cr, uid, ids, context=None):
+        if context is None:
+            context = {}
+
+        result_obj = self.pool.get('som.simulacio.result')
+        line_obj = self.pool.get('som.simulacio.result.line')
+        coeff_obj = self.pool.get('som.simulacio.annual.coeff')
+        price_obj = self.pool.get('som.simulacio.energy.price.monthly')
+        adapter = self.pool.get('som.simulacio.erp.adapter')
+
+        created_result_ids = []
+        for request in self.read(cr, uid, ids, context=context):
+            tariff_code = request.get('tariff_code')
+            when_date = '%04d-%02d-01' % (request['year'], request['month'])
+
+            power_price = adapter.get_power_price(
+                cr, uid, when_date, tariff_code=tariff_code, context=context
+            )
+            social_bonus = adapter.get_social_bonus(
+                cr, uid, when_date, tariff_code=tariff_code, context=context
+            )
+            meter_charge = adapter.get_meter_charge(
+                cr, uid, when_date, tariff_code=tariff_code, context=context
+            )
+
+            coeff_ids = coeff_obj.search(cr, uid, [
+                ('year', '=', request['year']),
+                ('tariff_code', '=', tariff_code),
+            ], context=context)
+            coeff_rows = coeff_obj.read(
+                cr, uid, coeff_ids, ['id', 'period', 'ratio'], context=context)
+
+            prices_by_period = {}
+            selected_energy_price_id = False
+            for coeff_row in coeff_rows:
+                price_ids = price_obj.search(cr, uid, [
+                    ('year', '=', request['year']),
+                    ('month', '=', request['month']),
+                    ('period', '=', coeff_row['period']),
+                    ('tariff_code', '=', tariff_code),
+                ], context=context)
+                if not price_ids:
+                    raise osv.except_osv(
+                        'Missing data',
+                        'Monthly energy price missing for %s' % coeff_row['period']
+                    )
+                price_row = price_obj.read(cr, uid, price_ids[0], ['id', 'price'], context=context)
+                prices_by_period[coeff_row['period']] = price_row['price']
+                if not selected_energy_price_id:
+                    selected_energy_price_id = price_row['id']
+
+            powers = self._get_request_powers(request)
+            max_power = max([power for _period, power in powers])
+            annual_kwh = max_power * self._HOURS_REF
+
+            variable_total = 0.0
+            for coeff_row in coeff_rows:
+                period = coeff_row['period']
+                period_kwh = annual_kwh * (coeff_row['ratio'] or 0.0)
+                period_energy = (period_kwh / 12.0) * prices_by_period[period]
+                variable_total += period_energy
+
+            fixed_total = (
+                (power_price.get('value') or 0.0)
+                + (social_bonus.get('value') or 0.0)
+                + (meter_charge.get('value') or 0.0)
+            )
+            untaxed_total = fixed_total + variable_total
+
+            fallback_flags = {
+                'power_price': power_price.get('fallback_used'),
+                'social_bonus': social_bonus.get('fallback_used'),
+                'meter_charge': meter_charge.get('fallback_used'),
+            }
+            traceability_payload = {
+                'tariff_code': tariff_code,
+                'powers': powers,
+                'concept_sources': {
+                    'power_price': power_price.get('source'),
+                    'social_bonus': social_bonus.get('source'),
+                    'meter_charge': meter_charge.get('source'),
+                },
+                'coeff_ids': [row['id'] for row in coeff_rows],
+            }
+
+            result_id = result_obj.create(cr, uid, {
+                'name': request.get('name'),
+                'request_id': request['id'],
+                'untaxed_total': untaxed_total,
+                'selected_energy_price_id': selected_energy_price_id,
+                'selected_coeff_set_id': coeff_rows and coeff_rows[0]['id'] or False,
+                'fallback_flags': repr(fallback_flags),
+                'traceability_payload': repr(traceability_payload),
+            }, context=context)
+
+            line_obj.create(cr, uid, {
+                'result_id': result_id,
+                'concept': 'power_price',
+                'amount': power_price.get('value') or 0.0,
+                'source_record': '%s:%s' % (
+                    power_price.get('source'), power_price.get('record_id')
+                ),
+            }, context=context)
+            line_obj.create(cr, uid, {
+                'result_id': result_id,
+                'concept': 'social_bonus',
+                'amount': social_bonus.get('value') or 0.0,
+                'source_record': '%s:%s' % (
+                    social_bonus.get('source'), social_bonus.get('record_id')
+                ),
+            }, context=context)
+            line_obj.create(cr, uid, {
+                'result_id': result_id,
+                'concept': 'meter_charge',
+                'amount': meter_charge.get('value') or 0.0,
+                'source_record': '%s:%s' % (
+                    meter_charge.get('source'), meter_charge.get('record_id')
+                ),
+            }, context=context)
+
+            for coeff_row in coeff_rows:
+                period = coeff_row['period']
+                period_kwh = annual_kwh * (coeff_row['ratio'] or 0.0)
+                period_energy = (period_kwh / 12.0) * prices_by_period[period]
+                line_obj.create(cr, uid, {
+                    'result_id': result_id,
+                    'concept': 'energy',
+                    'period': period,
+                    'amount': period_energy,
+                    'source_record': 'monthly_price:%s' % period,
+                }, context=context)
+
+            created_result_ids.append(result_id)
+
+        return created_result_ids
+
 
 SomSimulacioRequest()
