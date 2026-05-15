@@ -94,6 +94,8 @@ som_poweremail_common_templates:
 -  som_poweremail_common_templates/**
 som_sortida:
 -  som_sortida/**
+som_simulacions:
+-  som_simulacions/**
 somre_giscere_facturacio:
 -  somre_giscere_facturacio/**
 somre_giscere_oferta:
