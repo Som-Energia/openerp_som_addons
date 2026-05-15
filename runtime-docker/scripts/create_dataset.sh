@@ -112,12 +112,13 @@ require_tools() {
     have_cmd "${tool}" || fail "Falta l'eina requerida: ${tool}"
   done
   if [ -z "${COMPOSE_FILE}" ]; then
-    if [ -f "${ROOT_DIR}/docker-compose.yml" ]; then
-      COMPOSE_FILE="${ROOT_DIR}/docker-compose.yml"
-    elif [ -f "${REPO_ROOT}/docker-compose.yaml" ]; then
+    # Producer flow usually runs against root compose (host-accessible services).
+    if [ -f "${REPO_ROOT}/docker-compose.yaml" ]; then
       COMPOSE_FILE="${REPO_ROOT}/docker-compose.yaml"
     elif [ -f "${REPO_ROOT}/docker-compose.yml" ]; then
       COMPOSE_FILE="${REPO_ROOT}/docker-compose.yml"
+    elif [ -f "${ROOT_DIR}/docker-compose.yml" ]; then
+      COMPOSE_FILE="${ROOT_DIR}/docker-compose.yml"
     fi
   fi
 

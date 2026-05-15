@@ -40,15 +40,29 @@ compose_has_service() {
   run_compose -f "${COMPOSE_FILE}" config --services | grep -Fxq "${service}"
 }
 
+start_required_services() {
+  local services
+  services=("${DB_SERVICE}")
+
+  if compose_has_service redis; then
+    services+=(redis)
+  fi
+
+  if compose_has_service mongo; then
+    services+=(mongo)
+  fi
+
+  run_compose -f "${COMPOSE_FILE}" up -d "${services[@]}" >/dev/null
+}
+
 resolve_compose_file() {
   if [ -n "${COMPOSE_FILE}" ]; then
     [ -f "${COMPOSE_FILE}" ] || fail "No existeix COMPOSE_FILE: ${COMPOSE_FILE}"
     return
   fi
-  if [ -f "${ROOT_DIR}/docker-compose.yml" ]; then
-    COMPOSE_FILE="${ROOT_DIR}/docker-compose.yml"
-    return
-  fi
+
+  # Producer flow runs destral from host, so prefer compose files that usually
+  # expose DB/Redis/Mongo ports on localhost.
   if [ -f "${REPO_ROOT}/docker-compose.yaml" ]; then
     COMPOSE_FILE="${REPO_ROOT}/docker-compose.yaml"
     return
@@ -57,7 +71,71 @@ resolve_compose_file() {
     COMPOSE_FILE="${REPO_ROOT}/docker-compose.yml"
     return
   fi
+  if [ -f "${ROOT_DIR}/docker-compose.yml" ]; then
+    COMPOSE_FILE="${ROOT_DIR}/docker-compose.yml"
+    return
+  fi
   fail "No s'ha pogut resoldre COMPOSE_FILE"
+}
+
+service_port_published() {
+  local service="$1"
+  local port="$2"
+  run_compose -f "${COMPOSE_FILE}" port "${service}" "${port}" >/dev/null 2>&1
+}
+
+service_port_published_in_compose() {
+  local compose_file="$1"
+  local service="$2"
+  local port="$3"
+  run_compose -f "${compose_file}" port "${service}" "${port}" >/dev/null 2>&1
+}
+
+compose_has_service_in_file() {
+  local compose_file="$1"
+  local service="$2"
+  run_compose -f "${compose_file}" config --services | grep -Fxq "${service}"
+}
+
+fallback_to_host_compose_if_needed() {
+  local root_compose
+
+  if service_port_published "${DB_SERVICE}" 5432; then
+    return
+  fi
+
+  root_compose=""
+  if [ -f "${REPO_ROOT}/docker-compose.yaml" ]; then
+    root_compose="${REPO_ROOT}/docker-compose.yaml"
+  elif [ -f "${REPO_ROOT}/docker-compose.yml" ]; then
+    root_compose="${REPO_ROOT}/docker-compose.yml"
+  fi
+
+  if [ -z "${root_compose}" ]; then
+    return
+  fi
+
+  if compose_has_service_in_file "${root_compose}" db && service_port_published_in_compose "${root_compose}" db 5432; then
+    log "El compose actual no publica 5432; faig fallback automàtic a ${root_compose} (servei db)"
+    COMPOSE_FILE="${root_compose}"
+    DB_SERVICE="db"
+    return
+  fi
+}
+
+assert_host_accessible_services() {
+  service_port_published "${DB_SERVICE}" 5432 || \
+    fail "El servei ${DB_SERVICE} no publica port 5432 a host. Usa COMPOSE_FILE amb ports exposats (p.ex. docker-compose.yaml arrel)."
+
+  if compose_has_service redis; then
+    service_port_published redis 6379 || \
+      fail "El servei redis no publica port 6379 a host. Destral necessita redis accessible a localhost:6379."
+  fi
+
+  if compose_has_service mongo; then
+    service_port_published mongo 27017 || \
+      fail "El servei mongo no publica port 27017 a host."
+  fi
 }
 
 resolve_db_service() {
@@ -97,9 +175,11 @@ main() {
 
   resolve_compose_file
   resolve_db_service
+  fallback_to_host_compose_if_needed
 
-  log "Assegurant PostgreSQL disponible"
-  run_compose -f "${COMPOSE_FILE}" up -d "${DB_SERVICE}" >/dev/null
+  log "Assegurant dependències disponibles (db/redis/mongo)"
+  start_required_services
+  assert_host_accessible_services
 
   if [ ! -f "${builder_script}" ]; then
     app_tables="$(count_app_tables)"
