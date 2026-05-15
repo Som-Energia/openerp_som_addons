@@ -1,5 +1,3 @@
-version: "3.3"
-
 services:
   db:
     image: timescale/timescaledb-postgis:latest-pg13
