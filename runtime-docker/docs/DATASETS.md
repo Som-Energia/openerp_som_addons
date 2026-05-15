@@ -77,6 +77,7 @@ Això evita duplicar configuració i, alhora, deixa clar qui executa cada part d
 ## Arquitectura
 
 - Origen de dades: servei `postgres` de `runtime-docker/docker-compose.yml`.
+- Versions pinades de base de dades: PostgreSQL `13.14` + TimescaleDB `2.14.2` (imatge `timescale/timescaledb:2.14.2-pg13`).
 - Format de dump: `pg_dump -Fc`.
 - Compressió: `zstd`.
 - Distribució: OCI artifacts via `oras push` i `oras pull`.

@@ -1,12 +1,23 @@
 SHELL := /usr/bin/env bash
 
-.PHONY: dataset-producer-create dataset-producer-publish dataset-consumer-pull dataset-consumer-restore dataset-smoke-vpn runtime-build-prewarmed dataset-create dataset-publish dataset-pull dataset-restore
+# Load producer defaults (no secrets in git).
+ifneq (,$(wildcard .env.producer))
+include .env.producer
+export
+endif
+
+.PHONY: dataset-producer-create dataset-producer-dump dataset-producer-publish dataset-producer-all dataset-consumer-pull dataset-consumer-restore dataset-smoke-vpn runtime-build-prewarmed dataset-create dataset-dump dataset-publish dataset-pull dataset-restore
 
 dataset-producer-create:
+	./scripts/producer_create_db.sh
+
+dataset-producer-dump:
 	./scripts/create_dataset.sh
 
 dataset-producer-publish:
 	./scripts/publish_dataset.sh
+
+dataset-producer-all: dataset-producer-create dataset-producer-dump dataset-producer-publish
 
 dataset-consumer-pull:
 	./scripts/pull_dataset.sh
@@ -21,7 +32,9 @@ runtime-build-prewarmed:
 	./scripts/build_prewarmed_image.sh
 
 # Backward-compatible aliases.
-dataset-create: dataset-producer-create
+dataset-create: dataset-producer-dump
+
+dataset-dump: dataset-producer-dump
 
 dataset-publish: dataset-producer-publish
 
