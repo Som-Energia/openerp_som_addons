@@ -241,10 +241,23 @@ class SomLeadWww(osv.osv_memory):
                 sign_result = self.sign_lead(cr, uid, lead_id, context=context)
                 signature_url = sign_result.get('url')
                 signature_provider = 'signaturit'
-            except Exception:
+            except Exception as exc:
                 logger = logging.getLogger("openerp.{0}.create_lead".format(__name__))
                 logger.exception(
                     "Error signing lead after commit (lead_id=%s)", lead_id
+                )
+                sign_error_stage_id = ir_model_o.get_object_reference(
+                    cr, uid, "som_leads_polissa", "webform_stage_signature_error"
+                )[1]
+                lead_o.write(
+                    cr, uid, lead_id,
+                    {'stage_id': sign_error_stage_id, 'state': 'pending'},
+                    context=context
+                )
+                lead_o.historize_msg(
+                    cr, uid, [lead_id],
+                    u"SIGNATURE_ERROR: {}".format(str(exc)),
+                    context=context
                 )
                 raise
 

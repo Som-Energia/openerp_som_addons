@@ -223,12 +223,16 @@ class TestsSomLeadWww(testing.OOTestCase):
     def test_create_lead_propagates_signature_error(self):
         www_lead_o = self.get_model("som.lead.www")
         lead_o = self.get_model("giscedata.crm.lead")
+        ir_model_o = self.get_model("ir.model.data")
 
         values = self._basic_values
         lead_domain = [
             ("cups", "=", values["contract_info"]["cups"]),
             ("titular_vat", "=", "ES%s" % values["new_member_info"]["vat"]),
         ]
+        signature_error_stage_id = ir_model_o.get_object_reference(
+            self.cursor, self.uid, "som_leads_polissa", "webform_stage_signature_error"
+        )[1]
 
         leads_before = lead_o.search(self.cursor, self.uid, lead_domain)
         self.mock_sign_lead.side_effect = osv.except_osv('Error', 'Signature timeout')
@@ -238,6 +242,12 @@ class TestsSomLeadWww(testing.OOTestCase):
 
         leads_after = lead_o.search(self.cursor, self.uid, lead_domain)
         self.assertEqual(len(leads_after), len(leads_before) + 1)
+
+        new_lead_ids = list(set(leads_after) - set(leads_before))
+        self.assertEqual(len(new_lead_ids), 1)
+        lead = lead_o.browse(self.cursor, self.uid, new_lead_ids[0])
+        self.assertEqual(lead.state, 'pending')
+        self.assertEqual(lead.stage_id.id, signature_error_stage_id)
 
     def test_create_simple_domestic_lead_indexada(self):
         www_lead_o = self.get_model("som.lead.www")
