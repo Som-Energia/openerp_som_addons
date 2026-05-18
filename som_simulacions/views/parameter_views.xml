@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+        <record id="view_simulacio_energy_price_tree" model="ir.ui.view">
+            <field name="name">som.simulacio.energy.price.monthly.tree</field>
+            <field name="model">som.simulacio.energy.price.monthly</field>
+            <field name="type">tree</field>
+            <field name="arch" type="xml">
+                <tree string="Monthly energy prices">
+                    <field name="name"/>
+                    <field name="year"/>
+                    <field name="month"/>
+                    <field name="period"/>
+                    <field name="tariff_code"/>
+                    <field name="price"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="view_simulacio_energy_price_form" model="ir.ui.view">
+            <field name="name">som.simulacio.energy.price.monthly.form</field>
+            <field name="model">som.simulacio.energy.price.monthly</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <form string="Monthly energy price">
+                    <group col="4">
+                        <field name="name"/>
+                        <field name="year"/>
+                        <field name="month"/>
+                        <field name="period"/>
+                        <field name="tariff_code"/>
+                        <field name="price"/>
+                    </group>
+                </form>
+            </field>
+        </record>
+
+        <record id="view_simulacio_annual_coeff_tree" model="ir.ui.view">
+            <field name="name">som.simulacio.annual.coeff.tree</field>
+            <field name="model">som.simulacio.annual.coeff</field>
+            <field name="type">tree</field>
+            <field name="arch" type="xml">
+                <tree string="Annual coefficients">
+                    <field name="name"/>
+                    <field name="year"/>
+                    <field name="period"/>
+                    <field name="tariff_code"/>
+                    <field name="ratio"/>
+                    <field name="date_from"/>
+                    <field name="date_to"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="view_simulacio_annual_coeff_form" model="ir.ui.view">
+            <field name="name">som.simulacio.annual.coeff.form</field>
+            <field name="model">som.simulacio.annual.coeff</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <form string="Annual coefficient">
+                    <group col="4">
+                        <field name="name"/>
+                        <field name="year"/>
+                        <field name="period"/>
+                        <field name="tariff_code"/>
+                        <field name="ratio"/>
+                        <field name="date_from"/>
+                        <field name="date_to"/>
+                    </group>
+                </form>
+            </field>
+        </record>
+    </data>
+</openerp>

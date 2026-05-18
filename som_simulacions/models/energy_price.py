@@ -28,5 +28,19 @@ class SomSimulacioEnergyPriceMonthly(osv.osv):
         )
     ]
 
+    def _check_positive_price(self, cr, uid, ids, context=None):
+        for row in self.read(cr, uid, ids, ['price'], context=context):
+            if (row.get('price') or 0.0) <= 0.0:
+                return False
+        return True
+
+    _constraints = [
+        (
+            _check_positive_price,
+            'Monthly energy price must be greater than zero.',
+            ['price']
+        )
+    ]
+
 
 SomSimulacioEnergyPriceMonthly()

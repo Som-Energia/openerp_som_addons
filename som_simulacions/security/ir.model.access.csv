@@ -1,0 +1,11 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_simulacio_request_user,access.simulacio.request.user,model_som_simulacio_request,group_simulacio_user,1,1,1,0
+access_simulacio_request_manager,access.simulacio.request.manager,model_som_simulacio_request,group_simulacio_manager,1,1,1,1
+access_simulacio_result_user,access.simulacio.result.user,model_som_simulacio_result,group_simulacio_user,1,0,0,0
+access_simulacio_result_manager,access.simulacio.result.manager,model_som_simulacio_result,group_simulacio_manager,1,1,1,1
+access_simulacio_result_line_user,access.simulacio.result.line.user,model_som_simulacio_result_line,group_simulacio_user,1,0,0,0
+access_simulacio_result_line_manager,access.simulacio.result.line.manager,model_som_simulacio_result_line,group_simulacio_manager,1,1,1,1
+access_energy_price_manager,access.energy.price.manager,model_som_simulacio_energy_price_monthly,group_simulacio_manager,1,1,1,0
+access_annual_coeff_manager,access.annual.coeff.manager,model_som_simulacio_annual_coeff,group_simulacio_manager,1,1,1,0
+access_erp_adapter_user,access.erp.adapter.user,model_som_simulacio_erp_adapter,group_simulacio_user,1,0,0,0
+access_erp_adapter_manager,access.erp.adapter.manager,model_som_simulacio_erp_adapter,group_simulacio_manager,1,0,0,0

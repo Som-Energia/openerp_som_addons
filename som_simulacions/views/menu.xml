@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+        <record id="act_simulacio_request" model="ir.actions.act_window">
+            <field name="name">Indexed simulations</field>
+            <field name="res_model">som.simulacio.request</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+
+        <record id="act_simulacio_result" model="ir.actions.act_window">
+            <field name="name">Indexed results</field>
+            <field name="res_model">som.simulacio.result</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+
+        <record id="act_energy_price_monthly" model="ir.actions.act_window">
+            <field name="name">Monthly energy prices</field>
+            <field name="res_model">som.simulacio.energy.price.monthly</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+
+        <record id="act_annual_coeff" model="ir.actions.act_window">
+            <field name="name">Annual coefficients</field>
+            <field name="res_model">som.simulacio.annual.coeff</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+
+        <menuitem id="menu_simulacions_indexed_root" name="Simulacions Indexed" sequence="90"/>
+        <menuitem id="menu_simulacio_request" name="Requests" parent="menu_simulacions_indexed_root" action="act_simulacio_request" sequence="10"/>
+        <menuitem id="menu_simulacio_result" name="Results" parent="menu_simulacions_indexed_root" action="act_simulacio_result" sequence="20"/>
+        <menuitem id="menu_simulacio_energy_price" name="Monthly energy prices" parent="menu_simulacions_indexed_root" action="act_energy_price_monthly" sequence="30"/>
+        <menuitem id="menu_simulacio_annual_coeff" name="Annual coefficients" parent="menu_simulacions_indexed_root" action="act_annual_coeff" sequence="40"/>
+    </data>
+</openerp>

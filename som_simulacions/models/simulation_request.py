@@ -26,6 +26,67 @@ class SomSimulacioRequest(osv.osv):
             ('P3', request_data.get('power_p3') or 0.0),
         ]
 
+    def _validate_request_input(self, request):
+        tariff_code = (request.get('tariff_code') or '').strip()
+        if not tariff_code:
+            raise osv.except_osv('Validation error', 'Tariff context is required.')
+
+        powers = self._get_request_powers(request)
+        for period, value in powers:
+            if value < 0.0:
+                raise osv.except_osv(
+                    'Validation error',
+                    'Power %s must be non-negative.' % period
+                )
+
+        if not [value for _period, value in powers if value > 0.0]:
+            raise osv.except_osv(
+                'Validation error',
+                'At least one period power must be greater than zero.'
+            )
+
+        return tariff_code, powers
+
+    def _validate_coverage(
+        self, cr, uid, request, tariff_code, powers, coeff_obj, price_obj, context=None
+    ):
+        coeff_ids = coeff_obj.search(cr, uid, [
+            ('year', '=', request['year']),
+            ('tariff_code', '=', tariff_code),
+        ], context=context)
+        if not coeff_ids:
+            raise osv.except_osv(
+                'Missing data',
+                'Annual coefficients missing for year %s and tariff %s.'
+                % (request['year'], tariff_code)
+            )
+
+        coeff_rows = coeff_obj.read(
+            cr, uid, coeff_ids, ['id', 'period', 'ratio'], context=context)
+        coeff_periods = [row.get('period') for row in coeff_rows]
+        required_periods = [period for period, value in powers if value > 0.0]
+        for period in required_periods:
+            if period not in coeff_periods:
+                raise osv.except_osv(
+                    'Missing data',
+                    'Annual coefficient missing for period %s.' % period
+                )
+
+        for period in coeff_periods:
+            price_ids = price_obj.search(cr, uid, [
+                ('year', '=', request['year']),
+                ('month', '=', request['month']),
+                ('period', '=', period),
+                ('tariff_code', '=', tariff_code),
+            ], context=context)
+            if not price_ids:
+                raise osv.except_osv(
+                    'Missing data',
+                    'Monthly energy price missing for %s' % period
+                )
+
+        return coeff_rows
+
     def compute_indexed_estimate(self, cr, uid, ids, context=None):
         if context is None:
             context = {}
@@ -38,7 +99,7 @@ class SomSimulacioRequest(osv.osv):
 
         created_result_ids = []
         for request in self.read(cr, uid, ids, context=context):
-            tariff_code = request.get('tariff_code')
+            tariff_code, powers = self._validate_request_input(request)
             when_date = '%04d-%02d-01' % (request['year'], request['month'])
 
             power_price = adapter.get_power_price(
@@ -51,12 +112,16 @@ class SomSimulacioRequest(osv.osv):
                 cr, uid, when_date, tariff_code=tariff_code, context=context
             )
 
-            coeff_ids = coeff_obj.search(cr, uid, [
-                ('year', '=', request['year']),
-                ('tariff_code', '=', tariff_code),
-            ], context=context)
-            coeff_rows = coeff_obj.read(
-                cr, uid, coeff_ids, ['id', 'period', 'ratio'], context=context)
+            coeff_rows = self._validate_coverage(
+                cr,
+                uid,
+                request,
+                tariff_code,
+                powers,
+                coeff_obj,
+                price_obj,
+                context=context,
+            )
 
             prices_by_period = {}
             selected_energy_price_id = False
@@ -77,7 +142,6 @@ class SomSimulacioRequest(osv.osv):
                 if not selected_energy_price_id:
                     selected_energy_price_id = price_row['id']
 
-            powers = self._get_request_powers(request)
             max_power = max([power for _period, power in powers])
             annual_kwh = max_power * self._HOURS_REF
 

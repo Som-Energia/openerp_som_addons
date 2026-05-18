@@ -2,6 +2,7 @@
 
 from destral import testing
 from osv import osv
+import ast
 
 
 class TestIndexedEstimateCompute(testing.OOTestCaseWithCursor):
@@ -24,6 +25,17 @@ class TestIndexedEstimateCompute(testing.OOTestCaseWithCursor):
             'power_p2': 4.6,
             'power_p3': 3.45,
         })
+
+    def _create_request_payload(self, tariff_code='2.0TD'):
+        return {
+            'name': 'REQ-001',
+            'year': 2026,
+            'month': 5,
+            'tariff_code': tariff_code,
+            'power_p1': 6.9,
+            'power_p2': 4.6,
+            'power_p3': 3.45,
+        }
 
     def _create_coeffs(self, tariff_code='2.0TD'):
         data = [
@@ -128,3 +140,155 @@ class TestIndexedEstimateCompute(testing.OOTestCaseWithCursor):
             '2.0TD',
             None,
         )
+
+    def test_compute_rejects_missing_tariff_context(self):
+        payload = self._create_request_payload(tariff_code='')
+        req_id = self.request_obj.create(self.cursor, self.uid, payload)
+
+        self.assertRaises(
+            osv.except_osv,
+            self.request_obj.compute_indexed_estimate,
+            self.cursor,
+            self.uid,
+            [req_id],
+            None,
+        )
+
+    def test_compute_rejects_negative_power(self):
+        payload = self._create_request_payload()
+        payload['power_p2'] = -0.5
+        req_id = self.request_obj.create(self.cursor, self.uid, payload)
+
+        self.assertRaises(
+            osv.except_osv,
+            self.request_obj.compute_indexed_estimate,
+            self.cursor,
+            self.uid,
+            [req_id],
+            None,
+        )
+
+    def test_compute_rejects_when_all_powers_are_zero(self):
+        payload = self._create_request_payload()
+        payload.update({'power_p1': 0.0, 'power_p2': 0.0, 'power_p3': 0.0})
+        req_id = self.request_obj.create(self.cursor, self.uid, payload)
+
+        self.assertRaises(
+            osv.except_osv,
+            self.request_obj.compute_indexed_estimate,
+            self.cursor,
+            self.uid,
+            [req_id],
+            None,
+        )
+
+    def test_compute_rejects_missing_coefficients(self):
+        req_id = self._create_request()
+        self._create_prices()
+
+        self.adapter_obj.get_power_price = (
+            lambda cr, uid, when_date, tariff_code=None, context=None: {
+                'value': 10.0,
+                'source': 'tariff',
+                'record_id': 1,
+                'fallback_used': False,
+            }
+        )
+        self.adapter_obj.get_social_bonus = self.adapter_obj.get_power_price
+        self.adapter_obj.get_meter_charge = self.adapter_obj.get_power_price
+
+        self.assertRaises(
+            osv.except_osv,
+            self.request_obj.compute_indexed_estimate,
+            self.cursor,
+            self.uid,
+            [req_id],
+            None,
+        )
+
+    def test_compute_rejects_missing_monthly_price_for_required_period(self):
+        req_id = self._create_request()
+        self._create_coeffs()
+        self.price_obj.create(self.cursor, self.uid, {
+            'name': 'Price P1',
+            'year': 2026,
+            'month': 5,
+            'period': 'P1',
+            'tariff_code': '2.0TD',
+            'price': 0.11,
+        })
+        self.price_obj.create(self.cursor, self.uid, {
+            'name': 'Price P2',
+            'year': 2026,
+            'month': 5,
+            'period': 'P2',
+            'tariff_code': '2.0TD',
+            'price': 0.09,
+        })
+
+        self.adapter_obj.get_power_price = (
+            lambda cr, uid, when_date, tariff_code=None, context=None: {
+                'value': 10.0,
+                'source': 'tariff',
+                'record_id': 1,
+                'fallback_used': False,
+            }
+        )
+        self.adapter_obj.get_social_bonus = self.adapter_obj.get_power_price
+        self.adapter_obj.get_meter_charge = self.adapter_obj.get_power_price
+
+        self.assertRaises(
+            osv.except_osv,
+            self.request_obj.compute_indexed_estimate,
+            self.cursor,
+            self.uid,
+            [req_id],
+            None,
+        )
+
+    def test_compute_persists_fallback_traceability_sources(self):
+        req_id = self._create_request()
+        self._create_coeffs()
+        self._create_prices()
+
+        self.adapter_obj.get_power_price = (
+            lambda cr, uid, when_date, tariff_code=None, context=None: {
+                'value': 20.0,
+                'source': 'default',
+                'record_id': 10,
+                'fallback_used': True,
+            }
+        )
+        self.adapter_obj.get_social_bonus = (
+            lambda cr, uid, when_date, tariff_code=None, context=None: {
+                'value': 2.5,
+                'source': 'tariff',
+                'record_id': 11,
+                'fallback_used': False,
+            }
+        )
+        self.adapter_obj.get_meter_charge = (
+            lambda cr, uid, when_date, tariff_code=None, context=None: {
+                'value': 1.5,
+                'source': 'tariff',
+                'record_id': 12,
+                'fallback_used': False,
+            }
+        )
+
+        result_ids = self.request_obj.compute_indexed_estimate(
+            self.cursor, self.uid, [req_id], context=None)
+        result = self.result_obj.read(
+            self.cursor, self.uid, result_ids[0],
+            ['fallback_flags', 'traceability_payload']
+        )
+
+        fallback_flags = ast.literal_eval(result['fallback_flags'])
+        traceability_payload = ast.literal_eval(result['traceability_payload'])
+
+        self.assertTrue(fallback_flags['power_price'])
+        self.assertFalse(fallback_flags['social_bonus'])
+        self.assertEqual(
+            'default', traceability_payload['concept_sources']['power_price'])
+        self.assertEqual(
+            'tariff', traceability_payload['concept_sources']['social_bonus'])
