@@ -11,6 +11,12 @@ def up(cursor, installed_version):
     logger = logging.getLogger('openerp.migration')
     pool = pooler.get_pool(cursor.dbname)
 
+    logger.info("Auto Innit report.backend.mandat.sepa...")
+
+    pool.get('report.backend.mandat.sepa')._auto_init(
+        cursor, context={'module': 'som_polissa'}
+    )
+
     logger.info("Updating XML files")
     data_files = [
         'report/som_polissa_report.xml',
@@ -31,9 +37,6 @@ def up(cursor, installed_version):
             idref=None, mode='update'
         )
 
-    pool.get('report.backend.mandat.sepa')._auto_init(
-        cursor, context={'module': 'som_polissa'}
-    )
     logger.info("Migration completed successfully.")
 
 
