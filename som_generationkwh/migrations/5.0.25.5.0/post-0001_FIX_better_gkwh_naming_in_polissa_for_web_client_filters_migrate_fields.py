@@ -9,12 +9,9 @@ def up(cursor, installed_version):
 
     logger = logging.getLogger('openerp.migration')
 
-    logger.info("Initializing new fields")
+    logger.info("Reinitializing field metadata for renamed te_assignacio_gkwh label")
 
     pool = pooler.get_pool(cursor.dbname)
-    pool.get("giscedata.polissa.tarifa.periodes")._auto_init(
-        cursor, context={'module': 'som_generationkwh'}
-    )
     pool.get("giscedata.polissa")._auto_init(
         cursor, context={'module': 'som_generationkwh'}
     )
