@@ -146,3 +146,6 @@ patches/
 # Agents
 .engram/
 .atl/
+# Local consumer env (secrets)
+runtime-docker/.env.consumer
+runtime-docker/.env.producer

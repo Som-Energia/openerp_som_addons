@@ -1,8 +1,6 @@
-version: "3.3"
-
 services:
   db:
-    image: timescale/timescaledb-postgis:latest-pg13
+    image: timescale/timescaledb:2.14.2-pg13
     ports:
       - 5432:5432
     environment:

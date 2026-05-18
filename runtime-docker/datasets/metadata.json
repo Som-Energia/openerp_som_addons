@@ -1,0 +1,9 @@
+{
+  "dataset_version": "20260515",
+  "created_at": "2026-05-15T00:00:00Z",
+  "git_commit": "abcdef0",
+  "postgres_version": "13,
+  "odoo_version": "OpenERP 5",
+  "checksum_sha256": "<sha256-del-fitxer-dump-zst>",
+  "compressed_file": "openerp-demo-20260515.dump.zst"
+}
