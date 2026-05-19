@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data noupdate="1">
+        <record id="som_simulacio_annual_coeff_demo_p1" model="som.simulacio.annual.coeff">
+            <field name="name">Demo Coeff 2026 P1</field>
+            <field name="year">2026</field>
+            <field name="period">P1</field>
+            <field name="tariff_code">2.0TD</field>
+            <field name="ratio">0.5</field>
+            <field name="date_from">2026-01-01</field>
+            <field name="date_to">2026-12-31</field>
+        </record>
+        <record id="som_simulacio_annual_coeff_demo_p2" model="som.simulacio.annual.coeff">
+            <field name="name">Demo Coeff 2026 P2</field>
+            <field name="year">2026</field>
+            <field name="period">P2</field>
+            <field name="tariff_code">2.0TD</field>
+            <field name="ratio">0.3</field>
+            <field name="date_from">2026-01-01</field>
+            <field name="date_to">2026-12-31</field>
+        </record>
+        <record id="som_simulacio_annual_coeff_demo_p3" model="som.simulacio.annual.coeff">
+            <field name="name">Demo Coeff 2026 P3</field>
+            <field name="year">2026</field>
+            <field name="period">P3</field>
+            <field name="tariff_code">2.0TD</field>
+            <field name="ratio">0.2</field>
+            <field name="date_from">2026-01-01</field>
+            <field name="date_to">2026-12-31</field>
+        </record>
+    </data>
+</openerp>

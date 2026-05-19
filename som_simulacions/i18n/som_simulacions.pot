@@ -1,0 +1,164 @@
+# Translation template baseline for som_simulacions
+msgid ""
+msgstr ""
+"Project-Id-Version: som_simulacions\n"
+"POT-Creation-Date: 2026-05-18 00:00+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+msgid "Mòdul base per simulacions"
+msgstr ""
+
+msgid "Ratio"
+msgstr ""
+
+msgid "Simulacions Indexed"
+msgstr ""
+
+msgid "Untaxed monthly total"
+msgstr ""
+
+msgid "The Object name must start with x_ and not contain any special character !"
+msgstr ""
+
+msgid "Fallback usage flags"
+msgstr ""
+
+msgid "Period"
+msgstr ""
+
+msgid "Valid to"
+msgstr ""
+
+msgid "Indexed results"
+msgstr ""
+
+msgid "Invalid model name in the action definition."
+msgstr ""
+
+msgid "Indexed estimate fixed-concept adapter"
+msgstr ""
+
+msgid "Monthly energy prices"
+msgstr ""
+
+msgid "Indexed estimate simulation request"
+msgstr ""
+
+msgid "Indexed monthly energy prices"
+msgstr ""
+
+msgid "Requests"
+msgstr ""
+
+msgid "Run estimate"
+msgstr ""
+
+msgid "Amount"
+msgstr ""
+
+msgid "Description"
+msgstr ""
+
+msgid "Indexed annual coefficients by period"
+msgstr ""
+
+msgid "Price"
+msgstr ""
+
+msgid "Source record"
+msgstr ""
+
+msgid "Active"
+msgstr ""
+
+msgid "Annual coefficient"
+msgstr ""
+
+msgid "Request"
+msgstr ""
+
+msgid "Monthly energy price"
+msgstr ""
+
+msgid "Result"
+msgstr ""
+
+msgid "Invalid XML for View Architecture!"
+msgstr ""
+
+msgid "Valid from"
+msgstr ""
+
+msgid "Tariff code"
+msgstr ""
+
+msgid "Lines"
+msgstr ""
+
+msgid "Year"
+msgstr ""
+
+msgid "Indexed simulation results"
+msgstr ""
+
+msgid "Selected coefficient set"
+msgstr ""
+
+msgid "Annual coefficients"
+msgstr ""
+
+msgid "Traceability"
+msgstr ""
+
+msgid "Traceability payload"
+msgstr ""
+
+msgid "Power P1"
+msgstr ""
+
+msgid "Power P3"
+msgstr ""
+
+msgid "Power P2"
+msgstr ""
+
+msgid "Concept"
+msgstr ""
+
+msgid "som_simulacions"
+msgstr ""
+
+msgid "Reference"
+msgstr ""
+
+msgid "Indexed estimate simulation result line"
+msgstr ""
+
+msgid "Selected monthly price"
+msgstr ""
+
+msgid "Indexed simulation request"
+msgstr ""
+
+msgid "Indexed simulation result"
+msgstr ""
+
+msgid "Month"
+msgstr ""
+
+msgid "Indexed simulations"
+msgstr ""
+
+msgid "Indexed estimate simulation result"
+msgstr ""
+
+msgid "Results"
+msgstr ""
+
+msgid "Result lines"
+msgstr ""

@@ -1,0 +1,165 @@
+# Spanish translation baseline for som_simulacions
+msgid ""
+msgstr ""
+"Project-Id-Version: som_simulacions\n"
+"POT-Creation-Date: 2026-05-18 00:00+0000\n"
+"PO-Revision-Date: 2026-05-18 00:00+0000\n"
+"Last-Translator: Som Energia\n"
+"Language-Team: es_ES\n"
+"Language: es_ES\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+msgid "Mòdul base per simulacions"
+msgstr "Mòdul base per simulacions"
+
+msgid "Ratio"
+msgstr "Ratio"
+
+msgid "Simulacions Indexed"
+msgstr "Simulacions Indexed"
+
+msgid "Untaxed monthly total"
+msgstr "Untaxed monthly total"
+
+msgid "The Object name must start with x_ and not contain any special character !"
+msgstr "The Object name must start with x_ and not contain any special character !"
+
+msgid "Fallback usage flags"
+msgstr "Fallback usage flags"
+
+msgid "Period"
+msgstr "Period"
+
+msgid "Valid to"
+msgstr "Valid to"
+
+msgid "Indexed results"
+msgstr "Indexed results"
+
+msgid "Invalid model name in the action definition."
+msgstr "Invalid model name in the action definition."
+
+msgid "Indexed estimate fixed-concept adapter"
+msgstr "Indexed estimate fixed-concept adapter"
+
+msgid "Monthly energy prices"
+msgstr "Monthly energy prices"
+
+msgid "Indexed estimate simulation request"
+msgstr "Indexed estimate simulation request"
+
+msgid "Indexed monthly energy prices"
+msgstr "Indexed monthly energy prices"
+
+msgid "Requests"
+msgstr "Requests"
+
+msgid "Run estimate"
+msgstr "Run estimate"
+
+msgid "Amount"
+msgstr "Amount"
+
+msgid "Description"
+msgstr "Description"
+
+msgid "Indexed annual coefficients by period"
+msgstr "Indexed annual coefficients by period"
+
+msgid "Price"
+msgstr "Price"
+
+msgid "Source record"
+msgstr "Source record"
+
+msgid "Active"
+msgstr "Active"
+
+msgid "Annual coefficient"
+msgstr "Annual coefficient"
+
+msgid "Request"
+msgstr "Request"
+
+msgid "Monthly energy price"
+msgstr "Monthly energy price"
+
+msgid "Result"
+msgstr "Result"
+
+msgid "Invalid XML for View Architecture!"
+msgstr "Invalid XML for View Architecture!"
+
+msgid "Valid from"
+msgstr "Valid from"
+
+msgid "Tariff code"
+msgstr "Tariff code"
+
+msgid "Lines"
+msgstr "Lines"
+
+msgid "Year"
+msgstr "Year"
+
+msgid "Indexed simulation results"
+msgstr "Indexed simulation results"
+
+msgid "Selected coefficient set"
+msgstr "Selected coefficient set"
+
+msgid "Annual coefficients"
+msgstr "Annual coefficients"
+
+msgid "Traceability"
+msgstr "Traceability"
+
+msgid "Traceability payload"
+msgstr "Traceability payload"
+
+msgid "Power P1"
+msgstr "Power P1"
+
+msgid "Power P3"
+msgstr "Power P3"
+
+msgid "Power P2"
+msgstr "Power P2"
+
+msgid "Concept"
+msgstr "Concept"
+
+msgid "som_simulacions"
+msgstr "som_simulacions"
+
+msgid "Reference"
+msgstr "Reference"
+
+msgid "Indexed estimate simulation result line"
+msgstr "Indexed estimate simulation result line"
+
+msgid "Selected monthly price"
+msgstr "Selected monthly price"
+
+msgid "Indexed simulation request"
+msgstr "Indexed simulation request"
+
+msgid "Indexed simulation result"
+msgstr "Indexed simulation result"
+
+msgid "Month"
+msgstr "Month"
+
+msgid "Indexed simulations"
+msgstr "Indexed simulations"
+
+msgid "Indexed estimate simulation result"
+msgstr "Indexed estimate simulation result"
+
+msgid "Results"
+msgstr "Results"
+
+msgid "Result lines"
+msgstr "Result lines"
