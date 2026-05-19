@@ -36,6 +36,7 @@ services:
       OPENERP_DB_PASSWORD: ${POSTGRES_PASSWORD:-erp}
       ERP_DATABASE: ${POSTGRES_DB:-erp}
       ERP_XMLRPC_PORT: ${ERP_XMLRPC_PORT:-8069}
+      ERP_FOREGROUND: "1"
     entrypoint:
       - /bin/bash
       - -lc
@@ -64,17 +65,12 @@ services:
         wait_for_port mongo 27017 180
 
         export ERP_SERVER="/opt/somenergia/src/erp/server/bin/openerp-server.py"
-        export ERP_LOG_FILE="/tmp/erp-$${ERP_DATABASE}.log"
-        export ERP_PID_FILE="/tmp/erp-$${ERP_DATABASE}.pid"
-        export ERP_READY_FILE="/tmp/erp-ready-$${ERP_DATABASE}.flag"
         export OPENERP_CONFIG="/opt/somenergia/src/openerp_som_addons/runtime-docker/erp.conf"
         export OPENERP_DB_HOST="postgres"
         export OPENERP_MONGODB_HOST="mongo"
         export OPENERP_REDIS_URL="redis://redis:6379/0"
 
-        bash /opt/somenergia/src/openerp_som_addons/scripts/start-openerp-server.sh
-        ERP_PID="$$(cat "$${ERP_PID_FILE}")"
-        tail --pid="$${ERP_PID}" -f "$${ERP_LOG_FILE}"
+        exec bash /opt/somenergia/src/openerp_som_addons/scripts/start-openerp-server.sh
     ports:
       - "${ERP_XMLRPC_PORT:-8069}:${ERP_XMLRPC_PORT:-8069}"
     volumes:
