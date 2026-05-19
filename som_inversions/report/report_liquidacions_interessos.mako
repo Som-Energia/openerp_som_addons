@@ -387,7 +387,7 @@
     </div>
     <div class="contingutTXT">
             <div class="paragraf">
-            <p style="margin-top:60px;">${_(u"Aquest import serà transferit al teu compte corrent número:")}   <b>${(data.partner_iban or '')[-4:].rjust(len(data.partner_iban or ''), '*')}</b>.</p>
+            <p style="margin-top:60px;">${_(u"Aquest import serà transferit al teu compte corrent número:")}   <b>${(data.partner_iban[:-9] or '')}***</b>.</p>
             <p style="margin-top:20px;">${_(u"Gràcies a les aportacions com la teva, la cooperativa finança projectes i pot generar cada vegada més energia provinent de fonts renovables.")}</p>
             </div>
     </div>
