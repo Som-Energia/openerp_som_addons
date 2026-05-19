@@ -20,7 +20,7 @@ class PartnerTests(testing.OOTestCase):
         self.IrModelData = self.openerp.pool.get('ir.model.data')
         self.GenerationkWhAssignment = self.openerp.pool.get('generationkwh.assignment')
         self.GiscedataPolissa = self.openerp.pool.get('giscedata.polissa')
-        # self.txn = Transaction().start(self.database)
+        #self.txn = Transaction().start(self.database)
 
     def tearDown(self):
         # self.txn.stop()
@@ -189,39 +189,18 @@ class PartnerTests(testing.OOTestCase):
                 cursor, uid, 'som_generationkwh', 'soci_0001')[1]
             polissa_id = self.IrModelData.get_object_reference(
                 cursor, uid, 'giscedata_polissa', 'polissa_0001')[1]
-            self.GenerationkWhAssignment.create(
-                cursor,
-                uid,
-                {
-                    'member_id': member_id,
-                    'contract_id': polissa_id,
-                    'priority': 0,
-                }
-            )
+            self.GenerationkWhAssignment.create(cursor, uid, {'member_id': member_id,
+                                                              'contract_id': polissa_id, 'priority': 0})
 
             assig_list = self.partner_obj.www_generationkwh_assignments(cursor, uid, partner_id)
 
             for a in assig_list:
                 a.pop('id')
-
-            def normalize_spaces(text):
-                return u' '.join((text or u'').split())
-
-            assig_list[0]['contract_address'] = normalize_spaces(assig_list[0]['contract_address'])
-            self.assertEquals(assig_list, [{
-                'annual_use_kwh': False,
-                'contract_address': normalize_spaces(
-                    u'carrer inventat, 1 ESC. 1 1 1 aclaridor 00001 (Poble de Prova)'
-                ),
-                'contract_id': 1,
-                'contract_last_invoiced': False,
-                'contract_name': u'0001C',
-                'contract_state': u'esborrany',
-                'member_id': member_id,
-                'member_name': u'Gil, Pere',
-                'priority': 0,
-                'contract_tariff': u'2.0A',
-            }])
+            self.assertEquals(assig_list, [{'annual_use_kwh': False,
+                                            'contract_address': u'carrer inventat, 1 ESC. 1 1 1 aclaridor 00001 (Poble de Prova)',
+                                            'contract_id': 1, 'contract_last_invoiced': False, 'contract_name': u'0001C',
+                                            'contract_state': u'esborrany', 'member_id': member_id, 'member_name': u'Gil, Pere',
+                                            'priority': 0, 'contract_tariff': u'2.0A'}])
 
     def test__www_generationkwh_assignments_donation_partners(self):
         with Transaction().start(self.database) as txn:
@@ -237,15 +216,8 @@ class PartnerTests(testing.OOTestCase):
             # partner of member_id
             donation_partner_id = self.IrModelData.get_object_reference(
                 cursor, uid, 'som_generationkwh', 'res_partner_inversor1')[1]
-            self.GenerationkWhAssignment.create(
-                cursor,
-                uid,
-                {
-                    'member_id': member_id,
-                    'contract_id': polissa_id,
-                    'priority': 0,
-                }
-            )
+            self.GenerationkWhAssignment.create(cursor, uid, {'member_id': member_id,
+                                                              'contract_id': polissa_id, 'priority': 0})
             self.GiscedataPolissa.write(cursor, uid, polissa_id, {'state': 'activa'})
 
             partner_list = self.partner_obj.www_generationkwh_assignments_donation_partners(

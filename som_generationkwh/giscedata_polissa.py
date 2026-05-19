@@ -9,6 +9,7 @@ from osv import osv, fields
 from osv.expression import OOQuery
 from collections import defaultdict
 
+
 class GiscedataPolissaTarifaPeriodes(osv.osv):
     """Periodes de les Tarifes."""
     _name = 'giscedata.polissa.tarifa.periodes'
@@ -19,6 +20,7 @@ class GiscedataPolissaTarifaPeriodes(osv.osv):
             'product.product', 'Generation kWh', ondelete='restrict'
         ),
     }
+
 
 GiscedataPolissaTarifaPeriodes()
 
@@ -38,14 +40,14 @@ class GiscedataPolissa(osv.osv):
         return [p['contract_id'][0] for p in pol_ids]
 
     def _ff_get_assignacio_gkwh(self, cursor, uid, ids, field_name, arg,
-                              context=None):
+                                context=None):
         if not context:
             context = {}
         assig_obj = self.pool.get('generationkwh.assignment')
         res = dict.fromkeys(ids, False)
 
         for _id in ids:
-            search_params = [('contract_id','=', _id)]
+            search_params = [('contract_id', '=', _id)]
             assigment_id = assig_obj.search(cursor, uid, search_params, limit=1)
             res[_id] = len(assigment_id) > 0
 
@@ -99,6 +101,8 @@ class GiscedataPolissa(osv.osv):
                 - If there are 12 months of data, is just the sum of every period
                 - If there are some data, is ponerated to 12 months with a rule of 3
                 - If there are no data, returns False
+            It returns a tuple with the estimation and a string with the type of estimation:
+            'full_data', 'partial_data' or 'no_data'
         """
         if not date_end:
             date_end = str(date.today())
@@ -111,10 +115,10 @@ class GiscedataPolissa(osv.osv):
             cursor, uid, pol_id, date_start, date_end, context=context)
 
         if not use_data:
-            return False
+            return False, 'no_data'
 
         period_sums = {}
-        for invoice_date, periods in use_data.items():
+        for _, periods in use_data.items():
             for p, kwh in periods.items():
                 period_sums[p] = period_sums.get(p, 0) + kwh
 
@@ -122,7 +126,7 @@ class GiscedataPolissa(osv.osv):
         factor = 12.0 / num_invoices
         res = {p: int(round(kwh * factor)) for p, kwh in period_sums.items()}
 
-        return res
+        return res, 'full_data' if num_invoices >= 12 else 'partial_data'
 
     _columns = {
         'te_assignacio_gkwh': fields.function(

@@ -2,6 +2,7 @@
 from osv import osv, fields
 from tools import config
 from tools.translate import _
+import pooler
 
 
 class WizardComputeMod193Invoice(osv.osv_memory):
@@ -45,7 +46,7 @@ class WizardComputeMod193Invoice(osv.osv_memory):
 
         report_obj = self.pool.get('l10n.es.aeat.mod193.report')
         record_obj = self.pool.get('l10n.es.aeat.mod193.record')
-        partner_obj = self.pool.get('res.partner')
+        self.pool.get('res.partner')
         part_add_obj = self.pool.get('res.partner.address')
         report_id = context.get('active_id')
 
@@ -74,24 +75,26 @@ class WizardComputeMod193Invoice(osv.osv_memory):
             'incoming_type': '2'
         }
 
-        query_file = (u"%s/som_generationkwh/sql/aeat193_from_gkwh_invoices_query.sql" % config['addons_path'])
+        query_file = (u"%s/som_generationkwh/sql/aeat193_from_gkwh_invoices_query.sql" %
+                      config['addons_path'])
         with open(query_file) as f:
             query = f.read()
         cursor.execute(query, dict(start=dates['start'], end=dates['end']))
 
         new_linies = 0
         for data in cursor.fetchall():
+            new_cursor = pooler.get_db(cursor.dbname).cursor()
             partner_id = data[0]
             partner_vat = data[1]
             amount = float(data[2])
 
-            part_add_id = part_add_obj.search(cursor, uid, [('partner_id', '=', partner_id)])
+            part_add_id = part_add_obj.search(new_cursor, uid, [('partner_id', '=', partner_id)])
             if not part_add_id:
                 raise osv.except_osv("Error",
                                      _(u"No s'han trobat adreces pel partner amb VAT {} i ID {}").
                                      format(partner_vat, partner_id))
 
-            state_id = part_add_obj.read(cursor, uid, part_add_id[0], ['state_id'])
+            state_id = part_add_obj.read(new_cursor, uid, part_add_id[0], ['state_id'])
             if not state_id:
                 raise osv.except_osv("Error",
                                      _(u"L'adreça amb ID {} pel partner amb VAT {} no té definida província. "
@@ -112,7 +115,9 @@ class WizardComputeMod193Invoice(osv.osv_memory):
                 'fiscal_address_id': part_add_id[0]
             })
 
-            record_obj.create(cursor, uid, vals)
+            record_obj.create(new_cursor, uid, vals)
+            new_cursor.commit()
+            new_cursor.close()
             new_linies += 1
 
         txt += u'\nAfegides {} línies al model 193.'.format(new_linies)

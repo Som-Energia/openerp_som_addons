@@ -1,9 +1,6 @@
 # -*- coding: utf-8 -*-
 from destral import testing
 from destral.transaction import Transaction
-from osv import osv
-from datetime import datetime
-import poweremail
 import mock
 
 
@@ -26,26 +23,31 @@ class TestWizardBaixaSoci(testing.OOTestCase):
         member_id = self.IrModelData.get_object_reference(
             self.cursor, self.uid, 'som_generationkwh', 'soci_0003'
         )[1]
-        self.Soci.write(self.cursor, self.uid, [member_id], {'baixa': False, 'data_baixa_soci': None})
-        context = {'active_ids':[member_id]}
+        self.Soci.write(self.cursor, self.uid, [member_id], {
+                        'baixa': False, 'data_baixa_soci': None})
+        context = {'active_ids': [member_id]}
 
-        wiz_id = self.WizardBaixaSoci.create(self.cursor, self.uid, {'info':''}, context=context)
-        self.WizardBaixaSoci.baixa_soci(self.cursor, self.uid, wiz_id, context=context, send_mail=False)
+        wiz_id = self.WizardBaixaSoci.create(self.cursor, self.uid, {'info': ''}, context=context)
+        self.WizardBaixaSoci.baixa_soci(self.cursor, self.uid, wiz_id,
+                                        context=context, send_mail=False)
 
         baixa = self.Soci.read(self.cursor, self.uid, member_id, ['baixa'])['baixa']
         self.assertTrue(baixa)
-        partner_id = self.Soci.read(self.cursor, self.uid, member_id, ['partner_id'])['partner_id'][0]
+        partner_id = self.Soci.read(self.cursor, self.uid, member_id,
+                                    ['partner_id'])['partner_id'][0]
         mailchimp_mock.assert_called_with(self.cursor, self.uid, [partner_id], context=context)
 
     def test__baixa_soci__notAllowed(self):
         member_id = self.IrModelData.get_object_reference(
             self.cursor, self.uid, 'som_generationkwh', 'soci_0001'
         )[1]
-        self.Soci.write(self.cursor, self.uid, [member_id], {'baixa': False, 'data_baixa_soci': None})
-        context = {'active_ids':[member_id]}
+        self.Soci.write(self.cursor, self.uid, [member_id], {
+                        'baixa': False, 'data_baixa_soci': None})
+        context = {'active_ids': [member_id]}
 
-        wiz_id = self.WizardBaixaSoci.create(self.cursor, self.uid, {'info':''}, context=context)
-        self.WizardBaixaSoci.baixa_soci(self.cursor, self.uid, wiz_id, context=context, send_mail=False)
+        wiz_id = self.WizardBaixaSoci.create(self.cursor, self.uid, {'info': ''}, context=context)
+        self.WizardBaixaSoci.baixa_soci(self.cursor, self.uid, wiz_id,
+                                        context=context, send_mail=False)
 
         baixa = self.Soci.read(self.cursor, self.uid, member_id, ['baixa'])['baixa']
         self.assertFalse(baixa)
@@ -59,30 +61,34 @@ class TestWizardBaixaSoci(testing.OOTestCase):
         template_id = self.IrModelData.get_object_reference(
             self.cursor, self.uid, 'som_generationkwh', 'email_baixa_soci'
         )[1]
-        email_from = self.AccountObj.search(self.cursor, self.uid, [('name', 'ilike', 'Info%Som Energia')])[0]
+        email_from = self.AccountObj.search(
+            self.cursor, self.uid, [('name', 'ilike', 'Info%Som Energia')])[0]
         self.AccountObj.write(self.cursor, self.uid, email_from, {'name': 'Info Som Energia'})
-        self.Soci.write(self.cursor, self.uid, [member_id], {'baixa': False, 'data_baixa_soci': None})
-        context = {'active_ids':[member_id]}
+        self.Soci.write(self.cursor, self.uid, [member_id], {
+                        'baixa': False, 'data_baixa_soci': None})
+        context = {'active_ids': [member_id]}
 
-        wiz_id = self.WizardBaixaSoci.create(self.cursor, self.uid, {'info':''}, context=context)
-        self.WizardBaixaSoci.baixa_soci(self.cursor, self.uid, wiz_id, context=context, send_mail=True)
+        wiz_id = self.WizardBaixaSoci.create(self.cursor, self.uid, {'info': ''}, context=context)
+        self.WizardBaixaSoci.baixa_soci(self.cursor, self.uid, wiz_id,
+                                        context=context, send_mail=True)
 
         baixa = self.Soci.read(self.cursor, self.uid, member_id, ['baixa'])['baixa']
         self.assertTrue(baixa)
 
         expected_ctx = {
-                'active_ids': [member_id],
-                'active_id': member_id,
-                'template_id': template_id,
-                'src_model': 'somenergia.soci',
-                'src_rec_ids': [member_id],
-                'from': email_from,
-                'state': 'single',
-                'priority': '0',
-            }
+            'active_ids': [member_id],
+            'active_id': member_id,
+            'template_id': template_id,
+            'src_model': 'somenergia.soci',
+            'src_rec_ids': [member_id],
+            'from': email_from,
+            'state': 'single',
+            'priority': '0',
+        }
 
         mocked_send_mail.assert_called_with(self.cursor, self.uid, mock.ANY, expected_ctx)
-        partner_id = self.Soci.read(self.cursor, self.uid, member_id, ['partner_id'])['partner_id'][0]
+        partner_id = self.Soci.read(self.cursor, self.uid, member_id,
+                                    ['partner_id'])['partner_id'][0]
         mailchimp_mock.assert_called_with(self.cursor, self.uid, [partner_id], context=context)
 
     @mock.patch("poweremail.poweremail_send_wizard.poweremail_send_wizard.send_mail")
@@ -90,13 +96,45 @@ class TestWizardBaixaSoci(testing.OOTestCase):
         member_id = self.IrModelData.get_object_reference(
             self.cursor, self.uid, 'som_generationkwh', 'soci_0001'
         )[1]
-        self.Soci.write(self.cursor, self.uid, [member_id], {'baixa': False, 'data_baixa_soci': None})
+        self.Soci.write(self.cursor, self.uid, [member_id], {
+                        'baixa': False, 'data_baixa_soci': None})
 
-        context = {'active_ids':[member_id]}
+        context = {'active_ids': [member_id]}
 
-        wiz_id = self.WizardBaixaSoci.create(self.cursor, self.uid, {'info':''}, context=context)
-        self.WizardBaixaSoci.baixa_soci_and_send_mail(self.cursor, self.uid, wiz_id, context=context)
+        wiz_id = self.WizardBaixaSoci.create(self.cursor, self.uid, {'info': ''}, context=context)
+        self.WizardBaixaSoci.baixa_soci_and_send_mail(
+            self.cursor, self.uid, wiz_id, context=context)
 
         baixa = self.Soci.read(self.cursor, self.uid, member_id, ['baixa'])['baixa']
         self.assertFalse(baixa)
         mocked_send_mail.assert_not_called()
+
+    def test__verify__all_good(self):
+        member_id = self.IrModelData.get_object_reference(
+            self.cursor, self.uid, 'som_generationkwh', 'soci_0003'
+        )[1]
+        self.Soci.write(self.cursor, self.uid, [member_id], {
+                        'baixa': False, 'data_baixa_soci': None})
+        context = {'active_ids': [member_id]}
+
+        wiz_id = self.WizardBaixaSoci.create(self.cursor, self.uid, {'info': ''}, context=context)
+        self.WizardBaixaSoci.verify(self.cursor, self.uid, wiz_id, context=context)
+
+        wiz = self.WizardBaixaSoci.browse(self.cursor, self.uid, wiz_id)
+        self.assertEqual(wiz.state, 'checklist')
+        self.assertIn('Tot correcte', wiz.info)
+
+    def test__verify__with_issues(self):
+        member_id = self.IrModelData.get_object_reference(
+            self.cursor, self.uid, 'som_generationkwh', 'soci_0001'
+        )[1]
+        self.Soci.write(self.cursor, self.uid, [member_id], {
+                        'baixa': False, 'data_baixa_soci': None})
+        context = {'active_ids': [member_id]}
+
+        wiz_id = self.WizardBaixaSoci.create(self.cursor, self.uid, {'info': ''}, context=context)
+        self.WizardBaixaSoci.verify(self.cursor, self.uid, wiz_id, context=context)
+
+        wiz = self.WizardBaixaSoci.browse(self.cursor, self.uid, wiz_id)
+        self.assertEqual(wiz.state, 'checklist')
+        self.assertNotIn('Tot correcte', wiz.info)

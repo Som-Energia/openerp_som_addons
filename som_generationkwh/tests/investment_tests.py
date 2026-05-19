@@ -2,21 +2,17 @@
 import unittest
 from destral import testing
 from destral.transaction import Transaction
-from destral.patch import PatchNewCursors
-import netsvc
-import time
-import random
 from generationkwh.testutils import assertNsEqual
 from datetime import datetime, timedelta, date
 from yamlns import namespace as ns
 import generationkwh.investmentmodel as gkwh
-from osv import osv, fields
+from osv import osv
 from ..investment_strategy import (
-    PartnerException, InvestmentException,
-    AportacionsActions)
+    PartnerException, InvestmentException)
 from freezegun import freeze_time
 import mock
 from osv.osv import except_osv
+
 
 class AccountInvoice(osv.osv):
     _name = 'account.invoice'
@@ -25,7 +21,9 @@ class AccountInvoice(osv.osv):
     def send_sii_sync(self, cursor, uid, inv_id, context=None):
         return None
 
+
 AccountInvoice()
+
 
 class InvestmentTests(testing.OOTestCase):
 
@@ -41,17 +39,17 @@ class InvestmentTests(testing.OOTestCase):
         self.Emission = self.openerp.pool.get('generationkwh.emission')
         self.PaymentLine = self.openerp.pool.get('payment.line')
         self.PaymentOrder = self.openerp.pool.get('payment.order')
+        self.PaymentType = self.openerp.pool.get('payment.type')
         self.Soci = self.openerp.pool.get('somenergia.soci')
         self.Product = self.openerp.pool.get('product.product')
         self.AccountAccount = self.openerp.pool.get('account.account')
         self.IrProperty = self.openerp.pool.get('ir.property')
         self.maxDiff = None
 
-
     def tearDown(self):
         pass
 
-    assertNsEqual=assertNsEqual
+    assertNsEqual = assertNsEqual
 
     def assertInvoiceInfoEqual(self, cursor, uid, invoice_id, expected):
         def proccesLine(line):
@@ -89,21 +87,21 @@ class InvestmentTests(testing.OOTestCase):
         invoice.invoice_line = [
             proccesLine(line)
             for line in self.InvoiceLine.read(cursor, uid, invoice.invoice_line, [])
-            ]
+        ]
         self.assertNsEqual(invoice, expected)
 
     def assertLogEquals(self, log, expected):
         for x in log.splitlines():
             self.assertRegexpMatches(x,
-                u'\\[\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}.\\d+ [^]]+\\] .*',
-                u"Linia de log con formato no estandard"
-            )
+                                     u'\\[\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}.\\d+ [^]]+\\] .*',
+                                     u"Linia de log con formato no estandard"
+                                     )
 
         logContent = ''.join(
-                x.split('] ')[1]+'\n'
-                for x in log.splitlines()
-                if u'] ' in x
-                )
+            x.split('] ')[1] + '\n'
+            for x in log.splitlines()
+            if u'] ' in x
+        )
         self.assertMultiLineEqual(logContent, expected)
 
     def assertMailLogEqual(self, log, expected):
@@ -111,25 +109,26 @@ class InvestmentTests(testing.OOTestCase):
 
     def _generationMailAccount(self, cursor, uid):
         return self.PEAccounts.search(cursor, uid, [
-           ('name','=','Generation kWh')
-            ])[0]
+            ('name', '=', 'Generation kWh')
+        ])[0]
 
     def _invertirMailAccount(self, cursor, uid):
         return self.PEAccounts.search(cursor, uid, [
-           ('email_id','=','invertir@somenergia.coop')
-            ])[0]
+            ('email_id', '=', 'invertir@somenergia.coop')
+        ])[0]
 
     def _aportaMailAccount(self, cursor, uid):
         return self.PEAccounts.search(cursor, uid, [
-           ('email_id','=','aporta@somenergia.coop')
-            ])[0]
+            ('email_id', '=', 'aporta@somenergia.coop')
+        ])[0]
 
     def _propertyAccountData(self, cursor, uid, demo_id):
         property_account_id = self.IrModelData.get_object_reference(
             cursor, uid, 'som_generationkwh', demo_id
-            )[1]
-        gkwh_account_value = self.IrProperty.read(cursor, uid, property_account_id, ['value'])['value']
-        return self.AccountAccount.read(cursor, uid, int(gkwh_account_value.split(',')[1]), ['name','code'])
+        )[1]
+        gkwh_account_value = self.IrProperty.read(
+            cursor, uid, property_account_id, ['value'])['value']
+        return self.AccountAccount.read(cursor, uid, int(gkwh_account_value.split(',')[1]), ['name', 'code'])
 
     def test_mark_as_signed_allOk_GKWH(self):
         """
@@ -140,8 +139,8 @@ class InvestmentTests(testing.OOTestCase):
             cursor = txn.cursor
             uid = txn.user
             inv_id = self.IrModelData.get_object_reference(
-                        cursor, uid, 'som_generationkwh', 'genkwh_0001'
-                        )[1]
+                cursor, uid, 'som_generationkwh', 'genkwh_0001'
+            )[1]
             inv_0001 = self.Investment.browse(cursor, uid, inv_id)
             self.assertEquals(inv_0001.signed_date, False)
 
@@ -159,8 +158,8 @@ class InvestmentTests(testing.OOTestCase):
             cursor = txn.cursor
             uid = txn.user
             inv_id = self.IrModelData.get_object_reference(
-                        cursor, uid, 'som_generationkwh', 'apo_0001'
-                        )[1]
+                cursor, uid, 'som_generationkwh', 'apo_0001'
+            )[1]
 
             member_id = self.IrModelData.get_object_reference(
                 cursor, uid, 'som_generationkwh', 'soci_0001')[1]
@@ -177,21 +176,21 @@ class InvestmentTests(testing.OOTestCase):
             id_emission, name_emission = inv_0001.pop('emission_id')
             self.assertEqual(name_emission, "Aportacions")
             self.assertEquals(inv_0001,
-                {
-                    'first_effective_date': False,
-                    'move_line_id': False,
-                    'last_effective_date': False,
-                    'last_interest_paid_date': False,
-                    'nshares': 10,
-                    'signed_date': '2017-01-06',
-                    'draft': True,
-                    'purchase_date': False,
-                    'member_id': (member_id, u'Gil, Pere'),
-                    'active': True,
-                    'order_date': '2020-03-04',
-                    'amortized_amount': 0.0,
-                    'name': u'APO00001'
-                })
+                              {
+                                  'first_effective_date': False,
+                                  'move_line_id': False,
+                                  'last_effective_date': False,
+                                  'last_interest_paid_date': False,
+                                  'nshares': 10,
+                                  'signed_date': '2017-01-06',
+                                  'draft': True,
+                                  'purchase_date': False,
+                                  'member_id': (member_id, u'Gil, Pere'),
+                                  'active': True,
+                                  'order_date': '2020-03-04',
+                                  'amortized_amount': 0.0,
+                                  'name': u'APO00001'
+                              })
 
     @freeze_time("2020-06-09")
     def test_create_from_form_allOk_APO(self):
@@ -204,16 +203,16 @@ class InvestmentTests(testing.OOTestCase):
             uid = txn.user
             self.MailMockup.activate(cursor, uid)
             partner_id = self.IrModelData.get_object_reference(
-                        cursor, uid, 'som_generationkwh', 'res_partner_inversor1'
-                        )[1]
+                cursor, uid, 'som_generationkwh', 'res_partner_inversor1'
+            )[1]
 
             inv_id = self.Investment.create_from_form(cursor, uid,
-                    partner_id,
-                    '2020-06-06',
-                    4000,
-                    '10.10.23.123',
-                    'ES7712341234161234567890',
-                    'APO_202006')
+                                                      partner_id,
+                                                      '2020-06-06',
+                                                      4000,
+                                                      '10.10.23.123',
+                                                      'ES7712341234161234567890',
+                                                      'APO_202006')
 
             member_id = self.IrModelData.get_object_reference(
                 cursor, uid, 'som_generationkwh', 'soci_0001')[1]
@@ -225,21 +224,21 @@ class InvestmentTests(testing.OOTestCase):
             id_emission, name_emission = inv_0001.pop('emission_id')
             self.assertEqual(name_emission, "Aportacions Juny")
             self.assertEquals(inv_0001,
-                {
-                    'first_effective_date': False,
-                    'move_line_id': False,
-                    'last_effective_date': False,
-                    'last_interest_paid_date': False,
-                    'nshares': 40,
-                    'signed_date': False,
-                    'draft': True,
-                    'purchase_date': False,
-                    'member_id': (member_id, u'Gil, Pere'),
-                    'active': True,
-                    'order_date': '2020-06-06',
-                    'amortized_amount': 0.0,
-                    'name': u'APO000001'
-                })
+                              {
+                                  'first_effective_date': False,
+                                  'move_line_id': False,
+                                  'last_effective_date': False,
+                                  'last_interest_paid_date': False,
+                                  'nshares': 40,
+                                  'signed_date': False,
+                                  'draft': True,
+                                  'purchase_date': False,
+                                  'member_id': (member_id, u'Gil, Pere'),
+                                  'active': True,
+                                  'order_date': '2020-06-06',
+                                  'amortized_amount': 0.0,
+                                  'name': u'APO000001'
+                              })
             self.MailMockup.deactivate(cursor, uid)
 
     @freeze_time("2020-05-09")
@@ -254,16 +253,16 @@ class InvestmentTests(testing.OOTestCase):
                 uid = txn.user
                 self.MailMockup.activate(cursor, uid)
                 partner_id = self.IrModelData.get_object_reference(
-                            cursor, uid, 'som_generationkwh', 'res_partner_inversor1'
-                            )[1]
+                    cursor, uid, 'som_generationkwh', 'res_partner_inversor1'
+                )[1]
 
                 inv_id = self.Investment.create_from_form(cursor, uid,
-                        partner_id,
-                        '2020-06-06',
-                        4000,
-                        '10.10.23.123',
-                        'ES7712341234161234567890',
-                        'APO_202006')
+                                                          partner_id,
+                                                          '2020-06-06',
+                                                          4000,
+                                                          '10.10.23.123',
+                                                          'ES7712341234161234567890',
+                                                          'APO_202006')
                 member_id = self.IrModelData.get_object_reference(
                     cursor, uid, 'som_generationkwh', 'soci_0001')[1]
 
@@ -274,23 +273,23 @@ class InvestmentTests(testing.OOTestCase):
                 id_emission, name_emission = inv_0001.pop('emission_id')
                 self.assertEqual(name_emission, "Aportacions Juny")
                 self.assertEquals(inv_0001,
-                    {
-                        'first_effective_date': False,
-                        'move_line_id': False,
-                        'last_effective_date': False,
-                        'last_interest_paid_date': False,
-                        'nshares': 40,
-                        'signed_date': False,
-                        'draft': True,
-                        'purchase_date': False,
-                        'member_id': (member_id, u'Gil, Pere'),
-                        'active': True,
-                        'order_date': '2020-06-06',
-                        'amortized_amount': 0.0,
-                        'name': u'APO000001'
-                    })
+                                  {
+                                      'first_effective_date': False,
+                                      'move_line_id': False,
+                                      'last_effective_date': False,
+                                      'last_interest_paid_date': False,
+                                      'nshares': 40,
+                                      'signed_date': False,
+                                      'draft': True,
+                                      'purchase_date': False,
+                                      'member_id': (member_id, u'Gil, Pere'),
+                                      'active': True,
+                                      'order_date': '2020-06-06',
+                                      'amortized_amount': 0.0,
+                                      'name': u'APO000001'
+                                  })
                 self.MailMockup.deactivate(cursor, uid)
-        self.assertEqual(str(ctx.exception),'Emission not open yet')
+        self.assertEqual(str(ctx.exception), 'Emission not open yet')
 
     def test__create_from_form__whenNotAMember_GKWH(self):
         with self.assertRaises(PartnerException) as ctx:
@@ -298,18 +297,18 @@ class InvestmentTests(testing.OOTestCase):
                 cursor = txn.cursor
                 uid = txn.user
                 partner_id = self.IrModelData.get_object_reference(
-                            cursor, uid, 'som_generationkwh', 'res_partner_noinversor1'
-                            )[1]
+                    cursor, uid, 'som_generationkwh', 'res_partner_noinversor1'
+                )[1]
 
                 inv_id = self.Investment.create_from_form(cursor, uid,
-                    partner_id,
-                    '2017-01-01', # order_date
-                    4000,
-                    '10.10.23.123',
-                    'ES7712341234161234567890',
-                    'emissio_genkwh',
-                    )
-        self.assertEqual(str(ctx.exception),'Not a member')
+                                                          partner_id,
+                                                          '2017-01-01',  # order_date
+                                                          4000,
+                                                          '10.10.23.123',
+                                                          'ES7712341234161234567890',
+                                                          'emissio_genkwh',
+                                                          )
+        self.assertEqual(str(ctx.exception), 'Not a member')
 
     def test__create_from_form__whenNotAMember_APO(self):
         with self.assertRaises(PartnerException) as ctx:
@@ -317,19 +316,19 @@ class InvestmentTests(testing.OOTestCase):
                 cursor = txn.cursor
                 uid = txn.user
                 partner_id = self.IrModelData.get_object_reference(
-                            cursor, uid, 'som_generationkwh', 'res_partner_noinversor1'
-                            )[1]
+                    cursor, uid, 'som_generationkwh', 'res_partner_noinversor1'
+                )[1]
 
                 inv_id = self.Investment.create_from_form(cursor, uid,
-                    partner_id,
-                    '2017-01-01', # order_date
-                    4000,
-                    '10.10.23.123',
-                    'ES7712341234161234567890',
-                    'emissio_apo',
-                    )
+                                                          partner_id,
+                                                          '2017-01-01',  # order_date
+                                                          4000,
+                                                          '10.10.23.123',
+                                                          'ES7712341234161234567890',
+                                                          'emissio_apo',
+                                                          )
 
-        self.assertEqual(str(ctx.exception),'Not a member')
+        self.assertEqual(str(ctx.exception), 'Not a member')
 
     def test__create_from_form__withNonDivisibleAmount_APO(self):
         with self.assertRaises(InvestmentException) as ctx:
@@ -337,19 +336,19 @@ class InvestmentTests(testing.OOTestCase):
                 cursor = txn.cursor
                 uid = txn.user
                 partner_id = self.IrModelData.get_object_reference(
-                            cursor, uid, 'som_generationkwh', 'res_partner_inversor1'
-                            )[1]
+                    cursor, uid, 'som_generationkwh', 'res_partner_inversor1'
+                )[1]
 
                 inv_id = self.Investment.create_from_form(cursor, uid,
-                    partner_id,
-                    '2017-01-01', # order_date
-                    4003,
-                    '10.10.23.123',
-                    'ES7712341234161234567890',
-                    'emissio_apo',
-                    )
+                                                          partner_id,
+                                                          '2017-01-01',  # order_date
+                                                          4003,
+                                                          '10.10.23.123',
+                                                          'ES7712341234161234567890',
+                                                          'emissio_apo',
+                                                          )
 
-        self.assertEqual(str(ctx.exception),'Invalid amount')
+        self.assertEqual(str(ctx.exception), 'Invalid amount')
 
     def test__create_from_form__withNonDivisibleAmount_GKWH(self):
         with self.assertRaises(InvestmentException) as ctx:
@@ -357,19 +356,19 @@ class InvestmentTests(testing.OOTestCase):
                 cursor = txn.cursor
                 uid = txn.user
                 partner_id = self.IrModelData.get_object_reference(
-                            cursor, uid, 'som_generationkwh', 'res_partner_inversor1'
-                            )[1]
+                    cursor, uid, 'som_generationkwh', 'res_partner_inversor1'
+                )[1]
 
                 inv_id = self.Investment.create_from_form(cursor, uid,
-                    partner_id,
-                    '2017-01-01', # order_date
-                    4003,
-                    '10.10.23.123',
-                    'ES7712341234161234567890',
-                    'emissio_genkwh',
-                    )
+                                                          partner_id,
+                                                          '2017-01-01',  # order_date
+                                                          4003,
+                                                          '10.10.23.123',
+                                                          'ES7712341234161234567890',
+                                                          'emissio_genkwh',
+                                                          )
 
-        self.assertEqual(str(ctx.exception),'Invalid amount')
+        self.assertEqual(str(ctx.exception), 'Invalid amount')
 
     def test__create_from_form__withNegativeAmount_APO(self):
         with self.assertRaises(InvestmentException) as ctx:
@@ -377,19 +376,19 @@ class InvestmentTests(testing.OOTestCase):
                 cursor = txn.cursor
                 uid = txn.user
                 partner_id = self.IrModelData.get_object_reference(
-                            cursor, uid, 'som_generationkwh', 'res_partner_inversor1'
-                            )[1]
+                    cursor, uid, 'som_generationkwh', 'res_partner_inversor1'
+                )[1]
 
                 inv_id = self.Investment.create_from_form(cursor, uid,
-                    partner_id,
-                    '2017-01-01', # order_date
-                    -400,
-                    '10.10.23.123',
-                    'ES7712341234161234567890',
-                    'emissio_apo',
-                    )
+                                                          partner_id,
+                                                          '2017-01-01',  # order_date
+                                                          -400,
+                                                          '10.10.23.123',
+                                                          'ES7712341234161234567890',
+                                                          'emissio_apo',
+                                                          )
 
-        self.assertEqual(str(ctx.exception),'Invalid amount')
+        self.assertEqual(str(ctx.exception), 'Invalid amount')
 
     def test__create_from_form__withNegativeAmount_GKWH(self):
         with self.assertRaises(InvestmentException) as ctx:
@@ -397,19 +396,19 @@ class InvestmentTests(testing.OOTestCase):
                 cursor = txn.cursor
                 uid = txn.user
                 partner_id = self.IrModelData.get_object_reference(
-                            cursor, uid, 'som_generationkwh', 'res_partner_inversor1'
-                            )[1]
+                    cursor, uid, 'som_generationkwh', 'res_partner_inversor1'
+                )[1]
 
                 inv_id = self.Investment.create_from_form(cursor, uid,
-                    partner_id,
-                    '2017-01-01', # order_date
-                    -400,
-                    '10.10.23.123',
-                    'ES7712341234161234567890',
-                    'emissio_genkwh',
-                    )
+                                                          partner_id,
+                                                          '2017-01-01',  # order_date
+                                                          -400,
+                                                          '10.10.23.123',
+                                                          'ES7712341234161234567890',
+                                                          'emissio_genkwh',
+                                                          )
 
-        self.assertEqual(str(ctx.exception),'Invalid amount')
+        self.assertEqual(str(ctx.exception), 'Invalid amount')
 
     def test__create_from_form__withZeroAmount_APO(self):
         with self.assertRaises(InvestmentException) as ctx:
@@ -417,19 +416,19 @@ class InvestmentTests(testing.OOTestCase):
                 cursor = txn.cursor
                 uid = txn.user
                 partner_id = self.IrModelData.get_object_reference(
-                            cursor, uid, 'som_generationkwh', 'res_partner_inversor1'
-                            )[1]
+                    cursor, uid, 'som_generationkwh', 'res_partner_inversor1'
+                )[1]
 
                 inv_id = self.Investment.create_from_form(cursor, uid,
-                    partner_id,
-                    '2017-01-01', # order_date
-                    0,
-                    '10.10.23.123',
-                    'ES7712341234161234567890',
-                    'emissio_apo',
-                    )
+                                                          partner_id,
+                                                          '2017-01-01',  # order_date
+                                                          0,
+                                                          '10.10.23.123',
+                                                          'ES7712341234161234567890',
+                                                          'emissio_apo',
+                                                          )
 
-        self.assertEqual(str(ctx.exception),'Invalid amount')
+        self.assertEqual(str(ctx.exception), 'Invalid amount')
 
     def test__create_from_form__withZeroAmount_GKWH(self):
         with self.assertRaises(InvestmentException) as ctx:
@@ -437,19 +436,19 @@ class InvestmentTests(testing.OOTestCase):
                 cursor = txn.cursor
                 uid = txn.user
                 partner_id = self.IrModelData.get_object_reference(
-                            cursor, uid, 'som_generationkwh', 'res_partner_inversor1'
-                            )[1]
+                    cursor, uid, 'som_generationkwh', 'res_partner_inversor1'
+                )[1]
 
                 inv_id = self.Investment.create_from_form(cursor, uid,
-                    partner_id,
-                    '2017-01-01', # order_date
-                    0,
-                    '10.10.23.123',
-                    'ES7712341234161234567890',
-                    'emissio_genkwh',
-                    )
+                                                          partner_id,
+                                                          '2017-01-01',  # order_date
+                                                          0,
+                                                          '10.10.23.123',
+                                                          'ES7712341234161234567890',
+                                                          'emissio_genkwh',
+                                                          )
 
-        self.assertEqual(str(ctx.exception),'Invalid amount')
+        self.assertEqual(str(ctx.exception), 'Invalid amount')
 
     def test__create_from_form__withBadIban_APO(self):
         with self.assertRaises(PartnerException) as ctx:
@@ -457,19 +456,19 @@ class InvestmentTests(testing.OOTestCase):
                 cursor = txn.cursor
                 uid = txn.user
                 partner_id = self.IrModelData.get_object_reference(
-                            cursor, uid, 'som_generationkwh', 'res_partner_inversor1'
-                            )[1]
+                    cursor, uid, 'som_generationkwh', 'res_partner_inversor1'
+                )[1]
 
                 inv_id = self.Investment.create_from_form(cursor, uid,
-                    partner_id,
-                    '2017-01-01', # order_date
-                    3000,
-                    '10.10.23.123',
-                    'ES77123412341612345678ZZ',
-                    'emissio_apo',
-                    )
+                                                          partner_id,
+                                                          '2017-01-01',  # order_date
+                                                          3000,
+                                                          '10.10.23.123',
+                                                          'ES77123412341612345678ZZ',
+                                                          'emissio_apo',
+                                                          )
 
-        self.assertEqual(str(ctx.exception),'Wrong iban')
+        self.assertEqual(str(ctx.exception), 'Wrong iban')
 
     def test__create_from_form__withBadIban_GKWH(self):
         with self.assertRaises(PartnerException) as ctx:
@@ -477,19 +476,19 @@ class InvestmentTests(testing.OOTestCase):
                 cursor = txn.cursor
                 uid = txn.user
                 partner_id = self.IrModelData.get_object_reference(
-                            cursor, uid, 'som_generationkwh', 'res_partner_inversor1'
-                            )[1]
+                    cursor, uid, 'som_generationkwh', 'res_partner_inversor1'
+                )[1]
 
                 inv_id = self.Investment.create_from_form(cursor, uid,
-                    partner_id,
-                    '2017-01-01', # order_date
-                    3000,
-                    '10.10.23.123',
-                    'ES77123412341612345678ZZ',
-                    'emissio_gkwh',
-                    )
+                                                          partner_id,
+                                                          '2017-01-01',  # order_date
+                                                          3000,
+                                                          '10.10.23.123',
+                                                          'ES77123412341612345678ZZ',
+                                                          'emissio_gkwh',
+                                                          )
 
-        self.assertEqual(str(ctx.exception),'Wrong iban')
+        self.assertEqual(str(ctx.exception), 'Wrong iban')
 
     @freeze_time("2020-06-09")
     def test__create_from_form__sendsCreationEmailAPO(self):
@@ -498,16 +497,16 @@ class InvestmentTests(testing.OOTestCase):
             uid = txn.user
             self.MailMockup.activate(cursor, uid)
             partner_id = self.IrModelData.get_object_reference(
-                        cursor, uid, 'som_generationkwh', 'res_partner_inversor1'
-                        )[1]
+                cursor, uid, 'som_generationkwh', 'res_partner_inversor1'
+            )[1]
 
             inv_id = self.Investment.create_from_form(cursor, uid,
-                    partner_id,
-                    '2020-06-06',
-                    4000,
-                    '10.10.23.123',
-                    'ES7712341234161234567890',
-                    'APO_202006')
+                                                      partner_id,
+                                                      '2020-06-06',
+                                                      4000,
+                                                      '10.10.23.123',
+                                                      'ES7712341234161234567890',
+                                                      'APO_202006')
 
             self.assertMailLogEqual(self.MailMockup.log(cursor, uid), """\
                 logs:
@@ -516,9 +515,9 @@ class InvestmentTests(testing.OOTestCase):
                   template: aportacio_mail_creacio
                   from_id: {account_id}
                 """.format(
-                    id=inv_id,
-                    account_id = self._aportaMailAccount(cursor, uid),
-                ))
+                id=inv_id,
+                account_id=self._aportaMailAccount(cursor, uid),
+            ))
             self.MailMockup.deactivate(cursor, uid)
 
     def test__create_from_form__sendsCreationEmailGKWH(self):
@@ -527,16 +526,16 @@ class InvestmentTests(testing.OOTestCase):
             uid = txn.user
             self.MailMockup.activate(cursor, uid)
             partner_id = self.IrModelData.get_object_reference(
-                        cursor, uid, 'som_generationkwh', 'res_partner_inversor1'
-                        )[1]
+                cursor, uid, 'som_generationkwh', 'res_partner_inversor1'
+            )[1]
 
             inv_id = self.Investment.create_from_form(cursor, uid,
-                    partner_id,
-                    '2017-01-06',
-                    4000,
-                    '10.10.23.123',
-                    'ES7712341234161234567890',
-                    'emissio_genkwh')
+                                                      partner_id,
+                                                      '2017-01-06',
+                                                      4000,
+                                                      '10.10.23.123',
+                                                      'ES7712341234161234567890',
+                                                      'emissio_genkwh')
 
             self.assertMailLogEqual(self.MailMockup.log(cursor, uid), """\
                 logs:
@@ -545,9 +544,9 @@ class InvestmentTests(testing.OOTestCase):
                   template: generationkwh_mail_creacio
                   from_id: {account_id}
                 """.format(
-                    id=inv_id,
-                    account_id = self._generationMailAccount(cursor, uid),
-                ))
+                id=inv_id,
+                account_id=self._generationMailAccount(cursor, uid),
+            ))
             self.MailMockup.deactivate(cursor, uid)
 
     def test__create_from_form__ibanIsSet(self):
@@ -555,16 +554,16 @@ class InvestmentTests(testing.OOTestCase):
             cursor = txn.cursor
             uid = txn.user
             partner_id = self.IrModelData.get_object_reference(
-                        cursor, uid, 'som_generationkwh', 'res_partner_inversor1'
-                        )[1]
+                cursor, uid, 'som_generationkwh', 'res_partner_inversor1'
+            )[1]
 
             inv_id = self.Investment.create_from_form(cursor, uid,
-                partner_id,
-                '2017-01-01', # order_date
-                2000,
-                '10.10.23.1',
-                'ES7712341234161234567890',
-            )
+                                                      partner_id,
+                                                      '2017-01-01',  # order_date
+                                                      2000,
+                                                      '10.10.23.1',
+                                                      'ES7712341234161234567890',
+                                                      )
             partner = self.Partner.browse(cursor, uid, partner_id)
             self.assertTrue(partner.bank_inversions)
 
@@ -573,29 +572,30 @@ class InvestmentTests(testing.OOTestCase):
             cursor = txn.cursor
             uid = txn.user
             partner_id = self.IrModelData.get_object_reference(
-                        cursor, uid, 'som_generationkwh', 'res_partner_inversor1'
-                        )[1]
+                cursor, uid, 'som_generationkwh', 'res_partner_inversor1'
+            )[1]
             iban = 'ES7712341234161234567890'
             id = self.Investment.create_from_form(cursor, uid,
-                partner_id,
-                '2017-01-01', # order_date
-                2000,
-                '10.10.23.1',
-                iban,
-                'emissio_genkwh',
-                )
+                                                  partner_id,
+                                                  '2017-01-01',  # order_date
+                                                  2000,
+                                                  '10.10.23.1',
+                                                  iban,
+                                                  'emissio_genkwh',
+                                                  )
 
             gkwh_account_dict = self._propertyAccountData(cursor, uid, 'property_gkwh_account_demo')
             liq_account_dict = self._propertyAccountData(cursor, uid, 'property_liq_account_demo')
 
-            invoice_ids, errs =  self.Investment.create_initial_invoices(cursor, uid, [id])
+            invoice_ids, errs = self.Investment.create_initial_invoices(cursor, uid, [id])
 
             self.assertFalse(errs)
             self.assertTrue(invoice_ids)
             investment = self.Investment.browse(cursor, uid, id)
             mandate_id = self.Investment.get_or_create_payment_mandate(cursor, uid,
-                partner_id, iban, investment.emission_id.mandate_name, gkwh.creditorCode)
+                                                                       partner_id, iban, investment.emission_id.mandate_name, gkwh.creditorCode)
             partner_data = self.Partner.browse(cursor, uid, partner_id)
+            payment_type_id = self.PaymentType.search(cursor, uid, [('code', '=', 'RECIBO_CSB')])[0]
             self.assertInvoiceInfoEqual(cursor, uid, invoice_ids[0], u"""\
                 account_id: {liq_account_code} {liq_account_name}
                 amount_total: 2000.0
@@ -635,7 +635,7 @@ class InvestmentTests(testing.OOTestCase):
                 - {p.id}
                 - {p.name}
                 payment_type:
-                - 2
+                - {payment_type_id}
                 - Recibo domiciliado
                 sii_to_send: false
                 type: out_invoice
@@ -647,38 +647,40 @@ class InvestmentTests(testing.OOTestCase):
                 year=2018,
                 investment_name=investment.name,
                 p=partner_data,
-                num_soci= partner_data.ref[1:],
+                num_soci=partner_data.ref[1:],
                 investment_id=id,
                 mandate_id=mandate_id,
                 gkwh_account_code=gkwh_account_dict['code'],
                 gkwh_account_name=gkwh_account_dict['name'],
                 liq_account_code=liq_account_dict['code'],
-                liq_account_name=liq_account_dict['name']
-                ))
+                liq_account_name=liq_account_dict['name'],
+                payment_type_id=payment_type_id
+            ))
 
     def test__create_initial_invoices__AllOkAPO(self):
         with Transaction().start(self.database) as txn:
             cursor = txn.cursor
             uid = txn.user
             id = self.IrModelData.get_object_reference(
-                        cursor, uid, 'som_generationkwh', 'apo_0001'
-                        )[1]
+                cursor, uid, 'som_generationkwh', 'apo_0001'
+            )[1]
             apo_account_dict = self._propertyAccountData(cursor, uid, 'property_apo_account_demo')
             liq_account_dict = self._propertyAccountData(cursor, uid, 'property_liq_account_demo')
 
-            invoice_ids, errs =  self.Investment.create_initial_invoices(cursor, uid, [id])
+            invoice_ids, errs = self.Investment.create_initial_invoices(cursor, uid, [id])
 
             self.assertFalse(errs)
             self.assertTrue(invoice_ids)
             investment = self.Investment.browse(cursor, uid, id)
             iban = 'ES7712341234161234567890'
             partner_id = self.IrModelData.get_object_reference(
-                        cursor, uid, 'som_generationkwh', 'res_partner_inversor1'
-                        )[1]
+                cursor, uid, 'som_generationkwh', 'res_partner_inversor1'
+            )[1]
             emission_data = investment.emission_id
             mandate_id = self.Investment.get_or_create_payment_mandate(cursor, uid,
-                partner_id, iban, emission_data.mandate_name, gkwh.creditorCode)
+                                                                       partner_id, iban, emission_data.mandate_name, gkwh.creditorCode)
             partner_data = self.Partner.browse(cursor, uid, partner_id)
+            payment_type_id = self.PaymentType.search(cursor, uid, [('code', '=', 'RECIBO_CSB')])[0]
             self.assertInvoiceInfoEqual(cursor, uid, invoice_ids[0], u"""\
                 account_id: {liq_account_code} {liq_account_name}
                 amount_total: 1000.0
@@ -718,7 +720,7 @@ class InvestmentTests(testing.OOTestCase):
                 - {p.id}
                 - {p.name}
                 payment_type:
-                - 2
+                - {payment_type_id}
                 - Recibo domiciliado
                 sii_to_send: false
                 type: out_invoice
@@ -730,23 +732,24 @@ class InvestmentTests(testing.OOTestCase):
                 year=2018,
                 investment_name=investment.name,
                 p=partner_data,
-                num_soci= partner_data.ref[1:],
+                num_soci=partner_data.ref[1:],
                 investment_id=id,
                 mandate_id=mandate_id,
                 liq_account_code=liq_account_dict['code'],
                 liq_account_name=liq_account_dict['name'],
                 apo_account_code=apo_account_dict['code'],
-                apo_account_name=apo_account_dict['name']
-                ))
+                apo_account_name=apo_account_dict['name'],
+                payment_type_id=payment_type_id
+            ))
 
     def test__create_initial_invoices__withNegativeAmount_APO(self):
         with Transaction().start(self.database) as txn:
             cursor = txn.cursor
             uid = txn.user
             id = self.IrModelData.get_object_reference(
-                        cursor, uid, 'som_generationkwh', 'apo_0001'
-                        )[1]
-            investment = self.Investment.browse(cursor, uid, id)
+                cursor, uid, 'som_generationkwh', 'apo_0001'
+            )[1]
+            self.Investment.browse(cursor, uid, id)
             self.Investment.mark_as_invoiced(cursor, uid, id)
 
             result = self.Investment.create_initial_invoices(cursor, uid, [id])
@@ -754,16 +757,16 @@ class InvestmentTests(testing.OOTestCase):
             inv = self.Investment.read(cursor, uid, id)
             self.assertEqual(result, ([], [
                 "Investment {name} already invoiced".format(**inv)
-                ]))
+            ]))
 
     def test__create_initial_invoices__withNegativeAmount_GKWH(self):
         with Transaction().start(self.database) as txn:
             cursor = txn.cursor
             uid = txn.user
             id = self.IrModelData.get_object_reference(
-                        cursor, uid, 'som_generationkwh', 'genkwh_0001'
-                        )[1]
-            investment = self.Investment.browse(cursor, uid, id)
+                cursor, uid, 'som_generationkwh', 'genkwh_0001'
+            )[1]
+            self.Investment.browse(cursor, uid, id)
             self.Investment.mark_as_invoiced(cursor, uid, id)
 
             result = self.Investment.create_initial_invoices(cursor, uid, [id])
@@ -771,16 +774,16 @@ class InvestmentTests(testing.OOTestCase):
             inv = self.Investment.read(cursor, uid, id)
             self.assertEqual(result, ([], [
                 "Investment {name} already invoiced".format(**inv)
-                ]))
+            ]))
 
     def test__create_initial_invoices__twice_APO(self):
         with Transaction().start(self.database) as txn:
             cursor = txn.cursor
             uid = txn.user
             id = self.IrModelData.get_object_reference(
-                        cursor, uid, 'som_generationkwh', 'apo_0001'
-                        )[1]
-            investment = self.Investment.browse(cursor, uid, id)
+                cursor, uid, 'som_generationkwh', 'apo_0001'
+            )[1]
+            self.Investment.browse(cursor, uid, id)
 
             self.Investment.create_initial_invoices(cursor, uid, [id])
 
@@ -789,19 +792,19 @@ class InvestmentTests(testing.OOTestCase):
             inv = self.Investment.read(cursor, uid, id)
             self.assertEqual(result, ([], [
                 "Initial Invoice {name}-JUST already exists".format(**inv)
-                ]))
+            ]))
 
     def test__create_initial_invoices__twice_GKWH(self):
         with Transaction().start(self.database) as txn:
             cursor = txn.cursor
             uid = txn.user
             id = self.IrModelData.get_object_reference(
-                        cursor, uid, 'som_generationkwh', 'genkwh_0001'
-                        )[1]
-            investment = self.Investment.browse(cursor, uid, id)
+                cursor, uid, 'som_generationkwh', 'genkwh_0001'
+            )[1]
+            self.Investment.browse(cursor, uid, id)
 
             aa_obj = self.openerp.pool.get('account.account')
-            aa_id = aa_obj.search(cursor, uid, [('type','!=','view'),('type','!=','closed')])
+            aa_id = aa_obj.search(cursor, uid, [('type', '!=', 'view'), ('type', '!=', 'closed')])
             aa_obj.write(cursor, uid, aa_id[0], {'code': '163500000000'})
 
             self.Investment.create_initial_invoices(cursor, uid, [id])
@@ -811,15 +814,15 @@ class InvestmentTests(testing.OOTestCase):
             inv = self.Investment.read(cursor, uid, id)
             self.assertEqual(result, ([], [
                 "Initial Invoice {name}-JUST already exists".format(**inv)
-                ]))
+            ]))
 
     def test__create_initial_invoices__withUnnamedInvestment_APO(self):
         with Transaction().start(self.database) as txn:
             cursor = txn.cursor
             uid = txn.user
             id = self.IrModelData.get_object_reference(
-                        cursor, uid, 'som_generationkwh', 'apo_0001'
-                        )[1]
+                cursor, uid, 'som_generationkwh', 'apo_0001'
+            )[1]
             self.Investment.write(cursor, uid, id, dict(name=None))
 
             invoice_ids, errs = self.Investment.create_initial_invoices(cursor, uid, [id])
@@ -832,12 +835,12 @@ class InvestmentTests(testing.OOTestCase):
             cursor = txn.cursor
             uid = txn.user
             id = self.IrModelData.get_object_reference(
-                        cursor, uid, 'som_generationkwh', 'genkwh_0001'
-                        )[1]
+                cursor, uid, 'som_generationkwh', 'genkwh_0001'
+            )[1]
             self.Investment.write(cursor, uid, id, dict(name=None))
 
             aa_obj = self.openerp.pool.get('account.account')
-            aa_id = aa_obj.search(cursor, uid, [('type','!=','view'),('type','!=','closed')])
+            aa_id = aa_obj.search(cursor, uid, [('type', '!=', 'view'), ('type', '!=', 'closed')])
             aa_obj.write(cursor, uid, aa_id[0], {'code': '163500000000'})
 
             invoice_ids, errs = self.Investment.create_initial_invoices(cursor, uid, [id])
@@ -850,40 +853,42 @@ class InvestmentTests(testing.OOTestCase):
             cursor = txn.cursor
             uid = txn.user
             id = self.IrModelData.get_object_reference(
-                        cursor, uid, 'som_generationkwh', 'apo_0001'
-                        )[1]
+                cursor, uid, 'som_generationkwh', 'apo_0001'
+            )[1]
             inv = self.Investment.browse(cursor, uid, id)
-            self.Partner.write(cursor, uid, inv.member_id.partner_id.id, dict(bank_inversions = False ))
+            self.Partner.write(cursor, uid, inv.member_id.partner_id.id,
+                               dict(bank_inversions=False))
 
             invoice_ids, errs = self.Investment.create_initial_invoices(cursor, uid, [id])
 
             inv = self.Investment.browse(cursor, uid, id)
             self.assertEqual(errs, [u"""Partner '{name}' has no investment bank account"""
-                    .format(name=inv.member_id.partner_id.name)])
+                                    .format(name=inv.member_id.partner_id.name)])
 
     def test__create_initial_invoices__errorWhenNoBank_GKWH(self):
         with Transaction().start(self.database) as txn:
             cursor = txn.cursor
             uid = txn.user
             id = self.IrModelData.get_object_reference(
-                        cursor, uid, 'som_generationkwh', 'genkwh_0001'
-                        )[1]
+                cursor, uid, 'som_generationkwh', 'genkwh_0001'
+            )[1]
             inv = self.Investment.browse(cursor, uid, id)
-            self.Partner.write(cursor, uid, inv.member_id.partner_id.id, dict(bank_inversions = False ))
+            self.Partner.write(cursor, uid, inv.member_id.partner_id.id,
+                               dict(bank_inversions=False))
 
             invoice_ids, errs = self.Investment.create_initial_invoices(cursor, uid, [id])
 
             inv = self.Investment.browse(cursor, uid, id)
             self.assertEqual(errs, [u"""Partner '{name}' has no investment bank account"""
-                    .format(name=inv.member_id.partner_id.name)])
+                                    .format(name=inv.member_id.partner_id.name)])
 
     def test__create_initial_invoices__investmentWithPurchaseDate_APO(self):
         with Transaction().start(self.database) as txn:
             cursor = txn.cursor
             uid = txn.user
             id = self.IrModelData.get_object_reference(
-                        cursor, uid, 'som_generationkwh', 'apo_0001'
-                        )[1]
+                cursor, uid, 'som_generationkwh', 'apo_0001'
+            )[1]
             self.Investment.mark_as_invoiced(cursor, uid, id)
             self.Investment.mark_as_paid(cursor, uid, [id], '2016-01-04')
 
@@ -892,15 +897,15 @@ class InvestmentTests(testing.OOTestCase):
             inv = self.Investment.read(cursor, uid, id)
             self.assertEqual(result, ([], [
                 "Investment {name} was already paid".format(**inv)
-                ]))
+            ]))
 
     def test__create_initial_invoices__investmentWithPurchaseDate_GKWH(self):
         with Transaction().start(self.database) as txn:
             cursor = txn.cursor
             uid = txn.user
             id = self.IrModelData.get_object_reference(
-                        cursor, uid, 'som_generationkwh', 'genkwh_0001'
-                        )[1]
+                cursor, uid, 'som_generationkwh', 'genkwh_0001'
+            )[1]
             self.Investment.mark_as_invoiced(cursor, uid, id)
             self.Investment.mark_as_paid(cursor, uid, [id], '2016-01-04')
 
@@ -909,57 +914,57 @@ class InvestmentTests(testing.OOTestCase):
             inv = self.Investment.read(cursor, uid, id)
             self.assertEqual(result, ([], [
                 "Investment {name} was already paid".format(**inv)
-                ]))
+            ]))
 
     def test__create_initial_invoices__inactiveInvestment_APO(self):
         with Transaction().start(self.database) as txn:
             cursor = txn.cursor
             uid = txn.user
             id = self.IrModelData.get_object_reference(
-                        cursor, uid, 'som_generationkwh', 'apo_0001'
-                        )[1]
-            self.Investment.write(cursor, uid, id, {'active':False})
+                cursor, uid, 'som_generationkwh', 'apo_0001'
+            )[1]
+            self.Investment.write(cursor, uid, id, {'active': False})
 
             result = self.Investment.create_initial_invoices(cursor, uid, [id])
 
             inv = self.Investment.read(cursor, uid, id)
             self.assertEqual(result, ([], [
                 "Investment {name} is inactive".format(**inv)
-                ]))
+            ]))
 
     def test__create_initial_invoices__inactiveInvestment_GKWH(self):
         with Transaction().start(self.database) as txn:
             cursor = txn.cursor
             uid = txn.user
             id = self.IrModelData.get_object_reference(
-                        cursor, uid, 'som_generationkwh', 'genkwh_0001'
-                        )[1]
-            self.Investment.write(cursor, uid, id, {'active':False})
+                cursor, uid, 'som_generationkwh', 'genkwh_0001'
+            )[1]
+            self.Investment.write(cursor, uid, id, {'active': False})
 
             result = self.Investment.create_initial_invoices(cursor, uid, [id])
 
             inv = self.Investment.read(cursor, uid, id)
             self.assertEqual(result, ([], [
                 "Investment {name} is inactive".format(**inv)
-                ]))
+            ]))
 
     def test__create_initial_invoices__multiInvestments(self):
         with Transaction().start(self.database) as txn:
             cursor = txn.cursor
             uid = txn.user
             id1 = self.IrModelData.get_object_reference(
-                        cursor, uid, 'som_generationkwh', 'apo_0001'
-                        )[1]
+                cursor, uid, 'som_generationkwh', 'apo_0001'
+            )[1]
             id2 = self.IrModelData.get_object_reference(
-                        cursor, uid, 'som_generationkwh', 'genkwh_0001'
-                        )[1]
+                cursor, uid, 'som_generationkwh', 'genkwh_0001'
+            )[1]
 
             aa_obj = self.openerp.pool.get('account.account')
-            aa_id = aa_obj.search(cursor, uid, [('type','!=','view'),('type','!=','closed')])
+            aa_id = aa_obj.search(cursor, uid, [('type', '!=', 'view'), ('type', '!=', 'closed')])
             aa_obj.write(cursor, uid, aa_id[0], {'code': '163000000000'})
             aa_obj.write(cursor, uid, aa_id[1], {'code': '163500000000'})
 
-            result, errs = self.Investment.create_initial_invoices(cursor, uid, [id1,id2])
+            result, errs = self.Investment.create_initial_invoices(cursor, uid, [id1, id2])
 
             self.assertEqual(len(result), 2)
 
@@ -968,23 +973,23 @@ class InvestmentTests(testing.OOTestCase):
             cursor = txn.cursor
             uid = txn.user
             id1 = self.IrModelData.get_object_reference(
-                        cursor, uid, 'som_generationkwh', 'apo_0001'
-                        )[1]
-            self.Investment.write(cursor, uid, id1, {'active':False})
+                cursor, uid, 'som_generationkwh', 'apo_0001'
+            )[1]
+            self.Investment.write(cursor, uid, id1, {'active': False})
             id2 = self.IrModelData.get_object_reference(
-                        cursor, uid, 'som_generationkwh', 'genkwh_0001'
-                        )[1]
+                cursor, uid, 'som_generationkwh', 'genkwh_0001'
+            )[1]
 
             aa_obj = self.openerp.pool.get('account.account')
-            aa_id = aa_obj.search(cursor, uid, [('type','!=','view'),('type','!=','closed')])
+            aa_id = aa_obj.search(cursor, uid, [('type', '!=', 'view'), ('type', '!=', 'closed')])
             aa_obj.write(cursor, uid, aa_id[0], {'code': '163500000000'})
 
-            result, errs = self.Investment.create_initial_invoices(cursor, uid, [id1,id2])
+            result, errs = self.Investment.create_initial_invoices(cursor, uid, [id1, id2])
 
             inv = self.Investment.read(cursor, uid, id1)
             self.assertEqual(errs, [
                 "Investment {name} is inactive".format(**inv),
-                ])
+            ])
             self.assertEqual(len(result), 1)
 
     def test__create_initial_invoices__twoErrors(self):
@@ -992,23 +997,23 @@ class InvestmentTests(testing.OOTestCase):
             cursor = txn.cursor
             uid = txn.user
             id1 = self.IrModelData.get_object_reference(
-                        cursor, uid, 'som_generationkwh', 'apo_0001'
-                        )[1]
-            self.Investment.write(cursor, uid, id1, {'active':False})
+                cursor, uid, 'som_generationkwh', 'apo_0001'
+            )[1]
+            self.Investment.write(cursor, uid, id1, {'active': False})
             id2 = self.IrModelData.get_object_reference(
-                        cursor, uid, 'som_generationkwh', 'genkwh_0001'
-                        )[1]
+                cursor, uid, 'som_generationkwh', 'genkwh_0001'
+            )[1]
             self.Investment.mark_as_invoiced(cursor, uid, id2)
             self.Investment.mark_as_paid(cursor, uid, [id2], '2016-01-04')
 
-            result, errs = self.Investment.create_initial_invoices(cursor, uid, [id1,id2])
+            result, errs = self.Investment.create_initial_invoices(cursor, uid, [id1, id2])
 
             inv1 = self.Investment.read(cursor, uid, id1)
             inv2 = self.Investment.read(cursor, uid, id2)
             self.assertEqual(errs, [
                 "Investment {name} is inactive".format(**inv1),
                 "Investment {name} was already paid".format(**inv2),
-                ])
+            ])
             self.assertEqual(len(result), 0)
 
     def test__create_initial_invoices__zeroInvestments(self):
@@ -1025,34 +1030,34 @@ class InvestmentTests(testing.OOTestCase):
             cursor = txn.cursor
             uid = txn.user
             id = self.IrModelData.get_object_reference(
-                        cursor, uid, 'som_generationkwh', 'apo_0001'
-                        )[1]
+                cursor, uid, 'som_generationkwh', 'apo_0001'
+            )[1]
 
-            invoice_ids, errs =  self.Investment.create_initial_invoices(cursor, uid, [id])
+            invoice_ids, errs = self.Investment.create_initial_invoices(cursor, uid, [id])
             self.Investment.open_invoices(cursor, uid, invoice_ids)
             emission_id = self.IrModelData.get_object_reference(
-                        cursor, uid, 'som_generationkwh', 'emissio_apo'
-                        )[1]
+                cursor, uid, 'som_generationkwh', 'emissio_apo'
+            )[1]
             emission_data = self.Emission.browse(cursor, uid, emission_id)
 
             self.Investment.invoices_to_payment_order(cursor, uid, invoice_ids,
-                    emission_data.investment_payment_mode_id.name)
+                                                      emission_data.investment_payment_mode_id.name)
 
             invoice = self.Invoice.browse(cursor, uid, invoice_ids[0])
             order_id = self.Investment.get_or_create_open_payment_order(cursor,
-                    uid, emission_data.investment_payment_mode_id.name)
+                                                                        uid, emission_data.investment_payment_mode_id.name)
             lines = self.PaymentLine.search(cursor, uid, [
-                ('order_id','=', order_id),
-                ('communication','like', invoice.origin),
-                ])
+                ('order_id', '=', order_id),
+                ('communication', 'like', invoice.origin),
+            ])
             payment_order = self.PaymentOrder.read(cursor, uid, order_id,
-                    ['line_ids','create_account_moves','mode','n_lines',
-                    'paid', 'payment_type_name','state','total','type'])
-            self.assertEquals(payment_order,{
+                                                   ['line_ids', 'create_account_moves', 'mode', 'n_lines',
+                                                    'paid', 'payment_type_name', 'state', 'total', 'type'])
+            self.assertEquals(payment_order, {
                 'create_account_moves': u'bank-statement',
                 'line_ids': lines,
                 'mode': (emission_data.investment_payment_mode_id.id,
-                    emission_data.investment_payment_mode_id.name),
+                         emission_data.investment_payment_mode_id.name),
                 'n_lines': 1,
                 'paid': False,
                 'payment_type_name': u'Recibo domiciliado',
@@ -1060,7 +1065,7 @@ class InvestmentTests(testing.OOTestCase):
                 'total': -1000.0,
                 'type': u'receivable',
                 'id': payment_order['id'],
-             })
+            })
 
     def test__invoices_to_payment_order_GKWH(self):
         with Transaction().start(self.database) as txn:
@@ -1068,38 +1073,38 @@ class InvestmentTests(testing.OOTestCase):
             uid = txn.user
 
             id = self.IrModelData.get_object_reference(
-                        cursor, uid, 'som_generationkwh', 'genkwh_0001'
-                        )[1]
+                cursor, uid, 'som_generationkwh', 'genkwh_0001'
+            )[1]
 
             aa_obj = self.openerp.pool.get('account.account')
-            aa_id = aa_obj.search(cursor, uid, [('type','!=','view'),('type','!=','closed')])
+            aa_id = aa_obj.search(cursor, uid, [('type', '!=', 'view'), ('type', '!=', 'closed')])
             aa_obj.write(cursor, uid, aa_id[0], {'code': '163500000000'})
 
-            invoice_ids, errs =  self.Investment.create_initial_invoices(cursor, uid, [id])
+            invoice_ids, errs = self.Investment.create_initial_invoices(cursor, uid, [id])
             self.Investment.open_invoices(cursor, uid, invoice_ids)
             emission_id = self.IrModelData.get_object_reference(
-                        cursor, uid, 'som_generationkwh', 'emissio_apo'
-                        )[1]
+                cursor, uid, 'som_generationkwh', 'emissio_apo'
+            )[1]
             emission_data = self.Emission.browse(cursor, uid, emission_id)
 
             self.Investment.invoices_to_payment_order(cursor, uid,
-                    invoice_ids, emission_data.investment_payment_mode_id.name)
+                                                      invoice_ids, emission_data.investment_payment_mode_id.name)
 
             invoice = self.Invoice.browse(cursor, uid, invoice_ids[0])
             order_id = self.Investment.get_or_create_open_payment_order(cursor,
-                    uid, emission_data.investment_payment_mode_id.name)
+                                                                        uid, emission_data.investment_payment_mode_id.name)
             lines = self.PaymentLine.search(cursor, uid, [
-                ('order_id','=', order_id),
-                ('communication','like', invoice.origin),
-                ])
+                ('order_id', '=', order_id),
+                ('communication', 'like', invoice.origin),
+            ])
             payment_order = self.PaymentOrder.read(cursor, uid, order_id,
-                    ['line_ids','create_account_moves','mode','n_lines',
-                    'paid', 'payment_type_name','state','total','type'])
-            self.assertEquals(payment_order,{
+                                                   ['line_ids', 'create_account_moves', 'mode', 'n_lines',
+                                                    'paid', 'payment_type_name', 'state', 'total', 'type'])
+            self.assertEquals(payment_order, {
                 'create_account_moves': u'bank-statement',
                 'line_ids': lines,
                 'mode': (emission_data.investment_payment_mode_id.id,
-                    emission_data.investment_payment_mode_id.name),
+                         emission_data.investment_payment_mode_id.name),
                 'n_lines': 1,
                 'paid': False,
                 'payment_type_name': u'Recibo domiciliado',
@@ -1114,17 +1119,17 @@ class InvestmentTests(testing.OOTestCase):
             cursor = txn.cursor
             uid = txn.user
             id = self.IrModelData.get_object_reference(
-                        cursor, uid, 'som_generationkwh', 'apo_0001'
-                        )[1]
+                cursor, uid, 'som_generationkwh', 'apo_0001'
+            )[1]
             investment = self.Investment.browse(cursor, uid, id)
             partner_id = self.IrModelData.get_object_reference(
-                        cursor, uid, 'som_generationkwh', 'res_partner_inversor1'
-                        )[1]
+                cursor, uid, 'som_generationkwh', 'res_partner_inversor1'
+            )[1]
             apo_account_dict = self._propertyAccountData(cursor, uid, 'property_apo_account_demo')
             liq_account_dict = self._propertyAccountData(cursor, uid, 'property_liq_account_demo')
 
-
-            self.Investment.investment_actions(cursor, uid, investment.id).get_or_create_investment_account(cursor, uid, partner_id)
+            self.Investment.investment_actions(
+                cursor, uid, investment.id).get_or_create_investment_account(cursor, uid, partner_id)
 
             partner = self.Partner.browse(cursor, uid, partner_id)
             self.assertEquals(partner.property_account_aportacions.code, apo_account_dict['code'])
@@ -1135,17 +1140,18 @@ class InvestmentTests(testing.OOTestCase):
             cursor = txn.cursor
             uid = txn.user
             id = self.IrModelData.get_object_reference(
-                        cursor, uid, 'som_generationkwh', 'genkwh_0001'
-                        )[1]
+                cursor, uid, 'som_generationkwh', 'genkwh_0001'
+            )[1]
             investment = self.Investment.browse(cursor, uid, id)
             partner_id = self.IrModelData.get_object_reference(
-                        cursor, uid, 'som_generationkwh', 'res_partner_inversor1'
-                        )[1]
+                cursor, uid, 'som_generationkwh', 'res_partner_inversor1'
+            )[1]
 
             gkwh_account_dict = self._propertyAccountData(cursor, uid, 'property_gkwh_account_demo')
             liq_account_dict = self._propertyAccountData(cursor, uid, 'property_liq_account_demo')
 
-            self.Investment.investment_actions(cursor, uid, investment.id).get_or_create_investment_account(cursor, uid, partner_id)
+            self.Investment.investment_actions(
+                cursor, uid, investment.id).get_or_create_investment_account(cursor, uid, partner_id)
 
             partner = self.Partner.browse(cursor, uid, partner_id)
             self.assertEquals(partner.property_account_gkwh.code, gkwh_account_dict['code'])
@@ -1157,10 +1163,11 @@ class InvestmentTests(testing.OOTestCase):
             uid = txn.user
             self.MailMockup.activate(cursor, uid)
             investment_id = self.IrModelData.get_object_reference(
-                        cursor, uid, 'som_generationkwh', 'genkwh_0002'
-                        )[1]
+                cursor, uid, 'som_generationkwh', 'genkwh_0002'
+            )[1]
 
-            amortization_ids, errors = self.Investment.amortize(cursor, uid, '2021-10-13', [investment_id])
+            amortization_ids, errors = self.Investment.amortize(
+                cursor, uid, '2021-10-13', [investment_id])
 
             self.assertEqual(len(amortization_ids), 1)
             self.assertEqual(len(errors), 0)
@@ -1174,9 +1181,9 @@ class InvestmentTests(testing.OOTestCase):
                   template: generationkwh_mail_amortitzacio
                   from_id: {account_id}
                 """.format(
-                    id=amortization_ids[0],
-                    account_id = self._generationMailAccount(cursor, uid),
-                ))
+                id=amortization_ids[0],
+                account_id=self._generationMailAccount(cursor, uid),
+            ))
             self.MailMockup.deactivate(cursor, uid)
 
     @mock.patch("som_generationkwh.investment.GenerationkwhInvestment.get_irpf_amounts")
@@ -1186,16 +1193,18 @@ class InvestmentTests(testing.OOTestCase):
             uid = txn.user
             self.MailMockup.activate(cursor, uid)
             investment_id = self.IrModelData.get_object_reference(
-                        cursor, uid, 'som_generationkwh', 'genkwh_0002'
-                        )[1]
+                cursor, uid, 'som_generationkwh', 'genkwh_0002'
+            )[1]
 
-            get_irpf_mock.return_value = {'irpf_amount':50}
-            amortization_ids, errors = self.Investment.amortize(cursor, uid, '2021-10-13', [investment_id])
+            get_irpf_mock.return_value = {'irpf_amount': 50}
+            amortization_ids, errors = self.Investment.amortize(
+                cursor, uid, '2021-10-13', [investment_id])
 
             self.assertEqual(len(amortization_ids), 1)
             self.assertEqual(len(errors), 0)
             invoice = self.Invoice.browse(cursor, uid, amortization_ids[0])
-            self.assertEqual(invoice.payment_order_id.mode.name, gkwh.amortizationReceivablePaymentMode)
+            self.assertEqual(invoice.payment_order_id.mode.name,
+                             gkwh.amortizationReceivablePaymentMode)
             self.assertEqual(invoice.payment_order_id.mode.tipo, 'sepa19')
             self.assertMailLogEqual(self.MailMockup.log(cursor, uid), """\
                 logs:
@@ -1204,9 +1213,9 @@ class InvestmentTests(testing.OOTestCase):
                   template: generationkwh_mail_amortitzacio
                   from_id: {account_id}
                 """.format(
-                    id=amortization_ids[0],
-                    account_id = self._generationMailAccount(cursor, uid),
-                ))
+                id=amortization_ids[0],
+                account_id=self._generationMailAccount(cursor, uid),
+            ))
             self.MailMockup.deactivate(cursor, uid)
 
     def test__investment_payment__oneGKWH(self):
@@ -1215,11 +1224,11 @@ class InvestmentTests(testing.OOTestCase):
             uid = txn.user
             self.MailMockup.activate(cursor, uid)
             id2 = self.IrModelData.get_object_reference(
-                        cursor, uid, 'som_generationkwh', 'genkwh_0001'
-                        )[1]
+                cursor, uid, 'som_generationkwh', 'genkwh_0001'
+            )[1]
 
             aa_obj = self.openerp.pool.get('account.account')
-            aa_id = aa_obj.search(cursor, uid, [('type','!=','view'),('type','!=','closed')])
+            aa_id = aa_obj.search(cursor, uid, [('type', '!=', 'view'), ('type', '!=', 'closed')])
             aa_obj.write(cursor, uid, aa_id[0], {'code': '163500000000'})
 
             invoice_ids, errors = self.Investment.investment_payment(cursor, uid, [id2])
@@ -1233,9 +1242,9 @@ class InvestmentTests(testing.OOTestCase):
                   template: generationkwh_mail_pagament
                   from_id: {account_id}
                 """.format(
-                    id=invoice_ids[0],
-                    account_id = self._generationMailAccount(cursor, uid),
-                ))
+                id=invoice_ids[0],
+                account_id=self._generationMailAccount(cursor, uid),
+            ))
             self.MailMockup.deactivate(cursor, uid)
 
     def test__investment_payment__oneAPO(self):
@@ -1244,9 +1253,9 @@ class InvestmentTests(testing.OOTestCase):
             uid = txn.user
             self.MailMockup.activate(cursor, uid)
             inv_id = self.IrModelData.get_object_reference(
-                        cursor, uid, 'som_generationkwh', 'apo_0001'
-                        )[1]
-            investment = self.Investment.browse(cursor, uid, inv_id)
+                cursor, uid, 'som_generationkwh', 'apo_0001'
+            )[1]
+            self.Investment.browse(cursor, uid, inv_id)
 
             invoice_ids, errors = self.Investment.investment_payment(cursor, uid, [inv_id])
 
@@ -1259,9 +1268,9 @@ class InvestmentTests(testing.OOTestCase):
                   template: aportacio_mail_pagament
                   from_id: {account_id}
                 """.format(
-                    id=invoice_ids[0],
-                    account_id = self._aportaMailAccount(cursor, uid),
-                ))
+                id=invoice_ids[0],
+                account_id=self._aportaMailAccount(cursor, uid),
+            ))
             self.MailMockup.deactivate(cursor, uid)
 
     def test__get_investments_amount__noInvestments(self):
@@ -1269,12 +1278,12 @@ class InvestmentTests(testing.OOTestCase):
             cursor = txn.cursor
             uid = txn.user
             member_id = self.IrModelData.get_object_reference(
-                        cursor, uid, 'som_generationkwh', 'soci_0003'
-                        )[1]
+                cursor, uid, 'som_generationkwh', 'soci_0003'
+            )[1]
 
             amount = self.Investment.get_investments_amount(cursor, uid,
-                member_id,
-            )
+                                                            member_id,
+                                                            )
 
             self.assertEqual(amount, 0)
 
@@ -1283,12 +1292,12 @@ class InvestmentTests(testing.OOTestCase):
             cursor = txn.cursor
             uid = txn.user
             member_id = self.IrModelData.get_object_reference(
-                        cursor, uid, 'som_generationkwh', 'soci_0001'
-                        )[1]
+                cursor, uid, 'som_generationkwh', 'soci_0001'
+            )[1]
 
             amount = self.Investment.get_investments_amount(cursor, uid,
-                member_id,
-            )
+                                                            member_id,
+                                                            )
 
             self.assertEqual(amount, 6000)
 
@@ -1297,15 +1306,15 @@ class InvestmentTests(testing.OOTestCase):
             cursor = txn.cursor
             uid = txn.user
             member_id = self.IrModelData.get_object_reference(
-                        cursor, uid, 'som_generationkwh', 'soci_0001'
-                        )[1]
+                cursor, uid, 'som_generationkwh', 'soci_0001'
+            )[1]
             emission_id = self.IrModelData.get_object_reference(
                 cursor, uid, 'som_generationkwh', 'emissio_apo'
             )[1]
 
             amount = self.Investment.get_investments_amount(cursor, uid,
-                member_id, emission_id
-            )
+                                                            member_id, emission_id
+                                                            )
 
             self.assertEqual(amount, 1000)
 
@@ -1315,13 +1324,13 @@ class InvestmentTests(testing.OOTestCase):
             cursor = txn.cursor
             uid = txn.user
             partner_id = self.IrModelData.get_object_reference(
-                    cursor, uid, 'som_generationkwh', 'res_partner_noinversor2'
-                    )[1]
+                cursor, uid, 'som_generationkwh', 'res_partner_noinversor2'
+            )[1]
 
             amount = self.Investment.get_max_investment(cursor, uid,
-                partner_id, 'APO_202006'
-            )
-            #emission limit date is
+                                                        partner_id, 'APO_202006'
+                                                        )
+            # emission limit date is
 
             self.assertEqual(amount, 100000)
 
@@ -1331,12 +1340,12 @@ class InvestmentTests(testing.OOTestCase):
             cursor = txn.cursor
             uid = txn.user
             partner_id = self.IrModelData.get_object_reference(
-                    cursor, uid, 'som_generationkwh', 'res_partner_noinversor2'
-                    )[1]
+                cursor, uid, 'som_generationkwh', 'res_partner_noinversor2'
+            )[1]
 
             amount = self.Investment.get_max_investment(cursor, uid,
-                partner_id, 'APO_202006'
-            )
+                                                        partner_id, 'APO_202006'
+                                                        )
 
             self.assertEqual(amount, 100000)
 
@@ -1424,7 +1433,7 @@ class InvestmentTests(testing.OOTestCase):
                                                             partner_id, 'APO_202006'
                                                             )
 
-        self.assertEqual(str(ctx.exception),'Emission completed')
+        self.assertEqual(str(ctx.exception), 'Emission completed')
 
     @freeze_time("2020-06-13")
     def test__get_max_investment__withInvestments_outOfTemporaLimit(self):
@@ -1474,8 +1483,8 @@ class InvestmentTests(testing.OOTestCase):
                 cursor = txn.cursor
                 uid = txn.user
                 partner_id = self.IrModelData.get_object_reference(
-                            cursor, uid, 'som_generationkwh', 'res_partner_inversor2'
-                            )[1]
+                    cursor, uid, 'som_generationkwh', 'res_partner_inversor2'
+                )[1]
                 emission_id = self.IrModelData.get_object_reference(
                     cursor, uid, 'som_generationkwh', 'emissio_apo'
                 )[1]
@@ -1484,7 +1493,7 @@ class InvestmentTests(testing.OOTestCase):
                                                             partner_id, 'fake_emission_code'
                                                             )
 
-        self.assertEqual(str(ctx.exception),'Emission closed or not exist')
+        self.assertEqual(str(ctx.exception), 'Emission closed or not exist')
 
     @freeze_time("2020-06-01")
     def test__get_max_investment__emissionDayBeforeOpen(self):
@@ -1493,19 +1502,19 @@ class InvestmentTests(testing.OOTestCase):
                 cursor = txn.cursor
                 uid = txn.user
                 partner_id = self.IrModelData.get_object_reference(
-                            cursor, uid, 'som_generationkwh', 'res_partner_inversor2'
-                            )[1]
+                    cursor, uid, 'som_generationkwh', 'res_partner_inversor2'
+                )[1]
                 emission_id = self.IrModelData.get_object_reference(
                     cursor, uid, 'som_generationkwh', 'emissio_apo2'
                 )[1]
                 self.Emission.write(cursor, uid, emission_id,
-                                {'start_date': '2020-06-03', })
+                                    {'start_date': '2020-06-03', })
 
                 amount = self.Investment.get_max_investment(cursor, uid,
                                                             partner_id, 'APO_202006'
                                                             )
 
-        self.assertEqual(str(ctx.exception),'Emission not open yet')
+        self.assertEqual(str(ctx.exception), 'Emission not open yet')
 
     @freeze_time("2020-09-01")
     def test__get_max_investment__emissionDayAfterClosed(self):
@@ -1514,19 +1523,19 @@ class InvestmentTests(testing.OOTestCase):
                 cursor = txn.cursor
                 uid = txn.user
                 partner_id = self.IrModelData.get_object_reference(
-                            cursor, uid, 'som_generationkwh', 'res_partner_inversor2'
-                            )[1]
+                    cursor, uid, 'som_generationkwh', 'res_partner_inversor2'
+                )[1]
                 emission_id = self.IrModelData.get_object_reference(
                     cursor, uid, 'som_generationkwh', 'emissio_apo2'
                 )[1]
                 self.Emission.write(cursor, uid, emission_id,
-                                {'end_date': '2020-08-30', })
+                                    {'end_date': '2020-08-30', })
 
                 amount = self.Investment.get_max_investment(cursor, uid,
                                                             partner_id, 'APO_202006'
                                                             )
 
-        self.assertEqual(str(ctx.exception),'Emission closed')
+        self.assertEqual(str(ctx.exception), 'Emission closed')
 
     @freeze_time("2020-03-04")
     def test__get_max_investment__emissionNotOpen(self):
@@ -1535,19 +1544,19 @@ class InvestmentTests(testing.OOTestCase):
                 cursor = txn.cursor
                 uid = txn.user
                 partner_id = self.IrModelData.get_object_reference(
-                            cursor, uid, 'som_generationkwh', 'res_partner_inversor2'
-                            )[1]
+                    cursor, uid, 'som_generationkwh', 'res_partner_inversor2'
+                )[1]
                 emission_id = self.IrModelData.get_object_reference(
                     cursor, uid, 'som_generationkwh', 'emissio_apo'
                 )[1]
                 self.Emission.write(cursor, uid, emission_id,
-                                {'state': 'draft', })
+                                    {'state': 'draft', })
 
                 amount = self.Investment.get_max_investment(cursor, uid,
                                                             partner_id, 'APO_202003'
                                                             )
 
-        self.assertEqual(str(ctx.exception),'Emission closed or not exist')
+        self.assertEqual(str(ctx.exception), 'Emission closed or not exist')
 
     def test_mark_as_paid__allOk_APO(self):
         """
@@ -1558,8 +1567,8 @@ class InvestmentTests(testing.OOTestCase):
             cursor = txn.cursor
             uid = txn.user
             inv_id = self.IrModelData.get_object_reference(
-                        cursor, uid, 'som_generationkwh', 'apo_0001'
-                        )[1]
+                cursor, uid, 'som_generationkwh', 'apo_0001'
+            )[1]
 
             member_id = self.IrModelData.get_object_reference(
                 cursor, uid, 'som_generationkwh', 'soci_0001')[1]
@@ -1571,30 +1580,30 @@ class InvestmentTests(testing.OOTestCase):
 
             inv_0001 = self.Investment.read(cursor, uid, inv_id)
             self.assertLogEquals(inv_0001['log'],
-                u'PAID: Pagament de 1000 € efectuat [None]\n'
-                u'INVOICED: Facturada i remesada\n'
-            )
+                                 u'PAID: Pagament de 1000 € efectuat [None]\n'
+                                 u'INVOICED: Facturada i remesada\n'
+                                 )
             inv_0001.pop('actions_log')
             inv_0001.pop('log')
             inv_0001.pop('id')
             id_emission, name_emission = inv_0001.pop('emission_id')
             self.assertEqual(name_emission, "Aportacions")
             self.assertEquals(inv_0001,
-                {
-                    'first_effective_date': '2017-01-06',
-                    'move_line_id': False,
-                    'last_effective_date': False,
-                    'last_interest_paid_date': False,
-                    'nshares': 10,
-                    'signed_date': False,
-                    'draft': False,
-                    'purchase_date': '2017-01-06',
-                    'member_id': (member_id, u'Gil, Pere'),
-                    'active': True,
-                    'order_date': '2020-03-04',
-                    'amortized_amount': 0.0,
-                    'name': u'APO00001'
-                })
+                              {
+                                  'first_effective_date': '2017-01-06',
+                                  'move_line_id': False,
+                                  'last_effective_date': False,
+                                  'last_interest_paid_date': False,
+                                  'nshares': 10,
+                                  'signed_date': False,
+                                  'draft': False,
+                                  'purchase_date': '2017-01-06',
+                                  'member_id': (member_id, u'Gil, Pere'),
+                                  'active': True,
+                                  'order_date': '2020-03-04',
+                                  'amortized_amount': 0.0,
+                                  'name': u'APO00001'
+                              })
 
     def test_mark_as_paid__allOk_GKWH(self):
         """
@@ -1605,8 +1614,8 @@ class InvestmentTests(testing.OOTestCase):
             cursor = txn.cursor
             uid = txn.user
             inv_id = self.IrModelData.get_object_reference(
-                        cursor, uid, 'som_generationkwh', 'genkwh_0001'
-                        )[1]
+                cursor, uid, 'som_generationkwh', 'genkwh_0001'
+            )[1]
 
             member_id = self.IrModelData.get_object_reference(
                 cursor, uid, 'som_generationkwh', 'soci_0001')[1]
@@ -1618,30 +1627,30 @@ class InvestmentTests(testing.OOTestCase):
 
             inv_0001 = self.Investment.read(cursor, uid, inv_id)
             self.assertLogEquals(inv_0001['log'],
-                u'PAID: Pagament de 1000 € efectuat [None]\n'
-                u'INVOICED: Facturada i remesada\n'
-            )
+                                 u'PAID: Pagament de 1000 € efectuat [None]\n'
+                                 u'INVOICED: Facturada i remesada\n'
+                                 )
             inv_0001.pop('actions_log')
             inv_0001.pop('log')
             inv_0001.pop('id')
             id_emission, name_emission = inv_0001.pop('emission_id')
             self.assertEqual(name_emission, "GenerationkWH")
             self.assertEquals(inv_0001,
-                {
-                    'first_effective_date': '2018-01-06',
-                    'move_line_id': False,
-                    'last_effective_date': '2042-01-06',
-                    'last_interest_paid_date': False,
-                    'nshares': 10,
-                    'signed_date': False,
-                    'draft': False,
-                    'purchase_date': '2017-01-06',
-                    'member_id': (member_id, u'Gil, Pere'),
-                    'active': True,
-                    'order_date': '2019-10-01',
-                    'amortized_amount': 0.0,
-                    'name': u'GKWH00001'
-                })
+                              {
+                                  'first_effective_date': '2018-01-06',
+                                  'move_line_id': False,
+                                  'last_effective_date': '2042-01-06',
+                                  'last_interest_paid_date': False,
+                                  'nshares': 10,
+                                  'signed_date': False,
+                                  'draft': False,
+                                  'purchase_date': '2017-01-06',
+                                  'member_id': (member_id, u'Gil, Pere'),
+                                  'active': True,
+                                  'order_date': '2019-10-01',
+                                  'amortized_amount': 0.0,
+                                  'name': u'GKWH00001'
+                              })
 
     def test__effective_investments_tuple__allGKWH(self):
         """
@@ -1681,7 +1690,8 @@ class InvestmentTests(testing.OOTestCase):
             member2_id = self.IrModelData.get_object_reference(
                 cursor, uid, 'som_generationkwh', 'soci_aportacions')[1]
 
-            inv_tuple = self.Investment.effective_investments_tuple(cursor, uid, emission_type='apo')
+            inv_tuple = self.Investment.effective_investments_tuple(
+                cursor, uid, emission_type='apo')
 
             self.assertEquals(set(inv_tuple), set([
                 (member1_id, False, False, 50),
@@ -1698,13 +1708,14 @@ class InvestmentTests(testing.OOTestCase):
             cursor = txn.cursor
             uid = txn.user
             inv_id = self.IrModelData.get_object_reference(
-                        cursor, uid, 'som_generationkwh', 'genkwh_0001'
-                        )[1]
+                cursor, uid, 'som_generationkwh', 'genkwh_0001'
+            )[1]
 
             member_id = self.IrModelData.get_object_reference(
                 cursor, uid, 'som_generationkwh', 'soci_0001')[1]
 
-            inv_tuple = self.Investment.effective_investments_tuple(cursor, uid, emission_type='apo', emission_code='APO_202006')
+            inv_tuple = self.Investment.effective_investments_tuple(
+                cursor, uid, emission_type='apo', emission_code='APO_202006')
 
             self.assertEquals(inv_tuple, [(member_id, False, False, 50)])
 
@@ -1717,10 +1728,11 @@ class InvestmentTests(testing.OOTestCase):
             cursor = txn.cursor
             uid = txn.user
             member_id = self.IrModelData.get_object_reference(
-                        cursor, uid, 'som_generationkwh', 'soci_generation'
-                        )[1]
+                cursor, uid, 'som_generationkwh', 'soci_generation'
+            )[1]
 
-            has_effectives = self.Investment.member_has_effective(cursor, uid, member_id, '2010-01-01','2022-01-01')
+            has_effectives = self.Investment.member_has_effective(
+                cursor, uid, member_id, '2010-01-01', '2022-01-01')
 
             self.assertTrue(has_effectives)
 
@@ -1733,10 +1745,11 @@ class InvestmentTests(testing.OOTestCase):
             cursor = txn.cursor
             uid = txn.user
             member_id = self.IrModelData.get_object_reference(
-                        cursor, uid, 'som_generationkwh', 'soci_aportacions'
-                        )[1]
+                cursor, uid, 'som_generationkwh', 'soci_aportacions'
+            )[1]
 
-            has_effectives = self.Investment.member_has_effective(cursor, uid, member_id, '2010-01-01','2022-01-01', emission_type='apo')
+            has_effectives = self.Investment.member_has_effective(
+                cursor, uid, member_id, '2010-01-01', '2022-01-01', emission_type='apo')
 
             self.assertTrue(has_effectives)
 
@@ -1749,10 +1762,11 @@ class InvestmentTests(testing.OOTestCase):
             cursor = txn.cursor
             uid = txn.user
             member_id = self.IrModelData.get_object_reference(
-                        cursor, uid, 'som_generationkwh', 'soci_aportacions'
-                        )[1]
+                cursor, uid, 'som_generationkwh', 'soci_aportacions'
+            )[1]
 
-            has_effectives = self.Investment.member_has_effective(cursor, uid, member_id, '2010-01-01','2022-01-01')
+            has_effectives = self.Investment.member_has_effective(
+                cursor, uid, member_id, '2010-01-01', '2022-01-01')
 
             self.assertFalse(has_effectives)
 
@@ -1765,10 +1779,11 @@ class InvestmentTests(testing.OOTestCase):
             cursor = txn.cursor
             uid = txn.user
             member_id = self.IrModelData.get_object_reference(
-                        cursor, uid, 'som_generationkwh', 'soci_generation'
-                        )[1]
+                cursor, uid, 'som_generationkwh', 'soci_generation'
+            )[1]
 
-            has_effectives = self.Investment.member_has_effective(cursor, uid, member_id, '2010-01-01','2022-01-01', emission_type='apo')
+            has_effectives = self.Investment.member_has_effective(
+                cursor, uid, member_id, '2010-01-01', '2022-01-01', emission_type='apo')
 
             self.assertFalse(has_effectives)
 
@@ -1777,11 +1792,11 @@ class InvestmentTests(testing.OOTestCase):
             cursor = txn.cursor
             uid = txn.user
             inv_id = self.IrModelData.get_object_reference(
-                        cursor, uid, 'som_generationkwh', 'genkwh_0002'
-                        )[1]
+                cursor, uid, 'som_generationkwh', 'genkwh_0002'
+            )[1]
 
             self.assertEqual((2, 80),
-                self.Investment.pending_amortization_summary(cursor, uid, '2022-11-20', [inv_id]))
+                             self.Investment.pending_amortization_summary(cursor, uid, '2022-11-20', [inv_id]))
 
     def test__pending_amortization_summary__allInvestments(self):
         with Transaction().start(self.database) as txn:
@@ -1789,7 +1804,7 @@ class InvestmentTests(testing.OOTestCase):
             uid = txn.user
 
             self.assertEqual((4, 120),
-                self.Investment.pending_amortization_summary(cursor, uid, '2022-11-20'))
+                             self.Investment.pending_amortization_summary(cursor, uid, '2022-11-20'))
 
     def test__get_stats_investment_generation__when_last_effective_date(self):
         """
@@ -1807,14 +1822,17 @@ class InvestmentTests(testing.OOTestCase):
             with_last_effective_date_ids = inv_ids[:with_last_effective_date]
             without_last_effective_date_ids = inv_ids[with_last_effective_date:]
 
-            inv_datas = self.Investment.read(cursor, uid, without_last_effective_date_ids, ['member_id'])
+            inv_datas = self.Investment.read(
+                cursor, uid, without_last_effective_date_ids, ['member_id'])
             members = [inv_data['member_id'] for inv_data in inv_datas]
 
             today = date.today().strftime('%Y-%m-%d')
             yesterday = (date.today() - timedelta(days=1)).strftime('%Y-%m-%d')
 
-            self.Investment.write(cursor, uid, without_last_effective_date_ids ,{'last_effective_date':None})
-            self.Investment.write(cursor, uid, with_last_effective_date_ids ,{'last_effective_date': yesterday})
+            self.Investment.write(cursor, uid, without_last_effective_date_ids, {
+                                  'last_effective_date': None})
+            self.Investment.write(cursor, uid, with_last_effective_date_ids,
+                                  {'last_effective_date': yesterday})
 
             ret = self.Investment.get_stats_investment_generation(cursor, uid, {'today': today})
             socis = ret[0]['socis']
@@ -1842,8 +1860,10 @@ class InvestmentTests(testing.OOTestCase):
             today = date.today().strftime('%Y-%m-%d')
             yesterday = (date.today() - timedelta(days=1)).strftime('%Y-%m-%d')
 
-            self.Investment.write(cursor, uid, without_last_effective_date_ids ,{'last_effective_date':None})
-            self.Investment.write(cursor, uid, with_last_effective_date_ids ,{'last_effective_date': today})
+            self.Investment.write(cursor, uid, without_last_effective_date_ids, {
+                                  'last_effective_date': None})
+            self.Investment.write(cursor, uid, with_last_effective_date_ids,
+                                  {'last_effective_date': today})
 
             ret = self.Investment.get_stats_investment_generation(cursor, uid, {'today': yesterday})
             socis = ret[0]['socis']
@@ -1869,8 +1889,10 @@ class InvestmentTests(testing.OOTestCase):
             today = date.today().strftime('%Y-%m-%d')
             yesterday = (date.today() - timedelta(days=1)).strftime('%Y-%m-%d')
 
-            self.Investment.write(cursor, uid, without_last_effective_date_ids ,{'last_effective_date':None , 'nshares':10})
-            self.Investment.write(cursor, uid, with_last_effective_date_ids ,{'last_effective_date':yesterday})
+            self.Investment.write(cursor, uid, without_last_effective_date_ids, {
+                                  'last_effective_date': None, 'nshares': 10})
+            self.Investment.write(cursor, uid, with_last_effective_date_ids,
+                                  {'last_effective_date': yesterday})
 
             ret = self.Investment.get_stats_investment_generation(cursor, uid, {'today': today})
             amount = ret[0]['amount']
@@ -1896,14 +1918,15 @@ class InvestmentTests(testing.OOTestCase):
             today = date.today().strftime('%Y-%m-%d')
             yesterday = (date.today() - timedelta(days=1)).strftime('%Y-%m-%d')
 
-            self.Investment.write(cursor, uid, without_last_effective_date_ids ,{'last_effective_date':None , 'nshares':10})
-            self.Investment.write(cursor, uid, with_last_effective_date_ids ,{'last_effective_date':today , 'nshares':10})
+            self.Investment.write(cursor, uid, without_last_effective_date_ids, {
+                                  'last_effective_date': None, 'nshares': 10})
+            self.Investment.write(cursor, uid, with_last_effective_date_ids, {
+                                  'last_effective_date': today, 'nshares': 10})
 
             ret = self.Investment.get_stats_investment_generation(cursor, uid, {'today': yesterday})
             amount = ret[0]['amount']
 
             self.assertEqual(amount, len(inv_ids) * 1000)
-
 
     def test__get_stats_investment_generation__amount_2023(self):
         """
@@ -1915,38 +1938,41 @@ class InvestmentTests(testing.OOTestCase):
             uid = txn.user
 
             inv_ids = self.Investment.search(cursor, uid, [('emission_id.type', '=', 'genkwh')])
-            self.Investment.write(cursor, uid, inv_ids[-1] , {'order_date': date(2023, 9, 27) , 'nshares': 5})
+            self.Investment.write(cursor, uid, inv_ids[-1],
+                                  {'order_date': date(2023, 9, 27), 'nshares': 5})
 
             ret = self.Investment.get_stats_investment_generation(cursor, uid)
             amount_2023 = ret[0]['amount_2023']
 
             self.assertEqual(amount_2023, 500)
 
-
     def test__create_divestment_invoice__withouProfitGKWH(self):
         with Transaction().start(self.database) as txn:
             cursor = txn.cursor
             uid = txn.user
             partner_id = self.IrModelData.get_object_reference(
-                        cursor, uid, 'som_generationkwh', 'res_partner_inversor1'
-                        )[1]
+                cursor, uid, 'som_generationkwh', 'res_partner_inversor1'
+            )[1]
             investment_id = self.IrModelData.get_object_reference(
-                        cursor, uid, 'som_generationkwh', 'genkwh_0001'
-                        )[1]
+                cursor, uid, 'som_generationkwh', 'genkwh_0001'
+            )[1]
             iban = 'ES7712341234161234567890'
             investment = self.Investment.browse(cursor, uid, investment_id)
             mandate_id = self.Investment.get_or_create_payment_mandate(cursor, uid,
-                partner_id, iban, investment.emission_id.mandate_name, gkwh.creditorCode)
+                                                                       partner_id, iban, investment.emission_id.mandate_name, gkwh.creditorCode)
             date_invoice = '2020-04-23'
             pending_amount = 1000
             gkwh_account_dict = self._propertyAccountData(cursor, uid, 'property_gkwh_account_demo')
             liq_account_dict = self._propertyAccountData(cursor, uid, 'property_liq_account_demo')
 
-            invoice_ids, errs =  self.Investment.create_divestment_invoice(cursor, uid, investment_id, date_invoice, pending_amount)
+            invoice_ids, errs = self.Investment.create_divestment_invoice(
+                cursor, uid, investment_id, date_invoice, pending_amount)
 
             self.assertFalse(errs)
             self.assertTrue(invoice_ids)
             partner_data = self.Partner.browse(cursor, uid, partner_id)
+            payment_type_id = self.PaymentType.search(
+                cursor, uid, [('code', '=', 'TRANSFERENCIA_CSB')])[0]
             self.assertInvoiceInfoEqual(cursor, uid, invoice_ids, u"""\
                 account_id: {liq_account_code} {liq_account_name}
                 amount_total: 1000.0
@@ -1987,7 +2013,7 @@ class InvestmentTests(testing.OOTestCase):
                 - {p.id}
                 - {p.name}
                 payment_type:
-                - 3
+                - {payment_type_id}
                 - Transferencia
                 sii_to_send: false
                 type: in_invoice
@@ -1999,29 +2025,30 @@ class InvestmentTests(testing.OOTestCase):
                 year=2018,
                 investment_name=investment.name,
                 p=partner_data,
-                num_soci= partner_data.ref[1:],
+                num_soci=partner_data.ref[1:],
                 investment_id=investment_id,
                 mandate_id=mandate_id,
                 gkwh_account_code=gkwh_account_dict['code'],
                 gkwh_account_name=gkwh_account_dict['name'],
                 liq_account_code=liq_account_dict['code'],
-                liq_account_name=liq_account_dict['name']
-                ))
+                liq_account_name=liq_account_dict['name'],
+                payment_type_id=payment_type_id
+            ))
 
     def test__create_divestment_invoice__withProfitOneYearOkGKWH(self):
         with Transaction().start(self.database) as txn:
             cursor = txn.cursor
             uid = txn.user
             partner_id = self.IrModelData.get_object_reference(
-                        cursor, uid, 'som_generationkwh', 'res_partner_inversor1'
-                        )[1]
+                cursor, uid, 'som_generationkwh', 'res_partner_inversor1'
+            )[1]
             investment_id = self.IrModelData.get_object_reference(
-                        cursor, uid, 'som_generationkwh', 'genkwh_0001'
-                        )[1]
+                cursor, uid, 'som_generationkwh', 'genkwh_0001'
+            )[1]
             iban = 'ES7712341234161234567890'
             investment = self.Investment.browse(cursor, uid, investment_id)
             mandate_id = self.Investment.get_or_create_payment_mandate(cursor, uid,
-                partner_id, iban, investment.emission_id.mandate_name, gkwh.creditorCode)
+                                                                       partner_id, iban, investment.emission_id.mandate_name, gkwh.creditorCode)
             date_invoice = '2020-04-23'
             pending_amount = 1000
             irpf_amount_current_year = 7
@@ -2030,11 +2057,14 @@ class InvestmentTests(testing.OOTestCase):
             gkwh_account_dict = self._propertyAccountData(cursor, uid, 'property_gkwh_account_demo')
             liq_account_dict = self._propertyAccountData(cursor, uid, 'property_liq_account_demo')
 
-            invoice_ids, errs =  self.Investment.create_divestment_invoice(cursor, uid, investment_id, date_invoice, pending_amount, irpf_amount_current_year, irpf_amount)
+            invoice_ids, errs = self.Investment.create_divestment_invoice(
+                cursor, uid, investment_id, date_invoice, pending_amount, irpf_amount_current_year, irpf_amount)
 
             self.assertFalse(errs)
             self.assertTrue(invoice_ids)
             partner_data = self.Partner.browse(cursor, uid, partner_id)
+            payment_type_id = self.PaymentType.search(
+                cursor, uid, [('code', '=', 'TRANSFERENCIA_CSB')])[0]
             self.assertInvoiceInfoEqual(cursor, uid, invoice_ids, u"""\
                 account_id: {liq_account_code} {liq_account_name}
                 amount_total: 993.0
@@ -2097,7 +2127,7 @@ class InvestmentTests(testing.OOTestCase):
                 - {p.id}
                 - {p.name}
                 payment_type:
-                - 3
+                - {payment_type_id}
                 - Transferencia
                 sii_to_send: false
                 type: in_invoice
@@ -2109,7 +2139,7 @@ class InvestmentTests(testing.OOTestCase):
                 year=2020,
                 investment_name=investment.name,
                 p=partner_data,
-                num_soci= partner_data.ref[1:],
+                num_soci=partner_data.ref[1:],
                 investment_id=investment_id,
                 mandate_id=mandate_id,
                 purchase_date=investment.purchase_date,
@@ -2117,23 +2147,24 @@ class InvestmentTests(testing.OOTestCase):
                 gkwh_account_code=gkwh_account_dict['code'],
                 gkwh_account_name=gkwh_account_dict['name'],
                 liq_account_code=liq_account_dict['code'],
-                liq_account_name=liq_account_dict['name']
-                ))
+                liq_account_name=liq_account_dict['name'],
+                payment_type_id=payment_type_id
+            ))
 
     def test__create_divestment_invoice__withProfitTwoYears_irpNotRoundedOkGKWH(self):
         with Transaction().start(self.database) as txn:
             cursor = txn.cursor
             uid = txn.user
             partner_id = self.IrModelData.get_object_reference(
-                        cursor, uid, 'som_generationkwh', 'res_partner_inversor1'
-                        )[1]
+                cursor, uid, 'som_generationkwh', 'res_partner_inversor1'
+            )[1]
             investment_id = self.IrModelData.get_object_reference(
-                        cursor, uid, 'som_generationkwh', 'genkwh_0001'
-                        )[1]
+                cursor, uid, 'som_generationkwh', 'genkwh_0001'
+            )[1]
             iban = 'ES7712341234161234567890'
             investment = self.Investment.browse(cursor, uid, investment_id)
             mandate_id = self.Investment.get_or_create_payment_mandate(cursor, uid,
-                partner_id, iban, investment.emission_id.mandate_name, gkwh.creditorCode)
+                                                                       partner_id, iban, investment.emission_id.mandate_name, gkwh.creditorCode)
             date_invoice = '2020-04-23'
             pending_amount = 1000
             irpf_amount_current_year = 0.032211777
@@ -2141,11 +2172,14 @@ class InvestmentTests(testing.OOTestCase):
             gkwh_account_dict = self._propertyAccountData(cursor, uid, 'property_gkwh_account_demo')
             liq_account_dict = self._propertyAccountData(cursor, uid, 'property_liq_account_demo')
 
-            invoice_ids, errs =  self.Investment.create_divestment_invoice(cursor, uid, investment_id, date_invoice, pending_amount, irpf_amount_current_year, irpf_amount)
+            invoice_ids, errs = self.Investment.create_divestment_invoice(
+                cursor, uid, investment_id, date_invoice, pending_amount, irpf_amount_current_year, irpf_amount)
 
             self.assertFalse(errs)
             self.assertTrue(invoice_ids)
             partner_data = self.Partner.browse(cursor, uid, partner_id)
+            payment_type_id = self.PaymentType.search(
+                cursor, uid, [('code', '=', 'TRANSFERENCIA_CSB')])[0]
             self.assertInvoiceInfoEqual(cursor, uid, invoice_ids, u"""\
                 account_id: {liq_account_code} {liq_account_name}
                 amount_total: 999.9
@@ -2230,7 +2264,7 @@ class InvestmentTests(testing.OOTestCase):
                 - {p.id}
                 - {p.name}
                 payment_type:
-                - 3
+                - {payment_type_id}
                 - Transferencia
                 sii_to_send: false
                 type: in_invoice
@@ -2240,10 +2274,10 @@ class InvestmentTests(testing.OOTestCase):
                 id=invoice_ids,
                 iban='ES77 1234 1234 1612 3456 7890',
                 year=2020,
-                yearm1 = 2019,
+                yearm1=2019,
                 investment_name=investment.name,
                 p=partner_data,
-                num_soci= partner_data.ref[1:],
+                num_soci=partner_data.ref[1:],
                 investment_id=investment_id,
                 mandate_id=mandate_id,
                 purchase_date=investment.purchase_date,
@@ -2251,38 +2285,40 @@ class InvestmentTests(testing.OOTestCase):
                 gkwh_account_code=gkwh_account_dict['code'],
                 gkwh_account_name=gkwh_account_dict['name'],
                 liq_account_code=liq_account_dict['code'],
-                liq_account_name=liq_account_dict['name']
-                ))
-
-
+                liq_account_name=liq_account_dict['name'],
+                payment_type_id=payment_type_id
+            ))
 
     def test__create_divestment_invoice__withProfitTwoYears_okGKWH(self):
         with Transaction().start(self.database) as txn:
             cursor = txn.cursor
             uid = txn.user
             partner_id = self.IrModelData.get_object_reference(
-                        cursor, uid, 'som_generationkwh', 'res_partner_inversor1'
-                        )[1]
+                cursor, uid, 'som_generationkwh', 'res_partner_inversor1'
+            )[1]
             investment_id = self.IrModelData.get_object_reference(
-                        cursor, uid, 'som_generationkwh', 'genkwh_0001'
-                        )[1]
+                cursor, uid, 'som_generationkwh', 'genkwh_0001'
+            )[1]
 
             gkwh_account_dict = self._propertyAccountData(cursor, uid, 'property_gkwh_account_demo')
             liq_account_dict = self._propertyAccountData(cursor, uid, 'property_liq_account_demo')
             iban = 'ES7712341234161234567890'
             investment = self.Investment.browse(cursor, uid, investment_id)
             mandate_id = self.Investment.get_or_create_payment_mandate(cursor, uid,
-                partner_id, iban, investment.emission_id.mandate_name, gkwh.creditorCode)
+                                                                       partner_id, iban, investment.emission_id.mandate_name, gkwh.creditorCode)
             date_invoice = '2020-04-23'
             pending_amount = 1000
             irpf_amount_current_year = 7
             irpf_amount = 3
 
-            invoice_ids, errs =  self.Investment.create_divestment_invoice(cursor, uid, investment_id, date_invoice, pending_amount, irpf_amount_current_year, irpf_amount)
+            invoice_ids, errs = self.Investment.create_divestment_invoice(
+                cursor, uid, investment_id, date_invoice, pending_amount, irpf_amount_current_year, irpf_amount)
 
             self.assertFalse(errs)
             self.assertTrue(invoice_ids)
             partner_data = self.Partner.browse(cursor, uid, partner_id)
+            payment_type_id = self.PaymentType.search(
+                cursor, uid, [('code', '=', 'TRANSFERENCIA_CSB')])[0]
             self.assertInvoiceInfoEqual(cursor, uid, invoice_ids, u"""\
                 account_id: {liq_account_code} {liq_account_name}
                 amount_total: 990.0
@@ -2367,7 +2403,7 @@ class InvestmentTests(testing.OOTestCase):
                 - {p.id}
                 - {p.name}
                 payment_type:
-                - 3
+                - {payment_type_id}
                 - Transferencia
                 sii_to_send: false
                 type: in_invoice
@@ -2377,10 +2413,10 @@ class InvestmentTests(testing.OOTestCase):
                 id=invoice_ids,
                 iban='ES77 1234 1234 1612 3456 7890',
                 year=2020,
-                yearm1 = 2019,
+                yearm1=2019,
                 investment_name=investment.name,
                 p=partner_data,
-                num_soci= partner_data.ref[1:],
+                num_soci=partner_data.ref[1:],
                 investment_id=investment_id,
                 mandate_id=mandate_id,
                 purchase_date=investment.purchase_date,
@@ -2388,34 +2424,38 @@ class InvestmentTests(testing.OOTestCase):
                 gkwh_account_code=gkwh_account_dict['code'],
                 gkwh_account_name=gkwh_account_dict['name'],
                 liq_account_code=liq_account_dict['code'],
-                liq_account_name=liq_account_dict['name']
-                ))
+                liq_account_name=liq_account_dict['name'],
+                payment_type_id=payment_type_id
+            ))
 
     def test__create_divestment_invoice__APO(self):
         with Transaction().start(self.database) as txn:
             cursor = txn.cursor
             uid = txn.user
             partner_id = self.IrModelData.get_object_reference(
-                        cursor, uid, 'som_generationkwh', 'res_partner_inversor1'
-                        )[1]
+                cursor, uid, 'som_generationkwh', 'res_partner_inversor1'
+            )[1]
             investment_id = self.IrModelData.get_object_reference(
-                        cursor, uid, 'som_generationkwh', 'apo_0001'
-                        )[1]
+                cursor, uid, 'som_generationkwh', 'apo_0001'
+            )[1]
             iban = 'ES7712341234161234567890'
 
             investment = self.Investment.browse(cursor, uid, investment_id)
             mandate_id = self.Investment.get_or_create_payment_mandate(cursor, uid,
-                partner_id, iban, investment.emission_id.mandate_name, gkwh.creditorCode)
+                                                                       partner_id, iban, investment.emission_id.mandate_name, gkwh.creditorCode)
             date_invoice = '2020-04-23'
             pending_amount = 1000
             apo_account_dict = self._propertyAccountData(cursor, uid, 'property_apo_account_demo')
             liq_account_dict = self._propertyAccountData(cursor, uid, 'property_liq_account_demo')
 
-            invoice_ids, errs = self.Investment.create_divestment_invoice(cursor, uid, investment_id, date_invoice, pending_amount)
+            invoice_ids, errs = self.Investment.create_divestment_invoice(
+                cursor, uid, investment_id, date_invoice, pending_amount)
 
             self.assertFalse(errs)
             self.assertTrue(invoice_ids)
             partner_data = self.Partner.browse(cursor, uid, partner_id)
+            payment_type_id = self.PaymentType.search(
+                cursor, uid, [('code', '=', 'TRANSFERENCIA_CSB')])[0]
             self.assertInvoiceInfoEqual(cursor, uid, invoice_ids, u"""\
                 account_id: {liq_account_code} {liq_account_name}
                 amount_total: 1000.0
@@ -2456,7 +2496,7 @@ class InvestmentTests(testing.OOTestCase):
                 - {p.id}
                 - {p.name}
                 payment_type:
-                - 3
+                - {payment_type_id}
                 - Transferencia
                 sii_to_send: false
                 type: in_invoice
@@ -2474,8 +2514,9 @@ class InvestmentTests(testing.OOTestCase):
                 apo_account_name=apo_account_dict['name'],
                 apo_account_code=apo_account_dict['code'],
                 liq_account_code=liq_account_dict['code'],
-                liq_account_name=liq_account_dict['name']
-                ))
+                liq_account_name=liq_account_dict['name'],
+                payment_type_id=payment_type_id
+            ))
 
     @unittest.skip("FIXME: There is an error with the payment mode, but probably a test data problem D:")
     def test__divest_investment__APO_whenOne(self):
@@ -2493,7 +2534,8 @@ class InvestmentTests(testing.OOTestCase):
 
             self.Investment.divest(cursor, uid, [investment_id])
 
-            last_effective_date = self.Investment.read(cursor, uid, investment_id, ['last_effective_date'])['last_effective_date']
+            last_effective_date = self.Investment.read(cursor, uid, investment_id, ['last_effective_date'])[
+                'last_effective_date']
             today = datetime.today().strftime("%Y-%m-%d")
 
             self.assertEqual(last_effective_date, today)
@@ -2510,12 +2552,13 @@ class InvestmentTests(testing.OOTestCase):
             )[1]
 
             aa_obj = self.openerp.pool.get('account.account')
-            aa_id = aa_obj.search(cursor, uid, [('type','!=','view'),('type','!=','closed')])
+            aa_id = aa_obj.search(cursor, uid, [('type', '!=', 'view'), ('type', '!=', 'closed')])
             aa_obj.write(cursor, uid, aa_id[0], {'code': '163500000000'})
 
             self.Investment.divest(cursor, uid, [investment_id])
 
-            last_effective_date = self.Investment.read(cursor, uid, investment_id, ['last_effective_date'])['last_effective_date']
+            last_effective_date = self.Investment.read(cursor, uid, investment_id, ['last_effective_date'])[
+                'last_effective_date']
             today = datetime.today().strftime("%Y-%m-%d")
             self.assertEqual(last_effective_date, today)
 
@@ -2542,7 +2585,8 @@ class InvestmentTests(testing.OOTestCase):
             partner_id = self.IrModelData.get_object_reference(
                 cursor, uid, 'som_generationkwh', 'res_partner_inversor1'
             )[1]
-            address_id = self.PartnerAddress.search(cursor, uid, [('partner_id', '=', partner_id)])[0]
+            address_id = self.PartnerAddress.search(
+                cursor, uid, [('partner_id', '=', partner_id)])[0]
             self.PartnerAddress.write(cursor, uid, [address_id], {'email': False})
 
             with self.assertRaises(except_osv) as ctx:
@@ -2559,7 +2603,6 @@ class InvestmentTests(testing.OOTestCase):
             with self.assertRaises(except_osv) as ctx:
                 self.Investment.investment_sign_request(cursor, uid, investment_id)
 
-            
     @unittest.skip("No implemented yet. Keep in mind to mock ResPartnerAddress.write()")
     def test__generationwkwh_investment_sign_callback__ok(self):
         with Transaction().start(self.database) as txn:
@@ -2577,9 +2620,9 @@ class InvestmentTests(testing.OOTestCase):
                 }
             }
             self.Invoice.process_signature_callback(cursor, uid, [], context)
-            signed_date = self.Investment.read(cursor, uid, investment_id, ['signed_date'])['signed_date']
+            signed_date = self.Investment.read(cursor, uid, investment_id, [
+                                               'signed_date'])['signed_date']
             self.assertTrue(signed_date)
-
 
     def test__has_interest_invoice__False(self):
         with Transaction().start(self.database) as txn:
@@ -2587,8 +2630,8 @@ class InvestmentTests(testing.OOTestCase):
             uid = txn.user
             self.MailMockup.activate(cursor, uid)
             investment_id = self.IrModelData.get_object_reference(
-                        cursor, uid, 'som_generationkwh', 'apo_0003'
-                        )[1]
+                cursor, uid, 'som_generationkwh', 'apo_0003'
+            )[1]
 
             inv_id = self.Investment.has_interest_invoice(cursor, uid, investment_id)
 
@@ -2601,8 +2644,8 @@ class InvestmentTests(testing.OOTestCase):
             uid = txn.user
             self.MailMockup.activate(cursor, uid)
             investment_id = self.IrModelData.get_object_reference(
-                        cursor, uid, 'som_generationkwh', 'apo_0003'
-                        )[1]
+                cursor, uid, 'som_generationkwh', 'apo_0003'
+            )[1]
 
             inv_id = self.Investment.has_interest_invoice(cursor, uid, investment_id, 2020)
 
@@ -2615,8 +2658,8 @@ class InvestmentTests(testing.OOTestCase):
             uid = txn.user
             self.MailMockup.activate(cursor, uid)
             investment_id = self.IrModelData.get_object_reference(
-                        cursor, uid, 'som_generationkwh', 'apo_0003'
-                        )[1]
+                cursor, uid, 'som_generationkwh', 'apo_0003'
+            )[1]
 
             context = {'open_invoices': True}
             vals = {
@@ -2626,7 +2669,8 @@ class InvestmentTests(testing.OOTestCase):
                 'to_be_interized': 8.1,
                 'interest_rate': 1.0
             }
-            interest_ids, errors = self.Investment.interest(cursor, uid, [investment_id], vals, context)
+            interest_ids, errors = self.Investment.interest(
+                cursor, uid, [investment_id], vals, context)
 
             self.assertEqual(len(interest_ids), 1)
             self.assertEqual(len(errors), 0)
@@ -2637,9 +2681,9 @@ class InvestmentTests(testing.OOTestCase):
                   template: aportacio_interest_notification_mail
                   from_id: {account_id}
                 """.format(
-                    id=interest_ids[0],
-                    account_id=self._aportaMailAccount(cursor, uid),
-                ))
+                id=interest_ids[0],
+                account_id=self._aportaMailAccount(cursor, uid),
+            ))
             self.MailMockup.deactivate(cursor, uid)
 
     def test__interest__tryTwoInterestOnlyOneDone(self):
@@ -2648,8 +2692,8 @@ class InvestmentTests(testing.OOTestCase):
             uid = txn.user
             self.MailMockup.activate(cursor, uid)
             investment_id = self.IrModelData.get_object_reference(
-                        cursor, uid, 'som_generationkwh', 'apo_0003'
-                        )[1]
+                cursor, uid, 'som_generationkwh', 'apo_0003'
+            )[1]
             vals = {
                 'date_invoice': '2021-06-30',
                 'date_start': '2020-06-30',
@@ -2671,8 +2715,8 @@ class InvestmentTests(testing.OOTestCase):
             uid = txn.user
             self.MailMockup.activate(cursor, uid)
             investment_id = self.IrModelData.get_object_reference(
-                        cursor, uid, 'som_generationkwh', 'genkwh_0002'
-                        )[1]
+                cursor, uid, 'som_generationkwh', 'genkwh_0002'
+            )[1]
             vals = {
                 'date_invoice': '2021-06-30',
                 'date_start': '2020-06-30',
@@ -2693,8 +2737,8 @@ class InvestmentTests(testing.OOTestCase):
             uid = txn.user
             self.MailMockup.activate(cursor, uid)
             investment_id = self.IrModelData.get_object_reference(
-                        cursor, uid, 'som_generationkwh', 'apo_0001'
-                        )[1]
+                cursor, uid, 'som_generationkwh', 'apo_0001'
+            )[1]
             vals = {
                 'date_invoice': '2021-06-30',
                 'date_start': '2020-06-30',
@@ -2714,12 +2758,12 @@ class InvestmentTests(testing.OOTestCase):
                 cursor = txn.cursor
                 uid = txn.user
                 product_id = self.Product.search(cursor, uid, [
-                    ('default_code','=', 'APO_INT'),
+                    ('default_code', '=', 'APO_INT'),
                 ])[0]
                 inv_id = self.IrModelData.get_object_reference(
-                            cursor, uid, 'som_generationkwh', 'apo_0001'
-                            )[1]
-                inv_obj = self.Investment.browse(cursor, uid, inv_id)
+                    cursor, uid, 'som_generationkwh', 'apo_0001'
+                )[1]
+                self.Investment.browse(cursor, uid, inv_id)
                 current_interest = self.Emission.current_interest(cursor, uid)
                 vals = {
                     'date_invoice': '2021-06-30',
@@ -2728,15 +2772,15 @@ class InvestmentTests(testing.OOTestCase):
                     'interest_rate': current_interest
                 }
 
-                amount = self.Investment.get_to_be_interized(cursor, uid, inv_id, vals)
+                self.Investment.get_to_be_interized(cursor, uid, inv_id, vals)
 
     def test__get_to_be_interized__AllYear_leapYear(self):
         with Transaction().start(self.database) as txn:
             cursor = txn.cursor
             uid = txn.user
             inv_id = self.IrModelData.get_object_reference(
-                        cursor, uid, 'som_generationkwh', 'apo_0003'
-                        )[1]
+                cursor, uid, 'som_generationkwh', 'apo_0003'
+            )[1]
             current_interest = self.Emission.current_interest(cursor, uid)
             vals = {
                 'date_invoice': '2021-06-30',
@@ -2754,8 +2798,8 @@ class InvestmentTests(testing.OOTestCase):
             cursor = txn.cursor
             uid = txn.user
             inv_id = self.IrModelData.get_object_reference(
-                        cursor, uid, 'som_generationkwh', 'apo_0003'
-                        )[1]
+                cursor, uid, 'som_generationkwh', 'apo_0003'
+            )[1]
             current_interest = self.Emission.current_interest(cursor, uid)
             vals = {
                 'date_invoice': '2022-06-30',
@@ -2774,9 +2818,9 @@ class InvestmentTests(testing.OOTestCase):
                 cursor = txn.cursor
                 uid = txn.user
                 inv_id = self.IrModelData.get_object_reference(
-                            cursor, uid, 'som_generationkwh', 'apo_0003'
-                            )[1]
-                self.Investment.write(cursor, uid, inv_id, {'last_effective_date' : '2020-06-23'})
+                    cursor, uid, 'som_generationkwh', 'apo_0003'
+                )[1]
+                self.Investment.write(cursor, uid, inv_id, {'last_effective_date': '2020-06-23'})
                 current_interest = self.Emission.current_interest(cursor, uid)
                 vals = {
                     'date_invoice': '2021-06-30',
@@ -2792,10 +2836,10 @@ class InvestmentTests(testing.OOTestCase):
             cursor = txn.cursor
             uid = txn.user
             inv_id = self.IrModelData.get_object_reference(
-                        cursor, uid, 'som_generationkwh', 'apo_0003'
-                        )[1]
+                cursor, uid, 'som_generationkwh', 'apo_0003'
+            )[1]
             inv_obj = self.Investment.browse(cursor, uid, inv_id)
-            inv_obj.write({'last_effective_date' : '2020-12-31'})
+            inv_obj.write({'last_effective_date': '2020-12-31'})
             current_interest = self.Emission.current_interest(cursor, uid)
             vals = {
                 'date_invoice': '2021-06-30',
@@ -2812,10 +2856,10 @@ class InvestmentTests(testing.OOTestCase):
             cursor = txn.cursor
             uid = txn.user
             inv_id = self.IrModelData.get_object_reference(
-                        cursor, uid, 'som_generationkwh', 'apo_0003'
-                        )[1]
+                cursor, uid, 'som_generationkwh', 'apo_0003'
+            )[1]
             inv_obj = self.Investment.browse(cursor, uid, inv_id)
-            inv_obj.write({'last_effective_date' : '2021-12-31'})
+            inv_obj.write({'last_effective_date': '2021-12-31'})
             current_interest = self.Emission.current_interest(cursor, uid)
             vals = {
                 'date_invoice': '2022-06-30',
@@ -2833,8 +2877,8 @@ class InvestmentTests(testing.OOTestCase):
                 cursor = txn.cursor
                 uid = txn.user
                 inv_id = self.IrModelData.get_object_reference(
-                            cursor, uid, 'som_generationkwh', 'apo_0001'
-                            )[1]
+                    cursor, uid, 'som_generationkwh', 'apo_0001'
+                )[1]
                 current_interest = self.Emission.current_interest(cursor, uid)
                 vals = {
                     'date_invoice': '2021-06-30',
@@ -2849,10 +2893,10 @@ class InvestmentTests(testing.OOTestCase):
             cursor = txn.cursor
             uid = txn.user
             inv_id = self.IrModelData.get_object_reference(
-                        cursor, uid, 'som_generationkwh', 'apo_0003'
-                        )[1]
+                cursor, uid, 'som_generationkwh', 'apo_0003'
+            )[1]
             inv_obj = self.Investment.browse(cursor, uid, inv_id)
-            inv_obj.write({'last_interest_paid_date' : '2020-12-31'})
+            inv_obj.write({'last_interest_paid_date': '2020-12-31'})
             current_interest = self.Emission.current_interest(cursor, uid)
             vals = {
                 'date_invoice': '2021-06-30',
@@ -2861,7 +2905,7 @@ class InvestmentTests(testing.OOTestCase):
                 'interest_rate': current_interest
             }
             with self.assertRaises(InvestmentException) as e:
-                to_be_interized = self.Investment.get_to_be_interized(cursor, uid, inv_id, vals, {})
+                self.Investment.get_to_be_interized(cursor, uid, inv_id, vals, {})
 
             self.assertTrue('Cannot pay interest of a already paid interest' in e.exception.message)
 
@@ -2871,31 +2915,31 @@ class InvestmentTests(testing.OOTestCase):
             cursor = txn.cursor
             uid = txn.user
             partner_id = self.IrModelData.get_object_reference(
-                        cursor, uid, 'som_generationkwh', 'res_partner_inversor1'
-                        )[1]
+                cursor, uid, 'som_generationkwh', 'res_partner_inversor1'
+            )[1]
             iban = 'ES7712341234161234567890'
 
             # the code makes a commit needed for production but useless at testing, and
             # it makes the DB dirty so we "deactivate" it
             cursor.commit = lambda: None
             id = self.Investment.create_from_form(cursor, uid,
-                partner_id,
-                '2017-01-01',
-                2000,
-                '10.10.23.1',
-                iban,
-                'emissio_genkwh',
-                signaturit_data={
-                    "id": "th1s-i5-a-f4ls3-1d",
-                    "url": "https://app.sandbox.signaturit.com/document/th1s-i5-a-f4ls3-1d",
-                    "documents": [{
-                        "id": "th1s-i5-a-f4ls3-d0c-1d",
-                        "file": {
-                            "name": "Test_File.pdf",
-                        },
-                    }],
-                }
-            )
+                                                  partner_id,
+                                                  '2017-01-01',
+                                                  2000,
+                                                  '10.10.23.1',
+                                                  iban,
+                                                  'emissio_genkwh',
+                                                  signaturit_data={
+                                                      "id": "th1s-i5-a-f4ls3-1d",
+                                                      "url": "https://app.sandbox.signaturit.com/document/th1s-i5-a-f4ls3-1d",
+                                                      "documents": [{
+                                                          "id": "th1s-i5-a-f4ls3-d0c-1d",
+                                                          "file": {
+                                                              "name": "Test_File.pdf",
+                                                          },
+                                                      }],
+                                                  }
+                                                  )
             investment = self.Investment.browse(cursor, uid, id)
             self.assertTrue(investment.signed_date)
             mocked_update_sign.assert_called()
@@ -2909,30 +2953,30 @@ class InvestmentTests(testing.OOTestCase):
 
             old_partner_id = self.IrModelData.get_object_reference(
                 cursor, uid, 'som_generationkwh', 'res_partner_inversor1'
-                )[1]
+            )[1]
             new_partner_id = self.IrModelData.get_object_reference(
                 cursor, uid, 'som_generationkwh', 'res_partner_inversor2'
-                )[1]
+            )[1]
 
             old_member_id = self.IrModelData.get_object_reference(
                 cursor, uid, 'som_generationkwh', 'soci_0001'
-                )[1]
+            )[1]
             old_member = self.Soci.browse(cursor, uid, old_member_id)
 
             new_member_id = self.IrModelData.get_object_reference(
                 cursor, uid, 'som_generationkwh', 'soci_0002'
-                )[1]
+            )[1]
             new_member = self.Soci.browse(cursor, uid, new_member_id)
 
             with freeze_time("2017-01-01"):
                 old_investment_id = self.Investment.create_from_form(
                     cursor, uid,
                     old_partner_id,
-                    '2017-01-01', # order_date
+                    '2017-01-01',  # order_date
                     1000,
                     '10.10.23.123',
                     'ES7712341234161234567890',
-                    )
+                )
 
             self.Investment.mark_as_signed(cursor, uid, old_investment_id, '2017-01-03')
             self.Investment.mark_as_invoiced(cursor, uid, old_investment_id)
@@ -2945,7 +2989,7 @@ class InvestmentTests(testing.OOTestCase):
                     new_partner_id,
                     '2019-05-01',
                     'ES7712341234161234567890',
-                    )
+                )
 
             old_investment = ns(self.Investment.read(cursor, uid, old_investment_id, []))
             _ = old_investment.pop('log')
@@ -2971,10 +3015,9 @@ class InvestmentTests(testing.OOTestCase):
                 draft: false
                 signed_date: '2017-01-03'
                 """.format(
-                    id=old_investment_id,
-                    member = old_member,
-                ))
-
+                id=old_investment_id,
+                member=old_member,
+            ))
 
             investment = ns(self.Investment.read(cursor, uid, new_investment_id, []))
             _ = investment.pop('log')
@@ -2999,9 +3042,9 @@ class InvestmentTests(testing.OOTestCase):
                 draft: false
                 signed_date: false
                 """.format(
-                    id=new_investment_id,
-                    member = new_member,
-                ))
+                id=new_investment_id,
+                member=new_member,
+            ))
 
 
 # vim: et ts=4 sw=4

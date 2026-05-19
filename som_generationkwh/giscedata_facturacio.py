@@ -5,8 +5,6 @@ from __future__ import absolute_import
 from osv import osv, fields
 from tools.translate import _
 from tools import cache
-import netsvc
-from datetime import datetime
 
 
 class GiscedataFacturacioFactura(osv.osv):
@@ -18,7 +16,7 @@ class GiscedataFacturacioFactura(osv.osv):
     def unlink(self, cursor, uid, ids, context=None):
         """Return gkwh rights to owner when gkwh invoice is droped"""
         line_obj = self.pool.get('giscedata.facturacio.factura.linia')
-        gkwh_lineowner_obj = self.pool.get('generationkwh.invoice.line.owner')
+        self.pool.get('generationkwh.invoice.line.owner')
         gkwh_dealer_obj = self.pool.get('generationkwh.dealer')
 
         invoice_fields = [
@@ -172,7 +170,7 @@ class GiscedataFacturacioFactura(osv.osv):
                     'product_id': line_vals['product_id'][0],
                     'uos_id': line_vals['uos_id'][0],
                 })
-                #No group gkwh lines
+                # No group gkwh lines
                 ctx = context.copy()
                 ctx['group_line'] = False
                 refund_line_id = fact_line_obj.create(
@@ -200,7 +198,7 @@ class GiscedataFacturacioFactura(osv.osv):
                     cursor, uid, refund_owner_vals, context=context
                 )
 
-                for k,v in refunded_dict[original_factura_line_id].items():
+                for k, v in refunded_dict[original_factura_line_id].items():
                     gkwh_rightusage_obj.create(
                         cursor, uid, {
                             'datetime': k, 'quantity': v,
@@ -327,14 +325,14 @@ class GiscedataFacturacioFactura(osv.osv):
 
     def get_lines_in_extralines(self, cursor, uid, inv_id, pol_id):
         extra_obj = self.pool.get('giscedata.facturacio.extra')
-        extra_ids = extra_obj.search(cursor, uid,[
-                ('polissa_id', '=', pol_id),
-                ('factura_ids', 'in', inv_id),
-            ])
+        extra_ids = extra_obj.search(cursor, uid, [
+            ('polissa_id', '=', pol_id),
+            ('factura_ids', 'in', inv_id),
+        ])
         extra_linia_datas = extra_obj.read(cursor, uid,
-                extra_ids,
-                ['factura_linia_ids']
-            )
+                                           extra_ids,
+                                           ['factura_linia_ids']
+                                           )
 
         factura_linia_ids = []
 
@@ -345,18 +343,23 @@ class GiscedataFacturacioFactura(osv.osv):
     def get_real_energy_lines(self, cursor, uid, inv_id, pol_id, linies_energia_ids):
         product_obj = self.pool.get('product.product')
         invline_obj = self.pool.get('giscedata.facturacio.factura.linia')
-        maj_product = product_obj.search(cursor, uid, [('default_code','=', 'RMAG')])
+        maj_product = product_obj.search(cursor, uid, [('default_code', '=', 'RMAG')])
         if maj_product:
             maj_product = maj_product[0]
         else:
             maj_product = False
 
+        saju_product = product_obj.search(cursor, uid, [('default_code', '=', 'SAJU')])
+        if saju_product:
+            saju_product = saju_product[0]
+        else:
+            saju_product = False
         real_energy = []
         lines_extra_ids = self.get_lines_in_extralines(cursor, uid, inv_id, pol_id)
         for l_id in linies_energia_ids:
             if l_id not in lines_extra_ids:
                 line = invline_obj.browse(cursor, uid, l_id)
-                if line.product_id.id == maj_product:
+                if line.product_id.id in [maj_product, saju_product]:
                     continue
                 real_energy.append(l_id)
         return real_energy
@@ -484,7 +487,7 @@ class GiscedataFacturacioFactura(osv.osv):
                         'quantity': gkwh_quantity,
                         'name': _(u'{0} GkWh').format(line_vals['name']),
                     })
-                    #No group gkwh lines
+                    # No group gkwh lines
                     ctx = context.copy()
                     ctx['group_line'] = False
                     iline_id = invlines_obj.create(cursor, uid, vals, context=ctx)
@@ -496,7 +499,7 @@ class GiscedataFacturacioFactura(osv.osv):
                             'owner_id': gkwh_owner_id
                         }
                     )
-                    for k,v in gkwh_line['usage'].items():
+                    for k, v in gkwh_line['usage'].items():
                         gkwh_rightusage_obj.create(
                             cursor, uid, {
                                 'datetime': k, 'quantity': v,
@@ -516,16 +519,16 @@ class GiscedataFacturacioFactura(osv.osv):
         cfg_obj = self.pool.get('res.config')
 
         start_date_mecanisme_ajust_gas = cfg_obj.get(
-           cursor, uid, 'start_date_mecanisme_ajust_gas', '2022-10-01'
+            cursor, uid, 'start_date_mecanisme_ajust_gas', '2022-10-01'
         )
         end_date_mecanisme_ajust_gas = cfg_obj.get(
             cursor, uid, 'end_date_mecanisme_ajust_gas', '2099-12-31'
         )
         all_gkwh_lines_ids = self.get_gkwh_lines(cursor, uid, inv_id, context)
         substract_from_maj_line_ids = line_obj.search(cursor, uid,
-            [('id', 'in', all_gkwh_lines_ids), ('data_desde', '>=', start_date_mecanisme_ajust_gas),
-            ('data_fins','<=', end_date_mecanisme_ajust_gas)]
-        )
+                                                      [('id', 'in', all_gkwh_lines_ids), ('data_desde', '>=', start_date_mecanisme_ajust_gas),
+                                                       ('data_fins', '<=', end_date_mecanisme_ajust_gas)]
+                                                      )
         if substract_from_maj_line_ids:
             rmag_original_quantity = rmag_line.quantity
             gkwh_data = line_obj.read(cursor, uid, substract_from_maj_line_ids, ['quantity'])
@@ -610,6 +613,7 @@ class GiscedataFacturacioFactura(osv.osv):
         )
     }
 
+
 GiscedataFacturacioFactura()
 
 
@@ -619,12 +623,13 @@ class GiscedataFacturacioFacturador(osv.osv):
     _name = 'giscedata.facturacio.facturador'
     _inherit = 'giscedata.facturacio.facturador'
 
-
     def elimina_ajustar_saldo_excedents_autoconsum(self, cursor, uid, factura_id, context=None):
         flinia_o = self.pool.get("giscedata.facturacio.factura.linia")
         imd_o = self.pool.get("ir.model.data")
-        producte_ajust_autoconsum = product_id = imd_o.get_object_reference(cursor, uid, "giscedata_facturacio_comer", 'saldo_excedents_autoconsum')[1]
-        l_autoc = flinia_o.search(cursor, uid, [('tipus', '=', 'generacio'), ('factura_id', '=', factura_id), ('product_id', '=', producte_ajust_autoconsum)])
+        producte_ajust_autoconsum = product_id = imd_o.get_object_reference(
+            cursor, uid, "giscedata_facturacio_comer", 'saldo_excedents_autoconsum')[1]
+        l_autoc = flinia_o.search(cursor, uid, [(
+            'tipus', '=', 'generacio'), ('factura_id', '=', factura_id), ('product_id', '=', producte_ajust_autoconsum)])
         if len(l_autoc):
             flinia_o.unlink(cursor, uid, l_autoc)
             return True
@@ -634,7 +639,8 @@ class GiscedataFacturacioFacturador(osv.osv):
         if not isinstance(factura_ids, (tuple, list)):
             factura_ids = [factura_ids]
         for factura_id in factura_ids:
-            self.elimina_ajustar_saldo_excedents_autoconsum(cursor, uid, factura_id, context=context)
+            self.elimina_ajustar_saldo_excedents_autoconsum(
+                cursor, uid, factura_id, context=context)
             self.ajustar_saldo_excedents_autoconsum(cursor, uid, factura_id, context=context)
         return True
 
@@ -647,7 +653,8 @@ class GiscedataFacturacioFacturador(osv.osv):
 
         factura_obj = self.pool.get('giscedata.facturacio.factura')
         polissa_obj = self.pool.get('giscedata.polissa')
-        can_have_gkwh = polissa_obj.read(cursor, uid, polissa_id, ['te_assignacio_gkwh'])['te_assignacio_gkwh']
+        can_have_gkwh = polissa_obj.read(cursor, uid, polissa_id, ['te_assignacio_gkwh'])[
+            'te_assignacio_gkwh']
         if can_have_gkwh:
             factura_obj.apply_gkwh(cursor, uid, factures, context)
             self.reaplica_ajustar_saldo_excedents_autoconsum(cursor, uid, factures, context)
@@ -678,12 +685,15 @@ class GiscedataFacturacioFacturador(osv.osv):
             if ctx.get('base_pricelist_list', False):
                 ctx.update({'base_pricelist_list': {}})
 
-            periodes_energia = [l.product_id for l in factura.linia_ids if l.tipus == 'energia' and not l.is_gkwh()[l.id]]
+            periodes_energia = [l.product_id for l in factura.linia_ids if l.tipus == 'energia' and not l.is_gkwh()[
+                l.id]]
             num_periodes = len(list(set(periodes_energia)))
             llista_preus = factura.llista_preu
             mode_facturacio = factura.polissa_id.mode_facturacio
-            is_indexada_and_uses_cargos = self.is_indexada_and_uses_cargos(cursor, uid, factura, context=context)
-            force_full_discount = self.has_to_force_full_discount(cursor, uid, factura, context=context)
+            is_indexada_and_uses_cargos = self.is_indexada_and_uses_cargos(
+                cursor, uid, factura, context=context)
+            force_full_discount = self.has_to_force_full_discount(
+                cursor, uid, factura, context=context)
             if mode_facturacio == 'pvpc':
                 ctx['pricelist_base_price'] = 0.0  # Dummy base price to avoid error
             for line in factura.linia_ids:
@@ -693,7 +703,8 @@ class GiscedataFacturacioFacturador(osv.osv):
                     if line.is_gkwh()[line.id]:
                         product_id = fact_obj.get_energy_product_from_gkwh(cursor, uid, product_id)
 
-                    ctx.update({'date': line.data_desde, 'uom': line.uos_id.id, 'base_pricelist_list': {}})
+                    ctx.update({'date': line.data_desde, 'uom': line.uos_id.id,
+                               'base_pricelist_list': {}})
                     price = pricelist_obj.price_get(
                         cursor, uid, [llista_preus.id],
                         line.product_id.id, line.quantity, context=ctx
@@ -727,7 +738,8 @@ class GiscedataFacturacioFacturador(osv.osv):
                         raise NotImplementedError(_(u"Cálcul del preu de descompte segons RD 17/2021 "
                                                     u"per a 2 periodes no implementat"))
                     else:
-                        total_discount = self.get_discount_line_total_discount(cursor, uid, product_id, factura, context=ctx)
+                        total_discount = self.get_discount_line_total_discount(
+                            cursor, uid, product_id, factura, context=ctx)
 
                     if total_discount:
                         vals = self.get_discount_line_vals(cursor, uid, line, context=context)
@@ -738,9 +750,11 @@ class GiscedataFacturacioFacturador(osv.osv):
 
                         ctx_crear_linia = context.copy()
                         ctx_crear_linia.update({'force_not_showing_discount': True})
-                        line_id = self.crear_linia(cursor, uid, factura.id, vals, context=ctx_crear_linia)
+                        line_id = self.crear_linia(
+                            cursor, uid, factura.id, vals, context=ctx_crear_linia)
                         tax_ids = [x.id for x in line.invoice_line_tax_id]
-                        line_obj.write(cursor, uid, line_id, {'invoice_line_tax_id': [(6, 0, tax_ids)]})
+                        line_obj.write(cursor, uid, line_id, {
+                                       'invoice_line_tax_id': [(6, 0, tax_ids)]})
 
 
 GiscedataFacturacioFacturador()
@@ -872,6 +886,7 @@ class GiscedataFacturacioFacturaLinia(osv.osv):
         return super(GiscedataFacturacioFacturaLinia, self).unlink(
             cursor, uid, ids, context
         )
+
 
 GiscedataFacturacioFacturaLinia()
 

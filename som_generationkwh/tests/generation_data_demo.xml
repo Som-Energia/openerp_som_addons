@@ -464,6 +464,15 @@
             <field name="name">Capital social demo</field>
             <field name="user_type" ref="l10n_chart_ES.financieras"/>
         </record>
+        <record id="account_clients_demo" model="account.account">
+            <field name="name">Clients</field>
+            <field name="code">430000000000</field>
+            <field name="type">receivable</field>
+            <field eval="ref('account.minimal_0')" name="parent_id"/>
+            <field name="company_id" ref="base.main_company"/>
+            <field eval="True" name="reconcile"/>
+            <field name="user_type" ref="account.account_type_income"/>
+        </record>
         <!-- we use the Caixa account and demo account because it's created in the same module, and this is demo -->
         <record id="property_gkwh_account_demo" model="ir.property">
             <field name="name">property_account_gkwh</field>
