@@ -262,6 +262,7 @@ class SomLeadWww(osv.osv_memory):
                     u"SIGNATURE_ERROR: {}".format(str(exc)),
                     context=context
                 )
+                cr.commit()
                 raise
 
         return {
