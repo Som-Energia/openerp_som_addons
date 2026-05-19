@@ -11,7 +11,7 @@ def up(cursor, installed_version):
 
     logger.info("Updating XML files")
     data_files = [
-        'som_autoreclama_state_data.xml',
+        'data/som_autoreclama_state_data.xml',
     ]
     for data_file in data_files:
         load_data(

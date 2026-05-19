@@ -381,7 +381,7 @@
 
             <div class="contingutTXT">
                 <div class="paragraf">
-                    <p style="margin-top:60px;">${_(u"Aquest import serà transferit al teu compte corrent número:")}   <b>${(invoice['partner_iban'][:-9] or '')}***</b>.</p>
+                    <p style="margin-top:60px;">${_(u"Aquest import serà transferit al teu compte corrent número:")}   <b>${(invoice['partner_iban'] or '')[-4:].rjust(len(invoice['partner_iban'] or ''), '*')}</b>.</p>
                 </div>
             </div>
 

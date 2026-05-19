@@ -258,11 +258,11 @@ class TestsSomLeadWww(testing.OOTestCase):
         # Check that the representative is created and correctly linked
         rep_id = partner_o.search(self.cursor, self.uid, [("vat", "=", "ES40323835M")])[0]
         self.assertEqual(lead.polissa_id.titular.representante_id.id, rep_id)
+        self.assertEqual(lead.polissa_id.titular.name, "PEC COOP SCCL")
         self.mock_subscribe_member.assert_called()
         self.mock_unsubscribe_customer.assert_called()
 
-    def test_create_simple_juridic_lead_with_existing_representative(
-            self):
+    def test_create_simple_juridic_lead_with_existing_representative(self):
         www_lead_o = self.get_model("som.lead.www")
         lead_o = self.get_model("giscedata.crm.lead")
         partner_o = self.get_model("res.partner")
@@ -856,7 +856,7 @@ class TestsSomLeadWww(testing.OOTestCase):
         self.assertEqual(invoice.state, "open")
 
         payment_mode_id = ir_model_o.get_object_reference(
-            self.cursor, self.uid, "som_polissa_soci", "mode_pagament_socis"
+            self.cursor, self.uid, "som_leads_polissa", "mode_pagament_socis_factura"
         )[1]
 
         payment_order = invoice.payment_order_id
@@ -1337,3 +1337,97 @@ class TestsSomLeadWww(testing.OOTestCase):
 
         with self.assertRaises(osv.except_osv):
             lead_o.create_entities(self.cursor, self.uid, lead_id)
+
+    def test_create_lead_with_existing_poblacio(self):
+        www_lead_o = self.get_model("som.lead.www")
+        lead_o = self.get_model("giscedata.crm.lead")
+        partner_o = self.get_model("res.partner")
+        address_o = self.get_model("res.partner.address")
+        imd_o = self.get_model('ir.model.data')
+
+        existing_partner_id = imd_o.get_object_reference(
+            self.cursor, self.uid, 'som_polissa_soci', 'res_partner_nosoci1'
+        )[1]
+        existing_partner_vat = partner_o.read(
+            self.cursor, self.uid, existing_partner_id, ['vat']
+        )['vat']
+        existing_address_id = imd_o.get_object_reference(
+            self.cursor, self.uid, 'som_polissa_soci', 'res_partner_address_nosoci1'
+        )[1]
+        test_poblacio_id = imd_o.get_object_reference(
+            self.cursor, self.uid, 'base_extended', 'poble_01'
+        )[1]
+        test_municipi_id = imd_o.get_object_reference(
+            self.cursor, self.uid, 'base_extended', 'ine_01001'
+        )[1]
+        girona_municipi_id = imd_o.get_object_reference(
+            self.cursor, self.uid, 'base_extended', 'ine_17079'
+        )[1]
+        address_o.write(
+            self.cursor, self.uid, existing_address_id, {
+                'id_poblacio': test_poblacio_id,
+                'id_municipi': test_municipi_id,
+            }
+        )
+
+        values = self._basic_values
+        values["new_member_info"]["address"]["city_id"] = girona_municipi_id
+        values["new_member_info"]["vat"] = existing_partner_vat.replace("ES", "")
+
+        result = www_lead_o.create_lead(self.cursor, self.uid, values)
+        www_lead_o.activate_lead(self.cursor, self.uid, result["lead_id"], context={"sync": True})
+
+        lead = lead_o.browse(self.cursor, self.uid, result["lead_id"])
+        self.assertEqual(lead.polissa_id.direccio_notificacio.id_municipi.id, girona_municipi_id)
+        self.assertFalse(lead.polissa_id.direccio_notificacio.id_poblacio)
+
+    def test_create_lead_with_existing_surnames(self):
+        www_lead_o = self.get_model("som.lead.www")
+        lead_o = self.get_model("giscedata.crm.lead")
+        partner_o = self.get_model("res.partner")
+        imd_o = self.get_model('ir.model.data')
+
+        existing_partner_id = imd_o.get_object_reference(
+            self.cursor, self.uid, 'som_polissa_soci', 'res_partner_nosoci1'
+        )[1]
+        existing_partner_vat = partner_o.read(
+            self.cursor, self.uid, existing_partner_id, ['vat']
+        )['vat']
+        partner_o.write(
+            self.cursor, self.uid, existing_partner_id, {
+                'name': 'Cognom1 Cognom2, Nom'
+            }
+        )
+
+        values = self._basic_values
+        values["new_member_info"]["name"] = 'Nom'
+        values["new_member_info"]["surname"] = 'Cognom1 Cognom2'
+        values["new_member_info"]["vat"] = existing_partner_vat.replace("ES", "")
+
+        result = www_lead_o.create_lead(self.cursor, self.uid, values)
+        www_lead_o.activate_lead(self.cursor, self.uid, result["lead_id"], context={"sync": True})
+
+        lead = lead_o.browse(self.cursor, self.uid, result["lead_id"])
+        self.assertEqual(lead.polissa_id.titular.name, 'Cognom1 Cognom2, Nom')
+        self.assertEqual(lead.polissa_id.direccio_notificacio.name, 'Cognom1 Cognom2, Nom')
+
+    def test_create_lead_with_andorra_phone(self):
+        www_lead_o = self.get_model("som.lead.www")
+        lead_o = self.get_model("giscedata.crm.lead")
+
+        values = self._basic_values
+        values["new_member_info"]["phone"] = "+376 123456"
+
+        result = www_lead_o.create_lead(self.cursor, self.uid, self._basic_values)
+        self.assertFalse(result["error"])
+
+        www_lead_o.activate_lead(self.cursor, self.uid, result["lead_id"], context={"sync": True})
+
+        lead = lead_o.browse(self.cursor, self.uid, result["lead_id"])
+
+        # Check that the phone and prefix are correctly set
+        self.assertEqual(lead.titular_phone, "123456")
+        self.assertEqual(lead.titular_phone_prefix.name, "+376")
+
+        self.assertEqual(lead.polissa_id.direccio_notificacio.phone, "123456")
+        self.assertEqual(lead.polissa_id.direccio_notificacio.phone_prefix.name, "+376")

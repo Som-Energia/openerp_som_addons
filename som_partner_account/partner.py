@@ -319,7 +319,8 @@ class ResPartner(osv.osv):
             )
 
         if not soci_ids:
-            soci_ids = [soci_obj.create_one_soci(cursor, uid, partner["id"])]
+            context['mailchimp_from'] = 'become_member: partner_id {}'.format(partner["id"])
+            soci_ids = [soci_obj.create_one_soci(cursor, uid, id, context)]
 
         return soci_ids[0]
 

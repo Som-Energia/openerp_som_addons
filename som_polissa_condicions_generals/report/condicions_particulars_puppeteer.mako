@@ -59,7 +59,7 @@
                         %if "gurb" in informe:
                             ${gurb(informe['gurb'])}
                         %endif
-                        ${payment_info(informe['polissa'])}
+                        ${payment_info(informe['titular'])}
                         ${disclaimers(informe['polissa'], informe['prices'])}
                         ${footer(informe['polissa'], informe['titular'])}
                         <p style="page-break-after:always;"></p>

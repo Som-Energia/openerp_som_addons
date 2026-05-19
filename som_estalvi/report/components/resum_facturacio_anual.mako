@@ -45,19 +45,19 @@
             <div id="grafic-costos"></div>
         </div>
     </div>
-    ## <div class="container">
-    ##     <div class="descomptes-excedents">
-    ##         <table>
-    ##             <tr>
-    ##                 <td>
-    ##                     <p class="text-descompte">${_(u"Descompte pels excedents:")}</p>
-    ##                     <p class="secondary-text text-negre">${_(u"Inclou la compensació i el Flux Solar descomptats.")}</p>
-    ##                 </td>
-    ##                 <td class="text-descompte"><b>${costs['descompte_generacio']} €</b></td>
-    ##             </tr>
-    ##         </table>
-    ##     </div>
-    ## </div>
+    <div class="container">
+        <div class="descomptes-excedents">
+            <table>
+                <tr>
+                    <td>
+                        <p class="text-descompte">${_(u"Descompte pels excedents:")}</p>
+                        <p class="secondary-text text-negre">${_(u"Inclou la compensació i el Flux Solar descomptats.")}</p>
+                    </td>
+                    <td class="text-descompte"><b>${costs['descompte_generacio']} €</b></td>
+                </tr>
+            </table>
+        </div>
+    </div>
     <div class="container">
         <div class="note">
             <span>

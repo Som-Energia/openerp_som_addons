@@ -5,7 +5,7 @@
     This module provide :
         * Creació de comptes comptables per partner.
     """,
-    "version": "24.5.0",
+    "version": "0-dev",
     "author": "GISCE",
     "category": "SomEnergia",
     "depends": [

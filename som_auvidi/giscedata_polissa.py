@@ -36,7 +36,7 @@ class GiscedataPolissaModcontractual(osv.osv):
             te_auvidi_ara = modcon.te_auvidi
             tenia_auvidi_abans = modcon.modcontractual_ant.te_auvidi
 
-            if modcon.modcontractual_ant and te_auvidi_ara and te_auvidi_ara != tenia_auvidi_abans:
+            if modcon.modcontractual_ant and te_auvidi_ara != tenia_auvidi_abans:
                 # Let's check if last F1 reading is prev to modcon creation date (without time)
                 if not self._apply_modcon_date_last_f1_plus_1(cursor, uid, mc_id, context=None):
                     return 'error'

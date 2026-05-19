@@ -1,0 +1,54 @@
+name: OpenCode Auto Review
+run-name: 'OpenCode Review for PR #${{ github.event.pull_request.number }}'
+
+on:
+  pull_request:
+    types: [synchronize]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+  pull-requests: write
+  id-token: write
+
+jobs:
+  review:
+    runs-on: ubuntu-22.04
+    timeout-minutes: 10
+    if: contains(github.event.pull_request.labels.*.name, 'AI review')
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Run OpenCode Review
+        uses: anomalyco/opencode/github@v1.14.38
+        with:
+          model: opencode/minimax-m2.5-free
+          prompt: |
+            You are reviewing a pull request in the openerp_som_addons repository (custom modules for OpenERP).
+            This repository contains custom modules that depend on the main ERP codebase: https://github.com/Som-Energia/erp/tree/rolling_erp01
+            The branch rolling_erp01 is the production branch.
+
+            IMPORTANT: Read the file AGENTS.md in the repository root first. It contains all the conventions, patterns, and best practices for this project. From there you can access:
+            - Tech stack and testing patterns (destral)
+            - Code style guidelines (.github/docs/estil.md, .github/docs/evitar.md)
+            - OpenERP patterns (osv.osv, fields.*, _columns)
+            - Git workflow conventions
+            - Testing requirements
+            - SDD (Spec-Driven Development) workflow
+
+            Review this pull request thoroughly:
+            - Check for code quality issues and best practices
+            - Look for potential bugs, security vulnerabilities, or logic errors
+            - Suggest improvements for readability and maintainability
+            - Identify any missing tests or documentation
+            - Be aware of OpenERP/Odoo patterns and conventions
+            - Consider Python 2.7/3 compatibility if relevant
+            - Focus on the changes made in this PR, not the entire codebase
+            - Provide constructive feedback with specific suggestions when possible

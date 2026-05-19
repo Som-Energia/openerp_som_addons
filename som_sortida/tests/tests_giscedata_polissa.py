@@ -44,7 +44,7 @@ class TestsGiscedataPolissa(testing.OOTestCaseWithCursor):
                 pol.sortida_state_id.name
             ))
 
-    def tests_gicedata_polissa_history(self):
+    def tests_giscedata_polissa_history(self):
         cursor = self.cursor
         uid = self.uid
         imd_obj = self.openerp.pool.get('ir.model.data')
@@ -62,7 +62,7 @@ class TestsGiscedataPolissa(testing.OOTestCaseWithCursor):
         self.assertEqual(hist_data[0]['polissa_id'][0], polissa_id,
                          "L'historial hauria de correspondre a la pòlissa correcta")
 
-    def test_gicedata_polissa_to_cor_date(self):
+    def test_giscedata_polissa_to_cor_date(self):
         cursor = self.cursor
         uid = self.uid
         imd_obj = self.openerp.pool.get('ir.model.data')
@@ -117,7 +117,6 @@ class TestsGiscedataPolissa(testing.OOTestCaseWithCursor):
         pol_obj.send_signal(cursor, uid, [polissa_id], [
             "validar", "contracte"
         ])
-
         partner_soci_id = imd_obj.get_object_reference(
             cursor, uid, 'som_polissa_soci', 'res_partner_soci_ct'
         )[1]
@@ -129,15 +128,18 @@ class TestsGiscedataPolissa(testing.OOTestCaseWithCursor):
         pol_obj.set_pending(cursor, uid, polissa_id, estat_pendent_cor, {
             "custom_change_dates": {polissa_id: "2025-08-15"},
         })
+        # This line is needed because state "Correte macu" from
+        # demo data from psala breaks everything
+        self.cursor.execute(
+            "UPDATE giscedata_polissa SET pending_state = 'Correct' WHERE id = %s", (polissa_id,))
+
         case_id = pol_obj.request_submission_to_cor(cursor, uid, polissa_id)
 
         b1 = sw_obj.browse(cursor, uid, case_id)
-
         self.assertEqual(b1.proces_id.name, "B1")
         self.assertEqual(b1.state, "open")
         self.assertEqual(b1.notificacio_pendent, True)
         self.assertEqual(b1.step_id.name, "01")
-
         b101 = sw_obj.get_pas(cursor, uid, b1)
         self.assertEqual(b101.data_accio, datetime.today().strftime("%Y-%m-%d"))
         self.assertEqual(b101.activacio, "A")

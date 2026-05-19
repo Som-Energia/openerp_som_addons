@@ -17,6 +17,7 @@
                         <field name="report" colspan="4" filename="filename_report"/>
                         <field name="filename_report" colspan="4"/>
                         <field name="info" colspan="4" readonly="1" nolabel="1"/>
+                        <button name="button_send_mails" type="object" string="Enviar Estalvis per E-mail" icon="gtk-execute" colspan="4" confirm="Aquesta acció enviarà un correu per tothom pel qui s'ha generat el full de càlcul. Vols procedir?"/>
                         <button special="cancel" string="Sortir" icon="gtk-ok" />
                     </group>
                 </form>

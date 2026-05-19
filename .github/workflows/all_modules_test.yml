@@ -1,6 +1,6 @@
 # This workflow is disabled because Github is not supporting matrix output separatly by job: PR https://github.com/actions/runner/pull/2477
 
-name: SOM_MODULES
+name: "SOM_MODULES rolling_erp01"
 on:
   workflow_dispatch:
   schedule:

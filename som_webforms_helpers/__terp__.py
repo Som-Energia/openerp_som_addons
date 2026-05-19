@@ -2,7 +2,7 @@
 {
     "name": "Webforms Helpers for Som Energia",
     "description": """Aquest mòdul afegeix funcions per donar suport a l'API de Webforms""",
-    "version": "24.5.0",
+    "version": "0-dev",
     "author": "SOMEnergia",
     "category": "Master",
     "depends": [
@@ -12,6 +12,7 @@
         "som_facturacio_switching",
         "som_generationkwh",
         "som_polissa_condicions_generals",
+        "giscedata_repercusio_bo_social",
     ],
     "init_xml": [],
     "demo_xml": [

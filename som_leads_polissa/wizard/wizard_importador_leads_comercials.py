@@ -7,7 +7,7 @@ logging.basicConfig(stream=sys.stdout, level=logging.INFO)
 logger = logging.getLogger("import.crm.leads")
 
 
-class WizardImportarLeadsComercials(osv.osv):
+class WizardImportarLeadsComercials(osv.osv_memory):
     _inherit = "wizard.importador.leads.comercials"
 
     def import_file(self, cursor, uid, ids, context=None):
@@ -57,6 +57,9 @@ class WizardImportarLeadsComercials(osv.osv):
     _defaults = {
         'activate_leads': lambda *a: False,
     }
+
+    _sql_constraints = [
+    ]
 
 
 WizardImportarLeadsComercials()

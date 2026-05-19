@@ -5,7 +5,7 @@
         </div>
         <div>
             <p class="alert-text">
-                ${_(u"Coneixeu el ")}<a href="${_(u"https://somserveis.coop/")}">${_(u"projecte Som Serveis")}</a>? <b>${_(u"Energia renovable, telefonia conscient i mobilitat sostenible per a empreses amb propòsit")}</b>.
+                ${_(u"El RDL 7/2026 elimina durant el 2026 la limitació d'un canvi de potències cada 12 mesos pels contractes d'empreses i persones d'alta al RETA. A més, els canvis són gratuïts excepte si s'augmenta la potència màxima o cal canviar el comptador. Podeu consultar-ne els detalls ")}<a href="${_(u"https://ca.support.somenergia.coop/article/1270-modificacions-temporals-de-potencia-rdl-7-2026")}">${_(u"aquí")}</a>.
             </p>
         </div>
     </div>

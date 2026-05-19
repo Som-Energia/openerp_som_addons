@@ -120,6 +120,8 @@ var option = {
             '#FF632B',
             '#0C4C27',
             '#AFB5E8',
+            '#FFCDB5',
+            '#E3E8DF',
         ],
     },
     ].concat(stackBarSeries),

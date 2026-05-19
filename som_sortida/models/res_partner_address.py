@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from osv import osv
+from oorq.decorators import job
 
 FIELDS_CTSS = {
     "email": "EMAIL",
@@ -82,15 +83,15 @@ class ResPartnerAddress(osv.osv):
             "email_address": partner_data["email"],
             "status": "subscribed",
             "merge_fields": {
-                FIELDS_CTSS["email"]: partner_data["email"],
-                FIELDS_CTSS["Nom"]: nom_pila,
-                FIELDS_CTSS["Idioma"]: partner_fields["lang"],
+                FIELDS_CTSS["email"]: partner_data["email"] or '',
+                FIELDS_CTSS["Nom"]: nom_pila or '',
+                FIELDS_CTSS["Idioma"]: partner_fields["lang"] or '',
                 FIELDS_CTSS["Origen"]: "Origen vinculat al CT sense socia",
                 # FIELDS_CTSS["Cognoms_Nom"]: partner_fields["name"],
-                FIELDS_CTSS["num_socia"]: pol_data["num_socia"],  # ojo, obtenir de polissa
+                FIELDS_CTSS["num_socia"]: pol_data["num_socia"] or '',  # ojo, obtenir de polissa
                 # TODO: obtenir de polissa
-                FIELDS_CTSS["situacio_socia"]: pol_data['situacio_socia'],
-                FIELDS_CTSS["codi_postal"]: partner_data["zip"],
+                FIELDS_CTSS["situacio_socia"]: pol_data['situacio_socia'] or '',
+                FIELDS_CTSS["codi_postal"]: partner_data["zip"] or '',
             },
         }
 
@@ -111,6 +112,21 @@ class ResPartnerAddress(osv.osv):
             )
 
         return mailchimp_member
+
+    @job(queue="mailchimp_tasks")
+    def unsubscribe_titular_in_ctss_lists(self, cursor, uid, partner_ids, context=None):
+        if not isinstance(partner_ids, (list, tuple)):
+            partner_ids = [partner_ids]
+
+        MAILCHIMP_CLIENT = self._get_mailchimp_client()
+        conf_obj = self.pool.get("res.config")
+        list_name = conf_obj.get(cursor, uid, "mailchimp_clients_ctss_list", None)
+        list_id = self.get_mailchimp_list_id(list_name, MAILCHIMP_CLIENT)
+
+        for _id in partner_ids:
+            self.archieve_mail_in_list_sync(
+                cursor, uid, _id, list_id, MAILCHIMP_CLIENT
+            )
 
 
 ResPartnerAddress()

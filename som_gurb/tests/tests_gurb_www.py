@@ -16,6 +16,19 @@ class TestsGurbWww(TestsGurbBase):
     )
     _www_signature_fnc = "som_gurb.www.som_gurb_www.SomGurbWww._get_signature_url"
 
+    def _eliminar_GURB_CUPS(self):
+        imd_o = self.openerp.pool.get("ir.model.data")
+        gurb_cups_o = self.openerp.pool.get("som.gurb.cups")
+
+        gurb_cups_id_1 = imd_o.get_object_reference(
+            self.cursor, self.uid, "som_gurb", "gurb_cups_0001"
+        )[1]
+        gurb_cups_id_2 = imd_o.get_object_reference(
+            self.cursor, self.uid, "som_gurb", "gurb_cups_0002"
+        )[1]
+
+        gurb_cups_o.unlink(self.cursor, self.uid, [gurb_cups_id_1, gurb_cups_id_2])
+
     def test_get_info_gurb__bad_gurb_code(self):
         gurb_www_o = self.openerp.pool.get("som.gurb.www")
 
@@ -66,6 +79,49 @@ class TestsGurbWww(TestsGurbBase):
         )
 
         self.assertEqual(result["available_betas"], [x / 10.0 for x in range(5, 25, 5)])
+
+    def test_get_info_gurb__available_betas_considers_comming_states(self):
+        imd_o = self.openerp.pool.get("ir.model.data")
+        gurb_www_o = self.openerp.pool.get("som.gurb.www")
+        gurb_cups_o = self.openerp.pool.get("som.gurb.cups")
+        gurb_cau_o = self.openerp.pool.get("som.gurb.cau")
+        gurb_cups_beta_o = self.openerp.pool.get("som.gurb.cups.beta")
+
+        gurb_cups_id_1 = imd_o.get_object_reference(
+            self.cursor, self.uid, "som_gurb", "gurb_cups_0001"
+        )[1]
+        gurb_cups_id_2 = imd_o.get_object_reference(
+            self.cursor, self.uid, "som_gurb", "gurb_cups_0002"
+        )[1]
+        gurb_cau_id_2 = imd_o.get_object_reference(
+            self.cursor, self.uid, "som_gurb", "gurb_cau_0002"
+        )[1]
+        beta_id_2 = imd_o.get_object_reference(
+            self.cursor, self.uid, "som_gurb", "gurb_cups_beta_0002"
+        )[1]
+
+        # Shrink the second CAU so it does not become the bottleneck
+        gurb_cau_o.write(self.cursor, self.uid, gurb_cau_id_2, {"generation_power": 0.5})
+
+        # First CUPS stays active with its current beta (2.5 kW)
+        gurb_cups_o.write(self.cursor, self.uid, gurb_cups_id_1, {"state": "active"})
+
+        # Second CUPS is a pending registration with a large future beta (6 kW)
+        gurb_cups_beta_o.write(
+            self.cursor, self.uid, beta_id_2, {"future_beta": True, "beta_kw": 6.0}
+        )
+        gurb_cups_o.write(
+            self.cursor, self.uid, gurb_cups_id_2, {"state": "comming_registration"}
+        )
+
+        result = gurb_www_o.get_info_gurb(
+            self.cursor, self.uid, 'G001', "2.0TD"
+        )
+
+        # CAU 1: 10 - 2.5 (active) - 6.0 (future from comming_registration) = 1.5 kW available
+        # CAU 2: 0.5 kW available
+        # Best available = 1.5, capped at max_power_20 = 2 → [0.5, 1.0, 1.5]
+        self.assertEqual(result["available_betas"], [0.5, 1.0, 1.5])
 
     def test_get_info_gurb__surplus_comensation(self):
         imd_o = self.openerp.pool.get("ir.model.data")
@@ -133,7 +189,9 @@ class TestsGurbWww(TestsGurbBase):
             "access_tariff": "2.0TD",
             "cups": "ES0021126262693495FV",
             "beta": 2.0,
+            "vat": "B55129415"
         }
+        self._eliminar_GURB_CUPS()
         result = gurb_www_obj.create_new_gurb_cups(
             self.cursor, self.uid, form_payload
         )
@@ -153,10 +211,12 @@ class TestsGurbWww(TestsGurbBase):
             self.cursor, self.uid, "som_polissa", "res_partner_domestic"
         )[1]
         res_partner_obj.write(self.cursor, self.uid, titular_id, {"lang": "en_US"})
+
         ctx = {
-            "polissa_module": "som_polissa",
-            "polissa_xml_id": "polissa_domestica_0100"
+            "polissa_xml_id": "polissa_domestica_0109",
+            "polissa_module": "som_polissa_soci"
         }
+
         self.activar_polissa_CUPS(context=ctx)
         gurb_cups_id = imd_obj.get_object_reference(
             self.cursor, self.uid, "som_gurb", "gurb_cups_0001"
@@ -169,8 +229,9 @@ class TestsGurbWww(TestsGurbBase):
             "access_tariff": "2.0TD",
             "cups": "ES0021126262693495FV",
             "beta": 2.0,
+            "vat": "B55129415"
         }
-
+        self._eliminar_GURB_CUPS()
         result = gurb_www_obj.create_new_gurb_cups(
             self.cursor, self.uid, form_payload
         )
@@ -267,9 +328,78 @@ class TestsGurbWww(TestsGurbBase):
         result = gurb_www_obj.create_new_gurb_cups(self.cursor, self.uid, form_payload)
         self.assertEqual(result["code"], "BadGurbGroup")
 
+    def test_create_new_gurb_cups_with_self_consumption(self):
+        gurb_www_obj = self.openerp.pool.get("som.gurb.www")
+        polissa_obj = self.openerp.pool.get("giscedata.polissa")
+        cups_helper_obj = self.openerp.pool.get("cups.helper")
+        form_payload = {
+            "gurb_code": "G001",
+            "access_tariff": "2.0TD",
+            "cups": "ES0021126262693495FV",
+            "beta": 1,
+            "vat": "B55129415"
+        }
+        self._eliminar_GURB_CUPS()
+        cups_id = gurb_www_obj._get_cups_id(self.cursor, self.uid, form_payload["cups"])
+        polissa_id = cups_helper_obj._get_polissa_id(self.cursor, self.uid, cups_id)
+        polissa_obj.write(
+            self.cursor, self.uid, polissa_id, {"tipus_subseccio": "10"}
+        )
+        result = gurb_www_obj.create_new_gurb_cups(self.cursor, self.uid, form_payload)
+        self.assertEqual(result["code"], "CupsIsAutoconsum")
+
     @mock.patch(_start_signature_fnc, return_value=True)
     @mock.patch(_update_signature_fnc, return_value=True)
-    def test_activate_gurb_cups_lead(self, start_mock, update_mock):
+    def test_create_new_gurb_cups_correct_vat(self, start_mock, update_mock):
+        gurb_www_obj = self.get_model("som.gurb.www")
+        form_payload = {
+            "gurb_code": "G001",
+            "access_tariff": "2.0TD",
+            "cups": "ES0021126262693495FV",
+            "beta": 1,
+            "vat": "B55129415"
+        }
+        self._eliminar_GURB_CUPS()
+        result = gurb_www_obj.create_new_gurb_cups(self.cursor, self.uid, form_payload)
+        self.assertTrue(result["success"])
+
+    def test_create_new_gurb_cups_incorrect_vat(self):
+        gurb_www_obj = self.get_model("som.gurb.www")
+        form_payload = {
+            "gurb_code": "G001",
+            "access_tariff": "2.0TD",
+            "cups": "ES0021126262693495FV",
+            "beta": 1,
+            "vat": "93105281Q"
+        }
+        self._eliminar_GURB_CUPS()
+        result = gurb_www_obj.create_new_gurb_cups(self.cursor, self.uid, form_payload)
+        self.assertEqual(result["code"], "BadVAT")
+
+    def test_create_new_gurb_cups_no_vat(self):
+        gurb_www_obj = self.get_model("som.gurb.www")
+        form_payload = {
+            "gurb_code": "G001",
+            "access_tariff": "2.0TD",
+            "cups": "ES0021126262693495FV",
+            "beta": 1,
+        }
+        self._eliminar_GURB_CUPS()
+        result = gurb_www_obj.create_new_gurb_cups(self.cursor, self.uid, form_payload)
+        self.assertEqual(result["code"], "BadVAT")
+
+    @mock.patch(_start_signature_fnc, return_value=True)
+    @mock.patch(_update_signature_fnc, return_value=True)
+    @mock.patch(
+        "som_gurb.models.som_gurb_cups.SomGurbCups.get_sign_status", return_value="completed")
+    @mock.patch(
+        "som_gurb.models.som_gurb_cups.SomGurbCups.generate_gurb_invoice_base64", return_value="AA")
+    @mock.patch(
+        "poweremail.poweremail_template.poweremail_templates.generate_mail_sync", return_value=True
+    )
+    def test_activate_gurb_cups_lead(
+        self, start_mock, update_mock, sign_status_mock, invoice_mock, mail_mock
+    ):
         gurb_www_obj = self.get_model("som.gurb.www")
         gurb_cups_obj = self.get_model("som.gurb.cups")
         sign_docs_obj = self.get_model("giscedata.signatura.documents")
@@ -280,8 +410,16 @@ class TestsGurbWww(TestsGurbBase):
             "access_tariff": "2.0TD",
             "cups": "ES0021126262693495FV",
             "beta": 2.0,
+            "vat": "B55129415"
         }
-        self.activar_polissa_CUPS()
+
+        ctx = {
+            "polissa_xml_id": "polissa_domestica_0109",
+            "polissa_module": "som_polissa_soci"
+        }
+
+        self._eliminar_GURB_CUPS()
+        self.activar_polissa_CUPS(context=ctx)
         gurb_cups_id = gurb_www_obj.create_new_gurb_cups(
             self.cursor, self.uid, form_payload
         )["gurb_cups_id"]
@@ -289,11 +427,14 @@ class TestsGurbWww(TestsGurbBase):
         doc_id = sign_docs_obj.search(self.cursor, self.uid, search_vals, limit=1)[0]
         process_id = sign_docs_obj.browse(self.cursor, self.uid, doc_id).process_id.id
         sign_process_obj.write(self.cursor, self.uid, [process_id], {'status': 'completed'})
-        result = gurb_www_obj.activate_gurb_cups_lead(self.cursor, self.uid, gurb_cups_id)
+
+        gurb_cups_obj.form_activate_gurb_cups_lead_sync(
+            self.cursor, self.uid, [gurb_cups_id]
+        )
 
         gurb_cups_br = gurb_cups_obj.browse(self.cursor, self.uid, gurb_cups_id)
         self.assertEqual(gurb_cups_br.state, "comming_registration")
-        self.assertTrue(result["success"])
+        self.assertIsNotNone(gurb_cups_br.initial_invoice_id.id)
 
     @mock.patch(_start_signature_fnc, return_value=True)
     @mock.patch(_update_signature_fnc, return_value=True)
@@ -306,14 +447,18 @@ class TestsGurbWww(TestsGurbBase):
             "access_tariff": "2.0TD",
             "cups": "ES0021126262693495FV",
             "beta": 2.0,
+            "vat": "B55129415"
         }
+        self._eliminar_GURB_CUPS()
         gurb_cups_id = gurb_www_obj.create_new_gurb_cups(
             self.cursor, self.uid, form_payload
         )["gurb_cups_id"]
         gurb_cups_obj.send_signal(self.cursor, self.uid, [gurb_cups_id], "button_create_cups")
-        result = gurb_www_obj.activate_gurb_cups_lead(self.cursor, self.uid, gurb_cups_id)
 
-        self.assertEqual(result["code"], "GurbCupsNotDraft")
+        with self.assertRaises(Exception):
+            gurb_cups_obj.form_activate_gurb_cups_lead_sync(
+                self.cursor, self.uid, [gurb_cups_id]
+            )
 
     @mock.patch(_start_signature_fnc, return_value=True)
     @mock.patch(_update_signature_fnc, return_value=True)
@@ -326,12 +471,17 @@ class TestsGurbWww(TestsGurbBase):
             "access_tariff": "2.0TD",
             "cups": "ES0021126262693495FV",
             "beta": 2.0,
+            "vat": "B55129415"
         }
+        self._eliminar_GURB_CUPS()
         gurb_cups_id = gurb_www_obj.create_new_gurb_cups(
             self.cursor, self.uid, form_payload
         )["gurb_cups_id"]
-        result = gurb_www_obj.activate_gurb_cups_lead(self.cursor, self.uid, gurb_cups_id)
 
         gurb_cups_br = gurb_cups_obj.browse(self.cursor, self.uid, gurb_cups_id)
         self.assertEqual(gurb_cups_br.state, "draft")
-        self.assertEqual(result["code"], "SignatureNotCompleted")
+
+        with self.assertRaises(Exception):
+            gurb_cups_obj.form_activate_gurb_cups_lead_sync(
+                self.cursor, self.uid, [gurb_cups_id]
+            )

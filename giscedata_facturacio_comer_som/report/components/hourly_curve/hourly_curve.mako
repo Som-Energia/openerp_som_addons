@@ -70,7 +70,8 @@ modes = {
             csv_lines = csv.reader(csv_stream, delimiter=';')
             rows = []
             for row in csv_lines:
-                rows.append((row[0], float(row[1])))
+                value = row[1].replace(',', '.')
+                rows.append((row[0], float(value)))
             collection = dict(rows)
             if index == 0 and nom=='curvegraph':
                 axis, data[index] = getAxisAndData(collection, 'dayly')

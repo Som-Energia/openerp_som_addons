@@ -8,7 +8,10 @@
     "author": "Som Energia SCCL",
     "category": "SomEnergia",
     "depends": [
+        "base_extended_som",
         "som_account_invoice_pending",
+        "som_polissa_soci",
+        "som_switching",
     ],
     "init_xml": [],
     "demo_xml": [

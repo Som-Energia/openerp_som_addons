@@ -3,7 +3,7 @@
     "name": "Procediments d'impagats específics de Som Energia",
     "description": """Mòdul per a la gestió dels impagaments de contractes
         especifics de SomEngergia""",
-    "version": "24.5.0",
+    "version": "0-dev",
     "author": "Som Energia SCCL",
     "category": "Master",
     "depends": [
@@ -21,6 +21,7 @@
         "giscedata_atc",
         "giscedata_facturacio_comer_som",
         "som_generationkwh",
+        "giscedata_facturacio_som",
     ],
     "init_xml": [
     ],

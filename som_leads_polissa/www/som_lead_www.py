@@ -27,6 +27,7 @@ class SomLeadWww(osv.osv_memory):
         payment_mode_o = self.pool.get("payment.mode")
         polissa_o = self.pool.get("giscedata.polissa")
         tarifa_o = self.pool.get("giscedata.polissa.tarifa")
+        partner_o = self.pool.get("res.partner")
         cnae_o = self.pool.get("giscemisc.cnae")
         self.pool.get("giscedata.cups.ps")
         selfcons_o = self.pool.get("giscedata.autoconsum")
@@ -87,6 +88,16 @@ class SomLeadWww(osv.osv_memory):
         member["mobile_prefix"], member["phone2"] = self._split_phone_prefix(
             cr, uid, member.get("phone2"))
 
+        # Prepare name and surname for the ERP standards
+        if member.get("name") and member.get("surname"):
+            names = partner_o.separa_cognoms(
+                cr, uid, "{}, {}".format(member["surname"], member["name"]))
+            member.update({
+                'name': names['nom'],
+                'surname': names['cognoms'][0],
+                'surname2': names['cognoms'][1],
+            })
+
         values = {
             "state": "open",
             "name": "{} / {}".format(member["vat"].upper(), contract_info["cups"]),
@@ -119,6 +130,7 @@ class SomLeadWww(osv.osv_memory):
             "titular_vat": 'ES%s' % member["vat"].upper(),
             "titular_nom": member.get("name"),
             "titular_cognom1": member.get("surname"),
+            "titular_cognom2": member.get("surname2"),
             "tipus_vivenda": 'habitual',
             "titular_zip": member["address"].get("postal_code"),
             "titular_nv": member["address"].get("street"),
@@ -184,18 +196,16 @@ class SomLeadWww(osv.osv_memory):
                 int(values["tipus_cups"]), int(values["tipus_installacio"]), context=context
             )
 
-        if member_type in ["new_member", "sponsored"]:
-            if self._already_has_contract(cr, uid, values["titular_vat"], context=context):
-                values["is_new_contact"] = False
-            else:
-                values["is_new_contact"] = True
-        else:
-            values["is_new_contact"] = False
+        values["is_new_contact"] = (
+            not self._already_has_contract(cr, uid, values["titular_vat"], context=context))
 
         # Remove None values to let the lead get them if exists in the bbdd
         for field, value in values.items():
             if value is None:
                 del values[field]
+
+        # Avoid filling poblacio from existing values because it can be wrong
+        values["titular_id_poblacio"] = None
 
         lead_id = lead_o.create(cr, uid, values, context=context)
         self._create_attachments(cr, uid, lead_id, www_vals.get("attachments", []), context=context)
@@ -315,10 +325,12 @@ class SomLeadWww(osv.osv_memory):
         savepoint = 'savepoint_check_lead_can_be_activated_{}'.format(id(cr))
         cr.savepoint(savepoint)
 
+        ctxt = context.copy()
+        ctxt['in_rollback_transaction'] = True
         error = None
         try:
-            lead_o.force_validation(cr, uid, [lead_id], context=context)
-            lead_o.create_entities(cr, uid, lead_id, context=context)
+            lead_o.force_validation(cr, uid, [lead_id], context=ctxt)
+            lead_o.create_entities(cr, uid, lead_id, context=ctxt)
             cr.rollback(savepoint)
         except Exception as e:
             cr.rollback(savepoint)
@@ -339,8 +351,10 @@ class SomLeadWww(osv.osv_memory):
         result = False
         partner_id = partner_o.search(cr, uid, [('vat', '=', vat)])
         if partner_id:
-            if polissa_o.search(cr, uid, [("titular", "=", partner_id[0])]):
+            context["active_test"] = False
+            if polissa_o.search(cr, uid, [("titular", "=", partner_id[0])], context=context):
                 result = True
+            context.pop("active_test")
         return result
 
     def _check_member_vat_dont_exists(self, cr, uid, vat, context=None):

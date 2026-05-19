@@ -1,3 +1,4 @@
+# -*- encoding: utf-8 -*-
 from __future__ import print_function
 import configdb
 from erppeek import Client
@@ -11,6 +12,7 @@ doit = False
 phones_to_change = []
 phones_changed = []
 phones_not_valid = []
+phones_moved = []
 
 
 def clean_partner_telephones(partner_address_id, phone_number):
@@ -25,12 +27,16 @@ def clean_partner_telephones(partner_address_id, phone_number):
     phone_number = phone_number.replace("(", "")
     phone_number = phone_number.replace(")", "")
     phone_number = phone_number.replace("+34", "")
-    if phone_number.startswith("34"):
-        phone_number = phone_number[2:]
     while phone_number.startswith("0"):
         phone_number = phone_number[1:]
-    # Remove all non-numeric characters
-    phone_number = ''.join(filter(str.isdigit, str(phone_number)))
+    if phone_number.startswith("34"):
+        phone_number = phone_number[2:]
+
+    # Search for a non-numeric character found in phone number
+    for char in phone_number:
+        if not char.isdigit():
+            phones_not_valid.append(phone_number)
+            return ''
 
     if len(phone_number) == 9:
         # print("new phone {}".format(phone_number))
@@ -39,13 +45,13 @@ def clean_partner_telephones(partner_address_id, phone_number):
     else:
         # print("Phone number {0} of partner address {1} is not valid".format(phone_number, partner_address_id))  # noqa:E501
         phones_not_valid.append(phone_number)
-        return None
+        return ''
 
 
 partner_address_list = c.ResPartnerAddress.search([])
 
 rows = []
-for partner_address_id in tqdm(partner_address_list, desc="Processing partner addresses"):
+for partner_address_id in tqdm(partner_address_list, desc="Processing partner addresses"):  # noqa:C901,E501
     partner_address = c.ResPartnerAddress.browse(partner_address_id)
     row = {'partner_address_id': partner_address_id}
     old_phone = partner_address.phone
@@ -55,13 +61,15 @@ for partner_address_id in tqdm(partner_address_list, desc="Processing partner ad
         new_phone = clean_partner_telephones(partner_address_id, old_phone)
         row['old_phone'] = old_phone
         row['new_phone'] = new_phone
-        if new_phone:
+        if old_phone != new_phone:
             # print("New phone number of {0}: {1}".format(partner_address_id, new_phone))
             if doit:
+                previous_notes = partner_address.notes if partner_address.notes else ''
                 c.ResPartnerAddress.write(partner_address_id, {
-                    'notes': partner_address.notes + "\n2025/06/20: Procés de neteja de telèfons, el telèfon antic era: {}".format(partner_address.phone)})  # noqa:E501
-                partner_address.phone = new_phone
-                partner_address.save()
+                    'notes': previous_notes + "\n2025/06/20: Procés de neteja de telèfons, el telèfon antic era: {}".format(old_phone),  # noqa:E501
+                    'phone': new_phone,
+                })
+                partner_address = c.ResPartnerAddress.browse(partner_address_id)
     old_mobile = partner_address.mobile
     if old_mobile and len(old_mobile) != 9:
         phones_to_change.append(old_mobile)
@@ -69,14 +77,86 @@ for partner_address_id in tqdm(partner_address_list, desc="Processing partner ad
         new_mobile = clean_partner_telephones(partner_address_id, old_mobile)
         row['old_mobile'] = old_mobile
         row['new_mobile'] = new_mobile
-        if new_mobile:
+        if old_mobile != new_mobile:
             # print("New mobile number of {0}: {1}".format(partner_address_id, new_mobile))
             if doit:
+                previous_notes = partner_address.notes if partner_address.notes else ''
                 c.ResPartnerAddress.write(partner_address_id, {
-                    'notes': partner_address.notes
-                    + "\n2025/06/20: Procés de neteja de telèfons, el mòbil antic era: {}\n".format(partner_address.mobile)})  # noqa:E501
-                partner_address.mobile = new_mobile
-                partner_address.save()
+                    'notes': previous_notes + "\n2025/06/20: Procés de neteja de telèfons, el mòbil antic era: {}\n".format(partner_address.mobile),  # noqa:E501
+                    'mobile': new_mobile,
+                })
+
+    # Check if we phone and mobile are on their propper field
+    partner_address = c.ResPartnerAddress.browse(partner_address_id)
+    mobile_misplaced = False
+    landline_misplaced = False
+    if partner_address.phone:
+        if c.ResPartnerAddress.check_mobile_or_landline_peek(partner_address.phone) == 'landline':
+            pass
+        else:
+            mobile_misplaced = partner_address.phone
+    if partner_address.mobile:
+        if c.ResPartnerAddress.check_mobile_or_landline_peek(partner_address.mobile) == 'mobile':
+            pass
+        else:
+            landline_misplaced = partner_address.mobile
+    if mobile_misplaced or landline_misplaced:
+        # print("Telefons mobil {} o fixe {} mal posat:".format(mobile_misplaced, landline_misplaced))  # noqa:E501
+        pass
+    if doit:
+        if mobile_misplaced and landline_misplaced:
+            previous_notes = partner_address.notes if partner_address.notes else ''
+            c.ResPartnerAddress.write(partner_address_id, {
+                'mobile': mobile_misplaced,
+                'phone': landline_misplaced,
+                'notes': previous_notes + "\n2025/06/20: Procés de neteja de telèfons, s'ha intercanviat el telefon amb el mòbil",  # noqa:E501
+            })
+            row['moved'] = "Telèfons intercanviats {}->{} i {}->{}".format(
+                partner_address.phone, landline_misplaced, partner_address.mobile, mobile_misplaced)
+
+        elif mobile_misplaced:
+            if not partner_address.mobile:
+                c.ResPartnerAddress.write(partner_address_id, {
+                    'mobile': mobile_misplaced,
+                    'phone': '',
+                })
+                row['moved'] = "Telèfons mogut de 'phone' a 'mobile' {}->{}".format(
+                    partner_address.phone, mobile_misplaced)
+            elif partner_address.mobile == mobile_misplaced:
+                c.ResPartnerAddress.write(partner_address_id, {
+                    'phone': '',
+                })
+                row['moved'] = "Telèfons 'phone' esborrat, estava als dos camps {}->{}".format(
+                    partner_address.phone, mobile_misplaced)
+            else:
+                previous_notes = partner_address.notes if partner_address.notes else ''
+                c.ResPartnerAddress.write(partner_address_id, {
+                    'notes': previous_notes + "\n2025/06/20: Procés de neteja de telèfons, hi havia dos mòbils, l'atre era: {}\n".format(mobile_misplaced),  # noqa:E501
+                })
+                row['moved'] = "Hi havia dos mòbils, l'altre no hi cap {} i {}".format(
+                    partner_address.phone, partner_address.mobile)
+
+        elif landline_misplaced:
+            if not partner_address.phone:
+                c.ResPartnerAddress.write(partner_address_id, {
+                    'phone': landline_misplaced,
+                    'mobile': '',
+                })
+                row['moved'] = "Telèfons mogut de 'mobile' a 'phone' {}->{}".format(
+                    partner_address.mobile, landline_misplaced)
+            elif partner_address.phone == landline_misplaced:
+                c.ResPartnerAddress.write(partner_address_id, {
+                    'mobile': '',
+                })
+                row['moved'] = "Telèfons 'mobile' esborrat, estava als dos camps {}->{}".format(
+                    partner_address.mobile, landline_misplaced)
+            else:
+                previous_notes = partner_address.notes if partner_address.notes else ''
+                c.ResPartnerAddress.write(partner_address_id, {
+                    'notes': previous_notes + "\n2025/06/20: Procés de neteja de telèfons, hi havia dos fixes, l'atre era: {}\n".format(landline_misplaced),  # noqa:E501
+                })
+                row['moved'] = "Hi havia dos fixes, l'altre no hi cap {} i {}".format(
+                    partner_address.phone, partner_address.mobile)
 
     if len(row.keys()) > 1:
         rows.append(row)
@@ -84,6 +164,7 @@ for partner_address_id in tqdm(partner_address_list, desc="Processing partner ad
 print("Telèfons a canviar: {}".format(len(phones_to_change)))
 print("Telèfons canviats: {}".format(len(phones_changed)))
 print("Telèfons eliminats: {}".format(len(phones_not_valid)))
+print("Telèfons moguts de camp: {}".format(len(phones_moved)))
 
 
 with open('canvis_telefon.csv', 'w') as csvfile:

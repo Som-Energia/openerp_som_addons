@@ -4,7 +4,7 @@
     "description": """Aquest mòdul afegeix les següents funcionalitats:
     * Condicions generals pòlisses Somenergia
     """,
-    "version": "24.5.0",
+    "version": "0-dev",
     "author": "GISCE",
     "category": "SomEnergia",
     "depends": [
@@ -17,6 +17,9 @@
         "report_puppeteer",
         "som_infoenergia",
         "giscedata_facturacio_iese",
+        "som_indexada",
+        "som_extend_facturacio_comer",
+        "l10n_es_igic",
     ],
     "init_xml": [],
     "demo_xml": ["demo/res_partner_demo.xml"],
@@ -25,6 +28,7 @@
         "data/giscedata_switching_data_m1.xml",
         "report/giscedata_polissa_condicions_generals_report.xml",
         "report/giscedata_polissa_condicions_generals_m101_report.xml",
+        "report/giscedata_polissa_condicions_generals_ignore_modcon_report.xml",
         "security/ir.model.access.csv",
     ],
     "active": False,

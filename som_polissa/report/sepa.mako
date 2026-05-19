@@ -1,9 +1,4 @@
 ## -*- encoding: utf-8 -*-
-<%
-report = objects[0]
-data = report.sepa_particulars_data()
-%>
-
 <!doctype html public "-//w3c//dtd html 4.0 transitional//en">
 <html>
 <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
@@ -11,9 +6,10 @@ data = report.sepa_particulars_data()
     <link rel="stylesheet" href="${addons_path}/som_polissa/report/sepa.css"/>
 </head>
 <body>
+%for data in objects:
 <div class="extern margin50">
     <div>
-        <img id="logo" width='105px' src="https://www.somenergia.coop/wp-content/uploads/2014/11/logo-somenergia.png">
+        <img id="logo" width='105px' src="data:image/jpeg;base64,${data['company_logo']}">
         <div class="centered title">
             % if data['is_business']:
             <h1>Orden de domiciliación de adeudo directo SEPA B2B</h1>
@@ -115,5 +111,6 @@ data = report.sepa_particulars_data()
         % endif
     </div>
 </div>
+%endfor
 </body>
 </html>

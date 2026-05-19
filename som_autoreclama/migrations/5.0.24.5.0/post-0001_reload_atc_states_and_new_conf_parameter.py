@@ -12,12 +12,12 @@ def up(cursor, installed_version):
 
     logger.info("Updating XML som_autoreclama_state_data.xml")
     load_data(
-        cursor, 'som_autoreclama', 'som_autoreclama_state_data.xml', idref=None,
+        cursor, 'som_autoreclama', 'data/som_autoreclama_state_data.xml', idref=None,
         mode='update'
     )
     logger.info("Create new config parameter at res_config_data.xml")
     load_data(
-        cursor, 'som_autoreclama', 'res_config_data.xml', idref=None,
+        cursor, 'som_autoreclama', 'data/res_config_data.xml', idref=None,
         mode='update'
     )
     logger.info("XMLs succesfully updated.")

@@ -644,3 +644,7 @@ msgid ""
 " exercir els teus drets a l'adreça indicada del responsable o a "
 "gdpr@somenergia.coop."
 msgstr "INFORMACIÓN SOBRE PROTECCIÓN DE DATOS DE SOM RENOVABLES S.L.U<br>Los datos personales tratados para gestionar la relación contractual y, si se tercia, remitir información comercial por medios electrónicos, se conservarán hasta el fin de la relación, baja comercial o los plazos de retención legales. Puedes ejercer tus derechos en la dirección indicada del responsable o a gdpr@somenergia.coop."
+#: rml:account_invoice_som/report/account_invoice_som.mako:300
+msgid ""
+"L'import d'aquesta factura s'ha pagat mitjançant targeta de crèdit"
+msgstr "El importe de esta factura se ha pagado mediante tarjeta de crédito"

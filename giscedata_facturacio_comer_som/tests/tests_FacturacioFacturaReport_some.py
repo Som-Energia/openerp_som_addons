@@ -220,7 +220,7 @@ class Tests_FacturacioFacturaReport_logo_component(Tests_FacturacioFacturaReport
         f = self.factura_obj.browse(self.cursor, self.uid, f_id)
         get_auvi_data_mock_function.return_value = False
 
-        p_id = 23
+        p_id = self.get_fixture("base", "res_partner_agrolait")
         self.partner_obj.write(self.cursor, self.uid, p_id, {"ref": "S12345"})
         self.polissa_obj.write(self.cursor, self.uid, f.polissa_id.id, {"soci": p_id})
 
@@ -238,7 +238,7 @@ class Tests_FacturacioFacturaReport_logo_component(Tests_FacturacioFacturaReport
         f = self.factura_obj.browse(self.cursor, self.uid, f_id)
         get_auvi_data_mock_function.return_value = False
 
-        p_id = 23
+        p_id = self.get_fixture("base", "res_partner_agrolait")
         self.partner_obj.write(self.cursor, self.uid, p_id, {"ref": "S019753"})
         self.polissa_obj.write(self.cursor, self.uid, f.polissa_id.id, {"soci": p_id})
 
@@ -266,7 +266,7 @@ class Tests_FacturacioFacturaReport_company_component(Tests_FacturacioFacturaRep
             {
                 "cif": u"A31896889",
                 "city": u"Gerompont",
-                "email": False,
+                "email": 'Fabien.Pinckaers@tinysprl.com',
                 "name": u"Tiny sprl",
                 "street": u"Chaussee de Namur 40",
                 "zip": u"1367",
@@ -667,7 +667,7 @@ class Tests_FacturacioFacturaReport_contract_data_component(Tests_FacturacioFact
                 "pricelist": u"TARIFAS ELECTRICIDAD",
                 "autoconsum_cau": "",
                 "is_autoconsum_colectiu": False,
-                "cups_direction": u"carrer inventat ,  1  ESC.  1 1 1 aclaridor 00001 (Poble de Prova)",  # noqa: E501
+                "cups_direction": u"carrer inventat, 1 ESC. 1 1 1 aclaridor 00001 (Poble de Prova)",  # noqa: E501
                 "autoconsum_colectiu_repartiment": 100.0,
                 "cnae": u"0111",
                 "power_invoicing_type": True,
@@ -720,7 +720,7 @@ class Tests_FacturacioFacturaReport_contract_data_component(Tests_FacturacioFact
             "pricelist": u"TARIFAS ELECTRICIDAD",
             "autoconsum_cau": u"ES0318363477145938GEA000",
             "is_autoconsum_colectiu": False,
-            "cups_direction": u"carrer inventat ,  1  ESC.  1 1 1 aclaridor 00001 (Poble de Prova)",  # noqa: E501
+            "cups_direction": u"carrer inventat, 1 ESC. 1 1 1 aclaridor 00001 (Poble de Prova)",  # noqa: E501
             "autoconsum_colectiu_repartiment": 100.0,
             "cnae": u"0111",
             "power_invoicing_type": False,
@@ -1181,7 +1181,7 @@ class Tests_FacturacioFacturaReport_emergency_complaints(Tests_FacturacioFactura
         f_id = self.get_fixture("giscedata_facturacio", "factura_0001")
         f = self.factura_obj.browse(self.cursor, self.uid, f_id)
 
-        p_id = 23
+        p_id = self.get_fixture("base", "res_partner_agrolait")
         self.partner_obj.write(self.cursor, self.uid, p_id, {"ref": "S12345"})
         self.polissa_obj.write(
             self.cursor,
@@ -1246,7 +1246,7 @@ class Tests_FacturacioFacturaReport_emergency_complaints(Tests_FacturacioFactura
         f_id = self.get_fixture("giscedata_facturacio", "factura_0001")
         f = self.factura_obj.browse(self.cursor, self.uid, f_id)
 
-        p_id = 23
+        p_id = self.get_fixture("base", "res_partner_agrolait")
         self.partner_obj.write(self.cursor, self.uid, p_id, {"ref": "S019753"})
         self.polissa_obj.write(
             self.cursor, self.uid, f.polissa_id.id, {"ref_dist": "ref_dist", "soci": p_id}
@@ -1265,7 +1265,7 @@ class Tests_FacturacioFacturaReport_emergency_complaints(Tests_FacturacioFactura
                 "distri_contract": u"ref_dist",
                 "distri_phone": "123.456.789",
                 "has_agreement_partner": True,
-                "agreement_partner_name": u"ENDESA DISTRIBUCI\xd3N EL\xc9CTRICA S. L.",
+                "agreement_partner_name": u"Agrolait",
                 "is_energetica": True,
                 "comer_phone": u"(+32).81.81.37.00",
             },
@@ -1815,7 +1815,7 @@ class Tests_FacturacioFacturaReport_invoice_details_comments(Tests_FacturacioFac
                 "invoice_comment": None,
                 "has_web": False,
                 "web_distri": False,
-                "language": False,
+                "language": 'es_ES',
                 "distri_name": u"Agrolait",
             },
         )
@@ -1853,7 +1853,7 @@ class Tests_FacturacioFacturaReport_invoice_details_comments(Tests_FacturacioFac
                 "invoice_comment": u"comment",
                 "has_web": False,
                 "web_distri": False,
-                "language": False,
+                "language": 'es_ES',
                 "distri_name": u"Agrolait",
             },
         )
@@ -2146,7 +2146,7 @@ class Tests_FacturacioFacturaReport_invoice_info(Tests_FacturacioFacturaReport_b
                 "start_date": "01/01/2016",
                 "end_date": "29/02/2016",
                 "contract_number": u"0001C",
-                "address": u"carrer inventat ,  1  ESC.  1 1 1 aclaridor 00001 (Poble de Prova)",
+                "address": u"carrer inventat, 1 ESC. 1 1 1 aclaridor 00001 (Poble de Prova)",
                 "due_date": "01/01/2016",
             },
         )
@@ -2259,6 +2259,8 @@ class Tests_FacturacioFacturaReport_invoice_details_td(Tests_FacturacioFacturaRe
                 "dies_any": 0,
                 "dies": 0,
                 "iva_column": False,
+                "total": 0,
+                "is_visible": False,
             },
         )
 
@@ -2285,6 +2287,8 @@ class Tests_FacturacioFacturaReport_invoice_details_td(Tests_FacturacioFacturaRe
                 "dies": 0,
                 "header_multi": 2,
                 "iva_column": False,
+                "total": 0,
+                "is_visible": False,
             },
         )
 
@@ -4867,3 +4871,85 @@ class Tests_FacturacioFacturaReport_invoice_details_td(Tests_FacturacioFacturaRe
                 'expedient': expedient
             }
         )
+
+    def _get_or_create_product(self, code, except_ids=None):
+        prod_obj = self.model("product.product")
+        prod_ids = prod_obj.search(self.cursor, self.uid, [("default_code", "=", code)])
+        if prod_ids:
+            return prod_ids[0]
+
+        params = []
+        if except_ids:
+            params = [
+                ("id", "not in", except_ids),
+            ]
+
+        prod_id = prod_obj.search(self.cursor, self.uid, params, limit=1)[0]
+        prod_obj.write(self.cursor, self.uid, prod_id, {"default_code": code})
+        return prod_id
+
+    def _create_saju_line(self, f_id, product_id, subtotal):
+        fact = self.bf(f_id)
+        inv_line_id = self.model("account.invoice.line").create(self.cursor, self.uid, {
+            "name": "SAJU", "invoice_id": fact.invoice.id,
+            "product_id": product_id, "quantity": 1.0,
+            "price_unit": subtotal, "account_id": 1,
+        })
+        self.linia_f_obj.create(self.cursor, self.uid, {
+            "name": "SAJU", "invoice_line_id": inv_line_id,
+            "factura_id": f_id, "price_subtotal": subtotal,
+            "tipus": "altres", "product_id": product_id,
+            "account_id": 1, "data_desde": "2021-06-01",
+            "data_fins": "2021-06-30",
+        })
+
+    def test__get_adjustment_services_data__no_saju_lines__returns_none(self):
+        f_id = self.get_fixture("giscedata_facturacio", "factura_0001")
+        self.assertIsNone(self.r_obj.get_adjustment_services_data(self.bf(f_id)))
+
+    def test__get_adjustment_services_data__SAJU_and_DSAJU__sum_totals(self):
+        f_id = self.get_fixture("giscedata_facturacio", "factura_0001")
+
+        saju_id = self._get_or_create_product("SAJU")
+        dsaju_id = self._get_or_create_product("DSAJU", except_ids=[saju_id])
+
+        self.linia_f_obj.create(
+            self.cursor,
+            self.uid,
+            {
+                "name": "Serveis d'ajust",
+                "quantity": 12.0,
+                "price_unit_multi": 1,
+                "price_unit": 1,
+                "extra": 1,
+                "multi": 1,
+                "factura_id": f_id,
+                "tipus": "reactiva",
+                "product_id": saju_id,
+                "account_id": 1,
+                "data_desde": '2021-06-01',
+                "data_fins": '2021-06-30',
+            },
+        )
+
+        self.linia_f_obj.create(
+            self.cursor,
+            self.uid,
+            {
+                "name": "D Serveis d'ajust",
+                "quantity": 7.0,
+                "price_unit_multi": -1,
+                "price_unit": 1,
+                "extra": 1,
+                "multi": 1,
+                "factura_id": f_id,
+                "tipus": "reactiva",
+                "product_id": dsaju_id,
+                "account_id": 1,
+                "data_desde": '2021-06-01',
+                "data_fins": '2021-06-30',
+            },
+        )
+
+        result = self.r_obj.get_adjustment_services_data(self.bf(f_id))
+        self.assertEquals(result["total"], 5.0)

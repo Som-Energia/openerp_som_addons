@@ -47,7 +47,8 @@
                             )
                         else:
                             entidad_bancaria = inv.partner_bank.name or inv.partner_bank.bank.lname
-                            bank_acc = inv.partner_bank.iban[:-4].replace(' ','')  + '****'
+                            iban_clean = inv.partner_bank.iban.replace(' ', '')
+                            bank_acc = iban_clean[-4:].rjust(len(iban_clean), '*')
 	        elif inv.payment_type.code == 'N57':
 		    fact_id = fact_obj.search(cursor, uid, [('invoice_id','=',inv.id)])[0]
 		    fact = fact_obj.browse(cursor, uid, fact_id)
@@ -71,7 +72,8 @@
                 else:
                     if inv.partner_bank:
                         entidad_bancaria = inv.partner_bank.name or inv.partner_bank.bank.lname
-                        bank_acc = inv.partner_bank.iban[:-4].replace(' ','') + '****'
+                        iban_clean = inv.partner_bank.iban.replace(' ', '')
+                        bank_acc = iban_clean[-4:].rjust(len(iban_clean), '*')
                 altres_lines = [l for l in inv.invoice_line]
                 residual_total = inv.residual
                 base = 0.0
@@ -273,28 +275,30 @@
 
                         %if inv.payment_type.code == 'RECIBO_CSB':
                             <p style="font-size: .8em">${_(u"L'import d'aquesta factura es carregarà al teu compte. El seu pagament quedarà justificat amb l'apunt bancari corresponent")}</p>
-                        <p class="center"><b>${bank_acc}</b></p>
+                            <p class="center"><b>${bank_acc}</b></p>
                         %elif inv.payment_type.code == 'N57' :
-			<table class="space">
-                    	<tr>
-                        <td align="center">
-                        ${ recibo507.svg(writer_options={
-                        'background':'transparent',
-                        'module_height': 7,
-                        'font_size': 7,
-                        'text_distance': 3,
-                        'module_width': 0.25})
-                        }
-                        </td>
-                    	</tr>
-                    	<tr>
-                    	<td align="center">
-                        ${_("Per fer el pagament online, pots entrar a <a href='https://www.caixabank.es/particular/pagos/impuestosrecibosmatriculas_ca.html'>https://www.caixabank.es/particular/pagos/impuestosrecibosmatriculas_ca.html</a>")}
-                        </td>
-	                </tr>
-        	        </table>
+			                <table class="space">
+                                <tr>
+                                    <td align="center">
+                                    ${ recibo507.svg(writer_options={
+                                    'background':'transparent',
+                                    'module_height': 7,
+                                    'font_size': 7,
+                                    'text_distance': 3,
+                                    'module_width': 0.25})
+                                    }
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td align="center">
+                                    ${_("Per fer el pagament online, pots entrar a <a href='https://www.caixabank.es/particular/pagos/impuestosrecibosmatriculas_ca.html'>https://www.caixabank.es/particular/pagos/impuestosrecibosmatriculas_ca.html</a>")}
+                                    </td>
+                                </tr>
+                            </table>
 
-			%else:
+                        %elif inv.payment_type.code == "COBRAMENT_TARGETA":
+                            ${_("L'import d'aquesta factura s'ha pagat mitjançant targeta de crèdit")}
+			            %else:
                             ${_("L'import d'aquesta factura s'ha de pagar mitjançant transferència bancària al compte indicat:")}
                             <%
                                 bank_list = company.partner_id.bank_ids

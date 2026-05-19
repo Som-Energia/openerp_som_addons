@@ -138,6 +138,7 @@ class TestsGurbServices(TestsGurbBase):
             n_lines += 1
             self.assertEqual(line["quantity"], 2.5)  # Number of betas
             self.assertEqual(line["multi"], 60)  # Service days invoiced
+            self.assertEqual(line["name"], "Producte GURB dom\xc3\xa8stic GRUP")  # Line name
 
         self.assertEqual(n_lines, 1)
 

@@ -4,3 +4,4 @@ from . import wizard
 from . import payment_order
 from . import facturacio_extra
 from . import giscedata_facturacio_validation
+from . import giscedata_polissa

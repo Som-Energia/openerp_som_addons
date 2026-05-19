@@ -98,6 +98,14 @@
             <field name="browser">chrome</field>
             <field name="user_ultima_modificacio" ref="base.user_admin"/>
         </record>
+        <record model="som.crawlers.config" id="cide_api_conf">
+            <field name="name">cide</field>
+            <field name="crawler">API</field>
+            <field name="days_of_margin">5</field>
+            <field name="pending_files_only" eval="False"/>
+            <field name="browser">api</field>
+            <field name="user_ultima_modificacio" ref="base.user_admin"/>
+        </record>
         <record model="som.crawlers.config" id="guadassuar_conf">
             <field name="name">guadassuar</field>
             <field name="crawler">Selenium</field>
@@ -266,6 +274,14 @@
             <field name="browser">chrome</field>
             <field name="user_ultima_modificacio" ref="base.user_admin"/>
         </record>
+        <record model="som.crawlers.config" id="alginet_conf">
+            <field name="name">alginet</field>
+            <field name="crawler">Selenium</field>
+            <field name="days_of_margin">15</field>
+            <field name="pending_files_only" eval="False"/>
+            <field name="browser">chrome</field>
+            <field name="user_ultima_modificacio" ref="base.user_admin"/>
+        </record>
 
         <!-- Configuracions a FTPs -->
         <record model="som.crawlers.config" id="avellana_ftp_conf">
@@ -383,6 +399,15 @@
             <field name="pending_files_only" eval="False"/>
             <field name="browser">chrome</field>
             <field name="port">2222</field>
+            <field name="user_ultima_modificacio" ref="base.user_admin"/>
+        </record>
+        <record model="som.crawlers.config" id="eriste_ftp_conf">
+            <field name="name">eriste_ftp</field>
+            <field name="crawler">Selenium</field>
+            <field name="days_of_margin">5</field>
+            <field name="pending_files_only" eval="False"/>
+            <field name="browser">chrome</field>
+            <field name="port">22</field>
             <field name="user_ultima_modificacio" ref="base.user_admin"/>
         </record>
         <record model="som.crawlers.config" id="registregeneral_conf">

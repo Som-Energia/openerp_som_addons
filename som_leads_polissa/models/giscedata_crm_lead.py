@@ -30,6 +30,12 @@ class GiscedataCrmLead(osv.OsvInherits):
         self.lead_titular_adr_to_adr["titular_phone_prefix"] = "phone_prefix"
         self.lead_titular_adr_to_adr["titular_mobile_prefix"] = "mobile_prefix"
 
+        # remove check_num_tel constraints because only allows 9 digits phone numbers D:
+        self._constraints = [
+            constraint for constraint in self._constraints
+            if constraint[0].__name__ != "check_num_tel_mob_longitude"
+        ]
+
     def contract_pdf(self, cursor, uid, ids, context=None):
         if context is None:
             context = {}
@@ -106,6 +112,7 @@ class GiscedataCrmLead(osv.OsvInherits):
 
         values["soci"] = member_id[0]
         values["donatiu"] = lead.donation
+        values["data_firma_contracte"] = datetime.today().strftime("%Y-%m-%d %H:%M:%S")
 
         for line in lead.history_line:
             if line.description and line.description.startswith(WWW_DATA_FORM_HEADER):
@@ -213,9 +220,17 @@ class GiscedataCrmLead(osv.OsvInherits):
                 ad_id = addrs.get("default")
                 adr_info = address_o.read(
                     cursor, uid, ad_id, ['phone_prefix', 'mobile_prefix'], context=context)
-                if adr_info:
-                    vals["titular_phone_prefix"] = adr_info.get("phone_prefix", [False])[0]
-                    vals["titular_mobile_prefix"] = adr_info.get("mobile_prefix", [False])[0]
+                # Quick fix to ensure no more exceptions on new contracts
+                phone_prefix = adr_info.get("phone_prefix", False)
+                mobile_prefix = adr_info.get("mobile_prefix", False)
+                if isinstance(phone_prefix, list) or isinstance(phone_prefix, tuple):
+                    phone_prefix = phone_prefix[0]
+                if isinstance(mobile_prefix, list) or isinstance(mobile_prefix, tuple):
+                    mobile_prefix = mobile_prefix[0]
+                if phone_prefix:
+                    vals["titular_phone_prefix"] = phone_prefix
+                if mobile_prefix:
+                    vals["titular_mobile_prefix"] = mobile_prefix
 
         return vals
 
@@ -345,7 +360,7 @@ class GiscedataCrmLead(osv.OsvInherits):
         # fer un tipus de pagament especial per a la quota de soci i despres buscar una remesa
         # oberta o crearla de nou com fa generation a get_or_create_open_payment_order
         payment_mode_id = ir_model_o.get_object_reference(
-            cursor, uid, "som_polissa_soci", "mode_pagament_socis"
+            cursor, uid, "som_leads_polissa", "mode_pagament_socis_factura"
         )[1]
         payment_mode_name = payment_mode_o.read(
             cursor, uid, payment_mode_id, ["name"], context=context

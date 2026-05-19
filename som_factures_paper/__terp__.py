@@ -3,7 +3,7 @@
     "name": "Mòdul per crear un assitent per ajudar a la impresuió de factures en paper",
     "description": """
     """,
-    "version": "24.5.0",
+    "version": "0-dev",
     "author": "SomEnergia",
     "category": "SomEnergia",
     "depends": [

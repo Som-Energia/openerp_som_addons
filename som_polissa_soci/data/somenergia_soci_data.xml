@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <openerp>
-    <data>
+    <data noupdate="1">
+        <!-- CT SS -->
         <!-- Partner -->
         <record id="res_partner_soci_ct" model="res.partner">
             <field name="name">Campanya de facilitació del CT sense sòcia</field>
@@ -10,6 +11,17 @@
         <!-- Soci -->
         <record id="soci_ct_sense_soci" model="somenergia.soci">
             <field name="partner_id" ref="res_partner_soci_ct"/>
+        </record>
+        <!-- 15 anys -->
+        <!-- Partner -->
+        <record id="res_partner_soci_15_anys" model="res.partner">
+            <field name="name">Campanya 15 anys</field>
+            <field name="ref">S999997</field>
+            <field name="vat">ES99999997E</field>
+        </record>
+        <!-- Soci -->
+        <record id="soci_15_anys" model="somenergia.soci">
+            <field name="partner_id" ref="res_partner_soci_15_anys"/>
         </record>
      </data>
 </openerp>
