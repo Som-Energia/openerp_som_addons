@@ -2,9 +2,13 @@
 import logging
 import traceback
 import sys
+import time
 from osv import osv
+from service.security import Sudo
+from oorq.decorators import job
 import yaml
 import copy
+from uuid import uuid4
 
 from som_leads_polissa.models.giscedata_crm_lead import WWW_DATA_FORM_HEADER
 from giscedata_cups.giscedata_cups import get_dso
@@ -18,8 +22,10 @@ class SomLeadWww(osv.osv_memory):
     _127_WITH_SURPLUSES = '2'
     _128_SIMPLIFIED_SURPLUSES = 'a0'
     _131_CONSUMPTION = '01'
+    _SIGNATURE_COMPLETED_STATUS = 'completed'
+    _SIGNATURE_ERROR_STATUSES = ('error', 'canceled', 'rejected', 'declined', 'expired')
 
-    def create_lead(self, cr, uid, www_vals, context=None):
+    def create_lead(self, cr, uid, www_vals, context=None):  # noqa: C901
         if context is None:
             context = {}
         imd_o = self.pool.get("ir.model.data")
@@ -152,6 +158,7 @@ class SomLeadWww(osv.osv_memory):
             "birthdate": member.get("birthdate"),
             "referral_source": member.get("referral_source"),
             "comercial_info_accepted": member.get("comercial_info_accepted", False),
+            "mandate_number": uuid4().hex,
         }
 
         values["user_id"] = ir_model_o.get_object_reference(
@@ -227,9 +234,42 @@ class SomLeadWww(osv.osv_memory):
                 context=context
             )
 
+        signature_url = None
+        signature_provider = None
+        if not error_info:
+            # Make the just-created lead visible to the secondary cursor opened
+            # during signature document generation.
+            cr.commit()
+            try:
+                sign_result = self.sign_lead(cr, uid, lead_id, context=context)
+                signature_url = sign_result.get('url')
+                signature_provider = 'signaturit'
+            except Exception as exc:
+                logger = logging.getLogger("openerp.{0}.create_lead".format(__name__))
+                logger.exception(
+                    "Error signing lead after commit (lead_id=%s)", lead_id
+                )
+                sign_error_stage_id = ir_model_o.get_object_reference(
+                    cr, uid, "som_leads_polissa", "webform_stage_signature_error"
+                )[1]
+                lead_o.write(
+                    cr, uid, lead_id,
+                    {'stage_id': sign_error_stage_id, 'state': 'pending'},
+                    context=context
+                )
+                lead_o.historize_msg(
+                    cr, uid, [lead_id],
+                    u"SIGNATURE_ERROR: {}".format(str(exc)),
+                    context=context
+                )
+                cr.commit()
+                raise
+
         return {
             "lead_id": lead_id,
             "error": error_info,
+            "signature_url": signature_url,
+            "signature_provider": signature_provider,
         }
 
     def activate_lead(self, cr, uid, lead_id, context=None):
@@ -261,11 +301,81 @@ class SomLeadWww(osv.osv_memory):
             logger.warning("Error al comunicar amb Mailchimp {}".format(str(e)))
 
         if context.get('sync'):
-            lead_o._send_mail(cr, uid, lead_id, context=context)
+            self._send_activation_mail_if_signature_allows(cr, uid, lead_id, context=context)
         else:
-            lead_o._send_mail_async(cr, uid, lead_id, context=context)
+            self._send_activation_mail_if_signature_allows_async(cr, uid, lead_id, context=context)
 
         return True
+
+    @job(queue="poweremail_sender")
+    def _send_activation_mail_if_signature_allows_async(self, cr, uid, lead_id, context=None):
+        if context is None:
+            context = {}
+        self._send_activation_mail_if_signature_allows(cr, uid, lead_id, context=context)
+
+    def _send_activation_mail_if_signature_allows(self, cr, uid, lead_id, context=None):
+        if context is None:
+            context = {}
+
+        lead_o = self.pool.get("giscedata.crm.lead")
+        ir_model_o = self.pool.get("ir.model.data")
+        logger = logging.getLogger("openerp.{0}.activate_lead.signature_mail".format(__name__))
+
+        attempts = 30
+        wait_seconds = 10
+
+        for _ in range(attempts):
+            lead_data = lead_o.read(
+                cr, uid, lead_id, ['signature_process', 'status_firma'], context=context
+            )
+            signature_process = lead_data.get('signature_process')
+            signature_status = lead_data.get('status_firma')
+
+            if not signature_process:
+                lead_o._send_mail(cr, uid, lead_id, context=context)
+                return True
+
+            if signature_status == self._SIGNATURE_COMPLETED_STATUS:
+                lead_o._send_mail(cr, uid, lead_id, context=context)
+                return True
+
+            if signature_status in self._SIGNATURE_ERROR_STATUSES:
+                signature_error_stage_id = ir_model_o.get_object_reference(
+                    cr, uid, "som_leads_polissa", "webform_stage_signature_error"
+                )[1]
+                lead_o.write(
+                    cr, uid, lead_id,
+                    {'stage_id': signature_error_stage_id, 'state': 'pending'},
+                    context=context
+                )
+                lead_o.historize_msg(
+                    cr, uid, [lead_id],
+                    u"SIGNATURE_NOT_COMPLETED: activation e-mail not sent (status={})".format(
+                        signature_status
+                    ),
+                    context=context
+                )
+                return False
+
+            time.sleep(wait_seconds)
+
+        logger.warning(
+            "Signature still pending, activation e-mail not sent yet (lead_id=%s)", lead_id
+        )
+        signature_pending_review_stage_id = ir_model_o.get_object_reference(
+            cr, uid, "som_leads_polissa", "webform_stage_signature_pending_review"
+        )[1]
+        lead_o.write(
+            cr, uid, lead_id,
+            {'stage_id': signature_pending_review_stage_id, 'state': 'pending'},
+            context=context
+        )
+        lead_o.historize_msg(
+            cr, uid, [lead_id],
+            u"SIGNATURE_PENDING: activation e-mail not sent yet",
+            context=context
+        )
+        return False
 
     def _create_attachments(self, cr, uid, lead_id, attachments, context=None):
         if context is None:
@@ -409,6 +519,53 @@ class SomLeadWww(osv.osv_memory):
             prefix_res = phone_prefix_o.search(cursor, uid, [('name', '=', parts[0])], limit=1)
             return prefix_res and prefix_res[0] or None, parts[1]
         return None, phone_full
+
+    def sign_lead(self, cr, uid, lead_id, context=None):
+        if context is None:
+            context = {}
+        ctx = context.copy()
+        ctx['delivery_type'] = 'url'
+        ctx['provider'] = 'signaturit'
+
+        lead_o = self.pool.get('giscedata.crm.lead')
+        state, errors = lead_o.check_start_signature_process(cr, uid, [lead_id], context=ctx)
+        if state != 'end':
+            raise osv.except_osv('Error', errors)
+
+        with Sudo(uid=uid, gid=0):
+            with self.api.db.cursor() as sign_cursor:
+                process_id = lead_o.start_signature_process(
+                    sign_cursor, uid, lead_id, context=ctx
+                )
+
+        process_o = self.pool.get('giscedata.signatura.process')
+        timeout_seconds = 30.0
+        poll_interval = 0.2
+        deadline = time.time() + timeout_seconds
+        signature_url = False
+
+        while time.time() < deadline:
+            process_data = process_o.read(
+                cr, uid, process_id, ['signature_url', 'status'], context=context
+            )
+            signature_url = process_data.get('signature_url')
+            if signature_url:
+                break
+            if process_data.get('status') == 'error':
+                raise osv.except_osv(
+                    'Error',
+                    'Signature process failed before URL generation (process_id={})'.format(
+                        process_id)
+                )
+            time.sleep(poll_interval)
+
+        if not signature_url:
+            raise osv.except_osv(
+                'Error',
+                'Timeout waiting signature URL (process_id={})'.format(process_id)
+            )
+
+        return {'url': signature_url}
 
 
 SomLeadWww()
