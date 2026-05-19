@@ -100,3 +100,32 @@ class TestWizardBaixaSoci(testing.OOTestCase):
         baixa = self.Soci.read(self.cursor, self.uid, member_id, ['baixa'])['baixa']
         self.assertFalse(baixa)
         mocked_send_mail.assert_not_called()
+
+    def test__verify__all_good(self):
+        member_id = self.IrModelData.get_object_reference(
+            self.cursor, self.uid, 'som_generationkwh', 'soci_0003'
+        )[1]
+        self.Soci.write(self.cursor, self.uid, [member_id], {'baixa': False, 'data_baixa_soci': None})
+        context = {'active_ids':[member_id]}
+        
+        wiz_id = self.WizardBaixaSoci.create(self.cursor, self.uid, {'info':''}, context=context)
+        self.WizardBaixaSoci.verify(self.cursor, self.uid, wiz_id, context=context)
+
+        wiz = self.WizardBaixaSoci.browse(self.cursor, self.uid, wiz_id)
+        self.assertEqual(wiz.state, 'checklist')
+        self.assertIn('Tot correcte', wiz.info)
+
+
+    def test__verify__with_issues(self):
+        member_id = self.IrModelData.get_object_reference(
+            self.cursor, self.uid, 'som_generationkwh', 'soci_0001'
+        )[1]
+        self.Soci.write(self.cursor, self.uid, [member_id], {'baixa': False, 'data_baixa_soci': None})
+        context = {'active_ids':[member_id]}
+        
+        wiz_id = self.WizardBaixaSoci.create(self.cursor, self.uid, {'info':''}, context=context)
+        self.WizardBaixaSoci.verify(self.cursor, self.uid, wiz_id, context=context)
+
+        wiz = self.WizardBaixaSoci.browse(self.cursor, self.uid, wiz_id)
+        self.assertEqual(wiz.state, 'checklist')
+        self.assertNotIn('Tot correcte', wiz.info)

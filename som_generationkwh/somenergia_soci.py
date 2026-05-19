@@ -2,12 +2,17 @@
 
 from __future__ import absolute_import
 
+import netsvc
 from osv import osv, fields
 from tools.translate import _
 from tools import config
 from oorq.decorators import job
 
 from datetime import datetime, date
+
+
+_MEMBER_FEE_RETURN_PURPOSE = 'RETORN QUOTA SOCI'
+
 
 def field_function(ff_func):
     def string_key(*args, **kwargs):
@@ -130,93 +135,223 @@ class SomenergiaSoci(osv.osv):
 
         return True
 
-    def verifica_baixa_soci(self, cursor, uid, ids, context=None):
-        # - Comprovar si té generationkwh: Existeix atribut al model generation que ho indica. Altrament es poden buscar les inversions.
-        # - Comprovar si té inversions vigents: Buscar inversions vigents.
-        # - Comprovar si té contractes actius: Buscar contractes vigents.
-        # - Comprovar si té Factures pendents de pagament: Per a aquesta comprovació hi ha una tasca feta a la OV que ens pot ajudar feta per en Fran a la següent PR: https://github.com/gisce/erp/pull/7997/files
-
-        """Mètode per donar de baixa un soci.
-        """
+    def get_baixa_blocking_reasons(self, cursor, uid, member_id, context=None):
         if not context:
             context = {}
-        if not ids:
-            return
-        if isinstance(ids, (int, long)):
-            ids = [ids]
-        if len(ids) != 1:
-            raise osv.except_osv(_('Com ha minim es necessita un soci'))
 
-        imd_obj = self.pool.get('ir.model.data')
+        reasons = []
+
         invest_obj = self.pool.get('generationkwh.investment')
         emi_obj = self.pool.get('generationkwh.emission')
         pol_obj = self.pool.get('giscedata.polissa')
         fact_obj = self.pool.get('giscedata.facturacio.factura')
         soci_obj = self.pool.get('somenergia.soci')
-        rpa_obj = self.pool.get('res.partner.address')
 
         today = datetime.today().strftime('%Y-%m-%d')
-        member_id = ids[0]
         res_partner_id = soci_obj.read(cursor, uid, member_id, ['partner_id'])['partner_id'][0]
 
         baixa = soci_obj.read(cursor, uid, [member_id], ['baixa'])[0]['baixa']
 
         if baixa:
-            raise osv.except_osv(_('El soci no pot ser donat de baixa!'),
-                                 _('Ja ha estat donat de baixa anteriorment!'))
+            reasons.append(_('Ja ha estat donat de baixa anteriorment!'))
 
         genkwh_emission_ids = emi_obj.search(cursor, uid, [('type','=','genkwh')])
         gen_invest = invest_obj.search(cursor, uid, [('member_id', '=', member_id),
                                                      ('emission_id', 'in', genkwh_emission_ids),
-                                                     ('last_effective_date', '>=', today)])
+                                                     ('last_effective_date', '>', today)])
         if gen_invest:
-            raise osv.except_osv(_('El soci no pot ser donat de baixa!'),
-                                 _('El soci té inversions de generation actives.'))
+            reasons.append(_('El soci té inversions de generation actives.'))
 
         aportacions_ids = emi_obj.search(cursor, uid, [('type','=','apo')])
         apo_invest = invest_obj.search(cursor, uid, [('member_id', '=', member_id),
                                                      ('emission_id', 'in', aportacions_ids),
                                                      '|', ('last_effective_date', '=', False),
-                                                     ('last_effective_date', '>=', today)])
+                                                     ('last_effective_date', '>', today)])
         if apo_invest:
-            raise osv.except_osv(_('El soci no pot ser donat de baixa!'), _('El soci té aportacions actives.'))
+            reasons.append(_('El soci té aportacions actives.'))
 
         factures_pendents = fact_obj.search(cursor, uid, [('partner_id', '=', res_partner_id),
                                                           ('state', 'not in', ['cancel', 'paid']),
                                                           ('type', '=', 'out_invoice')])
 
         if factures_pendents and not context.get('skip_pending_check', False):
-            raise osv.except_osv(_('El soci no pot ser donat de baixa!'), _('El soci té factures pendents.'))
+            reasons.append(_('El soci té factures pendents.'))
 
-        polisses = pol_obj.search(cursor, uid,
+        polisses_as_titular = pol_obj.search(cursor, uid,
                                   [('soci', '=', res_partner_id),
+                                   ('titular', '=', res_partner_id),
                                    ('state', '!=', 'baixa'),
                                    ('state', '!=', 'cancelada')])
-        if polisses:
-            raise osv.except_osv(_('El soci no pot ser donat de baixa!'), _('El soci té al menys un contracte vinculat.'))
+        if polisses_as_titular:
+            reasons.append(_('El soci té al menys un contracte vinculat com a soci i titular.'))
+
+        polisses_apadrinades = pol_obj.search(cursor, uid,
+                                  [('soci', '=', res_partner_id),
+                                   ('titular', '!=', res_partner_id),
+                                   ('state', '!=', 'baixa'),
+                                   ('state', '!=', 'cancelada')])
+        if polisses_apadrinades and not context.get('skip_sponsored_check', False):
+            reasons.append(_('El soci té al menys un contracte apadrinat.'))
+
+        return reasons
+
+    def do_baixa_soci(self, cursor, uid, member_id, bank_account_id, context=None):
+        # - Comprovar si té generationkwh: Existeix atribut al model generation que ho indica. Altrament es poden buscar les inversions.
+        # - Comprovar si té inversions vigents: Buscar inversions vigents.
+        # - Comprovar si té contractes actius: Buscar contractes vigents.
+        # - Comprovar si té Factures pendents de pagament: Per a aquesta comprovació hi ha una tasca feta a la OV que ens pot ajudar feta per en Fran a la següent PR: https://github.com/gisce/erp/pull/7997/files
+
+        """Mètode per donar de baixa un soci."""
+        context = context or {}
+
+        reasons = self.get_baixa_blocking_reasons(cursor, uid, member_id, context=context)
+        if reasons:
+            raise osv.except_osv("Error", _('El soci no pot ser donat de baixa!'), '\n'.join(reasons))
+
+        imd_obj = self.pool.get('ir.model.data')
+        soci_obj = self.pool.get('somenergia.soci')
+        rpa_obj = self.pool.get('res.partner.address')
+
+        today = datetime.today().strftime('%Y-%m-%d')
+        res_partner_id = soci_obj.read(cursor, uid, member_id, ['partner_id'])['partner_id'][0]
 
         soci_category_id = imd_obj.get_object_reference(
             cursor, uid, 'som_partner_account', 'res_partner_category_soci'
         )[1]
 
         def delete_rel(cursor, uid, categ_id, res_partner_id):
-            cursor.execute('delete from res_partner_category_rel where category_id=%s and partner_id=%s',(categ_id, res_partner_id))
+            cursor.execute(
+                'delete from res_partner_category_rel where category_id=%s and partner_id=%s',
+                (categ_id, res_partner_id)
+            )
 
         res_users = self.pool.get('res.users')
         usuari = res_users.read(cursor, uid, uid, ['name'])['name']
         old_comment = soci_obj.read(cursor, uid, [member_id], ['comment'])[0]['comment']
-        old_comment = old_comment + '\n' if old_comment else '' 
-        comment =  "{}Baixa efectuada a data {} per: {}".format(old_comment, today, usuari)
-        soci_obj.write(cursor, uid, [member_id], {'baixa': True,
-                                                'data_baixa_soci': today,
-                                                'comment': comment })
+        old_comment = old_comment + '\n' if old_comment else ''
+        comment = "{}Baixa efectuada a data {} per: {}".format(old_comment, today, usuari)
+        soci_obj.write(cursor, uid, [member_id], {
+            'baixa': True,
+            'data_baixa_soci': today,
+            'comment': comment,
+        })
         delete_rel(cursor, uid, soci_category_id, res_partner_id)
 
+        self._unlink_sponsored_contracts(cursor, uid, res_partner_id, context)
         rpa_obj.unsubscribe_partner_in_members_lists(
             cursor, uid, [res_partner_id], context=context
         )
+        self._create_payment_line(cursor, uid, member_id, bank_account_id, context)
         return True
 
+    def _unlink_sponsored_contracts(self, cursor, uid, res_partner_id, context=None):
+        polissa_obj = self.pool.get('giscedata.polissa')
+        res_partner_obj = self.pool.get('res.partner')
+
+        dni_soci = res_partner_obj.read(cursor, uid, res_partner_id, ['vat'])['vat']
+        polisses_apadrinades = polissa_obj.search(cursor, uid, [
+            ('soci', '=', res_partner_id), ('titular', '!=', res_partner_id)
+        ])
+        for polissa_id in polisses_apadrinades:
+            polissa_vals = polissa_obj.read(cursor, uid, polissa_id, ['titular', 'name'])
+            titular_id = polissa_vals['titular'][0]
+            titular_notes = res_partner_obj.read(
+                cursor, uid, titular_id, ['comment'])['comment'] or ''
+            titular_notes = (
+                "{} Contracte {} apadrinat per {},"
+                " soci es dona de baixa i treiem apadrinament."
+                .format(datetime.now().strftime('%Y-%m-%d'), polissa_vals['name'], dni_soci)
+            )
+            polissa_obj.write(cursor, uid, polissa_id, {'soci': False})
+            res_partner_obj.write(cursor, uid, titular_id, {'comment': titular_notes})
+
+    def _create_payment_line(self, cursor, uid, member_id, bank_account_id, context=None):
+        conf_o = self.pool.get("res.config")
+        imd_o = self.pool.get("ir.model.data")
+        payment_mode_o = self.pool.get("payment.mode")
+        payment_order_o = self.pool.get("payment.order")
+        currency_o = self.pool.get("res.currency")
+        soci_o = self.pool.get("somenergia.soci")
+        account_o = self.pool.get("account.account")
+        invoice_o = self.pool.get("account.invoice")
+        journal_o = self.pool.get("account.journal")
+        payment_type_o = self.pool.get("payment.type")
+        payment_line_o = self.pool.get("payment.line")
+
+        socia_fee_amount = conf_o.get(cursor, uid, "socia_member_fee_amount", "100")
+        currency_id = currency_o.search(cursor, uid, [("name", "=", "EUR")])[0]
+        payment_mode_id = imd_o.get_object_reference(
+            cursor, uid, "som_generationkwh", "soci_return_payment_mode")[1]
+        payment_mode_name = payment_mode_o.read(cursor, uid, payment_mode_id, ["name"])["name"]
+        acc_id_100 = account_o.search(cursor, uid, [("code", "=", "100000000000")])[0]
+        acc_id_430 = account_o.search(cursor, uid, [("code", "=", "430000000000")])[0]
+        journal_id = journal_o.search(
+            cursor, uid, [("code", "=", "SOCIS_RETURN")], context=context
+        )[0]
+        payment_type_id = payment_type_o.search(
+            cursor, uid, [("code", "=", "TRANSFERENCIA_CSB")], context=context
+        )[0]
+        soci = soci_o.browse(cursor, uid, member_id, context=context)
+
+        # Create invoice line
+        inv_line = {
+            "name": _MEMBER_FEE_RETURN_PURPOSE,
+            "account_id": acc_id_100,
+            "price_unit": socia_fee_amount,
+            "quantity": 1,
+            "uom_id": 1,
+            "company_currency_id": currency_id,
+        }
+
+        # Create invoice
+        invoice_name = "RETORN-QUOTA-SOCIS-{}".format(soci.partner_id.ref)
+        invoice_vals = {
+            "name": invoice_name,
+            "number": invoice_name,
+            "partner_id": soci.partner_id.id,
+            "type": "in_invoice",
+            "invoice_line": [(0, 0, inv_line)],
+            "origin_date_invoice": datetime.today().strftime("%Y-%m-%d"),
+            "date_invoice": datetime.today().strftime("%Y-%m-%d"),
+            "journal_id": journal_id,
+            "origin": invoice_name,
+            "reference": invoice_name,
+            "check_total": socia_fee_amount,
+            "sii_to_send": False,
+        }
+        invoice_vals.update(invoice_o.onchange_partner_id(  # Get invoice default values
+            cursor, uid, [], "in_invoice", soci.partner_id.id).get("value", {})
+        )
+        invoice_vals.update({
+            "payment_type": payment_type_id,
+            "partner_bank": bank_account_id,
+            "account_id": acc_id_430,
+        })
+
+        invoice_id = invoice_o.create(cursor, uid, invoice_vals, context=context)
+        invoice_o.button_reset_taxes(cursor, uid, [invoice_id])
+
+        # open the invoice
+        wf_service = netsvc.LocalService("workflow")
+        wf_service.trg_validate(uid, 'account.invoice', invoice_id, 'invoice_open', cursor)
+
+        payment_order_id = payment_order_o.get_or_create_open_payment_order(
+            cursor, uid,  payment_mode_name, use_invoice=True, context=context
+        )
+        invoice_o.afegeix_a_remesa(cursor, uid, [invoice_id], payment_order_id, context=context)
+
+        # set the member number as the payment line name
+        payment_line_id = payment_line_o.search(
+            cursor, uid,
+            [
+                ("partner_id", "=", soci.partner_id.id),
+                ("communication", "=", "{}. {}".format(invoice_name, invoice_name)),
+                ("order_id", "=", payment_order_id),
+            ],
+            context=context
+        )
+        payment_line_o.write(
+            cursor, uid, payment_line_id, {"name": invoice_name}, context=context)
 
     _columns = {
         'has_gkwh': fields.function(

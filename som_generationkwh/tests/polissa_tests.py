@@ -36,7 +36,7 @@ class PolissaTests(testing.OOTestCaseWithCursor):
         result = self.Polissa.generationkwh_anual_estimation(
             cursor, uid, polissa_id, '2016-12-31')
 
-        self.assertFalse(result)
+        self.assertEqual(result, (False, 'no_data'))
 
     @mock.patch("som_generationkwh.giscedata_polissa.GiscedataPolissa.get_generationkwh_use")
     def test_generationkwh_anual_estimation_with_full_data(self, mocked_get_use):
@@ -56,11 +56,10 @@ class PolissaTests(testing.OOTestCaseWithCursor):
         result = self.Polissa.generationkwh_anual_estimation(
             cursor, uid, polissa_id, '2016-12-31')
 
-        self.assertEqual(result, {
+        self.assertEqual(result, ({
             'P1': 120,
             'P2': 60,
-        })
-
+        }, 'full_data'))
 
     @mock.patch("som_generationkwh.giscedata_polissa.GiscedataPolissa.get_generationkwh_use")
     def test_generationkwh_anual_estimation_with_partial_data(self, mocked_get_use):
@@ -84,7 +83,7 @@ class PolissaTests(testing.OOTestCaseWithCursor):
         result = self.Polissa.generationkwh_anual_estimation(
             cursor, uid, polissa_id, '2016-12-31')
 
-        self.assertEqual(result, {
+        self.assertEqual(result, ({
             'P1': 132,
             'P2': 36,
-        })
+        }, 'partial_data'))
