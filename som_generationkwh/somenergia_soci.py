@@ -5,8 +5,6 @@ from __future__ import absolute_import
 import netsvc
 from osv import osv, fields
 from tools.translate import _
-from tools import config
-from oorq.decorators import job
 
 from datetime import datetime, date
 
@@ -155,14 +153,14 @@ class SomenergiaSoci(osv.osv):
         if baixa:
             reasons.append(_('Ja ha estat donat de baixa anteriorment!'))
 
-        genkwh_emission_ids = emi_obj.search(cursor, uid, [('type','=','genkwh')])
+        genkwh_emission_ids = emi_obj.search(cursor, uid, [('type', '=', 'genkwh')])
         gen_invest = invest_obj.search(cursor, uid, [('member_id', '=', member_id),
                                                      ('emission_id', 'in', genkwh_emission_ids),
                                                      ('last_effective_date', '>', today)])
         if gen_invest:
             reasons.append(_('El soci té inversions de generation actives.'))
 
-        aportacions_ids = emi_obj.search(cursor, uid, [('type','=','apo')])
+        aportacions_ids = emi_obj.search(cursor, uid, [('type', '=', 'apo')])
         apo_invest = invest_obj.search(cursor, uid, [('member_id', '=', member_id),
                                                      ('emission_id', 'in', aportacions_ids),
                                                      '|', ('last_effective_date', '=', False),
@@ -178,35 +176,37 @@ class SomenergiaSoci(osv.osv):
             reasons.append(_('El soci té factures pendents.'))
 
         polisses_as_titular = pol_obj.search(cursor, uid,
-                                  [('soci', '=', res_partner_id),
-                                   ('titular', '=', res_partner_id),
-                                   ('state', '!=', 'baixa'),
-                                   ('state', '!=', 'cancelada')])
+                                             [('soci', '=', res_partner_id),
+                                              ('titular', '=', res_partner_id),
+                                                 ('state', '!=', 'baixa'),
+                                                 ('state', '!=', 'cancelada')])
         if polisses_as_titular:
             reasons.append(_('El soci té al menys un contracte vinculat com a soci i titular.'))
 
         polisses_apadrinades = pol_obj.search(cursor, uid,
-                                  [('soci', '=', res_partner_id),
-                                   ('titular', '!=', res_partner_id),
-                                   ('state', '!=', 'baixa'),
-                                   ('state', '!=', 'cancelada')])
+                                              [('soci', '=', res_partner_id),
+                                               ('titular', '!=', res_partner_id),
+                                                  ('state', '!=', 'baixa'),
+                                                  ('state', '!=', 'cancelada')])
         if polisses_apadrinades and not context.get('skip_sponsored_check', False):
             reasons.append(_('El soci té al menys un contracte apadrinat.'))
 
         return reasons
 
     def do_baixa_soci(self, cursor, uid, member_id, bank_account_id, context=None):
-        # - Comprovar si té generationkwh: Existeix atribut al model generation que ho indica. Altrament es poden buscar les inversions.
+        # - Comprovar si té generationkwh: Existeix atribut al model generation que ho indica.
+        #   Altrament es poden buscar les inversions.
         # - Comprovar si té inversions vigents: Buscar inversions vigents.
         # - Comprovar si té contractes actius: Buscar contractes vigents.
-        # - Comprovar si té Factures pendents de pagament: Per a aquesta comprovació hi ha una tasca feta a la OV que ens pot ajudar feta per en Fran a la següent PR: https://github.com/gisce/erp/pull/7997/files
-
+        # - Comprovar si té Factures pendents de pagament: Per a aquesta comprovació hi ha una
+        #   tasca feta a la OV que ens pot ajudar feta per en Fran a la següent PR:
+        #   https://github.com/gisce/erp/pull/7997/files
         """Mètode per donar de baixa un soci."""
         context = context or {}
 
         reasons = self.get_baixa_blocking_reasons(cursor, uid, member_id, context=context)
         if reasons:
-            raise osv.except_osv("Error", _('El soci no pot ser donat de baixa!'), '\n'.join(reasons))
+            raise osv.except_osv(_('El soci no pot ser donat de baixa!'), '\n'.join(reasons))
 
         imd_obj = self.pool.get('ir.model.data')
         soci_obj = self.pool.get('somenergia.soci')
@@ -255,13 +255,14 @@ class SomenergiaSoci(osv.osv):
         for polissa_id in polisses_apadrinades:
             polissa_vals = polissa_obj.read(cursor, uid, polissa_id, ['titular', 'name'])
             titular_id = polissa_vals['titular'][0]
-            titular_notes = res_partner_obj.read(
+            existing_notes = res_partner_obj.read(
                 cursor, uid, titular_id, ['comment'])['comment'] or ''
-            titular_notes = (
+            new_note = (
                 "{} Contracte {} apadrinat per {},"
                 " soci es dona de baixa i treiem apadrinament."
                 .format(datetime.now().strftime('%Y-%m-%d'), polissa_vals['name'], dni_soci)
             )
+            titular_notes = "{}\n{}".format(existing_notes, new_note).strip()
             polissa_obj.write(cursor, uid, polissa_id, {'soci': False})
             res_partner_obj.write(cursor, uid, titular_id, {'comment': titular_notes})
 
@@ -336,7 +337,7 @@ class SomenergiaSoci(osv.osv):
         wf_service.trg_validate(uid, 'account.invoice', invoice_id, 'invoice_open', cursor)
 
         payment_order_id = payment_order_o.get_or_create_open_payment_order(
-            cursor, uid,  payment_mode_name, use_invoice=True, context=context
+            cursor, uid, payment_mode_name, use_invoice=True, context=context
         )
         invoice_o.afegeix_a_remesa(cursor, uid, [invoice_id], payment_order_id, context=context)
 
@@ -389,6 +390,7 @@ class SomenergiaSoci(osv.osv):
         'gkwh_assignment_notified': lambda *a: False,
     }
 
+
 SomenergiaSoci()
 
 
@@ -416,5 +418,6 @@ class GenerationkWhkWhxShare(osv.osv):
         'version_start_date': fields.date(u"Data Valor"),
         'kwh': fields.integer(u"kWh per acció"),
     }
+
 
 GenerationkWhkWhxShare()
