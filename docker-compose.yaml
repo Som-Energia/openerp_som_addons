@@ -4,10 +4,10 @@ services:
     ports:
       - 5432:5432
     environment:
-     - POSTGRES_USER=erp
-     - POSTGRES_PASSWORD=erp
+      - POSTGRES_USER=erp
+      - POSTGRES_PASSWORD=erp
     volumes:
-      - ./db:/var/lib/postgresql/data
+      - erp_db_data:/var/lib/postgresql/data
 
   mongo:
     image: mongo:3.0
@@ -18,3 +18,6 @@ services:
     image: redis:5.0
     ports:
       - 6379:6379
+
+volumes:
+  erp_db_data:

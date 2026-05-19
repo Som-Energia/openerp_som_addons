@@ -14,6 +14,7 @@ ERP_HEALTH_TIMEOUT="${ERP_HEALTH_TIMEOUT:-180}"
 ERP_READY_FILE="${ERP_READY_FILE:-/tmp/erp-ready-${ERP_DATABASE}.flag}"
 OPENERP_CONFIG="${OPENERP_CONFIG:-}"
 OPENERP_EXTRA_ARGS="${OPENERP_EXTRA_ARGS:-}"
+ERP_FOREGROUND="${ERP_FOREGROUND:-0}"
 
 SERVER_ARGS=(
   --no-netrpc
@@ -34,6 +35,11 @@ if [ -n "$OPENERP_EXTRA_ARGS" ]; then
 fi
 
 echo "Starting ERP runtime on ${ERP_BIND_ADDRESS}:${ERP_XMLRPC_PORT}"
+if [ "${ERP_FOREGROUND}" = "1" ]; then
+  echo "Running ERP in foreground (stdout/stderr)"
+  exec python "$ERP_SERVER" "${SERVER_ARGS[@]}"
+fi
+
 nohup python "$ERP_SERVER" \
   "${SERVER_ARGS[@]}" \
   >"$ERP_LOG_FILE" 2>&1 &

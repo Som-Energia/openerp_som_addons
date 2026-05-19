@@ -9,6 +9,8 @@ DB_SERVICE="${DB_SERVICE:-}"
 POSTGRES_DB="${POSTGRES_DB:-${ERP_DATABASE:-erp}}"
 POSTGRES_USER="${POSTGRES_USER:-erp}"
 POSTGRES_PASSWORD="${POSTGRES_PASSWORD:-erp}"
+USE_PREWARMED_DB="${USE_PREWARMED_DB:-1}"
+PREWARMED_DB_DUMP_PATH="${PREWARMED_DB_DUMP_PATH:-${ROOT_DIR}/build/prewarmed/prewarmed-db.dump.zst}"
 
 log() {
   printf '[producer_create_db] %s\n' "$*"
@@ -166,6 +168,50 @@ count_app_tables() {
     " | tr -d '[:space:]'
 }
 
+wait_for_db() {
+  local tries=30
+  local i
+  for ((i = 1; i <= tries; i++)); do
+    if run_compose -f "${COMPOSE_FILE}" exec -T "${DB_SERVICE}" \
+      pg_isready -U "${POSTGRES_USER}" -d postgres >/dev/null 2>&1; then
+      return
+    fi
+    sleep 2
+  done
+  fail "PostgreSQL no està llest després d'esperar"
+}
+
+restore_prewarmed_db_if_available() {
+  local app_tables
+
+  if [ "${USE_PREWARMED_DB}" != "1" ]; then
+    return 1
+  fi
+  if [ ! -f "${PREWARMED_DB_DUMP_PATH}" ]; then
+    log "No s'ha trobat dump prewarmed a ${PREWARMED_DB_DUMP_PATH}; es farà inicialització amb destral"
+    return 1
+  fi
+
+  have_cmd zstd || fail "Falta zstd per restaurar ${PREWARMED_DB_DUMP_PATH}"
+
+  log "Restaurar BD des de dump prewarmed: ${PREWARMED_DB_DUMP_PATH}"
+  run_compose -f "${COMPOSE_FILE}" exec -T "${DB_SERVICE}" \
+    dropdb -U "${POSTGRES_USER}" --if-exists "${POSTGRES_DB}" >/dev/null
+  run_compose -f "${COMPOSE_FILE}" exec -T "${DB_SERVICE}" \
+    createdb -U "${POSTGRES_USER}" "${POSTGRES_DB}" >/dev/null
+
+  zstd -dc "${PREWARMED_DB_DUMP_PATH}" | run_compose -f "${COMPOSE_FILE}" exec -T "${DB_SERVICE}" \
+    pg_restore -U "${POSTGRES_USER}" -d "${POSTGRES_DB}" --clean --if-exists --no-owner --no-privileges
+
+  app_tables="$(count_app_tables)"
+  if [ -z "${app_tables}" ] || [ "${app_tables}" -eq 0 ]; then
+    fail "La restauració des de ${PREWARMED_DB_DUMP_PATH} ha deixat la BD buida"
+  fi
+
+  log "BD restaurada des de prewarmed dump (${app_tables} taules d'aplicació)"
+  return 0
+}
+
 main() {
   local builder_script
   local app_tables
@@ -179,7 +225,12 @@ main() {
 
   log "Assegurant dependències disponibles (db/redis/mongo)"
   start_required_services
+  wait_for_db
   assert_host_accessible_services
+
+  if restore_prewarmed_db_if_available; then
+    return
+  fi
 
   if [ ! -f "${builder_script}" ]; then
     app_tables="$(count_app_tables)"

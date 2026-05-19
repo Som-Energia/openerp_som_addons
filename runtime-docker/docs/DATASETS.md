@@ -4,7 +4,13 @@ Sistema pragmàtic per distribuir snapshots PostgreSQL del runtime OpenERP/Odoo 
 
 ## Camí feliç
 
-Des de l'arrel del repo:
+Des de l'arrel del repo. Configura primer els fitxers d'entorn:
+
+```bash
+cp runtime-docker/.env.producer.example runtime-docker/.env.producer
+cp runtime-docker/.env.consumer.example runtime-docker/.env.consumer
+# edita valors (Harbor, repositori, tags, etc.)
+```
 
 1. Equip productor: crear dataset:
 
@@ -15,19 +21,19 @@ make -C runtime-docker dataset-producer-create
 2. Equip productor: publicar-lo a Harbor:
 
 ```bash
-DATASET_REPOSITORY="harbor.example.com/openerp/datasets" make -C runtime-docker dataset-producer-publish
+make -C runtime-docker dataset-producer-publish
 ```
 
-3. Equip consumidor: descarregar l'últim dataset:
+3. Equip consumidor: preparar assets (baixa imatge prewarmed i dataset si no hi són):
 
 ```bash
-make -C runtime-docker dataset-consumer-pull
+make -C runtime-docker dataset-consumer-prepare
 ```
 
-4. Equip consumidor: restaurar-lo al PostgreSQL del runtime local:
+4. Equip consumidor: arrencar stack docker compose:
 
 ```bash
-make -C runtime-docker dataset-consumer-restore
+make -C runtime-docker dataset-consumer-up
 ```
 
 ## Variables obligatòries (publicar a Harbor)
@@ -51,6 +57,7 @@ Variables habituals de runtime:
 - `EXPECTED_POSTGRES_MAJOR` (default: `13`, recomanat deixar-lo així per alinear amb PROD)
 
 Política de versió:
+
 - Els scripts validen la versió del servidor PostgreSQL abans de crear/restaurar.
 - Si no és major `13`, fallen amb error explícit.
 
@@ -62,7 +69,8 @@ Fem servir un sol `Makefile`, però separat per rols:
   - `dataset-producer-create`
   - `dataset-producer-publish`
 - Consumidor:
-  - `dataset-consumer-pull`
+  - `dataset-consumer-prepare`
+  - `dataset-consumer-up`
   - `dataset-consumer-restore`
 
 També es mantenen aliases curts per compatibilitat:
@@ -73,6 +81,11 @@ També es mantenen aliases curts per compatibilitat:
 - `dataset-restore`
 
 Això evita duplicar configuració i, alhora, deixa clar qui executa cada part del workflow.
+
+Els targets `make` carreguen automàticament:
+
+- `.env.producer` per targets productor i prewarmed.
+- `.env.consumer` per targets consumidor.
 
 ## Arquitectura
 
@@ -97,25 +110,48 @@ Això evita duplicar configuració i, alhora, deixa clar qui executa cada part d
 
 ### Workflow productor
 
-El productor només necessita:
+El camí per defecte del productor (`runtime-docker/.env.producer`) és:
 
 ```bash
-make -C runtime-docker dataset-producer-create
-DATASET_REPOSITORY="harbor.example.com/openerp/datasets" make -C runtime-docker dataset-producer-publish
+make -C runtime-docker dataset-producer-all
+```
+
+Això fa:
+
+1. `runtime-build-prewarmed` (build + push de la imatge prewarmed)
+2. `dataset-producer-publish` (push del dataset exportat)
+
+Tags publicats per defecte (imatge i dataset):
+
+- `latest`
+- `YYYYMMDD` (data UTC)
+
+Si abans has executat `runtime-build-prewarmed`, `dataset-producer-create` pot
+reutilitzar automàticament el dump exportat del prewarm (`PREWARMED_DB_DUMP_PATH`)
+i evitar tornar a executar destral.
+
+Opció legacy (sense prewarm com a pas principal):
+
+```bash
+make -C runtime-docker dataset-producer-legacy-all
 ```
 
 ### Workflow consumidor
 
-El consumidor només necessita:
+El consumidor només necessita (`runtime-docker/.env.consumer`):
 
 ```bash
-DATASET_REPOSITORY="harbor.example.com/openerp/datasets" DATASET_TAG=latest make -C runtime-docker dataset-consumer-pull
-make -C runtime-docker dataset-consumer-restore
+# 1) baixa imatge+dataset només si falten
+make -C runtime-docker dataset-consumer-prepare
+
+# 2) arrenca el compose
+make -C runtime-docker dataset-consumer-up
 ```
 
 ### Crear dataset
 
 `create_dataset.sh`:
+
 - arrenca `postgres` si cal,
 - espera `pg_isready`,
 - executa `pg_dump -Fc`,
@@ -124,10 +160,12 @@ make -C runtime-docker dataset-consumer-restore
 - escriu metadata JSON a `runtime-docker/build/datasets/`.
 
 Sortida:
+
 - `runtime-docker/build/datasets/openerp-demo-YYYYMMDD.dump.zst`
 - `runtime-docker/build/datasets/openerp-demo-YYYYMMDD.metadata.json`
 
 Variables útils:
+
 - `DATASET_NAME`
 - `POSTGRES_DB` o `ERP_DATABASE`
 - `POSTGRES_USER`
@@ -137,31 +175,35 @@ Variables útils:
 - `PG_DUMP_EXTRA_ARGS` (opcions addicionals de `pg_dump`)
 
 Nota TimescaleDB:
+
 - Per defecte, el dump exclou esquemes interns `_timescaledb_*` per evitar errors de restore entre entorns.
 - Si necessites incloure'ls explícitament, posa `EXCLUDE_TIMESCALE_INTERNALS=0`.
 
 ### Publicar a Harbor
 
 `publish_dataset.sh`:
+
 - reutilitza el login existent del Docker client,
 - publica dump i metadata via `oras push`,
-- crea sempre tres tags:
+- crea sempre dos tags:
   - `latest`
-  - timestamp UTC (`YYYYMMDDHHMMSS`)
-  - git sha curt.
+  - data UTC (`YYYYMMDD`).
 
 Variables útils:
+
 - `DATASET_REPOSITORY`
 - `DATASET_FILE`, `METADATA_FILE`
-- `TIMESTAMP_TAG`, `GIT_SHA_TAG`
+- `DATE_TAG`
 
 ### Descarregar dataset
 
 `pull_dataset.sh`:
+
 - baixa `DATASET_REPOSITORY:DATASET_TAG`,
 - guarda el resultat a `runtime-docker/.cache/datasets/<tag>/`.
 
 Variables útils:
+
 - `DATASET_REPOSITORY`
 - `DATASET_TAG`
 - `CACHE_DIR`
@@ -174,6 +216,7 @@ Variables útils:
 - Mode extern: si defines `POSTGRES_HOST`, fa servir `dropdb`, `createdb` i `pg_restore` contra aquell host.
 
 Variables útils:
+
 - `POSTGRES_HOST`, `POSTGRES_PORT`
 - `POSTGRES_USER`, `POSTGRES_PASSWORD`
 - `POSTGRES_DB` o `ERP_DATABASE`
@@ -185,10 +228,9 @@ Variables útils:
 ## Publicació manual
 
 ```bash
-export HARBOR_DOMAIN="harbor.example.com"
-export HARBOR_USERNAME="<usuari>"
-export HARBOR_PASSWORD="<password_o_token>"
-export DATASET_REPOSITORY="${HARBOR_DOMAIN}/openerp/datasets"
+set -a
+source runtime-docker/.env.producer
+set +a
 
 printf '%s' "$HARBOR_PASSWORD" | docker login "$HARBOR_DOMAIN" -u "$HARBOR_USERNAME" --password-stdin
 make -C runtime-docker dataset-producer-create
@@ -200,11 +242,7 @@ make -C runtime-docker dataset-producer-publish
 Executa el flux sencer (create -> publish -> pull -> restore):
 
 ```bash
-export HARBOR_DOMAIN="harbor.example.com"
-export HARBOR_USERNAME="<usuari>"
-export HARBOR_PASSWORD="<password_o_token>"
-export DATASET_REPOSITORY="${HARBOR_DOMAIN}/openerp/datasets"
-
+# assegura que runtime-docker/.env.producer té credencials vàlides
 make -C runtime-docker dataset-smoke-vpn
 ```
 
@@ -218,20 +256,23 @@ Opcionalment:
 Des de cache OCI:
 
 ```bash
-DATASET_REPOSITORY="harbor.example.com/openerp/datasets" DATASET_TAG=latest make -C runtime-docker dataset-consumer-pull
+# configura DATASET_REPOSITORY i DATASET_TAG a runtime-docker/.env.consumer
+make -C runtime-docker dataset-consumer-pull
 make -C runtime-docker dataset-consumer-restore
 ```
 
 Des d'un fitxer concret:
 
 ```bash
-DATASET_PATH="$PWD/runtime-docker/build/datasets/openerp-demo-20260515.dump.zst" make -C runtime-docker dataset-consumer-restore
+# defineix DATASET_PATH a runtime-docker/.env.consumer
+make -C runtime-docker dataset-consumer-restore
 ```
 
 Contra un PostgreSQL extern:
 
 ```bash
-POSTGRES_HOST=127.0.0.1 POSTGRES_PORT=5432 POSTGRES_DB=erp_runtime make -C runtime-docker dataset-consumer-restore
+# defineix POSTGRES_HOST, POSTGRES_PORT i POSTGRES_DB a runtime-docker/.env.consumer
+make -C runtime-docker dataset-consumer-restore
 ```
 
 ## Integració operativa
@@ -239,6 +280,7 @@ POSTGRES_HOST=127.0.0.1 POSTGRES_PORT=5432 POSTGRES_DB=erp_runtime make -C runti
 Com que Harbor és local i darrere VPN, la publicació s'ha de fer des d'un host intern amb accés a la VPN.
 
 Recomanació:
+
 - executar `make -C runtime-docker dataset-smoke-vpn` com a comprovació inicial,
 - després deixar un cron o job intern que executi només productor (`dataset-producer-create` + `dataset-producer-publish`).
 
@@ -250,40 +292,72 @@ S'inclou un compose dedicat per consumidors:
 - `runtime-docker/.env.consumer.example`
 
 Què fa:
+
 - aixeca `postgres` (PG13), `mongo`, `redis` i `erp-runtime` (imatge preconstruida),
 - permet executar un job one-shot `dataset-restore` que baixa `erp/datasets:latest` via ORAS i restaura la base.
 
 Nota sobre `erp-runtime`:
+
 - Aquesta imatge executa un bootstrap al primer inici (clonat/configuració) si no troba workspace.
 - El compose consumidor munta un volum (`consumer_workspace`) a `/opt/somenergia/src` per persistir-lo i evitar re-bootstrap a cada arrencada.
 - El compose consumidor arrenca ERP directament amb `start-openerp-server.sh` (bypass de `build-openerp-server.sh`) per evitar executar `destral` a cada `up`.
 
 ### Opció recomanada: imatge prewarmed
 
-Per evitar també el bootstrap del *primer* arrencat, publica una imatge runtime prewarmed.
+Per evitar també el bootstrap del _primer_ arrencat, publica una imatge runtime
+prewarmed. Aquest és el camí recomanat per equips consumidors: la imatge ja porta
+repos clonats, dependències instal·lades i ERP preparat; el dataset es distribueix
+separadament com a artefacte OCI.
 
 Script inclòs:
+
 - `runtime-docker/scripts/build_prewarmed_image.sh`
-- target Makefile: `make -C runtime-docker runtime-build-prewarmed`
+- targets Makefile:
+  - `make -C runtime-docker runtime-build-prewarmed` (build + export DB + push imatge)
+  - `make -C runtime-docker runtime-export-prewarmed-db` (només export DB prewarmed, sense push)
 
 Variables obligatòries:
-- `BASE_IMAGE` (ex: `harbor.example.com/erp/openerp:20260514`)
-- `TARGET_IMAGE` (ex: `harbor.example.com/erp/openerp:20260514-prewarmed`)
-- `GITHUB_TOKEN` (read repos privats)
 
-Exemple:
+- `TARGET_IMAGE_REPOSITORY` (ex: `harbor.example.com/erp/openerp`)
+- `GITHUB_TOKEN` (read repos privats, només durant el build/prewarm)
+
+Variables opcionals:
+
+- `BASE_IMAGE`: si s'informa, el prewarm parteix d'una imatge existent.
+- `LOCAL_BASE_IMAGE`: tag local per a la imatge base quan `BASE_IMAGE` no s'informa.
+- `DOCKERFILE_PATH` i `BUILD_CONTEXT`: permeten canviar el Dockerfile/context del build base.
+
+Exemple recomanat, construint també la base localment:
 
 ```bash
-BASE_IMAGE="harbor.example.com/erp/openerp:20260514" \
-TARGET_IMAGE="harbor.example.com/erp/openerp:20260514-prewarmed" \
-GITHUB_TOKEN="<token>" \
+# defineix TARGET_IMAGE_REPOSITORY i GITHUB_TOKEN a runtime-docker/.env.producer
+make -C runtime-docker runtime-build-prewarmed
+
+# si només vols regenerar el dump prewarmed local (sense publicar imatge):
+make -C runtime-docker runtime-export-prewarmed-db
+```
+
+Exemple alternatiu, partint d'una base ja publicada:
+
+```bash
+# defineix BASE_IMAGE, TARGET_IMAGE_REPOSITORY i GITHUB_TOKEN a runtime-docker/.env.producer
 make -C runtime-docker runtime-build-prewarmed
 ```
+
+El token de GitHub es passa al contenidor de bootstrap com a fitxer muntat temporal,
+no com a variable d'entorn de Docker. Abans de fer el commit de la imatge final,
+el script elimina les carpetes `.git` de la imatge perquè no cal historial ni
+remotes en entorns consumidors.
+
+A més, el prewarm exporta un dump de la BD temporal a
+`PREWARMED_DB_DUMP_PATH` (per defecte `runtime-docker/build/prewarmed/prewarmed-db.dump.zst`).
+Aquest dump es pot reaprofitar després a `dataset-producer-create` amb
+`USE_PREWARMED_DB=1`.
 
 Després, a l'equip consumidor:
 
 ```bash
-ERP_RUNTIME_IMAGE="harbor.example.com/erp/openerp:20260514-prewarmed"
+ERP_RUNTIME_IMAGE="harbor.example.com/erp/openerp:latest"
 ```
 
 ### Arrencar stack de consum
@@ -292,21 +366,24 @@ ERP_RUNTIME_IMAGE="harbor.example.com/erp/openerp:20260514-prewarmed"
 cp runtime-docker/.env.consumer.example runtime-docker/.env.consumer
 # edita credencials Harbor i valors necessaris
 
-docker compose --env-file runtime-docker/.env.consumer -f runtime-docker/docker-compose.consumer.yml up -d postgres mongo redis erp-runtime
+make -C runtime-docker dataset-consumer-prepare
+make -C runtime-docker dataset-consumer-up
 ```
 
-### Carregar el dataset més recent
+### Carregar el dataset més recent a PostgreSQL local
 
 ```bash
-docker compose --env-file runtime-docker/.env.consumer -f runtime-docker/docker-compose.consumer.yml --profile dataset run --rm dataset-restore
+make -C runtime-docker dataset-consumer-restore
 ```
 
 Variables obligatòries per aquest flux:
+
 - `HARBOR_DOMAIN`
 - `HARBOR_USERNAME`
 - `HARBOR_PASSWORD`
 
 Variables recomanades:
+
 - `ERP_RUNTIME_IMAGE` (default: `harbor.example.com/erp/openerp:latest`)
 - `GITHUB_TOKEN` (opcional en mode consumidor amb entrypoint bypass)
 - `DATASET_REPOSITORY` (default: `harbor.example.com/erp/datasets`)
@@ -315,6 +392,7 @@ Variables recomanades:
 - `RESET_ADMIN_PASSWORD` (recomanat: `admin` en entorns locals de demo)
 
 Troubleshooting ràpid:
+
 - Si veus `artifact erp/openerp:latest not found`, revisa que `ERP_RUNTIME_IMAGE` sigui una referència completa i existent a Harbor.
 - Pots validar la interpolació final amb:
 
