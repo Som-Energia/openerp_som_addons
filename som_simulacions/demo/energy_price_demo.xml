@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data noupdate="1">
+        <record id="som_simulacio_energy_price_demo_2026_05_p1" model="som.simulacio.energy.price.monthly">
+            <field name="name">Demo Price 2026-05 P1</field>
+            <field name="year">2026</field>
+            <field name="month">5</field>
+            <field name="period">P1</field>
+            <field name="tariff_code">2.0TD</field>
+            <field name="price">0.11</field>
+        </record>
+        <record id="som_simulacio_energy_price_demo_2026_05_p2" model="som.simulacio.energy.price.monthly">
+            <field name="name">Demo Price 2026-05 P2</field>
+            <field name="year">2026</field>
+            <field name="month">5</field>
+            <field name="period">P2</field>
+            <field name="tariff_code">2.0TD</field>
+            <field name="price">0.09</field>
+        </record>
+        <record id="som_simulacio_energy_price_demo_2026_05_p3" model="som.simulacio.energy.price.monthly">
+            <field name="name">Demo Price 2026-05 P3</field>
+            <field name="year">2026</field>
+            <field name="month">5</field>
+            <field name="period">P3</field>
+            <field name="tariff_code">2.0TD</field>
+            <field name="price">0.07</field>
+        </record>
+    </data>
+</openerp>

@@ -35,6 +35,41 @@ class TestIndexedEstimateUISecurity(testing.OOTestCaseWithCursor):
         for expected_file in expected_files:
             self.assertIn(expected_file, update_xml)
 
+    def test_manifest_and_demo_xml_define_demo_seed_data(self):
+        module_path = self._module_path()
+        manifest_path = os.path.join(module_path, '__terp__.py')
+        namespace = {}
+        manifest = eval(open(manifest_path).read(), {}, namespace)
+
+        demo_xml = manifest.get('demo_xml', [])
+        expected_demo_files = [
+            'demo/annual_coeff_demo.xml',
+            'demo/energy_price_demo.xml',
+            'demo/simulation_request_demo.xml',
+        ]
+        for expected_file in expected_demo_files:
+            self.assertIn(expected_file, demo_xml)
+
+        coeff_root = self._parse_xml('demo/annual_coeff_demo.xml')
+        coeff_records = coeff_root.findall(
+            ".//record[@model='som.simulacio.annual.coeff']")
+        self.assertEqual(3, len(coeff_records))
+        coeff_sum = 0.0
+        for record in coeff_records:
+            ratio_node = record.find("field[@name='ratio']")
+            coeff_sum += float(ratio_node.text)
+        self.assertAlmostEqual(1.0, coeff_sum, places=6)
+
+        prices_root = self._parse_xml('demo/energy_price_demo.xml')
+        price_records = prices_root.findall(
+            ".//record[@model='som.simulacio.energy.price.monthly']")
+        self.assertEqual(3, len(price_records))
+
+        request_root = self._parse_xml('demo/simulation_request_demo.xml')
+        request_records = request_root.findall(
+            ".//record[@model='som.simulacio.request']")
+        self.assertEqual(1, len(request_records))
+
     def test_parameter_views_define_expected_models_and_fields(self):
         root = self._parse_xml('views/parameter_views.xml')
         model_names = [

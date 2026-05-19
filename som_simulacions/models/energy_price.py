@@ -23,22 +23,8 @@ class SomSimulacioEnergyPriceMonthly(osv.osv):
     _sql_constraints = [
         (
             'uniq_monthly_tariff_period',
-            'unique(year, month, period, tariff_code)',
+            'unique(year, month, period, tariff_code, active)',
             'Monthly energy price already exists for this year/month/period/tariff.'
-        )
-    ]
-
-    def _check_positive_price(self, cr, uid, ids, context=None):
-        for row in self.read(cr, uid, ids, ['price'], context=context):
-            if (row.get('price') or 0.0) <= 0.0:
-                return False
-        return True
-
-    _constraints = [
-        (
-            _check_positive_price,
-            'Monthly energy price must be greater than zero.',
-            ['price']
         )
     ]
 

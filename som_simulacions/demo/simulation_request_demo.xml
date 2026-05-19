@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data noupdate="1">
+        <record id="som_simulacio_request_demo_2026_05" model="som.simulacio.request">
+            <field name="name">DEMO-REQ-2026-05</field>
+            <field name="year">2026</field>
+            <field name="month">5</field>
+            <field name="tariff_code">2.0TD</field>
+            <field name="power_p1">6.9</field>
+            <field name="power_p2">4.6</field>
+            <field name="power_p3">3.45</field>
+        </record>
+    </data>
+</openerp>
