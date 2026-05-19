@@ -5,7 +5,6 @@ from osv import osv, fields
 from tools.translate import _
 import netsvc
 from som_generationkwh import investment
-from generationkwh.isodates import isodate
 import pickle
 
 class WizardInvestmentAmortization(osv.osv_memory):
@@ -58,7 +57,7 @@ class WizardInvestmentAmortization(osv.osv_memory):
             investment_ids = Investment.search(cursor, uid, [('active', '=', True),('emission_id.type','=','genkwh')])
 
         limit_date = date.today() + timedelta(days=31)
-        if isodate(current_date) > limit_date:
+        if datetime.strptime(str(current_date)[:10], '%Y-%m-%d').date() > limit_date:
             wiz.write(dict(
                 validation=
                     'Data no permesa, ha de ser inferior a {limit} per poder amortitzar.\n'

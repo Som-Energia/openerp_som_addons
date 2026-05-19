@@ -351,12 +351,17 @@ class GiscedataFacturacioFactura(osv.osv):
         else:
             maj_product = False
 
+        saju_product = product_obj.search(cursor, uid, [('default_code','=', 'SAJU')])
+        if saju_product:
+            saju_product = saju_product[0]
+        else:
+            saju_product = False
         real_energy = []
         lines_extra_ids = self.get_lines_in_extralines(cursor, uid, inv_id, pol_id)
         for l_id in linies_energia_ids:
             if l_id not in lines_extra_ids:
                 line = invline_obj.browse(cursor, uid, l_id)
-                if line.product_id.id == maj_product:
+                if line.product_id.id in [maj_product, saju_product]:
                     continue
                 real_energy.append(l_id)
         return real_energy

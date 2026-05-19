@@ -256,7 +256,7 @@ for account.invoice in objects:
             </b></th>
         </tr>
         <tr>
-            <td id="account"> ${(data.inversionBankAccount or '')[-4:].rjust(len(data.inversionBankAccount or ''), '*')} </td>
+            <td id="account"> ${data.inversionBankAccount} </td>
         </tr>
     </table>
     %if data.countInvestmentsGkwh > 1:

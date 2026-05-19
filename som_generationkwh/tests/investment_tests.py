@@ -41,6 +41,7 @@ class InvestmentTests(testing.OOTestCase):
         self.Emission = self.openerp.pool.get('generationkwh.emission')
         self.PaymentLine = self.openerp.pool.get('payment.line')
         self.PaymentOrder = self.openerp.pool.get('payment.order')
+        self.PaymentType = self.openerp.pool.get('payment.type')
         self.Soci = self.openerp.pool.get('somenergia.soci')
         self.Product = self.openerp.pool.get('product.product')
         self.AccountAccount = self.openerp.pool.get('account.account')
@@ -596,6 +597,7 @@ class InvestmentTests(testing.OOTestCase):
             mandate_id = self.Investment.get_or_create_payment_mandate(cursor, uid,
                 partner_id, iban, investment.emission_id.mandate_name, gkwh.creditorCode)
             partner_data = self.Partner.browse(cursor, uid, partner_id)
+            payment_type_id = self.PaymentType.search(cursor, uid, [('code', '=', 'RECIBO_CSB')])[0]
             self.assertInvoiceInfoEqual(cursor, uid, invoice_ids[0], u"""\
                 account_id: {liq_account_code} {liq_account_name}
                 amount_total: 2000.0
@@ -635,7 +637,7 @@ class InvestmentTests(testing.OOTestCase):
                 - {p.id}
                 - {p.name}
                 payment_type:
-                - 2
+                - {payment_type_id}
                 - Recibo domiciliado
                 sii_to_send: false
                 type: out_invoice
@@ -653,7 +655,8 @@ class InvestmentTests(testing.OOTestCase):
                 gkwh_account_code=gkwh_account_dict['code'],
                 gkwh_account_name=gkwh_account_dict['name'],
                 liq_account_code=liq_account_dict['code'],
-                liq_account_name=liq_account_dict['name']
+                liq_account_name=liq_account_dict['name'],
+                payment_type_id=payment_type_id
                 ))
 
     def test__create_initial_invoices__AllOkAPO(self):
@@ -679,6 +682,7 @@ class InvestmentTests(testing.OOTestCase):
             mandate_id = self.Investment.get_or_create_payment_mandate(cursor, uid,
                 partner_id, iban, emission_data.mandate_name, gkwh.creditorCode)
             partner_data = self.Partner.browse(cursor, uid, partner_id)
+            payment_type_id = self.PaymentType.search(cursor, uid, [('code', '=', 'RECIBO_CSB')])[0]
             self.assertInvoiceInfoEqual(cursor, uid, invoice_ids[0], u"""\
                 account_id: {liq_account_code} {liq_account_name}
                 amount_total: 1000.0
@@ -718,7 +722,7 @@ class InvestmentTests(testing.OOTestCase):
                 - {p.id}
                 - {p.name}
                 payment_type:
-                - 2
+                - {payment_type_id}
                 - Recibo domiciliado
                 sii_to_send: false
                 type: out_invoice
@@ -736,7 +740,8 @@ class InvestmentTests(testing.OOTestCase):
                 liq_account_code=liq_account_dict['code'],
                 liq_account_name=liq_account_dict['name'],
                 apo_account_code=apo_account_dict['code'],
-                apo_account_name=apo_account_dict['name']
+                apo_account_name=apo_account_dict['name'],
+                payment_type_id=payment_type_id
                 ))
 
     def test__create_initial_invoices__withNegativeAmount_APO(self):
@@ -1947,6 +1952,7 @@ class InvestmentTests(testing.OOTestCase):
             self.assertFalse(errs)
             self.assertTrue(invoice_ids)
             partner_data = self.Partner.browse(cursor, uid, partner_id)
+            payment_type_id = self.PaymentType.search(cursor, uid, [('code', '=', 'TRANSFERENCIA_CSB')])[0]
             self.assertInvoiceInfoEqual(cursor, uid, invoice_ids, u"""\
                 account_id: {liq_account_code} {liq_account_name}
                 amount_total: 1000.0
@@ -1987,7 +1993,7 @@ class InvestmentTests(testing.OOTestCase):
                 - {p.id}
                 - {p.name}
                 payment_type:
-                - 3
+                - {payment_type_id}
                 - Transferencia
                 sii_to_send: false
                 type: in_invoice
@@ -2005,7 +2011,8 @@ class InvestmentTests(testing.OOTestCase):
                 gkwh_account_code=gkwh_account_dict['code'],
                 gkwh_account_name=gkwh_account_dict['name'],
                 liq_account_code=liq_account_dict['code'],
-                liq_account_name=liq_account_dict['name']
+                liq_account_name=liq_account_dict['name'],
+                payment_type_id=payment_type_id
                 ))
 
     def test__create_divestment_invoice__withProfitOneYearOkGKWH(self):
@@ -2035,6 +2042,7 @@ class InvestmentTests(testing.OOTestCase):
             self.assertFalse(errs)
             self.assertTrue(invoice_ids)
             partner_data = self.Partner.browse(cursor, uid, partner_id)
+            payment_type_id = self.PaymentType.search(cursor, uid, [('code', '=', 'TRANSFERENCIA_CSB')])[0]
             self.assertInvoiceInfoEqual(cursor, uid, invoice_ids, u"""\
                 account_id: {liq_account_code} {liq_account_name}
                 amount_total: 993.0
@@ -2097,7 +2105,7 @@ class InvestmentTests(testing.OOTestCase):
                 - {p.id}
                 - {p.name}
                 payment_type:
-                - 3
+                - {payment_type_id}
                 - Transferencia
                 sii_to_send: false
                 type: in_invoice
@@ -2117,7 +2125,8 @@ class InvestmentTests(testing.OOTestCase):
                 gkwh_account_code=gkwh_account_dict['code'],
                 gkwh_account_name=gkwh_account_dict['name'],
                 liq_account_code=liq_account_dict['code'],
-                liq_account_name=liq_account_dict['name']
+                liq_account_name=liq_account_dict['name'],
+                payment_type_id=payment_type_id
                 ))
 
     def test__create_divestment_invoice__withProfitTwoYears_irpNotRoundedOkGKWH(self):
@@ -2146,6 +2155,7 @@ class InvestmentTests(testing.OOTestCase):
             self.assertFalse(errs)
             self.assertTrue(invoice_ids)
             partner_data = self.Partner.browse(cursor, uid, partner_id)
+            payment_type_id = self.PaymentType.search(cursor, uid, [('code', '=', 'TRANSFERENCIA_CSB')])[0]
             self.assertInvoiceInfoEqual(cursor, uid, invoice_ids, u"""\
                 account_id: {liq_account_code} {liq_account_name}
                 amount_total: 999.9
@@ -2230,7 +2240,7 @@ class InvestmentTests(testing.OOTestCase):
                 - {p.id}
                 - {p.name}
                 payment_type:
-                - 3
+                - {payment_type_id}
                 - Transferencia
                 sii_to_send: false
                 type: in_invoice
@@ -2251,7 +2261,8 @@ class InvestmentTests(testing.OOTestCase):
                 gkwh_account_code=gkwh_account_dict['code'],
                 gkwh_account_name=gkwh_account_dict['name'],
                 liq_account_code=liq_account_dict['code'],
-                liq_account_name=liq_account_dict['name']
+                liq_account_name=liq_account_dict['name'],
+                payment_type_id=payment_type_id
                 ))
 
 
@@ -2283,6 +2294,7 @@ class InvestmentTests(testing.OOTestCase):
             self.assertFalse(errs)
             self.assertTrue(invoice_ids)
             partner_data = self.Partner.browse(cursor, uid, partner_id)
+            payment_type_id = self.PaymentType.search(cursor, uid, [('code', '=', 'TRANSFERENCIA_CSB')])[0]
             self.assertInvoiceInfoEqual(cursor, uid, invoice_ids, u"""\
                 account_id: {liq_account_code} {liq_account_name}
                 amount_total: 990.0
@@ -2367,7 +2379,7 @@ class InvestmentTests(testing.OOTestCase):
                 - {p.id}
                 - {p.name}
                 payment_type:
-                - 3
+                - {payment_type_id}
                 - Transferencia
                 sii_to_send: false
                 type: in_invoice
@@ -2388,7 +2400,8 @@ class InvestmentTests(testing.OOTestCase):
                 gkwh_account_code=gkwh_account_dict['code'],
                 gkwh_account_name=gkwh_account_dict['name'],
                 liq_account_code=liq_account_dict['code'],
-                liq_account_name=liq_account_dict['name']
+                liq_account_name=liq_account_dict['name'],
+                payment_type_id=payment_type_id
                 ))
 
     def test__create_divestment_invoice__APO(self):
@@ -2416,6 +2429,7 @@ class InvestmentTests(testing.OOTestCase):
             self.assertFalse(errs)
             self.assertTrue(invoice_ids)
             partner_data = self.Partner.browse(cursor, uid, partner_id)
+            payment_type_id = self.PaymentType.search(cursor, uid, [('code', '=', 'TRANSFERENCIA_CSB')])[0]
             self.assertInvoiceInfoEqual(cursor, uid, invoice_ids, u"""\
                 account_id: {liq_account_code} {liq_account_name}
                 amount_total: 1000.0
@@ -2456,7 +2470,7 @@ class InvestmentTests(testing.OOTestCase):
                 - {p.id}
                 - {p.name}
                 payment_type:
-                - 3
+                - {payment_type_id}
                 - Transferencia
                 sii_to_send: false
                 type: in_invoice
@@ -2474,7 +2488,8 @@ class InvestmentTests(testing.OOTestCase):
                 apo_account_name=apo_account_dict['name'],
                 apo_account_code=apo_account_dict['code'],
                 liq_account_code=liq_account_dict['code'],
-                liq_account_name=liq_account_dict['name']
+                liq_account_name=liq_account_dict['name'],
+                payment_type_id=payment_type_id
                 ))
 
     @unittest.skip("FIXME: There is an error with the payment mode, but probably a test data problem D:")
