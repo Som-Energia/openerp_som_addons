@@ -2,14 +2,14 @@
 set -euo pipefail
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-REPO_ROOT="$(cd "${ROOT_DIR}/.." && pwd)"
 
 DATASET_REPOSITORY="${DATASET_REPOSITORY:-harbor.example.com/openerp/datasets}"
 OUTPUT_DIR="${OUTPUT_DIR:-${ROOT_DIR}/build/datasets}"
+PREWARMED_DB_DUMP_PATH="${PREWARMED_DB_DUMP_PATH:-${ROOT_DIR}/build/prewarmed/prewarmed-db.dump.zst}"
+USE_PREWARMED_DB="${USE_PREWARMED_DB:-1}"
 DATASET_FILE="${DATASET_FILE:-}"
 METADATA_FILE="${METADATA_FILE:-}"
-TIMESTAMP_TAG="${TIMESTAMP_TAG:-$(date -u +%Y%m%d%H%M%S)}"
-GIT_SHA_TAG="${GIT_SHA_TAG:-$(git -C "${REPO_ROOT}" rev-parse --short HEAD 2>/dev/null || printf 'unknown')}"
+DATE_TAG="${DATE_TAG:-$(date -u +%Y%m%d)}"
 
 log() {
 	printf '[publish_dataset] %s\n' "$*"
@@ -32,6 +32,10 @@ validate_repository() {
 }
 
 resolve_latest_files() {
+	if [ -z "${DATASET_FILE}" ] && [ "${USE_PREWARMED_DB}" = "1" ] && [ -f "${PREWARMED_DB_DUMP_PATH}" ]; then
+		DATASET_FILE="${PREWARMED_DB_DUMP_PATH}"
+	fi
+
 	if [ -z "${DATASET_FILE}" ]; then
 		local f
 		shopt -s nullglob
@@ -72,14 +76,12 @@ push_tag() {
 
 main() {
 	require_cmd oras
-	require_cmd git
 	validate_repository
 
 	resolve_latest_files
 
 	push_tag latest
-	push_tag "${TIMESTAMP_TAG}"
-	push_tag "${GIT_SHA_TAG}"
+	push_tag "${DATE_TAG}"
 
 	log "Publicació completada"
 }

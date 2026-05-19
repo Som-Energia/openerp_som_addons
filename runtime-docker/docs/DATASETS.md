@@ -109,16 +109,31 @@ Els targets `make` carreguen automàticament:
 
 ### Workflow productor
 
-El productor només necessita (`runtime-docker/.env.producer`):
+El camí per defecte del productor (`runtime-docker/.env.producer`) és:
 
 ```bash
-make -C runtime-docker dataset-producer-create
-make -C runtime-docker dataset-producer-publish
+make -C runtime-docker dataset-producer-all
 ```
+
+Això fa:
+
+1. `runtime-build-prewarmed` (build + push de la imatge prewarmed)
+2. `dataset-producer-publish` (push del dataset exportat)
+
+Tags publicats per defecte (imatge i dataset):
+
+- `latest`
+- `YYYYMMDD` (data UTC)
 
 Si abans has executat `runtime-build-prewarmed`, `dataset-producer-create` pot
 reutilitzar automàticament el dump exportat del prewarm (`PREWARMED_DB_DUMP_PATH`)
 i evitar tornar a executar destral.
+
+Opció legacy (sense prewarm com a pas principal):
+
+```bash
+make -C runtime-docker dataset-producer-legacy-all
+```
 
 ### Workflow consumidor
 
@@ -166,16 +181,15 @@ Nota TimescaleDB:
 
 - reutilitza el login existent del Docker client,
 - publica dump i metadata via `oras push`,
-- crea sempre tres tags:
+- crea sempre dos tags:
   - `latest`
-  - timestamp UTC (`YYYYMMDDHHMMSS`)
-  - git sha curt.
+  - data UTC (`YYYYMMDD`).
 
 Variables útils:
 
 - `DATASET_REPOSITORY`
 - `DATASET_FILE`, `METADATA_FILE`
-- `TIMESTAMP_TAG`, `GIT_SHA_TAG`
+- `DATE_TAG`
 
 ### Descarregar dataset
 
@@ -300,7 +314,7 @@ Script inclòs:
 
 Variables obligatòries:
 
-- `TARGET_IMAGE` (ex: `harbor.example.com/erp/openerp:20260514-prewarmed`)
+- `TARGET_IMAGE_REPOSITORY` (ex: `harbor.example.com/erp/openerp`)
 - `GITHUB_TOKEN` (read repos privats, només durant el build/prewarm)
 
 Variables opcionals:
@@ -312,7 +326,7 @@ Variables opcionals:
 Exemple recomanat, construint també la base localment:
 
 ```bash
-# defineix TARGET_IMAGE i GITHUB_TOKEN a runtime-docker/.env.producer
+# defineix TARGET_IMAGE_REPOSITORY i GITHUB_TOKEN a runtime-docker/.env.producer
 make -C runtime-docker runtime-build-prewarmed
 
 # si només vols regenerar el dump prewarmed local (sense publicar imatge):
@@ -322,7 +336,7 @@ make -C runtime-docker runtime-export-prewarmed-db
 Exemple alternatiu, partint d'una base ja publicada:
 
 ```bash
-# defineix BASE_IMAGE, TARGET_IMAGE i GITHUB_TOKEN a runtime-docker/.env.producer
+# defineix BASE_IMAGE, TARGET_IMAGE_REPOSITORY i GITHUB_TOKEN a runtime-docker/.env.producer
 make -C runtime-docker runtime-build-prewarmed
 ```
 
@@ -339,7 +353,7 @@ Aquest dump es pot reaprofitar després a `dataset-producer-create` amb
 Després, a l'equip consumidor:
 
 ```bash
-ERP_RUNTIME_IMAGE="harbor.example.com/erp/openerp:20260514-prewarmed"
+ERP_RUNTIME_IMAGE="harbor.example.com/erp/openerp:latest"
 ```
 
 ### Arrencar stack de consum

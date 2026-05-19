@@ -1,6 +1,6 @@
 SHELL := /usr/bin/env bash
 
-.PHONY: dataset-producer-create dataset-producer-dump dataset-producer-publish dataset-producer-all dataset-consumer-pull dataset-consumer-restore dataset-smoke-vpn runtime-build-prewarmed runtime-export-prewarmed-db dataset-create dataset-dump dataset-publish dataset-pull dataset-restore
+.PHONY: dataset-producer-create dataset-producer-dump dataset-producer-publish dataset-producer-all dataset-producer-legacy-all dataset-consumer-pull dataset-consumer-restore dataset-smoke-vpn runtime-build-prewarmed runtime-export-prewarmed-db runtime-publish-prewarmed dataset-create dataset-dump dataset-publish dataset-pull dataset-restore
 
 dataset-producer-create:
 	bash -lc 'set -euo pipefail; [ -f .env.producer ] || { echo ".env.producer is required" >&2; exit 1; }; while IFS= read -r line; do case "$$line" in ""|\#*) continue;; esac; export "$$line"; done < ./.env.producer; ./scripts/producer_create_db.sh'
@@ -11,7 +11,9 @@ dataset-producer-dump:
 dataset-producer-publish:
 	bash -lc 'set -euo pipefail; [ -f .env.producer ] || { echo ".env.producer is required" >&2; exit 1; }; while IFS= read -r line; do case "$$line" in ""|\#*) continue;; esac; export "$$line"; done < ./.env.producer; ./scripts/publish_dataset.sh'
 
-dataset-producer-all: dataset-producer-create dataset-producer-dump dataset-producer-publish
+dataset-producer-all: runtime-build-prewarmed dataset-producer-publish
+
+dataset-producer-legacy-all: dataset-producer-create dataset-producer-dump dataset-producer-publish
 
 dataset-consumer-pull:
 	bash -lc 'set -euo pipefail; [ -f .env.consumer ] || { echo ".env.consumer is required" >&2; exit 1; }; while IFS= read -r line; do case "$$line" in ""|\#*) continue;; esac; export "$$line"; done < ./.env.consumer; ./scripts/pull_dataset.sh'
@@ -24,6 +26,9 @@ dataset-smoke-vpn:
 
 runtime-build-prewarmed:
 	bash -lc 'set -euo pipefail; [ -f .env.producer ] || { echo ".env.producer is required" >&2; exit 1; }; while IFS= read -r line; do case "$$line" in ""|\#*) continue;; esac; export "$$line"; done < ./.env.producer; ./scripts/build_prewarmed_image.sh'
+
+runtime-publish-prewarmed:
+	bash -lc 'set -euo pipefail; [ -f .env.producer ] || { echo ".env.producer is required" >&2; exit 1; }; while IFS= read -r line; do case "$$line" in ""|\#*) continue;; esac; export "$$line"; done < ./.env.producer; PREWARM_ONLY_DB_EXPORT=0 EXPORT_PREWARMED_DB=0 ./scripts/build_prewarmed_image.sh'
 
 runtime-export-prewarmed-db:
 	bash -lc 'set -euo pipefail; [ -f .env.producer ] || { echo ".env.producer is required" >&2; exit 1; }; while IFS= read -r line; do case "$$line" in ""|\#*) continue;; esac; export "$$line"; done < ./.env.producer; PREWARM_ONLY_DB_EXPORT=1 EXPORT_PREWARMED_DB=1 ./scripts/build_prewarmed_image.sh'

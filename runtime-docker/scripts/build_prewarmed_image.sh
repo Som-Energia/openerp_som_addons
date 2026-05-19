@@ -6,6 +6,8 @@ REPO_ROOT="$(cd "${ROOT_DIR}/.." && pwd)"
 
 BASE_IMAGE="${BASE_IMAGE:-}"
 TARGET_IMAGE="${TARGET_IMAGE:-}"
+TARGET_IMAGE_REPOSITORY="${TARGET_IMAGE_REPOSITORY:-}"
+DATE_TAG="${DATE_TAG:-$(date -u +%Y%m%d)}"
 GITHUB_TOKEN="${GITHUB_TOKEN:-}"
 ERP_BRANCH="${ERP_BRANCH:-rolling_erp01}"
 ERP_DATABASE="${ERP_DATABASE:-erp}"
@@ -54,7 +56,9 @@ cleanup() {
 
 validate_inputs() {
 	if [ "${PREWARM_ONLY_DB_EXPORT}" != "1" ]; then
-		[ -n "${TARGET_IMAGE}" ] || fail "Cal TARGET_IMAGE (ex: harbor.example.com/erp/openerp:20260514-prewarmed)"
+		if [ -z "${TARGET_IMAGE}" ] && [ -z "${TARGET_IMAGE_REPOSITORY}" ]; then
+			fail "Cal TARGET_IMAGE o TARGET_IMAGE_REPOSITORY (ex: harbor.example.com/erp/openerp)"
+		fi
 	fi
 	[ -n "${GITHUB_TOKEN}" ] || fail "Cal GITHUB_TOKEN (read access repos privats)"
 	[ -f "${DOCKERFILE_PATH}" ] || fail "No existeix DOCKERFILE_PATH: ${DOCKERFILE_PATH}"
@@ -159,6 +163,18 @@ wait_for_runtime_ready() {
 	done
 }
 
+resolve_target_repository() {
+	if [ -n "${TARGET_IMAGE_REPOSITORY}" ]; then
+		return
+	fi
+
+	if [[ "${TARGET_IMAGE}" =~ ^.+:[^/]+$ ]]; then
+		TARGET_IMAGE_REPOSITORY="${TARGET_IMAGE%:*}"
+	else
+		TARGET_IMAGE_REPOSITORY="${TARGET_IMAGE}"
+	fi
+}
+
 main() {
 	require_cmd docker
 	validate_inputs
@@ -201,19 +217,26 @@ main() {
 		return
 	fi
 
+	resolve_target_repository
+
 	sanitize_runtime_container
 
 	log "Aturant runtime bootstrapat"
 	docker stop "${RUNTIME_CONTAINER}" >/dev/null
 
-	log "Committant imatge prewarmed -> ${TARGET_IMAGE}"
+	log "Committant imatge prewarmed -> ${TARGET_IMAGE_REPOSITORY}:latest"
 	docker commit \
 		--change 'ENTRYPOINT ["/opt/somenergia/src/openerp_som_addons/runtime-docker/entrypoint.sh"]' \
 		--change 'CMD []' \
-		"${RUNTIME_CONTAINER}" "${TARGET_IMAGE}" >/dev/null
+		"${RUNTIME_CONTAINER}" "${TARGET_IMAGE_REPOSITORY}:latest" >/dev/null
 
-	log "Publicant ${TARGET_IMAGE}"
-	docker push "${TARGET_IMAGE}"
+	log "Taggant imatge prewarmed -> ${TARGET_IMAGE_REPOSITORY}:${DATE_TAG}"
+	docker tag "${TARGET_IMAGE_REPOSITORY}:latest" "${TARGET_IMAGE_REPOSITORY}:${DATE_TAG}"
+
+	log "Publicant ${TARGET_IMAGE_REPOSITORY}:latest"
+	docker push "${TARGET_IMAGE_REPOSITORY}:latest"
+	log "Publicant ${TARGET_IMAGE_REPOSITORY}:${DATE_TAG}"
+	docker push "${TARGET_IMAGE_REPOSITORY}:${DATE_TAG}"
 
 	log "Imatge prewarmed publicada correctament"
 }
