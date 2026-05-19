@@ -24,16 +24,16 @@ make -C runtime-docker dataset-producer-create
 make -C runtime-docker dataset-producer-publish
 ```
 
-3. Equip consumidor: descarregar l'últim dataset:
+3. Equip consumidor: preparar assets (baixa imatge prewarmed i dataset si no hi són):
 
 ```bash
-make -C runtime-docker dataset-consumer-pull
+make -C runtime-docker dataset-consumer-prepare
 ```
 
-4. Equip consumidor: restaurar-lo al PostgreSQL del runtime local:
+4. Equip consumidor: arrencar stack docker compose:
 
 ```bash
-make -C runtime-docker dataset-consumer-restore
+make -C runtime-docker dataset-consumer-up
 ```
 
 ## Variables obligatòries (publicar a Harbor)
@@ -69,7 +69,8 @@ Fem servir un sol `Makefile`, però separat per rols:
   - `dataset-producer-create`
   - `dataset-producer-publish`
 - Consumidor:
-  - `dataset-consumer-pull`
+  - `dataset-consumer-prepare`
+  - `dataset-consumer-up`
   - `dataset-consumer-restore`
 
 També es mantenen aliases curts per compatibilitat:
@@ -140,8 +141,11 @@ make -C runtime-docker dataset-producer-legacy-all
 El consumidor només necessita (`runtime-docker/.env.consumer`):
 
 ```bash
-make -C runtime-docker dataset-consumer-pull
-make -C runtime-docker dataset-consumer-restore
+# 1) baixa imatge+dataset només si falten
+make -C runtime-docker dataset-consumer-prepare
+
+# 2) arrenca el compose
+make -C runtime-docker dataset-consumer-up
 ```
 
 ### Crear dataset
@@ -362,13 +366,14 @@ ERP_RUNTIME_IMAGE="harbor.example.com/erp/openerp:latest"
 cp runtime-docker/.env.consumer.example runtime-docker/.env.consumer
 # edita credencials Harbor i valors necessaris
 
-docker compose --env-file runtime-docker/.env.consumer -f runtime-docker/docker-compose.consumer.yml up -d postgres mongo redis erp-runtime
+make -C runtime-docker dataset-consumer-prepare
+make -C runtime-docker dataset-consumer-up
 ```
 
-### Carregar el dataset més recent
+### Carregar el dataset més recent a PostgreSQL local
 
 ```bash
-docker compose --env-file runtime-docker/.env.consumer -f runtime-docker/docker-compose.consumer.yml --profile dataset run --rm dataset-restore
+make -C runtime-docker dataset-consumer-restore
 ```
 
 Variables obligatòries per aquest flux:
