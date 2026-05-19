@@ -74,14 +74,20 @@ push_tag() {
 	rm -rf "${stage_dir}"
 }
 
+retag_as_latest() {
+	local source_ref="${DATASET_REPOSITORY}:${DATE_TAG}"
+	log "Assignant tag latest al mateix artefacte: ${source_ref} -> ${DATASET_REPOSITORY}:latest"
+	oras tag "${source_ref}" latest
+}
+
 main() {
 	require_cmd oras
 	validate_repository
 
 	resolve_latest_files
 
-	push_tag latest
 	push_tag "${DATE_TAG}"
+	retag_as_latest
 
 	log "Publicació completada"
 }
