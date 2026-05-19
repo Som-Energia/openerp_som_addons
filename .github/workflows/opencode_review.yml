@@ -28,8 +28,11 @@ jobs:
 
       - name: Run OpenCode Review
         uses: anomalyco/opencode/github@v1.14.38
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          GITHUB_TOKEN: ${{ github.token }}
         with:
-          model: opencode/minimax-m2.5-free
+          model: openai/gpt-5.4
           prompt: |
             You are reviewing a pull request in the openerp_som_addons repository (custom modules for OpenERP).
             This repository contains custom modules that depend on the main ERP codebase: https://github.com/Som-Energia/erp/tree/rolling_erp01
