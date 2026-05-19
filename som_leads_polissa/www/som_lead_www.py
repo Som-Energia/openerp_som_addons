@@ -5,6 +5,7 @@ import sys
 import time
 from osv import osv
 from service.security import Sudo
+from oorq.decorators import job
 import yaml
 import copy
 from uuid import uuid4
@@ -21,6 +22,8 @@ class SomLeadWww(osv.osv_memory):
     _127_WITH_SURPLUSES = '2'
     _128_SIMPLIFIED_SURPLUSES = 'a0'
     _131_CONSUMPTION = '01'
+    _SIGNATURE_COMPLETED_STATUS = 'completed'
+    _SIGNATURE_ERROR_STATUSES = ('error', 'canceled', 'rejected', 'declined', 'expired')
 
     def create_lead(self, cr, uid, www_vals, context=None):  # noqa: C901
         if context is None:
@@ -297,11 +300,81 @@ class SomLeadWww(osv.osv_memory):
             logger.warning("Error al comunicar amb Mailchimp {}".format(str(e)))
 
         if context.get('sync'):
-            lead_o._send_mail(cr, uid, lead_id, context=context)
+            self._send_activation_mail_if_signature_allows(cr, uid, lead_id, context=context)
         else:
-            lead_o._send_mail_async(cr, uid, lead_id, context=context)
+            self._send_activation_mail_if_signature_allows_async(cr, uid, lead_id, context=context)
 
         return True
+
+    @job(queue="poweremail_sender")
+    def _send_activation_mail_if_signature_allows_async(self, cr, uid, lead_id, context=None):
+        if context is None:
+            context = {}
+        self._send_activation_mail_if_signature_allows(cr, uid, lead_id, context=context)
+
+    def _send_activation_mail_if_signature_allows(self, cr, uid, lead_id, context=None):
+        if context is None:
+            context = {}
+
+        lead_o = self.pool.get("giscedata.crm.lead")
+        ir_model_o = self.pool.get("ir.model.data")
+        logger = logging.getLogger("openerp.{0}.activate_lead.signature_mail".format(__name__))
+
+        attempts = 30
+        wait_seconds = 10
+
+        for _ in range(attempts):
+            lead_data = lead_o.read(
+                cr, uid, lead_id, ['signature_process', 'status_firma'], context=context
+            )
+            signature_process = lead_data.get('signature_process')
+            signature_status = lead_data.get('status_firma')
+
+            if not signature_process:
+                lead_o._send_mail(cr, uid, lead_id, context=context)
+                return True
+
+            if signature_status == self._SIGNATURE_COMPLETED_STATUS:
+                lead_o._send_mail(cr, uid, lead_id, context=context)
+                return True
+
+            if signature_status in self._SIGNATURE_ERROR_STATUSES:
+                signature_error_stage_id = ir_model_o.get_object_reference(
+                    cr, uid, "som_leads_polissa", "webform_stage_signature_error"
+                )[1]
+                lead_o.write(
+                    cr, uid, lead_id,
+                    {'stage_id': signature_error_stage_id, 'state': 'pending'},
+                    context=context
+                )
+                lead_o.historize_msg(
+                    cr, uid, [lead_id],
+                    u"SIGNATURE_NOT_COMPLETED: activation e-mail not sent (status={})".format(
+                        signature_status
+                    ),
+                    context=context
+                )
+                return False
+
+            time.sleep(wait_seconds)
+
+        logger.warning(
+            "Signature still pending, activation e-mail not sent yet (lead_id=%s)", lead_id
+        )
+        signature_pending_review_stage_id = ir_model_o.get_object_reference(
+            cr, uid, "som_leads_polissa", "webform_stage_signature_pending_review"
+        )[1]
+        lead_o.write(
+            cr, uid, lead_id,
+            {'stage_id': signature_pending_review_stage_id, 'state': 'pending'},
+            context=context
+        )
+        lead_o.historize_msg(
+            cr, uid, [lead_id],
+            u"SIGNATURE_PENDING: activation e-mail not sent yet",
+            context=context
+        )
+        return False
 
     def _create_attachments(self, cr, uid, lead_id, attachments, context=None):
         if context is None:

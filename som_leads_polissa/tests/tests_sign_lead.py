@@ -84,3 +84,69 @@ class TestSignLead(testing.OOTestCase):
         mock_lead_o.read.assert_called_with(
             self.cursor, self.uid, 123, ['signature_url', 'status'], context={}
         )
+
+    def test_send_activation_mail_waits_until_signature_completed(self):
+        www_lead_o = self.get_model('som.lead.www')
+        mock_lead_o = mock.MagicMock()
+        mock_lead_o.read.side_effect = [
+            {'signature_process': [10, 'PROC'], 'status_firma': 'pending'},
+            {'signature_process': [10, 'PROC'], 'status_firma': 'completed'},
+        ]
+
+        with mock.patch.object(www_lead_o.pool, 'get', return_value=mock_lead_o):
+            with mock.patch('som_leads_polissa.www.som_lead_www.time.sleep'):
+                res = www_lead_o._send_activation_mail_if_signature_allows(
+                    self.cursor, self.uid, 1, context={}
+                )
+
+        self.assertTrue(res)
+        self.assertEqual(mock_lead_o.read.call_count, 2)
+        mock_lead_o._send_mail.assert_called_once_with(self.cursor, self.uid, 1, context={})
+
+    def test_send_activation_mail_not_sent_when_signature_failed(self):
+        www_lead_o = self.get_model('som.lead.www')
+        mock_lead_o = mock.MagicMock()
+        mock_lead_o.read.return_value = {
+            'signature_process': [10, 'PROC'],
+            'status_firma': 'error',
+        }
+
+        with mock.patch.object(www_lead_o.pool, 'get', return_value=mock_lead_o):
+            res = www_lead_o._send_activation_mail_if_signature_allows(
+                self.cursor, self.uid, 1, context={}
+            )
+
+        self.assertFalse(res)
+        mock_lead_o._send_mail.assert_not_called()
+        mock_lead_o.write.assert_called_once()
+        mock_lead_o.historize_msg.assert_called_once()
+
+    def test_send_activation_mail_sets_pending_review_when_signature_never_arrives(self):
+        www_lead_o = self.get_model('som.lead.www')
+        mock_lead_o = mock.MagicMock()
+        mock_ir_model_o = mock.MagicMock()
+        mock_ir_model_o.get_object_reference.return_value = [1, 999]
+        mock_lead_o.read.return_value = {
+            'signature_process': [10, 'PROC'],
+            'status_firma': 'pending',
+        }
+
+        def _pool_get(model_name):
+            if model_name == 'ir.model.data':
+                return mock_ir_model_o
+            return mock_lead_o
+
+        with mock.patch.object(www_lead_o.pool, 'get', side_effect=_pool_get):
+            with mock.patch('som_leads_polissa.www.som_lead_www.time.sleep'):
+                res = www_lead_o._send_activation_mail_if_signature_allows(
+                    self.cursor, self.uid, 1, context={}
+                )
+
+        self.assertFalse(res)
+        mock_lead_o._send_mail.assert_not_called()
+        mock_lead_o.write.assert_called_once_with(
+            self.cursor, self.uid, 1,
+            {'stage_id': 999, 'state': 'pending'},
+            context={}
+        )
+        mock_lead_o.historize_msg.assert_called_once()
