@@ -6,6 +6,12 @@ services:
     environment:
      - POSTGRES_USER=erp
      - POSTGRES_PASSWORD=erp
+    command: >
+      postgres
+        -c max_worker_processes=20
+        -c max_parallel_workers=8
+        -c max_parallel_workers_per_gather=4
+        -c timescaledb.max_background_workers=8
     volumes:
       - ./db:/var/lib/postgresql/data
 
