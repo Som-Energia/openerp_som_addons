@@ -16,7 +16,6 @@ class GiscedataFacturacioFactura(osv.osv):
     def unlink(self, cursor, uid, ids, context=None):
         """Return gkwh rights to owner when gkwh invoice is droped"""
         line_obj = self.pool.get('giscedata.facturacio.factura.linia')
-        self.pool.get('generationkwh.invoice.line.owner')
         gkwh_dealer_obj = self.pool.get('generationkwh.dealer')
 
         invoice_fields = [
@@ -370,7 +369,6 @@ class GiscedataFacturacioFactura(osv.osv):
 
         invlines_obj = self.pool.get('giscedata.facturacio.factura.linia')
         pricelist_obj = self.pool.get('product.pricelist')
-        self.pool.get('res.partner')
         gkwh_rightusage_obj = self.pool.get('generationkwh.right.usage.line')
 
         gkwh_lineowner_obj = self.pool.get('generationkwh.invoice.line.owner')
