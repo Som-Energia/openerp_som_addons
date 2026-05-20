@@ -618,7 +618,7 @@ class GiscedataFacturacioFacturador(osv.osv):
     _name = 'giscedata.facturacio.facturador'
     _inherit = 'giscedata.facturacio.facturador'
 
-    def _get_servei_ajust_line_ids(self, cursor, uid, factura_id, context=None):
+    def _get_servei_ajust_line_id(self, cursor, uid, factura_id, context=None):
         line_obj = self.pool.get('giscedata.facturacio.factura.linia')
         imd_obj = self.pool.get('ir.model.data')
 
@@ -626,10 +626,20 @@ class GiscedataFacturacioFacturador(osv.osv):
             cursor, uid, 'giscedata_repercussio_servei_ajust', 'servei_ajust'
         )[1]
 
-        return line_obj.search(cursor, uid, [
+        saju_line_ids = line_obj.search(cursor, uid, [
             ('factura_id', '=', factura_id),
             ('product_id', '=', saju_product_id)
         ], context=context)
+        if not saju_line_ids:
+            return False
+        if len(saju_line_ids) > 1:
+            raise osv.except_osv(
+                'Error',
+                "S'han trobat multiples linies de Servei d'Ajust a la factura {}".format(
+                    factura_id
+                )
+            )
+        return saju_line_ids[0]
 
     def reconcile_servei_ajust_generationkwh(self, cursor, uid, factura_ids, context=None):
         if context is None:
@@ -643,9 +653,9 @@ class GiscedataFacturacioFacturador(osv.osv):
 
         for factura_id in factura_ids:
             factura = fact_obj.browse(cursor, uid, factura_id, context=context)
-            saju_line_ids = self._get_servei_ajust_line_ids(
+            saju_line_id = self._get_servei_ajust_line_id(
                 cursor, uid, factura_id, context=context)
-            if not saju_line_ids:
+            if not saju_line_id:
                 continue
 
             mode_facturacio = factura.polissa_id.mode_facturacio
@@ -671,10 +681,10 @@ class GiscedataFacturacioFacturador(osv.osv):
                 gkwh_total_quantity = sum([line['quantity'] for line in gkwh_line_data])
 
             if gkwh_total_quantity <= 0:
-                line_obj.unlink(cursor, uid, saju_line_ids, context=context)
+                line_obj.unlink(cursor, uid, [saju_line_id], context=context)
                 continue
 
-            saju_line = line_obj.browse(cursor, uid, saju_line_ids[0], context=context)
+            saju_line = line_obj.browse(cursor, uid, saju_line_id, context=context)
             if not saju_line.quantity:
                 continue
 
