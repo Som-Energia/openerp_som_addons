@@ -3,7 +3,7 @@ set -euo pipefail
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 
-ERP_RUNTIME_IMAGE="${ERP_RUNTIME_IMAGE:-example.com/erp/openerp:latest}"
+ERP_RUNTIME_IMAGE="${ERP_RUNTIME_IMAGE:-${HARBOR_DOMAIN}/erp/openerp:latest}"
 DATASET_TAG="${DATASET_TAG:-latest}"
 CACHE_DIR="${CACHE_DIR:-${ROOT_DIR}/.cache/datasets}"
 FORCE_REFRESH_LATEST="${FORCE_REFRESH_LATEST:-1}"
