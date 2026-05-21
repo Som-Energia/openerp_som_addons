@@ -2,8 +2,10 @@
 from osv import osv
 from tools import config
 from datetime import datetime, timedelta
+import calendar
 from enerdata.contracts import get_tariff_by_code
 from som_webforms_helpers.exceptions import som_webforms_exceptions
+from decimal import Decimal, ROUND_HALF_UP
 
 
 class GiscedataPolissaTarifa(osv.osv):
@@ -900,6 +902,143 @@ class GiscedataPolissaTarifa(osv.osv):
                 consistent_data = False
                 break
         return consistent_data
+
+    def _get_simulation_days_in_month(self, context=None):
+        if context is None:
+            context = {}
+        anchor_date = context.get("date") or datetime.today().strftime("%Y-%m-%d")
+        date_obj = datetime.strptime(anchor_date, "%Y-%m-%d")
+        return calendar.monthrange(date_obj.year, date_obj.month)[1]
+
+    def _round_2(self, value):
+        return float(Decimal(str(value)).quantize(Decimal('0.01'), rounding=ROUND_HALF_UP))
+
+    def get_simulation_www(
+        self,
+        cursor,
+        uid,
+        tariff_id,
+        municipi_id,
+        powers,
+        pricelist,
+        fiscal_position,
+        with_taxes,
+        home,
+        context=None,
+    ):
+        if context is None:
+            context = {}
+
+        if pricelist not in ["index", "periods"]:
+            raise som_webforms_exceptions.InvalidSimulationPricelist()
+
+        max_power = max([power for _period, power in powers])
+
+        consumption_obj = self.pool.get("som.annual.consumption.estimate")
+        coeff_obj = self.pool.get("som.annual.coefficient")
+        avg_price_obj = self.pool.get("som.last.month.average.price")
+
+        tariff = "2.0TD" if max_power < 15 else "3.0TD"
+        coeff_tariff = tariff + "_" + pricelist
+
+        coeff = coeff_obj.get_annual_coefficients(cursor, uid, coeff_tariff, context=context)
+
+        annual_kwh = consumption_obj.get_consumption_by_power(
+            cursor, uid, max_power, context=context
+        )
+
+        monthly_kwh = annual_kwh / 12.0
+        if pricelist == 'index':
+            p1_kwh = monthly_kwh * coeff["p1_ratio"]
+            p2_kwh = monthly_kwh * coeff["p2_ratio"]
+            p3_kwh = monthly_kwh * coeff["p3_ratio"]
+            p4_kwh = monthly_kwh * coeff["p4_ratio"]
+            p5_kwh = monthly_kwh * coeff["p5_ratio"]
+            p6_kwh = monthly_kwh * coeff["p6_ratio"]
+
+        if pricelist == 'periods':
+            p1_kwh = annual_kwh * coeff["p1_ratio"]
+            p2_kwh = annual_kwh * coeff["p2_ratio"]
+            p3_kwh = annual_kwh * coeff["p3_ratio"]
+            p4_kwh = annual_kwh * coeff["p4_ratio"]
+            p5_kwh = annual_kwh * coeff["p5_ratio"]
+            p6_kwh = annual_kwh * coeff["p6_ratio"]
+
+        avg_price = avg_price_obj.get_current_price(cursor, uid, tariff, type, context=context)
+
+        anchor_date = context.get("date") or datetime.today().strftime("%Y-%m-%d")
+        price_data = self.get_tariff_prices_by_range(
+            cursor,
+            uid,
+            tariff_id,
+            municipi_id,
+            max_power * 1000.0,
+            fiscal_position,
+            with_taxes,
+            home,
+            anchor_date,
+            anchor_date,
+            context=context,
+        )
+
+        current = price_data.get("current", {})
+
+        if pricelist == "index":
+            avg_price = avg_price_obj.get_current_price(
+                cursor, uid, tariff, "index", context=context)
+            energy_eur = (
+                p1_kwh * avg_price["p1_price"]
+                + p2_kwh * avg_price["p2_price"]
+                + p3_kwh * avg_price["p3_price"]
+                + p4_kwh * avg_price["p4_price"]
+                + p5_kwh * avg_price["p5_price"]
+                + p6_kwh * avg_price["p6_price"]
+            )
+
+        if pricelist == "periods":
+            avg_price = avg_price_obj.get_current_price(
+                cursor, uid, tariff, "ssaa", context=context)
+            energy_eur = (
+                p1_kwh * ((current.get("te", {}).get("p1", 0.0)
+                           ).get("value", 0.0) + avg_price["p1_price"])
+                + p2_kwh * ((current.get("te", {}).get("p2", 0.0)
+                             ).get("value", 0.0) + avg_price["p2_price"])
+                + p3_kwh * ((current.get("te", {}).get("p3", 0.0)
+                             ).get("value", 0.0) + avg_price["p3_price"])
+                + p4_kwh * ((current.get("te", {}).get("p4", 0.0)
+                             ).get("value", 0.0) + avg_price["p4_price"])
+                + p5_kwh * ((current.get("te", {}).get("p5", 0.0)
+                             ).get("value", 0.0) + avg_price["p5_price"])
+                + p6_kwh * ((current.get("te", {}).get("p6", 0.0)
+                             ).get("value", 0.0) + avg_price["p6_price"])
+            )
+            energy_eur = energy_eur / 12
+
+        power_prices = current.get("potencia", {})
+        days_in_month = self._get_simulation_days_in_month(context=context)
+
+        power_eur = 0.0
+        for period_name, period_info in power_prices.items():
+            period_kw = float(powers.get(period_name, 0.0)) / 1000.0
+            power_eur += period_kw * period_info["value"] * days_in_month
+
+        # comprovar quin import retorna 3.0 sobretot
+        meter_eur = current.get("comptador", {}).get("value", 0.0)
+        social_bonus_eur = current.get("bo_social", {}).get("value", 0.0) * days_in_month
+
+        total_eur = energy_eur + power_eur + meter_eur + social_bonus_eur
+
+        return {
+            "estimated_monthly_kwh": int(round(monthly_kwh)),
+            "estimated_monthly_total_eur": float(self._round_2(total_eur)),
+            "breakdown": {
+                "energy_eur": float(self._round_2(energy_eur)),
+                "power_eur": float(self._round_2(power_eur)),
+                "meter_eur": float(self._round_2(meter_eur)),
+                "social_bonus_eur": float(self._round_2(social_bonus_eur)),
+                "taxes_applied": bool(with_taxes),
+            },
+        }
 
     def _get_dades_modcontractuals(self, modcon_data):
         """

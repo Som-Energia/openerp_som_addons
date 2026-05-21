@@ -1,5 +1,11 @@
 schema: spec-driven
 
+init:
+  execution_mode: interactive
+  artifact_store: openspec
+  delivery_strategy: single-pr-default
+  review_budget_lines: 800
+
 context: |
   Tech stack: OpenERP/OpenERP (Python 2.7, PostgreSQL) - Som Energia custom modules
   Architecture: Modular OpenERP addon structure (~60 modules), XML models, SQL triggers
@@ -25,9 +31,14 @@ rules:
   apply:
     - Follow existing code patterns and conventions
     - Load relevant coding skills for the project stack
+    - tdd: true
+    - test_command: "scripts/run-tests.sh <database> -m <module>"
   verify:
     - Run tests if test infrastructure exists
     - Compare implementation against every spec scenario
+    - test_command: "scripts/run-tests.sh <database> -m <module>"
+    - build_command: "—"
+    - coverage_threshold: 0
   archive:
     - Warn before merging destructive deltas (large removals)
 
