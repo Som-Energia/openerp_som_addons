@@ -3,7 +3,7 @@ set -euo pipefail
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 
-ERP_RUNTIME_IMAGE="${ERP_RUNTIME_IMAGE:-}"
+ERP_RUNTIME_IMAGE="${ERP_RUNTIME_IMAGE:-example.com/erp/openerp:latest}"
 DATASET_TAG="${DATASET_TAG:-latest}"
 CACHE_DIR="${CACHE_DIR:-${ROOT_DIR}/.cache/datasets}"
 FORCE_REFRESH_LATEST="${FORCE_REFRESH_LATEST:-1}"
@@ -71,8 +71,6 @@ should_pull_latest_image() {
 
 main() {
 	require_cmd docker
-
-	[ -n "${ERP_RUNTIME_IMAGE}" ] || fail "Cal ERP_RUNTIME_IMAGE"
 
 	if [[ "${ERP_RUNTIME_IMAGE}" == *":latest" ]] && [ "${FORCE_REFRESH_LATEST}" = "1" ]; then
 		if should_pull_latest_image; then

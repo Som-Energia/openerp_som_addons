@@ -22,7 +22,7 @@ services:
     image: redis:5.0
 
   erp-runtime:
-    image: "${ERP_RUNTIME_IMAGE:?Defineix ERP_RUNTIME_IMAGE amb una imatge valida de Harbor, per exemple harbor.example.com/erp/openerp:latest}"
+    image: "${ERP_RUNTIME_IMAGE:-harbor.somenergia.coop/erp/openerp:latest}"
     depends_on:
       postgres:
         condition: service_healthy

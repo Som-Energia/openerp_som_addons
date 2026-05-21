@@ -68,7 +68,8 @@ push_tag() {
 		oras push "${ref}" \
 			"$(basename "${DATASET_FILE}"):application/zstd" \
 			"metadata.json:application/json" \
-			--artifact-type application/vnd.somenergia.pg-dataset.v1
+			--artifact-type application/vnd.somenergia.pg-dataset.v1 \
+			--insecure
 	)
 
 	rm -rf "${stage_dir}"

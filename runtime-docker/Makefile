@@ -27,7 +27,7 @@ dataset-consumer-restore:
 	bash -lc 'set -euo pipefail; [ -f .env.consumer ] || { echo ".env.consumer is required" >&2; exit 1; }; while IFS= read -r line; do case "$$line" in ""|\#*) continue;; esac; export "$$line"; done < ./.env.consumer; ./scripts/restore_dataset.sh'
 
 dataset-consumer-up:
-	bash -lc 'set -euo pipefail; [ -f .env.consumer ] || { echo ".env.consumer is required" >&2; exit 1; }; docker compose --env-file ./.env.consumer -f ./docker-compose.consumer.yml up postgres mongo redis erp-runtime'
+	bash -lc 'set -euo pipefail; [ -f .env.consumer ] || { echo ".env.consumer is required" >&2; exit 1; }; COMPOSE_FILES="-f ./docker-compose.consumer.yml"; [ -f ./docker-compose.consumer.override.yml ] && COMPOSE_FILES="$$COMPOSE_FILES -f ./docker-compose.consumer.override.yml"; docker compose --env-file ./.env.consumer $$COMPOSE_FILES up postgres mongo redis erp-runtime'
 
 dataset-smoke-vpn:
 	bash -lc 'set -euo pipefail; [ -f .env.producer ] || { echo ".env.producer is required" >&2; exit 1; }; while IFS= read -r line; do case "$$line" in ""|\#*) continue;; esac; export "$$line"; done < ./.env.producer; ./scripts/smoke_test_dataset_flow.sh'
