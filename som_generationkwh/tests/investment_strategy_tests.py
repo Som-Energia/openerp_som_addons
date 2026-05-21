@@ -45,6 +45,7 @@ class InvestmentStrategyTests(testing.OOTestCase):
         self.Emission = self.openerp.pool.get('generationkwh.emission')
         self.PaymentLine = self.openerp.pool.get('payment.line')
         self.PaymentOrder = self.openerp.pool.get('payment.order')
+        self.PaymentType = self.openerp.pool.get('payment.type')
         self.Soci = self.openerp.pool.get('somenergia.soci')
         self.IrProperty = self.openerp.pool.get('ir.property')
         self.AccountAccount = self.openerp.pool.get('account.account')
@@ -154,6 +155,7 @@ class InvestmentStrategyTests(testing.OOTestCase):
                         )[1]
             emission_data = investment.emission_id
             partner_data = self.Partner.browse(cursor, uid, partner_id)
+            payment_type_id = self.PaymentType.search(cursor, uid, [('code', '=', 'TRANSFERENCIA_CSB')])[0]
 
             self.assertInvoiceInfoEqual(cursor, uid, invoice_ids, u"""\
                 account_id: {liq_account_code} {liq_account_name}
@@ -198,7 +200,7 @@ class InvestmentStrategyTests(testing.OOTestCase):
                 - {p.id}
                 - {p.name}
                 payment_type:
-                - 3
+                - {payment_type_id}
                 - Transferencia
                 sii_to_send: false
                 type: in_invoice
@@ -210,14 +212,15 @@ class InvestmentStrategyTests(testing.OOTestCase):
                 year=datetime.today().strftime("%Y"),
                 investment_name=investment.name,
                 p=partner_data,
-                num_soci= partner_data.ref[1:],
+                num_soci=partner_data.ref[1:],
                 investment_id=id,
                 taxes_id=taxes_id,
                 invoice_line_tax_id=invoice.invoice_line[0].invoice_line_tax_id[0].id,
                 liq_account_code=liq_account_dict['code'],
                 liq_account_name=liq_account_dict['name'],
                 apo_account_code=apo_account_dict['code'],
-                apo_account_name=apo_account_dict['name']
+                apo_account_name=apo_account_dict['name'],
+                payment_type_id=payment_type_id
                 ))
 
     def test__create_interest_invoices__AllOkAPO_middlePurchaseDateAndLastEffectiveDate(self):
@@ -260,6 +263,7 @@ class InvestmentStrategyTests(testing.OOTestCase):
                         )[1]
             emission_data = investment.emission_id
             partner_data = self.Partner.browse(cursor, uid, partner_id)
+            payment_type_id = self.PaymentType.search(cursor, uid, [('code', '=', 'TRANSFERENCIA_CSB')])[0]
 
             self.assertInvoiceInfoEqual(cursor, uid, invoice_ids, u"""\
                 account_id: {liq_account_code} {liq_account_name}
@@ -304,7 +308,7 @@ class InvestmentStrategyTests(testing.OOTestCase):
                 - {p.id}
                 - {p.name}
                 payment_type:
-                - 3
+                - {payment_type_id}
                 - Transferencia
                 sii_to_send: false
                 type: in_invoice
@@ -323,5 +327,6 @@ class InvestmentStrategyTests(testing.OOTestCase):
                 liq_account_code=liq_account_dict['code'],
                 liq_account_name=liq_account_dict['name'],
                 apo_account_code=apo_account_dict['code'],
-                apo_account_name=apo_account_dict['name']
+                apo_account_name=apo_account_dict['name'],
+                payment_type_id=payment_type_id
                 ))

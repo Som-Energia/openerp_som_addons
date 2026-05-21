@@ -51,7 +51,7 @@ class GiscedataFacturacioFacturador(osv.osv):
                             [
                                 x.quantity if x.price_unit >= 0 else -x.quantity
                                 for x in fact.linia_ids
-                                if x.tipus == "energia" and x.product_id.code != "RMAG"
+                                if x.tipus == "energia" and x.product_id.code not in ("RMAG", "SAJU", "DSAJU")  # noqa: E501
                             ]
                         )
                         vals = {

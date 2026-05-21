@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 from osv import osv
+from report_backend.report_backend import ReportBackend, report_browsify
+from report_puppeteer.report_puppeteer import PuppeteerParser
 
 import babel
 from datetime import datetime
@@ -76,3 +78,32 @@ class PaymentMandate(osv.osv):
 
 
 PaymentMandate()
+
+
+class ReportBackendMandatSepa(ReportBackend):
+    _name = "report.backend.mandat.sepa"
+    _source_model = "payment.mandate"
+
+    @report_browsify
+    def get_data(self, cursor, uid, mandate, context=None):
+        if context is None:
+            context = {}
+
+        mandate_o = self.pool.get("payment.mandate")
+        data = mandate_o.sepa_particulars_data(cursor, uid, [mandate.id])
+
+        user = self.pool.get("res.users").browse(cursor, uid, uid, context=context)
+        company_logo = user.company_id.logo if user and user.company_id else ""
+        data["company_logo"] = company_logo or ""
+        return data
+
+
+ReportBackendMandatSepa()
+
+
+PuppeteerParser(
+    "report.report_mandato",
+    "report.backend.mandat.sepa",
+    "som_polissa/report/sepa.mako",
+    params={}
+)

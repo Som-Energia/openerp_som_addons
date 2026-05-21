@@ -541,7 +541,7 @@ class GenerationkwhInvestment(osv.osv):
                 purchase_date = isodate(inv['purchase_date']),
                 nominal_amount = gkwh.shareValue*inv['nshares'],
             )
-            for pending in invstate.pendingAmortizations(isodate(current_date)):
+            for pending in invstate.pendingAmortizations(datetime.strptime(str(current_date)[:10], '%Y-%m-%d').date()):
                 (
                     amortization_number,
                     amortization_total_number,
