@@ -30,10 +30,18 @@ make -C runtime-docker dataset-producer-publish
 make -C runtime-docker dataset-consumer-prepare
 ```
 
-4. Equip consumidor: arrencar stack docker compose:
+4. Equip consumidor: arrencar stack docker compose (mode consumer pur: sempre pull + recreate):
 
 ```bash
 make -C runtime-docker dataset-consumer-up
+```
+
+5. Opcional (mode local/dev amb override):
+
+```bash
+cp runtime-docker/docker-compose.consumer.override.example.yml runtime-docker/docker-compose.consumer.override.yml
+# ajusta mounts si cal
+make -C runtime-docker dataset-consumer-up-local
 ```
 
 ## Variables obligatòries (publicar a Harbor)
@@ -144,8 +152,12 @@ El consumidor només necessita (`runtime-docker/.env.consumer`):
 # 1) baixa imatge+dataset només si falten
 make -C runtime-docker dataset-consumer-prepare
 
-# 2) arrenca el compose
+# 2) arrenca el compose (consumer pur: sempre pull + recreate)
 make -C runtime-docker dataset-consumer-up
+
+# 3) opcional: mode local/dev amb docker-compose.consumer.override.yml
+cp runtime-docker/docker-compose.consumer.override.example.yml runtime-docker/docker-compose.consumer.override.yml
+make -C runtime-docker dataset-consumer-up-local
 ```
 
 ### Crear dataset
@@ -298,8 +310,8 @@ Què fa:
 
 Nota sobre `erp-runtime`:
 
-- Aquesta imatge executa un bootstrap al primer inici (clonat/configuració) si no troba workspace.
-- El compose consumidor munta un volum (`consumer_workspace`) a `/opt/somenergia/src` per persistir-lo i evitar re-bootstrap a cada arrencada.
+- En mode consumidor per defecte **no** es munta `/opt/somenergia/src`, així s'executa exactament el codi de la imatge de Harbor.
+- Si vols iterar codi local, fes servir `dataset-consumer-up-local` amb `docker-compose.consumer.override.yml`.
 - El compose consumidor arrenca ERP directament amb `start-openerp-server.sh` (bypass de `build-openerp-server.sh`) per evitar executar `destral` a cada `up`.
 
 ### Opció recomanada: imatge prewarmed
@@ -362,6 +374,13 @@ ERP_RUNTIME_IMAGE="harbor.example.com/erp/openerp:latest"
 
 ### Arrencar stack de consum
 
+Modes disponibles:
+
+- `dataset-consumer-up`: consumer pur (imatge Harbor, sense mounts locals), amb `--pull always --force-recreate`.
+- `dataset-consumer-up-local`: usa `docker-compose.consumer.override.yml` per mounts locals.
+- `dataset-consumer-refresh`: baixa i recrea stack consumer pur.
+
+
 ```bash
 cp runtime-docker/.env.consumer.example runtime-docker/.env.consumer
 # edita credencials Harbor i valors necessaris
@@ -392,6 +411,8 @@ Variables recomanades:
 - `RESET_ADMIN_PASSWORD` (recomanat: `admin` en entorns locals de demo)
 
 Troubleshooting ràpid:
+
+- Si el contenidor carrega codi antic tot i fer pull, comprova que no estiguis en mode local (`dataset-consumer-up-local`) amb mounts que tapen `/opt/somenergia/src`.
 
 - Si veus `artifact erp/openerp:latest not found`, revisa que `ERP_RUNTIME_IMAGE` sigui una referència completa i existent a Harbor.
 - Pots validar la interpolació final amb:

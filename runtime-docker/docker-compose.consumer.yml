@@ -69,12 +69,11 @@ services:
         export OPENERP_DB_HOST="postgres"
         export OPENERP_MONGODB_HOST="mongo"
         export OPENERP_REDIS_URL="redis://redis:6379/0"
+        export PYTHONPATH="/opt/somenergia/src/erp/server/bin:/opt/somenergia/src/erp/server/bin/addons:/opt/somenergia/src/erp/server/sitecustomize:${PYTHONPATH:-}"
 
         exec bash /opt/somenergia/src/openerp_som_addons/scripts/start-openerp-server.sh
     ports:
       - "${ERP_XMLRPC_PORT:-8069}:${ERP_XMLRPC_PORT:-8069}"
-    volumes:
-      - consumer_workspace:/opt/somenergia/src
 
   dataset-restore:
     image: ubuntu:22.04
@@ -126,4 +125,3 @@ services:
 volumes:
   consumer_pgdata:
   consumer_dataset_cache:
-  consumer_workspace:

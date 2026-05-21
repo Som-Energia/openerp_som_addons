@@ -1,5 +1,5 @@
 services:
-  db:
+  postgres:
     image: timescale/timescaledb:2.14.2-pg13
     ports:
       - 5432:5432
