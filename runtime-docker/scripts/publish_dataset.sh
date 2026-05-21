@@ -78,7 +78,7 @@ push_tag() {
 retag_as_latest() {
 	local source_ref="${DATASET_REPOSITORY}:${DATE_TAG}"
 	log "Assignant tag latest al mateix artefacte: ${source_ref} -> ${DATASET_REPOSITORY}:latest"
-	oras tag "${source_ref}" latest
+	oras tag --insecure "${source_ref}" latest
 }
 
 main() {
