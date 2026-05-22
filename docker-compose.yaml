@@ -1,5 +1,5 @@
 services:
-  db:
+  postgres:
     image: timescale/timescaledb:2.14.2-pg13
     ports:
       - 5432:5432
@@ -13,7 +13,7 @@ services:
         -c max_parallel_workers_per_gather=4
         -c timescaledb.max_background_workers=8
     volumes:
-      - ./db:/var/lib/postgresql/data
+      - erp_db_data:/var/lib/postgresql/data
 
   mongo:
     image: mongo:3.0
@@ -24,3 +24,6 @@ services:
     image: redis:5.0
     ports:
       - 6379:6379
+
+volumes:
+  erp_db_data:

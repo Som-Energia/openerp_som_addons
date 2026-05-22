@@ -146,6 +146,9 @@ patches/
 # Agents
 .engram/
 .atl/
+.pi/
+.pi-lens/
+
 # Local consumer env (secrets)
 runtime-docker/.env.consumer
 runtime-docker/.env.producer

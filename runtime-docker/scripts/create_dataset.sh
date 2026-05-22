@@ -19,185 +19,207 @@ EXCLUDE_TIMESCALE_INTERNALS="${EXCLUDE_TIMESCALE_INTERNALS:-1}"
 PG_DUMP_EXTRA_ARGS="${PG_DUMP_EXTRA_ARGS:-}"
 
 log() {
-  printf '[create_dataset] %s\n' "$*"
+	printf '[create_dataset] %s\n' "$*"
 }
 
 fail() {
-  printf '[create_dataset] ERROR: %s\n' "$*" >&2
-  exit 1
+	printf '[create_dataset] ERROR: %s\n' "$*" >&2
+	exit 1
 }
 
 have_cmd() {
-  command -v "$1" >/dev/null 2>&1
+	command -v "$1" >/dev/null 2>&1
 }
 
 run_compose() {
-  if have_cmd docker && docker compose version >/dev/null 2>&1; then
-    docker compose "$@"
-    return
-  fi
-  if have_cmd docker-compose; then
-    docker-compose "$@"
-    return
-  fi
-  fail "No s'ha trobat docker compose ni docker-compose"
+	if have_cmd docker && docker compose version >/dev/null 2>&1; then
+		docker compose "$@"
+		return
+	fi
+	if have_cmd docker-compose; then
+		docker-compose "$@"
+		return
+	fi
+	fail "No s'ha trobat docker compose ni docker-compose"
 }
 
 compose_has_service() {
-  local service="$1"
-  run_compose -f "${COMPOSE_FILE}" config --services | grep -Fxq "${service}"
+	local service="$1"
+	run_compose -f "${COMPOSE_FILE}" config --services | grep -Fxq "${service}"
 }
 
 resolve_db_service() {
-  if [ -n "${DB_SERVICE}" ]; then
-    compose_has_service "${DB_SERVICE}" || fail "El servei DB_SERVICE=${DB_SERVICE} no existeix a ${COMPOSE_FILE}"
-    return
-  fi
+	if [ -n "${DB_SERVICE}" ]; then
+		compose_has_service "${DB_SERVICE}" || fail "El servei DB_SERVICE=${DB_SERVICE} no existeix a ${COMPOSE_FILE}"
+		return
+	fi
 
-  if compose_has_service postgres; then
-    DB_SERVICE="postgres"
-    return
-  fi
+	if compose_has_service postgres; then
+		DB_SERVICE="postgres"
+		return
+	fi
 
-  if compose_has_service db; then
-    DB_SERVICE="db"
-    return
-  fi
+	if compose_has_service db; then
+		DB_SERVICE="db"
+		return
+	fi
 
-  fail "No s'ha pogut detectar cap servei PostgreSQL (esperat: postgres o db)"
+	fail "No s'ha pogut detectar cap servei PostgreSQL (esperat: postgres o db)"
 }
 
 database_exists() {
-  local db_name="$1"
-  run_compose -f "${COMPOSE_FILE}" exec -T "${DB_SERVICE}" \
-    psql -U "${POSTGRES_USER}" -d postgres -tAc \
-    "SELECT 1 FROM pg_database WHERE datname='${db_name}';" | grep -Fxq '1'
+	local db_name="$1"
+	run_compose -f "${COMPOSE_FILE}" exec -T "${DB_SERVICE}" \
+		psql -U "${POSTGRES_USER}" -d postgres -tAc \
+		"SELECT 1 FROM pg_database WHERE datname='${db_name}';" | grep -Fxq '1'
 }
 
 resolve_postgres_db() {
-  if [ -n "${POSTGRES_DB}" ]; then
-    return
-  fi
+	if [ -n "${POSTGRES_DB}" ]; then
+		return
+	fi
 
-  if database_exists erp_runtime; then
-    POSTGRES_DB="erp_runtime"
-    return
-  fi
+	if database_exists erp_runtime; then
+		POSTGRES_DB="erp_runtime"
+		return
+	fi
 
-  if database_exists erp; then
-    POSTGRES_DB="erp"
-    return
-  fi
+	if database_exists erp; then
+		POSTGRES_DB="erp"
+		return
+	fi
 
-  fail "No s'ha pogut detectar la base de dades (esperat: erp_runtime o erp). Defineix POSTGRES_DB."
+	fail "No s'ha pogut detectar la base de dades (esperat: erp_runtime o erp). Defineix POSTGRES_DB."
 }
 
 checksum_file() {
-  local file="$1"
-  if have_cmd sha256sum; then
-    sha256sum "${file}" | cut -d' ' -f1
-    return
-  fi
-  if have_cmd shasum; then
-    shasum -a 256 "${file}" | cut -d' ' -f1
-    return
-  fi
-  fail "No s'ha trobat sha256sum ni shasum"
+	local file="$1"
+	if have_cmd sha256sum; then
+		sha256sum "${file}" | cut -d' ' -f1
+		return
+	fi
+	if have_cmd shasum; then
+		shasum -a 256 "${file}" | cut -d' ' -f1
+		return
+	fi
+	fail "No s'ha trobat sha256sum ni shasum"
 }
 
 require_tools() {
-  local tools=(docker zstd date git)
-  local tool
-  for tool in "${tools[@]}"; do
-    have_cmd "${tool}" || fail "Falta l'eina requerida: ${tool}"
-  done
-  if [ -z "${COMPOSE_FILE}" ]; then
-    # Producer flow usually runs against root compose (host-accessible services).
-    if [ -f "${REPO_ROOT}/docker-compose.yaml" ]; then
-      COMPOSE_FILE="${REPO_ROOT}/docker-compose.yaml"
-    elif [ -f "${REPO_ROOT}/docker-compose.yml" ]; then
-      COMPOSE_FILE="${REPO_ROOT}/docker-compose.yml"
-    elif [ -f "${ROOT_DIR}/docker-compose.yml" ]; then
-      COMPOSE_FILE="${ROOT_DIR}/docker-compose.yml"
-    fi
-  fi
+	local tools=(docker zstd date git)
+	local tool
+	for tool in "${tools[@]}"; do
+		have_cmd "${tool}" || fail "Falta l'eina requerida: ${tool}"
+	done
+	if [ -z "${COMPOSE_FILE}" ]; then
+		# Producer flow usually runs against root compose (host-accessible services).
+		if [ -f "${REPO_ROOT}/docker-compose.yaml" ]; then
+			COMPOSE_FILE="${REPO_ROOT}/docker-compose.yaml"
+		elif [ -f "${REPO_ROOT}/docker-compose.yml" ]; then
+			COMPOSE_FILE="${REPO_ROOT}/docker-compose.yml"
+		elif [ -f "${ROOT_DIR}/docker-compose.yml" ]; then
+			COMPOSE_FILE="${ROOT_DIR}/docker-compose.yml"
+		fi
+	fi
 
-  [ -n "${COMPOSE_FILE}" ] || fail "No s'ha pogut resoldre COMPOSE_FILE"
-  [ -f "${COMPOSE_FILE}" ] || fail "No existeix el fitxer compose: ${COMPOSE_FILE}"
-  have_cmd sha256sum || have_cmd shasum || fail "No s'ha trobat sha256sum ni shasum"
-  resolve_db_service
+	[ -n "${COMPOSE_FILE}" ] || fail "No s'ha pogut resoldre COMPOSE_FILE"
+	[ -f "${COMPOSE_FILE}" ] || fail "No existeix el fitxer compose: ${COMPOSE_FILE}"
+	have_cmd sha256sum || have_cmd shasum || fail "No s'ha trobat sha256sum ni shasum"
+	resolve_db_service
 }
 
 wait_for_db() {
-  local tries=30
-  local i
-  for ((i = 1; i <= tries; i++)); do
-    if run_compose -f "${COMPOSE_FILE}" exec -T "${DB_SERVICE}" \
-      pg_isready -U "${POSTGRES_USER}" -d postgres >/dev/null 2>&1; then
-      return
-    fi
-    sleep 2
-  done
-  fail "PostgreSQL no està llest després d'esperar"
+	local tries=30
+	local i
+	for ((i = 1; i <= tries; i++)); do
+		if run_compose -f "${COMPOSE_FILE}" exec -T "${DB_SERVICE}" \
+			pg_isready -U "${POSTGRES_USER}" -d postgres >/dev/null 2>&1; then
+			return
+		fi
+		sleep 2
+	done
+	fail "PostgreSQL no està llest després d'esperar"
 }
 
 get_postgres_version() {
-  run_compose -f "${COMPOSE_FILE}" exec -T "${DB_SERVICE}" \
-    psql -U "${POSTGRES_USER}" -d postgres -tAc 'SHOW server_version;' | tr -d '[:space:]'
+	run_compose -f "${COMPOSE_FILE}" exec -T "${DB_SERVICE}" \
+		psql -U "${POSTGRES_USER}" -d postgres -tAc 'SHOW server_version;' | tr -d '[:space:]'
 }
 
 assert_postgres_major() {
-  local version major
-  version="$(get_postgres_version)"
-  major="${version%%.*}"
-  [ -n "${major}" ] || fail "No s'ha pogut determinar la versió de PostgreSQL"
-  if [ "${major}" != "${EXPECTED_POSTGRES_MAJOR}" ]; then
-    fail "Versió PostgreSQL detectada ${version} (major ${major}) però s'esperava major ${EXPECTED_POSTGRES_MAJOR}"
-  fi
+	local version major
+	version="$(get_postgres_version)"
+	major="${version%%.*}"
+	[ -n "${major}" ] || fail "No s'ha pogut determinar la versió de PostgreSQL"
+	if [ "${major}" != "${EXPECTED_POSTGRES_MAJOR}" ]; then
+		fail "Versió PostgreSQL detectada ${version} (major ${major}) però s'esperava major ${EXPECTED_POSTGRES_MAJOR}"
+	fi
+}
+
+count_app_tables() {
+	run_compose -f "${COMPOSE_FILE}" exec -T "${DB_SERVICE}" \
+		psql -U "${POSTGRES_USER}" -d "${POSTGRES_DB}" -tAc "
+      SELECT count(*)
+      FROM information_schema.tables
+      WHERE table_type = 'BASE TABLE'
+        AND table_schema NOT IN ('pg_catalog', 'information_schema')
+        AND table_schema NOT LIKE '_timescaledb%'
+        AND table_schema <> 'timescaledb_information';
+    " | tr -d '[:space:]'
+}
+
+assert_dataset_not_empty() {
+	local app_tables
+	app_tables="$(count_app_tables)"
+	[ -n "${app_tables}" ] || fail "No s'ha pogut comptar taules d'aplicació"
+	if [ "${app_tables}" -eq 0 ]; then
+		fail "La BD ${POSTGRES_DB} no té taules d'aplicació. Executa 'make -C runtime-docker dataset-producer-create' (o restaura un dataset) abans de fer dump."
+	fi
 }
 
 main() {
-  require_tools
+	require_tools
 
-  mkdir -p "${OUTPUT_DIR}"
-  run_compose -f "${COMPOSE_FILE}" up -d "${DB_SERVICE}" >/dev/null
-  wait_for_db
-  resolve_postgres_db
-  assert_postgres_major
+	mkdir -p "${OUTPUT_DIR}"
+	run_compose -f "${COMPOSE_FILE}" up -d "${DB_SERVICE}" >/dev/null
+	wait_for_db
+	resolve_postgres_db
+	assert_postgres_major
+	assert_dataset_not_empty
 
-  local dump_base dump_file compressed_file metadata_file checksum
-  local -a dump_args
-  dump_base="${DATASET_NAME}-${DATASET_DATE}"
-  dump_file="${OUTPUT_DIR}/${dump_base}.dump"
-  compressed_file="${dump_file}.zst"
-  metadata_file="${OUTPUT_DIR}/${dump_base}.metadata.json"
+	local dump_base dump_file compressed_file metadata_file checksum
+	local -a dump_args
+	dump_base="${DATASET_NAME}-${DATASET_DATE}"
+	dump_file="${OUTPUT_DIR}/${dump_base}.dump"
+	compressed_file="${dump_file}.zst"
+	metadata_file="${OUTPUT_DIR}/${dump_base}.metadata.json"
 
-  dump_args=( -Fc )
-  if [ "${EXCLUDE_TIMESCALE_INTERNALS}" = "1" ]; then
-    dump_args+=(
-      --exclude-schema=_timescaledb_cache
-      --exclude-schema=_timescaledb_catalog
-      --exclude-schema=_timescaledb_config
-      --exclude-schema=_timescaledb_functions
-      --exclude-schema=_timescaledb_internal
-    )
-  fi
-  if [ -n "${PG_DUMP_EXTRA_ARGS}" ]; then
-    # shellcheck disable=SC2206
-    dump_args+=( ${PG_DUMP_EXTRA_ARGS} )
-  fi
+	dump_args=(-Fc)
+	if [ "${EXCLUDE_TIMESCALE_INTERNALS}" = "1" ]; then
+		dump_args+=(
+			--exclude-schema=_timescaledb_cache
+			--exclude-schema=_timescaledb_catalog
+			--exclude-schema=_timescaledb_config
+			--exclude-schema=_timescaledb_functions
+			--exclude-schema=_timescaledb_internal
+		)
+	fi
+	if [ -n "${PG_DUMP_EXTRA_ARGS}" ]; then
+		# shellcheck disable=SC2206
+		dump_args+=(${PG_DUMP_EXTRA_ARGS})
+	fi
 
-  log "Generant dump PostgreSQL de ${POSTGRES_DB}"
-  run_compose -f "${COMPOSE_FILE}" exec -T "${DB_SERVICE}" \
-    pg_dump -U "${POSTGRES_USER}" -d "${POSTGRES_DB}" "${dump_args[@]}" >"${dump_file}"
+	log "Generant dump PostgreSQL de ${POSTGRES_DB}"
+	run_compose -f "${COMPOSE_FILE}" exec -T "${DB_SERVICE}" \
+		pg_dump -U "${POSTGRES_USER}" -d "${POSTGRES_DB}" "${dump_args[@]}" >"${dump_file}"
 
-  log "Comprimint dump amb zstd"
-  zstd -f --rm "${dump_file}" -o "${compressed_file}"
+	log "Comprimint dump amb zstd"
+	zstd -f --rm "${dump_file}" -o "${compressed_file}"
 
-  checksum="$(checksum_file "${compressed_file}")"
+	checksum="$(checksum_file "${compressed_file}")"
 
-  log "Escrivint metadata"
-  cat >"${metadata_file}" <<EOF
+	log "Escrivint metadata"
+	cat >"${metadata_file}" <<EOF
 {
   "dataset_version": "${DATASET_VERSION}",
   "created_at": "$(date -u +%Y-%m-%dT%H:%M:%SZ)",
@@ -209,9 +231,9 @@ main() {
 }
 EOF
 
-  log "Dataset creat correctament"
-  log "Dump: ${compressed_file}"
-  log "Metadata: ${metadata_file}"
+	log "Dataset creat correctament"
+	log "Dump: ${compressed_file}"
+	log "Metadata: ${metadata_file}"
 }
 
 main "$@"
