@@ -236,7 +236,7 @@ class SomLeadWww(osv.osv_memory):
 
         signature_url = None
         signature_provider = None
-        if not error_info:
+        if not error_info and www_vals.get("signature"):
             # Make the just-created lead visible to the secondary cursor opened
             # during signature document generation.
             cr.commit()
