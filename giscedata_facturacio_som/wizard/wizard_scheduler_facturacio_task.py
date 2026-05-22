@@ -1,7 +1,4 @@
 # -*- coding: utf-8 -*-
-
-from __future__ import unicode_literals
-
 from osv import osv, fields
 
 
@@ -14,13 +11,13 @@ class WizardScheduleTask(osv.osv_memory):
             cursor, uid, context=context
         )
 
-        found = False
-        for task in tasks:
-            if task[0] == 'obrir_factures_button_by_queue':
-                task[1] = 'Obrir Factures per workers'
-            elif task[0] == 'obrir_factures_button':
-                found = True
-        if not found:
+        tasks = [
+            (task_code, 'Obrir Factures per workers')
+            if task_code == 'obrir_factures_button_by_queue'
+            else (task_code, task_label)
+            for task_code, task_label in tasks
+        ]
+        if not any(task_code == 'obrir_factures_button' for task_code, _ in tasks):
             tasks.append(('obrir_factures_button', 'Obrir Factures sequencial'))
 
         return tasks
