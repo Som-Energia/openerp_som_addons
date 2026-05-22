@@ -30,6 +30,8 @@ som_autoreclama:
 -  som_autoreclama/**
 som_auvidi:
 -  som_auvidi/**
+som_card_payment:
+-  som_card_payment/**
 som_control_reports:
 -  som_control_reports/**
 som_crawlers:
