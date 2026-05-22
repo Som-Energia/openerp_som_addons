@@ -1,0 +1,76 @@
+# -*- coding: utf-8 -*-
+from osv import osv, fields
+
+
+class GiscedataPolissa(osv.osv):
+    _name = "giscedata.polissa"
+    _inherit = "giscedata.polissa"
+
+    def onchange_tipo_pago(self, cursor, uid, ids, tipo_pago, pagador, context=None):
+        res = super(GiscedataPolissa, self).onchange_tipo_pago(
+            cursor, uid, ids, tipo_pago, pagador, context=context
+        )
+        if not tipo_pago:
+            return res
+
+        payment_type = self.pool.get("payment.type").browse(cursor, uid, tipo_pago, context=context)
+        if payment_type.code != "COBRAMENT_RECURRENT_TARGETA":
+            return res
+
+        if not pagador:
+            res.setdefault("value", {}).update({"creditcard": False})
+            return res
+
+        card_obj = self.pool.get("res.partner.creditcard")
+        card_ids = card_obj.search(cursor, uid, [("partner_id", "=", pagador)], context=context)
+        res.setdefault("value", {}).update(
+            {"creditcard": card_ids[0] if len(card_ids) == 1 else False})
+        return res
+
+    def _check_card_payment_data(self, cursor, uid, ids, context=None):
+        for polissa in self.browse(cursor, uid, ids, context=context):
+            if not polissa.tipo_pago or polissa.tipo_pago.code != "COBRAMENT_RECURRENT_TARGETA":
+                continue
+            if not polissa.creditcard:
+                return False
+            if polissa.pagador and polissa.creditcard.partner_id.id != polissa.pagador.id:
+                return False
+        return True
+
+    _columns = {
+        "creditcard": fields.many2one(
+            "res.partner.creditcard",
+            "Targeta",
+            ondelete="restrict",
+            readonly=True,
+            states={
+                "esborrany": [("readonly", False)],
+                "validar": [("readonly", False)],
+                "modcontractual": [("readonly", False)],
+            },
+        ),
+    }
+
+    _constraints = [
+        (
+            _check_card_payment_data,
+            "Cal indicar una targeta del pagador quan el tipus de pagament "
+            "es cobrament recurrent per targeta.",
+            ["tipo_pago", "creditcard", "pagador"],
+        )
+    ]
+
+
+GiscedataPolissa()
+
+
+class GiscedataPolissaModcontractual(osv.osv):
+    _name = "giscedata.polissa.modcontractual"
+    _inherit = "giscedata.polissa.modcontractual"
+
+    _columns = {
+        "creditcard": fields.many2one("res.partner.creditcard", "Targeta", ondelete="restrict"),
+    }
+
+
+GiscedataPolissaModcontractual()

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data noupdate="1">
+        <record id="payment_mode_card_recurrent" model="payment.mode">
+            <field name="name">Cobrament recurrent per targeta</field>
+            <field name="type" ref="payment_type_card_recurrent"/>
+            <field name="journal" search="[('code', '=', 'CAJA')]"/>
+            <field name="bank_id" search="[('partner_id', '=', 1)]"/>
+            <field name="require_bank_account" eval="False"/>
+            <field name="active" eval="True"/>
+        </record>
+    </data>
+</openerp>
