@@ -89,12 +89,20 @@ jobs:
           pyenv global ${{ matrix.python-version }}
           pip install --upgrade pip setuptools wheel
 
-      - name: Bootstrap ERP environment
-        uses: ./.github/actions/bootstrap-erp
+      - name: Checkout openerp_som_addons bootstrap scripts
+        uses: actions/checkout@v6.0.2
         with:
-          github_token: ${{ secrets.ACCESS_TOKEN_GA }}
-          erpbranch: ${{ inputs.erpbranch }}
-          python-version: ${{ matrix.python-version }}
+          repository: Som-Energia/openerp_som_addons
+          ref: main
+          token: ${{ secrets.ACCESS_TOKEN_GA }}
+          path: .ci/openerp_som_addons
+
+      - name: Bootstrap ERP environment
+        env:
+          GITHUB_TOKEN: ${{ secrets.ACCESS_TOKEN_GA }}
+          ERP_BRANCH: ${{ inputs.erpbranch }}
+          PYTHON_VERSION: ${{ matrix.python-version }}
+        run: .ci/openerp_som_addons/scripts/bootstrap-erp-env.sh
 
       - name: Run Tests
         env:
