@@ -7,7 +7,7 @@ on:
     - cron: '0 0 * * 1'
 jobs:
   erp-tests-module:
-    uses: ./.github/workflows/reusable_workflow.yml
+    uses: ./.github/workflows/reusable_workflow.yml@MOD_actions_path
     with:
       module: som_plantmeter
     secrets:
