@@ -90,7 +90,7 @@ jobs:
           pip install --upgrade pip setuptools wheel
 
       - name: Bootstrap ERP environment
-        uses: Som-Energia/openerp_som_addons/.github/actions/bootstrap-erp@main
+        uses: Som-Energia/openerp_som_addons/.github/actions/bootstrap-erp@MOD_actions_path
         with:
           github_token: ${{ secrets.ACCESS_TOKEN_GA }}
           erpbranch: ${{ inputs.erpbranch }}
