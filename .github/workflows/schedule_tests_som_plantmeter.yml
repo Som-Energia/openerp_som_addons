@@ -4,10 +4,10 @@ name: som_plantmeter
 on:
   workflow_dispatch:
   schedule:
-    - cron: '0 0 * * 1'
+    - cron: "0 0 * * 1"
 jobs:
   erp-tests-module:
-    uses: Som-Energia/openerp_som_addons/.github/workflows/reusable_workflow.yml@MOD_actions_path
+    uses: ./.github/workflows/reusable_workflow.yml
     with:
       module: som_plantmeter
     secrets:
