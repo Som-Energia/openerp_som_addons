@@ -79,6 +79,20 @@ class GiscedataFacturacioFacturador(osv.osv):
     def avoid_creating_zero_lines(self, cursor, uid, factura_id, servei_vals, context=None):
         return 'data_inici' in servei_vals and servei_vals.get('data_inici') < '2026-05-01'
 
+    def get_consum_curve_components_for_servei(self, cursor, uid, fact_id, data_inici, data_final,
+                                               single_period_profiling, context=None):
+        if context is None:
+            context = {}
+        tmp_curves = super(GiscedataFacturacioFacturador, self).get_consum_curve_components_for_servei(
+            cursor, uid, fact_id, data_inici, data_final, single_period_profiling, context=context
+        )
+        res = []
+        for curve in tmp_curves:
+            if curve.start_date.strftime('%Y-%m-%d') < '2026-05-01':
+                curve = curve * 0
+            res.append(curve)
+        return res
+
     def phf_calc_servei_ajust(self, cursor, uid, factura, tariff, esios_token, start_date, end_date,
                               context=None):
         if context is None:
