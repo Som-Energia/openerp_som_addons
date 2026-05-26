@@ -3321,16 +3321,20 @@ class GiscedataFacturacioFacturaReport(osv.osv):
         total = 0
         iva = None
         count = 0
+        is_generation_adjustment = False
         for l in fact.linia_ids:  # noqa: E741
             if l.invoice_line_id.product_id.code in ("SAJU", "DSAJU"):
                 total += l.price_subtotal
                 iva = get_iva_line(l)
                 count += 1
+                if "generation" in (l.name or "").lower():
+                    is_generation_adjustment = True
 
         if count:
             return {
                 "total": total,
-                "iva": iva
+                "iva": iva,
+                "is_generation_adjustment": is_generation_adjustment,
             }
         else:
             return None

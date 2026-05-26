@@ -1905,6 +1905,10 @@ msgstr "Importe de la energía asociada al mecanismo ibérico regulado por el Re
 msgid "Serveis d'Ajust segons preu REE pel periode facturat"
 msgstr "Servicios de Ajuste según precio REE por el período facturado"
 
+#: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_energy/invoice_details_td_energy.mako:160
+msgid "Serveis d'Ajust segons preu REE pel periode facturat, aplicat a assignació GenerationkWh"
+msgstr "Servicios de Ajuste según precio REE por el período facturado, aplicado a la asignación GenerationkWh"
+
 #: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_energy_charges/invoice_details_td_energy_charges.mako:6
 #: rml:giscedata_facturacio_comer_som/report/components/invoice_details_td_energy_charges_CT/invoice_details_td_energy_charges_CT.mako:12
 msgid "Preu càrrecs per electricitat utilitzades [€/kWh]"

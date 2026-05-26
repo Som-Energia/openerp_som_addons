@@ -10,3 +10,4 @@ from investment_strategy_tests import *
 from wizard_generate_mandate_tests import *
 from report_tests import *
 from polissa_tests import *
+from facturador_servei_ajust_tests import *
