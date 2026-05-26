@@ -111,21 +111,18 @@ class GiscedataFacturacioFacturador(osv.osv):
         B = (1 + (perdues * 0.01))
         C = A * B
 
-        tarifa_class = TARIFFS_FACT[factura.polissa_id.modcontractual_activa.tarifa.name]
-        tarifa = tarifa_class({}, {}, factura.data_inici, factura.data_final)
         audit_keys = {'prdemcad_sa': 'prdemcad', 'perdues_sa': 'perdues'}
-        for key in ['prdemcad_sa', 'perdues_sa']:
-            if key not in tarifa.audit_data.keys():
-                tarifa.audit_data[key] = []
-            if key not in tarifa.audit_components.keys():
-                tarifa.audit_components[key] = None
+        for key in audit_keys.keys():
+            if key not in tariff.audit_data.keys():
+                tariff.audit_data[key] = []
+            if key not in tariff.audit_components.keys():
+                tariff.audit_components[key] = None
             var_name = audit_keys[key]
             com = locals()[var_name]
-            tarifa.audit_components[key] = com
-            tarifa.audit_data[key].extend(
+            tariff.audit_components[key] = com
+            tariff.audit_data[key].extend(
                 com.get_audit_data(start=start_date.day)
             )
-        self.audit_data(cursor, uid, tarifa, factura.id)
 
         return C
 
