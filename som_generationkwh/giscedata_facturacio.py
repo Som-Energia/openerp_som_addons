@@ -617,6 +617,7 @@ class GiscedataFacturacioFacturador(osv.osv):
     """
     _name = 'giscedata.facturacio.facturador'
     _inherit = 'giscedata.facturacio.facturador'
+    GKWH_SAJU_START_DATE = '2026-05-01'
 
     def _get_servei_ajust_line_id(self, cursor, uid, factura_id, context=None):
         line_obj = self.pool.get('giscedata.facturacio.factura.linia')
@@ -677,8 +678,11 @@ class GiscedataFacturacioFacturador(osv.osv):
             gkwh_total_quantity = 0.0
             if gkwh_line_ids:
                 gkwh_line_data = line_obj.read(cursor, uid, gkwh_line_ids, [
-                                               'quantity'], context=context)
-                gkwh_total_quantity = sum([line['quantity'] for line in gkwh_line_data])
+                                               'quantity', 'data_desde'], context=context)
+                gkwh_total_quantity = sum([
+                    line['quantity'] for line in gkwh_line_data
+                    if line.get('data_desde') and line['data_desde'] >= self.GKWH_SAJU_START_DATE
+                ])
 
             if gkwh_total_quantity <= 0:
                 line_obj.unlink(cursor, uid, [saju_line_id], context=context)

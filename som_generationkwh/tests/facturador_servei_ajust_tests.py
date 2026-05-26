@@ -91,15 +91,15 @@ class FacturadorServeiAjustTests(testing.OOTestCaseWithCursor):
         }
         return self.line_obj.create(self.cursor, self.uid, vals, context={'group_line': False})
 
-    def _create_gkwh_line(self, quantity):
+    def _create_gkwh_line(self, quantity, data_desde=None, data_fins=None):
         template = self._get_template_energy_line()
         gkwh_products = self.line_obj.get_gkwh_products(self.cursor, self.uid)
         if not gkwh_products:
             raise AssertionError('No GKWH products found')
         vals = {
             'factura_id': self.factura_id,
-            'data_desde': template.data_desde,
-            'data_fins': template.data_fins,
+            'data_desde': data_desde or template.data_desde,
+            'data_fins': data_fins or template.data_fins,
             'uos_id': template.uos_id.id,
             'quantity': quantity,
             'product_id': gkwh_products[0],
@@ -117,8 +117,8 @@ class FacturadorServeiAjustTests(testing.OOTestCaseWithCursor):
         self._prepare_factura()
         self._set_mode_facturacio('index')
         saju_line_id = self._create_saju_line(quantity=20.0, force_price=0.5)
-        self._create_gkwh_line(quantity=4.0)
-        self._create_gkwh_line(quantity=6.0)
+        self._create_gkwh_line(quantity=4.0, data_desde='2026-05-01', data_fins='2026-05-31')
+        self._create_gkwh_line(quantity=6.0, data_desde='2026-06-01', data_fins='2026-06-30')
 
         self.facturador.reconcile_servei_ajust_generationkwh(
             self.cursor, self.uid, [self.factura_id], context={}
@@ -144,7 +144,7 @@ class FacturadorServeiAjustTests(testing.OOTestCaseWithCursor):
         self._prepare_factura()
         self._set_mode_facturacio('atr')
         saju_line_id = self._create_saju_line(quantity=20.0, force_price=0.5)
-        self._create_gkwh_line(quantity=6.0)
+        self._create_gkwh_line(quantity=6.0, data_desde='2026-05-01', data_fins='2026-05-31')
 
         self.facturador.reconcile_servei_ajust_generationkwh(
             self.cursor, self.uid, [self.factura_id], context={}
@@ -157,7 +157,7 @@ class FacturadorServeiAjustTests(testing.OOTestCaseWithCursor):
         self._prepare_factura()
         self._set_mode_facturacio('index')
         saju_line_id = self._create_saju_line(quantity=0.0, force_price=0.5, name='SAJU original')
-        self._create_gkwh_line(quantity=2.0)
+        self._create_gkwh_line(quantity=2.0, data_desde='2026-05-01', data_fins='2026-05-31')
 
         self.facturador.reconcile_servei_ajust_generationkwh(
             self.cursor, self.uid, [self.factura_id], context={}
@@ -206,3 +206,18 @@ class FacturadorServeiAjustTests(testing.OOTestCaseWithCursor):
 
         still_exists = self.line_obj.search(self.cursor, self.uid, [('id', '=', saju_line_id)])
         self.assertEqual(still_exists, [])
+
+    def test_reconcile_ignores_gkwh_lines_before_2026_05_01(self):
+        self._prepare_factura()
+        self._set_mode_facturacio('index')
+        saju_line_id = self._create_saju_line(quantity=20.0, force_price=0.5)
+        self._create_gkwh_line(quantity=8.0, data_desde='2026-04-01', data_fins='2026-04-30')
+        self._create_gkwh_line(quantity=3.0, data_desde='2026-05-01', data_fins='2026-05-31')
+
+        self.facturador.reconcile_servei_ajust_generationkwh(
+            self.cursor, self.uid, [self.factura_id], context={}
+        )
+
+        saju_line = self.line_obj.browse(self.cursor, self.uid, saju_line_id)
+        self.assertEqual(saju_line.quantity, 3.0)
+        self.assertIn('(Generation kWh)', saju_line.name)
