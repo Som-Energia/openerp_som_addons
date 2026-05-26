@@ -18,20 +18,20 @@ on:
       all_modules:
         required: false
         type: string
-        default: 'false'
+        default: "false"
       upload_coverage:
         required: false
         type: boolean
         default: false
     secrets:
-        ACCESS_TOKEN_GA:
-            required: true
-        ESIOS_TOKEN:
-            required: true
-        SRID:
-            required: true
-        CODECOV_TOKEN:
-            required: true
+      ACCESS_TOKEN_GA:
+        required: true
+      ESIOS_TOKEN:
+        required: true
+      SRID:
+        required: true
+      CODECOV_TOKEN:
+        required: true
 
 env:
   POSTGRES_USER: erp
