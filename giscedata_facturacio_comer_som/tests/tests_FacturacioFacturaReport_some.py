@@ -4953,3 +4953,32 @@ class Tests_FacturacioFacturaReport_invoice_details_td(Tests_FacturacioFacturaRe
 
         result = self.r_obj.get_adjustment_services_data(self.bf(f_id))
         self.assertEquals(result["total"], 5.0)
+        self.assertFalse(result["is_generation_adjustment"])
+
+    def test__get_adjustment_services_data__detects_generation_adjustment(self):
+        f_id = self.get_fixture("giscedata_facturacio", "factura_0001")
+
+        saju_id = self._get_or_create_product("SAJU")
+
+        self.linia_f_obj.create(
+            self.cursor,
+            self.uid,
+            {
+                "name": "Serveis d'ajust (Generation kWh)",
+                "quantity": 2.0,
+                "price_unit_multi": 1,
+                "price_unit": 1,
+                "extra": 1,
+                "multi": 1,
+                "factura_id": f_id,
+                "tipus": "reactiva",
+                "product_id": saju_id,
+                "account_id": 1,
+                "data_desde": '2021-06-01',
+                "data_fins": '2021-06-30',
+            },
+        )
+
+        result = self.r_obj.get_adjustment_services_data(self.bf(f_id))
+        self.assertEquals(result["total"], 2.0)
+        self.assertTrue(result["is_generation_adjustment"])
