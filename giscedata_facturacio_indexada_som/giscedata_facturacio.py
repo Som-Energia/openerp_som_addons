@@ -77,7 +77,7 @@ class GiscedataFacturacioFacturador(osv.osv):
 
     # Serveis d'ajust a preu fix
     def avoid_creating_zero_lines(self, cursor, uid, factura_id, servei_vals, context=None):
-        return 'data_inici' in servei_vals and servei_vals.get('data_inici') < '2026-05-01'
+        return 'data_final' in servei_vals and servei_vals.get('data_final') < '2026-05-01'
 
     def get_consum_curve_components_for_servei(self, cursor, uid, fact_id, data_inici, data_final,
                                                single_period_profiling, context=None):

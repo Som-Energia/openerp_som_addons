@@ -2,7 +2,8 @@
 from libfacturacioatr.pool.tarifes import *
 from libfacturacioatr.tarifes import *
 
-import osv.osv
+from osv import osv
+
 
 EXTRAPENINSULAR_FORMULAS = [
     'phf_calc_balears',
