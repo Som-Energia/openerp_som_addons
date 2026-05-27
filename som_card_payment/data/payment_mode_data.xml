@@ -2,7 +2,7 @@
 <openerp>
     <data noupdate="1">
         <record id="payment_mode_card_recurrent" model="payment.mode">
-            <field name="name">Cobrament recurrent per targeta</field>
+            <field name="name">COBRAMENT RECURRENT TARGETA</field>
             <field name="type" ref="payment_type_card_recurrent"/>
             <field name="journal" search="[('code', '=', 'CAJA')]"/>
             <field name="bank_id" search="[('partner_id', '=', 1)]"/>

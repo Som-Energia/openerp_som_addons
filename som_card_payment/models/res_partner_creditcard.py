@@ -14,6 +14,7 @@ class ResPartnerCreditCard(osv.osv):
             "res.partner", "Empresa", required=True, ondelete="cascade", select=True
         ),
         "token": fields.char("Token", size=128, required=True, select=True),
+        "cof_txnid": fields.char("COF TxnId", size=128, select=True),
         "expiry_date": fields.char("Data caducitat", size=5),
         "masked_number": fields.char("Numero targeta", size=32, select=True),
     }
