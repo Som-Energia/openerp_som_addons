@@ -48,3 +48,24 @@ class TestResPartnerCreditCard(testing.OOTestCaseWithCursor):
                 [card_id],
                 {"expiry_date": "1/24"},
             )
+
+    def test_create_accepts_different_tokens(self):
+        vals_1 = self._base_vals()
+        vals_1["token"] = "tok_unique_1"
+        vals_2 = self._base_vals()
+        vals_2["token"] = "tok_unique_2"
+
+        card_id_1 = self.creditcard_obj.create(self.cursor, self.uid, vals_1)
+        card_id_2 = self.creditcard_obj.create(self.cursor, self.uid, vals_2)
+
+        self.assertTrue(card_id_1)
+        self.assertTrue(card_id_2)
+
+    def test_create_rejects_duplicate_token(self):
+        vals = self._base_vals()
+        vals["token"] = "tok_duplicate"
+
+        self.creditcard_obj.create(self.cursor, self.uid, vals)
+
+        with self.assertRaises(Exception):
+            self.creditcard_obj.create(self.cursor, self.uid, vals)
