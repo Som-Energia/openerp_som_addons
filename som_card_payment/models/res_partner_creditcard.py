@@ -36,5 +36,13 @@ class ResPartnerCreditCard(osv.osv):
         )
     ]
 
+    _sql_constraints = [
+        (
+            "res_partner_creditcard_token_unique",
+            "unique(token)",
+            "Ja existeix una targeta amb aquest token.",
+        )
+    ]
+
 
 ResPartnerCreditCard()

@@ -29,7 +29,9 @@ class TestCardPaymentInPolissa(testing.OOTestCaseWithCursor):
             self.cursor, self.uid, "som_card_payment", "payment_mode_card_recurrent"
         )[1]
 
-    def _get_open_modcontractual_id(self):
+    def _get_modcontractual_id_for_validation(self):
+        self._ensure_modcontractual_for_polissa()
+
         modcontractual_ids = self.modcontractual_obj.search(
             self.cursor,
             self.uid,
@@ -38,8 +40,25 @@ class TestCardPaymentInPolissa(testing.OOTestCaseWithCursor):
             order="id desc",
         )
         if not modcontractual_ids:
-            self.skipTest("No hi ha modcontractual activa per provar validacions")
+            self.fail("No hi ha cap modcontractual per provar validacions")
         return modcontractual_ids[0]
+
+    def _ensure_modcontractual_for_polissa(self):
+        modcontractual_ids = self.modcontractual_obj.search(
+            self.cursor,
+            self.uid,
+            [("polissa_id", "=", self.polissa_id)],
+            limit=1,
+        )
+        if modcontractual_ids:
+            return
+
+        self.polissa_obj.send_signal(
+            self.cursor,
+            self.uid,
+            [self.polissa_id],
+            ["validar", "contracte", "modcontractual"],
+        )
 
     def test_modcon_to_card_payment_mode_requires_creditcard(self):
         self.polissa_obj.send_signal(self.cursor, self.uid, [self.polissa_id], ["modcontractual"])
@@ -120,8 +139,7 @@ class TestCardPaymentInPolissa(testing.OOTestCaseWithCursor):
         self.assertEqual(empty_type_values["value"]["creditcard"], False)
 
     def test_modcontractual_requires_creditcard_from_pagador(self):
-        self.polissa_obj.send_signal(self.cursor, self.uid, [self.polissa_id], ["modcontractual"])
-        modcontractual_id = self._get_open_modcontractual_id()
+        modcontractual_id = self._get_modcontractual_id_for_validation()
 
         other_partner_id = self.imd_obj.get_object_reference(
             self.cursor, self.uid, "base", "res_partner_2"
