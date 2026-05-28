@@ -10,6 +10,7 @@ class ResPartnerCreditCard(osv.osv):
     _rec_name = "masked_number"
 
     _columns = {
+        "active": fields.boolean("Activa"),
         "partner_id": fields.many2one(
             "res.partner", "Empresa", required=True, ondelete="cascade", select=True
         ),
@@ -43,6 +44,10 @@ class ResPartnerCreditCard(osv.osv):
             "Ja existeix una targeta amb aquest token.",
         )
     ]
+
+    _defaults = {
+        "active": lambda *a: True,
+    }
 
 
 ResPartnerCreditCard()
