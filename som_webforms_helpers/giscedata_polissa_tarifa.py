@@ -979,7 +979,7 @@ class GiscedataPolissaTarifa(osv.osv):
             uid,
             tariff_id,
             municipi_id,
-            max_power * 1000.0,
+            max_power,
             fiscal_position,
             with_taxes,
             home,
@@ -993,6 +993,8 @@ class GiscedataPolissaTarifa(osv.osv):
         if pricelist == "index":
             avg_price = avg_price_obj.get_current_price(
                 cursor, uid, tariff, "index", context=context)
+            if not avg_price:
+                raise som_webforms_exceptions.MissingSimulationConfig()
             energy_eur = (
                 p1_kwh * avg_price["p1_price"]
                 + p2_kwh * avg_price["p2_price"]
@@ -1005,6 +1007,8 @@ class GiscedataPolissaTarifa(osv.osv):
         if pricelist == "periods":
             avg_price = avg_price_obj.get_current_price(
                 cursor, uid, tariff, "ssaa", context=context)
+            if not avg_price:
+                raise som_webforms_exceptions.MissingSimulationConfig()
             energy_eur = (
                 p1_kwh * ((current.get("te", {}).get("p1", {})
                            ).get("value", 0.0) + avg_price["p1_price"])
