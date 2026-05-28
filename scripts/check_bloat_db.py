@@ -72,6 +72,7 @@ ORDER BY percentatge_actual DESC;
 
 def cerca_taules_excedides():
     conn = None
+    cursor = None
     try:
         conn = psycopg2.connect(**configdb.psycopg)
         cursor = conn.cursor(cursor_factory=RealDictCursor)
@@ -81,7 +82,7 @@ def cerca_taules_excedides():
 
         if not taules_alerta:
             print("✅ Cap taula ha superat el llindar modificat amb el marge definit.")
-            return 0
+            exit(0)
 
         print("⚠️ S'han trobat {0} taules que han superat el límit:\n".format(len(taules_alerta)))
 
@@ -103,12 +104,13 @@ def cerca_taules_excedides():
 
     except Exception as error:
         print("❌ Error d'execució: {0}".format(error))
+        exit(-1)
     finally:
-        if conn:
+        if cursor:
             cursor.close()
+        if conn:
             conn.close()
-
-    return 1
+    exit(1)
 
 
 if __name__ == "__main__":
