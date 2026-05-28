@@ -80,7 +80,9 @@ class GiscedataPolissa(osv.osv):
             days_since_last_f1 = 0
 
         history_obj = self.pool.get("som.autoreclama.state.history.polissa")
-        h_ids = history_obj.search(cursor, uid, [("polissa_id", "=", id)])
+        h_ids = history_obj.search(
+            cursor, uid, [("polissa_id", "=", id)], limit=1, order="id desc"
+        )
 
         days_since_current_cacr1006 = 0
         if h_ids:
@@ -119,10 +121,16 @@ class GiscedataPolissa(osv.osv):
             review_state_id = data_obj.get_object_reference(
                 cursor, uid, "som_autoreclama", "review_state_workflow_polissa"
             )[1]
-            h_ids = history_obj.search(cursor, uid, [
-                ("polissa_id", "=", id),
-                ("state_id", "=", review_state_id),
-            ])
+            h_ids = history_obj.search(
+                cursor,
+                uid,
+                [
+                    ("polissa_id", "=", id),
+                    ("state_id", "=", review_state_id),
+                ],
+                limit=1,
+                order="id desc",
+            )
             if h_ids:
                 last_date_review = history_obj.read(
                     cursor, uid, h_ids[0], ['change_date']
@@ -178,7 +186,9 @@ class GiscedataPolissa(osv.osv):
         invoicing_cyles_with_estimate_readings = len(reading_ids)
 
         history_obj = self.pool.get("som.autoreclama.state.history.polissa009")
-        h_ids = history_obj.search(cursor, uid, [("polissa_id", "=", id)])
+        h_ids = history_obj.search(
+            cursor, uid, [("polissa_id", "=", id)], limit=1, order="id desc"
+        )
 
         days_since_current_cacr1009 = 0
         if h_ids:
@@ -217,10 +227,16 @@ class GiscedataPolissa(osv.osv):
             review_state_id = data_obj.get_object_reference(
                 cursor, uid, "som_autoreclama", "review_state_workflow_polissa009"
             )[1]
-            h_ids = history_obj.search(cursor, uid, [
-                ("polissa_id", "=", id),
-                ("state_id", "=", review_state_id),
-            ])
+            h_ids = history_obj.search(
+                cursor,
+                uid,
+                [
+                    ("polissa_id", "=", id),
+                    ("state_id", "=", review_state_id),
+                ],
+                limit=1,
+                order="id desc",
+            )
             if h_ids:
                 last_date_review = history_obj.read(
                     cursor, uid, h_ids[0], ['change_date']
@@ -342,7 +358,9 @@ class GiscedataPolissa(osv.osv):
         result = dict.fromkeys(ids, False)
         fields_to_read = ["state_id", "change_date", "polissa_id"]
         for id in ids:
-            res = history_obj.search(cursor, uid, [("polissa_id", "=", id)])
+            res = history_obj.search(
+                cursor, uid, [("polissa_id", "=", id)], limit=1, order="id desc"
+            )
             if res:
                 # We consider the last record the first one due to order
                 # statement in the model definition.

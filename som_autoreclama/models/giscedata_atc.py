@@ -556,7 +556,9 @@ class GiscedataAtc(osv.osv):
         result = dict.fromkeys(ids, False)
         fields_to_read = ["state_id", "change_date", "atc_id"]
         for id in ids:
-            res = history_obj.search(cursor, uid, [("atc_id", "=", id)])
+            res = history_obj.search(
+                cursor, uid, [("atc_id", "=", id)], limit=1, order="id desc"
+            )
             if res:
                 # We consider the last record the first one due to order
                 # statement in the model definition.
