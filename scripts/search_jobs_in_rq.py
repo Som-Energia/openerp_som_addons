@@ -51,6 +51,7 @@ for i in range(0, len(job_ids), BATCH_SIZE):
             job_data = zlib.decompress(job_data)
         except zlib.error as e:
             print("Error descomprimint job_id %s: %s" % (job_id, e))
+            continue
 
         matches = FILENAME_RE.findall(job_data)
 
