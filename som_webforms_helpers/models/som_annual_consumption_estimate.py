@@ -20,7 +20,7 @@ class SomAnnualConsumptionEstimate(osv.osv):
         )
     ]
 
-    def _id_power_inferior_o_igual(items, value):
+    def _id_power_inferior_o_igual(self, items, value):
         candidates = [d for d in items if d["power"] <= value]
         if not candidates:
             return None
@@ -37,17 +37,18 @@ class SomAnnualConsumptionEstimate(osv.osv):
             context=context,
         )
 
-        ids = self._id_power_inferior_o_igual(self, cursor, uid, id_power_dict, power, context)
+        estimate_id = self._id_power_inferior_o_igual(id_power_dict, power)
 
-        if not ids:
+        if not estimate_id:
             return False
-        return self.read(
+        estimate = self.read(
             cursor,
             uid,
-            ids[0],
+            estimate_id,
             ["consumption"],
             context=context,
         )
+        return estimate["consumption"]
 
 
 SomAnnualConsumptionEstimate()

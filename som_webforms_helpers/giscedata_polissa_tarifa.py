@@ -932,7 +932,8 @@ class GiscedataPolissaTarifa(osv.osv):
         if pricelist not in ["index", "periods"]:
             raise som_webforms_exceptions.InvalidSimulationPricelist()
 
-        max_power = max([power for _period, power in powers])
+        power_values = [float(power) for power in powers.values() if power is not None]
+        max_power = max(power_values) if power_values else 0.0
 
         consumption_obj = self.pool.get("som.annual.consumption.estimate")
         coeff_obj = self.pool.get("som.annual.coefficient")
@@ -941,7 +942,7 @@ class GiscedataPolissaTarifa(osv.osv):
         tariff = "2.0TD" if max_power < 15 else "3.0TD"
         coeff_tariff = tariff + "_" + pricelist
 
-        coeff = coeff_obj.get_annual_coefficients(cursor, uid, coeff_tariff, context=context)
+        coeff = coeff_obj.get_current_coefficient(cursor, uid, coeff_tariff, context=context)
 
         annual_kwh = consumption_obj.get_consumption_by_power(
             cursor, uid, max_power, context=context
@@ -964,9 +965,8 @@ class GiscedataPolissaTarifa(osv.osv):
             p5_kwh = annual_kwh * coeff["p5_ratio"]
             p6_kwh = annual_kwh * coeff["p6_ratio"]
 
-        avg_price = avg_price_obj.get_current_price(cursor, uid, tariff, type, context=context)
-
         anchor_date = context.get("date") or datetime.today().strftime("%Y-%m-%d")
+        range_context = context.copy()
         price_data = self.get_tariff_prices_by_range(
             cursor,
             uid,
@@ -978,7 +978,7 @@ class GiscedataPolissaTarifa(osv.osv):
             home,
             anchor_date,
             anchor_date,
-            context=context,
+            context=range_context,
         )
 
         current = price_data.get("current", {})
@@ -1015,7 +1015,7 @@ class GiscedataPolissaTarifa(osv.osv):
             energy_eur = energy_eur / 12
 
         power_prices = current.get("potencia", {})
-        days_in_month = self._get_simulation_days_in_month(context=context)
+        days_in_month = self._get_simulation_days_in_month(context={"date": anchor_date})
 
         power_eur = 0.0
         for period_name, period_info in power_prices.items():

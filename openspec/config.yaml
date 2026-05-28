@@ -31,12 +31,12 @@ rules:
   apply:
     - Follow existing code patterns and conventions
     - Load relevant coding skills for the project stack
-    - tdd: true
-    - test_command: "scripts/run-tests.sh <database> -m <module>"
+    - tdd=true
+    - test_command=scripts/run-tests.sh <database> -m <module>
   verify:
     - Run tests if test infrastructure exists
     - Compare implementation against every spec scenario
-    - test_command: "scripts/run-tests.sh <database> -m <module>"
+    - test_command=scripts/run-tests.sh <database> -m <module>
     - build_command: "—"
     - coverage_threshold: 0
   archive:
