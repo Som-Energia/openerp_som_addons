@@ -20,7 +20,7 @@ class SomLastMonthAveragePrice(osv.osv):
 
     def get_current_price(self, cursor, uid, tariff, type, context=None):
         ids = self.search(cursor, uid, [("tariff", "=", tariff),
-                          ("type", "=", type)], limit=1, order="id asc", context=context)
+                          ("type", "=", type)], limit=1, order="date desc", context=context)
         if not ids:
             return False
         return self.read(

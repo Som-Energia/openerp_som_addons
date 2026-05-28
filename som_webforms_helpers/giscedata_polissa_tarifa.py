@@ -934,19 +934,26 @@ class GiscedataPolissaTarifa(osv.osv):
 
         power_values = [float(power) for power in powers.values() if power is not None]
         max_power = max(power_values) if power_values else 0.0
+        max_power_kw = max_power / 1000.0
+        if max_power_kw < 1 or max_power_kw > 100:
+            raise som_webforms_exceptions.InvalidSimulationPowers()
 
         consumption_obj = self.pool.get("som.annual.consumption.estimate")
         coeff_obj = self.pool.get("som.annual.coefficient")
         avg_price_obj = self.pool.get("som.last.month.average.price")
 
-        tariff = "2.0TD" if max_power < 15 else "3.0TD"
+        tariff = "2.0TD" if max_power < 15000 else "3.0TD"
         coeff_tariff = tariff + "_" + pricelist
 
         coeff = coeff_obj.get_current_coefficient(cursor, uid, coeff_tariff, context=context)
+        if not coeff:
+            raise som_webforms_exceptions.MissingSimulationConfig()
 
         annual_kwh = consumption_obj.get_consumption_by_power(
             cursor, uid, max_power, context=context
         )
+        if annual_kwh is False:
+            raise som_webforms_exceptions.MissingSimulationConfig()
 
         monthly_kwh = annual_kwh / 12.0
         if pricelist == 'index':
@@ -999,17 +1006,17 @@ class GiscedataPolissaTarifa(osv.osv):
             avg_price = avg_price_obj.get_current_price(
                 cursor, uid, tariff, "ssaa", context=context)
             energy_eur = (
-                p1_kwh * ((current.get("te", {}).get("p1", 0.0)
+                p1_kwh * ((current.get("te", {}).get("p1", {})
                            ).get("value", 0.0) + avg_price["p1_price"])
-                + p2_kwh * ((current.get("te", {}).get("p2", 0.0)
+                + p2_kwh * ((current.get("te", {}).get("p2", {})
                              ).get("value", 0.0) + avg_price["p2_price"])
-                + p3_kwh * ((current.get("te", {}).get("p3", 0.0)
+                + p3_kwh * ((current.get("te", {}).get("p3", {})
                              ).get("value", 0.0) + avg_price["p3_price"])
-                + p4_kwh * ((current.get("te", {}).get("p4", 0.0)
+                + p4_kwh * ((current.get("te", {}).get("p4", {})
                              ).get("value", 0.0) + avg_price["p4_price"])
-                + p5_kwh * ((current.get("te", {}).get("p5", 0.0)
+                + p5_kwh * ((current.get("te", {}).get("p5", {})
                              ).get("value", 0.0) + avg_price["p5_price"])
-                + p6_kwh * ((current.get("te", {}).get("p6", 0.0)
+                + p6_kwh * ((current.get("te", {}).get("p6", {})
                              ).get("value", 0.0) + avg_price["p6_price"])
             )
             energy_eur = energy_eur / 12

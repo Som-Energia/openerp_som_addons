@@ -19,7 +19,7 @@ class SomAnnualCoefficient(osv.osv):
 
     def get_current_coefficient(self, cursor, uid, tariff, context=None):
         ids = self.search(cursor, uid, [("tariff", "=", tariff)],
-                          limit=1, order="id asc", context=context)
+                          limit=1, order="year desc", context=context)
         if not ids:
             return False
         return self.read(
