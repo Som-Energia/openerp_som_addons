@@ -942,7 +942,7 @@ class GiscedataPolissaTarifa(osv.osv):
         coeff_obj = self.pool.get("som.annual.coefficient")
         avg_price_obj = self.pool.get("som.last.month.average.price")
 
-        tariff = "2.0TD" if max_power < 15000 else "3.0TD"
+        tariff = "2.0TD" if max_power <= 15000 else "3.0TD"
         coeff_tariff = tariff + "_" + pricelist
 
         coeff = coeff_obj.get_current_coefficient(cursor, uid, coeff_tariff, context=context)
