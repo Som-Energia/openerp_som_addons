@@ -950,7 +950,7 @@ class GiscedataPolissaTarifa(osv.osv):
             raise som_webforms_exceptions.MissingSimulationConfig()
 
         annual_kwh = consumption_obj.get_consumption_by_power(
-            cursor, uid, max_power, context=context
+            cursor, uid, max_power_kw, context=context
         )
         if annual_kwh is False:
             raise som_webforms_exceptions.MissingSimulationConfig()
