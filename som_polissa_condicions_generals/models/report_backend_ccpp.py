@@ -19,6 +19,26 @@ class ReportBackendCondicionsParticulars(ReportBackend):
     _source_model = "giscedata.polissa"
     _name = "report.backend.condicions.particulars"
 
+    def _get_coeficient_k_for_pricelist(self, fs_data, dades_tarifa, default_coeficient_k_untaxed):
+        if not fs_data:
+            return default_coeficient_k_untaxed
+
+        k_old = fs_data.get('k_old', False)
+        k_new = fs_data.get('k_new', False)
+        if k_old is False and k_new is False:
+            return default_coeficient_k_untaxed
+
+        if k_old is False or k_old is None:
+            k_old = k_new
+        if k_new is False or k_new is None:
+            k_new = k_old
+
+        date_start = dades_tarifa.get('date_start', False)
+        if date_start and datetime.strptime(date_start, '%Y-%m-%d') > datetime.today():
+            return (k_new or 0.0) / 1000
+
+        return (k_old or 0.0) / 1000
+
     # _decimals = {
     #     ('potencia', 'potencies_contractades'): 0,
     # }
@@ -366,6 +386,23 @@ class ReportBackendCondicionsParticulars(ReportBackend):
                 cursor, uid, pol.id, tarifes_ids, context=context)
             ctx.update({'force_pricelist': pricelist_id.id})
             tarifes_a_mostrar = get_comming_atr_price(cursor, uid, polissa, ctx)
+        fs_data = get_fs_from_k_change(cursor, uid, pol, context)
+        if fs_data and fs_data.get('k_new', False):
+            coeficient_k_untaxed = fs_data['k_new'] / 1000
+        else:
+            coeficient_k_untaxed = (pol.coeficient_k + pol.coeficient_d) / 1000
+
+        def _get_fp_k(_ctx):
+            fp_k_id = polissa.fiscal_position_id.id if pol.fiscal_position_id else _ctx.get(
+                'force_fiscal_position', False)
+            if fp_k_id:
+                return fp_obj.browse(cursor, uid, fp_k_id)
+            return False
+
+        coeficient_id = imd_obj.get_object_reference(
+            cursor, uid, 'giscedata_facturacio_indexada', 'product_factor_k'
+        )[1]
+
         res['pricelists'] = []
         for dades_tarifa in tarifes_a_mostrar:
             text_vigencia = ''
@@ -467,24 +504,22 @@ class ReportBackendCondicionsParticulars(ReportBackend):
             pricelist['price_auto_untaxed'] = get_atr_price(
                 cursor, uid, pol, periodes_energia[0], 'ac', ctx, with_taxes=False)[0]
 
+            coeficient_k_untaxed_pricelist = self._get_coeficient_k_for_pricelist(
+                fs_data, dades_tarifa, coeficient_k_untaxed
+            )
+            pricelist['coeficient_k_untaxed'] = coeficient_k_untaxed_pricelist
+            fp_k = _get_fp_k(ctx)
+            pricelist['coeficient_k'] = prod_obj.add_taxes(
+                cursor, uid, coeficient_id, coeficient_k_untaxed_pricelist, fp_k,
+                direccio_pagament=polissa.direccio_pagament, titular=polissa.titular,
+                context=context,
+            )
+
             res['pricelists'].append(pricelist)
 
-        fs_data = get_fs_from_k_change(cursor, uid, pol, context)
-        if fs_data and fs_data.get('k_new', False):
-            coeficient_k_untaxed = fs_data['k_new'] / 1000
-        else:
-            coeficient_k_untaxed = (pol.coeficient_k + pol.coeficient_d) / 1000
         coeficient_k = False
+        fp_k = _get_fp_k(ctx)
         res['mostra_indexada'] = False
-        fp_k_id = polissa.fiscal_position_id.id if pol.fiscal_position_id else ctx.get(
-            'force_fiscal_position', False)
-        if fp_k_id:
-            fp_k = fp_obj.browse(cursor, uid, fp_k_id)
-        else:
-            fp_k = False
-        coeficient_id = imd_obj.get_object_reference(
-            cursor, uid, 'giscedata_facturacio_indexada', 'product_factor_k'
-        )[1]
         if (polissa.mode_facturacio == 'index' and not modcon_pendent_periodes) or modcon_pendent_indexada:  # noqa: E501
             res['mostra_indexada'] = True
             if coeficient_k_untaxed == 0:
