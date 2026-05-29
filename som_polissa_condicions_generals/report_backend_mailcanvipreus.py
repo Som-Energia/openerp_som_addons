@@ -106,7 +106,7 @@ class ReportBackendMailcanvipreus(ReportBackend):
         if context is None:
             context = {}
 
-        context['iva10'] = env.polissa_id.potencia < 10
+        context['iva10'] = env.polissa_id.potencia <= 10
 
         self.simplified_taxes = pol_obj.get_simplified_taxes(
             cursor, uid, env.polissa_id.id, context=context)
@@ -151,7 +151,7 @@ class ReportBackendMailcanvipreus(ReportBackend):
             "text_legal": self.get_text_legal(cursor, uid, env, context=context),
             "lang": env.polissa_id.titular.lang,
             "nom_titular": self.getPartnerName(cursor, uid, env),
-            "iva_reduit": env.polissa_id.potencia < 10 and not canaries,
+            "iva_reduit": env.polissa_id.potencia <= 10 and not canaries,
             "te_gkwh": env.polissa_id.te_assignacio_gkwh,
             "preus_antics": preus_antics,
             "preus_nous": preus_nous,
@@ -340,10 +340,11 @@ class ReportBackendMailcanvipreus(ReportBackend):
         is_gkwh=False,
         context=None,
     ):
+        conf_obj = self.pool.get('res.config')
         bo_social_price = self.get_bo_social_price(
             cursor, uid, polissa_id.llista_preu, context=context)
-        preu_estimat_servei_ajust = float(self.imd_obj.get_object_reference(
-            cursor, uid, 'som_polissa_condicions_generals', 'serveis_ajust_estimated_kwh_price')[1])
+        preu_estimat_servei_ajust = float(
+            conf_obj.get(cursor, uid, 'serveis_ajust_estimated_kwh_price'))
 
         ctx = context or {}
         if date:
@@ -380,15 +381,11 @@ class ReportBackendMailcanvipreus(ReportBackend):
 
         return imports
 
-    _bo_social_price = False
-
     def get_bo_social_price(self, cursor, uid, pricelist, context=None):
         tarifa_obj = self.pool.get("giscedata.polissa.tarifa")
-        if not self._bo_social_price:
-            self._bo_social_price = (
-                tarifa_obj.get_bo_social_price(cursor, uid, pricelist, context=context)
-            ) * 365
-        return self._bo_social_price
+        return (
+            tarifa_obj.get_bo_social_price(cursor, uid, pricelist, context=context)[0]
+        ) * 365
 
     def aplicarCoeficients(self, consum_anual, tarifa):
         coeficients = {
@@ -448,10 +445,8 @@ class ReportBackendMailcanvipreus(ReportBackend):
         return round(preu_imp * (1 + iva))
 
     def get_iva_text(self, context=None):
-        if 'IGIC' in self.simplified_taxes:
-            return 'IGIC del {}%'.format(int(self.simplified_taxes['IGIC'] * 100))
-        else:
-            return 'IVA del {}%'.format(int(self.simplified_taxes['IVA'] * 100))
+        iva_str = 'IVA' if 'IVA' in self.simplified_taxes else 'IGIC'
+        return '{} del {:.0f}%'.format(iva_str, self.simplified_taxes[iva_str] * 100)
 
     def has_gurb(self, cursor, uid, polissa, context=False):
         gurb_cups_obj = self.pool.get("som.gurb.cups")
@@ -587,9 +582,12 @@ class ReportBackendMailcanvipreus(ReportBackend):
         today = date.today().strftime("%Y-%m-%d")
         if polissa.llista_preu:
             versions = polissa.llista_preu.version_id
-            for version in versions:
-                if version.active and version.date_start and version.date_start > today:
-                    return version.date_start
+            future_version_starts = [
+                v.date_start for v in versions
+                if v.active and v.date_start and v.date_start > today
+            ]
+            if future_version_starts:
+                return min(future_version_starts)
         return (date.today() + timedelta(days=60)).strftime("%Y-%m-%d")
 
     def esCanaries(self, cursor, uid, env, context=False):

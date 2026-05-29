@@ -108,7 +108,7 @@
             %endif
             %if prices['auvi']:
                 <%namespace file="/som_polissa_condicions_generals/report/components/auvi.mako" import="auvi"/>
-                ${auvi(polissa, prices, True)}
+                ${auvi(polissa, prices, pricelist, True)}
             %endif
                     <tr>
                         <td class="bold">${_(u"Terme energia (€/kWh)")}</td>
@@ -125,16 +125,16 @@
                             <tr>
                                 <td class="bold">${_(u"on la franja de la cooperativa")}</td>
                                 <td class="center" colspan="3">
-                                        <span class="">${("(F) = %s €/kWh</B>") % formatLang(prices['coeficient_k_untaxed'], digits=6)}</span>
+                                        <span class="">${("(F) = %s €/kWh</B>") % formatLang(pricelist.get('coeficient_k_untaxed', prices['coeficient_k_untaxed']), digits=6)}</span>
                                 </td>
                                 <td class="center divisio_impostos" colspan="3">
-                                        <span class="">${("(F) = %s €/kWh</B>") % formatLang(prices['coeficient_k'], digits=6)}</span>
+                                        <span class="">${("(F) = %s €/kWh</B>") % formatLang(pricelist.get('coeficient_k', prices['coeficient_k']), digits=6)}</span>
                                 </td>
                             </tr>
                         %else:
                             <br/>
                             <span class="normal_font_weight">${_(u"on la franja de la cooperativa")}</span>
-                            <span>&nbsp;${("(F) = %s €/kWh</B>") % formatLang(prices['coeficient_k_untaxed'], digits=6)}</span>
+                            <span>&nbsp;${("(F) = %s €/kWh</B>") % formatLang(pricelist.get('coeficient_k_untaxed', prices['coeficient_k_untaxed']), digits=6)}</span>
                             </td>
                         %endif
                     %else:
@@ -233,7 +233,7 @@
                 %if polissa['auto'] != '00':
                 <tr>
                     <td class="bold">${_(u"Excedents d'autoconsum (€/kWh)")}</td>
-                    %if (polissa['mode_facturacio'] == 'index' and not polissa['modcon_pendent_periodes']) or polissa['modcon_pendent_indexada']:
+                    %if polissa['mode_facturacio_calculat'] == 'index':
                         <td class="center" colspan="6">
                             <span class="normal_font_weight">${_(u"Tarifa indexada(2) - el preu horari de la compensació d'excedents és igual al PHM")}</span>
                         </td>
@@ -274,7 +274,7 @@
             %if polissa['te_assignacio_gkwh']:
                 <span class="bold">(1) </span> ${_(u"Terme d'energia en cas de participar-hi, segons condicions del contracte GenerationkWh.")}<br/>
             %endif
-            %if (polissa['mode_facturacio'] == 'index' and not polissa['modcon_pendent_periodes']) or polissa['modcon_pendent_indexada'] or prices['auvi']:
+            %if polissa['mode_facturacio_calculat'] == 'index':
                 <span class="bold">(2) </span> ${_(u"Pots consultar el significat de les variables a les condicions específiques que trobaràs a continuació.")}
             %endif
             </div>
@@ -320,7 +320,7 @@
                     </tr>
                     %if prices['auvi']:
                         <%namespace file="/som_polissa_condicions_generals/report/components/auvi.mako" import="auvi"/>
-                        ${auvi(polissa, prices, False)}
+                        ${auvi(polissa, prices, pricelist, False)}
                     %endif
                     <tr>
                         <td class="bold">${_(u"Terme energia (€/kWh)")}</td>
@@ -333,7 +333,7 @@
                                 <span>${_(u"PH = 1,015 * [(PHM + Pc + Sc + Dsv + GdO + POsOm) (1 + Perd) + FE + F] + PTD + CA")}</span>
                                 <br/>
                                 <span class="normal_font_weight">${_(u"on la franja de la cooperativa")}</span>
-                                <span>&nbsp;${("(F) = %s €/kWh</B>") % formatLang(prices['coeficient_k'], digits=6)}</span>
+                                <span>&nbsp;${("(F) = %s €/kWh</B>") % formatLang(pricelist.get('coeficient_k', prices['coeficient_k']), digits=6)}</span>
                             </td>
                         %else:
                             %for p in polissa['periodes_energia']:
@@ -374,7 +374,7 @@
                     %if polissa['auto'] != '00':
                     <tr>
                         <td><span class="bold">${_(u"Excedents d'autoconsum (€/kWh)")}</span></td>
-                        %if (polissa['mode_facturacio'] == 'index' and not polissa['modcon_pendent_periodes']) or polissa['modcon_pendent_indexada']:
+                        %if polissa['mode_facturacio_calculat'] == 'index':
                             <td class="center reset_line_height" colspan="6">
                                 <span class="normal_font_weight">${_(u"Tarifa indexada(2) - el preu horari de la compensació d'excedents és igual al PHM")}</span>
                             </td>
@@ -396,7 +396,7 @@
                 %if polissa['te_assignacio_gkwh']:
                     <span class="bold">(1) </span> ${_(u"Terme d'energia en cas de participar-hi, segons condicions del contracte GenerationkWh.")}<br/>
                 %endif
-                %if (polissa['mode_facturacio'] == 'index' and not polissa['modcon_pendent_periodes']) or polissa['modcon_pendent_indexada']:
+                %if polissa['mode_facturacio_calculat'] == 'index':
                     <span class="bold">(2) </span> ${_(u"Pots consultar el significat de les variables a les condicions específiques que trobaràs a continuació.")}
                 %endif
                 </div>
@@ -411,29 +411,16 @@
     </div>
     <div class="styled_box padding_bottom">
         <div class="center avis_impostos">
-            % if prices['use_modcon_pricelist']:  # FIXME: Simplify this logic D:
-                %if (polissa['mode_facturacio'] == 'index' and not polissa['modcon_pendent_periodes']) or polissa['modcon_pendent_indexada']:
-                    ${_(u"Els preus del terme de potència")}
-                %else:
-                    ${_(u"Tots els preus que apareixen en aquest contracte")}
-                %endif
-                ${_(u"inclouen l'impost elèctric i l'IVA (IGIC a Canàries), amb el tipus impositiu vigent actualment per a cada tipus de contracte sense perjudici de les exempcions o bonificacions que puguin ser d'aplicació.")}
-                %if polissa['te_assignacio_gkwh'] or ((polissa['mode_facturacio'] == 'atr' and not polissa['modcon_pendent_indexada']) or polissa['modcon_pendent_periodes']):
-                    <br/>
-                    ${_(u"Els costos dels Serveis d'Ajust tenen un preu horari variable, fixat per Red Eléctrica Española (REE), no inclosos en el terme d'energia.")}
-                %endif
-            % else:
-                %if polissa['mode_facturacio'] == 'index':
-                    ${_(u"Els preus del terme de potència")}
-                %else:
-                    ${_(u"Tots els preus que apareixen en aquest contracte")}
-                %endif
-                ${_(u"inclouen l'impost elèctric i l'IVA (IGIC a Canàries), amb el tipus impositiu vigent actualment per a cada tipus de contracte sense perjudici de les exempcions o bonificacions que puguin ser d'aplicació.")}
-                %if polissa['te_assignacio_gkwh'] or polissa['mode_facturacio'] == 'atr':
-                    <br/>
-                    ${_(u"Els costos dels Serveis d'Ajust tenen un preu horari variable, fixat per Red Eléctrica Española (REE), no inclosos en el terme d'energia.")}
-                %endif
-            % endif
+            %if polissa['mode_facturacio_calculat'] == 'index':
+                ${_(u"Els preus del terme de potència")}
+            %else:
+                ${_(u"Tots els preus que apareixen en aquest contracte")}
+            %endif
+            ${_(u"inclouen l'impost elèctric i l'IVA (IGIC a Canàries), amb el tipus impositiu vigent actualment per a cada tipus de contracte sense perjudici de les exempcions o bonificacions que puguin ser d'aplicació.")}
+            %if polissa['te_assignacio_gkwh'] or polissa['mode_facturacio_calculat'] == 'atr':
+                <br/>
+                ${_(u"Els costos dels Serveis d'Ajust tenen un preu horari variable, fixat per Red Eléctrica Española (REE), no inclosos en el terme d'energia.")}
+            %endif
         </div>
     </div>
 </%def>

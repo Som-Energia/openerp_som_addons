@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+    <data>
+        <record model="ir.ui.view" id="view_wizard_investment_cancel_or_resign_form">
+            <field name="name">wizard.generationkwh.investment.cancel.or.resign.view</field>
+            <field name="model">wizard.generationkwh.investment.cancel.or.resign</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <form string="Assistent de cancel·lació o renúncia">
+                    <group colspan="4" col="4" >
+                        <field name="state" invisible="1" colspan="4"/>
+                        <field name="info" nolabel="1" size="3000" width="1000" height ="300" colspan="4" readonly="1" />
+                        <separator colspan="4" />
+                        <button name="do_cancel_or_resign" string="Cancelar o renunciar" type="object" icon="gtk-execute" colspan="4" attrs="{'invisible':[('state', '!=', 'init')]}"/>
+                        <field name="invoices" invisible="1"/>
+                        <button name="close_and_show" string="Veure factures" type="object" icon="gtk-execute" colspan="4" attrs="{'invisible':[('state', '!=', 'done')]}"/>
+                    </group>
+                </form>
+            </field>
+        </record>
+        <record model="ir.actions.act_window" id="action_wizard_investment_cancel_or_resign_form">
+            <field name="name">Cancelar o renunciar</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">wizard.generationkwh.investment.cancel.or.resign</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">form</field>
+            <field name="target">new</field>
+            <field name="view_id" ref="view_wizard_investment_cancel_or_resign_form"/>
+        </record>
+        <record id="value_wizard_generationkwh_investment_cancel_or_resign" model="ir.values">
+            <field name="object" eval="1"/>
+            <field name="name">Cancelar o renunciar</field>
+            <field name="key2">client_action_multi</field>
+            <field name="key">action</field>
+            <field name="model">generationkwh.investment</field>
+            <field name="value" eval="'ir.actions.act_window,'+str(ref('action_wizard_investment_cancel_or_resign_form'))" />
+        </record>
+    </data>
+</openerp>

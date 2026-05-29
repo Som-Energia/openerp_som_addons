@@ -1,0 +1,101 @@
+<?xml version="1.0"?>
+<openerp>
+    <data>
+        <record model="ir.ui.view" id="view_gkwh_invoice_line_owner_form">
+            <field name="name">generationkwh.invoice.line.owner.form</field>
+            <field name="model">generationkwh.invoice.line.owner</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <form string="Propietari Drets GkWh Factura">
+                    <field name="factura_id"/>
+                    <field name="factura_number"/>
+                    <field name="factura_line_id"/>
+                    <field name="owner_id"/>
+                    <field name="saving_gkw_amount"/>
+                    <field name="right_usage_lines" colspan="4"/>
+                </form>
+            </field>
+        </record>
+        <record model="ir.ui.view" id="view_gkwh_invoice_line_owner_tree">
+            <field name="name">generationkwh.invoice.line.owner.tree</field>
+            <field name="model">generationkwh.invoice.line.owner</field>
+            <field name="type">tree</field>
+            <field name="arch" type="xml">
+                <tree string="Propietari Drets GkWh Factura">
+                    <field name="factura_id" select="1"/>
+                    <field name="factura_number"/>
+                    <field name="factura_line_id"/>
+                    <field name="owner_id" select="1"/>
+                </tree>
+            </field>
+        </record>
+        <record id="action_gkwh_invoice_line_owner_tree" model="ir.actions.act_window">
+            <field name="name">Generation kWh assignats a factures</field>
+            <field name="res_model">generationkwh.invoice.line.owner</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="view_id" ref="view_gkwh_invoice_line_owner_tree"/>
+        </record>
+        <menuitem action="action_gkwh_invoice_line_owner_tree" id="menu_gkwh_invoice_line_owner_tree" parent="giscedata_facturacio.menu_facturacio_base"/>
+        <record model="ir.ui.view" id="view_gkwh_right_usage_line_form">
+            <field name="name">generationkwh.right.usage.line.form</field>
+            <field name="model">generationkwh.right.usage.line</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <form string="Drets usats a una linia de factura">
+                    <field name="datetime" select="1"/>
+                    <field name="quantity"/>
+                    <field name="line_owner"/>
+                    <field name="factura_id" select="1"/>
+                </form>
+            </field>
+        </record>
+        <record model="ir.ui.view" id="view_gkwh_right_usage_line_tree">
+            <field name="name">generationkwh.right.usage.line.tree</field>
+            <field name="model">generationkwh.right.usage.line</field>
+            <field name="type">tree</field>
+            <field name="arch" type="xml">
+                <tree string="Drets usats a una linia de factura">
+                    <field name="datetime"/>
+                    <field name="quantity" sum="Total"/>
+                    <field name="line_owner"/>
+                    <field name="factura_id"/>
+                </tree>
+            </field>
+        </record>
+        <record model="ir.actions.act_window" id="act_right_usage_line_by_partner">
+            <field name="name">Drets GKWH usats</field>
+            <field name="res_model">generationkwh.right.usage.line</field>
+            <field name="src_model">res.partner</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="domain">[('owner_id', '=', active_id)]</field>
+            <field name="view_id" ref="view_gkwh_right_usage_line_tree"/>
+        </record>
+        <record id="value_right_usage_line_by_partner" model="ir.values">
+            <field name="object" eval="1"/>
+            <field name="name">Drets GKWH usats</field>
+            <field name="key2">client_action_relate</field>
+            <field name="key">action</field>
+            <field name="model">res.partner</field>
+            <field name="value" eval="'ir.actions.act_window,'+str(ref('act_right_usage_line_by_partner'))" />
+        </record>
+        <record model="ir.actions.act_window" id="act_right_usage_line_by_factura">
+            <field name="name">Drets GKWH usats</field>
+            <field name="res_model">generationkwh.right.usage.line</field>
+            <field name="src_model">giscedata.facturacio.factura</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="domain">[('factura_id', '=', active_id)]</field>
+            <field name="view_id" ref="view_gkwh_right_usage_line_tree"/>
+        </record>
+        <record id="value_right_usage_line_by_factura" model="ir.values">
+            <field name="object" eval="1"/>
+            <field name="name">Drets GKWH usats</field>
+            <field name="key2">client_action_relate</field>
+            <field name="key">action</field>
+            <field name="model">giscedata.facturacio.factura</field>
+            <field name="value" eval="'ir.actions.act_window,'+str(ref('act_right_usage_line_by_factura'))" />
+        </record>
+    </data>
+</openerp>

@@ -1,0 +1,127 @@
+services:
+  postgres:
+    image: timescale/timescaledb:2.14.2-pg13
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-erp}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-erp}
+      POSTGRES_DB: ${POSTGRES_DB:-erp}
+      RESET_ADMIN_LOGIN: ${RESET_ADMIN_LOGIN:-admin}
+      RESET_ADMIN_PASSWORD: ${RESET_ADMIN_PASSWORD:-admin}
+    volumes:
+      - consumer_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-erp} -d postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  mongo:
+    image: mongo:3.0
+
+  redis:
+    image: redis:5.0
+
+  erp-runtime:
+    image: "${ERP_RUNTIME_IMAGE:-harbor.somenergia.coop/erp/openerp:latest}"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      mongo:
+        condition: service_started
+      redis:
+        condition: service_started
+    environment:
+      GITHUB_TOKEN: ${GITHUB_TOKEN:-}
+      OPENERP_DB_USER: ${POSTGRES_USER:-erp}
+      OPENERP_DB_PASSWORD: ${POSTGRES_PASSWORD:-erp}
+      ERP_DATABASE: ${POSTGRES_DB:-erp}
+      ERP_XMLRPC_PORT: ${ERP_XMLRPC_PORT:-8069}
+      ERP_FOREGROUND: "1"
+    entrypoint:
+      - /bin/bash
+      - -lc
+      - |
+        set -euo pipefail
+        wait_for_port() {
+          local host="$$1"
+          local port="$$2"
+          local timeout="$$3"
+          local start
+          start=$$(date +%s)
+          while true; do
+            if nc -z "$$host" "$$port" >/dev/null 2>&1; then
+              return 0
+            fi
+            if [ $$(( $$(date +%s) - start )) -ge "$$timeout" ]; then
+              echo "Timeout waiting for $$host:$$port" >&2
+              return 1
+            fi
+            sleep 2
+          done
+        }
+
+        wait_for_port postgres 5432 180
+        wait_for_port redis 6379 180
+        wait_for_port mongo 27017 180
+
+        export ERP_SERVER="/opt/somenergia/src/erp/server/bin/openerp-server.py"
+        export OPENERP_CONFIG="/opt/somenergia/src/openerp_som_addons/runtime-docker/erp.conf"
+        export OPENERP_DB_HOST="postgres"
+        export OPENERP_MONGODB_HOST="mongo"
+        export OPENERP_REDIS_URL="redis://redis:6379/0"
+        export PYTHONPATH="/opt/somenergia/src/erp/server/bin:/opt/somenergia/src/erp/server/bin/addons:/opt/somenergia/src/erp/server/sitecustomize:${PYTHONPATH:-}"
+
+        exec bash /opt/somenergia/src/openerp_som_addons/scripts/start-openerp-server.sh
+    ports:
+      - "${ERP_XMLRPC_PORT:-8069}:${ERP_XMLRPC_PORT:-8069}"
+
+  dataset-restore:
+    image: ubuntu:22.04
+    profiles: ["dataset"]
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      HARBOR_DOMAIN: ${HARBOR_DOMAIN}
+      HARBOR_USERNAME: ${HARBOR_USERNAME}
+      HARBOR_PASSWORD: ${HARBOR_PASSWORD}
+      DATASET_REPOSITORY: ${DATASET_REPOSITORY:-${HARBOR_DOMAIN}/erp/datasets}
+      DATASET_TAG: ${DATASET_TAG:-latest}
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: 5432
+      POSTGRES_USER: ${POSTGRES_USER:-erp}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-erp}
+      POSTGRES_DB: ${POSTGRES_DB:-erp}
+    volumes:
+      - consumer_dataset_cache:/cache/datasets
+    entrypoint:
+      - /bin/bash
+      - -lc
+      - |
+        set -euo pipefail
+        apt-get update
+        apt-get install -y --no-install-recommends ca-certificates curl zstd postgresql-client
+        ORAS_VERSION="1.1.0"
+        curl -sL "https://github.com/oras-project/oras/releases/download/v$${ORAS_VERSION}/oras_$${ORAS_VERSION}_linux_amd64.tar.gz" -o /tmp/oras.tgz
+        tar -xzf /tmp/oras.tgz -C /tmp oras
+        install -m 0755 /tmp/oras /usr/local/bin/oras
+        echo "$${HARBOR_PASSWORD}" | oras login "$${HARBOR_DOMAIN}" -u "$${HARBOR_USERNAME}" --password-stdin
+        mkdir -p "/cache/datasets/$${DATASET_TAG}"
+        oras pull --output "/cache/datasets/$${DATASET_TAG}" "$${DATASET_REPOSITORY}:$${DATASET_TAG}"
+        DATASET_FILE="$$(ls -1 /cache/datasets/$${DATASET_TAG}/*.dump.zst | head -n1)"
+        test -n "$${DATASET_FILE}"
+        zstd -d -f "$${DATASET_FILE}" -o /tmp/restore.dump
+        PGPASSWORD="$${POSTGRES_PASSWORD}" dropdb --if-exists -h "$${POSTGRES_HOST}" -p "$${POSTGRES_PORT}" -U "$${POSTGRES_USER}" "$${POSTGRES_DB}"
+        PGPASSWORD="$${POSTGRES_PASSWORD}" createdb -h "$${POSTGRES_HOST}" -p "$${POSTGRES_PORT}" -U "$${POSTGRES_USER}" "$${POSTGRES_DB}"
+        pg_restore -l /tmp/restore.dump | awk '!($0 ~ / EXTENSION - timescaledb( |$)/ || $0 ~ / COMMENT - EXTENSION timescaledb( |$)/)' > /tmp/restore.filtered.list
+        PGPASSWORD="$${POSTGRES_PASSWORD}" pg_restore -h "$${POSTGRES_HOST}" -p "$${POSTGRES_PORT}" -U "$${POSTGRES_USER}" -d "$${POSTGRES_DB}" --clean --if-exists -L /tmp/restore.filtered.list /tmp/restore.dump
+        if [ -n "$${RESET_ADMIN_PASSWORD}" ]; then
+          PGPASSWORD="$${POSTGRES_PASSWORD}" psql -h "$${POSTGRES_HOST}" -p "$${POSTGRES_PORT}" -U "$${POSTGRES_USER}" -d "$${POSTGRES_DB}" \
+            -v login="$${RESET_ADMIN_LOGIN}" -v password="$${RESET_ADMIN_PASSWORD}" \
+            -c "UPDATE res_users SET password = :'password' WHERE login = :'login';"
+        fi
+        echo "Dataset restored successfully"
+
+volumes:
+  consumer_pgdata:
+  consumer_dataset_cache:

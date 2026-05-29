@@ -28,19 +28,20 @@ openerp_som_addons/
 |---------|-----------|
 | `docs/patterns/` | Receptes: com fer tasques concretes |
 | `docs/guides/` | Guies: conceptes i configuració |
+| `docs/guides/sentry-triage-workflow.md` | Workflow per triar repo, issue i PR quan una incidència ve de Sentry |
 | `.github/docs/` | Decisions d'arquitectura i estil |
 
 ## Skills Disponibles
 
-Les skills següents estan disponibles al projecte i s'han d'utilitzar quan correspongui:
+Les skills següents estan disponibles al projecte i s'han d'utilitzar quan correspongui. Veure [.agents/skill-registry.md](.agents/skill-registry.md) per la llista completa.
 
 ### Git Workflow
 
 | Skill | Quan usar | Com usar |
 |-------|-----------|----------|
-| `git-branch` | Crear branca nova | `git checkout -b <TYPE>_<description>` |
-| `git-commit` | Fer commit | `git commit -m "<emoji> <type>: <description>"` |
-| `git-pr` | Crear PR | `gh pr create --title "..." --body "..."` |
+| `git-branch` | Crear branca nova | Veure [.agents/skills/git-branch/SKILL.md](.agents/skills/git-branch/SKILL.md) |
+| `git-commit` | Fer commit | Veure [.agents/skills/git-commit/SKILL.md](.agents/skills/git-commit/SKILL.md) |
+| `git-pr` | Crear PR | Veure [.agents/skills/git-pr/SKILL.md](.agents/skills/git-pr/SKILL.md) |
 
 **Convencions de branca:**
 - `ADD_<desc>` - Nova funcionalitat
@@ -59,12 +60,19 @@ Les skills següents estan disponibles al projecte i s'han d'utilitzar quan corr
 
 | Skill | Quan usar | Com usar |
 |-------|-----------|----------|
-| `erp-test` | Executar tests | `dodestral <db> -m <modul>` |
+| `erp-test` | Executar tests | Veure [.agents/skills/erp-test/SKILL.md](.agents/skills/erp-test/SKILL.md) |
+| `erp-start` | Arrencar servei ERP | Veure [.agents/skills/erp-start/SKILL.md](.agents/skills/erp-start/SKILL.md) |
+| `erp-migration` | Crear scripts de migració | Veure [.agents/skills/erp-migration/SKILL.md](.agents/skills/erp-migration/SKILL.md) |
+
+### Sentry
+
+| Skill | Quan usar | Com usar |
+|-------|-----------|----------|
+| `sentry-triage` | Fer triage d'incidències de Sentry | Veure [.agents/skills/sentry-triage/SKILL.md](.agents/skills/sentry-triage/SKILL.md) |
 
 **Requisits per executar tests:**
 1. Docker: PostgreSQL, MongoDB, Redis corrent
-2. pyenv: `pyenv activate erp`
-3. OpenERP instal·lat a `~/somenergia/src/erp/server/bin`
+2. Virtualenv activat — nom habitual: `erp` (`pyenv activate erp` o `workon erp`)
 
 ## Estil de Programació
 
@@ -98,11 +106,3 @@ Abans de crear PR, verificar:
 - [ ] Tests passen (`erp-test`)
 - [ ] Linting passen (`flake8 .`)
 - [ ] S'ha seguit l'estil de codi
-
-## Documentació
-
-| Carpeta | Contingut |
-|---------|-----------|
-| `docs/patterns/` | Receptes: com fer tasques concretes |
-| `docs/guides/` | Guies: conceptes i configuració |
-| `.github/docs/` | Decisions d'arquitectura i estil |

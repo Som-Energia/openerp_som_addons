@@ -7,6 +7,18 @@ from datetime import datetime, timedelta
 
 class TestsGurbCups(TestsGurbBase):
 
+    def _assert_account_code(self, many2one_value, expected_code):
+        self.assertEqual(many2one_value[1].split(' ', 1)[0], expected_code)
+
+    def _assert_partner_receivable_account(self, partner_id, many2one_value):
+        partner_o = self.openerp.pool.get("res.partner")
+        partner = partner_o.read(
+            self.cursor, self.uid, partner_id, ["property_account_receivable"]
+        )
+        self.assertEqual(
+            many2one_value[0], partner["property_account_receivable"][0]
+        )
+
     def test_gurb_cups_percentage(self):
         imd_o = self.openerp.pool.get("ir.model.data")
         gurb_cups_o = self.openerp.pool.get("som.gurb.cups")
@@ -185,7 +197,7 @@ class TestsGurbCups(TestsGurbBase):
         self.assertFalse(errs)
         self.assertTrue(invoice_id)
         inv = invoice_o.read(self.cursor, self.uid, invoice_id)
-        self.assertEqual(inv['account_id'][1], '430000000000 Clients')
+        self._assert_partner_receivable_account(inv['partner_id'][0], inv['account_id'])
         self.assertEqual(inv['partner_id'][1], 'GISCE')
         self.assertEqual(inv['origin'], 'GURBCUPSID2')
         self.assertEqual(inv['reference'], 'GURBCUPSID2')
@@ -200,12 +212,12 @@ class TestsGurbCups(TestsGurbBase):
         self.assertEqual(inv["residual"], 4.54)
         self.assertEqual(inv["saldo"], 4.54)
         self.assertEqual(inv['journal_id'][1], u'Factures GURB')
-        self.assertEqual(inv['payment_type'][1], u'Transferencia')
+        self.assertEqual(inv['payment_type'][1], u'Recibo domiciliado')
         line = line_o.read(self.cursor, self.uid, inv['invoice_line'][0])
         self.assertEqual(line['name'], u"Cost d'adhesió GURB GRUP 001")
         self.assertEqual(line['quantity'], 1.0)
         self.assertEqual(line['price_unit'], 3.75)
-        self.assertEqual(line['account_id'][1], '705000000104 Gurb')
+        self._assert_account_code(line['account_id'], '705000000104')
 
     @mock.patch("som_gurb.models.som_gurb_cups.SomGurbCups.generate_gurb_invoice_base64")
     def test_create_initial_invoice__invoice_tpv_payment(
@@ -233,7 +245,7 @@ class TestsGurbCups(TestsGurbBase):
         self.assertFalse(errs)
         self.assertTrue(invoice_id)
         inv = invoice_o.read(self.cursor, self.uid, invoice_id)
-        self.assertEqual(inv['account_id'][1], '430000000000 Clients')
+        self._assert_partner_receivable_account(inv['partner_id'][0], inv['account_id'])
         self.assertEqual(inv['partner_id'][1], 'GISCE')
         self.assertEqual(inv['origin'], 'GURBCUPSID2')
         self.assertEqual(inv['reference'], 'GURBCUPSID2')
@@ -253,7 +265,7 @@ class TestsGurbCups(TestsGurbBase):
         self.assertEqual(line['name'], u"Cost d'adhesió GURB GRUP 001")
         self.assertEqual(line['quantity'], 1.0)
         self.assertEqual(line['price_unit'], 3.75)
-        self.assertEqual(line['account_id'][1], '705000000104 Gurb')
+        self._assert_account_code(line['account_id'], '705000000104')
 
     def test_pay_invoice_gurb(self):
         gurb_cups_o = self.openerp.pool.get("som.gurb.cups")

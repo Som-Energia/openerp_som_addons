@@ -12,6 +12,8 @@ GithubActions:
 -  .github/**
 docs:
 -  docs/**
+devolucions_base_som:
+-  devolucions_base_som/**
 powersms:
 -  powersms/**
 report_tester:

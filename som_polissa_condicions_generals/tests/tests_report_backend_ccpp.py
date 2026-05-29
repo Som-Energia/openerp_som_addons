@@ -20,10 +20,23 @@ class TestReportBackendCCPP(testing.OOTestCase):
         self.rpa_obj = self.openerp.pool.get("res.partner.address")
         self.pricelist_obj = self.openerp.pool.get("product.pricelist")
         self.wiz_change_to_index_obj = self.openerp.pool.get("wizard.change.to.indexada")
+        self.tax_obj = self.openerp.pool.get('account.tax')
+        self.conf_obj = self.openerp.pool.get('res.config')
         self.contract1_id = self.get_ref("giscedata_polissa", "polissa_0001")
         self.contract_20TD_id = self.get_ref("giscedata_polissa", "polissa_tarifa_018")
         self.contract_30TD_id = self.get_ref("giscedata_polissa", "polissa_tarifa_019")
         self.contract_61TD_id = self.get_ref("giscedata_polissa", "polissa_tarifa_020")
+
+        self.conf_obj.set(
+            self.cursor, self.uid, 'default_iva_21_tax_id',
+            self.tax_obj.search(self.cursor, self.uid, [("name", "=", "IVA 21%")])[0],
+        )
+        self.conf_obj.set(
+            self.cursor, self.uid, 'default_iese_tax_id',
+            self.tax_obj.search(self.cursor, self.uid, [
+                ("name", "=", "Impuesto especial sobre la electricidad")
+            ])[0],
+        )
 
     def tearDown(self):
         self.txn.stop()
@@ -51,6 +64,7 @@ class TestReportBackendCCPP(testing.OOTestCase):
         result = self.backend_obj.get_titular_data(self.cursor, self.uid, pol_20td, None)
 
         self.assertEqual(result, {
+            u'bank': False,
             u'city': u'Girona',
             u'city_envio': u'Bruxelles',
             u'client_name': u'GISCE',
@@ -66,6 +80,7 @@ class TestReportBackendCCPP(testing.OOTestCase):
             u'name_envio': u'Michel Schumacher',
             u'phone': u'',
             u'phone_envio': u'(+32) 2 123 456',
+            u'printable_iban': u'',
             u'sign_date': '',
             u'state': u'',
             u'state_envio': u'',
@@ -99,7 +114,6 @@ class TestReportBackendCCPP(testing.OOTestCase):
         pricelist_name = self.pricelist_obj.browse(self.cursor, self.uid, pricelist_id).name
         self.assertEqual(result, {
             u'auto': u'00',
-            u'bank': False,
             u'contract_type': u'Anual',
             u'data_baixa': '2099-01-01',
             u'data_final': u'',
@@ -110,12 +124,12 @@ class TestReportBackendCCPP(testing.OOTestCase):
             u'modcon_pendent_indexada': False,
             u'modcon_pendent_periodes': False,
             u'mode_facturacio': u'atr',
+            u'mode_facturacio_calculat': u'atr',
             u'name': u'0018',
             u'periodes_energia': [u'P1', u'P2', u'P3'],
             u'periodes_potencia': [u'P1', u'P2'],
             u'potencia_max': 4.6,
             u'pricelist': pricelist_id,
-            u'printable_iban': u'',
             u'state': u'esborrany',
             u'tarifa': u'2.0TD',
             u'tarifa_mostrar': pricelist_name,
@@ -195,3 +209,29 @@ class TestReportBackendCCPP(testing.OOTestCase):
         result = self.backend_obj.get_prices_data(self.cursor, self.uid, pol_20td, context={})
 
         self.assertEqual(result['mostra_indexada'], True)
+        self.assertTrue('coeficient_k' in result['pricelists'][0])
+        self.assertTrue('coeficient_k_untaxed' in result['pricelists'][0])
+
+    def test_get_coeficient_k_for_pricelist_uses_k_old_for_current_block(self):
+        fs_data = {'k_old': 12.0, 'k_new': 19.0}
+        dades_tarifa = {'date_end': '2026-12-31', 'date_start': False}
+
+        result = self.backend_obj._get_coeficient_k_for_pricelist(fs_data, dades_tarifa, 0.0)
+
+        self.assertEqual(result, 0.012)
+
+    def test_get_coeficient_k_for_pricelist_uses_k_new_for_future_block(self):
+        fs_data = {'k_old': 12.0, 'k_new': 19.0}
+        dades_tarifa = {'date_end': False, 'date_start': '2099-01-01'}
+
+        result = self.backend_obj._get_coeficient_k_for_pricelist(fs_data, dades_tarifa, 0.0)
+
+        self.assertEqual(result, 0.019)
+
+    def test_get_coeficient_k_for_pricelist_keeps_zero_old_value(self):
+        fs_data = {'k_old': 0.0, 'k_new': 19.0}
+        dades_tarifa = {'date_end': '2026-12-31', 'date_start': False}
+
+        result = self.backend_obj._get_coeficient_k_for_pricelist(fs_data, dades_tarifa, 0.5)
+
+        self.assertEqual(result, 0.0)

@@ -7,6 +7,16 @@ Treballa amb el repositori `openerp_som_addons`.
 - Testing: destral
 - Linting: flake8
 
+## Skills
+
+Utilitza les skills del projecte quan correspongui. Veure [.agents/skill-registry.md](.agents/skill-registry.md):
+- `git-branch` - Crear branca nova
+- `git-commit` - Fer commit
+- `git-pr` - Crear PR
+- `erp-test` - Executar tests
+- `erp-start` - Arrencar servei ERP
+- `erp-migration` - Crear scripts de migració
+
 ## Convencions
 
 ### Branques
@@ -27,12 +37,6 @@ Format: `<emoji> <type>: <description>`
 ### PRs
 - Plantilla: `pull_request_template.md`
 - Totes les seccions obligatòries
-
-## Testing
-```bash
-pyenv activate erp
-dodestral <db> -m <modul>
-```
 
 ## Estil de Codi
 - `.github/docs/estil.md`
