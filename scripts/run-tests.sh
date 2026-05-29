@@ -97,11 +97,23 @@ fresh_db_name() {
   printf '%s_%s' "${base:0:max_base_len}" "$suffix"
 }
 
+has_dropdb_flag() {
+  local arg
+  for arg in "$@"; do
+    if [ "$arg" = "--dropdb" ] || [ "$arg" = "--no-dropdb" ]; then
+      return 0
+    fi
+  done
+  return 1
+}
+
 db_name=""
+auto_db_mode=0
 if [ "$#" -gt 0 ] && [ "${1#-}" = "$1" ]; then
   db_name="$1"
   shift
 else
+  auto_db_mode=1
   db_name="$(build_reuse_db_name)"
   if [ "${OPENERP_TEST_DB_FRESH:-0}" = "1" ]; then
     db_name="$(fresh_db_name "$db_name")"
@@ -109,6 +121,16 @@ else
 fi
 
 args=("$db_name" "$@")
+
+if ! has_dropdb_flag "$@"; then
+  if [ "$auto_db_mode" = "1" ]; then
+    if [ "${OPENERP_TEST_DB_FRESH:-0}" = "1" ]; then
+      args+=("--dropdb")
+    else
+      args+=("--no-dropdb")
+    fi
+  fi
+fi
 
 export OPENERP_DB_NAME="$db_name"
 

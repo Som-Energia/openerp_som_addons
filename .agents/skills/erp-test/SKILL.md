@@ -49,6 +49,8 @@ Si **no** passes `<database>`, el script genera una DB determinística per branc
 scripts/run-tests.sh -m <module_name>
 ```
 
+En aquest mode, el wrapper afegeix `--no-dropdb` automàticament (si no l'has passat tu), perquè la DB es conservi.
+
 **Exemple**:
 ```bash
 scripts/run-tests.sh test_som_polissa -m som_polissa
@@ -63,6 +65,8 @@ Forçar DB nova (sense reutilitzar cache de branca/PR):
 ```bash
 OPENERP_TEST_DB_FRESH=1 scripts/run-tests.sh -m som_polissa
 ```
+
+En mode `OPENERP_TEST_DB_FRESH=1`, el wrapper afegeix `--dropdb` automàticament (si no l'has passat tu) per netejar aquesta execució puntual.
 
 Opcionalment pots fixar la referència usada per al nom determinístic:
 ```bash
