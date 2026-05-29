@@ -209,3 +209,29 @@ class TestReportBackendCCPP(testing.OOTestCase):
         result = self.backend_obj.get_prices_data(self.cursor, self.uid, pol_20td, context={})
 
         self.assertEqual(result['mostra_indexada'], True)
+        self.assertTrue('coeficient_k' in result['pricelists'][0])
+        self.assertTrue('coeficient_k_untaxed' in result['pricelists'][0])
+
+    def test_get_coeficient_k_for_pricelist_uses_k_old_for_current_block(self):
+        fs_data = {'k_old': 12.0, 'k_new': 19.0}
+        dades_tarifa = {'date_end': '2026-12-31', 'date_start': False}
+
+        result = self.backend_obj._get_coeficient_k_for_pricelist(fs_data, dades_tarifa, 0.0)
+
+        self.assertEqual(result, 0.012)
+
+    def test_get_coeficient_k_for_pricelist_uses_k_new_for_future_block(self):
+        fs_data = {'k_old': 12.0, 'k_new': 19.0}
+        dades_tarifa = {'date_end': False, 'date_start': '2099-01-01'}
+
+        result = self.backend_obj._get_coeficient_k_for_pricelist(fs_data, dades_tarifa, 0.0)
+
+        self.assertEqual(result, 0.019)
+
+    def test_get_coeficient_k_for_pricelist_keeps_zero_old_value(self):
+        fs_data = {'k_old': 0.0, 'k_new': 19.0}
+        dades_tarifa = {'date_end': '2026-12-31', 'date_start': False}
+
+        result = self.backend_obj._get_coeficient_k_for_pricelist(fs_data, dades_tarifa, 0.5)
+
+        self.assertEqual(result, 0.0)
