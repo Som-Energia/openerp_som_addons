@@ -20,13 +20,14 @@ export OPENERP_DB_USER="${OPENERP_DB_USER:-erp}"
 export OPENERP_DB_PASSWORD="${OPENERP_DB_PASSWORD:-erp}"
 export OPENERP_OORQ_ASYNC="False"
 export OPENERP_PRICE_ACCURACY=6
-export OPENERP_SECRET="1234567890"
+export OPENERP_SECRET="verysecret"
 export OPENERP_ROOT_PATH="$WORKSPACE/erp/server/bin/"
 export OPENERP_REDIS_URL="redis://localhost"
 export OPENERP_MONGODB_HOST="localhost"
 export OPENERP_RUN_SCRIPTS_INTERACTIVE_RESULT=skip
 export OPENERP_ENVIRONMENT=local
 export OPENERP_SII_TEST_MODE=1
+export OPENERP_IGNORE_PUBSUB=1
 
 # --no-requirements evita que destral intenti instal·lar dependències (recomanat en entorns locals)
 python $WORKSPACE/destral/destral/cli.py "$@"
