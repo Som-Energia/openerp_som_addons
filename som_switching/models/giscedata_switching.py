@@ -390,7 +390,7 @@ class GiscedataSwitching(osv.osv):
 
         for atc_id in atc_ids:
             atc = atc_obj.browse(cursor, uid, atc_id)
-            if atc.process_step == '08' and atc.state in ['open', 'pending']:
+            if atc.process_step in ['08', '09'] and atc.state in ['open', 'pending']:
                 atc_obj.write(cursor, uid, atc_id, {
                     'state': 'open',
                 }, context=context)
