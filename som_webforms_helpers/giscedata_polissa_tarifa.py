@@ -1030,7 +1030,7 @@ class GiscedataPolissaTarifa(osv.osv):
 
         power_eur = 0.0
         for period_name, period_info in power_prices.items():
-            period_kw = float(powers.get(period_name, 0.0)) / 1000.0
+            period_kw = float(powers.get(period_name) or 0.0) / 1000.0
             power_eur += period_kw * period_info["value"] * days_in_month
 
         # comprovar quin import retorna 3.0 sobretot
