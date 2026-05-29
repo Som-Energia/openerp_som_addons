@@ -12,12 +12,12 @@
             <field name="tariff">2.0TD_periods</field>
         </record>
         <record model="som.annual.coefficient" id="coefficient_30_td_periods_2026">
-            <field name="p1_ratio">0.103156</field>
-            <field name="p2_ratio">0.096864</field>
-            <field name="p3_ratio">0.109806</field>
-            <field name="p4_ratio">0.122748</field>
-            <field name="p5_ratio">0.13569</field>
-            <field name="p6_ratio">0.148632</field>
+            <field name="p1_ratio">0.119</field>
+            <field name="p2_ratio">0.134</field>
+            <field name="p3_ratio">0.123</field>
+            <field name="p4_ratio">0.133</field>
+            <field name="p5_ratio">0.050</field>
+            <field name="p6_ratio">0.441</field>
             <field name="year">2026</field>
             <field name="tariff">3.0TD_periods</field>
         </record>
@@ -33,8 +33,8 @@
         </record>
         <record model="som.annual.coefficient" id="coefficient_30_td_index_2026">
             <field name="p1_ratio">0.229</field>
-            <field name="p2_ratio">0.292</field>
-            <field name="p3_ratio">0.479</field>
+            <field name="p2_ratio">0.330</field>
+            <field name="p3_ratio">0.441</field>
             <field name="p4_ratio">0</field>
             <field name="p5_ratio">0</field>
             <field name="p6_ratio">0</field>

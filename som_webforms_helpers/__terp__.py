@@ -17,8 +17,6 @@
     "init_xml": [],
     "demo_xml": [
         "tests/tarifes_demo.xml",
-        "demo/som_annual_coefficient_demo.xml",
-        "demo/som_last_month_average_price_demo.xml",
     ],
     "update_xml": [
         "security/som_webforms_helpers_security.xml",
@@ -28,7 +26,9 @@
         "views/som_last_month_average_price_view.xml",
         "views/menu.xml",
         "som_webforms_helpers_data.xml",
-        "data/som_annual_consumption_estimate.xml",
+        "data/som_annual_consumption_estimate_data.xml",
+        "data/som_annual_coefficient_data.xml",
+        "data/som_last_month_average_price_data.xml",
     ],
     "active": False,
     "installable": True,
