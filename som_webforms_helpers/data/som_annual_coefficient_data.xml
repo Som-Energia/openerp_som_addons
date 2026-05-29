@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <openerp>
-    <data noupdate="0">
+    <data noupdate="1">
         <record model="som.annual.coefficient" id="coefficient_20_td_periods_2026">
             <field name="p1_ratio">0.265</field>
             <field name="p2_ratio">0.256</field>

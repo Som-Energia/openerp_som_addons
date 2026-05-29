@@ -921,9 +921,9 @@ class GiscedataPolissaTarifa(osv.osv):
         municipi_id,
         powers,
         pricelist,
-        fiscal_position,
-        with_taxes,
-        home,
+        fiscal_position=None,
+        with_taxes=None,
+        home=None,
         context=None,
     ):
         if context is None:
