@@ -8,4 +8,4 @@ services:
 
   erp-runtime:
     environment:
-      ERP_DATABASE: erp_runtime
+      ERP_DATABASE: ${ERP_DATABASE:-erp_runtime}
