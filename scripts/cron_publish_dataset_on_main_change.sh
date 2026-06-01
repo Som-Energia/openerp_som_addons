@@ -62,7 +62,11 @@ log "New commit detected on ${MAIN_BRANCH}: ${LAST_SHA:0:12} -> ${REMOTE_SHA:0:1
 CURRENT_BRANCH="$(git rev-parse --abbrev-ref HEAD)"
 if [ "${CURRENT_BRANCH}" != "${MAIN_BRANCH}" ]; then
 	log "Switching branch ${CURRENT_BRANCH} -> ${MAIN_BRANCH}"
-	git switch "${MAIN_BRANCH}"
+	if git switch --help >/dev/null 2>&1; then
+		git switch "${MAIN_BRANCH}"
+	else
+		git checkout "${MAIN_BRANCH}"
+	fi
 fi
 
 git reset --hard "${REMOTE_NAME}/${MAIN_BRANCH}"
