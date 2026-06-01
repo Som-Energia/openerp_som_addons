@@ -16,6 +16,7 @@ ERP_DATABASE="${ERP_DATABASE:-erp}"
 POSTGRES_IMAGE="${POSTGRES_IMAGE:-timescale/timescaledb:2.14.2-pg13}"
 REDIS_IMAGE="${REDIS_IMAGE:-redis:5.0}"
 MONGO_IMAGE="${MONGO_IMAGE:-mongo:3.0}"
+MONGO_ARGS="${MONGO_ARGS:---smallfiles}"
 WAIT_TIMEOUT_SECONDS="${WAIT_TIMEOUT_SECONDS:-4000}"
 DOCKERFILE_PATH="${DOCKERFILE_PATH:-${ROOT_DIR}/Dockerfile}"
 BUILD_CONTEXT="${BUILD_CONTEXT:-${REPO_ROOT}}"
@@ -139,6 +140,42 @@ sanitize_runtime_container() {
   '
 }
 
+wait_for_dependencies_ready() {
+	local timeout="$1"
+	local start now
+	start=$(date +%s)
+
+	while true; do
+		if ! docker ps --format '{{.Names}}' | grep -Fxq "${PG_CONTAINER}"; then
+			docker logs "${PG_CONTAINER}" >&2 || true
+			fail "PostgreSQL container s'ha aturat abans d'estar llest"
+		fi
+		if ! docker ps --format '{{.Names}}' | grep -Fxq "${REDIS_CONTAINER}"; then
+			docker logs "${REDIS_CONTAINER}" >&2 || true
+			fail "Redis container s'ha aturat abans d'estar llest"
+		fi
+		if ! docker ps --format '{{.Names}}' | grep -Fxq "${MONGO_CONTAINER}"; then
+			docker logs "${MONGO_CONTAINER}" >&2 || true
+			fail "Mongo container s'ha aturat abans d'estar llest"
+		fi
+
+		if docker exec "${PG_CONTAINER}" pg_isready -U erp -d postgres >/dev/null 2>&1 \
+			&& docker exec "${REDIS_CONTAINER}" redis-cli ping 2>/dev/null | grep -Fq PONG \
+			&& docker exec "${MONGO_CONTAINER}" mongo --quiet --eval 'db.runCommand({ ping: 1 }).ok' 2>/dev/null | grep -Fxq 1; then
+			return
+		fi
+
+		now=$(date +%s)
+		if [ $((now - start)) -ge "${timeout}" ]; then
+			docker logs "${PG_CONTAINER}" >&2 || true
+			docker logs "${REDIS_CONTAINER}" >&2 || true
+			docker logs "${MONGO_CONTAINER}" >&2 || true
+			fail "Timeout esperant dependències llestes (${timeout}s)"
+		fi
+		sleep 5
+	done
+}
+
 wait_for_runtime_ready() {
 	local timeout="$1"
 	local start now
@@ -204,13 +241,17 @@ main() {
 		-e POSTGRES_USER=erp -e POSTGRES_PASSWORD=erp -e POSTGRES_DB=erp \
 		"${POSTGRES_IMAGE}" >/dev/null
 	docker run -d --name "${REDIS_CONTAINER}" --network "${NETWORK_NAME}" --network-alias redis "${REDIS_IMAGE}" >/dev/null
-	docker run -d --name "${MONGO_CONTAINER}" --network "${NETWORK_NAME}" --network-alias mongo "${MONGO_IMAGE}" >/dev/null
+	docker run -d --name "${MONGO_CONTAINER}" --network "${NETWORK_NAME}" --network-alias mongo "${MONGO_IMAGE}" ${MONGO_ARGS} >/dev/null
+
+	log "Esperant dependències llestes"
+	wait_for_dependencies_ready 300
 
 	log "Arrencar runtime per fer bootstrap"
 	docker run -d --name "${RUNTIME_CONTAINER}" --network "${NETWORK_NAME}" \
 		-v "${GITHUB_TOKEN_FILE}:/run/secrets/github_token:ro" \
 		-e ERP_BRANCH="${ERP_BRANCH}" \
 		-e ERP_DATABASE="${ERP_DATABASE}" \
+		-e ERP_BOOTSTRAP_TIMEOUT="${WAIT_TIMEOUT_SECONDS}" \
 		-e OPENERP_DB_USER=erp \
 		-e OPENERP_DB_PASSWORD=erp \
 		--entrypoint bash \
