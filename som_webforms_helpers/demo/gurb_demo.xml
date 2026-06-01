@@ -4,7 +4,7 @@
         <record id="partner_gurb_vat_58622130y" model="res.partner">
             <field name="name">Partner GURB Demo 58622130Y</field>
             <field name="vat">58622130Y</field>
-            <field name="lang">ca_ES</field>
+            <field name="lang">en_US</field>
             <field name="customer">1</field>
         </record>
         <record id="res_partner_address_partner_gurb_vat_58622130y" model="res.partner.address">
