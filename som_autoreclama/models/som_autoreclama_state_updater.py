@@ -216,7 +216,7 @@ class SomAutoreclamaStateUpdater(osv.osv_memory):
                     msg += _(" - {}\n").format(message)
             else:
                 errors.append(item_id)
-                error_line = _(
+                msg += _(
                     "{} amb id {} no ha canviat d'estat per error, estat actual: {} => condició {}\n"  # noqa: E501
                 ).format(
                     _namespaces[namespace]['name'],
@@ -224,7 +224,6 @@ class SomAutoreclamaStateUpdater(osv.osv_memory):
                     actual_state,
                     cnd_obj.get_string(new_cursor, uid, condition_id),
                 )
-                msg += error_line
                 msg += _(" - {}\n").format(message)
 
             new_cursor.commit()
