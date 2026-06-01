@@ -22,8 +22,6 @@
     ],
     "update_xml": [
         "som_webforms_helpers_data.xml",
-        "demo/tarifes_demo.xml",
-        "demo/gurb_demo.xml",
     ],
     "active": False,
     "installable": True,
