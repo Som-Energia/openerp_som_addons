@@ -9,6 +9,7 @@ set -euo pipefail
 #   REMOTE_NAME=origin
 #   STATE_FILE=/var/tmp/openerp_som_addons-main.sha
 #   PRODUCER_ENV_FILE=/secure/path/.env.producer
+#   USE_LOCAL_CODE=1   # 1=sempre executa codi local, 0=segueix origin/main
 #   LOG_PREFIX=[dataset-cron]
 
 REPO_DIR="${1:-$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)}"
@@ -17,6 +18,7 @@ REMOTE_NAME="${REMOTE_NAME:-origin}"
 STATE_FILE="${STATE_FILE:-/var/tmp/openerp_som_addons-${MAIN_BRANCH}.sha}"
 PRODUCER_ENV_FILE="${PRODUCER_ENV_FILE:-${REPO_DIR}/runtime-docker/.env.producer}"
 LOG_PREFIX="${LOG_PREFIX:-[dataset-cron]}"
+USE_LOCAL_CODE="${USE_LOCAL_CODE:-1}"
 
 log() {
 	printf '%s %s\n' "${LOG_PREFIX}" "$*"
@@ -39,8 +41,18 @@ require_cmd make
 
 cd "${REPO_DIR}"
 
-if [ -n "$(git status --porcelain)" ]; then
-	fail "Working tree is dirty. Use a clean dedicated clone for this cron job."
+if [ "${USE_LOCAL_CODE}" = "1" ]; then
+	log "USE_LOCAL_CODE=1 -> executant codi local (sense fetch/worktree)"
+
+	if [ "${PRODUCER_ENV_FILE}" != "${REPO_DIR}/runtime-docker/.env.producer" ]; then
+		log "Applying PRODUCER_ENV_FILE into runtime-docker/.env.producer"
+		cp "${PRODUCER_ENV_FILE}" "${REPO_DIR}/runtime-docker/.env.producer"
+	fi
+
+	log "Running make -C runtime-docker dataset-producer-all"
+	make -C "${REPO_DIR}/runtime-docker" dataset-producer-all
+	log "Publish completed with local code"
+	exit 0
 fi
 
 log "Fetching ${REMOTE_NAME}/${MAIN_BRANCH}"
@@ -59,25 +71,24 @@ fi
 
 log "New commit detected on ${MAIN_BRANCH}: ${LAST_SHA:0:12} -> ${REMOTE_SHA:0:12}"
 
-CURRENT_BRANCH="$(git rev-parse --abbrev-ref HEAD)"
-if [ "${CURRENT_BRANCH}" != "${MAIN_BRANCH}" ]; then
-	log "Switching branch ${CURRENT_BRANCH} -> ${MAIN_BRANCH}"
-	if git switch --help >/dev/null 2>&1; then
-		git switch "${MAIN_BRANCH}"
-	else
-		git checkout "${MAIN_BRANCH}"
-	fi
-fi
+WORKTREE_DIR="$(mktemp -d -t dataset-producer-worktree.XXXXXX)"
+cleanup() {
+	set +e
+	git -C "${REPO_DIR}" worktree remove --force "${WORKTREE_DIR}" >/dev/null 2>&1 || true
+	rm -rf "${WORKTREE_DIR}" >/dev/null 2>&1 || true
+}
+trap cleanup EXIT
 
-git reset --hard "${REMOTE_NAME}/${MAIN_BRANCH}"
+log "Creating isolated worktree at ${WORKTREE_DIR} (${REMOTE_SHA:0:12})"
+git -C "${REPO_DIR}" worktree add --detach "${WORKTREE_DIR}" "${REMOTE_SHA}" >/dev/null
 
-if [ "${PRODUCER_ENV_FILE}" != "${REPO_DIR}/runtime-docker/.env.producer" ]; then
-	log "Applying PRODUCER_ENV_FILE into runtime-docker/.env.producer"
-	cp "${PRODUCER_ENV_FILE}" "${REPO_DIR}/runtime-docker/.env.producer"
+if [ "${PRODUCER_ENV_FILE}" != "${WORKTREE_DIR}/runtime-docker/.env.producer" ]; then
+	log "Applying PRODUCER_ENV_FILE into worktree runtime-docker/.env.producer"
+	cp "${PRODUCER_ENV_FILE}" "${WORKTREE_DIR}/runtime-docker/.env.producer"
 fi
 
 log "Running make -C runtime-docker dataset-producer-all"
-make -C runtime-docker dataset-producer-all
+make -C "${WORKTREE_DIR}/runtime-docker" dataset-producer-all
 
 printf '%s\n' "${REMOTE_SHA}" >"${STATE_FILE}"
 log "Publish completed. Saved state to ${STATE_FILE}"
