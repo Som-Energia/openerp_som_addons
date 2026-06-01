@@ -229,9 +229,9 @@ class SomAutoreclamaStateUpdater(osv.osv_memory):
                     raise Exception(error_line + message)
 
                 cursor.commit()
-            except Exception:
+            except Exception as e:
                 cursor.rollback()
-                raise
+                raise e
 
         summary = _("Sumari {}\n").format(block_name)
         summary += _("{} que han canviat d'estat: .................. {}\n".format(block_name, len(updated)))  # noqa: E501
