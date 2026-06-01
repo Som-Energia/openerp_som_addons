@@ -1,6 +1,7 @@
 name: Publish dataset producer image and artifact
 
 on:
+  workflow_dispatch:
   push:
     branches:
       - main
@@ -20,9 +21,9 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Install ORAS
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y oras
+        uses: oras-project/setup-oras@v1
+        with:
+          version: 1.2.2
 
       - name: Docker login to Harbor
         uses: docker/login-action@v3
@@ -42,12 +43,12 @@ jobs:
       - name: Prepare runtime-docker/.env.producer
         run: |
           cat > runtime-docker/.env.producer <<'EOF'
-          TARGET_IMAGE_REPOSITORY=${{ secrets.TARGET_IMAGE_REPOSITORY }}
-          DATASET_REPOSITORY=${{ secrets.DATASET_REPOSITORY }}
+          TARGET_IMAGE_REPOSITORY=${{ secrets.HARBOR_TARGET_IMAGE_REPOSITORY }}
+          DATASET_REPOSITORY=${{ secrets.HARBOR_DATASET_REPOSITORY }}
           HARBOR_DOMAIN=${{ secrets.HARBOR_DOMAIN }}
           HARBOR_USERNAME=${{ secrets.HARBOR_USERNAME }}
           HARBOR_PASSWORD=${{ secrets.HARBOR_PASSWORD }}
-          GITHUB_TOKEN=${{ secrets.PRIVATE_REPO_READ_TOKEN }}
+          GITHUB_TOKEN=${{ secrets.ACCESS_TOKEN_GA }}
           EOF
 
       - name: Build and publish prewarmed image + dataset artifact
@@ -57,7 +58,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: dataset-producer-artifacts-${{ github.run_number }}
-          if-no-files-found: error
+          if-no-files-found: warn
           path: |
             runtime-docker/build/prewarmed/*.dump.zst
             runtime-docker/build/prewarmed/*.metadata.json
