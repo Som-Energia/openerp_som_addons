@@ -42,12 +42,12 @@ jobs:
       - name: Prepare runtime-docker/.env.producer
         run: |
           cat > runtime-docker/.env.producer <<'EOF'
-          TARGET_IMAGE_REPOSITORY=${{ secrets.TARGET_IMAGE_REPOSITORY }}
-          DATASET_REPOSITORY=${{ secrets.DATASET_REPOSITORY }}
+          TARGET_IMAGE_REPOSITORY=${{ secrets.HARBOR_TARGET_IMAGE_REPOSITORY }}
+          DATASET_REPOSITORY=${{ secrets.HARBOR_DATASET_REPOSITORY }}
           HARBOR_DOMAIN=${{ secrets.HARBOR_DOMAIN }}
           HARBOR_USERNAME=${{ secrets.HARBOR_USERNAME }}
           HARBOR_PASSWORD=${{ secrets.HARBOR_PASSWORD }}
-          GITHUB_TOKEN=${{ secrets.PRIVATE_REPO_READ_TOKEN }}
+          GITHUB_TOKEN=${{ secrets.ACCESS_TOKEN_GA }}
           EOF
 
       - name: Build and publish prewarmed image + dataset artifact
