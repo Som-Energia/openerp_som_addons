@@ -1,0 +1,65 @@
+name: Publish dataset producer image and artifact
+
+on:
+  push:
+    branches:
+      - main
+
+concurrency:
+  group: publish-dataset-producer-main
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install ORAS
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y oras
+
+      - name: Docker login to Harbor
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ secrets.HARBOR_DOMAIN }}
+          username: ${{ secrets.HARBOR_USERNAME }}
+          password: ${{ secrets.HARBOR_PASSWORD }}
+
+      - name: ORAS login to Harbor
+        run: |
+          echo "${HARBOR_PASSWORD}" | oras login "${HARBOR_DOMAIN}" --username "${HARBOR_USERNAME}" --password-stdin --insecure
+        env:
+          HARBOR_DOMAIN: ${{ secrets.HARBOR_DOMAIN }}
+          HARBOR_USERNAME: ${{ secrets.HARBOR_USERNAME }}
+          HARBOR_PASSWORD: ${{ secrets.HARBOR_PASSWORD }}
+
+      - name: Prepare runtime-docker/.env.producer
+        run: |
+          cat > runtime-docker/.env.producer <<'EOF'
+          TARGET_IMAGE_REPOSITORY=${{ secrets.TARGET_IMAGE_REPOSITORY }}
+          DATASET_REPOSITORY=${{ secrets.DATASET_REPOSITORY }}
+          HARBOR_DOMAIN=${{ secrets.HARBOR_DOMAIN }}
+          HARBOR_USERNAME=${{ secrets.HARBOR_USERNAME }}
+          HARBOR_PASSWORD=${{ secrets.HARBOR_PASSWORD }}
+          GITHUB_TOKEN=${{ secrets.PRIVATE_REPO_READ_TOKEN }}
+          EOF
+
+      - name: Build and publish prewarmed image + dataset artifact
+        run: make -C runtime-docker dataset-producer-all
+
+      - name: Upload generated artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: dataset-producer-artifacts-${{ github.run_number }}
+          if-no-files-found: error
+          path: |
+            runtime-docker/build/prewarmed/*.dump.zst
+            runtime-docker/build/prewarmed/*.metadata.json
+            runtime-docker/build/datasets/*.dump.zst
+            runtime-docker/build/datasets/*.metadata.json
