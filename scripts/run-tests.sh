@@ -10,7 +10,7 @@ export PYTHONUNBUFFERED="1"
 
 export DEBUG_ENABLED=0
 export OORQ_ASYNC=0
-export DESTRAL_TESTING_LANGS="['es_ES']"
+export DESTRAL_TESTING_LANGS="['en_US','ca_ES','es_ES']"
 
 # export OPENERP_DB_NAME="destral_db"
 
