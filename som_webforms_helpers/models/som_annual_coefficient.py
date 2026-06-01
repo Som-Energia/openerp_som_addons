@@ -7,12 +7,12 @@ class SomAnnualCoefficient(osv.osv):
     _description = "Annual kWh coefficients for simulations"
 
     _columns = {
-        "p1_ratio": fields.float("P1 ratio", required=True),
-        "p2_ratio": fields.float("P2 ratio", required=True),
-        "p3_ratio": fields.float("P3 ratio", required=True),
-        "p4_ratio": fields.float("P4 ratio", required=True),
-        "p5_ratio": fields.float("P5 ratio", required=True),
-        "p6_ratio": fields.float("P6 ratio", required=True),
+        "p1_ratio": fields.float("P1 ratio", digits=(16, 3), required=True),
+        "p2_ratio": fields.float("P2 ratio", digits=(16, 3), required=True),
+        "p3_ratio": fields.float("P3 ratio", digits=(16, 3), required=True),
+        "p4_ratio": fields.float("P4 ratio", digits=(16, 3), required=True),
+        "p5_ratio": fields.float("P5 ratio", digits=(16, 3), required=True),
+        "p6_ratio": fields.float("P6 ratio", digits=(16, 3), required=True),
         "year": fields.integer("Year of coefficients", required=True),
         "tariff": fields.char("Access tariff", size=64, required=True),
     }
