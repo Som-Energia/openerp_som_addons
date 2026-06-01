@@ -1010,17 +1010,17 @@ class GiscedataPolissaTarifa(osv.osv):
             if not avg_price:
                 raise som_webforms_exceptions.MissingSimulationConfig()
             energy_eur = (
-                p1_kwh * ((current.get("te", {}).get("p1", {})
+                p1_kwh * ((current.get("energia", {}).get("P1", {})
                            ).get("value", 0.0) + avg_price["p1_price"])
-                + p2_kwh * ((current.get("te", {}).get("p2", {})
+                + p2_kwh * ((current.get("energia", {}).get("P2", {})
                              ).get("value", 0.0) + avg_price["p2_price"])
-                + p3_kwh * ((current.get("te", {}).get("p3", {})
+                + p3_kwh * ((current.get("energia", {}).get("P3", {})
                              ).get("value", 0.0) + avg_price["p3_price"])
-                + p4_kwh * ((current.get("te", {}).get("p4", {})
+                + p4_kwh * ((current.get("energia", {}).get("P4", {})
                              ).get("value", 0.0) + avg_price["p4_price"])
-                + p5_kwh * ((current.get("te", {}).get("p5", {})
+                + p5_kwh * ((current.get("energia", {}).get("P5", {})
                              ).get("value", 0.0) + avg_price["p5_price"])
-                + p6_kwh * ((current.get("te", {}).get("p6", {})
+                + p6_kwh * ((current.get("energia", {}).get("P6", {})
                              ).get("value", 0.0) + avg_price["p6_price"])
             )
             energy_eur = energy_eur / 12
