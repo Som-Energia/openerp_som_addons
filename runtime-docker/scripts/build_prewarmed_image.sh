@@ -5,7 +5,7 @@ ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 REPO_ROOT="$(cd "${ROOT_DIR}/.." && pwd)"
 
 BASE_IMAGE="${BASE_IMAGE:-}"
-TARGET_IMAGE="${TARGET_IMAGE:-}"
+HARBOR_IMAGE_REPOSITORY="${HARBOR_IMAGE_REPOSITORY:-}"
 HARBOR_IMAGE_REPOSITORY="${HARBOR_IMAGE_REPOSITORY:-}"
 DATE_TAG="${DATE_TAG:-$(date -u +%Y%m%d)}"
 GITHUB_TOKEN="${GITHUB_TOKEN:-}"
@@ -56,8 +56,8 @@ cleanup() {
 
 validate_inputs() {
 	if [ "${PREWARM_ONLY_DB_EXPORT}" != "1" ]; then
-		if [ -z "${TARGET_IMAGE}" ] && [ -z "${HARBOR_IMAGE_REPOSITORY}" ]; then
-			fail "Cal TARGET_IMAGE o HARBOR_IMAGE_REPOSITORY (ex: harbor.example.com/erp/openerp)"
+		if [ -z "${HARBOR_IMAGE_REPOSITORY}" ] && [ -z "${HARBOR_IMAGE_REPOSITORY}" ]; then
+			fail "Cal HARBOR_IMAGE_REPOSITORY o HARBOR_IMAGE_REPOSITORY (ex: harbor.example.com/erp/openerp)"
 		fi
 	fi
 	[ -n "${GITHUB_TOKEN}" ] || fail "Cal GITHUB_TOKEN (read access repos privats)"
@@ -168,10 +168,10 @@ resolve_target_repository() {
 		return
 	fi
 
-	if [[ "${TARGET_IMAGE}" =~ ^.+:[^/]+$ ]]; then
-		HARBOR_IMAGE_REPOSITORY="${TARGET_IMAGE%:*}"
+	if [[ "${HARBOR_IMAGE_REPOSITORY}" =~ ^.+:[^/]+$ ]]; then
+		HARBOR_IMAGE_REPOSITORY="${HARBOR_IMAGE_REPOSITORY%:*}"
 	else
-		HARBOR_IMAGE_REPOSITORY="${TARGET_IMAGE}"
+		HARBOR_IMAGE_REPOSITORY="${HARBOR_IMAGE_REPOSITORY}"
 	fi
 }
 
