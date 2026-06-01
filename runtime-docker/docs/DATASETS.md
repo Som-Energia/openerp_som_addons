@@ -149,10 +149,18 @@ make -C runtime-docker dataset-producer-legacy-all
 El consumidor només necessita (`runtime-docker/.env.consumer`):
 
 ```bash
+make -C runtime-docker dataset-consumer-all
+```
+
+Això fa:
+```bash
 # 1) baixa imatge+dataset només si falten
 make -C runtime-docker dataset-consumer-prepare
 
-# 2) arrenca el compose (consumer pur: sempre pull + recreate)
+# 2) restaura la base de dades
+make -C runtime-docker dataset-consumer-restore
+
+# 3) arrenca el compose (consumer pur: sempre pull + recreate)
 make -C runtime-docker dataset-consumer-up
 
 # 3) opcional: mode local/dev amb docker-compose.consumer.override.yml

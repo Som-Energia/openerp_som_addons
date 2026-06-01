@@ -13,12 +13,16 @@
         "som_generationkwh",
         "som_polissa_condicions_generals",
         "giscedata_repercusio_bo_social",
+        "som_gurb",
     ],
     "init_xml": [],
     "demo_xml": [
-        "tests/tarifes_demo.xml",
+        "demo/tarifes_demo.xml",
+        "demo/gurb_demo.xml",
     ],
-    "update_xml": ["som_webforms_helpers_data.xml"],
+    "update_xml": [
+        "som_webforms_helpers_data.xml",
+    ],
     "active": False,
     "installable": True,
 }
