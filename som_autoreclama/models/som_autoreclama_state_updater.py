@@ -5,7 +5,7 @@ from tools.translate import _
 from tools import email_send
 import json
 import urllib
-
+import pooler
 
 _namespaces = {
     'atc': {
@@ -183,55 +183,52 @@ class SomAutoreclamaStateUpdater(osv.osv_memory):
         msg = _("Accions {}\n").format(block_name)
 
         for item_id in tqdm(ids):
-            try:
-                actual_state_id, actual_state = self.get_autoreclama_state_name(
-                    cursor, uid, item_id, namespace, context
-                )
-                result, condition_id, message = self.update_item_if_possible(
-                    cursor, uid, item_id, namespace, context
-                )
-                item_name = self.get_item_name(cursor, uid, item_id, namespace, context)
-                if result:
-                    updated.append(item_id)
-                    next_state_id, next_state = self.get_autoreclama_state_name(
-                        cursor, uid, item_id, namespace, context
-                    )
-                    msg += _("{} amb id {} ha canviat d'estat: {} --> {} => condició {}\n").format(
-                        _namespaces[namespace]['name'],
-                        item_name,
-                        actual_state,
-                        next_state,
-                        cnd_obj.get_string(cursor, uid, condition_id),
-                    )
-                    msg += _(" - {}\n").format(message)
-                    if next_state_id in review_states:
-                        reviews.append(item_id)
-                elif result is False:
-                    not_updated.append(item_id)
-                    if verbose:
-                        msg += _(
-                            "{} amb id {} no li toca canviar d'estat, estat actual: {}\n"
-                        ).format(_namespaces[namespace]['name'], item_name, actual_state)
-                        msg += _(" - {}\n").format(message)
-                else:
-                    errors.append(item_id)
-                    error_line = _(
-                        "{} amb id {} no ha canviat d'estat per error, estat actual: {} => condició {}\n"  # noqa: E501
-                    ).format(
-                        _namespaces[namespace]['name'],
-                        item_name,
-                        actual_state,
-                        cnd_obj.get_string(cursor, uid, condition_id),
-                    )
-                    msg += error_line
-                    msg += _(" - {}\n").format(message)
-                    cursor.rollback()
-                    raise Exception(error_line + message)
+            new_cursor = pooler.get_db(cursor.dbname).cursor()
 
-                cursor.commit()
-            except Exception as e:
-                cursor.rollback()
-                raise e
+            actual_state_id, actual_state = self.get_autoreclama_state_name(
+                new_cursor, uid, item_id, namespace, context
+            )
+            result, condition_id, message = self.update_item_if_possible(
+                new_cursor, uid, item_id, namespace, context
+            )
+            item_name = self.get_item_name(new_cursor, uid, item_id, namespace, context)
+            if result:
+                updated.append(item_id)
+                next_state_id, next_state = self.get_autoreclama_state_name(
+                    new_cursor, uid, item_id, namespace, context
+                )
+                msg += _("{} amb id {} ha canviat d'estat: {} --> {} => condició {}\n").format(
+                    _namespaces[namespace]['name'],
+                    item_name,
+                    actual_state,
+                    next_state,
+                    cnd_obj.get_string(new_cursor, uid, condition_id),
+                )
+                msg += _(" - {}\n").format(message)
+                if next_state_id in review_states:
+                    reviews.append(item_id)
+            elif result is False:
+                not_updated.append(item_id)
+                if verbose:
+                    msg += _(
+                        "{} amb id {} no li toca canviar d'estat, estat actual: {}\n"
+                    ).format(_namespaces[namespace]['name'], item_name, actual_state)
+                    msg += _(" - {}\n").format(message)
+            else:
+                errors.append(item_id)
+                error_line = _(
+                    "{} amb id {} no ha canviat d'estat per error, estat actual: {} => condició {}\n"  # noqa: E501
+                ).format(
+                    _namespaces[namespace]['name'],
+                    item_name,
+                    actual_state,
+                    cnd_obj.get_string(new_cursor, uid, condition_id),
+                )
+                msg += error_line
+                msg += _(" - {}\n").format(message)
+
+            new_cursor.commit()
+            new_cursor.close()
 
         summary = _("Sumari {}\n").format(block_name)
         summary += _("{} que han canviat d'estat: .................. {}\n".format(block_name, len(updated)))  # noqa: E501
