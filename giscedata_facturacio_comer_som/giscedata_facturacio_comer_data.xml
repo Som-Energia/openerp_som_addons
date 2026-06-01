@@ -82,7 +82,7 @@ div.back{
         <record model="res.config" id="component_gdo_data">
             <field name="name">component_gdo_data</field>
             <field name="description">Valors de la taula de Garantia d'Origen (gdo)</field>
-            <field name="value">{'wind_power':142579,'photovoltaic':163406,'hydraulics':50120,'biomassa':6843,'biogas':0,'total': 362948,'year': '2025'}</field>
+            <field name="value">{'wind_power':101806,'photovoltaic':176016,'hydraulics':101758,'biomassa':5610,'biogas':0,'total': 385190,'year': '2025'}</field>
         </record>
         <record model="res.config" id="rep_boe_data">
             <field name="name">rep_boe_data</field>
