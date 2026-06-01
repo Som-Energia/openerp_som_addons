@@ -54,7 +54,7 @@ Per publicar (i per al smoke test dins VPN), aquestes variables són obligatòri
 
 I aquesta és recomanada (si no la passes, es calcula sola):
 
-- `DATASET_REPOSITORY`: repositori OCI complet (default: `${HARBOR_DOMAIN}/openerp/datasets`)
+- `HARBOR_DATASET_REPOSITORY`: repositori OCI complet (default: `${HARBOR_DOMAIN}/openerp/datasets`)
 
 Variables habituals de runtime:
 
@@ -211,7 +211,7 @@ Nota TimescaleDB:
 
 Variables útils:
 
-- `DATASET_REPOSITORY`
+- `HARBOR_DATASET_REPOSITORY`
 - `DATASET_FILE`, `METADATA_FILE`
 - `DATE_TAG`
 
@@ -219,12 +219,12 @@ Variables útils:
 
 `pull_dataset.sh`:
 
-- baixa `DATASET_REPOSITORY:DATASET_TAG`,
+- baixa `HARBOR_DATASET_REPOSITORY:DATASET_TAG`,
 - guarda el resultat a `runtime-docker/.cache/datasets/<tag>/`.
 
 Variables útils:
 
-- `DATASET_REPOSITORY`
+- `HARBOR_DATASET_REPOSITORY`
 - `DATASET_TAG`
 - `CACHE_DIR`
 
@@ -276,7 +276,7 @@ Opcionalment:
 Des de cache OCI:
 
 ```bash
-# configura DATASET_REPOSITORY i DATASET_TAG a runtime-docker/.env.consumer
+# configura HARBOR_DATASET_REPOSITORY i DATASET_TAG a runtime-docker/.env.consumer
 make -C runtime-docker dataset-consumer-pull
 make -C runtime-docker dataset-consumer-restore
 ```
@@ -338,7 +338,7 @@ Script inclòs:
 
 Variables obligatòries:
 
-- `TARGET_IMAGE_REPOSITORY` (ex: `harbor.example.com/erp/openerp`)
+- `HARBOR_IMAGE_REPOSITORY` (ex: `harbor.example.com/erp/openerp`)
 - `GITHUB_TOKEN` (read repos privats, només durant el build/prewarm)
 
 Variables opcionals:
@@ -350,7 +350,7 @@ Variables opcionals:
 Exemple recomanat, construint també la base localment:
 
 ```bash
-# defineix TARGET_IMAGE_REPOSITORY i GITHUB_TOKEN a runtime-docker/.env.producer
+# defineix HARBOR_IMAGE_REPOSITORY i GITHUB_TOKEN a runtime-docker/.env.producer
 make -C runtime-docker runtime-build-prewarmed
 
 # si només vols regenerar el dump prewarmed local (sense publicar imatge):
@@ -360,7 +360,7 @@ make -C runtime-docker runtime-export-prewarmed-db
 Exemple alternatiu, partint d'una base ja publicada:
 
 ```bash
-# defineix BASE_IMAGE, TARGET_IMAGE_REPOSITORY i GITHUB_TOKEN a runtime-docker/.env.producer
+# defineix BASE_IMAGE, HARBOR_IMAGE_REPOSITORY i GITHUB_TOKEN a runtime-docker/.env.producer
 make -C runtime-docker runtime-build-prewarmed
 ```
 
@@ -413,7 +413,7 @@ Variables recomanades:
 
 - `ERP_RUNTIME_IMAGE` (default: `harbor.example.com/erp/openerp:latest`)
 - `GITHUB_TOKEN` (opcional en mode consumidor amb entrypoint bypass)
-- `DATASET_REPOSITORY` (default: `harbor.example.com/erp/datasets`)
+- `HARBOR_DATASET_REPOSITORY` (default: `harbor.example.com/erp/datasets`)
 - `DATASET_TAG` (default: `latest`)
 - `RESET_ADMIN_LOGIN` (default: `admin`)
 - `RESET_ADMIN_PASSWORD` (recomanat: `admin` en entorns locals de demo)

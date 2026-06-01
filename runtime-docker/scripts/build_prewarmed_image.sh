@@ -6,7 +6,7 @@ REPO_ROOT="$(cd "${ROOT_DIR}/.." && pwd)"
 
 BASE_IMAGE="${BASE_IMAGE:-}"
 TARGET_IMAGE="${TARGET_IMAGE:-}"
-TARGET_IMAGE_REPOSITORY="${TARGET_IMAGE_REPOSITORY:-}"
+HARBOR_IMAGE_REPOSITORY="${HARBOR_IMAGE_REPOSITORY:-}"
 DATE_TAG="${DATE_TAG:-$(date -u +%Y%m%d)}"
 GITHUB_TOKEN="${GITHUB_TOKEN:-}"
 ERP_BRANCH="${ERP_BRANCH:-rolling_erp01}"
@@ -56,8 +56,8 @@ cleanup() {
 
 validate_inputs() {
 	if [ "${PREWARM_ONLY_DB_EXPORT}" != "1" ]; then
-		if [ -z "${TARGET_IMAGE}" ] && [ -z "${TARGET_IMAGE_REPOSITORY}" ]; then
-			fail "Cal TARGET_IMAGE o TARGET_IMAGE_REPOSITORY (ex: harbor.example.com/erp/openerp)"
+		if [ -z "${TARGET_IMAGE}" ] && [ -z "${HARBOR_IMAGE_REPOSITORY}" ]; then
+			fail "Cal TARGET_IMAGE o HARBOR_IMAGE_REPOSITORY (ex: harbor.example.com/erp/openerp)"
 		fi
 	fi
 	[ -n "${GITHUB_TOKEN}" ] || fail "Cal GITHUB_TOKEN (read access repos privats)"
@@ -164,14 +164,14 @@ wait_for_runtime_ready() {
 }
 
 resolve_target_repository() {
-	if [ -n "${TARGET_IMAGE_REPOSITORY}" ]; then
+	if [ -n "${HARBOR_IMAGE_REPOSITORY}" ]; then
 		return
 	fi
 
 	if [[ "${TARGET_IMAGE}" =~ ^.+:[^/]+$ ]]; then
-		TARGET_IMAGE_REPOSITORY="${TARGET_IMAGE%:*}"
+		HARBOR_IMAGE_REPOSITORY="${TARGET_IMAGE%:*}"
 	else
-		TARGET_IMAGE_REPOSITORY="${TARGET_IMAGE}"
+		HARBOR_IMAGE_REPOSITORY="${TARGET_IMAGE}"
 	fi
 }
 
@@ -224,19 +224,19 @@ main() {
 	log "Aturant runtime bootstrapat"
 	docker stop "${RUNTIME_CONTAINER}" >/dev/null
 
-	log "Committant imatge prewarmed -> ${TARGET_IMAGE_REPOSITORY}:latest"
+	log "Committant imatge prewarmed -> ${HARBOR_IMAGE_REPOSITORY}:latest"
 	docker commit \
 		--change 'ENTRYPOINT ["/opt/somenergia/src/openerp_som_addons/runtime-docker/entrypoint.sh"]' \
 		--change 'CMD []' \
-		"${RUNTIME_CONTAINER}" "${TARGET_IMAGE_REPOSITORY}:latest" >/dev/null
+		"${RUNTIME_CONTAINER}" "${HARBOR_IMAGE_REPOSITORY}:latest" >/dev/null
 
-	log "Taggant imatge prewarmed -> ${TARGET_IMAGE_REPOSITORY}:${DATE_TAG}"
-	docker tag "${TARGET_IMAGE_REPOSITORY}:latest" "${TARGET_IMAGE_REPOSITORY}:${DATE_TAG}"
+	log "Taggant imatge prewarmed -> ${HARBOR_IMAGE_REPOSITORY}:${DATE_TAG}"
+	docker tag "${HARBOR_IMAGE_REPOSITORY}:latest" "${HARBOR_IMAGE_REPOSITORY}:${DATE_TAG}"
 
-	log "Publicant ${TARGET_IMAGE_REPOSITORY}:latest"
-	docker push "${TARGET_IMAGE_REPOSITORY}:latest"
-	log "Publicant ${TARGET_IMAGE_REPOSITORY}:${DATE_TAG}"
-	docker push "${TARGET_IMAGE_REPOSITORY}:${DATE_TAG}"
+	log "Publicant ${HARBOR_IMAGE_REPOSITORY}:latest"
+	docker push "${HARBOR_IMAGE_REPOSITORY}:latest"
+	log "Publicant ${HARBOR_IMAGE_REPOSITORY}:${DATE_TAG}"
+	docker push "${HARBOR_IMAGE_REPOSITORY}:${DATE_TAG}"
 
 	log "Imatge prewarmed publicada correctament"
 }
