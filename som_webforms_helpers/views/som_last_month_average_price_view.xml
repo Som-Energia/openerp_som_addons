@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+    <data>
+        <record model="ir.ui.view" id="view_simulation_avg_price_tree">
+            <field name="name">som.last.month.average.price.tree</field>
+            <field name="model">som.last.month.average.price</field>
+            <field name="type">tree</field>
+            <field name="arch" type="xml">
+                <tree string="Simulation prices">
+                    <field name="date"/>
+                    <field name="tariff"/>
+                    <field name="type"/>
+                    <field name="p1_price"/>
+                    <field name="p2_price"/>
+                    <field name="p3_price"/>
+                    <field name="p4_price"/>
+                    <field name="p5_price"/>
+                    <field name="p6_price"/>
+                </tree>
+            </field>
+        </record>
+
+        <record model="ir.ui.view" id="view_simulation_avg_price_form">
+            <field name="name">som.last.month.average.price.form</field>
+            <field name="model">som.last.month.average.price</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <form string="Simulation prices">
+                    <group colspan="4" string="Month average">
+                        <field name="date"/>
+                        <field name="tariff"/>
+                        <field name="type"/>
+                        <field name="p1_price"/>
+                        <field name="p2_price"/>
+                        <field name="p3_price"/>
+                        <field name="p4_price"/>
+                        <field name="p5_price"/>
+                        <field name="p6_price"/>
+                    </group>
+                </form>
+            </field>
+        </record>
+    </data>
+</openerp>

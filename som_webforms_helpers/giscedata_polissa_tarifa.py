@@ -2,8 +2,10 @@
 from osv import osv
 from tools import config
 from datetime import datetime, timedelta
+import calendar
 from enerdata.contracts import get_tariff_by_code
 from som_webforms_helpers.exceptions import som_webforms_exceptions
+from decimal import Decimal, ROUND_HALF_UP
 
 
 class GiscedataPolissaTarifa(osv.osv):
@@ -1026,7 +1028,6 @@ class GiscedataPolissaTarifa(osv.osv):
         power_prices = current.get("potencia", {})
         days_in_month = self._get_simulation_days_in_month(context={"date": anchor_date})
 
-        import pudb; pu.db
         power_eur = 0.0
         for period_name, period_info in power_prices.items():
             period_kw = float(powers.get(period_name) or 0.0) / 1000.0
