@@ -5,8 +5,10 @@ ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 REPO_ROOT="$(cd "${ROOT_DIR}/.." && pwd)"
 
 BASE_IMAGE="${BASE_IMAGE:-}"
-HARBOR_IMAGE_REPOSITORY="${HARBOR_IMAGE_REPOSITORY:-}"
-HARBOR_IMAGE_REPOSITORY="${HARBOR_IMAGE_REPOSITORY:-}"
+HARBOR_IMAGE_REPOSITORY="${HARBOR_IMAGE_REPOSITORY:-${TARGET_IMAGE_REPOSITORY:-${TARGET_IMAGE:-}}}"
+HARBOR_DOMAIN="${HARBOR_DOMAIN:-}"
+HARBOR_USERNAME="${HARBOR_USERNAME:-}"
+HARBOR_PASSWORD="${HARBOR_PASSWORD:-}"
 DATE_TAG="${DATE_TAG:-$(date -u +%Y%m%d)}"
 GITHUB_TOKEN="${GITHUB_TOKEN:-}"
 ERP_BRANCH="${ERP_BRANCH:-rolling_erp01}"
@@ -56,9 +58,7 @@ cleanup() {
 
 validate_inputs() {
 	if [ "${PREWARM_ONLY_DB_EXPORT}" != "1" ]; then
-		if [ -z "${HARBOR_IMAGE_REPOSITORY}" ] && [ -z "${HARBOR_IMAGE_REPOSITORY}" ]; then
-			fail "Cal HARBOR_IMAGE_REPOSITORY o HARBOR_IMAGE_REPOSITORY (ex: harbor.example.com/erp/openerp)"
-		fi
+		[ -n "${HARBOR_IMAGE_REPOSITORY}" ] || fail "Cal HARBOR_IMAGE_REPOSITORY (ex: harbor.example.com/erp/openerp)"
 	fi
 	[ -n "${GITHUB_TOKEN}" ] || fail "Cal GITHUB_TOKEN (read access repos privats)"
 	[ -f "${DOCKERFILE_PATH}" ] || fail "No existeix DOCKERFILE_PATH: ${DOCKERFILE_PATH}"
@@ -164,15 +164,27 @@ wait_for_runtime_ready() {
 }
 
 resolve_target_repository() {
-	if [ -n "${HARBOR_IMAGE_REPOSITORY}" ]; then
+	if [[ "${HARBOR_IMAGE_REPOSITORY}" =~ ^.+:[^/]+$ ]]; then
+		HARBOR_IMAGE_REPOSITORY="${HARBOR_IMAGE_REPOSITORY%:*}"
+	fi
+}
+
+login_harbor_if_configured() {
+	local registry
+	registry="${HARBOR_IMAGE_REPOSITORY%%/*}"
+
+	if [ -z "${HARBOR_DOMAIN}" ] && [ -z "${HARBOR_USERNAME}" ] && [ -z "${HARBOR_PASSWORD}" ]; then
+		log "Sense HARBOR_* configurat; confiant en credencials docker existents"
 		return
 	fi
 
-	if [[ "${HARBOR_IMAGE_REPOSITORY}" =~ ^.+:[^/]+$ ]]; then
-		HARBOR_IMAGE_REPOSITORY="${HARBOR_IMAGE_REPOSITORY%:*}"
-	else
-		HARBOR_IMAGE_REPOSITORY="${HARBOR_IMAGE_REPOSITORY}"
-	fi
+	[ -n "${HARBOR_DOMAIN}" ] || fail "Cal HARBOR_DOMAIN per fer docker login"
+	[ -n "${HARBOR_USERNAME}" ] || fail "Cal HARBOR_USERNAME per fer docker login"
+	[ -n "${HARBOR_PASSWORD}" ] || fail "Cal HARBOR_PASSWORD per fer docker login"
+	[ "${HARBOR_DOMAIN}" = "${registry}" ] || fail "HARBOR_DOMAIN (${HARBOR_DOMAIN}) no coincideix amb registry de HARBOR_IMAGE_REPOSITORY (${registry})"
+
+	log "Fent docker login a ${HARBOR_DOMAIN}"
+	printf '%s' "${HARBOR_PASSWORD}" | docker login "${HARBOR_DOMAIN}" --username "${HARBOR_USERNAME}" --password-stdin >/dev/null
 }
 
 main() {
@@ -218,6 +230,7 @@ main() {
 	fi
 
 	resolve_target_repository
+	login_harbor_if_configured
 
 	sanitize_runtime_container
 

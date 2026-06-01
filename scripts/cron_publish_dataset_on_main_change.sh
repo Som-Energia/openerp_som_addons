@@ -71,6 +71,11 @@ fi
 
 git reset --hard "${REMOTE_NAME}/${MAIN_BRANCH}"
 
+if [ "${PRODUCER_ENV_FILE}" != "${REPO_DIR}/runtime-docker/.env.producer" ]; then
+	log "Applying PRODUCER_ENV_FILE into runtime-docker/.env.producer"
+	cp "${PRODUCER_ENV_FILE}" "${REPO_DIR}/runtime-docker/.env.producer"
+fi
+
 log "Running make -C runtime-docker dataset-producer-all"
 make -C runtime-docker dataset-producer-all
 
