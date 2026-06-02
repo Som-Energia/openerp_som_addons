@@ -2,8 +2,8 @@
 {
     "name": "SomEnergia Productive Base Profile",
     "description": """
-    Mòdul perfil per construir una base de dades buida
-    amb el mateix stack funcional que productiu.
+    Mòdul fulla per construir una base de dades buida
+    amb els mateixos mòduls instal·lats que productiu.
     """,
     "version": "0-dev",
     "author": "Som Energia",
@@ -11,7 +11,7 @@
     "depends": [
         "account_analytic_distribution",
         "account_chart_coop_es",
-        "account_import_facturae",
+        # "account_import_facturae", # PR #27960
         "account_renumber",
         "db_utils",
         "devolucions_base_som",
