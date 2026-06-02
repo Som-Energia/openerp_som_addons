@@ -24,6 +24,7 @@ EXPORT_PREWARMED_DB="${EXPORT_PREWARMED_DB:-1}"
 PREWARMED_DB_DUMP_PATH="${PREWARMED_DB_DUMP_PATH:-${ROOT_DIR}/build/prewarmed/prewarmed-db.dump.zst}"
 PREWARMED_DB_METADATA_PATH="${PREWARMED_DB_METADATA_PATH:-${PREWARMED_DB_DUMP_PATH%.dump.zst}.metadata.json}"
 PREWARM_ONLY_DB_EXPORT="${PREWARM_ONLY_DB_EXPORT:-0}"
+EXCLUDE_TIMESCALE_INTERNALS="${EXCLUDE_TIMESCALE_INTERNALS:-1}"
 
 WORK_ID="prewarm-$(date +%Y%m%d%H%M%S)-$$"
 NETWORK_NAME="${NETWORK_NAME:-${WORK_ID}-net}"
@@ -101,8 +102,21 @@ export_prewarmed_db_dump() {
 	require_cmd git
 	mkdir -p "$(dirname "${PREWARMED_DB_DUMP_PATH}")"
 
+	local -a dump_args
+	dump_args=(-Fc)
+	if [ "${EXCLUDE_TIMESCALE_INTERNALS}" = "1" ]; then
+		dump_args+=(
+			--exclude-schema=_timescaledb_cache
+			--exclude-schema=_timescaledb_catalog
+			--exclude-schema=_timescaledb_config
+			--exclude-schema=_timescaledb_functions
+			--exclude-schema=_timescaledb_internal
+			--exclude-schema=timescaledb_information
+		)
+	fi
+
 	log "Exportant dump prewarmed de la BD ${ERP_DATABASE}"
-	docker exec "${PG_CONTAINER}" pg_dump -U erp -d "${ERP_DATABASE}" -Fc |
+	docker exec "${PG_CONTAINER}" pg_dump -U erp -d "${ERP_DATABASE}" "${dump_args[@]}" |
 		zstd -f -o "${PREWARMED_DB_DUMP_PATH}"
 
 	local checksum pg_version git_commit created_at
