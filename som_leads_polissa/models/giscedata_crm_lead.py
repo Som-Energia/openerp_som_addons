@@ -478,6 +478,10 @@ class GiscedataCrmLead(osv.OsvInherits):
             _member_quota_payment_types, "Forma pagament quota sòcia"),
         "billing_payment_method": fields.selection(
             _billing_payment_methods, "Forma pagament facturacio"),
+        "creditcard_token": fields.char("Token targeta", size=128),
+        "creditcard_masked_number": fields.char("Numero targeta", size=32),
+        "creditcard_expiry_date": fields.char("Data caducitat targeta", size=5),
+        "creditcard_cof_txnid": fields.char("COF TxnId targeta", size=128),
         "donation": fields.boolean("Donatiu voluntari"),
         "referral_source": fields.char("Com ens ha conegut", size=255),
         "birthdate": fields.date("Data de naixement"),
