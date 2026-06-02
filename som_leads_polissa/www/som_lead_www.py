@@ -233,6 +233,54 @@ class SomLeadWww(osv.osv_memory):
             "error": error_info,
         }
 
+    def add_payment_card_data(self, cr, uid, lead_id, card_vals, context=None):
+        if context is None:
+            context = {}
+
+        lead_o = self.pool.get("giscedata.crm.lead")
+        lead = lead_o.browse(cr, uid, lead_id, context=context)
+
+        if lead.billing_payment_method != "card_recurrent":
+            raise osv.except_osv(
+                "INVALID_PAYMENT_METHOD",
+                "El lead no te configurat el pagament per targeta recurrent."
+            )
+
+        if lead.polissa_id:
+            raise osv.except_osv(
+                "LEAD_ALREADY_ACTIVATED",
+                "No es poden afegir dades de targeta a un lead ja activat."
+            )
+
+        if lead.creditcard_token:
+            raise osv.except_osv(
+                "CARD_ALREADY_DEFINED",
+                "Aquest lead ja te dades de targeta informades."
+            )
+
+        required_fields = ["token", "masked_number", "expiry_date", "cof_txnid"]
+        missing_fields = [field for field in required_fields if not card_vals.get(field)]
+        if missing_fields:
+            raise osv.except_osv(
+                "INVALID_CARD_DATA",
+                "Falten dades obligatories de la targeta: {}".format(", ".join(missing_fields))
+            )
+
+        lead_o.write(
+            cr,
+            uid,
+            lead_id,
+            {
+                "creditcard_token": card_vals["token"],
+                "creditcard_masked_number": card_vals["masked_number"],
+                "creditcard_expiry_date": card_vals["expiry_date"],
+                "creditcard_cof_txnid": card_vals["cof_txnid"],
+            },
+            context=context,
+        )
+
+        return True
+
     def activate_lead(self, cr, uid, lead_id, context=None):
         if context is None:
             context = {}

@@ -1,0 +1,120 @@
+# -*- encoding: utf-8 -*-
+from __future__ import absolute_import
+
+from osv import osv
+
+from .base_som_lead_www import BaseSomLeadWwwTest
+
+
+class TestLeadWwwCardData(BaseSomLeadWwwTest):
+    def test_add_payment_card_data_stores_credit_card_fields(self):
+        www_lead_o = self.get_model("som.lead.www")
+        lead_o = self.get_model("giscedata.crm.lead")
+
+        values = self._basic_values
+        values["billing_payment_method"] = "card_recurrent"
+
+        result = www_lead_o.create_lead(self.cursor, self.uid, values)
+
+        www_lead_o.add_payment_card_data(
+            self.cursor,
+            self.uid,
+            result["lead_id"],
+            {
+                "token": "tok_lead_123",
+                "masked_number": "**** **** **** 4242",
+                "expiry_date": "12/30",
+                "cof_txnid": "cof_123",
+            },
+        )
+
+        lead = lead_o.browse(self.cursor, self.uid, result["lead_id"])
+
+        self.assertEqual(lead.creditcard_token, "tok_lead_123")
+        self.assertEqual(lead.creditcard_masked_number, "**** **** **** 4242")
+        self.assertEqual(lead.creditcard_expiry_date, "12/30")
+        self.assertEqual(lead.creditcard_cof_txnid, "cof_123")
+
+    def test_add_payment_card_data_fails_for_non_card_recurrent_method(self):
+        www_lead_o = self.get_model("som.lead.www")
+
+        result = www_lead_o.create_lead(self.cursor, self.uid, self._basic_values)
+
+        with self.assertRaises(osv.except_osv):
+            www_lead_o.add_payment_card_data(
+                self.cursor,
+                self.uid,
+                result["lead_id"],
+                {
+                    "token": "tok_lead_123",
+                    "masked_number": "**** **** **** 4242",
+                    "expiry_date": "12/30",
+                    "cof_txnid": "cof_123",
+                },
+            )
+
+    def test_add_payment_card_data_fails_when_card_already_defined(self):
+        www_lead_o = self.get_model("som.lead.www")
+
+        values = self._basic_values
+        values["billing_payment_method"] = "card_recurrent"
+
+        result = www_lead_o.create_lead(self.cursor, self.uid, values)
+
+        card_vals = {
+            "token": "tok_lead_123",
+            "masked_number": "**** **** **** 4242",
+            "expiry_date": "12/30",
+            "cof_txnid": "cof_123",
+        }
+
+        www_lead_o.add_payment_card_data(
+            self.cursor, self.uid, result["lead_id"], card_vals
+        )
+
+        with self.assertRaises(osv.except_osv):
+            www_lead_o.add_payment_card_data(
+                self.cursor, self.uid, result["lead_id"], card_vals
+            )
+
+    def test_add_payment_card_data_fails_when_lead_is_already_activated(self):
+        www_lead_o = self.get_model("som.lead.www")
+
+        values = self._basic_values
+        values["billing_payment_method"] = "card_recurrent"
+
+        result = www_lead_o.create_lead(self.cursor, self.uid, values)
+        www_lead_o.activate_lead(self.cursor, self.uid, result["lead_id"], context={"sync": True})
+
+        with self.assertRaises(osv.except_osv):
+            www_lead_o.add_payment_card_data(
+                self.cursor,
+                self.uid,
+                result["lead_id"],
+                {
+                    "token": "tok_lead_123",
+                    "masked_number": "**** **** **** 4242",
+                    "expiry_date": "12/30",
+                    "cof_txnid": "cof_123",
+                },
+            )
+
+    def test_add_payment_card_data_requires_all_card_fields(self):
+        www_lead_o = self.get_model("som.lead.www")
+
+        values = self._basic_values
+        values["billing_payment_method"] = "card_recurrent"
+
+        result = www_lead_o.create_lead(self.cursor, self.uid, values)
+
+        with self.assertRaises(osv.except_osv):
+            www_lead_o.add_payment_card_data(
+                self.cursor,
+                self.uid,
+                result["lead_id"],
+                {
+                    "token": "tok_lead_123",
+                    "masked_number": "**** **** **** 4242",
+                    "expiry_date": "12/30",
+                },
+            )
