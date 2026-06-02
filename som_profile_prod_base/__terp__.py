@@ -94,7 +94,6 @@
         "partner_address_tipovia_trg",
         "partner_blacklist",
         "poweremail_oorq",
-        "report_aeroo",
         "report_tester",
         "res_comarca_canaries",
         "res_comarca_ib",
