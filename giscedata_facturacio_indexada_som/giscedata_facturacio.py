@@ -86,6 +86,10 @@ class GiscedataFacturacioFacturador(osv.osv):
         tmp_curves = super(GiscedataFacturacioFacturador, self).get_consum_curve_components_for_servei(
             cursor, uid, fact_id, data_inici, data_final, single_period_profiling, context=context
         )
+
+        if context.get('get_original_ssaa_curves'):
+            return tmp_curves
+
         res = []
         for curve in tmp_curves:
             if curve.start_date.strftime('%Y-%m-%d') < '2026-05-01':
