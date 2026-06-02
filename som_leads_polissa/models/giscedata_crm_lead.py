@@ -18,6 +18,11 @@ _member_quota_payment_types = [
     ("tpv", "Passarel·la de pagament")
 ]
 
+_billing_payment_methods = [
+    ("remesa", "Remesa"),
+    ("card_recurrent", "Targeta recurrent")
+]
+
 WWW_DATA_FORM_HEADER = "**** DADES DEL FORMULARI ****"
 _MEMBER_FEE_PURPOSE = 'QUOTA SOCI'
 
@@ -471,6 +476,8 @@ class GiscedataCrmLead(osv.OsvInherits):
         "create_new_member": fields.boolean("Sòcia de nova creació"),
         "member_quota_payment_type": fields.selection(
             _member_quota_payment_types, "Forma pagament quota sòcia"),
+        "billing_payment_method": fields.selection(
+            _billing_payment_methods, "Forma pagament facturacio"),
         "donation": fields.boolean("Donatiu voluntari"),
         "referral_source": fields.char("Com ens ha conegut", size=255),
         "birthdate": fields.date("Data de naixement"),
@@ -487,6 +494,7 @@ class GiscedataCrmLead(osv.OsvInherits):
     _defaults = {
         "tipus_tarifa_lead": lambda *a: "tarifa_existent",
         "set_custom_potencia": lambda *a: False,
+        "billing_payment_method": lambda *a: "remesa",
         "donation": lambda *a: False,
         "comercial_info_accepted": lambda *a: False,
         "crm_lead_id": lambda *a: 0,

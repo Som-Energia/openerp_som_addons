@@ -148,6 +148,7 @@ class SomLeadWww(osv.osv_memory):
             "use_cont_address": False,
             "donation": www_vals.get("donation", False),
             "member_quota_payment_type": www_vals.get("member_payment_type"),
+            "billing_payment_method": www_vals.get("billing_payment_method", "remesa"),
             "gender": member.get("gender"),
             "birthdate": member.get("birthdate"),
             "referral_source": member.get("referral_source"),
