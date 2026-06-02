@@ -31,6 +31,13 @@ have_cmd() {
   command -v "$1" >/dev/null 2>&1
 }
 
+filter_toc() {
+  local toc_file="$1"
+  local filtered_toc="$2"
+
+  awk '!($0 ~ / EXTENSION - timescaledb( |$)/ || $0 ~ / COMMENT - EXTENSION timescaledb( |$)/ || $0 ~ /^[0-9]+; .* (_timescaledb_cache|_timescaledb_catalog|_timescaledb_config|_timescaledb_functions|_timescaledb_internal|timescaledb_information)( |$)/ || $0 ~ / TRIGGER .* ts_insert_blocker /)' "${toc_file}" >"${filtered_toc}"
+}
+
 run_compose() {
   if have_cmd docker && docker compose version >/dev/null 2>&1; then
     docker compose "$@"
@@ -202,7 +209,7 @@ restore_external() {
   trap 'rm -f "${TMP_DUMP}" "${toc_file}" "${filtered_toc}"' EXIT
 
   pg_restore -l "${dump_file}" >"${toc_file}"
-  awk '!($0 ~ / EXTENSION - timescaledb( |$)/ || $0 ~ / COMMENT - EXTENSION timescaledb( |$)/)' "${toc_file}" >"${filtered_toc}"
+  filter_toc "${toc_file}" "${filtered_toc}"
 
   log "Esperant disponibilitat de PostgreSQL extern"
   wait_for_external_db
@@ -234,7 +241,7 @@ restore_compose() {
   remote_filtered_toc="/tmp/runtime-dataset-restore.filtered.toc.list"
 
   pg_restore -l "${dump_file}" >"${toc_file}"
-  awk '!($0 ~ / EXTENSION - timescaledb( |$)/ || $0 ~ / COMMENT - EXTENSION timescaledb( |$)/)' "${toc_file}" >"${filtered_toc}"
+  filter_toc "${toc_file}" "${filtered_toc}"
 
   log "Assegurant que el servei PostgreSQL està actiu"
   run_compose -f "${COMPOSE_FILE}" up -d "${DB_SERVICE}" >/dev/null

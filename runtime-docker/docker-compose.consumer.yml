@@ -113,7 +113,7 @@ services:
         zstd -d -f "$${DATASET_FILE}" -o /tmp/restore.dump
         PGPASSWORD="$${POSTGRES_PASSWORD}" dropdb --if-exists -h "$${POSTGRES_HOST}" -p "$${POSTGRES_PORT}" -U "$${POSTGRES_USER}" "$${POSTGRES_DB}"
         PGPASSWORD="$${POSTGRES_PASSWORD}" createdb -h "$${POSTGRES_HOST}" -p "$${POSTGRES_PORT}" -U "$${POSTGRES_USER}" "$${POSTGRES_DB}"
-        pg_restore -l /tmp/restore.dump | awk '!($0 ~ / EXTENSION - timescaledb( |$)/ || $0 ~ / COMMENT - EXTENSION timescaledb( |$)/)' > /tmp/restore.filtered.list
+        pg_restore -l /tmp/restore.dump | awk '!($0 ~ / EXTENSION - timescaledb( |$)/ || $0 ~ / COMMENT - EXTENSION timescaledb( |$)/ || $0 ~ /^[0-9]+; .* (_timescaledb_cache|_timescaledb_catalog|_timescaledb_config|_timescaledb_functions|_timescaledb_internal|timescaledb_information)( |$)/ || $0 ~ / TRIGGER .* ts_insert_blocker /)' > /tmp/restore.filtered.list
         PGPASSWORD="$${POSTGRES_PASSWORD}" pg_restore -h "$${POSTGRES_HOST}" -p "$${POSTGRES_PORT}" -U "$${POSTGRES_USER}" -d "$${POSTGRES_DB}" --clean --if-exists -L /tmp/restore.filtered.list /tmp/restore.dump
         if [ -n "$${RESET_ADMIN_PASSWORD}" ]; then
           PGPASSWORD="$${POSTGRES_PASSWORD}" psql -h "$${POSTGRES_HOST}" -p "$${POSTGRES_PORT}" -U "$${POSTGRES_USER}" -d "$${POSTGRES_DB}" \
