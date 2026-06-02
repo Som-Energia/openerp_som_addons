@@ -35,7 +35,7 @@ filter_toc() {
   local toc_file="$1"
   local filtered_toc="$2"
 
-  awk '!($0 ~ / EXTENSION - timescaledb( |$)/ || $0 ~ / COMMENT - EXTENSION timescaledb( |$)/ || $0 ~ /^[0-9]+; .* (_timescaledb_cache|_timescaledb_catalog|_timescaledb_config|_timescaledb_functions|_timescaledb_internal|timescaledb_information)( |$)/ || $0 ~ / TRIGGER .* ts_insert_blocker /)' "${toc_file}" >"${filtered_toc}"
+  awk '!($0 ~ / EXTENSION - timescaledb( |$)/ || $0 ~ / COMMENT - EXTENSION timescaledb( |$)/ || $0 ~ /^[0-9]+; .* (_timescaledb_cache|_timescaledb_catalog|_timescaledb_config|_timescaledb_functions|_timescaledb_internal|timescaledb_information)( |$)/ || $0 ~ / TRIGGER .* ts_insert_blocker( |$)/)' "${toc_file}" >"${filtered_toc}"
 }
 
 run_compose() {

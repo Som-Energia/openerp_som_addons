@@ -111,6 +111,7 @@ export_prewarmed_db_dump() {
 			--exclude-schema=_timescaledb_config
 			--exclude-schema=_timescaledb_functions
 			--exclude-schema=_timescaledb_internal
+			--exclude-schema=timescaledb_information
 		)
 	fi
 
