@@ -75,6 +75,7 @@
         "giscedata_telegestio_comer_switching",
         "giscedata_tipovia_catastro",
         "giscemisc_informes_scheduler",
+        "giscedata_omie_api",
         "giscere_facturacio_casacio",
         "giscere_facturacio_facturae",
         "giscere_facturacio_refund_signed",
