@@ -84,6 +84,17 @@ class TestLeadWwwCardData(BaseSomLeadWwwTest):
         values["billing_payment_method"] = "card_recurrent"
 
         result = www_lead_o.create_lead(self.cursor, self.uid, values)
+        www_lead_o.add_payment_card_data(
+            self.cursor,
+            self.uid,
+            result["lead_id"],
+            {
+                "token": "tok_lead_123",
+                "masked_number": "**** **** **** 4242",
+                "expiry_date": "12/30",
+                "cof_txnid": "cof_123",
+            },
+        )
         www_lead_o.activate_lead(self.cursor, self.uid, result["lead_id"], context={"sync": True})
 
         with self.assertRaises(osv.except_osv):

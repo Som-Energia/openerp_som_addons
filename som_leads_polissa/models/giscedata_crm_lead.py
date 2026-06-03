@@ -30,6 +30,13 @@ _MEMBER_FEE_PURPOSE = 'QUOTA SOCI'
 class GiscedataCrmLead(osv.OsvInherits):
     _inherit = "giscedata.crm.lead"
 
+    _CREDITCARD_REQUIRED_FIELDS = [
+        "creditcard_token",
+        "creditcard_masked_number",
+        "creditcard_expiry_date",
+        "creditcard_cof_txnid",
+    ]
+
     def __init__(self, *args, **kwargs):
         super(GiscedataCrmLead, self).__init__(*args, **kwargs)
         self.lead_titular_adr_to_adr["titular_phone_prefix"] = "phone_prefix"
@@ -141,6 +148,86 @@ class GiscedataCrmLead(osv.OsvInherits):
 
         if values:
             polissa_o.write(cursor, uid, polissa_id, values, context=context)
+        return res
+
+    def _get_card_payment_polissa_values(self, cursor, uid, lead, pagador_id, context=None):
+        if context is None:
+            context = {}
+
+        missing_fields = [
+            field for field in self._CREDITCARD_REQUIRED_FIELDS if not getattr(lead, field, False)
+        ]
+        if missing_fields:
+            raise osv.except_osv(
+                "MISSING_CARD_DATA",
+                "Falten dades de targeta recurrents al lead."
+            )
+
+        ir_model_o = self.pool.get("ir.model.data")
+        card_o = self.pool.get("res.partner.creditcard")
+
+        payment_type_id = ir_model_o.get_object_reference(
+            cursor, uid, "som_card_payment", "payment_type_card_recurrent"
+        )[1]
+        payment_mode_id = ir_model_o.get_object_reference(
+            cursor, uid, "som_card_payment", "payment_mode_card_recurrent"
+        )[1]
+
+        card_ids = card_o.search(
+            cursor, uid, [("token", "=", lead.creditcard_token)], context=context
+        )
+
+        if card_ids:
+            card = card_o.browse(cursor, uid, card_ids[0], context=context)
+            if card.partner_id.id != pagador_id:
+                raise osv.except_osv(
+                    "INVALID_CARD_TOKEN",
+                    "Ja existeix una targeta amb aquest token per un altre partner."
+                )
+            if (
+                card.masked_number != lead.creditcard_masked_number
+                or card.expiry_date != lead.creditcard_expiry_date
+            ):
+                raise osv.except_osv(
+                    "INVALID_CARD_TOKEN_DATA",
+                    "Ja existeix una targeta amb aquest token pero amb dades diferents."
+                )
+            card_id = card.id
+        else:
+            card_id = card_o.create(
+                cursor,
+                uid,
+                {
+                    "partner_id": pagador_id,
+                    "token": lead.creditcard_token,
+                    "cof_txnid": lead.creditcard_cof_txnid,
+                    "expiry_date": lead.creditcard_expiry_date,
+                    "masked_number": lead.creditcard_masked_number,
+                },
+                context=context,
+            )
+
+        return {
+            "payment_mode_id": payment_mode_id,
+            "tipo_pago": payment_type_id,
+            "creditcard": card_id,
+        }
+
+    def compute_extra_polissa_vals(self, cursor, uid, crml_id, polissa_vals, context=None):
+        if context is None:
+            context = {}
+
+        res = super(GiscedataCrmLead, self).compute_extra_polissa_vals(
+            cursor, uid, crml_id, polissa_vals, context=context
+        )
+
+        lead = self.browse(cursor, uid, crml_id, context=context)
+        if lead.billing_payment_method == "card_recurrent":
+            pagador_id = polissa_vals.get("pagador") or polissa_vals.get("titular")
+            polissa_vals.update(self._get_card_payment_polissa_values(
+                cursor, uid, lead, pagador_id, context=context
+            ))
+
         return res
 
     def onchange_set_custom_potencia(self, cursor, uid, ids, set_custom_potencia):

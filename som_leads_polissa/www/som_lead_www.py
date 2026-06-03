@@ -41,8 +41,14 @@ class SomLeadWww(osv.osv_memory):
             tensio_xml_id = 'tensio_3x230_400'
         tensio_id = imd_o.get_object_reference(cr, uid, 'giscedata_tensions', tensio_xml_id)[1]
 
-        tarifa_id = tarifa_o.search(cr, uid, [("name", "=", contract_info["tariff"])])[0]
+        billing_payment_method = www_vals.get("billing_payment_method", "remesa")
         payment_mode_id = payment_mode_o.search(cr, uid, [("name", "=", "ENGINYERS")])[0]
+        if billing_payment_method == 'card_recurrent':
+            payment_mode_id = ir_model_o.get_object_reference(
+                cr, uid, "som_card_payment", "payment_mode_card_recurrent"
+            )[1]
+
+        tarifa_id = tarifa_o.search(cr, uid, [("name", "=", contract_info["tariff"])])[0]
         tariff_mode = 'index' if contract_info["is_indexed"] else 'atr'
         llista_preu_id = polissa_o.get_pricelist_from_tariff_and_location(
             cr, uid, contract_info["tariff"], tariff_mode, contract_address["city_id"], context).id
@@ -238,6 +244,7 @@ class SomLeadWww(osv.osv_memory):
             context = {}
 
         lead_o = self.pool.get("giscedata.crm.lead")
+        ir_model_o = self.pool.get("ir.model.data")
         lead = lead_o.browse(cr, uid, lead_id, context=context)
 
         if lead.billing_payment_method != "card_recurrent":
@@ -266,11 +273,16 @@ class SomLeadWww(osv.osv_memory):
                 "Falten dades obligatories de la targeta: {}".format(", ".join(missing_fields))
             )
 
+        payment_mode_id = ir_model_o.get_object_reference(
+            cr, uid, "som_card_payment", "payment_mode_card_recurrent"
+        )[1]
+
         lead_o.write(
             cr,
             uid,
             lead_id,
             {
+                "payment_mode_id": payment_mode_id,
                 "creditcard_token": card_vals["token"],
                 "creditcard_masked_number": card_vals["masked_number"],
                 "creditcard_expiry_date": card_vals["expiry_date"],
