@@ -1,0 +1,54 @@
+name: Python 3 compatibility lint
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - "*.py"
+      - "**/*.py"
+      - ".github/workflows/python3-compat-lint.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: python3-compat-lint-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  pylint-py3k:
+    name: pylint --py3k
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Collect Python files
+        id: python-files
+        run: |
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            git diff -z --name-only --diff-filter=ACMRT \
+              "${{ github.event.pull_request.base.sha }}" HEAD -- "*.py" > python-files.txt
+          else
+            git ls-files -z "*.py" > python-files.txt
+          fi
+
+          if [ ! -s python-files.txt ]; then
+            echo "has_files=false" >> "$GITHUB_OUTPUT"
+            echo "No Python files to lint."
+            exit 0
+          fi
+
+          echo "has_files=true" >> "$GITHUB_OUTPUT"
+          tr '\0' '\n' < python-files.txt
+
+      - name: Run Python 3 compatibility lint
+        if: steps.python-files.outputs.has_files == 'true'
+        run: |
+          docker run --rm \
+            -v "$PWD:/repo" \
+            -w /repo \
+            python:2.7-buster \
+            bash -lc 'pip install "pip<21" "setuptools<45" wheel "pylint==1.9.5" "astroid==1.6.6" "isort==4.3.21" && xargs -0 pylint --py3k --reports=n --score=n --persistent=n < python-files.txt'
