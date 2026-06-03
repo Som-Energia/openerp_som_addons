@@ -43,6 +43,14 @@ Contenidors esperats:
 scripts/run-tests.sh <database> -m <module_name>
 ```
 
+Si **no** passes `<database>`, el script genera una DB determinística per branca/PR i la reutilitza entre execucions:
+
+```bash
+scripts/run-tests.sh -m <module_name>
+```
+
+En aquest mode, el wrapper afegeix `--no-dropdb` automàticament (si no l'has passat tu), perquè la DB es conservi.
+
 **Exemple**:
 ```bash
 scripts/run-tests.sh test_som_polissa -m som_polissa
@@ -51,6 +59,18 @@ scripts/run-tests.sh test_som_polissa -m som_polissa
 Test únic:
 ```bash
 scripts/run-tests.sh test_som_polissa -m som_polissa -t TestsClass.test_method
+```
+
+Forçar DB nova (sense reutilitzar cache de branca/PR):
+```bash
+OPENERP_TEST_DB_FRESH=1 scripts/run-tests.sh -m som_polissa
+```
+
+En mode `OPENERP_TEST_DB_FRESH=1`, el wrapper afegeix `--dropdb` automàticament (si no l'has passat tu) per netejar aquesta execució puntual.
+
+Opcionalment pots fixar la referència usada per al nom determinístic:
+```bash
+OPENERP_TEST_DB_REF="IMP_fix_factures" scripts/run-tests.sh -m som_polissa
 ```
 
 ## Errors Comuns

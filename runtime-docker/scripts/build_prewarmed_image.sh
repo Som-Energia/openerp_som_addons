@@ -5,8 +5,10 @@ ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 REPO_ROOT="$(cd "${ROOT_DIR}/.." && pwd)"
 
 BASE_IMAGE="${BASE_IMAGE:-}"
-TARGET_IMAGE="${TARGET_IMAGE:-}"
-TARGET_IMAGE_REPOSITORY="${TARGET_IMAGE_REPOSITORY:-}"
+HARBOR_IMAGE_REPOSITORY="${HARBOR_IMAGE_REPOSITORY:-${TARGET_IMAGE_REPOSITORY:-${TARGET_IMAGE:-}}}"
+HARBOR_DOMAIN="${HARBOR_DOMAIN:-}"
+HARBOR_USERNAME="${HARBOR_USERNAME:-}"
+HARBOR_PASSWORD="${HARBOR_PASSWORD:-}"
 DATE_TAG="${DATE_TAG:-$(date -u +%Y%m%d)}"
 GITHUB_TOKEN="${GITHUB_TOKEN:-}"
 ERP_BRANCH="${ERP_BRANCH:-rolling_erp01}"
@@ -14,6 +16,7 @@ ERP_DATABASE="${ERP_DATABASE:-erp}"
 POSTGRES_IMAGE="${POSTGRES_IMAGE:-timescale/timescaledb:2.14.2-pg13}"
 REDIS_IMAGE="${REDIS_IMAGE:-redis:5.0}"
 MONGO_IMAGE="${MONGO_IMAGE:-mongo:3.0}"
+MONGO_ARGS="${MONGO_ARGS:---smallfiles}"
 WAIT_TIMEOUT_SECONDS="${WAIT_TIMEOUT_SECONDS:-4000}"
 DOCKERFILE_PATH="${DOCKERFILE_PATH:-${ROOT_DIR}/Dockerfile}"
 BUILD_CONTEXT="${BUILD_CONTEXT:-${REPO_ROOT}}"
@@ -21,6 +24,7 @@ EXPORT_PREWARMED_DB="${EXPORT_PREWARMED_DB:-1}"
 PREWARMED_DB_DUMP_PATH="${PREWARMED_DB_DUMP_PATH:-${ROOT_DIR}/build/prewarmed/prewarmed-db.dump.zst}"
 PREWARMED_DB_METADATA_PATH="${PREWARMED_DB_METADATA_PATH:-${PREWARMED_DB_DUMP_PATH%.dump.zst}.metadata.json}"
 PREWARM_ONLY_DB_EXPORT="${PREWARM_ONLY_DB_EXPORT:-0}"
+EXCLUDE_TIMESCALE_INTERNALS="${EXCLUDE_TIMESCALE_INTERNALS:-1}"
 
 WORK_ID="prewarm-$(date +%Y%m%d%H%M%S)-$$"
 NETWORK_NAME="${NETWORK_NAME:-${WORK_ID}-net}"
@@ -56,9 +60,7 @@ cleanup() {
 
 validate_inputs() {
 	if [ "${PREWARM_ONLY_DB_EXPORT}" != "1" ]; then
-		if [ -z "${TARGET_IMAGE}" ] && [ -z "${TARGET_IMAGE_REPOSITORY}" ]; then
-			fail "Cal TARGET_IMAGE o TARGET_IMAGE_REPOSITORY (ex: harbor.example.com/erp/openerp)"
-		fi
+		[ -n "${HARBOR_IMAGE_REPOSITORY}" ] || fail "Cal HARBOR_IMAGE_REPOSITORY (ex: harbor.example.com/erp/openerp)"
 	fi
 	[ -n "${GITHUB_TOKEN}" ] || fail "Cal GITHUB_TOKEN (read access repos privats)"
 	[ -f "${DOCKERFILE_PATH}" ] || fail "No existeix DOCKERFILE_PATH: ${DOCKERFILE_PATH}"
@@ -100,8 +102,21 @@ export_prewarmed_db_dump() {
 	require_cmd git
 	mkdir -p "$(dirname "${PREWARMED_DB_DUMP_PATH}")"
 
+	local -a dump_args
+	dump_args=(-Fc)
+	if [ "${EXCLUDE_TIMESCALE_INTERNALS}" = "1" ]; then
+		dump_args+=(
+			--exclude-schema=_timescaledb_cache
+			--exclude-schema=_timescaledb_catalog
+			--exclude-schema=_timescaledb_config
+			--exclude-schema=_timescaledb_functions
+			--exclude-schema=_timescaledb_internal
+			--exclude-schema=timescaledb_information
+		)
+	fi
+
 	log "Exportant dump prewarmed de la BD ${ERP_DATABASE}"
-	docker exec "${PG_CONTAINER}" pg_dump -U erp -d "${ERP_DATABASE}" -Fc |
+	docker exec "${PG_CONTAINER}" pg_dump -U erp -d "${ERP_DATABASE}" "${dump_args[@]}" |
 		zstd -f -o "${PREWARMED_DB_DUMP_PATH}"
 
 	local checksum pg_version git_commit created_at
@@ -139,6 +154,42 @@ sanitize_runtime_container() {
   '
 }
 
+wait_for_dependencies_ready() {
+	local timeout="$1"
+	local start now
+	start=$(date +%s)
+
+	while true; do
+		if ! docker ps --format '{{.Names}}' | grep -Fxq "${PG_CONTAINER}"; then
+			docker logs "${PG_CONTAINER}" >&2 || true
+			fail "PostgreSQL container s'ha aturat abans d'estar llest"
+		fi
+		if ! docker ps --format '{{.Names}}' | grep -Fxq "${REDIS_CONTAINER}"; then
+			docker logs "${REDIS_CONTAINER}" >&2 || true
+			fail "Redis container s'ha aturat abans d'estar llest"
+		fi
+		if ! docker ps --format '{{.Names}}' | grep -Fxq "${MONGO_CONTAINER}"; then
+			docker logs "${MONGO_CONTAINER}" >&2 || true
+			fail "Mongo container s'ha aturat abans d'estar llest"
+		fi
+
+		if docker exec "${PG_CONTAINER}" pg_isready -U erp -d postgres >/dev/null 2>&1 \
+			&& docker exec "${REDIS_CONTAINER}" redis-cli ping 2>/dev/null | grep -Fq PONG \
+			&& docker exec "${MONGO_CONTAINER}" mongo --quiet --eval 'db.runCommand({ ping: 1 }).ok' 2>/dev/null | grep -Fxq 1; then
+			return
+		fi
+
+		now=$(date +%s)
+		if [ $((now - start)) -ge "${timeout}" ]; then
+			docker logs "${PG_CONTAINER}" >&2 || true
+			docker logs "${REDIS_CONTAINER}" >&2 || true
+			docker logs "${MONGO_CONTAINER}" >&2 || true
+			fail "Timeout esperant dependències llestes (${timeout}s)"
+		fi
+		sleep 5
+	done
+}
+
 wait_for_runtime_ready() {
 	local timeout="$1"
 	local start now
@@ -164,15 +215,27 @@ wait_for_runtime_ready() {
 }
 
 resolve_target_repository() {
-	if [ -n "${TARGET_IMAGE_REPOSITORY}" ]; then
+	if [[ "${HARBOR_IMAGE_REPOSITORY}" =~ ^.+:[^/]+$ ]]; then
+		HARBOR_IMAGE_REPOSITORY="${HARBOR_IMAGE_REPOSITORY%:*}"
+	fi
+}
+
+login_harbor_if_configured() {
+	local registry
+	registry="${HARBOR_IMAGE_REPOSITORY%%/*}"
+
+	if [ -z "${HARBOR_DOMAIN}" ] && [ -z "${HARBOR_USERNAME}" ] && [ -z "${HARBOR_PASSWORD}" ]; then
+		log "Sense HARBOR_* configurat; confiant en credencials docker existents"
 		return
 	fi
 
-	if [[ "${TARGET_IMAGE}" =~ ^.+:[^/]+$ ]]; then
-		TARGET_IMAGE_REPOSITORY="${TARGET_IMAGE%:*}"
-	else
-		TARGET_IMAGE_REPOSITORY="${TARGET_IMAGE}"
-	fi
+	[ -n "${HARBOR_DOMAIN}" ] || fail "Cal HARBOR_DOMAIN per fer docker login"
+	[ -n "${HARBOR_USERNAME}" ] || fail "Cal HARBOR_USERNAME per fer docker login"
+	[ -n "${HARBOR_PASSWORD}" ] || fail "Cal HARBOR_PASSWORD per fer docker login"
+	[ "${HARBOR_DOMAIN}" = "${registry}" ] || fail "HARBOR_DOMAIN (${HARBOR_DOMAIN}) no coincideix amb registry de HARBOR_IMAGE_REPOSITORY (${registry})"
+
+	log "Fent docker login a ${HARBOR_DOMAIN}"
+	printf '%s' "${HARBOR_PASSWORD}" | docker login "${HARBOR_DOMAIN}" --username "${HARBOR_USERNAME}" --password-stdin >/dev/null
 }
 
 main() {
@@ -192,13 +255,17 @@ main() {
 		-e POSTGRES_USER=erp -e POSTGRES_PASSWORD=erp -e POSTGRES_DB=erp \
 		"${POSTGRES_IMAGE}" >/dev/null
 	docker run -d --name "${REDIS_CONTAINER}" --network "${NETWORK_NAME}" --network-alias redis "${REDIS_IMAGE}" >/dev/null
-	docker run -d --name "${MONGO_CONTAINER}" --network "${NETWORK_NAME}" --network-alias mongo "${MONGO_IMAGE}" >/dev/null
+	docker run -d --name "${MONGO_CONTAINER}" --network "${NETWORK_NAME}" --network-alias mongo "${MONGO_IMAGE}" ${MONGO_ARGS} >/dev/null
+
+	log "Esperant dependències llestes"
+	wait_for_dependencies_ready 300
 
 	log "Arrencar runtime per fer bootstrap"
 	docker run -d --name "${RUNTIME_CONTAINER}" --network "${NETWORK_NAME}" \
 		-v "${GITHUB_TOKEN_FILE}:/run/secrets/github_token:ro" \
 		-e ERP_BRANCH="${ERP_BRANCH}" \
 		-e ERP_DATABASE="${ERP_DATABASE}" \
+		-e ERP_BOOTSTRAP_TIMEOUT="${WAIT_TIMEOUT_SECONDS}" \
 		-e OPENERP_DB_USER=erp \
 		-e OPENERP_DB_PASSWORD=erp \
 		--entrypoint bash \
@@ -218,25 +285,26 @@ main() {
 	fi
 
 	resolve_target_repository
+	login_harbor_if_configured
 
 	sanitize_runtime_container
 
 	log "Aturant runtime bootstrapat"
 	docker stop "${RUNTIME_CONTAINER}" >/dev/null
 
-	log "Committant imatge prewarmed -> ${TARGET_IMAGE_REPOSITORY}:latest"
+	log "Committant imatge prewarmed -> ${HARBOR_IMAGE_REPOSITORY}:latest"
 	docker commit \
 		--change 'ENTRYPOINT ["/opt/somenergia/src/openerp_som_addons/runtime-docker/entrypoint.sh"]' \
 		--change 'CMD []' \
-		"${RUNTIME_CONTAINER}" "${TARGET_IMAGE_REPOSITORY}:latest" >/dev/null
+		"${RUNTIME_CONTAINER}" "${HARBOR_IMAGE_REPOSITORY}:latest" >/dev/null
 
-	log "Taggant imatge prewarmed -> ${TARGET_IMAGE_REPOSITORY}:${DATE_TAG}"
-	docker tag "${TARGET_IMAGE_REPOSITORY}:latest" "${TARGET_IMAGE_REPOSITORY}:${DATE_TAG}"
+	log "Taggant imatge prewarmed -> ${HARBOR_IMAGE_REPOSITORY}:${DATE_TAG}"
+	docker tag "${HARBOR_IMAGE_REPOSITORY}:latest" "${HARBOR_IMAGE_REPOSITORY}:${DATE_TAG}"
 
-	log "Publicant ${TARGET_IMAGE_REPOSITORY}:latest"
-	docker push "${TARGET_IMAGE_REPOSITORY}:latest"
-	log "Publicant ${TARGET_IMAGE_REPOSITORY}:${DATE_TAG}"
-	docker push "${TARGET_IMAGE_REPOSITORY}:${DATE_TAG}"
+	log "Publicant ${HARBOR_IMAGE_REPOSITORY}:latest"
+	docker push "${HARBOR_IMAGE_REPOSITORY}:latest"
+	log "Publicant ${HARBOR_IMAGE_REPOSITORY}:${DATE_TAG}"
+	docker push "${HARBOR_IMAGE_REPOSITORY}:${DATE_TAG}"
 
 	log "Imatge prewarmed publicada correctament"
 }

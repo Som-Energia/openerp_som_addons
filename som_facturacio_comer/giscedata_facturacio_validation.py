@@ -291,5 +291,28 @@ class GiscedataFacturacioValidationValidator(osv.osv):
             self
         ).check_exceding_days(cursor, uid, fact, parameters)
 
+    def check_f070_condicions_especials(self, cursor, uid, fact, linia_saju, parameters):
+        """ To be customized """
+        res = super(GiscedataFacturacioValidationValidator, self).check_f070_condicions_especials(
+            cursor, uid, fact, linia_saju, parameters
+        )
+        if res and fact.data_inici < '2026-05-01' <= fact.data_final:
+            facturador_obj = self.pool.get('giscedata.facturacio.facturador')
+            context = {'get_original_ssaa_curves': True}
+            original_curves = facturador_obj.get_consum_curve_components_for_servei(
+                cursor, uid, fact.id, fact.data_inici, fact.data_final,
+                single_period_profiling=False, context=context
+            )
+
+            original_consum = 0.0
+            for curve in original_curves:
+                original_consum += curve.total_sum
+
+            tolerancia = parameters.get("tolerancia", 1)
+            diferencia_facturada_saju = original_consum - fact.energia_kwh
+            if abs(diferencia_facturada_saju) > tolerancia:
+                res = False
+        return res
+
 
 GiscedataFacturacioValidationValidator()

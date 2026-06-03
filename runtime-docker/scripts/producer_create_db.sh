@@ -181,6 +181,14 @@ wait_for_db() {
   fail "PostgreSQL no està llest després d'esperar"
 }
 
+force_admin_credentials() {
+  log "Forçant credencials admin/admin"
+  run_compose -f "${COMPOSE_FILE}" exec -T "${DB_SERVICE}" \
+    psql -U "${POSTGRES_USER}" -d "${POSTGRES_DB}" \
+    -v login="admin" -v password="admin" \
+    -c "UPDATE res_users SET password = :'password' WHERE login = :'login';"
+}
+
 restore_prewarmed_db_if_available() {
   local app_tables
 
@@ -229,6 +237,7 @@ main() {
   assert_host_accessible_services
 
   if restore_prewarmed_db_if_available; then
+    force_admin_credentials
     return
   fi
 
@@ -236,6 +245,7 @@ main() {
     app_tables="$(count_app_tables)"
     if [ -n "${app_tables}" ] && [ "${app_tables}" -gt 0 ]; then
       log "No s'ha trobat ${builder_script}, però la BD ${POSTGRES_DB} ja té ${app_tables} taules d'aplicació. Continuem."
+      force_admin_credentials
       return
     fi
     fail "No s'ha trobat ${builder_script} i la BD ${POSTGRES_DB} no té model de negoci. Inicialitza-la externament o restaura un dataset abans de fer dump."
@@ -249,6 +259,8 @@ main() {
   OPENERP_DB_PASSWORD="${POSTGRES_PASSWORD}" \
   ERP_IGNORE_DESTRAL_FAILURES=0 \
   bash "${builder_script}"
+
+  force_admin_credentials
 
   log "Inicialització completada per BD ${POSTGRES_DB}"
 }
