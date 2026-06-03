@@ -23,4 +23,4 @@ runs:
         GITHUB_TOKEN: ${{ inputs.github_token }}
         ERP_BRANCH: ${{ inputs.erpbranch }}
         PYTHON_VERSION: ${{ inputs.python-version }}
-      run: ${{ github.action_path }}/../../../scripts/bootstrap-erp-env.sh
+      run: ${{ github.action_path }}/bootstrap-erp-env.sh

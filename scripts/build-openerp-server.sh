@@ -76,7 +76,7 @@ echo "Building ERP model in database '$ERP_DATABASE'"
 SAVED_OPENERP_CONFIG="${OPENERP_CONFIG:-}"
 unset OPENERP_CONFIG
 set +e
-"${DESTRAL_RUN[@]}" -m som_webforms_helpers -d "$ERP_DATABASE" -t test_tarifes
+"${DESTRAL_RUN[@]}" -m som_webforms_helpers www_som -d "$ERP_DATABASE" -t test_tarifes
 DESTRAL_EXIT_CODE=$?
 set -e
 if [ -n "$SAVED_OPENERP_CONFIG" ]; then
