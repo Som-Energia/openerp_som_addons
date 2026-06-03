@@ -93,6 +93,12 @@ class GiscedataFacturacioFacturador(osv.osv):
             res.append(curve)
         return res
 
+    def get_audit_keys_calc_preu_servei_ajust(self, cursor, uid):
+        return {'corba_sa': 'curve'}
+
+    def get_audit_keys_phf_calc_servei_ajust(self, cursor, uid):
+        return {'prdemcad_sa': 'prdemcad', 'perdues_sa': 'perdues'}
+
     def phf_calc_servei_ajust(self, cursor, uid, factura, tariff, esios_token, start_date, end_date,
                               context=None):
         if context is None:
@@ -111,7 +117,7 @@ class GiscedataFacturacioFacturador(osv.osv):
         B = (1 + (perdues * 0.01))
         C = A * B
 
-        audit_keys = {'prdemcad_sa': 'prdemcad', 'perdues_sa': 'perdues'}
+        audit_keys = self.get_audit_keys_phf_calc_servei_ajust(cursor, uid)
         for key in audit_keys.keys():
             if key not in tariff.audit_data.keys():
                 tariff.audit_data[key] = []
