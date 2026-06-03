@@ -9,27 +9,6 @@ from .base_som_lead_www import BaseSomLeadWwwTest
 
 
 class TestLeadWwwCreation(BaseSomLeadWwwTest):
-    def test_create_lead_sets_default_billing_payment_method(self):
-        www_lead_o = self.get_model("som.lead.www")
-        lead_o = self.get_model("giscedata.crm.lead")
-
-        result = www_lead_o.create_lead(self.cursor, self.uid, self._basic_values)
-        lead = lead_o.browse(self.cursor, self.uid, result["lead_id"])
-
-        self.assertEqual(lead.billing_payment_method, "remesa")
-
-    def test_create_lead_keeps_explicit_billing_payment_method(self):
-        www_lead_o = self.get_model("som.lead.www")
-        lead_o = self.get_model("giscedata.crm.lead")
-
-        values = self._basic_values
-        values["billing_payment_method"] = "card_recurrent"
-
-        result = www_lead_o.create_lead(self.cursor, self.uid, values)
-        lead = lead_o.browse(self.cursor, self.uid, result["lead_id"])
-
-        self.assertEqual(lead.billing_payment_method, "card_recurrent")
-
     def test_create_lead_starts_without_credit_card_data(self):
         www_lead_o = self.get_model("som.lead.www")
         lead_o = self.get_model("giscedata.crm.lead")

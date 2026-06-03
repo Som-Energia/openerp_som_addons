@@ -22,197 +22,19 @@ class SomLeadWww(osv.osv_memory):
     def create_lead(self, cr, uid, www_vals, context=None):
         if context is None:
             context = {}
-        imd_o = self.pool.get("ir.model.data")
         lead_o = self.pool.get("giscedata.crm.lead")
-        payment_mode_o = self.pool.get("payment.mode")
-        polissa_o = self.pool.get("giscedata.polissa")
-        tarifa_o = self.pool.get("giscedata.polissa.tarifa")
-        partner_o = self.pool.get("res.partner")
-        cnae_o = self.pool.get("giscemisc.cnae")
-        self.pool.get("giscedata.cups.ps")
-        selfcons_o = self.pool.get("giscedata.autoconsum")
         ir_model_o = self.pool.get("ir.model.data")
 
-        contract_info = www_vals["contract_info"]
-        contract_address = contract_info["cups_address"]
+        payment_data = self._resolve_payment_configuration(cr, uid, www_vals, context=context)
+        contract_data = self._resolve_contract_data(cr, uid, www_vals, context=context)
+        member_type, member = self._resolve_member_data(cr, uid, www_vals, context=context)
+        member = self._normalize_member_data(cr, uid, member, context=context)
 
-        tensio_xml_id = 'tensio_230'
-        if contract_info.get("phase") == "3x230/400":
-            tensio_xml_id = 'tensio_3x230_400'
-        tensio_id = imd_o.get_object_reference(cr, uid, 'giscedata_tensions', tensio_xml_id)[1]
-
-        billing_payment_method = www_vals.get("billing_payment_method", "remesa")
-        payment_mode_id = payment_mode_o.search(cr, uid, [("name", "=", "ENGINYERS")])[0]
-        if billing_payment_method == 'card_recurrent':
-            payment_mode_id = ir_model_o.get_object_reference(
-                cr, uid, "som_card_payment", "payment_mode_card_recurrent"
-            )[1]
-
-        tarifa_id = tarifa_o.search(cr, uid, [("name", "=", contract_info["tariff"])])[0]
-        tariff_mode = 'index' if contract_info["is_indexed"] else 'atr'
-        llista_preu_id = polissa_o.get_pricelist_from_tariff_and_location(
-            cr, uid, contract_info["tariff"], tariff_mode, contract_address["city_id"], context).id
-
-        try:
-            cnae_id = cnae_o.search(cr, uid, [("name", "=", contract_info["cnae"])])[0]
-        except IndexError:
-            cnae_id = None  # TODO: Probably new CNAE 2025, by the moment we avoid to fail
-
-        distri_ref = get_dso(contract_info["cups"])
-
-        member_type = www_vals["linked_member"]
-
-        if member_type == "new_member":
-            self._check_member_vat_dont_exists(
-                cr, uid, www_vals["new_member_info"]["vat"], context=context)
-            member = www_vals["new_member_info"]
-        elif member_type in ["sponsored", "already_member"]:
-            self._check_member_vat_number_matching(
-                cr, uid, www_vals["linked_member_info"]["vat"],
-                www_vals["linked_member_info"]["code"], context=context
-            )
-            if member_type == "sponsored":
-                member = www_vals["contract_owner"]
-                context["sponsored_titular"] = True
-            else:
-                member = {
-                    "vat": www_vals["linked_member_info"]["vat"],
-                    "address": {},
-                }
-
-            # Complying with the format seq_som_partner_seq format
-            member["number"] = "S" + www_vals["linked_member_info"]["code"].zfill(6)
-        else:
-            raise osv.except_osv(
-                "Error",
-                "linked_member value not valid: %s" % member_type
-            )
-
-        # Split phone and prefix
-        member["phone_prefix"], member["phone"] = self._split_phone_prefix(
-            cr, uid, member.get("phone"))
-        member["mobile_prefix"], member["phone2"] = self._split_phone_prefix(
-            cr, uid, member.get("phone2"))
-
-        # Prepare name and surname for the ERP standards
-        if member.get("name") and member.get("surname"):
-            names = partner_o.separa_cognoms(
-                cr, uid, "{}, {}".format(member["surname"], member["name"]))
-            member.update({
-                'name': names['nom'],
-                'surname': names['cognoms'][0],
-                'surname2': names['cognoms'][1],
-            })
-
-        values = {
-            "state": "open",
-            "name": "{} / {}".format(member["vat"].upper(), contract_info["cups"]),
-            "cups": contract_info["cups"],
-            "codigoEmpresaDistribuidora": distri_ref,
-            "cups_ref_catastral": contract_info.get("cups_cadastral_reference"),
-            "cups_zip": contract_address["postal_code"],
-            "cups_id_municipi": contract_address["city_id"],
-            "cups_nv": contract_address["street"],
-            "cups_pnp": contract_address.get("number"),
-            "cups_pt": contract_address.get("floor"),
-            "cups_es": contract_address.get("stair"),
-            "cups_pu": contract_address.get("door"),
-            "cups_bq": contract_address.get("block"),
-            "cnae": cnae_id,
-            "tarifa": tarifa_id,
-            "facturacio_potencia": 'max' if contract_info["tariff"] == '3.0TD' else 'icp',
-            "tensio_normalitzada": tensio_id,
-            "atr_proces_name": contract_info['process'],
-            "change_adm": contract_info['process'] == 'C2',
-            "contract_type": self._CONTRACT_TYPE_ANUAL,
-            "llista_preu": llista_preu_id,
-            "facturacio": self._FACTURACIO_MENSUAL,
-            "iban": www_vals["iban"],
-            "payment_mode_id": payment_mode_id,
-            "enviament": "email",
-            "create_new_member": member_type == "new_member",
-            "autoconsumo": "00",  # Without self-consumption by default
-            "member_number": member.get("number"),
-            "titular_vat": 'ES%s' % member["vat"].upper(),
-            "titular_nom": member.get("name"),
-            "titular_cognom1": member.get("surname"),
-            "titular_cognom2": member.get("surname2"),
-            "tipus_vivenda": 'habitual',
-            "titular_zip": member["address"].get("postal_code"),
-            "titular_nv": member["address"].get("street"),
-            "titular_pnp": member["address"].get("number"),
-            "titular_pt": member["address"].get("floor"),
-            "titular_es": member["address"].get("stair"),
-            "titular_pu": member["address"].get("door"),
-            "titular_bq": member["address"].get("block"),
-            "titular_id_municipi": member["address"].get("city_id"),
-            "titular_email": member.get("email", "").lower() or None,
-            "titular_phone": member.get("phone"),
-            "titular_mobile": member.get("phone2"),
-            "titular_phone_prefix": member.get("phone_prefix"),
-            "titular_mobile_prefix": member.get("mobile_prefix"),
-            "use_cont_address": False,
-            "donation": www_vals.get("donation", False),
-            "member_quota_payment_type": www_vals.get("member_payment_type"),
-            "billing_payment_method": www_vals.get("billing_payment_method", "remesa"),
-            "gender": member.get("gender"),
-            "birthdate": member.get("birthdate"),
-            "referral_source": member.get("referral_source"),
-            "comercial_info_accepted": member.get("comercial_info_accepted", False),
-        }
-
-        values["user_id"] = ir_model_o.get_object_reference(
-            cr, uid, "base_extended_som", "res_users_webforms"
-        )[1]
-
-        values["stage_id"] = ir_model_o.get_object_reference(
-            cr, uid, "som_leads_polissa", "webform_stage_recieved"
-        )[1]
-
-        values["section_id"] = ir_model_o.get_object_reference(
-            cr, uid, "som_leads_polissa", "webform_section"
-        )[1]
-
-        if member.get("is_juridic"):
-            values["persona_firmant_vat"] = member["proxy_vat"]
-            values["persona_nom"] = member["proxy_name"]
-            values["is_juridic"] = True
-
-        for i, power in enumerate(contract_info["powers"]):
-            values["potenciasContratadasEnKWP%s" % str(i + 1)] = float(power) / 1000
-
-        if member.get("lang", False):
-            values["lang"] = member["lang"]
-
-        if www_vals.get("self_consumption"):
-            values["seccio_registre"] = self._127_WITH_SURPLUSES
-            values["subseccio"] = self._128_SIMPLIFIED_SURPLUSES
-            values["tipus_cups"] = self._131_CONSUMPTION
-
-            values["cau"] = www_vals["self_consumption"]["cau"]
-            values["collectiu"] = www_vals["self_consumption"]["collective_installation"]
-            values["tec_generador"] = www_vals["self_consumption"]["technology"]
-            values["pot_instalada_gen"] = float(
-                www_vals["self_consumption"]["installation_power"]
-            ) / 1000
-            values["tipus_installacio"] = www_vals["self_consumption"]["installation_type"]
-            values["ssaa"] = 'S' if www_vals["self_consumption"]['aux_services'] else 'N'
-
-            values["autoconsumo"] = selfcons_o.get_ree_autoconsum_type_from_attrs(
-                values["seccio_registre"], values["subseccio"], int(values["collectiu"]),
-                int(values["tipus_cups"]), int(values["tipus_installacio"]), context=context
-            )
-
-        values["is_new_contact"] = (
-            not self._already_has_contract(cr, uid, values["titular_vat"], context=context))
-
-        # Remove None values to let the lead get them if exists in the bbdd
-        for field, value in values.items():
-            if value is None:
-                del values[field]
-
-        # Avoid filling poblacio from existing values because it can be wrong
-        values["titular_id_poblacio"] = None
+        values = self._build_lead_values(
+            cr, uid, www_vals, member_type, member, contract_data, payment_data, context=context
+        )
+        values = self._apply_self_consumption_values(cr, uid, values, www_vals, context=context)
+        values = self._finalize_lead_values(values)
 
         lead_id = lead_o.create(cr, uid, values, context=context)
         self._create_attachments(cr, uid, lead_id, www_vals.get("attachments", []), context=context)
@@ -238,6 +60,264 @@ class SomLeadWww(osv.osv_memory):
             "lead_id": lead_id,
             "error": error_info,
         }
+
+    def _resolve_payment_configuration(self, cr, uid, www_vals, context=None):
+        if context is None:
+            context = {}
+
+        payment_mode_o = self.pool.get("payment.mode")
+        ir_model_o = self.pool.get("ir.model.data")
+
+        member_payment_type = www_vals.get("member_payment_type")
+        billing_payment_method = www_vals.get("billing_payment_method")
+
+        if not billing_payment_method:
+            billing_payment_method = (
+                "card_recurrent" if member_payment_type == "tpv" else "remesa"
+            )
+
+        invalid_payment_configuration = (
+            (member_payment_type == "tpv" and billing_payment_method != "card_recurrent")
+            or (member_payment_type == "remesa" and billing_payment_method != "remesa")
+        )
+        if invalid_payment_configuration:
+            raise osv.except_osv(
+                "INVALID_PAYMENT_CONFIGURATION",
+                "La forma de pagament de la quota i la de la facturacio han de ser coherents."
+            )
+
+        payment_mode_id = payment_mode_o.search(cr, uid, [("name", "=", "ENGINYERS")])[0]
+        if billing_payment_method == 'card_recurrent':
+            payment_mode_id = ir_model_o.get_object_reference(
+                cr, uid, "som_card_payment", "payment_mode_card_recurrent"
+            )[1]
+
+        return {
+            "member_payment_type": member_payment_type,
+            "billing_payment_method": billing_payment_method,
+            "payment_mode_id": payment_mode_id,
+        }
+
+    def _resolve_contract_data(self, cr, uid, www_vals, context=None):
+        if context is None:
+            context = {}
+
+        imd_o = self.pool.get("ir.model.data")
+        polissa_o = self.pool.get("giscedata.polissa")
+        tarifa_o = self.pool.get("giscedata.polissa.tarifa")
+        cnae_o = self.pool.get("giscemisc.cnae")
+
+        contract_info = www_vals["contract_info"]
+        contract_address = contract_info["cups_address"]
+
+        tensio_xml_id = 'tensio_230'
+        if contract_info.get("phase") == "3x230/400":
+            tensio_xml_id = 'tensio_3x230_400'
+        tensio_id = imd_o.get_object_reference(cr, uid, 'giscedata_tensions', tensio_xml_id)[1]
+
+        tarifa_id = tarifa_o.search(cr, uid, [("name", "=", contract_info["tariff"])])[0]
+        tariff_mode = 'index' if contract_info["is_indexed"] else 'atr'
+        llista_preu_id = polissa_o.get_pricelist_from_tariff_and_location(
+            cr, uid, contract_info["tariff"], tariff_mode, contract_address["city_id"], context
+        ).id
+
+        try:
+            cnae_id = cnae_o.search(cr, uid, [("name", "=", contract_info["cnae"])])[0]
+        except IndexError:
+            cnae_id = None
+
+        return {
+            "contract_info": contract_info,
+            "contract_address": contract_address,
+            "tensio_id": tensio_id,
+            "tarifa_id": tarifa_id,
+            "llista_preu_id": llista_preu_id,
+            "cnae_id": cnae_id,
+            "distri_ref": get_dso(contract_info["cups"]),
+        }
+
+    def _resolve_member_data(self, cr, uid, www_vals, context=None):
+        if context is None:
+            context = {}
+
+        member_type = www_vals["linked_member"]
+        if member_type == "new_member":
+            self._check_member_vat_dont_exists(
+                cr, uid, www_vals["new_member_info"]["vat"], context=context
+            )
+            return member_type, www_vals["new_member_info"]
+
+        if member_type in ["sponsored", "already_member"]:
+            self._check_member_vat_number_matching(
+                cr, uid, www_vals["linked_member_info"]["vat"],
+                www_vals["linked_member_info"]["code"], context=context
+            )
+            if member_type == "sponsored":
+                member = www_vals["contract_owner"]
+                context["sponsored_titular"] = True
+            else:
+                member = {
+                    "vat": www_vals["linked_member_info"]["vat"],
+                    "address": {},
+                }
+            member["number"] = "S" + www_vals["linked_member_info"]["code"].zfill(6)
+            return member_type, member
+
+        raise osv.except_osv(
+            "Error",
+            "linked_member value not valid: %s" % member_type
+        )
+
+    def _normalize_member_data(self, cr, uid, member, context=None):
+        if context is None:
+            context = {}
+
+        partner_o = self.pool.get("res.partner")
+
+        member["phone_prefix"], member["phone"] = self._split_phone_prefix(
+            cr, uid, member.get("phone")
+        )
+        member["mobile_prefix"], member["phone2"] = self._split_phone_prefix(
+            cr, uid, member.get("phone2")
+        )
+
+        if member.get("name") and member.get("surname"):
+            names = partner_o.separa_cognoms(
+                cr, uid, "{}, {}".format(member["surname"], member["name"])
+            )
+            member.update({
+                'name': names['nom'],
+                'surname': names['cognoms'][0],
+                'surname2': names['cognoms'][1],
+            })
+
+        return member
+
+    def _build_lead_values(
+        self, cr, uid, www_vals, member_type, member, contract_data, payment_data, context=None
+    ):
+        if context is None:
+            context = {}
+
+        ir_model_o = self.pool.get("ir.model.data")
+        contract_info = contract_data["contract_info"]
+        contract_address = contract_data["contract_address"]
+
+        values = {
+            "state": "open",
+            "name": "{} / {}".format(member["vat"].upper(), contract_info["cups"]),
+            "cups": contract_info["cups"],
+            "codigoEmpresaDistribuidora": contract_data["distri_ref"],
+            "cups_ref_catastral": contract_info.get("cups_cadastral_reference"),
+            "cups_zip": contract_address["postal_code"],
+            "cups_id_municipi": contract_address["city_id"],
+            "cups_nv": contract_address["street"],
+            "cups_pnp": contract_address.get("number"),
+            "cups_pt": contract_address.get("floor"),
+            "cups_es": contract_address.get("stair"),
+            "cups_pu": contract_address.get("door"),
+            "cups_bq": contract_address.get("block"),
+            "cnae": contract_data["cnae_id"],
+            "tarifa": contract_data["tarifa_id"],
+            "facturacio_potencia": 'max' if contract_info["tariff"] == '3.0TD' else 'icp',
+            "tensio_normalitzada": contract_data["tensio_id"],
+            "atr_proces_name": contract_info['process'],
+            "change_adm": contract_info['process'] == 'C2',
+            "contract_type": self._CONTRACT_TYPE_ANUAL,
+            "llista_preu": contract_data["llista_preu_id"],
+            "facturacio": self._FACTURACIO_MENSUAL,
+            "iban": www_vals["iban"],
+            "payment_mode_id": payment_data["payment_mode_id"],
+            "enviament": "email",
+            "create_new_member": member_type == "new_member",
+            "autoconsumo": "00",
+            "member_number": member.get("number"),
+            "titular_vat": 'ES%s' % member["vat"].upper(),
+            "titular_nom": member.get("name"),
+            "titular_cognom1": member.get("surname"),
+            "titular_cognom2": member.get("surname2"),
+            "tipus_vivenda": 'habitual',
+            "titular_zip": member["address"].get("postal_code"),
+            "titular_nv": member["address"].get("street"),
+            "titular_pnp": member["address"].get("number"),
+            "titular_pt": member["address"].get("floor"),
+            "titular_es": member["address"].get("stair"),
+            "titular_pu": member["address"].get("door"),
+            "titular_bq": member["address"].get("block"),
+            "titular_id_municipi": member["address"].get("city_id"),
+            "titular_email": member.get("email", "").lower() or None,
+            "titular_phone": member.get("phone"),
+            "titular_mobile": member.get("phone2"),
+            "titular_phone_prefix": member.get("phone_prefix"),
+            "titular_mobile_prefix": member.get("mobile_prefix"),
+            "use_cont_address": False,
+            "donation": www_vals.get("donation", False),
+            "member_quota_payment_type": payment_data["member_payment_type"],
+            "billing_payment_method": payment_data["billing_payment_method"],
+            "gender": member.get("gender"),
+            "birthdate": member.get("birthdate"),
+            "referral_source": member.get("referral_source"),
+            "comercial_info_accepted": member.get("comercial_info_accepted", False),
+        }
+
+        values["user_id"] = ir_model_o.get_object_reference(
+            cr, uid, "base_extended_som", "res_users_webforms"
+        )[1]
+        values["stage_id"] = ir_model_o.get_object_reference(
+            cr, uid, "som_leads_polissa", "webform_stage_recieved"
+        )[1]
+        values["section_id"] = ir_model_o.get_object_reference(
+            cr, uid, "som_leads_polissa", "webform_section"
+        )[1]
+
+        if member.get("is_juridic"):
+            values["persona_firmant_vat"] = member["proxy_vat"]
+            values["persona_nom"] = member["proxy_name"]
+            values["is_juridic"] = True
+
+        for i, power in enumerate(contract_info["powers"]):
+            values["potenciasContratadasEnKWP%s" % str(i + 1)] = float(power) / 1000
+
+        if member.get("lang", False):
+            values["lang"] = member["lang"]
+
+        values["is_new_contact"] = (
+            not self._already_has_contract(cr, uid, values["titular_vat"], context=context)
+        )
+
+        return values
+
+    def _apply_self_consumption_values(self, cr, uid, values, www_vals, context=None):
+        if context is None:
+            context = {}
+
+        if not www_vals.get("self_consumption"):
+            return values
+
+        selfcons_o = self.pool.get("giscedata.autoconsum")
+        values["seccio_registre"] = self._127_WITH_SURPLUSES
+        values["subseccio"] = self._128_SIMPLIFIED_SURPLUSES
+        values["tipus_cups"] = self._131_CONSUMPTION
+        values["cau"] = www_vals["self_consumption"]["cau"]
+        values["collectiu"] = www_vals["self_consumption"]["collective_installation"]
+        values["tec_generador"] = www_vals["self_consumption"]["technology"]
+        values["pot_instalada_gen"] = float(
+            www_vals["self_consumption"]["installation_power"]
+        ) / 1000
+        values["tipus_installacio"] = www_vals["self_consumption"]["installation_type"]
+        values["ssaa"] = 'S' if www_vals["self_consumption"]['aux_services'] else 'N'
+        values["autoconsumo"] = selfcons_o.get_ree_autoconsum_type_from_attrs(
+            values["seccio_registre"], values["subseccio"], int(values["collectiu"]),
+            int(values["tipus_cups"]), int(values["tipus_installacio"]), context=context
+        )
+        return values
+
+    def _finalize_lead_values(self, values):
+        for field, value in values.items():
+            if value is None:
+                del values[field]
+        values["titular_id_poblacio"] = None
+        return values
 
     def add_payment_card_data(self, cr, uid, lead_id, card_vals, context=None):
         if context is None:
