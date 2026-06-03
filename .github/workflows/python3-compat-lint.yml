@@ -4,8 +4,7 @@ on:
   pull_request:
     branches: [main]
     paths:
-      - "*.py"
-      - "**/*.py"
+      - "**.py"
       - ".github/workflows/python3-compat-lint.yml"
   workflow_dispatch:
 
@@ -27,10 +26,13 @@ jobs:
 
       - name: Collect Python files
         id: python-files
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
         run: |
-          if [ "${{ github.event_name }}" = "pull_request" ]; then
+          if [ "$EVENT_NAME" = "pull_request" ]; then
             git diff -z --name-only --diff-filter=ACMRT \
-              "${{ github.event.pull_request.base.sha }}" HEAD -- "*.py" > python-files.txt
+              "$BASE_SHA" HEAD -- "*.py" > python-files.txt
           else
             git ls-files -z "*.py" > python-files.txt
           fi
