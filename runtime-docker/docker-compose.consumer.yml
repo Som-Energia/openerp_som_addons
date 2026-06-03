@@ -85,7 +85,7 @@ services:
       HARBOR_DOMAIN: ${HARBOR_DOMAIN}
       HARBOR_USERNAME: ${HARBOR_USERNAME}
       HARBOR_PASSWORD: ${HARBOR_PASSWORD}
-      DATASET_REPOSITORY: ${DATASET_REPOSITORY:-${HARBOR_DOMAIN}/erp/datasets}
+      HARBOR_DATASET_REPOSITORY: ${HARBOR_DATASET_REPOSITORY:-${DATASET_REPOSITORY:-${HARBOR_DOMAIN}/erp/datasets}}
       DATASET_TAG: ${DATASET_TAG:-latest}
       POSTGRES_HOST: postgres
       POSTGRES_PORT: 5432
@@ -107,13 +107,13 @@ services:
         install -m 0755 /tmp/oras /usr/local/bin/oras
         echo "$${HARBOR_PASSWORD}" | oras login "$${HARBOR_DOMAIN}" -u "$${HARBOR_USERNAME}" --password-stdin
         mkdir -p "/cache/datasets/$${DATASET_TAG}"
-        oras pull --output "/cache/datasets/$${DATASET_TAG}" "$${DATASET_REPOSITORY}:$${DATASET_TAG}"
+        oras pull --output "/cache/datasets/$${DATASET_TAG}" "$${HARBOR_DATASET_REPOSITORY}:$${DATASET_TAG}"
         DATASET_FILE="$$(ls -1 /cache/datasets/$${DATASET_TAG}/*.dump.zst | head -n1)"
         test -n "$${DATASET_FILE}"
         zstd -d -f "$${DATASET_FILE}" -o /tmp/restore.dump
         PGPASSWORD="$${POSTGRES_PASSWORD}" dropdb --if-exists -h "$${POSTGRES_HOST}" -p "$${POSTGRES_PORT}" -U "$${POSTGRES_USER}" "$${POSTGRES_DB}"
         PGPASSWORD="$${POSTGRES_PASSWORD}" createdb -h "$${POSTGRES_HOST}" -p "$${POSTGRES_PORT}" -U "$${POSTGRES_USER}" "$${POSTGRES_DB}"
-        pg_restore -l /tmp/restore.dump | awk '!($0 ~ / EXTENSION - timescaledb( |$)/ || $0 ~ / COMMENT - EXTENSION timescaledb( |$)/)' > /tmp/restore.filtered.list
+        pg_restore -l /tmp/restore.dump | awk '!($0 ~ / EXTENSION - timescaledb( |$)/ || $0 ~ / COMMENT - EXTENSION timescaledb( |$)/ || $0 ~ /^[0-9]+; .* (_timescaledb_cache|_timescaledb_catalog|_timescaledb_config|_timescaledb_functions|_timescaledb_internal|timescaledb_information)( |$)/ || $0 ~ / TRIGGER .* ts_insert_blocker( |$)/)' > /tmp/restore.filtered.list
         PGPASSWORD="$${POSTGRES_PASSWORD}" pg_restore -h "$${POSTGRES_HOST}" -p "$${POSTGRES_PORT}" -U "$${POSTGRES_USER}" -d "$${POSTGRES_DB}" --clean --if-exists -L /tmp/restore.filtered.list /tmp/restore.dump
         if [ -n "$${RESET_ADMIN_PASSWORD}" ]; then
           PGPASSWORD="$${POSTGRES_PASSWORD}" psql -h "$${POSTGRES_HOST}" -p "$${POSTGRES_PORT}" -U "$${POSTGRES_USER}" -d "$${POSTGRES_DB}" \

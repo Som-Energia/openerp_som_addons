@@ -3,7 +3,7 @@ set -euo pipefail
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 
-DATASET_REPOSITORY="${DATASET_REPOSITORY:-harbor.example.com/openerp/datasets}"
+HARBOR_DATASET_REPOSITORY="${HARBOR_DATASET_REPOSITORY:-harbor.example.com/openerp/datasets}"
 DATASET_TAG="${DATASET_TAG:-latest}"
 CACHE_DIR="${CACHE_DIR:-${ROOT_DIR}/.cache/datasets}"
 
@@ -25,7 +25,7 @@ main() {
 
   local target_dir ref
   target_dir="${CACHE_DIR}/${DATASET_TAG}"
-  ref="${DATASET_REPOSITORY}:${DATASET_TAG}"
+  ref="${HARBOR_DATASET_REPOSITORY}:${DATASET_TAG}"
 
   mkdir -p "${target_dir}"
   log "Descarregant ${ref} a ${target_dir}"

@@ -63,6 +63,7 @@ Les skills següents estan disponibles al projecte i s'han d'utilitzar quan corr
 | `erp-test` | Executar tests | Veure [.agents/skills/erp-test/SKILL.md](.agents/skills/erp-test/SKILL.md) |
 | `erp-start` | Arrencar servei ERP | Veure [.agents/skills/erp-start/SKILL.md](.agents/skills/erp-start/SKILL.md) |
 | `erp-migration` | Crear scripts de migració | Veure [.agents/skills/erp-migration/SKILL.md](.agents/skills/erp-migration/SKILL.md) |
+| `erp-demo-testcase` | Crear casos demo XML de test | Veure [.agents/skills/erp-demo-testcase/SKILL.md](.agents/skills/erp-demo-testcase/SKILL.md) |
 
 ### Sentry
 

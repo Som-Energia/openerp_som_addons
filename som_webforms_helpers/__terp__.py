@@ -13,7 +13,7 @@
         "som_generationkwh",
         "som_polissa_condicions_generals",
         "giscedata_repercusio_bo_social",
-        "som_gurb"
+        "som_gurb",
     ],
     "init_xml": [],
     "demo_xml": [

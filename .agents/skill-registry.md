@@ -21,6 +21,7 @@ See `_shared/skill-resolver.md` for the full resolution protocol.
 | Quan necessites executar tests d'un mòdul OpenERP amb destral | erp-test | .agents/skills/erp-test/SKILL.md |
 | Quan necessites arrencar el servei ERP, executar l'ERP, o obrir l'entorn de desenvolupament | erp-start | .agents/skills/erp-start/SKILL.md |
 | Quan necessites crear un script de migració, modificar el model, o actualitzar un mòdul a producció | erp-migration | .agents/skills/erp-migration/SKILL.md |
+| Quan necessites afegir casos de test/demo XML en un mòdul OpenERP | erp-demo-testcase | .agents/skills/erp-demo-testcase/SKILL.md |
 | Quan necessites fer triage d'incidències de Sentry, "analitzar sentry", "triar incidents" | sentry-triage | .agents/skills/sentry-triage/SKILL.md |
 
 ## Compact Rules
@@ -62,6 +63,12 @@ See `_shared/skill-resolver.md` for the full resolution protocol.
 - Script automàtic: `python scripts/create_migration_script.py`
 - Estructura: `<modul>/migrations/5.0.25.5.0/post-0001_*.py`
 - Executar: `erpserver -d <db> --run-scripts=<module>` o `--update=<module>`
+
+### erp-demo-testcase
+- Inputs mínims: `module_name`, `model_name`, `record_id_prefix`
+- Detectar camps `required=True` del model abans d'escriure XML
+- Per `many2one` obligatoris, reutilitzar XML IDs existents o crear prerequisits
+- Escriure a `demo/*.xml` i registrar el fitxer al manifest si cal
 
 ### sentry-triage
 - MCP Sentry requerit: Configurar a OpenCode (self-hosted mode)

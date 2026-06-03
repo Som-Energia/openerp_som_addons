@@ -6,7 +6,7 @@ ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 HARBOR_DOMAIN="${HARBOR_DOMAIN:-}"
 HARBOR_USERNAME="${HARBOR_USERNAME:-}"
 HARBOR_PASSWORD="${HARBOR_PASSWORD:-}"
-DATASET_REPOSITORY="${DATASET_REPOSITORY:-}"
+HARBOR_DATASET_REPOSITORY="${HARBOR_DATASET_REPOSITORY:-}"
 
 DATASET_TAG="${DATASET_TAG:-latest}"
 COMPOSE_FILE="${COMPOSE_FILE:-}"
@@ -32,13 +32,13 @@ validate_inputs() {
   [ -n "${HARBOR_USERNAME}" ] || fail "Cal HARBOR_USERNAME"
   [ -n "${HARBOR_PASSWORD}" ] || fail "Cal HARBOR_PASSWORD"
 
-  if [ -z "${DATASET_REPOSITORY}" ]; then
-    DATASET_REPOSITORY="${HARBOR_DOMAIN}/openerp/datasets"
+  if [ -z "${HARBOR_DATASET_REPOSITORY}" ]; then
+    HARBOR_DATASET_REPOSITORY="${HARBOR_DOMAIN}/openerp/datasets"
   fi
 
-  case "${DATASET_REPOSITORY}" in
+  case "${HARBOR_DATASET_REPOSITORY}" in
     */*) ;;
-    *) fail "DATASET_REPOSITORY invàlid: ${DATASET_REPOSITORY}. Exemple vàlid: ${HARBOR_DOMAIN}/openerp/datasets" ;;
+    *) fail "HARBOR_DATASET_REPOSITORY invàlid: ${HARBOR_DATASET_REPOSITORY}. Exemple vàlid: ${HARBOR_DOMAIN}/openerp/datasets" ;;
   esac
 }
 
@@ -148,7 +148,7 @@ main() {
   fi
   resolve_postgres_db
 
-  log "Repository OCI: ${DATASET_REPOSITORY}"
+  log "Repository OCI: ${HARBOR_DATASET_REPOSITORY}"
 
   log "Login a Harbor (${HARBOR_DOMAIN})"
   printf '%s' "${HARBOR_PASSWORD}" | docker login "${HARBOR_DOMAIN}" -u "${HARBOR_USERNAME}" --password-stdin
@@ -158,11 +158,11 @@ main() {
     make -C "${ROOT_DIR}" dataset-producer-create
 
   log "2/4 Publicar dataset"
-  DATASET_REPOSITORY="${DATASET_REPOSITORY}" \
+  HARBOR_DATASET_REPOSITORY="${HARBOR_DATASET_REPOSITORY}" \
     make -C "${ROOT_DIR}" dataset-producer-publish
 
   log "3/4 Descarregar dataset"
-  DATASET_REPOSITORY="${DATASET_REPOSITORY}" DATASET_TAG="${DATASET_TAG}" \
+  HARBOR_DATASET_REPOSITORY="${HARBOR_DATASET_REPOSITORY}" DATASET_TAG="${DATASET_TAG}" \
     make -C "${ROOT_DIR}" dataset-consumer-pull
 
   log "4/4 Restaurar dataset"

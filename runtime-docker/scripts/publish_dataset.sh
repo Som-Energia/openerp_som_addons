@@ -3,7 +3,10 @@ set -euo pipefail
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 
-DATASET_REPOSITORY="${DATASET_REPOSITORY:-harbor.example.com/openerp/datasets}"
+HARBOR_DATASET_REPOSITORY="${HARBOR_DATASET_REPOSITORY:-${DATASET_REPOSITORY:-harbor.example.com/openerp/datasets}}"
+HARBOR_DOMAIN="${HARBOR_DOMAIN:-}"
+HARBOR_USERNAME="${HARBOR_USERNAME:-}"
+HARBOR_PASSWORD="${HARBOR_PASSWORD:-}"
 OUTPUT_DIR="${OUTPUT_DIR:-${ROOT_DIR}/build/datasets}"
 PREWARMED_DB_DUMP_PATH="${PREWARMED_DB_DUMP_PATH:-${ROOT_DIR}/build/prewarmed/prewarmed-db.dump.zst}"
 USE_PREWARMED_DB="${USE_PREWARMED_DB:-1}"
@@ -25,10 +28,35 @@ require_cmd() {
 }
 
 validate_repository() {
-	case "${DATASET_REPOSITORY}" in
+	case "${HARBOR_DATASET_REPOSITORY}" in
 	*/*) ;;
-	*) fail "DATASET_REPOSITORY invàlid: ${DATASET_REPOSITORY}. Exemple vàlid: harbor.example.com/openerp/datasets" ;;
+	*) fail "HARBOR_DATASET_REPOSITORY invàlid: ${HARBOR_DATASET_REPOSITORY}. Exemple vàlid: harbor.example.com/openerp/datasets" ;;
 	esac
+}
+
+registry_from_repository() {
+	printf '%s' "${HARBOR_DATASET_REPOSITORY%%/*}"
+}
+
+oras_login_if_configured() {
+	local registry
+	registry="$(registry_from_repository)"
+
+	if [ -z "${HARBOR_DOMAIN}" ] && [ -z "${HARBOR_USERNAME}" ] && [ -z "${HARBOR_PASSWORD}" ]; then
+		log "Sense HARBOR_* configurat; confiant en credencials existents de docker/oras"
+		return
+	fi
+
+	[ -n "${HARBOR_DOMAIN}" ] || fail "Cal HARBOR_DOMAIN per fer login"
+	[ -n "${HARBOR_USERNAME}" ] || fail "Cal HARBOR_USERNAME per fer login"
+	[ -n "${HARBOR_PASSWORD}" ] || fail "Cal HARBOR_PASSWORD per fer login"
+
+	if [ "${HARBOR_DOMAIN}" != "${registry}" ]; then
+		fail "HARBOR_DOMAIN (${HARBOR_DOMAIN}) no coincideix amb el registry de HARBOR_DATASET_REPOSITORY (${registry})"
+	fi
+
+	log "Fent login ORAS a ${HARBOR_DOMAIN}"
+	printf '%s' "${HARBOR_PASSWORD}" | oras login "${HARBOR_DOMAIN}" --username "${HARBOR_USERNAME}" --password-stdin --insecure
 }
 
 resolve_latest_files() {
@@ -55,7 +83,7 @@ resolve_latest_files() {
 
 push_tag() {
 	local tag="$1"
-	local ref="${DATASET_REPOSITORY}:${tag}"
+	local ref="${HARBOR_DATASET_REPOSITORY}:${tag}"
 	local stage_dir
 
 	stage_dir="$(mktemp -d -t dataset-publish.XXXXXX)"
@@ -76,14 +104,15 @@ push_tag() {
 }
 
 retag_as_latest() {
-	local source_ref="${DATASET_REPOSITORY}:${DATE_TAG}"
-	log "Assignant tag latest al mateix artefacte: ${source_ref} -> ${DATASET_REPOSITORY}:latest"
+	local source_ref="${HARBOR_DATASET_REPOSITORY}:${DATE_TAG}"
+	log "Assignant tag latest al mateix artefacte: ${source_ref} -> ${HARBOR_DATASET_REPOSITORY}:latest"
 	oras tag --insecure "${source_ref}" latest
 }
 
 main() {
 	require_cmd oras
 	validate_repository
+	oras_login_if_configured
 
 	resolve_latest_files
 

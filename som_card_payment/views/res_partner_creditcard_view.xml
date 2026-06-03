@@ -1,0 +1,55 @@
+<?xml version="1.0"?>
+<openerp>
+    <data>
+        <record id="view_res_partner_creditcard_tree" model="ir.ui.view">
+            <field name="name">res.partner.creditcard.tree</field>
+            <field name="model">res.partner.creditcard</field>
+            <field name="type">tree</field>
+            <field name="arch" type="xml">
+                <tree string="Targetes" editable="bottom">
+                    <field name="active"/>
+                    <field name="partner_id"/>
+                    <field name="masked_number"/>
+                    <field name="expiry_date"/>
+                    <field name="token"/>
+                    <field name="cof_txnid"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="view_res_partner_creditcard_form" model="ir.ui.view">
+            <field name="name">res.partner.creditcard.form</field>
+            <field name="model">res.partner.creditcard</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <form string="Targeta">
+                    <group col="4" colspan="4">
+                        <field name="active"/>
+                        <field name="partner_id"/>
+                        <field name="masked_number"/>
+                        <field name="expiry_date"/>
+                        <field name="token" colspan="4"/>
+                        <field name="cof_txnid" colspan="4"/>
+                    </group>
+                </form>
+            </field>
+        </record>
+
+        <record model="ir.actions.act_window" id="action_partner_creditcard_tree">
+            <field name="name">Targetes de partners</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">res.partner.creditcard</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="view_id" ref="view_res_partner_creditcard_tree"/>
+        </record>
+
+        <menuitem
+            id="menu_partner_creditcard_tree"
+            action="action_partner_creditcard_tree"
+            parent="base.menu_partner_form"
+            name="Targetes"
+            sequence="25"
+        />
+    </data>
+</openerp>
