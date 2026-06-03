@@ -31,16 +31,16 @@ class TestSignLead(testing.OOTestCase):
     def test_sign_lead_returns_url_with_signaturit_context(self):
         www_lead_o = self.get_model('som.lead.www')
         mock_lead_o = mock.MagicMock()
+        mock_lead_o.read.side_effect = [
+            {'cups': 'ES123OF'},
+            {'signature_url': 'http://sign.url', 'status': 'done'}
+        ]
         mock_lead_o.check_start_signature_process.return_value = ('end', '')
         mock_lead_o.start_signature_process.return_value = 123
-        mock_lead_o.read.return_value = {
-            'signature_url': 'http://sign.url',
-            'status': 'done'
-        }
 
         with mock.patch.object(www_lead_o.pool, 'get', return_value=mock_lead_o):
             with mock.patch('som_leads_polissa.www.som_lead_www.Sudo'):
-                result = www_lead_o.sign_lead(self.cursor, self.uid, 1)
+                result = www_lead_o.sign_lead(self.cursor, self.uid, 1, 'ES123OF')
 
         self.assertEqual(result, {'url': 'http://sign.url'})
         ctx_passed = mock_lead_o.check_start_signature_process.call_args[1]['context']
@@ -53,23 +53,36 @@ class TestSignLead(testing.OOTestCase):
     def test_sign_lead_invalid_lead_raises(self):
         www_lead_o = self.get_model('som.lead.www')
         mock_lead_o = mock.MagicMock()
+        mock_lead_o.read.return_value = {'cups': 'ES123OF'}
         mock_lead_o.check_start_signature_process.return_value = ('error', 'Lead no pot firmar')
 
         with mock.patch.object(www_lead_o.pool, 'get', return_value=mock_lead_o):
             with self.assertRaises(osv.except_osv):
-                www_lead_o.sign_lead(self.cursor, self.uid, 1)
+                www_lead_o.sign_lead(self.cursor, self.uid, 1, 'ES123OF')
 
         mock_lead_o.start_signature_process.assert_not_called()
+
+    def test_sign_lead_invalid_cups_raises(self):
+        www_lead_o = self.get_model('som.lead.www')
+        mock_lead_o = mock.MagicMock()
+        mock_lead_o.read.return_value = {'cups': 'ES123OF'}
+
+        with mock.patch.object(www_lead_o.pool, 'get', return_value=mock_lead_o):
+            with self.assertRaises(osv.except_osv):
+                www_lead_o.sign_lead(self.cursor, self.uid, 1, 'ES999OF')
+
+        mock_lead_o.check_start_signature_process.assert_not_called()
 
     def test_sign_lead_timeout_raises(self):
         www_lead_o = self.get_model('som.lead.www')
         mock_lead_o = mock.MagicMock()
+        mock_lead_o.read.side_effect = [
+            {'cups': 'ES123OF'},
+            {'signature_url': False, 'status': 'wait'},
+            {'signature_url': False, 'status': 'wait'}
+        ]
         mock_lead_o.check_start_signature_process.return_value = ('end', '')
         mock_lead_o.start_signature_process.return_value = 123
-        mock_lead_o.read.return_value = {
-            'signature_url': False,
-            'status': 'wait'
-        }
 
         with mock.patch.object(www_lead_o.pool, 'get', return_value=mock_lead_o):
             with mock.patch('som_leads_polissa.www.som_lead_www.Sudo'):
@@ -79,7 +92,7 @@ class TestSignLead(testing.OOTestCase):
                         side_effect=[0, 1, 31]
                     ):
                         with self.assertRaises(osv.except_osv):
-                            www_lead_o.sign_lead(self.cursor, self.uid, 1)
+                            www_lead_o.sign_lead(self.cursor, self.uid, 1, 'ES123OF')
 
         mock_lead_o.read.assert_called_with(
             self.cursor, self.uid, 123, ['signature_url', 'status'], context={}

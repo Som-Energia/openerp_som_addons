@@ -127,7 +127,7 @@ class SomLeadWww(osv.osv_memory):
             "contract_type": self._CONTRACT_TYPE_ANUAL,
             "llista_preu": llista_preu_id,
             "facturacio": self._FACTURACIO_MENSUAL,
-            "iban": www_vals["iban"],
+            "iban": www_vals.get("iban"),
             "payment_mode_id": payment_mode_id,
             "enviament": "email",
             "create_new_member": member_type == "new_member",
@@ -234,42 +234,9 @@ class SomLeadWww(osv.osv_memory):
                 context=context
             )
 
-        signature_url = None
-        signature_provider = None
-        if not error_info and www_vals.get("signature"):
-            # Make the just-created lead visible to the secondary cursor opened
-            # during signature document generation.
-            cr.commit()
-            try:
-                sign_result = self.sign_lead(cr, uid, lead_id, context=context)
-                signature_url = sign_result.get('url')
-                signature_provider = 'signaturit'
-            except Exception as exc:
-                logger = logging.getLogger("openerp.{0}.create_lead".format(__name__))
-                logger.exception(
-                    "Error signing lead after commit (lead_id=%s)", lead_id
-                )
-                sign_error_stage_id = ir_model_o.get_object_reference(
-                    cr, uid, "som_leads_polissa", "webform_stage_signature_error"
-                )[1]
-                lead_o.write(
-                    cr, uid, lead_id,
-                    {'stage_id': sign_error_stage_id, 'state': 'pending'},
-                    context=context
-                )
-                lead_o.historize_msg(
-                    cr, uid, [lead_id],
-                    u"SIGNATURE_ERROR: {}".format(str(exc)),
-                    context=context
-                )
-                cr.commit()
-                raise
-
         return {
             "lead_id": lead_id,
             "error": error_info,
-            "signature_url": signature_url,
-            "signature_provider": signature_provider,
         }
 
     def activate_lead(self, cr, uid, lead_id, context=None):
@@ -520,17 +487,29 @@ class SomLeadWww(osv.osv_memory):
             return prefix_res and prefix_res[0] or None, parts[1]
         return None, phone_full
 
-    def sign_lead(self, cr, uid, lead_id, context=None):
+    def sign_lead(self, cr, uid, lead_id, cups, context=None):
         if context is None:
             context = {}
+
+        lead_o = self.pool.get('giscedata.crm.lead')
+        lead_data = lead_o.read(cr, uid, lead_id, ['cups'], context=context)
+        lead_cups = (lead_data.get('cups') or '').strip().upper()
+        requested_cups = (cups or '').strip().upper()
+
+        if not requested_cups or lead_cups != requested_cups:
+            raise osv.except_osv(
+                'Error',
+                'Lead {} does not match CUPS {}'.format(lead_id, cups)
+            )
+
         ctx = context.copy()
         ctx['delivery_type'] = 'url'
         ctx['provider'] = 'signaturit'
 
-        lead_o = self.pool.get('giscedata.crm.lead')
-        state, errors = lead_o.check_start_signature_process(cr, uid, [lead_id], context=ctx)
-        if state != 'end':
-            raise osv.except_osv('Error', errors)
+        # Disabled, we call _check_lead_can_be_activated during lead creation
+        # state, errors = lead_o.check_start_signature_process(cr, uid, [lead_id], context=ctx)
+        # if state != 'end':
+        #     raise osv.except_osv('Error', errors)
 
         with Sudo(uid=uid, gid=0):
             with self.api.db.cursor() as sign_cursor:
