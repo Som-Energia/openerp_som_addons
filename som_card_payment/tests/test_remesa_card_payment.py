@@ -88,3 +88,27 @@ class TestCardPaymentNotInRemesa(testing.OOTestCaseWithCursor):
         )
         for inv in invoices:
             self.assertFalse(inv["payment_order_id"])
+
+    def test_add_to_remesa_async_raises_for_card_recurrent_invoice(self):
+        if not hasattr(self.invoice_obj, "afegeix_a_remesa_async"):
+            self.skipTest("No hi ha afegeix_a_remesa_async disponible en aquest entorn")
+
+        invoice_ids = self._get_open_invoice_ids(limit=1)
+        if not invoice_ids:
+            self.skipTest("No hi ha factures obertes disponibles per provar la remesa")
+        invoice_id = invoice_ids[0]
+
+        self.invoice_obj.write(
+            self.cursor,
+            self.uid,
+            [invoice_id],
+            {"payment_type": self.card_type_id},
+        )
+
+        with self.assertRaises(osv.except_osv):
+            self.invoice_obj.afegeix_a_remesa_async(
+                self.cursor, self.uid, [invoice_id], self.order_id
+            )
+
+        inv = self.invoice_obj.read(self.cursor, self.uid, invoice_id, ["payment_order_id"])
+        self.assertFalse(inv["payment_order_id"])
