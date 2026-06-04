@@ -164,6 +164,7 @@ class TestRedsysCardCollection(testing.OOTestCaseWithCursor):
             ),
         )
         factura = FakeRecord(invoice_id=invoice)
+        factura_duplicate = FakeRecord(invoice_id=invoice)
         factura_without_card = FakeRecord(invoice_id=invoice_without_card)
         factura_pending_review = FakeRecord(invoice_id=invoice_pending_review)
         factura_failed_ko = FakeRecord(invoice_id=invoice_failed_ko)
@@ -173,6 +174,7 @@ class TestRedsysCardCollection(testing.OOTestCaseWithCursor):
             "search",
             return_value=[
                 invoice.id,
+                invoice.id,
                 invoice_without_card.id,
                 invoice_pending_review.id,
                 invoice_failed_ko.id,
@@ -180,12 +182,13 @@ class TestRedsysCardCollection(testing.OOTestCaseWithCursor):
         ) as mock_invoice_search, mock.patch.object(
             self.factura_obj,
             "search",
-            return_value=[10, 11, 12, 13],
+            return_value=[10, 11, 12, 13, 14],
         ) as mock_factura_search, mock.patch.object(
             self.factura_obj,
             "browse",
             return_value=[
                 factura,
+                factura_duplicate,
                 factura_without_card,
                 factura_pending_review,
                 factura_failed_ko,
@@ -338,7 +341,7 @@ class TestRedsysCardCollection(testing.OOTestCaseWithCursor):
         self.assertEqual(mock_charge.call_count, 2)
         self.assertEqual(mock_charge.call_args_list[0][0][2], invoice_id)
 
-    def test_cron_collect_recurrent_card_invoices_commits_each_invoice(self):
+    def test_cron_collect_recurrent_card_invoices_commits_processed_invoices(self):
         fake_cursor = FakeCursor()
 
         with mock.patch.object(
@@ -356,8 +359,8 @@ class TestRedsysCardCollection(testing.OOTestCaseWithCursor):
 
         self.assertTrue(result)
         self.assertEqual(mock_charge.call_count, 3)
-        self.assertEqual(fake_cursor.commits, 2)
-        self.assertEqual(len(fake_cursor.rollbacks), 1)
+        self.assertEqual(fake_cursor.commits, 1)
+        self.assertEqual(len(fake_cursor.rollbacks), 2)
 
     def test_cron_collect_recurrent_card_invoices_logs_unexpected_exception(self):
         fake_cursor = FakeCursor()
@@ -383,6 +386,26 @@ class TestRedsysCardCollection(testing.OOTestCaseWithCursor):
         self.assertIn("Unexpected Redsys", mock_exception.call_args[0][0])
         self.assertEqual(mock_exception.call_args[0][1], 11)
         self.assertEqual(fake_cursor.commits, 1)
+
+    def test_cron_collect_recurrent_card_invoices_rolls_back_noop_invoice(self):
+        fake_cursor = FakeCursor()
+
+        with mock.patch.object(
+            card_account_invoice.AccountInvoice,
+            "_search_recurrent_card_invoice_ids",
+            return_value=[11],
+        ), mock.patch.object(
+            card_account_invoice.AccountInvoice,
+            "_charge_invoice_by_redsys",
+            return_value=False,
+        ):
+            result = self.invoice_obj._cron_collect_recurrent_card_invoices(
+                fake_cursor, self.uid
+            )
+
+        self.assertTrue(result)
+        self.assertEqual(fake_cursor.commits, 0)
+        self.assertEqual(len(fake_cursor.rollbacks), 1)
 
     def test_charge_invoice_by_redsys_skips_when_invoice_lock_is_owned(self):
         invoice_id = 1234
@@ -416,6 +439,39 @@ class TestRedsysCardCollection(testing.OOTestCaseWithCursor):
         self.assertFalse(locked)
         self.assertEqual(len(fake_cursor.savepoints), 1)
         self.assertEqual(fake_cursor.rollbacks, fake_cursor.savepoints)
+
+    def test_charge_invoice_by_redsys_revalidates_markers_after_lock(self):
+        invoice_id = 1234
+        invoice = FakeRecord(
+            id=invoice_id,
+            residual=12.34,
+            number="F2026/0001",
+            comment=u"Redsys targeta recurrent pendent revisio - ordre 12340000ABCD",
+            payment_type=self._recurrent_payment_type(),
+        )
+
+        with mock.patch.object(
+            card_account_invoice.AccountInvoice,
+            "_lock_redsys_invoice_for_collection",
+            return_value=True,
+        ), mock.patch.object(
+            self.invoice_obj,
+            "browse",
+            return_value=invoice,
+        ), mock.patch.object(
+            card_account_invoice.AccountInvoice,
+            "_get_recurrent_card_for_invoice",
+        ) as mock_card, mock.patch.object(
+            card_account_invoice.AccountInvoice,
+            "_get_redsys_client",
+        ) as mock_client:
+            result = self.invoice_obj._charge_invoice_by_redsys(
+                self.cursor, self.uid, invoice_id
+            )
+
+        self.assertFalse(result)
+        mock_card.assert_not_called()
+        mock_client.assert_not_called()
 
     def test_pay_invoice_by_tpv_uses_existing_payment_flow(self):
         invoice_id = 1234
@@ -607,7 +663,7 @@ class TestRedsysCardCollection(testing.OOTestCaseWithCursor):
                 self.cursor, self.uid, invoice_id
             )
 
-        self.assertFalse(result)
+        self.assertTrue(result)
         self.assertEqual(len(client.calls), 1)
         mock_fail.assert_not_called()
         mock_write.assert_called_once()
@@ -705,7 +761,7 @@ class TestRedsysCardCollection(testing.OOTestCaseWithCursor):
                 fake_cursor, self.uid, invoice_id
             )
 
-        self.assertFalse(result)
+        self.assertTrue(result)
         mock_write.assert_called_once()
 
     def test_charge_invoice_transport_exception_marks_manual_review_not_ko(self):
@@ -782,7 +838,7 @@ class TestRedsysCardCollection(testing.OOTestCaseWithCursor):
                 self.cursor, self.uid, invoice_id
             )
 
-        self.assertFalse(result)
+        self.assertTrue(result)
         self.assertEqual(len(client.calls), 1)
         mock_failure.assert_not_called()
         mock_pending.assert_not_called()

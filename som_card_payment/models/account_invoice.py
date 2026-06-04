@@ -70,7 +70,7 @@ class AccountInvoice(osv.osv):
             savepoint = self._redsys_invoice_savepoint_name(cursor, invoice_id)
             cursor.savepoint(savepoint)
             try:
-                self._charge_invoice_by_redsys(
+                processed = self._charge_invoice_by_redsys(
                     cursor, uid, invoice_id, context=context
                 )
             except Exception:
@@ -80,7 +80,10 @@ class AccountInvoice(osv.osv):
                 )
                 cursor.rollback(savepoint)
                 continue
-            cursor.commit()
+            if processed:
+                cursor.commit()
+            else:
+                cursor.rollback(savepoint)
 
         return True
 
@@ -118,6 +121,7 @@ class AccountInvoice(osv.osv):
         )
 
         result = []
+        seen_invoice_ids = set()
         factura_obj = self.pool.get("giscedata.facturacio.factura")
         factura_ids = factura_obj.search(
             cursor,
@@ -127,11 +131,10 @@ class AccountInvoice(osv.osv):
         )
         for factura in factura_obj.browse(cursor, uid, factura_ids, context=context):
             invoice = factura.invoice_id
-            if self._has_redsys_success_pending_reconcile(invoice):
+            if invoice.id in seen_invoice_ids:
                 continue
-            if self._has_redsys_manual_review_pending(invoice):
-                continue
-            if self._has_redsys_failure_pending(invoice):
+            seen_invoice_ids.add(invoice.id)
+            if self._has_any_redsys_collection_marker(invoice):
                 continue
             if self._get_recurrent_card_for_invoice(cursor, uid, invoice, context=context):
                 result.append(invoice.id)
@@ -427,6 +430,13 @@ class AccountInvoice(osv.osv):
         )
         return self._redsys_success_pending_reconcile_marker in current_comment
 
+    def _has_any_redsys_collection_marker(self, invoice):
+        return (
+            self._has_redsys_success_pending_reconcile(invoice)
+            or self._has_redsys_manual_review_pending(invoice)
+            or self._has_redsys_failure_pending(invoice)
+        )
+
     def _is_redsys_invoice_lock_conflict(self, exc):
         return getattr(exc, "pgcode", False) == "55P03"
 
@@ -516,6 +526,9 @@ class AccountInvoice(osv.osv):
         return self._redsys_manual_review_marker in current_comment
 
     def _has_redsys_failure_pending(self, invoice):
+        # A KO marker intentionally blocks automatic retries. Operators must
+        # resolve the unpaid/manual-review situation and clear the marker from
+        # invoice additional information before allowing a new cron attempt.
         current_comment = self._to_redsys_unicode(
             getattr(invoice, "comment", False) or u""
         )
@@ -561,7 +574,7 @@ class AccountInvoice(osv.osv):
         )
         new_comment = review_note + (current_comment and u"\n" + current_comment or u"")
         self.write(cursor, uid, [invoice.id], {"comment": new_comment}, context=context)
-        return False
+        return True
 
     def _register_redsys_failure(
         self, cursor, uid, invoice, order_ref, response_code, message, context=None
@@ -649,6 +662,8 @@ class AccountInvoice(osv.osv):
         invoice = self.browse(cursor, uid, invoice_id, context=context)
         if not self._is_recurrent_card_invoice_still_collectable(invoice):
             return False
+        if self._has_any_redsys_collection_marker(invoice):
+            return False
 
         card = self._get_recurrent_card_for_invoice(cursor, uid, invoice, context=context)
         if not card:
@@ -684,10 +699,9 @@ class AccountInvoice(osv.osv):
                 )
             except Exception as exc:
                 cursor.rollback(savepoint)
-                self._register_redsys_success_reconcile_failure(
+                return self._register_redsys_success_reconcile_failure(
                     cursor, uid, invoice, order_ref, "%s" % exc, context=context
                 )
-                return False
             return True
 
         return self._register_redsys_failure(
