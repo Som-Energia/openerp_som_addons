@@ -1030,12 +1030,17 @@ class GiscedataPolissaTarifa(osv.osv):
 
         power_eur = 0.0
         for period_name, period_info in power_prices.items():
-            period_kw = float(powers.get(period_name) or 0.0) / 1000.0
+            period_kw = float(powers.get(period_name.lower()) or 0.0) / 1000.0
             power_eur += period_kw * period_info["value"] * days_in_month
 
         # comprovar quin import retorna 3.0 sobretot
         meter_eur = current.get("comptador", {}).get("value", 0.0)
         social_bonus_eur = current.get("bo_social", {}).get("value", 0.0) * days_in_month
+
+        energy_eur = self._round_2(energy_eur)
+        power_eur = self._round_2(power_eur)
+        meter_eur = self._round_2(meter_eur)
+        social_bonus_eur = self._round_2(social_bonus_eur)
 
         total_eur = energy_eur + power_eur + meter_eur + social_bonus_eur
 
@@ -1043,10 +1048,10 @@ class GiscedataPolissaTarifa(osv.osv):
             "estimated_monthly_kwh": int(round(monthly_kwh)),
             "estimated_monthly_total_eur": float(self._round_2(total_eur)),
             "breakdown": {
-                "energy_eur": float(self._round_2(energy_eur)),
-                "power_eur": float(self._round_2(power_eur)),
-                "meter_eur": float(self._round_2(meter_eur)),
-                "social_bonus_eur": float(self._round_2(social_bonus_eur)),
+                "energy_eur": float(energy_eur),
+                "power_eur": float(power_eur),
+                "meter_eur": float(meter_eur),
+                "social_bonus_eur": float(social_bonus_eur),
                 "taxes_applied": bool(with_taxes),
             },
         }

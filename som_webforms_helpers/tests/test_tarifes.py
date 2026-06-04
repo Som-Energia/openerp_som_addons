@@ -617,8 +617,8 @@ class tarifes_tests(testing.OOTestCase):
                             "P6": {"value": 0.0},
                         },
                         "potencia": {
-                            "p1": {"value": 0.082011},
-                            "p2": {"value": 0.008096},
+                            "P1": {"value": 0.082011},
+                            "P2": {"value": 0.008096},
                         },
                         "comptador": {"value": 0.81},
                         "bo_social": {"value": 0.019121},
@@ -637,7 +637,7 @@ class tarifes_tests(testing.OOTestCase):
                 )
 
             self.assertEqual(result["estimated_monthly_kwh"], 271)
-            self.assertEqual(result["estimated_monthly_total_eur"], 62.22)
+            self.assertEqual(result["estimated_monthly_total_eur"], 62.21)
             self.assertEqual(result["breakdown"]["energy_eur"], 50.02)
             self.assertEqual(result["breakdown"]["power_eur"], 10.81)
             self.assertEqual(result["breakdown"]["meter_eur"], 0.81)
@@ -697,12 +697,12 @@ class tarifes_tests(testing.OOTestCase):
                             "P6": {"value": 0.115},
                         },
                         "potencia": {
-                            "p1": {"value": 0.055827},
-                            "p2": {"value": 0.029089},
-                            "p3": {"value": 0.012278},
-                            "p4": {"value": 0.010647},
-                            "p5": {"value": 0.006887},
-                            "p6": {"value": 0.003951},
+                            "P1": {"value": 0.055827},
+                            "P2": {"value": 0.029089},
+                            "P3": {"value": 0.012278},
+                            "P4": {"value": 0.010647},
+                            "P5": {"value": 0.006887},
+                            "P6": {"value": 0.003951},
                         },
                         "comptador": {"value": 0.81},
                         "bo_social": {"value": 0.019121},
@@ -773,8 +773,8 @@ class tarifes_tests(testing.OOTestCase):
                 return_value={
                     "current": {
                         "potencia": {
-                            "p1": {"value": 0.082011},
-                            "p2": {"value": 0.008096},
+                            "P1": {"value": 0.082011},
+                            "P2": {"value": 0.008096},
                         },
                         "comptador": {"value": 0.81},
                         "bo_social": {"value": 0.019121},
@@ -848,12 +848,12 @@ class tarifes_tests(testing.OOTestCase):
                 return_value={
                     "current": {
                         "potencia": {
-                            "p1": {"value": 0.055827},
-                            "p2": {"value": 0.029089},
-                            "p3": {"value": 0.012278},
-                            "p4": {"value": 0.010647},
-                            "p5": {"value": 0.006887},
-                            "p6": {"value": 0.003951},
+                            "P1": {"value": 0.055827},
+                            "P2": {"value": 0.029089},
+                            "P3": {"value": 0.012278},
+                            "P4": {"value": 0.010647},
+                            "P5": {"value": 0.006887},
+                            "P6": {"value": 0.003951},
                         },
                         "comptador": {"value": 0.81},
                         "bo_social": {"value": 0.019121},
