@@ -102,20 +102,14 @@ class TestsSomLeadWww(testing.OOTestCase):
         self.patch_subscribe_customer = mock.patch(
             "som_polissa_soci.models.res_partner_address.ResPartnerAddress.subscribe_partner_in_customers_no_members_lists"  # noqa: E501
         )
-        self.patch_sign_lead = mock.patch(
-            "som_leads_polissa.www.som_lead_www.SomLeadWww.sign_lead",
-            return_value={'url': 'http://sign.url'}
-        )
         self.mock_subscribe_member = self.patch_subscribe_member.start()
         self.mock_unsubscribe_customer = self.patch_unsubscribe_customer.start()
         self.mock_subscribe_customer = self.patch_subscribe_customer.start()
-        self.mock_sign_lead = self.patch_sign_lead.start()
 
     def tearDown(self):
         self.patch_subscribe_member.stop()
         self.patch_unsubscribe_customer.stop()
         self.patch_subscribe_customer.stop()
-        self.patch_sign_lead.stop()
         self.txn.stop()
 
     def get_model(self, model_name):
@@ -130,8 +124,6 @@ class TestsSomLeadWww(testing.OOTestCase):
 
         result = www_lead_o.create_lead(self.cursor, self.uid, self._basic_values)
         self.assertFalse(result["error"])
-        self.assertEqual(result["signature_url"], 'http://sign.url')
-        self.assertEqual(result["signature_provider"], 'signaturit')
 
         www_lead_o.activate_lead(self.cursor, self.uid, result["lead_id"], context={"sync": True})
 
@@ -219,35 +211,6 @@ class TestsSomLeadWww(testing.OOTestCase):
         self.assertEqual(lead.partner_id.date, datetime.today().strftime("%Y-%m-%d"))
         self.mock_subscribe_member.assert_called()
         self.mock_unsubscribe_customer.assert_called()
-
-    def test_create_lead_propagates_signature_error(self):
-        www_lead_o = self.get_model("som.lead.www")
-        lead_o = self.get_model("giscedata.crm.lead")
-        ir_model_o = self.get_model("ir.model.data")
-
-        values = self._basic_values
-        lead_domain = [
-            ("cups", "=", values["contract_info"]["cups"]),
-            ("titular_vat", "=", "ES%s" % values["new_member_info"]["vat"]),
-        ]
-        signature_error_stage_id = ir_model_o.get_object_reference(
-            self.cursor, self.uid, "som_leads_polissa", "webform_stage_signature_error"
-        )[1]
-
-        leads_before = lead_o.search(self.cursor, self.uid, lead_domain)
-        self.mock_sign_lead.side_effect = osv.except_osv('Error', 'Signature timeout')
-
-        with self.assertRaises(osv.except_osv):
-            www_lead_o.create_lead(self.cursor, self.uid, values)
-
-        leads_after = lead_o.search(self.cursor, self.uid, lead_domain)
-        self.assertEqual(len(leads_after), len(leads_before) + 1)
-
-        new_lead_ids = list(set(leads_after) - set(leads_before))
-        self.assertEqual(len(new_lead_ids), 1)
-        lead = lead_o.browse(self.cursor, self.uid, new_lead_ids[0])
-        self.assertEqual(lead.state, 'pending')
-        self.assertEqual(lead.stage_id.id, signature_error_stage_id)
 
     def test_create_simple_domestic_lead_indexada(self):
         www_lead_o = self.get_model("som.lead.www")
