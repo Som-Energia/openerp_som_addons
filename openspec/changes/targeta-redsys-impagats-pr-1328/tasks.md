@@ -74,3 +74,10 @@ Chain strategy: size-exception
 
 - [x] 8.1 Log unexpected per-invoice cron exceptions with OpenERP-compatible logging while preserving continue-to-next-invoice isolation.
 - [x] 8.2 Exclude confirmed Redsys KO/failure-marked invoices from recurrent-card search and add focused regression coverage proving they are skipped.
+
+## Phase 9: Greptile Review Fixes
+
+- [x] 9.1 Revalidate Redsys success/manual/KO markers after the invoice row lock before any new external charge.
+- [x] 9.2 Deduplicate `account.invoice` IDs returned from factura lookup before cron processing.
+- [x] 9.3 Roll back the per-invoice cron savepoint for lock-skipped/no-op invoices and commit only invoices that wrote durable state.
+- [x] 9.4 Document that KO markers intentionally block automatic retries until operators resolve and clear the marker.
