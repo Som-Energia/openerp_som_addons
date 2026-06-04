@@ -14,6 +14,15 @@
                 </xpath>
                 <xpath expr="//field[@name='llista_preu']" position="replace">
                 </xpath>
+                <xpath expr="//page[@string='Sobre el Pago']" position="inside">
+                    <group string="Pagament lead web" colspan="4" col="4">
+                        <field name="member_quota_payment_type" colspan="4" col="4"/>
+                        <field name="billing_payment_method" colspan="4" col="4"/>
+                        <field name="creditcard_masked_number" colspan="4" col="4" readonly="1"/>
+                        <field name="creditcard_expiry_date" colspan="4" col="4" readonly="1"/>
+                        <field name="initial_invoice_id" colspan="4" col="4"/>
+                    </group>
+                </xpath>
                 <xpath expr="//page[@string='Sobre el Pago']" position="after">
                     <page string="Sobre la Tarifa">
                         <field name="llista_preu" colspan="4" col="4"/>
@@ -50,11 +59,6 @@
                         <field name="member_number" colspan="4" col="4"/>
                         <field name="titular_number" colspan="4" col="4"/>
                         <field name="donation" colspan="4" col="4"/>
-                        <field name="member_quota_payment_type" colspan="4" col="4"/>
-                        <field name="billing_payment_method" colspan="4" col="4"/>
-                        <field name="creditcard_masked_number" colspan="4" col="4" readonly="1"/>
-                        <field name="creditcard_expiry_date" colspan="4" col="4" readonly="1"/>
-                        <field name="initial_invoice_id" colspan="4" col="4"/>
                         <field name="comercial_info_accepted" colspan="4" col="4"/>
                         <field name="crm_lead_id" colspan="4" col="4" readonly="1"/>
                     </page>
