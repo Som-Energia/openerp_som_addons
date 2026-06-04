@@ -116,9 +116,12 @@ class TestLeadWwwCardActivation(BaseSomLeadWwwTest):
         self.assertEqual(lead.crm_id.state, 'pending')
         self.assertEqual(lead.crm_id.stage_id.id, error_stage_id)
 
-        www_lead_o.add_payment_card_data(
+        card_result = www_lead_o.add_payment_card_data(
             self.cursor, self.uid, result["lead_id"], self._card_vals()
         )
+
+        self.assertEqual(card_result["lead_id"], result["lead_id"])
+        self.assertFalse(card_result["error"])
 
         lead = lead_o.browse(self.cursor, self.uid, result["lead_id"])
         self.assertEqual(lead.crm_id.state, 'open')
