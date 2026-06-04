@@ -13,8 +13,8 @@ Aquest fitxer conté les instruccions i convencions que qualsevol agent IA ha de
 
 ```
 openerp_som_addons/
-├── som_* /              # Mòduls propis de Som Energia
-├── giscedata_* /        # Mòduls de facturació
+├── som_* /              # Mòduls propis de Som Energia i herència d'alguns de gisce/erp
+├── giscedata_* /        # Mòduls de GISCE que fem herència
 ├── account_* /          # Mòduls comptables
 └── .github/
     ├── workflows/       # CI (schedule_tests_*.yml)
