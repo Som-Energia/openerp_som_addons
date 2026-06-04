@@ -83,6 +83,16 @@ class TestLeadWwwMemberPayment(BaseSomLeadWwwTest):
         with self.assertRaises(osv.except_osv):
             www_lead_o.create_lead(self.cursor, self.uid, values)
 
+    def test_create_lead_rejects_card_recurrent_without_member_payment_type(self):
+        www_lead_o = self.get_model("som.lead.www")
+
+        values = self._basic_values
+        del values["member_payment_type"]
+        values["billing_payment_method"] = "card_recurrent"
+
+        with self.assertRaises(osv.except_osv):
+            www_lead_o.create_lead(self.cursor, self.uid, values)
+
     def test_create_lead_with_remesable_member(self):
         www_lead_o = self.get_model("som.lead.www")
         account_invoice_o = self.get_model("account.invoice")

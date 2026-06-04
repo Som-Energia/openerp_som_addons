@@ -93,6 +93,41 @@ class TestLeadWwwCardActivation(BaseSomLeadWwwTest):
             www_lead_o.activate_lead(
                 self.cursor, self.uid, result["lead_id"], context={"sync": True})
 
+    def test_add_payment_card_data_revalidates_error_card_lead(self):
+        www_lead_o = self.get_model("som.lead.www")
+        lead_o = self.get_model("giscedata.crm.lead")
+        ir_model_o = self.get_model("ir.model.data")
+
+        values = self._basic_values
+        values["member_payment_type"] = "tpv"
+        values["billing_payment_method"] = "card_recurrent"
+
+        result = www_lead_o.create_lead(self.cursor, self.uid, values)
+        lead = lead_o.browse(self.cursor, self.uid, result["lead_id"])
+
+        error_stage_id = ir_model_o.get_object_reference(
+            self.cursor, self.uid, "som_leads_polissa", "webform_stage_error"
+        )[1]
+        received_stage_id = ir_model_o.get_object_reference(
+            self.cursor, self.uid, "som_leads_polissa", "webform_stage_recieved"
+        )[1]
+
+        self.assertTrue(result["error"])
+        self.assertEqual(lead.crm_id.state, 'pending')
+        self.assertEqual(lead.crm_id.stage_id.id, error_stage_id)
+
+        www_lead_o.add_payment_card_data(
+            self.cursor, self.uid, result["lead_id"], self._card_vals()
+        )
+
+        lead = lead_o.browse(self.cursor, self.uid, result["lead_id"])
+        self.assertEqual(lead.crm_id.state, 'open')
+        self.assertEqual(lead.crm_id.stage_id.id, received_stage_id)
+
+        www_lead_o.activate_lead(self.cursor, self.uid, result["lead_id"], context={"sync": True})
+        lead = lead_o.browse(self.cursor, self.uid, result["lead_id"])
+        self.assertTrue(lead.polissa_id)
+
     def test_activate_lead_reuses_existing_card_with_same_token_and_data(self):
         www_lead_o = self.get_model("som.lead.www")
         lead_o = self.get_model("giscedata.crm.lead")

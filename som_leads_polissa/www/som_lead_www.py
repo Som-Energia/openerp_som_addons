@@ -1,4 +1,6 @@
 # -*- encoding: utf-8 -*-
+from __future__ import absolute_import, division
+
 import logging
 import traceback
 import sys
@@ -76,21 +78,22 @@ class SomLeadWww(osv.osv_memory):
                 "card_recurrent" if member_payment_type == "tpv" else "remesa"
             )
 
-        invalid_payment_configuration = (
-            (member_payment_type == "tpv" and billing_payment_method != "card_recurrent")
-            or (member_payment_type == "remesa" and billing_payment_method != "remesa")
+        valid_payment_configuration = (
+            (member_payment_type == "tpv" and billing_payment_method == "card_recurrent")
+            or (member_payment_type == "remesa" and billing_payment_method == "remesa")
         )
-        if invalid_payment_configuration:
+        if not valid_payment_configuration:
             raise osv.except_osv(
                 "INVALID_PAYMENT_CONFIGURATION",
                 "La forma de pagament de la quota i la de la facturacio han de ser coherents."
             )
 
-        payment_mode_id = payment_mode_o.search(cr, uid, [("name", "=", "ENGINYERS")])[0]
         if billing_payment_method == 'card_recurrent':
             payment_mode_id = ir_model_o.get_object_reference(
                 cr, uid, "som_card_payment", "payment_mode_card_recurrent"
             )[1]
+        else:
+            payment_mode_id = payment_mode_o.search(cr, uid, [("name", "=", "ENGINYERS")])[0]
 
         return {
             "member_payment_type": member_payment_type,
@@ -370,6 +373,19 @@ class SomLeadWww(osv.osv_memory):
             },
             context=context,
         )
+
+        error_info = self._check_lead_can_be_activated(cr, uid, lead_id, context=context)
+        if not error_info:
+            received_stage_id = ir_model_o.get_object_reference(
+                cr, uid, "som_leads_polissa", "webform_stage_recieved"
+            )[1]
+            lead_o.write(
+                cr,
+                uid,
+                lead_id,
+                {"stage_id": received_stage_id, "state": "open"},
+                context=context,
+            )
 
         return True
 
