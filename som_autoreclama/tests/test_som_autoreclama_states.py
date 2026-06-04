@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+from __future__ import absolute_import
+
 from datetime import timedelta, datetime
 from addons import get_module_resource
 import mock
@@ -1071,7 +1073,7 @@ class SomAutoreclamaConditionsTest(SomAutoreclamaBaseTests):
         test_datas = [
             {
                 "subtype": "001",
-                "log_days": 30 / 2,
+                "log_days": 30 // 2,
                 "result": False,
                 "cond": "conditions_001_correct_state_workflow_atc",
             },
@@ -1083,7 +1085,7 @@ class SomAutoreclamaConditionsTest(SomAutoreclamaBaseTests):
             },
             {
                 "subtype": "038",
-                "log_days": 30 / 2,
+                "log_days": 30 // 2,
                 "result": False,
                 "cond": "conditions_038_correct_state_workflow_atc",
             },
@@ -1095,7 +1097,7 @@ class SomAutoreclamaConditionsTest(SomAutoreclamaBaseTests):
             },
             {
                 "subtype": "027",
-                "log_days": 10 / 2,
+                "log_days": 10 // 2,
                 "result": False,
                 "cond": "conditions_027_correct_state_workflow_atc",
             },
@@ -1107,7 +1109,7 @@ class SomAutoreclamaConditionsTest(SomAutoreclamaBaseTests):
             },
             {
                 "subtype": "039",
-                "log_days": 30 / 2,
+                "log_days": 30 // 2,
                 "result": False,
                 "cond": "conditions_039_correct_state_workflow_atc",
             },
@@ -1140,7 +1142,6 @@ class SomAutoreclamaConditionsTest(SomAutoreclamaBaseTests):
         for cond_id in cond_ids:
             cond = cond_obj.browse(self.cursor, self.uid, cond_id)
 
-            print(cond.subtype_id.name)
             if cond.subtype_id.name in ["006", "009", "036"]:  # unsuported
                 continue
 
@@ -1151,7 +1152,7 @@ class SomAutoreclamaConditionsTest(SomAutoreclamaBaseTests):
             self.assertEqual(ok, True, "Error on More than for condition id {}".format(cond_id))
 
             # test less
-            atc_id = self.build_atc(subtype=cond.subtype_id.name, log_days=cond.days / 2, r1=True)
+            atc_id = self.build_atc(subtype=cond.subtype_id.name, log_days=cond.days // 2, r1=True)
             atc_data = atc_obj.get_autoreclama_data(self.cursor, self.uid, atc_id, "atc", {})
             ok = cond_obj.fit_condition(self.cursor, self.uid, cond_id, atc_data, "atc", {})
             self.assertEqual(ok, False, "Error on Less than for condition id {}".format(cond_id))
