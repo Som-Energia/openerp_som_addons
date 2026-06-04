@@ -241,6 +241,54 @@ class SomAutoreclamaStatesTest(SomAutoreclamaBaseTests):
         self.assertEqual(atc.autoreclama_history_ids[2].atc_id.id, new_atc_id)
         self.assertEqual(atc.autoreclama_history_ids[2].generated_atc_id.id, False)
 
+    def test_atc_current_state_ignores_newer_closed_history_row(self):
+        atc_obj = self.get_model("giscedata.atc")
+        history_obj = self.get_model("som.autoreclama.state.history.atc")
+
+        atc_id = self.build_atc(r1=True)
+        _, disabled_state_id = self.get_object_reference(
+            "som_autoreclama", "disabled_state_workflow_atc"
+        )
+
+        history_obj.create(
+            self.cursor,
+            self.uid,
+            {
+                "atc_id": atc_id,
+                "state_id": disabled_state_id,
+                "change_date": "2020-01-01",
+                "end_date": "2020-01-02",
+            },
+        )
+
+        atc = atc_obj.browse(self.cursor, self.uid, atc_id)
+        self.assertEqual(atc.autoreclama_state.name, "Correcte")
+        self.assertEqual(atc.autoreclama_state_date, today_str())
+
+    def test_polissa_current_state_ignores_newer_closed_history_row(self):
+        pol_obj = self.get_model("giscedata.polissa")
+        history_obj = self.get_model("som.autoreclama.state.history.polissa")
+
+        pol_id = self.build_polissa(initial_state='correct', data_baixa=False)
+        _, loop_state_id = self.get_object_reference(
+            "som_autoreclama", "loop_state_workflow_polissa"
+        )
+
+        history_obj.create(
+            self.cursor,
+            self.uid,
+            {
+                "polissa_id": pol_id,
+                "state_id": loop_state_id,
+                "change_date": "2020-01-01",
+                "end_date": "2020-01-02",
+            },
+        )
+
+        pol = pol_obj.browse(self.cursor, self.uid, pol_id)
+        self.assertEqual(pol.autoreclama_state.name, "Correcte")
+        self.assertEqual(pol.autoreclama_state_date, today_str())
+
 
 class SomAutoreclamaCreationWizardTest(SomAutoreclamaBaseTests):
     def test_create_general_atc_r1_case_via_wizard__atr_wihtout_r1_type_a(self):
