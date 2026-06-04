@@ -9,6 +9,42 @@ from .base_som_lead_www import BaseSomLeadWwwTest
 
 
 class TestLeadWwwCreation(BaseSomLeadWwwTest):
+    def test_create_lead_starts_without_credit_card_data(self):
+        www_lead_o = self.get_model("som.lead.www")
+        lead_o = self.get_model("giscedata.crm.lead")
+
+        result = www_lead_o.create_lead(self.cursor, self.uid, self._basic_values)
+        lead = lead_o.browse(self.cursor, self.uid, result["lead_id"])
+
+        self.assertFalse(lead.creditcard_token)
+        self.assertFalse(lead.creditcard_masked_number)
+        self.assertFalse(lead.creditcard_expiry_date)
+        self.assertFalse(lead.creditcard_cof_txnid)
+
+    def test_lead_can_store_credit_card_data(self):
+        www_lead_o = self.get_model("som.lead.www")
+        lead_o = self.get_model("giscedata.crm.lead")
+
+        result = www_lead_o.create_lead(self.cursor, self.uid, self._basic_values)
+        lead_o.write(
+            self.cursor,
+            self.uid,
+            result["lead_id"],
+            {
+                "creditcard_token": "tok_lead_123",
+                "creditcard_masked_number": "**** **** **** 4242",
+                "creditcard_expiry_date": "12/30",
+                "creditcard_cof_txnid": "cof_123",
+            },
+        )
+
+        lead = lead_o.browse(self.cursor, self.uid, result["lead_id"])
+
+        self.assertEqual(lead.creditcard_token, "tok_lead_123")
+        self.assertEqual(lead.creditcard_masked_number, "**** **** **** 4242")
+        self.assertEqual(lead.creditcard_expiry_date, "12/30")
+        self.assertEqual(lead.creditcard_cof_txnid, "cof_123")
+
     def test_create_simple_domestic_lead(self):
         www_lead_o = self.get_model("som.lead.www")
         lead_o = self.get_model("giscedata.crm.lead")
