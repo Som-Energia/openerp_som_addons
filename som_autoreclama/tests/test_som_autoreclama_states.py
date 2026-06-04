@@ -5,7 +5,11 @@ from datetime import timedelta, datetime
 from addons import get_module_resource
 import mock
 from ..models import giscedata_atc, giscedata_polissa, som_autoreclama_state_history
-from test_som_autoreclama_base import SomAutoreclamaBaseTests, today_str, today_minus_str
+from .test_som_autoreclama_base import (
+    SomAutoreclamaBaseTests,
+    today_str,
+    today_minus_str,
+)
 from destral.patch import PatchNewCursors
 
 
