@@ -81,7 +81,7 @@ class GiscedataPolissa(osv.osv):
 
         history_obj = self.pool.get("som.autoreclama.state.history.polissa")
         h_ids = history_obj.search(
-            cursor, uid, [("polissa_id", "=", id)], limit=1, order="id desc"
+            cursor, uid, [("polissa_id", "=", id), ("end_date", "=", False)], limit=1
         )
 
         days_since_current_cacr1006 = 0
@@ -187,7 +187,7 @@ class GiscedataPolissa(osv.osv):
 
         history_obj = self.pool.get("som.autoreclama.state.history.polissa009")
         h_ids = history_obj.search(
-            cursor, uid, [("polissa_id", "=", id)], limit=1, order="id desc"
+            cursor, uid, [("polissa_id", "=", id), ("end_date", "=", False)], limit=1
         )
 
         days_since_current_cacr1009 = 0
@@ -359,7 +359,10 @@ class GiscedataPolissa(osv.osv):
         fields_to_read = ["state_id", "change_date", "polissa_id"]
         for id in ids:
             res = history_obj.search(
-                cursor, uid, [("polissa_id", "=", id)], limit=1, order="id desc"
+                cursor,
+                uid,
+                [("polissa_id", "=", id), ("end_date", "=", False)],
+                limit=1,
             )
             if res:
                 # We consider the last record the first one due to order
