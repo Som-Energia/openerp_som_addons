@@ -183,6 +183,7 @@ class SomAutoreclamaStateUpdater(osv.osv_memory):
         msg = _("Accions {}\n").format(block_name)
 
         for item_id in tqdm(ids):
+            new_cursor = None
             try:
                 new_cursor = pooler.get_db(cursor.dbname).cursor()
 
@@ -229,7 +230,8 @@ class SomAutoreclamaStateUpdater(osv.osv_memory):
 
                 new_cursor.commit()
             finally:
-                new_cursor.close()
+                if new_cursor:
+                    new_cursor.close()
 
         summary = _("Sumari {}\n").format(block_name)
         summary += _("{} que han canviat d'estat: .................. {}\n".format(block_name, len(updated)))  # noqa: E501
