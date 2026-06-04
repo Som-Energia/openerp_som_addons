@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import, unicode_literals
+from datetime import datetime
+
 from destral import testing
 from destral.transaction import Transaction
 
@@ -106,6 +108,23 @@ class TestGiscedataPolissa(testing.OOTestCase):
 
         expected = {"IVA": 0.1, "IE": 0.005}
         self.assertEqual(result, expected)
+
+    def test_get_simplified_taxes__datetime_context_date_does_not_crash(self):
+        pol_ids = self.pol_obj.search(
+            self.cursor, self.uid, [("state", "!=", "esborrany")], limit=1
+        )
+        if not pol_ids:
+            self.skipTest("No non-draft polissa available")
+
+        result = self.pol_obj.get_simplified_taxes(
+            self.cursor,
+            self.uid,
+            pol_ids[0],
+            context={"date": datetime(2026, 6, 4), "dont_raise_exception": True},
+        )
+
+        self.assertTrue("IE" in result)
+        self.assertTrue("IVA" in result or "IGIC" in result)
 
     def test_get_simplified_taxes__with_igic(self):
         pol_id = self._pol_id
