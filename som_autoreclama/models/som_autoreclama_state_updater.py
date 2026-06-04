@@ -1,11 +1,17 @@
 # -*- coding: utf-8 -*-
+from __future__ import absolute_import
+
 from osv import osv
 from tqdm import tqdm
 from tools.translate import _
 from tools import email_send
 import json
-import urllib
 import pooler
+
+try:
+    from urllib import urlencode
+except ImportError:
+    from urllib.parse import urlencode
 
 _namespaces = {
     'atc': {
@@ -141,13 +147,13 @@ class SomAutoreclamaStateUpdater(osv.osv_memory):
         }
 
         actionj = {}
-        for action in actions.iteritems():
+        for action in actions.items():
             if isinstance(action[1], (list, dict)):
                 actionj[action[0]] = json.dumps(action[1])
             else:
                 actionj[action[0]] = action[1]
 
-        url_params = urllib.urlencode(actionj)
+        url_params = urlencode(actionj)
         base_url = cfg_obj.get(
             cursor, uid, "som_autoreclama_web_client_base_url", "https://somenergia.coop/")
         action = u'/action?'
