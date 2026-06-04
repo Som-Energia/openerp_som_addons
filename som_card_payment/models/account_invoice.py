@@ -693,6 +693,7 @@ class AccountInvoice(osv.osv):
 
         try:
             result = client.mit_payment(params)
+            response_code, response_message = self._extract_redsys_response_info(result)
         except Exception as exc:
             return self._register_redsys_manual_review(
                 cursor,
@@ -703,7 +704,6 @@ class AccountInvoice(osv.osv):
                 context=context,
             )
 
-        response_code, response_message = self._extract_redsys_response_info(result)
         if self._is_redsys_success(response_code):
             savepoint = self._redsys_success_reconcile_savepoint_name(
                 cursor, invoice_id

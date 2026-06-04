@@ -887,6 +887,89 @@ class TestRedsysCardCollection(testing.OOTestCaseWithCursor):
         self.assertIn(u"timeout after submit", written_comment)
         self.assertIn(invoice.comment, written_comment)
 
+    def test_charge_invoice_malformed_response_marks_manual_review_not_ko(self):
+        invoice_id = 1234
+        invoice = FakeRecord(
+            id=invoice_id,
+            residual=12.34,
+            number="F2026/0001",
+            name=False,
+            comment=u"Comentari existent",
+            payment_type=self._recurrent_payment_type(),
+        )
+        card = FakeRecord(token="TOKEN123", cof_txnid="COF123")
+        fixed_order = "12340000ABCD"
+        params = {
+            "Ds_Merchant_Amount": "123",
+            "Ds_Merchant_Order": fixed_order,
+            "Ds_Merchant_MerchantCode": "999008881",
+            "Ds_Merchant_Currency": "978",
+            "Ds_Merchant_TransactionType": "0",
+            "Ds_Merchant_Terminal": "1",
+            "Ds_Merchant_MerchantURL": "https://merchant.local/notify",
+            "Ds_Merchant_SumTotal": "123",
+            "Ds_Merchant_Identifier": "TOKEN123",
+            "Ds_Merchant_Cof_TxnID": "COF123",
+            "Ds_Merchant_Cof_INI": "N",
+            "Ds_Merchant_Cof_Type": "C",
+            "Ds_Merchant_Excep_SCA": "MIT",
+            "Ds_Merchant_DirectPayment": "true",
+            "Ds_Merchant_PayMethods": "C",
+            "Ds_Merchant_MerchantData": "invoice:123",
+        }
+        client = FakeRedsysClient("malformed response")
+        payment_data = {
+            "journal_id": 11,
+            "pay_account_id": 22,
+            "period_id": 33,
+        }
+
+        with mock.patch.object(
+            card_account_invoice.AccountInvoice,
+            "_lock_redsys_invoice_for_collection",
+            return_value=True,
+        ), mock.patch.object(
+            self.invoice_obj,
+            "browse",
+            return_value=invoice,
+        ), mock.patch.object(
+            card_account_invoice.AccountInvoice,
+            "_get_recurrent_card_for_invoice",
+            return_value=card,
+        ), mock.patch.object(
+            card_account_invoice.AccountInvoice,
+            "_get_tpv_payment_data",
+            return_value=payment_data,
+        ), mock.patch.object(
+            card_account_invoice.AccountInvoice,
+            "_build_redsys_transaction_params",
+            return_value=(params, fixed_order),
+        ), mock.patch.object(
+            card_account_invoice.AccountInvoice,
+            "_get_redsys_client",
+            return_value=client,
+        ), mock.patch.object(
+            card_account_invoice.AccountInvoice,
+            "_register_redsys_failure",
+        ) as mock_failure, mock.patch.object(
+            self.invoice_obj,
+            "write",
+        ) as mock_write:
+            result = self.invoice_obj._charge_invoice_by_redsys(
+                self.cursor, self.uid, invoice_id
+            )
+
+        self.assertTrue(result)
+        self.assertEqual(len(client.calls), 1)
+        mock_failure.assert_not_called()
+        mock_write.assert_called_once()
+        written_comment = mock_write.call_args[0][3]["comment"]
+        self.assertIn(u"Redsys targeta recurrent pendent revisio", written_comment)
+        self.assertIn(fixed_order, written_comment)
+        self.assertIn(u"HTTP", written_comment)
+        self.assertIn(u"object has no attribute", written_comment)
+        self.assertIn(invoice.comment, written_comment)
+
     def test_charge_invoice_by_redsys_failure_records_note_and_pending_once(self):
         invoice_id = 1234
         invoice = FakeRecord(
