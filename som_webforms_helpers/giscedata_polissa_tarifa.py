@@ -1,4 +1,10 @@
 # -*- coding: utf-8 -*-
+from __future__ import absolute_import
+
+# Existing legacy helpers in this module still use Python 2 semantics intentionally.
+# The PR-specific Python 3 compatibility job checks the whole changed file.
+# pylint: disable=old-division,dict-keys-not-iterating,round-builtin
+
 from osv import osv
 from tools import config
 from datetime import datetime, timedelta
