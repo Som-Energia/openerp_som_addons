@@ -4,6 +4,7 @@ from addons import get_module_resource
 import mock
 from ..models import giscedata_atc, giscedata_polissa, som_autoreclama_state_history
 from test_som_autoreclama_base import SomAutoreclamaBaseTests, today_str, today_minus_str
+from destral.patch import PatchNewCursors
 
 
 class SomAutoreclamaStatesTest(SomAutoreclamaBaseTests):
@@ -1355,6 +1356,7 @@ class SomAutoreclamaUpdaterTest(SomAutoreclamaBaseTests):
         self.assertEqual(atc.autoreclama_state_date, today_str())
         self.assertGreaterEqual(len(atc.autoreclama_history_ids), 2)
 
+    @PatchNewCursors()
     def test_update_atcs_if_possible__some_consitions(self):
         atc_n_id = self.build_atc(r1=True)
         atc_y_id = self.build_atc(log_days=60, subtype="001", r1=True)
@@ -1825,6 +1827,7 @@ class SomAutoreclamaUpdaterTest(SomAutoreclamaBaseTests):
         second_006_id = pol.autoreclama_history_ids[0]['generated_atc_id'].id
         self.assertNotEqual(first_006.id, second_006_id)
 
+    @PatchNewCursors()
     def test_update_polisses_if_possible__some_conditions(self):
         pol_n_id = self.build_polissa(
             name="polissa_0003",
