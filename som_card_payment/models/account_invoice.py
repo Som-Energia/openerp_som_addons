@@ -4,6 +4,7 @@ from __future__ import absolute_import
 import logging
 import time
 from datetime import date
+from decimal import Decimal, ROUND_HALF_UP
 
 from osv import osv
 from tools.translate import _
@@ -217,7 +218,13 @@ class AccountInvoice(osv.osv):
             context = {}
 
         config = self._get_redsys_config(cursor, uid, context=context)
-        amount_cents = str(int(round(invoice.residual * 100)))
+        amount_cents = str(
+            int(
+                (Decimal(str(invoice.residual)) * Decimal("100")).quantize(
+                    Decimal("1"), rounding=ROUND_HALF_UP
+                )
+            )
+        )
         order_ref = self._build_redsys_order(invoice.id)
         invoice_ref = invoice.number or invoice.name or str(invoice.id)
 
