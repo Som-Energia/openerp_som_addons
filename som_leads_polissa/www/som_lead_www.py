@@ -387,7 +387,10 @@ class SomLeadWww(osv.osv_memory):
                 context=context,
             )
 
-        return True
+        return {
+            "lead_id": lead_id,
+            "error": error_info,
+        }
 
     def activate_lead(self, cr, uid, lead_id, context=None):
         if context is None:
