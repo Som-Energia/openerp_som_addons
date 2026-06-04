@@ -294,9 +294,7 @@ class TestRedsysCardCollection(testing.OOTestCaseWithCursor):
             )
 
         self.assertEqual(order_ref, expected_order)
-        self.assertEqual(
-            params["Ds_Merchant_Amount"], str(int(round(invoice.residual * 100)))
-        )
+        self.assertEqual(params["Ds_Merchant_Amount"], "1234")
         self.assertEqual(params["Ds_Merchant_Order"], expected_order)
         self.assertEqual(
             params["Ds_Merchant_MerchantCode"], expected_config["merchant_code"]
@@ -314,6 +312,33 @@ class TestRedsysCardCollection(testing.OOTestCaseWithCursor):
         self.assertEqual(params["Ds_Merchant_Excep_SCA"], "MIT")
         self.assertEqual(params["Ds_Merchant_DirectPayment"], "true")
         self.assertEqual(params["Ds_Merchant_PayMethods"], "C")
+
+    def test_build_redsys_transaction_params_rounds_half_cents_up(self):
+        invoice = FakeRecord(id=1234, residual=10.005, number="F2026/0001", name=False)
+        card = FakeRecord(token="TOKEN123")
+
+        with mock.patch.object(
+            card_account_invoice.AccountInvoice,
+            "_get_redsys_config",
+            return_value={
+                "merchant_code": "999008881",
+                "private_key": "secret",
+                "merchant_url": "https://merchant.local/notify",
+                "endpoint_url": "https://sis.redsys.es/sis/rest/trataPeticionREST",
+                "terminal": "1",
+                "currency": "978",
+                "timeout": 30,
+            },
+        ), mock.patch.object(
+            card_account_invoice.AccountInvoice,
+            "_build_redsys_order",
+            return_value="12340000ABCD",
+        ):
+            params, _order_ref = self.invoice_obj._build_redsys_transaction_params(
+                self.cursor, self.uid, invoice, card
+            )
+
+        self.assertEqual(params["Ds_Merchant_Amount"], "1001")
 
     def test_build_redsys_order_uses_unique_twelve_char_reference(self):
         with mock.patch.object(card_account_invoice.time, "time", return_value=12345.678901):
