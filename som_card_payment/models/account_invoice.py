@@ -130,8 +130,10 @@ class AccountInvoice(osv.osv):
             [("invoice_id", "in", invoice_ids), ("polissa_id", "!=", False)],
             context=context,
         )
+        factura_invoice_ids = set()
         for factura in factura_obj.browse(cursor, uid, factura_ids, context=context):
             invoice = factura.invoice_id
+            factura_invoice_ids.add(invoice.id)
             if invoice.id in seen_invoice_ids:
                 continue
             seen_invoice_ids.add(invoice.id)
@@ -139,6 +141,12 @@ class AccountInvoice(osv.osv):
                 continue
             if self._get_recurrent_card_for_invoice(cursor, uid, invoice, context=context):
                 result.append(invoice.id)
+        missing_factura_invoice_ids = sorted(set(invoice_ids) - factura_invoice_ids)
+        if missing_factura_invoice_ids:
+            logger.debug(
+                "Skipping Redsys recurrent card invoices without linked factura: %s",
+                missing_factura_invoice_ids,
+            )
         return result
 
     def _get_factura_for_invoice(self, cursor, uid, invoice, context=None):
@@ -163,7 +171,7 @@ class AccountInvoice(osv.osv):
             return False
 
         card = getattr(polissa, "creditcard", False)
-        if not card or not card.active or not card.token:
+        if not card or not card.active or not card.token or not card.cof_txnid:
             return False
 
         pagador = getattr(polissa, "pagador", False)
@@ -238,6 +246,7 @@ class AccountInvoice(osv.osv):
             "Ds_Merchant_MerchantURL": "%s" % config["merchant_url"],
             "Ds_Merchant_SumTotal": amount_cents,
             "Ds_Merchant_Identifier": card.token,
+            "Ds_Merchant_Cof_TxnID": card.cof_txnid,
             "Ds_Merchant_Cof_INI": "N",
             "Ds_Merchant_Cof_Type": "C",
             "Ds_Merchant_Excep_SCA": "MIT",

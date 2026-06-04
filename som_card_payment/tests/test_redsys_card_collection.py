@@ -126,6 +126,7 @@ class TestRedsysCardCollection(testing.OOTestCaseWithCursor):
             {
                 "partner_id": factura.polissa_id.pagador.id,
                 "token": "tok_redsys_%s_%s" % (invoice_id, int(time.time() * 1000000)),
+                "cof_txnid": "cof_txnid_%s" % invoice_id,
                 "masked_number": "**** **** **** 4242",
                 "expiry_date": "12/35",
                 "active": True,
@@ -211,7 +212,9 @@ class TestRedsysCardCollection(testing.OOTestCaseWithCursor):
     def test_search_recurrent_card_invoice_ids_requires_contract_selected_card(self):
         invoice = FakeRecord(id=1234)
         pagador = FakeRecord(id=77)
-        card = FakeRecord(active=True, token="TOKEN123", partner_id=pagador)
+        card = FakeRecord(
+            active=True, token="TOKEN123", cof_txnid="COF123", partner_id=pagador
+        )
         polissa = FakeRecord(creditcard=False, pagador=pagador)
         factura = FakeRecord(polissa_id=polissa)
 
@@ -227,6 +230,14 @@ class TestRedsysCardCollection(testing.OOTestCaseWithCursor):
             )
 
             polissa.creditcard = card
+            card.cof_txnid = False
+            self.assertFalse(
+                self.invoice_obj._get_recurrent_card_for_invoice(
+                    self.cursor, self.uid, invoice
+                )
+            )
+
+            card.cof_txnid = "COF123"
             self.assertEqual(
                 self.invoice_obj._get_recurrent_card_for_invoice(
                     self.cursor, self.uid, invoice
@@ -269,7 +280,7 @@ class TestRedsysCardCollection(testing.OOTestCaseWithCursor):
 
     def test_build_redsys_transaction_params_includes_mit_fields(self):
         invoice = FakeRecord(id=1234, residual=12.34, number="F2026/0001", name=False)
-        card = FakeRecord(token="TOKEN123")
+        card = FakeRecord(token="TOKEN123", cof_txnid="COF123")
 
         expected_order = "12340000ABCD"
         expected_config = {
@@ -307,6 +318,7 @@ class TestRedsysCardCollection(testing.OOTestCaseWithCursor):
         )
         self.assertEqual(params["Ds_Merchant_SumTotal"], params["Ds_Merchant_Amount"])
         self.assertEqual(params["Ds_Merchant_Identifier"], card.token)
+        self.assertEqual(params["Ds_Merchant_Cof_TxnID"], card.cof_txnid)
         self.assertEqual(params["Ds_Merchant_Cof_INI"], "N")
         self.assertEqual(params["Ds_Merchant_Cof_Type"], "C")
         self.assertEqual(params["Ds_Merchant_Excep_SCA"], "MIT")
@@ -315,7 +327,7 @@ class TestRedsysCardCollection(testing.OOTestCaseWithCursor):
 
     def test_build_redsys_transaction_params_rounds_half_cents_up(self):
         invoice = FakeRecord(id=1234, residual=10.005, number="F2026/0001", name=False)
-        card = FakeRecord(token="TOKEN123")
+        card = FakeRecord(token="TOKEN123", cof_txnid="COF123")
 
         with mock.patch.object(
             card_account_invoice.AccountInvoice,
@@ -546,7 +558,7 @@ class TestRedsysCardCollection(testing.OOTestCaseWithCursor):
             number="F2026/0001",
             payment_type=self._recurrent_payment_type(),
         )
-        card = FakeRecord(token="TOKEN123")
+        card = FakeRecord(token="TOKEN123", cof_txnid="COF123")
 
         params = {
             "Ds_Merchant_Amount": "123",
@@ -623,7 +635,7 @@ class TestRedsysCardCollection(testing.OOTestCaseWithCursor):
             comment=u"Comentari existent",
             payment_type=self._recurrent_payment_type(),
         )
-        card = FakeRecord(token="TOKEN123")
+        card = FakeRecord(token="TOKEN123", cof_txnid="COF123")
         params = {
             "Ds_Merchant_Amount": "123",
             "Ds_Merchant_Order": "12340000ABCD",
@@ -706,7 +718,7 @@ class TestRedsysCardCollection(testing.OOTestCaseWithCursor):
             comment=u"Comentari existent",
             payment_type=self._recurrent_payment_type(),
         )
-        card = FakeRecord(token="TOKEN123")
+        card = FakeRecord(token="TOKEN123", cof_txnid="COF123")
         fixed_order = "12340000ABCD"
         params = {
             "Ds_Merchant_Amount": "123",
@@ -799,7 +811,7 @@ class TestRedsysCardCollection(testing.OOTestCaseWithCursor):
             comment=u"Comentari existent",
             payment_type=self._recurrent_payment_type(),
         )
-        card = FakeRecord(token="TOKEN123")
+        card = FakeRecord(token="TOKEN123", cof_txnid="COF123")
         fixed_order = "12340000ABCD"
         params = {
             "Ds_Merchant_Amount": "123",
@@ -884,7 +896,7 @@ class TestRedsysCardCollection(testing.OOTestCaseWithCursor):
             name=False,
             payment_type=self._recurrent_payment_type(),
         )
-        card = FakeRecord(token="TOKEN123")
+        card = FakeRecord(token="TOKEN123", cof_txnid="COF123")
         previous_comment = u"Comentari existent"
         invoice.comment = previous_comment
         invoice.pending_state = False
