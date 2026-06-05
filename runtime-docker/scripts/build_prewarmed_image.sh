@@ -268,6 +268,7 @@ main() {
 		-e ERP_BOOTSTRAP_TIMEOUT="${WAIT_TIMEOUT_SECONDS}" \
 		-e OPENERP_DB_USER=erp \
 		-e OPENERP_DB_PASSWORD=erp \
+		-e ERP_IGNORE_DESTRAL_FAILURES=0 \
 		--entrypoint bash \
 		"${BASE_IMAGE}" \
 		-lc 'export GITHUB_TOKEN="$(cat /run/secrets/github_token)"; exec /opt/somenergia/src/openerp_som_addons/runtime-docker/entrypoint.sh' >/dev/null

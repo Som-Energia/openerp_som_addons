@@ -102,7 +102,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.ACCESS_TOKEN_GA }}
           ERP_BRANCH: ${{ inputs.erpbranch }}
           PYTHON_VERSION: ${{ matrix.python-version }}
-        run: ./scripts/bootstrap-erp-env.sh
+        run: .ci/openerp_som_addons/scripts/bootstrap-erp-env.sh
 
       - name: Run Tests
         env:
