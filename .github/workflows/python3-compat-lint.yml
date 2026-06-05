@@ -28,11 +28,11 @@ jobs:
         id: python-files
         env:
           EVENT_NAME: ${{ github.event_name }}
-          BASE_SHA: ${{ github.event.pull_request.base.sha }}
         run: |
           if [ "$EVENT_NAME" = "pull_request" ]; then
+            MERGE_BASE=$(git merge-base origin/main HEAD)
             git diff -z --name-only --diff-filter=ACMRT \
-              "$BASE_SHA" HEAD -- "*.py" > python-files.txt
+              "$MERGE_BASE" HEAD -- "*.py" > python-files.txt
           else
             git ls-files -z "*.py" > python-files.txt
           fi
