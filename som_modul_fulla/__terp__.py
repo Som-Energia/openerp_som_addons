@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 {
-    "name": "SomEnergia Productive Base Profile",
+    "name": "SomEnergia mòdul full que conté tots els mòduls de prod",
     "description": """
-    Mòdul fulla per construir una base de dades buida
+    Mòdul fulla per construir una base de dades amb dades demo
     amb els mateixos mòduls instal·lats que productiu.
     """,
     "version": "0-dev",
@@ -11,7 +11,7 @@
     "depends": [
         "account_analytic_distribution",
         "account_chart_coop_es",
-        # "account_import_facturae", # PR #27960
+        "account_import_facturae",
         "account_renumber",
         "db_utils",
         "devolucions_base_som",
