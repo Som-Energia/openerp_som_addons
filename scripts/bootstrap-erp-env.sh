@@ -13,8 +13,9 @@ fi
 
 git clone --depth 1 "https://${GITHUB_TOKEN}@github.com/Som-Energia/erp.git" -b "$ERP_BRANCH" "$ROOT_DIR_SRC/erp"
 git clone --depth 1 "https://${GITHUB_TOKEN}@github.com/Som-Energia/libFacturacioATR.git" "$ROOT_DIR_SRC/libFacturacioATR"
-git clone --depth 1 "https://${GITHUB_TOKEN}@github.com/Som-Energia/omie-modules.git" "$ROOT_DIR_SRC/omie-modules"
 git clone --depth 1 "https://${GITHUB_TOKEN}@github.com/Som-Energia/OMIE.git" "$ROOT_DIR_SRC/OMIE"
+git clone --depth 1 "https://${GITHUB_TOKEN}@github.com/Som-Energia/omie-modules.git" "$ROOT_DIR_SRC/omie-modules"
+printf '%s\n' "git+https://${GITHUB_TOKEN}@github.com/som-energia/omie.git" >"$ROOT_DIR_SRC/omie-modules/giscedata_omie_api/requirements.txt"
 if [ ! -d "$ROOT_DIR_SRC/openerp_som_addons" ]; then
 	git clone --depth 1 https://github.com/Som-Energia/openerp_som_addons.git "$ROOT_DIR_SRC/openerp_som_addons"
 fi
