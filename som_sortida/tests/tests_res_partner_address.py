@@ -37,7 +37,7 @@ class TestsPartnerAddress(testing.OOTestCaseWithCursor):
         self.assertEqual(res, {
             'num_socia': 'S202129',
             'situacio_socia': 'Apadrinada',
-            'category_id': [],
+            'category_id': [10, 9],
         })
 
     def test__fill_merge_fields_titular_polissa_ctss__ok(self):
@@ -57,7 +57,7 @@ class TestsPartnerAddress(testing.OOTestCaseWithCursor):
             'email_address': u'test@test.test',
             'merge_fields': {
                 'EMAIL': u'test@test.test',
-                'FNAME': u'Pere',
+                'FNAME': u'',
                 'MMERGE11': u'08600',
                 'MMERGE3': '',
                 'MMERGE4': 'Origen vinculat al CT sense socia',
