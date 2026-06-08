@@ -34,6 +34,7 @@
         "report/giscedata_polissa_contract_summary_full_report.xml",
         "report/giscedata_crm_lead_contract_summary_report.xml",
         "report/giscedata_crm_lead_contract_summary_full_report.xml",
+	"report/report_mailcanvipreus_report.xml",
         "security/ir.model.access.csv",
     ],
     "active": False,
