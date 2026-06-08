@@ -10,7 +10,6 @@
             <div class="cnmc_qr_image">
                 <img
                     src="${addons_path}/som_polissa_condicions_generals/report/assets/generic_qr_comparator.png"
-                    onerror="this.onerror=null;this.src='${addons_path}/giscedata_facturacio_comer_som/report/components/cnmc_comparator_qr_link/generic_qr_comparator.png';"
                 />
             </div>
         </div>
