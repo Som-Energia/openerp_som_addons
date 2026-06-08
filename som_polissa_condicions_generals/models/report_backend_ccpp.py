@@ -227,6 +227,7 @@ class ReportBackendCondicionsParticulars(ReportBackend):
         res['country'] = pol.cups.id_provincia.country_id.name
         res['name'] = pol.cups.name
         res['cnae'] = pol.cnae.name
+        res['ref_catastral'] = pol.cups.ref_catastral or ''
         res['ref_dist'] = pol.ref_dist or ''
         res['cnae_des'] = pol.cnae.descripcio
         res['distri'] = pol.cups.distribuidora_id.name
