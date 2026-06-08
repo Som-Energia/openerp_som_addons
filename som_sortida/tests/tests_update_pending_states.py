@@ -1,3 +1,5 @@
+from __future__ import absolute_import
+
 from destral import testing
 from base_extended_som.tests.utils import avoid_creating_subcursors
 
