@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+from __future__ import absolute_import
+
 from osv import osv, fields
 from tools.translate import _
 from datetime import date
@@ -556,7 +558,9 @@ class GiscedataAtc(osv.osv):
         result = dict.fromkeys(ids, False)
         fields_to_read = ["state_id", "change_date", "atc_id"]
         for id in ids:
-            res = history_obj.search(cursor, uid, [("atc_id", "=", id)])
+            res = history_obj.search(
+                cursor, uid, [("atc_id", "=", id), ("end_date", "=", False)], limit=1
+            )
             if res:
                 # We consider the last record the first one due to order
                 # statement in the model definition.
