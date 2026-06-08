@@ -84,8 +84,6 @@ class MailCanviPreusReport(report_int):
                 ]
                 generate_command = ' '.join(command)
                 subprocess.call(generate_command, shell=True)
-            except Exception:
-                raise
             finally:
                 os.remove(html_file_path)
 

@@ -21,6 +21,18 @@ class ReportBackendMailcanvipreusEnviamentMassiu(ReportBackend):
 
         return data
 
+    def get_lang(self, cursor, uid, record_id, context=None):
+        if context is None:
+            context = {}
+
+        env_o = self.pool.get("som.enviament.massiu")
+        env_br = env_o.browse(cursor, uid, record_id, context=context)
+
+        return env_br.polissa_id.titular.lang
+
+
+ReportBackendMailcanvipreusEnviamentMassiu()
+
 
 class ReportBackendMailcanvipreusPDF(ReportBackend):
     _source_model = "giscedata.polissa"
