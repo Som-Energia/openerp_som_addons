@@ -8,7 +8,7 @@ from datetime import date, timedelta
 
 
 class ReportBackendMailcanvipreusEnviamentMassiu(ReportBackend):
-    _source_model = "giscedata.polissa"
+    _source_model = "som.enviament.massiu"
     _name = "report.backend.mailcanvipreus"
 
     def get_data(self, cursor, uid, env, context=None):
@@ -17,7 +17,7 @@ class ReportBackendMailcanvipreusEnviamentMassiu(ReportBackend):
 
         backend_o = self.pool.get("report.backend.mailcanvipreus.pdf")
 
-        data = backend_o.get_data(cursor, uid, env.polissa_id, context=context)
+        data = backend_o.get_data(cursor, uid, env.polissa_id.id, context=context)
 
         return data
 
