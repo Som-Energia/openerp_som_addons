@@ -28,17 +28,17 @@ class MailCanviPreusReport(report_int):
             "canviPreusBackend"
         )[1]
 
+        addons_lookup = TemplateLookup(
+            directories=[config['addons_path']], input_encoding='utf-8'
+        )
+        template = template_o.browse(cursor, uid, template_id, context=context)
+        message = template.def_body_html
+        templ = MakoTemplate(message, input_encoding='utf-8', lookup=addons_lookup)
+
         result = []
 
         for pol_id in ids:
             pol_br = pol_o.browse(cursor, uid, pol_id, context=context)
-
-            addons_lookup = TemplateLookup(
-                directories=[config['addons_path']], input_encoding='utf-8'
-            )
-            template = template_o.browse(cursor, uid, template_id, context=context)
-            message = template.def_body_html
-            templ = MakoTemplate(message, input_encoding='utf-8', lookup=addons_lookup)
 
             values = {
                 'pool': pool,
