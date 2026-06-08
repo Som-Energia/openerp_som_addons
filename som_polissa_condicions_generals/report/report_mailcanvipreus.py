@@ -21,12 +21,14 @@ class MailCanviPreusReport(report_int):
         pol_o = pool.get("giscedata.polissa")
         template_o = pool.get("poweremail.templates")
 
-        ir_model_data = self.pool.get("ir.model.data")
+        ir_model_data = pool.get("ir.model.data")
         template_id = ir_model_data.get_object_reference(
             cursor, uid,
             "som_polissa_condicions_generals",
             "canviPreusBackend"
         )[1]
+
+        result = []
 
         for pol_id in ids:
             pol_br = pol_o.browse(cursor, uid, pol_id, context=context)
@@ -56,9 +58,7 @@ class MailCanviPreusReport(report_int):
 
             puppeteer_script_path = 'get_pdf'
 
-            node_bin_path = os.environ.get('NODE_BIN_PATH', 'node')
-            if not node_bin_path:
-                node_bin_path = 'node'
+            node_bin_path = os.environ.get('NODE_BIN_PATH') or 'node'
 
             node_modules_path = os.environ.get('NODE_PATH', False)
             if node_modules_path:
@@ -90,9 +90,11 @@ class MailCanviPreusReport(report_int):
                 os.remove(html_file_path)
 
             with open(pdf_file_path, "rb") as pdf_file:
-                result = base64.b64encode(pdf_file.read())
+                result.append(base64.b64encode(pdf_file.read()))
+            if os.path.exists(pdf_file_path):
+                os.remove(pdf_file_path)
 
-            return result, 'pdf'
+        return result, 'pdf'
 
 
 MailCanviPreusReport('report.report_mailcanvipreus')
