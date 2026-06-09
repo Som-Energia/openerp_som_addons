@@ -145,6 +145,26 @@ class SomAutoreclamaStateUpdater(osv.osv_memory):
             )
         return context
 
+    def _get_condition_ids(self, cursor, uid, state_id, namespace, context=None):
+        if not context:
+            context = {}
+
+        condition_cache = context.setdefault('_autoreclama_condition_cache', {})
+        cache_key = (namespace, state_id)
+        if cache_key not in condition_cache:
+            cond_obj = self.pool.get("som.autoreclama.state.condition")
+            condition_cache[cache_key] = cond_obj.search(
+                cursor,
+                uid,
+                [
+                    ("state_id", "=", state_id),
+                    ("active", "=", True),
+                ],
+                order="priority",
+                context=context,
+            )
+        return condition_cache[cache_key]
+
     def get_atc_candidates_to_update(self, cursor, uid, context=None):
         atc_obj = self.pool.get("giscedata.atc")
         search_params = [
@@ -415,15 +435,8 @@ class SomAutoreclamaStateUpdater(osv.osv_memory):
         else:
             return False, None, _(u"Sense estat d'autoreclama inicial")
 
-        cond_ids = cond_obj.search(
-            cursor,
-            uid,
-            [
-                ("state_id", "=", autoreclama_state_id),
-                ("active", "=", True),
-            ],
-            order="priority",
-            context=context,
+        cond_ids = self._get_condition_ids(
+            cursor, uid, autoreclama_state_id, namespace, context
         )
 
         do_not_execute = context and context.get("search_only", False)
