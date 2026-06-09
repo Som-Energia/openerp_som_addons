@@ -130,6 +130,21 @@ class SomAutoreclamaStateUpdater(osv.osv_memory):
         if cursor:
             cursor.rollback()
 
+    def _ensure_updater_config_context(self, cursor, uid, context=None):
+        if not context:
+            context = {}
+
+        cfg_obj = self.pool.get('res.config')
+        if 'days_ago_R1006' not in context:
+            context['days_ago_R1006'] = int(cfg_obj.get(
+                cursor, uid, "som_autoreclama_2_006_in_a_row_days_ago", "120")
+            )
+        if 'days_ago_R1009' not in context:
+            context['days_ago_R1009'] = int(cfg_obj.get(
+                cursor, uid, "som_autoreclama_2_009_in_a_row_days_ago", "120")
+            )
+        return context
+
     def get_atc_candidates_to_update(self, cursor, uid, context=None):
         atc_obj = self.pool.get("giscedata.atc")
         search_params = [
@@ -385,20 +400,12 @@ class SomAutoreclamaStateUpdater(osv.osv_memory):
         return updated, not_updated, errors, msg, summary
 
     def update_item_if_possible(self, cursor, uid, item_id, namespace, context=None):
-        if not context:
-            context = {}
+        context = self._ensure_updater_config_context(cursor, uid, context)
 
         item_obj = self.pool.get(_namespaces[namespace]['model'])
         history_obj = self.pool.get(_namespaces[namespace]['history_model'])
         state_obj = self.pool.get("som.autoreclama.state")
         cond_obj = self.pool.get("som.autoreclama.state.condition")
-        cfg_obj = self.pool.get('res.config')
-        context['days_ago_R1006'] = int(cfg_obj.get(
-            cursor, uid, "som_autoreclama_2_006_in_a_row_days_ago", "120")
-        )
-        context['days_ago_R1009'] = int(cfg_obj.get(
-            cursor, uid, "som_autoreclama_2_009_in_a_row_days_ago", "120")
-        )
         item_data = item_obj.get_autoreclama_data(cursor, uid, item_id, namespace, context)
 
         autoreclama_state = _namespaces[namespace]['state_field']
@@ -449,6 +456,8 @@ class SomAutoreclamaStateUpdater(osv.osv_memory):
         )
 
     def _state_updater_impl(self, cursor, uid, context=None):
+        context = self._ensure_updater_config_context(cursor, uid, context)
+
         atc_ids = self.get_atc_candidates_to_update(cursor, uid, context)
         a, b, c, atc_msg, atc_sum = self.update_items_if_possible(
             cursor, uid, atc_ids, "atc", False, context)
