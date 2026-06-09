@@ -5,8 +5,18 @@ from osv import osv
 from tqdm import tqdm
 from tools.translate import _
 from tools import email_send
+import cProfile
 import json
+import os
+import pstats
 import pooler
+import random
+import time
+
+try:
+    from cStringIO import StringIO
+except ImportError:
+    from io import StringIO
 
 try:
     from urllib import urlencode
@@ -41,6 +51,79 @@ _namespaces = {
 class SomAutoreclamaStateUpdater(osv.osv_memory):
 
     _name = "som.autoreclama.state.updater"
+
+    def _get_default_profile_paths(self, cursor):
+        timestamp = time.strftime("%Y%m%d_%H%M%S")
+        filename = "som_autoreclama_state_updater_{}_{}".format(
+            cursor.dbname, timestamp
+        )
+        profile_path = os.path.join('/tmp', filename + '.cprof')
+        summary_path = os.path.join('/tmp', filename + '.stats.txt')
+        return profile_path, summary_path
+
+    def _ensure_parent_dir(self, path):
+        parent_dir = os.path.dirname(path)
+        if parent_dir and not os.path.isdir(parent_dir):
+            os.makedirs(parent_dir)
+
+    def _dump_profile_summary(self, profiler, summary_path, sort_by, limit):
+        output = StringIO()
+        stats = pstats.Stats(profiler, stream=output)
+        stats.strip_dirs()
+        stats.sort_stats(sort_by)
+        stats.print_stats(limit)
+
+        self._ensure_parent_dir(summary_path)
+        with open(summary_path, 'w') as summary_file:
+            summary_file.write(output.getvalue())
+
+    def _profile_state_updater_impl(
+        self, cursor, uid, profile_path=None, summary_path=None, context=None
+    ):
+        if not context:
+            context = {}
+
+        if not profile_path or not summary_path:
+            default_profile_path, default_summary_path = self._get_default_profile_paths(cursor)
+            profile_path = profile_path or default_profile_path
+            summary_path = summary_path or default_summary_path
+
+        sort_by = context.get('profile_sort', 'cumulative')
+        limit = int(context.get('profile_limit', 200))
+
+        profiler = cProfile.Profile()
+        result = profiler.runcall(self._state_updater_impl, cursor, uid, context)
+
+        self._ensure_parent_dir(profile_path)
+        profiler.dump_stats(profile_path)
+        self._dump_profile_summary(profiler, summary_path, sort_by, limit)
+
+        return u"{}\n\ncProfile dump: {}\nSummary: {}\nSort: {}\nLimit: {}".format(
+            result,
+            profile_path,
+            summary_path,
+            sort_by,
+            limit,
+        )
+
+    def _get_profiled_polissa_ids(self, ids, context=None):
+        if not context:
+            context = {}
+
+        max_items = context.get('profile_max_polissa_items')
+        if not max_items:
+            return ids
+
+        max_items = int(max_items)
+        if max_items <= 0 or len(ids) <= max_items:
+            return ids
+
+        sample_seed = context.get('profile_polissa_sample_seed')
+        if sample_seed is not None:
+            sampler = random.Random(sample_seed)
+            return sampler.sample(ids, max_items)
+
+        return random.sample(ids, max_items)
 
     def get_atc_candidates_to_update(self, cursor, uid, context=None):
         atc_obj = self.pool.get("giscedata.atc")
@@ -341,12 +424,14 @@ class SomAutoreclamaStateUpdater(osv.osv_memory):
             len(cond_ids)
         )
 
-    def state_updater(self, cursor, uid, context=None):
+    def _state_updater_impl(self, cursor, uid, context=None):
         atc_ids = self.get_atc_candidates_to_update(cursor, uid, context)
         a, b, c, atc_msg, atc_sum = self.update_items_if_possible(
             cursor, uid, atc_ids, "atc", False, context)
 
         pol_ids = self.get_polissa_candidates_to_update(cursor, uid, "polissa", context)
+        if context and context.get('profile_max_polissa_items'):
+            pol_ids = self._get_profiled_polissa_ids(pol_ids, context)
         a, b, c, pol006_msg, pol006_sum = self.update_items_if_possible(
             cursor, uid, pol_ids, "polissa", False, context)
 
@@ -355,6 +440,16 @@ class SomAutoreclamaStateUpdater(osv.osv_memory):
             cursor, uid, pol_ids, "polissa009", False, context)
 
         return "\n\n".join([atc_sum, pol006_sum, pol009_sum, atc_msg, pol006_msg, pol009_msg])
+
+    def state_updater(self, cursor, uid, context=None):
+        return self._state_updater_impl(cursor, uid, context)
+
+    def profile_state_updater(
+        self, cursor, uid, profile_path=None, summary_path=None, context=None
+    ):
+        return self._profile_state_updater_impl(
+            cursor, uid, profile_path, summary_path, context
+        )
 
     def _cronjob_state_updater_mail_text(self, cursor, uid, data=None, context=None):
         if not data:
