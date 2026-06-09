@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import
+from . import demo
 from . import report
 from . import report_backend_mailcanvipreus
 from . import report_backend_mailcanvipreus_eie

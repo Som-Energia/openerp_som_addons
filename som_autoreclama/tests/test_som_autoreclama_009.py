@@ -3,7 +3,7 @@
 import mock
 import unittest
 from ..models import giscedata_polissa
-from test_som_autoreclama_base import SomAutoreclamaBaseTests, today_str
+from .test_som_autoreclama_base import SomAutoreclamaBaseTests, today_str
 
 
 class SomAutoreclama009AutomationTest(SomAutoreclamaBaseTests):

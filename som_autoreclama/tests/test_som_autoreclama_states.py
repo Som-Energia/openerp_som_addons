@@ -1,9 +1,16 @@
 # -*- coding: utf-8 -*-
+from __future__ import absolute_import
+
 from datetime import timedelta, datetime
 from addons import get_module_resource
 import mock
 from ..models import giscedata_atc, giscedata_polissa, som_autoreclama_state_history
-from test_som_autoreclama_base import SomAutoreclamaBaseTests, today_str, today_minus_str
+from .test_som_autoreclama_base import (
+    SomAutoreclamaBaseTests,
+    today_str,
+    today_minus_str,
+)
+from destral.patch import PatchNewCursors
 
 
 class SomAutoreclamaStatesTest(SomAutoreclamaBaseTests):
@@ -239,6 +246,54 @@ class SomAutoreclamaStatesTest(SomAutoreclamaBaseTests):
         self.assertEqual(atc.autoreclama_history_ids[2].end_date, state_1_dt)
         self.assertEqual(atc.autoreclama_history_ids[2].atc_id.id, new_atc_id)
         self.assertEqual(atc.autoreclama_history_ids[2].generated_atc_id.id, False)
+
+    def test_atc_current_state_ignores_newer_closed_history_row(self):
+        atc_obj = self.get_model("giscedata.atc")
+        history_obj = self.get_model("som.autoreclama.state.history.atc")
+
+        atc_id = self.build_atc(r1=True)
+        _, disabled_state_id = self.get_object_reference(
+            "som_autoreclama", "disabled_state_workflow_atc"
+        )
+
+        history_obj.create(
+            self.cursor,
+            self.uid,
+            {
+                "atc_id": atc_id,
+                "state_id": disabled_state_id,
+                "change_date": "2020-01-01",
+                "end_date": "2020-01-02",
+            },
+        )
+
+        atc = atc_obj.browse(self.cursor, self.uid, atc_id)
+        self.assertEqual(atc.autoreclama_state.name, "Correcte")
+        self.assertEqual(atc.autoreclama_state_date, today_str())
+
+    def test_polissa_current_state_ignores_newer_closed_history_row(self):
+        pol_obj = self.get_model("giscedata.polissa")
+        history_obj = self.get_model("som.autoreclama.state.history.polissa")
+
+        pol_id = self.build_polissa(initial_state='correct', data_baixa=False)
+        _, loop_state_id = self.get_object_reference(
+            "som_autoreclama", "loop_state_workflow_polissa"
+        )
+
+        history_obj.create(
+            self.cursor,
+            self.uid,
+            {
+                "polissa_id": pol_id,
+                "state_id": loop_state_id,
+                "change_date": "2020-01-01",
+                "end_date": "2020-01-02",
+            },
+        )
+
+        pol = pol_obj.browse(self.cursor, self.uid, pol_id)
+        self.assertEqual(pol.autoreclama_state.name, "Correcte")
+        self.assertEqual(pol.autoreclama_state_date, today_str())
 
 
 class SomAutoreclamaCreationWizardTest(SomAutoreclamaBaseTests):
@@ -1022,7 +1077,7 @@ class SomAutoreclamaConditionsTest(SomAutoreclamaBaseTests):
         test_datas = [
             {
                 "subtype": "001",
-                "log_days": 30 / 2,
+                "log_days": 30 // 2,
                 "result": False,
                 "cond": "conditions_001_correct_state_workflow_atc",
             },
@@ -1034,7 +1089,7 @@ class SomAutoreclamaConditionsTest(SomAutoreclamaBaseTests):
             },
             {
                 "subtype": "038",
-                "log_days": 30 / 2,
+                "log_days": 30 // 2,
                 "result": False,
                 "cond": "conditions_038_correct_state_workflow_atc",
             },
@@ -1046,7 +1101,7 @@ class SomAutoreclamaConditionsTest(SomAutoreclamaBaseTests):
             },
             {
                 "subtype": "027",
-                "log_days": 10 / 2,
+                "log_days": 10 // 2,
                 "result": False,
                 "cond": "conditions_027_correct_state_workflow_atc",
             },
@@ -1058,7 +1113,7 @@ class SomAutoreclamaConditionsTest(SomAutoreclamaBaseTests):
             },
             {
                 "subtype": "039",
-                "log_days": 30 / 2,
+                "log_days": 30 // 2,
                 "result": False,
                 "cond": "conditions_039_correct_state_workflow_atc",
             },
@@ -1091,7 +1146,6 @@ class SomAutoreclamaConditionsTest(SomAutoreclamaBaseTests):
         for cond_id in cond_ids:
             cond = cond_obj.browse(self.cursor, self.uid, cond_id)
 
-            print(cond.subtype_id.name)
             if cond.subtype_id.name in ["006", "009", "036"]:  # unsuported
                 continue
 
@@ -1102,7 +1156,7 @@ class SomAutoreclamaConditionsTest(SomAutoreclamaBaseTests):
             self.assertEqual(ok, True, "Error on More than for condition id {}".format(cond_id))
 
             # test less
-            atc_id = self.build_atc(subtype=cond.subtype_id.name, log_days=cond.days / 2, r1=True)
+            atc_id = self.build_atc(subtype=cond.subtype_id.name, log_days=cond.days // 2, r1=True)
             atc_data = atc_obj.get_autoreclama_data(self.cursor, self.uid, atc_id, "atc", {})
             ok = cond_obj.fit_condition(self.cursor, self.uid, cond_id, atc_data, "atc", {})
             self.assertEqual(ok, False, "Error on Less than for condition id {}".format(cond_id))
@@ -1355,6 +1409,7 @@ class SomAutoreclamaUpdaterTest(SomAutoreclamaBaseTests):
         self.assertEqual(atc.autoreclama_state_date, today_str())
         self.assertGreaterEqual(len(atc.autoreclama_history_ids), 2)
 
+    @PatchNewCursors()
     def test_update_atcs_if_possible__some_consitions(self):
         atc_n_id = self.build_atc(r1=True)
         atc_y_id = self.build_atc(log_days=60, subtype="001", r1=True)
@@ -1825,6 +1880,7 @@ class SomAutoreclamaUpdaterTest(SomAutoreclamaBaseTests):
         second_006_id = pol.autoreclama_history_ids[0]['generated_atc_id'].id
         self.assertNotEqual(first_006.id, second_006_id)
 
+    @PatchNewCursors()
     def test_update_polisses_if_possible__some_conditions(self):
         pol_n_id = self.build_polissa(
             name="polissa_0003",
