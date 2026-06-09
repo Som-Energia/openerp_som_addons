@@ -289,9 +289,11 @@ class SomAutoreclamaStateUpdater(osv.osv_memory):
                 )
                 if result is None:
                     self._rollback_cursor(new_cursor)
-                item_name = self.get_item_name(new_cursor, uid, item_id, namespace, context)
                 if result:
                     updated.append(item_id)
+                    item_name = self.get_item_name(
+                        new_cursor, uid, item_id, namespace, context
+                    )
                     next_state_id, next_state = self.get_autoreclama_state_name(
                         new_cursor, uid, item_id, namespace, context
                     )
@@ -308,12 +310,18 @@ class SomAutoreclamaStateUpdater(osv.osv_memory):
                 elif result is False:
                     not_updated.append(item_id)
                     if verbose:
+                        item_name = self.get_item_name(
+                            new_cursor, uid, item_id, namespace, context
+                        )
                         msg += _(
                             "{} amb id {} no li toca canviar d'estat, estat actual: {}\n"
                         ).format(_namespaces[namespace]['name'], item_name, actual_state)
                         msg += _(" - {}\n").format(message)
                 else:
                     errors.append(item_id)
+                    item_name = self.get_item_name(
+                        new_cursor, uid, item_id, namespace, context
+                    )
                     msg += _(
                         "{} amb id {} no ha canviat d'estat per error, estat actual: {} => condició {}\n"  # noqa: E501
                     ).format(
