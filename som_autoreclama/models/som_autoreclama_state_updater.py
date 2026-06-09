@@ -12,6 +12,7 @@ import pstats
 import pooler
 import random
 import time
+import traceback
 
 try:
     from cStringIO import StringIO
@@ -124,6 +125,10 @@ class SomAutoreclamaStateUpdater(osv.osv_memory):
             return sampler.sample(ids, max_items)
 
         return random.sample(ids, max_items)
+
+    def _rollback_cursor(self, cursor):
+        if cursor:
+            cursor.rollback()
 
     def get_atc_candidates_to_update(self, cursor, uid, context=None):
         atc_obj = self.pool.get("giscedata.atc")
@@ -282,6 +287,8 @@ class SomAutoreclamaStateUpdater(osv.osv_memory):
                 result, condition_id, message = self.update_item_if_possible(
                     new_cursor, uid, item_id, namespace, context
                 )
+                if result is None:
+                    self._rollback_cursor(new_cursor)
                 item_name = self.get_item_name(new_cursor, uid, item_id, namespace, context)
                 if result:
                     updated.append(item_id)
@@ -318,6 +325,15 @@ class SomAutoreclamaStateUpdater(osv.osv_memory):
                     msg += _(" - {}\n").format(message)
 
                 new_cursor.commit()
+            except Exception:
+                if new_cursor:
+                    self._rollback_cursor(new_cursor)
+                errors.append(item_id)
+                item_name = self.get_item_name(cursor, uid, item_id, namespace, context)
+                msg += _(
+                    "{} amb id {} no ha canviat d'estat per error inesperat\n"
+                ).format(_namespaces[namespace]['name'], item_name)
+                msg += traceback.format_exc()
             finally:
                 if new_cursor:
                     new_cursor.close()
