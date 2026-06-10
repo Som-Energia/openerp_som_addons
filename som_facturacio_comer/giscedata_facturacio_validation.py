@@ -291,9 +291,14 @@ class GiscedataFacturacioValidationValidator(osv.osv):
             self
         ).check_exceding_days(cursor, uid, fact, parameters)
 
-    def check_f070_condicions_especials(self, cursor, uid, fact, linia_saju, parameters):
-        """ To be customized """
-        res = super(GiscedataFacturacioValidationValidator, self).check_f070_condicions_especials(
+    def check_f070_ha_de_saltar(self, cursor, uid, fact, linia_saju, parameters):
+        """ Si True farà saltar error F070 si hi ha diferencia, si False, no farà saltar validació
+        Customitzat per a que en validar una corba amb consums anteriors a 1 de maig de 2026
+        Es validi contra la corba original i no la "cuinada". Si la diferència és menor o igual
+        a la tolerància establerta, fer que no salti la F070 ja que de base comprova contra la
+        corba "cuinada" utilitzada
+        """
+        res = super(GiscedataFacturacioValidationValidator, self).check_f070_ha_de_saltar(
             cursor, uid, fact, linia_saju, parameters
         )
         if res and fact.data_inici < '2026-05-01' <= fact.data_final:
@@ -310,7 +315,7 @@ class GiscedataFacturacioValidationValidator(osv.osv):
 
             tolerancia = parameters.get("tolerancia", 1)
             diferencia_facturada_saju = original_consum - fact.energia_kwh
-            if abs(diferencia_facturada_saju) > tolerancia:
+            if abs(diferencia_facturada_saju) <= tolerancia:
                 res = False
         return res
 
