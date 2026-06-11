@@ -234,10 +234,7 @@ class ResPartnerAddress(osv.osv):
         """Prepare the fields with the data of a member, to be sent to Mailchimp
         from res.partner id
         """
-        try:
-            partner_address_id = self.search(cursor, uid, [("partner_id", "=", partner_id)], limit=1)[0]  # noqa: E501
-        except IndexError:
-            raise osv.except_osv(_("Error"), _("Partner address not found. Partner ID: {}".format(partner_id)))  # noqa: E501
+        partner_address_id = self._get_partner_address_id(cursor, uid, partner_id, context=context)
         return self.fill_merge_fields_clients(cursor, uid, partner_address_id, context=context)
 
     def fill_merge_fields_clients(self, cursor, uid, id, context=None):
@@ -288,11 +285,16 @@ class ResPartnerAddress(osv.osv):
         """Prepare the fields with the data of a member, to be sent to Mailchimp
         from res.partner id
         """
-        try:
-            partner_address_id = self.search(cursor, uid, [("partner_id", "=", partner_id)], limit=1)[0]  # noqa: E501
-        except IndexError:
-            raise osv.except_osv(_("Error"), _("Partner address not found. Partner ID: {}".format(partner_id)))  # noqa: E501
+        partner_address_id = self._get_partner_address_id(cursor, uid, partner_id, context=context)
         return self.fill_merge_fields_soci(cursor, uid, partner_address_id, context=context)
+
+    def _get_partner_address_id(self, cursor, uid, partner_id, context=None):
+        try:
+            return self.search(cursor, uid, [("partner_id", "=", partner_id)], limit=1)[0]
+        except IndexError:
+            raise osv.except_osv(
+                _("Error"), _("Partner address not found. Partner ID: {}".format(partner_id))
+            )
 
     def fill_merge_fields_soci(self, cursor, uid, id, context=None):
         """
@@ -583,8 +585,9 @@ class ResPartnerAddress(osv.osv):
         list_id = self.get_mailchimp_list_id(list_name, MAILCHIMP_CLIENT)
 
         for _id in partner_ids:
+            address_id = self._get_partner_address_id(cursor, uid, _id, context=context)
             self.archieve_mail_in_list_sync(
-                cursor, uid, _id, list_id, MAILCHIMP_CLIENT
+                cursor, uid, address_id, list_id, MAILCHIMP_CLIENT
             )
 
     @job(queue="mailchimp_tasks")
@@ -597,9 +600,10 @@ class ResPartnerAddress(osv.osv):
         list_ids = [self.get_mailchimp_list_id(name, MAILCHIMP_CLIENT) for name in list_names]
 
         for _id in partner_ids:
+            address_id = self._get_partner_address_id(cursor, uid, _id, context=context)
             for list_id in list_ids:
                 self.archieve_mail_in_list_sync(
-                    cursor, uid, _id, list_id, MAILCHIMP_CLIENT
+                    cursor, uid, address_id, list_id, MAILCHIMP_CLIENT
                 )
 
     @job(queue="mailchimp_tasks")

@@ -224,3 +224,59 @@ class TestsPartnerAddress(testing.OOTestCase):
         )
 
         mock_fakemailchimp.delete_list_member.assert_called()
+
+    @mock.patch.object(res_partner_address.ResPartnerAddress, "archieve_mail_in_list_sync")
+    @mock.patch.object(res_partner_address.ResPartnerAddress, "get_mailchimp_list_id")
+    @mock.patch.object(res_partner_address.ResPartnerAddress, "_get_mailchimp_client")
+    def test_unsubscribe_partner_in_customers_no_members_lists_uses_address_id(
+        self, get_mailchimp_client_mock, get_mailchimp_list_id_mock, archive_mock
+    ):
+        partner_address_o = self.pool.get("res.partner.address")
+        imd_o = self.pool.get("ir.model.data")
+        address_id = imd_o.get_object_reference(
+            self.cursor, self.uid, "som_polissa_soci", "res_partner_address_soci"
+        )[1]
+        partner_id = partner_address_o.read(self.cursor, self.uid, address_id, ["partner_id"])[
+            "partner_id"
+        ][0]
+
+        get_mailchimp_client_mock.return_value = fake_mchimp_client
+        get_mailchimp_list_id_mock.return_value = 99
+
+        partner_address_o.unsubscribe_partner_in_customers_no_members_lists(
+            self.cursor, self.txn, partner_id
+        )
+
+        archive_mock.assert_called_once_with(
+            self.cursor, self.txn, address_id, 99, fake_mchimp_client
+        )
+
+    @mock.patch.object(res_partner_address.ResPartnerAddress, "archieve_mail_in_list_sync")
+    @mock.patch.object(res_partner_address.ResPartnerAddress, "_get_members_mailchimp_lists")
+    @mock.patch.object(res_partner_address.ResPartnerAddress, "get_mailchimp_list_id")
+    @mock.patch.object(res_partner_address.ResPartnerAddress, "_get_mailchimp_client")
+    def test_unsubscribe_partner_in_members_lists_uses_address_id(
+        self,
+        get_mailchimp_client_mock,
+        get_mailchimp_list_id_mock,
+        get_members_mailchimp_lists_mock,
+        archive_mock,
+    ):
+        partner_address_o = self.pool.get("res.partner.address")
+        imd_o = self.pool.get("ir.model.data")
+        address_id = imd_o.get_object_reference(
+            self.cursor, self.uid, "som_polissa_soci", "res_partner_address_soci"
+        )[1]
+        partner_id = partner_address_o.read(self.cursor, self.uid, address_id, ["partner_id"])[
+            "partner_id"
+        ][0]
+
+        get_mailchimp_client_mock.return_value = fake_mchimp_client
+        get_members_mailchimp_lists_mock.return_value = ["socis", "crinforma"]
+        get_mailchimp_list_id_mock.side_effect = [11, 22]
+
+        partner_address_o.unsubscribe_partner_in_members_lists(self.cursor, self.txn, partner_id)
+
+        self.assertEqual(archive_mock.call_count, 2)
+        archive_mock.assert_any_call(self.cursor, self.txn, address_id, 11, fake_mchimp_client)
+        archive_mock.assert_any_call(self.cursor, self.txn, address_id, 22, fake_mchimp_client)
