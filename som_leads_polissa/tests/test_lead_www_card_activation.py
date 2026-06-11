@@ -1,6 +1,7 @@
 # -*- encoding: utf-8 -*-
 from __future__ import absolute_import
 
+import mock
 from osv import osv
 
 from .base_som_lead_www import BaseSomLeadWwwTest
@@ -69,7 +70,7 @@ class TestLeadWwwCardActivation(BaseSomLeadWwwTest):
         self.assertEqual(polissa.creditcard.expiry_date, "12/30")
         self.assertEqual(polissa.creditcard.cof_txnid, "cof_123")
 
-    def test_create_lead_marks_error_when_card_recurrent_has_no_card_data(self):
+    def test_create_lead_does_not_mark_error_when_only_card_data_is_missing(self):
         www_lead_o = self.get_model("som.lead.www")
         lead_o = self.get_model("giscedata.crm.lead")
         ir_model_o = self.get_model("ir.model.data")
@@ -81,40 +82,27 @@ class TestLeadWwwCardActivation(BaseSomLeadWwwTest):
         result = www_lead_o.create_lead(self.cursor, self.uid, values)
         lead = lead_o.browse(self.cursor, self.uid, result["lead_id"])
 
-        error_stage_id = ir_model_o.get_object_reference(
-            self.cursor, self.uid, "som_leads_polissa", "webform_stage_error"
+        received_stage_id = ir_model_o.get_object_reference(
+            self.cursor, self.uid, "som_leads_polissa", "webform_stage_recieved"
         )[1]
 
-        self.assertTrue(result["error"])
-        self.assertEqual(lead.crm_id.state, 'pending')
-        self.assertEqual(lead.crm_id.stage_id.id, error_stage_id)
+        self.assertFalse(result["error"])
+        self.assertEqual(lead.crm_id.state, 'open')
+        self.assertEqual(lead.crm_id.stage_id.id, received_stage_id)
 
         with self.assertRaises(osv.except_osv):
             www_lead_o.activate_lead(
                 self.cursor, self.uid, result["lead_id"], context={"sync": True})
 
-    def test_add_payment_card_data_revalidates_error_card_lead(self):
+    def test_add_payment_card_data_allows_activation_after_missing_card_data(self):
         www_lead_o = self.get_model("som.lead.www")
         lead_o = self.get_model("giscedata.crm.lead")
-        ir_model_o = self.get_model("ir.model.data")
 
         values = self._basic_values
         values["member_payment_type"] = "tpv"
         values["billing_payment_method"] = "card_recurrent"
 
         result = www_lead_o.create_lead(self.cursor, self.uid, values)
-        lead = lead_o.browse(self.cursor, self.uid, result["lead_id"])
-
-        error_stage_id = ir_model_o.get_object_reference(
-            self.cursor, self.uid, "som_leads_polissa", "webform_stage_error"
-        )[1]
-        received_stage_id = ir_model_o.get_object_reference(
-            self.cursor, self.uid, "som_leads_polissa", "webform_stage_recieved"
-        )[1]
-
-        self.assertTrue(result["error"])
-        self.assertEqual(lead.crm_id.state, 'pending')
-        self.assertEqual(lead.crm_id.stage_id.id, error_stage_id)
 
         card_result = www_lead_o.add_payment_card_data(
             self.cursor, self.uid, result["lead_id"], self._card_vals()
@@ -125,11 +113,38 @@ class TestLeadWwwCardActivation(BaseSomLeadWwwTest):
 
         lead = lead_o.browse(self.cursor, self.uid, result["lead_id"])
         self.assertEqual(lead.crm_id.state, 'open')
-        self.assertEqual(lead.crm_id.stage_id.id, received_stage_id)
 
         www_lead_o.activate_lead(self.cursor, self.uid, result["lead_id"], context={"sync": True})
         lead = lead_o.browse(self.cursor, self.uid, result["lead_id"])
         self.assertTrue(lead.polissa_id)
+
+    def test_create_lead_uses_temporary_card_data_during_validation(self):
+        www_lead_o = self.get_model("som.lead.www")
+        lead_o = self.get_model("giscedata.crm.lead")
+
+        values = self._basic_values
+        values["member_payment_type"] = "tpv"
+        values["billing_payment_method"] = "card_recurrent"
+
+        captured = {}
+        original_method = lead_o._get_card_payment_polissa_values
+
+        def _wrapped_get_card_payment_polissa_values(cursor, uid, lead, pagador_id, context=None):
+            captured["token"] = lead.creditcard_token
+            return original_method(cursor, uid, lead, pagador_id, context=context)
+
+        with mock.patch.object(
+            lead_o,
+            "_get_card_payment_polissa_values",
+            side_effect=_wrapped_get_card_payment_polissa_values,
+        ):
+            result = www_lead_o.create_lead(self.cursor, self.uid, values)
+
+        lead = lead_o.browse(self.cursor, self.uid, result["lead_id"])
+
+        self.assertFalse(result["error"])
+        self.assertEqual(captured["token"], "validation-token-{}".format(result["lead_id"]))
+        self.assertFalse(lead.creditcard_token)
 
     def test_activate_lead_reuses_existing_card_with_same_token_and_data(self):
         www_lead_o = self.get_model("som.lead.www")
