@@ -2913,6 +2913,16 @@ class InvestmentTests(testing.OOTestCase):
             )
             investment = self.Investment.browse(cursor, uid, id)
             self.assertTrue(investment.signed_date)
+            report_id = self.IrModelData.get_object_reference(
+                cursor, uid, 'som_generationkwh', 'report_generationkwh_signaturit_doc'
+            )[1]
+            sign_doc_obj = self.openerp.pool.get('giscedata.signatura.documents')
+            sign_doc_id = sign_doc_obj.search(cursor, uid, [
+                ('model', '=', 'generationkwh.investment,{}'.format(id)),
+                ('signature_id', '=', 'th1s-i5-a-f4ls3-d0c-1d'),
+            ])[0]
+            sign_doc = sign_doc_obj.read(cursor, uid, sign_doc_id, ['report_id'])
+            self.assertEqual(sign_doc['report_id'][0], report_id)
             mocked_update_sign.assert_called()
 
     @mock.patch("generationkwh.investmentstate.InvestmentState.addAction")
