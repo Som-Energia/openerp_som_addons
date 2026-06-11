@@ -375,7 +375,18 @@ class SomLeadWww(osv.osv_memory):
         )
 
         error_info = self._check_lead_can_be_activated(cr, uid, lead_id, context=context)
-        if not error_info:
+        if error_info:
+            error_stage_id = ir_model_o.get_object_reference(
+                cr, uid, "som_leads_polissa", "webform_stage_error"
+            )[1]
+            lead_o.write(
+                cr,
+                uid,
+                lead_id,
+                {"stage_id": error_stage_id, "state": "pending"},
+                context=context,
+            )
+        else:
             received_stage_id = ir_model_o.get_object_reference(
                 cr, uid, "som_leads_polissa", "webform_stage_recieved"
             )[1]
@@ -481,6 +492,7 @@ class SomLeadWww(osv.osv_memory):
             context = {}
 
         lead_o = self.pool.get("giscedata.crm.lead")
+        lead = lead_o.browse(cr, uid, lead_id, context=context)
 
         savepoint = 'savepoint_check_lead_can_be_activated_{}'.format(id(cr))
         cr.savepoint(savepoint)
@@ -489,6 +501,14 @@ class SomLeadWww(osv.osv_memory):
         ctxt['in_rollback_transaction'] = True
         error = None
         try:
+            if lead.billing_payment_method == "card_recurrent" and not lead.creditcard_token:
+                lead_o.write(
+                    cr,
+                    uid,
+                    lead_id,
+                    self._get_validation_card_values(lead_id),
+                    context=ctxt,
+                )
             lead_o.force_validation(cr, uid, [lead_id], context=ctxt)
             lead_o.create_entities(cr, uid, lead_id, context=ctxt)
             cr.rollback(savepoint)
@@ -502,6 +522,14 @@ class SomLeadWww(osv.osv_memory):
             )
 
         return error
+
+    def _get_validation_card_values(self, lead_id):
+        return {
+            "creditcard_token": "validation-token-{}".format(lead_id),
+            "creditcard_masked_number": "**** **** **** 0000",
+            "creditcard_expiry_date": "12/30",
+            "creditcard_cof_txnid": "validation-cof-{}".format(lead_id),
+        }
 
     def _already_has_contract(self, cr, uid, vat, context=None):
         if context is None:
