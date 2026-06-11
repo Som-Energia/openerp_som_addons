@@ -13,7 +13,7 @@ class TestLeadWwwCardData(BaseSomLeadWwwTest):
         lead_o = self.get_model("giscedata.crm.lead")
 
         values = self._basic_values
-        values["member_payment_type"] = "tpv"
+        values["payment_type"] = "tpv"
         values["billing_payment_method"] = "card_recurrent"
 
         result = www_lead_o.create_lead(self.cursor, self.uid, values)
@@ -45,7 +45,7 @@ class TestLeadWwwCardData(BaseSomLeadWwwTest):
         ir_model_o = self.get_model("ir.model.data")
 
         values = self._basic_values
-        values["member_payment_type"] = "tpv"
+        values["payment_type"] = "tpv"
         values["billing_payment_method"] = "card_recurrent"
 
         result = www_lead_o.create_lead(self.cursor, self.uid, values)
@@ -98,7 +98,7 @@ class TestLeadWwwCardData(BaseSomLeadWwwTest):
         www_lead_o = self.get_model("som.lead.www")
 
         values = self._basic_values
-        values["member_payment_type"] = "tpv"
+        values["payment_type"] = "tpv"
         values["billing_payment_method"] = "card_recurrent"
 
         result = www_lead_o.create_lead(self.cursor, self.uid, values)
@@ -123,7 +123,7 @@ class TestLeadWwwCardData(BaseSomLeadWwwTest):
         www_lead_o = self.get_model("som.lead.www")
 
         values = self._basic_values
-        values["member_payment_type"] = "tpv"
+        values["payment_type"] = "tpv"
         values["billing_payment_method"] = "card_recurrent"
 
         result = www_lead_o.create_lead(self.cursor, self.uid, values)
@@ -157,7 +157,7 @@ class TestLeadWwwCardData(BaseSomLeadWwwTest):
         www_lead_o = self.get_model("som.lead.www")
 
         values = self._basic_values
-        values["member_payment_type"] = "tpv"
+        values["payment_type"] = "tpv"
         values["billing_payment_method"] = "card_recurrent"
 
         result = www_lead_o.create_lead(self.cursor, self.uid, values)

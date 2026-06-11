@@ -41,7 +41,7 @@ class TestLeadWwwCardActivation(BaseSomLeadWwwTest):
         ir_model_o = self.get_model("ir.model.data")
 
         values = self._basic_values
-        values["member_payment_type"] = "tpv"
+        values["payment_type"] = "tpv"
         values["billing_payment_method"] = "card_recurrent"
 
         result = www_lead_o.create_lead(self.cursor, self.uid, values)
@@ -76,7 +76,7 @@ class TestLeadWwwCardActivation(BaseSomLeadWwwTest):
         ir_model_o = self.get_model("ir.model.data")
 
         values = self._basic_values
-        values["member_payment_type"] = "tpv"
+        values["payment_type"] = "tpv"
         values["billing_payment_method"] = "card_recurrent"
 
         result = www_lead_o.create_lead(self.cursor, self.uid, values)
@@ -99,7 +99,7 @@ class TestLeadWwwCardActivation(BaseSomLeadWwwTest):
         lead_o = self.get_model("giscedata.crm.lead")
 
         values = self._basic_values
-        values["member_payment_type"] = "tpv"
+        values["payment_type"] = "tpv"
         values["billing_payment_method"] = "card_recurrent"
 
         result = www_lead_o.create_lead(self.cursor, self.uid, values)
@@ -123,7 +123,7 @@ class TestLeadWwwCardActivation(BaseSomLeadWwwTest):
         lead_o = self.get_model("giscedata.crm.lead")
 
         values = self._basic_values
-        values["member_payment_type"] = "tpv"
+        values["payment_type"] = "tpv"
         values["billing_payment_method"] = "card_recurrent"
 
         captured = {}
@@ -152,7 +152,7 @@ class TestLeadWwwCardActivation(BaseSomLeadWwwTest):
         card_o = self.get_model("res.partner.creditcard")
 
         values, partner_id = self._get_existing_member_values()
-        values["member_payment_type"] = "tpv"
+        values["payment_type"] = "tpv"
         values["billing_payment_method"] = "card_recurrent"
 
         existing_card_id = card_o.create(
@@ -185,7 +185,7 @@ class TestLeadWwwCardActivation(BaseSomLeadWwwTest):
         card_o = self.get_model("res.partner.creditcard")
 
         values, partner_id = self._get_existing_member_values()
-        values["member_payment_type"] = "tpv"
+        values["payment_type"] = "tpv"
         values["billing_payment_method"] = "card_recurrent"
 
         card_o.create(

@@ -81,7 +81,7 @@ class BaseSomLeadWwwTest(testing.OOTestCase):
                 },
             },
             "iban": "ES7712341234161234567890",
-            "member_payment_type": "remesa",
+            "payment_type": "remesa",
             "donation": False,
             "general_contract_terms_accepted": True,
             "particular_contract_terms_accepted": True,

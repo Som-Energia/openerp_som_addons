@@ -70,17 +70,17 @@ class SomLeadWww(osv.osv_memory):
         payment_mode_o = self.pool.get("payment.mode")
         ir_model_o = self.pool.get("ir.model.data")
 
-        member_payment_type = www_vals.get("payment_type")
+        payment_type = www_vals.get("payment_type")
         billing_payment_method = www_vals.get("billing_payment_method")
 
         if not billing_payment_method:
             billing_payment_method = (
-                "card_recurrent" if member_payment_type == "tpv" else "remesa"
+                "card_recurrent" if payment_type == "tpv" else "remesa"
             )
 
         valid_payment_configuration = (
-            (member_payment_type == "tpv" and billing_payment_method == "card_recurrent")
-            or (member_payment_type == "remesa" and billing_payment_method == "remesa")
+            (payment_type == "tpv" and billing_payment_method == "card_recurrent")
+            or (payment_type == "remesa" and billing_payment_method == "remesa")
         )
         if not valid_payment_configuration:
             raise osv.except_osv(
@@ -96,7 +96,7 @@ class SomLeadWww(osv.osv_memory):
             payment_mode_id = payment_mode_o.search(cr, uid, [("name", "=", "ENGINYERS")])[0]
 
         return {
-            "member_payment_type": member_payment_type,
+            "payment_type": payment_type,
             "billing_payment_method": billing_payment_method,
             "payment_mode_id": payment_mode_id,
         }
@@ -255,7 +255,7 @@ class SomLeadWww(osv.osv_memory):
             "titular_mobile_prefix": member.get("mobile_prefix"),
             "use_cont_address": False,
             "donation": www_vals.get("donation", False),
-            "member_quota_payment_type": payment_data["member_payment_type"],
+            "member_quota_payment_type": payment_data["payment_type"],
             "billing_payment_method": payment_data["billing_payment_method"],
             "gender": member.get("gender"),
             "birthdate": member.get("birthdate"),
