@@ -107,7 +107,7 @@ class SomLeadWww(osv.osv_memory):
         payment_mode_o = self.pool.get("payment.mode")
         ir_model_o = self.pool.get("ir.model.data")
 
-        member_payment_type = www_vals.get("member_payment_type")
+        member_payment_type = www_vals.get("payment_type")
         billing_payment_method = www_vals.get("billing_payment_method")
 
         if not billing_payment_method:
