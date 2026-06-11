@@ -181,6 +181,24 @@ class SomAutoreclamaStateUpdater(osv.osv_memory):
             )
         return condition_string_cache[condition_id]
 
+    def _get_condition_data(self, cursor, uid, condition_id, context=None):
+        if not context:
+            context = {}
+
+        condition_data_cache = context.setdefault(
+            '_autoreclama_condition_data_cache', {}
+        )
+        if condition_id not in condition_data_cache:
+            cond_obj = self.pool.get("som.autoreclama.state.condition")
+            condition_data_cache[condition_id] = cond_obj.read(
+                cursor,
+                uid,
+                condition_id,
+                ["days", "condition_code", "subtype_id", "next_state_id"],
+                context=context,
+            )
+        return condition_data_cache[condition_id]
+
     def get_atc_candidates_to_update(self, cursor, uid, context=None):
         atc_obj = self.pool.get("giscedata.atc")
         search_params = [
@@ -464,13 +482,12 @@ class SomAutoreclamaStateUpdater(osv.osv_memory):
 
         do_not_execute = context and context.get("search_only", False)
         for cond_id in cond_ids:
-            if cond_obj.fit_condition(cursor, uid, cond_id, item_data, namespace):
+            cond_data = self._get_condition_data(cursor, uid, cond_id, context)
+            if cond_obj.fit_condition_data(cond_data, item_data, namespace):
                 if do_not_execute:
                     return True, None, _(u"Testing")
 
-                next_state_id = cond_obj.read(
-                    cursor, uid, cond_id, ["next_state_id"], context=context
-                )["next_state_id"][0]
+                next_state_id = cond_data["next_state_id"][0]
                 action_result = state_obj.do_action(
                     cursor, uid, next_state_id, item_id, namespace, context)
                 if action_result["do_change"]:
