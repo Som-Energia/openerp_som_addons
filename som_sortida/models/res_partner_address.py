@@ -124,8 +124,9 @@ class ResPartnerAddress(osv.osv):
         list_id = self.get_mailchimp_list_id(list_name, MAILCHIMP_CLIENT)
 
         for _id in partner_ids:
+            address_id = self._get_partner_address_id(cursor, uid, _id, context=context)
             self.archieve_mail_in_list_sync(
-                cursor, uid, _id, list_id, MAILCHIMP_CLIENT
+                cursor, uid, address_id, list_id, MAILCHIMP_CLIENT
             )
 
 
