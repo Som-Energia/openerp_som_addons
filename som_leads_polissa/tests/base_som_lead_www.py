@@ -1,4 +1,6 @@
 # -*- encoding: utf-8 -*-
+from __future__ import absolute_import
+
 from destral import testing
 from destral.transaction import Transaction
 from oopgrade import oopgrade
@@ -79,7 +81,7 @@ class BaseSomLeadWwwTest(testing.OOTestCase):
                 },
             },
             "iban": "ES7712341234161234567890",
-            "member_payment_type": "tpv",
+            "payment_type": "remesa",
             "donation": False,
             "general_contract_terms_accepted": True,
             "particular_contract_terms_accepted": True,
