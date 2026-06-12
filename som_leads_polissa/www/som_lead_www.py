@@ -93,7 +93,13 @@ class SomLeadWww(osv.osv_memory):
                 cr, uid, "som_card_payment", "payment_mode_card_recurrent"
             )[1]
         else:
-            payment_mode_id = payment_mode_o.search(cr, uid, [("name", "=", "ENGINYERS")])[0]
+            enginyers_ids = payment_mode_o.search(cr, uid, [("name", "=", "ENGINYERS")], limit=1)
+            if not enginyers_ids:
+                raise osv.except_osv(
+                    "MISSING_PAYMENT_MODE",
+                    "No s'ha trobat el mode de pagament 'ENGINYERS'."
+                )
+            payment_mode_id = enginyers_ids[0]
 
         return {
             "payment_type": payment_type,
