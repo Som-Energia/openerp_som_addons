@@ -16,7 +16,7 @@ def up(cursor, installed_version):
     for data_file in data_files:
         load_data(
             cursor, 'som_leads_polissa', data_file,
-            idref=None, mode='update'
+            idref=None, mode='init'
         )
 
     logger.info("Migration completed successfully.")

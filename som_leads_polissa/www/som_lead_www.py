@@ -53,6 +53,9 @@ class SomLeadWww(osv.osv_memory):
         # similar to lead.contract_pdf but simpler (contract_pdf fails because the 2nd cursor)
         error_info = self._check_lead_can_be_activated(cr, uid, lead_id, context=context)
 
+        signature_url = None
+        signature_provider = None
+
         if error_info:
             # Set the stage to error and state to pending
             error_stage_id = ir_model_o.get_object_reference(
@@ -63,10 +66,43 @@ class SomLeadWww(osv.osv_memory):
                 {'stage_id': error_stage_id, 'state': 'pending'},
                 context=context
             )
+        elif www_vals.get("signature"):
+            # `start_signature_process` uses a secondary cursor, so the just-created
+            # lead must be committed before the signature flow can read it.
+            cr.commit()
+            try:
+                sign_result = self.sign_lead(
+                    cr, uid, lead_id, values["cups"], context=context
+                )
+                signature_url = sign_result.get("url")
+                if signature_url:
+                    signature_provider = "signaturit"
+            except osv.except_osv as exc:
+                error_info = {
+                    "error": exc.value,
+                    "code": getattr(exc, "name", "SIGNATURE_ERROR"),
+                    "trace": [],
+                }
+                signature_error_stage_id = ir_model_o.get_object_reference(
+                    cr, uid, "som_leads_polissa", "webform_stage_signature_error"
+                )[1]
+                lead_o.write(
+                    cr, uid, lead_id,
+                    {'stage_id': signature_error_stage_id, 'state': 'pending'},
+                    context=context
+                )
+                lead_o.historize_msg(
+                    cr, uid, [lead_id],
+                    u"SIGNATURE_ERROR: {}".format(exc.value),
+                    context=context
+                )
+                cr.commit()
 
         return {
             "lead_id": lead_id,
             "error": error_info,
+            "signature_url": signature_url,
+            "signature_provider": signature_provider,
         }
 
     def _resolve_payment_configuration(self, cr, uid, www_vals, context=None):
@@ -465,8 +501,12 @@ class SomLeadWww(osv.osv_memory):
         ir_model_o = self.pool.get("ir.model.data")
         logger = logging.getLogger("openerp.{0}.activate_lead.signature_mail".format(__name__))
 
-        attempts = 30
-        wait_seconds = 10
+        if context.get('sync'):
+            attempts = 30
+            wait_seconds = 10
+        else:
+            attempts = 3
+            wait_seconds = 2
 
         for _ in range(attempts):
             lead_data = lead_o.read(
@@ -700,15 +740,14 @@ class SomLeadWww(osv.osv_memory):
         ctx['delivery_type'] = 'url'
         ctx['provider'] = 'signaturit'
 
-        # Disabled, we call _check_lead_can_be_activated during lead creation
-        # state, errors = lead_o.check_start_signature_process(cr, uid, [lead_id], context=ctx)
-        # if state != 'end':
-        #     raise osv.except_osv('Error', errors)
+        state, errors = lead_o.check_start_signature_process(cr, uid, [lead_id], context=ctx)
+        if state != 'end':
+            raise osv.except_osv('Error', errors)
 
         with Sudo(uid=uid, gid=0):
-            with self.api.db.cursor() as sign_cursor:
+            with self.pool.db.cursor() as sign_cursor:
                 process_id = lead_o.start_signature_process(
-                    sign_cursor, uid, lead_id, context=ctx
+                    sign_cursor, uid, [lead_id], context=ctx
                 )
 
         process_o = self.pool.get('giscedata.signatura.process')
