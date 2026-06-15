@@ -480,7 +480,7 @@ class SomLeadWww(osv.osv_memory):
             logger = logging.getLogger("openerp.{0}.activate_lead".format(__name__))
             logger.warning("Error al comunicar amb Mailchimp {}".format(str(e)))
 
-        if context.get('sync'):
+        if self._should_send_activation_mail_synchronously(cr, context=context):
             self._send_activation_mail_if_signature_allows(cr, uid, lead_id, context=context)
         else:
             self._send_activation_mail_if_signature_allows_async(cr, uid, lead_id, context=context)
@@ -501,7 +501,7 @@ class SomLeadWww(osv.osv_memory):
         ir_model_o = self.pool.get("ir.model.data")
         logger = logging.getLogger("openerp.{0}.activate_lead.signature_mail".format(__name__))
 
-        if context.get('sync'):
+        if self._should_send_activation_mail_synchronously(cr, context=context):
             attempts = 30
             wait_seconds = 10
         else:
@@ -560,6 +560,12 @@ class SomLeadWww(osv.osv_memory):
             context=context
         )
         return False
+
+    def _should_send_activation_mail_synchronously(self, cr, context=None):
+        if context is None:
+            context = {}
+        dbname = getattr(cr, 'dbname', '') or ''
+        return context.get('sync') and dbname.startswith('test_')
 
     def _create_attachments(self, cr, uid, lead_id, attachments, context=None):
         if context is None:
