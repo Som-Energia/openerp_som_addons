@@ -7,7 +7,6 @@ from tools.translate import _
 from tools import email_send
 import json
 import pooler
-import traceback
 
 try:
     from urllib import urlencode
@@ -329,12 +328,7 @@ class SomAutoreclamaStateUpdater(osv.osv_memory):
             except Exception:
                 if new_cursor:
                     self._rollback_cursor(new_cursor)
-                errors.append(item_id)
-                item_name = self.get_item_name(cursor, uid, item_id, namespace, context)
-                msg += _(
-                    "{} amb id {} no ha canviat d'estat per error inesperat\n"
-                ).format(_namespaces[namespace]['name'], item_name)
-                msg += traceback.format_exc()
+                raise
             finally:
                 if new_cursor:
                     new_cursor.close()
