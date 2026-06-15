@@ -265,6 +265,11 @@ class GenerationkwhActions(InvestmentActions):
     def attach_signature(self, cursor, uid, investment_id, signaturit_data, context=None):
         GenerationkwhInvestment = self.erp.pool.get('generationkwh.investment')
         SignaturaProcess = self.erp.pool.get('giscedata.signatura.process')
+        IrModelData = self.erp.pool.get('ir.model.data')
+
+        report_id = IrModelData.get_object_reference(
+            cursor, uid, 'som_generationkwh', 'report_generationkwh_signaturit_doc'
+        )[1]
 
         investment = GenerationkwhInvestment.browse(cursor, uid, investment_id)
         recipients = [
@@ -279,6 +284,7 @@ class GenerationkwhActions(InvestmentActions):
                 'signature_id': signaturit_data['documents'][0]['id'],
                 'model': 'generationkwh.investment,{}'.format(investment_id),
                 'filename': signaturit_data['documents'][0]['file']['name'],
+                'report_id': report_id,
             })
         ]
         values = {

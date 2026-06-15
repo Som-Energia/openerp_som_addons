@@ -32,7 +32,6 @@ export OPENERP_SECRET="${OPENERP_SECRET:-verysecret}"
 export OPENERP_IGNORE_PUBSUB="${OPENERP_IGNORE_PUBSUB:-1}"
 export OPENERP_ENVIRONMENT="${OPENERP_ENVIRONMENT:-ci}"
 export OPENERP_RUN_SCRIPTS_INTERACTIVE_RESULT="${OPENERP_RUN_SCRIPTS_INTERACTIVE_RESULT:-skip}"
-export DESTRAL_TESTING_LANGS="${DESTRAL_TESTING_LANGS:-['en_US','ca_ES','es_ES']}"
 export ERP_REQUIREMENTS_MODULES="${ERP_REQUIREMENTS_MODULES:-base_extended_som,l10n_ES_partner,l10n_ES_aeat_sii,l10n_ES_remesas}"
 
 ERP_SERVER="${ROOT_DIR_SRC}/erp/server/bin/openerp-server.py"
@@ -76,7 +75,7 @@ echo "Building ERP model in database '$ERP_DATABASE'"
 SAVED_OPENERP_CONFIG="${OPENERP_CONFIG:-}"
 unset OPENERP_CONFIG
 set +e
-"${DESTRAL_RUN[@]}" -m som_webforms_helpers www_som -d "$ERP_DATABASE" -t test_tarifes
+"${DESTRAL_RUN[@]}" -m som_modul_fulla -d "$ERP_DATABASE
 DESTRAL_EXIT_CODE=$?
 set -e
 if [ -n "$SAVED_OPENERP_CONFIG" ]; then

@@ -1,11 +1,17 @@
 # -*- coding: utf-8 -*-
+from __future__ import absolute_import
+
 from osv import osv
 from tqdm import tqdm
 from tools.translate import _
 from tools import email_send
 import json
-import urllib
+import pooler
 
+try:
+    from urllib import urlencode
+except ImportError:
+    from urllib.parse import urlencode
 
 _namespaces = {
     'atc': {
@@ -44,7 +50,7 @@ class SomAutoreclamaStateUpdater(osv.osv_memory):
             ("agent_actual", "=", "10"),  # Distri
             ("autoreclama_state.is_last", "=", False),
         ]
-        return atc_obj.search(cursor, uid, search_params)
+        return atc_obj.search(cursor, uid, search_params, order="id")
 
     def get_autoreclama_state_name(self, cursor, uid, item_id, namespace, context=None):
         item_obj = self.pool.get(_namespaces[namespace]['model'])
@@ -65,7 +71,9 @@ class SomAutoreclamaStateUpdater(osv.osv_memory):
             ("state", "in", ['activa', 'baixa', 'impagament', 'modcontractual']),
             (autoreclama_state + ".is_last", "=", False),
         ]
-        return pol_obj.search(cursor, uid, search_params, context={"active_test": False})
+        return pol_obj.search(
+            cursor, uid, search_params, order="id", context={"active_test": False}
+        )
 
     def get_item_name(self, cursor, uid, item_id, namespace, context=None):
         if namespace == 'atc':
@@ -139,13 +147,13 @@ class SomAutoreclamaStateUpdater(osv.osv_memory):
         }
 
         actionj = {}
-        for action in actions.iteritems():
+        for action in actions.items():
             if isinstance(action[1], (list, dict)):
                 actionj[action[0]] = json.dumps(action[1])
             else:
                 actionj[action[0]] = action[1]
 
-        url_params = urllib.urlencode(actionj)
+        url_params = urlencode(actionj)
         base_url = cfg_obj.get(
             cursor, uid, "som_autoreclama_web_client_base_url", "https://somenergia.coop/")
         action = u'/action?'
@@ -181,38 +189,55 @@ class SomAutoreclamaStateUpdater(osv.osv_memory):
         msg = _("Accions {}\n").format(block_name)
 
         for item_id in tqdm(ids):
-            actual_state_id, actual_state = self.get_autoreclama_state_name(
-                cursor, uid, item_id, namespace, context)
-            result, condition_id, message = self.update_item_if_possible(
-                cursor, uid, item_id, namespace, context
-            )
-            item_name = self.get_item_name(cursor, uid, item_id, namespace, context)
-            if result:
-                updated.append(item_id)
-                next_state_id, next_state = self.get_autoreclama_state_name(
-                    cursor, uid, item_id, namespace, context)
-                msg += _("{} amb id {} ha canviat d'estat: {} --> {} => condició {}\n").format(
-                    _namespaces[namespace]['name'],
-                    item_name, actual_state, next_state,
-                    cnd_obj.get_string(cursor, uid, condition_id)
+            new_cursor = None
+            try:
+                new_cursor = pooler.get_db(cursor.dbname).cursor()
+
+                actual_state_id, actual_state = self.get_autoreclama_state_name(
+                    new_cursor, uid, item_id, namespace, context
                 )
-                msg += _(" - {}\n").format(message)
-                if next_state_id in review_states:
-                    reviews.append(item_id)
-            elif result is False:
-                not_updated.append(item_id)
-                if verbose:
-                    msg += _("{} amb id {} no li toca canviar d'estat, estat actual: {}\n").format(
-                        _namespaces[namespace]['name'], item_name, actual_state
+                result, condition_id, message = self.update_item_if_possible(
+                    new_cursor, uid, item_id, namespace, context
+                )
+                item_name = self.get_item_name(new_cursor, uid, item_id, namespace, context)
+                if result:
+                    updated.append(item_id)
+                    next_state_id, next_state = self.get_autoreclama_state_name(
+                        new_cursor, uid, item_id, namespace, context
+                    )
+                    msg += _("{} amb id {} ha canviat d'estat: {} --> {} => condició {}\n").format(
+                        _namespaces[namespace]['name'],
+                        item_name,
+                        actual_state,
+                        next_state,
+                        cnd_obj.get_string(new_cursor, uid, condition_id),
                     )
                     msg += _(" - {}\n").format(message)
-            else:
-                errors.append(item_id)
-                msg += _(
-                    "{} amb id {} no ha canviat d'estat per error, estat actual: {} => condició {}\n"  # noqa: E501
-                ).format(_namespaces[namespace]['name'], item_name, actual_state,
-                         cnd_obj.get_string(cursor, uid, condition_id))
-                msg += _(" - {}\n").format(message)
+                    if next_state_id in review_states:
+                        reviews.append(item_id)
+                elif result is False:
+                    not_updated.append(item_id)
+                    if verbose:
+                        msg += _(
+                            "{} amb id {} no li toca canviar d'estat, estat actual: {}\n"
+                        ).format(_namespaces[namespace]['name'], item_name, actual_state)
+                        msg += _(" - {}\n").format(message)
+                else:
+                    errors.append(item_id)
+                    msg += _(
+                        "{} amb id {} no ha canviat d'estat per error, estat actual: {} => condició {}\n"  # noqa: E501
+                    ).format(
+                        _namespaces[namespace]['name'],
+                        item_name,
+                        actual_state,
+                        cnd_obj.get_string(new_cursor, uid, condition_id),
+                    )
+                    msg += _(" - {}\n").format(message)
+
+                new_cursor.commit()
+            finally:
+                if new_cursor:
+                    new_cursor.close()
 
         summary = _("Sumari {}\n").format(block_name)
         summary += _("{} que han canviat d'estat: .................. {}\n".format(block_name, len(updated)))  # noqa: E501
