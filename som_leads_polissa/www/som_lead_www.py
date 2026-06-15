@@ -53,9 +53,6 @@ class SomLeadWww(osv.osv_memory):
         # similar to lead.contract_pdf but simpler (contract_pdf fails because the 2nd cursor)
         error_info = self._check_lead_can_be_activated(cr, uid, lead_id, context=context)
 
-        signature_url = None
-        signature_provider = None
-
         if error_info:
             # Set the stage to error and state to pending
             error_stage_id = ir_model_o.get_object_reference(
@@ -66,43 +63,10 @@ class SomLeadWww(osv.osv_memory):
                 {'stage_id': error_stage_id, 'state': 'pending'},
                 context=context
             )
-        elif www_vals.get("signature"):
-            # `start_signature_process` uses a secondary cursor, so the just-created
-            # lead must be committed before the signature flow can read it.
-            cr.commit()
-            try:
-                sign_result = self.sign_lead(
-                    cr, uid, lead_id, values["cups"], context=context
-                )
-                signature_url = sign_result.get("url")
-                if signature_url:
-                    signature_provider = "signaturit"
-            except osv.except_osv as exc:
-                error_info = {
-                    "error": exc.value,
-                    "code": getattr(exc, "name", "SIGNATURE_ERROR"),
-                    "trace": [],
-                }
-                signature_error_stage_id = ir_model_o.get_object_reference(
-                    cr, uid, "som_leads_polissa", "webform_stage_signature_error"
-                )[1]
-                lead_o.write(
-                    cr, uid, lead_id,
-                    {'stage_id': signature_error_stage_id, 'state': 'pending'},
-                    context=context
-                )
-                lead_o.historize_msg(
-                    cr, uid, [lead_id],
-                    u"SIGNATURE_ERROR: {}".format(exc.value),
-                    context=context
-                )
-                cr.commit()
 
         return {
             "lead_id": lead_id,
             "error": error_info,
-            "signature_url": signature_url,
-            "signature_provider": signature_provider,
         }
 
     def _resolve_payment_configuration(self, cr, uid, www_vals, context=None):
@@ -480,10 +444,7 @@ class SomLeadWww(osv.osv_memory):
             logger = logging.getLogger("openerp.{0}.activate_lead".format(__name__))
             logger.warning("Error al comunicar amb Mailchimp {}".format(str(e)))
 
-        if self._should_send_activation_mail_synchronously(cr, context=context):
-            self._send_activation_mail_if_signature_allows(cr, uid, lead_id, context=context)
-        else:
-            self._send_activation_mail_if_signature_allows_async(cr, uid, lead_id, context=context)
+        self._send_activation_mail_if_signature_allows_async(cr, uid, lead_id, context=context)
 
         return True
 
@@ -501,12 +462,8 @@ class SomLeadWww(osv.osv_memory):
         ir_model_o = self.pool.get("ir.model.data")
         logger = logging.getLogger("openerp.{0}.activate_lead.signature_mail".format(__name__))
 
-        if self._should_send_activation_mail_synchronously(cr, context=context):
-            attempts = 30
-            wait_seconds = 10
-        else:
-            attempts = 15
-            wait_seconds = 2
+        attempts = 30
+        wait_seconds = 10
 
         for _ in range(attempts):
             lead_data = lead_o.read(
@@ -561,18 +518,6 @@ class SomLeadWww(osv.osv_memory):
             context=context
         )
         cr.commit()
-        return False
-
-    def _should_send_activation_mail_synchronously(self, cr, context=None):
-        if context is None:
-            context = {}
-        dbname = getattr(cr, 'dbname', '') or ''
-        if not context.get('sync'):
-            return False
-        if dbname.startswith('test_'):
-            return True
-        logger = logging.getLogger("openerp.{0}.activate_lead.signature_mail".format(__name__))
-        logger.warning("Ignoring sync=True outside test database %s", dbname)
         return False
 
     def _create_attachments(self, cr, uid, lead_id, attachments, context=None):
