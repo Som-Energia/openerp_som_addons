@@ -750,6 +750,12 @@ class SomLeadWww(osv.osv_memory):
                     sign_cursor, uid, [lead_id], context=ctx
                 )
 
+        if not process_id:
+            raise osv.except_osv(
+                'Error',
+                'Signature process could not be started for lead {}'.format(lead_id)
+            )
+
         process_o = self.pool.get('giscedata.signatura.process')
         timeout_seconds = 30.0
         poll_interval = 0.2
