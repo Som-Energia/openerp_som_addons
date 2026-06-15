@@ -565,7 +565,13 @@ class SomLeadWww(osv.osv_memory):
         if context is None:
             context = {}
         dbname = getattr(cr, 'dbname', '') or ''
-        return context.get('sync') and dbname.startswith('test_')
+        if not context.get('sync'):
+            return False
+        if dbname.startswith('test_'):
+            return True
+        logger = logging.getLogger("openerp.{0}.activate_lead.signature_mail".format(__name__))
+        logger.warning("Ignoring sync=True outside test database %s", dbname)
+        return False
 
     def _create_attachments(self, cr, uid, lead_id, attachments, context=None):
         if context is None:
@@ -750,6 +756,9 @@ class SomLeadWww(osv.osv_memory):
         if state != 'end':
             raise osv.except_osv('Error', errors)
 
+        # `start_signature_process` creates signature artifacts with admin-only
+        # permissions in this legacy flow, so we keep the original user id while
+        # temporarily elevating the group context.
         with Sudo(uid=uid, gid=0):
             with self.pool.db.cursor() as sign_cursor:
                 process_id = lead_o.start_signature_process(
