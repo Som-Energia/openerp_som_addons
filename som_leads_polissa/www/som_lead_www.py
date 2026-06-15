@@ -444,7 +444,10 @@ class SomLeadWww(osv.osv_memory):
             logger = logging.getLogger("openerp.{0}.activate_lead".format(__name__))
             logger.warning("Error al comunicar amb Mailchimp {}".format(str(e)))
 
-        self._send_activation_mail_if_signature_allows_async(cr, uid, lead_id, context=context)
+        if context.get("sync"):
+            self._send_activation_mail_if_signature_allows(cr, uid, lead_id, context=context)
+        else:
+            self._send_activation_mail_if_signature_allows_async(cr, uid, lead_id, context=context)
 
         return True
 
