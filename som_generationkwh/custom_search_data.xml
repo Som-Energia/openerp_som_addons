@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<openerp>
+    <data>
+        <!--Queries-->
+        <record id="suma_drets_en_factures_generationkwh" model="custom.search">
+            <field name="name">Llista de factures amb kWh Generation utilitzats</field>
+            <field name="query"><![CDATA[
+                SELECT owner_name as "Nom", contracte as "Contracte", fact_number as "Factura", fact_date as "Data factura", fact_inici as "Data inici", fact_final as "Data final", sum(quantity) as "kWh assignats"
+                FROM
+                    (
+                        SELECT (
+                            CASE
+                                WHEN max(i.type)='out_refund'
+                                THEN -max(ail.quantity)
+                                ELSE max(ail.quantity)
+                            END) AS quantity,
+                            max(par.name) AS owner_name,
+                            max(i.number) as fact_number,
+                            max(fl.id) as fline_id,
+                            max(i.name) as contracte,
+                            max(i.date_invoice) as fact_date,
+                            max(f.data_inici) as fact_inici,
+                            max(f.data_final) as fact_final
+                        FROM generationkwh_invoice_line_owner gkwh_owner
+                        INNER JOIN giscedata_facturacio_factura f ON f.id=gkwh_owner.factura_id
+                        INNER JOIN giscedata_facturacio_factura_linia fl ON fl.id=gkwh_owner.factura_line_id
+                        INNER JOIN account_invoice_line ail ON ail.id=fl.invoice_line_id
+                        INNER JOIN account_invoice i ON i.id=f.invoice_id
+                        INNER JOIN res_partner par ON par.id = gkwh_owner.owner_id
+                        WHERE par.ref = '$codi_soci' AND i.date_invoice BETWEEN '$start_date' AND '$end_date'
+                        GROUP BY gkwh_owner.factura_line_id
+                    ) as parcial1
+                GROUP BY owner_name, contracte, fact_number, fact_date, fact_inici, fact_final
+                ORDER BY "Contracte", "Factura"
+            ]]></field>
+        </record>
+        <record model="custom.search.column" id="suma_drets_en_factures_generationkwh_column_0">
+            <field name="sequence" eval="0"/>
+            <field name="search_id" ref="suma_drets_en_factures_generationkwh"/>
+            <field name="name">Nom</field>
+        </record>
+        <record model="custom.search.column" id="suma_drets_en_factures_generationkwh_column_1">
+            <field name="sequence" eval="1"/>
+            <field name="search_id" ref="suma_drets_en_factures_generationkwh"/>
+            <field name="name">Contracte</field>
+        </record>
+        <record model="custom.search.column" id="suma_drets_en_factures_generationkwh_column_2">
+            <field name="sequence" eval="2"/>
+            <field name="search_id" ref="suma_drets_en_factures_generationkwh"/>
+            <field name="name">Factura</field>
+        </record>
+        <record model="custom.search.column" id="suma_drets_en_factures_generationkwh_column_3">
+            <field name="sequence" eval="3"/>
+            <field name="search_id" ref="suma_drets_en_factures_generationkwh"/>
+            <field name="name">Data factura</field>
+        </record>
+        <record model="custom.search.column" id="suma_drets_en_factures_generationkwh_column_4">
+            <field name="sequence" eval="4"/>
+            <field name="search_id" ref="suma_drets_en_factures_generationkwh"/>
+            <field name="name">Data inici</field>
+        </record>
+        <record model="custom.search.column" id="suma_drets_en_factures_generationkwh_column_5">
+            <field name="sequence" eval="5"/>
+            <field name="search_id" ref="suma_drets_en_factures_generationkwh"/>
+            <field name="name">Data final</field>
+        </record>
+        <record model="custom.search.column" id="suma_drets_en_factures_generationkwh_column_6">
+            <field name="sequence" eval="6"/>
+            <field name="search_id" ref="suma_drets_en_factures_generationkwh"/>
+            <field name="name">kWh assignats</field>
+        </record>
+    </data>
+    <data noupdate="1">
+        <record model="custom.search.param" id="suma_drets_en_factures_generationkwh_param_0" forcecreate="1">
+            <field name="short_desc">Número de persona sòcia</field>
+            <field name="search_id" ref="suma_drets_en_factures_generationkwh"/>
+            <field name="name">codi_soci</field>
+            <field name="value">S000001</field>
+        </record>
+        <record model="custom.search.param" id="suma_drets_en_factures_generationkwh_param_1" forcecreate="1">
+            <field name="short_desc">Data des de factures</field>
+            <field name="search_id" ref="suma_drets_en_factures_generationkwh"/>
+            <field name="value">2017/01/01</field>
+            <field name="name">start_date</field>
+        </record>
+        <record model="custom.search.param" id="suma_drets_en_factures_generationkwh_param_2" forcecreate="1">
+            <field name="short_desc">Data fins a factures</field>
+            <field name="search_id" ref="suma_drets_en_factures_generationkwh"/>
+            <field name="name">end_date</field>
+            <field name="value">2099/01/01</field>
+        </record>
+    </data>
+</openerp>

@@ -14,6 +14,9 @@
 - No utilitzar frameworks moderns (Flask, Django, etc.).
 
 ## Estils no desitjats
+
+> Veure [docs/patterns/](../../docs/patterns/) per a les receptes oficials del projecte.
+
 - No generar receptes, exemples no relacionats amb el projecte.
 - No proposar patrons de disseny complexos.
 - No generar codi massa màgic o difícil de mantenir.

@@ -117,3 +117,8 @@ msgid ""
 "L'import d'aquesta factura s'ha de pagar mitjançant transferència bancària "
 "al compte indicat:"
 msgstr "El importe de esta factura se debe pagar a través de transferencia bancaria en la cuenta indicada:"
+
+#: rml:account_invoice_som/report/account_invoice_som.mako:300
+msgid ""
+"L'import d'aquesta factura s'ha pagat mitjançant targeta de crèdit"
+msgstr "El importe de esta factura se ha pagado mediante tarjeta de crédito"

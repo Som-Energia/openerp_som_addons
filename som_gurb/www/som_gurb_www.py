@@ -253,7 +253,6 @@ class SomGurbWww(osv.osv_memory):
     def create_new_gurb_cups(self, cursor, uid, form_payload, context=None):
         if context is None:
             context = {}
-
         gurb_group_obj = self.pool.get("som.gurb.group")
         gurb_cups_obj = self.pool.get("som.gurb.cups")
         cups_helper_obj = self.pool.get("cups.helper")
@@ -358,9 +357,12 @@ class SomGurbWww(osv.osv_memory):
         }
         gurb_cups_id = gurb_cups_obj.create(cursor, uid, create_vals, context=context)
 
-        signature_url = self._get_signature_url(
-            cursor, uid, gurb_cups_id, context=context
-        )
+        if context.get("webform_test", False):
+            signature_url = "http://test_signature_url.com/{}".format(gurb_cups_id)
+        else:
+            signature_url = self._get_signature_url(
+                cursor, uid, gurb_cups_id, context=context
+            )
 
         if gurb_cups_id:
             return {

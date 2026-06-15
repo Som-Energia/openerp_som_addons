@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+    <data>
+        <record model="ir.ui.view" id="wizard_generationkwh_investment_payment_view">
+            <field name="name">wizard.generationkwh.investment.payment.view</field>
+            <field name="model">wizard.generationkwh.investment.payment</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <form string="Generar ordre de cobrament. Facturar i remesar">
+                    <field name="state" invisible="1"/>
+                    <field name="invoices" invisible="1"/>
+                    <field name="info" nolabel="1" size="300" width="1000" height ="300" colspan="4" readonly="1"/>
+                    <button name="do_payment" string="Generar" type="object" icon="gtk-execute" colspan="4" attrs="{'invisible':[('state', '=', 'Done')]}"/>
+                    <button name="show_invoices" type="object" string="Mostra factures" icon="gtk-ok" attrs="{'invisible':[('state', '!=', 'Done')]}"/>
+                    <button name="show_payment_order" type="object" string="Mostra remesar"  icon="gtk-ok" attrs="{'invisible':[('state', '!=', 'Done')]}"/>
+                    <button special="cancel" string="Cancelar" icon="gtk-no" colspan="4" attrs="{'invisible':[('state', '=', 'Done')]}"/>
+                </form>
+            </field>
+        </record>
+        <record model="ir.actions.act_window" id="action_wizard_generationkwh_investment_payment">
+            <field name="name">Generar ordre de cobrament</field>
+            <field name="res_model">wizard.generationkwh.investment.payment</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="view_id" ref="wizard_generationkwh_investment_payment_view"/>
+            <field name="target">new</field>
+        </record>
+        <record id="value_wizard_generationkwh_investment_payment" model="ir.values">
+            <field name="object" eval="1"/>
+            <field name="name">Generar ordre de cobrament</field>
+            <field name="key2">client_action_multi</field>
+            <field name="key">action</field>
+            <field name="model">generationkwh.investment</field>
+            <field name="value" eval="'ir.actions.act_window,'+str(ref('action_wizard_generationkwh_investment_payment'))" />
+        </record>
+    </data>
+</openerp>

@@ -12,6 +12,8 @@ GithubActions:
 -  .github/**
 docs:
 -  docs/**
+devolucions_base_som:
+-  devolucions_base_som/**
 powersms:
 -  powersms/**
 report_tester:
@@ -28,6 +30,8 @@ som_autoreclama:
 -  som_autoreclama/**
 som_auvidi:
 -  som_auvidi/**
+som_card_payment:
+-  som_card_payment/**
 som_control_reports:
 -  som_control_reports/**
 som_crawlers:

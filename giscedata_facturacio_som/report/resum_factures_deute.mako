@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
-<%namespace file="/giscedata_facturacio/report/resum_factures_deute.mako" import="capcalera, taula_factures, preu_final"/>
+<%namespace file="/giscedata_facturacio/report/resum_factures_deute.mako" import="capcalera, preu_final"/>
+<%namespace file="/giscedata_facturacio/report/resum_factures_emeses/components/taula_factures.mako" import="taula_factures"/>
 <!DOCTYPE html>
 <html>
     <meta http-equiv="content-type" content="text/html; charset=utf-8"/>

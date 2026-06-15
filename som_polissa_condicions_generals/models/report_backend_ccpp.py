@@ -107,6 +107,9 @@ class ReportBackendCondicionsParticulars(ReportBackend):
         res['phone_envio'] = direccio_envio.phone or ''
         data_firma = datetime.today()
         res['sign_date'] = localize_period(data_firma, pol.titular.lang)
+        res['bank'] = pas.bank if es_ct_subrogacio else pol.bank or False
+        iban = res['bank'] and res['bank'].printable_iban[5:] or ''
+        res['printable_iban'] = iban[-4:]
         res['lang'] = pol.titular.lang
         if context.get("lead") and context.get("lang"):
             res['lang'] = context.get("lang")
@@ -164,11 +167,9 @@ class ReportBackendCondicionsParticulars(ReportBackend):
         # res['fiscal_position'] = pol.fiscal_position
         res['potencia_max'] = pol.potencia
         res['mode_facturacio'] = pol.mode_facturacio
+        res['mode_facturacio_calculat'] = pol.mode_facturacio
 
         res['te_assignacio_gkwh'] = pol.te_assignacio_gkwh
-        res['bank'] = pol.bank or False
-        iban = pol.bank and pol.bank.printable_iban[5:] or ''
-        res['printable_iban'] = iban[-4:]
 
         # context['potencia_anual'] = True
         # context['sense_agrupar'] = True
@@ -201,6 +202,7 @@ class ReportBackendCondicionsParticulars(ReportBackend):
         has_some_modcon = res['modcon_pendent_indexada'] or res['modcon_pendent_periodes']
         if use_modcon_pricelist and has_some_modcon:
             res['pricelist'] = pol.modcontractuals_ids[0].llista_preu
+            res['mode_facturacio_calculat'] = pol.modcontractuals_ids[0].mode_facturacio
         elif pol.llista_preu:
             res['pricelist'] = pol.llista_preu
         else:
@@ -341,7 +343,6 @@ class ReportBackendCondicionsParticulars(ReportBackend):
         modcon_pendent_indexada = False
         modcon_pendent_periodes = False
         use_modcon_pricelist = not context.get('ignore_modcon_pricelist', False)
-        res['use_modcon_pricelist'] = use_modcon_pricelist
         if use_modcon_pricelist and pol.state != 'esborrany':
             ultima_modcon = pol.modcontractuals_ids[0]
             modcon_pendent_indexada = ultima_modcon.state == 'pendent' and \
@@ -405,13 +406,19 @@ class ReportBackendCondicionsParticulars(ReportBackend):
 
             text_impostos = ''
             if not pol.fiscal_position_id and not lead:
-                if iva_10_active and pol.potencia < 10 and today_str >= start_date_iva_10 and today_str <= end_date_iva_10:  # noqa: E501
+                if iva_10_active and pol.potencia <= 10 and today_str >= start_date_iva_10 and today_str <= end_date_iva_10:  # noqa: E501
                     fp_id = imd_obj.get_object_reference(
                         cursor, uid, 'som_polissa_condicions_generals', 'fp_iva_reduit')[1]
-                    text_impostos = " (IVA 10%, IE 0,5%)"
-                    ctx.update({'force_fiscal_position': fp_id})
-                else:
-                    text_impostos = " (IVA 21%, IE 0,5%)"
+                    ctx.update({'force_fiscal_position': fp_id, 'iva10': True})
+            simple_taxes = pol_obj.get_simplified_taxes(cursor, uid, pol.id, context=ctx)
+            iva_str = 'IVA' if 'IVA' in simple_taxes else 'IGIC'
+            ie_percent_str = "{:.2f}".format(
+                simple_taxes['IE'] * 100).rstrip('0').rstrip('.').replace('.', ',')
+            text_impostos = " ({} {:.0f}%, IE {}%)".format(
+                iva_str,
+                simple_taxes[iva_str] * 100,
+                ie_percent_str
+            )
 
             pricelist['text_impostos'] = text_impostos
 

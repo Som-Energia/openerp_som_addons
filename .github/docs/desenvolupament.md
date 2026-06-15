@@ -5,13 +5,14 @@
 Aquest fitxer recull informació d'alt nivell i decisions tècniques. Per a receptes pràctiques:
 
 - **Receptes**: [docs/patterns/](../docs/patterns/)
-- **Guies**: [docs/guides/](../docs/guides/)
+- **Guies**: [Guies](../docs/guides/)
+- **Skills**: [.agents/skill-registry.md](../../.agents/skill-registry.md)
 
 ---
 
 ## Estil de programació
 
-Seguir `.github/docs/estil.md` i `.github/docs/evitar.md`.
+Seguir [.github/docs/estil.md](estil.md) i [.github/docs/evitar.md](evitar.md).
 
 ---
 

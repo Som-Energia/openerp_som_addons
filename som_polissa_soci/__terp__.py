@@ -13,6 +13,7 @@
         "giscedata_lectures_estimacio",
         "giscedata_polissa_category",
         "giscedata_switching_comer",
+        "giscedata_repercusio_bo_social",
     ],
     "test_depends": [
         "giscedata_tarifas_peajes_20150101",

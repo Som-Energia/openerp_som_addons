@@ -49,7 +49,7 @@
             % endfor
             <td class="periods_td">
             % if meter.adjust_reason != False:
-                <sup>(1)</sup>
+                <sup>(2)</sup>
             % endif
             </td>
         </tr>
