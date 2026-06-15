@@ -505,7 +505,7 @@ class SomLeadWww(osv.osv_memory):
             attempts = 30
             wait_seconds = 10
         else:
-            attempts = 3
+            attempts = 15
             wait_seconds = 2
 
         for _ in range(attempts):
