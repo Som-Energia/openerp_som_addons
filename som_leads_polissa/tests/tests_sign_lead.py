@@ -4,7 +4,6 @@ import copy
 from destral import testing
 from destral.transaction import Transaction
 from osv import osv
-from tools import config
 import mock
 
 from .base_som_lead_www import BaseSomLeadWwwTest
@@ -18,19 +17,6 @@ class TestSignLead(testing.OOTestCase):
     )
     _cups = 'ES0177000000000000LR'
 
-    @classmethod
-    def tearDownClass(cls):
-        with Transaction().start(config['db_name']) as txn:
-            cls._delete_stage_validations(txn.cursor)
-            txn.cursor.commit()
-        super(TestSignLead, cls).tearDownClass()
-
-    @classmethod
-    def _delete_stage_validations(cls, cursor):
-        val_o = cls.openerp.pool.get('crm.stage.validation')
-        ids = val_o.search(cursor, 1, [])
-        val_o.unlink(cursor, 1, ids)
-
     def setUp(self):
         self.txn = Transaction().start(self.database)
         self.cursor = self.txn.cursor
@@ -41,7 +27,6 @@ class TestSignLead(testing.OOTestCase):
         self.ir_model_o = self.get_model('ir.model.data')
         self.config_o = self.get_model('res.config')
         self.payment_mode_o = self.get_model('payment.mode')
-        self._delete_stage_validations(self.cursor)
         self.config_o.set(self.cursor, self.uid, 'validar_lead_firmar_digitalment', 0)
 
     def tearDown(self):

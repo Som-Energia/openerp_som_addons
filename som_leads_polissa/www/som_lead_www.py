@@ -25,7 +25,7 @@ class SomLeadWww(osv.osv_memory):
     _128_SIMPLIFIED_SURPLUSES = 'a0'
     _131_CONSUMPTION = '01'
     _SIGNATURE_COMPLETED_STATUS = 'completed'
-    _SIGNATURE_ERROR_STATUSES = ('error', 'canceled', 'rejected', 'declined', 'expired')
+    _SIGNATURE_ERROR_STATUSES = ('error', 'canceled', 'declined', 'expired')
 
     def create_lead(self, cr, uid, www_vals, context=None):  # noqa: C901
         if context is None:
@@ -763,11 +763,13 @@ class SomLeadWww(osv.osv_memory):
             signature_url = process_data.get('signature_url')
             if signature_url:
                 break
-            if process_data.get('status') == 'error':
+            if process_data.get('status') in self._SIGNATURE_ERROR_STATUSES:
                 raise osv.except_osv(
                     'Error',
-                    'Signature process failed before URL generation (process_id={})'.format(
-                        process_id)
+                    (
+                        'Signature process failed before URL generation '
+                        '(process_id={}, status={})'
+                    ).format(process_id, process_data.get('status'))
                 )
             time.sleep(poll_interval)
 
