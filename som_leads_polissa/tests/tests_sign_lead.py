@@ -97,9 +97,13 @@ class TestSignLead(testing.OOTestCase):
         signaturit_start_mock.side_effect = self._signaturit_start_side_effect()
         lead_id = self._create_lead()
 
-        result = self.www_lead_o.sign_lead(
-            self.cursor, self.uid, lead_id, self._cups, context={'skip_validations': True}
-        )
+        with mock.patch.object(
+            self.lead_o, 'check_start_signature_process', return_value=('end', '')
+        ):
+            result = self.www_lead_o.sign_lead(
+                self.cursor, self.uid, lead_id, self._cups,
+                context={'skip_validations': True}
+            )
 
         self.assertEqual(result, {'url': 'http://sign.url'})
 
@@ -108,9 +112,13 @@ class TestSignLead(testing.OOTestCase):
         signaturit_start_mock.side_effect = self._signaturit_start_side_effect()
         lead_id = self._create_lead()
 
-        self.www_lead_o.sign_lead(
-            self.cursor, self.uid, lead_id, self._cups, context={'skip_validations': True}
-        )
+        with mock.patch.object(
+            self.lead_o, 'check_start_signature_process', return_value=('end', '')
+        ):
+            self.www_lead_o.sign_lead(
+                self.cursor, self.uid, lead_id, self._cups,
+                context={'skip_validations': True}
+            )
 
         context = signaturit_start_mock.call_args[1]['context']
         self.assertEqual(context['delivery_type'], 'url')
@@ -123,13 +131,16 @@ class TestSignLead(testing.OOTestCase):
         )
         lead_id = self._create_lead()
 
-        with mock.patch('som_leads_polissa.www.som_lead_www.time') as time_mock:
-            time_mock.time.side_effect = [0, 31]
-            with self.assertRaises(osv.except_osv):
-                self.www_lead_o.sign_lead(
-                    self.cursor, self.uid, lead_id, self._cups,
-                    context={'skip_validations': True}
-                )
+        with mock.patch.object(
+            self.lead_o, 'check_start_signature_process', return_value=('end', '')
+        ):
+            with mock.patch('som_leads_polissa.www.som_lead_www.time') as time_mock:
+                time_mock.time.side_effect = [0, 31]
+                with self.assertRaises(osv.except_osv):
+                    self.www_lead_o.sign_lead(
+                        self.cursor, self.uid, lead_id, self._cups,
+                        context={'skip_validations': True}
+                    )
 
 
 class TestActivationMailAfterSignature(testing.OOTestCase):
