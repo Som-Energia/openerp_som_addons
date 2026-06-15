@@ -539,6 +539,7 @@ class SomLeadWww(osv.osv_memory):
                     ),
                     context=context
                 )
+                cr.commit()
                 return False
 
             time.sleep(wait_seconds)
@@ -559,6 +560,7 @@ class SomLeadWww(osv.osv_memory):
             u"SIGNATURE_PENDING: activation e-mail not sent yet",
             context=context
         )
+        cr.commit()
         return False
 
     def _should_send_activation_mail_synchronously(self, cr, context=None):
