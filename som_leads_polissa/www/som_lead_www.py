@@ -710,7 +710,7 @@ class SomLeadWww(osv.osv_memory):
         # permissions in this legacy flow, so we keep the original user id while
         # temporarily elevating the group context.
         with Sudo(uid=uid, gid=0):
-            with self.pool.db.cursor() as sign_cursor:
+            with self.api.db.cursor() as sign_cursor:
                 process_id = lead_o.start_signature_process(
                     sign_cursor, uid, [lead_id], context=ctx
                 )
