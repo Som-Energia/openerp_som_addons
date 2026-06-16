@@ -329,9 +329,6 @@ class SomAutoreclamaStateUpdater(osv.osv_memory):
                 if new_cursor:
                     self._rollback_cursor(new_cursor)
                 raise e
-                if new_cursor:
-                    self._rollback_cursor(new_cursor)
-                raise
             finally:
                 if new_cursor:
                     new_cursor.close()
