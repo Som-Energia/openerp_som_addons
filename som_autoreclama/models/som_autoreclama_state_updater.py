@@ -279,8 +279,6 @@ class SomAutoreclamaStateUpdater(osv.osv_memory):
                 result, condition_id, message = self.update_item_if_possible(
                     new_cursor, uid, item_id, namespace, context
                 )
-                if result is None:
-                    self._rollback_cursor(new_cursor)
                 if result:
                     updated.append(item_id)
                     item_name = self.get_item_name(
@@ -310,6 +308,7 @@ class SomAutoreclamaStateUpdater(osv.osv_memory):
                         ).format(_namespaces[namespace]['name'], item_name, actual_state)
                         msg += _(" - {}\n").format(message)
                 else:
+                    self._rollback_cursor(new_cursor)
                     errors.append(item_id)
                     item_name = self.get_item_name(
                         new_cursor, uid, item_id, namespace, context
@@ -323,12 +322,13 @@ class SomAutoreclamaStateUpdater(osv.osv_memory):
                         self._get_condition_string(new_cursor, uid, condition_id, context),
                     )
                     msg += _(" - {}\n").format(message)
+                    continue
 
                 new_cursor.commit()
-            except Exception as e:
+            except Exception:
                 if new_cursor:
                     self._rollback_cursor(new_cursor)
-                raise e
+                raise
             finally:
                 if new_cursor:
                     new_cursor.close()
