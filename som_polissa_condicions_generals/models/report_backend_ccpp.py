@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from __future__ import absolute_import, unicode_literals
+from __future__ import absolute_import, unicode_literals, division
 from report_backend.report_backend import ReportBackend, report_browsify
 from report_puppeteer.report_puppeteer import PuppeteerParser
 from datetime import datetime

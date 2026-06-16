@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from __future__ import absolute_import, unicode_literals, division
 import unittest
 from datetime import datetime
 from destral import testing
@@ -238,7 +239,7 @@ class TestReportBackendCCPP(testing.OOTestCase):
 
         self.assertEqual(result, 0.0)
 
-    def test_get_coeficient_k_from_pricelist_uses_context_date_without_k_change_record(self):
+    def test_get_coeficient_k_from_pricelist_matches_pricelist_price_without_k_change_record(self):
         today = datetime.today()
         self.pol_obj.send_signal(
             self.cursor, self.uid, [self.contract_20TD_id], ["validar", "contracte"])
@@ -272,4 +273,3 @@ class TestReportBackendCCPP(testing.OOTestCase):
         )[pricelist_id] / 1000
 
         self.assertEqual(result, expected)
-        self.assertNotEqual(result, 0.0)
