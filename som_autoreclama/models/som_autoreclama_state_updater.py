@@ -325,7 +325,10 @@ class SomAutoreclamaStateUpdater(osv.osv_memory):
                     msg += _(" - {}\n").format(message)
 
                 new_cursor.commit()
-            except Exception:
+            except Exception as e:
+                if new_cursor:
+                    self._rollback_cursor(new_cursor)
+                raise e
                 if new_cursor:
                     self._rollback_cursor(new_cursor)
                 raise
