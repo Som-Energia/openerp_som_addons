@@ -53,8 +53,8 @@ Les skills següents estan disponibles al projecte i s'han d'utilitzar quan corr
 - `DOCS_<desc>` - Documentació
 
 **Format de commit:**
-- Emoji + type en anglès: `✨ feat: add user auth`
-- Tipus: feat, fix, refactor, perf, test, docs, style, chore
+- Només emoji + descripció en anglès: `✨ add user auth`
+- No afegir `feat:`, `fix:` ni cap altre type textual
 
 ### Testing
 
