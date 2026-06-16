@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
+from __future__ import absolute_import, unicode_literals, division
 import unittest
+from datetime import datetime
 from destral import testing
 from destral.transaction import Transaction
 
@@ -20,6 +22,7 @@ class TestReportBackendCCPP(testing.OOTestCase):
         self.rpa_obj = self.openerp.pool.get("res.partner.address")
         self.pricelist_obj = self.openerp.pool.get("product.pricelist")
         self.wiz_change_to_index_obj = self.openerp.pool.get("wizard.change.to.indexada")
+        self.k_change_obj = self.openerp.pool.get("som.polissa.k.change")
         self.tax_obj = self.openerp.pool.get('account.tax')
         self.conf_obj = self.openerp.pool.get('res.config')
         self.contract1_id = self.get_ref("giscedata_polissa", "polissa_0001")
@@ -209,3 +212,64 @@ class TestReportBackendCCPP(testing.OOTestCase):
         result = self.backend_obj.get_prices_data(self.cursor, self.uid, pol_20td, context={})
 
         self.assertEqual(result['mostra_indexada'], True)
+        self.assertTrue('coeficient_k' in result['pricelists'][0])
+        self.assertTrue('coeficient_k_untaxed' in result['pricelists'][0])
+
+    def test_get_coeficient_k_for_pricelist_uses_k_old_for_current_block(self):
+        fs_data = {'k_old': 12.0, 'k_new': 19.0}
+        dades_tarifa = {'date_end': '2026-12-31', 'date_start': False}
+
+        result = self.backend_obj._get_coeficient_k_for_pricelist(fs_data, dades_tarifa, 0.0)
+
+        self.assertEqual(result, 0.012)
+
+    def test_get_coeficient_k_for_pricelist_uses_k_new_for_future_block(self):
+        fs_data = {'k_old': 12.0, 'k_new': 19.0}
+        dades_tarifa = {'date_end': False, 'date_start': '2099-01-01'}
+
+        result = self.backend_obj._get_coeficient_k_for_pricelist(fs_data, dades_tarifa, 0.0)
+
+        self.assertEqual(result, 0.019)
+
+    def test_get_coeficient_k_for_pricelist_keeps_zero_old_value(self):
+        fs_data = {'k_old': 0.0, 'k_new': 19.0}
+        dades_tarifa = {'date_end': '2026-12-31', 'date_start': False}
+
+        result = self.backend_obj._get_coeficient_k_for_pricelist(fs_data, dades_tarifa, 0.5)
+
+        self.assertEqual(result, 0.0)
+
+    def test_get_coeficient_k_from_pricelist_matches_pricelist_price_without_k_change_record(self):
+        today = datetime.today()
+        self.pol_obj.send_signal(
+            self.cursor, self.uid, [self.contract_20TD_id], ["validar", "contracte"])
+        context = {"active_id": self.contract_20TD_id, "change_type": "from_period_to_index"}
+        wiz_id = self.wiz_change_to_index_obj.create(self.cursor, self.uid, {}, context=context)
+        self.wiz_change_to_index_obj.change_to_indexada(
+            self.cursor, self.uid, [wiz_id], context=context)
+
+        self.k_change_obj.unlink(self.cursor, self.uid,
+                                 self.k_change_obj.search(self.cursor, self.uid, []))
+
+        pol_20td = self.pol_obj.browse(self.cursor, self.uid, self.contract_20TD_id)
+        coeficient_id = self.get_ref("giscedata_facturacio_indexada", "product_factor_k")
+        pricelist_id = pol_20td.modcontractuals_ids[0].llista_preu.id
+        price_ctx = {
+            'date': today,
+            'force_pricelist': pricelist_id,
+        }
+
+        result = self.backend_obj._get_coeficient_k_from_pricelist(
+            self.cursor, self.uid, pol_20td, price_ctx, coeficient_id
+        )
+
+        expected = self.pricelist_obj.price_get(
+            self.cursor, self.uid, [pricelist_id], coeficient_id, 1,
+            context={
+                'date': today.strftime('%Y-%m-%d'),
+                'force_pricelist': pricelist_id,
+                'pricelist_base_price': 0.0,
+            }
+        )[pricelist_id] / 1000
+
+        self.assertEqual(result, expected)
