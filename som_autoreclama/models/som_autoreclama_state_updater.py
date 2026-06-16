@@ -47,7 +47,7 @@ class SomAutoreclamaStateUpdater(osv.osv_memory):
             cursor.rollback()
 
     def _ensure_updater_config_context(self, cursor, uid, context=None):
-        if not context:
+        if context is None:
             context = {}
 
         cfg_obj = self.pool.get('res.config')
