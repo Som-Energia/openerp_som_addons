@@ -66,7 +66,7 @@ class SomAutoreclamaStateUpdater(osv.osv_memory):
             context = {}
 
         condition_cache = context.setdefault('_autoreclama_condition_cache', {})
-        cache_key = (namespace, state_id)
+        cache_key = state_id
         if cache_key not in condition_cache:
             cond_obj = self.pool.get("som.autoreclama.state.condition")
             condition_cache[cache_key] = cond_obj.search(
