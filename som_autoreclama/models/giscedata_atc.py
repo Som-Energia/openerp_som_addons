@@ -17,6 +17,8 @@ class GiscedataAtc(osv.osv):
         if not context:
             context = {}
 
+        # This cache only persists across calls when the caller reuses the same
+        # context dict (for example, inside the state_updater batch flow).
         cache = context.setdefault('_autoreclama_r1_006_metadata_cache', {})
         if cache:
             return cache
