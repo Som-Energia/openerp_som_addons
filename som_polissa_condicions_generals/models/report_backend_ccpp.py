@@ -19,6 +19,27 @@ class ReportBackendCondicionsParticulars(ReportBackend):
     _source_model = "giscedata.polissa"
     _name = "report.backend.condicions.particulars"
 
+    def _get_price_context(self, ctx):
+        price_ctx = ctx.copy()
+        if price_ctx.get('date') and hasattr(price_ctx['date'], 'strftime'):
+            price_ctx['date'] = price_ctx['date'].strftime('%Y-%m-%d')
+        return price_ctx
+
+    def _get_coeficient_k_from_pricelist(self, cursor, uid, polissa, ctx, coeficient_id):
+        pricelist_id = ctx.get('force_pricelist') or (
+            polissa.llista_preu and polissa.llista_preu.id)
+        if not pricelist_id:
+            return False
+
+        price_ctx = self._get_price_context(ctx)
+        price_ctx['pricelist_base_price'] = 0.0
+        price = self.pool.get('product.pricelist').price_get(
+            cursor, uid, [pricelist_id], coeficient_id, 1, context=price_ctx
+        ).get(pricelist_id, False)
+        if price is False or price is None:
+            return False
+        return price / 1000
+
     def _get_coeficient_k_for_pricelist(self, fs_data, dades_tarifa, default_coeficient_k_untaxed):
         if not fs_data:
             return default_coeficient_k_untaxed
@@ -386,11 +407,6 @@ class ReportBackendCondicionsParticulars(ReportBackend):
                 cursor, uid, pol.id, tarifes_ids, context=context)
             ctx.update({'force_pricelist': pricelist_id.id})
             tarifes_a_mostrar = get_comming_atr_price(cursor, uid, polissa, ctx)
-        fs_data = get_fs_from_k_change(cursor, uid, pol, context)
-        if fs_data and fs_data.get('k_new', False):
-            coeficient_k_untaxed = fs_data['k_new'] / 1000
-        else:
-            coeficient_k_untaxed = (pol.coeficient_k + pol.coeficient_d) / 1000
 
         def _get_fp_k(_ctx):
             fp_k_id = polissa.fiscal_position_id.id if pol.fiscal_position_id else _ctx.get(
@@ -402,11 +418,20 @@ class ReportBackendCondicionsParticulars(ReportBackend):
         coeficient_id = imd_obj.get_object_reference(
             cursor, uid, 'giscedata_facturacio_indexada', 'product_factor_k'
         )[1]
+        fs_data = get_fs_from_k_change(cursor, uid, pol, context)
+        coeficient_k_untaxed = self._get_coeficient_k_from_pricelist(
+            cursor, uid, polissa, ctx, coeficient_id
+        )
+        if coeficient_k_untaxed is False:
+            coeficient_k_untaxed = (pol.coeficient_k + pol.coeficient_d) / 1000
+        if fs_data and fs_data.get('k_new', False) is not False:
+            coeficient_k_untaxed = fs_data['k_new'] / 1000
 
         res['pricelists'] = []
         for dades_tarifa in tarifes_a_mostrar:
             text_vigencia = ''
             pricelist = {}
+            ctx_pricelist = ctx.copy()
 
             if lead:
                 text_vigencia = ''
@@ -419,7 +444,8 @@ class ReportBackendCondicionsParticulars(ReportBackend):
             elif dades_tarifa['date_start'] and datetime.strptime(dades_tarifa['date_start'], '%Y-%m-%d') > datetime.today():  # noqa: E501
                 text_vigencia = _(u"(vigents a partir del {})").format(
                     datetime.strptime(dades_tarifa['date_start'], '%Y-%m-%d').strftime('%d/%m/%Y'))
-                ctx.update({'date': datetime.strptime(dades_tarifa['date_start'], '%Y-%m-%d')})
+                ctx_pricelist.update({'date': datetime.strptime(
+                    dades_tarifa['date_start'], '%Y-%m-%d')})
             pricelist['text_vigencia'] = text_vigencia
 
             try:
@@ -446,8 +472,8 @@ class ReportBackendCondicionsParticulars(ReportBackend):
                 if iva_10_active and pol.potencia <= 10 and today_str >= start_date_iva_10 and today_str <= end_date_iva_10:  # noqa: E501
                     fp_id = imd_obj.get_object_reference(
                         cursor, uid, 'som_polissa_condicions_generals', 'fp_iva_reduit')[1]
-                    ctx.update({'force_fiscal_position': fp_id, 'iva10': True})
-            simple_taxes = pol_obj.get_simplified_taxes(cursor, uid, pol.id, context=ctx)
+                    ctx_pricelist.update({'force_fiscal_position': fp_id, 'iva10': True})
+            simple_taxes = pol_obj.get_simplified_taxes(cursor, uid, pol.id, context=ctx_pricelist)
             iva_str = 'IVA' if 'IVA' in simple_taxes else 'IGIC'
             ie_percent_str = "{:.2f}".format(
                 simple_taxes['IE'] * 100).rstrip('0').rstrip('.').replace('.', ',')
@@ -462,53 +488,69 @@ class ReportBackendCondicionsParticulars(ReportBackend):
             periodes_energia = sorted(pol.tarifa.get_periodes(context=context).keys())
             periodes_potencia = sorted(pol.tarifa.get_periodes('tp', context=context).keys())
 
-            ctx['potencia_anual'] = True
-            ctx['sense_agrupar'] = True
-            ctx['pricelist_base_price'] = 0.0  # Dummy base price to avoid error
+            ctx_pricelist['potencia_anual'] = True
+            ctx_pricelist['sense_agrupar'] = True
+            ctx_pricelist['pricelist_base_price'] = 0.0  # Dummy base price to avoid error
             power_prices = {}
             for p in periodes_potencia:
-                power_prices[p] = get_atr_price(cursor, uid, pol, p, 'tp', ctx, with_taxes=True)[0]
+                power_prices[p] = get_atr_price(
+                    cursor, uid, pol, p, 'tp', ctx_pricelist, with_taxes=True
+                )[0]
             pricelist['power_prices'] = power_prices
 
             power_prices_untaxed = {}
             for p in periodes_potencia:
                 power_prices_untaxed[p] = get_atr_price(
-                    cursor, uid, pol, p, 'tp', ctx, with_taxes=False)[0]
+                    cursor, uid, pol, p, 'tp', ctx_pricelist, with_taxes=False
+                )[0]
             pricelist['power_prices_untaxed'] = power_prices_untaxed
 
             energy_prices = {}
             for p in periodes_energia:
-                energy_prices[p] = get_atr_price(cursor, uid, pol, p, 'te', ctx, with_taxes=True)[0]
+                energy_prices[p] = get_atr_price(
+                    cursor, uid, pol, p, 'te', ctx_pricelist, with_taxes=True
+                )[0]
             pricelist['energy_prices'] = energy_prices
 
             energy_prices_untaxed = {}
             for p in periodes_energia:
                 energy_prices_untaxed[p] = get_atr_price(
-                    cursor, uid, pol, p, 'te', ctx, with_taxes=False)[0]
+                    cursor, uid, pol, p, 'te', ctx_pricelist, with_taxes=False
+                )[0]
             pricelist['energy_prices_untaxed'] = energy_prices_untaxed
 
             generation_prices = {}
             for p in periodes_energia:
                 generation_prices[p] = get_atr_price(
-                    cursor, uid, pol, p, 'gkwh', ctx, with_taxes=True)[0]
+                    cursor, uid, pol, p, 'gkwh', ctx_pricelist, with_taxes=True
+                )[0]
             pricelist['generation_prices'] = generation_prices
 
             generation_prices_untaxed = {}
             for p in periodes_energia:
                 generation_prices_untaxed[p] = get_atr_price(
-                    cursor, uid, pol, p, 'gkwh', ctx, with_taxes=False)[0]
+                    cursor, uid, pol, p, 'gkwh', ctx_pricelist, with_taxes=False
+                )[0]
             pricelist['generation_prices_untaxed'] = generation_prices_untaxed
 
             pricelist['price_auto'] = get_atr_price(
-                cursor, uid, pol, periodes_energia[0], 'ac', ctx, with_taxes=True)[0]
+                cursor, uid, pol, periodes_energia[0], 'ac', ctx_pricelist, with_taxes=True
+            )[0]
             pricelist['price_auto_untaxed'] = get_atr_price(
-                cursor, uid, pol, periodes_energia[0], 'ac', ctx, with_taxes=False)[0]
+                cursor, uid, pol, periodes_energia[0], 'ac', ctx_pricelist, with_taxes=False
+            )[0]
+
+            coeficient_k_untaxed_pricelist = self._get_coeficient_k_from_pricelist(
+                cursor, uid, polissa, ctx_pricelist, coeficient_id
+            )
+            if coeficient_k_untaxed_pricelist is False:
+                coeficient_k_untaxed_pricelist = coeficient_k_untaxed
 
             coeficient_k_untaxed_pricelist = self._get_coeficient_k_for_pricelist(
-                fs_data, dades_tarifa, coeficient_k_untaxed
+                fs_data, dades_tarifa, coeficient_k_untaxed_pricelist
             )
             pricelist['coeficient_k_untaxed'] = coeficient_k_untaxed_pricelist
-            fp_k = _get_fp_k(ctx)
+            fp_k = _get_fp_k(ctx_pricelist)
             pricelist['coeficient_k'] = prod_obj.add_taxes(
                 cursor, uid, coeficient_id, coeficient_k_untaxed_pricelist, fp_k,
                 direccio_pagament=polissa.direccio_pagament, titular=polissa.titular,
