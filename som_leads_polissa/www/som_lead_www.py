@@ -27,7 +27,7 @@ class SomLeadWww(osv.osv_memory):
     _SIGNATURE_COMPLETED_STATUS = 'completed'
     _SIGNATURE_ERROR_STATUSES = ('error', 'canceled', 'declined', 'expired')
 
-    def create_lead(self, cr, uid, www_vals, context=None):  # noqa: C901
+    def create_lead(self, cr, uid, www_vals, context=None):
         if context is None:
             context = {}
         lead_o = self.pool.get("giscedata.crm.lead")
