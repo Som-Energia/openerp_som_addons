@@ -427,6 +427,17 @@ class ReportBackendCondicionsParticulars(ReportBackend):
         if fs_data and fs_data.get('k_new', False) is not False:
             coeficient_k_untaxed = fs_data['k_new'] / 1000
 
+        start_date_iva_10 = cfg_obj.get(
+            cursor, uid, 'charge_iva_10_percent_when_start_date', '2026-03-22'
+        )
+        end_date_iva_10 = cfg_obj.get(
+            cursor, uid, 'charge_iva_10_percent_end_date', '2026-06-30'
+        )
+        iva_10_active = eval(cfg_obj.get(
+            cursor, uid, 'charge_iva_10_percent_when_available', '0'
+        ))
+        today_str = datetime.today().strftime("%Y-%m-%d")
+
         res['pricelists'] = []
         for dades_tarifa in tarifes_a_mostrar:
             text_vigencia = ''
@@ -454,18 +465,6 @@ class ReportBackendCondicionsParticulars(ReportBackend):
             except Exception:
                 omie_mon_price_45 = False
             pricelist['omie_mon_price_45'] = omie_mon_price_45
-
-            start_date_iva_10 = cfg_obj.get(
-                cursor, uid, 'charge_iva_10_percent_when_start_date', '2026-03-22'
-            )
-            end_date_iva_10 = cfg_obj.get(
-                cursor, uid, 'charge_iva_10_percent_end_date', '2026-06-30'
-            )
-            iva_10_active = eval(cfg_obj.get(
-                cursor, uid, 'charge_iva_10_percent_when_available', '0'
-            ))
-
-            today_str = datetime.today().strftime("%Y-%m-%d")
 
             text_impostos = ''
             if not pol.fiscal_position_id and not lead:
@@ -560,7 +559,14 @@ class ReportBackendCondicionsParticulars(ReportBackend):
             res['pricelists'].append(pricelist)
 
         coeficient_k = False
-        fp_k = _get_fp_k(ctx)
+        ctx_global = ctx.copy()
+        if not pol.fiscal_position_id and not lead:
+            if iva_10_active and pol.potencia <= 10 and today_str >= start_date_iva_10 and today_str <= end_date_iva_10:  # noqa: E501
+                fp_id = imd_obj.get_object_reference(
+                    cursor, uid, 'som_polissa_condicions_generals', 'fp_iva_reduit'
+                )[1]
+                ctx_global.update({'force_fiscal_position': fp_id, 'iva10': True})
+        fp_k = _get_fp_k(ctx_global)
         res['mostra_indexada'] = False
         if (polissa.mode_facturacio == 'index' and not modcon_pendent_periodes) or modcon_pendent_indexada:  # noqa: E501
             res['mostra_indexada'] = True
