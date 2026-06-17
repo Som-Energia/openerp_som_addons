@@ -71,3 +71,28 @@ class TestsPartnerAddress(testing.OOTestCaseWithCursor):
             },
             'status': 'subscribed'
         })
+
+    @mock.patch('som_polissa_soci.models.res_partner_address.ResPartnerAddress.archieve_mail_in_list_sync')  # noqa: E501
+    @mock.patch('som_polissa_soci.models.res_partner_address.ResPartnerAddress.get_mailchimp_list_id')  # noqa: E501
+    @mock.patch('som_polissa_soci.models.res_partner_address.ResPartnerAddress._get_mailchimp_client')  # noqa: E501
+    def test__unsubscribe_titular_in_ctss_lists__uses_address_id(
+        self, mocked_get_mailchimp_client, mocked_get_mailchimp_list_id, mocked_archive
+    ):
+        cursor = self.cursor
+        uid = self.uid
+        rpa_obj = self.openerp.pool.get("res.partner.address")
+        imd_obj = self.openerp.pool.get('ir.model.data')
+        address_id = imd_obj.get_object_reference(
+            cursor, uid, 'som_polissa_soci', 'res_partner_address_soci'
+        )[1]
+        partner_id = rpa_obj.read(cursor, uid, address_id, ['partner_id'])['partner_id'][0]
+        mailchimp_client = mock.Mock()
+
+        mocked_get_mailchimp_client.return_value = mailchimp_client
+        mocked_get_mailchimp_list_id.return_value = 77
+
+        rpa_obj.unsubscribe_titular_in_ctss_lists(cursor, uid, partner_id)
+
+        mocked_archive.assert_called_once_with(
+            cursor, uid, address_id, 77, mailchimp_client
+        )

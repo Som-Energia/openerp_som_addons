@@ -1,9 +1,14 @@
 # -*- encoding: utf-8 -*-
+from __future__ import absolute_import
+
+import copy
+
 from destral import testing
 from destral.transaction import Transaction
 from osv import osv
-from tools import config
 import mock
+
+from .base_som_lead_www import BaseSomLeadWwwTest
 
 
 class TestSignLead(testing.OOTestCase):
@@ -13,19 +18,6 @@ class TestSignLead(testing.OOTestCase):
         'GiscedataSignaturaProcess.start'
     )
     _cups = 'ES0177000000000000LR'
-
-    @classmethod
-    def tearDownClass(cls):
-        with Transaction().start(config['db_name']) as txn:
-            cls._delete_stage_validations(txn.cursor)
-            txn.cursor.commit()
-        super(TestSignLead, cls).tearDownClass()
-
-    @classmethod
-    def _delete_stage_validations(cls, cursor):
-        val_o = cls.openerp.pool.get('crm.stage.validation')
-        ids = val_o.search(cursor, 1, [])
-        val_o.unlink(cursor, 1, ids)
 
     def setUp(self):
         self.txn = Transaction().start(self.database)
@@ -37,7 +29,6 @@ class TestSignLead(testing.OOTestCase):
         self.ir_model_o = self.get_model('ir.model.data')
         self.config_o = self.get_model('res.config')
         self.payment_mode_o = self.get_model('payment.mode')
-        self._delete_stage_validations(self.cursor)
         self.config_o.set(self.cursor, self.uid, 'validar_lead_firmar_digitalment', 0)
 
     def tearDown(self):
@@ -93,9 +84,13 @@ class TestSignLead(testing.OOTestCase):
         signaturit_start_mock.side_effect = self._signaturit_start_side_effect()
         lead_id = self._create_lead()
 
-        result = self.www_lead_o.sign_lead(
-            self.cursor, self.uid, lead_id, self._cups, context={'skip_validations': True}
-        )
+        with mock.patch.object(
+            self.lead_o, 'check_start_signature_process', return_value=('end', '')
+        ):
+            result = self.www_lead_o.sign_lead(
+                self.cursor, self.uid, lead_id, self._cups,
+                context={'skip_validations': True}
+            )
 
         self.assertEqual(result, {'url': 'http://sign.url'})
 
@@ -104,9 +99,13 @@ class TestSignLead(testing.OOTestCase):
         signaturit_start_mock.side_effect = self._signaturit_start_side_effect()
         lead_id = self._create_lead()
 
-        self.www_lead_o.sign_lead(
-            self.cursor, self.uid, lead_id, self._cups, context={'skip_validations': True}
-        )
+        with mock.patch.object(
+            self.lead_o, 'check_start_signature_process', return_value=('end', '')
+        ):
+            self.www_lead_o.sign_lead(
+                self.cursor, self.uid, lead_id, self._cups,
+                context={'skip_validations': True}
+            )
 
         context = signaturit_start_mock.call_args[1]['context']
         self.assertEqual(context['delivery_type'], 'url')
@@ -119,13 +118,16 @@ class TestSignLead(testing.OOTestCase):
         )
         lead_id = self._create_lead()
 
-        with mock.patch('som_leads_polissa.www.som_lead_www.time') as time_mock:
-            time_mock.time.side_effect = [0, 31]
-            with self.assertRaises(osv.except_osv):
-                self.www_lead_o.sign_lead(
-                    self.cursor, self.uid, lead_id, self._cups,
-                    context={'skip_validations': True}
-                )
+        with mock.patch.object(
+            self.lead_o, 'check_start_signature_process', return_value=('end', '')
+        ):
+            with mock.patch('som_leads_polissa.www.som_lead_www.time') as time_mock:
+                time_mock.time.side_effect = [0, 31]
+                with self.assertRaises(osv.except_osv):
+                    self.www_lead_o.sign_lead(
+                        self.cursor, self.uid, lead_id, self._cups,
+                        context={'skip_validations': True}
+                    )
 
 
 class TestActivationMailAfterSignature(testing.OOTestCase):
@@ -198,3 +200,46 @@ class TestActivationMailAfterSignature(testing.OOTestCase):
             context={}
         )
         lead_o.historize_msg.assert_called_once()
+
+
+class TestCreateLeadWithSignature(BaseSomLeadWwwTest):
+
+    def test_create_lead_returns_signature_metadata(self):
+        www_lead_o = self.get_model('som.lead.www')
+        values = copy.deepcopy(self._basic_values)
+        values['signature'] = True
+
+        with mock.patch.object(
+            www_lead_o, 'sign_lead', return_value={'url': 'http://sign.url'}
+        ) as sign_mock:
+            result = www_lead_o.create_lead(self.cursor, self.uid, values, context={})
+
+        self.assertFalse(result['error'])
+        self.assertEqual(result['signature_url'], 'http://sign.url')
+        self.assertEqual(result['signature_provider'], 'signaturit')
+        sign_mock.assert_called_once_with(
+            self.cursor, self.uid, result['lead_id'],
+            values['contract_info']['cups'], context={}
+        )
+
+    def test_create_lead_keeps_lead_and_returns_signature_error(self):
+        www_lead_o = self.get_model('som.lead.www')
+        lead_o = self.get_model('giscedata.crm.lead')
+        ir_model_o = self.get_model('ir.model.data')
+        values = copy.deepcopy(self._basic_values)
+        values['signature'] = True
+
+        with mock.patch.object(
+            www_lead_o, 'sign_lead', side_effect=osv.except_osv('Error', 'No pot firmar')
+        ):
+            result = www_lead_o.create_lead(self.cursor, self.uid, values, context={})
+
+        signature_error_stage_id = ir_model_o.get_object_reference(
+            self.cursor, self.uid, 'som_leads_polissa', 'webform_stage_signature_error'
+        )[1]
+        lead = lead_o.browse(self.cursor, self.uid, result['lead_id'], context={})
+
+        self.assertEqual(result['error']['error'], 'No pot firmar')
+        self.assertFalse(result['signature_url'])
+        self.assertFalse(result['signature_provider'])
+        self.assertEqual(lead.stage_id.id, signature_error_stage_id)

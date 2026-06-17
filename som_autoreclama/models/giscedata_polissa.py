@@ -11,6 +11,15 @@ class GiscedataPolissa(osv.osv):
     _name = "giscedata.polissa"
     _inherit = "giscedata.polissa"
 
+    def _read_autoreclama_base_data(self, cursor, uid, id, context=None):
+        return self.read(
+            cursor,
+            uid,
+            id,
+            ["data_ultima_lectura_f1", "data_baixa", "data_alta", "state"],
+            context,
+        )
+
     def som_autoreclama_add_to_info_gestio_endarrerida(self, cursor, uid, pol_id, params, context=None):  # noqa: E501
         data = self.read(cursor, uid, pol_id, ['info_gestio_endarrerida'])
         if 'info_gestio_endarrerida' in data and data['info_gestio_endarrerida']:
@@ -25,21 +34,21 @@ class GiscedataPolissa(osv.osv):
         self.write(cursor, uid, pol_id, {'info_gestio_endarrerida': line + text})
 
     def get_autoreclama_data(self, cursor, uid, id, namespace, context=None):
-        vals = self._get_autoreclama_data_common(cursor, uid, id, context=context)
+        base_data = self._read_autoreclama_base_data(cursor, uid, id, context=context)
+        vals = self._get_autoreclama_data_common(
+            cursor, uid, id, context=context, data=base_data
+        )
         if namespace == "polissa":
-            vals.update(self._get_autoreclama_data_006(cursor, uid, id, context=context))
+            vals.update(self._get_autoreclama_data_006(
+                cursor, uid, id, context=context, data=base_data
+            ))
         if namespace == "polissa009":
             vals.update(self._get_autoreclama_data_009(cursor, uid, id, context=context))
         return vals
 
-    def _get_autoreclama_data_common(self, cursor, uid, id, context=None):
-        data = self.read(
-            cursor,
-            uid,
-            id,
-            ["data_ultima_lectura_f1", "data_baixa", "state"],
-            context,
-        )
+    def _get_autoreclama_data_common(self, cursor, uid, id, context=None, data=None):
+        if data is None:
+            data = self._read_autoreclama_base_data(cursor, uid, id, context=context)
 
         baixa = data['state'] == 'baixa'
         if data["data_ultima_lectura_f1"] and data["data_baixa"]:
@@ -58,17 +67,12 @@ class GiscedataPolissa(osv.osv):
             'baixa_facturada': baixa and facturada,
         }
 
-    def _get_autoreclama_data_006(self, cursor, uid, id, context=None):
+    def _get_autoreclama_data_006(self, cursor, uid, id, context=None, data=None):
         atc_obj = self.pool.get("giscedata.atc")
         data_obj = self.pool.get("ir.model.data")
 
-        data = self.read(
-            cursor,
-            uid,
-            id,
-            ["data_ultima_lectura_f1", "data_alta", "state"],
-            context,
-        )
+        if data is None:
+            data = self._read_autoreclama_base_data(cursor, uid, id, context=context)
 
         if data['data_ultima_lectura_f1']:
             last_date = data['data_ultima_lectura_f1']

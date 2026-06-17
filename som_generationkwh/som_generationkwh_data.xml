@@ -9,7 +9,17 @@
         <record model="giscedata.signatura.models" id="signatura_model_generationkwh_investment">
             <field name="name" ref="account.model_account_invoice"/>
         </record>
-
+        <record id="report_generationkwh_signaturit_doc" model="ir.actions.report.xml">
+            <field name="report_type">webkit</field>
+            <field name="report_name">generationkwh.signaturit.doc</field>
+            <field eval="[(6,0,[])]" name="groups_id"/>
+            <field eval="0" name="multi"/>
+            <field eval="0" name="auto"/>
+            <field eval="0" name="header"/>
+            <field name="model">generationkwh.investment</field>
+            <field name="type">ir.actions.report.xml</field>
+            <field name="name">Contracte Generation kWh signat</field>
+        </record>
     </data>
     <data noupdate="1">
         <record model="product.category" id="categ_inversions">

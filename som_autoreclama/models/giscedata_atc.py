@@ -13,6 +13,41 @@ class GiscedataAtc(osv.osv):
     _inherit = "giscedata.atc"
     _order = "id desc"
 
+    def _get_autoreclama_r1_006_metadata(self, cursor, uid, context=None):
+        if not context:
+            context = {}
+
+        # This cache only persists across calls when the caller reuses the same
+        # context dict (for example, inside the state_updater batch flow).
+        cache = context.setdefault('_autoreclama_r1_006_metadata_cache', {})
+        if cache:
+            return cache
+
+        subtr_obj = self.pool.get("giscedata.subtipus.reclamacio")
+        cache['subtr_id'] = subtr_obj.search(
+            cursor, uid, [("name", "=", "006")], context=context
+        )[0]
+
+        channel_obj = self.pool.get("res.partner.canal")
+        cache['canal_id'] = channel_obj.search(
+            cursor, uid, [("name", "ilike", "intercambi")], context=context
+        )[0]
+
+        imd_obj = self.pool.get("ir.model.data")
+        cache['initial_state_id'] = imd_obj.get_object_reference(
+            cursor, uid, "som_autoreclama", "correct_state_workflow_atc"
+        )[1]
+        cache['section_id'] = imd_obj.get_object_reference(
+            cursor, uid, "som_switching", "atc_section_factura"
+        )[1]
+
+        tag_obj = self.pool.get("giscedata.atc.tag")
+        tag_ids = tag_obj.search(
+            cursor, uid, [('name', '=', 'AUTOCAC 006')], context=context
+        )
+        cache['tag_id'] = tag_ids[0] if tag_ids else False
+        return cache
+
     def get_autoreclama_data(self, cursor, uid, id, namespace, context=None):
         data = self.read(
             cursor,
@@ -83,8 +118,8 @@ class GiscedataAtc(osv.osv):
     # Automatic ATC + R1-006 from existing polissa / Entry point
 
     def create_ATC_R1_006_from_polissa_via_wizard(self, cursor, uid, polissa_id, context=None):
-        subtr_obj = self.pool.get("giscedata.subtipus.reclamacio")
-        subtr_id = subtr_obj.search(cursor, uid, [("name", "=", "006")], context=context)[0]
+        metadata = self._get_autoreclama_r1_006_metadata(cursor, uid, context)
+        subtr_id = metadata['subtr_id']
 
         # Do not create a 006 if there is an active one yet
         params = [
@@ -100,39 +135,21 @@ class GiscedataAtc(osv.osv):
                 ).format(",".join([str(atc_id) for atc_id in atc_ids]))
             )
 
-        channel_obj = self.pool.get("res.partner.canal")
-        canal_id = channel_obj.search(
-            cursor, uid, [("name", "ilike", "intercambi")], context=context
-        )[0]
-
-        imd_obj = self.pool.get("ir.model.data")
-        initial_state_id = imd_obj.get_object_reference(
-            cursor, uid, "som_autoreclama", "correct_state_workflow_atc"
-        )[1]
-
-        section_id = imd_obj.get_object_reference(
-            cursor, uid, "som_switching", "atc_section_factura"
-        )[1]
-
         new_case_data = {
             "polissa_id": polissa_id,
             "descripcio": u"AUTOCAC 006",
-            "canal_id": canal_id,
-            "section_id": section_id,
+            "canal_id": metadata['canal_id'],
+            "section_id": metadata['section_id'],
             "subtipus_reclamacio_id": subtr_id,
             "comentaris": u"",
             "sense_responsable": True,
             "tanca_al_finalitzar_r1": True,
             "crear_cas_r1": True,
-            "autoreclama_history_initial_state_id": initial_state_id,
+            "autoreclama_history_initial_state_id": metadata['initial_state_id'],
         }
 
-        tag_obj = self.pool.get("giscedata.atc.tag")
-        tag_ids = tag_obj.search(
-            cursor, uid, [('name', '=', 'AUTOCAC 006')], context=context
-        )
-        if tag_ids:
-            new_case_data['atc_tag_id'] = tag_ids[0]
+        if metadata['tag_id']:
+            new_case_data['atc_tag_id'] = metadata['tag_id']
 
         return self.create_general_atc_r1_case_via_wizard(cursor, uid, new_case_data, context)
 

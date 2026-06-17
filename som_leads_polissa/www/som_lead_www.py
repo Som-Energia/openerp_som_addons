@@ -25,9 +25,9 @@ class SomLeadWww(osv.osv_memory):
     _128_SIMPLIFIED_SURPLUSES = 'a0'
     _131_CONSUMPTION = '01'
     _SIGNATURE_COMPLETED_STATUS = 'completed'
-    _SIGNATURE_ERROR_STATUSES = ('error', 'canceled', 'rejected', 'declined', 'expired')
+    _SIGNATURE_ERROR_STATUSES = ('error', 'canceled', 'declined', 'expired')
 
-    def create_lead(self, cr, uid, www_vals, context=None):  # noqa: C901
+    def create_lead(self, cr, uid, www_vals, context=None):
         if context is None:
             context = {}
         lead_o = self.pool.get("giscedata.crm.lead")
@@ -107,17 +107,17 @@ class SomLeadWww(osv.osv_memory):
         payment_mode_o = self.pool.get("payment.mode")
         ir_model_o = self.pool.get("ir.model.data")
 
-        member_payment_type = www_vals.get("payment_type")
+        payment_type = www_vals.get("payment_type")
         billing_payment_method = www_vals.get("billing_payment_method")
 
         if not billing_payment_method:
             billing_payment_method = (
-                "card_recurrent" if member_payment_type == "tpv" else "remesa"
+                "card_recurrent" if payment_type == "tpv" else "remesa"
             )
 
         valid_payment_configuration = (
-            (member_payment_type == "tpv" and billing_payment_method == "card_recurrent")
-            or (member_payment_type == "remesa" and billing_payment_method == "remesa")
+            (payment_type == "tpv" and billing_payment_method == "card_recurrent")
+            or (payment_type == "remesa" and billing_payment_method == "remesa")
         )
         if not valid_payment_configuration:
             raise osv.except_osv(
@@ -130,10 +130,16 @@ class SomLeadWww(osv.osv_memory):
                 cr, uid, "som_card_payment", "payment_mode_card_recurrent"
             )[1]
         else:
-            payment_mode_id = payment_mode_o.search(cr, uid, [("name", "=", "ENGINYERS")])[0]
+            enginyers_ids = payment_mode_o.search(cr, uid, [("name", "=", "ENGINYERS")], limit=1)
+            if not enginyers_ids:
+                raise osv.except_osv(
+                    "MISSING_PAYMENT_MODE",
+                    "No s'ha trobat el mode de pagament 'ENGINYERS'."
+                )
+            payment_mode_id = enginyers_ids[0]
 
         return {
-            "member_payment_type": member_payment_type,
+            "payment_type": payment_type,
             "billing_payment_method": billing_payment_method,
             "payment_mode_id": payment_mode_id,
         }
@@ -267,7 +273,7 @@ class SomLeadWww(osv.osv_memory):
             "llista_preu": contract_data["llista_preu_id"],
             "facturacio": self._FACTURACIO_MENSUAL,
             "iban": www_vals.get("iban"),
-            "payment_mode_id": payment_mode_id,
+            "payment_mode_id": payment_data["payment_mode_id"],
             "enviament": "email",
             "create_new_member": member_type == "new_member",
             "autoconsumo": "00",
@@ -292,7 +298,7 @@ class SomLeadWww(osv.osv_memory):
             "titular_mobile_prefix": member.get("mobile_prefix"),
             "use_cont_address": False,
             "donation": www_vals.get("donation", False),
-            "member_quota_payment_type": payment_data["member_payment_type"],
+            "member_quota_payment_type": payment_data["payment_type"],
             "billing_payment_method": payment_data["billing_payment_method"],
             "gender": member.get("gender"),
             "birthdate": member.get("birthdate"),
@@ -469,7 +475,7 @@ class SomLeadWww(osv.osv_memory):
             logger = logging.getLogger("openerp.{0}.activate_lead".format(__name__))
             logger.warning("Error al comunicar amb Mailchimp {}".format(str(e)))
 
-        if context.get('sync'):
+        if context.get("sync"):
             self._send_activation_mail_if_signature_allows(cr, uid, lead_id, context=context)
         else:
             self._send_activation_mail_if_signature_allows_async(cr, uid, lead_id, context=context)
@@ -524,6 +530,7 @@ class SomLeadWww(osv.osv_memory):
                     ),
                     context=context
                 )
+                cr.commit()
                 return False
 
             time.sleep(wait_seconds)
@@ -544,6 +551,7 @@ class SomLeadWww(osv.osv_memory):
             u"SIGNATURE_PENDING: activation e-mail not sent yet",
             context=context
         )
+        cr.commit()
         return False
 
     def _create_attachments(self, cr, uid, lead_id, attachments, context=None):
@@ -725,16 +733,24 @@ class SomLeadWww(osv.osv_memory):
         ctx['delivery_type'] = 'url'
         ctx['provider'] = 'signaturit'
 
-        # Disabled, we call _check_lead_can_be_activated during lead creation
-        # state, errors = lead_o.check_start_signature_process(cr, uid, [lead_id], context=ctx)
-        # if state != 'end':
-        #     raise osv.except_osv('Error', errors)
+        state, errors = lead_o.check_start_signature_process(cr, uid, [lead_id], context=ctx)
+        if state != 'end':
+            raise osv.except_osv('Error', errors)
 
+        # `start_signature_process` creates signature artifacts with admin-only
+        # permissions in this legacy flow, so we keep the original user id while
+        # temporarily elevating the group context.
         with Sudo(uid=uid, gid=0):
             with self.api.db.cursor() as sign_cursor:
                 process_id = lead_o.start_signature_process(
-                    sign_cursor, uid, lead_id, context=ctx
+                    sign_cursor, uid, [lead_id], context=ctx
                 )
+
+        if not process_id:
+            raise osv.except_osv(
+                'Error',
+                'Signature process could not be started for lead {}'.format(lead_id)
+            )
 
         process_o = self.pool.get('giscedata.signatura.process')
         timeout_seconds = 30.0
@@ -749,11 +765,13 @@ class SomLeadWww(osv.osv_memory):
             signature_url = process_data.get('signature_url')
             if signature_url:
                 break
-            if process_data.get('status') == 'error':
+            if process_data.get('status') in self._SIGNATURE_ERROR_STATUSES:
                 raise osv.except_osv(
                     'Error',
-                    'Signature process failed before URL generation (process_id={})'.format(
-                        process_id)
+                    (
+                        'Signature process failed before URL generation '
+                        '(process_id={}, status={})'
+                    ).format(process_id, process_data.get('status'))
                 )
             time.sleep(poll_interval)
 
