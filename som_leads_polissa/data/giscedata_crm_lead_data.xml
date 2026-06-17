@@ -43,6 +43,18 @@
             <field name="section_ids" eval="[(6,0,[ref('webform_section')])]"/>
             <field name="sequence">99</field>
         </record>
+        <record id="webform_stage_signature_error" model="crm.case.stage">
+            <field name="name">Formulari web amb error de signatura</field>
+            <field name="section_id" ref="webform_section"/>
+            <field name="section_ids" eval="[(6,0,[ref('webform_section')])]"/>
+            <field name="sequence">98</field>
+        </record>
+        <record id="webform_stage_signature_pending_review" model="crm.case.stage">
+            <field name="name">Formulari web pendent revisió de signatura</field>
+            <field name="section_id" ref="webform_section"/>
+            <field name="section_ids" eval="[(6,0,[ref('webform_section')])]"/>
+            <field name="sequence">97</field>
+        </record>
     </data>
     <data noupdate="1">
         <record model="account.journal" id="member_fee_journal">

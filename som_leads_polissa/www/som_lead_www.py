@@ -4,9 +4,13 @@ from __future__ import absolute_import, division
 import logging
 import traceback
 import sys
+import time
 from osv import osv
+from service.security import Sudo
+from oorq.decorators import job
 import yaml
 import copy
+from uuid import uuid4
 
 from som_leads_polissa.models.giscedata_crm_lead import WWW_DATA_FORM_HEADER
 from giscedata_cups.giscedata_cups import get_dso
@@ -20,6 +24,8 @@ class SomLeadWww(osv.osv_memory):
     _127_WITH_SURPLUSES = '2'
     _128_SIMPLIFIED_SURPLUSES = 'a0'
     _131_CONSUMPTION = '01'
+    _SIGNATURE_COMPLETED_STATUS = 'completed'
+    _SIGNATURE_ERROR_STATUSES = ('error', 'canceled', 'declined', 'expired')
 
     def create_lead(self, cr, uid, www_vals, context=None):
         if context is None:
@@ -235,7 +241,7 @@ class SomLeadWww(osv.osv_memory):
             "contract_type": self._CONTRACT_TYPE_ANUAL,
             "llista_preu": contract_data["llista_preu_id"],
             "facturacio": self._FACTURACIO_MENSUAL,
-            "iban": www_vals["iban"],
+            "iban": www_vals.get("iban"),
             "payment_mode_id": payment_data["payment_mode_id"],
             "enviament": "email",
             "create_new_member": member_type == "new_member",
@@ -267,6 +273,7 @@ class SomLeadWww(osv.osv_memory):
             "birthdate": member.get("birthdate"),
             "referral_source": member.get("referral_source"),
             "comercial_info_accepted": member.get("comercial_info_accepted", False),
+            "mandate_number": uuid4().hex,
         }
 
         values["user_id"] = ir_model_o.get_object_reference(
@@ -437,12 +444,84 @@ class SomLeadWww(osv.osv_memory):
             logger = logging.getLogger("openerp.{0}.activate_lead".format(__name__))
             logger.warning("Error al comunicar amb Mailchimp {}".format(str(e)))
 
-        if context.get('sync'):
-            lead_o._send_mail(cr, uid, lead_id, context=context)
+        if context.get("sync"):
+            self._send_activation_mail_if_signature_allows(cr, uid, lead_id, context=context)
         else:
-            lead_o._send_mail_async(cr, uid, lead_id, context=context)
+            self._send_activation_mail_if_signature_allows_async(cr, uid, lead_id, context=context)
 
         return True
+
+    @job(queue="poweremail_sender")
+    def _send_activation_mail_if_signature_allows_async(self, cr, uid, lead_id, context=None):
+        if context is None:
+            context = {}
+        self._send_activation_mail_if_signature_allows(cr, uid, lead_id, context=context)
+
+    def _send_activation_mail_if_signature_allows(self, cr, uid, lead_id, context=None):
+        if context is None:
+            context = {}
+
+        lead_o = self.pool.get("giscedata.crm.lead")
+        ir_model_o = self.pool.get("ir.model.data")
+        logger = logging.getLogger("openerp.{0}.activate_lead.signature_mail".format(__name__))
+
+        attempts = 30
+        wait_seconds = 10
+
+        for _ in range(attempts):
+            lead_data = lead_o.read(
+                cr, uid, lead_id, ['signature_process', 'status_firma'], context=context
+            )
+            signature_process = lead_data.get('signature_process')
+            signature_status = lead_data.get('status_firma')
+
+            if not signature_process:
+                lead_o._send_mail(cr, uid, lead_id, context=context)
+                return True
+
+            if signature_status == self._SIGNATURE_COMPLETED_STATUS:
+                lead_o._send_mail(cr, uid, lead_id, context=context)
+                return True
+
+            if signature_status in self._SIGNATURE_ERROR_STATUSES:
+                signature_error_stage_id = ir_model_o.get_object_reference(
+                    cr, uid, "som_leads_polissa", "webform_stage_signature_error"
+                )[1]
+                lead_o.write(
+                    cr, uid, lead_id,
+                    {'stage_id': signature_error_stage_id, 'state': 'pending'},
+                    context=context
+                )
+                lead_o.historize_msg(
+                    cr, uid, [lead_id],
+                    u"SIGNATURE_NOT_COMPLETED: activation e-mail not sent (status={})".format(
+                        signature_status
+                    ),
+                    context=context
+                )
+                cr.commit()
+                return False
+
+            time.sleep(wait_seconds)
+
+        logger.warning(
+            "Signature still pending, activation e-mail not sent yet (lead_id=%s)", lead_id
+        )
+        signature_pending_review_stage_id = ir_model_o.get_object_reference(
+            cr, uid, "som_leads_polissa", "webform_stage_signature_pending_review"
+        )[1]
+        lead_o.write(
+            cr, uid, lead_id,
+            {'stage_id': signature_pending_review_stage_id, 'state': 'pending'},
+            context=context
+        )
+        lead_o.historize_msg(
+            cr, uid, [lead_id],
+            u"SIGNATURE_PENDING: activation e-mail not sent yet",
+            context=context
+        )
+        cr.commit()
+        return False
 
     def _create_attachments(self, cr, uid, lead_id, attachments, context=None):
         if context is None:
@@ -603,6 +682,75 @@ class SomLeadWww(osv.osv_memory):
             prefix_res = phone_prefix_o.search(cursor, uid, [('name', '=', parts[0])], limit=1)
             return prefix_res and prefix_res[0] or None, parts[1]
         return None, phone_full
+
+    def sign_lead(self, cr, uid, lead_id, cups, context=None):
+        if context is None:
+            context = {}
+
+        lead_o = self.pool.get('giscedata.crm.lead')
+        lead_data = lead_o.read(cr, uid, lead_id, ['cups'], context=context)
+        lead_cups = (lead_data.get('cups') or '').strip().upper()
+        requested_cups = (cups or '').strip().upper()
+
+        if not requested_cups or lead_cups != requested_cups:
+            raise osv.except_osv(
+                'Error',
+                'Lead {} does not match CUPS {}'.format(lead_id, cups)
+            )
+
+        ctx = context.copy()
+        ctx['delivery_type'] = 'url'
+        ctx['provider'] = 'signaturit'
+
+        state, errors = lead_o.check_start_signature_process(cr, uid, [lead_id], context=ctx)
+        if state != 'end':
+            raise osv.except_osv('Error', errors)
+
+        # `start_signature_process` creates signature artifacts with admin-only
+        # permissions in this legacy flow, so we keep the original user id while
+        # temporarily elevating the group context.
+        with Sudo(uid=uid, gid=0):
+            with self.api.db.cursor() as sign_cursor:
+                process_id = lead_o.start_signature_process(
+                    sign_cursor, uid, [lead_id], context=ctx
+                )
+
+        if not process_id:
+            raise osv.except_osv(
+                'Error',
+                'Signature process could not be started for lead {}'.format(lead_id)
+            )
+
+        process_o = self.pool.get('giscedata.signatura.process')
+        timeout_seconds = 30.0
+        poll_interval = 0.2
+        deadline = time.time() + timeout_seconds
+        signature_url = False
+
+        while time.time() < deadline:
+            process_data = process_o.read(
+                cr, uid, process_id, ['signature_url', 'status'], context=context
+            )
+            signature_url = process_data.get('signature_url')
+            if signature_url:
+                break
+            if process_data.get('status') in self._SIGNATURE_ERROR_STATUSES:
+                raise osv.except_osv(
+                    'Error',
+                    (
+                        'Signature process failed before URL generation '
+                        '(process_id={}, status={})'
+                    ).format(process_id, process_data.get('status'))
+                )
+            time.sleep(poll_interval)
+
+        if not signature_url:
+            raise osv.except_osv(
+                'Error',
+                'Timeout waiting signature URL (process_id={})'.format(process_id)
+            )
+
+        return {'url': signature_url}
 
 
 SomLeadWww()
