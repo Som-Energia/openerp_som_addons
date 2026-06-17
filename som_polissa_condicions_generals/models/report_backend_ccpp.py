@@ -559,9 +559,6 @@ class ReportBackendCondicionsParticulars(ReportBackend):
             res['pricelists'].append(pricelist)
 
         coeficient_k = False
-<<<<<<< HEAD
-        fp_k = _get_fp_k(ctx)
-=======
         ctx_global = ctx.copy()
         if not pol.fiscal_position_id and not lead:
             if iva_10_active and pol.potencia <= 10 and today_str >= start_date_iva_10 and today_str <= end_date_iva_10:  # noqa: E501
@@ -570,7 +567,6 @@ class ReportBackendCondicionsParticulars(ReportBackend):
                 )[1]
                 ctx_global.update({'force_fiscal_position': fp_id, 'iva10': True})
         fp_k = _get_fp_k(ctx_global)
->>>>>>> origin/add_payment_card_in_lead
         res['mostra_indexada'] = False
         if (polissa.mode_facturacio == 'index' and not modcon_pendent_periodes) or modcon_pendent_indexada:  # noqa: E501
             res['mostra_indexada'] = True
