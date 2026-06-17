@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+    <data>
+        <record id="action_simulation_annual_coeff" model="ir.actions.act_window">
+            <field name="name">Simulation coefficients</field>
+            <field name="res_model">som.annual.coefficient</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="view_id" ref="view_simulation_annual_coeff_tree"/>
+        </record>
+
+        <record id="action_simulation_avg_prices" model="ir.actions.act_window">
+            <field name="name">Simulation average monthly prices</field>
+            <field name="res_model">som.last.month.average.price</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="view_id" ref="view_simulation_avg_price_tree"/>
+        </record>
+
+         <record id="action_simulation_annual_consumption" model="ir.actions.act_window">
+            <field name="name">Simulation annual consumption estimates</field>
+            <field name="res_model">som.annual.consumption.estimate</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="view_id" ref="view_simulation_annual_consumption_estimate_tree"/>
+        </record>
+
+        <menuitem id="menu_simulation_www_root" name="Simulation WWW" parent="base.menu_config" groups="som_webforms_helpers.group_webforms_helpers_config_editor"/>
+        <menuitem id="menu_simulation_annual_coeff" name="Annual coefficients" parent="som_webforms_helpers.menu_simulation_www_root" action="action_simulation_annual_coeff" groups="som_webforms_helpers.group_webforms_helpers_config_editor"/>
+        <menuitem id="menu_simulation_avg_prices" name="Average prices" parent="som_webforms_helpers.menu_simulation_www_root" action="action_simulation_avg_prices" groups="som_webforms_helpers.group_webforms_helpers_config_editor"/>
+        <menuitem id="menu_simulation_annual_consumption" name="Annual consumption estimates" parent="som_webforms_helpers.menu_simulation_www_root" action="action_simulation_annual_consumption" groups="som_webforms_helpers.group_webforms_helpers_config_editor"/>
+    </data>
+</openerp>

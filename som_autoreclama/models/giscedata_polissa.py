@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+from __future__ import absolute_import
+
 from osv import osv, fields
 from tools.translate import _
 from datetime import datetime, date, timedelta
@@ -8,6 +10,15 @@ class GiscedataPolissa(osv.osv):
 
     _name = "giscedata.polissa"
     _inherit = "giscedata.polissa"
+
+    def _read_autoreclama_base_data(self, cursor, uid, id, context=None):
+        return self.read(
+            cursor,
+            uid,
+            id,
+            ["data_ultima_lectura_f1", "data_baixa", "data_alta", "state"],
+            context,
+        )
 
     def som_autoreclama_add_to_info_gestio_endarrerida(self, cursor, uid, pol_id, params, context=None):  # noqa: E501
         data = self.read(cursor, uid, pol_id, ['info_gestio_endarrerida'])
@@ -23,21 +34,21 @@ class GiscedataPolissa(osv.osv):
         self.write(cursor, uid, pol_id, {'info_gestio_endarrerida': line + text})
 
     def get_autoreclama_data(self, cursor, uid, id, namespace, context=None):
-        vals = self._get_autoreclama_data_common(cursor, uid, id, context=context)
+        base_data = self._read_autoreclama_base_data(cursor, uid, id, context=context)
+        vals = self._get_autoreclama_data_common(
+            cursor, uid, id, context=context, data=base_data
+        )
         if namespace == "polissa":
-            vals.update(self._get_autoreclama_data_006(cursor, uid, id, context=context))
+            vals.update(self._get_autoreclama_data_006(
+                cursor, uid, id, context=context, data=base_data
+            ))
         if namespace == "polissa009":
             vals.update(self._get_autoreclama_data_009(cursor, uid, id, context=context))
         return vals
 
-    def _get_autoreclama_data_common(self, cursor, uid, id, context=None):
-        data = self.read(
-            cursor,
-            uid,
-            id,
-            ["data_ultima_lectura_f1", "data_baixa", "state"],
-            context,
-        )
+    def _get_autoreclama_data_common(self, cursor, uid, id, context=None, data=None):
+        if data is None:
+            data = self._read_autoreclama_base_data(cursor, uid, id, context=context)
 
         baixa = data['state'] == 'baixa'
         if data["data_ultima_lectura_f1"] and data["data_baixa"]:
@@ -56,17 +67,12 @@ class GiscedataPolissa(osv.osv):
             'baixa_facturada': baixa and facturada,
         }
 
-    def _get_autoreclama_data_006(self, cursor, uid, id, context=None):
+    def _get_autoreclama_data_006(self, cursor, uid, id, context=None, data=None):
         atc_obj = self.pool.get("giscedata.atc")
         data_obj = self.pool.get("ir.model.data")
 
-        data = self.read(
-            cursor,
-            uid,
-            id,
-            ["data_ultima_lectura_f1", "data_alta", "state"],
-            context,
-        )
+        if data is None:
+            data = self._read_autoreclama_base_data(cursor, uid, id, context=context)
 
         if data['data_ultima_lectura_f1']:
             last_date = data['data_ultima_lectura_f1']
@@ -80,7 +86,9 @@ class GiscedataPolissa(osv.osv):
             days_since_last_f1 = 0
 
         history_obj = self.pool.get("som.autoreclama.state.history.polissa")
-        h_ids = history_obj.search(cursor, uid, [("polissa_id", "=", id)])
+        h_ids = history_obj.search(
+            cursor, uid, [("polissa_id", "=", id), ("end_date", "=", False)], limit=1
+        )
 
         days_since_current_cacr1006 = 0
         if h_ids:
@@ -119,10 +127,16 @@ class GiscedataPolissa(osv.osv):
             review_state_id = data_obj.get_object_reference(
                 cursor, uid, "som_autoreclama", "review_state_workflow_polissa"
             )[1]
-            h_ids = history_obj.search(cursor, uid, [
-                ("polissa_id", "=", id),
-                ("state_id", "=", review_state_id),
-            ])
+            h_ids = history_obj.search(
+                cursor,
+                uid,
+                [
+                    ("polissa_id", "=", id),
+                    ("state_id", "=", review_state_id),
+                ],
+                limit=1,
+                order="id desc",
+            )
             if h_ids:
                 last_date_review = history_obj.read(
                     cursor, uid, h_ids[0], ['change_date']
@@ -178,7 +192,9 @@ class GiscedataPolissa(osv.osv):
         invoicing_cyles_with_estimate_readings = len(reading_ids)
 
         history_obj = self.pool.get("som.autoreclama.state.history.polissa009")
-        h_ids = history_obj.search(cursor, uid, [("polissa_id", "=", id)])
+        h_ids = history_obj.search(
+            cursor, uid, [("polissa_id", "=", id), ("end_date", "=", False)], limit=1
+        )
 
         days_since_current_cacr1009 = 0
         if h_ids:
@@ -217,10 +233,16 @@ class GiscedataPolissa(osv.osv):
             review_state_id = data_obj.get_object_reference(
                 cursor, uid, "som_autoreclama", "review_state_workflow_polissa009"
             )[1]
-            h_ids = history_obj.search(cursor, uid, [
-                ("polissa_id", "=", id),
-                ("state_id", "=", review_state_id),
-            ])
+            h_ids = history_obj.search(
+                cursor,
+                uid,
+                [
+                    ("polissa_id", "=", id),
+                    ("state_id", "=", review_state_id),
+                ],
+                limit=1,
+                order="id desc",
+            )
             if h_ids:
                 last_date_review = history_obj.read(
                     cursor, uid, h_ids[0], ['change_date']
@@ -342,7 +364,12 @@ class GiscedataPolissa(osv.osv):
         result = dict.fromkeys(ids, False)
         fields_to_read = ["state_id", "change_date", "polissa_id"]
         for id in ids:
-            res = history_obj.search(cursor, uid, [("polissa_id", "=", id)])
+            res = history_obj.search(
+                cursor,
+                uid,
+                [("polissa_id", "=", id), ("end_date", "=", False)],
+                limit=1,
+            )
             if res:
                 # We consider the last record the first one due to order
                 # statement in the model definition.

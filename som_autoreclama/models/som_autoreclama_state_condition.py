@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+from __future__ import absolute_import
+
 from osv import osv, fields
 from tools.translate import _
 
@@ -22,9 +24,8 @@ class SomAutoreclamaStateCondition(osv.osv):
         ("2_009_in_a_row", _("Dues 009 tancades seguides en X dies sense lectures reals")),
     ]
 
-    def fit_condition(self, cursor, uid, id, data, namespace, context=None):
+    def fit_condition_data(self, cond_data, data, namespace):
         if namespace == "polissa":
-            cond_data = self.read(cursor, uid, id, ["days", "condition_code"], context=context)
             if cond_data['condition_code'] == 'noF1':
                 return data["days_without_F1"] > cond_data["days"]
             if cond_data['condition_code'] == 'F1ok':
@@ -39,7 +40,6 @@ class SomAutoreclamaStateCondition(osv.osv):
                     and data["CACR1006s_in_last_conf_days"] >= 2
                 )
         if namespace == "atc":
-            cond_data = self.read(cursor, uid, id, ["subtype_id", "days"], context=context)
             return (
                 data["subtipus_id"] == cond_data["subtype_id"][0]
                 and data["distri_days"] >= cond_data["days"]
@@ -47,7 +47,6 @@ class SomAutoreclamaStateCondition(osv.osv):
                 and data["state"] == "pending"
             )
         if namespace == "polissa009":
-            cond_data = self.read(cursor, uid, id, ["days", "condition_code"], context=context)
             if cond_data['condition_code'] == 'CACR1009closed':
                 return data["days_since_current_CACR1009_closed"] > cond_data["days"]
             if cond_data['condition_code'] == '2_009_in_a_row':
@@ -61,6 +60,18 @@ class SomAutoreclamaStateCondition(osv.osv):
                 return data["invoicing_cyles_with_estimate_readings"] < cond_data["days"]
             if cond_data['condition_code'] == 'oldPolissa':
                 return data["days_since_baixa"] >= cond_data["days"] or data["baixa_facturada"]
+        return False
+
+    def fit_condition(self, cursor, uid, id, data, namespace, context=None):
+        if namespace == "polissa":
+            cond_data = self.read(cursor, uid, id, ["days", "condition_code"], context=context)
+            return self.fit_condition_data(cond_data, data, namespace)
+        if namespace == "atc":
+            cond_data = self.read(cursor, uid, id, ["subtype_id", "days"], context=context)
+            return self.fit_condition_data(cond_data, data, namespace)
+        if namespace == "polissa009":
+            cond_data = self.read(cursor, uid, id, ["days", "condition_code"], context=context)
+            return self.fit_condition_data(cond_data, data, namespace)
         return False
 
     def get_string(self, cursor, uid, cnd_id):

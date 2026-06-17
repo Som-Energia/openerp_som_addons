@@ -14,12 +14,18 @@ services:
       interval: 5s
       timeout: 5s
       retries: 20
+    ports:
+      - "5432:5432"
 
   mongo:
     image: mongo:3.0
+    ports:
+      - "27017:27017"
 
   redis:
     image: redis:5.0
+    ports:
+      - "6379:6379"
 
   erp-runtime:
     image: "${ERP_RUNTIME_IMAGE:-harbor.somenergia.coop/erp/openerp:latest}"
