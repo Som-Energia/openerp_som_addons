@@ -42,6 +42,79 @@ class SomAutoreclamaStateUpdater(osv.osv_memory):
 
     _name = "som.autoreclama.state.updater"
 
+    def _rollback_cursor(self, cursor):
+        if cursor:
+            cursor.rollback()
+
+    def _ensure_updater_config_context(self, cursor, uid, context=None):
+        if context is None:
+            context = {}
+
+        cfg_obj = self.pool.get('res.config')
+        if 'days_ago_R1006' not in context:
+            context['days_ago_R1006'] = int(cfg_obj.get(
+                cursor, uid, "som_autoreclama_2_006_in_a_row_days_ago", "120")
+            )
+        if 'days_ago_R1009' not in context:
+            context['days_ago_R1009'] = int(cfg_obj.get(
+                cursor, uid, "som_autoreclama_2_009_in_a_row_days_ago", "120")
+            )
+        return context
+
+    def _get_condition_ids(self, cursor, uid, state_id, namespace, context=None):
+        if not context:
+            context = {}
+
+        condition_cache = context.setdefault('_autoreclama_condition_cache', {})
+        cache_key = state_id
+        if cache_key not in condition_cache:
+            cond_obj = self.pool.get("som.autoreclama.state.condition")
+            condition_cache[cache_key] = cond_obj.search(
+                cursor,
+                uid,
+                [
+                    ("state_id", "=", state_id),
+                    ("active", "=", True),
+                ],
+                order="priority",
+                context=context,
+            )
+        return condition_cache[cache_key]
+
+    def _get_condition_string(self, cursor, uid, condition_id, context=None):
+        if not condition_id:
+            return ""
+        if not context:
+            context = {}
+
+        condition_string_cache = context.setdefault(
+            '_autoreclama_condition_string_cache', {}
+        )
+        if condition_id not in condition_string_cache:
+            cnd_obj = self.pool.get("som.autoreclama.state.condition")
+            condition_string_cache[condition_id] = cnd_obj.get_string(
+                cursor, uid, condition_id
+            )
+        return condition_string_cache[condition_id]
+
+    def _get_condition_data(self, cursor, uid, condition_id, context=None):
+        if not context:
+            context = {}
+
+        condition_data_cache = context.setdefault(
+            '_autoreclama_condition_data_cache', {}
+        )
+        if condition_id not in condition_data_cache:
+            cond_obj = self.pool.get("som.autoreclama.state.condition")
+            condition_data_cache[condition_id] = cond_obj.read(
+                cursor,
+                uid,
+                condition_id,
+                ["days", "condition_code", "subtype_id", "next_state_id"],
+                context=context,
+            )
+        return condition_data_cache[condition_id]
+
     def get_atc_candidates_to_update(self, cursor, uid, context=None):
         atc_obj = self.pool.get("giscedata.atc")
         search_params = [
@@ -159,31 +232,38 @@ class SomAutoreclamaStateUpdater(osv.osv_memory):
         action = u'/action?'
         return u'{}{}{}'.format(base_url, action, url_params)
 
-    def get_review_states(self, cursor, uid, namespace):
-        data_obj = self.pool.get("ir.model.data")
-        review_state_id = data_obj.get_object_reference(
-            cursor, uid, "som_autoreclama", "review_state_workflow_polissa"
-        )[1]
-        review_stat009_id = data_obj.get_object_reference(
-            cursor, uid, "som_autoreclama", "review_state_workflow_polissa009"
-        )[1]
-
+    def get_review_states(self, cursor, uid, namespace, context=None):
         if namespace == 'atc':
             return []
+
+        if not context:
+            context = {}
+
+        review_states_cache = context.setdefault('_autoreclama_review_states_cache', {})
+        if namespace in review_states_cache:
+            return review_states_cache[namespace]
+
+        data_obj = self.pool.get("ir.model.data")
         if namespace == 'polissa':
-            return [review_state_id]
-        if namespace == 'polissa009':
-            return [review_stat009_id]
-        return []
+            semantic_id = "review_state_workflow_polissa"
+        elif namespace == 'polissa009':
+            semantic_id = "review_state_workflow_polissa009"
+        else:
+            review_states_cache[namespace] = []
+            return []
+
+        review_state_id = data_obj.get_object_reference(
+            cursor, uid, "som_autoreclama", semantic_id
+        )[1]
+        review_states_cache[namespace] = [review_state_id]
+        return review_states_cache[namespace]
 
     def update_items_if_possible(self, cursor, uid, ids, namespace, verbose=True, context=None):
-        cnd_obj = self.pool.get("som.autoreclama.state.condition")
-
         updated = []
         not_updated = []
         errors = []
         reviews = []
-        review_states = self.get_review_states(cursor, uid, namespace)
+        review_states = self.get_review_states(cursor, uid, namespace, context)
 
         block_name = _namespaces[namespace]['block_name']
         msg = _("Accions {}\n").format(block_name)
@@ -199,9 +279,11 @@ class SomAutoreclamaStateUpdater(osv.osv_memory):
                 result, condition_id, message = self.update_item_if_possible(
                     new_cursor, uid, item_id, namespace, context
                 )
-                item_name = self.get_item_name(new_cursor, uid, item_id, namespace, context)
                 if result:
                     updated.append(item_id)
+                    item_name = self.get_item_name(
+                        new_cursor, uid, item_id, namespace, context
+                    )
                     next_state_id, next_state = self.get_autoreclama_state_name(
                         new_cursor, uid, item_id, namespace, context
                     )
@@ -210,7 +292,7 @@ class SomAutoreclamaStateUpdater(osv.osv_memory):
                         item_name,
                         actual_state,
                         next_state,
-                        cnd_obj.get_string(new_cursor, uid, condition_id),
+                        self._get_condition_string(new_cursor, uid, condition_id, context),
                     )
                     msg += _(" - {}\n").format(message)
                     if next_state_id in review_states:
@@ -218,23 +300,35 @@ class SomAutoreclamaStateUpdater(osv.osv_memory):
                 elif result is False:
                     not_updated.append(item_id)
                     if verbose:
+                        item_name = self.get_item_name(
+                            new_cursor, uid, item_id, namespace, context
+                        )
                         msg += _(
                             "{} amb id {} no li toca canviar d'estat, estat actual: {}\n"
                         ).format(_namespaces[namespace]['name'], item_name, actual_state)
                         msg += _(" - {}\n").format(message)
                 else:
+                    self._rollback_cursor(new_cursor)
                     errors.append(item_id)
+                    item_name = self.get_item_name(
+                        new_cursor, uid, item_id, namespace, context
+                    )
                     msg += _(
                         "{} amb id {} no ha canviat d'estat per error, estat actual: {} => condició {}\n"  # noqa: E501
                     ).format(
                         _namespaces[namespace]['name'],
                         item_name,
                         actual_state,
-                        cnd_obj.get_string(new_cursor, uid, condition_id),
+                        self._get_condition_string(new_cursor, uid, condition_id, context),
                     )
                     msg += _(" - {}\n").format(message)
+                    continue
 
                 new_cursor.commit()
+            except Exception as e:
+                if new_cursor:
+                    self._rollback_cursor(new_cursor)
+                raise e
             finally:
                 if new_cursor:
                     new_cursor.close()
@@ -278,20 +372,12 @@ class SomAutoreclamaStateUpdater(osv.osv_memory):
         return updated, not_updated, errors, msg, summary
 
     def update_item_if_possible(self, cursor, uid, item_id, namespace, context=None):
-        if not context:
-            context = {}
+        context = self._ensure_updater_config_context(cursor, uid, context)
 
         item_obj = self.pool.get(_namespaces[namespace]['model'])
         history_obj = self.pool.get(_namespaces[namespace]['history_model'])
         state_obj = self.pool.get("som.autoreclama.state")
         cond_obj = self.pool.get("som.autoreclama.state.condition")
-        cfg_obj = self.pool.get('res.config')
-        context['days_ago_R1006'] = int(cfg_obj.get(
-            cursor, uid, "som_autoreclama_2_006_in_a_row_days_ago", "120")
-        )
-        context['days_ago_R1009'] = int(cfg_obj.get(
-            cursor, uid, "som_autoreclama_2_009_in_a_row_days_ago", "120")
-        )
         item_data = item_obj.get_autoreclama_data(cursor, uid, item_id, namespace, context)
 
         autoreclama_state = _namespaces[namespace]['state_field']
@@ -301,26 +387,18 @@ class SomAutoreclamaStateUpdater(osv.osv_memory):
         else:
             return False, None, _(u"Sense estat d'autoreclama inicial")
 
-        cond_ids = cond_obj.search(
-            cursor,
-            uid,
-            [
-                ("state_id", "=", autoreclama_state_id),
-                ("active", "=", True),
-            ],
-            order="priority",
-            context=context,
+        cond_ids = self._get_condition_ids(
+            cursor, uid, autoreclama_state_id, namespace, context
         )
 
         do_not_execute = context and context.get("search_only", False)
         for cond_id in cond_ids:
-            if cond_obj.fit_condition(cursor, uid, cond_id, item_data, namespace):
+            cond_data = self._get_condition_data(cursor, uid, cond_id, context)
+            if cond_obj.fit_condition_data(cond_data, item_data, namespace):
                 if do_not_execute:
                     return True, None, _(u"Testing")
 
-                next_state_id = cond_obj.read(
-                    cursor, uid, cond_id, ["next_state_id"], context=context
-                )["next_state_id"][0]
+                next_state_id = cond_data["next_state_id"][0]
                 action_result = state_obj.do_action(
                     cursor, uid, next_state_id, item_id, namespace, context)
                 if action_result["do_change"]:
@@ -342,6 +420,8 @@ class SomAutoreclamaStateUpdater(osv.osv_memory):
         )
 
     def state_updater(self, cursor, uid, context=None):
+        context = self._ensure_updater_config_context(cursor, uid, context)
+
         atc_ids = self.get_atc_candidates_to_update(cursor, uid, context)
         a, b, c, atc_msg, atc_sum = self.update_items_if_possible(
             cursor, uid, atc_ids, "atc", False, context)
