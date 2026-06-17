@@ -65,9 +65,9 @@ Fem servir un sol `Makefile`, però separat per rols:
   - `dataset-producer-create`
   - `dataset-producer-publish`
 - Consumidor:
-  - `dataset-consumer-prepare`
+  - `dataset-consumer-sync`
   - `dataset-consumer-up`
-  - `dataset-consumer-restore`
+  - `dataset-consumer-up-local`
 
 També es mantenen aliases curts per compatibilitat:
 
@@ -142,19 +142,23 @@ make -C runtime-docker dataset-consumer-all
 
 Això fa:
 ```bash
-# 1) baixa imatge+dataset només si falten
-make -C runtime-docker dataset-consumer-prepare
+# 1) sincronitza imatge i dataset; restaura la base només si el dataset resolt és nou
+make -C runtime-docker dataset-consumer-sync
 
-# 2) restaura la base de dades
-make -C runtime-docker dataset-consumer-restore
-
-# 3) arrenca el compose (consumer pur: sempre pull + recreate)
+# 2) arrenca el compose compartit (consumer pur)
 make -C runtime-docker dataset-consumer-up
 
-# 3) opcional: mode local/dev amb docker-compose.consumer.override.yml
+# 3) opcional: mateix stack i mateixa BD, però amb openerp_som_addons local
 cp runtime-docker/docker-compose.consumer.override.example.yml runtime-docker/docker-compose.consumer.override.yml
 make -C runtime-docker dataset-consumer-up-local
 ```
+
+La sincronització guarda una marca local a `runtime-docker/.cache/consumer-state/dataset-state.env` amb:
+
+- `requested_tag`: el tag demanat (`latest`, `YYYYMMDD`, ...)
+- `resolved_tag`: el `dataset_version` real restaurat
+
+Si falta aquesta marca, `dataset-consumer-sync` assumeix estat desconegut i restaura.
 
 ### Crear dataset
 
@@ -302,7 +306,8 @@ S'inclou un compose dedicat per consumidors:
 Què fa:
 
 - aixeca `postgres` (PG13), `mongo`, `redis` i `erp-runtime` (imatge preconstruida),
-- permet executar un job one-shot `dataset-restore` que baixa `erp/datasets:latest` via ORAS i restaura la base.
+- comparteix el mateix stack i la mateixa BD entre mode empaquetat i mode local,
+- separa `dataset-consumer-sync` del `up`, per evitar refresh o restore accidental a cada arrencada.
 
 Nota sobre `erp-runtime`:
 
@@ -372,20 +377,27 @@ ERP_RUNTIME_IMAGE="harbor.example.com/erp/openerp:latest"
 
 Modes disponibles:
 
-- `dataset-consumer-up`: consumer pur (imatge Harbor, sense mounts locals), amb `--pull always --force-recreate`.
-- `dataset-consumer-up-local`: usa `docker-compose.consumer.override.yml` per mounts locals.
-- `dataset-consumer-refresh`: baixa i recrea stack consumer pur.
+- `dataset-consumer-up`: consumer pur (imatge Harbor, sense mounts locals), sense fer cap sync ni restore.
+- `dataset-consumer-up-local`: usa `docker-compose.consumer.override.yml` per mounts locals sobre el mateix stack i la mateixa BD.
+- `dataset-consumer-sync`: actualitza la imatge si canvia i restaura la BD només quan el dataset resolt és nou.
+- `dataset-consumer-refresh`: recrea el stack consumer pur sense tocar l'estat sincronitzat.
 
 
 ```bash
 cp runtime-docker/.env.consumer.example runtime-docker/.env.consumer
 # edita credencials Harbor i valors necessaris
 
-make -C runtime-docker dataset-consumer-prepare
+make -C runtime-docker dataset-consumer-sync
 make -C runtime-docker dataset-consumer-up
 ```
 
-### Carregar el dataset més recent a PostgreSQL local
+### Forçar una restauració del dataset actual
+
+```bash
+FORCE_RESTORE=1 make -C runtime-docker dataset-consumer-sync
+```
+
+### Carregar manualment el dataset actual a PostgreSQL local
 
 ```bash
 make -C runtime-docker dataset-consumer-restore
@@ -409,6 +421,8 @@ Variables recomanades:
 Troubleshooting ràpid:
 
 - Si el contenidor carrega codi antic tot i fer pull, comprova que no estiguis en mode local (`dataset-consumer-up-local`) amb mounts que tapen `/opt/somenergia/src`.
+
+- Si `dataset-consumer-sync` no restaura quan esperaves, revisa `runtime-docker/.cache/consumer-state/dataset-state.env` per veure quin `resolved_tag` considera aplicat.
 
 - Si veus `artifact erp/openerp:latest not found`, revisa que `ERP_RUNTIME_IMAGE` sigui una referència completa i existent a Harbor.
 - Pots validar la interpolació final amb:
