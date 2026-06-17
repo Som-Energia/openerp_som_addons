@@ -318,6 +318,10 @@
                             %endif
                         %endfor
                     </tr>
+                    <tr>
+                        <td class="bold">${_(u"Contingut preu (potència i energia)")}</td>
+                        <td colspan="6">&nbsp;</td>
+                    </tr>
                     %if prices['auvi']:
                         <%namespace file="/som_polissa_condicions_generals/report/components/auvi.mako" import="auvi"/>
                         ${auvi(polissa, prices, pricelist, False)}
@@ -420,6 +424,14 @@
             %if polissa['te_assignacio_gkwh'] or polissa['mode_facturacio_calculat'] == 'atr':
                 <br/>
                 ${_(u"Els costos dels Serveis d'Ajust tenen un preu horari variable, fixat per Red Eléctrica Española (REE), no inclosos en el terme d'energia.")}
+                %if polissa['mode_facturacio_calculat'] == 'atr':
+                    <br/>
+                    ${_(u"Preu Serveis Ajust amb pèrdues = SA(1) x (1+Perd(2)/100)")}
+                    <br/>
+                    <span class="bold">(1) </span> ${_(u"SA: Costos dels Serveis d'Ajust per resoldre les restriccions tècniques del sistema carregats per Red Eléctrica (REE).")}
+                    <br/>
+                    <span class="bold">(2) </span> ${_(u"Perd: Coeficients de pèrdues regulades de sistema des del punt de generació al punt de consum, segons el valor publicat per REE en el moment de generar la factura.")}
+                %endif
             %endif
         </div>
     </div>
