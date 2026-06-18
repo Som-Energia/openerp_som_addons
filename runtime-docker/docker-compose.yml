@@ -22,6 +22,8 @@ services:
     build:
       context: ..
       dockerfile: runtime-docker/Dockerfile
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     depends_on:
       postgres:
         condition: service_healthy
@@ -38,6 +40,7 @@ services:
       OPENERP_DB_PASSWORD: erp
     ports:
       - "${ERP_XMLRPC_PORT:-8069}:${ERP_XMLRPC_PORT:-8069}"
+      - "${PUDB_RDB_PORT:-6899}:6899"
     healthcheck:
       test:
         [

@@ -29,6 +29,8 @@ services:
 
   erp-runtime:
     image: "${ERP_RUNTIME_IMAGE:-harbor.somenergia.coop/erp/openerp:latest}"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     depends_on:
       postgres:
         condition: service_healthy
@@ -80,6 +82,7 @@ services:
         exec bash /opt/somenergia/src/openerp_som_addons/scripts/start-openerp-server.sh
     ports:
       - "${ERP_XMLRPC_PORT:-8069}:${ERP_XMLRPC_PORT:-8069}"
+      - "${PUDB_RDB_PORT:-6899}:6899"
 
   dataset-restore:
     image: ubuntu:22.04

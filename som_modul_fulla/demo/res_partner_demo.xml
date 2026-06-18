@@ -1,0 +1,14 @@
+<openerp>
+    <data>
+        <record id="res_partner_demo" model="res.partner">
+            <field name="name">Demo Partner</field>
+            <field name="email">demo@partner.com</field>
+            <field name="lang">en_US</field>
+        </record>
+        <record id="res_partner_address_demo3" model="res.partner.address">
+            <field name="name">Demo Address</field>
+            <field name="partner_id" ref="res_partner_demo"/>
+            <field name="type">default</field>
+        </record>
+    </data>
+</openerp>

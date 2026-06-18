@@ -127,7 +127,9 @@
         "ws_transactions",
     ],
     "init_xml": [],
-    "demo_xml": [],
+    "demo_xml": [
+        "demo/res_partner_demo.xml",
+    ],
     "update_xml": [],
     "active": False,
     "installable": True,
