@@ -425,6 +425,58 @@ Aquest flow:
 - executa `--update=<modul>` amb `--stop-after-init` sobre la mateixa BD del consumer,
 - i torna a arrencar `erp-runtime` si abans estava en marxa.
 
+### Debug remot amb PuDB
+
+El runtime publica també el port remot de PuDB (`6899` per defecte) per poder
+entrar al debugger des del host.
+
+Snippet recomanat al codi:
+
+```python
+from pudb.remote import set_trace
+set_trace(host="0.0.0.0", port=6899, term_size=(120, 40))
+```
+
+Abans de disparar el codi, al teu host connecta't al port publicat:
+
+```bash
+telnet 127.0.0.1 6899
+```
+
+Després executa el flow que vulguis depurar, normalment en mode local:
+
+```bash
+make -C runtime-docker dataset-consumer-up-local
+```
+
+Quan l'execució arribi al `set_trace()`, PuDB quedarà esperant la connexió i la
+veuràs a la terminal del `telnet`.
+
+Tecles útils:
+
+- `n`: next
+- `s`: step into
+- `r`: return
+- `c`: continue
+- `q`: quit
+
+Notes:
+
+- Si la imatge consumer actual és anterior a aquest canvi, PuDB encara no hi serà.
+  Rebuilda/publica la imatge runtime o instal·la temporalment `pudb==2019.2`
+  dins del contenidor per la sessió actual.
+- Fem servir `pudb==2019.2` perquè el runtime és Python 2.7.
+- Si vols canviar el port remot, defineix `PUDB_RDB_PORT` a `.env.consumer`.
+
+Instal·lació temporal ràpida de PuDB dins del contenidor actual:
+
+```bash
+make -C runtime-docker dataset-consumer-install-package PACKAGE="pudb==2019.2"
+```
+
+Com que això s'instal·la dins del contenidor viu, si el recrees ho perdràs i ho
+hauràs de tornar a executar.
+
 ### Carregar manualment el dataset actual a PostgreSQL local
 
 ```bash

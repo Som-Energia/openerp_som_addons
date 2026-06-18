@@ -106,6 +106,7 @@ pip install "cachelib<0.2"
 pip install "Mako<1.2"
 pip install "pypdftk<0.5"
 pip install "paramiko<2.8"
+pip install "pudb==2019.2"
 
 if [ "$PYTHON_VERSION" != "2.7" ]; then
 	pip install somutils
