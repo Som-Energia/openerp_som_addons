@@ -40,6 +40,8 @@
     }
     .LogoPpal img {
       display: block;
+      width: 150px;
+      height: auto;
       margin-top: -10px;
     }
     .sotalogo {
@@ -191,7 +193,7 @@
         <div class="LogoPpal">
         <a href="https://www.somenergia.coop" target="_blank">
         <!-- 150px mida logo -->
-        <img src="${addons_path}/som_inversions/report/logo_som2.png" alt="Logo Som Energia" width="150" height="75" /></a><br>
+        <img src="${addons_path}/som_inversions/report/logo_som2.png" alt="Logo Som Energia" /></a><br>
         <p class="sotalogo"><b>${data.somenergia.partner_name}</b><br>${_(u"CIF:")} ${data.somenergia.partner_vat.replace('ES','')}<br>${_(u"Domicili:")} ${data.somenergia.address_street} ${data.somenergia.address_zip} - ${data.somenergia.address_city}<br>
             ${_(u"Adreça electrònica:")} <a href="mailto:aporta@somenergia.coop">${_(u"aporta@somenergia.coop")}</a>
     </div>
