@@ -152,9 +152,30 @@ class TestLeadWwwCreation(BaseSomLeadWwwTest):
         # Check that the representative is created and correctly linked
         rep_id = partner_o.search(self.cursor, self.uid, [("vat", "=", "ES40323835M")])[0]
         self.assertEqual(lead.polissa_id.titular.representante_id.id, rep_id)
+        self.assertEqual(lead.polissa_id.titular.representante_id.name, "Palotes, Pepito")
         self.assertEqual(lead.polissa_id.titular.name, "PEC COOP SCCL")
         self.mock_subscribe_member.assert_called()
         self.mock_unsubscribe_customer.assert_called()
+
+    def test_create_simple_juridic_lead_keeps_existing_representative_format(self):
+        www_lead_o = self.get_model("som.lead.www")
+        lead_o = self.get_model("giscedata.crm.lead")
+        partner_o = self.get_model("res.partner")
+
+        values = self._basic_values
+        values["new_member_info"]["is_juridic"] = True
+        values["new_member_info"]["vat"] = "C81837452"
+        values["new_member_info"]["name"] = "PEC COOP SCCL"
+        values["new_member_info"]["proxy_name"] = "Palotes, Pepito"
+        values["new_member_info"]["proxy_vat"] = "40323835M"
+
+        result = www_lead_o.create_lead(self.cursor, self.uid, values)
+        www_lead_o.activate_lead(self.cursor, self.uid, result["lead_id"], context={"sync": True})
+
+        lead = lead_o.browse(self.cursor, self.uid, result["lead_id"])
+        rep_id = partner_o.search(self.cursor, self.uid, [("vat", "=", "ES40323835M")])[0]
+        self.assertEqual(lead.polissa_id.titular.representante_id.id, rep_id)
+        self.assertEqual(lead.polissa_id.titular.representante_id.name, "Palotes, Pepito")
 
     def test_create_simple_juridic_lead_with_existing_representative(self):
         www_lead_o = self.get_model("som.lead.www")
