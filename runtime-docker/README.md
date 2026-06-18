@@ -68,6 +68,7 @@ Fem servir un sol `Makefile`, però separat per rols:
   - `dataset-consumer-sync`
   - `dataset-consumer-up`
   - `dataset-consumer-up-local`
+  - `dataset-consumer-update-module`
 
 També es mantenen aliases curts per compatibilitat:
 
@@ -396,6 +397,33 @@ make -C runtime-docker dataset-consumer-up
 ```bash
 FORCE_RESTORE=1 make -C runtime-docker dataset-consumer-sync
 ```
+
+### Actualitzar un mòdul al runtime consumidor
+
+Mode empaquetat:
+
+```bash
+make -C runtime-docker dataset-consumer-update-module MODULE=som_polissa
+```
+
+Mode local amb `openerp_som_addons` mapat:
+
+```bash
+make -C runtime-docker dataset-consumer-update-module MODULE=som_polissa LOCAL=1
+```
+
+També pots actualitzar diversos mòduls:
+
+```bash
+make -C runtime-docker dataset-consumer-update-module MODULES=som_polissa,som_switching
+```
+
+Aquest flow:
+
+- assegura `postgres`, `mongo` i `redis`,
+- atura temporalment `erp-runtime` si estava corrent,
+- executa `--update=<modul>` amb `--stop-after-init` sobre la mateixa BD del consumer,
+- i torna a arrencar `erp-runtime` si abans estava en marxa.
 
 ### Carregar manualment el dataset actual a PostgreSQL local
 

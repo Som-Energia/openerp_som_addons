@@ -1,6 +1,6 @@
 SHELL := /usr/bin/env bash
 
-.PHONY: dataset-producer-create dataset-producer-dump dataset-producer-publish dataset-producer-all dataset-producer-legacy-all dataset-consumer-all dataset-consumer-sync dataset-consumer-prepare dataset-consumer-pull dataset-consumer-restore dataset-consumer-up dataset-consumer-up-local dataset-consumer-refresh dataset-smoke-vpn runtime-build-prewarmed runtime-export-prewarmed-db runtime-publish-prewarmed dataset-create dataset-dump dataset-publish dataset-pull dataset-restore
+.PHONY: dataset-producer-create dataset-producer-dump dataset-producer-publish dataset-producer-all dataset-producer-legacy-all dataset-consumer-all dataset-consumer-sync dataset-consumer-prepare dataset-consumer-pull dataset-consumer-restore dataset-consumer-up dataset-consumer-up-local dataset-consumer-update-module dataset-consumer-refresh dataset-smoke-vpn runtime-build-prewarmed runtime-export-prewarmed-db runtime-publish-prewarmed dataset-create dataset-dump dataset-publish dataset-pull dataset-restore
 
 dataset-producer-create:
 	bash -lc 'set -euo pipefail; [ -f .env.producer ] || { echo ".env.producer is required" >&2; exit 1; }; while IFS= read -r line; do case "$$line" in ""|\#*) continue;; esac; export "$$line"; done < ./.env.producer; ./scripts/producer_create_db.sh'
@@ -35,6 +35,9 @@ dataset-consumer-up:
 dataset-consumer-up-local:
 	bash -lc 'set -euo pipefail; [ -f .env.consumer ] || { echo ".env.consumer is required" >&2; exit 1; }; [ -f ./docker-compose.consumer.override.yml ] || { echo "docker-compose.consumer.override.yml is required for local mode" >&2; exit 1; }; docker compose --env-file ./.env.consumer -f ./docker-compose.consumer.yml -f ./docker-compose.consumer.override.yml up --force-recreate postgres mongo redis erp-runtime'
 
+dataset-consumer-update-module:
+	bash -lc 'set -euo pipefail; [ -f .env.consumer ] || { echo ".env.consumer is required" >&2; exit 1; }; if [ "$(or $(LOCAL),0)" = "1" ]; then [ -f ./docker-compose.consumer.override.yml ] || { echo "docker-compose.consumer.override.yml is required for local mode" >&2; exit 1; }; fi; while IFS= read -r line; do case "$$line" in ""|\#*) continue;; esac; export "$$line"; done < ./.env.consumer; CONSUMER_LOCAL_MODE="$(or $(LOCAL),0)" ./scripts/update_runtime_module.sh'
+
 dataset-consumer-refresh:
 	bash -lc 'set -euo pipefail; [ -f .env.consumer ] || { echo ".env.consumer is required" >&2; exit 1; }; docker compose --env-file ./.env.consumer -f ./docker-compose.consumer.yml down; docker compose --env-file ./.env.consumer -f ./docker-compose.consumer.yml up --force-recreate postgres mongo redis erp-runtime'
 
@@ -64,6 +67,8 @@ consumer-prepare: dataset-consumer-prepare
 consumer-sync: dataset-consumer-sync
 
 consumer-up: dataset-consumer-up
+
+consumer-update-module: dataset-consumer-update-module
 
 consumer-all: dataset-consumer-all
 
