@@ -382,6 +382,7 @@ Modes disponibles:
 - `dataset-consumer-up-local`: usa `docker-compose.consumer.override.yml` per mounts locals sobre el mateix stack i la mateixa BD.
 - `dataset-consumer-sync`: actualitza la imatge si canvia i restaura la BD només quan el dataset resolt és nou.
 - `dataset-consumer-refresh`: recrea el stack consumer pur sense tocar l'estat sincronitzat.
+- `WEBCLIENT=1`: afegeix el webclient de release al mateix stack consumidor.
 
 
 ```bash
@@ -391,6 +392,21 @@ cp runtime-docker/.env.consumer.example runtime-docker/.env.consumer
 make -C runtime-docker dataset-consumer-sync
 make -C runtime-docker dataset-consumer-up
 ```
+
+Amb webclient:
+
+```bash
+make -C runtime-docker dataset-consumer-up WEBCLIENT=1
+```
+
+Mode local amb `openerp_som_addons` mapat i webclient:
+
+```bash
+make -C runtime-docker dataset-consumer-up-local WEBCLIENT=1
+```
+
+El webclient es publica a `http://localhost:${WEBCLIENT_PORT:-8081}` i el seu
+`/api` fa proxy directament al `msgpack` de l'`erp-runtime` del mateix stack.
 
 ### Forçar una restauració del dataset actual
 
@@ -497,10 +513,17 @@ Variables recomanades:
 - `DATASET_TAG` (default: `latest`)
 - `RESET_ADMIN_LOGIN` (default: `admin`)
 - `RESET_ADMIN_PASSWORD` (recomanat: `admin` en entorns locals de demo)
+- `WEBCLIENT_PORT` (default: `8081`, només si `WEBCLIENT=1`)
+- `WEBCLIENT_CHECK_INTERVAL` (default: `21600`, només si `WEBCLIENT=1`)
+- `WEBCLIENT_REPO` (default: `gisce/webclient`, només si `WEBCLIENT=1`)
+- `ERP_MSGPACK_PORT` (default: `8068`, només si `WEBCLIENT=1`)
+- `OPENERP_SECRET` (default: `runtime-docker-secret`; necessari perquè el webclient pugui obtenir tokens al login)
 
 Troubleshooting ràpid:
 
 - Si el contenidor carrega codi antic tot i fer pull, comprova que no estiguis en mode local (`dataset-consumer-up-local`) amb mounts que tapen `/opt/somenergia/src`.
+
+- Si el webclient no arrenca, comprova que `GITHUB_TOKEN` tingui accés al repo privat `gisce/webclient` i mira els logs del servei `webclient`.
 
 - Si `dataset-consumer-sync` no restaura quan esperaves, revisa `runtime-docker/.cache/consumer-state/dataset-state.env` per veure quin `resolved_tag` considera aplicat.
 

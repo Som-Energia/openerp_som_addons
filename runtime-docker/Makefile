@@ -1,5 +1,9 @@
 SHELL := /usr/bin/env bash
 
+WEBCLIENT_COMPOSE_FILE := $(if $(filter 1,$(WEBCLIENT)),-f ./docker-compose.consumer.webclient.yml,)
+WEBCLIENT_SERVICE := $(if $(filter 1,$(WEBCLIENT)),webclient,)
+WEBCLIENT_BUILD_FLAG := $(if $(filter 1,$(WEBCLIENT)),--build,)
+
 .PHONY: dataset-producer-create dataset-producer-dump dataset-producer-publish dataset-producer-all dataset-producer-legacy-all dataset-consumer-all dataset-consumer-sync dataset-consumer-prepare dataset-consumer-pull dataset-consumer-restore dataset-consumer-up dataset-consumer-up-local dataset-consumer-update-module dataset-consumer-install-package dataset-consumer-refresh dataset-smoke-vpn runtime-build-prewarmed runtime-export-prewarmed-db runtime-publish-prewarmed dataset-create dataset-dump dataset-publish dataset-pull dataset-restore
 
 dataset-producer-create:
@@ -30,10 +34,10 @@ dataset-consumer-restore:
 	bash -lc 'set -euo pipefail; [ -f .env.consumer ] || { echo ".env.consumer is required" >&2; exit 1; }; while IFS= read -r line; do case "$$line" in ""|\#*) continue;; esac; export "$$line"; done < ./.env.consumer; COMPOSE_FILE=./docker-compose.consumer.yml DB_SERVICE=postgres ./scripts/restore_dataset.sh'
 
 dataset-consumer-up:
-	bash -lc 'set -euo pipefail; [ -f .env.consumer ] || { echo ".env.consumer is required" >&2; exit 1; }; docker compose --env-file ./.env.consumer -f ./docker-compose.consumer.yml up --force-recreate postgres mongo redis erp-runtime'
+	bash -lc 'set -euo pipefail; [ -f .env.consumer ] || { echo ".env.consumer is required" >&2; exit 1; }; docker compose --env-file ./.env.consumer -f ./docker-compose.consumer.yml $(WEBCLIENT_COMPOSE_FILE) up $(WEBCLIENT_BUILD_FLAG) --force-recreate postgres mongo redis erp-runtime $(WEBCLIENT_SERVICE)'
 
 dataset-consumer-up-local:
-	bash -lc 'set -euo pipefail; [ -f .env.consumer ] || { echo ".env.consumer is required" >&2; exit 1; }; [ -f ./docker-compose.consumer.override.yml ] || { echo "docker-compose.consumer.override.yml is required for local mode" >&2; exit 1; }; docker compose --env-file ./.env.consumer -f ./docker-compose.consumer.yml -f ./docker-compose.consumer.override.yml up --force-recreate postgres mongo redis erp-runtime'
+	bash -lc 'set -euo pipefail; [ -f .env.consumer ] || { echo ".env.consumer is required" >&2; exit 1; }; [ -f ./docker-compose.consumer.override.yml ] || { echo "docker-compose.consumer.override.yml is required for local mode" >&2; exit 1; }; docker compose --env-file ./.env.consumer -f ./docker-compose.consumer.yml -f ./docker-compose.consumer.override.yml $(WEBCLIENT_COMPOSE_FILE) up $(WEBCLIENT_BUILD_FLAG) --force-recreate postgres mongo redis erp-runtime $(WEBCLIENT_SERVICE)'
 
 dataset-consumer-update-module:
 	bash -lc 'set -euo pipefail; [ -f .env.consumer ] || { echo ".env.consumer is required" >&2; exit 1; }; if [ "$(or $(LOCAL),0)" = "1" ]; then [ -f ./docker-compose.consumer.override.yml ] || { echo "docker-compose.consumer.override.yml is required for local mode" >&2; exit 1; }; fi; while IFS= read -r line; do case "$$line" in ""|\#*) continue;; esac; export "$$line"; done < ./.env.consumer; CONSUMER_LOCAL_MODE="$(or $(LOCAL),0)" ./scripts/update_runtime_module.sh'
@@ -42,7 +46,7 @@ dataset-consumer-install-package:
 	bash -lc 'set -euo pipefail; [ -f .env.consumer ] || { echo ".env.consumer is required" >&2; exit 1; }; [ -n "$(PACKAGE)" ] || { echo "PACKAGE is required, for example PACKAGE=\"pudb==2019.2\"" >&2; exit 1; }; docker compose --env-file ./.env.consumer -f ./docker-compose.consumer.yml exec -T erp-runtime bash -lc "pip install \"$(PACKAGE)\""'
 
 dataset-consumer-refresh:
-	bash -lc 'set -euo pipefail; [ -f .env.consumer ] || { echo ".env.consumer is required" >&2; exit 1; }; docker compose --env-file ./.env.consumer -f ./docker-compose.consumer.yml down; docker compose --env-file ./.env.consumer -f ./docker-compose.consumer.yml up --force-recreate postgres mongo redis erp-runtime'
+	bash -lc 'set -euo pipefail; [ -f .env.consumer ] || { echo ".env.consumer is required" >&2; exit 1; }; docker compose --env-file ./.env.consumer -f ./docker-compose.consumer.yml $(WEBCLIENT_COMPOSE_FILE) down; docker compose --env-file ./.env.consumer -f ./docker-compose.consumer.yml $(WEBCLIENT_COMPOSE_FILE) up $(WEBCLIENT_BUILD_FLAG) --force-recreate postgres mongo redis erp-runtime $(WEBCLIENT_SERVICE)'
 
 dataset-smoke-vpn:
 	bash -lc 'set -euo pipefail; [ -f .env.producer ] || { echo ".env.producer is required" >&2; exit 1; }; while IFS= read -r line; do case "$$line" in ""|\#*) continue;; esac; export "$$line"; done < ./.env.producer; ./scripts/smoke_test_dataset_flow.sh'
