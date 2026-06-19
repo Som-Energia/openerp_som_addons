@@ -42,6 +42,10 @@ services:
       GITHUB_TOKEN: ${GITHUB_TOKEN:-}
       OPENERP_DB_USER: ${POSTGRES_USER:-erp}
       OPENERP_DB_PASSWORD: ${POSTGRES_PASSWORD:-erp}
+      OPENERP_MSGPACK: 1
+      OPENERP_MSGPACK_HOST: 0.0.0.0
+      OPENERP_MSGPACK_PORT: ${ERP_MSGPACK_PORT:-8068}
+      OPENERP_SECRET: ${OPENERP_SECRET:-runtime-docker-secret}
       ERP_DATABASE: ${POSTGRES_DB:-erp}
       ERP_XMLRPC_PORT: ${ERP_XMLRPC_PORT:-8069}
       ERP_FOREGROUND: "1"
@@ -126,8 +130,7 @@ services:
         PGPASSWORD="$${POSTGRES_PASSWORD}" pg_restore -h "$${POSTGRES_HOST}" -p "$${POSTGRES_PORT}" -U "$${POSTGRES_USER}" -d "$${POSTGRES_DB}" --clean --if-exists -L /tmp/restore.filtered.list /tmp/restore.dump
         if [ -n "$${RESET_ADMIN_PASSWORD}" ]; then
           PGPASSWORD="$${POSTGRES_PASSWORD}" psql -h "$${POSTGRES_HOST}" -p "$${POSTGRES_PORT}" -U "$${POSTGRES_USER}" -d "$${POSTGRES_DB}" \
-            -v login="$${RESET_ADMIN_LOGIN}" -v password="$${RESET_ADMIN_PASSWORD}" \
-            -c "UPDATE res_users SET password = :'password' WHERE login = :'login';"
+            -c "UPDATE res_users SET password = '$${RESET_ADMIN_PASSWORD}' WHERE login = '$${RESET_ADMIN_LOGIN}';"
         fi
         echo "Dataset restored successfully"
 
