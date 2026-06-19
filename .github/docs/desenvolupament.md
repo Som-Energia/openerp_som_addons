@@ -21,8 +21,10 @@ Seguir [.github/docs/estil.md](estil.md) i [.github/docs/evitar.md](evitar.md).
 Els missatges de commit segueixen el format:
 
 ```
-<emoji> (<modul o context>) Cosa que fa el commit
+<emoji> <description>
 ```
+
+La descripció ha d'estar en anglès, en imperatiu, i no ha d'incloure `feat:`, `fix:` ni cap altre type textual.
 
 Emojis disponibles (basats en [gitmoji](https://gitmoji.dev/)):
 
@@ -51,10 +53,10 @@ Emojis disponibles (basats en [gitmoji](https://gitmoji.dev/)):
 
 Exemples:
 ```
-🐛 (polissa) Fix error en càlcul de factura
-✨ (gurb) Afegir camp assigned_betas_kw al CAU
-♻️ (switching) Refactoritzar _is_m1_closable
-✅ (gurb) Afegir test per a totals de betes
+🐛 fix invoice calculation error
+✨ add assigned_betas_kw field to CAU
+♻️ refactor _is_m1_closable flow
+✅ add tests for beta totals
 ```
 
 ---
