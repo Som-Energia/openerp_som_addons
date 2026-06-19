@@ -416,53 +416,13 @@ class SomLeadWww(osv.osv_memory):
             "error": error_info,
         }
 
-    def activate_lead(self, cr, uid, lead_id, context=None):
-        if context is None:
-            context = {}
-
-        context["create_draft_atr"] = True
-
-        lead_o = self.pool.get("giscedata.crm.lead")
-        soci_obj = self.pool.get("somenergia.soci")
-        rpa_obj = self.pool.get("res.partner.address")
-
-        msg = lead_o.create_entities(cr, uid, lead_id, context=context)
-
-        lead_o.historize_msg(cr, uid, [lead_id], msg, context=context)
-        lead_o.stage_next(cr, uid, [lead_id], context=context)
-
-        try:
-            # Si no és sòcia, subscriu mail a mailchimp com a client sense ser soci
-            partner = lead_o.browse(cr, uid, lead_id).partner_id
-            if not soci_obj.search(cr, uid, [("partner_id", "=", partner.id)]):
-                rpa_obj.subscribe_partner_in_customers_no_members_lists(
-                    cr, uid, partner.id, context=context)
-        except Exception as e:
-            sentry = self.pool.get('sentry.setup')
-            if sentry:
-                sentry.client.captureException()
-            logger = logging.getLogger("openerp.{0}.activate_lead".format(__name__))
-            logger.warning("Error al comunicar amb Mailchimp {}".format(str(e)))
-
-        if context.get("sync"):
-            self._send_activation_mail_if_signature_allows(cr, uid, lead_id, context=context)
-        else:
-            self._send_activation_mail_if_signature_allows_async(cr, uid, lead_id, context=context)
-
-        return True
-
-    @job(queue="poweremail_sender")
-    def _send_activation_mail_if_signature_allows_async(self, cr, uid, lead_id, context=None):
-        if context is None:
-            context = {}
-        self._send_activation_mail_if_signature_allows(cr, uid, lead_id, context=context)
-
-    def _send_activation_mail_if_signature_allows(self, cr, uid, lead_id, context=None):
+    def if_signature_allows(self, cr, uid, lead_id, context=None):
         if context is None:
             context = {}
 
         lead_o = self.pool.get("giscedata.crm.lead")
         ir_model_o = self.pool.get("ir.model.data")
+        sign_process_obj = self.pool.get("giscedata.signatura.process")
         logger = logging.getLogger("openerp.{0}.activate_lead.signature_mail".format(__name__))
 
         attempts = 30
@@ -476,32 +436,15 @@ class SomLeadWww(osv.osv_memory):
             signature_status = lead_data.get('status_firma')
 
             if not signature_process:
-                lead_o._send_mail(cr, uid, lead_id, context=context)
                 return True
 
             if signature_status == self._SIGNATURE_COMPLETED_STATUS:
-                lead_o._send_mail(cr, uid, lead_id, context=context)
                 return True
 
             if signature_status in self._SIGNATURE_ERROR_STATUSES:
-                signature_error_stage_id = ir_model_o.get_object_reference(
-                    cr, uid, "som_leads_polissa", "webform_stage_signature_error"
-                )[1]
-                lead_o.write(
-                    cr, uid, lead_id,
-                    {'stage_id': signature_error_stage_id, 'state': 'pending'},
-                    context=context
-                )
-                lead_o.historize_msg(
-                    cr, uid, [lead_id],
-                    u"SIGNATURE_NOT_COMPLETED: activation e-mail not sent (status={})".format(
-                        signature_status
-                    ),
-                    context=context
-                )
-                cr.commit()
                 return False
 
+            sign_process_obj.update(cr, uid, [signature_process[0]], context=context)
             time.sleep(wait_seconds)
 
         logger.warning(
@@ -522,6 +465,89 @@ class SomLeadWww(osv.osv_memory):
         )
         cr.commit()
         return False
+
+    def activate_lead(self, cr, uid, lead_id, context=None):
+        if context is None:
+            context = {}
+        self.activate_lead_async(cr, uid, lead_id, context=context)
+        return True
+
+    @job(queue="leads")
+    def activate_lead_async(self, cr, uid, lead_id, context=None):
+        if context is None:
+            context = {}
+        self.activate_lead_sync(cr, uid, lead_id, context=context)
+
+    def activate_lead_sync(self, cr, uid, lead_id, context=None):
+        if context is None:
+            context = {}
+
+        lead_o = self.pool.get("giscedata.crm.lead")
+        soci_obj = self.pool.get("somenergia.soci")
+        rpa_obj = self.pool.get("res.partner.address")
+        ir_model_o = self.pool.get("ir.model.data")
+
+        if self.if_signature_allows(cr, uid, lead_id, context=context):
+            context["create_draft_atr"] = True
+            msg = lead_o.create_entities(cr, uid, lead_id, context=context)
+
+            lead_o.historize_msg(cr, uid, [lead_id], msg, context=context)
+            lead_o.stage_next(cr, uid, [lead_id], context=context)
+
+            try:
+                # Si no és sòcia, subscriu mail a mailchimp com a client sense ser soci
+                partner = lead_o.browse(cr, uid, lead_id).partner_id
+                if not soci_obj.search(cr, uid, [("partner_id", "=", partner.id)]):
+                    rpa_obj.subscribe_partner_in_customers_no_members_lists(
+                        cr, uid, partner.id, context=context)
+            except Exception as e:
+                sentry = self.pool.get('sentry.setup')
+                if sentry:
+                    sentry.client.captureException()
+                logger = logging.getLogger("openerp.{0}.activate_lead".format(__name__))
+                logger.warning("Error al comunicar amb Mailchimp {}".format(str(e)))
+
+            if context.get("sync"):
+                self._send_activation_mail_sync(cr, uid, lead_id, context=context)
+            else:
+                self._send_activation_mail_async(cr, uid, lead_id, context=context)
+
+            return True
+        else:
+            logger.warning(
+                "Webform stage error (lead_id=%s)", lead_id
+            )
+            signature_pending_review_stage_id = ir_model_o.get_object_reference(
+                cr, uid, "som_leads_polissa", "webform_stage_error"
+            )[1]
+            lead_o.write(
+                cr, uid, lead_id,
+                {'stage_id': signature_pending_review_stage_id, 'state': 'pending'},
+                context=context
+            )
+            lead_o.historize_msg(
+                cr, uid, [lead_id],
+                u"ERROR: No s'ha pogut activar aquest lead",
+                context=context
+            )
+            return False
+
+    @job(queue="poweremail_sender")
+    def _send_activation_mail_async(self, cr, uid, lead_id, context=None):
+        if context is None:
+            context = {}
+        self._send_activation_mail_sync(cr, uid, lead_id, context=context)
+
+    def _send_activation_mail_sync(self, cr, uid, lead_id, context=None):
+        if context is None:
+            context = {}
+
+        lead_o = self.pool.get("giscedata.crm.lead")
+
+        lead_o._send_mail(cr, uid, lead_id, context=context)
+
+        cr.commit()
+        return True
 
     def _create_attachments(self, cr, uid, lead_id, attachments, context=None):
         if context is None:
