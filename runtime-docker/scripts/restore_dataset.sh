@@ -108,8 +108,9 @@ reset_admin_external() {
   log "Aplicant credencials després del restore per ${RESET_ADMIN_LOGIN}"
   PGPASSWORD="${POSTGRES_PASSWORD}" psql \
     -h "${POSTGRES_HOST}" -p "${POSTGRES_PORT}" -U "${POSTGRES_USER}" -d "${POSTGRES_DB}" \
-    -v login="${RESET_ADMIN_LOGIN}" -v password="${RESET_ADMIN_PASSWORD}" \
-    -c "UPDATE res_users SET password = :'password' WHERE login = :'login';"
+    -v login="${RESET_ADMIN_LOGIN}" -v password="${RESET_ADMIN_PASSWORD}" <<'SQL'
+UPDATE res_users SET password = :'password' WHERE login = :'login';
+SQL
 }
 
 reset_admin_compose() {
@@ -120,8 +121,9 @@ reset_admin_compose() {
   log "Aplicant credencials després del restore per ${RESET_ADMIN_LOGIN}"
   run_compose -f "${COMPOSE_FILE}" exec -T "${DB_SERVICE}" \
     psql -U "${POSTGRES_USER}" -d "${POSTGRES_DB}" \
-    -v login="${RESET_ADMIN_LOGIN}" -v password="${RESET_ADMIN_PASSWORD}" \
-    -c "UPDATE res_users SET password = :'password' WHERE login = :'login';"
+    -v login="${RESET_ADMIN_LOGIN}" -v password="${RESET_ADMIN_PASSWORD}" <<'SQL'
+UPDATE res_users SET password = :'password' WHERE login = :'login';
+SQL
 }
 
 resolve_compose_file() {
