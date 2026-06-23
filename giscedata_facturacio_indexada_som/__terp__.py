@@ -1,0 +1,25 @@
+# -*- coding: utf-8 -*-
+{
+  "name": "Facturació indexada SOM",
+  "description": """Aquest mòdul adapta la facturació indexada a les
+  necessitats: de Som Energía
+  * PHF pròpia
+""",
+  "version": "0-dev",
+  "author": "GISCE",
+  "category": "Master",
+  "depends": [
+      'base',
+      'giscedata_facturacio_indexada',
+      'giscedata_reganecu',
+      'giscedata_repercussio_servei_ajust',
+  ],
+  "init_xml": [],
+  "demo_xml": ['giscedata_facturacio_indexada_som_demo.xml'],
+  "update_xml": [
+    'giscedata_polissa_view.xml',
+    'giscedata_facturacio_indexada_som_data.xml',
+  ],
+  "active": False,
+  "installable": True
+}
