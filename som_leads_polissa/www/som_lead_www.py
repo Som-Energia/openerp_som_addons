@@ -361,7 +361,8 @@ class SomLeadWww(osv.osv_memory):
                 "Aquest lead ja te dades de targeta informades."
             )
 
-        required_fields = ["token", "masked_number", "expiry_date", "cof_txnid"]
+        required_fields = ["creditcard_token", "creditcard_masked_number",
+                           "creditcard_expiry_date", "creditcard_cof_txnid"]
         missing_fields = [field for field in required_fields if not card_vals.get(field)]
         if missing_fields:
             raise osv.except_osv(
@@ -373,16 +374,19 @@ class SomLeadWww(osv.osv_memory):
             cr, uid, "som_card_payment", "payment_mode_card_recurrent"
         )[1]
 
+        expiry_date = '{}/{}'.format(card_vals["creditcard_expiry_date"]
+                                     [2:], card_vals["creditcard_expiry_date"][:2])
+
         lead_o.write(
             cr,
             uid,
             lead_id,
             {
                 "payment_mode_id": payment_mode_id,
-                "creditcard_token": card_vals["token"],
-                "creditcard_masked_number": card_vals["masked_number"],
-                "creditcard_expiry_date": card_vals["expiry_date"],
-                "creditcard_cof_txnid": card_vals["cof_txnid"],
+                "creditcard_token": card_vals["creditcard_token"],
+                "creditcard_masked_number": card_vals["creditcard_masked_number"],
+                "creditcard_expiry_date": expiry_date,
+                "creditcard_cof_txnid": card_vals["creditcard_cof_txnid"],
             },
             context=context,
         )
@@ -728,9 +732,13 @@ class SomLeadWww(osv.osv_memory):
         ctx['delivery_type'] = 'url'
         ctx['provider'] = 'signaturit'
 
+        lead_o.write(cr, uid, lead_id, {'delivery_type': 'url'})
+
         state, errors = lead_o.check_start_signature_process(cr, uid, [lead_id], context=ctx)
         if state != 'end':
             raise osv.except_osv('Error', errors)
+
+        cr.commit()
 
         # `start_signature_process` creates signature artifacts with admin-only
         # permissions in this legacy flow, so we keep the original user id while
@@ -738,7 +746,7 @@ class SomLeadWww(osv.osv_memory):
         with Sudo(uid=uid, gid=0):
             with self.api.db.cursor() as sign_cursor:
                 process_id = lead_o.start_signature_process(
-                    sign_cursor, uid, [lead_id], context=ctx
+                    sign_cursor, uid, lead_id, context=ctx
                 )
 
         if not process_id:
@@ -748,7 +756,7 @@ class SomLeadWww(osv.osv_memory):
             )
 
         process_o = self.pool.get('giscedata.signatura.process')
-        timeout_seconds = 30.0
+        timeout_seconds = 200.0
         poll_interval = 0.2
         deadline = time.time() + timeout_seconds
         signature_url = False
