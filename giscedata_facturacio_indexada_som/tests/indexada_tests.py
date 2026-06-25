@@ -5,6 +5,7 @@ from destral.transaction import Transaction
 from expects import *
 from giscedata_facturacio_indexada_som.tarifes import *
 from ..tarifes import *
+from numbers import Integral
 import os
 import tools
 import base64
@@ -66,6 +67,7 @@ class IndexadaSOMTest(testing.OOTestCase):
         for day_num in range(1, 32):
             day = copy.copy([])
             for hour in range(0, 24):
+                # pylint: disable=round-builtin
                 day.append(round(day_num * 1.0 + (hour / 100.0), 2))
             day.append(0.0)
             curve.append(day)
@@ -197,7 +199,7 @@ class IndexadaSOMTest(testing.OOTestCase):
             )
 
             for version, productes in preus.items():
-                expect(productes).to(be_an((int, long)))
+                expect(productes).to(be_an(Integral))
                 expect(productes).to(equal(pricelist_id))
 
     def test_phf(self):

@@ -1,2 +1,4 @@
 # -*- coding: utf-8 -*-
-from indexada_tests import *
+from __future__ import absolute_import
+
+from .indexada_tests import *

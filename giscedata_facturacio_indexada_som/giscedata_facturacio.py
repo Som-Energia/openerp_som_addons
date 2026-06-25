@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+from __future__ import absolute_import
+
 from osv import osv
 from .tarifes import TARIFFS_FACT
 from libfacturacioatr.pool.tarifes import *
