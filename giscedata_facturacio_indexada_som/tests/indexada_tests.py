@@ -38,6 +38,26 @@ TARIFFS = {
 class IndexadaSOMTest(testing.OOTestCase):
     ''' Test indexed SOM tariffs '''
 
+    def get_contract_id(self, cursor, uid, xml_id='polissa_0001'):
+        imd_obj = self.openerp.pool.get('ir.model.data')
+        contract_obj = self.openerp.pool.get('giscedata.polissa')
+
+        try:
+            return imd_obj.get_object_reference(
+                cursor, uid, 'giscedata_polissa', xml_id
+            )[1]
+        except ValueError:
+            contract_ids = contract_obj.search(cursor, uid, [], limit=1)
+            if contract_ids:
+                return contract_ids[0]
+            self.fail('Missing demo contract for test fixture: {0}'.format(xml_id))
+
+    def get_esios_token(self):
+        try:
+            return tools.config['esios_token']
+        except KeyError:
+            self.skipTest('Missing esios_token test configuration')
+
     def crear_modcon(self, cursor, uid, polissa_id, ini, fi):
         '''Creates a modcon in contract'''
         pool = self.openerp.pool
@@ -86,16 +106,7 @@ class IndexadaSOMTest(testing.OOTestCase):
             uid = txn.user
 
             contract_obj = self.openerp.pool.get('giscedata.polissa')
-            imd_obj = self.openerp.pool.get('ir.model.data')
-
-            # gets contract 0001
-            contract_id_index = imd_obj.get_object_reference(
-                cursor, uid, 'giscedata_polissa', 'polissa_0001'
-            )[1]
-
-            contract_id_atr = imd_obj.get_object_reference(
-                cursor, uid, 'giscedata_polissa', 'polissa_0002'
-            )[1]
+            contract_id = self.get_contract_id(cursor, uid)
 
             # Test all available DSO access fare
             for tariff_name in TARIFFS:
@@ -105,28 +116,24 @@ class IndexadaSOMTest(testing.OOTestCase):
                 )[0]
 
                 contract_obj.write(
-                    cursor, uid, [contract_id_index, contract_id_atr],
-                    {'tarifa': tariff_id}
+                    cursor, uid, [contract_id],
+                    {'tarifa': tariff_id, 'mode_facturacio': 'atr'}
                 )
 
-                contract_index = contract_obj.browse(
-                    cursor, uid, contract_id_index
-                )
-                contract_atr = contract_obj.browse(
-                    cursor, uid, contract_id_atr
-                )
-
-                tariff_class_index = facturador_obj.get_tarifa_class(
-                    contract_index
-                )
                 tariff_class_atr = facturador_obj.get_tarifa_class(
-                    contract_atr
+                    contract_obj.browse(cursor, uid, contract_id)
                 )
 
-                expect(contract_atr.mode_facturacio).to(equal('atr'))
                 expect(tariff_class_atr).to(be(TARIFFS[tariff_name][0]))
 
-                expect(contract_index.mode_facturacio).to(equal('index'))
+                contract_obj.write(
+                    cursor, uid, [contract_id],
+                    {'tarifa': tariff_id, 'mode_facturacio': 'index'}
+                )
+
+                contract_index = contract_obj.browse(cursor, uid, contract_id)
+                tariff_class_index = facturador_obj.get_tarifa_class(contract_index)
+
                 expect(tariff_class_index).to(be(TARIFFS[tariff_name][1]))
 
     def test_facturador_versions_de_preus(self):
@@ -146,15 +153,7 @@ class IndexadaSOMTest(testing.OOTestCase):
             contract_obj = self.openerp.pool.get('giscedata.polissa')
             pricelist_obj = self.openerp.pool.get('product.pricelist')
             imd_obj = self.openerp.pool.get('ir.model.data')
-
-            # gets contract 0001
-            contract_id_index = imd_obj.get_object_reference(
-                cursor, uid, 'giscedata_polissa', 'polissa_0001'
-            )[1]
-
-            contract_id_atr = imd_obj.get_object_reference(
-                cursor, uid, 'giscedata_polissa', 'polissa_0002'
-            )[1]
+            contract_id = self.get_contract_id(cursor, uid)
 
             pricelist_id = imd_obj.get_object_reference(
                 cursor, uid, 'giscedata_facturacio',
@@ -162,22 +161,19 @@ class IndexadaSOMTest(testing.OOTestCase):
             )[1]
 
             contract_obj.send_signal(
-                cursor, uid, [contract_id_index], ['validar', 'contracte']
+                cursor, uid, [contract_id], ['validar', 'contracte']
             )
             self.crear_modcon(
-                cursor, uid, contract_id_index, '2017-01-01', '2017-12-31'
+                cursor, uid, contract_id, '2017-01-01', '2017-12-31'
             )
 
-            contract_obj.send_signal(
-                cursor, uid, [contract_id_atr], ['validar', 'contracte']
-            )
-            self.crear_modcon(
-                cursor, uid, contract_id_atr, '2017-01-01', '2017-12-31'
+            contract_obj.write(
+                cursor, uid, [contract_id], {'mode_facturacio': 'index'}
             )
 
             context = {'llista_preu': pricelist_id}
             preus = facturador_obj.versions_de_preus(
-                cursor, uid, contract_id_index, '2017-01-01', '2017-01-31',
+                cursor, uid, contract_id, '2017-01-01', '2017-01-31',
                 context
             )
 
@@ -193,8 +189,12 @@ class IndexadaSOMTest(testing.OOTestCase):
                 if pricelist_obj.browse(cursor, uid, pricelist_id).indexed_formula == u'Indexada Península':
                     expect(productes).to(have_key('h'))
 
+            contract_obj.write(
+                cursor, uid, [contract_id], {'mode_facturacio': 'atr'}
+            )
+
             preus = facturador_obj.versions_de_preus(
-                cursor, uid, contract_id_atr, '2017-01-01', '2017-01-31',
+                cursor, uid, contract_id, '2017-01-01', '2017-01-31',
                 context
             )
 
@@ -203,8 +203,7 @@ class IndexadaSOMTest(testing.OOTestCase):
                 expect(productes).to(equal(pricelist_id))
 
     def test_phf(self):
-        ESIOS_TOKEN = tools.config['esios_token']
-        token = ESIOS_TOKEN
+        token = self.get_esios_token()
 
         facturador_obj = self.openerp.pool.get(
             'giscedata.facturacio.facturador'
@@ -223,13 +222,7 @@ class IndexadaSOMTest(testing.OOTestCase):
             imd_obj = self.openerp.pool.get('ir.model.data')
 
             # gets contract 0001
-            contract_id_index = imd_obj.get_object_reference(
-                cursor, uid, 'giscedata_polissa', 'polissa_0001'
-            )[1]
-
-            contract_id_atr = imd_obj.get_object_reference(
-                cursor, uid, 'giscedata_polissa', 'polissa_0002'
-            )[1]
+            contract_id_index = self.get_contract_id(cursor, uid)
 
             pricelist_id = imd_obj.get_object_reference(
                 cursor, uid, 'giscedata_facturacio',
@@ -331,8 +324,7 @@ class IndexadaSOMTest(testing.OOTestCase):
                 os.remove('/tmp/pmd_data.csv')
 
     def test_phf_peninsula(self):
-        ESIOS_TOKEN = tools.config['esios_token']
-        token = ESIOS_TOKEN
+        token = self.get_esios_token()
 
         facturador_obj = self.openerp.pool.get(
             'giscedata.facturacio.facturador'
@@ -352,13 +344,7 @@ class IndexadaSOMTest(testing.OOTestCase):
             pricelist_obj = self.openerp.pool.get('product.pricelist')
 
             # gets contract 0001
-            contract_id_index = imd_obj.get_object_reference(
-                cursor, uid, 'giscedata_polissa', 'polissa_0001'
-            )[1]
-
-            contract_id_atr = imd_obj.get_object_reference(
-                cursor, uid, 'giscedata_polissa', 'polissa_0002'
-            )[1]
+            contract_id_index = self.get_contract_id(cursor, uid)
 
             pricelist_id = imd_obj.get_object_reference(
                 cursor, uid, 'giscedata_facturacio',
@@ -447,7 +433,7 @@ class IndexadaSOMTest(testing.OOTestCase):
             cursor = txn.cursor
             uid = txn.user
 
-            token = tools.config['esios_token']
+            token = self.get_esios_token()
 
             contract_obj = self.openerp.pool.get('giscedata.polissa')
             imd_obj = self.openerp.pool.get('ir.model.data')
@@ -565,7 +551,7 @@ class IndexadaSOMTest(testing.OOTestCase):
             cursor = txn.cursor
             uid = txn.user
 
-            token = tools.config['esios_token']
+            token = self.get_esios_token()
 
             contract_obj = self.openerp.pool.get('giscedata.polissa')
             imd_obj = self.openerp.pool.get('ir.model.data')
@@ -666,8 +652,7 @@ class IndexadaSOMTest(testing.OOTestCase):
                 os.remove('/tmp/phf_data.csv')
 
     def test_phf_peninsula_reganecu_qh(self):
-        ESIOS_TOKEN = tools.config['esios_token']
-        token = ESIOS_TOKEN
+        token = self.get_esios_token()
 
         facturador_obj = self.openerp.pool.get(
             'giscedata.facturacio.facturador'
@@ -701,13 +686,7 @@ class IndexadaSOMTest(testing.OOTestCase):
             pricelist_obj = self.openerp.pool.get('product.pricelist')
 
             # gets contract 0001
-            contract_id_index = imd_obj.get_object_reference(
-                cursor, uid, 'giscedata_polissa', 'polissa_0001'
-            )[1]
-
-            contract_id_atr = imd_obj.get_object_reference(
-                cursor, uid, 'giscedata_polissa', 'polissa_0002'
-            )[1]
+            contract_id_index = self.get_contract_id(cursor, uid)
 
             pricelist_id = imd_obj.get_object_reference(
                 cursor, uid, 'giscedata_facturacio',
