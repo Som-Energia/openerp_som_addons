@@ -36,6 +36,7 @@ TARIFFS = {
 
 class IndexadaSOMTest(testing.OOTestCase):
     ''' Test indexed SOM tariffs '''
+
     def crear_modcon(self, cursor, uid, polissa_id, ini, fi):
         '''Creates a modcon in contract'''
         pool = self.openerp.pool
@@ -274,7 +275,7 @@ class IndexadaSOMTest(testing.OOTestCase):
             # test component
             tarifa.factura_energia()
             assert tarifa.code == '2.0A'
-            activa = tarifa.termes['activa']
+            tarifa.termes['activa']
 
             # CURVE
             curve_audit = tarifa.get_audit_data('curve')
@@ -363,7 +364,8 @@ class IndexadaSOMTest(testing.OOTestCase):
             )[1]
 
             # change formula to 'Pass-Through Ebroenergia'
-            pricelist_obj.write(cursor, uid, pricelist_id, {'indexed_formula': u'Indexada Península'})
+            pricelist_obj.write(cursor, uid, pricelist_id, {
+                                'indexed_formula': u'Indexada Península'})
 
             contract_obj.send_signal(
                 cursor, uid, [contract_id_index], ['validar', 'contracte']
@@ -692,7 +694,6 @@ class IndexadaSOMTest(testing.OOTestCase):
             wiz_id = wiz_obj.create(cursor, uid, wiz_create_vals, context={})
             wiz_obj.load(cursor, uid, [wiz_id], context={})
 
-
             contract_obj = self.openerp.pool.get('giscedata.polissa')
             imd_obj = self.openerp.pool.get('ir.model.data')
             pricelist_obj = self.openerp.pool.get('product.pricelist')
@@ -712,7 +713,8 @@ class IndexadaSOMTest(testing.OOTestCase):
             )[1]
 
             # change formula to 'Pass-Through Ebroenergia'
-            pricelist_obj.write(cursor, uid, pricelist_id, {'indexed_formula': u'Indexada Península'})
+            pricelist_obj.write(cursor, uid, pricelist_id, {
+                                'indexed_formula': u'Indexada Península'})
 
             contract_obj.send_signal(
                 cursor, uid, [contract_id_index], ['validar', 'contracte']

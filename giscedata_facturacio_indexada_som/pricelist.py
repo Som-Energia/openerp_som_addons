@@ -11,7 +11,8 @@ class ProductPriceList(osv.osv):
     def _pricelist_type_get(self, cursor, uid, context={}):
         # Dummy TarifaPoolSOM to get available indexed formulas
         selection = []
-        formulas = TarifaPoolSOM({}, {}, '2020-08-01', '2020-08-31').get_available_indexed_formulas()
+        formulas = TarifaPoolSOM({}, {}, '2020-08-01',
+                                 '2020-08-31').get_available_indexed_formulas()
         for key in formulas:
             selection.append((key, key))
         return selection

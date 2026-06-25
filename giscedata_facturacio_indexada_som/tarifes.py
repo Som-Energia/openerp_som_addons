@@ -109,7 +109,8 @@ class TarifaPoolSOM(TarifaPool):
         try:
             fdata = open(marginal_path, 'r')
         except:
-            raise osv.except_osv('Error', "No se ha encontrado MarginalPDBC para el período {}".format(check_date))
+            raise osv.except_osv(
+                'Error', "No se ha encontrado MarginalPDBC para el período {}".format(check_date))
         csv_reader = csv.reader(fdata, delimiter=';')
 
         # Formatarlo obtenint dia-hora i preu
@@ -152,9 +153,11 @@ class TarifaPoolSOM(TarifaPool):
             component = component.lower()
             postfix = ('%s_%s' % (data_inici, data_final)).replace('-', '')
             if component == 'prmdiari' and (start_date.year > 2025 or (start_date.year == 2025 and start_date.month >= 10)):
-                component_inst = Pmdiario('C2_pmdiario_%(postfix)s' % locals(), self.conf['esios_token'])
+                component_inst = Pmdiario('C2_pmdiario_%(postfix)s' %
+                                          locals(), self.conf['esios_token'])
             else:
-                component_inst = component_class('C2_%(component)s_%(postfix)s' % locals(), self.conf['esios_token'])
+                component_inst = component_class(
+                    'C2_%(component)s_%(postfix)s' % locals(), self.conf['esios_token'])
             if component == 'prmdiari' and fallback and day:
                 if sum(component_inst.matrix[int(datetime.strptime(day, '%Y-%m-%d').day) - 1]) == 0:
                     raise REECoeficientsNotFound('Prmdiari for day %(day)s not found' % locals())
@@ -202,7 +205,7 @@ class TarifaPoolSOM(TarifaPool):
 
         # Curva cuarto-horaria
         curve_qh = curve.get_component_qh_interpolated()
-        curve = curve * 0.001 # in kWh
+        curve = curve * 0.001  # in kWh
 
         # REE
         postfix = ('%s_%s' % (start_date.strftime("%Y%m%d"), end_date.strftime("%Y%m%d")))
@@ -219,11 +222,13 @@ class TarifaPoolSOM(TarifaPool):
 
             filename_dem = 'SphdemDD_{}'.format(subsystem)
             classname_dem = globals()[filename_dem]
-            sphdem = classname_dem('C2_%(filename_dem)s_%(postfix)s' % locals(), esios_token)  # [€/MWh]
+            sphdem = classname_dem('C2_%(filename_dem)s_%(postfix)s' %
+                                   locals(), esios_token)  # [€/MWh]
 
             filename_auto = 'Sphauto_{}'.format(subsystem)
             classname_auto = globals()[filename_auto]
-            sphauto = classname_auto('C2_%(filename_auto)s_%(postfix)s' % locals(), esios_token)  # [€/MWh]
+            sphauto = classname_auto('C2_%(filename_auto)s_%(postfix)s' %
+                                     locals(), esios_token)  # [€/MWh]
 
             prmdiari = sphdem - sphauto
 
@@ -237,7 +242,7 @@ class TarifaPoolSOM(TarifaPool):
             if (isinstance(var, Component)
                     and not isinstance(var, ComponentQH)
                     and key not in excluded_var_names
-            ):
+                ):
                 new_var = self.transform_local_to_qh(var, key, divided_var_names)
                 exec('{} = new_var'.format(key))
 
@@ -312,8 +317,8 @@ class TarifaPoolSOM(TarifaPool):
 
         # Use AJOM if invoice includes june'22 or later days and variable is activated
         if maj_activated and (
-                (start_date.year == 2022 and start_date.month >= 6) or
-                (start_date.year == 2023)
+                (start_date.year == 2022 and start_date.month >= 6)
+                or (start_date.year == 2023)
         ):
             ajom = self.get_coeficient_from_dict(start_date, 'ajom')
             A += ajom * 0.001
@@ -390,10 +395,13 @@ class TarifaPoolSOM(TarifaPool):
         # Sobrecostes REE
         compodem = MonthlyCompodem('C2_monthlycompodem_%(postfix)s' % locals(), esios_token)
         sobrecostes_ree = (
-                compodem.get_component("RT3") + compodem.get_component("RT6") + compodem.get_component("BS3") +
-                compodem.get_component("EXD") + compodem.get_component("IN7") + compodem.get_component("CFP") +
-                compodem.get_component("BALX") + compodem.get_component("DSV") + compodem.get_component("PS3") +
-                compodem.get_component("IN3") + compodem.get_component("CT3")
+            compodem.get_component("RT3") + compodem.get_component("RT6")
+            + compodem.get_component("BS3")
+            + compodem.get_component("EXD") + compodem.get_component("IN7")
+            + compodem.get_component("CFP")
+            + compodem.get_component("BALX") + compodem.get_component("DSV")
+            + compodem.get_component("PS3")
+            + compodem.get_component("IN3") + compodem.get_component("CT3")
         )
 
         if (start_date.year >= 2022 and start_date.month >= 11) or (start_date.year > 2022):
@@ -410,8 +418,8 @@ class TarifaPoolSOM(TarifaPool):
 
         # Use AJOM if invoice includes june'22 or later days and variable is activated
         if maj_activated and (
-                (start_date.year == 2022 and start_date.month >= 6) or
-                (start_date.year == 2023)
+                (start_date.year == 2022 and start_date.month >= 6)
+                or (start_date.year == 2023)
         ):
             ajom = self.get_coeficient_from_dict(start_date, 'ajom')
             A += ajom * 0.001
@@ -470,12 +478,12 @@ class TarifaPoolSOM(TarifaPool):
         # Curva de consumo real
         if not preu_dema:
             curve_real = self.get_curve_from_consum_magn(start_date, magn='activa_real')
-            curve_real = curve_real * 0.001 # in kWh
+            curve_real = curve_real * 0.001  # in kWh
             curve_real_qh = curve_real.get_component_qh_interpolated()
 
         # Curva cuarto-horaria
         curve_qh = curve.get_component_qh_interpolated()
-        curve_fact = curve * 0.001 # in kWh
+        curve_fact = curve * 0.001  # in kWh
 
         # peajes
         pa = self.get_peaje_component(start_date, holidays)    # [€/kWh]
@@ -501,7 +509,8 @@ class TarifaPoolSOM(TarifaPool):
 
         # REE
         postfix = ('%s_%s' % (start_date.strftime("%Y%m%d"), end_date.strftime("%Y%m%d")))
-        prmdiari = self.get_component_with_fallback('prmdiari', start_date_str, end_date_str, day, fallback=preu_dema)  # [€/MWh]
+        prmdiari = self.get_component_with_fallback(
+            'prmdiari', start_date_str, end_date_str, day, fallback=preu_dema)  # [€/MWh]
 
         # Pérdidas
         if start_date.year < 2024 or (start_date.year == 2024 and start_date.month < 12):
@@ -512,15 +521,20 @@ class TarifaPoolSOM(TarifaPool):
             perdues = self.perdclassqh('C2_%(fname)s_%(postfix)s' % locals(), esios_token)  # [%]
 
         # Prdemcad
-        prdemcad = self.get_component_with_fallback('prdemcad', start_date_str, end_date_str, day, fallback=preu_dema)  # [€/MWh]
+        prdemcad = self.get_component_with_fallback(
+            'prdemcad', start_date_str, end_date_str, day, fallback=preu_dema)  # [€/MWh]
 
         # Componentes Desvios
         if start_date.year < 2024 or (start_date.year == 2024 and start_date.month < 12):
-            csdvbaj = self.get_component_with_fallback('codsvbaj', start_date_str, end_date_str, day, fallback=preu_dema)  # [€/MWh]
-            csdvsub = self.get_component_with_fallback('codsvsub', start_date_str, end_date_str, day, fallback=preu_dema)  # [€/MWh]
+            csdvbaj = self.get_component_with_fallback(
+                'codsvbaj', start_date_str, end_date_str, day, fallback=preu_dema)  # [€/MWh]
+            csdvsub = self.get_component_with_fallback(
+                'codsvsub', start_date_str, end_date_str, day, fallback=preu_dema)  # [€/MWh]
         else:
-            csdvbaj = self.get_component_with_fallback('codsvbaqh', start_date_str, end_date_str, day, fallback=preu_dema)  # [€/MWh]
-            csdvsub = self.get_component_with_fallback('codsvsuqh', start_date_str, end_date_str, day, fallback=preu_dema)  # [€/MWh]
+            csdvbaj = self.get_component_with_fallback(
+                'codsvbaqh', start_date_str, end_date_str, day, fallback=preu_dema)  # [€/MWh]
+            csdvsub = self.get_component_with_fallback(
+                'codsvsuqh', start_date_str, end_date_str, day, fallback=preu_dema)  # [€/MWh]
 
         # RAD3 and BS3
         compodem = MonthlyCompodem('C2_monthlycompodem_%(postfix)s' % locals(), esios_token)
@@ -551,7 +565,7 @@ class TarifaPoolSOM(TarifaPool):
             if (isinstance(var, Component)
                     and not isinstance(var, ComponentQH)
                     and key not in excluded_var_names
-            ):
+                ):
                 new_var = self.transform_local_to_qh(var, key, divided_var_names)
                 exec('{} = new_var'.format(key))
 
@@ -610,7 +624,8 @@ class TarifaPoolSOM(TarifaPool):
         classname = globals()[filename]
         sphdem = classname('C2_%(filename)s_%(postfix)s' % locals(), esios_token)  # [€/MWh]
         # Pagos por capacidad
-        filename = 'Sprpcap{}_{}'.format(self.code.replace('.', ''), SUBSYSTEMS_SPHDEM[self.geom_zone])
+        filename = 'Sprpcap{}_{}'.format(self.code.replace(
+            '.', ''), SUBSYSTEMS_SPHDEM[self.geom_zone])
         classname = globals()[filename]
         pc3_ree = classname('C2_%(filename)s_%(postfix)s' % locals(), esios_token)  # [€/MWh]
         # Servicio de Interrumpibilidad
@@ -680,12 +695,12 @@ class TarifaPoolSOM(TarifaPool):
         # Curva de consumo real
         if not preu_dema:
             curve_real = self.get_curve_from_consum_magn(start_date, magn='activa_real')
-            curve_real = curve_real * 0.001 # in kWh
+            curve_real = curve_real * 0.001  # in kWh
             curve_real_qh = curve_real.get_component_qh_interpolated()
 
         # Curva cuarto-horaria
         curve_qh = curve.get_component_qh_interpolated()
-        curve_fact = curve * 0.001 # in kWh
+        curve_fact = curve * 0.001  # in kWh
 
         # REE
         # Precio horario demanda aplicable sistema no peninsular
@@ -697,7 +712,8 @@ class TarifaPoolSOM(TarifaPool):
         sphdem = classname('C2_%(filename)s_%(postfix)s' % locals(), esios_token)  # [€/MWh]
 
         # Pagos por capacidad
-        filename = 'Sprpcap{}_{}'.format(self.code.replace('.', ''), SUBSYSTEMS_SPHDEM[self.geom_zone])
+        filename = 'Sprpcap{}_{}'.format(self.code.replace(
+            '.', ''), SUBSYSTEMS_SPHDEM[self.geom_zone])
         classname = globals()[filename]
         pc3_ree = classname('C2_%(filename)s_%(postfix)s' % locals(), esios_token)  # [€/MWh]
 
@@ -746,7 +762,7 @@ class TarifaPoolSOM(TarifaPool):
             if (isinstance(var, Component)
                     and not isinstance(var, ComponentQH)
                     and key not in excluded_var_names
-            ):
+                ):
                 new_var = self.transform_local_to_qh(var, key, divided_var_names)
                 exec('{} = new_var'.format(key))
 
@@ -800,7 +816,8 @@ class TarifaPoolSOM(TarifaPool):
         classname = globals()[filename]
         sphdem = classname('C2_%(filename)s_%(postfix)s' % locals(), esios_token)  # [€/MWh]
         # Pagos por capacidad
-        filename = 'Sprpcap{}_{}'.format(self.code.replace('.', ''), SUBSYSTEMS_SPHDEM[self.geom_zone])
+        filename = 'Sprpcap{}_{}'.format(self.code.replace(
+            '.', ''), SUBSYSTEMS_SPHDEM[self.geom_zone])
         classname = globals()[filename]
         pc3_ree = classname('C2_%(filename)s_%(postfix)s' % locals(), esios_token)  # [€/MWh]
         # Servicio de Interrumpibilidad
@@ -870,12 +887,12 @@ class TarifaPoolSOM(TarifaPool):
         # Curva de consumo real
         if not preu_dema:
             curve_real = self.get_curve_from_consum_magn(start_date, magn='activa_real')
-            curve_real = curve_real * 0.001 # in kWh
+            curve_real = curve_real * 0.001  # in kWh
             curve_real_qh = curve_real.get_component_qh_interpolated()
 
         # Curva cuarto-horaria
         curve_qh = curve.get_component_qh_interpolated()
-        curve_fact = curve * 0.001 # in kWh
+        curve_fact = curve * 0.001  # in kWh
 
         # REE
         # Precio horario demanda aplicable sistema no peninsular
@@ -887,7 +904,8 @@ class TarifaPoolSOM(TarifaPool):
         sphdem = classname('C2_%(filename)s_%(postfix)s' % locals(), esios_token)  # [€/MWh]
 
         # Pagos por capacidad
-        filename = 'Sprpcap{}_{}'.format(self.code.replace('.', ''), SUBSYSTEMS_SPHDEM[self.geom_zone])
+        filename = 'Sprpcap{}_{}'.format(self.code.replace(
+            '.', ''), SUBSYSTEMS_SPHDEM[self.geom_zone])
         classname = globals()[filename]
         pc3_ree = classname('C2_%(filename)s_%(postfix)s' % locals(), esios_token)  # [€/MWh]
 
@@ -936,7 +954,7 @@ class TarifaPoolSOM(TarifaPool):
             if (isinstance(var, Component)
                     and not isinstance(var, ComponentQH)
                     and key not in excluded_var_names
-            ):
+                ):
                 new_var = self.transform_local_to_qh(var, key, divided_var_names)
                 exec('{} = new_var'.format(key))
 
@@ -985,12 +1003,12 @@ class TarifaPoolSOM(TarifaPool):
 
         # Curva de consumo real
         curve_real = self.get_curve_from_consum_magn(start_date, magn='activa_real')
-        curve_real = curve_real * 0.001 # in kWh
+        curve_real = curve_real * 0.001  # in kWh
         curve_real_qh = curve_real.get_component_qh_interpolated()
 
         # Curva cuarto-horaria
         curve_qh = curve.get_component_qh_interpolated()
-        curve_fact = curve * 0.001 # in kWh
+        curve_fact = curve * 0.001  # in kWh
 
         # peajes
         pa = self.get_peaje_component(start_date, holidays)    # [€/kWh]
@@ -1032,14 +1050,14 @@ class TarifaPoolSOM(TarifaPool):
         prdemcad = Prdemcad('C2_prdemcad_%(postfix)s' % locals(), esios_token)  # [€/MWh]
 
         # preu del desvío
-        dsv = MeasuredDeviationsFree('C2_mdsvfree_%(postfix)s' % locals(), esios_token) # [€/MWh]
+        dsv = MeasuredDeviationsFree('C2_mdsvfree_%(postfix)s' % locals(), esios_token)  # [€/MWh]
 
         # MAJ RDL 10/2022
         # Use AJOM if invoice includes june'22 or later days and variable is activated
         maj_activated = self.conf.get('maj_activated', 0)
         if maj_activated and (
-                (start_date.year == 2022 and start_date.month >= 6) or
-                (start_date.year == 2023)
+                (start_date.year == 2022 and start_date.month >= 6)
+                or (start_date.year == 2023)
         ):
             ajom = self.get_coeficient_from_dict(start_date, 'ajom')  # [€/MWh]
         else:
@@ -1055,7 +1073,7 @@ class TarifaPoolSOM(TarifaPool):
             if (isinstance(var, Component)
                     and not isinstance(var, ComponentQH)
                     and key not in excluded_var_names
-            ):
+                ):
                 new_var = self.transform_local_to_qh(var, key, divided_var_names)
                 exec('{} = new_var'.format(key))
 
@@ -1085,7 +1103,7 @@ class TarifaPoolSOM(TarifaPool):
             )
 
         return component
-    
+
     def phf_calc_auvi(self, curve, start_date):
         """
         Fòrmula pels kWh AUVI:
@@ -1169,7 +1187,7 @@ class TarifaPoolSOM(TarifaPool):
             if (isinstance(var, Component)
                     and not isinstance(var, ComponentQH)
                     and key not in excluded_var_names
-            ):
+                ):
                 new_var = self.transform_local_to_qh(var, key, divided_var_names)
                 exec('{} = new_var'.format(key))
 

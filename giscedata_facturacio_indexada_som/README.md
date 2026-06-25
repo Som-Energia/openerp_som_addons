@@ -179,7 +179,7 @@ Where:
 ### audit files
 
 * **phf**: Precio Horario Final (incluye consumo)
-* **curve**: Curva 
+* **curve**: Curva
 * **pmd**: prmncur (PMD+POS+PC)
 * **pc3_ree**: prgpncur
 * **perdues**: perdxxxxx

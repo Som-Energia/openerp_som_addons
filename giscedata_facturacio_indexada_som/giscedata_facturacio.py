@@ -71,7 +71,8 @@ class GiscedataFacturacioFacturador(osv.osv):
                 if pricelist_obj.browse(cursor, uid, llista_preu_id).indexed_formula == u'Indexada Península':
                     # Fem un browse amb la data final per obtenir quina tarifa té
                     polissa = polissa_obj.browse(cursor, uid, polissa_id, context=ctx)
-                    res[date_version]['h'] = polissa.coeficient_h * 0.001  # H is expressed in €/MWh in contract
+                    res[date_version]['h'] = polissa.coeficient_h * \
+                        0.001  # H is expressed in €/MWh in contract
 
         return res
 
@@ -112,7 +113,8 @@ class GiscedataFacturacioFacturador(osv.osv):
             postfix = '%s_%s' % (start_date.strftime("%Y%m%d"), end_date.strftime("%Y%m%d"))
             fname = tariff.perdclass.name
             perdues = tariff.perdclass('C2_%(fname)s_%(postfix)s' % locals(), esios_token)
-            prdemcad = Prdemcad('C2_prdemcad_%(postfix)s' % locals(), esios_token)  # prdemcad [€/MWh]
+            prdemcad = Prdemcad('C2_prdemcad_%(postfix)s' %
+                                locals(), esios_token)  # prdemcad [€/MWh]
         else:
             perdues = Component(start_date)
             prdemcad = Component(start_date)
@@ -145,5 +147,6 @@ class GiscedataNextDaysEnergyPrice(osv.osv):
 
     def get_tarifa_class(self, cursor, uid, tarifa_name, context=None):
         return TARIFFS_FACT[tarifa_name]
+
 
 GiscedataNextDaysEnergyPrice()
