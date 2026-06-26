@@ -65,9 +65,10 @@ Fem servir un sol `Makefile`, però separat per rols:
   - `dataset-producer-create`
   - `dataset-producer-publish`
 - Consumidor:
-  - `dataset-consumer-prepare`
+  - `dataset-consumer-sync`
   - `dataset-consumer-up`
-  - `dataset-consumer-restore`
+  - `dataset-consumer-up-local`
+  - `dataset-consumer-update-module`
 
 També es mantenen aliases curts per compatibilitat:
 
@@ -142,19 +143,23 @@ make -C runtime-docker dataset-consumer-all
 
 Això fa:
 ```bash
-# 1) baixa imatge+dataset només si falten
-make -C runtime-docker dataset-consumer-prepare
+# 1) sincronitza imatge i dataset; restaura la base només si el dataset resolt és nou
+make -C runtime-docker dataset-consumer-sync
 
-# 2) restaura la base de dades
-make -C runtime-docker dataset-consumer-restore
-
-# 3) arrenca el compose (consumer pur: sempre pull + recreate)
+# 2) arrenca el compose compartit (consumer pur)
 make -C runtime-docker dataset-consumer-up
 
-# 3) opcional: mode local/dev amb docker-compose.consumer.override.yml
+# 3) opcional: mateix stack i mateixa BD, però amb openerp_som_addons local
 cp runtime-docker/docker-compose.consumer.override.example.yml runtime-docker/docker-compose.consumer.override.yml
 make -C runtime-docker dataset-consumer-up-local
 ```
+
+La sincronització guarda una marca local a `runtime-docker/.cache/consumer-state/dataset-state.env` amb:
+
+- `requested_tag`: el tag demanat (`latest`, `YYYYMMDD`, ...)
+- `resolved_tag`: el `dataset_version` real restaurat
+
+Si falta aquesta marca, `dataset-consumer-sync` assumeix estat desconegut i restaura.
 
 ### Crear dataset
 
@@ -302,7 +307,8 @@ S'inclou un compose dedicat per consumidors:
 Què fa:
 
 - aixeca `postgres` (PG13), `mongo`, `redis` i `erp-runtime` (imatge preconstruida),
-- permet executar un job one-shot `dataset-restore` que baixa `erp/datasets:latest` via ORAS i restaura la base.
+- comparteix el mateix stack i la mateixa BD entre mode empaquetat i mode local,
+- separa `dataset-consumer-sync` del `up`, per evitar refresh o restore accidental a cada arrencada.
 
 Nota sobre `erp-runtime`:
 
@@ -372,20 +378,122 @@ ERP_RUNTIME_IMAGE="harbor.example.com/erp/openerp:latest"
 
 Modes disponibles:
 
-- `dataset-consumer-up`: consumer pur (imatge Harbor, sense mounts locals), amb `--pull always --force-recreate`.
-- `dataset-consumer-up-local`: usa `docker-compose.consumer.override.yml` per mounts locals.
-- `dataset-consumer-refresh`: baixa i recrea stack consumer pur.
+- `dataset-consumer-up`: consumer pur (imatge Harbor, sense mounts locals), sense fer cap sync ni restore.
+- `dataset-consumer-up-local`: usa `docker-compose.consumer.override.yml` per mounts locals sobre el mateix stack i la mateixa BD.
+- `dataset-consumer-sync`: actualitza la imatge si canvia i restaura la BD només quan el dataset resolt és nou.
+- `dataset-consumer-refresh`: recrea el stack consumer pur sense tocar l'estat sincronitzat.
+- `WEBCLIENT=1`: afegeix el webclient de release al mateix stack consumidor.
 
 
 ```bash
 cp runtime-docker/.env.consumer.example runtime-docker/.env.consumer
 # edita credencials Harbor i valors necessaris
 
-make -C runtime-docker dataset-consumer-prepare
+make -C runtime-docker dataset-consumer-sync
 make -C runtime-docker dataset-consumer-up
 ```
 
-### Carregar el dataset més recent a PostgreSQL local
+Amb webclient:
+
+```bash
+make -C runtime-docker dataset-consumer-up WEBCLIENT=1
+```
+
+Mode local amb `openerp_som_addons` mapat i webclient:
+
+```bash
+make -C runtime-docker dataset-consumer-up-local WEBCLIENT=1
+```
+
+El webclient es publica a `http://localhost:${WEBCLIENT_PORT:-8081}` i el seu
+`/api` fa proxy directament al `msgpack` de l'`erp-runtime` del mateix stack.
+
+### Forçar una restauració del dataset actual
+
+```bash
+FORCE_RESTORE=1 make -C runtime-docker dataset-consumer-sync
+```
+
+### Actualitzar un mòdul al runtime consumidor
+
+Mode empaquetat:
+
+```bash
+make -C runtime-docker dataset-consumer-update-module MODULE=som_polissa
+```
+
+Mode local amb `openerp_som_addons` mapat:
+
+```bash
+make -C runtime-docker dataset-consumer-update-module MODULE=som_polissa LOCAL=1
+```
+
+També pots actualitzar diversos mòduls:
+
+```bash
+make -C runtime-docker dataset-consumer-update-module MODULES=som_polissa,som_switching
+```
+
+Aquest flow:
+
+- assegura `postgres`, `mongo` i `redis`,
+- atura temporalment `erp-runtime` si estava corrent,
+- executa `--update=<modul>` amb `--stop-after-init` sobre la mateixa BD del consumer,
+- i torna a arrencar `erp-runtime` si abans estava en marxa.
+
+### Debug remot amb PuDB
+
+El runtime publica també el port remot de PuDB (`6899` per defecte) per poder
+entrar al debugger des del host.
+
+Snippet recomanat al codi:
+
+```python
+from pudb.remote import set_trace
+set_trace(host="0.0.0.0", port=6899, term_size=(120, 40))
+```
+
+Abans de disparar el codi, al teu host connecta't al port publicat:
+
+```bash
+telnet 127.0.0.1 6899
+```
+
+Després executa el flow que vulguis depurar, normalment en mode local:
+
+```bash
+make -C runtime-docker dataset-consumer-up-local
+```
+
+Quan l'execució arribi al `set_trace()`, PuDB quedarà esperant la connexió i la
+veuràs a la terminal del `telnet`.
+
+Tecles útils:
+
+- `n`: next
+- `s`: step into
+- `r`: return
+- `c`: continue
+- `q`: quit
+
+Notes:
+
+- Si la imatge consumer actual és anterior a aquest canvi, PuDB encara no hi serà.
+  Rebuilda/publica la imatge runtime o instal·la temporalment `pudb==2019.2`
+  dins del contenidor per la sessió actual.
+- Fem servir `pudb==2019.2` perquè el runtime és Python 2.7.
+- Si vols canviar el port remot, defineix `PUDB_RDB_PORT` a `.env.consumer`.
+
+Instal·lació temporal ràpida de PuDB dins del contenidor actual:
+
+```bash
+make -C runtime-docker dataset-consumer-install-package PACKAGE="pudb==2019.2"
+```
+
+Com que això s'instal·la dins del contenidor viu, si el recrees ho perdràs i ho
+hauràs de tornar a executar.
+
+### Carregar manualment el dataset actual a PostgreSQL local
 
 ```bash
 make -C runtime-docker dataset-consumer-restore
@@ -405,10 +513,19 @@ Variables recomanades:
 - `DATASET_TAG` (default: `latest`)
 - `RESET_ADMIN_LOGIN` (default: `admin`)
 - `RESET_ADMIN_PASSWORD` (recomanat: `admin` en entorns locals de demo)
+- `WEBCLIENT_PORT` (default: `8081`, només si `WEBCLIENT=1`)
+- `WEBCLIENT_CHECK_INTERVAL` (default: `21600`, només si `WEBCLIENT=1`)
+- `WEBCLIENT_REPO` (default: `gisce/webclient`, només si `WEBCLIENT=1`)
+- `ERP_MSGPACK_PORT` (default: `8068`, només si `WEBCLIENT=1`)
+- `OPENERP_SECRET` (default: `runtime-docker-secret`; necessari perquè el webclient pugui obtenir tokens al login)
 
 Troubleshooting ràpid:
 
 - Si el contenidor carrega codi antic tot i fer pull, comprova que no estiguis en mode local (`dataset-consumer-up-local`) amb mounts que tapen `/opt/somenergia/src`.
+
+- Si el webclient no arrenca, comprova que `GITHUB_TOKEN` tingui accés al repo privat `gisce/webclient` i mira els logs del servei `webclient`.
+
+- Si `dataset-consumer-sync` no restaura quan esperaves, revisa `runtime-docker/.cache/consumer-state/dataset-state.env` per veure quin `resolved_tag` considera aplicat.
 
 - Si veus `artifact erp/openerp:latest not found`, revisa que `ERP_RUNTIME_IMAGE` sigui una referència completa i existent a Harbor.
 - Pots validar la interpolació final amb:

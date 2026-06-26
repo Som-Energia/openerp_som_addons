@@ -185,8 +185,9 @@ force_admin_credentials() {
   log "Forçant credencials admin/admin"
   run_compose -f "${COMPOSE_FILE}" exec -T "${DB_SERVICE}" \
     psql -U "${POSTGRES_USER}" -d "${POSTGRES_DB}" \
-    -v login="admin" -v password="admin" \
-    -c "UPDATE res_users SET password = :'password' WHERE login = :'login';"
+    -v login="admin" -v password="admin" <<'SQL'
+UPDATE res_users SET password = :'password' WHERE login = :'login';
+SQL
 }
 
 restore_prewarmed_db_if_available() {

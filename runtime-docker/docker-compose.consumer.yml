@@ -15,20 +15,22 @@ services:
       timeout: 5s
       retries: 20
     ports:
-      - "5432:5432"
+      - "${POSTGRES_HOST_PORT:-15432}:5432"
 
   mongo:
     image: mongo:3.0
     ports:
-      - "27017:27017"
+      - "${MONGO_HOST_PORT:-37017}:27017"
 
   redis:
     image: redis:5.0
     ports:
-      - "6379:6379"
+      - "${REDIS_HOST_PORT:-16379}:6379"
 
   erp-runtime:
     image: "${ERP_RUNTIME_IMAGE:-harbor.somenergia.coop/erp/openerp:latest}"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     depends_on:
       postgres:
         condition: service_healthy
@@ -40,6 +42,10 @@ services:
       GITHUB_TOKEN: ${GITHUB_TOKEN:-}
       OPENERP_DB_USER: ${POSTGRES_USER:-erp}
       OPENERP_DB_PASSWORD: ${POSTGRES_PASSWORD:-erp}
+      OPENERP_MSGPACK: 1
+      OPENERP_MSGPACK_HOST: 0.0.0.0
+      OPENERP_MSGPACK_PORT: ${ERP_MSGPACK_PORT:-8068}
+      OPENERP_SECRET: ${OPENERP_SECRET:-runtime-docker-secret}
       ERP_DATABASE: ${POSTGRES_DB:-erp}
       ERP_XMLRPC_PORT: ${ERP_XMLRPC_PORT:-8069}
       ERP_FOREGROUND: "1"
@@ -80,6 +86,7 @@ services:
         exec bash /opt/somenergia/src/openerp_som_addons/scripts/start-openerp-server.sh
     ports:
       - "${ERP_XMLRPC_PORT:-8069}:${ERP_XMLRPC_PORT:-8069}"
+      - "${PUDB_RDB_PORT:-6899}:6899"
 
   dataset-restore:
     image: ubuntu:22.04
@@ -123,8 +130,7 @@ services:
         PGPASSWORD="$${POSTGRES_PASSWORD}" pg_restore -h "$${POSTGRES_HOST}" -p "$${POSTGRES_PORT}" -U "$${POSTGRES_USER}" -d "$${POSTGRES_DB}" --clean --if-exists -L /tmp/restore.filtered.list /tmp/restore.dump
         if [ -n "$${RESET_ADMIN_PASSWORD}" ]; then
           PGPASSWORD="$${POSTGRES_PASSWORD}" psql -h "$${POSTGRES_HOST}" -p "$${POSTGRES_PORT}" -U "$${POSTGRES_USER}" -d "$${POSTGRES_DB}" \
-            -v login="$${RESET_ADMIN_LOGIN}" -v password="$${RESET_ADMIN_PASSWORD}" \
-            -c "UPDATE res_users SET password = :'password' WHERE login = :'login';"
+            -c "UPDATE res_users SET password = '$${RESET_ADMIN_PASSWORD}' WHERE login = '$${RESET_ADMIN_LOGIN}';"
         fi
         echo "Dataset restored successfully"
 

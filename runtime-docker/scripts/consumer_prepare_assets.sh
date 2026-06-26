@@ -21,6 +21,19 @@ require_cmd() {
 	command -v "$1" >/dev/null 2>&1 || fail "Falta l'eina requerida: $1"
 }
 
+docker_login_if_configured() {
+	if [ -z "${HARBOR_DOMAIN:-}" ] && [ -z "${HARBOR_USERNAME:-}" ] && [ -z "${HARBOR_PASSWORD:-}" ]; then
+		return
+	fi
+
+	[ -n "${HARBOR_DOMAIN:-}" ] || fail "Cal HARBOR_DOMAIN per fer docker login"
+	[ -n "${HARBOR_USERNAME:-}" ] || fail "Cal HARBOR_USERNAME per fer docker login"
+	[ -n "${HARBOR_PASSWORD:-}" ] || fail "Cal HARBOR_PASSWORD per fer docker login"
+
+	log "Fent docker login a ${HARBOR_DOMAIN}"
+	printf '%s' "${HARBOR_PASSWORD}" | docker login "${HARBOR_DOMAIN}" -u "${HARBOR_USERNAME}" --password-stdin >/dev/null
+}
+
 has_dataset_cached() {
 	local target_dir="$1"
 	shopt -s nullglob
@@ -71,6 +84,7 @@ should_pull_latest_image() {
 
 main() {
 	require_cmd docker
+	docker_login_if_configured
 
 	if [[ "${ERP_RUNTIME_IMAGE}" == *":latest" ]] && [ "${FORCE_REFRESH_LATEST}" = "1" ]; then
 		if should_pull_latest_image; then

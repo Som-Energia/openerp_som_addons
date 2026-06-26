@@ -1,12 +1,12 @@
 server {
-    listen 8081;
+    listen ${WEBCLIENT_LISTEN_PORT};
     server_name _;
 
     root /usr/share/nginx/html;
     index index.html;
 
     location /api {
-        proxy_pass http://localhost:8068/;
+        proxy_pass ${WEBCLIENT_API_UPSTREAM};
         proxy_set_header X-Real-IP $remote_addr;
         proxy_read_timeout 86400;
     }

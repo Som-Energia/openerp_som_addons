@@ -108,8 +108,9 @@ reset_admin_external() {
   log "Aplicant credencials després del restore per ${RESET_ADMIN_LOGIN}"
   PGPASSWORD="${POSTGRES_PASSWORD}" psql \
     -h "${POSTGRES_HOST}" -p "${POSTGRES_PORT}" -U "${POSTGRES_USER}" -d "${POSTGRES_DB}" \
-    -v login="${RESET_ADMIN_LOGIN}" -v password="${RESET_ADMIN_PASSWORD}" \
-    -c "UPDATE res_users SET password = :'password' WHERE login = :'login';"
+    -v login="${RESET_ADMIN_LOGIN}" -v password="${RESET_ADMIN_PASSWORD}" <<'SQL'
+UPDATE res_users SET password = :'password' WHERE login = :'login';
+SQL
 }
 
 reset_admin_compose() {
@@ -120,8 +121,9 @@ reset_admin_compose() {
   log "Aplicant credencials després del restore per ${RESET_ADMIN_LOGIN}"
   run_compose -f "${COMPOSE_FILE}" exec -T "${DB_SERVICE}" \
     psql -U "${POSTGRES_USER}" -d "${POSTGRES_DB}" \
-    -v login="${RESET_ADMIN_LOGIN}" -v password="${RESET_ADMIN_PASSWORD}" \
-    -c "UPDATE res_users SET password = :'password' WHERE login = :'login';"
+    -v login="${RESET_ADMIN_LOGIN}" -v password="${RESET_ADMIN_PASSWORD}" <<'SQL'
+UPDATE res_users SET password = :'password' WHERE login = :'login';
+SQL
 }
 
 resolve_compose_file() {
@@ -195,6 +197,29 @@ wait_for_compose_db() {
   fail "PostgreSQL del compose no està llest després d'esperar"
 }
 
+wait_for_compose_db_stable() {
+  local required_successes=3
+  local successes=0
+  local tries=30
+  local i
+
+  for ((i = 1; i <= tries; i++)); do
+    if run_compose -f "${COMPOSE_FILE}" exec -T "${DB_SERVICE}" \
+      psql -h 127.0.0.1 -U "${POSTGRES_USER}" -d postgres -tAc 'SELECT 1;' \
+      | grep -Fxq '1'; then
+      successes=$((successes + 1))
+      if [ "${successes}" -ge "${required_successes}" ]; then
+        return
+      fi
+    else
+      successes=0
+    fi
+    sleep 1
+  done
+
+  fail "PostgreSQL del compose no s'ha mantingut estable després d'esperar"
+}
+
 restore_external() {
   local dump_file="$1"
   local toc_file filtered_toc
@@ -247,6 +272,7 @@ restore_compose() {
   run_compose -f "${COMPOSE_FILE}" up -d "${DB_SERVICE}" >/dev/null
   wait_for_compose_db
   assert_compose_postgres_major
+  wait_for_compose_db_stable
 
   log "Copiant dump dins del contenidor"
   run_compose -f "${COMPOSE_FILE}" cp "${dump_file}" "${DB_SERVICE}:${remote_dump}"
@@ -254,9 +280,9 @@ restore_compose() {
 
   log "Recreant base de dades ${POSTGRES_DB} dins del compose"
   run_compose -f "${COMPOSE_FILE}" exec -T "${DB_SERVICE}" \
-    dropdb --if-exists -U "${POSTGRES_USER}" "${POSTGRES_DB}"
+    dropdb --if-exists -h 127.0.0.1 -U "${POSTGRES_USER}" "${POSTGRES_DB}"
   run_compose -f "${COMPOSE_FILE}" exec -T "${DB_SERVICE}" \
-    createdb -U "${POSTGRES_USER}" "${POSTGRES_DB}"
+    createdb -h 127.0.0.1 -U "${POSTGRES_USER}" "${POSTGRES_DB}"
 
   log "Restaurant dump dins del compose"
   run_compose -f "${COMPOSE_FILE}" exec -T "${DB_SERVICE}" \

@@ -34,8 +34,8 @@ See `_shared/skill-resolver.md` for the full resolution protocol.
 - Sempre fer `git fetch origin && git pull origin main` abans de crear branca
 
 ### git-commit
-- Format: `<emoji> <type>: <description>` (ex: `✨ feat: add user auth`)
-- Tipus: feat, fix, refactor, perf, test, docs, style, chore, build, ci, revert
+- Format: `<emoji> <description>` (ex: `✨ add user auth`)
+- L'emoji ja indica el tipus; no afegir `feat:`, `fix:`, etc.
 - Emoji obligatori seguit d'un espai
 - Descripció en anglès, max 72 caràcters, imperatiu
 - Context: utilitzar per guardar canvis implementats

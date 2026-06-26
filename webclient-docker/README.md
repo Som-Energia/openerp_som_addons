@@ -144,7 +144,7 @@ Si hi ha una altra cosa, canvia el `listen` a `nginx.conf` i reconstrueix.
 webclient-docker/
 ├── Dockerfile              # nginx:alpine + curl/unzip/jq
 ├── docker-compose.yml      # network_mode: host, llegeix .env
-├── nginx.conf              # listen 8081 + location /api
+├── nginx.conf.template     # plantilla de nginx per listen + location /api
 ├── entrypoint.sh           # update inicial + bucle + exec nginx
 ├── update-webclient.sh     # descàrrega/instal·lació del zip de la release
 ├── .dockerignore
