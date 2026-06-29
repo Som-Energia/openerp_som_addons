@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import base64
 from datetime import datetime
 from time import sleep
 from osv import fields, osv
@@ -70,6 +71,47 @@ class GiscedataCrmLead(osv.OsvInherits):
                     preus_provisional_potencia
 
         return super(GiscedataCrmLead, self).contract_pdf(cursor, uid, ids, context=context)
+
+    def contract_summary_pdf(self, cursor, uid, ids, context=None):
+        if context is None:
+            context = {}
+        if not isinstance(ids, (list, tuple)):
+            ids = [ids]
+
+        lead = self.browse(cursor, uid, ids[0], context=context)
+        summary_context = context.copy()
+        summary_context.update({
+            "lead": True,
+            "lang": lead.lang,
+            "in_rollback_transaction": True,
+            "summary_contract": True,
+        })
+
+        savepoint = 'savepoint_contract_summary_pdf_{}'.format(id(cursor))
+        cursor.savepoint(savepoint)
+        try:
+            self.force_validation(cursor, uid, ids, context=summary_context)
+            self.create_entities(cursor, uid, lead.id, context=summary_context)
+
+            lead = self.browse(cursor, uid, lead.id, context=summary_context)
+            polissa_id = lead.polissa_id and lead.polissa_id.id or False
+            if not polissa_id:
+                raise osv.except_osv(
+                    "Error",
+                    "No temporary contract was generated for the lead contract summary.",
+                )
+
+            service = netsvc.LocalService('report.giscedata.polissa.contract.summary')
+            result, _doc_format = service.create(cursor, uid, [polissa_id], {}, summary_context)
+            encoded = base64.b64encode(result)
+            cursor.rollback(savepoint)
+            return {
+                'contract': encoded,
+                'contract_summary': encoded,
+            }
+        except Exception:
+            cursor.rollback(savepoint)
+            raise
 
     def _check_and_get_mandatory_fields(
         self, cursor, uid, crml_id, mandatory_fields=[], other_fields=[], context=None

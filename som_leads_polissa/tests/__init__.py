@@ -2,6 +2,7 @@
 from __future__ import absolute_import
 
 from .test_lead_www_creation import *
+from .test_contract_summary_pdf import *
 from .test_lead_www_self_consumption import *
 from .test_lead_www_member_linking import *
 from .test_lead_www_member_payment import *
