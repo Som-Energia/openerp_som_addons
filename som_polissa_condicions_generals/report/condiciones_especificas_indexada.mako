@@ -71,7 +71,7 @@
             <p><strong>SA</strong> = Servicios de Ajuste publicados diariamente por Red Eléctrica de España (REE) para la gestión de la red, según el valor publicado en el momento de generar la factura (archivo prdemCAD publicado por REE en liquicomun.zip).</p>
         </li>
         <li>
-            <p><strong>Dsv</strong> = Coste de la penalización por desvíos entre energía programada y energía finalmente utilizada. El coste del Dsv se obtendrá de la suma de los valores publicados por REE para BS3, RAD3 y la media de los costes del desvío a subir y bajar multiplicado por un factor de desvío propio de SOM ENERGIA, SCCL que se actualizará trimestralmente y será informado en la web de de SOM ENERGIA, SCCL (Factor Desvío). En caso de Baleares y Canarias el Dsv se obtiene directamente del precio publicado por REE multiplicado por el Factor Desvío.</p>
+            <p><strong>Dsv</strong> = Coste de la penalización por desvíos entre energía programada y energía finalmente utilizada. El coste del Dsv se obtendrá de la suma de los valores publicados por REE para BS3, RAD3 y la media de los costes del desvío a subir y bajar multiplicado por un factor de desvío propio de SOM ENERGIA, SCCL que se actualizará trimestralmente y será informado en la web de SOM ENERGIA, SCCL (Factor Desvío). En caso de Baleares y Canarias el Dsv se obtiene directamente del precio publicado por REE multiplicado por el Factor Desvío.</p>
             <ul>
                 <li><p>Dsv = [1/2 (CoDsvSu + CoDsvBa) + BS3 + RAD3] * Factor Desvío</p></li>
                 <li><p>Dsv = scdsvdem * Factor Desvío</p></li>
@@ -99,15 +99,15 @@
             <p><strong>CA</strong> = Coste regulado de los cargos del sistema eléctrico definidos por el Ministerio correspondiente, aplicado sobre el total de la energía consumida.</p>
         </li>
     </ul>
-    <ol>
+    <ol type="a">
         <li><span id="anchor-2"></span><strong>Término de energía reactiva</strong></li>
     </ol>
     <p>SOM ENERGIA, SCCL, aplicará a la facturación lo que indica la legislación vigente en relación con la forma de facturar los excesos de energía reactiva. Estos irán a cargo de la Contratante y se calcularán según el porcentaje de energía reactiva generada en la instalación respecto del consumo de energía activa.</p>
-    <ol start="2">
+    <ol type="a" start="2">
         <li><span id="anchor-3"></span><strong>Excesos de potencia</strong></li>
     </ol>
     <p>SOM ENERGIA, SCCL, aplicará a la facturación lo que indica la legislación vigente en relación con la forma de facturar los excesos de potencia de la tarifa de acceso, que irán a cargo de la Contratante por la diferencia entre la potencia contratada y la finalmente utilizada.</p>
-    <ol start="3">
+    <ol type="a" start="3">
         <li><span id="anchor-4"></span><strong>Compensación simplificada</strong></li>
     </ol>
     <p>En caso de estar acogido al mecanismo de compensación simplificada, la comercializadora debe reflejar en las facturas esta compensación, de acuerdo a la información facilitada por la compañía distribuidora, conforme a lo que establece el Real Decreto 244/2019 y otra normativa aplicable a esta modalidad de autoconsumo. En particular, la comercializadora debe facturar la energía consumida de la red en periodos de facturación de 1 mes, de acuerdo a las lecturas y otra información enviada por la distribuidora, conforme a los artículos 13 y 14 del Real Decreto 244/2019, aplicando el precio de compensación que se pacta a continuación.</p>
