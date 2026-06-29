@@ -22,6 +22,7 @@
         "som_partner_account",
         "som_card_payment",
         "giscedata_crm_leads_signatura",
+        "som_polissa_condicions_generals",
     ],
     "init_xml": [],
     "demo_xml": [
@@ -29,6 +30,7 @@
     ],
     "update_xml": [
         "data/giscedata_crm_lead_data.xml",
+        "report/giscedata_crm_lead_report.xml",
         "views/giscedata_crm_lead_view.xml",
         "views/res_partner_view.xml",
         "wizard/wizard_crm_lead_create_entities_view.xml",
