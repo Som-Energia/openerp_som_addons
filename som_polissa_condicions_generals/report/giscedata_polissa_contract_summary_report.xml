@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<openerp>
+    <data>
+        <record id="report_contract_summary" model="ir.actions.report.xml">
+            <field name="report_name">giscedata.polissa.contract.summary</field>
+            <field name="name">Lead Contract Summary</field>
+            <field name="model">giscedata.polissa</field>
+            <field name="report_webkit" eval=""/>
+            <field name="report_type">pdf</field>
+            <field name="header" eval="0"/>
+            <field name="auto" eval="0"/>
+            <field eval="[(6,0,[])]" name="groups_id"/>
+            <field eval="0" name="multi"/>
+            <field name="type">ir.actions.report.xml</field>
+            <field name="webkit_header" eval="0"/>
+            <field name="report_rml" eval="False"/>
+            <field name="report_xsl" eval="False"/>
+            <field name="report_xml" eval="False"/>
+        </record>
+    </data>
+</openerp>
