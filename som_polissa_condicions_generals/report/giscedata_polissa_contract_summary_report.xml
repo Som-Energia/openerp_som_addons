@@ -17,5 +17,12 @@
             <field name="report_xsl" eval="False"/>
             <field name="report_xml" eval="False"/>
         </record>
+        <record id="value_report_contract_summary" model="ir.values">
+            <field name="object" eval="1"/>
+            <field name="name">giscedata.polissa.contract.summary</field>
+            <field name="key2">client_print_multi</field>
+            <field name="model">giscedata.polissa</field>
+            <field name="value" eval="'ir.actions.report.xml,'+str(ref('report_contract_summary'))"/>
+        </record>
     </data>
 </openerp>
