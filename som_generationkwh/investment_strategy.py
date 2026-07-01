@@ -881,9 +881,6 @@ class AportacionsActions(InvestmentActions):
         partner_id = investment.member_id.partner_id.id
         partner = Partner.browse(cursor, uid, partner_id)
 
-        # Get or create partner specific accounts
-        account_inv_id = self.get_or_create_investment_account(cursor, uid, partner_id)
-
         # The product
         product_id = Product.search(cursor, uid, [
             ('default_code', '=', 'APO_INT'),
@@ -987,8 +984,6 @@ class AportacionsActions(InvestmentActions):
             quantity=1,
             price_unit=to_be_interized,
             product_id=product_id,
-            # partner specific account, was generic from product
-            account_id=account_inv_id,
         )
 
         # Force apply taxes. Taxes from product doesn't work.
