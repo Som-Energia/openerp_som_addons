@@ -1,4 +1,4 @@
-<%page args="offer, prices, features, gurb" />
+<%def name="summary_offer(offer, prices, features, gurb)">
 <%
     economic_summary = offer['economic_summary']
 %>
@@ -95,3 +95,4 @@
         %endif
     </div>
 </div>
+</%def>

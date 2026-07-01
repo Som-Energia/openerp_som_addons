@@ -1,4 +1,4 @@
-<%page args="company, holder, supply, self_consumption" />
+<%def name="summary_identification(company, holder, supply, self_consumption)">
 <div class="summary-box">
     <h3>2. Identificación del titular y del punto de suministro</h3>
     <div class="summary-content">
@@ -31,3 +31,4 @@
         %endif
     </div>
 </div>
+</%def>

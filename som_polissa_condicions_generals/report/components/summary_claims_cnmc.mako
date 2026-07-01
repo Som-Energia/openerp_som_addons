@@ -1,4 +1,4 @@
-<%page args="cnmc" />
+<%def name="summary_claims_cnmc(cnmc)">
 <div class="summary-box">
     <h3>1. Vías alternativas de reclamación disponibles al consumidor</h3>
     <div class="summary-content">
@@ -15,3 +15,4 @@
         <%include file="/giscedata_facturacio_comer_som/report/components/cnmc_comparator_qr_link/cnmc_comparator_qr_link.mako" args="comparator=cnmc" />
     </div>
 </div>
+</%def>

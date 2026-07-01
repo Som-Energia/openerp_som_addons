@@ -1,4 +1,4 @@
-<%page args="discounts" />
+<%def name="summary_discounts(discounts)">
 <div class="summary-box">
     <h3>5. Descuentos y promociones</h3>
     <div class="summary-content">
@@ -11,3 +11,4 @@
         %endif
     </div>
 </div>
+</%def>

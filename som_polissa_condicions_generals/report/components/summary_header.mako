@@ -1,4 +1,4 @@
-<%page args="company" />
+<%def name="summary_header(company)">
 <div class="summary-title">DOCUMENTO RESUMEN DEL CONTRATO DE SUMINISTRO ELÉCTRICO</div>
 <div class="summary-box">
     <h3>1. Identificación de la empresa comercializadora</h3>
@@ -12,3 +12,4 @@
         <p class="section-text"><span class="inline-label">Teléfono de atención gratuito:</span> ${company['phone']}</p>
     </div>
 </div>
+</%def>
