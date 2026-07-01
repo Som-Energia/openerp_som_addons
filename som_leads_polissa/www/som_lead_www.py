@@ -374,9 +374,6 @@ class SomLeadWww(osv.osv_memory):
             cr, uid, "som_card_payment", "payment_mode_card_recurrent"
         )[1]
 
-        expiry_date = '{}/{}'.format(card_vals["creditcard_expiry_date"]
-                                     [2:], card_vals["creditcard_expiry_date"][:2])
-
         lead_o.write(
             cr,
             uid,
@@ -385,7 +382,7 @@ class SomLeadWww(osv.osv_memory):
                 "payment_mode_id": payment_mode_id,
                 "creditcard_token": card_vals["creditcard_token"],
                 "creditcard_masked_number": card_vals["creditcard_masked_number"],
-                "creditcard_expiry_date": expiry_date,
+                "creditcard_expiry_date": card_vals["creditcard_expiry_date"],
                 "creditcard_cof_txnid": card_vals["creditcard_cof_txnid"],
             },
             context=context,
