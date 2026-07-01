@@ -1,4 +1,4 @@
-<%page args="features, bono_social_estimate" />
+<%def name="summary_legal(features, bono_social_estimate)">
 <div class="summary-box">
     <h3>6. Duración y prórroga del contrato</h3>
     <div class="summary-content">
@@ -43,3 +43,4 @@
         <p class="section-text"><span class="inline-label">Estimación de la diferencia anual de precio existente entre el nuevo contrato y el anterior con bono social:</span> ${bono_social_estimate}</p>
     </div>
 </div>
+</%def>
