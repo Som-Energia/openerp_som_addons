@@ -56,5 +56,15 @@
         <record id="giscedata_facturacio_bateria_virtual.value_giscedata_import_bateria_virtual_polissa" model="ir.values">
             <field name="name">Detall sols generats i aplicats</field>
         </record>
+
+        <record id="giscedata_facturacio_bateria_virtual.act_detall_descompte_per_bat"
+                model="ir.actions.act_window">
+            <field name="src_model"/>
+        </record>
+
+        <record id="giscedata_facturacio_bateria_virtual.value_detall_descomptes_per_bateria"
+                model="ir.values">
+            <field name="model"/>
+        </record>
     </data>
 </openerp>
