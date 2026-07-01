@@ -128,15 +128,17 @@
     <p>
         5.2 Sens perjudici del que indica la clàusula anterior en relació amb la resolució unilateral per part de la Contractant, són causes automàtiques de resolució del producte GURB les següents:
     </p>
-    <p>
-        En cas de resolució del contracte de subministrament de la Contractant amb SOM ENERGIA, SCCL: en aquest cas, la Comercialitzadora informarà d’aquesta circumstància la Contractant, així com de l’inici dels tràmits per donar de baixa el CUPS de la Contractant de l’autoconsum col·lectiu. La Contractant s’obliga a aportar tota la documentació que sigui necessària per materialitzar aquesta baixa, així com a donar instruccions a la seva nova comercialitzadora, i està obligada a abonar la Quota GURB fins que la baixa sigui efectiva.
-    </p>
-    <p>
-        En cas que qualsevol de les Parts incompleixi les seves obligacions, segons aquestes Condicions Específiques o segons el Contracte de Subministrament, en particular que incompleixi totes o algunes de les obligacions necessàries per activar o modificar l’autoconsum col·lectiu dins dels terminis establerts. En el supòsit que sigui la Contractant qui hagi incomplert les seves obligacions, SOM ENERGIA, SCCL, no li retornarà el Cost d’Adhesió i la Contractant estarà obligada a abonar la Quota GURB fins que la baixa del producte sigui efectiva.
-    </p>
-    <p>
-        Qualsevol altre cas previst en aquest contracte o en la legislació aplicable.
-    </p>
+    <ol type="a">
+        <li>
+            En cas de resolució del contracte de subministrament de la Contractant amb SOM ENERGIA, SCCL: en aquest cas, la Comercialitzadora informarà d’aquesta circumstància la Contractant, així com de l’inici dels tràmits per donar de baixa el CUPS de la Contractant de l’autoconsum col·lectiu. La Contractant s’obliga a aportar tota la documentació que sigui necessària per materialitzar aquesta baixa, així com a donar instruccions a la seva nova comercialitzadora, i està obligada a abonar la Quota GURB fins que la baixa sigui efectiva.
+        </li>
+        <li>
+            En cas que qualsevol de les Parts incompleixi les seves obligacions, segons aquestes Condicions Específiques o segons el Contracte de Subministrament, en particular que incompleixi totes o algunes de les obligacions necessàries per activar o modificar l’autoconsum col·lectiu dins dels terminis establerts. En el supòsit que sigui la Contractant qui hagi incomplert les seves obligacions, SOM ENERGIA, SCCL, no li retornarà el Cost d’Adhesió i la Contractant estarà obligada a abonar la Quota GURB fins que la baixa del producte sigui efectiva.
+        </li>
+        <li>
+            Qualsevol altre cas previst en aquest contracte o en la legislació aplicable.
+        </li>
+    </ol>
     <p>
         5.3. SOM ENERGIA, SCCL, pot resoldre unilateralment el producte GURB avisant la Contractant amb trenta (30) dies naturals d’antelació en cas de modificació normativa o qualsevol altre canvi que afecti l’autoconsum col·lectiu en xarxa. SOM ENERGIA, SCCL, no li retornarà el Cost d’Adhesió i la Contractant estarà obligada a abonar la Quota GURB fins que la baixa del producte sigui efectiva.
     </p>
@@ -149,34 +151,34 @@
         “5. (bis) En cas d’haver contractat el producte GURB, la Contractant abonarà, addicionalment a la contraprestació pel subministrament contractat, el preu que es detalla a les Condicions particulars com a contraprestació del producte GURB, que anualment s’actualitzarà d’acord amb l’Índex de preus al consum (IPC) que correspongui i al qual s’hauran d’afegir els impostos aplicables al tipus vigent en cada moment, així com totes les prestacions patrimonials i/o d’altres legalment exigibles.
     </p>
     <p>
-        La contraprestació pel producte GURB consisteix en un cost d’adhesió (en endavant, “Cost d’Adhesió”) i una quota de producte mensual (d’ara endavant, “Quota GURB”).
+        La contraprestació pel producte GURB consisteix en un cost d’adhesió (en endavant, “<b>Cost d’Adhesió</b>”) i una quota de producte mensual (d’ara endavant, “<b>Quota GURB</b>”).
     </p>
     <p>
-        El Cost d’Adhesió és únic i estarà vinculat a cada Instal·lació. S’informarà la Contractant de l’import d’aquest Cost d’Adhesió en el moment que contracti el producte GURB, i quedarà recollit a les Condicions Particulars. Aquest import es retorna solament en els casos previstos en aquestes Condicions Específiques.
+        <b>El Cost d’Adhesió</b> és únic i estarà vinculat a cada Instal·lació. S’informarà la Contractant de l’import d’aquest <b>Cost d’Adhesió</b> en el moment que contracti el producte GURB, i quedarà recollit a les Condicions Particulars. Aquest import es retorna solament en els casos previstos en aquestes Condicions Específiques.
     </p>
     <p>
-        La Contractant ha d’abonar el Cost d’Adhesió per poder acabar el formulari de contractació, d’acord amb les instruccions de pagament recollides en el mateix formulari. Obtindrà la factura corresponent adjunta al correu electrònic de benvinguda que rebrà quan acabi la contractació.
+        La Contractant ha d’abonar el <b>Cost d’Adhesió</b> per poder acabar el formulari de contractació, d’acord amb les instruccions de pagament recollides en el mateix formulari. Obtindrà la factura corresponent adjunta al correu electrònic de benvinguda que rebrà quan acabi la contractació.
     </p>
     <p>
-        La Contractant estarà exempta d’abonar el Cost d’Adhesió en dos casos:
+        La Contractant estarà exempta d’abonar el <b>Cost d’Adhesió</b> en dos casos:
     </p>
     <p>
         (i) El CUPS objecte del Contracte de Subministrament ja està associat a un autoconsum col·lectiu GURB.
     </p>
     <p>
-        (ii) La Contractant informa SOM ENERGIA, SCCL, de la seva voluntat de resoldre el Contracte de Subministrament a causa d’un canvi de domicili i sol·licita que el seu nou subministrament s’associï a l’autoconsum col·lectiu de la Instal·lació (perquè es troba dins del perímetre de 5 km), SOM ENERGIA, SCCL, no li cobrarà de nou el Cost d’Adhesió. En tot cas, la Contractant haurà de continuar abonant la Quota GURB respecte al CUPS inicial en les mateixes condicions que qualsevol altra baixa (tres mesos si ha preavisat o bé fins que la baixa del CUPS sigui efectiva).
+        (ii) La Contractant informa SOM ENERGIA, SCCL, de la seva voluntat de resoldre el Contracte de Subministrament a causa d’un canvi de domicili i sol·licita que el seu nou subministrament s’associï a l’autoconsum col·lectiu de la Instal·lació (perquè es troba dins del perímetre de 5 km), SOM ENERGIA, SCCL, no li cobrarà de nou el <b>Cost d’Adhesió</b>. En tot cas, la Contractant haurà de continuar abonant la <b>Quota GURB</b> respecte al CUPS inicial en les mateixes condicions que qualsevol altra baixa (tres mesos si ha preavisat o bé fins que la baixa del CUPS sigui efectiva).
     </p>
     <p>
-        L’import de la Quota GURB depèn de la Potència GURB contractada (kW contractats) i de la tipologia d’autoconsum col·lectiu de la Instal·lació. S’informarà la Contractant de l’import d’aquesta Quota GURB en el moment que contracti el producte GURB, i ha de quedar recollida a les Condicions Particulars.
+        L’import de la <b>Quota GURB</b> depèn de la Potència GURB contractada (kW contractats) i de la tipologia d’autoconsum col·lectiu de la Instal·lació. S’informarà la Contractant de l’import d’aquesta <b>Quota GURB</b> en el moment que contracti el producte GURB, i ha de quedar recollida a les Condicions Particulars.
     </p>
     <p>
-        La Quota GURB és exigible a partir de la primera factura que s’emeti (segons el Contracte de Subministrament) després de la Data d’Activació, i es facturarà prorratejada pel nombre de dies que inclogui la factura de subministrament, considerant exclòs de facturar el dia de lectura inicial i inclòs el dia de lectura final, i d’acord amb la clàusula 7 de les Condicions Generals de Contractació.
+        La <b>Quota GURB</b> és exigible a partir de la primera factura que s’emeti (segons el Contracte de Subministrament) després de la Data d’Activació, i es facturarà prorratejada pel nombre de dies que inclogui la factura de subministrament, considerant exclòs de facturar el dia de lectura inicial i inclòs el dia de lectura final, i d’acord amb la clàusula 7 de les Condicions Generals de Contractació.
     </p>
     <p>
-        La Quota GURB pot variar durant la vigència del Contracte de Subministrament en els termes establerts a la clàusula 5.3 (ii) de les Condicions Generals.
+        La <b>Quota GURB</b> pot variar durant la vigència del Contracte de Subministrament en els termes establerts a la clàusula 5.3 (ii) de les Condicions Generals.
     </p>
     <p>
-        El Cost d’Adhesió, la Quota GURB, les característiques del producte GURB contractat (la Potència GURB, la tipologia de l’autoconsum col·lectiu al qual quedarà associat el CUPS de la Contractant i la (𝜷), acceptades per la Contractant en el formulari de contractació, es recolliran a les Condicions Particulars, com també els impostos i totes les prestacions patrimonials i/o d’altres exigibles legalment.
+        El <b>Cost d’Adhesió</b>, la <b>Quota GURB</b>, les característiques del producte GURB contractat (la Potència GURB, la tipologia de l’autoconsum col·lectiu al qual quedarà associat el CUPS de la Contractant i la (𝜷), acceptades per la Contractant en el formulari de contractació, es recolliran a les Condicions Particulars, com també els impostos i totes les prestacions patrimonials i/o d’altres exigibles legalment.
     </p>
     <p>
         En cas que el CUPS contractat estigui també associat al Preu Generation kWh, aquest s’aplicarà prioritàriament respecte a qualsevol altra tarifa contractada, si bé s’aplicarà únicament al consum (kWh) provinent del sistema Generation kWh. La facturació del Preu Generation kWh es farà sobre el consum corresponent expressat en kWh sencers, sense decimals.”
@@ -351,15 +353,17 @@
     <p>
         5.2 Sin perjuicio de lo que indica la cláusula anterior en relación con la resolución unilateral por parte de la Contratante, son causas automáticas de resolución del producto GURB las siguientes:
     </p>
-    <p>
-        a. En caso de resolución del contrato de suministro de la Contratante con SOM ENERGIA, SCCL,: en este caso, la Comercializadora informará de esta circunstancia a la Contratante, así como del inicio de los trámites para dar de baja el CUPS de la Contratante del autoconsumo colectivo. La Contratante se obliga a aportar toda la documentación que sea necesaria para materializar esta baja, así como a dar instrucciones a su nueva comercializadora, y está obligada a abonar la Cuota GURB hasta que la baja sea efectiva.
-    </p>
-    <p>
-        En caso de incumplimiento por cualquiera de las Partes de sus obligaciones, según las presentes Condiciones Específicas o según el Contrato de Suministro, en particular el incumplimiento de todas o algunas de las obligaciones necesarias para activar o modificar el autoconsumo colectivo dentro de los plazos establecidos. En el supuesto de que sea la Contratante quien haya incumplido sus obligaciones, SOM ENERGIA, SCCL, no le devolverá el Coste de Adhesión y la Contratante estará obligada a abonar la Cuota GURB hasta que la baja del producto sea efectiva.
-    </p>
-    <p>
-        Cualquier otro caso previsto en este contrato o en la legislación aplicable.
-    </p>
+    <ol type="a">
+        <li>
+            En caso de resolución del contrato de suministro de la Contratante con SOM ENERGIA, SCCL,: en este caso, la Comercializadora informará de esta circunstancia a la Contratante, así como del inicio de los trámites para dar de baja el CUPS de la Contratante del autoconsumo colectivo. La Contratante se obliga a aportar toda la documentación que sea necesaria para materializar esta baja, así como a dar instrucciones a su nueva comercializadora, y está obligada a abonar la Cuota GURB hasta que la baja sea efectiva.
+        </li>
+        <li>
+            En caso de incumplimiento por cualquiera de las Partes de sus obligaciones, según las presentes Condiciones Específicas o según el Contrato de Suministro, en particular el incumplimiento de todas o algunas de las obligaciones necesarias para activar o modificar el autoconsumo colectivo dentro de los plazos establecidos. En el supuesto de que sea la Contratante quien haya incumplido sus obligaciones, SOM ENERGIA, SCCL, no le devolverá el Coste de Adhesión y la Contratante estará obligada a abonar la Cuota GURB hasta que la baja del producto sea efectiva.
+        </li>
+        <li>
+            Cualquier otro caso previsto en este contrato o en la legislación aplicable.
+        </li>
+    </ol>
     <p>
         5.3. SOM ENERGIA, SCCL, puede resolver unilateralmente el producto GURB avisando a la Contratante con treinta (30) días naturales de antelación en caso de modificación normativa o cualquier otro cambio que afecte al autoconsumo colectivo en red. SOM ENERGIA, SCCL, no le devolverá el Coste de Adhesión y la Contratante estará obligada a abonar la Cuota GURB hasta que la baja del producto sea efectiva.
     </p>
@@ -372,34 +376,34 @@
         “5. (bis) En caso de haber contratado el producto GURB, la Contratante abonará, adicionalmente a la contraprestación por el suministro contratado, el precio que se detalla en las Condiciones particulares como contraprestación del producto GURB el cual será actualizado anualmente conforme al Índice de precios al consumo (IPC) que corresponda y al que se deberán añadir los impuestos aplicables al tipo vigente en cada momento, así como todas las prestaciones patrimoniales y/u otras legalmente exigibles.
     </p>
     <p>
-        La contraprestación por el producto GURB consiste en un coste de adhesión (en adelante, “Coste de Adhesión”) y una cuota de producto mensual (en adelante, “Cuota GURB”).
+        La contraprestación por el producto GURB consiste en un coste de adhesión (en adelante, “<b>Coste de Adhesión</b>”) y una cuota de producto mensual (en adelante, “<b>Cuota GURB</b>”).
     </p>
     <p>
-        El Coste de Adhesión es único y estará vinculado a cada Instalación. La Contratante será informada del importe de este Coste de Adhesión en el momento de la contratación del producto GURB, y quedará recogido en las Condiciones Particulares. Este importe se devuelve solamente en los casos previstos en estas Condiciones Específicas.
+        <b>El Coste de Adhesión</b> es único y estará vinculado a cada Instalación. La Contratante será informada del importe de este <b>Coste de Adhesión</b> en el momento de la contratación del producto GURB, y quedará recogido en las Condiciones Particulares. Este importe se devuelve solamente en los casos previstos en estas Condiciones Específicas.
     </p>
     <p>
-        La Contratante ha de abonar el Coste de Adhesión para poder acabar el formulario de contratación, de acuerdo con las instrucciones de pago recogidas en el propio formulario. Recibirá la factura correspondiente adjunta al correo electrónico de bienvenida que recibirá una vez acabada la contratación.
+        La Contratante ha de abonar el <b>Coste de Adhesión</b> para poder acabar el formulario de contratación, de acuerdo con las instrucciones de pago recogidas en el propio formulario. Recibirá la factura correspondiente adjunta al correo electrónico de bienvenida que recibirá una vez acabada la contratación.
     </p>
     <p>
-        La Contratante estará exenta de abonar el Coste de Adhesión en 2 casos:
+        La Contratante estará exenta de abonar el <b>Coste de Adhesión</b> en 2 casos:
     </p>
     <p>
         (i) El CUPS objeto del Contrato de Suministro ya está asociado a un autoconsumo colectivo GURB.
     </p>
     <p>
-        (ii) La Contratante informa a SOM ENERGIA, SCCL, de su voluntad de resolver el Contrato de Suministro debido a un cambio de domicilio y solicita que su nuevo suministro se asocie al autoconsumo colectivo de la Instalación (por encontrarse dentro del perímetro de 5 kms), SOM ENERGIA, SCCL, no le cobrará de nuevo el Coste de Adhesión. En todo caso, la Contratante deberá continuar abonando la Cuota GURB respecto al CUPS inicial en las mismas condiciones que cualquier otra baja (tres meses si ha preavisado o bien hasta que la baja del CUPS sea efectiva).
+        (ii) La Contratante informa a SOM ENERGIA, SCCL, de su voluntad de resolver el Contrato de Suministro debido a un cambio de domicilio y solicita que su nuevo suministro se asocie al autoconsumo colectivo de la Instalación (por encontrarse dentro del perímetro de 5 kms), SOM ENERGIA, SCCL, no le cobrará de nuevo el <b>Coste de Adhesión</b>. En todo caso, la Contratante deberá continuar abonando la <b>Cuota GURB</b> respecto al CUPS inicial en las mismas condiciones que cualquier otra baja (tres meses si ha preavisado o bien hasta que la baja del CUPS sea efectiva).
     </p>
     <p>
-        2. El importe de la Cuota GURB depende de la Potencia GURB contratada (kW contratados) y de la tipología de autoconsumo colectivo de la Instalación. La Contratante será informada del importe de esta Cuota GURB en el momento de la contratación del producto GURB, y tiene que quedar recogida a las Condiciones Particulares.
+        2. El importe de la <b>Cuota GURB</b> depende de la Potencia GURB contratada (kW contratados) y de la tipología de autoconsumo colectivo de la Instalación. La Contratante será informada del importe de esta <b>Cuota GURB</b> en el momento de la contratación del producto GURB, y tiene que quedar recogida a las Condiciones Particulares.
     </p>
     <p>
-        La Cuota GURB es exigible a partir de la primera factura a emitir (según el Contrato de Suministro) posterior a la Fecha de Activación, y se facturará prorrateada por el número de días que incluya la factura de suministro, considerando el día inicial de lectura a facturar excluido y el de lectura final incluido y, conforme la cláusula 7 de las Condiciones Generales de Contratación.
+        La <b>Cuota GURB</b> es exigible a partir de la primera factura a emitir (según el Contrato de Suministro) posterior a la Fecha de Activación, y se facturará prorrateada por el número de días que incluya la factura de suministro, considerando el día inicial de lectura a facturar excluido y el de lectura final incluido y, conforme la cláusula 7 de las Condiciones Generales de Contratación.
     </p>
     <p>
-        La Cuota GURB puede variar durante la vigencia del Contrato de Suministro en los términos establecidos en la cláusula 5.3 (ii) de las Condiciones Generales.
+        La <b>Cuota GURB</b> puede variar durante la vigencia del Contrato de Suministro en los términos establecidos en la cláusula 5.3 (ii) de las Condiciones Generales.
     </p>
     <p>
-        El Coste de Adhesión, la Cuota GURB, las características del producto GURB contratado (la Potencia GURB, la tipología del autoconsumo colectivo al que quedará asociado el CUPS de la Contratante y la 𝜷), aceptadas por la Contratante en el formulario de contratación serán las recogidas en las Condiciones Particulares. Así mismo, los impuestos y todas las prestaciones patrimoniales y/u otros exigibles legalmente.
+        El <b>Coste de Adhesión</b>, la <b>Cuota GURB</b>, las características del producto GURB contratado (la Potencia GURB, la tipología del autoconsumo colectivo al que quedará asociado el CUPS de la Contratante y la 𝜷), aceptadas por la Contratante en el formulario de contratación serán las recogidas en las Condiciones Particulares. Así mismo, los impuestos y todas las prestaciones patrimoniales y/u otros exigibles legalmente.
     </p>
     <p>
         En caso de que el CUPS contratado esté también asociado al Precio Generation kWh éste será de aplicación prioritaria respecto a cualquier otra tarifa contratada, si bien se aplicará únicamente al consumo (kWh) proveniente del sistema Generation kWh. La facturación del Precio Generation kWh se hará sobre el consumo correspondiente expresado en kWh enteros, sin decimales.”
