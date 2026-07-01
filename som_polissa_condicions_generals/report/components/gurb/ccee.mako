@@ -154,7 +154,7 @@
         La contraprestació pel producte GURB consisteix en un cost d’adhesió (en endavant, “<b>Cost d’Adhesió</b>”) i una quota de producte mensual (d’ara endavant, “<b>Quota GURB</b>”).
     </p>
     <p>
-        <b>El Cost d’Adhesió</b> és únic i estarà vinculat a cada Instal·lació. S’informarà la Contractant de l’import d’aquest <b>Cost d’Adhesió</b> en el moment que contracti el producte GURB, i quedarà recollit a les Condicions Particulars. Aquest import es retorna solament en els casos previstos en aquestes Condicions Específiques.
+        1. <b>El Cost d’Adhesió</b> és únic i estarà vinculat a cada Instal·lació. S’informarà la Contractant de l’import d’aquest <b>Cost d’Adhesió</b> en el moment que contracti el producte GURB, i quedarà recollit a les Condicions Particulars. Aquest import es retorna solament en els casos previstos en aquestes Condicions Específiques.
     </p>
     <p>
         La Contractant ha d’abonar el <b>Cost d’Adhesió</b> per poder acabar el formulari de contractació, d’acord amb les instruccions de pagament recollides en el mateix formulari. Obtindrà la factura corresponent adjunta al correu electrònic de benvinguda que rebrà quan acabi la contractació.
@@ -169,7 +169,7 @@
         (ii) La Contractant informa SOM ENERGIA, SCCL, de la seva voluntat de resoldre el Contracte de Subministrament a causa d’un canvi de domicili i sol·licita que el seu nou subministrament s’associï a l’autoconsum col·lectiu de la Instal·lació (perquè es troba dins del perímetre de 5 km), SOM ENERGIA, SCCL, no li cobrarà de nou el <b>Cost d’Adhesió</b>. En tot cas, la Contractant haurà de continuar abonant la <b>Quota GURB</b> respecte al CUPS inicial en les mateixes condicions que qualsevol altra baixa (tres mesos si ha preavisat o bé fins que la baixa del CUPS sigui efectiva).
     </p>
     <p>
-        L’import de la <b>Quota GURB</b> depèn de la Potència GURB contractada (kW contractats) i de la tipologia d’autoconsum col·lectiu de la Instal·lació. S’informarà la Contractant de l’import d’aquesta <b>Quota GURB</b> en el moment que contracti el producte GURB, i ha de quedar recollida a les Condicions Particulars.
+        2. L’import de la <b>Quota GURB</b> depèn de la Potència GURB contractada (kW contractats) i de la tipologia d’autoconsum col·lectiu de la Instal·lació. S’informarà la Contractant de l’import d’aquesta <b>Quota GURB</b> en el moment que contracti el producte GURB, i ha de quedar recollida a les Condicions Particulars.
     </p>
     <p>
         La <b>Quota GURB</b> és exigible a partir de la primera factura que s’emeti (segons el Contracte de Subministrament) després de la Data d’Activació, i es facturarà prorratejada pel nombre de dies que inclogui la factura de subministrament, considerant exclòs de facturar el dia de lectura inicial i inclòs el dia de lectura final, i d’acord amb la clàusula 7 de les Condicions Generals de Contractació.
@@ -379,7 +379,7 @@
         La contraprestación por el producto GURB consiste en un coste de adhesión (en adelante, “<b>Coste de Adhesión</b>”) y una cuota de producto mensual (en adelante, “<b>Cuota GURB</b>”).
     </p>
     <p>
-        <b>El Coste de Adhesión</b> es único y estará vinculado a cada Instalación. La Contratante será informada del importe de este <b>Coste de Adhesión</b> en el momento de la contratación del producto GURB, y quedará recogido en las Condiciones Particulares. Este importe se devuelve solamente en los casos previstos en estas Condiciones Específicas.
+        1. <b>El Coste de Adhesión</b> es único y estará vinculado a cada Instalación. La Contratante será informada del importe de este <b>Coste de Adhesión</b> en el momento de la contratación del producto GURB, y quedará recogido en las Condiciones Particulares. Este importe se devuelve solamente en los casos previstos en estas Condiciones Específicas.
     </p>
     <p>
         La Contratante ha de abonar el <b>Coste de Adhesión</b> para poder acabar el formulario de contratación, de acuerdo con las instrucciones de pago recogidas en el propio formulario. Recibirá la factura correspondiente adjunta al correo electrónico de bienvenida que recibirá una vez acabada la contratación.
