@@ -3,6 +3,7 @@ from __future__ import absolute_import
 import base64
 from datetime import datetime
 from time import sleep
+import pooler
 from osv import fields, osv
 import netsvc
 from oorq.decorators import job
@@ -79,22 +80,21 @@ class GiscedataCrmLead(osv.OsvInherits):
         if not isinstance(ids, (list, tuple)):
             ids = [ids]
 
-        lead = self.browse(cursor, uid, ids[0], context=context)
-        summary_context = context.copy()
-        summary_context.update({
-            "lead": True,
-            "lang": lead.lang,
-            "in_rollback_transaction": True,
-            "summary_contract": True,
-        })
-
-        savepoint = 'savepoint_contract_summary_pdf_{}'.format(id(cursor))
-        cursor.savepoint(savepoint)
+        tmp_cursor = pooler.get_db(cursor.dbname).cursor()
         try:
-            self.force_validation(cursor, uid, ids, context=summary_context)
-            self.create_entities(cursor, uid, lead.id, context=summary_context)
+            lead = self.browse(tmp_cursor, uid, ids[0], context=context)
+            summary_context = context.copy()
+            summary_context.update({
+                "lead": True,
+                "lang": lead.lang,
+                "in_rollback_transaction": True,
+                "summary_contract": True,
+            })
 
-            lead = self.browse(cursor, uid, lead.id, context=summary_context)
+            self.force_validation(tmp_cursor, uid, ids, context=summary_context)
+            self.create_entities(tmp_cursor, uid, lead.id, context=summary_context)
+
+            lead = self.browse(tmp_cursor, uid, lead.id, context=summary_context)
             polissa_id = lead.polissa_id and lead.polissa_id.id or False
             if not polissa_id:
                 raise osv.except_osv(
@@ -103,16 +103,17 @@ class GiscedataCrmLead(osv.OsvInherits):
                 )
 
             service = netsvc.LocalService('report.giscedata.polissa.contract.summary')
-            result, _doc_format = service.create(cursor, uid, [polissa_id], {}, summary_context)
+            result, _doc_format = service.create(
+                tmp_cursor, uid, [polissa_id], {}, summary_context
+            )
             encoded = base64.b64encode(result)
-            cursor.rollback(savepoint)
             return {
                 'contract': encoded,
                 'contract_summary': encoded,
             }
-        except Exception:
-            cursor.rollback(savepoint)
-            raise
+        finally:
+            tmp_cursor.rollback()
+            tmp_cursor.close()
 
     def _check_and_get_mandatory_fields(
         self, cursor, uid, crml_id, mandatory_fields=[], other_fields=[], context=None
