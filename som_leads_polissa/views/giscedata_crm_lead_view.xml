@@ -8,15 +8,6 @@
             <field name="inherit_id" ref="giscedata_crm_leads.giscedata_crm_leads_view_form"/>
             <field name="arch" type="xml">
                 <xpath expr="//field[@name='polissa_id']" position="after">
-                    <group colspan="2">
-                        <button
-                            name="%(lead_contract_summary_report)d"
-                            type="action"
-                            string="Imprimir resum contracte"
-                            icon="gtk-print"
-                            colspan="2"
-                        />
-                    </group>
                     <group colspan="2" attrs="{'invisible': [('polissa_id', '=', False)]}">
                         <button name="button_send_mail" type="object" string="Enviar correu conforme ha contractat" icon="send" colspan="2" confirm="Aquesta acció enviarà un correu electrònic, vols procedir?"/>
                     </group>

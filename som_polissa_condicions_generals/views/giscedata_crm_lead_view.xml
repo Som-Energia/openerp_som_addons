@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<openerp>
+    <data>
+        <record id="giscedata_crm_leads_contract_summary_view" model="ir.ui.view">
+            <field name="name">giscedata.crm.lead.contract.summary.button</field>
+            <field name="model">giscedata.crm.lead</field>
+            <field name="type">form</field>
+            <field name="inherit_id" ref="som_leads_polissa.giscedata_crm_leads_som_view"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='polissa_id']" position="after">
+                    <group colspan="2">
+                        <button
+                            name="%(lead_contract_summary_report)d"
+                            type="action"
+                            string="Imprimir resum contracte"
+                            icon="gtk-print"
+                            colspan="2"
+                        />
+                    </group>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</openerp>
