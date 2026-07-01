@@ -9,7 +9,7 @@
         <h2 style="text-align: center;">${_(u"ACORD DE REPARTIMENT D'ENERGIA EN AUTOCONSUM COL·LECTIU AMB EXCEDENTS I COMPENSACIÓ")}</h1>
     </div>
     <p>
-        ${_(u"En aplicació del Reial decret 244/2019, de 5 d'abril, els consumidors següents vam acordar associar-nos a la instal·lació d'autoconsum col·lectiu d'energia elèctrica amb les característiques següents: ")}
+        ${_(u"En aplicació del Reial decret 244/2019, de 5 d'abril, els consumidors següents acordem associar-nos en una instal·lació d'autoconsum col·lectiu d'energia elèctrica amb les característiques següents:")}
     </p>
     <p>
         <input type="checkbox"> ${_(u"AMB excedents acollits a compensació simplificada")}</input>
@@ -18,7 +18,10 @@
         <input type="checkbox"> ${_(u"AMB excedents no acollits a compensació simplificada")}</input>
     </p>
     <p>
-        <b> ${_(u"Codi autoconsum (CAU):")} </b>
+        <b> ${_(u"Codi d'autoconsum (CAU):")} </b>
+    </p>
+    <p>
+        ${_(u"(completar per cada consumidora associada)")}
     </p>
     <table>
         <thead>
@@ -104,38 +107,33 @@
     ${_(u"Amb la signatura d'aquest acord:")}
     <ul>
         <li>
-            ${_(u"Les persones consumidores ens acollim voluntàriament al mecanisme de compensació simplificada entre els dèficits de consum de cada una i la totalitat dels excedents de la instal·lació d'autoconsum. La generació elèctrica neta es repartirà d'acord amb els coeficients de repartiment (β) indicats, tal com estableix el Reial decret 244/2019, de 5 d'abril. ")}
+            ${_(u"En el cas que la instal·lació estigui donada d'alta en la modalitat amb excedents acollida a compensació, les persones consumidores ens acollim voluntàriament al mecanisme de compensació simplificada entre els dèficits de consum de cadascuna i la totalitat dels excedents de la instal·lació d'autoconsum, la generació elèctrica neta es repartirà d'acord amb els coeficients de repartiment (β) indicats, tal com estableix el Reial decret 244/2019, de 5 d'abril.")}
         </li>
         <li>
-            ${_(u"Les persones consumidores manifesten que SOM ENERGIA, SCCL, actua com a gestora i titular dels drets d'explotació propis de la Instal·lació, legalitzats en règim d'autoconsum col·lectiu amb excedents. Especialment en el cas d'estar acollides a la modalitat d'autoconsum amb excedents sense compensació simplificada, les Parts assumeixen i entenen que l’energia produïda per la Instal·lació que, per falta de consum a horari suficient del CUPS associat no pot ser considerada energia horària autoconsumida, correspon en exclusiva a la titular de la Instal·lació, tant la seva propietat com la seva valoració, formes d'aprofitament i en general qualsevol altre aspecte relatiu a aquesta energia.")}
+            ${_(u"Les persones consumidores manifesten que SOM ENERGIA, SCCL, actua com a gestora i titular dels drets d'explotació propis de la Instal·lació, legalitzats en règim d'autoconsum col·lectiu amb excedents. Especialment en el cas d'estar acollides a la modalitat d'autoconsum amb excedents sense compensació simplificada, les Parts assumeixen i entenen que l'energia produïda per la Instal·lació que, per falta de consum horari suficient del CUPS associat no es pot considerar energia horària autoconsumida, correspon en exclusiva a la titular de la Instal·lació, tant la seva propietat com la seva valoració, formes d'aprofitament i, en general, qualsevol altre aspecte relatiu a aquesta energia.")}
         </li>
         <li>
-            ${_(u"Totes les parts ens obliguem a notificar aquest acord de repartiment a la companyia comercialitzadora amb la qual tenim contractat el subministrament elèctric, amb la instrucció de dur a terme tots els tràmits necessaris relacionats amb l’activació de l’autoconsum col·lectiu i l’aplicació del present acord de repartiment, en particular el mecanisme de compensació simplificada dels excedents de la instal·lació d'autoconsum a la qual ens associem i l'inici del mecanisme de compensació en el següent període de facturació des de la recepció d'aquest acord en els termes previstos al Reial decret 244/2019 i la normativa que el desenvolupa. ")}
+            ${_(u"Totes les parts ens obliguem a notificar aquest acord de repartiment a la companyia comercialitzadora amb la qual tenim contractat el subministrament elèctric, amb la instrucció de fer tots els tràmits necessaris per modificar el Contracte Tècnic d'Accés a xarxes subscrit amb la propietària de la xarxa, a fi d'activar l'autoconsum col·lectiu i aplicar del present acord de repartiment, en particular el mecanisme de compensació simplificada dels excedents de la instal·lació d'autoconsum a la qual ens associem i l'inici del mecanisme de compensació en el següent període de facturació des de la recepció d'aquest acord, en els termes previstos en el Reial decret 244/2019 i la normativa que el desenvolupa.")}
         </li>
         <li>
-            ${_(u"La productora associada es compromet a informar les consumidores, directament o a través del gestor d’aquest autoconsum col·lectiu (SOM ENERGIA, SCCL), de qualsevol incidència que afecti la instal·lació.")}
+            ${_(u"La productora associada es compromet a informar les consumidores, directament o a través de la gestora d'aquest autoconsum col·lectiu (SOM ENERGIA, SCCL), de qualsevol incidència que afecti la instal·lació.")}
         </li>
         <li>
-            ${_(u"Totes les parts, tant la productora associada com consumidores, s'obliguen a mantenir absoluta confidencialitat sobre les dades personals a les quals tenen accés amb motiu de la signatura d'aquest acord de repartiment.")}
+            ${_(u"Totes les Parts, tant la Productora Associada com les Consumidores, s'obliguen a mantenir absoluta confidencialitat sobre les dades personals a les quals tenen accés amb motiu de la signatura d'aquest acord de repartiment.")}
         </li>
         <li>
-            ${_(u"Totes les parts, tant la productora associada com consumidores, accepten expressament la cessió de les dades personals recollides en aquest document a la resta de participants, a les seves respectives comercialitzadores, a la distribuïdora propietària de la xarxa a la qual es connecten, a les autoritats competents, a l'empresa instal·ladora o mantenidora de la instal·lació associada i a Som Energia, SCCL, en tant que gestora de la instal·lació associada, i amb la sola finalitat de gestionar i tramitar l’aplicació del present acord de repartiment i de l'autoconsum col·lectiu al qual fa referència.")}
+            ${_(u"Totes les parts, tant la Productora Associada com les Consumidores, accepten expressament la cessió de les dades personals recollides en aquest document a la resta de participants, a les seves respectives comercialitzadores, a la distribuïdora propietària de la xarxa a la qual es connecten, a les autoritats competents, a l'empresa instal·ladora o mantenidora de la instal·lació associada i a SOM ENERGIA, SCCL, com a gestora de la instal·lació associada, amb la sola finalitat de gestionar i tramitar l'aplicació d'aquest acord de repartiment i de l'autoconsum col·lectiu a què es refereix.")}
         </li>
         <li>
-            ${_(u"Totes les parts queden informades que el responsable del tractament de les dades personals objecte de la cessió és Som Energia, SCCL, en tant que actua com a representant de l’autoconsum col·lectiu, amb la finalitat de gestionar i tramitar l’aplicació del present acord de repartiment i de l'autoconsum col·lectiu al qual fa referència. Per tant, tret de l'obligada cessió indicada, les dades no seran cedides, excepte en els supòsits legalment exigits, i només es conservaran mentre el titular de les dades estigui associat a l'autoconsum col·lectiu i, un cop finalitzada aquesta pertinença, dins dels terminis legals previstos.")}
+            ${_(u"Totes les parts queden informades que el responsable del tractament de les dades personals objecte de la cessió és SOM ENERGIA, SCCL, ja que actua com a representant de l'autoconsum col·lectiu, amb la finalitat de gestionar i tramitar l'aplicació d'aquest acord de repartiment i de l'autoconsum col·lectiu al qual fa referència. Per tant, excepte l'obligada cessió indicada, les dades no seran cedides, tret dels supòsits legalment exigits, i només es conservaran mentre el titular de les dades estigui associat a l'autoconsum col·lectiu i, una vegada finalitzada aquesta pertinença, dins dels terminis legals previstos.")}
         </li>
         <li>
-            ${_(u"Es pot retirar el consentiment en qualsevol moment i exercir el dret d'accés, rectificació, supressió, portabilitat, limitació i oposició dirigint-se a somenergia@delegado-datos.com (delegat de protecció de dades). En cas de divergències, es pot presentar una reclamació davant l'Agència de Protecció de Dades (www.aepd.es).")}
+            ${_(u"Es pot retirar el consentiment en qualsevol moment i exercir el dret d'accés, rectificació, supressió, portabilitat, limitació i oposició adreçant-se a somenergia@delegado-datos.com (delegat de protecció de dades). En cas de divergències, es pot presentar una reclamació davant l'Agència de Protecció de Dades (www.aepd.es).")}
         </li>
     </ul>
     <p style="page-break-after:always"></p>
     <p>A Girona, ... de ... de ...</p>
-    <p>${_(u"Les CONSUMIDORES associades:")}</p>
-    <p>&nbsp;</p>
-    <br/>
-    <br/>
-    <p>&nbsp;</p>
-    <p>${_(u"La PRODUCTORA associada:")}</p>
+    <p>${_(u"Les CONSUMIDORES associades representades pel seu representant, SOM ENERGIA, SCCL, amb NIF F55091367")}</p>
     <p>&nbsp;</p>
     <br/>
     <br/>
@@ -163,6 +161,9 @@
     </p>
     <p>
         <b> ${_(u"Código de autoconsumo (CAU):")} </b>
+    </p>
+    <p>
+        ${_(u"(completar por cada consumidora asociada)")}
     </p>
     <table>
         <thead>
@@ -248,7 +249,7 @@
     ${_(u"Con la firma de este acuerdo:")}
     <ul>
         <li>
-            ${_(u"Las personas consumidoras nos acogemos voluntariamente al mecanismo de compensación simplificada entre los déficits de consumo de cada una y la totalidad de los excedentes de la instalación de autoconsumo, la generación eléctrica neta se repartirá de acuerdo con los coeficientes de reparto (β) indicados, tal y como establece el Real Decreto 244/2019, de 5 de abril.")}
+            ${_(u"En el caso de que la instalación esté dada de alta en la modalidad con excedentes acogida a compensación, las personas consumidoras nos acogemos voluntariamente al mecanismo de compensación simplificada entre los déficits de consumo de cada una y la totalidad de los excedentes de la instalación de autoconsumo, la generación eléctrica neta se repartirá de acuerdo con los coeficientes de reparto (β) indicados, tal y como establece el Real Decreto 244/2019, de 5 de abril.")}
         </li>
         <li>
             ${_(u"Las personas consumidoras manifiestan que SOM ENERGIA, SCCL, actúa como gestor y titular de los derechos de explotación propios de la Instalación, legalizados en régimen de autoconsumo colectivo con excedentes. Especialmente en el caso de estar acogidas a la modalidad de autoconsumo con excedentes sin compensación simplificada, las Partes asumen y entienden que la energía producida por la Instalación que, por falta de consumo horario suficiente del CUPS asociado no puede ser considerada energía horaria autoconsumida, corresponde en exclusiva a la titular de la Instalación, tanto su propiedad como su valoración, formas de aprovechamiento y en general cualquier otro aspecto relativo a esta energía.")}
@@ -274,12 +275,7 @@
     </ul>
     <p style="page-break-after:always"></p>
     <p>A Girona, ... de ... de ...</p>
-    <p>${_(u"Las CONSUMIDORAS asociadas representadas por su representante SOM ENERGIA Sccl con NIF F55091367:")}</p>
-    <p>&nbsp;</p>
-    <br/>
-    <br/>
-    <p>&nbsp;</p>
-    <p>${_(u"La PRODUCTORA associada:")}</p>
+    <p>${_(u"Las CONSUMIDORAS asociadas representadas por su representante SOM ENERGIA Sccl con NIF F55091367")}</p>
     <p>&nbsp;</p>
     <br/>
     <br/>

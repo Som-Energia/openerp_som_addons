@@ -7,12 +7,12 @@
     <h2 style="font-size: 14px;">Annex II</h2>
 </div>
 <div id="titol">
-    <h2 style="font-size: 14px;">Autorització del representant de l'autoconsum col·lectiu</h2>
+    <h2 style="font-size: 14px;">Autorització al representant de l'autoconsum col·lectiu</h2>
 </div>
 
 <div class="content_generals">
     <p>
-        Atès el que preveu la normativa sectorial aplicable i en particular els articles 9 i 44 de la Llei 24/2013; els articles 3, 4, 16 bis de l'Annex I del RD 244/2019; i la disposició transitòria segona de l'Ordre TED /1247/2021, així com els principis generals, en particular el de llibertat de forma, i els articles 1710 i 1280 del Codi Civil Espanyol.
+        Atès el que preveu la normativa sectorial aplicable, i en particular els articles 9 i 44 de la Llei 24/2013; els articles 3, 4 i 16 bis de l'Annex I del RD 244/2019; la disposició transitòria segona de l'Ordre TED /1247/2021, així com els principis generals, en particular el de llibertat de forma, i els articles 1710 i 1280 del Codi Civil Espanyol.
     </p>
     %if informe['is_enterprise']:
         <p>
@@ -20,14 +20,14 @@
         </p>
     %else:
         <p>
-            ${informe['name']}, major d'edat, amb domicili a ${informe['address']} i DNI número ${informe['nif']}, de forma lliure i voluntària i en ple ús de les meves facultats, i en tant que titular del CUPS ${informe['cups']} associat a l'autoconsum col·lectiu CAU ${informe["cau"]} (“Autoritzant”)
+            ${informe['name']}, major d'edat, amb domicili a ${informe['address']} i DNI número ${informe['nif']}, de manera lliure i voluntària i en ple ús de les meves facultats, i com a titular del CUPS ${informe['cups']} associat/ada a l'autoconsum col·lectiu CAU ${informe["cau"]} (“Autoritzant”)
         </p>
     %endif
     <p>
         <b> AUTORITZO: </b>
     </p>
     <p>
-        SOM ENERGIA, SCCL, amb NIF F55091367 i domicili social al carrer  Riu Güell 68, 17005 Girona (“Autoritzada”) a actuar com a representant  integral del meu CUPS en tant que associat a l'autoconsum col·lectiu CAU provisional ${informe["cau"]}, per termini il·limitat, a fi que pugui dur a terme les ACTUACIONS següents:
+        SOM ENERGIA, SCCL, amb NIF F55091367 i domicili social al carrer Riu Güell, 68, 17005 Girona (“Autoritzada”) a actuar com a representant integral del meu CUPS com a associat/ada a l'autoconsum col·lectiu CAU provisional ${informe["cau"]}, per un termini il·limitat, a fi que pugui fer les ACTUACIONS següents:
     </p>
     <ul>
         <li>
@@ -37,21 +37,24 @@
             Comunicar directament en nom meu aquest acord de repartiment (i les seves modificacions), així com el fitxer de coeficients de repartiment corresponent a l'empresa distribuïdora propietària de la xarxa a la qual em connecto, així com a l'empresa comercialitzadora amb què tingui en cada moment contractat el subministrament elèctric.
         </li>
         <li>
-            Fer en nom meu qualsevol gestió o comunicació amb la distribuïdora que sigui necessària, convenient, accessòria o relacionada amb l'aplicació del terme de descompte per retard en activació d'autoconsum (art. 16.bis Reial decret 244/2019).
+            Disposar d'una còpia del meu DNI/NIE i custodiar-la a fi de poder demostrar davant l'empresa distribuïdora que SOM ENERGIA, SCCL, té la meva autorització per actuar en nom meu i representació meva.
         </li>
         <li>
-            Recepcionar i ventilar en nom meu, per qualsevol via, qualsevol comunicació necessària, convenient, accessòria o relacionada amb les actuacions indicades més amunt, incloent-hi aquelles per les quals es tractin o comparteixin els acords de repartiment o les seves modificacions, sigui amb la distribuïdora, l'Autoritzada o altres signants, presents o futurs.
+            Fer en nom meu qualsevol gestió o comunicació amb la distribuïdora que sigui necessària, convenient, accessòria o relacionada amb l'aplicació del terme de descompte per retard en activació d'autoconsum (art. 16.bis del Reial decret 244/2019).
+        </li>
+        <li>
+            Rebre i resoldre en nom meu, per qualsevol via, qualsevol comunicació necessària, convenient, accessòria o relacionada amb les actuacions indicades anteriorment, incloent-hi aquelles per les quals es tractin o es comparteixin els acords de repartiment o les seves modificacions, sigui amb la distribuïdora, l'Autoritzada o altres signants, presents o futurs.
         </li>
         <li>
             Cedir les meves dades personals recollides en aquest document a la resta de participants en l'autoconsum col·lectiu CAU provisional ${informe["cau"]}, a les seves respectives comercialitzadores, a la distribuïdora propietària de la xarxa a la qual es connectin, a les autoritats competents, a l'empresa instal·ladora o mantenidora de la instal·lació associada, amb la sola finalitat de gestionar i tramitar l'aplicació de l'acord de repartiment i l'activació, modificació o baixa de l'autoconsum col·lectiu al qual fa referència.
         </li>
     </ul>
     <p>
-        Llevat l'obligada cessió indicada, declaro que conec que Som Energia, SCCL, és la responsable del tractament de les dades personals objecte d'aquesta autorització, que m'ha informat clarament que les dades no seran cedides, excepte en els supòsits legalment exigits, que només es conservaran mentre la present autorització estigui vigent i, una vegada finalitzada aquesta, dins dels terminis legals previstos. Així mateix, declaro que Som Energia, SCCL, m'ha informat que puc retirar el meu consentiment en qualsevol moment i exercir el meu dret d'accés, rectificació, supressió, portabilitat, limitació i oposició dirigint-me a somenergia@delegado-datos.com (delegat de protecció de dades). En cas de divergències, puc presentar una reclamació davant l'Agència de Protecció de Dades (www.aepd.es).
+        Excepte l'obligada cessió indicada, declaro que conec que SOM ENERGIA, SCCL, és la responsable del tractament de les dades personals objecte d'aquesta autorització, que m'ha informat clarament que les dades no seran cedides, excepte en els supòsits legalment exigits, que només es conservaran mentre aquesta autorització estigui vigent i que, una vegada finalitzada, es conservaran dins dels terminis legals previstos. Així mateix, declaro que SOM ENERGIA, SCCL, m'ha informat que puc retirar el meu consentiment en qualsevol moment i exercir el meu dret d'accés, rectificació, supressió, portabilitat, limitació i oposició adreçant-me a somenergia@delegado-datos.com (delegat de protecció de dades). En cas de divergències, puc presentar una reclamació davant l'Agència de Protecció de Dades (www.aepd.es).
     </p>
     <ul>
         <li>
-            A dur a terme qualsevol altra actuació que, segons el parer de l'Autoritzada, sigui necessària, convenient, accessòria o relacionada amb les actuacions indicades més amunt.
+            A fer qualsevol altra actuació que, segons el parer de l'Autoritzada, sigui necessària, convenient, accessòria o relacionada amb les actuacions indicades anteriorment.
         </li>
     </ul>
     <p> Girona, ${informe['day']}/${informe['month']}/${informe['year']}</p>
@@ -66,7 +69,7 @@
 <br>
 <br>
 <div id="titol">
-    <h2 style="font-size: 14px;">Annexo II</h2>
+    <h2 style="font-size: 14px;">Anexo II</h2>
 </div>
 <div id="titol">
     <h2 style="font-size: 14px;">Autorización al representante del autoconsumo colectivo</h2>
@@ -89,7 +92,7 @@
         <b> AUTORIZO A: </b>
     </p>
     <p>
-        SOM ENERGIA, SCCL, con NIF F55091367 y domicilio social en la calle Riu Güell 68, 17005 Girona (“Autorizada”) a actuar como representante integral del mi CUPS como asociado al autoconsumo colectivo CAU provisional ${informe["cau"]}, por plazo ilimitado, a fin de que pueda realizar las siguientes ACTUACIONES:
+        SOM ENERGIA, SCCL, con NIF F55091367 y domicilio social en la calle Riu Güell, 68, 17005 Girona (“Autorizada”) a actuar como representante integral del mi CUPS como asociado al autoconsumo colectivo CAU provisional ${informe["cau"]}, por plazo ilimitado, a fin de que pueda realizar las siguientes ACTUACIONES:
     </p>
     <ul>
         <li>
@@ -97,6 +100,9 @@
         </li>
         <li>
             Comunicar directamente en mi nombre este acuerdo de reparto (y sus modificaciones), así como el fichero de coeficientes de reparto correspondiente a la empresa distribuidora propietaria de la red a la que me conecto y a la empresa comercializadora con la que tenga en cada momento contratado el suministro eléctrico.
+        </li>
+        <li>
+            Disponer de una copia de mi DNI/NIE y custodiarla a efectos de poder demostrar ante la empresa distribuidora que Som Energia, SCCL, tiene mi autorización para actuar en nombre mío y representación.
         </li>
         <li>
             Realizar en mi nombre cualquier gestión o comunicación con la distribuidora que sea necesaria, conveniente, accesoria o relacionada con la aplicación del término de descuento por retraso en activación de autoconsumo (art. 16.bis del Real Decreto 244/2019).
