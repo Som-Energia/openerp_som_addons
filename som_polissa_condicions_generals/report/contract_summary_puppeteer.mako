@@ -29,7 +29,7 @@
         %for informe in objects:
             <div class="a4">
                 ${summary_header(informe['company'])}
-                ${summary_identification(informe['company'], informe['holder'], informe['supply'], informe['self_consumption'])}
+                ${summary_identification(informe['holder'], informe['supply'], informe['self_consumption'])}
                 ${summary_offer(informe['offer'], informe['prices'], informe['features'], informe['gurb'])}
                 ${summary_payment(informe['payment'])}
                 ${summary_discounts(informe['discounts'])}

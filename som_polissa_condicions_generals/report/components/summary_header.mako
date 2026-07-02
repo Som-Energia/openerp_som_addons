@@ -1,6 +1,11 @@
 <%def name="summary_header(company)">
+<div class="summary-header-branding">
+    <div class="summary-header-logo">
+        <img class="summary-header-logo__image" src="${addons_path}/som_polissa_condicions_generals/report/assets/logo2.png"/>
+    </div>
+</div>
 <div class="summary-title">DOCUMENTO RESUMEN DEL CONTRATO DE SUMINISTRO ELÉCTRICO</div>
-<div class="summary-box">
+<div class="summary-box summary-box--company">
     <h3>1. Identificación de la empresa comercializadora</h3>
     <div class="summary-content">
         <p class="section-text"><span class="inline-label">Denominación social:</span> ${company['name']}</p>
