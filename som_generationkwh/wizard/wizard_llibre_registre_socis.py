@@ -10,6 +10,7 @@ from osv import osv, fields
 from report import report_sxw
 from zipfile import ZipFile
 
+
 class WizardLlibreRegistreSocis(osv.osv_memory):
     """Assistent per generar registre de socis"""
 
@@ -27,8 +28,6 @@ class WizardLlibreRegistreSocis(osv.osv_memory):
 
     @job(queue="print_report", timeout=3000)
     def generate_one_report(self, cursor, uid, ids, context=None):
-        wiz = self.browse(cursor, uid, ids[0])
-
         dades = self.get_report_data(cursor, uid, ids, context)
         summary_dades = self.get_report_summary(dades)
 
@@ -37,7 +36,8 @@ class WizardLlibreRegistreSocis(osv.osv_memory):
         header['date_to'] = context['date_to']
 
         document_binary = self.generate_report_pdf(cursor, uid, ids, dades, header, context)
-        document_binary_summary = self.generate_report_summary_pdf(cursor, uid, ids, summary_dades, header, context)
+        document_binary_summary = self.generate_report_summary_pdf(
+            cursor, uid, ids, summary_dades, header, context)
 
         path = "/tmp/reports"
         if not os.path.exists(path):
@@ -46,8 +46,10 @@ class WizardLlibreRegistreSocis(osv.osv_memory):
             except OSError:
                 print ("Creation of the directory %s failed" % path)
 
-        path_filename, filename = self.create_file(path, "llibre_registre_socis_", header['date_to'][:4],document_binary[0])
-        path_filenamesummary, filenamesummary = self.create_file(path, "resum_llibre_registre_socis_", header['date_to'][:4],document_binary_summary[0])
+        path_filename, filename = self.create_file(
+            path, "llibre_registre_socis_", header['date_to'][:4], document_binary[0])
+        path_filenamesummary, filenamesummary = self.create_file(
+            path, "resum_llibre_registre_socis_", header['date_to'][:4], document_binary_summary[0])
 
         filename_zip = path + "/llibre_registre_socis_" + str(header['date_to'][:4]) + ".zip"
         zipObj = ZipFile(filename_zip, 'w')
@@ -57,20 +59,21 @@ class WizardLlibreRegistreSocis(osv.osv_memory):
 
         ar_obj = self.pool.get('async.reports')
         datas = ar_obj.get_datas_email_params(cursor, uid, {}, context)
-        ar_obj.send_mail(cursor, uid, datas['from'], filename_zip, datas['email_to'], filename_zip.split("/")[-1])
+        ar_obj.send_mail(cursor, uid, datas['from'], filename_zip,
+                         datas['email_to'], filename_zip.split("/")[-1])
 
     def create_file(self, path, file_header, date, document):
         filename = file_header + str(date) + ".pdf"
         path_filename = path + "/" + filename
 
-        f = open(path_filename, 'wb+' )
+        f = open(path_filename, 'wb+')
         try:
             bits = base64.b64decode(base64.b64encode(document))
             f.write(bits)
         finally:
             f.close()
 
-        return path_filename,filename
+        return path_filename, filename
 
     def generate_report_pdf(self, cursor, uid, ids, dades, header, context):
         report_printer = webkit_report.WebKitParser(
@@ -79,18 +82,22 @@ class WizardLlibreRegistreSocis(osv.osv_memory):
             'som_generationkwh/report/report_llibre_registre_socis.mako',
             parser=report_sxw.rml_parse
         )
-        return self.generate_report_document(cursor, uid, ids, dades, header, report_printer, context)
+        return self.generate_report_document(
+            cursor, uid, ids, dades, header, report_printer, context)
 
-    def generate_report_summary_pdf(self, cursor, uid, ids, summary_dades, header, context):
+    def generate_report_summary_pdf(self, cursor, uid, ids, summary_dades,
+                                    header, context):
         report_printer = webkit_report.WebKitParser(
             'report.somenergia.soci.report_llibre_registre_socis_summary',
             'somenergia.soci',
             'som_generationkwh/report/report_llibre_registre_socis_summary.mako',
             parser=report_sxw.rml_parse
         )
-        return self.generate_report_document(cursor, uid, ids, summary_dades, header, report_printer, context)
+        return self.generate_report_document(
+            cursor, uid, ids, summary_dades, header, report_printer, context)
 
-    def generate_report_document(self, cursor, uid, ids, dades, header, report_printer, context):
+    def generate_report_document(self, cursor, uid, ids, dades, header,
+                                 report_printer, context):
         data = {
             'model': 'giscedata.facturacio.factura',
             'report_type': 'webkit',
@@ -126,15 +133,15 @@ class WizardLlibreRegistreSocis(osv.osv_memory):
                     else:
                         total_import_voluntari_retirat += inversio['import'] * -1
         return {
-                'numero_altes': numero_altes,
-                'numero_baixes': numero_baixes,
-                'total_import_voluntari': total_import_voluntari,
-                'total_import_voluntari_retirat':total_import_voluntari_retirat,
-                }
+            'numero_altes': numero_altes,
+            'numero_baixes': numero_baixes,
+            'total_import_voluntari': total_import_voluntari,
+            'total_import_voluntari_retirat': total_import_voluntari_retirat,
+        }
 
     def get_report_data(self, cursor, uid, ids, context=None):
         soci_obj = self.pool.get('somenergia.soci')
-        socis = soci_obj.search(cursor, uid, [('active','=',True)])
+        socis = soci_obj.search(cursor, uid, [('active', '=', True)])
         socis.sort()
         values = []
         for soci in socis:
@@ -149,13 +156,14 @@ class WizardLlibreRegistreSocis(osv.osv_memory):
             header.update({'inversions': quadre_moviments})
             values.append(header)
 
-	return values
+        return values
 
     def get_soci_values(self, cursor, uid, soci, context=None):
         soci_obj = self.pool.get('somenergia.soci')
-        data = soci_obj.read(cursor, uid, soci, ['ref','name','vat',
-            'www_email', 'www_street','www_zip', 'www_provincia',
-            'date','data_baixa_soci', 'www_municipi'])
+        data = soci_obj.read(
+            cursor, uid, soci, ['ref', 'name', 'vat', 'www_email',
+                                'www_street', 'www_zip', 'www_provincia',
+                                'date', 'data_baixa_soci', 'www_municipi'])
         singles_soci_values = {
             'tipus': 'Consumidor',
             'num_soci': data['ref'],
@@ -180,7 +188,9 @@ class WizardLlibreRegistreSocis(osv.osv_memory):
                 'concepte': u'Obligatoria',
                 'import': 100
             })
-        if data['data_baixa_soci'] and data['data_baixa_soci'] >= context['date_from'] and data['data_baixa_soci'] <= context['date_to']:
+        if (data['data_baixa_soci']
+                and data['data_baixa_soci'] >= context['date_from']
+                and data['data_baixa_soci'] <= context['date_to']):
             inversions.append({
                 'data': data['data_baixa_soci'],
                 'concepte': u'Obligatoria',
@@ -190,33 +200,39 @@ class WizardLlibreRegistreSocis(osv.osv_memory):
 
     def get_aportacions_voluntaries_values(self, cursor, uid, soci, context=None):
         inv_obj = self.pool.get('generationkwh.investment')
-        inv_list = inv_obj.search(cursor, uid, [('member_id', '=', soci),('emission_id','>',1)])
+        inv_list = inv_obj.search(
+            cursor, uid, [('member_id', '=', soci), ('emission_id', '>', 1)])
         inversions = []
         for inv in inv_list:
-            data = inv_obj.read(cursor, uid, inv, ['purchase_date',
-                   'last_effective_date','last_effective_date','nshares',
-                   'amortized_amount'])
-            if data['purchase_date'] and data['purchase_date'] >= context['date_from'] and data['purchase_date'] <= context['date_to']:
+            data = inv_obj.read(
+                cursor, uid, inv, ['purchase_date', 'last_effective_date',
+                                   'last_effective_date', 'nshares',
+                                   'amortized_amount'])
+            if (data['purchase_date']
+                    and data['purchase_date'] >= context['date_from']
+                    and data['purchase_date'] <= context['date_to']):
                 inversions.append({
                     'data': data['purchase_date'],
                     'concepte': u'Voluntaria',
-                    'import': data['nshares']*100,
-                    'import_amortitzat':  data['amortized_amount']
+                    'import': data['nshares'] * 100,
+                    'import_amortitzat': data['amortized_amount']
                 })
-            if data['last_effective_date'] and data['last_effective_date'] >= context['date_from'] and data['last_effective_date'] <= context['date_to']:
+            if (data['last_effective_date']
+                    and data['last_effective_date'] >= context['date_from']
+                    and data['last_effective_date'] <= context['date_to']):
                 inversions.append({
                     'data': data['last_effective_date'],
                     'concepte': u'Voluntaria',
-                    'import': data['nshares']*100*-1,
-                    'import_amortitzat': data['amortized_amount']*-1
+                    'import': data['nshares'] * 100 * -1,
+                    'import_amortitzat': data['amortized_amount'] * -1
                 })
         return inversions
 
     _columns = {
         'name': fields.char('Nom fitxer', size=32),
         'state': fields.char('State', size=16),
-        'date_to': fields.date('Data final',required=True),
-        'date_from': fields.date('Data inicial',required=True),
+        'date_to': fields.date('Data final', required=True),
+        'date_from': fields.date('Data inicial', required=True),
     }
 
     _defaults = {
@@ -224,5 +240,6 @@ class WizardLlibreRegistreSocis(osv.osv_memory):
         'date_to': lambda *a: str(datetime.today()),
         'date_from': '2010-12-01',
     }
+
 
 WizardLlibreRegistreSocis()
