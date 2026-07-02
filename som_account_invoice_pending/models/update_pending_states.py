@@ -63,10 +63,13 @@ class UpdatePendingStates(osv.osv_memory):
 
     def get_invoices_with_pending_state(self, cursor, uid, pending_state):
         """
-        Return invoices (giscedata factura) with the given pending state
+        Return customer invoices (giscedata factura) with the given pending state
         """
         fact_obj = self.pool.get("giscedata.facturacio.factura")
-        factura_ids = fact_obj.search(cursor, uid, [("pending_state", "=", pending_state)])
+        factura_ids = fact_obj.search(cursor, uid, [
+            ("pending_state", "=", pending_state),
+            ("type", "in", ["out_invoice", "out_refund"])
+        ])
         return factura_ids
 
     def get_from_email(self, cursor, uid, template_id):
@@ -1038,7 +1041,7 @@ class UpdatePendingStates(osv.osv_memory):
             date_fue = datetime.strptime(fact.pending_state_date, "%Y-%m-%d %H:%M:%S")
             date_diff = datetime.today() - date_fue
 
-            if date_diff.days % 330 == 0:
+            if date_diff.days and date_diff.days % 330 == 0:
                 ret_value = self.send_email(cursor, uid, factura_id, email_params)
                 if ret_value == -1:
                     logger.info(
@@ -1083,7 +1086,7 @@ class UpdatePendingStates(osv.osv_memory):
             date_r1 = datetime.strptime(fact.pending_state_date, "%Y-%m-%d %H:%M:%S")
             date_diff = datetime.today() - date_r1
 
-            if date_diff.days % 330 == 0:
+            if date_diff.days and date_diff.days % 330 == 0:
                 ret_value = self.send_email(cursor, uid, factura_id, email_params)
                 if ret_value == -1:
                     logger.info(
