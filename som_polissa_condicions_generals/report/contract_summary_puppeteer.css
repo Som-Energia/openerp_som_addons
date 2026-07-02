@@ -1,3 +1,7 @@
+:root {
+    --summary-company-accent: #bbca2b;
+}
+
 body {
     color: #0b2e34;
     font-family: "Roboto";
@@ -13,11 +17,52 @@ body {
     width: 100%;
 }
 
+.summary-header-branding {
+    margin-bottom: 8px;
+}
+
+.summary-header-logo {
+    width: 22%;
+}
+
+.summary-header-logo .summary-header-logo__image {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
 .summary-box {
     background: #f7f7f8;
     border-bottom: 2px solid #0b2e34;
     margin-bottom: 12px;
     break-inside: avoid;
+}
+
+.summary-box--company {
+    border-bottom-color: var(--summary-company-accent);
+}
+
+.summary-box-section {
+    margin-bottom: 12px;
+}
+
+.summary-box-section__title {
+    font-size: 12px;
+    font-weight: bold;
+    margin: 0 0 8px 0;
+}
+
+.summary-box-group {
+    font-size: 0;
+    margin: 0 -4px 12px -4px;
+}
+
+.summary-box--third {
+    box-sizing: border-box;
+    display: inline-block;
+    padding: 0 4px;
+    width: 33.33%;
+    vertical-align: top;
 }
 
 .summary-box h3 {
@@ -26,6 +71,10 @@ body {
     margin: 0;
     padding: 8px 10px;
     font-size: 12px;
+}
+
+.summary-box.summary-box--company h3 {
+    background: var(--summary-company-accent);
 }
 
 .summary-box .summary-content {
@@ -70,6 +119,11 @@ body {
     margin: 0 0 8px 0;
 }
 
+.section-text--wrap {
+    overflow-wrap: break-word;
+    word-break: normal;
+}
+
 .power-list {
     margin: 0;
     padding-left: 18px;
@@ -77,10 +131,6 @@ body {
 
 .muted {
     color: #4f6165;
-}
-
-.spacer {
-    height: 8px;
 }
 
 a {
