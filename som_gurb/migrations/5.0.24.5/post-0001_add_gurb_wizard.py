@@ -33,7 +33,7 @@ def up(cursor, installed_version):
         wf_service.trg_create(uid, 'som.gurb.cups', gurb_cups.id, cursor)
         gurb_cups.send_signal('button_create_cups')
         gurb_cups.send_signal('button_activate_cups')
-        print sgc_obj.read(cursor, uid, gurb_cups.id, ['state'])
+        print(sgc_obj.read(cursor, uid, gurb_cups.id, ['state']))
 
     # Update XMLs
     views = [
