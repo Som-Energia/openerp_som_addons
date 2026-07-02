@@ -10,6 +10,8 @@
 <%namespace file="som_polissa_condicions_generals/report/condiciones_generales.mako" import="generals_es"/>
 <%namespace file="som_polissa_condicions_generals/report/condicions_especifiques_indexada.mako" import="indexada_ca"/>
 <%namespace file="som_polissa_condicions_generals/report/condiciones_especificas_indexada.mako" import="indexada_es"/>
+<%namespace file="som_polissa_condicions_generals/report/condicions_especifiques_generationkwh.mako" import="generationkwh_ca"/>
+<%namespace file="som_polissa_condicions_generals/report/condiciones_especificas_generationkwh.mako" import="generationkwh_es"/>
 <%namespace file="som_polissa_condicions_generals/report/components/gurb/gurb.mako" import="gurb"/>
 <%namespace file="som_polissa_condicions_generals/report/components/gurb/ccee.mako" import="gurb_ccee_ca"/>
 <%namespace file="som_polissa_condicions_generals/report/components/gurb/ccee.mako" import="gurb_ccee_es"/>
@@ -78,6 +80,9 @@
                                 ${gurb_autoritzacio_ca(informe['gurb'])}
                                 ${gurb_baixa_ca(informe['gurb'])}
                             %endif
+                            %if informe['polissa']['te_assignacio_gkwh']:
+                                ${generationkwh_ca()}
+                            %endif
                         %else:
                             ${generals_es()}
                             %if informe['prices']['auvi']:
@@ -92,6 +97,9 @@
                                 ${gurb_acord_es()}
                                 ${gurb_autoritzacio_es(informe['gurb'])}
                                 ${gurb_baixa_es(informe['gurb'])}
+                            %endif
+                            %if informe['polissa']['te_assignacio_gkwh']:
+                                ${generationkwh_es()}
                             %endif
                         %endif
                     </div>
