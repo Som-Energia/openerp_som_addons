@@ -3784,6 +3784,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
 
         excess_data = []
         showing_periods = self.get_matrix_show_periods(pol)
+        power_excess_change_date = datetime(2025, 4, 1)
 
         for excess_lines in excess_lines_data:
             items = {}
@@ -3800,7 +3801,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
                 items["date_from"] = excess_lines["date_from"]
                 items["date_to"] = excess_lines["date_to"]
                 items["pre_2025_04_01"] = datetime.strptime(
-                    excess_lines["date_to"], "%d/%m/%Y") < datetime(2025, 04, 1)
+                    excess_lines["date_to"], "%d/%m/%Y") < power_excess_change_date
                 items["iva"] = excess_lines["iva"]
             excess_data.append(items)
         data = {
