@@ -1041,7 +1041,7 @@ class UpdatePendingStates(osv.osv_memory):
             date_fue = datetime.strptime(fact.pending_state_date, "%Y-%m-%d %H:%M:%S")
             date_diff = datetime.today() - date_fue
 
-            if date_diff.days % 330 == 0:
+            if date_diff.days and date_diff.days % 330 == 0:
                 ret_value = self.send_email(cursor, uid, factura_id, email_params)
                 if ret_value == -1:
                     logger.info(
@@ -1086,7 +1086,7 @@ class UpdatePendingStates(osv.osv_memory):
             date_r1 = datetime.strptime(fact.pending_state_date, "%Y-%m-%d %H:%M:%S")
             date_diff = datetime.today() - date_r1
 
-            if date_diff.days % 330 == 0:
+            if date_diff.days and date_diff.days % 330 == 0:
                 ret_value = self.send_email(cursor, uid, factura_id, email_params)
                 if ret_value == -1:
                     logger.info(
