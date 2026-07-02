@@ -57,7 +57,7 @@ def up(cursor, installed_version):
                 '''
                 cursor.execute(sql_select, (att_id,))
                 for data in cursor.dictfetchall():
-                    print data
+                    logger.debug('Attachment datas_mongo fetched for %s', att_id)
                     datas_mongo = data['datas_mongo']
 
                 search_vals = [
