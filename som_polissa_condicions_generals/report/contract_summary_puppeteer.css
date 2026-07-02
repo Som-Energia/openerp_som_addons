@@ -1,0 +1,138 @@
+:root {
+    --summary-company-accent: #bbca2b;
+}
+
+body {
+    color: #0b2e34;
+    font-family: "Roboto";
+    font-size: 11px;
+}
+
+@page {
+    size: A4 portrait;
+    margin: 25px;
+}
+
+.a4 {
+    width: 100%;
+}
+
+.summary-header-branding {
+    margin-bottom: 8px;
+}
+
+.summary-header-logo {
+    width: 22%;
+}
+
+.summary-header-logo .summary-header-logo__image {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
+.summary-box {
+    background: #f7f7f8;
+    border-bottom: 2px solid #0b2e34;
+    margin-bottom: 12px;
+    break-inside: avoid;
+}
+
+.summary-box--company {
+    border-bottom-color: var(--summary-company-accent);
+}
+
+.summary-box-section {
+    margin-bottom: 12px;
+}
+
+.summary-box-section__title {
+    font-size: 12px;
+    font-weight: bold;
+    margin: 0 0 8px 0;
+}
+
+.summary-box-group {
+    font-size: 0;
+    margin: 0 -4px 12px -4px;
+}
+
+.summary-box--third {
+    box-sizing: border-box;
+    display: inline-block;
+    padding: 0 4px;
+    width: 33.33%;
+    vertical-align: top;
+}
+
+.summary-box h3 {
+    background: #0b2e34;
+    color: white;
+    margin: 0;
+    padding: 8px 10px;
+    font-size: 12px;
+}
+
+.summary-box.summary-box--company h3 {
+    background: var(--summary-company-accent);
+}
+
+.summary-box .summary-content {
+    padding: 10px;
+    line-height: 1.45;
+}
+
+.summary-title {
+    text-align: center;
+    font-size: 16px;
+    font-weight: bold;
+    margin-bottom: 12px;
+}
+
+.summary-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.summary-table td,
+.summary-table th {
+    padding: 6px 8px;
+    text-align: left;
+    vertical-align: top;
+}
+
+.summary-table tr:nth-child(odd) {
+    background-color: #efeff1;
+}
+
+.summary-table th {
+    background-color: #878787;
+    color: white;
+}
+
+.inline-label {
+    font-weight: bold;
+}
+
+.section-text {
+    text-align: justify;
+    margin: 0 0 8px 0;
+}
+
+.section-text--wrap {
+    overflow-wrap: break-word;
+    word-break: normal;
+}
+
+.power-list {
+    margin: 0;
+    padding-left: 18px;
+}
+
+.muted {
+    color: #4f6165;
+}
+
+a {
+    color: #0b2e34;
+}

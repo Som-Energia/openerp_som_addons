@@ -91,6 +91,27 @@ L'entorn ERP depén de diversos repositoris clonats al mateix nivell que aquest 
 
 ---
 
+## Regla crítica sobre `__terp__.py`
+
+Abans d'afegir una dependència nova a `depends`, comprovar si el mòdul destí ja depèn del mòdul actual.
+
+**No es poden introduir dependències circulars entre addons.**
+
+Exemple de què **no** s'ha de fer:
+
+- `som_polissa_condicions_generals` depèn de `som_leads_polissa`
+- afegir després `som_polissa_condicions_generals` a `depends` de `som_leads_polissa`
+
+Aquest patró trenca la càrrega de mòduls, pot impedir arrencar el servidor i també pot bloquejar l'execució de tests.
+
+Si falta wiring entre dos mòduls que ja tenen una direcció de dependència definida, cal resoldre-ho d'una d'aquestes maneres:
+
+- moure el botó / report / vista al mòdul que ja és a la part alta de la dependència
+- crear un mòdul pont específic
+- desacoblar l'accés mitjançant herència o extensió, però **sense** invertir la dependència
+
+---
+
 ## Decisions arquitectòniques
 
 Per entendre per què fem servir certes eines i patrons, consulta:
