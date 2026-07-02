@@ -1,5 +1,6 @@
 import csv
 import sys
+from io import open
 from erppeek import Client
 import dbconfig
 
@@ -51,7 +52,7 @@ def crear_ajuntament_config(fila):
 
     municipi_id = erp.ResMunicipi.search([('name', 'ilike', nom)])
     if not municipi_id:
-        print "No s'ha pogut crear: {}".format(fila['ajuntament'])
+        print("No s'ha pogut crear: {}".format(fila['ajuntament']))
         return False
 
     vals = {
@@ -84,7 +85,7 @@ def crear_ajuntament_config(fila):
 def carrega_ajuntaments(filename):
     creats = []
     no_creats = []
-    with open(filename, 'rb') as fitxer:
+    with open(filename, 'r', encoding='utf-8', newline='') as fitxer:
         lector = csv.DictReader(fitxer)
 
         # Iterem per les files del fitxer
@@ -93,19 +94,19 @@ def carrega_ajuntaments(filename):
                 result = crear_ajuntament_config(fila)
             except Exception as e:
                 result = False
-                print "No s'ha pogut crear: {}. Error: {}".format(fila['ajuntament'], str(e))
+                print("No s'ha pogut crear: {}. Error: {}".format(fila['ajuntament'], str(e)))
 
             if result:
                 creats.append(fila['ajuntament'])
             else:
                 no_creats.append(fila['ajuntament'])
 
-    print "Creats {}".format(len(creats))
-    print "No Creats {}".format(len(no_creats))
+    print("Creats {}".format(len(creats)))
+    print("No Creats {}".format(len(no_creats)))
 
 
 if __name__ == "__main__":
     if len(sys.argv) < 2:
-        print u"Usage: {} <fitxer.csv>".format(sys.argv[0])
+        print(u"Usage: {} <fitxer.csv>".format(sys.argv[0]))
         sys.exit()
     carrega_ajuntaments(sys.argv[1])
