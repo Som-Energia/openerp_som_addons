@@ -3,11 +3,96 @@ from __future__ import absolute_import
 
 from datetime import datetime
 from destral.patch import PatchNewCursors
+from osv import osv
 
 from .base_som_lead_www import BaseSomLeadWwwTest
 
 
 class TestLeadWwwMemberPayment(BaseSomLeadWwwTest):
+    def test_create_lead_defaults_card_recurrent_for_tpv_member_payment(self):
+        www_lead_o = self.get_model("som.lead.www")
+        lead_o = self.get_model("giscedata.crm.lead")
+
+        values = self._basic_values
+        values["payment_type"] = "tpv"
+
+        result = www_lead_o.create_lead(self.cursor, self.uid, values)
+        lead = lead_o.browse(self.cursor, self.uid, result["lead_id"])
+
+        self.assertEqual(lead.member_quota_payment_type, "tpv")
+        self.assertEqual(lead.billing_payment_method, "card_recurrent")
+
+    def test_create_lead_defaults_remesa_for_remesa_member_payment(self):
+        www_lead_o = self.get_model("som.lead.www")
+        lead_o = self.get_model("giscedata.crm.lead")
+
+        values = self._basic_values
+        values["payment_type"] = "remesa"
+
+        result = www_lead_o.create_lead(self.cursor, self.uid, values)
+        lead = lead_o.browse(self.cursor, self.uid, result["lead_id"])
+
+        self.assertEqual(lead.member_quota_payment_type, "remesa")
+        self.assertEqual(lead.billing_payment_method, "remesa")
+
+    def test_create_lead_accepts_explicit_tpv_card_recurrent_pair(self):
+        www_lead_o = self.get_model("som.lead.www")
+        lead_o = self.get_model("giscedata.crm.lead")
+
+        values = self._basic_values
+        values["payment_type"] = "tpv"
+        values["billing_payment_method"] = "card_recurrent"
+
+        result = www_lead_o.create_lead(self.cursor, self.uid, values)
+        lead = lead_o.browse(self.cursor, self.uid, result["lead_id"])
+
+        self.assertEqual(lead.member_quota_payment_type, "tpv")
+        self.assertEqual(lead.billing_payment_method, "card_recurrent")
+
+    def test_create_lead_accepts_explicit_remesa_pair(self):
+        www_lead_o = self.get_model("som.lead.www")
+        lead_o = self.get_model("giscedata.crm.lead")
+
+        values = self._basic_values
+        values["payment_type"] = "remesa"
+        values["billing_payment_method"] = "remesa"
+
+        result = www_lead_o.create_lead(self.cursor, self.uid, values)
+        lead = lead_o.browse(self.cursor, self.uid, result["lead_id"])
+
+        self.assertEqual(lead.member_quota_payment_type, "remesa")
+        self.assertEqual(lead.billing_payment_method, "remesa")
+
+    def test_create_lead_rejects_tpv_with_remesa_billing(self):
+        www_lead_o = self.get_model("som.lead.www")
+
+        values = self._basic_values
+        values["payment_type"] = "tpv"
+        values["billing_payment_method"] = "remesa"
+
+        with self.assertRaises(osv.except_osv):
+            www_lead_o.create_lead(self.cursor, self.uid, values)
+
+    def test_create_lead_rejects_remesa_with_card_recurrent_billing(self):
+        www_lead_o = self.get_model("som.lead.www")
+
+        values = self._basic_values
+        values["payment_type"] = "remesa"
+        values["billing_payment_method"] = "card_recurrent"
+
+        with self.assertRaises(osv.except_osv):
+            www_lead_o.create_lead(self.cursor, self.uid, values)
+
+    def test_create_lead_rejects_card_recurrent_without_payment_type(self):
+        www_lead_o = self.get_model("som.lead.www")
+
+        values = self._basic_values
+        del values["payment_type"]
+        values["billing_payment_method"] = "card_recurrent"
+
+        with self.assertRaises(osv.except_osv):
+            www_lead_o.create_lead(self.cursor, self.uid, values)
+
     def test_create_lead_with_remesable_member(self):
         www_lead_o = self.get_model("som.lead.www")
         account_invoice_o = self.get_model("account.invoice")
@@ -26,7 +111,7 @@ class TestLeadWwwMemberPayment(BaseSomLeadWwwTest):
             self.cursor, self.uid, rec_payment_order_seq_id, {'prefix': 'R%(year)s/'})
 
         values = self._basic_values
-        values["member_payment_type"] = "remesa"
+        values["payment_type"] = "remesa"
 
         result = www_lead_o.create_lead(self.cursor, self.uid, values)
         www_lead_o.activate_lead(self.cursor, self.uid, result["lead_id"], context={"sync": True})
@@ -107,7 +192,7 @@ class TestLeadWwwMemberPayment(BaseSomLeadWwwTest):
             "vat": vat,
             "code": member.partner_id.ref.replace("S", ""),
         }
-        values["member_payment_type"] = "remesa"
+        values["payment_type"] = "remesa"
 
         result = www_lead_o.create_lead(self.cursor, self.uid, values)
         www_lead_o.activate_lead(self.cursor, self.uid, result["lead_id"], context={"sync": True})

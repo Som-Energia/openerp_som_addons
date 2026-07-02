@@ -1,4 +1,6 @@
 # -*- encoding: utf-8 -*-
+from __future__ import absolute_import
+
 from destral import testing
 from destral.transaction import Transaction
 from oopgrade import oopgrade
@@ -22,17 +24,11 @@ class BaseSomLeadWwwTest(testing.OOTestCase):
         self.uid = self.txn.user
 
         lang_o = self.get_model("res.lang")
-        ir_model_o = self.get_model("ir.model.data")
-        stage_validation_template_o = self.get_model("crm.stage.validation.template")
 
         lang_o.create(self.cursor, self.uid, {"name": "Català", "code": "ca_ES"})
         lang_o.create(self.cursor, self.uid, {"name": "Español", "code": "es_ES"})
 
-        # Remove a demo data that changes the stage validation behaviour
-        no_stage_validation_id = ir_model_o.get_object_reference(
-            self.cursor, self.uid, "giscedata_crm_leads", "demo_crm_lead_no_stage_validation"
-        )[1]
-        stage_validation_template_o.unlink(self.cursor, self.uid, no_stage_validation_id)
+        self._remove_stage_validation_template()
 
         self._basic_values = {
             "linked_member": "new_member",
@@ -79,7 +75,7 @@ class BaseSomLeadWwwTest(testing.OOTestCase):
                 },
             },
             "iban": "ES7712341234161234567890",
-            "member_payment_type": "tpv",
+            "payment_type": "remesa",
             "donation": False,
             "general_contract_terms_accepted": True,
             "particular_contract_terms_accepted": True,
@@ -105,6 +101,24 @@ class BaseSomLeadWwwTest(testing.OOTestCase):
         self.patch_unsubscribe_customer.stop()
         self.patch_subscribe_customer.stop()
         self.txn.stop()
+
+    def _remove_stage_validation_template(self):
+        ir_model_o = self.get_model("ir.model.data")
+        stage_validation_o = self.get_model("crm.stage.validation")
+        stage_validation_template_o = self.get_model("crm.stage.validation.template")
+
+        # Remove a demo data that changes the stage validation behaviour
+        stage_validation_id = ir_model_o.get_object_reference(
+            self.cursor, self.uid, "giscedata_crm_leads", "demo_crm_lead_no_stage_validation"
+        )[1]
+
+        validation_ids = stage_validation_o.search(
+            self.cursor, self.uid, [("plantilla_id", "=", stage_validation_id)]
+        )
+        if validation_ids:
+            stage_validation_o.unlink(self.cursor, self.uid, validation_ids)
+
+        stage_validation_template_o.unlink(self.cursor, self.uid, stage_validation_id)
 
     def get_model(self, model_name):
         return self.openerp.pool.get(model_name)
