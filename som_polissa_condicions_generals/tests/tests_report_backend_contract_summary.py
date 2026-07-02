@@ -2,7 +2,9 @@
 from __future__ import absolute_import, unicode_literals, division
 
 from datetime import datetime
+import os
 import mock
+import unittest
 
 from destral import testing
 from destral.transaction import Transaction
@@ -143,17 +145,51 @@ class TestReportBackendContractSummary(testing.OOTestCase):
 
         self.assertNotEqual(result["tarifa_mostrar"], "Tarifa Períodes Empresa")
 
-    def test_get_cnmc_data_reuses_report_v2_qr_helper(self):
+    def test_get_cnmc_data_returns_generic_contract_summary_data(self):
         pol = self.pol_obj.browse(self.cursor, self.uid, self.contract_20td_id)
         report_v2_obj = self.openerp.pool.get("giscedata.facturacio.factura.report.v2")
 
         with mock.patch.object(
             report_v2_obj,
             "_get_qr_comparador_cnmc",
-            return_value=("https://comparador.cnmc.gob.es/comparador/QRE?", "fake-qr"),
+            side_effect=AssertionError("invoice report helper must not be used"),
         ) as qr_helper:
             result = self.backend_obj.get_cnmc_data(self.cursor, self.uid, pol, context={})
 
-        qr_helper.assert_called_with({})
-        self.assertEqual(result["link_qr"], "https://comparador.cnmc.gob.es/comparador/QRE?")
-        self.assertEqual(result["qr_image"], "fake-qr")
+        self.assertFalse(qr_helper.called)
+        self.assertEqual(result, {
+            "is_visible": True,
+            "lang": "es_es",
+            "link_qr": "https://comparador.cnmc.gob.es/",
+            "has_gkwh": False,
+        })
+
+    def test_get_cnmc_data_keeps_language_and_generation_flags(self):
+        pol = self.pol_obj.browse(self.cursor, self.uid, self.contract_20td_id)
+        self.pol_obj.write(self.cursor, self.uid, [pol.id], {"te_assignacio_gkwh": True})
+
+        pol = self.pol_obj.browse(self.cursor, self.uid, self.contract_20td_id)
+        result = self.backend_obj.get_cnmc_data(
+            self.cursor, self.uid, pol, context={"lang": "ca_ES"}
+        )
+
+        self.assertEqual(result["lang"], "ca_es")
+        self.assertTrue(result["has_gkwh"])
+
+
+class TestSummaryClaimsCnmcTemplate(unittest.TestCase):
+    def test_summary_claims_cnmc_does_not_include_invoice_component(self):
+        template_path = os.path.join(
+            os.path.dirname(__file__),
+            "..",
+            "report",
+            "components",
+            "summary_claims_cnmc.mako",
+        )
+        with open(template_path, "r") as template_file:
+            template = template_file.read()
+
+        self.assertFalse(
+            "/giscedata_facturacio_comer_som/report/components/"
+            "cnmc_comparator_qr_link/cnmc_comparator_qr_link.mako" in template
+        )

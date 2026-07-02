@@ -1,4 +1,7 @@
 <%def name="summary_claims_cnmc(cnmc)">
+<%
+    generation_link = "https://www.somenergia.coop/ca/tarifes-d-electricitat/" if cnmc.get('lang') == 'ca_es' else "https://www.somenergia.coop/es/tarifas-de-electricidad/"
+%>
 <div class="summary-box">
     <h3>1. Vías alternativas de reclamación disponibles al consumidor</h3>
     <div class="summary-content">
@@ -12,7 +15,9 @@
 <div class="summary-box">
     <h3>2. Acceso al comparador de ofertas de la CNMC</h3>
     <div class="summary-content">
-        <%include file="/giscedata_facturacio_comer_som/report/components/cnmc_comparator_qr_link/cnmc_comparator_qr_link.mako" args="comparator=cnmc" />
+        % if cnmc.get('is_visible'):
+            <p class="section-text">Con este enlace <a href="${cnmc.get('link_qr')}">comparador.cnmc.gob.es</a> puedes consultar y comparar las diferentes ofertas vigentes de las comercializadoras de electricidad del mercado libre.</p>
+        % endif
     </div>
 </div>
 </%def>
