@@ -57,7 +57,10 @@ def up(cursor, installed_version):
                 '''
                 cursor.execute(sql_select, (att_id,))
                 for data in cursor.dictfetchall():
-                    print data
+                    logger.debug(
+                        'Fetched ir_attachment row for attachment %s: %s',
+                        att_id, data
+                    )
                     datas_mongo = data['datas_mongo']
 
                 search_vals = [
