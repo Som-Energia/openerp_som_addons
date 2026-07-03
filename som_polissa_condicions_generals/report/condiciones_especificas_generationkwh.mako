@@ -92,7 +92,7 @@
 
     <p>A este coste, se le deben añadir el resto de conceptos relacionados con la comercialización de la energía (cargos y peajes de acceso regulados, pagos al operador del sistema y del mercado, margen de la comercializadora y otros conceptos relacionados con la compra de energía...).</p>
 
-    <p>El método de cálculo completo está especificado en <a href="https://www.somenergia.coop/wpsom/gkwh/Anexo-I-Contrato-Generation-kWh-ES.pdf">esta nota técnica (Anexo I del contrato de préstamo Generation kWh)</a>.</p>
+    <p>El método de cálculo completo está especificado en <a href="https://back.somenergia.coop/storage/app/media/DOCS/legal/es/CCGG_GenerationkWh/Anexo-I-Contrato-GenerationkWh.pdf">esta nota técnica (Anexo I del contrato de préstamo Generation kWh)</a>.</p>
 
     <h3>Aplicación del precio Generation kWh en las facturas</h3>
 
@@ -108,6 +108,6 @@
 
     <p>Las personas socias participantes del Generation kWh podrán tener varios contratos asociados a su participación y podrá definir, a través de la Oficina Virtual, el orden de prioridad según el cual dichos contratos facturarán los kWh. Tendrá que haber como mínimo un contrato asociado para usar la energía procedente del Generation kWh. Es responsabilidad de la persona titular asegurarse que los derechos energéticos Generation kWh son recibidos por algún contrato, ya que cambios de titularidad o nuevas altas contractuales no se asociarán de manera automática al programa Generation kWh.</p>
 
-    <p>Más información sobre los criterios de la asignación de kWh y el reparto según periodo, en <a href="https://www.somenergia.coop/wpsom/gkwh/Anexo-II-Contrato-Generation-kWh-ES.pdf">esta nota técnica (Anexo II del contrato de préstamo Generation kWh)</a></p>
+    <p>Más información sobre los criterios de la asignación de kWh y el reparto según periodo, en <a href="https://back.somenergia.coop/storage/app/media/DOCS/legal/es/CCGG_GenerationkWh/Anexo-II-Contrato-GenerationkWh.pdf">esta nota técnica (Anexo II del contrato de préstamo Generation kWh)</a></p>
 </div>
 </%def>
