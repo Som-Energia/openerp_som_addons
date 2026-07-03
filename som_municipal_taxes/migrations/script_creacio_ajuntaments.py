@@ -3,7 +3,6 @@ from __future__ import print_function
 
 import csv
 import sys
-from io import open
 from erppeek import Client
 import dbconfig
 
