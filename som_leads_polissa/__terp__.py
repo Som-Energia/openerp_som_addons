@@ -22,7 +22,6 @@
         "som_partner_account",
         "som_card_payment",
         "giscedata_crm_leads_signatura",
-        "som_polissa_condicions_generals",
     ],
     "init_xml": [],
     "demo_xml": [
