@@ -215,6 +215,7 @@ class SomLeadWww(osv.osv_memory):
             context = {}
 
         ir_model_o = self.pool.get("ir.model.data")
+        member_o = self.pool.get("somenergia.soci")
         contract_info = contract_data["contract_info"]
         contract_address = contract_data["contract_address"]
 
@@ -296,6 +297,16 @@ class SomLeadWww(osv.osv_memory):
 
         if member.get("lang", False):
             values["lang"] = member["lang"]
+        else:
+            if member_type in ["sponsored", "already_member"]:
+                member_id = self._check_member_vat_number_matching(
+                    cr, uid, www_vals["linked_member_info"]["vat"],
+                    www_vals["linked_member_info"]["code"], context=context
+                )
+                if member_id:
+                    member_br = member_o.browse(cr, uid, member_id, context=context)
+                    if member_br.partner_id.lang and values.get("lang") is None:
+                        values["lang"] = member_br.partner_id.lang
 
         values["is_new_contact"] = (
             not self._already_has_contract(cr, uid, values["titular_vat"], context=context)
@@ -374,9 +385,6 @@ class SomLeadWww(osv.osv_memory):
             cr, uid, "som_card_payment", "payment_mode_card_recurrent"
         )[1]
 
-        expiry_date = '{}/{}'.format(card_vals["creditcard_expiry_date"]
-                                     [2:], card_vals["creditcard_expiry_date"][:2])
-
         lead_o.write(
             cr,
             uid,
@@ -385,7 +393,7 @@ class SomLeadWww(osv.osv_memory):
                 "payment_mode_id": payment_mode_id,
                 "creditcard_token": card_vals["creditcard_token"],
                 "creditcard_masked_number": card_vals["creditcard_masked_number"],
-                "creditcard_expiry_date": expiry_date,
+                "creditcard_expiry_date": card_vals["creditcard_expiry_date"],
                 "creditcard_cof_txnid": card_vals["creditcard_cof_txnid"],
             },
             context=context,
@@ -701,6 +709,7 @@ class SomLeadWww(osv.osv_memory):
                 "INVALID_MEMBER",
                 "Member has been not found: {} not match with VAT {}".format(number, vat)
             )
+        return member_id[0]
 
     def _split_phone_prefix(self, cursor, uid, phone_full, context=None):
         """Splits (if possible) the phone number and prefix using the prefixes table"""
@@ -733,10 +742,6 @@ class SomLeadWww(osv.osv_memory):
         ctx['provider'] = 'signaturit'
 
         lead_o.write(cr, uid, lead_id, {'delivery_type': 'url'})
-
-        state, errors = lead_o.check_start_signature_process(cr, uid, [lead_id], context=ctx)
-        if state != 'end':
-            raise osv.except_osv('Error', errors)
 
         cr.commit()
 
