@@ -1,4 +1,6 @@
 # -*- encoding: utf-8 -*-
+from __future__ import absolute_import
+
 from tools import config
 from oopgrade.oopgrade import MigrationHelper
 
