@@ -181,11 +181,6 @@ class GiscedataCrmLead(osv.OsvInherits):
 
         if card_ids:
             card = card_o.browse(cursor, uid, card_ids[0], context=context)
-            if card.partner_id.id != pagador_id:
-                raise osv.except_osv(
-                    "INVALID_CARD_TOKEN",
-                    "Ja existeix una targeta amb aquest token per un altre partner."
-                )
             if (
                 card.masked_number != lead.creditcard_masked_number
                 or card.expiry_date != lead.creditcard_expiry_date
