@@ -57,6 +57,7 @@ def up(cursor, installed_version):
                     FROM ir_attachment
                     WHERE id = %s
                 '''
+                datas_mongo = None
                 cursor.execute(sql_select, (att_id,))
                 for data in cursor.dictfetchall():
                     logger.debug(
@@ -82,7 +83,7 @@ def up(cursor, installed_version):
                     SET datas_mongo = '%s'
                     WHERE id = %s;
                 '''
-                if att_ids:
+                if att_ids and datas_mongo is not None:
                     cursor.execute(sql, (AsIs(datas_mongo), att_ids[0]))
                     logger.info(
                         'Attachments actualitzat de pobresa energètica {}.'.format(scp_id[0]))
