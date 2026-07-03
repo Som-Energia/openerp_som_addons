@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 
+from __future__ import absolute_import, print_function
+
 from osv import osv, fields
 from osv.expression import OOQuery
 from .erpwrapper import ErpWrapper

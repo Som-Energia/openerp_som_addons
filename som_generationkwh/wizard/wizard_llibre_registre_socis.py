@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+from __future__ import absolute_import, print_function
+
 from autoworker import AutoWorker
 import base64
 from c2c_webkit_report import webkit_report

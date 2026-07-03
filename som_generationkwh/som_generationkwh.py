@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from __future__ import absolute_import
+from __future__ import absolute_import, print_function
 
 from osv import osv, fields
 import netsvc
@@ -24,6 +24,10 @@ from .holidays import HolidaysProvider
 import datetime
 
 # Models
+
+
+def _round_to_cents(amount):
+    return float('{0:.2f}'.format(amount))
 
 
 class GenerationkWhDealer(osv.osv):
@@ -98,7 +102,7 @@ class GenerationkWhDealer(osv.osv):
         ]
 
     def get_contracts_by_ref(self, cursor, uid, contract_refs, context=None):
-        contract_refs = map(str, contract_refs)
+        contract_refs = [str(contract_ref) for contract_ref in contract_refs]
         Contract = self.pool.get('giscedata.polissa')
         contract_ids = Contract.search(cursor, uid, [
             ('name', 'in', contract_refs),
@@ -550,8 +554,8 @@ class GenerationkWhInvoiceLineOwner(osv.osv):
             profit = (priceNoGen - line['price_unit']) * line['quantity']
 
         if ai_obj.read(cr, uid, line['invoice_id'][0], ['type'])['type'] == 'out_refund':
-            return round(profit * -1, 2)
-        return round(profit, 2)
+            return _round_to_cents(profit * -1)
+        return _round_to_cents(profit)
 
     def _ff_saving_generation(self, cursor, uid, ids, field_name, arg,
                               context=None):

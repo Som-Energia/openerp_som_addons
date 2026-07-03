@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
-from erpwrapper import ErpWrapper
+from __future__ import absolute_import, print_function
+
+from .erpwrapper import ErpWrapper
 import pooler
 from generationkwh.isodates import isodate
 import generationkwh.investmentmodel as gkwh
@@ -10,6 +12,10 @@ from yamlns import namespace as ns
 from tools.translate import _
 from dateutil.relativedelta import relativedelta
 from threading import Thread
+
+
+def _round_to_cents(amount):
+    return float('{0:.2f}'.format(amount))
 
 
 class PartnerException(Exception):
@@ -215,12 +221,12 @@ class InvestmentActions(ErpWrapper):
 
         InvoiceLine.create(cursor, uid, line)
         if irpf_amount_current_year:
-            irpf_amount_current_year = round(irpf_amount_current_year, 2)
+            irpf_amount_current_year = _round_to_cents(irpf_amount_current_year)
             Investment.irpfRetentionLine(
                 cursor, uid, investment, irpf_amount_current_year, invoice_id,
                 isodate(date_invoice), investmentMemento)
         if irpf_amount:
-            irpf_amount = round(irpf_amount, 2)
+            irpf_amount = _round_to_cents(irpf_amount)
             Investment.irpfRetentionLine(cursor, uid, investment, irpf_amount, invoice_id, isodate(
                 date_invoice) - relativedelta(years=1), investmentMemento)
 
