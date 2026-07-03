@@ -93,7 +93,7 @@
 
     <p>A aquest cost, s’hi han d’afegir la resta de conceptes relacionats amb la comercialització de l’energia (càrrecs i peatges d’accés regulats, pagaments a l’operador del sistema i del mercat, marge de la comercialitzadora i altres conceptes relacionats amb la compra d’energia...).</p>
 
-    <p>El mètode de càlcul complet està especificat en <a href="https://www.somenergia.coop/wpsom/gkwh/Anexo-I-Contrato-Generation-kWh-ES.pdf">aquesta nota tècnica (Annex I del contracte de Préstec Generation kWh)</a>.</p>
+    <p>El mètode de càlcul complet està especificat en <a href="https://back.somenergia.coop/storage/app/media/DOCS/legal/ca/CCGG_GenerationkWh/Annex-I-Contracte-GenerationkWh.pdf">aquesta nota tècnica (Annex I del contracte de Préstec Generation kWh)</a>.</p>
 
     <h3>Aplicació del preu Generation kWh a les factures</h3>
 
@@ -109,6 +109,6 @@
 
     <p>Les persones sòcies participants del Generation kWh podran tenir diversos contractes associats a la seva participació i podran definir, a través de l’Oficina Virtual, l’ordre de prioritat segons el qual aquests contractes facturaran els kWh. Hi haurà d’haver, com a mínim, un contracte associat per fer servir l’energia procedent del Generation kWh. És responsabilitat de la persona titular assegurar-se que els drets energètics Generation kWh són rebuts per algun contracte, ja que els canvis de titularitat o les noves altes contractuals no s’associaran de manera automàtica al programa Generation kWh.</p>
 
-    <p>Trobareu més informació sobre els criteris de l’assignació de kWh i el repartiment segons el període en <a href="https://www.somenergia.coop/wpsom/gkwh/Anexo-II-Contrato-Generation-kWh-ES.pdf">aquesta nota tècnica (Annex II del contracte de préstec Generation kWh)</a>.</p>
+    <p>Trobareu més informació sobre els criteris de l’assignació de kWh i el repartiment segons el període en <a href="https://back.somenergia.coop/storage/app/media/DOCS/legal/ca/CCGG_GenerationkWh/Annex-II-Contracte-GenerationkWh.pdf">aquesta nota tècnica (Annex II del contracte de préstec Generation kWh)</a>.</p>
 </div>
 </%def>
