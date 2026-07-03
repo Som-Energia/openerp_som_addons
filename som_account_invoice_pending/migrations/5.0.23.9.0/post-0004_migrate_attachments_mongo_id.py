@@ -1,4 +1,6 @@
 # coding=utf-8
+from __future__ import absolute_import
+
 import logging
 import pooler
 from psycopg2.extensions import AsIs
