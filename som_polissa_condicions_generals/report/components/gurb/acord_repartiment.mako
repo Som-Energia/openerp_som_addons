@@ -6,24 +6,28 @@
         <h2 style="font-size: 14px;">Annex I</h2>
     </div>
     <div id="titol">
-        <h2 style="text-align: center;">${_(u"ACORD DE REPARTIMENT D'ENERGIA EN AUTOCONSUM COL·LECTIU AMB EXCEDENTS I COMPENSACIÓ")}</h1>
+        <h1 style="text-align: center;">${_(u"ACORD DE REPARTIMENT D'ENERGIA EN AUTOCONSUM COL·LECTIU AMB EXCEDENTS I COMPENSACIÓ")}</h1>
     </div>
     <p>
         ${_(u"En aplicació del Reial decret 244/2019, de 5 d'abril, els consumidors següents acordem associar-nos en una instal·lació d'autoconsum col·lectiu d'energia elèctrica amb les característiques següents:")}
     </p>
     <p>
-        <input type="checkbox"> ${_(u"AMB excedents acollits a compensació simplificada")}</input>
+        ☐ ${_(u"AMB excedents acollits a compensació simplificada")}
     </p>
     <p>
-        <input type="checkbox"> ${_(u"AMB excedents no acollits a compensació simplificada")}</input>
+        ☐ ${_(u"AMB excedents no acollits a compensació simplificada")}
     </p>
     <p>
-        <b> ${_(u"Codi d'autoconsum (CAU):")} </b>
+        ${_(u"Codi d'autoconsum (CAU):")}
     </p>
-    <p>
-        ${_(u"(completar per cada consumidora associada)")}
-    </p>
-    <table>
+    <table border="1" cellspacing="0" cellpadding="4" width="90%">
+        <colgroup>
+            <col width="4%">
+            <col width="37%">
+            <col width="25%">
+            <col width="30%">
+            <col width="4%">
+        </colgroup>
         <thead>
             <tr>
                 <th colspan="2">
@@ -55,15 +59,24 @@
                     &nbsp;
                 </td>
                 <td>
-                    &nbsp;
+                    1
                 </td>
             </tr>
         </tbody>
     </table>
 
-    <br/>
+    <p>
+        ${_(u"(completar per cada consumidora associada)")}
+    </p>
 
-    <table>
+    <table border="1" cellspacing="0" cellpadding="4" width="90%">
+        <colgroup>
+            <col width="4%">
+            <col width="37%">
+            <col width="25%">
+            <col width="30%">
+            <col width="4%">
+        </colgroup>
         <thead>
             <tr>
                 <th colspan="2">
@@ -83,7 +96,41 @@
         <tbody>
             <tr>
                 <td>
+                    1
+                </td>
+                <td>
                     &nbsp;
+                </td>
+                <td>
+                    &nbsp;
+                </td>
+                <td>
+                    &nbsp;
+                </td>
+                <td>
+                    &nbsp;
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    2
+                </td>
+                <td>
+                    &nbsp;
+                </td>
+                <td>
+                    &nbsp;
+                </td>
+                <td>
+                    &nbsp;
+                </td>
+                <td>
+                    &nbsp;
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    3
                 </td>
                 <td>
                     &nbsp;
@@ -101,6 +148,7 @@
         </tbody>
     </table>
 
+    <br/> <br/> <br/>
     <p style="page-break-after:always"></p>
     <br/> <br/> <br/>
 
@@ -131,7 +179,7 @@
             ${_(u"Es pot retirar el consentiment en qualsevol moment i exercir el dret d'accés, rectificació, supressió, portabilitat, limitació i oposició adreçant-se a somenergia@delegado-datos.com (delegat de protecció de dades). En cas de divergències, es pot presentar una reclamació davant l'Agència de Protecció de Dades (www.aepd.es).")}
         </li>
     </ul>
-    <p style="page-break-after:always"></p>
+    <br/> <br/> <br/>
     <p>A Girona, ... de ... de ...</p>
     <p>${_(u"Les CONSUMIDORES associades representades pel seu representant, SOM ENERGIA, SCCL, amb NIF F55091367")}</p>
     <p>&nbsp;</p>
@@ -148,24 +196,28 @@
         <h2 style="font-size: 14px;">Anexo I</h2>
     </div>
     <div id="titol">
-        <h2 style="text-align: center;">${_(u"ACUERDO DE REPARTO DE ENERGÍA EN AUTOCONSUMO COLECTIVO CON EXCEDENTES Y COMPENSACIÓN")}</h1>
+        <h1 style="text-align: center;">${_(u"ACUERDO DE REPARTO DE ENERGÍA EN AUTOCONSUMO COLECTIVO CON EXCEDENTES Y COMPENSACIÓN")}</h1>
     </div>
     <p>
         ${_(u"En aplicación del Real Decreto 244/2019, de 5 de abril, los siguientes consumidores acordamos asociarnos en una instalación de autoconsumo colectivo de energía eléctrica con las siguientes características:")}
     </p>
     <p>
-        <input type="checkbox"> ${_(u"CON excedentes acogidos a compensación simplificada")}</input>
+        ☐ ${_(u"CON excedentes acogidos a compensación simplificada")}
     </p>
     <p>
-        <input type="checkbox"> ${_(u"CON excedentes no acogidos a compensación simplificada")}</input>
+        ☐ ${_(u"CON excedentes no acogidos a compensación simplificada")}
     </p>
     <p>
-        <b> ${_(u"Código de autoconsumo (CAU):")} </b>
+        ${_(u"Código de autoconsumo (CAU):")}
     </p>
-    <p>
-        ${_(u"(completar por cada consumidora asociada)")}
-    </p>
-    <table>
+    <table border="1" cellspacing="0" cellpadding="4" width="90%">
+        <colgroup>
+            <col width="4%">
+            <col width="37%">
+            <col width="25%">
+            <col width="30%">
+            <col width="4%">
+        </colgroup>
         <thead>
             <tr>
                 <th colspan="2">
@@ -197,15 +249,24 @@
                     &nbsp;
                 </td>
                 <td>
-                    &nbsp;
+                    1
                 </td>
             </tr>
         </tbody>
     </table>
 
-    <br/>
+    <p>
+        ${_(u"(completar por cada consumidora asociada)")}
+    </p>
 
-    <table>
+    <table border="1" cellspacing="0" cellpadding="4" width="90%">
+        <colgroup>
+            <col width="4%">
+            <col width="37%">
+            <col width="25%">
+            <col width="30%">
+            <col width="4%">
+        </colgroup>
         <thead>
             <tr>
                 <th colspan="2">
@@ -218,14 +279,48 @@
                     ${_("CUPS")}
                 </th>
                 <th>
-                    ${_("Coeficiente de Reparto (ß)")}
+                    ${_("Coeficiente de Reparto (β)")}
                 </th>
             </tr>
         </thead>
         <tbody>
             <tr>
                 <td>
+                    1
+                </td>
+                <td>
                     &nbsp;
+                </td>
+                <td>
+                    &nbsp;
+                </td>
+                <td>
+                    &nbsp;
+                </td>
+                <td>
+                    &nbsp;
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    2
+                </td>
+                <td>
+                    &nbsp;
+                </td>
+                <td>
+                    &nbsp;
+                </td>
+                <td>
+                    &nbsp;
+                </td>
+                <td>
+                    &nbsp;
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    3
                 </td>
                 <td>
                     &nbsp;
@@ -243,6 +338,7 @@
         </tbody>
     </table>
 
+    <br/> <br/> <br/>
     <p style="page-break-after:always"></p>
     <br/> <br/> <br/>
 
@@ -273,7 +369,7 @@
             ${_(u"Se puede retirar el consentimiento en cualquier momento y ejercer el derecho de acceso, rectificación, supresión, portabilidad, limitación y oposición dirigiéndose a somenergia@delegado-datos.com (delegado de protección de datos). En caso de divergencias, se puede presentar una reclamación ante la Agencia de Protección de Datos (www.aepd.es).")}
         </li>
     </ul>
-    <p style="page-break-after:always"></p>
+    <br/> <br/> <br/>
     <p>A Girona, ... de ... de ...</p>
     <p>${_(u"Las CONSUMIDORAS asociadas representadas por su representante SOM ENERGIA Sccl con NIF F55091367")}</p>
     <p>&nbsp;</p>
