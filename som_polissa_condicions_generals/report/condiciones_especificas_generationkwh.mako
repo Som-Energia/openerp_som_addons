@@ -62,7 +62,7 @@
             <br>
         </li>
         <li>
-            El Precio Generation kWh de cada anualidad se aprobará con carácter definitivo por el Consejo Rector de SOM ENERGIA, SCCL y tendrá efecto en fecha 31 de diciembre de cada anualidad. Así, hasta esa fecha se aplicará con carácter meramente provisional el Precio Generation kWh, pudiendo implicar la regularización del precio ya aplicado a la electricidad que le corresponda al socio en el transcurso de la anualidad si el mismo difiriese del definitivo.</p>
+            El Precio Generation kWh de cada anualidad se aprobará con carácter definitivo por el Consejo Rector de SOM ENERGIA, SCCL y tendrá efecto en fecha 31 de diciembre de cada anualidad. Así, hasta esa fecha se aplicará con carácter meramente provisional el Precio Generation kWh, pudiendo implicar la regularización del precio ya aplicado a la electricidad que le corresponda al socio en el transcurso de la anualidad si el mismo difiriese del definitivo.
             <br>
             A estos efectos la Contratante manifiesta y acepta que su acceso a la participación en el sistema de autoproducción colectiva no se entiende en ningún caso como la transmisión de un valor neto de bienes y/o derechos adquiridos por parte del socio prestamista, sino como una opción ejercida de forma conjunta para facilitar que una parte de la energía eléctrica consumida sea equivalente a la energía eléctrica proveniente de fuentes renovables que se producirá por las Plantas Asociadas promovidas y operadas, directa o indirectamente, por SOM ENERGIA SCCL.
         </li>
