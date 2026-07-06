@@ -48,7 +48,7 @@
             <br>
         </li>
         <li>
-            Cada Acción Energética equivale a una cantidad de energía eléctrica (kWhs) determinada en función de la producción de las Plantas Asociadas que constan en las Condiciones Particulares del Contrato de Suministro. Esta cantidad de energía eléctrica (kWh) a la que se aplicará el Precio Generation kWh se repartirá entre el número de contratos de suministro asociados al Préstamo Generation kWh, atendiendo a la prioridad de asignación establecida por el titular del Préstamo Generation kWh.
+            Cada Acción Energética equivale a una cantidad de energía eléctrica (kWh) determinada en función de la producción de las Plantas Asociadas que constan en las Condiciones Particulares del Contrato de Suministro. Esta cantidad de energía eléctrica (kWh) a la que se aplicará el Precio Generation kWh se repartirá entre el número de contratos de suministro asociados al Préstamo Generation kWh, atendiendo a la prioridad de asignación establecida por el titular del Préstamo Generation kWh.
             <br>
         </li>
         <li>
