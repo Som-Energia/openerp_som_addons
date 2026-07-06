@@ -48,7 +48,7 @@
             <br>
         </li>
         <li>
-            Cada Acció Energètica equival a una quantitat d’energia elèctrica (kWhs) determinada en funció de la producció de les Plantes Associades que consten en les Condicions Particulars del Contracte de Subministrament. Aquesta quantitat d’energia elèctrica (kWh) a la qual s’aplicarà el Preu Generation kWh es repartirà entre el nombre de contractes de subministrament associats al Préstec Generation kWh, atenent la prioritat d’assignació establerta pel titular del Préstec Generation kWh.
+            Cada Acció Energètica equival a una quantitat d’energia elèctrica (kWh) determinada en funció de la producció de les Plantes Associades que consten en les Condicions Particulars del Contracte de Subministrament. Aquesta quantitat d’energia elèctrica (kWh) a la qual s’aplicarà el Preu Generation kWh es repartirà entre el nombre de contractes de subministrament associats al Préstec Generation kWh, atenent la prioritat d’assignació establerta pel titular del Préstec Generation kWh.
             <br>
         </li>
         <li>
