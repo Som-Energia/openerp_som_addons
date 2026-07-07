@@ -130,13 +130,13 @@
     </p>
     <ol type="a">
         <li>
-            En cas de resolució del contracte de subministrament de la Contractant amb SOM ENERGIA, SCCL: en aquest cas, la Comercialitzadora informarà d’aquesta circumstància la Contractant, així com de l’inici dels tràmits per donar de baixa el CUPS de la Contractant de l’autoconsum col·lectiu. La Contractant s’obliga a aportar tota la documentació que sigui necessària per materialitzar aquesta baixa, així com a donar instruccions a la seva nova comercialitzadora, i està obligada a abonar la Quota GURB fins que la baixa sigui efectiva.
+            <u>En cas de resolució del contracte de subministrament de la Contractant amb SOM ENERGIA, SCCL:</u> en aquest cas, la Comercialitzadora informarà d’aquesta circumstància la Contractant, així com de l’inici dels tràmits per donar de baixa el CUPS de la Contractant de l’autoconsum col·lectiu. La Contractant s’obliga a aportar tota la documentació que sigui necessària per materialitzar aquesta baixa, així com a donar instruccions a la seva nova comercialitzadora, i està obligada a abonar la Quota GURB fins que la baixa sigui efectiva.
         </li>
         <li>
-            En cas que qualsevol de les Parts incompleixi les seves obligacions, segons aquestes Condicions Específiques o segons el Contracte de Subministrament, en particular que incompleixi totes o algunes de les obligacions necessàries per activar o modificar l’autoconsum col·lectiu dins dels terminis establerts. En el supòsit que sigui la Contractant qui hagi incomplert les seves obligacions, SOM ENERGIA, SCCL, no li retornarà el Cost d’Adhesió i la Contractant estarà obligada a abonar la Quota GURB fins que la baixa del producte sigui efectiva.
+            <u>En cas que qualsevol de les Parts incompleixi les seves obligacions, segons aquestes Condicions Específiques o segons el Contracte de Subministrament</u>, en particular que incompleixi totes o algunes de les obligacions necessàries per activar o modificar l’autoconsum col·lectiu dins dels terminis establerts. En el supòsit que sigui la Contractant qui hagi incomplert les seves obligacions, SOM ENERGIA, SCCL, no li retornarà el Cost d’Adhesió i la Contractant estarà obligada a abonar la Quota GURB fins que la baixa del producte sigui efectiva.
         </li>
         <li>
-            Qualsevol altre cas previst en aquest contracte o en la legislació aplicable.
+            <u>Qualsevol altre cas previst en aquest contracte o en la legislació aplicable.</u>
         </li>
     </ol>
     <p>
@@ -355,13 +355,13 @@
     </p>
     <ol type="a">
         <li>
-            En caso de resolución del contrato de suministro de la Contratante con SOM ENERGIA, SCCL,: en este caso, la Comercializadora informará de esta circunstancia a la Contratante, así como del inicio de los trámites para dar de baja el CUPS de la Contratante del autoconsumo colectivo. La Contratante se obliga a aportar toda la documentación que sea necesaria para materializar esta baja, así como a dar instrucciones a su nueva comercializadora, y está obligada a abonar la Cuota GURB hasta que la baja sea efectiva.
+            <u>En caso de resolución del contrato de suministro de la Contratante con SOM ENERGIA, SCCL,:</u> en este caso, la Comercializadora informará de esta circunstancia a la Contratante, así como del inicio de los trámites para dar de baja el CUPS de la Contratante del autoconsumo colectivo. La Contratante se obliga a aportar toda la documentación que sea necesaria para materializar esta baja, así como a dar instrucciones a su nueva comercializadora, y está obligada a abonar la Cuota GURB hasta que la baja sea efectiva.
         </li>
         <li>
-            En caso de incumplimiento por cualquiera de las Partes de sus obligaciones, según las presentes Condiciones Específicas o según el Contrato de Suministro, en particular el incumplimiento de todas o algunas de las obligaciones necesarias para activar o modificar el autoconsumo colectivo dentro de los plazos establecidos. En el supuesto de que sea la Contratante quien haya incumplido sus obligaciones, SOM ENERGIA, SCCL, no le devolverá el Coste de Adhesión y la Contratante estará obligada a abonar la Cuota GURB hasta que la baja del producto sea efectiva.
+            <u>En caso de incumplimiento por cualquiera de las Partes de sus obligaciones, según las presentes Condiciones Específicas o según el Contrato de Suministro</u>, en particular el incumplimiento de todas o algunas de las obligaciones necesarias para activar o modificar el autoconsumo colectivo dentro de los plazos establecidos. En el supuesto de que sea la Contratante quien haya incumplido sus obligaciones, SOM ENERGIA, SCCL, no le devolverá el Coste de Adhesión y la Contratante estará obligada a abonar la Cuota GURB hasta que la baja del producto sea efectiva.
         </li>
         <li>
-            Cualquier otro caso previsto en este contrato o en la legislación aplicable.
+            <u>Cualquier otro caso previsto en este contrato o en la legislación aplicable.</u>
         </li>
     </ol>
     <p>
