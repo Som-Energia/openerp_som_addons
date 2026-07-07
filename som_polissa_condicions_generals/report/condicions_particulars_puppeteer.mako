@@ -72,7 +72,6 @@
                             %endif
                             %if informe['prices']['mostra_indexada']:
                                 ${indexada_ca()}
-                                <p style="page-break-after:always;"></p>
                             %endif
                             %if "gurb" in informe:
                                 ${gurb_ccee_ca()}
@@ -90,7 +89,6 @@
                             %endif
                             %if informe['prices']['mostra_indexada']:
                                 ${indexada_es()}
-                                <p style="page-break-after:always;"></p>
                             %endif
                             %if "gurb" in informe:
                                 ${gurb_ccee_es()}
