@@ -727,7 +727,9 @@ class SomLeadWww(osv.osv_memory):
             context = {}
 
         lead_o = self.pool.get('giscedata.crm.lead')
-        lead_data = lead_o.read(cr, uid, lead_id, ['cups'], context=context)
+        lead_data = lead_o.read(
+            cr, uid, lead_id, ["cups", "signature_process"], context=context
+        )
         lead_cups = (lead_data.get('cups') or '').strip().upper()
         requested_cups = (cups or '').strip().upper()
 
@@ -735,6 +737,13 @@ class SomLeadWww(osv.osv_memory):
             raise osv.except_osv(
                 'Error',
                 'Lead {} does not match CUPS {}'.format(lead_id, cups)
+            )
+
+        signature_process = lead_data.get("signature_process")
+        if signature_process:
+            raise osv.except_osv(
+                'Error',
+                'Lead {} already has a signature process {}'.format(lead_id, signature_process[0])
             )
 
         ctx = context.copy()
