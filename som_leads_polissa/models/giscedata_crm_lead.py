@@ -365,14 +365,20 @@ class GiscedataCrmLead(osv.OsvInherits):
     def create_entity_iban(self, cursor, uid, crml_id, context=None):
         if context is None:
             context = {}
-
-        res = super(GiscedataCrmLead, self).create_entity_iban(
-            cursor, uid, crml_id, context=context
-        )
-
+        ir_model_o = self.pool.get("ir.model.data")
         lead = self.browse(cursor, uid, crml_id, context=context)
-        if lead.create_new_member and lead.member_quota_payment_type == 'remesa':
-            self.create_entity_member_bank_payment(cursor, uid, crml_id, context=context)
+
+        payment_mode_card_id = ir_model_o.get_object_reference(
+            cursor, uid, "som_card_payment", "payment_mode_card_recurrent"
+        )[1]
+        res = {}
+        if lead.payment_mode_id != payment_mode_card_id:
+            res = super(GiscedataCrmLead, self).create_entity_iban(
+                cursor, uid, crml_id, context=context
+            )
+
+            if lead.create_new_member and lead.member_quota_payment_type == 'remesa':
+                self.create_entity_member_bank_payment(cursor, uid, crml_id, context=context)
 
         return res
 
