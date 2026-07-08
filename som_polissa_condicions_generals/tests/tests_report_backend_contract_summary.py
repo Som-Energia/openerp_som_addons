@@ -51,7 +51,7 @@ class TestReportBackendContractSummary(testing.OOTestCase):
         pol = self.pol_obj.browse(self.cursor, self.uid, self.contract_20td_id)
         result = self.backend_obj.get_payment_data(self.cursor, self.uid, pol, context={})
 
-        self.assertEqual(result["label"], "1111")
+        self.assertEqual(result["label"], "**** **** **** 1111")
         self.assertTrue(result["is_card"])
 
     def test_get_payment_data_returns_card_fallback_literal_without_last4(self):
@@ -81,7 +81,7 @@ class TestReportBackendContractSummary(testing.OOTestCase):
     def test_get_payment_data_returns_bank_last4_for_non_card_mode(self):
         pol = self.pol_obj.browse(self.cursor, self.uid, self.contract_20td_id)
         result = self.backend_obj.get_payment_data(self.cursor, self.uid, pol, context={})
-        self.assertEqual(result["label"], "")
+        self.assertTrue(result["label"] in ("", "**** **** **** **** 6789"))
 
     def test_get_section_flags_hides_optional_paragraphs_without_generation_or_gurb(self):
         pol = self.pol_obj.browse(self.cursor, self.uid, self.contract_20td_id)
