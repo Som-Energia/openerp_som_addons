@@ -60,6 +60,7 @@ body {
 .summary-box--third {
     box-sizing: border-box;
     display: inline-block;
+    font-size: 11px;
     padding: 0 4px;
     width: 33.33%;
     vertical-align: top;
