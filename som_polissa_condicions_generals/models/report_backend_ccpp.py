@@ -148,9 +148,18 @@ class ReportBackendCondicionsParticulars(ReportBackend):
         res['phone_envio'] = direccio_envio.phone or ''
         data_firma = datetime.today()
         res['sign_date'] = localize_period(data_firma, pol.titular.lang)
-        res['bank'] = pas.bank if es_ct_subrogacio else pol.bank or False
+        payment_type = getattr(pol, 'tipo_pago', False)
+        res['is_recurrent_card_payment'] = bool(
+            payment_type and payment_type.code == 'COBRAMENT_RECURRENT_TARGETA'
+        )
+        res['bank'] = False if res['is_recurrent_card_payment'] else (
+            pas.bank if es_ct_subrogacio else pol.bank or False
+        )
         iban = res['bank'] and res['bank'].printable_iban[5:] or ''
+        creditcard = res['is_recurrent_card_payment'] and getattr(pol, 'creditcard', False) or False
+        masked_number = creditcard and creditcard.masked_number or ''
         res['printable_iban'] = iban[-4:]
+        res['printable_card_number'] = masked_number[-4:]
         res['lang'] = pol.titular.lang
         if context.get("lead") and context.get("lang"):
             res['lang'] = context.get("lang")

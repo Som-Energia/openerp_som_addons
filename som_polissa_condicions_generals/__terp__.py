@@ -13,6 +13,7 @@
         "giscedata_facturacio_comer",
         "giscedata_polissa_condicions_generals",
         "giscedata_facturacio_indexada_som",
+        "som_card_payment",
         "som_leads_polissa",
         "report_puppeteer",
         "som_infoenergia",

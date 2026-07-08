@@ -1,15 +1,29 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import, unicode_literals, division
 import unittest
+import os
 from datetime import datetime
 from destral import testing
 from destral.transaction import Transaction
+from mako.template import Template
 
 
 class TestReportBackendCCPP(testing.OOTestCase):
+    PAYMENT_INFO_TEMPLATE = os.path.join(
+        os.path.dirname(os.path.dirname(__file__)),
+        'report',
+        'components',
+        'payment_info.mako'
+    )
+
     def get_ref(self, module, ref):
         IrModel = self.openerp.pool.get("ir.model.data")
         return IrModel._get_obj(self.cursor, self.uid, module, ref).id
+
+    def render_payment_info(self, titular):
+        return Template(filename=self.PAYMENT_INFO_TEMPLATE).get_def('payment_info').render_unicode(
+            titular=titular, _=lambda text: text
+        )
 
     def setUp(self):
         self.maxDiff = None
@@ -23,8 +37,10 @@ class TestReportBackendCCPP(testing.OOTestCase):
         self.pricelist_obj = self.openerp.pool.get("product.pricelist")
         self.wiz_change_to_index_obj = self.openerp.pool.get("wizard.change.to.indexada")
         self.k_change_obj = self.openerp.pool.get("som.polissa.k.change")
+        self.card_obj = self.openerp.pool.get("res.partner.creditcard")
         self.tax_obj = self.openerp.pool.get('account.tax')
         self.conf_obj = self.openerp.pool.get('res.config')
+        self.imd_obj = self.openerp.pool.get("ir.model.data")
         self.contract1_id = self.get_ref("giscedata_polissa", "polissa_0001")
         self.contract_20TD_id = self.get_ref("giscedata_polissa", "polissa_tarifa_018")
         self.contract_30TD_id = self.get_ref("giscedata_polissa", "polissa_tarifa_019")
@@ -77,12 +93,14 @@ class TestReportBackendCCPP(testing.OOTestCase):
             u'diferent': True,
             u'email': u'',
             u'email_envio': u'info@openroad.be',
+            u'is_recurrent_card_payment': False,
             u'lang': False,
             u'mobile': u'',
             u'mobile_envio': u'',
             u'name_envio': u'Michel Schumacher',
             u'phone': u'',
             u'phone_envio': u'(+32) 2 123 456',
+            u'printable_card_number': u'',
             u'printable_iban': u'',
             u'sign_date': '',
             u'state': u'',
@@ -92,6 +110,67 @@ class TestReportBackendCCPP(testing.OOTestCase):
             u'zip': u'17001',
             u'zip_envio': u'1000'}
         )
+
+    def test_get_titular_data_with_recurrent_card_payment_ok(self):
+        pol_20td = self.pol_obj.browse(self.cursor, self.uid, self.contract_20TD_id)
+        payment_type_id = self.imd_obj.get_object_reference(
+            self.cursor, self.uid, "som_card_payment", "payment_type_card_recurrent"
+        )[1]
+        card_id = self.card_obj.create(
+            self.cursor,
+            self.uid,
+            {
+                "partner_id": pol_20td.pagador.id,
+                "token": "tok_ccpp_1",
+                "expiry_date": "12/35",
+                "masked_number": "**** **** **** 4242",
+            },
+        )
+        self.pol_obj.write(
+            self.cursor,
+            self.uid,
+            [self.contract_20TD_id],
+            {
+                "tipo_pago": payment_type_id,
+                "creditcard": card_id,
+            },
+        )
+        pol_20td = self.pol_obj.browse(self.cursor, self.uid, self.contract_20TD_id)
+
+        result = self.backend_obj.get_titular_data(self.cursor, self.uid, pol_20td, None)
+
+        self.assertEqual(result['bank'], False)
+        self.assertEqual(result['is_recurrent_card_payment'], True)
+        self.assertEqual(result['printable_card_number'], u'4242')
+        self.assertEqual(result['printable_iban'], u'')
+
+    def test_payment_info_renders_iban_branch(self):
+        titular = {
+            'bank': object(),
+            'is_recurrent_card_payment': False,
+            'printable_card_number': u'4242',
+            'printable_iban': u'1234',
+        }
+
+        result = self.render_payment_info(titular)
+
+        self.assertTrue(u'Nº de compte bancari (IBAN)' in result)
+        self.assertFalse(u'Nº de targeta' in result)
+        self.assertTrue(u'1234' in result)
+
+    def test_payment_info_prefers_card_branch_over_iban_when_both_are_present(self):
+        titular = {
+            'bank': object(),
+            'is_recurrent_card_payment': True,
+            'printable_card_number': u'4242',
+            'printable_iban': u'1234',
+        }
+
+        result = self.render_payment_info(titular)
+
+        self.assertTrue(u'Nº de targeta' in result)
+        self.assertFalse(u'Nº de compte bancari (IBAN)' in result)
+        self.assertTrue(u'4242' in result)
 
     def test_get_potencies_data_ok(self):
         pol_20td = self.pol_obj.browse(self.cursor, self.uid, self.contract_20TD_id)
