@@ -34,6 +34,11 @@ class ReportBackendContractSummary(ReportBackendCondicionsParticulars):
         digits = "".join([character for character in value if character.isdigit()])
         return digits[-4:] if len(digits) >= 4 else ""
 
+    def _mask_last_4_digits(self, last4, groups=4):
+        if not last4:
+            return ""
+        return "{} {}".format(" ".join(["****"] * groups), last4)
+
     def _is_autoconsum_active(self, pol):
         return getattr(pol, "tipus_subseccio", False) not in (False, "", "00", "0C")
 
@@ -51,11 +56,11 @@ class ReportBackendContractSummary(ReportBackendCondicionsParticulars):
         if is_card:
             masked_number = getattr(getattr(pol, "creditcard", False), "masked_number", "")
             last4 = self._extract_last_4_digits(masked_number)
-            label = last4 or CARD_FALLBACK_LITERAL
+            label = self._mask_last_4_digits(last4, groups=3) or CARD_FALLBACK_LITERAL
         else:
             printable_iban = getattr(getattr(pol, "bank", False), "printable_iban", "")
             last4 = self._extract_last_4_digits(printable_iban)
-            label = last4
+            label = self._mask_last_4_digits(last4)
 
         return {
             "is_card": is_card,

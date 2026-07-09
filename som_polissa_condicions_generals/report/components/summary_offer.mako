@@ -27,9 +27,13 @@
             <tr>
                 <td>Término potencia (€/kW y año)</td>
                 <td>
-                    %for index, power_price in enumerate(economic_summary['power_prices']):
-                        ${power_price['period']}: ${formatLang(power_price['value'], digits=6)}%if index < len(economic_summary['power_prices']) - 1:, %endif
-                    %endfor
+                    ${", ".join([
+                        "%s: %s" % (
+                            power_price['period'],
+                            formatLang(power_price['value'], digits=6)
+                        )
+                        for power_price in economic_summary['power_prices']
+                    ])}
                 </td>
             </tr>
         %if economic_summary['is_indexed']:
@@ -45,9 +49,13 @@
             <tr>
                 <td>Término energía (€/kWh)</td>
                 <td>
-                    %for index, energy_price in enumerate(economic_summary['energy_prices']):
-                        ${energy_price['period']}: ${formatLang(energy_price['value'], digits=6)}%if index < len(economic_summary['energy_prices']) - 1:, %endif
-                    %endfor
+                    ${", ".join([
+                        "%s: %s" % (
+                            energy_price['period'],
+                            formatLang(energy_price['value'], digits=6)
+                        )
+                        for energy_price in economic_summary['energy_prices']
+                    ])}
                 </td>
             </tr>
         %endif
@@ -56,9 +64,13 @@
             <tr>
                 <td>Generation (€/kWh)</td>
                 <td>
-                    %for index, generation_price in enumerate(economic_summary['generation_prices']):
-                        ${generation_price['period']}: ${formatLang(generation_price['value'], digits=6)}%if index < len(economic_summary['generation_prices']) - 1:, %endif
-                    %endfor
+                    ${", ".join([
+                        "%s: %s" % (
+                            generation_price['period'],
+                            formatLang(generation_price['value'], digits=6)
+                        )
+                        for generation_price in economic_summary['generation_prices']
+                    ])}
                 </td>
             </tr>
         %endif
