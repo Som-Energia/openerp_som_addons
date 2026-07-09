@@ -19,13 +19,20 @@ def up(cursor, installed_version):
     )
 
     logger.info('Updating contract summary report XML')
-    load_data(
-        cursor,
-        'som_polissa_condicions_generals',
+    data_files = [
         'report/giscedata_polissa_contract_summary_report.xml',
-        idref=None,
-        mode='update'
-    )
+        'report/giscedata_crm_lead_contract_summary_report.xml',
+        'views/giscedata_crm_lead_view.xml',
+        'views/giscedata_polissa_view.xml',
+    ]
+    for data_file in data_files:
+        load_data(
+            cursor,
+            'som_polissa_condicions_generals',
+            data_file,
+            idref=None,
+            mode='update'
+        )
 
     logger.info('Updating contract summary security CSV')
     load_data(
