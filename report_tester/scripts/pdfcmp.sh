@@ -63,7 +63,7 @@ rasterjoin() {
 }
 
 count_pages() {
-    ls "$1"/page_*.pdf 2>/dev/null | wc -l
+    ls "$1"/page_*.png 2>/dev/null | wc -l
 }
 
 create_blank_page() {
