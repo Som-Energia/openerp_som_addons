@@ -34,6 +34,14 @@ def get_ast_string_value(node):
     return None
 
 
+def parse_python_file(file_path):
+    """Analitza un fitxer Python mantenint compatibilitat entre Python 2 i 3."""
+    with io.open(file_path, 'rb') as f:
+        source = f.read()
+
+    return ast.parse(source)
+
+
 def get_modified_files():
     """Retorna un diccionari amb els mòduls i
         els seus fitxers modificats (XML, CSV, Python i PO)."""
@@ -74,8 +82,7 @@ def get_modified_files():
 def find_new_fields(file_path):
     """Analitza un fitxer Python per trobar nous camps en _columns."""
     try:
-        with io.open(file_path, 'r', encoding='utf-8') as f:
-            tree = ast.parse(f.read())
+        tree = parse_python_file(file_path)
 
         models = []
         for node in ast.walk(tree):
@@ -200,7 +207,6 @@ def create_migration_script(module_name, files):  # noqa: C901
                 existing_branch_script))
             return
         # Si existeix un script per aquesta branca però no ha estat modificat, l'eliminem
-        script_name = os.path.basename(existing_branch_script)
         script_path = existing_branch_script
         os.remove(existing_branch_script)
 
