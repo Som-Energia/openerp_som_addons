@@ -727,6 +727,7 @@ class SomLeadWww(osv.osv_memory):
             context = {}
 
         lead_o = self.pool.get('giscedata.crm.lead')
+        process_o = self.pool.get('giscedata.signatura.process')
         lead_data = lead_o.read(
             cr, uid, lead_id, ["cups", "signature_process"], context=context
         )
@@ -741,10 +742,11 @@ class SomLeadWww(osv.osv_memory):
 
         signature_process = lead_data.get("signature_process")
         if signature_process:
-            raise osv.except_osv(
-                'Error',
-                'Lead {} already has a signature process {}'.format(lead_id, signature_process[0])
+            process_data = process_o.read(
+                cr, uid, signature_process[0], ['signature_url', 'status'], context=context
             )
+            signature_url = process_data.get('signature_url')
+            return {'url': signature_url}
 
         ctx = context.copy()
         ctx['delivery_type'] = 'url'
@@ -769,7 +771,6 @@ class SomLeadWww(osv.osv_memory):
                 'Signature process could not be started for lead {}'.format(lead_id)
             )
 
-        process_o = self.pool.get('giscedata.signatura.process')
         timeout_seconds = 200.0
         poll_interval = 0.2
         deadline = time.time() + timeout_seconds

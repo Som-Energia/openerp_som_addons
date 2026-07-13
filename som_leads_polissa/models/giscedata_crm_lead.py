@@ -372,7 +372,7 @@ class GiscedataCrmLead(osv.OsvInherits):
             cursor, uid, "som_card_payment", "payment_mode_card_recurrent"
         )[1]
         res = ""
-        if lead.payment_mode_id != payment_mode_card_id:
+        if lead.payment_mode_id.id != payment_mode_card_id:
             res = super(GiscedataCrmLead, self).create_entity_iban(
                 cursor, uid, crml_id, context=context
             )
