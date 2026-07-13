@@ -189,7 +189,7 @@ class GiscedataCrmLead(osv.OsvInherits):
                     "INVALID_CARD_TOKEN_DATA",
                     "Ja existeix una targeta amb aquest token pero amb dades diferents."
                 )
-            if card.partner_id == pagador_id:
+            if card.partner_id.id == pagador_id:
                 card_id = card.id
             else:
                 card_id = card_o.create(
@@ -371,7 +371,7 @@ class GiscedataCrmLead(osv.OsvInherits):
         payment_mode_card_id = ir_model_o.get_object_reference(
             cursor, uid, "som_card_payment", "payment_mode_card_recurrent"
         )[1]
-        res = {}
+        res = ""
         if lead.payment_mode_id != payment_mode_card_id:
             res = super(GiscedataCrmLead, self).create_entity_iban(
                 cursor, uid, crml_id, context=context
