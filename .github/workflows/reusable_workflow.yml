@@ -130,9 +130,10 @@ jobs:
           cd ${{github.workspace}}
           export GIT_TERMINAL_PROMPT=0
 
-          test -n "${GITHUB_TOKEN:-}" || { echo "GITHUB_TOKEN is missing"; exit 1; }
+          git config --global --get-regexp '^url\..*\.insteadof$' || true
+          git config --global --show-origin --get-regexp '^url\..*\.insteadof$' || true
+          test -n "${GITHUB_TOKEN:-}" && echo "GITHUB_TOKEN is set" || echo "GITHUB_TOKEN is missing"
 
-          git config --global --unset-all url."https://x-access-token:${GITHUB_TOKEN}@github.com/".insteadOf || true
           git config --global \
             url."https://x-access-token:${GITHUB_TOKEN}@github.com/".insteadOf \
             "ssh://git@github.com/"
