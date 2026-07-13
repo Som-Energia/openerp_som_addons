@@ -106,6 +106,7 @@ jobs:
 
       - name: Run Tests
         env:
+          GITHUB_TOKEN: ${{ secrets.ACCESS_TOKEN_GA }}
           ESIOS_TOKEN: ${{ secrets.ESIOS_TOKEN }}
           SRID: ${{ secrets.SRID }}
         run: |
@@ -127,6 +128,16 @@ jobs:
           export OPENERP_SECRET="verysecret"
           export OPENERP_IGNORE_PUBSUB=1
           cd ${{github.workspace}}
+          export GIT_TERMINAL_PROMPT=0
+
+          git config --global --get-regexp '^url\..*\.insteadof$' || true
+          git config --global --show-origin --get-regexp '^url\..*\.insteadof$' || true
+          test -n "${GITHUB_TOKEN:-}" && echo "GITHUB_TOKEN is set" || echo "GITHUB_TOKEN is missing"
+
+          git config --global \
+            url."https://x-access-token:${GITHUB_TOKEN}@github.com/".insteadOf \
+            "ssh://git@github.com/"
+
           destral --report-coverage --enable-coverage --report-junitxml ${{github.workspace}}/test-results/destral -m ${{ inputs.module }}
 
       - name: Publish Unit Test Results
