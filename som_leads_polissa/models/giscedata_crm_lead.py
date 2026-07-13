@@ -189,7 +189,7 @@ class GiscedataCrmLead(osv.OsvInherits):
                     "INVALID_CARD_TOKEN_DATA",
                     "Ja existeix una targeta amb aquest token pero amb dades diferents."
                 )
-            if card.partner_id == pagador_id:
+            if card.partner_id.id == pagador_id:
                 card_id = card.id
             else:
                 card_id = card_o.create(
