@@ -119,7 +119,7 @@ class Tests_FacturacioFacturaReportV2_base(testing.OOTestCase):
         fact.write({'date_due': '2024-12-31'})
         fact.polissa_id.titular.write({'vat': 'ES11111111H'})
         fact.company_id.write({
-            'partner_address_id': 1,
+            'partner_address_id': fact.company_id.partner_id.address[0].id,
         })
 
 
