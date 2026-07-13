@@ -667,7 +667,7 @@ class Tests_FacturacioFacturaReport_contract_data_component(Tests_FacturacioFact
                 "pricelist": u"TARIFAS ELECTRICIDAD",
                 "autoconsum_cau": "",
                 "is_autoconsum_colectiu": False,
-                "cups_direction": u"carrer inventat, 1 ESC. 1 1 1 aclaridor 00001 (Poble de Prova)",  # noqa: E501
+                "cups_direction": u"carrer inventat, 1 1 1 1 aclaridor 00001 (Poble de Prova)",  # noqa: E501
                 "autoconsum_colectiu_repartiment": 100.0,
                 "cnae": u"0111",
                 "power_invoicing_type": True,
@@ -720,7 +720,7 @@ class Tests_FacturacioFacturaReport_contract_data_component(Tests_FacturacioFact
             "pricelist": u"TARIFAS ELECTRICIDAD",
             "autoconsum_cau": u"ES0318363477145938GEA000",
             "is_autoconsum_colectiu": False,
-            "cups_direction": u"carrer inventat, 1 ESC. 1 1 1 aclaridor 00001 (Poble de Prova)",  # noqa: E501
+            "cups_direction": u"carrer inventat, 1 1 1 1 aclaridor 00001 (Poble de Prova)",  # noqa: E501
             "autoconsum_colectiu_repartiment": 100.0,
             "cnae": u"0111",
             "power_invoicing_type": False,
@@ -2146,7 +2146,7 @@ class Tests_FacturacioFacturaReport_invoice_info(Tests_FacturacioFacturaReport_b
                 "start_date": "01/01/2016",
                 "end_date": "29/02/2016",
                 "contract_number": u"0001C",
-                "address": u"carrer inventat, 1 ESC. 1 1 1 aclaridor 00001 (Poble de Prova)",
+                "address": u"carrer inventat, 1 1 1 1 aclaridor 00001 (Poble de Prova)",
                 "due_date": "01/01/2016",
             },
         )
