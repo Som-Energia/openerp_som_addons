@@ -11,6 +11,12 @@ if [ -z "${GITHUB_TOKEN:-}" ]; then
 	exit 1
 fi
 
+export GIT_TERMINAL_PROMPT=0
+
+git config --global \
+  url."https://x-access-token:${GITHUB_TOKEN}@github.com/".insteadOf \
+  "ssh://git@github.com/"
+
 git clone --depth 1 "https://${GITHUB_TOKEN}@github.com/Som-Energia/erp.git" -b "$ERP_BRANCH" "$ROOT_DIR_SRC/erp"
 git clone --depth 1 "https://${GITHUB_TOKEN}@github.com/Som-Energia/libFacturacioATR.git" "$ROOT_DIR_SRC/libFacturacioATR"
 git clone --depth 1 "https://${GITHUB_TOKEN}@github.com/Som-Energia/OMIE.git" "$ROOT_DIR_SRC/OMIE"

@@ -127,6 +127,12 @@ jobs:
           export OPENERP_SECRET="verysecret"
           export OPENERP_IGNORE_PUBSUB=1
           cd ${{github.workspace}}
+          export GIT_TERMINAL_PROMPT=0
+
+          git config --global \
+            url."https://x-access-token:${GITHUB_TOKEN}@github.com/".insteadOf \
+            "ssh://git@github.com/"
+
           destral --report-coverage --enable-coverage --report-junitxml ${{github.workspace}}/test-results/destral -m ${{ inputs.module }}
 
       - name: Publish Unit Test Results
