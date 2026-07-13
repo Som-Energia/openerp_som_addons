@@ -524,6 +524,10 @@ msgid "DADES DE PAGAMENT"
 msgstr "DATOS DE PAGO"
 
 #: rml:som_polissa_condicions_generals/report/components/payment_info.mako:6
+msgid "Nº de targeta: **** **** ****"
+msgstr "Nº de tarjeta: **** **** ****"
+
+#: rml:som_polissa_condicions_generals/report/components/payment_info.mako:8
 msgid "Nº de compte bancari (IBAN): **** **** **** ****"
 msgstr "Nº de cuenta bancaria (IBAN): **** **** **** ****"
 
