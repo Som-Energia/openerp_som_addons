@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals, print_function
+import errno
+import io
 import os
 import subprocess
 import ast
@@ -15,11 +17,36 @@ Execució des de l'arrel del repositori:
 TARGET_VERSION = "5.0.25.5.0"
 
 
+def to_unicode(value):
+    """Retorna text unicode tant en Python 2 com en Python 3."""
+    if isinstance(value, bytes):
+        return value.decode('utf-8')
+    return value
+
+
+def get_ast_string_value(node):
+    """Extreu el valor string d'un node AST compatible amb Python 2 i 3."""
+    if isinstance(node, ast.Str):
+        return node.s
+    if hasattr(ast, 'Constant') and isinstance(node, ast.Constant):
+        if isinstance(node.value, str):
+            return node.value
+    return None
+
+
+def parse_python_file(file_path):
+    """Analitza un fitxer Python mantenint compatibilitat entre Python 2 i 3."""
+    with io.open(file_path, 'rb') as f:
+        source = f.read()
+
+    return ast.parse(source)
+
+
 def get_modified_files():
     """Retorna un diccionari amb els mòduls i
         els seus fitxers modificats (XML, CSV, Python i PO)."""
     cmd = "git diff --name-only main"
-    result = subprocess.check_output(cmd.split()).decode('utf-8')
+    result = to_unicode(subprocess.check_output(cmd.split()))
 
     modified_files = {}
     for file_path in result.splitlines():
@@ -55,8 +82,7 @@ def get_modified_files():
 def find_new_fields(file_path):
     """Analitza un fitxer Python per trobar nous camps en _columns."""
     try:
-        with open(file_path, 'r') as f:
-            tree = ast.parse(f.read())
+        tree = parse_python_file(file_path)
 
         models = []
         for node in ast.walk(tree):
@@ -69,8 +95,8 @@ def find_new_fields(file_path):
                     if isinstance(item, ast.Assign):
                         for target in item.targets:
                             if isinstance(target, ast.Name):
-                                if target.id == '_name' and isinstance(item.value, ast.Str):
-                                    model_name = item.value.s
+                                if target.id == '_name':
+                                    model_name = get_ast_string_value(item.value)
                                 elif target.id == '_columns':
                                     has_columns = True
 
@@ -89,14 +115,14 @@ def is_manually_modified(file_path):
         return False
 
     cmd = "git diff --name-only {0}".format(file_path)
-    result = subprocess.check_output(cmd.split()).decode('utf-8')
+    result = to_unicode(subprocess.check_output(cmd.split()))
     return bool(result.strip())
 
 
 def get_current_branch():
     """Obté el nom de la branca actual de git."""
     cmd = "git rev-parse --abbrev-ref HEAD"
-    return subprocess.check_output(cmd.split()).decode('utf-8').strip()
+    return to_unicode(subprocess.check_output(cmd.split())).strip()
 
 
 def get_next_script_number(migration_dir):
@@ -157,7 +183,7 @@ def create_migration_script(module_name, files):  # noqa: C901
     try:
         os.makedirs(migration_dir)
     except OSError as e:
-        if e.errno != os.errno.EEXIST:
+        if e.errno != errno.EEXIST:
             raise
 
     # Obtenir el següent número de seqüència i el nom de la branca
@@ -181,11 +207,10 @@ def create_migration_script(module_name, files):  # noqa: C901
                 existing_branch_script))
             return
         # Si existeix un script per aquesta branca però no ha estat modificat, l'eliminem
-        script_name = existing_branch_script.split('/')[-1]
         script_path = existing_branch_script
         os.remove(existing_branch_script)
 
-    with open(script_path, 'w') as f:
+    with io.open(script_path, 'w', encoding='utf-8') as f:
         f.write('''# -*- coding: utf-8 -*-\nimport logging\n''')
         if files.get('data') or files.get('security'):
             f.write('''from oopgrade.oopgrade import load_data\n''')
