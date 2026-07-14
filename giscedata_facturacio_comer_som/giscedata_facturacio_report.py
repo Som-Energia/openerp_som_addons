@@ -1,14 +1,24 @@
 # -*- coding: utf-8 -*-
+from __future__ import absolute_import
+# pylint: disable=old-division,round-builtin
+
+try:
+    from itertools import izip_longest as zip_longest
+except ImportError:
+    from itertools import zip_longest
+from operator import attrgetter
+
 from osv import osv
 from yamlns import namespace as ns
 from datetime import datetime, timedelta
 import inspect
 from tools.translate import _
 import json
-from operator import attrgetter
 from collections import Counter
 import base64
 from decimal import Decimal
+
+STRING_TYPES = (str, type(u""))
 
 SENSE_EXCEDENTS = ["31", "32", "33"]
 
@@ -32,6 +42,8 @@ mean_zipcode_consumption_dates = {
 
 show_iva_column_date = "2023-10-10"
 
+excess_maximeter_price_change_date = datetime(2025, 4, 1)
+
 auvi_logo_attachment_name = "auvi_logo.png"
 
 compl_cat = "Facturació Complementaria imputada per part de la Distribuïdora"
@@ -40,7 +52,7 @@ compl_cas = "Facturación Complementaria imputada por parte de la Distribuidora"
 
 def get_lang_partner(fact):
     lang = fact.lang_partner
-    if isinstance(lang, basestring):
+    if isinstance(lang, STRING_TYPES):
         return lang
     return 'es_ES'
 
@@ -298,7 +310,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
             if isinstance(data, (list, tuple)):
                 return [ns_to_dict(item) for item in data]
             if isinstance(data, (dict, ns)):
-                return {key: ns_to_dict(value) for key, value in data.iteritems()}
+                return {key: ns_to_dict(value) for key, value in data.items()}
             return data
 
         data = self.get_components_data(cursor, uid, f_id, context=context)[f_id]
@@ -884,7 +896,8 @@ class GiscedataFacturacioFacturaReport(osv.osv):
 
     def get_gkwh_owner(self, line):
         """Gets owner of gkwh line kwh"""
-        if not line.is_gkwh().values()[0]:
+        has_gkwh = line.is_gkwh()[line.id]
+        if not has_gkwh:
             return ""
 
         line_owner_obj = line.pool.get("generationkwh.invoice.line.owner")
@@ -2693,7 +2706,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
         parametres = ["comptador", "data_anterior", "data_actual"]
         periodes_max_d = [p.read(parametres)[0] for p in periodes_max]
 
-        lectures = map(None, periodes_act_d, periodes_rea_d, periodes_max_d)
+        lectures = zip_longest(periodes_act_d, periodes_rea_d, periodes_max_d)
 
         comptador_actual = None
         comptador_anterior = None
@@ -3800,7 +3813,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
                 items["date_from"] = excess_lines["date_from"]
                 items["date_to"] = excess_lines["date_to"]
                 items["pre_2025_04_01"] = datetime.strptime(
-                    excess_lines["date_to"], "%d/%m/%Y") < datetime(2025, 04, 1)
+                    excess_lines["date_to"], "%d/%m/%Y") < excess_maximeter_price_change_date
                 items["iva"] = excess_lines["iva"]
             excess_data.append(items)
         data = {
@@ -4337,8 +4350,14 @@ class GiscedataFacturacioFacturaReport(osv.osv):
             lectures_m.append((lectura.name, lectura.pot_contract, lectura.pot_maximetre))
 
         fact_potencia = dict([(p, 0) for p in periodes_m])
-        for p in [(p.product_id.name, p.quantity) for p in excess_lines]:
-            fact_potencia.update({p[0]: max(fact_potencia.get(p[0], 0), p[1])})
+        for product_name, quantity in [
+            (line.product_id.name, line.quantity) for line in excess_lines
+        ]:
+            fact_potencia.update(
+                {
+                    product_name: max(fact_potencia.get(product_name, 0), quantity)
+                }
+            )
 
         for reading in lectures_m:
             data[reading[0]] = {
