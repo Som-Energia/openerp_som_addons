@@ -2,7 +2,7 @@
 <div class="summary-box-section">
     <div class="summary-box-section__title">2. Identificación del titular y del punto de suministro</div>
     <div class="summary-box-group">
-        <div class="summary-box summary-box--third">
+        <div class="summary-box ${'summary-box--third' if self_consumption else 'summary-box--half'}">
         <h3>PERSONA TITULAR</h3>
         <div class="summary-content">
             <p class="section-text">- Nombre o razón social: ${holder['name']}</p>
@@ -15,7 +15,7 @@
         </div>
         </div>
 
-        <div class="summary-box summary-box--third">
+        <div class="summary-box ${'summary-box--third' if self_consumption else 'summary-box--half'}">
         <h3>DATOS DEL PUNTO DE SUMINISTRO</h3>
         <div class="summary-content">
             <p class="section-text section-text--wrap">- Dirección: ${supply['address']}</p>
@@ -28,19 +28,17 @@
         </div>
         </div>
 
+        %if self_consumption:
         <div class="summary-box summary-box--third">
         <h3>TIPOLOGIA DEL AUTOCONSUMO</h3>
         <div class="summary-content">
-            %if self_consumption:
                 %if self_consumption.get('cau'):
                     <p class="section-text">- CAU: ${self_consumption['cau']}</p>
                 %endif
                 <p class="section-text">- Colectivo S/N: ${'S' if self_consumption.get('collective') else 'N'}</p>
-            %else:
-                <p class="section-text muted">- No aplica: el contrato no incluye autoconsumo informado.</p>
-            %endif
         </div>
         </div>
+        %endif
     </div>
 </div>
 </%def>
