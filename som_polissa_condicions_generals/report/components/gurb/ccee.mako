@@ -114,7 +114,7 @@
 <h3>5. FINALITZACIÓ DEL PRODUCTE GURB</h3>
 
     <p>
-        5.1. La Contractant pot resoldre unilateralment el producte GURB notificant aquesta circumstància a SOM ENERGIA, SCCL, comunicant-ho a l’adreça gurb@somenergia.coop. A partir de la data de la comunicació, SOM ENERGIA, SCCL, disposarà de fins a 4 mesos per sol·licitar-ne la baixa a l’empresa distribuïdora, segons la possibilitat d’incorporar nous participants, amb la finalitat de garantir la viabilitat econòmica del producte. Es facturarà la quota de producte fins al moment en què es faci efectiva la baixa de l’autoconsum col·lectiu per part de la distribuïdora.
+        5.1. La Contractant pot resoldre unilateralment el producte GURB notificant aquesta circumstància a SOM ENERGIA, SCCL, comunicant-ho a l’adreça gurb@somenergia.coop.
     </p>
     <p>
         En cas que la contractant no comuniqui la baixa i dugui a terme un canvi de comercialitzadora o s’efectuï un canvi de titular del CUPS, la Contractant abonarà la Quota GURB fins que la distribuïdora l’hagi donat efectivament de baixa l’autoconsum o el nou titular del CUPS hagi contractat el producte GURB.
@@ -339,7 +339,7 @@
 <h3>5. FINALIZACIÓN DEL PRODUCTO GURB</h3>
 
     <p>
-        5.1. La Contratante puede resolver unilateralmente el producto GURB notificando esta circunstancia a SOM ENERGIA, SCCL mediante el envío de comunicación a la dirección gurb@somenergia.coop. A partir de la fecha de comunicación, SOM ENERGIA SCCL dispondrá de hasta 4 meses para solicitar la baja a la empresa distribuidora, según la posibilidad de incorporar nuevos participantes, con el fin de garantizar la viabilidad económica del producto. Se facturará la cuota de producto hasta el momento en que se efectúe la baja del autoconsumo colectivo por parte de la distribuidora.
+        5.1. La Contratante puede resolver unilateralmente el producto GURB notificando esta circunstancia a SOM ENERGIA, SCCL mediante el envío de comunicación a la dirección gurb@somenergia.coop.
     </p>
     <p>
         En caso de que la contratante no comunique la baja y lleve a cabo un cambio de comercializadora o se efectúe un cambio de titular del CUPS, la Contratante abonará la Cuota GURB hasta que el autoconsumo se haya dado efectivamente de baja por parte de la distribuidora o el nuevo titular del CUPS haya contratado el producto GURB.
