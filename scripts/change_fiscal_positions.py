@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from __future__ import absolute_import
 import dbconfig
 from erppeek import Client
 from consolemsg import success
@@ -8,6 +9,7 @@ O = Client(**dbconfig.erppeek)  # noqa: E741
 
 write_vals = False
 
+# Hardcoded IDs handle with extremely caution, do not use in production without validation.
 fp_change_map = [
     (98, 88),
     (97, 87),
