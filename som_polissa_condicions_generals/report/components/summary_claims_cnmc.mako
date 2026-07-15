@@ -16,7 +16,20 @@
     <h3>2. Acceso al comparador de ofertas de la CNMC</h3>
     <div class="summary-content">
         % if cnmc.get('is_visible'):
-            <p class="section-text">Con este enlace <a href="${cnmc.get('link_qr')}">comparador.cnmc.gob.es</a> puedes consultar y comparar las diferentes ofertas vigentes de las comercializadoras de electricidad del mercado libre.</p>
+            <table class="summary-cnmc-table">
+                <tr>
+                    <td class="summary-cnmc-text">
+                        <p class="section-text">Con este enlace <a href="${cnmc.get('link_qr')}">comparador.cnmc.gob.es</a> puedes consultar y comparar las diferentes ofertas vigentes de las comercializadoras de electricidad del mercado libre.</p>
+                    </td>
+                    <td class="summary-cnmc-qr">
+                        % if cnmc.get('qr_image'):
+                            <img class="summary-cnmc-qr-image" src="${'data:image/png;base64, {}'.format(cnmc.get('qr_image'))}">
+                        % else:
+                            <img class="summary-cnmc-qr-image" src="${addons_path}/giscedata_facturacio_comer_som/report/components/cnmc_comparator_qr_link/generic_qr_comparator.png">
+                        % endif
+                    </td>
+                </tr>
+            </table>
         % endif
     </div>
 </div>
