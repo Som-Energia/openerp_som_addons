@@ -66,6 +66,15 @@ body {
     vertical-align: top;
 }
 
+.summary-box--half {
+    box-sizing: border-box;
+    display: inline-block;
+    font-size: 11px;
+    padding: 0 4px;
+    width: 50%;
+    vertical-align: top;
+}
+
 .summary-box h3 {
     background: #0b2e34;
     color: white;
