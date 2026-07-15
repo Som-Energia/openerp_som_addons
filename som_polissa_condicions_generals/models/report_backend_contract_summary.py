@@ -211,11 +211,21 @@ class ReportBackendContractSummary(ReportBackendCondicionsParticulars):
         }
 
     def get_cnmc_data(self, cursor, uid, pol, context=None):
+        report_v2_obj = self.pool.get("giscedata.facturacio.factura.report.v2")
+        link_qr = "https://comparador.cnmc.gob.es/"
+        qr_image = False
+        if report_v2_obj and hasattr(report_v2_obj, "_get_qr_comparador_cnmc"):
+            try:
+                link_qr, qr_image = report_v2_obj._get_qr_comparador_cnmc({})
+            except Exception:
+                qr_image = False
+
         return {
             "is_visible": True,
             "lang": self._get_lang_from_context(context, pol).lower(),
-            "link_qr": "https://comparador.cnmc.gob.es/",
+            "link_qr": link_qr,
             "has_gkwh": bool(getattr(pol, "te_assignacio_gkwh", False)),
+            "qr_image": qr_image,
         }
 
     @report_browsify
