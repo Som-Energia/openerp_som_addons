@@ -3,7 +3,7 @@
     generation_link = "https://www.somenergia.coop/ca/tarifes-d-electricitat/" if cnmc.get('lang') == 'ca_es' else "https://www.somenergia.coop/es/tarifas-de-electricidad/"
 %>
 <div class="summary-box">
-    <h3>1. Vías alternativas de reclamación disponibles al consumidor</h3>
+    <h3>10. Vías alternativas de reclamación disponibles al consumidor</h3>
     <div class="summary-content">
         <p class="section-text">SOM ENERGIA está adherida a la Junta Arbitral Nacional de Consumo y a las Juntas Arbitrales Autonómicas.</p>
         <p class="section-text">Junta Arbitral Nacional de Consumo · Calle Príncipe de Vergara, 54 · 28006 Madrid · junta-nacional@consumo.gob.es</p>
@@ -13,7 +13,7 @@
 </div>
 
 <div class="summary-box">
-    <h3>2. Acceso al comparador de ofertas de la CNMC</h3>
+    <h3>11. Acceso al comparador de ofertas de la CNMC</h3>
     <div class="summary-content">
         % if cnmc.get('is_visible'):
             <table class="summary-cnmc-table">

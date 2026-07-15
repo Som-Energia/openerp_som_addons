@@ -36,11 +36,4 @@
     </div>
 </div>
 
-<div class="summary-box">
-    <h3>10. Información adicional relevante sobre el Bono Social</h3>
-    <div class="summary-content">
-        <p class="section-text">La suscripción del nuevo contrato en libre mercado implica que dejes de percibir el bono social que tenías con tu comercializadora de referencia hasta la fecha del cambio efectivo de comercializadora con SOM ENERGIA.</p>
-        <p class="section-text"><span class="inline-label">Estimación de la diferencia anual de precio existente entre el nuevo contrato y el anterior con bono social:</span> ${bono_social_estimate}</p>
-    </div>
-</div>
 </%def>
