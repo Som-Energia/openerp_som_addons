@@ -501,11 +501,11 @@ class SomLeadWww(osv.osv_memory):
         return True
 
     @auto_close_cursor()
-    def retry_lead_activation_cron(self, cursor, uid, ids, context=None):
+    def retry_lead_activation_cron(self, cr, uid, ids, context=None):
         # cursor is never used and cause idle in transaction
         if context is None:
             context = {}
-        dbname = cursor.dbname
+        dbname = cr.dbname
         db = pooler.get_db(dbname)
 
         tmp_cursor = db.cursor()
@@ -524,9 +524,8 @@ class SomLeadWww(osv.osv_memory):
             return False
         finally:
             tmp_cursor.close()
-        lead_o = self.pool.get("giscedata.crm.lead")
         for lead_id in all_ids:
-            lead_o.activate_lead_async([lead_id], context=context)
+            self.activate_lead_async(cr, uid, lead_id, context=context)
 
     @job(queue="leads")
     def activate_lead_async(self, cr, uid, lead_id, context=None):
