@@ -108,7 +108,7 @@
             <field name="interval_number">1</field>
             <field name="interval_type">minutes</field>
             <field name="numbercall">-1</field>
-            <field name="model" eval="'giscedata.crm.lead'"/>
+            <field name="model" eval="'som.lead.www'"/>
             <field name="function" eval="'retry_lead_activation_cron'"/>
             <field eval="'([],)'" name="args"/>
         </record>
