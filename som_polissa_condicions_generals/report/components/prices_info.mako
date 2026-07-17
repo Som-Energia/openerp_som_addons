@@ -318,10 +318,6 @@
                             %endif
                         %endfor
                     </tr>
-                    <tr>
-                        <td class="bold">${_(u"Contingut preu (potència i energia)")}</td>
-                        <td colspan="6">&nbsp;</td>
-                    </tr>
                     %if prices['auvi']:
                         <%namespace file="/som_polissa_condicions_generals/report/components/auvi.mako" import="auvi"/>
                         ${auvi(polissa, prices, False)}
@@ -415,22 +411,32 @@
     </div>
     <div class="styled_box padding_bottom">
         <div class="center avis_impostos">
-            %if polissa['mode_facturacio_calculat'] == 'index':
-                ${_(u"Els preus del terme de potència")}
-            %else:
-                ${_(u"Tots els preus que apareixen en aquest contracte")}
-            %endif
-            ${_(u"inclouen l'impost elèctric i l'IVA (IGIC a Canàries), amb el tipus impositiu vigent actualment per a cada tipus de contracte sense perjudici de les exempcions o bonificacions que puguin ser d'aplicació.")}
-            %if polissa['te_assignacio_gkwh'] or polissa['mode_facturacio_calculat'] == 'atr':
+            %if polissa['mode_facturacio_calculat'] == 'atr':
+                ${_(u"Aquests preus inclouen l'Impost Especial sobre l'Electricitat (IEE) i l'IVA (IGIC a Canàries), sense perjudici de les exempcions o bonificacions que puguin ser aplicables.")}
                 <br/>
                 ${_(u"Els costos dels Serveis d'Ajust tenen un preu horari variable, fixat per Red Eléctrica Española (REE), no inclosos en el terme d'energia.")}
-                %if polissa['mode_facturacio_calculat'] == 'atr':
+                <br/>
+                ${_(u"Pots consultar altres conceptes que poden ser aplicables, com ara el lloguer de comptador, el recàrrec per potència demandada o el recàrrec per energia reactiva, a la ")}
+                <a href="${_(u"https://www.somenergia.coop/ca/tarifes-llum/")}">${_(u"pàgina de tarifes")}</a>
+                ${_(u" del nostre web, on també trobaràs més informació sobre els períodes tarifaris.")}
+                <br/>
+                <b>
+                ${_(u"Preu Serveis Ajust amb pèrdues = SA<sub>(1)</sub> x (1 + Perd<sub>(2)</sub> / 100)")}
+                </b>
+                <br/>
+                <b>(1)</b> ${_(u"SA: Costos dels Serveis d'Ajust per resoldre les restriccions tècniques del sistema carregats per Red Eléctrica (REE).")}
+                <br/>
+                <b>(2)</b> ${_(u"Perd: Coeficients de pèrdues regulades de sistema des del punt de generació al punt de consum, segons el valor publicat per REE en el moment de generar la factura.")}
+            %else:
+                %if polissa['mode_facturacio_calculat'] == 'index':
+                    ${_(u"Els preus del terme de potència")}
+                %else:
+                    ${_(u"Tots els preus que apareixen en aquest contracte")}
+                %endif
+                ${_(u"inclouen l'impost elèctric i l'IVA (IGIC a Canàries), amb el tipus impositiu vigent actualment per a cada tipus de contracte sense perjudici de les exempcions o bonificacions que puguin ser d'aplicació.")}
+                %if polissa['te_assignacio_gkwh']:
                     <br/>
-                    ${_(u"Preu Serveis Ajust amb pèrdues = SA(1) x (1+Perd(2)/100)")}
-                    <br/>
-                    <span class="bold">(1) </span> ${_(u"SA: Costos dels Serveis d'Ajust per resoldre les restriccions tècniques del sistema carregats per Red Eléctrica (REE).")}
-                    <br/>
-                    <span class="bold">(2) </span> ${_(u"Perd: Coeficients de pèrdues regulades de sistema des del punt de generació al punt de consum, segons el valor publicat per REE en el moment de generar la factura.")}
+                    ${_(u"Els costos dels Serveis d'Ajust tenen un preu horari variable, fixat per Red Eléctrica Española (REE), no inclosos en el terme d'energia.")}
                 %endif
             %endif
         </div>
