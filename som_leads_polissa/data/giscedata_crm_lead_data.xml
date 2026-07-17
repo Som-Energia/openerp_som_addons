@@ -99,4 +99,18 @@
             <field name="description">Import de la quota de sòcia</field>
         </record>
     </data>
+    <data noupdate="1">
+        <!-- Cron per actualitzar automàticament leads encallats -->
+        <record model="ir.cron" id="ir_cron_retry_lead_activation_cron" forcecreate="1">
+            <field name="name">Cron per actualitzar automàticament leads encallats</field>
+            <field name="active" eval="0"/>
+            <field name="user_id" ref="base.user_admin"/>
+            <field name="interval_number">1</field>
+            <field name="interval_type">minutes</field>
+            <field name="numbercall">-1</field>
+            <field name="model" eval="'giscedata.crm.lead'"/>
+            <field name="function" eval="'retry_lead_activation_cron'"/>
+            <field eval="'([],)'" name="args"/>
+        </record>
+    </data>
 </openerp>
