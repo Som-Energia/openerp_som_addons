@@ -774,7 +774,7 @@ class SomLeadWww(osv.osv_memory):
         lead_o = self.pool.get('giscedata.crm.lead')
         process_o = self.pool.get('giscedata.signatura.process')
         lead_data = lead_o.read(
-            cr, uid, lead_id, ["cups", "signature_process"], context=context
+            cr, uid, lead_id, ["cups", "signature_process", "lang"], context=context
         )
         lead_cups = (lead_data.get('cups') or '').strip().upper()
         requested_cups = (cups or '').strip().upper()
@@ -843,6 +843,11 @@ class SomLeadWww(osv.osv_memory):
                 'Error',
                 'Timeout waiting signature URL (process_id={})'.format(process_id)
             )
+
+        lang = lead_data.get('lang').split('_')[0]
+
+        signature_url = signature_url.replace("app.", "sign-app.")
+        signature_url = signature_url.replace("document", "v1/{}".format(lang))
 
         return {'url': signature_url}
 
