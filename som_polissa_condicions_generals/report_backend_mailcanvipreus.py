@@ -11,6 +11,7 @@ class ReportBackendMailcanvipreusEnviamentMassiu(ReportBackend):
     _source_model = "som.enviament.massiu"
     _name = "report.backend.mailcanvipreus"
 
+    @report_browsify
     def get_data(self, cursor, uid, env, context=None):
         if context is None:
             context = {}
