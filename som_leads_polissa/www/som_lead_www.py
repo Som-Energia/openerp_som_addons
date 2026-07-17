@@ -10,10 +10,13 @@ from service.security import Sudo
 from oorq.decorators import job
 import yaml
 import copy
+import pooler
 from uuid import uuid4
+from psycopg2.errors import LockNotAvailable
 
 from som_leads_polissa.models.giscedata_crm_lead import WWW_DATA_FORM_HEADER
 from giscedata_cups.giscedata_cups import get_dso
+from tools.sql_utils import auto_close_cursor
 
 
 class SomLeadWww(osv.osv_memory):
@@ -346,6 +349,19 @@ class SomLeadWww(osv.osv_memory):
         values["titular_id_poblacio"] = None
         return values
 
+    def _payment_allows_activation(self, cr, uid, lead_id, context=None):
+        if context is None:
+            context = {}
+
+        lead_o = self.pool.get("giscedata.crm.lead")
+        lead = lead_o.browse(cr, uid, lead_id, context=context)
+
+        result = True
+
+        if lead.billing_payment_method == "card_recurrent" and not lead.creditcard_token:
+            result = False
+        return result
+
     def add_payment_card_data(self, cr, uid, lead_id, card_vals, context=None):
         if context is None:
             context = {}
@@ -428,7 +444,7 @@ class SomLeadWww(osv.osv_memory):
             "error": error_info,
         }
 
-    def if_signature_allows(self, cr, uid, lead_id, context=None):
+    def _signature_allows_activation(self, cr, uid, lead_id, context=None):
         if context is None:
             context = {}
 
@@ -484,6 +500,34 @@ class SomLeadWww(osv.osv_memory):
         self.activate_lead_async(cr, uid, lead_id, context=context)
         return True
 
+    @auto_close_cursor()
+    def retry_lead_activation_cron(self, cursor, uid, ids, context=None):
+        # cursor is never used and cause idle in transaction
+        if context is None:
+            context = {}
+        dbname = cursor.dbname
+        db = pooler.get_db(dbname)
+
+        tmp_cursor = db.cursor()
+        try:
+            query = """SELECT l.id from giscedata_crm_lead as l
+                       LEFT JOIN crm_case as c on c.id = l.crm_id
+                       where c.state in ('open', 'pending')
+                       and l.create_date >= now() - INTERVAL '7 days'
+                       order by id desc
+                       FOR UPDATE skip locked
+                       """
+            tmp_cursor.execute(query)
+            all_data = tmp_cursor.fetchall()
+            all_ids = [x[0] for x in all_data]
+        except LockNotAvailable:
+            return False
+        finally:
+            tmp_cursor.close()
+        lead_o = self.pool.get("giscedata.crm.lead")
+        for lead_id in all_ids:
+            lead_o.activate_lead_async([lead_id], context=context)
+
     @job(queue="leads")
     def activate_lead_async(self, cr, uid, lead_id, context=None):
         if context is None:
@@ -496,10 +540,13 @@ class SomLeadWww(osv.osv_memory):
 
         lead_o = self.pool.get("giscedata.crm.lead")
         soci_obj = self.pool.get("somenergia.soci")
-        rpa_obj = self.pool.get("res.partner.address")
+        rpa_o = self.pool.get("res.partner.address")
         ir_model_o = self.pool.get("ir.model.data")
 
-        if self.if_signature_allows(cr, uid, lead_id, context=context):
+        signature_allows = self._signature_allows_activation(cr, uid, lead_id, context=context)
+        payment_allows = self._payment_allows_activation(cr, uid, lead_id, context=context)
+
+        if signature_allows and payment_allows:
             context["create_draft_atr"] = True
             msg = lead_o.create_entities(cr, uid, lead_id, context=context)
 
@@ -510,7 +557,7 @@ class SomLeadWww(osv.osv_memory):
                 # Si no és sòcia, subscriu mail a mailchimp com a client sense ser soci
                 partner = lead_o.browse(cr, uid, lead_id).partner_id
                 if not soci_obj.search(cr, uid, [("partner_id", "=", partner.id)]):
-                    rpa_obj.subscribe_partner_in_customers_no_members_lists(
+                    rpa_o.subscribe_partner_in_customers_no_members_lists(
                         cr, uid, partner.id, context=context)
             except Exception as e:
                 sentry = self.pool.get('sentry.setup')
@@ -526,9 +573,8 @@ class SomLeadWww(osv.osv_memory):
 
             return True
         else:
-            logger.warning(
-                "Webform stage error (lead_id=%s)", lead_id
-            )
+            logger.warning("Webform stage error (lead_id=%s)", lead_id)
+
             signature_pending_review_stage_id = ir_model_o.get_object_reference(
                 cr, uid, "som_leads_polissa", "webform_stage_error"
             )[1]
@@ -537,11 +583,10 @@ class SomLeadWww(osv.osv_memory):
                 {'stage_id': signature_pending_review_stage_id, 'state': 'pending'},
                 context=context
             )
-            lead_o.historize_msg(
-                cr, uid, [lead_id],
-                u"ERROR: No s'ha pogut activar aquest lead",
-                context=context
-            )
+            msg = u"ERROR: No s'ha pogut activar aquest lead." \
+                u"És probable que la signatura o el pagament no estiguin completats."
+
+            lead_o.historize_msg(cr, uid, [lead_id], msg, context=context)
             return False
 
     @job(queue="poweremail_sender")
