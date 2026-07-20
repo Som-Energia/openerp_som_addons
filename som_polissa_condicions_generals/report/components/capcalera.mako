@@ -22,13 +22,14 @@
                     ${polissa['data_inici']}
                 %endif
                 <br/>
-                <b>${_(u"Data de renovació del subministrament: ")}</b>
-                %if polissa['state'] == 'esborrany':
-                    &nbsp;
-                %else:
-                    ${polissa['data_final']}
-                %endif
+                <b>${_(u"Vigència del contracte: ")}</b>
+                ${_(u"Sense permanència")}
                 <br/>
+                %if polissa['te_tarifa_periodes']:
+                    <b>${_(u"Data de renovació: ")}</b>
+                    ${polissa['data_renovacio']}
+                    <br/>
+                %endif
             </div>
         </div>
     </div>

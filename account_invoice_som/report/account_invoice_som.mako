@@ -137,8 +137,7 @@
                         </h2>
                     </div>
                     <div class="content intro">${("Núm. de factura:")} ${inv.number or ''}
-                        ${_("Data:")} ${inv.date_invoice}
-
+                        ${_("Data:")} ${datetime.strptime(inv.date_invoice, '%Y-%m-%d').strftime('%d/%m/%Y')}
                         ${_("Nom:")} ${nom_client}
                         ${_("NIF/CIF:")} ${partner_vat or ''}
                         ${_("Adreça:")} ${dades_client.street or ''} ${poblacio_client} ${provincia_client} ${dades_client.zip or ''}
