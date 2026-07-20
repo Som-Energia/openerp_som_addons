@@ -1,9 +1,9 @@
 <%def name="prices_info(polissa, prices, titular)">
     <%
         if titular['lang'] == 'ca_ES':
-            url_tarifes = 'https://www.somenergia.coop/ca/tarifes-llum/empresa-periodes/' if polissa['is_business'] else 'https://www.somenergia.coop/ca/tarifes-llum/domestic-periodes/'
+            url_tarifes = 'https://www.somenergia.coop/es/tarifas-luz/empresa-indexada/' if polissa['is_business'] else 'https://www.somenergia.coop/es/tarifas-luz/domestico-indexada/'
         else:
-            url_tarifes = 'https://www.somenergia.coop/es/tarifas-luz/empresa-periodos/' if polissa['is_business'] else 'https://www.somenergia.coop/es/tarifas-luz/domestico-periodos/'
+            url_tarifes = 'https://www.somenergia.coop/ca/tarifes-llum/empresa-indexada/' if polissa['is_business'] else 'https://www.somenergia.coop/ca/tarifes-llum/domestic-indexada/'
     %>
     <div class="styled_box">
     %for pricelist in prices['pricelists']:
