@@ -56,7 +56,7 @@
                         ${capcalera(informe['polissa'])}
                         ${contact_info(informe['titular'], informe['cups'])}
                         ${potencies_info(informe['polissa'], informe['potencies'])}
-                        ${prices_info(informe['polissa'], informe['prices'])}
+                        ${prices_info(informe['polissa'], informe['prices'], informe['titular'])}
                         %if "gurb" in informe:
                             ${gurb(informe['gurb'])}
                         %endif

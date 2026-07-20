@@ -1,4 +1,10 @@
-<%def name="prices_info(polissa, prices)">
+<%def name="prices_info(polissa, prices, titular)">
+    <%
+        if titular['lang'] == 'ca_ES':
+            url_tarifes = 'https://www.somenergia.coop/ca/tarifes-llum/empresa-periodes/' if polissa['is_business'] else 'https://www.somenergia.coop/ca/tarifes-llum/domestic-periodes/'
+        else:
+            url_tarifes = 'https://www.somenergia.coop/es/tarifas-luz/empresa-periodos/' if polissa['is_business'] else 'https://www.somenergia.coop/es/tarifas-luz/domestico-periodos/'
+    %>
     <div class="styled_box">
     %for pricelist in prices['pricelists']:
         %if polissa['tarifa'] == "2.0TD":
@@ -433,11 +439,13 @@
                 %else:
                     ${_(u"Tots els preus que apareixen en aquest contracte")}
                 %endif
-                ${_(u"inclouen l'impost elèctric i l'IVA (IGIC a Canàries), amb el tipus impositiu vigent actualment per a cada tipus de contracte sense perjudici de les exempcions o bonificacions que puguin ser d'aplicació.")}
-                %if polissa['te_assignacio_gkwh']:
-                    <br/>
-                    ${_(u"Els costos dels Serveis d'Ajust tenen un preu horari variable, fixat per Red Eléctrica Española (REE), no inclosos en el terme d'energia.")}
-                %endif
+                ${_(u"inclouen l'Impost Especial sobre l'Electricitat (IEE) i l'IVA (IGIC a Canàries), amb el tipus impositiu vigent actualment per a cada tipus de contracte sense perjudici de les exempcions o bonificacions que puguin ser d'aplicació.")}
+                <br/>
+                ${_(u"Els costos dels Serveis d'Ajust tenen un preu horari variable, fixat per Red Eléctrica Española (REE), no inclosos en el terme d'energia.")}
+                <br/>
+                ${_(u"Pots consultar altres conceptes que poden ser d'aplicació, tals com, el lloguer de contador, el recàrrec per potencia demandada o el recàrrec per energia reactiva, a la pàgina de tarifes de la ")}
+                <a href="${url_tarifes}"><b>${_(u"nostra web")}</b></a>
+                ${_(u", on també trobareu més informació sobre els períodes tarifaris.")}
             %endif
         </div>
     </div>
