@@ -1,9 +1,27 @@
 <%def name="prices_info(polissa, prices, titular)">
     <%
-        if titular['lang'] == 'ca_ES':
-            url_tarifes = 'https://www.somenergia.coop/ca/tarifes-llum/empresa-indexada/' if polissa['is_business'] else 'https://www.somenergia.coop/ca/tarifes-llum/domestic-indexada/'
+        if polissa['mode_facturacio_calculat'] == 'atr':
+            if titular['lang'] == 'ca_ES':
+                if polissa['is_business']:
+                    url_tarifes = 'https://www.somenergia.coop/ca/tarifes-llum/empresa-periodes/'
+                else:
+                    url_tarifes = 'https://www.somenergia.coop/ca/tarifes-llum/domestic-periodes/'
+            else:
+                if polissa['is_business']:
+                    url_tarifes = 'https://www.somenergia.coop/es/tarifas-luz/empresa-periodos/'
+                else:
+                    url_tarifes = 'https://www.somenergia.coop/es/tarifas-luz/domestico-periodos/'
         else:
-            url_tarifes = 'https://www.somenergia.coop/es/tarifas-luz/empresa-indexada/' if polissa['is_business'] else 'https://www.somenergia.coop/es/tarifas-luz/domestico-indexada/'
+            if titular['lang'] == 'ca_ES':
+                if polissa['is_business']:
+                    url_tarifes = 'https://www.somenergia.coop/ca/tarifes-llum/empresa-indexada/'
+                else:
+                    url_tarifes = 'https://www.somenergia.coop/ca/tarifes-llum/domestic-indexada/'
+            else:
+                if polissa['is_business']:
+                    url_tarifes = 'https://www.somenergia.coop/es/tarifas-luz/empresa-indexada/'
+                else:
+                    url_tarifes = 'https://www.somenergia.coop/es/tarifas-luz/domestico-indexada/'
     %>
     <div class="styled_box">
     %for pricelist in prices['pricelists']:
@@ -423,7 +441,7 @@
                 ${_(u"Els costos dels Serveis d'Ajust tenen un preu horari variable, fixat per Red Eléctrica Española (REE), no inclosos en el terme d'energia.")}
                 <br/>
                 ${_(u"Pots consultar altres conceptes que poden ser aplicables, com ara el lloguer de comptador, el recàrrec per potència demandada o el recàrrec per energia reactiva, a la ")}
-                <a href="${_(u"https://www.somenergia.coop/ca/tarifes-llum/")}">${_(u"pàgina de tarifes")}</a>
+                <a href="${url_tarifes}">${_(u"pàgina de tarifes")}</a>
                 ${_(u" del nostre web, on també trobaràs més informació sobre els períodes tarifaris.")}
                 <br/>
                 <b>
