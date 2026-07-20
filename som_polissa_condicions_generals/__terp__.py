@@ -29,6 +29,7 @@
         "report/giscedata_polissa_condicions_generals_report.xml",
         "report/giscedata_polissa_condicions_generals_m101_report.xml",
         "report/giscedata_polissa_condicions_generals_ignore_modcon_report.xml",
+        "report/report_mailcanvipreus_report.xml",
         "security/ir.model.access.csv",
     ],
     "active": False,
