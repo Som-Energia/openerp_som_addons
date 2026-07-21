@@ -32,6 +32,7 @@
         "report/giscedata_polissa_condicions_generals_ignore_modcon_report.xml",
         "report/report_mailcanvipreus_report.xml",
         "report/giscedata_polissa_contract_summary_report.xml",
+        "report/giscedata_polissa_contract_summary_full_report.xml",
         "report/giscedata_crm_lead_contract_summary_report.xml",
         "views/giscedata_crm_lead_view.xml",
         "security/ir.model.access.csv",
