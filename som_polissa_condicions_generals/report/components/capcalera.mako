@@ -25,11 +25,9 @@
                 <b>${_(u"Vigència del contracte: ")}</b>
                 ${_(u"Sense permanència")}
                 <br/>
-                %if polissa['te_tarifa_periodes']:
-                    <b>${_(u"Data de renovació: ")}</b>
-                    ${polissa['data_renovacio']}
-                    <br/>
-                %endif
+                <b>${_(u"Data de renovació: ")}</b>
+                ${polissa['data_renovacio']}
+                <br/>
             </div>
         </div>
     </div>
