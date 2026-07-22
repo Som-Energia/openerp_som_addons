@@ -22,7 +22,6 @@ def up(cursor, installed_version):
     data_files = [
         'report/giscedata_polissa_contract_summary_report.xml',
         'report/giscedata_crm_lead_contract_summary_report.xml',
-        'views/giscedata_crm_lead_view.xml',
     ]
     for data_file in data_files:
         load_data(
