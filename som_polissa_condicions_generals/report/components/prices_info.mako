@@ -459,8 +459,6 @@
                 %endif
                 ${_(u"inclouen l'Impost Especial sobre l'Electricitat (IEE) i l'IVA (IGIC a Canàries), amb el tipus impositiu vigent actualment per a cada tipus de contracte sense perjudici de les exempcions o bonificacions que puguin ser d'aplicació.")}
                 <br/>
-                ${_(u"Els costos dels Serveis d'Ajust tenen un preu horari variable, fixat per Red Eléctrica Española (REE), no inclosos en el terme d'energia.")}
-                <br/>
                 ${_(u"Pots consultar altres conceptes que poden ser d'aplicació, tals com, el lloguer de contador, el recàrrec per potencia demandada o el recàrrec per energia reactiva, a la pàgina de tarifes de la ")}
                 <a href="${url_tarifes}"><b>${_(u"nostra web")}</b></a>
                 ${_(u", on també trobareu més informació sobre els períodes tarifaris.")}
