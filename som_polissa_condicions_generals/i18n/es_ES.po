@@ -9,8 +9,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Som Energia\n"
 "Report-Msgid-Bugs-To: support@openerp.com\n"
-"POT-Creation-Date: 2026-07-22 14:44+0000\n"
-"PO-Revision-Date: 2026-07-22 13:22+0000\n"
+"POT-Creation-Date: 2026-07-22 17:05+0000\n"
+"PO-Revision-Date: 2026-07-22 15:07+0000\n"
 "Last-Translator: Som Energia <itcrowd@somenergia.coop>\n"
 "Language-Team: Spanish (Spain) (http://trad.gisce.net/projects/p/somenergia/language/es_ES/)\n"
 "MIME-Version: 1.0\n"
@@ -408,20 +408,20 @@ msgstr "Vigencia del contrato: "
 msgid "Sense permanència"
 msgstr "Sin permanencia"
 
-#: rml:som_polissa_condicions_generals/report/components/capcalera.mako:29
+#: rml:som_polissa_condicions_generals/report/components/capcalera.mako:28
 msgid "Data de renovació: "
 msgstr "Fecha de renovación: "
 
-#: rml:som_polissa_condicions_generals/report/components/capcalera.mako:37
+#: rml:som_polissa_condicions_generals/report/components/capcalera.mako:35
 msgid ""
 "CONDICIONS PARTICULARS DEL CONTRACTE DE SUBMINISTRAMENT D'ENERGIA ELÈCTRICA"
 msgstr "CONDICIONES PARTICULARES DEL CONTRATO DE SUMINISTRO DE ENERGÍA ELÉCTRICA"
 
-#: rml:som_polissa_condicions_generals/report/components/capcalera.mako:43
+#: rml:som_polissa_condicions_generals/report/components/capcalera.mako:41
 msgid "LES DADES D'AQUEST CONTRACTE ESTAN PENDENTS DE VALIDACIÓ."
 msgstr "LOS DATOS DE ESTE CONTRATO ESTÁN PENDIENTES DE VALIDACIÓN."
 
-#: rml:som_polissa_condicions_generals/report/components/capcalera.mako:46
+#: rml:som_polissa_condicions_generals/report/components/capcalera.mako:44
 msgid ""
 "Les tarifes que s’aplicaran seran les vigents al moment d'activar el "
 "contracte."
@@ -706,7 +706,6 @@ msgid ""
 msgstr "Estos precios incluyen el Impuesto Especial sobre la Electricidad (IEE) y el IVA (IGIC en Canarias) sin perjuicio de las exenciones o bonificaciones que puedan ser de aplicación."
 
 #: rml:som_polissa_condicions_generals/report/components/prices_info.mako:441
-#: rml:som_polissa_condicions_generals/report/components/prices_info.mako:462
 msgid ""
 "Els costos dels Serveis d'Ajust tenen un preu horari variable, fixat per Red"
 " Eléctrica Española (REE), no inclosos en el terme d'energia."
@@ -764,18 +763,18 @@ msgid ""
 "d'aplicació."
 msgstr "incluyen el Impuesto Especial sobre la Electricidad (IEE)  e IVA (IGIC en Canarias), con el tipo impositivo vigente actualmente para cada tipo de contrato sin perjuicio de las exenciones o bonificaciones que pudieran ser de aplicación."
 
-#: rml:som_polissa_condicions_generals/report/components/prices_info.mako:464
+#: rml:som_polissa_condicions_generals/report/components/prices_info.mako:462
 msgid ""
 "Pots consultar altres conceptes que poden ser d'aplicació, tals com, el "
 "lloguer de contador, el recàrrec per potencia demandada o el recàrrec per "
 "energia reactiva, a la pàgina de tarifes de la "
-msgstr "uedes consultar otros conceptos que pueden ser de aplicación, tales como, el alquiler de contador, el recargo por potencia demandada o el recargo por energía reactiva, a la página de tarifas de "
+msgstr "Puedes consultar otros conceptos que pueden ser de aplicación, tales como, el alquiler de contador, el recargo por potencia demandada o el recargo por energía reactiva, a la página de tarifas de "
 
-#: rml:som_polissa_condicions_generals/report/components/prices_info.mako:465
+#: rml:som_polissa_condicions_generals/report/components/prices_info.mako:463
 msgid "nostra web"
 msgstr "nuestra web"
 
-#: rml:som_polissa_condicions_generals/report/components/prices_info.mako:466
+#: rml:som_polissa_condicions_generals/report/components/prices_info.mako:464
 msgid ", on també trobareu més informació sobre els períodes tarifaris."
 msgstr ", donde también encontrarás más información sobre los períodos tarifarios."
 
