@@ -8,7 +8,6 @@ class GiscedataPolissa(osv.osv):
     _inherit = "giscedata.polissa"
 
     def action_imprimir_contract_summary_pdf(self, cursor, uid, ids, context=None):
-        assert len(ids) == 1
         return {
             'type': 'ir.actions.report.xml',
             'model': 'giscedata.polissa',
@@ -26,7 +25,6 @@ class GiscedataPolissa(osv.osv):
         }
 
     def action_imprimir_contract_summary_full_pdf(self, cursor, uid, ids, context=None):
-        assert len(ids) == 1
         return {
             'type': 'ir.actions.report.xml',
             'model': 'giscedata.polissa',
