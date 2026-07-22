@@ -1,15 +1,20 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import
+import base64
 import imp
 import os
 import shutil
 import tempfile
+import unittest
 
 import mock
 import netsvc
 import pypdftk
 from destral import testing
 from destral.transaction import Transaction
+from som_polissa_condicions_generals.report import (
+    giscedata_crm_lead_contract_summary_full,
+)
 
 _netsvc_local_service = (
     'som_polissa_condicions_generals.report.'
@@ -187,6 +192,7 @@ class TestGiscedataPolissaContractSummaryRoutes(testing.OOTestCase):
         self.report_obj = self.openerp.pool.get('ir.actions.report.xml')
         self.values_obj = self.openerp.pool.get('ir.values')
         self.imd_obj = self.openerp.pool.get('ir.model.data')
+        self.view_obj = self.openerp.pool.get('ir.ui.view')
 
     def tearDown(self):
         self.txn.stop()
@@ -233,6 +239,67 @@ class TestGiscedataPolissaContractSummaryRoutes(testing.OOTestCase):
         )
         self.assertTrue(callable(service.create))
 
+    def test_lead_combined_report_service_is_registered(self):
+        service = netsvc.LocalService(
+            'report.giscedata.crm.lead.contract.summary.full'
+        )
+
+        self.assertEqual(
+            service._service.name,
+            'report.giscedata.crm.lead.contract.summary.full'
+        )
+        self.assertTrue(callable(service.create))
+
+    def test_lead_combined_report_action_and_button_are_registered(self):
+        summary_report_action = self.imd_obj._get_obj(
+            self.cursor,
+            self.uid,
+            'som_polissa_condicions_generals',
+            'lead_contract_summary_report'
+        )
+        summary_button_view = self.imd_obj._get_obj(
+            self.cursor,
+            self.uid,
+            'som_polissa_condicions_generals',
+            'giscedata_crm_leads_contract_summary_view'
+        )
+        report_action = self.imd_obj._get_obj(
+            self.cursor,
+            self.uid,
+            'som_polissa_condicions_generals',
+            'lead_contract_summary_full_report'
+        )
+        button_view = self.imd_obj._get_obj(
+            self.cursor,
+            self.uid,
+            'som_polissa_condicions_generals',
+            'giscedata_crm_leads_contract_summary_full_view'
+        )
+        report_data = self.report_obj.read(
+            self.cursor, self.uid, report_action.id, ['model', 'report_name']
+        )
+        summary_report_data = self.report_obj.read(
+            self.cursor, self.uid, summary_report_action.id, ['report_name']
+        )
+        view_data = self.view_obj.read(
+            self.cursor, self.uid, button_view.id, ['arch']
+        )
+        summary_view_data = self.view_obj.read(
+            self.cursor, self.uid, summary_button_view.id, ['arch']
+        )
+
+        self.assertEqual(
+            summary_report_data['report_name'],
+            'giscedata.crm.lead.contract.summary'
+        )
+        self.assertIn('Imprimir resum contracte', summary_view_data['arch'])
+        self.assertEqual(report_data['model'], 'giscedata.crm.lead')
+        self.assertEqual(
+            report_data['report_name'],
+            'giscedata.crm.lead.contract.summary.full'
+        )
+        self.assertIn('Print contract summary and conditions', view_data['arch'])
+
     def test_contract_summary_print_records_keep_both_routes(self):
         self._assert_summary_print_route()
         self._assert_combined_print_route()
@@ -252,6 +319,108 @@ class TestGiscedataPolissaContractSummaryRoutes(testing.OOTestCase):
                 mode='update'
             ),
         ])
+
+    def test_lead_migration_loads_only_new_lead_records(self):
+        migration = self._load_lead_migration()
+
+        with mock.patch.object(migration, 'load_data') as load_data:
+            migration.up(self.cursor, '5.0.25.8')
+
+        self.assertEqual(load_data.call_args_list, [
+            mock.call(
+                self.cursor,
+                'som_polissa_condicions_generals',
+                'report/giscedata_crm_lead_contract_summary_full_report.xml',
+                idref=None,
+                mode='update'
+            ),
+            mock.call(
+                self.cursor,
+                'som_polissa_condicions_generals',
+                'views/giscedata_crm_lead_contract_summary_full_view.xml',
+                idref=None,
+                mode='update'
+            ),
+        ])
+
+    def test_lead_migration_creates_additive_route_without_replacing_summary(self):
+        summary_report_action = self.imd_obj._get_obj(
+            self.cursor,
+            self.uid,
+            'som_polissa_condicions_generals',
+            'lead_contract_summary_report'
+        )
+        summary_button_view = self.imd_obj._get_obj(
+            self.cursor,
+            self.uid,
+            'som_polissa_condicions_generals',
+            'giscedata_crm_leads_contract_summary_view'
+        )
+        summary_report_data = self.report_obj.read(
+            self.cursor, self.uid, summary_report_action.id, ['report_name']
+        )
+        summary_view_data = self.view_obj.read(
+            self.cursor, self.uid, summary_button_view.id, ['arch']
+        )
+        report_action = self.imd_obj._get_obj(
+            self.cursor,
+            self.uid,
+            'som_polissa_condicions_generals',
+            'lead_contract_summary_full_report'
+        )
+        button_view = self.imd_obj._get_obj(
+            self.cursor,
+            self.uid,
+            'som_polissa_condicions_generals',
+            'giscedata_crm_leads_contract_summary_full_view'
+        )
+        imd_ids = self.imd_obj.search(self.cursor, self.uid, [
+            ('module', '=', 'som_polissa_condicions_generals'),
+            ('name', 'in', [
+                'lead_contract_summary_full_report',
+                'giscedata_crm_leads_contract_summary_full_view',
+            ]),
+        ])
+        self.report_obj.unlink(self.cursor, self.uid, [report_action.id])
+        self.view_obj.unlink(self.cursor, self.uid, [button_view.id])
+        self.imd_obj.unlink(self.cursor, self.uid, imd_ids)
+
+        migration = self._load_lead_migration()
+        migration.up(self.cursor, '5.0.25.8')
+        migration.up(self.cursor, '5.0.25.8')
+
+        self.assertEqual(
+            self.report_obj.read(
+                self.cursor, self.uid, summary_report_action.id, ['report_name']
+            ),
+            summary_report_data
+        )
+        self.assertEqual(
+            self.view_obj.read(
+                self.cursor, self.uid, summary_button_view.id, ['arch']
+            ),
+            summary_view_data
+        )
+        restored_report_action = self.imd_obj._get_obj(
+            self.cursor,
+            self.uid,
+            'som_polissa_condicions_generals',
+            'lead_contract_summary_full_report'
+        )
+        restored_button_view = self.imd_obj._get_obj(
+            self.cursor,
+            self.uid,
+            'som_polissa_condicions_generals',
+            'giscedata_crm_leads_contract_summary_full_view'
+        )
+        self.assertEqual(
+            restored_report_action.report_name,
+            'giscedata.crm.lead.contract.summary.full'
+        )
+        self.assertEqual(
+            restored_button_view.name,
+            'giscedata.crm.lead.contract.summary.full.button'
+        )
 
     def test_migration_creates_combined_route_without_replacing_summary(self):
         summary_action = self.imd_obj._get_obj(
@@ -327,6 +496,18 @@ class TestGiscedataPolissaContractSummaryRoutes(testing.OOTestCase):
             'contract_summary_full_report_migration', migration_path
         )
 
+    def _load_lead_migration(self):
+        migration_path = os.path.abspath(os.path.join(
+            os.path.dirname(__file__),
+            '..',
+            'migrations',
+            '5.0.25.9',
+            'post-0001_add_lead_contract_summary_full_report.py'
+        ))
+        return imp.load_source(
+            'lead_contract_summary_full_report_migration', migration_path
+        )
+
     def _assert_summary_print_route(self):
         self._assert_print_route(
             'report_contract_summary',
@@ -377,3 +558,103 @@ class TestGiscedataPolissaContractSummaryRoutes(testing.OOTestCase):
             value_data['value'],
             'ir.actions.report.xml,{0}'.format(report_action.id)
         )
+
+
+class TestLeadContractSummaryFullReportWrapper(unittest.TestCase):
+
+    def _get_report(self):
+        return giscedata_crm_lead_contract_summary_full.LeadContractSummaryFullReport(
+            'report.giscedata.crm.lead.contract.summary.full.test'
+        )
+
+    def _get_cursor(self):
+        cursor = mock.Mock()
+        cursor.dbname = 'test'
+        return cursor
+
+    @mock.patch(
+        'som_polissa_condicions_generals.report.'
+        'giscedata_crm_lead_contract_summary_full.Sudo'
+    )
+    @mock.patch(
+        'som_polissa_condicions_generals.report.'
+        'giscedata_crm_lead_contract_summary_full.pooler.get_pool'
+    )
+    def test_create_retries_with_sudo_after_permission_failure(
+        self, mock_get_pool, mock_sudo
+    ):
+        report = self._get_report()
+        cursor = self._get_cursor()
+        lead_obj = mock.Mock()
+        model_data_obj = mock.Mock()
+        pool = mock.Mock()
+        pool.get.side_effect = lambda model: {
+            'giscedata.crm.lead': lead_obj,
+            'ir.model.data': model_data_obj,
+        }[model]
+        mock_get_pool.return_value = pool
+        model_data_obj.get_object_reference.return_value = (
+            'giscedata_crm_leads', 27
+        )
+        lead_obj.contract_summary_full_pdf.side_effect = [
+            RuntimeError('permission denied'),
+            {'contract_summary_full': base64.b64encode(b'%PDF')},
+        ]
+        datas = {'form': {'source': 'lead'}}
+
+        result = report.create(cursor, 9, [42], datas, {'lang': 'ca_ES'})
+
+        self.assertEqual(result, (b'%PDF', 'pdf'))
+        self.assertEqual(lead_obj.contract_summary_full_pdf.call_args_list, [
+            mock.call(cursor, 9, [42], context={'lang': 'ca_ES'}, datas=datas),
+            mock.call(cursor, 1, [42], context={'lang': 'ca_ES'}, datas=datas),
+        ])
+        self.assertIs(
+            lead_obj.contract_summary_full_pdf.call_args_list[0][1]['datas'], datas
+        )
+        model_data_obj.get_object_reference.assert_called_once_with(
+            cursor,
+            9,
+            'giscedata_crm_leads',
+            'group_giscedata_crm_lead_allow_print',
+        )
+        mock_sudo.assert_called_once_with(uid=9, gid=27)
+
+    @mock.patch(
+        'som_polissa_condicions_generals.report.'
+        'giscedata_crm_lead_contract_summary_full.Sudo'
+    )
+    @mock.patch(
+        'som_polissa_condicions_generals.report.'
+        'giscedata_crm_lead_contract_summary_full.pooler.get_pool'
+    )
+    def test_create_propagates_initial_error_when_sudo_retry_fails(
+        self, mock_get_pool, mock_sudo
+    ):
+        report = self._get_report()
+        cursor = self._get_cursor()
+        lead_obj = mock.Mock()
+        model_data_obj = mock.Mock()
+        pool = mock.Mock()
+        pool.get.side_effect = lambda model: {
+            'giscedata.crm.lead': lead_obj,
+            'ir.model.data': model_data_obj,
+        }[model]
+        mock_get_pool.return_value = pool
+        model_data_obj.get_object_reference.return_value = (
+            'giscedata_crm_leads', 27
+        )
+        initial_error = RuntimeError('permission denied')
+        lead_obj.contract_summary_full_pdf.side_effect = [
+            initial_error,
+            RuntimeError('sudo failed'),
+        ]
+
+        try:
+            report.create(cursor, 9, [42], {}, {})
+        except RuntimeError as error:
+            self.assertIs(error, initial_error)
+        else:
+            self.fail('The initial permission error should be propagated')
+
+        mock_sudo.assert_called_once_with(uid=9, gid=27)
