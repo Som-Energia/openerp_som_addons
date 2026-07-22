@@ -5,6 +5,7 @@
 <%namespace file="som_polissa_condicions_generals/report/components/prices_info.mako" import="prices_info"/>
 <%namespace file="som_polissa_condicions_generals/report/components/payment_info.mako" import="payment_info"/>
 <%namespace file="som_polissa_condicions_generals/report/components/disclaimers.mako" import="disclaimers"/>
+<%namespace file="som_polissa_condicions_generals/report/components/cnmc_comparator_qr_link.mako" import="cnmc_comparator_qr_link"/>
 <%namespace file="som_polissa_condicions_generals/report/components/footer.mako" import="footer"/>
 <%namespace file="som_polissa_condicions_generals/report/condicions_generals.mako" import="generals_ca"/>
 <%namespace file="som_polissa_condicions_generals/report/condiciones_generales.mako" import="generals_es"/>
@@ -55,12 +56,13 @@
                         ${capcalera(informe['polissa'])}
                         ${contact_info(informe['titular'], informe['cups'])}
                         ${potencies_info(informe['polissa'], informe['potencies'])}
-                        ${prices_info(informe['polissa'], informe['prices'])}
+                        ${prices_info(informe['polissa'], informe['prices'], informe['titular'])}
                         %if "gurb" in informe:
                             ${gurb(informe['gurb'])}
                         %endif
                         ${payment_info(informe['titular'])}
                         ${disclaimers(informe['polissa'], informe['prices'])}
+                        ${cnmc_comparator_qr_link()}
                         ${footer(informe['polissa'], informe['titular'])}
                         <p style="page-break-after:always;"></p>
                         %if informe['titular']['lang'] == 'ca_ES':

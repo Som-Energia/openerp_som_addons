@@ -57,6 +57,7 @@ class TestReportBackendCCPP(testing.OOTestCase):
             u'distri': u'Agrolait',
             u'name': u'ES0021126262693495FV',
             u'provincia': u'Girona',
+            u'ref_catastral': u'referencia catastral',
             u'ref_dist': u'',
             u'tensio': 127}
         )
@@ -113,6 +114,13 @@ class TestReportBackendCCPP(testing.OOTestCase):
 
         result = self.backend_obj.get_polissa_data(self.cursor, self.uid, pol_20td, context={})
 
+        today = datetime.today()
+        current_quarter = ((today.month - 1) // 3) + 1
+        if current_quarter == 4:
+            expected_date = datetime(today.year + 1, 1, 1).strftime('%d/%m/%Y')
+        else:
+            expected_date = datetime(today.year, (current_quarter * 3) + 1, 1).strftime('%d/%m/%Y')
+
         pricelist_id = self.get_ref("giscedata_facturacio", "pricelist_tarifas_electricidad_venda")
         pricelist_name = self.pricelist_obj.browse(self.cursor, self.uid, pricelist_id).name
         self.assertEqual(result, {
@@ -136,7 +144,9 @@ class TestReportBackendCCPP(testing.OOTestCase):
             u'state': u'esborrany',
             u'tarifa': u'2.0TD',
             u'tarifa_mostrar': pricelist_name,
-            u'te_assignacio_gkwh': False}
+            u'te_assignacio_gkwh': False,
+            u'te_tarifa_periodes': True,
+            u'data_renovacio': expected_date}
         )
 
     def test_get_polissa_data_with_modcon_ok(self):

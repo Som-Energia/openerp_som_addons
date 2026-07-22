@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OpenERP Server 5.0.14\n"
 "Report-Msgid-Bugs-To: support@openerp.com\n"
-"POT-Creation-Date: 2025-09-03 17:02+0000\n"
-"PO-Revision-Date: 2025-09-03 17:02+0000\n"
+"POT-Creation-Date: 2026-07-22 17:05+0000\n"
+"PO-Revision-Date: 2026-07-22 17:05+0000\n"
 "Last-Translator: <>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -16,21 +16,67 @@ msgstr ""
 "Generated-By: Babel 2.9.1\n"
 
 #. module: som_polissa_condicions_generals
-#: model:ir.model,name:som_polissa_condicions_generals.model_report_backend_condicions_particulars_m1
-msgid "report.backend.condicions.particulars.m1"
-msgstr ""
-
-#. module: som_polissa_condicions_generals
 #: constraint:ir.model:0
 msgid "The Object name must start with x_ and not contain any special character !"
 msgstr ""
 
 #. module: som_polissa_condicions_generals
-#: model:poweremail.templates,def_subject:som_polissa_condicions_generals.notification_atr_M1_01_SS
+#: model:ir.model,name:som_polissa_condicions_generals.model_report_backend_condicions_particulars_ignore_modcon
+msgid "report.backend.condicions.particulars.ignore.modcon"
+msgstr ""
+
+#. module: som_polissa_condicions_generals
+#: constraint:res.partner.address:0
 msgid ""
-"Som Energia: Canvi de titular. Verificació de dades. Contracte "
-"${object.cups_polissa_id.name} / Cambio de titular. Verificación de "
-"datos. Contrato ${object.cups_polissa_id.name}"
+"El número de mòbil ha de tenir exactament 9 dígits numèrics i començar "
+"per 6 o 7."
+msgstr ""
+
+#. module: som_polissa_condicions_generals
+#: model:ir.model,name:som_polissa_condicions_generals.model_contract_helper
+msgid "contract.helper"
+msgstr ""
+
+#. module: som_polissa_condicions_generals
+#: model:account.fiscal.position,name:som_polissa_condicions_generals.fp_iva_reduit
+msgid "IVA Reduït (IVA 5%)"
+msgstr ""
+
+#. module: som_polissa_condicions_generals
+#: model:ir.actions.report.xml,name:som_polissa_condicions_generals.report_contracte_ignore_modcon
+msgid "Contracte (ignora modcon)"
+msgstr ""
+
+#. module: som_polissa_condicions_generals
+#: model:ir.model,name:som_polissa_condicions_generals.model_report_backend_condicions_particulars
+msgid "report.backend.condicions.particulars"
+msgstr ""
+
+#. module: som_polissa_condicions_generals
+#: model:ir.model,name:som_polissa_condicions_generals.model_report_backend_condicions_particulars_m1
+msgid "report.backend.condicions.particulars.m1"
+msgstr ""
+
+#. module: som_polissa_condicions_generals
+#: model:product.pricelist.version,name:som_polissa_condicions_generals.product_pricelist_version_tarifas_electridad
+msgid "Versio 1"
+msgstr ""
+
+#. module: som_polissa_condicions_generals
+#: model:ir.actions.report.xml,name:som_polissa_condicions_generals.report_contracte_m101
+msgid "Contracte"
+msgstr ""
+
+#. module: som_polissa_condicions_generals
+#: model:ir.model,name:som_polissa_condicions_generals.model_report_backend_mailcanvipreus_eie
+msgid "report.backend.mailcanvipreus.eie"
+msgstr ""
+
+#. module: som_polissa_condicions_generals
+#: constraint:res.partner.address:0
+msgid ""
+"El número de telèfon ha de tenir exactament 9 dígits numèrics i començar "
+"per 9 o 8."
 msgstr ""
 
 #. module: som_polissa_condicions_generals
@@ -39,8 +85,8 @@ msgid "You cannot have 2 pricelist versions that overlap!"
 msgstr ""
 
 #. module: som_polissa_condicions_generals
-#: model:product.pricelist.version,name:som_polissa_condicions_generals.product_pricelist_version_tarifas_electridad
-msgid "Versio 1"
+#: model:poweremail.templates,def_subject:som_polissa_condicions_generals.canviPreusBackend
+msgid "Al gener actualitzarem les tarifes d’electricitat"
 msgstr ""
 
 #. module: som_polissa_condicions_generals
@@ -263,44 +309,13 @@ msgid ""
 msgstr ""
 
 #. module: som_polissa_condicions_generals
-#: model:poweremail.templates,file_name:som_polissa_condicions_generals.notification_atr_M1_01_SS
-msgid "${object.codi_sollicitud}"
-msgstr ""
-
-#. module: som_polissa_condicions_generals
 #: model:ir.model,name:som_polissa_condicions_generals.model_report_backend_mailcanvipreus
 msgid "report.backend.mailcanvipreus"
 msgstr ""
 
 #. module: som_polissa_condicions_generals
-#: model:ir.actions.report.xml,name:som_polissa_condicions_generals.report_contracte_m101
-msgid "Contracte"
-msgstr ""
-
-#. module: som_polissa_condicions_generals
-#: code:addons/som_polissa_condicions_generals/models/report_backend_ccpp.py:374
+#: code:addons/som_polissa_condicions_generals/models/report_backend_ccpp.py:398
 msgid "(vigents a partir del {})"
-msgstr ""
-
-#. module: som_polissa_condicions_generals
-#: model:poweremail.templates,def_subject:som_polissa_condicions_generals.canviPreusBackend
-msgid "Al gener actualitzarem les tarifes d’electricitat"
-msgstr ""
-
-#. module: som_polissa_condicions_generals
-#: code:addons/som_polissa_condicions_generals/models/report_backend_ccpp.py:368
-#: code:addons/som_polissa_condicions_generals/models/report_backend_ccpp.py:371
-msgid "(vigents fins al {})"
-msgstr ""
-
-#. module: som_polissa_condicions_generals
-#: model:ir.model,name:som_polissa_condicions_generals.model_report_backend_condicions_particulars
-msgid "report.backend.condicions.particulars"
-msgstr ""
-
-#. module: som_polissa_condicions_generals
-#: model:ir.module.module,shortdesc:som_polissa_condicions_generals.module_meta_information
-msgid "Condicions generals Somenergia"
 msgstr ""
 
 #. module: som_polissa_condicions_generals
@@ -312,13 +327,32 @@ msgid ""
 msgstr ""
 
 #. module: som_polissa_condicions_generals
-#: model:account.fiscal.position,name:som_polissa_condicions_generals.fp_iva_reduit
-msgid "IVA Reduït (IVA 5%)"
+#: model:poweremail.templates,def_subject:som_polissa_condicions_generals.notification_atr_M1_01_SS
+msgid ""
+"Som Energia: Canvi de titular. Verificació de dades. Contracte "
+"${object.cups_polissa_id.name} / Cambio de titular. Verificación de "
+"datos. Contrato ${object.cups_polissa_id.name}"
+msgstr ""
+
+#. module: som_polissa_condicions_generals
+#: model:poweremail.templates,file_name:som_polissa_condicions_generals.notification_atr_M1_01_SS
+msgid "${object.codi_sollicitud}"
+msgstr ""
+
+#. module: som_polissa_condicions_generals
+#: code:addons/som_polissa_condicions_generals/models/report_backend_ccpp.py:392
+#: code:addons/som_polissa_condicions_generals/models/report_backend_ccpp.py:395
+msgid "(vigents fins al {})"
+msgstr ""
+
+#. module: som_polissa_condicions_generals
+#: model:ir.module.module,shortdesc:som_polissa_condicions_generals.module_meta_information
+msgid "Condicions generals Somenergia"
 msgstr ""
 
 #: rml:som_polissa_condicions_generals/report/components/auvi.mako:3
-#: rml:som_polissa_condicions_generals/report/components/prices_info.mako:114
-#: rml:som_polissa_condicions_generals/report/components/prices_info.mako:326
+#: rml:som_polissa_condicions_generals/report/components/prices_info.mako:138
+#: rml:som_polissa_condicions_generals/report/components/prices_info.mako:350
 msgid "Terme energia (€/kWh)"
 msgstr ""
 
@@ -327,8 +361,8 @@ msgid "Tarifa autoconsum virtual"
 msgstr ""
 
 #: rml:som_polissa_condicions_generals/report/components/auvi.mako:6
-#: rml:som_polissa_condicions_generals/report/components/prices_info.mako:118
-#: rml:som_polissa_condicions_generals/report/components/prices_info.mako:330
+#: rml:som_polissa_condicions_generals/report/components/prices_info.mako:142
+#: rml:som_polissa_condicions_generals/report/components/prices_info.mako:354
 msgid "(2) - el preu horari (PH) es calcula d'acord amb la fórmula:"
 msgstr ""
 
@@ -341,9 +375,9 @@ msgstr ""
 #: rml:som_polissa_condicions_generals/report/components/auvi.mako:14
 #: rml:som_polissa_condicions_generals/report/components/auvi.mako:19
 #: rml:som_polissa_condicions_generals/report/components/auvi.mako:44
-#: rml:som_polissa_condicions_generals/report/components/prices_info.mako:126
-#: rml:som_polissa_condicions_generals/report/components/prices_info.mako:136
-#: rml:som_polissa_condicions_generals/report/components/prices_info.mako:335
+#: rml:som_polissa_condicions_generals/report/components/prices_info.mako:150
+#: rml:som_polissa_condicions_generals/report/components/prices_info.mako:160
+#: rml:som_polissa_condicions_generals/report/components/prices_info.mako:359
 msgid "on la franja de la cooperativa"
 msgstr ""
 
@@ -404,23 +438,45 @@ msgid "Data d'inici del subministrament: "
 msgstr ""
 
 #: rml:som_polissa_condicions_generals/report/components/capcalera.mako:25
-msgid "Data de renovació del subministrament: "
+msgid "Vigència del contracte: "
 msgstr ""
 
-#: rml:som_polissa_condicions_generals/report/components/capcalera.mako:36
+#: rml:som_polissa_condicions_generals/report/components/capcalera.mako:26
+msgid "Sense permanència"
+msgstr ""
+
+#: rml:som_polissa_condicions_generals/report/components/capcalera.mako:28
+msgid "Data de renovació: "
+msgstr ""
+
+#: rml:som_polissa_condicions_generals/report/components/capcalera.mako:35
 msgid ""
 "CONDICIONS PARTICULARS DEL CONTRACTE DE SUBMINISTRAMENT D'ENERGIA "
 "ELÈCTRICA"
 msgstr ""
 
-#: rml:som_polissa_condicions_generals/report/components/capcalera.mako:42
+#: rml:som_polissa_condicions_generals/report/components/capcalera.mako:41
 msgid "LES DADES D'AQUEST CONTRACTE ESTAN PENDENTS DE VALIDACIÓ."
 msgstr ""
 
-#: rml:som_polissa_condicions_generals/report/components/capcalera.mako:45
+#: rml:som_polissa_condicions_generals/report/components/capcalera.mako:44
 msgid ""
 "Les tarifes que s’aplicaran seran les vigents al moment d'activar el "
 "contracte."
+msgstr ""
+
+#: rml:som_polissa_condicions_generals/report/components/cnmc_comparator_qr_link.mako:3
+msgid "COMPARADOR DE PREUS DE LA CNMC"
+msgstr ""
+
+#: rml:som_polissa_condicions_generals/report/components/cnmc_comparator_qr_link.mako:6
+msgid "Amb aquest codi QR o bé amb l’enllaç "
+msgstr ""
+
+#: rml:som_polissa_condicions_generals/report/components/cnmc_comparator_qr_link.mako:8
+msgid ""
+" pots consultar i comparar les diferents ofertes vigents de les "
+"comercialitzadores d’electricitat del mercat lliure."
 msgstr ""
 
 #: rml:som_polissa_condicions_generals/report/components/contact_info.mako:4
@@ -428,7 +484,7 @@ msgid "PERSONA TITULAR"
 msgstr ""
 
 #: rml:som_polissa_condicions_generals/report/components/contact_info.mako:6
-#: rml:som_polissa_condicions_generals/report/components/contact_info.mako:52
+#: rml:som_polissa_condicions_generals/report/components/contact_info.mako:54
 msgid "Nom/Raó social: "
 msgstr ""
 
@@ -438,33 +494,33 @@ msgstr ""
 
 #: rml:som_polissa_condicions_generals/report/components/contact_info.mako:10
 #: rml:som_polissa_condicions_generals/report/components/contact_info.mako:29
-#: rml:som_polissa_condicions_generals/report/components/contact_info.mako:54
+#: rml:som_polissa_condicions_generals/report/components/contact_info.mako:56
 msgid "Adreça: "
 msgstr ""
 
 #: rml:som_polissa_condicions_generals/report/components/contact_info.mako:12
-#: rml:som_polissa_condicions_generals/report/components/contact_info.mako:56
+#: rml:som_polissa_condicions_generals/report/components/contact_info.mako:58
 msgid "Codi postal i municipi: "
 msgstr ""
 
 #: rml:som_polissa_condicions_generals/report/components/contact_info.mako:14
 #: rml:som_polissa_condicions_generals/report/components/contact_info.mako:31
-#: rml:som_polissa_condicions_generals/report/components/contact_info.mako:58
+#: rml:som_polissa_condicions_generals/report/components/contact_info.mako:60
 msgid "Província i país: "
 msgstr ""
 
 #: rml:som_polissa_condicions_generals/report/components/contact_info.mako:16
-#: rml:som_polissa_condicions_generals/report/components/contact_info.mako:60
+#: rml:som_polissa_condicions_generals/report/components/contact_info.mako:62
 msgid "Adreça electrònica: "
 msgstr ""
 
 #: rml:som_polissa_condicions_generals/report/components/contact_info.mako:18
-#: rml:som_polissa_condicions_generals/report/components/contact_info.mako:62
+#: rml:som_polissa_condicions_generals/report/components/contact_info.mako:64
 msgid "Telèfon: "
 msgstr ""
 
 #: rml:som_polissa_condicions_generals/report/components/contact_info.mako:20
-#: rml:som_polissa_condicions_generals/report/components/contact_info.mako:64
+#: rml:som_polissa_condicions_generals/report/components/contact_info.mako:66
 msgid "Telèfon 2: "
 msgstr ""
 
@@ -481,22 +537,26 @@ msgid "CNAE: "
 msgstr ""
 
 #: rml:som_polissa_condicions_generals/report/components/contact_info.mako:37
-msgid "Contracte d'accés: "
+msgid "Referència cadastral: "
 msgstr ""
 
 #: rml:som_polissa_condicions_generals/report/components/contact_info.mako:39
-msgid "Activitat principal: "
+msgid "Contracte d'accés: "
 msgstr ""
 
 #: rml:som_polissa_condicions_generals/report/components/contact_info.mako:41
-msgid "Empresa distribuïdora: "
+msgid "Activitat principal: "
 msgstr ""
 
 #: rml:som_polissa_condicions_generals/report/components/contact_info.mako:43
+msgid "Empresa distribuïdora: "
+msgstr ""
+
+#: rml:som_polissa_condicions_generals/report/components/contact_info.mako:45
 msgid "Tensió Nominal (V): "
 msgstr ""
 
-#: rml:som_polissa_condicions_generals/report/components/contact_info.mako:50
+#: rml:som_polissa_condicions_generals/report/components/contact_info.mako:52
 msgid "DADES DE CONTACTE"
 msgstr ""
 
@@ -584,18 +644,18 @@ msgid "Tarifa: "
 msgstr ""
 
 #: rml:som_polissa_condicions_generals/report/components/potencies_info.mako:12
-#: rml:som_polissa_condicions_generals/report/components/prices_info.mako:21
-#: rml:som_polissa_condicions_generals/report/components/prices_info.mako:24
-#: rml:som_polissa_condicions_generals/report/components/prices_info.mako:94
-#: rml:som_polissa_condicions_generals/report/components/prices_info.mako:97
+#: rml:som_polissa_condicions_generals/report/components/prices_info.mako:45
+#: rml:som_polissa_condicions_generals/report/components/prices_info.mako:48
+#: rml:som_polissa_condicions_generals/report/components/prices_info.mako:118
+#: rml:som_polissa_condicions_generals/report/components/prices_info.mako:121
 msgid "Punta"
 msgstr ""
 
 #: rml:som_polissa_condicions_generals/report/components/potencies_info.mako:14
-#: rml:som_polissa_condicions_generals/report/components/prices_info.mako:23
-#: rml:som_polissa_condicions_generals/report/components/prices_info.mako:26
-#: rml:som_polissa_condicions_generals/report/components/prices_info.mako:96
-#: rml:som_polissa_condicions_generals/report/components/prices_info.mako:99
+#: rml:som_polissa_condicions_generals/report/components/prices_info.mako:47
+#: rml:som_polissa_condicions_generals/report/components/prices_info.mako:50
+#: rml:som_polissa_condicions_generals/report/components/prices_info.mako:120
+#: rml:som_polissa_condicions_generals/report/components/prices_info.mako:123
 msgid "Vall"
 msgstr ""
 
@@ -603,98 +663,455 @@ msgstr ""
 msgid "Potència contractada (kW):"
 msgstr ""
 
-#: rml:som_polissa_condicions_generals/report/components/prices_info.mako:5
+#: rml:som_polissa_condicions_generals/report/components/prices_info.mako:29
 msgid "TARIFES D'ELECTRICITAT"
 msgstr ""
 
-#: rml:som_polissa_condicions_generals/report/components/prices_info.mako:7
+#: rml:som_polissa_condicions_generals/report/components/prices_info.mako:31
 msgid "TARIFES D'ELECTRICITAT SENSE IMPOSTOS"
 msgstr ""
 
-#: rml:som_polissa_condicions_generals/report/components/prices_info.mako:14
+#: rml:som_polissa_condicions_generals/report/components/prices_info.mako:38
 msgid "Sense impostos"
 msgstr ""
 
-#: rml:som_polissa_condicions_generals/report/components/prices_info.mako:15
+#: rml:som_polissa_condicions_generals/report/components/prices_info.mako:39
 msgid "Amb impostos"
 msgstr ""
 
-#: rml:som_polissa_condicions_generals/report/components/prices_info.mako:37
-#: rml:som_polissa_condicions_generals/report/components/prices_info.mako:302
+#: rml:som_polissa_condicions_generals/report/components/prices_info.mako:61
+#: rml:som_polissa_condicions_generals/report/components/prices_info.mako:326
 msgid "Terme potència (€/kW i any)"
 msgstr ""
 
-#: rml:som_polissa_condicions_generals/report/components/prices_info.mako:95
-#: rml:som_polissa_condicions_generals/report/components/prices_info.mako:98
+#: rml:som_polissa_condicions_generals/report/components/prices_info.mako:119
+#: rml:som_polissa_condicions_generals/report/components/prices_info.mako:122
 msgid "Pla"
 msgstr ""
 
-#: rml:som_polissa_condicions_generals/report/components/prices_info.mako:118
-#: rml:som_polissa_condicions_generals/report/components/prices_info.mako:330
+#: rml:som_polissa_condicions_generals/report/components/prices_info.mako:142
+#: rml:som_polissa_condicions_generals/report/components/prices_info.mako:354
 msgid "Tarifa indexada"
 msgstr ""
 
-#: rml:som_polissa_condicions_generals/report/components/prices_info.mako:121
-#: rml:som_polissa_condicions_generals/report/components/prices_info.mako:333
+#: rml:som_polissa_condicions_generals/report/components/prices_info.mako:145
+#: rml:som_polissa_condicions_generals/report/components/prices_info.mako:357
 msgid ""
-"PH = 1,015 * [(PHM + Pc + Sc + Dsv + GdO + POsOm) (1 + Perd) + FE + F] + "
+"PH = 1,015 * [(PHM + Pc + SA + Dsv + GdO + POsOm) (1 + Perd) + FE + F] + "
 "PTD + CA"
 msgstr ""
 
-#: rml:som_polissa_condicions_generals/report/components/prices_info.mako:196
-#: rml:som_polissa_condicions_generals/report/components/prices_info.mako:360
+#: rml:som_polissa_condicions_generals/report/components/prices_info.mako:220
+#: rml:som_polissa_condicions_generals/report/components/prices_info.mako:384
 msgid "(1) GenerationkWh (€/kWh)"
 msgstr ""
 
-#: rml:som_polissa_condicions_generals/report/components/prices_info.mako:235
-#: rml:som_polissa_condicions_generals/report/components/prices_info.mako:376
+#: rml:som_polissa_condicions_generals/report/components/prices_info.mako:259
+#: rml:som_polissa_condicions_generals/report/components/prices_info.mako:400
 msgid "Excedents d'autoconsum (€/kWh)"
 msgstr ""
 
-#: rml:som_polissa_condicions_generals/report/components/prices_info.mako:238
-#: rml:som_polissa_condicions_generals/report/components/prices_info.mako:379
+#: rml:som_polissa_condicions_generals/report/components/prices_info.mako:262
+#: rml:som_polissa_condicions_generals/report/components/prices_info.mako:403
 msgid ""
 "Tarifa indexada(2) - el preu horari de la compensació d'excedents és "
 "igual al PHM"
 msgstr ""
 
-#: rml:som_polissa_condicions_generals/report/components/prices_info.mako:275
-#: rml:som_polissa_condicions_generals/report/components/prices_info.mako:397
+#: rml:som_polissa_condicions_generals/report/components/prices_info.mako:299
+#: rml:som_polissa_condicions_generals/report/components/prices_info.mako:421
 msgid ""
 "Terme d'energia en cas de participar-hi, segons condicions del contracte "
 "GenerationkWh."
 msgstr ""
 
-#: rml:som_polissa_condicions_generals/report/components/prices_info.mako:278
-#: rml:som_polissa_condicions_generals/report/components/prices_info.mako:400
+#: rml:som_polissa_condicions_generals/report/components/prices_info.mako:302
+#: rml:som_polissa_condicions_generals/report/components/prices_info.mako:424
 msgid ""
 "Pots consultar el significat de les variables a les condicions "
 "específiques que trobaràs a continuació."
 msgstr ""
 
-#: rml:som_polissa_condicions_generals/report/components/prices_info.mako:289
+#: rml:som_polissa_condicions_generals/report/components/prices_info.mako:313
 msgid "TARIFES D'ELECTRICITAT AMB IMPOSTOS"
 msgstr ""
 
-#: rml:som_polissa_condicions_generals/report/components/prices_info.mako:415
-msgid "Els preus del terme de potència"
-msgstr ""
-
-#: rml:som_polissa_condicions_generals/report/components/prices_info.mako:417
-msgid "Tots els preus que apareixen en aquest contracte"
-msgstr ""
-
-#: rml:som_polissa_condicions_generals/report/components/prices_info.mako:419
+#: rml:som_polissa_condicions_generals/report/components/prices_info.mako:439
 msgid ""
-"inclouen l'impost elèctric i l'IVA (IGIC a Canàries), amb el tipus "
-"impositiu vigent actualment per a cada tipus de contracte sense perjudici"
-" de les exempcions o bonificacions que puguin ser d'aplicació."
+"Aquests preus inclouen l'Impost Especial sobre l'Electricitat (IEE) i "
+"l'IVA (IGIC a Canàries), sense perjudici de les exempcions o "
+"bonificacions que puguin ser aplicables."
 msgstr ""
 
-#: rml:som_polissa_condicions_generals/report/components/prices_info.mako:422
+#: rml:som_polissa_condicions_generals/report/components/prices_info.mako:441
 msgid ""
 "Els costos dels Serveis d'Ajust tenen un preu horari variable, fixat per "
 "Red Eléctrica Española (REE), no inclosos en el terme d'energia."
+msgstr ""
+
+#: rml:som_polissa_condicions_generals/report/components/prices_info.mako:443
+msgid ""
+"Pots consultar altres conceptes que poden ser aplicables, com ara el "
+"lloguer de comptador, el recàrrec per potència demandada o el recàrrec "
+"per energia reactiva, a la "
+msgstr ""
+
+#: rml:som_polissa_condicions_generals/report/components/prices_info.mako:444
+msgid "pàgina de tarifes"
+msgstr ""
+
+#: rml:som_polissa_condicions_generals/report/components/prices_info.mako:445
+msgid ""
+" del nostre web, on també trobaràs més informació sobre els períodes "
+"tarifaris."
+msgstr ""
+
+#: rml:som_polissa_condicions_generals/report/components/prices_info.mako:448
+msgid ""
+"Preu Serveis Ajust amb pèrdues = SA<sub>(1)</sub> x (1 + "
+"Perd<sub>(2)</sub> / 100)"
+msgstr ""
+
+#: rml:som_polissa_condicions_generals/report/components/prices_info.mako:451
+msgid ""
+"SA: Costos dels Serveis d'Ajust per resoldre les restriccions tècniques "
+"del sistema carregats per Red Eléctrica (REE)."
+msgstr ""
+
+#: rml:som_polissa_condicions_generals/report/components/prices_info.mako:453
+msgid ""
+"Perd: Coeficients de pèrdues regulades de sistema des del punt de "
+"generació al punt de consum, segons el valor publicat per REE en el "
+"moment de generar la factura."
+msgstr ""
+
+#: rml:som_polissa_condicions_generals/report/components/prices_info.mako:456
+msgid "Els preus del terme de potència"
+msgstr ""
+
+#: rml:som_polissa_condicions_generals/report/components/prices_info.mako:458
+msgid "Tots els preus que apareixen en aquest contracte"
+msgstr ""
+
+#: rml:som_polissa_condicions_generals/report/components/prices_info.mako:460
+msgid ""
+"inclouen l'Impost Especial sobre l'Electricitat (IEE) i l'IVA (IGIC a "
+"Canàries), amb el tipus impositiu vigent actualment per a cada tipus de "
+"contracte sense perjudici de les exempcions o bonificacions que puguin "
+"ser d'aplicació."
+msgstr ""
+
+#: rml:som_polissa_condicions_generals/report/components/prices_info.mako:462
+msgid ""
+"Pots consultar altres conceptes que poden ser d'aplicació, tals com, el "
+"lloguer de contador, el recàrrec per potencia demandada o el recàrrec per"
+" energia reactiva, a la pàgina de tarifes de la "
+msgstr ""
+
+#: rml:som_polissa_condicions_generals/report/components/prices_info.mako:463
+msgid "nostra web"
+msgstr ""
+
+#: rml:som_polissa_condicions_generals/report/components/prices_info.mako:464
+msgid ", on també trobareu més informació sobre els períodes tarifaris."
+msgstr ""
+
+#: rml:som_polissa_condicions_generals/report/components/gurb/acord_repartiment.mako:9
+msgid ""
+"ACORD DE REPARTIMENT D'ENERGIA EN AUTOCONSUM COL·LECTIU AMB EXCEDENTS I "
+"COMPENSACIÓ"
+msgstr ""
+
+#: rml:som_polissa_condicions_generals/report/components/gurb/acord_repartiment.mako:12
+msgid ""
+"En aplicació del Reial decret 244/2019, de 5 d'abril, els consumidors "
+"següents vam acordar associar-nos a la instal·lació d'autoconsum "
+"col·lectiu d'energia elèctrica amb les característiques següents: "
+msgstr ""
+
+#: rml:som_polissa_condicions_generals/report/components/gurb/acord_repartiment.mako:15
+msgid "AMB excedents acollits a compensació simplificada"
+msgstr ""
+
+#: rml:som_polissa_condicions_generals/report/components/gurb/acord_repartiment.mako:18
+msgid "AMB excedents no acollits a compensació simplificada"
+msgstr ""
+
+#: rml:som_polissa_condicions_generals/report/components/gurb/acord_repartiment.mako:21
+msgid "Codi autoconsum (CAU):"
+msgstr ""
+
+#: rml:som_polissa_condicions_generals/report/components/gurb/acord_repartiment.mako:27
+msgid "<b>Productora Associada</b> (titular de la instal·lació de generació)"
+msgstr ""
+
+#: rml:som_polissa_condicions_generals/report/components/gurb/acord_repartiment.mako:30
+#: rml:som_polissa_condicions_generals/report/components/gurb/acord_repartiment.mako:70
+#: rml:som_polissa_condicions_generals/report/components/gurb/acord_repartiment.mako:174
+#: rml:som_polissa_condicions_generals/report/components/gurb/acord_repartiment.mako:214
+msgid "NIF"
+msgstr ""
+
+#: rml:som_polissa_condicions_generals/report/components/gurb/acord_repartiment.mako:33
+#: rml:som_polissa_condicions_generals/report/components/gurb/acord_repartiment.mako:177
+msgid "CIL"
+msgstr ""
+
+#: rml:som_polissa_condicions_generals/report/components/gurb/acord_repartiment.mako:36
+msgid "Coefiecient (α)"
+msgstr ""
+
+#: rml:som_polissa_condicions_generals/report/components/gurb/acord_repartiment.mako:67
+msgid "<b>Consumidora Associada</b> (titular del subministrament)"
+msgstr ""
+
+#: rml:som_polissa_condicions_generals/report/components/gurb/acord_repartiment.mako:73
+#: rml:som_polissa_condicions_generals/report/components/gurb/acord_repartiment.mako:217
+msgid "CUPS"
+msgstr ""
+
+#: rml:som_polissa_condicions_generals/report/components/gurb/acord_repartiment.mako:76
+msgid "Coef. de repartiment (β)"
+msgstr ""
+
+#: rml:som_polissa_condicions_generals/report/components/gurb/acord_repartiment.mako:104
+msgid "Amb la signatura d'aquest acord:"
+msgstr ""
+
+#: rml:som_polissa_condicions_generals/report/components/gurb/acord_repartiment.mako:107
+msgid ""
+"Les persones consumidores ens acollim voluntàriament al mecanisme de "
+"compensació simplificada entre els dèficits de consum de cada una i la "
+"totalitat dels excedents de la instal·lació d'autoconsum. La generació "
+"elèctrica neta es repartirà d'acord amb els coeficients de repartiment "
+"(β) indicats, tal com estableix el Reial decret 244/2019, de 5 d'abril. "
+msgstr ""
+
+#: rml:som_polissa_condicions_generals/report/components/gurb/acord_repartiment.mako:110
+msgid ""
+"Les persones consumidores manifesten que SOM ENERGIA, SCCL, actua com a "
+"gestora i titular dels drets d'explotació propis de la Instal·lació, "
+"legalitzats en règim d'autoconsum col·lectiu amb excedents. Especialment "
+"en el cas d'estar acollides a la modalitat d'autoconsum amb excedents "
+"sense compensació simplificada, les Parts assumeixen i entenen que "
+"l’energia produïda per la Instal·lació que, per falta de consum a horari "
+"suficient del CUPS associat no pot ser considerada energia horària "
+"autoconsumida, correspon en exclusiva a la titular de la Instal·lació, "
+"tant la seva propietat com la seva valoració, formes d'aprofitament i en "
+"general qualsevol altre aspecte relatiu a aquesta energia."
+msgstr ""
+
+#: rml:som_polissa_condicions_generals/report/components/gurb/acord_repartiment.mako:113
+msgid ""
+"Totes les parts ens obliguem a notificar aquest acord de repartiment a la"
+" companyia comercialitzadora amb la qual tenim contractat el "
+"subministrament elèctric, amb la instrucció de dur a terme tots els "
+"tràmits necessaris relacionats amb l’activació de l’autoconsum col·lectiu"
+" i l’aplicació del present acord de repartiment, en particular el "
+"mecanisme de compensació simplificada dels excedents de la instal·lació "
+"d'autoconsum a la qual ens associem i l'inici del mecanisme de "
+"compensació en el següent període de facturació des de la recepció "
+"d'aquest acord en els termes previstos al Reial decret 244/2019 i la "
+"normativa que el desenvolupa. "
+msgstr ""
+
+#: rml:som_polissa_condicions_generals/report/components/gurb/acord_repartiment.mako:116
+msgid ""
+"La productora associada es compromet a informar les consumidores, "
+"directament o a través del gestor d’aquest autoconsum col·lectiu (SOM "
+"ENERGIA, SCCL), de qualsevol incidència que afecti la instal·lació."
+msgstr ""
+
+#: rml:som_polissa_condicions_generals/report/components/gurb/acord_repartiment.mako:119
+msgid ""
+"Totes les parts, tant la productora associada com consumidores, "
+"s'obliguen a mantenir absoluta confidencialitat sobre les dades personals"
+" a les quals tenen accés amb motiu de la signatura d'aquest acord de "
+"repartiment."
+msgstr ""
+
+#: rml:som_polissa_condicions_generals/report/components/gurb/acord_repartiment.mako:122
+msgid ""
+"Totes les parts, tant la productora associada com consumidores, accepten "
+"expressament la cessió de les dades personals recollides en aquest "
+"document a la resta de participants, a les seves respectives "
+"comercialitzadores, a la distribuïdora propietària de la xarxa a la qual "
+"es connecten, a les autoritats competents, a l'empresa instal·ladora o "
+"mantenidora de la instal·lació associada i a Som Energia, SCCL, en tant "
+"que gestora de la instal·lació associada, i amb la sola finalitat de "
+"gestionar i tramitar l’aplicació del present acord de repartiment i de "
+"l'autoconsum col·lectiu al qual fa referència."
+msgstr ""
+
+#: rml:som_polissa_condicions_generals/report/components/gurb/acord_repartiment.mako:125
+msgid ""
+"Totes les parts queden informades que el responsable del tractament de "
+"les dades personals objecte de la cessió és Som Energia, SCCL, en tant "
+"que actua com a representant de l’autoconsum col·lectiu, amb la finalitat"
+" de gestionar i tramitar l’aplicació del present acord de repartiment i "
+"de l'autoconsum col·lectiu al qual fa referència. Per tant, tret de "
+"l'obligada cessió indicada, les dades no seran cedides, excepte en els "
+"supòsits legalment exigits, i només es conservaran mentre el titular de "
+"les dades estigui associat a l'autoconsum col·lectiu i, un cop "
+"finalitzada aquesta pertinença, dins dels terminis legals previstos."
+msgstr ""
+
+#: rml:som_polissa_condicions_generals/report/components/gurb/acord_repartiment.mako:128
+msgid ""
+"Es pot retirar el consentiment en qualsevol moment i exercir el dret "
+"d'accés, rectificació, supressió, portabilitat, limitació i oposició "
+"dirigint-se a somenergia@delegado-datos.com (delegat de protecció de "
+"dades). En cas de divergències, es pot presentar una reclamació davant "
+"l'Agència de Protecció de Dades (www.aepd.es)."
+msgstr ""
+
+#: rml:som_polissa_condicions_generals/report/components/gurb/acord_repartiment.mako:133
+msgid "Les CONSUMIDORES associades:"
+msgstr ""
+
+#: rml:som_polissa_condicions_generals/report/components/gurb/acord_repartiment.mako:138
+#: rml:som_polissa_condicions_generals/report/components/gurb/acord_repartiment.mako:282
+msgid "La PRODUCTORA associada:"
+msgstr ""
+
+#: rml:som_polissa_condicions_generals/report/components/gurb/acord_repartiment.mako:153
+msgid ""
+"ACUERDO DE REPARTO DE ENERGÍA EN AUTOCONSUMO COLECTIVO CON EXCEDENTES Y "
+"COMPENSACIÓN"
+msgstr ""
+
+#: rml:som_polissa_condicions_generals/report/components/gurb/acord_repartiment.mako:156
+msgid ""
+"En aplicación del Real Decreto 244/2019, de 5 de abril, los siguientes "
+"consumidores acordamos asociarnos en una instalación de autoconsumo "
+"colectivo de energía eléctrica con las siguientes características:"
+msgstr ""
+
+#: rml:som_polissa_condicions_generals/report/components/gurb/acord_repartiment.mako:159
+msgid "CON excedentes acogidos a compensación simplificada"
+msgstr ""
+
+#: rml:som_polissa_condicions_generals/report/components/gurb/acord_repartiment.mako:162
+msgid "CON excedentes no acogidos a compensación simplificada"
+msgstr ""
+
+#: rml:som_polissa_condicions_generals/report/components/gurb/acord_repartiment.mako:165
+msgid "Código de autoconsumo (CAU):"
+msgstr ""
+
+#: rml:som_polissa_condicions_generals/report/components/gurb/acord_repartiment.mako:171
+msgid "<b>Productora asociada</b> (titular de la instalación de generación)"
+msgstr ""
+
+#: rml:som_polissa_condicions_generals/report/components/gurb/acord_repartiment.mako:180
+msgid "Coefieciente (α)"
+msgstr ""
+
+#: rml:som_polissa_condicions_generals/report/components/gurb/acord_repartiment.mako:211
+msgid "<b>Consumidora asociada</b> (titular del suministro)"
+msgstr ""
+
+#: rml:som_polissa_condicions_generals/report/components/gurb/acord_repartiment.mako:220
+msgid "Coeficiente de Reparto (ß)"
+msgstr ""
+
+#: rml:som_polissa_condicions_generals/report/components/gurb/acord_repartiment.mako:248
+msgid "Con la firma de este acuerdo:"
+msgstr ""
+
+#: rml:som_polissa_condicions_generals/report/components/gurb/acord_repartiment.mako:251
+msgid ""
+"Las personas consumidoras nos acogemos voluntariamente al mecanismo de "
+"compensación simplificada entre los déficits de consumo de cada una y la "
+"totalidad de los excedentes de la instalación de autoconsumo, la "
+"generación eléctrica neta se repartirá de acuerdo con los coeficientes de"
+" reparto (β) indicados, tal y como establece el Real Decreto 244/2019, de"
+" 5 de abril."
+msgstr ""
+
+#: rml:som_polissa_condicions_generals/report/components/gurb/acord_repartiment.mako:254
+msgid ""
+"Las personas consumidoras manifiestan que SOM ENERGIA, SCCL, actúa como "
+"gestor y titular de los derechos de explotación propios de la "
+"Instalación, legalizados en régimen de autoconsumo colectivo con "
+"excedentes. Especialmente en el caso de estar acogidas a la modalidad de "
+"autoconsumo con excedentes sin compensación simplificada, las Partes "
+"asumen y entienden que la energía producida por la Instalación que, por "
+"falta de consumo horario suficiente del CUPS asociado no puede ser "
+"considerada energía horaria autoconsumida, corresponde en exclusiva a la "
+"titular de la Instalación, tanto su propiedad como su valoración, formas "
+"de aprovechamiento y en general cualquier otro aspecto relativo a esta "
+"energía."
+msgstr ""
+
+#: rml:som_polissa_condicions_generals/report/components/gurb/acord_repartiment.mako:257
+msgid ""
+"Todas las partes nos obligamos a notificar este acuerdo de reparto a la "
+"compañía comercializadora con la que tenemos contratado el suministro "
+"eléctrico, con la instrucción de realizar todos los trámites necesarios "
+"para modificar el Contrato Técnico de Acceso a redes suscrito con la "
+"propietaria de la red, a fin de activar el autoconsumo colectivo y "
+"aplicar del presente acuerdo de reparto, en particular el mecanismo de "
+"compensación simplificada de los excedentes de la instalación de "
+"autoconsumo a la que nos asociamos y el inicio del mecanismo de "
+"compensación en el siguiente periodo de facturación desde la recepción de"
+" este acuerdo, en los términos previstos en el Real Decreto 244/2019 y la"
+" normativa que lo desarrolla."
+msgstr ""
+
+#: rml:som_polissa_condicions_generals/report/components/gurb/acord_repartiment.mako:260
+msgid ""
+"La productora asociada se compromete a informar a las consumidoras, "
+"directamente o a través del gestor de este autoconsumo colectivo (SOM "
+"ENERGIA, SCCL), de cualquier incidencia que afecte a la instalación."
+msgstr ""
+
+#: rml:som_polissa_condicions_generals/report/components/gurb/acord_repartiment.mako:263
+msgid ""
+"Todas las partes, tanto productora asociada como consumidoras, se obligan"
+" a mantener absoluta confidencialidad sobre los datos personales a los "
+"que tienen acceso con motivo de la firma de este acuerdo de reparto."
+msgstr ""
+
+#: rml:som_polissa_condicions_generals/report/components/gurb/acord_repartiment.mako:266
+msgid ""
+"Todas las partes, tanto Productora Asociada como Consumidoras, aceptan "
+"expresamente la cesión de los datos personales recogidos en este "
+"documento al resto de participantes, a sus respectivas comercializadoras,"
+" a la distribuidora propietaria de la red a la que se conectan, a las "
+"autoridades competentes, a la empresa instaladora o mantenedora de la "
+"instalación asociada y a Som Energia, SCCL, como gestora de la "
+"instalación asociada, con la sola finalidad de gestionar y tramitar la "
+"aplicación del presente acuerdo de reparto y del autoconsumo colectivo al"
+" que se refiere."
+msgstr ""
+
+#: rml:som_polissa_condicions_generals/report/components/gurb/acord_repartiment.mako:269
+msgid ""
+"Todas las partes quedan informadas de que el responsable del tratamiento "
+"de los datos personales objeto de la cesión es Som Energia, SCCL, en "
+"cuanto que actúa como representante del autoconsumo colectivo, con el fin"
+" de gestionar y tramitar la aplicación del presente acuerdo de reparto y "
+"del autoconsumo colectivo al que hace referencia. Por lo tanto, salvo la "
+"obligada cesión indicada, los datos no serán cedidos, excepto en los "
+"supuestos legalmente exigidos, y solo se conservarán mientras el titular "
+"de los datos esté asociado al autoconsumo colectivo y, una vez finalizada"
+" esta pertenencia, dentro de los plazos legales previstos."
+msgstr ""
+
+#: rml:som_polissa_condicions_generals/report/components/gurb/acord_repartiment.mako:272
+msgid ""
+"Se puede retirar el consentimiento en cualquier momento y ejercer el "
+"derecho de acceso, rectificación, supresión, portabilidad, limitación y "
+"oposición dirigiéndose a somenergia@delegado-datos.com (delegado de "
+"protección de datos). En caso de divergencias, se puede presentar una "
+"reclamación ante la Agencia de Protección de Datos (www.aepd.es)."
+msgstr ""
+
+#: rml:som_polissa_condicions_generals/report/components/gurb/acord_repartiment.mako:277
+msgid ""
+"Las CONSUMIDORAS asociadas representadas por su representante SOM ENERGIA"
+" Sccl con NIF F55091367:"
 msgstr ""
 
 #: rml:som_polissa_condicions_generals/report/components/gurb/gurb.mako:3
@@ -723,4 +1140,8 @@ msgstr ""
 
 #: rml:som_polissa_condicions_generals/report/components/gurb/gurb.mako:8
 msgid "Beta contractada (%):"
+msgstr ""
+
+#: rml:som_polissa_condicions_generals/report/components/gurb/gurb.mako:9
+msgid "Beta contractada (kW):"
 msgstr ""

@@ -209,6 +209,7 @@ class ReportBackendCondicionsParticulars(ReportBackend):
         res['potencia_max'] = pol.potencia
         res['mode_facturacio'] = pol.mode_facturacio
         res['mode_facturacio_calculat'] = pol.mode_facturacio
+        res['data_renovacio'] = self._get_first_day_next_quarter()
 
         res['te_assignacio_gkwh'] = pol.te_assignacio_gkwh
 
@@ -259,7 +260,20 @@ class ReportBackendCondicionsParticulars(ReportBackend):
         if res['pricelist']:
             res['pricelist'] = res['pricelist'].id
 
+        res['te_tarifa_periodes'] = res['mode_facturacio_calculat'] == 'atr'
+
         return res
+
+    def _get_first_day_next_quarter(self):
+        today = datetime.today()
+        current_quarter = ((today.month - 1) // 3) + 1
+        if current_quarter == 4:
+            year = today.year + 1
+            month = 1
+        else:
+            year = today.year
+            month = (current_quarter * 3) + 1
+        return datetime(year, month, 1).strftime('%d/%m/%Y')
 
     def get_cups_data(self, cursor, uid, pol, context=None):
         res = {}
@@ -268,6 +282,7 @@ class ReportBackendCondicionsParticulars(ReportBackend):
         res['country'] = pol.cups.id_provincia.country_id.name
         res['name'] = pol.cups.name
         res['cnae'] = pol.cnae.name
+        res['ref_catastral'] = pol.cups.ref_catastral or ''
         res['ref_dist'] = pol.ref_dist or ''
         res['cnae_des'] = pol.cnae.descripcio
         res['distri'] = pol.cups.distribuidora_id.name

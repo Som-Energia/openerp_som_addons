@@ -1,4 +1,28 @@
-<%def name="prices_info(polissa, prices)">
+<%def name="prices_info(polissa, prices, titular)">
+    <%
+        if polissa['mode_facturacio_calculat'] == 'atr':
+            if titular['lang'] == 'ca_ES':
+                if polissa['is_business']:
+                    url_tarifes = 'https://www.somenergia.coop/ca/tarifes-llum/empresa-periodes/'
+                else:
+                    url_tarifes = 'https://www.somenergia.coop/ca/tarifes-llum/domestic-periodes/'
+            else:
+                if polissa['is_business']:
+                    url_tarifes = 'https://www.somenergia.coop/es/tarifas-luz/empresa-periodos/'
+                else:
+                    url_tarifes = 'https://www.somenergia.coop/es/tarifas-luz/domestico-periodos/'
+        else:
+            if titular['lang'] == 'ca_ES':
+                if polissa['is_business']:
+                    url_tarifes = 'https://www.somenergia.coop/ca/tarifes-llum/empresa-indexada/'
+                else:
+                    url_tarifes = 'https://www.somenergia.coop/ca/tarifes-llum/domestic-indexada/'
+            else:
+                if polissa['is_business']:
+                    url_tarifes = 'https://www.somenergia.coop/es/tarifas-luz/empresa-indexada/'
+                else:
+                    url_tarifes = 'https://www.somenergia.coop/es/tarifas-luz/domestico-indexada/'
+    %>
     <div class="styled_box">
     %for pricelist in prices['pricelists']:
         %if polissa['tarifa'] == "2.0TD":
@@ -118,7 +142,7 @@
                                 <b>${_(u"Tarifa indexada")}</b>${_(u"(2) - el preu horari (PH) es calcula d'acord amb la fórmula:")}
                             </span>
                             <br/>
-                            <span>${_(u"PH = 1,015 * [(PHM + Pc + Sc + Dsv + GdO + POsOm) (1 + Perd) + FE + F] + PTD + CA")}</span>
+                            <span>${_(u"PH = 1,015 * [(PHM + Pc + SA + Dsv + GdO + POsOm) (1 + Perd) + FE + F] + PTD + CA")}</span>
                         %if polissa['tarifa'] == "2.0TD":
                             </td>
                             </tr>
@@ -330,7 +354,7 @@
                                     <b>${_(u"Tarifa indexada")}</b>${_(u"(2) - el preu horari (PH) es calcula d'acord amb la fórmula:")}
                                 </span>
                                 <br/>
-                                <span>${_(u"PH = 1,015 * [(PHM + Pc + Sc + Dsv + GdO + POsOm) (1 + Perd) + FE + F] + PTD + CA")}</span>
+                                <span>${_(u"PH = 1,015 * [(PHM + Pc + SA + Dsv + GdO + POsOm) (1 + Perd) + FE + F] + PTD + CA")}</span>
                                 <br/>
                                 <span class="normal_font_weight">${_(u"on la franja de la cooperativa")}</span>
                                 <span>&nbsp;${("(F) = %s €/kWh</B>") % formatLang(pricelist.get('coeficient_k', prices['coeficient_k']), digits=6)}</span>
@@ -411,15 +435,33 @@
     </div>
     <div class="styled_box padding_bottom">
         <div class="center avis_impostos">
-            %if polissa['mode_facturacio_calculat'] == 'index':
-                ${_(u"Els preus del terme de potència")}
-            %else:
-                ${_(u"Tots els preus que apareixen en aquest contracte")}
-            %endif
-            ${_(u"inclouen l'impost elèctric i l'IVA (IGIC a Canàries), amb el tipus impositiu vigent actualment per a cada tipus de contracte sense perjudici de les exempcions o bonificacions que puguin ser d'aplicació.")}
-            %if polissa['te_assignacio_gkwh'] or polissa['mode_facturacio_calculat'] == 'atr':
+            %if polissa['mode_facturacio_calculat'] == 'atr':
+                ${_(u"Aquests preus inclouen l'Impost Especial sobre l'Electricitat (IEE) i l'IVA (IGIC a Canàries), sense perjudici de les exempcions o bonificacions que puguin ser aplicables.")}
                 <br/>
                 ${_(u"Els costos dels Serveis d'Ajust tenen un preu horari variable, fixat per Red Eléctrica Española (REE), no inclosos en el terme d'energia.")}
+                <br/>
+                ${_(u"Pots consultar altres conceptes que poden ser aplicables, com ara el lloguer de comptador, el recàrrec per potència demandada o el recàrrec per energia reactiva, a la ")}
+                <a href="${url_tarifes}">${_(u"pàgina de tarifes")}</a>
+                ${_(u" del nostre web, on també trobaràs més informació sobre els períodes tarifaris.")}
+                <br/>
+                <b>
+                ${_(u"Preu Serveis Ajust amb pèrdues = SA<sub>(1)</sub> x (1 + Perd<sub>(2)</sub> / 100)")}
+                </b>
+                <br/>
+                <b>(1)</b> ${_(u"SA: Costos dels Serveis d'Ajust per resoldre les restriccions tècniques del sistema carregats per Red Eléctrica (REE).")}
+                <br/>
+                <b>(2)</b> ${_(u"Perd: Coeficients de pèrdues regulades de sistema des del punt de generació al punt de consum, segons el valor publicat per REE en el moment de generar la factura.")}
+            %else:
+                %if polissa['mode_facturacio_calculat'] == 'index':
+                    ${_(u"Els preus del terme de potència")}
+                %else:
+                    ${_(u"Tots els preus que apareixen en aquest contracte")}
+                %endif
+                ${_(u"inclouen l'Impost Especial sobre l'Electricitat (IEE) i l'IVA (IGIC a Canàries), amb el tipus impositiu vigent actualment per a cada tipus de contracte sense perjudici de les exempcions o bonificacions que puguin ser d'aplicació.")}
+                <br/>
+                ${_(u"Pots consultar altres conceptes que poden ser d'aplicació, tals com, el lloguer de contador, el recàrrec per potencia demandada o el recàrrec per energia reactiva, a la pàgina de tarifes de la ")}
+                <a href="${url_tarifes}"><b>${_(u"nostra web")}</b></a>
+                ${_(u", on també trobareu més informació sobre els períodes tarifaris.")}
             %endif
         </div>
     </div>
