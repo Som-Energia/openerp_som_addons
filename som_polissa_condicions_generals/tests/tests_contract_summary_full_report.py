@@ -193,6 +193,7 @@ class TestGiscedataPolissaContractSummaryRoutes(testing.OOTestCase):
         self.values_obj = self.openerp.pool.get('ir.values')
         self.imd_obj = self.openerp.pool.get('ir.model.data')
         self.view_obj = self.openerp.pool.get('ir.ui.view')
+        self.view_sc_obj = self.openerp.pool.get('ir.ui.view_sc')
 
     def tearDown(self):
         self.txn.stop()
@@ -250,18 +251,23 @@ class TestGiscedataPolissaContractSummaryRoutes(testing.OOTestCase):
         )
         self.assertTrue(callable(service.create))
 
-    def test_lead_combined_report_action_and_button_are_registered(self):
+    def test_lead_summary_report_service_is_registered(self):
+        service = netsvc.LocalService(
+            'report.giscedata.crm.lead.contract.summary'
+        )
+
+        self.assertEqual(
+            service._service.name,
+            'report.giscedata.crm.lead.contract.summary'
+        )
+        self.assertTrue(callable(service.create))
+
+    def test_lead_report_actions_are_registered_without_button_views(self):
         summary_report_action = self.imd_obj._get_obj(
             self.cursor,
             self.uid,
             'som_polissa_condicions_generals',
             'lead_contract_summary_report'
-        )
-        summary_button_view = self.imd_obj._get_obj(
-            self.cursor,
-            self.uid,
-            'som_polissa_condicions_generals',
-            'giscedata_crm_leads_contract_summary_view'
         )
         report_action = self.imd_obj._get_obj(
             self.cursor,
@@ -269,36 +275,25 @@ class TestGiscedataPolissaContractSummaryRoutes(testing.OOTestCase):
             'som_polissa_condicions_generals',
             'lead_contract_summary_full_report'
         )
-        button_view = self.imd_obj._get_obj(
-            self.cursor,
-            self.uid,
-            'som_polissa_condicions_generals',
-            'giscedata_crm_leads_contract_summary_full_view'
+        self._assert_lead_print_route(
+            summary_report_action,
+            'giscedata.crm.lead.contract.summary',
+            'Resum contracte'
         )
-        report_data = self.report_obj.read(
-            self.cursor, self.uid, report_action.id, ['model', 'report_name']
+        self._assert_lead_print_route(
+            report_action,
+            'giscedata.crm.lead.contract.summary.full',
+            'Contract Summary and Conditions'
         )
-        summary_report_data = self.report_obj.read(
-            self.cursor, self.uid, summary_report_action.id, ['report_name']
-        )
-        view_data = self.view_obj.read(
-            self.cursor, self.uid, button_view.id, ['arch']
-        )
-        summary_view_data = self.view_obj.read(
-            self.cursor, self.uid, summary_button_view.id, ['arch']
-        )
-
-        self.assertEqual(
-            summary_report_data['report_name'],
-            'giscedata.crm.lead.contract.summary'
-        )
-        self.assertIn('Imprimir resum contracte', summary_view_data['arch'])
-        self.assertEqual(report_data['model'], 'giscedata.crm.lead')
-        self.assertEqual(
-            report_data['report_name'],
-            'giscedata.crm.lead.contract.summary.full'
-        )
-        self.assertIn('Print contract summary and conditions', view_data['arch'])
+        button_view_ids = self.imd_obj.search(self.cursor, self.uid, [
+            ('module', '=', 'som_polissa_condicions_generals'),
+            ('model', '=', 'ir.ui.view'),
+            ('name', 'in', [
+                'giscedata_crm_leads_contract_summary_view',
+                'giscedata_crm_leads_contract_summary_full_view',
+            ]),
+        ])
+        self.assertEqual(button_view_ids, [])
 
     def test_contract_summary_print_records_keep_both_routes(self):
         self._assert_summary_print_route()
@@ -320,7 +315,41 @@ class TestGiscedataPolissaContractSummaryRoutes(testing.OOTestCase):
             ),
         ])
 
-    def test_lead_migration_loads_only_new_lead_records(self):
+    def test_summary_migration_loads_report_actions_without_button_view(self):
+        migration = self._load_summary_migration()
+        pool = mock.Mock()
+
+        with mock.patch.object(migration, 'load_data') as load_data:
+            with mock.patch.object(
+                migration.pooler, 'get_pool', return_value=pool
+            ):
+                migration.up(self.cursor, '5.0.25.6')
+
+        self.assertEqual(load_data.call_args_list, [
+            mock.call(
+                self.cursor,
+                'som_polissa_condicions_generals',
+                'report/giscedata_polissa_contract_summary_report.xml',
+                idref=None,
+                mode='update'
+            ),
+            mock.call(
+                self.cursor,
+                'som_polissa_condicions_generals',
+                'report/giscedata_crm_lead_contract_summary_report.xml',
+                idref=None,
+                mode='update'
+            ),
+            mock.call(
+                self.cursor,
+                'som_polissa_condicions_generals',
+                'security/ir.model.access.csv',
+                idref=None,
+                mode='update'
+            ),
+        ])
+
+    def test_lead_migration_loads_only_combined_report_action(self):
         migration = self._load_lead_migration()
 
         with mock.patch.object(migration, 'load_data') as load_data:
@@ -334,33 +363,17 @@ class TestGiscedataPolissaContractSummaryRoutes(testing.OOTestCase):
                 idref=None,
                 mode='update'
             ),
-            mock.call(
-                self.cursor,
-                'som_polissa_condicions_generals',
-                'views/giscedata_crm_lead_contract_summary_full_view.xml',
-                idref=None,
-                mode='update'
-            ),
         ])
 
-    def test_lead_migration_creates_additive_route_without_replacing_summary(self):
+    def test_lead_migration_preserves_routes_and_neutralizes_button_views(self):
         summary_report_action = self.imd_obj._get_obj(
             self.cursor,
             self.uid,
             'som_polissa_condicions_generals',
             'lead_contract_summary_report'
         )
-        summary_button_view = self.imd_obj._get_obj(
-            self.cursor,
-            self.uid,
-            'som_polissa_condicions_generals',
-            'giscedata_crm_leads_contract_summary_view'
-        )
         summary_report_data = self.report_obj.read(
             self.cursor, self.uid, summary_report_action.id, ['report_name']
-        )
-        summary_view_data = self.view_obj.read(
-            self.cursor, self.uid, summary_button_view.id, ['arch']
         )
         report_action = self.imd_obj._get_obj(
             self.cursor,
@@ -368,22 +381,12 @@ class TestGiscedataPolissaContractSummaryRoutes(testing.OOTestCase):
             'som_polissa_condicions_generals',
             'lead_contract_summary_full_report'
         )
-        button_view = self.imd_obj._get_obj(
-            self.cursor,
-            self.uid,
-            'som_polissa_condicions_generals',
-            'giscedata_crm_leads_contract_summary_full_view'
+        report_action_data = self.report_obj.read(
+            self.cursor, self.uid, report_action.id, ['report_name']
         )
-        imd_ids = self.imd_obj.search(self.cursor, self.uid, [
-            ('module', '=', 'som_polissa_condicions_generals'),
-            ('name', 'in', [
-                'lead_contract_summary_full_report',
-                'giscedata_crm_leads_contract_summary_full_view',
-            ]),
-        ])
-        self.report_obj.unlink(self.cursor, self.uid, [report_action.id])
-        self.view_obj.unlink(self.cursor, self.uid, [button_view.id])
-        self.imd_obj.unlink(self.cursor, self.uid, imd_ids)
+        stale_view_ids, child_view_ids, shortcut_ids, unrelated_view_id = (
+            self._create_stale_button_views()
+        )
 
         migration = self._load_lead_migration()
         migration.up(self.cursor, '5.0.25.8')
@@ -396,10 +399,10 @@ class TestGiscedataPolissaContractSummaryRoutes(testing.OOTestCase):
             summary_report_data
         )
         self.assertEqual(
-            self.view_obj.read(
-                self.cursor, self.uid, summary_button_view.id, ['arch']
+            self.report_obj.read(
+                self.cursor, self.uid, report_action.id, ['report_name']
             ),
-            summary_view_data
+            report_action_data
         )
         restored_report_action = self.imd_obj._get_obj(
             self.cursor,
@@ -407,20 +410,45 @@ class TestGiscedataPolissaContractSummaryRoutes(testing.OOTestCase):
             'som_polissa_condicions_generals',
             'lead_contract_summary_full_report'
         )
-        restored_button_view = self.imd_obj._get_obj(
-            self.cursor,
-            self.uid,
-            'som_polissa_condicions_generals',
-            'giscedata_crm_leads_contract_summary_full_view'
-        )
         self.assertEqual(
             restored_report_action.report_name,
             'giscedata.crm.lead.contract.summary.full'
         )
-        self.assertEqual(
-            restored_button_view.name,
-            'giscedata.crm.lead.contract.summary.full.button'
+        self._assert_lead_print_route(
+            summary_report_action,
+            'giscedata.crm.lead.contract.summary',
+            'Resum contracte'
         )
+        self._assert_lead_print_route(
+            report_action,
+            'giscedata.crm.lead.contract.summary.full',
+            'Contract Summary and Conditions'
+        )
+        button_view_ids = self.imd_obj.search(self.cursor, self.uid, [
+            ('module', '=', 'som_polissa_condicions_generals'),
+            ('model', '=', 'ir.ui.view'),
+            ('name', 'in', [
+                'giscedata_crm_leads_contract_summary_view',
+                'giscedata_crm_leads_contract_summary_full_view',
+            ]),
+        ])
+        self.assertEqual(sorted(self.view_obj.search(self.cursor, self.uid, [
+            ('id', 'in', stale_view_ids),
+        ])), sorted(stale_view_ids))
+        self.assertEqual(len(button_view_ids), 2)
+        stale_views = self.view_obj.read(
+            self.cursor, self.uid, stale_view_ids, ['arch']
+        )
+        self.assertTrue(all(view['arch'] == '<data/>' for view in stale_views))
+        self.assertEqual(sorted(self.view_obj.search(self.cursor, self.uid, [
+            ('id', 'in', child_view_ids),
+        ])), sorted(child_view_ids))
+        self.assertEqual(self.view_obj.search(self.cursor, self.uid, [
+            ('id', '=', unrelated_view_id),
+        ]), [unrelated_view_id])
+        self.assertEqual(sorted(self.view_sc_obj.search(self.cursor, self.uid, [
+            ('view_id', 'in', stale_view_ids),
+        ])), sorted(shortcut_ids))
 
     def test_migration_creates_combined_route_without_replacing_summary(self):
         summary_action = self.imd_obj._get_obj(
