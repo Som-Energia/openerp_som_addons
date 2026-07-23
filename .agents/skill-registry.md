@@ -23,6 +23,7 @@ See `_shared/skill-resolver.md` for the full resolution protocol.
 | Quan necessites crear un script de migració, modificar el model, o actualitzar un mòdul a producció | erp-migration | .agents/skills/erp-migration/SKILL.md |
 | Quan necessites afegir casos de test/demo XML en un mòdul OpenERP | erp-demo-testcase | .agents/skills/erp-demo-testcase/SKILL.md |
 | Quan necessites fer triage d'incidències de Sentry, "analitzar sentry", "triar incidents" | sentry-triage | .agents/skills/sentry-triage/SKILL.md |
+| Quan necessites actualitzar un report legal o contractual `.mako` a partir d'un `docx` o `md` | update-contract-report | .agents/skills/update-contract-report/SKILL.md |
 
 ## Compact Rules
 
@@ -77,6 +78,13 @@ See `_shared/skill-resolver.md` for the full resolution protocol.
 - Labels obligatoris: bug + autotask
 - Prohibit: Noms, emails, telèfons, CUPS, dades personals
 - branca PR: developer (gisce/erp) o main (openerp_som_addons), MAI rolling_erp01
+
+### update-contract-report
+- La font de veritat (`docx` o `md`) l'ha de confirmar l'usuari; no barrejar fonts sense confirmar
+- Ignorar colors, highlights i marques editorials del document font; només conservar contingut i estructura
+- Tocar només plantilles `.mako`/HTML del report, no backend Python o lògica de render, tret que l'usuari ho demani explícitament
+- Preservar fórmules, subíndexs/superíndexs, notes al peu i enllaços en HTML net
+- Si existeixen versions CA i ES, revisar consistència de contingut entre idiomes
 
 ## Project Conventions
 

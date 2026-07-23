@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+from __future__ import absolute_import
 from destral import testing
 from destral.transaction import Transaction
 
@@ -118,6 +119,9 @@ class Tests_FacturacioFacturaReportV2_base(testing.OOTestCase):
         fact.partner_id.write({'lang': 'ca_ES'})
         fact.write({'date_due': '2024-12-31'})
         fact.polissa_id.titular.write({'vat': 'ES11111111H'})
+        fact.company_id.write({
+            'partner_address_id': fact.company_id.partner_id.address[0].id,
+        })
 
 
 class Tests_FacturacioFacturaReportV2(Tests_FacturacioFacturaReportV2_base):

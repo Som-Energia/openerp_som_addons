@@ -71,6 +71,12 @@ Les skills següents estan disponibles al projecte i s'han d'utilitzar quan corr
 |-------|-----------|----------|
 | `sentry-triage` | Fer triage d'incidències de Sentry | Veure [.agents/skills/sentry-triage/SKILL.md](.agents/skills/sentry-triage/SKILL.md) |
 
+### Reports legals i contractuals
+
+| Skill | Quan usar | Com usar |
+|-------|-----------|----------|
+| `update-contract-report` | Actualitzar un report `.mako` legal/contractual a partir d'un `docx` o `md` | Veure [.agents/skills/update-contract-report/SKILL.md](.agents/skills/update-contract-report/SKILL.md) |
+
 **Requisits per executar tests:**
 1. Docker: PostgreSQL, MongoDB, Redis corrent
 2. Virtualenv activat — nom habitual: `erp` (`pyenv activate erp` o `workon erp`)
