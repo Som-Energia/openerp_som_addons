@@ -4,6 +4,7 @@ from report_puppeteer.report_puppeteer import PuppeteerParser
 
 class ReportBackendCondicionsParticularsIgnoreModcon(ReportBackend):
     """Is the same report, but ignores modcons"""
+    _source_model = "giscedata.polissa"
     _name = "report.backend.condicions.particulars.ignore.modcon"
 
     @report_browsify
