@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<openerp>
+    <data>
+        <report id="lead_contract_summary_full_report"
+                name="giscedata.crm.lead.contract.summary.full"
+                string="Contract Summary and Conditions"
+                model="giscedata.crm.lead"
+                auto="False"
+                multi="False"
+        />
+    </data>
+</openerp>

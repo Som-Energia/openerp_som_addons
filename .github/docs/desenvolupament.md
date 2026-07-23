@@ -21,8 +21,10 @@ Seguir [.github/docs/estil.md](estil.md) i [.github/docs/evitar.md](evitar.md).
 Els missatges de commit segueixen el format:
 
 ```
-<emoji> (<modul o context>) Cosa que fa el commit
+<emoji> <description>
 ```
+
+La descripció ha d'estar en anglès, en imperatiu, i no ha d'incloure `feat:`, `fix:` ni cap altre type textual.
 
 Emojis disponibles (basats en [gitmoji](https://gitmoji.dev/)):
 
@@ -51,10 +53,10 @@ Emojis disponibles (basats en [gitmoji](https://gitmoji.dev/)):
 
 Exemples:
 ```
-🐛 (polissa) Fix error en càlcul de factura
-✨ (gurb) Afegir camp assigned_betas_kw al CAU
-♻️ (switching) Refactoritzar _is_m1_closable
-✅ (gurb) Afegir test per a totals de betes
+🐛 fix invoice calculation error
+✨ add assigned_betas_kw field to CAU
+♻️ refactor _is_m1_closable flow
+✅ add tests for beta totals
 ```
 
 ---
@@ -86,6 +88,27 @@ L'entorn ERP depén de diversos repositoris clonats al mateix nivell que aquest 
 - `Som-Energia/somenergia-generationkwh`
 - `gisce/oorq` (cua de jobs asíncrons)
 - `poweremail`, `openerp-sentry`, `ws_transactions`, `ir_attachment_mongodb`, `mongodb_backend`
+
+---
+
+## Regla crítica sobre `__terp__.py`
+
+Abans d'afegir una dependència nova a `depends`, comprovar si el mòdul destí ja depèn del mòdul actual.
+
+**No es poden introduir dependències circulars entre addons.**
+
+Exemple de què **no** s'ha de fer:
+
+- `som_polissa_condicions_generals` depèn de `som_leads_polissa`
+- afegir després `som_polissa_condicions_generals` a `depends` de `som_leads_polissa`
+
+Aquest patró trenca la càrrega de mòduls, pot impedir arrencar el servidor i també pot bloquejar l'execució de tests.
+
+Si falta wiring entre dos mòduls que ja tenen una direcció de dependència definida, cal resoldre-ho d'una d'aquestes maneres:
+
+- moure el botó / report / vista al mòdul que ja és a la part alta de la dependència
+- crear un mòdul pont específic
+- desacoblar l'accés mitjançant herència o extensió, però **sense** invertir la dependència
 
 ---
 

@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import
-
+import base64
 from datetime import datetime
 from time import sleep
+import pooler
 from osv import fields, osv
 import netsvc
 from oorq.decorators import job
@@ -84,6 +85,116 @@ class GiscedataCrmLead(osv.OsvInherits):
                     preus_provisional_potencia
 
         return super(GiscedataCrmLead, self).contract_pdf(cursor, uid, ids, context=context)
+
+    def contract_summary_pdf(self, cursor, uid, ids, context=None):
+        if context is None:
+            context = {}
+        if not isinstance(ids, (list, tuple)):
+            ids = [ids]
+
+        tmp_cursor = pooler.get_db(cursor.dbname).cursor()
+        try:
+            lead = self.browse(tmp_cursor, uid, ids[0], context=context)
+            summary_context = context.copy()
+            summary_context.update({
+                "lead": True,
+                "lang": lead.lang,
+                "in_rollback_transaction": True,
+                "summary_contract": True,
+            })
+
+            self.force_validation(tmp_cursor, uid, ids, context=summary_context)
+            self.create_entities(tmp_cursor, uid, lead.id, context=summary_context)
+
+            lead = self.browse(tmp_cursor, uid, lead.id, context=summary_context)
+            polissa_id = lead.polissa_id and lead.polissa_id.id or False
+            if not polissa_id:
+                raise osv.except_osv(
+                    "Error",
+                    "No temporary contract was generated for the lead contract summary.",
+                )
+
+            service = netsvc.LocalService('report.giscedata.polissa.contract.summary')
+            result, _doc_format = service.create(
+                tmp_cursor, uid, [polissa_id], {}, summary_context
+            )
+            encoded = base64.b64encode(result)
+            return {
+                'contract': encoded,
+                'contract_summary': encoded,
+            }
+        finally:
+            tmp_cursor.rollback()
+            tmp_cursor.close()
+
+    def contract_summary_full_pdf(self, cursor, uid, ids, context=None, datas=None):
+        if context is None:
+            context = {}
+        if datas is None:
+            datas = {}
+        if not isinstance(ids, (list, tuple)):
+            ids = [ids]
+
+        tmp_cursor = pooler.get_db(cursor.dbname).cursor()
+        try:
+            lead = self.browse(tmp_cursor, uid, ids[0], context=context)
+            summary_context = context.copy()
+            summary_context.update({
+                "lead": True,
+                "lang": lead.lang,
+                "in_rollback_transaction": True,
+                "summary_contract": True,
+            })
+
+            preus_provisional_energia = {
+                "P1": lead.preu_fix_energia_p1,
+                "P2": lead.preu_fix_energia_p2,
+                "P3": lead.preu_fix_energia_p3,
+                "P4": lead.preu_fix_energia_p4,
+                "P5": lead.preu_fix_energia_p5,
+                "P6": lead.preu_fix_energia_p6,
+            }
+            if lead.tipus_tarifa_lead == 'tarifa_provisional':
+                summary_context["tarifa_provisional"] = {
+                    "preus_provisional_energia": preus_provisional_energia
+                }
+                if lead.set_custom_potencia:
+                    preus_provisional_potencia = {
+                        "P1": lead.preu_fix_potencia_p1,
+                        "P2": lead.preu_fix_potencia_p2,
+                        "P3": lead.preu_fix_potencia_p3,
+                        "P4": lead.preu_fix_potencia_p4,
+                        "P5": lead.preu_fix_potencia_p5,
+                        "P6": lead.preu_fix_potencia_p6,
+                    }
+                    summary_context["tarifa_provisional"]["preus_provisional_potencia"] = \
+                        preus_provisional_potencia
+
+            self.force_validation(tmp_cursor, uid, ids, context=summary_context)
+            self.create_entities(tmp_cursor, uid, lead.id, context=summary_context)
+
+            lead = self.browse(tmp_cursor, uid, lead.id, context=summary_context)
+            polissa_id = lead.polissa_id and lead.polissa_id.id or False
+            if not polissa_id:
+                raise osv.except_osv(
+                    "Error",
+                    "No temporary contract was generated for the lead contract summary.",
+                )
+
+            service = netsvc.LocalService(
+                'report.giscedata.polissa.contract.summary.full'
+            )
+            result, _doc_format = service.create(
+                tmp_cursor, uid, [polissa_id], datas, summary_context
+            )
+            encoded = base64.b64encode(result)
+            return {
+                'contract': encoded,
+                'contract_summary_full': encoded,
+            }
+        finally:
+            tmp_cursor.rollback()
+            tmp_cursor.close()
 
     def _check_and_get_mandatory_fields(
         self, cursor, uid, crml_id, mandatory_fields=[], other_fields=[], context=None

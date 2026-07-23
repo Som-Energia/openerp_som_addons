@@ -101,11 +101,14 @@ pip install "Pympler<0.8"
 pip install "Flask-RESTful<0.4"
 pip install "Flask-Login<0.5"
 pip install "Flask-Cors<3"
+pip install "Flask-SSE<1.0"
+pip install "msgpack-python<1.0"
 pip install "Cerberus<1.3"
 pip install "cachelib<0.2"
 pip install "Mako<1.2"
 pip install "pypdftk<0.5"
 pip install "paramiko<2.8"
+pip install "pudb==2019.2"
 
 if [ "$PYTHON_VERSION" != "2.7" ]; then
 	pip install somutils

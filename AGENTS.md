@@ -13,8 +13,8 @@ Aquest fitxer conté les instruccions i convencions que qualsevol agent IA ha de
 
 ```
 openerp_som_addons/
-├── som_* /              # Mòduls propis de Som Energia
-├── giscedata_* /        # Mòduls de facturació
+├── som_* /              # Mòduls propis de Som Energia i herència d'alguns de gisce/erp
+├── giscedata_* /        # Mòduls de GISCE que fem herència
 ├── account_* /          # Mòduls comptables
 └── .github/
     ├── workflows/       # CI (schedule_tests_*.yml)
@@ -53,8 +53,8 @@ Les skills següents estan disponibles al projecte i s'han d'utilitzar quan corr
 - `DOCS_<desc>` - Documentació
 
 **Format de commit:**
-- Emoji + type en anglès: `✨ feat: add user auth`
-- Tipus: feat, fix, refactor, perf, test, docs, style, chore
+- Només emoji + descripció en anglès: `✨ add user auth`
+- No afegir `feat:`, `fix:` ni cap altre type textual
 
 ### Testing
 
