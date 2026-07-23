@@ -1,24 +1,33 @@
+from report_backend.report_backend import ReportBackend, report_browsify
 from report_puppeteer.report_puppeteer import PuppeteerParser
-from .report_backend_ccpp import ReportBackendCondicionsParticulars
 
 
-class ReportBackendCondicionsParticularsIgnoreModcon(ReportBackendCondicionsParticulars):
+class ReportBackendCondicionsParticularsIgnoreModcon(ReportBackend):
     """Is the same report, but ignores modcons"""
     _name = "report.backend.condicions.particulars.ignore.modcon"
+
+    @report_browsify
+    def get_data(self, cursor, uid, pol, context=None):
+        context = context or {}
+        context.update({'ignore_modcon_pricelist': True})
+
+        return self.pool.get(
+            'report.backend.condicions.particulars'
+        ).get_data(cursor, uid, pol, context=context)
 
     def get_polissa_data(self, cursor, uid, pol, context=None):
         context = context or {}
         context.update({'ignore_modcon_pricelist': True})
-        res = super(ReportBackendCondicionsParticularsIgnoreModcon, self).get_polissa_data(
-            cursor, uid, pol, context=context)
-        return res
+        return self.pool.get(
+            'report.backend.condicions.particulars'
+        ).get_polissa_data(cursor, uid, pol, context=context)
 
     def get_prices_data(self, cursor, uid, pol, context=None):
         context = context or {}
         context.update({'ignore_modcon_pricelist': True})
-        res = super(ReportBackendCondicionsParticularsIgnoreModcon, self).get_prices_data(
-            cursor, uid, pol, context=context)
-        return res
+        return self.pool.get(
+            'report.backend.condicions.particulars'
+        ).get_prices_data(cursor, uid, pol, context=context)
 
 
 ReportBackendCondicionsParticularsIgnoreModcon()
