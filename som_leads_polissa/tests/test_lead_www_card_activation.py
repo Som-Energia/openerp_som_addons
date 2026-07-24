@@ -157,6 +157,7 @@ class TestLeadWwwCardActivation(BaseSomLeadWwwTest):
         values, partner_id = self._get_existing_member_values()
         values["payment_type"] = "tpv"
         values["billing_payment_method"] = "card_recurrent"
+        values.pop("iban")
 
         existing_card_id = card_o.create(
             self.cursor,
