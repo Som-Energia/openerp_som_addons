@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+from __future__ import absolute_import
+
 import re
 
 from osv import osv, fields
@@ -34,14 +36,6 @@ class ResPartnerCreditCard(osv.osv):
             _check_expiry_date,
             "La data de caducitat ha de tenir format MM/YY.",
             ["expiry_date"],
-        )
-    ]
-
-    _sql_constraints = [
-        (
-            "res_partner_creditcard_token_unique",
-            "unique(token)",
-            "Ja existeix una targeta amb aquest token.",
         )
     ]
 
