@@ -55,7 +55,8 @@ class TestLeadWwwCreation(BaseSomLeadWwwTest):
         result = www_lead_o.create_lead(self.cursor, self.uid, self._basic_values)
         self.assertFalse(result["error"])
 
-        www_lead_o.activate_lead(self.cursor, self.uid, result["lead_id"], context={"sync": True})
+        www_lead_o.activate_lead_sync(
+            self.cursor, self.uid, result["lead_id"], context={"sync": True})
 
         lead = lead_o.browse(self.cursor, self.uid, result["lead_id"])
         # Check that the name is correctly set
@@ -152,7 +153,7 @@ class TestLeadWwwCreation(BaseSomLeadWwwTest):
         values["contract_info"]["indexed_contract_terms_accepted"] = True
 
         result = www_lead_o.create_lead(self.cursor, self.uid, values)
-        www_lead_o.activate_lead(self.cursor, self.uid, result["lead_id"], context={"sync": True})
+        www_lead_o.activate_lead_sync(self.cursor, self.uid, result["lead_id"])
 
         lead = lead_o.browse(self.cursor, self.uid, result["lead_id"])
 
@@ -179,7 +180,7 @@ class TestLeadWwwCreation(BaseSomLeadWwwTest):
         result = www_lead_o.create_lead(self.cursor, self.uid, values)
         lead = lead_o.browse(self.cursor, self.uid, result["lead_id"])
         self.assertEqual(lead.is_new_contact, True)
-        www_lead_o.activate_lead(self.cursor, self.uid, result["lead_id"], context={"sync": True})
+        www_lead_o.activate_lead_sync(self.cursor, self.uid, result["lead_id"])
 
         lead = lead_o.browse(self.cursor, self.uid, result["lead_id"])
         # Check that the name is correctly set
@@ -214,7 +215,7 @@ class TestLeadWwwCreation(BaseSomLeadWwwTest):
         values["new_member_info"]["proxy_vat"] = existing_partner_vat
 
         result = www_lead_o.create_lead(self.cursor, self.uid, values)
-        www_lead_o.activate_lead(self.cursor, self.uid, result["lead_id"], context={"sync": True})
+        www_lead_o.activate_lead_sync(self.cursor, self.uid, result["lead_id"])
 
         lead = lead_o.browse(self.cursor, self.uid, result["lead_id"])
 
@@ -237,7 +238,7 @@ class TestLeadWwwCreation(BaseSomLeadWwwTest):
         values["contract_info"]["powers"] = ["4400", "4900", "5000", "6000", "7000", "15001"]
 
         result = www_lead_o.create_lead(self.cursor, self.uid, values)
-        www_lead_o.activate_lead(self.cursor, self.uid, result["lead_id"], context={"sync": True})
+        www_lead_o.activate_lead_sync(self.cursor, self.uid, result["lead_id"])
 
         lead = lead_o.browse(self.cursor, self.uid, result["lead_id"])
 
@@ -255,7 +256,7 @@ class TestLeadWwwCreation(BaseSomLeadWwwTest):
         values["donation"] = True
 
         result = www_lead_o.create_lead(self.cursor, self.uid, values)
-        www_lead_o.activate_lead(self.cursor, self.uid, result["lead_id"], context={"sync": True})
+        www_lead_o.activate_lead_sync(self.cursor, self.uid, result["lead_id"])
 
         lead = lead_o.browse(self.cursor, self.uid, result["lead_id"])
         self.assertIs(lead.polissa_id.donatiu, True)
@@ -271,7 +272,7 @@ class TestLeadWwwCreation(BaseSomLeadWwwTest):
         values["contract_info"]['process'] = 'C2'
 
         result = www_lead_o.create_lead(self.cursor, self.uid, values)
-        www_lead_o.activate_lead(self.cursor, self.uid, result["lead_id"], context={"sync": True})
+        www_lead_o.activate_lead_sync(self.cursor, self.uid, result["lead_id"])
 
         lead = lead_o.browse(self.cursor, self.uid, result["lead_id"])
 
@@ -310,7 +311,7 @@ class TestLeadWwwCreation(BaseSomLeadWwwTest):
         values["contract_info"]["powers"] = ["4400", "4900", "5000", "6000", "7000", "15001"]
 
         result = www_lead_o.create_lead(self.cursor, self.uid, values)
-        www_lead_o.activate_lead(self.cursor, self.uid, result["lead_id"], context={"sync": True})
+        www_lead_o.activate_lead_sync(self.cursor, self.uid, result["lead_id"])
 
         lead = lead_o.browse(self.cursor, self.uid, result["lead_id"])
 
@@ -347,7 +348,7 @@ class TestLeadWwwCreation(BaseSomLeadWwwTest):
         values["contract_info"]['process'] = 'A3'
 
         result = www_lead_o.create_lead(self.cursor, self.uid, values)
-        www_lead_o.activate_lead(self.cursor, self.uid, result["lead_id"], context={"sync": True})
+        www_lead_o.activate_lead_sync(self.cursor, self.uid, result["lead_id"])
 
         lead = lead_o.browse(self.cursor, self.uid, result["lead_id"])
 
@@ -395,7 +396,7 @@ class TestLeadWwwCreation(BaseSomLeadWwwTest):
         cfg_o.set(self.cursor, self.uid, "fp_canarias_vivienda_id", canarian_posicio_id)
 
         result = www_lead_o.create_lead(self.cursor, self.uid, values)
-        www_lead_o.activate_lead(self.cursor, self.uid, result["lead_id"], context={"sync": True})
+        www_lead_o.activate_lead_sync(self.cursor, self.uid, result["lead_id"])
 
         lead = lead_o.browse(self.cursor, self.uid, result["lead_id"])
 
@@ -426,7 +427,7 @@ class TestLeadWwwCreation(BaseSomLeadWwwTest):
         values["contract_info"]["cups_address"]["state_id"] = balears_state_id
 
         result = www_lead_o.create_lead(self.cursor, self.uid, values)
-        www_lead_o.activate_lead(self.cursor, self.uid, result["lead_id"], context={"sync": True})
+        www_lead_o.activate_lead_sync(self.cursor, self.uid, result["lead_id"])
 
         lead = lead_o.browse(self.cursor, self.uid, result["lead_id"])
 
@@ -465,7 +466,7 @@ class TestLeadWwwCreation(BaseSomLeadWwwTest):
         )[1]
 
         result = www_lead_o.create_lead(self.cursor, self.uid, values)
-        www_lead_o.activate_lead(self.cursor, self.uid, result["lead_id"], context={"sync": True})
+        www_lead_o.activate_lead_sync(self.cursor, self.uid, result["lead_id"])
 
         lead = lead_o.browse(self.cursor, self.uid, result["lead_id"])
 

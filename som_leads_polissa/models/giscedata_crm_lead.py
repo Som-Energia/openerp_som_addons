@@ -670,15 +670,6 @@ class GiscedataCrmLead(osv.OsvInherits):
         wiz_id = wiz_send_obj.create(cr, uid, params, context)
         return wiz_send_obj.send_mail(cr, uid, [wiz_id], context)
 
-    def get_lead_report(self, cursor, uid, lead_id, context=None):
-        if context is None:
-            context = {}
-        imd_obj = self.pool.get('ir.model.data')
-        report_id = imd_obj.get_object_reference(
-            cursor, uid, 'som_polissa_condicions_generals', 'lead_contract_summary_full_report'
-        )[1]
-        return report_id
-
     _columns = {
         "tipus_tarifa_lead": fields.selection(_tipus_tarifes_lead, "Tipus de tarifa del contracte"),
         "set_custom_potencia": fields.boolean("Sobreescriure preus potència"),

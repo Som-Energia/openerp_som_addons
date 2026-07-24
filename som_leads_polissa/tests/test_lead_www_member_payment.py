@@ -114,7 +114,7 @@ class TestLeadWwwMemberPayment(BaseSomLeadWwwTest):
         values["payment_type"] = "remesa"
 
         result = www_lead_o.create_lead(self.cursor, self.uid, values)
-        www_lead_o.activate_lead(self.cursor, self.uid, result["lead_id"], context={"sync": True})
+        www_lead_o.activate_lead_sync(self.cursor, self.uid, result["lead_id"])
 
         lead = lead_o.browse(self.cursor, self.uid, result["lead_id"])
         titular_id = lead.polissa_id.titular.id
@@ -195,7 +195,7 @@ class TestLeadWwwMemberPayment(BaseSomLeadWwwTest):
         values["payment_type"] = "remesa"
 
         result = www_lead_o.create_lead(self.cursor, self.uid, values)
-        www_lead_o.activate_lead(self.cursor, self.uid, result["lead_id"], context={"sync": True})
+        www_lead_o.activate_lead_sync(self.cursor, self.uid, result["lead_id"])
 
         lead = lead_o.browse(self.cursor, self.uid, result["lead_id"])
         titular_id = lead.polissa_id.titular.id
