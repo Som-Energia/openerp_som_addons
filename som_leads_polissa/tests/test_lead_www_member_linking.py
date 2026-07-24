@@ -33,7 +33,8 @@ class TestLeadWwwMemberLinking(BaseSomLeadWwwTest):
         }
 
         result = www_lead_o.create_lead(self.cursor, self.uid, values)
-        www_lead_o.activate_lead(self.cursor, self.uid, result["lead_id"], context={"sync": True})
+        www_lead_o.activate_lead_sync(
+            self.cursor, self.uid, result["lead_id"], context={"sync": True})
 
         lead = lead_o.browse(self.cursor, self.uid, result["lead_id"])
 
@@ -89,7 +90,8 @@ class TestLeadWwwMemberLinking(BaseSomLeadWwwTest):
         }
 
         result = www_lead_o.create_lead(self.cursor, self.uid, values)
-        www_lead_o.activate_lead(self.cursor, self.uid, result["lead_id"], context={"sync": True})
+        www_lead_o.activate_lead_sync(
+            self.cursor, self.uid, result["lead_id"], context={"sync": True})
 
         lead = lead_o.browse(self.cursor, self.uid, result["lead_id"])
 
@@ -141,7 +143,7 @@ class TestLeadWwwMemberLinking(BaseSomLeadWwwTest):
         result = www_lead_o.create_lead(self.cursor, self.uid, values)
         lead = lead_o.browse(self.cursor, self.uid, result["lead_id"])
         self.assertEqual(lead.is_new_contact, False)
-        www_lead_o.activate_lead(self.cursor, self.uid, result["lead_id"], context={"sync": True})
+        www_lead_o.activate_lead_sync(self.cursor, self.uid, result["lead_id"])
 
         gisce_br = partner_o.browse(self.cursor, self.uid, gisce_id)
         contract_member_id = pol_o.read(
@@ -224,7 +226,7 @@ class TestLeadWwwMemberLinking(BaseSomLeadWwwTest):
         values["new_member_info"]["vat"] = existing_partner_vat.replace("ES", "")
 
         result = www_lead_o.create_lead(self.cursor, self.uid, values)
-        www_lead_o.activate_lead(self.cursor, self.uid, result["lead_id"], context={"sync": True})
+        www_lead_o.activate_lead_sync(self.cursor, self.uid, result["lead_id"])
 
         lead = lead_o.browse(self.cursor, self.uid, result["lead_id"])
         self.assertEqual(lead.polissa_id.direccio_notificacio.id_municipi.id, girona_municipi_id)
@@ -254,7 +256,7 @@ class TestLeadWwwMemberLinking(BaseSomLeadWwwTest):
         values["new_member_info"]["vat"] = existing_partner_vat.replace("ES", "")
 
         result = www_lead_o.create_lead(self.cursor, self.uid, values)
-        www_lead_o.activate_lead(self.cursor, self.uid, result["lead_id"], context={"sync": True})
+        www_lead_o.activate_lead_sync(self.cursor, self.uid, result["lead_id"])
 
         lead = lead_o.browse(self.cursor, self.uid, result["lead_id"])
         self.assertEqual(lead.polissa_id.titular.name, 'Cognom1 Cognom2, Nom')

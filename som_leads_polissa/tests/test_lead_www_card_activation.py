@@ -29,10 +29,10 @@ class TestLeadWwwCardActivation(BaseSomLeadWwwTest):
 
     def _card_vals(self, token="tok_lead_123", masked_number="**** **** **** 4242"):
         return {
-            "token": token,
-            "masked_number": masked_number,
-            "expiry_date": "12/30",
-            "cof_txnid": "cof_123",
+            "creditcard_token": token,
+            "creditcard_masked_number": masked_number,
+            "creditcard_expiry_date": "12/30",
+            "creditcard_cof_txnid": "cof_123",
         }
 
     def test_activate_lead_assigns_recurrent_card_payment(self):
@@ -43,13 +43,14 @@ class TestLeadWwwCardActivation(BaseSomLeadWwwTest):
         values = self._basic_values
         values["payment_type"] = "tpv"
         values["billing_payment_method"] = "card_recurrent"
+        values.pop("iban")
 
         result = www_lead_o.create_lead(self.cursor, self.uid, values)
         www_lead_o.add_payment_card_data(
             self.cursor, self.uid, result["lead_id"], self._card_vals()
         )
 
-        www_lead_o.activate_lead(self.cursor, self.uid, result["lead_id"], context={"sync": True})
+        www_lead_o.activate_lead_sync(self.cursor, self.uid, result["lead_id"])
 
         lead = lead_o.browse(self.cursor, self.uid, result["lead_id"])
         polissa = lead.polissa_id
@@ -78,6 +79,7 @@ class TestLeadWwwCardActivation(BaseSomLeadWwwTest):
         values = self._basic_values
         values["payment_type"] = "tpv"
         values["billing_payment_method"] = "card_recurrent"
+        values.pop("iban")
 
         result = www_lead_o.create_lead(self.cursor, self.uid, values)
         lead = lead_o.browse(self.cursor, self.uid, result["lead_id"])
@@ -91,8 +93,7 @@ class TestLeadWwwCardActivation(BaseSomLeadWwwTest):
         self.assertEqual(lead.crm_id.stage_id.id, received_stage_id)
 
         with self.assertRaises(osv.except_osv):
-            www_lead_o.activate_lead(
-                self.cursor, self.uid, result["lead_id"], context={"sync": True})
+            www_lead_o.activate_lead_sync(self.cursor, self.uid, result["lead_id"])
 
     def test_add_payment_card_data_allows_activation_after_missing_card_data(self):
         www_lead_o = self.get_model("som.lead.www")
@@ -101,6 +102,7 @@ class TestLeadWwwCardActivation(BaseSomLeadWwwTest):
         values = self._basic_values
         values["payment_type"] = "tpv"
         values["billing_payment_method"] = "card_recurrent"
+        values.pop("iban")
 
         result = www_lead_o.create_lead(self.cursor, self.uid, values)
 
@@ -114,7 +116,7 @@ class TestLeadWwwCardActivation(BaseSomLeadWwwTest):
         lead = lead_o.browse(self.cursor, self.uid, result["lead_id"])
         self.assertEqual(lead.crm_id.state, 'open')
 
-        www_lead_o.activate_lead(self.cursor, self.uid, result["lead_id"], context={"sync": True})
+        www_lead_o.activate_lead_sync(self.cursor, self.uid, result["lead_id"])
         lead = lead_o.browse(self.cursor, self.uid, result["lead_id"])
         self.assertTrue(lead.polissa_id)
 
@@ -125,6 +127,7 @@ class TestLeadWwwCardActivation(BaseSomLeadWwwTest):
         values = self._basic_values
         values["payment_type"] = "tpv"
         values["billing_payment_method"] = "card_recurrent"
+        values.pop("iban")
 
         captured = {}
         original_method = lead_o._get_card_payment_polissa_values
@@ -175,7 +178,8 @@ class TestLeadWwwCardActivation(BaseSomLeadWwwTest):
             self._card_vals(token="tok_existing_member", masked_number="**** **** **** 1111"),
         )
 
-        www_lead_o.activate_lead(self.cursor, self.uid, result["lead_id"], context={"sync": True})
+        www_lead_o.activate_lead_sync(
+            self.cursor, self.uid, result["lead_id"], context={"sync": True})
 
         lead = lead_o.browse(self.cursor, self.uid, result["lead_id"])
         self.assertEqual(lead.polissa_id.creditcard.id, existing_card_id)
@@ -209,5 +213,4 @@ class TestLeadWwwCardActivation(BaseSomLeadWwwTest):
         )
 
         with self.assertRaises(osv.except_osv):
-            www_lead_o.activate_lead(
-                self.cursor, self.uid, result["lead_id"], context={"sync": True})
+            www_lead_o.activate_lead_sync(self.cursor, self.uid, result["lead_id"])

@@ -5,3 +5,4 @@ from .som_polissa_tests import *
 from .som_polissa_webforms_helpers_tests import *
 from .giscedata_polissa_tests import *
 from .giscedata_cups_tests import *
+from .test_report_sepa import *

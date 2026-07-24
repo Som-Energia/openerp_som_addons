@@ -15,6 +15,7 @@ class TestLeadWwwCardData(BaseSomLeadWwwTest):
         values = self._basic_values
         values["payment_type"] = "tpv"
         values["billing_payment_method"] = "card_recurrent"
+        values.pop("iban")
 
         result = www_lead_o.create_lead(self.cursor, self.uid, values)
 
@@ -23,10 +24,10 @@ class TestLeadWwwCardData(BaseSomLeadWwwTest):
             self.uid,
             result["lead_id"],
             {
-                "token": "tok_lead_123",
-                "masked_number": "**** **** **** 4242",
-                "expiry_date": "12/30",
-                "cof_txnid": "cof_123",
+                "creditcard_token": "tok_lead_123",
+                "creditcard_masked_number": "**** **** **** 4242",
+                "creditcard_expiry_date": "12/30",
+                "creditcard_cof_txnid": "cof_123",
             },
         )
 
@@ -59,10 +60,10 @@ class TestLeadWwwCardData(BaseSomLeadWwwTest):
                 self.uid,
                 result["lead_id"],
                 {
-                    "token": "tok_lead_123",
-                    "masked_number": "**** **** **** 4242",
-                    "expiry_date": "12/30",
-                    "cof_txnid": "cof_123",
+                    "creditcard_token": "tok_lead_123",
+                    "creditcard_masked_number": "**** **** **** 4242",
+                    "creditcard_expiry_date": "12/30",
+                    "creditcard_cof_txnid": "cof_123",
                 },
             )
 
@@ -87,10 +88,10 @@ class TestLeadWwwCardData(BaseSomLeadWwwTest):
                 self.uid,
                 result["lead_id"],
                 {
-                    "token": "tok_lead_123",
-                    "masked_number": "**** **** **** 4242",
-                    "expiry_date": "12/30",
-                    "cof_txnid": "cof_123",
+                    "creditcard_token": "tok_lead_123",
+                    "creditcard_masked_number": "**** **** **** 4242",
+                    "creditcard_expiry_date": "12/30",
+                    "creditcard_cof_txnid": "cof_123",
                 },
             )
 
@@ -104,10 +105,10 @@ class TestLeadWwwCardData(BaseSomLeadWwwTest):
         result = www_lead_o.create_lead(self.cursor, self.uid, values)
 
         card_vals = {
-            "token": "tok_lead_123",
-            "masked_number": "**** **** **** 4242",
-            "expiry_date": "12/30",
-            "cof_txnid": "cof_123",
+            "creditcard_token": "tok_lead_123",
+            "creditcard_masked_number": "**** **** **** 4242",
+            "creditcard_expiry_date": "12/30",
+            "creditcard_cof_txnid": "cof_123",
         }
 
         www_lead_o.add_payment_card_data(
@@ -125,6 +126,7 @@ class TestLeadWwwCardData(BaseSomLeadWwwTest):
         values = self._basic_values
         values["payment_type"] = "tpv"
         values["billing_payment_method"] = "card_recurrent"
+        values.pop("iban")
 
         result = www_lead_o.create_lead(self.cursor, self.uid, values)
         www_lead_o.add_payment_card_data(
@@ -132,13 +134,13 @@ class TestLeadWwwCardData(BaseSomLeadWwwTest):
             self.uid,
             result["lead_id"],
             {
-                "token": "tok_lead_123",
-                "masked_number": "**** **** **** 4242",
-                "expiry_date": "12/30",
-                "cof_txnid": "cof_123",
+                "creditcard_token": "tok_lead_123",
+                "creditcard_masked_number": "**** **** **** 4242",
+                "creditcard_expiry_date": "12/30",
+                "creditcard_cof_txnid": "cof_123",
             },
         )
-        www_lead_o.activate_lead(self.cursor, self.uid, result["lead_id"], context={"sync": True})
+        www_lead_o.activate_lead_sync(self.cursor, self.uid, result["lead_id"])
 
         with self.assertRaises(osv.except_osv):
             www_lead_o.add_payment_card_data(
@@ -146,10 +148,10 @@ class TestLeadWwwCardData(BaseSomLeadWwwTest):
                 self.uid,
                 result["lead_id"],
                 {
-                    "token": "tok_lead_123",
-                    "masked_number": "**** **** **** 4242",
-                    "expiry_date": "12/30",
-                    "cof_txnid": "cof_123",
+                    "creditcard_token": "tok_lead_123",
+                    "creditcard_masked_number": "**** **** **** 4242",
+                    "creditcard_expiry_date": "12/30",
+                    "creditcard_cof_txnid": "cof_123",
                 },
             )
 
@@ -168,8 +170,8 @@ class TestLeadWwwCardData(BaseSomLeadWwwTest):
                 self.uid,
                 result["lead_id"],
                 {
-                    "token": "tok_lead_123",
-                    "masked_number": "**** **** **** 4242",
-                    "expiry_date": "12/30",
+                    "creditcard_token": "tok_lead_123",
+                    "creditcard_masked_number": "**** **** **** 4242",
+                    "creditcard_expiry_date": "12/30",
                 },
             )

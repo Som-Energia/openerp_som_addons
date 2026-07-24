@@ -545,6 +545,8 @@ class SomLeadWww(osv.osv_memory):
         signature_allows = self._signature_allows_activation(cr, uid, lead_id, context=context)
         payment_allows = self._payment_allows_activation(cr, uid, lead_id, context=context)
 
+        logger = logging.getLogger("openerp.{0}.activate_lead".format(__name__))
+
         if signature_allows and payment_allows:
             context["create_draft_atr"] = True
             msg = lead_o.create_entities(cr, uid, lead_id, context=context)
@@ -562,7 +564,6 @@ class SomLeadWww(osv.osv_memory):
                 sentry = self.pool.get('sentry.setup')
                 if sentry:
                     sentry.client.captureException()
-                logger = logging.getLogger("openerp.{0}.activate_lead".format(__name__))
                 logger.warning("Error al comunicar amb Mailchimp {}".format(str(e)))
 
             if context.get("sync"):
@@ -795,8 +796,6 @@ class SomLeadWww(osv.osv_memory):
         ctx = context.copy()
         ctx['delivery_type'] = 'url'
         ctx['provider'] = 'signaturit'
-
-        lead_o.write(cr, uid, lead_id, {'delivery_type': 'url'})
 
         cr.commit()
 
