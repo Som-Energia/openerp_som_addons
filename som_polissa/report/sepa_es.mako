@@ -54,7 +54,7 @@
             <span class="english">To be completed by the debtor</span>
         </div>
         <div class="intern margin50 full-width">
-            <div class="parella"><p class="label">Nombre del deudor/es (titular/es de la cuenta de cargo) / <span class="english">Debtor’s name</span></p>
+            <div class="parella"><p class="label">Nombre del deudor/es / <span class="english">Debtor’s name</span></p>
             <p class="entrada">${data['debtor_name']}</p></div>
             <div class="parella"><p class="label">Dirección del deudor / <span class="english">Address of the debtor</span></p>
             <p class="entrada">${data['debtor_address']}</p></div>
