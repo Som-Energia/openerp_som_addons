@@ -844,7 +844,8 @@ class SomLeadWww(osv.osv_memory):
 
         lang = lead_data.get('lang').split('_')[0]
 
-        signature_url = signature_url.replace("app.", "sign-app.")
+        if "sign-app." not in signature_url:
+            signature_url = signature_url.replace("app.", "sign-app.")
         signature_url = signature_url.replace("document", "v1/{}".format(lang))
 
         return {'url': signature_url}
