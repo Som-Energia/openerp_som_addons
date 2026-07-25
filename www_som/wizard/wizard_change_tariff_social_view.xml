@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+    <data>
+        <record id="view_change_to_social" model="ir.ui.view">
+            <field name="name">wizard.change.tariff.social.form</field>
+            <field name="model">wizard.change.tariff.social</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <form string="Canviar mode facturació de la polissa">
+                    <field name="state" invisible="1"/>
+                    <field name="change_type" invisible="1"/>
+                    <group attrs="{'invisible': [('state','!=','init')]}">
+                        <field name="polissa_id" colspan="4" width="250" readonly="True"/>
+                        <group colspan="4" col="4">
+                            <button icon="gtk-close" special="cancel" string="Cancel·lar" type="object"/>
+                            <button name="change_to_social"
+                                    attrs="{'invisible': [('change_type','!=','to_social')]}"
+                                    icon="gtk-ok" string="Canviar a social" type="object"/>
+                            <button name="change_to_regular"
+                                    attrs="{'invisible': [('change_type','!=','to_regular')]}"
+                                    icon="gtk-ok" string="Canviar a no social" type="object"/>
+                        </group>
+                    </group>
+                    <group attrs="{'invisible': [('state','!=','end')]}">
+                        <group colspan="4" attrs="{'invisible': [('change_type','!=','to_regular')]}">
+                            <label string="S'ha passat la polissa a no social"/>
+                        </group>
+                        <group colspan="4" attrs="{'invisible': [('change_type','!=','to_social')]}">
+                            <label string="S'ha passat la polissa a social"/>
+                        </group>
+                        <newline/>
+                        <button icon="gtk-close" special="cancel" string="Finalitzar" type="object" colspan="4"/>
+                    </group>
+                </form>
+            </field>
+        </record>
+        <record id="action_change_to_social" model="ir.actions.act_window">
+            <field name="name">Wizard canviar polissa a tarifa social</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">wizard.change.tariff.social</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">form</field>
+            <field name="domain">[]</field>
+            <field name="target">new</field>
+            <field name="context">{'change_type':'to_social'}</field>
+            <field name="view_id" ref="view_change_to_social"/>
+        </record>
+        <record id="action_change_to_regular" model="ir.actions.act_window">
+            <field name="name">Wizard canviar polissa a tarifa no social</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">wizard.change.tariff.social</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">form</field>
+            <field name="domain">[]</field>
+            <field name="context">{'change_type':'to_regular'}</field>
+            <field name="target">new</field>
+            <field name="view_id" ref="view_change_to_social"/>
+        </record>
+
+        <record id="wizard_change_to_social" model="ir.values">
+            <field name="object" eval="1"/>
+            <field name="name">Canviar les polisses a tarifa social</field>
+            <field name="key2">client_action_multi</field>
+            <field name="key">action</field>
+            <field name="model">giscedata.polissa</field>
+            <field name="value" eval="'ir.actions.act_window,'+str(ref('action_change_to_social'))" />
+        </record>
+        <record id="wizard_change_to_regular" model="ir.values">
+            <field name="object" eval="1"/>
+            <field name="name">Canviar les polisses a tarifa no social</field>
+            <field name="key2">client_action_multi</field>
+            <field name="key">action</field>
+            <field name="model">giscedata.polissa</field>
+            <field name="value" eval="'ir.actions.act_window,'+str(ref('action_change_to_regular'))" />
+        </record>
+    </data>
+</openerp>
