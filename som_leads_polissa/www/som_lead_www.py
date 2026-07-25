@@ -98,6 +98,15 @@ class SomLeadWww(osv.osv_memory):
                 'surname2': names['cognoms'][1],
             })
 
+        representative_name = member.get("proxy_name")
+        if representative_name and "," not in representative_name:
+            rep_names = partner_o.separa_cognoms(cr, uid, representative_name)
+            representative_surnames = " ".join(filter(None, rep_names['cognoms']))
+            if rep_names['nom'] and representative_surnames:
+                representative_name = "{}, {}".format(
+                    representative_surnames, rep_names['nom']
+                )
+
         values = {
             "state": "open",
             "name": "{} / {}".format(member["vat"].upper(), contract_info["cups"]),
@@ -168,7 +177,7 @@ class SomLeadWww(osv.osv_memory):
 
         if member.get("is_juridic"):
             values["persona_firmant_vat"] = member["proxy_vat"]
-            values["persona_nom"] = member["proxy_name"]
+            values["persona_nom"] = representative_name
             values["is_juridic"] = True
 
         for i, power in enumerate(contract_info["powers"]):
