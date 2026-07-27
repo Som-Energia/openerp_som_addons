@@ -6,3 +6,4 @@ from . import report_backend_mailcanvipreus
 from . import report_backend_mailcanvipreus_eie
 from . import models
 from . import www
+from . import giscedata_crm_lead

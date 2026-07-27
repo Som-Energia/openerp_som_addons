@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+from __future__ import absolute_import
+
 from osv import osv, fields
 
 
@@ -34,8 +36,6 @@ class GiscedataPolissa(osv.osv):
             if not polissa.tipo_pago or polissa.tipo_pago.code != "COBRAMENT_RECURRENT_TARGETA":
                 continue
             if not polissa.creditcard:
-                return False
-            if polissa.pagador and polissa.creditcard.partner_id.id != polissa.pagador.id:
                 return False
         return True
 
@@ -84,8 +84,6 @@ class GiscedataPolissaModcontractual(osv.osv):
             if not pagador and getattr(modcontractual, "polissa_id", False):
                 pagador = modcontractual.polissa_id.pagador
 
-            if pagador and creditcard.partner_id.id != pagador.id:
-                return False
         return True
 
     _columns = {

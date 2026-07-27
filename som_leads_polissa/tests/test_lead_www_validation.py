@@ -31,7 +31,7 @@ class TestLeadWwwValidation(BaseSomLeadWwwTest):
 
         # we need to reload the browse record because the cache
         lead = lead_o.browse(self.cursor, self.uid, result["lead_id"])
-        www_lead_o.activate_lead(self.cursor, self.uid, result["lead_id"], context={"sync": True})
+        www_lead_o.activate_lead_sync(self.cursor, self.uid, result["lead_id"])
         self.assertEqual(lead.crm_id.stage_id.id, webform_stage_converted_id)
         self.assertEqual(lead.crm_id.state, 'done')
 
@@ -108,8 +108,7 @@ class TestLeadWwwValidation(BaseSomLeadWwwTest):
         self.assertIn("cnae: '123456789'", lead.history_line[1].description)
 
         with self.assertRaises(osv.except_osv) as e:
-            www_lead_o.activate_lead(self.cursor, self.uid,
-                                     result["lead_id"], context={"sync": True})
+            www_lead_o.activate_lead_sync(self.cursor, self.uid, result["lead_id"])
         self.assertIn("CNAE", e.exception.value)
         self.mock_subscribe_member.assert_called()
         self.mock_unsubscribe_customer.assert_called()
