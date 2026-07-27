@@ -453,7 +453,7 @@ class SomLeadWww(osv.osv_memory):
         sign_process_obj = self.pool.get("giscedata.signatura.process")
         logger = logging.getLogger("openerp.{0}.activate_lead.signature_mail".format(__name__))
 
-        attempts = 30
+        attempts = 5
         wait_seconds = 10
 
         for _ in range(attempts):
@@ -527,7 +527,7 @@ class SomLeadWww(osv.osv_memory):
         for lead_id in all_ids:
             self.activate_lead_async(cr, uid, lead_id, context=context)
 
-    @job(queue="leads")
+    @job(queue="leads", timeout=300)
     def activate_lead_async(self, cr, uid, lead_id, context=None):
         if context is None:
             context = {}
