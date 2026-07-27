@@ -29,6 +29,7 @@ def up(cursor, installed_version):
     module = 'som_facturacio_switching'
     mh = MigrationHelper(cursor, module)
 
+    mh.init_model('giscedata.facturacio.importacio.linia')
     file = 'giscedata_facturacio_importacio_linia_view.xml'
     views = [
         'view_importacio_linia_auto_tarifa_codi_rect_anul_form',
@@ -43,11 +44,3 @@ def down(cursor, installed_version):
 
 
 migrate = up
-
-
-
-
-
-sql = """
-
-"""
