@@ -65,6 +65,10 @@ class GiscedataFacturacioImportacioLinia(osv.osv):
         if tarifaATR:
             vals["tarifa_atr"] = tarifaATR[0]
 
+        motiu_facturacio = re.findall("<MotivoFacturacion>(.*)</MotivoFacturacion>", xml_data)
+        if motiu_facturacio:
+            vals["motiu_facturacio"] = motiu_facturacio[0]
+
         if vals["type_factura"] in ("C", "A"):
             expedient = re.findall("<NumeroExpediente>(.*)</NumeroExpediente>", xml_data)
             if expedient:

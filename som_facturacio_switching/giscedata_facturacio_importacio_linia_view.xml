@@ -13,8 +13,8 @@
                 </xpath>
                 <xpath expr="//field[@name='type_factura']" position="after">
                     <group attrs="{'invisible': [('type_factura', 'not in', ['C', 'A'])]}" colspan="4" col="4">
-                        <field name="motiu_facturacio"/>
-                        <field name="num_expedient"/>
+                        <field name="motiu_facturacio" select="2"/>
+                        <field name="num_expedient" select="2"/>
                         <field name="comentari"/>
                     </group>
                 </xpath>
@@ -45,7 +45,7 @@
             <field name="view_type">form</field>
             <field name="view_mode">tree,form</field>
             <field name="view_id" ref="giscedata_facturacio_switching.view_importacio_linia_general_tree"/>
-            <field name="domain">[('moitu_facturacio', 'in', ['06', '11]), ('type_factura', '=', 'A')]</field>
+            <field name="domain">[('motiu_facturacio', 'in', ['06', '11']), ('type_factura', '=', 'A')]</field>
         </record>
         <menuitem id="menu_importacio_linia_abonament_expedients_som" action="action_importacio_linia_expedients_inspeccio_frau_som" parent="giscedata_facturacio_switching.menu_importacio_linia"/>
     </data>
