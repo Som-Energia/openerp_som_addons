@@ -113,6 +113,7 @@ class SomGurbWww(osv.osv_memory):
             for gcups in gcau.gurb_cups_ids:
                 if gcups.state in occupying_states:
                     beta_remaining -= gcups.beta_kw
+                    beta_remaining -= gcups.gift_beta_kw
                     beta_remaining -= gcups.future_beta_kw
                     beta_remaining -= gcups.future_gift_beta_kw
             available_betas.append(beta_remaining)
