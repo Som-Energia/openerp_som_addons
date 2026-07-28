@@ -173,6 +173,13 @@ class TestUpdatePendingStates(testing.OOTestCaseWithCursor):
             "default_pendent_traspas_advocats_pending_state",
         )[1]
 
+        self.traspas_advocats_bs = imd_obj.get_object_reference(
+            cursor,
+            uid,
+            "som_account_invoice_pending",
+            "pendent_traspas_advocats_pending_state",
+        )[1]
+
         self.consulta_pobresa = imd_obj.get_object_reference(
             cursor,
             uid,
@@ -232,6 +239,43 @@ class TestUpdatePendingStates(testing.OOTestCaseWithCursor):
         self.assertEqual(inv_data.pending_state.id, self.waiting_48h_bs)
         inv_data = fact_obj.browse(cursor, uid, self.invoice_2_id)
         self.assertEqual(inv_data.pending_state.id, self.waiting_48h_bs)
+
+    @mock.patch("som_account_invoice_pending.models.update_pending_states.UpdatePendingStates.send_email")  # noqa: E501
+    @mock.patch("som_account_invoice_pending.models.update_pending_states.UpdatePendingStates.send_sms")  # noqa: E501
+    def test__update_second_unpaid_invoice__bo_social_baixa_uses_bo_social_lawyer_state(
+        self, mock_sms, mock_mail
+    ):
+        cursor = self.txn.cursor
+        uid = self.txn.user
+        imd_obj = self.pool.get("ir.model.data")
+        pol_obj = self.pool.get("giscedata.polissa")
+        fact_obj = self.pool.get("giscedata.facturacio.factura")
+        history_obj = self.pool.get("account.invoice.pending.history")
+        pol_id = imd_obj.get_object_reference(
+            cursor, uid, "giscedata_polissa", "polissa_0001"
+        )[1]
+        pol_obj.write(cursor, uid, [pol_id], {"state": "baixa"})
+        self._load_data_unpaid_invoices(
+            cursor, uid, [self.waiting_unpaid_id, self.waiting_unpaid_id]
+        )
+
+        pending_obj = self.pool.get("update.pending.states")
+        pending_obj.update_second_unpaid_invoice(cursor, uid)
+
+        self.assertEqual(mock_mail.call_count, 2)
+        self.assertEqual(mock_sms.call_count, 2)
+        for factura_id in (self.invoice_1_id, self.invoice_2_id):
+            factura = fact_obj.browse(cursor, uid, factura_id)
+            self.assertEqual(factura.pending_state.id, self.waiting_48h_bs)
+            history_states = history_obj.search(
+                cursor,
+                uid,
+                [("invoice_id", "=", factura.invoice_id.id)],
+            )
+            history_states = history_obj.read(cursor, uid, history_states, ["pending_state_id"])
+            history_state_ids = [state["pending_state_id"][0] for state in history_states]
+            self.assertIn(self.traspas_advocats_bs, history_state_ids)
+            self.assertNotIn(self.traspas_advocats_dp, history_state_ids)
 
     def test__update_second_unpaid_invoice__two_invoices_not_moving(self):
         cursor = self.txn.cursor

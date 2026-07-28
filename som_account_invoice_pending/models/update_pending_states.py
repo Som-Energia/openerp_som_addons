@@ -951,9 +951,10 @@ class UpdatePendingStates(osv.osv_memory):
                             self.update_waiting_for_annex_cancelled_contracts(
                                 cursor, uid, fact_id[0], traspas_advocats_bs, context
                             )
-                        self.update_waiting_for_annex_cancelled_contracts(
-                            cursor, uid, fact_id[0], traspas_advocats_dp, context
-                        )
+                        else:
+                            self.update_waiting_for_annex_cancelled_contracts(
+                                cursor, uid, fact_id[0], traspas_advocats_dp, context
+                            )
                     fact_obj.set_pending(cursor, uid, fact_id, waiting_notif_id)
 
     def poverty_eligible(self, cursor, uid, polissa_id):
