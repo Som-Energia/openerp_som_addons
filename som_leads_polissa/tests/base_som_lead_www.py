@@ -25,8 +25,12 @@ class BaseSomLeadWwwTest(testing.OOTestCase):
 
         lang_o = self.get_model("res.lang")
 
-        lang_o.create(self.cursor, self.uid, {"name": "Català", "code": "ca_ES"})
-        lang_o.create(self.cursor, self.uid, {"name": "Español", "code": "es_ES"})
+        ca_ES = lang_o.search(self.cursor, self.uid, [("code", "=", "ca_ES")])
+        if not ca_ES:
+            lang_o.create(self.cursor, self.uid, {"name": "Català", "code": "ca_ES"})
+        es_ES = lang_o.search(self.cursor, self.uid, [("code", "=", "es_ES")])
+        if not es_ES:
+            lang_o.create(self.cursor, self.uid, {"name": "Español", "code": "es_ES"})
 
         self._remove_stage_validation_template()
 

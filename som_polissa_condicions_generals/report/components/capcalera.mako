@@ -23,7 +23,7 @@
                 %endif
                 <br/>
                 <b>${_(u"Vigència del contracte: ")}</b>
-                ${_(u"Sense permanència")}
+                ${_(u"Trimestre natural")}
                 <br/>
                 <b>${_(u"Data de renovació: ")}</b>
                 ${polissa['data_renovacio']}

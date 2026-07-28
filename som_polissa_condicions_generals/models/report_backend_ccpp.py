@@ -38,7 +38,7 @@ class ReportBackendCondicionsParticulars(ReportBackend):
         ).get(pricelist_id, False)
         if price is False or price is None:
             return False
-        return price / 1000
+        return price
 
     def _get_coeficient_k_for_pricelist(self, fs_data, dades_tarifa, default_coeficient_k_untaxed):
         if not fs_data:
