@@ -12,8 +12,9 @@
                     <field name="tarifa_atr" select="2" />
                 </xpath>
                 <xpath expr="//field[@name='type_factura']" position="after">
-                    <group attrs="{'invisible': [('type_factura', 'not in', ['C'])]}" colspan="4" col="4">
-                        <field name="num_expedient"/>
+                    <group attrs="{'invisible': [('type_factura', 'not in', ['C', 'A'])]}" colspan="4" col="4">
+                        <field name="motiu_facturacio" select="2"/>
+                        <field name="num_expedient" select="2"/>
                         <field name="comentari"/>
                     </group>
                 </xpath>
@@ -37,5 +38,15 @@
                 </field>
             </field>
         </record>
+        <record model="ir.actions.act_window" id="action_importacio_linia_expedients_inspeccio_frau_som">
+            <field name="name">Fitxers F1 abonament expedients</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">giscedata.facturacio.importacio.linia</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="view_id" ref="giscedata_facturacio_switching.view_importacio_linia_general_tree"/>
+            <field name="domain">[('motiu_facturacio', 'in', ['06', '11']), ('type_factura', '=', 'A')]</field>
+        </record>
+        <menuitem id="menu_importacio_linia_abonament_expedients_som" action="action_importacio_linia_expedients_inspeccio_frau_som" parent="giscedata_facturacio_switching.menu_importacio_linia"/>
     </data>
 </openerp>
