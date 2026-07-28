@@ -442,7 +442,7 @@ msgid "Vigència del contracte: "
 msgstr ""
 
 #: rml:som_polissa_condicions_generals/report/components/capcalera.mako:26
-msgid "Sense permanència"
+msgid "Trimestre natural"
 msgstr ""
 
 #: rml:som_polissa_condicions_generals/report/components/capcalera.mako:28
