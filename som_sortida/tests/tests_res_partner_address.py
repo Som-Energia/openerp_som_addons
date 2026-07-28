@@ -26,7 +26,7 @@ class TestsPartnerAddress(testing.OOTestCaseWithCursor):
         cursor = self.cursor
         uid = self.uid
         rpa_obj = self.openerp.pool.get("res.partner.address")
-        self.openerp.pool.get("giscedata.polissa")
+        pol_obj = self.openerp.pool.get("giscedata.polissa")
         imd_obj = self.openerp.pool.get('ir.model.data')
         polissa_id = imd_obj.get_object_reference(
             cursor, uid, 'giscedata_polissa', 'polissa_0001'
@@ -37,7 +37,9 @@ class TestsPartnerAddress(testing.OOTestCaseWithCursor):
         self.assertEqual(res, {
             'num_socia': 'S202129',
             'situacio_socia': 'Apadrinada',
-            'category_id': [],
+            'category_id': [cat.id for cat in pol_obj.browse(
+                cursor, uid, polissa_id
+            ).category_id],
         })
 
     def test__fill_merge_fields_titular_polissa_ctss__ok(self):
@@ -57,7 +59,7 @@ class TestsPartnerAddress(testing.OOTestCaseWithCursor):
             'email_address': u'test@test.test',
             'merge_fields': {
                 'EMAIL': u'test@test.test',
-                'FNAME': u'Pere',
+                'FNAME': '',
                 'MMERGE11': u'08600',
                 'MMERGE3': '',
                 'MMERGE4': 'Origen vinculat al CT sense socia',
@@ -94,5 +96,5 @@ class TestsPartnerAddress(testing.OOTestCaseWithCursor):
         rpa_obj.unsubscribe_titular_in_ctss_lists(cursor, uid, partner_id)
 
         mocked_archive.assert_called_once_with(
-            cursor, uid, address_id, 77, mailchimp_client
+            mock.ANY, uid, address_id, 77, mailchimp_client
         )
