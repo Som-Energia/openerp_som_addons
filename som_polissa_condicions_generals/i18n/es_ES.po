@@ -405,8 +405,8 @@ msgid "Vigència del contracte: "
 msgstr "Vigencia del contrato: "
 
 #: rml:som_polissa_condicions_generals/report/components/capcalera.mako:26
-msgid "Sense permanència"
-msgstr "Sin permanencia"
+msgid "Trimestre natural"
+msgstr "Trimestre natural"
 
 #: rml:som_polissa_condicions_generals/report/components/capcalera.mako:28
 msgid "Data de renovació: "
