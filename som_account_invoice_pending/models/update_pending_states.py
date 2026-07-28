@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+from __future__ import absolute_import
+
 from osv import osv
 from datetime import datetime, timedelta, date
 from addons.som_account_invoice_pending.models.som_account_invoice_pending_exceptions import (
@@ -115,7 +117,7 @@ class UpdatePendingStates(osv.osv_memory):
         except Exception as e:
             logger.info(
                 "ERROR sending email to invoice {factura_id}: {exc}".format(
-                    factura_id=factura_id, exc=e.message
+                    factura_id=factura_id, exc=str(e)
                 )
             )
             return -1
@@ -147,7 +149,7 @@ class UpdatePendingStates(osv.osv_memory):
         except Exception as e:
             logger.info(
                 "ERROR sending sms to invoice {factura_id}: {exc}".format(
-                    factura_id=factura_id, exc=e.message
+                    factura_id=factura_id, exc=str(e)
                 )
             )
             raise e
@@ -213,19 +215,19 @@ class UpdatePendingStates(osv.osv_memory):
             except UpdateWaitingFor48hException as e:
                 logger.info(
                     "ERROR updating invoice {factura_id} in update_waiting_for_48h: {exc}".format(
-                        factura_id=factura_id, exc=e.message
+                        factura_id=factura_id, exc=str(e)
                     )
                 )
             except UpdateWaitingCancelledContractsException as e:
                 logger.info(
                     "ERROR updating invoice {factura_id} in update_waiting_for_48h: {exc}".format(
-                        factura_id=factura_id, exc=e.message
+                        factura_id=factura_id, exc=str(e)
                     )
                 )
             except Exception as e:
                 logger.info(
                     "UNHANDLED ERROR updating invoice {factura_id} in update_waiting_for_48h: {exc}".format(  # noqa: E501
-                        factura_id=factura_id, exc=e.message
+                        factura_id=factura_id, exc=str(e)
                     )
                 )
 
@@ -298,19 +300,19 @@ class UpdatePendingStates(osv.osv_memory):
             except UpdateWaitingFor48hException as e:
                 logger.info(
                     "ERROR updating invoice {factura_id} in update_waiting_for_48h: {exc}".format(
-                        factura_id=factura_id, exc=e.message
+                        factura_id=factura_id, exc=str(e)
                     )
                 )
             except UpdateWaitingCancelledContractsException as e:
                 logger.info(
                     "ERROR updating invoice {factura_id} in update_waiting_for_48h: {exc}".format(
-                        factura_id=factura_id, exc=e.message
+                        factura_id=factura_id, exc=str(e)
                     )
                 )
             except Exception as e:
                 logger.info(
                     "UNHANDLED ERROR updating invoice {factura_id} in update_waiting_for_48h: {exc}".format(  # noqa: E501
-                        factura_id=factura_id, exc=e.message
+                        factura_id=factura_id, exc=str(e)
                     )
                 )
 
@@ -445,19 +447,19 @@ class UpdatePendingStates(osv.osv_memory):
             except UpdateWaitingForAnnexIVException as e:
                 logger.info(
                     "ERROR updating invoice {factura_id} in update_waiting_for_annexIV: {exc}".format(  # noqa: E501
-                        factura_id=factura_id, exc=e.message
+                        factura_id=factura_id, exc=str(e)
                     )
                 )
             except UpdateWaitingCancelledContractsException as e:
                 logger.info(
                     "ERROR updating invoice {factura_id} in update_waiting_for_annexIV: {exc}".format(  # noqa: E501
-                        factura_id=factura_id, exc=e.message
+                        factura_id=factura_id, exc=str(e)
                     )
                 )
             except Exception as e:
                 logger.info(
                     "UNHANDLED ERROR updating invoice {factura_id} in update_waiting_for_annexIV: {exc}".format(  # noqa: E501
-                        factura_id=factura_id, exc=e.message
+                        factura_id=factura_id, exc=str(e)
                     )
                 )
 
@@ -508,19 +510,19 @@ class UpdatePendingStates(osv.osv_memory):
             except UpdateWaitingForAnnexIVException as e:
                 logger.info(
                     "ERROR updating invoice {factura_id} in update_waiting_for_annexIV: {exc}".format(  # noqa: E501
-                        factura_id=factura_id, exc=e.message
+                        factura_id=factura_id, exc=str(e)
                     )
                 )
             except UpdateWaitingCancelledContractsException as e:
                 logger.info(
                     "ERROR updating invoice {factura_id} in update_waiting_for_annexIV: {exc}".format(  # noqa: E501
-                        factura_id=factura_id, exc=e.message
+                        factura_id=factura_id, exc=str(e)
                     )
                 )
             except Exception as e:
                 logger.info(
                     "UNHANDLED ERROR updating invoice {factura_id} in update_waiting_for_annexIV: {exc}".format(  # noqa: E501
-                        factura_id=factura_id, exc=e.message
+                        factura_id=factura_id, exc=str(e)
                     )
                 )
 
