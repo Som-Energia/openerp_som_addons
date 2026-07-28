@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from __future__ import absolute_import
 import mock
 from destral import testing
 
@@ -11,7 +12,6 @@ class TestsPartnerAddress(testing.OOTestCaseWithCursor):
         cursor = self.cursor
         uid = self.uid
         rpa_obj = self.openerp.pool.get("res.partner.address")
-        self.openerp.pool.get("giscedata.polissa")
         imd_obj = self.openerp.pool.get('ir.model.data')
         polissa_id = imd_obj.get_object_reference(
             cursor, uid, 'giscedata_polissa', 'polissa_0001'
@@ -46,7 +46,6 @@ class TestsPartnerAddress(testing.OOTestCaseWithCursor):
         cursor = self.cursor
         uid = self.uid
         rpa_obj = self.openerp.pool.get("res.partner.address")
-        self.openerp.pool.get("giscedata.polissa")
         imd_obj = self.openerp.pool.get('ir.model.data')
         polissa_id = imd_obj.get_object_reference(
             cursor, uid, 'giscedata_polissa', 'polissa_0001'
