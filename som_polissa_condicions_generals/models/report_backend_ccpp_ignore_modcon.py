@@ -1,10 +1,12 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import
-from report_backend.report_backend import ReportBackend, report_browsify
+from report_backend.report_backend import report_browsify
 from report_puppeteer.report_puppeteer import PuppeteerParser
 
+from .report_backend_ccpp import ReportBackendCondicionsParticulars
 
-class ReportBackendCondicionsParticularsIgnoreModcon(ReportBackend):
+
+class ReportBackendCondicionsParticularsIgnoreModcon(ReportBackendCondicionsParticulars):
     """Is the same report, but ignores modcons"""
     _source_model = "giscedata.polissa"
     _name = "report.backend.condicions.particulars.ignore.modcon"
