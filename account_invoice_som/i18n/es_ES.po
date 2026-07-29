@@ -1,16 +1,16 @@
 # Translation of OpenERP Server.
 # This file contains the translation of the following modules:
 # * account_invoice_som
-#
+# 
 # Translators:
-#   <>, 2018, 2025.
+#   <>, 2018, 2025, 2026.
 msgid ""
 msgstr ""
 "Project-Id-Version: GISCE-ERP\n"
 "Report-Msgid-Bugs-To: https://github.com/gisce/erp/issues\n"
 "POT-Creation-Date: 2025-03-10 15:16+0000\n"
-"PO-Revision-Date: 2025-03-10 14:15+0000\n"
-"Last-Translator: destanyol <>\n"
+"PO-Revision-Date: 2026-07-29 13:48+0000\n"
+"Last-Translator: gpozo <>\n"
 "Language-Team: Spanish (Spain) <erp@dev.gisce.net>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -466,10 +466,10 @@ msgstr "Factura SomEnergia"
 
 #: rml:account_invoice_som/report/account_invoice_som.mako:94
 msgid ""
-"SOM ENERGIA SCCL Amb seu social a CL. C/ Riu Güell, 68 · 17005 - Girona "
+"SOM ENERGIA SCCL Amb seu social a CL. Pic de Peguera, 9 1a · 17003 - Girona "
 "- Inscrita al Registre General de Cooperatives, full 13936, Inscripció 1a "
 "CIF: F55091367"
-msgstr "SOM ENERGIA SCCL Con sede social en CL. C/ Riu Güell, 68 · 17005 - Girona - Inscrita en el Registro General de Cooperativas, hoja 13936, Inscripción 1a CIF: F55091367"
+msgstr "SOM ENERGIA SCCL Con sede social en CL. Pic de Peguera, 9 1a · 17003 - Girona - Inscrita en el Registro General de Cooperativas, hoja 13936, Inscripción 1a CIF: F55091367"
 
 #: rml:account_invoice_som/report/account_invoice_som.mako:110
 msgid "CIF:"
@@ -581,7 +581,7 @@ msgstr "Fecha de la nota de cargo"
 
 #: rml:account_invoice_som/report/nota_carrec/components/dades_nota.mako:22
 msgid "Resum de la nota de càrrec"
-msgstr "Resum de la nota de càrrec"
+msgstr "Resumen de la nota de cargo"
 
 #: rml:account_invoice_som/report/nota_carrec/components/dades_nota.mako:24
 msgid "A Cobrar"
@@ -617,7 +617,7 @@ msgstr "N.º Factura"
 
 #: rml:account_invoice_som/report/nota_carrec/components/detall_nota.mako:25
 msgid "Data factura"
-msgstr "Data factura"
+msgstr "Fecha factura"
 
 #: rml:account_invoice_som/report/nota_carrec/components/detall_nota.mako:35
 msgid "Tipus factura"
@@ -644,7 +644,3 @@ msgid ""
 " exercir els teus drets a l'adreça indicada del responsable o a "
 "gdpr@somenergia.coop."
 msgstr "INFORMACIÓN SOBRE PROTECCIÓN DE DATOS DE SOM RENOVABLES S.L.U<br>Los datos personales tratados para gestionar la relación contractual y, si se tercia, remitir información comercial por medios electrónicos, se conservarán hasta el fin de la relación, baja comercial o los plazos de retención legales. Puedes ejercer tus derechos en la dirección indicada del responsable o a gdpr@somenergia.coop."
-#: rml:account_invoice_som/report/account_invoice_som.mako:300
-msgid ""
-"L'import d'aquesta factura s'ha pagat mitjançant targeta de crèdit"
-msgstr "El importe de esta factura se ha pagado mediante tarjeta de crédito"
