@@ -797,6 +797,8 @@ class SomLeadWww(osv.osv_memory):
         ctx['delivery_type'] = 'url'
         ctx['provider'] = 'signaturit'
 
+        lead_o.write(cr, uid, lead_id, {'delivery_type': 'url'})
+
         cr.commit()
 
         # `start_signature_process` creates signature artifacts with admin-only
