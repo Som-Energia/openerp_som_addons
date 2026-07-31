@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+        <record model="ir.ui.view" id="view_wizard_refund_rectify_batch">
+            <field name="name">wizard.refund.rectify.batch.form</field>
+            <field name="model">wizard.refund.rectify.batch</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <form string="Abonar i rectificar F1's tipus R per tasques">
+                    <group colspan="4" col="4">
+                        <label string="Crea un lot persistent per processar els F1 seleccionats en segon pla." colspan="4"/>
+                        <field name="info" nolabel="1" colspan="4" height="60" width="300"/>
+                        <button special="cancel" string="Cancel·lar" icon="gtk-close"/>
+                        <button name="create_batch" string="Crear lot pendent" icon="gtk-ok" type="object"/>
+                    </group>
+                </form>
+            </field>
+        </record>
+
+        <record model="ir.actions.act_window" id="action_wizard_refund_rectify_batch_from_f1">
+            <field name="name">Abonar i rectificar F1's tipus R per tasques</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">wizard.refund.rectify.batch</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="view_wizard_refund_rectify_batch"/>
+            <field name="context">{'from_model': 'giscedata.facturacio.importacio.linia'}</field>
+            <field name="target">new</field>
+        </record>
+
+        <record id="value_wizard_refund_rectify_batch_from_f1" model="ir.values">
+            <field name="object" eval="1"/>
+            <field name="name">Abonar i rectificar F1's tipus R per tasques</field>
+            <field name="key2">client_action_multi</field>
+            <field name="key">action</field>
+            <field name="model">giscedata.facturacio.importacio.linia</field>
+            <field name="value" eval="'ir.actions.act_window,'+str(ref('action_wizard_refund_rectify_batch_from_f1'))"/>
+        </record>
+    </data>
+</openerp>
