@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+        <record model="ir.ui.view" id="view_refund_rectify_batch_tree">
+            <field name="name">refund.rectify.batch.tree</field>
+            <field name="model">refund.rectify.batch</field>
+            <field name="type">tree</field>
+            <field name="arch" type="xml">
+                <tree string="Tasques d'abonar i rectificar">
+                    <field name="name"/>
+                    <field name="polissa_id"/>
+                    <field name="state"/>
+                    <field name="total_lines"/>
+                    <field name="completed_lines"/>
+                    <field name="failed_lines"/>
+                    <field name="blocked_lines"/>
+                </tree>
+            </field>
+        </record>
+
+        <record model="ir.ui.view" id="view_refund_rectify_batch_form">
+            <field name="name">refund.rectify.batch.form</field>
+            <field name="model">refund.rectify.batch</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <form string="Tasca d'abonar i rectificar">
+                    <group colspan="4" col="4">
+                        <field name="name"/>
+                        <field name="state"/>
+                        <field name="polissa_id"/>
+                        <field name="started_at"/>
+                        <field name="finished_at"/>
+                        <field name="job_reference"/>
+                    </group>
+                    <group colspan="4" col="4" string="Comptadors">
+                        <field name="total_lines"/>
+                        <field name="completed_lines"/>
+                        <field name="failed_lines"/>
+                        <field name="blocked_lines"/>
+                    </group>
+                    <group colspan="4" col="4" string="Resum">
+                        <field name="summary" nolabel="1" colspan="4" height="100" width="400"/>
+                    </group>
+                    <field name="line_ids" nolabel="1" colspan="4">
+                        <tree string="F1 de la tasca">
+                            <field name="sequence"/>
+                            <field name="f1_id"/>
+                            <field name="state"/>
+                            <field name="started_at"/>
+                            <field name="finished_at"/>
+                        </tree>
+                    </field>
+                </form>
+            </field>
+        </record>
+
+        <record model="ir.ui.view" id="view_refund_rectify_batch_line_tree">
+            <field name="name">refund.rectify.batch.line.tree</field>
+            <field name="model">refund.rectify.batch.line</field>
+            <field name="type">tree</field>
+            <field name="arch" type="xml">
+                <tree string="F1 dels lots d'abonar i rectificar">
+                    <field name="batch_id"/>
+                    <field name="sequence"/>
+                    <field name="f1_id"/>
+                    <field name="state"/>
+                    <field name="started_at"/>
+                    <field name="finished_at"/>
+                </tree>
+            </field>
+        </record>
+
+        <record model="ir.ui.view" id="view_refund_rectify_batch_line_form">
+            <field name="name">refund.rectify.batch.line.form</field>
+            <field name="model">refund.rectify.batch.line</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <form string="F1 del lot d'abonar i rectificar">
+                    <group colspan="4" col="4">
+                        <field name="batch_id"/>
+                        <field name="f1_id"/>
+                        <field name="sequence"/>
+                        <field name="state"/>
+                        <field name="started_at"/>
+                        <field name="finished_at"/>
+                    </group>
+                    <field name="generated_invoice_ids" colspan="4" nolabel="1" width="300" />
+                    <group colspan="4" col="4" string="Resultat">
+                        <field name="result" nolabel="1" colspan="4" height="60" width="300"/>
+                    </group>
+                    <group colspan="4" col="4" string="Error">
+                        <field name="error" nolabel="1" colspan="4" height="60" width="300"/>
+                    </group>
+                </form>
+            </field>
+        </record>
+
+        <record model="ir.actions.act_window" id="action_refund_rectify_batch">
+            <field name="name">Tasques d'abonar i rectificar F1 tipus R</field>
+            <field name="res_model">refund.rectify.batch</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+
+        <menuitem id="menu_refund_rectify_batch" name="Tasques d'abonar i rectificar F1 tipus R"
+                  parent="giscedata_facturacio_switching.menu_gestio_f1"
+                  action="action_refund_rectify_batch"/>
+    </data>
+</openerp>
