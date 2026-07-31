@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-from datetime import datetime
 
 from osv import osv, fields
 from tools.translate import _
@@ -35,10 +34,8 @@ class WizardRefundRectifyBatch(osv.osv_memory):
             {
                 "name": "/",
                 "polissa_id": policy_ids.pop(),
-                "requested_by_id": uid,
-                "requested_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
                 "total_lines": len(ordered_f1_ids),
-                "summary": _("Lot pendent creat. Encara no s'ha iniciat cap refacturació."),
+                "summary": _("Tasca pendent creada. Encara no s'ha iniciat cap refacturació."),
             },
             context=context,
         )
