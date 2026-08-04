@@ -456,15 +456,18 @@ class SomLeadWww(osv.osv_memory):
         attempts = 5
         wait_seconds = 10
 
+        db = pooler.get_db(cr.dbname)
+
         for _ in range(attempts):
+            tmp_cursor = db.cursor()
             lead_data = lead_o.read(
-                cr, uid, lead_id, ['signature_process', 'status_firma'], context=context
+                tmp_cursor, uid, lead_id, ['signature_process', 'status_firma'], context=context
             )
             signature_process = lead_data.get('signature_process')
             signature_status = lead_data.get('status_firma')
 
             if not signature_process:
-                return True
+                return False
 
             if signature_status == self._SIGNATURE_COMPLETED_STATUS:
                 return True
@@ -472,7 +475,10 @@ class SomLeadWww(osv.osv_memory):
             if signature_status in self._SIGNATURE_ERROR_STATUSES:
                 return False
 
-            sign_process_obj.update(cr, uid, [signature_process[0]], context=context)
+            sign_process_obj.update(tmp_cursor, uid, [signature_process[0]], context=context)
+
+            tmp_cursor.commit()
+            tmp_cursor.close()
             time.sleep(wait_seconds)
 
         logger.warning(
@@ -796,6 +802,8 @@ class SomLeadWww(osv.osv_memory):
         ctx = context.copy()
         ctx['delivery_type'] = 'url'
         ctx['provider'] = 'signaturit'
+
+        lead_o.write(cr, uid, lead_id, {'delivery_type': 'url'})
 
         cr.commit()
 
