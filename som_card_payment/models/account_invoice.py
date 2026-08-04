@@ -2,11 +2,9 @@
 from __future__ import absolute_import
 
 import logging
-import time
 from datetime import date
-from decimal import Decimal, ROUND_HALF_UP
 
-from osv import osv
+from osv import osv, fields
 from tools.translate import _
 
 try:
@@ -27,11 +25,11 @@ class AccountInvoice(osv.osv):
         "default_invoice_pending_state",
     )
     _redsys_recurrent_card_payment_type_code = "COBRAMENT_RECURRENT_TARGETA"
-    _redsys_success_pending_reconcile_marker = (
-        u"Redsys targeta recurrent OK pendent conciliacio"
-    )
-    _redsys_manual_review_marker = u"Redsys targeta recurrent pendent revisio"
-    _redsys_failure_marker = u"Redsys targeta recurrent KO"
+    _columns = {
+        "redsys_attempt_ids": fields.one2many(
+            "som.card.payment.attempt", "invoice_id", "Intents Redsys", readonly=True
+        ),
+    }
 
     def afegeix_a_remesa(self, cursor, uid, ids, order_id, context=None):
         if not isinstance(ids, (list, tuple)):
@@ -137,7 +135,7 @@ class AccountInvoice(osv.osv):
             if invoice.id in seen_invoice_ids:
                 continue
             seen_invoice_ids.add(invoice.id)
-            if self._has_any_redsys_collection_marker(invoice):
+            if self._has_any_redsys_collection_marker(cursor, uid, invoice.id, context):
                 continue
             if self._get_recurrent_card_for_invoice(cursor, uid, invoice, context=context):
                 result.append(invoice.id)
@@ -179,113 +177,6 @@ class AccountInvoice(osv.osv):
             return False
 
         return card
-
-    def _get_redsys_config(self, cursor, uid, context=None):
-        if context is None:
-            context = {}
-
-        cfg_obj = self.pool.get("res.config")
-        return {
-            "merchant_code": cfg_obj.get(
-                cursor, uid, "redsys_merchant_code", ""
-            ),
-            "private_key": cfg_obj.get(
-                cursor, uid, "redsys_private_key", ""
-            ),
-            "merchant_url": cfg_obj.get(
-                cursor, uid, "redsys_merchant_url", ""
-            ),
-            "endpoint_url": cfg_obj.get(
-                cursor,
-                uid,
-                "redsys_endpoint_url",
-                "https://sis.redsys.es/sis/rest/trataPeticionREST",
-            ),
-            "terminal": cfg_obj.get(cursor, uid, "redsys_terminal", "1"),
-            "currency": cfg_obj.get(cursor, uid, "redsys_currency", "978"),
-            "timeout": int(cfg_obj.get(cursor, uid, "redsys_timeout", 30)),
-        }
-
-    def _to_base36(self, number, width):
-        alphabet = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-        number = abs(int(number))
-        chars = []
-        while number:
-            number, remainder = divmod(number, 36)
-            chars.append(alphabet[remainder])
-        value = "".join(reversed(chars)) or "0"
-        return value[-width:].rjust(width, "0")
-
-    def _build_redsys_order(self, invoice_id):
-        timestamp = int(time.time() * 1000000)
-        suffix = self._to_base36(timestamp + int(invoice_id), 8)
-        return "%04d%s" % (invoice_id % 10000, suffix)
-
-    def _build_redsys_transaction_params(self, cursor, uid, invoice, card, context=None):
-        if context is None:
-            context = {}
-
-        config = self._get_redsys_config(cursor, uid, context=context)
-        amount_cents = str(
-            int(
-                (Decimal(str(invoice.residual)) * Decimal("100")).quantize(
-                    Decimal("1"), rounding=ROUND_HALF_UP
-                )
-            )
-        )
-        order_ref = self._build_redsys_order(invoice.id)
-        invoice_ref = invoice.number or invoice.name or str(invoice.id)
-
-        params = {
-            "Ds_Merchant_Amount": amount_cents,
-            "Ds_Merchant_Order": order_ref,
-            "Ds_Merchant_MerchantCode": "%s" % config["merchant_code"],
-            "Ds_Merchant_Currency": "%s" % config["currency"],
-            "Ds_Merchant_TransactionType": "0",
-            "Ds_Merchant_Terminal": "%s" % config["terminal"],
-            "Ds_Merchant_MerchantURL": "%s" % config["merchant_url"],
-            "Ds_Merchant_SumTotal": amount_cents,
-            "Ds_Merchant_Identifier": card.token,
-            "Ds_Merchant_Cof_TxnID": card.cof_txnid,
-            "Ds_Merchant_Cof_INI": "N",
-            "Ds_Merchant_Cof_Type": "C",
-            "Ds_Merchant_Excep_SCA": "MIT",
-            "Ds_Merchant_DirectPayment": "true",
-            "Ds_Merchant_PayMethods": "C",
-            "Ds_Merchant_MerchantData": "invoice:%s" % invoice_ref,
-        }
-        return params, order_ref
-
-    def _get_redsys_client(self, cursor, uid, context=None):
-        if context is None:
-            context = {}
-
-        try:
-            from sermepa import RestClient
-        except ImportError:
-            raise osv.except_osv(
-                _("Error"),
-                _(
-                    "No s'ha pogut carregar la llibreria Sermepa. "
-                    "Revisa que estigui disponible al runtime d'ERP."
-                ),
-            )
-
-        config = self._get_redsys_config(cursor, uid, context=context)
-        if not config["merchant_code"] or not config["private_key"]:
-            raise osv.except_osv(
-                _("Error"),
-                _(
-                    "Falta configurar el codi de comerç o la clau privada de Redsys."
-                ),
-            )
-
-        return RestClient(
-            config["merchant_code"],
-            config["private_key"],
-            endpoint_url=config["endpoint_url"],
-            timeout=config["timeout"],
-        )
 
     def _get_tpv_payment_data(self, cursor, uid, context=None):
         if context is None:
@@ -369,30 +260,6 @@ class AccountInvoice(osv.osv):
         )
         return True
 
-    def _extract_redsys_response_info(self, result):
-        result = result or {}
-        merchant_params = result.get("merchant_parameters") or {}
-        raw = result.get("raw") or {}
-
-        response_code = (
-            merchant_params.get("Ds_Response")
-            or raw.get("Ds_Response")
-            or raw.get("Ds_ErrorCode")
-            or raw.get("error")
-            or raw.get("message")
-        )
-        response_message = raw.get("error") or raw.get("message") or raw.get(
-            "Ds_ErrorCode"
-        )
-        return response_code, response_message
-
-    def _is_redsys_success(self, response_code):
-        try:
-            response_number = int("%s" % response_code)
-        except (TypeError, ValueError):
-            return False
-        return 0 <= response_number <= 99
-
     def _get_redsys_failure_pending_state_id(self, cursor, uid, context=None):
         if context is None:
             context = {}
@@ -404,72 +271,10 @@ class AccountInvoice(osv.osv):
             self._redsys_failure_pending_state_ref[1],
         )[1]
 
-    def _format_redsys_failure_note(
-        self, invoice, order_ref, response_code, message, context=None
-    ):
-        if context is None:
-            context = {}
-
-        invoice_name = self._to_redsys_unicode(invoice.number or invoice.name or invoice.id)
-        response_code_text = self._to_redsys_unicode(
-            response_code if response_code is not None else "HTTP"
+    def _has_any_redsys_collection_marker(self, cursor, uid, invoice_id, context=None):
+        return self.pool.get("som.card.payment.attempt").has_blocking_attempt(
+            cursor, uid, invoice_id, context=context
         )
-        message_text = self._to_redsys_unicode(
-            message if message is not None else _("Sense detall")
-        )
-        message_text = message_text.replace("\n", " ").replace("\r", " ").strip()
-        if not message_text:
-            message_text = self._to_redsys_unicode(_("Sense detall"))
-
-        return (
-            u"{} - Redsys targeta recurrent KO - factura {} - ordre {} - codi {} - {}".format(
-                date.today().strftime("%Y-%m-%d"),
-                invoice_name,
-                order_ref,
-                response_code_text,
-                message_text,
-            )
-        )
-
-    def _to_redsys_unicode(self, value):
-        if value is None:
-            return u""
-        if isinstance(value, unicode):
-            return value
-        if isinstance(value, str):
-            return value.decode("utf-8", "replace")
-        return unicode(value)
-
-    def _has_redsys_success_pending_reconcile(self, invoice):
-        current_comment = self._to_redsys_unicode(
-            getattr(invoice, "comment", False) or u""
-        )
-        return self._redsys_success_pending_reconcile_marker in current_comment
-
-    def _has_any_redsys_collection_marker(self, invoice):
-        return (
-            self._has_redsys_success_pending_reconcile(invoice)
-            or self._has_redsys_manual_review_pending(invoice)
-            or self._has_redsys_failure_pending(invoice)
-        )
-
-    def _is_redsys_invoice_lock_conflict(self, exc):
-        return getattr(exc, "pgcode", False) == "55P03"
-
-    def _lock_redsys_invoice_for_collection(self, cursor, uid, invoice_id, context=None):
-        savepoint = "redsys_card_lock_%s_%s" % (invoice_id, id(cursor))
-        cursor.savepoint(savepoint)
-        try:
-            cursor.execute(
-                "SELECT id FROM account_invoice WHERE id = %s FOR UPDATE NOWAIT",
-                (invoice_id,),
-            )
-        except Exception as exc:
-            cursor.rollback(savepoint)
-            if self._is_redsys_invoice_lock_conflict(exc):
-                return False
-            raise
-        return True
 
     def _is_recurrent_card_invoice_still_collectable(self, invoice):
         if getattr(invoice, "state", "open") != "open":
@@ -496,157 +301,6 @@ class AccountInvoice(osv.osv):
             return False
         return True
 
-    def _redsys_success_reconcile_savepoint_name(self, cursor, invoice_id):
-        return "redsys_card_success_reconcile_%s_%s" % (invoice_id, id(cursor))
-
-    def _format_redsys_success_reconcile_note(self, invoice, order_ref, message):
-        invoice_name = self._to_redsys_unicode(
-            invoice.number or invoice.name or invoice.id
-        )
-        message_text = self._to_redsys_unicode(message or _("Sense detall"))
-        message_text = message_text.replace("\n", " ").replace("\r", " ").strip()
-        return (
-            u"{} - {} - "
-            u"factura {} - ordre {} - {}".format(
-                date.today().strftime("%Y-%m-%d"),
-                self._redsys_success_pending_reconcile_marker,
-                invoice_name,
-                self._to_redsys_unicode(order_ref),
-                message_text,
-            )
-        )
-
-    def _register_redsys_success_reconcile_failure(
-        self, cursor, uid, invoice, order_ref, message, context=None
-    ):
-        if context is None:
-            context = {}
-
-        current_comment = self._to_redsys_unicode(
-            getattr(invoice, "comment", False) or u""
-        )
-        if self._has_redsys_success_pending_reconcile(invoice):
-            return False
-
-        success_note = self._format_redsys_success_reconcile_note(
-            invoice, order_ref, message
-        )
-        new_comment = success_note + (current_comment and u"\n" + current_comment or u"")
-        self.write(cursor, uid, [invoice.id], {"comment": new_comment}, context=context)
-        return True
-
-    def _has_redsys_manual_review_pending(self, invoice):
-        current_comment = self._to_redsys_unicode(
-            getattr(invoice, "comment", False) or u""
-        )
-        return self._redsys_manual_review_marker in current_comment
-
-    def _has_redsys_failure_pending(self, invoice):
-        # A KO marker intentionally blocks automatic retries. Operators must
-        # resolve the unpaid/manual-review situation and clear the marker from
-        # invoice additional information before allowing a new cron attempt.
-        current_comment = self._to_redsys_unicode(
-            getattr(invoice, "comment", False) or u""
-        )
-        return self._redsys_failure_marker in current_comment
-
-    def _format_redsys_manual_review_note(self, invoice, order_ref, message):
-        invoice_name = self._to_redsys_unicode(
-            invoice.number or invoice.name or invoice.id
-        )
-        message_text = self._to_redsys_unicode(message or _("Sense detall"))
-        message_text = message_text.replace("\n", " ").replace("\r", " ").strip()
-        if not message_text:
-            message_text = self._to_redsys_unicode(_("Sense detall"))
-
-        return (
-            u"{} - {} - factura {} - ordre {} - codi HTTP - {}".format(
-                date.today().strftime("%Y-%m-%d"),
-                self._redsys_manual_review_marker,
-                invoice_name,
-                self._to_redsys_unicode(order_ref),
-                message_text,
-            )
-        )
-
-    def _register_redsys_manual_review(
-        self, cursor, uid, invoice, order_ref, message, context=None
-    ):
-        if context is None:
-            context = {}
-
-        current_comment = self._to_redsys_unicode(
-            getattr(invoice, "comment", False) or u""
-        )
-        order_marker = u"ordre {}".format(self._to_redsys_unicode(order_ref))
-        if (
-            self._redsys_manual_review_marker in current_comment
-            and order_marker in current_comment
-        ):
-            return False
-
-        review_note = self._format_redsys_manual_review_note(
-            invoice, order_ref, message
-        )
-        new_comment = review_note + (current_comment and u"\n" + current_comment or u"")
-        self.write(cursor, uid, [invoice.id], {"comment": new_comment}, context=context)
-        return True
-
-    def _register_redsys_failure(
-        self, cursor, uid, invoice, order_ref, response_code, message, context=None
-    ):
-        if context is None:
-            context = {}
-
-        target_pending_state_id = self._get_redsys_failure_pending_state_id(
-            cursor, uid, context=context
-        )
-        current_pending_state_id = (
-            invoice.pending_state and invoice.pending_state.id or False
-        )
-        response_code_text = self._to_redsys_unicode(
-            response_code if response_code is not None else "HTTP"
-        )
-        marker = u"ordre {} - codi {}".format(order_ref, response_code_text)
-        current_comment = self._to_redsys_unicode(invoice.comment or u"")
-
-        if marker in current_comment:
-            if current_pending_state_id != target_pending_state_id:
-                self._set_redsys_failure_pending(
-                    cursor,
-                    uid,
-                    invoice.id,
-                    target_pending_state_id,
-                    context=context,
-                )
-            return False
-
-        failure_note = self._format_redsys_failure_note(
-            invoice, order_ref, response_code_text, message, context=context
-        )
-        if current_comment:
-            new_comment = failure_note + u"\n" + current_comment
-        else:
-            new_comment = failure_note
-
-        self.write(
-            cursor,
-            uid,
-            [invoice.id],
-            {"comment": new_comment},
-            context=context,
-        )
-
-        if current_pending_state_id != target_pending_state_id:
-            self._set_redsys_failure_pending(
-                cursor,
-                uid,
-                invoice.id,
-                target_pending_state_id,
-                context=context,
-            )
-        return True
-
     def _set_redsys_failure_pending(
         self, cursor, uid, invoice_id, pending_state_id, context=None
     ):
@@ -667,67 +321,8 @@ class AccountInvoice(osv.osv):
         )
 
     def _charge_invoice_by_redsys(self, cursor, uid, invoice_id, context=None):
-        if context is None:
-            context = {}
-
-        if not self._lock_redsys_invoice_for_collection(
+        return self.pool.get("som.card.payment.attempt").charge_invoice(
             cursor, uid, invoice_id, context=context
-        ):
-            return False
-
-        invoice = self.browse(cursor, uid, invoice_id, context=context)
-        if not self._is_recurrent_card_invoice_still_collectable(invoice):
-            return False
-        if self._has_any_redsys_collection_marker(invoice):
-            return False
-
-        card = self._get_recurrent_card_for_invoice(cursor, uid, invoice, context=context)
-        if not card:
-            return False
-
-        payment_data = self._get_tpv_payment_data(cursor, uid, context=context)
-        params, order_ref = self._build_redsys_transaction_params(
-            cursor, uid, invoice, card, context=context
-        )
-        client = self._get_redsys_client(cursor, uid, context=context)
-
-        try:
-            result = client.mit_payment(params)
-            response_code, response_message = self._extract_redsys_response_info(result)
-        except Exception as exc:
-            return self._register_redsys_manual_review(
-                cursor,
-                uid,
-                invoice,
-                order_ref,
-                "%s" % exc,
-                context=context,
-            )
-
-        if self._is_redsys_success(response_code):
-            savepoint = self._redsys_success_reconcile_savepoint_name(
-                cursor, invoice_id
-            )
-            cursor.savepoint(savepoint)
-            try:
-                self._pay_invoice_by_tpv(
-                    cursor, uid, invoice, payment_data=payment_data, context=context
-                )
-            except Exception as exc:
-                cursor.rollback(savepoint)
-                return self._register_redsys_success_reconcile_failure(
-                    cursor, uid, invoice, order_ref, "%s" % exc, context=context
-                )
-            return True
-
-        return self._register_redsys_failure(
-            cursor,
-            uid,
-            invoice,
-            order_ref,
-            response_code,
-            response_message,
-            context=context,
         )
 
 
