@@ -28,7 +28,7 @@ class SomLeadWww(osv.osv_memory):
     _128_SIMPLIFIED_SURPLUSES = 'a0'
     _131_CONSUMPTION = '01'
     _SIGNATURE_COMPLETED_STATUS = 'completed'
-    _SIGNATURE_ERROR_STATUSES = ('error', 'canceled', 'declined', 'expired')
+    _SIGNATURE_ERROR_STATUSES = ('error', 'canceled', 'declined', 'expired', 'unsend')
 
     def create_lead(self, cr, uid, www_vals, context=None):
         if context is None:
