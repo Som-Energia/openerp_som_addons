@@ -12,6 +12,7 @@
         "giscedata_facturacio_comer",
         "account_account_som",
         "account_invoice_pending",
+        "giscedata_facturacio_impagat",
     ],
     "init_xml": [],
     "demo_xml": [],
