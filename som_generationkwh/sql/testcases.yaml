@@ -1,0 +1,19 @@
+#!/usr/bin/env back2back
+datapath: b2bdata
+testcases:
+    investments_all:
+        command: sql2csv.py -C config.py investment_from_accounting.sql --start 2000-01-01 --stop 2100-01-01 --generationAccountPrefix 163500% --waitingDays 1 --expirationYears 1 > output.csv
+        outputs:
+        - output.csv
+    genkwh_investors_profile:
+        command: sql2csv.py -C config.py investors_profile.sql > output.csv
+        outputs:
+        - output.csv
+    assignacio_total_b2b:
+        command: sql2csv.py -C config.py default_contracts_to_assign.sql --socis "(6981,14014,8899,17562,8430,3071,351,3)"  > output.csv
+        outputs:
+        - output.csv
+    socis_titular_o_pagador_b2b:
+        command: sql2csv.py -C config.py gen_kwh_inversion_b2b.sql  > output.csv
+        outputs:
+        - output.csv

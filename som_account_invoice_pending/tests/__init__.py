@@ -10,3 +10,4 @@ from .wizard_unlink_sms_pending_history_tests import *
 from .wizard_tugesto_invoices_export_tests import *
 from .wizard_pay_invoice_tests import *
 from .account_invoice_tests import *
+from .tests_correu_backend_blocked_payment import *

@@ -1,0 +1,33 @@
+<?xml version="1.0"?>
+<openerp>
+    <data>
+        <record id="view_partner_form_creditcards" model="ir.ui.view">
+            <field name="name">res.partner.creditcards.form</field>
+            <field name="model">res.partner</field>
+            <field name="type">form</field>
+            <field name="priority">90</field>
+            <field name="inherit_id" ref="account.view_partner_property_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='bank_ids']" position="after">
+                    <separator string="Targetes" colspan="4"/>
+                    <field name="creditcard_ids" colspan="4" nolabel="1">
+                        <tree editable="bottom" string="Targetes">
+                            <field name="masked_number"/>
+                            <field name="expiry_date"/>
+                            <field name="token"/>
+                            <field name="cof_txnid"/>
+                        </tree>
+                        <form string="Targeta">
+                            <group col="4" colspan="4">
+                                <field name="masked_number"/>
+                                <field name="expiry_date"/>
+                                <field name="token" colspan="4"/>
+                                <field name="cof_txnid" colspan="4"/>
+                            </group>
+                        </form>
+                    </field>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</openerp>

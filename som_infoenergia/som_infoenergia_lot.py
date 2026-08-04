@@ -104,6 +104,7 @@ class SomInfoenergiaLotEnviament(osv.osv):
 
         # Remove already created
         before_clean = len(object_ids)
+        object_ids = [int(id) for id in object_ids]
         env_obj = self.get_enviament_object(cursor, uid, ids)
         env_ids = env_obj.search(cursor, uid, [('lot_enviament', '=', ids)])
         for pol in env_obj.read(cursor, uid, env_ids, ['polissa_id']):

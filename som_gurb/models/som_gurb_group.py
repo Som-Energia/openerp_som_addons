@@ -21,6 +21,20 @@ class SomGurbGroup(osv.osv):
 
         return res_id
 
+    def unlink(self, cursor, uid, ids, context={}):
+        gurb_cau_obj = self.pool.get("som.gurb.cau")
+        for gurb_group_id in ids:
+            gurb_cuau_ids = gurb_cau_obj.search(
+                cursor, uid, [("gurb_group_id", "=", gurb_group_id)], context=context
+            )
+            if gurb_cuau_ids:
+                raise osv.except_osv(
+                    _('Error !'),
+                    _('No pots eliminar un GURB Grup amb GURB Caus!')
+                )
+            else:
+                return super(SomGurbGroup, self).unlink(cursor, uid, ids, context=context)
+
     def _ff_get_address_fields(self, cursor, uid, ids, field_name, arg, context=None):
         if context is None:
             context = {}

@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+    <data>
+        <record model="ir.ui.view" id="view_wizard_investment_amortization_form">
+            <field name="name">wizard.generationkwh.investment.amortization.form</field>
+            <field name="model">wizard.generationkwh.investment.amortization</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <form string="Assistent Amortització de inversions">
+                    <field name="state" invisible="1"/>
+                    <field name="amortizeds" invisible="1"/>
+
+                    <group colspan="4" col="4" attrs="{'invisible':[('state', '!=', 'init')]}">
+                        <field name="date_end"/>
+                        <label string="" colspan="4" />
+                        <label string="" colspan="4" />
+                        <field name="validation" nolabel="1" colspan="4" />
+                        <separator colspan="4" />
+                        <button string="Previsualitza" name="preview" type="object" icon="gtk-execute"/>
+                    </group>
+
+                    <group colspan="4" col="4" attrs="{'invisible':[('state', '!=', 'pre_calc')]}">
+                        <separator string="Previsualització de resultats" colspan="4" />
+                        <field name="output" nolabel="1" colspan="4" height="75"/>
+                        <separator colspan="4" />
+                        <button string="Crear amortitzacions" name="generate" type="object" icon="gtk-new" />
+                    </group>
+
+                    <group colspan="4" col="4" attrs="{'invisible':[('state', '!=', 'close')]}">
+                        <group colspan="4" col="4" attrs="{'invisible':[('errors', '=', False)]}">
+                            <separator string="Errors" colspan="4" />
+                            <field name="errors" nolabel="1" colspan="4" height="150" />
+                        </group>
+                        <separator string="Resultats" colspan="4" />
+                        <field name="results" nolabel="1" colspan="4" height="75"/>
+                        <separator colspan="4" />
+                        <button string="Mostrar factures" name="close_and_show" type="object" icon="gtk-ok"/>
+                        <button string="Mostrar remesa" name="show_payment_order" type="object" icon="gtk-ok"/>
+                    </group>
+
+
+                </form>
+            </field>
+        </record>
+        <record model="ir.actions.act_window" id="action_wizard_investment_amortization_form">
+            <field name="name">Genera amortitzacions pendents</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">wizard.generationkwh.investment.amortization</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="view_wizard_investment_amortization_form"/>
+            <field name="target">new</field>
+        </record>
+        <record id="value_wizard_generationkwh_investment_amortization" model="ir.values">
+            <field name="object" eval="1"/>
+            <field name="name">Genera amortitzacions pendents</field>
+            <field name="key2">client_action_multi</field>
+            <field name="key">action</field>
+            <field name="model">generationkwh.investment</field>
+            <field name="value" eval="'ir.actions.act_window,'+str(ref('action_wizard_investment_amortization_form'))" />
+        </record>
+        <record model="ir.actions.act_window" id="action_wizard_investment_amortization_form_global">
+            <field name="name">Genera totes les amortitzacions pendents</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">wizard.generationkwh.investment.amortization</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="view_wizard_investment_amortization_form"/>
+            <field name="target">new</field>
+            <field name="context">{'search_all': 'True'}</field>
+        </record>
+    </data>
+</openerp>

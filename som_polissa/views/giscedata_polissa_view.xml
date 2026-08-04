@@ -317,7 +317,7 @@
                     <field name="historic_autoconsum" />
                 </xpath>
                 <xpath expr="//page[@string='Autoconsum']" position="attributes">
-                    <attribute name="attrs">{'invisible':[('historic_autoconsum','=', False)]}</attribute>
+                    <attribute name="attrs">{'invisible':[('tipus_subseccio','in', ['00', '0C'])]}</attribute>
                 </xpath>
             </field>
         </record>

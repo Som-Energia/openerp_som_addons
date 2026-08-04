@@ -41,7 +41,7 @@ class GiscedataPolissa(osv.osv):
         return res
 
     def get_modcontractual_intervals(
-            self, cursor, uid, polissa_id, data_inici, data_final, context=None):
+            self, cursor, uid, polissa_id, data_inici, data_final, with_power=True, context=None):
         if context is None:
             context = {}
 
@@ -53,7 +53,7 @@ class GiscedataPolissa(osv.osv):
         })
 
         dates_de_tall = super(GiscedataPolissa, self).get_modcontractual_intervals(
-            cursor, uid, polissa_id, data_inici, data_final, ctx)
+            cursor, uid, polissa_id, data_inici, data_final, with_power=with_power, context=ctx)
 
         llista_preu_dades = []
         indexed_formula_old = ""

@@ -13,6 +13,8 @@
         "som_dashboard_custom_search.xml",
         "som_dashboard_contractes.xml",
         "som_dashboard_gc_fase_3.xml",
+        "som_dashboard_gc_tasca_1.xml",
+        "som_dashboard_gc_endarrerits.xml",
     ],
     "active": False,
     "installable": True,

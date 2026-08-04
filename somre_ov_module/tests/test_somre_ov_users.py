@@ -10,7 +10,7 @@ from ..models.exceptions import NoSuchUser
 class SomreOvUsersTests(testing.OOTestCase):
 
     base_costumer_vat = 'ES48591264S'
-    base_staff_vat = 'G78525763'
+    base_staff_vat = 'G78525764'
 
     def setUp(self):
         self.pool = self.openerp.pool

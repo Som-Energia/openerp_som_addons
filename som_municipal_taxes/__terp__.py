@@ -3,7 +3,7 @@
 {
     'name': 'Som municipal taxes',
     'description': 'Mòdul per gestionar el pagament del impost municipal',
-    "version": "24.5.0",
+    "version": "0-dev",
     'category': 'Som Energia module',
     'website': 'https://github.com/Som-Energia/openerp-som-addons',
     'author': 'Som Energia SCCL',

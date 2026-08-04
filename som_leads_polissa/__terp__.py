@@ -5,7 +5,7 @@
     This module provide :
         * Afegir o modificar funcionalitats dels leads base
     """,
-    "version": "24.5.0",
+    "version": "0-dev",
     "author": "SomEnergia",
     "category": "SomEnergia",
     "depends": [
@@ -20,18 +20,21 @@
         "l10n_ES_aeat_mod347",
         "account_account_som",
         "som_partner_account",
+        "giscedata_crm_leads_signatura",
+        "giscedata_crm_leads_switching_signaturit",
+        "som_card_payment",
     ],
     "init_xml": [],
     "demo_xml": [
         "demo/som_leads_polissa_demo.xml",
     ],
     "update_xml": [
+        "data/giscedata_crm_lead_data.xml",
         "views/giscedata_crm_lead_view.xml",
         "views/res_partner_view.xml",
-        "data/giscedata_crm_lead_data.xml",
-        "security/ir.model.access.csv",
         "wizard/wizard_crm_lead_create_entities_view.xml",
         "wizard/wizard_importador_leads_comercials_view.xml",
+        "security/ir.model.access.csv",
     ],
     "active": False,
     "installable": True,

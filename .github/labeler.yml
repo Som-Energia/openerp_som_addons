@@ -10,6 +10,10 @@ giscedata_facturacio_som:
 -  giscedata_facturacio_som/**
 GithubActions:
 -  .github/**
+docs:
+-  docs/**
+devolucions_base_som:
+-  devolucions_base_som/**
 powersms:
 -  powersms/**
 report_tester:
@@ -26,6 +30,8 @@ som_autoreclama:
 -  som_autoreclama/**
 som_auvidi:
 -  som_auvidi/**
+som_card_payment:
+-  som_card_payment/**
 som_control_reports:
 -  som_control_reports/**
 som_crawlers:
@@ -64,6 +70,10 @@ som_infoenergia:
 -  som_infoenergia/**
 som_informe:
 -  som_informe/**
+som_generationkwh:
+ -  som_generationkwh/**
+som_plantmeter:
+ -  som_plantmeter/**
 som_inversions:
 -  som_inversions/**
 som_l10n_ES_aeat_mod347:

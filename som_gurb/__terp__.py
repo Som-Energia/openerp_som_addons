@@ -2,10 +2,11 @@
 {
     "name": "Generació urbana",
     "description": "Mòdul per gestionar els grups de generació urbana",
-    "version": "24.5.0",
+    "version": "0-dev",
     "author": "SomEnergia",
     "category": "SomEnergia",
     "depends": [
+        "account_invoice_som",  # remove when banners import is fixed in account_invoice_base
         "giscedata_polissa",
         "giscedata_telemesures_base",
         "giscedata_facturacio_services",
@@ -17,7 +18,8 @@
         "som_poweremail_common_templates",
         "giscedata_signatura_documents_signaturit",
         "som_switching",
-        "som_polissa_condicions_generals"
+        "som_polissa_condicions_generals",
+        "www_som",
     ],
     "demo_xml": [
         "demo/som_gurb_service_demo.xml",

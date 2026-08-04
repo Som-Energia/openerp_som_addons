@@ -85,6 +85,7 @@ class ReportBackendInvoiceEmail(ReportBackend):
         else:
             return False
 
+    @report_browsify
     def get_factura(self, cursor, uid, fra, context=None):
         if context is None:
             context = {}

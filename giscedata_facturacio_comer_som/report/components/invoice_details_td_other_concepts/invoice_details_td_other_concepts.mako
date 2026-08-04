@@ -182,14 +182,17 @@ TABLA_101 = {
                     ${_(u"%s kWh x 0,0005 €/kWh (aplicant Art 99.2 de la Llei 28/2014 sense bonificació del 85%%)") % (formatLang(l['base_iese']))}
                 % elif l.tax_type == 'excempcio':
                     ${_(u"%s € x 0,5%%") % (formatLang(l['base_iese']))}
+                % elif l.tax_type == '0.5percent2026':
+                    ${_(u"%s € x 0,5%%") % (formatLang(l['base_iese']))}
+                    ${_(u"En virtut del Reial Decret-llei 7/2026, del 20 de març, l'Impost Especial sobre l'Electricitat aplicat a la factura es troba reduït del 5,11269632% al 0,5%.")}
                 % else:
                     ${_(u"%s € x 5,11269%%") % (formatLang(l['base_iese']))}
                 % endif
                 % if  l.tax_type in ('excempcio', '5.11percent'):
                     %if id.is_excempcio_IE_base:
                         ${_(u" (amb l'exempció del {}% sobre el {}% de Base Imposable IE)").format(
-                            id.percentatges_exempcio_splitted[2].replace('-', ''),
-                            formatLang(id.percentatges_exempcio[0] * 100, digits=1)
+                            formatLang(id.percentatges_exempcio[1] * 100, digits=0),
+                            formatLang(id.percentatges_exempcio[0] * 100, digits=2)
                         )}
                     %else:
                         ${_(u" (amb l'exempció del ")} ${id.excempcio})
@@ -216,6 +219,9 @@ TABLA_101 = {
                     ${_(u"%s kWh x 0,001 €/kWh (aplicant Art 99.2 de la Llei 28/2014)") % (formatLang(l['base_amount']))}
                 % elif l.tax_type == '0.5euroMWh':
                     ${_(u"%s kWh x 0,0005 €/kWh (aplicant Art 99.2 de la Llei 28/2014)") % (formatLang(l['base_amount']))}
+                % elif l.tax_type == '0.5percent2026':
+                    ${_(u"%s € x 0,5%%") % (formatLang(l['base_amount']))}
+                    ${_(u"En virtut del Reial Decret-llei 7/2026, del 20 de març, l'Impost Especial sobre l'Electricitat aplicat a la factura es troba reduït del 5,11269632% al 0,5%.")}
                 % else:
                     ${_(u"%s € x 5,11269%%") % (formatLang(l['base_amount']))}
                 % endif
@@ -244,7 +250,7 @@ TABLA_101 = {
         %if l.disclaimer_21_to_5:
             ${_(u"En virtut del Reial Decret-llei 12/2021, del 24 de juny, l'IVA aplicable a la factura es troba reduït del 21% al 5%.")}
         %elif l.disclaimer_21_to_10:
-            ${_(u"En virtut del Reial Decret-llei 8/2023, del 27 de desembre, l’IVA aplicat a la factura es troba reduït del 21% al 10%")}
+            ${_(u"En virtut del Reial Decret-llei 10/2026, del 28 d'abril, l’IVA aplicat a la factura es troba reduït del 21% al 10%.")}
         %endif
         </td>
         <td class="subtotal">${_(u"%s €") % formatLang(l['amount'])}</td>

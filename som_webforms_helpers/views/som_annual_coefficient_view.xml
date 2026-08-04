@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+    <data>
+        <record model="ir.ui.view" id="view_simulation_annual_coeff_tree">
+            <field name="name">som.annual.coefficient.tree</field>
+            <field name="model">som.annual.coefficient</field>
+            <field name="type">tree</field>
+            <field name="arch" type="xml">
+                <tree string="Simulation coefficients">
+                    <field name="year"/>
+                    <field name="tariff"/>
+                    <field name="p1_ratio"/>
+                    <field name="p2_ratio"/>
+                    <field name="p3_ratio"/>
+                    <field name="p4_ratio"/>
+                    <field name="p5_ratio"/>
+                    <field name="p6_ratio"/>
+                </tree>
+            </field>
+        </record>
+
+        <record model="ir.ui.view" id="view_simulation_annual_coeff_form">
+            <field name="name">som.annual.coefficient.form</field>
+            <field name="model">som.annual.coefficient</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <form string="Simulation coefficient">
+                    <group colspan="4">
+                        <field name="year"/>
+                        <field name="tariff"/>
+                        <field name="p1_ratio"/>
+                        <field name="p2_ratio"/>
+                        <field name="p3_ratio"/>
+                        <field name="p4_ratio"/>
+                        <field name="p5_ratio"/>
+                        <field name="p6_ratio"/>
+                    </group>
+                </form>
+            </field>
+        </record>
+    </data>
+</openerp>

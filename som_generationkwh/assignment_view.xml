@@ -1,0 +1,61 @@
+<?xml version="1.0"?>
+<openerp>
+    <data>
+    <!-- Assignment tree in member view -->
+        <record model="ir.ui.view" id="view_gkwh_assignment_member_tree">
+            <field name="name">generationkwh.assignment.tree</field>
+            <field name="model">generationkwh.assignment</field>
+            <field name="type">tree</field>
+            <field name="priority">10</field>
+            <field name="arch" type="xml">
+                <tree string="Assignacions a contracte de Generation kWh">
+                    <field name="priority"/>
+                    <field name="contract_id"/>
+                    <field name="end_date"/>
+                    <field name="contract_state"/>
+                    <field name="contract_last_invoiced"/>
+                    <field name="cups_direction"/>
+                    <field name="cups_anual_use"/>
+                </tree>
+            </field>
+        </record>
+        <!-- generic assignments views -->
+        <record model="ir.ui.view" id="view_gkwh_assignment_form">
+            <field name="name">generationkwh.assignment.form</field>
+            <field name="model">generationkwh.assignment</field>
+            <field name="type">form</field>
+            <field name="priority">50</field>
+            <field name="arch" type="xml">
+                <form string="Assignacions a contracte de Generation kWh">
+                    <field name="contract_id" select="1"/>
+                    <field name="member_id" select="1"/>
+                    <field name="priority"/>
+                    <field name="end_date"/>
+                </form>
+            </field>
+        </record>
+        <record model="ir.ui.view" id="view_gkwh_assignment_tree">
+            <field name="name">generationkwh.assignment.tree</field>
+            <field name="model">generationkwh.assignment</field>
+            <field name="type">tree</field>
+            <field name="arch" type="xml">
+                <tree string="Assignacions a contracte de Generation kWh">
+                    <field name="contract_id"/>
+                    <field name="member_id"/>
+                    <field name="priority"/>
+                    <field name="end_date"/>
+                </tree>
+            </field>
+        </record>
+        <record id="action_gkwh_assignment_tree" model="ir.actions.act_window">
+            <field name="name">Assignaments a contracte de Generation kWh</field>
+            <field name="res_model">generationkwh.assignment</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="view_id" ref="view_gkwh_assignment_tree"/>
+        </record>
+        <menuitem id="menu_gkwh_base" name="Aportacions"/>
+        <menuitem action="action_gkwh_assignment_tree"
+            id="menu_gkwh_assignment_tree" parent="menu_gkwh_base"/>
+    </data>
+</openerp>

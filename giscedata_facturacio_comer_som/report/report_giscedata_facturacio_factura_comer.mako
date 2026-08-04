@@ -18,7 +18,6 @@ report_data = r_obj.get_report_data(cursor, uid, objects)
     ajust_fet = False
     motiu_ajust = ''
 %>
-<script src="${addons_path}/giscedata_facturacio_comer_som/report/d3.min.js"></script>
 <script>
     d3_antic = d3
     window.d3 = null
@@ -54,7 +53,7 @@ report_data = r_obj.get_report_data(cursor, uid, objects)
         <h1>${_(u"INFORMACIÓ DE L'ELECTRICITAT UTILITZADA")}</h1>
         <div>
             <%include file="/giscedata_facturacio_comer_som/report/components/energy_consumption_graphic_td/energy_consumption_graphic_td.mako" args="energy=factura_data.energy_consumption_graphic_td" />
-            % if factura_data.globals.is_indexed:
+            % if factura_data.globals.is_indexed and factura_data.globals.is_abonadora == False:
                 <%include file="/giscedata_facturacio_comer_som/report/components/hourly_curve/hourly_curve.mako" args="hc=factura_data.hourly_curve" />
             % endif
         </div>

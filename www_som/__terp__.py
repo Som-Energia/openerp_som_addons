@@ -4,7 +4,7 @@
     "description": """
 Mòdul per la integració de l'oficina virtual
     """,
-    "version": "24.5.0",
+    "version": "0-dev",
     "author": "GISCE-TI, S.L.",
     "category": "www",
     "depends": [
@@ -32,6 +32,7 @@ Mòdul per la integració de l'oficina virtual
         "wizard/wizard_model_list_from_file_data.xml",
         "security/ir.model.access.csv",
         "ir_attachment_view.xml",
+        "data/pricelist_social_data.xml",
     ],
     "active": False,
     "installable": True,

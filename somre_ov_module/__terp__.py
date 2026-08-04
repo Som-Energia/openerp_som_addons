@@ -3,7 +3,7 @@
 {
     'name': 'somre_ov_module',
     'description': 'Modul de som representa com a suport de la oficina virtual',
-    "version": "24.5.0",
+    "version": "0-dev",
     'category': 'Som Energia module',
     'website': 'https://github.com/Som-Energia/openerp-som-addons',
     'author': 'Som Energia SCCL',

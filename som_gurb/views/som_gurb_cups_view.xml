@@ -72,6 +72,7 @@
                     <field name="signed" />
                     <field name="ens_ha_avisat" select="1"/>
                     <field name="state" select="1"/>
+                    <field name="inscription_date" select="1"/>
                 </tree>
             </field>
         </record>

@@ -52,6 +52,7 @@ class UpdatePendingStates(osv.osv_memory):
         self.update_waiting_for_annexIV(cursor, uid)
         self.update_waiting_for_48h(cursor, uid)
         self.send_fue_reminder_emails(cursor, uid)
+        self.send_r1_reminder_emails(cursor, uid)
 
     def get_object_id(self, cursor, uid, module, sem_id):
         """
@@ -62,10 +63,13 @@ class UpdatePendingStates(osv.osv_memory):
 
     def get_invoices_with_pending_state(self, cursor, uid, pending_state):
         """
-        Return invoices (giscedata factura) with the given pending state
+        Return customer invoices (giscedata factura) with the given pending state
         """
         fact_obj = self.pool.get("giscedata.facturacio.factura")
-        factura_ids = fact_obj.search(cursor, uid, [("pending_state", "=", pending_state)])
+        factura_ids = fact_obj.search(cursor, uid, [
+            ("pending_state", "=", pending_state),
+            ("type", "in", ["out_invoice", "out_refund"])
+        ])
         return factura_ids
 
     def get_from_email(self, cursor, uid, template_id):
@@ -1037,7 +1041,7 @@ class UpdatePendingStates(osv.osv_memory):
             date_fue = datetime.strptime(fact.pending_state_date, "%Y-%m-%d %H:%M:%S")
             date_diff = datetime.today() - date_fue
 
-            if date_diff.days % 330 == 0:
+            if date_diff.days and date_diff.days % 330 == 0:
                 ret_value = self.send_email(cursor, uid, factura_id, email_params)
                 if ret_value == -1:
                     logger.info(
@@ -1048,6 +1052,51 @@ class UpdatePendingStates(osv.osv_memory):
                 else:
                     old_comment = fact.comment if fact.comment else ""
                     new_comment = "{} (auto.): Enviat correu recordatori FUE.\n".format(
+                        datetime.now().strftime("%Y-%m-%d")
+                    )
+                    gff_obj.write(cursor, uid, factura_id, {"comment": new_comment + old_comment})
+
+    def send_r1_reminder_emails(self, cursor, uid, context=None):
+        if context is None:
+            context = {}
+
+        gff_obj = self.pool.get("giscedata.facturacio.factura")
+        logger = logging.getLogger("openerp.poweremail")
+        r1_dp_state = self.get_object_id(
+            cursor, uid, "som_account_invoice_pending", "default_reclamacio_en_curs_pending_state"
+        )
+        r1_bs_state = self.get_object_id(
+            cursor, uid, "som_account_invoice_pending", "reclamacio_en_curs_pending_state"
+        )
+        factura_ids = []
+        facts_dp = self.get_invoices_with_pending_state(cursor, uid, r1_dp_state)
+        facts_bs = self.get_invoices_with_pending_state(cursor, uid, r1_bs_state)
+
+        factura_ids = facts_dp + facts_bs
+
+        r1_reminder_template_id = self.get_object_id(
+            cursor, uid, "som_account_invoice_pending", "email_r1_reminder"
+        )
+        email_from = self.get_from_email(cursor, uid, r1_reminder_template_id)
+
+        email_params = dict({"email_from": email_from, "template_id": r1_reminder_template_id})
+
+        for factura_id in factura_ids:
+            fact = gff_obj.browse(cursor, uid, factura_id)
+            date_r1 = datetime.strptime(fact.pending_state_date, "%Y-%m-%d %H:%M:%S")
+            date_diff = datetime.today() - date_r1
+
+            if date_diff.days and date_diff.days % 330 == 0:
+                ret_value = self.send_email(cursor, uid, factura_id, email_params)
+                if ret_value == -1:
+                    logger.info(
+                        "ERROR: Sending R1 reminder for {factura_id} invoice error.".format(
+                            factura_id=factura_id,
+                        )
+                    )
+                else:
+                    old_comment = fact.comment if fact.comment else ""
+                    new_comment = "{} (auto.): Enviat correu recordatori R1.\n".format(
                         datetime.now().strftime("%Y-%m-%d")
                     )
                     gff_obj.write(cursor, uid, factura_id, {"comment": new_comment + old_comment})

@@ -41,7 +41,10 @@ class SomenergiaSoci(osv.osv):
     def create_one_soci(self, cursor, uid, partner_id, context=None):
         """Creates only one soci (member) from a partner"""
         if isinstance(partner_id, (tuple, list)):
-            partner_id[0]
+            partner_id = partner_id[0]
+        if not context:
+            context = {}
+        context['mailchimp_from'] = 'create_one_soci: partner_id {}'.format(partner_id)
         rpa_obj = self.pool.get("res.partner.address")
 
         vals = {"partner_id": partner_id}
@@ -51,20 +54,21 @@ class SomenergiaSoci(osv.osv):
         else:
             soci_id = self.create(cursor, uid, vals, context=context)
 
-        try:
-            if soci_id:
-                rpa_obj.unsubscribe_partner_in_customers_no_members_lists(
-                    cursor, uid, partner_id, context=context
-                )
-                rpa_obj.subscribe_partner_in_members_lists(
-                    cursor, uid, partner_id, context=context
-                )
-        except Exception as e:
-            sentry = self.pool.get('sentry.setup')
-            if sentry:
-                sentry.client.captureException()
-            logger = logging.getLogger("openerp.{0}.create_one_soci".format(__name__))
-            logger.warning("Error al comunicar amb Mailchimp {}".format(str(e)))
+        if not context.get('in_rollback_transaction', False):
+            try:
+                if soci_id:
+                    rpa_obj.unsubscribe_partner_in_customers_no_members_lists(
+                        cursor, uid, partner_id, context=context
+                    )
+                    rpa_obj.subscribe_partner_in_members_lists(
+                        cursor, uid, partner_id, context=context
+                    )
+            except Exception as e:
+                sentry = self.pool.get('sentry.setup')
+                if sentry:
+                    sentry.client.captureException()
+                logger = logging.getLogger("openerp.{0}.create_one_soci".format(__name__))
+                logger.warning("Error al comunicar amb Mailchimp {}".format(str(e)))
         return soci_id
 
     def create_socis(self, cr_orig, uid, ids, context=None):

@@ -27,11 +27,12 @@ class GiscedataSwitchingHelpers(osv.osv):
         return res
 
     def ct_baixa_mailchimp(self, cursor, uid, sw_id, context=None):
+        if not context:
+            context = {}
         sw_obj = self.pool.get("giscedata.switching")
         m101_obj = self.pool.get("giscedata.switching.m1.01")
         conf_obj = self.pool.get("res.config")
         pol_obj = self.pool.get("giscedata.polissa")
-
         sw = sw_obj.browse(cursor, uid, sw_id)
         pas_actual = sw.get_pas()
         use_new_contract = bool(
@@ -103,10 +104,12 @@ class GiscedataSwitchingHelpers(osv.osv):
             return (_(u"OK"), info)
         else:
             old_titular_id = sw.cups_polissa_id.titular.id
-
-        return self._check_and_archive_old_owner(cursor, uid, old_titular_id)
+        context['mailchimp_from'] = 'ct_baixa_mailchimp: sw_id {}'.format(sw_id)
+        return self._check_and_archive_old_owner(cursor, uid, old_titular_id, context=context)
 
     def ct_alta_mailchimp(self, cursor, uid, sw_id, context=None):
+        if not context:
+            context = {}
         sw_obj = self.pool.get("giscedata.switching")
         m101_obj = self.pool.get("giscedata.switching.m1.01")
         conf_obj = self.pool.get("res.config")
@@ -184,6 +187,8 @@ class GiscedataSwitchingHelpers(osv.osv):
             else:
                 old_titular_id = sw.cups_polissa_id.titular.id
 
+            context['mailchimp_from'] = 'ct_alta_mailchimp: sw_id {}'.format(sw_id)
+
             res = self.subscribe_new_owner(cursor, uid, sw_id, context)
         except Exception as e:
             sentry = self.pool.get('sentry.setup')
@@ -196,6 +201,8 @@ class GiscedataSwitchingHelpers(osv.osv):
             return res
 
     def cn06_bn05_baixa_mailchimp(self, cursor, uid, sw_id, context=None):
+        if not context:
+            context = {}
         sw_obj = self.pool.get("giscedata.switching")
         sw = sw_obj.browse(cursor, uid, sw_id)
 
@@ -223,10 +230,13 @@ class GiscedataSwitchingHelpers(osv.osv):
             return (_(u"OK"), info)
 
         titular_id = sw.cups_polissa_id.titular.id
-        return self._check_and_archive_old_owner(cursor, uid, titular_id)
+        context['mailchimp_from'] = 'cn06_bn05_baixa_mailchimp: sw_id {}'.format(sw_id)
+        return self._check_and_archive_old_owner(cursor, uid, titular_id, context)
 
     def _check_and_archive_old_owner(self, cursor, uid, titular_id, context=None):
         pol_obj = self.pool.get("giscedata.polissa")
+        address_obj = self.pool.get("res.partner.address")
+        soci_obj = self.pool.get("somenergia.soci")
 
         pol_actives = pol_obj.search(
             cursor, uid, [("titular", "=", titular_id)]
@@ -239,8 +249,18 @@ class GiscedataSwitchingHelpers(osv.osv):
 
             return "OK", info
         try:
-            partner_obj = self.pool.get("res.partner.address")
-            partner_obj.unsubscribe_partner_in_customers_no_members_lists(cursor, uid, titular_id)
+            address_obj.unsubscribe_partner_in_customers_no_members_lists(
+                cursor, uid, titular_id, context=context
+            )
+            is_soci = soci_obj.search(cursor, uid, [("partner_id", "=", titular_id)], context=context)  # noqa: E501
+            if is_soci:
+                address_obj.update_members_data_mailchimp_async(
+                    cursor, uid, titular_id, context=context
+                )
+
+            self.unsubscribe_extra_mailchimp_lists_hook(
+                cursor, uid, titular_id, context=context
+            )
 
             info = _(
                 u"[Baixa Mailchimp] S'ha iniciat el procés de baixa per l'antic titular (ID %d)"
@@ -253,6 +273,10 @@ class GiscedataSwitchingHelpers(osv.osv):
                 sentry.client.captureException()
             logger = logging.getLogger("openerp.{0}._check_and_archive_old_owner".format(__name__))
             logger.warning("Error al comunicar amb Mailchimp {}".format(str(e)))
+
+    def unsubscribe_extra_mailchimp_lists_hook(self, cursor, uid, titular_id, context=None):
+        """This method is intended to be overridden in other modules"""
+        return
 
     def subscribe_new_owner(self, cursor, uid, sw_id, context=None):
         sw_obj = self.pool.get("giscedata.switching")

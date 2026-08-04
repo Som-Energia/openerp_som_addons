@@ -21,5 +21,10 @@
             <field name="complete_name">Origen vinculat al CT sense sòcia</field>
             <field name="active">True</field>
         </record>
+        <record model="giscedata.polissa.category" id="origen_15_anys_category">
+            <field name="name">Origen vinculat a la campanya dels 15 anys</field>
+            <field name="complete_name">Origen vinculat a la campanya dels 15 anys</field>
+            <field name="active">True</field>
+        </record>
     </data>
 </openerp>

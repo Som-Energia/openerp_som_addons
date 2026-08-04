@@ -7,6 +7,13 @@ from addons import get_module_resource
 
 
 class TestImportF1Som(TestImportF1Base):
+
+    def setUp(self):
+        self.openerp.install_module('giscedata_tarifas_pagos_capacidad_20210601')
+        self.openerp.install_module('giscedata_tarifas_peajes_20210601')
+        self.openerp.install_module('giscedata_tarifas_cargos_20210601')
+        super(TestImportF1Som, self).setUp()
+
     def test_validation_3035S_ok(self):
         line_obj = self.openerp.pool.get("giscedata.facturacio.importacio.linia")
         imd_obj = self.openerp.pool.get("ir.model.data")

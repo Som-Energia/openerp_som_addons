@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+	<data>
+		<record id="view_poweremail_sendgrid_category_form" model="ir.ui.view">
+			<field name="name">poweremail.sendgrid.category.form</field>
+			<field name="model">poweremail.sendgrid.category</field>
+			<field name="type">form</field>
+			<field name="arch" type="xml">
+				<form string="SendGrid Category">
+                    <field name="name"/>
+                </form>
+			</field>
+		</record>
+
+		<record id="view_poweremail_sendgrid_category_tree" model="ir.ui.view">
+			<field name="name">poweremail.sendgrid.category.tree</field>
+			<field name="model">poweremail.sendgrid.category</field>
+			<field name="type">tree</field>
+			<field name="arch" type="xml">
+				<tree string="SendGrid Category">
+					<field name="name" select="1"/>
+				</tree>
+			</field>
+		</record>
+
+		<record id="action_poweremail_sendgrid_category" model="ir.actions.act_window">
+			<field name="name">Power Email SendGrid Category</field>
+			<field name="res_model">poweremail.sendgrid.category</field>
+			<field name="view_type">form</field>
+			<field name="view_mode">tree,form</field>
+			<field name="view_id" ref="view_poweremail_sendgrid_category_tree"/>
+		</record>
+
+		<record model="ir.ui.view" id="poweremail_template_sendgrid_category_form">
+            <field name="name">poweremail.templates.sendgrid_category.form</field>
+            <field name="model">poweremail.templates</field>
+            <field name="type">form</field>
+            <field name="inherit_id" ref="poweremail.poweremail_template_form"/>
+            <field name="arch" type="xml">
+            	<page string="Other settings" position="inside">
+            		<group>
+						<separator colspan="4" string="SendGrid categories" />
+						<field name="sendgrid_category_ids" string="SendGrid categories" widget="tags" nolabel="1" colspan="4"/>
+					</group>
+            	</page>
+            </field>
+    	</record>
+
+		<menuitem id="menu_poweremail_sendgrid_category"
+			parent="poweremail.menu_poweremail_configuration_server" action="action_poweremail_sendgrid_category"/>
+	</data>
+</openerp>

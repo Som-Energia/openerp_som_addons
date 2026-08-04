@@ -21,7 +21,7 @@ class SomCrawlersConfig(osv.osv):
         ),
         "contrasenya": fields.char(
             "Contrasenya del portal",
-            size=30,
+            size=100,
             help="Contrasenya del portal web o servidor FTP/SFTP",
         ),
         "url_portal": fields.char(

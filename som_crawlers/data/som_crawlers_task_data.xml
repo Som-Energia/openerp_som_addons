@@ -159,6 +159,22 @@
             <field name="active">True</field>
             <field name="configuracio_id" ref="iberdrola_conf"/>
         </record>
+        <record model="som.crawlers.task" id="descargar_iberdrola_w1">
+            <field name="name">Descarregar Iberdrola W1</field>
+            <field name="active">True</field>
+            <field name="configuracio_id" ref="iberdrola_conf"/>
+        </record>
+        <!-- CIDE -->
+        <record model="som.crawlers.task" id="descargar_cide_api_switching">
+            <field name="name">Descarregar CIDE Switching</field>
+            <field name="active">True</field>
+            <field name="configuracio_id" ref="cide_api_conf"/>
+        </record>
+        <record model="som.crawlers.task" id="descargar_cide_api_f1">
+            <field name="name">Descarregar CIDE F1</field>
+            <field name="active">True</field>
+            <field name="configuracio_id" ref="cide_api_conf"/>
+        </record>
         <!-- Endesa -->
         <record model="som.crawlers.task" id="descargar_A3_endesa">
             <field name="name">Endesa descargar A3</field>
@@ -222,6 +238,11 @@
         </record>
         <record model="som.crawlers.task" id="descargar_T1_endesa">
             <field name="name">Endesa descargar T1</field>
+            <field name="active">True</field>
+            <field name="configuracio_id" ref="endesa_conf"/>
+        </record>
+        <record model="som.crawlers.task" id="descargar_w1_endesa">
+            <field name="name">Endesa descargar W1</field>
             <field name="active">True</field>
             <field name="configuracio_id" ref="endesa_conf"/>
         </record>
@@ -313,6 +334,11 @@
         </record>
         <record model="som.crawlers.task" id="descargar_anselmo_t1">
             <field name="name">Descarregar Anselmo T1</field>
+            <field name="active">True</field>
+            <field name="configuracio_id" ref="anselmo_conf"/>
+        </record>
+        <record model="som.crawlers.task" id="descargar_anselmo_w1">
+            <field name="name">Descarregar Anselmo W1</field>
             <field name="active">True</field>
             <field name="configuracio_id" ref="anselmo_conf"/>
         </record>
@@ -479,6 +505,11 @@
             <field name="active">True</field>
             <field name="configuracio_id" ref="conquense_conf"/>
         </record>
+        <record model="som.crawlers.task" id="descargar_conquense_w1">
+            <field name="name">Descarregar Conquense W1</field>
+            <field name="active">True</field>
+            <field name="configuracio_id" ref="conquense_conf"/>
+        </record>
         <!--Cabriel-->
         <record model="som.crawlers.task" id="descargar_cabriel">
             <field name="name">Descarregar Cabriel</field>
@@ -598,6 +629,12 @@
             <field name="active">True</field>
             <field name="configuracio_id" ref="chilla_ftp_conf"/>
         </record>
+        <!-- Eriste -->
+        <record model="som.crawlers.task" id="descargar_eriste_ftp">
+            <field name="name">Descarregar FTP Eriste</field>
+            <field name="active">True</field>
+            <field name="configuracio_id" ref="eriste_ftp_conf"/>
+        </record>
         <!-- 6eis (formerly aseme) -->
         <record model="som.crawlers.task" id="descarregar_aseme_ftp">
             <field name="name">Descarregar FTP 6eis (abans aseme)</field>
@@ -650,6 +687,12 @@
             <field name="name">Descarregar COELCA</field>
             <field name="active">True</field>
             <field name="configuracio_id" ref="coelca_conf"/>
+        </record>
+        <!-- ALGINET -->
+        <record model="som.crawlers.task" id="descarregar_alginet">
+            <field name="name">Descarregar ALGINET</field>
+            <field name="active">True</field>
+            <field name="configuracio_id" ref="alginet_conf"/>
         </record>
     </data>
 </openerp>

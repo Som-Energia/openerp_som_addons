@@ -4,7 +4,7 @@
     "description": """Aquest mòdul afegeix les següents funcionalitats:
   * Menú Energética
 """,
-    "version": "24.5.0",
+    "version": "0-dev",
     "author": "GISCE",
     "category": "Master",
     "depends": [

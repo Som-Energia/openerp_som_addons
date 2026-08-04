@@ -28,6 +28,8 @@
     <%include file="/giscedata_facturacio_comer_som/report/components/invoice_details_td_power/invoice_details_td_power.mako" args="id=id.power" />
     <%include file="/giscedata_facturacio_comer_som/report/components/invoice_details_td_power_tolls/invoice_details_td_power_tolls.mako" args="id=id.power_tolls" />
     <%include file="/giscedata_facturacio_comer_som/report/components/invoice_details_td_power_charges/invoice_details_td_power_charges.mako" args="id=id.power_charges" />
+    <%include file="/giscedata_facturacio_comer_som/report/components/invoice_details_td_power_tolls_CT/invoice_details_td_power_tolls_CT.mako" args="id=id.power_tolls_CT" />
+    <%include file="/giscedata_facturacio_comer_som/report/components/invoice_details_td_power_charges_CT/invoice_details_td_power_charges_CT.mako" args="id=id.power_charges_CT" />
     <%include file="/giscedata_facturacio_comer_som/report/components/invoice_details_td_power_discount_BOE17_2021/invoice_details_td_power_discount_BOE17_2021.mako" args="id=id.power_discount_BOE17_2021" />
     <%include file="/giscedata_facturacio_comer_som/report/components/invoice_details_td_excess_power_maximeter/invoice_details_td_excess_power_maximeter.mako" args="id=id.excess_power_maximeter" />
     <%include file="/giscedata_facturacio_comer_som/report/components/invoice_details_td_excess_power_quarterhours/invoice_details_td_excess_power_quarterhours.mako" args="id=id.excess_power_quarterhours" />
@@ -36,6 +38,8 @@
     <%include file="/giscedata_facturacio_comer_som/report/components/invoice_details_td_energy_generationkwh/invoice_details_td_energy_generationkwh.mako" args="id=id.energy" />
     <%include file="/giscedata_facturacio_comer_som/report/components/invoice_details_td_energy_tolls/invoice_details_td_energy_tolls.mako" args="id=id.energy_tolls" />
     <%include file="/giscedata_facturacio_comer_som/report/components/invoice_details_td_energy_charges/invoice_details_td_energy_charges.mako" args="id=id.energy_charges" />
+    <%include file="/giscedata_facturacio_comer_som/report/components/invoice_details_td_energy_tolls_CT/invoice_details_td_energy_tolls_CT.mako" args="id=id.energy_tolls_CT" />
+    <%include file="/giscedata_facturacio_comer_som/report/components/invoice_details_td_energy_charges_CT/invoice_details_td_energy_charges_CT.mako" args="id=id.energy_charges_CT" />
     <%include file="/giscedata_facturacio_comer_som/report/components/invoice_details_td_energy_discount_BOE17_2021/invoice_details_td_energy_discount_BOE17_2021.mako" args="id=id.energy_discount_BOE17_2021" />
     <%include file="/giscedata_facturacio_comer_som/report/components/invoice_details_td_bo_social_2023/invoice_details_td_bo_social_2023.mako" args="bs=id.bo_social_2023" />
     <%include file="/giscedata_facturacio_comer_som/report/components/invoice_details_td_generation/invoice_details_td_generation.mako" args="id=id.generation" />

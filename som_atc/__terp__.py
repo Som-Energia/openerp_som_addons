@@ -4,17 +4,18 @@
     "description": """Aquest mòdul afegeix les següents funcionalitats:
     * Funcionalitats sobre casos d'atencio al client
     """,
-    "version": "24.5.0",
+    "version": "0-dev",
     "author": "GISCE",
     "category": "Master",
     "depends": [
         "giscedata_atc_switching",
         "giscedata_atc_electricitat",
+        "partner_canal_cnmc",
     ],
     "init_xml": [],
     "demo_xml": [],
     "update_xml": [
-        "res_partner_data.xml",
+        "data/res_partner_data.xml",
         "wizard/wizard_create_atc_from_polissa_view.xml",
         "views/giscedata_atc_view.xml",
     ],

@@ -11,6 +11,10 @@ class AccountInvoice(osv.osv):
     _inherit = "account.invoice"
 
     def set_pending(self, cursor, uid, ids, pending_id, context=None):
+        datas = self.read(cursor, uid, ids, ['pending_state'], context=context)
+        previous_pending = {data['id']: data['pending_state'][0]
+                            for data in datas if data['pending_state']}
+
         res = super(AccountInvoice, self).set_pending(
             cursor, uid, ids, pending_id, context
         )
@@ -50,6 +54,18 @@ class AccountInvoice(osv.osv):
             cursor, uid,
             "som_account_invoice_pending",
             "default_reclamacio_en_curs_pending_state"
+        )[1]
+
+        df_pending_state_id = ir_model_data.get_object_reference(
+            cursor, uid,
+            "account_invoice_pending",
+            "default_invoice_pending_state"
+        )[1]
+
+        bs_pending_state_id = ir_model_data.get_object_reference(
+            cursor, uid,
+            "giscedata_facturacio_comer_bono_social",
+            "correct_bono_social_pending_state",
         )[1]
 
         if pending_id in (perdues_fact_df, perdues_fact_bs, fue_bs, fue_df, r1_bs, r1_df):
@@ -97,6 +113,20 @@ class AccountInvoice(osv.osv):
                     invoice_id, to_write,
                     context=context
                 )
+
+        previous_pending_states = (perdues_fact_df, perdues_fact_bs, fue_bs, fue_df, r1_bs, r1_df)
+        if pending_id in (df_pending_state_id, bs_pending_state_id):
+            for invoice_id in ids:
+                if previous_pending.get(invoice_id, None) in previous_pending_states:
+                    inv = self.browse(cursor, uid, invoice_id, context=context)
+                    self.write(
+                        cursor, uid,
+                        invoice_id,
+                        {
+                            'payment_type': inv.partner_id.payment_type_customer.id,
+                        },
+                        context=context
+                    )
 
         return res
 

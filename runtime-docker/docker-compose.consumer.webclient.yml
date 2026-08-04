@@ -1,0 +1,21 @@
+services:
+  webclient:
+    build:
+      context: ../webclient-docker
+    image: gisce-webclient:latest
+    depends_on:
+      erp-runtime:
+        condition: service_started
+    environment:
+      CHECK_INTERVAL: ${WEBCLIENT_CHECK_INTERVAL:-21600}
+      GITHUB_TOKEN: ${GITHUB_TOKEN:-}
+      WEBCLIENT_REPO: ${WEBCLIENT_REPO:-gisce/webclient}
+      WEBCLIENT_LISTEN_PORT: ${WEBCLIENT_LISTEN_PORT:-8081}
+      WEBCLIENT_API_UPSTREAM: http://erp-runtime:${ERP_MSGPACK_PORT:-8068}/
+    ports:
+      - "${WEBCLIENT_PORT:-8081}:${WEBCLIENT_LISTEN_PORT:-8081}"
+    volumes:
+      - consumer_webclient_state:/var/lib/webclient
+
+volumes:
+  consumer_webclient_state:

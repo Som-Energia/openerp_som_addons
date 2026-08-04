@@ -5,7 +5,7 @@
     This module provide :
         * Pestanya de logs de Gestió Endarrerida
     """,
-    "version": "24.5.0",
+    "version": "0-dev",
     "author": "GISCE",
     "category": "SomEnergia",
     "depends": [

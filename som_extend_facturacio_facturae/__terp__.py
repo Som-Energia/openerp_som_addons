@@ -2,7 +2,7 @@
 {
     "name": "Som Energia facturae extension",
     "description": """SomEnergia facturae extension""",
-    "version": "24.5.0",
+    "version": "0-dev",
     "author": "Som Energia",
     "category": "Master",
     "depends": ["base", "giscedata_facturacio", "giscedata_facturacio_facturae"],

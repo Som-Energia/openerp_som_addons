@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
+import unittest
 from destral import testing
 from destral.transaction import Transaction
 
@@ -72,6 +73,7 @@ class WizardCreateSomreOvUsers(testing.OOTestCase):
         result = self.ov_user.search(self.cursor, self.uid, [('partner_id', '=', partner_id)])
         self.assertEqual(len(result), 1)
 
+    @unittest.skip(reason="new in 25.5 partner cannot have same VAT.")
     def test__action_create_somre_ov_users__same_vat_error(self):
         partner_id = self.reference('base', 'res_partner_asus')
 

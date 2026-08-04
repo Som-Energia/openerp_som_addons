@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+    <data>
+        <record model="ir.ui.view" id="wizard_generationkwh_investment_transfer_view">
+            <field name="name">wizard.generationkwh.investment.transfer.view</field>
+            <field name="model">wizard.generationkwh.investment.transfer</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <form string="Transferir aportació">
+                    <field name="state" invisible="1"/>
+                    <field name="info" nolabel="1" size="300" width="300" height ="200" colspan="4" readonly="1"/>
+                    <group colspan="4" col="4" attrs="{}">
+                        <field name="partner_id_alt" colspan="4" readonly="0"/>
+                        <field name="iban" colspan="4" readonly="0"/>
+                        <field name="transfer_date" colspan="4"/>
+                    </group>
+                    <button name="do_transfer" string="Transferir" type="object" icon="gtk-execute" colspan="4" attrs="{'invisible':[('state', '=', 'Done')]}"/>
+                    <button special="cancel" string="Close" icon="gtk-no" colspan="4" attrs="{'invisible':[('state', '!=', 'Done')]}"/>
+                    <button special="cancel" string="Cancel" icon="gtk-no" colspan="4" attrs="{'invisible':[('state', '=', 'Done')]}"/>
+                </form>
+            </field>
+        </record>
+        <record model="ir.actions.act_window" id="action_wizard_generationkwh_investment_transfer">
+            <field name="name">Transferir</field>
+            <field name="res_model">wizard.generationkwh.investment.transfer</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="view_id" ref="wizard_generationkwh_investment_transfer_view"/>
+            <field name="target">new</field>
+        </record>
+        <record id="value_wizard_generationkwh_investment_transfer" model="ir.values">
+            <field name="object" eval="1"/>
+            <field name="name">Transferir</field>
+            <field name="key2">client_action_multi</field>
+            <field name="key">action</field>
+            <field name="model">generationkwh.investment</field>
+            <field name="value" eval="'ir.actions.act_window,'+str(ref('action_wizard_generationkwh_investment_transfer'))" />
+        </record>
+    </data>
+</openerp>

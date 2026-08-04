@@ -1,0 +1,128 @@
+<?xml version="1.0"?>
+<openerp>
+    <data>
+        <record model="ir.ui.view" id="view_gkwh_investment_form">
+            <field name="name">generationkwh.investment.form</field>
+            <field name="model">generationkwh.investment</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <form string="Inversions en Generation kWh">
+                    <field name="name" readonly="1"/>
+                    <field name="order_date" readonly="1"/>
+                    <field name="member_id" readonly="1"/>
+                    <field name="purchase_date" readonly="1"/>
+                    <field name="signed_date" readonly="1"/>
+                    <field name="nshares" readonly="1"/>
+                    <field name="first_effective_date" readonly="1"/>
+                    <field name="amortized_amount" readonly="1"/>
+                    <field name="last_effective_date" readonly="1"/>
+                    <field name="last_interest_paid_date" domain="[('emission_id.type','=','apo')]"/>
+                    <field name="active" readonly="1"/>
+                    <field name="draft" readonly="1"/>
+                    <field name="emission_id" readonly="1"/>
+                    <group colspan="4" col="2">
+                        <field name="log" readonly="1"/>
+                    </group>
+                    <group colspan="4" col="2">
+                        <field name="move_line_id" readonly="1"/>
+                    </group>
+                    <group colspan="4" col="3">
+                        <separator string="Abans de pagament" colspan="3"/>
+                        <!-- TODO: '1r pagament' should be also readonly when not purchased but already has invoice generated -->
+                        <button name="%(action_wizard_generationkwh_investment_payment)d" string="Generar ordre de cobrament" icon="gtk-convert" type="action" attrs="{'readonly': [('purchase_date','!=',False)]}"/>
+                        <button name="%(action_wizard_investment_cancel_or_resign_form)d" string="Renunciar" icon="gtk-delete" type="action" attrs="{'readonly': [('purchase_date','!=',False)]}"/>
+                        <separator string="Període de carència" colspan="3"/>
+                        <button name="%(action_wizard_investment_amortization_form)d" string="Pacte" icon="gtk-execute" type="action" attrs="{'readonly': [('purchase_date','==',False)]}"/>
+                        <button name="%(action_wizard_generationkwh_investment_transfer)d" string="Traspassar" icon="gtk-go-forward" type="action" attrs="{'readonly': [('purchase_date','==',False)]}"/>
+                        <button name="%(action_wizard_generationkwh_investment_divest)d" string="Desinvertir" icon="gtk-clear" type="action" attrs="{'readonly': [('purchase_date','==',False)]}"/>
+                        <separator string="Període efectiu" colspan="3"/>
+                        <button name="%(action_wizard_investment_amortization_form)d" string="Amortitzar" icon="gtk-execute" type="action" attrs="{'readonly': [('purchase_date','==',False)]}"/>
+                        <button name="%(action_wizard_generationkwh_investment_divest)d" string="Desinvertir amb penalització" icon="gtk-clear" type="action" attrs="{'readonly': [('purchase_date','==',False)]}"/>
+                    </group>
+                </form>
+            </field>
+        </record>
+        <record model="ir.ui.view" id="view_gkwh_investment_tree">
+            <field name="name">generationkwh.investment.tree</field>
+            <field name="model">generationkwh.investment</field>
+            <field name="type">tree</field>
+            <field name="arch" type="xml">
+                <tree string="Inversions en Generation kWh" colors="red:active==0">
+                    <field name="active" select="1"/>
+                    <field name="name" select="1"/>
+                    <field name="member_id" select="1"/>
+                    <field name="nshares" select="1"/>
+                    <field name="amortized_amount" select="1"/>
+                    <field name="order_date" select="1"/>
+                    <field name="purchase_date" select="1"/>
+                    <field name="signed_date" select="1"/>
+                    <field name="first_effective_date" select="1"/>
+                    <field name="last_effective_date" select="1"/>
+                    <field name="last_interest_paid_date" select="1"/>
+                    <field name="emission_id" select="1"/>
+                </tree>
+            </field>
+        </record>
+        <record id="action_gkwh_investment_tree" model="ir.actions.act_window">
+            <field name="name">Inversions en Generation kWh</field>
+            <field name="res_model">generationkwh.investment</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="view_id" ref="view_gkwh_investment_tree"/>
+            <field name="context">{'emission_id.type':'genkwh'}</field>
+            <field name="domain">[('emission_id.type', '=', 'genkwh')]</field>
+        </record>
+        <menuitem id="menu_gkwh_base" name="Aportacions"/>
+        <menuitem action="action_gkwh_investment_tree"
+            id="menu_gkwh_investment_tree" parent="menu_gkwh_base"/>
+        <record id="action_all_investment_tree" model="ir.actions.act_window">
+            <field name="name">Totes les Inversions</field>
+            <field name="res_model">generationkwh.investment</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="view_id" ref="view_gkwh_investment_tree"/>
+        </record>
+        <menuitem action="action_all_investment_tree"
+            id="menu_all_investment_tree" parent="menu_gkwh_base"/>
+        <record id="action_apo_investment_tree" model="ir.actions.act_window">
+            <field name="name">Aportacions al capital social</field>
+            <field name="res_model">generationkwh.investment</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="view_id" ref="view_gkwh_investment_tree"/>
+            <field name="context">{'emission_id.type':'apo'}</field>
+            <field name="domain">[('emission_id.type', '=', 'apo')]</field>
+        </record>
+        <menuitem action="action_apo_investment_tree"
+            id="menu_apo_investment_tree" parent="menu_gkwh_base"/>
+    <!-- Enllaç des de la inversió a les factures -->
+        <record model="ir.actions.act_window" id="action_sc_invoices_from_investment">
+            <field name="name">Factures de la inversió</field>
+            <field name="res_model">account.invoice</field>
+            <field name="src_model">generationkwh.investment</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="domain">[('origin', '=', name)]</field>
+        </record>
+        <record id="value_action_sc_comptadors_de_polisses" model="ir.values">
+            <field name="object" eval="1"/>
+            <field name="name">Factures de la inversió</field>
+            <field name="key2">client_action_relate</field>
+            <field name="key">action</field>
+            <field name="model">generationkwh.investment</field>
+            <field name="value" eval="'ir.actions.act_window,'+str(ref('action_sc_invoices_from_investment'))" />
+        </record>
+        <menuitem
+            id="menu_wizard_investment_amortization"
+            name="Amortització de inversions"
+            parent="menu_gkwh_base"
+            action="action_wizard_investment_amortization_form_global"
+	/>
+        <menuitem
+            id="menu_wizard_investment_creation"
+            name="Creació d'inversió"
+            parent="menu_gkwh_base"
+            action="action_wizard_investment_creation_form"
+        />
+    </data>
+</openerp>

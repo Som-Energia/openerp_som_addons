@@ -1,11 +1,29 @@
+# -*- coding: utf-8 -*-
+from __future__ import absolute_import, unicode_literals, division
+import unittest
+import os
+from datetime import datetime
 from destral import testing
 from destral.transaction import Transaction
+from mako.template import Template
 
 
 class TestReportBackendCCPP(testing.OOTestCase):
+    PAYMENT_INFO_TEMPLATE = os.path.join(
+        os.path.dirname(os.path.dirname(__file__)),
+        'report',
+        'components',
+        'payment_info.mako'
+    )
+
     def get_ref(self, module, ref):
         IrModel = self.openerp.pool.get("ir.model.data")
         return IrModel._get_obj(self.cursor, self.uid, module, ref).id
+
+    def render_payment_info(self, titular):
+        return Template(filename=self.PAYMENT_INFO_TEMPLATE).get_def('payment_info').render_unicode(
+            titular=titular, _=lambda text: text
+        )
 
     def setUp(self):
         self.maxDiff = None
@@ -17,10 +35,27 @@ class TestReportBackendCCPP(testing.OOTestCase):
         self.backend_obj = self.openerp.pool.get("report.backend.condicions.particulars")
         self.rpa_obj = self.openerp.pool.get("res.partner.address")
         self.pricelist_obj = self.openerp.pool.get("product.pricelist")
+        self.wiz_change_to_index_obj = self.openerp.pool.get("wizard.change.to.indexada")
+        self.k_change_obj = self.openerp.pool.get("som.polissa.k.change")
+        self.card_obj = self.openerp.pool.get("res.partner.creditcard")
+        self.tax_obj = self.openerp.pool.get('account.tax')
+        self.conf_obj = self.openerp.pool.get('res.config')
+        self.imd_obj = self.openerp.pool.get("ir.model.data")
         self.contract1_id = self.get_ref("giscedata_polissa", "polissa_0001")
         self.contract_20TD_id = self.get_ref("giscedata_polissa", "polissa_tarifa_018")
         self.contract_30TD_id = self.get_ref("giscedata_polissa", "polissa_tarifa_019")
         self.contract_61TD_id = self.get_ref("giscedata_polissa", "polissa_tarifa_020")
+
+        self.conf_obj.set(
+            self.cursor, self.uid, 'default_iva_21_tax_id',
+            self.tax_obj.search(self.cursor, self.uid, [("name", "=", "IVA 21%")])[0],
+        )
+        self.conf_obj.set(
+            self.cursor, self.uid, 'default_iese_tax_id',
+            self.tax_obj.search(self.cursor, self.uid, [
+                ("name", "=", "Impuesto especial sobre la electricidad")
+            ])[0],
+        )
 
     def tearDown(self):
         self.txn.stop()
@@ -34,10 +69,11 @@ class TestReportBackendCCPP(testing.OOTestCase):
             u'cnae': u'9820',
             u'cnae_des': u'Actividades de los hogares como productores de servicios para uso propio',  # noqa: E501
             u'country': u'Espa\xf1a',
-            u'direccio': u'Pla\xe7a Mela Mutermilch ,  2 1 2 17001 (Girona)',
+            u'direccio': u'Pla\xe7a Mela Mutermilch, 2 1 2 17001 (Girona)',
             u'distri': u'Agrolait',
             u'name': u'ES0021126262693495FV',
             u'provincia': u'Girona',
+            u'ref_catastral': u'referencia catastral',
             u'ref_dist': u'',
             u'tensio': 127}
         )
@@ -48,6 +84,7 @@ class TestReportBackendCCPP(testing.OOTestCase):
         result = self.backend_obj.get_titular_data(self.cursor, self.uid, pol_20td, None)
 
         self.assertEqual(result, {
+            u'bank': False,
             u'city': u'Girona',
             u'city_envio': u'Bruxelles',
             u'client_name': u'GISCE',
@@ -57,12 +94,15 @@ class TestReportBackendCCPP(testing.OOTestCase):
             u'diferent': True,
             u'email': u'',
             u'email_envio': u'info@openroad.be',
+            u'is_recurrent_card_payment': False,
             u'lang': False,
             u'mobile': u'',
             u'mobile_envio': u'',
             u'name_envio': u'Michel Schumacher',
             u'phone': u'',
             u'phone_envio': u'(+32) 2 123 456',
+            u'printable_card_number': u'',
+            u'printable_iban': u'',
             u'sign_date': '',
             u'state': u'',
             u'state_envio': u'',
@@ -71,6 +111,67 @@ class TestReportBackendCCPP(testing.OOTestCase):
             u'zip': u'17001',
             u'zip_envio': u'1000'}
         )
+
+    def test_get_titular_data_with_recurrent_card_payment_ok(self):
+        pol_20td = self.pol_obj.browse(self.cursor, self.uid, self.contract_20TD_id)
+        payment_type_id = self.imd_obj.get_object_reference(
+            self.cursor, self.uid, "som_card_payment", "payment_type_card_recurrent"
+        )[1]
+        card_id = self.card_obj.create(
+            self.cursor,
+            self.uid,
+            {
+                "partner_id": pol_20td.pagador.id,
+                "token": "tok_ccpp_1",
+                "expiry_date": "12/35",
+                "masked_number": "**** **** **** 4242",
+            },
+        )
+        self.pol_obj.write(
+            self.cursor,
+            self.uid,
+            [self.contract_20TD_id],
+            {
+                "tipo_pago": payment_type_id,
+                "creditcard": card_id,
+            },
+        )
+        pol_20td = self.pol_obj.browse(self.cursor, self.uid, self.contract_20TD_id)
+
+        result = self.backend_obj.get_titular_data(self.cursor, self.uid, pol_20td, None)
+
+        self.assertEqual(result['bank'], False)
+        self.assertEqual(result['is_recurrent_card_payment'], True)
+        self.assertEqual(result['printable_card_number'], u'4242')
+        self.assertEqual(result['printable_iban'], u'')
+
+    def test_payment_info_renders_iban_branch(self):
+        titular = {
+            'bank': object(),
+            'is_recurrent_card_payment': False,
+            'printable_card_number': u'4242',
+            'printable_iban': u'1234',
+        }
+
+        result = self.render_payment_info(titular)
+
+        self.assertTrue(u'Nº de compte bancari (IBAN)' in result)
+        self.assertFalse(u'Nº de targeta' in result)
+        self.assertTrue(u'1234' in result)
+
+    def test_payment_info_prefers_card_branch_over_iban_when_both_are_present(self):
+        titular = {
+            'bank': object(),
+            'is_recurrent_card_payment': True,
+            'printable_card_number': u'4242',
+            'printable_iban': u'1234',
+        }
+
+        result = self.render_payment_info(titular)
+
+        self.assertTrue(u'Nº de targeta' in result)
+        self.assertFalse(u'Nº de compte bancari (IBAN)' in result)
+        self.assertTrue(u'4242' in result)
 
     def test_get_potencies_data_ok(self):
         pol_20td = self.pol_obj.browse(self.cursor, self.uid, self.contract_20TD_id)
@@ -92,10 +193,17 @@ class TestReportBackendCCPP(testing.OOTestCase):
 
         result = self.backend_obj.get_polissa_data(self.cursor, self.uid, pol_20td, context={})
 
-        pricelist = 12
+        today = datetime.today()
+        current_quarter = ((today.month - 1) // 3) + 1
+        if current_quarter == 4:
+            expected_date = datetime(today.year + 1, 1, 1).strftime('%d/%m/%Y')
+        else:
+            expected_date = datetime(today.year, (current_quarter * 3) + 1, 1).strftime('%d/%m/%Y')
+
+        pricelist_id = self.get_ref("giscedata_facturacio", "pricelist_tarifas_electricidad_venda")
+        pricelist_name = self.pricelist_obj.browse(self.cursor, self.uid, pricelist_id).name
         self.assertEqual(result, {
             u'auto': u'00',
-            u'bank': False,
             u'contract_type': u'Anual',
             u'data_baixa': '2099-01-01',
             u'data_final': u'',
@@ -106,18 +214,39 @@ class TestReportBackendCCPP(testing.OOTestCase):
             u'modcon_pendent_indexada': False,
             u'modcon_pendent_periodes': False,
             u'mode_facturacio': u'atr',
+            u'mode_facturacio_calculat': u'atr',
             u'name': u'0018',
             u'periodes_energia': [u'P1', u'P2', u'P3'],
             u'periodes_potencia': [u'P1', u'P2'],
             u'potencia_max': 4.6,
-            u'pricelist': pricelist,
-            u'printable_iban': u'',
+            u'pricelist': pricelist_id,
             u'state': u'esborrany',
             u'tarifa': u'2.0TD',
-            u'tarifa_mostrar': u'TARIFAS ELECTRICIDAD VENDA',
-            u'te_assignacio_gkwh': False}
+            u'tarifa_mostrar': pricelist_name,
+            u'te_assignacio_gkwh': False,
+            u'te_tarifa_periodes': True,
+            u'data_renovacio': expected_date}
         )
 
+    def test_get_polissa_data_with_modcon_ok(self):
+        self.pol_obj.send_signal(
+            self.cursor, self.uid, [self.contract_20TD_id], ["validar", "contracte"])
+        context = {"active_id": self.contract_20TD_id, "change_type": "from_period_to_index"}
+        wiz_id = self.wiz_change_to_index_obj.create(self.cursor, self.uid, {}, context=context)
+        self.wiz_change_to_index_obj.change_to_indexada(
+            self.cursor, self.uid, [wiz_id], context=context)
+
+        pol_20td = self.pol_obj.browse(self.cursor, self.uid, self.contract_20TD_id)
+
+        result = self.backend_obj.get_polissa_data(self.cursor, self.uid, pol_20td, context={})
+
+        pricelist_id = self.get_ref("som_indexada", "pricelist_indexada_20td_peninsula_2024")
+        pricelist_name = self.pricelist_obj.browse(self.cursor, self.uid, pricelist_id).name
+
+        self.assertEqual(result['pricelist'], pricelist_id)
+        self.assertEqual(result['tarifa_mostrar'], pricelist_name)
+
+    @unittest.skip(reason='IVA temporaly reduced')
     def test_get_prices_data_ok(self):
         pol_20td = self.pol_obj.browse(self.cursor, self.uid, self.contract_20TD_id)
 
@@ -158,3 +287,78 @@ class TestReportBackendCCPP(testing.OOTestCase):
                 u'text_impostos': u' (IVA 21%, IE 5,11%)',
                 u'text_vigencia': u''}]
         })
+
+    def test_get_prices_data_with_modcon_ok(self):
+        self.pol_obj.send_signal(
+            self.cursor, self.uid, [self.contract_20TD_id], ["validar", "contracte"])
+        context = {"active_id": self.contract_20TD_id, "change_type": "from_period_to_index"}
+        wiz_id = self.wiz_change_to_index_obj.create(self.cursor, self.uid, {}, context=context)
+        self.wiz_change_to_index_obj.change_to_indexada(
+            self.cursor, self.uid, [wiz_id], context=context)
+
+        pol_20td = self.pol_obj.browse(self.cursor, self.uid, self.contract_20TD_id)
+
+        result = self.backend_obj.get_prices_data(self.cursor, self.uid, pol_20td, context={})
+
+        self.assertEqual(result['mostra_indexada'], True)
+        self.assertTrue('coeficient_k' in result['pricelists'][0])
+        self.assertTrue('coeficient_k_untaxed' in result['pricelists'][0])
+
+    def test_get_coeficient_k_for_pricelist_uses_k_old_for_current_block(self):
+        fs_data = {'k_old': 12.0, 'k_new': 19.0}
+        dades_tarifa = {'date_end': '2026-12-31', 'date_start': False}
+
+        result = self.backend_obj._get_coeficient_k_for_pricelist(fs_data, dades_tarifa, 0.0)
+
+        self.assertEqual(result, 0.012)
+
+    def test_get_coeficient_k_for_pricelist_uses_k_new_for_future_block(self):
+        fs_data = {'k_old': 12.0, 'k_new': 19.0}
+        dades_tarifa = {'date_end': False, 'date_start': '2099-01-01'}
+
+        result = self.backend_obj._get_coeficient_k_for_pricelist(fs_data, dades_tarifa, 0.0)
+
+        self.assertEqual(result, 0.019)
+
+    def test_get_coeficient_k_for_pricelist_keeps_zero_old_value(self):
+        fs_data = {'k_old': 0.0, 'k_new': 19.0}
+        dades_tarifa = {'date_end': '2026-12-31', 'date_start': False}
+
+        result = self.backend_obj._get_coeficient_k_for_pricelist(fs_data, dades_tarifa, 0.5)
+
+        self.assertEqual(result, 0.0)
+
+    def test_get_coeficient_k_from_pricelist_matches_pricelist_price_without_k_change_record(self):
+        today = datetime.today()
+        self.pol_obj.send_signal(
+            self.cursor, self.uid, [self.contract_20TD_id], ["validar", "contracte"])
+        context = {"active_id": self.contract_20TD_id, "change_type": "from_period_to_index"}
+        wiz_id = self.wiz_change_to_index_obj.create(self.cursor, self.uid, {}, context=context)
+        self.wiz_change_to_index_obj.change_to_indexada(
+            self.cursor, self.uid, [wiz_id], context=context)
+
+        self.k_change_obj.unlink(self.cursor, self.uid,
+                                 self.k_change_obj.search(self.cursor, self.uid, []))
+
+        pol_20td = self.pol_obj.browse(self.cursor, self.uid, self.contract_20TD_id)
+        coeficient_id = self.get_ref("giscedata_facturacio_indexada", "product_factor_k")
+        pricelist_id = pol_20td.modcontractuals_ids[0].llista_preu.id
+        price_ctx = {
+            'date': today,
+            'force_pricelist': pricelist_id,
+        }
+
+        result = self.backend_obj._get_coeficient_k_from_pricelist(
+            self.cursor, self.uid, pol_20td, price_ctx, coeficient_id
+        )
+
+        expected = self.pricelist_obj.price_get(
+            self.cursor, self.uid, [pricelist_id], coeficient_id, 1,
+            context={
+                'date': today.strftime('%Y-%m-%d'),
+                'force_pricelist': pricelist_id,
+                'pricelist_base_price': 0.0,
+            }
+        )[pricelist_id] / 1000
+
+        self.assertEqual(result, expected)

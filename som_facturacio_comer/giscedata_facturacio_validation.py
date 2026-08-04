@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from __future__ import absolute_import
 from osv import osv
 from datetime import datetime, timedelta
 from dateutil.relativedelta import relativedelta
@@ -216,6 +217,21 @@ class GiscedataFacturacioValidationValidator(osv.osv):
         if pcat_ids and pcat_ids[0] in [x.id for x in fact.polissa_id.category_id]:
             return None
 
+        tarifa_acces = fact.tarifa_acces_id.name
+        tarifa_comer = fact.polissa_id.llista_preu.name
+        autoconsum = fact.polissa_id.autoconsumo
+        limit_kWh = parameters.get("som_skip_if_20TD_00_and_less_than_kWh", None)
+        try:
+            limit_kWh = int(limit_kWh)
+        except (ValueError, TypeError):
+            limit_kWh = None
+        if (limit_kWh is not None
+            and fact.energia_kwh <= limit_kWh
+            and tarifa_acces == '2.0TD'
+            and tarifa_comer == '2.0TD_SOM'
+                and autoconsum == '00'):
+            return None
+
         return super(GiscedataFacturacioValidationValidator, self).check_consume_by_amount(
             cursor, uid, fact, parameters
         )
@@ -254,6 +270,55 @@ class GiscedataFacturacioValidationValidator(osv.osv):
                 }
             )
         return ret
+
+    def check_exceding_days(self, cursor, uid, fact, parameters):
+        tarifa_acces = fact.tarifa_acces_id.name
+        tarifa_comer = fact.polissa_id.llista_preu.name
+        autoconsum = fact.polissa_id.autoconsumo
+        limit_days = parameters.get("som_skip_if_20TD_00_and_less_than_days", None)
+        try:
+            limit_days = int(limit_days)
+        except (ValueError, TypeError):
+            limit_days = None
+        if (limit_days is not None
+            and fact.dies <= limit_days
+            and tarifa_acces == '2.0TD'
+            and tarifa_comer == '2.0TD_SOM'
+                and autoconsum == '00'):
+            return None
+
+        return super(
+            GiscedataFacturacioValidationValidator,
+            self
+        ).check_exceding_days(cursor, uid, fact, parameters)
+
+    def check_f070_ha_de_saltar(self, cursor, uid, fact, linia_saju, parameters):
+        """ Si True farà saltar error F070 si hi ha diferencia, si False, no farà saltar validació
+        Customitzat per a que en validar una corba amb consums anteriors a 1 de maig de 2026
+        Es validi contra la corba original i no la "cuinada". Si la diferència és menor o igual
+        a la tolerància establerta, fer que no salti la F070 ja que de base comprova contra la
+        corba "cuinada" utilitzada
+        """
+        res = super(GiscedataFacturacioValidationValidator, self).check_f070_ha_de_saltar(
+            cursor, uid, fact, linia_saju, parameters
+        )
+        if res and fact.data_inici < '2026-05-01' <= fact.data_final:
+            facturador_obj = self.pool.get('giscedata.facturacio.facturador')
+            context = {'get_original_ssaa_curves': True}
+            original_curves = facturador_obj.get_consum_curve_components_for_servei(
+                cursor, uid, fact.id, fact.data_inici, fact.data_final,
+                single_period_profiling=False, context=context
+            )
+
+            original_consum = 0.0
+            for curve in original_curves:
+                original_consum += curve.total_sum
+
+            tolerancia = parameters.get("tolerancia", 1)
+            diferencia_facturada_saju = original_consum - fact.energia_kwh
+            if abs(diferencia_facturada_saju) <= tolerancia:
+                res = False
+        return res
 
 
 GiscedataFacturacioValidationValidator()

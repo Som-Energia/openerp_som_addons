@@ -11,6 +11,7 @@ import zipfile
 import shutil
 import StringIO
 from gridfs.errors import CorruptGridFile, NoFile
+from som_crawlers.api_downloaders import get_instance_from_api_module
 
 # Class Task Step that describes the module and the task step fields
 
@@ -762,6 +763,40 @@ class SomCrawlersTaskStep(osv.osv):
                 output = "File or directory doesn't exist"
         else:
             output = "Falta especificar nom fitxer"
+        task_step_obj.task_id.write(
+            {
+                "ultima_tasca_executada": str(task_step_obj.name)
+                + " - "
+                + str(datetime.now().strftime("%Y-%m-%d_%H:%M:%S"))
+            }
+        )
+        classresult.write(cursor, uid, result_id, {"resultat_bool": True})
+        return output
+
+    def download_api_files(self, cursor, uid, id, result_id, context=None):
+        classresult = self.pool.get("som.crawlers.result")
+        task_step_obj = self.browse(cursor, uid, id)
+        task_step_params = json.loads(task_step_obj.params)
+
+        config_obj = self.pool.get("som.crawlers.task").id_del_portal_config(
+            cursor, uid, task_step_obj.task_id.id, context
+        )
+        process = task_step_params.get("process")
+        api_downloader_instance = get_instance_from_api_module(config_obj, config_obj.name, process)
+        api_downloader_instance.start()
+
+        output_path = self.get_output_path(cursor, uid)
+        output = self.attach_files_zip(
+            cursor,
+            uid,
+            id,
+            result_id,
+            config_obj,
+            output_path,
+            task_step_params,
+            context=context,
+        )
+
         task_step_obj.task_id.write(
             {
                 "ultima_tasca_executada": str(task_step_obj.name)

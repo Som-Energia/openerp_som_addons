@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+    <data noupdate="1">
+        <record model="som.annual.coefficient" id="coefficient_20_td_periods_2026">
+            <field name="p1_ratio">0.265</field>
+            <field name="p2_ratio">0.256</field>
+            <field name="p3_ratio">0.479</field>
+            <field name="p4_ratio">0</field>
+            <field name="p5_ratio">0</field>
+            <field name="p6_ratio">0</field>
+            <field name="year">2026</field>
+            <field name="tariff">2.0TD_periods</field>
+        </record>
+        <record model="som.annual.coefficient" id="coefficient_30_td_periods_2026">
+            <field name="p1_ratio">0.119</field>
+            <field name="p2_ratio">0.134</field>
+            <field name="p3_ratio">0.123</field>
+            <field name="p4_ratio">0.133</field>
+            <field name="p5_ratio">0.050</field>
+            <field name="p6_ratio">0.441</field>
+            <field name="year">2026</field>
+            <field name="tariff">3.0TD_periods</field>
+        </record>
+        <record model="som.annual.coefficient" id="coefficient_20_td_index_2026">
+            <field name="p1_ratio">0.265</field>
+            <field name="p2_ratio">0.256</field>
+            <field name="p3_ratio">0.479</field>
+            <field name="p4_ratio">0</field>
+            <field name="p5_ratio">0</field>
+            <field name="p6_ratio">0</field>
+            <field name="year">2026</field>
+            <field name="tariff">2.0TD_index</field>
+        </record>
+        <record model="som.annual.coefficient" id="coefficient_30_td_index_2026">
+            <field name="p1_ratio">0.229</field>
+            <field name="p2_ratio">0.330</field>
+            <field name="p3_ratio">0.441</field>
+            <field name="p4_ratio">0</field>
+            <field name="p5_ratio">0</field>
+            <field name="p6_ratio">0</field>
+            <field name="year">2026</field>
+            <field name="tariff">3.0TD_index</field>
+        </record>
+    </data>
+</openerp>

@@ -62,7 +62,7 @@
         <record id="res_partner_not_customer" model="res.partner">
             <field name="name">Distri Name</field>
             <field name="ref">666</field>
-            <field name="vat"></field>
+            <field name="vat"> </field>
             <field name="active" eval="True"/>
         </record>
         <record id="res_partner_address_not_customer" model="res.partner.address">
@@ -90,7 +90,7 @@
         <!-- Partner exists, is active and is staff -->
         <record id="res_partner_res_users_already_staff" model="res.partner">
             <field name="name">Hari, Mata</field>
-            <field name="vat">G78525763</field>
+            <field name="vat">G78525764</field>
             <field name="ref">777</field>
             <field name="active" eval="True"/>
         </record>
@@ -101,7 +101,7 @@
             <field name="street">Carrer Riu Güell, 68</field>
             <field name="city">Girona</field>
             <field name="zip">17002</field>
-            <field name="state_id">20</field>
+            <field name="state_id" model="res.country.state" search="[('name', '=', 'Girona')]"/>
             <field name="title">M.</field>
             <field name="country_id" model="res.country" search="[('name','=','España')]"/>
             <field name="type">default</field>
