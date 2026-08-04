@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
+from __future__ import absolute_import
+
 import logging
-from oopgrade.oopgrade import column_exists, add_columns
+from oopgrade.oopgrade import column_exists
 
 
 def up(cursor, installed_version):
