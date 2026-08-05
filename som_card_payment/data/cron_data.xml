@@ -10,8 +10,8 @@
             <field name="numbercall">-1</field>
             <field name="doall" eval="0"/>
             <field name="nextcall" eval="time.strftime('%Y-%m-%d 00:00:00')"/>
-            <field name="model" eval="'account.invoice'"/>
-            <field name="function" eval="'_cron_collect_recurrent_card_invoices'"/>
+            <field name="model" eval="'giscedata.facturacio.factura'"/>
+            <field name="function" eval="'_cron_collect_recurrent_card_factures'"/>
             <field eval="'({},)'" name="args"/>
         </record>
     </data>

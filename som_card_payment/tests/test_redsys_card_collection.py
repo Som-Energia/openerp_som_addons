@@ -16,7 +16,6 @@ class TestRedsysCardCollection(testing.OOTestCaseWithCursor):
         self.factura_obj = self.openerp.pool.get("giscedata.facturacio.factura")
         self.card_obj = self.openerp.pool.get("res.partner.creditcard")
         self.polissa_obj = self.openerp.pool.get("giscedata.polissa")
-        self.attempt_obj = self.openerp.pool.get("som.card.payment.attempt")
 
         self.card_type_id = self.imd_obj.get_object_reference(
             self.cursor, self.uid, "som_card_payment", "payment_type_card_recurrent"
@@ -100,6 +99,20 @@ class TestRedsysCardCollection(testing.OOTestCaseWithCursor):
                 "active": True,
             },
         )
+        self.factura_obj.write(
+            self.cursor,
+            self.uid,
+            [factura.id],
+            {
+                "redsys_collection_state": False,
+                "redsys_order_ref": False,
+                "redsys_card_id": False,
+                "redsys_amount_cents": False,
+                "redsys_currency": False,
+                "redsys_response_code": False,
+                "redsys_response_message": False,
+            },
+        )
         self.invoice_obj.write(
             self.cursor,
             self.uid,
@@ -114,7 +127,7 @@ class TestRedsysCardCollection(testing.OOTestCaseWithCursor):
         self.polissa_obj.write(
             self.cursor, self.uid, [factura.polissa_id.id], {"creditcard": card_id}
         )
-        return self.invoice_obj.browse(self.cursor, self.uid, invoice.id)
+        return self.factura_obj.browse(self.cursor, self.uid, factura.id)
 
     def _redsys_client(self, response=None, exception=None):
         client = mock.Mock()
@@ -124,49 +137,41 @@ class TestRedsysCardCollection(testing.OOTestCaseWithCursor):
             client.mit_payment.return_value = response
         return mock.patch("sermepa.RestClient", return_value=client), client
 
-    def test_search_recurrent_card_invoice_ids_uses_real_invoice_and_card(self):
+    def test_search_recurrent_card_factura_ids_uses_real_invoice_and_card(self):
         invoice = self._prepare_eligible_invoice()
 
-        eligible_ids = self.invoice_obj._search_recurrent_card_invoice_ids(
+        eligible_ids = self.factura_obj._search_recurrent_card_factura_ids(
             self.cursor, self.uid
         )
 
         self.assertIn(invoice.id, eligible_ids)
 
-    def test_search_recurrent_card_invoice_ids_skips_invoice_not_due(self):
+    def test_search_recurrent_card_factura_ids_skips_factura_not_due(self):
         invoice = self._prepare_eligible_invoice()
         tomorrow = date.today() + timedelta(days=1)
-        self.invoice_obj.write(
+        self.factura_obj.write(
             self.cursor,
             self.uid,
             [invoice.id],
             {"date_due": tomorrow.strftime("%Y-%m-%d")},
         )
 
-        eligible_ids = self.invoice_obj._search_recurrent_card_invoice_ids(
+        eligible_ids = self.factura_obj._search_recurrent_card_factura_ids(
             self.cursor, self.uid
         )
 
         self.assertNotIn(invoice.id, eligible_ids)
 
-    def test_search_recurrent_card_invoice_ids_skips_invoice_with_review_attempt(self):
+    def test_search_recurrent_card_factura_ids_skips_factura_under_review(self):
         invoice = self._prepare_eligible_invoice()
-        self.attempt_obj.create(
+        self.factura_obj.write(
             self.cursor,
             self.uid,
-            {
-                "invoice_id": invoice.id,
-                "card_id": self.invoice_obj._get_recurrent_card_for_invoice(
-                    self.cursor, self.uid, invoice
-                ).id,
-                "order_ref": "0000REVIEW1",
-                "amount_cents": 1234,
-                "currency": "978",
-                "state": "review",
-            },
+            [invoice.id],
+            {"redsys_collection_state": "review"},
         )
 
-        eligible_ids = self.invoice_obj._search_recurrent_card_invoice_ids(
+        eligible_ids = self.factura_obj._search_recurrent_card_factura_ids(
             self.cursor, self.uid
         )
 
@@ -174,11 +179,11 @@ class TestRedsysCardCollection(testing.OOTestCaseWithCursor):
 
     def test_build_redsys_transaction_params_uses_real_configuration_and_card(self):
         invoice = self._prepare_eligible_invoice()
-        card = invoice and self.invoice_obj._get_recurrent_card_for_invoice(
+        card = invoice and self.factura_obj._get_recurrent_card_for_factura(
             self.cursor, self.uid, invoice
         )
 
-        params, order_ref = self.attempt_obj._build_redsys_transaction_params(
+        params, order_ref = self.factura_obj._build_redsys_transaction_params(
             self.cursor, self.uid, invoice, card
         )
 
@@ -191,7 +196,7 @@ class TestRedsysCardCollection(testing.OOTestCaseWithCursor):
         self.assertEqual(params["Ds_Merchant_Cof_Type"], "C")
         self.assertEqual(params["Ds_Merchant_Excep_SCA"], "MIT")
 
-    def test_charge_invoice_by_redsys_marks_confirmed_failure_as_pending(self):
+    def test_charge_factura_by_redsys_marks_confirmed_failure_as_pending(self):
         invoice = self._prepare_eligible_invoice()
         response = {
             "raw": {"Ds_Response": "101", "error": "Operacio denegada"},
@@ -200,64 +205,54 @@ class TestRedsysCardCollection(testing.OOTestCaseWithCursor):
         redsys_client, client = self._redsys_client(response=response)
 
         with redsys_client:
-            result = self.invoice_obj._charge_invoice_by_redsys(
+            result = self.factura_obj._charge_factura_by_redsys(
                 self.cursor, self.uid, invoice.id
             )
 
         self.assertTrue(result)
         client.mit_payment.assert_called_once()
-        updated_invoice = self.invoice_obj.browse(self.cursor, self.uid, invoice.id)
-        self.assertEqual(updated_invoice.pending_state.id, self.pending_state_id)
-        attempt_ids = self.attempt_obj.search(
-            self.cursor, self.uid, [("invoice_id", "=", invoice.id)]
-        )
-        self.assertEqual(len(attempt_ids), 1)
-        attempt = self.attempt_obj.browse(self.cursor, self.uid, attempt_ids[0])
-        self.assertEqual(attempt.state, "declined")
-        self.assertEqual(attempt.response_code, "101")
-        self.assertIn(u"Operacio denegada", attempt.response_message)
+        updated_factura = self.factura_obj.browse(self.cursor, self.uid, invoice.id)
+        self.assertEqual(updated_factura.pending_state.id, self.pending_state_id)
+        self.assertEqual(updated_factura.redsys_collection_state, "declined")
+        self.assertEqual(updated_factura.redsys_response_code, "101")
+        self.assertIn(u"Operacio denegada", updated_factura.redsys_response_message)
 
-    def test_charge_invoice_by_redsys_marks_transport_failure_for_review(self):
+    def test_charge_factura_by_redsys_marks_transport_failure_for_review(self):
         invoice = self._prepare_eligible_invoice()
         redsys_client, client = self._redsys_client(exception=Exception("timeout"))
 
         with redsys_client:
-            result = self.attempt_obj.charge_invoice(
+            result = self.factura_obj._charge_factura_by_redsys(
                 self.cursor, self.uid, invoice.id
             )
 
         self.assertTrue(result)
         client.mit_payment.assert_called_once()
-        updated_invoice = self.invoice_obj.browse(self.cursor, self.uid, invoice.id)
-        self.assertFalse(updated_invoice.pending_state)
-        attempt_ids = self.attempt_obj.search(
-            self.cursor, self.uid, [("invoice_id", "=", invoice.id)]
-        )
-        attempt = self.attempt_obj.browse(self.cursor, self.uid, attempt_ids[0])
-        self.assertEqual(attempt.state, "review")
-        self.assertIn(u"timeout", attempt.response_message)
+        updated_factura = self.factura_obj.browse(self.cursor, self.uid, invoice.id)
+        self.assertFalse(updated_factura.pending_state)
+        self.assertEqual(updated_factura.redsys_collection_state, "review")
+        self.assertIn(u"timeout", updated_factura.redsys_response_message)
 
-    def test_charge_invoice_by_redsys_marks_malformed_response_for_review(self):
+    def test_charge_factura_by_redsys_marks_malformed_response_for_review(self):
         invoice = self._prepare_eligible_invoice()
         redsys_client, client = self._redsys_client(response="invalid response")
 
         with redsys_client:
-            result = self.attempt_obj.charge_invoice(
+            result = self.factura_obj._charge_factura_by_redsys(
                 self.cursor, self.uid, invoice.id
             )
 
         self.assertTrue(result)
         client.mit_payment.assert_called_once()
-        attempt_ids = self.attempt_obj.search(
-            self.cursor, self.uid, [("invoice_id", "=", invoice.id)]
+        updated_factura = self.factura_obj.browse(self.cursor, self.uid, invoice.id)
+        self.assertEqual(updated_factura.redsys_collection_state, "review")
+        self.assertIn(
+            u"object has no attribute", updated_factura.redsys_response_message
         )
-        attempt = self.attempt_obj.browse(self.cursor, self.uid, attempt_ids[0])
-        self.assertEqual(attempt.state, "review")
-        self.assertIn(u"object has no attribute", attempt.response_message)
 
     def test_build_redsys_order_returns_unique_twelve_character_references(self):
-        first_order = self.attempt_obj._build_redsys_order(1234)
-        second_order = self.attempt_obj._build_redsys_order(11234)
+        first_order = self.factura_obj._build_redsys_order(1234)
+        second_order = self.factura_obj._build_redsys_order(11234)
 
         self.assertEqual(len(first_order), 12)
         self.assertEqual(len(second_order), 12)
