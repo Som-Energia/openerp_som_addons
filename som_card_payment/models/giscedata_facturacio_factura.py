@@ -29,7 +29,23 @@ class GiscedataFacturacioFactura(osv.osv):
         ("review", "Pendent de revisio"),
     ]
 
+    def _is_recurrent_card_payment(self, cursor, uid, ids, name, arg, context=None):
+        result = {}
+        for factura in self.browse(cursor, uid, ids, context=context):
+            result[factura.id] = bool(
+                factura.payment_type
+                and factura.payment_type.code
+                == self._redsys_recurrent_card_payment_type_code
+            )
+        return result
+
     _columns = {
+        "is_recurrent_card_payment": fields.function(
+            _is_recurrent_card_payment,
+            method=True,
+            type="boolean",
+            string="Cobrament recurrent per targeta",
+        ),
         "redsys_collection_state": fields.selection(
             _redsys_collection_states, "Estat cobrament Redsys", readonly=True
         ),

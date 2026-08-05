@@ -24,6 +24,7 @@
         "views/res_partner_creditcard_view.xml",
         "views/res_partner_view.xml",
         "views/giscedata_polissa_view.xml",
+        "views/giscedata_facturacio_factura_view.xml",
     ],
     "active": False,
     "installable": True,
