@@ -217,6 +217,27 @@ class TestRedsysCardCollection(testing.OOTestCaseWithCursor):
         self.assertEqual(updated_factura.redsys_response_code, "101")
         self.assertIn(u"Operacio denegada", updated_factura.redsys_response_message)
 
+    def test_charge_factura_by_redsys_marks_approved_payment_as_paid(self):
+        invoice = self._prepare_eligible_invoice()
+        initial_residual = invoice.invoice_id.residual
+        response = {
+            "raw": {"Ds_Response": "0000"},
+            "merchant_parameters": {"Ds_Response": "0000"},
+        }
+        redsys_client, client = self._redsys_client(response=response)
+
+        with redsys_client:
+            result = self.factura_obj._charge_factura_by_redsys(
+                self.cursor, self.uid, invoice.id
+            )
+
+        self.assertTrue(result)
+        client.mit_payment.assert_called_once()
+        updated_factura = self.factura_obj.browse(self.cursor, self.uid, invoice.id)
+        self.assertEqual(updated_factura.redsys_collection_state, "paid")
+        self.assertEqual(updated_factura.redsys_response_code, "0000")
+        self.assertLess(updated_factura.invoice_id.residual, initial_residual)
+
     def test_charge_factura_by_redsys_marks_transport_failure_for_review(self):
         invoice = self._prepare_eligible_invoice()
         redsys_client, client = self._redsys_client(exception=Exception("timeout"))

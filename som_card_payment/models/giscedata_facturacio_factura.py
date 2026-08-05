@@ -24,6 +24,7 @@ class GiscedataFacturacioFactura(osv.osv):
     _redsys_recurrent_card_payment_type_code = "COBRAMENT_RECURRENT_TARGETA"
     _redsys_collection_states = [
         ("submitted", "Enviat a Redsys"),
+        ("paid", "Cobrat"),
         ("declined", "Denegat"),
         ("review", "Pendent de revisio"),
     ]
@@ -376,6 +377,17 @@ class GiscedataFacturacioFactura(osv.osv):
                     context=context,
                 )
                 return True
+            self.write(
+                cursor,
+                uid,
+                [factura.id],
+                {
+                    "redsys_collection_state": "paid",
+                    "redsys_response_code": "%s" % response_code,
+                    "redsys_response_message": response_message or False,
+                },
+                context=context,
+            )
             return True
 
         self.write(
