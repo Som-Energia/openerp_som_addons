@@ -13,7 +13,7 @@ tarifes_sistemes AS (
         gpt.name AS tarifa_name,
         CASE
             WHEN rse.code IN ('TF', 'PA', 'LG', 'HI', 'GC', 'FL', 'TG') THEN 'Canàries'
-            WHEN rse.code IN ('IF', 'MM') THEN 'Balears'
+            WHEN rse.code IN ('IF', 'MM', 'SB') THEN 'Balears'
             WHEN rse.code = 'PE' THEN 'Península'
         END AS sistema
     FROM giscedata_polissa gp
@@ -45,7 +45,7 @@ LEFT JOIN (
         gpt.name,
         CASE
             WHEN rse.code IN ('TF', 'PA', 'LG', 'HI', 'GC', 'FL', 'TG') THEN 'Canàries'
-            WHEN rse.code IN ('IF', 'MM') THEN 'Balears'
+            WHEN rse.code IN ('IF', 'MM', 'SB') THEN 'Balears'
             WHEN rse.code = 'PE' THEN 'Península'
         END AS sistema
     FROM giscedata_polissa_modcontractual gpm
@@ -63,7 +63,7 @@ LEFT JOIN (
         gpt.name,
         CASE
             WHEN rse.code IN ('TF', 'PA', 'LG', 'HI', 'GC', 'FL', 'TG') THEN 'Canàries'
-            WHEN rse.code IN ('IF', 'MM') THEN 'Balears'
+            WHEN rse.code IN ('IF', 'MM', 'SB') THEN 'Balears'
             WHEN rse.code = 'PE' THEN 'Península'
         END AS sistema
     FROM giscedata_polissa_modcontractual gpm
@@ -81,7 +81,7 @@ LEFT JOIN (
         gpt.name,
         CASE
             WHEN rse.code IN ('TF', 'PA', 'LG', 'HI', 'GC', 'FL', 'TG') THEN 'Canàries'
-            WHEN rse.code IN ('IF', 'MM') THEN 'Balears'
+            WHEN rse.code IN ('IF', 'MM', 'SB') THEN 'Balears'
             WHEN rse.code = 'PE' THEN 'Península'
         END AS sistema
     FROM giscedata_polissa_modcontractual gpm
@@ -99,7 +99,7 @@ LEFT JOIN (
         gpt.name,
         CASE
             WHEN rse.code IN ('TF', 'PA', 'LG', 'HI', 'GC', 'FL', 'TG') THEN 'Canàries'
-            WHEN rse.code IN ('IF', 'MM') THEN 'Balears'
+            WHEN rse.code IN ('IF', 'MM', 'SB') THEN 'Balears'
             WHEN rse.code = 'PE' THEN 'Península'
         END AS sistema
     FROM giscedata_polissa gp
@@ -117,7 +117,7 @@ LEFT JOIN (
         gpt.name,
         CASE
             WHEN rse.code IN ('TF', 'PA', 'LG', 'HI', 'GC', 'FL', 'TG') THEN 'Canàries'
-            WHEN rse.code IN ('IF', 'MM') THEN 'Balears'
+            WHEN rse.code IN ('IF', 'MM', 'SB') THEN 'Balears'
             WHEN rse.code = 'PE' THEN 'Península'
         END AS sistema
     FROM giscedata_polissa gp
@@ -135,7 +135,7 @@ LEFT JOIN (
         gpt.name,
         CASE
             WHEN rse.code IN ('TF', 'PA', 'LG', 'HI', 'GC', 'FL', 'TG') THEN 'Canàries'
-            WHEN rse.code IN ('IF', 'MM') THEN 'Balears'
+            WHEN rse.code IN ('IF', 'MM', 'SB') THEN 'Balears'
             WHEN rse.code = 'PE' THEN 'Península'
         END AS sistema
     FROM giscedata_polissa_modcontractual gpm
@@ -161,7 +161,7 @@ tarifes_sistemes AS (
         gpt.name AS tarifa_name,
         CASE
             WHEN rse.code IN ('TF', 'PA', 'LG', 'HI', 'GC', 'FL', 'TG') THEN 'Canàries'
-            WHEN rse.code IN ('IF', 'MM') THEN 'Balears'
+            WHEN rse.code IN ('IF', 'MM', 'SB') THEN 'Balears'
             WHEN rse.code = 'PE' THEN 'Península'
         END AS sistema
     FROM giscedata_polissa gp
@@ -192,7 +192,7 @@ LEFT JOIN (
         gpt.name,
         CASE
             WHEN rse.code IN ('TF', 'PA', 'LG', 'HI', 'GC', 'FL', 'TG') THEN 'Canàries'
-            WHEN rse.code IN ('IF', 'MM') THEN 'Balears'
+            WHEN rse.code IN ('IF', 'MM', 'SB') THEN 'Balears'
             WHEN rse.code = 'PE' THEN 'Península'
         END AS sistema
     FROM giscedata_polissa_modcontractual gpm
@@ -210,7 +210,7 @@ LEFT JOIN (
         gpt.name,
         CASE
             WHEN rse.code IN ('TF', 'PA', 'LG', 'HI', 'GC', 'FL', 'TG') THEN 'Canàries'
-            WHEN rse.code IN ('IF', 'MM') THEN 'Balears'
+            WHEN rse.code IN ('IF', 'MM', 'SB') THEN 'Balears'
             WHEN rse.code = 'PE' THEN 'Península'
         END AS sistema
     FROM giscedata_polissa_modcontractual gpm
@@ -228,7 +228,7 @@ LEFT JOIN (
         gpt.name,
         CASE
             WHEN rse.code IN ('TF', 'PA', 'LG', 'HI', 'GC', 'FL', 'TG') THEN 'Canàries'
-            WHEN rse.code IN ('IF', 'MM') THEN 'Balears'
+            WHEN rse.code IN ('IF', 'MM', 'SB') THEN 'Balears'
             WHEN rse.code = 'PE' THEN 'Península'
         END AS sistema
     FROM giscedata_polissa_modcontractual gpm
@@ -246,7 +246,7 @@ LEFT JOIN (
         gpt.name,
         CASE
             WHEN rse.code IN ('TF', 'PA', 'LG', 'HI', 'GC', 'FL', 'TG') THEN 'Canàries'
-            WHEN rse.code IN ('IF', 'MM') THEN 'Balears'
+            WHEN rse.code IN ('IF', 'MM', 'SB') THEN 'Balears'
             WHEN rse.code = 'PE' THEN 'Península'
         END AS sistema
     FROM giscedata_polissa gp
@@ -264,7 +264,7 @@ LEFT JOIN (
         gpt.name,
         CASE
             WHEN rse.code IN ('TF', 'PA', 'LG', 'HI', 'GC', 'FL', 'TG') THEN 'Canàries'
-            WHEN rse.code IN ('IF', 'MM') THEN 'Balears'
+            WHEN rse.code IN ('IF', 'MM', 'SB') THEN 'Balears'
             WHEN rse.code = 'PE' THEN 'Península'
         END AS sistema
     FROM giscedata_polissa gp
@@ -282,7 +282,7 @@ LEFT JOIN (
         gpt.name,
         CASE
             WHEN rse.code IN ('TF', 'PA', 'LG', 'HI', 'GC', 'FL', 'TG') THEN 'Canàries'
-            WHEN rse.code IN ('IF', 'MM') THEN 'Balears'
+            WHEN rse.code IN ('IF', 'MM', 'SB') THEN 'Balears'
             WHEN rse.code = 'PE' THEN 'Península'
         END AS sistema
     FROM giscedata_polissa_modcontractual gpm

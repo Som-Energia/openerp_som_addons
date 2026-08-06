@@ -78,7 +78,7 @@ LEFT JOIN (
         LEFT JOIN res_municipi rm ON gcps.id_municipi = rm.id
         LEFT JOIN res_subsistemas_electricos rse ON rm.subsistema_id = rse.id
     WHERE
-        observacions LIKE '%Mode facturaci%: ATR % Indexada%' and rse.code IN ('IF', 'MM')
+        observacions LIKE '%Mode facturaci%: ATR % Indexada%' and rse.code IN ('IF', 'MM', 'SB')
     GROUP BY
         CAST(gpm.create_date AS DATE)
 ) aa ON g.fecha = aa.dates
@@ -92,7 +92,7 @@ LEFT JOIN (
         LEFT JOIN res_municipi rm ON gcps.id_municipi = rm.id
         LEFT JOIN res_subsistemas_electricos rse ON rm.subsistema_id = rse.id
     WHERE
-        observacions LIKE '%Mode facturaci%: Indexada % ATR%' and rse.code IN ('IF', 'MM')
+        observacions LIKE '%Mode facturaci%: Indexada % ATR%' and rse.code IN ('IF', 'MM', 'SB')
     GROUP BY
         CAST(gpm.create_date AS DATE)
 ) bb ON g.fecha = bb.dates
@@ -216,7 +216,7 @@ LEFT JOIN (
         LEFT JOIN res_municipi rm ON gcps.id_municipi = rm.id
         LEFT JOIN res_subsistemas_electricos rse ON rm.subsistema_id = rse.id
     WHERE
-        mode_facturacio = 'index' and rse.code IN ('IF', 'MM') and gpm.name = '1'
+        mode_facturacio = 'index' and rse.code IN ('IF', 'MM', 'SB') and gpm.name = '1'
     GROUP BY
         CAST(gpm.data_inici AS DATE)
 ) aaa ON g.fecha = aaa.dates
@@ -230,7 +230,7 @@ LEFT JOIN (
         LEFT JOIN res_municipi rm ON gcps.id_municipi = rm.id
         LEFT JOIN res_subsistemas_electricos rse ON rm.subsistema_id = rse.id
     WHERE
-        mode_facturacio = 'atr' and rse.code IN ('IF', 'MM') and gpm.name = '1'
+        mode_facturacio = 'atr' and rse.code IN ('IF', 'MM', 'SB') and gpm.name = '1'
     GROUP BY
         CAST(gpm.data_inici AS DATE)
 ) aab ON g.fecha = aab.dates
@@ -592,7 +592,7 @@ LEFT JOIN (
         LEFT JOIN res_municipi rm ON gcps.id_municipi = rm.id
         LEFT JOIN res_subsistemas_electricos rse ON rm.subsistema_id = rse.id
     WHERE
-        mode_facturacio = 'index' and rse.code IN ('IF', 'MM')
+        mode_facturacio = 'index' and rse.code IN ('IF', 'MM', 'SB')
     GROUP BY
         CAST(gp.data_baixa AS DATE)
 ) aaa ON g.fecha = aaa.dates
@@ -606,7 +606,7 @@ LEFT JOIN (
         LEFT JOIN res_municipi rm ON gcps.id_municipi = rm.id
         LEFT JOIN res_subsistemas_electricos rse ON rm.subsistema_id = rse.id
     WHERE
-        mode_facturacio = 'atr' and rse.code IN ('IF', 'MM')
+        mode_facturacio = 'atr' and rse.code IN ('IF', 'MM', 'SB')
     GROUP BY
         CAST(gp.data_baixa AS DATE)
 ) aab ON g.fecha = aab.dates
@@ -842,7 +842,7 @@ LEFT JOIN (
         LEFT JOIN res_municipi rm ON gcps.id_municipi = rm.id
         LEFT JOIN res_subsistemas_electricos rse ON rm.subsistema_id = rse.id
     WHERE
-        observacions LIKE '%Mode facturaci%: ATR % Indexada%' AND rse.code IN ('IF', 'MM')
+        observacions LIKE '%Mode facturaci%: ATR % Indexada%' AND rse.code IN ('IF', 'MM', 'SB')
     GROUP BY
         DATE_TRUNC('month', gpm.create_date)
 ) aa ON g.fecha = aa.dates
@@ -856,7 +856,7 @@ LEFT JOIN (
         LEFT JOIN res_municipi rm ON gcps.id_municipi = rm.id
         LEFT JOIN res_subsistemas_electricos rse ON rm.subsistema_id = rse.id
     WHERE
-        observacions LIKE '%Mode facturaci%: Indexada % ATR%' AND rse.code IN ('IF', 'MM')
+        observacions LIKE '%Mode facturaci%: Indexada % ATR%' AND rse.code IN ('IF', 'MM', 'SB')
     GROUP BY
         DATE_TRUNC('month', gpm.create_date)
 ) bb ON g.fecha = bb.dates
@@ -975,7 +975,7 @@ LEFT JOIN (
     LEFT JOIN res_municipi rm ON gcps.id_municipi = rm.id
     LEFT JOIN res_subsistemas_electricos rse ON rm.subsistema_id = rse.id
     WHERE
-        gpm.mode_facturacio = 'index' AND rse.code IN ('IF', 'MM') AND gpm.name = '1'
+        gpm.mode_facturacio = 'index' AND rse.code IN ('IF', 'MM', 'SB') AND gpm.name = '1'
     GROUP BY 1
 ) aaa ON g.fecha = aaa.dates
 LEFT JOIN (
@@ -988,7 +988,7 @@ LEFT JOIN (
     LEFT JOIN res_municipi rm ON gcps.id_municipi = rm.id
     LEFT JOIN res_subsistemas_electricos rse ON rm.subsistema_id = rse.id
     WHERE
-        gpm.mode_facturacio = 'atr' AND rse.code IN ('IF', 'MM') AND gpm.name = '1'
+        gpm.mode_facturacio = 'atr' AND rse.code IN ('IF', 'MM', 'SB') AND gpm.name = '1'
     GROUP BY 1
 ) aab ON g.fecha = aab.dates
 LEFT JOIN (
@@ -1294,7 +1294,7 @@ LEFT JOIN (
     LEFT JOIN giscedata_cups_ps gcps ON gp.cups = gcps.id
     LEFT JOIN res_municipi rm ON gcps.id_municipi = rm.id
     LEFT JOIN res_subsistemas_electricos rse ON rm.subsistema_id = rse.id
-    WHERE mode_facturacio = 'index' AND rse.code IN ('IF', 'MM')
+    WHERE mode_facturacio = 'index' AND rse.code IN ('IF', 'MM', 'SB')
     GROUP BY DATE_TRUNC('month', gp.data_baixa)
 ) aaa ON g.fecha = aaa.dates
 LEFT JOIN (
@@ -1305,7 +1305,7 @@ LEFT JOIN (
     LEFT JOIN giscedata_cups_ps gcps ON gp.cups = gcps.id
     LEFT JOIN res_municipi rm ON gcps.id_municipi = rm.id
     LEFT JOIN res_subsistemas_electricos rse ON rm.subsistema_id = rse.id
-    WHERE mode_facturacio = 'atr' AND rse.code IN ('IF', 'MM')
+    WHERE mode_facturacio = 'atr' AND rse.code IN ('IF', 'MM', 'SB')
     GROUP BY DATE_TRUNC('month', gp.data_baixa)
 ) aab ON g.fecha = aab.dates
 LEFT JOIN (

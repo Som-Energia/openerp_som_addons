@@ -82,7 +82,7 @@ class GiscedataPolissa(osv.osv):
         subsistema_code = municipi.subsistema_id.code
         if subsistema_code in ['TF', 'PA', 'LG', 'HI', 'GC', 'FL', 'TG']:
             return "canaries"
-        elif subsistema_code in ['IF', 'MM']:
+        elif subsistema_code in ['IF', 'MM', 'SB']:
             return "balears"
         else:
             return "peninsula"
