@@ -11,6 +11,9 @@
                     <group colspan="2" attrs="{'invisible': [('polissa_id', '=', False)]}">
                         <button name="button_send_mail" type="object" string="Enviar correu conforme ha contractat" icon="send" colspan="2" confirm="Aquesta acció enviarà un correu electrònic, vols procedir?"/>
                     </group>
+                    <group colspan="2" attrs="{'invisible': [('signature_process', '=', False)]}">
+                        <button name="send_sign_email" type="object" string="Enviar correu per Signar (correu instantàni)" icon="send" colspan="2"/>
+                    </group>
                 </xpath>
                 <xpath expr="//field[@name='llista_preu']" position="replace">
                 </xpath>
