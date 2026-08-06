@@ -64,9 +64,15 @@ class GiscedataCrmLead(osv.OsvInherits):
                 "No hi ha cap procés de signatura associat a aquest lead."
             )
 
-        lead.signature_process.send_poweremail(cursor, uid, [lead_id], context=context)
+        sign_id = lead.signature_process.id
+        template_id = lead.signature_process.template_id.id
+        lead.signature_process.send_poweremail(
+            cursor, uid, [sign_id], context=context
+        )
         search_params = [
-            ("reference", "=", "poweremail.mailbox,{}".format(lead_id))
+            ("reference", "=", "giscedata.signatura.process,{}".format(sign_id)),
+            ("template_id", "=", template_id),
+            ("folder", "=", "outbox")
         ]
         mail_ids = mail_o.search(cursor, uid, search_params, context=context)
         mail_o.send_this_mail(cursor, uid, mail_ids, context=context)
