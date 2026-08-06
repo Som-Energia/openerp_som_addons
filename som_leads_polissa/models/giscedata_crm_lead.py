@@ -57,7 +57,7 @@ class GiscedataCrmLead(osv.OsvInherits):
 
         mail_o = self.pool.get("poweremail.mailbox")
 
-        lead = self.browse(cursor, uid, lead_id, context=context)
+        lead = self.browse(cursor, uid, lead_id[0], context=context)
         if not lead.signature_process:
             raise osv.except_osv(
                 "Error",
