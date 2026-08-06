@@ -592,11 +592,11 @@ class ReportBackendMailcanvipreus(ReportBackend):
 
     def esCanaries(self, cursor, uid, env, context=False):
         return env.polissa_id.cups.id_municipi.subsistema_id.code in [
-            'TF', 'PA', 'LG', 'HI', 'GC', 'FL'
+            'TF', 'PA', 'LG', 'HI', 'GC', 'FL', 'TG'
         ]
 
     def esBalears(self, cursor, uid, env, context=False):
-        return env.polissa_id.cups.id_municipi.subsistema_id.code in ['MM', 'IF']
+        return env.polissa_id.cups.id_municipi.subsistema_id.code in ['MM', 'IF', 'SB']
 
     def getTarifaCorreu(self, cursor, uid, env, context=False):
         key_prefixes = ["Indexada", "Periodes"]
