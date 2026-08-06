@@ -80,7 +80,7 @@ class GiscedataPolissa(osv.osv):
         res_municipi_o = self.pool.get("res.municipi")
         municipi = res_municipi_o.browse(cursor, uid, id_municipi)
         subsistema_code = municipi.subsistema_id.code
-        if subsistema_code in ['TF', 'PA', 'LG', 'HI', 'GC', 'FL']:
+        if subsistema_code in ['TF', 'PA', 'LG', 'HI', 'GC', 'FL', 'TG']:
             return "canaries"
         elif subsistema_code in ['IF', 'MM']:
             return "balears"
