@@ -979,7 +979,7 @@ class GiscedataPolissa(osv.osv):
         municipi = municipi_obj.browse(cursor, uid, cups.id_municipi.id, context=context)
         posicio_id = None
         is_canarias = municipi and municipi.subsistema_id and municipi.subsistema_id.code in [
-            'TF', 'PA', 'LG', 'HI', 'GC', 'FL']
+            'TF', 'PA', 'LG', 'HI', 'GC', 'FL', 'TG']
         is_pdlc = cups.distribuidora_id.ref == '0401'
         is_vivienda = cnae and cnae == "9820"
         power = max(powers or [0])

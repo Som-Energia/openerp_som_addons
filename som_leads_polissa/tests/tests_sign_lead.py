@@ -7,6 +7,8 @@ from destral.transaction import Transaction
 from osv import osv
 import mock
 
+from poweremail_oorq import poweremail_mailbox
+
 
 class TestSignLead(testing.OOTestCase):
 
@@ -125,6 +127,51 @@ class TestSignLead(testing.OOTestCase):
                         self.cursor, self.uid, lead_id, self._cups,
                         context={'skip_validations': True}
                     )
+
+    def test_send_sign_email_raises_when_signature_process_not_found(self):
+        lead_id = self._create_lead()
+        with self.assertRaises(osv.except_osv):
+            self.lead_o.send_sign_email(self.cursor, self.uid, lead_id, context={})
+
+    @mock.patch.object(poweremail_mailbox.PoweremailMailbox, 'send_this_mail')
+    def test_send_sign_email(self, mock_send_this_mail):
+        mailbox_o = self.get_model('poweremail.mailbox')
+        lead_id = self._create_lead()
+        template_id = self.ir_model_o.get_object_reference(
+            self.cursor, self.uid,
+            'giscedata_crm_leads_signatura', 'alta_lead_signatura'
+        )[1]
+        process_id = self.process_o.create(
+            self.cursor, self.uid,
+            {
+                'subject': 'Test process',
+                'status': 'wait',
+                'signature_url': 'http://sign.url',
+                'template_id': template_id,
+                'template_res_id': lead_id,
+                'lang': 'en_US',
+                'recipients': [(0, 0, {
+                    'name': 'Test titular',
+                    'email': 'test@example.org',
+                })],
+            },
+            context={}
+        )
+        lead = self.lead_o.browse(self.cursor, self.uid, lead_id)
+        lead.write({'signature_process': process_id}, context={})
+        self.lead_o.send_sign_email(self.cursor, self.uid, lead_id, context={})
+        search_params = [
+            ('reference', '=', 'giscedata.signatura.process,{}'.format(process_id)),
+            ('template_id', '=', template_id),
+            ('folder', '=', 'outbox'),
+        ]
+        mail_ids = mailbox_o.search(
+            self.cursor, self.uid, search_params, context={}
+        )
+        self.assertEqual(len(mail_ids), 1)
+        mock_send_this_mail.assert_called_once_with(
+            self.cursor, self.uid, mail_ids, context=mock.ANY
+        )
 
 
 class TestActivationMailAfterSignature(testing.OOTestCase):

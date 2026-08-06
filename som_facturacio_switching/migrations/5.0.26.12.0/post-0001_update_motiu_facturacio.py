@@ -1,4 +1,6 @@
 # coding=utf-8
+from __future__ import absolute_import
+
 import logging
 
 from oopgrade.oopgrade import MigrationHelper
@@ -17,9 +19,9 @@ def up(cursor, installed_version):
         UPDATE giscedata_facturacio_importacio_linia AS f1
         SET motiu_facturacio = foo.tipo_factura
         FROM (
-            SELECT f1.id AS f1_id, COALESCE(fact.tipo_factura, '01') AS tipo_factura 
-            FROM giscedata_facturacio_importacio_linia f1 
-            LEFT JOIN account_invoice ai on ai.origin = f1.invoice_number_text 
+            SELECT f1.id AS f1_id, COALESCE(fact.tipo_factura, '01') AS tipo_factura
+            FROM giscedata_facturacio_importacio_linia f1
+            LEFT JOIN account_invoice ai on ai.origin = f1.invoice_number_text
             LEFT JOIN giscedata_facturacio_factura fact on fact.invoice_id = ai.id
         ) AS foo
         WHERE f1.id = foo.f1_id

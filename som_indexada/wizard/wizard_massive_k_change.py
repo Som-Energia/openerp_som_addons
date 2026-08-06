@@ -95,13 +95,13 @@ class WizardMassiveKChange(osv.osv_memory):
                     if wiz_og.update_pricelist:
                         if (
                             polissa.cups.id_municipi.subsistema_id.code in
-                            ['TF', 'PA', 'LG', 'HI', 'GC', 'FL']
+                            ['TF', 'PA', 'LG', 'HI', 'GC', 'FL', 'TG']
                         ):
                             pricelist_id = ir_model_data.get_object_reference(
                                 cursor, uid, "som_indexada",
                                 "pricelist_indexada_empresa_canaries_non_standard_2024"
                             )[1]
-                        elif polissa.cups.id_municipi.subsistema_id.code in ['IF', 'MM']:
+                        elif polissa.cups.id_municipi.subsistema_id.code in ['IF', 'MM', 'SB']:
                             pricelist_id = ir_model_data.get_object_reference(
                                 cursor, uid, "som_indexada",
                                 "pricelist_indexada_empresa_balears_non_standard_2024"

@@ -618,13 +618,13 @@ class ReportBackendMailcanvipreusPDF(ReportBackend):
                 return min(future_version_starts)
         return (date.today() + timedelta(days=60)).strftime("%Y-%m-%d")
 
-    def esCanaries(self, cursor, uid, pol_id, context=False):
-        return pol_id.cups.id_municipi.subsistema_id.code in [
-            'TF', 'PA', 'LG', 'HI', 'GC', 'FL'
+    def esCanaries(self, cursor, uid, env, context=False):
+        return env.polissa_id.cups.id_municipi.subsistema_id.code in [
+            'TF', 'PA', 'LG', 'HI', 'GC', 'FL', 'TG'
         ]
 
-    def esBalears(self, cursor, uid, pol_id, context=False):
-        return pol_id.cups.id_municipi.subsistema_id.code in ['MM', 'IF']
+    def esBalears(self, cursor, uid, env, context=False):
+        return env.polissa_id.cups.id_municipi.subsistema_id.code in ['MM', 'IF', 'SB']
 
     def getTarifaCorreu(self, cursor, uid, pol_id, context=False):
         key_prefixes = ["Indexada", "Periodes"]
