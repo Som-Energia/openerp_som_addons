@@ -30,6 +30,22 @@
                 </field>
             </field>
         </record>
+
+        <record model="ir.actions.act_window" id="action_som_bateries_polissa_tree">
+            <field name="name">Contractes Flux Solar</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">giscedata.bateria.virtual.polissa</field>
+            <field name="domain">[]</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="view_id" ref="giscedata_facturacio_bateria_virtual.view_bateries_polissa_tree_listat"/>
+        </record>
+
+        <menuitem id="menu_som_bateries_polissa_tree"
+                  name="Contractes Flux Solar"
+                  parent="giscedata_facturacio_bateria_virtual.menu_bateries_virtuals"
+                  action="action_som_bateries_polissa_tree"/>
+
         <record id="view_giscedata_import_bateria_virtual_tree_inherit" model="ir.ui.view">
             <field name="name">view_giscedata_import_bateria_virtual_tree_inherit</field>
             <field name="model">giscedata.bateria.virtual.resum.facturacio</field>
