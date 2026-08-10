@@ -52,10 +52,10 @@ p {
     font-family: Arial, Helvetica, sans-serif;
     padding: 3px;
 }
-.spanish {
+.normal-text {
     font-size: 11px;
 }
-.english {
+.small-text {
     font-size: 10px;
     font-style: italic;
 }
