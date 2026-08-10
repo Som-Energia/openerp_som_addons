@@ -453,7 +453,7 @@ class SomLeadWww(osv.osv_memory):
         sign_process_obj = self.pool.get("giscedata.signatura.process")
         logger = logging.getLogger("openerp.{0}.activate_lead.signature_mail".format(__name__))
 
-        attempts = 5
+        attempts = context.get("attempts") or 5
         wait_seconds = 10
 
         db = pooler.get_db(cr.dbname)
@@ -519,7 +519,7 @@ class SomLeadWww(osv.osv_memory):
             query = """SELECT l.id from giscedata_crm_lead as l
                        LEFT JOIN crm_case as c on c.id = l.crm_id
                        where c.state in ('open', 'pending')
-                       and l.create_date >= now() - INTERVAL '3 days'
+                       and l.create_date >= now() - INTERVAL '5 days'
                        order by id desc
                        FOR UPDATE skip locked
                        """
@@ -530,6 +530,7 @@ class SomLeadWww(osv.osv_memory):
             return False
         finally:
             tmp_cursor.close()
+        context["attempts"] = 1
         for lead_id in all_ids:
             self.activate_lead_async(cr, uid, lead_id, context=context)
 

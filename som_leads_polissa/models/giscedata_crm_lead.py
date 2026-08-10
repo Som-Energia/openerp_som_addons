@@ -72,6 +72,7 @@ class GiscedataCrmLead(osv.OsvInherits):
         signature_o.send_poweremail(
             cursor, uid, [sign_id], context=context
         )
+        cursor.commit()
         search_params = [
             ("reference", "=", "giscedata.signatura.process,{}".format(sign_id)),
             ("template_id", "=", template_id),
