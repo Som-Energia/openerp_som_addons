@@ -28,7 +28,7 @@ class SomLeadWww(osv.osv_memory):
     _128_SIMPLIFIED_SURPLUSES = 'a0'
     _131_CONSUMPTION = '01'
     _SIGNATURE_COMPLETED_STATUS = 'completed'
-    _SIGNATURE_ERROR_STATUSES = ('error', 'canceled', 'declined', 'expired', 'unsend')
+    _SIGNATURE_ERROR_STATUSES = ('error', 'canceled', 'declined', 'expired')
 
     def create_lead(self, cr, uid, www_vals, context=None):
         if context is None:
@@ -472,7 +472,7 @@ class SomLeadWww(osv.osv_memory):
             if signature_status == self._SIGNATURE_COMPLETED_STATUS:
                 return True
 
-            if signature_status in self._SIGNATURE_ERROR_STATUSES:
+            if signature_status in self._SIGNATURE_ERROR_STATUSES or signature_status == 'unsend':
                 return False
 
             sign_process_obj.update(tmp_cursor, uid, [signature_process[0]], context=context)
@@ -519,7 +519,7 @@ class SomLeadWww(osv.osv_memory):
             query = """SELECT l.id from giscedata_crm_lead as l
                        LEFT JOIN crm_case as c on c.id = l.crm_id
                        where c.state in ('open', 'pending')
-                       and l.create_date >= now() - INTERVAL '7 days'
+                       and l.create_date >= now() - INTERVAL '3 days'
                        order by id desc
                        FOR UPDATE skip locked
                        """
