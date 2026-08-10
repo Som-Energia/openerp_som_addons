@@ -219,9 +219,7 @@ class ReportBackendContractSummary(ReportBackendCondicionsParticulars):
 
         return {
             "is_visible": True,
-            "lang": self._get_lang_from_context(context, pol).lower(),
             "link_qr": link_qr,
-            "has_gkwh": bool(getattr(pol, "te_assignacio_gkwh", False)),
             "qr_image": qr_image,
         }
 
