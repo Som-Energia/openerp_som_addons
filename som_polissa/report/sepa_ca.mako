@@ -58,10 +58,10 @@
             <div class="parella">
                 <p class="label">Tipus de pagament:</p>
                 <label class="entrada-label">
-                    <input type="checkbox" name="optradio" ${data['recurring']}>Pagament recurrent</span>
+                    <input type="checkbox" name="optradio" ${data['recurring']}>Pagament recurrent
                 </label>
                 <label class="entrada-label">
-                    <input type="checkbox" name="optradio" ${data['single_payment']}>Pagament únic</span>
+                    <input type="checkbox" name="optradio" ${data['single_payment']}>Pagament únic
                 </label>
             </div>
             <div class="parella"><p class="label">Data - Localitat:</p>
