@@ -9,9 +9,6 @@ from .report_backend_ccpp import ReportBackendCondicionsParticulars
 
 
 CARD_PAYMENT_TYPE = "COBRAMENT_RECURRENT_TARGETA"
-CARD_FALLBACK_LITERAL = (
-    u"Tarjeta de crédito (pago seleccionado mediante tarjeta bancaria)"
-)
 
 
 class ReportBackendContractSummary(ReportBackendCondicionsParticulars):
@@ -42,10 +39,10 @@ class ReportBackendContractSummary(ReportBackendCondicionsParticulars):
     def _is_autoconsum_active(self, pol):
         return getattr(pol, "tipus_subseccio", False) not in (False, "", "00", "0C")
 
-    def get_duration_text(self, today=None):
+    def get_duration_data(self, today=None):
         today = today or datetime.today()
         quarter = ((today.month - 1) // 3) + 1
-        return u"{}º trimestre {}".format(int(quarter), today.year)
+        return int(quarter), today.year
 
     def get_payment_data(self, cursor, uid, pol, context=None):
         payment_type = getattr(pol, "tipo_pago", False)
@@ -56,7 +53,7 @@ class ReportBackendContractSummary(ReportBackendCondicionsParticulars):
         if is_card:
             masked_number = getattr(getattr(pol, "creditcard", False), "masked_number", "")
             last4 = self._extract_last_4_digits(masked_number)
-            label = self._mask_last_4_digits(last4, groups=3) or CARD_FALLBACK_LITERAL
+            label = self._mask_last_4_digits(last4, groups=3)
         else:
             printable_iban = getattr(getattr(pol, "bank", False), "printable_iban", "")
             last4 = self._extract_last_4_digits(printable_iban)
@@ -182,6 +179,8 @@ class ReportBackendContractSummary(ReportBackendCondicionsParticulars):
         if features["has_generation"]:
             tariff_label = u"{} / Generation".format(tariff_label)
 
+        duration_quarter, duration_year = self.get_duration_data()
+
         visible_powers = []
         for periode in potencies_data.get("periodes", []):
             if not periode:
@@ -196,7 +195,8 @@ class ReportBackendContractSummary(ReportBackendCondicionsParticulars):
 
         return {
             "tariff_label": tariff_label,
-            "duration_text": self.get_duration_text(),
+            "duration_quarter": duration_quarter,
+            "duration_year": duration_year,
             "powers": visible_powers,
             "economic_summary": self.get_economic_summary(prices, features),
         }
@@ -204,9 +204,6 @@ class ReportBackendContractSummary(ReportBackendCondicionsParticulars):
     def get_discount_data(self, cursor, uid, pol, context=None):
         has_autoconsum = self._is_autoconsum_active(pol)
         return {
-            "text": "N/A" if not has_autoconsum else (
-                u"En caso de que se te aplique el descuento flux solar se informará del mismo a la siguiente factura a aquella en la que no haya sido posible compensar todo el valor económico de los excedentes de la instalación de autoconsumo."  # noqa: E501
-            ),
             "show_legal_text": has_autoconsum,
         }
 

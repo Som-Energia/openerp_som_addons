@@ -28,9 +28,9 @@ class TestReportBackendContractSummary(testing.OOTestCase):
     def tearDown(self):
         self.txn.stop()
 
-    def test_get_duration_text_returns_quarter_and_year_only(self):
-        result = self.backend_obj.get_duration_text(datetime(2026, 5, 17))
-        self.assertEqual(result, u"2º trimestre 2026")
+    def test_get_duration_data_returns_quarter_and_year(self):
+        result = self.backend_obj.get_duration_data(datetime(2026, 5, 17))
+        self.assertEqual(result, (2, 2026))
 
     def test_get_payment_data_returns_card_last4_when_available(self):
         card_payment_type_id = self.imd_obj.get_object_reference(
@@ -54,7 +54,7 @@ class TestReportBackendContractSummary(testing.OOTestCase):
         self.assertEqual(result["label"], "**** **** **** 1111")
         self.assertTrue(result["is_card"])
 
-    def test_get_payment_data_returns_card_fallback_literal_without_last4(self):
+    def test_get_payment_data_returns_empty_label_for_card_without_last4(self):
         card_payment_type_id = self.imd_obj.get_object_reference(
             self.cursor, self.uid, "som_card_payment", "payment_type_card_recurrent"
         )[1]
@@ -73,10 +73,9 @@ class TestReportBackendContractSummary(testing.OOTestCase):
         pol = self.pol_obj.browse(self.cursor, self.uid, self.contract_20td_id)
         result = self.backend_obj.get_payment_data(self.cursor, self.uid, pol, context={})
 
-        self.assertEqual(
-            result["label"],
-            u"Tarjeta de crédito (pago seleccionado mediante tarjeta bancaria)",
-        )
+        self.assertEqual(result["label"], "")
+        self.assertEqual(result["last4"], "")
+        self.assertTrue(result["is_card"])
 
     def test_get_payment_data_returns_bank_last4_for_non_card_mode(self):
         pol = self.pol_obj.browse(self.cursor, self.uid, self.contract_20td_id)
@@ -108,10 +107,10 @@ class TestReportBackendContractSummary(testing.OOTestCase):
 
         self.assertFalse("contract_number" in result["supply"])
 
-    def test_get_data_sets_na_discounts_without_self_consumption(self):
+    def test_get_data_exposes_discount_visibility_without_self_consumption(self):
         pol = self.pol_obj.browse(self.cursor, self.uid, self.contract_20td_id)
         result = self.backend_obj.get_data(self.cursor, self.uid, pol, context={})
-        self.assertEqual(result["discounts"]["text"], "N/A")
+        self.assertFalse(result["discounts"]["show_legal_text"])
 
     def test_get_data_reuses_existing_prices_shape_for_indexed_and_periods(self):
         pol = self.pol_obj.browse(self.cursor, self.uid, self.contract_20td_id)
