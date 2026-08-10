@@ -1403,7 +1403,7 @@ msgstr "Beta contratada (kW):"
 msgid "Nº de targeta: **** **** ****"
 msgstr "Nº de tarjeta: **** **** ****"
 
-#: report/components/summary_claims_cnmc.mako:6
+#: rml:som_polissa_condicions_generals/report/components/summary_claims_cnmc.mako:6
 msgid ""
 "{}. Vies alternatives de reclamació disponibles per a la consumidora o el "
 "consumidor"
@@ -1411,7 +1411,7 @@ msgstr ""
 "{}. Vías alternativas de reclamación disponibles para la consumidora o el "
 "consumidor"
 
-#: report/components/summary_claims_cnmc.mako:8
+#: rml:som_polissa_condicions_generals/report/components/summary_claims_cnmc.mako:8
 msgid ""
 "SOM ENERGIA, SCCL, està adherida a la Junta Arbitral Nacional de Consum i a "
 "les Juntes Arbitrals Autonòmiques."
@@ -1419,7 +1419,7 @@ msgstr ""
 "SOM ENERGIA, SCCL, está adherida a la Junta Arbitral Nacional de Consumo y a "
 "las Juntas Arbitrales Autonómicas."
 
-#: report/components/summary_claims_cnmc.mako:9
+#: rml:som_polissa_condicions_generals/report/components/summary_claims_cnmc.mako:9
 msgid ""
 "Junta Arbitral Nacional de Consum · Carrer Príncipe de Vergara, 54 · 28006 "
 "Madrid · junta-nacional@consumo.gob.es"
@@ -1427,15 +1427,15 @@ msgstr ""
 "Junta Arbitral Nacional de Consumo · Calle Príncipe de Vergara, 54 · 28006 "
 "Madrid · junta-nacional@consumo.gob.es"
 
-#: report/components/summary_claims_cnmc.mako:16
+#: rml:som_polissa_condicions_generals/report/components/summary_claims_cnmc.mako:16
 msgid "{}. Accés al comparador d'ofertes de la CNMC"
 msgstr "{}. Acceso al comparador de ofertas de la CNMC"
 
-#: report/components/summary_claims_cnmc.mako:22
+#: rml:som_polissa_condicions_generals/report/components/summary_claims_cnmc.mako:22
 msgid "Amb aquest enllaç"
 msgstr "Con este enlace"
 
-#: report/components/summary_claims_cnmc.mako:22
+#: rml:som_polissa_condicions_generals/report/components/summary_claims_cnmc.mako:22
 msgid ""
 "pots consultar i comparar les diferents ofertes vigents de les "
 "comercialitzadores d'electricitat del mercat lliure."
@@ -1443,11 +1443,11 @@ msgstr ""
 "puedes consultar y comparar las diferentes ofertas vigentes de las "
 "comercializadoras de electricidad del mercado libre."
 
-#: report/components/summary_discounts.mako:3
+#: rml:som_polissa_condicions_generals/report/components/summary_discounts.mako:3
 msgid "5. Descomptes i promocions"
 msgstr "5. Descuentos y promociones"
 
-#: report/components/summary_discounts.mako:6
+#: rml:som_polissa_condicions_generals/report/components/summary_discounts.mako:6
 #, python-format
 msgid ""
 "En cas que se t'apliqui el descompte flux solar, s'informarà d'aquest "
@@ -1464,7 +1464,7 @@ msgstr ""
 "excedentes informados por el encargado de lectura que no haya sido posible "
 "compensar, ni podrá superar el valor de la factura."
 
-#: report/components/summary_discounts.mako:7
+#: rml:som_polissa_condicions_generals/report/components/summary_discounts.mako:7
 msgid ""
 "En cas que et quedin SOLS pendents d'aplicar i que et donin dret al "
 "descompte, aquests caducaran cinc anys després de la data de factura on "
@@ -1474,7 +1474,7 @@ msgstr ""
 "descuento, estos caducarán cinco años después de la fecha de factura en la "
 "que consta su emisión."
 
-#: report/components/summary_discounts.mako:8
+#: rml:som_polissa_condicions_generals/report/components/summary_discounts.mako:8
 msgid ""
 "En cas que donis de baixa del punt de subministrament, de canvi de "
 "comercialitzadora, de traspàs o subrogació del contracte, els SOLS i els "
@@ -1484,88 +1484,88 @@ msgstr ""
 "comercializadora, realices un traspaso o subrogación del contrato, los SOLS "
 "y los descuentos pendientes de aplicación se perderán automáticamente."
 
-#: report/components/summary_header.mako:7
+#: rml:som_polissa_condicions_generals/report/components/summary_header.mako:7
 msgid "DOCUMENT RESUM DEL CONTRACTE DE SUBMINISTRAMENT ELÈCTRIC"
 msgstr "DOCUMENTO RESUMEN DEL CONTRATO DE SUMINISTRO ELÉCTRICO"
 
-#: report/components/summary_header.mako:9
+#: rml:som_polissa_condicions_generals/report/components/summary_header.mako:9
 msgid "1. Identificació de l'empresa comercialitzadora"
 msgstr "1. Identificación de la empresa comercializadora"
 
-#: report/components/summary_header.mako:11
+#: rml:som_polissa_condicions_generals/report/components/summary_header.mako:11
 msgid "Denominació social:"
 msgstr "Denominación social:"
 
-#: report/components/summary_header.mako:12
+#: rml:som_polissa_condicions_generals/report/components/summary_header.mako:12
 msgid "Marca comercial:"
 msgstr "Marca comercial:"
 
-#: report/components/summary_header.mako:13
+#: rml:som_polissa_condicions_generals/report/components/summary_header.mako:13
 msgid "NIF:"
 msgstr "NIF:"
 
-#: report/components/summary_header.mako:14
+#: rml:som_polissa_condicions_generals/report/components/summary_header.mako:14
 msgid "Adreça completa:"
 msgstr "Dirección completa:"
 
-#: report/components/summary_header.mako:15
-#: report/components/summary_identification.mako:10
+#: rml:som_polissa_condicions_generals/report/components/summary_header.mako:15
+#: rml:som_polissa_condicions_generals/report/components/summary_identification.mako:10
 msgid "Adreça postal:"
 msgstr "Dirección postal:"
 
-#: report/components/summary_header.mako:16
+#: rml:som_polissa_condicions_generals/report/components/summary_header.mako:16
 msgid "Correu electrònic:"
 msgstr "Correo electrónico:"
 
-#: report/components/summary_header.mako:17
+#: rml:som_polissa_condicions_generals/report/components/summary_header.mako:17
 msgid "Telèfon d'atenció gratuït:"
 msgstr "Teléfono de atención gratuito:"
 
-#: report/components/summary_identification.mako:3
+#: rml:som_polissa_condicions_generals/report/components/summary_identification.mako:3
 msgid "2. Identificació de la persona titular i del punt de subministrament"
 msgstr "2. Identificación de la persona titular y del punto de suministro"
 
-#: report/components/summary_identification.mako:8
+#: rml:som_polissa_condicions_generals/report/components/summary_identification.mako:8
 msgid "Nom o raó social:"
 msgstr "Nombre o razón social:"
 
-#: report/components/summary_identification.mako:11
+#: rml:som_polissa_condicions_generals/report/components/summary_identification.mako:11
 msgid "Telèfon:"
 msgstr "Teléfono:"
 
-#: report/components/summary_identification.mako:13
+#: rml:som_polissa_condicions_generals/report/components/summary_identification.mako:13
 msgid "Referència cadastral:"
 msgstr "Referencia catastral:"
 
-#: report/components/summary_identification.mako:21
+#: rml:som_polissa_condicions_generals/report/components/summary_identification.mako:21
 msgid "Adreça:"
 msgstr "Dirección:"
 
-#: report/components/summary_identification.mako:22
+#: rml:som_polissa_condicions_generals/report/components/summary_identification.mako:22
 msgid "Província i país:"
 msgstr "Provincia y país:"
 
-#: report/components/summary_identification.mako:25
+#: rml:som_polissa_condicions_generals/report/components/summary_identification.mako:25
 msgid "Número de pòlissa del contracte de subministrament:"
 msgstr "Número de póliza del contrato de suministro:"
 
-#: report/components/summary_identification.mako:27
+#: rml:som_polissa_condicions_generals/report/components/summary_identification.mako:27
 msgid "CNAE (codi nacional d'activitats econòmiques):"
 msgstr "CNAE (código nacional de actividades económicas):"
 
-#: report/components/summary_identification.mako:33
+#: rml:som_polissa_condicions_generals/report/components/summary_identification.mako:33
 msgid "TIPOLOGIA DE L'AUTOCONSUM"
 msgstr "TIPOLOGÍA DEL AUTOCONSUMO"
 
-#: report/components/summary_identification.mako:38
+#: rml:som_polissa_condicions_generals/report/components/summary_identification.mako:38
 msgid "Col·lectiu S/N:"
 msgstr "Colectivo S/N:"
 
-#: report/components/summary_legal.mako:3
+#: rml:som_polissa_condicions_generals/report/components/summary_legal.mako:3
 msgid "6. Durada i pròrroga del contracte"
 msgstr "6. Duración y prórroga del contrato"
 
-#: report/components/summary_legal.mako:5
+#: rml:som_polissa_condicions_generals/report/components/summary_legal.mako:5
 msgid ""
 "La durada del contracte és trimestral natural. S'entén per \"trimestre "
 "natural\" el període de l'1 de gener al 31 de març, el període de l'1 "
@@ -1577,7 +1577,7 @@ msgstr ""
 "abril al 30 de junio, el período del 1 de julio al 30 de septiembre y del 1 "
 "de octubre al 31 de diciembre."
 
-#: report/components/summary_legal.mako:6
+#: rml:som_polissa_condicions_generals/report/components/summary_legal.mako:6
 msgid ""
 "Vençut cada període trimestral natural, el contracte es prorrogarà "
 "tàcitament i automàticament per períodes trimestrals naturals successius, "
@@ -1587,7 +1587,7 @@ msgstr ""
 "automáticamente por períodos trimestrales naturales sucesivos, salvo que "
 "alguna de las partes comunique su voluntad de no prorrogar."
 
-#: report/components/summary_legal.mako:7
+#: rml:som_polissa_condicions_generals/report/components/summary_legal.mako:7
 msgid ""
 "En cas que SOM ENERGIA, SCCL, et comuniqui una modificació substancial del "
 "contracte o una revisió del preu aplicable, t'informarà de manera clara i "
@@ -1603,7 +1603,7 @@ msgstr ""
 "penalización en el plazo de 15 días naturales contados desde la fecha de la "
 "notificación."
 
-#: report/components/summary_legal.mako:9
+#: rml:som_polissa_condicions_generals/report/components/summary_legal.mako:9
 msgid ""
 "En cas que tinguis contractat el servei GURB, anualment s'actualitzarà la "
 "quota GURB segons l'Índex de Preus al Consum."
@@ -1611,11 +1611,11 @@ msgstr ""
 "En caso de que tengas contratado el servicio GURB, anualmente se actualizará "
 "la cuota GURB según el Índice de Precios al Consumo."
 
-#: report/components/summary_legal.mako:15
+#: rml:som_polissa_condicions_generals/report/components/summary_legal.mako:15
 msgid "7. Resolució i penalitzacions"
 msgstr "7. Resolución y penalizaciones"
 
-#: report/components/summary_legal.mako:17
+#: rml:som_polissa_condicions_generals/report/components/summary_legal.mako:17
 msgid ""
 "Pots rescindir el teu contracte i les seves pròrrogues en qualsevol moment "
 "sens perjudici de les obligacions de pagament per consums efectivament "
@@ -1627,7 +1627,7 @@ msgstr ""
 "y, en su caso, de los costes que legalmente procedan. El mismo derecho se "
 "aplicará en caso de modificaciones contractuales."
 
-#: report/components/summary_legal.mako:19
+#: rml:som_polissa_condicions_generals/report/components/summary_legal.mako:19
 msgid ""
 "En cas que tinguis contractat el servei GURB o la tarifa Generation kWh, si "
 "resols el contracte de subministrament amb tarifa períodes i/o indexada "
@@ -1638,11 +1638,11 @@ msgstr ""
 "indexada, se producirá la baja automática del servicio GURB o de la tarifa "
 "Generation kWh."
 
-#: report/components/summary_legal.mako:25
+#: rml:som_polissa_condicions_generals/report/components/summary_legal.mako:25
 msgid "8. Dret de desistiment"
 msgstr "8. Derecho de desistimiento"
 
-#: report/components/summary_legal.mako:27
+#: rml:som_polissa_condicions_generals/report/components/summary_legal.mako:27
 msgid ""
 "Sempre que tinguis la condició de consumidora, segons es defineix en la "
 "normativa aplicable, podràs desistir del contracte actual sense necessitat "
@@ -1667,11 +1667,11 @@ msgstr ""
 "eficacia del desistimiento, sin penalización adicional y de acuerdo con la "
 "normativa aplicable."
 
-#: report/components/summary_legal.mako:32
+#: rml:som_polissa_condicions_generals/report/components/summary_legal.mako:32
 msgid "9. Informació rellevant sobre la tarifa indexada"
 msgstr "9. Información relevante sobre la tarifa indexada"
 
-#: report/components/summary_legal.mako:34
+#: rml:som_polissa_condicions_generals/report/components/summary_legal.mako:34
 msgid ""
 "El preu és diferent cada quart d'hora i pot augmentar en períodes d'alta "
 "demanda, escassa aportació renovable i/o encariment de la producció amb "
@@ -1683,7 +1683,7 @@ msgstr ""
 "producción con combustibles fósiles. Si se da alguna de las condiciones "
 "anteriores, tu factura podrá variar de manera relevante entre meses."
 
-#: report/components/summary_legal.mako:35
+#: rml:som_polissa_condicions_generals/report/components/summary_legal.mako:35
 msgid ""
 "Pots estalviar costos adaptant el consum als períodes més econòmics. Així "
 "mateix, pots consultar la tendència dels preus a l'enllaç següent."
@@ -1692,86 +1692,86 @@ msgstr ""
 "Asimismo, puedes consultar la tendencia de los precios en el enlace "
 "siguiente."
 
-#: report/components/summary_offer.mako:6
+#: rml:som_polissa_condicions_generals/report/components/summary_offer.mako:6
 msgid "3. Resum de l'oferta i condicions econòmiques"
 msgstr "3. Resumen de la oferta y condiciones económicas"
 
-#: report/components/summary_offer.mako:8
+#: rml:som_polissa_condicions_generals/report/components/summary_offer.mako:8
 msgid "Tarifa contractada:"
 msgstr "Tarifa contratada:"
 
-#: report/components/summary_offer.mako:9
+#: rml:som_polissa_condicions_generals/report/components/summary_offer.mako:9
 msgid "Durada del contracte:"
 msgstr "Duración del contrato:"
 
-#: report/components/summary_offer.mako:11
+#: rml:som_polissa_condicions_generals/report/components/summary_offer.mako:11
 msgid "1r trimestre {}"
 msgstr "1.er trimestre {}"
 
-#: report/components/summary_offer.mako:13
+#: rml:som_polissa_condicions_generals/report/components/summary_offer.mako:13
 msgid "2n trimestre {}"
 msgstr "2.º trimestre {}"
 
-#: report/components/summary_offer.mako:15
+#: rml:som_polissa_condicions_generals/report/components/summary_offer.mako:15
 msgid "3r trimestre {}"
 msgstr "3.er trimestre {}"
 
-#: report/components/summary_offer.mako:17
+#: rml:som_polissa_condicions_generals/report/components/summary_offer.mako:17
 msgid "4t trimestre {}"
 msgstr "4.º trimestre {}"
 
-#: report/components/summary_offer.mako:20
+#: rml:som_polissa_condicions_generals/report/components/summary_offer.mako:20
 msgid "Potències contractades"
 msgstr "Potencias contratadas"
 
-#: report/components/summary_offer.mako:31
+#: rml:som_polissa_condicions_generals/report/components/summary_offer.mako:31
 msgid "Resum econòmic"
 msgstr "Resumen económico"
 
-#: report/components/summary_offer.mako:34
+#: rml:som_polissa_condicions_generals/report/components/summary_offer.mako:34
 msgid "Concepte"
 msgstr "Concepto"
 
-#: report/components/summary_offer.mako:35
+#: rml:som_polissa_condicions_generals/report/components/summary_offer.mako:35
 msgid "Detall"
 msgstr "Detalle"
 
-#: report/components/summary_offer.mako:55
+#: rml:som_polissa_condicions_generals/report/components/summary_offer.mako:55
 msgid "Franja de la cooperativa (F)"
 msgstr "Franja de la cooperativa (F)"
 
-#: report/components/summary_offer.mako:90
+#: rml:som_polissa_condicions_generals/report/components/summary_offer.mako:90
 msgid "Autoconsum (€/kWh)"
 msgstr "Autoconsumo (€/kWh)"
 
-#: report/components/summary_offer.mako:97
+#: rml:som_polissa_condicions_generals/report/components/summary_offer.mako:97
 msgid "Impostos"
 msgstr "Impuestos"
 
-#: report/components/summary_offer.mako:104
+#: rml:som_polissa_condicions_generals/report/components/summary_offer.mako:104
 msgid "Generation: segons condicions del contracte Generation kWh."
 msgstr "Generation: según condiciones del contrato Generation kWh."
 
-#: report/components/summary_offer.mako:107
+#: rml:som_polissa_condicions_generals/report/components/summary_offer.mako:107
 msgid ""
 "Autoconsum (€/kWh): preu de la compensació d'excedents, si és aplicable."
 msgstr ""
 "Autoconsumo (€/kWh): precio de la compensación de excedentes, si es "
 "aplicable."
 
-#: report/components/summary_offer.mako:111
+#: rml:som_polissa_condicions_generals/report/components/summary_offer.mako:111
 msgid "Servei GURB"
 msgstr "Servicio GURB"
 
-#: report/components/summary_payment.mako:3
+#: rml:som_polissa_condicions_generals/report/components/summary_payment.mako:3
 msgid "4. Dades de pagament"
 msgstr "4. Datos de pago"
 
-#: report/components/summary_payment.mako:5
+#: rml:som_polissa_condicions_generals/report/components/summary_payment.mako:5
 msgid "Nre. de compte bancari seleccionat (IBAN) / Targeta de crèdit:"
 msgstr "N.º de cuenta bancaria seleccionada (IBAN) / Tarjeta de crédito:"
 
-#: report/components/summary_payment.mako:7
+#: rml:som_polissa_condicions_generals/report/components/summary_payment.mako:7
 msgid "Targeta de crèdit (pagament seleccionat mitjançant targeta bancària)"
 msgstr "Tarjeta de crédito (pago seleccionado mediante tarjeta bancaria)"
 
