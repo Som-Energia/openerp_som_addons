@@ -7,6 +7,7 @@ from osv import osv, fields
 class SomLastMonthAveragePrice(osv.osv):
     _name = "som.last.month.average.price"
     _description = "Previous month prices for simulations"
+    _order = "date desc, id desc"
 
     _columns = {
         "p1_price": fields.float("P1 average (€/kWh)", digits=(16, 6), required=True),

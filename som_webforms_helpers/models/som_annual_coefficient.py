@@ -7,6 +7,7 @@ from osv import osv, fields
 class SomAnnualCoefficient(osv.osv):
     _name = "som.annual.coefficient"
     _description = "Annual kWh coefficients for simulations"
+    _order = "year desc, id desc"
 
     _columns = {
         "p1_ratio": fields.float("P1 ratio", digits=(16, 3), required=True),
@@ -21,7 +22,7 @@ class SomAnnualCoefficient(osv.osv):
 
     def get_current_coefficient(self, cursor, uid, tariff, context=None):
         ids = self.search(cursor, uid, [("tariff", "=", tariff)],
-                          limit=1, order="year desc", context=context)
+                          limit=1, order="year desc, id desc", context=context)
         if not ids:
             return False
         return self.read(
