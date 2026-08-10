@@ -8,7 +8,7 @@
 <%namespace file="som_polissa_condicions_generals/report/components/summary_claims_cnmc.mako" import="summary_claims_cnmc"/>
 
 <!DOCTYPE html>
-<html lang="es">
+<html lang="${informe['holder']['lang'][:2].lower()}">
     <meta http-equiv="content-type" content="text/html; charset=utf-8" />
     <head>
         <style>
@@ -33,8 +33,8 @@
                 ${summary_offer(informe['offer'], informe['prices'], informe['features'], informe['gurb'])}
                 ${summary_payment(informe['payment'])}
                 ${summary_discounts(informe['discounts'])}
-                ${summary_legal(informe['features'], informe['bono_social_estimate'])}
-                ${summary_claims_cnmc(informe['cnmc'])}
+                ${summary_legal(informe['features'], informe['bono_social_estimate'], informe['offer']['is_indexed'])}
+                ${summary_claims_cnmc(informe['cnmc'], informe['offer']['is_indexed'])}
             </div>
         %endfor
     </body>
