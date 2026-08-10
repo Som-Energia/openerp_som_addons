@@ -51,6 +51,36 @@ class GiscedataCrmLead(osv.OsvInherits):
             if constraint[0].__name__ != "check_num_tel_mob_longitude"
         ]
 
+    def send_sign_email(self, cursor, uid, lead_id, context=None):
+        if context is None:
+            context = {}
+
+        mail_o = self.pool.get("poweremail.mailbox")
+        signature_o = self.pool.get("giscedata.signatura.process")
+
+        if not isinstance(lead_id, (list, tuple)):
+            lead_id = [lead_id]
+        lead = self.browse(cursor, uid, lead_id[0], context=context)
+        if not lead.signature_process:
+            raise osv.except_osv(
+                "Error",
+                "No hi ha cap procés de signatura associat a aquest lead."
+            )
+
+        sign_id = lead.signature_process.id
+        template_id = lead.signature_process.template_id.id
+        signature_o.send_poweremail(
+            cursor, uid, [sign_id], context=context
+        )
+        search_params = [
+            ("reference", "=", "giscedata.signatura.process,{}".format(sign_id)),
+            ("template_id", "=", template_id),
+            ("folder", "=", "outbox")
+        ]
+        mail_ids = mail_o.search(cursor, uid, search_params, context=context)
+        mail_o.send_this_mail(cursor, uid, mail_ids, context=context)
+        return True
+
     def contract_pdf(self, cursor, uid, ids, context=None):
         if context is None:
             context = {}
