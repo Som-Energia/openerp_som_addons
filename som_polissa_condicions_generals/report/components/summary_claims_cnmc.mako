@@ -1,6 +1,5 @@
 <%def name="summary_claims_cnmc(cnmc, is_indexed)">
 <%
-    generation_link = "https://www.somenergia.coop/ca/tarifes-d-electricitat/" if cnmc.get('lang') == 'ca_es' else "https://www.somenergia.coop/es/tarifas-de-electricidad/"
     first_number = 10 if is_indexed else 9
     second_number = 11 if is_indexed else 10
 %>
