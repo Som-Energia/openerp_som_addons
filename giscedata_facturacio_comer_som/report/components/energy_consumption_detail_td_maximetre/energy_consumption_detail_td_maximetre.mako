@@ -54,7 +54,7 @@
         % endif
     % else:
         <tr>
-            <td class="td_first concepte_td" rowspan="3">${_(u"Maximetre (kW)")}</td>
+            <td class="td_first concepte_td" rowspan="3">${_(u"Maxímetre (kW)")}</td>
 
             <td class="detall_td">${_(u"Potència contractada")}</td>
             % for p in meter.showing_periods:

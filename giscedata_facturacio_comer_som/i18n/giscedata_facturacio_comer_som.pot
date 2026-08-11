@@ -1123,7 +1123,7 @@ msgstr ""
 
 #: rml:giscedata_facturacio_comer_som/report/components/energy_consumption_detail_td_base/energy_consumption_detail_td_base.mako:43
 #: rml:giscedata_facturacio_comer_som/report/components/energy_consumption_detail_td_surplus/energy_consumption_detail_td_surplus.mako:38
-msgid "Total periode "
+msgid "Total període "
 msgstr ""
 
 #: rml:giscedata_facturacio_comer_som/report/components/energy_consumption_detail_td_collective/energy_consumption_detail_td_collective.mako:9
@@ -1212,7 +1212,7 @@ msgid "Potència excedida"
 msgstr ""
 
 #: rml:giscedata_facturacio_comer_som/report/components/energy_consumption_detail_td_maximetre/energy_consumption_detail_td_maximetre.mako:57
-msgid "Maximetre (kW)"
+msgid "Maxímetre (kW)"
 msgstr ""
 
 #: rml:giscedata_facturacio_comer_som/report/components/energy_consumption_graphic/energy_consumption_graphic.mako:15
