@@ -43,6 +43,12 @@ Les skills següents estan disponibles al projecte i s'han d'utilitzar quan corr
 | `git-commit` | Fer commit | Veure [.agents/skills/git-commit/SKILL.md](.agents/skills/git-commit/SKILL.md) |
 | `git-pr` | Crear PR | Veure [.agents/skills/git-pr/SKILL.md](.agents/skills/git-pr/SKILL.md) |
 
+### Current PR Policy
+
+Repository GitHub workflows and repository rules are authoritative for PR requirements. Verify any generic or global skill requirement against them before applying it to this repository.
+
+Currently, `.github/workflows/pull_request_labeler.yml` requires each PR to have at least one label. It does not require an approved linked issue or a `type:*` label. This is the current policy and may change with repository workflows or rules.
+
 **Convencions de branca:**
 - `ADD_<desc>` - Nova funcionalitat
 - `IMP_<desc>` - Millora
