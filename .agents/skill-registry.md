@@ -4,6 +4,12 @@
 
 See `_shared/skill-resolver.md` for the full resolution protocol.
 
+## Current PR Policy
+
+For PR work, repository GitHub workflows and repository rules take precedence over generic or global skill requirements. Delegators must verify those repository sources before applying external PR-policy rules.
+
+Current verification: `.github/workflows/pull_request_labeler.yml` requires at least one PR label. It does not require an approved linked issue or a `type:*` label. This is current repository policy and may change.
+
 ## User Skills
 
 > **Configuració inicial** (executar una vegada):
