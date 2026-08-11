@@ -8,7 +8,7 @@
 <%namespace file="som_polissa_condicions_generals/report/components/summary_claims_cnmc.mako" import="summary_claims_cnmc"/>
 
 <!DOCTYPE html>
-<html lang="es">
+<html lang="${objects[0]['holder']['lang'][:2].lower()}">
     <meta http-equiv="content-type" content="text/html; charset=utf-8" />
     <head>
         <style>
@@ -27,14 +27,17 @@
     </head>
     <body>
         %for informe in objects:
+        <%
+            is_indexed = informe['offer']['economic_summary']['is_indexed']
+        %>
             <div class="a4">
                 ${summary_header(informe['company'])}
                 ${summary_identification(informe['holder'], informe['supply'], informe['self_consumption'])}
                 ${summary_offer(informe['offer'], informe['prices'], informe['features'], informe['gurb'])}
                 ${summary_payment(informe['payment'])}
                 ${summary_discounts(informe['discounts'])}
-                ${summary_legal(informe['features'], informe['bono_social_estimate'])}
-                ${summary_claims_cnmc(informe['cnmc'])}
+                ${summary_legal(informe['features'], informe['bono_social_estimate'], is_indexed, informe['holder']['lang'])}
+                ${summary_claims_cnmc(informe['cnmc'], is_indexed)}
             </div>
         %endfor
     </body>
