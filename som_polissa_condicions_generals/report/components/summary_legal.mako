@@ -1,4 +1,11 @@
-<%def name="summary_legal(features, bono_social_estimate, is_indexed)">
+<%def name="summary_legal(features, bono_social_estimate, is_indexed, lang)">
+<%
+    price_trend_url = (
+        "https://www.somenergia.coop/ca/serveis/tendencia-dels-preus"
+        if (lang or '').lower() == 'ca_es'
+        else "https://www.somenergia.coop/es/servicios/tendencia-de-los-precios"
+    )
+%>
 <div class="summary-box">
     <h3>${_(u"6. Durada i pròrroga del contracte")}</h3>
     <div class="summary-content">
@@ -33,7 +40,7 @@
         <h3>${_(u"9. Informació rellevant sobre la tarifa indexada")}</h3>
         <div class="summary-content">
             <p class="section-text">${_(u"El preu és diferent cada quart d'hora i pot augmentar en períodes d'alta demanda, escassa aportació renovable i/o encariment de la producció amb combustibles fòssils. Si es donen alguna de les condicions anteriors, la teva factura podrà variar de manera rellevant entre mesos.")}</p>
-            <p class="section-text">${_(u"Pots estalviar costos adaptant el consum als períodes més econòmics. Així mateix, pots consultar la tendència dels preus a l'enllaç següent.")}</p>
+            <p class="section-text">${_(u"Pots estalviar costos adaptant el consum als períodes més econòmics. Així mateix, pots consultar la tendència dels preus a la ")}<a href="${price_trend_url}">web de Som Energia</a>.</p>
         </div>
     </div>
 %endif
