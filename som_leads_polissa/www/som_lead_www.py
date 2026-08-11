@@ -449,9 +449,7 @@ class SomLeadWww(osv.osv_memory):
             context = {}
 
         lead_o = self.pool.get("giscedata.crm.lead")
-        ir_model_o = self.pool.get("ir.model.data")
         sign_process_obj = self.pool.get("giscedata.signatura.process")
-        logger = logging.getLogger("openerp.{0}.activate_lead.signature_mail".format(__name__))
 
         attempts = context.get("attempts") or 5
         wait_seconds = 10
@@ -481,23 +479,6 @@ class SomLeadWww(osv.osv_memory):
             tmp_cursor.close()
             time.sleep(wait_seconds)
 
-        logger.warning(
-            "Signature still pending, activation e-mail not sent yet (lead_id=%s)", lead_id
-        )
-        signature_pending_review_stage_id = ir_model_o.get_object_reference(
-            cr, uid, "som_leads_polissa", "webform_stage_signature_pending_review"
-        )[1]
-        lead_o.write(
-            cr, uid, lead_id,
-            {'stage_id': signature_pending_review_stage_id, 'state': 'pending'},
-            context=context
-        )
-        lead_o.historize_msg(
-            cr, uid, [lead_id],
-            u"SIGNATURE_PENDING: activation e-mail not sent yet",
-            context=context
-        )
-        cr.commit()
         return False
 
     def activate_lead(self, cr, uid, lead_id, context=None):
@@ -580,20 +561,24 @@ class SomLeadWww(osv.osv_memory):
 
             return True
         else:
-            logger.warning("Webform stage error (lead_id=%s)", lead_id)
-
             signature_pending_review_stage_id = ir_model_o.get_object_reference(
                 cr, uid, "som_leads_polissa", "webform_stage_error"
             )[1]
-            lead_o.write(
-                cr, uid, lead_id,
-                {'stage_id': signature_pending_review_stage_id, 'state': 'pending'},
-                context=context
-            )
-            msg = u"ERROR: No s'ha pogut activar aquest lead." \
-                u"És probable que la signatura o el pagament no estiguin completats."
 
-            lead_o.historize_msg(cr, uid, [lead_id], msg, context=context)
+            stage_id = lead_o.read(cr, uid, lead_id, ['stage_id'], context=context)["stage_id"]
+
+            if stage_id != signature_pending_review_stage_id:
+                logger.warning("Webform stage error (lead_id=%s)", lead_id)
+
+                lead_o.write(
+                    cr, uid, lead_id,
+                    {'stage_id': signature_pending_review_stage_id, 'state': 'pending'},
+                    context=context
+                )
+                msg = u"ERROR: No s'ha pogut activar aquest lead." \
+                    u"És probable que la signatura o el pagament no estiguin completats."
+
+                lead_o.historize_msg(cr, uid, [lead_id], msg, context=context)
             return False
 
     @job(queue="poweremail_sender")
