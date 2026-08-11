@@ -73,6 +73,7 @@ class GiscedataCrmLead(osv.OsvInherits):
             cursor, uid, [sign_id], context=context
         )
         cursor.commit()
+        sleep(2)
         search_params = [
             ("reference", "=", "giscedata.signatura.process,{}".format(sign_id)),
             ("template_id", "=", template_id),
