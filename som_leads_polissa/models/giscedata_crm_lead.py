@@ -73,6 +73,7 @@ class GiscedataCrmLead(osv.OsvInherits):
             cursor, uid, [sign_id], context=context
         )
         cursor.commit()
+        sleep(2)
         search_params = [
             ("reference", "=", "giscedata.signatura.process,{}".format(sign_id)),
             ("template_id", "=", template_id),
@@ -80,6 +81,12 @@ class GiscedataCrmLead(osv.OsvInherits):
         ]
         mail_ids = mail_o.search(cursor, uid, search_params, context=context)
         mail_o.send_this_mail(cursor, uid, mail_ids, context=context)
+
+        msg = u"S'ha sol·licitat l'enviament de l'e-mail de Signatura manualment" \
+            u"(en cas de dubte, mirar HelpScout)"
+
+        self.historize_msg(cursor, uid, [lead_id], msg, context=context)
+
         return True
 
     def contract_pdf(self, cursor, uid, ids, context=None):
