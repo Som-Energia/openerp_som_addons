@@ -565,7 +565,7 @@ class SomLeadWww(osv.osv_memory):
                 cr, uid, "som_leads_polissa", "webform_stage_error"
             )[1]
 
-            stage_id = lead_o.read(cr, uid, lead_id, ['stage_id'], context=context)["stage_id"]
+            stage_id = lead_o.read(cr, uid, lead_id, ['stage_id'], context=context)["stage_id"][0]
 
             if stage_id != signature_pending_review_stage_id:
                 logger.warning("Webform stage error (lead_id=%s)", lead_id)
