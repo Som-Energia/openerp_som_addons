@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+
+    <!-- New form view -->
+    <record id="model_name_view_form" model="ir.ui.view">
+        <field name="name">model.name.view.form</field>
+        <field name="model">model.name</field>
+        <field name="type">view</field>
+        <field name="arch" type="xml">
+            <form string="My Data">
+                <group name="data">
+                    <field name="name" />
+                    <field name="active" />
+                </group>
+            </form>
+        </field>
+    </record>
+
+    <!-- New tree view -->
+    <record id="model_name_view_tree" model="ir.ui.view">
+        <field name="name">model.name.view.tree</field>
+        <field name="model">model.name</field>
+        <field name="type">tree</field>
+        <field name="arch" type="xml">
+            <tree string="My Datas">
+                <field name="name" select="1"/>
+                <field name="active" select="2"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- New search view -->
+    <record id="model_name_view_search" model="ir.ui.view">
+        <field name="name">model.name.view.search</field>
+        <field name="model">model.name</field>
+        <field name="arch" type="xml">
+            <search string="My Datas">
+
+                <!-- Allow searching by:
+                <field name="is_derp" />
+                -->
+
+                <!-- Separate (allthethings)
+                <newline />
+                -->
+
+                <!-- Allow grouping by:
+                <group expand="0" string="Group By">
+                    <filter string="Is A Derp"
+                            domain=""
+                            context="{'group_by': 'is_derp'}" />
+                </group>
+                -->
+            </search>
+        </field>
+    </record>
+
+    <!-- New Action -->
+    <record id="model_name_action" model="ir.actions.act_window">
+         <field name="name">My Datas</field>
+         <field name="res_model">model.name</field>
+         <field name="type">ir.actions.act_window</field>
+         <field name="view_type">tree</field>
+         <field name="view_mode">tree,form</field>
+     </record>
+
+    <!-- Inherited view -->
+    <record id="name_of_view" model="ir.ui.view">
+        <field name="name">My view description</field>
+        <field name="model">model.name</field>
+        <field name="inherit_id" ref="othermodule.name_of_view"/>
+        <field name="arch" type="xml">
+            <!-- My view modifications -->
+            <!-- <xpath expr="//field[@name['derp']]" position="after"> -->
+        </field>
+    </record>
+
+</openerp>

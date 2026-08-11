@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+        <!-- Els records que hi hagi aquí només hi seran si en el moment d'instal·lar així s'indica (o s'instal·la amb l'eina Destral) -->
+        <record id="som_template_demo_record" model="som.template">
+            <field name="name">Som Template demo</field>
+        </record>
+    </data>
+</openerp>
