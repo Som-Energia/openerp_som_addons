@@ -36,7 +36,7 @@
                 ${summary_offer(informe['offer'], informe['prices'], informe['features'], informe['gurb'])}
                 ${summary_payment(informe['payment'])}
                 ${summary_discounts(informe['discounts'])}
-                ${summary_legal(informe['features'], informe['bono_social_estimate'], is_indexed)}
+                ${summary_legal(informe['features'], informe['bono_social_estimate'], is_indexed, informe['holder']['lang'])}
                 ${summary_claims_cnmc(informe['cnmc'], is_indexed)}
             </div>
         %endfor

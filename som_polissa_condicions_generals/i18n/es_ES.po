@@ -1683,14 +1683,13 @@ msgstr ""
 "producción con combustibles fósiles. Si se da alguna de las condiciones "
 "anteriores, tu factura podrá variar de manera relevante entre meses."
 
-#: rml:som_polissa_condicions_generals/report/components/summary_legal.mako:35
+#: rml:som_polissa_condicions_generals/report/components/summary_legal.mako:43
 msgid ""
 "Pots estalviar costos adaptant el consum als períodes més econòmics. Així "
-"mateix, pots consultar la tendència dels preus a l'enllaç següent."
+"mateix, pots consultar la tendència dels preus a la "
 msgstr ""
 "Puedes ahorrar costes adaptando el consumo a los períodos más económicos. "
-"Asimismo, puedes consultar la tendencia de los precios en el enlace "
-"siguiente."
+"Asimismo, puedes consultar la tendencia de los precios en la "
 
 #: rml:som_polissa_condicions_generals/report/components/summary_offer.mako:6
 msgid "3. Resum de l'oferta i condicions econòmiques"
