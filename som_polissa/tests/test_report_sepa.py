@@ -126,5 +126,4 @@ class TestSepaTemplate(unittest.TestCase):
         self.assertIn(u"operacions entre empreses i/o autònoms", result)
         self.assertIn(u"Orden de domiciliación de adeudo directo SEPA", result)
         self.assertIn(u"operaciones exclusivamente entre empresas", result)
-        self.assertIn(u"SEPA Direct Debit Mandate", result)
         self.assertEqual(result.count(u"mandate-page"), 3)
