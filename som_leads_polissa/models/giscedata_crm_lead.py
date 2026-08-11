@@ -79,7 +79,13 @@ class GiscedataCrmLead(osv.OsvInherits):
             ("template_id", "=", template_id),
             ("folder", "=", "outbox")
         ]
-        msg = u"S'ha sol·licitat l'enviament de l'e-mail de Signatura manualment (en cas de dubte, mirar HelpScout)"
+        mail_ids = mail_o.search(cursor, uid, search_params, context=context)
+        mail_o.send_this_mail(cursor, uid, mail_ids, context=context)
+
+        msg = u"S'ha sol·licitat l'enviament de l'e-mail de Signatura manualment" \
+            u"(en cas de dubte, mirar HelpScout)"
+
+        self.historize_msg(cursor, uid, [lead_id], msg, context=context)
 
         return True
 
