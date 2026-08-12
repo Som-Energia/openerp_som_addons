@@ -1,3 +1,5 @@
+from __future__ import absolute_import
+
 from destral import testing
 from base_extended_som.tests.utils import avoid_creating_subcursors
 
@@ -207,7 +209,12 @@ class TestUpdatePendingStates(testing.OOTestCaseWithCursor):
         partner_soci_id = imd_obj.get_object_reference(
             cursor, uid, 'som_polissa_soci', 'res_partner_soci_ct'
         )[1]
-        pol_obj.write(cursor, uid, [polissa_id], {'soci': partner_soci_id}, context={
+        llista_preu = imd_obj.get_object_reference(
+            cursor, uid, 'giscedata_facturacio', 'pricelist_tarifas_electricidad'
+        )[1]
+        pol_obj.write(cursor, uid, [polissa_id], {
+            'soci': partner_soci_id,
+            'llista_preu': llista_preu}, context={
             'custom_change_dates': {polissa_id: '2023-09-01'},
         })
         pol_obj.send_signal(cursor, uid, [polissa_id], [
