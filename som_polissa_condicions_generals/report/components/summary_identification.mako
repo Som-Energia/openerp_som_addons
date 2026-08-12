@@ -10,7 +10,7 @@
             <p class="section-text section-text--wrap">- ${_(u"Adreça postal:")} ${holder['street']} ${holder['zip']} ${holder['city']}</p>
             <p class="section-text">- ${_(u"Telèfon:")} ${holder['phone'] or ''}</p>
             %if supply.get('cadastral_reference'):
-                <p class="section-text">- ${_(u"Referència cadastral:")} ${supply['cadastral_reference']}</p>
+                <p class="section-text" style="text-align: left">- ${_(u"Referència cadastral:")} ${supply['cadastral_reference']}</p>
             %endif
         </div>
         </div>
