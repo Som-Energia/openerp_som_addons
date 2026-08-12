@@ -231,7 +231,7 @@ interest_rate = float(conf_obj.get(inv._cr, inv._uid, 'som_aportacions_interest'
   <div class="fila">
     <div class="LogoPpal">
     <a href="https://www.somenergia.coop" target="_blank">
-      <img src="${addons_path}/som_assets/img/logo.svg" width="228" height="150" alt="Logo Som Energia"/>
+      <img src="${addons_path}/som_assets/img/logo.svg" width="200" height="100" alt="Logo Som Energia"/>
     </a><br>
       <p class="sotalogo"><b>${_(u"Som Energia, SCCL")}</b><br>${_(u"CIF: F55091367")}<br>${_(u"Domicili: C/Riu Güell, 68. 17005- Girona")}<br>
 ${_(u"Adreça electrònica: aporta@somenergia.coop")}
