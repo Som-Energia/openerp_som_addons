@@ -534,14 +534,78 @@ class GiscedataSwitchingHelpers(osv.osv):
             context = {}
 
         sw_obj = self.pool.get('giscedata.switching')
+        conf_obj = self.pool.get('res.config')
         sw_step_header_obj = self.pool.get("giscedata.switching.step.header")
         gurb_obj = self.pool.get("som.gurb.cau")
+        wz_crear_mc_obj = self.pool.get('giscedata.polissa.crear.contracte')
+
+        sw = sw_obj.browse(cursor, uid, sw_id, context=context)
+        if (
+            sw.proces_id.name == "M1"
+            and sw.step_id.name == "05"
+            and _cups_contract_has_gurb_cups(cursor, uid, self.pool, sw.cups_polissa_id.id)
+        ):
+            polissa = sw.cups_polissa_id
+            step_obj = self.pool.get("giscedata.switching.m1.05")
+            step_id = int(sw.step_ids[-1].pas_id.split(",")[1])
+            step = step_obj.browse(cursor, uid, step_id, context=context)
+            vals = {}
+
+            self.activar_canvis_autoconsum_from_m1(
+                cursor, uid, sw_id, polissa.id, step, vals, context=context
+            )
+
+            if vals.get('tipus_subseccio') and polissa.tipus_subseccio != vals['tipus_subseccio']:
+                polissa.send_signal('modcontractual')
+                polissa.write(vals)
+
+                ctx = {'active_id': polissa.id}
+                ctx.update({'activacio_from_atr': context.get('activacio_from_atr', False)})
+                params = {'duracio': context.get('periode_modcon', 'actual'), 'accio': 'nou'}
+
+                wz_id = wz_crear_mc_obj.create(cursor, uid, params, ctx)
+                wiz = wz_crear_mc_obj.browse(cursor, uid, wz_id, ctx)
+                res_wiz = wz_crear_mc_obj.onchange_duracio(
+                    cursor, uid, [wz_id], step.data_activacio, wiz.duracio, ctx
+                )
+
+                update_if_same_date = int(
+                    conf_obj.get(cursor, uid, 'sw_m1_update_if_same_date', '1')
+                )
+                if res_wiz.get('warning', False) and not update_if_same_date:
+                    info = _(
+                        u"Hem trobat un error amb les dates al crear la "
+                        u"modificació contractual de la pòlissa '{polissa_name}' "
+                        u"pel cas '{cas_sw}'. Data activació '{data_activacio}'. "
+                        u"{warning_title}: {warning_message}. "
+                        u"AQUEST CANVI JA HA ESTAT ACTIVAT?"
+                    ).format(**{
+                        'polissa_name': polissa.name,
+                        'cas_sw': sw.name,
+                        'data_activacio': step.data_activacio,
+                        'warning_title': res_wiz['warning']['title'],
+                        'warning_message': res_wiz['warning']['message']
+                    })
+                    polissa.send_signal('undo_modcontractual')
+                    return (_(u'ERROR'), info)
+                elif (
+                    res_wiz.get('warning', False)
+                    and update_if_same_date
+                    and polissa.modcontractual_activa
+                    and polissa.modcontractual_activa.data_inici == step.data_activacio
+                ):
+                    wiz.write({'accio': 'modificar'})
+
+                wiz.write({
+                    'data_final': res_wiz['value']['data_final'] or '',
+                    'data_inici': step.data_activacio,
+                })
+                wiz.action_crear_contracte(ctx)
 
         res = super(GiscedataSwitchingHelpers, self).m105_acord_repartiment_autoconsum(
             cursor, uid, sw_id, context=context
         )
 
-        sw = sw_obj.browse(cursor, uid, sw_id, context=context)
         if (
             sw.proces_id.name == "M1"
             and sw.step_id.name == "05"
