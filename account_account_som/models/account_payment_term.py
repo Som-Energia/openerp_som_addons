@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from __future__ import absolute_import
 
 from osv import fields, osv
 from tools.translate import _
@@ -8,7 +9,9 @@ class AccountPaymentTerm(osv.osv):
     _name = "account.payment.term"
     _inherit = "account.payment.term"
 
-    def create(self, cr, uid, vals, context={}):
+    def create(self, cr, uid, vals, context=None):
+        if context is None:
+            context = {}
         id = super(AccountPaymentTerm, self).create(cr, uid, vals, context=context)
         result = self.browse(cr, uid, id)
         if not result.line_ids:
