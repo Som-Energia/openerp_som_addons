@@ -141,7 +141,9 @@ patches/
 *.jasper
 
 # VSCode
-.vscode/
+.vscode/*
+!.vscode/
+!.vscode/tasks.json
 
 # Agents
 .engram/

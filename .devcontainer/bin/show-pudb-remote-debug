@@ -1,0 +1,38 @@
+#!/bin/bash
+
+set -euo pipefail
+
+cat <<'EOF'
+PuDB remote debugging in this devcontainer
+==========================================
+
+1. Open the devcontainer and start ERP manually when you are ready:
+
+   bootstrap-erp-workspace   # first time only
+   start-erp-runtime
+
+2. Add this breakpoint where you want execution to stop:
+
+   import pudb.remote
+   pudb.remote.set_trace(host="0.0.0.0", port=6899, term_size=(120, 40))
+
+3. Make the code path run inside ERP.
+
+4. When execution stops, connect from another terminal attached to the same devcontainer:
+
+   telnet 127.0.0.1 6899
+
+   If telnet is not available, try:
+
+   nc 127.0.0.1 6899
+
+5. Interact with PuDB in that terminal. When you continue/quit the session,
+   ERP resumes in the original terminal.
+
+Notes
+-----
+- Port 6899 is already forwarded by the devcontainer and published by docker compose.
+- Keep bootstrap/start manual. This helper only documents the flow.
+- Use a second terminal for the debugger client so the ERP process can stay attached
+  to the first one.
+EOF
