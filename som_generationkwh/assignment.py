@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 
+from __future__ import absolute_import, print_function
+
 from osv import osv, fields
 from osv.expression import OOQuery
 from .erpwrapper import ErpWrapper
@@ -27,7 +29,7 @@ def _sqlfromfile(sqlname):
     import os
     sqlfile = os.path.join(
         config['addons_path'], 'som_generationkwh',
-            'sql', sqlname+'.sql')
+        'sql', sqlname + '.sql')
     with open(sqlfile) as f:
         return f.read()
 
@@ -84,14 +86,14 @@ class GenerationkWhAssignment(osv.osv):
             'Contracte',
             required=True,
             help="Contracte que te els drets per utilitzar els kWh generats",
-            ),
+        ),
         member_id=fields.many2one(
             'somenergia.soci',
             'Soci',
             readonly=True,
             required=True,
             help="Soci que va comprar accions Generation kWh i els assigna",
-            ),
+        ),
         priority=fields.integer(
             'Prioritat',
             required=True,
@@ -100,38 +102,38 @@ class GenerationkWhAssignment(osv.osv):
                  "encara no han estat facturades a assignacions del mateix soci"
                  " que tinguin una prioritat mes alta."
                  "(a valor més petit, més prioritat)",
-            ),
+        ),
         end_date=fields.date(
             "Data d'Expiració",
             help="Data a partir de la qual l'assignació ja no serà activa",
-            ),
+        ),
         # Contract fields
         contract_state=fields.function(
             _ff_contract, string='Contract State', readonly=True, type='char',
             method=True, multi='contract',
             help="Estat del contracte seleccionat",
-            ),
+        ),
         contract_last_invoiced=fields.function(
             _ff_contract, string='Data última factura', readonly=True,
             type='date', method=True, multi='contract',
             help="Data Última lectura facturada",
-            ),
+        ),
         contract_tariff=fields.function(
             _ff_contract, string='Contract Tariff', readonly=True, type='char',
             method=True, multi='contract',
             help="Tarifa del contracte seleccionat",
-            ),
+        ),
         cups_direction=fields.function(
             _ff_contract, string='Direcció CUPS', readonly=True, type='char',
             method=True, multi='contract',
             help="Direcció del CUPS",
-            ),
+        ),
         cups_anual_use=fields.function(
             _ff_contract, string='Consum anual', readonly=True, type='integer',
             method=True, multi='contract',
             help="Consum anyal del CUPS. Pot ser estimat.",
-            ),
-        )
+        ),
+    )
 
     _defaults = dict(
         member_id=_default_member_id,
@@ -153,8 +155,8 @@ class GenerationkWhAssignment(osv.osv):
 
         Contract = self.pool.get('giscedata.polissa')
 
-        member_id = values.get('member_id',None)
-        contract_id = values.get('contract_id',None)
+        member_id = values.get('member_id', None)
+        contract_id = values.get('contract_id', None)
         priority = values.get('priority', 0)
 
         self.expire(cr, uid, contract_id, member_id, context=context)
@@ -201,7 +203,6 @@ class GenerationkWhAssignment(osv.osv):
             header = _(u"MODIFICADA assignació ({0}):").format(assignment_id)
 
             current_assignment = current_assignments[assignment_id]
-            fields_txt = ''
             for field in assignment_fields:
                 current_value = current_assignment[field]
                 new_value = assignment[field]
@@ -224,7 +225,7 @@ class GenerationkWhAssignment(osv.osv):
         return res
 
     def unlink(self, cr, uid, ids, context=None):
-        print "customized unlink..."
+        print("customized unlink...")
         assignment_vals = self.read(cr, uid, ids, ['contract_id', 'priority'])
         for assignment in assignment_vals:
             assignment_id = assignment['id']
@@ -242,22 +243,24 @@ class GenerationkWhAssignment(osv.osv):
         )
 
     def expire(self, cr, uid, contract_id, member_id, context=None):
-        if contract_id is None: return
-        if member_id is None: return
+        if contract_id is None:
+            return
+        if member_id is None:
+            return
         same_polissa_member = self.search(cr, uid, [
-            #'|', ('end_date', '<', str(datetime.date.today())),
-                ('end_date','=',False),
+            # '|', ('end_date', '<', str(datetime.date.today())),
+            ('end_date', '=', False),
             ('contract_id', '=', contract_id),
             ('member_id', '=', member_id),
-        ], context = context)
+        ], context=context)
         if same_polissa_member:
-            self.write(cr,uid,
-                same_polissa_member,
-                dict(
-                    end_date=str(datetime.date.today()),
-                ),
-                context=context,
-            )
+            self.write(cr, uid,
+                       same_polissa_member,
+                       dict(
+                           end_date=str(datetime.date.today()),
+                       ),
+                       context=context,
+                       )
 
     def createDefaultForMembers(self, cr, uid, member_ids, context=None):
         """ Creates default contract assignments for the given members.
@@ -274,40 +277,41 @@ class GenerationkWhAssignment(osv.osv):
             - Within both groups the ones with more anual use first.
             - If all criteria match, use contract creation order
         """
-        if not member_ids: return []
+        if not member_ids:
+            return []
         sql = _sqlfromfile('default_contracts_to_assign')
         cr.execute(sql, dict(socis=tuple(member_ids)))
         return [
-            (contract,member)
-            for contract,member,_,_ in cr.fetchall()
+            (contract, member)
+            for contract, member, _, _ in cr.fetchall()
             if contract
-            ]
+        ]
 
     def createOnePrioritaryAndManySecondaries(self, cr, uid, assignments, context=None):
         """ PRIVATE.
             Creates assignments from a list of pairs of contract_id, member_id.
-            The first pair of a member is the priority 0 and the 
+            The first pair of a member is the priority 0 and the
             remaining contracts of the same member are inserted as priority zero.
             @pre contracts of the same member are together
             """
-        formerMember=None
-        members = list(set(member for contract,member in assignments))
+        formerMember = None
+        members = list(set(member for contract, member in assignments))
         ids = self.search(cr, uid, [
-            ('member_id','in',members),
-            ],context=context)
+            ('member_id', 'in', members),
+        ], context=context)
         self.unlink(cr, uid, ids, context=context)
         for contract, member in assignments:
             self.create(cr, uid, dict(
-                contract_id = contract,
-                member_id = member,
-                priority = 0 if member!=formerMember else 1,
-                ), context=context)
-            formerMember=member
-    
+                contract_id=contract,
+                member_id=member,
+                priority=0 if member != formerMember else 1,
+            ), context=context)
+            formerMember = member
+
     def dropAll(self, cr, uid, context=None):
         """Remove all records"""
         ids = self.search(cr, uid, [
-            ],context=context)
+        ], context=context)
         super(GenerationkWhAssignment, self).unlink(
             cr, uid, ids, context=context
         )
@@ -321,10 +325,10 @@ class GenerationkWhAssignment(osv.osv):
             cursor,
             uid,
             [
-                ('contract_id','=',contract_id),
-                ('end_date','=',False),
+                ('contract_id', '=', contract_id),
+                ('end_date', '=', False),
             ], context=context
-            ))>=1
+        )) >= 1
 
     def contractSources(self, cursor, uid, contract_id, context=None):
         sql = _sqlfromfile('right_sources_for_contract')
@@ -333,11 +337,11 @@ class GenerationkWhAssignment(osv.osv):
             (member_id, last_usable_date)
             for member_id, last_usable_date, _
             in cursor.fetchall()
-            ]
+        ]
 
     def send_mail(self, cursor, uid,
-            obj_id, mail_from, model, template_name,
-            context=None):
+                  obj_id, mail_from, model, template_name,
+                  context=None):
 
         ModelData = self.pool.get('ir.model.data')
         Template = self.pool.get('poweremail.templates')
@@ -347,7 +351,7 @@ class GenerationkWhAssignment(osv.osv):
             try:
                 template_id = int(template_name)
             except ValueError:
-                #Busquem la plantilla de mail d'activació
+                # Busquem la plantilla de mail d'activació
                 ignored, template_id = ModelData.get_object_reference(
                     cursor, uid,
                     'som_generationkwh',
@@ -368,50 +372,49 @@ class GenerationkWhAssignment(osv.osv):
                 'from': mail_from,
                 'state': 'single',
                 'priority': '0',
-                }
+            }
             params = {
                 'state': 'single',
                 'priority': '0',
                 'from': mail_from,
-                }
+            }
 
             pwswz_id = Wizard.create(cursor, uid, params, ctx)
             Wizard.send_mail(cursor, uid, [pwswz_id], ctx)
 
-        except osv.except_osv, e:
-                info = u'%s' % unicode(e.value)
-                return (_(u'ERROR'), info)
+        except osv.except_osv as e:
+            info = u'%s' % e.value
+            return (_(u'ERROR'), info)
 
-        except Exception, e:
-                raise Exception(e)
-
+        except Exception as e:
+            raise Exception(e)
 
     def generationMailAccount(self, cursor, uid):
         PEAccounts = self.pool.get('poweremail.core_accounts')
-        return PEAccounts.search(cursor,uid,[
-            ('email_id','=','generationkwh@somenergia.coop'),
-            ])[0]
+        return PEAccounts.search(cursor, uid, [
+            ('email_id', '=', 'generationkwh@somenergia.coop'),
+        ])[0]
 
     def notifyAssignmentByMail(self, cursor, uid, members, context=None):
         for member in members:
             self.send_mail(cursor, uid,
-                member,
-                self.generationMailAccount(cursor,uid),
-                'somenergia.soci',
-                'generationkwh_assignment_notification_mail',
-                context or {})
+                           member,
+                           self.generationMailAccount(cursor, uid),
+                           'somenergia.soci',
+                           'generationkwh_assignment_notification_mail',
+                           context or {})
 
     def notifyAdvancedEffectiveDate(self, cursor, uid, members, context=None):
         for member in members:
             self.send_mail(cursor, uid,
-                member,
-                self.generationMailAccount(cursor,uid),
-                'somenergia.soci',
-                70, # TODO this id changes from installation to another!!
-                context or {})
+                           member,
+                           self.generationMailAccount(cursor, uid),
+                           'somenergia.soci',
+                           70,  # TODO this id changes from installation to another!!
+                           context or {})
 
-
-    def unassignedInvestors(self, cursor, uid, effectiveOn, purchasedUntil, force, insist, context=None):
+    def unassignedInvestors(self, cursor, uid, effectiveOn, purchasedUntil,
+                            force, insist, context=None):
         """
             Returns all the members that have investments but no assignment
             has been made.
@@ -461,29 +464,28 @@ class GenerationkWhAssignment(osv.osv):
             ORDER BY
                 investment.member_id
             """, dict(
-                force = force or None,
-                insist = insist or None,
-                lastPurchaseDate = purchasedUntil and isodate(purchasedUntil),
-                lastFirstEffectiveDate = effectiveOn and isodate(effectiveOn),
-            ))
-        result = [ id for id, in cursor.fetchall() ]
+            force=force or None,
+            insist=insist or None,
+            lastPurchaseDate=purchasedUntil and isodate(purchasedUntil),
+            lastFirstEffectiveDate=effectiveOn and isodate(effectiveOn),
+        ))
+        result = [id for id, in cursor.fetchall()]
         return result
 
     def get_generationkwh_monthly_use(self, cursor, uid, res_partner_id, month):
         """Month must be in the format YYYY-MM"""
         month_start = datetime.datetime.strptime(month, '%Y-%m')
-        next_month = month_start+relativedelta(months=1)
+        next_month = month_start + relativedelta(months=1)
         date_domain = [
             ('factura_id.invoice_id.date_invoice', '>=', month_start.strftime('%Y-%m-%d')),
             ('factura_id.invoice_id.date_invoice', '<', next_month.strftime('%Y-%m-%d'))
         ]
         return self._get_generationkwh_use(cursor, uid, res_partner_id, date_domain)
 
-
     def get_generationkwh_yearly_use(self, cursor, uid, res_partner_id, year):
         """Year must be in the format YYYY"""
         year_start = datetime.datetime.strptime(year, '%Y')
-        next_year = year_start+relativedelta(years=1)
+        next_year = year_start + relativedelta(years=1)
         date_domain = [
             ('factura_id.invoice_id.date_invoice', '>=', year_start.strftime('%Y-%m-%d')),
             ('factura_id.invoice_id.date_invoice', '<', next_year.strftime('%Y-%m-%d'))
@@ -494,7 +496,8 @@ class GenerationkWhAssignment(osv.osv):
         GenerationkWhInvoiceLineOwner = self.pool.get('generationkwh.invoice.line.owner')
         q = OOQuery(GenerationkWhInvoiceLineOwner, cursor, uid)
 
-        sql = q.select(['id']).where([('factura_id.polissa_id.titular.id', '=', res_partner_id)]+date_domain)
+        sql = q.select(['id']).where(
+            [('factura_id.polissa_id.titular.id', '=', res_partner_id)] + date_domain)
         cursor.execute(*sql)
         res = cursor.fetchall()
         generation_line_ids = [line[0] for line in res]
@@ -507,7 +510,7 @@ class GenerationkWhAssignment(osv.osv):
             multiplier = 1 if invoice.type in ('out_invoice', 'in_refund') else -1
             response[str(contract.name)]['address'] = contract.cups_direccio
             response[str(contract.name)][str(line.product_id.name)] += (
-                line.quantity*multiplier)
+                line.quantity * multiplier)
 
         # clean defaultdict for serialization
         response = {k: dict(v) for k, v in response.items()}
@@ -535,7 +538,7 @@ class AssignmentProvider(ErpWrapper):
                 self.cursor, self.uid,
                 contract_id,
                 context=self.context)
-            ]
+        ]
 
     def anyForContract(self, contract_id):
         Assignment = self.erp.pool.get('generationkwh.assignment')
@@ -543,27 +546,25 @@ class AssignmentProvider(ErpWrapper):
             self.cursor, self.uid,
             contract_id,
             context=self.context,
-            )
+        )
 
 
 class Generationkwh_Assignment_TestHelper(osv.osv_memory):
     _name = 'generationkwh.assignment.testhelper'
     _auto = False
-    
+
     def contractSources(self, cursor, uid, contract_id, context=None):
         provider = AssignmentProvider(self, cursor, uid, context)
         return [
             dict(
                 member_id=val.member_id,
                 last_usable_date=val.last_usable_date.isoformat(),
-                )
+            )
             for val in provider.contractSources(contract_id)
-            ]
+        ]
+
 
 Generationkwh_Assignment_TestHelper()
-
-
-
 
 
 # vim: et ts=4 sw=4
