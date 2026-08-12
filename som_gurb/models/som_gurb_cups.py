@@ -419,7 +419,7 @@ class SomGurbCups(osv.osv):
             )
         gurb_cups = self.browse(cursor, uid, gurb_cups_id, context=context)
         if gurb_cups.state == "atr_pending":
-            gurb_cups.send_signal(["button_confirm_atr"])
+            gurb_cups.send_signal(["button_reject_atr"])
         elif gurb_cups.state == "comming_registration":
             gurb_cups.send_signal(["button_activate_cups"])
 
