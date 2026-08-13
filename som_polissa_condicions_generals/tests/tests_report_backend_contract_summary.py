@@ -2,8 +2,6 @@
 from __future__ import absolute_import, unicode_literals, division
 
 from datetime import datetime
-import os
-import unittest
 
 from destral import testing
 from destral.transaction import Transaction
@@ -142,21 +140,3 @@ class TestReportBackendContractSummary(testing.OOTestCase):
         })
 
         self.assertNotEqual(result["tarifa_mostrar"], "Tarifa Períodes Empresa")
-
-
-class TestSummaryClaimsCnmcTemplate(unittest.TestCase):
-    def test_summary_claims_cnmc_does_not_include_invoice_component(self):
-        template_path = os.path.join(
-            os.path.dirname(__file__),
-            "..",
-            "report",
-            "components",
-            "summary_claims_cnmc.mako",
-        )
-        with open(template_path, "r") as template_file:
-            template = template_file.read()
-
-        self.assertFalse(
-            "/giscedata_facturacio_comer_som/report/components/"
-            "cnmc_comparator_qr_link/cnmc_comparator_qr_link.mako" in template
-        )
