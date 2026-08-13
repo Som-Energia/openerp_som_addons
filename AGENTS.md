@@ -55,6 +55,7 @@ Les skills següents estan disponibles al projecte i s'han d'utilitzar quan corr
 **Format de commit:**
 - Només emoji + descripció en anglès: `✨ add user auth`
 - No afegir `feat:`, `fix:` ni cap altre type textual
+- Feu els commits amb el virtualenv ERP actiu: els hooks de pre-commit requereixen l'executable `python`. Exemple portable: `PYENV_VERSION=erp git commit -m "✨ add user auth"`.
 
 ### Testing
 
@@ -77,9 +78,52 @@ Les skills següents estan disponibles al projecte i s'han d'utilitzar quan corr
 |-------|-----------|----------|
 | `update-contract-report` | Actualitzar un report `.mako` legal/contractual a partir d'un `docx` o `md` | Veure [.agents/skills/update-contract-report/SKILL.md](.agents/skills/update-contract-report/SKILL.md) |
 
-**Requisits per executar tests:**
-1. Docker: PostgreSQL, MongoDB, Redis corrent
+**Requisits de l'entorn de tests:**
+1. Inicieu els serveis necessaris de PostgreSQL, MongoDB i Redis:
+   ```bash
+   REPO_ROOT="$(git rev-parse --show-toplevel)"
+   docker compose -f "$REPO_ROOT/docker-compose.yaml" up -d
+   ```
+   Inicieu sempre els tres serveis abans d'executar tests.
 2. Virtualenv activat — nom habitual: `erp` (`pyenv activate erp` o `workon erp`)
+
+### Tests en worktrees
+
+Per executar tots els tests d'ERP, primer inicieu totes les dependències amb l'ordre Compose anterior. `WORKSPACE` és l'arrel que conté els repositoris germans `erp`, `destral` i d'addons. Des de dins del worktree d'addons, manteniu l'addon del worktree abans que el checkout d'ERP; en cas contrari, `som_card_payment` es resoldrà des del directori d'addons d'ERP, no des del worktree.
+
+```bash
+REPO_ROOT="$(git rev-parse --show-toplevel)"
+: "${WORKSPACE:?Set WORKSPACE to the root containing erp, destral, and addons repositories}"
+for path in "$WORKSPACE" "$WORKSPACE/erp/server/bin" "$WORKSPACE/erp/server/bin/addons" "$WORKSPACE/erp/server/sitecustomize" "$WORKSPACE/destral/destral/cli.py"; do
+  [ -e "$path" ] || { printf 'Missing required workspace path: %s\n' "$path" >&2; exit 1; }
+done
+```
+
+Des del worktree, verifiqueu la resolució del codi font abans d'una execució llarga:
+
+```bash
+PYTHONPATH="$REPO_ROOT:$WORKSPACE/erp/server/bin:$WORKSPACE/erp/server/bin/addons:$WORKSPACE/erp/server/sitecustomize${PYTHONPATH:+:$PYTHONPATH}" \
+  python -c 'import som_card_payment; print(som_card_payment.__file__)'
+```
+
+Ha d'imprimir una ruta dins del worktree. A continuació, utilitzeu Destral directament; substituïu els marcadors segons calgui:
+
+```bash
+PYENV_VERSION=erp \
+PYTHONPATH="$REPO_ROOT:$WORKSPACE/erp/server/bin:$WORKSPACE/erp/server/bin/addons:$WORKSPACE/erp/server/sitecustomize${PYTHONPATH:+:$PYTHONPATH}" \
+OPENERP_ADDONS_PATH="$REPO_ROOT" \
+OPENERP_ROOT_PATH="$WORKSPACE/erp/server/bin" \
+python "$WORKSPACE/destral/destral/cli.py" <database> --no-requirements -m <module> -t <test>
+```
+
+Alguns addons esperen `../model_templates`. Si no existeix, creeu l'enllaç simbòlic extern al directori de plantilles d'ERP:
+
+```bash
+[ -e "$REPO_ROOT/../model_templates" ] || \
+  ln -s "$WORKSPACE/erp/server/bin/model_templates" "$REPO_ROOT/../model_templates"
+```
+
+Aquest enllaç simbòlic és una configuració externa de l'entorn, no està versionada i no s'ha de fer commit. `scripts/run-tests.sh` assumeix que el checkout principal d'addons és a `$WORKSPACE/openerp_som_addons`; utilitzeu Destral directament per a un worktree separat, tret que el runner passi a ser compatible amb worktrees.
 
 ## Estil de Programació
 
