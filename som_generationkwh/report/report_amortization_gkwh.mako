@@ -10,10 +10,6 @@
     <title>${_(u"Liquidació préstec Generation kWh")}</title>
     <style type="text/css">
     ${css}
-    img {
-        width: 120px;
-        height: 75px;
-    }
     .logos {
         display: flex;
         justify-content: center;
@@ -127,7 +123,7 @@ for account.invoice in objects:
  setLang(account.invoice.lang_partner)
 %>
     <div class="logos">
-        <img src="${addons_path}/som_assets/img/logo.svg" width="228" height="150" alt="Logo Som Energia"/>
+        <img src="${addons_path}/som_assets/img/logo.svg" width="200" height="100" alt="Logo Som Energia"/>
     </div>
     <div>
         <p id="cabecera"><b>${_(u"Liquidació Generation kWh")}</b><br>${_(u"Emissió: ")} ${data.receiptDate} </ p>

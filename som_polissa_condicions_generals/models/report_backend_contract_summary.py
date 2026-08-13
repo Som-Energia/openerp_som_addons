@@ -207,22 +207,6 @@ class ReportBackendContractSummary(ReportBackendCondicionsParticulars):
             "show_legal_text": has_autoconsum,
         }
 
-    def get_cnmc_data(self, cursor, uid, pol, context=None):
-        report_v2_obj = self.pool.get("giscedata.facturacio.factura.report.v2")
-        link_qr = "https://comparador.cnmc.gob.es/"
-        qr_image = False
-        if report_v2_obj and hasattr(report_v2_obj, "_get_qr_comparador_cnmc"):
-            try:
-                link_qr, qr_image = report_v2_obj._get_qr_comparador_cnmc({})
-            except Exception:
-                qr_image = False
-
-        return {
-            "is_visible": True,
-            "link_qr": link_qr,
-            "qr_image": qr_image,
-        }
-
     @report_browsify
     def get_data(self, cursor, uid, pol, context=None):
         context = self._get_summary_context(context)
@@ -240,7 +224,6 @@ class ReportBackendContractSummary(ReportBackendCondicionsParticulars):
             "discounts": self.get_discount_data(cursor, uid, pol, context=context),
             "features": features,
             "self_consumption": self_consumption,
-            "cnmc": self.get_cnmc_data(cursor, uid, pol, context=context),
             "bono_social_estimate": "",
             "gurb": features["gurb"],
         }
