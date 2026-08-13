@@ -332,6 +332,11 @@ class GiscedataFacturacioFactura(osv.osv):
                 Decimal("1"), rounding=ROUND_HALF_UP
             )
         )
+        payment_data = self._get_tpv_payment_data(cursor, uid, context=context)
+        params, order_ref = self._build_redsys_transaction_params(
+            cursor, uid, factura, card, order_ref=order_ref, context=context
+        )
+        redsys_client = self._get_redsys_client(cursor, uid, context=context)
         self.write(
             cursor,
             uid,
@@ -352,12 +357,8 @@ class GiscedataFacturacioFactura(osv.osv):
 
         factura = self.browse(cursor, uid, factura_id, context=context)
         invoice = factura.invoice_id
-        payment_data = self._get_tpv_payment_data(cursor, uid, context=context)
-        params, order_ref = self._build_redsys_transaction_params(
-            cursor, uid, factura, card, order_ref=order_ref, context=context
-        )
         try:
-            result = self._get_redsys_client(cursor, uid, context=context).mit_payment(params)
+            result = redsys_client.mit_payment(params)
             response_code, response_message = self._extract_redsys_response_info(result)
         except Exception as exc:
             self.write(

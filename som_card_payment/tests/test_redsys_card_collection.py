@@ -5,6 +5,7 @@ import time
 
 from destral import testing
 import mock
+from osv import osv
 
 
 class TestRedsysCardCollection(testing.OOTestCaseWithCursor):
@@ -216,6 +217,26 @@ class TestRedsysCardCollection(testing.OOTestCaseWithCursor):
         self.assertEqual(updated_factura.redsys_collection_state, "declined")
         self.assertEqual(updated_factura.redsys_response_code, "101")
         self.assertIn(u"Operacio denegada", updated_factura.redsys_response_message)
+
+    def test_charge_factura_by_redsys_keeps_factura_eligible_when_tpv_is_unconfigured(self):
+        factura = self._prepare_eligible_invoice()
+        self.config_obj.set(self.cursor, self.uid, "redsys_tpv_journal_id", "")
+        self.config_obj.set(self.cursor, self.uid, "redsys_tpv_journal_code", "")
+        redsys_client, client = self._redsys_client()
+
+        with redsys_client:
+            with self.assertRaises(osv.except_osv):
+                self.factura_obj._charge_factura_by_redsys(
+                    self.cursor, self.uid, factura.id
+                )
+
+        client.mit_payment.assert_not_called()
+        updated_factura = self.factura_obj.browse(self.cursor, self.uid, factura.id)
+        self.assertFalse(updated_factura.redsys_collection_state)
+        eligible_ids = self.factura_obj._search_recurrent_card_factura_ids(
+            self.cursor, self.uid
+        )
+        self.assertIn(factura.id, eligible_ids)
 
     def test_charge_factura_by_redsys_marks_approved_payment_as_paid(self):
         invoice = self._prepare_eligible_invoice()
