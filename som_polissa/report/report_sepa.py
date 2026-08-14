@@ -90,6 +90,10 @@ class ReportBackendMandatSepa(ReportBackend):
     _source_model = "payment.mandate"
 
     def get_lang(self, cursor, uid, record_id, context=None):
+        if context is None:
+            context = {}
+        if context.get("lang"):
+            return context["lang"]
         mandate_backend = self.pool.get("report.backend.mandat")
         return mandate_backend.get_lang(
             cursor, uid, record_id, context=context
