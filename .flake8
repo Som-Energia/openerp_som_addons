@@ -8,3 +8,7 @@ ignore = W503,F403
 per-file-ignores=
     # F401: module imported but unused
     __init__.py:F401
+    # Legacy migrated module relies on star imports and historical test patterns.
+    giscedata_facturacio_indexada_som/giscedata_facturacio.py:F405,E501
+    giscedata_facturacio_indexada_som/tarifes.py:F405,E125,E501,E722
+    giscedata_facturacio_indexada_som/tests/indexada_tests.py:F405,F841,E501
