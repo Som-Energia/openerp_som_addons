@@ -4101,6 +4101,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
         return data
 
     def get_component_energy_consumption_detail_td_data(self, fact, pol):
+        context = {"lang": get_lang_partner(fact)}  # noqa: F841
         if not is_TD(pol):
             return {}
 
@@ -4130,6 +4131,8 @@ class GiscedataFacturacioFacturaReport(osv.osv):
         return data
 
     def get_sub_component_energy_consumption_detail_meter_td_data(self, fact, pol, meter):
+        context = {"lang": get_lang_partner(fact)}  # noqa: F841
+
         def visibility(subs):
             return any([sub["is_visible"] for sub in subs])
 
@@ -4187,6 +4190,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
         return False
 
     def get_sub_component_energy_consumption_detail_td_active_data(self, fact, pol, meter):
+        context = {"lang": get_lang_partner(fact)}  # noqa: F841
         (a, a, a, a, lectures_a, a, a, a, a, a, a, a, a, a, a, a, a, a, a) = self.get_readings_data(
             fact
         )
@@ -4219,6 +4223,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
         return data
 
     def get_sub_component_energy_consumption_detail_td_surplus_data(self, fact, pol, meter):
+        context = {"lang": get_lang_partner(fact)}  # noqa: F841
         (a, a, a, a, a, a, a, lectures_g, a, a, a, a, a, a, a, a, a, a, a) = self.get_readings_data(
             fact
         )
@@ -4257,6 +4262,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
         return data
 
     def get_sub_component_energy_consumption_detail_td_inductive_data(self, fact, pol, meter):
+        context = {"lang": get_lang_partner(fact)}  # noqa: F841
         (a, a, a, a, a, lectures_r, a, a, a, a, a, a, a, a, a, a, a, a, a) = self.get_readings_data(
             fact
         )
@@ -4288,6 +4294,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
         return data
 
     def get_sub_component_energy_consumption_detail_td_capacitive_data(self, fact, pol, meter):
+        context = {"lang": get_lang_partner(fact)}  # noqa: F841
         (a, a, a, a, a, a, lectures_c, a, a, a, a, a, a, a, a, a, a, a, a) = self.get_readings_data(
             fact
         )
@@ -4319,6 +4326,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
         return data
 
     def get_sub_component_energy_consumption_detail_td_maximeter_data(self, fact, pol, meter):
+        context = {"lang": get_lang_partner(fact)}  # noqa: F841
         excess_lines = [l for l in fact.linia_ids if l.tipus == "exces_potencia"]  # noqa: E741
 
         data = {
