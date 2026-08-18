@@ -505,7 +505,7 @@ class ReportBackendMailcanvipreus(ReportBackend):
                 env.polissa_id,
                 consums,
                 potencies,
-                afegir_servei_ajust=True,
+                afegir_servei_ajust=False,
                 bo_social_separat=True,
                 date=self.get_price_change_date(cursor, uid, env.polissa_id, context),
                 context=context,
