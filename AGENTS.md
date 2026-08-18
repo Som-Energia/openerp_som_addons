@@ -89,86 +89,48 @@ Les skills següents estan disponibles al projecte i s'han d'utilitzar quan corr
 
 ### Tests en worktrees
 
-Per executar tests des d'un worktree, primer inicieu sempre els tres serveis: PostgreSQL, MongoDB i Redis, amb l'ordre Compose anterior. `link_addons.py` reconstrueix tots els enllaços simbòlics de `$ERP/server/bin/addons`; és estat d'execució compartit i mutable. No l'executeu simultàniament amb una sessió d'ERP, Docker o un altre worktree.
+Useu el wrapper del projecte, no un runner de tests manual. Inicieu sempre PostgreSQL, MongoDB i Redis abans dels tests. `$WORKSPACE/erp/server/bin/addons` és estat compartit i mutable: redirigiu temporalment només els enllaços dels addons modificats del worktree (directoris amb `__terp__.py`) i preserveu-ne el destí original.
 
-El linker requereix que el checkout font tingui el nom base `openerp_som_addons`. No substituïu l'entrada principal `$WORKSPACE/openerp_som_addons`: creeu un espai de treball temporal separat dins de `$WORKSPACE`, que exposi el worktree amb aquest nom.
-
-```bash
-WORKTREE="$(git rev-parse --show-toplevel)"
-WORKSPACE="$(dirname "$(dirname "$WORKTREE")")"
-ERP="$WORKSPACE/erp"
-LINK_WORKSPACE="$WORKSPACE/.worktree-link-pr-1333"
-
-mkdir -p "$LINK_WORKSPACE"
-ln -s "$WORKTREE" "$LINK_WORKSPACE/openerp_som_addons"
-PYENV_VERSION=erp python "$ERP/tools/link_addons.py" --skip-relative --base-path "$LINK_WORKSPACE"
-```
-
-No creeu enllaços simbòlics individuals per addon, recurs o `model_templates`: useu el linker per a tots els camins de mòduls. Després d'executar-lo, el directori `$ERP/server/bin/addons` resol els addons del worktree i els addons restants configurats pel linker.
-
-Des del worktree, exporteu el contracte complet de `scripts/run-tests.sh`, amb el worktree primer només al `PYTHONPATH`. `$WORKSPACE/oorq` és una dependència local del runtime ERP, no un paquet de `pip`, i ha d'anar abans que Python resolgui `oorq.tasks`. Els tres directoris d'ERP són necessaris: `osv` viu a `server/bin`, mentre que els addons base viuen a `server/bin/addons`. Manteniu `OPENERP_ADDONS_PATH` a `$ERP/server/bin/addons`, no a l'arrel del worktree: `link_addons.py` selecciona les substitucions del worktree mitjançant els enllaços simbòlics d'aquest directori.
+No modifiqueu aquests enllaços alhora que ERP o tests d'un altre worktree. El manifest temporal extern i el `trap` següents restauren tots els enllaços originals tant si el test acaba bé com si falla o s'interromp:
 
 ```bash
 WORKTREE="$(git rev-parse --show-toplevel)"
 WORKSPACE="$(dirname "$(dirname "$WORKTREE")")"
-ERP="$WORKSPACE/erp"
+DATABASE="<database>"
+MODULE="<module>"
+ADDONS="$WORKSPACE/erp/server/bin/addons"
+MANIFEST="$(mktemp)"
 
-export PYTHONIOENCODING="UTF-8"
-export PYTHONUNBUFFERED="1"
-export PYTHONPATH="$WORKTREE:$WORKSPACE/oorq:$ERP/server/bin:$ERP/server/bin/addons:$ERP/server/sitecustomize:${PYTHONPATH:-}"
-export DEBUG_ENABLED=0
-export OORQ_ASYNC=0
-export DESTRAL_TESTING_LANGS="['en_US','ca_ES','es_ES']"
-export OPENERP_ADDONS_PATH="$ERP/server/bin/addons"
-export OPENERP_DB_HOST="localhost"
-export OPENERP_DB_PORT="5432"
-export OPENERP_DB_USER="erp"
-export OPENERP_DB_PASSWORD="erp"
-export OPENERP_OORQ_ASYNC="False"
-export OPENERP_PRICE_ACCURACY=6
-export OPENERP_SECRET="verysecret"
-export OPENERP_ROOT_PATH="$ERP/server/bin/"
-export OPENERP_REDIS_URL="redis://localhost"
-export redis_url="redis://localhost"
-export OPENERP_MONGODB_HOST="localhost"
-export OPENERP_RUN_SCRIPTS_INTERACTIVE_RESULT=skip
-export OPENERP_ENVIRONMENT=local
-export OPENERP_SII_TEST_MODE=1
-export OPENERP_IGNORE_PUBSUB=1
-unset OPENERP_CONFIG OPENERP_SERVER
+restore_links() {
+    while IFS=$'\t' read -r link target; do
+        rm -f "$link"
+        ln -s "$target" "$link"
+    done < "$MANIFEST"
+    rm -f "$MANIFEST"
+}
+trap restore_links EXIT INT TERM
+
+docker compose -f "$WORKTREE/docker-compose.yaml" up -d
+
+while IFS= read -r -d '' addon; do
+    name="$(basename "$addon")"
+    link="$ADDONS/$name"
+
+    if [ -e "$link" ] && [ ! -L "$link" ]; then
+        printf 'Refuso substituir %s: no és un enllaç simbòlic.\n' "$link" >&2
+        exit 1
+    fi
+    if [ -L "$link" ]; then
+        printf '%s\t%s\n' "$link" "$(readlink "$link")" >> "$MANIFEST"
+        rm "$link"
+    fi
+    ln -s "$addon" "$link"
+done < <(find "$WORKTREE" -type f -name __terp__.py -printf '%h\0')
+
+PYENV_VERSION=erp "$WORKTREE/scripts/run-tests.sh" "$DATABASE" --no-requirements -m "$MODULE"
 ```
 
-`OPENERP_REDIS_URL` descriu la connexió Redis per al contracte de l'entorn, però el runtime d'OpenERP carregat per Destral consumeix la clau de configuració `redis_url`. Cal exportar ambdues variables amb `redis://localhost`; `REDIS_HOST` i `REDIS_PORT` no substitueixen `redis_url` i provoquen `redis_url not specified` durant la inicialització de la base de dades.
-
-El PostgreSQL local de Compose escolta a `localhost:5432` amb l'usuari `erp` i la contrasenya `erp`. Exporteu aquestes quatre variables `OPENERP_DB_*` i executeu `unset OPENERP_CONFIG OPENERP_SERVER` en el mateix procés que invoca Destral; si no, OpenERP pot ignorar l'entorn o aplicar la configuració heretada i usar l'usuari del sistema operatiu.
-
-Abans d'una execució llarga, executeu aquestes probes ràpides:
-
-```bash
-MODULE=MODULE  # Substituïu MODULE pel mòdul sota prova
-test -d "$WORKSPACE/oorq"
-test -f "$WORKSPACE/oorq/oorq/tasks.py"
-PYENV_VERSION=erp python -c 'from osv import osv; print(osv.__file__)'
-PYENV_VERSION=erp python -c 'from oorq import tasks; print(tasks.__file__)'
-PYENV_VERSION=erp python -c "module = __import__('$MODULE'); print(module.__file__)"
-```
-
-Les dues primeres comprovacions han de trobar el checkout local d'`oorq` i el seu fitxer `oorq/tasks.py`. La tercera ha d'imprimir una ruta dins de `$WORKSPACE/erp/server/bin/osv`; la quarta, una ruta dins de `$WORKSPACE/oorq/oorq/tasks.py`; i la cinquena, una ruta dins del worktree per al mòdul indicat a `MODULE`. Si la comprovació d'`osv` falla amb `ImportError: No module named osv.osv`, reviseu `PYTHONPATH`: no useu `$WORKSPACE/erp/...`; l'arrel correcta d'OpenERP v5 és `$WORKSPACE/erp/server/bin`.
-
-A continuació, utilitzeu Destral directament només després que `link_addons.py` hagi apuntat els enllaços d'ERP al worktree. Això replica el contracte del runner, però evita que `scripts/run-tests.sh` usi el checkout principal d'addons. Substituïu els marcadors segons calgui:
-
-```bash
-PYENV_VERSION=erp python "$WORKSPACE/destral/destral/cli.py" "$DATABASE" --no-requirements -m "$MODULE" -t "$TEST"
-```
-
-En acabar, restaureu els enllaços del checkout principal i elimineu l'espai temporal. Feu-ho només quan no hi hagi cap altra sessió d'ERP, Docker o worktree utilitzant aquests enllaços compartits:
-
-```bash
-PYENV_VERSION=erp python "$ERP/tools/link_addons.py"
-rm -rf "$LINK_WORKSPACE"
-```
-
-`scripts/run-tests.sh` assumeix que el checkout principal d'addons és a `$WORKSPACE/openerp_som_addons`; utilitzeu Destral directament per a un worktree separat, tret que el runner passi a ser compatible amb worktrees.
+En acabar, el `trap` restaura tots els enllaços originals. No executeu canvis d'enllaços d'addons de worktrees concurrentment amb ERP o tests d'un altre worktree.
 
 ## Estil de Programació
 
