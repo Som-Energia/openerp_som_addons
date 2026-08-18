@@ -178,6 +178,32 @@ class TestRedsysCardCollection(testing.OOTestCaseWithCursor):
 
         self.assertNotIn(invoice.id, eligible_ids)
 
+    def test_charge_factura_by_redsys_marks_submitted_as_review_without_retry(self):
+        factura = self._prepare_eligible_invoice()
+        self.factura_obj.write(
+            self.cursor,
+            self.uid,
+            [factura.id],
+            {
+                "redsys_collection_state": "submitted",
+                "redsys_order_ref": "123SUBMITTED",
+            },
+        )
+        redsys_client, client = self._redsys_client()
+
+        with redsys_client:
+            result = self.factura_obj._charge_factura_by_redsys(
+                self.cursor, self.uid, factura.id
+            )
+
+        self.assertTrue(result)
+        client.mit_payment.assert_not_called()
+        updated_factura = self.factura_obj.browse(self.cursor, self.uid, factura.id)
+        self.assertEqual(updated_factura.redsys_collection_state, "review")
+        self.assertIn(u"123SUBMITTED", updated_factura.redsys_response_message)
+        self.assertIn(u"unknown", updated_factura.redsys_response_message)
+        self.assertIn(u"Manual reconciliation", updated_factura.redsys_response_message)
+
     def test_build_redsys_transaction_params_uses_real_configuration_and_card(self):
         invoice = self._prepare_eligible_invoice()
         card = invoice and self.factura_obj._get_recurrent_card_for_factura(

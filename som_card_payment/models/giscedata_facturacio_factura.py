@@ -102,7 +102,7 @@ class GiscedataFacturacioFactura(osv.osv):
                 ("invoice_id.residual", ">", 0),
                 ("payment_type", "in", payment_type_ids),
                 ("polissa_id", "!=", False),
-                ("redsys_collection_state", "=", False),
+                ("redsys_collection_state", "in", [False, "submitted"]),
             ],
             limit=limit,
             context=context,
@@ -315,6 +315,22 @@ class GiscedataFacturacioFactura(osv.osv):
             raise
 
         factura = self.browse(cursor, uid, factura_id, context=context)
+        if factura.redsys_collection_state == "submitted":
+            self.write(
+                cursor,
+                uid,
+                [factura.id],
+                {
+                    "redsys_collection_state": "review",
+                    "redsys_response_message": (
+                        "Redsys request result is unknown for order %s. "
+                        "Manual reconciliation is required; the request was not retried."
+                        % (factura.redsys_order_ref or "unknown")
+                    ),
+                },
+                context=context,
+            )
+            return True
         if (
             not self._is_recurrent_card_factura_still_collectable(factura)
             or factura.redsys_collection_state
