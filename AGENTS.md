@@ -37,6 +37,11 @@ Les skills següents estan disponibles al projecte i s'han d'utilitzar quan corr
 
 ### Git Workflow
 
+**PR worktree policy:**
+- PR-affecting work must use a named worktree under `<WORKSPACE>/openerp_som_addons-worktrees/`, where `<WORKSPACE>` is the directory containing the primary repository checkout; never use `/tmp/opencode`.
+- Announce the active worktree before making edits.
+- If no appropriate worktree exists, stop and get explicit approval before creating one.
+
 | Skill | Quan usar | Com usar |
 |-------|-----------|----------|
 | `git-branch` | Crear branca nova | Veure [.agents/skills/git-branch/SKILL.md](.agents/skills/git-branch/SKILL.md) |
