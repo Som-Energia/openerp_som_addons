@@ -134,7 +134,7 @@ class ReportBackendMailcanvipreusPDF(ReportBackend):
         if context is None:
             context = {}
 
-        context['iva10'] = pol_id.potencia <= 10
+        # context['iva10'] = pol_id.potencia <= 10
 
         self.simplified_taxes = pol_obj.get_simplified_taxes(
             cursor, uid, pol_id.id, context=context)
@@ -533,7 +533,7 @@ class ReportBackendMailcanvipreusPDF(ReportBackend):
                 pol_id,
                 consums,
                 potencies,
-                afegir_servei_ajust=True,
+                afegir_servei_ajust=False,
                 bo_social_separat=True,
                 date=self.get_price_change_date(cursor, uid, pol_id, context),
                 context=context,
