@@ -134,7 +134,7 @@ class ReportBackendMailcanvipreusPDF(ReportBackend):
         if context is None:
             context = {}
 
-        context['iva10'] = pol_id.potencia <= 10
+        # context['iva10'] = pol_id.potencia <= 10
 
         self.simplified_taxes = pol_obj.get_simplified_taxes(
             cursor, uid, pol_id.id, context=context)
@@ -618,13 +618,13 @@ class ReportBackendMailcanvipreusPDF(ReportBackend):
                 return min(future_version_starts)
         return (date.today() + timedelta(days=60)).strftime("%Y-%m-%d")
 
-    def esCanaries(self, cursor, uid, env, context=False):
-        return env.polissa_id.cups.id_municipi.subsistema_id.code in [
+    def esCanaries(self, cursor, uid, pol_id, context=False):
+        return pol_id.cups.id_municipi.subsistema_id.code in [
             'TF', 'PA', 'LG', 'HI', 'GC', 'FL', 'TG'
         ]
 
-    def esBalears(self, cursor, uid, env, context=False):
-        return env.polissa_id.cups.id_municipi.subsistema_id.code in ['MM', 'IF', 'SB']
+    def esBalears(self, cursor, uid, pol_id, context=False):
+        return pol_id.cups.id_municipi.subsistema_id.code in ['MM', 'IF', 'SB']
 
     def getTarifaCorreu(self, cursor, uid, pol_id, context=False):
         key_prefixes = ["Indexada", "Periodes"]

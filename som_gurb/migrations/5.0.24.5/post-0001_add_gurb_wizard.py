@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+from __future__ import absolute_import
+
 import logging
 import pooler
 from oopgrade.oopgrade import load_data
@@ -33,7 +35,7 @@ def up(cursor, installed_version):
         wf_service.trg_create(uid, 'som.gurb.cups', gurb_cups.id, cursor)
         gurb_cups.send_signal('button_create_cups')
         gurb_cups.send_signal('button_activate_cups')
-        print sgc_obj.read(cursor, uid, gurb_cups.id, ['state'])
+        logger.info(sgc_obj.read(cursor, uid, gurb_cups.id, ['state']))
 
     # Update XMLs
     views = [
