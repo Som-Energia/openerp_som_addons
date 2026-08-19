@@ -9,6 +9,8 @@ class AccountInvoice(osv.osv):
     _name = "account.invoice"
     _inherit = "account.invoice"
 
+    _redsys_recurrent_card_payment_type_code = "COBRAMENT_RECURRENT_TARGETA"
+
     def afegeix_a_remesa(self, cursor, uid, ids, order_id, context=None):
         if not isinstance(ids, (list, tuple)):
             ids = [ids]
@@ -16,7 +18,10 @@ class AccountInvoice(osv.osv):
         blocked_invoice_names = []
         for invoice in self.browse(cursor, uid, ids, context=context):
             payment_type = getattr(invoice, "payment_type", False)
-            if payment_type and payment_type.code == "COBRAMENT_RECURRENT_TARGETA":
+            if (
+                payment_type
+                and payment_type.code == self._redsys_recurrent_card_payment_type_code
+            ):
                 blocked_invoice_names.append(invoice.number or str(invoice.id))
 
         if blocked_invoice_names:

@@ -67,5 +67,8 @@ class TestResPartnerCreditCard(testing.OOTestCaseWithCursor):
 
         self.creditcard_obj.create(self.cursor, self.uid, vals)
 
-        with self.assertRaises(Exception):
+        with self.assertRaises(Exception) as context:
             self.creditcard_obj.create(self.cursor, self.uid, vals)
+        self.assertRegexpMatches(
+            str(context.exception), "res_partner_creditcard_token_unique"
+        )
