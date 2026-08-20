@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+from __future__ import absolute_import
+
 from autoworker import AutoWorker
 import base64
 from c2c_webkit_report import webkit_report
@@ -6,9 +8,13 @@ from datetime import datetime
 from oorq.decorators import job
 from oorq.oorq import ProgressJobsPool
 import os
+import logging
 from osv import osv, fields
 from report import report_sxw
 from zipfile import ZipFile
+
+
+logger = logging.getLogger(__name__)
 
 
 class WizardLlibreRegistreSocis(osv.osv_memory):
@@ -44,7 +50,7 @@ class WizardLlibreRegistreSocis(osv.osv_memory):
             try:
                 os.mkdir(path)
             except OSError:
-                print ("Creation of the directory %s failed" % path)
+                logger.error("Creation of the directory %s failed", path)
 
         path_filename, filename = self.create_file(
             path, "llibre_registre_socis_", header['date_to'][:4], document_binary[0])
