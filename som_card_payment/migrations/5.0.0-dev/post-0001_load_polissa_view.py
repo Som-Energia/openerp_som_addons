@@ -1,13 +1,13 @@
 # -*- coding: utf-8 -*-
 from oopgrade.oopgrade import load_data
-from pooler import Pooler
+import pooler
 
 
 def up(cursor, installed_version):
     if not installed_version:
         return
 
-    pool = Pooler.get_pool(cursor.dbname)
+    pool = pooler.get_pool(cursor.dbname)
     for model_name in (
         'res.partner.creditcard',
         'giscedata.polissa',
