@@ -3,8 +3,11 @@
 from __future__ import absolute_import
 import mock
 import unittest
+import os
 from destral import testing
 from destral.transaction import Transaction
+from mako.lookup import TemplateLookup
+from mako.template import Template
 from yamlns import namespace as ns
 from yamlns.testutils import assertNsEqual
 from datetime import datetime, timedelta
@@ -2183,6 +2186,149 @@ class Tests_FacturacioFacturaReport_invoice_summary(Tests_FacturacioFacturaRepor
 
 
 class Tests_FacturacioFacturaReport_partner_info(Tests_FacturacioFacturaReport_base):
+    @classmethod
+    def setUpClass(cls):
+        addon_path = os.path.dirname(os.path.dirname(__file__))
+        component_path = os.path.join(
+            addon_path, "report", "components", "partner_info"
+        )
+        template_path = os.path.join(
+            component_path, "partner_info.mako"
+        )
+        with open(template_path, "r") as template_file:
+            cls.partner_info_template = Template(
+                template_file.read(),
+                lookup=TemplateLookup(directories=[component_path]),
+                input_encoding="utf-8",
+            )
+
+    def render_partner_info(self, partner_info):
+        partner_info.update({
+            "pol_name": u"Test owner",
+            "vat": u"12345678A",
+        })
+        return self.partner_info_template.render_unicode(
+            pi=ns(partner_info),
+            _=lambda value: value,
+        )
+
+    def test__som_report_comp_partner_info__recurrent_card(self):
+        f_id = self.get_fixture("giscedata_facturacio", "factura_0001")
+        f = self.factura_obj.browse(self.cursor, self.uid, f_id)
+        f.is_recurrent_card_payment = True
+        result = self.r_obj.get_component_partner_info_data(
+            f, mock.Mock(creditcard=mock.Mock(masked_number=u"**** 1234"))
+        )
+
+        self.assertTrue(result["is_recurrent_card_payment"])
+        self.assertEquals(result["masked_card_number"], u"**** 1234")
+        self.assertEquals(result["bank_name"], u"")
+        self.assertEquals(result["cc_name"], u"")
+
+    def test__som_report_comp_partner_info__recurrent_card_template(self):
+        output = self.render_partner_info({
+            "is_out_refund": False,
+            "is_recurrent_card_payment": True,
+            "masked_card_number": u"**** 1234",
+            "bank_name": u"evil bank",
+            "cc_name": u"ES12 3456 7890 1234",
+            "payment_type": u"COBRAMENT_RECURRENT_TARGETA",
+        })
+
+        self.assertIn(u"Targeta:", output)
+        self.assertIn(u"**** 1234", output)
+        self.assertIn(
+            u"L'import d'aquesta factura es carregarà a la teva targeta. "
+            u"El seu pagament queda justificat amb l'apunt bancari o "
+            u"comprovant de la transacció.", output
+        )
+        self.assertNotIn(u"Entitat bancària:", output)
+        self.assertNotIn(u"Núm. compte bancari:", output)
+        self.assertNotIn(u"evil bank", output)
+        self.assertNotIn(u"ES12 3456 7890 1234", output)
+        self.assertNotIn(u"carregarà al teu compte", output)
+
+    def test__som_report_comp_partner_info__recurrent_card_template_without_card(self):
+        output = self.render_partner_info({
+            "is_out_refund": False,
+            "is_recurrent_card_payment": True,
+            "masked_card_number": u"",
+            "bank_name": u"evil bank",
+            "cc_name": u"ES12 3456 7890 1234",
+            "payment_type": u"COBRAMENT_RECURRENT_TARGETA",
+        })
+
+        self.assertIn(u"Targeta:", output)
+        self.assertNotIn(u"evil bank", output)
+        self.assertNotIn(u"ES12 3456 7890 1234", output)
+        self.assertNotIn(u"carregarà al teu compte", output)
+
+    def test__som_report_comp_partner_info__recurrent_card_template_hides_sensitive_values(self):
+        output = self.render_partner_info({
+            "is_out_refund": False,
+            "is_recurrent_card_payment": True,
+            "masked_card_number": u"**** 1234",
+            "bank_name": u"",
+            "cc_name": u"",
+            "payment_type": u"COBRAMENT_RECURRENT_TARGETA",
+            "pan": u"4111111111111111",
+            "token": u"card-token-secret",
+            "expiry": u"12/30",
+        })
+
+        self.assertIn(u"**** 1234", output)
+        self.assertNotIn(u"4111111111111111", output)
+        self.assertNotIn(u"card-token-secret", output)
+        self.assertNotIn(u"12/30", output)
+
+    def test__som_report_comp_partner_info__direct_debit_template(self):
+        output = self.render_partner_info({
+            "is_out_refund": False,
+            "is_recurrent_card_payment": False,
+            "masked_card_number": u"",
+            "bank_name": u"evil bank",
+            "cc_name": u"**** 1234",
+            "payment_type": u"DOMICILIACIO",
+        })
+
+        self.assertIn(u"Entitat bancària:", output)
+        self.assertIn(u"evil bank", output)
+        self.assertIn(u"Núm. compte bancari:", output)
+        self.assertIn(u"**** 1234", output)
+        self.assertIn(u"carregarà al teu compte", output)
+        self.assertNotIn(u"Targeta:", output)
+
+    def test__som_report_comp_partner_info__transfer_template(self):
+        output = self.render_partner_info({
+            "is_out_refund": False,
+            "is_recurrent_card_payment": False,
+            "masked_card_number": u"",
+            "bank_name": u"TRANSFERÈNCIA",
+            "cc_name": u"ES12 3456 7890 1234",
+            "payment_type": u"TRANSFERENCIA_CSB",
+        })
+
+        self.assertIn(u"Entitat bancària:", output)
+        self.assertIn(u"TRANSFERÈNCIA", output)
+        self.assertIn(u"Núm. compte bancari:", output)
+        self.assertIn(u"ES12 3456 7890 1234", output)
+        self.assertIn(u"transferència bancària al compte indicat", output)
+        self.assertNotIn(u"Targeta:", output)
+
+    def test__som_report_comp_partner_info__recurrent_card_without_card(self):
+        f_id = self.get_fixture("giscedata_facturacio", "factura_0001")
+        f = self.factura_obj.browse(self.cursor, self.uid, f_id)
+        f.is_recurrent_card_payment = True
+
+        result = self.r_obj.get_component_partner_info_data(
+            f, mock.Mock(creditcard=False)
+        )
+
+        self.assertTrue(result["is_recurrent_card_payment"])
+        self.assertEquals(result["masked_card_number"], u"")
+        self.assertEquals(result["bank_name"], u"")
+        self.assertEquals(result["cc_name"], u"")
+
     def test__som_report_comp_partner_info(self):
         f_id = self.get_fixture("giscedata_facturacio", "factura_0001")
 
@@ -2215,6 +2361,8 @@ class Tests_FacturacioFacturaReport_partner_info(Tests_FacturacioFacturaReport_b
                 "payment_type": u"TRANSFERENCIA_SBC",
                 "cc_name": u"**** **** **** **** **** 1234",
                 "bank_name": u"",
+                "is_recurrent_card_payment": False,
+                "masked_card_number": u"",
             },
         )
 
