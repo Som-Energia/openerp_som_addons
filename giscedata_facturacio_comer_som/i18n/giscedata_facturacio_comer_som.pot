@@ -2403,21 +2403,29 @@ msgstr ""
 msgid "DADES DE PAGAMENT"
 msgstr ""
 
-#: rml:giscedata_facturacio_comer_som/report/components/partner_info/partner_info.mako:19
+#: rml:giscedata_facturacio_comer_som/report/components/partner_info/partner_info.mako:20
+msgid "Targeta:"
+msgstr ""
+
+#: rml:giscedata_facturacio_comer_som/report/components/partner_info/partner_info.mako:22
 msgid "Entitat bancària:"
 msgstr ""
 
-#: rml:giscedata_facturacio_comer_som/report/components/partner_info/partner_info.mako:20
+#: rml:giscedata_facturacio_comer_som/report/components/partner_info/partner_info.mako:23
 msgid "Núm. compte bancari:"
 msgstr ""
 
-#: rml:giscedata_facturacio_comer_som/report/components/partner_info/partner_info.mako:25
+#: rml:giscedata_facturacio_comer_som/report/components/partner_info/partner_info.mako:29
+msgid "L'import d'aquesta factura es carregarà a la teva targeta. El seu pagament queda justificat amb l'apunt bancari o comprovant de la transacció."
+msgstr ""
+
+#: rml:giscedata_facturacio_comer_som/report/components/partner_info/partner_info.mako:31
 msgid ""
 "L'import d'aquesta factura es carregarà al teu compte. El seu pagament "
 "queda justificat amb l'apunt bancari corresponent."
 msgstr ""
 
-#: rml:giscedata_facturacio_comer_som/report/components/partner_info/partner_info.mako:27
+#: rml:giscedata_facturacio_comer_som/report/components/partner_info/partner_info.mako:33
 msgid ""
 "L'import d'aquesta factura es pagarà mitjançant transferència bancària al"
 " compte indicat."

@@ -2593,7 +2593,13 @@ class GiscedataFacturacioFacturaReport(osv.osv):
     def get_component_partner_info_data(self, fact, pol):
         cc_name = _(u"")
         bank_name = _(u"")
-        if pol.tipo_pago.code != "TRANSFERENCIA_CSB":
+        is_recurrent_card_payment = fact.is_recurrent_card_payment
+        masked_card_number = u""
+        if is_recurrent_card_payment:
+            card = getattr(pol, "creditcard", False)
+            if card:
+                masked_card_number = getattr(card, "masked_number", u"") or u""
+        elif pol.tipo_pago.code != "TRANSFERENCIA_CSB":
             if fact.partner_bank:
                 cc_name = "**** " * 5 + fact.partner_bank.iban[-4:]
                 if fact.partner_bank.bank:
@@ -2608,6 +2614,8 @@ class GiscedataFacturacioFacturaReport(osv.osv):
             "payment_type": pol.tipo_pago.code,
             "cc_name": cc_name,
             "bank_name": bank_name,
+            "is_recurrent_card_payment": is_recurrent_card_payment,
+            "masked_card_number": masked_card_number,
         }
         return data
 
