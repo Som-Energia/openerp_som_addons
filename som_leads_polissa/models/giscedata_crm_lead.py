@@ -66,6 +66,11 @@ class GiscedataCrmLead(osv.OsvInherits):
                 "Error",
                 "No hi ha cap procés de signatura associat a aquest lead."
             )
+        if lead.signature_process.status != "wait":
+            raise osv.except_osv(
+                "Error",
+                "El procés de signatura associat al lead no ha estat creat o ja està completat."
+            )
 
         sign_id = lead.signature_process.id
         template_id = lead.signature_process.template_id.id
