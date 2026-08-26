@@ -108,6 +108,85 @@ class TestCardPaymentInPolissa(testing.OOTestCaseWithCursor):
         self.assertEqual(values["tipo_pago"][0], self.payment_type_id)
         self.assertEqual(values["creditcard"][0], card_id)
 
+    def test_activation_keeps_card_payment_data(self):
+        polissa = self.polissa_obj.browse(
+            self.cursor, self.uid, self.polissa_id
+        )
+        card_id = self.card_obj.create(
+            self.cursor,
+            self.uid,
+            {
+                "partner_id": polissa.pagador.id,
+                "token": "tok_activation_1",
+                "expiry_date": "12/35",
+                "masked_number": "**** **** **** 2222",
+            },
+        )
+        self.polissa_obj.write(
+            self.cursor,
+            self.uid,
+            [self.polissa_id],
+            {
+                "payment_mode_id": self.payment_mode_id,
+                "tipo_pago": self.payment_type_id,
+                "creditcard": card_id,
+            },
+        )
+
+        self.polissa_obj.wkf_activa(
+            self.cursor, self.uid, [self.polissa_id]
+        )
+        values = self.polissa_obj.read(
+            self.cursor,
+            self.uid,
+            self.polissa_id,
+            ["payment_mode_id", "tipo_pago", "creditcard"],
+        )
+
+        self.assertEqual(values["payment_mode_id"][0], self.payment_mode_id)
+        self.assertEqual(values["tipo_pago"][0], self.payment_type_id)
+        self.assertEqual(values["creditcard"][0], card_id)
+
+    def test_copy_data_replaces_card_payment_data(self):
+        polissa = self.polissa_obj.browse(
+            self.cursor, self.uid, self.polissa_id
+        )
+        card_id = self.card_obj.create(
+            self.cursor,
+            self.uid,
+            {
+                "partner_id": polissa.pagador.id,
+                "token": "tok_copy_1",
+                "expiry_date": "12/35",
+                "masked_number": "**** **** **** 2222",
+            },
+        )
+        self.polissa_obj.write(
+            self.cursor,
+            self.uid,
+            [self.polissa_id],
+            {
+                "payment_mode_id": self.payment_mode_id,
+                "tipo_pago": self.payment_type_id,
+                "creditcard": card_id,
+            },
+        )
+
+        copy_values = self.polissa_obj.copy_data(
+            self.cursor, self.uid, self.polissa_id
+        )[0]
+        payment_mode_obj = self.openerp.pool.get("payment.mode")
+        enginyers_mode_id = payment_mode_obj.search(
+            self.cursor, self.uid, [("name", "=", "ENGINYERS")], limit=1
+        )[0]
+        enginyers_mode = payment_mode_obj.browse(
+            self.cursor, self.uid, enginyers_mode_id
+        )
+
+        self.assertEqual(copy_values["payment_mode_id"], enginyers_mode_id)
+        self.assertEqual(copy_values["tipo_pago"], enginyers_mode.type.id)
+        self.assertFalse(copy_values["creditcard"])
+
     def test_onchange_tipo_pago_clears_creditcard_for_non_recurrent(self):
         polissa = self.polissa_obj.browse(self.cursor, self.uid, self.polissa_id)
         non_recurrent_type_ids = self.payment_type_obj.search(

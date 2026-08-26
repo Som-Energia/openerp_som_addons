@@ -12,6 +12,7 @@
         "giscedata_facturacio_comer",
         "account_account_som",
     ],
+    "test_depends": ["som_polissa"],
     "init_xml": [],
     "demo_xml": [],
     "update_xml": [

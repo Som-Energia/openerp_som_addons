@@ -432,13 +432,37 @@ class GiscedataPolissa(osv.osv):
 
         return False
 
+    def _get_enginyers_payment_values(self, cursor, uid, context=None):
+        payment_mode_o = self.pool.get("payment.mode")
+        payment_mode_id = payment_mode_o.search(
+            cursor, uid, [("name", "=", "ENGINYERS")], limit=1
+        )[0]
+        payment_mode = payment_mode_o.browse(
+            cursor, uid, payment_mode_id, context=context
+        )
+        values = {
+            "payment_mode_id": payment_mode.id,
+            "tipo_pago": payment_mode.type.id,
+        }
+        if "creditcard" in self._columns:
+            values["creditcard"] = False
+        return values
+
     def wkf_activa(self, cursor, uid, ids):
-        if not isinstance(ids, list):
+        if not isinstance(ids, (list, tuple)):
             ids = [ids]
 
-        payment_mode_o = self.pool.get("payment.mode")
-        payment_mode_id = payment_mode_o.search(cursor, uid, [("name", "=", "ENGINYERS")])
-        self.write(cursor, uid, ids, {"payment_mode_id": payment_mode_id[0]})
+        for polissa in self.browse(cursor, uid, ids):
+            if (
+                polissa.payment_mode_id
+                and polissa.payment_mode_id.type
+                and polissa.payment_mode_id.type.code == "COBRAMENT_RECURRENT_TARGETA"
+            ):
+                continue
+            self.write(
+                cursor, uid, [polissa.id],
+                self._get_enginyers_payment_values(cursor, uid)
+            )
 
         return super(GiscedataPolissa, self).wkf_activa(cursor, uid, ids)
 
@@ -449,9 +473,7 @@ class GiscedataPolissa(osv.osv):
         if default is None:
             default = {}
 
-        payment_mode_o = self.pool.get("payment.mode")
-        payment_mode_id = payment_mode_o.search(cursor, uid, [("name", "=", "ENGINYERS")])
-        default.update({"payment_mode_id": payment_mode_id[0]})
+        default.update(self._get_enginyers_payment_values(cursor, uid, context=context))
 
         return super(GiscedataPolissa, self).copy_data(cursor, uid, id, default, context=context)
 
