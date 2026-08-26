@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+from __future__ import absolute_import, division
+
 from datetime import datetime, timedelta
 from addons import get_module_resource
 from osv import osv, fields
