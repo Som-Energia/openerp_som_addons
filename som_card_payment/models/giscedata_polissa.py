@@ -83,6 +83,8 @@ class GiscedataPolissaModcontractual(osv.osv):
             pagador = getattr(modcontractual, "pagador", False)
             if not pagador and getattr(modcontractual, "polissa_id", False):
                 pagador = modcontractual.polissa_id.pagador
+            if pagador and creditcard.partner_id.id != pagador.id:
+                return False
 
         return True
 
