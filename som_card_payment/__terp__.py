@@ -11,8 +11,8 @@
         "account_payment",
         "giscedata_facturacio_comer",
         "account_account_som",
+        "som_polissa",
     ],
-    "test_depends": ["som_polissa"],
     "init_xml": [],
     "demo_xml": [],
     "update_xml": [
