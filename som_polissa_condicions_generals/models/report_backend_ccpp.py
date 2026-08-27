@@ -425,10 +425,13 @@ class ReportBackendCondicionsParticulars(ReportBackend):
         else:
             tarifes_a_mostrar = get_comming_atr_price(cursor, uid, polissa, ctx)
         tarifes_a_mostrar if isinstance(tarifes_a_mostrar, list) else [tarifes_a_mostrar]
-        if polissa.state == 'esborrany' and not polissa.llista_preu:
-            tarifes_ids = pricelist_obj.search(cursor, uid, [])
-            pricelist_id = pol_obj.escull_llista_preus(
-                cursor, uid, pol.id, tarifes_ids, context=context)
+        if polissa.state == 'esborrany':
+            if not polissa.llista_preu:
+                tarifes_ids = pricelist_obj.search(cursor, uid, [])
+                pricelist_id = pol_obj.escull_llista_preus(
+                    cursor, uid, pol.id, tarifes_ids, context=context)
+            else:
+                pricelist_id = polissa.llista_preu
             ctx.update({'force_pricelist': pricelist_id.id})
             tarifes_a_mostrar = get_comming_atr_price(cursor, uid, polissa, ctx)
 
