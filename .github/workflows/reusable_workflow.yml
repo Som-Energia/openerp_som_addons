@@ -138,6 +138,18 @@ jobs:
             url."https://x-access-token:${GITHUB_TOKEN}@github.com/".insteadOf \
             "ssh://git@github.com/"
 
+          addon_path="$OPENERP_ADDONS_PATH/som_card_payment"
+          checkout_path="${{ github.workspace }}/som_card_payment"
+          if [ -d "$checkout_path" ]; then
+            echo "som_card_payment addon: $(readlink -f "$addon_path")"
+            echo "som_card_payment checkout: $(readlink -f "$checkout_path")"
+            sha256sum "$addon_path/tests/test_polissa_card_payment.py" \
+              "$checkout_path/tests/test_polissa_card_payment.py"
+            cmp "$addon_path/tests/test_polissa_card_payment.py" \
+              "$checkout_path/tests/test_polissa_card_payment.py"
+            find "$addon_path/tests" -name '*.py[co]' -print
+          fi
+
           destral --report-coverage --enable-coverage --report-junitxml ${{github.workspace}}/test-results/destral -m ${{ inputs.module }}
 
       - name: Publish Unit Test Results
