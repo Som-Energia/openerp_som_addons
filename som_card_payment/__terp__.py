@@ -20,6 +20,7 @@
         "security/ir.model.access.csv",
         "data/payment_type_data.xml",
         "data/payment_mode_data.xml",
+        "data/cron_data.xml",
         "views/res_partner_creditcard_view.xml",
         "views/res_partner_view.xml",
         "views/giscedata_polissa_view.xml",
