@@ -471,9 +471,7 @@ class ReportBackendCondicionsParticulars(ReportBackend):
             pricelist = {}
             ctx_pricelist = ctx.copy()
 
-            if lead:
-                text_vigencia = ''
-            elif (not pol.modcontractual_activa.data_final and not (modcon_pendent_indexada or modcon_pendent_indexada)) and dades_tarifa['date_end']:  # noqa: E501
+            if (not pol.modcontractual_activa.data_final and not (modcon_pendent_indexada or modcon_pendent_indexada)) and dades_tarifa['date_end']:  # noqa: E501
                 text_vigencia = _(u"(vigents fins al {})").format(
                     datetime.strptime(dades_tarifa['date_end'], '%Y-%m-%d').strftime('%d/%m/%Y'))
             elif dades_tarifa['date_end'] and dades_tarifa['date_start']:
