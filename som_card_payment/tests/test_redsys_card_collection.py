@@ -18,6 +18,7 @@ class TestRedsysCardCollection(testing.OOTestCaseWithCursor):
         self.factura_obj = self.openerp.pool.get("giscedata.facturacio.factura")
         self.card_obj = self.openerp.pool.get("res.partner.creditcard")
         self.polissa_obj = self.openerp.pool.get("giscedata.polissa")
+        self.account_obj = self.openerp.pool.get("account.account")
 
         self.card_type_id = self.imd_obj.get_object_reference(
             self.cursor, self.uid, "som_card_payment", "payment_type_card_recurrent"
@@ -47,6 +48,12 @@ class TestRedsysCardCollection(testing.OOTestCaseWithCursor):
         self.config_obj.set(self.cursor, self.uid, "redsys_timeout", "30")
         self.config_obj.set(
             self.cursor, self.uid, "redsys_tpv_journal_id", str(payment_mode.journal.id)
+        )
+        self.config_obj.set(
+            self.cursor,
+            self.uid,
+            "redsys_tpv_pay_account_id",
+            str(payment_mode.journal.default_credit_account_id.id),
         )
 
     def _get_invoice_candidate(self):
@@ -248,15 +255,18 @@ class TestRedsysCardCollection(testing.OOTestCaseWithCursor):
     def test_charge_factura_by_redsys_keeps_factura_eligible_when_tpv_is_unconfigured(self):
         factura = self._prepare_eligible_invoice()
         self.config_obj.set(self.cursor, self.uid, "redsys_tpv_journal_id", "")
-        self.config_obj.set(self.cursor, self.uid, "redsys_tpv_journal_code", "")
+        self.config_obj.set(
+            self.cursor, self.uid, "redsys_tpv_journal_code", "CARD"
+        )
         redsys_client, client = self._redsys_client()
 
         with redsys_client:
-            with self.assertRaises(osv.except_osv):
+            with self.assertRaises(osv.except_osv) as error:
                 self.factura_obj._charge_factura_by_redsys(
                     self.cursor, self.uid, factura.id
                 )
 
+        self.assertIn("redsys_tpv_journal_id", error.exception.value)
         client.mit_payment.assert_not_called()
         updated_factura = self.factura_obj.browse(self.cursor, self.uid, factura.id)
         self.assertFalse(updated_factura.redsys_collection_state)
@@ -264,6 +274,42 @@ class TestRedsysCardCollection(testing.OOTestCaseWithCursor):
             self.cursor, self.uid
         )
         self.assertIn(factura.id, eligible_ids)
+
+    def test_get_tpv_payment_data_uses_configured_account_over_journal_defaults(self):
+        payment_mode_id = self.imd_obj.get_object_reference(
+            self.cursor, self.uid, "som_card_payment", "payment_mode_card_recurrent"
+        )[1]
+        payment_mode = self.openerp.pool.get("payment.mode").browse(
+            self.cursor, self.uid, payment_mode_id
+        )
+        account_ids = self.account_obj.search(
+            self.cursor,
+            self.uid,
+            [("id", "!=", payment_mode.journal.default_credit_account_id.id)],
+            limit=1,
+        )
+        self.assertTrue(account_ids)
+        self.config_obj.set(
+            self.cursor,
+            self.uid,
+            "redsys_tpv_pay_account_id",
+            str(account_ids[0]),
+        )
+
+        payment_data = self.factura_obj._get_tpv_payment_data(
+            self.cursor, self.uid
+        )
+
+        self.assertEqual(payment_data["journal_id"], payment_mode.journal.id)
+        self.assertEqual(payment_data["pay_account_id"], account_ids[0])
+
+    def test_get_tpv_payment_data_requires_configured_payment_account(self):
+        self.config_obj.set(self.cursor, self.uid, "redsys_tpv_pay_account_id", "")
+
+        with self.assertRaises(osv.except_osv) as error:
+            self.factura_obj._get_tpv_payment_data(self.cursor, self.uid)
+
+        self.assertIn("redsys_tpv_pay_account_id", error.exception.value)
 
     def test_charge_factura_by_redsys_marks_approved_payment_as_paid(self):
         invoice = self._prepare_eligible_invoice()

@@ -28,6 +28,10 @@ def up(cursor, installed_version):
         cursor, 'som_card_payment', 'data/cron_data.xml',
         idref=None, mode='update'
     )
+    load_data(
+        cursor, 'som_card_payment', 'data/res_config_data.xml',
+        idref=None, mode='update'
+    )
 
 
 def down(cursor, installed_version):
