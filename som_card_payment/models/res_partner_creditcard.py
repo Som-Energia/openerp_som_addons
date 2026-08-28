@@ -31,25 +31,11 @@ class ResPartnerCreditCard(osv.osv):
                 return False
         return True
 
-    def _check_unique_token(self, cursor, uid, ids, context=None):
-        for card in self.browse(cursor, uid, ids, context=context):
-            card_ids = self.search(
-                cursor, uid, [("token", "=", card.token)], context=context
-            )
-            if len(card_ids) > 1:
-                return False
-        return True
-
     _constraints = [
         (
             _check_expiry_date,
             "La data de caducitat ha de tenir format MM/YY.",
             ["expiry_date"],
-        ),
-        (
-            _check_unique_token,
-            "El token de targeta ha de ser únic.",
-            ["token"],
         ),
     ]
 
