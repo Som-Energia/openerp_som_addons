@@ -454,6 +454,7 @@ class GiscedataPolissa(osv.osv):
         if not isinstance(ids, (list, tuple)):
             ids = [ids]
 
+        non_card_ids = []
         for polissa in self.browse(cursor, uid, ids):
             if (
                 polissa.payment_mode_id
@@ -461,9 +462,14 @@ class GiscedataPolissa(osv.osv):
                 and polissa.payment_mode_id.type.code == "COBRAMENT_RECURRENT_TARGETA"
             ):
                 continue
+            non_card_ids.append(polissa.id)
+
+        if non_card_ids:
             self.write(
-                cursor, uid, [polissa.id],
-                self._get_enginyers_payment_values(cursor, uid)
+                cursor,
+                uid,
+                non_card_ids,
+                self._get_enginyers_payment_values(cursor, uid),
             )
 
         return super(GiscedataPolissa, self).wkf_activa(cursor, uid, ids)
