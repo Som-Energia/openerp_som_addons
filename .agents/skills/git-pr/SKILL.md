@@ -5,7 +5,7 @@ description: >
   Trigger: Quan necessites crear una Pull Request.
 metadata:
   author: oriol
-  version: "1.0"
+  version: "1.1"
 ---
 
 ## When to Use
@@ -56,7 +56,7 @@ git push -u origin <branch_name>
 ### Pas 3: Crear PR
 
 ```bash
-gh pr create --title "<title>" --body "$(cat <<'EOF'
+gh pr create --assignee "@me" --title "<title>" --body "$(cat <<'EOF'
 ## Objectiu
 
 <descripció de l'objectiu>
@@ -86,7 +86,7 @@ EOF
 
 O alternativament:
 ```bash
-gh pr create --title "<title>" --body-file /path/to/pr_template.md
+gh pr create --assignee "@me" --title "<title>" --body-file /path/to/pr_template.md
 ```
 
 ## Exemples
@@ -94,6 +94,7 @@ gh pr create --title "<title>" --body-file /path/to/pr_template.md
 ```bash
 # PR simple
 gh pr create \
+  --assignee "@me" \
   --title "ADD_user_registration" \
   --body "$(cat <<'EOF'
 ## Objectiu
@@ -129,6 +130,7 @@ EOF
 2. **Totes les seccions**: Omple-les totes, no deixis espais buits
 3. **Comprovacions**: Marca les que apliquen amb [x]
 4. **Títols**: Clar i descriptiu
+5. **Assignació**: Autoassignar la PR amb `--assignee "@me"`
 
 ## Errors Comuns
 

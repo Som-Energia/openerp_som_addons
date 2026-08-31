@@ -37,7 +37,7 @@ Current verification: `.github/workflows/pull_request_labeler.yml` requires at l
 - Format de branca: `<type>_<description>` (ex: `ADD_user_registration`)
 - Tipus: IMP_ (millora), FIX_ (bug), MOD_ (canvi), ADD_ (nova), REF_ (refactor), TEST_, DOCS_, CI_
 - Descripció: 2-3 paraules en anglès, lowercase, max 50 caràcters
-- Separador: guió baix entre tipus i descripció
+- Separador: guió baix entre tipus i descripció i entre les paraules de la descripció
 - Sempre fer `git fetch origin && git pull origin main` abans de crear branca
 
 ### git-commit
@@ -52,6 +52,7 @@ Current verification: `.github/workflows/pull_request_labeler.yml` requires at l
 - Totes les sections: Omple-les totes, no deixis espais buits
 - Idioma: Català per a la descripció
 - Títols: Clar i descriptiu
+- Autoassignar la PR a l'usuari actual amb `--assignee "@me"`
 
 ### erp-test
 - Requisits: Virtualenv activat + Docker (PostgreSQL, MongoDB, Redis)
