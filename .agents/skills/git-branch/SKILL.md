@@ -5,7 +5,7 @@ description: >
   Trigger: Quan necessites crear una branca nova per treballar.
 metadata:
   author: oriol
-  version: "1.1"
+  version: "1.2"
 ---
 
 ## When to Use
@@ -41,24 +41,36 @@ El format és: `<type>_<description>`
 
 ## Workflow
 
-### Pas 1: Actualitzar main/master
+### Pas 1: Verificar l'estat local
+
+```bash
+git status --short
+```
+
+Abans de canviar de branca, identificar qualsevol canvi local. No descartar-lo,
+fer `stash` ni incloure'l a la branca nova sense confirmar-ne l'abast.
+
+### Pas 2: Actualitzar `main`
 
 ```bash
 git fetch origin
-git pull origin main
+git switch main
+git pull --ff-only origin main
 ```
 
-### Pas 2: Crear branca nova
+`--ff-only` evita crear un merge accidental durant l'actualització.
+
+### Pas 3: Crear branca nova
 
 ```bash
-git checkout -b <type>_<description>
+git switch -c <type>_<description>
 ```
 
-### Pas 3: Fer canvis i commit
+### Pas 4: Fer canvis i commit
 
 (Utilitza la skill `git-commit`)
 
-### Pas 4: Fer push
+### Pas 5: Fer push
 
 ```bash
 git push -u origin <branch_name>
@@ -68,25 +80,25 @@ git push -u origin <branch_name>
 
 ```bash
 # Nova funcionalitat
-git checkout -b ADD_user_registration
+git switch -c ADD_user_registration
 
 # Millora
-git checkout -b IMP_payment_validation
+git switch -c IMP_payment_validation
 
 # Bug fix
-git checkout -b FIX_invoice_total_calculation
+git switch -c FIX_invoice_total_calculation
 
 # Canvi de comportament
-git checkout -b MOD_renewal_process
+git switch -c MOD_renewal_process
 
 # Refactor
-git checkout -b REF_extract_partner_service
+git switch -c REF_extract_partner_service
 
 # Tests
-git checkout -b TEST_contract_validation
+git switch -c TEST_contract_validation
 
 # Documentació
-git checkout -b DOCS_api_reference
+git switch -c DOCS_api_reference
 ```
 
 ## Errors Comuns
@@ -95,7 +107,8 @@ git checkout -b DOCS_api_reference
 |-------|-------|----------|
 | Branch already exists | Branca ja existent | Canvia el nom o elimina la branca existent |
 | Invalid branch name | Caràcters invàlids | Utilitza només lletres, números, guions i guions baixos |
-| Not on main | No estàs a main | `git checkout main` abans de crear branca |
+| Not on main | No estàs a main | `git switch main` abans de crear branca |
+| Not possible to fast-forward | La branca local ha divergit de `origin/main` | Atura't i revisa l'historial; no forcis el pull |
 
 ## Integració amb SDD
 

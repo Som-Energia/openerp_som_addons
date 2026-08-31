@@ -38,7 +38,8 @@ Current verification: `.github/workflows/pull_request_labeler.yml` requires at l
 - Tipus: IMP_ (millora), FIX_ (bug), MOD_ (canvi), ADD_ (nova), REF_ (refactor), TEST_, DOCS_, CI_
 - Descripció: 2-3 paraules en anglès, lowercase, max 50 caràcters
 - Separador: guió baix entre tipus i descripció i entre les paraules de la descripció
-- Sempre fer `git fetch origin && git pull origin main` abans de crear branca
+- Abans de crear-la: revisar canvis locals, fer `git fetch origin`, `git switch main` i `git pull --ff-only origin main`
+- No descartar, fer stash ni incloure canvis locals sense confirmar-ne l'abast
 
 ### git-commit
 - Format: `<emoji> <description>` (ex: `✨ add user auth`)
@@ -51,8 +52,10 @@ Current verification: `.github/workflows/pull_request_labeler.yml` requires at l
 - PLANTILLA OBLIGATÒRIA: Omplir totes les seccions (Objectiu, Targeta, Comportament antic, Comportament nou, Comprovacions)
 - Totes les sections: Omple-les totes, no deixis espais buits
 - Idioma: Català per a la descripció
-- Títols: Clar i descriptiu
-- Autoassignar la PR a l'usuari actual amb `--assignee "@me"`
+- Títols: clars i descriptius; no reutilitzar automàticament el nom de la branca
+- Abans de crear-la: verificar abast, tests i linting obligatoris segons `AGENTS.md`
+- Crear-la contra `main`, autoassignar-la i afegir com a mínim una etiqueta existent
+- Flags requerits: `--base main --assignee "@me" --label "<label>"`
 
 ### erp-test
 - Requisits: Virtualenv activat + Docker (PostgreSQL, MongoDB, Redis)
