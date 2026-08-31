@@ -55,16 +55,16 @@ Current verification: `.github/workflows/pull_request_labeler.yml` requires at l
 
 ### erp-test
 - Requisits: virtualenv activat, `WORKSPACE` definit i Docker amb PostgreSQL, MongoDB i Redis
-- Verificar que existeixen `$WORKSPACE/erp` i `$WORKSPACE/destral`
+- Verificar `$WORKSPACE/erp`, `$WORKSPACE/destral` i `$WORKSPACE/openerp_som_addons/docker-compose.yaml`
 - Command: `scripts/run-tests.sh <database> -m <module_name>`
-- Serveis de `docker compose`: `postgres`, `mongo`, `redis`
+- Compose: `docker compose -f "$WORKSPACE/openerp_som_addons/docker-compose.yaml"`; serveis `postgres`, `mongo`, `redis`
 
 ### erp-start
 - Requisits: virtualenv activat, `WORKSPACE` definit i Docker amb PostgreSQL, MongoDB i Redis
 - Command: `$WORKSPACE/erp/server/bin/openerp-server.py --no-netrpc --price_accuracy=6 --config=$HOME/conf/erp.conf -d <database>`
-- `erpserver` només es pot utilitzar si l'alias existeix a l'entorn local
+- `erpserver` només es pot utilitzar si `command -v erpserver` té èxit
 - Opcions: `--update=<module>` per actualitzar mòdul, `--run-scripts=<module>` per migracions
-- Serveis de `docker compose`: `postgres`, `mongo`, `redis`
+- Compose: `docker compose -f "$WORKSPACE/openerp_som_addons/docker-compose.yaml"`; serveis `postgres`, `mongo`, `redis`
 - Interfície: http://localhost:8069
 
 ### erp-migration

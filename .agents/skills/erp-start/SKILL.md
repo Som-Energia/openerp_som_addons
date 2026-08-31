@@ -22,10 +22,11 @@ Aquesta skill requereix:
 1. **Virtualenv activat** amb openerp-server instal·lat. El nom habitual és `erp`:
    - pyenv: `pyenv activate erp`
    - virtualenvwrapper: `workon erp`
-2. **Workspace definit** amb el repositori `erp`:
+2. **Workspace definit** amb els repositoris `erp` i `openerp_som_addons`:
    ```bash
    export WORKSPACE=/home/<user>/src
    test -d "$WORKSPACE/erp"
+   test -f "$WORKSPACE/openerp_som_addons/docker-compose.yaml"
    ```
 3. **Contenidors Docker**: PostgreSQL, MongoDB, Redis
 
@@ -34,7 +35,8 @@ Aquesta skill requereix:
 ### Pas 1: Verificar Contenidors
 
 ```bash
-docker compose ps
+COMPOSE_FILE="$WORKSPACE/openerp_som_addons/docker-compose.yaml"
+docker compose -f "$COMPOSE_FILE" ps
 ```
 
 Serveis esperats:
@@ -44,7 +46,7 @@ Serveis esperats:
 
 Si no estan actius:
 ```bash
-docker compose up -d postgres mongo redis
+docker compose -f "$COMPOSE_FILE" up -d postgres mongo redis
 ```
 
 ### Pas 2: Arrencar l'ERP
@@ -60,8 +62,9 @@ docker compose up -d postgres mongo redis
 
 **Amb alias** (si existeix a l'entorn local):
 ```bash
-command -v erpserver
-erpserver -d <nom_bbdd>
+if command -v erpserver >/dev/null 2>&1; then
+  erpserver -d <nom_bbdd>
+fi
 ```
 
 **Opcions útils**:
@@ -88,9 +91,9 @@ Un cop arrencat, l'ERP està disponible a:
 |-------|-------|----------|
 | `WORKSPACE no definit` | Falta la ruta arrel del workspace | `export WORKSPACE=/home/<user>/src` |
 | `openerp-server.py: command not found` | Virtualenv no activat o ruta incorrecta | Activa `erp` i comprova `$WORKSPACE/erp` |
-| `Connection refused to localhost:5432` | PostgreSQL no corrent | `docker compose up -d postgres` |
-| `Connection refused to localhost:27017` | MongoDB no corrent | `docker compose up -d mongo` |
-| `Connection refused to localhost:6379` | Redis no corrent | `docker compose up -d redis` |
+| `Connection refused to localhost:5432` | PostgreSQL no corrent | `docker compose -f "$WORKSPACE/openerp_som_addons/docker-compose.yaml" up -d postgres` |
+| `Connection refused to localhost:27017` | MongoDB no corrent | `docker compose -f "$WORKSPACE/openerp_som_addons/docker-compose.yaml" up -d mongo` |
+| `Connection refused to localhost:6379` | Redis no corrent | `docker compose -f "$WORKSPACE/openerp_som_addons/docker-compose.yaml" up -d redis` |
 | `Config file not found` | Fitxer de configuració inexistent | Crear `$HOME/conf/erp.conf` |
 
 ## Variables d'Entorn
