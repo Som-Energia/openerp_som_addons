@@ -42,11 +42,13 @@ Current verification: `.github/workflows/pull_request_labeler.yml` requires at l
 - No descartar, fer stash ni incloure canvis locals sense confirmar-ne l'abast
 
 ### git-commit
+- Font canònica d'emojis: `.github/docs/desenvolupament.md`
 - Format: `<emoji> <description>` (ex: `✨ add user auth`)
 - L'emoji ja indica el tipus; no afegir `feat:`, `fix:`, etc.
 - Emoji obligatori seguit d'un espai
 - Descripció en anglès, max 72 caràcters, imperatiu
-- Context: utilitzar per guardar canvis implementats
+- Revisar l'abast, preparar fitxers explícits i revisar `git diff --cached`
+- Executar `pre-commit run` després de preparar els fitxers; no utilitzar `git add -A`
 
 ### git-pr
 - PLANTILLA OBLIGATÒRIA: Omplir totes les seccions (Objectiu, Targeta, Comportament antic, Comportament nou, Comprovacions)
