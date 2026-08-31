@@ -5,7 +5,7 @@ description: >
   Trigger: Quan necessites fer un commit de codi.
 metadata:
   author: oriol
-  version: "1.2"
+  version: "1.3"
 ---
 
 ## When to Use
@@ -17,38 +17,43 @@ Utilitza aquesta skill quan:
 
 ## Format de Commit
 
-La font canònica és
-[`.github/docs/desenvolupament.md`](../../../.github/docs/desenvolupament.md).
+[gitmoji.dev](https://gitmoji.dev/) és la font canònica del significat dels
+emojis. [`.github/docs/desenvolupament.md`](../../../.github/docs/desenvolupament.md)
+recull la selecció habitual i les regles de format pròpies del projecte.
 
 El format és: `<emoji> <description>`
 
 L'emoji indica el tipus de commit; no cal duplicar la informació amb un type
 textual com `feat:` o `fix:`.
 
-### Emoji i Tipus
+### Selecció habitual
 
-| Emoji | Tipus |
-|-------|-------|
-| ✨ | Nova funcionalitat |
-| 🐛 | Correcció de bug |
-| 🩹 | Correcció menor |
-| 👔 | Lògica de negoci |
-| 🗃️ | Dades XML |
-| 🏗️ | Build o estructura |
-| 🔧 | CI o configuració |
-| 📝 | Documentació |
-| ⚡️ | Rendiment |
-| ♻️ | Refactorització |
-| 🎨 | Estil de codi |
-| 🧹 | Neteja |
-| 🦺 | Codi robust |
-| ✅ | Testos |
-| 🚧 | Treball en curs |
-| 🌐 | Traduccions |
-| 💄 | Canvis visuals |
-| 🏳️ | Abandonat |
-| 🐬 | Informes |
-| 🔨 | Script de migració |
+| Emoji | Significat oficial |
+|-------|---------------------|
+| ✨ | Introduir funcionalitat nova |
+| 🐛 | Corregir un bug |
+| 🩹 | Fer una correcció senzilla i no crítica |
+| 👔 | Afegir o actualitzar lògica de negoci |
+| 🗃️ | Fer canvis relacionats amb la base de dades |
+| 🏗️ | Fer canvis arquitectònics |
+| 🔧 | Afegir o actualitzar fitxers de configuració |
+| 👷 | Afegir o actualitzar el sistema de CI |
+| 📝 | Afegir o actualitzar documentació |
+| ⚡️ | Millorar el rendiment |
+| ♻️ | Refactoritzar codi |
+| 🎨 | Millorar l'estructura o el format del codi |
+| 🔥 | Eliminar codi o fitxers |
+| ⚰️ | Eliminar codi mort |
+| 🦺 | Afegir o actualitzar validacions |
+| ✅ | Afegir, actualitzar o fer passar tests |
+| 🚧 | Marcar treball en curs |
+| ⬆️ | Actualitzar dependències a versions superiors |
+| 🌐 | Internacionalització i localització |
+| 💄 | Afegir o actualitzar la interfície i els fitxers d'estil |
+| 🔨 | Afegir o actualitzar scripts de desenvolupament, incloses migracions |
+
+Per a qualsevol emoji no llistat, consultar [gitmoji.dev](https://gitmoji.dev/)
+en lloc d'inventar o redefinir-ne el significat.
 
 ### Regles
 
@@ -128,8 +133,8 @@ git commit -m "⚡️ optimize database query performance"
 # Estil de codi
 git commit -m "🎨 format code with autopep8"
 
-# Canvis de build
-git commit -m "🏗️ update build dependencies"
+# Actualització de dependències
+git commit -m "⬆️ upgrade build dependencies"
 
 # Script de migració
 git commit -m "🔨 migrate contract status values"

@@ -42,7 +42,9 @@ Current verification: `.github/workflows/pull_request_labeler.yml` requires at l
 - No descartar, fer stash ni incloure canvis locals sense confirmar-ne l'abast
 
 ### git-commit
-- Font canònica d'emojis: `.github/docs/desenvolupament.md`
+- Font canònica del significat dels emojis: `https://gitmoji.dev/`
+- Guia local de format i selecció habitual: `.github/docs/desenvolupament.md`
+- No inventar ni redefinir significats; consultar gitmoji.dev per emojis no llistats
 - Format: `<emoji> <description>` (ex: `✨ add user auth`)
 - L'emoji ja indica el tipus; no afegir `feat:`, `fix:`, etc.
 - Emoji obligatori seguit d'un espai
