@@ -6,7 +6,7 @@ description: >
   Trigger: Quan necessites executar tests d'un mòdul OpenERP amb destral.
 metadata:
   author: oriol
-  version: "1.1"
+  version: "1.2"
 ---
 
 ## When to Use
@@ -22,20 +22,31 @@ Aquesta skill requereix:
 1. **Virtualenv activat** amb destral instal·lat. El nom habitual és `erp`:
    - pyenv: `pyenv activate erp`
    - virtualenvwrapper: `workon erp`
-2. **Contenidors Docker**: PostgreSQL, MongoDB, Redis
+2. **Workspace definit** amb els repositoris `erp` i `destral`:
+   ```bash
+   export WORKSPACE=/home/<user>/src
+   test -d "$WORKSPACE/erp"
+   test -d "$WORKSPACE/destral"
+   ```
+3. **Contenidors Docker**: PostgreSQL, MongoDB, Redis
 
 ## Workflow
 
 ### Pas 1: Verificar Contenidors
 
 ```bash
-docker ps --format "{{.Names}}" | grep -E "postgres|redis|mongo"
+docker compose ps
 ```
 
-Contenidors esperats:
-- PostgreSQL (src_db_1)
-- MongoDB (src_mongo_1)
-- Redis (src_redis_1)
+Serveis esperats:
+- `postgres`
+- `mongo`
+- `redis`
+
+Si no estan actius:
+```bash
+docker compose up -d postgres mongo redis
+```
 
 ### Pas 2: Executar tests
 
@@ -77,10 +88,11 @@ OPENERP_TEST_DB_REF="IMP_fix_factures" scripts/run-tests.sh -m som_polissa
 
 | Error | Causa | Solució |
 |-------|-------|----------|
+| `WORKSPACE no definit` | Falta la ruta arrel del workspace | `export WORKSPACE=/home/<user>/src` |
 | `destral: command not found` | Virtualenv no activat | `pyenv activate erp` o `workon erp` |
-| `Connection refused to localhost:5432` | PostgreSQL no corrent | `docker-compose up -d` |
-| `Connection refused to localhost:27017` | MongoDB no corrent | `docker-compose up -d` |
-| `Connection refused to localhost:6379` | Redis no corrent | `docker-compose up -d` |
+| `Connection refused to localhost:5432` | PostgreSQL no corrent | `docker compose up -d postgres` |
+| `Connection refused to localhost:27017` | MongoDB no corrent | `docker compose up -d mongo` |
+| `Connection refused to localhost:6379` | Redis no corrent | `docker compose up -d redis` |
 | `Database does not exist` | DB no creada | destral la crea automàticament |
 | `timeout` | Tests molt lents | Els tests d'OpenERP poden trigar 10+ min |
 
