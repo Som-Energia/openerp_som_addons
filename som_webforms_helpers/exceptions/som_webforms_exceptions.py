@@ -46,6 +46,13 @@ class InvalidSimulationPowers(SomWebformsException):
         )
 
 
+class IncompleteSimulationPolicy(SomWebformsException):
+    def __init__(self):
+        super(IncompleteSimulationPolicy, self).__init__(
+            text="Policy data required for simulation is incomplete"
+        )
+
+
 class MissingSimulationConfig(SomWebformsException):
     def __init__(self):
         super(MissingSimulationConfig, self).__init__(

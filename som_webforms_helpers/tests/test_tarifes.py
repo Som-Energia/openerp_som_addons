@@ -21,6 +21,42 @@ class tarifes_tests(testing.OOTestCase):
     def tearDown(self):
         pass
 
+    def _simulation_policy(self, power=5.0, mode="atr", fiscal_position=False):
+        period = mock.Mock()
+        period.name = "P1"
+        cnae = mock.Mock()
+        cnae.name = "9820"
+        power_period = mock.Mock(periode_id=period, potencia=power)
+        subsystem = mock.Mock(id=7, code="PE")
+        municipality = mock.Mock(id=5386, subsistema_id=subsystem)
+        cups = mock.Mock(id=11, id_municipi=municipality)
+        policy = mock.Mock(
+            tarifa=mock.Mock(id=22),
+            cups=cups,
+            cnae=cnae,
+            mode_facturacio=mode,
+            potencies_periode=[power_period],
+            fiscal_position_id=fiscal_position,
+            state="cancelada",
+            titular=mock.Mock(vat="ES123"),
+        )
+        return policy
+
+    def _call_policy_simulation(
+        self, cursor, uid, policy, with_taxes=False, context=None, policy_id=17
+    ):
+        policy_obj = self.pool.get("giscedata.polissa")
+        with mock.patch.object(
+            policy_obj, "search", return_value=[policy_id]
+        ) as search, mock.patch.object(policy_obj, "browse", return_value=policy):
+            result = self.tariff_model.get_simulation_by_polissa_www(
+                cursor, uid, policy_id, with_taxes, context
+            )
+        search.assert_called_once_with(
+            cursor, uid, [("id", "=", policy_id)], context=context
+        )
+        return result
+
     def test__dummyTest(self):
         self.assertTrue(True)
 
@@ -497,6 +533,248 @@ class tarifes_tests(testing.OOTestCase):
             )
 
             self.assertEqual(result, [])
+
+    def test__incomplete_simulation_policy__stable_text(self):
+        exception = som_webforms_exceptions.IncompleteSimulationPolicy()
+
+        self.assertEqual(
+            exception.text, "Policy data required for simulation is incomplete"
+        )
+
+    def test__get_simulation_by_polissa_www__incomplete_structure(self):
+        with Transaction().start(self.database) as txn:
+            cursor = txn.cursor
+            uid = txn.user
+            policy_obj = self.pool.get("giscedata.polissa")
+
+            for policy_id in (False, 999999999):
+                with mock.patch.object(
+                    policy_obj, "search", return_value=[]
+                ), mock.patch.object(
+                    self.tariff_model, "_calculate_simulation_www", create=True
+                ) as calculate:
+                    with self.assertRaises(
+                        som_webforms_exceptions.IncompleteSimulationPolicy
+                    ) as ctx:
+                        self.tariff_model.get_simulation_by_polissa_www(
+                            cursor, uid, policy_id, False, None
+                        )
+                    self.assertEqual(
+                        ctx.exception.text,
+                        "Policy data required for simulation is incomplete",
+                    )
+                    self.assertEqual(calculate.call_count, 0)
+
+            invalid_policies = []
+            for attribute in ("tarifa", "cups", "cnae", "mode_facturacio"):
+                policy = self._simulation_policy()
+                setattr(policy, attribute, False)
+                invalid_policies.append(policy)
+            for path in (
+                ("cups", "id_municipi"),
+                ("cups", "id_municipi", "subsistema_id"),
+                ("cnae", "name"),
+            ):
+                policy = self._simulation_policy()
+                target = policy
+                for attribute in path[:-1]:
+                    target = getattr(target, attribute)
+                setattr(target, path[-1], False)
+                invalid_policies.append(policy)
+
+            for policy in invalid_policies:
+                with mock.patch.object(
+                    policy_obj, "search", return_value=[17]
+                ), mock.patch.object(
+                    policy_obj, "browse", return_value=policy
+                ), mock.patch.object(
+                    self.tariff_model, "_calculate_simulation_www", create=True
+                ) as calculate:
+                    with self.assertRaises(
+                        som_webforms_exceptions.IncompleteSimulationPolicy
+                    ):
+                        self.tariff_model.get_simulation_by_polissa_www(
+                            cursor, uid, 17, False, {}
+                        )
+                    self.assertEqual(calculate.call_count, 0)
+
+    def test__get_simulation_by_polissa_www__incomplete_powers(self):
+        with Transaction().start(self.database) as txn:
+            cursor = txn.cursor
+            uid = txn.user
+            policy_obj = self.pool.get("giscedata.polissa")
+            invalid_powers = [[], [mock.Mock(periode_id=False, potencia=5.0)]]
+            for name, power in ((False, 5.0), ("P1", None), ("P1", "bad")):
+                period = mock.Mock()
+                period.name = name
+                invalid_powers.append([mock.Mock(periode_id=period, potencia=power)])
+
+            for powers in invalid_powers:
+                policy = self._simulation_policy()
+                policy.potencies_periode = powers
+                with mock.patch.object(
+                    policy_obj, "search", return_value=[17]
+                ), mock.patch.object(
+                    policy_obj, "browse", return_value=policy
+                ), mock.patch.object(
+                    self.tariff_model, "_calculate_simulation_www", create=True
+                ) as calculate:
+                    with self.assertRaises(
+                        som_webforms_exceptions.IncompleteSimulationPolicy
+                    ):
+                        self.tariff_model.get_simulation_by_polissa_www(
+                            cursor, uid, 17, False, {}
+                        )
+                    self.assertEqual(calculate.call_count, 0)
+
+            for power in (0, 101):
+                policy = self._simulation_policy(power=power)
+                with mock.patch.object(
+                    policy_obj, "search", return_value=[17]
+                ), mock.patch.object(policy_obj, "browse", return_value=policy):
+                    with self.assertRaises(
+                        som_webforms_exceptions.InvalidSimulationPowers
+                    ):
+                        self.tariff_model.get_simulation_by_polissa_www(
+                            cursor, uid, 17, False, {}
+                        )
+
+    def test__get_simulation_by_polissa_www__maps_inputs(self):
+        with Transaction().start(self.database) as txn:
+            cursor = txn.cursor
+            uid = txn.user
+            context = {"date": "2026-01-01"}
+            taxes = object()
+
+            for mode, expected in (("atr", "periods"), ("index", "index")):
+                policy = self._simulation_policy(mode=mode)
+                policy.potencies_periode[0].periode_id.name = "pA"
+                with mock.patch.object(
+                    self.tariff_model,
+                    "_calculate_simulation_www",
+                    return_value="mapped",
+                    create=True,
+                ) as calculate:
+                    result = self._call_policy_simulation(
+                        cursor, uid, policy, taxes, context
+                    )
+                self.assertEqual(result, "mapped")
+                arguments = calculate.call_args[0]
+                self.assertEqual(arguments[2:7], (22, 5386, {"pa": 5000.0}, expected, False))
+                self.assertIs(arguments[7], taxes)
+                self.assertEqual(arguments[8], True)
+                self.assertIs(arguments[9], context)
+
+            fiscal_position = mock.Mock(id=44)
+            fiscal_cases = (
+                ("9820", 9.999, False, False, True),
+                ("9820", 10.0, False, "ESVAT", False),
+                ("0111", 5.0, False, False, False),
+                ("9820", 5.0, fiscal_position, "ESVAT", False),
+            )
+            for cnae, power, fiscal, vat, expected_home in fiscal_cases:
+                policy = self._simulation_policy(power=power, fiscal_position=fiscal)
+                policy.cnae.name = cnae
+                policy.titular.vat = vat
+                with mock.patch.object(
+                    self.tariff_model,
+                    "_calculate_simulation_www",
+                    return_value="classified",
+                    create=True,
+                ) as calculate:
+                    self._call_policy_simulation(cursor, uid, policy, True, None)
+                arguments = calculate.call_args[0]
+                self.assertEqual(arguments[6], fiscal.id if fiscal else False)
+                self.assertEqual(arguments[8], expected_home)
+                self.assertIs(arguments[9], None)
+
+            for mode in ("pvpc", "flat", "unknown", "custom"):
+                policy = self._simulation_policy(mode=mode)
+                with self.assertRaises(
+                    som_webforms_exceptions.InvalidSimulationPricelist
+                ):
+                    self._call_policy_simulation(cursor, uid, policy)
+
+    def test__get_simulation_by_polissa_www__range_and_equivalence(self):
+        with Transaction().start(self.database) as txn:
+            cursor = txn.cursor
+            uid = txn.user
+            tariff_id = self.imd_obj.get_object_reference(
+                cursor, uid, "som_webforms_helpers", "tarifa_20TD_test"
+            )[1]
+            coefficient = dict(
+                ("p{}_ratio".format(period), 1.0 if period == 1 else 0.0)
+                for period in range(1, 7)
+            )
+            average = dict(
+                ("p{}_price".format(period), 0.1 if period == 1 else 0.0)
+                for period in range(1, 7)
+            )
+            prices = {
+                "current": {
+                    "energia": {"P1": {"value": 0.2}},
+                    "potencia": {"P1": {"value": 0.01}},
+                    "comptador": {"value": 1.0},
+                    "bo_social": {"value": 0.01},
+                }
+            }
+            policy = self._simulation_policy(mode="atr")
+            policy.tarifa.id = tariff_id
+
+            with mock.patch.object(
+                self.pool.get("som.annual.coefficient"),
+                "get_current_coefficient",
+                return_value=coefficient,
+            ), mock.patch.object(
+                self.pool.get("som.annual.consumption.estimate"),
+                "get_consumption_by_power",
+                return_value=1200.0,
+            ), mock.patch.object(
+                self.pool.get("som.last.month.average.price"),
+                "get_current_price",
+                return_value=average,
+            ), mock.patch.object(
+                self.tariff_model, "get_tariff_prices_by_range", return_value=prices
+            ):
+                for context in ({"date": "2026-01-01"}, {}, None):
+                    direct = self.tariff_model.get_simulation_www(
+                        cursor,
+                        uid,
+                        tariff_id,
+                        5386,
+                        {"p1": 5000.0},
+                        "periods",
+                        with_taxes=True,
+                        context=context,
+                    )
+                    derived = self._call_policy_simulation(
+                        cursor, uid, policy, True, context
+                    )
+                    self.assertEqual(derived, direct)
+
+            coefficient_obj = self.pool.get("som.annual.coefficient")
+            for power in (1.0, 100.0, 0.999, 100.001):
+                policy = self._simulation_policy(power=power)
+                expected_exception = (
+                    som_webforms_exceptions.MissingSimulationConfig
+                    if power in (1.0, 100.0)
+                    else som_webforms_exceptions.InvalidSimulationPowers
+                )
+                with mock.patch.object(
+                    coefficient_obj, "get_current_coefficient", return_value=False
+                ):
+                    with self.assertRaises(expected_exception):
+                        self.tariff_model.get_simulation_www(
+                            cursor,
+                            uid,
+                            tariff_id,
+                            5386,
+                            {"p1": power * 1000},
+                            "periods",
+                            context={},
+                        )
+                    with self.assertRaises(expected_exception):
+                        self._call_policy_simulation(cursor, uid, policy, context={})
 
     def test__get_simulation_www__invalid_pricelist(self):
         with Transaction().start(self.database) as txn:
