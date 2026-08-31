@@ -122,6 +122,11 @@ class GiscedataFacturacioFactura(osv.osv):
 
     def _get_redsys_config(self, cursor, uid, context=None):
         cfg_obj = self.pool.get("res.config")
+        timeout = cfg_obj.get(cursor, uid, "redsys_timeout", "30")
+        try:
+            timeout = int(timeout)
+        except (TypeError, ValueError):
+            timeout = 30
         return {
             "merchant_code": cfg_obj.get(cursor, uid, "redsys_merchant_code", ""),
             "private_key": cfg_obj.get(cursor, uid, "redsys_private_key", ""),
@@ -132,7 +137,7 @@ class GiscedataFacturacioFactura(osv.osv):
             ),
             "terminal": cfg_obj.get(cursor, uid, "redsys_terminal", "1"),
             "currency": cfg_obj.get(cursor, uid, "redsys_currency", "978"),
-            "timeout": int(cfg_obj.get(cursor, uid, "redsys_timeout", 30)),
+            "timeout": timeout,
         }
 
     def _to_base36(self, number, width):

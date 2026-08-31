@@ -56,6 +56,32 @@ class TestRedsysCardCollection(testing.OOTestCaseWithCursor):
             str(payment_mode.journal.default_credit_account_id.id),
         )
 
+    def test_redsys_config_data_has_safe_defaults(self):
+        expected_values = {
+            "redsys_merchant_code": "DEMO_MERCHANT_CODE",
+            "redsys_private_key": "DEMO_PRIVATE_KEY",
+            "redsys_merchant_url": "https://example.invalid/redsys",
+            "redsys_endpoint_url": "https://sis.redsys.es/sis/rest/trataPeticionREST",
+            "redsys_terminal": "1",
+            "redsys_currency": "978",
+            "redsys_timeout": "30",
+        }
+
+        for key, expected_value in expected_values.items():
+            config_id = self.imd_obj.get_object_reference(
+                self.cursor, self.uid, "som_card_payment", key
+            )[1]
+            config = self.config_obj.browse(self.cursor, self.uid, config_id)
+            self.assertEqual(config.name, key)
+            self.assertEqual(config.value, expected_value)
+
+    def test_get_redsys_config_uses_default_timeout_when_invalid(self):
+        self.config_obj.set(self.cursor, self.uid, "redsys_timeout", "invalid")
+
+        config = self.factura_obj._get_redsys_config(self.cursor, self.uid)
+
+        self.assertEqual(config["timeout"], 30)
+
     def _get_invoice_candidate(self):
         invoice_ids = self.invoice_obj.search(
             self.cursor,
