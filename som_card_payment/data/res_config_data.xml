@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data noupdate="1">
+        <record model="res.config" id="redsys_tpv_journal_id" forcecreate="1">
+            <field name="name">redsys_tpv_journal_id</field>
+            <field name="value"></field>
+            <field name="description">ID of the Redsys TPV collection journal</field>
+        </record>
+        <record model="res.config" id="redsys_tpv_pay_account_id" forcecreate="1">
+            <field name="name">redsys_tpv_pay_account_id</field>
+            <field name="value"></field>
+            <field name="description">ID of the Redsys TPV payment account</field>
+        </record>
+    </data>
+</openerp>

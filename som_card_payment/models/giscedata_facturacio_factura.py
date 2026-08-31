@@ -218,31 +218,51 @@ class GiscedataFacturacioFactura(osv.osv):
 
     def _get_tpv_payment_data(self, cursor, uid, context=None):
         cfg_obj = self.pool.get("res.config")
-        journal_id = int(cfg_obj.get(cursor, uid, "redsys_tpv_journal_id", 0) or 0)
-        journal_code = cfg_obj.get(cursor, uid, "redsys_tpv_journal_code", "")
+        journal_key = "redsys_tpv_journal_id"
+        pay_account_key = "redsys_tpv_pay_account_id"
+        try:
+            journal_id = int(cfg_obj.get(cursor, uid, journal_key, 0) or 0)
+            if journal_id <= 0:
+                raise ValueError
+        except (TypeError, ValueError):
+            raise osv.except_osv(
+                _("Error"),
+                _("Cal configurar un ID positiu vàlid per %(key)s.") % {
+                    "key": journal_key,
+                },
+            )
+        try:
+            pay_account_id = int(
+                cfg_obj.get(cursor, uid, pay_account_key, 0) or 0
+            )
+            if pay_account_id <= 0:
+                raise ValueError
+        except (TypeError, ValueError):
+            raise osv.except_osv(
+                _("Error"),
+                _("Cal configurar un ID positiu vàlid per %(key)s.") % {
+                    "key": pay_account_key,
+                },
+            )
         journal_obj = self.pool.get("account.journal")
-        if not journal_id and journal_code:
-            journal_ids = journal_obj.search(
-                cursor, uid, [("code", "=", journal_code)], limit=1, context=context
-            )
-            journal_id = journal_ids and journal_ids[0] or False
-        if not journal_id:
+        journal_ids = journal_obj.search(
+            cursor, uid, [("id", "=", journal_id)], context=context
+        )
+        if not journal_ids:
             raise osv.except_osv(
                 _("Error"),
-                _(
-                    "Falta configurar el diari de cobrament TPV per Redsys "
-                    "(redsys_tpv_journal_id o redsys_tpv_journal_code)."
-                ),
+                _("No existeix cap diari per %(key)s.") % {"key": journal_key},
             )
-        journal = journal_obj.browse(cursor, uid, journal_id, context=context)
-        pay_account = journal.default_credit_account_id or journal.default_debit_account_id
-        if not pay_account:
+        account_obj = self.pool.get("account.account")
+        pay_account_ids = account_obj.search(
+            cursor, uid, [("id", "=", pay_account_id)], context=context
+        )
+        if not pay_account_ids:
             raise osv.except_osv(
                 _("Error"),
-                _(
-                    "Cal configurar un compte de crèdit o dèbit al diari "
-                    "de cobrament TPV de Redsys."
-                ),
+                _("No existeix cap compte per %(key)s.") % {
+                    "key": pay_account_key,
+                },
             )
         period_ids = self.pool.get("account.period").find(
             cursor, uid, dt=date.today().strftime("%Y-%m-%d"), context=context
@@ -254,7 +274,7 @@ class GiscedataFacturacioFactura(osv.osv):
             )
         return {
             "journal_id": journal_id,
-            "pay_account_id": pay_account.id,
+            "pay_account_id": pay_account_id,
             "period_id": period_ids[0],
         }
 
