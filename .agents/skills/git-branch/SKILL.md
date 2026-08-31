@@ -5,7 +5,7 @@ description: >
   Trigger: Quan necessites crear una branca nova per treballar.
 metadata:
   author: oriol
-  version: "1.0"
+  version: "1.1"
 ---
 
 ## When to Use
@@ -36,7 +36,7 @@ El format és: `<type>_<description>`
 
 1. **Descripció**: 2-3 paraules en anglès, lowercase
 2. **Separador**: Guió baix (_) entre tipus i descripció
-3. **Espais**: Utilitzar guions (-) dins la descripció si cal
+3. **Separador de paraules**: Utilitzar guions baixos (_) dins la descripció si cal
 4. **Longitud**: Màxim 50 caràcters
 
 ## Workflow
