@@ -253,8 +253,8 @@ class TestRedsysCardCollection(testing.OOTestCaseWithCursor):
         self.assertEqual(params["Ds_Merchant_MerchantCode"], "999008881")
         self.assertEqual(params["Ds_Merchant_Identifier"], card.token)
         self.assertEqual(params["Ds_Merchant_Cof_TxnID"], card.cof_txnid)
-        self.assertEqual(params["Ds_Merchant_Cof_INI"], "N")
-        self.assertEqual(params["Ds_Merchant_Cof_Type"], "C")
+        self.assertNotIn("Ds_Merchant_Cof_INI", params)
+        self.assertEqual(params["Ds_Merchant_Cof_Type"], "R")
         self.assertEqual(params["Ds_Merchant_Excep_SCA"], "MIT")
 
     def test_charge_factura_by_redsys_marks_confirmed_failure_as_pending(self):
