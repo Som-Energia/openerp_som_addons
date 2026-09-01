@@ -174,7 +174,7 @@ class GiscedataFacturacioFactura(osv.osv):
             "Ds_Merchant_SumTotal": amount_cents,
             "Ds_Merchant_Identifier": card.token,
             "Ds_Merchant_Cof_TxnID": card.cof_txnid,
-            "Ds_Merchant_Cof_Type": "R",
+            "Ds_Merchant_Cof_Type": "C",
             "Ds_Merchant_Excep_SCA": "MIT",
             "Ds_Merchant_DirectPayment": "true",
             "Ds_Merchant_PayMethods": "C",
