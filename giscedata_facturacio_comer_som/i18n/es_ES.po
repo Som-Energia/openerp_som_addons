@@ -690,9 +690,17 @@ msgid ""
 "sense condicions de permanència"
 msgstr "Fecha de alta del contrato: <span style=\"font-weight: bold;\">%s</span>, sin condiciones de permanencia"
 
-#: rml:giscedata_facturacio_comer_som/report/components/contract_data/contract_data.mako:53
+#: rml:giscedata_facturacio_comer_som/report/components/contract_data/contract_data.mako:56
 msgid "Forma de pagament: rebut domiciliat"
 msgstr "Forma de pago: recibo domiciliado"
+
+#: rml:giscedata_facturacio_comer_som/report/components/contract_data/contract_data.mako:54
+msgid "Forma de pagament: cobrament recurrent per targeta"
+msgstr "Forma de pago: cobro recurrente con tarjeta"
+
+#: rml:giscedata_facturacio_comer_som/report/components/contract_data/contract_data.mako:56
+msgid "Forma de pagament: transferència bancària"
+msgstr "Forma de pago: transferencia bancaria"
 
 #: rml:giscedata_facturacio_comer_som/report/components/contract_data/contract_data.mako:54
 #, python-format
@@ -769,7 +777,15 @@ msgstr "Tarifa:"
 msgid "Data d'alta del contracte: <span style=\"font-weight: bold;\">%s</span>"
 msgstr "Fecha de alta del contrato: <span style=\"font-weight: bold;\">%s</span>"
 
-#: rml:giscedata_facturacio_comer_som/report/components/contract_data_td/contract_data_td.mako:81
+#: rml:giscedata_facturacio_comer_som/report/components/contract_data_td/contract_data_td.mako:82
+msgid "Forma de pagament: <span style=\"font-weight: bold;\">Cobrament recurrent per targeta</span>"
+msgstr "Forma de pago: <span style=\"font-weight: bold;\">Cobro recurrente con tarjeta</span>"
+
+#: rml:giscedata_facturacio_comer_som/report/components/contract_data_td/contract_data_td.mako:84
+msgid "Forma de pagament: <span style=\"font-weight: bold;\">Transferència bancària</span>"
+msgstr "Forma de pago: <span style=\"font-weight: bold;\">Transferencia bancaria</span>"
+
+#: rml:giscedata_facturacio_comer_som/report/components/contract_data_td/contract_data_td.mako:86
 msgid ""
 "Forma de pagament: <span style=\"font-weight: bold;\">Rebut "
 "domiciliat</span>"

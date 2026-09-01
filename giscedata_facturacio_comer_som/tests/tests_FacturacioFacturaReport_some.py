@@ -670,6 +670,8 @@ class Tests_FacturacioFacturaReport_contract_data_component(Tests_FacturacioFact
                 "small_text": False,
                 "is_auvi": False,
                 "auvi_data": False,
+                "is_recurrent_card_payment": False,
+                "is_transfer_payment": False,
             },
         )
 
@@ -723,6 +725,8 @@ class Tests_FacturacioFacturaReport_contract_data_component(Tests_FacturacioFact
             "small_text": False,
             "is_auvi": False,
             "auvi_data": False,
+            "is_recurrent_card_payment": False,
+            "is_transfer_payment": False,
         }
         self.assertDictEqual(
             result,
