@@ -12,6 +12,7 @@ GithubActions:
 -  .github/**
 docs:
 -  docs/**
+-  .agents/**
 devolucions_base_som:
 -  devolucions_base_som/**
 powersms:
