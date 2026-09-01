@@ -16,12 +16,25 @@ class WizardRefundRectifyBatch(osv.osv_memory):
 
         f1_obj = self.pool.get("giscedata.facturacio.importacio.linia")
         f1_data = f1_obj.read(cursor, uid, active_ids, ["polissa_id"])
-        policy_ids = set(
-            f1["polissa_id"] and f1["polissa_id"][0] or False for f1 in f1_data
-        )
-        if len(policy_ids) != 1 or False in policy_ids:
+        polissa_names = []
+        polissa_ids = []
+        for f1_d in f1_data:
+            if f1_d["polissa_id"]:
+                polissa_names.append(f1_d["polissa_id"][1])
+                polissa_ids.append(f1_d["polissa_id"][0])
+
+        polissa_ids = list(set(polissa_ids))
+        polissa_names = list(set(polissa_names))
+
+        if len(polissa_ids) == 0:
             raise osv.except_osv(
-                _("Error"), _("Els F1 seleccionats han de correspondre a una única pòlissa."),
+                _("Error"), _("Els F1 seleccionats no tenen cap pòlissa associada."),
+            )
+        if len(polissa_ids) > 1:
+            raise osv.except_osv(
+                _("Error"),
+                _("Els F1 seleccionats han de correspondre a una única pòlissa.")
+                + _("\nPolisses trobades: ") + ", ".join(polissa_names),
             )
 
         ordered_f1_ids = f1_obj.search(
@@ -33,7 +46,7 @@ class WizardRefundRectifyBatch(osv.osv_memory):
             uid,
             {
                 "name": "/",
-                "polissa_id": policy_ids.pop(),
+                "polissa_id": polissa_ids[0],
                 "total_lines": len(ordered_f1_ids),
                 "summary": _("Tasca pendent creada. Encara no s'ha iniciat cap refacturació."),
             },
