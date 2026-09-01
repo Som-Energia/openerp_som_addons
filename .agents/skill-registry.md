@@ -37,21 +37,29 @@ Current verification: `.github/workflows/pull_request_labeler.yml` requires at l
 - Format de branca: `<type>_<description>` (ex: `ADD_user_registration`)
 - Tipus: IMP_ (millora), FIX_ (bug), MOD_ (canvi), ADD_ (nova), REF_ (refactor), TEST_, DOCS_, CI_
 - Descripció: 2-3 paraules en anglès, lowercase, max 50 caràcters
-- Separador: guió baix entre tipus i descripció
-- Sempre fer `git fetch origin && git pull origin main` abans de crear branca
+- Separador: guió baix entre tipus i descripció i entre les paraules de la descripció
+- Abans de crear-la: revisar canvis locals, fer `git fetch origin`, `git switch main` i `git pull --ff-only origin main`
+- No descartar, fer stash ni incloure canvis locals sense confirmar-ne l'abast
 
 ### git-commit
+- Font canònica del significat dels emojis: `https://gitmoji.dev/`
+- Guia local de format i selecció habitual: `.github/docs/desenvolupament.md`
+- No inventar ni redefinir significats; consultar gitmoji.dev per emojis no llistats
 - Format: `<emoji> <description>` (ex: `✨ add user auth`)
 - L'emoji ja indica el tipus; no afegir `feat:`, `fix:`, etc.
 - Emoji obligatori seguit d'un espai
 - Descripció en anglès, max 72 caràcters, imperatiu
-- Context: utilitzar per guardar canvis implementats
+- Revisar l'abast, preparar fitxers explícits i revisar `git diff --cached`
+- Executar `pre-commit run` després de preparar els fitxers; no utilitzar `git add -A`
 
 ### git-pr
 - PLANTILLA OBLIGATÒRIA: Omplir totes les seccions (Objectiu, Targeta, Comportament antic, Comportament nou, Comprovacions)
 - Totes les sections: Omple-les totes, no deixis espais buits
 - Idioma: Català per a la descripció
-- Títols: Clar i descriptiu
+- Títols: clars i descriptius; no reutilitzar automàticament el nom de la branca
+- Abans de crear-la: verificar abast, tests i linting obligatoris segons `AGENTS.md`
+- Crear-la contra `main`, autoassignar-la i afegir com a mínim una etiqueta existent
+- Flags requerits: `--base main --assignee "@me" --label "<label>"`
 
 ### erp-test
 - Requisits: Virtualenv activat + Docker (PostgreSQL, MongoDB, Redis)

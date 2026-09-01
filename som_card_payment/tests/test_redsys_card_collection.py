@@ -23,12 +23,6 @@ class TestRedsysCardCollection(testing.OOTestCaseWithCursor):
         self.card_type_id = self.imd_obj.get_object_reference(
             self.cursor, self.uid, "som_card_payment", "payment_type_card_recurrent"
         )[1]
-        self.pending_state_id = self.imd_obj.get_object_reference(
-            self.cursor,
-            self.uid,
-            "account_invoice_pending",
-            "default_invoice_pending_state",
-        )[1]
         self._configure_redsys()
 
     def _configure_redsys(self):
@@ -257,7 +251,7 @@ class TestRedsysCardCollection(testing.OOTestCaseWithCursor):
         self.assertEqual(params["Ds_Merchant_Cof_Type"], "R")
         self.assertEqual(params["Ds_Merchant_Excep_SCA"], "MIT")
 
-    def test_charge_factura_by_redsys_marks_confirmed_failure_as_pending(self):
+    def test_charge_factura_by_redsys_advances_pending_on_confirmed_failure(self):
         invoice = self._prepare_eligible_invoice()
         response = {
             "raw": {"Ds_Response": "101", "error": "Operacio denegada"},
@@ -266,14 +260,20 @@ class TestRedsysCardCollection(testing.OOTestCaseWithCursor):
         redsys_client, client = self._redsys_client(response=response)
 
         with redsys_client:
-            result = self.factura_obj._charge_factura_by_redsys(
-                self.cursor, self.uid, invoice.id
-            )
+            with mock.patch.object(self.factura_obj, "go_on_pending") as go_on_pending:
+                with mock.patch.object(self.factura_obj, "set_pending") as set_pending:
+                    result = self.factura_obj._charge_factura_by_redsys(
+                        self.cursor, self.uid, invoice.id
+                    )
 
         self.assertTrue(result)
         client.mit_payment.assert_called_once()
+        go_on_pending.assert_called_once_with(
+            self.cursor, self.uid, [invoice.id], context={}
+        )
+        set_pending.assert_not_called()
         updated_factura = self.factura_obj.browse(self.cursor, self.uid, invoice.id)
-        self.assertEqual(updated_factura.pending_state.id, self.pending_state_id)
+        self.assertFalse(updated_factura.pending_state)
         self.assertEqual(updated_factura.redsys_collection_state, "declined")
         self.assertEqual(updated_factura.redsys_response_code, "101")
         self.assertIn(u"Operacio denegada", updated_factura.redsys_response_message)

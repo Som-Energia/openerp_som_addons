@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from __future__ import absolute_import
 
 from destral import testing
 from osv.orm import FieldsValidationException
@@ -60,15 +61,3 @@ class TestResPartnerCreditCard(testing.OOTestCaseWithCursor):
 
         self.assertTrue(card_id_1)
         self.assertTrue(card_id_2)
-
-    def test_create_rejects_duplicate_token(self):
-        vals = self._base_vals()
-        vals["token"] = "tok_duplicate"
-
-        self.creditcard_obj.create(self.cursor, self.uid, vals)
-
-        with self.assertRaises(Exception) as context:
-            self.creditcard_obj.create(self.cursor, self.uid, vals)
-        self.assertRegexpMatches(
-            str(context.exception), "res_partner_creditcard_token_unique"
-        )

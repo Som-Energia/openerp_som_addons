@@ -39,14 +39,6 @@ class ResPartnerCreditCard(osv.osv):
         ),
     ]
 
-    _sql_constraints = [
-        (
-            "res_partner_creditcard_token_unique",
-            "unique (token)",
-            "El token de Redsys ja existeix.",
-        )
-    ]
-
     _defaults = {
         "active": lambda *a: True,
     }

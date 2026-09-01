@@ -11,6 +11,7 @@
         "account_payment",
         "giscedata_facturacio_comer",
         "account_account_som",
+        "som_polissa",
         "account_invoice_pending",
         "giscedata_facturacio_impagat",
     ],

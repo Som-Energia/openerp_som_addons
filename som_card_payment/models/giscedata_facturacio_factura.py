@@ -17,10 +17,6 @@ class GiscedataFacturacioFactura(osv.osv):
     _name = "giscedata.facturacio.factura"
     _inherit = "giscedata.facturacio.factura"
 
-    _redsys_failure_pending_state_ref = (
-        "account_invoice_pending",
-        "default_invoice_pending_state",
-    )
     _redsys_recurrent_card_payment_type_code = "COBRAMENT_RECURRENT_TARGETA"
     _redsys_collection_states = [
         ("submitted", "Enviat a Redsys"),
@@ -304,11 +300,6 @@ class GiscedataFacturacioFactura(osv.osv):
         )
         return True
 
-    def _get_redsys_failure_pending_state_id(self, cursor, uid, context=None):
-        return self.pool.get("ir.model.data").get_object_reference(
-            cursor, uid, *self._redsys_failure_pending_state_ref
-        )[1]
-
     def _is_recurrent_card_factura_still_collectable(self, factura):
         if factura.state != "open" or factura.type != "out_invoice":
             return False
@@ -458,11 +449,7 @@ class GiscedataFacturacioFactura(osv.osv):
             },
             context=context,
         )
-        pending_state_id = self._get_redsys_failure_pending_state_id(
-            cursor, uid, context=context
-        )
-        if not invoice.pending_state or invoice.pending_state.id != pending_state_id:
-            self.set_pending(cursor, uid, [factura.id], pending_state_id, context=context)
+        self.go_on_pending(cursor, uid, [factura.id], context=context)
         return True
 
 
