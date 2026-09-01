@@ -695,6 +695,36 @@ class tarifes_tests(testing.OOTestCase):
                 ):
                     self._call_policy_simulation(cursor, uid, policy)
 
+    def test__get_simulation_by_polissa_www__optional_arguments_default_to_none(self):
+        with Transaction().start(self.database) as txn:
+            cursor = txn.cursor
+            uid = txn.user
+            policy = self._simulation_policy()
+            policy_obj = self.pool.get("giscedata.polissa")
+
+            with mock.patch.object(
+                policy_obj, "search", return_value=[17]
+            ) as search, mock.patch.object(
+                policy_obj, "browse", return_value=policy
+            ) as browse, mock.patch.object(
+                self.tariff_model,
+                "_calculate_simulation_www",
+                return_value="simulated",
+                create=True,
+            ) as calculate:
+                result = self.tariff_model.get_simulation_by_polissa_www(
+                    cursor, uid, 17
+                )
+
+            self.assertEqual(result, "simulated")
+            search.assert_called_once_with(
+                cursor, uid, [("id", "=", 17)], context=None
+            )
+            browse.assert_called_once_with(cursor, uid, 17, context=None)
+            arguments = calculate.call_args[0]
+            self.assertIs(arguments[7], None)
+            self.assertIs(arguments[9], None)
+
     def test__get_simulation_by_polissa_www__range_and_equivalence(self):
         with Transaction().start(self.database) as txn:
             cursor = txn.cursor

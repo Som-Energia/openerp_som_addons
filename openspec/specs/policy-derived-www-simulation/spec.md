@@ -8,7 +8,7 @@ Specify policy-derived WWW simulation behavior.
 
 ### Requirement: Policy-derived public operation
 
-The system MUST expose `get_simulation_by_polissa_www`, accepting `polissa_id`, `with_taxes`, and `context`. Complete policies MUST be accepted regardless of lifecycle state. Results and exceptions MUST match `get_simulation_www` supplied with equivalent inputs.
+The system MUST expose `get_simulation_by_polissa_www`, accepting required `polissa_id` and optional `with_taxes` and `context`. When omitted, `with_taxes` and `context` MUST each default to `None`. Complete policies MUST be accepted regardless of lifecycle state. Results and exceptions MUST match `get_simulation_www` supplied with equivalent inputs.
 
 #### Scenario: Equivalent policy simulation
 
@@ -21,6 +21,12 @@ The system MUST expose `get_simulation_by_polissa_www`, accepting `polissa_id`, 
 - GIVEN an existing valid or invalid `get_simulation_www` request
 - WHEN it is introduced
 - THEN `get_simulation_www` MUST retain its signature, defaults, results, and exception semantics
+
+#### Scenario: Optional simulation values are omitted
+
+- GIVEN a complete policy and a request containing only `polissa_id`
+- WHEN `get_simulation_by_polissa_www` is called without `with_taxes` or `context`
+- THEN both values default to `None` and are forwarded unchanged to policy lookup and the shared simulation core
 
 ### Requirement: Policy structural eligibility
 

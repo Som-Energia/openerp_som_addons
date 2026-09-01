@@ -1144,7 +1144,7 @@ class GiscedataPolissaTarifa(osv.osv):
         )
 
     def get_simulation_by_polissa_www(
-        self, cursor, uid, polissa_id, with_taxes, context
+        self, cursor, uid, polissa_id, with_taxes=None, context=None
     ):
         inputs = self._get_simulation_inputs_by_polissa(
             cursor, uid, polissa_id, context
