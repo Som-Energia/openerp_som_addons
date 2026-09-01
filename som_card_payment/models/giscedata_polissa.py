@@ -37,6 +37,8 @@ class GiscedataPolissa(osv.osv):
                 continue
             if not polissa.creditcard:
                 return False
+            if polissa.creditcard.partner_id.id != polissa.pagador.id:
+                return False
         return True
 
     _columns = {

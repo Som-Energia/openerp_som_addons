@@ -89,7 +89,7 @@
                                     <span><span>${formatLang(pricelist['power_prices_untaxed'][p], digits=6)}</span></span>
                                 </td>
                             %else:
-                                %if lead:
+                                %if prices['dict_preus_tp_potencia']:
                                     <td class="center">
                                         <span><span>${formatLang(prices['dict_preus_tp_potencia'][p], digits=6)}</span></span>
                                     </td>
@@ -169,7 +169,7 @@
                                         <span class="">${formatLang(pricelist['energy_prices_untaxed'][p], digits=6)}</span>
                                     </td>
                                 %else:
-                                    %if lead:
+                                    %if prices['dict_preus_tp_energia']:
                                         <td class="center">
                                             <span><span>${formatLang(prices['dict_preus_tp_energia'][p], digits=6)}</span></span>
                                         </td>
@@ -201,7 +201,7 @@
                                     </td>
                                 %endif
                             %else:
-                                %if lead:
+                                %if prices['dict_preus_tp_energia']:
                                     <td class="center">
                                         <span><span>${formatLang(prices['dict_preus_tp_energia'][p], digits=6)}</span></span>
                                     </td>
@@ -303,11 +303,6 @@
             %endif
             </div>
         </div>
-        <%
-            if lead:
-                break
-        %>
-
         <!-- INICI Bloc amb impostos de 3.X i 6.X -->
         %if polissa['tarifa'] != "2.0TD":
             <h5> ${_(u"TARIFES D'ELECTRICITAT AMB IMPOSTOS")} ${pricelist['text_impostos']} ${pricelist['text_vigencia']}</h5>
@@ -330,7 +325,7 @@
                                     <span><span>${formatLang(pricelist['power_prices'][p], digits=6)}</span></span>
                                 </td>
                             %else:
-                                %if lead:
+                                %if prices['dict_preus_tp_potencia']:
                                     <td class="center">
                                         <span><span>${formatLang(prices['dict_preus_tp_potencia'][p], digits=6)}</span></span>
                                     </td>
@@ -366,7 +361,7 @@
                                         <span class="">${formatLang(pricelist['energy_prices'][p], digits=6)}</span>
                                     </td>
                                 %else:
-                                    %if lead:
+                                    %if prices['dict_preus_tp_energia']:
                                         <td class="center">
                                             <span><span>${formatLang(prices['dict_preus_tp_energia'][p], digits=6)}</span></span>
                                         </td>
@@ -425,10 +420,6 @@
                 %endif
                 </div>
             </div>
-            <%
-                if lead:
-                    break
-            %>
         %endif
         <!-- FI Bloc amb impostos de 3.X i 6.X -->
     %endfor

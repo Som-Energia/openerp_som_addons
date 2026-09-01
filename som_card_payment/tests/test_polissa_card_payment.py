@@ -220,6 +220,12 @@ class TestCardPaymentInPolissa(testing.OOTestCaseWithCursor):
 
     def test_modcontractual_requires_creditcard_from_pagador(self):
         modcontractual_id = self._get_modcontractual_id_for_validation()
+        self.payment_type_obj.write(
+            self.cursor,
+            self.uid,
+            [self.payment_type_id],
+            {"code": "COBRAMENT_RECURRENT_TARGETA"},
+        )
 
         other_partner_id = self.imd_obj.get_object_reference(
             self.cursor, self.uid, "base", "res_partner_2"

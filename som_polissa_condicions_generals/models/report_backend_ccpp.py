@@ -425,10 +425,13 @@ class ReportBackendCondicionsParticulars(ReportBackend):
         else:
             tarifes_a_mostrar = get_comming_atr_price(cursor, uid, polissa, ctx)
         tarifes_a_mostrar if isinstance(tarifes_a_mostrar, list) else [tarifes_a_mostrar]
-        if polissa.state == 'esborrany' and not polissa.llista_preu:
-            tarifes_ids = pricelist_obj.search(cursor, uid, [])
-            pricelist_id = pol_obj.escull_llista_preus(
-                cursor, uid, pol.id, tarifes_ids, context=context)
+        if polissa.state == 'esborrany':
+            if not polissa.llista_preu:
+                tarifes_ids = pricelist_obj.search(cursor, uid, [])
+                pricelist_id = pol_obj.escull_llista_preus(
+                    cursor, uid, pol.id, tarifes_ids, context=context)
+            else:
+                pricelist_id = polissa.llista_preu
             ctx.update({'force_pricelist': pricelist_id.id})
             tarifes_a_mostrar = get_comming_atr_price(cursor, uid, polissa, ctx)
 
@@ -468,9 +471,7 @@ class ReportBackendCondicionsParticulars(ReportBackend):
             pricelist = {}
             ctx_pricelist = ctx.copy()
 
-            if lead:
-                text_vigencia = ''
-            elif (not pol.modcontractual_activa.data_final and not (modcon_pendent_indexada or modcon_pendent_indexada)) and dades_tarifa['date_end']:  # noqa: E501
+            if (not pol.modcontractual_activa.data_final and not (modcon_pendent_indexada or modcon_pendent_indexada)) and dades_tarifa['date_end']:  # noqa: E501
                 text_vigencia = _(u"(vigents fins al {})").format(
                     datetime.strptime(dades_tarifa['date_end'], '%Y-%m-%d').strftime('%d/%m/%Y'))
             elif dades_tarifa['date_end'] and dades_tarifa['date_start']:
@@ -496,7 +497,10 @@ class ReportBackendCondicionsParticulars(ReportBackend):
                     fp_id = imd_obj.get_object_reference(
                         cursor, uid, 'som_polissa_condicions_generals', 'fp_iva_reduit')[1]
                     ctx_pricelist.update({'force_fiscal_position': fp_id, 'iva10': True})
-            simple_taxes = pol_obj.get_simplified_taxes(cursor, uid, pol.id, context=ctx_pricelist)
+            tax_context = ctx_pricelist.copy()
+            tax_context['dont_raise_exception'] = True
+            simple_taxes = pol_obj.get_simplified_taxes(
+                cursor, uid, pol.id, context=tax_context)
             iva_str = 'IVA' if 'IVA' in simple_taxes else 'IGIC'
             ie_percent_str = "{:.2f}".format(
                 simple_taxes['IE'] * 100).rstrip('0').rstrip('.').replace('.', ',')
