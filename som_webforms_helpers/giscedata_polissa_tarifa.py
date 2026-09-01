@@ -919,7 +919,62 @@ class GiscedataPolissaTarifa(osv.osv):
     def _round_2(self, value):
         return float(Decimal(str(value)).quantize(Decimal('0.01'), rounding=ROUND_HALF_UP))
 
-    def get_simulation_www(
+    def _get_simulation_inputs_by_polissa(
+        self, cursor, uid, polissa_id, context
+    ):
+        incomplete = som_webforms_exceptions.IncompleteSimulationPolicy
+        if not polissa_id:
+            raise incomplete()
+
+        policy_obj = self.pool.get("giscedata.polissa")
+        policy_ids = policy_obj.search(
+            cursor, uid, [("id", "=", polissa_id)], context=context
+        )
+        if not policy_ids:
+            raise incomplete()
+
+        policy = policy_obj.browse(cursor, uid, policy_ids[0], context=context)
+        tariff = policy.tarifa
+        cups = policy.cups
+        municipality = cups and cups.id_municipi
+        subsystem = municipality and municipality.subsistema_id
+        cnae = policy.cnae
+        mode = policy.mode_facturacio
+        power_periods = policy.potencies_periode
+        if not all(
+            (tariff, cups, municipality, subsystem, cnae, cnae and cnae.name, mode, power_periods)
+        ):
+            raise incomplete()
+
+        powers = {}
+        for power_period in power_periods:
+            period = power_period.periode_id
+            if not period or not period.name or power_period.potencia is None:
+                raise incomplete()
+            try:
+                power_kw = float(power_period.potencia)
+            except (TypeError, ValueError):
+                raise incomplete()
+            powers[period.name.lower()] = power_kw * 1000
+
+        pricelists = {"atr": "periods", "index": "index"}
+        if mode not in pricelists:
+            raise som_webforms_exceptions.InvalidSimulationPricelist()
+
+        fiscal_position = policy.fiscal_position_id
+        fiscal_position_id = fiscal_position.id if fiscal_position else False
+        max_power_kw = max([power / 1000.0 for power in powers.values()])
+        home = not fiscal_position and cnae.name == "9820" and max_power_kw < 10
+        return (
+            tariff.id,
+            municipality.id,
+            powers,
+            pricelists[mode],
+            fiscal_position_id,
+            home,
+        )
+
+    def _calculate_simulation_www(
         self,
         cursor,
         uid,
@@ -1061,6 +1116,51 @@ class GiscedataPolissaTarifa(osv.osv):
                 "taxes_applied": bool(with_taxes),
             },
         }
+
+    def get_simulation_www(
+        self,
+        cursor,
+        uid,
+        tariff_id,
+        municipi_id,
+        powers,
+        pricelist,
+        fiscal_position=None,
+        with_taxes=None,
+        home=None,
+        context=None,
+    ):
+        return self._calculate_simulation_www(
+            cursor,
+            uid,
+            tariff_id,
+            municipi_id,
+            powers,
+            pricelist,
+            fiscal_position,
+            with_taxes,
+            home,
+            context,
+        )
+
+    def get_simulation_by_polissa_www(
+        self, cursor, uid, polissa_id, with_taxes, context
+    ):
+        inputs = self._get_simulation_inputs_by_polissa(
+            cursor, uid, polissa_id, context
+        )
+        return self._calculate_simulation_www(
+            cursor,
+            uid,
+            inputs[0],
+            inputs[1],
+            inputs[2],
+            inputs[3],
+            inputs[4],
+            with_taxes,
+            inputs[5],
+            context,
+        )
 
     def _get_dades_modcontractuals(self, modcon_data):
         """
