@@ -2,7 +2,7 @@
 from __future__ import absolute_import
 from osv import osv, fields
 
-REFUND_RECTIFY_TASK_STATUS = [
+REFUND_RECTIFY_BATCH_STATUS = [
     ("pending", "Pendent"),
     ("running", "Executant-se"),
     ("blocked", "Bloquejada"),
@@ -11,7 +11,7 @@ REFUND_RECTIFY_TASK_STATUS = [
     ("cancelled", "Cancelada"),
 ]
 
-REFUND_RECTIFY_BATCH_STATUS = [
+REFUND_RECTIFY_BATCH_LINE_STATUS = [
     ("pending", "Pendent"),
     ("running", "Executant-se"),
     ("done", "Finalitzada Ok"),
@@ -31,7 +31,7 @@ class RefundRectifyBatch(osv.osv):
         "started_at": fields.datetime("Començada", readonly=True),
         "finished_at": fields.datetime("Finalitzada", readonly=True),
         "state": fields.selection(
-            REFUND_RECTIFY_TASK_STATUS, "Estat", required=True, readonly=True
+            REFUND_RECTIFY_BATCH_STATUS, "Estat", required=True, readonly=True
         ),
         "total_lines": fields.integer("F1 totals", readonly=True),
         "completed_lines": fields.integer("F1 completats", readonly=True),
@@ -75,7 +75,7 @@ class RefundRectifyBatchLine(osv.osv):
         ),
         "sequence": fields.integer("Ordre", required=True, readonly=True),
         "state": fields.selection(
-            REFUND_RECTIFY_BATCH_STATUS, "Estat", required=True, readonly=True
+            REFUND_RECTIFY_BATCH_LINE_STATUS, "Estat", required=True, readonly=True
         ),
         "started_at": fields.datetime("Començada", readonly=True),
         "finished_at": fields.datetime("Finalitzada", readonly=True),
