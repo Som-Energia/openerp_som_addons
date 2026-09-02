@@ -179,8 +179,7 @@ class TestLeadWwwCardActivation(BaseSomLeadWwwTest):
             self._card_vals(token="tok_existing_member", masked_number="**** **** **** 1111"),
         )
 
-        www_lead_o.activate_lead_sync(
-            self.cursor, self.uid, result["lead_id"], context={"sync": True})
+        www_lead_o.activate_lead_sync(self.cursor, self.uid, result["lead_id"])
 
         lead = lead_o.browse(self.cursor, self.uid, result["lead_id"])
         self.assertEqual(lead.polissa_id.creditcard.id, existing_card_id)
