@@ -248,8 +248,12 @@ class TestRedsysCardCollection(testing.OOTestCaseWithCursor):
         self.assertEqual(params["Ds_Merchant_Identifier"], card.token)
         self.assertEqual(params["Ds_Merchant_Cof_TxnID"], card.cof_txnid)
         self.assertNotIn("Ds_Merchant_Cof_INI", params)
-        self.assertEqual(params["Ds_Merchant_Cof_Type"], "R")
+        self.assertEqual(params["Ds_Merchant_Cof_Type"], "C")
         self.assertEqual(params["Ds_Merchant_Excep_SCA"], "MIT")
+        self.assertEqual(
+            params["Ds_Merchant_ProductDescription"],
+            "Factura: %s" % invoice.invoice_id.number,
+        )
 
     def test_charge_factura_by_redsys_advances_pending_on_confirmed_failure(self):
         invoice = self._prepare_eligible_invoice()
