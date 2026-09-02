@@ -100,7 +100,16 @@ class BaseSomLeadWwwTest(testing.OOTestCase):
         self.mock_unsubscribe_customer = self.patch_unsubscribe_customer.start()
         self.mock_subscribe_customer = self.patch_subscribe_customer.start()
 
+        # 2. Patch de signatura
+        self.patch_signature_allows_activation = mock.patch.object(
+            self.get_model("som.lead.www"),
+            "_signature_allows_activation",
+            return_value="completed",
+        )
+        self.patch_signature_allows_activation.start()
+
     def tearDown(self):
+        self.patch_signature_allows_activation.stop()
         self.patch_subscribe_member.stop()
         self.patch_unsubscribe_customer.stop()
         self.patch_subscribe_customer.stop()
