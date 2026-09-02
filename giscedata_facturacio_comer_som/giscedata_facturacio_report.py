@@ -1295,6 +1295,17 @@ class GiscedataFacturacioFacturaReport(osv.osv):
         }
         return data
 
+    def get_masked_card_number(self, card_number):
+        digits = u"".join(
+            char for char in u"%s" % (card_number or u"") if char.isdigit()
+        )
+        if not digits:
+            return u""
+        masked_number = digits[-4:].rjust(16, u"*")
+        return u" ".join([
+            masked_number[index:index + 4] for index in range(0, 16, 4)
+        ])
+
     def get_recurrent_card_payment_data(self, fact, pol):
         is_recurrent_card_payment = bool(
             getattr(fact, "is_recurrent_card_payment", False)
@@ -1303,7 +1314,9 @@ class GiscedataFacturacioFacturaReport(osv.osv):
         if is_recurrent_card_payment:
             card = getattr(pol, "creditcard", False)
             if card:
-                masked_card_number = getattr(card, "masked_number", u"") or u""
+                masked_card_number = self.get_masked_card_number(
+                    getattr(card, "masked_number", u"")
+                )
         return is_recurrent_card_payment, masked_card_number
 
     def get_component_contract_data_data(self, fact, pol):
