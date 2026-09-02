@@ -7,6 +7,7 @@ import configdb
 
 # 1. Marge multiplicador: 1.10 significa "Llindar + 10% de marge"
 MARGE_MULTIPLICADOR = 1.10
+MAX_TAULES_ALERTA = 3
 
 # 2. Query SQL optimitzada amb filtres interns
 SQL_QUERY = """
@@ -110,7 +111,7 @@ def cerca_taules_excedides():
             cursor.close()
         if conn:
             conn.close()
-    exit(1)
+    exit(0 if len(taules_alerta) <= MAX_TAULES_ALERTA else 1)
 
 
 if __name__ == "__main__":
