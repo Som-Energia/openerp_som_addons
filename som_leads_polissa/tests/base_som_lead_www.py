@@ -104,7 +104,7 @@ class BaseSomLeadWwwTest(testing.OOTestCase):
         self.patch_signature_allows_activation = mock.patch.object(
             self.get_model("som.lead.www"),
             "_signature_allows_activation",
-            return_value="completed",
+            return_value=True,
         )
         self.patch_signature_allows_activation.start()
 
