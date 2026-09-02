@@ -37,29 +37,8 @@ class WizardRefundRectifyBatch(osv.osv_memory):
                 + _("\nPolisses trobades: ") + ", ".join(polissa_names),
             )
 
-        ordered_f1_ids = f1_obj.search(
-            cursor, uid, [("id", "in", active_ids)], order="fecha_factura_desde asc, id asc"
-        )
         batch_obj = self.pool.get("refund.rectify.batch")
-        batch_id = batch_obj.create(
-            cursor,
-            uid,
-            {
-                "name": "/",
-                "polissa_id": polissa_ids[0],
-                "total_lines": len(ordered_f1_ids),
-                "summary": _("Tasca pendent creada. Encara no s'ha iniciat cap refacturació."),
-            },
-            context=context,
-        )
-        line_obj = self.pool.get("refund.rectify.batch.line")
-        for sequence, f1_id in enumerate(ordered_f1_ids, 1):
-            line_obj.create(
-                cursor,
-                uid,
-                {"batch_id": batch_id, "f1_id": f1_id, "sequence": sequence},
-                context=context,
-            )
+        batch_id = batch_obj.create_batch(cursor, uid, polissa_ids[0], active_ids, context=context)
 
         return {
             "type": "ir.actions.act_window",

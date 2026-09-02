@@ -1,6 +1,9 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import
+import base64
+import csv
 from datetime import datetime, timedelta
+from StringIO import StringIO
 from osv import osv, fields
 from tools.translate import _
 
@@ -23,6 +26,12 @@ REFUND_RECTIFY_BATCH_LINE_STATUS = [
     ("failed", "Finalitzada Error"),
     ("blocked", "Bloquejada"),
 ]
+
+
+def _csv_value(value):
+    if isinstance(value, unicode):
+        return value.encode("utf-8")
+    return str(value or "")
 
 
 class RefundRectifyBatch(osv.osv):
@@ -62,6 +71,140 @@ class RefundRectifyBatch(osv.osv):
         self.write(cursor, uid, [batch_id], {"name": "F1_R-TASCA-%s" % batch_id}, context=context)
         return batch_id
 
+    def create_batch(self, cursor, uid, polissa_id, f1_ids, context=None):
+        f1_obj = self.pool.get("giscedata.facturacio.importacio.linia")
+        ordered_f1_ids = f1_obj.search(
+            cursor, uid, [("id", "in", f1_ids)], order="fecha_factura_desde asc, id asc"
+        )
+        batch_id = self.create(
+            cursor,
+            uid,
+            {
+                "name": "/",
+                "polissa_id": polissa_id,
+                "total_lines": len(ordered_f1_ids),
+                "summary": _("Tasca pendent creada. Encara no s'ha iniciat cap refacturació."),
+            },
+            context=context,
+        )
+
+        line_obj = self.pool.get("refund.rectify.batch.line")
+        for sequence, f1_id in enumerate(ordered_f1_ids, 1):
+            line_obj.create(
+                cursor,
+                uid,
+                {"batch_id": batch_id, "f1_id": f1_id, "sequence": sequence},
+                context=context,
+            )
+        return batch_id
+
+    def _refresh_execution(self, cursor, uid, batch_id, context=None):
+        """Persist progress, terminal state and the monitoring CSV from its lines."""
+        line_obj = self.pool.get("refund.rectify.batch.line")
+        line_ids = line_obj.search(
+            cursor, uid, [("batch_id", "=", batch_id)], order="sequence asc, id asc",
+            context=context
+        )
+        lines = line_obj.browse(cursor, uid, line_ids, context=context)
+        counts = dict((state, 0) for state, unused in REFUND_RECTIFY_BATCH_LINE_STATUS)
+        csv_file = StringIO()
+        csv_writer = csv.writer(csv_file)
+        csv_writer.writerow([
+            "sequence", "f1_id", "state", "invoices", "result", "error",
+        ])
+        for line in lines:
+            counts[line.state] += 1
+            csv_writer.writerow([
+                line.sequence, line.f1_id.id, line.state,
+                ",".join([str(invoice.id) for invoice in line.generated_invoice_ids]),
+                _csv_value(line.result), _csv_value(line.error),
+            ])
+        batch = self.browse(cursor, uid, batch_id, context=context)
+        state = batch.state
+        if state != "cancelled":
+            if counts["failed"]:
+                state = "failed"
+            elif counts["blocked"]:
+                state = "blocked"
+            elif counts["running"]:
+                state = "running"
+            elif counts["pending"]:
+                state = "pending"
+            else:
+                state = "done"
+        summary = "F1 totals: {total}. Completats: {done}. Erronis: {failed}. Bloquejats: {blocked}.".format(  # noqa: E501
+            total=len(lines), done=counts["done"], failed=counts["failed"],
+            blocked=counts["blocked"]
+        )
+        filename = "%s.csv" % batch.name
+        attachment_vals = {
+            "name": filename,
+            "datas": base64.b64encode(csv_file.getvalue()),
+            "datas_fname": filename,
+            "res_model": self._name,
+            "res_id": batch_id,
+        }
+        attachment_obj = self.pool.get("ir.attachment")
+        attachment_ids = attachment_obj.search(
+            cursor,
+            uid,
+            [("res_model", "=", self._name), ("res_id", "=", batch_id), ("name", "=", filename)],
+            limit=1,
+            context=context,
+        )
+        if attachment_ids:
+            attachment_obj.write(cursor, uid, attachment_ids, attachment_vals, context=context)
+        else:
+            attachment_obj.create(cursor, uid, attachment_vals, context=context)
+        vals = {
+            "state": state,
+            "total_lines": len(lines),
+            "completed_lines": counts["done"],
+            "failed_lines": counts["failed"],
+            "blocked_lines": counts["blocked"],
+            "summary": summary,
+        }
+        if state in ("done", "failed", "blocked", "cancelled"):
+            vals["finished_at"] = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        self.write(cursor, uid, [batch_id], vals, context=context)
+        return vals
+
+    def process_batch_f1_lines(self, cursor, uid, batch_id, context=None):
+        """Process batch lines serially, carrying the predecessor outcome."""
+        line_obj = self.pool.get("refund.rectify.batch.line")
+
+        context = context or {}
+        self.write(cursor, uid, [batch_id], {
+            "state": "running",
+            "started_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+            "finished_at": False,
+        }, context=context)
+        batch = self.browse(cursor, uid, batch_id, context=context)
+
+        previous_f1_id = None
+        predecessor_processed = False
+        results = []
+        for line in batch.line_ids:
+            line_obj._mark_line_running(cursor, uid, line.id, context=context)
+            try:
+                result = line_obj.process_one_f1(
+                    cursor, uid, line.f1_id.id, expected_polissa_id=batch.polissa_id.id,
+                    previous_f1_id=previous_f1_id,
+                    predecessor_processed=predecessor_processed, context=context
+                )
+            except Exception as error:
+                line_obj._persist_line_outcome(
+                    cursor, uid, line.id, error=error, context=context
+                )
+                raise
+            line_obj._persist_line_outcome(
+                cursor, uid, line.id, result=result, context=context
+            )
+            results.append(result)
+            previous_f1_id = line.f1_id.id
+            predecessor_processed = result["status"] == "processed"
+        return results
+
 
 RefundRectifyBatch()
 
@@ -100,6 +243,32 @@ class RefundRectifyBatchLine(osv.osv):
         "state": lambda *a: "pending",
     }
 
+    def _mark_line_running(self, cursor, uid, line_id, context=None):
+        self.write(cursor, uid, [line_id], {
+            "state": "running",
+            "started_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+            "finished_at": False,
+        }, context=context)
+
+    def _persist_line_outcome(self, cursor, uid, line_id, result=None, error=None, context=None):
+        """Save a functional outcome or a technical failure for one batch line."""
+        result = result or {}
+        vals = {
+            "state": "failed" if error else "done",
+            "finished_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+            "result": "\n".join(result.get("messages", [])),
+            "error": str(error) if error else False,
+            "generated_invoice_ids": [(6, 0, result.get("generated_invoice_ids", []))],
+        }
+        self.write(cursor, uid, [line_id], vals, context=context)
+        batch_id = self.read(cursor, uid, line_id, ["batch_id"], context=context)["batch_id"][0]
+        self.pool.get("refund.rectify.batch")._refresh_execution(
+            cursor, uid, batch_id, context=context
+        )
+
+    # revisió manual a partir d'aquí
+    # verificar que no son alucinacions
+
     def _get_factures_client_by_dates(
             self, cursor, uid, polissa_id, data_inici, data_final, context=None):
         fact_obj = self.pool.get("giscedata.facturacio.factura")
@@ -127,31 +296,98 @@ class RefundRectifyBatchLine(osv.osv):
             invoice_ids = list(set(invoice_ids) - set(draft_invoice_ids))
         return invoice_ids, message, draft_invoice_ids
 
-    def _recarregar_lectures_between_dates(
-            self, cursor, uid, polissa_id, data_inici, data_final, context=None):
-        pol_obj = self.pool.get("giscedata.polissa")
+    def _get_f1_meter_ids(self, cursor, uid, f1, context=None):
+        """Return the F1 meters, requiring one ERP meter for every serial."""
+        meter_obj = self.pool.get("giscedata.lectures.comptador")
+        serials = sorted(set([
+            lectura.comptador for lectura in f1.importacio_lectures_ids
+            if lectura.comptador
+        ]))
+        if not serials:
+            raise osv.except_osv(_("Error"), _("L'F1 no té comptadors"))
+        meter_context = (context or {}).copy()
+        meter_context["active_test"] = False
+        meter_ids = meter_obj.search(
+            cursor,
+            uid,
+            [("polissa", "=", f1.polissa_id.id), ("name", "in", serials)],
+            order="id asc",
+            context=meter_context,
+        )
+        meters_by_serial = {}
+        for meter in meter_obj.browse(cursor, uid, meter_ids, context=meter_context):
+            meters_by_serial.setdefault(meter.name, []).append(meter.id)
+        invalid_serials = [
+            serial for serial in serials
+            if len(meters_by_serial.get(serial, [])) != 1
+        ]
+        if invalid_serials:
+            raise osv.except_osv(
+                _("Error"),
+                _("No es pot resoldre unívocament el comptador de l'F1: %s")
+                % ", ".join(invalid_serials),
+            )
+        return sorted([meters_by_serial[serial][0] for serial in serials])
+
+    def _get_reading_anchor_ids(
+            self, cursor, uid, meter_ids, data_inici, data_final,
+            context=None, reload_initial=True):
+        """Return deterministic pool-reading anchors for all F1 meters."""
         lectura_pool_obj = self.pool.get("giscedata.lectures.lectura.pool")
-        copy_wizard_obj = self.pool.get("wizard.copiar.lectura.pool.a.fact")
-        polissa = pol_obj.browse(cursor, uid, polissa_id, context=context)
         previous_date = (
             datetime.strptime(data_inici, "%Y-%m-%d") - timedelta(days=1)
         ).strftime("%Y-%m-%d")
-        meter_ids = [meter.id for meter in polissa.comptadors]
-        previous_reading_ids = lectura_pool_obj.search(
-            cursor,
-            uid,
-            [("comptador", "in", meter_ids), ("name", "in", [previous_date, data_inici])],
-            limit=1,
-            context=context,
+        anchors = []
+        copied_anchors = set()
+        for meter_id in meter_ids:
+            initial_reading_ids = []
+            initial_date = data_inici
+            if reload_initial:
+                initial_reading_ids = lectura_pool_obj.search(
+                    cursor,
+                    uid,
+                    [("comptador", "=", meter_id), ("name", "=", data_inici)],
+                    order="id asc",
+                    limit=1,
+                    context=context,
+                )
+                if not initial_reading_ids:
+                    initial_date = previous_date
+                    initial_reading_ids = lectura_pool_obj.search(
+                        cursor,
+                        uid,
+                        [("comptador", "=", meter_id), ("name", "=", previous_date)],
+                        order="id asc",
+                        limit=1,
+                        context=context,
+                    )
+            final_reading_ids = lectura_pool_obj.search(
+                cursor,
+                uid,
+                [("comptador", "=", meter_id), ("name", "=", data_final)],
+                order="id asc",
+                limit=1,
+                context=context,
+            )
+            anchors_to_copy = [(data_final, final_reading_ids)]
+            if reload_initial:
+                anchors_to_copy.insert(0, (initial_date, initial_reading_ids))
+            for anchor_date, reading_ids in anchors_to_copy:
+                anchor = (meter_id, anchor_date)
+                if reading_ids and anchor not in copied_anchors:
+                    anchors.append(reading_ids[0])
+                    copied_anchors.add(anchor)
+        return anchors
+
+    def _recarregar_lectures_between_dates(
+            self, cursor, uid, meter_ids, data_inici, data_final,
+            context=None, reload_initial=True):
+        copy_wizard_obj = self.pool.get("wizard.copiar.lectura.pool.a.fact")
+        anchor_ids = self._get_reading_anchor_ids(
+            cursor, uid, meter_ids, data_inici, data_final,
+            reload_initial=reload_initial, context=context
         )
-        final_reading_ids = lectura_pool_obj.search(
-            cursor,
-            uid,
-            [("comptador", "in", meter_ids), ("name", "=", data_final)],
-            limit=1,
-            context=context,
-        )
-        for lectura_id in previous_reading_ids + final_reading_ids:
+        for lectura_id in anchor_ids:
             lectura_context = {"active_id": lectura_id, "active_ids": [lectura_id]}
             wizard_id = copy_wizard_obj.create(
                 cursor, uid, {"overwrite": True}, context=lectura_context
@@ -159,7 +395,32 @@ class RefundRectifyBatchLine(osv.osv):
             copy_wizard_obj.action_copia_lectura(
                 cursor, uid, [wizard_id], context=lectura_context
             )
-        return len(previous_reading_ids + final_reading_ids)
+        return len(anchor_ids)
+
+    def _build_reading_anchor_plan(
+            self, cursor, uid, f1, meter_ids, previous_f1_id=None,
+            predecessor_processed=False, context=None):
+        """Select the safe anchors for one F1 in a serial batch."""
+        reload_initial = True
+        if predecessor_processed and previous_f1_id:
+            f1_obj = self.pool.get("giscedata.facturacio.importacio.linia")
+            previous_f1 = f1_obj.browse(
+                cursor, uid, previous_f1_id, context=context
+            )
+            previous_meter_ids = self._get_f1_meter_ids(
+                cursor, uid, previous_f1, context=context
+            )
+            previous_final = datetime.strptime(
+                previous_f1.fecha_factura_hasta, "%Y-%m-%d"
+            ).date()
+            current_initial = datetime.strptime(
+                f1.fecha_factura_desde, "%Y-%m-%d"
+            ).date()
+            reload_initial = not (
+                previous_meter_ids == meter_ids
+                and previous_final + timedelta(days=1) == current_initial
+            )
+        return {"meter_ids": meter_ids, "reload_initial": reload_initial}
 
     def _refund_rectify_if_needed(self, cursor, uid, invoice_ids, context=None):
         wizard_obj = self.pool.get("wizard.ranas")
@@ -287,7 +548,9 @@ class RefundRectifyBatchLine(osv.osv):
         )
         self._write_f1_observation(cursor, uid, f1_id, text, context=context)
 
-    def process_one_f1(self, cursor, uid, f1_id, expected_polissa_id=None, context=None):
+    def process_one_f1(
+            self, cursor, uid, f1_id, expected_polissa_id=None,
+            context=None, previous_f1_id=None, predecessor_processed=False):
         """Process one F1 in draft mode; transaction ownership belongs to the caller."""
         context = context or {}
         f1_obj = self.pool.get("giscedata.facturacio.importacio.linia")
@@ -321,6 +584,7 @@ class RefundRectifyBatchLine(osv.osv):
         if f1.polissa_id.facturacio_suspesa:
             result["messages"].append("Pòlissa amb facturació suspesa. No s'actua.")
             return result
+        meter_ids = self._get_f1_meter_ids(cursor, uid, f1, context=context)
         source_invoice_ids, draft_message, removed_draft_invoice_ids = (
             self._get_factures_client_by_dates(
                 cursor,
@@ -348,8 +612,14 @@ class RefundRectifyBatchLine(osv.osv):
             )
             result["observation_written"] = True
             return result
+        reading_plan = self._build_reading_anchor_plan(
+            cursor, uid, f1, meter_ids, previous_f1_id=previous_f1_id,
+            predecessor_processed=predecessor_processed, context=context
+        )
         reloaded_reading_count = self._recarregar_lectures_between_dates(
-            cursor, uid, polissa_id, f1.fecha_factura_desde, f1.fecha_factura_hasta, context=context
+            cursor, uid, reading_plan["meter_ids"], f1.fecha_factura_desde,
+            f1.fecha_factura_hasta,
+            reload_initial=reading_plan["reload_initial"], context=context
         )
         result["reloaded_reading_count"] = reloaded_reading_count
         if not reloaded_reading_count:
