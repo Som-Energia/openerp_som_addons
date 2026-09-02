@@ -874,6 +874,67 @@ class tarifes_tests(testing.OOTestCase):
                         context={"date": "2024-01-01"},
                     )
 
+    def test__get_simulation_www__power_period_keys_are_case_insensitive(self):
+        with Transaction().start(self.database) as txn:
+            cursor = txn.cursor
+            uid = txn.user
+            tariff_id = self.imd_obj.get_object_reference(
+                cursor, uid, "som_webforms_helpers", "tarifa_20TD_test"
+            )[1]
+            coefficient = dict(
+                ("p{}_ratio".format(period), 1.0 if period == 1 else 0.0)
+                for period in range(1, 7)
+            )
+            average = dict(
+                ("p{}_price".format(period), 0.0) for period in range(1, 7)
+            )
+            prices = {
+                "current": {
+                    "potencia": {
+                        "P1": {"value": 0.01},
+                        "P2": {"value": 0.02},
+                    }
+                }
+            }
+            power_cases = (
+                {"P1": 5000.0, "P2": 3000.0},
+                {"p1": 5000.0, "p2": 3000.0},
+                {"P1": 5000.0, "p2": 3000.0},
+            )
+
+            with mock.patch.object(
+                self.pool.get("som.annual.coefficient"),
+                "get_current_coefficient",
+                return_value=coefficient,
+            ), mock.patch.object(
+                self.pool.get("som.annual.consumption.estimate"),
+                "get_consumption_by_power",
+                return_value=1200.0,
+            ), mock.patch.object(
+                self.pool.get("som.last.month.average.price"),
+                "get_current_price",
+                return_value=average,
+            ), mock.patch.object(
+                self.tariff_model, "get_tariff_prices_by_range", return_value=prices
+            ):
+                power_costs = []
+                for powers in power_cases:
+                    result = self.tariff_model.get_simulation_www(
+                        cursor,
+                        uid,
+                        tariff_id,
+                        5386,
+                        powers,
+                        "periods",
+                        context={"date": "2026-01-01"},
+                    )
+                    power_cost = result["breakdown"]["power_eur"]
+                    self.assertEqual(power_cost, 3.41)
+                    self.assertGreater(power_cost, 0.0)
+                    power_costs.append(power_cost)
+
+            self.assertEqual(power_costs, [power_costs[0]] * len(power_cases))
+
     def test__get_simulation_www__happy_path_periods_20td(self):
         with Transaction().start(self.database) as txn:
             cursor = txn.cursor

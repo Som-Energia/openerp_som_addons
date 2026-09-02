@@ -46,7 +46,7 @@ The operation MUST require a real policy, tariff, CUPS, CUPS municipality, munic
 
 ### Requirement: Selector and power mapping
 
-The operation MUST map `atr` to `periods` and `index` to `index`. Present PVPC, flat-rate, unknown, and custom modes MUST raise `InvalidSimulationPricelist`. Period names MUST be lowercased and kW values converted to W.
+The operation MUST map `atr` to `periods` and `index` to `index`. Present PVPC, flat-rate, unknown, and custom modes MUST raise `InvalidSimulationPricelist`. Period names MUST be lowercased and kW values converted to W. The shared calculation MUST match incoming power keys to tariff periods case-insensitively.
 
 #### Scenario: Supported selectors are mapped
 
@@ -65,6 +65,12 @@ The operation MUST map `atr` to `periods` and `index` to `index`. Present PVPC, 
 - GIVEN complete mixed-case powers expressed in kW
 - WHEN policy inputs are derived
 - THEN keys are lowercase and values equal kW multiplied by 1000
+
+#### Scenario: Power key matching is case-insensitive
+
+- GIVEN equivalent uppercase, lowercase, or mixed-case power keys and uppercase tariff periods
+- WHEN direct or policy-derived simulation is calculated
+- THEN each produces the same correct non-zero power cost
 
 #### Scenario: Power range behavior
 

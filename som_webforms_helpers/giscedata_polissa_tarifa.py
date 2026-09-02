@@ -993,6 +993,7 @@ class GiscedataPolissaTarifa(osv.osv):
         if pricelist not in ["index", "periods"]:
             raise som_webforms_exceptions.InvalidSimulationPricelist()
 
+        powers = dict((period.lower(), power) for period, power in powers.items())
         power_values = [float(power) for power in powers.values() if power is not None]
         max_power = max(power_values) if power_values else 0.0
         max_power_kw = max_power / 1000.0
