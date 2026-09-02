@@ -63,7 +63,7 @@ SELECT
     files_totals,
     files_mortes,
     llindar_autovacuum,
-    ROUND((files_mortes::float / NULLIF(llindar_autovacuum, 0) * 100)::numeric,
+    ROUND((files_mortes::float / NULLIF(files_totals, 0) * 100)::numeric,
         1) AS percentatge_actual
 FROM taules_amb_llindar
 WHERE files_mortes > (llindar_autovacuum * %s)
