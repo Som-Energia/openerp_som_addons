@@ -178,6 +178,7 @@ class GiscedataFacturacioFactura(osv.osv):
             "Ds_Merchant_Excep_SCA": "MIT",
             "Ds_Merchant_DirectPayment": "true",
             "Ds_Merchant_PayMethods": "C",
+            "Ds_Merchant_ProductDescription": "Factura: %s" % invoice_ref,
             "Ds_Merchant_MerchantData": "invoice:%s" % invoice_ref,
         }, order_ref
 
