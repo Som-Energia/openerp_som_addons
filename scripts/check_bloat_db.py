@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from __future__ import print_function  # Garanteix que print() funcioni igual a Python 2 i 3
+from __future__ import absolute_import, print_function
 import psycopg2
 from psycopg2.extras import RealDictCursor
 import configdb
