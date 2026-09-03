@@ -3,7 +3,10 @@ from __future__ import absolute_import
 import base64
 import csv
 from datetime import datetime, timedelta
-from StringIO import StringIO
+try:
+    from StringIO import StringIO
+except ImportError:
+    from io import StringIO
 from osv import osv, fields
 from tools.translate import _
 
@@ -29,7 +32,7 @@ REFUND_RECTIFY_BATCH_LINE_STATUS = [
 
 
 def _csv_value(value):
-    if isinstance(value, unicode):
+    if isinstance(value, type(u"")):
         return value.encode("utf-8")
     return str(value or "")
 
@@ -137,9 +140,12 @@ class RefundRectifyBatch(osv.osv):
             blocked=counts["blocked"]
         )
         filename = "%s.csv" % batch.name
+        csv_data = csv_file.getvalue()
+        if isinstance(csv_data, type(u"")):
+            csv_data = csv_data.encode("utf-8")
         attachment_vals = {
             "name": filename,
-            "datas": base64.b64encode(csv_file.getvalue()),
+            "datas": base64.b64encode(csv_data),
             "datas_fname": filename,
             "res_model": self._name,
             "res_id": batch_id,
@@ -475,9 +481,9 @@ class RefundRectifyBatchLine(osv.osv):
                 context=context,
             )
             invoice_id = source_info["invoice_id"][0]
-            ab_re_infos = filter(
-                lambda info: info["rectifying_id"][0] == invoice_id, generated_infos
-            )
+            ab_re_infos = [
+                info for info in generated_infos if info["rectifying_id"][0] == invoice_id
+            ]
             has_gkwh = any([info["is_gkwh"] for info in ab_re_infos])
             has_autoconsumption = any([info["linies_generacio"] for info in ab_re_infos])
             equal_amounts = len(set([info["amount_untaxed_no_mag"] for info in ab_re_infos])) == 1
