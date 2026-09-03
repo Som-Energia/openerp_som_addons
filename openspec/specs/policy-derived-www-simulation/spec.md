@@ -8,7 +8,7 @@ Specify policy-derived WWW simulation behavior.
 
 ### Requirement: Policy-derived public operation
 
-The system MUST expose `get_simulation_by_polissa_www`, accepting `polissa_id`, `with_taxes`, and `context`. Complete policies MUST be accepted regardless of lifecycle state. Results and exceptions MUST match `get_simulation_www` supplied with equivalent inputs.
+The system MUST expose `get_simulation_by_polissa_www`, accepting required `polissa_id` and optional `with_taxes` and `context`. When omitted, `with_taxes` and `context` MUST each default to `None`. Complete policies MUST be accepted regardless of lifecycle state. Results and exceptions MUST match `get_simulation_www` supplied with equivalent inputs.
 
 #### Scenario: Equivalent policy simulation
 
@@ -21,6 +21,12 @@ The system MUST expose `get_simulation_by_polissa_www`, accepting `polissa_id`, 
 - GIVEN an existing valid or invalid `get_simulation_www` request
 - WHEN it is introduced
 - THEN `get_simulation_www` MUST retain its signature, defaults, results, and exception semantics
+
+#### Scenario: Optional simulation values are omitted
+
+- GIVEN a complete policy and a request containing only `polissa_id`
+- WHEN `get_simulation_by_polissa_www` is called without `with_taxes` or `context`
+- THEN both values default to `None` and are forwarded unchanged to policy lookup and the shared simulation core
 
 ### Requirement: Policy structural eligibility
 
@@ -40,7 +46,7 @@ The operation MUST require a real policy, tariff, CUPS, CUPS municipality, munic
 
 ### Requirement: Selector and power mapping
 
-The operation MUST map `atr` to `periods` and `index` to `index`. Present PVPC, flat-rate, unknown, and custom modes MUST raise `InvalidSimulationPricelist`. Period names MUST be lowercased and kW values converted to W.
+The operation MUST map `atr` to `periods` and `index` to `index`. Present PVPC, flat-rate, unknown, and custom modes MUST raise `InvalidSimulationPricelist`. Period names MUST be lowercased and kW values converted to W. The shared calculation MUST match incoming power keys to tariff periods case-insensitively.
 
 #### Scenario: Supported selectors are mapped
 
@@ -59,6 +65,12 @@ The operation MUST map `atr` to `periods` and `index` to `index`. Present PVPC, 
 - GIVEN complete mixed-case powers expressed in kW
 - WHEN policy inputs are derived
 - THEN keys are lowercase and values equal kW multiplied by 1000
+
+#### Scenario: Power key matching is case-insensitive
+
+- GIVEN equivalent uppercase, lowercase, or mixed-case power keys and uppercase tariff periods
+- WHEN direct or policy-derived simulation is calculated
+- THEN each produces the same correct non-zero power cost
 
 #### Scenario: Power range behavior
 
