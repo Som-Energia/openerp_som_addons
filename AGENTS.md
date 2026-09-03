@@ -54,14 +54,14 @@ Repository GitHub workflows and repository rules are authoritative for PR requir
 
 Currently, `.github/workflows/pull_request_labeler.yml` requires each PR to have at least one label. It does not require an approved linked issue or a `type:*` label. This is the current policy and may change with repository workflows or rules.
 
-**Convencions de branca:**
-- `ADD_<desc>` - Nova funcionalitat
-- `IMP_<desc>` - Millora
-- `FIX_<desc>` - Bug fix
-- `MOD_<desc>` - Canvi de comportament
-- `REF_<desc>` - Refactorització
-- `TEST_<desc>` - Tests
-- `DOCS_<desc>` - Documentació
+### Noms de branca
+
+Utilitza el format `<PREFIX>_<descripcio>`:
+
+- Prefix: `ADD_`, `IMP_`, `FIX_`, `MOD_`, `REF_`, `TEST_`, `DOCS_` o `CI_`.
+- Descripció: 2 o 3 paraules en anglès, minúscules i separades per `_`.
+
+Exemple: `IMP_invoice_payment_type_views`.
 
 **Format de commit:**
 - Només emoji + descripció en anglès: `✨ add user auth`
