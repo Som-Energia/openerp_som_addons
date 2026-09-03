@@ -110,12 +110,12 @@ class RefundRectifyBatch(osv.osv):
         csv_file = StringIO()
         csv_writer = csv.writer(csv_file)
         csv_writer.writerow([
-            "sequence", "f1_id", "state", "invoices", "result", "error",
+            "sequence", "f1_id", "state", "outcome", "invoices", "result", "error",
         ])
         for line in lines:
             counts[line.state] += 1
             csv_writer.writerow([
-                line.sequence, line.f1_id.id, line.state,
+                line.sequence, line.f1_id.id, line.state, line.outcome or "",
                 ",".join([str(invoice.id) for invoice in line.generated_invoice_ids]),
                 _csv_value(line.result), _csv_value(line.error),
             ])
@@ -225,6 +225,11 @@ class RefundRectifyBatchLine(osv.osv):
         "state": fields.selection(
             REFUND_RECTIFY_BATCH_LINE_STATUS, "Estat", required=True, readonly=True
         ),
+        "outcome": fields.selection(
+            [("processed", "Processat"), ("no_action", "Sense acció")],
+            "Resultat funcional",
+            readonly=True,
+        ),
         "started_at": fields.datetime("Començada", readonly=True),
         "finished_at": fields.datetime("Finalitzada", readonly=True),
         "generated_invoice_ids": fields.many2many(
@@ -255,6 +260,7 @@ class RefundRectifyBatchLine(osv.osv):
         result = result or {}
         vals = {
             "state": "failed" if error else "done",
+            "outcome": result.get("status", False) if not error else False,
             "finished_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
             "result": "\n".join(result.get("messages", [])),
             "error": str(error) if error else False,
