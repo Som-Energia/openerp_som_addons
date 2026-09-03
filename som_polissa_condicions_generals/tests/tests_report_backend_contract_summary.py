@@ -2,9 +2,79 @@
 from __future__ import absolute_import, unicode_literals, division
 
 from datetime import datetime
+import os
+import unittest
 
 from destral import testing
 from destral.transaction import Transaction
+from mako.template import Template
+
+
+SUMMARY_OFFER_TEMPLATE = os.path.join(
+    os.path.dirname(os.path.dirname(__file__)),
+    "report",
+    "components",
+    "summary_offer.mako",
+)
+
+
+class TestSummaryOfferTemplate(unittest.TestCase):
+    def test_renders_current_and_future_price_blocks_in_order(self):
+        economic_summary = {
+            "tax_text": "",
+            "generation_prices": [],
+            "cooperative_fee": False,
+            "autoconsum_price": False,
+        }
+        current_summary = economic_summary.copy()
+        current_summary.update({
+            "power_prices": [{"period": "P1", "value": 10.0}],
+            "energy_prices": [{"period": "P1", "value": 0.1}],
+        })
+        future_summary = economic_summary.copy()
+        future_summary.update({
+            "power_prices": [{"period": "P1", "value": 20.0}],
+            "energy_prices": [{"period": "P1", "value": 0.2}],
+        })
+        offer = {
+            "tariff_label": "2.0TD",
+            "duration_quarter": 1,
+            "duration_year": 2026,
+            "powers": [],
+            "is_indexed": False,
+            "price_summaries": [
+                {
+                    "validity_text": "Current validity",
+                    "economic_summary": current_summary,
+                },
+                {
+                    "validity_text": "Future validity",
+                    "economic_summary": future_summary,
+                },
+            ],
+        }
+        features = {
+            "has_generation": False,
+            "has_autoconsum": False,
+            "has_gurb": False,
+        }
+
+        result = Template(filename=SUMMARY_OFFER_TEMPLATE).get_def(
+            "summary_offer"
+        ).render_unicode(
+            offer=offer,
+            features=features,
+            gurb=False,
+            _=lambda text: text,
+            formatLang=lambda value, digits: u"{0:.6f}".format(value),
+        )
+
+        current_label = result.index("Current validity")
+        future_label = result.index("Future validity")
+        self.assertTrue(current_label < result.index("10.000000") < future_label)
+        self.assertTrue(current_label < result.index("0.100000") < future_label)
+        self.assertTrue(future_label < result.index("20.000000"))
+        self.assertTrue(future_label < result.index("0.200000"))
 
 
 class TestReportBackendContractSummary(testing.OOTestCase):
@@ -114,8 +184,57 @@ class TestReportBackendContractSummary(testing.OOTestCase):
         result = self.backend_obj.get_data(self.cursor, self.uid, pol, context={})
         self.assertTrue("pricelists" in result["prices"])
         self.assertTrue("mostra_indexada" in result["prices"])
-        self.assertTrue("economic_summary" in result["offer"])
-        self.assertTrue(result["offer"]["economic_summary"]["power_prices"])
+        self.assertTrue("price_summaries" in result["offer"])
+        self.assertTrue(
+            result["offer"]["price_summaries"][0]["economic_summary"]["power_prices"]
+        )
+
+    def test_get_offer_data_builds_current_and_future_price_summaries_in_order(self):
+        pol = self.pol_obj.browse(self.cursor, self.uid, self.contract_20td_id)
+        prices = {
+            "mostra_indexada": False,
+            "pricelists": [
+                {
+                    "text_vigencia": "Current prices",
+                    "power_prices_untaxed": {"P1": 1.0},
+                    "energy_prices_untaxed": {"P1": 0.1},
+                },
+                {
+                    "text_vigencia": "Future prices",
+                    "power_prices_untaxed": {"P1": 2.0},
+                    "energy_prices_untaxed": {"P1": 0.2},
+                },
+            ],
+        }
+
+        result = self.backend_obj.get_offer_data(
+            self.cursor, self.uid, pol, prices, context={}
+        )
+
+        self.assertFalse(result["is_indexed"])
+        self.assertEqual(
+            [summary["validity_text"] for summary in result["price_summaries"]],
+            ["Current prices", "Future prices"],
+        )
+        self.assertEqual(
+            [
+                summary["economic_summary"]["energy_prices"][0]["value"]
+                for summary in result["price_summaries"]
+            ],
+            [0.1, 0.2],
+        )
+        self.assertTrue(
+            all(
+                "validity_text" not in summary["economic_summary"]
+                for summary in result["price_summaries"]
+            )
+        )
+        self.assertTrue(
+            all(
+                "is_indexed" not in summary["economic_summary"]
+                for summary in result["price_summaries"]
+            )
+        )
 
     def test_get_prices_data_ignores_tarifa_provisional_context(self):
         pol = self.pol_obj.browse(self.cursor, self.uid, self.contract_20td_id)

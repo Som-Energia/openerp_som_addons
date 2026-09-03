@@ -28,12 +28,12 @@
     <body>
         %for informe in objects:
         <%
-            is_indexed = informe['offer']['economic_summary']['is_indexed']
+            is_indexed = informe['offer']['is_indexed']
         %>
             <div class="a4">
                 ${summary_header(informe['company'])}
                 ${summary_identification(informe['holder'], informe['supply'], informe['self_consumption'])}
-                ${summary_offer(informe['offer'], informe['prices'], informe['features'], informe['gurb'])}
+                ${summary_offer(informe['offer'], informe['features'], informe['gurb'])}
                 ${summary_payment(informe['payment'])}
                 ${summary_discounts(informe['discounts'])}
                 ${summary_legal(informe['features'], informe['bono_social_estimate'], is_indexed, informe['holder']['lang'])}
