@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 from datetime import datetime
-import unittest
 
 import mock
+from destral import testing
 
 from som_crawlers.api_downloaders.cide import (
     Cide,
@@ -21,7 +21,7 @@ class CideConfig(object):
     pending_files_only = False
 
 
-class CideApiDownloadersTests(unittest.TestCase):
+class CideApiDownloadersTests(testing.OOTestCase):
     def build_downloader(self, downloader_class):
         downloader = downloader_class(CideConfig(), retailer_cdos="0762")
         downloader._auth_headers = {"Authorization": "Bearer token"}
