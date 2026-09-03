@@ -1,7 +1,4 @@
-<%def name="summary_offer(offer, prices, features, gurb)">
-<%
-    economic_summary = offer['economic_summary']
-%>
+<%def name="summary_offer(offer, features, gurb)">
 <div class="summary-box">
     <h3>${_(u"3. Resum de l'oferta i condicions econòmiques")}</h3>
     <div class="summary-content">
@@ -24,8 +21,12 @@
             %endfor
         </ul>
 
-        %if economic_summary['validity_text']:
-            <p class="section-text muted">${economic_summary['validity_text']}</p>
+        %for price_summary in offer['price_summaries']:
+        <%
+            economic_summary = price_summary['economic_summary']
+        %>
+        %if price_summary['validity_text']:
+            <p class="section-text muted">${price_summary['validity_text']}</p>
         %endif
 
         <p class="section-text inline-label">${_(u"Resum econòmic")}</p>
@@ -46,7 +47,7 @@
                     ])}
                 </td>
             </tr>
-        %if economic_summary['is_indexed']:
+        %if offer['is_indexed']:
             <tr>
                 <td>${_(u"Terme energia (€/kWh)")}</td>
                 <td>PH = 1,015 * [(PHM + Pc + Sc + Dsv + GdO + POsOm) (1 + Perd) + FE + F] + PTD + CA</td>
@@ -99,6 +100,7 @@
             </tr>
         %endif
         </table>
+        %endfor
 
         %if features['has_generation']:
             <p class="section-text">${_(u"Generation: segons condicions del contracte Generation kWh.")}</p>
