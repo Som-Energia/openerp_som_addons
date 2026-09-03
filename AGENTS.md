@@ -59,7 +59,7 @@ Currently, `.github/workflows/pull_request_labeler.yml` requires each PR to have
 Utilitza el format `<PREFIX>_<descripcio>`:
 
 - Prefix: `ADD_`, `IMP_`, `FIX_`, `MOD_`, `REF_`, `TEST_`, `DOCS_` o `CI_`.
-- Descripció: 2 o 3 paraules en anglès, minúscules i separades per `_`.
+- Descripció: paraules descriptives en anglès, minúscules i separades per `_`.
 
 Exemple: `IMP_invoice_payment_type_views`.
 
@@ -76,6 +76,10 @@ Exemple: `IMP_invoice_payment_type_views`.
 | `erp-start` | Arrencar servei ERP | Veure [.agents/skills/erp-start/SKILL.md](.agents/skills/erp-start/SKILL.md) |
 | `erp-migration` | Crear scripts de migració | Veure [.agents/skills/erp-migration/SKILL.md](.agents/skills/erp-migration/SKILL.md) |
 | `erp-demo-testcase` | Crear casos demo XML de test | Veure [.agents/skills/erp-demo-testcase/SKILL.md](.agents/skills/erp-demo-testcase/SKILL.md) |
+
+### Migracions obligatòries
+
+Qualsevol canvi de model o fitxer XML, incloses les vistes, requereix llegir la skill `erp-migration` abans d'editar i incloure el script de migració corresponent.
 
 ### Sentry
 
