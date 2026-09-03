@@ -266,11 +266,9 @@ class RefundRectifyBatchLine(osv.osv):
             cursor, uid, batch_id, context=context
         )
 
-    # revisió manual a partir d'aquí
-    # verificar que no son alucinacions
-
     def _get_factures_client_by_dates(
             self, cursor, uid, polissa_id, data_inici, data_final, context=None):
+        """Equivalent a get_factures_client_by_dates del wizard original"""
         fact_obj = self.pool.get("giscedata.facturacio.factura")
         invoice_ids = fact_obj.search(
             cursor,
@@ -382,6 +380,8 @@ class RefundRectifyBatchLine(osv.osv):
     def _recarregar_lectures_between_dates(
             self, cursor, uid, meter_ids, data_inici, data_final,
             context=None, reload_initial=True):
+        """Millora amb optimitzacions i determinisme a l'hora d'escollir comptador
+        Equivalent a recarregar_lectures_between_dates del wizard original"""
         copy_wizard_obj = self.pool.get("wizard.copiar.lectura.pool.a.fact")
         anchor_ids = self._get_reading_anchor_ids(
             cursor, uid, meter_ids, data_inici, data_final,
@@ -423,12 +423,14 @@ class RefundRectifyBatchLine(osv.osv):
         return {"meter_ids": meter_ids, "reload_initial": reload_initial}
 
     def _refund_rectify_if_needed(self, cursor, uid, invoice_ids, context=None):
+        """Equivalent a refund_rectify_if_needed del wizard original"""
         wizard_obj = self.pool.get("wizard.ranas")
         wizard_context = {"active_ids": invoice_ids, "active_id": invoice_ids[0]}
         wizard_id = wizard_obj.create(cursor, uid, {}, context=wizard_context)
         return wizard_obj.action_rectificar(cursor, uid, wizard_id, context=wizard_context)
 
     def _get_invoice_total_mag(self, cursor, uid, invoice_id, context=None):
+        """Equivalent a get_invoice_total_mag del wizard original"""
         fact_obj = self.pool.get("giscedata.facturacio.factura")
         product_obj = self.pool.get("product.product")
         mag_product_ids = product_obj.search(
@@ -443,6 +445,7 @@ class RefundRectifyBatchLine(osv.osv):
 
     def _delete_draft_invoices_if_needed(
             self, cursor, uid, generated_invoice_ids, source_invoice_ids, context=None):
+        """Equivalent a delete_draft_invoices_if_needed del wizard original"""
         messages = []
         fact_obj = self.pool.get("giscedata.facturacio.factura")
         generated_infos = fact_obj.read(
@@ -517,6 +520,7 @@ class RefundRectifyBatchLine(osv.osv):
         return messages, generated_invoice_ids
 
     def _write_f1_observation(self, cursor, uid, f1_id, text, context=None):
+        """Equivalent a add_f1_observation del wizard original"""
         f1_obj = self.pool.get("giscedata.facturacio.importacio.linia")
         observations = f1_obj.read(
             cursor, uid, f1_id, ["user_observations"], context=context
@@ -530,6 +534,7 @@ class RefundRectifyBatchLine(osv.osv):
         )
 
     def _write_refacturation_observation(self, cursor, uid, f1_id, messages, context=None):
+        """Equivalent a save_info_into_f1_after_refacturacio del wizard original"""
         result_text = "\n".join(messages)
         if "factures AB i RE tenen mateix import, s'esborren" in result_text:
             difference = " Diferència 0"
