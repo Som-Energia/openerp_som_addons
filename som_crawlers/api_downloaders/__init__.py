@@ -5,12 +5,12 @@ import socket
 from datetime import datetime, timedelta
 
 
-def get_instance_from_api_module(config_obj, name, process=None):
+def get_instance_from_api_module(config_obj, name, process=None, **kwargs):
     if process:
         module = importlib.import_module("som_crawlers.api_downloaders.{}_{}".format(name, process))
     else:
         module = importlib.import_module("som_crawlers.api_downloaders.{}".format(name))
-    return module.instance(config_obj)
+    return module.instance(config_obj, **kwargs)
 
 
 class BaseApiDownloader(object):

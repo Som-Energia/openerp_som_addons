@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from destral import testing
 from destral.transaction import Transaction
+import mock
 import os
 
 
@@ -74,3 +75,34 @@ class SomCrawlersTaskStepTests(testing.OOTestCase):
                 self.assertTrue(
                     "IOError: [Errno 2] No such file or directory: " in context.exception
                 )
+
+    def test_download_api_files_passes_retailer_cdos_from_res_config(self):
+        with Transaction().start(self.database) as txn:
+            cursor = txn.cursor
+            uid = txn.user
+            self.pool.get("res.config").set(
+                cursor, uid, "cide_retailer_cdos", "0762"
+            )
+            step_id = self.model_data.get_object_reference(
+                cursor, uid, "som_crawlers", "pas_descarregar_cide_f1"
+            )[1]
+            result_id = self.model_data.get_object_reference(
+                cursor, uid, "som_crawlers", "demo_result_1"
+            )[1]
+
+            with mock.patch(
+                "som_crawlers.models.som_crawlers_task_step.get_instance_from_api_module"
+            ) as get_instance, mock.patch.object(
+                self.task_step, "attach_files_zip", return_value=""
+            ):
+                self.task_step.download_api_files(
+                    cursor, uid, step_id, result_id
+                )
+
+            get_instance.assert_called_once_with(
+                mock.ANY,
+                "cide",
+                "f1",
+                retailer_cdos="0762",
+            )
+            get_instance.return_value.start.assert_called_once_with()

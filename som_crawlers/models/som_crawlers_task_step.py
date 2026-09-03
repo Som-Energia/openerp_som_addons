@@ -782,7 +782,15 @@ class SomCrawlersTaskStep(osv.osv):
             cursor, uid, task_step_obj.task_id.id, context
         )
         process = task_step_params.get("process")
-        api_downloader_instance = get_instance_from_api_module(config_obj, config_obj.name, process)
+        retailer_cdos = self.pool.get("res.config").get(
+            cursor, uid, "cide_retailer_cdos", None
+        )
+        api_downloader_instance = get_instance_from_api_module(
+            config_obj,
+            config_obj.name,
+            process,
+            retailer_cdos=retailer_cdos,
+        )
         api_downloader_instance.start()
 
         output_path = self.get_output_path(cursor, uid)
