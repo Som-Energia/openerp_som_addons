@@ -34,6 +34,8 @@
                 ${cups['name']}</br>
                 <b>${_(u"CNAE: ")}</b>
                 ${cups['cnae']}</br>
+                <b>${_(u"Referència cadastral: ")}</b>
+                ${cups['ref_catastral']}</br>
                 <b>${_(u"Contracte d'accés: ")}</b>
                 ${cups['ref_dist']}</br>
                 <b>${_(u"Activitat principal: ")}</b>

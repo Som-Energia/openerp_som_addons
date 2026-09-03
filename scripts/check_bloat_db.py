@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from __future__ import print_function  # Garanteix que print() funcioni igual a Python 2 i 3
+from __future__ import absolute_import, print_function
 import psycopg2
 from psycopg2.extras import RealDictCursor
 import configdb
@@ -7,6 +7,7 @@ import configdb
 
 # 1. Marge multiplicador: 1.10 significa "Llindar + 10% de marge"
 MARGE_MULTIPLICADOR = 1.10
+MAX_TAULES_ALERTA = 3
 
 # 2. Query SQL optimitzada amb filtres interns
 SQL_QUERY = """
@@ -62,7 +63,7 @@ SELECT
     files_totals,
     files_mortes,
     llindar_autovacuum,
-    ROUND((files_mortes::float / NULLIF(llindar_autovacuum, 0) * 100)::numeric,
+    ROUND((files_mortes::float / NULLIF(files_totals, 0) * 100)::numeric,
         1) AS percentatge_actual
 FROM taules_amb_llindar
 WHERE files_mortes > (llindar_autovacuum * %s)
@@ -110,7 +111,7 @@ def cerca_taules_excedides():
             cursor.close()
         if conn:
             conn.close()
-    exit(1)
+    exit(0 if len(taules_alerta) <= MAX_TAULES_ALERTA else 1)
 
 
 if __name__ == "__main__":

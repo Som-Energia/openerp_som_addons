@@ -130,7 +130,7 @@ class GiscedataServeiGeneracioPolissa(osv.osv):
         # La llista de preus és Empresa
         llista_preus = polissa.llista_preu
         te_llista_preus_empresa = (llista_preus
-                                   and (llista_preus.indexed_formula == 'Indexada ESMASA'
+                                   and (llista_preus.indexed_formula.name == 'Indexada ESMASA'
                                         or 'Empresa' in llista_preus.name))
 
         # Condicions especifiques

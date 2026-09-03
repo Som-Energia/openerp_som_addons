@@ -4,6 +4,12 @@
 
 See `_shared/skill-resolver.md` for the full resolution protocol.
 
+## Current PR Policy
+
+For PR work, repository GitHub workflows and repository rules take precedence over generic or global skill requirements. Delegators must verify those repository sources before applying external PR-policy rules.
+
+Current verification: `.github/workflows/pull_request_labeler.yml` requires at least one PR label. It does not require an approved linked issue or a `type:*` label. This is current repository policy and may change.
+
 ## User Skills
 
 > **Configuració inicial** (executar una vegada):
@@ -23,6 +29,7 @@ See `_shared/skill-resolver.md` for the full resolution protocol.
 | Quan necessites crear un script de migració, modificar el model, o actualitzar un mòdul a producció | erp-migration | .agents/skills/erp-migration/SKILL.md |
 | Quan necessites afegir casos de test/demo XML en un mòdul OpenERP | erp-demo-testcase | .agents/skills/erp-demo-testcase/SKILL.md |
 | Quan necessites fer triage d'incidències de Sentry, "analitzar sentry", "triar incidents" | sentry-triage | .agents/skills/sentry-triage/SKILL.md |
+| Quan necessites actualitzar un report legal o contractual `.mako` a partir d'un `docx` o `md` | update-contract-report | .agents/skills/update-contract-report/SKILL.md |
 
 ## Compact Rules
 
@@ -30,21 +37,29 @@ See `_shared/skill-resolver.md` for the full resolution protocol.
 - Format de branca: `<type>_<description>` (ex: `ADD_user_registration`)
 - Tipus: IMP_ (millora), FIX_ (bug), MOD_ (canvi), ADD_ (nova), REF_ (refactor), TEST_, DOCS_, CI_
 - Descripció: 2-3 paraules en anglès, lowercase, max 50 caràcters
-- Separador: guió baix entre tipus i descripció
-- Sempre fer `git fetch origin && git pull origin main` abans de crear branca
+- Separador: guió baix entre tipus i descripció i entre les paraules de la descripció
+- Abans de crear-la: revisar canvis locals, fer `git fetch origin`, `git switch main` i `git pull --ff-only origin main`
+- No descartar, fer stash ni incloure canvis locals sense confirmar-ne l'abast
 
 ### git-commit
+- Font canònica del significat dels emojis: `https://gitmoji.dev/`
+- Guia local de format i selecció habitual: `.github/docs/desenvolupament.md`
+- No inventar ni redefinir significats; consultar gitmoji.dev per emojis no llistats
 - Format: `<emoji> <description>` (ex: `✨ add user auth`)
 - L'emoji ja indica el tipus; no afegir `feat:`, `fix:`, etc.
 - Emoji obligatori seguit d'un espai
 - Descripció en anglès, max 72 caràcters, imperatiu
-- Context: utilitzar per guardar canvis implementats
+- Revisar l'abast, preparar fitxers explícits i revisar `git diff --cached`
+- Executar `pre-commit run` després de preparar els fitxers; no utilitzar `git add -A`
 
 ### git-pr
 - PLANTILLA OBLIGATÒRIA: Omplir totes les seccions (Objectiu, Targeta, Comportament antic, Comportament nou, Comprovacions)
 - Totes les sections: Omple-les totes, no deixis espais buits
 - Idioma: Català per a la descripció
-- Títols: Clar i descriptiu
+- Títols: clars i descriptius; no reutilitzar automàticament el nom de la branca
+- Abans de crear-la: verificar abast, tests i linting obligatoris segons `AGENTS.md`
+- Crear-la contra `main`, autoassignar-la i afegir com a mínim una etiqueta existent
+- Flags requerits: `--base main --assignee "@me" --label "<label>"`
 
 ### erp-test
 - Requisits: Virtualenv activat + Docker (PostgreSQL, MongoDB, Redis)
@@ -77,6 +92,13 @@ See `_shared/skill-resolver.md` for the full resolution protocol.
 - Labels obligatoris: bug + autotask
 - Prohibit: Noms, emails, telèfons, CUPS, dades personals
 - branca PR: developer (gisce/erp) o main (openerp_som_addons), MAI rolling_erp01
+
+### update-contract-report
+- La font de veritat (`docx` o `md`) l'ha de confirmar l'usuari; no barrejar fonts sense confirmar
+- Ignorar colors, highlights i marques editorials del document font; només conservar contingut i estructura
+- Tocar només plantilles `.mako`/HTML del report, no backend Python o lògica de render, tret que l'usuari ho demani explícitament
+- Preservar fórmules, subíndexs/superíndexs, notes al peu i enllaços en HTML net
+- Si existeixen versions CA i ES, revisar consistència de contingut entre idiomes
 
 ## Project Conventions
 

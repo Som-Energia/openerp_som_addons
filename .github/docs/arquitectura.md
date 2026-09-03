@@ -315,6 +315,8 @@ WizardMultiStep()
 ## Integració amb altres addons
 - Utilitzar `depends` al manifest.
 - No introduir dependències circulars.
+- Si el mòdul `A` ja depèn de `B`, no afegir `A` a `depends` de `B` per resoldre botons, reports o vistes. En aquests casos s'ha de moure el wiring al mòdul correcte o extreure'l a un tercer mòdul pont.
+- Abans d'afegir una nova dependència a `__terp__.py`, revisar sempre el `depends` del mòdul destí per evitar bucles que impedeixen arrencar el servidor i passar tests.
 - Mantenir coherència amb la resta d’addons de Som Energia.
 
 ## Notes

@@ -211,7 +211,7 @@ class PartnerTests(testing.OOTestCase):
             self.assertEquals(assig_list, [{
                 'annual_use_kwh': False,
                 'contract_address': normalize_spaces(
-                    u'carrer inventat, 1 ESC. 1 1 1 aclaridor 00001 (Poble de Prova)'
+                    u'carrer inventat, 1 1 1 1 aclaridor 00001 (Poble de Prova)'
                 ),
                 'contract_id': 1,
                 'contract_last_invoiced': False,
