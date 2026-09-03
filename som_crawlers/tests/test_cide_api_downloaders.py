@@ -129,14 +129,14 @@ class CideApiDownloadersTests(testing.OOTestCase):
             timeout=REQUEST_TIMEOUT,
         )
 
-    @mock.patch("__builtin__.open", new_callable=mock.mock_open)
     @mock.patch("som_crawlers.api_downloaders.cide.requests.get")
-    def test_signed_url_does_not_send_retailer_cdos(self, request_get, _open):
+    def test_signed_url_does_not_send_retailer_cdos(self, request_get):
         request_get.return_value = self.response()
+        request_get.return_value.status_code = 500
         downloader = self.build_downloader(Cide)
-        downloader.target_filename = "/tmp/cide.zip"
 
-        downloader.download_file("https://files.example/file.zip")
+        with self.assertRaises(CrawlingProcessException):
+            downloader.download_file("https://files.example/file.zip")
 
         request_get.assert_called_once_with(
             "https://files.example/file.zip", timeout=DOWNLOAD_REQUEST_TIMEOUT
