@@ -3,6 +3,7 @@ from __future__ import absolute_import, unicode_literals, division
 
 from datetime import datetime
 import os
+import re
 import unittest
 
 from destral import testing
@@ -16,13 +17,17 @@ SUMMARY_OFFER_TEMPLATE = os.path.join(
     "components",
     "summary_offer.mako",
 )
+CONTRACT_SUMMARY_CSS = os.path.join(
+    os.path.dirname(os.path.dirname(__file__)),
+    "report",
+    "contract_summary_puppeteer.css",
+)
 
 
 class TestSummaryOfferTemplate(unittest.TestCase):
     def test_renders_current_and_future_price_blocks_in_order(self):
         economic_summary = {
             "tax_text": "",
-            "generation_prices": [],
             "cooperative_fee": False,
             "autoconsum_price": False,
         }
@@ -30,11 +35,13 @@ class TestSummaryOfferTemplate(unittest.TestCase):
         current_summary.update({
             "power_prices": [{"period": "P1", "value": 10.0}],
             "energy_prices": [{"period": "P1", "value": 0.1}],
+            "generation_prices": [{"period": "P1", "value": 0.03}],
         })
         future_summary = economic_summary.copy()
         future_summary.update({
             "power_prices": [{"period": "P1", "value": 20.0}],
             "energy_prices": [{"period": "P1", "value": 0.2}],
+            "generation_prices": [{"period": "P1", "value": 0.04}],
         })
         offer = {
             "tariff_label": "2.0TD",
@@ -54,7 +61,7 @@ class TestSummaryOfferTemplate(unittest.TestCase):
             ],
         }
         features = {
-            "has_generation": False,
+            "has_generation": True,
             "has_autoconsum": False,
             "has_gurb": False,
         }
@@ -69,17 +76,58 @@ class TestSummaryOfferTemplate(unittest.TestCase):
             formatLang=lambda value, digits: u"{0:.6f}".format(value),
         )
 
-        self.assertEqual(result.count(u"Resum econòmic"), 1)
-        positions = [
+        self.assertEqual(
+            result.count('<div class="summary-box summary-box--offer">'), 1
+        )
+        self.assertEqual(result.count('<div class="price-summary">'), 2)
+        self.assertEqual(result.count('<table class="summary-table">'), 2)
+
+        price_blocks = result.split('<div class="price-summary">')[1:]
+        self.assertEqual(price_blocks[0].count(u"Resum econòmic"), 1)
+        self.assertNotIn(u"Resum econòmic", price_blocks[1])
+        self.assertLess(
+            result.index(u"Potències contractades"),
             result.index(u"Resum econòmic"),
-            result.index("Current validity"),
-            result.index("10.000000"),
-            result.index("0.100000"),
-            result.index("Future validity"),
-            result.index("20.000000"),
-            result.index("0.200000"),
+        )
+        self.assertLess(
+            price_blocks[0].index(u"Resum econòmic"),
+            price_blocks[0].index("Current validity"),
+        )
+        expected_blocks = [
+            (
+                price_blocks[0], "Current validity", "10.000000",
+                "0.100000", "0.030000",
+            ),
+            (
+                price_blocks[1], "Future validity", "20.000000",
+                "0.200000", "0.040000",
+            ),
         ]
-        self.assertEqual(positions, sorted(positions))
+        for block, validity, power, energy, generation in expected_blocks:
+            self.assertEqual(block.count('<table class="summary-table">'), 1)
+            self.assertEqual(block.count("Generation (€/kWh)"), 1)
+            positions = [
+                block.index(validity),
+                block.index(power),
+                block.index(energy),
+                block.index("Generation (€/kWh)"),
+                block.index(generation),
+            ]
+            self.assertEqual(positions, sorted(positions))
+
+    def test_offer_box_can_paginate_while_each_price_summary_stays_together(self):
+        with open(CONTRACT_SUMMARY_CSS, "r") as css_file:
+            css = css_file.read()
+
+        self.assertTrue(re.search(
+            r"\.summary-box\s*\{[^}]*break-inside:\s*avoid;", css
+        ))
+        self.assertTrue(re.search(
+            r"\.summary-box--offer\s*\{[^}]*break-inside:\s*auto;", css
+        ))
+        self.assertTrue(re.search(
+            r"\.price-summary\s*\{[^}]*break-inside:\s*avoid;", css
+        ))
 
 
 class TestReportBackendContractSummary(testing.OOTestCase):
