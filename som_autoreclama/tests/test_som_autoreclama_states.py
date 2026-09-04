@@ -4,7 +4,12 @@ from __future__ import absolute_import
 from datetime import timedelta, datetime
 from addons import get_module_resource
 import mock
-from ..models import giscedata_atc, giscedata_polissa, som_autoreclama_state_history
+from ..models import (
+    giscedata_atc,
+    giscedata_polissa,
+    som_autoreclama_state_history,
+    som_autoreclama_state_updater,
+)
 from .test_som_autoreclama_base import (
     SomAutoreclamaBaseTests,
     today_str,
@@ -14,6 +19,40 @@ from destral.patch import PatchNewCursors
 
 
 class SomAutoreclamaStatesTest(SomAutoreclamaBaseTests):
+    @mock.patch.object(som_autoreclama_state_updater.pooler, "get_db")
+    def test_state_updater_releases_coordinator_transaction_before_each_batch(
+        self, get_db_mock
+    ):
+        original_cursor = mock.Mock()
+        original_cursor.dbname = self.cursor.dbname
+        batch_cursor = get_db_mock.return_value.cursor.return_value
+        updater_obj = self.get_model("som.autoreclama.state.updater")
+        update_result = ([], [], [], "actions", "summary")
+        rollback_counts = []
+
+        def update_items(*args, **kwargs):
+            rollback_counts.append(batch_cursor.rollback.call_count)
+            return update_result
+
+        with mock.patch.object(
+            updater_obj, "_ensure_updater_config_context", return_value={}
+        ), mock.patch.object(
+            updater_obj, "get_atc_candidates_to_update", return_value=[]
+        ), mock.patch.object(
+            updater_obj, "get_polissa_candidates_to_update", return_value=[]
+        ), mock.patch.object(
+            updater_obj, "get_review_states", return_value=[]
+        ), mock.patch.object(
+            updater_obj, "update_items_if_possible", side_effect=update_items
+        ) as update_items_mock:
+            updater_obj.state_updater(original_cursor, self.uid)
+
+        self.assertEqual(batch_cursor.rollback.call_count, 4)
+        self.assertEqual(rollback_counts, [1, 2, 3])
+        self.assertEqual(update_items_mock.call_count, 3)
+        batch_cursor.close.assert_called_once_with()
+        self.assertEqual(original_cursor.method_calls, [])
+
     def test_first_state_correct_atc_dummy(self):
         _, correct_state_id = self.get_object_reference(
             "som_autoreclama", "correct_state_workflow_atc"
