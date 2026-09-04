@@ -1,15 +1,17 @@
 # -*- coding: utf-8 -*-
+from __future__ import absolute_import
+
 from datetime import datetime, date
 from osv import osv, fields
 from tools.translate import _
 import json
 import os
 import base64
+import io
 from time import sleep
 from . import som_sftp, som_ftp, exceptions
 import zipfile
 import shutil
-import StringIO
 from gridfs.errors import CorruptGridFile, NoFile
 from som_crawlers.api_downloaders import get_instance_from_api_module
 
@@ -347,7 +349,7 @@ class SomCrawlersTaskStep(osv.osv):
             os.makedirs(working_path)
 
             data = base64.b64decode(input_file)
-            file_handler = StringIO.StringIO(data)
+            file_handler = io.BytesIO(data)
 
             input_file = zipfile.ZipFile(file_handler)
 
@@ -425,7 +427,7 @@ class SomCrawlersTaskStep(osv.osv):
         if context:
             args.update({"-context": base64.b64encode(json.dumps(context))})
 
-        return " ".join(["{} {}".format(k, v) for k, v in args.iteritems()])
+        return " ".join(["{} {}".format(k, v) for k, v in args.items()])
 
     def upload_files(self, cursor, uid, id, result_id, context=None):
         classresult = self.pool.get("som.crawlers.result")
@@ -782,7 +784,15 @@ class SomCrawlersTaskStep(osv.osv):
             cursor, uid, task_step_obj.task_id.id, context
         )
         process = task_step_params.get("process")
-        api_downloader_instance = get_instance_from_api_module(config_obj, config_obj.name, process)
+        retailer_cdos = self.pool.get("res.config").get(
+            cursor, uid, "cide_retailer_cdos", None
+        )
+        api_downloader_instance = get_instance_from_api_module(
+            config_obj,
+            config_obj.name,
+            process,
+            retailer_cdos=retailer_cdos,
+        )
         api_downloader_instance.start()
 
         output_path = self.get_output_path(cursor, uid)
