@@ -21,15 +21,17 @@
             %endfor
         </ul>
 
+        <p class="section-text inline-label">${_(u"Resum econòmic")}</p>
+        <div class="price-summaries">
         %for price_summary in offer['price_summaries']:
         <%
             economic_summary = price_summary['economic_summary']
         %>
+        <div class="price-summary">
         %if price_summary['validity_text']:
-            <p class="section-text muted">${price_summary['validity_text']}</p>
+            <p class="section-text price-summary__validity muted">${price_summary['validity_text']}</p>
         %endif
 
-        <p class="section-text inline-label">${_(u"Resum econòmic")}</p>
         <table class="summary-table">
             <tr>
                 <th>${_(u"Concepte")}</th>
@@ -100,7 +102,9 @@
             </tr>
         %endif
         </table>
+        </div>
         %endfor
+        </div>
 
         %if features['has_generation']:
             <p class="section-text">${_(u"Generation: segons condicions del contracte Generation kWh.")}</p>
