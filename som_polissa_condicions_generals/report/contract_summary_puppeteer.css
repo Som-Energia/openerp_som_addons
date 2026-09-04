@@ -38,6 +38,10 @@ body {
     break-inside: avoid;
 }
 
+.summary-box--offer {
+    break-inside: auto;
+}
+
 .summary-box--company {
     border-bottom-color: var(--summary-company-accent);
 }

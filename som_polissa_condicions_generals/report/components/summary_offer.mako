@@ -1,5 +1,5 @@
 <%def name="summary_offer(offer, features, gurb)">
-<div class="summary-box">
+<div class="summary-box summary-box--offer">
     <h3>${_(u"3. Resum de l'oferta i condicions econòmiques")}</h3>
     <div class="summary-content">
         <p class="section-text"><span class="inline-label">${_(u"Tarifa contractada:")}</span> ${offer['tariff_label']}</p>
@@ -21,13 +21,15 @@
             %endfor
         </ul>
 
-        <p class="section-text inline-label">${_(u"Resum econòmic")}</p>
         <div class="price-summaries">
         %for price_summary in offer['price_summaries']:
         <%
             economic_summary = price_summary['economic_summary']
         %>
         <div class="price-summary">
+        %if loop.first:
+            <p class="section-text inline-label">${_(u"Resum econòmic")}</p>
+        %endif
         %if price_summary['validity_text']:
             <p class="section-text price-summary__validity muted">${price_summary['validity_text']}</p>
         %endif
