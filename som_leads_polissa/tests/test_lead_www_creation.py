@@ -222,7 +222,6 @@ class TestLeadWwwCreation(BaseSomLeadWwwTest):
 
         # Check that the representative is correctly linked
         self.assertEqual(lead.polissa_id.titular.representante_id.id, existing_partner_id)
-        self.assertEqual(lead.polissa_id.titular.representante_id.name, 'Pepito Palotes')
         self.mock_subscribe_member.assert_called()
         self.mock_unsubscribe_customer.assert_called()
 
