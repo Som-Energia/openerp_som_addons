@@ -726,40 +726,57 @@ class TestRefundRectifyBatchLineSequentialReadingPlan(testing.OOTestCaseWithCurs
         self.assertTrue(no_action_plan["reload_initial"])
 
     def test_processes_batch_lines_in_order_with_predecessor_outcome(self):
+        outer_cursor = mock.Mock()
+        outer_cursor.dbname = "test_batch"
+        start_cursor = mock.Mock()
+        first_cursor = mock.Mock()
+        second_cursor = mock.Mock()
+        database = mock.Mock()
+        database.cursor.side_effect = [start_cursor, first_cursor, second_cursor]
         batch = mock.Mock()
+        batch.state = "pending"
         batch.polissa_id.id = 7
         first_line = mock.Mock()
+        first_line.id = 1
+        first_line.sequence = 1
         first_line.f1_id.id = 11
         second_line = mock.Mock()
+        second_line.id = 2
+        second_line.sequence = 2
         second_line.f1_id.id = 12
-        batch.line_ids = [first_line, second_line]
         line_obj = mock.Mock()
+        line_obj.search.return_value = [1, 2]
+        line_obj.browse.return_value = [first_line, second_line]
+        line_obj._mark_line_running.return_value = True
         line_obj.process_one_f1.side_effect = [
             {"status": "processed"}, {"status": "no_action"}
         ]
-        with mock.patch.object(self.pool, "get", return_value=line_obj):
-            with mock.patch.object(self.batch_obj, "browse", return_value=batch):
-                with mock.patch.object(self.batch_obj, "write"):
-                    with mock.patch.object(line_obj, "_mark_line_running"):
-                        with mock.patch.object(line_obj, "_persist_line_outcome"):
-                            results = self.batch_obj.process_batch_f1_lines(
-                                self.cursor, self.uid, 3, context={}
-                            )
+        with mock.patch.object(refund_rectify_batch.pooler, "get_db", return_value=database):
+            with mock.patch.object(self.pool, "get", return_value=line_obj):
+                with mock.patch.object(self.batch_obj, "browse", return_value=batch):
+                    with mock.patch.object(self.batch_obj, "write"):
+                        results = self.batch_obj.process_batch_f1_lines(
+                            outer_cursor, self.uid, 3, context={}
+                        )
 
         self.assertEqual(results, [{"status": "processed"}, {"status": "no_action"}])
         self.assertEqual(
             line_obj.process_one_f1.call_args_list,
             [
                 mock.call(
-                    self.cursor, self.uid, 11, expected_polissa_id=7,
+                    first_cursor, self.uid, 11, expected_polissa_id=7,
                     previous_f1_id=None, predecessor_processed=False, context={}
                 ),
                 mock.call(
-                    self.cursor, self.uid, 12, expected_polissa_id=7,
+                    second_cursor, self.uid, 12, expected_polissa_id=7,
                     previous_f1_id=11, predecessor_processed=True, context={}
                 ),
             ],
         )
+        self.assertEqual(outer_cursor.method_calls, [])
+        for execution_cursor in [start_cursor, first_cursor, second_cursor]:
+            execution_cursor.commit.assert_called_once_with()
+            execution_cursor.close.assert_called_once_with()
 
 
 class TestRefundRectifyBatchExecutionPersistence(testing.OOTestCaseWithCursor):
@@ -854,8 +871,8 @@ class TestRefundRectifyBatchExecutionPersistence(testing.OOTestCaseWithCursor):
         third_line = mock.Mock()
         third_line.sequence = 3
         third_line.f1_id.id = 13
-        third_line.state = "done"
-        third_line.outcome = "no_action"
+        third_line.state = "blocked"
+        third_line.outcome = False
         third_line.generated_invoice_ids = []
         third_line.result = "No s'actua."
         third_line.error = False
@@ -880,11 +897,11 @@ class TestRefundRectifyBatchExecutionPersistence(testing.OOTestCaseWithCursor):
                     )
 
         vals = write.call_args[0][3]
-        self.assertEqual(vals["state"], "failed")
+        self.assertEqual(vals["state"], "blocked")
         self.assertEqual(vals["total_lines"], 3)
-        self.assertEqual(vals["completed_lines"], 2)
+        self.assertEqual(vals["completed_lines"], 1)
         self.assertEqual(vals["failed_lines"], 1)
-        self.assertEqual(vals["blocked_lines"], 0)
+        self.assertEqual(vals["blocked_lines"], 1)
         attachment_vals = attachment_obj.create.call_args[0][2]
         self.assertEqual(attachment_vals["name"], "F1_R-TASCA-7.csv")
         self.assertEqual(attachment_vals["res_model"], "refund.rectify.batch")
@@ -892,4 +909,112 @@ class TestRefundRectifyBatchExecutionPersistence(testing.OOTestCaseWithCursor):
         self.assertTrue("Error tecnic" in csv_content)
         self.assertTrue("outcome" in csv_content)
         self.assertTrue("processed" in csv_content)
-        self.assertTrue("no_action" in csv_content)
+        self.assertTrue("blocked" in csv_content)
+
+
+class TestRefundRectifyBatchPerLineTransactions(testing.OOTestCaseWithCursor):
+    def setUp(self):
+        super(TestRefundRectifyBatchPerLineTransactions, self).setUp()
+        self.pool = self.openerp.pool
+        self.batch_obj = self.pool.get("refund.rectify.batch")
+
+    def _batch(self, state="pending"):
+        batch = mock.Mock()
+        batch.state = state
+        batch.polissa_id.id = 7
+        return batch
+
+    def _line(self, line_id, sequence, f1_id):
+        line = mock.Mock()
+        line.id = line_id
+        line.sequence = sequence
+        line.f1_id.id = f1_id
+        return line
+
+    def test_failure_persists_with_new_cursor_blocks_later_lines_and_returns(self):
+        outer_cursor = mock.Mock()
+        outer_cursor.dbname = "test_batch"
+        start_cursor = mock.Mock()
+        failed_cursor = mock.Mock()
+        persistence_cursor = mock.Mock()
+        database = mock.Mock()
+        database.cursor.side_effect = [start_cursor, failed_cursor, persistence_cursor]
+        failing_line = self._line(1, 1, 11)
+        line_obj = mock.Mock()
+        line_obj.search.side_effect = [[1], [2, 3]]
+        line_obj.browse.return_value = [failing_line]
+        line_obj._mark_line_running.return_value = True
+        line_obj.process_one_f1.side_effect = ValueError("F1 broken")
+        with mock.patch.object(refund_rectify_batch.pooler, "get_db", return_value=database):
+            with mock.patch.object(self.pool, "get", return_value=line_obj):
+                with mock.patch.object(self.batch_obj, "browse", return_value=self._batch()):
+                    with mock.patch.object(self.batch_obj, "write"):
+                        with mock.patch.object(self.batch_obj, "_refresh_execution") as refresh:
+                            results = self.batch_obj.process_batch_f1_lines(
+                                outer_cursor, self.uid, 3, context={}
+                            )
+
+        self.assertEqual(results, [])
+        failed_cursor.rollback.assert_called_once_with()
+        failed_cursor.close.assert_called_once_with()
+        persistence_cursor.commit.assert_called_once_with()
+        persistence_cursor.close.assert_called_once_with()
+        line_obj._persist_line_outcome.assert_called_once_with(
+            persistence_cursor, self.uid, 1, error=mock.ANY, context={}
+        )
+        self.assertEqual(
+            line_obj.write.call_args[0][2], [2, 3]
+        )
+        self.assertEqual(line_obj.write.call_args[0][3]["state"], "blocked")
+        self.assertTrue("F1 11" in line_obj.write.call_args[0][3]["result"])
+        refresh.assert_called_once_with(persistence_cursor, self.uid, 3, context={})
+        self.assertEqual(line_obj.process_one_f1.call_count, 1)
+
+    def test_processes_only_pending_lines(self):
+        outer_cursor = mock.Mock()
+        outer_cursor.dbname = "test_batch"
+        start_cursor = mock.Mock()
+        line_cursor = mock.Mock()
+        database = mock.Mock()
+        database.cursor.side_effect = [start_cursor, line_cursor]
+        pending_line = self._line(2, 2, 12)
+        line_obj = mock.Mock()
+        line_obj.search.return_value = [2]
+        line_obj.browse.return_value = [pending_line]
+        line_obj._mark_line_running.return_value = True
+        line_obj.process_one_f1.return_value = {"status": "no_action"}
+        with mock.patch.object(refund_rectify_batch.pooler, "get_db", return_value=database):
+            with mock.patch.object(self.pool, "get", return_value=line_obj):
+                with mock.patch.object(self.batch_obj, "browse", return_value=self._batch()):
+                    with mock.patch.object(self.batch_obj, "write"):
+                        self.batch_obj.process_batch_f1_lines(outer_cursor, self.uid, 3, context={})
+
+        self.assertEqual(
+            line_obj.search.call_args[0][2],
+            [("batch_id", "=", 3), ("state", "=", "pending")],
+        )
+        line_obj.process_one_f1.assert_called_once_with(
+            line_cursor, self.uid, 12, expected_polissa_id=7,
+            previous_f1_id=None, predecessor_processed=False, context={}
+        )
+
+    def test_terminal_batch_is_not_reopened(self):
+        outer_cursor = mock.Mock()
+        outer_cursor.dbname = "test_batch"
+        state_cursor = mock.Mock()
+        database = mock.Mock()
+        database.cursor.return_value = state_cursor
+        line_obj = mock.Mock()
+        with mock.patch.object(refund_rectify_batch.pooler, "get_db", return_value=database):
+            with mock.patch.object(self.pool, "get", return_value=line_obj):
+                with mock.patch.object(self.batch_obj, "browse", return_value=self._batch("done")):
+                    with mock.patch.object(self.batch_obj, "write") as write:
+                        results = self.batch_obj.process_batch_f1_lines(
+                            outer_cursor, self.uid, 3, context={}
+                        )
+
+        self.assertEqual(results, [])
+        self.assertFalse(write.called)
+        self.assertFalse(line_obj.search.called)
+        self.assertFalse(state_cursor.commit.called)
+        state_cursor.close.assert_called_once_with()
