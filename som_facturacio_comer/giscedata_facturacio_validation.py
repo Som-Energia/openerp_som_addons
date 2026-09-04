@@ -228,7 +228,7 @@ class GiscedataFacturacioValidationValidator(osv.osv):
         if (limit_kWh is not None
             and fact.energia_kwh <= limit_kWh
             and tarifa_acces == '2.0TD'
-            and tarifa_comer == '2.0TD_SOM'
+            and tarifa_comer in ['2.0TD_SOM', '2.0TD_SOM_INUSLAR']
                 and autoconsum == '00'):
             return None
 
@@ -283,7 +283,7 @@ class GiscedataFacturacioValidationValidator(osv.osv):
         if (limit_days is not None
             and fact.dies <= limit_days
             and tarifa_acces == '2.0TD'
-            and tarifa_comer == '2.0TD_SOM'
+            and tarifa_comer in ['2.0TD_SOM', '2.0TD_SOM_INUSLAR']
                 and autoconsum == '00'):
             return None
 
