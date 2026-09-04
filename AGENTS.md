@@ -100,48 +100,18 @@ Currently, `.github/workflows/pull_request_labeler.yml` requires each PR to have
 
 ### Tests en worktrees
 
-Useu el wrapper del projecte, no un runner de tests manual. Inicieu sempre PostgreSQL, MongoDB i Redis abans dels tests. `$WORKSPACE/erp/server/bin/addons` és estat compartit i mutable: redirigiu temporalment només els enllaços dels addons modificats del worktree (directoris amb `__terp__.py`) i preserveu-ne el destí original.
+Useu obligatòriament `scripts/run-tests-worktree.sh` des de qualsevol worktree. `$WORKSPACE/erp/server/bin/addons` és estat compartit i mutable: executar-hi `scripts/run-tests.sh` directament o modificar-ne els symlinks manualment és insegur.
 
-No modifiqueu aquests enllaços alhora que ERP o tests d'un altre worktree. El manifest temporal extern i el `trap` següents restauren tots els enllaços originals tant si el test acaba bé com si falla o s'interromp:
+Indiqueu explícitament cada addon que el test ha de redirigir. El wrapper valida els addons, adquireix un únic lock global entre worktrees i el manté durant la captura, la redirecció, tota l'execució de Destral i la restauració. `--no-requirements` continua sent la ruta recomanada:
 
 ```bash
-WORKTREE="$(git rev-parse --show-toplevel)"
-WORKSPACE="$(dirname "$(dirname "$WORKTREE")")"
-DATABASE="<database>"
-MODULE="<module>"
-ADDONS="$WORKSPACE/erp/server/bin/addons"
-MANIFEST="$(mktemp)"
-
-restore_links() {
-    while IFS=$'\t' read -r link target; do
-        rm -f "$link"
-        ln -s "$target" "$link"
-    done < "$MANIFEST"
-    rm -f "$MANIFEST"
-}
-trap restore_links EXIT INT TERM
-
-docker compose -f "$WORKTREE/docker-compose.yaml" up -d
-
-while IFS= read -r -d '' addon; do
-    name="$(basename "$addon")"
-    link="$ADDONS/$name"
-
-    if [ -e "$link" ] && [ ! -L "$link" ]; then
-        printf 'Refuso substituir %s: no és un enllaç simbòlic.\n' "$link" >&2
-        exit 1
-    fi
-    if [ -L "$link" ]; then
-        printf '%s\t%s\n' "$link" "$(readlink "$link")" >> "$MANIFEST"
-        rm "$link"
-    fi
-    ln -s "$addon" "$link"
-done < <(find "$WORKTREE" -type f -name __terp__.py -printf '%h\0')
-
-PYENV_VERSION=erp "$WORKTREE/scripts/run-tests.sh" "$DATABASE" --no-requirements -m "$MODULE"
+REPO_ROOT="$(git rev-parse --show-toplevel)"
+docker compose -f "$REPO_ROOT/docker-compose.yaml" up -d
+PYENV_VERSION=erp scripts/run-tests-worktree.sh \
+    --addon <module> -- <database> --no-requirements -m <module>
 ```
 
-En acabar, el `trap` restaura tots els enllaços originals. No executeu canvis d'enllaços d'addons de worktrees concurrentment amb ERP o tests d'un altre worktree.
+El timeout del lock és finit i configurable amb `OPENERP_WORKTREE_TEST_LOCK_TIMEOUT` (600 segons per defecte). En timeout, el wrapper mostra metadata limitada del propietari; no mata processos. Si detecta una alteració externa o una recuperació que no pot demostrar segura, no sobreescriu l'entrada i conserva el manifest per diagnosticar-la.
 
 ## Estil de Programació
 
