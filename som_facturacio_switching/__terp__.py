@@ -16,6 +16,7 @@
         "som_facturacio_comer",
         "giscedata_facturacio_switching",
         "som_indexada",
+        "oorq",
     ],
     "init_xml": [],
     "demo_xml": [

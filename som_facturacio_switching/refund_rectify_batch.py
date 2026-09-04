@@ -9,9 +9,14 @@ except ImportError:
     from io import StringIO
 from osv import osv, fields
 from tools.translate import _
+from oorq.decorators import job
+from oorq.autoworker import AutoWorker
 
 
 INVOICE_DIFFERENCE_MAG_TOLERANCE = 0.02
+REFUND_RECTIFY_F1_QUEUE = "refund_rectify_f1"
+REFUND_RECTIFY_F1_TIMEOUT = 7200
+REFUND_RECTIFY_F1_RESULT_TTL = 24 * 3600
 
 REFUND_RECTIFY_BATCH_STATUS = [
     ("pending", "Pendent"),
@@ -289,6 +294,33 @@ class RefundRectifyBatch(osv.osv):
             previous_f1_id = line.f1_id.id
             predecessor_processed = result["status"] == "processed"
         return results
+
+    @job(
+        queue=REFUND_RECTIFY_F1_QUEUE,
+        timeout=REFUND_RECTIFY_F1_TIMEOUT,
+        result_ttl=REFUND_RECTIFY_F1_RESULT_TTL,
+        on_commit=True,
+    )
+    def process_batch_f1_lines_async(self, cursor, uid, batch_id):
+        """Run one persistent batch in the dedicated OORQ queue."""
+        return self.process_batch_f1_lines(cursor, uid, batch_id)
+
+    def schedule_batch_execution(self, cursor, uid, batch_id, context=None):
+        """Request asynchronous execution and defer worker startup to commit."""
+        queued_job = self.process_batch_f1_lines_async(cursor, uid, batch_id)
+        self.write(
+            cursor,
+            uid,
+            [batch_id],
+            {"job_reference": queued_job.id},
+            context=context,
+        )
+        worker = AutoWorker(
+            queue=REFUND_RECTIFY_F1_QUEUE,
+            default_result_ttl=REFUND_RECTIFY_F1_RESULT_TTL,
+            max_procs=1,
+        )
+        worker.work(cursor)
 
 
 RefundRectifyBatch()
