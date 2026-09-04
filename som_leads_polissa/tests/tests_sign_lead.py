@@ -7,8 +7,6 @@ from destral.transaction import Transaction
 from osv import osv
 import mock
 
-from poweremail_oorq import poweremail_mailbox
-
 
 class TestSignLead(testing.OOTestCase):
 
@@ -133,8 +131,7 @@ class TestSignLead(testing.OOTestCase):
         with self.assertRaises(osv.except_osv):
             self.lead_o.send_sign_email(self.cursor, self.uid, lead_id, context={})
 
-    @mock.patch.object(poweremail_mailbox.PoweremailMailbox, 'send_this_mail')
-    def test_send_sign_email(self, mock_send_this_mail):
+    def test_send_sign_email(self):
         mailbox_o = self.get_model('poweremail.mailbox')
         lead_id = self._create_lead()
         template_id = self.ir_model_o.get_object_reference(
@@ -159,18 +156,21 @@ class TestSignLead(testing.OOTestCase):
         )
         lead = self.lead_o.browse(self.cursor, self.uid, lead_id)
         lead.write({'signature_process': process_id}, context={})
-        self.lead_o.send_sign_email(self.cursor, self.uid, lead_id, context={})
-        search_params = [
-            ('reference', '=', 'giscedata.signatura.process,{}'.format(process_id)),
-            ('template_id', '=', template_id),
-            ('folder', '=', 'outbox'),
-        ]
-        mail_ids = mailbox_o.search(
-            self.cursor, self.uid, search_params, context={}
+
+        with mock.patch.object(self.process_o, 'send_poweremail') as send_poweremail:
+            with mock.patch.object(mailbox_o, 'search', return_value=[1]):
+                with mock.patch.object(
+                    mailbox_o, 'send_this_mail'
+                ) as send_this_mail:
+                    self.lead_o.send_sign_email(
+                        self.cursor, self.uid, lead_id, context={}
+                    )
+
+        send_poweremail.assert_called_once_with(
+            self.cursor, self.uid, [process_id], context={}
         )
-        self.assertEqual(len(mail_ids), 1)
-        mock_send_this_mail.assert_called_once_with(
-            self.cursor, self.uid, mail_ids, context=mock.ANY
+        send_this_mail.assert_called_once_with(
+            self.cursor, self.uid, [1], context={}
         )
 
 
