@@ -432,7 +432,8 @@
         </record>
         <record model="res.config" id="cide_retailer_cdos" forcecreate="1">
             <field name="name">cide_retailer_cdos</field>
-            <field name="description">Codi CDOS de la comercialitzadora per a l'API de CIDE</field>
+            <field name="value">0762</field>
+            <field name="description">Codi de la comercialitzadora per a l'API de CIDE</field>
         </record>
         <!-- Executar tasques a partir d'un cron -->
         <record id="ir_cron_run_tasks_action" model="ir.cron">
