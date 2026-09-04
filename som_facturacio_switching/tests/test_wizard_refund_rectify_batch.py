@@ -82,9 +82,11 @@ class TestWizardRefundRectifyBatch(testing.OOTestCaseWithCursor):
         context = {"active_ids": [second_id, first_id]}
         wizard_id = self.wizard_obj.create(self.cursor, self.uid, {}, context=context)
 
-        action = self.wizard_obj.create_batch(
-            self.cursor, self.uid, [wizard_id], context=context
-        )
+        batch_obj = self.pool.get("refund.rectify.batch")
+        with mock.patch.object(batch_obj, "schedule_batch_execution"):
+            action = self.wizard_obj.create_batch(
+                self.cursor, self.uid, [wizard_id], context=context
+            )
         batch = self.pool.get("refund.rectify.batch").browse(
             self.cursor, self.uid, action["res_id"]
         )
@@ -249,6 +251,64 @@ class TestRefundRectifyBatchCreation(testing.OOTestCaseWithCursor):
                 {"batch_id": 12, "f1_id": second_f1.id, "sequence": 2},
             ],
         )
+
+
+class TestRefundRectifyBatchScheduling(testing.OOTestCaseWithCursor):
+    def setUp(self):
+        super(TestRefundRectifyBatchScheduling, self).setUp()
+        self.pool = self.openerp.pool
+        self.batch_obj = self.pool.get("refund.rectify.batch")
+        self.wizard_obj = self.pool.get("wizard.refund.rectify.batch")
+
+    def test_schedules_one_primitive_batch_job_and_defers_worker_to_commit(self):
+        cursor = mock.Mock()
+        queued_job = mock.Mock()
+        queued_job.id = "rq-job-12"
+        context = {"active_ids": [3, 4]}
+        with mock.patch.object(
+                self.batch_obj,
+                "process_batch_f1_lines_async",
+                return_value=queued_job) as async_job:
+            with mock.patch.object(refund_rectify_batch, "AutoWorker") as worker_class:
+                worker = worker_class.return_value
+                with mock.patch.object(self.batch_obj, "write") as write:
+                    self.batch_obj.schedule_batch_execution(
+                        cursor, self.uid, 12, context=context
+                    )
+
+        async_job.assert_called_once_with(cursor, self.uid, 12)
+        write.assert_called_once_with(
+            cursor, self.uid, [12], {"job_reference": "rq-job-12"}, context=context
+        )
+        worker_class.assert_called_once_with(
+            queue="refund_rectify_f1", default_result_ttl=24 * 3600, max_procs=1
+        )
+        worker.work.assert_called_once_with(cursor)
+
+    def test_wizard_returns_batch_form_after_requesting_schedule(self):
+        batch_obj = mock.Mock()
+        batch_obj.create_batch.return_value = 12
+        context = {"active_ids": [3, 4]}
+        with mock.patch.object(self.pool, "get", return_value=batch_obj):
+            action = self.wizard_obj.create_batch(
+                self.cursor, self.uid, [1], context=context
+            )
+
+        batch_obj.create_batch.assert_called_once_with(
+            self.cursor, self.uid, [3, 4], context=context
+        )
+        batch_obj.schedule_batch_execution.assert_called_once_with(
+            self.cursor, self.uid, 12, context=context
+        )
+        self.assertEqual(action, {
+            "type": "ir.actions.act_window",
+            "name": "Lot pendent d'abonar i rectificar",
+            "res_model": "refund.rectify.batch",
+            "view_type": "form",
+            "view_mode": "form",
+            "res_id": 12,
+            "target": "current",
+        })
 
 
 class TestRefundRectifyBatchLineProcessOneF1(testing.OOTestCaseWithCursor):
