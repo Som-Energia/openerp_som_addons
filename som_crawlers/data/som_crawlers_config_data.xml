@@ -430,6 +430,10 @@
             <field name="value">/tmp/outputFiles</field>
             <field name="description">Ruta dels fitxers temporals del massive importer</field>
         </record>
+        <record model="res.config" id="cide_retailer_cdos" forcecreate="1">
+            <field name="name">cide_retailer_cdos</field>
+            <field name="description">Codi CDOS de la comercialitzadora per a l'API de CIDE</field>
+        </record>
         <!-- Executar tasques a partir d'un cron -->
         <record id="ir_cron_run_tasks_action" model="ir.cron">
             <field name="name">Executar crawlers programats distris</field>
