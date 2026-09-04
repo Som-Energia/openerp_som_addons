@@ -63,7 +63,8 @@ Current verification: `.github/workflows/pull_request_labeler.yml` requires at l
 
 ### erp-test
 - Requisits: Virtualenv activat + Docker (PostgreSQL, MongoDB, Redis)
-- Command: `scripts/run-tests.sh <database> -m <module_name>`
+- En worktrees, wrapper obligatori: `scripts/run-tests-worktree.sh --addon <module_name> -- <database> --no-requirements -m <module_name>`
+- No executar `run-tests.sh` directament ni modificar manualment els symlinks compartits
 - Contenidors esperats: src_db_1, src_mongo_1, src_redis_1
 
 ### erp-start
