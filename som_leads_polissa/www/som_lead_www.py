@@ -291,8 +291,15 @@ class SomLeadWww(osv.osv_memory):
         )[1]
 
         if member.get("is_juridic"):
+            representative_name = member.get("proxy_name")
+            if representative_name and "," not in representative_name:
+                partner_o = self.pool.get("res.partner")
+                names = partner_o.separa_cognoms(cr, uid, representative_name)
+                surnames = " ".join(filter(None, names["cognoms"]))
+                if names["nom"] and surnames:
+                    representative_name = "{}, {}".format(surnames, names["nom"])
             values["persona_firmant_vat"] = member["proxy_vat"]
-            values["persona_nom"] = member["proxy_name"]
+            values["persona_nom"] = representative_name
             values["is_juridic"] = True
 
         for i, power in enumerate(contract_info["powers"]):

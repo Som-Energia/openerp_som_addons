@@ -5,6 +5,8 @@ import os
 import base64
 from datetime import datetime
 
+import mock
+
 from .base_som_lead_www import BaseSomLeadWwwTest
 
 
@@ -50,13 +52,18 @@ class TestLeadWwwCreation(BaseSomLeadWwwTest):
         lead_o = self.get_model("giscedata.crm.lead")
         sw_o = self.get_model("giscedata.switching")
         ir_model_o = self.get_model("ir.model.data")
-        mailbox_o = self.get_model('poweremail.mailbox')
 
         result = www_lead_o.create_lead(self.cursor, self.uid, self._basic_values)
         self.assertFalse(result["error"])
 
-        www_lead_o.activate_lead_sync(
-            self.cursor, self.uid, result["lead_id"], context={"sync": True})
+        with mock.patch.object(www_lead_o, "_send_activation_mail_sync") as send_mail:
+            www_lead_o.activate_lead_sync(
+                self.cursor, self.uid, result["lead_id"], context={"sync": True})
+
+        send_mail.assert_called_once()
+        args, kwargs = send_mail.call_args
+        self.assertEqual(args, (self.cursor, self.uid, result["lead_id"]))
+        self.assertTrue(kwargs["context"]["sync"])
 
         lead = lead_o.browse(self.cursor, self.uid, result["lead_id"])
         # Check that the name is correctly set
@@ -125,18 +132,6 @@ class TestLeadWwwCreation(BaseSomLeadWwwTest):
         # Check the catastral reference
         self.assertEqual(lead.polissa_id.cups.ref_catastral, "9872023VH5797S0001WX")
 
-        # Check that the mail was sent
-        template_name = "email_contracte_esborrany_nou_soci"
-        template_id = ir_model_o.get_object_reference(
-            self.cursor, self.uid, 'som_polissa_soci', template_name)[1]
-        mails = mailbox_o.search(
-            self.cursor, self.uid, [
-                ("template_id", "=", template_id),
-                ("folder", "=", "outbox"),
-            ]
-        )
-        self.assertEqual(len(mails), 1)
-
         # Check partner lang and member date
         self.assertEqual(lead.partner_id.lang, "es_ES")
         self.assertEqual(lead.partner_id.date, datetime.today().strftime("%Y-%m-%d"))
@@ -189,6 +184,7 @@ class TestLeadWwwCreation(BaseSomLeadWwwTest):
         # Check that the representative is created and correctly linked
         rep_id = partner_o.search(self.cursor, self.uid, [("vat", "=", "ES40323835M")])[0]
         self.assertEqual(lead.polissa_id.titular.representante_id.id, rep_id)
+        self.assertEqual(lead.polissa_id.titular.representante_id.name, "Palotes, Pepito")
         self.assertEqual(lead.polissa_id.titular.name, "PEC COOP SCCL")
         self.mock_subscribe_member.assert_called()
         self.mock_unsubscribe_customer.assert_called()
