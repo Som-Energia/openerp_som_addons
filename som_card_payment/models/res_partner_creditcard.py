@@ -36,7 +36,7 @@ class ResPartnerCreditCard(osv.osv):
             _check_expiry_date,
             "La data de caducitat ha de tenir format MM/YY.",
             ["expiry_date"],
-        )
+        ),
     ]
 
     _defaults = {

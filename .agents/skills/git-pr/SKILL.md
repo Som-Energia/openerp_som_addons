@@ -5,7 +5,7 @@ description: >
   Trigger: Quan necessites crear una Pull Request.
 metadata:
   author: oriol
-  version: "1.0"
+  version: "1.2"
 ---
 
 ## When to Use
@@ -40,30 +40,56 @@ Utilitza aquesta skill quan:
 
 ## Workflow
 
-### Pas 1: Verificar estat
+### Pas 1: Verificar estat i abast
 
 ```bash
-git status
+git status --short
+git diff --check
 git log main..HEAD --oneline
+git diff --stat main...HEAD
 ```
 
-### Pas 2: Fer push de la branca
+Comprovar que tots els commits i fitxers pertanyen a l'abast acordat. No
+incloure canvis locals o fitxers no relacionats.
+
+### Pas 2: Executar comprovacions
+
+Revisar `AGENTS.md` i executar els tests i el linting obligatoris que apliquin.
+Per codi OpenERP, utilitzar la skill `erp-test` i executar `flake8 .`. Si una
+comprovació no aplica, indicar-ho explícitament a la descripció de la PR; no
+marcar com a passada una comprovació que no s'ha executat.
+
+### Pas 3: Seleccionar l'etiqueta
+
+```bash
+gh label list
+```
+
+Escollir com a mínim una etiqueta existent segons els fitxers modificats. Si
+no és evident quina correspon, preguntar-ho abans de crear la PR.
+
+### Pas 4: Fer push de la branca
 
 ```bash
 git push -u origin <branch_name>
 ```
 
-### Pas 3: Crear PR
+### Pas 5: Crear PR
 
 ```bash
-gh pr create --title "<title>" --body "$(cat <<'EOF'
+gh pr create \
+  --base main \
+  --assignee "@me" \
+  --label "<label>" \
+  --title "<title descriptiu>" \
+  --body "$(cat <<'EOF'
 ## Objectiu
 
 <descripció de l'objectiu>
 
 ## Targeta on es demana o Incidència
 
-<enllaç a la targeta/jira>
+<enllaç a la targeta/incidència o "No aplica">
 
 ## Comportament antic
 
@@ -86,7 +112,12 @@ EOF
 
 O alternativament:
 ```bash
-gh pr create --title "<title>" --body-file /path/to/pr_template.md
+gh pr create \
+  --base main \
+  --assignee "@me" \
+  --label "<label>" \
+  --title "<title descriptiu>" \
+  --body-file /path/to/pr_template.md
 ```
 
 ## Exemples
@@ -94,7 +125,10 @@ gh pr create --title "<title>" --body-file /path/to/pr_template.md
 ```bash
 # PR simple
 gh pr create \
-  --title "ADD_user_registration" \
+  --base main \
+  --assignee "@me" \
+  --label "feature" \
+  --title "Add user registration" \
   --body "$(cat <<'EOF'
 ## Objectiu
 
@@ -128,7 +162,11 @@ EOF
 1. **Idioma**: Català per a la descripció
 2. **Totes les seccions**: Omple-les totes, no deixis espais buits
 3. **Comprovacions**: Marca les que apliquen amb [x]
-4. **Títols**: Clar i descriptiu
+4. **Títols**: Clar i descriptiu; no reutilitzar automàticament el nom de la branca
+5. **Assignació**: Autoassignar la PR amb `--assignee "@me"`
+6. **Branca base**: Indicar explícitament `--base main`
+7. **Etiqueta**: Afegir com a mínim una etiqueta existent amb `--label`
+8. **Comprovacions**: Executar les obligatòries abans de crear la PR i documentar les que no apliquin
 
 ## Errors Comuns
 
@@ -137,6 +175,8 @@ EOF
 | No branch to push | Branca no existent | Crea la branca primer amb `git-branch` |
 | PR title too long | Títol massa llarg | Redueix a menys de 72 caràcters |
 | No description | Descripció buida | Omple la plantilla completa |
+| Label not found | L'etiqueta no existeix | Consulta `gh label list` i selecciona'n una d'existent |
+| Checks failing | Tests o linting fallen | Atura la creació de la PR i corregeix els errors |
 
 ## Integració amb SDD
 
