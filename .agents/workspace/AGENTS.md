@@ -1,6 +1,6 @@
 # Workspace Som Energia — dispatcher d'agents
 
-Aquest fitxer és el dispatcher d'un workspace multirepositori. S'ha d'exposar com a `AGENTS.md` a l'arrel del workspace (vegeu [README.md](README.md)); Pi el carregarà per a qualsevol repositori fill.
+Aquest fitxer és el dispatcher d'un workspace multirepositori. S'ha d'exposar com a `AGENTS.md` a l'arrel del workspace (vegeu [README.md](README.md)); els agents que descobreixen `AGENTS.md` el carregaran per a qualsevol repositori fill.
 
 ## Regles de treball generals
 

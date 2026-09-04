@@ -1,10 +1,10 @@
 # Dispatcher d'AGENTS.md del workspace
 
-Aquest directori manté sota control de versions el context compartit de Pi per al workspace multirepositori de Som Energia.
+Aquest directori manté sota control de versions el context compartit d'agents per al workspace multirepositori de Som Energia.
 
 ## Per què cal un enllaç simbòlic?
 
-Pi descobreix automàticament `AGENTS.md` des del directori actual cap als directoris pare, però no descobreix fitxers de repositoris germans. Per això, si els checkouts estan sota un directori com `~/src`, el dispatcher ha d'estar a:
+Els agents compatibles descobreixen automàticament `AGENTS.md` des del directori actual cap als directoris pare, però no descobreixen fitxers de repositoris germans. Per això, si els checkouts estan sota un directori com `~/src`, el dispatcher ha d'estar a:
 
 ```text
 ~/src/AGENTS.md
@@ -33,8 +33,8 @@ Ha d'apuntar a `openerp_som_addons/.agents/workspace/AGENTS.md`.
 
 ## Ús i manteniment
 
-- Pi carregarà el dispatcher quan s'iniciï des de l'arrel del workspace, qualsevol repositori fill o un worktree situat sota el workspace.
-- Després de modificar-lo, inicia una sessió nova de Pi o usa `/reload`.
+- Els agents compatibles carregaran el dispatcher quan s'iniciïn des de l'arrel del workspace, qualsevol repositori fill o un worktree situat sota el workspace.
+- Després de modificar-lo, reinicia o recarrega l'agent segons la seva interfície.
 - Mantén aquí només normes transversals i un mapa de repositoris. Les normes específiques d'`openerp_som_addons` continuen a `../../AGENTS.md`.
 - No facis un enllaç directe a l'`AGENTS.md` específic d'`openerp_som_addons`: aplicaria regles d'ERP a repositoris que no les comparteixen.
 - Qualsevol canvi en aquests fitxers s'ha de revisar i versionar amb la resta del repositori `openerp_som_addons`.
