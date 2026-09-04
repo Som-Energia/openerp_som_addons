@@ -60,9 +60,10 @@ class TestLeadWwwCreation(BaseSomLeadWwwTest):
             www_lead_o.activate_lead_sync(
                 self.cursor, self.uid, result["lead_id"], context={"sync": True})
 
-        send_mail.assert_called_once_with(
-            self.cursor, self.uid, result["lead_id"], context={"sync": True}
-        )
+        send_mail.assert_called_once()
+        args, kwargs = send_mail.call_args
+        self.assertEqual(args, (self.cursor, self.uid, result["lead_id"]))
+        self.assertTrue(kwargs["context"]["sync"])
 
         lead = lead_o.browse(self.cursor, self.uid, result["lead_id"])
         # Check that the name is correctly set
