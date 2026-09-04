@@ -119,7 +119,7 @@ class TestSignLead(testing.OOTestCase):
             self.lead_o, 'check_start_signature_process', return_value=('end', '')
         ):
             with mock.patch('som_leads_polissa.www.som_lead_www.time') as time_mock:
-                time_mock.time.side_effect = [0, 31]
+                time_mock.time.side_effect = [0, 201]
                 with self.assertRaises(osv.except_osv):
                     self.www_lead_o.sign_lead(
                         self.cursor, self.uid, lead_id, self._cups,
