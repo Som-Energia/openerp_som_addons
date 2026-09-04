@@ -166,6 +166,101 @@ class TestRedsysCardCollection(testing.OOTestCaseWithCursor):
             client.mit_payment.return_value = response
         return mock.patch("sermepa.RestClient", return_value=client), client
 
+    def test_send_redsys_declined_email_uses_configured_template(self):
+        factura = self._prepare_eligible_invoice()
+        template_id = self.imd_obj.get_object_reference(
+            self.cursor,
+            self.uid,
+            "som_card_payment",
+            "email_card_payment_failure",
+        )[1]
+        template = self.openerp.pool.get("poweremail.templates").browse(
+            self.cursor, self.uid, template_id
+        )
+        send_wizard = self.openerp.pool.get("poweremail.send.wizard")
+        mailbox_obj = self.openerp.pool.get("poweremail.mailbox")
+
+        with mock.patch.object(send_wizard, "create", return_value=42) as create:
+            with mock.patch.object(
+                send_wizard,
+                "save_to_mailbox",
+                return_value=[101],
+            ) as save_to_mailbox:
+                with mock.patch.object(
+                    mailbox_obj, "is_valid", return_value=True
+                ) as is_valid:
+                    with mock.patch.object(mailbox_obj, "write") as write:
+                        result = self.factura_obj._send_redsys_declined_email(
+                            self.cursor, self.uid, factura.id
+                        )
+
+        expected_context = {
+            "active_ids": [factura.id],
+            "active_id": factura.id,
+            "template_id": template_id,
+            "src_model": "giscedata.facturacio.factura",
+            "src_rec_ids": [factura.id],
+            "from": template.enforce_from_account.id,
+            "state": "single",
+            "priority": "0",
+        }
+        self.assertTrue(result)
+        create.assert_called_once_with(
+            self.cursor,
+            self.uid,
+            {
+                "state": "single",
+                "priority": "0",
+                "from": template.enforce_from_account.id,
+            },
+            expected_context,
+        )
+        save_to_mailbox.assert_called_once_with(
+            self.cursor, self.uid, [42], context=expected_context
+        )
+        is_valid.assert_called_once_with(self.cursor, self.uid, 101)
+        write.assert_called_once_with(
+            self.cursor,
+            self.uid,
+            [101],
+            {"folder": "outbox"},
+            context=expected_context,
+        )
+
+    def test_send_redsys_declined_email_fails_without_mailbox(self):
+        factura = self._prepare_eligible_invoice()
+        send_wizard = self.openerp.pool.get("poweremail.send.wizard")
+
+        with mock.patch.object(send_wizard, "create", return_value=42):
+            with mock.patch.object(
+                send_wizard, "save_to_mailbox", return_value=[]
+            ):
+                result = self.factura_obj._send_redsys_declined_email(
+                    self.cursor, self.uid, factura.id
+                )
+
+        self.assertEqual(result, -1)
+
+    def test_send_redsys_declined_email_marks_invalid_mailbox_as_error(self):
+        factura = self._prepare_eligible_invoice()
+        send_wizard = self.openerp.pool.get("poweremail.send.wizard")
+        mailbox_obj = self.openerp.pool.get("poweremail.mailbox")
+
+        with mock.patch.object(send_wizard, "create", return_value=42):
+            with mock.patch.object(
+                send_wizard, "save_to_mailbox", return_value=[101]
+            ):
+                with mock.patch.object(mailbox_obj, "is_valid", return_value=False):
+                    with mock.patch.object(mailbox_obj, "write") as write:
+                        result = self.factura_obj._send_redsys_declined_email(
+                            self.cursor, self.uid, factura.id
+                        )
+
+        self.assertEqual(result, -1)
+        write.assert_called_once_with(
+            self.cursor, self.uid, [101], {"folder": "error"}, context=mock.ANY
+        )
+
     def test_search_recurrent_card_factura_ids_uses_real_invoice_and_card(self):
         invoice = self._prepare_eligible_invoice()
 
@@ -251,20 +346,34 @@ class TestRedsysCardCollection(testing.OOTestCaseWithCursor):
         self.assertEqual(params["Ds_Merchant_Cof_Type"], "R")
         self.assertEqual(params["Ds_Merchant_Excep_SCA"], "MIT")
 
-    def test_charge_factura_by_redsys_advances_pending_on_confirmed_failure(self):
+    def test_charge_factura_by_redsys_sends_email_before_advancing_confirmed_failure(self):
         invoice = self._prepare_eligible_invoice()
         response = {
             "raw": {"Ds_Response": "101", "error": "Operacio denegada"},
             "merchant_parameters": {"Ds_Response": "101"},
         }
         redsys_client, client = self._redsys_client(response=response)
+        send_wizard = self.openerp.pool.get("poweremail.send.wizard")
+        mailbox_obj = self.openerp.pool.get("poweremail.mailbox")
 
         with redsys_client:
-            with mock.patch.object(self.factura_obj, "go_on_pending") as go_on_pending:
-                with mock.patch.object(self.factura_obj, "set_pending") as set_pending:
-                    result = self.factura_obj._charge_factura_by_redsys(
-                        self.cursor, self.uid, invoice.id
-                    )
+            with mock.patch.object(send_wizard, "create", return_value=42):
+                with mock.patch.object(
+                    send_wizard, "save_to_mailbox", return_value=[101]
+                ):
+                    with mock.patch.object(
+                        mailbox_obj, "is_valid", return_value=True
+                    ):
+                        with mock.patch.object(mailbox_obj, "write"):
+                            with mock.patch.object(
+                                self.factura_obj, "go_on_pending"
+                            ) as go_on_pending:
+                                with mock.patch.object(
+                                    self.factura_obj, "set_pending"
+                                ) as set_pending:
+                                    result = self.factura_obj._charge_factura_by_redsys(
+                                        self.cursor, self.uid, invoice.id
+                                    )
 
         self.assertTrue(result)
         client.mit_payment.assert_called_once()
@@ -277,6 +386,68 @@ class TestRedsysCardCollection(testing.OOTestCaseWithCursor):
         self.assertEqual(updated_factura.redsys_collection_state, "declined")
         self.assertEqual(updated_factura.redsys_response_code, "101")
         self.assertIn(u"Operacio denegada", updated_factura.redsys_response_message)
+
+    def test_charge_factura_by_redsys_keeps_declined_for_invalid_mailbox(self):
+        invoice = self._prepare_eligible_invoice()
+        response = {
+            "raw": {"Ds_Response": "101", "error": "Operacio denegada"},
+            "merchant_parameters": {"Ds_Response": "101"},
+        }
+        redsys_client, client = self._redsys_client(response=response)
+
+        with redsys_client, mock.patch.object(
+            self.factura_obj, "_send_redsys_declined_email", return_value=-1
+        ) as send_email, mock.patch.object(
+            self.factura_obj, "go_on_pending"
+        ) as go_on_pending:
+            result = self.factura_obj._charge_factura_by_redsys(
+                self.cursor, self.uid, invoice.id
+            )
+
+        self.assertTrue(result)
+        client.mit_payment.assert_called_once()
+        send_email.assert_called_once_with(
+            self.cursor, self.uid, invoice.id, context={}
+        )
+        go_on_pending.assert_not_called()
+        updated_factura = self.factura_obj.browse(self.cursor, self.uid, invoice.id)
+        self.assertEqual(updated_factura.redsys_collection_state, "declined")
+        self.assertIn(
+            u"email_card_payment_failure", updated_factura.redsys_response_message
+        )
+
+    def test_charge_factura_by_redsys_keeps_declined_when_email_fails(self):
+        invoice = self._prepare_eligible_invoice()
+        response = {
+            "raw": {"Ds_Response": "101", "error": "Operacio denegada"},
+            "merchant_parameters": {"Ds_Response": "101"},
+        }
+        redsys_client, client = self._redsys_client(response=response)
+        send_wizard = self.openerp.pool.get("poweremail.send.wizard")
+
+        with redsys_client:
+            with mock.patch.object(send_wizard, "create", return_value=42):
+                with mock.patch.object(
+                    send_wizard,
+                    "save_to_mailbox",
+                    side_effect=Exception("mailbox failure"),
+                ):
+                    with mock.patch.object(
+                        self.factura_obj, "go_on_pending"
+                    ) as go_on_pending:
+                        result = self.factura_obj._charge_factura_by_redsys(
+                            self.cursor, self.uid, invoice.id
+                        )
+
+        self.assertTrue(result)
+        client.mit_payment.assert_called_once()
+        go_on_pending.assert_not_called()
+        updated_factura = self.factura_obj.browse(self.cursor, self.uid, invoice.id)
+        self.assertEqual(updated_factura.redsys_collection_state, "declined")
+        self.assertIn(u"Operacio denegada", updated_factura.redsys_response_message)
+        self.assertIn(
+            u"email_card_payment_failure", updated_factura.redsys_response_message
+        )
 
     def test_charge_factura_by_redsys_keeps_factura_eligible_when_tpv_is_unconfigured(self):
         factura = self._prepare_eligible_invoice()
@@ -347,9 +518,12 @@ class TestRedsysCardCollection(testing.OOTestCaseWithCursor):
         redsys_client, client = self._redsys_client(response=response)
 
         with redsys_client:
-            result = self.factura_obj._charge_factura_by_redsys(
-                self.cursor, self.uid, invoice.id
-            )
+            with mock.patch.object(
+                self.factura_obj, "_send_redsys_declined_email"
+            ) as send_email:
+                result = self.factura_obj._charge_factura_by_redsys(
+                    self.cursor, self.uid, invoice.id
+                )
 
         self.assertTrue(result)
         client.mit_payment.assert_called_once()
@@ -357,15 +531,19 @@ class TestRedsysCardCollection(testing.OOTestCaseWithCursor):
         self.assertEqual(updated_factura.redsys_collection_state, "paid")
         self.assertEqual(updated_factura.redsys_response_code, "0000")
         self.assertLess(updated_factura.invoice_id.residual, initial_residual)
+        send_email.assert_not_called()
 
     def test_charge_factura_by_redsys_marks_transport_failure_for_review(self):
         invoice = self._prepare_eligible_invoice()
         redsys_client, client = self._redsys_client(exception=Exception("timeout"))
 
         with redsys_client:
-            result = self.factura_obj._charge_factura_by_redsys(
-                self.cursor, self.uid, invoice.id
-            )
+            with mock.patch.object(
+                self.factura_obj, "_send_redsys_declined_email"
+            ) as send_email:
+                result = self.factura_obj._charge_factura_by_redsys(
+                    self.cursor, self.uid, invoice.id
+                )
 
         self.assertTrue(result)
         client.mit_payment.assert_called_once()
@@ -373,6 +551,7 @@ class TestRedsysCardCollection(testing.OOTestCaseWithCursor):
         self.assertFalse(updated_factura.pending_state)
         self.assertEqual(updated_factura.redsys_collection_state, "review")
         self.assertIn(u"timeout", updated_factura.redsys_response_message)
+        send_email.assert_not_called()
 
     def test_charge_factura_by_redsys_marks_malformed_response_for_review(self):
         invoice = self._prepare_eligible_invoice()
