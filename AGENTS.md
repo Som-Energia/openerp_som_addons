@@ -47,6 +47,7 @@ Les skills següents estan disponibles al projecte i s'han d'utilitzar quan corr
 | `git-branch` | Crear branca nova | Veure [.agents/skills/git-branch/SKILL.md](.agents/skills/git-branch/SKILL.md) |
 | `git-commit` | Fer commit | Veure [.agents/skills/git-commit/SKILL.md](.agents/skills/git-commit/SKILL.md) |
 | `git-pr` | Crear PR | Veure [.agents/skills/git-pr/SKILL.md](.agents/skills/git-pr/SKILL.md) |
+| `erp-herdr-worktree` | Treballar en un worktree ERP des d'un pane Herdr mantenint l'agent al workspace multirepo | Veure [.agents/skills/erp-herdr-worktree/SKILL.md](.agents/skills/erp-herdr-worktree/SKILL.md) |
 
 ### Current PR Policy
 
