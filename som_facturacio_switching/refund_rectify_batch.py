@@ -30,6 +30,8 @@ REFUND_RECTIFY_BATCH_LINE_STATUS = [
     ("blocked", "Bloquejada"),
 ]
 
+ACTIVE_REFUND_RECTIFY_BATCH_STATES = ["pending", "running", "blocked"]
+
 
 def _csv_value(value):
     if isinstance(value, type(u"")):
@@ -74,10 +76,87 @@ class RefundRectifyBatch(osv.osv):
         self.write(cursor, uid, [batch_id], {"name": "F1_R-TASCA-%s" % batch_id}, context=context)
         return batch_id
 
-    def create_batch(self, cursor, uid, polissa_id, f1_ids, context=None):
+    def _validate_batch_selection(self, cursor, uid, f1_ids, context=None):
+        """Validate selected F1 records and resolve their one historical policy."""
+        f1_ids = list(f1_ids or [])
+        if not f1_ids:
+            raise osv.except_osv(_("Error"), _("Cal seleccionar almenys un F1."))
+
         f1_obj = self.pool.get("giscedata.facturacio.importacio.linia")
+        f1s = f1_obj.browse(cursor, uid, f1_ids, context=context)
+        if len(f1s) != len(f1_ids):
+            raise osv.except_osv(
+                _("Error"), _("Hi ha F1 seleccionats que ja no existeixen.")
+            )
+
+        polissa_ids = []
+        polissa_names = []
+        for f1 in f1s:
+            if f1.type_factura != "R":
+                raise osv.except_osv(
+                    _("Error"), _("L'f1 {} no és de tipus R.").format(f1.name)
+                )
+            try:
+                data_inici = datetime.strptime(f1.fecha_factura_desde, "%Y-%m-%d")
+                data_final = datetime.strptime(f1.fecha_factura_hasta, "%Y-%m-%d")
+            except (TypeError, ValueError):
+                raise osv.except_osv(
+                    _("Error"),
+                    _("L'f1 {} no té dates de factura vàlides.").format(f1.name),
+                )
+            if data_inici > data_final:
+                raise osv.except_osv(
+                    _("Error"),
+                    _("L'f1 {} no té una data inicial de factura posterior a la final.").format(
+                        f1.name)
+                )
+            if not f1.cups_id:
+                raise osv.except_osv(
+                    _("Error"), _("L'f1 {} no té un CUPS assignat.").format(f1.name)
+                )
+            if not f1.polissa_id:
+                raise osv.except_osv(
+                    _("Error"), _("L'f1 {} no té una pòlissa assignada.").format(f1.name)
+                )
+            polissa_ids.append(f1.polissa_id.id)
+            polissa_names.append(f1.polissa_id.name or str(f1.polissa_id.id))
+
+        unique_polissa_ids = sorted(set(polissa_ids))
+        if len(unique_polissa_ids) != 1:
+            raise osv.except_osv(
+                _("Error"),
+                _("Els F1 seleccionats han de correspondre a una única pòlissa.")
+                + _("\nPòlisses trobades: ")
+                + ", ".join(sorted(set(polissa_names))),
+            )
+        return unique_polissa_ids[0]
+
+    def create_batch(self, cursor, uid, f1_ids, context=None):
+        f1_obj = self.pool.get("giscedata.facturacio.importacio.linia")
+        polissa_id = self._validate_batch_selection(
+            cursor, uid, f1_ids, context=context
+        )
+
+        active_batch_ids = self.search(
+            cursor,
+            uid,
+            [
+                ("polissa_id", "=", polissa_id),
+                ("state", "in", ACTIVE_REFUND_RECTIFY_BATCH_STATES),
+            ],
+            context=context,
+        )
+        if active_batch_ids:
+            raise osv.except_osv(
+                _("Error"),
+                _("Ja hi ha una tasca activa d'abonar i rectificar per a aquesta pòlissa."),
+            )
         ordered_f1_ids = f1_obj.search(
-            cursor, uid, [("id", "in", f1_ids)], order="fecha_factura_desde asc, id asc"
+            cursor,
+            uid,
+            [("id", "in", f1_ids)],
+            order="fecha_factura_desde asc, id asc",
+            context=context,
         )
         batch_id = self.create(
             cursor,
