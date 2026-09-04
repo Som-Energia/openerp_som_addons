@@ -236,3 +236,67 @@ class TestLeadWwwMemberLinking(BaseSomLeadWwwTest):
         lead = lead_o.browse(self.cursor, self.uid, result["lead_id"])
         self.assertEqual(lead.polissa_id.titular.name, 'Cognom1 Cognom2, Nom')
         self.assertEqual(lead.polissa_id.direccio_notificacio.name, 'Cognom1 Cognom2, Nom')
+
+    def test_create_lead_repairs_legacy_representative_name(self):
+        www_lead_o = self.get_model("som.lead.www")
+        lead_o = self.get_model("giscedata.crm.lead")
+        partner_o = self.get_model("res.partner")
+        imd_o = self.get_model('ir.model.data')
+
+        existing_partner_id = imd_o.get_object_reference(
+            self.cursor, self.uid, 'som_polissa_soci', 'res_partner_nosoci1'
+        )[1]
+        existing_partner_vat = partner_o.read(
+            self.cursor, self.uid, existing_partner_id, ['vat']
+        )['vat']
+        partner_o.write(
+            self.cursor, self.uid, existing_partner_id, {
+                'name': 'Nom Cognom1 Cognom2'
+            }
+        )
+        partner_o.create(self.cursor, self.uid, {
+            'name': 'Company represented by the partner',
+            'vat': 'ESC81837452',
+            'representante_id': existing_partner_id,
+        })
+
+        values = self._basic_values
+        values["new_member_info"]["name"] = 'Nom'
+        values["new_member_info"]["surname"] = 'Cognom1 Cognom2'
+        values["new_member_info"]["vat"] = existing_partner_vat.replace("ES", "")
+
+        result = www_lead_o.create_lead(self.cursor, self.uid, values)
+        www_lead_o.activate_lead_sync(self.cursor, self.uid, result["lead_id"])
+
+        lead = lead_o.browse(self.cursor, self.uid, result["lead_id"])
+        self.assertEqual(lead.polissa_id.titular.id, existing_partner_id)
+        self.assertEqual(lead.polissa_id.titular.name, 'Cognom1 Cognom2, Nom')
+
+    def test_create_lead_keeps_unrelated_malformed_name(self):
+        www_lead_o = self.get_model("som.lead.www")
+        partner_o = self.get_model("res.partner")
+        imd_o = self.get_model('ir.model.data')
+
+        existing_partner_id = imd_o.get_object_reference(
+            self.cursor, self.uid, 'som_polissa_soci', 'res_partner_nosoci1'
+        )[1]
+        existing_partner_vat = partner_o.read(
+            self.cursor, self.uid, existing_partner_id, ['vat']
+        )['vat']
+        partner_o.write(
+            self.cursor, self.uid, existing_partner_id, {
+                'name': 'Nom Cognom1 Cognom2'
+            }
+        )
+
+        values = self._basic_values
+        values["new_member_info"]["name"] = 'Nom'
+        values["new_member_info"]["surname"] = 'Cognom1 Cognom2'
+        values["new_member_info"]["vat"] = existing_partner_vat.replace("ES", "")
+
+        result = www_lead_o.create_lead(self.cursor, self.uid, values)
+        with self.assertRaises(osv.except_osv):
+            www_lead_o.activate_lead_sync(self.cursor, self.uid, result["lead_id"])
+
+        partner = partner_o.browse(self.cursor, self.uid, existing_partner_id)
+        self.assertEqual(partner.name, 'Nom Cognom1 Cognom2')

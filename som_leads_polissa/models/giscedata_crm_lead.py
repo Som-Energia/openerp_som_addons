@@ -90,7 +90,7 @@ class GiscedataCrmLead(osv.OsvInherits):
         msg = u"S'ha sol·licitat l'enviament de l'e-mail de Signatura manualment" \
             u"(en cas de dubte, mirar HelpScout)"
 
-        self.historize_msg(cursor, uid, [lead_id], msg, context=context)
+        self.historize_msg(cursor, uid, [lead.id], msg, context=context)
 
         return True
 
@@ -416,6 +416,26 @@ class GiscedataCrmLead(osv.OsvInherits):
             context = {}
 
         partner_o = self.pool.get("res.partner")
+        lead = self.browse(cursor, uid, crml_id, context=context)
+
+        if not lead.titular_es_empresa and lead.titular_nom and lead.titular_cognom1:
+            partner_ids = partner_o.search(
+                cursor, uid, [("vat", "=", lead.titular_vat)]
+            )
+            if partner_ids and partner_o.search(
+                cursor, uid, [("representante_id", "=", partner_ids[0])]
+            ):
+                surnames = " ".join(filter(None, [
+                    lead.titular_cognom1, lead.titular_cognom2
+                ]))
+                legacy_name = "{} {}".format(lead.titular_nom, surnames)
+                partner_name = partner_o.read(
+                    cursor, uid, partner_ids[0], ["name"], context=context
+                )["name"]
+                if partner_name == legacy_name:
+                    partner_o.write(cursor, uid, partner_ids[0], {
+                        "name": "{}, {}".format(surnames, lead.titular_nom)
+                    }, context=context)
 
         res = super(GiscedataCrmLead, self).create_entity_titular(
             cursor, uid, crml_id, context=context

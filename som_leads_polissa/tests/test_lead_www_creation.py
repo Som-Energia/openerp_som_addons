@@ -183,6 +183,7 @@ class TestLeadWwwCreation(BaseSomLeadWwwTest):
         # Check that the representative is created and correctly linked
         rep_id = partner_o.search(self.cursor, self.uid, [("vat", "=", "ES40323835M")])[0]
         self.assertEqual(lead.polissa_id.titular.representante_id.id, rep_id)
+        self.assertEqual(lead.polissa_id.titular.representante_id.name, "Palotes, Pepito")
         self.assertEqual(lead.polissa_id.titular.name, "PEC COOP SCCL")
         self.mock_subscribe_member.assert_called()
         self.mock_unsubscribe_customer.assert_called()
@@ -220,6 +221,7 @@ class TestLeadWwwCreation(BaseSomLeadWwwTest):
 
         # Check that the representative is correctly linked
         self.assertEqual(lead.polissa_id.titular.representante_id.id, existing_partner_id)
+        self.assertEqual(lead.polissa_id.titular.representante_id.name, 'Pepito Palotes')
         self.mock_subscribe_member.assert_called()
         self.mock_unsubscribe_customer.assert_called()
 
