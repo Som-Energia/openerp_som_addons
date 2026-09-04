@@ -312,6 +312,60 @@ class GiscedataFacturacioFactura(osv.osv):
             and factura.payment_type.code == self._redsys_recurrent_card_payment_type_code
         )
 
+    def _send_redsys_declined_email(self, cursor, uid, factura_id, context=None):
+        try:
+            template_id = self.pool.get("ir.model.data").get_object_reference(
+                cursor,
+                uid,
+                "som_card_payment",
+                "email_card_payment_failure",
+            )[1]
+            template = self.pool.get("poweremail.templates").browse(
+                cursor, uid, template_id, context=context
+            )
+            send_wizard = self.pool.get("poweremail.send.wizard")
+            mailbox_obj = self.pool.get("poweremail.mailbox")
+            send_context = (context or {}).copy()
+            send_context.update({
+                "active_ids": [factura_id],
+                "active_id": factura_id,
+                "template_id": template_id,
+                "src_model": "giscedata.facturacio.factura",
+                "src_rec_ids": [factura_id],
+                "from": template.enforce_from_account.id,
+                "state": "single",
+                "priority": "0",
+            })
+            params = {
+                "state": "single",
+                "priority": "0",
+                "from": send_context["from"],
+            }
+            wizard_id = send_wizard.create(cursor, uid, params, send_context)
+            mail_ids = send_wizard.save_to_mailbox(
+                cursor, uid, [wizard_id], context=send_context
+            )
+            if not mail_ids:
+                return -1
+
+            mail_id = mail_ids[0]
+            if not mailbox_obj.is_valid(cursor, uid, mail_id):
+                mailbox_obj.write(
+                    cursor, uid, [mail_id], {"folder": "error"}, context=send_context
+                )
+                return -1
+
+            mailbox_obj.write(
+                cursor, uid, [mail_id], {"folder": "outbox"}, context=send_context
+            )
+            return True
+        except Exception as exc:
+            logger.info(
+                "ERROR sending Redsys decline email to factura {factura_id}: "
+                "{exc}".format(factura_id=factura_id, exc=str(exc))
+            )
+            return -1
+
     def _charge_factura_by_redsys(self, cursor, uid, factura_id, context=None):
         context = context or {}
         factura = self.browse(cursor, uid, factura_id, context=context)
@@ -438,6 +492,7 @@ class GiscedataFacturacioFactura(osv.osv):
             )
             return True
 
+        decline_message = "%s" % (response_message or _("Sense detall"))
         self.write(
             cursor,
             uid,
@@ -445,11 +500,30 @@ class GiscedataFacturacioFactura(osv.osv):
             {
                 "redsys_collection_state": "declined",
                 "redsys_response_code": "%s" % (response_code or "HTTP"),
-                "redsys_response_message": "%s" % (response_message or _("Sense detall")),
+                "redsys_response_message": decline_message,
             },
             context=context,
         )
-        self.go_on_pending(cursor, uid, [factura.id], context=context)
+        email_result = self._send_redsys_declined_email(
+            cursor, uid, factura.id, context=context
+        )
+        if email_result != -1:
+            self.go_on_pending(cursor, uid, [factura.id], context=context)
+        else:
+            email_error = (
+                "Redsys decline email was not sent using "
+                "som_card_payment.email_card_payment_failure"
+            )
+            self.write(
+                cursor,
+                uid,
+                [factura.id],
+                {"redsys_response_message": "%s | %s" % (
+                    decline_message, email_error
+                )},
+                context=context,
+            )
+            logger.error("%s for factura %s", email_error, factura.id)
         return True
 
 
