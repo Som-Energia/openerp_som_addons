@@ -51,6 +51,7 @@ class TestWizardRefundRectifyBatch(testing.OOTestCaseWithCursor):
                 "cups_text": polissa.cups.name,
                 "fecha_factura_desde": initial_date,
                 "fecha_factura_hasta": final_date,
+                "type_factura": "R",
             },
         )
         second_id = self.f1_obj.copy(
@@ -95,6 +96,9 @@ class TestWizardRefundRectifyBatch(testing.OOTestCaseWithCursor):
     def test_create_batch_rejects_multiple_policies(self):
         first_id = self._f1_id("line_01_f1_import_01")
         second_id = self._f1_id("line_02_f1_import_01")
+        self.f1_obj.write(
+            self.cursor, self.uid, [first_id, second_id], {"type_factura": "R"}
+        )
         context = {"active_ids": [first_id, second_id]}
         wizard_id = self.wizard_obj.create(self.cursor, self.uid, {}, context=context)
 
@@ -105,6 +109,145 @@ class TestWizardRefundRectifyBatch(testing.OOTestCaseWithCursor):
             self.uid,
             [wizard_id],
             context=context,
+        )
+
+
+class TestRefundRectifyBatchCreation(testing.OOTestCaseWithCursor):
+    def setUp(self):
+        super(TestRefundRectifyBatchCreation, self).setUp()
+        self.pool = self.openerp.pool
+        self.batch_obj = self.pool.get("refund.rectify.batch")
+
+    def _f1(self, f1_id, polissa_id=7, **values):
+        cups = mock.Mock()
+        cups.id = 13
+        f1 = mock.Mock()
+        f1.id = f1_id
+        f1.type_factura = "R"
+        f1.fecha_factura_desde = "2022-01-01"
+        f1.fecha_factura_hasta = "2022-01-31"
+        f1.cups_id = cups
+        if polissa_id:
+            polissa = mock.Mock()
+            polissa.id = polissa_id
+            polissa.name = "POL-%s" % polissa_id
+            f1.polissa_id = polissa
+        else:
+            f1.polissa_id = False
+        for field, value in values.items():
+            setattr(f1, field, value)
+        return f1
+
+    def _assert_create_batch_rejected(self, f1s):
+        f1_obj = mock.Mock()
+        line_obj = mock.Mock()
+        f1_obj.search.return_value = [f1.id for f1 in f1s]
+        f1_obj.browse.return_value = f1s
+        with mock.patch.object(
+                self.pool,
+                "get",
+                side_effect=lambda model: {
+                    "giscedata.facturacio.importacio.linia": f1_obj,
+                    "refund.rectify.batch.line": line_obj,
+                }[model]):
+            with mock.patch.object(self.batch_obj, "create", return_value=12):
+                try:
+                    self.batch_obj.create_batch(
+                        self.cursor,
+                        self.uid,
+                        [f1.id for f1 in f1s],
+                        context={},
+                    )
+                except osv.except_osv as error:
+                    return error
+        self.fail("Expected batch creation to be rejected")
+
+    def test_create_batch_rejects_empty_selection_without_wizard(self):
+        self._assert_create_batch_rejected([])
+
+    def test_create_batch_rejects_invalid_f1_data_without_wizard(self):
+        invalid_f1s = [
+            self._f1(1, type_factura="C"),
+            self._f1(2, fecha_factura_desde=False),
+            self._f1(3, fecha_factura_hasta="not-a-date"),
+            self._f1(
+                4,
+                fecha_factura_desde="2022-02-01",
+                fecha_factura_hasta="2022-01-31",
+            ),
+            self._f1(5, cups_id=False),
+            self._f1(6, polissa_id=False),
+        ]
+        for f1 in invalid_f1s:
+            self._assert_create_batch_rejected([f1])
+
+    def test_create_batch_rejects_f1s_resolved_to_multiple_policies(self):
+        error = self._assert_create_batch_rejected([
+            self._f1(1, polissa_id=7), self._f1(2, polissa_id=9),
+        ])
+        self.assertTrue("POL-7" in error.value)
+        self.assertTrue("POL-9" in error.value)
+
+    def test_create_batch_rejects_existing_active_batch(self):
+        f1 = self._f1(1)
+        f1_obj = mock.Mock()
+        f1_obj.search.return_value = [f1.id]
+        f1_obj.browse.return_value = [f1]
+        line_obj = mock.Mock()
+        cursor = mock.Mock()
+        with mock.patch.object(
+                self.pool,
+                "get",
+                side_effect=lambda model: {
+                    "giscedata.facturacio.importacio.linia": f1_obj,
+                    "refund.rectify.batch.line": line_obj,
+                }[model]):
+            with mock.patch.object(self.batch_obj, "search", return_value=[12]) as search:
+                self.assertRaises(
+                    osv.except_osv,
+                    self.batch_obj.create_batch,
+                    cursor,
+                    self.uid,
+                    [f1.id],
+                    context={},
+                )
+
+        search.assert_called_once_with(
+            cursor,
+            self.uid,
+            [("polissa_id", "=", 7), ("state", "in", ["pending", "running", "blocked"])],
+            context={},
+        )
+
+    def test_create_batch_creates_chronological_lines_without_policy_lock(self):
+        first_f1 = self._f1(1)
+        second_f1 = self._f1(2)
+        f1_obj = mock.Mock()
+        f1_obj.search.return_value = [first_f1.id, second_f1.id]
+        f1_obj.browse.return_value = [second_f1, first_f1]
+        line_obj = mock.Mock()
+        cursor = mock.Mock()
+        with mock.patch.object(
+                self.pool,
+                "get",
+                side_effect=lambda model: {
+                    "giscedata.facturacio.importacio.linia": f1_obj,
+                    "refund.rectify.batch.line": line_obj,
+                }[model]):
+            with mock.patch.object(self.batch_obj, "search", return_value=[]):
+                with mock.patch.object(self.batch_obj, "create", return_value=12):
+                    batch_id = self.batch_obj.create_batch(
+                        cursor, self.uid, [second_f1.id, first_f1.id], context={}
+                    )
+
+        self.assertEqual(batch_id, 12)
+        self.assertEqual(cursor.execute.call_count, 0)
+        self.assertEqual(
+            [call[0][2] for call in line_obj.create.call_args_list],
+            [
+                {"batch_id": 12, "f1_id": first_f1.id, "sequence": 1},
+                {"batch_id": 12, "f1_id": second_f1.id, "sequence": 2},
+            ],
         )
 
 
