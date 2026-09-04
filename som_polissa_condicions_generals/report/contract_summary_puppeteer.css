@@ -120,6 +120,18 @@ body {
     color: white;
 }
 
+.price-summary {
+    break-inside: avoid;
+}
+
+.price-summary + .price-summary {
+    margin-top: 12px;
+}
+
+.price-summary__validity {
+    margin-bottom: 0;
+}
+
 .inline-label {
     font-weight: bold;
 }

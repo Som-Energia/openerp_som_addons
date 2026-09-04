@@ -69,12 +69,17 @@ class TestSummaryOfferTemplate(unittest.TestCase):
             formatLang=lambda value, digits: u"{0:.6f}".format(value),
         )
 
-        current_label = result.index("Current validity")
-        future_label = result.index("Future validity")
-        self.assertTrue(current_label < result.index("10.000000") < future_label)
-        self.assertTrue(current_label < result.index("0.100000") < future_label)
-        self.assertTrue(future_label < result.index("20.000000"))
-        self.assertTrue(future_label < result.index("0.200000"))
+        self.assertEqual(result.count(u"Resum econòmic"), 1)
+        positions = [
+            result.index(u"Resum econòmic"),
+            result.index("Current validity"),
+            result.index("10.000000"),
+            result.index("0.100000"),
+            result.index("Future validity"),
+            result.index("20.000000"),
+            result.index("0.200000"),
+        ]
+        self.assertEqual(positions, sorted(positions))
 
 
 class TestReportBackendContractSummary(testing.OOTestCase):
