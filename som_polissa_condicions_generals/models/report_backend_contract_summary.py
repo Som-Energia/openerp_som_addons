@@ -140,9 +140,7 @@ class ReportBackendContractSummary(ReportBackendCondicionsParticulars):
             "collective": autoconsum and getattr(autoconsum, "collectiu", False) or False,
         }
 
-    def get_economic_summary(self, prices, features):
-        pricelists = prices.get("pricelists", [])
-        pricelist = pricelists and pricelists[0] or {}
+    def get_economic_summary(self, pricelist, prices, features):
         power_prices = []
         for period, value in sorted(pricelist.get("power_prices_untaxed", {}).items()):
             power_prices.append({"period": period, "value": value})
@@ -157,8 +155,6 @@ class ReportBackendContractSummary(ReportBackendCondicionsParticulars):
                 generation_prices.append({"period": period, "value": value})
 
         return {
-            "is_indexed": prices.get("mostra_indexada", False),
-            "validity_text": pricelist.get("text_vigencia", ""),
             "tax_text": pricelist.get("text_impostos", ""),
             "power_prices": power_prices,
             "energy_prices": energy_prices,
@@ -193,12 +189,22 @@ class ReportBackendContractSummary(ReportBackendCondicionsParticulars):
                 "power": power,
             })
 
+        price_summaries = []
+        for pricelist in prices.get("pricelists", []):
+            price_summaries.append({
+                "validity_text": pricelist.get("text_vigencia", ""),
+                "economic_summary": self.get_economic_summary(
+                    pricelist, prices, features
+                ),
+            })
+
         return {
             "tariff_label": tariff_label,
             "duration_quarter": duration_quarter,
             "duration_year": duration_year,
             "powers": visible_powers,
-            "economic_summary": self.get_economic_summary(prices, features),
+            "is_indexed": prices.get("mostra_indexada", False),
+            "price_summaries": price_summaries,
         }
 
     def get_discount_data(self, cursor, uid, pol, context=None):
