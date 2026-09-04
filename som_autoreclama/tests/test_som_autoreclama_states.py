@@ -20,6 +20,39 @@ from destral.patch import PatchNewCursors
 
 class SomAutoreclamaStatesTest(SomAutoreclamaBaseTests):
     @mock.patch.object(som_autoreclama_state_updater.pooler, "get_db")
+    def test_update_items_does_not_query_coordinator_cursor(self, get_db_mock):
+        coordinator_cursor = mock.Mock()
+        coordinator_cursor.dbname = self.cursor.dbname
+        item_cursor = get_db_mock.return_value.cursor.return_value
+        updater_obj = self.get_model("som.autoreclama.state.updater")
+        context = {
+            "_autoreclama_review_states_cache": {
+                "polissa": [],
+            },
+        }
+
+        with mock.patch.object(
+            updater_obj, "get_autoreclama_state_name", return_value=(1, "state")
+        ) as get_state_mock, mock.patch.object(
+            updater_obj,
+            "update_item_if_possible",
+            return_value=(False, None, "unchanged"),
+        ) as update_item_mock:
+            updater_obj.update_items_if_possible(
+                coordinator_cursor, self.uid, [1], "polissa", False, context
+            )
+
+        get_state_mock.assert_called_once_with(
+            item_cursor, self.uid, 1, "polissa", context
+        )
+        update_item_mock.assert_called_once_with(
+            item_cursor, self.uid, 1, "polissa", context
+        )
+        item_cursor.commit.assert_called_once_with()
+        item_cursor.close.assert_called_once_with()
+        self.assertEqual(coordinator_cursor.method_calls, [])
+
+    @mock.patch.object(som_autoreclama_state_updater.pooler, "get_db")
     def test_state_updater_releases_coordinator_transaction_before_each_batch(
         self, get_db_mock
     ):
