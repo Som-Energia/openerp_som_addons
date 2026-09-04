@@ -14,6 +14,32 @@ class TestRedsysCardCollection(testing.OOTestCaseWithCursor):
         super(TestRedsysCardCollection, self).setUp()
         self.config_obj = self.openerp.pool.get("res.config")
         self.imd_obj = self.openerp.pool.get("ir.model.data")
+
+    def test_redsys_config_data_has_safe_defaults(self):
+        expected_values = {
+            "redsys_merchant_code": "DEMO_MERCHANT_CODE",
+            "redsys_private_key": "DEMO_PRIVATE_KEY",
+            "redsys_merchant_url": "https://example.invalid/redsys",
+            "redsys_endpoint_url": "https://sis.redsys.es/sis/rest/trataPeticionREST",
+            "redsys_terminal": "1",
+            "redsys_currency": "978",
+            "redsys_timeout": "30",
+        }
+
+        for key, expected_value in expected_values.items():
+            config_id = self.imd_obj.get_object_reference(
+                self.cursor, self.uid, "som_card_payment", key
+            )[1]
+            config = self.config_obj.browse(self.cursor, self.uid, config_id)
+            self.assertEqual(config.name, key)
+            self.assertEqual(config.value, expected_value)
+
+
+class TestRedsysCardCollectionConfigured(testing.OOTestCaseWithCursor):
+    def setUp(self):
+        super(TestRedsysCardCollectionConfigured, self).setUp()
+        self.config_obj = self.openerp.pool.get("res.config")
+        self.imd_obj = self.openerp.pool.get("ir.model.data")
         self.invoice_obj = self.openerp.pool.get("account.invoice")
         self.factura_obj = self.openerp.pool.get("giscedata.facturacio.factura")
         self.card_obj = self.openerp.pool.get("res.partner.creditcard")
@@ -49,25 +75,6 @@ class TestRedsysCardCollection(testing.OOTestCaseWithCursor):
             "redsys_tpv_pay_account_id",
             str(payment_mode.journal.default_credit_account_id.id),
         )
-
-    def test_redsys_config_data_has_safe_defaults(self):
-        expected_values = {
-            "redsys_merchant_code": "DEMO_MERCHANT_CODE",
-            "redsys_private_key": "DEMO_PRIVATE_KEY",
-            "redsys_merchant_url": "https://example.invalid/redsys",
-            "redsys_endpoint_url": "https://sis.redsys.es/sis/rest/trataPeticionREST",
-            "redsys_terminal": "1",
-            "redsys_currency": "978",
-            "redsys_timeout": "30",
-        }
-
-        for key, expected_value in expected_values.items():
-            config_id = self.imd_obj.get_object_reference(
-                self.cursor, self.uid, "som_card_payment", key
-            )[1]
-            config = self.config_obj.browse(self.cursor, self.uid, config_id)
-            self.assertEqual(config.name, key)
-            self.assertEqual(config.value, expected_value)
 
     def test_get_redsys_config_uses_default_timeout_when_invalid(self):
         self.config_obj.set(self.cursor, self.uid, "redsys_timeout", "invalid")

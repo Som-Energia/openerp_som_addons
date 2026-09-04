@@ -1,0 +1,224 @@
+#. module: som_card_payment
+#: field:giscedata.facturacio.factura,redsys_currency:0
+msgid "Moneda Redsys"
+msgstr ""
+
+#. module: som_card_payment
+#: constraint:ir.model:0
+msgid "The Object name must start with x_ and not contain any special character !"
+msgstr ""
+
+#. module: som_card_payment
+#: constraint:ir.actions.act_window:0
+msgid "Invalid model name in the action definition."
+msgstr ""
+
+#. module: som_card_payment
+#: view:giscedata.facturacio.factura:0
+msgid "Cobrament Redsys"
+msgstr ""
+
+#. module: som_card_payment
+#: selection:giscedata.facturacio.factura,redsys_collection_state:0
+msgid "Cobrat"
+msgstr ""
+
+#. module: som_card_payment
+#: model:ir.cron,name:som_card_payment.ir_cron_redsys_recurrent_card_collection
+msgid "Cobro automàtic de factures de targeta recurrent"
+msgstr ""
+
+#. module: som_card_payment
+#: model:ir.actions.act_window,name:som_card_payment.action_partner_creditcard_tree
+msgid "Targetes de partners"
+msgstr ""
+
+#. module: som_card_payment
+#: selection:giscedata.facturacio.factura,redsys_collection_state:0
+msgid "Pendent de revisio"
+msgstr ""
+
+#. module: som_card_payment
+#: code:addons/som_card_payment/models/giscedata_facturacio_factura.py:230
+#: code:addons/som_card_payment/models/giscedata_facturacio_factura.py:243
+#, python-format
+msgid "Cal configurar un ID positiu vàlid per %(key)s."
+msgstr ""
+
+#. module: som_card_payment
+#: selection:giscedata.facturacio.factura,redsys_collection_state:0
+msgid "Enviat a Redsys"
+msgstr ""
+
+#. module: som_card_payment
+#: constraint:payment.mode:0
+msgid "The SEPA creditor code is not correct"
+msgstr ""
+
+#. module: som_card_payment
+#: model:ir.module.module,shortdesc:som_card_payment.module_meta_information
+msgid "Pagament per targeta de Som Energia"
+msgstr ""
+
+#. module: som_card_payment
+#: code:addons/som_card_payment/models/giscedata_facturacio_factura.py:190
+#, python-format
+msgid "No s'ha pogut carregar la llibreria Sermepa. Revisa el runtime."
+msgstr ""
+
+#. module: som_card_payment
+#: field:giscedata.facturacio.factura,is_recurrent_card_payment:0
+#: model:payment.type,name:som_card_payment.payment_type_card_recurrent
+#: model:payment.type,note:som_card_payment.payment_type_card_recurrent
+msgid "Cobrament recurrent per targeta"
+msgstr ""
+
+#. module: som_card_payment
+#: code:addons/som_card_payment/models/giscedata_facturacio_factura.py:448
+#, python-format
+msgid "Sense detall"
+msgstr ""
+
+#. module: som_card_payment
+#: field:giscedata.facturacio.factura,redsys_response_code:0
+msgid "Codi Redsys"
+msgstr ""
+
+#. module: som_card_payment
+#: constraint:ir.ui.view:0
+msgid "Invalid XML for View Architecture! Check server logs for details (view name, model, line number and RNG error)."
+msgstr ""
+
+#. module: som_card_payment
+#: code:addons/som_card_payment/models/giscedata_facturacio_factura.py:273
+#, python-format
+msgid "No s'ha trobat cap període comptable obert per cobrar Redsys."
+msgstr ""
+
+#. module: som_card_payment
+#: field:res.partner.creditcard,active:0
+msgid "Activa"
+msgstr ""
+
+#. module: som_card_payment
+#: selection:giscedata.facturacio.factura,redsys_collection_state:0
+msgid "Denegat"
+msgstr ""
+
+#. module: som_card_payment
+#: model:ir.ui.menu,name:som_card_payment.menu_partner_creditcard_tree
+#: view:res.partner:0
+#: field:res.partner,creditcard_ids:0
+#: view:res.partner.creditcard:0
+msgid "Targetes"
+msgstr ""
+
+#. module: som_card_payment
+#: constraint:ir.cron:0
+msgid "Invalid arguments"
+msgstr ""
+
+#. module: som_card_payment
+#: code:addons/som_card_payment/models/account_invoice.py:30
+#, python-format
+msgid "No es poden afegir a una remesa les factures amb cobrament recurrent per targeta. Factures afectades: %s"
+msgstr ""
+
+#. module: som_card_payment
+#: code:addons/som_card_payment/models/giscedata_facturacio_factura.py:254
+#, python-format
+msgid "No existeix cap diari per %(key)s."
+msgstr ""
+
+#. module: som_card_payment
+#: model:ir.module.module,description:som_card_payment.module_meta_information
+msgid "Mòdul per gestionar el pagament per targeta de Som Energia"
+msgstr ""
+
+#. module: som_card_payment
+#: field:res.partner.creditcard,token:0
+msgid "Token"
+msgstr ""
+
+#. module: som_card_payment
+#: code:addons/som_card_payment/models/account_invoice.py:29
+#: code:addons/som_card_payment/models/giscedata_facturacio_factura.py:189
+#: code:addons/som_card_payment/models/giscedata_facturacio_factura.py:195
+#: code:addons/som_card_payment/models/giscedata_facturacio_factura.py:229
+#: code:addons/som_card_payment/models/giscedata_facturacio_factura.py:242
+#: code:addons/som_card_payment/models/giscedata_facturacio_factura.py:253
+#: code:addons/som_card_payment/models/giscedata_facturacio_factura.py:262
+#: code:addons/som_card_payment/models/giscedata_facturacio_factura.py:272
+#, python-format
+msgid "Error"
+msgstr ""
+
+#. module: som_card_payment
+#: field:giscedata.facturacio.factura,redsys_amount_cents:0
+msgid "Import Redsys en centims"
+msgstr ""
+
+#. module: som_card_payment
+#: code:addons/som_card_payment/models/giscedata_facturacio_factura.py:196
+#, python-format
+msgid "Falta configurar el codi de comerç o la clau privada de Redsys."
+msgstr ""
+
+#. module: som_card_payment
+#: field:giscedata.facturacio.factura,redsys_order_ref:0
+msgid "Ordre Redsys"
+msgstr ""
+
+#. module: som_card_payment
+#: field:res.partner.creditcard,partner_id:0
+msgid "Empresa"
+msgstr ""
+
+#. module: som_card_payment
+#: field:giscedata.facturacio.factura,redsys_response_message:0
+msgid "Resposta Redsys"
+msgstr ""
+
+#. module: som_card_payment
+#: field:giscedata.facturacio.factura,redsys_collection_state:0
+msgid "Estat cobrament Redsys"
+msgstr ""
+
+#. module: som_card_payment
+#: code:addons/som_card_payment/models/giscedata_facturacio_factura.py:263
+#, python-format
+msgid "No existeix cap compte per %(key)s."
+msgstr ""
+
+#. module: som_card_payment
+#: field:res.partner.creditcard,cof_txnid:0
+msgid "COF TxnId"
+msgstr ""
+
+#. module: som_card_payment
+#: field:giscedata.polissa,creditcard:0
+#: field:giscedata.polissa.modcontractual,creditcard:0
+#: view:res.partner:0
+#: view:res.partner.creditcard:0
+msgid "Targeta"
+msgstr ""
+
+#. module: som_card_payment
+#: field:res.partner.creditcard,expiry_date:0
+msgid "Data caducitat"
+msgstr ""
+
+#. module: som_card_payment
+#: model:ir.model,name:som_card_payment.model_res_partner_creditcard
+msgid "Targetes de partner"
+msgstr ""
+
+#. module: som_card_payment
+#: field:giscedata.facturacio.factura,redsys_card_id:0
+msgid "Targeta Redsys"
+msgstr ""
+
+#. module: som_card_payment
+#: field:res.partner.creditcard,masked_number:0
+msgid "Numero targeta"
+msgstr ""
