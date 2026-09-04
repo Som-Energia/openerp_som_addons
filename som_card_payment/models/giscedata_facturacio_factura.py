@@ -324,6 +324,7 @@ class GiscedataFacturacioFactura(osv.osv):
                 cursor, uid, template_id, context=context
             )
             send_wizard = self.pool.get("poweremail.send.wizard")
+            mailbox_obj = self.pool.get("poweremail.mailbox")
             send_context = (context or {}).copy()
             send_context.update({
                 "active_ids": [factura_id],
@@ -341,7 +342,23 @@ class GiscedataFacturacioFactura(osv.osv):
                 "from": send_context["from"],
             }
             wizard_id = send_wizard.create(cursor, uid, params, send_context)
-            return send_wizard.send_mail(cursor, uid, [wizard_id], send_context)
+            mail_ids = send_wizard.save_to_mailbox(
+                cursor, uid, [wizard_id], context=send_context
+            )
+            if not mail_ids:
+                return -1
+
+            mail_id = mail_ids[0]
+            if not mailbox_obj.is_valid(cursor, uid, mail_id):
+                mailbox_obj.write(
+                    cursor, uid, [mail_id], {"folder": "error"}, context=send_context
+                )
+                return -1
+
+            mailbox_obj.write(
+                cursor, uid, [mail_id], {"folder": "outbox"}, context=send_context
+            )
+            return True
         except Exception as exc:
             logger.info(
                 "ERROR sending Redsys decline email to factura {factura_id}: "
