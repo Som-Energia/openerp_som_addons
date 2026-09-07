@@ -2,6 +2,7 @@
 from __future__ import absolute_import
 
 from destral import testing
+from datetime import date
 from osv.orm import FieldsValidationException
 
 
@@ -252,3 +253,82 @@ class TestCardPaymentInPolissa(testing.OOTestCaseWithCursor):
                     "creditcard": invalid_card_id,
                 },
             )
+
+    def test_convert_to_recurring_card_returns_noop_for_equivalent_card(self):
+        polissa = self.polissa_obj.browse(self.cursor, self.uid, self.polissa_id)
+        card_id = self.card_obj.create(
+            self.cursor,
+            self.uid,
+            {
+                "partner_id": polissa.pagador.id,
+                "token": "tok_convert_noop",
+                "cof_txnid": "cof_convert_noop",
+                "expiry_date": "12/35",
+                "masked_number": "**** **** **** 4242",
+            },
+        )
+        self.polissa_obj.write(
+            self.cursor,
+            self.uid,
+            [self.polissa_id],
+            {
+                "payment_mode_id": self.payment_mode_id,
+                "tipo_pago": self.payment_type_id,
+                "creditcard": card_id,
+            },
+        )
+
+        result = self.polissa_obj.convert_to_recurring_card(
+            self.cursor,
+            self.uid,
+            self.polissa_id,
+            {
+                "token": "tok_convert_noop",
+                "cof_txnid": "cof_convert_noop",
+                "expiry_date": "12/35",
+                "masked_number": "**** **** **** 4242",
+            },
+        )
+
+        self.assertEqual(result["status"], "no-op")
+        self.assertEqual(result["reason_code"], "already_converted")
+        self.assertEqual(result["card"]["id"], card_id)
+        self.assertEqual(result["policy"]["effective_date"], date.today().strftime("%Y-%m-%d"))
+
+    def test_convert_to_recurring_card_creates_today_modification(self):
+        self._ensure_modcontractual_for_polissa()
+        self.polissa_obj.wkf_activa(self.cursor, self.uid, [self.polissa_id])
+        polissa_id = self.polissa_id
+        card_data = {
+            "token": "tok_convert_today",
+            "cof_txnid": "cof_convert_today",
+            "expiry_date": "12/35",
+            "masked_number": "**** **** **** 4243",
+        }
+
+        result = self.polissa_obj.convert_to_recurring_card(
+            self.cursor, self.uid, polissa_id, card_data
+        )
+
+        self.assertEqual(result["status"], "complete")
+        self.assertEqual(result["card"]["disposition"], "created")
+        self.assertEqual(result["policy"], {
+            "id": polissa_id,
+            "disposition": "updated",
+            "effective_date": date.today().strftime("%Y-%m-%d"),
+        })
+        polissa = self.polissa_obj.browse(self.cursor, self.uid, polissa_id)
+        self.assertEqual(polissa.creditcard.id, result["card"]["id"])
+        self.assertEqual(polissa.tipo_pago.id, self.payment_type_id)
+        self.assertEqual(polissa.payment_mode_id.id, self.payment_mode_id)
+
+    def test_recurring_card_result_is_partial_for_remitted_noop_policy(self):
+        result = self.polissa_obj._recurring_card_result(
+            {"id": 10, "disposition": "reused"},
+            {"id": 11, "disposition": "unchanged", "effective_date": "2026-09-07"},
+            {"migrated": [], "remitted": [12], "failed": [], "unchanged": []},
+            "2026-09-07",
+        )
+
+        self.assertEqual(result["status"], "partial")
+        self.assertEqual(result["reason_code"], "invoice_excluded_or_failed")

@@ -25,6 +25,63 @@ class GiscedataFacturacioFactura(osv.osv):
         ("review", "Pendent de revisio"),
     ]
 
+    def migrate_recurring_card_invoices(
+        self, cursor, uid, polissa_id, payment_type_id, today, context=None
+    ):
+        context = (context or {}).copy()
+        invoice_obj = self.pool.get("account.invoice")
+        self.check_perm(cursor, uid, "read", context=context)
+        invoice_obj.check_perm(cursor, uid, "write", context=context)
+        factura_ids = self.search(
+            cursor,
+            uid,
+            [
+                ("polissa_id", "=", polissa_id),
+                ("type", "=", "out_invoice"),
+                ("state", "=", "open"),
+                ("invoice_id.residual", ">", 0),
+                ("date_due", ">=", today),
+            ],
+            order="id",
+            context=context,
+        )
+        result = {"migrated": [], "remitted": [], "failed": [], "unchanged": []}
+        for factura in self.browse(cursor, uid, factura_ids, context=context):
+            if factura.payment_order_id:
+                result["remitted"].append(factura.id)
+                continue
+            if factura.redsys_collection_state:
+                result["unchanged"].append(
+                    {"id": factura.id, "reason_code": "card_attempted"}
+                )
+                continue
+            if (
+                factura.invoice_id.payment_type
+                and factura.invoice_id.payment_type.id == payment_type_id
+            ):
+                result["unchanged"].append(
+                    {"id": factura.id, "reason_code": "already_recurring"}
+                )
+                continue
+            savepoint = "recurring_card_invoice_%s_%s" % (factura.id, id(cursor))
+            cursor.savepoint(savepoint)
+            try:
+                invoice_obj.write(
+                    cursor,
+                    uid,
+                    [factura.invoice_id.id],
+                    {"payment_type": payment_type_id},
+                    context=context,
+                )
+            except osv.except_osv:
+                cursor.rollback(savepoint)
+                result["failed"].append(
+                    {"id": factura.id, "reason_code": "payment_type_write_failed"}
+                )
+            else:
+                result["migrated"].append(factura.id)
+        return result
+
     def _is_recurrent_card_payment(self, cursor, uid, ids, name, arg, context=None):
         result = {}
         for factura in self.browse(cursor, uid, ids, context=context):

@@ -405,3 +405,35 @@ class TestRedsysCardCollectionConfigured(testing.OOTestCaseWithCursor):
         self.assertEqual(len(first_order), 12)
         self.assertEqual(len(second_order), 12)
         self.assertNotEqual(first_order, second_order)
+
+    def test_migrate_recurring_card_invoices_keeps_remitted_invoice_unchanged(self):
+        factura = self._prepare_eligible_invoice()
+        payment_mode_id = self.imd_obj.get_object_reference(
+            self.cursor, self.uid, "account_payment", "payment_mode_demo"
+        )[1]
+        payment_mode = self.openerp.pool.get("payment.mode").read(
+            self.cursor, self.uid, payment_mode_id, ["name"]
+        )
+        payment_order_id = self.openerp.pool.get(
+            "payment.order"
+        ).get_or_create_open_payment_order(
+            self.cursor, self.uid, payment_mode["name"]
+        )
+        self.invoice_obj.write(
+            self.cursor,
+            self.uid,
+            [factura.invoice_id.id],
+            {"payment_order_id": payment_order_id, "payment_type": False},
+        )
+
+        result = self.factura_obj.migrate_recurring_card_invoices(
+            self.cursor,
+            self.uid,
+            factura.polissa_id.id,
+            self.card_type_id,
+            date.today().strftime("%Y-%m-%d"),
+        )
+
+        self.assertIn(factura.id, result["remitted"])
+        invoice = self.invoice_obj.browse(self.cursor, self.uid, factura.invoice_id.id)
+        self.assertNotEqual(invoice.payment_type.id, self.card_type_id)

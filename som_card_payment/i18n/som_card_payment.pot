@@ -1,4 +1,25 @@
 #. module: som_card_payment
+#: code:addons/som_card_payment/models/res_partner_creditcard.py:55
+msgid "Card token conflict"
+msgstr ""
+
+#. module: som_card_payment
+#: code:addons/som_card_payment/models/res_partner_creditcard.py:20
+msgid "Invalid card data"
+msgstr ""
+
+#. module: som_card_payment
+#: code:addons/som_card_payment/models/res_partner_creditcard.py:21
+#, python-format
+msgid "Missing required card fields: %s"
+msgstr ""
+
+#. module: som_card_payment
+#: code:addons/som_card_payment/models/res_partner_creditcard.py:56
+msgid "The stored card token has different payer or metadata."
+msgstr ""
+
+#. module: som_card_payment
 #: field:giscedata.facturacio.factura,redsys_currency:0
 msgid "Moneda Redsys"
 msgstr ""
