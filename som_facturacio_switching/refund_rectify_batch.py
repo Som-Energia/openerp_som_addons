@@ -300,8 +300,9 @@ class RefundRectifyBatch(osv.osv):
         for line_id, sequence, f1_id in pending_lines:
             f1_cursor = database.cursor()
             try:
+                started_at = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
                 line_obj._mark_line_running(
-                    f1_cursor, uid, line_id, context=context
+                    f1_cursor, uid, line_id, started_at=started_at, context=context
                 )
                 result = line_obj.process_one_f1(
                     f1_cursor, uid, f1_id, expected_polissa_id=polissa_id,
@@ -317,7 +318,8 @@ class RefundRectifyBatch(osv.osv):
                 persistence_cursor = database.cursor()
                 try:
                     line_obj._persist_line_outcome(
-                        persistence_cursor, uid, line_id, error=error, context=context
+                        persistence_cursor, uid, line_id, error=error,
+                        started_at=started_at, context=context
                     )
                     blocked_line_ids = line_obj.search(
                         persistence_cursor,
@@ -445,18 +447,21 @@ class RefundRectifyBatchLine(osv.osv):
         "state": lambda *a: "pending",
     }
 
-    def _mark_line_running(self, cursor, uid, line_id, context=None):
+    def _mark_line_running(self, cursor, uid, line_id, started_at=None, context=None):
         line = self.browse(cursor, uid, line_id, context=context)
         if line.state != "pending":
             return False
+        if started_at is None:
+            started_at = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         self.write(cursor, uid, [line_id], {
             "state": "running",
-            "started_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+            "started_at": started_at,
             "finished_at": False,
         }, context=context)
         return True
 
-    def _persist_line_outcome(self, cursor, uid, line_id, result=None, error=None, context=None):
+    def _persist_line_outcome(
+            self, cursor, uid, line_id, result=None, error=None, started_at=None, context=None):
         """Save a functional outcome or a technical failure for one batch line."""
         result = result or {}
         vals = {
@@ -467,6 +472,8 @@ class RefundRectifyBatchLine(osv.osv):
             "error": str(error) if error else False,
             "generated_invoice_ids": [(6, 0, result.get("generated_invoice_ids", []))],
         }
+        if started_at is not None:
+            vals["started_at"] = started_at
         self.write(cursor, uid, [line_id], vals, context=context)
         batch_id = self.read(cursor, uid, line_id, ["batch_id"], context=context)["batch_id"][0]
         self.pool.get("refund.rectify.batch")._refresh_execution(
