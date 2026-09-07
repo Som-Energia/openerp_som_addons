@@ -12,6 +12,7 @@ class WizardRefundRectifyBatch(osv.osv_memory):
         context = context or {}
         active_ids = context.get("active_ids", [])
         batch_obj = self.pool.get("refund.rectify.batch")
+        # context["refund_rectify_debug_sync"] = True  # activate for single thread debugging
         batch_id = batch_obj.create_batch(cursor, uid, active_ids, context=context)
         batch_obj.schedule_batch_execution(cursor, uid, batch_id, context=context)
 

@@ -368,6 +368,12 @@ class RefundRectifyBatch(osv.osv):
 
     def schedule_batch_execution(self, cursor, uid, batch_id, context=None):
         """Request asynchronous execution and defer worker startup to commit."""
+        context = context or {}
+        if context.get("refund_rectify_debug_sync"):
+            cursor.commit()
+            return self.process_batch_f1_lines(
+                cursor, uid, batch_id, context=context
+            )
         queued_job = self.process_batch_f1_lines_async(cursor, uid, batch_id)
         self.write(
             cursor,
