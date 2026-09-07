@@ -5,6 +5,7 @@ from osv import osv
 from tqdm import tqdm
 from tools.translate import _
 from tools import email_send
+from tools.sql_utils import auto_close_cursor
 import json
 import pooler
 
@@ -455,6 +456,7 @@ class SomAutoreclamaStateUpdater(osv.osv_memory):
                 batch_cursor.rollback()
                 batch_cursor.close()
 
+    @auto_close_cursor()
     def _cronjob_state_updater_mail_text(self, cursor, uid, data=None, context=None):
         if not data:
             data = {}
@@ -471,8 +473,14 @@ class SomAutoreclamaStateUpdater(osv.osv_memory):
         emails_to = emails
 
         if emails_to:
+            email_cursor = pooler.get_db(cursor.dbname).cursor(readonly=True)
             user_obj = self.pool.get("res.users")
-            email_from = user_obj.browse(cursor, uid, uid).address_id.email
+            try:
+                email_from = user_obj.browse(
+                    email_cursor, uid, uid
+                ).address_id.email
+            finally:
+                email_cursor.close()
             email_send(email_from, emails_to, subject, msg)
 
         return True
