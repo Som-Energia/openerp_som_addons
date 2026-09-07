@@ -398,6 +398,12 @@ class RefundRectifyBatchLine(osv.osv):
     _description = "Refund and rectify F1 batch line"
     _order = "batch_id, sequence, id"
 
+    def _get_generated_invoice_count(self, cursor, uid, ids, name, arg, context=None):
+        result = {}
+        for line in self.browse(cursor, uid, ids, context=context):
+            result[line.id] = len(line.generated_invoice_ids)
+        return result
+
     _columns = {
         "batch_id": fields.many2one(
             "refund.rectify.batch", "Tasca", required=True, ondelete="cascade", readonly=True
@@ -422,6 +428,13 @@ class RefundRectifyBatchLine(osv.osv):
             "line_id",
             "factura_id",
             "Factures generades",
+            readonly=True,
+        ),
+        "generated_invoice_count": fields.function(
+            _get_generated_invoice_count,
+            method=True,
+            type="integer",
+            string="Factures generades",
             readonly=True,
         ),
         "result": fields.text("Resultat", readonly=True),
