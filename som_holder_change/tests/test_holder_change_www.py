@@ -71,7 +71,7 @@ class TestHolderChangeWww(testing.OOTestCase):
 
     def test_create_request_resolves_active_contract(self):
         result = self.www_obj.create_request(
-            self.cursor, self.uid, "holder-www-001", self.payload()
+            self.cursor, self.uid, self.payload()
         )
 
         self.assertTrue(result["success"], result)
@@ -85,15 +85,12 @@ class TestHolderChangeWww(testing.OOTestCase):
         self.assertEqual(request["owner_change_type"], "T")
         self.assertEqual(request["state"], "received")
 
-    def test_create_request_is_idempotent(self):
+    def test_create_request_returns_internal_request_id(self):
         first = self.www_obj.create_request(
-            self.cursor, self.uid, "holder-www-002", self.payload()
-        )
-        second = self.www_obj.create_request(
-            self.cursor, self.uid, "holder-www-002", self.payload()
+            self.cursor, self.uid, self.payload()
         )
 
-        self.assertEqual(second, first)
+        self.assertTrue(first["request_id"])
 
     def test_create_request_rejects_same_holder(self):
         payload = self.payload()
@@ -104,7 +101,7 @@ class TestHolderChangeWww(testing.OOTestCase):
         })
 
         result = self.www_obj.create_request(
-            self.cursor, self.uid, "holder-www-003", payload
+            self.cursor, self.uid, payload
         )
 
         self.assertFalse(result["success"])
@@ -115,7 +112,7 @@ class TestHolderChangeWww(testing.OOTestCase):
         payload["payment"]["sepa_accepted"] = False
 
         result = self.www_obj.create_request(
-            self.cursor, self.uid, "holder-www-004", payload
+            self.cursor, self.uid, payload
         )
 
         self.assertFalse(result["success"])
@@ -129,7 +126,7 @@ class TestHolderChangeWww(testing.OOTestCase):
         })
 
         result = self.www_obj.create_request(
-            self.cursor, self.uid, "holder-www-005", payload
+            self.cursor, self.uid, payload
         )
 
         self.assertTrue(result["success"], result)
@@ -150,7 +147,7 @@ class TestHolderChangeWww(testing.OOTestCase):
         payload["supply_point"]["cups"] = inactive.cups.name
 
         result = self.www_obj.create_request(
-            self.cursor, self.uid, "holder-www-006", payload
+            self.cursor, self.uid, payload
         )
 
         self.assertFalse(result["success"])
