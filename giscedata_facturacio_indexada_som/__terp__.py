@@ -19,6 +19,7 @@
     "update_xml": [
         'giscedata_polissa_view.xml',
         'giscedata_facturacio_indexada_som_data.xml',
+        'indexed_formula_data.xml',
     ],
     "active": False,
     "installable": True

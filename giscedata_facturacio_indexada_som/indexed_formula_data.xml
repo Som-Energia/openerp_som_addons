@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data noupdate="1">
+        <record model="giscemisc.facturacio.indexed.formula" id="facturacio_indexada_base.indexed_formula_indexada">
+            <field name="formula">[((PRMNCUR - PC3_REE) + PC3_BOE + OMIE_REE ) * (1 + Perdidas) + K + D + FONDO_EFICIENCIA] * (1 + IMU) + PA</field>
+        </record>
+        <record model="giscemisc.facturacio.indexed.formula" id="indexed_formula_peninsula_som" forcecreate="1">
+            <field name="name">Indexada Península</field>
+            <field name="method">phf_calc_peninsula</field>
+            <field name="formula">[(PMD + PC + POS + SI + OMIE_REE + H) * (1 + Perdidas) + FNEE + K + D] * (1 + IMU) + PA</field>
+        </record>
+        <record model="giscemisc.facturacio.indexed.formula" id="indexed_formula_balears_som" forcecreate="1">
+            <field name="name">Indexada Balears</field>
+            <field name="method">phf_calc_balears</field>
+            <field name="formula">[(SPHDEM + PC_REE + SI + REE) * (1 + Perdidas) + FNEE + K + D] * (1 + IMU) + PA</field>
+        </record>
+        <record model="giscemisc.facturacio.indexed.formula" id="indexed_formula_canaries_som" forcecreate="1">
+            <field name="name">Indexada Canàries</field>
+            <field name="method">phf_calc_canaries</field>
+            <field name="formula">[(SPHDEM + PC_REE + SI + REE) * (1 + Perdidas) + FNEE + K + D] * (1 + IMU) + PA</field>
+        </record>
+        <record model="giscemisc.facturacio.indexed.formula" id="indexed_formula_esmasa_som" forcecreate="1">
+            <field name="name">Indexada ESMASA</field>
+            <field name="method">phf_calc_esmasa</field>
+            <field name="formula">[(PMD + PC + POS + DSV + SI + OMIE_REE) * (1 + Perdidas) * (1 + IMU) + K + D + PA</field>
+        </record>
+        <record model="giscemisc.facturacio.indexed.formula" id="indexed_formula_peninsula_2024_som" forcecreate="1">
+            <field name="name">Indexada Península 2024</field>
+            <field name="method">phf_calc_peninsula_2024</field>
+            <field name="formula">[(PMD + PC + POS + DSV + GDOS + OMIE_REE) * (1 + Perdidas) + FNEE + K + D] * (1 + IMU) + PA</field>
+        </record>
+        <record model="giscemisc.facturacio.indexed.formula" id="indexed_formula_baleares_2024_som" forcecreate="1">
+            <field name="name">Indexada Balears 2024</field>
+            <field name="method">phf_calc_balears_2024</field>
+            <field name="formula">[(SPHDEM + PC_REE + DSV + REE + GDOS) * (1 + Perdidas) + FNEE + K + D] * (1 + IMU) + PA</field>
+        </record>
+        <record model="giscemisc.facturacio.indexed.formula" id="indexed_formula_canaries_2024_som" forcecreate="1">
+            <field name="name">Indexada Canàries 2024</field>
+            <field name="method">phf_calc_canaries_2024</field>
+            <field name="formula">[(SPHDEM + PC_REE + DSV + REE + GDOS) * (1 + Perdidas) + FNEE + K + D] * (1 + IMU) + PA</field>
+        </record>
+    </data>
+</openerp>
