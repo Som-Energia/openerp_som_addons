@@ -50,11 +50,11 @@ class TestRedsysCardCollection(testing.OOTestCaseWithCursor):
             str(payment_mode.journal.default_credit_account_id.id),
         )
 
-    def test_redsys_config_data_has_safe_defaults(self):
+    def test_redsys_config_is_configured_for_tests(self):
         expected_values = {
-            "redsys_merchant_code": "DEMO_MERCHANT_CODE",
-            "redsys_private_key": "DEMO_PRIVATE_KEY",
-            "redsys_merchant_url": "https://example.invalid/redsys",
+            "redsys_merchant_code": "999008881",
+            "redsys_private_key": "secret",
+            "redsys_merchant_url": "https://merchant.local/notify",
             "redsys_endpoint_url": "https://sis.redsys.es/sis/rest/trataPeticionREST",
             "redsys_terminal": "1",
             "redsys_currency": "978",
