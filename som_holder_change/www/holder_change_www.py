@@ -2,9 +2,12 @@
 from __future__ import absolute_import, unicode_literals
 
 import re
+import time
 from copy import deepcopy
 
 from osv import osv
+from oorq.decorators import job
+from service.security import Sudo
 from tools.translate import _
 
 
@@ -15,6 +18,7 @@ LEGAL_PERSON_PREFIXES = set("ABCDEFGHJNPQRSUVW")
 class SomHolderChangeWww(osv.osv_memory):
     _name = "som.holder.change.www"
     _description = "Holder change web facade"
+    _SIGNATURE_ERROR_STATUSES = ("error", "canceled", "declined", "expired")
 
     def _error(self, code, message):
         return {"success": False, "code": code, "error": message}
@@ -34,16 +38,19 @@ class SomHolderChangeWww(osv.osv_memory):
                 _("Missing required fields: {}.").format(", ".join(missing)),
             )
 
-        if not payload.get("privacy_policy_accepted") \
-                or not payload.get("terms_accepted") \
-                or not payload["payment"].get("sepa_accepted"):
+        if not payload.get("privacy_policy_accepted") or not payload.get("terms_accepted"):
             return self._error(
                 "CONSENT_REQUIRED",
-                _("Privacy, contractual and SEPA consent are required."),
+                _("Privacy and contractual consent are required."),
             )
 
+        payment_method = payload.get("payment_method")
+        if payment_method not in ("bank", "card"):
+            return self._error("INVALID_PAYMENT_METHOD", _("Payment method must be bank or card."))
+        if payment_method == "bank" and not payload["payment"].get("sepa_accepted"):
+            return self._error("CONSENT_REQUIRED", _("SEPA consent is required for bank payment."))
+
         required = {
-            "payment": ["iban", "sepa_accepted", "voluntary_cent"],
             "supply_point": ["cups", "address"],
             "member": ["invite_token", "become_member", "link_member"],
             "especial_cases": ["reason_death", "reason_merge", "reason_electrodep"],
@@ -52,6 +59,9 @@ class SomHolderChangeWww(osv.osv_memory):
                 "email", "phone1", "language",
             ],
         }
+        required["payment"] = ["voluntary_cent"]
+        if payment_method == "bank":
+            required["payment"].extend(["iban", "sepa_accepted"])
         for section, fields_to_check in required.items():
             missing = self._missing_fields(payload[section], fields_to_check)
             if missing:
@@ -141,6 +151,15 @@ class SomHolderChangeWww(osv.osv_memory):
         ])
         return "S" if special_case else "T"
 
+    def _get_request(self, cursor, uid, request_id, cups, context=None):
+        request = self.pool.get("som.holder.change.request").browse(
+            cursor, uid, request_id, context=context
+        )
+        if self._normalize_cups(cups) != request.cups:
+            raise osv.except_osv(_("Invalid holder change"), _(
+                "The request does not match this CUPS."))
+        return request
+
     def create_request(self, cursor, uid, payload, context=None):
         if context is None:
             context = {}
@@ -178,6 +197,20 @@ class SomHolderChangeWww(osv.osv_memory):
             },
             context=context,
         )
+        # The simulation uses an independent cursor, so it must see the request.
+        cursor.commit()
+        try:
+            request_obj.prepare(cursor, uid, request_id, context=context)
+        except Exception as error:
+            request_obj.write(
+                cursor,
+                uid,
+                [request_id],
+                {"state": "validation_error", "error_code": "SIMULATION_ERROR",
+                    "error_message": str(error)},
+                context=context,
+            )
+            return self._error("SIMULATION_ERROR", str(error))
 
         request = request_obj.read(
             cursor, uid, request_id, ["state"], context=context
@@ -188,6 +221,102 @@ class SomHolderChangeWww(osv.osv_memory):
             "state": request["state"],
             "signature_url": False,
         }
+
+    def add_payment_card_data(self, cursor, uid, request_id, card_values, context=None):
+        request_obj = self.pool.get("som.holder.change.request")
+        request = request_obj.browse(cursor, uid, request_id, context=context)
+        cursor.commit()
+        request_obj.set_card_data(cursor, uid, request_id, card_values, context=context)
+        return {"success": True, "request_id": request.id, "state": "awaiting_signature"}
+
+    def sign_request(self, cursor, uid, request_id, cups, context=None):
+        if context is None:
+            context = {}
+        request = self._get_request(cursor, uid, request_id, cups, context=context)
+        if request.signature_process_id:
+            return {"url": request.signature_process_id.signature_url}
+        if request.state != "awaiting_signature":
+            raise osv.except_osv(_("Invalid request state"), _(
+                "The request is not ready for signing."))
+
+        holder = request.payload["holder"]
+        files = [(0, 0, {"doc_file": request.contract_pdf,
+                  "filename": "contract-with-summary.pdf"})]
+        if request.mandate_pdf:
+            files.append((0, 0, {"doc_file": request.mandate_pdf,
+                         "filename": "bank-authorization.pdf"}))
+        process_obj = self.pool.get("giscedata.signatura.process")
+        values = {
+            "delivery_type": "url",
+            "provider": "signaturit",
+            "lang": holder["language"],
+            "data": "{}",
+            "all_signed": True,
+            "recipients": [(0, 0, {"name": holder["name"], "email": holder["email"]})],
+            "files": files,
+        }
+        cursor.commit()
+        with Sudo(uid=uid, gid=0):
+            process_id = process_obj.create(cursor, uid, values, context=context)
+            process_obj.start(cursor, uid, [process_id], context=context)
+        request_obj = self.pool.get("som.holder.change.request")
+        request_obj.write(cursor, uid, [request_id], {
+                          "signature_process_id": process_id}, context=context)
+
+        deadline = time.time() + 200.0
+        signature_url = False
+        while time.time() < deadline:
+            process = process_obj.read(cursor, uid, process_id, [
+                                       "signature_url", "status"], context=context)
+            signature_url = process["signature_url"]
+            if signature_url:
+                break
+            if process["status"] in self._SIGNATURE_ERROR_STATUSES:
+                raise osv.except_osv(_("Signature error"), _("The signature process failed."))
+            time.sleep(0.2)
+        if not signature_url:
+            raise osv.except_osv(_("Signature error"), _(
+                "Timed out waiting for the signature URL."))
+        lang = holder["language"].split("_")[0]
+        signature_url = signature_url.replace(
+            "app.", "sign-app.").replace("document", "v1/{}".format(lang))
+        return {"url": signature_url}
+
+    def execute_request(self, cursor, uid, request_id, cups, context=None):
+        if context is None:
+            context = {}
+        request = self._get_request(cursor, uid, request_id, cups, context=context)
+        if not request.signature_process_id:
+            raise osv.except_osv(_("Signature required"), _(
+                "The request has not been sent for signing."))
+        process_obj = self.pool.get("giscedata.signatura.process")
+        process_obj.update(cursor, uid, [request.signature_process_id.id], context=context)
+        status = process_obj.read(cursor, uid, request.signature_process_id.id, [
+                                  "status"], context=context)["status"]
+        if status != "completed":
+            raise osv.except_osv(_("Signature required"), _(
+                "The signature has not been completed."))
+        request_obj = self.pool.get("som.holder.change.request")
+        request_obj.write(cursor, uid, [request_id], {"state": "queued"}, context=context)
+        self.execute_request_async(cursor, uid, request_id, context=context)
+        return {"success": True, "request_id": request_id, "state": "queued"}
+
+    @job(queue="leads", timeout=300)
+    def execute_request_async(self, cursor, uid, request_id, context=None):
+        request_obj = self.pool.get("som.holder.change.request")
+        try:
+            request_obj.write(cursor, uid, [request_id], {"state": "signed"}, context=context)
+            return request_obj.execute(cursor, uid, request_id, context=context)
+        except Exception as error:
+            request_obj.write(
+                cursor,
+                uid,
+                [request_id],
+                {"state": "execution_error", "error_code": "EXECUTION_ERROR",
+                    "error_message": str(error)},
+                context=context,
+            )
+            raise
 
 
 SomHolderChangeWww()
