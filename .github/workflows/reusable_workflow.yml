@@ -176,9 +176,9 @@ jobs:
           dump_file="$RUNNER_TEMP/${{ inputs.module }}.dump"
           docker exec -e PGPASSWORD="$POSTGRES_PASSWORD" "$POSTGRES_CONTAINER" pg_dump -U "$POSTGRES_USER" --format=custom --no-owner "$test_db" > "$dump_file"
           base64 --wrap=0 "$dump_file" > "${dump_file}.base64"
-          jq -n --arg module "${{ inputs.module }}" --rawfile db "${dump_file}.base64" \
-            '{module_name: $module, db: $db}' | \
-            curl --fail --show-error --silent --retry 3 --retry-all-errors \
+          jq -n --arg module_name "${{ inputs.module }}" --rawfile db "${dump_file}.base64" \
+            '{module_name: $module_name, db: $db}' | \
+            curl --fail --show-error --silent --retry 3 \
               --connect-timeout 15 --max-time 900 \
               -X POST "$MOTOSERRA_URL/databases" \
               -H "Authorization: Bearer $MOTOSERRA_TOKEN" \
