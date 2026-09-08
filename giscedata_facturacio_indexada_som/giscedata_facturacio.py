@@ -19,6 +19,9 @@ class GiscedataFacturacioFacturador(osv.osv):
 
     def versions_de_preus(self, cursor, uid, polissa_id, data_inici,
                           data_final, context=None):
+        if context is None:
+            context = {}
+
         res = super(GiscedataFacturacioFacturador, self).versions_de_preus(
             cursor, uid, polissa_id, data_inici, data_final, context
         )
