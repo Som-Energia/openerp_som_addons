@@ -32,6 +32,10 @@ on:
         required: true
       CODECOV_TOKEN:
         required: true
+      MOTOSERRA_URL:
+        required: false
+      MOTOSERRA_TOKEN:
+        required: false
 
 env:
   POSTGRES_USER: erp
@@ -104,8 +108,14 @@ jobs:
           PYTHON_VERSION: ${{ matrix.python-version }}
         run: .ci/openerp_som_addons/scripts/bootstrap-erp-env.sh
 
+      - name: Rebuild addon links from the PR checkout
+        run: |
+          rm -rf .ci/openerp_som_addons
+          (cd ../erp && ./tools/link_addons.sh)
+
       - name: Run Tests
         env:
+          GITHUB_TOKEN: ${{ secrets.ACCESS_TOKEN_GA }}
           ESIOS_TOKEN: ${{ secrets.ESIOS_TOKEN }}
           SRID: ${{ secrets.SRID }}
         run: |
@@ -127,7 +137,67 @@ jobs:
           export OPENERP_SECRET="verysecret"
           export OPENERP_IGNORE_PUBSUB=1
           cd ${{github.workspace}}
-          destral --report-coverage --enable-coverage --report-junitxml ${{github.workspace}}/test-results/destral -m ${{ inputs.module }}
+          export GIT_TERMINAL_PROMPT=0
+
+          git config --global --get-regexp '^url\..*\.insteadof$' || true
+          git config --global --show-origin --get-regexp '^url\..*\.insteadof$' || true
+          test -n "${GITHUB_TOKEN:-}" && echo "GITHUB_TOKEN is set" || echo "GITHUB_TOKEN is missing"
+
+          git config --global \
+            url."https://x-access-token:${GITHUB_TOKEN}@github.com/".insteadOf \
+            "ssh://git@github.com/"
+
+          if [ "${{ inputs.all_modules }}" = "true" ]; then
+            destral --report-coverage --enable-coverage --report-junitxml ${{github.workspace}}/test-results/destral -m ${{ inputs.module }} --no-dropdb
+          else
+            destral --report-coverage --enable-coverage --report-junitxml ${{github.workspace}}/test-results/destral -m ${{ inputs.module }}
+          fi
+
+      - name: Upload module database to Motoserra
+        if: ${{ always() && inputs.all_modules == 'true' }}
+        env:
+          MOTOSERRA_URL: ${{ secrets.MOTOSERRA_URL }}
+          MOTOSERRA_TOKEN: ${{ secrets.MOTOSERRA_TOKEN }}
+          POSTGRES_CONTAINER: ${{ job.services.postgres.id }}
+        run: |
+          set -euo pipefail
+          test -n "$POSTGRES_CONTAINER"
+
+          test_db="$(docker exec -e PGPASSWORD="$POSTGRES_PASSWORD" "$POSTGRES_CONTAINER" psql -U "$POSTGRES_USER" -d postgres -Atc "SELECT datname FROM pg_database WHERE datname LIKE 'test\\_%' ESCAPE '\\' ORDER BY oid DESC LIMIT 1")"
+          test -n "$test_db"
+          case "$test_db" in
+            test_*) ;;
+            *) exit 1 ;;
+          esac
+
+          printf '%s' "$test_db" > "$RUNNER_TEMP/motoserra-test-db"
+          test -n "$MOTOSERRA_URL"
+          test -n "$MOTOSERRA_TOKEN"
+          dump_file="$RUNNER_TEMP/${{ inputs.module }}.dump"
+          docker exec -e PGPASSWORD="$POSTGRES_PASSWORD" "$POSTGRES_CONTAINER" pg_dump -U "$POSTGRES_USER" --format=custom --no-owner "$test_db" > "$dump_file"
+          base64 --wrap=0 "$dump_file" > "${dump_file}.base64"
+          jq -n --arg module_name "${{ inputs.module }}" --rawfile db "${dump_file}.base64" \
+            '{module_name: $module_name, db: $db}' | \
+            curl --fail --show-error --silent --retry 3 \
+              --connect-timeout 15 --max-time 900 \
+              -X POST "$MOTOSERRA_URL/databases" \
+              -H "Authorization: Bearer $MOTOSERRA_TOKEN" \
+              -H "Content-Type: application/json" \
+              --data-binary @-
+
+      - name: Drop preserved test database
+        if: ${{ always() && inputs.all_modules == 'true' }}
+        env:
+          POSTGRES_CONTAINER: ${{ job.services.postgres.id }}
+        run: |
+          set -euo pipefail
+          test -f "$RUNNER_TEMP/motoserra-test-db" || exit 0
+          test_db="$(cat "$RUNNER_TEMP/motoserra-test-db")"
+          case "$test_db" in
+            test_*) ;;
+            *) exit 1 ;;
+          esac
+          docker exec -e PGPASSWORD="$POSTGRES_PASSWORD" "$POSTGRES_CONTAINER" dropdb -U "$POSTGRES_USER" --if-exists "$test_db"
 
       - name: Publish Unit Test Results
         if: (success() || failure()) && matrix.python-version == '2.7'

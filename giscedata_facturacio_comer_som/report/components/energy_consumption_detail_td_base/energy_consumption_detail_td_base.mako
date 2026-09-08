@@ -40,7 +40,7 @@
     % else:
         <tr class="tr_bold last_row">
     % endif
-        <td class="detall_td">${_(u"Total periode ")}
+        <td class="detall_td">${_(u"Total període ")}
         % if meter.is_active:
             <sup class="sup_bold">(1)</sup>
         % endif

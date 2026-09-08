@@ -9,10 +9,24 @@
             <field name="arch" type="xml">
                 <xpath expr="//field[@name='polissa_id']" position="after">
                     <group colspan="2" attrs="{'invisible': [('polissa_id', '=', False)]}">
-                        <button name="button_send_mail" type="object" string="Enviar correu conforme ha contractat" icon="send" colspan="2" confirm="Aquesta acció enviarà un correu electrònic, vols procedir?"/>
+                        <button name="button_send_mail" type="object" string="Enviar correu conforme ha contractat" icon="mail" colspan="2" confirm="Aquesta acció enviarà un correu electrònic, vols procedir?"/>
+                    </group>
+                    <group colspan="2" attrs="{'invisible': [('signature_process', '=', False)]}">
+                        <button name="send_sign_email" type="object"
+                            string="Enviar correu per Signar (correu instantani)" confirm="Aquesta acció enviarà un correu electrònic INSTANTANI, vols procedir?"
+                            icon="mail-fast" colspan="2"/>
                     </group>
                 </xpath>
                 <xpath expr="//field[@name='llista_preu']" position="replace">
+                </xpath>
+                <xpath expr="//page[@string='Sobre el Pago']" position="inside">
+                    <group string="Pagament lead web" colspan="4" col="4">
+                        <field name="member_quota_payment_type" colspan="4" col="4"/>
+                        <field name="billing_payment_method" colspan="4" col="4"/>
+                        <field name="creditcard_masked_number" colspan="4" col="4" readonly="1"/>
+                        <field name="creditcard_expiry_date" colspan="4" col="4" readonly="1"/>
+                        <field name="initial_invoice_id" colspan="4" col="4"/>
+                    </group>
                 </xpath>
                 <xpath expr="//page[@string='Sobre el Pago']" position="after">
                     <page string="Sobre la Tarifa">
@@ -50,8 +64,6 @@
                         <field name="member_number" colspan="4" col="4"/>
                         <field name="titular_number" colspan="4" col="4"/>
                         <field name="donation" colspan="4" col="4"/>
-                        <field name="member_quota_payment_type" colspan="4" col="4"/>
-                        <field name="initial_invoice_id" colspan="4" col="4"/>
                         <field name="comercial_info_accepted" colspan="4" col="4"/>
                         <field name="crm_lead_id" colspan="4" col="4" readonly="1"/>
                     </page>

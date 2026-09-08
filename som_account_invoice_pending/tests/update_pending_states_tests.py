@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+from __future__ import absolute_import
+
 from destral import testing
 import mock
 from mock import ANY
@@ -173,6 +175,13 @@ class TestUpdatePendingStates(testing.OOTestCaseWithCursor):
             "default_pendent_traspas_advocats_pending_state",
         )[1]
 
+        self.traspas_advocats_bs = imd_obj.get_object_reference(
+            cursor,
+            uid,
+            "som_account_invoice_pending",
+            "pendent_traspas_advocats_pending_state",
+        )[1]
+
         self.consulta_pobresa = imd_obj.get_object_reference(
             cursor,
             uid,
@@ -232,6 +241,43 @@ class TestUpdatePendingStates(testing.OOTestCaseWithCursor):
         self.assertEqual(inv_data.pending_state.id, self.waiting_48h_bs)
         inv_data = fact_obj.browse(cursor, uid, self.invoice_2_id)
         self.assertEqual(inv_data.pending_state.id, self.waiting_48h_bs)
+
+    @mock.patch("som_account_invoice_pending.models.update_pending_states.UpdatePendingStates.send_email")  # noqa: E501
+    @mock.patch("som_account_invoice_pending.models.update_pending_states.UpdatePendingStates.send_sms")  # noqa: E501
+    def test__update_second_unpaid_invoice__bo_social_baixa_uses_bo_social_lawyer_state(
+        self, mock_sms, mock_mail
+    ):
+        cursor = self.txn.cursor
+        uid = self.txn.user
+        imd_obj = self.pool.get("ir.model.data")
+        pol_obj = self.pool.get("giscedata.polissa")
+        fact_obj = self.pool.get("giscedata.facturacio.factura")
+        history_obj = self.pool.get("account.invoice.pending.history")
+        pol_id = imd_obj.get_object_reference(
+            cursor, uid, "giscedata_polissa", "polissa_0001"
+        )[1]
+        pol_obj.write(cursor, uid, [pol_id], {"state": "baixa"})
+        self._load_data_unpaid_invoices(
+            cursor, uid, [self.waiting_unpaid_id, self.waiting_unpaid_id]
+        )
+
+        pending_obj = self.pool.get("update.pending.states")
+        pending_obj.update_second_unpaid_invoice(cursor, uid)
+
+        self.assertEqual(mock_mail.call_count, 2)
+        self.assertEqual(mock_sms.call_count, 2)
+        for factura_id in (self.invoice_1_id, self.invoice_2_id):
+            factura = fact_obj.browse(cursor, uid, factura_id)
+            self.assertEqual(factura.pending_state.id, self.waiting_48h_bs)
+            history_states = history_obj.search(
+                cursor,
+                uid,
+                [("invoice_id", "=", factura.invoice_id.id)],
+            )
+            history_states = history_obj.read(cursor, uid, history_states, ["pending_state_id"])
+            history_state_ids = [state["pending_state_id"][0] for state in history_states]
+            self.assertIn(self.traspas_advocats_bs, history_state_ids)
+            self.assertNotIn(self.traspas_advocats_dp, history_state_ids)
 
     def test__update_second_unpaid_invoice__two_invoices_not_moving(self):
         cursor = self.txn.cursor
@@ -1061,3 +1107,49 @@ class TestUpdatePendingStates(testing.OOTestCaseWithCursor):
         self.assertIn("(auto.): Enviat correu recordatori R1.", factura_dp.comment)
         factura_bs = fact_obj.browse(cursor, uid, fact_bs_id)
         self.assertIn("(auto.): Enviat correu recordatori R1.", factura_bs.comment)
+
+    def test__get_invoices_with_pending_state__excludes_in_invoice(self):
+        cursor = self.txn.cursor
+        uid = self.txn.user
+
+        imd_obj = self.pool.get("ir.model.data")
+        pending_obj = self.pool.get("update.pending.states")
+        inv_obj = self.pool.get("account.invoice")
+        fact_obj = self.pool.get("giscedata.facturacio.factura")
+
+        fue_dp_state = imd_obj.get_object_reference(
+            cursor, uid, "som_account_invoice_pending", "fue_default_pending_state"
+        )[1]
+        fact_id = imd_obj.get_object_reference(
+            cursor, uid, "som_account_invoice_pending", "factura_00011"
+        )[1]
+        invoice_id = fact_obj.read(cursor, uid, fact_id, ["invoice_id"])["invoice_id"][0]
+
+        inv_obj.write(cursor, uid, [invoice_id], {"type": "in_invoice"})
+
+        factura_ids = pending_obj.get_invoices_with_pending_state(cursor, uid, fue_dp_state)
+
+        self.assertNotIn(fact_id, factura_ids)
+
+    def test__get_invoices_with_pending_state__includes_out_refund(self):
+        cursor = self.txn.cursor
+        uid = self.txn.user
+
+        imd_obj = self.pool.get("ir.model.data")
+        pending_obj = self.pool.get("update.pending.states")
+        inv_obj = self.pool.get("account.invoice")
+        fact_obj = self.pool.get("giscedata.facturacio.factura")
+
+        r1_dp_state = imd_obj.get_object_reference(
+            cursor, uid, "som_account_invoice_pending", "default_reclamacio_en_curs_pending_state"
+        )[1]
+        fact_id = imd_obj.get_object_reference(
+            cursor, uid, "som_account_invoice_pending", "factura_00013"
+        )[1]
+        invoice_id = fact_obj.read(cursor, uid, fact_id, ["invoice_id"])["invoice_id"][0]
+
+        inv_obj.write(cursor, uid, [invoice_id], {"type": "out_refund"})
+
+        factura_ids = pending_obj.get_invoices_with_pending_state(cursor, uid, r1_dp_state)
+
+        self.assertIn(fact_id, factura_ids)

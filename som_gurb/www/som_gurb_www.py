@@ -1,5 +1,4 @@
 # -*- encoding: utf-8 -*-
-import time
 from osv import osv
 from tools.translate import _
 from math import radians, cos, sin, asin, sqrt
@@ -113,6 +112,7 @@ class SomGurbWww(osv.osv_memory):
             for gcups in gcau.gurb_cups_ids:
                 if gcups.state in occupying_states:
                     beta_remaining -= gcups.beta_kw
+                    beta_remaining -= gcups.gift_beta_kw
                     beta_remaining -= gcups.future_beta_kw
                     beta_remaining -= gcups.future_gift_beta_kw
             available_betas.append(beta_remaining)
@@ -379,17 +379,3 @@ class SomGurbWww(osv.osv_memory):
 
 
 SomGurbWww()
-
-
-class GiscedataSignaturaDocuments(osv.osv):
-    _name = 'giscedata.signatura.documents'
-    _inherit = 'giscedata.signatura.documents'
-
-    def generate_report(self, cursor, uid, ids, context=None):
-        if context is None:
-            context = {}
-        super(GiscedataSignaturaDocuments, self).generate_report(cursor, uid, ids, context=context)
-        time.sleep(3)
-
-
-GiscedataSignaturaDocuments()

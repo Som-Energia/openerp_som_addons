@@ -180,7 +180,7 @@ class GiscedataPolissa(osv.osv):
         elif mode_facturacio == 'atr':
             if location == 'peninsula':
                 new_pricelist_id = pp_periodes_peninsula_id
-            elif location == 'insular':
+            else:
                 new_pricelist_id = pp_periodes_insular_id
 
         return new_pricelist_id

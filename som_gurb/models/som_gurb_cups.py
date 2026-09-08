@@ -910,14 +910,14 @@ class SomGurbCups(osv.osv):
             _ff_get_beta_percentage,
             type="float",
             string="Total Beta (%)",
-            digits=(12, 4),
+            digits=(12, 2),
             method=True,
         ),
         "future_beta_percentage": fields.function(
             _ff_get_future_beta_percentage,
             type="float",
             string="Total Beta (%)",
-            digits=(12, 4),
+            digits=(12, 2),
             method=True,
         ),
         "owner_cups": fields.function(

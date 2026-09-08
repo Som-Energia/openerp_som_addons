@@ -11,7 +11,7 @@ class TestLeadWwwMisc(BaseSomLeadWwwTest):
         lead_o = self.get_model("giscedata.crm.lead")
 
         result = www_lead_o.create_lead(self.cursor, self.uid, self._basic_values)
-        www_lead_o.activate_lead(self.cursor, self.uid, result["lead_id"], context={"sync": True})
+        www_lead_o.activate_lead_sync(self.cursor, self.uid, result["lead_id"])
 
         lead = lead_o.browse(self.cursor, self.uid, result["lead_id"])
 
@@ -32,7 +32,7 @@ class TestLeadWwwMisc(BaseSomLeadWwwTest):
         values["new_member_info"]["referral_source"] = "opcions"
 
         result = www_lead_o.create_lead(self.cursor, self.uid, values)
-        www_lead_o.activate_lead(self.cursor, self.uid, result["lead_id"], context={"sync": True})
+        www_lead_o.activate_lead_sync(self.cursor, self.uid, result["lead_id"])
 
         lead = lead_o.browse(self.cursor, self.uid, result["lead_id"])
 
@@ -55,7 +55,7 @@ class TestLeadWwwMisc(BaseSomLeadWwwTest):
         values["new_member_info"]["comercial_info_accepted"] = True
 
         result = www_lead_o.create_lead(self.cursor, self.uid, values)
-        www_lead_o.activate_lead(self.cursor, self.uid, result["lead_id"], context={"sync": True})
+        www_lead_o.activate_lead_sync(self.cursor, self.uid, result["lead_id"])
 
         lead = lead_o.browse(self.cursor, self.uid, result["lead_id"])
         # Check that the name is correctly set
@@ -72,7 +72,7 @@ class TestLeadWwwMisc(BaseSomLeadWwwTest):
         values["contract_info"]["phase"] = "3x230/400"
 
         result = www_lead_o.create_lead(self.cursor, self.uid, values)
-        www_lead_o.activate_lead(self.cursor, self.uid, result["lead_id"], context={"sync": True})
+        www_lead_o.activate_lead_sync(self.cursor, self.uid, result["lead_id"])
 
         lead = lead_o.browse(self.cursor, self.uid, result["lead_id"])
 
@@ -90,7 +90,7 @@ class TestLeadWwwMisc(BaseSomLeadWwwTest):
         result = www_lead_o.create_lead(self.cursor, self.uid, self._basic_values)
         self.assertFalse(result["error"])
 
-        www_lead_o.activate_lead(self.cursor, self.uid, result["lead_id"], context={"sync": True})
+        www_lead_o.activate_lead_sync(self.cursor, self.uid, result["lead_id"])
 
         lead = lead_o.browse(self.cursor, self.uid, result["lead_id"])
 
@@ -112,7 +112,7 @@ class TestLeadWwwMisc(BaseSomLeadWwwTest):
         result = www_lead_o.create_lead(self.cursor, self.uid, self._basic_values)
         self.assertFalse(result["error"])
 
-        www_lead_o.activate_lead(self.cursor, self.uid, result["lead_id"], context={"sync": True})
+        www_lead_o.activate_lead_sync(self.cursor, self.uid, result["lead_id"])
 
         lead = lead_o.browse(self.cursor, self.uid, result["lead_id"])
 
@@ -166,7 +166,7 @@ class TestLeadWwwMisc(BaseSomLeadWwwTest):
             "titular_phone": "699999999",
             "titular_phone_prefix": new_prefix_id,
         })
-        www_lead_o.activate_lead(self.cursor, self.uid, result["lead_id"], context={"sync": True})
+        www_lead_o.activate_lead_sync(self.cursor, self.uid, result["lead_id"])
         lead = lead_o.browse(self.cursor, self.uid, result["lead_id"])
 
         self.assertEqual(lead.polissa_id.direccio_notificacio.phone, "699999999")
@@ -182,7 +182,7 @@ class TestLeadWwwMisc(BaseSomLeadWwwTest):
         result = www_lead_o.create_lead(self.cursor, self.uid, self._basic_values)
         self.assertFalse(result["error"])
 
-        www_lead_o.activate_lead(self.cursor, self.uid, result["lead_id"], context={"sync": True})
+        www_lead_o.activate_lead_sync(self.cursor, self.uid, result["lead_id"])
 
         lead = lead_o.browse(self.cursor, self.uid, result["lead_id"])
 

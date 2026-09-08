@@ -420,21 +420,40 @@ class SomAutoreclamaStateUpdater(osv.osv_memory):
         )
 
     def state_updater(self, cursor, uid, context=None):
-        context = self._ensure_updater_config_context(cursor, uid, context)
+        batch_cursor = None
+        try:
+            batch_cursor = pooler.get_db(cursor.dbname).cursor()
+            context = self._ensure_updater_config_context(batch_cursor, uid, context)
 
-        atc_ids = self.get_atc_candidates_to_update(cursor, uid, context)
-        a, b, c, atc_msg, atc_sum = self.update_items_if_possible(
-            cursor, uid, atc_ids, "atc", False, context)
+            atc_ids = self.get_atc_candidates_to_update(batch_cursor, uid, context)
+            self.get_review_states(batch_cursor, uid, "atc", context)
+            batch_cursor.rollback()
+            a, b, c, atc_msg, atc_sum = self.update_items_if_possible(
+                batch_cursor, uid, atc_ids, "atc", False, context)
 
-        pol_ids = self.get_polissa_candidates_to_update(cursor, uid, "polissa", context)
-        a, b, c, pol006_msg, pol006_sum = self.update_items_if_possible(
-            cursor, uid, pol_ids, "polissa", False, context)
+            pol_ids = self.get_polissa_candidates_to_update(
+                batch_cursor, uid, "polissa", context
+            )
+            self.get_review_states(batch_cursor, uid, "polissa", context)
+            batch_cursor.rollback()
+            a, b, c, pol006_msg, pol006_sum = self.update_items_if_possible(
+                batch_cursor, uid, pol_ids, "polissa", False, context)
 
-        pol_ids = self.get_polissa_candidates_to_update(cursor, uid, "polissa009", context)
-        a, b, c, pol009_msg, pol009_sum = self.update_items_if_possible(
-            cursor, uid, pol_ids, "polissa009", False, context)
+            pol_ids = self.get_polissa_candidates_to_update(
+                batch_cursor, uid, "polissa009", context
+            )
+            self.get_review_states(batch_cursor, uid, "polissa009", context)
+            batch_cursor.rollback()
+            a, b, c, pol009_msg, pol009_sum = self.update_items_if_possible(
+                batch_cursor, uid, pol_ids, "polissa009", False, context)
 
-        return "\n\n".join([atc_sum, pol006_sum, pol009_sum, atc_msg, pol006_msg, pol009_msg])
+            return "\n\n".join(
+                [atc_sum, pol006_sum, pol009_sum, atc_msg, pol006_msg, pol009_msg]
+            )
+        finally:
+            if batch_cursor:
+                batch_cursor.rollback()
+                batch_cursor.close()
 
     def _cronjob_state_updater_mail_text(self, cursor, uid, data=None, context=None):
         if not data:

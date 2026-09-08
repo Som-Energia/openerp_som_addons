@@ -50,7 +50,13 @@ autoconsum_text = TABLA_133_dict[cd.autoconsum] if cd.autoconsum in TABLA_133_di
                 ${_(u"Comptador telegestionat:")} <span style="font-weight: bold;">${cd.remote_managed_meter and _(u'Sí') or _(u'No')}</span> <br />
                 ${_(u"CNAE:")} <span style="font-weight: bold;">${cd.cnae}</span> <br />
                 ${_(u'Data d\'alta del contracte: <span style="font-weight: bold;">%s</span>, sense condicions de permanència') % cd.start_date} <br />
-                ${_(u'Forma de pagament: rebut domiciliat')} <br />
+                % if cd.is_recurrent_card_payment:
+                    ${_(u'Forma de pagament: cobrament recurrent per targeta')} <br />
+                % elif cd.is_transfer_payment:
+                    ${_(u'Forma de pagament: transferència bancària')} <br />
+                % else:
+                    ${_(u'Forma de pagament: rebut domiciliat')} <br />
+                % endif
                 ${_(u'Data de renovació automàtica: <span style="font-weight: bold;">%s</span>') % cd.renovation_date}
                 </p>
             </div>
