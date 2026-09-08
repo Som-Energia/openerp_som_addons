@@ -2,6 +2,7 @@
 from __future__ import absolute_import
 
 import base64
+import os
 from datetime import datetime, timedelta
 from destral import testing
 from osv import osv
@@ -260,21 +261,22 @@ class TestRefundRectifyBatchScheduling(testing.OOTestCaseWithCursor):
         self.batch_obj = self.pool.get("refund.rectify.batch")
         self.wizard_obj = self.pool.get("wizard.refund.rectify.batch")
 
-    def test_schedules_one_primitive_batch_job_and_defers_worker_to_commit(self):
+    def test_schedules_one_primitive_batch_job_regardless_of_oorq_async_setting(self):
         cursor = mock.Mock()
         queued_job = mock.Mock()
         queued_job.id = "rq-job-12"
         context = {"active_ids": [3, 4]}
-        with mock.patch.object(
-                self.batch_obj,
-                "process_batch_f1_lines_async",
-                return_value=queued_job) as async_job:
-            with mock.patch.object(refund_rectify_batch, "AutoWorker") as worker_class:
-                worker = worker_class.return_value
-                with mock.patch.object(self.batch_obj, "write") as write:
-                    self.batch_obj.schedule_batch_execution(
-                        cursor, self.uid, 12, context=context
-                    )
+        with mock.patch.dict(os.environ, {"OORQ_ASYNC": "False"}):
+            with mock.patch.object(
+                    self.batch_obj,
+                    "process_batch_f1_lines_async",
+                    return_value=queued_job) as async_job:
+                with mock.patch.object(refund_rectify_batch, "AutoWorker") as worker_class:
+                    worker = worker_class.return_value
+                    with mock.patch.object(self.batch_obj, "write") as write:
+                        self.batch_obj.schedule_batch_execution(
+                            cursor, self.uid, 12, context=context
+                        )
 
         async_job.assert_called_once_with(cursor, self.uid, 12)
         write.assert_called_once_with(
@@ -284,6 +286,30 @@ class TestRefundRectifyBatchScheduling(testing.OOTestCaseWithCursor):
             queue="refund_rectify_f1", default_result_ttl=24 * 3600, max_procs=1
         )
         worker.work.assert_called_once_with(cursor)
+
+    def test_processes_batch_directly_in_explicit_debug_mode(self):
+        cursor = mock.Mock()
+        context = {"active_ids": [3, 4], "refund_rectify_debug_sync": True}
+        results = [{"status": "processed"}]
+        with mock.patch.object(
+                self.batch_obj, "process_batch_f1_lines", return_value=results) as process:
+            with mock.patch.object(
+                    self.batch_obj, "process_batch_f1_lines_async") as async_job:
+                with mock.patch.object(refund_rectify_batch, "AutoWorker") as worker_class:
+                    with mock.patch.object(self.batch_obj, "write") as write:
+                        returned_results = self.batch_obj.schedule_batch_execution(
+                            cursor, self.uid, 12, context=context
+                        )
+
+        self.assertEqual(returned_results, results)
+        cursor.commit.assert_called_once_with()
+        process.assert_called_once_with(
+            cursor, self.uid, 12, context=context
+        )
+        self.assertFalse(async_job.called)
+        self.assertFalse(write.called)
+        self.assertFalse(worker_class.called)
+        self.assertFalse(cursor.on_commit.called)
 
     def test_wizard_returns_batch_form_after_requesting_schedule(self):
         batch_obj = mock.Mock()
@@ -832,6 +858,7 @@ class TestRefundRectifyBatchExecutionPersistence(testing.OOTestCaseWithCursor):
 
     def test_persists_technical_error_for_failed_line(self):
         batch_obj = mock.Mock()
+        started_at = "2024-05-06 12:34:56"
         with mock.patch.object(self.pool, "get", return_value=batch_obj):
             with mock.patch.object(
                     self.line_obj, "read", return_value={"batch_id": [7, "F1_R-TASCA-7"]}):
@@ -841,6 +868,7 @@ class TestRefundRectifyBatchExecutionPersistence(testing.OOTestCaseWithCursor):
                         self.uid,
                         3,
                         error=ValueError("Unexpected error"),
+                        started_at=started_at,
                         context={},
                     )
 
@@ -848,6 +876,7 @@ class TestRefundRectifyBatchExecutionPersistence(testing.OOTestCaseWithCursor):
         self.assertEqual(vals["state"], "failed")
         self.assertFalse(vals["outcome"])
         self.assertEqual(vals["error"], "Unexpected error")
+        self.assertEqual(vals["started_at"], started_at)
 
     def test_refreshes_derived_counts_state_and_csv(self):
         line_obj = mock.Mock()
@@ -959,8 +988,13 @@ class TestRefundRectifyBatchPerLineTransactions(testing.OOTestCaseWithCursor):
         failed_cursor.close.assert_called_once_with()
         persistence_cursor.commit.assert_called_once_with()
         persistence_cursor.close.assert_called_once_with()
+        line_obj._mark_line_running.assert_called_once_with(
+            failed_cursor, self.uid, 1, started_at=mock.ANY, context={}
+        )
+        started_at = line_obj._mark_line_running.call_args[1]["started_at"]
         line_obj._persist_line_outcome.assert_called_once_with(
-            persistence_cursor, self.uid, 1, error=mock.ANY, context={}
+            persistence_cursor, self.uid, 1, error=mock.ANY,
+            started_at=started_at, context={}
         )
         self.assertEqual(
             line_obj.write.call_args[0][2], [2, 3]
