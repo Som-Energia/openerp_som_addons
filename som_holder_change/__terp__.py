@@ -4,7 +4,7 @@
     "description": """
     Holder change request management for existing contracts.
     """,
-    "version": "0.1",
+    "version": "0-dev",
     "author": "SomEnergia",
     "category": "SomEnergia",
     "depends": [
