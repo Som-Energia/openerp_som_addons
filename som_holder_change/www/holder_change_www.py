@@ -141,17 +141,12 @@ class SomHolderChangeWww(osv.osv_memory):
         ])
         return "S" if special_case else "T"
 
-    def create_request(self, cursor, uid, request_key, payload, context=None):
+    def create_request(self, cursor, uid, payload, context=None):
         if context is None:
             context = {}
         validation_error = self._validate_payload(payload)
         if validation_error:
             return validation_error
-        if not request_key:
-            return self._error(
-                "MISSING_REQUEST_KEY", _("The request key is required.")
-            )
-
         cups = self._normalize_cups(payload["supply_point"]["cups"])
         if not CUPS_RE.match(cups):
             return self._error("INVALID_CUPS", _("The CUPS format is invalid."))
@@ -172,24 +167,17 @@ class SomHolderChangeWww(osv.osv_memory):
             )
 
         request_obj = self.pool.get("som.holder.change.request")
-        try:
-            request_id = request_obj.create_or_get(
-                cursor,
-                uid,
-                {
-                    "request_key": request_key,
-                    "polissa_id": polissa_id,
-                    "cups": cups,
-                    "owner_change_type": self._owner_change_type(payload),
-                    "payload": deepcopy(payload),
-                },
-                context=context,
-            )
-        except osv.except_osv:
-            return self._error(
-                "IDEMPOTENCY_CONFLICT",
-                _("The request key was already used for different data."),
-            )
+        request_id = request_obj.create(
+            cursor,
+            uid,
+            {
+                "polissa_id": polissa_id,
+                "cups": cups,
+                "owner_change_type": self._owner_change_type(payload),
+                "payload": deepcopy(payload),
+            },
+            context=context,
+        )
 
         request = request_obj.read(
             cursor, uid, request_id, ["state"], context=context
