@@ -2221,13 +2221,18 @@ class Tests_FacturacioFacturaReport_partner_info(Tests_FacturacioFacturaReport_b
         f = self.factura_obj.browse(self.cursor, self.uid, f_id)
         f.is_recurrent_card_payment = True
         result = self.r_obj.get_component_partner_info_data(
-            f, mock.Mock(creditcard=mock.Mock(masked_number=u"**** 1234"))
+            f, mock.Mock(creditcard=mock.Mock(masked_number=u"4111 1111 1111 1234"))
         )
 
         self.assertTrue(result["is_recurrent_card_payment"])
-        self.assertEquals(result["masked_card_number"], u"**** 1234")
+        self.assertEquals(result["masked_card_number"], u"**** **** **** 1234")
         self.assertEquals(result["bank_name"], u"")
         self.assertEquals(result["cc_name"], u"")
+
+    def test__som_report_comp_partner_info__masks_existing_card_format(self):
+        result = self.r_obj.get_masked_card_number(u"411111******1234")
+
+        self.assertEquals(result, u"**** **** **** 1234")
 
     def test__som_report_comp_partner_info__recurrent_card_template(self):
         output = self.render_partner_info({
