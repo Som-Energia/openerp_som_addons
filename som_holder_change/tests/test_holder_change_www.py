@@ -3,11 +3,16 @@ from __future__ import absolute_import
 
 from copy import deepcopy
 
+import mock
 from destral import testing
 from destral.transaction import Transaction
 
 
 class TestHolderChangeWww(testing.OOTestCase):
+
+    _local_service = (
+        "som_holder_change.models.holder_change_request.netsvc.LocalService"
+    )
 
     def setUp(self):
         self.txn = Transaction().start(self.database)
@@ -26,12 +31,19 @@ class TestHolderChangeWww(testing.OOTestCase):
         self.polissa_obj.write(
             self.cursor, self.uid, self.polissa_id, {"state": "activa"}
         )
+        self.local_service = mock.patch(self._local_service).start()
+        self.local_service.return_value.create.side_effect = [
+            (b"%PDF-contract", "pdf"),
+            (b"%PDF-mandate", "pdf"),
+        ]
 
     def tearDown(self):
+        mock.patch.stopall()
         self.txn.stop()
 
     def payload(self):
         return {
+            "payment_method": "bank",
             "payment": {
                 "iban": "ES9121000418450200051332",
                 "sepa_accepted": True,
@@ -79,11 +91,24 @@ class TestHolderChangeWww(testing.OOTestCase):
             self.cursor,
             self.uid,
             result["request_id"],
-            ["polissa_id", "owner_change_type", "state"],
+            ["contract_pdf", "mandate_pdf", "polissa_id", "owner_change_type", "state"],
         )
         self.assertEqual(request["polissa_id"][0], self.polissa_id)
         self.assertEqual(request["owner_change_type"], "T")
-        self.assertEqual(request["state"], "received")
+        self.assertEqual(request["state"], "awaiting_signature")
+        self.assertTrue(request["contract_pdf"])
+        self.assertTrue(request["mandate_pdf"])
+        self.assertEqual(
+            [
+                call[0][0]
+                for call in self.local_service.call_args_list
+                if call[0][0].startswith("report.")
+            ],
+            [
+                "report.giscedata.polissa.contract.summary.full",
+                "report.report_mandato",
+            ],
+        )
 
     def test_create_request_returns_internal_request_id(self):
         first = self.www_obj.create_request(

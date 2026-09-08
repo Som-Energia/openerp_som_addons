@@ -1,4 +1,3 @@
 "id","name","model_id:id","group_id:id","perm_read","perm_write","perm_create","perm_unlink"
 "access_som_holder_change_request_user","som.holder.change.request user","model_som_holder_change_request","base.group_user",1,1,1,0
 "access_som_holder_change_www_user","som.holder.change.www user","model_som_holder_change_www","base.group_user",1,1,1,1
-"access_som_holder_change_m1_user","som.holder.change.m1 user","model_som_holder_change_m1","base.group_user",1,1,1,1
