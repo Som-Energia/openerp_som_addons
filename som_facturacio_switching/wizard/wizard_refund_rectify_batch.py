@@ -32,7 +32,9 @@ class WizardRefundRectifyBatch(osv.osv_memory):
 
     _defaults = {
         "info": lambda *a: _(
-            "Es crearà una tasca pendent amb els F1 seleccionats."
+            "Es crearà un lot amb els F1 seleccionats i s'executarà per workers automàticament.\n"
+            + "Cal anar a Facturacio > General > Gestió F1 > Tasques d'abonar i rectificar F1 "
+            + "tipus R"
         ),
     }
 
