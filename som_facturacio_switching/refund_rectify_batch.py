@@ -389,7 +389,7 @@ class RefundRectifyBatch(osv.osv):
             default_result_ttl=REFUND_RECTIFY_F1_RESULT_TTL,
             max_procs=1,
         )
-        worker.work(cursor)
+        worker.work()
 
 
 RefundRectifyBatch()
