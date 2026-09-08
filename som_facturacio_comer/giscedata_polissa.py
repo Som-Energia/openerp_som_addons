@@ -56,7 +56,7 @@ class GiscedataPolissa(osv.osv):
             cursor, uid, polissa_id, data_inici, data_final, with_power=with_power, context=ctx)
 
         llista_preu_dades = []
-        indexed_formula_old = ""
+        indexed_formula_old = None
 
         for mod_data in sorted(dates_de_tall.keys()):
             values = ['llista_preu', 'data_inici', 'data_final']
@@ -77,7 +77,7 @@ class GiscedataPolissa(osv.osv):
                 indexed_formula = price_o.read(cursor, uid, llista_preu_id, ['indexed_formula'],
                                                context=context)['indexed_formula']
 
-                if indexed_formula != indexed_formula_old and indexed_formula_old != "":
+                if indexed_formula != indexed_formula_old and indexed_formula_old is not None:
                     # updatar registre
                     dates_de_tall[mod_data]['changes'] = ['potencia']
 

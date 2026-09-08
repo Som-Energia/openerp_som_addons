@@ -144,6 +144,7 @@ patches/
 .vscode/
 
 # Agents
+.codegraph/
 .engram/
 .atl/
 .pi/

@@ -17,6 +17,9 @@
                     <field name="collectiu_atr"/>
                     <field name="collectiu_polissa"/>
                 </field>
+                <xpath expr="//field[@name='step_ids']" position="attributes">
+                    <attribute name="attrs">{}</attribute>
+                </xpath>
             </field>
         </record>
 

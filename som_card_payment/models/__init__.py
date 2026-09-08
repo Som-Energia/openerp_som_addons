@@ -5,3 +5,4 @@ from . import res_partner
 from . import res_partner_creditcard
 from . import giscedata_polissa
 from . import account_invoice
+from . import giscedata_facturacio_factura

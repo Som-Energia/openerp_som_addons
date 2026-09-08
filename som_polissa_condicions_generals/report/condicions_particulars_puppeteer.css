@@ -259,6 +259,47 @@ a {
     padding-top: 1em;
 }
 
+.cnmc_qr_info {
+    background: #f7f7f8;
+    border-bottom: 2px solid #0b2e34;
+    margin-bottom: 10px;
+}
+
+.cnmc_qr_info h5 {
+    background: #0b2e34;
+    color: white;
+    padding-left: 0.8em;
+    padding-top: 0.4em;
+    padding-bottom: 0.4em;
+    margin: 0;
+    font-size: 12px;
+}
+
+.cnmc_qr_content {
+    display: table;
+    width: 100%;
+}
+
+.cnmc_qr_text {
+    display: table-cell;
+    vertical-align: middle;
+    padding: 0.8em;
+    line-height: 150%;
+}
+
+.cnmc_qr_image {
+    display: table-cell;
+    width: 130px;
+    text-align: center;
+    vertical-align: middle;
+    padding: 0.8em;
+}
+
+.cnmc_qr_image img {
+    width: 110px;
+    height: auto;
+}
+
 .padding_left {
     padding-left: 0.8em;
 }

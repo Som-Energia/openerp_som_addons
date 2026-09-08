@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+from __future__ import absolute_import
+
 import logging
 from osv import osv
 from datetime import datetime, timedelta
@@ -19,10 +21,23 @@ class GiscedataSwitchingHelpers(osv.osv):
             cursor, uid, sw_id, old_polissa=old_polissa, context=context)
 
         sw_obj = self.pool.get("giscedata.switching")
-        payment_mode_o = self.pool.get("payment.mode")
-        payment_mode_id = payment_mode_o.search(cursor, uid, [("name", "=", "ENGINYERS")])
+        polissa_obj = self.pool.get("giscedata.polissa")
+        payment_mode_obj = self.pool.get("payment.mode")
+        payment_mode_id = payment_mode_obj.search(
+            cursor, uid, [("name", "=", "ENGINYERS")], limit=1
+        )[0]
+        payment_mode = payment_mode_obj.browse(
+            cursor, uid, payment_mode_id, context=context
+        )
+        values = {
+            "payment_mode_id": payment_mode.id,
+            "tipo_pago": payment_mode.type.id,
+        }
+        if "creditcard" in polissa_obj._columns:
+            values["creditcard"] = False
+
         sw = sw_obj.browse(cursor, uid, sw_id, context=context)
-        sw.cups_polissa_id.write({"payment_mode_id": payment_mode_id[0]})
+        sw.cups_polissa_id.write(values)
 
         return res
 

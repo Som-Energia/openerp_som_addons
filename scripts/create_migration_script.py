@@ -12,6 +12,8 @@ per actualitzar els camps i vistes dels models afectats.
 Execució des de l'arrel del repositori:
     python scripts/create_migration_script.py
 """
+# Intentionally manual source of truth. Update when the installed ERP migration
+# version changes; do not replace this with auto-detection.
 TARGET_VERSION = "5.0.25.5.0"
 
 
@@ -138,7 +140,23 @@ def get_script_name(files, next_num, branch_name):
     return script_name
 
 
-def create_migration_script(module_name, files):  # noqa: C901
+def report_migration_candidate(module_name, files, models_to_init,
+                               script_path):
+    """Report the actions that a migration script would contain."""
+    print("Migration candidate for module: {0}".format(module_name))
+    if models_to_init:
+        print("  Python/model initialization: {0}".format(
+            ', '.join(models_to_init)))
+    if files['data']:
+        print("  XML/data loading: {0}".format(', '.join(files['data'])))
+    if files['security']:
+        print("  Security loading: {0}".format(', '.join(files['security'])))
+    if files.get('po'):
+        print("  Translations: {0}".format(', '.join(files['po'])))
+    print("  Proposed path: {0}".format(script_path))
+
+
+def create_migration_script(module_name, files, dry_run=False, replace=False):  # noqa: C901
     """Crea un script de migració pel mòdul especificat."""
     # Primer comprovem si hi ha canvis a fer
     models_to_init = []
@@ -153,13 +171,6 @@ def create_migration_script(module_name, files):  # noqa: C901
 
     migration_dir = os.path.join(module_name, 'migrations', TARGET_VERSION)
 
-    # Crear directori si no existeix (compatible amb Python 2)
-    try:
-        os.makedirs(migration_dir)
-    except OSError as e:
-        if e.errno != os.errno.EEXIST:
-            raise
-
     # Obtenir el següent número de seqüència i el nom de la branca
     next_num = get_next_script_number(migration_dir)
     branch_name = get_current_branch().replace('/', '_')
@@ -170,19 +181,43 @@ def create_migration_script(module_name, files):  # noqa: C901
 
     # Comprovar si ja existeix un script per aquesta branca
     existing_branch_script = None
-    for f in os.listdir(migration_dir):
-        if f.endswith('.py') and branch_name in f:
-            existing_branch_script = os.path.join(migration_dir, f)
-            break
+    if os.path.exists(migration_dir):
+        for f in os.listdir(migration_dir):
+            if f.endswith('.py') and branch_name in f:
+                existing_branch_script = os.path.join(migration_dir, f)
+                break
 
     if existing_branch_script:
-        if is_manually_modified(existing_branch_script):
-            print("L'script {0} ha estat modificat manualment. No es sobreescriurà.".format(
-                existing_branch_script))
-            return
-        # Si existeix un script per aquesta branca però no ha estat modificat, l'eliminem
-        script_name = existing_branch_script.split('/')[-1]
+        script_name = os.path.basename(existing_branch_script)
         script_path = existing_branch_script
+
+    if dry_run:
+        report_migration_candidate(module_name, files, models_to_init,
+                                   script_path)
+        if existing_branch_script:
+            print("  Existing script: {0}".format(existing_branch_script))
+            if replace:
+                print("  Action: replace existing script")
+            else:
+                print("  Action: skip existing script (use --replace to overwrite)")
+        else:
+            print("  Action: create migration script")
+        return
+
+    if existing_branch_script and not replace:
+        print("L'script {0} ja existeix. No es sobreescriurà; usa --replace "
+              "per substituir-lo.".format(
+                  existing_branch_script))
+        return
+
+    # Crear directori si no existeix (compatible amb Python 2)
+    try:
+        os.makedirs(migration_dir)
+    except OSError as e:
+        if e.errno != os.errno.EEXIST:
+            raise
+
+    if existing_branch_script:
         os.remove(existing_branch_script)
 
     with open(script_path, 'w') as f:
@@ -257,13 +292,24 @@ migrate = up
     print("Creat script de migració: {0}".format(script_path))
 
 
-def main():
+def main(dry_run=False, replace=False):
     modified_files = get_modified_files()
     for module_name, files in modified_files.items():
         if files['data'] or files['py'] or files.get('po'):  # Crear script si hi ha canvis
-            create_migration_script(module_name, files)
+            create_migration_script(module_name, files, dry_run, replace)
 
 
 if __name__ == '__main__':
-    main()
+    import argparse
+
+    parser = argparse.ArgumentParser(
+        description='Create migration scripts from changes against main.')
+    parser.add_argument(
+        '--dry-run', action='store_true',
+        help='Report candidate migration actions without changing files.')
+    parser.add_argument(
+        '--replace', action='store_true',
+        help='Replace an existing migration script for the current branch.')
+    args = parser.parse_args()
+    main(args.dry_run, args.replace)
     exit(0)

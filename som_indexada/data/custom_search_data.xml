@@ -12,8 +12,8 @@ tarifes_sistemes AS (
     SELECT DISTINCT
         gpt.name AS tarifa_name,
         CASE
-            WHEN rse.code IN ('TF', 'PA', 'LG', 'HI', 'GC', 'FL') THEN 'Canàries'
-            WHEN rse.code IN ('IF', 'MM') THEN 'Balears'
+            WHEN rse.code IN ('TF', 'PA', 'LG', 'HI', 'GC', 'FL', 'TG') THEN 'Canàries'
+            WHEN rse.code IN ('IF', 'MM', 'SB') THEN 'Balears'
             WHEN rse.code = 'PE' THEN 'Península'
         END AS sistema
     FROM giscedata_polissa gp
@@ -44,8 +44,8 @@ LEFT JOIN (
         COUNT(*) AS altes,
         gpt.name,
         CASE
-            WHEN rse.code IN ('TF', 'PA', 'LG', 'HI', 'GC', 'FL') THEN 'Canàries'
-            WHEN rse.code IN ('IF', 'MM') THEN 'Balears'
+            WHEN rse.code IN ('TF', 'PA', 'LG', 'HI', 'GC', 'FL', 'TG') THEN 'Canàries'
+            WHEN rse.code IN ('IF', 'MM', 'SB') THEN 'Balears'
             WHEN rse.code = 'PE' THEN 'Península'
         END AS sistema
     FROM giscedata_polissa_modcontractual gpm
@@ -62,8 +62,8 @@ LEFT JOIN (
         COUNT(*) AS altes_indexada,
         gpt.name,
         CASE
-            WHEN rse.code IN ('TF', 'PA', 'LG', 'HI', 'GC', 'FL') THEN 'Canàries'
-            WHEN rse.code IN ('IF', 'MM') THEN 'Balears'
+            WHEN rse.code IN ('TF', 'PA', 'LG', 'HI', 'GC', 'FL', 'TG') THEN 'Canàries'
+            WHEN rse.code IN ('IF', 'MM', 'SB') THEN 'Balears'
             WHEN rse.code = 'PE' THEN 'Península'
         END AS sistema
     FROM giscedata_polissa_modcontractual gpm
@@ -80,8 +80,8 @@ LEFT JOIN (
         COUNT(*) AS canvis_index,
         gpt.name,
         CASE
-            WHEN rse.code IN ('TF', 'PA', 'LG', 'HI', 'GC', 'FL') THEN 'Canàries'
-            WHEN rse.code IN ('IF', 'MM') THEN 'Balears'
+            WHEN rse.code IN ('TF', 'PA', 'LG', 'HI', 'GC', 'FL', 'TG') THEN 'Canàries'
+            WHEN rse.code IN ('IF', 'MM', 'SB') THEN 'Balears'
             WHEN rse.code = 'PE' THEN 'Península'
         END AS sistema
     FROM giscedata_polissa_modcontractual gpm
@@ -98,8 +98,8 @@ LEFT JOIN (
         COUNT(*) AS baixes,
         gpt.name,
         CASE
-            WHEN rse.code IN ('TF', 'PA', 'LG', 'HI', 'GC', 'FL') THEN 'Canàries'
-            WHEN rse.code IN ('IF', 'MM') THEN 'Balears'
+            WHEN rse.code IN ('TF', 'PA', 'LG', 'HI', 'GC', 'FL', 'TG') THEN 'Canàries'
+            WHEN rse.code IN ('IF', 'MM', 'SB') THEN 'Balears'
             WHEN rse.code = 'PE' THEN 'Península'
         END AS sistema
     FROM giscedata_polissa gp
@@ -116,8 +116,8 @@ LEFT JOIN (
         COUNT(*) AS baixes_indexada,
         gpt.name,
         CASE
-            WHEN rse.code IN ('TF', 'PA', 'LG', 'HI', 'GC', 'FL') THEN 'Canàries'
-            WHEN rse.code IN ('IF', 'MM') THEN 'Balears'
+            WHEN rse.code IN ('TF', 'PA', 'LG', 'HI', 'GC', 'FL', 'TG') THEN 'Canàries'
+            WHEN rse.code IN ('IF', 'MM', 'SB') THEN 'Balears'
             WHEN rse.code = 'PE' THEN 'Península'
         END AS sistema
     FROM giscedata_polissa gp
@@ -134,8 +134,8 @@ LEFT JOIN (
         COUNT(*) AS canvis_periodes,
         gpt.name,
         CASE
-            WHEN rse.code IN ('TF', 'PA', 'LG', 'HI', 'GC', 'FL') THEN 'Canàries'
-            WHEN rse.code IN ('IF', 'MM') THEN 'Balears'
+            WHEN rse.code IN ('TF', 'PA', 'LG', 'HI', 'GC', 'FL', 'TG') THEN 'Canàries'
+            WHEN rse.code IN ('IF', 'MM', 'SB') THEN 'Balears'
             WHEN rse.code = 'PE' THEN 'Península'
         END AS sistema
     FROM giscedata_polissa_modcontractual gpm
@@ -160,8 +160,8 @@ tarifes_sistemes AS (
     SELECT DISTINCT
         gpt.name AS tarifa_name,
         CASE
-            WHEN rse.code IN ('TF', 'PA', 'LG', 'HI', 'GC', 'FL') THEN 'Canàries'
-            WHEN rse.code IN ('IF', 'MM') THEN 'Balears'
+            WHEN rse.code IN ('TF', 'PA', 'LG', 'HI', 'GC', 'FL', 'TG') THEN 'Canàries'
+            WHEN rse.code IN ('IF', 'MM', 'SB') THEN 'Balears'
             WHEN rse.code = 'PE' THEN 'Península'
         END AS sistema
     FROM giscedata_polissa gp
@@ -191,8 +191,8 @@ LEFT JOIN (
         COUNT(*) AS altes,
         gpt.name,
         CASE
-            WHEN rse.code IN ('TF', 'PA', 'LG', 'HI', 'GC', 'FL') THEN 'Canàries'
-            WHEN rse.code IN ('IF', 'MM') THEN 'Balears'
+            WHEN rse.code IN ('TF', 'PA', 'LG', 'HI', 'GC', 'FL', 'TG') THEN 'Canàries'
+            WHEN rse.code IN ('IF', 'MM', 'SB') THEN 'Balears'
             WHEN rse.code = 'PE' THEN 'Península'
         END AS sistema
     FROM giscedata_polissa_modcontractual gpm
@@ -209,8 +209,8 @@ LEFT JOIN (
         COUNT(*) AS altes_indexada,
         gpt.name,
         CASE
-            WHEN rse.code IN ('TF', 'PA', 'LG', 'HI', 'GC', 'FL') THEN 'Canàries'
-            WHEN rse.code IN ('IF', 'MM') THEN 'Balears'
+            WHEN rse.code IN ('TF', 'PA', 'LG', 'HI', 'GC', 'FL', 'TG') THEN 'Canàries'
+            WHEN rse.code IN ('IF', 'MM', 'SB') THEN 'Balears'
             WHEN rse.code = 'PE' THEN 'Península'
         END AS sistema
     FROM giscedata_polissa_modcontractual gpm
@@ -227,8 +227,8 @@ LEFT JOIN (
         COUNT(*) AS canvis_index,
         gpt.name,
         CASE
-            WHEN rse.code IN ('TF', 'PA', 'LG', 'HI', 'GC', 'FL') THEN 'Canàries'
-            WHEN rse.code IN ('IF', 'MM') THEN 'Balears'
+            WHEN rse.code IN ('TF', 'PA', 'LG', 'HI', 'GC', 'FL', 'TG') THEN 'Canàries'
+            WHEN rse.code IN ('IF', 'MM', 'SB') THEN 'Balears'
             WHEN rse.code = 'PE' THEN 'Península'
         END AS sistema
     FROM giscedata_polissa_modcontractual gpm
@@ -245,8 +245,8 @@ LEFT JOIN (
         COUNT(*) AS baixes,
         gpt.name,
         CASE
-            WHEN rse.code IN ('TF', 'PA', 'LG', 'HI', 'GC', 'FL') THEN 'Canàries'
-            WHEN rse.code IN ('IF', 'MM') THEN 'Balears'
+            WHEN rse.code IN ('TF', 'PA', 'LG', 'HI', 'GC', 'FL', 'TG') THEN 'Canàries'
+            WHEN rse.code IN ('IF', 'MM', 'SB') THEN 'Balears'
             WHEN rse.code = 'PE' THEN 'Península'
         END AS sistema
     FROM giscedata_polissa gp
@@ -263,8 +263,8 @@ LEFT JOIN (
         COUNT(*) AS baixes_indexada,
         gpt.name,
         CASE
-            WHEN rse.code IN ('TF', 'PA', 'LG', 'HI', 'GC', 'FL') THEN 'Canàries'
-            WHEN rse.code IN ('IF', 'MM') THEN 'Balears'
+            WHEN rse.code IN ('TF', 'PA', 'LG', 'HI', 'GC', 'FL', 'TG') THEN 'Canàries'
+            WHEN rse.code IN ('IF', 'MM', 'SB') THEN 'Balears'
             WHEN rse.code = 'PE' THEN 'Península'
         END AS sistema
     FROM giscedata_polissa gp
@@ -281,8 +281,8 @@ LEFT JOIN (
         COUNT(*) AS canvis_periodes,
         gpt.name,
         CASE
-            WHEN rse.code IN ('TF', 'PA', 'LG', 'HI', 'GC', 'FL') THEN 'Canàries'
-            WHEN rse.code IN ('IF', 'MM') THEN 'Balears'
+            WHEN rse.code IN ('TF', 'PA', 'LG', 'HI', 'GC', 'FL', 'TG') THEN 'Canàries'
+            WHEN rse.code IN ('IF', 'MM', 'SB') THEN 'Balears'
             WHEN rse.code = 'PE' THEN 'Península'
         END AS sistema
     FROM giscedata_polissa_modcontractual gpm

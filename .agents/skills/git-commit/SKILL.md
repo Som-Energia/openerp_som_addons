@@ -1,93 +1,112 @@
 ---
 name: git-commit
 description: >
-  Crea commits seguint les convencions de gitmoji.dev.
+  Crea commits seguint les convencions de gitmoji del projecte.
   Trigger: Quan necessites fer un commit de codi.
 metadata:
   author: oriol
-  version: "1.1"
+  version: "1.3"
 ---
 
 ## When to Use
 
 Utilitza aquesta skill quan:
-- Has fet canvis de codi que vols guardar
-- Necessites fer un commit seguint Conventional Commits
-- Vols afegir emoji al commit per fer-lo més llegible
+- Has fet canvis que vols guardar en un commit
+- Necessites seguir la convenció de commits del projecte
+- Vols preparar només els fitxers de l'abast acordat
 
-## Format de Commit (segons gitmoji.dev)
+## Format de Commit
 
-Veure: https://gitmoji.dev/
+[gitmoji.dev](https://gitmoji.dev/) és la font canònica del significat dels
+emojis. [`.github/docs/desenvolupament.md`](../../../.github/docs/desenvolupament.md)
+recull la selecció habitual i les regles de format pròpies del projecte.
 
 El format és: `<emoji> <description>`
 
-L'emoji indica el tipus de commit - no cal duplicar la informació amb el type.
+L'emoji indica el tipus de commit; no cal duplicar la informació amb un type
+textual com `feat:` o `fix:`.
 
-### Emoji i Tipus
+### Selecció habitual
 
-| Emoji | Tipus | Descripció |
-|-------|-------|------------|
-| ✨ | feat | Nova funcionalitat |
-| 🐛 | fix | Bug fix |
-| ♻️ | refactor | Refactorització |
-| ⚡️ | perf | Millora de rendiment |
-| ✅ | test | Afegir o corregir tests |
-| 📖 | docs | Documentació |
-| 💄 | style | Estil (formatting, no lògica) |
-| 🔧 | chore | Tasques de manteniment |
-| 📦 | build | Canvis al build o dependències |
-| 👷 | ci | Canvis a CI/CD |
-| ↩️ | revert | Revert de commit anterior |
-| 🎨 | improve | Millora d'estructura/codi |
-| 🔥 | remove | Eliminar codi o funcionalità |
-| 🚚 | move | Moure o renombrar fitxers |
-| 🚀 | deploy | Canvis de deployment |
-| 💡 | int | Introduir nova idea sense canviar codi |
+| Emoji | Significat oficial |
+|-------|---------------------|
+| ✨ | Introduir funcionalitat nova |
+| 🐛 | Corregir un bug |
+| 🩹 | Fer una correcció senzilla i no crítica |
+| 👔 | Afegir o actualitzar lògica de negoci |
+| 🗃️ | Fer canvis relacionats amb la base de dades |
+| 🏗️ | Fer canvis arquitectònics |
+| 🔧 | Afegir o actualitzar fitxers de configuració |
+| 👷 | Afegir o actualitzar el sistema de CI |
+| 📝 | Afegir o actualitzar documentació |
+| ⚡️ | Millorar el rendiment |
+| ♻️ | Refactoritzar codi |
+| 🎨 | Millorar l'estructura o el format del codi |
+| 🔥 | Eliminar codi o fitxers |
+| ⚰️ | Eliminar codi mort |
+| 🦺 | Afegir o actualitzar validacions |
+| ✅ | Afegir, actualitzar o fer passar tests |
+| 🚧 | Marcar treball en curs |
+| ⬆️ | Actualitzar dependències a versions superiors |
+| 🌐 | Internacionalització i localització |
+| 💄 | Afegir o actualitzar la interfície i els fitxers d'estil |
+| 🔨 | Afegir o actualitzar scripts de desenvolupament, incloses migracions |
+
+Per a qualsevol emoji no llistat, consultar [gitmoji.dev](https://gitmoji.dev/)
+en lloc d'inventar o redefinir-ne el significat.
 
 ### Regles
 
 1. **Idioma**: Tota la descripció en anglès
-2. **Length màxima**: 72 caràcters
-3. **Imperatiu**: Descripció en forma imperativa ("add feature" no "added feature")
+2. **Longitud màxima**: 72 caràcters
+3. **Imperatiu**: Descripció en forma imperativa (`add feature`, no `added feature`)
 4. **Emoji**: Obligatori, seguit d'un espai
-5. **No cal type**: L'emoji ja indica el tipus - no escrius "feat:"
+5. **Sense type textual**: No escriure `feat:`, `fix:` ni equivalents
 
 ## Workflow
 
-### Pas 0: Prerequisits (OBLIGATORI)
+### Pas 1: Verificar els canvis
 
-Abans de fer qualsevol commit, cal:
-
-1. **Activar l'entorn virtual erp**:
-   ```bash
-   pyenv activate erp
-   ```
-
-2. **Executar pre-commit** per verificar que el codi passa el linting:
-   ```bash
-   pre-commit run
-   ```
-   Si hi ha errors, pre-commit els corregirà automàticament. Torna a executar fins que passi sense errors.
-
-### Pas 1: Verificar canvis
-
-```
-git status
+```bash
+git status --short
 git diff
 ```
 
-### Pas 2: Seleccionar fitxers
+Identificar els fitxers de l'abast acordat. No descartar ni incloure canvis
+aliens, i no utilitzar `git add -A`.
+
+### Pas 2: Preparar fitxers explícits
 
 ```bash
-git add <fitxer>
-# O per afegir tots:
-git add -A
+git add <fitxer> [<fitxer> ...]
+git diff --cached --check
+git diff --cached
 ```
 
-### Pas 3: Crear commit
+### Pas 3: Executar pre-commit
+
+Activar l'entorn virtual habitual del projecte i executar pre-commit sobre els
+fitxers preparats:
+
+```bash
+pyenv activate erp
+pre-commit run
+```
+
+Si algun hook modifica fitxers, revisar els canvis, tornar a preparar només els
+fitxers corresponents i repetir `pre-commit run` fins que passi.
+
+### Pas 4: Crear el commit
 
 ```bash
 git commit -m "<emoji> <description>"
+```
+
+### Pas 5: Verificar el resultat
+
+```bash
+git status --short
+git show --stat --oneline HEAD
 ```
 
 ## Exemples
@@ -106,25 +125,30 @@ git commit -m "♻️ extract payment logic to service"
 git commit -m "✅ add unit tests for contract validation"
 
 # Documentació
-git commit -m "📖 update API endpoint documentation"
+git commit -m "📝 update API endpoint documentation"
 
 # Millora de rendiment
 git commit -m "⚡️ optimize database query performance"
 
-# Estil
-git commit -m "💄 format code with autopep8"
+# Estil de codi
+git commit -m "🎨 format code with autopep8"
 
-# Canvis de build
-git commit -m "📦 update dependencies to latest versions"
+# Actualització de dependències
+git commit -m "⬆️ upgrade build dependencies"
+
+# Script de migració
+git commit -m "🔨 migrate contract status values"
 ```
 
 ## Errors Comuns
 
 | Error | Causa | Solució |
 |-------|-------|----------|
-| Nothing to commit | Canvis no afegits | `git add -A` abans de commit |
-| Commit message too long | Descripció massa llarga | Redueix a 72 caràcters |
-| No emoji | Oblidat l'emoji | Afegeix l'emoji corresponent |
+| Nothing to commit | No hi ha fitxers preparats | Revisa `git status` i prepara fitxers explícits amb `git add <fitxer>` |
+| Hooks pass without checking files | Pre-commit s'ha executat abans de preparar fitxers | Prepara els fitxers i torna a executar `pre-commit run` |
+| Unrelated files staged | S'han preparat canvis fora de l'abast | Retira'ls de l'staging sense descartar-los i revisa `git diff --cached` |
+| Commit message too long | Descripció massa llarga | Redueix-la a un màxim de 72 caràcters |
+| No emoji | Falta l'emoji inicial | Utilitza un emoji de la taula canònica |
 
 ## Integració amb SDD
 

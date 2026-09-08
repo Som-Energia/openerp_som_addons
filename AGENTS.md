@@ -37,11 +37,22 @@ Les skills següents estan disponibles al projecte i s'han d'utilitzar quan corr
 
 ### Git Workflow
 
+**PR worktree policy:**
+- PR-affecting work must use a named worktree under `<WORKSPACE>/openerp_som_addons-worktrees/`, where `<WORKSPACE>` is the directory containing the primary repository checkout; never use `/tmp/opencode`.
+- Announce the active worktree before making edits.
+- If no appropriate worktree exists, stop and get explicit approval before creating one.
+
 | Skill | Quan usar | Com usar |
 |-------|-----------|----------|
 | `git-branch` | Crear branca nova | Veure [.agents/skills/git-branch/SKILL.md](.agents/skills/git-branch/SKILL.md) |
 | `git-commit` | Fer commit | Veure [.agents/skills/git-commit/SKILL.md](.agents/skills/git-commit/SKILL.md) |
 | `git-pr` | Crear PR | Veure [.agents/skills/git-pr/SKILL.md](.agents/skills/git-pr/SKILL.md) |
+
+### Current PR Policy
+
+Repository GitHub workflows and repository rules are authoritative for PR requirements. Verify any generic or global skill requirement against them before applying it to this repository.
+
+Currently, `.github/workflows/pull_request_labeler.yml` requires each PR to have at least one label. It does not require an approved linked issue or a `type:*` label. This is the current policy and may change with repository workflows or rules.
 
 **Convencions de branca:**
 - `ADD_<desc>` - Nova funcionalitat
@@ -55,6 +66,7 @@ Les skills següents estan disponibles al projecte i s'han d'utilitzar quan corr
 **Format de commit:**
 - Només emoji + descripció en anglès: `✨ add user auth`
 - No afegir `feat:`, `fix:` ni cap altre type textual
+- Feu els commits amb el virtualenv ERP actiu: els hooks de pre-commit requereixen l'executable `python`. Exemple portable: `PYENV_VERSION=erp git commit -m "✨ add user auth"`.
 
 ### Testing
 
@@ -71,9 +83,65 @@ Les skills següents estan disponibles al projecte i s'han d'utilitzar quan corr
 |-------|-----------|----------|
 | `sentry-triage` | Fer triage d'incidències de Sentry | Veure [.agents/skills/sentry-triage/SKILL.md](.agents/skills/sentry-triage/SKILL.md) |
 
-**Requisits per executar tests:**
-1. Docker: PostgreSQL, MongoDB, Redis corrent
+### Reports legals i contractuals
+
+| Skill | Quan usar | Com usar |
+|-------|-----------|----------|
+| `update-contract-report` | Actualitzar un report `.mako` legal/contractual a partir d'un `docx` o `md` | Veure [.agents/skills/update-contract-report/SKILL.md](.agents/skills/update-contract-report/SKILL.md) |
+
+**Requisits de l'entorn de tests:**
+1. Inicieu els serveis necessaris de PostgreSQL, MongoDB i Redis:
+   ```bash
+   REPO_ROOT="$(git rev-parse --show-toplevel)"
+   docker compose -f "$REPO_ROOT/docker-compose.yaml" up -d
+   ```
+   Inicieu sempre els tres serveis abans d'executar tests.
 2. Virtualenv activat — nom habitual: `erp` (`pyenv activate erp` o `workon erp`)
+
+### Tests en worktrees
+
+Useu el wrapper del projecte, no un runner de tests manual. Inicieu sempre PostgreSQL, MongoDB i Redis abans dels tests. `$WORKSPACE/erp/server/bin/addons` és estat compartit i mutable: redirigiu temporalment només els enllaços dels addons modificats del worktree (directoris amb `__terp__.py`) i preserveu-ne el destí original.
+
+No modifiqueu aquests enllaços alhora que ERP o tests d'un altre worktree. El manifest temporal extern i el `trap` següents restauren tots els enllaços originals tant si el test acaba bé com si falla o s'interromp:
+
+```bash
+WORKTREE="$(git rev-parse --show-toplevel)"
+WORKSPACE="$(dirname "$(dirname "$WORKTREE")")"
+DATABASE="<database>"
+MODULE="<module>"
+ADDONS="$WORKSPACE/erp/server/bin/addons"
+MANIFEST="$(mktemp)"
+
+restore_links() {
+    while IFS=$'\t' read -r link target; do
+        rm -f "$link"
+        ln -s "$target" "$link"
+    done < "$MANIFEST"
+    rm -f "$MANIFEST"
+}
+trap restore_links EXIT INT TERM
+
+docker compose -f "$WORKTREE/docker-compose.yaml" up -d
+
+while IFS= read -r -d '' addon; do
+    name="$(basename "$addon")"
+    link="$ADDONS/$name"
+
+    if [ -e "$link" ] && [ ! -L "$link" ]; then
+        printf 'Refuso substituir %s: no és un enllaç simbòlic.\n' "$link" >&2
+        exit 1
+    fi
+    if [ -L "$link" ]; then
+        printf '%s\t%s\n' "$link" "$(readlink "$link")" >> "$MANIFEST"
+        rm "$link"
+    fi
+    ln -s "$addon" "$link"
+done < <(find "$WORKTREE" -type f -name __terp__.py -printf '%h\0')
+
+PYENV_VERSION=erp "$WORKTREE/scripts/run-tests.sh" "$DATABASE" --no-requirements -m "$MODULE"
+```
+
+En acabar, el `trap` restaura tots els enllaços originals. No executeu canvis d'enllaços d'addons de worktrees concurrentment amb ERP o tests d'un altre worktree.
 
 ## Estil de Programació
 

@@ -20,6 +20,9 @@
         "l10n_ES_aeat_mod347",
         "account_account_som",
         "som_partner_account",
+        "giscedata_crm_leads_signatura",
+        "giscedata_crm_leads_switching_signaturit",
+        "som_card_payment",
     ],
     "init_xml": [],
     "demo_xml": [

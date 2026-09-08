@@ -56,7 +56,7 @@ h1.titol {
   padding: 5px 5px 2px 20px;
   width: 80%;
   float: right;
-  
+
 }
 .textcaixa {
   text-align: justify;
@@ -190,7 +190,7 @@ h1.titol {
   font-size: 0.85em;
 }
 @media print {
-  footer {  
+  footer {
     position:relative;
     top:-20px;
   }
@@ -231,7 +231,8 @@ interest_rate = float(conf_obj.get(inv._cr, inv._uid, 'som_aportacions_interest'
   <div class="fila">
     <div class="LogoPpal">
     <a href="https://www.somenergia.coop" target="_blank">
-      <img src="https://www.somenergia.coop/iconespdf/logo_som_energia.svg" alt="Logo Som Energia" width="200" height="100" /></a><br>
+      <img src="${addons_path}/som_assets/img/logo.svg" width="200" height="100" alt="Logo Som Energia"/>
+    </a><br>
       <p class="sotalogo"><b>${_(u"Som Energia, SCCL")}</b><br>${_(u"CIF: F55091367")}<br>${_(u"Domicili: C/Riu Güell, 68. 17005- Girona")}<br>
 ${_(u"Adreça electrònica: aporta@somenergia.coop")}
   </div>
@@ -290,7 +291,7 @@ ${_(u"Adreça electrònica: aporta@somenergia.coop")}
   </div>
       <div class="final"></div>
    </div>
-  
+
 </div>
 <div style="page-break-after: always">
 </div>
@@ -300,12 +301,12 @@ ${_(u"Adreça electrònica: aporta@somenergia.coop")}
 </div>
 <div class="CaixaFons">
   <p class="TitolCondicions">${_(u"1. objecte")}</p>
-<p class="sagnia">${_(u"1.1 D’acord amb el que preveuen els Estatuts de SOM ENERGIA, SCCL, i les decisions adoptades pels seus òrgans cooperatius, el capital social està constituït per les aportacions obligatòries de les persones sòcies, i també per aportacions voluntàries.")}</p> 
-<p class="sagnia">${_(u"1.2 En cap cas s’inclou en aquestes condicions els títols participatius i el Generation kWh. Tampoc podran accedir a subscriure aquestes aportacions voluntàries aquelles persones que no hagin estat acceptades prèviament com persones sòcies.")}</p>  
+<p class="sagnia">${_(u"1.1 D’acord amb el que preveuen els Estatuts de SOM ENERGIA, SCCL, i les decisions adoptades pels seus òrgans cooperatius, el capital social està constituït per les aportacions obligatòries de les persones sòcies, i també per aportacions voluntàries.")}</p>
+<p class="sagnia">${_(u"1.2 En cap cas s’inclou en aquestes condicions els títols participatius i el Generation kWh. Tampoc podran accedir a subscriure aquestes aportacions voluntàries aquelles persones que no hagin estat acceptades prèviament com persones sòcies.")}</p>
 
 <p class="sagnia">${_(u"1.3 La persona sòcia ha de posseir com a mínim un títol que es desemborsarà de manera íntegra al moment de formalització de la subscripció. Totes les aportacions es destinaran al desenvolupament de la cooperativa, en concret, a afavorir la comercialització i producció d’energia elèctrica provinent de fonts renovables.")}</p>
   <p class="TitolCondicions">${_(u"2. VALOR NOMINAL DE CADA APORTACIÓ")}</p>
-  <p class="sagnia">${_(u"2.1 El valor mínim de les aportacions serà de cent euros (100€). Durant la primera setmana es limitaran les aportacions a cinc mil euros (5.000€) per persona sòcia, per tal de donar l'oportunitat a més socis a participar. Si no s’arriba al total requerit, s’ampliarà l’aportació fins als cent mil euros (100.000€) per cada persona sòcia. A efectes de computar aquest màxim de 100.000 euros, es comptaran totes les aportacions al capital social voluntari que la persona sòcia hagi efectuat amb anterioritat.")}</p> 
+  <p class="sagnia">${_(u"2.1 El valor mínim de les aportacions serà de cent euros (100€). Durant la primera setmana es limitaran les aportacions a cinc mil euros (5.000€) per persona sòcia, per tal de donar l'oportunitat a més socis a participar. Si no s’arriba al total requerit, s’ampliarà l’aportació fins als cent mil euros (100.000€) per cada persona sòcia. A efectes de computar aquest màxim de 100.000 euros, es comptaran totes les aportacions al capital social voluntari que la persona sòcia hagi efectuat amb anterioritat.")}</p>
 
 <p class="sagnia">${_(u"2.2 Les aportacions s’acrediten mitjançant títols nominatius, llibretes, fitxes o relació nominal de socis amb el seu import corresponent, diferents per a unes o altres aportacions, i no tenen en cap cas la consideració de títols valors.")}</p>
   <p class="TitolCondicions">${_(u"3. INTERESSOS")}</p>
@@ -314,11 +315,11 @@ ${_(u"Adreça electrònica: aporta@somenergia.coop")}
   <p class="TitolCondicions">${_(u"4. TRASPÀS")}</p>
   <p class="sagnia">${_(u"4.1 La persona sòcia pot traspassar les aportacions voluntàries per les causes següents, d’acord amb el que s’estableix a la Llei 18/2015 de cooperatives de Catalunya:")}</p>
 <ol class="alpha">
-  <li>${_(u"Per actes “inter vivos”, entre persones sòcies, i en els termes establerts als estatuts socials, i en exposició al tauler d’anuncis de la cooperativa, amb autorització prèvia del Consell Rector.")}</li> 
+  <li>${_(u"Per actes “inter vivos”, entre persones sòcies, i en els termes establerts als estatuts socials, i en exposició al tauler d’anuncis de la cooperativa, amb autorització prèvia del Consell Rector.")}</li>
   <li>${_(u"Per actes “mortis causa”, els hereus substitueixen a la persona causant en la seva posició jurídica, subrogant-se en els drets i les obligacions que tenia cap a la cooperativa.")}</li>
   </ol>
 <p class="TitolCondicions">${_(u"5. RETORN DE LES APORTACIONS VOLUNTÀRIES")}</p>
-<p class="sagnia">${_(u"5.1 L’aportació voluntària al capital de SOM ENERGIA, SCCL, romandrà a la cooperativa fins que la persona sòcia en sol·liciti el retorn, sens perjudici del que s'estableix a la Llei i els Estatuts socials per a les aportacions el reemborsament de les quals pugui ser refusat incondicionalment pel Consell Rector.")}</p> 
+<p class="sagnia">${_(u"5.1 L’aportació voluntària al capital de SOM ENERGIA, SCCL, romandrà a la cooperativa fins que la persona sòcia en sol·liciti el retorn, sens perjudici del que s'estableix a la Llei i els Estatuts socials per a les aportacions el reemborsament de les quals pugui ser refusat incondicionalment pel Consell Rector.")}</p>
 <p class="sagnia">${_(u"5.2 La persona sòcia té dret a sol·licitar a SOM ENERGIA, SCCL, el retorn de les aportacions en qualsevol moment.")}</p>
 <p class="sagnia">${_(u"5.3 D’acord amb els Estatuts de SOM ENERGIA, SCCL, que en qualsevol cas prevaldran sobre aquestes clàusules, el Consell Rector estarà obligat a acordar el reemborsament de les aportacions voluntàries fins al límit del 10% del capital social existent a la data d’inici de l’exercici econòmic en cas que se sol·liciti el reemborsament, i sempre amb el límit anual d‘1.350.000 euros, en els terminis establerts al punt 5.6. En els casos que les sol·licituds excedeixin aquest límit, els nous reemborsaments estan condicionats a l’acord favorable del Consell Rector que, conforme als Estatuts de la cooperativa, serà lliure per refusar-los incondicionalment.")}</p>
 <p class="sagnia">${_(u"5.4 En cas de baixa d’una persona sòcia, aquesta té el dret de sol·licitar el reemborsament de les seves aportacions voluntàries, sens perjudici del que la llei i els estatuts socials estableixen. En aquest cas els criteris que s’aplicaran de conformitat amb els Estatuts socials seran els següents:")}</p>
@@ -343,17 +344,17 @@ ${_(u"Adreça electrònica: aporta@somenergia.coop")}
 <p class="sagnia">${_(u"6.2 La persona sòcia que es doni de baixa continua sent responsable durant cinc anys davant la cooperativa, amb la limitació esmentada al paràgraf anterior, per les obligacions assumides per aquesta amb anterioritat a la data de la baixa.")}</p>
 <div class="final"></div>
 </div>
-<div class="CaixaFons">  
-<p class="TitolCondicions">${_(u"7. DRET DE DESISTIMENT")}</p>  
+<div class="CaixaFons">
+<p class="TitolCondicions">${_(u"7. DRET DE DESISTIMENT")}</p>
 <p class="sagnia">${_(u"7.1 Totes les persones sòcies que formalitzin aquest contracte disposaran de 14 dies naturals des de la data del contracte per desistir dels serveis. En cas que es vulgui desistir, serà necessària la notificació a través del correu electrònic o postal, determinat a les Condicions Generals previstes al mateix web de contractació o bé directament a aporta@somenergia.coop.")}</p>
 
 <p class="sagnia">${_(u"7.2 En cas d’exercir el dret de desistiment SOM ENERGIA, SCCL, s’obliga a retornar, dins del termini de 14 dies naturals des de la notificació formal de la persona sòcia, l’aportació voluntària seguint el mateix mètode de pagament que la persona sòcia hagi utilitzat, excepte una altra indicació.")}</p>
-<p class="TitolCondicions">${_(u"8. INFORMACIÓ BÀSICA SOBRE PROTECCIÓ DE DADES")}</p>  
-<p class="sagnia">${_(u"8.1 S’informa a la persona sòcia que el responsable de dades personals facilitades en el marc d’aquestes condicions és SOM ENERGIA, SCCL, que els ha d’emprar únicament per atendre les sol·licituds, realitzar comunicacions informatives i enviar comunicacions comercials sobre els productes i/o serveis de SOM ENERGIA, SCCL, i en particular sobre la relació amb la persona sòcia de la cooperativa. La legitimació per a aquest tractament deriva de l’execució de les presents condicions, així com del consentiment que la contractant va expressar en fer-se sòcia de SOM ENERGIA, SCCL. Les dades es conservaran mentre es mantingui la relació societària, i en el seu cas, durant els anys necessaris per complir amb les obligacions legals.")}</p> 
+<p class="TitolCondicions">${_(u"8. INFORMACIÓ BÀSICA SOBRE PROTECCIÓ DE DADES")}</p>
+<p class="sagnia">${_(u"8.1 S’informa a la persona sòcia que el responsable de dades personals facilitades en el marc d’aquestes condicions és SOM ENERGIA, SCCL, que els ha d’emprar únicament per atendre les sol·licituds, realitzar comunicacions informatives i enviar comunicacions comercials sobre els productes i/o serveis de SOM ENERGIA, SCCL, i en particular sobre la relació amb la persona sòcia de la cooperativa. La legitimació per a aquest tractament deriva de l’execució de les presents condicions, així com del consentiment que la contractant va expressar en fer-se sòcia de SOM ENERGIA, SCCL. Les dades es conservaran mentre es mantingui la relació societària, i en el seu cas, durant els anys necessaris per complir amb les obligacions legals.")}</p>
 
 <p class="sagnia">${_(u"8.2 En el marc de l’execució d’aquestes condicions està prevista la cessió de dades, procedents de la mateixa persona interessada, a terceres empreses quan sigui necessari per a la prestació dels serveis contractats, tals com, per exemple, assessories fiscals i comptables, bancs i caixes, administració tributària o altres administracions públiques, etc.")}</p>
 
-<p class="sagnia">${_(u"8.3 La contractant té dret a accedir, rectificar i suprimir les dades, així com altres drets, indicats en la informació addicional que figura a la política de privacitat de SOM ENERGIA, SCCL, disponible al seu espai web d’internet www.somenergia.coop, i que pot exercir els drets o trobar la informació addicional dirigint-se al responsable de tractament de les seves dades de SOM ENERGIA, SCCL:")}</p> 
+<p class="sagnia">${_(u"8.3 La contractant té dret a accedir, rectificar i suprimir les dades, així com altres drets, indicats en la informació addicional que figura a la política de privacitat de SOM ENERGIA, SCCL, disponible al seu espai web d’internet www.somenergia.coop, i que pot exercir els drets o trobar la informació addicional dirigint-se al responsable de tractament de les seves dades de SOM ENERGIA, SCCL:")}</p>
 
 <ul class="punts">
 <li>${_(u"Per correu postal dirigit a l’adreça:<br>C/ Riu Güell, 68 17005 Girona.")}</li>
@@ -365,7 +366,7 @@ ${_(u"Adreça electrònica: aporta@somenergia.coop")}
 
 <p class="sagnia">${_(u"9.2 La notificació al soci/sòcia de les operacions i comunicacions de caràcter general derivades de l’operativa d’aquestes aportacions voluntàries, es realitzaran prioritàriament per correu electrònic a l’adreça indicada en aquestes condicions. És responsabilitat de la persona sòcia el manteniment correcte, en estat operatiu, del correu referit.")}</p>
 
-<p class="sagnia">${_(u"9.3 En cas d’incompatibilitat, les disposicions establertes als Estatuts socials vigents i als acords de l'Assemblea general prevaldran sobre les presents condicions. La declaració de qualsevol d’aquestes condicions com a invàlida o ineficaç no afectarà la validesa o eficàcia de la resta, que continuarà essent vinculant per a la persona sòcia i la cooperativa, les quals es comprometen en aquest cas a substituir la clàusula afectada per una altra de vàlida d’efecte equivalent, segons els principis de bona fe i equilibri de contraprestacions.")}</p> 
+<p class="sagnia">${_(u"9.3 En cas d’incompatibilitat, les disposicions establertes als Estatuts socials vigents i als acords de l'Assemblea general prevaldran sobre les presents condicions. La declaració de qualsevol d’aquestes condicions com a invàlida o ineficaç no afectarà la validesa o eficàcia de la resta, que continuarà essent vinculant per a la persona sòcia i la cooperativa, les quals es comprometen en aquest cas a substituir la clàusula afectada per una altra de vàlida d’efecte equivalent, segons els principis de bona fe i equilibri de contraprestacions.")}</p>
 
 <p class="sagnia">${_(u"9.4 Aquest contracte es regirà i interpretarà en tots els seus extrems per les lleis espanyoles que resultin aplicables.")}</p>
 

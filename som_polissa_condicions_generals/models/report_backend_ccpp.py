@@ -38,7 +38,7 @@ class ReportBackendCondicionsParticulars(ReportBackend):
         ).get(pricelist_id, False)
         if price is False or price is None:
             return False
-        return price / 1000
+        return price
 
     def _get_coeficient_k_for_pricelist(self, fs_data, dades_tarifa, default_coeficient_k_untaxed):
         if not fs_data:
@@ -148,9 +148,18 @@ class ReportBackendCondicionsParticulars(ReportBackend):
         res['phone_envio'] = direccio_envio.phone or ''
         data_firma = datetime.today()
         res['sign_date'] = localize_period(data_firma, pol.titular.lang)
-        res['bank'] = pas.bank if es_ct_subrogacio else pol.bank or False
+        payment_type = getattr(pol, 'tipo_pago', False)
+        res['is_recurrent_card_payment'] = bool(
+            payment_type and payment_type.code == 'COBRAMENT_RECURRENT_TARGETA'
+        )
+        res['bank'] = False if res['is_recurrent_card_payment'] else (
+            pas.bank if es_ct_subrogacio else pol.bank or False
+        )
         iban = res['bank'] and res['bank'].printable_iban[5:] or ''
+        creditcard = res['is_recurrent_card_payment'] and getattr(pol, 'creditcard', False) or False
+        masked_number = creditcard and creditcard.masked_number or ''
         res['printable_iban'] = iban[-4:]
+        res['printable_card_number'] = masked_number[-4:]
         res['lang'] = pol.titular.lang
         if context.get("lead") and context.get("lang"):
             res['lang'] = context.get("lang")
@@ -209,6 +218,7 @@ class ReportBackendCondicionsParticulars(ReportBackend):
         res['potencia_max'] = pol.potencia
         res['mode_facturacio'] = pol.mode_facturacio
         res['mode_facturacio_calculat'] = pol.mode_facturacio
+        res['data_renovacio'] = self._get_first_day_next_quarter()
 
         res['te_assignacio_gkwh'] = pol.te_assignacio_gkwh
 
@@ -259,7 +269,20 @@ class ReportBackendCondicionsParticulars(ReportBackend):
         if res['pricelist']:
             res['pricelist'] = res['pricelist'].id
 
+        res['te_tarifa_periodes'] = res['mode_facturacio_calculat'] == 'atr'
+
         return res
+
+    def _get_first_day_next_quarter(self):
+        today = datetime.today()
+        current_quarter = ((today.month - 1) // 3) + 1
+        if current_quarter == 4:
+            year = today.year + 1
+            month = 1
+        else:
+            year = today.year
+            month = (current_quarter * 3) + 1
+        return datetime(year, month, 1).strftime('%d/%m/%Y')
 
     def get_cups_data(self, cursor, uid, pol, context=None):
         res = {}
@@ -268,6 +291,7 @@ class ReportBackendCondicionsParticulars(ReportBackend):
         res['country'] = pol.cups.id_provincia.country_id.name
         res['name'] = pol.cups.name
         res['cnae'] = pol.cnae.name
+        res['ref_catastral'] = pol.cups.ref_catastral or ''
         res['ref_dist'] = pol.ref_dist or ''
         res['cnae_des'] = pol.cnae.descripcio
         res['distri'] = pol.cups.distribuidora_id.name
@@ -401,10 +425,13 @@ class ReportBackendCondicionsParticulars(ReportBackend):
         else:
             tarifes_a_mostrar = get_comming_atr_price(cursor, uid, polissa, ctx)
         tarifes_a_mostrar if isinstance(tarifes_a_mostrar, list) else [tarifes_a_mostrar]
-        if polissa.state == 'esborrany' and not polissa.llista_preu:
-            tarifes_ids = pricelist_obj.search(cursor, uid, [])
-            pricelist_id = pol_obj.escull_llista_preus(
-                cursor, uid, pol.id, tarifes_ids, context=context)
+        if polissa.state == 'esborrany':
+            if not polissa.llista_preu:
+                tarifes_ids = pricelist_obj.search(cursor, uid, [])
+                pricelist_id = pol_obj.escull_llista_preus(
+                    cursor, uid, pol.id, tarifes_ids, context=context)
+            else:
+                pricelist_id = polissa.llista_preu
             ctx.update({'force_pricelist': pricelist_id.id})
             tarifes_a_mostrar = get_comming_atr_price(cursor, uid, polissa, ctx)
 
@@ -444,9 +471,7 @@ class ReportBackendCondicionsParticulars(ReportBackend):
             pricelist = {}
             ctx_pricelist = ctx.copy()
 
-            if lead:
-                text_vigencia = ''
-            elif (not pol.modcontractual_activa.data_final and not (modcon_pendent_indexada or modcon_pendent_indexada)) and dades_tarifa['date_end']:  # noqa: E501
+            if (not pol.modcontractual_activa.data_final and not (modcon_pendent_indexada or modcon_pendent_indexada)) and dades_tarifa['date_end']:  # noqa: E501
                 text_vigencia = _(u"(vigents fins al {})").format(
                     datetime.strptime(dades_tarifa['date_end'], '%Y-%m-%d').strftime('%d/%m/%Y'))
             elif dades_tarifa['date_end'] and dades_tarifa['date_start']:
@@ -472,7 +497,10 @@ class ReportBackendCondicionsParticulars(ReportBackend):
                     fp_id = imd_obj.get_object_reference(
                         cursor, uid, 'som_polissa_condicions_generals', 'fp_iva_reduit')[1]
                     ctx_pricelist.update({'force_fiscal_position': fp_id, 'iva10': True})
-            simple_taxes = pol_obj.get_simplified_taxes(cursor, uid, pol.id, context=ctx_pricelist)
+            tax_context = ctx_pricelist.copy()
+            tax_context['dont_raise_exception'] = True
+            simple_taxes = pol_obj.get_simplified_taxes(
+                cursor, uid, pol.id, context=tax_context)
             iva_str = 'IVA' if 'IVA' in simple_taxes else 'IGIC'
             ie_percent_str = "{:.2f}".format(
                 simple_taxes['IE'] * 100).rstrip('0').rstrip('.').replace('.', ',')

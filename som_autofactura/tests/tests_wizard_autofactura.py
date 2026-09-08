@@ -1,8 +1,68 @@
 # -*- coding: utf-8 -*-
+from __future__ import absolute_import
 from destral import testing
 from osv import osv
 import mock
+from som_autofactura import som_autofactura_task
 from som_autofactura.wizard import wizard_autofactura
+
+
+class TestsAutofacturaTaskTransactions(testing.OOTestCaseWithCursor):
+    def setUp(self):
+        super(TestsAutofacturaTaskTransactions, self).setUp()
+        self.task_obj = self.openerp.pool.get("som.autofactura.task.step")
+
+    @mock.patch.object(som_autofactura_task, "sleep")
+    def test_wait_for_job_group_releases_transaction_between_polls(self, sleep_mock):
+        cursor = mock.Mock()
+        config_obj = self.openerp.pool.get("res.config")
+        jobs_group_obj = self.openerp.pool.get("oorq.jobs.group")
+        task = mock.Mock()
+        task.function = "validar_button"
+        task.autoworker_task_name = "Validar Lot"
+        events = []
+
+        cursor.commit.side_effect = lambda: events.append("commit")
+        cursor.rollback.side_effect = lambda: events.append("rollback")
+        sleep_mock.side_effect = lambda seconds: events.append("sleep")
+
+        def search(*args, **kwargs):
+            events.append("search")
+            return [1] if events.count("search") == 1 else []
+
+        with mock.patch.object(config_obj, "get", return_value=300), mock.patch.object(
+            self.task_obj, "browse", return_value=task
+        ), mock.patch.object(jobs_group_obj, "search", side_effect=search):
+            self.task_obj._wait_until_task_done(cursor, self.uid, [1], {})
+
+        self.assertEqual(
+            events,
+            ["commit", "sleep", "search", "rollback", "sleep", "search", "rollback"],
+        )
+
+    @mock.patch.object(som_autofactura_task, "sleep")
+    def test_wait_for_draft_invoices_releases_transaction_after_poll(self, sleep_mock):
+        cursor = mock.Mock()
+        config_obj = self.openerp.pool.get("res.config")
+        invoice_obj = self.openerp.pool.get("giscedata.facturacio.factura")
+        task = mock.Mock()
+        task.function = "obrir_factures_button"
+        events = []
+
+        cursor.commit.side_effect = lambda: events.append("commit")
+        cursor.rollback.side_effect = lambda: events.append("rollback")
+        sleep_mock.side_effect = lambda seconds: events.append("sleep")
+
+        def search(*args, **kwargs):
+            events.append("search")
+            return [1]
+
+        with mock.patch.object(config_obj, "get", return_value=300), mock.patch.object(
+            self.task_obj, "browse", return_value=task
+        ), mock.patch.object(invoice_obj, "search", side_effect=search):
+            self.task_obj._wait_until_task_done(cursor, self.uid, [1], {})
+
+        self.assertEqual(events, ["search", "commit", "sleep", "search", "rollback"])
 
 
 class TestsWizardAutofacturaUnlock(testing.OOTestCaseWithCursor):

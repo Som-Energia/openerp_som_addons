@@ -49,11 +49,38 @@ L'script `scripts/create_migration_script.py` genera automàticament l'script de
 python scripts/create_migration_script.py
 ```
 
+Preview the proposed migration actions without changing files:
+
+```bash
+python scripts/create_migration_script.py --dry-run
+```
+
+Existing migration scripts are never overwritten by default. Use `--replace`
+only after reviewing the generated candidate and confirming replacement is safe:
+
+```bash
+python scripts/create_migration_script.py --replace
+```
+
 Aquest script:
 - Compara amb la branca `main`
 - Detecta canvis en fitxers XML, Python, CSV (security) i PO
 - Assigna el següent número seqüencial
 - Crea el nom automàticament (ex: `post-0001_IMP_agents_docs_fields_migrate.py`)
+
+`TARGET_VERSION = "5.0.25.5.0"` in the generator is intentionally the manual
+source of truth. Update it when the installed ERP migration version changes;
+do not auto-detect the version.
+
+### Mandatory Pre-Commit Checklist
+
+- [ ] Reconcile the complete PR diff: changed model fields have corresponding `_auto_init` actions.
+- [ ] Reconcile XML and security changes: every required resource has a `load_data` action.
+- [ ] Verify changed manifest resources are included in the migration review.
+- [ ] Run and review `python scripts/create_migration_script.py --dry-run`.
+- [ ] Run Python 2.7 and Python 3 syntax compilation for the generator and generated migration script.
+- [ ] Verify the module upgrade in an ERP environment.
+- [ ] Confirm `TARGET_VERSION` still matches the installed ERP migration version; update it manually when it changes.
 
 ### Pas 2: Crear manualment (si cal)
 
