@@ -110,6 +110,166 @@ class TestHolderChangeWww(testing.OOTestCase):
             ],
         )
 
+    def test_card_request_waits_for_card_data(self):
+        payload = self.payload()
+        payload["payment_method"] = "card"
+        del payload["payment"]["iban"]
+        del payload["payment"]["sepa_accepted"]
+
+        result = self.www_obj.create_request(
+            self.cursor, self.uid, payload
+        )
+
+        self.assertTrue(result["success"], result)
+        request = self.request_obj.read(
+            self.cursor,
+            self.uid,
+            result["request_id"],
+            ["state", "contract_pdf", "mandate_pdf"],
+        )
+        self.assertEqual(request["state"], "awaiting_payment")
+        self.assertTrue(request["contract_pdf"])
+        self.assertFalse(request["mandate_pdf"])
+
+    def test_card_data_generates_documents_and_waits_for_signature(self):
+        payload = self.payload()
+        payload["payment_method"] = "card"
+        del payload["payment"]["iban"]
+        del payload["payment"]["sepa_accepted"]
+        result = self.www_obj.create_request(
+            self.cursor, self.uid, payload
+        )
+        card_values = {
+            "creditcard_token": "card-token",
+            "creditcard_masked_number": "**** **** **** 1234",
+            "creditcard_expiry_date": "12/30",
+            "creditcard_cof_txnid": "cof-transaction",
+        }
+
+        response = self.www_obj.add_payment_card_data(
+            self.cursor, self.uid, result["request_id"], card_values
+        )
+
+        self.assertEqual(response["state"], "awaiting_signature")
+        request = self.request_obj.read(
+            self.cursor,
+            self.uid,
+            result["request_id"],
+            ["state", "contract_pdf", "mandate_pdf"] + card_values.keys(),
+        )
+        self.assertEqual(request["state"], "awaiting_signature")
+        self.assertTrue(request["contract_pdf"])
+        self.assertFalse(request["mandate_pdf"])
+        for field, value in card_values.items():
+            self.assertEqual(request[field], value)
+
+    def test_card_data_rejects_missing_or_repeated_values(self):
+        payload = self.payload()
+        payload["payment_method"] = "card"
+        del payload["payment"]["iban"]
+        del payload["payment"]["sepa_accepted"]
+        result = self.www_obj.create_request(
+            self.cursor, self.uid, payload
+        )
+        card_values = {
+            "creditcard_token": "card-token",
+            "creditcard_masked_number": "**** **** **** 1234",
+            "creditcard_expiry_date": "12/30",
+            "creditcard_cof_txnid": "cof-transaction",
+        }
+
+        with self.assertRaises(Exception):
+            self.www_obj.add_payment_card_data(
+                self.cursor, self.uid, result["request_id"], {}
+            )
+        self.www_obj.add_payment_card_data(
+            self.cursor, self.uid, result["request_id"], card_values
+        )
+        with self.assertRaises(Exception):
+            self.www_obj.add_payment_card_data(
+                self.cursor, self.uid, result["request_id"], card_values
+            )
+
+    def test_simulation_only_persists_reserved_references(self):
+        partner_obj = self.openerp.pool.get("res.partner")
+        bank_obj = self.openerp.pool.get("res.partner.bank")
+        mandate_obj = self.openerp.pool.get("payment.mandate")
+        switching_obj = self.openerp.pool.get("giscedata.switching")
+        vat = "ES12345678Z"
+        iban = self.payload()["payment"]["iban"]
+        counts_before = {
+            "partner": partner_obj.search_count(
+                self.cursor, self.uid, [("vat", "=", vat)]
+            ),
+            "bank": bank_obj.search_count(
+                self.cursor, self.uid, [("iban", "=", iban)]
+            ),
+            "switching": switching_obj.search_count(self.cursor, self.uid, []),
+        }
+
+        result = self.www_obj.create_request(
+            self.cursor, self.uid, self.payload()
+        )
+
+        request = self.request_obj.read(
+            self.cursor,
+            self.uid,
+            result["request_id"],
+            ["contract_number", "mandate_number"],
+        )
+        self.assertTrue(request["contract_number"])
+        self.assertTrue(request["mandate_number"])
+        self.assertEqual(
+            partner_obj.search_count(self.cursor, self.uid, [("vat", "=", vat)]),
+            counts_before["partner"],
+        )
+        self.assertEqual(
+            bank_obj.search_count(self.cursor, self.uid, [("iban", "=", iban)]),
+            counts_before["bank"],
+        )
+        self.assertEqual(
+            mandate_obj.search_count(
+                self.cursor, self.uid, [("name", "=", request["mandate_number"])]
+            ),
+            0,
+        )
+        self.assertEqual(
+            switching_obj.search_count(self.cursor, self.uid, []),
+            counts_before["switching"],
+        )
+        self.assertFalse(self.polissa_obj.search(
+            self.cursor, self.uid, [("name", "=", request["contract_number"])]
+        ))
+
+    def test_execute_completes_once_without_duplicate_m1(self):
+        result = self.www_obj.create_request(
+            self.cursor, self.uid, self.payload()
+        )
+        self.request_obj.write(
+            self.cursor, self.uid, [result["request_id"]], {"state": "queued"}
+        )
+
+        first_result = self.request_obj.execute(
+            self.cursor, self.uid, result["request_id"]
+        )
+        second_result = self.request_obj.execute(
+            self.cursor, self.uid, result["request_id"]
+        )
+
+        self.assertEqual(first_result, second_result)
+        request = self.request_obj.read(
+            self.cursor,
+            self.uid,
+            result["request_id"],
+            ["state", "attempt_count", "switching_id", "result_polissa_id"],
+        )
+        self.assertEqual(request["state"], "completed")
+        self.assertEqual(request["attempt_count"], 1)
+        self.assertEqual(request["switching_id"][0], first_result["switching_id"])
+        self.assertEqual(
+            request["result_polissa_id"][0], first_result["result_polissa_id"]
+        )
+
     def test_create_request_returns_internal_request_id(self):
         first = self.www_obj.create_request(
             self.cursor, self.uid, self.payload()
