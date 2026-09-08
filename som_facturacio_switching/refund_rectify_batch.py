@@ -2,7 +2,9 @@
 from __future__ import absolute_import
 import base64
 import csv
+import logging
 import pooler
+from tqdm import tqdm
 from datetime import datetime, timedelta
 try:
     from StringIO import StringIO
@@ -18,6 +20,8 @@ INVOICE_DIFFERENCE_MAG_TOLERANCE = 0.02
 REFUND_RECTIFY_F1_QUEUE = "refund_rectify_f1"
 REFUND_RECTIFY_F1_TIMEOUT = 7200
 REFUND_RECTIFY_F1_RESULT_TTL = 24 * 3600
+
+logger = logging.getLogger("openerp.%s" % __name__)
 
 REFUND_RECTIFY_BATCH_STATUS = [
     ("pending", "Pendent"),
@@ -270,6 +274,10 @@ class RefundRectifyBatch(osv.osv):
         try:
             batch = self.browse(start_cursor, uid, batch_id, context=context)
             if batch.state in TERMINAL_REFUND_RECTIFY_BATCH_STATES:
+                logger.info(
+                    "refund_rectify_f1: skipping terminal batch batch_name=%s state=%s",
+                    batch.name, batch.state,
+                )
                 return []
             self.write(start_cursor, uid, [batch_id], {
                 "state": "running",
@@ -290,6 +298,20 @@ class RefundRectifyBatch(osv.osv):
                 (line.id, line.sequence, line.f1_id.id) for line in pending_lines
             ]
             polissa_id = batch.polissa_id.id
+            logger.info(
+                "refund_rectify_f1: batch started batch_name=%s polissa_id=%s pending_count=%s",
+                batch.name, polissa_id, len(pending_lines),
+            )
+            if not pending_lines:
+                self._refresh_execution(
+                    start_cursor, uid, batch_id, context=context
+                )
+                start_cursor.commit()
+                logger.info(
+                    "refund_rectify_f1: batch completed batch_name=%s result_count=%s outcomes=%s",
+                    batch.name, 0, "none",
+                )
+                return []
             start_cursor.commit()
         finally:
             start_cursor.close()
@@ -297,9 +319,15 @@ class RefundRectifyBatch(osv.osv):
         previous_f1_id = None
         predecessor_processed = False
         results = []
-        for line_id, sequence, f1_id in pending_lines:
+        for line_id, sequence, f1_id in tqdm(pending_lines):
             f1_cursor = database.cursor()
             try:
+                logger.info(
+                    "refund_rectify_f1: processing line batch_name=%s line_id=%s sequence=%s "
+                    "f1_id=%s previous_f1_id=%s predecessor_processed=%s",
+                    batch.name, line_id, sequence, f1_id, previous_f1_id,
+                    predecessor_processed,
+                )
                 started_at = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
                 line_obj._mark_line_running(
                     f1_cursor, uid, line_id, started_at=started_at, context=context
@@ -313,7 +341,18 @@ class RefundRectifyBatch(osv.osv):
                     f1_cursor, uid, line_id, result=result, context=context
                 )
                 f1_cursor.commit()
+                logger.info(
+                    "refund_rectify_f1: line committed batch_name=%s line_id=%s f1_id=%s "
+                    "outcome=%s reloaded_reading_count=%s generated_invoice_count=%s",
+                    batch.name, line_id, f1_id, result.get("status"),
+                    result.get("reloaded_reading_count", 0),
+                    len(result.get("generated_invoice_ids", [])),
+                )
             except Exception as error:
+                logger.exception(
+                    "refund_rectify_f1: line failed batch_name=%s line_id=%s sequence=%s f1_id=%s",
+                    batch.name, line_id, sequence, f1_id,
+                )
                 f1_cursor.rollback()
                 persistence_cursor = database.cursor()
                 try:
@@ -348,6 +387,11 @@ class RefundRectifyBatch(osv.osv):
                         persistence_cursor, uid, batch_id, context=context
                     )
                     persistence_cursor.commit()
+                    logger.warning(
+                        "refund_rectify_f1: batch blocked batch_name=%s failed_line_id=%s "
+                        "failed_f1_id=%s blocked_line_count=%s",
+                        batch.name, line_id, f1_id, len(blocked_line_ids),
+                    )
                 finally:
                     persistence_cursor.close()
                 return results
@@ -356,6 +400,18 @@ class RefundRectifyBatch(osv.osv):
             results.append(result)
             previous_f1_id = f1_id
             predecessor_processed = result["status"] == "processed"
+        outcome_counts = {}
+        for result in results:
+            outcome = result.get("status", "unknown")
+            outcome_counts[outcome] = outcome_counts.get(outcome, 0) + 1
+        outcomes = ",".join([
+            "%s:%s" % (outcome_name, outcome_counts[outcome_name])
+            for outcome_name in sorted(outcome_counts)
+        ])
+        logger.info(
+            "refund_rectify_f1: batch completed batch_name=%s result_count=%s outcomes=%s",
+            batch.name, len(results), outcomes,
+        )
         return results
 
     @job(
@@ -389,7 +445,8 @@ class RefundRectifyBatch(osv.osv):
             default_result_ttl=REFUND_RECTIFY_F1_RESULT_TTL,
             max_procs=1,
         )
-        worker.work()
+        # Register on this commit: the job itself is enqueued by on_commit.
+        worker.work(cursor)
 
 
 RefundRectifyBatch()
@@ -771,6 +828,7 @@ class RefundRectifyBatchLine(osv.osv):
             self, cursor, uid, f1_id, expected_polissa_id=None,
             context=None, previous_f1_id=None, predecessor_processed=False):
         """Process one F1 in draft mode; transaction ownership belongs to the caller."""
+        logger.info("refund_rectify_f1: start f1_id=%s", f1_id)
         context = context or {}
         f1_obj = self.pool.get("giscedata.facturacio.importacio.linia")
         f1_ids = f1_obj.search(cursor, uid, [("id", "=", f1_id)], limit=1, context=context)
@@ -804,6 +862,10 @@ class RefundRectifyBatchLine(osv.osv):
             result["messages"].append("Pòlissa amb facturació suspesa. No s'actua.")
             return result
         meter_ids = self._get_f1_meter_ids(cursor, uid, f1, context=context)
+        logger.info(
+            "refund_rectify_f1: before finding source invoices f1_id=%s polissa_id=%s",
+            f1_id, polissa_id,
+        )
         source_invoice_ids, draft_message, removed_draft_invoice_ids = (
             self._get_factures_client_by_dates(
                 cursor,
@@ -835,6 +897,10 @@ class RefundRectifyBatchLine(osv.osv):
             cursor, uid, f1, meter_ids, previous_f1_id=previous_f1_id,
             predecessor_processed=predecessor_processed, context=context
         )
+        logger.info(
+            "refund_rectify_f1: before reloading readings f1_id=%s polissa_id=%s",
+            f1_id, polissa_id,
+        )
         reloaded_reading_count = self._recarregar_lectures_between_dates(
             cursor, uid, reading_plan["meter_ids"], f1.fecha_factura_desde,
             f1.fecha_factura_hasta,
@@ -844,6 +910,10 @@ class RefundRectifyBatchLine(osv.osv):
         if not reloaded_reading_count:
             result["messages"].append("No té lectures per esborrar. No s'hi actua.")
             return result
+        logger.info(
+            "refund_rectify_f1: before refund/rectify invoice generation f1_id=%s polissa_id=%s",
+            f1_id, polissa_id,
+        )
         generated_invoice_ids = self._refund_rectify_if_needed(
             cursor, uid, source_invoice_ids, context=context
         )
@@ -862,6 +932,10 @@ class RefundRectifyBatchLine(osv.osv):
             cursor, uid, f1.id, cleanup_messages, context=context
         )
         result["observation_written"] = True
+        logger.info(
+            "refund_rectify_f1: successful end f1_id=%s polissa_id=%s",
+            f1_id, polissa_id,
+        )
         return result
 
 
