@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from __future__ import unicode_literals, print_function
+from __future__ import absolute_import, print_function, unicode_literals
 import os
 import subprocess
 import ast
@@ -221,7 +221,13 @@ def create_migration_script(module_name, files, dry_run=False, replace=False):  
         os.remove(existing_branch_script)
 
     with open(script_path, 'w') as f:
-        f.write('''# -*- coding: utf-8 -*-\nimport logging\n''')
+        f.write(
+            '''# -*- coding: utf-8 -*-
+from __future__ import absolute_import
+
+import logging
+'''
+        )
         if files.get('data') or files.get('security'):
             f.write('''from oopgrade.oopgrade import load_data\n''')
         if models_to_init:
@@ -289,7 +295,7 @@ def down(cursor, installed_version):
 migrate = up
 ''')
 
-    print("Creat script de migració: {0}".format(script_path))
+    print("Created migration script: {0}".format(script_path))
 
 
 def main(dry_run=False, replace=False):
