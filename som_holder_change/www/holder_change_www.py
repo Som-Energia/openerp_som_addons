@@ -305,7 +305,6 @@ class SomHolderChangeWww(osv.osv_memory):
     def execute_request_async(self, cursor, uid, request_id, context=None):
         request_obj = self.pool.get("som.holder.change.request")
         try:
-            request_obj.write(cursor, uid, [request_id], {"state": "signed"}, context=context)
             return request_obj.execute(cursor, uid, request_id, context=context)
         except Exception as error:
             request_obj.write(

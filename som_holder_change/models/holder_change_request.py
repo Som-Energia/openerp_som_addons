@@ -21,20 +21,20 @@ IMMUTABLE_FIELDS = frozenset([
 
 REQUEST_STATES = [
     ("received", "Received"),
-    ("prevalidating", "Prevalidating"),
     ("awaiting_payment", "Awaiting payment"),
     ("validation_error", "Validation error"),
     ("awaiting_signature", "Awaiting signature"),
-    ("signed", "Signed"),
     ("queued", "Queued"),
-    ("processing", "Processing"),
     ("completed", "Completed"),
     ("execution_error", "Execution error"),
-    ("review_required", "Review required"),
-    ("declined", "Declined"),
-    ("expired", "Expired"),
-    ("cancelled", "Cancelled"),
 ]
+
+STATE_TRANSITIONS = {
+    "received": ("awaiting_payment", "awaiting_signature", "validation_error"),
+    "awaiting_payment": ("awaiting_signature",),
+    "awaiting_signature": ("queued",),
+    "queued": ("completed", "execution_error"),
+}
 
 
 class SomHolderChangeRequest(osv.osv):
@@ -154,12 +154,25 @@ class SomHolderChangeRequest(osv.osv):
         return values
 
     def _run_m1(self, cursor, uid, request, partner_id, payment_values, context=None):
+        m1_payment_values = payment_values.copy()
+        is_card_payment = bool(m1_payment_values.pop("creditcard", None))
+        if is_card_payment:
+            # M1 cannot create a recurrent-card contract because it validates the
+            # payment before the card can be assigned to the copied contract.
+            m1_payment_values.update({
+                "bank": request.polissa_id.bank.id,
+                "payment_mode_id": request.polissa_id.payment_mode_id.id,
+                "tipo_pago": request.polissa_id.tipo_pago.id,
+            })
         values = self._m1_values(
-            cursor, uid, request, partner_id, payment_values, context=context
+            cursor, uid, request, partner_id, m1_payment_values, context=context
         )
         execution_context = (context or {}).copy()
+        extra_values = {}
         if request.contract_number:
-            execution_context["new_contract_extra_vals"] = {"name": request.contract_number}
+            extra_values["name"] = request.contract_number
+        if extra_values:
+            execution_context["new_contract_extra_vals"] = extra_values
         switching_ids = self.pool.get("giscedata.polissa").generate_M1_API(
             cursor, uid, request.polissa_id.id, values, context=execution_context
         )
@@ -171,7 +184,20 @@ class SomHolderChangeRequest(osv.osv):
         switching = self.pool.get("giscedata.switching").browse(
             cursor, uid, switching_ids[0], context=context
         )
-        return switching_ids[0], switching.polissa_ref_id.id
+        polissa_id = switching.polissa_ref_id.id
+        if is_card_payment:
+            self.pool.get("giscedata.polissa").write(
+                cursor,
+                uid,
+                polissa_id,
+                {
+                    "payment_mode_id": payment_values["payment_mode_id"],
+                    "tipo_pago": payment_values["tipo_pago"],
+                    "creditcard": payment_values["creditcard"],
+                },
+                context=context,
+            )
+        return switching_ids[0], polissa_id
 
     def _create_mandate(self, cursor, uid, request, partner_id, polissa_id, context=None):
         if self._payment_method(request) != "bank":
@@ -300,7 +326,7 @@ class SomHolderChangeRequest(osv.osv):
                 "switching_id": request.switching_id.id,
                 "result_polissa_id": request.result_polissa_id.id,
             }
-        if request.state not in ("signed", "queued"):
+        if request.state != "queued":
             raise osv.except_osv(
                 _("Invalid request state"), _("The request has not been signed.")
             )
@@ -309,13 +335,11 @@ class SomHolderChangeRequest(osv.osv):
             uid,
             [request_id],
             {
-                "state": "processing",
                 "attempt_count": request.attempt_count + 1,
                 "last_attempt_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
             },
             context=context,
         )
-        request = self.browse(cursor, uid, request_id, context=context)
         partner_id = self._create_holder(cursor, uid, request, context=context)
         payment_values = self._payment_values(cursor, uid, request, partner_id, context=context)
         switching_id, polissa_id = self._run_m1(
@@ -341,6 +365,16 @@ class SomHolderChangeRequest(osv.osv):
                 _("Immutable request"),
                 _("The holder change request identity and payload cannot be modified."),
             )
+        if "state" in values:
+            for request in self.browse(cursor, uid, ids, context=context):
+                if values["state"] == request.state:
+                    continue
+                allowed = STATE_TRANSITIONS.get(request.state, ())
+                if values["state"] not in allowed:
+                    raise osv.except_osv(
+                        _("Invalid request state"),
+                        _("The request state transition is not allowed."),
+                    )
         return super(SomHolderChangeRequest, self).write(
             cursor, uid, ids, values, context=context
         )
