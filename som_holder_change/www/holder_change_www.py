@@ -106,7 +106,16 @@ class SomHolderChangeWww(osv.osv_memory):
             required_attachment = "merge"
         elif cases.get("reason_electrodep"):
             required_attachment = "medical"
-        if required_attachment and not attachments.get(required_attachment):
+        attachment_categories = {
+            "death": "holder_change_death",
+            "merge": "holder_change_merge",
+            "medical": "holder_change_medical",
+        }
+        has_attachment = not required_attachment or attachments.get(required_attachment) or any(
+            attachment.get("category") == attachment_categories[required_attachment]
+            for attachment in payload.get("attachments", [])
+        )
+        if required_attachment and not has_attachment:
             return self._error(
                 "MISSING_REQUIRED_FIELDS",
                 _("The {} attachment is required.").format(required_attachment),
@@ -213,7 +222,7 @@ class SomHolderChangeWww(osv.osv_memory):
 
         request_obj = self.pool.get("som.holder.change.request")
         stored_payload = deepcopy(payload)
-        attachments = stored_payload.pop("attachments", [])
+        attachments = stored_payload.get("attachments", [])
         for attachment in attachments:
             attachment.pop("datas", None)
         request_id = request_obj.create(

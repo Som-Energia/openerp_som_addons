@@ -13,6 +13,7 @@
         "som_polissa_condicions_generals",
         "giscedata_signatura_documents_signaturit",
         "som_card_payment",
+        "som_documents_sensibles",
     ],
     "init_xml": [],
     "demo_xml": [],
