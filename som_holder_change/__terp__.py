@@ -18,6 +18,7 @@
     "demo_xml": [],
     "update_xml": [
         "security/ir.model.access.csv",
+        "data/holder_change_data.xml",
     ],
     "active": False,
     "installable": True,

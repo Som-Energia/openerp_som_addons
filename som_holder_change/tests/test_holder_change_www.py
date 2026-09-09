@@ -110,6 +110,37 @@ class TestHolderChangeWww(testing.OOTestCase):
             ],
         )
 
+    def test_create_request_persists_attachments_outside_payload(self):
+        payload = self.payload()
+        payload["attachments"] = [{
+            "filename": "death-certificate.pdf",
+            "category": "holder_change_death",
+            "datas": "JVBERi0xLjQ=",
+        }]
+
+        result = self.www_obj.create_request(self.cursor, self.uid, payload)
+
+        self.assertTrue(result["success"], result)
+        attachment_obj = self.openerp.pool.get("ir.attachment")
+        attachment_ids = attachment_obj.search(
+            self.cursor,
+            self.uid,
+            [
+                ("res_model", "=", "som.holder.change.request"),
+                ("res_id", "=", result["request_id"]),
+            ],
+        )
+        self.assertEqual(len(attachment_ids), 1)
+        attachment = attachment_obj.read(
+            self.cursor, self.uid, attachment_ids[0], ["datas_fname", "category_id"]
+        )
+        self.assertEqual(attachment["datas_fname"], "death-certificate.pdf")
+        self.assertEqual(attachment["category_id"][1], "Holder change death certificate")
+        request = self.request_obj.read(
+            self.cursor, self.uid, result["request_id"], ["payload"]
+        )
+        self.assertNotIn("datas", request["payload"]["attachments"][0])
+
     def test_card_request_waits_for_card_data(self):
         payload = self.payload()
         payload["payment_method"] = "card"
