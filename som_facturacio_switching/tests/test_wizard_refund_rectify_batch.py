@@ -962,6 +962,46 @@ class TestRefundRectifyBatchExecutionPersistence(testing.OOTestCaseWithCursor):
         self.assertTrue("blocked" in csv_content)
         self.assertTrue("cancelled" in csv_content)
 
+    def test_refresh_keeps_running_batch_running_with_pending_lines(self):
+        line_obj = mock.Mock()
+        line_obj.search.return_value = [1, 2]
+        done_line = mock.Mock()
+        done_line.sequence = 1
+        done_line.f1_id.id = 11
+        done_line.state = "done"
+        done_line.outcome = "processed"
+        done_line.generated_invoice_ids = []
+        done_line.result = "F1 processat"
+        done_line.error = False
+        pending_line = mock.Mock()
+        pending_line.sequence = 2
+        pending_line.f1_id.id = 12
+        pending_line.state = "pending"
+        pending_line.outcome = False
+        pending_line.generated_invoice_ids = []
+        pending_line.result = False
+        pending_line.error = False
+        line_obj.browse.return_value = [done_line, pending_line]
+        batch = mock.Mock()
+        batch.name = "F1_R-TASCA-7"
+        batch.state = "running"
+        attachment_obj = mock.Mock()
+        attachment_obj.search.return_value = []
+        with mock.patch.object(
+                self.pool,
+                "get",
+                side_effect=lambda model: {
+                    "refund.rectify.batch.line": line_obj,
+                    "ir.attachment": attachment_obj,
+                }[model]):
+            with mock.patch.object(self.batch_obj, "browse", return_value=batch):
+                with mock.patch.object(self.batch_obj, "write") as write:
+                    self.batch_obj._refresh_execution(
+                        self.cursor, self.uid, 7, context={}
+                    )
+
+        self.assertEqual(write.call_args[0][3]["state"], "running")
+
 
 class TestRefundRectifyBatchPerLineTransactions(testing.OOTestCaseWithCursor):
     def setUp(self):
