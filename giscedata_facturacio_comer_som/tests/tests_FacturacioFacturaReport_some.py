@@ -2196,14 +2196,34 @@ class Tests_FacturacioFacturaReport_partner_info(Tests_FacturacioFacturaReport_b
         f_id = self.get_fixture("giscedata_facturacio", "factura_0001")
         f = self.factura_obj.browse(self.cursor, self.uid, f_id)
         f.is_recurrent_card_payment = True
-        result = self.r_obj.get_component_partner_info_data(
-            f, mock.Mock(creditcard=mock.Mock(masked_number=u"4111 1111 1111 1234"))
-        )
+        self.r_obj.cursor = self.cursor
+        self.r_obj.uid = self.uid
+        pol = mock.Mock(creditcard=mock.Mock(masked_number=u"4111 1111 1111 1234"))
+        with mock.patch.object(self.polissa_obj, "browse", return_value=pol) as browse:
+            result = self.r_obj.get_recurrent_card_payment_data(f)
 
-        self.assertTrue(result["is_recurrent_card_payment"])
-        self.assertEquals(result["masked_card_number"], u"**** **** **** 1234")
-        self.assertEquals(result["bank_name"], u"")
-        self.assertEquals(result["cc_name"], u"")
+        browse.assert_called_once_with(
+            self.cursor, self.uid, f.polissa_id.id,
+            context={"date": f.date_invoice}
+        )
+        self.assertEquals(result, (True, u"**** **** **** 1234"))
+
+    @mock.patch.object(giscedata_facturacio_report, "datetime")
+    def test__get_recurrent_card_payment_data__without_invoice_date(self, datetime_mock):
+        fact = mock.Mock(is_recurrent_card_payment=True, date_invoice=False)
+        fact.polissa_id.id = 42
+        self.r_obj.cursor = self.cursor
+        self.r_obj.uid = self.uid
+        datetime_mock.today.return_value.strftime.return_value = "2026-03-09"
+        pol = mock.Mock(creditcard=False)
+
+        with mock.patch.object(self.polissa_obj, "browse", return_value=pol) as browse:
+            result = self.r_obj.get_recurrent_card_payment_data(fact)
+
+        browse.assert_called_once_with(
+            self.cursor, self.uid, 42, context={"date": "2026-03-09"}
+        )
+        self.assertEquals(result, (True, u""))
 
     def test__som_report_comp_partner_info__masks_existing_card_format(self):
         result = self.r_obj.get_masked_card_number(u"411111******1234")
@@ -2304,15 +2324,14 @@ class Tests_FacturacioFacturaReport_partner_info(Tests_FacturacioFacturaReport_b
         f_id = self.get_fixture("giscedata_facturacio", "factura_0001")
         f = self.factura_obj.browse(self.cursor, self.uid, f_id)
         f.is_recurrent_card_payment = True
+        self.r_obj.cursor = self.cursor
+        self.r_obj.uid = self.uid
 
-        result = self.r_obj.get_component_partner_info_data(
-            f, mock.Mock(creditcard=False)
-        )
+        with mock.patch.object(
+                self.polissa_obj, "browse", return_value=mock.Mock(creditcard=False)):
+            result = self.r_obj.get_recurrent_card_payment_data(f)
 
-        self.assertTrue(result["is_recurrent_card_payment"])
-        self.assertEquals(result["masked_card_number"], u"")
-        self.assertEquals(result["bank_name"], u"")
-        self.assertEquals(result["cc_name"], u"")
+        self.assertEquals(result, (True, u""))
 
     def test__som_report_comp_partner_info(self):
         f_id = self.get_fixture("giscedata_facturacio", "factura_0001")
