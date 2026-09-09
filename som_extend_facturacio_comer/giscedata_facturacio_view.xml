@@ -34,6 +34,9 @@
             <field name="model">giscedata.facturacio.factura</field>
             <field name="inherit_id" ref="giscedata_facturacio.view_factura_tree"/>
             <field name="arch" type="xml">
+                <xpath expr="//field[@name='date_due']" position="after">
+                    <field name="payment_type"/>
+                </xpath>
                 <xpath expr="//field[@name='origin_date_invoice']" position="after">
                     <field name="comment"/>
                 </xpath>
@@ -45,6 +48,9 @@
             <field name="model">giscedata.facturacio.factura</field>
             <field name="inherit_id" ref="giscedata_facturacio_impagat.view_factura_impagades_tree"/>
             <field name="arch" type="xml">
+                <xpath expr="//field[@name='date_due']" position="after">
+                    <field name="payment_type"/>
+                </xpath>
                 <xpath expr="//field[@name='group_move_id']" position="after">
                     <field name="comment"/>
                 </xpath>
