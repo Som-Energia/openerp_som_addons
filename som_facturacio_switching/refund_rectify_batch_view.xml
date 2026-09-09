@@ -14,6 +14,7 @@
                     <field name="completed_lines"/>
                     <field name="failed_lines"/>
                     <field name="blocked_lines"/>
+                    <field name="cancelled_lines"/>
                 </tree>
             </field>
         </record>
@@ -24,6 +25,11 @@
             <field name="type">form</field>
             <field name="arch" type="xml">
                 <form string="Tasca d'abonar i rectificar">
+                    <group colspan="4" col="4" string="Accions (refresca abans de premer)" states="pending,blocked,failed,running">
+                        <button name="action_retry_from_failed" string="Reprendre des de l'error" type="object" states="blocked,failed"/>
+                        <button name="action_cancel_pending_lines" string="Cancel·lar F1 pendents" type="object" states="pending,running"/>
+                        <button name="action_recover_stale" string="Recuperar job aturat" type="object" states="running"/>
+                    </group>
                     <group colspan="4" col="4">
                         <field name="name"/>
                         <field name="state"/>
@@ -37,6 +43,7 @@
                         <field name="completed_lines"/>
                         <field name="failed_lines"/>
                         <field name="blocked_lines"/>
+                        <field name="cancelled_lines"/>
                     </group>
                     <group colspan="4" col="4" string="Resum">
                         <field name="summary" nolabel="1" colspan="4" height="100" width="400"/>
@@ -46,7 +53,10 @@
                             <field name="sequence"/>
                             <field name="f1_id"/>
                             <field name="state"/>
+                            <field name="outcome"/>
                             <field name="generated_invoice_count"/>
+                            <field name="result"/>
+                            <field name="error"/>
                             <field name="started_at"/>
                             <field name="finished_at"/>
                         </tree>
@@ -65,7 +75,10 @@
                     <field name="sequence"/>
                     <field name="f1_id"/>
                     <field name="state"/>
+                    <field name="outcome"/>
                     <field name="generated_invoice_count"/>
+                    <field name="result"/>
+                    <field name="error"/>
                     <field name="started_at"/>
                     <field name="finished_at"/>
                 </tree>
@@ -83,6 +96,7 @@
                         <field name="f1_id"/>
                         <field name="sequence"/>
                         <field name="state"/>
+                        <field name="outcome"/>
                         <field name="started_at"/>
                         <field name="finished_at"/>
                     </group>

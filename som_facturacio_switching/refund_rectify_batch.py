@@ -4,7 +4,6 @@ import base64
 import csv
 import logging
 import pooler
-from tqdm import tqdm
 from datetime import datetime, timedelta
 try:
     from StringIO import StringIO
@@ -14,6 +13,9 @@ from osv import osv, fields
 from tools.translate import _
 from oorq.decorators import job
 from oorq.autoworker import AutoWorker
+from oorq.oorq import setup_redis_connection
+from rq.exceptions import NoSuchJobError
+from rq.job import Job
 
 
 INVOICE_DIFFERENCE_MAG_TOLERANCE = 0.02
@@ -23,21 +25,13 @@ REFUND_RECTIFY_F1_RESULT_TTL = 24 * 3600
 
 logger = logging.getLogger("openerp.%s" % __name__)
 
-REFUND_RECTIFY_BATCH_STATUS = [
+REFUND_RECTIFY_EXECUTION_STATUS = [
     ("pending", "Pendent"),
     ("running", "Executant-se"),
     ("blocked", "Bloquejada"),
     ("done", "Finalitzada Ok"),
     ("failed", "Finalitzada Error"),
-    ("cancelled", "Cancelada"),
-]
-
-REFUND_RECTIFY_BATCH_LINE_STATUS = [
-    ("pending", "Pendent"),
-    ("running", "Executant-se"),
-    ("done", "Finalitzada Ok"),
-    ("failed", "Finalitzada Error"),
-    ("blocked", "Bloquejada"),
+    ("cancelled", "Cancel·lada"),
 ]
 
 ACTIVE_REFUND_RECTIFY_BATCH_STATES = ["pending", "running", "blocked"]
@@ -61,12 +55,13 @@ class RefundRectifyBatch(osv.osv):
         "started_at": fields.datetime("Començada", readonly=True),
         "finished_at": fields.datetime("Finalitzada", readonly=True),
         "state": fields.selection(
-            REFUND_RECTIFY_BATCH_STATUS, "Estat", required=True, readonly=True
+            REFUND_RECTIFY_EXECUTION_STATUS, "Estat", required=True, readonly=True
         ),
         "total_lines": fields.integer("F1 totals", readonly=True),
         "completed_lines": fields.integer("F1 completats", readonly=True),
         "failed_lines": fields.integer("F1 erronis", readonly=True),
         "blocked_lines": fields.integer("F1 bloquejats", readonly=True),
+        "cancelled_lines": fields.integer("F1 cancel·lats", readonly=True),
         "summary": fields.text("Resum", readonly=True),
         "job_reference": fields.char("Job reference", size=128, readonly=True),
         "line_ids": fields.one2many(
@@ -80,6 +75,7 @@ class RefundRectifyBatch(osv.osv):
         "completed_lines": lambda *a: 0,
         "failed_lines": lambda *a: 0,
         "blocked_lines": lambda *a: 0,
+        "cancelled_lines": lambda *a: 0,
     }
 
     def create(self, cursor, uid, vals, context=None):
@@ -199,7 +195,7 @@ class RefundRectifyBatch(osv.osv):
             context=context
         )
         lines = line_obj.browse(cursor, uid, line_ids, context=context)
-        counts = dict((state, 0) for state, unused in REFUND_RECTIFY_BATCH_LINE_STATUS)
+        counts = dict((state, 0) for state, unused in REFUND_RECTIFY_EXECUTION_STATUS)
         csv_file = StringIO()
         csv_writer = csv.writer(csv_file)
         csv_writer.writerow([
@@ -213,21 +209,21 @@ class RefundRectifyBatch(osv.osv):
                 _csv_value(line.result), _csv_value(line.error),
             ])
         batch = self.browse(cursor, uid, batch_id, context=context)
-        state = batch.state
-        if state != "cancelled":
-            if counts["blocked"]:
-                state = "blocked"
-            elif counts["failed"]:
-                state = "failed"
-            elif counts["running"]:
-                state = "running"
-            elif counts["pending"]:
-                state = "pending"
-            else:
-                state = "done"
-        summary = "F1 totals: {total}. Completats: {done}. Erronis: {failed}. Bloquejats: {blocked}.".format(  # noqa: E501
+        if counts["blocked"]:
+            state = "blocked"
+        elif counts["failed"]:
+            state = "failed"
+        elif counts["running"]:
+            state = "running"
+        elif counts["pending"]:
+            state = "pending"
+        elif counts["cancelled"]:
+            state = "cancelled"
+        else:
+            state = "done"
+        summary = "F1 totals: {total}. Completats: {done}. Erronis: {failed}. Bloquejats: {blocked}. Cancel·lats: {cancelled}.".format(  # noqa: E501
             total=len(lines), done=counts["done"], failed=counts["failed"],
-            blocked=counts["blocked"]
+            blocked=counts["blocked"], cancelled=counts["cancelled"]
         )
         filename = "%s.csv" % batch.name
         csv_data = csv_file.getvalue()
@@ -258,12 +254,153 @@ class RefundRectifyBatch(osv.osv):
             "completed_lines": counts["done"],
             "failed_lines": counts["failed"],
             "blocked_lines": counts["blocked"],
+            "cancelled_lines": counts["cancelled"],
             "summary": summary,
         }
         if state in ("done", "failed", "blocked", "cancelled"):
             vals["finished_at"] = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         self.write(cursor, uid, [batch_id], vals, context=context)
         return vals
+
+    def _claim_batch_for_execution(self, cursor, batch_id):
+        """Atomically claim a pending batch so duplicate OORQ jobs cannot run it."""
+        cursor.execute(
+            "UPDATE %s SET state=%%s, started_at=%%s, finished_at=NULL "
+            "WHERE id=%%s AND state=%%s" % self._table,
+            ("running", datetime.now().strftime("%Y-%m-%d %H:%M:%S"), batch_id, "pending"),
+        )
+        return cursor.rowcount == 1
+
+    def _block_later_lines(self, cursor, uid, batch_id, sequence, f1_id, error, context=None):
+        line_obj = self.pool.get("refund.rectify.batch.line")
+        blocked_line_ids = line_obj.search(
+            cursor, uid,
+            [("batch_id", "=", batch_id), ("sequence", ">", sequence),
+             ("state", "=", "pending")],
+            order="sequence asc, id asc", context=context,
+        )
+        if blocked_line_ids:
+            line_obj.write(cursor, uid, blocked_line_ids, {
+                "state": "blocked",
+                "finished_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                "result": _("Bloquejada per l'error de l'F1 %s: %s") % (f1_id, str(error)),
+                "error": False,
+            }, context=context)
+        return blocked_line_ids
+
+    def _persist_failure_and_block(
+            self, cursor, uid, batch_id, line_id, sequence, f1_id, error,
+            started_at=None, context=None):
+        line_obj = self.pool.get("refund.rectify.batch.line")
+        line_obj._persist_line_outcome(
+            cursor, uid, line_id, error=error, started_at=started_at, context=context
+        )
+        blocked_line_ids = self._block_later_lines(
+            cursor, uid, batch_id, sequence, f1_id, error, context=context
+        )
+        self.write(cursor, uid, [batch_id], {"state": "blocked"}, context=context)
+        self._refresh_execution(cursor, uid, batch_id, context=context)
+        return blocked_line_ids
+
+    def _job_is_recovery_eligible(self, job_reference):
+        """A running batch is stale only when its recorded RQ job is not active."""
+        if not job_reference:
+            return True
+        try:
+            job = Job.fetch(job_reference, connection=setup_redis_connection())
+            status = job.get_status()
+        except NoSuchJobError:
+            return True
+        except Exception:
+            logger.exception(
+                "refund_rectify_f1: unable to check job for stale recovery job_reference=%s",
+                job_reference,
+            )
+            return False
+        return status in (None, "failed", "finished")
+
+    def action_retry_from_failed(self, cursor, uid, ids, context=None):
+        context = context or {}
+        line_obj = self.pool.get("refund.rectify.batch.line")
+        for batch in self.browse(cursor, uid, ids, context=context):
+            if batch.state not in ("blocked", "failed"):
+                raise osv.except_osv(_("Error"), _(
+                    "Només es poden reprendre tasques bloquejades o errònies."))
+            failed_ids = line_obj.search(
+                cursor, uid, [("batch_id", "=", batch.id), ("state", "=", "failed")],
+                order="sequence asc, id asc", limit=1, context=context,
+            )
+            if not failed_ids:
+                raise osv.except_osv(_("Error"), _("La tasca no té cap F1 erroni per reprendre."))
+            failed_line = line_obj.browse(cursor, uid, failed_ids[0], context=context)
+            reset_ids = line_obj.search(
+                cursor, uid,
+                [("batch_id", "=", batch.id), ("sequence", ">=", failed_line.sequence),
+                 ("state", "in", ["failed", "blocked"])],
+                order="sequence asc, id asc", context=context,
+            )
+            line_obj.write(cursor, uid, reset_ids, {
+                "state": "pending", "outcome": False, "started_at": False,
+                "finished_at": False, "result": False, "error": False,
+                "generated_invoice_ids": [(6, 0, [])],
+            }, context=context)
+            self.write(cursor, uid, [batch.id], {
+                "state": "pending", "finished_at": False,
+                "summary": _("Tasca pendent de reprendre des de l'F1 erroni."),
+            }, context=context)
+            self._refresh_execution(cursor, uid, batch.id, context=context)
+            self.schedule_batch_execution(cursor, uid, batch.id, context=context)
+        return True
+
+    def action_cancel_pending_lines(self, cursor, uid, ids, context=None):
+        context = context or {}
+        line_obj = self.pool.get("refund.rectify.batch.line")
+        for batch in self.browse(cursor, uid, ids, context=context):
+            if batch.state not in ("pending", "running"):
+                raise osv.except_osv(
+                    _("Error"), _("Només es poden cancel·lar F1 de tasques pendents o en execució.")
+                )
+            pending_ids = line_obj.search(
+                cursor, uid, [("batch_id", "=", batch.id), ("state", "=", "pending")],
+                context=context,
+            )
+            if pending_ids:
+                line_obj.write(cursor, uid, pending_ids, {
+                    "state": "cancelled",
+                    "finished_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                    "outcome": False,
+                    "result": _("Cancel·lada manualment abans d'executar-se."),
+                    "error": False,
+                    "generated_invoice_ids": [(6, 0, [])],
+                }, context=context)
+            self._refresh_execution(cursor, uid, batch.id, context=context)
+        return True
+
+    def action_recover_stale(self, cursor, uid, ids, context=None):
+        context = context or {}
+        line_obj = self.pool.get("refund.rectify.batch.line")
+        for batch in self.browse(cursor, uid, ids, context=context):
+            if batch.state != "running":
+                raise osv.except_osv(_("Error"), _("Només es poden recuperar tasques en execució."))
+            if not self._job_is_recovery_eligible(batch.job_reference):
+                raise osv.except_osv(_("Error"), _(
+                    "El job de la tasca encara està actiu i no es pot recuperar."))
+            running_ids = line_obj.search(
+                cursor, uid, [("batch_id", "=", batch.id), ("state", "=", "running")],
+                order="sequence asc, id asc", limit=1, context=context,
+            )
+            if not running_ids:
+                raise osv.except_osv(
+                    _("Error"),
+                    _("No hi ha cap F1 en execució; no es pot recuperar sense inventar un error."),
+                )
+            line = line_obj.browse(cursor, uid, running_ids[0], context=context)
+            error = RuntimeError(_("Recuperació manual: el job OORQ ja no està actiu."))
+            self._persist_failure_and_block(
+                cursor, uid, batch.id, line.id, line.sequence, line.f1_id.id,
+                error, started_at=line.started_at, context=context,
+            )
+        return True
 
     def process_batch_f1_lines(self, cursor, uid, batch_id, context=None):
         """Process pending batch lines in independent F1 transactions."""
@@ -273,17 +410,15 @@ class RefundRectifyBatch(osv.osv):
         start_cursor = database.cursor()
         try:
             batch = self.browse(start_cursor, uid, batch_id, context=context)
-            if batch.state in TERMINAL_REFUND_RECTIFY_BATCH_STATES:
+            if batch.state != "pending":
                 logger.info(
-                    "refund_rectify_f1: skipping terminal batch batch_name=%s state=%s",
+                    "refund_rectify_f1: skipping non-pending batch batch_name=%s state=%s",
                     batch.name, batch.state,
                 )
                 return []
-            self.write(start_cursor, uid, [batch_id], {
-                "state": "running",
-                "started_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-                "finished_at": False,
-            }, context=context)
+            if not self._claim_batch_for_execution(start_cursor, batch_id):
+                logger.info("refund_rectify_f1: duplicate job skipped batch_name=%s", batch.name)
+                return []
             line_ids = line_obj.search(
                 start_cursor,
                 uid,
@@ -319,7 +454,19 @@ class RefundRectifyBatch(osv.osv):
         previous_f1_id = None
         predecessor_processed = False
         results = []
-        for line_id, sequence, f1_id in tqdm(pending_lines):
+        skipped_lines = False
+        for line_id, sequence, f1_id in pending_lines:
+            claim_cursor = database.cursor()
+            started_at = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            try:
+                if not line_obj._mark_line_running(
+                        claim_cursor, uid, line_id, started_at=started_at, context=context):
+                    claim_cursor.rollback()
+                    skipped_lines = True
+                    continue
+                claim_cursor.commit()
+            finally:
+                claim_cursor.close()
             f1_cursor = database.cursor()
             try:
                 logger.info(
@@ -327,10 +474,6 @@ class RefundRectifyBatch(osv.osv):
                     "f1_id=%s previous_f1_id=%s predecessor_processed=%s",
                     batch.name, line_id, sequence, f1_id, previous_f1_id,
                     predecessor_processed,
-                )
-                started_at = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-                line_obj._mark_line_running(
-                    f1_cursor, uid, line_id, started_at=started_at, context=context
                 )
                 result = line_obj.process_one_f1(
                     f1_cursor, uid, f1_id, expected_polissa_id=polissa_id,
@@ -356,35 +499,9 @@ class RefundRectifyBatch(osv.osv):
                 f1_cursor.rollback()
                 persistence_cursor = database.cursor()
                 try:
-                    line_obj._persist_line_outcome(
-                        persistence_cursor, uid, line_id, error=error,
-                        started_at=started_at, context=context
-                    )
-                    blocked_line_ids = line_obj.search(
-                        persistence_cursor,
-                        uid,
-                        [
-                            ("batch_id", "=", batch_id),
-                            ("sequence", ">", sequence),
-                            ("state", "=", "pending"),
-                        ],
-                        order="sequence asc, id asc",
-                        context=context,
-                    )
-                    if blocked_line_ids:
-                        line_obj.write(persistence_cursor, uid, blocked_line_ids, {
-                            "state": "blocked",
-                            "finished_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-                            "result": _(
-                                "Bloquejada per l'error de l'F1 %s: %s"
-                            ) % (f1_id, str(error)),
-                            "error": False,
-                        }, context=context)
-                    self.write(persistence_cursor, uid, [batch_id], {
-                        "state": "blocked",
-                    }, context=context)
-                    self._refresh_execution(
-                        persistence_cursor, uid, batch_id, context=context
+                    blocked_line_ids = self._persist_failure_and_block(
+                        persistence_cursor, uid, batch_id, line_id, sequence, f1_id,
+                        error, started_at=started_at, context=context
                     )
                     persistence_cursor.commit()
                     logger.warning(
@@ -400,6 +517,13 @@ class RefundRectifyBatch(osv.osv):
             results.append(result)
             previous_f1_id = f1_id
             predecessor_processed = result["status"] == "processed"
+        if skipped_lines:
+            refresh_cursor = database.cursor()
+            try:
+                self._refresh_execution(refresh_cursor, uid, batch_id, context=context)
+                refresh_cursor.commit()
+            finally:
+                refresh_cursor.close()
         outcome_counts = {}
         for result in results:
             outcome = result.get("status", "unknown")
@@ -472,7 +596,7 @@ class RefundRectifyBatchLine(osv.osv):
         ),
         "sequence": fields.integer("Ordre", required=True, readonly=True),
         "state": fields.selection(
-            REFUND_RECTIFY_BATCH_LINE_STATUS, "Estat", required=True, readonly=True
+            REFUND_RECTIFY_EXECUTION_STATUS, "Estat", required=True, readonly=True
         ),
         "outcome": fields.selection(
             [("processed", "Processat"), ("no_action", "Sense acció")],
@@ -505,17 +629,15 @@ class RefundRectifyBatchLine(osv.osv):
     }
 
     def _mark_line_running(self, cursor, uid, line_id, started_at=None, context=None):
-        line = self.browse(cursor, uid, line_id, context=context)
-        if line.state != "pending":
-            return False
         if started_at is None:
             started_at = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        self.write(cursor, uid, [line_id], {
-            "state": "running",
-            "started_at": started_at,
-            "finished_at": False,
-        }, context=context)
-        return True
+        # Atomic claim: write() cannot combine this state predicate with its update.
+        cursor.execute(
+            "UPDATE %s SET state=%%s, started_at=%%s, finished_at=NULL "
+            "WHERE id=%%s AND state=%%s" % self._table,
+            ("running", started_at, line_id, "pending"),
+        )
+        return cursor.rowcount == 1
 
     def _persist_line_outcome(
             self, cursor, uid, line_id, result=None, error=None, started_at=None, context=None):
