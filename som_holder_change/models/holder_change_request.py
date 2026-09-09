@@ -232,6 +232,92 @@ class SomHolderChangeRequest(osv.osv):
         )
         return mandate_id
 
+    def _apply_special_documents(self, cursor, uid, request, partner_id, polissa_id, context=None):
+        cases = request.payload["especial_cases"]
+        category_code = False
+        description = False
+        target_model = "giscedata.polissa"
+        target_id = polissa_id
+        if cases.get("reason_death"):
+            category_code = "holder_change_death"
+            description = "Certificat defunció"
+        elif cases.get("reason_merge"):
+            category_code = "holder_change_merge"
+            description = "Certificat fusió"
+        elif cases.get("reason_electrodep"):
+            category_code = "holder_change_medical"
+            description = "Justificant mèdic"
+            category_id = self.pool.get("ir.model.data").get_object_reference(
+                cursor,
+                uid,
+                "som_documents_sensibles",
+                "documents_sensibles_category_electrodependent",
+            )[1]
+            document_obj = self.pool.get("som.documents.sensibles")
+            document_ids = document_obj.search(
+                cursor, uid, [("partner_id", "=", partner_id)], context=context
+            )
+            if document_ids:
+                target_id = document_ids[0]
+            else:
+                today = datetime.today().strftime("%Y-%m-%d")
+                target_id = document_obj.create(
+                    cursor,
+                    uid,
+                    {
+                        "name": self.pool.get("giscedata.polissa").read(
+                            cursor, uid, polissa_id, ["name"], context=context
+                        )["name"],
+                        "data_recepcio": today,
+                        "darrera_data_valida": today,
+                        "partner_id": partner_id,
+                        "categoria": category_id,
+                    },
+                    context=context,
+                )
+            target_model = "som.documents.sensibles"
+            nocutoff_ids = self.pool.get("giscedata.polissa.nocutoff").search(
+                cursor, uid, [("motiu", "like", "imprescindible")], limit=1, context=context
+            )
+            if not nocutoff_ids:
+                raise osv.except_osv(
+                    _("Missing no-cutoff reason"),
+                    _("The indispensable supply no-cutoff reason is required."),
+                )
+            self.pool.get("giscedata.polissa").write(
+                cursor, uid, polissa_id, {"nocutoff": nocutoff_ids[0]}, context=context
+            )
+        if not category_code:
+            return
+
+        attachment_obj = self.pool.get("ir.attachment")
+        attachment_ids = attachment_obj.search(
+            cursor,
+            uid,
+            [
+                ("res_model", "=", "som.holder.change.request"),
+                ("res_id", "=", request.id),
+            ],
+            context=context,
+        )
+        for attachment in attachment_obj.browse(cursor, uid, attachment_ids, context=context):
+            if attachment.category_id.code != category_code:
+                continue
+            attachment_obj.create(
+                cursor,
+                uid,
+                {
+                    "name": attachment.name,
+                    "datas": attachment.datas,
+                    "datas_fname": attachment.datas_fname,
+                    "category_id": attachment.category_id.id,
+                    "description": description,
+                    "res_model": target_model,
+                    "res_id": target_id,
+                },
+                context=context,
+            )
+
     def _render_reports(self, cursor, uid, request, polissa_id, mandate_id, context=None):
         contract_pdf, _format = netsvc.LocalService(
             "report.giscedata.polissa.contract.summary.full"
@@ -275,6 +361,14 @@ class SomHolderChangeRequest(osv.osv):
             )
             mandate_id = self._create_mandate(
                 temporary_cursor, uid, request, partner_id, polissa_id, context=temporary_context
+            )
+            self._apply_special_documents(
+                temporary_cursor,
+                uid,
+                request,
+                partner_id,
+                polissa_id,
+                context=temporary_context,
             )
             reports = self._render_reports(
                 temporary_cursor, uid, request, polissa_id, mandate_id, context=temporary_context
@@ -345,6 +439,9 @@ class SomHolderChangeRequest(osv.osv):
         switching_id, polissa_id = self._run_m1(
             cursor, uid, request, partner_id, payment_values, context=context)
         self._create_mandate(cursor, uid, request, partner_id, polissa_id, context=context)
+        self._apply_special_documents(
+            cursor, uid, request, partner_id, polissa_id, context=context
+        )
         super(SomHolderChangeRequest, self).write(
             cursor,
             uid,
