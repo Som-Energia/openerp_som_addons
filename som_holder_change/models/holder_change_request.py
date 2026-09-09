@@ -77,17 +77,47 @@ class SomHolderChangeRequest(osv.osv):
                 cursor, uid, [request_id], values, context=context
             )
 
+    def _holder_vat(self, holder):
+        vat = holder["vat"].upper()
+        return vat if vat.startswith("ES") else "ES{}".format(vat)
+
+    def _holder_language(self, cursor, uid, request, context=None):
+        language = request.payload["holder"]["language"]
+        language_ids = self.pool.get("res.lang").search(
+            cursor, uid, [("code", "=", language)], limit=1, context=context
+        )
+        return language if language_ids else request.polissa_id.titular.lang
+
     def _create_holder(self, cursor, uid, request, context=None):
         holder = request.payload["holder"]
-        vat = holder["vat"].upper()
-        if not vat.startswith("ES"):
-            vat = "ES{}".format(vat)
+        vat = self._holder_vat(holder)
+        partner_obj = self.pool.get("res.partner")
         values = {
             "name": holder["name"],
             "vat": vat,
-            "lang": request.polissa_id.titular.lang,
+            "lang": self._holder_language(cursor, uid, request, context=context),
         }
-        return self.pool.get("res.partner").create(cursor, uid, values, context=context)
+        partner_ids = partner_obj.search(
+            cursor, uid, [("vat", "=", vat)], limit=1, context=context
+        )
+        if partner_ids:
+            partner_obj.write(cursor, uid, partner_ids, values, context=context)
+            return partner_ids[0]
+        return partner_obj.create(cursor, uid, values, context=context)
+
+    def _create_holder_address(self, cursor, uid, request, partner_id, context=None):
+        holder = request.payload["holder"]
+        values = {
+            "partner_id": partner_id,
+            "street": holder["address"],
+            "zip": holder["postal_code"],
+            "id_municipi": holder["city"],
+            "email": holder["email"],
+            "phone": holder["phone1"],
+        }
+        return self.pool.get("res.partner.address").create(
+            cursor, uid, values, context=context
+        )
 
     def _payment_values(self, cursor, uid, request, partner_id, temporary=False, context=None):
         if self._payment_method(request) == "card":
@@ -112,7 +142,15 @@ class SomHolderChangeRequest(osv.osv):
             }
 
         iban = request.payload["payment"]["iban"].replace(" ", "")
-        bank_id = self.pool.get("res.partner.bank").create(
+        bank_obj = self.pool.get("res.partner.bank")
+        bank_ids = bank_obj.search(
+            cursor,
+            uid,
+            [("partner_id", "=", partner_id), ("iban", "=", iban)],
+            limit=1,
+            context=context,
+        )
+        bank_id = bank_ids[0] if bank_ids else bank_obj.create(
             cursor,
             uid,
             {"partner_id": partner_id, "iban": iban, "state": "iban"},
@@ -125,7 +163,9 @@ class SomHolderChangeRequest(osv.osv):
             "tipo_pago": contract.tipo_pago.id,
         }
 
-    def _m1_values(self, cursor, uid, request, partner_id, payment_values, context=None):
+    def _m1_values(
+        self, cursor, uid, request, partner_id, address_id, payment_values, context=None
+    ):
         vat_kind = self.pool.get("res.partner").get_vat_type(
             cursor, uid, partner_id, context=context
         )
@@ -145,15 +185,15 @@ class SomHolderChangeRequest(osv.osv):
             "cnae": request.polissa_id.cnae.id,
             "vat": request.payload["holder"]["vat"],
             "vat_kind": vat_kind,
-            "direccio_pagament": request.polissa_id.direccio_pagament.id,
-            "direccio_notificacio": request.polissa_id.direccio_notificacio.id,
+            "direccio_pagament": address_id,
+            "direccio_notificacio": address_id,
         }
         values.update(payment_values)
         if values["generate_new_contract"] == "exists":
             values["new_contract"] = False
         return values
 
-    def _run_m1(self, cursor, uid, request, partner_id, payment_values, context=None):
+    def _run_m1(self, cursor, uid, request, partner_id, address_id, payment_values, context=None):
         m1_payment_values = payment_values.copy()
         is_card_payment = bool(m1_payment_values.pop("creditcard", None))
         if is_card_payment:
@@ -165,7 +205,7 @@ class SomHolderChangeRequest(osv.osv):
                 "tipo_pago": request.polissa_id.tipo_pago.id,
             })
         values = self._m1_values(
-            cursor, uid, request, partner_id, m1_payment_values, context=context
+            cursor, uid, request, partner_id, address_id, m1_payment_values, context=context
         )
         execution_context = (context or {}).copy()
         extra_values = {}
@@ -343,6 +383,9 @@ class SomHolderChangeRequest(osv.osv):
             request = self.browse(temporary_cursor, uid, request_id, context=temporary_context)
             partner_id = self._create_holder(
                 temporary_cursor, uid, request, context=temporary_context)
+            address_id = self._create_holder_address(
+                temporary_cursor, uid, request, partner_id, context=temporary_context
+            )
             payment_values = self._payment_values(
                 temporary_cursor,
                 uid,
@@ -356,6 +399,7 @@ class SomHolderChangeRequest(osv.osv):
                 uid,
                 request,
                 partner_id,
+                address_id,
                 payment_values,
                 context=temporary_context,
             )
@@ -435,9 +479,12 @@ class SomHolderChangeRequest(osv.osv):
             context=context,
         )
         partner_id = self._create_holder(cursor, uid, request, context=context)
+        address_id = self._create_holder_address(
+            cursor, uid, request, partner_id, context=context
+        )
         payment_values = self._payment_values(cursor, uid, request, partner_id, context=context)
         switching_id, polissa_id = self._run_m1(
-            cursor, uid, request, partner_id, payment_values, context=context)
+            cursor, uid, request, partner_id, address_id, payment_values, context=context)
         self._create_mandate(cursor, uid, request, partner_id, polissa_id, context=context)
         self._apply_special_documents(
             cursor, uid, request, partner_id, polissa_id, context=context
