@@ -26,7 +26,7 @@ class SomHolderChangeWww(osv.osv_memory):
     def _missing_fields(self, values, fields_to_check):
         return [field for field in fields_to_check if field not in values]
 
-    def _validate_payload(self, payload):
+    def _validate_base_payload(self, payload):
         if not isinstance(payload, dict):
             return self._error("INVALID_PAYLOAD", _("The payload must be an object."))
 
@@ -49,7 +49,10 @@ class SomHolderChangeWww(osv.osv_memory):
             return self._error("INVALID_PAYMENT_METHOD", _("Payment method must be bank or card."))
         if payment_method == "bank" and not payload["payment"].get("sepa_accepted"):
             return self._error("CONSENT_REQUIRED", _("SEPA consent is required for bank payment."))
+        return False
 
+    def _validate_required_fields(self, payload):
+        payment_method = payload["payment_method"]
         required = {
             "supply_point": ["cups", "address"],
             "member": ["invite_token", "become_member", "link_member"],
@@ -69,7 +72,9 @@ class SomHolderChangeWww(osv.osv_memory):
                     "MISSING_REQUIRED_FIELDS",
                     _("Missing {} fields: {}.").format(section, ", ".join(missing)),
                 )
+        return False
 
+    def _validate_holder(self, payload):
         holder = payload["holder"]
         vat = self._normalize_vat(holder.get("vat"))
         if not vat:
@@ -82,7 +87,9 @@ class SomHolderChangeWww(osv.osv_memory):
                 "MISSING_REQUIRED_FIELDS",
                 _("Missing holder fields: {}.").format(", ".join(missing)),
             )
+        return False
 
+    def _validate_member(self, payload):
         member = payload["member"]
         if member.get("become_member") and member.get("link_member"):
             return self._error(
@@ -96,7 +103,9 @@ class SomHolderChangeWww(osv.osv_memory):
                     "MISSING_REQUIRED_FIELDS",
                     _("Missing member fields: {}.").format(", ".join(missing)),
                 )
+        return False
 
+    def _validate_special_case(self, payload):
         cases = payload["especial_cases"]
         attachments = cases.get("attachments", {})
         required_attachment = False
@@ -111,15 +120,37 @@ class SomHolderChangeWww(osv.osv_memory):
             "merge": "holder_change_merge",
             "medical": "holder_change_medical",
         }
+        special_attachments = payload.get("attachments", [])
         has_attachment = not required_attachment or attachments.get(required_attachment) or any(
             attachment.get("category") == attachment_categories[required_attachment]
-            for attachment in payload.get("attachments", [])
+            for attachment in special_attachments
         )
         if required_attachment and not has_attachment:
             return self._error(
                 "MISSING_REQUIRED_FIELDS",
                 _("The {} attachment is required.").format(required_attachment),
             )
+        if required_attachment and special_attachments and any(
+            attachment.get("category") != attachment_categories[required_attachment]
+            for attachment in special_attachments
+        ):
+            return self._error(
+                "INVALID_ATTACHMENT_CATEGORY",
+                _("The attachment category does not match the special case."),
+            )
+        return False
+
+    def _validate_payload(self, payload):
+        for validator in (
+            self._validate_base_payload,
+            self._validate_required_fields,
+            self._validate_holder,
+            self._validate_member,
+            self._validate_special_case,
+        ):
+            error = validator(payload)
+            if error:
+                return error
         return False
 
     def _normalize_cups(self, cups):
