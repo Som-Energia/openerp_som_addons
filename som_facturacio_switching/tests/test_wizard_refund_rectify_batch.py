@@ -755,10 +755,18 @@ class TestRefundRectifyBatchLineSequentialReadingPlan(testing.OOTestCaseWithCurs
         outer_cursor = mock.Mock()
         outer_cursor.dbname = "test_batch"
         start_cursor = mock.Mock()
+        first_claim_cursor = mock.Mock()
         first_cursor = mock.Mock()
+        second_claim_cursor = mock.Mock()
         second_cursor = mock.Mock()
         database = mock.Mock()
-        database.cursor.side_effect = [start_cursor, first_cursor, second_cursor]
+        database.cursor.side_effect = [
+            start_cursor, first_claim_cursor, first_cursor,
+            second_claim_cursor, second_cursor,
+        ]
+        start_cursor.rowcount = 1
+        first_claim_cursor.rowcount = 1
+        second_claim_cursor.rowcount = 1
         batch = mock.Mock()
         batch.state = "pending"
         batch.polissa_id.id = 7
@@ -800,7 +808,9 @@ class TestRefundRectifyBatchLineSequentialReadingPlan(testing.OOTestCaseWithCurs
             ],
         )
         self.assertEqual(outer_cursor.method_calls, [])
-        for execution_cursor in [start_cursor, first_cursor, second_cursor]:
+        for execution_cursor in [
+                start_cursor, first_claim_cursor, first_cursor,
+                second_claim_cursor, second_cursor]:
             execution_cursor.commit.assert_called_once_with()
             execution_cursor.close.assert_called_once_with()
 
@@ -880,7 +890,7 @@ class TestRefundRectifyBatchExecutionPersistence(testing.OOTestCaseWithCursor):
 
     def test_refreshes_derived_counts_state_and_csv(self):
         line_obj = mock.Mock()
-        line_obj.search.return_value = [1, 2, 3]
+        line_obj.search.return_value = [1, 2, 3, 4]
         first_line = mock.Mock()
         first_line.sequence = 1
         first_line.f1_id.id = 11
@@ -905,7 +915,17 @@ class TestRefundRectifyBatchExecutionPersistence(testing.OOTestCaseWithCursor):
         third_line.generated_invoice_ids = []
         third_line.result = "No s'actua."
         third_line.error = False
-        line_obj.browse.return_value = [first_line, second_line, third_line]
+        cancelled_line = mock.Mock()
+        cancelled_line.sequence = 4
+        cancelled_line.f1_id.id = 14
+        cancelled_line.state = "cancelled"
+        cancelled_line.outcome = False
+        cancelled_line.generated_invoice_ids = []
+        cancelled_line.result = "Cancel·lada manualment"
+        cancelled_line.error = False
+        line_obj.browse.return_value = [
+            first_line, second_line, third_line, cancelled_line,
+        ]
         batch = mock.Mock()
         batch.name = "F1_R-TASCA-7"
         batch.state = "running"
@@ -927,10 +947,11 @@ class TestRefundRectifyBatchExecutionPersistence(testing.OOTestCaseWithCursor):
 
         vals = write.call_args[0][3]
         self.assertEqual(vals["state"], "blocked")
-        self.assertEqual(vals["total_lines"], 3)
+        self.assertEqual(vals["total_lines"], 4)
         self.assertEqual(vals["completed_lines"], 1)
         self.assertEqual(vals["failed_lines"], 1)
         self.assertEqual(vals["blocked_lines"], 1)
+        self.assertEqual(vals["cancelled_lines"], 1)
         attachment_vals = attachment_obj.create.call_args[0][2]
         self.assertEqual(attachment_vals["name"], "F1_R-TASCA-7.csv")
         self.assertEqual(attachment_vals["res_model"], "refund.rectify.batch")
@@ -939,6 +960,7 @@ class TestRefundRectifyBatchExecutionPersistence(testing.OOTestCaseWithCursor):
         self.assertTrue("outcome" in csv_content)
         self.assertTrue("processed" in csv_content)
         self.assertTrue("blocked" in csv_content)
+        self.assertTrue("cancelled" in csv_content)
 
 
 class TestRefundRectifyBatchPerLineTransactions(testing.OOTestCaseWithCursor):
@@ -964,10 +986,15 @@ class TestRefundRectifyBatchPerLineTransactions(testing.OOTestCaseWithCursor):
         outer_cursor = mock.Mock()
         outer_cursor.dbname = "test_batch"
         start_cursor = mock.Mock()
+        claim_cursor = mock.Mock()
         failed_cursor = mock.Mock()
         persistence_cursor = mock.Mock()
         database = mock.Mock()
-        database.cursor.side_effect = [start_cursor, failed_cursor, persistence_cursor]
+        database.cursor.side_effect = [
+            start_cursor, claim_cursor, failed_cursor, persistence_cursor,
+        ]
+        start_cursor.rowcount = 1
+        claim_cursor.rowcount = 1
         failing_line = self._line(1, 1, 11)
         line_obj = mock.Mock()
         line_obj.search.side_effect = [[1], [2, 3]]
@@ -984,12 +1011,14 @@ class TestRefundRectifyBatchPerLineTransactions(testing.OOTestCaseWithCursor):
                             )
 
         self.assertEqual(results, [])
+        claim_cursor.commit.assert_called_once_with()
+        claim_cursor.close.assert_called_once_with()
         failed_cursor.rollback.assert_called_once_with()
         failed_cursor.close.assert_called_once_with()
         persistence_cursor.commit.assert_called_once_with()
         persistence_cursor.close.assert_called_once_with()
         line_obj._mark_line_running.assert_called_once_with(
-            failed_cursor, self.uid, 1, started_at=mock.ANY, context={}
+            claim_cursor, self.uid, 1, started_at=mock.ANY, context={}
         )
         started_at = line_obj._mark_line_running.call_args[1]["started_at"]
         line_obj._persist_line_outcome.assert_called_once_with(
@@ -1008,9 +1037,12 @@ class TestRefundRectifyBatchPerLineTransactions(testing.OOTestCaseWithCursor):
         outer_cursor = mock.Mock()
         outer_cursor.dbname = "test_batch"
         start_cursor = mock.Mock()
+        claim_cursor = mock.Mock()
         line_cursor = mock.Mock()
         database = mock.Mock()
-        database.cursor.side_effect = [start_cursor, line_cursor]
+        database.cursor.side_effect = [start_cursor, claim_cursor, line_cursor]
+        start_cursor.rowcount = 1
+        claim_cursor.rowcount = 1
         pending_line = self._line(2, 2, 12)
         line_obj = mock.Mock()
         line_obj.search.return_value = [2]
@@ -1031,6 +1063,101 @@ class TestRefundRectifyBatchPerLineTransactions(testing.OOTestCaseWithCursor):
             line_cursor, self.uid, 12, expected_polissa_id=7,
             previous_f1_id=None, predecessor_processed=False, context={}
         )
+
+    def test_duplicate_running_job_is_skipped_without_processing(self):
+        outer_cursor = mock.Mock()
+        outer_cursor.dbname = "test_batch"
+        state_cursor = mock.Mock()
+        database = mock.Mock()
+        database.cursor.return_value = state_cursor
+        line_obj = mock.Mock()
+        with mock.patch.object(refund_rectify_batch.pooler, "get_db", return_value=database):
+            with mock.patch.object(self.pool, "get", return_value=line_obj):
+                with mock.patch.object(self.batch_obj, "browse",
+                                       return_value=self._batch("running")):
+                    results = self.batch_obj.process_batch_f1_lines(
+                        outer_cursor, self.uid, 3, context={}
+                    )
+
+        self.assertEqual(results, [])
+        self.assertFalse(line_obj.search.called)
+        self.assertFalse(state_cursor.commit.called)
+
+
+class TestRefundRectifyBatchRecoveryActions(testing.OOTestCaseWithCursor):
+    def setUp(self):
+        super(TestRefundRectifyBatchRecoveryActions, self).setUp()
+        self.pool = self.openerp.pool
+        self.batch_obj = self.pool.get("refund.rectify.batch")
+
+    def _batch(self, state, job_reference=False):
+        batch = mock.Mock()
+        batch.id = 7
+        batch.state = state
+        batch.job_reference = job_reference
+        return batch
+
+    def test_cancels_only_pending_lines_and_refreshes_counts(self):
+        line_obj = mock.Mock()
+        line_obj.search.return_value = [3, 4]
+        with mock.patch.object(self.pool, "get", return_value=line_obj):
+            with mock.patch.object(self.batch_obj, "browse", return_value=[self._batch("running")]):
+                with mock.patch.object(self.batch_obj, "_refresh_execution") as refresh:
+                    self.batch_obj.action_cancel_pending_lines(
+                        self.cursor, self.uid, [7], context={}
+                    )
+
+        self.assertEqual(line_obj.write.call_args[0][2], [3, 4])
+        self.assertEqual(line_obj.write.call_args[0][3]["state"], "cancelled")
+        refresh.assert_called_once_with(self.cursor, self.uid, 7, context={})
+
+    def test_retry_preserves_done_no_action_and_cancelled_lines(self):
+        line_obj = mock.Mock()
+        failed_line = mock.Mock()
+        failed_line.sequence = 2
+        line_obj.search.side_effect = [[2], [2, 3]]
+        line_obj.browse.return_value = failed_line
+        batch = self._batch("blocked")
+        with mock.patch.object(self.pool, "get", return_value=line_obj):
+            with mock.patch.object(self.batch_obj, "browse", return_value=[batch]):
+                with mock.patch.object(self.batch_obj, "write") as write:
+                    with mock.patch.object(self.batch_obj, "_refresh_execution"):
+                        with mock.patch.object(self.batch_obj,
+                                               "schedule_batch_execution") as schedule:
+                            self.batch_obj.action_retry_from_failed(
+                                self.cursor, self.uid, [7], context={}
+                            )
+
+        self.assertEqual(line_obj.write.call_args[0][2], [2, 3])
+        self.assertEqual(line_obj.write.call_args[0][3]["state"], "pending")
+        self.assertEqual(line_obj.write.call_args[0][3]["generated_invoice_ids"], [(6, 0, [])])
+        self.assertEqual(
+            line_obj.search.call_args_list[1][0][2][-1],
+            ("state", "in", ["failed", "blocked"]),
+        )
+        self.assertEqual(write.call_args[0][3]["state"], "pending")
+        schedule.assert_called_once_with(self.cursor, self.uid, 7, context={})
+
+    def test_stale_recovery_requires_a_failed_or_finished_job(self):
+        job = mock.Mock()
+        job.get_status.return_value = "started"
+        with mock.patch.object(refund_rectify_batch, "setup_redis_connection"):
+            with mock.patch.object(refund_rectify_batch.Job, "fetch", return_value=job):
+                self.assertFalse(self.batch_obj._job_is_recovery_eligible("job-7"))
+                job.get_status.return_value = "failed"
+                self.assertTrue(self.batch_obj._job_is_recovery_eligible("job-7"))
+
+    def test_stale_recovery_rejects_running_batch_without_running_line(self):
+        line_obj = mock.Mock()
+        line_obj.search.return_value = []
+        with mock.patch.object(self.pool, "get", return_value=line_obj):
+            with mock.patch.object(self.batch_obj, "browse", return_value=[self._batch("running")]):
+                with mock.patch.object(self.batch_obj, "_job_is_recovery_eligible",
+                                       return_value=True):
+                    self.assertRaises(
+                        osv.except_osv, self.batch_obj.action_recover_stale,
+                        self.cursor, self.uid, [7], context={}
+                    )
 
     def test_terminal_batch_is_not_reopened(self):
         outer_cursor = mock.Mock()
