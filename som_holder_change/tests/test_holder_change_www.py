@@ -329,6 +329,68 @@ class TestHolderChangeWww(testing.OOTestCase):
         )
         self.assertEqual(len(attachment_ids), 1)
 
+    def test_execute_copies_merge_certificate_to_result_contract(self):
+        payload = self.payload()
+        payload["especial_cases"].update({"reason_merge": True})
+        payload["attachments"] = [{
+            "filename": "merge-certificate.pdf",
+            "category": "holder_change_merge",
+            "datas": "JVBERi0xLjQ=",
+        }]
+        result = self.www_obj.create_request(self.cursor, self.uid, payload)
+        self.request_obj.write(
+            self.cursor, self.uid, [result["request_id"]], {"state": "queued"}
+        )
+        execution = self.request_obj.execute(
+            self.cursor, self.uid, result["request_id"]
+        )
+        attachment_ids = self.openerp.pool.get("ir.attachment").search(
+            self.cursor,
+            self.uid,
+            [
+                ("res_model", "=", "giscedata.polissa"),
+                ("res_id", "=", execution["result_polissa_id"]),
+                ("description", "=", "Certificat fusió"),
+            ],
+        )
+        self.assertEqual(len(attachment_ids), 1)
+
+    def test_execute_creates_electrodependency_document_and_nocutoff(self):
+        payload = self.payload()
+        payload["especial_cases"].update({"reason_electrodep": True})
+        payload["attachments"] = [{
+            "filename": "medical-certificate.pdf",
+            "category": "holder_change_medical",
+            "datas": "JVBERi0xLjQ=",
+        }]
+        result = self.www_obj.create_request(self.cursor, self.uid, payload)
+        self.request_obj.write(
+            self.cursor, self.uid, [result["request_id"]], {"state": "queued"}
+        )
+        execution = self.request_obj.execute(
+            self.cursor, self.uid, result["request_id"]
+        )
+        result_polissa = self.polissa_obj.browse(
+            self.cursor, self.uid, execution["result_polissa_id"]
+        )
+        document_ids = self.openerp.pool.get("som.documents.sensibles").search(
+            self.cursor,
+            self.uid,
+            [("partner_id", "=", result_polissa.titular.id)],
+        )
+        self.assertEqual(len(document_ids), 1)
+        attachment_ids = self.openerp.pool.get("ir.attachment").search(
+            self.cursor,
+            self.uid,
+            [
+                ("res_model", "=", "som.documents.sensibles"),
+                ("res_id", "=", document_ids[0]),
+                ("description", "=", "Justificant mèdic"),
+            ],
+        )
+        self.assertEqual(len(attachment_ids), 1)
+        self.assertTrue(result_polissa.nocutoff)
+
     def test_create_request_returns_internal_request_id(self):
         first = self.www_obj.create_request(
             self.cursor, self.uid, self.payload()
