@@ -221,6 +221,8 @@ class RefundRectifyBatch(osv.osv):
             state = "cancelled"
         else:
             state = "done"
+        if state == "pending" and batch.state == "running":
+            state = "running"
         summary = "F1 totals: {total}. Completats: {done}. Erronis: {failed}. Bloquejats: {blocked}. Cancel·lats: {cancelled}.".format(  # noqa: E501
             total=len(lines), done=counts["done"], failed=counts["failed"],
             blocked=counts["blocked"], cancelled=counts["cancelled"]
