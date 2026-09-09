@@ -301,6 +301,29 @@ class TestHolderChangeWww(testing.OOTestCase):
             request["result_polissa_id"][0], first_result["result_polissa_id"]
         )
 
+    def test_execute_uses_new_holder_language_and_address(self):
+        payload = self.payload()
+        payload["holder"]["language"] = self.polissa.titular.lang
+        result = self.www_obj.create_request(self.cursor, self.uid, payload)
+        self.request_obj.write(
+            self.cursor, self.uid, [result["request_id"]], {"state": "queued"}
+        )
+
+        execution = self.request_obj.execute(
+            self.cursor, self.uid, result["request_id"]
+        )
+
+        polissa = self.polissa_obj.browse(
+            self.cursor, self.uid, execution["result_polissa_id"]
+        )
+        self.assertEqual(polissa.titular.lang, payload["holder"]["language"])
+        self.assertEqual(
+            polissa.direccio_pagament.street, payload["holder"]["address"]
+        )
+        self.assertEqual(
+            polissa.direccio_notificacio.id, polissa.direccio_pagament.id
+        )
+
     def test_execute_copies_death_certificate_to_result_contract(self):
         payload = self.payload()
         payload["especial_cases"].update({"reason_death": True})
