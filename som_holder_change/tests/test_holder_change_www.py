@@ -301,6 +301,34 @@ class TestHolderChangeWww(testing.OOTestCase):
             request["result_polissa_id"][0], first_result["result_polissa_id"]
         )
 
+    def test_execute_copies_death_certificate_to_result_contract(self):
+        payload = self.payload()
+        payload["especial_cases"].update({"reason_death": True})
+        payload["attachments"] = [{
+            "filename": "death-certificate.pdf",
+            "category": "holder_change_death",
+            "datas": "JVBERi0xLjQ=",
+        }]
+        result = self.www_obj.create_request(self.cursor, self.uid, payload)
+        self.request_obj.write(
+            self.cursor, self.uid, [result["request_id"]], {"state": "queued"}
+        )
+
+        execution = self.request_obj.execute(
+            self.cursor, self.uid, result["request_id"]
+        )
+
+        attachment_ids = self.openerp.pool.get("ir.attachment").search(
+            self.cursor,
+            self.uid,
+            [
+                ("res_model", "=", "giscedata.polissa"),
+                ("res_id", "=", execution["result_polissa_id"]),
+                ("description", "=", "Certificat defunció"),
+            ],
+        )
+        self.assertEqual(len(attachment_ids), 1)
+
     def test_create_request_returns_internal_request_id(self):
         first = self.www_obj.create_request(
             self.cursor, self.uid, self.payload()
