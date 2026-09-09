@@ -160,6 +160,32 @@ class SomHolderChangeWww(osv.osv_memory):
                 "The request does not match this CUPS."))
         return request
 
+    def _create_attachments(self, cursor, uid, request_id, attachments, context=None):
+        category_obj = self.pool.get("ir.attachment.category")
+        attachment_obj = self.pool.get("ir.attachment")
+        for attachment in attachments:
+            category_ids = category_obj.search(
+                cursor, uid, [("code", "=", attachment["category"])], context=context
+            )
+            if not category_ids:
+                raise osv.except_osv(
+                    _("Invalid attachment"),
+                    _("Unknown attachment category: {}.").format(attachment["category"]),
+                )
+            attachment_obj.create(
+                cursor,
+                uid,
+                {
+                    "res_model": "som.holder.change.request",
+                    "res_id": request_id,
+                    "datas_fname": attachment["filename"],
+                    "name": attachment["filename"],
+                    "category_id": category_ids[0],
+                    "datas": attachment["datas"],
+                },
+                context=context,
+            )
+
     def create_request(self, cursor, uid, payload, context=None):
         if context is None:
             context = {}
@@ -186,6 +212,10 @@ class SomHolderChangeWww(osv.osv_memory):
             )
 
         request_obj = self.pool.get("som.holder.change.request")
+        stored_payload = deepcopy(payload)
+        attachments = stored_payload.pop("attachments", [])
+        for attachment in attachments:
+            attachment.pop("datas", None)
         request_id = request_obj.create(
             cursor,
             uid,
@@ -193,8 +223,15 @@ class SomHolderChangeWww(osv.osv_memory):
                 "polissa_id": polissa_id,
                 "cups": cups,
                 "owner_change_type": self._owner_change_type(payload),
-                "payload": deepcopy(payload),
+                "payload": stored_payload,
             },
+            context=context,
+        )
+        self._create_attachments(
+            cursor,
+            uid,
+            request_id,
+            payload.get("attachments", []),
             context=context,
         )
         # The simulation uses an independent cursor, so it must see the request.
