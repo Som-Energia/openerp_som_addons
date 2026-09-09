@@ -49,12 +49,22 @@ class GiscedataPolissa(osv.osv):
         self.check_perm(cursor, uid, "write", context=context)
         polissa = self.browse(cursor, uid, polissa_id, context=context)
         empty_invoices = {"migrated": [], "remitted": [], "failed": [], "unchanged": []}
+        if not polissa.pagador or polissa.state != "activa":
+            return self._recurring_card_result(
+                {"id": False, "disposition": "unchanged"},
+                {"id": polissa_id, "disposition": "unchanged", "effective_date": today},
+                empty_invoices,
+                today,
+                "policy_not_eligible",
+            )
         payment_type_id, payment_mode_id = self._recurring_card_payment_ids(
             cursor, uid, context=context
         )
         current_card = polissa.creditcard
         equivalent_card = bool(
             current_card
+            and current_card.active
+            and current_card.partner_id.id == polissa.pagador.id
             and all(
                 getattr(current_card, field) == card_data.get(field)
                 for field in ("token", "masked_number", "expiry_date", "cof_txnid")
@@ -76,15 +86,8 @@ class GiscedataPolissa(osv.osv):
                 {"id": current_card.id, "disposition": "reused"},
                 {"id": polissa_id, "disposition": "unchanged", "effective_date": today},
                 invoices,
-                today,
-            )
-        if not polissa.pagador or polissa.state != "activa":
-            return self._recurring_card_result(
-                {"id": False, "disposition": "unchanged"},
-                {"id": polissa_id, "disposition": "unchanged", "effective_date": today},
-                empty_invoices,
-                today,
-                "policy_not_eligible",
+                today=today,
+                reason_code="already_converted",
             )
 
         self.check_modifiable_polissa(cursor, uid, polissa_id, context=context)
@@ -109,7 +112,9 @@ class GiscedataPolissa(osv.osv):
             end_date,
             context=context,
         )
-        invoices = self.pool.get("giscedata.facturacio.factura").migrate_recurring_card_invoices(
+        invoices = self.pool.get(
+            "giscedata.facturacio.factura"
+        ).migrate_recurring_card_invoices(
             cursor, uid, polissa_id, payment_type_id, today, context=context
         )
         return self._recurring_card_result(

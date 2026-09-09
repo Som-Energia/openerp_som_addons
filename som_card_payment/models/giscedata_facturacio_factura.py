@@ -73,7 +73,7 @@ class GiscedataFacturacioFactura(osv.osv):
                     {"payment_type": payment_type_id},
                     context=context,
                 )
-            except osv.except_osv:
+            except Exception:
                 cursor.rollback(savepoint)
                 result["failed"].append(
                     {"id": factura.id, "reason_code": "payment_type_write_failed"}

@@ -1,23 +1,23 @@
 #. module: som_card_payment
 #: code:addons/som_card_payment/models/res_partner_creditcard.py:20
 msgid "Invalid card data"
-msgstr "Invalid card data"
+msgstr "Dades de targeta no vàlides"
 
 #. module: som_card_payment
 #: code:addons/som_card_payment/models/res_partner_creditcard.py:21
 #, python-format
 msgid "Missing required card fields: %s"
-msgstr "Missing required card fields: %s"
+msgstr "Falten camps obligatoris de la targeta: %s"
 
 #. module: som_card_payment
 #: code:addons/som_card_payment/models/res_partner_creditcard.py:55
 msgid "Card token conflict"
-msgstr "Card token conflict"
+msgstr "Conflicte de token de targeta"
 
 #. module: som_card_payment
 #: code:addons/som_card_payment/models/res_partner_creditcard.py:56
 msgid "The stored card token has different payer or metadata."
-msgstr "The stored card token has different payer or metadata."
+msgstr "El token de targeta desat té un pagador o metadades diferents."
 
 #: field:giscedata.facturacio.factura,redsys_currency:0
 msgid "Moneda Redsys"
@@ -242,3 +242,8 @@ msgstr "Targeta Redsys"
 #: field:res.partner.creditcard,masked_number:0
 msgid "Numero targeta"
 msgstr "Numero targeta"
+
+#. module: som_card_payment
+#: code:addons/som_card_payment/models/res_partner_creditcard.py:93
+msgid "La data de caducitat ha de tenir format MM/YY."
+msgstr "La data de caducitat ha de tenir format MM/YY."

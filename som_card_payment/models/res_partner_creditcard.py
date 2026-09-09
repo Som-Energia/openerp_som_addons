@@ -28,6 +28,10 @@ class ResPartnerCreditCard(osv.osv):
             )
 
         self.check_perm(cursor, uid, "read", context=context)
+        cursor.execute(
+            "SELECT pg_advisory_xact_lock(hashtext(%s))",
+            (values["token"],),
+        )
         lookup_context = context.copy()
         lookup_context["active_test"] = False
         card_ids = self.search(
@@ -86,7 +90,7 @@ class ResPartnerCreditCard(osv.osv):
     _constraints = [
         (
             _check_expiry_date,
-            "La data de caducitat ha de tenir format MM/YY.",
+            _("La data de caducitat ha de tenir format MM/YY."),
             ["expiry_date"],
         ),
     ]

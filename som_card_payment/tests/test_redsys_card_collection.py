@@ -436,4 +436,34 @@ class TestRedsysCardCollectionConfigured(testing.OOTestCaseWithCursor):
 
         self.assertIn(factura.id, result["remitted"])
         invoice = self.invoice_obj.browse(self.cursor, self.uid, factura.invoice_id.id)
-        self.assertNotEqual(invoice.payment_type.id, self.card_type_id)
+        self.assertFalse(invoice.payment_type)
+
+    def test_migrate_recurring_card_invoices_isolates_unexpected_write_failure(self):
+        factura = self._prepare_eligible_invoice()
+        self.invoice_obj.write(
+            self.cursor,
+            self.uid,
+            [factura.invoice_id.id],
+            {"payment_type": False},
+        )
+
+        with mock.patch.object(
+            self.invoice_obj, "write", side_effect=RuntimeError("database failure")
+        ):
+            result = self.factura_obj.migrate_recurring_card_invoices(
+                self.cursor,
+                self.uid,
+                factura.polissa_id.id,
+                self.card_type_id,
+                date.today().strftime("%Y-%m-%d"),
+            )
+
+        self.assertEqual(
+            result["failed"],
+            [{"id": factura.id, "reason_code": "payment_type_write_failed"}],
+        )
+        self.assertFalse(
+            self.invoice_obj.browse(
+                self.cursor, self.uid, factura.invoice_id.id
+            ).payment_type
+        )

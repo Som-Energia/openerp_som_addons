@@ -1,9 +1,13 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import
 
+import threading
+
 from destral import testing
+import mock
 from osv import osv
 from osv.orm import FieldsValidationException
+import pooler
 
 
 class TestResPartnerCreditCard(testing.OOTestCaseWithCursor):
@@ -62,12 +66,92 @@ class TestResPartnerCreditCard(testing.OOTestCaseWithCursor):
         self.assertEqual(result["disposition"], "created")
         self.assertEqual(card["partner_id"][0], self.partner_id)
         self.assertEqual(card["token"], "tok_test_123")
+        self.assertEqual(card["masked_number"], "**** **** **** 1234")
+        self.assertEqual(card["expiry_date"], "12/34")
         self.assertEqual(card["cof_txnid"], "cof_test_123")
         self.assertEqual(
             self.creditcard_obj.search(
                 self.cursor, self.uid, [("token", "=", "tok_test_123")]
             ),
             [result["id"]],
+        )
+
+    def test_resolve_for_payer_retries_a_new_token_without_duplicate_cards(self):
+        created = self._resolve()
+
+        retried = self._resolve()
+
+        self.assertEqual(retried, {"id": created["id"], "disposition": "reused"})
+        self.assertEqual(
+            self.creditcard_obj.search(
+                self.cursor, self.uid, [("token", "=", "tok_test_123")]
+            ),
+            [created["id"]],
+        )
+
+    def test_resolve_for_payer_serializes_concurrent_new_token_requests(self):
+        self.cursor.commit()
+        database = pooler.get_db(self.cursor.dbname)
+        first_create_started = threading.Event()
+        release_first_create = threading.Event()
+        second_started = threading.Event()
+        second_finished = threading.Event()
+        results = []
+        errors = []
+        original_create = self.creditcard_obj.create
+
+        def create_while_holding_token_lock(*args, **kwargs):
+            if not first_create_started.is_set():
+                first_create_started.set()
+                release_first_create.wait(5)
+            return original_create(*args, **kwargs)
+
+        def resolve_in_transaction(started, finished):
+            cursor = database.cursor()
+            try:
+                started.set()
+                result = self.creditcard_obj.resolve_for_payer(
+                    cursor, self.uid, self.partner_id, self._base_vals()
+                )
+                cursor.commit()
+                results.append(result)
+            except Exception as error:
+                cursor.rollback()
+                errors.append(error)
+            finally:
+                finished.set()
+                cursor.close()
+
+        with mock.patch.object(
+            self.creditcard_obj, "create", side_effect=create_while_holding_token_lock
+        ):
+            first = threading.Thread(
+                target=resolve_in_transaction,
+                args=(threading.Event(), threading.Event()),
+            )
+            first.start()
+            self.assertTrue(first_create_started.wait(5))
+            second = threading.Thread(
+                target=resolve_in_transaction,
+                args=(second_started, second_finished),
+            )
+            second.start()
+            self.assertTrue(second_started.wait(5))
+            self.assertFalse(second_finished.wait(0.5))
+            release_first_create.set()
+            first.join(5)
+            second.join(5)
+
+        self.assertFalse(first.is_alive())
+        self.assertFalse(second.is_alive())
+        self.assertEqual(errors, [])
+        self.assertEqual(sorted(result["disposition"] for result in results), ["created", "reused"])
+        self.assertEqual(len(set(result["id"] for result in results)), 1)
+        self.assertEqual(
+            self.creditcard_obj.search(
+                self.cursor, self.uid, [("token", "=", "tok_test_123")]
+            ),
+            [results[0]["id"]],
         )
 
     def test_resolve_for_payer_rejects_token_metadata_conflict(self):

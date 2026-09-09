@@ -242,3 +242,8 @@ msgstr "Targeta Redsys"
 #: field:res.partner.creditcard,masked_number:0
 msgid "Numero targeta"
 msgstr "Numero targeta"
+
+#. module: som_card_payment
+#: code:addons/som_card_payment/models/res_partner_creditcard.py:93
+msgid "La data de caducitat ha de tenir format MM/YY."
+msgstr "The expiry date must use the MM/YY format."
