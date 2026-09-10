@@ -353,8 +353,8 @@ class TestRedsysCardCollection(testing.OOTestCaseWithCursor):
     def test_charge_factura_by_redsys_advances_around_confirmed_failure_email(self):
         invoice = self._prepare_eligible_invoice()
         response = {
-            "raw": {"Ds_Response": "101", "error": "Operacio denegada"},
-            "merchant_parameters": {"Ds_Response": "101"},
+            "raw": {"Ds_Response": "0101", "error": "Operacio denegada"},
+            "merchant_parameters": {"Ds_Response": "0101"},
         }
         redsys_client, client = self._redsys_client(response=response)
         calls = []
@@ -388,14 +388,14 @@ class TestRedsysCardCollection(testing.OOTestCaseWithCursor):
         updated_factura = self.factura_obj.browse(self.cursor, self.uid, invoice.id)
         self.assertFalse(updated_factura.pending_state)
         self.assertEqual(updated_factura.redsys_collection_state, "declined")
-        self.assertEqual(updated_factura.redsys_response_code, "101")
+        self.assertEqual(updated_factura.redsys_response_code, "0101")
         self.assertIn(u"Operacio denegada", updated_factura.redsys_response_message)
 
     def test_charge_factura_by_redsys_keeps_declined_for_invalid_mailbox(self):
         invoice = self._prepare_eligible_invoice()
         response = {
-            "raw": {"Ds_Response": "101", "error": "Operacio denegada"},
-            "merchant_parameters": {"Ds_Response": "101"},
+            "raw": {"Ds_Response": "0101", "error": "Operacio denegada"},
+            "merchant_parameters": {"Ds_Response": "0101"},
         }
         redsys_client, client = self._redsys_client(response=response)
 
@@ -425,8 +425,8 @@ class TestRedsysCardCollection(testing.OOTestCaseWithCursor):
     def test_charge_factura_by_redsys_keeps_declined_when_email_fails(self):
         invoice = self._prepare_eligible_invoice()
         response = {
-            "raw": {"Ds_Response": "101", "error": "Operacio denegada"},
-            "merchant_parameters": {"Ds_Response": "101"},
+            "raw": {"Ds_Response": "0101", "error": "Operacio denegada"},
+            "merchant_parameters": {"Ds_Response": "0101"},
         }
         redsys_client, client = self._redsys_client(response=response)
         send_wizard = self.openerp.pool.get("poweremail.send.wizard")
@@ -541,6 +541,15 @@ class TestRedsysCardCollection(testing.OOTestCaseWithCursor):
         self.assertLess(updated_factura.invoice_id.residual, initial_residual)
         send_email.assert_not_called()
 
+    def test_redsys_response_classification_uses_authorization_ranges(self):
+        for response_code in ("0000", "0099"):
+            self.assertTrue(self.factura_obj._is_redsys_success(response_code))
+        for response_code in ("0100", "0299"):
+            self.assertTrue(self.factura_obj._is_redsys_decline(response_code))
+        for response_code in ("0300", "9997", "", None):
+            self.assertFalse(self.factura_obj._is_redsys_success(response_code))
+            self.assertFalse(self.factura_obj._is_redsys_decline(response_code))
+
     def test_charge_factura_by_redsys_marks_transport_failure_for_review(self):
         invoice = self._prepare_eligible_invoice()
         redsys_client, client = self._redsys_client(exception=Exception("timeout"))
@@ -585,6 +594,59 @@ class TestRedsysCardCollection(testing.OOTestCaseWithCursor):
         self.assertEqual(updated_factura.redsys_collection_state, "review")
         self.assertEqual(
             updated_factura.redsys_response_message, "Missing Redsys response code"
+        )
+        send_email.assert_not_called()
+        go_on_pending.assert_not_called()
+
+    def test_charge_factura_by_redsys_keeps_numeric_error_code_for_review(self):
+        invoice = self._prepare_eligible_invoice()
+        response = {"raw": {"Ds_ErrorCode": "9004"}}
+        redsys_client, client = self._redsys_client(response=response)
+
+        with redsys_client, mock.patch.object(
+            self.factura_obj, "_send_redsys_declined_email"
+        ) as send_email, mock.patch.object(
+            self.factura_obj, "go_on_pending"
+        ) as go_on_pending:
+            result = self.factura_obj._charge_factura_by_redsys(
+                self.cursor, self.uid, invoice.id
+            )
+
+        self.assertTrue(result)
+        client.mit_payment.assert_called_once()
+        updated_factura = self.factura_obj.browse(self.cursor, self.uid, invoice.id)
+        self.assertFalse(updated_factura.pending_state)
+        self.assertEqual(updated_factura.redsys_collection_state, "review")
+        self.assertFalse(updated_factura.redsys_response_code)
+        self.assertEqual(updated_factura.redsys_response_message, "9004")
+        send_email.assert_not_called()
+        go_on_pending.assert_not_called()
+
+    def test_charge_factura_by_redsys_keeps_technical_response_for_review(self):
+        invoice = self._prepare_eligible_invoice()
+        response = {
+            "raw": {"Ds_Response": "9997", "error": "Payment is processing"},
+            "merchant_parameters": {"Ds_Response": "9997"},
+        }
+        redsys_client, client = self._redsys_client(response=response)
+
+        with redsys_client, mock.patch.object(
+            self.factura_obj, "_send_redsys_declined_email"
+        ) as send_email, mock.patch.object(
+            self.factura_obj, "go_on_pending"
+        ) as go_on_pending:
+            result = self.factura_obj._charge_factura_by_redsys(
+                self.cursor, self.uid, invoice.id
+            )
+
+        self.assertTrue(result)
+        client.mit_payment.assert_called_once()
+        updated_factura = self.factura_obj.browse(self.cursor, self.uid, invoice.id)
+        self.assertFalse(updated_factura.pending_state)
+        self.assertEqual(updated_factura.redsys_collection_state, "review")
+        self.assertEqual(updated_factura.redsys_response_code, "9997")
+        self.assertEqual(
+            updated_factura.redsys_response_message, "Payment is processing"
         )
         send_email.assert_not_called()
         go_on_pending.assert_not_called()

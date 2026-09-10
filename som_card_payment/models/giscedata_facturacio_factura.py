@@ -206,8 +206,7 @@ class GiscedataFacturacioFactura(osv.osv):
         merchant_params = result.get("merchant_parameters") or {}
         raw = result.get("raw") or {}
         return (
-            merchant_params.get("Ds_Response") or raw.get("Ds_Response")
-            or raw.get("Ds_ErrorCode") or raw.get("error") or raw.get("message"),
+            merchant_params.get("Ds_Response") or raw.get("Ds_Response"),
             raw.get("error") or raw.get("message") or raw.get("Ds_ErrorCode"),
         )
 
@@ -219,7 +218,8 @@ class GiscedataFacturacioFactura(osv.osv):
 
     def _is_redsys_decline(self, response_code):
         try:
-            return int("%s" % response_code) >= 100
+            response_code = "%s" % response_code
+            return response_code.isdigit() and 100 <= int(response_code) <= 299
         except (TypeError, ValueError):
             return False
 
