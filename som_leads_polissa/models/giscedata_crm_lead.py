@@ -527,6 +527,13 @@ class GiscedataCrmLead(osv.OsvInherits):
             if representative_ids:
                 representative_id = representative_ids[0]
             else:
+                if name and "," not in name:
+                    config_o = self.pool.get("res.config")
+                    with config_o.ResConfigPatch({"partner_name_format": "N C1 C2"}):
+                        names = partner_o.separa_cognoms(cursor, uid, name)
+                    surnames = " ".join(filter(None, names["cognoms"]))
+                    if names["nom"] and surnames:
+                        name = "{}, {}".format(surnames, names["nom"])
                 values = {
                     "vat": vat,
                     "name": name,
