@@ -206,14 +206,20 @@ class GiscedataFacturacioFactura(osv.osv):
         merchant_params = result.get("merchant_parameters") or {}
         raw = result.get("raw") or {}
         return (
-            merchant_params.get("Ds_Response") or raw.get("Ds_Response")
-            or raw.get("Ds_ErrorCode") or raw.get("error") or raw.get("message"),
+            merchant_params.get("Ds_Response") or raw.get("Ds_Response"),
             raw.get("error") or raw.get("message") or raw.get("Ds_ErrorCode"),
         )
 
     def _is_redsys_success(self, response_code):
         try:
             return 0 <= int("%s" % response_code) <= 99
+        except (TypeError, ValueError):
+            return False
+
+    def _is_redsys_decline(self, response_code):
+        try:
+            response_code = "%s" % response_code
+            return response_code.isdigit() and 100 <= int(response_code) <= 299
         except (TypeError, ValueError):
             return False
 
@@ -493,6 +499,20 @@ class GiscedataFacturacioFactura(osv.osv):
             )
             return True
 
+        if not self._is_redsys_decline(response_code):
+            self.write(
+                cursor,
+                uid,
+                [factura.id],
+                {
+                    "redsys_collection_state": "review",
+                    "redsys_response_code": response_code or False,
+                    "redsys_response_message": response_message or False,
+                },
+                context=context,
+            )
+            return True
+
         decline_message = "%s" % (response_message or _("Sense detall"))
         self.write(
             cursor,
@@ -505,6 +525,7 @@ class GiscedataFacturacioFactura(osv.osv):
             },
             context=context,
         )
+        self.go_on_pending(cursor, uid, [factura.id], context=context)
         email_result = self._send_redsys_declined_email(
             cursor, uid, factura.id, context=context
         )
