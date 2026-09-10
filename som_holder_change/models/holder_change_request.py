@@ -119,6 +119,31 @@ class SomHolderChangeRequest(osv.osv):
             cursor, uid, values, context=context
         )
 
+    def _linked_member_partner(self, cursor, uid, member, context=None):
+        vat = self._holder_vat(member)
+        member_ids = self.pool.get("somenergia.soci").search(
+            cursor, uid, [("vat", "=", vat)], context=context
+        )
+        for member_record in self.pool.get("somenergia.soci").browse(
+            cursor, uid, member_ids, context=context
+        ):
+            if member_record.www_soci == member["number"]:
+                return member_record.partner_id.id
+        raise osv.except_osv(
+            _("Member not found"), _("The linked member does not exist or is inactive.")
+        )
+
+    def _member_partner(self, cursor, uid, request, holder_id, context=None):
+        member = request.payload["member"]
+        if member.get("link_member"):
+            return self._linked_member_partner(cursor, uid, member, context=context), False
+        if member.get("become_member"):
+            self.pool.get("res.partner").become_member(
+                cursor, uid, holder_id, context=context
+            )
+            return holder_id, True
+        return False, False
+
     def _payment_values(self, cursor, uid, request, partner_id, temporary=False, context=None):
         if self._payment_method(request) == "card":
             card_data = {
@@ -375,6 +400,9 @@ class SomHolderChangeRequest(osv.osv):
         address_id = self._create_holder_address(
             cursor, uid, request, partner_id, context=context
         )
+        member_partner_id, is_new_member = self._member_partner(
+            cursor, uid, request, partner_id, context=context
+        )
         payment_values = self._payment_values(
             cursor, uid, request, partner_id, temporary=temporary, context=context
         )
@@ -387,6 +415,14 @@ class SomHolderChangeRequest(osv.osv):
         self._apply_special_documents(
             cursor, uid, request, partner_id, polissa_id, context=context
         )
+        if member_partner_id:
+            self.pool.get("giscedata.polissa").write(
+                cursor, uid, polissa_id, {"soci": member_partner_id}, context=context
+            )
+        if is_new_member:
+            self.pool.get("res.partner").adopt_contracts_as_member(
+                cursor, uid, partner_id, context=context
+            )
         return switching_id, polissa_id, mandate_id
 
     def prepare(self, cursor, uid, request_id, context=None):
