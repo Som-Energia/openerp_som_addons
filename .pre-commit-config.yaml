@@ -31,5 +31,9 @@ repos:
       - id: pylint-py3k
         name: pylint --py3k
         entry: pylint --py3k --reports=n --score=n --persistent=n
-        language: system
+        language: python
+        additional_dependencies:
+          - pylint==1.9.5
+          - astroid==1.6.6
+          - isort==4.3.21
         types: [python]
