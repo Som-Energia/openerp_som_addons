@@ -14,6 +14,32 @@ class TestRedsysCardCollection(testing.OOTestCaseWithCursor):
         super(TestRedsysCardCollection, self).setUp()
         self.config_obj = self.openerp.pool.get("res.config")
         self.imd_obj = self.openerp.pool.get("ir.model.data")
+
+    def test_redsys_config_data_has_safe_defaults(self):
+        expected_values = {
+            "redsys_merchant_code": "DEMO_MERCHANT_CODE",
+            "redsys_private_key": "DEMO_PRIVATE_KEY",
+            "redsys_merchant_url": "https://example.invalid/redsys",
+            "redsys_endpoint_url": "https://sis.redsys.es/sis/rest/trataPeticionREST",
+            "redsys_terminal": "1",
+            "redsys_currency": "978",
+            "redsys_timeout": "30",
+        }
+
+        for key, expected_value in expected_values.items():
+            config_id = self.imd_obj.get_object_reference(
+                self.cursor, self.uid, "som_card_payment", key
+            )[1]
+            config = self.config_obj.browse(self.cursor, self.uid, config_id)
+            self.assertEqual(config.name, key)
+            self.assertEqual(config.value, expected_value)
+
+
+class TestRedsysCardCollectionConfigured(testing.OOTestCaseWithCursor):
+    def setUp(self):
+        super(TestRedsysCardCollectionConfigured, self).setUp()
+        self.config_obj = self.openerp.pool.get("res.config")
+        self.imd_obj = self.openerp.pool.get("ir.model.data")
         self.invoice_obj = self.openerp.pool.get("account.invoice")
         self.factura_obj = self.openerp.pool.get("giscedata.facturacio.factura")
         self.card_obj = self.openerp.pool.get("res.partner.creditcard")
@@ -581,3 +607,65 @@ class TestRedsysCardCollection(testing.OOTestCaseWithCursor):
         self.assertEqual(len(first_order), 12)
         self.assertEqual(len(second_order), 12)
         self.assertNotEqual(first_order, second_order)
+
+    def test_migrate_recurring_card_invoices_keeps_remitted_invoice_unchanged(self):
+        factura = self._prepare_eligible_invoice()
+        payment_mode_id = self.imd_obj.get_object_reference(
+            self.cursor, self.uid, "account_payment", "payment_mode_demo"
+        )[1]
+        payment_mode = self.openerp.pool.get("payment.mode").read(
+            self.cursor, self.uid, payment_mode_id, ["name"]
+        )
+        payment_order_id = self.openerp.pool.get(
+            "payment.order"
+        ).get_or_create_open_payment_order(
+            self.cursor, self.uid, payment_mode["name"]
+        )
+        self.invoice_obj.write(
+            self.cursor,
+            self.uid,
+            [factura.invoice_id.id],
+            {"payment_order_id": payment_order_id, "payment_type": False},
+        )
+
+        result = self.factura_obj.migrate_recurring_card_invoices(
+            self.cursor,
+            self.uid,
+            factura.polissa_id.id,
+            self.card_type_id,
+            date.today().strftime("%Y-%m-%d"),
+        )
+
+        self.assertIn(factura.id, result["remitted"])
+        invoice = self.invoice_obj.browse(self.cursor, self.uid, factura.invoice_id.id)
+        self.assertFalse(invoice.payment_type)
+
+    def test_migrate_recurring_card_invoices_isolates_unexpected_write_failure(self):
+        factura = self._prepare_eligible_invoice()
+        self.invoice_obj.write(
+            self.cursor,
+            self.uid,
+            [factura.invoice_id.id],
+            {"payment_type": False},
+        )
+
+        with mock.patch.object(
+            self.invoice_obj, "write", side_effect=RuntimeError("database failure")
+        ):
+            result = self.factura_obj.migrate_recurring_card_invoices(
+                self.cursor,
+                self.uid,
+                factura.polissa_id.id,
+                self.card_type_id,
+                date.today().strftime("%Y-%m-%d"),
+            )
+
+        self.assertEqual(
+            result["failed"],
+            [{"id": factura.id, "reason_code": "payment_type_write_failed"}],
+        )
+        self.assertFalse(
+            self.invoice_obj.browse(
+                self.cursor, self.uid, factura.invoice_id.id
+            ).payment_type
+        )
