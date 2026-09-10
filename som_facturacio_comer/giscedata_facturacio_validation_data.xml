@@ -22,6 +22,18 @@
             <field name="parameters">{"n_months": 14, "overuse_percentage":50.0, "min_periods": 4, "min_amount": 0.0, "min_invoice_len": 0, "category":"Gran Contracte"}</field>
             <field name="active" eval="False"/>
         </record>
+        <record model="giscedata.facturacio.validation.warning.template" id="giscedata_facturacio.warning_F001">
+            <field name="parameters">{"n_months": 14, "overuse_percentage": 50.0, "min_periods": 4, "min_amount": 0.0, "min_invoice_len": 0, "check_origins": 0, "origin_codes_to_check": "[]", "som_skip_if_20TD_00_and_less_than_kWh": 1000}</field>
+        </record>
+        <record model="giscedata.facturacio.validation.warning.template" id="giscedata_facturacio.warning_F003">
+            <field name="parameters">{"n_months": 14, "overuse_amount": 500.0, "min_periods": 4, "som_skip_if_20TD_00_and_less_than_kWh": 1000}</field>
+        </record>
+        <record model="giscedata.facturacio.validation.warning.template" id="giscedata_facturacio.warning_F009">
+            <field name="parameters">{"n_days_mensual": 5, "n_days_bimensual": 10, "n_days_anual": 1, "som_skip_if_20TD_00_and_less_than_days": 90}</field>
+        </record>
+        <record model="giscedata.facturacio.validation.warning.template" id="giscedata_facturacio.warning_F017">
+            <field name="parameters">{"max_delayed_days": 50, "som_skip_if_20TD_00_and_less_than_days": 90}</field>
+        </record>
     </data>
     <data>
         <record model="giscedata.facturacio.validation.warning.template" id="warning_SF01" forcecreate="1">
