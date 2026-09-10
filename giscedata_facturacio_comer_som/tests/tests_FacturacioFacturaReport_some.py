@@ -2198,15 +2198,24 @@ class Tests_FacturacioFacturaReport_partner_info(Tests_FacturacioFacturaReport_b
         f.is_recurrent_card_payment = True
         self.r_obj.cursor = self.cursor
         self.r_obj.uid = self.uid
-        pol = mock.Mock(creditcard=mock.Mock(masked_number=u"4111 1111 1111 1234"))
-        with mock.patch.object(self.polissa_obj, "browse", return_value=pol) as browse:
-            result = self.r_obj.get_recurrent_card_payment_data(f)
+        card_pol = mock.Mock(
+            creditcard=mock.Mock(masked_number=u"4111 1111 1111 1234")
+        )
+        component_pol = mock.Mock()
+        component_pol.payment_mode_id.bank_id.iban = u"ES00"
+        component_pol.titular.name = u"Test"
+        component_pol.titular.vat = u"ES00000000"
+        component_pol.tipo_pago.code = "DOMICILIACIO"
+        with mock.patch.object(
+                self.polissa_obj, "browse", return_value=card_pol) as browse:
+            result = self.r_obj.get_component_partner_info_data(f, component_pol)
 
         browse.assert_called_once_with(
             self.cursor, self.uid, f.polissa_id.id,
             context={"date": f.date_invoice}
         )
-        self.assertEquals(result, (True, u"**** **** **** 1234"))
+        self.assertTrue(result["is_recurrent_card_payment"])
+        self.assertEquals(result["masked_card_number"], u"**** **** **** 1234")
 
     @mock.patch.object(giscedata_facturacio_report, "datetime")
     def test__get_recurrent_card_payment_data__without_invoice_date(self, datetime_mock):
