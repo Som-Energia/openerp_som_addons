@@ -26,26 +26,26 @@
                         <field name="redsys_response_message" colspan="4"/>
                     </group>
                 </xpath>
-                <field name="partner_bank" position="attributes">
+                <xpath expr="//field[@name='partner_bank']" position="attributes">
                     <attribute name="attrs">
                         {'invisible': [('is_recurrent_card_payment', '=', True)]}
                     </attribute>
-                </field>
-                <field name="mandate_id" position="attributes">
+                </xpath>
+                <xpath expr="//field[@name='mandate_id']" position="attributes">
                     <attribute name="attrs">
                         {'invisible': [('is_recurrent_card_payment', '=', True)]}
                     </attribute>
-                </field>
-                <field name="payment_order_id" position="attributes">
+                </xpath>
+                <xpath expr="//field[@name='payment_order_id']" position="attributes">
                     <attribute name="attrs">
                         {'invisible': [('is_recurrent_card_payment', '=', True)]}
                     </attribute>
-                </field>
-                <field name="payment_order_history_ids" position="attributes">
+                </xpath>
+                <xpath expr="//field[@name='payment_order_history_ids']" position="attributes">
                     <attribute name="attrs">
                         {'invisible': [('is_recurrent_card_payment', '=', True)]}
                     </attribute>
-                </field>
+                </xpath>
             </field>
         </record>
     </data>
