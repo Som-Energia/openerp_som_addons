@@ -370,6 +370,25 @@ class SomHolderChangeRequest(osv.osv):
             result["mandate_pdf"] = base64.b64encode(mandate_pdf)
         return result
 
+    def _run_holder_change(self, cursor, uid, request, temporary=False, context=None):
+        partner_id = self._create_holder(cursor, uid, request, context=context)
+        address_id = self._create_holder_address(
+            cursor, uid, request, partner_id, context=context
+        )
+        payment_values = self._payment_values(
+            cursor, uid, request, partner_id, temporary=temporary, context=context
+        )
+        switching_id, polissa_id = self._run_m1(
+            cursor, uid, request, partner_id, address_id, payment_values, context=context
+        )
+        mandate_id = self._create_mandate(
+            cursor, uid, request, partner_id, polissa_id, context=context
+        )
+        self._apply_special_documents(
+            cursor, uid, request, partner_id, polissa_id, context=context
+        )
+        return switching_id, polissa_id, mandate_id
+
     def prepare(self, cursor, uid, request_id, context=None):
         request_id = self._one_id(request_id)
         self._reserve_references(cursor, uid, request_id, context=context)
@@ -381,37 +400,11 @@ class SomHolderChangeRequest(osv.osv):
         temporary_context["in_rollback_transaction"] = True
         try:
             request = self.browse(temporary_cursor, uid, request_id, context=temporary_context)
-            partner_id = self._create_holder(
-                temporary_cursor, uid, request, context=temporary_context)
-            address_id = self._create_holder_address(
-                temporary_cursor, uid, request, partner_id, context=temporary_context
-            )
-            payment_values = self._payment_values(
+            switching_id, polissa_id, mandate_id = self._run_holder_change(
                 temporary_cursor,
                 uid,
                 request,
-                partner_id,
                 temporary=True,
-                context=temporary_context,
-            )
-            switching_id, polissa_id = self._run_m1(
-                temporary_cursor,
-                uid,
-                request,
-                partner_id,
-                address_id,
-                payment_values,
-                context=temporary_context,
-            )
-            mandate_id = self._create_mandate(
-                temporary_cursor, uid, request, partner_id, polissa_id, context=temporary_context
-            )
-            self._apply_special_documents(
-                temporary_cursor,
-                uid,
-                request,
-                partner_id,
-                polissa_id,
                 context=temporary_context,
             )
             reports = self._render_reports(
@@ -478,16 +471,8 @@ class SomHolderChangeRequest(osv.osv):
             },
             context=context,
         )
-        partner_id = self._create_holder(cursor, uid, request, context=context)
-        address_id = self._create_holder_address(
-            cursor, uid, request, partner_id, context=context
-        )
-        payment_values = self._payment_values(cursor, uid, request, partner_id, context=context)
-        switching_id, polissa_id = self._run_m1(
-            cursor, uid, request, partner_id, address_id, payment_values, context=context)
-        self._create_mandate(cursor, uid, request, partner_id, polissa_id, context=context)
-        self._apply_special_documents(
-            cursor, uid, request, partner_id, polissa_id, context=context
+        switching_id, polissa_id, _mandate_id = self._run_holder_change(
+            cursor, uid, request, context=context
         )
         super(SomHolderChangeRequest, self).write(
             cursor,
