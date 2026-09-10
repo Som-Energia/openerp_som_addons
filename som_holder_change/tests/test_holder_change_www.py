@@ -324,6 +324,46 @@ class TestHolderChangeWww(testing.OOTestCase):
             polissa.direccio_notificacio.id, polissa.direccio_pagament.id
         )
 
+    def test_execute_assigns_linked_member_to_result_contract(self):
+        payload = self.payload()
+        payload["member"].update({
+            "become_member": False,
+            "link_member": True,
+            "vat": "97053918J",
+            "number": "202129",
+        })
+        linked_partner_id = self.imd_obj.get_object_reference(
+            self.cursor, self.uid, "som_polissa_soci", "res_partner_soci"
+        )[1]
+        result = self.www_obj.create_request(self.cursor, self.uid, payload)
+        self.request_obj.write(
+            self.cursor, self.uid, [result["request_id"]], {"state": "queued"}
+        )
+
+        execution = self.request_obj.execute(
+            self.cursor, self.uid, result["request_id"]
+        )
+
+        polissa = self.polissa_obj.browse(
+            self.cursor, self.uid, execution["result_polissa_id"]
+        )
+        self.assertEqual(polissa.soci.id, linked_partner_id)
+
+    def test_execute_turns_new_holder_into_member(self):
+        result = self.www_obj.create_request(self.cursor, self.uid, self.payload())
+        self.request_obj.write(
+            self.cursor, self.uid, [result["request_id"]], {"state": "queued"}
+        )
+
+        execution = self.request_obj.execute(
+            self.cursor, self.uid, result["request_id"]
+        )
+
+        polissa = self.polissa_obj.browse(
+            self.cursor, self.uid, execution["result_polissa_id"]
+        )
+        self.assertEqual(polissa.soci.id, polissa.titular.id)
+
     def test_execute_copies_death_certificate_to_result_contract(self):
         payload = self.payload()
         payload["especial_cases"].update({"reason_death": True})
