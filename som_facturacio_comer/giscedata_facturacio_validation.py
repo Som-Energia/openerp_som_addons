@@ -205,6 +205,16 @@ class GiscedataFacturacioValidationValidator(osv.osv):
         if pcat_ids and pcat_ids[0] in [x.id for x in fact.polissa_id.category_id]:
             return None
 
+        last_origens = set(
+            [lect.origen_id.codi for lect in fact.lectures_energia_ids if lect.magnitud == 'AE'])
+        reals = set([
+            '10',  # telemesura
+            '20',  # TPL
+            '30',  # visual
+            '60',  # telegestio
+        ])
+        last_is_real = last_origens <= reals and len(last_origens) > 0
+
         tarifa_acces = fact.tarifa_acces_id.name
         tarifa_comer = fact.polissa_id.llista_preu.name
         autoconsum = fact.polissa_id.autoconsumo
@@ -216,7 +226,8 @@ class GiscedataFacturacioValidationValidator(osv.osv):
         if (limit_kWh is not None
             and fact.energia_kwh <= limit_kWh
             and tarifa_acces == '2.0TD'
-            and tarifa_comer == '2.0TD_SOM'
+            and tarifa_comer in ['2.0TD_SOM', '2.0TD_SOM_INSULAR']
+            and last_is_real
                 and autoconsum == '00'):
             return None
 
@@ -339,15 +350,6 @@ class GiscedataFacturacioValidationValidator(osv.osv):
         tarifa_acces = fact.tarifa_acces_id.name
         tarifa_comer = fact.polissa_id.llista_preu.name
         autoconsum = fact.polissa_id.autoconsumo
-        last_origens = set(
-            [lect.origen_id.codi for lect in fact.lectures_energia_ids if lect.magnitud == 'AE'])
-        reals = set([
-            '10',  # telemesura
-            '20',  # TPL
-            '30',  # visual
-            '60',  # telegestio
-        ])
-        last_is_real = last_origens <= reals and len(last_origens) > 0
 
         limit_days = parameters.get("som_skip_if_20TD_00_and_less_than_days", None)
         try:
@@ -357,8 +359,7 @@ class GiscedataFacturacioValidationValidator(osv.osv):
         if (limit_days is not None
             and fact.dies <= limit_days
             and tarifa_acces == '2.0TD'
-            and tarifa_comer == '2.0TD_SOM'
-            and last_is_real
+            and tarifa_comer in ['2.0TD_SOM', '2.0TD_SOM_INSULAR']
                 and autoconsum == '00'):
             return None
 
