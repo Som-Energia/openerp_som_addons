@@ -217,6 +217,12 @@ class GiscedataFacturacioFactura(osv.osv):
         except (TypeError, ValueError):
             return False
 
+    def _is_redsys_decline(self, response_code):
+        try:
+            return int("%s" % response_code) >= 100
+        except (TypeError, ValueError):
+            return False
+
     def _get_tpv_payment_data(self, cursor, uid, context=None):
         cfg_obj = self.pool.get("res.config")
         journal_key = "redsys_tpv_journal_id"
@@ -493,6 +499,20 @@ class GiscedataFacturacioFactura(osv.osv):
             )
             return True
 
+        if not self._is_redsys_decline(response_code):
+            self.write(
+                cursor,
+                uid,
+                [factura.id],
+                {
+                    "redsys_collection_state": "review",
+                    "redsys_response_code": response_code or False,
+                    "redsys_response_message": response_message or False,
+                },
+                context=context,
+            )
+            return True
+
         decline_message = "%s" % (response_message or _("Sense detall"))
         self.write(
             cursor,
@@ -505,6 +525,7 @@ class GiscedataFacturacioFactura(osv.osv):
             },
             context=context,
         )
+        self.go_on_pending(cursor, uid, [factura.id], context=context)
         email_result = self._send_redsys_declined_email(
             cursor, uid, factura.id, context=context
         )
