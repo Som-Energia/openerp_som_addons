@@ -11,7 +11,7 @@
                     <field name="payment_type" on_change="onchange_payment_type(payment_type, partner_id)" select="2" required="1"/>
                 </field>
                 <field name="origin" position="replace">
-                     <field name="origin" select="2" required="1"/>
+                     <field name="origin" select="2" required="1" on_change="onchange_origin(origin,reference)"/>
                 </field>
                 <field name="origin_date_invoice" position="replace">
                     <field name="origin_date_invoice" select="2" required="1"/>
