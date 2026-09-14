@@ -498,9 +498,12 @@ class SomLeadWww(osv.osv_memory):
         tmp_cursor = db.cursor()
         try:
             query = """SELECT l.id from giscedata_crm_lead as l
-                       LEFT JOIN crm_case as c on c.id = l.crm_id
+                       JOIN crm_case as c on c.id = l.crm_id
+                       JOIN giscedata_signatura_process as sp
+                           on sp.id = l.signature_process
                        where c.state in ('open', 'pending')
-                       and l.create_date >= now() - INTERVAL '5 days'
+                       and sp.create_date >= now() - INTERVAL '15 days'
+                       and sp.status in ('wait', 'doing', 'completed')
                        order by id desc
                        FOR UPDATE skip locked
                        """
