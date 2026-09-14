@@ -304,6 +304,27 @@ class TestReportBackendCCPP(testing.OOTestCase):
         self.assertTrue('coeficient_k' in result['pricelists'][0])
         self.assertTrue('coeficient_k_untaxed' in result['pricelists'][0])
 
+    def test_get_prices_data_uses_contract_coefficient_over_pricelist(self):
+        self.pol_obj.send_signal(
+            self.cursor, self.uid, [self.contract_20TD_id], ["validar", "contracte"])
+        context = {"active_id": self.contract_20TD_id, "change_type": "from_period_to_index"}
+        wiz_id = self.wiz_change_to_index_obj.create(self.cursor, self.uid, {}, context=context)
+        self.wiz_change_to_index_obj.change_to_indexada(
+            self.cursor, self.uid, [wiz_id], context=context)
+        self.pol_obj.write(
+            self.cursor, self.uid, [self.contract_20TD_id], {'coeficient_k': 3.478}
+        )
+        self.k_change_obj.unlink(
+            self.cursor, self.uid, self.k_change_obj.search(self.cursor, self.uid, [])
+        )
+
+        pol_20td = self.pol_obj.browse(self.cursor, self.uid, self.contract_20TD_id)
+        result = self.backend_obj.get_prices_data(self.cursor, self.uid, pol_20td, context={})
+
+        self.assertEqual(result['coeficient_k_untaxed'], 0.003478)
+        for pricelist in result['pricelists']:
+            self.assertEqual(pricelist['coeficient_k_untaxed'], 0.003478)
+
     def test_get_coeficient_k_for_pricelist_uses_k_old_for_current_block(self):
         fs_data = {'k_old': 12.0, 'k_new': 19.0}
         dades_tarifa = {'date_end': '2026-12-31', 'date_start': False}
