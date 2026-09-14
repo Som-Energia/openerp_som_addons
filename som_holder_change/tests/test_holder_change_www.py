@@ -367,7 +367,7 @@ class TestHolderChangeWww(testing.OOTestCase):
         )
         self.assertIn("Canvi de titular", old_polissa.observacions_estimacio)
         self.assertTrue(old_polissa.no_estimable)
-        self.assertIn("Nou Titular: Maria", old_polissa.observacions)
+        self.assertIn("Nou Titular: Nova Titular, Maria", old_polissa.observacions)
         self.assertIn("holder", switching.user_observations)
         self.assertNotIn("JVBERi0xLjQ", switching.user_observations)
 
@@ -380,6 +380,7 @@ class TestHolderChangeWww(testing.OOTestCase):
             "datas": "JVBERi0xLjQ=",
         }]
         result = self.www_obj.create_request(self.cursor, self.uid, payload)
+        self.assertTrue(result["success"], result)
         self.request_obj.write(
             self.cursor, self.uid, [result["request_id"]], {"state": "queued"}
         )
@@ -398,7 +399,9 @@ class TestHolderChangeWww(testing.OOTestCase):
     def test_execute_uses_new_holder_language_and_address(self):
         payload = self.payload()
         payload["holder"]["language"] = self.polissa.titular.lang
+        payload["payment"]["iban"] = "es91 2100-0418.4502/0005 1332"
         result = self.www_obj.create_request(self.cursor, self.uid, payload)
+        self.assertTrue(result["success"], result)
         self.request_obj.write(
             self.cursor, self.uid, [result["request_id"]], {"state": "queued"}
         )
@@ -411,12 +414,51 @@ class TestHolderChangeWww(testing.OOTestCase):
             self.cursor, self.uid, execution["result_polissa_id"]
         )
         self.assertEqual(polissa.titular.lang, payload["holder"]["language"])
+        self.assertEqual(polissa.titular.name, "Nova Titular, Maria")
         self.assertEqual(
             polissa.direccio_pagament.street, payload["holder"]["address"]
         )
         self.assertEqual(
+            polissa.direccio_pagament.state_id.id, payload["holder"]["state"]
+        )
+        self.assertEqual(
+            polissa.direccio_pagament.id_municipi.id, payload["holder"]["city"]
+        )
+        self.assertEqual(polissa.direccio_pagament.country_id.code, "ES")
+        self.assertEqual(
+            polissa.direccio_pagament.id_poblacio.municipi_id.id,
+            payload["holder"]["city"],
+        )
+        self.assertEqual(polissa.bank.iban, "ES9121000418450200051332")
+        self.assertEqual(
             polissa.direccio_notificacio.id, polissa.direccio_pagament.id
         )
+
+    def test_execute_stores_legal_representative_for_a_new_company(self):
+        payload = self.payload()
+        payload["holder"].update({
+            "name": "Empresa Nova SA",
+            "vat": "A08015497",
+            "proxyname": "Maria Representant",
+            "proxynif": "12345678Z",
+        })
+        del payload["holder"]["surname1"]
+        del payload["holder"]["surname2"]
+        result = self.www_obj.create_request(self.cursor, self.uid, payload)
+        self.request_obj.write(
+            self.cursor, self.uid, [result["request_id"]], {"state": "queued"}
+        )
+
+        execution = self.request_obj.execute(
+            self.cursor, self.uid, result["request_id"]
+        )
+
+        holder = self.polissa_obj.browse(
+            self.cursor, self.uid, execution["result_polissa_id"]
+        ).titular
+        self.assertEqual(holder.name, payload["holder"]["name"])
+        self.assertIn("Maria Representant", holder.comment)
+        self.assertIn("12345678Z", holder.comment)
 
     def test_execute_assigns_linked_member_to_result_contract(self):
         payload = self.payload()
