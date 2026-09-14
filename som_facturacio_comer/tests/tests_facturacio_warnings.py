@@ -257,9 +257,10 @@ class TestsFacturesValidation(testing.OOTestCase):
 
     def f001_parameters(self):
         return {
-            "n_months": 14,
-            "overuse_percentage": 50.0,
-            "min_periods": 4,
+            "min_amount": 0.0,
+            "min_periods": 24,
+            "n_months": 24,
+            "overuse_percentage": 65.0,
             "som_skip_if_20TD_00_and_less_than_kWh": 1000,
         }
 
@@ -268,6 +269,24 @@ class TestsFacturesValidation(testing.OOTestCase):
             "max_delayed_days": 70,
             "today": "2017-05-30",
             "som_skip_if_20TD_00_and_less_than_days": 90,
+        }
+
+    def f003_parameters(self):
+        return {
+            "min_periods": 12,
+            "n_months": 12,
+            "overuse_amount": 1.0,
+            "som_skip_if_20TD_00_and_less_than_kWh": 1000,
+        }
+
+    def f009_parameters(self):
+        return {
+            "inc_days_maximeter": 1,
+            "n_days_bimensual": 10,
+            "n_days_first_invoice": 14,
+            "n_days_mensual": 10,
+            "n_days_not_estimable": 14,
+            "som_skip_if_20TD_00_and_less_than_days": 69,
         }
 
     def assign_gkwh(self, polissa):
@@ -787,17 +806,23 @@ class TestsFacturesValidation(testing.OOTestCase):
                 self.txn.cursor, self.txn.user, warning_ids, ["code", "parameters"]
             )
         ])
+        self.assertEqual(parameters_by_code["F001"], self.f001_parameters())
         self.assertEqual(
-            parameters_by_code["F001"]["som_skip_if_20TD_00_and_less_than_kWh"], 1000
+            parameters_by_code["F003"],
+            {
+                "min_periods": 12,
+                "n_months": 12,
+                "overuse_amount": 500.0,
+                "som_skip_if_20TD_00_and_less_than_kWh": 1000,
+            },
         )
+        self.assertEqual(parameters_by_code["F009"], self.f009_parameters())
         self.assertEqual(
-            parameters_by_code["F003"]["som_skip_if_20TD_00_and_less_than_kWh"], 1000
-        )
-        self.assertEqual(
-            parameters_by_code["F009"]["som_skip_if_20TD_00_and_less_than_days"], 90
-        )
-        self.assertEqual(
-            parameters_by_code["F017"]["som_skip_if_20TD_00_and_less_than_days"], 90
+            parameters_by_code["F017"],
+            {
+                "max_delayed_days": 70,
+                "som_skip_if_20TD_00_and_less_than_days": 90,
+            },
         )
 
     @mock.patch(
@@ -896,6 +921,142 @@ class TestsFacturesValidation(testing.OOTestCase):
         )
         fact = self.fact_obj.browse(self.txn.cursor, self.txn.user, fact.id)
         return self.prepare_som_20td_fact(fact)
+
+    def prepare_f003_fact(self, energy_kwh):
+        pol_id = self.get_fixture("giscedata_polissa", "polissa_0001")
+        self.prepare_contract(pol_id, "2017-01-01", "2017-02-18")
+        inv_id = self.get_fixture("giscedata_facturacio", "factura_0001")
+        self.modify_invoice(inv_id, pol_id, "2017-02-11", "2017-03-27", energy_kwh)
+        fact = self.fact_obj.browse(self.txn.cursor, self.txn.user, inv_id)
+        fact.energia_kwh = energy_kwh
+        return self.prepare_som_20td_fact(fact)
+
+    def prepare_f009_fact(self, end_date):
+        pol_id = self.get_fixture("giscedata_polissa", "polissa_0001")
+        self.prepare_contract(pol_id, "2017-01-01", "2017-02-18")
+        inv_id = self.get_fixture("giscedata_facturacio", "factura_0001")
+        self.modify_invoice(inv_id, pol_id, "2017-01-01", end_date)
+        fact = self.fact_obj.browse(self.txn.cursor, self.txn.user, inv_id)
+        return self.prepare_som_20td_fact(fact)
+
+    @mock.patch(
+        'giscedata_facturacio.giscedata_facturacio.'
+        'GiscedataFacturacioFactura.get_max_consume_by_contract'
+    )
+    def test_check_consume_by_amount_prefilter__suppresses_at_1000_kwh(
+        self, get_max_consume_by_contract
+    ):
+        get_max_consume_by_contract.return_value = 1.0
+        fact = self.prepare_f003_fact(1000)
+        result = self.vali_obj.check_consume_by_amount(
+            self.txn.cursor, self.txn.user, fact, self.f003_parameters()
+        )
+        self.assertIsNone(result)
+
+    @mock.patch(
+        'giscedata_facturacio.giscedata_facturacio.'
+        'GiscedataFacturacioFactura.get_max_consume_by_contract'
+    )
+    def test_check_consume_by_amount_prefilter__does_not_suppress_at_1001_kwh(
+        self, get_max_consume_by_contract
+    ):
+        get_max_consume_by_contract.return_value = 1.0
+        fact = self.prepare_f003_fact(1001)
+        result = self.vali_obj.check_consume_by_amount(
+            self.txn.cursor, self.txn.user, fact, self.f003_parameters()
+        )
+        self.assertTrue(get_max_consume_by_contract.called)
+        self.assertIsNotNone(result)
+
+    @mock.patch(
+        'giscedata_facturacio.giscedata_facturacio.'
+        'GiscedataFacturacioFactura.get_max_consume_by_contract'
+    )
+    def test_check_consume_by_amount_prefilter__suppresses_with_insular_tariff(
+        self, get_max_consume_by_contract
+    ):
+        get_max_consume_by_contract.return_value = 1.0
+        fact = self.prepare_f003_fact(1000)
+        self.prepare_som_20td_fact(fact, u"2.0TD_SOM_INSULAR")
+        result = self.vali_obj.check_consume_by_amount(
+            self.txn.cursor, self.txn.user, fact, self.f003_parameters()
+        )
+        self.assertIsNone(result)
+
+    @mock.patch(
+        'giscedata_facturacio.giscedata_facturacio.'
+        'GiscedataFacturacioFactura.get_max_consume_by_contract'
+    )
+    def test_check_consume_by_amount_prefilter__does_not_suppress_with_other_tariff(
+        self, get_max_consume_by_contract
+    ):
+        get_max_consume_by_contract.return_value = 1.0
+        fact = self.prepare_f003_fact(1000)
+        fact.tarifa_acces_id.name = u"3.0TD"
+        result = self.vali_obj.check_consume_by_amount(
+            self.txn.cursor, self.txn.user, fact, self.f003_parameters()
+        )
+        self.assertTrue(get_max_consume_by_contract.called)
+        self.assertIsNotNone(result)
+
+    @mock.patch(
+        'giscedata_facturacio.giscedata_facturacio.'
+        'GiscedataFacturacioFactura.get_max_consume_by_contract'
+    )
+    def test_check_consume_by_amount_prefilter__does_not_suppress_with_autoconsum(
+        self, get_max_consume_by_contract
+    ):
+        get_max_consume_by_contract.return_value = 1.0
+        fact = self.prepare_f003_fact(1000)
+        fact.polissa_id.autoconsumo = u"41"
+        result = self.vali_obj.check_consume_by_amount(
+            self.txn.cursor, self.txn.user, fact, self.f003_parameters()
+        )
+        self.assertTrue(get_max_consume_by_contract.called)
+        self.assertIsNotNone(result)
+
+    def test_check_exceding_days_prefilter__suppresses_at_69_days(self):
+        fact = self.prepare_f009_fact("2017-03-10")
+        self.assertEqual(fact.dies, 69)
+        result = self.vali_obj.check_exceding_days(
+            self.txn.cursor, self.txn.user, fact, self.f009_parameters()
+        )
+        self.assertIsNone(result)
+
+    def test_check_exceding_days_prefilter__does_not_suppress_at_70_days(self):
+        fact = self.prepare_f009_fact("2017-03-11")
+        self.assertEqual(fact.dies, 70)
+        result = self.vali_obj.check_exceding_days(
+            self.txn.cursor, self.txn.user, fact, self.f009_parameters()
+        )
+        self.assertIsNotNone(result)
+
+    def test_check_exceding_days_prefilter__suppresses_with_insular_tariff(self):
+        fact = self.prepare_f009_fact("2017-03-10")
+        self.assertEqual(fact.dies, 69)
+        self.prepare_som_20td_fact(fact, u"2.0TD_SOM_INSULAR")
+        result = self.vali_obj.check_exceding_days(
+            self.txn.cursor, self.txn.user, fact, self.f009_parameters()
+        )
+        self.assertIsNone(result)
+
+    def test_check_exceding_days_prefilter__does_not_suppress_with_other_tariff(self):
+        fact = self.prepare_f009_fact("2017-03-10")
+        self.assertEqual(fact.dies, 69)
+        fact.tarifa_acces_id.name = u"3.0TD"
+        result = self.vali_obj.check_exceding_days(
+            self.txn.cursor, self.txn.user, fact, self.f009_parameters()
+        )
+        self.assertIsNotNone(result)
+
+    def test_check_exceding_days_prefilter__does_not_suppress_with_autoconsum(self):
+        fact = self.prepare_f009_fact("2017-03-10")
+        self.assertEqual(fact.dies, 69)
+        fact.polissa_id.autoconsumo = u"41"
+        result = self.vali_obj.check_exceding_days(
+            self.txn.cursor, self.txn.user, fact, self.f009_parameters()
+        )
+        self.assertIsNotNone(result)
 
     def test_check_invoice_from_delayed_contract_prefilter__suppresses_at_90_days(self):
         fact = self.prepare_f017_fact("2017-03-01", [])
