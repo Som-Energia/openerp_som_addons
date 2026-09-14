@@ -78,6 +78,44 @@ class SomHolderChangeRequest(osv.osv):
         vat = holder["vat"].upper()
         return vat if vat.startswith("ES") else "ES{}".format(vat)
 
+    def _holder_full_name(self, holder):
+        if holder["vat"][0].upper() in "0123456789KLMXYZ":
+            surnames = holder["surname1"]
+            if holder.get("surname2"):
+                surnames = "{} {}".format(surnames, holder["surname2"])
+            return "{}, {}".format(surnames, holder["name"])
+        return holder["name"]
+
+    def _clean_iban(self, iban):
+        return "".join(char.upper() for char in iban if char.isalnum())
+
+    def _iban_country(self, cursor, uid, iban, context=None):
+        country_ids = self.pool.get("res.country").search(
+            cursor, uid, [("code", "=", iban[:2])], limit=1, context=context
+        )
+        if not country_ids:
+            raise osv.except_osv(_("Invalid IBAN"), _("The IBAN country is invalid."))
+        return country_ids[0]
+
+    def _get_or_create_poblacio(self, cursor, uid, municipi_id, context=None):
+        poblacio_obj = self.pool.get("res.poblacio")
+        municipi = self.pool.get("res.municipi").browse(
+            cursor, uid, municipi_id, context=context
+        )
+        poblacio_ids = poblacio_obj.search(
+            cursor,
+            uid,
+            [("municipi_id", "=", municipi_id), ("name", "=", municipi.name)],
+            limit=1,
+            context=context,
+        )
+        return poblacio_ids[0] if poblacio_ids else poblacio_obj.create(
+            cursor,
+            uid,
+            {"municipi_id": municipi_id, "name": municipi.name},
+            context=context,
+        )
+
     def _holder_language(self, cursor, uid, request, context=None):
         language = request.payload["holder"]["language"]
         language_ids = self.pool.get("res.lang").search(
@@ -90,31 +128,50 @@ class SomHolderChangeRequest(osv.osv):
         vat = self._holder_vat(holder)
         partner_obj = self.pool.get("res.partner")
         values = {
-            "name": holder["name"],
+            "name": self._holder_full_name(holder),
             "vat": vat,
             "lang": self._holder_language(cursor, uid, request, context=context),
         }
+        if holder["vat"][0].upper() not in "0123456789KLMXYZ":
+            values["comment"] = " Persona representant: {}\n NIF representant: {}".format(
+                holder["proxyname"], holder["proxynif"]
+            )
         partner_ids = partner_obj.search(
             cursor, uid, [("vat", "=", vat)], limit=1, context=context
         )
         if partner_ids:
-            partner_obj.write(cursor, uid, partner_ids, values, context=context)
             return partner_ids[0]
         return partner_obj.create(cursor, uid, values, context=context)
 
     def _create_holder_address(self, cursor, uid, request, partner_id, context=None):
         holder = request.payload["holder"]
+        iban = self._clean_iban(request.payload["payment"].get("iban", ""))
+        country_id = iban and self._iban_country(cursor, uid, iban, context=context) or False
+        address_obj = self.pool.get("res.partner.address")
+        address_ids = address_obj.search(
+            cursor,
+            uid,
+            [("partner_id", "=", partner_id), ("nv", "=", holder["address"])],
+            limit=1,
+            context=context,
+        )
+        if address_ids:
+            return address_ids[0]
         values = {
             "partner_id": partner_id,
-            "street": holder["address"],
+            "name": self._holder_full_name(holder),
+            "nv": holder["address"],
             "zip": holder["postal_code"],
             "id_municipi": holder["city"],
+            "id_poblacio": self._get_or_create_poblacio(
+                cursor, uid, holder["city"], context=context
+            ),
+            "state_id": holder["state"],
+            "country_id": country_id,
             "email": holder["email"],
             "phone": holder["phone1"],
         }
-        return self.pool.get("res.partner.address").create(
-            cursor, uid, values, context=context
-        )
+        return address_obj.create(cursor, uid, values, context=context)
 
     def _linked_member_partner(self, cursor, uid, member, context=None):
         vat = self._holder_vat(member)
@@ -163,8 +220,11 @@ class SomHolderChangeRequest(osv.osv):
                 "creditcard": card_id,
             }
 
-        iban = request.payload["payment"]["iban"].replace(" ", "")
+        iban = self._clean_iban(request.payload["payment"]["iban"])
         bank_obj = self.pool.get("res.partner.bank")
+        if not bank_obj.is_iban_valid(cursor, uid, iban):
+            raise osv.except_osv(_("Invalid IBAN"), _("The IBAN is invalid."))
+        country_id = self._iban_country(cursor, uid, iban, context=context)
         bank_ids = bank_obj.search(
             cursor,
             uid,
@@ -172,12 +232,27 @@ class SomHolderChangeRequest(osv.osv):
             limit=1,
             context=context,
         )
-        bank_id = bank_ids[0] if bank_ids else bank_obj.create(
-            cursor,
-            uid,
-            {"partner_id": partner_id, "iban": iban, "state": "iban"},
-            context=context,
-        )
+        if bank_ids:
+            bank_id = bank_ids[0]
+        else:
+            onchange = bank_obj.onchange_banco(
+                cursor, uid, [], iban[4:].encode("ascii"), country_id, context or {}
+            )
+            if "value" not in onchange:
+                raise osv.except_osv(
+                    _("Invalid IBAN"),
+                    onchange.get("warning", {}).get("message", _("The IBAN is invalid.")),
+                )
+            values = onchange["value"]
+            values.update({
+                "state": "iban",
+                "iban": iban,
+                "partner_id": partner_id,
+                "country_id": country_id,
+                "acc_country_id": country_id,
+                "state_id": request.payload["holder"]["state"],
+            })
+            bank_id = bank_obj.create(cursor, uid, values, context=context)
         contract = request.polissa_id
         return {
             "bank": bank_id,

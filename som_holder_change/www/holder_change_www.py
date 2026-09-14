@@ -328,6 +328,11 @@ class SomHolderChangeWww(osv.osv_memory):
 
         request_obj = self.pool.get("som.holder.change.request")
         stored_payload = deepcopy(payload)
+        if stored_payload["payment_method"] == "bank":
+            stored_payload["payment"]["iban"] = "".join(
+                char.upper() for char in stored_payload["payment"]["iban"]
+                if char.isalnum()
+            )
         attachments = stored_payload.get("attachments", [])
         for attachment in attachments:
             attachment.pop("datas", None)
