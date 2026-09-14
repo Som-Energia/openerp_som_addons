@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from __future__ import absolute_import
 import base64
 from expects import expect
 from expects import contain
@@ -16,6 +17,9 @@ class TestsFacturesValidation(testing.OOTestCase):
         self.imd_obj = self.openerp.pool.get("ir.model.data")
         self.pol_obj = self.openerp.pool.get("giscedata.polissa")
         self.lectures_obj = self.openerp.pool.get("giscedata.lectures.lectura")
+        self.invoice_energy_readings_obj = self.openerp.pool.get(
+            "giscedata.facturacio.lectures.energia"
+        )
         self.cnt_lot_obj = self.openerp.pool.get("giscedata.facturacio.contracte_lot")
         self.lot_obj = self.openerp.pool.get("giscedata.facturacio.lot")
         self.vali_obj = self.openerp.pool.get("giscedata.facturacio.validation.validator")
@@ -24,6 +28,9 @@ class TestsFacturesValidation(testing.OOTestCase):
         self.txn = Transaction().start(self.database)
         cursor = self.txn.cursor
         uid = self.txn.user
+
+        pol_id = self.get_fixture("giscedata_polissa", "polissa_0001")
+        self.pol_obj.write(cursor, uid, pol_id, {"category_id": [(6, 0, [])]})
 
         ctx = {"active_test": False}
 
@@ -200,6 +207,68 @@ class TestsFacturesValidation(testing.OOTestCase):
                 "quantity": quantity,
             },
         )
+
+    def create_invoice_energy_reading(self, inv_id, meter_id, origin_code):
+        origen_obj = self.model("giscedata.lectures.origen")
+        origin_ids = origen_obj.search(
+            self.txn.cursor, self.txn.user, [("codi", "=", origin_code)]
+        ) if origin_code else []
+        values = {
+            "name": "P1",
+            "comptador_id": meter_id,
+            "factura_id": inv_id,
+            "tipus": "activa",
+            "magnitud": "AE",
+            "data_actual": "2017-03-17",
+            "lect_actual": 1000,
+            "data_anterior": "2017-02-18",
+            "lect_anterior": 0,
+            "consum": 1000,
+        }
+        if origin_ids:
+            values["origen_id"] = origin_ids[0]
+        self.invoice_energy_readings_obj.create(
+            self.txn.cursor, self.txn.user, values
+        )
+
+    def prepare_som_20td_fact(self, fact, price_list_name=u"2.0TD_SOM"):
+        """Apply validation-only tariff values without altering shared fixtures."""
+        fact.tarifa_acces_id.name = u"2.0TD"
+        fact.polissa_id.llista_preu.name = price_list_name
+        fact.polissa_id.autoconsumo = u"00"
+        return fact
+
+    def prepare_f001_fact(self, energy_kwh, origin_codes):
+        pol_id = self.get_fixture("giscedata_polissa", "polissa_0001")
+        meter_id = self.prepare_contract(pol_id, "2017-01-01", "2017-02-18")
+        inv_id = self.get_fixture("giscedata_facturacio", "factura_0001")
+        self.modify_invoice(inv_id, pol_id, "2017-02-18", "2017-03-17", energy_kwh)
+        reading_ids = self.invoice_energy_readings_obj.search(
+            self.txn.cursor, self.txn.user, [("factura_id", "=", inv_id)]
+        )
+        self.invoice_energy_readings_obj.unlink(
+            self.txn.cursor, self.txn.user, reading_ids
+        )
+        for origin_code in origin_codes:
+            self.create_invoice_energy_reading(inv_id, meter_id, origin_code)
+        fact = self.fact_obj.browse(self.txn.cursor, self.txn.user, inv_id)
+        fact.energia_kwh = energy_kwh
+        return self.prepare_som_20td_fact(fact)
+
+    def f001_parameters(self):
+        return {
+            "n_months": 14,
+            "overuse_percentage": 50.0,
+            "min_periods": 4,
+            "som_skip_if_20TD_00_and_less_than_kWh": 1000,
+        }
+
+    def f017_parameters(self):
+        return {
+            "max_delayed_days": 70,
+            "today": "2017-05-30",
+            "som_skip_if_20TD_00_and_less_than_days": 90,
+        }
 
     def assign_gkwh(self, polissa):
         cursor = self.txn.cursor
@@ -604,7 +673,7 @@ class TestsFacturesValidation(testing.OOTestCase):
         self.modify_invoice(inv_id, pol_id, "2017-02-18", "2017-03-17")
         params = {
             "max_delayed_days": 70,
-            "today": "2017-05-20",
+            "today": "2017-04-29",
         }
         fact = self.fact_obj.browse(self.txn.cursor, self.txn.user, inv_id)
         result = self.vali_obj.check_invoice_from_delayed_contract(
@@ -628,6 +697,12 @@ class TestsFacturesValidation(testing.OOTestCase):
     def test_check_invoice_from_delayed_contract_overwrite__Yes_but_jumped(self):
         pol_id = self.get_fixture("giscedata_polissa", "polissa_0001")
         self.prepare_contract(pol_id, "2017-01-01", "2017-02-18")
+        self.pol_obj.write(
+            self.txn.cursor,
+            self.txn.user,
+            pol_id,
+            {"data_ultima_lectura": "2017-03-10"},
+        )
         inv_id = self.get_fixture("giscedata_facturacio", "factura_0001")
         self.modify_invoice(inv_id, pol_id, "2017-02-18", "2017-03-17")
         params = {
@@ -677,7 +752,14 @@ class TestsFacturesValidation(testing.OOTestCase):
             self.txn.cursor, self.txn.user, fact, params)
         self.assertEqual(result, None)
 
-    def test_check_consume_by_percentage_overwrite__Yes(self):
+    @mock.patch(
+        'giscedata_facturacio.giscedata_facturacio.'
+        'GiscedataFacturacioFactura.get_max_consume_by_contract'
+    )
+    def test_check_consume_by_percentage_overwrite__Yes(
+        self, get_max_consume_by_contract
+    ):
+        get_max_consume_by_contract.return_value = 0.1
         pol_id = self.get_fixture("giscedata_polissa", "polissa_0001")
         self.prepare_contract(pol_id, "2017-01-01", "2017-02-18")
         inv_id = self.get_fixture("giscedata_facturacio", "factura_0001")
@@ -692,3 +774,160 @@ class TestsFacturesValidation(testing.OOTestCase):
         result = self.vali_obj.check_consume_by_percentage(
             self.txn.cursor, self.txn.user, fact, params)
         self.assertIsNotNone(result)
+
+    def test_prefilter_parameters_are_configured(self):
+        warning_obj = self.model("giscedata.facturacio.validation.warning.template")
+        warning_ids = warning_obj.search(
+            self.txn.cursor, self.txn.user,
+            [("code", "in", ["F001", "F003", "F009", "F017"])]
+        )
+        parameters_by_code = dict([
+            (warning["code"], warning["parameters"])
+            for warning in warning_obj.read(
+                self.txn.cursor, self.txn.user, warning_ids, ["code", "parameters"]
+            )
+        ])
+        self.assertEqual(
+            parameters_by_code["F001"]["som_skip_if_20TD_00_and_less_than_kWh"], 1000
+        )
+        self.assertEqual(
+            parameters_by_code["F003"]["som_skip_if_20TD_00_and_less_than_kWh"], 1000
+        )
+        self.assertEqual(
+            parameters_by_code["F009"]["som_skip_if_20TD_00_and_less_than_days"], 90
+        )
+        self.assertEqual(
+            parameters_by_code["F017"]["som_skip_if_20TD_00_and_less_than_days"], 90
+        )
+
+    @mock.patch(
+        'giscedata_facturacio.giscedata_facturacio.'
+        'GiscedataFacturacioFactura.get_max_consume_by_contract'
+    )
+    def test_check_consume_by_percentage_prefilter__suppresses_at_1000_kwh_with_real_origins(
+        self, get_max_consume_by_contract
+    ):
+        get_max_consume_by_contract.return_value = 1.0
+        fact = self.prepare_f001_fact(1000, ["10", "30"])
+        result = self.vali_obj.check_consume_by_percentage(
+            self.txn.cursor, self.txn.user, fact, self.f001_parameters()
+        )
+        self.assertIsNone(result)
+
+    @mock.patch(
+        'giscedata_facturacio.giscedata_facturacio.'
+        'GiscedataFacturacioFactura.get_max_consume_by_contract'
+    )
+    def test_check_consume_by_percentage_prefilter__does_not_suppress_with_estimated_origin(
+        self, get_max_consume_by_contract
+    ):
+        get_max_consume_by_contract.return_value = 1.0
+        fact = self.prepare_f001_fact(1000, ["40"])
+        result = self.vali_obj.check_consume_by_percentage(
+            self.txn.cursor, self.txn.user, fact, self.f001_parameters()
+        )
+        self.assertIsNotNone(result)
+
+    @mock.patch(
+        'giscedata_facturacio.giscedata_facturacio.'
+        'GiscedataFacturacioFactura.get_max_consume_by_contract'
+    )
+    def test_check_consume_by_percentage_prefilter__does_not_suppress_without_origin(
+        self, get_max_consume_by_contract
+    ):
+        get_max_consume_by_contract.return_value = 1.0
+        fact = self.prepare_f001_fact(1000, [False])
+        result = self.vali_obj.check_consume_by_percentage(
+            self.txn.cursor, self.txn.user, fact, self.f001_parameters()
+        )
+        self.assertIsNotNone(result)
+
+    @mock.patch(
+        'giscedata_facturacio.giscedata_facturacio.'
+        'GiscedataFacturacioFactura.get_max_consume_by_contract'
+    )
+    def test_check_consume_by_percentage_prefilter__does_not_suppress_without_active_energy_readings(  # noqa: E501
+        self, get_max_consume_by_contract
+    ):
+        get_max_consume_by_contract.return_value = 1.0
+        fact = self.prepare_f001_fact(1000, [])
+        result = self.vali_obj.check_consume_by_percentage(
+            self.txn.cursor, self.txn.user, fact, self.f001_parameters()
+        )
+        self.assertIsNotNone(result)
+
+    @mock.patch(
+        'giscedata_facturacio.giscedata_facturacio.'
+        'GiscedataFacturacioFactura.get_max_consume_by_contract'
+    )
+    def test_check_consume_by_percentage_prefilter__does_not_suppress_above_1000_kwh(
+        self, get_max_consume_by_contract
+    ):
+        get_max_consume_by_contract.return_value = 1.0
+        fact = self.prepare_f001_fact(1001, ["10"])
+        result = self.vali_obj.check_consume_by_percentage(
+            self.txn.cursor, self.txn.user, fact, self.f001_parameters()
+        )
+        self.assertTrue(get_max_consume_by_contract.called)
+        self.assertIsNotNone(result)
+
+    @mock.patch(
+        'giscedata_facturacio.giscedata_facturacio.'
+        'GiscedataFacturacioFactura.get_max_consume_by_contract'
+    )
+    def test_check_consume_by_percentage_prefilter__suppresses_with_insular_tariff(
+        self, get_max_consume_by_contract
+    ):
+        get_max_consume_by_contract.return_value = 1.0
+        fact = self.prepare_f001_fact(1000, ["10"])
+        self.prepare_som_20td_fact(fact, u"2.0TD_SOM_INSULAR")
+        result = self.vali_obj.check_consume_by_percentage(
+            self.txn.cursor, self.txn.user, fact, self.f001_parameters()
+        )
+        self.assertIsNone(result)
+
+    def prepare_f017_fact(self, policy_reference_date, origin_codes):
+        fact = self.prepare_f001_fact(1000, origin_codes)
+        self.pol_obj.write(
+            self.txn.cursor,
+            self.txn.user,
+            fact.polissa_id.id,
+            {"data_ultima_lectura": policy_reference_date},
+        )
+        fact = self.fact_obj.browse(self.txn.cursor, self.txn.user, fact.id)
+        return self.prepare_som_20td_fact(fact)
+
+    def test_check_invoice_from_delayed_contract_prefilter__suppresses_at_90_days(self):
+        fact = self.prepare_f017_fact("2017-03-01", [])
+        self.assertLess(fact.dies, 90)
+        result = self.vali_obj.check_invoice_from_delayed_contract(
+            self.txn.cursor, self.txn.user, fact, self.f017_parameters()
+        )
+        self.assertIsNone(result)
+
+    def test_check_invoice_from_delayed_contract_prefilter__does_not_suppress_at_91_days(self):
+        fact = self.prepare_f017_fact("2017-02-28", [])
+        self.assertLess(fact.dies, 90)
+        result = self.vali_obj.check_invoice_from_delayed_contract(
+            self.txn.cursor, self.txn.user, fact, self.f017_parameters()
+        )
+        self.assertIsNotNone(result)
+
+    def test_check_invoice_from_delayed_contract_prefilter__suppresses_with_insular_tariff(self):
+        fact = self.prepare_f017_fact("2017-03-01", [])
+        self.assertLess(fact.dies, 90)
+        self.prepare_som_20td_fact(fact, u"2.0TD_SOM_INSULAR")
+        result = self.vali_obj.check_invoice_from_delayed_contract(
+            self.txn.cursor, self.txn.user, fact, self.f017_parameters()
+        )
+        self.assertIsNone(result)
+
+    def test_check_invoice_from_delayed_contract_prefilter__suppresses_with_non_real_and_missing_origins(  # noqa: E501
+        self,
+    ):
+        fact = self.prepare_f017_fact("2017-03-01", ["40", False])
+        self.assertLess(fact.dies, 90)
+        result = self.vali_obj.check_invoice_from_delayed_contract(
+            self.txn.cursor, self.txn.user, fact, self.f017_parameters()
+        )
+        self.assertIsNone(result)
