@@ -1,8 +1,7 @@
 # -*- coding: utf-8 -*-
-
 from __future__ import absolute_import
+
 import mock
-import unittest
 import os
 from destral import testing
 from destral.transaction import Transaction
@@ -181,29 +180,6 @@ class Tests_FacturacioFacturaReport_logo_component(Tests_FacturacioFacturaReport
             result,
             {"logo": "logo_som2.png", "has_agreement_partner": False, "has_auvi": False},
         )
-
-    @unittest.skip(reason="WIP using mock")
-    @mock.patch("som_polissa_soci.giscedata_polissa.GiscedataPolissa")
-    def test__som_report_comp_logo__energetica_mock(self, patch):
-        f_id = self.get_fixture("giscedata_facturacio", "factura_0001")
-        self.get_fixture("giscedata_polissa", "polissa_0001")
-
-        p = self.partner_obj.browse(self.cursor, self.uid, 23)
-        self.partner_obj.write(self.cursor, self.uid, p.id, {"ref": "S019753"})
-
-        with patch("soci") as polissa:
-            polissa.return_value = "S019753"
-
-            result = self.r_obj.get_component_logo_data(**self.bfp(f_id))
-            self.assertYamlfy(result)
-            self.assertEquals(
-                result,
-                {
-                    "logo": "logo_som2.png",
-                    "has_agreement_partner": True,
-                    "logo_agreement_partner": "logo_S019753.png",
-                },
-            )
 
     @mock.patch.object(
         giscedata_facturacio_report.GiscedataFacturacioFacturaReport, "get_auvi_data"
