@@ -191,6 +191,48 @@ class SomHolderChangeWww(osv.osv_memory):
         ])
         return "S" if special_case else "T"
 
+    def _is_inactive_holder(self, cursor, uid, vat, context=None):
+        inactive_context = (context or {}).copy()
+        inactive_context["active_test"] = False
+        return bool(self.pool.get("res.partner").search(
+            cursor,
+            uid,
+            [("vat", "=", "ES{}".format(self._normalize_vat(vat))), ("active", "=", False)],
+            limit=1,
+            context=inactive_context,
+        ))
+
+    def _check_contract_modifiable(self, cursor, uid, polissa_id, context=None):
+        polissa = self.pool.get("giscedata.polissa").browse(
+            cursor, uid, polissa_id, context=context
+        )
+        if not polissa.modcontractuals_ids:
+            return self._check_open_atr(cursor, uid, polissa_id, context=context)
+        try:
+            self.pool.get("giscedata.polissa").check_modifiable_polissa(
+                cursor, uid, polissa_id, context=context
+            )
+        except Exception as error:
+            return self._error("CONTRACT_NOT_MODIFIABLE", str(error))
+        return False
+
+    def _check_open_atr(self, cursor, uid, polissa_id, context=None):
+        atr_ids = self.pool.get("giscedata.switching").search(
+            cursor,
+            uid,
+            [
+                ("cups_polissa_id", "=", polissa_id),
+                ("state", "in", ["open", "draft", "pending"]),
+                ("proces_id.name", "!=", "R1"),
+            ],
+            context=context,
+        )
+        if atr_ids:
+            return self._error(
+                "CONTRACT_NOT_MODIFIABLE", _("The contract has an open ATR case.")
+            )
+        return False
+
     def _get_request(self, cursor, uid, request_id, cups, context=None):
         request = self.pool.get("som.holder.change.request").browse(
             cursor, uid, request_id, context=context
@@ -240,6 +282,15 @@ class SomHolderChangeWww(osv.osv_memory):
         )
         if contract_error:
             return self._error(contract_error, _("The contract is not available."))
+        if self._is_inactive_holder(
+            cursor, uid, payload["holder"]["vat"], context=context
+        ):
+            return self._error("CUSTOMER_INACTIVE", _("The new holder is inactive."))
+        modifiable_error = self._check_contract_modifiable(
+            cursor, uid, polissa_id, context=context
+        )
+        if modifiable_error:
+            return modifiable_error
 
         polissa = self.pool.get("giscedata.polissa").browse(
             cursor, uid, polissa_id, context=context
