@@ -578,6 +578,11 @@ class SomHolderChangeRequest(osv.osv):
 
     def execute(self, cursor, uid, request_id, context=None):
         request_id = self._one_id(request_id)
+        # Queue retries can run concurrently; serialize them before inspecting state.
+        cursor.execute(
+            "SELECT id FROM som_holder_change_request WHERE id = %s FOR UPDATE",
+            (request_id,),
+        )
         request = self.browse(cursor, uid, request_id, context=context)
         if request.state == "completed":
             return {

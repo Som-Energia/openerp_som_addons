@@ -13,6 +13,9 @@ from tools.translate import _
 
 CUPS_RE = re.compile(r"^ES[0-9]{16}[A-Z]{2}(?:[0-9][A-Z])?$")
 LEGAL_PERSON_PREFIXES = set("ABCDEFGHJNPQRSUVW")
+ACTIVE_REQUEST_STATES = (
+    "received", "awaiting_payment", "awaiting_signature", "queued",
+)
 
 
 class SomHolderChangeWww(osv.osv_memory):
@@ -242,6 +245,16 @@ class SomHolderChangeWww(osv.osv_memory):
                 "The request does not match this CUPS."))
         return request
 
+    def _active_request_for_cups(self, cursor, uid, cups, context=None):
+        request_ids = self.pool.get("som.holder.change.request").search(
+            cursor,
+            uid,
+            [("cups", "=", cups), ("state", "in", ACTIVE_REQUEST_STATES)],
+            limit=1,
+            context=context,
+        )
+        return request_ids and request_ids[0] or False
+
     def _create_attachments(self, cursor, uid, request_id, attachments, context=None):
         category_obj = self.pool.get("ir.attachment.category")
         attachment_obj = self.pool.get("ir.attachment")
@@ -302,6 +315,17 @@ class SomHolderChangeWww(osv.osv_memory):
                 "SAME_OWNER", _("The new holder must differ from the current holder.")
             )
 
+        # Serializing on the contract prevents concurrent requests for one CUPS.
+        cursor.execute(
+            "SELECT id FROM giscedata_polissa WHERE id = %s FOR UPDATE",
+            (polissa_id,),
+        )
+        if self._active_request_for_cups(cursor, uid, cups, context=context):
+            return self._error(
+                "REQUEST_IN_PROGRESS",
+                _("There is already an active holder change request for this CUPS."),
+            )
+
         request_obj = self.pool.get("som.holder.change.request")
         stored_payload = deepcopy(payload)
         attachments = stored_payload.get("attachments", [])
@@ -350,9 +374,11 @@ class SomHolderChangeWww(osv.osv_memory):
             "signature_url": False,
         }
 
-    def add_payment_card_data(self, cursor, uid, request_id, card_values, context=None):
+    def add_payment_card_data(
+        self, cursor, uid, request_id, cups, card_values, context=None
+    ):
         request_obj = self.pool.get("som.holder.change.request")
-        request = request_obj.browse(cursor, uid, request_id, context=context)
+        request = self._get_request(cursor, uid, request_id, cups, context=context)
         cursor.commit()
         request_obj.set_card_data(cursor, uid, request_id, card_values, context=context)
         return {"success": True, "request_id": request.id, "state": "awaiting_signature"}
