@@ -31,6 +31,14 @@ class TestHolderChangeWww(testing.OOTestCase):
         self.polissa_obj.write(
             self.cursor, self.uid, self.polissa_id, {"state": "activa"}
         )
+        # create_request commits so requests from prior tests survive in this DB.
+        self.cursor.execute(
+            "UPDATE som_holder_change_request SET state = 'completed' "
+            "WHERE polissa_id = %s AND state IN %s",
+            (self.polissa_id, (
+                "received", "awaiting_payment", "awaiting_signature", "queued",
+            )),
+        )
         self.local_service = mock.patch(self._local_service).start()
         self.local_service.return_value.create.side_effect = [
             (b"%PDF-contract", "pdf"),
@@ -178,7 +186,11 @@ class TestHolderChangeWww(testing.OOTestCase):
         }
 
         response = self.www_obj.add_payment_card_data(
-            self.cursor, self.uid, result["request_id"], card_values
+            self.cursor,
+            self.uid,
+            result["request_id"],
+            payload["supply_point"]["cups"],
+            card_values,
         )
 
         self.assertEqual(response["state"], "awaiting_signature")
@@ -211,15 +223,47 @@ class TestHolderChangeWww(testing.OOTestCase):
 
         with self.assertRaises(Exception):
             self.www_obj.add_payment_card_data(
-                self.cursor, self.uid, result["request_id"], {}
+                self.cursor,
+                self.uid,
+                result["request_id"],
+                payload["supply_point"]["cups"],
+                {},
             )
         self.www_obj.add_payment_card_data(
-            self.cursor, self.uid, result["request_id"], card_values
+            self.cursor,
+            self.uid,
+            result["request_id"],
+            payload["supply_point"]["cups"],
+            card_values,
         )
         with self.assertRaises(Exception):
             self.www_obj.add_payment_card_data(
-                self.cursor, self.uid, result["request_id"], card_values
+                self.cursor,
+                self.uid,
+                result["request_id"],
+                payload["supply_point"]["cups"],
+                card_values,
             )
+
+    def test_card_data_rejects_request_for_a_different_cups(self):
+        payload = self.payload()
+        payload["payment_method"] = "card"
+        del payload["payment"]["iban"]
+        del payload["payment"]["sepa_accepted"]
+        result = self.www_obj.create_request(self.cursor, self.uid, payload)
+
+        with self.assertRaises(Exception):
+            self.www_obj.add_payment_card_data(
+                self.cursor, self.uid, result["request_id"], "ES0000000000000000AA", {}
+            )
+
+    def test_create_request_rejects_an_active_request_for_the_same_cups(self):
+        first = self.www_obj.create_request(self.cursor, self.uid, self.payload())
+        second = self.www_obj.create_request(self.cursor, self.uid, self.payload())
+
+        self.assertTrue(first["success"])
+        self.assertFalse(second["success"])
+        self.assertEqual(second["code"], "REQUEST_IN_PROGRESS")
 
     def test_simulation_only_persists_reserved_references(self):
         partner_obj = self.openerp.pool.get("res.partner")
