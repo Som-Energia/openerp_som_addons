@@ -7,4 +7,4 @@ from . import wizard
 from . import som_indexada_webforms_helpers
 from . import ir_attachment
 from . import models
-from . import card_payment_helper
+from . import contract_payment_helper

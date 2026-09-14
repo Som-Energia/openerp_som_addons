@@ -169,24 +169,28 @@ class TestResPartnerCreditCard(testing.OOTestCaseWithCursor):
         )
         self.assertEqual(card["masked_number"], "**** **** **** 1234")
 
-    def test_resolve_for_payer_rejects_token_owned_by_another_payer(self):
-        self.creditcard_obj.create(self.cursor, self.uid, self._base_vals())
+    def test_resolve_for_payer_creates_card_when_token_belongs_to_another_payer(self):
+        existing_card_id = self.creditcard_obj.create(
+            self.cursor, self.uid, self._base_vals()
+        )
         other_partner_id = self.partner_obj.create(
             self.cursor, self.uid, {"name": "Other card payer"}
         )
 
-        with self.assertRaises(osv.except_osv):
-            self._resolve(partner_id=other_partner_id)
+        result = self._resolve(partner_id=other_partner_id)
 
+        self.assertEqual(result["disposition"], "created")
         self.assertEqual(
-            self.creditcard_obj.search(
+            self.creditcard_obj.read(
+                self.cursor, self.uid, result["id"], ["partner_id"]
+            )["partner_id"][0],
+            other_partner_id,
+        )
+        self.assertEqual(
+            sorted(self.creditcard_obj.search(
                 self.cursor, self.uid, [("token", "=", "tok_test_123")]
-            ),
-            self.creditcard_obj.search(
-                self.cursor,
-                self.uid,
-                [("token", "=", "tok_test_123"), ("partner_id", "=", self.partner_id)],
-            ),
+            )),
+            sorted([existing_card_id, result["id"]]),
         )
 
     def test_check_expiry_date_accepts_valid_format(self):
