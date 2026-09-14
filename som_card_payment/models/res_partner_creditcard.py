@@ -48,19 +48,22 @@ class ResPartnerCreditCard(osv.osv):
                 ["partner_id", "active"] + list(self._resolution_fields),
                 context=lookup_context,
             )
+            same_payer_cards = [
+                card for card in cards if card["partner_id"][0] == partner_id
+            ]
             compatible = [
                 card
-                for card in cards
+                for card in same_payer_cards
                 if card["active"]
-                and card["partner_id"][0] == partner_id
                 and all(card[name] == values[name] for name in self._resolution_fields)
             ]
-            if len(cards) == 1 and compatible:
+            if len(compatible) == 1:
                 return {"id": compatible[0]["id"], "disposition": "reused"}
-            raise osv.except_osv(
-                _("Card token conflict"),
-                _("The stored card token has different payer or metadata."),
-            )
+            if same_payer_cards:
+                raise osv.except_osv(
+                    _("Card token conflict"),
+                    _("The stored card token has different payer or metadata."),
+                )
 
         self.check_perm(cursor, uid, "create", context=context)
         values["partner_id"] = partner_id

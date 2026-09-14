@@ -433,7 +433,9 @@ class TestCardPaymentInPolissa(testing.OOTestCaseWithCursor):
             self.card_obj.read(self.cursor, self.uid, card_id, ["active"])["active"], False
         )
 
-    def test_convert_to_recurring_card_rejects_card_owned_by_another_payer(self):
+    def test_convert_to_recurring_card_creates_card_owned_by_contract_payer(self):
+        self._ensure_modcontractual_for_polissa()
+        self.polissa_obj.wkf_activa(self.cursor, self.uid, [self.polissa_id])
         other_partner_id = self.imd_obj.get_object_reference(
             self.cursor, self.uid, "base", "res_partner_2"
         )[1]
@@ -443,14 +445,28 @@ class TestCardPaymentInPolissa(testing.OOTestCaseWithCursor):
             "expiry_date": "12/35",
             "masked_number": "**** **** **** 4247",
         }
-        card_id = self.card_obj.create(
+        existing_card_id = self.card_obj.create(
             self.cursor, self.uid, dict(card_data, partner_id=other_partner_id)
         )
 
-        self._assert_rejected_token_leaves_conversion_unchanged(card_data)
+        result = self.polissa_obj.convert_to_recurring_card(
+            self.cursor, self.uid, self.polissa_id, card_data
+        )
 
+        self.assertEqual(result["status"], "complete")
+        self.assertEqual(result["card"]["disposition"], "created")
         self.assertEqual(
-            self.card_obj.read(self.cursor, self.uid, card_id, ["partner_id"])["partner_id"][0],
+            self.card_obj.read(
+                self.cursor, self.uid, result["card"]["id"], ["partner_id"]
+            )["partner_id"][0],
+            self.polissa_obj.browse(
+                self.cursor, self.uid, self.polissa_id
+            ).pagador.id,
+        )
+        self.assertEqual(
+            self.card_obj.read(
+                self.cursor, self.uid, existing_card_id, ["partner_id"]
+            )["partner_id"][0],
             other_partner_id,
         )
 
