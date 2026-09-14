@@ -452,6 +452,8 @@ class ReportBackendCondicionsParticulars(ReportBackend):
         coeficient_k_untaxed = self._get_coeficient_k_from_pricelist(
             cursor, uid, polissa, ctx, coeficient_id
         )
+        if coeficient_k_untaxed is False:
+            coeficient_k_untaxed = (pol.coeficient_k + pol.coeficient_d) / 1000
         if fs_data and fs_data.get('k_new', False) is not False:
             coeficient_k_untaxed = fs_data['k_new'] / 1000
 

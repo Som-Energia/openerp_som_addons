@@ -3,6 +3,7 @@ from __future__ import absolute_import, unicode_literals, division
 import unittest
 import os
 from datetime import datetime
+import mock
 from destral import testing
 from destral.transaction import Transaction
 from mako.template import Template
@@ -320,6 +321,35 @@ class TestReportBackendCCPP(testing.OOTestCase):
 
         pol_20td = self.pol_obj.browse(self.cursor, self.uid, self.contract_20TD_id)
         result = self.backend_obj.get_prices_data(self.cursor, self.uid, pol_20td, context={})
+
+        self.assertEqual(result['coeficient_k_untaxed'], 0.003478)
+        for pricelist in result['pricelists']:
+            self.assertEqual(pricelist['coeficient_k_untaxed'], 0.003478)
+
+    def test_get_prices_data_uses_contract_fallback_without_pricelist_coefficient(self):
+        self.pol_obj.send_signal(
+            self.cursor, self.uid, [self.contract_20TD_id], ["validar", "contracte"])
+        context = {"active_id": self.contract_20TD_id, "change_type": "from_period_to_index"}
+        wiz_id = self.wiz_change_to_index_obj.create(self.cursor, self.uid, {}, context=context)
+        self.wiz_change_to_index_obj.change_to_indexada(
+            self.cursor, self.uid, [wiz_id], context=context)
+        self.pol_obj.write(
+            self.cursor, self.uid, [self.contract_20TD_id], {
+                'coeficient_k': 0.0,
+                'coeficient_d': 3.478,
+            }
+        )
+        self.k_change_obj.unlink(
+            self.cursor, self.uid, self.k_change_obj.search(self.cursor, self.uid, [])
+        )
+
+        pol_20td = self.pol_obj.browse(self.cursor, self.uid, self.contract_20TD_id)
+        with mock.patch.object(
+            self.backend_obj, '_get_coeficient_k_from_pricelist', return_value=False
+        ):
+            result = self.backend_obj.get_prices_data(
+                self.cursor, self.uid, pol_20td, context={}
+            )
 
         self.assertEqual(result['coeficient_k_untaxed'], 0.003478)
         for pricelist in result['pricelists']:
