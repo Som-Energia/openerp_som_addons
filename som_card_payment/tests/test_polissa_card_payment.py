@@ -297,7 +297,7 @@ class TestCardPaymentInPolissa(testing.OOTestCaseWithCursor):
         self.assertEqual(result["status"], "no-op")
         self.assertEqual(result["reason_code"], "already_converted")
         self.assertEqual(result["card"]["id"], card_id)
-        self.assertEqual(result["policy"]["effective_date"], date.today().strftime("%Y-%m-%d"))
+        self.assertEqual(result["contract"]["effective_date"], date.today().strftime("%Y-%m-%d"))
 
     def test_convert_to_recurring_card_marks_invoice_only_retry_as_already_converted(self):
         self._ensure_modcontractual_for_polissa()
@@ -373,13 +373,13 @@ class TestCardPaymentInPolissa(testing.OOTestCaseWithCursor):
                     )
 
         self.assertEqual(result["status"], "no-op")
-        self.assertEqual(result["reason_code"], "policy_not_eligible")
+        self.assertEqual(result["reason_code"], "contract_not_eligible")
         factura_obj.migrate_recurring_card_invoices.assert_not_called()
 
     def _assert_rejected_token_leaves_conversion_unchanged(self, card_data):
         self._ensure_modcontractual_for_polissa()
         self.polissa_obj.wkf_activa(self.cursor, self.uid, [self.polissa_id])
-        before_policy = self.polissa_obj.read(
+        before_contract = self.polissa_obj.read(
             self.cursor,
             self.uid,
             self.polissa_id,
@@ -405,7 +405,7 @@ class TestCardPaymentInPolissa(testing.OOTestCaseWithCursor):
                 self.polissa_id,
                 ["creditcard", "tipo_pago", "payment_mode_id"],
             ),
-            before_policy,
+            before_contract,
         )
         self.assertEqual(
             self.modcontractual_obj.search(
@@ -471,7 +471,7 @@ class TestCardPaymentInPolissa(testing.OOTestCaseWithCursor):
 
         self.assertEqual(result["status"], "complete")
         self.assertEqual(result["card"]["disposition"], "created")
-        self.assertEqual(result["policy"], {
+        self.assertEqual(result["contract"], {
             "id": polissa_id,
             "disposition": "updated",
             "effective_date": date.today().strftime("%Y-%m-%d"),
@@ -481,7 +481,7 @@ class TestCardPaymentInPolissa(testing.OOTestCaseWithCursor):
         self.assertEqual(polissa.tipo_pago.id, self.payment_type_id)
         self.assertEqual(polissa.payment_mode_id.id, self.payment_mode_id)
 
-    def test_recurring_card_result_is_partial_for_remitted_noop_policy(self):
+    def test_recurring_card_result_is_partial_for_remitted_noop_contract(self):
         result = self.polissa_obj._recurring_card_result(
             {"id": 10, "disposition": "reused"},
             {"id": 11, "disposition": "unchanged", "effective_date": "2026-09-07"},

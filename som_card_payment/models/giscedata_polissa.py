@@ -12,14 +12,14 @@ class GiscedataPolissa(osv.osv):
 
     _recurring_card_payment_type_code = "COBRAMENT_RECURRENT_TARGETA"
 
-    def _recurring_card_result(self, card, policy, invoices, today, reason_code=False):
-        policy_changed = policy["disposition"] == "updated"
+    def _recurring_card_result(self, card, contract, invoices, today, reason_code=False):
+        contract_changed = contract["disposition"] == "updated"
         invoice_changed = bool(invoices["migrated"])
         partial = bool(invoices["remitted"] or invoices["failed"])
         if partial:
             status = "partial"
             reason_code = reason_code or "invoice_excluded_or_failed"
-        elif not policy_changed and not invoice_changed:
+        elif not contract_changed and not invoice_changed:
             status = "no-op"
             reason_code = reason_code or "already_converted"
         else:
@@ -29,7 +29,7 @@ class GiscedataPolissa(osv.osv):
             "status": status,
             "reason_code": reason_code,
             "card": card,
-            "policy": policy,
+            "contract": contract,
             "invoices": invoices,
         }
 
@@ -55,7 +55,7 @@ class GiscedataPolissa(osv.osv):
                 {"id": polissa_id, "disposition": "unchanged", "effective_date": today},
                 empty_invoices,
                 today,
-                "policy_not_eligible",
+                "contract_not_eligible",
             )
         payment_type_id, payment_mode_id = self._recurring_card_payment_ids(
             cursor, uid, context=context
