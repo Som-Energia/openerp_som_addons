@@ -13,8 +13,8 @@ def up(cursor, installed_version):
     logger = logging.getLogger('openerp.migration')
     pool = pooler.get_pool(cursor.dbname)
 
-    logger.info("Initializing som.card.payment.helper metadata in www_som")
-    pool.get("som.card.payment.helper")._auto_init(
+    logger.info("Initializing som.contract.payment.helper metadata in www_som")
+    pool.get("som.contract.payment.helper")._auto_init(
         cursor, context={'module': 'www_som'}
     )
 

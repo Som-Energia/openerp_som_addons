@@ -6,9 +6,9 @@ import mock
 from som_polissa.exceptions import exceptions
 
 
-class TestCardPaymentHelper(testing.OOTestCaseWithCursor):
-    def test_convert_contract_delegates_unchanged_result_and_copied_context(self):
-        helper = self.openerp.pool.get("som.card.payment.helper")
+class TestContractPaymentHelper(testing.OOTestCaseWithCursor):
+    def test_convert_to_recurring_card_delegates_unchanged_result_and_copied_context(self):
+        helper = self.openerp.pool.get("som.contract.payment.helper")
         domain = mock.Mock()
         result = {"status": "complete", "invoices": {"migrated": [7]}}
 
@@ -20,20 +20,20 @@ class TestCardPaymentHelper(testing.OOTestCaseWithCursor):
         context = {"lang": "en_US"}
 
         with mock.patch.object(helper.pool, "get", return_value=domain):
-            actual = helper.convert_contract(
+            actual = helper.convert_to_recurring_card(
                 self.cursor, self.uid, 42, {"token": "token"}, context=context
             )
 
         self.assertEqual(actual, result)
         self.assertEqual(context, {"lang": "en_US"})
 
-    def test_convert_contract_preserves_som_polissa_exception_response(self):
-        helper = self.openerp.pool.get("som.card.payment.helper")
+    def test_convert_to_recurring_card_preserves_som_polissa_exception_response(self):
+        helper = self.openerp.pool.get("som.contract.payment.helper")
         domain = mock.Mock()
         domain.convert_to_recurring_card.side_effect = exceptions.PolissaNotActive("P-42")
 
         with mock.patch.object(helper.pool, "get", return_value=domain):
-            result = helper.convert_contract(
+            result = helper.convert_to_recurring_card(
                 self.cursor, self.uid, 42, {"token": "token"}, context={}
             )
 
