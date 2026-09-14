@@ -476,6 +476,31 @@ class TestHolderChangeWww(testing.OOTestCase):
         self.assertFalse(result["success"])
         self.assertEqual(result["code"], "SAME_OWNER")
 
+    def test_create_request_rejects_inactive_new_holder(self):
+        payload = self.payload()
+        self.openerp.pool.get("res.partner").create(
+            self.cursor,
+            self.uid,
+            {"name": "Inactive holder", "vat": "ES12345678Z", "active": False},
+            context={"active_test": False},
+        )
+
+        result = self.www_obj.create_request(self.cursor, self.uid, payload)
+
+        self.assertFalse(result["success"])
+        self.assertEqual(result["code"], "CUSTOMER_INACTIVE")
+
+    def test_create_request_rejects_non_modifiable_contract(self):
+        with mock.patch.object(
+            self.www_obj,
+            "_check_contract_modifiable",
+            return_value=self.www_obj._error("CONTRACT_NOT_MODIFIABLE", "Open ATR"),
+        ):
+            result = self.www_obj.create_request(self.cursor, self.uid, self.payload())
+
+        self.assertFalse(result["success"])
+        self.assertEqual(result["code"], "CONTRACT_NOT_MODIFIABLE")
+
     def test_create_request_requires_real_consent(self):
         payload = self.payload()
         payload["payment"]["sepa_accepted"] = False
