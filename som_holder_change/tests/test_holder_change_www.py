@@ -226,6 +226,10 @@ class TestHolderChangeWww(testing.OOTestCase):
         bank_obj = self.openerp.pool.get("res.partner.bank")
         mandate_obj = self.openerp.pool.get("payment.mandate")
         switching_obj = self.openerp.pool.get("giscedata.switching")
+        old_polissa = self.polissa_obj.read(
+            self.cursor, self.uid, self.polissa_id,
+            ["no_estimable", "observacions", "observacions_estimacio"],
+        )
         vat = "ES12345678Z"
         iban = self.payload()["payment"]["iban"]
         counts_before = {
@@ -271,6 +275,13 @@ class TestHolderChangeWww(testing.OOTestCase):
         self.assertFalse(self.polissa_obj.search(
             self.cursor, self.uid, [("name", "=", request["contract_number"])]
         ))
+        self.assertEqual(
+            self.polissa_obj.read(
+                self.cursor, self.uid, self.polissa_id,
+                ["no_estimable", "observacions", "observacions_estimacio"],
+            ),
+            old_polissa,
+        )
 
     def test_execute_completes_once_without_duplicate_m1(self):
         result = self.www_obj.create_request(
@@ -300,6 +311,45 @@ class TestHolderChangeWww(testing.OOTestCase):
         self.assertEqual(
             request["result_polissa_id"][0], first_result["result_polissa_id"]
         )
+        switching = self.openerp.pool.get("giscedata.switching").browse(
+            self.cursor, self.uid, first_result["switching_id"]
+        )
+        self.assertEqual(switching.state, "open")
+        self.assertEqual(switching.proces_id.name, "M1")
+        self.assertEqual(switching.get_pas().sollicitudadm, "S")
+        self.assertEqual(switching.get_pas().canvi_titular, "T")
+        old_polissa = self.openerp.pool.get("giscedata.polissa").browse(
+            self.cursor, self.uid, self.polissa_id
+        )
+        self.assertIn("Canvi de titular", old_polissa.observacions_estimacio)
+        self.assertTrue(old_polissa.no_estimable)
+        self.assertIn("Nou Titular: Maria", old_polissa.observacions)
+        self.assertIn("holder", switching.user_observations)
+        self.assertNotIn("JVBERi0xLjQ", switching.user_observations)
+
+    def test_subrogation_creates_draft_m1(self):
+        payload = self.payload()
+        payload["especial_cases"].update({"reason_death": True})
+        payload["attachments"] = [{
+            "filename": "death-certificate.pdf",
+            "category": "holder_change_death",
+            "datas": "JVBERi0xLjQ=",
+        }]
+        result = self.www_obj.create_request(self.cursor, self.uid, payload)
+        self.request_obj.write(
+            self.cursor, self.uid, [result["request_id"]], {"state": "queued"}
+        )
+
+        execution = self.request_obj.execute(
+            self.cursor, self.uid, result["request_id"]
+        )
+
+        switching = self.openerp.pool.get("giscedata.switching").browse(
+            self.cursor, self.uid, execution["switching_id"]
+        )
+        self.assertEqual(switching.state, "draft")
+        self.assertEqual(switching.get_pas().sollicitudadm, "S")
+        self.assertEqual(switching.get_pas().canvi_titular, "S")
 
     def test_execute_uses_new_holder_language_and_address(self):
         payload = self.payload()
@@ -433,13 +483,14 @@ class TestHolderChangeWww(testing.OOTestCase):
         execution = self.request_obj.execute(
             self.cursor, self.uid, result["request_id"]
         )
-        result_polissa = self.polissa_obj.browse(
-            self.cursor, self.uid, execution["result_polissa_id"]
+        partner_ids = self.openerp.pool.get("res.partner").search(
+            self.cursor, self.uid,
+            [("vat", "=", "ES" + payload["holder"]["vat"])],
         )
         document_ids = self.openerp.pool.get("som.documents.sensibles").search(
             self.cursor,
             self.uid,
-            [("partner_id", "=", result_polissa.titular.id)],
+            [("partner_id", "=", partner_ids[0])],
         )
         self.assertEqual(len(document_ids), 1)
         attachment_ids = self.openerp.pool.get("ir.attachment").search(
@@ -452,6 +503,9 @@ class TestHolderChangeWww(testing.OOTestCase):
             ],
         )
         self.assertEqual(len(attachment_ids), 1)
+        result_polissa = self.polissa_obj.browse(
+            self.cursor, self.uid, execution["result_polissa_id"]
+        )
         self.assertTrue(result_polissa.nocutoff)
 
     def test_create_request_returns_internal_request_id(self):
