@@ -2,6 +2,7 @@
 from __future__ import absolute_import, unicode_literals
 
 import base64
+import json
 import pooler
 from datetime import datetime
 from uuid import uuid4
@@ -51,11 +52,7 @@ class SomHolderChangeRequest(osv.osv):
         return ids
 
     def _needs_new_contract(self, cursor, uid, request, context=None):
-        if request.owner_change_type == "T":
-            return True
-        return bool(int(self.pool.get("res.config").get(
-            cursor, uid, "sw_m1_owner_change_subrogacio_new_contract", "1"
-        )))
+        return request.owner_change_type == "T"
 
     def _payment_method(self, request):
         return request.payload.get("payment_method", "bank")
@@ -215,7 +212,7 @@ class SomHolderChangeRequest(osv.osv):
         }
         values.update(payment_values)
         if values["generate_new_contract"] == "exists":
-            values["new_contract"] = False
+            values["new_contract"] = request.polissa_id.id
         return values
 
     def _run_m1(self, cursor, uid, request, partner_id, address_id, payment_values, context=None):
@@ -395,6 +392,89 @@ class SomHolderChangeRequest(osv.osv):
             result["mandate_pdf"] = base64.b64encode(mandate_pdf)
         return result
 
+    def _append_observation(self, current, new):
+        normalized = "".join(new.split())
+        if normalized and normalized in "".join((current or "").split()):
+            return current
+        return "{}\n{}".format(new, current or "")
+
+    def _apply_post_m1_effects(
+        self,
+        cursor,
+        uid,
+        request,
+        switching_id,
+        partner_id,
+        member_partner_id,
+        address_id,
+        payment_values,
+        context=None,
+    ):
+        switching_obj = self.pool.get("giscedata.switching")
+        polissa_obj = self.pool.get("giscedata.polissa")
+        partner = self.pool.get("res.partner").browse(
+            cursor, uid, partner_id, context=context
+        )
+        address = self.pool.get("res.partner.address").browse(
+            cursor, uid, address_id, context=context
+        )
+        member = member_partner_id and self.pool.get("res.partner").browse(
+            cursor, uid, member_partner_id, context=context
+        ) or False
+        iban = "-"
+        if payment_values.get("bank"):
+            iban = self.pool.get("res.partner.bank").browse(
+                cursor, uid, payment_values["bank"], context=context
+            ).iban
+        timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        # TODO: Revisar i actualitzar observacions
+        observation = (
+            "-- webforms diu: --\n"
+            "****Canvi de titular amb soci vinculat ({} {})****\n"
+            "Data de petició: {}\nNou Titular: {}\nNIF: {}\n"
+            "Contacte: {} {}\nIBAN: {}\n-- webforms ha dit --"
+        ).format(
+            member and member.name or "-",
+            member and member.ref or "-",
+            timestamp,
+            partner.name,
+            partner.vat[2:],
+            address.email or "",
+            address.phone or address.mobile or "",
+            iban,
+        )
+        old_polissa = polissa_obj.browse(
+            cursor, uid, request.polissa_id.id, context=context
+        )
+        polissa_obj.write(
+            cursor,
+            uid,
+            request.polissa_id.id,
+            {
+                "no_estimable": True,
+                "observacions_estimacio": self._append_observation(
+                    old_polissa.observacions_estimacio,
+                    "\n(webforms)[{}] Canvi de titular".format(timestamp),
+                ),
+                "observacions": self._append_observation(old_polissa.observacions, observation),
+            },
+            context=context,
+        )
+        switching = switching_obj.browse(cursor, uid, switching_id, context=context)
+        payload = json.dumps(request.payload, sort_keys=True, indent=2)
+        switching_obj.write(
+            cursor,
+            uid,
+            switching_id,
+            {
+                "state": "draft" if request.owner_change_type == "S" else "open",
+                "user_observations": self._append_observation(
+                    switching.user_observations, payload
+                ),
+            },
+            context=context,
+        )
+
     def _run_holder_change(self, cursor, uid, request, temporary=False, context=None):
         partner_id = self._create_holder(cursor, uid, request, context=context)
         address_id = self._create_holder_address(
@@ -411,6 +491,17 @@ class SomHolderChangeRequest(osv.osv):
         )
         mandate_id = self._create_mandate(
             cursor, uid, request, partner_id, polissa_id, context=context
+        )
+        self._apply_post_m1_effects(
+            cursor,
+            uid,
+            request,
+            switching_id,
+            partner_id,
+            member_partner_id,
+            address_id,
+            payment_values,
+            context=context,
         )
         self._apply_special_documents(
             cursor, uid, request, partner_id, polissa_id, context=context
