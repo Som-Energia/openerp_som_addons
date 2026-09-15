@@ -500,6 +500,66 @@ class TestHolderChangeWww(testing.OOTestCase):
         )
         self.assertEqual(polissa.soci.id, polissa.titular.id)
 
+    def test_execute_assigns_ct_ss_member_and_category_without_member(self):
+        payload = self.payload()
+        payload["member"].update({"become_member": False, "link_member": False})
+        ct_ss_member_id = self.imd_obj.get_object_reference(
+            self.cursor, self.uid, "som_polissa_soci", "res_partner_soci_ct"
+        )[1]
+        category_id = self.imd_obj.get_object_reference(
+            self.cursor,
+            self.uid,
+            "som_polissa_soci",
+            "origen_ct_sense_socia_category",
+        )[1]
+        result = self.www_obj.create_request(self.cursor, self.uid, payload)
+        self.request_obj.write(
+            self.cursor, self.uid, [result["request_id"]], {"state": "queued"}
+        )
+
+        execution = self.request_obj.execute(
+            self.cursor, self.uid, result["request_id"]
+        )
+
+        polissa = self.polissa_obj.browse(
+            self.cursor, self.uid, execution["result_polissa_id"]
+        )
+        self.assertEqual(polissa.soci.id, ct_ss_member_id)
+        self.assertIn(category_id, polissa.category_id.ids)
+
+    def test_subrogation_assigns_ct_ss_member_and_category_without_member(self):
+        payload = self.payload()
+        payload["member"].update({"become_member": False, "link_member": False})
+        payload["especial_cases"].update({"reason_death": True})
+        payload["attachments"] = [{
+            "filename": "death-certificate.pdf",
+            "category": "holder_change_death",
+            "datas": "JVBERi0xLjQ=",
+        }]
+        ct_ss_member_id = self.imd_obj.get_object_reference(
+            self.cursor, self.uid, "som_polissa_soci", "res_partner_soci_ct"
+        )[1]
+        category_id = self.imd_obj.get_object_reference(
+            self.cursor,
+            self.uid,
+            "som_polissa_soci",
+            "origen_ct_sense_socia_category",
+        )[1]
+        result = self.www_obj.create_request(self.cursor, self.uid, payload)
+        self.request_obj.write(
+            self.cursor, self.uid, [result["request_id"]], {"state": "queued"}
+        )
+
+        execution = self.request_obj.execute(
+            self.cursor, self.uid, result["request_id"]
+        )
+
+        polissa = self.polissa_obj.browse(
+            self.cursor, self.uid, execution["result_polissa_id"]
+        )
+        self.assertEqual(polissa.soci.id, ct_ss_member_id)
+        self.assertIn(category_id, polissa.category_id.ids)
+
     def test_execute_copies_death_certificate_to_result_contract(self):
         payload = self.payload()
         payload["especial_cases"].update({"reason_death": True})
