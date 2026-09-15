@@ -539,6 +539,16 @@ class SomLeadWww(osv.osv_memory):
         logger = logging.getLogger("openerp.{0}.activate_lead".format(__name__))
 
         if signature_allows and payment_allows:
+            lead_data = lead_o.read(
+                cr, uid, lead_id, ['crm_id', 'polissa_id', 'state'], context=context
+            )
+            if lead_data['polissa_id']:
+                if lead_data['state'] not in ('done', 'cancel'):
+                    self.pool.get('crm.case').case_close(
+                        cr, uid, [lead_data['crm_id'][0]]
+                    )
+                return True
+
             context["create_draft_atr"] = True
             msg = lead_o.create_entities(cr, uid, lead_id, context=context)
 
