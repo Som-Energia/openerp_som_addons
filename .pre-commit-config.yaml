@@ -26,3 +26,10 @@ repos:
     hooks:
       - id: flake8
         name: flake8
+  - repo: local
+    hooks:
+      - id: pylint-py3k
+        name: pylint --py3k
+        entry: pylint --py3k --reports=n --score=n --persistent=n
+        language: system
+        types: [python]
