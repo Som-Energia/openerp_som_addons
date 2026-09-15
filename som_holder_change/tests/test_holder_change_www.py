@@ -362,6 +362,13 @@ class TestHolderChangeWww(testing.OOTestCase):
         self.assertEqual(switching.proces_id.name, "M1")
         self.assertEqual(switching.get_pas().sollicitudadm, "S")
         self.assertEqual(switching.get_pas().canvi_titular, "T")
+        self.assertEqual(switching.get_pas().activacio_cicle, "L")
+        self.assertEqual(switching.get_pas().cont_nom, "Maria Nova Titular")
+        self.assertEqual(switching.get_pas().cont_telefons[0].numero, "600000000")
+        result_polissa = self.polissa_obj.browse(
+            self.cursor, self.uid, first_result["result_polissa_id"]
+        )
+        self.assertTrue(result_polissa.data_firma_contracte)
         old_polissa = self.openerp.pool.get("giscedata.polissa").browse(
             self.cursor, self.uid, self.polissa_id
         )
