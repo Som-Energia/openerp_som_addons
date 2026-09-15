@@ -63,9 +63,9 @@ Current verification: `.github/workflows/pull_request_labeler.yml` requires at l
 - Flags requerits: `--base main --assignee "@me" --label "<label>"`
 
 ### erp-herdr-worktree
-- Requereix un worktree Git existent i una sessió dins de Herdr (`HERDR_ENV=1`); mai crea worktrees.
-- El worktree objectiu és explícit: no l'infereixis del `cwd` de l'agent, que pot ser el workspace multirepo.
-- Executa `scripts/herdr-worktree-companion.sh <path-absolut-worktree>` des del directori de la skill abans d'editar o fer tests.
+- Requereix una sessió dins de Herdr (`HERDR_ENV=1`) i un worktree objectiu explícit; no l'infereixis del `cwd` de l'agent, que pot ser el workspace multirepo.
+- Amb aprovació prèvia per crear-lo, executa `scripts/erp-herdr-worktree.sh create <path-absolut-worktree> <nom-branca>` des del directori de la skill.
+- Per un worktree existent, executa `scripts/erp-herdr-worktree.sh open <path-absolut-worktree>` abans d'editar o fer tests.
 - El companion és només un shell auxiliar; no iniciïs tests ni modifiquis enllaços compartits automàticament.
 
 ### erp-test
