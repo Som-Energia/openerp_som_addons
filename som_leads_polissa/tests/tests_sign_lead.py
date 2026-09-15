@@ -173,67 +173,24 @@ class TestSignLead(testing.OOTestCase):
             self.cursor, self.uid, [1], context={}
         )
 
-    def test_retry_lead_activation_uses_recent_active_signatures(self):
-        template_id = self.ir_model_o.get_object_reference(
-            self.cursor, self.uid,
-            'giscedata_crm_leads_signatura', 'alta_lead_signatura'
-        )[1]
+    def test_retry_lead_activation_uses_recent_completed_signatures(self):
+        db = mock.MagicMock()
+        tmp_cursor = db.cursor.return_value
+        tmp_cursor.fetchall.return_value = [(10,)]
 
-        def create_lead_with_signature(status, state='open', old=False):
-            lead_id = self._create_lead()
-            self.lead_o.write(
-                self.cursor, self.uid, lead_id, {'state': state}, context={}
-            )
-            process_id = self.process_o.create(
-                self.cursor, self.uid,
-                {
-                    'subject': 'Test process {}'.format(lead_id),
-                    'status': status,
-                    'signature_url': 'http://sign.url',
-                    'template_id': template_id,
-                    'template_res_id': lead_id,
-                    'lang': 'en_US',
-                    'recipients': [(0, 0, {
-                        'name': 'Test titular',
-                        'email': 'test@example.org',
-                    })],
-                },
-                context={}
-            )
-            self.lead_o.write(
-                self.cursor, self.uid, lead_id,
-                {'signature_process': process_id}, context={}
-            )
-            if old:
-                self.cursor.execute(
-                    """UPDATE giscedata_signatura_process
-                       SET create_date = now() - INTERVAL '16 days'
-                       WHERE id = %s""",
-                    (process_id,)
+        with mock.patch(
+                'som_leads_polissa.www.som_lead_www.pooler.get_db', return_value=db
+        ):
+            with mock.patch.object(self.www_lead_o, 'activate_lead_async') as activate:
+                self.www_lead_o.retry_lead_activation_cron(
+                    self.cursor, self.uid, [], context={}
                 )
-            return lead_id
 
-        wait_lead_id = create_lead_with_signature('wait')
-        doing_lead_id = create_lead_with_signature('doing')
-        completed_lead_id = create_lead_with_signature('completed', state='pending')
-        closed_lead_id = create_lead_with_signature('completed', state='closed')
-        unsend_lead_id = create_lead_with_signature('unsend')
-        old_lead_id = create_lead_with_signature('wait', old=True)
-        self.cursor.commit()
-
-        with mock.patch.object(self.www_lead_o, 'activate_lead_async') as activate:
-            self.www_lead_o.retry_lead_activation_cron(
-                self.cursor, self.uid, [], context={}
-            )
-
-        activated_lead_ids = set(call[0][2] for call in activate.call_args_list)
-        self.assertTrue(
-            set([wait_lead_id, doing_lead_id, completed_lead_id])
-            .issubset(activated_lead_ids)
-        )
-        self.assertFalse(
-            set([closed_lead_id, unsend_lead_id, old_lead_id])
-            .intersection(activated_lead_ids)
+        query = tmp_cursor.execute.call_args[0][0]
+        self.assertIn("sp.status = 'completed'", query)
+        self.assertIn('FOR UPDATE OF l skip locked', query)
+        activate.assert_called_once_with(
+            self.cursor, self.uid, 10, context={'attempts': 1}
         )
 
 

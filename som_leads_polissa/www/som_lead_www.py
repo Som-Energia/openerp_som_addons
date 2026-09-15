@@ -458,25 +458,29 @@ class SomLeadWww(osv.osv_memory):
 
         for _ in range(attempts):
             tmp_cursor = db.cursor()
-            lead_data = lead_o.read(
-                tmp_cursor, uid, lead_id, ['signature_process', 'status_firma'], context=context
-            )
-            signature_process = lead_data.get('signature_process')
-            signature_status = lead_data.get('status_firma')
+            try:
+                lead_data = lead_o.read(
+                    tmp_cursor, uid, lead_id, ['signature_process', 'status_firma'], context=context
+                )
+                signature_process = lead_data.get('signature_process')
+                signature_status = lead_data.get('status_firma')
 
-            if not signature_process:
-                return False
+                if not signature_process:
+                    return False
 
-            if signature_status == self._SIGNATURE_COMPLETED_STATUS:
-                return True
+                if signature_status == self._SIGNATURE_COMPLETED_STATUS:
+                    return True
 
-            if signature_status in self._SIGNATURE_ERROR_STATUSES or signature_status == 'unsend':
-                return False
+                if (
+                        signature_status in self._SIGNATURE_ERROR_STATUSES
+                        or signature_status == 'unsend'
+                ):
+                    return False
 
-            sign_process_obj.update(tmp_cursor, uid, [signature_process[0]], context=context)
-
-            tmp_cursor.commit()
-            tmp_cursor.close()
+                sign_process_obj.update(tmp_cursor, uid, [signature_process[0]], context=context)
+                tmp_cursor.commit()
+            finally:
+                tmp_cursor.close()
             time.sleep(wait_seconds)
 
         return False
@@ -503,9 +507,9 @@ class SomLeadWww(osv.osv_memory):
                            on sp.id = l.signature_process
                        where c.state in ('open', 'pending')
                        and sp.create_date >= now() - INTERVAL '15 days'
-                       and sp.status in ('wait', 'doing', 'completed')
+                       and sp.status = 'completed'
                        order by id desc
-                       FOR UPDATE skip locked
+                       FOR UPDATE OF l skip locked
                        """
             tmp_cursor.execute(query)
             all_data = tmp_cursor.fetchall()
