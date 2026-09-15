@@ -198,7 +198,7 @@ class TestHolderChangeWww(testing.OOTestCase):
             self.cursor,
             self.uid,
             result["request_id"],
-            ["state", "contract_pdf", "mandate_pdf"] + card_values.keys(),
+            ["state", "contract_pdf", "mandate_pdf"] + list(card_values.keys()),
         )
         self.assertEqual(request["state"], "awaiting_signature")
         self.assertTrue(request["contract_pdf"])
