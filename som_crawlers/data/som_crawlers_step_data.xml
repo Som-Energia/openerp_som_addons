@@ -1715,6 +1715,21 @@
             <field name="params">{}</field>
             <field name="task_id" ref="descargar_eriste_ftp"/>
         </record>
+        <!-- Serosense -->
+        <record model="som.crawlers.task.step" id="taskStep_serosense_ftp_download">
+            <field name="name">Descarregar fitxers FTP Serosense</field>
+            <field name="sequence">1</field>
+            <field name="function">download_ftp_files</field>
+            <field name="params">{"dir_list": ["Entrada"]}</field>
+            <field name="task_id" ref="descarregar_serosense_ftp"/>
+        </record>
+        <record model="som.crawlers.task.step" id="taskStep_serosense_ftp_import">
+            <field name="name">Importar fitxers XML</field>
+            <field name="sequence">2</field>
+            <field name="function">import_ftp_xml_files</field>
+            <field name="params">{}</field>
+            <field name="task_id" ref="descarregar_serosense_ftp"/>
+        </record>
         <!-- 6eis (formerly aseme) -->
         <record model="som.crawlers.task.step" id="pas_descarregar_ftp_aseme">
             <field name="name">Descarregar fitxers FTP 6eis (abans aseme)</field>
