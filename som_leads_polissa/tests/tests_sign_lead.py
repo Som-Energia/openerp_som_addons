@@ -173,6 +173,26 @@ class TestSignLead(testing.OOTestCase):
             self.cursor, self.uid, [1], context={}
         )
 
+    def test_retry_lead_activation_uses_recent_completed_signatures(self):
+        db = mock.MagicMock()
+        tmp_cursor = db.cursor.return_value
+        tmp_cursor.fetchall.return_value = [(10,)]
+
+        with mock.patch(
+                'som_leads_polissa.www.som_lead_www.pooler.get_db', return_value=db
+        ):
+            with mock.patch.object(self.www_lead_o, 'activate_lead_async') as activate:
+                self.www_lead_o.retry_lead_activation_cron(
+                    self.cursor, self.uid, [], context={}
+                )
+
+        query = tmp_cursor.execute.call_args[0][0]
+        self.assertIn("sp.status = 'completed'", query)
+        self.assertIn('FOR UPDATE OF l skip locked', query)
+        activate.assert_called_once_with(
+            self.cursor, self.uid, 10, context={'attempts': 1}
+        )
+
 
 class TestActivationMailAfterSignature(testing.OOTestCase):
 
