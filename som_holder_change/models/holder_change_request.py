@@ -278,7 +278,7 @@ class SomHolderChangeRequest(osv.osv):
             ) else "exists",
             "change_retail_tariff": False,
             "retail_tariff": False,
-            "activacio_cicle": "A",
+            "activacio_cicle": "L",
             "owner": partner_id,
             "pagador": partner_id,
             "contact": partner_id,
@@ -288,6 +288,9 @@ class SomHolderChangeRequest(osv.osv):
             "direccio_pagament": address_id,
             "direccio_notificacio": address_id,
         }
+        wizard_obj = self.pool.get("giscedata.switching.mod.con.wizard")
+        values.update(wizard_obj.get_partner_fields(cursor, uid, partner_id, "con"))
+        values.update(wizard_obj.get_phone(cursor, uid, address_id))
         values.update(payment_values)
         if values["generate_new_contract"] == "exists":
             values["new_contract"] = request.polissa_id.id
@@ -309,6 +312,7 @@ class SomHolderChangeRequest(osv.osv):
         )
         execution_context = (context or {}).copy()
         extra_values = {}
+        signature_date = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         if request.contract_number:
             extra_values["name"] = request.contract_number
         if extra_values:
@@ -325,6 +329,14 @@ class SomHolderChangeRequest(osv.osv):
             cursor, uid, switching_ids[0], context=context
         )
         polissa_id = switching.polissa_ref_id.id
+        if request.owner_change_type == "T":
+            self.pool.get("giscedata.polissa").write(
+                cursor,
+                uid,
+                polissa_id,
+                {"data_firma_contracte": signature_date},
+                context=context,
+            )
         if is_card_payment:
             self.pool.get("giscedata.polissa").write(
                 cursor,
