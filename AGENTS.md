@@ -41,6 +41,7 @@ Les skills següents estan disponibles al projecte i s'han d'utilitzar quan corr
 - PR-affecting work must use a named worktree under `<WORKSPACE>/openerp_som_addons-worktrees/`, where `<WORKSPACE>` is the directory containing the primary repository checkout; never use `/tmp/opencode`.
 - Announce the active worktree before making edits.
 - If no appropriate worktree exists, stop and get explicit approval before creating one.
+- When `HERDR_ENV=1`, use the `erp-herdr-worktree` skill's `create` or `open` wrapper with the explicit target worktree before editing it.
 
 | Skill | Quan usar | Com usar |
 |-------|-----------|----------|
