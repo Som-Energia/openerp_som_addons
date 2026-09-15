@@ -24,6 +24,7 @@ Current verification: `.github/workflows/pull_request_labeler.yml` requires at l
 | Quan necessites crear una branca nova per treballar | git-branch | .agents/skills/git-branch/SKILL.md |
 | Quan necessites fer un commit de codi | git-commit | .agents/skills/git-commit/SKILL.md |
 | Quan necessites crear una Pull Request | git-pr | .agents/skills/git-pr/SKILL.md |
+| Quan un agent ERP ha de treballar en un worktree des d'un pane Herdr mantenint el context multirepo | erp-herdr-worktree | .agents/skills/erp-herdr-worktree/SKILL.md |
 | Quan necessites executar tests d'un mòdul OpenERP amb destral | erp-test | .agents/skills/erp-test/SKILL.md |
 | Quan necessites arrencar el servei ERP, executar l'ERP, o obrir l'entorn de desenvolupament | erp-start | .agents/skills/erp-start/SKILL.md |
 | Quan necessites crear un script de migració, modificar el model, o actualitzar un mòdul a producció | erp-migration | .agents/skills/erp-migration/SKILL.md |
@@ -60,6 +61,12 @@ Current verification: `.github/workflows/pull_request_labeler.yml` requires at l
 - Abans de crear-la: verificar abast, tests i linting obligatoris segons `AGENTS.md`
 - Crear-la contra `main`, autoassignar-la i afegir com a mínim una etiqueta existent
 - Flags requerits: `--base main --assignee "@me" --label "<label>"`
+
+### erp-herdr-worktree
+- Requereix un worktree Git existent i una sessió dins de Herdr (`HERDR_ENV=1`); mai crea worktrees.
+- El worktree objectiu és explícit: no l'infereixis del `cwd` de l'agent, que pot ser el workspace multirepo.
+- Executa `scripts/herdr-worktree-companion.sh <path-absolut-worktree>` des del directori de la skill abans d'editar o fer tests.
+- El companion és només un shell auxiliar; no iniciïs tests ni modifiquis enllaços compartits automàticament.
 
 ### erp-test
 - Requisits: Virtualenv activat + Docker (PostgreSQL, MongoDB, Redis)

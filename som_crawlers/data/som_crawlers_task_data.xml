@@ -635,6 +635,12 @@
             <field name="active">True</field>
             <field name="configuracio_id" ref="eriste_ftp_conf"/>
         </record>
+        <!-- Serosense -->
+        <record model="som.crawlers.task" id="descarregar_serosense_ftp">
+            <field name="name">Descarregar FTP Serosense</field>
+            <field name="active">True</field>
+            <field name="configuracio_id" ref="serosense_ftp_conf"/>
+        </record>
         <!-- 6eis (formerly aseme) -->
         <record model="som.crawlers.task" id="descarregar_aseme_ftp">
             <field name="name">Descarregar FTP 6eis (abans aseme)</field>

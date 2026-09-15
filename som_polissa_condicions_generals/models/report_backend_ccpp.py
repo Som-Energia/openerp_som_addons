@@ -26,6 +26,9 @@ class ReportBackendCondicionsParticulars(ReportBackend):
         return price_ctx
 
     def _get_coeficient_k_from_pricelist(self, cursor, uid, polissa, ctx, coeficient_id):
+        if polissa.coeficient_k:
+            return polissa.coeficient_k / 1000
+
         pricelist_id = ctx.get('force_pricelist') or (
             polissa.llista_preu and polissa.llista_preu.id)
         if not pricelist_id:
