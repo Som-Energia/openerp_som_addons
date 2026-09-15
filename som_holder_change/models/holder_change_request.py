@@ -190,13 +190,16 @@ class SomHolderChangeRequest(osv.osv):
     def _member_partner(self, cursor, uid, request, holder_id, context=None):
         member = request.payload["member"]
         if member.get("link_member"):
-            return self._linked_member_partner(cursor, uid, member, context=context), False
+            return self._linked_member_partner(cursor, uid, member, context=context), False, False
         if member.get("become_member"):
             self.pool.get("res.partner").become_member(
                 cursor, uid, holder_id, context=context
             )
-            return holder_id, True
-        return False, False
+            return holder_id, True, False
+        ct_ss_member_id = self.pool.get("ir.model.data").get_object_reference(
+            cursor, uid, "som_polissa_soci", "res_partner_soci_ct"
+        )[1]
+        return ct_ss_member_id, False, True
 
     def _payment_values(self, cursor, uid, request, partner_id, temporary=False, context=None):
         if self._payment_method(request) == "card":
@@ -555,7 +558,7 @@ class SomHolderChangeRequest(osv.osv):
         address_id = self._create_holder_address(
             cursor, uid, request, partner_id, context=context
         )
-        member_partner_id, is_new_member = self._member_partner(
+        member_partner_id, is_new_member, is_ct_ss_member = self._member_partner(
             cursor, uid, request, partner_id, context=context
         )
         payment_values = self._payment_values(
@@ -582,8 +585,17 @@ class SomHolderChangeRequest(osv.osv):
             cursor, uid, request, partner_id, polissa_id, context=context
         )
         if member_partner_id:
+            values = {"soci": member_partner_id}
+            if is_ct_ss_member:
+                category_id = self.pool.get("ir.model.data").get_object_reference(
+                    cursor,
+                    uid,
+                    "som_polissa_soci",
+                    "origen_ct_sense_socia_category",
+                )[1]
+                values["category_id"] = [(4, category_id)]
             self.pool.get("giscedata.polissa").write(
-                cursor, uid, polissa_id, {"soci": member_partner_id}, context=context
+                cursor, uid, polissa_id, values, context=context
             )
         if is_new_member:
             self.pool.get("res.partner").adopt_contracts_as_member(
