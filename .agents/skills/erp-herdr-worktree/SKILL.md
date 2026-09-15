@@ -5,9 +5,9 @@ description: Creates or opens an OpenERP worktree with a Herdr companion pane wh
 
 # ERP Herdr worktree
 
-Use this only after the target worktree and branch are explicit. The main agent
-may remain in the multirepo workspace; do **not** infer the target worktree
-from its current directory.
+Use this only after the target worktree is explicit; provide a branch name only
+for `create`. The main agent may remain in the multirepo workspace; do **not**
+infer the target worktree from its current directory.
 
 ## Preconditions
 

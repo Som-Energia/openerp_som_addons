@@ -4,6 +4,7 @@ set -euo pipefail
 
 script_dir="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
 companion="$script_dir/herdr-worktree-companion.sh"
+herdr="${HERDR_BIN_PATH:-herdr}"
 
 usage() {
     cat >&2 <<EOF
@@ -20,27 +21,40 @@ worktree_root() {
     '
 }
 
+require_herdr() {
+    if [ "${HERDR_ENV:-}" != "1" ] || [ -z "${HERDR_PANE_ID:-}" ]; then
+        printf 'Run this from a Herdr-managed pane.\n' >&2
+        exit 1
+    fi
+    if ! command -v "$herdr" >/dev/null 2>&1; then
+        printf 'Herdr CLI is unavailable; create or open the worktree normally.\n' >&2
+        exit 1
+    fi
+}
+
 [ "$#" -ge 1 ] || usage
 
 case "$1" in
     open)
         [ "$#" -eq 2 ] || usage
+        require_herdr
         exec "$companion" "$2"
         ;;
     create)
         [ "$#" -eq 3 ] || usage
-        [ "${HERDR_ENV:-}" = "1" ] && [ -n "${HERDR_PANE_ID:-}" ] || {
-            printf 'Create a Herdr companion only from a Herdr-managed pane.\n' >&2
-            exit 1
-        }
+        require_herdr
 
         requested_path="$2"
         branch="$3"
-        git check-ref-format --branch "$branch" >/dev/null
+        validated_branch="$(git check-ref-format --branch "$branch")"
+        if [ "$validated_branch" != "$branch" ]; then
+            printf 'Branch must be a concrete branch name: %s\n' "$branch" >&2
+            exit 1
+        fi
 
         primary_worktree="$(worktree_root)"
         workspace="$(dirname "$primary_worktree")"
-        expected_root="$workspace/$(basename "$primary_worktree")-worktrees"
+        expected_root="$workspace/openerp_som_addons-worktrees"
         worktree="$(realpath -m "$requested_path")"
 
         case "$worktree" in
@@ -59,7 +73,8 @@ case "$1" in
         if git -C "$primary_worktree" show-ref --verify --quiet "refs/heads/$branch"; then
             git -C "$primary_worktree" worktree add "$worktree" "$branch"
         else
-            git -C "$primary_worktree" worktree add -b "$branch" "$worktree" HEAD
+            git -C "$primary_worktree" fetch origin main
+            git -C "$primary_worktree" worktree add -b "$branch" "$worktree" origin/main
         fi
 
         exec "$companion" "$worktree"
