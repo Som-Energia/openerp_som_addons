@@ -27,9 +27,6 @@ _billing_payment_methods = [
 ]
 
 WWW_DATA_FORM_HEADER = "**** DADES DEL FORMULARI ****"
-_MEMBER_FEE_PURPOSE = 'QUOTA SOCI'
-
-
 class GiscedataCrmLead(osv.OsvInherits):
     _inherit = "giscedata.crm.lead"
 
@@ -567,112 +564,22 @@ class GiscedataCrmLead(osv.OsvInherits):
         if context is None:
             context = {}
 
-        invoice_o = self.pool.get("account.invoice")
-        account_o = self.pool.get("account.account")
-        journal_o = self.pool.get("account.journal")
-        payment_type_o = self.pool.get("payment.type")
-        payment_mode_o = self.pool.get("payment.mode")
-        payment_order_o = self.pool.get("payment.order")
-        payment_line_o = self.pool.get("payment.line")
-        mandate_o = self.pool.get("payment.mandate")
-        bank_o = self.pool.get("res.partner.bank")
-        currency_o = self.pool.get("res.currency")
-        conf_o = self.pool.get("res.config")
-        ir_model_o = self.pool.get("ir.model.data")
-
         lead = self.browse(cursor, uid, crml_id, context=context)
 
         if lead.initial_invoice_id:
             raise osv.except_osv('Error', 'Ja existeix una factura de remesa inicial')
 
-        partner_id = lead.partner_id.id
-        mandate_id = mandate_o.get_or_create_payment_mandate(
-            cursor, uid, partner_id, lead.iban, _MEMBER_FEE_PURPOSE,
-            payment_type="one_payment", context=context
+        partner_o = self.pool.get("res.partner")
+        invoice_id = partner_o.create_member_fee_payment(
+            cursor,
+            uid,
+            lead.partner_id.id,
+            lead.iban,
+            lead.member_number,
+            "QUOTA-SOCIA-LEAD-{}".format(lead.id),
+            context=context,
         )
-
-        socia_fee_amount = conf_o.get(cursor, uid, "socia_member_fee_amount", "100")
-        euro_id = currency_o.search(cursor, uid, [('code', '=', 'EUR')])[0]
-        invoice_account_ids = account_o.search(
-            cursor, uid, [("code", "=", "100000000000")], context=context
-        )
-
-        # Create invoice line
-        inv_line = {
-            "name": _MEMBER_FEE_PURPOSE,
-            "account_id": invoice_account_ids[0],
-            "price_unit": socia_fee_amount,
-            "quantity": 1,
-            "uom_id": 1,
-            "company_currency_id": euro_id,
-        }
-
-        # Create invoice
-        bank_id = bank_o.search(
-            cursor, uid,
-            [("iban", "=", lead.iban), ("partner_id", "=", lead.partner_id.id)],
-            limit=1, context=context
-        )[0]
-        journal_ids = journal_o.search(
-            cursor, uid, [("code", "=", "SOCIS")], context=context
-        )
-        payment_type_id = payment_type_o.search(
-            cursor, uid, [("code", "=", "TRANSFERENCIA_CSB")], context=context
-        )[0]
-        invoice_vals = {
-            "number": "QUOTA-SOCIA-LEAD-{}".format(lead.id),
-            "partner_id": partner_id,
-            "type": "out_invoice",
-            "invoice_line": [(0, 0, inv_line)],
-            "origin_date_invoice": datetime.today().strftime("%Y-%m-%d"),
-            "date_invoice": datetime.today().strftime("%Y-%m-%d"),
-            "mandate_id": mandate_id,
-            "sii_to_send": False,
-            "account_id": invoice_account_ids[0],
-            "journal_id": journal_ids[0],
-        }
-
-        invoice_vals.update(invoice_o.onchange_partner_id(  # Get invoice default values
-            cursor, uid, [], "out_invoice", partner_id).get("value", {})
-        )
-        invoice_vals.update({"payment_type": payment_type_id})
-        invoice_vals.update({"partner_bank": bank_id})
-
-        invoice_id = invoice_o.create(cursor, uid, invoice_vals, context=context)
-        invoice_o.button_reset_taxes(cursor, uid, [invoice_id])
-
         self.write(cursor, uid, lead.id, {"initial_invoice_id": invoice_id}, context=context)
-
-        # open the invoice
-        wf_service = netsvc.LocalService("workflow")
-        wf_service.trg_validate(uid, 'account.invoice', invoice_id, 'invoice_open', cursor)
-
-        # fer un tipus de pagament especial per a la quota de soci i despres buscar una remesa
-        # oberta o crearla de nou com fa generation a get_or_create_open_payment_order
-        payment_mode_id = ir_model_o.get_object_reference(
-            cursor, uid, "som_leads_polissa", "mode_pagament_socis_factura"
-        )[1]
-        payment_mode_name = payment_mode_o.read(
-            cursor, uid, payment_mode_id, ["name"], context=context
-        )["name"]
-        payment_order_id = payment_order_o.get_or_create_open_payment_order(
-            cursor, uid, payment_mode_name, use_invoice=True, context={'type': 'receivable'}
-        )
-        invoice_o.afegeix_a_remesa(cursor, uid, [invoice_id], payment_order_id, context=context)
-
-        # set the member number as the payment line name
-        invoice = invoice_o.browse(cursor, uid, invoice_id)
-        payment_line_id = payment_line_o.search(
-            cursor, uid,
-            [
-                ("partner_id", "=", partner_id),
-                ("communication", "=", invoice.number),
-                ("order_id", "=", payment_order_id),
-            ],
-            context=context
-        )
-        payment_line_o.write(
-            cursor, uid, payment_line_id, {"name": lead.member_number}, context=context)
 
     def create(self, cursor, uid, vals, context=None):
         if context is None:
