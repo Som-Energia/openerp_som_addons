@@ -93,7 +93,8 @@ ln -s "$case_root/original" "$shared/addon_one"
 export TEST_MODE=hold TEST_READY="$case_root/ready" TEST_RELEASE="$case_root/release"
 run_wrapper --no-requirements & holder=$!
 wait_for "$TEST_READY"
-kill -TERM "$holder"
+wrapper_pid="$(sed -n 's/^pid=//p' "$state/owner")"
+kill -TERM "$wrapper_pid"
 set +e
 wait "$holder"
 code=$?

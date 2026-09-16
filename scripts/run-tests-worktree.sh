@@ -162,6 +162,7 @@ printf 'pid=%s\nworktree=%s\naddons=%s\nstarted=%s\n' \
     "$$" "$worktree" "$addons_csv" "$(date -u +%Y-%m-%dT%H:%M:%SZ)" > "$metadata"
 active=0
 runner_pid=0
+interrupted_status=0
 cleanup() {
     local status=$?
     trap - EXIT INT TERM HUP
@@ -178,11 +179,11 @@ cleanup() {
 forward_signal() {
     local signal="$1" status="$2"
     if ((runner_pid)); then
+        interrupted_status="$status"
         kill -s "$signal" "$runner_pid" 2>/dev/null || true
-        wait "$runner_pid" 2>/dev/null || true
-        runner_pid=0
+    else
+        exit "$status"
     fi
-    exit "$status"
 }
 trap cleanup EXIT
 trap 'forward_signal INT 130' INT
@@ -217,6 +218,10 @@ WORKSPACE="$workspace" "$runner" "${runner_args[@]}" &
 runner_pid=$!
 wait "$runner_pid"
 status=$?
+if ((interrupted_status)); then
+    wait "$runner_pid" 2>/dev/null || true
+    status="$interrupted_status"
+fi
 runner_pid=0
 set -e
 exit "$status"
