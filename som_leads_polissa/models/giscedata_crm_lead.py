@@ -94,6 +94,21 @@ class GiscedataCrmLead(osv.OsvInherits):
 
         return True
 
+    def process_signature_callback(self, cursor, uid, lead_id, context=None):
+        if isinstance(lead_id, (list, tuple)):
+            lead_id = lead_id[0]
+        result = super(GiscedataCrmLead, self).process_signature_callback(
+            cursor, uid, lead_id, context=context
+        )
+        lead = self.read(
+            cursor, uid, lead_id, ['crm_id', 'polissa_id', 'state'], context=context
+        )
+        if lead['polissa_id'] and lead['state'] not in ('done', 'cancel'):
+            self.pool.get('crm.case').case_close(
+                cursor, uid, [lead['crm_id'][0]]
+            )
+        return result
+
     def contract_pdf(self, cursor, uid, ids, context=None):
         if context is None:
             context = {}
