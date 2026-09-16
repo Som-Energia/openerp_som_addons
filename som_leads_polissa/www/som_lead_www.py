@@ -479,11 +479,22 @@ class SomLeadWww(osv.osv_memory):
 
                 sign_process_obj.update(tmp_cursor, uid, [signature_process[0]], context=context)
                 tmp_cursor.commit()
+                signature_status = lead_o.read(
+                    tmp_cursor, uid, lead_id, ['status_firma'], context=context
+                )['status_firma']
+                if signature_status == self._SIGNATURE_COMPLETED_STATUS:
+                    return True
+                if (
+                        signature_status in self._SIGNATURE_ERROR_STATUSES
+                        or signature_status == 'unsend'
+                ):
+                    return False
             finally:
                 tmp_cursor.close()
-            time.sleep(wait_seconds)
+            if _ < attempts - 1:
+                time.sleep(wait_seconds)
 
-        return False
+        return None
 
     def activate_lead(self, cr, uid, lead_id, context=None):
         if context is None:
@@ -505,9 +516,11 @@ class SomLeadWww(osv.osv_memory):
                        JOIN crm_case as c on c.id = l.crm_id
                        JOIN giscedata_signatura_process as sp
                            on sp.id = l.signature_process
-                       where c.state in ('open', 'pending')
+                       where c.state in ('draft', 'open', 'pending')
                        and sp.create_date >= now() - INTERVAL '15 days'
-                       and sp.status = 'completed'
+                       and sp.status not in (
+                           'unsend', 'canceled', 'expired', 'declined', 'error'
+                       )
                        order by id desc
                        FOR UPDATE OF l skip locked
                        """
@@ -538,6 +551,8 @@ class SomLeadWww(osv.osv_memory):
         ir_model_o = self.pool.get("ir.model.data")
 
         signature_allows = self._signature_allows_activation(cr, uid, lead_id, context=context)
+        if signature_allows is None:
+            return False
         payment_allows = self._payment_allows_activation(cr, uid, lead_id, context=context)
 
         logger = logging.getLogger("openerp.{0}.activate_lead".format(__name__))

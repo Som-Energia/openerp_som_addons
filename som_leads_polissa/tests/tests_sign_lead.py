@@ -173,7 +173,7 @@ class TestSignLead(testing.OOTestCase):
             self.cursor, self.uid, [1], context={}
         )
 
-    def test_retry_lead_activation_uses_recent_completed_signatures(self):
+    def test_retry_lead_activation_uses_recent_eligible_signatures(self):
         db = mock.MagicMock()
         tmp_cursor = db.cursor.return_value
         tmp_cursor.fetchall.return_value = [(10,)]
@@ -187,11 +187,46 @@ class TestSignLead(testing.OOTestCase):
                 )
 
         query = tmp_cursor.execute.call_args[0][0]
-        self.assertIn("sp.status = 'completed'", query)
+        self.assertIn("c.state in ('draft', 'open', 'pending')", query)
+        self.assertIn("'unsend', 'canceled', 'expired', 'declined', 'error'", query)
         self.assertIn('FOR UPDATE OF l skip locked', query)
         activate.assert_called_once_with(
             self.cursor, self.uid, 10, context={'attempts': 1}
         )
+
+    def test_signature_in_progress_does_not_allow_activation(self):
+        db = mock.MagicMock()
+        tmp_cursor = db.cursor.return_value
+
+        with mock.patch(
+                'som_leads_polissa.www.som_lead_www.pooler.get_db', return_value=db
+        ):
+            with mock.patch.object(
+                    self.lead_o, 'read', side_effect=[
+                        {'signature_process': [10, 'PROC'], 'status_firma': 'doing'},
+                        {'status_firma': 'doing'},
+                    ]
+            ):
+                with mock.patch.object(self.process_o, 'update') as update:
+                    result = self.www_lead_o._signature_allows_activation(
+                        self.cursor, self.uid, 10, context={'attempts': 1}
+                    )
+
+        self.assertIsNone(result)
+        update.assert_called_once_with(tmp_cursor, self.uid, [10], context={'attempts': 1})
+        tmp_cursor.close.assert_called_once()
+
+    def test_activation_skips_in_progress_signature(self):
+        with mock.patch.object(
+                self.www_lead_o, '_signature_allows_activation', return_value=None
+        ):
+            with mock.patch.object(self.lead_o, 'write') as write:
+                result = self.www_lead_o.activate_lead_sync(
+                    self.cursor, self.uid, 10, context={}
+                )
+
+        self.assertFalse(result)
+        write.assert_not_called()
 
 
 class TestActivationMailAfterSignature(testing.OOTestCase):
