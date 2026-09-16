@@ -81,15 +81,6 @@ class SomHolderChangeRequest(osv.osv):
                 cursor, uid, [request_id], values, context=context
             )
 
-    def _holder_vat(self, holder):
-        return holder_change_payload.normalize_holder_vat(holder)
-
-    def _holder_full_name(self, holder):
-        return holder_change_payload.holder_full_name(holder)
-
-    def _clean_iban(self, iban):
-        return holder_change_payload.clean_iban(iban)
-
     def _iban_country(self, cursor, uid, iban, context=None):
         country_ids = self.pool.get("res.country").search(
             cursor, uid, [("code", "=", iban[:2])], limit=1, context=context
@@ -126,10 +117,10 @@ class SomHolderChangeRequest(osv.osv):
 
     def _create_holder(self, cursor, uid, request, context=None):
         holder = request.payload["holder"]
-        vat = self._holder_vat(holder)
+        vat = holder_change_payload.normalize_holder_vat(holder)
         partner_obj = self.pool.get("res.partner")
         values = {
-            "name": self._holder_full_name(holder),
+            "name": holder_change_payload.holder_full_name(holder),
             "vat": vat,
             "lang": self._holder_language(cursor, uid, request, context=context),
         }
@@ -146,7 +137,7 @@ class SomHolderChangeRequest(osv.osv):
 
     def _create_holder_address(self, cursor, uid, request, partner_id, context=None):
         holder = request.payload["holder"]
-        iban = self._clean_iban(request.payload["payment"].get("iban", ""))
+        iban = holder_change_payload.clean_iban(request.payload["payment"].get("iban", ""))
         country_id = iban and self._iban_country(cursor, uid, iban, context=context) or False
         address_obj = self.pool.get("res.partner.address")
         address_ids = address_obj.search(
@@ -160,7 +151,7 @@ class SomHolderChangeRequest(osv.osv):
             return address_ids[0]
         values = {
             "partner_id": partner_id,
-            "name": self._holder_full_name(holder),
+            "name": holder_change_payload.holder_full_name(holder),
             "nv": holder["address"],
             "zip": holder["postal_code"],
             "id_municipi": holder["city"],
@@ -175,7 +166,7 @@ class SomHolderChangeRequest(osv.osv):
         return address_obj.create(cursor, uid, values, context=context)
 
     def _linked_member_partner(self, cursor, uid, member, context=None):
-        vat = self._holder_vat(member)
+        vat = holder_change_payload.normalize_holder_vat(member)
         member_ids = self.pool.get("somenergia.soci").search(
             cursor, uid, [("vat", "=", vat)], context=context
         )
@@ -233,7 +224,7 @@ class SomHolderChangeRequest(osv.osv):
                 "creditcard": card_id,
             }
 
-        iban = self._clean_iban(request.payload["payment"]["iban"])
+        iban = holder_change_payload.clean_iban(request.payload["payment"]["iban"])
         bank_obj = self.pool.get("res.partner.bank")
         if not bank_obj.is_iban_valid(cursor, uid, iban):
             raise osv.except_osv(_("Invalid IBAN"), _("The IBAN is invalid."))
@@ -550,9 +541,6 @@ class SomHolderChangeRequest(osv.osv):
             result["mandate_pdf"] = base64.b64encode(mandate_pdf)
         return result
 
-    def _append_observation(self, current, new):
-        return holder_change_payload.append_observation(current, new)
-
     def _apply_post_m1_effects(
         self,
         cursor,
@@ -607,11 +595,12 @@ class SomHolderChangeRequest(osv.osv):
             request.polissa_id.id,
             {
                 "no_estimable": True,
-                "observacions_estimacio": self._append_observation(
+                "observacions_estimacio": holder_change_payload.append_observation(
                     old_polissa.observacions_estimacio,
                     "\n(webforms)[{}] Canvi de titular".format(timestamp),
                 ),
-                "observacions": self._append_observation(old_polissa.observacions, observation),
+                "observacions": holder_change_payload.append_observation(
+                    old_polissa.observacions, observation),
             },
             context=context,
         )
@@ -623,7 +612,7 @@ class SomHolderChangeRequest(osv.osv):
             switching_id,
             {
                 "state": "draft" if request.owner_change_type == "S" else "open",
-                "user_observations": self._append_observation(
+                "user_observations": holder_change_payload.append_observation(
                     switching.user_observations, payload
                 ),
             },
