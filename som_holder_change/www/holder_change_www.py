@@ -10,9 +10,9 @@ from oorq.decorators import job
 from service.security import Sudo
 from tools.translate import _
 
+from . import holder_change_validation
 
 CUPS_RE = re.compile(r"^ES[0-9]{16}[A-Z]{2}(?:[0-9][A-Z])?$")
-LEGAL_PERSON_PREFIXES = set("ABCDEFGHJNPQRSUVW")
 ACTIVE_REQUEST_STATES = (
     "received", "awaiting_payment", "awaiting_signature", "queued",
 )
@@ -26,135 +26,8 @@ class SomHolderChangeWww(osv.osv_memory):
     def _error(self, code, message):
         return {"success": False, "code": code, "error": message}
 
-    def _missing_fields(self, values, fields_to_check):
-        return [field for field in fields_to_check if field not in values]
-
-    def _validate_base_payload(self, payload):
-        if not isinstance(payload, dict):
-            return self._error("INVALID_PAYLOAD", _("The payload must be an object."))
-
-        sections = ["payment", "supply_point", "member", "especial_cases", "holder"]
-        missing = self._missing_fields(payload, sections)
-        if missing:
-            return self._error(
-                "MISSING_REQUIRED_FIELDS",
-                _("Missing required fields: {}.").format(", ".join(missing)),
-            )
-
-        if not payload.get("privacy_policy_accepted") or not payload.get("terms_accepted"):
-            return self._error(
-                "CONSENT_REQUIRED",
-                _("Privacy and contractual consent are required."),
-            )
-
-        payment_method = payload.get("payment_method")
-        if payment_method not in ("bank", "card"):
-            return self._error("INVALID_PAYMENT_METHOD", _("Payment method must be bank or card."))
-        if payment_method == "bank" and not payload["payment"].get("sepa_accepted"):
-            return self._error("CONSENT_REQUIRED", _("SEPA consent is required for bank payment."))
-        return False
-
-    def _validate_required_fields(self, payload):
-        payment_method = payload["payment_method"]
-        required = {
-            "supply_point": ["cups", "address"],
-            "member": ["invite_token", "become_member", "link_member"],
-            "especial_cases": ["reason_death", "reason_merge", "reason_electrodep"],
-            "holder": [
-                "name", "vat", "address", "postal_code", "state", "city",
-                "email", "phone1", "language",
-            ],
-        }
-        required["payment"] = ["voluntary_cent"]
-        if payment_method == "bank":
-            required["payment"].extend(["iban", "sepa_accepted"])
-        for section, fields_to_check in required.items():
-            missing = self._missing_fields(payload[section], fields_to_check)
-            if missing:
-                return self._error(
-                    "MISSING_REQUIRED_FIELDS",
-                    _("Missing {} fields: {}.").format(section, ", ".join(missing)),
-                )
-        return False
-
-    def _validate_holder(self, payload):
-        holder = payload["holder"]
-        vat = self._normalize_vat(holder.get("vat"))
-        if not vat:
-            return self._error("INVALID_VAT", _("The holder VAT is invalid."))
-        is_legal_person = vat[0] in LEGAL_PERSON_PREFIXES
-        person_fields = ["proxyname", "proxynif"] if is_legal_person else ["surname1"]
-        missing = self._missing_fields(holder, person_fields)
-        if missing:
-            return self._error(
-                "MISSING_REQUIRED_FIELDS",
-                _("Missing holder fields: {}.").format(", ".join(missing)),
-            )
-        return False
-
-    def _validate_member(self, payload):
-        member = payload["member"]
-        if member.get("become_member") and member.get("link_member"):
-            return self._error(
-                "INVALID_MEMBER_SELECTION",
-                _("The holder cannot become a member and link another member."),
-            )
-        if member.get("link_member"):
-            missing = self._missing_fields(member, ["vat", "number"])
-            if missing:
-                return self._error(
-                    "MISSING_REQUIRED_FIELDS",
-                    _("Missing member fields: {}.").format(", ".join(missing)),
-                )
-        return False
-
-    def _validate_special_case(self, payload):
-        cases = payload["especial_cases"]
-        attachments = cases.get("attachments", {})
-        required_attachment = False
-        if cases.get("reason_death"):
-            required_attachment = "death"
-        elif cases.get("reason_merge"):
-            required_attachment = "merge"
-        elif cases.get("reason_electrodep"):
-            required_attachment = "medical"
-        attachment_categories = {
-            "death": "holder_change_death",
-            "merge": "holder_change_merge",
-            "medical": "holder_change_medical",
-        }
-        special_attachments = payload.get("attachments", [])
-        has_attachment = not required_attachment or attachments.get(required_attachment) or any(
-            attachment.get("category") == attachment_categories[required_attachment]
-            for attachment in special_attachments
-        )
-        if required_attachment and not has_attachment:
-            return self._error(
-                "MISSING_REQUIRED_FIELDS",
-                _("The {} attachment is required.").format(required_attachment),
-            )
-        if required_attachment and special_attachments and any(
-            attachment.get("category") != attachment_categories[required_attachment]
-            for attachment in special_attachments
-        ):
-            return self._error(
-                "INVALID_ATTACHMENT_CATEGORY",
-                _("The attachment category does not match the special case."),
-            )
-        return False
-
     def _validate_payload(self, payload):
-        for validator in (
-            self._validate_base_payload,
-            self._validate_required_fields,
-            self._validate_holder,
-            self._validate_member,
-            self._validate_special_case,
-        ):
-            error = validator(payload)
-            if error:
-                return error
-        return False
+        return holder_change_validation.validate_payload(payload, self._error)
 
     def _normalize_cups(self, cups):
         return (cups or "").replace(" ", "").upper()
