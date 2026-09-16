@@ -1,3 +1,7 @@
+from __future__ import absolute_import
+
+from datetime import datetime
+
 from destral import testing
 from destral.transaction import Transaction
 import mock
@@ -24,6 +28,33 @@ class TestGisceDataCups(testing.OOTestCase):
     def get_ref(self, module, ref):
         IrModel = self.model("ir.model.data")
         return IrModel._get_obj(self.cursor, self.uid, module, ref).id
+
+    def test_get_draft_polissa_ids_older_than(self):
+        reference_date = datetime(2025, 4, 10, 12, 0, 0)
+        with mock.patch.object(self.pol_obj, "search", return_value=[1, 2]) as search:
+            polissa_ids = self.pol_obj._get_draft_polissa_ids_older_than(
+                self.cursor, self.uid, reference_date
+            )
+
+        self.assertEqual(polissa_ids, [1, 2])
+        search.assert_called_once_with(
+            self.cursor,
+            self.uid,
+            [
+                ("state", "=", "esborrany"),
+                ("create_date", "<", "2025-04-10 12:00:00"),
+            ],
+            context=None,
+        )
+
+    def test_cron_cancel_draft_polisses(self):
+        with mock.patch.object(
+            self.pol_obj, "_get_draft_polissa_ids_older_than", return_value=[1, 2]
+        ) as get_draft_polissa_ids, mock.patch.object(self.pol_obj, "send_signal") as send_signal:
+            self.assertTrue(self.pol_obj._cron_cancel_draft_polisses(self.cursor, self.uid))
+
+        self.assertTrue(get_draft_polissa_ids.called)
+        send_signal.assert_called_once_with(self.cursor, self.uid, [1, 2], "cancelar")
 
     @mock.patch(
         "giscedata_facturacio_comer.giscedata_facturacio_report_v2.GiscedataFacturacioFacturaReportV2.get_grafica_historic_consum_14_mesos"  # noqa: E501
