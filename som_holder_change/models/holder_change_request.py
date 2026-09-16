@@ -306,17 +306,22 @@ class SomHolderChangeRequest(osv.osv):
             values["new_contract"] = request.polissa_id.id
         return values
 
-    def _run_m1(self, cursor, uid, request, partner_id, address_id, payment_values, context=None):
-        m1_payment_values = payment_values.copy()
-        is_card_payment = bool(m1_payment_values.pop("creditcard", None))
+    def _m1_payment_values(self, request, payment_values):
+        values = payment_values.copy()
+        is_card_payment = bool(values.pop("creditcard", None))
         if is_card_payment:
-            # M1 cannot create a recurrent-card contract because it validates the
-            # payment before the card can be assigned to the copied contract.
-            m1_payment_values.update({
+            # M1 cannot validate the recurrent card before the copied contract exists.
+            values.update({
                 "bank": request.polissa_id.bank.id,
                 "payment_mode_id": request.polissa_id.payment_mode_id.id,
                 "tipo_pago": request.polissa_id.tipo_pago.id,
             })
+        return values, is_card_payment
+
+    def _run_m1(self, cursor, uid, request, partner_id, address_id, payment_values, context=None):
+        m1_payment_values, is_card_payment = self._m1_payment_values(
+            request, payment_values
+        )
         values = self._m1_values(
             cursor, uid, request, partner_id, address_id, m1_payment_values, context=context
         )
@@ -416,47 +421,13 @@ class SomHolderChangeRequest(osv.osv):
         context=None,
     ):
         cases = request.payload["especial_cases"]
-        category_code = False
-        description = False
+        category_code, description = holder_change_payload.special_case_document_spec(cases)
         target_model = "giscedata.polissa"
         target_id = polissa_id
-        if cases.get("reason_death"):
-            category_code = "holder_change_death"
-            description = "Certificat defunció"
-        elif cases.get("reason_merge"):
-            category_code = "holder_change_merge"
-            description = "Certificat fusió"
-        elif cases.get("reason_electrodep"):
-            category_code = "holder_change_medical"
-            description = "Justificant mèdic"
-            category_id = self.pool.get("ir.model.data").get_object_reference(
-                cursor,
-                uid,
-                "som_documents_sensibles",
-                "documents_sensibles_category_electrodependent",
-            )[1]
-            document_obj = self.pool.get("som.documents.sensibles")
-            document_ids = document_obj.search(
-                cursor, uid, [("partner_id", "=", partner_id)], context=context
+        if cases.get("reason_electrodep"):
+            target_id = self._get_or_create_electrodependency_document(
+                cursor, uid, partner_id, polissa_id, context=context
             )
-            if document_ids:
-                target_id = document_ids[0]
-            else:
-                today = datetime.today().strftime("%Y-%m-%d")
-                target_id = document_obj.create(
-                    cursor,
-                    uid,
-                    {
-                        "name": self.pool.get("giscedata.polissa").read(
-                            cursor, uid, polissa_id, ["name"], context=context
-                        )["name"],
-                        "data_recepcio": today,
-                        "darrera_data_valida": today,
-                        "partner_id": partner_id,
-                        "categoria": category_id,
-                    },
-                    context=context,
-                )
             target_model = "som.documents.sensibles"
             self.pool.get("giscedata.polissa").write(
                 cursor,
@@ -470,6 +441,59 @@ class SomHolderChangeRequest(osv.osv):
         if not category_code:
             return
 
+        self._copy_special_case_attachments(
+            cursor,
+            uid,
+            request,
+            category_code,
+            description,
+            target_model,
+            target_id,
+            context=context,
+        )
+
+    def _get_or_create_electrodependency_document(
+        self, cursor, uid, partner_id, polissa_id, context=None
+    ):
+        category_id = self.pool.get("ir.model.data").get_object_reference(
+            cursor,
+            uid,
+            "som_documents_sensibles",
+            "documents_sensibles_category_electrodependent",
+        )[1]
+        document_obj = self.pool.get("som.documents.sensibles")
+        document_ids = document_obj.search(
+            cursor, uid, [("partner_id", "=", partner_id)], context=context
+        )
+        if document_ids:
+            return document_ids[0]
+        today = datetime.today().strftime("%Y-%m-%d")
+        return document_obj.create(
+            cursor,
+            uid,
+            {
+                "name": self.pool.get("giscedata.polissa").read(
+                    cursor, uid, polissa_id, ["name"], context=context
+                )["name"],
+                "data_recepcio": today,
+                "darrera_data_valida": today,
+                "partner_id": partner_id,
+                "categoria": category_id,
+            },
+            context=context,
+        )
+
+    def _copy_special_case_attachments(
+        self,
+        cursor,
+        uid,
+        request,
+        category_code,
+        description,
+        target_model,
+        target_id,
+        context=None,
+    ):
         attachment_obj = self.pool.get("ir.attachment")
         attachment_ids = attachment_obj.search(
             cursor,
@@ -783,6 +807,20 @@ class SomHolderChangeRequest(osv.osv):
         self._reserve_references(cursor, uid, request_id, context=context)
         # The isolated simulation cursor must see the stable reserved references.
         cursor.commit()
+        reports = self._simulate_holder_change(cursor, uid, request_id, context=context)
+        request = self.browse(cursor, uid, request_id, context=context)
+        state = "awaiting_payment" if self._payment_method(
+            request) == "card" and not request.creditcard_token else "awaiting_signature"
+        super(SomHolderChangeRequest, self).write(
+            cursor,
+            uid,
+            [request_id],
+            dict(reports, state=state, error_code=False, error_message=False),
+            context=context,
+        )
+        return True
+
+    def _simulate_holder_change(self, cursor, uid, request_id, context=None):
         request = self.browse(cursor, uid, request_id, context=context)
         temporary_cursor = pooler.get_db(cursor.dbname).cursor()
         temporary_context = (context or {}).copy()
@@ -802,17 +840,7 @@ class SomHolderChangeRequest(osv.osv):
         finally:
             temporary_cursor.rollback()
             temporary_cursor.close()
-
-        state = "awaiting_payment" if self._payment_method(
-            request) == "card" and not request.creditcard_token else "awaiting_signature"
-        super(SomHolderChangeRequest, self).write(
-            cursor,
-            uid,
-            [request_id],
-            dict(reports, state=state, error_code=False, error_message=False),
-            context=context,
-        )
-        return True
+        return reports
 
     def set_card_data(self, cursor, uid, request_id, card_values, context=None):
         request_id = self._one_id(request_id)
