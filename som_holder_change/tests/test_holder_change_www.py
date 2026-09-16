@@ -13,6 +13,18 @@ class TestHolderChangeWww(testing.OOTestCase):
     _local_service = (
         "som_holder_change.models.holder_change_request.netsvc.LocalService"
     )
+    _subscribe_member = (
+        "som_polissa_soci.models.res_partner_address."
+        "ResPartnerAddress.subscribe_partner_in_members_lists"
+    )
+    _unsubscribe_customer = (
+        "som_polissa_soci.models.res_partner_address."
+        "ResPartnerAddress.unsubscribe_partner_in_customers_no_members_lists"
+    )
+    _subscribe_customer = (
+        "som_polissa_soci.models.res_partner_address."
+        "ResPartnerAddress.subscribe_partner_in_customers_no_members_lists"
+    )
 
     def setUp(self):
         self.txn = Transaction().start(self.database)
@@ -45,6 +57,9 @@ class TestHolderChangeWww(testing.OOTestCase):
             (b"%PDF-mandate", "pdf"),
         ]
         self.send_mail = mock.patch.object(self.request_obj, "_send_mail").start()
+        self.subscribe_member = mock.patch(self._subscribe_member).start()
+        self.unsubscribe_customer = mock.patch(self._unsubscribe_customer).start()
+        self.subscribe_customer = mock.patch(self._subscribe_customer).start()
 
     def tearDown(self):
         mock.patch.stopall()
