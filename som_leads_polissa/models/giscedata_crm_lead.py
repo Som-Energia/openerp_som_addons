@@ -27,6 +27,8 @@ _billing_payment_methods = [
 ]
 
 WWW_DATA_FORM_HEADER = "**** DADES DEL FORMULARI ****"
+
+
 class GiscedataCrmLead(osv.OsvInherits):
     _inherit = "giscedata.crm.lead"
 
