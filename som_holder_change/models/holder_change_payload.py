@@ -3,6 +3,11 @@ from __future__ import absolute_import, unicode_literals
 
 
 INDIVIDUAL_VAT_PREFIXES = "0123456789KLMXYZ"
+SPECIAL_CASE_DOCUMENT_SPECS = (
+    ("reason_death", "holder_change_death", "Certificat defunció"),
+    ("reason_merge", "holder_change_merge", "Certificat fusió"),
+    ("reason_electrodep", "holder_change_medical", "Justificant mèdic"),
+)
 
 
 def normalize_holder_vat(holder):
@@ -32,3 +37,10 @@ def append_observation(current, new):
     if normalized and normalized in "".join((current or "").split()):
         return current
     return "{}\n{}".format(new, current or "")
+
+
+def special_case_document_spec(cases):
+    for reason, category_code, description in SPECIAL_CASE_DOCUMENT_SPECS:
+        if cases.get(reason):
+            return category_code, description
+    return False, False
