@@ -410,6 +410,15 @@
             <field name="port">22</field>
             <field name="user_ultima_modificacio" ref="base.user_admin"/>
         </record>
+        <record model="som.crawlers.config" id="serosense_ftp_conf">
+            <field name="name">serosense_ftp</field>
+            <field name="crawler">Selenium</field>
+            <field name="days_of_margin">5</field>
+            <field name="pending_files_only" eval="False"/>
+            <field name="browser">chrome</field>
+            <field name="port">22</field>
+            <field name="user_ultima_modificacio" ref="base.user_admin"/>
+        </record>
         <record model="som.crawlers.config" id="registregeneral_conf">
             <field name="name">registregeneral</field>
             <field name="crawler">Selenium</field>
