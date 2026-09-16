@@ -71,7 +71,8 @@ Current verification: `.github/workflows/pull_request_labeler.yml` requires at l
 ### erp-test
 - Requisits: virtualenv activat, `WORKSPACE` definit i Docker amb PostgreSQL, MongoDB i Redis
 - Verificar `$WORKSPACE/erp`, `$WORKSPACE/destral` i `$WORKSPACE/openerp_som_addons/docker-compose.yaml`
-- Command: `scripts/run-tests.sh <database> -m <module_name>`
+- En worktrees, wrapper obligatori: `scripts/run-tests-worktree.sh --addon <module_name> -- <database> --no-requirements -m <module_name>`
+- No executar `run-tests.sh` directament ni modificar manualment els symlinks compartits
 - Compose: `docker compose -f "$WORKSPACE/openerp_som_addons/docker-compose.yaml"`; serveis `postgres`, `mongo`, `redis`
 
 ### erp-start
