@@ -44,6 +44,7 @@ class TestHolderChangeWww(testing.OOTestCase):
             (b"%PDF-contract", "pdf"),
             (b"%PDF-mandate", "pdf"),
         ]
+        self.send_mail = mock.patch.object(self.request_obj, "_send_mail").start()
 
     def tearDown(self):
         mock.patch.stopall()
@@ -355,6 +356,16 @@ class TestHolderChangeWww(testing.OOTestCase):
         self.assertEqual(
             request["result_polissa_id"][0], first_result["result_polissa_id"]
         )
+        self.assertEqual(self.send_mail.call_count, 3)
+        self.assertEqual(self.send_mail.call_args_list[0][0][2:4], (
+            "giscedata_switching", "notification_atr_M1_01"
+        ))
+        self.assertEqual(self.send_mail.call_args_list[1][0][2:4], (
+            "som_switching", "email_validacio_dades_canvi_titular"
+        ))
+        self.assertEqual(self.send_mail.call_args_list[2][0][2:4], (
+            "som_polissa_soci", "nou_soci_mail_webforms"
+        ))
         switching = self.openerp.pool.get("giscedata.switching").browse(
             self.cursor, self.uid, first_result["switching_id"]
         )
@@ -402,6 +413,9 @@ class TestHolderChangeWww(testing.OOTestCase):
         self.assertEqual(switching.state, "draft")
         self.assertEqual(switching.get_pas().sollicitudadm, "S")
         self.assertEqual(switching.get_pas().canvi_titular, "S")
+        self.assertEqual(self.send_mail.call_args_list[0][0][2:4], (
+            "som_polissa_condicions_generals", "notification_atr_M1_01_SS"
+        ))
 
     def test_execute_uses_new_holder_language_and_address(self):
         payload = self.payload()
