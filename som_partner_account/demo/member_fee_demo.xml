@@ -2,7 +2,7 @@
 <openerp>
     <data noupdate="1">
         <record id="mandatory_social_capital" model="account.account">
-            <field name="name">Demo: Mandatory Social Capital</field>
+            <field name="name">Demo: Das Kapital Social Obligatòri</field>
             <field name="code">100000000000</field>
             <field name="type">other</field>
             <field name="parent_id" model="account.account" search="[('code','=','100')]"/>
@@ -10,7 +10,7 @@
             <field name="user_type" ref="l10n_chart_ES.capital"/>
         </record>
         <record id="member_cash" model="account.account">
-            <field name="name">Demo: Member Cash</field>
+            <field name="name">Demo: Caixa Socis</field>
             <field name="code">555000000003</field>
             <field name="type">other</field>
             <field name="parent_id" model="account.account" search="[('code','=','555')]"/>
@@ -18,7 +18,7 @@
             <field name="user_type" ref="l10n_chart_ES.financieras"/>
         </record>
         <record id="other_loss_current_management" model="account.account">
-            <field name="name">Demo: Other Losses in Current Management</field>
+            <field name="name">Demo: Otras pérdidas en gestión corriente</field>
             <field name="code">659000000000</field>
             <field name="type">other</field>
             <field name="parent_id" model="account.account" search="[('code','=','659')]"/>
