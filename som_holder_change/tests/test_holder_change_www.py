@@ -771,6 +771,67 @@ class TestHolderChangeWww(testing.OOTestCase):
             category_id,
         )
 
+    def test_execute_ignores_sensitive_documents_of_other_categories(self):
+        payload = self.payload()
+        payload["holder"]["vat"] = "24681357B"
+        payload["especial_cases"].update({"reason_electrodep": True})
+        payload["attachments"] = [{
+            "filename": "medical-certificate.pdf",
+            "category": "holder_change_medical",
+            "datas": "JVBERi0xLjQ=",
+        }]
+        partner_obj = self.openerp.pool.get("res.partner")
+        partner_ids = partner_obj.search(
+            self.cursor, self.uid,
+            [("vat", "=", "ES" + payload["holder"]["vat"])],
+        )
+        partner_id = partner_ids[0] if partner_ids else partner_obj.create(
+            self.cursor,
+            self.uid,
+            {"name": "Holder with other document", "vat": "ES" + payload["holder"]["vat"]},
+        )
+        document_obj = self.openerp.pool.get("som.documents.sensibles")
+        other_category_id = self.imd_obj.get_object_reference(
+            self.cursor,
+            self.uid,
+            "som_documents_sensibles",
+            "documents_sensibles_category_other",
+        )[1]
+        other_document_ids = document_obj.search(
+            self.cursor,
+            self.uid,
+            [("partner_id", "=", partner_id), ("categoria", "=", other_category_id)],
+        )
+        if not other_document_ids:
+            document_obj.create(
+                self.cursor,
+                self.uid,
+                {
+                    "name": "Other sensitive document",
+                    "data_recepcio": "2020-01-01",
+                    "darrera_data_valida": "2020-01-01",
+                    "partner_id": partner_id,
+                    "categoria": other_category_id,
+                },
+            )
+
+        result = self.www_obj.create_request(self.cursor, self.uid, payload)
+        self.queue_request(result["request_id"])
+        self.request_obj.execute(self.cursor, self.uid, result["request_id"])
+
+        electro_category_id = self.imd_obj.get_object_reference(
+            self.cursor,
+            self.uid,
+            "som_documents_sensibles",
+            "documents_sensibles_category_electrodependent",
+        )[1]
+        electro_document_ids = document_obj.search(
+            self.cursor,
+            self.uid,
+            [("partner_id", "=", partner_id), ("categoria", "=", electro_category_id)],
+        )
+        self.assertEqual(len(electro_document_ids), 1)
+
     def test_create_request_returns_internal_request_id(self):
         first = self.www_obj.create_request(
             self.cursor, self.uid, self.payload()
