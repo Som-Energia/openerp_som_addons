@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+from __future__ import absolute_import
+
 import requests
 from requests.auth import HTTPBasicAuth
 
@@ -13,6 +15,19 @@ DOWNLOAD_REQUEST_TIMEOUT = 120
 class Cide(BaseApiDownloader):
     name = 'cide'
     cod_portal = '0023'
+
+    def __init__(self, config, retailer_cdos=None):
+        if not retailer_cdos:
+            raise CrawlingProcessException(
+                "Falta configurar 'cide_retailer_cdos' a res.config"
+            )
+        self.retailer_cdos = retailer_cdos
+        super(Cide, self).__init__(config)
+
+    def with_retailer_cdos(self, params):
+        params = dict(params)
+        params["retailer_cdos"] = self.retailer_cdos
+        return params
 
     def login(self):
         token_url = self.config.url_portal + "/token"
@@ -59,5 +74,5 @@ class Cide(BaseApiDownloader):
         raise NotImplementedError("Subclasses must implement download_files()")
 
 
-def instance(_config):
-    return Cide(_config)
+def instance(_config, **kwargs):
+    return Cide(_config, **kwargs)

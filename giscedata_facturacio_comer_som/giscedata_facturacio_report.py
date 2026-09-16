@@ -1319,12 +1319,18 @@ class GiscedataFacturacioFacturaReport(osv.osv):
             masked_number[index:index + 4] for index in range(0, 16, 4)
         ])
 
-    def get_recurrent_card_payment_data(self, fact, pol):
+    def get_recurrent_card_payment_data(self, fact):
         is_recurrent_card_payment = bool(
             getattr(fact, "is_recurrent_card_payment", False)
         )
         masked_card_number = u""
         if is_recurrent_card_payment:
+            pol_obj = self.pool.get("giscedata.polissa")
+            invoice_date = fact.date_invoice or datetime.today().strftime("%Y-%m-%d")
+            pol = pol_obj.browse(
+                self.cursor, self.uid, fact.polissa_id.id,
+                context={"date": invoice_date}
+            )
             card = getattr(pol, "creditcard", False)
             if card:
                 masked_card_number = self.get_masked_card_number(
@@ -2636,7 +2642,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
         cc_name = _(u"")
         bank_name = _(u"")
         is_recurrent_card_payment, masked_card_number = (
-            self.get_recurrent_card_payment_data(fact, pol)
+            self.get_recurrent_card_payment_data(fact)
         )
         if not is_recurrent_card_payment and pol.tipo_pago.code != "TRANSFERENCIA_CSB":
             if fact.partner_bank:

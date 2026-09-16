@@ -138,6 +138,41 @@ class TestLeadWwwCreation(BaseSomLeadWwwTest):
         self.mock_subscribe_member.assert_called()
         self.mock_unsubscribe_customer.assert_called()
 
+    def test_signature_callback_closes_pending_lead_with_contract(self):
+        www_lead_o = self.get_model("som.lead.www")
+        lead_o = self.get_model("giscedata.crm.lead")
+        result = www_lead_o.create_lead(self.cursor, self.uid, self._basic_values)
+        lead_id = result["lead_id"]
+
+        www_lead_o.activate_lead_sync(self.cursor, self.uid, lead_id)
+        lead_o.write(self.cursor, self.uid, lead_id, {'state': 'pending'})
+
+        lead_o.process_signature_callback(self.cursor, self.uid, lead_id)
+
+        lead = lead_o.browse(self.cursor, self.uid, lead_id)
+        self.assertTrue(lead.polissa_id)
+        self.assertEqual(lead.crm_id.state, 'done')
+
+    def test_activation_closes_pending_lead_with_contract(self):
+        www_lead_o = self.get_model("som.lead.www")
+        lead_o = self.get_model("giscedata.crm.lead")
+        result = www_lead_o.create_lead(self.cursor, self.uid, self._basic_values)
+        lead_id = result["lead_id"]
+
+        www_lead_o.activate_lead_sync(self.cursor, self.uid, lead_id)
+        lead_o.write(self.cursor, self.uid, lead_id, {'state': 'pending'})
+
+        with mock.patch.object(lead_o, 'create_entities') as create_entities:
+            activation_result = www_lead_o.activate_lead_sync(
+                self.cursor, self.uid, lead_id
+            )
+
+        lead = lead_o.browse(self.cursor, self.uid, lead_id)
+        self.assertTrue(activation_result)
+        self.assertTrue(lead.polissa_id)
+        self.assertEqual(lead.crm_id.state, 'done')
+        create_entities.assert_not_called()
+
     def test_create_simple_domestic_lead_indexada(self):
         www_lead_o = self.get_model("som.lead.www")
         lead_o = self.get_model("giscedata.crm.lead")

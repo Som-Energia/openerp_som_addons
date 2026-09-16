@@ -63,21 +63,24 @@ Current verification: `.github/workflows/pull_request_labeler.yml` requires at l
 - Flags requerits: `--base main --assignee "@me" --label "<label>"`
 
 ### erp-herdr-worktree
-- Requereix un worktree Git existent i una sessió dins de Herdr (`HERDR_ENV=1`); mai crea worktrees.
-- El worktree objectiu és explícit: no l'infereixis del `cwd` de l'agent, que pot ser el workspace multirepo.
-- Executa `scripts/herdr-worktree-companion.sh <path-absolut-worktree>` des del directori de la skill abans d'editar o fer tests.
+- Requereix una sessió dins de Herdr (`HERDR_ENV=1`) i un worktree objectiu explícit; no l'infereixis del `cwd` de l'agent, que pot ser el workspace multirepo.
+- Amb aprovació prèvia per crear-lo, executa `scripts/erp-herdr-worktree.sh create <path-absolut-worktree> <nom-branca>` des del directori de la skill.
+- Per un worktree existent, executa `scripts/erp-herdr-worktree.sh open <path-absolut-worktree>` abans d'editar o fer tests.
 - El companion és només un shell auxiliar; no iniciïs tests ni modifiquis enllaços compartits automàticament.
 
 ### erp-test
-- Requisits: Virtualenv activat + Docker (PostgreSQL, MongoDB, Redis)
-- Command: `scripts/run-tests.sh <database> -m <module_name>`
-- Contenidors esperats: src_db_1, src_mongo_1, src_redis_1
+- Requisits: virtualenv activat, `WORKSPACE` definit i Docker amb PostgreSQL, MongoDB i Redis
+- Verificar `$WORKSPACE/erp`, `$WORKSPACE/destral` i `$WORKSPACE/openerp_som_addons/docker-compose.yaml`
+- En worktrees, wrapper obligatori: `scripts/run-tests-worktree.sh --addon <module_name> -- <database> --no-requirements -m <module_name>`
+- No executar `run-tests.sh` directament ni modificar manualment els symlinks compartits
+- Compose: `docker compose -f "$WORKSPACE/openerp_som_addons/docker-compose.yaml"`; serveis `postgres`, `mongo`, `redis`
 
 ### erp-start
-- Requisits: Virtualenv activat + Docker (PostgreSQL, MongoDB, Redis)
-- Command: `erpserver -d <database>`
-- Full path: `/home/oriol/somenergia/src/erp/server/bin/openerp-server.py --no-netrpc --price_accuracy=6 --config=$HOME/conf/erp.conf -d <database>`
-- Opcions: --update=<module> per actualitzar mòdul, --run-scripts=<module> per migracions
+- Requisits: virtualenv activat, `WORKSPACE` definit i Docker amb PostgreSQL, MongoDB i Redis
+- Command: `$WORKSPACE/erp/server/bin/openerp-server.py --no-netrpc --price_accuracy=6 --config=$HOME/conf/erp.conf -d <database>`
+- `erpserver` només es pot utilitzar si `command -v erpserver` té èxit
+- Opcions: `--update=<module>` per actualitzar mòdul, `--run-scripts=<module>` per migracions
+- Compose: `docker compose -f "$WORKSPACE/openerp_som_addons/docker-compose.yaml"`; serveis `postgres`, `mongo`, `redis`
 - Interfície: http://localhost:8069
 
 ### erp-migration
