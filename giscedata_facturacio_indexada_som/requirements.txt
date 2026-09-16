@@ -1,0 +1,2 @@
+esios>=0.12.5
+libFacturacioATR>=8.1.0
