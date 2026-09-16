@@ -1,6 +1,6 @@
 <?xml version="1.0" ?>
 <openerp>
-    <data>
+    <data noupdate="1">
         <record id="mandatory_social_capital" model="account.account">
             <field name="name">Demo: Mandatory Social Capital</field>
             <field name="code">100000000000</field>
@@ -28,6 +28,7 @@
         <record model="account.journal" id="member_fee_journal">
             <field name="default_credit_account_id" model="account.account" search="[('code','=','555000000003')]"/>
             <field name="default_debit_account_id" model="account.account" search="[('code','=','555000000003')]"/>
+            <field name="property_writeoff_account_id" model="account.account" search="[('code','=','659000000000')]"/>
         </record>
     </data>
 </openerp>

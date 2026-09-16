@@ -260,6 +260,8 @@ class ResPartner(osv.osv):
         if context is None:
             context = {}
 
+        iban = iban.replace(" ", "")
+
         invoice_o = self.pool.get("account.invoice")
         account_o = self.pool.get("account.account")
         journal_o = self.pool.get("account.journal")
@@ -280,32 +282,14 @@ class ResPartner(osv.osv):
             cursor, uid, payment_mode_id, ["name", "sepa_creditor_code"], context=context
         )
 
-        partner = self.read(cursor, uid, partner_id, ["vat"], context=context)
-        mandate_ids = mandate_o.search(
+        mandate_id = mandate_o.get_or_create_payment_mandate(
             cursor,
             uid,
-            [
-                ("debtor_iban", "=", iban),
-                ("debtor_vat", "=", partner["vat"]),
-                ("date_end", "=", False),
-                ("reference", "=", "res.partner,{}".format(partner_id)),
-                ("notes", "=", MEMBER_FEE_PURPOSE),
-            ],
-            context=context,
-        )
-        mandate_id = mandate_ids and mandate_ids[0] or mandate_o.create(
-            cursor,
-            uid,
-            {
-                "date": datetime.datetime.today().strftime("%Y-%m-%d"),
-                "reference": "res.partner,{}".format(partner_id),
-                "mandate_scheme": "core",
-                "signed": 1,
-                "debtor_iban": iban.replace(" ", ""),
-                "payment_type": "one_payment",
-                "notes": MEMBER_FEE_PURPOSE,
-                "creditor_code": payment_mode["sepa_creditor_code"],
-            },
+            partner_id,
+            iban,
+            MEMBER_FEE_PURPOSE,
+            creditor_code=payment_mode["sepa_creditor_code"],
+            payment_type="one_payment",
             context=context,
         )
         socia_fee_amount = conf_o.get(cursor, uid, "socia_member_fee_amount", "100")

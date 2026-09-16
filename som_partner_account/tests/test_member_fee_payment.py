@@ -26,15 +26,17 @@ class TestMemberFeePayment(testing.OOTestCase):
         self.partner_id = self.imd_o.get_object_reference(
             self.cursor, self.uid, "base", "res_partner_c2c"
         )[1]
-        self.iban = "ES7712341234161234567890"
-        self.request_link_o.create(self.cursor, self.uid, {
-            "name": "Partner",
-            "object": "res.partner",
-        })
-        payment_mode_id = self._create_member_fee_configuration()
+        self.iban = "ES77 1234 1234 1612 3456 7890"
+        if not self.request_link_o.search(
+                self.cursor, self.uid, [("object", "=", "res.partner")]):
+            self.request_link_o.create(self.cursor, self.uid, {
+                "name": "Partner",
+                "object": "res.partner",
+            })
+        self._create_member_fee_configuration()
         self.bank_o.create(self.cursor, self.uid, {
             "partner_id": self.partner_id,
-            "iban": self.iban,
+            "iban": self.iban.replace(" ", ""),
             "state": "iban",
         })
 
@@ -45,13 +47,17 @@ class TestMemberFeePayment(testing.OOTestCase):
         capital_type_id = self.imd_o.get_object_reference(
             self.cursor, self.uid, "l10n_chart_ES", "capital"
         )[1]
-        self.account_o.create(self.cursor, self.uid, {
-            "name": "Mandatory social capital",
-            "code": "100000000000",
-            "type": "other",
-            "parent_id": capital_parent_id,
-            "user_type": capital_type_id,
-        })
+        capital_account_ids = self.account_o.search(
+            self.cursor, self.uid, [("code", "=", "100000000000")]
+        )
+        if not capital_account_ids:
+            self.account_o.create(self.cursor, self.uid, {
+                "name": "Mandatory social capital",
+                "code": "100000000000",
+                "type": "other",
+                "parent_id": capital_parent_id,
+                "user_type": capital_type_id,
+            })
         journal_view_id = self.imd_o.get_object_reference(
             self.cursor, self.uid, "account", "account_journal_bank_view"
         )[1]
@@ -61,41 +67,60 @@ class TestMemberFeePayment(testing.OOTestCase):
         bank_id = self.imd_o.get_object_reference(
             self.cursor, self.uid, "base", "partner_bank"
         )[1]
-        journal_id = self.journal_o.create(self.cursor, self.uid, {
-            "name": "SOCIS",
-            "code": "SOCIS",
-            "type": "sale",
-            "view_id": journal_view_id,
-            "sequence_id": sequence_id,
-        })
+        journal_ids = self.journal_o.search(
+            self.cursor, self.uid, [("code", "=", "SOCIS")]
+        )
+        journal_id = journal_ids and journal_ids[0] or self.journal_o.create(
+            self.cursor, self.uid, {
+                "name": "SOCIS",
+                "code": "SOCIS",
+                "type": "sale",
+                "view_id": journal_view_id,
+                "sequence_id": sequence_id,
+            }
+        )
         payment_type_id = self.payment_type_o.search(
             self.cursor, self.uid, [("code", "=", "RECIBO_CSB")]
         )[0]
-        payment_mode_id = self.payment_mode_o.create(self.cursor, self.uid, {
-            "name": "QUOTA SOCIS amb Factura",
-            "type": payment_type_id,
-            "journal": journal_id,
-            "tipo": "sepa19",
-            "nombre": "Som Energia",
-            "sufijo": "000",
-            "require_bank_account": True,
-            "partner_id": 1,
-            "bank_id": bank_id,
-            "sepa_creditor_code": "ES10000B22350466",
-        })
-        self.imd_o.create(self.cursor, self.uid, {
-            "module": "som_partner_account",
-            "name": "mode_pagament_socis_factura",
-            "model": "payment.mode",
-            "res_id": payment_mode_id,
-            "noupdate": True,
-        })
-        self.config_o.create(self.cursor, self.uid, {
-            "name": "socia_member_fee_amount",
-            "value": "100",
-            "description": "Member fee amount",
-        })
-        return payment_mode_id
+        payment_mode_ids = self.payment_mode_o.search(
+            self.cursor, self.uid, [("name", "=", "QUOTA SOCIS amb Factura")]
+        )
+        payment_mode_id = payment_mode_ids and payment_mode_ids[0] or self.payment_mode_o.create(
+            self.cursor, self.uid, {
+                "name": "QUOTA SOCIS amb Factura",
+                "type": payment_type_id,
+                "journal": journal_id,
+                "tipo": "sepa19",
+                "nombre": "Som Energia",
+                "sufijo": "000",
+                "require_bank_account": True,
+                "partner_id": 1,
+                "bank_id": bank_id,
+                "sepa_creditor_code": "ES10000B22350466",
+            }
+        )
+        mode_xml_ids = self.imd_o.search(
+            self.cursor, self.uid,
+            [("module", "=", "som_partner_account"),
+             ("name", "=", "mode_pagament_socis_factura")]
+        )
+        if not mode_xml_ids:
+            self.imd_o.create(self.cursor, self.uid, {
+                "module": "som_partner_account",
+                "name": "mode_pagament_socis_factura",
+                "model": "payment.mode",
+                "res_id": payment_mode_id,
+                "noupdate": True,
+            })
+        config_ids = self.config_o.search(
+            self.cursor, self.uid, [("name", "=", "socia_member_fee_amount")]
+        )
+        if not config_ids:
+            self.config_o.create(self.cursor, self.uid, {
+                "name": "socia_member_fee_amount",
+                "value": "100",
+                "description": "Member fee amount",
+            })
 
     def tearDown(self):
         self.txn.stop()
@@ -119,7 +144,11 @@ class TestMemberFeePayment(testing.OOTestCase):
         mandate_id = self.mandate_o.search(
             self.cursor,
             self.uid,
-            [("reference", "=", "res.partner,{}".format(self.partner_id))],
+            [
+                ("reference", "=", "res.partner,{}".format(self.partner_id)),
+                ("debtor_iban", "=", self.iban.replace(" ", "")),
+                ("notes", "=", "QUOTA SOCI"),
+            ],
         )[0]
         mandate = self.mandate_o.browse(self.cursor, self.uid, mandate_id)
 
@@ -128,6 +157,7 @@ class TestMemberFeePayment(testing.OOTestCase):
         self.assertEqual(invoice.state, "open")
         self.assertFalse(invoice.sii_to_send)
         self.assertEqual(mandate.payment_type, "one_payment")
+        self.assertEqual(mandate.debtor_iban, self.iban.replace(" ", ""))
         self.assertEqual(invoice.payment_order_id.mode.id, payment_mode_id)
         self.assertEqual(invoice.payment_order_id.state, "draft")
         self.assertEqual(invoice.payment_order_id.line_ids[0].name, "S123456")

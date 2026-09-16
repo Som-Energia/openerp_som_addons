@@ -1,10 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <openerp>
     <data noupdate="1">
-        <record id="member_fee_partner_reference" model="res.request.link">
-            <field name="name">Partner</field>
-            <field name="object">res.partner</field>
-        </record>
         <record id="member_fee_journal_view" model="account.journal.view">
             <field name="name">Member Fee Journal View</field>
         </record>
