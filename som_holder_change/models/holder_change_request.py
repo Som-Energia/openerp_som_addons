@@ -3,14 +3,19 @@ from __future__ import absolute_import, unicode_literals
 
 import base64
 import json
+import logging
 import pooler
 from datetime import datetime
 from uuid import uuid4
+
 
 import netsvc
 
 from osv import fields, osv
 from tools.translate import _
+
+
+logger = logging.getLogger(__name__)
 
 
 IMMUTABLE_FIELDS = frozenset([
@@ -192,6 +197,15 @@ class SomHolderChangeRequest(osv.osv):
         if member.get("link_member"):
             return self._linked_member_partner(cursor, uid, member, context=context), False, False
         if member.get("become_member"):
+            existing_member_ids = self.pool.get("somenergia.soci").search(
+                cursor,
+                uid,
+                [("partner_id", "=", holder_id)],
+                limit=1,
+                context=context,
+            )
+            if existing_member_ids:
+                return holder_id, False, False
             self.pool.get("res.partner").become_member(
                 cursor, uid, holder_id, context=context
             )
@@ -613,7 +627,120 @@ class SomHolderChangeRequest(osv.osv):
             self.pool.get("res.partner").adopt_contracts_as_member(
                 cursor, uid, partner_id, context=context
             )
-        return switching_id, polissa_id, mandate_id
+        return switching_id, polissa_id, mandate_id, is_new_member and partner_id or False
+
+    def _send_mail(
+        self,
+        cursor,
+        uid,
+        module,
+        xml_id,
+        src_model,
+        record_id,
+        recipient,
+        from_email=False,
+        context=None,
+    ):
+        imd_obj = self.pool.get("ir.model.data")
+        template_id = imd_obj.get_object_reference(cursor, uid, module, xml_id)[1]
+        template = self.pool.get("poweremail.templates").read(
+            cursor, uid, template_id, ["enforce_from_account"], context=context
+        )
+        from_id = template.get("enforce_from_account", False)
+        if from_email:
+            from_ids = self.pool.get("poweremail.core_accounts").search(
+                cursor, uid, [("email_id", "=", from_email)], limit=1, context=context
+            )
+            from_id = from_ids and from_ids[0] or False
+        elif from_id:
+            from_id = from_id[0]
+        if not from_id:
+            raise osv.except_osv(
+                _("Missing sender account"), _("No sender account is configured."))
+        mail_context = {
+            "active_ids": [record_id],
+            "active_id": record_id,
+            "template_id": template_id,
+            "src_model": src_model,
+            "src_rec_ids": [record_id],
+            "from": from_id,
+            "state": "single",
+            "priority": "2",
+        }
+        wizard_id = self.pool.get("poweremail.send.wizard").create(
+            cursor,
+            uid,
+            {"state": "single", "priority": "2", "from": from_id, "to": recipient},
+            context=mail_context,
+        )
+        return self.pool.get("poweremail.send.wizard").send_mail(
+            cursor, uid, [wizard_id], context=mail_context
+        )
+
+    def _notify_completed_request(self, cursor, uid, request_id, context=None):
+        request = self.browse(cursor, uid, request_id, context=context)
+        switching = request.switching_id
+        pas = switching.get_pas()
+        notifications = []
+        if not request.owner_notification_sent:
+            notifications.append((
+                "owner_notification_sent",
+                "giscedata_switching" if request.owner_change_type == "T"
+                else "som_polissa_condicions_generals",
+                "notification_atr_M1_01" if request.owner_change_type == "T"
+                else "notification_atr_M1_01_SS",
+                "giscedata.switching",
+                switching.id,
+                pas.direccio_notificacio.email,
+                "modifica@somenergia.coop",
+            ))
+        if not request.old_owner_notification_sent:
+            notifications.append((
+                "old_owner_notification_sent",
+                "som_switching",
+                "email_validacio_dades_canvi_titular",
+                "giscedata.switching",
+                switching.id,
+                switching.mail_pagador_polissa,
+                "modifica@somenergia.coop",
+            ))
+        if request.new_member_partner_id and not request.member_notification_sent:
+            member_ids = self.pool.get("somenergia.soci").search(
+                cursor,
+                uid,
+                [("partner_id", "=", request.new_member_partner_id.id)],
+                limit=1,
+                context=context,
+            )
+            if member_ids:
+                notifications.append((
+                    "member_notification_sent",
+                    "som_polissa_soci",
+                    "nou_soci_mail_webforms",
+                    "somenergia.soci",
+                    member_ids[0],
+                    False,
+                    False,
+                ))
+        for field, module, xml_id, model, record_id, recipient, from_email in notifications:
+            try:
+                self._send_mail(
+                    cursor,
+                    uid,
+                    module,
+                    xml_id,
+                    model,
+                    record_id,
+                    recipient,
+                    from_email=from_email,
+                    context=context,
+                )
+            except Exception as error:
+                logger.exception("Unable to send holder change notification: %s", error)
+                continue
+            super(SomHolderChangeRequest, self).write(
+                cursor, uid, [request_id], {field: True}, context=context
+            )
 
     def prepare(self, cursor, uid, request_id, context=None):
         request_id = self._one_id(request_id)
@@ -626,7 +753,7 @@ class SomHolderChangeRequest(osv.osv):
         temporary_context["in_rollback_transaction"] = True
         try:
             request = self.browse(temporary_cursor, uid, request_id, context=temporary_context)
-            switching_id, polissa_id, mandate_id = self._run_holder_change(
+            switching_id, polissa_id, mandate_id, _new_member_partner_id = self._run_holder_change(
                 temporary_cursor,
                 uid,
                 request,
@@ -684,6 +811,7 @@ class SomHolderChangeRequest(osv.osv):
         )
         request = self.browse(cursor, uid, request_id, context=context)
         if request.state == "completed":
+            self._notify_completed_request(cursor, uid, request_id, context=context)
             return {
                 "switching_id": request.switching_id.id,
                 "result_polissa_id": request.result_polissa_id.id,
@@ -702,7 +830,7 @@ class SomHolderChangeRequest(osv.osv):
             },
             context=context,
         )
-        switching_id, polissa_id, _mandate_id = self._run_holder_change(
+        switching_id, polissa_id, _mandate_id, new_member_partner_id = self._run_holder_change(
             cursor, uid, request, context=context
         )
         super(SomHolderChangeRequest, self).write(
@@ -713,9 +841,11 @@ class SomHolderChangeRequest(osv.osv):
                 "state": "completed",
                 "switching_id": switching_id,
                 "result_polissa_id": polissa_id,
+                "new_member_partner_id": new_member_partner_id,
             },
             context=context,
         )
+        self._notify_completed_request(cursor, uid, request_id, context=context)
         return {"switching_id": switching_id, "result_polissa_id": polissa_id}
 
     def write(self, cursor, uid, ids, values, context=None):
@@ -774,6 +904,12 @@ class SomHolderChangeRequest(osv.osv):
             readonly=True,
             ondelete="restrict",
         ),
+        "new_member_partner_id": fields.many2one(
+            "res.partner", "New member", readonly=True
+        ),
+        "owner_notification_sent": fields.boolean("Owner notification sent", readonly=True),
+        "old_owner_notification_sent": fields.boolean("Payer notification sent", readonly=True),
+        "member_notification_sent": fields.boolean("Member notification sent", readonly=True),
         "switching_id": fields.many2one(
             "giscedata.switching",
             "M1 case",
