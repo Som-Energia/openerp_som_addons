@@ -108,7 +108,7 @@ Qualsevol canvi de model o fitxer XML, incloses les vistes, requereix llegir la 
 
 Useu obligatòriament `scripts/run-tests-worktree.sh` des de qualsevol worktree. `$WORKSPACE/erp/server/bin/addons` és estat compartit i mutable: executar-hi `scripts/run-tests.sh` directament o modificar-ne els symlinks manualment és insegur.
 
-Indiqueu explícitament cada addon que el test ha de redirigir. El wrapper valida els addons, adquireix un únic lock global entre worktrees i el manté durant la captura, la redirecció, tota l'execució de Destral i la restauració. `--no-requirements` continua sent la ruta recomanada:
+Indiqueu explícitament cada addon que el test ha de redirigir. El wrapper valida els addons, adquireix un únic lock global entre worktrees i el manté durant la captura, la redirecció, tota l'execució de Destral i la restauració. El lock només serialitza processos que usen aquest wrapper: cap eina ha de modificar manualment els symlinks compartits. `--no-requirements` continua sent la ruta recomanada:
 
 ```bash
 REPO_ROOT="$(git rev-parse --show-toplevel)"
@@ -117,7 +117,7 @@ PYENV_VERSION=erp scripts/run-tests-worktree.sh \
     --addon <module> -- <database> --no-requirements -m <module>
 ```
 
-El timeout del lock és finit i configurable amb `OPENERP_WORKTREE_TEST_LOCK_TIMEOUT` (600 segons per defecte). En timeout, el wrapper mostra metadata limitada del propietari; no mata processos. Si detecta una alteració externa o una recuperació que no pot demostrar segura, no sobreescriu l'entrada i conserva el manifest per diagnosticar-la.
+El timeout del lock és finit i configurable amb `OPENERP_WORKTREE_TEST_LOCK_TIMEOUT` (600 segons per defecte). En timeout, el wrapper mostra metadata limitada del propietari; no mata processos. Si observa una alteració externa o una recuperació que no pot demostrar segura, no sobreescriu l'entrada i conserva el manifest per diagnosticar-la. Aquesta detecció no és una garantia davant d'escriptures externes que ignorin el lock durant un swap.
 
 ## Estil de Programació
 

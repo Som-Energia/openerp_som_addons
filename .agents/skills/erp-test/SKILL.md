@@ -106,4 +106,4 @@ Aquesta skill s'utilitza a les fases:
 - `sdd-apply`: Per verificar que el codi implementat passa els tests
 - `sdd-verify`: Per validar contra specs
 
-El runner obligatori en worktrees és `scripts/run-tests-worktree.sh`; aquest serialitza els symlinks compartits i delega a `scripts/run-tests.sh` mantenint el lock durant Destral.
+El runner obligatori en worktrees és `scripts/run-tests-worktree.sh`; aquest serialitza els symlinks compartits entre execucions que l'utilitzen i delega a `scripts/run-tests.sh` mantenint el lock durant Destral.
