@@ -154,6 +154,65 @@ class SomHolderChangeWww(osv.osv_memory):
                 context=context,
             )
 
+    def _store_request(self, cursor, uid, payload, cups, polissa_id, context=None):
+        stored_payload = deepcopy(payload)
+        if stored_payload["payment_method"] == "bank":
+            stored_payload["payment"]["iban"] = "".join(
+                char.upper() for char in stored_payload["payment"]["iban"]
+                if char.isalnum()
+            )
+        attachments = stored_payload.get("attachments", [])
+        for attachment in attachments:
+            attachment.pop("datas", None)
+        request_id = self.pool.get("som.holder.change.request").create(
+            cursor,
+            uid,
+            {
+                "polissa_id": polissa_id,
+                "cups": cups,
+                "owner_change_type": self._owner_change_type(payload),
+                "payload": stored_payload,
+            },
+            context=context,
+        )
+        self._create_attachments(
+            cursor,
+            uid,
+            request_id,
+            payload.get("attachments", []),
+            context=context,
+        )
+        return request_id
+
+    def _prepare_stored_request(self, cursor, uid, request_id, context=None):
+        request_obj = self.pool.get("som.holder.change.request")
+        # The simulation uses an independent cursor, so it must see the request.
+        cursor.commit()
+        try:
+            request_obj.prepare(cursor, uid, request_id, context=context)
+        except Exception as error:
+            request_obj.write(
+                cursor,
+                uid,
+                [request_id],
+                {"state": "validation_error", "error_code": "SIMULATION_ERROR",
+                    "error_message": str(error)},
+                context=context,
+            )
+            return self._error("SIMULATION_ERROR", str(error))
+        return False
+
+    def _request_response(self, cursor, uid, request_id, context=None):
+        request = self.pool.get("som.holder.change.request").read(
+            cursor, uid, request_id, ["state"], context=context
+        )
+        return {
+            "success": True,
+            "request_id": request_id,
+            "state": request["state"],
+            "signature_url": False,
+        }
+
     def create_request(self, cursor, uid, payload, context=None):
         if context is None:
             context = {}
@@ -199,58 +258,15 @@ class SomHolderChangeWww(osv.osv_memory):
                 _("There is already an active holder change request for this CUPS."),
             )
 
-        request_obj = self.pool.get("som.holder.change.request")
-        stored_payload = deepcopy(payload)
-        if stored_payload["payment_method"] == "bank":
-            stored_payload["payment"]["iban"] = "".join(
-                char.upper() for char in stored_payload["payment"]["iban"]
-                if char.isalnum()
-            )
-        attachments = stored_payload.get("attachments", [])
-        for attachment in attachments:
-            attachment.pop("datas", None)
-        request_id = request_obj.create(
-            cursor,
-            uid,
-            {
-                "polissa_id": polissa_id,
-                "cups": cups,
-                "owner_change_type": self._owner_change_type(payload),
-                "payload": stored_payload,
-            },
-            context=context,
+        request_id = self._store_request(
+            cursor, uid, payload, cups, polissa_id, context=context
         )
-        self._create_attachments(
-            cursor,
-            uid,
-            request_id,
-            payload.get("attachments", []),
-            context=context,
+        preparation_error = self._prepare_stored_request(
+            cursor, uid, request_id, context=context
         )
-        # The simulation uses an independent cursor, so it must see the request.
-        cursor.commit()
-        try:
-            request_obj.prepare(cursor, uid, request_id, context=context)
-        except Exception as error:
-            request_obj.write(
-                cursor,
-                uid,
-                [request_id],
-                {"state": "validation_error", "error_code": "SIMULATION_ERROR",
-                    "error_message": str(error)},
-                context=context,
-            )
-            return self._error("SIMULATION_ERROR", str(error))
-
-        request = request_obj.read(
-            cursor, uid, request_id, ["state"], context=context
+        return preparation_error or self._request_response(
+            cursor, uid, request_id, context=context
         )
-        return {
-            "success": True,
-            "request_id": request_id,
-            "state": request["state"],
-            "signature_url": False,
-        }
 
     def add_payment_card_data(
         self, cursor, uid, request_id, cups, card_values, context=None
@@ -260,6 +276,42 @@ class SomHolderChangeWww(osv.osv_memory):
         cursor.commit()
         request_obj.set_card_data(cursor, uid, request_id, card_values, context=context)
         return {"success": True, "request_id": request.id, "state": "awaiting_signature"}
+
+    def _signature_process_values(self, request):
+        holder = request.payload["holder"]
+        files = [(0, 0, {"doc_file": request.contract_pdf,
+                  "filename": "contract-with-summary.pdf"})]
+        if request.mandate_pdf:
+            files.append((0, 0, {"doc_file": request.mandate_pdf,
+                          "filename": "bank-authorization.pdf"}))
+        return {
+            "delivery_type": "url",
+            "provider": "signaturit",
+            "lang": holder["language"],
+            "data": "{}",
+            "all_signed": True,
+            "recipients": [(0, 0, {"name": holder["name"], "email": holder["email"]})],
+            "files": files,
+        }
+
+    def _wait_for_signature_url(self, cursor, uid, process_obj, process_id, context=None):
+        deadline = time.time() + 200.0
+        while time.time() < deadline:
+            process = process_obj.read(cursor, uid, process_id, [
+                "signature_url", "status"], context=context)
+            if process["signature_url"]:
+                return process["signature_url"]
+            if process["status"] in self._SIGNATURE_ERROR_STATUSES:
+                raise osv.except_osv(
+                    _("Signature error"), _("The signature process failed."))
+            time.sleep(0.2)
+        raise osv.except_osv(
+            _("Signature error"), _("Timed out waiting for the signature URL."))
+
+    def _localized_signature_url(self, signature_url, language):
+        lang = language.split("_")[0]
+        return signature_url.replace(
+            "app.", "sign-app.").replace("document", "v1/{}".format(lang))
 
     def sign_request(self, cursor, uid, request_id, cups, context=None):
         if context is None:
@@ -271,48 +323,23 @@ class SomHolderChangeWww(osv.osv_memory):
             raise osv.except_osv(_("Invalid request state"), _(
                 "The request is not ready for signing."))
 
-        holder = request.payload["holder"]
-        files = [(0, 0, {"doc_file": request.contract_pdf,
-                  "filename": "contract-with-summary.pdf"})]
-        if request.mandate_pdf:
-            files.append((0, 0, {"doc_file": request.mandate_pdf,
-                         "filename": "bank-authorization.pdf"}))
         process_obj = self.pool.get("giscedata.signatura.process")
-        values = {
-            "delivery_type": "url",
-            "provider": "signaturit",
-            "lang": holder["language"],
-            "data": "{}",
-            "all_signed": True,
-            "recipients": [(0, 0, {"name": holder["name"], "email": holder["email"]})],
-            "files": files,
-        }
         cursor.commit()
         with Sudo(uid=uid, gid=0):
-            process_id = process_obj.create(cursor, uid, values, context=context)
+            process_id = process_obj.create(
+                cursor, uid, self._signature_process_values(request), context=context
+            )
             process_obj.start(cursor, uid, [process_id], context=context)
         request_obj = self.pool.get("som.holder.change.request")
         request_obj.write(cursor, uid, [request_id], {
                           "signature_process_id": process_id}, context=context)
 
-        deadline = time.time() + 200.0
-        signature_url = False
-        while time.time() < deadline:
-            process = process_obj.read(cursor, uid, process_id, [
-                                       "signature_url", "status"], context=context)
-            signature_url = process["signature_url"]
-            if signature_url:
-                break
-            if process["status"] in self._SIGNATURE_ERROR_STATUSES:
-                raise osv.except_osv(_("Signature error"), _("The signature process failed."))
-            time.sleep(0.2)
-        if not signature_url:
-            raise osv.except_osv(_("Signature error"), _(
-                "Timed out waiting for the signature URL."))
-        lang = holder["language"].split("_")[0]
-        signature_url = signature_url.replace(
-            "app.", "sign-app.").replace("document", "v1/{}".format(lang))
-        return {"url": signature_url}
+        signature_url = self._wait_for_signature_url(
+            cursor, uid, process_obj, process_id, context=context
+        )
+        return {"url": self._localized_signature_url(
+            signature_url, request.payload["holder"]["language"]
+        )}
 
     def execute_request(self, cursor, uid, request_id, cups, context=None):
         if context is None:
