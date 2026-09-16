@@ -14,6 +14,8 @@ import netsvc
 from osv import fields, osv
 from tools.translate import _
 
+from . import holder_change_payload
+
 
 logger = logging.getLogger(__name__)
 
@@ -80,19 +82,13 @@ class SomHolderChangeRequest(osv.osv):
             )
 
     def _holder_vat(self, holder):
-        vat = holder["vat"].upper()
-        return vat if vat.startswith("ES") else "ES{}".format(vat)
+        return holder_change_payload.normalize_holder_vat(holder)
 
     def _holder_full_name(self, holder):
-        if holder["vat"][0].upper() in "0123456789KLMXYZ":
-            surnames = holder["surname1"]
-            if holder.get("surname2"):
-                surnames = "{} {}".format(surnames, holder["surname2"])
-            return "{}, {}".format(surnames, holder["name"])
-        return holder["name"]
+        return holder_change_payload.holder_full_name(holder)
 
     def _clean_iban(self, iban):
-        return "".join(char.upper() for char in iban if char.isalnum())
+        return holder_change_payload.clean_iban(iban)
 
     def _iban_country(self, cursor, uid, iban, context=None):
         country_ids = self.pool.get("res.country").search(
@@ -137,7 +133,7 @@ class SomHolderChangeRequest(osv.osv):
             "vat": vat,
             "lang": self._holder_language(cursor, uid, request, context=context),
         }
-        if holder["vat"][0].upper() not in "0123456789KLMXYZ":
+        if not holder_change_payload.is_individual_holder(holder):
             values["comment"] = " Persona representant: {}\n NIF representant: {}".format(
                 holder["proxyname"], holder["proxynif"]
             )
@@ -531,10 +527,7 @@ class SomHolderChangeRequest(osv.osv):
         return result
 
     def _append_observation(self, current, new):
-        normalized = "".join(new.split())
-        if normalized and normalized in "".join((current or "").split()):
-            return current
-        return "{}\n{}".format(new, current or "")
+        return holder_change_payload.append_observation(current, new)
 
     def _apply_post_m1_effects(
         self,
