@@ -16,6 +16,7 @@
         "som_partner_seq",
         "som_polissa_soci",
         "l10n_chart_ES",
+        "l10n_ES_aeat_sii",
     ],
     "init_xml": [],
     "demo_xml": ["demo/member_fee_demo.xml"],
