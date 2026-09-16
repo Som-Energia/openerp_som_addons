@@ -60,3 +60,19 @@ class TestHolderChangePayload(unittest.TestCase):
             holder_change_payload.append_observation("Old observation", "New observation"),
             "New observation\nOld observation",
         )
+
+    def test_special_case_document_spec_uses_legacy_priority(self):
+        self.assertEqual(
+            holder_change_payload.special_case_document_spec({
+                "reason_death": True,
+                "reason_merge": True,
+                "reason_electrodep": True,
+            }),
+            ("holder_change_death", "Certificat defunció"),
+        )
+
+    def test_special_case_document_spec_returns_false_without_special_case(self):
+        self.assertEqual(
+            holder_change_payload.special_case_document_spec({}),
+            (False, False),
+        )
