@@ -454,7 +454,10 @@ class SomHolderChangeRequest(osv.osv):
         )[1]
         document_obj = self.pool.get("som.documents.sensibles")
         document_ids = document_obj.search(
-            cursor, uid, [("partner_id", "=", partner_id)], context=context
+            cursor,
+            uid,
+            [("partner_id", "=", partner_id), ("categoria", "=", category_id)],
+            context=context,
         )
         if document_ids:
             return document_ids[0]
