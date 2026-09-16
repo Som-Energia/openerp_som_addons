@@ -50,6 +50,93 @@ class SomHolderChangeRequest(osv.osv):
     _description = "Holder change request"
     _rec_name = "cups"
 
+    def prepare(self, cursor, uid, request_id, context=None):
+        request_id = self._one_id(request_id)
+        self._reserve_references(cursor, uid, request_id, context=context)
+        # The isolated simulation cursor must see the stable reserved references.
+        cursor.commit()
+        reports = self._simulate_holder_change(cursor, uid, request_id, context=context)
+        request = self.browse(cursor, uid, request_id, context=context)
+        state = "awaiting_payment" if self._payment_method(
+            request) == "card" and not request.creditcard_token else "awaiting_signature"
+        super(SomHolderChangeRequest, self).write(
+            cursor,
+            uid,
+            [request_id],
+            dict(reports, state=state, error_code=False, error_message=False),
+            context=context,
+        )
+        return True
+
+    def set_card_data(self, cursor, uid, request_id, card_values, context=None):
+        request_id = self._one_id(request_id)
+        request = self.browse(cursor, uid, request_id, context=context)
+        if self._payment_method(request) != "card":
+            raise osv.except_osv(_("Invalid payment method"), _(
+                "The request does not use card payment."))
+        if request.state != "awaiting_payment" or request.creditcard_token:
+            raise osv.except_osv(_("Card data rejected"), _(
+                "Card data cannot be changed for this request."))
+        required = ("creditcard_token", "creditcard_masked_number",
+                    "creditcard_expiry_date", "creditcard_cof_txnid")
+        missing = [field for field in required if not card_values.get(field)]
+        if missing:
+            raise osv.except_osv(_("Invalid card data"), _(
+                "Missing card fields: {}.").format(", ".join(missing)))
+        super(SomHolderChangeRequest, self).write(
+            cursor,
+            uid,
+            [request_id],
+            {field: card_values[field] for field in required},
+            context=context,
+        )
+        return self.prepare(cursor, uid, request_id, context=context)
+
+    def execute(self, cursor, uid, request_id, context=None):
+        request_id = self._one_id(request_id)
+        # Queue retries can run concurrently; serialize them before inspecting state.
+        cursor.execute(
+            "SELECT id FROM som_holder_change_request WHERE id = %s FOR UPDATE",
+            (request_id,),
+        )
+        request = self.browse(cursor, uid, request_id, context=context)
+        if request.state == "completed":
+            self._notify_completed_request(cursor, uid, request_id, context=context)
+            return {
+                "switching_id": request.switching_id.id,
+                "result_polissa_id": request.result_polissa_id.id,
+            }
+        if request.state != "queued":
+            raise osv.except_osv(
+                _("Invalid request state"), _("The request has not been signed."))
+        super(SomHolderChangeRequest, self).write(
+            cursor,
+            uid,
+            [request_id],
+            {
+                "attempt_count": request.attempt_count + 1,
+                "last_attempt_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+            },
+            context=context,
+        )
+        switching_id, polissa_id, _mandate_id, new_member_partner_id = self._run_holder_change(
+            cursor, uid, request, context=context
+        )
+        super(SomHolderChangeRequest, self).write(
+            cursor,
+            uid,
+            [request_id],
+            {
+                "state": "completed",
+                "switching_id": switching_id,
+                "result_polissa_id": polissa_id,
+                "new_member_partner_id": new_member_partner_id,
+            },
+            context=context,
+        )
+        self._notify_completed_request(cursor, uid, request_id, context=context)
+        return {"switching_id": switching_id, "result_polissa_id": polissa_id}
+
     def _one_id(self, ids):
         if isinstance(ids, (list, tuple)):
             if len(ids) != 1:
@@ -843,24 +930,6 @@ class SomHolderChangeRequest(osv.osv):
                 cursor, uid, [request_id], {notification["field"]: True}, context=context
             )
 
-    def prepare(self, cursor, uid, request_id, context=None):
-        request_id = self._one_id(request_id)
-        self._reserve_references(cursor, uid, request_id, context=context)
-        # The isolated simulation cursor must see the stable reserved references.
-        cursor.commit()
-        reports = self._simulate_holder_change(cursor, uid, request_id, context=context)
-        request = self.browse(cursor, uid, request_id, context=context)
-        state = "awaiting_payment" if self._payment_method(
-            request) == "card" and not request.creditcard_token else "awaiting_signature"
-        super(SomHolderChangeRequest, self).write(
-            cursor,
-            uid,
-            [request_id],
-            dict(reports, state=state, error_code=False, error_message=False),
-            context=context,
-        )
-        return True
-
     def _simulate_holder_change(self, cursor, uid, request_id, context=None):
         request = self.browse(cursor, uid, request_id, context=context)
         temporary_cursor = pooler.get_db(cursor.dbname).cursor()
@@ -882,76 +951,6 @@ class SomHolderChangeRequest(osv.osv):
             temporary_cursor.rollback()
             temporary_cursor.close()
         return reports
-
-    def set_card_data(self, cursor, uid, request_id, card_values, context=None):
-        request_id = self._one_id(request_id)
-        request = self.browse(cursor, uid, request_id, context=context)
-        if self._payment_method(request) != "card":
-            raise osv.except_osv(_("Invalid payment method"), _(
-                "The request does not use card payment."))
-        if request.state != "awaiting_payment" or request.creditcard_token:
-            raise osv.except_osv(_("Card data rejected"), _(
-                "Card data cannot be changed for this request."))
-        required = ("creditcard_token", "creditcard_masked_number",
-                    "creditcard_expiry_date", "creditcard_cof_txnid")
-        missing = [field for field in required if not card_values.get(field)]
-        if missing:
-            raise osv.except_osv(_("Invalid card data"), _(
-                "Missing card fields: {}.").format(", ".join(missing)))
-        super(SomHolderChangeRequest, self).write(
-            cursor,
-            uid,
-            [request_id],
-            {field: card_values[field] for field in required},
-            context=context,
-        )
-        return self.prepare(cursor, uid, request_id, context=context)
-
-    def execute(self, cursor, uid, request_id, context=None):
-        request_id = self._one_id(request_id)
-        # Queue retries can run concurrently; serialize them before inspecting state.
-        cursor.execute(
-            "SELECT id FROM som_holder_change_request WHERE id = %s FOR UPDATE",
-            (request_id,),
-        )
-        request = self.browse(cursor, uid, request_id, context=context)
-        if request.state == "completed":
-            self._notify_completed_request(cursor, uid, request_id, context=context)
-            return {
-                "switching_id": request.switching_id.id,
-                "result_polissa_id": request.result_polissa_id.id,
-            }
-        if request.state != "queued":
-            raise osv.except_osv(
-                _("Invalid request state"), _("The request has not been signed.")
-            )
-        super(SomHolderChangeRequest, self).write(
-            cursor,
-            uid,
-            [request_id],
-            {
-                "attempt_count": request.attempt_count + 1,
-                "last_attempt_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-            },
-            context=context,
-        )
-        switching_id, polissa_id, _mandate_id, new_member_partner_id = self._run_holder_change(
-            cursor, uid, request, context=context
-        )
-        super(SomHolderChangeRequest, self).write(
-            cursor,
-            uid,
-            [request_id],
-            {
-                "state": "completed",
-                "switching_id": switching_id,
-                "result_polissa_id": polissa_id,
-                "new_member_partner_id": new_member_partner_id,
-            },
-            context=context,
-        )
-        self._notify_completed_request(cursor, uid, request_id, context=context)
-        return {"switching_id": switching_id, "result_polissa_id": polissa_id}
 
     def write(self, cursor, uid, ids, values, context=None):
         immutable = IMMUTABLE_FIELDS.intersection(values)
