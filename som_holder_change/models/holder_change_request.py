@@ -619,7 +619,7 @@ class SomHolderChangeRequest(osv.osv):
             context=context,
         )
 
-    def _run_holder_change(self, cursor, uid, request, temporary=False, context=None):
+    def _prepare_change_data(self, cursor, uid, request, temporary=False, context=None):
         nocutoff_id = False
         if request.payload["especial_cases"].get("reason_electrodep"):
             nocutoff_id = self._indispensable_nocutoff_id(cursor, uid, context=context)
@@ -633,35 +633,62 @@ class SomHolderChangeRequest(osv.osv):
         payment_values = self._payment_values(
             cursor, uid, request, partner_id, temporary=temporary, context=context
         )
+        return {
+            "address_id": address_id,
+            "is_ct_ss_member": is_ct_ss_member,
+            "is_new_member": is_new_member,
+            "member_partner_id": member_partner_id,
+            "nocutoff_id": nocutoff_id,
+            "partner_id": partner_id,
+            "payment_values": payment_values,
+        }
+
+    def _execute_m1_change(self, cursor, uid, request, change_data, context=None):
         switching_id, polissa_id = self._run_m1(
-            cursor, uid, request, partner_id, address_id, payment_values, context=context
+            cursor,
+            uid,
+            request,
+            change_data["partner_id"],
+            change_data["address_id"],
+            change_data["payment_values"],
+            context=context,
         )
         mandate_id = self._create_mandate(
-            cursor, uid, request, partner_id, polissa_id, context=context
+            cursor, uid, request, change_data["partner_id"], polissa_id, context=context
         )
         self._apply_post_m1_effects(
             cursor,
             uid,
             request,
             switching_id,
-            partner_id,
-            member_partner_id,
-            address_id,
-            payment_values,
+            change_data["partner_id"],
+            change_data["member_partner_id"],
+            change_data["address_id"],
+            change_data["payment_values"],
             context=context,
         )
         self._apply_special_documents(
             cursor,
             uid,
             request,
-            partner_id,
+            change_data["partner_id"],
             polissa_id,
-            nocutoff_id=nocutoff_id,
+            nocutoff_id=change_data["nocutoff_id"],
             context=context,
         )
+        return {
+            "mandate_id": mandate_id,
+            "polissa_id": polissa_id,
+            "switching_id": switching_id,
+        }
+
+    def _apply_result_contract_membership(
+        self, cursor, uid, polissa_id, change_data, context=None
+    ):
+        member_partner_id = change_data["member_partner_id"]
         if member_partner_id:
             values = {"soci": member_partner_id}
-            if is_ct_ss_member:
+            if change_data["is_ct_ss_member"]:
                 category_id = self.pool.get("ir.model.data").get_object_reference(
                     cursor,
                     uid,
@@ -672,11 +699,28 @@ class SomHolderChangeRequest(osv.osv):
             self.pool.get("giscedata.polissa").write(
                 cursor, uid, polissa_id, values, context=context
             )
-        if is_new_member:
+        if change_data["is_new_member"]:
             self.pool.get("res.partner").adopt_contracts_as_member(
-                cursor, uid, partner_id, context=context
+                cursor, uid, change_data["partner_id"], context=context
             )
-        return switching_id, polissa_id, mandate_id, is_new_member and partner_id or False
+
+    def _run_holder_change(self, cursor, uid, request, temporary=False, context=None):
+        change_data = self._prepare_change_data(
+            cursor, uid, request, temporary=temporary, context=context
+        )
+        execution = self._execute_m1_change(
+            cursor, uid, request, change_data, context=context
+        )
+        self._apply_result_contract_membership(
+            cursor, uid, execution["polissa_id"], change_data, context=context
+        )
+        new_member_partner_id = change_data["is_new_member"] and change_data["partner_id"]
+        return (
+            execution["switching_id"],
+            execution["polissa_id"],
+            execution["mandate_id"],
+            new_member_partner_id,
+        )
 
     def _send_mail(
         self,
