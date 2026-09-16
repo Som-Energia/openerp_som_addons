@@ -90,6 +90,11 @@ class TestHolderChangeWww(testing.OOTestCase):
             },
         }
 
+    def queue_request(self, request_id):
+        self.request_obj.write(
+            self.cursor, self.uid, [request_id], {"state": "queued"}
+        )
+
     def test_create_request_resolves_active_contract(self):
         result = self.www_obj.create_request(
             self.cursor, self.uid, self.payload()
@@ -334,9 +339,7 @@ class TestHolderChangeWww(testing.OOTestCase):
         result = self.www_obj.create_request(
             self.cursor, self.uid, payload
         )
-        self.request_obj.write(
-            self.cursor, self.uid, [result["request_id"]], {"state": "queued"}
-        )
+        self.queue_request(result["request_id"])
 
         first_result = self.request_obj.execute(
             self.cursor, self.uid, result["request_id"]
@@ -408,9 +411,7 @@ class TestHolderChangeWww(testing.OOTestCase):
         ]
         result = self.www_obj.create_request(self.cursor, self.uid, payload)
         self.assertTrue(result["success"], result)
-        self.request_obj.write(
-            self.cursor, self.uid, [result["request_id"]], {"state": "queued"}
-        )
+        self.queue_request(result["request_id"])
 
         execution = self.request_obj.execute(
             self.cursor, self.uid, result["request_id"]
@@ -433,9 +434,7 @@ class TestHolderChangeWww(testing.OOTestCase):
         payload["payment"]["iban"] = "es91 2100-0418.4502/0005 1332"
         result = self.www_obj.create_request(self.cursor, self.uid, payload)
         self.assertTrue(result["success"], result)
-        self.request_obj.write(
-            self.cursor, self.uid, [result["request_id"]], {"state": "queued"}
-        )
+        self.queue_request(result["request_id"])
 
         execution = self.request_obj.execute(
             self.cursor, self.uid, result["request_id"]
@@ -476,9 +475,7 @@ class TestHolderChangeWww(testing.OOTestCase):
         del payload["holder"]["surname1"]
         del payload["holder"]["surname2"]
         result = self.www_obj.create_request(self.cursor, self.uid, payload)
-        self.request_obj.write(
-            self.cursor, self.uid, [result["request_id"]], {"state": "queued"}
-        )
+        self.queue_request(result["request_id"])
 
         execution = self.request_obj.execute(
             self.cursor, self.uid, result["request_id"]
@@ -503,9 +500,7 @@ class TestHolderChangeWww(testing.OOTestCase):
             self.cursor, self.uid, "som_polissa_soci", "res_partner_soci"
         )[1]
         result = self.www_obj.create_request(self.cursor, self.uid, payload)
-        self.request_obj.write(
-            self.cursor, self.uid, [result["request_id"]], {"state": "queued"}
-        )
+        self.queue_request(result["request_id"])
 
         execution = self.request_obj.execute(
             self.cursor, self.uid, result["request_id"]
@@ -518,9 +513,7 @@ class TestHolderChangeWww(testing.OOTestCase):
 
     def test_execute_turns_new_holder_into_member(self):
         result = self.www_obj.create_request(self.cursor, self.uid, self.payload())
-        self.request_obj.write(
-            self.cursor, self.uid, [result["request_id"]], {"state": "queued"}
-        )
+        self.queue_request(result["request_id"])
 
         execution = self.request_obj.execute(
             self.cursor, self.uid, result["request_id"]
@@ -544,9 +537,7 @@ class TestHolderChangeWww(testing.OOTestCase):
             "origen_ct_sense_socia_category",
         )[1]
         result = self.www_obj.create_request(self.cursor, self.uid, payload)
-        self.request_obj.write(
-            self.cursor, self.uid, [result["request_id"]], {"state": "queued"}
-        )
+        self.queue_request(result["request_id"])
 
         execution = self.request_obj.execute(
             self.cursor, self.uid, result["request_id"]
@@ -577,9 +568,7 @@ class TestHolderChangeWww(testing.OOTestCase):
             "origen_ct_sense_socia_category",
         )[1]
         result = self.www_obj.create_request(self.cursor, self.uid, payload)
-        self.request_obj.write(
-            self.cursor, self.uid, [result["request_id"]], {"state": "queued"}
-        )
+        self.queue_request(result["request_id"])
 
         execution = self.request_obj.execute(
             self.cursor, self.uid, result["request_id"]
@@ -607,9 +596,7 @@ class TestHolderChangeWww(testing.OOTestCase):
             },
         ]
         result = self.www_obj.create_request(self.cursor, self.uid, payload)
-        self.request_obj.write(
-            self.cursor, self.uid, [result["request_id"]], {"state": "queued"}
-        )
+        self.queue_request(result["request_id"])
 
         execution = self.request_obj.execute(
             self.cursor, self.uid, result["request_id"]
@@ -668,9 +655,7 @@ class TestHolderChangeWww(testing.OOTestCase):
             "datas": "JVBERi0xLjQ=",
         }]
         result = self.www_obj.create_request(self.cursor, self.uid, payload)
-        self.request_obj.write(
-            self.cursor, self.uid, [result["request_id"]], {"state": "queued"}
-        )
+        self.queue_request(result["request_id"])
         execution = self.request_obj.execute(
             self.cursor, self.uid, result["request_id"]
         )
@@ -701,9 +686,7 @@ class TestHolderChangeWww(testing.OOTestCase):
             },
         ]
         result = self.www_obj.create_request(self.cursor, self.uid, payload)
-        self.request_obj.write(
-            self.cursor, self.uid, [result["request_id"]], {"state": "queued"}
-        )
+        self.queue_request(result["request_id"])
         execution = self.request_obj.execute(
             self.cursor, self.uid, result["request_id"]
         )
@@ -775,9 +758,7 @@ class TestHolderChangeWww(testing.OOTestCase):
             },
         )
         result = self.www_obj.create_request(self.cursor, self.uid, payload)
-        self.request_obj.write(
-            self.cursor, self.uid, [result["request_id"]], {"state": "queued"}
-        )
+        self.queue_request(result["request_id"])
 
         self.request_obj.execute(self.cursor, self.uid, result["request_id"])
 
