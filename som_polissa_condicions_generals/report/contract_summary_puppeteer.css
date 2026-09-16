@@ -38,6 +38,10 @@ body {
     break-inside: avoid;
 }
 
+.summary-box--offer {
+    break-inside: auto;
+}
+
 .summary-box--company {
     border-bottom-color: var(--summary-company-accent);
 }
@@ -118,6 +122,18 @@ body {
 .summary-table th {
     background-color: #878787;
     color: white;
+}
+
+.price-summary {
+    break-inside: avoid;
+}
+
+.price-summary + .price-summary {
+    margin-top: 12px;
+}
+
+.price-summary__validity {
+    margin-bottom: 0;
 }
 
 .inline-label {

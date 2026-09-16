@@ -41,12 +41,14 @@ Les skills següents estan disponibles al projecte i s'han d'utilitzar quan corr
 - PR-affecting work must use a named worktree under `<WORKSPACE>/openerp_som_addons-worktrees/`, where `<WORKSPACE>` is the directory containing the primary repository checkout; never use `/tmp/opencode`.
 - Announce the active worktree before making edits.
 - If no appropriate worktree exists, stop and get explicit approval before creating one.
+- When `HERDR_ENV=1`, use the `erp-herdr-worktree` skill's `create` or `open` wrapper with the explicit target worktree before editing it.
 
 | Skill | Quan usar | Com usar |
 |-------|-----------|----------|
 | `git-branch` | Crear branca nova | Veure [.agents/skills/git-branch/SKILL.md](.agents/skills/git-branch/SKILL.md) |
 | `git-commit` | Fer commit | Veure [.agents/skills/git-commit/SKILL.md](.agents/skills/git-commit/SKILL.md) |
 | `git-pr` | Crear PR | Veure [.agents/skills/git-pr/SKILL.md](.agents/skills/git-pr/SKILL.md) |
+| `erp-herdr-worktree` | Treballar en un worktree ERP des d'un pane Herdr mantenint l'agent al workspace multirepo | Veure [.agents/skills/erp-herdr-worktree/SKILL.md](.agents/skills/erp-herdr-worktree/SKILL.md) |
 
 ### Current PR Policy
 
@@ -54,14 +56,14 @@ Repository GitHub workflows and repository rules are authoritative for PR requir
 
 Currently, `.github/workflows/pull_request_labeler.yml` requires each PR to have at least one label. It does not require an approved linked issue or a `type:*` label. This is the current policy and may change with repository workflows or rules.
 
-**Convencions de branca:**
-- `ADD_<desc>` - Nova funcionalitat
-- `IMP_<desc>` - Millora
-- `FIX_<desc>` - Bug fix
-- `MOD_<desc>` - Canvi de comportament
-- `REF_<desc>` - Refactorització
-- `TEST_<desc>` - Tests
-- `DOCS_<desc>` - Documentació
+### Noms de branca
+
+Utilitza el format `<PREFIX>_<descripcio>`:
+
+- Prefix: `ADD_`, `IMP_`, `FIX_`, `MOD_`, `REF_`, `TEST_`, `DOCS_` o `CI_`.
+- Descripció: paraules descriptives en anglès, minúscules i separades per `_`.
+
+Exemple: `IMP_invoice_payment_type_views`.
 
 **Format de commit:**
 - Només emoji + descripció en anglès: `✨ add user auth`
@@ -76,6 +78,10 @@ Currently, `.github/workflows/pull_request_labeler.yml` requires each PR to have
 | `erp-start` | Arrencar servei ERP | Veure [.agents/skills/erp-start/SKILL.md](.agents/skills/erp-start/SKILL.md) |
 | `erp-migration` | Crear scripts de migració | Veure [.agents/skills/erp-migration/SKILL.md](.agents/skills/erp-migration/SKILL.md) |
 | `erp-demo-testcase` | Crear casos demo XML de test | Veure [.agents/skills/erp-demo-testcase/SKILL.md](.agents/skills/erp-demo-testcase/SKILL.md) |
+
+### Migracions obligatòries
+
+Qualsevol canvi de model o fitxer XML, incloses les vistes, requereix llegir la skill `erp-migration` abans d'editar i incloure el script de migració corresponent.
 
 ### Sentry
 
