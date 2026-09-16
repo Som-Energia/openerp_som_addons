@@ -329,8 +329,10 @@ class TestHolderChangeWww(testing.OOTestCase):
         )
 
     def test_execute_completes_once_without_duplicate_m1(self):
+        payload = self.payload()
+        payload["holder"]["vat"] = "98765432M"
         result = self.www_obj.create_request(
-            self.cursor, self.uid, self.payload()
+            self.cursor, self.uid, payload
         )
         self.request_obj.write(
             self.cursor, self.uid, [result["request_id"]], {"state": "queued"}
@@ -392,11 +394,18 @@ class TestHolderChangeWww(testing.OOTestCase):
     def test_subrogation_creates_draft_m1(self):
         payload = self.payload()
         payload["especial_cases"].update({"reason_death": True})
-        payload["attachments"] = [{
-            "filename": "death-certificate.pdf",
-            "category": "holder_change_death",
-            "datas": "JVBERi0xLjQ=",
-        }]
+        payload["attachments"] = [
+            {
+                "filename": "death-certificate.pdf",
+                "category": "holder_change_death",
+                "datas": "JVBERi0xLjQ=",
+            },
+            {
+                "filename": "death-certificate-2.pdf",
+                "category": "holder_change_death",
+                "datas": "JVBERi0xLjQy",
+            },
+        ]
         result = self.www_obj.create_request(self.cursor, self.uid, payload)
         self.assertTrue(result["success"], result)
         self.request_obj.write(
@@ -419,6 +428,7 @@ class TestHolderChangeWww(testing.OOTestCase):
 
     def test_execute_uses_new_holder_language_and_address(self):
         payload = self.payload()
+        payload["holder"]["vat"] = "76543210S"
         payload["holder"]["language"] = self.polissa.titular.lang
         payload["payment"]["iban"] = "es91 2100-0418.4502/0005 1332"
         result = self.www_obj.create_request(self.cursor, self.uid, payload)
@@ -584,11 +594,18 @@ class TestHolderChangeWww(testing.OOTestCase):
     def test_execute_copies_death_certificate_to_result_contract(self):
         payload = self.payload()
         payload["especial_cases"].update({"reason_death": True})
-        payload["attachments"] = [{
-            "filename": "death-certificate.pdf",
-            "category": "holder_change_death",
-            "datas": "JVBERi0xLjQ=",
-        }]
+        payload["attachments"] = [
+            {
+                "filename": "death-certificate.pdf",
+                "category": "holder_change_death",
+                "datas": "JVBERi0xLjQ=",
+            },
+            {
+                "filename": "death-certificate-2.pdf",
+                "category": "holder_change_death",
+                "datas": "JVBERi0xLjQy",
+            },
+        ]
         result = self.www_obj.create_request(self.cursor, self.uid, payload)
         self.request_obj.write(
             self.cursor, self.uid, [result["request_id"]], {"state": "queued"}
@@ -607,7 +624,40 @@ class TestHolderChangeWww(testing.OOTestCase):
                 ("description", "=", "Certificat defunció"),
             ],
         )
-        self.assertEqual(len(attachment_ids), 1)
+        self.assertEqual(len(attachment_ids), 2)
+        attachments = self.openerp.pool.get("ir.attachment").read(
+            self.cursor, self.uid, attachment_ids, ["datas_fname", "datas"]
+        )
+        self.assertEqual(
+            sorted(attachment["datas_fname"] for attachment in attachments),
+            ["death-certificate-2.pdf", "death-certificate.pdf"],
+        )
+        self.assertEqual(
+            sorted(attachment["datas"] for attachment in attachments),
+            ["JVBERi0xLjQ=", "JVBERi0xLjQy"],
+        )
+
+        request = self.request_obj.browse(
+            self.cursor, self.uid, result["request_id"]
+        )
+        self.request_obj._apply_special_documents(
+            self.cursor,
+            self.uid,
+            request,
+            self.polissa_obj.browse(
+                self.cursor, self.uid, execution["result_polissa_id"]
+            ).titular.id,
+            execution["result_polissa_id"],
+        )
+        self.assertEqual(len(self.openerp.pool.get("ir.attachment").search(
+            self.cursor,
+            self.uid,
+            [
+                ("res_model", "=", "giscedata.polissa"),
+                ("res_id", "=", execution["result_polissa_id"]),
+                ("description", "=", "Certificat defunció"),
+            ],
+        )), 2)
 
     def test_execute_copies_merge_certificate_to_result_contract(self):
         payload = self.payload()
@@ -638,11 +688,18 @@ class TestHolderChangeWww(testing.OOTestCase):
     def test_execute_creates_electrodependency_document_and_nocutoff(self):
         payload = self.payload()
         payload["especial_cases"].update({"reason_electrodep": True})
-        payload["attachments"] = [{
-            "filename": "medical-certificate.pdf",
-            "category": "holder_change_medical",
-            "datas": "JVBERi0xLjQ=",
-        }]
+        payload["attachments"] = [
+            {
+                "filename": "medical-certificate.pdf",
+                "category": "holder_change_medical",
+                "datas": "JVBERi0xLjQ=",
+            },
+            {
+                "filename": "resident-certificate.pdf",
+                "category": "holder_change_medical",
+                "datas": "JVBERi0xLjQy",
+            },
+        ]
         result = self.www_obj.create_request(self.cursor, self.uid, payload)
         self.request_obj.write(
             self.cursor, self.uid, [result["request_id"]], {"state": "queued"}
@@ -669,11 +726,69 @@ class TestHolderChangeWww(testing.OOTestCase):
                 ("description", "=", "Justificant mèdic"),
             ],
         )
-        self.assertEqual(len(attachment_ids), 1)
+        self.assertEqual(len(attachment_ids), 2)
         result_polissa = self.polissa_obj.browse(
             self.cursor, self.uid, execution["result_polissa_id"]
         )
         self.assertTrue(result_polissa.nocutoff)
+
+    def test_execute_reuses_existing_electrodependency_document(self):
+        payload = self.payload()
+        payload["holder"]["vat"] = "87654321X"
+        payload["especial_cases"].update({"reason_electrodep": True})
+        payload["attachments"] = [{
+            "filename": "medical-certificate.pdf",
+            "category": "holder_change_medical",
+            "datas": "JVBERi0xLjQ=",
+        }]
+        partner_obj = self.openerp.pool.get("res.partner")
+        partner_ids = partner_obj.search(
+            self.cursor, self.uid,
+            [("vat", "=", "ES" + payload["holder"]["vat"])],
+        )
+        partner_id = partner_ids[0] if partner_ids else partner_obj.create(
+            self.cursor,
+            self.uid,
+            {"name": "Existing holder", "vat": "ES" + payload["holder"]["vat"]},
+        )
+        category_id = self.imd_obj.get_object_reference(
+            self.cursor,
+            self.uid,
+            "som_documents_sensibles",
+            "documents_sensibles_category_electrodependent",
+        )[1]
+        document_obj = self.openerp.pool.get("som.documents.sensibles")
+        document_ids = document_obj.search(
+            self.cursor,
+            self.uid,
+            [("partner_id", "=", partner_id), ("categoria", "=", category_id)],
+        )
+        document_id = document_ids[0] if document_ids else document_obj.create(
+            self.cursor,
+            self.uid,
+            {
+                "name": "Existing sensitive document",
+                "data_recepcio": "2020-01-01",
+                "darrera_data_valida": "2020-01-01",
+                "partner_id": partner_id,
+                "categoria": category_id,
+            },
+        )
+        result = self.www_obj.create_request(self.cursor, self.uid, payload)
+        self.request_obj.write(
+            self.cursor, self.uid, [result["request_id"]], {"state": "queued"}
+        )
+
+        self.request_obj.execute(self.cursor, self.uid, result["request_id"])
+
+        document_ids = document_obj.search(
+            self.cursor, self.uid, [("partner_id", "=", partner_id)]
+        )
+        self.assertEqual(document_ids, [document_id])
+        self.assertEqual(
+            document_obj.read(self.cursor, self.uid, document_id, ["categoria"])["categoria"][0],
+            category_id,
+        )
 
     def test_create_request_returns_internal_request_id(self):
         first = self.www_obj.create_request(
@@ -699,10 +814,11 @@ class TestHolderChangeWww(testing.OOTestCase):
 
     def test_create_request_rejects_inactive_new_holder(self):
         payload = self.payload()
+        payload["holder"]["vat"] = "11223344B"
         self.openerp.pool.get("res.partner").create(
             self.cursor,
             self.uid,
-            {"name": "Inactive holder", "vat": "ES12345678Z", "active": False},
+            {"name": "Inactive holder", "vat": "ES11223344B", "active": False},
             context={"active_test": False},
         )
 

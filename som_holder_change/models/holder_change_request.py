@@ -398,7 +398,27 @@ class SomHolderChangeRequest(osv.osv):
         )
         return mandate_id
 
-    def _apply_special_documents(self, cursor, uid, request, partner_id, polissa_id, context=None):
+    def _indispensable_nocutoff_id(self, cursor, uid, context=None):
+        nocutoff_ids = self.pool.get("giscedata.polissa.nocutoff").search(
+            cursor, uid, [("motiu", "like", "imprescindible")], limit=1, context=context
+        )
+        if not nocutoff_ids:
+            raise osv.except_osv(
+                _("Missing no-cutoff reason"),
+                _("The indispensable supply no-cutoff reason is required."),
+            )
+        return nocutoff_ids[0]
+
+    def _apply_special_documents(
+        self,
+        cursor,
+        uid,
+        request,
+        partner_id,
+        polissa_id,
+        nocutoff_id=False,
+        context=None,
+    ):
         cases = request.payload["especial_cases"]
         category_code = False
         description = False
@@ -442,16 +462,14 @@ class SomHolderChangeRequest(osv.osv):
                     context=context,
                 )
             target_model = "som.documents.sensibles"
-            nocutoff_ids = self.pool.get("giscedata.polissa.nocutoff").search(
-                cursor, uid, [("motiu", "like", "imprescindible")], limit=1, context=context
-            )
-            if not nocutoff_ids:
-                raise osv.except_osv(
-                    _("Missing no-cutoff reason"),
-                    _("The indispensable supply no-cutoff reason is required."),
-                )
             self.pool.get("giscedata.polissa").write(
-                cursor, uid, polissa_id, {"nocutoff": nocutoff_ids[0]}, context=context
+                cursor,
+                uid,
+                polissa_id,
+                {"nocutoff": nocutoff_id or self._indispensable_nocutoff_id(
+                    cursor, uid, context=context
+                )},
+                context=context,
             )
         if not category_code:
             return
@@ -468,6 +486,22 @@ class SomHolderChangeRequest(osv.osv):
         )
         for attachment in attachment_obj.browse(cursor, uid, attachment_ids, context=context):
             if attachment.category_id.code != category_code:
+                continue
+            copied_ids = attachment_obj.search(
+                cursor,
+                uid,
+                [
+                    ("res_model", "=", target_model),
+                    ("res_id", "=", target_id),
+                    ("category_id", "=", attachment.category_id.id),
+                    ("datas_fname", "=", attachment.datas_fname),
+                    ("description", "=", description),
+                ],
+                context=context,
+            )
+            if any(copied.datas == attachment.datas for copied in attachment_obj.browse(
+                cursor, uid, copied_ids, context=context
+            )):
                 continue
             attachment_obj.create(
                 cursor,
@@ -580,6 +614,9 @@ class SomHolderChangeRequest(osv.osv):
         )
 
     def _run_holder_change(self, cursor, uid, request, temporary=False, context=None):
+        nocutoff_id = False
+        if request.payload["especial_cases"].get("reason_electrodep"):
+            nocutoff_id = self._indispensable_nocutoff_id(cursor, uid, context=context)
         partner_id = self._create_holder(cursor, uid, request, context=context)
         address_id = self._create_holder_address(
             cursor, uid, request, partner_id, context=context
@@ -608,7 +645,13 @@ class SomHolderChangeRequest(osv.osv):
             context=context,
         )
         self._apply_special_documents(
-            cursor, uid, request, partner_id, polissa_id, context=context
+            cursor,
+            uid,
+            request,
+            partner_id,
+            polissa_id,
+            nocutoff_id=nocutoff_id,
+            context=context,
         )
         if member_partner_id:
             values = {"soci": member_partner_id}
