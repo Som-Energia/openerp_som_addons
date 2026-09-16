@@ -770,33 +770,32 @@ class SomHolderChangeRequest(osv.osv):
             cursor, uid, [wizard_id], context=mail_context
         )
 
-    def _notify_completed_request(self, cursor, uid, request_id, context=None):
-        request = self.browse(cursor, uid, request_id, context=context)
+    def _completed_notification_specs(self, cursor, uid, request, context=None):
         switching = request.switching_id
         pas = switching.get_pas()
         notifications = []
         if not request.owner_notification_sent:
-            notifications.append((
-                "owner_notification_sent",
-                "giscedata_switching" if request.owner_change_type == "T"
+            notifications.append({
+                "field": "owner_notification_sent",
+                "module": "giscedata_switching" if request.owner_change_type == "T"
                 else "som_polissa_condicions_generals",
-                "notification_atr_M1_01" if request.owner_change_type == "T"
+                "xml_id": "notification_atr_M1_01" if request.owner_change_type == "T"
                 else "notification_atr_M1_01_SS",
-                "giscedata.switching",
-                switching.id,
-                pas.direccio_notificacio.email,
-                "modifica@somenergia.coop",
-            ))
+                "model": "giscedata.switching",
+                "record_id": switching.id,
+                "recipient": pas.direccio_notificacio.email,
+                "from_email": "modifica@somenergia.coop",
+            })
         if not request.old_owner_notification_sent:
-            notifications.append((
-                "old_owner_notification_sent",
-                "som_switching",
-                "email_validacio_dades_canvi_titular",
-                "giscedata.switching",
-                switching.id,
-                switching.mail_pagador_polissa,
-                "modifica@somenergia.coop",
-            ))
+            notifications.append({
+                "field": "old_owner_notification_sent",
+                "module": "som_switching",
+                "xml_id": "email_validacio_dades_canvi_titular",
+                "model": "giscedata.switching",
+                "record_id": switching.id,
+                "recipient": switching.mail_pagador_polissa,
+                "from_email": "modifica@somenergia.coop",
+            })
         if request.new_member_partner_id and not request.member_notification_sent:
             member_ids = self.pool.get("somenergia.soci").search(
                 cursor,
@@ -806,33 +805,39 @@ class SomHolderChangeRequest(osv.osv):
                 context=context,
             )
             if member_ids:
-                notifications.append((
-                    "member_notification_sent",
-                    "som_polissa_soci",
-                    "nou_soci_mail_webforms",
-                    "somenergia.soci",
-                    member_ids[0],
-                    False,
-                    False,
-                ))
-        for field, module, xml_id, model, record_id, recipient, from_email in notifications:
+                notifications.append({
+                    "field": "member_notification_sent",
+                    "module": "som_polissa_soci",
+                    "xml_id": "nou_soci_mail_webforms",
+                    "model": "somenergia.soci",
+                    "record_id": member_ids[0],
+                    "recipient": False,
+                    "from_email": False,
+                })
+        return notifications
+
+    def _notify_completed_request(self, cursor, uid, request_id, context=None):
+        request = self.browse(cursor, uid, request_id, context=context)
+        for notification in self._completed_notification_specs(
+            cursor, uid, request, context=context
+        ):
             try:
                 self._send_mail(
                     cursor,
                     uid,
-                    module,
-                    xml_id,
-                    model,
-                    record_id,
-                    recipient,
-                    from_email=from_email,
+                    notification["module"],
+                    notification["xml_id"],
+                    notification["model"],
+                    notification["record_id"],
+                    notification["recipient"],
+                    from_email=notification["from_email"],
                     context=context,
                 )
             except Exception as error:
                 logger.exception("Unable to send holder change notification: %s", error)
                 continue
             super(SomHolderChangeRequest, self).write(
-                cursor, uid, [request_id], {field: True}, context=context
+                cursor, uid, [request_id], {notification["field"]: True}, context=context
             )
 
     def prepare(self, cursor, uid, request_id, context=None):
