@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from __future__ import absolute_import
 import io
 import zipfile
 import requests
@@ -15,7 +16,7 @@ def is_empty_zip(bytes_zip):
         return len(zf.namelist()) == 0
 
 
-def instance(_config):
+def instance(_config, **_kwargs):
     return Iberdrola(_config)
 
 
@@ -33,8 +34,15 @@ class Iberdrola(BaseApiDownloader):
         login_auth = HTTPBasicAuth(self.config.usuari, self.config.contrasenya)
         login_body = {"codPortal": self.cod_portal}
 
+        login_headers = {
+            "Accept": "application/json",
+            "Portal": self.cod_portal,
+        }
+
         try:
-            res = requests.post(login_url, json=login_body, auth=login_auth)
+            res = requests.post(
+                login_url, json=login_body, auth=login_auth, headers=login_headers
+            )
             if res.status_code != 200 or res.json().get("descripcion") != "OK":
                 raise CrawlingLoginException(
                     "Error d'autenticació a la API. Verifiqui usuari i contrasenya!"
@@ -61,8 +69,8 @@ class Iberdrola(BaseApiDownloader):
 
         download_body = {
             "loginUsuario": self.config.usuari,
-            "marcados": True,  # this mark the files as downloaded
-            "firmados": False,
+            "marcados": False,
+            "firmado": False,
             "filtros": {
                 "fechaDesde": inici.strftime("%d/%m/%Y %H:%M:%S"),
                 "fechaHasta": final.strftime("%d/%m/%Y %H:%M:%S"),
