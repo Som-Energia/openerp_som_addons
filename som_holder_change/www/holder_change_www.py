@@ -23,18 +23,133 @@ class SomHolderChangeWww(osv.osv_memory):
     _description = "Holder change web facade"
     _SIGNATURE_ERROR_STATUSES = ("error", "canceled", "declined", "expired")
 
-    def _error(self, code, message):
-        return {"success": False, "code": code, "error": message}
+    def create_request(self, cursor, uid, payload, context=None):
+        if context is None:
+            context = {}
+        validation_error = holder_change_validation.validate_payload(payload)
+        if validation_error:
+            return validation_error
 
-    def _validate_payload(self, payload):
-        return holder_change_validation.validate_payload(payload, self._error)
+        cups = self._normalize_cups(payload["supply_point"]["cups"])
+        if not CUPS_RE.match(cups):
+            return holder_change_validation.error("INVALID_CUPS", _("The CUPS format is invalid."))
 
-    def _normalize_cups(self, cups):
-        return (cups or "").replace(" ", "").upper()
+        polissa_id, contract_error = self._find_contract(cursor, uid, cups, context=context)
+        if contract_error:
+            return holder_change_validation.error(
+                contract_error, _("The contract is not available."))
 
-    def _normalize_vat(self, vat):
-        vat = (vat or "").replace(" ", "").upper()
-        return vat[2:] if vat.startswith("ES") else vat
+        if self._is_inactive_holder(cursor, uid, payload["holder"]["vat"], context=context):
+            return holder_change_validation.error(
+                "CUSTOMER_INACTIVE", _("The new holder is inactive."))
+
+        modifiable_error = self._check_contract_modifiable(cursor, uid, polissa_id, context=context)
+        if modifiable_error:
+            return modifiable_error
+
+        polissa = self.pool.get("giscedata.polissa").browse(
+            cursor, uid, polissa_id, context=context)
+        current_vat = self._normalize_vat(polissa.titular.vat)
+        new_vat = self._normalize_vat(payload["holder"]["vat"])
+        if current_vat == new_vat:
+            return holder_change_validation.error(
+                "SAME_OWNER", _("The new holder must differ from the current holder.")
+            )
+
+        # Serializing on the contract prevents concurrent requests for one CUPS.
+        cursor.execute(
+            "SELECT id FROM giscedata_polissa WHERE id = %s FOR UPDATE",
+            (polissa_id,),
+        )
+        if self._active_request_for_cups(cursor, uid, cups, context=context):
+            return holder_change_validation.error(
+                "REQUEST_IN_PROGRESS",
+                _("There is already an active holder change request for this CUPS."),
+            )
+
+        request_id = self._store_request(
+            cursor, uid, payload, cups, polissa_id, context=context)
+
+        preparation_error = self._prepare_stored_request(
+            cursor, uid, request_id, context=context)
+
+        return preparation_error or self._request_response(
+            cursor, uid, request_id, context=context)
+
+    def add_payment_card_data(
+        self, cursor, uid, request_id, cups, card_values, context=None
+    ):
+        request_obj = self.pool.get("som.holder.change.request")
+        request = self._get_request(cursor, uid, request_id, cups, context=context)
+        cursor.commit()
+        request_obj.set_card_data(cursor, uid, request_id, card_values, context=context)
+        return {"success": True, "request_id": request.id, "state": "awaiting_signature"}
+
+    def sign_request(self, cursor, uid, request_id, cups, context=None):
+        if context is None:
+            context = {}
+        request = self._get_request(cursor, uid, request_id, cups, context=context)
+        if request.signature_process_id:
+            return {"url": request.signature_process_id.signature_url}
+        if request.state != "awaiting_signature":
+            raise osv.except_osv(_("Invalid request state"), _(
+                "The request is not ready for signing."))
+
+        process_obj = self.pool.get("giscedata.signatura.process")
+        cursor.commit()
+        with Sudo(uid=uid, gid=0):
+            process_id = process_obj.create(
+                cursor, uid, self._signature_process_values(request), context=context
+            )
+            process_obj.start(cursor, uid, [process_id], context=context)
+        request_obj = self.pool.get("som.holder.change.request")
+        request_obj.write(cursor, uid, [request_id], {
+                          "signature_process_id": process_id}, context=context)
+
+        signature_url = self._wait_for_signature_url(
+            cursor, uid, process_obj, process_id, context=context
+        )
+        return {"url": self._localized_signature_url(
+            signature_url, request.payload["holder"]["language"]
+        )}
+
+    @job(queue="leads", timeout=300)
+    def execute_request_async(self, cursor, uid, request_id, context=None):
+        request_obj = self.pool.get("som.holder.change.request")
+        try:
+            return request_obj.execute(cursor, uid, request_id, context=context)
+        except Exception as error:
+            request_obj.write(
+                cursor,
+                uid,
+                [request_id],
+                {"state": "execution_error", "error_code": "EXECUTION_ERROR",
+                    "error_message": str(error)},
+                context=context,
+            )
+            raise
+
+    def execute_request(self, cursor, uid, request_id, cups, context=None):
+        if context is None:
+            context = {}
+
+        request = self._get_request(cursor, uid, request_id, cups, context=context)
+        if not request.signature_process_id:
+            raise osv.except_osv(_("Signature required"), _(
+                "The request has not been sent for signing."))
+
+        process_obj = self.pool.get("giscedata.signatura.process")
+        process_obj.update(cursor, uid, [request.signature_process_id.id], context=context)
+        status = process_obj.read(cursor, uid, request.signature_process_id.id, [
+                                  "status"], context=context)["status"]
+        if status != "completed":
+            raise osv.except_osv(_("Signature required"), _(
+                "The signature has not been completed."))
+
+        request_obj = self.pool.get("som.holder.change.request")
+        request_obj.write(cursor, uid, [request_id], {"state": "queued"}, context=context)
+        self.execute_request_async(cursor, uid, request_id, context=context)
+        return {"success": True, "request_id": request_id, "state": "queued"}
 
     def _find_contract(self, cursor, uid, cups, context=None):
         cups_obj = self.pool.get("giscedata.cups.ps")
@@ -58,15 +173,6 @@ class SomHolderChangeWww(osv.osv_memory):
             return False, "CONTRACT_NOT_ACTIVE"
         return contract_ids[0], False
 
-    def _owner_change_type(self, payload):
-        cases = payload["especial_cases"]
-        special_case = any([
-            cases.get("reason_death"),
-            cases.get("reason_merge"),
-            cases.get("reason_electrodep"),
-        ])
-        return "S" if special_case else "T"
-
     def _is_inactive_holder(self, cursor, uid, vat, context=None):
         inactive_context = (context or {}).copy()
         inactive_context["active_test"] = False
@@ -89,7 +195,7 @@ class SomHolderChangeWww(osv.osv_memory):
                 cursor, uid, polissa_id, context=context
             )
         except Exception as error:
-            return self._error("CONTRACT_NOT_MODIFIABLE", str(error))
+            return holder_change_validation.error("CONTRACT_NOT_MODIFIABLE", str(error))
         return False
 
     def _check_open_atr(self, cursor, uid, polissa_id, context=None):
@@ -104,7 +210,7 @@ class SomHolderChangeWww(osv.osv_memory):
             context=context,
         )
         if atr_ids:
-            return self._error(
+            return holder_change_validation.error(
                 "CONTRACT_NOT_MODIFIABLE", _("The contract has an open ATR case.")
             )
         return False
@@ -127,6 +233,38 @@ class SomHolderChangeWww(osv.osv_memory):
             context=context,
         )
         return request_ids and request_ids[0] or False
+
+    def _store_request(self, cursor, uid, payload, cups, polissa_id, context=None):
+        stored_payload = deepcopy(payload)
+        if stored_payload["payment_method"] == "bank":
+            stored_payload["payment"]["iban"] = "".join(
+                char.upper() for char in stored_payload["payment"]["iban"]
+                if char.isalnum()
+            )
+
+        request_id = self.pool.get("som.holder.change.request").create(
+            cursor,
+            uid,
+            {
+                "polissa_id": polissa_id,
+                "cups": cups,
+                "owner_change_type": self._owner_change_type(payload),
+                "payload": stored_payload,
+            },
+            context=context,
+        )
+
+        attachments = stored_payload.get("attachments", [])
+        for attachment in attachments:
+            attachment.pop("datas", None)
+        self._create_attachments(
+            cursor,
+            uid,
+            request_id,
+            payload.get("attachments", []),
+            context=context,
+        )
+        return request_id
 
     def _create_attachments(self, cursor, uid, request_id, attachments, context=None):
         category_obj = self.pool.get("ir.attachment.category")
@@ -154,36 +292,6 @@ class SomHolderChangeWww(osv.osv_memory):
                 context=context,
             )
 
-    def _store_request(self, cursor, uid, payload, cups, polissa_id, context=None):
-        stored_payload = deepcopy(payload)
-        if stored_payload["payment_method"] == "bank":
-            stored_payload["payment"]["iban"] = "".join(
-                char.upper() for char in stored_payload["payment"]["iban"]
-                if char.isalnum()
-            )
-        attachments = stored_payload.get("attachments", [])
-        for attachment in attachments:
-            attachment.pop("datas", None)
-        request_id = self.pool.get("som.holder.change.request").create(
-            cursor,
-            uid,
-            {
-                "polissa_id": polissa_id,
-                "cups": cups,
-                "owner_change_type": self._owner_change_type(payload),
-                "payload": stored_payload,
-            },
-            context=context,
-        )
-        self._create_attachments(
-            cursor,
-            uid,
-            request_id,
-            payload.get("attachments", []),
-            context=context,
-        )
-        return request_id
-
     def _prepare_stored_request(self, cursor, uid, request_id, context=None):
         request_obj = self.pool.get("som.holder.change.request")
         # The simulation uses an independent cursor, so it must see the request.
@@ -199,8 +307,8 @@ class SomHolderChangeWww(osv.osv_memory):
                     "error_message": str(error)},
                 context=context,
             )
-            return self._error("SIMULATION_ERROR", str(error))
-        return False
+            return holder_change_validation.error("SIMULATION_ERROR", str(error))
+        return None
 
     def _request_response(self, cursor, uid, request_id, context=None):
         request = self.pool.get("som.holder.change.request").read(
@@ -212,70 +320,6 @@ class SomHolderChangeWww(osv.osv_memory):
             "state": request["state"],
             "signature_url": False,
         }
-
-    def create_request(self, cursor, uid, payload, context=None):
-        if context is None:
-            context = {}
-        validation_error = self._validate_payload(payload)
-        if validation_error:
-            return validation_error
-        cups = self._normalize_cups(payload["supply_point"]["cups"])
-        if not CUPS_RE.match(cups):
-            return self._error("INVALID_CUPS", _("The CUPS format is invalid."))
-        polissa_id, contract_error = self._find_contract(
-            cursor, uid, cups, context=context
-        )
-        if contract_error:
-            return self._error(contract_error, _("The contract is not available."))
-        if self._is_inactive_holder(
-            cursor, uid, payload["holder"]["vat"], context=context
-        ):
-            return self._error("CUSTOMER_INACTIVE", _("The new holder is inactive."))
-        modifiable_error = self._check_contract_modifiable(
-            cursor, uid, polissa_id, context=context
-        )
-        if modifiable_error:
-            return modifiable_error
-
-        polissa = self.pool.get("giscedata.polissa").browse(
-            cursor, uid, polissa_id, context=context
-        )
-        current_vat = self._normalize_vat(polissa.titular.vat)
-        new_vat = self._normalize_vat(payload["holder"]["vat"])
-        if current_vat == new_vat:
-            return self._error(
-                "SAME_OWNER", _("The new holder must differ from the current holder.")
-            )
-
-        # Serializing on the contract prevents concurrent requests for one CUPS.
-        cursor.execute(
-            "SELECT id FROM giscedata_polissa WHERE id = %s FOR UPDATE",
-            (polissa_id,),
-        )
-        if self._active_request_for_cups(cursor, uid, cups, context=context):
-            return self._error(
-                "REQUEST_IN_PROGRESS",
-                _("There is already an active holder change request for this CUPS."),
-            )
-
-        request_id = self._store_request(
-            cursor, uid, payload, cups, polissa_id, context=context
-        )
-        preparation_error = self._prepare_stored_request(
-            cursor, uid, request_id, context=context
-        )
-        return preparation_error or self._request_response(
-            cursor, uid, request_id, context=context
-        )
-
-    def add_payment_card_data(
-        self, cursor, uid, request_id, cups, card_values, context=None
-    ):
-        request_obj = self.pool.get("som.holder.change.request")
-        request = self._get_request(cursor, uid, request_id, cups, context=context)
-        cursor.commit()
-        request_obj.set_card_data(cursor, uid, request_id, card_values, context=context)
-        return {"success": True, "request_id": request.id, "state": "awaiting_signature"}
 
     def _signature_process_values(self, request):
         holder = request.payload["holder"]
@@ -313,68 +357,24 @@ class SomHolderChangeWww(osv.osv_memory):
         return signature_url.replace(
             "app.", "sign-app.").replace("document", "v1/{}".format(lang))
 
-    def sign_request(self, cursor, uid, request_id, cups, context=None):
-        if context is None:
-            context = {}
-        request = self._get_request(cursor, uid, request_id, cups, context=context)
-        if request.signature_process_id:
-            return {"url": request.signature_process_id.signature_url}
-        if request.state != "awaiting_signature":
-            raise osv.except_osv(_("Invalid request state"), _(
-                "The request is not ready for signing."))
+    def _error(self, code, message):
+        return {"success": False, "code": code, "error": message}
 
-        process_obj = self.pool.get("giscedata.signatura.process")
-        cursor.commit()
-        with Sudo(uid=uid, gid=0):
-            process_id = process_obj.create(
-                cursor, uid, self._signature_process_values(request), context=context
-            )
-            process_obj.start(cursor, uid, [process_id], context=context)
-        request_obj = self.pool.get("som.holder.change.request")
-        request_obj.write(cursor, uid, [request_id], {
-                          "signature_process_id": process_id}, context=context)
+    def _normalize_cups(self, cups):
+        return (cups or "").replace(" ", "").upper()
 
-        signature_url = self._wait_for_signature_url(
-            cursor, uid, process_obj, process_id, context=context
-        )
-        return {"url": self._localized_signature_url(
-            signature_url, request.payload["holder"]["language"]
-        )}
+    def _normalize_vat(self, vat):
+        vat = (vat or "").replace(" ", "").upper()
+        return vat[2:] if vat.startswith("ES") else vat
 
-    def execute_request(self, cursor, uid, request_id, cups, context=None):
-        if context is None:
-            context = {}
-        request = self._get_request(cursor, uid, request_id, cups, context=context)
-        if not request.signature_process_id:
-            raise osv.except_osv(_("Signature required"), _(
-                "The request has not been sent for signing."))
-        process_obj = self.pool.get("giscedata.signatura.process")
-        process_obj.update(cursor, uid, [request.signature_process_id.id], context=context)
-        status = process_obj.read(cursor, uid, request.signature_process_id.id, [
-                                  "status"], context=context)["status"]
-        if status != "completed":
-            raise osv.except_osv(_("Signature required"), _(
-                "The signature has not been completed."))
-        request_obj = self.pool.get("som.holder.change.request")
-        request_obj.write(cursor, uid, [request_id], {"state": "queued"}, context=context)
-        self.execute_request_async(cursor, uid, request_id, context=context)
-        return {"success": True, "request_id": request_id, "state": "queued"}
-
-    @job(queue="leads", timeout=300)
-    def execute_request_async(self, cursor, uid, request_id, context=None):
-        request_obj = self.pool.get("som.holder.change.request")
-        try:
-            return request_obj.execute(cursor, uid, request_id, context=context)
-        except Exception as error:
-            request_obj.write(
-                cursor,
-                uid,
-                [request_id],
-                {"state": "execution_error", "error_code": "EXECUTION_ERROR",
-                    "error_message": str(error)},
-                context=context,
-            )
-            raise
+    def _owner_change_type(self, payload):
+        cases = payload["especial_cases"]
+        special_case = any([
+            cases.get("reason_death"),
+            cases.get("reason_merge"),
+            cases.get("reason_electrodep"),
+        ])
+        return "S" if special_case else "T"
 
 
 SomHolderChangeWww()
