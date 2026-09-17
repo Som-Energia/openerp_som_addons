@@ -65,51 +65,6 @@ class TestHolderChangeWww(testing.OOTestCase):
         mock.patch.stopall()
         self.txn.stop()
 
-    def payload(self):
-        return {
-            "payment_method": "bank",
-            "payment": {
-                "iban": "ES9121000418450200051332",
-                "sepa_accepted": True,
-                "voluntary_cent": True,
-            },
-            "supply_point": {
-                "cups": self.polissa.cups.name,
-                "address": self.polissa.cups.direccio,
-            },
-            "privacy_policy_accepted": True,
-            "terms_accepted": True,
-            "member": {
-                "invite_token": False,
-                "become_member": True,
-                "link_member": False,
-            },
-            "especial_cases": {
-                "reason_death": False,
-                "reason_merge": False,
-                "reason_electrodep": False,
-                "attachments": {},
-            },
-            "holder": {
-                "name": "Maria",
-                "surname1": "Nova",
-                "surname2": "Titular",
-                "vat": "12345678Z",
-                "address": "Carrer Nou, 1",
-                "postal_code": "17001",
-                "state": self.polissa.cups.id_municipi.state.id,
-                "city": self.polissa.cups.id_municipi.id,
-                "email": "maria@example.com",
-                "phone1": "600000000",
-                "language": "ca_ES",
-            },
-        }
-
-    def queue_request(self, request_id):
-        self.request_obj.write(
-            self.cursor, self.uid, [request_id], {"state": "queued"}
-        )
-
     def test_create_request_resolves_active_contract(self):
         result = self.www_obj.create_request(
             self.cursor, self.uid, self.payload()
@@ -169,6 +124,108 @@ class TestHolderChangeWww(testing.OOTestCase):
             self.cursor, self.uid, result["request_id"], ["payload"]
         )
         self.assertNotIn("datas", request["payload"]["attachments"][0])
+
+    def test_create_request_returns_internal_request_id(self):
+        first = self.www_obj.create_request(
+            self.cursor, self.uid, self.payload()
+        )
+
+        self.assertTrue(first["request_id"])
+
+    def test_create_request_rejects_an_active_request_for_the_same_cups(self):
+        first = self.www_obj.create_request(self.cursor, self.uid, self.payload())
+        second = self.www_obj.create_request(self.cursor, self.uid, self.payload())
+
+        self.assertTrue(first["success"])
+        self.assertFalse(second["success"])
+        self.assertEqual(second["code"], "REQUEST_IN_PROGRESS")
+
+    def test_create_request_rejects_same_holder(self):
+        payload = self.payload()
+        payload["holder"]["vat"] = self.polissa.titular.vat.replace("ES", "")
+        payload["holder"].update({
+            "proxyname": "Representant Legal",
+            "proxynif": "12345678Z",
+        })
+
+        result = self.www_obj.create_request(
+            self.cursor, self.uid, payload
+        )
+
+        self.assertFalse(result["success"])
+        self.assertEqual(result["code"], "SAME_OWNER")
+
+    def test_create_request_rejects_inactive_new_holder(self):
+        payload = self.payload()
+        payload["holder"]["vat"] = "11223344B"
+        self.openerp.pool.get("res.partner").create(
+            self.cursor,
+            self.uid,
+            {"name": "Inactive holder", "vat": "ES11223344B", "active": False},
+            context={"active_test": False},
+        )
+
+        result = self.www_obj.create_request(self.cursor, self.uid, payload)
+
+        self.assertFalse(result["success"])
+        self.assertEqual(result["code"], "CUSTOMER_INACTIVE")
+
+    def test_create_request_rejects_non_modifiable_contract(self):
+        with mock.patch.object(
+            self.www_obj,
+            "_check_contract_modifiable",
+            return_value=self.www_obj._error("CONTRACT_NOT_MODIFIABLE", "Open ATR"),
+        ):
+            result = self.www_obj.create_request(self.cursor, self.uid, self.payload())
+
+        self.assertFalse(result["success"])
+        self.assertEqual(result["code"], "CONTRACT_NOT_MODIFIABLE")
+
+    def test_create_request_requires_real_consent(self):
+        payload = self.payload()
+        payload["payment"]["sepa_accepted"] = False
+
+        result = self.www_obj.create_request(
+            self.cursor, self.uid, payload
+        )
+
+        self.assertFalse(result["success"])
+        self.assertEqual(result["code"], "CONSENT_REQUIRED")
+
+    def test_create_request_derives_subrogation_from_special_case(self):
+        payload = self.payload()
+        payload["especial_cases"].update({
+            "reason_death": True,
+            "attachments": {"death": "attachment-id"},
+        })
+
+        result = self.www_obj.create_request(
+            self.cursor, self.uid, payload
+        )
+
+        self.assertTrue(result["success"], result)
+        request = self.request_obj.read(
+            self.cursor,
+            self.uid,
+            result["request_id"],
+            ["owner_change_type"],
+        )
+        self.assertEqual(request["owner_change_type"], "S")
+
+    def test_create_request_rejects_inactive_contract(self):
+        inactive_id = self.imd_obj.get_object_reference(
+            self.cursor, self.uid, "giscedata_polissa", "polissa_0001"
+        )[1]
+        inactive = self.polissa_obj.browse(self.cursor, self.uid, inactive_id)
+        payload = deepcopy(self.payload())
+        payload["supply_point"]["cups"] = inactive.cups.name
+
+        result = self.www_obj.create_request(
+            self.cursor, self.uid, payload
+        )
+
+        self.assertFalse(result["success"])
+        self.assertEqual(result["code"], "CONTRACT_NOT_ACTIVE")
 
     def test_card_request_waits_for_card_data(self):
         payload = self.payload()
@@ -277,14 +334,6 @@ class TestHolderChangeWww(testing.OOTestCase):
             self.www_obj.add_payment_card_data(
                 self.cursor, self.uid, result["request_id"], "ES0000000000000000AA", {}
             )
-
-    def test_create_request_rejects_an_active_request_for_the_same_cups(self):
-        first = self.www_obj.create_request(self.cursor, self.uid, self.payload())
-        second = self.www_obj.create_request(self.cursor, self.uid, self.payload())
-
-        self.assertTrue(first["success"])
-        self.assertFalse(second["success"])
-        self.assertEqual(second["code"], "REQUEST_IN_PROGRESS")
 
     def test_simulation_only_persists_reserved_references(self):
         partner_obj = self.openerp.pool.get("res.partner")
@@ -847,96 +896,47 @@ class TestHolderChangeWww(testing.OOTestCase):
         )
         self.assertEqual(len(electro_document_ids), 1)
 
-    def test_create_request_returns_internal_request_id(self):
-        first = self.www_obj.create_request(
-            self.cursor, self.uid, self.payload()
+    def payload(self):
+        return {
+            "payment_method": "bank",
+            "payment": {
+                "iban": "ES9121000418450200051332",
+                "sepa_accepted": True,
+                "voluntary_cent": True,
+            },
+            "supply_point": {
+                "cups": self.polissa.cups.name,
+                "address": self.polissa.cups.direccio,
+            },
+            "privacy_policy_accepted": True,
+            "terms_accepted": True,
+            "member": {
+                "invite_token": False,
+                "become_member": True,
+                "link_member": False,
+            },
+            "especial_cases": {
+                "reason_death": False,
+                "reason_merge": False,
+                "reason_electrodep": False,
+                "attachments": {},
+            },
+            "holder": {
+                "name": "Maria",
+                "surname1": "Nova",
+                "surname2": "Titular",
+                "vat": "12345678Z",
+                "address": "Carrer Nou, 1",
+                "postal_code": "17001",
+                "state": self.polissa.cups.id_municipi.state.id,
+                "city": self.polissa.cups.id_municipi.id,
+                "email": "maria@example.com",
+                "phone1": "600000000",
+                "language": "ca_ES",
+            },
+        }
+
+    def queue_request(self, request_id):
+        self.request_obj.write(
+            self.cursor, self.uid, [request_id], {"state": "queued"}
         )
-
-        self.assertTrue(first["request_id"])
-
-    def test_create_request_rejects_same_holder(self):
-        payload = self.payload()
-        payload["holder"]["vat"] = self.polissa.titular.vat.replace("ES", "")
-        payload["holder"].update({
-            "proxyname": "Representant Legal",
-            "proxynif": "12345678Z",
-        })
-
-        result = self.www_obj.create_request(
-            self.cursor, self.uid, payload
-        )
-
-        self.assertFalse(result["success"])
-        self.assertEqual(result["code"], "SAME_OWNER")
-
-    def test_create_request_rejects_inactive_new_holder(self):
-        payload = self.payload()
-        payload["holder"]["vat"] = "11223344B"
-        self.openerp.pool.get("res.partner").create(
-            self.cursor,
-            self.uid,
-            {"name": "Inactive holder", "vat": "ES11223344B", "active": False},
-            context={"active_test": False},
-        )
-
-        result = self.www_obj.create_request(self.cursor, self.uid, payload)
-
-        self.assertFalse(result["success"])
-        self.assertEqual(result["code"], "CUSTOMER_INACTIVE")
-
-    def test_create_request_rejects_non_modifiable_contract(self):
-        with mock.patch.object(
-            self.www_obj,
-            "_check_contract_modifiable",
-            return_value=self.www_obj._error("CONTRACT_NOT_MODIFIABLE", "Open ATR"),
-        ):
-            result = self.www_obj.create_request(self.cursor, self.uid, self.payload())
-
-        self.assertFalse(result["success"])
-        self.assertEqual(result["code"], "CONTRACT_NOT_MODIFIABLE")
-
-    def test_create_request_requires_real_consent(self):
-        payload = self.payload()
-        payload["payment"]["sepa_accepted"] = False
-
-        result = self.www_obj.create_request(
-            self.cursor, self.uid, payload
-        )
-
-        self.assertFalse(result["success"])
-        self.assertEqual(result["code"], "CONSENT_REQUIRED")
-
-    def test_create_request_derives_subrogation_from_special_case(self):
-        payload = self.payload()
-        payload["especial_cases"].update({
-            "reason_death": True,
-            "attachments": {"death": "attachment-id"},
-        })
-
-        result = self.www_obj.create_request(
-            self.cursor, self.uid, payload
-        )
-
-        self.assertTrue(result["success"], result)
-        request = self.request_obj.read(
-            self.cursor,
-            self.uid,
-            result["request_id"],
-            ["owner_change_type"],
-        )
-        self.assertEqual(request["owner_change_type"], "S")
-
-    def test_create_request_rejects_inactive_contract(self):
-        inactive_id = self.imd_obj.get_object_reference(
-            self.cursor, self.uid, "giscedata_polissa", "polissa_0001"
-        )[1]
-        inactive = self.polissa_obj.browse(self.cursor, self.uid, inactive_id)
-        payload = deepcopy(self.payload())
-        payload["supply_point"]["cups"] = inactive.cups.name
-
-        result = self.www_obj.create_request(
-            self.cursor, self.uid, payload
-        )
-
-        self.assertFalse(result["success"])
-        self.assertEqual(result["code"], "CONTRACT_NOT_ACTIVE")

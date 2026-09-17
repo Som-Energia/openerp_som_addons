@@ -15,10 +15,6 @@ def normalize_holder_vat(holder):
     return vat if vat.startswith("ES") else "ES{}".format(vat)
 
 
-def is_individual_holder(holder):
-    return holder["vat"][0].upper() in INDIVIDUAL_VAT_PREFIXES
-
-
 def holder_full_name(holder):
     if not is_individual_holder(holder):
         return holder["name"]
@@ -26,6 +22,10 @@ def holder_full_name(holder):
     if holder.get("surname2"):
         surnames = "{} {}".format(surnames, holder["surname2"])
     return "{}, {}".format(surnames, holder["name"])
+
+
+def is_individual_holder(holder):
+    return holder["vat"][0].upper() in INDIVIDUAL_VAT_PREFIXES
 
 
 def clean_iban(iban):

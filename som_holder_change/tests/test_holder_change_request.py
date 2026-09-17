@@ -22,19 +22,6 @@ class TestHolderChangeRequest(testing.OOTestCase):
     def tearDown(self):
         self.txn.stop()
 
-    def request_values(self, **values):
-        result = {
-            "polissa_id": self.polissa_id,
-            "cups": "ES12345678901234567890",
-            "owner_change_type": "T",
-            "payload": {
-                "holder": {"vat": "12345678Z", "name": "New holder"},
-                "payment": {"iban": "ES9121000418450200051332"},
-            },
-        }
-        result.update(values)
-        return result
-
     def test_create_sets_received_state(self):
         request_id = self.request_obj.create(
             self.cursor, self.uid, self.request_values()
@@ -85,3 +72,16 @@ class TestHolderChangeRequest(testing.OOTestCase):
         )
         self.assertEqual(request["state"], "validation_error")
         self.assertEqual(request["error_message"], "Invalid IBAN")
+
+    def request_values(self, **values):
+        result = {
+            "polissa_id": self.polissa_id,
+            "cups": "ES12345678901234567890",
+            "owner_change_type": "T",
+            "payload": {
+                "holder": {"vat": "12345678Z", "name": "New holder"},
+                "payment": {"iban": "ES9121000418450200051332"},
+            },
+        }
+        result.update(values)
+        return result
