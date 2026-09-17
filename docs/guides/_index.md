@@ -8,6 +8,7 @@ Guies conceptuals per entendre l'arquitectura i les decisions tècniques del pro
 |------|-----------|
 | [getting-started](getting-started.md) | Com configurar l'entorn i executar tests |
 | [testing](testing.md) | Com escriure i executar tests |
+| [cron-jobs](cron-jobs.md) | Com crear crons desactivats i gestionar-los des de `crontab` |
 
 ## Conceptes clau
 
