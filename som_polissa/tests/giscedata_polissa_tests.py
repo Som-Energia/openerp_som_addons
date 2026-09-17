@@ -29,6 +29,19 @@ class TestGisceDataCups(testing.OOTestCase):
         IrModel = self.model("ir.model.data")
         return IrModel._get_obj(self.cursor, self.uid, module, ref).id
 
+    def test_cancel_draft_polisses_cron_is_inactive(self):
+        cron_id = self.get_ref("som_polissa", "ir_cron_cancel_draft_polisses")
+        cron = self.model("ir.cron").read(
+            self.cursor,
+            self.uid,
+            cron_id,
+            ["active", "interval_number", "interval_type"],
+        )
+
+        self.assertFalse(cron["active"])
+        self.assertEqual(cron["interval_number"], 3)
+        self.assertEqual(cron["interval_type"], "months")
+
     def test_get_draft_polissa_ids_older_than(self):
         reference_date = datetime(2025, 4, 10, 12, 0, 0)
         with mock.patch.object(self.pol_obj, "search", return_value=[1, 2]) as search:
