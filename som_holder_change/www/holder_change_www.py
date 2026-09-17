@@ -241,6 +241,9 @@ class SomHolderChangeWww(osv.osv_memory):
                 char.upper() for char in stored_payload["payment"]["iban"]
                 if char.isalnum()
             )
+        attachments = stored_payload.get("attachments", [])
+        for attachment in attachments:
+            attachment.pop("datas", None)
 
         request_id = self.pool.get("som.holder.change.request").create(
             cursor,
@@ -253,10 +256,6 @@ class SomHolderChangeWww(osv.osv_memory):
             },
             context=context,
         )
-
-        attachments = stored_payload.get("attachments", [])
-        for attachment in attachments:
-            attachment.pop("datas", None)
         self._create_attachments(
             cursor,
             uid,
