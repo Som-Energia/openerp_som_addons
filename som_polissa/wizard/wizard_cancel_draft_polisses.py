@@ -14,11 +14,9 @@ class WizardCancelDraftPolisses(osv.osv_memory):
         if context is None:
             context = {}
 
-        imd_obj = self.pool.get("ir.model.data")
-        cron_id = imd_obj.get_object_reference(
-            cursor, uid, "som_polissa", "ir_cron_cancel_draft_polisses"
-        )[1]
-        self.pool.get("ir.cron").execute_cron_call(cursor, uid, cron_id, context=context)
+        self.pool.get("giscedata.polissa")._cron_cancel_draft_polisses(
+            cursor, uid, context=context
+        )
         self.write(
             cursor,
             uid,

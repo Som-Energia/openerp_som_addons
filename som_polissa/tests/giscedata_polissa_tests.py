@@ -42,18 +42,18 @@ class TestGisceDataCups(testing.OOTestCase):
         self.assertEqual(cron["interval_number"], 3)
         self.assertEqual(cron["interval_type"], "months")
 
-    def test_wizard_cancel_draft_polisses_executes_cron(self):
+    def test_wizard_cancel_draft_polisses_executes_cancellation(self):
         wizard_obj = self.model("wizard.cancel.draft.polisses")
         wizard_id = wizard_obj.create(self.cursor, self.uid, {})
-        cron_id = self.get_ref("som_polissa", "ir_cron_cancel_draft_polisses")
-        cron_obj = self.model("ir.cron")
 
-        with mock.patch.object(cron_obj, "execute_cron_call", return_value=True) as execute_cron:
+        with mock.patch.object(
+            self.pol_obj, "_cron_cancel_draft_polisses", return_value=True
+        ) as cancel_draft_polisses:
             self.assertTrue(
                 wizard_obj.action_cancel_draft_polisses(self.cursor, self.uid, [wizard_id])
             )
 
-        execute_cron.assert_called_once_with(self.cursor, self.uid, cron_id, context={})
+        cancel_draft_polisses.assert_called_once_with(self.cursor, self.uid, context={})
         wizard = wizard_obj.read(self.cursor, self.uid, [wizard_id], ["state", "info"])[0]
         self.assertEqual(wizard["state"], "done")
         self.assertIn("S'ha executat", wizard["info"])
