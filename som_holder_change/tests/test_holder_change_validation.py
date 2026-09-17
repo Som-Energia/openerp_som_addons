@@ -6,11 +6,49 @@ import unittest
 from som_holder_change.www import holder_change_validation
 
 
-def validation_error(code, message):
-    return {"code": code, "error": message}
-
-
 class TestHolderChangeValidation(unittest.TestCase):
+
+    def test_rejects_non_object_payload(self):
+        error = holder_change_validation.validate_payload([])
+
+        self.assertEqual(error["code"], "INVALID_PAYLOAD")
+
+    def test_rejects_missing_consent_before_other_validation(self):
+        payload = self.payload()
+        payload["privacy_policy_accepted"] = False
+        del payload["holder"]["surname1"]
+
+        error = holder_change_validation.validate_payload(payload)
+
+        self.assertEqual(error["code"], "CONSENT_REQUIRED")
+
+    def test_rejects_conflicting_member_selection(self):
+        payload = self.payload()
+        payload["member"].update({"become_member": True, "link_member": True})
+
+        error = holder_change_validation.validate_payload(payload)
+
+        self.assertEqual(error["code"], "INVALID_MEMBER_SELECTION")
+
+    def test_requires_the_attachment_for_a_special_case(self):
+        payload = self.payload()
+        payload["especial_cases"]["reason_death"] = True
+
+        error = holder_change_validation.validate_payload(payload)
+
+        self.assertEqual(error["code"], "MISSING_REQUIRED_FIELDS")
+
+    def test_rejects_attachment_for_another_special_case(self):
+        payload = self.payload()
+        payload["especial_cases"].update({
+            "reason_death": True,
+            "attachments": {"death": "attachment-id"},
+        })
+        payload["attachments"] = [{"category": "holder_change_merge"}]
+
+        error = holder_change_validation.validate_payload(payload)
+
+        self.assertEqual(error["code"], "INVALID_ATTACHMENT_CATEGORY")
 
     def payload(self):
         return {
@@ -46,45 +84,3 @@ class TestHolderChangeValidation(unittest.TestCase):
                 "language": "ca_ES",
             },
         }
-
-    def test_rejects_non_object_payload(self):
-        error = holder_change_validation.validate_payload([], validation_error)
-
-        self.assertEqual(error["code"], "INVALID_PAYLOAD")
-
-    def test_rejects_missing_consent_before_other_validation(self):
-        payload = self.payload()
-        payload["privacy_policy_accepted"] = False
-        del payload["holder"]["surname1"]
-
-        error = holder_change_validation.validate_payload(payload, validation_error)
-
-        self.assertEqual(error["code"], "CONSENT_REQUIRED")
-
-    def test_rejects_conflicting_member_selection(self):
-        payload = self.payload()
-        payload["member"].update({"become_member": True, "link_member": True})
-
-        error = holder_change_validation.validate_payload(payload, validation_error)
-
-        self.assertEqual(error["code"], "INVALID_MEMBER_SELECTION")
-
-    def test_requires_the_attachment_for_a_special_case(self):
-        payload = self.payload()
-        payload["especial_cases"]["reason_death"] = True
-
-        error = holder_change_validation.validate_payload(payload, validation_error)
-
-        self.assertEqual(error["code"], "MISSING_REQUIRED_FIELDS")
-
-    def test_rejects_attachment_for_another_special_case(self):
-        payload = self.payload()
-        payload["especial_cases"].update({
-            "reason_death": True,
-            "attachments": {"death": "attachment-id"},
-        })
-        payload["attachments"] = [{"category": "holder_change_merge"}]
-
-        error = holder_change_validation.validate_payload(payload, validation_error)
-
-        self.assertEqual(error["code"], "INVALID_ATTACHMENT_CATEGORY")
