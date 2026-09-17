@@ -12,16 +12,21 @@ SPECIAL_CASE_ATTACHMENTS = (
 )
 
 
-def missing_fields(values, fields_to_check):
-    return [field for field in fields_to_check if field not in values]
+def validate_payload(payload):
+    for validator in (
+        validate_base_payload,
+        validate_required_fields,
+        validate_holder,
+        validate_member,
+        validate_special_case,
+    ):
+        validation_error = validator(payload)
+        if validation_error:
+            return validation_error
+    return False
 
 
-def normalize_vat(vat):
-    vat = (vat or "").replace(" ", "").upper()
-    return vat[2:] if vat.startswith("ES") else vat
-
-
-def validate_base_payload(payload, error):
+def validate_base_payload(payload):
     if not isinstance(payload, dict):
         return error("INVALID_PAYLOAD", _("The payload must be an object."))
 
@@ -47,7 +52,7 @@ def validate_base_payload(payload, error):
     return False
 
 
-def validate_required_fields(payload, error):
+def validate_required_fields(payload):
     required = {
         "supply_point": ["cups", "address"],
         "member": ["invite_token", "become_member", "link_member"],
@@ -70,7 +75,7 @@ def validate_required_fields(payload, error):
     return False
 
 
-def validate_holder(payload, error):
+def validate_holder(payload):
     holder = payload["holder"]
     vat = normalize_vat(holder.get("vat"))
     if not vat:
@@ -85,7 +90,7 @@ def validate_holder(payload, error):
     return False
 
 
-def validate_member(payload, error):
+def validate_member(payload):
     member = payload["member"]
     if member.get("become_member") and member.get("link_member"):
         return error(
@@ -102,7 +107,7 @@ def validate_member(payload, error):
     return False
 
 
-def validate_special_case(payload, error):
+def validate_special_case(payload):
     cases = payload["especial_cases"]
     required_attachment = False
     attachment_category = False
@@ -133,15 +138,14 @@ def validate_special_case(payload, error):
     return False
 
 
-def validate_payload(payload, error):
-    for validator in (
-        validate_base_payload,
-        validate_required_fields,
-        validate_holder,
-        validate_member,
-        validate_special_case,
-    ):
-        validation_error = validator(payload, error)
-        if validation_error:
-            return validation_error
-    return False
+def missing_fields(values, fields_to_check):
+    return [field for field in fields_to_check if field not in values]
+
+
+def normalize_vat(vat):
+    vat = (vat or "").replace(" ", "").upper()
+    return vat[2:] if vat.startswith("ES") else vat
+
+
+def error(code, message):
+    return {"success": False, "code": code, "error": message}
