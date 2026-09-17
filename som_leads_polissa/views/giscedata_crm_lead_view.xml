@@ -79,5 +79,17 @@
                 </xpath>
             </field>
         </record>
+        <record id="giscedata_crm_leads_switching_som_view" model="ir.ui.view">
+            <field name="name">giscedata.crm.lead.switching.som</field>
+            <field name="model">giscedata.crm.lead</field>
+            <field name="type">form</field>
+            <field name="inherit_id" ref="giscedata_crm_leads_switching.giscedata_crm_leads_view_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='atr_proces_name']" position="attributes">
+                    <attribute name="colspan">16</attribute>
+                </xpath>
+                <xpath expr="//field[@name='atr_proces_name']/following-sibling::label[1]" position="replace"/>
+            </field>
+        </record>
     </data>
 </openerp>
