@@ -38,6 +38,7 @@
         "views/giscedata_cups_view.xml",
         "views/giscedata_polissa_view.xml",
         "wizard/wizard_add_cut_off_to_polissa_from_csv_view.xml",
+        "wizard/wizard_cancel_draft_polisses_view.xml",
         "wizard/wizard_gestio_text_to_polissa_view.xml",
         "wizard/wizard_import_ref_cadastral_from_csv_view.xml",
         "wizard/wizard_massive_category_to_polissa_view.xml",
