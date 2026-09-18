@@ -1,9 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <openerp>
     <data noupdate="1">
-        <record id="member_fee_journal_view" model="account.journal.view">
-            <field name="name">Member Fee Journal View</field>
-        </record>
         <record model="account.journal" id="member_fee_journal">
             <field name="account_control_ids" eval="[(6,0,[])]"/>
             <field name="active" eval="1"/>
@@ -36,7 +33,7 @@
             <field name="type_control_ids" eval="[(6,0,[])]"/>
             <field name="update_posted" eval="1"/>
             <field name="user_id" ref="base.user_root"/>
-            <field name="view_id" eval="ref('member_fee_journal_view')"/>
+            <field name="view_id" ref="account.account_journal_bank_view"/>
         </record>
         <record id="mode_pagament_socis_factura" model="payment.mode">
             <field name="name">QUOTA SOCIS amb Factura</field>
