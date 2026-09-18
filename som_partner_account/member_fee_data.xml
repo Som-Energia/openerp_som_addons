@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+    <data noupdate="1">
+        <record model="account.journal" id="member_fee_journal">
+            <field name="account_control_ids" eval="[(6,0,[])]"/>
+            <field name="active" eval="1"/>
+            <field name="cash_journal" eval="0"/>
+            <field name="centralisation" eval="0"/>
+            <field name="code">SOCIS</field>
+            <field
+                name="default_credit_account_id"
+                model="account.account"
+                search="[('code','=','555000000003')]"
+            />
+            <field
+                name="default_debit_account_id"
+                model="account.account"
+                search="[('code','=','555000000003')]"
+            />
+            <field
+                name="property_writeoff_account_id"
+                model="account.account"
+                search="[('code','=','659000000000')]"
+            />
+            <field name="entry_posted" eval="1"/>
+            <field name="group_invoice_lines" eval="0"/>
+            <field name="include_to_iva_book" eval="0"/>
+            <field name="name">SOCIS</field>
+            <field name="refund_journal" eval="0"/>
+            <field name="sequence_id" ref="account.sequence_statement"/>
+            <field name="sii_to_send" eval="False"/>
+            <field name="type">sale</field>
+            <field name="type_control_ids" eval="[(6,0,[])]"/>
+            <field name="update_posted" eval="1"/>
+            <field name="user_id" ref="base.user_root"/>
+            <field name="view_id" ref="account.account_journal_bank_view"/>
+        </record>
+        <record id="mode_pagament_socis_factura" model="payment.mode">
+            <field name="name">QUOTA SOCIS amb Factura</field>
+            <field name="type" search="[('code', '=', 'RECIBO_CSB')]"/>
+            <field name="journal" ref="member_fee_journal"/>
+            <field name="bank_id" search="[('partner_id', '=', 1)]"/>
+            <field name="tipo">sepa19</field>
+            <field name="nombre">Som Energia</field>
+            <field name="sufijo">000</field>
+            <field name="sepa_creditor_code">ES10000B22350466</field>
+            <field name="require_bank_account" eval="True"/>
+            <field name="partner_id">1</field>
+        </record>
+        <record model="res.config" id="socia_member_fee_amount">
+            <field name="name">socia_member_fee_amount</field>
+            <field name="value">100</field>
+            <field name="description">Import de la quota de sòcia</field>
+        </record>
+    </data>
+</openerp>
