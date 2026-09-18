@@ -29,8 +29,11 @@ class RepresentantGurbReport(report_int):
                 ("active", "=", True),
                 ("inscription_date", "<=", today),
                 ("state", "in", [
-                 "comming_registration", "comming_modification", "active", "atr_pending"
-                 ]),
+                    "comming_registration",
+                    "comming_modification",
+                    "active",
+                    "atr_pending",
+                ]),
             ]
 
             gurb_cups_ids = gurb_cups_o.search(cursor, uid, search_params, context=context)
