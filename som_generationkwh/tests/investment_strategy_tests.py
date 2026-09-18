@@ -118,6 +118,10 @@ class InvestmentStrategyTests(testing.OOTestCase):
         gkwh_account_value = self.IrProperty.read(cursor, uid, property_account_id, ['value'])['value']
         return self.AccountAccount.read(cursor, uid, int(gkwh_account_value.split(',')[1]), ['name','code'])
 
+    def _productExpenseAccountData(self, cursor, uid, product_id):
+        product = self.Product.read(cursor, uid, product_id, ['property_account_expense'])
+        return self.AccountAccount.read(cursor, uid, product['property_account_expense'][0], ['name', 'code'])
+
     def test__create_interest_invoices__AllOkAPO(self):
         with Transaction().start(self.database) as txn:
             cursor = txn.cursor
@@ -140,7 +144,7 @@ class InvestmentStrategyTests(testing.OOTestCase):
                 'interest_rate': current_interest
             }
             liq_account_dict = self._propertyAccountData(cursor, uid, 'property_liq_account_demo')
-            apo_account_dict = self._propertyAccountData(cursor, uid, 'property_apo_account_demo')
+            interest_account_dict = self._productExpenseAccountData(cursor, uid, product_id)
 
             invoice_ids, errs =  self.Investment.create_interest_invoice(cursor, uid,
             [id], vals)
@@ -167,7 +171,7 @@ class InvestmentStrategyTests(testing.OOTestCase):
                 invoice_line:
                 - account_analytic_id: false
                   uos_id: PCE
-                  account_id: {apo_account_code} {apo_account_name}
+                  account_id: {interest_account_code} {interest_account_name}
                   name: 'Interessos des de 01/07/2020 fins a 30/06/2021 de {investment_name} '
                   discount: 0.0
                   invoice_id:
@@ -218,8 +222,8 @@ class InvestmentStrategyTests(testing.OOTestCase):
                 invoice_line_tax_id=invoice.invoice_line[0].invoice_line_tax_id[0].id,
                 liq_account_code=liq_account_dict['code'],
                 liq_account_name=liq_account_dict['name'],
-                apo_account_code=apo_account_dict['code'],
-                apo_account_name=apo_account_dict['name'],
+                interest_account_code=interest_account_dict['code'],
+                interest_account_name=interest_account_dict['name'],
                 payment_type_id=payment_type_id
                 ))
 
@@ -248,7 +252,7 @@ class InvestmentStrategyTests(testing.OOTestCase):
                 'interest_rate': current_interest
             }
             liq_account_dict = self._propertyAccountData(cursor, uid, 'property_liq_account_demo')
-            apo_account_dict = self._propertyAccountData(cursor, uid, 'property_apo_account_demo')
+            interest_account_dict = self._productExpenseAccountData(cursor, uid, product_id)
 
             invoice_ids, errs =  self.Investment.create_interest_invoice(cursor, uid,
             [id], vals)
@@ -275,7 +279,7 @@ class InvestmentStrategyTests(testing.OOTestCase):
                 invoice_line:
                 - account_analytic_id: false
                   uos_id: PCE
-                  account_id: {apo_account_code} {apo_account_name}
+                  account_id: {interest_account_code} {interest_account_name}
                   name: 'Interessos des de 01/08/2020 fins a 01/02/2021 de {investment_name} '
                   discount: 0.0
                   invoice_id:
@@ -326,7 +330,7 @@ class InvestmentStrategyTests(testing.OOTestCase):
                 invoice_line_tax_id=invoice.invoice_line[0].invoice_line_tax_id[0].id,
                 liq_account_code=liq_account_dict['code'],
                 liq_account_name=liq_account_dict['name'],
-                apo_account_code=apo_account_dict['code'],
-                apo_account_name=apo_account_dict['name'],
+                interest_account_code=interest_account_dict['code'],
+                interest_account_name=interest_account_dict['name'],
                 payment_type_id=payment_type_id
                 ))
