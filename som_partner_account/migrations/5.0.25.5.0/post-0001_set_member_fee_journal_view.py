@@ -10,19 +10,10 @@ def up(cursor, installed_version):
         return
 
     logger = logging.getLogger("openerp.migration")
-    logger.info("Setting member fee journal view")
+    logger.info("Backfilling member fee creditor code")
     pool = pooler.get_pool(cursor.dbname)
     model_data_o = pool.get("ir.model.data")
-    journal_o = pool.get("account.journal")
     payment_mode_o = pool.get("payment.mode")
-
-    journal_id = model_data_o.get_object_reference(
-        cursor, 1, "som_partner_account", "member_fee_journal"
-    )[1]
-    view_id = model_data_o.get_object_reference(
-        cursor, 1, "som_partner_account", "member_fee_journal_view"
-    )[1]
-    journal_o.write(cursor, 1, [journal_id], {"view_id": view_id})
 
     payment_mode_id = model_data_o.get_object_reference(
         cursor, 1, "som_partner_account", "mode_pagament_socis_factura"
