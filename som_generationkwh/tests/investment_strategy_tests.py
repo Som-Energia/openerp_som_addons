@@ -118,8 +118,13 @@ class InvestmentStrategyTests(testing.OOTestCase):
         gkwh_account_value = self.IrProperty.read(cursor, uid, property_account_id, ['value'])['value']
         return self.AccountAccount.read(cursor, uid, int(gkwh_account_value.split(',')[1]), ['name','code'])
 
-    def _accountDataByCode(self, cursor, uid, code):
-        account_id = self.AccountAccount.search(cursor, uid, [('code', '=', code)])[0]
+    def _productAccountData(self, cursor, uid, product_id, partner_id):
+        product = self.Product.browse(cursor, uid, product_id)
+        values = self.InvoiceLine.product_id_change(
+            cursor, uid, [], product=product_id, uom=product.uom_id.id,
+            partner_id=partner_id, type='in_invoice'
+        ).get('value', {})
+        account_id = values['account_id']
         return self.AccountAccount.read(cursor, uid, account_id, ['name', 'code'])
 
     def test__create_interest_invoices__AllOkAPO(self):
@@ -143,8 +148,12 @@ class InvestmentStrategyTests(testing.OOTestCase):
                 'to_be_interized': 10,
                 'interest_rate': current_interest
             }
+            partner_id = self.IrModelData.get_object_reference(
+                cursor, uid, 'som_generationkwh', 'res_partner_aportacions'
+            )[1]
             liq_account_dict = self._propertyAccountData(cursor, uid, 'property_liq_account_demo')
-            interest_account_dict = self._accountDataByCode(cursor, uid, '662000000001')
+            interest_account_dict = self._productAccountData(
+                cursor, uid, product_id, partner_id)
 
             invoice_ids, errs =  self.Investment.create_interest_invoice(cursor, uid,
             [id], vals)
@@ -154,9 +163,6 @@ class InvestmentStrategyTests(testing.OOTestCase):
             invoice = self.Invoice.browse(cursor, uid, invoice_ids)
             investment = self.Investment.browse(cursor, uid, id)
             iban = 'ES7712341234161234567890'
-            partner_id = self.IrModelData.get_object_reference(
-                        cursor, uid, 'som_generationkwh', 'res_partner_aportacions'
-                        )[1]
             emission_data = investment.emission_id
             partner_data = self.Partner.browse(cursor, uid, partner_id)
             payment_type_id = self.PaymentType.search(cursor, uid, [('code', '=', 'TRANSFERENCIA_CSB')])[0]
@@ -251,8 +257,12 @@ class InvestmentStrategyTests(testing.OOTestCase):
                 'to_be_interized': 10,
                 'interest_rate': current_interest
             }
+            partner_id = self.IrModelData.get_object_reference(
+                cursor, uid, 'som_generationkwh', 'res_partner_aportacions'
+            )[1]
             liq_account_dict = self._propertyAccountData(cursor, uid, 'property_liq_account_demo')
-            interest_account_dict = self._accountDataByCode(cursor, uid, '662000000001')
+            interest_account_dict = self._productAccountData(
+                cursor, uid, product_id, partner_id)
 
             invoice_ids, errs =  self.Investment.create_interest_invoice(cursor, uid,
             [id], vals)
@@ -262,9 +272,6 @@ class InvestmentStrategyTests(testing.OOTestCase):
             invoice = self.Invoice.browse(cursor, uid, invoice_ids)
             investment = self.Investment.browse(cursor, uid, id)
             iban = 'ES7712341234161234567890'
-            partner_id = self.IrModelData.get_object_reference(
-                        cursor, uid, 'som_generationkwh', 'res_partner_aportacions'
-                        )[1]
             emission_data = investment.emission_id
             partner_data = self.Partner.browse(cursor, uid, partner_id)
             payment_type_id = self.PaymentType.search(cursor, uid, [('code', '=', 'TRANSFERENCIA_CSB')])[0]
