@@ -118,9 +118,9 @@ class InvestmentStrategyTests(testing.OOTestCase):
         gkwh_account_value = self.IrProperty.read(cursor, uid, property_account_id, ['value'])['value']
         return self.AccountAccount.read(cursor, uid, int(gkwh_account_value.split(',')[1]), ['name','code'])
 
-    def _productExpenseAccountData(self, cursor, uid, product_id):
-        product = self.Product.read(cursor, uid, product_id, ['property_account_expense'])
-        return self.AccountAccount.read(cursor, uid, product['property_account_expense'][0], ['name', 'code'])
+    def _accountDataByCode(self, cursor, uid, code):
+        account_id = self.AccountAccount.search(cursor, uid, [('code', '=', code)])[0]
+        return self.AccountAccount.read(cursor, uid, account_id, ['name', 'code'])
 
     def test__create_interest_invoices__AllOkAPO(self):
         with Transaction().start(self.database) as txn:
@@ -144,7 +144,7 @@ class InvestmentStrategyTests(testing.OOTestCase):
                 'interest_rate': current_interest
             }
             liq_account_dict = self._propertyAccountData(cursor, uid, 'property_liq_account_demo')
-            interest_account_dict = self._productExpenseAccountData(cursor, uid, product_id)
+            interest_account_dict = self._accountDataByCode(cursor, uid, '662000000001')
 
             invoice_ids, errs =  self.Investment.create_interest_invoice(cursor, uid,
             [id], vals)
@@ -252,7 +252,7 @@ class InvestmentStrategyTests(testing.OOTestCase):
                 'interest_rate': current_interest
             }
             liq_account_dict = self._propertyAccountData(cursor, uid, 'property_liq_account_demo')
-            interest_account_dict = self._productExpenseAccountData(cursor, uid, product_id)
+            interest_account_dict = self._accountDataByCode(cursor, uid, '662000000001')
 
             invoice_ids, errs =  self.Investment.create_interest_invoice(cursor, uid,
             [id], vals)
