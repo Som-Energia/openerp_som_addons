@@ -131,9 +131,7 @@ class TestSignLead(testing.OOTestCase):
         with self.assertRaises(osv.except_osv):
             self.lead_o.send_sign_email(self.cursor, self.uid, lead_id, context={})
 
-    def test_send_sign_email(self):
-        mailbox_o = self.get_model('poweremail.mailbox')
-        lead_id = self._create_lead()
+    def _create_signature_process(self, lead_id, status):
         template_id = self.ir_model_o.get_object_reference(
             self.cursor, self.uid,
             'giscedata_crm_leads_signatura', 'alta_lead_signatura'
@@ -142,7 +140,7 @@ class TestSignLead(testing.OOTestCase):
             self.cursor, self.uid,
             {
                 'subject': 'Test process',
-                'status': 'wait',
+                'status': status,
                 'signature_url': 'http://sign.url',
                 'template_id': template_id,
                 'template_res_id': lead_id,
@@ -156,6 +154,12 @@ class TestSignLead(testing.OOTestCase):
         )
         lead = self.lead_o.browse(self.cursor, self.uid, lead_id)
         lead.write({'signature_process': process_id}, context={})
+        return process_id
+
+    def test_send_sign_email(self):
+        mailbox_o = self.get_model('poweremail.mailbox')
+        lead_id = self._create_lead()
+        process_id = self._create_signature_process(lead_id, 'wait')
 
         with mock.patch.object(self.process_o, 'send_poweremail') as send_poweremail:
             with mock.patch.object(mailbox_o, 'search', return_value=[1]):
@@ -172,6 +176,48 @@ class TestSignLead(testing.OOTestCase):
         send_this_mail.assert_called_once_with(
             self.cursor, self.uid, [1], context={}
         )
+
+    def test_send_sign_email_sends_both_emails_when_signature_is_doing(self):
+        mailbox_o = self.get_model('poweremail.mailbox')
+        lead_id = self._create_lead()
+        process_id = self._create_signature_process(lead_id, 'doing')
+
+        with mock.patch.object(self.process_o, 'send_poweremail') as send_poweremail:
+            with mock.patch.object(mailbox_o, 'search', return_value=[1]):
+                with mock.patch.object(
+                    mailbox_o, 'send_this_mail'
+                ) as send_this_mail:
+                    with mock.patch(
+                        'som_leads_polissa.models.giscedata_crm_lead.sleep'
+                    ):
+                        self.lead_o.send_sign_email(
+                            self.cursor, self.uid, lead_id, context={}
+                        )
+
+        send_poweremail.assert_called_once_with(
+            self.cursor, self.uid, [process_id], context={}
+        )
+        send_this_mail.assert_called_once_with(
+            self.cursor, self.uid, [1], context={}
+        )
+
+    def test_send_sign_email_rejects_terminal_signature_states(self):
+        mailbox_o = self.get_model('poweremail.mailbox')
+        with mock.patch.object(self.process_o, 'send_poweremail') as send_poweremail:
+            with mock.patch.object(mailbox_o, 'search') as search:
+                with mock.patch.object(mailbox_o, 'send_this_mail') as send_this_mail:
+                    for status in ('completed', 'canceled'):
+                        lead_id = self._create_lead()
+                        self._create_signature_process(lead_id, status)
+
+                        with self.assertRaises(osv.except_osv):
+                            self.lead_o.send_sign_email(
+                                self.cursor, self.uid, lead_id, context={}
+                            )
+
+        send_poweremail.assert_not_called()
+        search.assert_not_called()
+        send_this_mail.assert_not_called()
 
     def test_retry_lead_activation_uses_recent_eligible_signatures(self):
         db = mock.MagicMock()
