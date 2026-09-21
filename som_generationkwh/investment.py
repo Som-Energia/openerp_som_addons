@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from __future__ import absolute_import, division, print_function
 
 from osv import osv, fields
 from osv.expression import OOQuery
