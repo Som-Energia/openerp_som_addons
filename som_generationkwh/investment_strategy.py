@@ -1,6 +1,4 @@
 # -*- coding: utf-8 -*-
-from __future__ import absolute_import, print_function
-
 from erpwrapper import ErpWrapper
 import pooler
 from generationkwh.isodates import isodate
