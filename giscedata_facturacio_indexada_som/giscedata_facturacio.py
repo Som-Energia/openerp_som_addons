@@ -86,11 +86,12 @@ class GiscedataFacturacioFacturador(osv.osv):
         return 'data_final' in servei_vals and servei_vals.get('data_final') < '2026-05-01'
 
     def get_consum_curve_components_for_servei(self, cursor, uid, fact_id, data_inici, data_final,
-                                               single_period_profiling, context=None):
+                                               single_period_profiling, complementaria=False, context=None):
         if context is None:
             context = {}
         tmp_curves = super(GiscedataFacturacioFacturador, self).get_consum_curve_components_for_servei(
-            cursor, uid, fact_id, data_inici, data_final, single_period_profiling, context=context
+            cursor, uid, fact_id, data_inici, data_final, single_period_profiling,
+            complementaria=complementaria, context=context
         )
 
         if context.get('get_original_ssaa_curves'):
