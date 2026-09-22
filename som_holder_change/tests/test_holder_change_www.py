@@ -284,6 +284,52 @@ class TestHolderChangeWww(testing.OOTestCase):
         for field, value in card_values.items():
             self.assertEqual(request[field], value)
 
+    def test_card_data_retries_preparation_after_a_simulation_failure(self):
+        payload = self.payload()
+        payload["payment_method"] = "card"
+        del payload["payment"]["iban"]
+        del payload["payment"]["sepa_accepted"]
+        result = self.www_obj.create_request(self.cursor, self.uid, payload)
+        card_values = {
+            "creditcard_token": "card-token",
+            "creditcard_masked_number": "**** **** **** 1234",
+            "creditcard_expiry_date": "12/30",
+            "creditcard_cof_txnid": "cof-transaction",
+        }
+
+        with mock.patch.object(
+            self.request_obj,
+            "_simulate_holder_change",
+            side_effect=Exception("Simulation failed"),
+        ):
+            with self.assertRaises(Exception):
+                self.www_obj.add_payment_card_data(
+                    self.cursor,
+                    self.uid,
+                    result["request_id"],
+                    payload["supply_point"]["cups"],
+                    card_values,
+                )
+
+        request = self.request_obj.read(
+            self.cursor,
+            self.uid,
+            result["request_id"],
+            ["state", "creditcard_token"],
+        )
+        self.assertEqual(request["state"], "awaiting_payment")
+        self.assertEqual(request["creditcard_token"], card_values["creditcard_token"])
+
+        response = self.www_obj.add_payment_card_data(
+            self.cursor,
+            self.uid,
+            result["request_id"],
+            payload["supply_point"]["cups"],
+            card_values,
+        )
+
+        self.assertEqual(response["state"], "awaiting_signature")
+
     def test_card_data_rejects_missing_or_repeated_values(self):
         payload = self.payload()
         payload["payment_method"] = "card"
