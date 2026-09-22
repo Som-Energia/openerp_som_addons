@@ -188,7 +188,7 @@ class SomHolderChangeRequest(osv.osv):
             cursor, uid, request, change_data, context=context
         )
         self._apply_result_contract_membership(
-            cursor, uid, execution["polissa_id"], change_data, context=context
+            cursor, uid, request, execution["polissa_id"], change_data, context=context
         )
         new_member_partner_id = change_data["is_new_member"] and change_data["partner_id"]
         return (
@@ -262,7 +262,7 @@ class SomHolderChangeRequest(osv.osv):
         }
 
     def _apply_result_contract_membership(
-        self, cursor, uid, polissa_id, change_data, context=None
+        self, cursor, uid, request, polissa_id, change_data, context=None
     ):
         member_partner_id = change_data["member_partner_id"]
         if member_partner_id:
@@ -279,9 +279,23 @@ class SomHolderChangeRequest(osv.osv):
                 cursor, uid, polissa_id, values, context=context
             )
         if change_data["is_new_member"]:
-            self.pool.get("res.partner").adopt_contracts_as_member(
+            partner_obj = self.pool.get("res.partner")
+            partner_obj.adopt_contracts_as_member(
                 cursor, uid, change_data["partner_id"], context=context
             )
+            if self._payment_method(request) == "bank":
+                partner = partner_obj.browse(
+                    cursor, uid, change_data["partner_id"], context=context
+                )
+                partner_obj.create_member_fee_payment(
+                    cursor,
+                    uid,
+                    partner.id,
+                    holder_change_payload.clean_iban(request.payload["payment"]["iban"]),
+                    partner.ref,
+                    "QUOTA-SOCIA-CANVI-TITULAR-{}".format(request.id),
+                    context=context,
+                )
 
     def _run_m1(self, cursor, uid, request, partner_id, address_id, payment_values, context=None):
         m1_payment_values, is_card_payment = self._m1_payment_values(

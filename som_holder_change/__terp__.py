@@ -10,6 +10,7 @@
     "depends": [
         "som_polissa",
         "som_polissa_soci",
+        "som_partner_account",
         "som_switching",
         "som_polissa_condicions_generals",
         "giscedata_signatura_documents_signaturit",
