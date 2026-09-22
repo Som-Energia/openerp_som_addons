@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import
 
-import os
-
 from osv import osv
 
 
@@ -40,8 +38,7 @@ class GiscedataSignaturaDocuments(osv.osv):
         else:
             return filename
 
-        extension = os.path.splitext(filename)[1]
-        return document_name + extension
+        return document_name
 
     def generate_report(self, cursor, uid, ids, context=None):
         if context is None:
