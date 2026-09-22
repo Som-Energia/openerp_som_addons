@@ -12,10 +12,12 @@ metadata:
 ## When to Use
 
 Utilitza aquesta skill quan:
-- Afegeixes un nou camp a un model
+- Afegeixes un nou camp a un model existent
 - Modifies el tipus d'un camp existent
-- Canvies l'estructura d'un model
+- Canvies l'estructura d'un model existent
 - Necessites aplicar canvis a producció
+
+No és obligatori crear una migració quan la PR parteix d'un mòdul nou, perquè no hi ha instal·lacions existents que actualitzar.
 
 ## Estructura de Migracions
 
@@ -72,7 +74,7 @@ Aquest script:
 source of truth. Update it when the installed ERP migration version changes;
 do not auto-detect the version.
 
-### Mandatory Pre-Commit Checklist
+### Pre-Commit Checklist (quan cal migració)
 
 - [ ] Reconcile the complete PR diff: changed model fields have corresponding `_auto_init` actions.
 - [ ] Reconcile XML and security changes: every required resource has a `load_data` action.
