@@ -161,6 +161,7 @@ class TestSignLead(testing.OOTestCase):
         self.assertEqual(context['delivery_type'], 'url')
         self.assertEqual(context['provider'], 'signaturit')
         self.assertTrue(context['signaturit_document_names'])
+        self.assertEqual(context['lang'], 'en_US')
 
     @mock.patch(_signaturit_start_fnc)
     def test_sign_lead_raises_when_signature_url_does_not_arrive(self, signaturit_start_mock):
