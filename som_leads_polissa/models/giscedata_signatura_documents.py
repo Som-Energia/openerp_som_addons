@@ -19,7 +19,7 @@ class GiscedataSignaturaDocuments(osv.osv):
         'es': {
             'contract': u'Contrato',
             'mandate': u'Autorización Bancaria',
-            'summary': u'Resumen de contratación',
+            'summary': u'Resumen de Contratación',
         },
     }
 
