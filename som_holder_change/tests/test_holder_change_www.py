@@ -442,6 +442,24 @@ class TestHolderChangeWww(testing.OOTestCase):
         self.assertEqual(switching.proces_id.name, "M1")
         self.assertEqual(switching.get_pas().sollicitudadm, "S")
         self.assertEqual(switching.get_pas().canvi_titular, "T")
+        result_polissa = self.polissa_obj.browse(
+            self.cursor, self.uid, first_result["result_polissa_id"]
+        )
+        invoice_number = "QUOTA-SOCIA-CANVI-TITULAR-{}".format(result["request_id"])
+        invoice_obj = self.openerp.pool.get("account.invoice")
+        invoice_ids = invoice_obj.search(
+            self.cursor, self.uid,
+            [("partner_id", "=", result_polissa.titular.id), ("number", "=", invoice_number)],
+        )
+        self.assertEqual(len(invoice_ids), 1)
+        invoice = invoice_obj.browse(self.cursor, self.uid, invoice_ids[0])
+        self.assertEqual(invoice.state, "draft")
+        self.assertFalse(invoice.sii_to_send)
+        self.assertEqual(invoice.mandate_id.payment_type, "one_payment")
+        self.assertEqual(
+            invoice.mandate_id.reference,
+            "res.partner,{}".format(result_polissa.titular.id),
+        )
         self.assertEqual(switching.get_pas().activacio_cicle, "L")
         self.assertEqual(switching.get_pas().cont_nom, "Maria Nova Titular")
         self.assertEqual(switching.get_pas().cont_telefons[0].numero, "600000000")
