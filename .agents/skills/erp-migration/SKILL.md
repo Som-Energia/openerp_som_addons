@@ -12,7 +12,7 @@ metadata:
 ## When to Use
 
 Utilitza aquesta skill quan:
-- Afegeixes un nou camp a un model existent
+- Afegeixes un model nou o un camp a un mòdul existent, encara que el model sigui nou
 - Modifies el tipus d'un camp existent
 - Canvies l'estructura d'un model existent
 - Necessites aplicar canvis a producció
