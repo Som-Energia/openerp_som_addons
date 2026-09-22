@@ -49,11 +49,17 @@ class GiscedataSignaturaDocuments(osv.osv):
 
         generated_documents = super(
             GiscedataSignaturaDocuments, self
-        ).generate_report(cursor, uid, ids, context=context)
+        ).generate_report(cursor, uid, ids, context=context) or {}
 
         lang = (context.get('lang') or '').split('_')[0]
         for document in self.browse(cursor, uid, ids, context=context):
             generated = generated_documents.get(document.id)
+            if not generated and document.report_id:
+                generated = self.read(
+                    cursor, uid, document.id, ['filename', 'doc_file'],
+                    context=context
+                )
+                generated_documents[document.id] = generated
             if not generated or not document.report_id:
                 continue
 
