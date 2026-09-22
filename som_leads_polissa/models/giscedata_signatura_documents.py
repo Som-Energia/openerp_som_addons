@@ -13,7 +13,7 @@ class GiscedataSignaturaDocuments(osv.osv):
     _SIGNATURIT_DOCUMENT_NAMES = {
         'ca': {
             'contract': u'Contracte',
-            'mandate': u'Autorització Bancaria',
+            'mandate': u'Autorització bancària',
             'summary': u'Resum de contractació',
         },
         'es': {

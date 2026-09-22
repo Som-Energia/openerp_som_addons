@@ -821,6 +821,7 @@ class SomLeadWww(osv.osv_memory):
         ctx['delivery_type'] = 'url'
         ctx['provider'] = 'signaturit'
         ctx['signaturit_document_names'] = True
+        ctx['lang'] = lead_data.get('lang')
 
         lead_o.write(cr, uid, lead_id, {'delivery_type': 'url'})
 

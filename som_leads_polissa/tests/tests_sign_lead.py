@@ -74,7 +74,7 @@ class TestSignLead(testing.OOTestCase):
     def test_signaturit_document_names_are_localized_and_keep_extension(self):
         cases = [
             ('ca', 'contract', u'Contracte.pdf'),
-            ('ca', 'mandate', u'Autorització Bancaria.pdf'),
+            ('ca', 'mandate', u'Autorització bancària.pdf'),
             ('ca', 'summary', u'Resum de contractació.pdf'),
             ('es', 'contract', u'Contrato.pdf'),
             ('es', 'mandate', u'Autorización Bancaria.pdf'),
@@ -87,6 +87,34 @@ class TestSignLead(testing.OOTestCase):
                 'current-name.pdf'
             )
             self.assertEqual(result, expected)
+
+    @mock.patch(
+        'giscedata_signatura_documents_signaturit.giscedata_signatura_documents.'
+        'GiscedataSignaturaDocuments.generate_report'
+    )
+    def test_generate_report_localizes_and_stores_filename(self, generate_report_mock):
+        document = mock.Mock(
+            id=1,
+            report_id=mock.Mock(report_name='giscedata.crm.lead.mandate')
+        )
+        generate_report_mock.return_value = {
+            1: {'filename': 'generated-name.pdf', 'doc_file': 'encoded'}
+        }
+
+        with mock.patch.object(self.document_o, 'browse', return_value=[document]):
+            with mock.patch.object(self.document_o, 'write') as write_mock:
+                result = self.document_o.generate_report(
+                    self.cursor, self.uid, [1],
+                    context={'lang': 'ca_ES', 'signaturit_document_names': True}
+                )
+
+        expected_filename = u'Autorització bancària.pdf'
+        self.assertEqual(result[1]['filename'], expected_filename)
+        write_mock.assert_called_once_with(
+            self.cursor, self.uid, 1,
+            {'filename': expected_filename},
+            context={'lang': 'ca_ES', 'signaturit_document_names': True}
+        )
 
     def test_signaturit_document_names_fallback_to_original_name(self):
         filename = 'current-name.docx'
