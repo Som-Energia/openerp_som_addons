@@ -23,16 +23,19 @@ class GiscedataSignaturaDocuments(osv.osv):
         },
     }
 
-    def _get_signaturit_document_name(self, report_name, lang, filename):
+    def _get_signaturit_document_name(
+        self, report_name, lang, filename, report_title=''
+    ):
         names = self._SIGNATURIT_DOCUMENT_NAMES.get(lang)
         if not names:
             return filename
 
-        if 'mandate' in report_name:
+        report_key = '{} {}'.format(report_name, report_title).lower()
+        if 'mandate' in report_key or 'mandato' in report_key:
             document_name = names['mandate']
-        elif 'summary' in report_name:
+        elif 'summary' in report_key or 'resum' in report_key:
             document_name = names['summary']
-        elif 'contract' in report_name:
+        elif 'contract' in report_key:
             document_name = names['contract']
         else:
             return filename
@@ -48,9 +51,6 @@ class GiscedataSignaturaDocuments(osv.osv):
             GiscedataSignaturaDocuments, self
         ).generate_report(cursor, uid, ids, context=context)
 
-        if not context.get('signaturit_document_names'):
-            return generated_documents
-
         lang = (context.get('lang') or '').split('_')[0]
         for document in self.browse(cursor, uid, ids, context=context):
             generated = generated_documents.get(document.id)
@@ -58,7 +58,10 @@ class GiscedataSignaturaDocuments(osv.osv):
                 continue
 
             filename = self._get_signaturit_document_name(
-                document.report_id.report_name, lang, generated['filename']
+                document.report_id.report_name,
+                lang,
+                generated['filename'],
+                document.report_id.name
             )
             if filename == generated['filename']:
                 continue
