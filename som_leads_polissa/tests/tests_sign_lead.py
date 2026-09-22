@@ -103,16 +103,19 @@ class TestSignLead(testing.OOTestCase):
             id=1,
             report_id=mock.Mock(report_name='giscedata.crm.lead.mandate')
         )
-        generate_report_mock.return_value = {
-            1: {'filename': 'generated-name.pdf', 'doc_file': 'encoded'}
-        }
+        generate_report_mock.return_value = None
 
         with mock.patch.object(self.document_o, 'browse', return_value=[document]):
-            with mock.patch.object(self.document_o, 'write') as write_mock:
-                result = self.document_o.generate_report(
-                    self.cursor, self.uid, [1],
-                    context={'lang': 'ca_ES', 'signaturit_document_names': True}
-                )
+            with mock.patch.object(
+                self.document_o,
+                'read',
+                return_value={'filename': 'generated-name.pdf', 'doc_file': 'encoded'}
+            ):
+                with mock.patch.object(self.document_o, 'write') as write_mock:
+                    result = self.document_o.generate_report(
+                        self.cursor, self.uid, [1],
+                        context={'lang': 'ca_ES', 'signaturit_document_names': True}
+                    )
 
         expected_filename = u'Autorització bancària.pdf'
         self.assertEqual(result[1]['filename'], expected_filename)
