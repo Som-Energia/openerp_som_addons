@@ -88,6 +88,12 @@ class TestSignLead(testing.OOTestCase):
             )
             self.assertEqual(result, expected)
 
+        result = self.document_o._get_signaturit_document_name(
+            'unknown.report', 'ca', 'current-name.pdf',
+            'Contract Summary and Conditions'
+        )
+        self.assertEqual(result, u'Resum de contractació.pdf')
+
     @mock.patch(
         'giscedata_signatura_documents_signaturit.giscedata_signatura_documents.'
         'GiscedataSignaturaDocuments.generate_report'
