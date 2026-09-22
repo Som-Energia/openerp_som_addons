@@ -23,6 +23,7 @@ class TestSignLead(testing.OOTestCase):
         self.www_lead_o = self.get_model('som.lead.www')
         self.lead_o = self.get_model('giscedata.crm.lead')
         self.process_o = self.get_model('giscedata.signatura.process')
+        self.document_o = self.get_model('giscedata.signatura.documents')
         self.ir_model_o = self.get_model('ir.model.data')
         self.config_o = self.get_model('res.config')
         self.payment_mode_o = self.get_model('payment.mode')
@@ -70,6 +71,30 @@ class TestSignLead(testing.OOTestCase):
 
         return start
 
+    def test_signaturit_document_names_are_localized_and_keep_extension(self):
+        cases = [
+            ('ca', 'contract', u'Contracte.pdf'),
+            ('ca', 'mandate', u'Autorització Bancaria.pdf'),
+            ('ca', 'summary', u'Resum de contractació.pdf'),
+            ('es', 'contract', u'Contrato.pdf'),
+            ('es', 'mandate', u'Autorización Bancaria.pdf'),
+            ('es', 'summary', u'Resumen de contratación.pdf'),
+        ]
+        for lang, document_type, expected in cases:
+            result = self.document_o._get_signaturit_document_name(
+                'giscedata.crm.lead.{}'.format(document_type),
+                lang,
+                'current-name.pdf'
+            )
+            self.assertEqual(result, expected)
+
+    def test_signaturit_document_names_fallback_to_original_name(self):
+        filename = 'current-name.docx'
+        result = self.document_o._get_signaturit_document_name(
+            'unknown.report', 'en', filename
+        )
+        self.assertEqual(result, filename)
+
     def test_sign_lead_rejects_wrong_cups(self):
         lead_id = self._create_lead()
 
@@ -107,6 +132,7 @@ class TestSignLead(testing.OOTestCase):
         context = signaturit_start_mock.call_args[1]['context']
         self.assertEqual(context['delivery_type'], 'url')
         self.assertEqual(context['provider'], 'signaturit')
+        self.assertTrue(context['signaturit_document_names'])
 
     @mock.patch(_signaturit_start_fnc)
     def test_sign_lead_raises_when_signature_url_does_not_arrive(self, signaturit_start_mock):

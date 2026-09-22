@@ -820,6 +820,7 @@ class SomLeadWww(osv.osv_memory):
         ctx = context.copy()
         ctx['delivery_type'] = 'url'
         ctx['provider'] = 'signaturit'
+        ctx['signaturit_document_names'] = True
 
         lead_o.write(cr, uid, lead_id, {'delivery_type': 'url'})
 
