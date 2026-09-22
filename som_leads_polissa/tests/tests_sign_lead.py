@@ -78,7 +78,7 @@ class TestSignLead(testing.OOTestCase):
             ('ca', 'summary', u'Resum de contractació.pdf'),
             ('es', 'contract', u'Contrato.pdf'),
             ('es', 'mandate', u'Autorización Bancaria.pdf'),
-            ('es', 'summary', u'Resumen de contratación.pdf'),
+            ('es', 'summary', u'Resumen de Contratación.pdf'),
         ]
         for lang, document_type, expected in cases:
             result = self.document_o._get_signaturit_document_name(
