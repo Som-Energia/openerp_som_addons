@@ -1,5 +1,8 @@
 # -*- coding: utf-8 -*-
-from __future__ import absolute_import
+from __future__ import absolute_import, division
+
+# OpenERP 5 imports and built-in round are required for Python 2 compatibility.
+# pylint: disable=bad-python3-import,round-builtin
 from osv import osv, fields
 from datetime import datetime
 from StringIO import StringIO
