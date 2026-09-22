@@ -23,6 +23,7 @@ class TestSignLead(testing.OOTestCase):
         self.www_lead_o = self.get_model('som.lead.www')
         self.lead_o = self.get_model('giscedata.crm.lead')
         self.process_o = self.get_model('giscedata.signatura.process')
+        self.document_o = self.get_model('giscedata.signatura.documents')
         self.ir_model_o = self.get_model('ir.model.data')
         self.config_o = self.get_model('res.config')
         self.payment_mode_o = self.get_model('payment.mode')
@@ -70,6 +71,67 @@ class TestSignLead(testing.OOTestCase):
 
         return start
 
+    def test_signaturit_document_names_are_localized_without_extension(self):
+        cases = [
+            ('ca', 'contract', u'Contracte'),
+            ('ca', 'mandate', u'Autorització bancària'),
+            ('ca', 'summary', u'Resum de contractació'),
+            ('es', 'contract', u'Contrato'),
+            ('es', 'mandate', u'Autorización Bancaria'),
+            ('es', 'summary', u'Resumen de Contratación'),
+        ]
+        for lang, document_type, expected in cases:
+            result = self.document_o._get_signaturit_document_name(
+                'giscedata.crm.lead.{}'.format(document_type),
+                lang,
+                'current-name.pdf'
+            )
+            self.assertEqual(result, expected)
+
+        result = self.document_o._get_signaturit_document_name(
+            'unknown.report', 'ca', 'current-name.pdf',
+            'Contract Summary and Conditions'
+        )
+        self.assertEqual(result, u'Resum de contractació')
+
+    @mock.patch(
+        'giscedata_signatura_documents_signaturit.giscedata_signatura_documents.'
+        'GiscedataSignaturaDocuments.generate_report'
+    )
+    def test_generate_report_localizes_and_stores_filename(self, generate_report_mock):
+        document = mock.Mock(
+            id=1,
+            report_id=mock.Mock(report_name='giscedata.crm.lead.mandate')
+        )
+        generate_report_mock.return_value = None
+
+        with mock.patch.object(self.document_o, 'browse', return_value=[document]):
+            with mock.patch.object(
+                self.document_o,
+                'read',
+                return_value={'filename': 'generated-name.pdf', 'doc_file': 'encoded'}
+            ):
+                with mock.patch.object(self.document_o, 'write') as write_mock:
+                    result = self.document_o.generate_report(
+                        self.cursor, self.uid, [1],
+                        context={'lang': 'ca_ES', 'signaturit_document_names': True}
+                    )
+
+        expected_filename = u'Autorització bancària'
+        self.assertEqual(result[1]['filename'], expected_filename)
+        write_mock.assert_called_once_with(
+            self.cursor, self.uid, 1,
+            {'filename': expected_filename},
+            context={'lang': 'ca_ES', 'signaturit_document_names': True}
+        )
+
+    def test_signaturit_document_names_fallback_to_original_name(self):
+        filename = 'current-name.docx'
+        result = self.document_o._get_signaturit_document_name(
+            'unknown.report', 'en', filename
+        )
+        self.assertEqual(result, filename)
+
     def test_sign_lead_rejects_wrong_cups(self):
         lead_id = self._create_lead()
 
@@ -107,6 +169,8 @@ class TestSignLead(testing.OOTestCase):
         context = signaturit_start_mock.call_args[1]['context']
         self.assertEqual(context['delivery_type'], 'url')
         self.assertEqual(context['provider'], 'signaturit')
+        self.assertTrue(context['signaturit_document_names'])
+        self.assertEqual(context['lang'], 'en_US')
 
     @mock.patch(_signaturit_start_fnc)
     def test_sign_lead_raises_when_signature_url_does_not_arrive(self, signaturit_start_mock):
