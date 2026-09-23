@@ -16,6 +16,7 @@ infer the target worktree from its current directory.
 - For `open`, the target is an existing, registered Git worktree.
 - The current terminal is a Herdr-managed pane (`HERDR_ENV=1`).
 - `bash`, `git`, `python3`, and the `herdr` CLI are available. The helper is bundled with this skill; no user-local installation is needed.
+- Amb `HERDR_ENV=1`, no useu mai `git worktree add` directament, tampoc per crear el worktree: el wrapper d'aquesta skill és obligatori per a `create` i `open`.
 
 If Herdr is unavailable, continue normally and report that no companion pane
 was created.

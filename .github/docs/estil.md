@@ -8,6 +8,7 @@
 - Indentació amb 4 espais.
 - Noms de variables descriptius i consistents.
 - Evitar funcions massa llargues.
+- En ampliar un model o classe existent, afegir els mètodes nous al final de la classe, excepte si l'ordenació local o un requisit explícit indiquen el contrari.
 
 ## ORM antic d’OpenERP 5
 - Utilitzar `osv.osv` i `osv.osv_memory`.
