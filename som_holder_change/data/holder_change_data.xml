@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <openerp>
-    <data>
+    <data noupdate="1">
         <record id="email_signature_process_holder_change" model="poweremail.templates">
             <field name="name">Canvi de titular: firma de documents</field>
             <field name="object_name" model="ir.model" search="[('model', '=', 'som.holder.change.request')]"/>
