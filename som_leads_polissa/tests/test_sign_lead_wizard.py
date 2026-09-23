@@ -20,17 +20,13 @@ class _WizardPool(object):
         return self._models[model_name]
 
 
-class _WizardProxy(object):
-    def __init__(self, lead_obj, process_obj):
-        self.pool = _WizardPool(lead_obj, process_obj)
-
-
 class TestSignLeadWizard(testing.OOTestCase):
 
     def setUp(self):
         self.lead_obj = mock.Mock()
         self.process_obj = mock.Mock()
-        self.wizard = _WizardProxy(self.lead_obj, self.process_obj)
+        self.wizard = object.__new__(WizardGenerarLeadPerFirmar)
+        self.wizard.pool = _WizardPool(self.lead_obj, self.process_obj)
 
     def _set_signature(self, lead_id, process_id=False, firmat=False, status=None,
                        signature_id=False):
