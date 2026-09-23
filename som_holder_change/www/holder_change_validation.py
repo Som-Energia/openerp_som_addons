@@ -116,17 +116,7 @@ def validate_special_case(payload):
             required_attachment = attachment_name
             attachment_category = category
             break
-    attachments = cases.get("attachments", {})
     special_attachments = payload.get("attachments", [])
-    has_attachment = not required_attachment or attachments.get(required_attachment) or any(
-        attachment.get("category") == attachment_category
-        for attachment in special_attachments
-    )
-    if required_attachment and not has_attachment:
-        return error(
-            "MISSING_REQUIRED_FIELDS",
-            _("The {} attachment is required.").format(required_attachment),
-        )
     if required_attachment and special_attachments and any(
         attachment.get("category") != attachment_category
         for attachment in special_attachments
@@ -134,6 +124,15 @@ def validate_special_case(payload):
         return error(
             "INVALID_ATTACHMENT_CATEGORY",
             _("The attachment category does not match the special case."),
+        )
+    has_attachment = not required_attachment or any(
+        attachment.get("category") == attachment_category
+        for attachment in special_attachments
+    )
+    if required_attachment and not has_attachment:
+        return error(
+            "MISSING_REQUIRED_FIELDS",
+            _("The {} attachment is required.").format(required_attachment),
         )
     return False
 

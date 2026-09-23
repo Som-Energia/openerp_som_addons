@@ -195,10 +195,12 @@ class TestHolderChangeWww(testing.OOTestCase):
 
     def test_create_request_derives_subrogation_from_special_case(self):
         payload = self.payload()
-        payload["especial_cases"].update({
-            "reason_death": True,
-            "attachments": {"death": "attachment-id"},
-        })
+        payload["especial_cases"]["reason_death"] = True
+        payload["attachments"] = [{
+            "filename": "death-certificate.pdf",
+            "category": "holder_change_death",
+            "datas": "JVBERi0xLjQ=",
+        }]
 
         result = self.www_obj.create_request(
             self.cursor, self.uid, payload
