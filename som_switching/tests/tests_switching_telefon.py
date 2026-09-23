@@ -74,3 +74,8 @@ class TestSwitchingTelefon(testing.OOTestCaseWithCursor):
 
         self.assertEqual(phone['phone_pre'], '850')
         self.assertEqual(phone['phone_num'], '1234567890')
+
+    def test_mod_con_wizard_phone_prefix_allows_three_digits(self):
+        self.assertEqual(
+            self.mod_con_wizard_obj._columns['phone_pre'].size, 4
+        )
