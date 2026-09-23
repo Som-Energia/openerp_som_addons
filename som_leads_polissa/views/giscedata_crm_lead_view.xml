@@ -77,6 +77,20 @@
                     <field name="titular_mobile_prefix" colspan="4"/>
                     <field name="titular_mobile" colspan="4"/>
                 </xpath>
+                <xpath expr="//field[@name='data_alta_prevista']" position="attributes">
+                    <attribute name="on_change">onchange_data_alta_prevista(data_alta_prevista)</attribute>
+                </xpath>
+            </field>
+        </record>
+        <record id="giscedata_crm_leads_switching_form_som_view" model="ir.ui.view">
+            <field name="name">giscedata.crm.lead.switghing.form.som</field>
+            <field name="model">giscedata.crm.lead</field>
+            <field name="type">form</field>
+            <field name="inherit_id" ref="giscedata_crm_leads_switching.giscedata_crm_leads_view_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='activacio_cicle']" position="attributes">
+                    <attribute name="attrs">{'readonly': [('data_alta_prevista', '!=', False)]}</attribute>
+                </xpath>
             </field>
         </record>
         <record id="giscedata_crm_leads_switching_som_view" model="ir.ui.view">
