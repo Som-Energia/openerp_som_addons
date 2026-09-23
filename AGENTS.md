@@ -43,6 +43,8 @@ Les skills següents estan disponibles al projecte i s'han d'utilitzar quan corr
 - Before creating any worktree, stop and get explicit approval. Fetch `origin` first and create a new worktree branch from the current `origin/main`, never from a potentially stale local `main`.
 - When `HERDR_ENV=1` and using a worktree, use the `erp-herdr-worktree` skill's `create` or `open` wrapper with the explicit target worktree before editing it.
 
+**Main branch policy:** No facis commits directament a `main`; treballa en una branca separada i integra els canvis mitjançant una PR. Només es permet un commit directe a `main` si la persona usuària ho demana explícitament.
+
 | Skill | Quan usar | Com usar |
 |-------|-----------|----------|
 | `git-branch` | Crear branca nova | Veure [.agents/skills/git-branch/SKILL.md](.agents/skills/git-branch/SKILL.md) |
