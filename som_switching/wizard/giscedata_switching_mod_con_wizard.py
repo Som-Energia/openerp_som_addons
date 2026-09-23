@@ -9,6 +9,18 @@ class GiscedataSwitchingModConWizard(osv.osv_memory):
     _name = "giscedata.switching.mod.con.wizard"
     _inherit = "giscedata.switching.mod.con.wizard"
 
+    def get_phone(self, cursor, uid, address_id, context=None):
+        telephone_obj = self.pool.get("giscedata.switching.telefon")
+        telephone_values = telephone_obj.get_atr_telephone_values(
+            cursor, uid, address_id, context=context
+        )
+        if not telephone_values:
+            return {"phone_num": ""}
+        return {
+            "phone_num": telephone_values[0]["numero"],
+            "phone_pre": telephone_values[0]["prefix"],
+        }
+
     def genera_casos_atr(self, cursor, uid, ids, context=None):
         if not context:
             context = {}
