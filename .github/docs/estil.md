@@ -8,7 +8,8 @@
 - Indentació amb 4 espais.
 - Noms de variables descriptius i consistents.
 - Evitar funcions massa llargues.
-- En ampliar un model o classe existent, afegir els mètodes nous al final de la classe, excepte si l'ordenació local o un requisit explícit indiquen el contrari.
+- En ampliar un model o classe existent, afegiu els mètodes nous al final del bloc de mètodes que precedeix les declaracions de classe d’OpenERP, com _columns, _defaults, _constraints, _sql_constraints o workflow.
+- No afegiu mai mètodes nous després d’aquestes declaracions ni reordeneu el codi existent. Si no hi ha cap bloc de mètodes abans, creeu-lo immediatament abans de la primera declaració.
 
 ## ORM antic d’OpenERP 5
 - Utilitzar `osv.osv` i `osv.osv_memory`.
