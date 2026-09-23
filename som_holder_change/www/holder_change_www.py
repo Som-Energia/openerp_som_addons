@@ -91,32 +91,41 @@ class SomHolderChangeWww(osv.osv_memory):
         if context is None:
             context = {}
         request = self._get_request(cursor, uid, request_id, cups, context=context)
-        if request.signature_process_id:
-            return {"url": request.signature_process_id.signature_url}
-        if request.state != "awaiting_signature":
-            raise osv.except_osv(_("Invalid request state"), _(
-                "The request is not ready for signing."))
-
         process_obj = self.pool.get("giscedata.signatura.process")
         request_obj = self.pool.get("som.holder.change.request")
-        cursor.commit()
-        # Keep the provider process associated even if URL polling later fails.
+        if request.signature_process_id and request.signature_process_id.signature_url:
+            return {"url": self._localized_signature_url(
+                request.signature_process_id.signature_url,
+                request.payload["holder"]["language"],
+            )}
+        if request.signature_process_id:
+            process_id = request.signature_process_id.id
+        elif request.state != "awaiting_signature":
+            raise osv.except_osv(_("Invalid request state"), _(
+                "The request is not ready for signing."))
+        else:
+            cursor.commit()
+            # Keep the provider process associated even if URL polling later fails.
+            with pooler.get_db(cursor.dbname).cursor() as signature_cursor:
+                with Sudo(uid=uid, gid=0):
+                    process_id = process_obj.create(
+                        signature_cursor,
+                        uid,
+                        self._signature_process_values(signature_cursor, uid, request),
+                        context=context,
+                    )
+                    request_obj.write(
+                        signature_cursor,
+                        uid,
+                        [request_id],
+                        {"signature_process_id": process_id},
+                        context=context,
+                    )
+                    signature_cursor.commit()
+
+        # start() is idempotent once the provider signature ID is stored.
         with pooler.get_db(cursor.dbname).cursor() as signature_cursor:
             with Sudo(uid=uid, gid=0):
-                process_id = process_obj.create(
-                    signature_cursor,
-                    uid,
-                    self._signature_process_values(signature_cursor, uid, request),
-                    context=context,
-                )
-                request_obj.write(
-                    signature_cursor,
-                    uid,
-                    [request_id],
-                    {"signature_process_id": process_id},
-                    context=context,
-                )
-                signature_cursor.commit()
                 process_obj.start(
                     signature_cursor, uid, [process_id], context=context
                 )
