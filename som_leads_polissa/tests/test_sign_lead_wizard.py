@@ -1,8 +1,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import
 
-from unittest import TestCase
-
+from destral import testing
 import mock
 
 from som_leads_polissa.wizard.wizard_generar_lead_per_firmar import (
@@ -26,7 +25,7 @@ class _WizardProxy(object):
         self.pool = _WizardPool(lead_obj, process_obj)
 
 
-class TestSignLeadWizard(TestCase):
+class TestSignLeadWizard(testing.OOTestCase):
 
     def setUp(self):
         self.lead_obj = mock.Mock()
@@ -96,10 +95,10 @@ class TestSignLeadWizard(TestCase):
         )
 
         _, _, replaceable = WizardGenerarLeadPerFirmar._inspect_leads(
-            self.wizard, None, [1], context={}
+            self.wizard, None, 1, [1], context={}
         )
         WizardGenerarLeadPerFirmar._replace_signatures(
-            self.wizard, None, replaceable, context={}
+            self.wizard, None, 1, replaceable, context={}
         )
 
         self.process_obj.cancel.assert_called_once_with(
