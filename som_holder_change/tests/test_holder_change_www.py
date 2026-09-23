@@ -4,6 +4,7 @@ from __future__ import absolute_import
 from copy import deepcopy
 
 import mock
+import pooler
 from destral import testing
 from destral.transaction import Transaction
 
@@ -380,6 +381,60 @@ class TestHolderChangeWww(testing.OOTestCase):
             self.www_obj.add_payment_card_data(
                 self.cursor, self.uid, result["request_id"], "ES0000000000000000AA", {}
             )
+
+    def test_sign_request_keeps_process_after_url_wait_failure(self):
+        payload = self.payload()
+        result = self.www_obj.create_request(self.cursor, self.uid, payload)
+        process_obj = self.openerp.pool.get("giscedata.signatura.process")
+        lang_obj = self.openerp.pool.get("res.lang")
+        lang_ids = lang_obj.search(
+            self.cursor, self.uid, [("code", "=", payload["holder"]["language"])]
+        )
+        if not lang_ids:
+            lang_obj.create(
+                self.cursor,
+                self.uid,
+                {"name": "Català", "code": payload["holder"]["language"]},
+            )
+
+        with mock.patch.object(process_obj, "start", return_value=True):
+            with mock.patch.object(
+                self.www_obj,
+                "_wait_for_signature_url",
+                side_effect=Exception("Signature URL timed out"),
+            ) as wait_for_signature_url:
+                with self.assertRaises(Exception) as raised:
+                    self.www_obj.sign_request(
+                        self.cursor,
+                        self.uid,
+                        result["request_id"],
+                        payload["supply_point"]["cups"],
+                    )
+        self.assertTrue(wait_for_signature_url.called, raised.exception)
+
+        self.cursor.rollback()
+        with pooler.get_db(self.cursor.dbname).cursor() as verification_cursor:
+            request = self.request_obj.read(
+                verification_cursor,
+                self.uid,
+                result["request_id"],
+                ["signature_process_id"],
+            )
+        self.assertTrue(request["signature_process_id"])
+        process = process_obj.read(
+            self.cursor,
+            self.uid,
+            request["signature_process_id"][0],
+            ["template_id", "template_res_id"],
+        )
+        template_id = self.imd_obj.get_object_reference(
+            self.cursor,
+            self.uid,
+            "som_holder_change",
+            "email_signature_process_holder_change",
+        )[1]
+        self.assertEqual(process["template_id"][0], template_id)
+        self.assertEqual(process["template_res_id"], result["request_id"])
 
     def test_simulation_only_persists_reserved_references(self):
         partner_obj = self.openerp.pool.get("res.partner")

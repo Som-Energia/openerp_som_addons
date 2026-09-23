@@ -545,6 +545,8 @@ class SomHolderChangeRequest(osv.osv):
             limit=1,
             context=context,
         )
+        # TODO: This works like webforms, but it may be better
+        #       to update the existing address instead of reusing it.
         if address_ids:
             return address_ids[0]
         values = {
