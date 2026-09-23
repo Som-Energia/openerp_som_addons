@@ -1,6 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <openerp>
     <data>
+        <record id="email_signature_process_holder_change" model="poweremail.templates">
+            <field name="name">Canvi de titular: firma de documents</field>
+            <field name="object_name" model="ir.model" search="[('model', '=', 'som.holder.change.request')]"/>
+            <field eval="0" name="save_to_drafts"/>
+            <field name="model_int_name">som.holder.change.request</field>
+            <field eval="0" name="use_filter"/>
+            <field name="file_name" eval="False"/>
+            <field name="def_to">${env['signature']['recipient']['email']}</field>
+            <field name="def_subject">Sol·licitud de signatura del canvi de titular</field>
+            <field name="lang">${object.payload['holder']['language']}</field>
+            <field name="template_language">mako</field>
+            <field name="def_body_text"><![CDATA[<p></p>]]></field>
+        </record>
         <record id="attachment_category_death" model="ir.attachment.category">
             <field name="code">holder_change_death</field>
             <field name="name">Holder change death certificate</field>

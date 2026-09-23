@@ -5,6 +5,8 @@ import re
 import time
 from copy import deepcopy
 
+import pooler
+
 from osv import osv
 from oorq.decorators import job
 from service.security import Sudo
@@ -96,15 +98,28 @@ class SomHolderChangeWww(osv.osv_memory):
                 "The request is not ready for signing."))
 
         process_obj = self.pool.get("giscedata.signatura.process")
-        cursor.commit()
-        with Sudo(uid=uid, gid=0):
-            process_id = process_obj.create(
-                cursor, uid, self._signature_process_values(request), context=context
-            )
-            process_obj.start(cursor, uid, [process_id], context=context)
         request_obj = self.pool.get("som.holder.change.request")
-        request_obj.write(cursor, uid, [request_id], {
-                          "signature_process_id": process_id}, context=context)
+        cursor.commit()
+        # Keep the provider process associated even if URL polling later fails.
+        with pooler.get_db(cursor.dbname).cursor() as signature_cursor:
+            with Sudo(uid=uid, gid=0):
+                process_id = process_obj.create(
+                    signature_cursor,
+                    uid,
+                    self._signature_process_values(signature_cursor, uid, request),
+                    context=context,
+                )
+                request_obj.write(
+                    signature_cursor,
+                    uid,
+                    [request_id],
+                    {"signature_process_id": process_id},
+                    context=context,
+                )
+                signature_cursor.commit()
+                process_obj.start(
+                    signature_cursor, uid, [process_id], context=context
+                )
 
         signature_url = self._wait_for_signature_url(
             cursor, uid, process_obj, process_id, context=context
@@ -320,7 +335,13 @@ class SomHolderChangeWww(osv.osv_memory):
             "signature_url": False,
         }
 
-    def _signature_process_values(self, request):
+    def _signature_process_values(self, cursor, uid, request):
+        template_id = self.pool.get("ir.model.data").get_object_reference(
+            cursor,
+            uid,
+            "som_holder_change",
+            "email_signature_process_holder_change",
+        )[1]
         holder = request.payload["holder"]
         files = [(0, 0, {"doc_file": request.contract_pdf,
                   "filename": "contract-with-summary.pdf"})]
@@ -328,6 +349,8 @@ class SomHolderChangeWww(osv.osv_memory):
             files.append((0, 0, {"doc_file": request.mandate_pdf,
                           "filename": "bank-authorization.pdf"}))
         return {
+            "template_id": template_id,
+            "template_res_id": request.id,
             "delivery_type": "url",
             "provider": "signaturit",
             "lang": holder["language"],
