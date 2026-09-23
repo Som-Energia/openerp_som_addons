@@ -10,6 +10,9 @@ class TestSwitchingTelefon(testing.OOTestCaseWithCursor):
         super(TestSwitchingTelefon, self).setUp()
         self.address_obj = self.openerp.pool.get('res.partner.address')
         self.telefon_obj = self.openerp.pool.get('giscedata.switching.telefon')
+        self.mod_con_wizard_obj = self.openerp.pool.get(
+            'giscedata.switching.mod.con.wizard'
+        )
         self.imd_obj = self.openerp.pool.get('ir.model.data')
 
     def get_prefix(self, code):
@@ -56,3 +59,18 @@ class TestSwitchingTelefon(testing.OOTestCaseWithCursor):
         self.assertEqual(
             (telephone['numero'], telephone['prefix']), ('612345678', '34')
         )
+
+    def test_mod_con_wizard_uses_structured_phone_prefix(self):
+        self.address_obj.write(self.cursor, self.uid, [1], {
+            'phone': '1234567890',
+            'phone_prefix': self.get_prefix('850'),
+            'mobile': False,
+            'mobile_prefix': False,
+        })
+
+        phone = self.mod_con_wizard_obj.get_phone(
+            self.cursor, self.uid, 1
+        )
+
+        self.assertEqual(phone['phone_pre'], '850')
+        self.assertEqual(phone['phone_num'], '1234567890')
