@@ -38,17 +38,32 @@ class TestHolderChangeValidation(unittest.TestCase):
 
         self.assertEqual(error["code"], "MISSING_REQUIRED_FIELDS")
 
-    def test_rejects_attachment_for_another_special_case(self):
+    def test_rejects_legacy_attachment_reference_without_an_upload(self):
         payload = self.payload()
         payload["especial_cases"].update({
             "reason_death": True,
             "attachments": {"death": "attachment-id"},
         })
+
+        error = holder_change_validation.validate_payload(payload)
+
+        self.assertEqual(error["code"], "MISSING_REQUIRED_FIELDS")
+
+    def test_rejects_attachment_for_another_special_case(self):
+        payload = self.payload()
+        payload["especial_cases"]["reason_death"] = True
         payload["attachments"] = [{"category": "holder_change_merge"}]
 
         error = holder_change_validation.validate_payload(payload)
 
         self.assertEqual(error["code"], "INVALID_ATTACHMENT_CATEGORY")
+
+    def test_accepts_matching_top_level_attachment_for_a_special_case(self):
+        payload = self.payload()
+        payload["especial_cases"]["reason_death"] = True
+        payload["attachments"] = [{"category": "holder_change_death"}]
+
+        self.assertFalse(holder_change_validation.validate_payload(payload))
 
     def payload(self):
         return {
