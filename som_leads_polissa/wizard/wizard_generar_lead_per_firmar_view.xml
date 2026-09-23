@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<openerp>
+    <data>
+        <record id="view_wizard_generar_lead_per_firmar_som_form" model="ir.ui.view">
+            <field name="name">wizard.generar.lead.per.firmar.som.form</field>
+            <field name="model">wizard.generar.lead.per.firmar</field>
+            <field name="type">form</field>
+            <field name="inherit_id" ref="giscedata_crm_leads_signatura.view_wizard_generar_lead_per_firmar_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//form/group[1]" position="after">
+                    <group colspan="4" col="4" attrs="{'invisible': [('state','!=', 'confirm')]}" string="Confirmar substitució">
+                        <label fill="1" string="Aquest lead ja té una firma digital, vols cancelar-la i generar una de nova?" colspan="4"/>
+                        <group colspan="8" col="4">
+                            <button icon="gtk-cancel" name="action_reject_signature_replacement" string="No" type="object" colspan="4"/>
+                            <button icon="gtk-execute" name="action_confirm_signature_replacement" string="Sí" type="object" colspan="4"/>
+                        </group>
+                    </group>
+                </xpath>
+                <xpath expr="//form/group[2]" position="after">
+                    <group colspan="4" col="4" attrs="{'invisible': [('state','!=', 'blocked')]}" string="Firma completada">
+                        <image name="gtk-dialog-info"/>
+                        <label fill="1" string="La firma està completada. Cal desvincular o eliminar la firma del lead manualment." colspan="3"/>
+                        <group colspan="8" col="4">
+                            <button icon="gtk-close" special="cancel" string="Tancar" colspan="4"/>
+                        </group>
+                    </group>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</openerp>
