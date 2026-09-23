@@ -86,6 +86,7 @@ class GiscedataSwitchingModConWizard(osv.osv_memory):
         return res
 
     _columns = {
+        "phone_pre": fields.char("Prefix", size=4),
         "necessita_documentacio_tecnica": fields.boolean(
             string="Necessita Documentació Tecnica", type="boolean"
         )
