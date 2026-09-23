@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+from __future__ import absolute_import
+
 from osv import osv, fields
 from datetime import datetime, date
 from tools.translate import _
@@ -138,7 +140,7 @@ class GiscedataSwitchingAparell(osv.osv):
         )
 
         vals = {
-            "preu_lloguer": round(preu, 6),
+            "preu_lloguer": round(preu, 6),  # pylint: disable=round-builtin
             "lloguer": True,
             "uom_id": uoms["ALQ/dia"],
             "txt": txt,
@@ -475,6 +477,49 @@ class GiscedataSwitching(osv.osv):
 
 
 GiscedataSwitching()
+
+
+class GiscedataSwitchingTelefon(osv.osv):
+
+    _name = 'giscedata.switching.telefon'
+    _inherit = 'giscedata.switching.telefon'
+
+    def get_atr_telephone_values(self, cursor, uid, partner_addr_id,
+                                 context=None):
+        address_obj = self.pool.get('res.partner.address')
+        header_obj = self.pool.get('giscedata.switching.step.header')
+        address = address_obj.read(
+            cursor, uid, partner_addr_id,
+            ['phone', 'mobile', 'phone_prefix', 'mobile_prefix'],
+            context=context
+        )
+        values = []
+        for number_field, prefix_field in [
+            ('phone', 'phone_prefix'), ('mobile', 'mobile_prefix')
+        ]:
+            number = address[number_field]
+            prefix = address[prefix_field]
+            if not number:
+                continue
+            if prefix and prefix[1]:
+                prefix = prefix[1]
+                values.append({
+                    'numero': number,
+                    'prefix': prefix[1:] if prefix.startswith('+') else prefix,
+                })
+            else:
+                values.append(header_obj.clean_tel_number(number))
+        return values
+
+    def dummy_create(self, cursor, uid, partner_addr_id, context=None):
+        telephone_ids = []
+        for values in self.get_atr_telephone_values(
+                cursor, uid, partner_addr_id, context=context):
+            telephone_ids.append(self.create(cursor, uid, values, context=context))
+        return telephone_ids
+
+
+GiscedataSwitchingTelefon()
 
 
 class GiscedataFacturacioImportacioLinia(osv.osv):
