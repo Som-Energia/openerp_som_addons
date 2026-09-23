@@ -2,7 +2,7 @@
 from __future__ import absolute_import
 
 import logging
-from oopgrade.oopgrade import load_data
+from oopgrade.oopgrade import load_data_records
 
 
 def up(cursor, installed_version):
@@ -11,9 +11,9 @@ def up(cursor, installed_version):
 
     logger = logging.getLogger('openerp.migration')
     logger.info("Loading high consumption policy category")
-    load_data(
-        cursor, 'som_polissa', 'data/som_polissa_data.xml',
-        idref=None, mode='update'
+    load_data_records(
+        cursor, 'som_polissa', 'som_polissa_data.xml',
+        ['categ_high_consumption_policy'], mode='update'
     )
     logger.info("Migration completed successfully.")
 

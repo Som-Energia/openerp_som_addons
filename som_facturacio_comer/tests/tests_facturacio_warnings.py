@@ -222,6 +222,11 @@ class TestsFacturesValidation(testing.OOTestCase):
             self.pol_obj.write(
                 self.txn.cursor, self.txn.user, pol_id, {"category_id": [(4, category_id)]}
             )
+        else:
+            category_id = self.get_fixture("som_polissa", "categ_high_consumption_policy")
+            self.pol_obj.write(
+                self.txn.cursor, self.txn.user, pol_id, {"category_id": [(3, category_id)]}
+            )
         inv_id = self.get_fixture("giscedata_facturacio", "factura_0001")
         self.modify_invoice(inv_id, pol_id, "2017-02-11", "2017-03-27", amount=5000)
         fact = self.fact_obj.browse(self.txn.cursor, self.txn.user, inv_id)
@@ -232,42 +237,65 @@ class TestsFacturesValidation(testing.OOTestCase):
         fact.potencia = 4
         return fact
 
-    def assert_high_consumption_policy_warnings(self, fact, f077_tariff="2.0TD"):
-        f077_parameters = {f077_tariff: {"0-6": 500}}
+    @mock.patch(
+        "giscedata_facturacio.giscedata_facturacio_validation."
+        "GiscedataFacturacioValidationValidator."
+        "check_maximum_import_by_tariff_and_power"
+    )
+    @mock.patch(
+        "giscedata_facturacio.giscedata_facturacio_validation."
+        "GiscedataFacturacioValidationValidator."
+        "check_max_theoric_consume_by_power"
+    )
+    def assert_high_consumption_policy_warnings(
+        self, fact, check_max_theoric_mock, check_maximum_import_mock
+    ):
+        f077_sentinel = object()
+        f015_sentinel = object()
+        check_maximum_import_mock.return_value = f077_sentinel
+        check_max_theoric_mock.return_value = f015_sentinel
+        f077_parameters = {"2.0TD": {"0-6": 500}}
         f015_parameters = {"min_percent": 100, "max_percent": ""}
-        self.assertIsNotNone(
+        self.assertIs(
             self.vali_obj.check_maximum_import_by_tariff_and_power(
                 self.txn.cursor, self.txn.user, fact, f077_parameters
-            )
+            ),
+            f077_sentinel,
         )
-        self.assertIsNotNone(
+        self.assertIs(
             self.vali_obj.check_max_theoric_consume_by_power(
                 self.txn.cursor, self.txn.user, fact, f015_parameters
+            ),
+            f015_sentinel,
+        )
+
+    def test_high_consumption_policy_skips_f077_and_f015_for_som_tariffs(self):
+        for commercial_tariff in (u"2.0TD_SOM", u"2.0TD_SOM_INSULAR"):
+            fact = self.high_consumption_policy_fact(commercial_tariff)
+            result = self.vali_obj.check_maximum_import_by_tariff_and_power(
+                self.txn.cursor, self.txn.user, fact, {"2.0TD": {"0-6": 500}}
             )
-        )
-
-    def test_high_consumption_policy_skips_f077_for_som_tariff(self):
-        fact = self.high_consumption_policy_fact(u"2.0TD_SOM")
-        result = self.vali_obj.check_maximum_import_by_tariff_and_power(
-            self.txn.cursor, self.txn.user, fact, {"2.0TD": {"0-6": 500}}
-        )
-        self.assertEqual(result, None)
-
-    def test_high_consumption_policy_skips_f015_for_insular_tariff(self):
-        fact = self.high_consumption_policy_fact(u"2.0TD_SOM_INSULAR")
-        result = self.vali_obj.check_max_theoric_consume_by_power(
-            self.txn.cursor, self.txn.user, fact, {"min_percent": 100, "max_percent": ""}
-        )
-        self.assertEqual(result, None)
+            self.assertEqual(result, None)
+            result = self.vali_obj.check_max_theoric_consume_by_power(
+                self.txn.cursor, self.txn.user, fact,
+                {"min_percent": 100, "max_percent": ""}
+            )
+            self.assertEqual(result, None)
 
     def test_high_consumption_policy_does_not_skip_warnings_without_category(self):
         fact = self.high_consumption_policy_fact(u"2.0TD_SOM", with_category=False)
         self.assert_high_consumption_policy_warnings(fact)
 
+    def test_high_consumption_policy_does_not_skip_warnings_for_insular_without_category(self):
+        fact = self.high_consumption_policy_fact(
+            u"2.0TD_SOM_INSULAR", with_category=False
+        )
+        self.assert_high_consumption_policy_warnings(fact)
+
     def test_high_consumption_policy_does_not_skip_warnings_for_other_access_tariff(self):
         fact = self.high_consumption_policy_fact(u"2.0TD_SOM")
         fact.tarifa_acces_id.name = u"3.0TD"
-        self.assert_high_consumption_policy_warnings(fact, f077_tariff="3.0TD")
+        self.assert_high_consumption_policy_warnings(fact)
 
     def test_high_consumption_policy_does_not_skip_warnings_for_other_commercial_tariff(self):
         fact = self.high_consumption_policy_fact(u"2.0TD_OTHER")
