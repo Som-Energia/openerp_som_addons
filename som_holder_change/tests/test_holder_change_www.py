@@ -438,6 +438,57 @@ class TestHolderChangeWww(testing.OOTestCase):
         self.assertEqual(process["template_id"][0], template_id)
         self.assertEqual(process["template_res_id"], result["request_id"])
 
+    def test_sign_request_retries_process_after_start_failure(self):
+        payload = self.payload()
+        result = self.www_obj.create_request(self.cursor, self.uid, payload)
+        process_obj = self.openerp.pool.get("giscedata.signatura.process")
+        signature_url = "https://app.signaturit.com/document/signature"
+
+        with mock.patch.object(
+            process_obj,
+            "start",
+            side_effect=[Exception("Provider unavailable"), True],
+        ) as start:
+            with mock.patch.object(
+                self.www_obj,
+                "_wait_for_signature_url",
+                return_value=signature_url,
+            ) as wait_for_signature_url:
+                with self.assertRaises(Exception):
+                    self.www_obj.sign_request(
+                        self.cursor,
+                        self.uid,
+                        result["request_id"],
+                        payload["supply_point"]["cups"],
+                    )
+
+                self.cursor.rollback()
+                first_process_id = self.request_obj.read(
+                    self.cursor,
+                    self.uid,
+                    result["request_id"],
+                    ["signature_process_id"],
+                )["signature_process_id"][0]
+                response = self.www_obj.sign_request(
+                    self.cursor,
+                    self.uid,
+                    result["request_id"],
+                    payload["supply_point"]["cups"],
+                )
+
+        request = self.request_obj.read(
+            self.cursor,
+            self.uid,
+            result["request_id"],
+            ["signature_process_id"],
+        )
+        self.assertEqual(request["signature_process_id"][0], first_process_id)
+        self.assertEqual(start.call_count, 2)
+        self.assertTrue(wait_for_signature_url.called)
+        self.assertEqual(
+            response["url"], "https://sign-app.signaturit.com/v1/ca/signature"
+        )
+
     def test_simulation_only_persists_reserved_references(self):
         partner_obj = self.openerp.pool.get("res.partner")
         bank_obj = self.openerp.pool.get("res.partner.bank")
