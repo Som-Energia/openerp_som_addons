@@ -6,6 +6,7 @@ import mock
 from giscedata_switching.tests.common_tests import TestSwitchingImport
 from destral.patch import PatchNewCursors
 from addons import get_module_resource
+from lxml import etree
 
 
 class TestActivacioM1(TestSwitchingImport):
@@ -319,6 +320,23 @@ class TestActivacioM1(TestSwitchingImport):
             m101 = self.M101.browse(cursor, uid, step_id)
             self.assertEqual(m101.cont_telefons[0].numero, '1234567890')
             self.assertEqual(m101.cont_telefons[0].prefix, '850')
+            xml = m101.generar_xml()[1]
+            document = etree.fromstring(xml)
+            contact_phones = document.xpath(
+                '//*[local-name()="Contacto"]'
+                '/*[local-name()="Telefono"]'
+            )
+            self.assertEqual(len(contact_phones), 1)
+            self.assertEqual(
+                contact_phones[0].xpath(
+                    './*[local-name()="PrefijoPais"]/text()'
+                )[0], '850'
+            )
+            self.assertEqual(
+                contact_phones[0].xpath(
+                    './*[local-name()="Numero"]/text()'
+                )[0], '1234567890'
+            )
 
     def test_ff_collectiu_atr_m1_01_auto_col_i_nocol(self):
         sw_obj = self.openerp.pool.get("giscedata.switching")

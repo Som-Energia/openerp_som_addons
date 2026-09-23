@@ -1,7 +1,12 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import
 
+import json
+
 from destral import testing
+from destral.transaction import Transaction
+from giscedata_switching.tests.common_tests import TestSwitchingImport
+from lxml import etree
 
 
 class TestSwitchingTelefon(testing.OOTestCaseWithCursor):
@@ -79,3 +84,97 @@ class TestSwitchingTelefon(testing.OOTestCaseWithCursor):
         self.assertEqual(
             self.mod_con_wizard_obj._columns['phone_pre'].size, 4
         )
+
+
+class TestStructuredATRPhoneXML(TestSwitchingImport):
+
+    @staticmethod
+    def xml_telephone_values(xml):
+        document = etree.fromstring(xml)
+        return [
+            (
+                phone.xpath('./*[local-name()="PrefijoPais"]/text()')[0],
+                phone.xpath('./*[local-name()="Numero"]/text()')[0],
+            )
+            for phone in document.xpath('//*[local-name()="Telefono"]')
+        ]
+
+    def get_prefix(self, cursor, uid, code):
+        return self.openerp.pool.get('ir.model.data').get_object_reference(
+            cursor, uid, 'base_extended_som',
+            'res_phone_national_code_data_{}'.format(code)
+        )[1]
+
+    def set_contract_holder_phone(self, cursor, uid, contract_id):
+        contract = self.openerp.pool.get('giscedata.polissa').browse(
+            cursor, uid, contract_id
+        )
+        self.openerp.pool.get('res.partner.address').write(
+            cursor, uid, [contract.titular.address[0].id], {
+                'phone': '1234567890',
+                'phone_prefix': self.get_prefix(cursor, uid, '850'),
+                'mobile': False,
+                'mobile_prefix': False,
+            }
+        )
+
+    def test_c1_creation_uses_dummy_phone_in_generated_xml(self):
+        with Transaction().start(self.database) as txn:
+            cursor = txn.cursor
+            uid = txn.user
+            self.switch(txn, 'comer')
+            contract_id = self.get_contract_id(txn)
+            self.activar_polissa_CUPS(txn)
+            self.set_contract_holder_phone(cursor, uid, contract_id)
+
+            step_id = self.create_case_and_step(
+                cursor, uid, contract_id, 'C1', '01'
+            )
+            step_obj = self.openerp.pool.get('giscedata.switching.c1.01')
+            c101 = step_obj.browse(cursor, uid, step_id)
+            xml = step_obj.generar_xml(cursor, uid, step_id)[1]
+
+            self.assertEqual(
+                (c101.telefons[0].prefix, c101.telefons[0].numero),
+                ('850', '1234567890')
+            )
+            self.assertIn(('850', '1234567890'), self.xml_telephone_values(xml))
+
+    def test_c2_wizard_serializes_structured_contact_phone_in_xml(self):
+        with Transaction().start(self.database) as txn:
+            cursor = txn.cursor
+            uid = txn.user
+            self.switch(txn, 'comer')
+            contract_id = self.get_contract_id(txn)
+            self.set_contract_holder_phone(cursor, uid, contract_id)
+            wizard_obj = self.openerp.pool.get(
+                'giscedata.switching.mod.con.wizard'
+            )
+            context = {'cas': 'C2', 'pol_id': contract_id}
+            wizard_id = wizard_obj.create(cursor, uid, {}, context=context)
+            wizard = wizard_obj.browse(cursor, uid, wizard_id)
+            self.assertEqual(
+                (wizard.phone_pre, wizard.phone_num), ('850', '1234567890')
+            )
+            wizard_obj.write(cursor, uid, [wizard_id], {
+                'change_atr': True,
+                'change_adm': False,
+                'activacio_cicle': 'L',
+            }, context=context)
+            wizard_obj.genera_casos_atr(
+                cursor, uid, [wizard_id], context=context
+            )
+
+            wizard = wizard_obj.browse(cursor, uid, wizard_id)
+            switching_id = json.loads(wizard.casos_generats)[0]
+            switching = self.openerp.pool.get('giscedata.switching').browse(
+                cursor, uid, switching_id
+            )
+            c201 = switching.get_pas()
+            xml = c201.generar_xml()[1]
+
+            self.assertEqual(
+                (c201.cont_telefons[0].prefix, c201.cont_telefons[0].numero),
+                ('850', '1234567890')
+            )
+            self.assertIn(('850', '1234567890'), self.xml_telephone_values(xml))
