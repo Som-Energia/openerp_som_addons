@@ -12,7 +12,7 @@ def up(cursor, installed_version):
     logger = logging.getLogger('openerp.migration')
     logger.info("Loading high consumption policy category")
     load_data_records(
-        cursor, 'som_polissa', 'som_polissa_data.xml',
+        cursor, 'som_polissa', 'data/som_polissa_data.xml',
         ['categ_high_consumption_policy'], mode='update'
     )
     logger.info("Migration completed successfully.")
