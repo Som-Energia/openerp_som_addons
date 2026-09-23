@@ -39,10 +39,20 @@ was created.
    ```
 
    The wrapper validates the target, creates the worktree only when requested,
-   then creates a vertical sibling pane rooted at that worktree. It preserves
-   focus on the agent pane and reuses a matching companion in the same tab
-   instead of creating a duplicate.
-3. Use the companion for explicit commands such as inspecting `git diff` or
+   then creates or reuses a vertical sibling pane rooted at that worktree. It
+   preserves focus on the agent pane, names that pane `agent`, and reuses a
+   matching companion in the same tab instead of creating a duplicate. It
+   records both the active worktree basename and companion pane ID as caller
+   metadata.
+4. If no matching companion exists, the helper may retarget exactly one
+   same-tab pane labeled `worktree · ...` rather than creating a split. It only
+   retargets a pane when Herdr reports a single foreground process that is the
+   pane shell itself (`sh`, `bash`, `zsh`, or `fish`). The helper never changes
+   a busy or ambiguous pane; it fails rather than sending it a command or
+   creating another pane. After sending a safely quoted `cd -- <worktree>`, it
+   waits until Herdr reports the new foreground working directory before
+   relabeling the pane. If that confirmation fails, no pane is created.
+5. Use the companion for explicit commands such as inspecting `git diff` or
    running approved tests. Do not start tests, redirect shared addon links, or
    mutate shared ERP state merely by creating the pane.
-4. Report the selected worktree and companion-pane result in the handoff.
+6. Report the selected worktree and companion-pane result in the handoff.
