@@ -995,6 +995,7 @@ class SomHolderChangeRequest(osv.osv):
         return ids
 
     _columns = {
+        "create_date": fields.datetime("Creation date", readonly=True),
         "polissa_id": fields.many2one(
             "giscedata.polissa",
             "Contract",

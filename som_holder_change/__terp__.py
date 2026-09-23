@@ -22,6 +22,7 @@
     "update_xml": [
         "security/ir.model.access.csv",
         "data/holder_change_data.xml",
+        "views/holder_change_request_view.xml",
     ],
     "active": False,
     "installable": True,
