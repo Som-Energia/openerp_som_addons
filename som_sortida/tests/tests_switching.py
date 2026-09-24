@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from __future__ import absolute_import
 from destral.transaction import Transaction
 import mock
 from giscedata_switching.tests.common_tests import TestSwitchingImport
