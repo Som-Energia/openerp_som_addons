@@ -1,0 +1,21 @@
+#!/bin/bash
+
+set -euo pipefail
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+source "${SCRIPT_DIR}/../helpers/common.sh"
+
+wait_for_dependencies
+ensure_workspace_bootstrapped
+export_runtime_environment
+
+if ! workspace_python_is_ready; then
+	echo "Python environment is not ready for ERP startup; running bootstrap-erp-workspace first"
+	bash "${SCRIPT_DIR}/bootstrap-erp-workspace"
+	export_runtime_environment
+fi
+
+echo "Starting ERP runtime for database ${ERP_DATABASE} on port ${ERP_XMLRPC_PORT}"
+prepare_authenticated_omie_requirements
+trap restore_authenticated_omie_requirements EXIT
+bash "${REPO_ROOT}/scripts/build-openerp-server.sh"
