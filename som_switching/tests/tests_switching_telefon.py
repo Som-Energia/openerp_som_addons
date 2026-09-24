@@ -106,11 +106,12 @@ class TestStructuredATRPhoneXML(TestSwitchingImport):
         )[1]
 
     def set_contract_holder_phone(self, cursor, uid, contract_id):
-        contract = self.openerp.pool.get('giscedata.polissa').browse(
+        polissa_obj = self.openerp.pool.get('giscedata.polissa')
+        address = polissa_obj.get_address_with_phone(
             cursor, uid, contract_id
         )
         self.openerp.pool.get('res.partner.address').write(
-            cursor, uid, [contract.titular.address[0].id], {
+            cursor, uid, [address.id], {
                 'phone': '1234567890',
                 'phone_prefix': self.get_prefix(cursor, uid, '850'),
                 'mobile': False,
