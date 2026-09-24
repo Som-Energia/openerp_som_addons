@@ -220,17 +220,6 @@ class GiscedataFacturacioContracteLot(osv.osv):
             string="Col·lectiu",
             readonly=True,
         ),
-        "tarifaATR": fields.related(
-            "polissa_id", "tarifa", "name", type="char", string=_("Tarifa Accés"), readonly=True
-        ),
-        "llista_preu": fields.related(
-            "polissa_id",
-            "llista_preu",
-            "name",
-            type="char",
-            string=_("Tarifa Comercialitzadora"),
-            readonly=True,
-        ),
         "total_incidencies": fields.function(
             _ff_update_fields,
             multi="totals",
