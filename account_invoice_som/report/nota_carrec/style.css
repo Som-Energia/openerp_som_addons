@@ -1,0 +1,330 @@
+@font-face {
+    font-family: "Roboto-Regular";
+    font-weight: normal;
+}
+
+/* -------------------------------------------------- COLORS */
+
+:root {
+    --generic-table-bg-color-primary: #595959; /* Background color header and footers */
+    --generic-table-bg-color-secondary: #f2f2f2; /* Background color for tables */
+    --generic-table-left-border-color: #595959; /* Left border color */
+    --generic-table-title-font-color: #f2f2f2; /* Font color for table titles */
+    --generic-table-body-font-color: #000000; /* Font color for table body */
+    --secondary-table-title-font-color: #ffff; /* Font color for secondary table titles */
+    --secondary-table-header-color: #92d400; /* Background color for secondary tables */
+    --secondary-table-bg-color: #f8f8f8; /* Background color for secondary tables */
+    --odd-row-bg-color: #f2f2f2; /* Background color for odd rows */
+    --extra-data-color-font: #7f7f7f; /* Font color for extra data */
+}
+
+/* -------------------------------------------------- GENERIC STYLES */
+
+body {
+    font-size: 3.1mm;
+    font-family: "Roboto";
+    margin: 0;
+    padding: 0;
+}
+
+.a4{
+    height: 290mm;
+    width: 200mm;
+    margin-left: auto;
+    margin-right: auto;
+    page-break-after: always; /* Asegura que cada .a4 sea una nueva página */
+}
+
+.a4-content{
+    height: 277mm;
+    width: 190mm;
+    margin-left: auto;
+    margin-right: auto;
+    position: relative;
+    page-break-inside: avoid; /* Evita romper el contenido dentro de .a4-content */
+}
+
+.header{
+    width: 100%;
+    font-size: 3mm;
+    margin-bottom: 3mm;
+    margin-top: 3mm;
+}
+
+.header tbody{
+    display: table;
+    table-layout: fixed;
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 2mm;
+}
+
+.header td{
+    margin-top: 0;
+    margin-bottom: 0;
+    padding-bottom: 0;
+    padding-top: 0;
+}
+
+.header td img{
+    display: block;
+    margin-left: 0;
+    margin-right: auto;
+    height: 160px;
+    width: auto;
+}
+
+.flex-container {
+    display: flex;
+    justify-content: space-between;
+}
+
+.vertically-centered {
+    display: flex;
+    align-items: center;
+}
+
+.full-width {
+    width: 100%;
+}
+
+.h-155 {
+    height: 155px;
+}
+
+/*----------------------------------------------------- CAPCALERA STYLE */
+
+.max-width-50mm {
+    max-width: 50mm;
+}
+
+/*----------------------------------------------------- HEADER: LOGO i ADREÇA*/
+
+#header{
+    width: 100%;
+    font-size: 12px;
+    text-align: right;
+    margin-bottom: 15px;
+}
+
+#header div img {
+    display: block;
+    margin-left: auto;
+    margin-right: 0;
+    height: 150px;
+    width: auto;
+}
+
+#header td img{
+    display: block;
+    margin-left: 0;
+    margin-right: auto;
+    height: 150px;
+    width: auto;
+}
+
+/*----------------------------------------------------- GENERIC TABLES*/
+
+.colored-window > tbody > tr:first-child > td {
+    padding-top: 9mm;
+}
+.colored-window > tbody > tr:last-child > td{
+    padding-bottom: 6mm;
+}
+.colored-window > tbody > tr > td:nth-child(2){
+    text-align: right;
+    padding-right: 3mm;
+}
+
+.generic-table{
+    border-collapse: collapse;
+}
+
+.generic-table > thead > tr > th{
+    color: var(--generic-table-title-font-color);
+    height: 8mm;
+    padding: 0;
+    font-size: 3.4mm;
+}
+
+.generic-table > thead > tr > th > div {
+    height: 100%;
+    background-color: var(--generic-table-bg-color-primary);
+    display: flex;
+    flex-flow: column wrap;
+    justify-content: center;
+}
+
+.generic-table > thead > tr > th > div > div{
+    padding-left: 3mm;
+    padding-right: 3mm;
+    text-align: left;
+}
+
+.generic-table > tbody > tr:last-child{
+    vertical-align: top;
+}
+
+.generic-table > tbody > tr > th{
+    color: var(--generic-table-bg-color-primary);
+    text-align: left;
+    font-weight: bold;
+}
+
+.generic-table > tbody > tr > td {
+    padding-left: 3mm;
+    padding-right: 3mm;
+    color: var(--generic-table-body-font-color);
+}
+
+.generic-table > tbody > tr > td > div{
+}
+
+.generic-table > tfoot > tr > td{
+    padding-left: 3mm;
+    padding-right: 3mm;
+    height: 1px;
+    background-color: var(--generic-table-bg-color-primary);
+}
+
+.generic-table > tfoot > tr > td > div{
+    width: 100%;
+    background-color: var(--generic-table-bg-color-primary);
+    display: flex;
+    flex-flow: column wrap;
+    justify-content: center;
+}
+
+.secondary-color {
+    background-color: var(--generic-table-bg-color-secondary);
+}
+
+.margin-bottom-15 {
+    margin-bottom: 15px;
+}
+
+/*----------------------------------------------------- Invoice data table */
+
+.invoice-data-table > tbody > tr:last-child > td{
+    padding-bottom: 0;
+}
+
+.invoice-data-table > tbody > tr > td:nth-child(2){
+    text-align: left;
+    padding-right: 3mm;
+}
+
+.hightlighted-field {
+    background-color: var(--generic-table-bg-color-primary);
+    color: var(--generic-table-title-font-color);
+    font-weight: bold;
+}
+
+.secondary-table {
+    border-collapse: collapse;
+    background-color: var(--secondary-table-bg-color);
+}
+
+.secondary-table > thead > tr > th{
+    color: var(--generic-table-body-font-color);
+    background-color: var(--secondary-table-header-color);
+}
+
+.secondary-table > thead > tr > th > div {
+    font-weight: bold;
+    display: flex;
+    flex-flow: column wrap;
+    justify-content: center;
+}
+
+.secondary-table > thead > tr > th > div > div{
+    padding-left: 3mm;
+    padding-right: 3mm;
+    text-align: left;
+}
+
+.secondary-table > tbody > tr:last-child{
+    vertical-align: top;
+}
+
+.secondary-table > tbody > tr > th{
+    text-align: left;
+    font-weight: bold;
+}
+
+.secondary-table > thead > tr > th > div > div {
+    color: var(--secondary-table-title-font-color);
+}
+
+
+.secondary-table > tbody > tr > td {
+    padding-left: 3mm;
+    padding-right: 3mm;
+}
+
+.secondary-table > tfoot > tr > td{
+    color: var(--generic-table-title-font-color);
+    height: 3mm;
+    padding: 0;
+    font-size: 3.4mm;
+}
+
+.secondary-table > tfoot > tr > td > div{
+    height: 100%;
+    background-color: var(--generic-table-bg-color-primary);
+    display: flex;
+    flex-flow: column wrap;
+    justify-content: center;
+}
+
+.secondary-table > tfoot > tr > td > div > div{
+    margin-left: 5px;
+}
+
+/*----------------------------------------------------- END Invoice data table */
+
+.h-5-mm {
+    height: 5mm;
+}
+
+.odd-row {
+    background-color: var(--odd-row-bg-color);
+}
+
+.bold {
+    font-weight: bold;
+}
+
+.border-l-black{
+    border-left: 0.1mm solid black;
+}
+
+.border-black{
+    border: 0.1mm solid black;
+}
+
+.margin-5-mm {
+    margin: 5mm
+}
+
+.w-90 {
+    width: 90%;
+}
+
+.w-50mm {
+    width: 50mm;
+}
+
+.generic-table-green > thead > tr > th > div {
+    background-color: var(--secondary-table-header-color);
+}
+
+.generic-table-green > tfoot > tr > td{
+    background-color: var(--secondary-table-header-color);
+}
+
+.extra_data {
+    color: var(--extra-data-color-font);
+    font-size: 2.5mm;
+    text-align: justify;
+}
