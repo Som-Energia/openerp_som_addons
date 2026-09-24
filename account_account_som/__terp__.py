@@ -15,6 +15,7 @@
         "l10n_ES_remesas",
         "remeses_base",
         "base_extended_som",
+        "report_banner",
     ],
     "init_xml": [],
     "demo_xml": [],
