@@ -508,7 +508,11 @@ class GiscedataSwitchingTelefon(osv.osv):
                     'prefix': prefix[1:] if prefix.startswith('+') else prefix,
                 })
             else:
-                values.append(header_obj.clean_tel_number(number))
+                cleaned_number = header_obj.clean_tel_number(number)
+                values.append({
+                    'numero': cleaned_number['tel'],
+                    'prefix': cleaned_number['pre'],
+                })
         return values
 
     def dummy_create(self, cursor, uid, partner_addr_id, context=None):
