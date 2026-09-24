@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+from __future__ import absolute_import
+
 from yamlns import namespace as ns
 
 from destral import testing
