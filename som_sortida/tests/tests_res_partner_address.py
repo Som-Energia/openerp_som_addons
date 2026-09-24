@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+from __future__ import absolute_import
+
 import mock
 from destral import testing
 
@@ -31,13 +33,19 @@ class TestsPartnerAddress(testing.OOTestCaseWithCursor):
         polissa_id = imd_obj.get_object_reference(
             cursor, uid, 'giscedata_polissa', 'polissa_0001'
         )[1]
+        eie_category_id = imd_obj.get_object_reference(
+            cursor, uid, 'som_polissa', 'categ_entitat_o_empresa'
+        )[1]
+        cnae_no_domestic_category_id = imd_obj.get_object_reference(
+            cursor, uid, 'som_polissa', 'categ_eie_CNAE_no_domestic'
+        )[1]
 
         res = rpa_obj._get_polissa_data(cursor, uid, polissa_id)
 
         self.assertEqual(res, {
             'num_socia': 'S202129',
             'situacio_socia': 'Apadrinada',
-            'category_id': [],
+            'category_id': [eie_category_id, cnae_no_domestic_category_id],
         })
 
     def test__fill_merge_fields_titular_polissa_ctss__ok(self):
@@ -57,7 +65,7 @@ class TestsPartnerAddress(testing.OOTestCaseWithCursor):
             'email_address': u'test@test.test',
             'merge_fields': {
                 'EMAIL': u'test@test.test',
-                'FNAME': u'Pere',
+                'FNAME': u'',
                 'MMERGE11': u'08600',
                 'MMERGE3': '',
                 'MMERGE4': 'Origen vinculat al CT sense socia',
