@@ -46,6 +46,25 @@ class TestSwitchingTelefon(testing.OOTestCaseWithCursor):
             [('1234567890', '850'), ('987654321', '376')]
         )
 
+    def test_structured_foreign_prefix_cleans_formatted_number(self):
+        self.address_obj.write(self.cursor, self.uid, [1], {
+            'phone': '123 456-7890',
+            'phone_prefix': self.get_prefix('850'),
+            'mobile': False,
+            'mobile_prefix': False,
+        })
+
+        telephone_ids = self.telefon_obj.dummy_create(
+            self.cursor, self.uid, 1
+        )
+        telephone = self.telefon_obj.read(
+            self.cursor, self.uid, telephone_ids[0], ['numero', 'prefix']
+        )
+
+        self.assertEqual(
+            (telephone['numero'], telephone['prefix']), ('1234567890', '850')
+        )
+
     def test_phone_without_structured_prefix_uses_legacy_cleaner(self):
         self.address_obj.write(self.cursor, self.uid, [1], {
             'phone': '612345678',

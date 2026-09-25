@@ -338,6 +338,50 @@ class TestActivacioM1(TestSwitchingImport):
                 )[0], '1234567890'
             )
 
+    def test_m1_unilateral_without_holder_address_keeps_phone(self):
+        with Transaction().start(self.database) as txn:
+            cursor = txn.cursor
+            uid = txn.user
+            self.switch(txn, "comer")
+            contract_id = self.get_contract_id(txn)
+            self.change_polissa_comer(txn)
+            self.update_polissa_distri(txn)
+            self.activar_polissa_CUPS(txn, context={
+                'polissa_xml_id': 'polissa_0001'
+            })
+            contract = self.Polissa.browse(cursor, uid, contract_id)
+            address_ids = [address.id for address in contract.titular.address]
+            other_partner_id = self.ResPartner.create(cursor, uid, {
+                'name': 'Holder address reassignment',
+            })
+            self.ResPartnerAddress.write(cursor, uid, address_ids, {
+                'partner_id': other_partner_id,
+            })
+            self.assertFalse(
+                self.Polissa.browse(cursor, uid, contract_id).titular.address
+            )
+
+            step_id = self.create_case_and_step(
+                cursor, uid, contract_id, 'M1', '01'
+            )
+            self.M101.config_step(cursor, uid, [step_id], {
+                'change_type': 'tarpot',
+                'tariff': '018',
+                'phone_num': '666888555',
+                'phone_pre': '34',
+                'con_name': 'Test',
+                'con_sur1': '',
+                'con_sur2': '',
+                'power_p1': 4600,
+                'power_p2': 4600,
+                'power_p3': 4600,
+                'power_invoicing': '1',
+            }, context={'is_m1_unilateral': True})
+
+            m101 = self.M101.browse(cursor, uid, step_id)
+            self.assertEqual(m101.cont_telefons[0].numero, '666888555')
+            self.assertEqual(m101.cont_telefons[0].prefix, '34')
+
     def test_ff_collectiu_atr_m1_01_auto_col_i_nocol(self):
         sw_obj = self.openerp.pool.get("giscedata.switching")
         step_obj = self.openerp.pool.get("giscedata.switching.m1.01")
