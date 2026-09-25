@@ -91,7 +91,7 @@ class WizardGenerarLeadPerFirmar(osv.osv_memory):
 
     def _set_state(self, cursor, uid, wizard_id, state, info, context=None):
         self.write(
-            cursor, uid, wizard_id,
+            cursor, uid, [wizard_id],
             {'state': state, 'info': info},
             context=context,
         )
@@ -183,7 +183,7 @@ class WizardGenerarLeadPerFirmar(osv.osv_memory):
 
     def action_reject_signature_replacement(self, cursor, uid, ids, context=None):
         self.write(
-            cursor, uid, ids[0], {'state': 'init'}, context=context
+            cursor, uid, [ids[0]], {'state': 'init'}, context=context
         )
         return True
 
