@@ -10,9 +10,9 @@
                 <xpath expr="//form/group[1]" position="after">
                     <group colspan="4" col="4" attrs="{'invisible': [('state','!=', 'confirm')]}" string="Confirmar substitució">
                         <label fill="1" string="Aquest lead ja té una firma digital, vols cancelar-la i generar una de nova?" colspan="4"/>
-                        <group colspan="8" col="4">
-                            <button icon="gtk-cancel" name="action_reject_signature_replacement" string="No" type="object" colspan="4"/>
-                            <button icon="gtk-execute" name="action_confirm_signature_replacement" string="Sí" type="object" colspan="4"/>
+                        <group colspan="8" col="8">
+                            <button icon="gtk-cancel" name="action_reject_signature_replacement" string="No" type="object" colspan="4" primary="1" danger="1"/>
+                            <button icon="gtk-execute" name="action_confirm_signature_replacement" string="Sí" type="object" colspan="4" primary="1"/>
                         </group>
                     </group>
                 </xpath>
