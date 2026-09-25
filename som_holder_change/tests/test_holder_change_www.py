@@ -4,7 +4,9 @@ from __future__ import absolute_import
 from copy import deepcopy
 
 import mock
+import pooler
 from destral import testing
+from destral.patch import PatchNewCursors
 from destral.transaction import Transaction
 
 
@@ -29,9 +31,22 @@ class TestHolderChangeWww(testing.OOTestCase):
     def setUp(self):
         self.txn = Transaction().start(self.database)
         self.cursor = self.txn.cursor
+        self.raw_cursor = self.cursor
+        self.new_cursors = PatchNewCursors()
+        self.new_cursors.__enter__()
+        # The workflow commits and opens cursors to isolate simulations.
+        # Use Destral's transaction cursor so teardown can roll them all back.
+        self.cursor = pooler.get_db(self.cursor.dbname).cursor()
         self.uid = self.txn.user
         self.www_obj = self.openerp.pool.get("som.holder.change.www")
         self.request_obj = self.openerp.pool.get("som.holder.change.request")
+        self._original_simulate_holder_change = self.request_obj._simulate_holder_change
+        self._simulation_savepoint = 0
+        self.simulate_holder_change = mock.patch.object(
+            self.request_obj,
+            "_simulate_holder_change",
+            side_effect=self._simulate_holder_change,
+        ).start()
         self.imd_obj = self.openerp.pool.get("ir.model.data")
         self.polissa_obj = self.openerp.pool.get("giscedata.polissa")
         self.polissa_id = self.imd_obj.get_object_reference(
@@ -63,7 +78,21 @@ class TestHolderChangeWww(testing.OOTestCase):
 
     def tearDown(self):
         mock.patch.stopall()
+        self.new_cursors.__exit__(None, None, None)
         self.txn.stop()
+
+    def _simulate_holder_change(self, cursor, uid, request_id, context=None):
+        self._simulation_savepoint += 1
+        savepoint = "holder_change_simulation_{}".format(
+            self._simulation_savepoint
+        )
+        self.raw_cursor.savepoint(savepoint)
+        try:
+            return self._original_simulate_holder_change(
+                self.raw_cursor, uid, request_id, context=context
+            )
+        finally:
+            self.raw_cursor.rollback(savepoint)
 
     def test_create_request_resolves_active_contract(self):
         result = self.www_obj.create_request(
@@ -194,10 +223,12 @@ class TestHolderChangeWww(testing.OOTestCase):
 
     def test_create_request_derives_subrogation_from_special_case(self):
         payload = self.payload()
-        payload["especial_cases"].update({
-            "reason_death": True,
-            "attachments": {"death": "attachment-id"},
-        })
+        payload["especial_cases"]["reason_death"] = True
+        payload["attachments"] = [{
+            "filename": "death-certificate.pdf",
+            "category": "holder_change_death",
+            "datas": "JVBERi0xLjQ=",
+        }]
 
         result = self.www_obj.create_request(
             self.cursor, self.uid, payload
@@ -284,6 +315,52 @@ class TestHolderChangeWww(testing.OOTestCase):
         for field, value in card_values.items():
             self.assertEqual(request[field], value)
 
+    def test_card_data_retries_preparation_after_a_simulation_failure(self):
+        payload = self.payload()
+        payload["payment_method"] = "card"
+        del payload["payment"]["iban"]
+        del payload["payment"]["sepa_accepted"]
+        result = self.www_obj.create_request(self.cursor, self.uid, payload)
+        card_values = {
+            "creditcard_token": "card-token",
+            "creditcard_masked_number": "**** **** **** 1234",
+            "creditcard_expiry_date": "12/30",
+            "creditcard_cof_txnid": "cof-transaction",
+        }
+
+        with mock.patch.object(
+            self.request_obj,
+            "_simulate_holder_change",
+            side_effect=Exception("Simulation failed"),
+        ):
+            with self.assertRaises(Exception):
+                self.www_obj.add_payment_card_data(
+                    self.cursor,
+                    self.uid,
+                    result["request_id"],
+                    payload["supply_point"]["cups"],
+                    card_values,
+                )
+
+        request = self.request_obj.read(
+            self.cursor,
+            self.uid,
+            result["request_id"],
+            ["state", "creditcard_token"],
+        )
+        self.assertEqual(request["state"], "awaiting_payment")
+        self.assertEqual(request["creditcard_token"], card_values["creditcard_token"])
+
+        response = self.www_obj.add_payment_card_data(
+            self.cursor,
+            self.uid,
+            result["request_id"],
+            payload["supply_point"]["cups"],
+            card_values,
+        )
+
+        self.assertEqual(response["state"], "awaiting_signature")
+
     def test_card_data_rejects_missing_or_repeated_values(self):
         payload = self.payload()
         payload["payment_method"] = "card"
@@ -334,6 +411,150 @@ class TestHolderChangeWww(testing.OOTestCase):
             self.www_obj.add_payment_card_data(
                 self.cursor, self.uid, result["request_id"], "ES0000000000000000AA", {}
             )
+
+    def test_sign_request_keeps_process_after_url_wait_failure(self):
+        payload = self.payload()
+        result = self.www_obj.create_request(self.cursor, self.uid, payload)
+        process_obj = self.openerp.pool.get("giscedata.signatura.process")
+        lang_obj = self.openerp.pool.get("res.lang")
+        lang_ids = lang_obj.search(
+            self.cursor, self.uid, [("code", "=", payload["holder"]["language"])]
+        )
+        if not lang_ids:
+            lang_obj.create(
+                self.cursor,
+                self.uid,
+                {"name": "Català", "code": payload["holder"]["language"]},
+            )
+
+        with mock.patch.object(process_obj, "start", return_value=True):
+            with mock.patch.object(
+                self.www_obj,
+                "_wait_for_signature_url",
+                side_effect=Exception("Signature URL timed out"),
+            ) as wait_for_signature_url:
+                with self.assertRaises(Exception) as raised:
+                    self.www_obj.sign_request(
+                        self.cursor,
+                        self.uid,
+                        result["request_id"],
+                        payload["supply_point"]["cups"],
+                    )
+        self.assertTrue(wait_for_signature_url.called, raised.exception)
+
+        self.cursor.rollback()
+        with pooler.get_db(self.cursor.dbname).cursor() as verification_cursor:
+            request = self.request_obj.read(
+                verification_cursor,
+                self.uid,
+                result["request_id"],
+                ["signature_process_id"],
+            )
+        self.assertTrue(request["signature_process_id"])
+        process = process_obj.read(
+            self.cursor,
+            self.uid,
+            request["signature_process_id"][0],
+            ["template_id", "template_res_id"],
+        )
+        template_id = self.imd_obj.get_object_reference(
+            self.cursor,
+            self.uid,
+            "som_holder_change",
+            "email_signature_process_holder_change",
+        )[1]
+        self.assertEqual(process["template_id"][0], template_id)
+        self.assertEqual(process["template_res_id"], result["request_id"])
+
+    def test_sign_request_retries_process_after_start_failure(self):
+        payload = self.payload()
+        result = self.www_obj.create_request(self.cursor, self.uid, payload)
+        process_obj = self.openerp.pool.get("giscedata.signatura.process")
+        lang_obj = self.openerp.pool.get("res.lang")
+        signature_url = "https://app.signaturit.com/document/signature"
+        lang_ids = lang_obj.search(
+            self.cursor, self.uid, [("code", "=", payload["holder"]["language"])]
+        )
+        if not lang_ids:
+            lang_obj.create(
+                self.cursor,
+                self.uid,
+                {"name": "Català", "code": payload["holder"]["language"]},
+            )
+        request = self.request_obj.browse(
+            self.cursor, self.uid, result["request_id"]
+        )
+        process_id = process_obj.create(
+            self.cursor,
+            self.uid,
+            self.www_obj._signature_process_values(self.cursor, self.uid, request),
+        )
+        self.request_obj.write(
+            self.cursor,
+            self.uid,
+            [result["request_id"]],
+            {"signature_process_id": process_id},
+        )
+
+        with mock.patch.object(
+            process_obj,
+            "start",
+            side_effect=[Exception("Provider unavailable"), True],
+        ) as start:
+            with mock.patch.object(
+                self.www_obj,
+                "_wait_for_signature_url",
+                return_value=signature_url,
+            ) as wait_for_signature_url:
+                with self.assertRaises(Exception):
+                    self.www_obj.sign_request(
+                        self.cursor,
+                        self.uid,
+                        result["request_id"],
+                        payload["supply_point"]["cups"],
+                    )
+                response = self.www_obj.sign_request(
+                    self.cursor,
+                    self.uid,
+                    result["request_id"],
+                    payload["supply_point"]["cups"],
+                )
+
+        request = self.request_obj.read(
+            self.cursor,
+            self.uid,
+            result["request_id"],
+            ["signature_process_id"],
+        )
+        self.assertEqual(request["signature_process_id"][0], process_id)
+        self.assertEqual(start.call_count, 2)
+        self.assertTrue(wait_for_signature_url.called)
+        self.assertEqual(
+            response["url"], "https://sign-app.signaturit.com/v1/ca/signature"
+        )
+
+    def test_sign_request_does_not_start_if_process_association_fails(self):
+        payload = self.payload()
+        result = self.www_obj.create_request(self.cursor, self.uid, payload)
+        process_obj = self.openerp.pool.get("giscedata.signatura.process")
+
+        with mock.patch.object(process_obj, "create", return_value=42) as create:
+            with mock.patch.object(
+                self.request_obj,
+                "write",
+                side_effect=Exception("Association failed"),
+            ) as write:
+                with mock.patch.object(process_obj, "start") as start:
+                    with self.assertRaises(Exception):
+                        self.www_obj.sign_request(
+                            self.cursor,
+                            self.uid,
+                            result["request_id"],
+                            payload["supply_point"]["cups"],
+                        )
+
+        self.assertIs(create.call_args[0][0], write.call_args[0][0])
+        start.assert_not_called()
 
     def test_simulation_only_persists_reserved_references(self):
         partner_obj = self.openerp.pool.get("res.partner")

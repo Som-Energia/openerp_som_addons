@@ -74,7 +74,7 @@ class SomHolderChangeRequest(osv.osv):
         if self._payment_method(request) != "card":
             raise osv.except_osv(_("Invalid payment method"), _(
                 "The request does not use card payment."))
-        if request.state != "awaiting_payment" or request.creditcard_token:
+        if request.state != "awaiting_payment":
             raise osv.except_osv(_("Card data rejected"), _(
                 "Card data cannot be changed for this request."))
         required = ("creditcard_token", "creditcard_masked_number",
@@ -83,6 +83,11 @@ class SomHolderChangeRequest(osv.osv):
         if missing:
             raise osv.except_osv(_("Invalid card data"), _(
                 "Missing card fields: {}.").format(", ".join(missing)))
+        if request.creditcard_token:
+            if any(getattr(request, field) != card_values[field] for field in required):
+                raise osv.except_osv(_("Card data rejected"), _(
+                    "Card data cannot be changed for this request."))
+            return self.prepare(cursor, uid, request_id, context=context)
         super(SomHolderChangeRequest, self).write(
             cursor,
             uid,
@@ -540,6 +545,8 @@ class SomHolderChangeRequest(osv.osv):
             limit=1,
             context=context,
         )
+        # TODO: This works like webforms, but it may be better
+        #       to update the existing address instead of reusing it.
         if address_ids:
             return address_ids[0]
         values = {
@@ -988,6 +995,7 @@ class SomHolderChangeRequest(osv.osv):
         return ids
 
     _columns = {
+        "create_date": fields.datetime("Creation date", readonly=True),
         "polissa_id": fields.many2one(
             "giscedata.polissa",
             "Contract",
