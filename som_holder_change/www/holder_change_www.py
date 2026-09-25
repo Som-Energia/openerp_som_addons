@@ -106,25 +106,22 @@ class SomHolderChangeWww(osv.osv_memory):
         else:
             cursor.commit()
             # Keep the provider process associated even if URL polling later fails.
-            with pooler.get_db(cursor.dbname).cursor() as signature_cursor:
+            with pooler.get_db(cursor.dbname).cursor() as registration_cursor:
                 with Sudo(uid=uid, gid=0):
                     process_id = process_obj.create(
-                        signature_cursor,
+                        registration_cursor,
                         uid,
-                        self._signature_process_values(signature_cursor, uid, request),
+                        self._signature_process_values(registration_cursor, uid, request),
                         context=context,
                     )
-                    signature_cursor.commit()
-            with pooler.get_db(cursor.dbname).cursor() as request_cursor:
-                with Sudo(uid=uid, gid=0):
                     request_obj.write(
-                        request_cursor,
+                        registration_cursor,
                         uid,
                         [request_id],
                         {"signature_process_id": process_id},
                         context=context,
                     )
-                    request_cursor.commit()
+                    registration_cursor.commit()
 
         # start() is idempotent once the provider signature ID is stored.
         start_error = None
