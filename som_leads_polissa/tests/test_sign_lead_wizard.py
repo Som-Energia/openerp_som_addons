@@ -138,7 +138,7 @@ class TestSignLeadWizard(testing.OOTestCase):
         self.assertTrue(result)
         self.assertFalse(base_action.called)
         self.wizard.write.assert_called_once_with(
-            None, 1, 7,
+            None, 1, [7],
             {
                 'state': 'blocked',
                 'info': WizardGenerarLeadPerFirmar._COMPLETED_MESSAGE,
@@ -164,7 +164,7 @@ class TestSignLeadWizard(testing.OOTestCase):
         self.assertTrue(result)
         self.assertFalse(base_action.called)
         self.wizard.write.assert_called_once_with(
-            None, 1, 7,
+            None, 1, [7],
             {
                 'state': 'confirm',
                 'info': WizardGenerarLeadPerFirmar._CONFIRMATION_MESSAGE,
@@ -221,7 +221,7 @@ class TestSignLeadWizard(testing.OOTestCase):
         self.assertTrue(result)
         self.assertFalse(base_action.called)
         self.wizard.write.assert_called_once_with(
-            None, 1, 7,
+            None, 1, [7],
             {
                 'state': 'blocked',
                 'info': WizardGenerarLeadPerFirmar._COMPLETED_MESSAGE,
@@ -255,7 +255,7 @@ class TestSignLeadWizard(testing.OOTestCase):
 
         self.assertTrue(result)
         self.wizard.write.assert_called_once_with(
-            None, 1, 7, {'state': 'init'}, context={'active_ids': [1]}
+            None, 1, [7], {'state': 'init'}, context={'active_ids': [1]}
         )
 
     def test_success_result_action(self):
