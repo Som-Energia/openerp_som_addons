@@ -6,6 +6,7 @@ from copy import deepcopy
 import mock
 import pooler
 from destral import testing
+from destral.patch import PatchNewCursors
 from destral.transaction import Transaction
 
 
@@ -30,9 +31,22 @@ class TestHolderChangeWww(testing.OOTestCase):
     def setUp(self):
         self.txn = Transaction().start(self.database)
         self.cursor = self.txn.cursor
+        self.raw_cursor = self.cursor
+        self.new_cursors = PatchNewCursors()
+        self.new_cursors.__enter__()
+        # The workflow commits and opens cursors to isolate simulations.
+        # Use Destral's transaction cursor so teardown can roll them all back.
+        self.cursor = pooler.get_db(self.cursor.dbname).cursor()
         self.uid = self.txn.user
         self.www_obj = self.openerp.pool.get("som.holder.change.www")
         self.request_obj = self.openerp.pool.get("som.holder.change.request")
+        self._original_simulate_holder_change = self.request_obj._simulate_holder_change
+        self._simulation_savepoint = 0
+        self.simulate_holder_change = mock.patch.object(
+            self.request_obj,
+            "_simulate_holder_change",
+            side_effect=self._simulate_holder_change,
+        ).start()
         self.imd_obj = self.openerp.pool.get("ir.model.data")
         self.polissa_obj = self.openerp.pool.get("giscedata.polissa")
         self.polissa_id = self.imd_obj.get_object_reference(
@@ -64,7 +78,21 @@ class TestHolderChangeWww(testing.OOTestCase):
 
     def tearDown(self):
         mock.patch.stopall()
+        self.new_cursors.__exit__(None, None, None)
         self.txn.stop()
+
+    def _simulate_holder_change(self, cursor, uid, request_id, context=None):
+        self._simulation_savepoint += 1
+        savepoint = "holder_change_simulation_{}".format(
+            self._simulation_savepoint
+        )
+        self.raw_cursor.savepoint(savepoint)
+        try:
+            return self._original_simulate_holder_change(
+                self.raw_cursor, uid, request_id, context=context
+            )
+        finally:
+            self.raw_cursor.rollback(savepoint)
 
     def test_create_request_resolves_active_contract(self):
         result = self.www_obj.create_request(
@@ -442,7 +470,31 @@ class TestHolderChangeWww(testing.OOTestCase):
         payload = self.payload()
         result = self.www_obj.create_request(self.cursor, self.uid, payload)
         process_obj = self.openerp.pool.get("giscedata.signatura.process")
+        lang_obj = self.openerp.pool.get("res.lang")
         signature_url = "https://app.signaturit.com/document/signature"
+        lang_ids = lang_obj.search(
+            self.cursor, self.uid, [("code", "=", payload["holder"]["language"])]
+        )
+        if not lang_ids:
+            lang_obj.create(
+                self.cursor,
+                self.uid,
+                {"name": "Català", "code": payload["holder"]["language"]},
+            )
+        request = self.request_obj.browse(
+            self.cursor, self.uid, result["request_id"]
+        )
+        process_id = process_obj.create(
+            self.cursor,
+            self.uid,
+            self.www_obj._signature_process_values(self.cursor, self.uid, request),
+        )
+        self.request_obj.write(
+            self.cursor,
+            self.uid,
+            [result["request_id"]],
+            {"signature_process_id": process_id},
+        )
 
         with mock.patch.object(
             process_obj,
@@ -461,14 +513,6 @@ class TestHolderChangeWww(testing.OOTestCase):
                         result["request_id"],
                         payload["supply_point"]["cups"],
                     )
-
-                self.cursor.rollback()
-                first_process_id = self.request_obj.read(
-                    self.cursor,
-                    self.uid,
-                    result["request_id"],
-                    ["signature_process_id"],
-                )["signature_process_id"][0]
                 response = self.www_obj.sign_request(
                     self.cursor,
                     self.uid,
@@ -482,7 +526,7 @@ class TestHolderChangeWww(testing.OOTestCase):
             result["request_id"],
             ["signature_process_id"],
         )
-        self.assertEqual(request["signature_process_id"][0], first_process_id)
+        self.assertEqual(request["signature_process_id"][0], process_id)
         self.assertEqual(start.call_count, 2)
         self.assertTrue(wait_for_signature_url.called)
         self.assertEqual(
