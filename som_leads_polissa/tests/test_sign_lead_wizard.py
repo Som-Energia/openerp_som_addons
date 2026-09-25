@@ -122,6 +122,27 @@ class TestSignLeadWizard(testing.OOTestCase):
         )
         self.lead_obj.write.assert_called_once()
 
+    def test_replace_signatures_uses_separate_transaction(self):
+        self.wizard._replace_signatures = mock.Mock()
+        signatures = [{'lead_id': 1}]
+
+        with mock.patch.object(
+            WizardGenerarLeadPerFirmar,
+            'api',
+            new_callable=mock.PropertyMock,
+        ) as api:
+            database = mock.MagicMock()
+            signature_cursor = mock.Mock()
+            api.return_value = mock.Mock(db=database)
+            database.cursor.return_value.__enter__.return_value = signature_cursor
+            self.wizard._replace_signatures_in_new_transaction(
+                1, signatures, context={}
+            )
+
+        self.wizard._replace_signatures.assert_called_once_with(
+            signature_cursor, 1, signatures, context={}
+        )
+
     def test_action_blocks_completed_signature(self):
         self._set_signature(1, process_id=10, status='completed')
         self.wizard.write = mock.Mock()

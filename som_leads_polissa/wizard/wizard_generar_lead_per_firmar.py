@@ -89,6 +89,13 @@ class WizardGenerarLeadPerFirmar(osv.osv_memory):
                 cursor, uid, signature['lead_id'], context=context
             )
 
+    def _replace_signatures_in_new_transaction(
+            self, uid, signatures, context=None):
+        with self.api.db.cursor() as signature_cursor:
+            self._replace_signatures(
+                signature_cursor, uid, signatures, context=context
+            )
+
     def _set_state(self, cursor, uid, wizard_id, state, info, context=None):
         self.write(
             cursor, uid, [wizard_id],
@@ -132,8 +139,8 @@ class WizardGenerarLeadPerFirmar(osv.osv_memory):
             )
             return True
         if replaceable:
-            self._replace_signatures(
-                cursor, uid, replaceable, context=context
+            self._replace_signatures_in_new_transaction(
+                uid, replaceable, context=context
             )
 
         result = super(
@@ -168,8 +175,8 @@ class WizardGenerarLeadPerFirmar(osv.osv_memory):
             )
             return True
 
-        self._replace_signatures(
-            cursor, uid, replaceable, context=context
+        self._replace_signatures_in_new_transaction(
+            uid, replaceable, context=context
         )
         result = super(
             WizardGenerarLeadPerFirmar, self
