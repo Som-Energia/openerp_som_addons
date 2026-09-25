@@ -114,21 +114,32 @@ class SomHolderChangeWww(osv.osv_memory):
                         self._signature_process_values(signature_cursor, uid, request),
                         context=context,
                     )
+                    signature_cursor.commit()
+            with pooler.get_db(cursor.dbname).cursor() as request_cursor:
+                with Sudo(uid=uid, gid=0):
                     request_obj.write(
-                        signature_cursor,
+                        request_cursor,
                         uid,
                         [request_id],
                         {"signature_process_id": process_id},
                         context=context,
                     )
-                    signature_cursor.commit()
+                    request_cursor.commit()
 
         # start() is idempotent once the provider signature ID is stored.
+        start_error = None
         with pooler.get_db(cursor.dbname).cursor() as signature_cursor:
             with Sudo(uid=uid, gid=0):
-                process_obj.start(
-                    signature_cursor, uid, [process_id], context=context
-                )
+                try:
+                    process_obj.start(
+                        signature_cursor, uid, [process_id], context=context
+                    )
+                except Exception as error:
+                    start_error = error
+                signature_cursor.commit()
+
+        if start_error:
+            raise start_error
 
         signature_url = self._wait_for_signature_url(
             cursor, uid, process_obj, process_id, context=context
