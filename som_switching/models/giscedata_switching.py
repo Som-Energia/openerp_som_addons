@@ -504,7 +504,7 @@ class GiscedataSwitchingTelefon(osv.osv):
             if prefix and prefix[1]:
                 prefix = prefix[1]
                 values.append({
-                    'numero': number,
+                    'numero': ''.join(char for char in number if char.isdigit()),
                     'prefix': prefix[1:] if prefix.startswith('+') else prefix,
                 })
             else:

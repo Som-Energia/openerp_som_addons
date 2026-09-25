@@ -13,18 +13,20 @@ class GiscedataSwitchingM1_01(osv.osv):
         if context and context.get('is_m1_unilateral'):
             m1_id = ids[0] if isinstance(ids, (list, tuple)) else ids
             m1 = self.browse(cursor, uid, m1_id, context=context)
-            address_id = m1.sw_id.cups_polissa_id.titular.address[0].id
-            telephone_values = self.pool.get(
-                'giscedata.switching.telefon'
-            ).get_atr_telephone_values(
-                cursor, uid, address_id, context=context
-            )
-            if telephone_values:
-                vals = vals.copy()
-                vals.update({
-                    'phone_num': telephone_values[0]['numero'],
-                    'phone_pre': telephone_values[0]['prefix'],
-                })
+            holder_addresses = m1.sw_id.cups_polissa_id.titular.address
+            if holder_addresses:
+                address_id = holder_addresses[0].id
+                telephone_values = self.pool.get(
+                    'giscedata.switching.telefon'
+                ).get_atr_telephone_values(
+                    cursor, uid, address_id, context=context
+                )
+                if telephone_values:
+                    vals = vals.copy()
+                    vals.update({
+                        'phone_num': telephone_values[0]['numero'],
+                        'phone_pre': telephone_values[0]['prefix'],
+                    })
 
         new_contract_values = vals.get("new_contract_values")
         if new_contract_values:
