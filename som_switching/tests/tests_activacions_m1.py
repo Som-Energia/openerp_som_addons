@@ -1,9 +1,12 @@
 # -*- coding: utf-8 -*-
+from __future__ import absolute_import
+
 from destral.transaction import Transaction
 import mock
 from giscedata_switching.tests.common_tests import TestSwitchingImport
 from destral.patch import PatchNewCursors
 from addons import get_module_resource
+from lxml import etree
 
 
 class TestActivacioM1(TestSwitchingImport):
@@ -272,6 +275,112 @@ class TestActivacioM1(TestSwitchingImport):
             m1 = sw_obj.browse(cursor, uid, m101.sw_id.id)
 
             self.assertFalse(m1.collectiu_atr)
+
+    def test_m1_unilateral_uses_structured_holder_phone(self):
+        with Transaction().start(self.database) as txn:
+            cursor = txn.cursor
+            uid = txn.user
+            self.switch(txn, "comer")
+            contract_id = self.get_contract_id(txn)
+            self.change_polissa_comer(txn)
+            self.update_polissa_distri(txn)
+            self.activar_polissa_CUPS(txn, context={
+                'polissa_xml_id': 'polissa_0001'
+            })
+            contract = self.Polissa.browse(cursor, uid, contract_id)
+            address_id = contract.titular.address[0].id
+            prefix_id = self.IrModelData.get_object_reference(
+                cursor, uid, 'base_extended_som',
+                'res_phone_national_code_data_850'
+            )[1]
+            self.ResPartnerAddress.write(cursor, uid, [address_id], {
+                'phone': '1234567890',
+                'phone_prefix': prefix_id,
+                'mobile': '987654321',
+                'mobile_prefix': False,
+            })
+
+            step_id = self.create_case_and_step(
+                cursor, uid, contract_id, 'M1', '01'
+            )
+            self.M101.config_step(cursor, uid, [step_id], {
+                'change_type': 'tarpot',
+                'tariff': '018',
+                'phone_num': '1234567890',
+                'phone_pre': '34',
+                'con_name': 'Test',
+                'con_sur1': '',
+                'con_sur2': '',
+                'power_p1': 4600,
+                'power_p2': 4600,
+                'power_p3': 4600,
+                'power_invoicing': '1',
+            }, context={'is_m1_unilateral': True})
+
+            m101 = self.M101.browse(cursor, uid, step_id)
+            self.assertEqual(m101.cont_telefons[0].numero, '1234567890')
+            self.assertEqual(m101.cont_telefons[0].prefix, '850')
+            xml = m101.generar_xml()[1]
+            document = etree.fromstring(xml)
+            contact_phones = document.xpath(
+                '//*[local-name()="Contacto"]'
+                '/*[local-name()="Telefono"]'
+            )
+            self.assertEqual(len(contact_phones), 1)
+            self.assertEqual(
+                contact_phones[0].xpath(
+                    './*[local-name()="PrefijoPais"]/text()'
+                )[0], '850'
+            )
+            self.assertEqual(
+                contact_phones[0].xpath(
+                    './*[local-name()="Numero"]/text()'
+                )[0], '1234567890'
+            )
+
+    def test_m1_unilateral_without_holder_address_keeps_phone(self):
+        with Transaction().start(self.database) as txn:
+            cursor = txn.cursor
+            uid = txn.user
+            self.switch(txn, "comer")
+            contract_id = self.get_contract_id(txn)
+            self.change_polissa_comer(txn)
+            self.update_polissa_distri(txn)
+            self.activar_polissa_CUPS(txn, context={
+                'polissa_xml_id': 'polissa_0001'
+            })
+            contract = self.Polissa.browse(cursor, uid, contract_id)
+            address_ids = [address.id for address in contract.titular.address]
+            other_partner_id = self.ResPartner.create(cursor, uid, {
+                'name': 'Holder address reassignment',
+            })
+            self.ResPartnerAddress.write(cursor, uid, address_ids, {
+                'partner_id': other_partner_id,
+            })
+            self.assertFalse(
+                self.Polissa.browse(cursor, uid, contract_id).titular.address
+            )
+
+            step_id = self.create_case_and_step(
+                cursor, uid, contract_id, 'M1', '01'
+            )
+            self.M101.config_step(cursor, uid, [step_id], {
+                'change_type': 'tarpot',
+                'tariff': '018',
+                'phone_num': '666888555',
+                'phone_pre': '34',
+                'con_name': 'Test',
+                'con_sur1': '',
+                'con_sur2': '',
+                'power_p1': 4600,
+                'power_p2': 4600,
+                'power_p3': 4600,
+                'power_invoicing': '1',
+            }, context={'is_m1_unilateral': True})
+
+            m101 = self.M101.browse(cursor, uid, step_id)
+            self.assertEqual(m101.cont_telefons[0].numero, '666888555')
+            self.assertEqual(m101.cont_telefons[0].prefix, '34')
 
     def test_ff_collectiu_atr_m1_01_auto_col_i_nocol(self):
         sw_obj = self.openerp.pool.get("giscedata.switching")

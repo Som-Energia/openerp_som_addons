@@ -13,3 +13,4 @@ from .tests_unlink_switching import *
 from .tests_wizard_validate_d101 import *
 from .tests_wizard_reexport_log import *
 from .tests_non_rectificative_f1_tag import *
+from .tests_switching_telefon import *
