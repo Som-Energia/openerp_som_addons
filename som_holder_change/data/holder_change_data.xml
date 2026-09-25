@@ -3,7 +3,8 @@
     <data noupdate="1">
         <record id="email_signature_process_holder_change" model="poweremail.templates">
             <field name="name">Canvi de titular: firma de documents</field>
-            <field name="object_name" model="ir.model" search="[('model', '=', 'som.holder.change.request')]"/>
+            <field name="object_name" model="ir.model"
+                search="[('model', '=', 'som.holder.change.request')]"/>
             <field eval="0" name="save_to_drafts"/>
             <field name="model_int_name">som.holder.change.request</field>
             <field eval="0" name="use_filter"/>

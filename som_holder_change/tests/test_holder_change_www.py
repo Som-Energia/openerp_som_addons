@@ -533,6 +533,29 @@ class TestHolderChangeWww(testing.OOTestCase):
             response["url"], "https://sign-app.signaturit.com/v1/ca/signature"
         )
 
+    def test_sign_request_does_not_start_if_process_association_fails(self):
+        payload = self.payload()
+        result = self.www_obj.create_request(self.cursor, self.uid, payload)
+        process_obj = self.openerp.pool.get("giscedata.signatura.process")
+
+        with mock.patch.object(process_obj, "create", return_value=42) as create:
+            with mock.patch.object(
+                self.request_obj,
+                "write",
+                side_effect=Exception("Association failed"),
+            ) as write:
+                with mock.patch.object(process_obj, "start") as start:
+                    with self.assertRaises(Exception):
+                        self.www_obj.sign_request(
+                            self.cursor,
+                            self.uid,
+                            result["request_id"],
+                            payload["supply_point"]["cups"],
+                        )
+
+        self.assertIs(create.call_args[0][0], write.call_args[0][0])
+        start.assert_not_called()
+
     def test_simulation_only_persists_reserved_references(self):
         partner_obj = self.openerp.pool.get("res.partner")
         bank_obj = self.openerp.pool.get("res.partner.bank")
