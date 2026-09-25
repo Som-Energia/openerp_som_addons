@@ -157,6 +157,7 @@ class TestMemberFeePayment(testing.OOTestCase):
         self.assertEqual(invoice.amount_total, 100)
         self.assertEqual(invoice.state, "open")
         self.assertFalse(invoice.sii_to_send)
+        self.assertEqual(invoice.mandate_id.id, mandate_id)
         self.assertEqual(mandate.payment_type, "one_payment")
         self.assertEqual(mandate.debtor_iban, self.iban.replace(" ", ""))
         self.assertEqual(invoice.payment_order_id.mode.id, payment_mode_id)
