@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+from __future__ import absolute_import
+
 import mock
 
 from destral import testing
@@ -248,7 +250,7 @@ class TestsPartnerAddress(testing.OOTestCase):
         )
 
         archive_mock.assert_called_once_with(
-            self.cursor, self.txn, address_id, 99, fake_mchimp_client
+            self.cursor, self.txn, address_id, 99, fake_mchimp_client, context=None
         )
 
     @mock.patch.object(res_partner_address.ResPartnerAddress, "archieve_mail_in_list_sync")
@@ -278,5 +280,56 @@ class TestsPartnerAddress(testing.OOTestCase):
         partner_address_o.unsubscribe_partner_in_members_lists(self.cursor, self.txn, partner_id)
 
         self.assertEqual(archive_mock.call_count, 2)
-        archive_mock.assert_any_call(self.cursor, self.txn, address_id, 11, fake_mchimp_client)
-        archive_mock.assert_any_call(self.cursor, self.txn, address_id, 22, fake_mchimp_client)
+        archive_mock.assert_any_call(
+            self.cursor, self.txn, address_id, 11, fake_mchimp_client, context=None
+        )
+        archive_mock.assert_any_call(
+            self.cursor, self.txn, address_id, 22, fake_mchimp_client, context=None
+        )
+
+    @mock.patch.object(res_partner_address.ResPartnerAddress, "_get_mailchimp_client")
+    def test_write_dry_run_does_not_create_mailchimp_client(self, get_client_mock):
+        partner_address_o = self.pool.get("res.partner.address")
+        imd_o = self.pool.get("ir.model.data")
+        address_id = imd_o.get_object_reference(
+            self.cursor, self.uid, "som_polissa_soci", "res_partner_address_soci"
+        )[1]
+
+        partner_address_o.write(
+            self.cursor, self.uid, address_id, {"email": "dry-run@example.org"},
+            context={"is_dry_run": True},
+        )
+
+        get_client_mock.assert_not_called()
+
+    @mock.patch.object(res_partner_address.ResPartnerAddress, "_get_mailchimp_client")
+    def test_async_subscription_dry_run_does_not_enqueue_or_create_client(
+        self, get_client_mock
+    ):
+        partner_address_o = self.pool.get("res.partner.address")
+
+        result = partner_address_o.subscribe_partner_in_members_lists(
+            self.cursor, self.uid, 1, context={"is_dry_run": True}
+        )
+
+        self.assertFalse(result)
+        get_client_mock.assert_not_called()
+
+    def test_mailchimp_api_boundaries_do_nothing_in_dry_run(self):
+        partner_address_o = self.pool.get("res.partner.address")
+        mailchimp_client = mock.Mock()
+        context = {"is_dry_run": True}
+
+        partner_address_o.subscribe_mail_in_list(
+            self.cursor, self.uid, [{"email_address": "dry@example.org"}],
+            1, mailchimp_client, context=context
+        )
+        partner_address_o.update_client_email_in_all_lists(
+            self.cursor, self.uid, 1, "old@example.org", "new@example.org",
+            mailchimp_client, context=context
+        )
+        partner_address_o.archieve_mail_in_list_sync(
+            self.cursor, self.uid, 1, 1, mailchimp_client, context=context
+        )
+
+        self.assertEqual(mailchimp_client.lists.mock_calls, [])
