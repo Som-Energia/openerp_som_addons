@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+from __future__ import absolute_import
+
 from destral import testing
 from destral.transaction import Transaction
 from tools.misc import cache
@@ -37,8 +39,10 @@ class TestsAutoActiva(testing.OOTestCase):
 
         self.malditas_tarifas_contatibles(cursor, uid)
 
-        for fact_id in fact_obj.search(cursor, uid, []):
-            fact_obj.write(cursor, uid, [fact_id], {"state": "open"})
+        polissa_obj = self.model("giscedata.polissa")
+        if "process_id" in polissa_obj.fields_get(cursor, uid):
+            for fact_id in fact_obj.search(cursor, uid, []):
+                fact_obj.write(cursor, uid, [fact_id], {"state": "open"})
 
         # We make sure that all warnings are active
         warn_ids = warn_obj.search(cursor, uid, [], context={"active_test": False})
@@ -111,7 +115,7 @@ class TestsAutoActiva(testing.OOTestCase):
             codes = {"distri": "1234", "comer": "4321"}
 
         partner_obj.write(cursor, uid, [partner_id], {"ref": codes.pop(where)})
-        partner_obj.write(cursor, uid, [other_id], {"ref": codes.values()[0]})
+        partner_obj.write(cursor, uid, [other_id], {"ref": next(iter(codes.values()))})
         partner_obj.write(cursor, uid, [another_id], {"ref": "5555"})
         cups_id = imd_obj.get_object_reference(cursor, uid, "giscedata_cups", "cups_01")[1]
         distri_ids = {"distri": partner_id, "comer": other_id}
