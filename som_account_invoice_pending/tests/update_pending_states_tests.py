@@ -222,6 +222,64 @@ class TestUpdatePendingStates(testing.OOTestCaseWithCursor):
             )
             inv_obj.set_pending(cursor, uid, [invoice_id], res_id)
 
+    def test__update_invoices__continues_after_unhandled_error(self):
+        cursor = self.txn.cursor
+        uid = self.txn.user
+        pending_obj = self.pool.get("update.pending.states")
+        method_names = (
+            "update_second_unpaid_invoice",
+            "update_waiting_for_annexII",
+            "update_waiting_for_annexIII_first",
+            "update_waiting_for_annexIII_second",
+            "update_pending_ask_poverty",
+            "update_waiting_for_annexIV",
+            "update_waiting_for_48h",
+            "send_fue_reminder_emails",
+            "send_r1_reminder_emails",
+        )
+        patched_methods = dict((method_name, mock.DEFAULT) for method_name in method_names)
+
+        with mock.patch.multiple(
+            "som_account_invoice_pending.models.update_pending_states.UpdatePendingStates",
+            **patched_methods
+        ) as methods:
+            methods["update_second_unpaid_invoice"].side_effect = Exception("test")
+            with mock.patch.object(
+                pending_obj, "get_invoices_to_update", return_value=[]
+            ):
+                with mock.patch(
+                    "som_account_invoice_pending.models.update_pending_states.logging.getLogger"
+                ) as get_logger:
+                    pending_obj.update_invoices(cursor, uid)
+
+        for method_name in method_names:
+            methods[method_name].assert_called_once_with(cursor, uid)
+        get_logger.return_value.error.assert_called_once_with(
+            "UNHANDLED ERROR in update_second_unpaid_invoice: test"
+        )
+
+    @mock.patch(
+        "som_account_invoice_pending.models.update_pending_states."
+        "UpdatePendingStates.update_waiting_for_annexII_active_contracts"
+    )
+    def test__update_waiting_for_annexII__continues_after_nested_error(
+        self, mock_update
+    ):
+        cursor = self.txn.cursor
+        uid = self.txn.user
+        self._load_data_unpaid_invoices(
+            cursor, uid, [self.waiting_annexII, self.waiting_annexII]
+        )
+        pending_obj = self.pool.get("update.pending.states")
+        mock_update.side_effect = [
+            UpdateWaitingCancelledContractsException(Exception("test")),
+            None,
+        ]
+
+        pending_obj.update_waiting_for_annexII(cursor, uid)
+
+        self.assertEqual(mock_update.call_count, 2)
+
     def test__update_second_unpaid_invoice__two_invoices_moving(self):
         cursor = self.txn.cursor
         uid = self.txn.user
@@ -1083,6 +1141,18 @@ class TestUpdatePendingStates(testing.OOTestCaseWithCursor):
         self.assertIn("(auto.): Enviat correu recordatori FUE.", factura_dp.comment)
         factura_bs = fact_obj.browse(cursor, uid, fact_bs_id)
         self.assertIn("(auto.): Enviat correu recordatori FUE.", factura_bs.comment)
+
+    @mock.patch("som_account_invoice_pending.models.update_pending_states.UpdatePendingStates.send_email")  # noqa: E501
+    @freeze_time("2024-03-26")
+    def test__send_fue_reminder_emails__continues_after_unhandled_error(self, mock_mail):
+        cursor = self.txn.cursor
+        uid = self.txn.user
+        pending_obj = self.pool.get("update.pending.states")
+        mock_mail.side_effect = [Exception("test"), None]
+
+        pending_obj.send_fue_reminder_emails(cursor, uid, context=None)
+
+        self.assertEqual(mock_mail.call_count, 2)
 
     @mock.patch("som_account_invoice_pending.models.update_pending_states.UpdatePendingStates.send_email")  # noqa: E501
     @freeze_time("2024-03-26")
