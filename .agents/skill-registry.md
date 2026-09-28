@@ -25,6 +25,7 @@ Current verification: `.github/workflows/pull_request_labeler.yml` requires at l
 | Quan necessites fer un commit de codi | git-commit | .agents/skills/git-commit/SKILL.md |
 | Quan necessites crear una Pull Request | git-pr | .agents/skills/git-pr/SKILL.md |
 | Quan un agent ERP ha de treballar en un worktree des d'un pane Herdr mantenint el context multirepo | erp-herdr-worktree | .agents/skills/erp-herdr-worktree/SKILL.md |
+| Abans de crear una branca o worktree ERP, per alinear les dependències compartides amb CI | erp-workspace-sync | .agents/skills/erp-workspace-sync/SKILL.md |
 | Quan necessites executar tests d'un mòdul OpenERP amb destral | erp-test | .agents/skills/erp-test/SKILL.md |
 | Quan necessites arrencar el servei ERP, executar l'ERP, o obrir l'entorn de desenvolupament | erp-start | .agents/skills/erp-start/SKILL.md |
 | Quan necessites crear un script de migració, modificar el model, o actualitzar un mòdul a producció | erp-migration | .agents/skills/erp-migration/SKILL.md |
@@ -67,6 +68,13 @@ Current verification: `.github/workflows/pull_request_labeler.yml` requires at l
 - Amb aprovació prèvia per crear-lo, executa `scripts/erp-herdr-worktree.sh create <path-absolut-worktree> <nom-branca>` des del directori de la skill.
 - Per un worktree existent, executa `scripts/erp-herdr-worktree.sh open <path-absolut-worktree>` abans d'editar o fer tests.
 - El companion és només un shell auxiliar; no iniciïs tests ni modifiquis enllaços compartits automàticament.
+
+### erp-workspace-sync
+- Abans de crear una branca o worktree ERP nou, executar `scripts/sync-workspace-repositories.sh` des del checkout que es prepara; ometre-ho per canvis només de docs/CI/metadades
+- Perfil de refs: `.agents/workspace-repositories.tsv`; el valor per defecte d'`erp` és `rolling_erp01` i `somenergia-utils` només s'aplica a Python 2
+- Excepció puntual: `--branch <repo>=<branca>`; persistent només després d'un sync correcte amb `--persist`, o amb `--persist-only` sense sync
+- Si algun repositori és brut, absent o ha divergit, aturar-se: no fer `stash`, `reset`, ni canviar-lo manualment; una branca reescrita requereix `--accept-rewritten-branch <repo>`
+- `--allow-missing` no valida un entorn equivalent a CI
 
 ### erp-test
 - Requisits: virtualenv activat, `WORKSPACE` definit i Docker amb PostgreSQL, MongoDB i Redis

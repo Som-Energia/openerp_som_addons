@@ -24,7 +24,22 @@ was created.
 
 1. State the explicit absolute path of the target worktree and, if it must be
    created, its branch name.
-2. Before editing or running tests, use one command from the directory
+2. Before creating a new worktree, synchronize shared dependencies from the
+   primary checkout using `erp-workspace-sync`:
+
+   ```bash
+   /absolute/path/to/openerp_som_addons/scripts/sync-workspace-repositories.sh
+   ```
+
+   Pass an explicit one-off exception when the development needs one, for
+   example `--branch erp=developer`. The script must finish successfully before
+   the worktree is created; it refuses dirty, absent, or divergent dependencies.
+   `--persist` at this point writes the primary checkout's local override, not
+   the new worktree's. To persist the exception in the new worktree, run its
+   own `scripts/sync-workspace-repositories.sh --branch erp=developer --persist`
+   after creation. This synchronization is not required for `open`, which must
+   not unexpectedly change shared repositories.
+3. Before editing or running tests, use one command from the directory
    containing this `SKILL.md`:
 
    ```bash
@@ -41,7 +56,7 @@ was created.
    then creates a vertical sibling pane rooted at that worktree. It preserves
    focus on the agent pane and reuses a matching companion in the same tab
    instead of creating a duplicate.
-3. Use the companion for explicit commands such as inspecting `git diff` or
+4. Use the companion for explicit commands such as inspecting `git diff` or
    running approved tests. Do not start tests, redirect shared addon links, or
    mutate shared ERP state merely by creating the pane.
-4. Report the selected worktree and companion-pane result in the handoff.
+5. Report the selected worktree and companion-pane result in the handoff.
