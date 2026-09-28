@@ -1,37 +1,41 @@
 # CI bootstrap dependency profile for the local multirepo workspace.
 #
-# Fields: directory  remote-or-fallbacks  strategy  ref
+# Fields: directory  remote-or-fallbacks  strategy  ref  profile
 #
 # Strategies:
 #   branch          checkout and fast-forward the named remote branch
 #   default-branch  checkout and fast-forward the remote's advertised HEAD
-#   latest-tag      checkout detached at the newest tag commit, as CI does
+#   latest-tag      checkout detached at the newest remote tag commit
 #
-# This mirrors .github/actions/bootstrap-erp/bootstrap-erp-env.sh.  The
+# Profiles:
+#   all             dependency used by every Python profile
+#   py2             dependency used only with Python 2.x
+#
+# This mirrors .github/actions/bootstrap-erp/bootstrap-erp-env.sh. The
 # openerp_som_addons checkout itself is intentionally omitted: it is the
 # feature worktree being prepared, not a shared dependency.
 #
 # ERP prefers the local `some` remote because it points to Som-Energia/erp in
 # the standard workspace. A clone with that repository as `origin` can use
 # the fallback transparently.
-erp	some,origin	branch	rolling_erp01
-libFacturacioATR	origin	latest-tag	-
-OMIE	origin	latest-tag	-
-omie-modules	origin	default-branch	-
-somenergia-generationkwh	origin	default-branch	-
-plantmeter	origin	default-branch	-
-som_sync_openerp_modules	origin	default-branch	-
-giscedata_facturacio_indexada_som	origin	default-branch	-
-oorq	origin	branch	api_v5
-poweremail2	origin	branch	v5_backport
-openerp-sentry	origin	branch	v5_legacy
-ws_transactions	origin	default-branch	-
-ir_attachment_mongodb	origin	default-branch	-
-mongodb_backend	origin	branch	gisce
-poweremail-modules	origin	default-branch	-
-crm_poweremail	origin	default-branch	-
-ooop	origin	latest-tag	-
-cchloader	origin	latest-tag	-
-gestionatr	origin	latest-tag	-
+erp	some,origin	branch	rolling_erp01	all
+libFacturacioATR	origin	latest-tag	-	all
+OMIE	origin	latest-tag	-	all
+omie-modules	origin	default-branch	-	all
+somenergia-generationkwh	origin	default-branch	-	all
+plantmeter	origin	default-branch	-	all
+som_sync_openerp_modules	origin	default-branch	-	all
+giscedata_facturacio_indexada_som	origin	default-branch	-	all
+oorq	origin	branch	api_v5	all
+poweremail2	origin	branch	v5_backport	all
+openerp-sentry	origin	branch	v5_legacy	all
+ws_transactions	origin	default-branch	-	all
+ir_attachment_mongodb	origin	default-branch	-	all
+mongodb_backend	origin	branch	gisce	all
+poweremail-modules	origin	default-branch	-	all
+crm_poweremail	origin	default-branch	-	all
+ooop	origin	latest-tag	-	all
+cchloader	origin	latest-tag	-	all
+gestionatr	origin	latest-tag	-	all
 # The bootstrap clones this only for Python 2 environments.
-somenergia-utils	origin	branch	py2
+somenergia-utils	origin	branch	py2	py2

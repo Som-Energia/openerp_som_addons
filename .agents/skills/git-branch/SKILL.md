@@ -50,10 +50,15 @@ git status --short
 Abans de canviar de branca, identificar qualsevol canvi local. No descartar-lo,
 fer `stash` ni incloure'l a la branca nova sense confirmar-ne l'abast.
 
-### Pas 2: Sincronitzar les dependències del workspace
+### Pas 2: Sincronitzar les dependències del workspace ERP
 
-Abans de crear la branca, prepara les dependències compartides amb el perfil
-que usa CI:
+Executa aquest pas només si la branca necessita executar o modificar l'entorn
+ERP (addons, scripts ERP o integració). Per a canvis exclusivament de
+documentació, CI o metadades que no facin servir les dependències compartides,
+omet-lo per no canviar repositoris germans sense necessitat.
+
+Abans de crear una branca ERP, prepara les dependències compartides amb el
+perfil que usa CI:
 
 ```bash
 scripts/sync-workspace-repositories.sh

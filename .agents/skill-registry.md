@@ -70,10 +70,10 @@ Current verification: `.github/workflows/pull_request_labeler.yml` requires at l
 - El companion és només un shell auxiliar; no iniciïs tests ni modifiquis enllaços compartits automàticament.
 
 ### erp-workspace-sync
-- Abans de crear una branca o worktree nou, executar `scripts/sync-workspace-repositories.sh` des del checkout que es prepara
-- Perfil de refs: `.agents/workspace-repositories.tsv`; el valor per defecte d'`erp` és `rolling_erp01`
-- Excepció puntual: `--branch <repo>=<branca>`; persistent només al worktree amb `--persist`
-- Si algun repositori és brut, absent o ha divergit, aturar-se: no fer `stash`, `reset`, ni canviar-lo manualment
+- Abans de crear una branca o worktree ERP nou, executar `scripts/sync-workspace-repositories.sh` des del checkout que es prepara; ometre-ho per canvis només de docs/CI/metadades
+- Perfil de refs: `.agents/workspace-repositories.tsv`; el valor per defecte d'`erp` és `rolling_erp01` i `somenergia-utils` només s'aplica a Python 2
+- Excepció puntual: `--branch <repo>=<branca>`; persistent només després d'un sync correcte amb `--persist`, o amb `--persist-only` sense sync
+- Si algun repositori és brut, absent o ha divergit, aturar-se: no fer `stash`, `reset`, ni canviar-lo manualment; una branca reescrita requereix `--accept-rewritten-branch <repo>`
 - `--allow-missing` no valida un entorn equivalent a CI
 
 ### erp-test

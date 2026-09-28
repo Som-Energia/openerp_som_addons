@@ -63,7 +63,9 @@ Abans de crear una branca de funcionalitat o un worktree nou, executa la skill
 `erp-workspace-sync`. El perfil versionat replica les dependències de CI i
 situa `erp` a `rolling_erp01` per defecte. Una excepció es declara de manera
 explícita amb `--branch <repo>=<branca>`; no canviïs repositoris germans a mà.
-El script refusa dependències amb canvis locals i no descarta mai estat local.
+No s'aplica a branques exclusivament de documentació, CI o metadades que no
+requereixin l'entorn ERP. El script refusa dependències amb canvis locals i no
+descarta mai estat local.
 
 ### Noms de branca
 
