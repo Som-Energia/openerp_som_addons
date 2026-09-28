@@ -50,7 +50,27 @@ git status --short
 Abans de canviar de branca, identificar qualsevol canvi local. No descartar-lo,
 fer `stash` ni incloure'l a la branca nova sense confirmar-ne l'abast.
 
-### Pas 2: Actualitzar `main`
+### Pas 2: Sincronitzar les dependències del workspace
+
+Abans de crear la branca, prepara les dependències compartides amb el perfil
+que usa CI:
+
+```bash
+scripts/sync-workspace-repositories.sh
+```
+
+Per a una necessitat concreta, declara l'excepció explícitament; no canviïs el
+repositori germà manualment:
+
+```bash
+scripts/sync-workspace-repositories.sh --branch erp=developer
+```
+
+Consulta `erp-workspace-sync` per als overrides persistents. Si el script
+informa de canvis locals, repositoris absents o branques divergents, atura't i
+resol-ho sense fer `stash` ni `reset` automàtics.
+
+### Pas 3: Actualitzar `main`
 
 ```bash
 git fetch origin
@@ -60,17 +80,17 @@ git pull --ff-only origin main
 
 `--ff-only` evita crear un merge accidental durant l'actualització.
 
-### Pas 3: Crear branca nova
+### Pas 4: Crear branca nova
 
 ```bash
 git switch -c <type>_<description>
 ```
 
-### Pas 4: Fer canvis i commit
+### Pas 5: Fer canvis i commit
 
 (Utilitza la skill `git-commit`)
 
-### Pas 5: Fer push
+### Pas 6: Fer push
 
 ```bash
 git push -u origin <branch_name>

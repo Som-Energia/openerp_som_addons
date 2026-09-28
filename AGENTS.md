@@ -49,12 +49,21 @@ Les skills següents estan disponibles al projecte i s'han d'utilitzar quan corr
 | `git-commit` | Fer commit | Veure [.agents/skills/git-commit/SKILL.md](.agents/skills/git-commit/SKILL.md) |
 | `git-pr` | Crear PR | Veure [.agents/skills/git-pr/SKILL.md](.agents/skills/git-pr/SKILL.md) |
 | `erp-herdr-worktree` | Treballar en un worktree ERP des d'un pane Herdr mantenint l'agent al workspace multirepo | Veure [.agents/skills/erp-herdr-worktree/SKILL.md](.agents/skills/erp-herdr-worktree/SKILL.md) |
+| `erp-workspace-sync` | Sincronitzar dependències compartides amb les refs de CI abans d'una branca o worktree nou | Veure [.agents/skills/erp-workspace-sync/SKILL.md](.agents/skills/erp-workspace-sync/SKILL.md) |
 
 ### Current PR Policy
 
 Repository GitHub workflows and repository rules are authoritative for PR requirements. Verify any generic or global skill requirement against them before applying it to this repository.
 
 Currently, `.github/workflows/pull_request_labeler.yml` requires each PR to have at least one label. It does not require an approved linked issue or a `type:*` label. This is the current policy and may change with repository workflows or rules.
+
+### Sincronització del workspace
+
+Abans de crear una branca de funcionalitat o un worktree nou, executa la skill
+`erp-workspace-sync`. El perfil versionat replica les dependències de CI i
+situa `erp` a `rolling_erp01` per defecte. Una excepció es declara de manera
+explícita amb `--branch <repo>=<branca>`; no canviïs repositoris germans a mà.
+El script refusa dependències amb canvis locals i no descarta mai estat local.
 
 ### Noms de branca
 

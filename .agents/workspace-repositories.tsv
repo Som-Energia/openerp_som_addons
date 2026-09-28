@@ -1,0 +1,37 @@
+# CI bootstrap dependency profile for the local multirepo workspace.
+#
+# Fields: directory  remote-or-fallbacks  strategy  ref
+#
+# Strategies:
+#   branch          checkout and fast-forward the named remote branch
+#   default-branch  checkout and fast-forward the remote's advertised HEAD
+#   latest-tag      checkout detached at the newest tag commit, as CI does
+#
+# This mirrors .github/actions/bootstrap-erp/bootstrap-erp-env.sh.  The
+# openerp_som_addons checkout itself is intentionally omitted: it is the
+# feature worktree being prepared, not a shared dependency.
+#
+# ERP prefers the local `some` remote because it points to Som-Energia/erp in
+# the standard workspace. A clone with that repository as `origin` can use
+# the fallback transparently.
+erp	some,origin	branch	rolling_erp01
+libFacturacioATR	origin	latest-tag	-
+OMIE	origin	latest-tag	-
+omie-modules	origin	default-branch	-
+somenergia-generationkwh	origin	default-branch	-
+plantmeter	origin	default-branch	-
+som_sync_openerp_modules	origin	default-branch	-
+giscedata_facturacio_indexada_som	origin	default-branch	-
+oorq	origin	branch	api_v5
+poweremail2	origin	branch	v5_backport
+openerp-sentry	origin	branch	v5_legacy
+ws_transactions	origin	default-branch	-
+ir_attachment_mongodb	origin	default-branch	-
+mongodb_backend	origin	branch	gisce
+poweremail-modules	origin	default-branch	-
+crm_poweremail	origin	default-branch	-
+ooop	origin	latest-tag	-
+cchloader	origin	latest-tag	-
+gestionatr	origin	latest-tag	-
+# The bootstrap clones this only for Python 2 environments.
+somenergia-utils	origin	branch	py2
