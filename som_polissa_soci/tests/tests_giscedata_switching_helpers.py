@@ -12,8 +12,15 @@ import mock
 
 class TestC1(TestSwitchingImport):
 
-    @mock.patch("som_polissa_soci.models.res_partner_address.ResPartnerAddress.subscribe_partner_in_customers_no_members_lists")  # noqa: E501
-    def test_load_c1_05(self, mock_subscribe):
+    def test_load_c1_05(self):
+        partner_address_obj = self.openerp.pool.get("res.partner.address")
+        subscribe_patcher = mock.patch.object(
+            partner_address_obj.__class__,
+            "subscribe_partner_in_customers_no_members_lists",
+        )
+        mock_subscribe = subscribe_patcher.start()
+        self.addCleanup(subscribe_patcher.stop)
+
         c102_xml_path = get_module_resource(
             'giscedata_switching', 'tests', 'fixtures', 'c102_new.xml')
         c105_xml_path = get_module_resource(

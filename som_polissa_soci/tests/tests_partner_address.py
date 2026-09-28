@@ -246,11 +246,11 @@ class TestsPartnerAddress(testing.OOTestCase):
         get_mailchimp_list_id_mock.return_value = 99
 
         partner_address_o.unsubscribe_partner_in_customers_no_members_lists(
-            self.cursor, self.txn, partner_id
+            self.cursor, self.uid, partner_id
         )
 
         archive_mock.assert_called_once_with(
-            self.cursor, self.txn, address_id, 99, fake_mchimp_client, context=None
+            mock.ANY, self.uid, address_id, 99, fake_mchimp_client, context=None
         )
 
     @mock.patch.object(res_partner_address.ResPartnerAddress, "archieve_mail_in_list_sync")
@@ -277,14 +277,16 @@ class TestsPartnerAddress(testing.OOTestCase):
         get_members_mailchimp_lists_mock.return_value = ["socis", "crinforma"]
         get_mailchimp_list_id_mock.side_effect = [11, 22]
 
-        partner_address_o.unsubscribe_partner_in_members_lists(self.cursor, self.txn, partner_id)
+        partner_address_o.unsubscribe_partner_in_members_lists(
+            self.cursor, self.uid, partner_id
+        )
 
         self.assertEqual(archive_mock.call_count, 2)
         archive_mock.assert_any_call(
-            self.cursor, self.txn, address_id, 11, fake_mchimp_client, context=None
+            mock.ANY, self.uid, address_id, 11, fake_mchimp_client, context=None
         )
         archive_mock.assert_any_call(
-            self.cursor, self.txn, address_id, 22, fake_mchimp_client, context=None
+            mock.ANY, self.uid, address_id, 22, fake_mchimp_client, context=None
         )
 
     @mock.patch.object(res_partner_address.ResPartnerAddress, "_get_mailchimp_client")

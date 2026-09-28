@@ -201,11 +201,12 @@ class ResPartnerAddress(osv.osv):
         if not isinstance(ids, (list, tuple)):
             ids = [ids]
 
+        if is_dry_run(context):
+            return super(ResPartnerAddress, self).write(
+                cursor, uid, ids, vals, context=context
+            )
+
         try:
-            if is_dry_run(context):
-                return super(ResPartnerAddress, self).write(
-                    cursor, uid, ids, vals, context=context
-                )
             MAILCHIMP_CLIENT = self._get_mailchimp_client(context=context)
             if "email" in vals:
                 for _id in ids:
