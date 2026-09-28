@@ -65,6 +65,12 @@ class TestHolderChangeValidation(unittest.TestCase):
 
         self.assertFalse(holder_change_validation.validate_payload(payload))
 
+    def test_accepts_supply_point_without_address(self):
+        payload = self.payload()
+        del payload["supply_point"]["address"]
+
+        self.assertFalse(holder_change_validation.validate_payload(payload))
+
     def payload(self):
         return {
             "payment_method": "bank",
