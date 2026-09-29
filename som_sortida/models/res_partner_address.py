@@ -1,7 +1,9 @@
 # -*- coding: utf-8 -*-
+from __future__ import absolute_import
 
 from osv import osv
 from oorq.decorators import job
+from base_extended_som.utils import is_dry_run, skip_job_in_dry_run
 
 FIELDS_CTSS = {
     "email": "EMAIL",
@@ -28,28 +30,36 @@ class ResPartnerAddress(osv.osv):
     _inherit = "res.partner.address"
 
     def subscribe_polissa_titular_in_ctss_lists(self, cursor, uid, polissa_ids, context=None):
+        if is_dry_run(context):
+            return False
         if not isinstance(polissa_ids, (list, tuple)):
             polissa_ids = [polissa_ids]
 
-        MAILCHIMP_CLIENT = self._get_mailchimp_client()
+        MAILCHIMP_CLIENT = self._get_mailchimp_client(context=context)
         conf_obj = self.pool.get("res.config")
         list_name = conf_obj.get(cursor, uid, "mailchimp_clients_ctss_list", None)
-        list_id = self.get_mailchimp_list_id(list_name, MAILCHIMP_CLIENT)
+        list_id = self.get_mailchimp_list_id(list_name, MAILCHIMP_CLIENT, context=context)
         for _id in polissa_ids:
-            client_data = self.fill_merge_fields_titular_polissa_ctss(cursor, uid, _id)
+            client_data = self.fill_merge_fields_titular_polissa_ctss(
+                cursor, uid, _id, context=context
+            )
             self.subscribe_mail_in_list_async(
-                cursor, uid, [client_data], list_id, MAILCHIMP_CLIENT
+                cursor, uid, [client_data], list_id, MAILCHIMP_CLIENT, context=context
             )
 
     def update_polissa_titular_in_ctss_lists(self, cursor, uid, polissa_ids, context=None):
+        if is_dry_run(context):
+            return False
         if not isinstance(polissa_ids, (list, tuple)):
             polissa_ids = [polissa_ids]
         conf_obj = self.pool.get("res.config")
         list_name = conf_obj.get(cursor, uid, "mailchimp_clients_ctss_list", None)
         for _id in polissa_ids:
-            client_data = self.fill_merge_fields_titular_polissa_ctss(cursor, uid, _id)
+            client_data = self.fill_merge_fields_titular_polissa_ctss(
+                cursor, uid, _id, context=context
+            )
             self.update_or_create_data_in_list_mailchimp_async(
-                cursor, uid, [client_data], [list_name], context
+                cursor, uid, [client_data], [list_name], context=context
             )
 
     def _get_polissa_data(self, cursor, uid, polissa_id, context=None):
@@ -113,20 +123,23 @@ class ResPartnerAddress(osv.osv):
 
         return mailchimp_member
 
+    @skip_job_in_dry_run
     @job(queue="mailchimp_tasks")
     def unsubscribe_titular_in_ctss_lists(self, cursor, uid, partner_ids, context=None):
+        if is_dry_run(context):
+            return False
         if not isinstance(partner_ids, (list, tuple)):
             partner_ids = [partner_ids]
 
-        MAILCHIMP_CLIENT = self._get_mailchimp_client()
+        MAILCHIMP_CLIENT = self._get_mailchimp_client(context=context)
         conf_obj = self.pool.get("res.config")
         list_name = conf_obj.get(cursor, uid, "mailchimp_clients_ctss_list", None)
-        list_id = self.get_mailchimp_list_id(list_name, MAILCHIMP_CLIENT)
+        list_id = self.get_mailchimp_list_id(list_name, MAILCHIMP_CLIENT, context=context)
 
         for _id in partner_ids:
             address_id = self._get_partner_address_id(cursor, uid, _id, context=context)
             self.archieve_mail_in_list_sync(
-                cursor, uid, address_id, list_id, MAILCHIMP_CLIENT
+                cursor, uid, address_id, list_id, MAILCHIMP_CLIENT, context=context
             )
 
 

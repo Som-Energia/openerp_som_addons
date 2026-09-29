@@ -157,7 +157,7 @@ class GiscedataCrmLead(osv.OsvInherits):
             summary_context.update({
                 "lead": True,
                 "lang": lead.lang,
-                "in_rollback_transaction": True,
+                "is_dry_run": True,
                 "summary_contract": True,
             })
 
@@ -200,7 +200,7 @@ class GiscedataCrmLead(osv.OsvInherits):
             summary_context.update({
                 "lead": True,
                 "lang": lead.lang,
-                "in_rollback_transaction": True,
+                "is_dry_run": True,
                 "summary_contract": True,
             })
 

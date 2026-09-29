@@ -8,6 +8,8 @@ from osv.orm import browse_record
 import logging
 import pooler
 
+from base_extended_som.utils import is_dry_run
+
 
 class SomenergiaSoci(osv.osv):
     """Class to manage GkWh info in User interface"""
@@ -54,7 +56,7 @@ class SomenergiaSoci(osv.osv):
         else:
             soci_id = self.create(cursor, uid, vals, context=context)
 
-        if not context.get('in_rollback_transaction', False):
+        if not is_dry_run(context):
             try:
                 if soci_id:
                     rpa_obj.unsubscribe_partner_in_customers_no_members_lists(

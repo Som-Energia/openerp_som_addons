@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+from __future__ import absolute_import
+
 from osv import osv
 from tools.translate import _
 
@@ -9,6 +11,9 @@ from mailchimp_marketing.api_client import ApiClientError
 from oorq.decorators import job
 from tools import config
 import ast
+
+from base_extended_som.utils import is_dry_run, skip_job_in_dry_run
+
 
 FIELDS_NO_MEMBERS = {
     "zip_code": "MMERGE10",
@@ -66,7 +71,9 @@ class ResPartnerAddress(osv.osv):
     _name = "res.partner.address"
     _inherit = "res.partner.address"
 
-    def _get_mailchimp_client(self):
+    def _get_mailchimp_client(self, context=None):
+        if is_dry_run(context):
+            return False
         return MailchimpMarketing.Client(
             dict(
                 api_key=config.options.get("mailchimp_apikey"),
@@ -194,8 +201,13 @@ class ResPartnerAddress(osv.osv):
         if not isinstance(ids, (list, tuple)):
             ids = [ids]
 
+        if is_dry_run(context):
+            return super(ResPartnerAddress, self).write(
+                cursor, uid, ids, vals, context=context
+            )
+
         try:
-            MAILCHIMP_CLIENT = self._get_mailchimp_client()
+            MAILCHIMP_CLIENT = self._get_mailchimp_client(context=context)
             if "email" in vals:
                 for _id in ids:
                     old_email = self.read(cursor, uid, _id, ["email"])["email"]
@@ -205,11 +217,12 @@ class ResPartnerAddress(osv.osv):
 
                     if not email:
                         self.unsubscribe_client_email_in_all_lists_async(
-                            cursor, uid, _id, old_email, MAILCHIMP_CLIENT
+                            cursor, uid, _id, old_email, MAILCHIMP_CLIENT, context=context
                         )
                     else:
                         self.update_client_email_in_all_lists_async(
-                            cursor, uid, _id, old_email, email, MAILCHIMP_CLIENT
+                            cursor, uid, _id, old_email, email, MAILCHIMP_CLIENT,
+                            context=context
                         )
         except Exception as e:
             sentry = self.pool.get('sentry.setup')
@@ -220,7 +233,9 @@ class ResPartnerAddress(osv.osv):
         return super(ResPartnerAddress, self).write(cursor, uid, ids, vals, context=context)
 
     @staticmethod
-    def get_mailchimp_list_id(list_name, mailchip_conn):
+    def get_mailchimp_list_id(list_name, mailchip_conn, context=None):
+        if is_dry_run(context):
+            return False
         all_lists = mailchip_conn.lists.get_all_lists(fields=["lists.id,lists.name"], count=100)[
             "lists"
         ]
@@ -359,6 +374,7 @@ class ResPartnerAddress(osv.osv):
 
         return mailchimp_member
 
+    @skip_job_in_dry_run
     @job(queue="mailchimp_tasks")
     def subscribe_partner_in_customers_no_members_lists(
             self, cursor, uid, partner_ids, context=None):
@@ -367,40 +383,53 @@ class ResPartnerAddress(osv.osv):
 
     def subscribe_partner_in_customers_no_members_lists_sync(
             self, cursor, uid, partner_ids, context=None):
+        if is_dry_run(context):
+            return False
         if not isinstance(partner_ids, (list, tuple)):
             partner_ids = [partner_ids]
 
-        MAILCHIMP_CLIENT = self._get_mailchimp_client()
+        MAILCHIMP_CLIENT = self._get_mailchimp_client(context=context)
         conf_obj = self.pool.get("res.config")
         list_name = conf_obj.get(cursor, uid, "mailchimp_clients_list", None)
-        list_id = self.get_mailchimp_list_id(list_name, MAILCHIMP_CLIENT)
+        list_id = self.get_mailchimp_list_id(list_name, MAILCHIMP_CLIENT, context=context)
 
         for _id in partner_ids:
-            client_data = self.fill_merge_fields_clients_from_partner(cursor, uid, _id)
+            client_data = self.fill_merge_fields_clients_from_partner(
+                cursor, uid, _id, context=context
+            )
             self.subscribe_mail_in_list(
-                cursor, uid, [client_data], list_id, MAILCHIMP_CLIENT
+                cursor, uid, [client_data], list_id, MAILCHIMP_CLIENT, context=context
             )
 
+    @skip_job_in_dry_run
     @job(queue="mailchimp_tasks")
     def subscribe_partner_in_members_lists(self, cursor, uid, partner_ids, context=None):
         return self.subscribe_partner_in_members_lists_sync(
             cursor, uid, partner_ids, context=context)
 
     def subscribe_partner_in_members_lists_sync(self, cursor, uid, partner_ids, context=None):
+        if is_dry_run(context):
+            return False
         if not isinstance(partner_ids, (list, tuple)):
             partner_ids = [partner_ids]
 
-        MAILCHIMP_CLIENT = self._get_mailchimp_client()
+        MAILCHIMP_CLIENT = self._get_mailchimp_client(context=context)
         list_names = self._get_members_mailchimp_lists(cursor, uid, partner_ids, context=context)
-        list_ids = [self.get_mailchimp_list_id(name, MAILCHIMP_CLIENT) for name in list_names]
+        list_ids = [
+            self.get_mailchimp_list_id(name, MAILCHIMP_CLIENT, context=context)
+            for name in list_names
+        ]
 
         for _id in partner_ids:
-            client_data = self.fill_merge_fields_soci_from_partner(cursor, uid, _id)
+            client_data = self.fill_merge_fields_soci_from_partner(
+                cursor, uid, _id, context=context
+            )
             for list_id in list_ids:
                 self.subscribe_mail_in_list(
-                    cursor, uid, [client_data], list_id, MAILCHIMP_CLIENT
+                    cursor, uid, [client_data], list_id, MAILCHIMP_CLIENT, context=context
                 )
 
+    @skip_job_in_dry_run
     @job(queue="mailchimp_tasks")
     def subscribe_mail_in_list_async(
         self, cursor, uid, clients_data, list_id, mailchimp_conn, context=None
@@ -412,6 +441,8 @@ class ResPartnerAddress(osv.osv):
         self, cursor, uid, clients_data, list_id, mailchimp_conn, context=None
     ):
         """ Subscribe a list of clients to a Mailchimp list """
+        if is_dry_run(context):
+            return False
         logger = logging.getLogger("openerp.{0}.subscribe_mail_in_list".format(__name__))
         for client_data in clients_data:
             try:
@@ -435,20 +466,28 @@ class ResPartnerAddress(osv.osv):
                 logger.info("Mailchimp: Email subscrit a la llista {}: {}".format(
                     list_id, client_data["email_address"]))
 
+    @skip_job_in_dry_run
     @job(queue="mailchimp_tasks")
     def update_members_data_mailchimp_async(self, cursor, uid, partner_ids, context=None):
         self.update_members_data_mailchimp_sync(cursor, uid, partner_ids, context=context)
 
     def update_members_data_mailchimp_sync(self, cursor, uid, partner_ids, context=None):
+        if is_dry_run(context):
+            return False
         if not isinstance(partner_ids, (list, tuple)):
             partner_ids = [partner_ids]
         logger = logging.getLogger("openerp.{0}.update_members_data_mailchimp".format(__name__))
-        MAILCHIMP_CLIENT = self._get_mailchimp_client()
+        MAILCHIMP_CLIENT = self._get_mailchimp_client(context=context)
         list_names = self._get_members_mailchimp_lists(cursor, uid, partner_ids, context=context)
-        list_ids = [self.get_mailchimp_list_id(name, MAILCHIMP_CLIENT) for name in list_names]
+        list_ids = [
+            self.get_mailchimp_list_id(name, MAILCHIMP_CLIENT, context=context)
+            for name in list_names
+        ]
 
         for _id in partner_ids:
-            client_data = self.fill_merge_fields_soci_from_partner(cursor, uid, _id)
+            client_data = self.fill_merge_fields_soci_from_partner(
+                cursor, uid, _id, context=context
+            )
             try:
                 subscriber_hash = md5(client_data["email_address"].lower()).hexdigest()
                 for list_id in list_ids:
@@ -481,18 +520,21 @@ class ResPartnerAddress(osv.osv):
                 logger.info("Mailchimp: Email actualitzat a la llista {}: {}".format(
                     list_id, client_data["email_address"]))
 
+    @skip_job_in_dry_run
     @job(queue="mailchimp_tasks")
     def update_client_email_in_all_lists_async(
         self, cursor, uid, ids, old_email, email, mailchimp_conn, context=None
     ):
         self.update_client_email_in_all_lists(
-            cursor, uid, ids, old_email, email, mailchimp_conn, context=None
+            cursor, uid, ids, old_email, email, mailchimp_conn, context=context
         )
 
     def update_client_email_in_all_lists(
         self, cursor, uid, ids, old_email, email, mailchimp_conn, context=None
     ):
         ''' Update email of a client in all Mailchimp lists where it is subscribed '''
+        if is_dry_run(context):
+            return False
         if not isinstance(ids, (list, tuple)):
             ids = [ids]
         logger = logging.getLogger("openerp.{0}.update_client_email_in_all_lists".format(__name__))
@@ -540,19 +582,25 @@ class ResPartnerAddress(osv.osv):
                         )
                     )
 
+    @skip_job_in_dry_run
     @job(queue="mailchimp_tasks")
     def update_or_create_data_in_list_mailchimp_async(self, cursor, uid, clients_data, list_names, context=None):  # noqa: E501
         self.update_or_create_data_in_list_mailchimp(
             cursor, uid, clients_data, list_names, context=context)
 
     def update_or_create_data_in_list_mailchimp(self, cursor, uid, clients_data, list_names, context=None):  # noqa: E501
+        if is_dry_run(context):
+            return False
         if not isinstance(clients_data, (list, tuple)):
             clients_data = [clients_data]
         if not isinstance(list_names, (list, tuple)):
             list_names = [list_names]
         logger = logging.getLogger("openerp.{0}.update_data_in_list_mailchimp".format(__name__))
-        MAILCHIMP_CLIENT = self._get_mailchimp_client()
-        list_ids = [self.get_mailchimp_list_id(name, MAILCHIMP_CLIENT) for name in list_names]
+        MAILCHIMP_CLIENT = self._get_mailchimp_client(context=context)
+        list_ids = [
+            self.get_mailchimp_list_id(name, MAILCHIMP_CLIENT, context=context)
+            for name in list_names
+        ]
         for client_data in clients_data:
             try:
                 if client_data.get("email_address", False):
@@ -573,47 +621,61 @@ class ResPartnerAddress(osv.osv):
                 logger.info("Mailchimp: Email actualitzat a la llista {}: {}".format(
                     list_id, client_data["email_address"]))
 
+    @skip_job_in_dry_run
     @job(queue="mailchimp_tasks")
     def unsubscribe_partner_in_customers_no_members_lists(
             self, cursor, uid, partner_ids, context=None):
+        if is_dry_run(context):
+            return False
         if not isinstance(partner_ids, (list, tuple)):
             partner_ids = [partner_ids]
 
-        MAILCHIMP_CLIENT = self._get_mailchimp_client()
+        MAILCHIMP_CLIENT = self._get_mailchimp_client(context=context)
         conf_obj = self.pool.get("res.config")
         list_name = conf_obj.get(cursor, uid, "mailchimp_clients_list", None)
-        list_id = self.get_mailchimp_list_id(list_name, MAILCHIMP_CLIENT)
+        list_id = self.get_mailchimp_list_id(list_name, MAILCHIMP_CLIENT, context=context)
 
         for _id in partner_ids:
             address_id = self._get_partner_address_id(cursor, uid, _id, context=context)
             self.archieve_mail_in_list_sync(
-                cursor, uid, address_id, list_id, MAILCHIMP_CLIENT
+                cursor, uid, address_id, list_id, MAILCHIMP_CLIENT, context=context
             )
 
+    @skip_job_in_dry_run
     @job(queue="mailchimp_tasks")
     def unsubscribe_partner_in_members_lists(self, cursor, uid, partner_ids, context=None):
+        if is_dry_run(context):
+            return False
         if not isinstance(partner_ids, (list, tuple)):
             partner_ids = [partner_ids]
 
-        MAILCHIMP_CLIENT = self._get_mailchimp_client()
+        MAILCHIMP_CLIENT = self._get_mailchimp_client(context=context)
         list_names = self._get_members_mailchimp_lists(cursor, uid, partner_ids, context=context)
-        list_ids = [self.get_mailchimp_list_id(name, MAILCHIMP_CLIENT) for name in list_names]
+        list_ids = [
+            self.get_mailchimp_list_id(name, MAILCHIMP_CLIENT, context=context)
+            for name in list_names
+        ]
 
         for _id in partner_ids:
             address_id = self._get_partner_address_id(cursor, uid, _id, context=context)
             for list_id in list_ids:
                 self.archieve_mail_in_list_sync(
-                    cursor, uid, address_id, list_id, MAILCHIMP_CLIENT
+                    cursor, uid, address_id, list_id, MAILCHIMP_CLIENT, context=context
                 )
 
+    @skip_job_in_dry_run
     @job(queue="mailchimp_tasks")
     def archieve_mail_in_list(self, cursor, uid, ids, list_id, mailchimp_conn, context=None):
-        self.archieve_mail_in_list_sync(cursor, uid, ids, list_id, mailchimp_conn, context=None)
+        self.archieve_mail_in_list_sync(
+            cursor, uid, ids, list_id, mailchimp_conn, context=context
+        )
 
     def archieve_mail_in_list_sync(self, cursor, uid, ids, list_id, mailchimp_conn, context=None):
         """
         Archive an email in a Mailchimp list
         """
+        if is_dry_run(context):
+            return False
         if not isinstance(ids, (list, tuple)):
             ids = [ids]
 
@@ -650,18 +712,21 @@ class ResPartnerAddress(osv.osv):
             else:
                 logger.info("Mailchimp: Email arxivat a la llista {}: {}".format(list_id, email))
 
+    @skip_job_in_dry_run
     @job(queue="mailchimp_tasks")
     def unsubscribe_client_email_in_all_lists_async(
         self, cursor, uid, ids, old_email, mailchimp_conn, context=None
     ):
         self.unsubscribe_client_email_in_all_lists(
-            cursor, uid, ids, old_email, mailchimp_conn, context=None
+            cursor, uid, ids, old_email, mailchimp_conn, context=context
         )
 
     def unsubscribe_client_email_in_all_lists(
         self, cursor, uid, ids, old_email, mailchimp_conn, context=None
     ):
         ''' Unsubscribe email of a client in all Mailchimp lists where it is subscribed '''
+        if is_dry_run(context):
+            return False
         if not isinstance(ids, (list, tuple)):
             ids = [ids]
 
@@ -675,7 +740,9 @@ class ResPartnerAddress(osv.osv):
 
         for mchimp_list in all_lists:
             list_id = mchimp_list["id"]
-            self.archieve_mail_in_list_sync(cursor, uid, ids, list_id, mailchimp_conn)
+            self.archieve_mail_in_list_sync(
+                cursor, uid, ids, list_id, mailchimp_conn, context=context
+            )
 
 
 ResPartnerAddress()
