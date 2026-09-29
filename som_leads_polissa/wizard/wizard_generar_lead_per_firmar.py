@@ -17,6 +17,9 @@ class WizardGenerarLeadPerFirmar(osv.osv_memory):
     _COMPLETED_MESSAGE = _(
         u'La firma està completada. Cal desvincular o eliminar la firma del lead manualment.'
     )
+    _CONTRACT_MESSAGE = _(
+        u'El lead ja té un contracte vinculat i no es pot tornar a firmar.'
+    )
 
     def _get_lead_ids(self, context):
         lead_ids = (context or {}).get('active_ids', [])
@@ -28,7 +31,9 @@ class WizardGenerarLeadPerFirmar(osv.osv_memory):
         lead_obj = self.pool.get('giscedata.crm.lead')
         process_obj = self.pool.get('giscedata.signatura.process')
         lead_data = lead_obj.read(
-            cursor, uid, lead_id, ['signature_process', 'firmat'], context=context
+            cursor, uid, lead_id,
+            ['signature_process', 'firmat', 'polissa_id', 'crm_lead_type'],
+            context=context,
         )
         process = lead_data.get('signature_process')
         process_id = process[0] if isinstance(process, (list, tuple)) else process
@@ -41,6 +46,8 @@ class WizardGenerarLeadPerFirmar(osv.osv_memory):
             'lead_id': lead_id,
             'process_id': process_id,
             'firmat': bool(lead_data.get('firmat')),
+            'has_contract': bool(lead_data.get('polissa_id')),
+            'is_renovation': lead_data.get('crm_lead_type') == 'renovation',
             'status': process_data.get('status'),
             'signature_id': process_data.get('signature_id'),
         }
@@ -53,6 +60,7 @@ class WizardGenerarLeadPerFirmar(osv.osv_memory):
         blocked = [
             signature for signature in signatures
             if signature['firmat'] or signature['status'] == 'completed'
+            or signature['has_contract'] and not signature['is_renovation']
         ]
         active = [
             signature for signature in signatures
@@ -64,6 +72,11 @@ class WizardGenerarLeadPerFirmar(osv.osv_memory):
             if signature['process_id'] and signature not in blocked
         ]
         return blocked, active, replaceable
+
+    def _get_blocked_message(self, blocked):
+        if any(signature['has_contract'] for signature in blocked):
+            return self._CONTRACT_MESSAGE
+        return self._COMPLETED_MESSAGE
 
     def _clean_signature_link(self, cursor, uid, lead_id, context=None):
         lead_obj = self.pool.get('giscedata.crm.lead')
@@ -128,8 +141,8 @@ class WizardGenerarLeadPerFirmar(osv.osv_memory):
         )
         if blocked:
             self._set_state(
-                cursor, uid, wizard_id, 'blocked', self._COMPLETED_MESSAGE,
-                context=context,
+                cursor, uid, wizard_id, 'blocked',
+                self._get_blocked_message(blocked), context=context,
             )
             return True
         if active:
@@ -170,8 +183,8 @@ class WizardGenerarLeadPerFirmar(osv.osv_memory):
         replaceable = inspection[2]
         if blocked:
             self._set_state(
-                cursor, uid, wizard_id, 'blocked', self._COMPLETED_MESSAGE,
-                context=context,
+                cursor, uid, wizard_id, 'blocked',
+                self._get_blocked_message(blocked), context=context,
             )
             return True
 
