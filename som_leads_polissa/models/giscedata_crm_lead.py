@@ -664,6 +664,12 @@ class GiscedataCrmLead(osv.OsvInherits):
         wiz_id = wiz_send_obj.create(cr, uid, params, context)
         return wiz_send_obj.send_mail(cr, uid, [wiz_id], context)
 
+    def onchange_data_alta_prevista(self, cursor, uid, ids, data_alta_prevista, context=None):
+        res = {'value': {'activacio_cicle': 'A'}, 'warning': {}, 'domain': {}}
+        if data_alta_prevista:
+            res['value']['activacio_cicle'] = 'F'
+        return res
+
     _columns = {
         "tipus_tarifa_lead": fields.selection(_tipus_tarifes_lead, "Tipus de tarifa del contracte"),
         "set_custom_potencia": fields.boolean("Sobreescriure preus potència"),
