@@ -556,6 +556,28 @@ class TestHolderChangeWww(testing.OOTestCase):
         self.assertIs(create.call_args[0][0], write.call_args[0][0])
         start.assert_not_called()
 
+    def test_simulation_uses_dry_run_context_without_mutating_caller_context(self):
+        caller_context = {"is_dry_run": False, "caller_marker": True}
+
+        with mock.patch.object(
+            self.request_obj,
+            "_run_holder_change",
+            wraps=self.request_obj._run_holder_change,
+        ) as run_holder_change:
+            result = self.www_obj.create_request(
+                self.cursor, self.uid, self.payload(), context=caller_context
+            )
+
+        self.assertTrue(result["success"], result)
+        run_holder_change.assert_called_once()
+        simulation_context = run_holder_change.call_args[1]["context"]
+        self.assertTrue(run_holder_change.call_args[1]["temporary"])
+        self.assertTrue(simulation_context["is_dry_run"])
+        self.assertNotIn("in_rollback_transaction", simulation_context)
+        self.assertEqual(
+            caller_context, {"is_dry_run": False, "caller_marker": True}
+        )
+
     def test_simulation_only_persists_reserved_references(self):
         partner_obj = self.openerp.pool.get("res.partner")
         bank_obj = self.openerp.pool.get("res.partner.bank")
