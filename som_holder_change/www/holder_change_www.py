@@ -149,6 +149,7 @@ class SomHolderChangeWww(osv.osv_memory):
     def execute_request_async(self, cursor, uid, request_id, context=None):
         request_obj = self.pool.get("som.holder.change.request")
         try:
+            import pudb; pu.db
             return request_obj.execute(cursor, uid, request_id, context=context)
         except Exception as error:
             request_obj.write(
@@ -162,6 +163,7 @@ class SomHolderChangeWww(osv.osv_memory):
             raise
 
     def execute_request(self, cursor, uid, request_id, cups, context=None):
+        import pudb; pu.db
         if context is None:
             context = {}
 

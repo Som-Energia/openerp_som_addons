@@ -54,7 +54,7 @@ def validate_base_payload(payload):
 
 def validate_required_fields(payload):
     required = {
-        "supply_point": ["cups", "address"],
+        "supply_point": ["cups"],
         "member": ["invite_token", "become_member", "link_member"],
         "especial_cases": ["reason_death", "reason_merge", "reason_electrodep"],
         "holder": [

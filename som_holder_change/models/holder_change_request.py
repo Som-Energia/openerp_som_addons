@@ -167,7 +167,7 @@ class SomHolderChangeRequest(osv.osv):
         request = self.browse(cursor, uid, request_id, context=context)
         temporary_cursor = pooler.get_db(cursor.dbname).cursor()
         temporary_context = (context or {}).copy()
-        temporary_context["in_rollback_transaction"] = True
+        temporary_context["is_dry_run"] = True
         try:
             request = self.browse(temporary_cursor, uid, request_id, context=temporary_context)
             switching_id, polissa_id, mandate_id, _new_member_partner_id = self._run_holder_change(
