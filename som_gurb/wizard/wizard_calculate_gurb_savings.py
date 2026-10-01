@@ -1,5 +1,8 @@
 # -*- coding: utf-8 -*-
-from __future__ import absolute_import
+from __future__ import absolute_import, division
+
+# OpenERP 5 imports and built-in round are required for Python 2 compatibility.
+# pylint: disable=bad-python3-import,round-builtin
 from osv import osv, fields
 from datetime import datetime
 from StringIO import StringIO
@@ -228,25 +231,27 @@ class WizardCalculateGurbSavings(osv.osv_memory):
             }
             for linia_energia in linies_energia:
                 if linia_energia.name in total_energia.keys():
-                    total_energia[linia_energia.name] = linia_energia.quantity
-                    price_energia[linia_energia.name] = linia_energia.price_unit
+                    total_energia[linia_energia.name] += linia_energia.quantity
+                    price_energia[linia_energia.name] += (
+                        linia_energia.quantity * linia_energia.price_unit
+                    )
             energia_kwh = sum(total_energia.values())
 
             profit_fact = 0
             for k in total_auto:
-                profit_fact += total_auto[k] * price_energia[k]
+                if total_energia[k]:
+                    profit_fact += (
+                        total_auto[k] * price_energia[k] / total_energia[k]
+                    )
 
             generacio_kwh = 0
             total_generacio = {'P1': 0, 'P2': 0, 'P3': 0, 'P4': 0, 'P5': 0, 'P6': 0}
-            price_generacio = {'P1': 0, 'P2': 0, 'P3': 0, 'P4': 0, 'P5': 0, 'P6': 0}
+            generacio_fact = 0
             for linia_generacio in linies_generacio:
                 if linia_generacio.name in total_generacio.keys():
                     generacio_kwh += linia_generacio.quantity
                     total_generacio[linia_generacio.name] += linia_generacio.quantity
-                    price_generacio[linia_generacio.name] += linia_generacio.price_unit
-            generacio_fact = 0
-            for k in total_generacio:
-                generacio_fact += total_generacio[k] * price_generacio[k]
+                    generacio_fact += linia_generacio.quantity * linia_generacio.price_unit
 
             cost_gurb = 0
             for linia_gurb in linies_gurb:
