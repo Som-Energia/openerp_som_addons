@@ -583,9 +583,12 @@ class TestHolderChangeWww(testing.OOTestCase):
         bank_obj = self.openerp.pool.get("res.partner.bank")
         mandate_obj = self.openerp.pool.get("payment.mandate")
         switching_obj = self.openerp.pool.get("giscedata.switching")
+        self.polissa_obj.write(
+            self.cursor, self.uid, self.polissa_id, {"donatiu": False}
+        )
         old_polissa = self.polissa_obj.read(
             self.cursor, self.uid, self.polissa_id,
-            ["no_estimable", "observacions", "observacions_estimacio"],
+            ["donatiu", "no_estimable", "observacions", "observacions_estimacio"],
         )
         vat = "ES12345678Z"
         iban = self.payload()["payment"]["iban"]
@@ -635,7 +638,7 @@ class TestHolderChangeWww(testing.OOTestCase):
         self.assertEqual(
             self.polissa_obj.read(
                 self.cursor, self.uid, self.polissa_id,
-                ["no_estimable", "observacions", "observacions_estimacio"],
+                ["donatiu", "no_estimable", "observacions", "observacions_estimacio"],
             ),
             old_polissa,
         )
@@ -688,6 +691,7 @@ class TestHolderChangeWww(testing.OOTestCase):
         result_polissa = self.polissa_obj.browse(
             self.cursor, self.uid, first_result["result_polissa_id"]
         )
+        self.assertTrue(result_polissa.donatiu)
         invoice_number = "QUOTA-SOCIA-CANVI-TITULAR-{}".format(result["request_id"])
         invoice_obj = self.openerp.pool.get("account.invoice")
         invoice_ids = invoice_obj.search(
@@ -719,6 +723,29 @@ class TestHolderChangeWww(testing.OOTestCase):
         self.assertIn("holder", switching.user_observations)
         self.assertNotIn("JVBERi0xLjQ", switching.user_observations)
 
+    def test_transfer_can_disable_inherited_voluntary_donation(self):
+        self.polissa_obj.write(
+            self.cursor, self.uid, self.polissa_id, {"donatiu": True}
+        )
+        payload = self.payload()
+        payload["payment"]["voluntary_cent"] = False
+        result = self.www_obj.create_request(self.cursor, self.uid, payload)
+        self.assertTrue(result["success"], result)
+        self.queue_request(result["request_id"])
+
+        execution = self.request_obj.execute(
+            self.cursor, self.uid, result["request_id"]
+        )
+
+        result_polissa = self.polissa_obj.browse(
+            self.cursor, self.uid, execution["result_polissa_id"]
+        )
+        old_polissa = self.polissa_obj.browse(
+            self.cursor, self.uid, self.polissa_id
+        )
+        self.assertFalse(result_polissa.donatiu)
+        self.assertTrue(old_polissa.donatiu)
+
     def test_subrogation_creates_draft_m1(self):
         payload = self.payload()
         payload["especial_cases"].update({"reason_death": True})
@@ -748,6 +775,10 @@ class TestHolderChangeWww(testing.OOTestCase):
         self.assertEqual(switching.state, "draft")
         self.assertEqual(switching.get_pas().sollicitudadm, "S")
         self.assertEqual(switching.get_pas().canvi_titular, "S")
+        result_polissa = self.polissa_obj.browse(
+            self.cursor, self.uid, execution["result_polissa_id"]
+        )
+        self.assertTrue(result_polissa.donatiu)
         self.assertEqual(self.send_mail.call_args_list[0][0][2:4], (
             "som_polissa_condicions_generals", "notification_atr_M1_01_SS"
         ))

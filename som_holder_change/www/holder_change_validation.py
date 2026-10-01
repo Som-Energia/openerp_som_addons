@@ -16,6 +16,7 @@ def validate_payload(payload):
     for validator in (
         validate_base_payload,
         validate_required_fields,
+        validate_payment,
         validate_holder,
         validate_member,
         validate_special_case,
@@ -72,6 +73,15 @@ def validate_required_fields(payload):
                 "MISSING_REQUIRED_FIELDS",
                 _("Missing {} fields: {}.").format(section, ", ".join(missing)),
             )
+    return False
+
+
+def validate_payment(payload):
+    if not isinstance(payload["payment"]["voluntary_cent"], bool):
+        return error(
+            "INCORRECT_PARAM_TYPE",
+            _("Voluntary cent must be a boolean."),
+        )
     return False
 
 

@@ -71,6 +71,20 @@ class TestHolderChangeValidation(unittest.TestCase):
 
         self.assertFalse(holder_change_validation.validate_payload(payload))
 
+    def test_accepts_disabled_voluntary_cent(self):
+        payload = self.payload()
+        payload["payment"]["voluntary_cent"] = False
+
+        self.assertFalse(holder_change_validation.validate_payload(payload))
+
+    def test_rejects_non_boolean_voluntary_cent(self):
+        payload = self.payload()
+        payload["payment"]["voluntary_cent"] = "false"
+
+        error = holder_change_validation.validate_payload(payload)
+
+        self.assertEqual(error["code"], "INCORRECT_PARAM_TYPE")
+
     def payload(self):
         return {
             "payment_method": "bank",

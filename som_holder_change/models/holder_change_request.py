@@ -192,7 +192,7 @@ class SomHolderChangeRequest(osv.osv):
         execution = self._execute_m1_change(
             cursor, uid, request, change_data, context=context
         )
-        self._apply_result_contract_membership(
+        self._apply_result_contract_values(
             cursor, uid, request, execution["polissa_id"], change_data, context=context
         )
         new_member_partner_id = change_data["is_new_member"] and change_data["partner_id"]
@@ -266,12 +266,15 @@ class SomHolderChangeRequest(osv.osv):
             "switching_id": switching_id,
         }
 
-    def _apply_result_contract_membership(
+    def _apply_result_contract_values(
         self, cursor, uid, request, polissa_id, change_data, context=None
     ):
+        values = {
+            "donatiu": request.payload["payment"]["voluntary_cent"],
+        }
         member_partner_id = change_data["member_partner_id"]
         if member_partner_id:
-            values = {"soci": member_partner_id}
+            values["soci"] = member_partner_id
             if change_data["is_ct_ss_member"]:
                 category_id = self.pool.get("ir.model.data").get_object_reference(
                     cursor,
@@ -280,9 +283,9 @@ class SomHolderChangeRequest(osv.osv):
                     "origen_ct_sense_socia_category",
                 )[1]
                 values["category_id"] = [(4, category_id)]
-            self.pool.get("giscedata.polissa").write(
-                cursor, uid, polissa_id, values, context=context
-            )
+        self.pool.get("giscedata.polissa").write(
+            cursor, uid, polissa_id, values, context=context
+        )
         if change_data["is_new_member"]:
             partner_obj = self.pool.get("res.partner")
             partner_obj.adopt_contracts_as_member(
