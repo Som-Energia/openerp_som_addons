@@ -19,6 +19,24 @@ from destral.patch import PatchNewCursors
 
 
 class SomAutoreclamaStatesTest(SomAutoreclamaBaseTests):
+    def test_cronjob_releases_outer_transaction_before_state_updater(self):
+        cron_cursor = mock.Mock()
+        updater_obj = self.get_model("som.autoreclama.state.updater")
+
+        def state_updater(*args, **kwargs):
+            cron_cursor.rollback.assert_called_once_with()
+            return "summary"
+
+        with mock.patch.object(
+            updater_obj, "state_updater", side_effect=state_updater
+        ) as state_updater_mock:
+            result = updater_obj._cronjob_state_updater_mail_text(
+                cron_cursor, self.uid, {"emails_to": ""}, {}
+            )
+
+        self.assertTrue(result)
+        state_updater_mock.assert_called_once_with(cron_cursor, self.uid, {})
+
     @mock.patch.object(som_autoreclama_state_updater.pooler, "get_db")
     def test_update_items_does_not_query_coordinator_cursor(self, get_db_mock):
         coordinator_cursor = mock.Mock()
