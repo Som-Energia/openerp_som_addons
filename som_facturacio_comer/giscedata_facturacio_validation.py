@@ -320,5 +320,31 @@ class GiscedataFacturacioValidationValidator(osv.osv):
                 res = False
         return res
 
+    def _skip_high_consumption_policy_warnings(self, cursor, uid, fact):
+        category_id = self.pool.get("ir.model.data").get_object_reference(
+            cursor, uid, "som_polissa", "categ_high_consumption_policy"
+        )[1]
+        category_ids = [category.id for category in fact.polissa_id.category_id]
+        return (
+            fact.tarifa_acces_id.name == "2.0TD"
+            and fact.polissa_id.llista_preu.name in ("2.0TD_SOM", "2.0TD_SOM_INSULAR")
+            and fact.polissa_id.autoconsumo == "00"
+            and category_id in category_ids
+        )
+
+    def check_maximum_import_by_tariff_and_power(self, cursor, uid, fact, parameters):
+        if self._skip_high_consumption_policy_warnings(cursor, uid, fact):
+            return None
+        return super(
+            GiscedataFacturacioValidationValidator, self
+        ).check_maximum_import_by_tariff_and_power(cursor, uid, fact, parameters)
+
+    def check_max_theoric_consume_by_power(self, cursor, uid, fact, parameters):
+        if self._skip_high_consumption_policy_warnings(cursor, uid, fact):
+            return None
+        return super(
+            GiscedataFacturacioValidationValidator, self
+        ).check_max_theoric_consume_by_power(cursor, uid, fact, parameters)
+
 
 GiscedataFacturacioValidationValidator()
