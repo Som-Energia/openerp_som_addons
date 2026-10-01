@@ -153,7 +153,7 @@ class GiscedataPolissaCalculada(osv.osv):
         try:
             wiz_measures_curve_o.load_measures(cursor, uid, [wiz_id], context=ctx)
         except Exception as e:
-            if isinstance(e, osv.orm.except_orm):
+            if isinstance(e, osv.except_osv):
                 return False, "sense_corbes"
             else:
                 return False, "error"
