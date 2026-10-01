@@ -1,0 +1,1066 @@
+# -*- coding: utf-8 -*-
+from __future__ import absolute_import
+import base64
+import csv
+import logging
+import pooler
+from datetime import datetime, timedelta
+try:
+    from StringIO import StringIO
+except ImportError:
+    from io import StringIO
+from osv import osv, fields
+from tools.translate import _
+from oorq.decorators import job
+from oorq.autoworker import AutoWorker
+from oorq.oorq import setup_redis_connection
+from rq.exceptions import NoSuchJobError
+from rq.job import Job
+
+
+INVOICE_DIFFERENCE_MAG_TOLERANCE = 0.02
+REFUND_RECTIFY_F1_QUEUE = "refund_rectify_f1"
+REFUND_RECTIFY_F1_TIMEOUT = 7200
+REFUND_RECTIFY_F1_RESULT_TTL = 24 * 3600
+
+logger = logging.getLogger("openerp.%s" % __name__)
+
+REFUND_RECTIFY_EXECUTION_STATUS = [
+    ("pending", "Pendent"),
+    ("running", "Executant-se"),
+    ("blocked", "Bloquejada"),
+    ("done", "Finalitzada Ok"),
+    ("failed", "Finalitzada Error"),
+    ("cancelled", "Cancel·lada"),
+]
+
+ACTIVE_REFUND_RECTIFY_BATCH_STATES = ["pending", "running", "blocked"]
+TERMINAL_REFUND_RECTIFY_BATCH_STATES = ["done", "failed", "blocked", "cancelled"]
+
+
+def _csv_value(value):
+    if isinstance(value, type(u"")):
+        return value.encode("utf-8")
+    return str(value or "")
+
+
+class RefundRectifyBatch(osv.osv):
+    _name = "refund.rectify.batch"
+    _description = "Refund and rectify F1 batch"
+    _order = "create_date desc, id desc"
+
+    _columns = {
+        "name": fields.char("Nom", size=64, required=True, readonly=True),
+        "polissa_id": fields.many2one("giscedata.polissa", "Polissa", required=True, readonly=True),
+        "started_at": fields.datetime("Començada", readonly=True),
+        "finished_at": fields.datetime("Finalitzada", readonly=True),
+        "state": fields.selection(
+            REFUND_RECTIFY_EXECUTION_STATUS, "Estat", required=True, readonly=True
+        ),
+        "total_lines": fields.integer("F1 totals", readonly=True),
+        "completed_lines": fields.integer("F1 completats", readonly=True),
+        "failed_lines": fields.integer("F1 erronis", readonly=True),
+        "blocked_lines": fields.integer("F1 bloquejats", readonly=True),
+        "cancelled_lines": fields.integer("F1 cancel·lats", readonly=True),
+        "summary": fields.text("Resum", readonly=True),
+        "job_reference": fields.char("Job reference", size=128, readonly=True),
+        "line_ids": fields.one2many(
+            "refund.rectify.batch.line", "batch_id", "Linies", readonly=True
+        ),
+    }
+
+    _defaults = {
+        "state": lambda *a: "pending",
+        "total_lines": lambda *a: 0,
+        "completed_lines": lambda *a: 0,
+        "failed_lines": lambda *a: 0,
+        "blocked_lines": lambda *a: 0,
+        "cancelled_lines": lambda *a: 0,
+    }
+
+    def create(self, cursor, uid, vals, context=None):
+        batch_id = super(RefundRectifyBatch, self).create(cursor, uid, vals, context=context)
+        self.write(cursor, uid, [batch_id], {"name": "F1_R-TASCA-%s" % batch_id}, context=context)
+        return batch_id
+
+    def _validate_batch_selection(self, cursor, uid, f1_ids, context=None):
+        """Validate selected F1 records and resolve their one historical policy."""
+        f1_ids = list(f1_ids or [])
+        if not f1_ids:
+            raise osv.except_osv(_("Error"), _("Cal seleccionar almenys un F1."))
+
+        f1_obj = self.pool.get("giscedata.facturacio.importacio.linia")
+        f1s = f1_obj.browse(cursor, uid, f1_ids, context=context)
+        if len(f1s) != len(f1_ids):
+            raise osv.except_osv(
+                _("Error"), _("Hi ha F1 seleccionats que ja no existeixen.")
+            )
+
+        polissa_ids = []
+        polissa_names = []
+        for f1 in f1s:
+            if f1.type_factura != "R":
+                raise osv.except_osv(
+                    _("Error"), _("L'f1 {} no és de tipus R.").format(f1.name)
+                )
+            try:
+                data_inici = datetime.strptime(f1.fecha_factura_desde, "%Y-%m-%d")
+                data_final = datetime.strptime(f1.fecha_factura_hasta, "%Y-%m-%d")
+            except (TypeError, ValueError):
+                raise osv.except_osv(
+                    _("Error"),
+                    _("L'f1 {} no té dates de factura vàlides.").format(f1.name),
+                )
+            if data_inici > data_final:
+                raise osv.except_osv(
+                    _("Error"),
+                    _("L'f1 {} no té una data inicial de factura posterior a la final.").format(
+                        f1.name)
+                )
+            if not f1.cups_id:
+                raise osv.except_osv(
+                    _("Error"), _("L'f1 {} no té un CUPS assignat.").format(f1.name)
+                )
+            if not f1.polissa_id:
+                raise osv.except_osv(
+                    _("Error"), _("L'f1 {} no té una pòlissa assignada.").format(f1.name)
+                )
+            polissa_ids.append(f1.polissa_id.id)
+            polissa_names.append(f1.polissa_id.name or str(f1.polissa_id.id))
+
+        unique_polissa_ids = sorted(set(polissa_ids))
+        if len(unique_polissa_ids) != 1:
+            raise osv.except_osv(
+                _("Error"),
+                _("Els F1 seleccionats han de correspondre a una única pòlissa.")
+                + _("\nPòlisses trobades: ")
+                + ", ".join(sorted(set(polissa_names))),
+            )
+        return unique_polissa_ids[0]
+
+    def create_batch(self, cursor, uid, f1_ids, context=None):
+        f1_obj = self.pool.get("giscedata.facturacio.importacio.linia")
+        polissa_id = self._validate_batch_selection(
+            cursor, uid, f1_ids, context=context
+        )
+
+        active_batch_ids = self.search(
+            cursor,
+            uid,
+            [
+                ("polissa_id", "=", polissa_id),
+                ("state", "in", ACTIVE_REFUND_RECTIFY_BATCH_STATES),
+            ],
+            context=context,
+        )
+        if active_batch_ids:
+            raise osv.except_osv(
+                _("Error"),
+                _("Ja hi ha una tasca activa d'abonar i rectificar per a aquesta pòlissa."),
+            )
+        ordered_f1_ids = f1_obj.search(
+            cursor,
+            uid,
+            [("id", "in", f1_ids)],
+            order="fecha_factura_desde asc, id asc",
+            context=context,
+        )
+        batch_id = self.create(
+            cursor,
+            uid,
+            {
+                "name": "/",
+                "polissa_id": polissa_id,
+                "total_lines": len(ordered_f1_ids),
+                "summary": _("Tasca pendent creada. Encara no s'ha iniciat cap refacturació."),
+            },
+            context=context,
+        )
+
+        line_obj = self.pool.get("refund.rectify.batch.line")
+        for sequence, f1_id in enumerate(ordered_f1_ids, 1):
+            line_obj.create(
+                cursor,
+                uid,
+                {"batch_id": batch_id, "f1_id": f1_id, "sequence": sequence},
+                context=context,
+            )
+        return batch_id
+
+    def _refresh_execution(self, cursor, uid, batch_id, context=None):
+        """Persist progress, terminal state and the monitoring CSV from its lines."""
+        line_obj = self.pool.get("refund.rectify.batch.line")
+        line_ids = line_obj.search(
+            cursor, uid, [("batch_id", "=", batch_id)], order="sequence asc, id asc",
+            context=context
+        )
+        lines = line_obj.browse(cursor, uid, line_ids, context=context)
+        counts = dict((state, 0) for state, unused in REFUND_RECTIFY_EXECUTION_STATUS)
+        csv_file = StringIO()
+        csv_writer = csv.writer(csv_file)
+        csv_writer.writerow([
+            "sequence", "f1_id", "state", "outcome", "invoices", "result", "error",
+        ])
+        for line in lines:
+            counts[line.state] += 1
+            csv_writer.writerow([
+                line.sequence, line.f1_id.id, line.state, line.outcome or "",
+                ",".join([str(invoice.id) for invoice in line.generated_invoice_ids]),
+                _csv_value(line.result), _csv_value(line.error),
+            ])
+        batch = self.browse(cursor, uid, batch_id, context=context)
+        if counts["blocked"]:
+            state = "blocked"
+        elif counts["failed"]:
+            state = "failed"
+        elif counts["running"]:
+            state = "running"
+        elif counts["pending"]:
+            state = "pending"
+        elif counts["cancelled"]:
+            state = "cancelled"
+        else:
+            state = "done"
+        if state == "pending" and batch.state == "running":
+            state = "running"
+        summary = "F1 totals: {total}. Completats: {done}. Erronis: {failed}. Bloquejats: {blocked}. Cancel·lats: {cancelled}.".format(  # noqa: E501
+            total=len(lines), done=counts["done"], failed=counts["failed"],
+            blocked=counts["blocked"], cancelled=counts["cancelled"]
+        )
+        filename = "%s.csv" % batch.name
+        csv_data = csv_file.getvalue()
+        if isinstance(csv_data, type(u"")):
+            csv_data = csv_data.encode("utf-8")
+        attachment_vals = {
+            "name": filename,
+            "datas": base64.b64encode(csv_data),
+            "datas_fname": filename,
+            "res_model": self._name,
+            "res_id": batch_id,
+        }
+        attachment_obj = self.pool.get("ir.attachment")
+        attachment_ids = attachment_obj.search(
+            cursor,
+            uid,
+            [("res_model", "=", self._name), ("res_id", "=", batch_id), ("name", "=", filename)],
+            limit=1,
+            context=context,
+        )
+        if attachment_ids:
+            attachment_obj.write(cursor, uid, attachment_ids, attachment_vals, context=context)
+        else:
+            attachment_obj.create(cursor, uid, attachment_vals, context=context)
+        vals = {
+            "state": state,
+            "total_lines": len(lines),
+            "completed_lines": counts["done"],
+            "failed_lines": counts["failed"],
+            "blocked_lines": counts["blocked"],
+            "cancelled_lines": counts["cancelled"],
+            "summary": summary,
+        }
+        if state in ("done", "failed", "blocked", "cancelled"):
+            vals["finished_at"] = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        self.write(cursor, uid, [batch_id], vals, context=context)
+        return vals
+
+    def _claim_batch_for_execution(self, cursor, batch_id):
+        """Atomically claim a pending batch so duplicate OORQ jobs cannot run it."""
+        cursor.execute(
+            "UPDATE %s SET state=%%s, started_at=%%s, finished_at=NULL "
+            "WHERE id=%%s AND state=%%s" % self._table,
+            ("running", datetime.now().strftime("%Y-%m-%d %H:%M:%S"), batch_id, "pending"),
+        )
+        return cursor.rowcount == 1
+
+    def _block_later_lines(self, cursor, uid, batch_id, sequence, f1_id, error, context=None):
+        line_obj = self.pool.get("refund.rectify.batch.line")
+        blocked_line_ids = line_obj.search(
+            cursor, uid,
+            [("batch_id", "=", batch_id), ("sequence", ">", sequence),
+             ("state", "=", "pending")],
+            order="sequence asc, id asc", context=context,
+        )
+        if blocked_line_ids:
+            line_obj.write(cursor, uid, blocked_line_ids, {
+                "state": "blocked",
+                "finished_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                "result": _("Bloquejada per l'error de l'F1 %s: %s") % (f1_id, str(error)),
+                "error": False,
+            }, context=context)
+        return blocked_line_ids
+
+    def _persist_failure_and_block(
+            self, cursor, uid, batch_id, line_id, sequence, f1_id, error,
+            started_at=None, context=None):
+        line_obj = self.pool.get("refund.rectify.batch.line")
+        line_obj._persist_line_outcome(
+            cursor, uid, line_id, error=error, started_at=started_at, context=context
+        )
+        blocked_line_ids = self._block_later_lines(
+            cursor, uid, batch_id, sequence, f1_id, error, context=context
+        )
+        self.write(cursor, uid, [batch_id], {"state": "blocked"}, context=context)
+        self._refresh_execution(cursor, uid, batch_id, context=context)
+        return blocked_line_ids
+
+    def _job_is_recovery_eligible(self, job_reference):
+        """A running batch is stale only when its recorded RQ job is not active."""
+        if not job_reference:
+            return True
+        try:
+            job = Job.fetch(job_reference, connection=setup_redis_connection())
+            status = job.get_status()
+        except NoSuchJobError:
+            return True
+        except Exception:
+            logger.exception(
+                "refund_rectify_f1: unable to check job for stale recovery job_reference=%s",
+                job_reference,
+            )
+            return False
+        return status in (None, "failed", "finished")
+
+    def action_retry_from_failed(self, cursor, uid, ids, context=None):
+        context = context or {}
+        line_obj = self.pool.get("refund.rectify.batch.line")
+        for batch in self.browse(cursor, uid, ids, context=context):
+            if batch.state not in ("blocked", "failed"):
+                raise osv.except_osv(_("Error"), _(
+                    "Només es poden reprendre tasques bloquejades o errònies."))
+            failed_ids = line_obj.search(
+                cursor, uid, [("batch_id", "=", batch.id), ("state", "=", "failed")],
+                order="sequence asc, id asc", limit=1, context=context,
+            )
+            if not failed_ids:
+                raise osv.except_osv(_("Error"), _("La tasca no té cap F1 erroni per reprendre."))
+            failed_line = line_obj.browse(cursor, uid, failed_ids[0], context=context)
+            reset_ids = line_obj.search(
+                cursor, uid,
+                [("batch_id", "=", batch.id), ("sequence", ">=", failed_line.sequence),
+                 ("state", "in", ["failed", "blocked"])],
+                order="sequence asc, id asc", context=context,
+            )
+            line_obj.write(cursor, uid, reset_ids, {
+                "state": "pending", "outcome": False, "started_at": False,
+                "finished_at": False, "result": False, "error": False,
+                "generated_invoice_ids": [(6, 0, [])],
+            }, context=context)
+            self.write(cursor, uid, [batch.id], {
+                "state": "pending", "finished_at": False,
+                "summary": _("Tasca pendent de reprendre des de l'F1 erroni."),
+            }, context=context)
+            self._refresh_execution(cursor, uid, batch.id, context=context)
+            self.schedule_batch_execution(cursor, uid, batch.id, context=context)
+        return True
+
+    def action_cancel_pending_lines(self, cursor, uid, ids, context=None):
+        context = context or {}
+        line_obj = self.pool.get("refund.rectify.batch.line")
+        for batch in self.browse(cursor, uid, ids, context=context):
+            if batch.state not in ("pending", "running"):
+                raise osv.except_osv(
+                    _("Error"), _("Només es poden cancel·lar F1 de tasques pendents o en execució.")
+                )
+            pending_ids = line_obj.search(
+                cursor, uid, [("batch_id", "=", batch.id), ("state", "=", "pending")],
+                context=context,
+            )
+            if pending_ids:
+                line_obj.write(cursor, uid, pending_ids, {
+                    "state": "cancelled",
+                    "finished_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                    "outcome": False,
+                    "result": _("Cancel·lada manualment abans d'executar-se."),
+                    "error": False,
+                    "generated_invoice_ids": [(6, 0, [])],
+                }, context=context)
+            self._refresh_execution(cursor, uid, batch.id, context=context)
+        return True
+
+    def action_recover_stale(self, cursor, uid, ids, context=None):
+        context = context or {}
+        line_obj = self.pool.get("refund.rectify.batch.line")
+        for batch in self.browse(cursor, uid, ids, context=context):
+            if batch.state != "running":
+                raise osv.except_osv(_("Error"), _("Només es poden recuperar tasques en execució."))
+            if not self._job_is_recovery_eligible(batch.job_reference):
+                raise osv.except_osv(_("Error"), _(
+                    "El job de la tasca encara està actiu i no es pot recuperar."))
+            running_ids = line_obj.search(
+                cursor, uid, [("batch_id", "=", batch.id), ("state", "=", "running")],
+                order="sequence asc, id asc", limit=1, context=context,
+            )
+            if not running_ids:
+                raise osv.except_osv(
+                    _("Error"),
+                    _("No hi ha cap F1 en execució; no es pot recuperar sense inventar un error."),
+                )
+            line = line_obj.browse(cursor, uid, running_ids[0], context=context)
+            error = RuntimeError(_("Recuperació manual: el job OORQ ja no està actiu."))
+            self._persist_failure_and_block(
+                cursor, uid, batch.id, line.id, line.sequence, line.f1_id.id,
+                error, started_at=line.started_at, context=context,
+            )
+        return True
+
+    def process_batch_f1_lines(self, cursor, uid, batch_id, context=None):
+        """Process pending batch lines in independent F1 transactions."""
+        line_obj = self.pool.get("refund.rectify.batch.line")
+        context = context or {}
+        database = pooler.get_db(cursor.dbname)
+        start_cursor = database.cursor()
+        try:
+            batch = self.browse(start_cursor, uid, batch_id, context=context)
+            if batch.state != "pending":
+                logger.info(
+                    "refund_rectify_f1: skipping non-pending batch batch_name=%s state=%s",
+                    batch.name, batch.state,
+                )
+                return []
+            if not self._claim_batch_for_execution(start_cursor, batch_id):
+                logger.info("refund_rectify_f1: duplicate job skipped batch_name=%s", batch.name)
+                return []
+            line_ids = line_obj.search(
+                start_cursor,
+                uid,
+                [("batch_id", "=", batch_id), ("state", "=", "pending")],
+                order="sequence asc, id asc",
+                context=context,
+            )
+            pending_lines = line_obj.browse(
+                start_cursor, uid, line_ids, context=context
+            )
+            pending_lines = [
+                (line.id, line.sequence, line.f1_id.id) for line in pending_lines
+            ]
+            polissa_id = batch.polissa_id.id
+            logger.info(
+                "refund_rectify_f1: batch started batch_name=%s polissa_id=%s pending_count=%s",
+                batch.name, polissa_id, len(pending_lines),
+            )
+            if not pending_lines:
+                self._refresh_execution(
+                    start_cursor, uid, batch_id, context=context
+                )
+                start_cursor.commit()
+                logger.info(
+                    "refund_rectify_f1: batch completed batch_name=%s result_count=%s outcomes=%s",
+                    batch.name, 0, "none",
+                )
+                return []
+            start_cursor.commit()
+        finally:
+            start_cursor.close()
+
+        previous_f1_id = None
+        predecessor_processed = False
+        results = []
+        skipped_lines = False
+        for line_id, sequence, f1_id in pending_lines:
+            claim_cursor = database.cursor()
+            started_at = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            try:
+                if not line_obj._mark_line_running(
+                        claim_cursor, uid, line_id, started_at=started_at, context=context):
+                    claim_cursor.rollback()
+                    skipped_lines = True
+                    continue
+                claim_cursor.commit()
+            finally:
+                claim_cursor.close()
+            f1_cursor = database.cursor()
+            try:
+                logger.info(
+                    "refund_rectify_f1: processing line batch_name=%s line_id=%s sequence=%s "
+                    "f1_id=%s previous_f1_id=%s predecessor_processed=%s",
+                    batch.name, line_id, sequence, f1_id, previous_f1_id,
+                    predecessor_processed,
+                )
+                result = line_obj.process_one_f1(
+                    f1_cursor, uid, f1_id, expected_polissa_id=polissa_id,
+                    previous_f1_id=previous_f1_id,
+                    predecessor_processed=predecessor_processed, context=context
+                )
+                line_obj._persist_line_outcome(
+                    f1_cursor, uid, line_id, result=result, context=context
+                )
+                f1_cursor.commit()
+                logger.info(
+                    "refund_rectify_f1: line committed batch_name=%s line_id=%s f1_id=%s "
+                    "outcome=%s reloaded_reading_count=%s generated_invoice_count=%s",
+                    batch.name, line_id, f1_id, result.get("status"),
+                    result.get("reloaded_reading_count", 0),
+                    len(result.get("generated_invoice_ids", [])),
+                )
+            except Exception as error:
+                logger.exception(
+                    "refund_rectify_f1: line failed batch_name=%s line_id=%s sequence=%s f1_id=%s",
+                    batch.name, line_id, sequence, f1_id,
+                )
+                f1_cursor.rollback()
+                persistence_cursor = database.cursor()
+                try:
+                    blocked_line_ids = self._persist_failure_and_block(
+                        persistence_cursor, uid, batch_id, line_id, sequence, f1_id,
+                        error, started_at=started_at, context=context
+                    )
+                    persistence_cursor.commit()
+                    logger.warning(
+                        "refund_rectify_f1: batch blocked batch_name=%s failed_line_id=%s "
+                        "failed_f1_id=%s blocked_line_count=%s",
+                        batch.name, line_id, f1_id, len(blocked_line_ids),
+                    )
+                finally:
+                    persistence_cursor.close()
+                return results
+            finally:
+                f1_cursor.close()
+            results.append(result)
+            previous_f1_id = f1_id
+            predecessor_processed = result["status"] == "processed"
+        if skipped_lines:
+            refresh_cursor = database.cursor()
+            try:
+                self._refresh_execution(refresh_cursor, uid, batch_id, context=context)
+                refresh_cursor.commit()
+            finally:
+                refresh_cursor.close()
+        outcome_counts = {}
+        for result in results:
+            outcome = result.get("status", "unknown")
+            outcome_counts[outcome] = outcome_counts.get(outcome, 0) + 1
+        outcomes = ",".join([
+            "%s:%s" % (outcome_name, outcome_counts[outcome_name])
+            for outcome_name in sorted(outcome_counts)
+        ])
+        logger.info(
+            "refund_rectify_f1: batch completed batch_name=%s result_count=%s outcomes=%s",
+            batch.name, len(results), outcomes,
+        )
+        return results
+
+    @job(
+        queue=REFUND_RECTIFY_F1_QUEUE,
+        timeout=REFUND_RECTIFY_F1_TIMEOUT,
+        result_ttl=REFUND_RECTIFY_F1_RESULT_TTL,
+        on_commit=True,
+    )
+    def process_batch_f1_lines_async(self, cursor, uid, batch_id):
+        """Run one persistent batch in the dedicated OORQ queue."""
+        return self.process_batch_f1_lines(cursor, uid, batch_id)
+
+    def schedule_batch_execution(self, cursor, uid, batch_id, context=None):
+        """Request asynchronous execution and defer worker startup to commit."""
+        context = context or {}
+        if context.get("refund_rectify_debug_sync"):
+            cursor.commit()
+            return self.process_batch_f1_lines(
+                cursor, uid, batch_id, context=context
+            )
+        queued_job = self.process_batch_f1_lines_async(cursor, uid, batch_id)
+        self.write(
+            cursor,
+            uid,
+            [batch_id],
+            {"job_reference": queued_job.id},
+            context=context,
+        )
+        worker = AutoWorker(
+            queue=REFUND_RECTIFY_F1_QUEUE,
+            default_result_ttl=REFUND_RECTIFY_F1_RESULT_TTL,
+            max_procs=1,
+        )
+        # Register on this commit: the job itself is enqueued by on_commit.
+        worker.work(cursor)
+
+
+RefundRectifyBatch()
+
+
+class RefundRectifyBatchLine(osv.osv):
+    _name = "refund.rectify.batch.line"
+    _description = "Refund and rectify F1 batch line"
+    _order = "batch_id, sequence, id"
+
+    def _get_generated_invoice_count(self, cursor, uid, ids, name, arg, context=None):
+        result = {}
+        for line in self.browse(cursor, uid, ids, context=context):
+            result[line.id] = len(line.generated_invoice_ids)
+        return result
+
+    _columns = {
+        "batch_id": fields.many2one(
+            "refund.rectify.batch", "Tasca", required=True, ondelete="cascade", readonly=True
+        ),
+        "f1_id": fields.many2one(
+            "giscedata.facturacio.importacio.linia", "F1", required=True, readonly=True
+        ),
+        "sequence": fields.integer("Ordre", required=True, readonly=True),
+        "state": fields.selection(
+            REFUND_RECTIFY_EXECUTION_STATUS, "Estat", required=True, readonly=True
+        ),
+        "outcome": fields.selection(
+            [("processed", "Processat"), ("no_action", "Sense acció")],
+            "Resultat funcional",
+            readonly=True,
+        ),
+        "started_at": fields.datetime("Començada", readonly=True),
+        "finished_at": fields.datetime("Finalitzada", readonly=True),
+        "generated_invoice_ids": fields.many2many(
+            "giscedata.facturacio.factura",
+            "refund_rectify_batch_line_factura_rel",
+            "line_id",
+            "factura_id",
+            "Factures generades",
+            readonly=True,
+        ),
+        "generated_invoice_count": fields.function(
+            _get_generated_invoice_count,
+            method=True,
+            type="integer",
+            string="Factures generades",
+            readonly=True,
+        ),
+        "result": fields.text("Resultat", readonly=True),
+        "error": fields.text("Error", readonly=True),
+    }
+
+    _defaults = {
+        "state": lambda *a: "pending",
+    }
+
+    def _mark_line_running(self, cursor, uid, line_id, started_at=None, context=None):
+        if started_at is None:
+            started_at = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        # Atomic claim: write() cannot combine this state predicate with its update.
+        cursor.execute(
+            "UPDATE %s SET state=%%s, started_at=%%s, finished_at=NULL "
+            "WHERE id=%%s AND state=%%s" % self._table,
+            ("running", started_at, line_id, "pending"),
+        )
+        return cursor.rowcount == 1
+
+    def _persist_line_outcome(
+            self, cursor, uid, line_id, result=None, error=None, started_at=None, context=None):
+        """Save a functional outcome or a technical failure for one batch line."""
+        result = result or {}
+        vals = {
+            "state": "failed" if error else "done",
+            "outcome": result.get("status", False) if not error else False,
+            "finished_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+            "result": "\n".join(result.get("messages", [])),
+            "error": str(error) if error else False,
+            "generated_invoice_ids": [(6, 0, result.get("generated_invoice_ids", []))],
+        }
+        if started_at is not None:
+            vals["started_at"] = started_at
+        self.write(cursor, uid, [line_id], vals, context=context)
+        batch_id = self.read(cursor, uid, line_id, ["batch_id"], context=context)["batch_id"][0]
+        self.pool.get("refund.rectify.batch")._refresh_execution(
+            cursor, uid, batch_id, context=context
+        )
+
+    def _get_factures_client_by_dates(
+            self, cursor, uid, polissa_id, data_inici, data_final, context=None):
+        """Equivalent a get_factures_client_by_dates del wizard original"""
+        fact_obj = self.pool.get("giscedata.facturacio.factura")
+        invoice_ids = fact_obj.search(
+            cursor,
+            uid,
+            [
+                ("polissa_id", "=", polissa_id),
+                ("type", "in", ["out_invoice", "out_refund"]),
+                ("refund_by_id", "=", False),
+                ("rectificative_type", "not in", ["B", "A"]),
+                ("data_inici", "<", data_final),
+                ("data_final", ">", data_inici),
+            ],
+            order="data_inici asc",
+            context=context,
+        )
+        draft_invoice_ids = fact_obj.search(
+            cursor, uid, [("id", "in", invoice_ids), ("state", "=", "draft")], context=context
+        )
+        message = ""
+        if draft_invoice_ids:
+            fact_obj.unlink(cursor, uid, draft_invoice_ids, context=context)
+            message = "S'han eliminat {} factures en esborrany".format(len(draft_invoice_ids))
+            invoice_ids = list(set(invoice_ids) - set(draft_invoice_ids))
+        return invoice_ids, message, draft_invoice_ids
+
+    def _get_f1_meter_ids(self, cursor, uid, f1, context=None):
+        """Return the F1 meters, requiring one ERP meter for every serial."""
+        meter_obj = self.pool.get("giscedata.lectures.comptador")
+        serials = sorted(set([
+            lectura.comptador for lectura in f1.importacio_lectures_ids
+            if lectura.comptador
+        ]))
+        if not serials:
+            raise osv.except_osv(_("Error"), _("L'F1 no té comptadors"))
+        meter_context = (context or {}).copy()
+        meter_context["active_test"] = False
+        meter_ids = meter_obj.search(
+            cursor,
+            uid,
+            [("polissa", "=", f1.polissa_id.id), ("name", "in", serials)],
+            order="id asc",
+            context=meter_context,
+        )
+        meters_by_serial = {}
+        for meter in meter_obj.browse(cursor, uid, meter_ids, context=meter_context):
+            meters_by_serial.setdefault(meter.name, []).append(meter.id)
+        invalid_serials = [
+            serial for serial in serials
+            if len(meters_by_serial.get(serial, [])) != 1
+        ]
+        if invalid_serials:
+            raise osv.except_osv(
+                _("Error"),
+                _("No es pot resoldre unívocament el comptador de l'F1: %s")
+                % ", ".join(invalid_serials),
+            )
+        return sorted([meters_by_serial[serial][0] for serial in serials])
+
+    def _get_reading_anchor_ids(
+            self, cursor, uid, meter_ids, data_inici, data_final,
+            context=None, reload_initial=True):
+        """Return deterministic pool-reading anchors for all F1 meters."""
+        lectura_pool_obj = self.pool.get("giscedata.lectures.lectura.pool")
+        previous_date = (
+            datetime.strptime(data_inici, "%Y-%m-%d") - timedelta(days=1)
+        ).strftime("%Y-%m-%d")
+        anchors = []
+        copied_anchors = set()
+        for meter_id in meter_ids:
+            initial_reading_ids = []
+            initial_date = data_inici
+            if reload_initial:
+                initial_reading_ids = lectura_pool_obj.search(
+                    cursor,
+                    uid,
+                    [("comptador", "=", meter_id), ("name", "=", data_inici)],
+                    order="id asc",
+                    limit=1,
+                    context=context,
+                )
+                if not initial_reading_ids:
+                    initial_date = previous_date
+                    initial_reading_ids = lectura_pool_obj.search(
+                        cursor,
+                        uid,
+                        [("comptador", "=", meter_id), ("name", "=", previous_date)],
+                        order="id asc",
+                        limit=1,
+                        context=context,
+                    )
+            final_reading_ids = lectura_pool_obj.search(
+                cursor,
+                uid,
+                [("comptador", "=", meter_id), ("name", "=", data_final)],
+                order="id asc",
+                limit=1,
+                context=context,
+            )
+            anchors_to_copy = [(data_final, final_reading_ids)]
+            if reload_initial:
+                anchors_to_copy.insert(0, (initial_date, initial_reading_ids))
+            for anchor_date, reading_ids in anchors_to_copy:
+                anchor = (meter_id, anchor_date)
+                if reading_ids and anchor not in copied_anchors:
+                    anchors.append(reading_ids[0])
+                    copied_anchors.add(anchor)
+        return anchors
+
+    def _recarregar_lectures_between_dates(
+            self, cursor, uid, meter_ids, data_inici, data_final,
+            context=None, reload_initial=True):
+        """Millora amb optimitzacions i determinisme a l'hora d'escollir comptador
+        Equivalent a recarregar_lectures_between_dates del wizard original"""
+        copy_wizard_obj = self.pool.get("wizard.copiar.lectura.pool.a.fact")
+        anchor_ids = self._get_reading_anchor_ids(
+            cursor, uid, meter_ids, data_inici, data_final,
+            reload_initial=reload_initial, context=context
+        )
+        for lectura_id in anchor_ids:
+            lectura_context = {"active_id": lectura_id, "active_ids": [lectura_id]}
+            wizard_id = copy_wizard_obj.create(
+                cursor, uid, {"overwrite": True}, context=lectura_context
+            )
+            copy_wizard_obj.action_copia_lectura(
+                cursor, uid, [wizard_id], context=lectura_context
+            )
+        return len(anchor_ids)
+
+    def _build_reading_anchor_plan(
+            self, cursor, uid, f1, meter_ids, previous_f1_id=None,
+            predecessor_processed=False, context=None):
+        """Select the safe anchors for one F1 in a serial batch."""
+        reload_initial = True
+        if predecessor_processed and previous_f1_id:
+            f1_obj = self.pool.get("giscedata.facturacio.importacio.linia")
+            previous_f1 = f1_obj.browse(
+                cursor, uid, previous_f1_id, context=context
+            )
+            previous_meter_ids = self._get_f1_meter_ids(
+                cursor, uid, previous_f1, context=context
+            )
+            previous_final = datetime.strptime(
+                previous_f1.fecha_factura_hasta, "%Y-%m-%d"
+            ).date()
+            current_initial = datetime.strptime(
+                f1.fecha_factura_desde, "%Y-%m-%d"
+            ).date()
+            reload_initial = not (
+                previous_meter_ids == meter_ids
+                and previous_final + timedelta(days=1) == current_initial
+            )
+        return {"meter_ids": meter_ids, "reload_initial": reload_initial}
+
+    def _refund_rectify_if_needed(self, cursor, uid, invoice_ids, context=None):
+        """Equivalent a refund_rectify_if_needed del wizard original"""
+        wizard_obj = self.pool.get("wizard.ranas")
+        wizard_context = {"active_ids": invoice_ids, "active_id": invoice_ids[0]}
+        wizard_id = wizard_obj.create(cursor, uid, {}, context=wizard_context)
+        return wizard_obj.action_rectificar(cursor, uid, wizard_id, context=wizard_context)
+
+    def _get_invoice_total_mag(self, cursor, uid, invoice_id, context=None):
+        """Equivalent a get_invoice_total_mag del wizard original"""
+        fact_obj = self.pool.get("giscedata.facturacio.factura")
+        product_obj = self.pool.get("product.product")
+        mag_product_ids = product_obj.search(
+            cursor, uid, [("default_code", "=", "RMAG")], context=context
+        )
+        invoice = fact_obj.browse(cursor, uid, invoice_id, context=context)
+        mag = 0.0
+        for energy_line in invoice.linies_energia:
+            if energy_line.product_id.id in mag_product_ids:
+                mag += energy_line.price_subtotal
+        return mag
+
+    def _delete_draft_invoices_if_needed(
+            self, cursor, uid, generated_invoice_ids, source_invoice_ids, context=None):
+        """Equivalent a delete_draft_invoices_if_needed del wizard original"""
+        messages = []
+        fact_obj = self.pool.get("giscedata.facturacio.factura")
+        generated_infos = fact_obj.read(
+            cursor,
+            uid,
+            generated_invoice_ids,
+            ["rectifying_id", "amount_untaxed", "invoice_id", "is_gkwh", "linies_generacio"],
+            context=context,
+        )
+        for generated_info in generated_infos:
+            generated_info["amount_untaxed_no_mag"] = (
+                generated_info["amount_untaxed"]
+                - self._get_invoice_total_mag(cursor, uid, generated_info["id"], context=context)
+            )
+        for source_invoice_id in source_invoice_ids:
+            source_info = fact_obj.read(
+                cursor,
+                uid,
+                source_invoice_id,
+                ["invoice_id", "number", "is_gkwh", "linies_generacio"],
+                context=context,
+            )
+            invoice_id = source_info["invoice_id"][0]
+            ab_re_infos = [
+                info for info in generated_infos if info["rectifying_id"][0] == invoice_id
+            ]
+            has_gkwh = any([info["is_gkwh"] for info in ab_re_infos])
+            has_autoconsumption = any([info["linies_generacio"] for info in ab_re_infos])
+            equal_amounts = len(set([info["amount_untaxed_no_mag"] for info in ab_re_infos])) == 1
+            close_amounts = (
+                len(ab_re_infos) == 2
+                and abs(
+                    ab_re_infos[0]["amount_untaxed_no_mag"]
+                    - ab_re_infos[-1]["amount_untaxed_no_mag"]
+                ) < INVOICE_DIFFERENCE_MAG_TOLERANCE
+            )
+            if equal_amounts or close_amounts:
+                if source_info["linies_generacio"] or has_autoconsumption:
+                    messages.append(
+                        "Per la factura numero {} no s'esborren perquè alguna de les factures té autoconsum.".format(  # noqa: E501
+                            source_info["number"]
+                        )
+                    )
+                elif source_info["is_gkwh"] or has_gkwh:
+                    messages.append(
+                        "Per la factura numero {} no s'esborren perquè alguna de les factures té generationkwh.".format(  # noqa: E501
+                            source_info["number"]
+                        )
+                    )
+                else:
+                    ab_re_ids = [info["id"] for info in ab_re_infos]
+                    fact_obj.unlink(cursor, uid, ab_re_ids, context=context)
+                    if equal_amounts:
+                        messages.append(
+                            "Per la factura numero {} les factures AB i RE tenen mateix import, s'esborren".format(  # noqa: E501
+                                source_info["number"]
+                            )
+                        )
+                    else:
+                        messages.append(
+                            "Per la factura numero {} les factures AB i RE tenen quasi mateix import, s'esborren".format(  # noqa: E501
+                                source_info["number"]
+                            )
+                        )
+                    generated_invoice_ids = list(set(generated_invoice_ids) - set(ab_re_ids))
+            else:
+                messages.append(
+                    "Per la factura numero {} les factures AB i RE tenen import diferent.".format(  # noqa: E501
+                        source_info["number"]
+                    )
+                )
+        return messages, generated_invoice_ids
+
+    def _write_f1_observation(self, cursor, uid, f1_id, text, context=None):
+        """Equivalent a add_f1_observation del wizard original"""
+        f1_obj = self.pool.get("giscedata.facturacio.importacio.linia")
+        observations = f1_obj.read(
+            cursor, uid, f1_id, ["user_observations"], context=context
+        )["user_observations"] or ""
+        f1_obj.write(
+            cursor,
+            uid,
+            f1_id,
+            {"user_observations": "{}\n{}".format(text, observations)},
+            context=context,
+        )
+
+    def _write_refacturation_observation(self, cursor, uid, f1_id, messages, context=None):
+        """Equivalent a save_info_into_f1_after_refacturacio del wizard original"""
+        result_text = "\n".join(messages)
+        if "factures AB i RE tenen mateix import, s'esborren" in result_text:
+            difference = " Diferència 0"
+        elif "les factures AB i RE tenen quasi mateix import" in result_text:
+            difference = " Diferència +- 0"
+        elif "les factures AB i RE tenen import diferent" in result_text:
+            difference = " Ok"
+        elif "generationkwh." in result_text:
+            difference = " Té GkWh"
+        elif "autoconsum." in result_text:
+            difference = " Té Auto"
+        else:
+            difference = ""
+        text = "F1 refacturat en data {}. Resultat:{}\n{}".format(
+            datetime.today().strftime("%d-%m-%Y"), difference, result_text
+        )
+        self._write_f1_observation(cursor, uid, f1_id, text, context=context)
+
+    def process_one_f1(
+            self, cursor, uid, f1_id, expected_polissa_id=None,
+            context=None, previous_f1_id=None, predecessor_processed=False):
+        """Process one F1 in draft mode; transaction ownership belongs to the caller."""
+        logger.info("refund_rectify_f1: start f1_id=%s", f1_id)
+        context = context or {}
+        f1_obj = self.pool.get("giscedata.facturacio.importacio.linia")
+        f1_ids = f1_obj.search(cursor, uid, [("id", "=", f1_id)], limit=1, context=context)
+        if not f1_ids:
+            raise osv.except_osv(_("Error"), _("No existeix l'F1 a processar"))
+        f1 = f1_obj.browse(cursor, uid, f1_ids[0], context=context)
+        if not f1.polissa_id:
+            raise osv.except_osv(_("Error"), _("L'F1 no té una pòlissa resolta"))
+        polissa_id = f1.polissa_id.id
+        if expected_polissa_id is not None and polissa_id != expected_polissa_id:
+            raise osv.except_osv(
+                _("Error"), _("La pòlissa de l'F1 no coincideix amb la de la tasca")
+            )
+        origin = f1.invoice_number_text
+        result = {
+            "status": "no_action",
+            "f1_id": f1.id,
+            "polissa_id": polissa_id,
+            "origin": origin,
+            "source_invoice_ids": [],
+            "removed_draft_invoice_ids": [],
+            "reloaded_reading_count": 0,
+            "generated_invoice_ids": [],
+            "messages": [],
+            "observation_written": False,
+        }
+        if f1.type_factura != "R":
+            result["messages"].append("F1 no és tipus rectificatiu. No s'actua.")
+            return result
+        if f1.polissa_id.facturacio_suspesa:
+            result["messages"].append("Pòlissa amb facturació suspesa. No s'actua.")
+            return result
+        meter_ids = self._get_f1_meter_ids(cursor, uid, f1, context=context)
+        logger.info(
+            "refund_rectify_f1: before finding source invoices f1_id=%s polissa_id=%s",
+            f1_id, polissa_id,
+        )
+        source_invoice_ids, draft_message, removed_draft_invoice_ids = (
+            self._get_factures_client_by_dates(
+                cursor,
+                uid,
+                polissa_id,
+                f1.fecha_factura_desde,
+                f1.fecha_factura_hasta,
+                context=context,
+            )
+        )
+        result["source_invoice_ids"] = source_invoice_ids
+        result["removed_draft_invoice_ids"] = removed_draft_invoice_ids
+        if draft_message:
+            result["messages"].append(draft_message)
+        if not source_invoice_ids:
+            result["messages"].append(
+                "No té res per abonar i rectificar perquè no hi ha factura generada, no s'actua"
+            )
+            self._write_f1_observation(
+                cursor, uid, f1.id,
+                "F1 NO refacturat en data {} per falta de factura generada".format(
+                    datetime.today().strftime("%d-%m-%Y")
+                ),
+                context=context,
+            )
+            result["observation_written"] = True
+            return result
+        reading_plan = self._build_reading_anchor_plan(
+            cursor, uid, f1, meter_ids, previous_f1_id=previous_f1_id,
+            predecessor_processed=predecessor_processed, context=context
+        )
+        logger.info(
+            "refund_rectify_f1: before reloading readings f1_id=%s polissa_id=%s",
+            f1_id, polissa_id,
+        )
+        reloaded_reading_count = self._recarregar_lectures_between_dates(
+            cursor, uid, reading_plan["meter_ids"], f1.fecha_factura_desde,
+            f1.fecha_factura_hasta,
+            reload_initial=reading_plan["reload_initial"], context=context
+        )
+        result["reloaded_reading_count"] = reloaded_reading_count
+        if not reloaded_reading_count:
+            result["messages"].append("No té lectures per esborrar. No s'hi actua.")
+            return result
+        logger.info(
+            "refund_rectify_f1: before refund/rectify invoice generation f1_id=%s polissa_id=%s",
+            f1_id, polissa_id,
+        )
+        generated_invoice_ids = self._refund_rectify_if_needed(
+            cursor, uid, source_invoice_ids, context=context
+        )
+        cleanup_messages, generated_invoice_ids = self._delete_draft_invoices_if_needed(
+            cursor, uid, generated_invoice_ids, source_invoice_ids, context=context
+        )
+        result["status"] = "processed"
+        result["generated_invoice_ids"] = generated_invoice_ids
+        result["messages"].append(
+            "S'han esborrat {} lectures de la pòlissa {} i s'han generat {} factures".format(
+                reloaded_reading_count, f1.polissa_id.name, len(generated_invoice_ids)
+            )
+        )
+        result["messages"] += cleanup_messages
+        self._write_refacturation_observation(
+            cursor, uid, f1.id, cleanup_messages, context=context
+        )
+        result["observation_written"] = True
+        logger.info(
+            "refund_rectify_f1: successful end f1_id=%s polissa_id=%s",
+            f1_id, polissa_id,
+        )
+        return result
+
+
+RefundRectifyBatchLine()
