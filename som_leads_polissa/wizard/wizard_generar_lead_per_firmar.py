@@ -126,6 +126,16 @@ class WizardGenerarLeadPerFirmar(osv.osv_memory):
             ),
         }
 
+    def _get_action_result(
+            self, cursor, uid, wizard_id, result, context=None):
+        wizard = self.browse(cursor, uid, wizard_id, context=context)
+        if wizard.state != 'end':
+            return result
+        self.write(
+            cursor, uid, [wizard_id], {'state': 'init'}, context=context
+        )
+        return self._result_action()
+
     def action_generar_lead_per_firmar(self, cursor, uid, ids, context=None):
         if context is None:
             context = {}
@@ -161,10 +171,9 @@ class WizardGenerarLeadPerFirmar(osv.osv_memory):
         ).action_generar_lead_per_firmar(
             cursor, uid, ids, context=context
         )
-        wizard = self.browse(cursor, uid, wizard_id, context=context)
-        if wizard.state == 'end':
-            return self._result_action()
-        return result
+        return self._get_action_result(
+            cursor, uid, wizard_id, result, context=context
+        )
 
     def action_confirm_signature_replacement(self, cursor, uid, ids, context=None):
         if context is None:
@@ -196,10 +205,9 @@ class WizardGenerarLeadPerFirmar(osv.osv_memory):
         ).action_generar_lead_per_firmar(
             cursor, uid, ids, context=context
         )
-        wizard = self.browse(cursor, uid, wizard_id, context=context)
-        if wizard.state == 'end':
-            return self._result_action()
-        return result
+        return self._get_action_result(
+            cursor, uid, wizard_id, result, context=context
+        )
 
     def action_reject_signature_replacement(self, cursor, uid, ids, context=None):
         self.write(

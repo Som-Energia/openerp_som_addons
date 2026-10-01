@@ -246,9 +246,11 @@ class TestSignLeadWizard(testing.OOTestCase):
             context={'active_ids': [1]},
         )
 
-    def test_action_returns_success_result_when_wizard_ends(self):
+    def test_action_returns_success_result_without_end_state(self):
         self._set_signature(1)
         self.wizard.browse = mock.Mock(return_value=mock.Mock(state='end'))
+        self.wizard.write = mock.Mock()
+        context = {'active_ids': [1]}
 
         with mock.patch.object(
             WizardGenerarLeadPerFirmar.__bases__[0],
@@ -257,15 +259,19 @@ class TestSignLeadWizard(testing.OOTestCase):
             return_value='base-result',
         ) as base_action:
             result = self.wizard.action_generar_lead_per_firmar(
-                None, 1, [7], context={'active_ids': [1]}
+                None, 1, [7], context=context
             )
 
         self.assertEqual(result['status'], 'success')
         self.assertEqual(base_action.call_count, 1)
+        self.wizard.write.assert_called_once_with(
+            None, 1, [7], {'state': 'init'}, context=context
+        )
 
     def test_action_returns_base_result_when_wizard_does_not_end(self):
         self._set_signature(1)
         self.wizard.browse = mock.Mock(return_value=mock.Mock(state='init'))
+        self.wizard.write = mock.Mock()
 
         with mock.patch.object(
             WizardGenerarLeadPerFirmar.__bases__[0],
@@ -278,6 +284,7 @@ class TestSignLeadWizard(testing.OOTestCase):
             )
 
         self.assertEqual(result, 'base-result')
+        self.assertFalse(self.wizard.write.called)
 
     def test_confirm_action_blocks_completed_signature(self):
         self._set_signature(1, process_id=10, status='completed')
@@ -303,9 +310,11 @@ class TestSignLeadWizard(testing.OOTestCase):
             context={'active_ids': [1]},
         )
 
-    def test_confirm_action_returns_success_result(self):
+    def test_confirm_action_returns_success_result_without_end_state(self):
         self._set_signature(1)
         self.wizard.browse = mock.Mock(return_value=mock.Mock(state='end'))
+        self.wizard.write = mock.Mock()
+        context = {'active_ids': [1]}
 
         with mock.patch.object(
             WizardGenerarLeadPerFirmar.__bases__[0],
@@ -314,11 +323,14 @@ class TestSignLeadWizard(testing.OOTestCase):
             return_value='base-result',
         ) as base_action:
             result = self.wizard.action_confirm_signature_replacement(
-                None, 1, [7], context={'active_ids': [1]}
+                None, 1, [7], context=context
             )
 
         self.assertEqual(result['status'], 'success')
         self.assertEqual(base_action.call_count, 1)
+        self.wizard.write.assert_called_once_with(
+            None, 1, [7], {'state': 'init'}, context=context
+        )
 
     def test_reject_signature_replacement(self):
         self.wizard.write = mock.Mock()
