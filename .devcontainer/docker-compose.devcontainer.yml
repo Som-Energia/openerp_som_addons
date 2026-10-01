@@ -1,0 +1,13 @@
+services:
+  erp-runtime:
+    environment:
+      GITHUB_TOKEN: ${GITHUB_TOKEN:-devcontainer-placeholder-token}
+    entrypoint:
+      - /bin/bash
+      - -lc
+    command:
+      - while sleep 1000; do :; done
+    volumes:
+      - ../..:/opt/somenergia/src:cached
+    tty: true
+    stdin_open: true
