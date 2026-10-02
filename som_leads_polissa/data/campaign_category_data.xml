@@ -1,0 +1,11 @@
+<?xml version="1.0" ?>
+<openerp>
+    <data noupdate="1">
+        <record id="res_partner_category_campaigns" model="res.partner.category">
+            <field name="name">Campanyes</field>
+        </record>
+        <record id="giscedata_polissa_category_campaigns" model="giscedata.polissa.category">
+            <field name="name">Campanyes</field>
+        </record>
+    </data>
+</openerp>
