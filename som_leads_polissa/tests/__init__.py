@@ -9,4 +9,5 @@ from .test_lead_www_member_linking import *
 from .test_lead_www_member_payment import *
 from .test_lead_www_validation import *
 from .test_lead_www_misc import *
+from .test_lead_www_params import *
 from .tests_sign_lead import *

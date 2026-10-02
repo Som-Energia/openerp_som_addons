@@ -1,0 +1,400 @@
+# Translation of OpenERP Server.
+# This file contains the translation of the following modules:
+#   * som_leads_polissa
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Som Energia ERP\n"
+"Report-Msgid-Bugs-To: https://github.com/Som-Energia/openerp_som_addons/issues\n"
+"POT-Creation-Date: 2026-10-02 11:53+0200\n"
+"PO-Revision-Date: 2026-10-02 11:53+0200\n"
+"Last-Translator: Som Energia <info@somenergia.coop>\n"
+"Language: en_US\n"
+"Language-Team: English (United States)\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.9.1\n"
+
+#. module: som_leads_polissa
+msgid ""
+"\n"
+"    This module provide :\n"
+"        * Afegir o modificar funcionalitats dels leads base\n"
+"    "
+msgstr ""
+"\n"
+"    This module provides:\n"
+"        * Add or modify base lead features\n"
+"    "
+
+#. module: som_leads_polissa
+#: selection:wizard.importador.leads.comercials,atr_proces_name
+msgid "A3"
+msgstr "A3"
+
+#. module: som_leads_polissa
+#: field:giscedata.crm.lead,comercial_info_accepted
+msgid "Accepta informació comercial (SomServeis)"
+msgstr "Accepts commercial information (SomServeis)"
+
+#. module: som_leads_polissa
+#: selection:giscedata.crm.lead,gender
+msgid "Altres"
+msgstr "Other"
+
+#. module: som_leads_polissa
+#: view:giscedata.crm.lead
+msgid "Aquesta acció enviarà un correu electrònic INSTANTANI, vols procedir?"
+msgstr "This action will send an email IMMEDIATELY. Do you want to continue?"
+
+#. module: som_leads_polissa
+#: view:giscedata.crm.lead
+msgid "Aquesta acció enviarà un correu electrònic, vols procedir?"
+msgstr "This action will send an email. Do you want to continue?"
+
+#. module: som_leads_polissa
+#: selection:wizard.importador.leads.comercials,atr_proces_name
+msgid "C1"
+msgstr "C1"
+
+#. module: som_leads_polissa
+#: field:giscedata.crm.lead,creditcard_cof_txnid
+msgid "COF TxnId targeta"
+msgstr "Card COF TxnId"
+
+#. module: som_leads_polissa
+#: field:giscedata.crm.lead,lead_tag
+msgid "Campanya"
+msgstr "Campaign"
+
+#. module: som_leads_polissa
+msgid "Campanyes"
+msgstr "Campaigns"
+
+#. module: som_leads_polissa
+#: field:wizard.importador.leads.comercials,coeficient_k
+msgid "Coeficient K €/MWh"
+msgstr "K coefficient €/MWh"
+
+#. module: som_leads_polissa
+#: field:giscedata.crm.lead,referral_source field:res.partner,referral_source
+msgid "Com ens ha conegut"
+msgstr "How did you hear about us?"
+
+#. module: som_leads_polissa
+msgid "Cron per actualitzar automàticament leads encallats"
+msgstr "Cron to automatically update stuck leads"
+
+#. module: som_leads_polissa
+#: field:giscedata.crm.lead,creditcard_expiry_date
+msgid "Data caducitat targeta"
+msgstr "Card expiry date"
+
+#. module: som_leads_polissa
+#: field:giscedata.crm.lead,birthdate
+msgid "Data de naixement"
+msgstr "Date of birth"
+
+#. module: som_leads_polissa
+#: selection:giscedata.crm.lead,gender
+msgid "Dona"
+msgstr "Woman"
+
+#. module: som_leads_polissa
+#: field:giscedata.crm.lead,donation
+msgid "Donatiu voluntari"
+msgstr "Voluntary donation"
+
+#. module: som_leads_polissa
+#: view:giscedata.crm.lead
+msgid "Enviar correu conforme ha contractat"
+msgstr "Send contract confirmation email"
+
+#. module: som_leads_polissa
+#: view:giscedata.crm.lead
+msgid "Enviar correu per Signar (correu instantani)"
+msgstr "Send email for signing (instant email)"
+
+#. module: som_leads_polissa
+#: constraint:giscedata.polissa.category
+msgid "Error ! No pots crear categories recursives."
+msgstr "Error: recursive categories cannot be created."
+
+#. module: som_leads_polissa
+#: constraint:res.partner.category
+msgid "Error ! You can not create recursive categories."
+msgstr "Error ! You can not create recursive categories."
+
+#. module: som_leads_polissa
+#: constraint:crm.case.section
+msgid "Error ! You cannot create recursive sections."
+msgstr "Error ! You cannot create recursive sections."
+
+#. module: som_leads_polissa
+#: field:giscedata.crm.lead,initial_invoice_id
+msgid "Factura de remesa inicial"
+msgstr "Initial direct debit invoice"
+
+#. module: som_leads_polissa
+#: field:giscedata.crm.lead,billing_payment_method
+msgid "Forma pagament facturacio"
+msgstr "Billing payment method"
+
+#. module: som_leads_polissa
+#: field:giscedata.crm.lead,member_quota_payment_type
+msgid "Forma pagament quota sòcia"
+msgstr "Member fee payment method"
+
+#. module: som_leads_polissa
+msgid "Formulari web amb error"
+msgstr "Web form with error"
+
+#. module: som_leads_polissa
+msgid "Formulari web amb error de signatura"
+msgstr "Web form with signature error"
+
+#. module: som_leads_polissa
+msgid "Formulari web convertit"
+msgstr "Converted web form"
+
+#. module: som_leads_polissa
+msgid "Formulari web pendent revisió de signatura"
+msgstr "Web form pending signature review"
+
+#. module: som_leads_polissa
+msgid "Formulari web rebut (i validat)"
+msgstr "Web form received (and validated)"
+
+#. module: som_leads_polissa
+msgid "Formularis web"
+msgstr "Web forms"
+
+#. module: som_leads_polissa
+#: field:giscedata.crm.lead,gender
+msgid "Gènere"
+msgstr "Gender"
+
+#. module: som_leads_polissa
+#: selection:giscedata.crm.lead,gender
+msgid "Gènere fluïd"
+msgstr "Gender-fluid"
+
+#. module: som_leads_polissa
+#: selection:giscedata.crm.lead,gender
+msgid "Home"
+msgstr "Man"
+
+#. module: som_leads_polissa
+#: field:giscedata.crm.lead,crm_lead_id
+msgid "ID del lead al CRM"
+msgstr "CRM lead ID"
+
+#. module: som_leads_polissa
+#: constraint:ir.ui.view
+msgid ""
+"Invalid XML for View Architecture! Check server logs for details (view name, model, line number "
+"and RNG error)."
+msgstr ""
+"Invalid XML for View Architecture! Check server logs for details (view name, model, line number "
+"and RNG error)."
+
+#. module: som_leads_polissa
+#: constraint:ir.cron
+msgid "Invalid arguments"
+msgstr "Invalid arguments"
+
+#. module: som_leads_polissa
+#: selection:giscedata.crm.lead,gender
+msgid "No binària"
+msgstr "Non-binary"
+
+#. module: som_leads_polissa
+#: field:giscedata.crm.lead,creditcard_masked_number
+msgid "Numero targeta"
+msgstr "Card number"
+
+#. module: som_leads_polissa
+#: field:giscedata.crm.lead,member_number
+msgid "Número de sòcia"
+msgstr "Member number"
+
+#. module: som_leads_polissa
+#: field:giscedata.crm.lead,titular_number
+msgid "Número de titular (apadrinada)"
+msgstr "Contract holder number (sponsored)"
+
+#. module: som_leads_polissa
+#: view:giscedata.crm.lead
+msgid "Pagament lead web"
+msgstr "Web lead payment"
+
+#. module: som_leads_polissa
+#: selection:giscedata.crm.lead,member_quota_payment_type
+msgid "Passarel·la de pagament"
+msgstr "Payment gateway"
+
+#. module: som_leads_polissa
+#: selection:giscedata.crm.lead,gender
+msgid "Prefereixo no dir-ho"
+msgstr "Prefer not to say"
+
+#. module: som_leads_polissa
+#: field:giscedata.crm.lead,titular_mobile_prefix field:giscedata.crm.lead,titular_phone_prefix
+msgid "Prefix"
+msgstr "Prefix"
+
+#. module: som_leads_polissa
+#: field:giscedata.crm.lead,preu_fix_energia_p1
+msgid "Preu Fix Energia P1"
+msgstr "Fixed energy price P1"
+
+#. module: som_leads_polissa
+#: field:giscedata.crm.lead,preu_fix_energia_p2
+msgid "Preu Fix Energia P2"
+msgstr "Fixed energy price P2"
+
+#. module: som_leads_polissa
+#: field:giscedata.crm.lead,preu_fix_energia_p3
+msgid "Preu Fix Energia P3"
+msgstr "Fixed energy price P3"
+
+#. module: som_leads_polissa
+#: field:giscedata.crm.lead,preu_fix_energia_p4
+msgid "Preu Fix Energia P4"
+msgstr "Fixed energy price P4"
+
+#. module: som_leads_polissa
+#: field:giscedata.crm.lead,preu_fix_energia_p5
+msgid "Preu Fix Energia P5"
+msgstr "Fixed energy price P5"
+
+#. module: som_leads_polissa
+#: field:giscedata.crm.lead,preu_fix_energia_p6
+msgid "Preu Fix Energia P6"
+msgstr "Fixed energy price P6"
+
+#. module: som_leads_polissa
+#: field:giscedata.crm.lead,preu_fix_potencia_p1
+msgid "Preu Fix Potència P1"
+msgstr "Fixed power price P1"
+
+#. module: som_leads_polissa
+#: field:giscedata.crm.lead,preu_fix_potencia_p2
+msgid "Preu Fix Potència P2"
+msgstr "Fixed power price P2"
+
+#. module: som_leads_polissa
+#: field:giscedata.crm.lead,preu_fix_potencia_p3
+msgid "Preu Fix Potència P3"
+msgstr "Fixed power price P3"
+
+#. module: som_leads_polissa
+#: field:giscedata.crm.lead,preu_fix_potencia_p4
+msgid "Preu Fix Potència P4"
+msgstr "Fixed power price P4"
+
+#. module: som_leads_polissa
+#: field:giscedata.crm.lead,preu_fix_potencia_p5
+msgid "Preu Fix Potència P5"
+msgstr "Fixed power price P5"
+
+#. module: som_leads_polissa
+#: field:giscedata.crm.lead,preu_fix_potencia_p6
+msgid "Preu Fix Potència P6"
+msgstr "Fixed power price P6"
+
+#. module: som_leads_polissa
+#: view:giscedata.crm.lead
+msgid "Preus Tarifa Provisional (es veuran al PDF sobreescrivint els de la tarifa de venda)"
+msgstr "Provisional tariff prices (shown in the PDF instead of the sales tariff prices)"
+
+#. module: som_leads_polissa
+#: view:giscedata.crm.lead
+msgid "Preus d'energia"
+msgstr "Energy prices"
+
+#. module: som_leads_polissa
+#: view:giscedata.crm.lead
+msgid "Preus de potència"
+msgstr "Power prices"
+
+#. module: som_leads_polissa
+#: field:wizard.importador.leads.comercials,atr_proces_name
+msgid "Procés d'alta"
+msgstr "Activation process"
+
+#. module: som_leads_polissa
+#: selection:giscedata.crm.lead,billing_payment_method
+#: selection:giscedata.crm.lead,member_quota_payment_type
+msgid "Remesa"
+msgstr "Direct debit"
+
+#. module: som_leads_polissa
+#: view:giscedata.crm.lead
+msgid "Sobre la Sòcia"
+msgstr "Member details"
+
+#. module: som_leads_polissa
+#: view:giscedata.crm.lead
+msgid "Sobre la Tarifa"
+msgstr "Tariff details"
+
+#. module: som_leads_polissa
+#: field:giscedata.crm.lead,set_custom_potencia
+msgid "Sobreescriure preus potència"
+msgstr "Override power prices"
+
+#. module: som_leads_polissa
+#: field:giscedata.crm.lead,create_new_member
+msgid "Sòcia de nova creació"
+msgstr "New member"
+
+#. module: som_leads_polissa
+#: selection:giscedata.crm.lead,billing_payment_method
+msgid "Targeta recurrent"
+msgstr "Recurring card"
+
+#. module: som_leads_polissa
+#: field:wizard.importador.leads.comercials,llista_preus
+msgid "Tarifa"
+msgstr "Tariff"
+
+#. module: som_leads_polissa
+#: selection:giscedata.crm.lead,tipus_tarifa_lead
+msgid "Tarifa ATR provisional"
+msgstr "Provisional ATR tariff"
+
+#. module: som_leads_polissa
+#: selection:giscedata.crm.lead,tipus_tarifa_lead
+msgid "Tarifa existent (ATR o Fixa)"
+msgstr "Existing tariff (ATR or fixed)"
+
+#. module: som_leads_polissa
+#: constraint:ir.model
+msgid "The Object name must start with x_ and not contain any special character !"
+msgstr "The Object name must start with x_ and not contain any special character !"
+
+#. module: som_leads_polissa
+#: field:giscedata.crm.lead,tipus_tarifa_lead
+msgid "Tipus de tarifa del contracte"
+msgstr "Contract tariff type"
+
+#. module: som_leads_polissa
+#: field:giscedata.crm.lead,creditcard_token
+msgid "Token targeta"
+msgstr "Card token"
+
+#. module: som_leads_polissa
+msgid "som.lead.www"
+msgstr "som.lead.www"
+
+#. module: som_leads_polissa
+msgid "som_leads_polissa"
+msgstr "som_leads_polissa"
+
+#. module: som_leads_polissa
+#: field:giscedata.crm.lead,is_new_contact
+msgid "És una persona nova per la cooperativa"
+msgstr "New person for the cooperative"

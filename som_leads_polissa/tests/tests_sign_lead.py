@@ -200,6 +200,11 @@ class TestSignLead(testing.OOTestCase):
             self.cursor, self.uid,
             'giscedata_crm_leads_signatura', 'alta_lead_signatura'
         )[1]
+        account_id = self.ir_model_o.get_object_reference(
+            self.cursor, self.uid,
+            'giscedata_signatura_documents_signaturit',
+            'giscedata_signature_provider_account_0001'
+        )[1]
         process_id = self.process_o.create(
             self.cursor, self.uid,
             {
@@ -208,6 +213,7 @@ class TestSignLead(testing.OOTestCase):
                 'signature_url': 'http://sign.url',
                 'template_id': template_id,
                 'template_res_id': lead_id,
+                'account_id': account_id,
                 'lang': 'en_US',
                 'recipients': [(0, 0, {
                     'name': 'Test titular',
