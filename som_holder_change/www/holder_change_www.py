@@ -355,16 +355,12 @@ class SomHolderChangeWww(osv.osv_memory):
         }
 
     def _signature_process_values(self, cursor, uid, request):
-        template_obj = self.pool.get("poweremail.templates")
         template_id = self.pool.get("ir.model.data").get_object_reference(
             cursor,
             uid,
             "som_holder_change",
             "email_signature_process_holder_change",
         )[1]
-        account_id = template_obj._get_signature_account_id(
-            cursor, uid, template_id, request.id
-        )
         contract_owner = request.payload["contract_owner"]
         files = [(0, 0, {"doc_file": request.contract_pdf,
                   "filename": "contract-with-summary.pdf"})]
@@ -374,7 +370,6 @@ class SomHolderChangeWww(osv.osv_memory):
         return {
             "template_id": template_id,
             "template_res_id": request.id,
-            "account_id": account_id,
             "delivery_type": "url",
             "provider": "signaturit",
             "lang": contract_owner["lang"],
