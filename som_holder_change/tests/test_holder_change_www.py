@@ -455,7 +455,7 @@ class TestHolderChangeWww(testing.OOTestCase):
             self.cursor,
             self.uid,
             request["signature_process_id"][0],
-            ["template_id", "template_res_id"],
+            ["template_id", "template_res_id", "account_id"],
         )
         template_id = self.imd_obj.get_object_reference(
             self.cursor,
@@ -465,6 +465,13 @@ class TestHolderChangeWww(testing.OOTestCase):
         )[1]
         self.assertEqual(process["template_id"][0], template_id)
         self.assertEqual(process["template_res_id"], result["request_id"])
+        account_id = self.imd_obj.get_object_reference(
+            self.cursor,
+            self.uid,
+            "giscedata_signatura_documents_signaturit",
+            "giscedata_signature_provider_account_0001",
+        )[1]
+        self.assertEqual(process["account_id"][0], account_id)
 
     def test_sign_request_retries_process_after_start_failure(self):
         payload = self.payload()
