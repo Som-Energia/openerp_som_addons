@@ -31,8 +31,7 @@ class TestHolderChangePayload(unittest.TestCase):
             holder_change_payload.holder_full_name({
                 "vat": "12345678Z",
                 "name": "Maria",
-                "surname1": "Nova",
-                "surname2": "Titular",
+                "surname": "Nova Titular",
             }),
             "Nova Titular, Maria",
         )

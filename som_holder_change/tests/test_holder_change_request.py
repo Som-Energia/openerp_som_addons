@@ -42,7 +42,7 @@ class TestHolderChangeRequest(testing.OOTestCase):
         )
 
         for values in (
-            {"payload": {"holder": {"vat": "B12345678"}}},
+            {"payload": {"contract_owner": {"vat": "B12345678"}}},
             {"polissa_id": self.polissa_id},
             {"cups": "ES00000000000000000000"},
             {"owner_change_type": "S"},
@@ -79,8 +79,8 @@ class TestHolderChangeRequest(testing.OOTestCase):
             "cups": "ES12345678901234567890",
             "owner_change_type": "T",
             "payload": {
-                "holder": {"vat": "12345678Z", "name": "New holder"},
-                "payment": {"iban": "ES9121000418450200051332"},
+                "contract_owner": {"vat": "12345678Z", "name": "New holder"},
+                "iban": "ES9121000418450200051332",
             },
         }
         result.update(values)
