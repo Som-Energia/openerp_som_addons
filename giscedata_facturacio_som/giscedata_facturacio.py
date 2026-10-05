@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from osv import osv
 from tools import cache
+from tools.translate import _
 from datetime import datetime
 
 
@@ -93,6 +94,28 @@ class GiscedataFacturacioFactura(osv.osv):
                 self.write(cursor, uid, fact_id, write_vals)
                 self.set_pending(cursor, uid, [fact_id], pol_data['estat_pendent_cobrament'][0])
 
+        return res
+
+    def get_data_inici_interessos(self, cursor, uid, factura, context=None):
+        if context is None:
+            context = {}
+
+        fact_obj = self.pool.get('giscedata.facturacio.factura')
+        search_vals = [
+            ('data_inici', '>=', factura.data_inici),
+            ('data_final', '<=', factura.data_final),
+            ('cups_id', '=', factura.cups_id.id),
+            ('refund_by_id', '=', False),
+            ('type', '=', ('in_invoice', 'in_refund')),
+            ('rectificative_type', '!=', 'BRA')
+        ]
+        fact_prov_ids = fact_obj.search(cursor, uid, search_vals, order="invoice_id.origin_date_invoice desc", context=context)
+        if fact_prov_ids:
+            res = fact_obj.read(cursor, uid, fact_prov_ids[0], ['origin_date_invoice'], context=context)['origin_date_invoice']
+        else:
+            raise osv.except_osv(_("No s'ha trobat factura de proveïdor"),
+                                 _("No s'ha trobat factura de proveïdor entre les dates {} i {}").format(
+                                     factura.data_inici, factura.data_final))
         return res
 
 
