@@ -202,8 +202,7 @@ class TestSignLead(testing.OOTestCase):
         )[1]
         account_id = self.ir_model_o.get_object_reference(
             self.cursor, self.uid,
-            'giscedata_signatura_documents_signaturit',
-            'giscedata_signature_provider_account_0001'
+            'som_leads_polissa', 'sign_lead_signature_account'
         )[1]
         process_id = self.process_o.create(
             self.cursor, self.uid,
