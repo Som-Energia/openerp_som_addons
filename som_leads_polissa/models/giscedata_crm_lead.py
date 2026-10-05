@@ -111,6 +111,8 @@ class GiscedataCrmLead(osv.OsvInherits):
     def contract_pdf(self, cursor, uid, ids, context=None):
         if context is None:
             context = {}
+        context = context.copy()
+        context["is_dry_run"] = True
         if not isinstance(ids, (list, tuple)):
             ids = [ids]
 
