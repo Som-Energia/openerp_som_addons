@@ -58,7 +58,7 @@ class SomHolderChangeRequest(osv.osv):
         reports = self._simulate_holder_change(cursor, uid, request_id, context=context)
         request = self.browse(cursor, uid, request_id, context=context)
         state = "awaiting_payment" if self._payment_method(
-            request) == "card" and not request.creditcard_token else "awaiting_signature"
+            request) == "tpv" and not request.creditcard_token else "awaiting_signature"
         super(SomHolderChangeRequest, self).write(
             cursor,
             uid,
@@ -71,7 +71,7 @@ class SomHolderChangeRequest(osv.osv):
     def set_card_data(self, cursor, uid, request_id, card_values, context=None):
         request_id = self._one_id(request_id)
         request = self.browse(cursor, uid, request_id, context=context)
-        if self._payment_method(request) != "card":
+        if self._payment_method(request) != "tpv":
             raise osv.except_osv(_("Invalid payment method"), _(
                 "The request does not use card payment."))
         if request.state != "awaiting_payment":
@@ -270,7 +270,7 @@ class SomHolderChangeRequest(osv.osv):
         self, cursor, uid, request, polissa_id, change_data, context=None
     ):
         values = {
-            "donatiu": request.payload["payment"]["voluntary_cent"],
+            "donatiu": request.payload["donation"],
         }
         member_partner_id = change_data["member_partner_id"]
         if member_partner_id:
@@ -291,7 +291,7 @@ class SomHolderChangeRequest(osv.osv):
             partner_obj.adopt_contracts_as_member(
                 cursor, uid, change_data["partner_id"], context=context
             )
-            if self._payment_method(request) == "bank":
+            if self._payment_method(request) == "remesa":
                 partner = partner_obj.browse(
                     cursor, uid, change_data["partner_id"], context=context
                 )
@@ -299,7 +299,7 @@ class SomHolderChangeRequest(osv.osv):
                     cursor,
                     uid,
                     partner.id,
-                    holder_change_payload.clean_iban(request.payload["payment"]["iban"]),
+                    holder_change_payload.clean_iban(request.payload["iban"]),
                     partner.ref,
                     "QUOTA-SOCIA-CANVI-TITULAR-{}".format(request.id),
                     context=context,
@@ -385,7 +385,7 @@ class SomHolderChangeRequest(osv.osv):
             "pagador": partner_id,
             "contact": partner_id,
             "cnae": request.polissa_id.cnae.id,
-            "vat": request.payload["holder"]["vat"],
+            "vat": request.payload["contract_owner"]["vat"],
             "vat_kind": vat_kind,
             "direccio_pagament": address_id,
             "direccio_notificacio": address_id,
@@ -399,7 +399,7 @@ class SomHolderChangeRequest(osv.osv):
         return values
 
     def _create_mandate(self, cursor, uid, request, partner_id, polissa_id, context=None):
-        if self._payment_method(request) != "bank":
+        if self._payment_method(request) != "remesa":
             return False
         payment_mode = request.polissa_id.payment_mode_id
         mandate_obj = self.pool.get("payment.mandate")
@@ -425,7 +425,7 @@ class SomHolderChangeRequest(osv.osv):
                 "name": request.mandate_number,
                 "date": datetime.today().strftime("%Y-%m-%d"),
                 "mandate_scheme": mandate_scheme,
-                "debtor_iban": request.payload["payment"]["iban"].replace(" ", ""),
+                "debtor_iban": request.payload["iban"].replace(" ", ""),
             },
             context=context,
         )
@@ -510,17 +510,17 @@ class SomHolderChangeRequest(osv.osv):
         )
 
     def _create_holder(self, cursor, uid, request, context=None):
-        holder = request.payload["holder"]
-        vat = holder_change_payload.normalize_holder_vat(holder)
+        contract_owner = request.payload["contract_owner"]
+        vat = holder_change_payload.normalize_holder_vat(contract_owner)
         partner_obj = self.pool.get("res.partner")
         values = {
-            "name": holder_change_payload.holder_full_name(holder),
+            "name": holder_change_payload.holder_full_name(contract_owner),
             "vat": vat,
             "lang": self._holder_language(cursor, uid, request, context=context),
         }
-        if not holder_change_payload.is_individual_holder(holder):
+        if not holder_change_payload.is_individual_holder(contract_owner):
             values["comment"] = " Persona representant: {}\n NIF representant: {}".format(
-                holder["proxyname"], holder["proxynif"]
+                contract_owner["proxy_name"], contract_owner["proxy_vat"]
             )
         partner_ids = partner_obj.search(
             cursor, uid, [("vat", "=", vat)], limit=1, context=context
@@ -530,21 +530,26 @@ class SomHolderChangeRequest(osv.osv):
         return partner_obj.create(cursor, uid, values, context=context)
 
     def _holder_language(self, cursor, uid, request, context=None):
-        language = request.payload["holder"]["language"]
+        language = request.payload["contract_owner"]["lang"]
         language_ids = self.pool.get("res.lang").search(
             cursor, uid, [("code", "=", language)], limit=1, context=context
         )
         return language if language_ids else request.polissa_id.titular.lang
 
     def _create_holder_address(self, cursor, uid, request, partner_id, context=None):
-        holder = request.payload["holder"]
-        iban = holder_change_payload.clean_iban(request.payload["payment"].get("iban", ""))
+        contract_owner = request.payload["contract_owner"]
+        address = contract_owner["address"]
+        iban = holder_change_payload.clean_iban(request.payload.get("iban", ""))
         country_id = iban and self._iban_country(cursor, uid, iban, context=context) or False
         address_obj = self.pool.get("res.partner.address")
         address_ids = address_obj.search(
             cursor,
             uid,
-            [("partner_id", "=", partner_id), ("nv", "=", holder["address"])],
+            [
+                ("partner_id", "=", partner_id),
+                ("nv", "=", address["street"]),
+                ("pnp", "=", address["number"]),
+            ],
             limit=1,
             context=context,
         )
@@ -554,17 +559,22 @@ class SomHolderChangeRequest(osv.osv):
             return address_ids[0]
         values = {
             "partner_id": partner_id,
-            "name": holder_change_payload.holder_full_name(holder),
-            "nv": holder["address"],
-            "zip": holder["postal_code"],
-            "id_municipi": holder["city"],
+            "name": holder_change_payload.holder_full_name(contract_owner),
+            "nv": address["street"],
+            "pnp": address["number"],
+            "pt": address.get("floor"),
+            "es": address.get("stair"),
+            "pu": address.get("door"),
+            "bq": address.get("block"),
+            "zip": address["postal_code"],
+            "id_municipi": address["city_id"],
             "id_poblacio": self._get_or_create_poblacio(
-                cursor, uid, holder["city"], context=context
+                cursor, uid, address["city_id"], context=context
             ),
-            "state_id": holder["state"],
+            "state_id": address["state_id"],
             "country_id": country_id,
-            "email": holder["email"],
-            "phone": holder["phone1"],
+            "email": contract_owner["email"],
+            "phone": contract_owner["phone"],
         }
         return address_obj.create(cursor, uid, values, context=context)
 
@@ -596,10 +606,13 @@ class SomHolderChangeRequest(osv.osv):
         )
 
     def _member_partner(self, cursor, uid, request, holder_id, context=None):
-        member = request.payload["member"]
-        if member.get("link_member"):
-            return self._linked_member_partner(cursor, uid, member, context=context), False, False
-        if member.get("become_member"):
+        linked_member = request.payload["linked_member"]
+        if linked_member == "sponsored":
+            member = request.payload["linked_member_info"]
+            return self._linked_member_partner(
+                cursor, uid, member, context=context
+            ), False, False
+        if linked_member == "new_member":
             existing_member_ids = self.pool.get("somenergia.soci").search(
                 cursor,
                 uid,
@@ -626,14 +639,14 @@ class SomHolderChangeRequest(osv.osv):
         for member_record in self.pool.get("somenergia.soci").browse(
             cursor, uid, member_ids, context=context
         ):
-            if member_record.www_soci == member["number"]:
+            if member_record.www_soci == member["code"]:
                 return member_record.partner_id.id
         raise osv.except_osv(
             _("Member not found"), _("The linked member does not exist or is inactive.")
         )
 
     def _payment_values(self, cursor, uid, request, partner_id, temporary=False, context=None):
-        if self._payment_method(request) == "card":
+        if self._payment_method(request) == "tpv":
             card_data = {
                 "token": request.creditcard_token or "validation-token-{}".format(request.id),
                 "masked_number": request.creditcard_masked_number or "**** **** **** 0000",
@@ -654,7 +667,7 @@ class SomHolderChangeRequest(osv.osv):
                 "creditcard": card_id,
             }
 
-        iban = holder_change_payload.clean_iban(request.payload["payment"]["iban"])
+        iban = holder_change_payload.clean_iban(request.payload["iban"])
         bank_obj = self.pool.get("res.partner.bank")
         if not bank_obj.is_iban_valid(cursor, uid, iban):
             raise osv.except_osv(_("Invalid IBAN"), _("The IBAN is invalid."))
@@ -684,7 +697,7 @@ class SomHolderChangeRequest(osv.osv):
                 "partner_id": partner_id,
                 "country_id": country_id,
                 "acc_country_id": country_id,
-                "state_id": request.payload["holder"]["state"],
+                "state_id": request.payload["contract_owner"]["address"]["state_id"],
             })
             bank_id = bank_obj.create(cursor, uid, values, context=context)
         contract = request.polissa_id
@@ -976,7 +989,7 @@ class SomHolderChangeRequest(osv.osv):
             values["contract_number"] = self.pool.get("ir.sequence").get(
                 cursor, uid, "giscedata.polissa"
             )
-        if self._payment_method(request) == "bank" and not request.mandate_number:
+        if self._payment_method(request) == "remesa" and not request.mandate_number:
             values["mandate_number"] = uuid4().hex
         if values:
             super(SomHolderChangeRequest, self).write(
@@ -987,7 +1000,7 @@ class SomHolderChangeRequest(osv.osv):
         return request.owner_change_type == "T"
 
     def _payment_method(self, request):
-        return request.payload.get("payment_method", "bank")
+        return request.payload["payment_type"]
 
     def _one_id(self, ids):
         if isinstance(ids, (list, tuple)):

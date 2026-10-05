@@ -5,6 +5,8 @@ from tools.translate import _
 
 
 LEGAL_PERSON_PREFIXES = set("ABCDEFGHJNPQRSUVW")
+LINKED_MEMBER_TYPES = ("new_member", "sponsored", "without_member")
+PAYMENT_TYPES = ("remesa", "tpv")
 SPECIAL_CASE_ATTACHMENTS = (
     ("reason_death", "death", "holder_change_death"),
     ("reason_merge", "merge", "holder_change_merge"),
@@ -31,7 +33,7 @@ def validate_base_payload(payload):
     if not isinstance(payload, dict):
         return error("INVALID_PAYLOAD", _("The payload must be an object."))
 
-    sections = ["payment", "supply_point", "member", "especial_cases", "holder"]
+    sections = ["contract_info", "contract_owner", "especial_cases"]
     missing = missing_fields(payload, sections)
     if missing:
         return error(
@@ -39,35 +41,49 @@ def validate_base_payload(payload):
             _("Missing required fields: {}.").format(", ".join(missing)),
         )
 
-    if not payload.get("privacy_policy_accepted") or not payload.get("terms_accepted"):
+    if (
+        not payload.get("privacy_conditions")
+        or not payload.get("general_contract_terms_accepted")
+    ):
         return error(
             "CONSENT_REQUIRED",
             _("Privacy and contractual consent are required."),
         )
 
-    payment_method = payload.get("payment_method")
-    if payment_method not in ("bank", "card"):
-        return error("INVALID_PAYMENT_METHOD", _("Payment method must be bank or card."))
-    if payment_method == "bank" and not payload["payment"].get("sepa_accepted"):
+    payment_type = payload.get("payment_type")
+    if payment_type not in PAYMENT_TYPES:
+        return error(
+            "INVALID_PAYMENT_METHOD",
+            _("Payment type must be remesa or tpv."),
+        )
+    if payment_type == "remesa" and not payload.get("sepa_accepted"):
         return error("CONSENT_REQUIRED", _("SEPA consent is required for bank payment."))
+    if payment_type == "tpv" and not payload.get("payment_authorization_accepted"):
+        return error(
+            "CONSENT_REQUIRED", _("Card payment authorization is required."))
     return False
 
 
 def validate_required_fields(payload):
     required = {
-        "supply_point": ["cups"],
-        "member": ["invite_token", "become_member", "link_member"],
+        "payload": ["linked_member", "donation"],
+        "contract_info": ["cups"],
         "especial_cases": ["reason_death", "reason_merge", "reason_electrodep"],
-        "holder": [
-            "name", "vat", "address", "postal_code", "state", "city",
-            "email", "phone1", "language",
+        "contract_owner": [
+            "name", "vat", "address", "email", "phone", "lang",
         ],
+        "address": ["street", "number", "postal_code", "state_id", "city_id"],
     }
-    required["payment"] = ["voluntary_cent"]
-    if payload["payment_method"] == "bank":
-        required["payment"].extend(["iban", "sepa_accepted"])
+    if payload["payment_type"] == "remesa":
+        required["payload"].append("iban")
     for section, fields_to_check in required.items():
-        missing = missing_fields(payload[section], fields_to_check)
+        if section == "payload":
+            values = payload
+        elif section == "address":
+            values = payload["contract_owner"].get("address", {})
+        else:
+            values = payload[section]
+        missing = missing_fields(values, fields_to_check)
         if missing:
             return error(
                 "MISSING_REQUIRED_FIELDS",
@@ -77,7 +93,7 @@ def validate_required_fields(payload):
 
 
 def validate_payment(payload):
-    if not isinstance(payload["payment"]["voluntary_cent"], bool):
+    if not isinstance(payload["donation"], bool):
         return error(
             "INCORRECT_PARAM_TYPE",
             _("Voluntary cent must be a boolean."),
@@ -86,12 +102,15 @@ def validate_payment(payload):
 
 
 def validate_holder(payload):
-    holder = payload["holder"]
-    vat = normalize_vat(holder.get("vat"))
+    contract_owner = payload["contract_owner"]
+    vat = normalize_vat(contract_owner.get("vat"))
     if not vat:
         return error("INVALID_VAT", _("The holder VAT is invalid."))
-    person_fields = ["proxyname", "proxynif"] if vat[0] in LEGAL_PERSON_PREFIXES else ["surname1"]
-    missing = missing_fields(holder, person_fields)
+    person_fields = (
+        ["proxy_name", "proxy_vat"]
+        if vat[0] in LEGAL_PERSON_PREFIXES else ["surname"]
+    )
+    missing = missing_fields(contract_owner, person_fields)
     if missing:
         return error(
             "MISSING_REQUIRED_FIELDS",
@@ -101,14 +120,15 @@ def validate_holder(payload):
 
 
 def validate_member(payload):
-    member = payload["member"]
-    if member.get("become_member") and member.get("link_member"):
+    linked_member = payload["linked_member"]
+    if linked_member not in LINKED_MEMBER_TYPES:
         return error(
             "INVALID_MEMBER_SELECTION",
-            _("The holder cannot become a member and link another member."),
+            _("The linked member selection is invalid."),
         )
-    if member.get("link_member"):
-        missing = missing_fields(member, ["vat", "number"])
+    if linked_member == "sponsored":
+        member = payload.get("linked_member_info", {})
+        missing = missing_fields(member, ["vat", "code"])
         if missing:
             return error(
                 "MISSING_REQUIRED_FIELDS",
@@ -119,6 +139,18 @@ def validate_member(payload):
 
 def validate_special_case(payload):
     cases = payload["especial_cases"]
+    reasons = [reason for reason, _name, _category in SPECIAL_CASE_ATTACHMENTS]
+    if any(not isinstance(cases[reason], bool) for reason in reasons):
+        return error(
+            "INCORRECT_PARAM_TYPE",
+            _("Special case reasons must be booleans."),
+        )
+    active_reasons = [reason for reason in reasons if cases[reason]]
+    if len(active_reasons) > 1:
+        return error(
+            "INVALID_SPECIAL_CASE",
+            _("Only one special case reason can be selected."),
+        )
     required_attachment = False
     attachment_category = False
     for reason, attachment_name, category in SPECIAL_CASE_ATTACHMENTS:
@@ -127,6 +159,17 @@ def validate_special_case(payload):
             attachment_category = category
             break
     special_attachments = payload.get("attachments", [])
+    special_categories = set(
+        category for _reason, _name, category in SPECIAL_CASE_ATTACHMENTS
+    )
+    if not required_attachment and any(
+        attachment.get("category") in special_categories
+        for attachment in special_attachments
+    ):
+        return error(
+            "INVALID_ATTACHMENT_CATEGORY",
+            _("A special attachment requires its corresponding special case."),
+        )
     if required_attachment and special_attachments and any(
         attachment.get("category") != attachment_category
         for attachment in special_attachments

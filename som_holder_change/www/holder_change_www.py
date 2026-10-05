@@ -32,7 +32,7 @@ class SomHolderChangeWww(osv.osv_memory):
         if validation_error:
             return validation_error
 
-        cups = self._normalize_cups(payload["supply_point"]["cups"])
+        cups = self._normalize_cups(payload["contract_info"]["cups"])
         if not CUPS_RE.match(cups):
             return holder_change_validation.error("INVALID_CUPS", _("The CUPS format is invalid."))
 
@@ -41,7 +41,9 @@ class SomHolderChangeWww(osv.osv_memory):
             return holder_change_validation.error(
                 contract_error, _("The contract is not available."))
 
-        if self._is_inactive_holder(cursor, uid, payload["holder"]["vat"], context=context):
+        if self._is_inactive_holder(
+            cursor, uid, payload["contract_owner"]["vat"], context=context
+        ):
             return holder_change_validation.error(
                 "CUSTOMER_INACTIVE", _("The new holder is inactive."))
 
@@ -52,7 +54,7 @@ class SomHolderChangeWww(osv.osv_memory):
         polissa = self.pool.get("giscedata.polissa").browse(
             cursor, uid, polissa_id, context=context)
         current_vat = self._normalize_vat(polissa.titular.vat)
-        new_vat = self._normalize_vat(payload["holder"]["vat"])
+        new_vat = self._normalize_vat(payload["contract_owner"]["vat"])
         if current_vat == new_vat:
             return holder_change_validation.error(
                 "SAME_OWNER", _("The new holder must differ from the current holder.")
@@ -96,7 +98,7 @@ class SomHolderChangeWww(osv.osv_memory):
         if request.signature_process_id and request.signature_process_id.signature_url:
             return {"url": self._localized_signature_url(
                 request.signature_process_id.signature_url,
-                request.payload["holder"]["language"],
+                request.payload["contract_owner"]["lang"],
             )}
         if request.signature_process_id:
             process_id = request.signature_process_id.id
@@ -142,7 +144,7 @@ class SomHolderChangeWww(osv.osv_memory):
             cursor, uid, process_obj, process_id, context=context
         )
         return {"url": self._localized_signature_url(
-            signature_url, request.payload["holder"]["language"]
+            signature_url, request.payload["contract_owner"]["lang"]
         )}
 
     @job(queue="leads", timeout=300)
@@ -268,9 +270,9 @@ class SomHolderChangeWww(osv.osv_memory):
 
     def _store_request(self, cursor, uid, payload, cups, polissa_id, context=None):
         stored_payload = deepcopy(payload)
-        if stored_payload["payment_method"] == "bank":
-            stored_payload["payment"]["iban"] = "".join(
-                char.upper() for char in stored_payload["payment"]["iban"]
+        if stored_payload["payment_type"] == "remesa":
+            stored_payload["iban"] = "".join(
+                char.upper() for char in stored_payload["iban"]
                 if char.isalnum()
             )
         attachments = stored_payload.get("attachments", [])
@@ -363,7 +365,7 @@ class SomHolderChangeWww(osv.osv_memory):
         account_id = template_obj._get_signature_account_id(
             cursor, uid, template_id, request.id
         )
-        holder = request.payload["holder"]
+        contract_owner = request.payload["contract_owner"]
         files = [(0, 0, {"doc_file": request.contract_pdf,
                   "filename": "contract-with-summary.pdf"})]
         if request.mandate_pdf:
@@ -375,10 +377,13 @@ class SomHolderChangeWww(osv.osv_memory):
             "account_id": account_id,
             "delivery_type": "url",
             "provider": "signaturit",
-            "lang": holder["language"],
+            "lang": contract_owner["lang"],
             "data": "{}",
             "all_signed": True,
-            "recipients": [(0, 0, {"name": holder["name"], "email": holder["email"]})],
+            "recipients": [(0, 0, {
+                "name": contract_owner["name"],
+                "email": contract_owner["email"],
+            })],
             "files": files,
         }
 

@@ -125,6 +125,7 @@ class TestHolderChangeWww(testing.OOTestCase):
 
     def test_create_request_persists_attachments_outside_payload(self):
         payload = self.payload()
+        payload["especial_cases"]["reason_death"] = True
         payload["attachments"] = [{
             "filename": "death-certificate.pdf",
             "category": "holder_change_death",
@@ -171,10 +172,10 @@ class TestHolderChangeWww(testing.OOTestCase):
 
     def test_create_request_rejects_same_holder(self):
         payload = self.payload()
-        payload["holder"]["vat"] = self.polissa.titular.vat.replace("ES", "")
-        payload["holder"].update({
-            "proxyname": "Representant Legal",
-            "proxynif": "12345678Z",
+        payload["contract_owner"]["vat"] = self.polissa.titular.vat.replace("ES", "")
+        payload["contract_owner"].update({
+            "proxy_name": "Representant Legal",
+            "proxy_vat": "12345678Z",
         })
 
         result = self.www_obj.create_request(
@@ -186,7 +187,7 @@ class TestHolderChangeWww(testing.OOTestCase):
 
     def test_create_request_rejects_inactive_new_holder(self):
         payload = self.payload()
-        payload["holder"]["vat"] = "11223344B"
+        payload["contract_owner"]["vat"] = "11223344B"
         self.openerp.pool.get("res.partner").create(
             self.cursor,
             self.uid,
@@ -212,7 +213,7 @@ class TestHolderChangeWww(testing.OOTestCase):
 
     def test_create_request_requires_real_consent(self):
         payload = self.payload()
-        payload["payment"]["sepa_accepted"] = False
+        payload["sepa_accepted"] = False
 
         result = self.www_obj.create_request(
             self.cursor, self.uid, payload
@@ -249,7 +250,7 @@ class TestHolderChangeWww(testing.OOTestCase):
         )[1]
         inactive = self.polissa_obj.browse(self.cursor, self.uid, inactive_id)
         payload = deepcopy(self.payload())
-        payload["supply_point"]["cups"] = inactive.cups.name
+        payload["contract_info"]["cups"] = inactive.cups.name
 
         result = self.www_obj.create_request(
             self.cursor, self.uid, payload
@@ -260,9 +261,10 @@ class TestHolderChangeWww(testing.OOTestCase):
 
     def test_card_request_waits_for_card_data(self):
         payload = self.payload()
-        payload["payment_method"] = "card"
-        del payload["payment"]["iban"]
-        del payload["payment"]["sepa_accepted"]
+        payload["payment_type"] = "tpv"
+        del payload["iban"]
+        del payload["sepa_accepted"]
+        payload["payment_authorization_accepted"] = True
 
         result = self.www_obj.create_request(
             self.cursor, self.uid, payload
@@ -281,9 +283,10 @@ class TestHolderChangeWww(testing.OOTestCase):
 
     def test_card_data_generates_documents_and_waits_for_signature(self):
         payload = self.payload()
-        payload["payment_method"] = "card"
-        del payload["payment"]["iban"]
-        del payload["payment"]["sepa_accepted"]
+        payload["payment_type"] = "tpv"
+        del payload["iban"]
+        del payload["sepa_accepted"]
+        payload["payment_authorization_accepted"] = True
         result = self.www_obj.create_request(
             self.cursor, self.uid, payload
         )
@@ -298,7 +301,7 @@ class TestHolderChangeWww(testing.OOTestCase):
             self.cursor,
             self.uid,
             result["request_id"],
-            payload["supply_point"]["cups"],
+            payload["contract_info"]["cups"],
             card_values,
         )
 
@@ -317,9 +320,10 @@ class TestHolderChangeWww(testing.OOTestCase):
 
     def test_card_data_retries_preparation_after_a_simulation_failure(self):
         payload = self.payload()
-        payload["payment_method"] = "card"
-        del payload["payment"]["iban"]
-        del payload["payment"]["sepa_accepted"]
+        payload["payment_type"] = "tpv"
+        del payload["iban"]
+        del payload["sepa_accepted"]
+        payload["payment_authorization_accepted"] = True
         result = self.www_obj.create_request(self.cursor, self.uid, payload)
         card_values = {
             "creditcard_token": "card-token",
@@ -338,7 +342,7 @@ class TestHolderChangeWww(testing.OOTestCase):
                     self.cursor,
                     self.uid,
                     result["request_id"],
-                    payload["supply_point"]["cups"],
+                    payload["contract_info"]["cups"],
                     card_values,
                 )
 
@@ -355,7 +359,7 @@ class TestHolderChangeWww(testing.OOTestCase):
             self.cursor,
             self.uid,
             result["request_id"],
-            payload["supply_point"]["cups"],
+            payload["contract_info"]["cups"],
             card_values,
         )
 
@@ -363,9 +367,10 @@ class TestHolderChangeWww(testing.OOTestCase):
 
     def test_card_data_rejects_missing_or_repeated_values(self):
         payload = self.payload()
-        payload["payment_method"] = "card"
-        del payload["payment"]["iban"]
-        del payload["payment"]["sepa_accepted"]
+        payload["payment_type"] = "tpv"
+        del payload["iban"]
+        del payload["sepa_accepted"]
+        payload["payment_authorization_accepted"] = True
         result = self.www_obj.create_request(
             self.cursor, self.uid, payload
         )
@@ -381,14 +386,14 @@ class TestHolderChangeWww(testing.OOTestCase):
                 self.cursor,
                 self.uid,
                 result["request_id"],
-                payload["supply_point"]["cups"],
+                payload["contract_info"]["cups"],
                 {},
             )
         self.www_obj.add_payment_card_data(
             self.cursor,
             self.uid,
             result["request_id"],
-            payload["supply_point"]["cups"],
+            payload["contract_info"]["cups"],
             card_values,
         )
         with self.assertRaises(Exception):
@@ -396,15 +401,16 @@ class TestHolderChangeWww(testing.OOTestCase):
                 self.cursor,
                 self.uid,
                 result["request_id"],
-                payload["supply_point"]["cups"],
+                payload["contract_info"]["cups"],
                 card_values,
             )
 
     def test_card_data_rejects_request_for_a_different_cups(self):
         payload = self.payload()
-        payload["payment_method"] = "card"
-        del payload["payment"]["iban"]
-        del payload["payment"]["sepa_accepted"]
+        payload["payment_type"] = "tpv"
+        del payload["iban"]
+        del payload["sepa_accepted"]
+        payload["payment_authorization_accepted"] = True
         result = self.www_obj.create_request(self.cursor, self.uid, payload)
 
         with self.assertRaises(Exception):
@@ -418,13 +424,13 @@ class TestHolderChangeWww(testing.OOTestCase):
         process_obj = self.openerp.pool.get("giscedata.signatura.process")
         lang_obj = self.openerp.pool.get("res.lang")
         lang_ids = lang_obj.search(
-            self.cursor, self.uid, [("code", "=", payload["holder"]["language"])]
+            self.cursor, self.uid, [("code", "=", payload["contract_owner"]["lang"])]
         )
         if not lang_ids:
             lang_obj.create(
                 self.cursor,
                 self.uid,
-                {"name": "Català", "code": payload["holder"]["language"]},
+                {"name": "Català", "code": payload["contract_owner"]["lang"]},
             )
 
         with mock.patch.object(process_obj, "start", return_value=True):
@@ -438,7 +444,7 @@ class TestHolderChangeWww(testing.OOTestCase):
                         self.cursor,
                         self.uid,
                         result["request_id"],
-                        payload["supply_point"]["cups"],
+                        payload["contract_info"]["cups"],
                     )
         self.assertTrue(wait_for_signature_url.called, raised.exception)
 
@@ -480,13 +486,13 @@ class TestHolderChangeWww(testing.OOTestCase):
         lang_obj = self.openerp.pool.get("res.lang")
         signature_url = "https://app.signaturit.com/document/signature"
         lang_ids = lang_obj.search(
-            self.cursor, self.uid, [("code", "=", payload["holder"]["language"])]
+            self.cursor, self.uid, [("code", "=", payload["contract_owner"]["lang"])]
         )
         if not lang_ids:
             lang_obj.create(
                 self.cursor,
                 self.uid,
-                {"name": "Català", "code": payload["holder"]["language"]},
+                {"name": "Català", "code": payload["contract_owner"]["lang"]},
             )
         request = self.request_obj.browse(
             self.cursor, self.uid, result["request_id"]
@@ -518,13 +524,13 @@ class TestHolderChangeWww(testing.OOTestCase):
                         self.cursor,
                         self.uid,
                         result["request_id"],
-                        payload["supply_point"]["cups"],
+                        payload["contract_info"]["cups"],
                     )
                 response = self.www_obj.sign_request(
                     self.cursor,
                     self.uid,
                     result["request_id"],
-                    payload["supply_point"]["cups"],
+                    payload["contract_info"]["cups"],
                 )
 
         request = self.request_obj.read(
@@ -557,7 +563,7 @@ class TestHolderChangeWww(testing.OOTestCase):
                             self.cursor,
                             self.uid,
                             result["request_id"],
-                            payload["supply_point"]["cups"],
+                            payload["contract_info"]["cups"],
                         )
 
         self.assertIs(create.call_args[0][0], write.call_args[0][0])
@@ -598,7 +604,7 @@ class TestHolderChangeWww(testing.OOTestCase):
             ["donatiu", "no_estimable", "observacions", "observacions_estimacio"],
         )
         vat = "ES12345678Z"
-        iban = self.payload()["payment"]["iban"]
+        iban = self.payload()["iban"]
         counts_before = {
             "partner": partner_obj.search_count(
                 self.cursor, self.uid, [("vat", "=", vat)]
@@ -652,7 +658,7 @@ class TestHolderChangeWww(testing.OOTestCase):
 
     def test_execute_completes_once_without_duplicate_m1(self):
         payload = self.payload()
-        payload["holder"]["vat"] = "98765432M"
+        payload["contract_owner"]["vat"] = "98765432M"
         result = self.www_obj.create_request(
             self.cursor, self.uid, payload
         )
@@ -727,7 +733,7 @@ class TestHolderChangeWww(testing.OOTestCase):
         self.assertIn("Canvi de titular", old_polissa.observacions_estimacio)
         self.assertTrue(old_polissa.no_estimable)
         self.assertIn("Nou Titular: Nova Titular, Maria", old_polissa.observacions)
-        self.assertIn("holder", switching.user_observations)
+        self.assertIn("contract_owner", switching.user_observations)
         self.assertNotIn("JVBERi0xLjQ", switching.user_observations)
 
     def test_transfer_can_disable_inherited_voluntary_donation(self):
@@ -735,7 +741,7 @@ class TestHolderChangeWww(testing.OOTestCase):
             self.cursor, self.uid, self.polissa_id, {"donatiu": True}
         )
         payload = self.payload()
-        payload["payment"]["voluntary_cent"] = False
+        payload["donation"] = False
         result = self.www_obj.create_request(self.cursor, self.uid, payload)
         self.assertTrue(result["success"], result)
         self.queue_request(result["request_id"])
@@ -792,9 +798,9 @@ class TestHolderChangeWww(testing.OOTestCase):
 
     def test_execute_uses_new_holder_language_and_address(self):
         payload = self.payload()
-        payload["holder"]["vat"] = "76543210S"
-        payload["holder"]["language"] = self.polissa.titular.lang
-        payload["payment"]["iban"] = "es91 2100-0418.4502/0005 1332"
+        payload["contract_owner"]["vat"] = "76543210S"
+        payload["contract_owner"]["lang"] = self.polissa.titular.lang
+        payload["iban"] = "es91 2100-0418.4502/0005 1332"
         result = self.www_obj.create_request(self.cursor, self.uid, payload)
         self.assertTrue(result["success"], result)
         self.queue_request(result["request_id"])
@@ -806,21 +812,28 @@ class TestHolderChangeWww(testing.OOTestCase):
         polissa = self.polissa_obj.browse(
             self.cursor, self.uid, execution["result_polissa_id"]
         )
-        self.assertEqual(polissa.titular.lang, payload["holder"]["language"])
+        self.assertEqual(polissa.titular.lang, payload["contract_owner"]["lang"])
         self.assertEqual(polissa.titular.name, "Nova Titular, Maria")
         self.assertEqual(
-            polissa.direccio_pagament.street, payload["holder"]["address"]
+            polissa.direccio_pagament.nv,
+            payload["contract_owner"]["address"]["street"],
         )
         self.assertEqual(
-            polissa.direccio_pagament.state_id.id, payload["holder"]["state"]
+            polissa.direccio_pagament.pnp,
+            payload["contract_owner"]["address"]["number"],
         )
         self.assertEqual(
-            polissa.direccio_pagament.id_municipi.id, payload["holder"]["city"]
+            polissa.direccio_pagament.state_id.id,
+            payload["contract_owner"]["address"]["state_id"],
+        )
+        self.assertEqual(
+            polissa.direccio_pagament.id_municipi.id,
+            payload["contract_owner"]["address"]["city_id"],
         )
         self.assertEqual(polissa.direccio_pagament.country_id.code, "ES")
         self.assertEqual(
             polissa.direccio_pagament.id_poblacio.municipi_id.id,
-            payload["holder"]["city"],
+            payload["contract_owner"]["address"]["city_id"],
         )
         self.assertEqual(polissa.bank.iban, "ES9121000418450200051332")
         self.assertEqual(
@@ -829,14 +842,13 @@ class TestHolderChangeWww(testing.OOTestCase):
 
     def test_execute_stores_legal_representative_for_a_new_company(self):
         payload = self.payload()
-        payload["holder"].update({
+        payload["contract_owner"].update({
             "name": "Empresa Nova SA",
             "vat": "A08015497",
-            "proxyname": "Maria Representant",
-            "proxynif": "12345678Z",
+            "proxy_name": "Maria Representant",
+            "proxy_vat": "12345678Z",
         })
-        del payload["holder"]["surname1"]
-        del payload["holder"]["surname2"]
+        del payload["contract_owner"]["surname"]
         result = self.www_obj.create_request(self.cursor, self.uid, payload)
         self.queue_request(result["request_id"])
 
@@ -847,18 +859,17 @@ class TestHolderChangeWww(testing.OOTestCase):
         holder = self.polissa_obj.browse(
             self.cursor, self.uid, execution["result_polissa_id"]
         ).titular
-        self.assertEqual(holder.name, payload["holder"]["name"])
+        self.assertEqual(holder.name, payload["contract_owner"]["name"])
         self.assertIn("Maria Representant", holder.comment)
         self.assertIn("12345678Z", holder.comment)
 
     def test_execute_assigns_linked_member_to_result_contract(self):
         payload = self.payload()
-        payload["member"].update({
-            "become_member": False,
-            "link_member": True,
+        payload["linked_member"] = "sponsored"
+        payload["linked_member_info"] = {
             "vat": "97053918J",
-            "number": "202129",
-        })
+            "code": "202129",
+        }
         linked_partner_id = self.imd_obj.get_object_reference(
             self.cursor, self.uid, "som_polissa_soci", "res_partner_soci"
         )[1]
@@ -889,7 +900,7 @@ class TestHolderChangeWww(testing.OOTestCase):
 
     def test_execute_assigns_ct_ss_member_and_category_without_member(self):
         payload = self.payload()
-        payload["member"].update({"become_member": False, "link_member": False})
+        payload["linked_member"] = "without_member"
         ct_ss_member_id = self.imd_obj.get_object_reference(
             self.cursor, self.uid, "som_polissa_soci", "res_partner_soci_ct"
         )[1]
@@ -914,7 +925,7 @@ class TestHolderChangeWww(testing.OOTestCase):
 
     def test_subrogation_assigns_ct_ss_member_and_category_without_member(self):
         payload = self.payload()
-        payload["member"].update({"become_member": False, "link_member": False})
+        payload["linked_member"] = "without_member"
         payload["especial_cases"].update({"reason_death": True})
         payload["attachments"] = [{
             "filename": "death-certificate.pdf",
@@ -1055,7 +1066,7 @@ class TestHolderChangeWww(testing.OOTestCase):
         )
         partner_ids = self.openerp.pool.get("res.partner").search(
             self.cursor, self.uid,
-            [("vat", "=", "ES" + payload["holder"]["vat"])],
+            [("vat", "=", "ES" + payload["contract_owner"]["vat"])],
         )
         document_ids = self.openerp.pool.get("som.documents.sensibles").search(
             self.cursor,
@@ -1080,7 +1091,7 @@ class TestHolderChangeWww(testing.OOTestCase):
 
     def test_execute_reuses_existing_electrodependency_document(self):
         payload = self.payload()
-        payload["holder"]["vat"] = "87654321X"
+        payload["contract_owner"]["vat"] = "87654321X"
         payload["especial_cases"].update({"reason_electrodep": True})
         payload["attachments"] = [{
             "filename": "medical-certificate.pdf",
@@ -1090,12 +1101,15 @@ class TestHolderChangeWww(testing.OOTestCase):
         partner_obj = self.openerp.pool.get("res.partner")
         partner_ids = partner_obj.search(
             self.cursor, self.uid,
-            [("vat", "=", "ES" + payload["holder"]["vat"])],
+            [("vat", "=", "ES" + payload["contract_owner"]["vat"])],
         )
         partner_id = partner_ids[0] if partner_ids else partner_obj.create(
             self.cursor,
             self.uid,
-            {"name": "Existing holder", "vat": "ES" + payload["holder"]["vat"]},
+            {
+                "name": "Existing holder",
+                "vat": "ES" + payload["contract_owner"]["vat"],
+            },
         )
         category_id = self.imd_obj.get_object_reference(
             self.cursor,
@@ -1136,7 +1150,7 @@ class TestHolderChangeWww(testing.OOTestCase):
 
     def test_execute_ignores_sensitive_documents_of_other_categories(self):
         payload = self.payload()
-        payload["holder"]["vat"] = "24681357B"
+        payload["contract_owner"]["vat"] = "24681357B"
         payload["especial_cases"].update({"reason_electrodep": True})
         payload["attachments"] = [{
             "filename": "medical-certificate.pdf",
@@ -1146,12 +1160,15 @@ class TestHolderChangeWww(testing.OOTestCase):
         partner_obj = self.openerp.pool.get("res.partner")
         partner_ids = partner_obj.search(
             self.cursor, self.uid,
-            [("vat", "=", "ES" + payload["holder"]["vat"])],
+            [("vat", "=", "ES" + payload["contract_owner"]["vat"])],
         )
         partner_id = partner_ids[0] if partner_ids else partner_obj.create(
             self.cursor,
             self.uid,
-            {"name": "Holder with other document", "vat": "ES" + payload["holder"]["vat"]},
+            {
+                "name": "Holder with other document",
+                "vat": "ES" + payload["contract_owner"]["vat"],
+            },
         )
         document_obj = self.openerp.pool.get("som.documents.sensibles")
         other_category_id = self.imd_obj.get_object_reference(
@@ -1197,41 +1214,33 @@ class TestHolderChangeWww(testing.OOTestCase):
 
     def payload(self):
         return {
-            "payment_method": "bank",
-            "payment": {
-                "iban": "ES9121000418450200051332",
-                "sepa_accepted": True,
-                "voluntary_cent": True,
-            },
-            "supply_point": {
-                "cups": self.polissa.cups.name,
-                "address": self.polissa.cups.direccio,
-            },
-            "privacy_policy_accepted": True,
-            "terms_accepted": True,
-            "member": {
-                "invite_token": False,
-                "become_member": True,
-                "link_member": False,
-            },
+            "payment_type": "remesa",
+            "iban": "ES9121000418450200051332",
+            "sepa_accepted": True,
+            "donation": True,
+            "contract_info": {"cups": self.polissa.cups.name},
+            "privacy_conditions": True,
+            "general_contract_terms_accepted": True,
+            "linked_member": "new_member",
             "especial_cases": {
                 "reason_death": False,
                 "reason_merge": False,
                 "reason_electrodep": False,
-                "attachments": {},
             },
-            "holder": {
+            "contract_owner": {
                 "name": "Maria",
-                "surname1": "Nova",
-                "surname2": "Titular",
+                "surname": "Nova Titular",
                 "vat": "12345678Z",
-                "address": "Carrer Nou, 1",
-                "postal_code": "17001",
-                "state": self.polissa.cups.id_municipi.state.id,
-                "city": self.polissa.cups.id_municipi.id,
+                "address": {
+                    "street": "Carrer Nou",
+                    "number": "1",
+                    "postal_code": "17001",
+                    "state_id": self.polissa.cups.id_municipi.state.id,
+                    "city_id": self.polissa.cups.id_municipi.id,
+                },
                 "email": "maria@example.com",
-                "phone1": "600000000",
-                "language": "ca_ES",
+                "phone": "600000000",
+                "lang": "ca_ES",
             },
         }
 

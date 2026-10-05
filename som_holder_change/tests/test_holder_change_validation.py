@@ -15,16 +15,16 @@ class TestHolderChangeValidation(unittest.TestCase):
 
     def test_rejects_missing_consent_before_other_validation(self):
         payload = self.payload()
-        payload["privacy_policy_accepted"] = False
-        del payload["holder"]["surname1"]
+        payload["privacy_conditions"] = False
+        del payload["contract_owner"]["surname"]
 
         error = holder_change_validation.validate_payload(payload)
 
         self.assertEqual(error["code"], "CONSENT_REQUIRED")
 
-    def test_rejects_conflicting_member_selection(self):
+    def test_rejects_invalid_member_selection(self):
         payload = self.payload()
-        payload["member"].update({"become_member": True, "link_member": True})
+        payload["linked_member"] = "invalid"
 
         error = holder_change_validation.validate_payload(payload)
 
@@ -65,21 +65,34 @@ class TestHolderChangeValidation(unittest.TestCase):
 
         self.assertFalse(holder_change_validation.validate_payload(payload))
 
-    def test_accepts_supply_point_without_address(self):
+    def test_rejects_special_attachment_without_special_case(self):
         payload = self.payload()
-        del payload["supply_point"]["address"]
+        payload["attachments"] = [{"category": "holder_change_death"}]
+
+        error = holder_change_validation.validate_payload(payload)
+
+        self.assertEqual(error["code"], "INVALID_ATTACHMENT_CATEGORY")
+
+    def test_rejects_more_than_one_special_case(self):
+        payload = self.payload()
+        payload["especial_cases"].update({
+            "reason_death": True,
+            "reason_electrodep": True,
+        })
+
+        error = holder_change_validation.validate_payload(payload)
+
+        self.assertEqual(error["code"], "INVALID_SPECIAL_CASE")
+
+    def test_accepts_disabled_donation(self):
+        payload = self.payload()
+        payload["donation"] = False
 
         self.assertFalse(holder_change_validation.validate_payload(payload))
 
-    def test_accepts_disabled_voluntary_cent(self):
+    def test_rejects_non_boolean_donation(self):
         payload = self.payload()
-        payload["payment"]["voluntary_cent"] = False
-
-        self.assertFalse(holder_change_validation.validate_payload(payload))
-
-    def test_rejects_non_boolean_voluntary_cent(self):
-        payload = self.payload()
-        payload["payment"]["voluntary_cent"] = "false"
+        payload["donation"] = "false"
 
         error = holder_change_validation.validate_payload(payload)
 
@@ -87,35 +100,32 @@ class TestHolderChangeValidation(unittest.TestCase):
 
     def payload(self):
         return {
-            "payment_method": "bank",
-            "payment": {
-                "iban": "ES9121000418450200051332",
-                "sepa_accepted": True,
-                "voluntary_cent": True,
-            },
-            "supply_point": {"cups": "ES123", "address": "Carrer Nou, 1"},
-            "privacy_policy_accepted": True,
-            "terms_accepted": True,
-            "member": {
-                "invite_token": False,
-                "become_member": False,
-                "link_member": False,
-            },
+            "payment_type": "remesa",
+            "iban": "ES9121000418450200051332",
+            "sepa_accepted": True,
+            "donation": True,
+            "contract_info": {"cups": "ES123"},
+            "privacy_conditions": True,
+            "general_contract_terms_accepted": True,
+            "linked_member": "without_member",
             "especial_cases": {
                 "reason_death": False,
                 "reason_merge": False,
                 "reason_electrodep": False,
             },
-            "holder": {
+            "contract_owner": {
                 "name": "Maria",
-                "surname1": "Nova",
+                "surname": "Nova",
                 "vat": "12345678Z",
-                "address": "Carrer Nou, 1",
-                "postal_code": "17001",
-                "state": 1,
-                "city": 1,
+                "address": {
+                    "street": "Carrer Nou",
+                    "number": "1",
+                    "postal_code": "17001",
+                    "state_id": 1,
+                    "city_id": 1,
+                },
                 "email": "maria@example.com",
-                "phone1": "600000000",
-                "language": "ca_ES",
+                "phone": "600000000",
+                "lang": "ca_ES",
             },
         }
