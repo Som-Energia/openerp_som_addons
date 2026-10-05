@@ -124,6 +124,7 @@ class WizardGenerarLeadPerFirmar(osv.osv_memory):
             'body': _(
                 u'L’oferta s’ha generat i està preparada per al procés de firma.'
             ),
+            'close_parent': True,
         }
 
     def _get_action_result(

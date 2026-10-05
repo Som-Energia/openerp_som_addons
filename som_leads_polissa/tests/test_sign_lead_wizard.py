@@ -352,4 +352,5 @@ class TestSignLeadWizard(testing.OOTestCase):
             'status': 'success',
             'title': u'Oferta generada correctament',
             'body': u'L’oferta s’ha generat i està preparada per al procés de firma.',
+            'close_parent': True,
         })
