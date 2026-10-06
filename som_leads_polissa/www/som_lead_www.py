@@ -690,7 +690,7 @@ class SomLeadWww(osv.osv_memory):
         cr.savepoint(savepoint)
 
         ctxt = context.copy()
-        ctxt['in_rollback_transaction'] = True
+        ctxt['is_dry_run'] = True
         error = None
         try:
             if lead.billing_payment_method == "card_recurrent" and not lead.creditcard_token:

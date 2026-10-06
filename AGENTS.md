@@ -41,8 +41,10 @@ Les skills següents estan disponibles al projecte i s'han d'utilitzar quan corr
 - Using a named worktree for PR-affecting work is optional. If used, place it under `<WORKSPACE>/openerp_som_addons-worktrees/`, where `<WORKSPACE>` is the directory containing the primary repository checkout; never use `/tmp/opencode`.
 - Before making edits, stop and get an explicit decision on whether to use the active checkout or a worktree. This applies even when the selected worktree already exists.
 - Before creating any worktree, stop and get explicit approval. Fetch `origin` first and create a new worktree branch from the current `origin/main`, never from a potentially stale local `main`.
-- When `HERDR_ENV=1` and using a worktree, use the `erp-herdr-worktree` skill's `create` or `open` wrapper with the explicit target worktree before editing it.
+- Quan s'hagi seleccionat un worktree amb nom en un pane Herdr (`HERDR_ENV=1`), abans d'editar o executar tests useu el wrapper `create` o `open` de la skill `erp-herdr-worktree`; crear o obrir directament amb `git worktree` no n'és una alternativa.
+- En presentar l'elecció entre el checkout actiu i un worktree nou, indiqueu explícitament que escollir un worktree nou autoritza el `fetch` i la creació necessaris i que no s'ha de demanar una segona confirmació per la mateixa decisió.
 
+**Main branch policy:** No facis commits directament a `main`: treballa sempre en una branca separada —també pots fer-ho en un worktree— i integra els canvis mitjançant una PR.
 | Skill | Quan usar | Com usar |
 |-------|-----------|----------|
 | `git-branch` | Crear branca nova | Veure [.agents/skills/git-branch/SKILL.md](.agents/skills/git-branch/SKILL.md) |
@@ -90,9 +92,9 @@ Exemple: `IMP_invoice_payment_type_views`.
 | `erp-migration` | Crear scripts de migració | Veure [.agents/skills/erp-migration/SKILL.md](.agents/skills/erp-migration/SKILL.md) |
 | `erp-demo-testcase` | Crear casos demo XML de test | Veure [.agents/skills/erp-demo-testcase/SKILL.md](.agents/skills/erp-demo-testcase/SKILL.md) |
 
-### Migracions obligatòries
+### Migracions
 
-Qualsevol canvi de model o fitxer XML, incloses les vistes, requereix llegir la skill `erp-migration` abans d'editar i incloure el script de migració corresponent.
+Qualsevol canvi de model o fitxer XML, incloses les vistes, requereix llegir la skill `erp-migration` abans d'editar i avaluar si cal un script de migració. No és obligatori crear una migració quan la PR parteix d'un mòdul nou, perquè no hi ha instal·lacions existents que actualitzar.
 
 ### Sentry
 

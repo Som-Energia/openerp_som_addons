@@ -97,7 +97,7 @@ class TestMemberFeePayment(testing.OOTestCase):
                 "require_bank_account": True,
                 "partner_id": 1,
                 "bank_id": bank_id,
-                "sepa_creditor_code": "ES10000B22350466",
+                "sepa_creditor_code": "ES24000F55091367",
             }
         )
         mode_xml_ids = self.imd_o.search(
@@ -152,6 +152,9 @@ class TestMemberFeePayment(testing.OOTestCase):
             ],
         )[0]
         mandate = self.mandate_o.browse(self.cursor, self.uid, mandate_id)
+        payment_mode = self.payment_mode_o.browse(
+            self.cursor, self.uid, payment_mode_id
+        )
 
         self.assertEqual(invoice.number, invoice_number)
         self.assertEqual(invoice.amount_total, 100)
@@ -159,6 +162,8 @@ class TestMemberFeePayment(testing.OOTestCase):
         self.assertFalse(invoice.sii_to_send)
         self.assertEqual(mandate.payment_type, "one_payment")
         self.assertEqual(mandate.debtor_iban, self.iban.replace(" ", ""))
+        self.assertEqual(payment_mode.sepa_creditor_code, "ES24000F55091367")
+        self.assertEqual(mandate.creditor_code, payment_mode.sepa_creditor_code)
         self.assertEqual(invoice.payment_order_id.mode.id, payment_mode_id)
         self.assertEqual(invoice.payment_order_id.state, "draft")
         self.assertEqual(invoice.payment_order_id.line_ids[0].name, "S123456")

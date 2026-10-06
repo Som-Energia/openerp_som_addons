@@ -8,6 +8,7 @@
     "author": "GISCE",
     "category": "Master",
     "depends": [
+        "base_extended_som",
         "giscedata_switching",
         "giscedata_facturacio_switching",
         "som_polissa_soci",

@@ -34,6 +34,7 @@
         "views/res_partner_view.xml",
         "wizard/wizard_crm_lead_create_entities_view.xml",
         "wizard/wizard_importador_leads_comercials_view.xml",
+        "wizard/wizard_generar_lead_per_firmar_view.xml",
         "security/ir.model.access.csv",
     ],
     "active": False,

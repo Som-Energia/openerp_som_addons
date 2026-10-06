@@ -43,7 +43,7 @@
             <field name="tipo">sepa19</field>
             <field name="nombre">Som Energia</field>
             <field name="sufijo">000</field>
-            <field name="sepa_creditor_code">ES10000B22350466</field>
+            <field name="sepa_creditor_code">ES24000F55091367</field>
             <field name="require_bank_account" eval="True"/>
             <field name="partner_id">1</field>
         </record>
