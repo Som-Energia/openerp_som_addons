@@ -2,7 +2,7 @@
 {
     "name": "Reports Facturació SOM (Comercialitzadora)",
     "description": """Reports Facturació SOM (Comercialitzadora)""",
-    "version": "24.5.0",
+    "version": "0-dev",
     "author": "GISCE",
     "category": "Extrareports",
     "depends": [
@@ -17,13 +17,17 @@
         "jasper_reports",
         # "giscedata_omie_comer",
         "som_auvidi",
+        "som_facturacio_switching"
     ],
     "init_xml": [],
     "demo_xml": ["giscedata_facturacio_comer_som_demo.xml"],
     "update_xml": [
         "giscedata_facturacio_comer_data.xml",
         "giscedata_facturacio_comer_report.xml",
-        "giscedata_facturacio_factura.xml"
+        "giscedata_facturacio_factura.xml",
+        "security/giscedata_facturacio_comer_som.xml",
+        "security/ir.model.access.csv",
+        "wizard/wizard_reprint_invoice_som.xml",
     ],
     "active": False,
     "installable": True,

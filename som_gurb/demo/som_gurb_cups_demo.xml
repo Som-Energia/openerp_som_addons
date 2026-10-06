@@ -1,15 +1,34 @@
 <?xml version="1.0" ?>
 <openerp>
     <data>
+        <record id="cups_01" model="giscedata.cups.ps">
+            <field name="name">ES0029597157508848VF</field>
+            <field name="id_municipi" ref="base_extended.ine_01001"/>
+            <field name="aclarador">aclaridor</field>
+            <field name="id_poblacio" ref="base_extended.poble_01"/>
+            <field name="ref_catastral">referencia cadastral</field>
+            <field name="nv">carrer inventat</field>
+            <field name="pnp">1</field>
+            <field name="es">1</field>
+            <field name="pt">1</field>
+            <field name="pu">1</field>
+            <field name="dp">00001</field>
+            <field name="notes">notes notes</field>
+            <field name="distribuidora_id" ref="base.main_partner"/>
+        </record>
         <record id="gurb_cups_0001" model="som.gurb.cups">
+            <field name="inscription_date">2016-01-01</field>
             <field name="start_date">2016-01-01</field>
-            <field name="gurb_id" ref="gurb_0001" />
+            <field name="gurb_cau_id" ref="gurb_cau_0001" />
             <field name="cups_id" ref="giscedata_cups.cups_01" />
+            <field name="polissa_id" ref="giscedata_polissa.polissa_0001" />
         </record>
         <record id="gurb_cups_0002" model="som.gurb.cups">
+            <field name="inscription_date">2016-01-01</field>
             <field name="start_date">2016-01-01</field>
-            <field name="gurb_id" ref="gurb_0001" />
+            <field name="gurb_cau_id" ref="gurb_cau_0001" />
             <field name="cups_id" ref="giscedata_cups.cups_tarifa_018" />
+            <field name="polissa_id" ref="giscedata_polissa.polissa_tarifa_018" />
         </record>
         <record id="gurb_cups_beta_0001" model="som.gurb.cups.beta">
             <field name="active">True</field>
@@ -26,6 +45,60 @@
             <field name="extra_beta_kw">1</field>
             <field name="gift_beta_kw">0</field>
             <field name="gurb_cups_id" ref="gurb_cups_0002" />
+        </record>
+        <record model="ir.attachment" id="gurb_general_conditions_0001_attachment">
+            <field name="name">Condicions Generals Demo Català adjunt</field>
+            <field name="res_model">som.gurb.cups</field>
+            <field name="res_id" ref="som_gurb.gurb_cups_0001"/>
+        </record>
+        <record id="gurb_general_conditions_0001" model="som.gurb.general.conditions">
+            <field name="active">True</field>
+            <field name="name">Condicions Generals Demo Català</field>
+            <field name="attachment_id" ref="gurb_general_conditions_0001_attachment"/>
+            <field name="lang_id" ref="base.lang_en"/>
+        </record>
+        <record model="ir.attachment" id="gurb_general_conditions_0001_attachment">
+            <field name="res_model">som.gurb.general.conditions</field>
+            <field name="res_id" ref="som_gurb.gurb_general_conditions_0001"/>
+        </record>
+        <record id="gurb_cups_0001" model="som.gurb.cups">
+            <field name="general_conditions_id" ref="gurb_general_conditions_0001" />
+        </record>
+        <record id="gurb_cups_0002" model="som.gurb.cups">
+            <field name="general_conditions_id" ref="gurb_general_conditions_0001" />
+        </record>
+        <record id="payment_type_demo" model="payment.type">
+            <field name="code">COBRAMENT_TARGETA</field>
+            <field name="name">Cobrament Targeta</field>
+            <field eval="[(6,0,[ref('base.bank_normal')])]"
+                   name="suitable_bank_types"/>
+            <field name="note">Cobrament Targeta</field>
+            <field eval="1" name="active"/>
+        </record>
+        <record model="account.account" id="account_gurb_sales">
+            <field name="name">Gurb</field>
+            <field name="code">705000000104</field>
+            <field name="type">receivable</field>
+            <field eval="ref('account.minimal_0')" name="parent_id"/>
+            <field name="company_id" ref="base.main_company"/>
+            <field eval="True" name="reconcile"/>
+            <field name="user_type" ref="account.account_type_income"/>
+        </record>
+        <record model="account.account" id="account_caja_laboral">
+            <field name="name">CAJA LABORAL</field>
+            <field name="code">572000000007</field>
+            <field name="type">receivable</field>
+            <field eval="ref('account.minimal_0')" name="parent_id"/>
+            <field name="company_id" ref="base.main_company"/>
+            <field eval="True" name="reconcile"/>
+            <field name="user_type" ref="account.account_type_income"/>
+        </record>
+        <record model="account.journal" id="journal_gurb">
+            <field name="name">Factures GURB</field>
+            <field name="code">FACT_GURB</field>
+            <field name="type">sale</field>
+            <field name="view_id" ref="account.account_journal_bank_view"/>
+            <field name="sequence_id" ref="account.sequence_journal"/>
         </record>
     </data>
 </openerp>

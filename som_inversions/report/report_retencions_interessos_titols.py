@@ -1,3 +1,5 @@
+from __future__ import absolute_import
+
 from osv import osv
 from yamlns import namespace as ns
 import pooler

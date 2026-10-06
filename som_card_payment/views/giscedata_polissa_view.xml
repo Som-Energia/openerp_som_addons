@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+        <record model="ir.ui.view" id="view_giscedata_polissa_form_card_payment">
+            <field name="name">giscedata.polissa.form.card.payment</field>
+            <field name="model">giscedata.polissa</field>
+            <field name="inherit_id" ref="giscedata_facturacio.view_giscedata_polissa_form"/>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <field name="bank" position="after">
+                    <field
+                        name="creditcard"
+                        domain="[('partner_id', '=', pagador)]"
+                    />
+                </field>
+            </field>
+        </record>
+
+        <record model="ir.ui.view" id="view_modcontractuals_form_card_payment">
+            <field name="name">giscedata.polissa.modcontractual.form.card.payment</field>
+            <field name="model">giscedata.polissa.modcontractual</field>
+            <field name="inherit_id" ref="giscedata_facturacio.view_modcontractuals_form"/>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <field name="bank" position="after">
+                    <field
+                        name="creditcard"
+                        domain="[('partner_id', '=', pagador)]"
+                    />
+                </field>
+            </field>
+        </record>
+    </data>
+</openerp>

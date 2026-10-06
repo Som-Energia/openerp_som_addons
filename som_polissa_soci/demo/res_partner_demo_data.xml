@@ -1,6 +1,12 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <openerp>
     <data>
+        <record model="payment.mode" id="payment_mode_enginyers_2">
+            <field name="name">ENGINYERS 2</field>
+            <field name="type" ref="account_payment.payment_type_demo"/>
+            <field name="bank_id" ref="base.main_bank"/>
+            <field name="journal" model="account.journal" search="[('type','=','cash')]"/>
+        </record>
         <!-- Partner -->
         <record id="res_partner_soci" model="res.partner">
             <field name="name">Pi, Pere</field>
@@ -66,6 +72,74 @@
                 <field name="email">noutest@test.test</field>
                 <field name="type">default</field>
                 <field name="partner_id" ref="res_partner_nosoci2"/>
+        </record>
+        <record id="res_partner_domestic" model="res.partner">
+            <field name="vat">ES37692879L</field>
+            <field name="name">Física, Persona</field>
+            <field name="lang">en_US</field>
+        </record>
+        <record id="res_partner_address_domestic" model="res.partner.address">
+            <field name="city">Berga</field>
+            <field name="name">Adreça Física, Persona</field>
+            <field name="zip">17800</field>
+            <field name="title">M.</field>
+            <field name="country_id" model="res.country" search="[('name','=','Espanya')]"/>
+            <field name="street">Major, 32</field>
+            <field name="type">default</field>
+            <field name="email">test@test.test</field>
+            <field name="partner_id" ref="res_partner_domestic"/>
+            <field name="mobile">600000000</field>
+        </record>
+        <record id="soci_0004" model="somenergia.soci">
+            <field name="partner_id" ref="res_partner_domestic"/>
+            <field name="ref">S0004</field>
+        </record>
+        <record id="res_partner_bank_som_iban" model="res.partner.bank">
+            <field name="name">0001_som_iban_bank</field>
+            <field name="state">iban</field>
+            <field name="partner_id" ref="res_partner_domestic"/>
+            <field name="bank" ref="base.partner_bank"/>
+            <field name="acc_country_id">1</field>
+            <field name="iban">ES5131050395675655409397</field>
+        </record>
+        <record id="polissa_domestica_0109" model="giscedata.polissa">
+            <field name="name">0109</field>
+            <field name="name_auto" eval="1"/>
+            <field name="active" eval="1"/>
+            <field name="renovacio_auto" eval="1"/>
+            <field name="cups" ref="giscedata_cups.cups_tarifa_018"/>
+            <field name="observacions">Polissa per 2.0TD</field>
+            <field name="potencia">4.600</field>
+            <field name="tarifa" ref="giscedata_polissa.tarifa_20TD"/>
+            <field name="titular" ref="res_partner_domestic"/>
+            <field name="tensio_normalitzada" ref="giscedata_tensions.tensio_127"/>
+            <field name="state">activa</field>
+            <field name="data_alta">2021-06-01</field>
+            <field name="data_baixa">2099-01-01</field>
+            <field name="data_firma_contracte">2021-03-20</field>
+            <field name="cnae" ref="giscemisc_cnae.cnae_9820"/>
+            <field name="comercialitzadora" ref="base.main_partner"/>
+            <field name="distribuidora" ref="base.res_partner_agrolait"/>
+            <field name="tipus_vivenda">habitual</field>
+            <field name="tg">1</field>
+            <field name="autoconsumo">00</field>
+            <field name="tipus_subseccio">00</field>
+            <field name="llista_preu" ref="giscedata_facturacio.pricelist_tarifas_electricidad"/>
+            <field name="bank" ref="res_partner_bank_som_iban"/>
+            <field name="facturacio" eval="1"/>
+            <field name="facturacio_potencia">icp</field>
+            <field name="notificacio">titular</field>
+            <field name="pagador_sel">titular</field>
+            <field name="pagador" ref="res_partner_domestic"/>
+            <field name="direccio_notificacio" ref="res_partner_address_domestic"/>
+            <field name="direccio_pagament" ref="res_partner_address_domestic"/>
+            <field name="tipo_pago">1</field>
+            <field name="contract_type">01</field>
+            <field name="property_unitat_potencia" search="[('name','=','kW/dia')]"/>
+            <field name="payment_mode_id" ref="payment_mode_enginyers_2"/>
+        </record>
+        <record id="base.res_partner_agrolait" model="res.partner">
+            <field name="ref">0002</field>
         </record>
      </data>
 </openerp>

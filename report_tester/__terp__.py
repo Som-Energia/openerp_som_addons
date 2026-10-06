@@ -5,7 +5,7 @@
     This module provide :
         * menus models u wizards per poder testejar reports de manera integrada dins del erp
     """,
-    "version": "24.5.0",
+    "version": "0-dev",
     "author": "SomEnergia",
     "category": "SomEnergia",
     "depends": [
@@ -24,6 +24,7 @@
         "views/report_test_view.xml",
         "views/report_test_group_view.xml",
         "security/ir.model.access.csv",
+        "data/report_tester_data.xml",
     ],
     "active": False,
     "installable": True,

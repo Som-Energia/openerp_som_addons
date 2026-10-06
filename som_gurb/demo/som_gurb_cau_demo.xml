@@ -1,0 +1,33 @@
+<?xml version="1.0" ?>
+<openerp>
+    <data>
+        <record id="gurb_cau_0001" model="som.gurb.cau">
+            <field name="name">GURB CAU 001</field>
+            <field name="roof_owner_id" ref="base.res_partner_c2c" />
+            <field name="address_id" ref="base.res_partner_address_c2c_1" />
+            <field name="self_consumption_id" ref="giscedata_cups.autoconsum_cups_tarifa_020_autoconsum_43" />
+            <field name="sig_data">SIGDATA</field>
+            <field name="generation_power">10</field>
+            <field name="priority">10</field>
+            <field name="quota_product_id" ref="product_gurb" />
+            <field name="gurb_group_id" ref="gurb_group_0001" />
+            <field name="coordenada_latitud">-3.064674264239092</field>
+            <field name="coordenada_longitud">37.35812464702857</field>
+        </record>
+        <record id="gurb_cau_0002" model="som.gurb.cau">
+            <field name="name">GURB CAU 002</field>
+            <field name="roof_owner_id" ref="base.res_partner_c2c" />
+            <field name="address_id" ref="base.res_partner_address_c2c_1" />
+            <field name="sig_data">SIGDATA</field>
+            <field name="generation_power">15</field>
+            <field name="priority">20</field>
+            <field name="quota_product_id" ref="product_gurb" />
+            <field name="gurb_group_id" ref="gurb_group_0001" />
+            <field name="coordenada_latitud">-3.064674264239092</field>
+            <field name="coordenada_longitud">37.36812464702857</field>
+        </record>
+        <record model="product.pricelist" id="giscedata_facturacio.pricelist_tarifas_electricidad">
+            <field name="dies_renovacio">30</field>
+        </record>
+    </data>
+</openerp>

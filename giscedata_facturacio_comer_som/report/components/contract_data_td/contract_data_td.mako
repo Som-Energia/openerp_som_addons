@@ -78,7 +78,13 @@ autoconsum_text = TABLA_133_dict[cd.autoconsum] if cd.autoconsum in TABLA_133_di
                 <p>
                     ${_(u"CNAE:")} <span style="font-weight: bold;">${cd.cnae}</span> <br />
                     ${_(u'Data d\'alta del contracte: <span style="font-weight: bold;">%s</span>') % (cd.start_date)} <br />
-                    ${_(u'Forma de pagament: <span style="font-weight: bold;">Rebut domiciliat</span>')} <br />
+                    % if cd.is_recurrent_card_payment:
+                        ${_(u'Forma de pagament: <span style="font-weight: bold;">Cobrament recurrent per targeta</span>')} <br />
+                    % elif cd.is_transfer_payment:
+                        ${_(u'Forma de pagament: <span style="font-weight: bold;">Transferència bancària</span>')} <br />
+                    % else:
+                        ${_(u'Forma de pagament: <span style="font-weight: bold;">Rebut domiciliat</span>')} <br />
+                    % endif
                     ${_(u'Data final del contracte: <span style="font-weight: bold;">%s</span> %s') % (cd.renovation_date, _(u'sense condicions de permanència') if not cd.has_permanence else _(u"pròrroga automàtica per períodes d'un any"))} <br/>
                     %if cd.is_autoconsum:
                         ${_(u"Autoproducció tipus:")} <span style="font-weight: bold;">${autoconsum_text}</span> <br />

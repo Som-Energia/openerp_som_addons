@@ -13,11 +13,6 @@
             <field name="type">default</field>
             <field name="zip">17001</field>
         </record>
-        <record model="product.pricelist.version" id="product_pricelist_version_tarifas_electridad">
-            <field name="pricelist_id" ref="giscedata_facturacio.pricelist_tarifas_electricidad" />
-            <field name="name">Versio 1</field>
-            <field name="date_start">2021-01-01</field>
-            <field name="date_end" eval="False"/>
-        </record>
+        <function model="product.pricelist.version" name="ensure_demo_tarifas_electricidad_version"/>
     </data>
 </openerp>

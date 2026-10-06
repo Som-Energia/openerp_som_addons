@@ -1,0 +1,7 @@
+"id","name","model_id:id","group_id:id","perm_read","perm_write","perm_create","perm_unlink"
+"access_simulation_coeff_user_r","som.annual.coefficient","model_som_annual_coefficient","base.group_user",1,0,0,0
+"access_simulation_coeff_editor_u","som.annual.coefficient","model_som_annual_coefficient","som_webforms_helpers.group_webforms_helpers_config_editor",1,1,1,1
+"access_simulation_consumption_user_r","som.annual.consumption.estimate","model_som_annual_consumption_estimate","base.group_user",1,0,0,0
+"access_simulation_consumption_u","som.annual.consumption.estimate","model_som_annual_consumption_estimate","som_webforms_helpers.group_webforms_helpers_config_editor",1,1,1,1
+"access_simulation_last_month_avg_user_r","som.last.month.average.price","model_som_last_month_average_price","base.group_user",1,0,0,0
+"access_simulation_last_month_avg_editor_u","som.last.month.average.price","model_som_last_month_average_price","som_webforms_helpers.group_webforms_helpers_config_editor",1,1,1,1

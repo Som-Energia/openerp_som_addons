@@ -85,6 +85,7 @@ class ReportBackendInvoiceEmail(ReportBackend):
         else:
             return False
 
+    @report_browsify
     def get_factura(self, cursor, uid, fra, context=None):
         if context is None:
             context = {}
@@ -93,6 +94,11 @@ class ReportBackendInvoiceEmail(ReportBackend):
         data = report_o.get_factura(cursor, uid, fra, context=context)
 
         data["isTariffChange"] = self._isTariffChange(cursor, uid, fra, context=context)
+
+        polissa_o = self.pool.get("giscedata.polissa")
+        ctxt = {"date": fra.data_final.val}
+        pol = polissa_o.browse(cursor, uid, fra.polissa_id.id, context=ctxt)
+        data["has_autoconsum_pdf_flag"] = pol.te_autoconsum(amb_o_sense_excedents=2, context=ctxt)
 
         return data
 

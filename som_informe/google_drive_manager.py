@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+from __future__ import absolute_import
+
 from osv import osv
 import pickle
 import os.path
@@ -52,7 +54,11 @@ class GoogleDriveManager(osv.osv_memory):
 
         service = build("drive", "v3", credentials=cred)
         media = MediaFileUpload(document_path, mimetype="text/html", resumable=True)
-        return service.files().create(body=file_metadata, media_body=media).execute()
+        return service.files().create(
+            body=file_metadata,
+            media_body=media,
+            supportsAllDrives=True,
+        ).execute()
 
 
 GoogleDriveManager()

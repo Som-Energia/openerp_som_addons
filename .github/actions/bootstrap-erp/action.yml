@@ -1,0 +1,26 @@
+name: Bootstrap ERP environment
+description: Prepare ERP dependencies and repositories until environment is ready to start ERP
+
+inputs:
+  github_token:
+    description: GitHub token with read access to private repositories
+    required: true
+  erpbranch:
+    description: ERP branch to clone
+    required: false
+    default: rolling_erp01
+  python-version:
+    description: Python version used in the current matrix job
+    required: false
+    default: "2.7"
+
+runs:
+  using: composite
+  steps:
+    - name: Bootstrap ERP environment
+      shell: bash
+      env:
+        GITHUB_TOKEN: ${{ inputs.github_token }}
+        ERP_BRANCH: ${{ inputs.erpbranch }}
+        PYTHON_VERSION: ${{ inputs.python-version }}
+      run: ${{ github.action_path }}/bootstrap-erp-env.sh

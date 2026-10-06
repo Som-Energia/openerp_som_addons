@@ -30,3 +30,31 @@ class ContractWithoutModcons(SomWebformsException):
 class InvalidModcons(SomWebformsException):
     def __init__(self):
         super(InvalidModcons, self).__init__(text="Contract with invalid modcons")
+
+
+class InvalidSimulationPricelist(SomWebformsException):
+    def __init__(self):
+        super(InvalidSimulationPricelist, self).__init__(
+            text="Simulation pricelist must be 'index' or 'periods'"
+        )
+
+
+class InvalidSimulationPowers(SomWebformsException):
+    def __init__(self):
+        super(InvalidSimulationPowers, self).__init__(
+            text="Simulation powers must be between 1 and 100"
+        )
+
+
+class IncompleteSimulationPolicy(SomWebformsException):
+    def __init__(self):
+        super(IncompleteSimulationPolicy, self).__init__(
+            text="Policy data required for simulation is incomplete"
+        )
+
+
+class MissingSimulationConfig(SomWebformsException):
+    def __init__(self):
+        super(MissingSimulationConfig, self).__init__(
+            text="Simulation configuration not found"
+        )

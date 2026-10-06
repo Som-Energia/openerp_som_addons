@@ -16,12 +16,18 @@
                 <h1>${_(u"DADES DE PAGAMENT")}</h1>
             % endif
             <p>
-                ${_(u"Entitat bancària:")} <span style="font-weight: bold;">${pi.bank_name}</span> <br />
-                ${_(u"Núm. compte bancari:")} <span style="font-weight: bold;">${pi.cc_name}</span> <br />
+                % if pi.is_recurrent_card_payment:
+                    ${_(u"Targeta:")} <span style="font-weight: bold;">${pi.masked_card_number}</span> <br />
+                % else:
+                    ${_(u"Entitat bancària:")} <span style="font-weight: bold;">${pi.bank_name}</span> <br />
+                    ${_(u"Núm. compte bancari:")} <span style="font-weight: bold;">${pi.cc_name}</span> <br />
+                % endif
             </p>
             <hr />
             % if not pi.is_out_refund:
-                % if pi.payment_type != 'TRANSFERENCIA_CSB':
+                % if pi.is_recurrent_card_payment:
+                    <p style="font-size: .8em">${_(u"L'import d'aquesta factura es carregarà a la teva targeta. El seu pagament queda justificat amb l'apunt bancari o comprovant de la transacció.")}</p>
+                % elif pi.payment_type != 'TRANSFERENCIA_CSB':
                     <p style="font-size: .8em">${_(u"L'import d'aquesta factura es carregarà al teu compte. El seu pagament queda justificat amb l'apunt bancari corresponent.")}</p>
                 % else:
                     <p style="font-size: .8em">${_(u"L'import d'aquesta factura es pagarà mitjançant transferència bancària al compte indicat.")}</p>

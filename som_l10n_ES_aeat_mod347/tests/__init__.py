@@ -1,1 +1,3 @@
-from test_som_l10n_ES_aeat_mod347 import *
+# -*- coding: utf-8 -*-
+from __future__ import absolute_import
+from .test_som_l10n_ES_aeat_mod347 import *

@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data noupdate="1">
+        <record model="res.config" id="redsys_merchant_code" forcecreate="1">
+            <field name="name">redsys_merchant_code</field>
+            <field name="value">DEMO_MERCHANT_CODE</field>
+            <field name="description">Redsys merchant code</field>
+        </record>
+        <record model="res.config" id="redsys_private_key" forcecreate="1">
+            <field name="name">redsys_private_key</field>
+            <field name="value">DEMO_PRIVATE_KEY</field>
+            <field name="description">Redsys merchant private key</field>
+        </record>
+        <record model="res.config" id="redsys_merchant_url" forcecreate="1">
+            <field name="name">redsys_merchant_url</field>
+            <field name="value">https://example.invalid/redsys</field>
+            <field name="description">Redsys merchant notification URL</field>
+        </record>
+        <record model="res.config" id="redsys_endpoint_url" forcecreate="1">
+            <field name="name">redsys_endpoint_url</field>
+            <field name="value">https://sis.redsys.es/sis/rest/trataPeticionREST</field>
+            <field name="description">Redsys REST endpoint URL</field>
+        </record>
+        <record model="res.config" id="redsys_terminal" forcecreate="1">
+            <field name="name">redsys_terminal</field>
+            <field name="value">1</field>
+            <field name="description">Redsys terminal</field>
+        </record>
+        <record model="res.config" id="redsys_currency" forcecreate="1">
+            <field name="name">redsys_currency</field>
+            <field name="value">978</field>
+            <field name="description">Redsys currency code</field>
+        </record>
+        <record model="res.config" id="redsys_timeout" forcecreate="1">
+            <field name="name">redsys_timeout</field>
+            <field name="value">30</field>
+            <field name="description">Redsys request timeout in seconds</field>
+        </record>
+        <record model="res.config" id="redsys_tpv_journal_id" forcecreate="1">
+            <field name="name">redsys_tpv_journal_id</field>
+            <field name="value"></field>
+            <field name="description">ID of the Redsys TPV collection journal</field>
+        </record>
+        <record model="res.config" id="redsys_tpv_pay_account_id" forcecreate="1">
+            <field name="name">redsys_tpv_pay_account_id</field>
+            <field name="value"></field>
+            <field name="description">ID of the Redsys TPV payment account</field>
+        </record>
+    </data>
+</openerp>

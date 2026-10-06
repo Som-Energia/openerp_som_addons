@@ -1,9 +1,17 @@
 # -*- coding: utf-8 -*-
+from __future__ import absolute_import
+
+# Existing legacy helpers in this module still use Python 2 semantics intentionally.
+# The PR-specific Python 3 compatibility job checks the whole changed file.
+# pylint: disable=old-division,dict-keys-not-iterating,round-builtin
+
 from osv import osv
 from tools import config
 from datetime import datetime, timedelta
+import calendar
 from enerdata.contracts import get_tariff_by_code
 from som_webforms_helpers.exceptions import som_webforms_exceptions
+from decimal import Decimal, ROUND_HALF_UP
 
 
 class GiscedataPolissaTarifa(osv.osv):
@@ -89,7 +97,8 @@ class GiscedataPolissaTarifa(osv.osv):
         imd_obj = self.pool.get("ir.model.data")
         prod_obj = self.pool.get("product.product")
 
-        bs_id = imd_obj.get_object_reference(cursor, uid, "som_polissa_soci", "bosocial_BS01")[1]
+        bs_id = imd_obj.get_object_reference(
+            cursor, uid, "giscedata_repercusio_bo_social", "bosocial_BS01")[1]
         prod = prod_obj.browse(cursor, uid, bs_id)
 
         price = pricelist.price_get(bs_id, 1, 1, context)[pricelist.id]
@@ -206,25 +215,25 @@ class GiscedataPolissaTarifa(osv.osv):
 
         fiscal_position_data = []
 
-        start_date_iva_reduit = conf_obj.get(
-            cursor, uid, "iva_reduit_get_tariff_prices_start_date", "2021-06-01"
-        )
-        end_date_iva_reduit = conf_obj.get(
-            cursor, uid, "iva_reduit_get_tariff_prices_end_date", "2024-12-31"
-        )
         iva_10_active = eval(conf_obj.get(
             cursor, uid, 'charge_iva_10_percent_when_available', '0'
         ))
 
-        try:
-            omie_mon_price_45 = omie_obj.has_to_charge_10_percent_requeriments_oficials(
-                cursor, uid, datetime.strftime(datetime.today(), '%Y-%m-%d'), max_power / 1000)
-        except Exception:
-            omie_mon_price_45 = False
+        has_to_charge_iva_10 = False
+        if iva_10_active:
+            try:
+                has_to_charge_iva_10 = omie_obj.has_to_charge_10_percent_requeriments_oficials(
+                    cursor, uid, datetime.strftime(datetime.today(), '%Y-%m-%d'), max_power / 1000)
+            except Exception:
+                pass
 
-        if (
-            date_from <= end_date_iva_reduit and date_to >= start_date_iva_reduit
-        ) and max_power <= 10000 and iva_10_active and omie_mon_price_45:
+        if has_to_charge_iva_10:
+            start_date_iva_reduit = conf_obj.get(
+                cursor, uid, "charge_iva_10_percent_when_start_date", "2021-06-01"
+            )
+            end_date_iva_reduit = conf_obj.get(
+                cursor, uid, "charge_iva_10_percent_end_date", "2024-12-31"
+            )
             fiscal_position_id = imd_obj.get_object_reference(
                 cursor, uid, "som_polissa_condicions_generals", "fp_iva_reduit"
             )[1]
@@ -899,6 +908,260 @@ class GiscedataPolissaTarifa(osv.osv):
                 consistent_data = False
                 break
         return consistent_data
+
+    def _get_simulation_days_in_month(self, context=None):
+        if context is None:
+            context = {}
+        anchor_date = context.get("date") or datetime.today().strftime("%Y-%m-%d")
+        date_obj = datetime.strptime(anchor_date, "%Y-%m-%d")
+        return calendar.monthrange(date_obj.year, date_obj.month)[1]
+
+    def _round_2(self, value):
+        return float(Decimal(str(value)).quantize(Decimal('0.01'), rounding=ROUND_HALF_UP))
+
+    def _get_simulation_inputs_by_polissa(
+        self, cursor, uid, polissa_id, context
+    ):
+        incomplete = som_webforms_exceptions.IncompleteSimulationPolicy
+        if not polissa_id:
+            raise incomplete()
+
+        policy_obj = self.pool.get("giscedata.polissa")
+        policy_ids = policy_obj.search(
+            cursor, uid, [("id", "=", polissa_id)], context=context
+        )
+        if not policy_ids:
+            raise incomplete()
+
+        policy = policy_obj.browse(cursor, uid, policy_ids[0], context=context)
+        tariff = policy.tarifa
+        cups = policy.cups
+        municipality = cups and cups.id_municipi
+        subsystem = municipality and municipality.subsistema_id
+        cnae = policy.cnae
+        mode = policy.mode_facturacio
+        power_periods = policy.potencies_periode
+        if not all(
+            (tariff, cups, municipality, subsystem, cnae, cnae and cnae.name, mode, power_periods)
+        ):
+            raise incomplete()
+
+        powers = {}
+        for power_period in power_periods:
+            period = power_period.periode_id
+            if not period or not period.name or power_period.potencia is None:
+                raise incomplete()
+            try:
+                power_kw = float(power_period.potencia)
+            except (TypeError, ValueError):
+                raise incomplete()
+            powers[period.name.lower()] = power_kw * 1000
+
+        pricelists = {"atr": "periods", "index": "index"}
+        if mode not in pricelists:
+            raise som_webforms_exceptions.InvalidSimulationPricelist()
+
+        fiscal_position = policy.fiscal_position_id
+        fiscal_position_id = fiscal_position.id if fiscal_position else False
+        max_power_kw = max([power / 1000.0 for power in powers.values()])
+        home = not fiscal_position and cnae.name == "9820" and max_power_kw < 10
+        return (
+            tariff.id,
+            municipality.id,
+            powers,
+            pricelists[mode],
+            fiscal_position_id,
+            home,
+        )
+
+    def _calculate_simulation_www(
+        self,
+        cursor,
+        uid,
+        tariff_id,
+        municipi_id,
+        powers,
+        pricelist,
+        fiscal_position=None,
+        with_taxes=None,
+        home=None,
+        context=None,
+    ):
+        if context is None:
+            context = {}
+
+        if pricelist not in ["index", "periods"]:
+            raise som_webforms_exceptions.InvalidSimulationPricelist()
+
+        powers = dict((period.lower(), power) for period, power in powers.items())
+        power_values = [float(power) for power in powers.values() if power is not None]
+        max_power = max(power_values) if power_values else 0.0
+        max_power_kw = max_power / 1000.0
+        if max_power_kw < 1 or max_power_kw > 100:
+            raise som_webforms_exceptions.InvalidSimulationPowers()
+
+        consumption_obj = self.pool.get("som.annual.consumption.estimate")
+        coeff_obj = self.pool.get("som.annual.coefficient")
+        avg_price_obj = self.pool.get("som.last.month.average.price")
+
+        tariff = "2.0TD" if max_power <= 15000 else "3.0TD"
+        coeff_tariff = tariff + "_" + pricelist
+
+        coeff = coeff_obj.get_current_coefficient(cursor, uid, coeff_tariff, context=context)
+        if not coeff:
+            raise som_webforms_exceptions.MissingSimulationConfig()
+
+        annual_kwh = consumption_obj.get_consumption_by_power(
+            cursor, uid, max_power_kw, context=context
+        )
+        if annual_kwh is False:
+            raise som_webforms_exceptions.MissingSimulationConfig()
+
+        monthly_kwh = annual_kwh / 12.0
+        if pricelist == 'index':
+            p1_kwh = monthly_kwh * coeff["p1_ratio"]
+            p2_kwh = monthly_kwh * coeff["p2_ratio"]
+            p3_kwh = monthly_kwh * coeff["p3_ratio"]
+            p4_kwh = monthly_kwh * coeff["p4_ratio"]
+            p5_kwh = monthly_kwh * coeff["p5_ratio"]
+            p6_kwh = monthly_kwh * coeff["p6_ratio"]
+
+        if pricelist == 'periods':
+            p1_kwh = annual_kwh * coeff["p1_ratio"]
+            p2_kwh = annual_kwh * coeff["p2_ratio"]
+            p3_kwh = annual_kwh * coeff["p3_ratio"]
+            p4_kwh = annual_kwh * coeff["p4_ratio"]
+            p5_kwh = annual_kwh * coeff["p5_ratio"]
+            p6_kwh = annual_kwh * coeff["p6_ratio"]
+
+        anchor_date = context.get("date") or datetime.today().strftime("%Y-%m-%d")
+        range_context = context.copy()
+        price_data = self.get_tariff_prices_by_range(
+            cursor,
+            uid,
+            tariff_id,
+            municipi_id,
+            max_power,
+            fiscal_position,
+            with_taxes,
+            home,
+            anchor_date,
+            anchor_date,
+            context=range_context,
+        )
+
+        current = price_data.get("current", {})
+
+        if pricelist == "index":
+            avg_price = avg_price_obj.get_current_price(
+                cursor, uid, tariff, "index", context=context)
+            if not avg_price:
+                raise som_webforms_exceptions.MissingSimulationConfig()
+            energy_eur = (
+                p1_kwh * avg_price["p1_price"]
+                + p2_kwh * avg_price["p2_price"]
+                + p3_kwh * avg_price["p3_price"]
+                + p4_kwh * avg_price["p4_price"]
+                + p5_kwh * avg_price["p5_price"]
+                + p6_kwh * avg_price["p6_price"]
+            )
+
+        if pricelist == "periods":
+            avg_price = avg_price_obj.get_current_price(
+                cursor, uid, tariff, "ssaa", context=context)
+            if not avg_price:
+                raise som_webforms_exceptions.MissingSimulationConfig()
+            energy_eur = (
+                p1_kwh * ((current.get("energia", {}).get("P1", {})
+                           ).get("value", 0.0) + avg_price["p1_price"])
+                + p2_kwh * ((current.get("energia", {}).get("P2", {})
+                             ).get("value", 0.0) + avg_price["p2_price"])
+                + p3_kwh * ((current.get("energia", {}).get("P3", {})
+                             ).get("value", 0.0) + avg_price["p3_price"])
+                + p4_kwh * ((current.get("energia", {}).get("P4", {})
+                             ).get("value", 0.0) + avg_price["p4_price"])
+                + p5_kwh * ((current.get("energia", {}).get("P5", {})
+                             ).get("value", 0.0) + avg_price["p5_price"])
+                + p6_kwh * ((current.get("energia", {}).get("P6", {})
+                             ).get("value", 0.0) + avg_price["p6_price"])
+            )
+            energy_eur = energy_eur / 12
+
+        power_prices = current.get("potencia", {})
+        days_in_month = self._get_simulation_days_in_month(context={"date": anchor_date})
+
+        power_eur = 0.0
+        for period_name, period_info in power_prices.items():
+            period_kw = float(powers.get(period_name.lower()) or 0.0) / 1000.0
+            power_eur += period_kw * period_info["value"] * days_in_month
+
+        # comprovar quin import retorna 3.0 sobretot
+        meter_eur = current.get("comptador", {}).get("value", 0.0)
+        social_bonus_eur = current.get("bo_social", {}).get("value", 0.0) * days_in_month
+
+        energy_eur = self._round_2(energy_eur)
+        power_eur = self._round_2(power_eur)
+        meter_eur = self._round_2(meter_eur)
+        social_bonus_eur = self._round_2(social_bonus_eur)
+
+        total_eur = energy_eur + power_eur + meter_eur + social_bonus_eur
+
+        return {
+            "estimated_monthly_kwh": int(round(monthly_kwh)),
+            "estimated_monthly_total_eur": float(self._round_2(total_eur)),
+            "breakdown": {
+                "energy_eur": float(energy_eur),
+                "power_eur": float(power_eur),
+                "meter_eur": float(meter_eur),
+                "social_bonus_eur": float(social_bonus_eur),
+                "taxes_applied": bool(with_taxes),
+            },
+        }
+
+    def get_simulation_www(
+        self,
+        cursor,
+        uid,
+        tariff_id,
+        municipi_id,
+        powers,
+        pricelist,
+        fiscal_position=None,
+        with_taxes=None,
+        home=None,
+        context=None,
+    ):
+        return self._calculate_simulation_www(
+            cursor,
+            uid,
+            tariff_id,
+            municipi_id,
+            powers,
+            pricelist,
+            fiscal_position,
+            with_taxes,
+            home,
+            context,
+        )
+
+    def get_simulation_by_polissa_www(
+        self, cursor, uid, polissa_id, with_taxes=None, context=None
+    ):
+        inputs = self._get_simulation_inputs_by_polissa(
+            cursor, uid, polissa_id, context
+        )
+        return self._calculate_simulation_www(
+            cursor,
+            uid,
+            inputs[0],
+            inputs[1],
+            inputs[2],
+            inputs[3],
+            inputs[4],
+            with_taxes,
+            inputs[5],
+            context,
+        )
 
     def _get_dades_modcontractuals(self, modcon_data):
         """

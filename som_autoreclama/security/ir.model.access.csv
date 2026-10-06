@@ -5,6 +5,7 @@
 "access_som_autoreclama_state_history_rcwd","som.autoreclama.state.history","model_som_autoreclama_state_history","som_autoreclama.group_som_autoreclama_u",1,1,1,1
 "access_som_autoreclama_state_history_atc_rcwd","som.autoreclama.state.history.atc","model_som_autoreclama_state_history_atc","som_autoreclama.group_som_autoreclama_u",1,1,1,1
 "access_som_autoreclama_state_history_polissa_rcwd","som.autoreclama.state.history.polissa","model_som_autoreclama_state_history_polissa","som_autoreclama.group_som_autoreclama_u",1,1,1,1
+"access_som_autoreclama_state_history_polissa009_rcwd","som.autoreclama.state.history.polissa009","model_som_autoreclama_state_history_polissa009","som_autoreclama.group_som_autoreclama_u",1,1,1,1
 "access_som_autoreclama_state_updater_rcwd","som.autoreclama.state.updater","model_som_autoreclama_state_updater","som_autoreclama.group_som_autoreclama_u",1,1,1,1
 "access_som_autoreclama_f1c_automation_rcwd","som.autoreclama.f1c.automation","model_som_autoreclama_f1c_automation","som_autoreclama.group_som_autoreclama_u",1,1,1,1
 "access_som_autoreclama_state_workflow_rw","som.autoreclama.state.workflow","model_som_autoreclama_state_workflow","som_autoreclama.group_som_autoreclama_w",1,1,0,0
@@ -13,6 +14,7 @@
 "access_som_autoreclama_state_history_rcw","som.autoreclama.state.history","model_som_autoreclama_state_history","som_autoreclama.group_som_autoreclama_w",1,1,1,0
 "access_som_autoreclama_state_history_atc_rcw","som.autoreclama.state.history.atc","model_som_autoreclama_state_history_atc","som_autoreclama.group_som_autoreclama_w",1,1,1,0
 "access_som_autoreclama_state_history_polissa_rcw","som.autoreclama.state.history.polissa","model_som_autoreclama_state_history_polissa","som_autoreclama.group_som_autoreclama_w",1,1,1,0
+"access_som_autoreclama_state_history_polissa009_rcw","som.autoreclama.state.history.polissa009","model_som_autoreclama_state_history_polissa009","som_autoreclama.group_som_autoreclama_w",1,1,1,0
 "access_som_autoreclama_state_updater_rw","som.autoreclama.state.updater","model_som_autoreclama_state_updater","som_autoreclama.group_som_autoreclama_w",1,1,0,0
 "access_som_autoreclama_f1c_automation_rw","som.autoreclama.f1c.automation","model_som_autoreclama_f1c_automation","som_autoreclama.group_som_autoreclama_w",1,1,0,0
 "access_som_autoreclama_state_workflow_r","som.autoreclama.state.workflow","model_som_autoreclama_state_workflow","som_autoreclama.group_som_autoreclama_r",1,0,0,0
@@ -21,6 +23,7 @@
 "access_som_autoreclama_state_history_r","som.autoreclama.state.history","model_som_autoreclama_state_history","som_autoreclama.group_som_autoreclama_r",1,0,0,0
 "access_som_autoreclama_state_history_atc_r","som.autoreclama.state.history.atc","model_som_autoreclama_state_history_atc","som_autoreclama.group_som_autoreclama_r",1,0,0,0
 "access_som_autoreclama_state_history_polissa_r","som.autoreclama.state.history.polissa","model_som_autoreclama_state_history_polissa","som_autoreclama.group_som_autoreclama_r",1,0,0,0
+"access_som_autoreclama_state_history_polissa009_r","som.autoreclama.state.history.polissa009","model_som_autoreclama_state_history_polissa009","som_autoreclama.group_som_autoreclama_r",1,0,0,0
 "access_som_autoreclama_state_updater_r","som.autoreclama.state.updater","model_som_autoreclama_state_updater","som_autoreclama.group_som_autoreclama_r",1,0,0,0
 "access_som_autoreclama_f1c_automation_r","som.autoreclama.f1c.automation","model_som_autoreclama_f1c_automation","som_autoreclama.group_som_autoreclama_r",1,0,0,0
 "access_wizard_massive_create_r1029_r","wizard.massive.create.r1029","model_wizard_massive_create_r1029","som_autoreclama.group_som_autoreclama_u",1,1,1,1
@@ -41,6 +44,7 @@
 "access_crm_u_som_autoreclama_state_history_r","som.autoreclama.state.history","model_som_autoreclama_state_history","crm.group_crm_user",1,0,0,0
 "access_crm_u_som_autoreclama_state_history_atc_r","som.autoreclama.state.history.atc","model_som_autoreclama_state_history_atc","crm.group_crm_user",1,0,0,0
 "access_crm_u_som_autoreclama_state_history_polissa_r","som.autoreclama.state.history.polissa","model_som_autoreclama_state_history_polissa","crm.group_crm_user",1,0,0,0
+"access_crm_u_som_autoreclama_state_history_polissa009_r","som.autoreclama.state.history.polissa009","model_som_autoreclama_state_history_polissa009","crm.group_crm_user",1,0,0,0
 "access_crm_u_som_autoreclama_state_updater_r","som.autoreclama.state.updater","model_som_autoreclama_state_updater","crm.group_crm_user",1,0,0,0
 "access_crm_u_som_autoreclama_f1c_automation_r","som.autoreclama.f1c.automation","model_som_autoreclama_f1c_automation","crm.group_crm_user",1,0,0,0
 "access_crm_u_wizard_massive_create_r1029_rcwd","wizard.massive.create.r1029","model_wizard_massive_create_r1029","crm.group_crm_user",1,0,0,0
@@ -52,6 +56,7 @@
 "access_crm_m_som_autoreclama_state_history_r","som.autoreclama.state.history","model_som_autoreclama_state_history","crm.group_crm_manager",1,0,0,0
 "access_crm_m_som_autoreclama_state_history_atc_r","som.autoreclama.state.history.atc","model_som_autoreclama_state_history_atc","crm.group_crm_manager",1,1,1,1
 "access_crm_m_som_autoreclama_state_history_polissa_r","som.autoreclama.state.history.polissa","model_som_autoreclama_state_history_polissa","crm.group_crm_manager",1,1,1,1
+"access_crm_m_som_autoreclama_state_history_polissa009_r","som.autoreclama.state.history.polissa009","model_som_autoreclama_state_history_polissa009","crm.group_crm_manager",1,1,1,1
 "access_crm_m_som_autoreclama_state_updater_r","som.autoreclama.state.updater","model_som_autoreclama_state_updater","crm.group_crm_manager",1,0,0,0
 "access_crm_m_som_autoreclama_f1c_automation_r","som.autoreclama.f1c.automation","model_som_autoreclama_f1c_automation","crm.group_crm_manager",1,0,0,0
 "access_crm_m_wizard_massive_create_r1029_rcwd","wizard.massive.create.r1029","model_wizard_massive_create_r1029","crm.group_crm_manager",1,0,0,0
@@ -61,3 +66,6 @@
 "access_wizard_som_autoreclama_set_disable_state_r","wizard.som.autoreclama.set.disable.state","model_wizard_som_autoreclama_set_disable_state","crm.group_crm_manager",1,0,0,0
 "access_wizard_som_autoreclama_set_disable_state_rw","wizard.som.autoreclama.set.disable.state","model_wizard_som_autoreclama_set_disable_state","crm.group_crm_manager",1,1,0,0
 "access_wizard_som_autoreclama_set_disable_state_rcwd","wizard.som.autoreclama.set.disable.state","model_wizard_som_autoreclama_set_disable_state","crm.group_crm_manager",1,1,1,1
+"access_wizard_som_autoreclama_set_correct_state_r","wizard.som.autoreclama.set.correct.state","model_wizard_som_autoreclama_set_correct_state","crm.group_crm_manager",1,0,0,0
+"access_wizard_som_autoreclama_set_correct_state_rw","wizard.som.autoreclama.set.correct.state","model_wizard_som_autoreclama_set_correct_state","crm.group_crm_manager",1,1,0,0
+"access_wizard_som_autoreclama_set_correct_state_rcwd","wizard.som.autoreclama.set.correct.state","model_wizard_som_autoreclama_set_correct_state","crm.group_crm_manager",1,1,1,1

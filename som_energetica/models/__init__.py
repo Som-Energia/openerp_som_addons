@@ -1,2 +1,4 @@
-from giscedata_facturacio import *
-from giscedata_polissa import *
+# -*- coding: utf-8 -*-
+from __future__ import absolute_import
+from .giscedata_facturacio import *
+from .giscedata_polissa import *

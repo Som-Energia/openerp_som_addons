@@ -22,5 +22,5 @@
 #    along with this program.  If not, see http://www.gnu.org/licenses/.
 #
 ##############################################################################
-
-import wizard_invoice_supplier_renumber
+from __future__ import absolute_import
+from . import wizard_invoice_supplier_renumber

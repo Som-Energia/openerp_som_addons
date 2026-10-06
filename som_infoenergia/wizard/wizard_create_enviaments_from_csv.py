@@ -11,7 +11,7 @@ STATES = [("init", "Estat Inicial"), ("finished", "Estat Final")]
 
 FROM_MODEL = [
     ("polissa", "Número de pòlissa"),
-    ("partner", "Número de partner"),
+    ("partner", "ID de partner"),
 ]
 
 
@@ -50,7 +50,7 @@ class WizardCancelFromCSV(osv.osv_memory):
         model_name = "res.partner" if wiz.model_name == "partner" else "giscedata.polissa"
         model_desc = "partners" if wiz.model_name == "partner" else "pòlisses"
         model_id = "partner_id" if wiz.model_name == "partner" else "polissa_id"
-        field_search = "ref" if wiz.model_name == "partner" else "name"
+        field_search = "name"
         model_obj = self.pool.get(model_name)
 
         vals = {"from_model": model_id}
@@ -86,7 +86,10 @@ class WizardCancelFromCSV(osv.osv_memory):
             vals["extra_text"] = result
 
         lot_id = context.get("active_id", [])
-        item_ids = model_obj.search(cursor, uid, [(field_search, "in", item_list)])
+
+        item_ids = item_list
+        if wiz.model_name == "polissa":
+            item_ids = model_obj.search(cursor, uid, [(field_search, "in", item_list)])
         lot_obj.create_enviaments_from_object_list(cursor, uid, lot_id, item_ids, vals)
         msg = _(
             u"Es crearan els enviaments de {} {} en segon pla".format(len(item_ids), model_desc)

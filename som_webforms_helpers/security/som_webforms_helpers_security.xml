@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+        <record model="res.groups" id="group_webforms_helpers_config_editor">
+            <field name="name">Webforms helpers / Config editor</field>
+        </record>
+    </data>
+</openerp>

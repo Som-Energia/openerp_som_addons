@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from osv import osv
 from som_polissa.exceptions import exceptions
+from som_indexada.utils import calculate_new_indexed_prices as calculate_new_indexed_prices_util
 
 
 _TARIFA_CODIS_INDEXADA = {
@@ -79,9 +80,9 @@ class GiscedataPolissa(osv.osv):
         res_municipi_o = self.pool.get("res.municipi")
         municipi = res_municipi_o.browse(cursor, uid, id_municipi)
         subsistema_code = municipi.subsistema_id.code
-        if subsistema_code in ['TF', 'PA', 'LG', 'HI', 'GC', 'FL']:
+        if subsistema_code in ['TF', 'PA', 'LG', 'HI', 'GC', 'FL', 'TG']:
             return "canaries"
-        elif subsistema_code in ['IF', 'MM']:
+        elif subsistema_code in ['IF', 'MM', 'SB']:
             return "balears"
         else:
             return "peninsula"
@@ -105,6 +106,10 @@ class GiscedataPolissa(osv.osv):
                     if price_list_id == standard_price_list_id.id:
                         return True
         return False
+
+    def calculate_new_indexed_prices(self, cursor, uid, id, context=None):
+        pol = self.browse(cursor, uid, id)
+        return calculate_new_indexed_prices_util(cursor, uid, pol, context=context)
 
 
 GiscedataPolissa()

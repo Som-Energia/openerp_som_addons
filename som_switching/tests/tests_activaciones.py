@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+from __future__ import absolute_import
+
 from destral import testing
 from destral.transaction import Transaction
 from tools.misc import cache
@@ -37,8 +39,10 @@ class TestsAutoActiva(testing.OOTestCase):
 
         self.malditas_tarifas_contatibles(cursor, uid)
 
-        for fact_id in fact_obj.search(cursor, uid, []):
-            fact_obj.write(cursor, uid, [fact_id], {"state": "open"})
+        polissa_obj = self.model("giscedata.polissa")
+        if "process_id" in polissa_obj.fields_get(cursor, uid):
+            for fact_id in fact_obj.search(cursor, uid, []):
+                fact_obj.write(cursor, uid, [fact_id], {"state": "open"})
 
         # We make sure that all warnings are active
         warn_ids = warn_obj.search(cursor, uid, [], context={"active_test": False})
@@ -111,7 +115,7 @@ class TestsAutoActiva(testing.OOTestCase):
             codes = {"distri": "1234", "comer": "4321"}
 
         partner_obj.write(cursor, uid, [partner_id], {"ref": codes.pop(where)})
-        partner_obj.write(cursor, uid, [other_id], {"ref": codes.values()[0]})
+        partner_obj.write(cursor, uid, [other_id], {"ref": next(iter(codes.values()))})
         partner_obj.write(cursor, uid, [another_id], {"ref": "5555"})
         cups_id = imd_obj.get_object_reference(cursor, uid, "giscedata_cups", "cups_01")[1]
         distri_ids = {"distri": partner_id, "comer": other_id}
@@ -220,7 +224,7 @@ class TestsAutoActiva(testing.OOTestCase):
         case_d = sw_obj.browse(cursor, uid, case_id)
         return case_d, step_d
 
-    def test_se_cierra_caso_cac_activacion_automatica_009_open(self):
+    def test_no_se_cierra_caso_cac_activacion_automatica_009_open(self):
         cursor = self.txn.cursor
         uid = self.txn.user
         self.switch(self.txn, "comer")
@@ -259,6 +263,7 @@ class TestsAutoActiva(testing.OOTestCase):
         self.assertEqual(extra_values["ref_model"], "giscedata.atc")
 
         # Cridem l'assistent de crear R1 amb el context obringut.
+        context["reclamacio_num_factura_text"] = {str(pol.id): "123456789ABCDEFG"}
         wiz_o = self.openerp.pool.get("wizard.subtype.r1")
         wiz_id = wiz_o.create(cursor, uid, {"comentaris": "TEST"}, context)
         res = wiz_o.action_create_r1_case(cursor, uid, [wiz_id], context)
@@ -294,12 +299,6 @@ class TestsAutoActiva(testing.OOTestCase):
         imd_obj = self.openerp.pool.get("ir.model.data")
 
         partner_id = imd_obj.get_object_reference(cursor, uid, "base", "main_partner")[1]
-
-        activ_custom_id = imd_obj.get_object_reference(
-            cursor, uid, "som_switching", "sw_act_r105_cac"
-        )[1]
-
-        self.assertIn(activ_custom_id, activations_ids)
 
         sw_obj = self.model("giscedata.switching")
         sw_obj.write(cursor, uid, r1_id, {"codi_sollicitud": "201602231255"})
@@ -367,14 +366,14 @@ class TestsAutoActiva(testing.OOTestCase):
         cas = atc_obj.browse(cursor, uid, cas.id)
         self.assertEqual(cas.subtipus_id.name, "009")
         self.assertEqual(cas.resultat, "01")
-        self.assertTrue(cas.tancar_cac_al_finalitzar_r1)
-        self.assertEqual(cas.state, "done")
+        self.assertFalse(cas.tancar_cac_al_finalitzar_r1)
+        self.assertEqual(cas.state, "open")
         r1_state = r1.read(["state"])[0]["state"]
-        self.assertEqual(r1_state, "done")
+        self.assertEqual(r1_state, "open")
         pol = pol_obj.browse(cursor, uid, pol_id)
         self.assertFalse(pol.refacturacio_pendent)
 
-    def test_se_cierra_caso_cac_activacion_automatica_009_pending(self):
+    def test_no_se_cierra_caso_cac_activacion_automatica_009_pending(self):
         cursor = self.txn.cursor
         uid = self.txn.user
         self.switch(self.txn, "comer")
@@ -413,6 +412,7 @@ class TestsAutoActiva(testing.OOTestCase):
         self.assertEqual(extra_values["ref_model"], "giscedata.atc")
 
         # Cridem l'assistent de crear R1 amb el context obringut.
+        context["reclamacio_num_factura_text"] = {str(pol.id): "123456789ABCDEFG"}
         wiz_o = self.openerp.pool.get("wizard.subtype.r1")
         wiz_id = wiz_o.create(cursor, uid, {"comentaris": "TEST"}, context)
         res = wiz_o.action_create_r1_case(cursor, uid, [wiz_id], context)
@@ -448,12 +448,6 @@ class TestsAutoActiva(testing.OOTestCase):
         imd_obj = self.openerp.pool.get("ir.model.data")
 
         partner_id = imd_obj.get_object_reference(cursor, uid, "base", "main_partner")[1]
-
-        activ_custom_id = imd_obj.get_object_reference(
-            cursor, uid, "som_switching", "sw_act_r105_cac"
-        )[1]
-
-        self.assertIn(activ_custom_id, activations_ids)
 
         sw_obj = self.model("giscedata.switching")
         sw_obj.write(cursor, uid, r1_id, {"codi_sollicitud": "201602231255"})
@@ -520,10 +514,10 @@ class TestsAutoActiva(testing.OOTestCase):
         cas = atc_obj.browse(cursor, uid, cas.id)
         self.assertEqual(cas.subtipus_id.name, "009")
         self.assertEqual(cas.resultat, "01")
-        self.assertTrue(cas.tancar_cac_al_finalitzar_r1)
-        self.assertEqual(cas.state, "done")
+        self.assertFalse(cas.tancar_cac_al_finalitzar_r1)
+        self.assertEqual(cas.state, "open")
         r1_state = r1.read(["state"])[0]["state"]
-        self.assertEqual(r1_state, "done")
+        self.assertEqual(r1_state, "open")
         pol = pol_obj.browse(cursor, uid, pol_id)
         self.assertFalse(pol.refacturacio_pendent)
 

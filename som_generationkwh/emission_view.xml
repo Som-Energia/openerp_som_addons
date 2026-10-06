@@ -1,0 +1,86 @@
+<?xml version="1.0"?>
+<openerp>
+    <data>
+    <!-- Assignment tree in member view -->
+        <record model="ir.ui.view" id="view_gkwh_emission_tree">
+            <field name="name">generationkwh.emission.tree</field>
+            <field name="model">generationkwh.emission</field>
+            <field name="type">tree</field>
+            <field name="priority">10</field>
+            <field name="arch" type="xml">
+                <tree string="Campanyes d'emissions d'inversions">
+                    <field name="name" select="1"/>
+                    <field name="state" select="1"/>
+                    <field name="start_date" select="1"/>
+                    <field name="amount_emission" select="1"/>
+                    <field name="type" select="1"/>
+                </tree>
+            </field>
+        </record>
+        <!-- generic assignments views -->
+        <record model="ir.ui.view" id="view_gkwh_emission_form">
+            <field name="name">generationkwh.emission.form</field>
+            <field name="model">generationkwh.emission</field>
+            <field name="type">form</field>
+            <field name="priority">50</field>
+            <field name="arch" type="xml">
+                <form string="Campanya d'emissions d'inversions">
+                    <group col="4" colspan="2">
+                        <separator string="Característiques inversió" colspan="4"/>
+                        <field name="name"/>
+                        <field name="code" attrs="{'readonly':[('state','in',['open','cancel','done'])]}"/>
+                        <field name="type"/>
+                        <field name="grace_period"/>
+                        <field name="expiration_years"/>
+                        <group col="2" colspan="2"
+                            attrs="{'invisible':[('type','in', ('apo', 'tit', 'other'))]}">
+                            <field name="waiting_days"/>
+                        </group>
+                    </group>
+                    <group col="2" colspan="2">
+                        <separator string="Productes de la factura" colspan="2"/>
+                        <field name="investment_product_id" attrs="{'readonly':[('state','in',['open','cancel','done'])]}"/>
+                        <field name="amortization_product_id" attrs="{'readonly':[('state','in',['open','cancel','done'])]}"/>
+                        <field name="irpf_product_id" attrs="{'readonly':[('state','in',['open','cancel','done'])]}"/>
+                    </group>
+                    <group col="4" colspan="2">
+                        <separator string="Limits campanya" colspan="4"/>
+                        <field name="start_date"/>
+                        <field name="end_date"/>
+                        <field name="amount_emission"/>
+                        <field name="current_total_amount_invested"/>
+                        <separator string="Limits temporals" colspan="4"/>
+                        <field name="limited_period_end_date"/>
+                        <field name="limited_period_amount"/>
+                    </group>
+                    <group col="2" colspan="2" >
+                        <separator string="Comptabilitat" colspan="2"/>
+                        <field name="mandate_name" attrs="{'readonly':[('state','in',['open','cancel','done'])]}"/>
+                        <field name="journal_id" attrs="{'readonly':[('state','in',['open','cancel','done'])]}"/>
+                        <field name="investment_payment_mode_id" attrs="{'readonly':[('state','in',['open','cancel','done'])]}"/>
+                        <field name="amortization_payment_mode_id" attrs="{'readonly':[('state','in',['open','cancel','done'])]}"/>
+                        <field name="bridge_account_payments_id" attrs="{'readonly':[('state','in',['open','cancel','done'])]}"/>
+                    </group>
+                    <group col="6" colspan="4">
+                        <separator string="Operacions" colspan="6"/>
+                        <field name="state"/>
+                        <button name="action_open" states="draft" string="Confirm" type="object"/>
+                        <button name="set_done" states="open" string="Set to done" type="object"/>
+                        <button name="cancel" states="draft,open" string="Cancel" type="object"/>
+                        <button name="set_to_draft" states="cancel" string="Set to draft" type="object"/>
+                    </group>
+                </form>
+            </field>
+        </record>
+        <record id="action_gkwh_emission_tree" model="ir.actions.act_window">
+            <field name="name">Campanyes d'emissions d'inversions</field>
+            <field name="res_model">generationkwh.emission</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="view_id" ref="view_gkwh_emission_tree"/>
+        </record>
+        <menuitem id="menu_gkwh_base" name="Aportacions"/>
+        <menuitem action="action_gkwh_emission_tree"
+            id="menu_gkwh_emission_tree" parent="menu_gkwh_base"/>
+    </data>
+</openerp>

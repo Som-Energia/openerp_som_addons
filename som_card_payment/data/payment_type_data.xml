@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data noupdate="1">
+        <record id="payment_type_card_recurrent" model="payment.type">
+            <field name="code">COBRAMENT_RECURRENT_TARGETA</field>
+            <field name="name">Cobrament recurrent per targeta</field>
+            <field eval="[(6,0,[ref('base.bank_normal')])]" name="suitable_bank_types"/>
+            <field name="note">Cobrament recurrent per targeta</field>
+            <field eval="1" name="active"/>
+        </record>
+    </data>
+</openerp>

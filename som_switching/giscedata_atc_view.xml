@@ -23,6 +23,9 @@
                 <field name="section_id" position="after">
                     <field name="tag" select="2"/>
                 </field>
+                <xpath expr="//tree" position="attributes">
+                    <attribute name="colors">blue:date_deadline&lt;current_date and state=='open' and business_days_with_same_agent&lt;30;red:business_days_with_same_agent&gt;=30;gray:state=='cancel';;</attribute>
+                </xpath>
             </field>
         </record>
     </data>

@@ -1,0 +1,29 @@
+.git
+.pi
+.engram
+.atl
+
+# Local runtime data and secrets
+runtime-docker/.env.consumer
+runtime-docker/.env.producer
+runtime-docker/.cache
+runtime-docker/build
+runtime-docker/datasets/*.dump*
+
+# Local database/data volumes
+db
+
+# Python/local caches
+__pycache__
+*.py[cod]
+.pytest_cache
+.mypy_cache
+.tox
+.nox
+.coverage
+.coverage.*
+
+# Editor/OS noise
+.idea
+.vscode
+*.swp

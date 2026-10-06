@@ -35,7 +35,7 @@
         </record>
         <record id="wizard_change_to_indexada_multi" model="ir.values">
             <field name="object" eval="1"/>
-            <field name="name">Canviar les polisses a indexada</field>
+            <field name="name">Canviar les polisses a indexada massivament</field>
             <field name="key2">client_action_multi</field>
             <field name="key">action</field>
             <field name="model">giscedata.polissa</field>

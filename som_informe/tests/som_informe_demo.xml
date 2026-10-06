@@ -370,5 +370,143 @@
             <field name="ajust">0</field>
             <field name="motiu"></field>
         </record>
+        <!--InvoiceF1A (Anuladora) test data-->
+        <record id="f1_import_F1A" model="giscedata.facturacio.importacio">
+            <field name="name">Import F1A</field>
+        </record>
+        <record id="line_F1A_01" model="giscedata.facturacio.importacio.linia">
+            <field name="name">File F1A</field>
+            <field name="importacio_id" ref="f1_import_F1A"/>
+            <field name="distribuidora_id" ref="giscedata_polissa_comer.res_partner_endesa"/>
+            <field name="import_phase" eval="10"/>
+            <field name="state">erroni</field>
+            <field name="invoice_number_text">F1A123456</field>
+            <field name="type_factura">N</field>
+            <field name="tipo_factura_f1">atr</field>
+        </record>
+        <record id="factura_F1A_01" model="giscedata.facturacio.factura">
+            <field name="name">0001F1A</field>
+            <field name="number">000F1A</field>
+            <field name="date_invoice">2021-10-01</field>
+            <field name="type">in_invoice</field>
+            <field name="polissa_id" ref="giscedata_polissa.polissa_0001"/>
+            <field name="account_id" search="[('code', '=', 430000)]" model="account.account"/>
+            <field name="company_id">1</field>
+            <field name="date_boe">2021-08-15</field>
+            <field name="reference_type">none</field>
+            <field name="journal_id" ref="giscedata_facturacio.facturacio_journal_energia"/>
+            <field name="cups_id" ref="giscedata_cups.cups_01"/>
+            <field name="facturacio" eval="1"/>
+            <field name="currency_id">1</field>
+            <field name="address_invoice_id" ref="base.res_partner_address_8"/>
+            <field name="potencia">15.0</field>
+            <field name="tarifa_acces_id" ref="giscedata_polissa.tarifa_20A_new"/>
+            <field name="llista_preu" ref="giscedata_facturacio.pricelist_tarifas_electricidad"/>
+            <field name="partner_id" ref="base.res_partner_agrolait"/>
+            <field name="data_inici">2021-08-15</field>
+            <field name="data_final">2021-09-15</field>
+            <field name="origin">F1A123456</field>
+            <field name="tipo_rectificadora">A</field>
+        </record>
+        <!--InvoiceF1C (Correctora) test data-->
+        <record id="f1_import_F1C" model="giscedata.facturacio.importacio">
+            <field name="name">Import F1C</field>
+        </record>
+        <record id="line_F1C_01" model="giscedata.facturacio.importacio.linia">
+            <field name="name">File F1C</field>
+            <field name="importacio_id" ref="f1_import_F1C"/>
+            <field name="distribuidora_id" ref="giscedata_polissa_comer.res_partner_endesa"/>
+            <field name="import_phase" eval="10"/>
+            <field name="state">erroni</field>
+            <field name="invoice_number_text">F1C123456</field>
+            <field name="type_factura">N</field>
+            <field name="tipo_factura_f1">atr</field>
+        </record>
+        <record id="factura_F1C_01" model="giscedata.facturacio.factura">
+            <field name="name">0001F1C</field>
+            <field name="number">000F1C</field>
+            <field name="date_invoice">2021-10-01</field>
+            <field name="type">in_invoice</field>
+            <field name="polissa_id" ref="giscedata_polissa.polissa_0001"/>
+            <field name="account_id" search="[('code', '=', 430000)]" model="account.account"/>
+            <field name="company_id">1</field>
+            <field name="date_boe">2021-08-15</field>
+            <field name="reference_type">none</field>
+            <field name="journal_id" ref="giscedata_facturacio.facturacio_journal_energia"/>
+            <field name="cups_id" ref="giscedata_cups.cups_01"/>
+            <field name="facturacio" eval="1"/>
+            <field name="currency_id">1</field>
+            <field name="address_invoice_id" ref="base.res_partner_address_8"/>
+            <field name="potencia">15.0</field>
+            <field name="tarifa_acces_id" ref="giscedata_polissa.tarifa_20A_new"/>
+            <field name="llista_preu" ref="giscedata_facturacio.pricelist_tarifas_electricidad"/>
+            <field name="partner_id" ref="base.res_partner_agrolait"/>
+            <field name="data_inici">2021-08-15</field>
+            <field name="data_final">2021-09-15</field>
+            <field name="origin">F1C123456</field>
+            <field name="tipo_rectificadora">R</field>
+        </record>
+        <!--InvoiceF1R (Rectificadora) test data-->
+        <record id="f1_import_F1R" model="giscedata.facturacio.importacio">
+            <field name="name">Import F1R</field>
+        </record>
+        <record id="line_F1R_01" model="giscedata.facturacio.importacio.linia">
+            <field name="name">File F1R</field>
+            <field name="importacio_id" ref="f1_import_F1R"/>
+            <field name="distribuidora_id" ref="giscedata_polissa_comer.res_partner_endesa"/>
+            <field name="import_phase" eval="10"/>
+            <field name="state">erroni</field>
+            <field name="invoice_number_text">F1R123456</field>
+            <field name="type_factura">N</field>
+            <field name="tipo_factura_f1">atr</field>
+        </record>
+        <record id="factura_F1R_01" model="giscedata.facturacio.factura">
+            <field name="name">0001F1R</field>
+            <field name="number">000F1R</field>
+            <field name="date_invoice">2021-10-01</field>
+            <field name="type">in_refund</field>
+            <field name="polissa_id" ref="giscedata_polissa.polissa_0001"/>
+            <field name="account_id" search="[('code', '=', 430000)]" model="account.account"/>
+            <field name="company_id">1</field>
+            <field name="date_boe">2021-08-15</field>
+            <field name="reference_type">none</field>
+            <field name="journal_id" ref="giscedata_facturacio.facturacio_journal_energia"/>
+            <field name="cups_id" ref="giscedata_cups.cups_01"/>
+            <field name="facturacio" eval="1"/>
+            <field name="currency_id">1</field>
+            <field name="address_invoice_id" ref="base.res_partner_address_8"/>
+            <field name="potencia">15.0</field>
+            <field name="tarifa_acces_id" ref="giscedata_polissa.tarifa_20A_new"/>
+            <field name="llista_preu" ref="giscedata_facturacio.pricelist_tarifas_electricidad"/>
+            <field name="partner_id" ref="base.res_partner_agrolait"/>
+            <field name="data_inici">2021-08-15</field>
+            <field name="data_final">2021-09-15</field>
+            <field name="origin">F1R123456</field>
+            <field name="tipo_rectificadora">R</field>
+        </record>
+        <!--InvoiceFE (Factura Energie) test data-->
+        <record id="factura_FE_01" model="giscedata.facturacio.factura">
+            <field name="name">0001FE</field>
+            <field name="number">000FE01</field>
+            <field name="date_invoice">2021-10-01</field>
+            <field name="type">in_invoice</field>
+            <field name="polissa_id" ref="giscedata_polissa.polissa_0001"/>
+            <field name="account_id" search="[('code', '=', 430000)]" model="account.account"/>
+            <field name="company_id">1</field>
+            <field name="date_boe">2021-08-15</field>
+            <field name="reference_type">none</field>
+            <field name="journal_id" ref="giscedata_facturacio.facturacio_journal_energia"/>
+            <field name="cups_id" ref="giscedata_cups.cups_01"/>
+            <field name="facturacio" eval="1"/>
+            <field name="currency_id">1</field>
+            <field name="address_invoice_id" ref="base.res_partner_address_8"/>
+            <field name="potencia">15.0</field>
+            <field name="tarifa_acces_id" ref="giscedata_polissa.tarifa_20A_new"/>
+            <field name="llista_preu" ref="giscedata_facturacio.pricelist_tarifas_electricidad"/>
+            <field name="partner_id" ref="base.res_partner_agrolait"/>
+            <field name="data_inici">2021-08-15</field>
+            <field name="data_final">2021-09-15</field>
+            <field name="origin">FE123456</field>
+        </record>
     </data>
 </openerp>

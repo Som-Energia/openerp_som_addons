@@ -16,6 +16,17 @@ class GiscedataServeiGeneracio(osv.osv):
     _name = "giscedata.servei.generacio"
     _inherit = "giscedata.servei.generacio"
 
+    def config_facturador_autoconsumida(self, cursor, uid, facturador, context=None):
+        if context is None:
+            context = {}
+
+        facturador.phf_function = 'phf_calc_auvi'
+        res = super(GiscedataServeiGeneracio, self).config_facturador_autoconsumida(
+            cursor, uid, facturador, context=context
+        )
+
+        return res
+
     def create(self, cursor, uid, vals, context=None):
         if context is None:
             context = {}
@@ -119,7 +130,7 @@ class GiscedataServeiGeneracioPolissa(osv.osv):
         # La llista de preus és Empresa
         llista_preus = polissa.llista_preu
         te_llista_preus_empresa = (llista_preus
-                                   and (llista_preus.indexed_formula == 'Indexada ESMASA'
+                                   and (llista_preus.indexed_formula.name == 'Indexada ESMASA'
                                         or 'Empresa' in llista_preus.name))
 
         # Condicions especifiques
@@ -156,21 +167,12 @@ class GiscedataServeiGeneracioPolissa(osv.osv):
             ('state', 'in', ['open', 'draft']),
         ])
 
-        # Old ATR 2.X cases
-        m1s_canvi_auto_collectiu_old = m1_obj.search(cursor, uid, [
-            ('header_id.sw_id', 'in', sw_ids),
-            ('sollicitudadm', 'in', ['N', 'A']),
-            ('tipus_autoconsum', 'in', NOT_ALLOWED_COLLECTIVES)
-        ])
-
         # New ATR 3.0 cases
-        m1s_canvi_auto_collectiu_new = m1_obj.search(cursor, uid, [
+        m1s_canvi_autoconsum_collectiu = m1_obj.search(cursor, uid, [
             ('header_id.sw_id', 'in', sw_ids),
             ('sollicitudadm', 'in', ['N', 'A']),
             ('header_id.dades_cau.collectiu', '=', True),
         ])
-
-        m1s_canvi_autoconsum_collectiu = m1s_canvi_auto_collectiu_old + m1s_canvi_auto_collectiu_new
 
         m1s_canvi_titular = m1_obj.search(cursor, uid, [
             ('header_id.sw_id', 'in', sw_ids),

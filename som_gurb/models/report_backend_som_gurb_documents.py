@@ -21,7 +21,7 @@ MONTHS = {
 
 
 class ReportBackendSomGurbAcordRepartiment(ReportBackend):
-    _source_model = "som.gurb"
+    _source_model = "som.gurb.cau"
     _name = "report.backend.som.gurb.acord.repartiment"
 
     @report_browsify
@@ -46,9 +46,14 @@ class ReportBackendSomGurbAcordRepartiment(ReportBackend):
             "cau": gurb.self_consumption_id.cau
         }
 
+        today = datetime.today().strftime('%Y-%m-%d')
         search_params = [
-            ("gurb_id", "=", gurb.id),
-            ("active", "=", True)
+            ("gurb_cau_id", "=", gurb.id),
+            ("active", "=", True),
+            ("inscription_date", "<=", today),
+            ("state", "in", [
+                "comming_registration", "comming_modification", "active", "atr_pending"
+            ]),
         ]
 
         gurb_cups_ids = gurb_cups_o.search(cursor, uid, search_params, context=context)
@@ -124,7 +129,7 @@ class ReportBackendSomGurbDocuments(ReportBackend):
             "day": datetime.now().day,
             "month": MONTHS[str(datetime.now().month)],
             "year": datetime.now().year,
-            "cau": gurb_cups.gurb_id.self_consumption_id.cau,
+            "cau": gurb_cups.gurb_cau_id.self_consumption_id.cau,
             "beta_kw": gurb_cups.beta_kw,
             "beta_percentage": gurb_cups.beta_percentage,
         }
@@ -136,9 +141,9 @@ class ReportBackendSomGurbDocuments(ReportBackend):
             if representative and representative.address[0]:
                 address = representative.address[0].street
             data["representative"] = {
-                "name": representative.name,
-                "vat": representative.vat,
-                "address": address
+                "name": representative.name or "",
+                "vat": representative.vat or "",
+                "address": address or ""
             }
 
         return data

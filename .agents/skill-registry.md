@@ -1,0 +1,132 @@
+# Skill Registry
+
+**Delegator use only.** Any agent that launches sub-agents reads this registry to resolve compact rules, then injects them directly into sub-agent prompts. Sub-agents do NOT read this registry or individual SKILL.md files.
+
+See `_shared/skill-resolver.md` for the full resolution protocol.
+
+## Current PR Policy
+
+For PR work, repository GitHub workflows and repository rules take precedence over generic or global skill requirements. Delegators must verify those repository sources before applying external PR-policy rules.
+
+Current verification: `.github/workflows/pull_request_labeler.yml` requires at least one PR label. It does not require an approved linked issue or a `type:*` label. This is current repository policy and may change.
+
+## User Skills
+
+> **Configuració inicial** (executar una vegada):
+> ```bash
+> cd $HOME/.config/opencode/skills
+> ln -s $HOME/somenergia/src/openerp_som_addons/.agents/skills openerp_som_addons
+> ```
+> OpenCode cercarà `.agents/skills/` dins del projecte.
+
+| Trigger | Skill | Path |
+|---------|-------|------|
+| Quan necessites crear una branca nova per treballar | git-branch | .agents/skills/git-branch/SKILL.md |
+| Quan necessites fer un commit de codi | git-commit | .agents/skills/git-commit/SKILL.md |
+| Quan necessites crear una Pull Request | git-pr | .agents/skills/git-pr/SKILL.md |
+| Quan un agent ERP ha de treballar en un worktree des d'un pane Herdr mantenint el context multirepo | erp-herdr-worktree | .agents/skills/erp-herdr-worktree/SKILL.md |
+| Quan necessites executar tests d'un mòdul OpenERP amb destral | erp-test | .agents/skills/erp-test/SKILL.md |
+| Quan necessites arrencar el servei ERP, executar l'ERP, o obrir l'entorn de desenvolupament | erp-start | .agents/skills/erp-start/SKILL.md |
+| Quan necessites crear un script de migració, modificar el model, o actualitzar un mòdul a producció | erp-migration | .agents/skills/erp-migration/SKILL.md |
+| Quan necessites aplicar una PR sobre una branca ERP divergent resolent conflictes reals | erp-apply-pr-divergent | .agents/skills/erp-apply-pr-divergent/SKILL.md |
+| Quan necessites afegir casos de test/demo XML en un mòdul OpenERP | erp-demo-testcase | .agents/skills/erp-demo-testcase/SKILL.md |
+| Quan necessites fer triage d'incidències de Sentry, "analitzar sentry", "triar incidents" | sentry-triage | .agents/skills/sentry-triage/SKILL.md |
+| Quan necessites actualitzar un report legal o contractual `.mako` a partir d'un `docx` o `md` | update-contract-report | .agents/skills/update-contract-report/SKILL.md |
+
+## Compact Rules
+
+### git-branch
+- Format de branca: `<type>_<description>` (ex: `ADD_user_registration`)
+- Tipus: IMP_ (millora), FIX_ (bug), MOD_ (canvi), ADD_ (nova), REF_ (refactor), TEST_, DOCS_, CI_
+- Descripció: 2-3 paraules en anglès, lowercase, max 50 caràcters
+- Separador: guió baix entre tipus i descripció i entre les paraules de la descripció
+- Abans de crear-la: revisar canvis locals, fer `git fetch origin`, `git switch main` i `git pull --ff-only origin main`
+- No descartar, fer stash ni incloure canvis locals sense confirmar-ne l'abast
+
+### git-commit
+- Font canònica del significat dels emojis: `https://gitmoji.dev/`
+- Guia local de format i selecció habitual: `.github/docs/desenvolupament.md`
+- No inventar ni redefinir significats; consultar gitmoji.dev per emojis no llistats
+- Format: `<emoji> <description>` (ex: `✨ add user auth`)
+- L'emoji ja indica el tipus; no afegir `feat:`, `fix:`, etc.
+- Emoji obligatori seguit d'un espai
+- Descripció en anglès, max 72 caràcters, imperatiu
+- Revisar l'abast, preparar fitxers explícits i revisar `git diff --cached`
+- Executar `pre-commit run` després de preparar els fitxers; no utilitzar `git add -A`
+
+### git-pr
+- PLANTILLA OBLIGATÒRIA: Omplir totes les seccions (Objectiu, Targeta, Comportament antic, Comportament nou, Comprovacions)
+- Totes les sections: Omple-les totes, no deixis espais buits
+- Idioma: Català per a la descripció
+- Títols: clars i descriptius; no reutilitzar automàticament el nom de la branca
+- Abans de crear-la: verificar abast, tests i linting obligatoris segons `AGENTS.md`
+- Crear-la contra `main`, autoassignar-la i afegir com a mínim una etiqueta existent
+- Flags requerits: `--base main --assignee "@me" --label "<label>"`
+
+### erp-herdr-worktree
+- Requereix una sessió dins de Herdr (`HERDR_ENV=1`) i un worktree objectiu explícit; no l'infereixis del `cwd` de l'agent, que pot ser el workspace multirepo.
+- Amb aprovació prèvia per crear-lo, executa `scripts/erp-herdr-worktree.sh create <path-absolut-worktree> <nom-branca>` des del directori de la skill.
+- Per un worktree existent, executa `scripts/erp-herdr-worktree.sh open <path-absolut-worktree>` abans d'editar o fer tests.
+- El companion és només un shell auxiliar; no iniciïs tests ni modifiquis enllaços compartits automàticament.
+
+### erp-test
+- Requisits: virtualenv activat, `WORKSPACE` definit i Docker amb PostgreSQL, MongoDB i Redis
+- Verificar `$WORKSPACE/erp`, `$WORKSPACE/destral` i `$WORKSPACE/openerp_som_addons/docker-compose.yaml`
+- En worktrees, wrapper obligatori: `scripts/run-tests-worktree.sh --addon <module_name> -- <database> --no-requirements -m <module_name>`
+- No executar `run-tests.sh` directament ni modificar manualment els symlinks compartits
+- Compose: `docker compose -f "$WORKSPACE/openerp_som_addons/docker-compose.yaml"`; serveis `postgres`, `mongo`, `redis`
+
+### erp-start
+- Requisits: virtualenv activat, `WORKSPACE` definit i Docker amb PostgreSQL, MongoDB i Redis
+- Command: `$WORKSPACE/erp/server/bin/openerp-server.py --no-netrpc --price_accuracy=6 --config=$HOME/conf/erp.conf -d <database>`
+- `erpserver` només es pot utilitzar si `command -v erpserver` té èxit
+- Opcions: `--update=<module>` per actualitzar mòdul, `--run-scripts=<module>` per migracions
+- Compose: `docker compose -f "$WORKSPACE/openerp_som_addons/docker-compose.yaml"`; serveis `postgres`, `mongo`, `redis`
+- Interfície: http://localhost:8069
+
+### erp-apply-pr-divergent
+- Identificar la base real de la PR mitjançant `refs/pull/<PR>/merge` quan estigui disponible
+- No fer un merge directe si la base no és ancestre de la branca objectiu
+- Aplicar els commits de la PR en ordre amb `git cherry-pick`
+- Resoldre manualment preservant els canvis de la branca objectiu i incorporant els de la PR
+- Validar `git diff --check` i absència de conflictes
+
+### erp-migration
+- Format: `<pre|post>-<0001>_<descripcio>.py`
+- Script automàtic: `python scripts/create_migration_script.py`
+- Estructura: `<modul>/migrations/5.0.25.5.0/post-0001_*.py`
+- Executar: `erpserver -d <db> --run-scripts=<module>` o `--update=<module>`
+
+### erp-demo-testcase
+- Inputs mínims: `module_name`, `model_name`, `record_id_prefix`
+- Detectar camps `required=True` del model abans d'escriure XML
+- Per `many2one` obligatoris, reutilitzar XML IDs existents o crear prerequisits
+- Escriure a `demo/*.xml` i registrar el fitxer al manifest si cal
+
+### sentry-triage
+- MCP Sentry requerit: Configurar a OpenCode (self-hosted mode)
+- Workflow: 1) Llista incidents → 2) Identifica tipus (error vs slow) → 3) Determina repo (erp vs addons) → 4) Crea issue sense PII → 5) Obrir PR
+- Repo segons stack: `/home/erp/src/erp/...` → gisce/erp (branca developer), `openerp_som_addons/` → openerp_som_addons (branca main)
+- Labels obligatoris: bug + autotask
+- Prohibit: Noms, emails, telèfons, CUPS, dades personals
+- branca PR: developer (gisce/erp) o main (openerp_som_addons), MAI rolling_erp01
+
+### update-contract-report
+- La font de veritat (`docx` o `md`) l'ha de confirmar l'usuari; no barrejar fonts sense confirmar
+- Ignorar colors, highlights i marques editorials del document font; només conservar contingut i estructura
+- Tocar només plantilles `.mako`/HTML del report, no backend Python o lògica de render, tret que l'usuari ho demani explícitament
+- Preservar fórmules, subíndexs/superíndexs, notes al peu i enllaços en HTML net
+- Si existeixen versions CA i ES, revisar consistència de contingut entre idiomes
+
+## Project Conventions
+
+| File | Path | Notes |
+|------|------|-------|
+| AGENTS.md | AGENTS.md | Index — references files below |
+| .github/docs/estil.md | .github/docs/estil.md | Estil de codi |
+| .github/docs/evitar.md | .github/docs/evitar.md | Evitar patrons |
+| .github/docs/arquitectura.md | .github/docs/arquitectura.md | Arquitectura |
+| .github/docs/desenvolupament.md | .github/docs/desenvolupament.md | Desenvolupament |
+| pull_request_template.md | pull_request_template.md | Plantilla PR |
+
+Read the convention files listed above for project-specific patterns and rules. All referenced paths have been extracted — no need to read index files to discover more.

@@ -3,13 +3,14 @@
     "name": "Customitzacions per AUVIDIs (Serveis de generació) per a SOM",
     "description": """
     """,
-    "version": "24.5.0",
+    "version": "0-dev",
     "author": "GISCE",
     "category": "SomEnergia",
     "depends": [
         "base",
         "giscedata_serveis_generacio",
         "giscedata_polissa_category",
+        "giscedata_facturacio_indexada_som",
         "som_indexada",
     ],
     "init_xml": [],

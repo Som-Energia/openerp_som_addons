@@ -2,10 +2,11 @@
 {
     "name": "Generació urbana",
     "description": "Mòdul per gestionar els grups de generació urbana",
-    "version": "24.5.0",
+    "version": "0-dev",
     "author": "SomEnergia",
     "category": "SomEnergia",
     "depends": [
+        "account_invoice_som",  # remove when banners import is fixed in account_invoice_base
         "giscedata_polissa",
         "giscedata_telemesures_base",
         "giscedata_facturacio_services",
@@ -17,19 +18,21 @@
         "som_poweremail_common_templates",
         "giscedata_signatura_documents_signaturit",
         "som_switching",
-        "som_polissa_condicions_generals"
+        "som_polissa_condicions_generals",
+        "www_som",
     ],
     "demo_xml": [
         "demo/som_gurb_service_demo.xml",
-        "demo/som_gurb_demo.xml",
+        "demo/som_gurb_group_demo.xml",
+        "demo/som_gurb_cau_demo.xml",
         "demo/som_gurb_cups_demo.xml",
     ],
     "update_xml": [
         "data/som_gurb_data.xml",
         "data/som_gurb_email_template_data.xml",
         "views/som_gurb_cups_view.xml",
-        "views/som_gurb_view.xml",
-        "views/som_gurb_webview.xml",
+        "views/som_gurb_cau_view.xml",
+        "views/som_gurb_cau_webview.xml",
         "workflow/som_gurb_workflow.xml",
         "security/ir.model.access.csv",
         "wizard/wizard_gurb_create_new_beta_view.xml",
@@ -41,6 +44,8 @@
         "workflow/som_gurb_cups_workflow.xml",
         "wizard/wizard_atr_gurb_model_view.xml",
         "wizard/wizard_calculate_gurb_savings_view.xml",
+        "views/som_gurb_group_view.xml",
+        "views/som_gurb_group_webview.xml",
     ],
     "init_xml": [],
     "active": False,

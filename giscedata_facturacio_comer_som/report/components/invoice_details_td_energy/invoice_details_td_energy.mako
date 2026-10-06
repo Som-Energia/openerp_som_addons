@@ -153,3 +153,21 @@ first_energy_line = True
         % endif
     </tr>
 % endif
+% if id.adjustment_services:
+    <tr class="tr_bold">
+        <td class="detall_td">
+            % if id.adjustment_services.get('is_generation_adjustment'):
+                ${_(u"Serveis d'Ajust segons preu REE pel periode facturat, aplicat a assignació GenerationkWh")}
+            % else:
+                ${_(u"Serveis d'Ajust segons preu REE pel periode facturat")}
+            % endif
+        </td>
+        % for p in id.showing_periods:
+                <td></td>
+        % endfor
+        <td><span class="subtotal">${_(u"%s €") % (formatLang(id.adjustment_services.total))}<sup class="sup_bold">(2)</sup></span></td>
+        % if id.iva_column:
+            <td>${_(u"%s") % (id.adjustment_services.iva) }</td>
+        % endif
+    </tr>
+% endif

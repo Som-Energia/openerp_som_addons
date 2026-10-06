@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+	<data>
+        <record id="l10n_ES_remesas.report_mandato_generico" model="ir.actions.report.xml">
+            <field name="report_type">pdf</field>
+            <field name="report_name">report_mandato</field>
+            <field eval="[(6,0,[])]" name="groups_id"/>
+            <field eval="0" name="multi"/>
+            <field eval="0" name="auto"/>
+            <field eval="0" name="header"/>
+            <field name="report_webkit" eval=""/>
+            <field name="report_rml" eval="False"/>
+        </record>
+	</data>
+</openerp>

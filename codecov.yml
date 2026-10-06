@@ -153,9 +153,6 @@ flag_management:
     - name: som_telemesura
       paths:
         - som_telemesura/
-    - name: som_tg_comer_provider
-      paths:
-        - som_tg_comer_provider/
     - name: som_webforms_helpers
       paths:
         - som_webforms_helpers/

@@ -3,7 +3,7 @@
     "name": "Account invoice comer (SomEnergia)",
     "description": """Este módulo añade las siguientes funcionalidades:
     * Extiende account_invoice""",
-    "version": "24.5.0",
+    "version": "0-dev",
     "author": "GISCE",
     "category": "GISCEMaster",
     "depends": [
@@ -12,6 +12,7 @@
         "poweremail",
         "giscedata_remeses",
         "l10n_ES_remesas",
+        "report_banner_poweremail",  # remove when banners import is fixed in account_invoice_base
         "som_polissa_soci",
     ],
     "init_xml": [],

@@ -5,7 +5,7 @@
     This module provide :
         * Camp d'administradora per relacionar un contracte amb una administradora.
     """,
-    "version": "24.5.0",
+    "version": "0-dev",
     "author": "GISCE",
     "category": "SomEnergia",
     "depends": [

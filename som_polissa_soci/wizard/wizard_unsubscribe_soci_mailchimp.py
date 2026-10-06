@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
+from __future__ import absolute_import
 
 from osv import osv, fields
 from tools.translate import _
-import mailchimp_marketing as MailchimpMarketing
-from tools import config
+
+from base_extended_som.utils import is_dry_run
 
 
 class WizardUnsubscribeSociMailchimp(osv.osv_memory):
@@ -14,6 +15,8 @@ class WizardUnsubscribeSociMailchimp(osv.osv_memory):
     def unsubscribe_soci_address(self, cursor, uid, ids, context=None):
         if context is None:
             context = {}
+        if is_dry_run(context):
+            return False
 
         address_ids = context.get("active_ids", False)
         info_wizard = "S'ha iniciat el procés de desubscripció de les adreces següents: \n"
@@ -23,18 +26,14 @@ class WizardUnsubscribeSociMailchimp(osv.osv_memory):
 
         address_obj = self.pool.get("res.partner.address")
         soci_obj = self.pool.get("somenergia.soci")
-        conf_obj = self.pool.get("res.config")
 
-        list_name = conf_obj.get(cursor, uid, "mailchimp_socis_list", None)
-
-        MAILCHIMP_CLIENT = MailchimpMarketing.Client(
-            dict(
-                api_key=config.options.get("mailchimp_apikey"),
-                server=config.options.get("mailchimp_server_prefix"),
-            )
-        )
+        MAILCHIMP_CLIENT = address_obj._get_mailchimp_client(context=context)
+        list_names = self._get_members_mailchimp_lists(cursor, uid, ids, context=context)
         try:
-            list_client_id = address_obj.get_mailchimp_list_id(list_name, MAILCHIMP_CLIENT)
+            list_ids = [
+                self.get_mailchimp_list_id(name, MAILCHIMP_CLIENT, context=context)
+                for name in list_names
+            ]
         except Exception as e:
             raise osv.except_osv(u"Error", str(e))
 
@@ -51,9 +50,11 @@ class WizardUnsubscribeSociMailchimp(osv.osv_memory):
             if is_member:
                 pass
             else:
-                address_obj.archieve_mail_in_list(
-                    cursor, uid, address, list_client_id, MAILCHIMP_CLIENT
-                )
+                for list_client_id in list_ids:
+                    address_obj.archieve_mail_in_list(
+                        cursor, uid, address, list_client_id, MAILCHIMP_CLIENT,
+                        context=context
+                    )
                 info_wizard += address_data["email"] + "\n"
 
         self.write(cursor, uid, ids, {"info": info_wizard, "state": "end"}, context=context)

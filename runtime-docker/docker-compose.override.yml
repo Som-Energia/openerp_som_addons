@@ -1,0 +1,11 @@
+services:
+  postgres:
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: erp
+      POSTGRES_PASSWORD: erp
+
+  erp-runtime:
+    environment:
+      ERP_DATABASE: ${ERP_DATABASE:-erp_runtime}

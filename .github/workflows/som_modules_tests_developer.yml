@@ -1,6 +1,6 @@
 # This workflow is disabled because Github is not supporting matrix output separatly by job: PR https://github.com/actions/runner/pull/2477
 
-name: 'Test som modules with developer branch'
+name: 'SOM_MODULES developer'
 on:
   workflow_dispatch:
   schedule:
@@ -24,7 +24,7 @@ jobs:
       - uses: actions/checkout@v4
       - id: set-matrix
         run: |
-          echo "matrix=$(ls -d */ | sed 's|[/]||g' | egrep -v '^scripts|docs' | jq -R -s -c 'split("\n")[:-1]')" >> "$GITHUB_OUTPUT"
+          echo "matrix=$(ls -d */ | sed 's|[/]||g' | egrep -v '^scripts|^docs|^openspec|^runtime-docker|^webclient-docker' | jq -R -s -c 'split("\n")[:-1]')" >> "$GITHUB_OUTPUT"
 
   test-modules:
     name: test-modules

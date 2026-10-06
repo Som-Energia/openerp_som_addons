@@ -392,6 +392,18 @@ class ReportTest(osv.osv):
             shutil.rmtree(tmp_dir)
             return False, diff_pdf
 
+    def get_active_results(self, cursor, uid, test_ids, context=None):
+        if context is None:
+            context = {}
+
+        results = []
+        tests_data = self.read(cursor, uid, test_ids, ['active', 'result'], context)
+        for test_data in tests_data:
+            if test_data['active']:
+                results.append(test_data['result'])
+
+        return results
+
     _columns = {
         "name": fields.char(
             _("Name"),

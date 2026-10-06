@@ -1,9 +1,12 @@
 # -*- encoding: utf-8 -*-
 from osv import osv, fields
+from oorq.decorators import job
 from datetime import datetime, timedelta
 from tools.translate import _
+import base64
 import logging
 import netsvc
+import time
 
 logger = logging.getLogger("openerp.{}".format(__name__))
 
@@ -16,6 +19,13 @@ _GURB_CUPS_STATES = [
     ("draft", "Esborrany"),
     ("atr_pending", "ATR Obert"),
 ]
+
+
+def parse_datetime(date_string):
+    try:
+        return datetime.strptime(date_string, "%Y-%m-%d %H:%M:%S")
+    except ValueError:
+        return datetime.strptime(date_string, "%Y-%m-%d")
 
 
 class SomGurbGeneralConditions(osv.osv):
@@ -37,19 +47,6 @@ class SomGurbCups(osv.osv):
     _rec_name = "cups_id"
     _description = _("CUPS en grup de generació urbana")
 
-    def create(self, cursor, uid, vals, context=None):
-        if context is None:
-            context = {}
-
-        gurb_cups_id = super(SomGurbCups, self).create(cursor, uid, vals, context=context)
-
-        if "cups_id" in vals:
-            gurb_cups_o = self.pool.get("som.gurb.cups")
-            polissa_id = gurb_cups_o.get_polissa_gurb_cups(cursor, uid, gurb_cups_id)
-            gurb_cups_o.write(cursor, uid, gurb_cups_id, {"polissa_id": polissa_id})
-
-        return gurb_cups_id
-
     def write(self, cursor, uid, ids, vals, context=None):
         if context is None:
             context = {}
@@ -70,12 +67,14 @@ class SomGurbCups(osv.osv):
         if context is None:
             context = {}
 
-        gurb_obj = self.pool.get("som.gurb")
+        gurb_cau_obj = self.pool.get("som.gurb.cau")
         pol_obj = self.pool.get("giscedata.polissa")
 
         res = dict.fromkeys(ids, False)
-        for gurb_cups_vals in self.read(cursor, uid, ids, ["gurb_id"]):
-            gurb_vals = gurb_obj.read(cursor, uid, gurb_cups_vals["gurb_id"][0], ["roof_owner_id"])
+        for gurb_cups_vals in self.read(cursor, uid, ids, ["gurb_cau_id"]):
+            gurb_vals = gurb_cau_obj.read(
+                cursor, uid, gurb_cups_vals["gurb_cau_id"][0], ["roof_owner_id"]
+            )
             cups_id = self.read(cursor, uid, gurb_cups_vals["id"], ["cups_id"])["cups_id"][0]
 
             if not gurb_vals["roof_owner_id"]:
@@ -107,21 +106,21 @@ class SomGurbCups(osv.osv):
     def _ff_get_future_beta_percentage(self, cursor, uid, ids, field_name, arg, context=None):
         if context is None:
             context = {}
-        gurb_obj = self.pool.get("som.gurb")
+        gurb_obj = self.pool.get("som.gurb.cau")
         res = dict.fromkeys(ids, False)
         for gurb_cups_vals in self.read(cursor, uid, ids, [
-            "gurb_id", "future_beta_kw", "future_extra_beta_kw", "future_gift_beta_kw"
+            "gurb_cau_id", "future_beta_kw", "future_extra_beta_kw", "future_gift_beta_kw"
         ]):
-            gurb_id = gurb_cups_vals.get("gurb_id", False)
-            if gurb_id:
+            gurb_cau_id = gurb_cups_vals.get("gurb_cau_id", False)
+            if gurb_cau_id:
                 generation_power = gurb_obj.read(
-                    cursor, uid, gurb_id[0], ["generation_power"]
+                    cursor, uid, gurb_cau_id[0], ["generation_power"]
                 )["generation_power"]
 
                 if generation_power:
-                    beta_kw = gurb_cups_vals.get("beta_kw", 0)
-                    extra_beta_kw = gurb_cups_vals.get("extra_beta_kw", 0)
-                    gift_beta_kw = gurb_cups_vals.get("gift_beta_kw", 0)
+                    beta_kw = gurb_cups_vals.get("future_beta_kw", 0)
+                    extra_beta_kw = gurb_cups_vals.get("future_extra_beta_kw", 0)
+                    gift_beta_kw = gurb_cups_vals.get("future_gift_beta_kw", 0)
                     res[gurb_cups_vals["id"]] = (
                         extra_beta_kw + beta_kw + gift_beta_kw) * 100 / generation_power
                 else:
@@ -131,15 +130,15 @@ class SomGurbCups(osv.osv):
     def _ff_get_beta_percentage(self, cursor, uid, ids, field_name, arg, context=None):
         if context is None:
             context = {}
-        gurb_obj = self.pool.get("som.gurb")
+        gurb_cau_obj = self.pool.get("som.gurb.cau")
         res = dict.fromkeys(ids, False)
         for gurb_cups_vals in self.read(cursor, uid, ids, [
-            "gurb_id", "beta_kw", "extra_beta_kw", "gift_beta_kw"
+            "gurb_cau_id", "beta_kw", "extra_beta_kw", "gift_beta_kw"
         ]):
-            gurb_id = gurb_cups_vals.get("gurb_id", False)
-            if gurb_id:
-                generation_power = gurb_obj.read(
-                    cursor, uid, gurb_id[0], ["generation_power"]
+            gurb_cau_id = gurb_cups_vals.get("gurb_cau_id", False)
+            if gurb_cau_id:
+                generation_power = gurb_cau_obj.read(
+                    cursor, uid, gurb_cau_id[0], ["generation_power"]
                 )["generation_power"]
 
                 if generation_power:
@@ -215,30 +214,138 @@ class SomGurbCups(osv.osv):
     def get_polissa_gurb_cups(self, cursor, uid, gurb_cups_id, context=None):
         if context is None:
             context = {}
-
-        pol_o = self.pool.get("giscedata.polissa")
-
-        gurb_vals = self.read(cursor, uid, gurb_cups_id, ["cups_id", "gurb_id", "owner_cups"])
-
-        search_params = [
-            ("state", "in", ["activa", "esborrany"]),
-            ("cups", "=", gurb_vals["cups_id"][0]),
-        ]
-        pol_ids = pol_o.search(cursor, uid, search_params, context=context, limit=1)
-
-        return pol_ids[0] if pol_ids else False
+        pol_id = self.read(cursor, uid, gurb_cups_id, ["polissa_id"])["polissa_id"][0]
+        return pol_id
 
     def get_titular_gurb_cups(self, cursor, uid, gurb_cups_id, context=None):
         if context is None:
             context = {}
-        pol_o = self.pool.get("giscedata.polissa")
-        pol_id = self.get_polissa_gurb_cups(cursor, uid, gurb_cups_id, context=context)
-        if not pol_id:
-            return False
-        partner_id = pol_o.read(cursor, uid, pol_id, ['titular'], context=context)
-        if partner_id:
-            partner_id = partner_id["titular"][0]
+        partner_id = self.read(cursor, uid, gurb_cups_id, ["partner_id"])["partner_id"][0]
         return partner_id
+
+    def pay_invoice_gurb(self, cursor, uid, inv_id, context=None):
+        if context is None:
+            context = {}
+        account_o = self.pool.get("account.account")
+        invoice_o = self.pool.get("account.invoice")
+
+        # Open before paying
+        wf_service = netsvc.LocalService("workflow")
+        wf_service.trg_validate(uid, 'account.invoice', inv_id, 'invoice_open', cursor)
+        inv = invoice_o.browse(cursor, uid, inv_id)
+
+        # Paguem factura
+        pay_account_id = account_o.search(
+            cursor, uid, [('code', '=', '572000000007')], context=context
+        )[0]
+        invoice_o.pay_and_reconcile(
+            cursor, uid, [inv_id], inv.saldo, pay_account_id, inv.period_id.id, inv.journal_id.id,
+            None, None, None, context=context
+        )
+
+    def generate_gurb_invoice_base64(self, cursor, uid, inv_id, context=None):
+        if context is None:
+            context = {}
+        service = netsvc.LocalService("report.account.invoice")
+        (result, doc_format) = service.create(
+            cursor, uid, [inv_id], {}, context
+        )
+        return base64.b64encode(result)
+
+    def get_sign_status(self, cursor, uid, gurb_cups_id, context=None):
+        if context is None:
+            context = {}
+
+        sign_docs_obj = self.pool.get("giscedata.signatura.documents")
+        sign_process_obj = self.pool.get("giscedata.signatura.process")
+
+        search_vals = [("model", "=", "som.gurb.cups,{}".format(gurb_cups_id))]
+        doc_id = sign_docs_obj.search(cursor, uid, search_vals, limit=1)[0]
+        process_id = sign_docs_obj.read(cursor, uid, doc_id, ["process_id"])["process_id"][0]
+
+        sign_status = sign_process_obj.read(
+            cursor, uid, process_id, ["status"], context=context
+        )["status"]
+
+        return sign_status
+
+    @job(queue="signaturit")
+    def update_signature(self, cursor, uid, gurb_lead_ids, context=None):
+        sign_docs_obj = self.pool.get("giscedata.signatura.documents")
+        sign_process_obj = self.pool.get("giscedata.signatura.process")
+
+        for gurb_lead_id in gurb_lead_ids:
+            search_vals = [("model", "=", "som.gurb.cups,{}".format(gurb_lead_id))]
+            doc_id = sign_docs_obj.search(cursor, uid, search_vals, limit=1)[0]
+            process_id = sign_docs_obj.read(cursor, uid, doc_id, ["process_id"])["process_id"][0]
+            status = sign_process_obj.read(
+                cursor, uid, process_id, ["status"], context=context
+            )["status"]
+            if status != "completed":
+                sign_process_obj.update(cursor, uid, [process_id], context=context)
+
+    @job(queue="leads")
+    def form_activate_gurb_cups_lead(self, cursor, uid, gurb_cups_id, context=None):
+        return self.form_activate_gurb_cups_lead_sync(cursor, uid, gurb_cups_id, context=context)
+
+    def form_activate_gurb_cups_lead_sync(self, cursor, uid, gurb_cups_id, context=None):
+        if context is None:
+            context = {}
+
+        if isinstance(gurb_cups_id, list):
+            gurb_cups_id = gurb_cups_id[0]
+
+        time.sleep(10)
+
+        attach_obj = self.pool.get('ir.attachment')
+        invoice_o = self.pool.get("account.invoice")
+
+        gurb_cups_br = self.browse(cursor, uid, gurb_cups_id, context=context)
+        sign_status = self.get_sign_status(cursor, uid, gurb_cups_id, context=context)
+
+        if sign_status != "completed":
+            raise Exception("The GURB CUPS is not SIGNED!!!")
+
+        if gurb_cups_br.state != "draft":
+            raise Exception("The GURB CUPS is not DRAFT!!!")
+
+        # Creem factura
+        context["tpv"] = True
+        inv_id, err = self.create_initial_invoice(cursor, uid, gurb_cups_id, context=context)
+        invoice_o.browse(cursor, uid, inv_id)
+
+        # Paguem factura
+        self.pay_invoice_gurb(cursor, uid, inv_id, context=context)
+
+        # Adjuntem la factura al Gurb CUPS
+        if inv_id:
+            invoice_pdf = self.generate_gurb_invoice_base64(cursor, uid, inv_id, context=context)
+            vals = {
+                'name': "Fatura inicial GURB CUPS - {}".format(gurb_cups_br.id),
+                'datas': invoice_pdf,
+                'datas_fname': "factura_inicial_gurb_cups_{}.pdf".format(gurb_cups_br.id),
+                'res_model': 'som.gurb.cups',
+                'res_id': gurb_cups_id,
+            }
+            attach_obj.create(cursor, uid, vals, context=context)
+
+        self.generate_gurb_welcome_email(cursor, uid, [gurb_cups_id], context=context)
+        self.send_signal(cursor, uid, [gurb_cups_id], "button_create_cups")
+
+    def generate_gurb_welcome_email(self, cursor, uid, gurb_cups_id, context=None):
+        if context is None:
+            context = {}
+        tmpl_obj = self.pool.get("poweremail.templates")
+        imd_o = self.pool.get("ir.model.data")
+
+        tmpl = imd_o.get_object_reference(cursor, uid, "som_gurb", "email_gurb_welcome")[1]
+        ctx = context.copy()
+        ctx['prefetch'] = False
+
+        logger.debug(
+            "Generating poweremail template (id: {}) resource: {}".format(tmpl, gurb_cups_id)
+        )
+        return tmpl_obj.generate_mail_sync(cursor, uid, tmpl, gurb_cups_id, context=ctx)
 
     def send_gurb_activation_email(self, cursor, uid, ids, context=None):
         if context is None:
@@ -310,18 +417,21 @@ class SomGurbCups(osv.osv):
             som_gurb_beta_o.activate_future_beta(
                 cursor, uid, future_beta[0], data_inici, context=context
             )
-
-        self.send_signal(cursor, uid, [gurb_cups_id], "button_activate_cups")
+        gurb_cups = self.browse(cursor, uid, gurb_cups_id, context=context)
+        if gurb_cups.state == "atr_pending":
+            gurb_cups.send_signal(["button_confirm_atr"])
+        elif gurb_cups.state == "comming_registration":
+            gurb_cups.send_signal(["button_activate_cups"])
 
     def check_only_one_gurb_service(self, cursor, uid, gurb_cups_id, context=None):
         if context is None:
             context = {}
 
-        gurb_o = self.pool.get("som.gurb")
+        gurb_cau_o = self.pool.get("som.gurb.cau")
         service_o = self.pool.get("giscedata.facturacio.services")
 
         pol_id = self.get_polissa_gurb_cups(cursor, uid, gurb_cups_id, context=context)
-        products_ids = gurb_o.get_gurb_products_ids(cursor, uid, context=context)
+        products_ids = gurb_cau_o.get_gurb_products_ids(cursor, uid, context=context)
 
         search_params = [
             ("polissa_id", "=", pol_id),
@@ -333,24 +443,35 @@ class SomGurbCups(osv.osv):
         if service_ids:
             raise osv.except_osv(
                 _("Error"),
-                _("Ja hi ha un servei GURB actiu associat. No es pot afegir un altre.")
+                _("Ja hi ha un servei GURB CAU actiu associat. No es pot afegir un altre.")
             )
 
     def add_service_to_contract(self, cursor, uid, gurb_cups_id, data_inici, context=None):
         if context is None:
             context = {}
 
-        gurb_o = self.pool.get("som.gurb")
+        gurb_cau_o = self.pool.get("som.gurb.cau")
         wiz_service_o = self.pool.get("wizard.create.service")
         service_o = self.pool.get("giscedata.facturacio.services")
         polissa_o = self.pool.get("giscedata.polissa")
+        gurb_group_o = self.pool.get("som.gurb.group")
 
-        read_vals = ["owner_cups", "gurb_id", "cups_id"]
+        read_vals = ["owner_cups", "gurb_cau_id", "cups_id"]
 
         gurb_cups_vals = self.read(cursor, uid, gurb_cups_id, read_vals, context=context)
 
         pol_id = self.get_polissa_gurb_cups(cursor, uid, gurb_cups_id, context=context)
         if not pol_id:
+            error_title = _("No hi ha pòlisses per aquest CUPS"),
+            error_info = _(
+                "El CUPS id {} no té pòlissa. No es pot afegir.".format(
+                    gurb_cups_vals["cups_id"][0]
+                )
+            )
+            raise osv.except_osv(error_title, error_info)
+
+        pol_state = polissa_o.read(cursor, uid, pol_id, ["state"], context=context)["state"]
+        if pol_state not in ["activa", "esborrany"]:
             error_title = _("No hi ha pòlisses actives o en esborrany per aquest CUPS"),
             error_info = _(
                 "El CUPS id {} no té pòlisses actives o en esborrany. No es pot afegir.".format(
@@ -387,13 +508,15 @@ class SomGurbCups(osv.osv):
         else:
             raise osv.except_osv("Error tarifa accés", "la tarifa d'accés no és 2.0TD ni 3.0TD")
 
-        read_vals = ["pricelist_id"]
-
-        gurb_vals = gurb_o.read(
-            cursor, uid, gurb_cups_vals["gurb_id"][0], read_vals, context=context
+        gurb_vals = gurb_cau_o.read(
+            cursor, uid, gurb_cups_vals["gurb_cau_id"][0], ["gurb_group_id"], context=context
         )
 
-        pricelist_id = gurb_vals["pricelist_id"][0]
+        gurb_group_id = gurb_vals["gurb_group_id"][0]
+
+        pricelist_id = gurb_group_o.read(
+            cursor, uid, gurb_group_id, ["pricelist_id"], context=context
+        )["pricelist_id"][0]
 
         # Afegim el servei
         creation_vals = {
@@ -497,7 +620,16 @@ class SomGurbCups(osv.osv):
         product_o = self.pool.get("product.product")
         pricelist_o = self.pool.get("product.pricelist")
 
+        invoice_account_code = "705000000104"
+        journal_code = "FACT_GURB"
+        payment_type_code = "RECIBO_CSB"
+
         gurb_cups_br = self.browse(cursor, uid, gurb_cups_id, context=context)
+
+        if context.get("tpv"):
+            payment_type_code = "COBRAMENT_TARGETA"
+
+        context["date"] = gurb_cups_br.inscription_date
 
         if gurb_cups_br.initial_invoice_id:
             error = "[GURB CUPS ID {}]: La factura d'inscripció ja existeix.".format(
@@ -525,10 +657,11 @@ class SomGurbCups(osv.osv):
         price_unit = pricelist_o.price_get(
             cursor,
             uid,
-            [gurb_cups_br.gurb_id.pricelist_id.id],
+            [gurb_cups_br.gurb_cau_id.gurb_group_id.pricelist_id.id],
             product_id,
             gurb_cups_br.beta_kw,
-        )[gurb_cups_br.gurb_id.pricelist_id.id]
+            context=context
+        )[gurb_cups_br.gurb_cau_id.gurb_group_id.pricelist_id.id]
 
         # Create invoice line
         gurb_line = invoice_line_o.product_id_change(  # Get line default values
@@ -541,23 +674,24 @@ class SomGurbCups(osv.osv):
             type="out_invoice",
         ).get("value", {})
         gurb_line["invoice_line_tax_id"] = [(6, 0, gurb_line.get("invoice_line_tax_id", []))]
+        invoice_line_account_ids = account_o.search(
+            cursor, uid, [("code", "=", invoice_account_code)], context=context
+        )[0]
         gurb_line.update({
-            "name": "Quota inicial Gurb",
+            "name": "Cost d'adhesió {}".format(gurb_cups_br.gurb_cau_id.gurb_group_id.name),
             "product_id": product_id,
             "price_unit": price_unit,
             "quantity": 1,
+            "account_id": invoice_line_account_ids,
         })
-
         # Create invoice
-        invoice_account_ids = account_o.search(
-            cursor, uid, [("code", "=", "430000000000")], context=context
-        )
         journal_ids = journal_o.search(
-            cursor, uid, [("code", "=", "VENTA")], context=context
+            cursor, uid, [("code", "=", journal_code)], context=context
         )
         payment_type_id = payment_type_o.search(
-            cursor, uid, [("code", "=", "TRANSFERENCIA_CSB")], context=context
+            cursor, uid, [("code", "=", payment_type_code)], context=context
         )[0]
+
         invoice_lines = [
             (0, 0, gurb_line)
         ]
@@ -574,6 +708,9 @@ class SomGurbCups(osv.osv):
         )
         invoice_vals.update({"payment_type": payment_type_id})
 
+        invoice_account_ids = account_o.search(
+            cursor, uid, [("code", "=", '430000000000')], context=context
+        )
         if invoice_account_ids:
             invoice_vals.update({"account_id": invoice_account_ids[0]})
         if journal_ids:
@@ -699,7 +836,7 @@ class SomGurbCups(osv.osv):
         "start_date": fields.date("Data activació al GURB"),
         "end_date": fields.date("Data sortida GURB"),
         "inscription_date": fields.date("Data d'inscripció al GURB"),
-        "gurb_id": fields.many2one("som.gurb", "GURB", required=True, ondelete="cascade"),
+        "gurb_cau_id": fields.many2one("som.gurb.cau", "GURB", required=True, ondelete="cascade"),
         "cups_id": fields.many2one("giscedata.cups.ps", "CUPS", required=True),
         "polissa_id": fields.many2one("giscedata.polissa", "Pòlissa", readonly=False),
         "partner_id": fields.related(
@@ -773,14 +910,14 @@ class SomGurbCups(osv.osv):
             _ff_get_beta_percentage,
             type="float",
             string="Total Beta (%)",
-            digits=(12, 4),
+            digits=(12, 2),
             method=True,
         ),
         "future_beta_percentage": fields.function(
             _ff_get_future_beta_percentage,
             type="float",
             string="Total Beta (%)",
-            digits=(12, 4),
+            digits=(12, 2),
             method=True,
         ),
         "owner_cups": fields.function(
@@ -811,14 +948,17 @@ class SomGurbCups(osv.osv):
         "ens_ha_avisat": fields.boolean(
             "Ens ha avisat",
             help="No és un canvi sobrevingut, sinó que estem informats i ho hem gestionat."),
+        "webform_payment": fields.boolean(
+            "Ha pagat", help="Es marca si ha pagat des del formulari"
+        ),
     }
 
     _defaults = {
         "active": lambda *a: True,
         "extra_beta_kw": lambda *a: 0,
         "gift_beta_kw": lambda *a: 0,
-        "start_date": lambda *a: str(datetime.today()),
         "ens_ha_avisat": lambda *a: False,
+        "webform_payment": lambda *a: False,
         "state": lambda *a: "draft",
     }
 
@@ -849,7 +989,7 @@ class SomGurbCupsBeta(osv.osv):
             actual_beta = self.search(cursor, uid, search_vals, context=context, limit=1)
 
             end_date = (
-                datetime.strptime(data_inici, "%Y-%m-%d") - timedelta(days=1)
+                parse_datetime(data_inici) - timedelta(days=1)
             ).strftime("%Y-%m-%d")
 
             write_vals = {

@@ -1,9 +1,12 @@
 # -*- coding: utf-8 -*-
+from __future__ import absolute_import
+
 from destral.transaction import Transaction
 import mock
 from giscedata_switching.tests.common_tests import TestSwitchingImport
 from destral.patch import PatchNewCursors
 from addons import get_module_resource
+from lxml import etree
 
 
 class TestActivacioM1(TestSwitchingImport):
@@ -16,6 +19,8 @@ class TestActivacioM1(TestSwitchingImport):
         self.M101 = self.openerp.pool.get("giscedata.switching.m1.01")
         self.ResConfig = self.openerp.pool.get("res.config")
         self.IrModelData = self.openerp.pool.get("ir.model.data")
+        self.SwitchingHelpers = self.pool.get("giscedata.switching.helpers")
+        self.SomenergiaSoci = self.pool.get("somenergia.soci")
 
     def get_m1_01_ct(self, txn, contract_id, tipus, context=None):
         if not context:
@@ -117,12 +122,11 @@ class TestActivacioM1(TestSwitchingImport):
 
         return m1
 
-    @mock.patch("som_polissa_soci.res_partner.ResPartner.arxiva_client_mailchimp_async")
+    @mock.patch("som_polissa_soci.models.res_partner_address.ResPartnerAddress.unsubscribe_partner_in_customers_no_members_lists")  # noqa: E501
     def test_ct_subrogacio_baixa_mailchimp_ok(self, mock_function):
         with Transaction().start(self.database) as txn:
             cursor = txn.cursor
             uid = txn.user
-
             contract_id = self.get_contract_id(txn)
             # remove all other contracts
             old_partner_id = self.Polissa.read(cursor, uid, contract_id, ["titular"])["titular"][0]
@@ -130,19 +134,17 @@ class TestActivacioM1(TestSwitchingImport):
                 cursor, uid, [("id", "!=", contract_id), ("titular", "=", old_partner_id)]
             )
             self.Polissa.write(cursor, uid, pol_ids, {"titular": False})
-
             # activate contract
             self.Polissa.send_signal(cursor, uid, [contract_id], [
                 'validar', 'contracte'
             ])
-
             m1 = self.get_m1_02_ct(
                 txn, contract_id, "S", context={"data_activacio": "2016-08-15"})
+
             with PatchNewCursors():
                 self.Switching.activa_cas_atr(cursor, uid, m1)
 
-            mock_function.assert_called_with(mock.ANY, uid, old_partner_id)
-
+            mock_function.assert_called_with(mock.ANY, uid, old_partner_id, context=mock.ANY)
             expected_result = (
                 u"[Baixa Mailchimp] S'ha iniciat el procés de baixa "
                 u"per l'antic titular (ID %d)" % (old_partner_id)
@@ -150,7 +152,7 @@ class TestActivacioM1(TestSwitchingImport):
             history_line_desc = [line["description"] for line in m1.history_line]
             self.assertTrue(any([expected_result in desc for desc in history_line_desc]))
 
-    @mock.patch("som_polissa_soci.res_partner.ResPartner.arxiva_client_mailchimp_async")
+    @mock.patch("som_polissa_soci.models.res_partner_address.ResPartnerAddress.unsubscribe_partner_in_customers_no_members_lists")  # noqa: E501
     def test_ct_subrogacio_baixa_mailchimp_error__more_than_one_contract(self, mock_function):
         with Transaction().start(self.database) as txn:
             cursor = txn.cursor
@@ -176,13 +178,13 @@ class TestActivacioM1(TestSwitchingImport):
             history_line_desc = [line["description"] for line in m1.history_line]
             self.assertTrue(any([expected_result in desc for desc in history_line_desc]))
 
-    @mock.patch("som_polissa_soci.res_partner.ResPartner.arxiva_client_mailchimp_async")
+    @mock.patch("som_polissa_soci.models.res_partner_address.ResPartnerAddress.unsubscribe_partner_in_customers_no_members_lists")  # noqa: E501
     @mock.patch(
         "giscedata_lectures_switching.giscedata_lectures.GiscedataLecturesSwitchingHelper.move_meters_of_contract"  # noqa: E501
     )
-    def test_ct_traspas_baixa_mailchimp_ok(self, mock_lectures, mock_mailchimp_function):
+    @mock.patch("som_polissa_soci.models.res_partner_address.ResPartnerAddress.subscribe_partner_in_customers_no_members_lists")  # noqa: E501
+    def test_ct_traspas_baixa_mailchimp_ok(self, mock_subscribe, mock_lectures, mock_unsubscribe):  # noqa: E501
         with Transaction().start(self.database) as txn:
-
             cursor = txn.cursor
             uid = txn.user
 
@@ -192,10 +194,8 @@ class TestActivacioM1(TestSwitchingImport):
             )[1]
             act_o = self.openerp.pool.get("giscedata.switching.activation.config")
             act_o.write(cursor, uid, act_sw_act_m105_ct_traspas_old_id, {"active": False})
-
             mock_lectures.return_value = []
             contract_id = self.get_contract_id(txn)
-
             old_partner_id = self.Polissa.read(cursor, uid, contract_id, ["titular"])["titular"][0]
             pol_ids = self.Polissa.search(
                 cursor, uid, [("id", "!=", contract_id), ("titular", "=", old_partner_id)]
@@ -206,8 +206,8 @@ class TestActivacioM1(TestSwitchingImport):
             with PatchNewCursors():
                 self.Switching.activa_cas_atr(cursor, uid, m1)
 
-            mock_mailchimp_function.assert_called_with(mock.ANY, uid, old_partner_id)
-
+            mock_unsubscribe.assert_called()
+            mock_subscribe.assert_called()
             expected_result = (
                 u"[Baixa Mailchimp] S'ha iniciat el procés de baixa "
                 u"per l'antic titular (ID %d)" % (old_partner_id)
@@ -215,33 +215,34 @@ class TestActivacioM1(TestSwitchingImport):
             history_line_desc = [line["description"] for line in m1.history_line]
             self.assertTrue(any([expected_result in desc for desc in history_line_desc]))
 
-    @mock.patch("som_polissa_soci.res_partner.ResPartner.arxiva_client_mailchimp_async")
+    @mock.patch("som_polissa_soci.models.res_partner_address.ResPartnerAddress.unsubscribe_partner_in_customers_no_members_lists")  # noqa: E501
     @mock.patch(
         "giscedata_lectures_switching.giscedata_lectures.GiscedataLecturesSwitchingHelper.move_meters_of_contract"  # noqa: E501
     )
+    @mock.patch("som_polissa_soci.models.res_partner_address.ResPartnerAddress.subscribe_partner_in_customers_no_members_lists")  # noqa: E501
     def test_ct_traspas_baixa_mailchimp_error__more_than_one_contract(
-        self, mock_lectures, mock_function
+        self, mock_subscribe, mock_lectures, mock_unsubscribe
     ):
         with Transaction().start(self.database) as txn:
             cursor = txn.cursor
             uid = txn.user
-
             # deactivate old ATR activation config that has been replaced
             act_sw_act_m105_ct_traspas_old_id = self.IrModelData.get_object_reference(
                 cursor, uid, "giscedata_switching", "sw_act_m105_ct_traspas"
             )[1]
             act_o = self.openerp.pool.get("giscedata.switching.activation.config")
             act_o.write(cursor, uid, act_sw_act_m105_ct_traspas_old_id, {"active": False})
-
             mock_lectures.return_value = []
             contract_id = self.get_contract_id(txn, "polissa_tarifa_018")
-
             m1 = self.get_m1_05_traspas(txn, contract_id, {"polissa_xml_id": "polissa_tarifa_018"})
+            new_partner_id = self.IrModelData.get_object_reference(
+                cursor, uid, "base", "res_partner_gisce"
+            )[1]
             with PatchNewCursors():
                 self.Switching.activa_cas_atr(cursor, uid, m1)
 
-            self.assertTrue(not mock_function.called)
-
+            mock_unsubscribe.assert_not_called()
+            mock_subscribe.assert_called_with(mock.ANY, 1, [new_partner_id], context=mock.ANY)
             expected_result = (
                 u"[Baixa Mailchimp] No s'ha iniciat el procés de baixa "
                 u"perque l'antic titular encara té pòlisses associades"
@@ -274,6 +275,112 @@ class TestActivacioM1(TestSwitchingImport):
             m1 = sw_obj.browse(cursor, uid, m101.sw_id.id)
 
             self.assertFalse(m1.collectiu_atr)
+
+    def test_m1_unilateral_uses_structured_holder_phone(self):
+        with Transaction().start(self.database) as txn:
+            cursor = txn.cursor
+            uid = txn.user
+            self.switch(txn, "comer")
+            contract_id = self.get_contract_id(txn)
+            self.change_polissa_comer(txn)
+            self.update_polissa_distri(txn)
+            self.activar_polissa_CUPS(txn, context={
+                'polissa_xml_id': 'polissa_0001'
+            })
+            contract = self.Polissa.browse(cursor, uid, contract_id)
+            address_id = contract.titular.address[0].id
+            prefix_id = self.IrModelData.get_object_reference(
+                cursor, uid, 'base_extended_som',
+                'res_phone_national_code_data_850'
+            )[1]
+            self.ResPartnerAddress.write(cursor, uid, [address_id], {
+                'phone': '1234567890',
+                'phone_prefix': prefix_id,
+                'mobile': '987654321',
+                'mobile_prefix': False,
+            })
+
+            step_id = self.create_case_and_step(
+                cursor, uid, contract_id, 'M1', '01'
+            )
+            self.M101.config_step(cursor, uid, [step_id], {
+                'change_type': 'tarpot',
+                'tariff': '018',
+                'phone_num': '1234567890',
+                'phone_pre': '34',
+                'con_name': 'Test',
+                'con_sur1': '',
+                'con_sur2': '',
+                'power_p1': 4600,
+                'power_p2': 4600,
+                'power_p3': 4600,
+                'power_invoicing': '1',
+            }, context={'is_m1_unilateral': True})
+
+            m101 = self.M101.browse(cursor, uid, step_id)
+            self.assertEqual(m101.cont_telefons[0].numero, '1234567890')
+            self.assertEqual(m101.cont_telefons[0].prefix, '850')
+            xml = m101.generar_xml()[1]
+            document = etree.fromstring(xml)
+            contact_phones = document.xpath(
+                '//*[local-name()="Contacto"]'
+                '/*[local-name()="Telefono"]'
+            )
+            self.assertEqual(len(contact_phones), 1)
+            self.assertEqual(
+                contact_phones[0].xpath(
+                    './*[local-name()="PrefijoPais"]/text()'
+                )[0], '850'
+            )
+            self.assertEqual(
+                contact_phones[0].xpath(
+                    './*[local-name()="Numero"]/text()'
+                )[0], '1234567890'
+            )
+
+    def test_m1_unilateral_without_holder_address_keeps_phone(self):
+        with Transaction().start(self.database) as txn:
+            cursor = txn.cursor
+            uid = txn.user
+            self.switch(txn, "comer")
+            contract_id = self.get_contract_id(txn)
+            self.change_polissa_comer(txn)
+            self.update_polissa_distri(txn)
+            self.activar_polissa_CUPS(txn, context={
+                'polissa_xml_id': 'polissa_0001'
+            })
+            contract = self.Polissa.browse(cursor, uid, contract_id)
+            address_ids = [address.id for address in contract.titular.address]
+            other_partner_id = self.ResPartner.create(cursor, uid, {
+                'name': 'Holder address reassignment',
+            })
+            self.ResPartnerAddress.write(cursor, uid, address_ids, {
+                'partner_id': other_partner_id,
+            })
+            self.assertFalse(
+                self.Polissa.browse(cursor, uid, contract_id).titular.address
+            )
+
+            step_id = self.create_case_and_step(
+                cursor, uid, contract_id, 'M1', '01'
+            )
+            self.M101.config_step(cursor, uid, [step_id], {
+                'change_type': 'tarpot',
+                'tariff': '018',
+                'phone_num': '666888555',
+                'phone_pre': '34',
+                'con_name': 'Test',
+                'con_sur1': '',
+                'con_sur2': '',
+                'power_p1': 4600,
+                'power_p2': 4600,
+                'power_p3': 4600,
+                'power_invoicing': '1',
+            }, context={'is_m1_unilateral': True})
+
+            m101 = self.M101.browse(cursor, uid, step_id)
+            self.assertEqual(m101.cont_telefons[0].numero, '666888555')
+            self.assertEqual(m101.cont_telefons[0].prefix, '34')
 
     def test_ff_collectiu_atr_m1_01_auto_col_i_nocol(self):
         sw_obj = self.openerp.pool.get("giscedata.switching")
@@ -661,3 +768,58 @@ class TestActivacioM1(TestSwitchingImport):
             )
             history_line_desc = [line["description"] for line in m1.history_line]
             self.assertFalse(any([not_expected_result in desc for desc in history_line_desc]))
+
+    @mock.patch("som_polissa_soci.models.res_partner_address.ResPartnerAddress.update_members_data_mailchimp_async")  # noqa: E501
+    def test__subscribe_new_owner__member(self, mock_subscribe):
+        with Transaction().start(self.database) as txn:
+            uid = txn.user
+            cursor = txn.cursor
+            contract_id = self.get_contract_id(txn)
+            # remove all other contracts
+            old_partner_id = self.Polissa.read(cursor, uid, contract_id, ["titular"])["titular"][0]
+            pol_ids = self.Polissa.search(
+                cursor, uid, [("id", "!=", contract_id), ("titular", "=", old_partner_id)]
+            )
+            self.Polissa.write(cursor, uid, pol_ids, {"titular": False})
+            # activate contract
+            self.Polissa.send_signal(cursor, uid, [contract_id], [
+                'validar', 'contracte'
+            ])
+            m1 = self.get_m1_02_ct(
+                txn, contract_id, "S", context={"data_activacio": "2016-08-15"})
+            self.SomenergiaSoci.create(
+                cursor, uid, {'partner_id': m1.cups_polissa_id.titular.id}
+            )
+
+            result = self.SwitchingHelpers.subscribe_new_owner(cursor, uid, m1.id)
+
+            self.assertEqual(result[0], 'OK')
+            mock_subscribe.assert_called_once_with(
+                cursor, uid, [m1.cups_polissa_id.titular.id], context=None
+            )
+
+    @mock.patch("som_polissa_soci.models.res_partner_address.ResPartnerAddress.subscribe_partner_in_customers_no_members_lists")  # noqa: E501
+    def test__subscribe_new_owner__no_member(self, mock_subscribe):
+        with Transaction().start(self.database) as txn:
+            uid = txn.user
+            cursor = txn.cursor
+            contract_id = self.get_contract_id(txn, xml_id="polissa_0004")
+            # remove all other contracts
+            old_partner_id = self.Polissa.read(cursor, uid, contract_id, ["titular"])["titular"][0]
+            pol_ids = self.Polissa.search(
+                cursor, uid, [("id", "!=", contract_id), ("titular", "=", old_partner_id)]
+            )
+            self.Polissa.write(cursor, uid, pol_ids, {"titular": False})
+            # activate contract
+            self.Polissa.send_signal(cursor, uid, [contract_id], [
+                'validar', 'contracte'
+            ])
+            m1 = self.get_m1_02_ct(
+                txn, contract_id, "S", context={"data_activacio": "2016-08-15"})
+
+            result = self.SwitchingHelpers.subscribe_new_owner(cursor, uid, m1.id)
+
+            self.assertEqual(result[0], 'OK')
+            mock_subscribe.assert_called_once_with(
+                cursor, uid, [m1.cups_polissa_id.titular.id], context=None
+            )

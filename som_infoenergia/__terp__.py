@@ -7,7 +7,7 @@
         * Model lot enviament
         * Acció d'enviament
     """,
-    "version": "24.5.0",
+    "version": "0-dev",
     "author": "SomEnergia",
     "category": "SomEnergia",
     "depends": [

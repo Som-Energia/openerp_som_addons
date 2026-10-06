@@ -11,36 +11,6 @@ class GiscedataPolissa(osv.osv):
     _name = "giscedata.polissa"
     _inherit = "giscedata.polissa"
 
-    def search_factura(self, cursor, uid, ids, data_inici, data_final, context=None):
-        if context is None:
-            context = {}
-        origen_obj = self.pool.get("giscedata.bateria.virtual.origen")
-        origen_data = (
-            origen_obj.q(cursor, uid)
-            .read(["data_inici_descomptes"])
-            .where([("origen_ref", "=", "giscedata.polissa,{}".format(str(ids[0])))])
-        )
-
-        if len(origen_data):
-            data_inici_origen = origen_data[0].get("data_inici_descomptes")
-        else:
-            data_inici_origen = data_inici
-
-        factura_obj = self.pool.get("giscedata.facturacio.factura")
-        factura_ids = factura_obj.search(
-            cursor,
-            uid,
-            [
-                ("polissa_id", "=", ids[0]),
-                ("data_inici", ">=", data_inici_origen),
-                ("data_inici", "<=", data_final),
-                ("state", "in", ("paid", "open")),
-                ("type", "in", ("out_invoice", "out_refund")),
-            ],
-            context=context,
-        )
-        return factura_ids
-
     def _ff_observations_first_line(self, cursor, uid, ids, args, fields, context=None):
         if context is None:
             context = {}
@@ -71,7 +41,7 @@ class GiscedataPolissa(osv.osv):
         return res
 
     def get_modcontractual_intervals(
-            self, cursor, uid, polissa_id, data_inici, data_final, context=None):
+            self, cursor, uid, polissa_id, data_inici, data_final, with_power=True, context=None):
         if context is None:
             context = {}
 
@@ -83,10 +53,10 @@ class GiscedataPolissa(osv.osv):
         })
 
         dates_de_tall = super(GiscedataPolissa, self).get_modcontractual_intervals(
-            cursor, uid, polissa_id, data_inici, data_final, ctx)
+            cursor, uid, polissa_id, data_inici, data_final, with_power=with_power, context=ctx)
 
         llista_preu_dades = []
-        indexed_formula_old = ""
+        indexed_formula_old = None
 
         for mod_data in sorted(dates_de_tall.keys()):
             values = ['llista_preu', 'data_inici', 'data_final']
@@ -107,7 +77,7 @@ class GiscedataPolissa(osv.osv):
                 indexed_formula = price_o.read(cursor, uid, llista_preu_id, ['indexed_formula'],
                                                context=context)['indexed_formula']
 
-                if indexed_formula != indexed_formula_old and indexed_formula_old != "":
+                if indexed_formula != indexed_formula_old and indexed_formula_old is not None:
                     # updatar registre
                     dates_de_tall[mod_data]['changes'] = ['potencia']
 

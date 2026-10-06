@@ -1,0 +1,28 @@
+<openerp>
+    <data>
+        <record id="partner_per_fer_stash" model="res.partner">
+            <field name="name">Partner per fer stash</field>
+            <field name="is_company">True</field>
+        </record>
+        <record id="soci_partner_per_fer_stash" model="somenergia.soci">
+            <field name="partner_id" ref="partner_per_fer_stash"/>
+            <field name="data_alta">2020-01-01</field>
+            <field name="ref">S20001</field>
+        </record>
+        <record id="partner_per_fer_stash2" model="res.partner">
+            <field name="name">Partner per fer stash 2</field>
+            <field name="is_company">True</field>
+        </record>
+        <record id="soci_partner_per_fer_stash2" model="somenergia.soci">
+            <field name="partner_id" ref="partner_per_fer_stash2"/>
+            <field name="data_alta">2020-01-01</field>
+            <field name="ref">S20002</field>
+        </record>
+        <record id="som_polissa.polissa_domestica_0100" model="giscedata.polissa">
+            <field name="titular" ref="partner_per_fer_stash"/>
+            <field name="state">baixa</field>
+            <field name="data_alta">2019-06-01</field>
+            <field name="data_baixa">2020-01-01</field>
+        </record>
+    </data>
+</openerp>

@@ -139,3 +139,17 @@ patches/
 
 # Jasper binaries
 *.jasper
+
+# VSCode
+.vscode/
+
+# Agents
+.codegraph/
+.engram/
+.atl/
+.pi/
+.pi-lens/
+
+# Local consumer env (secrets)
+runtime-docker/.env.consumer
+runtime-docker/.env.producer

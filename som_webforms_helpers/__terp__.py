@@ -2,7 +2,7 @@
 {
     "name": "Webforms Helpers for Som Energia",
     "description": """Aquest mòdul afegeix funcions per donar suport a l'API de Webforms""",
-    "version": "24.5.0",
+    "version": "0-dev",
     "author": "SOMEnergia",
     "category": "Master",
     "depends": [
@@ -12,12 +12,26 @@
         "som_facturacio_switching",
         "som_generationkwh",
         "som_polissa_condicions_generals",
+        "giscedata_repercusio_bo_social",
+        "som_gurb",
     ],
     "init_xml": [],
     "demo_xml": [
-        "tests/tarifes_demo.xml",
+        "demo/tarifes_demo.xml",
+        "demo/gurb_demo.xml",
     ],
-    "update_xml": ["som_webforms_helpers_data.xml"],
+    "update_xml": [
+        "security/som_webforms_helpers_security.xml",
+        "security/ir.model.access.csv",
+        "views/som_annual_coefficient_view.xml",
+        "views/som_annual_consumption_estimate_view.xml",
+        "views/som_last_month_average_price_view.xml",
+        "views/menu.xml",
+        "som_webforms_helpers_data.xml",
+        "data/som_annual_consumption_estimate_data.xml",
+        "data/som_annual_coefficient_data.xml",
+        "data/som_last_month_average_price_data.xml",
+    ],
     "active": False,
     "installable": True,
 }

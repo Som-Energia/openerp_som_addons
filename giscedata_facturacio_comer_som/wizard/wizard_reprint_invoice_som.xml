@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+    <data>
+        <record model="ir.ui.view" id="view_wizard_reprint_invoice_som_form">
+            <field name="name">wizard.reprint.invoice.som.form</field>
+            <field name="model">wizard.reprint.invoice.som</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <form string="Reimpressió de pdf's de factura:">
+                    <group>
+                        <group colspan="4">
+                            <button name="reprint_pdf" type="object" string="Reimprimir Pdf (no caché)" icon="gtk-print" />
+                            <button name="reprint_and_store" type="object" string="Reimprimir Pdf i adjuntar-ho a la factura" icon="gtk-save" />
+                            <button special="cancel" string="Sortir" icon="gtk-ok" />
+                        </group>
+                        <group colspan="4" col="2" attrs="{'invisible':[('state', '!=', 'end')]}">
+                            <field name="info" colspan="4" readonly="1" nolabel="1" height="400" attrs="{'invisible':[('state', '!=', 'end')]}"/>
+                        </group>
+                    </group>
+                </form>
+            </field>
+        </record>
+        <record model="ir.actions.act_window" id="action_wizard_reprint_invoice_som">
+            <field name="name">Reimprimir factura en pdf</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">wizard.reprint.invoice.som</field>
+            <field name="view_type">form</field>
+            <field name="target">new</field>
+            <field name="view_id" ref="view_wizard_reprint_invoice_som_form" />
+            <field name="groups_id" eval="[(6,0,[ref('giscedata_facturacio_comer_som.group_reprint_invoice_som')])]"/>
+        </record>
+        <record id="values_wizard_reprint_invoice_som" model="ir.values">
+            <field name="object" eval="1" />
+            <field name="name">Reimprimir factura en pdf</field>
+            <field name="key2">client_action_multi</field>
+            <field name="key">action</field>
+            <field name="model">giscedata.facturacio.factura</field>
+            <field name="value"
+                eval="'ir.actions.act_window,'+str(ref('action_wizard_reprint_invoice_som'))" />
+        </record>
+    </data>
+</openerp>

@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+    <data noupdate="0">
+        <record id="partner_gurb_vat_58622130y" model="res.partner">
+            <field name="name">Partner GURB Demo 58622130Y</field>
+            <field name="vat">58622130Y</field>
+            <field name="lang">en_US</field>
+            <field name="customer">1</field>
+        </record>
+        <record id="res_partner_address_partner_gurb_vat_58622130y" model="res.partner.address">
+            <field name="name">Direcció de notificació i pagament</field>
+            <field name="street">Carrer Inventat, 1</field>
+            <field name="zip">08001</field>
+            <field name="city">Barcelona</field>
+            <field name="country_id" ref="base.es"/>
+            <field name="partner_id" ref="som_webforms_helpers.partner_gurb_vat_58622130y"/>
+        </record>
+
+        <record id="cups_es0032924842625854qy" model="giscedata.cups.ps">
+            <field name="name">ES0032924842625854QY</field>
+            <field name="id_municipi" ref="base_extended.ine_01001"/>
+            <field name="aclarador">aclaridor</field>
+            <field name="id_poblacio" ref="base_extended.poble_01"/>
+            <field name="ref_catastral">referencia cadastral</field>
+            <field name="nv">carrer inventat</field>
+            <field name="pnp">1</field>
+            <field name="es">1</field>
+            <field name="pt">1</field>
+            <field name="pu">1</field>
+            <field name="dp">00001</field>
+            <field name="notes">CUPS demo per webforms GURB</field>
+            <field name="distribuidora_id" ref="base.main_partner"/>
+        </record>
+
+        <record id="polissa_cups_es0032924842625854qy" model="giscedata.polissa">
+            <field name="name">Polissa ES0032924842625854QY</field>
+            <field name="cups" ref="som_webforms_helpers.cups_es0032924842625854qy"/>
+            <field name="titular" ref="som_webforms_helpers.partner_gurb_vat_58622130y"/>
+            <field name="potencia">4.600</field>
+            <field name="facturacio" eval="1"/>
+            <field name="facturacio_potencia">icp</field>
+            <field name="notificacio">titular</field>
+            <field name="pagador_sel">titular</field>
+            <field name="pagador" ref="som_webforms_helpers.partner_gurb_vat_58622130y"/>
+            <field name="direccio_notificacio" ref="som_webforms_helpers.res_partner_address_partner_gurb_vat_58622130y"/>
+            <field name="direccio_pagament" ref="som_webforms_helpers.res_partner_address_partner_gurb_vat_58622130y"/>
+            <field name="tipo_pago">1</field>
+            <field name="contract_type">01</field>
+            <field name="llista_preu" ref="giscedata_facturacio.pricelist_tarifas_electricidad"/>
+            <field name="property_unitat_potencia" search="[('name','=','kW/dia')]"/>
+            <field name="state">activa</field>
+            <field name="data_alta">2019-01-01</field>
+            <field name="data_firma_contracte">2019-01-01</field>
+        </record>
+        <!--
+        <record id="gurb_cups_webforms_g001" model="som.gurb.cups">
+            <field name="inscription_date">2024-01-01</field>
+            <field name="start_date">2024-01-01</field>
+            <field name="gurb_cau_id" ref="som_gurb.gurb_cau_0001"/>
+            <field name="cups_id" ref="som_webforms_helpers.cups_es0032924842625854qy"/>
+            <field name="polissa_id" ref="som_webforms_helpers.polissa_cups_es0032924842625854qy"/>
+        </record>
+
+        <record id="gurb_cups_beta_webforms_g001" model="som.gurb.cups.beta">
+            <field name="active">True</field>
+            <field name="start_date">2024-01-01</field>
+            <field name="beta_kw">0.5</field>
+            <field name="extra_beta_kw">0</field>
+            <field name="gift_beta_kw">0</field>
+            <field name="gurb_cups_id" ref="som_webforms_helpers.gurb_cups_webforms_g001"/>
+        </record>
+        -->
+    </data>
+</openerp>

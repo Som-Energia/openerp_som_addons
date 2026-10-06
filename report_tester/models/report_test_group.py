@@ -57,6 +57,20 @@ class ReportTestGroup(osv.osv):
         rt_obj._set_status(cursor, uid, rt_ids, "doing", msg)
         return rt_ids
 
+    def get_active_results(self, cursor, uid, ids, context=None):
+        if context is None:
+            context = {}
+
+        rt_obj = self.pool.get("report.test")
+
+        results = []
+        tgs = self.read(cursor, uid, ids, ['active', 'test_ids'])
+        for tg in tgs:
+            if tg["active"]:
+                res = rt_obj.get_active_results(cursor, uid, tg['test_ids'], context)
+                results.extend(res)
+        return results
+
     _columns = {
         "name": fields.char(
             _("Nom"),

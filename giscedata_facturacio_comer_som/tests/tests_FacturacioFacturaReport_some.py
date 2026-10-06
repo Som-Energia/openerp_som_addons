@@ -1,12 +1,15 @@
 # -*- coding: utf-8 -*-
+from __future__ import absolute_import
 
 import mock
-import unittest
+import os
 from destral import testing
 from destral.transaction import Transaction
+from mako.lookup import TemplateLookup
+from mako.template import Template
 from yamlns import namespace as ns
 from yamlns.testutils import assertNsEqual
-from datetime import datetime
+from datetime import datetime, timedelta
 from .. import giscedata_facturacio_report
 
 
@@ -49,7 +52,7 @@ class Tests_FacturacioFacturaReport_base(testing.OOTestCase):
         lang_obj.create(self.cursor, self.uid, {"name": "cat", "code": "ca_ES"})
 
     def assertYamlfy(self, result):
-        self.assertTrue(len(ns.loads(ns(result).dump()).keys()) >= 0)
+        self.assertTrue(len(list((ns.loads(ns(result).dump()).keys()))) >= 0)
 
 
 class Tests_FacturacioFacturaReport_fill_and_find(Tests_FacturacioFacturaReport_base):
@@ -178,40 +181,6 @@ class Tests_FacturacioFacturaReport_logo_component(Tests_FacturacioFacturaReport
             {"logo": "logo_som2.png", "has_agreement_partner": False, "has_auvi": False},
         )
 
-    @unittest.skip(reason="WIP using mock")
-    @mock.patch("som_polissa_soci.giscedata_polissa.GiscedataPolissa")
-    def test__som_report_comp_logo__energetica_mock(self, patch):
-        f_id = self.get_fixture("giscedata_facturacio", "factura_0001")
-        self.get_fixture("giscedata_polissa", "polissa_0001")
-
-        print "+-" * 50  # noqa: E999
-        print f.polissa_id  # noqa: F821
-        print f.polissa_id.soci  # noqa: F821
-        print f.polissa_id.id  # noqa: F821
-
-        p = self.partner_obj.browse(self.cursor, self.uid, 23)
-        self.partner_obj.write(self.cursor, self.uid, p.id, {"ref": "S019753"})
-        print "*" * 50
-        print p
-        print p.ref
-
-        with patch("soci") as polissa:
-            polissa.return_value = "S019753"
-
-            print "*" * 50
-            print f.polissa_id.soci  # noqa: F821
-
-            result = self.r_obj.get_component_logo_data(**self.bfp(f_id))
-            self.assertYamlfy(result)
-            self.assertEquals(
-                result,
-                {
-                    "logo": "logo_som2.png",
-                    "has_agreement_partner": True,
-                    "logo_agreement_partner": "logo_S019753.png",
-                },
-            )
-
     @mock.patch.object(
         giscedata_facturacio_report.GiscedataFacturacioFacturaReport, "get_auvi_data"
     )
@@ -220,7 +189,7 @@ class Tests_FacturacioFacturaReport_logo_component(Tests_FacturacioFacturaReport
         f = self.factura_obj.browse(self.cursor, self.uid, f_id)
         get_auvi_data_mock_function.return_value = False
 
-        p_id = 23
+        p_id = self.get_fixture("base", "res_partner_agrolait")
         self.partner_obj.write(self.cursor, self.uid, p_id, {"ref": "S12345"})
         self.polissa_obj.write(self.cursor, self.uid, f.polissa_id.id, {"soci": p_id})
 
@@ -238,7 +207,7 @@ class Tests_FacturacioFacturaReport_logo_component(Tests_FacturacioFacturaReport
         f = self.factura_obj.browse(self.cursor, self.uid, f_id)
         get_auvi_data_mock_function.return_value = False
 
-        p_id = 23
+        p_id = self.get_fixture("base", "res_partner_agrolait")
         self.partner_obj.write(self.cursor, self.uid, p_id, {"ref": "S019753"})
         self.polissa_obj.write(self.cursor, self.uid, f.polissa_id.id, {"soci": p_id})
 
@@ -266,7 +235,7 @@ class Tests_FacturacioFacturaReport_company_component(Tests_FacturacioFacturaRep
             {
                 "cif": u"A31896889",
                 "city": u"Gerompont",
-                "email": False,
+                "email": 'Fabien.Pinckaers@tinysprl.com',
                 "name": u"Tiny sprl",
                 "street": u"Chaussee de Namur 40",
                 "zip": u"1367",
@@ -667,7 +636,7 @@ class Tests_FacturacioFacturaReport_contract_data_component(Tests_FacturacioFact
                 "pricelist": u"TARIFAS ELECTRICIDAD",
                 "autoconsum_cau": "",
                 "is_autoconsum_colectiu": False,
-                "cups_direction": u"carrer inventat ,  1  ESC.  1 1 1 aclaridor 00001 (Poble de Prova)",  # noqa: E501
+                "cups_direction": u"carrer inventat, 1 1 1 1 aclaridor 00001 (Poble de Prova)",  # noqa: E501
                 "autoconsum_colectiu_repartiment": 100.0,
                 "cnae": u"0111",
                 "power_invoicing_type": True,
@@ -677,6 +646,8 @@ class Tests_FacturacioFacturaReport_contract_data_component(Tests_FacturacioFact
                 "small_text": False,
                 "is_auvi": False,
                 "auvi_data": False,
+                "is_recurrent_card_payment": False,
+                "is_transfer_payment": False,
             },
         )
 
@@ -720,7 +691,7 @@ class Tests_FacturacioFacturaReport_contract_data_component(Tests_FacturacioFact
             "pricelist": u"TARIFAS ELECTRICIDAD",
             "autoconsum_cau": u"ES0318363477145938GEA000",
             "is_autoconsum_colectiu": False,
-            "cups_direction": u"carrer inventat ,  1  ESC.  1 1 1 aclaridor 00001 (Poble de Prova)",  # noqa: E501
+            "cups_direction": u"carrer inventat, 1 1 1 1 aclaridor 00001 (Poble de Prova)",  # noqa: E501
             "autoconsum_colectiu_repartiment": 100.0,
             "cnae": u"0111",
             "power_invoicing_type": False,
@@ -730,6 +701,8 @@ class Tests_FacturacioFacturaReport_contract_data_component(Tests_FacturacioFact
             "small_text": False,
             "is_auvi": False,
             "auvi_data": False,
+            "is_recurrent_card_payment": False,
+            "is_transfer_payment": False,
         }
         self.assertDictEqual(
             result,
@@ -1181,7 +1154,7 @@ class Tests_FacturacioFacturaReport_emergency_complaints(Tests_FacturacioFactura
         f_id = self.get_fixture("giscedata_facturacio", "factura_0001")
         f = self.factura_obj.browse(self.cursor, self.uid, f_id)
 
-        p_id = 23
+        p_id = self.get_fixture("base", "res_partner_agrolait")
         self.partner_obj.write(self.cursor, self.uid, p_id, {"ref": "S12345"})
         self.polissa_obj.write(
             self.cursor,
@@ -1246,7 +1219,7 @@ class Tests_FacturacioFacturaReport_emergency_complaints(Tests_FacturacioFactura
         f_id = self.get_fixture("giscedata_facturacio", "factura_0001")
         f = self.factura_obj.browse(self.cursor, self.uid, f_id)
 
-        p_id = 23
+        p_id = self.get_fixture("base", "res_partner_agrolait")
         self.partner_obj.write(self.cursor, self.uid, p_id, {"ref": "S019753"})
         self.polissa_obj.write(
             self.cursor, self.uid, f.polissa_id.id, {"ref_dist": "ref_dist", "soci": p_id}
@@ -1265,7 +1238,7 @@ class Tests_FacturacioFacturaReport_emergency_complaints(Tests_FacturacioFactura
                 "distri_contract": u"ref_dist",
                 "distri_phone": "123.456.789",
                 "has_agreement_partner": True,
-                "agreement_partner_name": u"ENDESA DISTRIBUCI\xd3N EL\xc9CTRICA S. L.",
+                "agreement_partner_name": u"Agrolait",
                 "is_energetica": True,
                 "comer_phone": u"(+32).81.81.37.00",
             },
@@ -1691,13 +1664,13 @@ class Tests_FacturacioFacturaReport_invoice_details_other_concepts(
     Tests_FacturacioFacturaReport_base
 ):
     @mock.patch.object(
-        giscedata_facturacio_report.GiscedataFacturacioFacturaReport, "get_lines_in_extralines"
+        giscedata_facturacio_report.GiscedataFacturacioFacturaReport, "get_all_lines_in_extralines"
     )
     def test__som_report_comp_invoice_details_other_concepts__without_other_lines(
-        self, get_lines_in_extralines_mock_function
+        self, get_all_lines_in_extralines_mock_function
     ):
 
-        get_lines_in_extralines_mock_function.return_value = []
+        get_all_lines_in_extralines_mock_function.return_value = []
         f_id = self.get_fixture("giscedata_facturacio", "factura_0001")
         fiscal_pos_obj = self.model("account.fiscal.position")
         fiscal_pos_ids = fiscal_pos_obj.search(self.cursor, self.uid, [], limit=1)
@@ -1720,6 +1693,7 @@ class Tests_FacturacioFacturaReport_invoice_details_other_concepts(
                 "lloguer_lines": [],
                 "bosocial_lines": [],
                 "donatiu_lines": [],
+                "compl_lines": [],
                 "altres_lines": [],
                 "iese_lines": [],
                 "iva_lines": [],
@@ -1729,19 +1703,19 @@ class Tests_FacturacioFacturaReport_invoice_details_other_concepts(
                 "percentatges_exempcio_splitted": None,
                 "percentatges_exempcio": None,
                 "is_excempcio_IE_base": None,
-                "donatiu": 0.0,
-                "amount_total": 10.0,
+                "donatiu": 0,
+                "amount_total": 28.0,
             },
         )
 
     @mock.patch.object(
-        giscedata_facturacio_report.GiscedataFacturacioFacturaReport, "get_lines_in_extralines"
+        giscedata_facturacio_report.GiscedataFacturacioFacturaReport, "get_all_lines_in_extralines"
     )
     def test__som_report_comp_invoice_details_other_concepts__with_lloguer(
-        self, get_lines_in_extralines_mock_function
+        self, get_all_lines_in_extralines_mock_function
     ):
 
-        get_lines_in_extralines_mock_function.return_value = []
+        get_all_lines_in_extralines_mock_function.return_value = []
         f_id = self.get_fixture("giscedata_facturacio", "factura_0008")
         fiscal_pos_obj = self.model("account.fiscal.position")
         fiscal_pos_ids = fiscal_pos_obj.search(self.cursor, self.uid, [], limit=1)
@@ -1783,6 +1757,7 @@ class Tests_FacturacioFacturaReport_invoice_details_other_concepts(
                     }
                 ],
                 "bosocial_lines": [],
+                "compl_lines": [],
                 "donatiu_lines": [],
                 "altres_lines": [],
                 "iese_lines": [],
@@ -1813,7 +1788,7 @@ class Tests_FacturacioFacturaReport_invoice_details_comments(Tests_FacturacioFac
                 "invoice_comment": None,
                 "has_web": False,
                 "web_distri": False,
-                "language": False,
+                "language": 'es_ES',
                 "distri_name": u"Agrolait",
             },
         )
@@ -1851,7 +1826,7 @@ class Tests_FacturacioFacturaReport_invoice_details_comments(Tests_FacturacioFac
                 "invoice_comment": u"comment",
                 "has_web": False,
                 "web_distri": False,
-                "language": False,
+                "language": 'es_ES',
                 "distri_name": u"Agrolait",
             },
         )
@@ -1870,12 +1845,12 @@ class Tests_FacturacioFacturaReport_amount_destination(Tests_FacturacioFacturaRe
             {
                 "is_visible": True,
                 "factura_id": 1,
-                "amount_total": 10.0,
+                "amount_total": 28.0,
                 "total_lloguers": 0.0,
-                "pie_total": 10.0,
+                "pie_total": 28.0,
                 "pie_regulats": 0.0,
                 "pie_impostos": 0.0,
-                "pie_costos": 10.0,
+                "pie_costos": 28.0,
                 "rep_BOE": {"i": 39.44, "c": 40.33, "o": 20.23},
             },
         )
@@ -2135,7 +2110,7 @@ class Tests_FacturacioFacturaReport_invoice_info(Tests_FacturacioFacturaReport_b
             result,
             {
                 "has_agreement_partner": False,
-                "amount_total": 10.0,
+                "amount_total": 28.0,
                 "type": u"out_invoice",
                 "number": u"0001/F",
                 "ref": False,
@@ -2144,7 +2119,7 @@ class Tests_FacturacioFacturaReport_invoice_info(Tests_FacturacioFacturaReport_b
                 "start_date": "01/01/2016",
                 "end_date": "29/02/2016",
                 "contract_number": u"0001C",
-                "address": u"carrer inventat ,  1  ESC.  1 1 1 aclaridor 00001 (Poble de Prova)",
+                "address": u"carrer inventat, 1 1 1 1 aclaridor 00001 (Poble de Prova)",
                 "due_date": "01/01/2016",
             },
         )
@@ -2154,12 +2129,16 @@ class Tests_FacturacioFacturaReport_invoice_summary(Tests_FacturacioFacturaRepor
     @mock.patch.object(
         giscedata_facturacio_report.GiscedataFacturacioFacturaReport, "get_extra_energy_lines"
     )
+    @mock.patch.object(
+        giscedata_facturacio_report.GiscedataFacturacioFacturaReport, "get_extra_reactive_lines"
+    )
     @mock.patch.object(giscedata_facturacio_report, "te_autoconsum")
     def test__som_report_comp_invoice_summary__only_energy(
-        self, te_autoconsum_mock_function, get_extra_energy_lines_mock_function
+        self, te_autoconsum_mock_function, get_extra_energy_lines_mock_function, get_extra_reactive_lines_mock_function  # noqa: E501
     ):
         te_autoconsum_mock_function.return_value = False
         get_extra_energy_lines_mock_function.return_value = []
+        get_extra_reactive_lines_mock_function.return_value = []
 
         f_id = self.get_fixture("giscedata_facturacio", "factura_0001")
 
@@ -2170,11 +2149,11 @@ class Tests_FacturacioFacturaReport_invoice_summary(Tests_FacturacioFacturaRepor
             {
                 "total_exces_consumida": 0.0,
                 "has_exces_potencia": False,
-                "total_energy": 10.0,
+                "total_energy": 28.0,
                 "total_power": 0.0,
                 "total_ractive": 0.0,
                 "total_rent": 0.0,
-                "total_amount": 10.0,
+                "total_amount": 28.0,
                 "has_autoconsum": False,
                 "autoconsum_total_compensada": 0,
                 "impostos": {},
@@ -2187,6 +2166,182 @@ class Tests_FacturacioFacturaReport_invoice_summary(Tests_FacturacioFacturaRepor
 
 
 class Tests_FacturacioFacturaReport_partner_info(Tests_FacturacioFacturaReport_base):
+    @classmethod
+    def setUpClass(cls):
+        addon_path = os.path.dirname(os.path.dirname(__file__))
+        component_path = os.path.join(
+            addon_path, "report", "components", "partner_info"
+        )
+        template_path = os.path.join(
+            component_path, "partner_info.mako"
+        )
+        with open(template_path, "r") as template_file:
+            cls.partner_info_template = Template(
+                template_file.read(),
+                lookup=TemplateLookup(directories=[component_path]),
+                input_encoding="utf-8",
+            )
+
+    def render_partner_info(self, partner_info):
+        partner_info.update({
+            "pol_name": u"Test owner",
+            "vat": u"12345678A",
+        })
+        return self.partner_info_template.render_unicode(
+            pi=ns(partner_info),
+            _=lambda value: value,
+        )
+
+    def test__som_report_comp_partner_info__recurrent_card(self):
+        f_id = self.get_fixture("giscedata_facturacio", "factura_0001")
+        f = self.factura_obj.browse(self.cursor, self.uid, f_id)
+        f.is_recurrent_card_payment = True
+        self.r_obj.cursor = self.cursor
+        self.r_obj.uid = self.uid
+        card_pol = mock.Mock(
+            creditcard=mock.Mock(masked_number=u"4111 1111 1111 1234")
+        )
+        component_pol = mock.Mock()
+        component_pol.payment_mode_id.bank_id.iban = u"ES00"
+        component_pol.titular.name = u"Test"
+        component_pol.titular.vat = u"ES00000000"
+        component_pol.tipo_pago.code = "DOMICILIACIO"
+        with mock.patch.object(
+                self.polissa_obj, "browse", return_value=card_pol) as browse:
+            result = self.r_obj.get_component_partner_info_data(f, component_pol)
+
+        browse.assert_called_once_with(
+            self.cursor, self.uid, f.polissa_id.id,
+            context={"date": f.date_invoice}
+        )
+        self.assertTrue(result["is_recurrent_card_payment"])
+        self.assertEquals(result["masked_card_number"], u"**** **** **** 1234")
+
+    @mock.patch.object(giscedata_facturacio_report, "datetime")
+    def test__get_recurrent_card_payment_data__without_invoice_date(self, datetime_mock):
+        fact = mock.Mock(is_recurrent_card_payment=True, date_invoice=False)
+        fact.polissa_id.id = 42
+        self.r_obj.cursor = self.cursor
+        self.r_obj.uid = self.uid
+        datetime_mock.today.return_value.strftime.return_value = "2026-03-09"
+        pol = mock.Mock(creditcard=False)
+
+        with mock.patch.object(self.polissa_obj, "browse", return_value=pol) as browse:
+            result = self.r_obj.get_recurrent_card_payment_data(fact)
+
+        browse.assert_called_once_with(
+            self.cursor, self.uid, 42, context={"date": "2026-03-09"}
+        )
+        self.assertEquals(result, (True, u""))
+
+    def test__som_report_comp_partner_info__masks_existing_card_format(self):
+        result = self.r_obj.get_masked_card_number(u"411111******1234")
+
+        self.assertEquals(result, u"**** **** **** 1234")
+
+    def test__som_report_comp_partner_info__recurrent_card_template(self):
+        output = self.render_partner_info({
+            "is_out_refund": False,
+            "is_recurrent_card_payment": True,
+            "masked_card_number": u"**** 1234",
+            "bank_name": u"evil bank",
+            "cc_name": u"ES12 3456 7890 1234",
+            "payment_type": u"COBRAMENT_RECURRENT_TARGETA",
+        })
+
+        self.assertIn(u"Targeta:", output)
+        self.assertIn(u"**** 1234", output)
+        self.assertIn(
+            u"L'import d'aquesta factura es carregarà a la teva targeta. "
+            u"El seu pagament queda justificat amb l'apunt bancari o "
+            u"comprovant de la transacció.", output
+        )
+        self.assertNotIn(u"Entitat bancària:", output)
+        self.assertNotIn(u"Núm. compte bancari:", output)
+        self.assertNotIn(u"evil bank", output)
+        self.assertNotIn(u"ES12 3456 7890 1234", output)
+        self.assertNotIn(u"carregarà al teu compte", output)
+
+    def test__som_report_comp_partner_info__recurrent_card_template_without_card(self):
+        output = self.render_partner_info({
+            "is_out_refund": False,
+            "is_recurrent_card_payment": True,
+            "masked_card_number": u"",
+            "bank_name": u"evil bank",
+            "cc_name": u"ES12 3456 7890 1234",
+            "payment_type": u"COBRAMENT_RECURRENT_TARGETA",
+        })
+
+        self.assertIn(u"Targeta:", output)
+        self.assertNotIn(u"evil bank", output)
+        self.assertNotIn(u"ES12 3456 7890 1234", output)
+        self.assertNotIn(u"carregarà al teu compte", output)
+
+    def test__som_report_comp_partner_info__recurrent_card_template_hides_sensitive_values(self):
+        output = self.render_partner_info({
+            "is_out_refund": False,
+            "is_recurrent_card_payment": True,
+            "masked_card_number": u"**** 1234",
+            "bank_name": u"",
+            "cc_name": u"",
+            "payment_type": u"COBRAMENT_RECURRENT_TARGETA",
+            "pan": u"4111111111111111",
+            "token": u"card-token-secret",
+            "expiry": u"12/30",
+        })
+
+        self.assertIn(u"**** 1234", output)
+        self.assertNotIn(u"4111111111111111", output)
+        self.assertNotIn(u"card-token-secret", output)
+        self.assertNotIn(u"12/30", output)
+
+    def test__som_report_comp_partner_info__direct_debit_template(self):
+        output = self.render_partner_info({
+            "is_out_refund": False,
+            "is_recurrent_card_payment": False,
+            "masked_card_number": u"",
+            "bank_name": u"evil bank",
+            "cc_name": u"**** 1234",
+            "payment_type": u"DOMICILIACIO",
+        })
+
+        self.assertIn(u"Entitat bancària:", output)
+        self.assertIn(u"evil bank", output)
+        self.assertIn(u"Núm. compte bancari:", output)
+        self.assertIn(u"**** 1234", output)
+        self.assertIn(u"carregarà al teu compte", output)
+        self.assertNotIn(u"Targeta:", output)
+
+    def test__som_report_comp_partner_info__transfer_template(self):
+        output = self.render_partner_info({
+            "is_out_refund": False,
+            "is_recurrent_card_payment": False,
+            "masked_card_number": u"",
+            "bank_name": u"TRANSFERÈNCIA",
+            "cc_name": u"ES12 3456 7890 1234",
+            "payment_type": u"TRANSFERENCIA_CSB",
+        })
+
+        self.assertIn(u"Entitat bancària:", output)
+        self.assertIn(u"TRANSFERÈNCIA", output)
+        self.assertIn(u"Núm. compte bancari:", output)
+        self.assertIn(u"ES12 3456 7890 1234", output)
+        self.assertIn(u"transferència bancària al compte indicat", output)
+        self.assertNotIn(u"Targeta:", output)
+
+    def test__som_report_comp_partner_info__recurrent_card_without_card(self):
+        f_id = self.get_fixture("giscedata_facturacio", "factura_0001")
+        f = self.factura_obj.browse(self.cursor, self.uid, f_id)
+        f.is_recurrent_card_payment = True
+        self.r_obj.cursor = self.cursor
+        self.r_obj.uid = self.uid
+
+        with mock.patch.object(
+                self.polissa_obj, "browse", return_value=mock.Mock(creditcard=False)):
+            result = self.r_obj.get_recurrent_card_payment_data(f)
+
+        self.assertEquals(result, (True, u""))
+
     def test__som_report_comp_partner_info(self):
         f_id = self.get_fixture("giscedata_facturacio", "factura_0001")
 
@@ -2213,12 +2368,14 @@ class Tests_FacturacioFacturaReport_partner_info(Tests_FacturacioFacturaReport_b
         self.assertEquals(
             result,
             {
-                "pol_name": u"Camptocamp",
-                "vat": u"B82420654",
+                "pol_name": u"Gil, Pere",
+                "vat": u"13900056Y",
                 "is_out_refund": False,
                 "payment_type": u"TRANSFERENCIA_SBC",
                 "cc_name": u"**** **** **** **** **** 1234",
                 "bank_name": u"",
+                "is_recurrent_card_payment": False,
+                "masked_card_number": u"",
             },
         )
 
@@ -2253,6 +2410,8 @@ class Tests_FacturacioFacturaReport_invoice_details_td(Tests_FacturacioFacturaRe
                 "dies_any": 0,
                 "dies": 0,
                 "iva_column": False,
+                "total": 0,
+                "is_visible": False,
             },
         )
 
@@ -2279,6 +2438,8 @@ class Tests_FacturacioFacturaReport_invoice_details_td(Tests_FacturacioFacturaRe
                 "dies": 0,
                 "header_multi": 2,
                 "iva_column": False,
+                "total": 0,
+                "is_visible": False,
             },
         )
 
@@ -3404,3 +3565,1571 @@ class Tests_FacturacioFacturaReport_invoice_details_td(Tests_FacturacioFacturaRe
                 ],
             },
         )
+
+    @mock.patch.object(
+        giscedata_facturacio_report.GiscedataFacturacioFacturaReport, "get_atr_price"
+    )
+    def test__get_sub_component_expedient_data__no_f1(
+        self, get_atr_price_mock_function
+    ):
+        get_atr_price_mock_function.return_value = 10.0
+
+        f_id = self.get_fixture("giscedata_facturacio", "factura_0001")
+        data = self.bfp(f_id)
+        self.r_obj.cursor = self.cursor
+        self.r_obj.uid = self.uid
+
+        with self.assertRaises(Exception) as context:
+            self.r_obj.get_sub_component_expedient_data(data['fact'], data['pol'], [])
+
+        msg = u"No s'han trobats F1's d'expedient de anomalia/frau al generar pdf per"
+        self.assertTrue(msg in context.exception.message)
+
+    @mock.patch.object(
+        giscedata_facturacio_report.GiscedataFacturacioFacturaReport, "get_atr_price"
+    )
+    def test__get_sub_component_expedient_data__find_the_f1_but_empty(
+        self, get_atr_price_mock_function
+    ):
+        get_atr_price_mock_function.return_value = 10.0
+
+        extra_obj = self.model("giscedata.facturacio.extra")
+        f1_obj = self.model("giscedata.facturacio.importacio.linia")
+        f1_extra_obj = self.model("giscedata.facturacio.importacio.linia.extra")
+
+        f_id = self.get_fixture("giscedata_facturacio", "factura_0001")
+        fact = self.factura_obj.browse(
+            self.cursor,
+            self.uid,
+            f_id
+        )
+        pol = self.polissa_obj.browse(
+            self.cursor,
+            self.uid,
+            fact.polissa_id.id
+        )
+
+        origin = 'expedient de anomalia/frau 12345'
+        expedient = "12345"
+
+        extra_id = extra_obj.create(
+            self.cursor,
+            self.uid,
+            {
+                "polissa_id": pol.id,
+                "factura_ids": [(6, 0, [f_id])],
+                "factura_linia_ids": [],
+                "price_unit": 123,
+                "date_from": fact.data_inici,
+                "date_to": fact.data_final,
+            },
+        )
+
+        f1_id = f1_obj.search(self.cursor, self.uid, [])[0]
+        f1_obj.write(
+            self.cursor,
+            self.uid,
+            f1_id,
+            {
+                "cups_id": pol.cups.id,
+                "invoice_number_text": origin,
+                "type_factura": "C",
+                "num_expedient": expedient,
+            }
+        )
+
+        f1_extra_obj.create(
+            self.cursor,
+            self.uid,
+            {
+                "extra_id": extra_id,
+                "linia_id": f1_id,
+            },
+        )
+
+        data = self.bfp(f_id)
+        self.r_obj.cursor = self.cursor
+        self.r_obj.uid = self.uid
+        result = self.r_obj.get_sub_component_expedient_data(data['fact'], data['pol'], [])
+
+        self.assertYamlfy(result)
+        self.assertEquals(
+            result,
+            {
+                'energy_lines_data': [],
+                'tipus': '11',
+                'expedient': expedient
+            }
+        )
+
+    @mock.patch.object(
+        giscedata_facturacio_report.GiscedataFacturacioFacturaReport, "get_atr_price"
+    )
+    def test__get_sub_component_expedient_data__find_the_f1_wrong_type(
+        self, get_atr_price_mock_function
+    ):
+        get_atr_price_mock_function.return_value = 10.0
+
+        extra_obj = self.model("giscedata.facturacio.extra")
+        f1_obj = self.model("giscedata.facturacio.importacio.linia")
+        f1_extra_obj = self.model("giscedata.facturacio.importacio.linia.extra")
+
+        f_id = self.get_fixture("giscedata_facturacio", "factura_0001")
+        fact = self.factura_obj.browse(
+            self.cursor,
+            self.uid,
+            f_id
+        )
+        pol = self.polissa_obj.browse(
+            self.cursor,
+            self.uid,
+            fact.polissa_id.id
+        )
+
+        origin = 'expedient de anomalia/frau 12345'
+        expedient = "12345"
+
+        l0_id = self.linia_f_obj.create(
+            self.cursor,
+            self.uid,
+            {
+                "name": "cosa rara",
+                "quantity": 1.0,
+                "price_subtotal": 10.0,
+                "price_unit_multi": 1,
+                "price_unit": 1,
+                "extra": 1,
+                "multi": 1,
+                "factura_id": f_id,
+                "tipus": "lloguer",
+                "product_id": 0,
+                "account_id": 1,
+                "data_desde": fact.data_inici,
+                "data_fins": fact.data_final,
+            },
+        )
+        l_ids = [l0_id]
+        l_data = self.linia_f_obj.browse(
+            self.cursor,
+            self.uid,
+            l_ids
+        )
+
+        extra_id = extra_obj.create(
+            self.cursor,
+            self.uid,
+            {
+                "polissa_id": pol.id,
+                "factura_ids": [(6, 0, [f_id])],
+                "factura_linia_ids": [(6, 0, l_ids)],
+                "price_unit": 123,
+                "date_from": fact.data_inici,
+                "date_to": fact.data_final,
+            },
+        )
+
+        f1_id = f1_obj.search(self.cursor, self.uid, [])[0]
+        f1_obj.write(
+            self.cursor,
+            self.uid,
+            f1_id,
+            {
+                "cups_id": pol.cups.id,
+                "invoice_number_text": origin,
+                "type_factura": "C",
+                "num_expedient": expedient,
+            }
+        )
+
+        f1_extra_obj.create(
+            self.cursor,
+            self.uid,
+            {
+                "extra_id": extra_id,
+                "linia_id": f1_id,
+            },
+        )
+
+        data = self.bfp(f_id)
+        self.r_obj.cursor = self.cursor
+        self.r_obj.uid = self.uid
+
+        with self.assertRaises(Exception) as context:
+            self.r_obj.get_sub_component_expedient_data(data['fact'], data['pol'], l_data)
+
+        msg = u"Factura amb linies complementaries de tipus desconegut"
+        self.assertTrue(msg in context.exception.message)
+
+    @mock.patch.object(
+        giscedata_facturacio_report.GiscedataFacturacioFacturaReport, "get_atr_price"
+    )
+    def test__get_sub_component_expedient_data__energy_data(
+        self, get_atr_price_mock_function
+    ):
+        get_atr_price_mock_function.return_value = 10.0
+
+        prod_obj = self.model("product.product")
+        extra_obj = self.model("giscedata.facturacio.extra")
+        f1_obj = self.model("giscedata.facturacio.importacio.linia")
+        f1_extra_obj = self.model("giscedata.facturacio.importacio.linia.extra")
+
+        f_id = self.get_fixture("giscedata_facturacio", "factura_0001")
+        fact = self.factura_obj.browse(
+            self.cursor,
+            self.uid,
+            f_id
+        )
+        pol = self.polissa_obj.browse(
+            self.cursor,
+            self.uid,
+            fact.polissa_id.id
+        )
+
+        p1_id = prod_obj.search(self.cursor, self.uid, [("name", "=", "P1")])[0]
+        p2_id = prod_obj.search(self.cursor, self.uid, [("name", "=", "P2")])[0]
+        p3_id = prod_obj.search(self.cursor, self.uid, [("name", "=", "P3")])[0]
+        p4_id = prod_obj.search(self.cursor, self.uid, [("name", "=", "P4")])[0]
+        p5_id = prod_obj.search(self.cursor, self.uid, [("name", "=", "P5")])[0]
+        p6_id = prod_obj.search(self.cursor, self.uid, [("name", "=", "P6")])[0]
+
+        origin = 'expedient de anomalia/frau 12345'
+        expedient = "12345"
+
+        l1_id = self.linia_f_obj.create(
+            self.cursor,
+            self.uid,
+            {
+                "name": "linia energia d'expedient",
+                "quantity": 1.0,
+                "price_unit_multi": 1,
+                "price_unit": 1,
+                "extra": 1,
+                "multi": 1,
+                "factura_id": f_id,
+                "tipus": "energia",
+                "product_id": p1_id,
+                "account_id": 1,
+                "data_desde": fact.data_inici,
+                "data_fins": fact.data_final,
+            },
+        )
+        l2_id = self.linia_f_obj.create(
+            self.cursor,
+            self.uid,
+            {
+                "name": "linia energia d'expedient",
+                "quantity": 2.0,
+                "price_unit_multi": 2,
+                "price_unit": 1,
+                "extra": 1,
+                "multi": 1,
+                "factura_id": f_id,
+                "tipus": "energia",
+                "product_id": p2_id,
+                "account_id": 1,
+                "data_desde": fact.data_inici,
+                "data_fins": fact.data_final,
+            },
+        )
+        l3_id = self.linia_f_obj.create(
+            self.cursor,
+            self.uid,
+            {
+                "name": "linia energia d'expedient",
+                "quantity": 3.0,
+                "price_unit_multi": 3,
+                "price_unit": 1,
+                "extra": 1,
+                "multi": 1,
+                "factura_id": f_id,
+                "tipus": "energia",
+                "product_id": p3_id,
+                "account_id": 1,
+                "data_desde": fact.data_inici,
+                "data_fins": fact.data_final,
+            },
+        )
+        l4_id = self.linia_f_obj.create(
+            self.cursor,
+            self.uid,
+            {
+                "name": "linia energia d'expedient",
+                "quantity": 4.0,
+                "price_unit_multi": 4,
+                "price_unit": 1,
+                "extra": 1,
+                "multi": 1,
+                "factura_id": f_id,
+                "tipus": "energia",
+                "product_id": p4_id,
+                "account_id": 1,
+                "data_desde": fact.data_inici,
+                "data_fins": fact.data_final,
+            },
+        )
+        l5_id = self.linia_f_obj.create(
+            self.cursor,
+            self.uid,
+            {
+                "name": "linia energia d'expedient",
+                "quantity": 5.0,
+                "price_unit_multi": 5,
+                "price_unit": 1,
+                "extra": 1,
+                "multi": 1,
+                "factura_id": f_id,
+                "tipus": "energia",
+                "product_id": p5_id,
+                "account_id": 1,
+                "data_desde": fact.data_inici,
+                "data_fins": fact.data_final,
+            },
+        )
+        l6_id = self.linia_f_obj.create(
+            self.cursor,
+            self.uid,
+            {
+                "name": "linia energia d'expedient",
+                "quantity": 6.0,
+                "price_unit_multi": 6,
+                "price_unit": 1,
+                "extra": 1,
+                "multi": 1,
+                "factura_id": f_id,
+                "tipus": "energia",
+                "product_id": p6_id,
+                "account_id": 1,
+                "data_desde": fact.data_inici,
+                "data_fins": fact.data_final,
+            },
+        )
+
+        l_ids = [l1_id, l2_id, l3_id, l4_id, l5_id, l6_id]
+        l_data = self.linia_f_obj.browse(
+            self.cursor,
+            self.uid,
+            l_ids
+        )
+
+        extra_id = extra_obj.create(
+            self.cursor,
+            self.uid,
+            {
+                "polissa_id": pol.id,
+                "factura_ids": [(6, 0, [f_id])],
+                "factura_linia_ids": [(6, 0, l_ids)],
+                "price_unit": 123,
+                "date_from": fact.data_inici,
+                "date_to": fact.data_final,
+            },
+        )
+
+        f1_id = f1_obj.search(self.cursor, self.uid, [])[0]
+        f1_obj.write(
+            self.cursor,
+            self.uid,
+            f1_id,
+            {
+                "cups_id": pol.cups.id,
+                "invoice_number_text": origin,
+                "type_factura": "C",
+                "num_expedient": expedient,
+            }
+        )
+
+        f1_extra_obj.create(
+            self.cursor,
+            self.uid,
+            {
+                "extra_id": extra_id,
+                "linia_id": f1_id,
+            },
+        )
+
+        data = self.bfp(f_id)
+        self.r_obj.cursor = self.cursor
+        self.r_obj.uid = self.uid
+
+        result = self.r_obj.get_sub_component_expedient_data(data['fact'], data['pol'], l_data)
+
+        self.assertYamlfy(result)
+        self.assertEquals(
+            result,
+            {
+                'energy_lines_data': [
+                    {
+                        'P1': {
+                            'price_tolls': 10.0,
+                            'price_charges': 10.0,
+                            'price_subtotal': 1.0,
+                            'price_unit_multi': 1.0,
+                            'tolls': 10.0,
+                            'charges': 10.0,
+                            'quantity': 1.0
+                        },
+                        'P2': {
+                            'price_tolls': 10.0,
+                            'price_charges': 10.0,
+                            'price_subtotal': 4.0,
+                            'price_unit_multi': 2.0,
+                            'tolls': 20.0,
+                            'charges': 20.0,
+                            'quantity': 2.0
+                        },
+                        'P3': {
+                            'price_tolls': 10.0,
+                            'price_charges': 10.0,
+                            'price_subtotal': 9.0,
+                            'price_unit_multi': 3.0,
+                            'tolls': 30.0,
+                            'charges': 30.0,
+                            'quantity': 3.0
+                        },
+                        'P4': {
+                            'price_tolls': 10.0,
+                            'price_charges': 10.0,
+                            'price_subtotal': 16.0,
+                            'price_unit_multi': 4.0,
+                            'tolls': 40.0,
+                            'charges': 40.0,
+                            'quantity': 4.0
+                        },
+                        'P5': {
+                            'price_tolls': 10.0,
+                            'price_charges': 10.0,
+                            'price_subtotal': 25.0,
+                            'price_unit_multi': 5.0,
+                            'tolls': 50.0,
+                            'charges': 50.0,
+                            'quantity': 5.0
+                        },
+                        'P6': {
+                            'price_tolls': 10.0,
+                            'price_charges': 10.0,
+                            'price_subtotal': 36.0,
+                            'price_unit_multi': 6.0,
+                            'tolls': 60.0,
+                            'charges': 60.0,
+                            'quantity': 6.0
+                        },
+                        'iva': '',
+                        'data_fi': fact.data_final,
+                        'data_inici': fact.data_inici,
+                        'units': 'kWh',
+                        'total': 1 + 2 * 2 + 3 * 3 + 4 * 4 + 5 * 5 + 6 * 6,
+                        'type': 'energia'
+                    }
+                ],
+                'tipus': '11',
+                'expedient': expedient
+            }
+        )
+
+    @mock.patch.object(
+        giscedata_facturacio_report.GiscedataFacturacioFacturaReport, "get_atr_price"
+    )
+    def test__get_sub_component_expedient_data__full_data(
+        self, get_atr_price_mock_function
+    ):
+        get_atr_price_mock_function.return_value = 10.0
+
+        prod_obj = self.model("product.product")
+        extra_obj = self.model("giscedata.facturacio.extra")
+        f1_obj = self.model("giscedata.facturacio.importacio.linia")
+        f1_extra_obj = self.model("giscedata.facturacio.importacio.linia.extra")
+
+        f_id = self.get_fixture("giscedata_facturacio", "factura_0001")
+        fact = self.factura_obj.browse(
+            self.cursor,
+            self.uid,
+            f_id
+        )
+        pol = self.polissa_obj.browse(
+            self.cursor,
+            self.uid,
+            fact.polissa_id.id
+        )
+
+        d_final = datetime.strptime(fact.data_final, "%Y-%m-%d")
+        d_inici = datetime.strptime(fact.data_inici, "%Y-%m-%d")
+        hdays = (d_final - d_inici).days // 2
+        data_mid = (d_inici + timedelta(days=hdays)).strftime("%Y-%m-%d")
+        data_mid1 = (d_inici + timedelta(days=hdays + 1)).strftime("%Y-%m-%d")
+
+        p1_id = prod_obj.search(self.cursor, self.uid, [("name", "=", "P1")])[0]
+        p2_id = prod_obj.search(self.cursor, self.uid, [("name", "=", "P2")])[0]
+        p3_id = prod_obj.search(self.cursor, self.uid, [("name", "=", "P3")])[0]
+        p4_id = prod_obj.search(self.cursor, self.uid, [("name", "=", "P4")])[0]
+        p5_id = prod_obj.search(self.cursor, self.uid, [("name", "=", "P5")])[0]
+        p6_id = prod_obj.search(self.cursor, self.uid, [("name", "=", "P6")])[0]
+
+        origin = 'expedient de anomalia/frau 12345'
+        expedient = "12345"
+
+        l1_id = self.linia_f_obj.create(
+            self.cursor,
+            self.uid,
+            {
+                "name": "linia energia d'expedient",
+                "quantity": 1.0,
+                "price_unit_multi": 1,
+                "price_unit": 1,
+                "extra": 1,
+                "multi": 1,
+                "factura_id": f_id,
+                "tipus": "energia",
+                "product_id": p1_id,
+                "account_id": 1,
+                "data_desde": fact.data_inici,
+                "data_fins": data_mid,
+            },
+        )
+        l2_id = self.linia_f_obj.create(
+            self.cursor,
+            self.uid,
+            {
+                "name": "linia Energia d'expedient",
+                "quantity": 2.0,
+                "price_unit_multi": 2,
+                "price_unit": 1,
+                "extra": 1,
+                "multi": 1,
+                "factura_id": f_id,
+                "tipus": "altres",
+                "product_id": p2_id,
+                "account_id": 1,
+                "data_desde": fact.data_inici,
+                "data_fins": data_mid,
+            },
+        )
+        l3_id = self.linia_f_obj.create(
+            self.cursor,
+            self.uid,
+            {
+                "name": "linia cosa rara d'expedient",
+                "quantity": 3.0,
+                "price_unit_multi": 3,
+                "price_unit": 1,
+                "extra": 1,
+                "multi": 1,
+                "factura_id": f_id,
+                "tipus": "altres",
+                "product_id": p3_id,
+                "account_id": 1,
+                "data_desde": fact.data_inici,
+                "data_fins": data_mid,
+            },
+        )
+        l4_id = self.linia_f_obj.create(
+            self.cursor,
+            self.uid,
+            {
+                "name": "linia energia d'expedient",
+                "quantity": 4.0,
+                "price_unit_multi": 4,
+                "price_unit": 1,
+                "extra": 1,
+                "multi": 1,
+                "factura_id": f_id,
+                "tipus": "energia",
+                "product_id": p1_id,
+                "account_id": 1,
+                "data_desde": data_mid1,
+                "data_fins": fact.data_final,
+            },
+        )
+        l5_id = self.linia_f_obj.create(
+            self.cursor,
+            self.uid,
+            {
+                "name": "linia energia d'expedient",
+                "quantity": 5.0,
+                "price_unit_multi": 5,
+                "price_unit": 1,
+                "extra": 1,
+                "multi": 1,
+                "factura_id": f_id,
+                "tipus": "energia",
+                "product_id": p2_id,
+                "account_id": 1,
+                "data_desde": data_mid1,
+                "data_fins": fact.data_final,
+            },
+        )
+        l6_id = self.linia_f_obj.create(
+            self.cursor,
+            self.uid,
+            {
+                "name": "linia energia d'expedient",
+                "quantity": 6.0,
+                "price_unit_multi": 6,
+                "price_unit": 1,
+                "extra": 1,
+                "multi": 1,
+                "factura_id": f_id,
+                "tipus": "energia",
+                "product_id": p3_id,
+                "account_id": 1,
+                "data_desde": data_mid1,
+                "data_fins": fact.data_final,
+            },
+        )
+        l7_id = self.linia_f_obj.create(
+            self.cursor,
+            self.uid,
+            {
+                "name": "linia potencia d'expedient",
+                "quantity": 1.0,
+                "price_unit_multi": 1,
+                "price_unit": 1,
+                "extra": 1,
+                "multi": 1,
+                "factura_id": f_id,
+                "tipus": "potencia",
+                "product_id": p1_id,
+                "account_id": 1,
+                "data_desde": fact.data_inici,
+                "data_fins": fact.data_final,
+            },
+        )
+        l8_id = self.linia_f_obj.create(
+            self.cursor,
+            self.uid,
+            {
+                "name": "linia Potencia d'expedient",
+                "quantity": 2.0,
+                "price_unit_multi": 2,
+                "price_unit": 1,
+                "extra": 1,
+                "multi": 1,
+                "factura_id": f_id,
+                "tipus": "altres",
+                "product_id": p2_id,
+                "account_id": 1,
+                "data_desde": fact.data_inici,
+                "data_fins": fact.data_final,
+            },
+        )
+        l9_id = self.linia_f_obj.create(
+            self.cursor,
+            self.uid,
+            {
+                "name": "linia cosa rara d'expedient",
+                "quantity": 3.0,
+                "price_unit_multi": 3,
+                "price_unit": 1,
+                "extra": 1,
+                "multi": 1,
+                "factura_id": f_id,
+                "tipus": "potencia",
+                "product_id": p3_id,
+                "account_id": 1,
+                "data_desde": fact.data_inici,
+                "data_fins": fact.data_final,
+            },
+        )
+        l10_id = self.linia_f_obj.create(
+            self.cursor,
+            self.uid,
+            {
+                "name": "linia reactiva d'expedient",
+                "quantity": 4.0,
+                "price_unit_multi": 4,
+                "price_unit": 1,
+                "extra": 1,
+                "multi": 1,
+                "factura_id": f_id,
+                "tipus": "reactiva",
+                "product_id": p4_id,
+                "account_id": 1,
+                "data_desde": data_mid1,
+                "data_fins": fact.data_final,
+            },
+        )
+        l11_id = self.linia_f_obj.create(
+            self.cursor,
+            self.uid,
+            {
+                "name": "linia Reactiva d'expedient",
+                "quantity": 5.0,
+                "price_unit_multi": 5,
+                "price_unit": 1,
+                "extra": 1,
+                "multi": 1,
+                "factura_id": f_id,
+                "tipus": "altres",
+                "product_id": p5_id,
+                "account_id": 1,
+                "data_desde": data_mid1,
+                "data_fins": fact.data_final,
+            },
+        )
+        l12_id = self.linia_f_obj.create(
+            self.cursor,
+            self.uid,
+            {
+                "name": "linia reactiva d'expedient",
+                "quantity": 6.0,
+                "price_unit_multi": 6,
+                "price_unit": 1,
+                "extra": 1,
+                "multi": 1,
+                "factura_id": f_id,
+                "tipus": "reactiva",
+                "product_id": p6_id,
+                "account_id": 1,
+                "data_desde": data_mid1,
+                "data_fins": fact.data_final,
+            },
+        )
+        l13_id = self.linia_f_obj.create(
+            self.cursor,
+            self.uid,
+            {
+                "name": "linia reactiva d'expedient",
+                "quantity": 1.0,
+                "price_unit_multi": 1,
+                "price_unit": 1,
+                "extra": 1,
+                "multi": 1,
+                "factura_id": f_id,
+                "tipus": "reactiva",
+                "product_id": p1_id,
+                "account_id": 1,
+                "data_desde": fact.data_inici,
+                "data_fins": data_mid,
+            },
+        )
+        l14_id = self.linia_f_obj.create(
+            self.cursor,
+            self.uid,
+            {
+                "name": "linia Reactiva d'expedient",
+                "quantity": 3.0,
+                "price_unit_multi": 3,
+                "price_unit": 1,
+                "extra": 1,
+                "multi": 1,
+                "factura_id": f_id,
+                "tipus": "altres",
+                "product_id": p3_id,
+                "account_id": 1,
+                "data_desde": fact.data_inici,
+                "data_fins": data_mid,
+            },
+        )
+
+        l_ids = [l1_id, l2_id, l3_id, l4_id, l5_id, l6_id, l7_id,
+                 l8_id, l9_id, l10_id, l11_id, l12_id, l13_id, l14_id]
+        l_data = self.linia_f_obj.browse(
+            self.cursor,
+            self.uid,
+            l_ids
+        )
+
+        extra_id = extra_obj.create(
+            self.cursor,
+            self.uid,
+            {
+                "polissa_id": pol.id,
+                "factura_ids": [(6, 0, [f_id])],
+                "factura_linia_ids": [(6, 0, l_ids)],
+                "price_unit": 123,
+                "date_from": fact.data_inici,
+                "date_to": fact.data_final,
+            },
+        )
+
+        f1_id = f1_obj.search(self.cursor, self.uid, [])[0]
+        f1_obj.write(
+            self.cursor,
+            self.uid,
+            f1_id,
+            {
+                "cups_id": pol.cups.id,
+                "invoice_number_text": origin,
+                "type_factura": "C",
+                "num_expedient": expedient,
+            }
+        )
+
+        f1_extra_obj.create(
+            self.cursor,
+            self.uid,
+            {
+                "extra_id": extra_id,
+                "linia_id": f1_id,
+            },
+        )
+
+        data = self.bfp(f_id)
+        self.r_obj.cursor = self.cursor
+        self.r_obj.uid = self.uid
+
+        result = self.r_obj.get_sub_component_expedient_data(data['fact'], data['pol'], l_data)
+
+        self.assertYamlfy(result)
+        self.assertEquals(
+            result,
+            {
+                'energy_lines_data': [
+                    {
+                        'P1': {
+                            'price_tolls': 10.0,
+                            'price_charges': 10.0,
+                            'price_subtotal': 1.0,
+                            'price_unit_multi': 1.0,
+                            'tolls': 10.0,
+                            'charges': 10.0,
+                            'quantity': 1.0
+                        },
+                        'P2': {
+                            'price_tolls': 10.0,
+                            'price_charges': 10.0,
+                            'price_subtotal': 4.0,
+                            'price_unit_multi': 2.0,
+                            'tolls': 20.0,
+                            'charges': 20.0,
+                            'quantity': 2.0
+                        },
+                        'P3': {
+                            'price_tolls': 10.0,
+                            'price_charges': 10.0,
+                            'price_subtotal': 9.0,
+                            'price_unit_multi': 3.0,
+                            'tolls': 30.0,
+                            'charges': 30.0,
+                            'quantity': 3.0
+                        },
+                        'iva': '',
+                        'data_inici': fact.data_inici,
+                        'data_fi': data_mid,
+                        'units': 'kWh',
+                        'total': 1 + 2 * 2 + 3 * 3,
+                        'type': 'energia'
+                    }, {
+                        'P1': {
+                            'price_tolls': 10.0,
+                            'price_charges': 10.0,
+                            'price_subtotal': 16.0,
+                            'price_unit_multi': 4.0,
+                            'tolls': 40.0,
+                            'charges': 40.0,
+                            'quantity': 4.0
+                        },
+                        'P2': {
+                            'price_tolls': 10.0,
+                            'price_charges': 10.0,
+                            'price_subtotal': 25.0,
+                            'price_unit_multi': 5.0,
+                            'tolls': 50.0,
+                            'charges': 50.0,
+                            'quantity': 5.0
+                        },
+                        'P3': {
+                            'price_tolls': 10.0,
+                            'price_charges': 10.0,
+                            'price_subtotal': 36.0,
+                            'price_unit_multi': 6.0,
+                            'tolls': 60.0,
+                            'charges': 60.0,
+                            'quantity': 6.0
+                        },
+                        'iva': '',
+                        'data_inici': data_mid1,
+                        'data_fi': fact.data_final,
+                        'units': 'kWh',
+                        'total': 4 * 4 + 5 * 5 + 6 * 6,
+                        'type': 'energia'
+                    }, {
+                        'P1': {
+                            'price_tolls': 10.0,
+                            'price_charges': 10.0,
+                            'price_subtotal': 1.0,
+                            'price_unit_multi': 1.0,
+                            'tolls': 10.0,
+                            'charges': 10.0,
+                            'quantity': 1.0
+                        },
+                        'P2': {
+                            'price_tolls': 10.0,
+                            'price_charges': 10.0,
+                            'price_subtotal': 4.0,
+                            'price_unit_multi': 2.0,
+                            'tolls': 20.0,
+                            'charges': 20.0,
+                            'quantity': 2.0
+                        },
+                        'P3': {
+                            'price_tolls': 10.0,
+                            'price_charges': 10.0,
+                            'price_subtotal': 9.0,
+                            'price_unit_multi': 3.0,
+                            'tolls': 30.0,
+                            'charges': 30.0,
+                            'quantity': 3.0
+                        },
+                        'iva': '',
+                        'data_inici': fact.data_inici,
+                        'data_fi': fact.data_final,
+                        'units': 'kW',
+                        'total': 1 + 2 * 2 + 3 * 3,
+                        'type': 'potencia'
+                    }, {
+                        'P1': {
+                            'price_tolls': 0.0,
+                            'price_charges': 0.0,
+                            'price_subtotal': 1.0,
+                            'price_unit_multi': 1.0,
+                            'tolls': 0.0,
+                            'charges': 0.0,
+                            'quantity': 1.0
+                        },
+                        'P3': {
+                            'price_tolls': 0.0,
+                            'price_charges': 0.0,
+                            'price_subtotal': 9.0,
+                            'price_unit_multi': 3.0,
+                            'tolls': 0.0,
+                            'charges': 0.0,
+                            'quantity': 3.0
+                        },
+                        'iva': '',
+                        'data_inici': fact.data_inici,
+                        'data_fi': data_mid,
+                        'units': 'kVArh',
+                        'total': 1 + 3 * 3,
+                        'type': 'reactiva'
+                    }, {
+                        'P4': {
+                            'price_tolls': 0.0,
+                            'price_charges': 0.0,
+                            'price_subtotal': 16.0,
+                            'price_unit_multi': 4.0,
+                            'tolls': 0.0,
+                            'charges': 0.0,
+                            'quantity': 4.0
+                        },
+                        'P5': {
+                            'price_tolls': 0.0,
+                            'price_charges': 0.0,
+                            'price_subtotal': 25.0,
+                            'price_unit_multi': 5.0,
+                            'tolls': 0.0,
+                            'charges': 0.0,
+                            'quantity': 5.0
+                        },
+                        'P6': {
+                            'price_tolls': 0.0,
+                            'price_charges': 0.0,
+                            'price_subtotal': 36.0,
+                            'price_unit_multi': 6.0,
+                            'tolls': 0.0,
+                            'charges': 0.0,
+                            'quantity': 6.0
+                        },
+                        'iva': '',
+                        'data_inici': data_mid1,
+                        'data_fi': fact.data_final,
+                        'units': 'kVArh',
+                        'total': 4 * 4 + 5 * 5 + 6 * 6,
+                        'type': 'reactiva'
+                    }
+                ],
+                'tipus': '11',
+                'expedient': expedient
+            }
+        )
+
+    @mock.patch.object(
+        giscedata_facturacio_report.GiscedataFacturacioFacturaReport, "get_atr_price"
+    )
+    def test__get_sub_component_expedient_data__accumulative_data(
+        self, get_atr_price_mock_function
+    ):
+        get_atr_price_mock_function.return_value = 10.0
+
+        prod_obj = self.model("product.product")
+        extra_obj = self.model("giscedata.facturacio.extra")
+        f1_obj = self.model("giscedata.facturacio.importacio.linia")
+        f1_extra_obj = self.model("giscedata.facturacio.importacio.linia.extra")
+
+        f_id = self.get_fixture("giscedata_facturacio", "factura_0001")
+        fact = self.factura_obj.browse(
+            self.cursor,
+            self.uid,
+            f_id
+        )
+        pol = self.polissa_obj.browse(
+            self.cursor,
+            self.uid,
+            fact.polissa_id.id
+        )
+
+        d_final = datetime.strptime(fact.data_final, "%Y-%m-%d")
+        d_inici = datetime.strptime(fact.data_inici, "%Y-%m-%d")
+        hdays = (d_final - d_inici).days // 2
+        data_mid = (d_inici + timedelta(days=hdays)).strftime("%Y-%m-%d")
+        data_mid1 = (d_inici + timedelta(days=hdays + 1)).strftime("%Y-%m-%d")
+
+        p1_id = prod_obj.search(self.cursor, self.uid, [("name", "=", "P1")])[0]
+        p2_id = prod_obj.search(self.cursor, self.uid, [("name", "=", "P2")])[0]
+        p3_id = prod_obj.search(self.cursor, self.uid, [("name", "=", "P3")])[0]
+        p4_id = prod_obj.search(self.cursor, self.uid, [("name", "=", "P4")])[0]
+        p5_id = prod_obj.search(self.cursor, self.uid, [("name", "=", "P5")])[0]
+        p6_id = prod_obj.search(self.cursor, self.uid, [("name", "=", "P6")])[0]
+
+        origin = 'expedient de anomalia/frau 12345'
+        expedient = "12345"
+
+        l1_id = self.linia_f_obj.create(
+            self.cursor,
+            self.uid,
+            {
+                "name": "linia energia d'expedient",
+                "quantity": 1.0,
+                "price_unit_multi": 1,
+                "price_unit": 1,
+                "extra": 1,
+                "multi": 1,
+                "factura_id": f_id,
+                "tipus": "energia",
+                "product_id": p1_id,
+                "account_id": 1,
+                "data_desde": fact.data_inici,
+                "data_fins": fact.data_final,
+            },
+        )
+        l2_id = self.linia_f_obj.create(
+            self.cursor,
+            self.uid,
+            {
+                "name": "linia Energia d'expedient",
+                "quantity": 2.0,
+                "price_unit_multi": 2,
+                "price_unit": 1,
+                "extra": 1,
+                "multi": 1,
+                "factura_id": f_id,
+                "tipus": "altres",
+                "product_id": p2_id,
+                "account_id": 1,
+                "data_desde": fact.data_inici,
+                "data_fins": fact.data_final,
+            },
+        )
+        l3_id = self.linia_f_obj.create(
+            self.cursor,
+            self.uid,
+            {
+                "name": "linia cosa rara d'expedient",
+                "quantity": 3.0,
+                "price_unit_multi": 3,
+                "price_unit": 1,
+                "extra": 1,
+                "multi": 1,
+                "factura_id": f_id,
+                "tipus": "altres",
+                "product_id": p3_id,
+                "account_id": 1,
+                "data_desde": fact.data_inici,
+                "data_fins": fact.data_final,
+            },
+        )
+        l4_id = self.linia_f_obj.create(
+            self.cursor,
+            self.uid,
+            {
+                "name": "linia energia d'expedient",
+                "quantity": 4.0,
+                "price_unit_multi": 4,
+                "price_unit": 1,
+                "extra": 1,
+                "multi": 1,
+                "factura_id": f_id,
+                "tipus": "energia",
+                "product_id": p1_id,
+                "account_id": 1,
+                "data_desde": fact.data_inici,
+                "data_fins": fact.data_final,
+            },
+        )
+        l5_id = self.linia_f_obj.create(
+            self.cursor,
+            self.uid,
+            {
+                "name": "linia energia d'expedient",
+                "quantity": 5.0,
+                "price_unit_multi": 5,
+                "price_unit": 1,
+                "extra": 1,
+                "multi": 1,
+                "factura_id": f_id,
+                "tipus": "energia",
+                "product_id": p2_id,
+                "account_id": 1,
+                "data_desde": fact.data_inici,
+                "data_fins": fact.data_final,
+            },
+        )
+        l6_id = self.linia_f_obj.create(
+            self.cursor,
+            self.uid,
+            {
+                "name": "linia energia d'expedient",
+                "quantity": 6.0,
+                "price_unit_multi": 6,
+                "price_unit": 1,
+                "extra": 1,
+                "multi": 1,
+                "factura_id": f_id,
+                "tipus": "energia",
+                "product_id": p3_id,
+                "account_id": 1,
+                "data_desde": fact.data_inici,
+                "data_fins": fact.data_final,
+            },
+        )
+        l7_id = self.linia_f_obj.create(
+            self.cursor,
+            self.uid,
+            {
+                "name": "linia potencia d'expedient",
+                "quantity": 1.0,
+                "price_unit_multi": 1,
+                "price_unit": 1,
+                "extra": 1,
+                "multi": 1,
+                "factura_id": f_id,
+                "tipus": "potencia",
+                "product_id": p1_id,
+                "account_id": 1,
+                "data_desde": fact.data_inici,
+                "data_fins": fact.data_final,
+            },
+        )
+        l8_id = self.linia_f_obj.create(
+            self.cursor,
+            self.uid,
+            {
+                "name": "linia Potencia d'expedient",
+                "quantity": 2.0,
+                "price_unit_multi": 2,
+                "price_unit": 1,
+                "extra": 1,
+                "multi": 1,
+                "factura_id": f_id,
+                "tipus": "altres",
+                "product_id": p2_id,
+                "account_id": 1,
+                "data_desde": fact.data_inici,
+                "data_fins": fact.data_final,
+            },
+        )
+        l9_id = self.linia_f_obj.create(
+            self.cursor,
+            self.uid,
+            {
+                "name": "linia cosa rara d'expedient",
+                "quantity": 3.0,
+                "price_unit_multi": 3,
+                "price_unit": 1,
+                "extra": 1,
+                "multi": 1,
+                "factura_id": f_id,
+                "tipus": "potencia",
+                "product_id": p3_id,
+                "account_id": 1,
+                "data_desde": fact.data_inici,
+                "data_fins": fact.data_final,
+            },
+        )
+        l10_id = self.linia_f_obj.create(
+            self.cursor,
+            self.uid,
+            {
+                "name": "linia reactiva d'expedient",
+                "quantity": 4.0,
+                "price_unit_multi": 4,
+                "price_unit": 1,
+                "extra": 1,
+                "multi": 1,
+                "factura_id": f_id,
+                "tipus": "reactiva",
+                "product_id": p4_id,
+                "account_id": 1,
+                "data_desde": data_mid1,
+                "data_fins": fact.data_final,
+            },
+        )
+        l11_id = self.linia_f_obj.create(
+            self.cursor,
+            self.uid,
+            {
+                "name": "linia Reactiva d'expedient",
+                "quantity": 5.0,
+                "price_unit_multi": 5,
+                "price_unit": 1,
+                "extra": 1,
+                "multi": 1,
+                "factura_id": f_id,
+                "tipus": "altres",
+                "product_id": p5_id,
+                "account_id": 1,
+                "data_desde": data_mid1,
+                "data_fins": fact.data_final,
+            },
+        )
+        l12_id = self.linia_f_obj.create(
+            self.cursor,
+            self.uid,
+            {
+                "name": "linia reactiva d'expedient",
+                "quantity": 6.0,
+                "price_unit_multi": 6,
+                "price_unit": 1,
+                "extra": 1,
+                "multi": 1,
+                "factura_id": f_id,
+                "tipus": "reactiva",
+                "product_id": p6_id,
+                "account_id": 1,
+                "data_desde": data_mid1,
+                "data_fins": fact.data_final,
+            },
+        )
+        l13_id = self.linia_f_obj.create(
+            self.cursor,
+            self.uid,
+            {
+                "name": "linia reactiva d'expedient",
+                "quantity": 1.0,
+                "price_unit_multi": 1,
+                "price_unit": 1,
+                "extra": 1,
+                "multi": 1,
+                "factura_id": f_id,
+                "tipus": "reactiva",
+                "product_id": p1_id,
+                "account_id": 1,
+                "data_desde": fact.data_inici,
+                "data_fins": data_mid,
+            },
+        )
+        l14_id = self.linia_f_obj.create(
+            self.cursor,
+            self.uid,
+            {
+                "name": "linia Reactiva d'expedient",
+                "quantity": 3.0,
+                "price_unit_multi": 3,
+                "price_unit": 1,
+                "extra": 1,
+                "multi": 1,
+                "factura_id": f_id,
+                "tipus": "altres",
+                "product_id": p3_id,
+                "account_id": 1,
+                "data_desde": fact.data_inici,
+                "data_fins": data_mid,
+            },
+        )
+
+        l_ids = [l1_id, l2_id, l3_id, l4_id, l5_id, l6_id, l7_id,
+                 l8_id, l9_id, l10_id, l11_id, l12_id, l13_id, l14_id]
+        l_data = self.linia_f_obj.browse(
+            self.cursor,
+            self.uid,
+            l_ids
+        )
+
+        extra_id = extra_obj.create(
+            self.cursor,
+            self.uid,
+            {
+                "polissa_id": pol.id,
+                "factura_ids": [(6, 0, [f_id])],
+                "factura_linia_ids": [(6, 0, l_ids)],
+                "price_unit": 123,
+                "date_from": fact.data_inici,
+                "date_to": fact.data_final,
+            },
+        )
+
+        f1_id = f1_obj.search(self.cursor, self.uid, [])[0]
+        f1_obj.write(
+            self.cursor,
+            self.uid,
+            f1_id,
+            {
+                "cups_id": pol.cups.id,
+                "invoice_number_text": origin,
+                "type_factura": "C",
+                "num_expedient": expedient,
+            }
+        )
+
+        f1_extra_obj.create(
+            self.cursor,
+            self.uid,
+            {
+                "extra_id": extra_id,
+                "linia_id": f1_id,
+            },
+        )
+
+        data = self.bfp(f_id)
+        self.r_obj.cursor = self.cursor
+        self.r_obj.uid = self.uid
+
+        result = self.r_obj.get_sub_component_expedient_data(data['fact'], data['pol'], l_data)
+
+        self.assertYamlfy(result)
+        self.assertEquals(
+            result,
+            {
+                'energy_lines_data': [
+                    {
+                        'P1': {
+                            'price_tolls': 10.0,
+                            'price_charges': 10.0,
+                            'price_subtotal': 1.0 + 16.0,
+                            'price_unit_multi': 1.0,
+                            'tolls': 10.0 + 40.0,
+                            'charges': 10.0 + 40.0,
+                            'quantity': 1.0 + 4.0,
+                        },
+                        'P2': {
+                            'price_tolls': 10.0,
+                            'price_charges': 10.0,
+                            'price_subtotal': 4.0 + 25.0,
+                            'price_unit_multi': 2.0,
+                            'tolls': 20.0 + 50.0,
+                            'charges': 20.0 + 50.0,
+                            'quantity': 2.0 + 5.0,
+                        },
+                        'P3': {
+                            'price_tolls': 10.0,
+                            'price_charges': 10.0,
+                            'price_subtotal': 9.0 + 36.0,
+                            'price_unit_multi': 3.0,
+                            'tolls': 30.0 + 60.0,
+                            'charges': 30.0 + 60.0,
+                            'quantity': 3.0 + 6.0,
+                        },
+                        'iva': '',
+                        'data_inici': fact.data_inici,
+                        'data_fi': fact.data_final,
+                        'units': 'kWh',
+                        'total': 1 + 2 * 2 + 3 * 3 + 4 * 4 + 5 * 5 + 6 * 6,
+                        'type': 'energia'
+                    }, {
+                        'P1': {
+                            'price_tolls': 10.0,
+                            'price_charges': 10.0,
+                            'price_subtotal': 1.0,
+                            'price_unit_multi': 1.0,
+                            'tolls': 10.0,
+                            'charges': 10.0,
+                            'quantity': 1.0
+                        },
+                        'P2': {
+                            'price_tolls': 10.0,
+                            'price_charges': 10.0,
+                            'price_subtotal': 4.0,
+                            'price_unit_multi': 2.0,
+                            'tolls': 20.0,
+                            'charges': 20.0,
+                            'quantity': 2.0
+                        },
+                        'P3': {
+                            'price_tolls': 10.0,
+                            'price_charges': 10.0,
+                            'price_subtotal': 9.0,
+                            'price_unit_multi': 3.0,
+                            'tolls': 30.0,
+                            'charges': 30.0,
+                            'quantity': 3.0
+                        },
+                        'iva': '',
+                        'data_inici': fact.data_inici,
+                        'data_fi': fact.data_final,
+                        'units': 'kW',
+                        'total': 1 + 2 * 2 + 3 * 3,
+                        'type': 'potencia'
+                    }, {
+                        'P1': {
+                            'price_tolls': 0.0,
+                            'price_charges': 0.0,
+                            'price_subtotal': 1.0,
+                            'price_unit_multi': 1.0,
+                            'tolls': 0.0,
+                            'charges': 0.0,
+                            'quantity': 1.0
+                        },
+                        'P3': {
+                            'price_tolls': 0.0,
+                            'price_charges': 0.0,
+                            'price_subtotal': 9.0,
+                            'price_unit_multi': 3.0,
+                            'tolls': 0.0,
+                            'charges': 0.0,
+                            'quantity': 3.0
+                        },
+                        'iva': '',
+                        'data_inici': fact.data_inici,
+                        'data_fi': data_mid,
+                        'units': 'kVArh',
+                        'total': 1 + 3 * 3,
+                        'type': 'reactiva'
+                    }, {
+                        'P4': {
+                            'price_tolls': 0.0,
+                            'price_charges': 0.0,
+                            'price_subtotal': 16.0,
+                            'price_unit_multi': 4.0,
+                            'tolls': 0.0,
+                            'charges': 0.0,
+                            'quantity': 4.0
+                        },
+                        'P5': {
+                            'price_tolls': 0.0,
+                            'price_charges': 0.0,
+                            'price_subtotal': 25.0,
+                            'price_unit_multi': 5.0,
+                            'tolls': 0.0,
+                            'charges': 0.0,
+                            'quantity': 5.0
+                        },
+                        'P6': {
+                            'price_tolls': 0.0,
+                            'price_charges': 0.0,
+                            'price_subtotal': 36.0,
+                            'price_unit_multi': 6.0,
+                            'tolls': 0.0,
+                            'charges': 0.0,
+                            'quantity': 6.0
+                        },
+                        'iva': '',
+                        'data_inici': data_mid1,
+                        'data_fi': fact.data_final,
+                        'units': 'kVArh',
+                        'total': 4 * 4 + 5 * 5 + 6 * 6,
+                        'type': 'reactiva'
+                    }
+                ],
+                'tipus': '11',
+                'expedient': expedient
+            }
+        )
+
+    def _get_or_create_product(self, code, except_ids=None):
+        prod_obj = self.model("product.product")
+        prod_ids = prod_obj.search(self.cursor, self.uid, [("default_code", "=", code)])
+        if prod_ids:
+            return prod_ids[0]
+
+        params = []
+        if except_ids:
+            params = [
+                ("id", "not in", except_ids),
+            ]
+
+        prod_id = prod_obj.search(self.cursor, self.uid, params, limit=1)[0]
+        prod_obj.write(self.cursor, self.uid, prod_id, {"default_code": code})
+        return prod_id
+
+    def _create_saju_line(self, f_id, product_id, subtotal):
+        fact = self.bf(f_id)
+        inv_line_id = self.model("account.invoice.line").create(self.cursor, self.uid, {
+            "name": "SAJU", "invoice_id": fact.invoice.id,
+            "product_id": product_id, "quantity": 1.0,
+            "price_unit": subtotal, "account_id": 1,
+        })
+        self.linia_f_obj.create(self.cursor, self.uid, {
+            "name": "SAJU", "invoice_line_id": inv_line_id,
+            "factura_id": f_id, "price_subtotal": subtotal,
+            "tipus": "altres", "product_id": product_id,
+            "account_id": 1, "data_desde": "2021-06-01",
+            "data_fins": "2021-06-30",
+        })
+
+    def test__get_adjustment_services_data__no_saju_lines__returns_none(self):
+        f_id = self.get_fixture("giscedata_facturacio", "factura_0001")
+        self.assertIsNone(self.r_obj.get_adjustment_services_data(self.bf(f_id)))
+
+    def test__get_adjustment_services_data__SAJU_and_DSAJU__sum_totals(self):
+        f_id = self.get_fixture("giscedata_facturacio", "factura_0001")
+
+        saju_id = self._get_or_create_product("SAJU")
+        dsaju_id = self._get_or_create_product("DSAJU", except_ids=[saju_id])
+
+        self.linia_f_obj.create(
+            self.cursor,
+            self.uid,
+            {
+                "name": "Serveis d'ajust",
+                "quantity": 12.0,
+                "price_unit_multi": 1,
+                "price_unit": 1,
+                "extra": 1,
+                "multi": 1,
+                "factura_id": f_id,
+                "tipus": "reactiva",
+                "product_id": saju_id,
+                "account_id": 1,
+                "data_desde": '2021-06-01',
+                "data_fins": '2021-06-30',
+            },
+        )
+
+        self.linia_f_obj.create(
+            self.cursor,
+            self.uid,
+            {
+                "name": "D Serveis d'ajust",
+                "quantity": 7.0,
+                "price_unit_multi": -1,
+                "price_unit": 1,
+                "extra": 1,
+                "multi": 1,
+                "factura_id": f_id,
+                "tipus": "reactiva",
+                "product_id": dsaju_id,
+                "account_id": 1,
+                "data_desde": '2021-06-01',
+                "data_fins": '2021-06-30',
+            },
+        )
+
+        result = self.r_obj.get_adjustment_services_data(self.bf(f_id))
+        self.assertEquals(result["total"], 5.0)
+        self.assertFalse(result["is_generation_adjustment"])
+
+    def test__get_adjustment_services_data__detects_generation_adjustment(self):
+        f_id = self.get_fixture("giscedata_facturacio", "factura_0001")
+
+        saju_id = self._get_or_create_product("SAJU")
+
+        self.linia_f_obj.create(
+            self.cursor,
+            self.uid,
+            {
+                "name": "Serveis d'ajust (Generation kWh)",
+                "quantity": 2.0,
+                "price_unit_multi": 1,
+                "price_unit": 1,
+                "extra": 1,
+                "multi": 1,
+                "factura_id": f_id,
+                "tipus": "reactiva",
+                "product_id": saju_id,
+                "account_id": 1,
+                "data_desde": '2021-06-01',
+                "data_fins": '2021-06-30',
+            },
+        )
+
+        result = self.r_obj.get_adjustment_services_data(self.bf(f_id))
+        self.assertEquals(result["total"], 2.0)
+        self.assertTrue(result["is_generation_adjustment"])

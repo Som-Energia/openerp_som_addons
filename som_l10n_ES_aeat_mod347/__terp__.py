@@ -3,7 +3,7 @@
     "name": "Som AEAT 347",
     "description": """
     """,
-    "version": "24.5.0",
+    "version": "0-dev",
     "author": "Som",
     "category": "Master",
     "depends": ["base_extended_som", "account", "l10n_ES_aeat_mod347", "poweremail"],

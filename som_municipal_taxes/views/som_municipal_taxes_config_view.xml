@@ -49,5 +49,18 @@
             <field name="context">{'active_test': False}</field>
         </record>
         <menuitem action="action_som_municipal_taxes_config_tree" id="menu_municipal_taxes_config_tree" parent="giscedata_municipal_taxes.menu_admin_pub_municipal_taxes"/>
+
+        <!-- Llistat de resultat del crawler de registregeneral -->
+         <record id="action_som_municipal_taxes_crawler_result_tree" model="ir.actions.act_window">
+            <field name="name">Resultat presentació Registre General</field>
+            <field name="res_model">som.crawlers.result</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="view_id" ref="som_crawlers.view_som_crawlers_result_tree"/>
+            <field name="domain">[('task_id.name', '=', 'Carregar impostos al Registre General')] </field>
+            <field name="context">{'active_test': False}</field>
+        </record>
+        <menuitem action="action_som_municipal_taxes_crawler_result_tree" id="menu_municipal_taxes_crawler_result_tree" parent="giscedata_municipal_taxes.menu_admin_pub_municipal_taxes"/>
+
     </data>
 </openerp>

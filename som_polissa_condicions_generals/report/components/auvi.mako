@@ -1,4 +1,4 @@
-<%def name="auvi(polissa, prices, untaxed)">
+<%def name="auvi(polissa, prices, pricelist, untaxed)">
     <tr>
         <td class="bold">${_(u"Terme energia (€/kWh)")}</td>
         <td class="center reset_line_height" colspan="6">
@@ -12,12 +12,12 @@
             %if polissa['tarifa'] != "2.0TD" and untaxed:
                 <br/>
                 <span class="normal_font_weight">${_(u"on la franja de la cooperativa")}</span>
-                <span>&nbsp;${("(F) = %s €/kWh</B>") % formatLang(prices['coeficient_k_untaxed'], digits=6)}</span>
+                <span>&nbsp;${("(F) = %s €/kWh</B>") % formatLang(pricelist.get('coeficient_k_untaxed', prices['coeficient_k_untaxed']), digits=6)}</span>
             %endif
             %if polissa['tarifa'] != "2.0TD" and not untaxed:
                 <br/>
                 <span class="normal_font_weight">${_(u"on la franja de la cooperativa")}</span>
-                <span>&nbsp;${("(F) = %s €/kWh</B>") % formatLang(prices['coeficient_k'], digits=6)}</span>
+                <span>&nbsp;${("(F) = %s €/kWh</B>") % formatLang(pricelist.get('coeficient_k', prices['coeficient_k']), digits=6)}</span>
             %endif
 
         </td>
@@ -43,10 +43,10 @@
         <tr>
             <td class="bold">${_(u"on la franja de la cooperativa")}</td>
             <td class="center" colspan="3">
-                <span class="">${("(F) = %s €/kWh</B>") % formatLang(prices['coeficient_k_untaxed'], digits=6)}</span>
+                <span class="">${("(F) = %s €/kWh</B>") % formatLang(pricelist.get('coeficient_k_untaxed', prices['coeficient_k_untaxed']), digits=6)}</span>
             </td>
             <td class="center divisio_impostos" colspan="3">
-                <span class="">${("(F) = %s €/kWh</B>") % formatLang(prices['coeficient_k'], digits=6)}</span>
+                <span class="">${("(F) = %s €/kWh</B>") % formatLang(pricelist.get('coeficient_k', prices['coeficient_k']), digits=6)}</span>
             </td>
         </tr>
     %endif

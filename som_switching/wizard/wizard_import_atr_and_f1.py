@@ -26,7 +26,7 @@ class WizardImportAtrAndF1(osv.osv_memory):
                 "{temporal_folder}/{pref}{filename}".format(
                     temporal_folder=directory, pref=prefix, filename=tmp_filename
                 ),
-                "w+",
+                "wb+",
             )
             zip_handler = zipfile.ZipFile(tmp_zip, "w")
         else:

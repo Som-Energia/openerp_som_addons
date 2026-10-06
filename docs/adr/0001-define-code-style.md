@@ -16,11 +16,12 @@ El codi ha de complir els següents requisits:
 
 - Passar `Flake8` (complir `PEP8`)
 - XML i YAML sense errors
-- Les línies no poden superar els 100 caràcters
+- Les línies dels fitxers Python no poden superar els 100 caràcters
+- Els fitxers XML, YAML, Mako i altres formats no tenen aquest límit
 
 ### Decisió llargada línies
 
-La llargada de mida que defineix PEP8 és de 79, que considerem massa poc. També vam considerar una llargada de 88 que és la que fa servir per defecte `black` (formatador de Python 3), però analitzant el codi del repositori també ens va resultar curt.
+Aquesta limitació només s'aplica als fitxers Python. La llargada de mida que defineix PEP8 és de 79, que considerem massa poc. També vam considerar una llargada de 88 que és la que fa servir per defecte `black` (formatador de Python 3), però analitzant el codi del repositori també ens va resultar curt.
 
 Llavors, després d'analitzar diferents llargades en fitxers del repositori i tenint en compte el principi "Explicit is better than implicit" de "Zen of Python", ens va semblar que el millor per la llegibilitat del codi del repositori seria de 120 caràcters.
 

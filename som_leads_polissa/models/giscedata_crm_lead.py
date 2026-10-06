@@ -1,0 +1,726 @@
+# -*- coding: utf-8 -*-
+from __future__ import absolute_import
+import base64
+from datetime import datetime
+from time import sleep
+import pooler
+from osv import fields, osv
+import netsvc
+from oorq.decorators import job
+
+from base_extended_som.models.res_partner import GENDER_SELECTION
+
+
+_tipus_tarifes_lead = [
+    ("tarifa_existent", "Tarifa existent (ATR o Fixa)"),
+    ("tarifa_provisional", "Tarifa ATR provisional"),
+]
+
+_member_quota_payment_types = [
+    ("remesa", "Remesa"),
+    ("tpv", "Passarel·la de pagament")
+]
+
+_billing_payment_methods = [
+    ("remesa", "Remesa"),
+    ("card_recurrent", "Targeta recurrent")
+]
+
+WWW_DATA_FORM_HEADER = "**** DADES DEL FORMULARI ****"
+
+
+class GiscedataCrmLead(osv.OsvInherits):
+    _inherit = "giscedata.crm.lead"
+
+    _CREDITCARD_REQUIRED_FIELDS = [
+        "creditcard_token",
+        "creditcard_masked_number",
+        "creditcard_expiry_date",
+        "creditcard_cof_txnid",
+    ]
+
+    def __init__(self, *args, **kwargs):
+        super(GiscedataCrmLead, self).__init__(*args, **kwargs)
+        self.lead_titular_adr_to_adr["titular_phone_prefix"] = "phone_prefix"
+        self.lead_titular_adr_to_adr["titular_mobile_prefix"] = "mobile_prefix"
+
+        # remove check_num_tel constraints because only allows 9 digits phone numbers D:
+        self._constraints = [
+            constraint for constraint in self._constraints
+            if constraint[0].__name__ != "check_num_tel_mob_longitude"
+        ]
+
+    def send_sign_email(self, cursor, uid, lead_id, context=None):
+        if context is None:
+            context = {}
+
+        mail_o = self.pool.get("poweremail.mailbox")
+        signature_o = self.pool.get("giscedata.signatura.process")
+
+        if not isinstance(lead_id, (list, tuple)):
+            lead_id = [lead_id]
+        lead = self.browse(cursor, uid, lead_id[0], context=context)
+        if not lead.signature_process:
+            raise osv.except_osv(
+                "Error",
+                "No hi ha cap procés de signatura associat a aquest lead."
+            )
+        if lead.signature_process.status not in ["wait", "doing"]:
+            raise osv.except_osv(
+                "Error",
+                "El procés de signatura associat al lead no ha estat creat o ja està completat."
+            )
+
+        sign_id = lead.signature_process.id
+        template_id = lead.signature_process.template_id.id
+        signature_o.send_poweremail(
+            cursor, uid, [sign_id], context=context
+        )
+        cursor.commit()
+        sleep(2)
+        search_params = [
+            ("reference", "=", "giscedata.signatura.process,{}".format(sign_id)),
+            ("template_id", "=", template_id),
+            ("folder", "=", "outbox")
+        ]
+        mail_ids = mail_o.search(cursor, uid, search_params, context=context)
+        mail_o.send_this_mail(cursor, uid, mail_ids, context=context)
+
+        msg = u"S'ha sol·licitat l'enviament de l'e-mail de Signatura manualment" \
+            u"(en cas de dubte, mirar HelpScout)"
+
+        self.historize_msg(cursor, uid, [lead.id], msg, context=context)
+
+        return True
+
+    def process_signature_callback(self, cursor, uid, lead_id, context=None):
+        if isinstance(lead_id, (list, tuple)):
+            lead_id = lead_id[0]
+        result = super(GiscedataCrmLead, self).process_signature_callback(
+            cursor, uid, lead_id, context=context
+        )
+        lead = self.read(
+            cursor, uid, lead_id, ['crm_id', 'polissa_id', 'state'], context=context
+        )
+        if lead['polissa_id'] and lead['state'] not in ('done', 'cancel'):
+            self.pool.get('crm.case').case_close(
+                cursor, uid, [lead['crm_id'][0]]
+            )
+        return result
+
+    def contract_pdf(self, cursor, uid, ids, context=None):
+        if context is None:
+            context = {}
+        context = context.copy()
+        context["is_dry_run"] = True
+        if not isinstance(ids, (list, tuple)):
+            ids = [ids]
+
+        context["lead"] = True
+
+        lead = self.browse(cursor, uid, ids[0])
+        context["lang"] = lead.lang
+
+        preus_provisional_energia = {
+            "P1": lead.preu_fix_energia_p1,
+            "P2": lead.preu_fix_energia_p2,
+            "P3": lead.preu_fix_energia_p3,
+            "P4": lead.preu_fix_energia_p4,
+            "P5": lead.preu_fix_energia_p5,
+            "P6": lead.preu_fix_energia_p6,
+        }
+        if lead.tipus_tarifa_lead == 'tarifa_provisional':
+            context["tarifa_provisional"] = {"preus_provisional_energia": preus_provisional_energia}
+            if lead.set_custom_potencia:
+                preus_provisional_potencia = {
+                    "P1": lead.preu_fix_potencia_p1,
+                    "P2": lead.preu_fix_potencia_p2,
+                    "P3": lead.preu_fix_potencia_p3,
+                    "P4": lead.preu_fix_potencia_p4,
+                    "P5": lead.preu_fix_potencia_p5,
+                    "P6": lead.preu_fix_potencia_p6,
+                }
+                context["tarifa_provisional"]["preus_provisional_potencia"] = \
+                    preus_provisional_potencia
+
+        return super(GiscedataCrmLead, self).contract_pdf(cursor, uid, ids, context=context)
+
+    def contract_summary_pdf(self, cursor, uid, ids, context=None):
+        if context is None:
+            context = {}
+        if not isinstance(ids, (list, tuple)):
+            ids = [ids]
+
+        tmp_cursor = pooler.get_db(cursor.dbname).cursor()
+        try:
+            lead = self.browse(tmp_cursor, uid, ids[0], context=context)
+            summary_context = context.copy()
+            summary_context.update({
+                "lead": True,
+                "lang": lead.lang,
+                "is_dry_run": True,
+                "summary_contract": True,
+            })
+
+            self.force_validation(tmp_cursor, uid, ids, context=summary_context)
+            self.create_entities(tmp_cursor, uid, lead.id, context=summary_context)
+
+            lead = self.browse(tmp_cursor, uid, lead.id, context=summary_context)
+            polissa_id = lead.polissa_id and lead.polissa_id.id or False
+            if not polissa_id:
+                raise osv.except_osv(
+                    "Error",
+                    "No temporary contract was generated for the lead contract summary.",
+                )
+
+            service = netsvc.LocalService('report.giscedata.polissa.contract.summary')
+            result, _doc_format = service.create(
+                tmp_cursor, uid, [polissa_id], {}, summary_context
+            )
+            encoded = base64.b64encode(result)
+            return {
+                'contract': encoded,
+                'contract_summary': encoded,
+            }
+        finally:
+            tmp_cursor.rollback()
+            tmp_cursor.close()
+
+    def contract_summary_full_pdf(self, cursor, uid, ids, context=None, datas=None):
+        if context is None:
+            context = {}
+        if datas is None:
+            datas = {}
+        if not isinstance(ids, (list, tuple)):
+            ids = [ids]
+
+        tmp_cursor = pooler.get_db(cursor.dbname).cursor()
+        try:
+            lead = self.browse(tmp_cursor, uid, ids[0], context=context)
+            summary_context = context.copy()
+            summary_context.update({
+                "lead": True,
+                "lang": lead.lang,
+                "is_dry_run": True,
+                "summary_contract": True,
+            })
+
+            preus_provisional_energia = {
+                "P1": lead.preu_fix_energia_p1,
+                "P2": lead.preu_fix_energia_p2,
+                "P3": lead.preu_fix_energia_p3,
+                "P4": lead.preu_fix_energia_p4,
+                "P5": lead.preu_fix_energia_p5,
+                "P6": lead.preu_fix_energia_p6,
+            }
+            if lead.tipus_tarifa_lead == 'tarifa_provisional':
+                summary_context["tarifa_provisional"] = {
+                    "preus_provisional_energia": preus_provisional_energia
+                }
+                if lead.set_custom_potencia:
+                    preus_provisional_potencia = {
+                        "P1": lead.preu_fix_potencia_p1,
+                        "P2": lead.preu_fix_potencia_p2,
+                        "P3": lead.preu_fix_potencia_p3,
+                        "P4": lead.preu_fix_potencia_p4,
+                        "P5": lead.preu_fix_potencia_p5,
+                        "P6": lead.preu_fix_potencia_p6,
+                    }
+                    summary_context["tarifa_provisional"]["preus_provisional_potencia"] = \
+                        preus_provisional_potencia
+
+            self.force_validation(tmp_cursor, uid, ids, context=summary_context)
+            self.create_entities(tmp_cursor, uid, lead.id, context=summary_context)
+
+            lead = self.browse(tmp_cursor, uid, lead.id, context=summary_context)
+            polissa_id = lead.polissa_id and lead.polissa_id.id or False
+            if not polissa_id:
+                raise osv.except_osv(
+                    "Error",
+                    "No temporary contract was generated for the lead contract summary.",
+                )
+
+            service = netsvc.LocalService(
+                'report.giscedata.polissa.contract.summary.full'
+            )
+            result, _doc_format = service.create(
+                tmp_cursor, uid, [polissa_id], datas, summary_context
+            )
+            encoded = base64.b64encode(result)
+            return {
+                'contract': encoded,
+                'contract_summary_full': encoded,
+            }
+        finally:
+            tmp_cursor.rollback()
+            tmp_cursor.close()
+
+    def _check_and_get_mandatory_fields(
+        self, cursor, uid, crml_id, mandatory_fields=[], other_fields=[], context=None
+    ):
+        if not (context is None or context.get("som_from_activation_lead")):
+            if "llista_preu" in mandatory_fields:
+                data = self.read(cursor, uid, crml_id, ["tipus_tarifa_lead", "set_custom_potencia"])
+                if (
+                    data["tipus_tarifa_lead"] == "tarifa_provisional"
+                    and data["set_custom_potencia"]
+                ):
+                    mandatory_fields.pop(mandatory_fields.index("llista_preu"))
+
+        return super(GiscedataCrmLead, self)._check_and_get_mandatory_fields(
+            cursor, uid, crml_id, mandatory_fields, other_fields, context
+        )
+
+    def create_entity_polissa(self, cursor, uid, crml_id, context=None):
+        res = super(GiscedataCrmLead, self).create_entity_polissa(
+            cursor, uid, crml_id, context=context
+        )
+        values = {}
+        partner_o = self.pool.get("res.partner")
+
+        # recuperem la polissa recent creada del lead
+        lead = self.browse(cursor, uid, crml_id, context=context)
+
+        polissa_id = lead.polissa_id.id
+        member_number = lead.member_number
+
+        member_id = partner_o.search(
+            cursor, uid, [("ref", "=", member_number)], limit=1
+        )
+
+        if not member_id:
+            raise osv.except_osv(
+                "Error - Sòcia no trobada",
+                "Prova de posar el número {} amb la lletra i els zeros".format(member_number),
+            )
+
+        values["soci"] = member_id[0]
+        values["donatiu"] = lead.donation
+        values["data_firma_contracte"] = datetime.today().strftime("%Y-%m-%d %H:%M:%S")
+
+        for line in lead.history_line:
+            if line.description and line.description.startswith(WWW_DATA_FORM_HEADER):
+                values["observacions"] = line.description
+                break
+
+        polissa_o = self.pool.get("giscedata.polissa")
+        polissa = polissa_o.browse(cursor, uid, polissa_id, context=context)
+        if polissa.mode_facturacio != 'atr':
+            values['mode_facturacio_generacio'] = polissa.mode_facturacio
+
+        fp_id = polissa_o.calculate_fiscal_position_from_cups(
+            cursor, uid,
+            polissa.cups.id,
+            polissa.cnae.name,
+            [potencia.potencia for potencia in polissa.potencies_periode],
+            context=context
+        )
+        if fp_id:
+            values['fiscal_position_id'] = fp_id
+
+        if values:
+            polissa_o.write(cursor, uid, polissa_id, values, context=context)
+        return res
+
+    def _get_card_payment_polissa_values(self, cursor, uid, lead, pagador_id, context=None):
+        if context is None:
+            context = {}
+
+        missing_fields = [
+            field for field in self._CREDITCARD_REQUIRED_FIELDS if not getattr(lead, field, False)
+        ]
+        if missing_fields:
+            raise osv.except_osv(
+                "MISSING_CARD_DATA",
+                "Falten dades de targeta recurrents al lead."
+            )
+
+        ir_model_o = self.pool.get("ir.model.data")
+        card_o = self.pool.get("res.partner.creditcard")
+
+        payment_type_id = ir_model_o.get_object_reference(
+            cursor, uid, "som_card_payment", "payment_type_card_recurrent"
+        )[1]
+        payment_mode_id = ir_model_o.get_object_reference(
+            cursor, uid, "som_card_payment", "payment_mode_card_recurrent"
+        )[1]
+
+        card_ids = card_o.search(
+            cursor, uid, [("token", "=", lead.creditcard_token)], context=context
+        )
+
+        if card_ids:
+            card = card_o.browse(cursor, uid, card_ids[0], context=context)
+            if (
+                card.masked_number != lead.creditcard_masked_number
+                or card.expiry_date != lead.creditcard_expiry_date
+            ):
+                raise osv.except_osv(
+                    "INVALID_CARD_TOKEN_DATA",
+                    "Ja existeix una targeta amb aquest token pero amb dades diferents."
+                )
+            if card.partner_id.id == pagador_id:
+                card_id = card.id
+            else:
+                card_id = card_o.create(
+                    cursor,
+                    uid,
+                    {
+                        "partner_id": pagador_id,
+                        "token": lead.creditcard_token,
+                        "cof_txnid": lead.creditcard_cof_txnid,
+                        "expiry_date": lead.creditcard_expiry_date,
+                        "masked_number": lead.creditcard_masked_number,
+                    },
+                    context=context,
+                )
+        else:
+            card_id = card_o.create(
+                cursor,
+                uid,
+                {
+                    "partner_id": pagador_id,
+                    "token": lead.creditcard_token,
+                    "cof_txnid": lead.creditcard_cof_txnid,
+                    "expiry_date": lead.creditcard_expiry_date,
+                    "masked_number": lead.creditcard_masked_number,
+                },
+                context=context,
+            )
+
+        return {
+            "payment_mode_id": payment_mode_id,
+            "tipo_pago": payment_type_id,
+            "creditcard": card_id,
+        }
+
+    def compute_extra_polissa_vals(self, cursor, uid, crml_id, polissa_vals, context=None):
+        if context is None:
+            context = {}
+
+        res = super(GiscedataCrmLead, self).compute_extra_polissa_vals(
+            cursor, uid, crml_id, polissa_vals, context=context
+        )
+
+        lead = self.browse(cursor, uid, crml_id, context=context)
+        if lead.billing_payment_method == "card_recurrent":
+            pagador_id = polissa_vals.get("pagador") or polissa_vals.get("titular")
+            polissa_vals.update(self._get_card_payment_polissa_values(
+                cursor, uid, lead, pagador_id, context=context
+            ))
+
+        return res
+
+    def onchange_set_custom_potencia(self, cursor, uid, ids, set_custom_potencia):
+        res = {
+            "value": {},
+            "domain": {},
+            "warning": {},
+        }
+        if not set_custom_potencia:
+            res["value"]["preu_fix_potencia_p1"] = 0
+            res["value"]["preu_fix_potencia_p2"] = 0
+            res["value"]["preu_fix_potencia_p3"] = 0
+            res["value"]["preu_fix_potencia_p4"] = 0
+            res["value"]["preu_fix_potencia_p5"] = 0
+            res["value"]["preu_fix_potencia_p6"] = 0
+
+        return res
+
+    def create_entity_titular(self, cursor, uid, crml_id, context=None):
+        if context is None:
+            context = {}
+
+        partner_o = self.pool.get("res.partner")
+        lead = self.browse(cursor, uid, crml_id, context=context)
+
+        if not lead.titular_es_empresa and lead.titular_nom and lead.titular_cognom1:
+            partner_ids = partner_o.search(
+                cursor, uid, [("vat", "=", lead.titular_vat)]
+            )
+            if partner_ids and partner_o.search(
+                cursor, uid, [("representante_id", "=", partner_ids[0])]
+            ):
+                surnames = " ".join(filter(None, [
+                    lead.titular_cognom1, lead.titular_cognom2
+                ]))
+                legacy_name = "{} {}".format(lead.titular_nom, surnames)
+                partner_name = partner_o.read(
+                    cursor, uid, partner_ids[0], ["name"], context=context
+                )["name"]
+                if partner_name == legacy_name:
+                    partner_o.write(cursor, uid, partner_ids[0], {
+                        "name": "{}, {}".format(surnames, lead.titular_nom)
+                    }, context=context)
+
+        res = super(GiscedataCrmLead, self).create_entity_titular(
+            cursor, uid, crml_id, context=context
+        )
+
+        lead = self.browse(cursor, uid, crml_id, context=context)
+        values = {}
+
+        # We set again the lang because if it existed before, the base code dont write it
+        if lead.lang:
+            values["lang"] = lead.lang
+
+        rep_id = self._create_or_get_representative(
+            cursor, uid, lead.persona_firmant_vat, lead.persona_nom, lead.lang, context=context
+        )
+        if rep_id:
+            values["representante_id"] = rep_id
+
+        if lead.create_new_member:
+            # become_member will keep the member number we set here
+            context["force_ref"] = lead.member_number
+            values["date"] = datetime.today().strftime("%Y-%m-%d")
+            partner_o.write(cursor, uid, lead.partner_id.id, values, context=context)
+            partner_o.become_member(cursor, uid, lead.partner_id.id, context=context)
+            partner_o.adopt_contracts_as_member(cursor, uid, lead.partner_id.id, context=context)
+        elif values:
+            partner_o.write(cursor, uid, lead.partner_id.id, values, context=context)
+
+        return res
+
+    def create_partner(self, cursor, uid, create_vals, crml_id, context=None):
+        if context is None:
+            context = {}
+
+        lead = self.browse(cursor, uid, crml_id)
+        if lead.titular_number:
+            create_vals['ref'] = lead.titular_number
+
+        create_vals["gender"] = lead.gender
+        create_vals["birthdate"] = lead.birthdate
+        create_vals["referral_source"] = lead.referral_source
+
+        partner_id = super(GiscedataCrmLead, self).create_partner(
+            cursor, uid, create_vals, crml_id, context=context)
+
+        return partner_id
+
+    def _get_values_titular(self, cursor, uid, vat, context=None):
+        partner_o = self.pool.get("res.partner")
+        address_o = self.pool.get("res.partner.address")
+
+        vals = super(GiscedataCrmLead, self)._get_values_titular(cursor, uid, vat, context=context)
+
+        # We add the phone prefix if found
+        pids = partner_o.search(cursor, uid, [('vat', '=', vals['titular_vat'])])
+        if len(pids):
+            addrs = partner_o.address_get(cursor, uid, pids[0], adr_pref=['default'])
+            if addrs.get("default"):
+                ad_id = addrs.get("default")
+                adr_info = address_o.read(
+                    cursor, uid, ad_id, ['phone_prefix', 'mobile_prefix'], context=context)
+                # Quick fix to ensure no more exceptions on new contracts
+                phone_prefix = adr_info.get("phone_prefix", False)
+                mobile_prefix = adr_info.get("mobile_prefix", False)
+                if isinstance(phone_prefix, list) or isinstance(phone_prefix, tuple):
+                    phone_prefix = phone_prefix[0]
+                if isinstance(mobile_prefix, list) or isinstance(mobile_prefix, tuple):
+                    mobile_prefix = mobile_prefix[0]
+                if phone_prefix:
+                    vals["titular_phone_prefix"] = phone_prefix
+                if mobile_prefix:
+                    vals["titular_mobile_prefix"] = mobile_prefix
+
+        return vals
+
+    def _create_or_get_representative(self, cursor, uid, vat, name, lang, context=None):
+        if context is None:
+            context = {}
+
+        partner_o = self.pool.get("res.partner")
+
+        representative_id = None
+        if vat:
+            if len(vat) <= 9:
+                vat = "ES" + vat
+            vat = vat.upper()
+
+            representative_ids = partner_o.search(cursor, uid, [("vat", "=", vat)])
+            if representative_ids:
+                representative_id = representative_ids[0]
+            else:
+                if name and "," not in name:
+                    config_o = self.pool.get("res.config")
+                    with config_o.ResConfigPatch({"partner_name_format": "N C1 C2"}):
+                        names = partner_o.separa_cognoms(cursor, uid, name)
+                    surnames = " ".join(filter(None, names["cognoms"]))
+                    if names["nom"] and surnames:
+                        name = "{}, {}".format(surnames, names["nom"])
+                values = {
+                    "vat": vat,
+                    "name": name,
+                }
+                if lang:
+                    values["lang"] = lang
+                representative_id = partner_o.create(cursor, uid, values, context=context)
+        return representative_id
+
+    def create_entity_iban(self, cursor, uid, crml_id, context=None):
+        if context is None:
+            context = {}
+        ir_model_o = self.pool.get("ir.model.data")
+        lead = self.browse(cursor, uid, crml_id, context=context)
+
+        payment_mode_card_id = ir_model_o.get_object_reference(
+            cursor, uid, "som_card_payment", "payment_mode_card_recurrent"
+        )[1]
+        res = ""
+        if lead.payment_mode_id.id != payment_mode_card_id:
+            res = super(GiscedataCrmLead, self).create_entity_iban(
+                cursor, uid, crml_id, context=context
+            )
+
+            if lead.create_new_member and lead.member_quota_payment_type == 'remesa':
+                self.create_entity_member_bank_payment(cursor, uid, crml_id, context=context)
+
+        return res
+
+    def create_entity_member_bank_payment(self, cursor, uid, crml_id, context=None):
+        if context is None:
+            context = {}
+
+        lead = self.browse(cursor, uid, crml_id, context=context)
+
+        if lead.initial_invoice_id:
+            raise osv.except_osv('Error', 'Ja existeix una factura de remesa inicial')
+
+        partner_o = self.pool.get("res.partner")
+        invoice_id = partner_o.create_member_fee_payment(
+            cursor,
+            uid,
+            lead.partner_id.id,
+            lead.iban,
+            lead.member_number,
+            "QUOTA-SOCIA-LEAD-{}".format(lead.id),
+            context=context,
+        )
+        self.write(cursor, uid, lead.id, {"initial_invoice_id": invoice_id}, context=context)
+
+    def create(self, cursor, uid, vals, context=None):
+        if context is None:
+            context = {}
+        seq_o = self.pool.get("ir.sequence")
+
+        # We assing here the new numbers to show it in the contract to be signed
+        if vals.get("create_new_member"):
+            vals["member_number"] = seq_o.get_next(cursor, uid, "res.partner.soci")
+        elif context.get("sponsored_titular"):
+            vals["titular_number"] = seq_o.get_next(cursor, uid, "res.partner.titular")
+
+        lead_id = super(GiscedataCrmLead, self).create(cursor, uid, vals, context=context)
+
+        return lead_id
+
+    def button_send_mail(self, cr, uid, ids, context=None):
+        if context is None:
+            context = {}
+
+        lead_id = context["active_id"]
+        self._send_mail(cr, uid, lead_id, context=context)
+
+    @job(queue="poweremail_sender")
+    def _send_mail_async(self, cr, uid, lead_id, context=None):
+        self._send_mail(cr, uid, lead_id, context=context)
+
+    def _send_mail(self, cr, uid, lead_id, context=None):
+        if context is None:
+            context = {}
+
+        lead_o = self.pool.get("giscedata.crm.lead")
+        ir_model_o = self.pool.get('ir.model.data')
+        template_o = self.pool.get('poweremail.templates')
+
+        lead = lead_o.read(cr, uid, lead_id, ['create_new_member', 'polissa_id'], context=context)
+
+        template_name = "email_contracte_esborrany"
+        if lead["create_new_member"]:
+            template_name = "email_contracte_esborrany_nou_soci"
+        template_id = ir_model_o.get_object_reference(cr, uid, 'som_polissa_soci', template_name)[1]
+
+        attempts = 5
+        while not lead["polissa_id"] and attempts > 0:
+            sleep(5)
+            lead = lead_o.read(cr, uid, lead_id, ['polissa_id'], context=context)
+            attempts -= 1
+        polissa_id = lead["polissa_id"][0]
+
+        from_id = template_o.read(cr, uid, template_id)['enforce_from_account'][0]
+
+        wiz_send_obj = self.pool.get("poweremail.send.wizard")
+        context.update({
+            "active_ids": [polissa_id],
+            "active_id": polissa_id,
+            "template_id": template_id,
+            "src_model": "giscedata.polissa",
+            "src_rec_ids": [polissa_id],
+            "from": from_id,
+            "state": "single",
+            "priority": "0",
+        })
+
+        params = {"state": "single", "priority": "0", "from": context["from"]}
+        wiz_id = wiz_send_obj.create(cr, uid, params, context)
+        return wiz_send_obj.send_mail(cr, uid, [wiz_id], context)
+
+    def onchange_data_alta_prevista(self, cursor, uid, ids, data_alta_prevista, context=None):
+        res = {'value': {'activacio_cicle': 'A'}, 'warning': {}, 'domain': {}}
+        if data_alta_prevista:
+            res['value']['activacio_cicle'] = 'F'
+        return res
+
+    _columns = {
+        "tipus_tarifa_lead": fields.selection(_tipus_tarifes_lead, "Tipus de tarifa del contracte"),
+        "set_custom_potencia": fields.boolean("Sobreescriure preus potència"),
+        "preu_fix_energia_p1": fields.float("Preu Fix Energia P1", digits=(16, 6)),
+        "preu_fix_energia_p2": fields.float("Preu Fix Energia P2", digits=(16, 6)),
+        "preu_fix_energia_p3": fields.float("Preu Fix Energia P3", digits=(16, 6)),
+        "preu_fix_energia_p4": fields.float("Preu Fix Energia P4", digits=(16, 6)),
+        "preu_fix_energia_p5": fields.float("Preu Fix Energia P5", digits=(16, 6)),
+        "preu_fix_energia_p6": fields.float("Preu Fix Energia P6", digits=(16, 6)),
+        "preu_fix_potencia_p1": fields.float("Preu Fix Potència P1", digits=(16, 6)),
+        "preu_fix_potencia_p2": fields.float("Preu Fix Potència P2", digits=(16, 6)),
+        "preu_fix_potencia_p3": fields.float("Preu Fix Potència P3", digits=(16, 6)),
+        "preu_fix_potencia_p4": fields.float("Preu Fix Potència P4", digits=(16, 6)),
+        "preu_fix_potencia_p5": fields.float("Preu Fix Potència P5", digits=(16, 6)),
+        "preu_fix_potencia_p6": fields.float("Preu Fix Potència P6", digits=(16, 6)),
+        "member_number": fields.char('Número de sòcia', size=64),
+        "titular_number": fields.char('Número de titular (apadrinada)', size=64),
+        "initial_invoice_id": fields.many2one("account.invoice", "Factura de remesa inicial"),
+        "create_new_member": fields.boolean("Sòcia de nova creació"),
+        "member_quota_payment_type": fields.selection(
+            _member_quota_payment_types, "Forma pagament quota sòcia"),
+        "billing_payment_method": fields.selection(
+            _billing_payment_methods, "Forma pagament facturacio"),
+        "creditcard_token": fields.char("Token targeta", size=128),
+        "creditcard_masked_number": fields.char("Numero targeta", size=32),
+        "creditcard_expiry_date": fields.char("Data caducitat targeta", size=5),
+        "creditcard_cof_txnid": fields.char("COF TxnId targeta", size=128),
+        "donation": fields.boolean("Donatiu voluntari"),
+        "referral_source": fields.char("Com ens ha conegut", size=255),
+        "birthdate": fields.date("Data de naixement"),
+        "gender": fields.selection(GENDER_SELECTION, "Gènere"),
+        "comercial_info_accepted": fields.boolean("Accepta informació comercial (SomServeis)"),
+        "crm_lead_id": fields.integer("ID del lead al CRM"),
+        "is_new_contact": fields.boolean("És una persona nova per la cooperativa"),
+        "titular_phone_prefix": fields.many2one(
+            'res.phone.national.code', "Prefix", required=False),
+        "titular_mobile_prefix": fields.many2one(
+            'res.phone.national.code', "Prefix", required=False),
+    }
+
+    _defaults = {
+        "tipus_tarifa_lead": lambda *a: "tarifa_existent",
+        "set_custom_potencia": lambda *a: False,
+        "billing_payment_method": lambda *a: "remesa",
+        "donation": lambda *a: False,
+        "comercial_info_accepted": lambda *a: False,
+        "crm_lead_id": lambda *a: 0,
+        "is_new_contact": lambda *a: False,
+    }
+
+
+GiscedataCrmLead()

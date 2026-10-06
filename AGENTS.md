@@ -1,0 +1,155 @@
+# AGENTS.md - Instruccions per a Agents IA
+
+Aquest fitxer conté les instruccions i convencions que qualsevol agent IA ha de seguir quan treballi amb el repositori `openerp_som_addons`.
+
+## Tech Stack
+
+- **Framework**: OpenERP v5 (Som Energia custom modules)
+- **Python**: 2.7 (compatible amb Python 3)
+- **Testing**: destral (OOMigration test framework)
+- **Linting**: flake8, autopep8, autoflake (via pre-commit)
+
+## Estructura del Projecte
+
+```
+openerp_som_addons/
+├── som_* /              # Mòduls propis de Som Energia i herència d'alguns de gisce/erp
+├── giscedata_* /        # Mòduls de GISCE que fem herència
+├── account_* /          # Mòduls comptables
+└── .github/
+    ├── workflows/       # CI (schedule_tests_*.yml)
+    ├── docs/           # Documentació interna
+    └── copilot-instructions.md
+```
+
+## Documentació del projecte
+
+| Carpeta | Contingut |
+|---------|-----------|
+| `docs/patterns/` | Receptes: com fer tasques concretes |
+| `docs/guides/` | Guies: conceptes i configuració |
+| `docs/guides/sentry-triage-workflow.md` | Workflow per triar repo, issue i PR quan una incidència ve de Sentry |
+| `.github/docs/` | Decisions d'arquitectura i estil |
+
+## Skills Disponibles
+
+Les skills següents estan disponibles al projecte i s'han d'utilitzar quan correspongui. Veure [.agents/skill-registry.md](.agents/skill-registry.md) per la llista completa.
+
+### Git Workflow
+
+**PR worktree policy:**
+- Using a named worktree for PR-affecting work is optional. If used, place it under `<WORKSPACE>/openerp_som_addons-worktrees/`, where `<WORKSPACE>` is the directory containing the primary repository checkout; never use `/tmp/opencode`.
+- Before making edits, stop and get an explicit decision on whether to use the active checkout or a worktree. This applies even when the selected worktree already exists.
+- Before creating any worktree, stop and get explicit approval. Fetch `origin` first and create a new worktree branch from the current `origin/main`, never from a potentially stale local `main`.
+- Quan s'hagi seleccionat un worktree amb nom en un pane Herdr (`HERDR_ENV=1`), abans d'editar o executar tests useu el wrapper `create` o `open` de la skill `erp-herdr-worktree`; crear o obrir directament amb `git worktree` no n'és una alternativa.
+- En presentar l'elecció entre el checkout actiu i un worktree nou, indiqueu explícitament que escollir un worktree nou autoritza el `fetch` i la creació necessaris i que no s'ha de demanar una segona confirmació per la mateixa decisió.
+
+**Main branch policy:** No facis commits directament a `main`: treballa sempre en una branca separada —també pots fer-ho en un worktree— i integra els canvis mitjançant una PR.
+| Skill | Quan usar | Com usar |
+|-------|-----------|----------|
+| `git-branch` | Crear branca nova | Veure [.agents/skills/git-branch/SKILL.md](.agents/skills/git-branch/SKILL.md) |
+| `git-commit` | Fer commit | Veure [.agents/skills/git-commit/SKILL.md](.agents/skills/git-commit/SKILL.md) |
+| `git-pr` | Crear PR | Veure [.agents/skills/git-pr/SKILL.md](.agents/skills/git-pr/SKILL.md) |
+| `erp-herdr-worktree` | Treballar en un worktree ERP des d'un pane Herdr mantenint l'agent al workspace multirepo | Veure [.agents/skills/erp-herdr-worktree/SKILL.md](.agents/skills/erp-herdr-worktree/SKILL.md) |
+
+### Current PR Policy
+
+Repository GitHub workflows and repository rules are authoritative for PR requirements. Verify any generic or global skill requirement against them before applying it to this repository.
+
+Currently, `.github/workflows/pull_request_labeler.yml` requires each PR to have at least one label. It does not require an approved linked issue or a `type:*` label. This is the current policy and may change with repository workflows or rules.
+
+### Noms de branca
+
+Utilitza el format `<PREFIX>_<descripcio>`:
+
+- Prefix: `ADD_`, `IMP_`, `FIX_`, `MOD_`, `REF_`, `TEST_`, `DOCS_` o `CI_`.
+- Descripció: paraules descriptives en anglès, minúscules i separades per `_`.
+
+Exemple: `IMP_invoice_payment_type_views`.
+
+**Format de commit:**
+- Només emoji + descripció en anglès: `✨ add user auth`
+- No afegir `feat:`, `fix:` ni cap altre type textual
+- Feu els commits amb el virtualenv ERP actiu: els hooks de pre-commit requereixen l'executable `python`. Exemple portable: `PYENV_VERSION=erp git commit -m "✨ add user auth"`.
+
+### Testing
+
+| Skill | Quan usar | Com usar |
+|-------|-----------|----------|
+| `erp-test` | Executar tests | Veure [.agents/skills/erp-test/SKILL.md](.agents/skills/erp-test/SKILL.md) |
+| `erp-start` | Arrencar servei ERP | Veure [.agents/skills/erp-start/SKILL.md](.agents/skills/erp-start/SKILL.md) |
+| `erp-migration` | Crear scripts de migració | Veure [.agents/skills/erp-migration/SKILL.md](.agents/skills/erp-migration/SKILL.md) |
+| `erp-demo-testcase` | Crear casos demo XML de test | Veure [.agents/skills/erp-demo-testcase/SKILL.md](.agents/skills/erp-demo-testcase/SKILL.md) |
+
+### Migracions
+
+Qualsevol canvi de model o fitxer XML, incloses les vistes, requereix llegir la skill `erp-migration` abans d'editar i avaluar si cal un script de migració. No és obligatori crear una migració quan la PR parteix d'un mòdul nou, perquè no hi ha instal·lacions existents que actualitzar.
+
+### Sentry
+
+| Skill | Quan usar | Com usar |
+|-------|-----------|----------|
+| `sentry-triage` | Fer triage d'incidències de Sentry | Veure [.agents/skills/sentry-triage/SKILL.md](.agents/skills/sentry-triage/SKILL.md) |
+
+### Reports legals i contractuals
+
+| Skill | Quan usar | Com usar |
+|-------|-----------|----------|
+| `update-contract-report` | Actualitzar un report `.mako` legal/contractual a partir d'un `docx` o `md` | Veure [.agents/skills/update-contract-report/SKILL.md](.agents/skills/update-contract-report/SKILL.md) |
+
+**Requisits de l'entorn de tests:**
+1. Inicieu els serveis necessaris de PostgreSQL, MongoDB i Redis:
+   ```bash
+   REPO_ROOT="$(git rev-parse --show-toplevel)"
+   docker compose -f "$REPO_ROOT/docker-compose.yaml" up -d
+   ```
+   Inicieu sempre els tres serveis abans d'executar tests.
+2. Virtualenv activat — nom habitual: `erp` (`pyenv activate erp` o `workon erp`)
+
+### Tests en worktrees
+
+Useu obligatòriament `scripts/run-tests-worktree.sh` des de qualsevol worktree. `$WORKSPACE/erp/server/bin/addons` és estat compartit i mutable: executar-hi `scripts/run-tests.sh` directament o modificar-ne els symlinks manualment és insegur.
+
+Indiqueu explícitament cada addon que el test ha de redirigir. El wrapper valida els addons, adquireix un únic lock global entre worktrees i el manté durant la captura, la redirecció, tota l'execució de Destral i la restauració. El lock només serialitza processos que usen aquest wrapper: cap eina ha de modificar manualment els symlinks compartits. `--no-requirements` continua sent la ruta recomanada:
+
+```bash
+REPO_ROOT="$(git rev-parse --show-toplevel)"
+docker compose -f "$REPO_ROOT/docker-compose.yaml" up -d
+PYENV_VERSION=erp scripts/run-tests-worktree.sh \
+    --addon <module> -- <database> --no-requirements -m <module>
+```
+
+El timeout del lock és finit i configurable amb `OPENERP_WORKTREE_TEST_LOCK_TIMEOUT` (600 segons per defecte). En timeout, el wrapper mostra metadata limitada del propietari; no mata processos. Si observa una alteració externa o una recuperació que no pot demostrar segura, no sobreescriu l'entrada i conserva el manifest per diagnosticar-la. Aquesta detecció no és una garantia davant d'escriptures externes que ignorin el lock durant un swap.
+
+## Estil de Programació
+
+Seguir `.github/docs/estil.md` i `.github/docs/evitar.md`.
+
+### Patterns d'OpenERP 5
+
+- Utilitzar `osv.osv`, `osv.osv_memory`
+- Definir camps amb `_columns` i `fields.*`
+- Evitar `@api.model`, `@api.depends` (API nova)
+- Mètodes: `def method(self, cursor, uid, ids, context=None):`
+
+## SDD (Spec-Driven Development)
+
+El projecte utilitza SDD per gestionar canvis:
+
+| Fase | Descripció |
+|------|------------|
+| `sdd-explore` | Investigar i entendre |
+| `sdd-propose` | Crear proposta |
+| `sdd-spec` | Escriure especificacions |
+| `sdd-design` | Disseny tècnic |
+| `sdd-tasks` | Dividir en tasques |
+| `sdd-apply` | Implementar |
+| `sdd-verify` | Verificar contra specs |
+| `sdd-archive` | Archivar canvi |
+
+## Comprovacions obligatòries
+
+Abans de crear PR, verificar:
+- [ ] Tests passen (`erp-test`)
+- [ ] Linting passen (`flake8 .`)
+- [ ] S'ha seguit l'estil de codi

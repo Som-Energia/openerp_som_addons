@@ -160,4 +160,24 @@
             <field name="def_body_text"><![CDATA[ <p>FOOTER</p> ]]> </field>
         </record>
     </data>
+    <data noupdate="1">
+        <record model="poweremail.templates" id="common_template_social_links">
+            <field name="name">Common template social links</field>
+            <field name="object_name" model="ir.model" search="[('model', '=', 'poweremail.templates')]"/>
+            <field eval="0" name="save_to_drafts"/>
+            <field name="model_int_name">poweremail.templates</field>
+            <field name="def_to">""</field>
+            <field name="def_bcc"></field>
+            <field eval="0" name="auto_email"/>
+            <field eval="0" name="single_email"/>
+            <field eval="0" name="use_sign"/>
+            <field name="def_subject"></field>
+            <field name="template_language">mako</field>
+            <field eval="0" name="send_on_create"/>
+            <field name="lang"></field>
+            <field name="copyvalue"></field>
+            <field eval="0" name="send_on_write"/>
+            <field name="def_body_text"><![CDATA[ <p>SOCIAL LINKS</p> ]]> </field>
+        </record>
+    </data>
 </openerp>

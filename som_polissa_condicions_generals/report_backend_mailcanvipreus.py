@@ -3,319 +3,150 @@ from __future__ import absolute_import, unicode_literals
 from report_backend.report_backend import ReportBackend, report_browsify
 from mako.template import Template
 from giscedata_facturacio.report.utils import get_atr_price
-from som_extend_facturacio_comer.utils import get_gkwh_atr_price
+from som_indexada.utils import calculate_new_indexed_prices
 from datetime import date, timedelta
 
 
-class ReportBackendMailcanvipreus(ReportBackend):
+_DECIMALS = {
+    ("preus_nous_generation", "P1"): 3,
+    ("preus_nous_generation", "P2"): 3,
+    ("preus_nous_generation", "P3"): 3,
+    ("preus_nous_generation", "P4"): 3,
+    ("preus_nous_generation", "P5"): 3,
+    ("preus_nous_generation", "P6"): 3,
+    ("preus_nous_generation_imp", "P1"): 3,
+    ("preus_nous_generation_imp", "P2"): 3,
+    ("preus_nous_generation_imp", "P3"): 3,
+    ("preus_nous_generation_imp", "P4"): 3,
+    ("preus_nous_generation_imp", "P5"): 3,
+    ("preus_nous_generation_imp", "P6"): 3,
+    ("preus_antics_generation", "P1"): 3,
+    ("preus_antics_generation", "P2"): 3,
+    ("preus_antics_generation", "P3"): 3,
+    ("preus_antics_generation", "P4"): 3,
+    ("preus_antics_generation", "P5"): 3,
+    ("preus_antics_generation", "P6"): 3,
+    ("preus_antics_generation_imp", "P1"): 3,
+    ("preus_antics_generation_imp", "P2"): 3,
+    ("preus_antics_generation_imp", "P3"): 3,
+    ("preus_antics_generation_imp", "P4"): 3,
+    ("preus_antics_generation_imp", "P5"): 3,
+    ("preus_antics_generation_imp", "P6"): 3,
+    ("preus_nous", "te", "P1"): 3,
+    ("preus_nous", "te", "P2"): 3,
+    ("preus_nous", "te", "P3"): 3,
+    ("preus_nous", "te", "P4"): 3,
+    ("preus_nous", "te", "P5"): 3,
+    ("preus_nous", "te", "P6"): 3,
+    ("preus_nous", "tp", "P1"): 3,
+    ("preus_nous", "tp", "P2"): 3,
+    ("preus_nous", "tp", "P3"): 3,
+    ("preus_nous", "tp", "P4"): 3,
+    ("preus_nous", "tp", "P5"): 3,
+    ("preus_nous", "tp", "P6"): 3,
+    ("preus_antics", "te", "P1"): 3,
+    ("preus_antics", "te", "P2"): 3,
+    ("preus_antics", "te", "P3"): 3,
+    ("preus_antics", "te", "P4"): 3,
+    ("preus_antics", "te", "P5"): 3,
+    ("preus_antics", "te", "P6"): 3,
+    ("preus_antics", "tp", "P1"): 3,
+    ("preus_antics", "tp", "P2"): 3,
+    ("preus_antics", "tp", "P3"): 3,
+    ("preus_antics", "tp", "P4"): 3,
+    ("preus_antics", "tp", "P5"): 3,
+    ("preus_antics", "tp", "P6"): 3,
+    ("preus_nous_imp", "te", "P1"): 3,
+    ("preus_nous_imp", "te", "P2"): 3,
+    ("preus_nous_imp", "te", "P3"): 3,
+    ("preus_nous_imp", "te", "P4"): 3,
+    ("preus_nous_imp", "te", "P5"): 3,
+    ("preus_nous_imp", "te", "P6"): 3,
+    ("preus_nous_imp", "tp", "P1"): 3,
+    ("preus_nous_imp", "tp", "P2"): 3,
+    ("preus_nous_imp", "tp", "P3"): 3,
+    ("preus_nous_imp", "tp", "P4"): 3,
+    ("preus_nous_imp", "tp", "P5"): 3,
+    ("preus_nous_imp", "tp", "P6"): 3,
+    ("preus_antics_imp", "te", "P1"): 3,
+    ("preus_antics_imp", "te", "P2"): 3,
+    ("preus_antics_imp", "te", "P3"): 3,
+    ("preus_antics_imp", "te", "P4"): 3,
+    ("preus_antics_imp", "te", "P5"): 3,
+    ("preus_antics_imp", "te", "P6"): 3,
+    ("preus_antics_imp", "tp", "P1"): 3,
+    ("preus_antics_imp", "tp", "P2"): 3,
+    ("preus_antics_imp", "tp", "P3"): 3,
+    ("preus_antics_imp", "tp", "P4"): 3,
+    ("preus_antics_imp", "tp", "P5"): 3,
+    ("preus_antics_imp", "tp", "P6"): 3,
+    ("dades_index", "f_antiga"): 3,
+    ("dades_index", "f_nova"): 3,
+    ("dades_index", "f_antiga_eie"): 6,
+    ("dades_index", "f_nova_eie"): 6,
+    ("preu_nou",): 0,
+    ("preu_nou_imp",): 0,
+    ("preu_vell",): 0,
+    ("preu_vell_imp",): 0,
+    ("consum_total",): 0,
+    ("preu_auto_antic", ): 3,
+    ("preu_auto_nou", ): 3,
+    ("preu_auto_antic_imp", ): 3,
+    ("preu_auto_nou_imp", ): 3,
+}
+
+
+class ReportBackendMailcanvipreusEnviamentMassiu(ReportBackend):
     _source_model = "som.enviament.massiu"
     _name = "report.backend.mailcanvipreus"
 
-    _decimals = {
-        # ("preus_nous_generation", "P1"): 3,
-        # ("preus_nous_generation", "P2"): 3,
-        # ("preus_nous_generation", "P3"): 3,
-        # ("preus_nous_generation", "P4"): 3,
-        # ("preus_nous_generation", "P5"): 3,
-        # ("preus_nous_generation", "P6"): 3,
-        # ("preus_nous_generation_imp", "P1"): 3,
-        # ("preus_nous_generation_imp", "P2"): 3,
-        # ("preus_nous_generation_imp", "P3"): 3,
-        # ("preus_nous_generation_imp", "P4"): 3,
-        # ("preus_nous_generation_imp", "P5"): 3,
-        # ("preus_nous_generation_imp", "P6"): 3,
-        # ("preus_antics_generation", "P1"): 3,
-        # ("preus_antics_generation", "P2"): 3,
-        # ("preus_antics_generation", "P3"): 3,
-        # ("preus_antics_generation", "P4"): 3,
-        # ("preus_antics_generation", "P5"): 3,
-        # ("preus_antics_generation", "P6"): 3,
-        # ("preus_antics_generation_imp", "P1"): 3,
-        # ("preus_antics_generation_imp", "P2"): 3,
-        # ("preus_antics_generation_imp", "P3"): 3,
-        # ("preus_antics_generation_imp", "P4"): 3,
-        # ("preus_antics_generation_imp", "P5"): 3,
-        # ("preus_antics_generation_imp", "P6"): 3,
-        ("preus_nous", "te", "P1"): 3,
-        ("preus_nous", "te", "P2"): 3,
-        ("preus_nous", "te", "P3"): 3,
-        ("preus_nous", "te", "P4"): 3,
-        ("preus_nous", "te", "P5"): 3,
-        ("preus_nous", "te", "P6"): 3,
-        ("preus_nous", "tp", "P1"): 3,
-        ("preus_nous", "tp", "P2"): 3,
-        ("preus_nous", "tp", "P3"): 3,
-        ("preus_nous", "tp", "P4"): 3,
-        ("preus_nous", "tp", "P5"): 3,
-        ("preus_nous", "tp", "P6"): 3,
-        ("preus_antics", "te", "P1"): 3,
-        ("preus_antics", "te", "P2"): 3,
-        ("preus_antics", "te", "P3"): 3,
-        ("preus_antics", "te", "P4"): 3,
-        ("preus_antics", "te", "P5"): 3,
-        ("preus_antics", "te", "P6"): 3,
-        ("preus_antics", "tp", "P1"): 3,
-        ("preus_antics", "tp", "P2"): 3,
-        ("preus_antics", "tp", "P3"): 3,
-        ("preus_antics", "tp", "P4"): 3,
-        ("preus_antics", "tp", "P5"): 3,
-        ("preus_antics", "tp", "P6"): 3,
-        ("preus_nous_imp", "te", "P1"): 3,
-        ("preus_nous_imp", "te", "P2"): 3,
-        ("preus_nous_imp", "te", "P3"): 3,
-        ("preus_nous_imp", "te", "P4"): 3,
-        ("preus_nous_imp", "te", "P5"): 3,
-        ("preus_nous_imp", "te", "P6"): 3,
-        ("preus_nous_imp", "tp", "P1"): 3,
-        ("preus_nous_imp", "tp", "P2"): 3,
-        ("preus_nous_imp", "tp", "P3"): 3,
-        ("preus_nous_imp", "tp", "P4"): 3,
-        ("preus_nous_imp", "tp", "P5"): 3,
-        ("preus_nous_imp", "tp", "P6"): 3,
-        ("preus_antics_imp", "te", "P1"): 3,
-        ("preus_antics_imp", "te", "P2"): 3,
-        ("preus_antics_imp", "te", "P3"): 3,
-        ("preus_antics_imp", "te", "P4"): 3,
-        ("preus_antics_imp", "te", "P5"): 3,
-        ("preus_antics_imp", "te", "P6"): 3,
-        ("preus_antics_imp", "tp", "P1"): 3,
-        ("preus_antics_imp", "tp", "P2"): 3,
-        ("preus_antics_imp", "tp", "P3"): 3,
-        ("preus_antics_imp", "tp", "P4"): 3,
-        ("preus_antics_imp", "tp", "P5"): 3,
-        ("preus_antics_imp", "tp", "P6"): 3,
-        # ("dades_index", "f_antiga"): 3,
-        # ("dades_index", "f_nova"): 3,
-        # ("dades_index", "f_antiga_eie"): 6,
-        # ("dades_index", "f_nova_eie"): 6,
-        ("preu_nou",): 0,
-        ("preu_nou_imp",): 0,
-        ("preu_vell",): 0,
-        ("preu_vell_imp",): 0,
-        ("consum_total",): 0,
-        ("preu_auto_antic", ): 3,
-        ("preu_auto_nou", ): 3,
-        ("preu_auto_antic_imp", ): 3,
-        ("preu_auto_nou_imp", ): 3,
-    }
-
-    # nomes index
-    indexada_consum_tipus = {
-        "2.0TD": {
-            "conany": 2500,
-            "pot_contractada": 4.40,
-            "preu_pot_contractada": 30.533,
-            "f_antiga": 0.02,
-            "f_nova": 0.02,
-            "preu_mig_anual_antiga": 154.08,
-            "preu_mig_anual_nova": 159.90,
-            "import_total_anual_antiga": 519.55,
-            "import_total_anual_nova": 534.10,
-            "impacte_import": 14.55,
-            "impacte_perc": 2.80,
-            "factor_eie_preu_antic": 133.781131630073,
-            "factor_eie_preu_nou": 139.600101568505,
-            "iva": 21,
-            "ie": 5.11,
-            "import_total_anual_antiga_amb_impost": 660.78,
-            "import_total_anual_nova_amb_impost": 679.28,
-            "impacte_import_amb_impost": 18.50,
-        },
-        "3.0TD": {
-            "conany": 10000,
-            "pot_contractada": 14,
-            "preu_pot_contractada": 37.89701,
-            "f_antiga": 0.016,
-            "f_nova": 0.016,
-            "preu_mig_anual_antiga": 136.26,
-            "preu_mig_anual_nova": 142.08,
-            "import_total_anual_antiga": 1893.17,
-            "import_total_anual_nova": 1951.37,
-            "impacte_import": 58.20,
-            "impacte_perc": 3.07,
-            "factor_eie_preu_antic": 120.017809474036,
-            "factor_eie_preu_nou": 125.837481976305,
-            "iva": 21,
-            "ie": 5.11,
-            "import_total_anual_antiga_amb_impost": 2407.80,
-            "import_total_anual_nova_amb_impost": 2481.81,
-            "impacte_import_amb_impost": 74.02,
-        },
-        "6.1TD": {
-            "conany": 15000,
-            "pot_contractada": 20,
-            "preu_pot_contractada": 62.382142,
-            "f_antiga": 0.016,
-            "f_nova": 0.016,
-            "preu_mig_anual_antiga": 122.30,
-            "preu_mig_anual_nova": 127.56,
-            "import_total_anual_antiga": 3082.07,
-            "import_total_anual_nova": 3160.98,
-            "impacte_import": 78.91,
-            "impacte_perc": 2.16,
-            "factor_eie_preu_antic": 106.055050891024,
-            "factor_eie_preu_nou": 111.316018940409,
-            "iva": 21,
-            "ie": 5.11,
-            "import_total_anual_antiga_amb_impost": 3919.87,
-            "import_total_anual_nova_amb_impost": 4020.24,
-            "impacte_import_amb_impost": 100.37,
-        },
-        "3.0TDVE": {
-            "conany": 10000,
-            "pot_contractada": 14,
-            "preu_pot_contractada": 7.005884,
-            "f_antiga": 0.016,
-            "f_nova": 0.016,
-            "preu_mig_anual_antiga": 157.78,
-            "preu_mig_anual_nova": 163.60,
-            "import_total_anual_antiga": 1675.85,
-            "import_total_anual_nova": 1734.05,
-            "impacte_import": 58.20,
-            "impacte_perc": 3.47,
-            "factor_eie_preu_antic": 0,
-            "factor_eie_preu_nou": 0,
-            "iva": 21,
-            "ie": 5.11,
-            "import_total_anual_antiga_amb_impost": 2131.40,
-            "import_total_anual_nova_amb_impost": 2205.42,
-            "impacte_import_amb_impost": 74.02,
-        },
-    }
-
-    # nomes index
-    def get_fs(self, cursor, uid, env, context=None):
-        if context is None:
-            context = {}
-
-        som_polissa_k_change_obj = self.pool.get("som.polissa.k.change")
-
-        search_params = [
-            ('polissa_id', '=', env.polissa_id.id)
-        ]
-
-        k_change_id = som_polissa_k_change_obj.search(
-            cursor, uid, search_params, context=context
-        )
-
-        res = {'k_old': 0, 'k_new': 0}
-        if k_change_id:
-            res = som_polissa_k_change_obj.read(
-                cursor, uid, k_change_id[0], ['k_old', 'k_new'], context=context
-            )
-
-        return res
-
-    # nomes index
-    def is_eie(self, cursor, uid, env, context=None):
-        if context is None:
-            context = {}
-
-        pol_llista = env.polissa_id.llista_preu.id
-
-        return pol_llista in [150, 153, 154]
-
-    # nomes index
-    def get_data_eie(self, cursor, uid, env, context=None):
-        if context is None:
-            context = {}
-
-        data = {
-            'cups': env.polissa_id.cups.name,
-            'direccio_cups': env.polissa_id.cups.direccio,
-            'titular': env.polissa_id.titular.name,
-            'numero': env.polissa_id.name
-        }
-
-        return data
-
-    # nomes index
-    def calculate_new_indexed_prices(self, cursor, uid, env, is_canaries, imp_value, context=None):
-        if context is None:
-            context = {}
-
-        data = self.indexada_consum_tipus[env.polissa_id.tarifa.name]
-        if is_canaries:
-            import_antiga = data["import_total_anual_antiga"]
-            import_nova = data["import_total_anual_nova"]
-            a = import_antiga * (1 + (imp_value / 100)) * (1 + 0.0511)
-            n = import_nova * (1 + (imp_value / 100)) * (1 + 0.0511)
-            impacte_amb_impostos = n - a
-            data["iva"] = imp_value
-            data["import_total_anual_antiga_amb_impost"] = a
-            data["import_total_anual_nova_amb_impost"] = n
-            data["impacte_import_amb_impost"] = impacte_amb_impostos
-        return data
-
-    # nomes index
-    @report_browsify
-    def calculate_new_eie_indexed_prices(self, cursor, uid, env, context=None):
-        if context is None:
-            context = {}
-
-        f_antiga = self.get_fs(cursor, uid, env, context=context)['k_old']
-        f_nova = self.get_fs(cursor, uid, env, context=context)['k_new']
-
-        tarifa_acces = env.polissa_id.tarifa.name
-        factor_eie_preu_antic = self.indexada_consum_tipus[tarifa_acces]["factor_eie_preu_antic"]
-        factor_eie_preu_nou = self.indexada_consum_tipus[tarifa_acces]["factor_eie_preu_nou"]
-
-        preu_mitja_antic = (1.015 * f_antiga + factor_eie_preu_antic) / 1000
-        preu_mitja_nou = (1.015 * f_nova + factor_eie_preu_nou) / 1000
-
-        conany = env.polissa_id.cups.conany_kwh if env.polissa_id.cups.conany_kwh > 0 else 1
-        potencia = env.polissa_id.potencia
-        preu_potencia = sum(self.get_preus(
-            cursor, uid, env.polissa_id, with_taxes=True, context=context
-        )['tp'].values())
-
-        # cost_potencia = preu_potencia * potencia
-
-        import_total_anual_antiga = (preu_mitja_antic * conany)
-        import_total_anual_nova = (preu_mitja_nou * conany)
-        impacte_import = import_total_anual_nova - import_total_anual_antiga
-
-        import_total_anual_antiga_amb_impost = import_total_anual_antiga * 1.015 * 1.21
-        import_total_anual_nova_amb_impost = import_total_anual_nova * 1.015 * 1.21
-        impacte_import_amb_impost = (
-            import_total_anual_nova_amb_impost - import_total_anual_antiga_amb_impost
-        )
-        impacte_perc = impacte_import_amb_impost / import_total_anual_antiga_amb_impost
-
-        consum_eie = {
-            "conany": conany,
-            "pot_contractada": potencia,
-            "preu_pot_contractada": preu_potencia,
-            "factor_eie_preu_antic": factor_eie_preu_antic,
-            "factor_eie_preu_nou": factor_eie_preu_nou,
-            "f_antiga_eie": f_antiga / 1000,
-            "f_nova_eie": f_nova / 1000,
-            "preu_mig_anual_antiga": preu_mitja_antic,
-            "preu_mig_anual_nova": preu_mitja_nou,
-            "import_total_anual_antiga": import_total_anual_antiga,
-            "import_total_anual_nova": import_total_anual_nova,
-            "impacte_import": impacte_import,
-            "impacte_perc": impacte_perc * 100,
-            "iva": 21,
-            "ie": 5.11,
-            "import_total_anual_antiga_amb_impost": import_total_anual_antiga_amb_impost,
-            "import_total_anual_nova_amb_impost": import_total_anual_nova_amb_impost,
-            "impacte_import_amb_impost": impacte_import_amb_impost,
-        }
-
-        return consum_eie
+    _decimals = _DECIMALS
 
     @report_browsify
     def get_data(self, cursor, uid, env, context=None):
-        imd_obj = self.pool.get('ir.model.data')
         if context is None:
             context = {}
 
-        # context['iva10'] = env.polissa_id.potencia <= 10
+        backend_o = self.pool.get("report.backend.mailcanvipreus.pdf")
 
-        impostos_str, impostos_value = self.getImpostos(env.polissa_id.fiscal_position_id, context)
+        data = backend_o.get_data(cursor, uid, env.polissa_id.id, context=context)
 
-        if impostos_str == 'IVA del 10%':
+        return data
+
+    def get_lang(self, cursor, uid, record_id, context=None):
+        if context is None:
+            context = {}
+
+        env_o = self.pool.get("som.enviament.massiu")
+        env_br = env_o.browse(cursor, uid, record_id, context=context)
+
+        return env_br.polissa_id.titular.lang
+
+
+ReportBackendMailcanvipreusEnviamentMassiu()
+
+
+class ReportBackendMailcanvipreusPDF(ReportBackend):
+    _source_model = "giscedata.polissa"
+    _name = "report.backend.mailcanvipreus.pdf"
+
+    _decimals = _DECIMALS
+
+    @report_browsify
+    def get_data(self, cursor, uid, pol_id, context=None):
+        imd_obj = self.pool.get('ir.model.data')
+        pol_obj = self.pool.get("giscedata.polissa")
+        if context is None:
+            context = {}
+
+        # context['iva10'] = pol_id.potencia <= 10
+
+        self.simplified_taxes = pol_obj.get_simplified_taxes(
+            cursor, uid, pol_id.id, context=context)
+
+        impostos_str = self.get_iva_text()
+
+        if 'IVA' in self.simplified_taxes and self.simplified_taxes['IVA'] < 0.21:
             fp_id = imd_obj.get_object_reference(
                 cursor, uid, 'som_polissa_condicions_generals', 'fp_iva_reduit')[1]
             context.update({'force_fiscal_position': fp_id})
@@ -327,36 +158,34 @@ class ReportBackendMailcanvipreus(ReportBackend):
         context_preus_nous["date"] = (date.today() + timedelta(days=60)).strftime("%Y-%m-%d")
 
         preus_antics = self.get_preus(
-            cursor, uid, env.polissa_id, with_taxes=False, context=context_preus_antics
+            cursor, uid, pol_id, with_taxes=False, context=context_preus_antics
         )
         preus_nous = self.get_preus(
-            cursor, uid, env.polissa_id, with_taxes=False, context=context_preus_nous
+            cursor, uid, pol_id, with_taxes=False, context=context_preus_nous
         )
         preus_antics_imp = self.get_preus(
-            cursor, uid, env.polissa_id, with_taxes=True, context=context_preus_antics
+            cursor, uid, pol_id, with_taxes=True, context=context_preus_antics
         )
         preus_nous_imp = self.get_preus(
-            cursor, uid, env.polissa_id, with_taxes=True, context=context_preus_nous
+            cursor, uid, pol_id, with_taxes=True, context=context_preus_nous
         )
 
-        gurb = self.has_gurb(cursor, uid, env.polissa_id, context)
+        gurb = self.has_gurb(cursor, uid, pol_id, context)
 
-        canaries = self.esCanaries(cursor, uid, env, context=context)
-        balears = self.esBalears(cursor, uid, env, context=context)
+        canaries = self.esCanaries(cursor, uid, pol_id, context=context)
+        balears = self.esBalears(cursor, uid, pol_id, context=context)
 
         data = {
+            "codi_polissa": pol_id.name,
             "canaries": canaries,
             "balears": balears,
-            "tarifa_acces": env.polissa_id.tarifa.name,
-            "text_legal": self.get_text_legal(cursor, uid, env, context=context),
-            "lang": env.polissa_id.titular.lang,
-            "nom_titular": self.getPartnerName(cursor, uid, env),
-            # "dades_index": self.calculate_new_indexed_prices(
-            #     cursor, uid, env, canaries, impostos_value, context=context
-            # ),
-            "potencia": env.polissa_id.potencia,
-            "iva_reduit": env.polissa_id.potencia <= 10 and not canaries,
-            # "te_gkwh": env.polissa_id.te_assignacio_gkwh,
+            "tarifa_acces": pol_id.tarifa.name,
+            "mode_facturacio": pol_id.mode_facturacio,
+            "text_legal": self.get_text_legal(cursor, uid, pol_id, context=context),
+            "lang": pol_id.titular.lang,
+            "nom_titular": self.getPartnerName(cursor, uid, pol_id),
+            "iva_reduit": pol_id.potencia <= 10 and not canaries,
+            "te_gkwh": pol_id.te_assignacio_gkwh,
             "preus_antics": preus_antics,
             "preus_nous": preus_nous,
             "preus_antics_imp": preus_antics_imp,
@@ -365,66 +194,61 @@ class ReportBackendMailcanvipreus(ReportBackend):
 
             "impostos_str": impostos_str,
             "modcon": (
-                env.polissa_id.modcontractuals_ids[0].state == "pendent"
-                and env.polissa_id.mode_facturacio
-                != env.polissa_id.modcontractuals_ids[0].mode_facturacio
-                and env.polissa_id.modcontractuals_ids[0].mode_facturacio
+                pol_id.modcontractuals_ids[0].state == "pendent"
+                and pol_id.mode_facturacio
+                != pol_id.modcontractuals_ids[0].mode_facturacio
+                and pol_id.modcontractuals_ids[0].mode_facturacio
             ),
             'autoconsum': {
-                'es_autoconsum': env.polissa_id.es_autoconsum,
-                'compensacio': env.polissa_id.tipus_subseccio in ['21']
+                'es_autoconsum': pol_id.es_autoconsum,
+                'compensacio': pol_id.tipus_subseccio in ['21']
             },
         }
 
-        # eie = self.is_eie(cursor, uid, env, context=context)
-        # if eie:
-        #     data['dades_index'] = self.calculate_new_eie_indexed_prices(
-        #         cursor, uid, env, context=context
-        #     )
-        #     data['contract'] = self.get_data_eie(cursor, uid, env, context=context)
-        if data['autoconsum']['compensacio']:
+        if data['autoconsum']['compensacio'] and data['mode_facturacio'] == 'atr':
             preu_auto_antic = get_atr_price(
-                cursor, uid, env.polissa_id, 'P1', 'ac', context_preus_antics, with_taxes=False)[0]
+                cursor, uid, pol_id, 'P1', 'ac', context_preus_antics, with_taxes=False)[0]
 
             preu_auto_nou = get_atr_price(
-                cursor, uid, env.polissa_id, 'P1', 'ac', context_preus_nous, with_taxes=False)[0]
+                cursor, uid, pol_id, 'P1', 'ac', context_preus_nous, with_taxes=False)[0]
 
             preu_auto_antic_imp = get_atr_price(
-                cursor, uid, env.polissa_id, 'P1', 'ac', context_preus_antics, with_taxes=True)[0]
+                cursor, uid, pol_id, 'P1', 'ac', context_preus_antics, with_taxes=True)[0]
 
             preu_auto_nou_imp = get_atr_price(
-                cursor, uid, env.polissa_id, 'P1', 'ac', context_preus_nous, with_taxes=True)[0]
+                cursor, uid, pol_id, 'P1', 'ac', context_preus_nous, with_taxes=True)[0]
             data['preu_auto_antic'] = preu_auto_antic
             data['preu_auto_nou'] = preu_auto_nou
             data['preu_auto_antic_imp'] = preu_auto_antic_imp
             data['preu_auto_nou_imp'] = preu_auto_nou_imp
 
-        # if data["te_gkwh"]:
-        #     data["preus_antics_generation"] = self.get_preus_gkwh(
-        #         cursor, uid, env.polissa_id, with_taxes=False, context=context_preus_antics
-        #     )
-        #     data["preus_antics_generation_imp"] = self.get_preus_gkwh(
-        #         cursor, uid, env.polissa_id, with_taxes=True, context=context_preus_antics
-        #     )
-        #     data["preus_nous_generation"] = self.get_preus_gkwh(
-        #         cursor, uid, env.polissa_id, with_taxes=False, context=context_preus_nous
-        #     )
-        #     data["preus_nous_generation_imp"] = self.get_preus_gkwh(
-        #         cursor, uid, env.polissa_id, with_taxes=True, context=context_preus_nous
-        #     )
+        if data["te_gkwh"]:
+            data["preus_antics_generation"] = self.get_preus_gkwh(
+                cursor, uid, pol_id, with_taxes=False, context=context_preus_antics
+            )
+            data["preus_antics_generation_imp"] = self.get_preus_gkwh(
+                cursor, uid, pol_id, with_taxes=True, context=context_preus_antics
+            )
+            data["preus_nous_generation"] = self.get_preus_gkwh(
+                cursor, uid, pol_id, with_taxes=False, context=context_preus_nous
+            )
+            data["preus_nous_generation_imp"] = self.get_preus_gkwh(
+                cursor, uid, pol_id, with_taxes=True, context=context_preus_nous
+            )
+            data.update(self.get_gkwh_estimation(cursor, uid, pol_id, context=context_preus_nous))
 
-        data.update(self.getEstimacioData(cursor, uid, env, context=context_preus_nous))
-        data.update(self.getTarifaCorreu(cursor, uid, env, context))
+        data.update(self.getEstimacioData(cursor, uid, pol_id, context=context_preus_nous))
+        data.update(self.getTarifaCorreu(cursor, uid, pol_id, context))
         return data
 
     def get_lang(self, cursor, uid, record_id, context=None):
         if context is None:
             context = {}
 
-        env_o = self.pool.get("som.enviament.massiu")
-        env_br = env_o.browse(cursor, uid, record_id, context=context)
+        pol_o = self.pool.get("giscedata.polissa")
+        pol_br = pol_o.browse(cursor, uid, record_id, context=context)
 
-        return env_br.polissa_id.titular.lang
+        return pol_br.titular.lang
 
     def getConsumEstimatPotencia(self, potencia):  # noqa: C901
         res = 0
@@ -501,8 +325,8 @@ class ReportBackendMailcanvipreus(ReportBackend):
 
         gkwh_periodes = sorted(pol.tarifa.get_periodes("te", context=context).keys())
         for periode in gkwh_periodes:
-            preu_periode = get_gkwh_atr_price(
-                cursor, uid, pol, periode, context=context, with_taxes=with_taxes
+            preu_periode = get_atr_price(
+                cursor, uid, pol, periode, 'gkwh', context=context, with_taxes=with_taxes
             )[0]
             result[periode] = preu_periode
         return result
@@ -522,9 +346,9 @@ class ReportBackendMailcanvipreus(ReportBackend):
             != pol.modcontractuals_ids[0].mode_facturacio
                 and pol.modcontractuals_ids[0].mode_facturacio == 'index'):
             context["force_pricelist"] = pol.modcontractuals_ids[1].llista_preu.id
-        elif(pol.modcontractuals_ids[0].state == "pendent"
-             and pol.mode_facturacio
-             != pol.modcontractuals_ids[0].mode_facturacio
+        elif (pol.modcontractuals_ids[0].state == "pendent"
+              and pol.mode_facturacio
+              != pol.modcontractuals_ids[0].mode_facturacio
                 and pol.modcontractuals_ids[0].mode_facturacio == 'atr'):
             context["force_pricelist"] = pol.modcontractuals_ids[0].llista_preu.id
         for terme, values in periods.items():
@@ -536,42 +360,6 @@ class ReportBackendMailcanvipreus(ReportBackend):
                 result[terme][periode] = preu_periode
         return result
 
-    # nomes index
-    def preusEstimatsIndexada(self, cursor, uid, tarifa, periode):
-        estimacions = {
-            "2.0TD": {
-                "P1": 0.243,
-                "P2": 0.184,
-                "P3": 0.148,
-            },
-            "3.0TD": {
-                "P1": 0.216,
-                "P2": 0.198,
-                "P3": 0.169,
-                "P4": 0.160,
-                "P5": 0.145,
-                "P6": 0.147,
-            },
-            "6.1TD": {
-                "P1": 0.189,
-                "P2": 0.176,
-                "P3": 0.154,
-                "P4": 0.152,
-                "P5": 0.141,
-                "P6": 0.141,
-            },
-            "3.0TDVE": {
-                "P1": 0.216,
-                "P2": 0.198,
-                "P3": 0.169,
-                "P4": 0.160,
-                "P5": 0.145,
-                "P6": 0.147,
-            },
-        }
-
-        return estimacions[tarifa][periode]
-
     def calcularPreuTotal(
         self,
         cursor,
@@ -579,46 +367,58 @@ class ReportBackendMailcanvipreus(ReportBackend):
         polissa_id,
         consums,
         potencies,
-        tarifa,
-        afegir_maj,
+        afegir_servei_ajust,
         bo_social_separat,
         date=None,
-        origen="",
+        is_gkwh=False,
+        context=None,
     ):
-        ctx = {}
+        conf_obj = self.pool.get('res.config')
+        bo_social_price = self.get_bo_social_price(
+            cursor, uid, polissa_id.llista_preu, context=context)
+        preu_estimat_servei_ajust = float(
+            conf_obj.get(cursor, uid, 'serveis_ajust_estimated_kwh_price'))
+
+        ctx = context or {}
         if date:
             ctx["date"] = date
         ctx["potencia_anual"] = True
         ctx["sense_agrupar"] = True
-        if (polissa_id.modcontractuals_ids[0].state == "pendent"
-            and polissa_id.mode_facturacio
-            != polissa_id.modcontractuals_ids[0].mode_facturacio
-                and polissa_id.modcontractuals_ids[0].mode_facturacio == 'index'):
-            ctx["force_pricelist"] = polissa_id.modcontractuals_ids[1].llista_preu.id
-        elif(polissa_id.modcontractuals_ids[0].state == "pendent"
-             and polissa_id.mode_facturacio
-             != polissa_id.modcontractuals_ids[0].mode_facturacio
-                and polissa_id.modcontractuals_ids[0].mode_facturacio == 'atr'):
-            ctx["force_pricelist"] = polissa_id.modcontractuals_ids[0].llista_preu.id
-        # maj_price = 0  # €/kWh
-        # bo_social_price = 2.299047  # 2024
-        bo_social_price = 4.650987  # 2025
-        types = {"tp": potencies or {}, "te": consums or {}}
+
+        if is_gkwh:
+            types = {'gkwh': consums or {}}
+        else:
+            types = {"tp": potencies or {}, "te": consums or {}}
+            if (polissa_id.modcontractuals_ids[0].state == "pendent"
+                    and polissa_id.mode_facturacio
+                    != polissa_id.modcontractuals_ids[0].mode_facturacio
+                    and polissa_id.modcontractuals_ids[0].mode_facturacio == 'index'):
+                ctx["force_pricelist"] = polissa_id.modcontractuals_ids[1].llista_preu.id
+            elif (polissa_id.modcontractuals_ids[0].state == "pendent"
+                    and polissa_id.mode_facturacio
+                    != polissa_id.modcontractuals_ids[0].mode_facturacio
+                    and polissa_id.modcontractuals_ids[0].mode_facturacio == 'atr'):
+                ctx["force_pricelist"] = polissa_id.modcontractuals_ids[0].llista_preu.id
+
         imports = 0
         for terme, values in types.items():
             for periode, quantity in values.items():
                 preu_periode = get_atr_price(
                     cursor, uid, polissa_id, periode, terme, ctx, with_taxes=False
                 )[0]
-                # if afegir_maj and terme == "te":
-                #     preu_periode += maj_price
-                # if terme == "te" and origen == "indexada":
-                #     preu_periode = self.preusEstimatsIndexada(cursor, uid, tarifa, periode)
+                if afegir_servei_ajust and terme != "tp":
+                    preu_periode += preu_estimat_servei_ajust
                 imports += preu_periode * quantity
         if bo_social_separat:
             imports += bo_social_price
 
         return imports
+
+    def get_bo_social_price(self, cursor, uid, pricelist, context=None):
+        tarifa_obj = self.pool.get("giscedata.polissa.tarifa")
+        return (
+            tarifa_obj.get_bo_social_price(cursor, uid, pricelist, context=context)[0]
+        ) * 365
 
     def aplicarCoeficients(self, consum_anual, tarifa):
         coeficients = {
@@ -655,44 +455,31 @@ class ReportBackendMailcanvipreus(ReportBackend):
         consums = {k: consum_anual * coeficients[tarifa][k] for k in coeficients[tarifa].keys()}
         return consums
 
-    def getConanyDict(self, cursor, uid, env):
+    def getConanyDict(self, cursor, uid, pol_id):
         conany = {
-            "P1": env.polissa_id.cups.conany_kwh_p1,
-            "P2": env.polissa_id.cups.conany_kwh_p2,
-            "P3": env.polissa_id.cups.conany_kwh_p3,
+            "P1": pol_id.cups.conany_kwh_p1,
+            "P2": pol_id.cups.conany_kwh_p2,
+            "P3": pol_id.cups.conany_kwh_p3,
         }
-        if env.polissa_id.tarifa_codi != "2.0TD":
+        if pol_id.tarifa_codi != "2.0TD":
             conany.update(
                 {
-                    "P4": env.polissa_id.cups.conany_kwh_p4,
-                    "P5": env.polissa_id.cups.conany_kwh_p5,
-                    "P6": env.polissa_id.cups.conany_kwh_p6,
+                    "P4": pol_id.cups.conany_kwh_p4,
+                    "P5": pol_id.cups.conany_kwh_p5,
+                    "P6": pol_id.cups.conany_kwh_p6,
                 }
             )
         return conany
 
-    def calcularImpostosPerCostAnualEstimat(self, preu, fiscal_position, context=False):
-        iva = 0.1 if context and context.get('iva10') else 0.21
-        impost_electric = 0.05112696
-        if fiscal_position:
-            if fiscal_position.id in [33, 47, 56, 52, 61, 38, 21, 19, 87, 89, 94]:
-                iva = 0.03
-            if fiscal_position.id in [34, 48, 53, 57, 53, 62, 39, 25, 88, 90]:
-                iva = 0.0
+    def calc_tax_for_anual_estimation(self, preu, context=None):
+        iva = self.simplified_taxes.get('IGIC', self.simplified_taxes.get('IVA', 0.21))
+        impost_electric = self.simplified_taxes.get('IE', 0)
         preu_imp = round(preu * (1 + impost_electric), 2)
         return round(preu_imp * (1 + iva))
 
-    def getImpostos(self, fiscal_position, context=False):
-        imp_str = "IVA del 10%" if context and context.get('iva10') else "IVA del 21%"
-        imp_value = 21
-        if fiscal_position:
-            if fiscal_position.id in [33, 47, 56, 52, 61, 38, 21, 19, 87, 89, 94]:
-                imp_str = "IGIC del 3%"
-                imp_value = 3
-            if fiscal_position.id in [34, 48, 53, 57, 53, 62, 39, 25, 88, 90]:
-                imp_str = "IGIC del 0%"
-                imp_value = 0
-        return imp_str, float(imp_value)
+    def get_iva_text(self, context=None):
+        iva_str = 'IVA' if 'IVA' in self.simplified_taxes else 'IGIC'
+        return '{} del {:.0f}%'.format(iva_str, self.simplified_taxes[iva_str] * 100)
 
     def has_gurb(self, cursor, uid, polissa, context=False):
         gurb_cups_obj = self.pool.get("som.gurb.cups")
@@ -701,65 +488,64 @@ class ReportBackendMailcanvipreus(ReportBackend):
 
         return gurb_cups_id
 
-    def getEstimacioData(self, cursor, uid, env, context=False):
-        PRICE_CHANGE_DATE = "2025-06-01"
+    def getEstimacioData(self, cursor, uid, pol_id, context=False):
+        potencies = self.getPotenciesPolissa(cursor, uid, pol_id)
 
-        potencies = self.getPotenciesPolissa(cursor, uid, env.polissa_id)
-
-        tarifa = env.polissa_id.tarifa.name
-        # mode_facturacio = env.polissa_id.mode_facturacio
+        tarifa = pol_id.tarifa.name
         consums = ""
         origen = ""
-        # if "index" in mode_facturacio:
-        #     origen = "indexada"
-        #     consums = self.getConanyDict(cursor, uid, env)
-        #     consum_total = env.polissa_id.cups.conany_kwh
-        if any(
+        potencia = pol_id.potencia
+        if "index" in pol_id.mode_facturacio:
+            origen = "indexada"
+            consums = self.getConanyDict(cursor, uid, pol_id)
+            consum_total = pol_id.cups.conany_kwh
+        elif any(
             [
-                env.polissa_id.cups.conany_kwh_p1,
-                env.polissa_id.cups.conany_kwh_p2,
-                env.polissa_id.cups.conany_kwh_p3,
+                pol_id.cups.conany_kwh_p1,
+                pol_id.cups.conany_kwh_p2,
+                pol_id.cups.conany_kwh_p3,
             ]
         ):
-            consums = self.getConanyDict(cursor, uid, env)
-            consum_total = env.polissa_id.cups.conany_kwh
-            origen = env.polissa_id.cups.conany_origen
+            consums = self.getConanyDict(cursor, uid, pol_id)
+            consum_total = pol_id.cups.conany_kwh
+            origen = pol_id.cups.conany_origen
         else:
-            consum_total = self.getConsumEstimatPotencia(env.polissa_id.potencia)
+            consum_total = self.getConsumEstimatPotencia(pol_id.potencia)
             consums = self.aplicarCoeficients(consum_total, tarifa)
             origen = "estadistic"
 
-        preu_vell = self.calcularPreuTotal(
-            cursor,
-            uid,
-            env.polissa_id,
-            consums,
-            potencies,
-            tarifa,
-            False,
-            True,
-            date.today().strftime("%Y-%m-%d"),
-            origen,
-        )
-        preu_nou = self.calcularPreuTotal(
-            cursor,
-            uid,
-            env.polissa_id,
-            consums,
-            potencies,
-            tarifa,
-            False,
-            True,
-            PRICE_CHANGE_DATE,
-            origen,
-        )
+        if origen == "indexada":
+            dades_index = calculate_new_indexed_prices(cursor, uid, pol_id, context=context)
+            preu_vell = dades_index["import_total_anual_antiga"]
+            preu_nou = dades_index["import_total_anual_nova"]
+            preu_vell_imp = dades_index["import_total_anual_antiga_amb_impost"]
+            preu_nou_imp = dades_index["import_total_anual_nova_amb_impost"]
+        else:
+            preu_vell = self.calcularPreuTotal(
+                cursor,
+                uid,
+                pol_id,
+                consums,
+                potencies,
+                afegir_servei_ajust=False,
+                bo_social_separat=True,
+                date=date.today().strftime("%Y-%m-%d"),
+                context=context,
+            )
+            preu_nou = self.calcularPreuTotal(
+                cursor,
+                uid,
+                pol_id,
+                consums,
+                potencies,
+                afegir_servei_ajust=False,
+                bo_social_separat=True,
+                date=self.get_price_change_date(cursor, uid, pol_id, context),
+                context=context,
+            )
 
-        preu_vell_imp = self.calcularImpostosPerCostAnualEstimat(
-            preu_vell, env.polissa_id.fiscal_position_id, context=context
-        )
-        preu_nou_imp = self.calcularImpostosPerCostAnualEstimat(
-            preu_nou, env.polissa_id.fiscal_position_id, context=context
-        )
+            preu_vell_imp = self.calc_tax_for_anual_estimation(preu_vell)
+            preu_nou_imp = self.calc_tax_for_anual_estimation(preu_nou)
 
         return {
             "origen": origen,
@@ -768,17 +554,84 @@ class ReportBackendMailcanvipreus(ReportBackend):
             "preu_vell_imp": preu_vell_imp,
             "preu_nou_imp": preu_nou_imp,
             "consum_total": consum_total,
+            "potencia": potencia,
         }
 
-    def esCanaries(self, cursor, uid, env, context=False):
-        return env.polissa_id.cups.id_municipi.subsistema_id.code in [
-            'TF', 'PA', 'LG', 'HI', 'GC', 'FL'
+    def get_gkwh_estimation(self, cursor, uid, pol_id, context=False):
+        pol_o = self.pool.get("giscedata.polissa")
+
+        consums, origen = pol_o.generationkwh_anual_estimation(
+            cursor, uid, pol_id.id, context=context)
+
+        if origen == 'no_data':
+            consum_total = False
+            preu_vell = False
+            preu_nou = False
+            preu_vell_imp = False
+            preu_nou_imp = False
+        else:
+            consum_total = sum(quantity for _, quantity in consums.items())
+
+            preu_vell = self.calcularPreuTotal(
+                cursor,
+                uid,
+                pol_id,
+                consums,
+                {},
+                afegir_servei_ajust=False,
+                bo_social_separat=False,
+                date=date.today().strftime("%Y-%m-%d"),
+                is_gkwh=True,
+                context=context,
+            )
+            preu_nou = self.calcularPreuTotal(
+                cursor,
+                uid,
+                pol_id,
+                consums,
+                {},
+                afegir_servei_ajust=True,
+                bo_social_separat=False,
+                date=self.get_price_change_date(cursor, uid, pol_id, context),
+                is_gkwh=True,
+                context=context,
+            )
+
+            preu_vell_imp = self.calc_tax_for_anual_estimation(preu_vell)
+            preu_nou_imp = self.calc_tax_for_anual_estimation(preu_nou)
+
+        return {
+            "gkwh_estimation": {
+                "origen": origen,
+                "preu_vell": preu_vell,
+                "preu_nou": preu_nou,
+                "preu_vell_imp": preu_vell_imp,
+                "preu_nou_imp": preu_nou_imp,
+                "consum_total": consum_total,
+            }
+        }
+
+    def get_price_change_date(self, cursor, uid, polissa, context=None):
+        today = date.today().strftime("%Y-%m-%d")
+        if polissa.llista_preu:
+            versions = polissa.llista_preu.version_id
+            future_version_starts = [
+                v.date_start for v in versions
+                if v.active and v.date_start and v.date_start > today
+            ]
+            if future_version_starts:
+                return min(future_version_starts)
+        return (date.today() + timedelta(days=60)).strftime("%Y-%m-%d")
+
+    def esCanaries(self, cursor, uid, pol_id, context=False):
+        return pol_id.cups.id_municipi.subsistema_id.code in [
+            'TF', 'PA', 'LG', 'HI', 'GC', 'FL', 'TG'
         ]
 
-    def esBalears(self, cursor, uid, env, context=False):
-        return env.polissa_id.cups.id_municipi.subsistema_id.code in ['MM', 'IF']
+    def esBalears(self, cursor, uid, pol_id, context=False):
+        return pol_id.cups.id_municipi.subsistema_id.code in ['MM', 'IF', 'SB']
 
-    def getTarifaCorreu(self, cursor, uid, env, context=False):
+    def getTarifaCorreu(self, cursor, uid, pol_id, context=False):
         key_prefixes = ["Indexada", "Periodes"]
         tariffs = ["20TD", "30TD", "61TD", "30TDVE"]
         regions = ["Peninsula", "Canaries", "Balears"]
@@ -790,17 +643,17 @@ class ReportBackendMailcanvipreus(ReportBackend):
                     data["{}{}{}".format(prefix, tariff, region)] = False
         data.update({"igic": False, "indexada": False, "periodes": False})
 
-        mode_facturacio = env.polissa_id.mode_facturacio
-        tarifa = env.polissa_id.tarifa.name.replace(".", "")
+        mode_facturacio = pol_id.mode_facturacio
+        tarifa = pol_id.tarifa.name.replace(".", "")
 
         operation = "Indexada" if "index" in mode_facturacio else "Periodes"
         data[operation.lower()] = True
 
         for t in tariffs:
             if t in tarifa:
-                if self.esCanaries(cursor, uid, env):
+                if self.esCanaries(cursor, uid, pol_id):
                     region_key = "Canaries"
-                elif self.esBalears(cursor, uid, env):
+                elif self.esBalears(cursor, uid, pol_id):
                     region_key = "Balears"
                 else:
                     region_key = "Peninsula"
@@ -814,18 +667,18 @@ class ReportBackendMailcanvipreus(ReportBackend):
 
         return data
 
-    def getPartnerName(self, cursor, uid, env):
+    def getPartnerName(self, cursor, uid, pol_id):
         try:
-            p_obj = env.pool.get("res.partner")
-            if not p_obj.vat_es_empresa(env._cr, env._uid, env.polissa_id.titular.vat):
-                nom_titular = " " + env.polissa_id.titular.name.split(",")[1].lstrip() + ","
+            p_obj = pol_id.pool.get("res.partner")
+            if not p_obj.vat_es_empresa(pol_id._cr, pol_id._uid, pol_id.titular.vat):
+                nom_titular = " " + pol_id.titular.name.split(",")[1].strip() + ","
             else:
                 nom_titular = ","
         except Exception:
             nom_titular = ","
         return nom_titular
 
-    def get_text_legal(self, cursor, uid, env, context=None):
+    def get_text_legal(self, cursor, uid, pol_id, context=None):
         def render(text_to_render, object_):
             templ = Template(text_to_render)
             return templ.render_unicode(object=object_, format_exceptions=True)
@@ -840,10 +693,10 @@ class ReportBackendMailcanvipreus(ReportBackend):
             cursor, uid, "som_poweremail_common_templates", "common_template_legal_footer"
         )[1]
         data = render(
-            t_obj.read(cursor, uid, [template_id], ["def_body_text"])[0]["def_body_text"], env
+            t_obj.read(cursor, uid, [template_id], ["def_body_text"])[0]["def_body_text"], pol_id
         )
 
         return data
 
 
-ReportBackendMailcanvipreus()
+ReportBackendMailcanvipreusPDF()

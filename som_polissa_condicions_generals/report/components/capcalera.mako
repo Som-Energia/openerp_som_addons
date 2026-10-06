@@ -6,7 +6,7 @@
         <div id="address_capcelera">
             <b>${_(u"Som Energia, SCCL")}</b><br/>
             <b>${_(u"CIF:")}</b> ${_(u" F55091367")}<br/>
-            <b>${_(u"Domicili:")}</b> ${_(u" C/Pic de Peguera, 9 (1a planta)<br/>17003, Girona")}<br/>
+            <b>${_(u"Domicili:")}</b> ${_(u" C/Riu Güell, 68<br/>17005, Girona")}<br/>
             <b>${_(u"Adreça electrònica:")} </b> ${_(u" info@somenergia.coop")}
         </div>
         <div id="dades_capcelera">
@@ -22,12 +22,11 @@
                     ${polissa['data_inici']}
                 %endif
                 <br/>
-                <b>${_(u"Data de renovació del subministrament: ")}</b>
-                %if polissa['state'] == 'esborrany':
-                    &nbsp;
-                %else:
-                    ${polissa['data_final']}
-                %endif
+                <b>${_(u"Vigència del contracte: ")}</b>
+                ${_(u"Trimestre natural")}
+                <br/>
+                <b>${_(u"Data de renovació: ")}</b>
+                ${polissa['data_renovacio']}
                 <br/>
             </div>
         </div>

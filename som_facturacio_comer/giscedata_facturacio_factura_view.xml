@@ -13,27 +13,5 @@
                 </field>
             </field>
         </record>
-        <record model="ir.ui.view" id="view_giscedata_facturacio_factura_generacio_som_form">
-            <field name="name">giscedata.facturacio.factura.generacio.som.form</field>
-            <field name="model">giscedata.facturacio.factura</field>
-            <field name="inherit_id" ref="giscedata_facturacio.view_factura_tree" />
-            <field name="type">tree</field>
-            <field name="arch" type="xml">
-                <field name="energia_kwh" position="after">
-                    <field name="generacio_kwh" select="2"/>
-                </field>
-            </field>
-        </record>
-        <record model="ir.ui.view" id="view_giscedata_facturacio_factura_generacio_grouped_som_form">
-            <field name="name">giscedata.facturacio.factura.grouped.generacio.som.form</field>
-            <field name="model">giscedata.facturacio.factura</field>
-            <field name="inherit_id" ref="giscedata_facturacio.view_factura_grouped_tree" />
-            <field name="type">tree</field>
-            <field name="arch" type="xml">
-                <field name="energia_kwh" position="after">
-                    <field name="generacio_kwh" select="2"/>
-                </field>
-            </field>
-        </record>
     </data>
 </openerp>

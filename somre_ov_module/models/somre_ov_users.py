@@ -2,8 +2,8 @@
 from osv import osv, fields
 from tools.translate import _
 
-from decorators import www_entry_point
-from exceptions import NoSuchUser, NoDocumentVersions
+from .decorators import www_entry_point
+from .exceptions import NoSuchUser, NoDocumentVersions
 
 from datetime import datetime
 

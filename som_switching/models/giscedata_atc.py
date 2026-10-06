@@ -48,14 +48,14 @@ class GiscedataAtc(osv.osv):
         return res
 
     def unlink(self, cursor, uid, ids, context=None):
-        return self.case_and_atrs_cancel(cursor, uid, ids, context)
+        return self.case_cancel(cursor, uid, ids, context)
 
-    def case_and_atrs_cancel(self, cursor, uid, ids, *args):
+    def case_cancel(self, cursor, uid, ids, *args):
         r101_obj = self.pool.get("giscedata.switching")
         if not isinstance(ids, (list, tuple)):
             ids = [ids]
 
-        self.case_cancel(cursor, uid, ids, *args)
+        self.case_cancel_this(cursor, uid, ids, *args)
 
         cancel_r1_ids = []
         for atc in self.browse(cursor, uid, ids):
@@ -67,7 +67,7 @@ class GiscedataAtc(osv.osv):
             r101_obj.case_cancel(cursor, uid, cancel_r1_ids, *args)
         return True
 
-    def case_cancel(self, cursor, uid, ids, *args):  # noqa: C901
+    def case_cancel_this(self, cursor, uid, ids, *args):  # noqa: C901
         if not isinstance(ids, (list, tuple)):
             ids = [ids]
 

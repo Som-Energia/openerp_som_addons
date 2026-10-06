@@ -1,8 +1,11 @@
 # -*- coding: utf-8 -*-
+from __future__ import absolute_import
+
 from destral import testing
 from destral.transaction import Transaction
 from datetime import datetime
 from ..exceptions.som_webforms_exceptions import TariffNonExists
+from ..exceptions import som_webforms_exceptions
 from giscedata_facturacio_iva_10.giscedata_facturacio_iva_10 import GiscedataMonthlyPriceOmie
 import mock
 
@@ -17,6 +20,42 @@ class tarifes_tests(testing.OOTestCase):
 
     def tearDown(self):
         pass
+
+    def _simulation_policy(self, power=5.0, mode="atr", fiscal_position=False):
+        period = mock.Mock()
+        period.name = "P1"
+        cnae = mock.Mock()
+        cnae.name = "9820"
+        power_period = mock.Mock(periode_id=period, potencia=power)
+        subsystem = mock.Mock(id=7, code="PE")
+        municipality = mock.Mock(id=5386, subsistema_id=subsystem)
+        cups = mock.Mock(id=11, id_municipi=municipality)
+        policy = mock.Mock(
+            tarifa=mock.Mock(id=22),
+            cups=cups,
+            cnae=cnae,
+            mode_facturacio=mode,
+            potencies_periode=[power_period],
+            fiscal_position_id=fiscal_position,
+            state="cancelada",
+            titular=mock.Mock(vat="ES123"),
+        )
+        return policy
+
+    def _call_policy_simulation(
+        self, cursor, uid, policy, with_taxes=False, context=None, policy_id=17
+    ):
+        policy_obj = self.pool.get("giscedata.polissa")
+        with mock.patch.object(
+            policy_obj, "search", return_value=[policy_id]
+        ) as search, mock.patch.object(policy_obj, "browse", return_value=policy):
+            result = self.tariff_model.get_simulation_by_polissa_www(
+                cursor, uid, policy_id, with_taxes, context
+            )
+        search.assert_called_once_with(
+            cursor, uid, [("id", "=", policy_id)], context=context
+        )
+        return result
 
     def test__dummyTest(self):
         self.assertTrue(True)
@@ -89,102 +128,6 @@ class tarifes_tests(testing.OOTestCase):
 
             self.assertTrue(result["error"])
 
-    def test__get_tariff_prices__valid_date_range_date_tariff_into_range(self):
-
-        date_start = "2022-12-01"
-        date_end = "2023-01-31"
-
-        date_from = "2021-01-01"
-        date_to = "2023-02-01"
-
-        self.assertTrue(
-            (not date_end or date_from <= date_end) and (not date_start or date_to >= date_start)
-        )
-
-    def test__get_tariff_prices__valid_date_range_date_from_into_tariff(self):
-
-        date_start = "2022-12-01"
-        date_end = "2023-01-31"
-
-        date_from = "2022-12-15"
-        date_to = "2023-02-01"
-
-        self.assertTrue(
-            (not date_end or date_from <= date_end) and (not date_start or date_to >= date_start)
-        )
-
-    def test__get_tariff_prices__valid_date_range_date_to_into_tariff(self):
-
-        date_start = "2022-12-01"
-        date_end = "2023-01-31"
-
-        date_from = "2021-01-01"
-        date_to = "2023-01-15"
-
-        self.assertTrue(
-            (not date_end or date_from <= date_end) and (not date_start or date_to >= date_start)
-        )
-
-    def test__get_tariff_prices__valid_date_range_date_range_into_tariff(self):
-
-        date_start = "2022-12-01"
-        date_end = "2023-01-31"
-
-        date_from = "2021-12-15"
-        date_to = "2023-01-15"
-
-        self.assertTrue(
-            (not date_end or date_from <= date_end) and (not date_start or date_to >= date_start)
-        )
-
-    def test__get_tariff_prices__valid_date_range_date_range_equal_tariff_range(self):
-
-        date_start = "2022-12-01"
-        date_end = "2023-01-31"
-
-        date_from = "2021-12-01"
-        date_to = "2023-01-31"
-
-        self.assertTrue(
-            (not date_end or date_from <= date_end) and (not date_start or date_to >= date_start)
-        )
-
-    def test__get_tariff_prices__valid_date_range_date_range_before_tariff_range(self):
-
-        date_start = "2022-12-01"
-        date_end = "2023-01-31"
-
-        date_from = "2020-12-01"
-        date_to = "2022-01-31"
-
-        self.assertFalse(
-            (not date_end or date_from <= date_end) and (not date_start or date_to >= date_start)
-        )
-
-    def test__get_tariff_prices__valid_date_range_date_range_after_tariff_range(self):
-
-        date_start = "2022-12-01"
-        date_end = "2023-01-31"
-
-        date_from = "2023-12-01"
-        date_to = "2024-01-31"
-
-        self.assertFalse(
-            (not date_end or date_from <= date_end) and (not date_start or date_to >= date_start)
-        )
-
-    def test__get_tariff_prices__valid_date_range_with_active_tariff(self):
-
-        date_start = "2022-12-01"
-        date_end = False
-
-        date_from = "2022-12-15"
-        date_to = "2024-01-31"
-
-        self.assertTrue(
-            (not date_end or date_from <= date_end) and (not date_start or date_to >= date_start)
-        )
-
     def test__get_tariff_prices__without_dates(self):
         """
         Get an active tariff
@@ -227,7 +170,7 @@ class tarifes_tests(testing.OOTestCase):
             # Assert
             prices = {
                 "current": {
-                    "bo_social": {"unit": "\xe2\x82\xac/dia", "value": 0.0},
+                    "bo_social": {"unit": "\xe2\x82\xac/Dia", "value": 0.0},
                     "comptador": {"unit": "\xe2\x82\xac/mes", "value": 0.0},
                     "end_date": False,
                     "energia": {
@@ -279,7 +222,7 @@ class tarifes_tests(testing.OOTestCase):
             )
             prices = {
                 "current": {
-                    "bo_social": {"unit": "\xe2\x82\xac/dia", "value": 0.0},
+                    "bo_social": {"unit": "\xe2\x82\xac/Dia", "value": 0.0},
                     "comptador": {"unit": "\xe2\x82\xac/mes", "value": 0.0},
                     "end_date": False,
                     "energia": {
@@ -303,7 +246,7 @@ class tarifes_tests(testing.OOTestCase):
                 },
                 "history": [
                     {
-                        "bo_social": {"unit": "\xe2\x82\xac/dia", "value": 0.0},
+                        "bo_social": {"unit": "\xe2\x82\xac/Dia", "value": 0.0},
                         "comptador": {"unit": "\xe2\x82\xac/mes", "value": 0.0},
                         "end_date": "2022-12-31",
                         "energia": {
@@ -499,7 +442,7 @@ class tarifes_tests(testing.OOTestCase):
             )
             # Assert
             prices = {
-                "bo_social": {"uom": "\xe2\x82\xac/dia", "value": 0.0},
+                "bo_social": {"uom": "\xe2\x82\xac/Dia", "value": 0.0},
                 "comptador": {"uom": "\xe2\x82\xac/mes", "value": 0.0},
                 "end_date": "2022-12-31",
                 "gkwh": {
@@ -534,15 +477,21 @@ class tarifes_tests(testing.OOTestCase):
             uid = txn.user
             tariff_obj = self.tariff_model
             self.conf_obj.set(cursor, uid, 'charge_iva_10_percent_when_available', 1)
+            self.conf_obj.set(cursor, uid, 'charge_iva_10_percent_when_start_date', '2021-06-01')
+            self.conf_obj.set(cursor, uid, 'charge_iva_10_percent_end_date', '2024-12-31')
             mock_omie_price.return_value = True
 
             result = tariff_obj._get_fiscal_position_reduced(
                 cursor, uid, 10000, "2022-06-15", "2022-06-30"
             )
 
+            fiscal_position_id = self.imd_obj.get_object_reference(
+                cursor, uid, "som_polissa_condicions_generals", "fp_iva_reduit"
+            )[1]
+
             self.assertEqual(result[0][0], u'2021-06-01')
             self.assertEqual(result[0][1], u'2024-12-31')
-            self.assertEqual(result[0][2].id, 31)
+            self.assertEqual(result[0][2].id, fiscal_position_id)
 
     def test___get_fiscal_position_reduced__max_power_gt_10000__NOTapply(self):
         with Transaction().start(self.database) as txn:
@@ -584,3 +533,722 @@ class tarifes_tests(testing.OOTestCase):
             )
 
             self.assertEqual(result, [])
+
+    def test__incomplete_simulation_policy__stable_text(self):
+        exception = som_webforms_exceptions.IncompleteSimulationPolicy()
+
+        self.assertEqual(
+            exception.text, "Policy data required for simulation is incomplete"
+        )
+
+    def test__get_simulation_by_polissa_www__incomplete_structure(self):
+        with Transaction().start(self.database) as txn:
+            cursor = txn.cursor
+            uid = txn.user
+            policy_obj = self.pool.get("giscedata.polissa")
+
+            for policy_id in (False, 999999999):
+                with mock.patch.object(
+                    policy_obj, "search", return_value=[]
+                ), mock.patch.object(
+                    self.tariff_model, "_calculate_simulation_www", create=True
+                ) as calculate:
+                    with self.assertRaises(
+                        som_webforms_exceptions.IncompleteSimulationPolicy
+                    ) as ctx:
+                        self.tariff_model.get_simulation_by_polissa_www(
+                            cursor, uid, policy_id, False, None
+                        )
+                    self.assertEqual(
+                        ctx.exception.text,
+                        "Policy data required for simulation is incomplete",
+                    )
+                    self.assertEqual(calculate.call_count, 0)
+
+            invalid_policies = []
+            for attribute in ("tarifa", "cups", "cnae", "mode_facturacio"):
+                policy = self._simulation_policy()
+                setattr(policy, attribute, False)
+                invalid_policies.append(policy)
+            for path in (
+                ("cups", "id_municipi"),
+                ("cups", "id_municipi", "subsistema_id"),
+                ("cnae", "name"),
+            ):
+                policy = self._simulation_policy()
+                target = policy
+                for attribute in path[:-1]:
+                    target = getattr(target, attribute)
+                setattr(target, path[-1], False)
+                invalid_policies.append(policy)
+
+            for policy in invalid_policies:
+                with mock.patch.object(
+                    policy_obj, "search", return_value=[17]
+                ), mock.patch.object(
+                    policy_obj, "browse", return_value=policy
+                ), mock.patch.object(
+                    self.tariff_model, "_calculate_simulation_www", create=True
+                ) as calculate:
+                    with self.assertRaises(
+                        som_webforms_exceptions.IncompleteSimulationPolicy
+                    ):
+                        self.tariff_model.get_simulation_by_polissa_www(
+                            cursor, uid, 17, False, {}
+                        )
+                    self.assertEqual(calculate.call_count, 0)
+
+    def test__get_simulation_by_polissa_www__incomplete_powers(self):
+        with Transaction().start(self.database) as txn:
+            cursor = txn.cursor
+            uid = txn.user
+            policy_obj = self.pool.get("giscedata.polissa")
+            invalid_powers = [[], [mock.Mock(periode_id=False, potencia=5.0)]]
+            for name, power in ((False, 5.0), ("P1", None), ("P1", "bad")):
+                period = mock.Mock()
+                period.name = name
+                invalid_powers.append([mock.Mock(periode_id=period, potencia=power)])
+
+            for powers in invalid_powers:
+                policy = self._simulation_policy()
+                policy.potencies_periode = powers
+                with mock.patch.object(
+                    policy_obj, "search", return_value=[17]
+                ), mock.patch.object(
+                    policy_obj, "browse", return_value=policy
+                ), mock.patch.object(
+                    self.tariff_model, "_calculate_simulation_www", create=True
+                ) as calculate:
+                    with self.assertRaises(
+                        som_webforms_exceptions.IncompleteSimulationPolicy
+                    ):
+                        self.tariff_model.get_simulation_by_polissa_www(
+                            cursor, uid, 17, False, {}
+                        )
+                    self.assertEqual(calculate.call_count, 0)
+
+            for power in (0, 101):
+                policy = self._simulation_policy(power=power)
+                with mock.patch.object(
+                    policy_obj, "search", return_value=[17]
+                ), mock.patch.object(policy_obj, "browse", return_value=policy):
+                    with self.assertRaises(
+                        som_webforms_exceptions.InvalidSimulationPowers
+                    ):
+                        self.tariff_model.get_simulation_by_polissa_www(
+                            cursor, uid, 17, False, {}
+                        )
+
+    def test__get_simulation_by_polissa_www__maps_inputs(self):
+        with Transaction().start(self.database) as txn:
+            cursor = txn.cursor
+            uid = txn.user
+            context = {"date": "2026-01-01"}
+            taxes = object()
+
+            for mode, expected in (("atr", "periods"), ("index", "index")):
+                policy = self._simulation_policy(mode=mode)
+                policy.potencies_periode[0].periode_id.name = "pA"
+                with mock.patch.object(
+                    self.tariff_model,
+                    "_calculate_simulation_www",
+                    return_value="mapped",
+                    create=True,
+                ) as calculate:
+                    result = self._call_policy_simulation(
+                        cursor, uid, policy, taxes, context
+                    )
+                self.assertEqual(result, "mapped")
+                arguments = calculate.call_args[0]
+                self.assertEqual(arguments[2:7], (22, 5386, {"pa": 5000.0}, expected, False))
+                self.assertIs(arguments[7], taxes)
+                self.assertEqual(arguments[8], True)
+                self.assertIs(arguments[9], context)
+
+            fiscal_position = mock.Mock(id=44)
+            fiscal_cases = (
+                ("9820", 9.999, False, False, True),
+                ("9820", 10.0, False, "ESVAT", False),
+                ("0111", 5.0, False, False, False),
+                ("9820", 5.0, fiscal_position, "ESVAT", False),
+            )
+            for cnae, power, fiscal, vat, expected_home in fiscal_cases:
+                policy = self._simulation_policy(power=power, fiscal_position=fiscal)
+                policy.cnae.name = cnae
+                policy.titular.vat = vat
+                with mock.patch.object(
+                    self.tariff_model,
+                    "_calculate_simulation_www",
+                    return_value="classified",
+                    create=True,
+                ) as calculate:
+                    self._call_policy_simulation(cursor, uid, policy, True, None)
+                arguments = calculate.call_args[0]
+                self.assertEqual(arguments[6], fiscal.id if fiscal else False)
+                self.assertEqual(arguments[8], expected_home)
+                self.assertIs(arguments[9], None)
+
+            for mode in ("pvpc", "flat", "unknown", "custom"):
+                policy = self._simulation_policy(mode=mode)
+                with self.assertRaises(
+                    som_webforms_exceptions.InvalidSimulationPricelist
+                ):
+                    self._call_policy_simulation(cursor, uid, policy)
+
+    def test__get_simulation_by_polissa_www__optional_arguments_default_to_none(self):
+        with Transaction().start(self.database) as txn:
+            cursor = txn.cursor
+            uid = txn.user
+            policy = self._simulation_policy()
+            policy_obj = self.pool.get("giscedata.polissa")
+
+            with mock.patch.object(
+                policy_obj, "search", return_value=[17]
+            ) as search, mock.patch.object(
+                policy_obj, "browse", return_value=policy
+            ) as browse, mock.patch.object(
+                self.tariff_model,
+                "_calculate_simulation_www",
+                return_value="simulated",
+                create=True,
+            ) as calculate:
+                result = self.tariff_model.get_simulation_by_polissa_www(
+                    cursor, uid, 17
+                )
+
+            self.assertEqual(result, "simulated")
+            search.assert_called_once_with(
+                cursor, uid, [("id", "=", 17)], context=None
+            )
+            browse.assert_called_once_with(cursor, uid, 17, context=None)
+            arguments = calculate.call_args[0]
+            self.assertIs(arguments[7], None)
+            self.assertIs(arguments[9], None)
+
+    def test__get_simulation_by_polissa_www__range_and_equivalence(self):
+        with Transaction().start(self.database) as txn:
+            cursor = txn.cursor
+            uid = txn.user
+            tariff_id = self.imd_obj.get_object_reference(
+                cursor, uid, "som_webforms_helpers", "tarifa_20TD_test"
+            )[1]
+            coefficient = dict(
+                ("p{}_ratio".format(period), 1.0 if period == 1 else 0.0)
+                for period in range(1, 7)
+            )
+            average = dict(
+                ("p{}_price".format(period), 0.1 if period == 1 else 0.0)
+                for period in range(1, 7)
+            )
+            prices = {
+                "current": {
+                    "energia": {"P1": {"value": 0.2}},
+                    "potencia": {"P1": {"value": 0.01}},
+                    "comptador": {"value": 1.0},
+                    "bo_social": {"value": 0.01},
+                }
+            }
+            policy = self._simulation_policy(mode="atr")
+            policy.tarifa.id = tariff_id
+
+            with mock.patch.object(
+                self.pool.get("som.annual.coefficient"),
+                "get_current_coefficient",
+                return_value=coefficient,
+            ), mock.patch.object(
+                self.pool.get("som.annual.consumption.estimate"),
+                "get_consumption_by_power",
+                return_value=1200.0,
+            ), mock.patch.object(
+                self.pool.get("som.last.month.average.price"),
+                "get_current_price",
+                return_value=average,
+            ), mock.patch.object(
+                self.tariff_model, "get_tariff_prices_by_range", return_value=prices
+            ):
+                for context in ({"date": "2026-01-01"}, {}, None):
+                    direct = self.tariff_model.get_simulation_www(
+                        cursor,
+                        uid,
+                        tariff_id,
+                        5386,
+                        {"p1": 5000.0},
+                        "periods",
+                        with_taxes=True,
+                        context=context,
+                    )
+                    derived = self._call_policy_simulation(
+                        cursor, uid, policy, True, context
+                    )
+                    self.assertEqual(derived, direct)
+
+            coefficient_obj = self.pool.get("som.annual.coefficient")
+            for power in (1.0, 100.0, 0.999, 100.001):
+                policy = self._simulation_policy(power=power)
+                expected_exception = (
+                    som_webforms_exceptions.MissingSimulationConfig
+                    if power in (1.0, 100.0)
+                    else som_webforms_exceptions.InvalidSimulationPowers
+                )
+                with mock.patch.object(
+                    coefficient_obj, "get_current_coefficient", return_value=False
+                ):
+                    with self.assertRaises(expected_exception):
+                        self.tariff_model.get_simulation_www(
+                            cursor,
+                            uid,
+                            tariff_id,
+                            5386,
+                            {"p1": power * 1000},
+                            "periods",
+                            context={},
+                        )
+                    with self.assertRaises(expected_exception):
+                        self._call_policy_simulation(cursor, uid, policy, context={})
+
+    def test__get_simulation_www__invalid_pricelist(self):
+        with Transaction().start(self.database) as txn:
+            cursor = txn.cursor
+            uid = txn.user
+            tariff_obj = self.tariff_model
+
+            tariff_id = self.imd_obj.get_object_reference(
+                cursor, uid, "som_webforms_helpers", "tarifa_20TD_test"
+            )[1]
+
+            with self.assertRaises(som_webforms_exceptions.InvalidSimulationPricelist):
+                tariff_obj.get_simulation_www(
+                    cursor,
+                    uid,
+                    tariff_id,
+                    5386,
+                    {"p1": 5000},
+                    "invalid",
+                    context={"date": "2024-01-01"},
+                )
+
+    def test__get_simulation_www__invalid_powers(self):
+        with Transaction().start(self.database) as txn:
+            cursor = txn.cursor
+            uid = txn.user
+            tariff_obj = self.tariff_model
+
+            tariff_id = self.imd_obj.get_object_reference(
+                cursor, uid, "som_webforms_helpers", "tarifa_20TD_test"
+            )[1]
+
+            with self.assertRaises(som_webforms_exceptions.InvalidSimulationPowers):
+                tariff_obj.get_simulation_www(
+                    cursor,
+                    uid,
+                    tariff_id,
+                    5386,
+                    {"p1": 500},
+                    "index",
+                    context={"date": "2024-01-01"},
+                )
+
+    def test__get_simulation_www__missing_config_coeff(self):
+        with Transaction().start(self.database) as txn:
+            cursor = txn.cursor
+            uid = txn.user
+            tariff_obj = self.tariff_model
+
+            tariff_id = self.imd_obj.get_object_reference(
+                cursor, uid, "som_webforms_helpers", "tarifa_20TD_test"
+            )[1]
+
+            with mock.patch.object(
+                self.pool.get("som.annual.coefficient"),
+                "get_current_coefficient",
+                return_value=False,
+            ):
+                with self.assertRaises(som_webforms_exceptions.MissingSimulationConfig):
+                    tariff_obj.get_simulation_www(
+                        cursor,
+                        uid,
+                        tariff_id,
+                        5386,
+                        {"p1": 5000},
+                        "index",
+                        context={"date": "2024-01-01"},
+                    )
+
+    def test__get_simulation_www__power_period_keys_are_case_insensitive(self):
+        with Transaction().start(self.database) as txn:
+            cursor = txn.cursor
+            uid = txn.user
+            tariff_id = self.imd_obj.get_object_reference(
+                cursor, uid, "som_webforms_helpers", "tarifa_20TD_test"
+            )[1]
+            coefficient = dict(
+                ("p{}_ratio".format(period), 1.0 if period == 1 else 0.0)
+                for period in range(1, 7)
+            )
+            average = dict(
+                ("p{}_price".format(period), 0.0) for period in range(1, 7)
+            )
+            prices = {
+                "current": {
+                    "potencia": {
+                        "P1": {"value": 0.01},
+                        "P2": {"value": 0.02},
+                    }
+                }
+            }
+            power_cases = (
+                {"P1": 5000.0, "P2": 3000.0},
+                {"p1": 5000.0, "p2": 3000.0},
+                {"P1": 5000.0, "p2": 3000.0},
+            )
+
+            with mock.patch.object(
+                self.pool.get("som.annual.coefficient"),
+                "get_current_coefficient",
+                return_value=coefficient,
+            ), mock.patch.object(
+                self.pool.get("som.annual.consumption.estimate"),
+                "get_consumption_by_power",
+                return_value=1200.0,
+            ), mock.patch.object(
+                self.pool.get("som.last.month.average.price"),
+                "get_current_price",
+                return_value=average,
+            ), mock.patch.object(
+                self.tariff_model, "get_tariff_prices_by_range", return_value=prices
+            ):
+                power_costs = []
+                for powers in power_cases:
+                    result = self.tariff_model.get_simulation_www(
+                        cursor,
+                        uid,
+                        tariff_id,
+                        5386,
+                        powers,
+                        "periods",
+                        context={"date": "2026-01-01"},
+                    )
+                    power_cost = result["breakdown"]["power_eur"]
+                    self.assertEqual(power_cost, 3.41)
+                    self.assertGreater(power_cost, 0.0)
+                    power_costs.append(power_cost)
+
+            self.assertEqual(power_costs, [power_costs[0]] * len(power_cases))
+
+    def test__get_simulation_www__happy_path_periods_20td(self):
+        with Transaction().start(self.database) as txn:
+            cursor = txn.cursor
+            uid = txn.user
+            tariff_obj = self.tariff_model
+
+            tariff_id = self.imd_obj.get_object_reference(
+                cursor, uid, "som_webforms_helpers", "tarifa_20TD_test"
+            )[1]
+
+            coeff = {
+                "p1_ratio": 0.265,
+                "p2_ratio": 0.256,
+                "p3_ratio": 0.479,
+                "p4_ratio": 0.0,
+                "p5_ratio": 0.0,
+                "p6_ratio": 0.0,
+            }
+            avg_price = {
+                "p1_price": 0.027,
+                "p2_price": 0.027,
+                "p3_price": 0.027,
+                "p4_price": 0.0,
+                "p5_price": 0.0,
+                "p6_price": 0.0,
+            }
+
+            with mock.patch.object(
+                self.pool.get("som.annual.coefficient"),
+                "get_current_coefficient",
+                return_value=coeff,
+            ), mock.patch.object(
+                self.pool.get("som.annual.consumption.estimate"),
+                "get_consumption_by_power",
+                return_value=3250.0,
+            ), mock.patch.object(
+                self.pool.get("som.last.month.average.price"),
+                "get_current_price",
+                return_value=avg_price,
+            ), mock.patch.object(
+                tariff_obj,
+                "get_tariff_prices_by_range",
+                return_value={
+                    "current": {
+                        "energia": {
+                            "P1": {"value": 0.226},
+                            "P2": {"value": 0.15},
+                            "P3": {"value": 0.124},
+                            "P4": {"value": 0.0},
+                            "P5": {"value": 0.0},
+                            "P6": {"value": 0.0},
+                        },
+                        "potencia": {
+                            "P1": {"value": 0.082011},
+                            "P2": {"value": 0.008096},
+                        },
+                        "comptador": {"value": 0.81},
+                        "bo_social": {"value": 0.019121},
+                    }
+                },
+            ):
+                result = tariff_obj.get_simulation_www(
+                    cursor,
+                    uid,
+                    tariff_id,
+                    5386,
+                    {"p1": 4000, "p2": 4000},
+                    "periods",
+                    with_taxes=False,
+                    context={"date": "2026-06-01"},
+                )
+
+            self.assertEqual(result["estimated_monthly_kwh"], 271)
+            self.assertEqual(result["estimated_monthly_total_eur"], 62.21)
+            self.assertEqual(result["breakdown"]["energy_eur"], 50.02)
+            self.assertEqual(result["breakdown"]["power_eur"], 10.81)
+            self.assertEqual(result["breakdown"]["meter_eur"], 0.81)
+            self.assertEqual(result["breakdown"]["social_bonus_eur"], 0.57)
+            self.assertEqual(result["breakdown"]["taxes_applied"], False)
+
+    def test__get_simulation_www__happy_path_periods_30td(self):
+        with Transaction().start(self.database) as txn:
+            cursor = txn.cursor
+            uid = txn.user
+            tariff_obj = self.tariff_model
+
+            tariff_id = self.imd_obj.get_object_reference(
+                cursor, uid, "som_webforms_helpers", "tarifa_30TD_test"
+            )[1]
+
+            coeff = {
+                "p1_ratio": 0.119,
+                "p2_ratio": 0.134,
+                "p3_ratio": 0.123,
+                "p4_ratio": 0.133,
+                "p5_ratio": 0.050,
+                "p6_ratio": 0.441,
+            }
+            avg_price = {
+                "p1_price": 0.027,
+                "p2_price": 0.027,
+                "p3_price": 0.027,
+                "p4_price": 0.027,
+                "p5_price": 0.027,
+                "p6_price": 0.027,
+            }
+
+            with mock.patch.object(
+                self.pool.get("som.annual.coefficient"),
+                "get_current_coefficient",
+                return_value=coeff,
+            ), mock.patch.object(
+                self.pool.get("som.annual.consumption.estimate"),
+                "get_consumption_by_power",
+                return_value=6000.0,
+            ), mock.patch.object(
+                self.pool.get("som.last.month.average.price"),
+                "get_current_price",
+                return_value=avg_price,
+            ), mock.patch.object(
+                tariff_obj,
+                "get_tariff_prices_by_range",
+                return_value={
+                    "current": {
+                        "energia": {
+                            "P1": {"value": 0.171},
+                            "P2": {"value": 0.154},
+                            "P3": {"value": 0.125},
+                            "P4": {"value": 0.113},
+                            "P5": {"value": 0.110},
+                            "P6": {"value": 0.115},
+                        },
+                        "potencia": {
+                            "P1": {"value": 0.055827},
+                            "P2": {"value": 0.029089},
+                            "P3": {"value": 0.012278},
+                            "P4": {"value": 0.010647},
+                            "P5": {"value": 0.006887},
+                            "P6": {"value": 0.003951},
+                        },
+                        "comptador": {"value": 0.81},
+                        "bo_social": {"value": 0.019121},
+                    }
+                },
+            ):
+                result = tariff_obj.get_simulation_www(
+                    cursor,
+                    uid,
+                    tariff_id,
+                    5386,
+                    {"p1": 16000, "p2": 16000, "p3": 16000, "p4": 16000, "p5": 16000, "p6": 16000},
+                    "periods",
+                    with_taxes=False,
+                    context={"date": "2026-06-01"},
+                )
+
+            self.assertEqual(result["estimated_monthly_kwh"], 500)
+            self.assertEqual(result["estimated_monthly_total_eur"], 135.65)
+            self.assertEqual(result["breakdown"]["energy_eur"], 77.3)
+            self.assertEqual(result["breakdown"]["power_eur"], 56.97)
+            self.assertEqual(result["breakdown"]["meter_eur"], 0.81)
+            self.assertEqual(result["breakdown"]["social_bonus_eur"], 0.57)
+            self.assertEqual(result["breakdown"]["taxes_applied"], False)
+
+    def test__get_simulation_www__happy_path_index_20td(self):
+        with Transaction().start(self.database) as txn:
+            cursor = txn.cursor
+            uid = txn.user
+            tariff_obj = self.tariff_model
+
+            tariff_id = self.imd_obj.get_object_reference(
+                cursor, uid, "som_webforms_helpers", "tarifa_20TD_test"
+            )[1]
+
+            coeff = {
+                "p1_ratio": 0.265,
+                "p2_ratio": 0.256,
+                "p3_ratio": 0.479,
+                "p4_ratio": 0.0,
+                "p5_ratio": 0.0,
+                "p6_ratio": 0.0,
+            }
+            avg_price = {
+                "p1_price": 0.201549,
+                "p2_price": 0.132039,
+                "p3_price": 0.1111250,
+                "p4_price": 0.0,
+                "p5_price": 0.0,
+                "p6_price": 0.0,
+            }
+
+            with mock.patch.object(
+                self.pool.get("som.annual.coefficient"),
+                "get_current_coefficient",
+                return_value=coeff,
+            ), mock.patch.object(
+                self.pool.get("som.annual.consumption.estimate"),
+                "get_consumption_by_power",
+                return_value=3500.0,
+            ), mock.patch.object(
+                self.pool.get("som.last.month.average.price"),
+                "get_current_price",
+                return_value=avg_price,
+            ), mock.patch.object(
+                tariff_obj,
+                "get_tariff_prices_by_range",
+                return_value={
+                    "current": {
+                        "potencia": {
+                            "P1": {"value": 0.082011},
+                            "P2": {"value": 0.008096},
+                        },
+                        "comptador": {"value": 0.81},
+                        "bo_social": {"value": 0.019121},
+                    }
+                },
+            ):
+                result = tariff_obj.get_simulation_www(
+                    cursor,
+                    uid,
+                    tariff_id,
+                    5386,
+                    {"p1": 5000, "p2": 5000},
+                    "index",
+                    with_taxes=False,
+                    context={"date": "2026-06-01"},
+                )
+
+            self.assertEqual(result["estimated_monthly_kwh"], 292)
+            self.assertEqual(result["estimated_monthly_total_eur"], 55.86)
+            self.assertEqual(result["breakdown"]["energy_eur"], 40.96)
+            self.assertEqual(result["breakdown"]["power_eur"], 13.52)
+            self.assertEqual(result["breakdown"]["meter_eur"], 0.81)
+            self.assertEqual(result["breakdown"]["social_bonus_eur"], 0.57)
+            self.assertEqual(result["breakdown"]["taxes_applied"], False)
+
+            self.assertTrue(isinstance(result["estimated_monthly_total_eur"], float))
+            self.assertTrue(isinstance(result["breakdown"]["energy_eur"], float))
+
+    def test__get_simulation_www__happy_path_index_30td(self):
+        with Transaction().start(self.database) as txn:
+            cursor = txn.cursor
+            uid = txn.user
+            tariff_obj = self.tariff_model
+
+            tariff_id = self.imd_obj.get_object_reference(
+                cursor, uid, "som_webforms_helpers", "tarifa_30TD_test"
+            )[1]
+
+            coeff = {
+                "p1_ratio": 0.229,
+                "p2_ratio": 0.330,
+                "p3_ratio": 0.441,
+                "p4_ratio": 0.0,
+                "p5_ratio": 0.0,
+                "p6_ratio": 0.0,
+            }
+            avg_price = {
+                "p1_price": 0.103156,
+                "p2_price": 0.096864,
+                "p3_price": 0.109806,
+                "p4_price": 0.0,
+                "p5_price": 0.0,
+                "p6_price": 0.0,
+            }
+
+            with mock.patch.object(
+                self.pool.get("som.annual.coefficient"),
+                "get_current_coefficient",
+                return_value=coeff,
+            ), mock.patch.object(
+                self.pool.get("som.annual.consumption.estimate"),
+                "get_consumption_by_power",
+                return_value=8000.0,
+            ), mock.patch.object(
+                self.pool.get("som.last.month.average.price"),
+                "get_current_price",
+                return_value=avg_price,
+            ), mock.patch.object(
+                tariff_obj,
+                "get_tariff_prices_by_range",
+                return_value={
+                    "current": {
+                        "potencia": {
+                            "P1": {"value": 0.055827},
+                            "P2": {"value": 0.029089},
+                            "P3": {"value": 0.012278},
+                            "P4": {"value": 0.010647},
+                            "P5": {"value": 0.006887},
+                            "P6": {"value": 0.003951},
+                        },
+                        "comptador": {"value": 0.81},
+                        "bo_social": {"value": 0.019121},
+                    }
+                },
+            ):
+                result = tariff_obj.get_simulation_www(
+                    cursor,
+                    uid,
+                    tariff_id,
+                    5386,
+                    {"p1": 23000, "p2": 23000, "p3": 23000, "p4": 23000, "p5": 23000, "p6": 23000},
+                    "index",
+                    with_taxes=False,
+                    context={"date": "2026-06-01"},
+                )
+
+            self.assertEqual(result["estimated_monthly_kwh"], 667)
+            self.assertEqual(result["estimated_monthly_total_eur"], 152.61)
+            self.assertEqual(result["breakdown"]["energy_eur"], 69.34)
+            self.assertEqual(result["breakdown"]["power_eur"], 81.89)
+            self.assertEqual(result["breakdown"]["meter_eur"], 0.81)
+            self.assertEqual(result["breakdown"]["social_bonus_eur"], 0.57)
+            self.assertEqual(result["breakdown"]["taxes_applied"], False)
+
+            self.assertTrue(isinstance(result["estimated_monthly_total_eur"], float))
+            self.assertTrue(isinstance(result["breakdown"]["energy_eur"], float))
