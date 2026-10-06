@@ -316,26 +316,6 @@ if ! flock -w "$sync_lock_timeout" "$sync_lock_fd"; then
     exit 75
 fi
 
-# Always acquire the test wrapper's lock after the workspace lock. The wrapper
-# keeps it during the entire test, including addon link restoration. Hold both
-# locks until every dependency checkout and local override is finished.
-test_lock_timeout="${OPENERP_WORKTREE_TEST_LOCK_TIMEOUT:-600}"
-if ! [[ "$test_lock_timeout" =~ ^[0-9]+([.][0-9]+)?$ ]]; then
-    error "OPENERP_WORKTREE_TEST_LOCK_TIMEOUT must be a non-negative number: $test_lock_timeout"
-    exit 1
-fi
-test_state_dir="$workspace/.openerp-worktree-tests"
-mkdir -p -- "$test_state_dir"
-exec {test_lock_fd}>"$test_state_dir/lock"
-if ! flock -w "$test_lock_timeout" "$test_lock_fd"; then
-    error "Timed out waiting for addon test lock: $test_state_dir/lock"
-    exit 75
-fi
-if [[ -e "$test_state_dir/manifest" ]]; then
-    error "Abandoned addon test manifest requires recovery before synchronizing: $test_state_dir/manifest"
-    exit 1
-fi
-
 declare -a temporary_tag_prefixes=()
 cleanup_temporary_tag_refs() {
     local entry path prefix ref
@@ -414,6 +394,26 @@ if [[ "$dry_run" -eq 1 ]]; then
             "$repository" "${selected_remotes[$repository]}" "$target"
     done
     exit 0
+fi
+
+# A dry run only reads the plan and never touches dependency checkouts. Real
+# synchronization acquires the test wrapper's lock after the workspace lock;
+# the wrapper holds it through addon link restoration. Keep both until done.
+test_lock_timeout="${OPENERP_WORKTREE_TEST_LOCK_TIMEOUT:-600}"
+if ! [[ "$test_lock_timeout" =~ ^[0-9]+([.][0-9]+)?$ ]]; then
+    error "OPENERP_WORKTREE_TEST_LOCK_TIMEOUT must be a non-negative number: $test_lock_timeout"
+    exit 1
+fi
+test_state_dir="$workspace/.openerp-worktree-tests"
+mkdir -p -- "$test_state_dir"
+exec {test_lock_fd}>"$test_state_dir/lock"
+if ! flock -w "$test_lock_timeout" "$test_lock_fd"; then
+    error "Timed out waiting for addon test lock: $test_state_dir/lock"
+    exit 75
+fi
+if [[ -e "$test_state_dir/manifest" ]]; then
+    error "Abandoned addon test manifest requires recovery before synchronizing: $test_state_dir/manifest"
+    exit 1
 fi
 
 fetch_branch_target() {

@@ -166,6 +166,12 @@ tester_pid=$!
 for _ in {1..500}; do [[ -e "$ready" ]] && break; sleep 0.01; done
 [[ -e "$ready" ]] || fail 'worktree test runner did not start'
 before_test_head="$(git -C "$tmp/branchrepo" rev-parse HEAD)"
+OPENERP_WORKTREE_TEST_LOCK_TIMEOUT=0 sync --dry-run \
+    > "$tmp/test-dry-run-out" 2> "$tmp/test-dry-run-err" || \
+    fail 'dry run waited for a running worktree test'
+grep -q 'Would synchronize branchrepo' "$tmp/test-dry-run-out" || \
+    fail 'dry run did not display a plan during a worktree test'
+assert_equal "$(git -C "$tmp/branchrepo" rev-parse HEAD)" "$before_test_head"
 if OPENERP_WORKTREE_TEST_LOCK_TIMEOUT=0 sync > "$tmp/test-lock-out" 2> "$tmp/test-lock-err"; then
     fail 'synchronization changed dependencies during a running worktree test'
 fi
@@ -178,9 +184,12 @@ wait "$tester_pid"
 sync > "$tmp/after-test-out" 2> "$tmp/after-test-err"
 assert_equal "$(git -C "$tmp/branchrepo" branch --show-current)" rolling_erp01
 
-# An abandoned test manifest must be recovered by the test wrapper, not by sync.
+# A dry run is still informative with an abandoned test manifest; only a
+# real synchronization must refuse it until the wrapper recovers it safely.
 mkdir "$tmp/.openerp-worktree-tests/manifest"
-if sync --dry-run > "$tmp/manifest-out" 2> "$tmp/manifest-err"; then
+sync --dry-run > "$tmp/manifest-plan" 2> "$tmp/manifest-plan-err" || \
+    fail 'dry run refused to display a plan with an abandoned manifest'
+if sync > "$tmp/manifest-out" 2> "$tmp/manifest-err"; then
     fail 'synchronization accepted an abandoned addon manifest'
 fi
 grep -q 'Abandoned addon test manifest' "$tmp/manifest-err" \

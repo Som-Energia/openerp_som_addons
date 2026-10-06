@@ -115,6 +115,8 @@ explícita: `--accept-rewritten-branch poweremail2`. El script crea una branca
 - No fa `stash` ni descarta commits locals. També bloqueja una branca de destí
   que no es pugui avançar amb fast-forward, excepte amb
   `--accept-rewritten-branch`, que en conserva una còpia de seguretat.
-- `--dry-run` mostra el pla sense canviar refs, checkouts ni overrides.
+- `--dry-run` mostra un pla informatiu sense canviar refs, checkouts ni
+  overrides. Conserva el lock del workspace, però no espera el lock de tests;
+  una sincronització real tornarà a validar l'estat i esperarà que acabin.
 - Si falla després d'un fetch, no canvia cap working tree; resol primer el
   problema indicat i torna'l a executar.
