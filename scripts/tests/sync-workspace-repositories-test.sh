@@ -1,7 +1,9 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-wrapper="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd)/sync-workspace-repositories.sh"
+script_dir="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd)"
+wrapper="$script_dir/sync-workspace-repositories.sh"
+test_wrapper="$script_dir/run-tests-worktree.sh"
 tmp="$(mktemp -d)"
 trap 'rm -rf -- "$tmp"' EXIT
 
@@ -137,6 +139,53 @@ fi
 wait "$locker_pid"
 grep -q 'Timed out waiting for workspace synchronization lock' "$tmp/lock-err" \
     || fail 'lock timeout was not reported'
+
+# A real worktree test keeps the addon lock for the full runner execution.
+# Synchronization must not change branchrepo until the runner has finished.
+mkdir -p "$tmp/openerp_som_addons/testaddon" "$tmp/erp/server/bin/addons"
+: > "$tmp/openerp_som_addons/testaddon/__terp__.py"
+runner="$tmp/test-runner.sh"
+cat > "$runner" <<'RUNNER'
+#!/usr/bin/env bash
+: > "$TEST_READY"
+for _ in {1..1000}; do
+    [[ ! -e "$TEST_RELEASE" ]] || exit 0
+    sleep 0.01
+done
+exit 1
+RUNNER
+chmod +x "$runner"
+ready="$tmp/test-ready"
+release="$tmp/test-release"
+OPENERP_WORKTREE_TEST_WORKTREE="$tmp/openerp_som_addons" \
+OPENERP_WORKTREE_TEST_WORKSPACE="$tmp" \
+OPENERP_WORKTREE_TEST_RUNNER="$runner" \
+TEST_READY="$ready" TEST_RELEASE="$release" \
+    "$test_wrapper" --addon testaddon -- fake-test > "$tmp/test-out" 2> "$tmp/test-err" &
+tester_pid=$!
+for _ in {1..500}; do [[ -e "$ready" ]] && break; sleep 0.01; done
+[[ -e "$ready" ]] || fail 'worktree test runner did not start'
+before_test_head="$(git -C "$tmp/branchrepo" rev-parse HEAD)"
+if OPENERP_WORKTREE_TEST_LOCK_TIMEOUT=0 sync > "$tmp/test-lock-out" 2> "$tmp/test-lock-err"; then
+    fail 'synchronization changed dependencies during a running worktree test'
+fi
+assert_equal "$(git -C "$tmp/branchrepo" rev-parse HEAD)" "$before_test_head"
+assert_equal "$(git -C "$tmp/branchrepo" branch --show-current)" developer
+grep -q 'Timed out waiting for addon test lock' "$tmp/test-lock-err" \
+    || fail 'addon test lock timeout was not reported'
+: > "$release"
+wait "$tester_pid"
+sync > "$tmp/after-test-out" 2> "$tmp/after-test-err"
+assert_equal "$(git -C "$tmp/branchrepo" branch --show-current)" rolling_erp01
+
+# An abandoned test manifest must be recovered by the test wrapper, not by sync.
+mkdir "$tmp/.openerp-worktree-tests/manifest"
+if sync --dry-run > "$tmp/manifest-out" 2> "$tmp/manifest-err"; then
+    fail 'synchronization accepted an abandoned addon manifest'
+fi
+grep -q 'Abandoned addon test manifest' "$tmp/manifest-err" \
+    || fail 'abandoned addon test manifest was not reported'
+rmdir "$tmp/.openerp-worktree-tests/manifest"
 
 # An ignored file is still protected if the target branch tracks that path.
 make_seed ignoredrepo

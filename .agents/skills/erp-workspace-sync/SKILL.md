@@ -105,7 +105,13 @@ explícita: `--accept-rewritten-branch poweremail2`. El script crea una branca
 - El script falla abans de canviar cap working tree si una dependència té
   canvis rastrejats/no rastrejats, o un fitxer ignorat que la ref destí
   versionaria.
-- Un lock del workspace serialitza tota la sincronització entre worktrees.
+- Un lock del workspace serialitza les sincronitzacions. Després s'adquireix
+  el mateix lock de `scripts/run-tests-worktree.sh` i es mantenen tots dos
+  fins al final: no es canvien dependències mentre un test del wrapper usa
+  l'ERP. Si hi ha un manifest de test sense restaurar, la sincronització
+  s'atura; cal recuperar-lo de manera segura amb el wrapper abans de continuar.
+  `OPENERP_WORKSPACE_SYNC_LOCK_TIMEOUT` i `OPENERP_WORKTREE_TEST_LOCK_TIMEOUT`
+  (600 segons per defecte) controlen els temps d'espera respectius.
 - No fa `stash` ni descarta commits locals. També bloqueja una branca de destí
   que no es pugui avançar amb fast-forward, excepte amb
   `--accept-rewritten-branch`, que en conserva una còpia de seguretat.
