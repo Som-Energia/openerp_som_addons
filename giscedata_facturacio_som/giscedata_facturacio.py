@@ -106,7 +106,7 @@ class GiscedataFacturacioFactura(osv.osv):
             ('data_final', '<=', factura.data_final),
             ('cups_id', '=', factura.cups_id.id),
             ('refund_by_id', '=', False),
-            ('type', '=', ('in_invoice', 'in_refund')),
+            ('type', 'in', ['in_invoice', 'in_refund']),
             ('rectificative_type', '!=', 'BRA')
         ]
         fact_prov_ids = fact_obj.search(cursor, uid, search_vals, order="invoice_id.origin_date_invoice desc", context=context)
