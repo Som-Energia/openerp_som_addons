@@ -99,7 +99,9 @@ class GiscedataFacturacioFactura(osv.osv):
         ]
         fact_prov_ids = fact_obj.search(cursor, uid, search_vals, order="invoice_id.origin_date_invoice desc", context=context)
         if fact_prov_ids:
-            res = fact_obj.read(cursor, uid, fact_prov_ids[0], ['origin_date_invoice'], context=context)['origin_date_invoice']
+            date_invoice_orig = fact_obj.read(cursor, uid, fact_prov_ids[0], ['origin_date_invoice'], context=context)['origin_date_invoice']
+            date_invoice_orig = datetime.strptime(date_invoice_orig, '%Y-%m-%d') + datetime.timedelta(days=31)
+            res = date_invoice_orig.strftime('%Y-%m-%d')
         else:
             raise osv.except_osv(_("No s'ha trobat factura de proveïdor"),
                                  _("No s'ha trobat factura de proveïdor entre les dates {} i {}").format(
