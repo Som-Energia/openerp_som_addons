@@ -10,3 +10,4 @@ from .test_lead_www_member_payment import *
 from .test_lead_www_validation import *
 from .test_lead_www_misc import *
 from .tests_sign_lead import *
+from .test_sign_lead_wizard import *
