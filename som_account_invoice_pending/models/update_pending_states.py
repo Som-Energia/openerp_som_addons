@@ -72,7 +72,8 @@ class UpdatePendingStates(osv.osv_memory):
                 logger.error(
                     "UNHANDLED ERROR in {method_name}: {exc}".format(
                         method_name=method_name, exc=_exception_message(e)
-                    )
+                    ),
+                    exc_info=True,
                 )
 
     def get_object_id(self, cursor, uid, module, sem_id):
@@ -247,7 +248,8 @@ class UpdatePendingStates(osv.osv_memory):
                 logger.error(
                     "UNHANDLED ERROR updating invoice {factura_id} in update_waiting_for_48h: {exc}".format(  # noqa: E501
                         factura_id=factura_id, exc=_exception_message(e)
-                    )
+                    ),
+                    exc_info=True,
                 )
 
         # BO SOCIAL
@@ -332,7 +334,8 @@ class UpdatePendingStates(osv.osv_memory):
                 logger.error(
                     "UNHANDLED ERROR updating invoice {factura_id} in update_waiting_for_48h: {exc}".format(  # noqa: E501
                         factura_id=factura_id, exc=_exception_message(e)
-                    )
+                    ),
+                    exc_info=True,
                 )
 
     def update_waiting_for_48h_active_contracts(
@@ -479,7 +482,8 @@ class UpdatePendingStates(osv.osv_memory):
                 logger.error(
                     "UNHANDLED ERROR updating invoice {factura_id} in update_waiting_for_annexIV: {exc}".format(  # noqa: E501
                         factura_id=factura_id, exc=_exception_message(e)
-                    )
+                    ),
+                    exc_info=True,
                 )
 
         # BO SOCIAL
@@ -542,7 +546,8 @@ class UpdatePendingStates(osv.osv_memory):
                 logger.error(
                     "UNHANDLED ERROR updating invoice {factura_id} in update_waiting_for_annexIV: {exc}".format(  # noqa: E501
                         factura_id=factura_id, exc=_exception_message(e)
-                    )
+                    ),
+                    exc_info=True,
                 )
 
     def update_waiting_for_annexIII_first(self, cursor, uid, context=None):
@@ -648,7 +653,8 @@ class UpdatePendingStates(osv.osv_memory):
                 logger.error(
                     "UNHANDLED ERROR updating invoice {factura_id} in update_update_waiting_for_annexIII: {exc}".format(  # noqa: E501
                         factura_id=factura_id, exc=_exception_message(e)
-                    )
+                    ),
+                    exc_info=True,
                 )
 
     def update_waiting_for_annexII(self, cursor, uid, context=None):
@@ -700,7 +706,8 @@ class UpdatePendingStates(osv.osv_memory):
                 logger.error(
                     "UNHANDLED ERROR updating invoice {factura_id} in update_waiting_for_annexII: {exc}".format(  # noqa: E501
                         factura_id=factura_id, exc=_exception_message(e)
-                    )
+                    ),
+                    exc_info=True,
                 )
 
     def update_waiting_for_annex_cancelled_contracts(
@@ -993,8 +1000,18 @@ class UpdatePendingStates(osv.osv_memory):
                         ("pending_state.weight", ">", correct_weight),
                     ],
                 )
-                if len(inv_list) >= 2:
-                    for invoice_id in inv_list:
+            except Exception as e:
+                logger.error(
+                    "UNHANDLED ERROR finding invoices for {invoice_id} in update_state_with_2_invoices_unpaid: {exc}".format(  # noqa: E501
+                        invoice_id=inv_id, exc=_exception_message(e)
+                    ),
+                    exc_info=True,
+                )
+                continue
+
+            if len(inv_list) >= 2:
+                for invoice_id in inv_list:
+                    try:
                         # quan es fan testos és False perquè les factures de destral no tene number
                         inv_number = inv_obj.browse(cursor, uid, invoice_id).number
                         fact_id = fact_obj.search(cursor, uid, [("number", "=", inv_number)])
@@ -1009,18 +1026,19 @@ class UpdatePendingStates(osv.osv_memory):
                                     cursor, uid, fact_id[0], traspas_advocats_dp, context
                                 )
                         fact_obj.set_pending(cursor, uid, fact_id, waiting_notif_id)
-            except UpdateWaitingCancelledContractsException as e:
-                logger.error(
-                    "ERROR updating invoice {factura_id} in update_state_with_2_invoices_unpaid: {exc}".format(  # noqa: E501
-                        factura_id=inv_id, exc=_exception_message(e)
-                    )
-                )
-            except Exception as e:
-                logger.error(
-                    "UNHANDLED ERROR updating invoice {factura_id} in update_state_with_2_invoices_unpaid: {exc}".format(  # noqa: E501
-                        factura_id=inv_id, exc=_exception_message(e)
-                    )
-                )
+                    except UpdateWaitingCancelledContractsException as e:
+                        logger.error(
+                            "ERROR updating invoice {invoice_id} in update_state_with_2_invoices_unpaid: {exc}".format(  # noqa: E501
+                                invoice_id=invoice_id, exc=_exception_message(e)
+                            )
+                        )
+                    except Exception as e:
+                        logger.error(
+                            "UNHANDLED ERROR updating invoice {invoice_id} in update_state_with_2_invoices_unpaid: {exc}".format(  # noqa: E501
+                                invoice_id=invoice_id, exc=_exception_message(e)
+                            ),
+                            exc_info=True,
+                        )
 
     def poverty_eligible(self, cursor, uid, polissa_id):
         pol_obj = self.pool.get("giscedata.polissa")
@@ -1094,7 +1112,8 @@ class UpdatePendingStates(osv.osv_memory):
                 logger.error(
                     "UNHANDLED ERROR updating invoice {factura_id} in update_pending_ask_poverty: {exc}".format(  # noqa: E501
                         factura_id=factura_id, exc=_exception_message(e)
-                    )
+                    ),
+                    exc_info=True,
                 )
 
     def send_fue_reminder_emails(self, cursor, uid, context=None):
@@ -1153,7 +1172,8 @@ class UpdatePendingStates(osv.osv_memory):
                 logger.error(
                     "UNHANDLED ERROR updating invoice {factura_id} in send_fue_reminder_emails: {exc}".format(  # noqa: E501
                         factura_id=factura_id, exc=_exception_message(e)
-                    )
+                    ),
+                    exc_info=True,
                 )
 
     def send_r1_reminder_emails(self, cursor, uid, context=None):
@@ -1212,7 +1232,8 @@ class UpdatePendingStates(osv.osv_memory):
                 logger.error(
                     "UNHANDLED ERROR updating invoice {factura_id} in send_r1_reminder_emails: {exc}".format(  # noqa: E501
                         factura_id=factura_id, exc=_exception_message(e)
-                    )
+                    ),
+                    exc_info=True,
                 )
 
 

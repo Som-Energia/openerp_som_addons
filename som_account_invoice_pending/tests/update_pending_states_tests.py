@@ -255,7 +255,7 @@ class TestUpdatePendingStates(testing.OOTestCaseWithCursor):
         for method_name in method_names:
             methods[method_name].assert_called_once_with(cursor, uid)
         get_logger.return_value.error.assert_called_once_with(
-            "UNHANDLED ERROR in update_second_unpaid_invoice: test"
+            "UNHANDLED ERROR in update_second_unpaid_invoice: test", exc_info=True
         )
 
     @mock.patch(
@@ -276,9 +276,61 @@ class TestUpdatePendingStates(testing.OOTestCaseWithCursor):
             None,
         ]
 
-        pending_obj.update_waiting_for_annexII(cursor, uid)
+        with mock.patch(
+            "som_account_invoice_pending.models.update_pending_states.logging.getLogger"
+        ) as get_logger:
+            pending_obj.update_waiting_for_annexII(cursor, uid)
 
         self.assertEqual(mock_update.call_count, 2)
+        failed_invoice_id = mock_update.call_args_list[0][0][2]
+        get_logger.return_value.error.assert_called_once_with(
+            "ERROR updating invoice {} in update_waiting_for_annexII: test".format(
+                failed_invoice_id
+            )
+        )
+
+    def test__update_state_with_2_invoices_unpaid__continues_within_group(self):
+        cursor = self.txn.cursor
+        uid = self.txn.user
+        self._load_data_unpaid_invoices(
+            cursor, uid, [self.waiting_unpaid_id, self.waiting_unpaid_id]
+        )
+        pending_obj = self.pool.get("update.pending.states")
+        inv_obj = self.pool.get("account.invoice")
+        fact_obj = self.pool.get("giscedata.facturacio.factura")
+        invoice_ids = [
+            fact_obj.read(cursor, uid, factura_id, ["invoice_id"])["invoice_id"][0]
+            for factura_id in (self.invoice_1_id, self.invoice_2_id)
+        ]
+
+        with mock.patch.object(inv_obj, "search", side_effect=[[invoice_ids[0]], invoice_ids]):
+            with mock.patch.object(
+                fact_obj, "search", side_effect=[[self.invoice_1_id], [self.invoice_2_id]]
+            ):
+                with mock.patch.object(
+                    fact_obj, "set_pending", side_effect=[Exception("test"), None]
+                ) as set_pending:
+                    with mock.patch(
+                        "som_account_invoice_pending.models.update_pending_states.logging.getLogger"
+                    ) as get_logger:
+                        pending_obj.update_state_with_2_invoices_unpaid(
+                            cursor,
+                            uid,
+                            "Bo Social",
+                            self.correct_id,
+                            self.waiting_unpaid_id,
+                            self.waiting_48h_bs,
+                        )
+
+        self.assertEqual(set_pending.call_count, 2)
+        self.assertEqual(set_pending.call_args_list[0][0][2], [self.invoice_1_id])
+        self.assertEqual(set_pending.call_args_list[1][0][2], [self.invoice_2_id])
+        get_logger.return_value.error.assert_called_once_with(
+            "UNHANDLED ERROR updating invoice {} in update_state_with_2_invoices_unpaid: test".format(  # noqa: E501
+                invoice_ids[0]
+            ),
+            exc_info=True,
+        )
 
     def test__update_second_unpaid_invoice__two_invoices_moving(self):
         cursor = self.txn.cursor
@@ -1150,9 +1202,19 @@ class TestUpdatePendingStates(testing.OOTestCaseWithCursor):
         pending_obj = self.pool.get("update.pending.states")
         mock_mail.side_effect = [Exception("test"), None]
 
-        pending_obj.send_fue_reminder_emails(cursor, uid, context=None)
+        with mock.patch(
+            "som_account_invoice_pending.models.update_pending_states.logging.getLogger"
+        ) as get_logger:
+            pending_obj.send_fue_reminder_emails(cursor, uid, context=None)
 
         self.assertEqual(mock_mail.call_count, 2)
+        failed_invoice_id = mock_mail.call_args_list[0][0][2]
+        get_logger.return_value.error.assert_called_once_with(
+            "UNHANDLED ERROR updating invoice {} in send_fue_reminder_emails: test".format(  # noqa: E501
+                failed_invoice_id
+            ),
+            exc_info=True,
+        )
 
     @mock.patch("som_account_invoice_pending.models.update_pending_states.UpdatePendingStates.send_email")  # noqa: E501
     @freeze_time("2024-03-26")
