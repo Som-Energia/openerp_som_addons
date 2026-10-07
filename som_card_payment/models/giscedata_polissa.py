@@ -45,6 +45,12 @@ class GiscedataPolissa(osv.osv):
 
     def convert_to_recurring_card(self, cursor, uid, polissa_id, card_data, context=None):
         context = (context or {}).copy()
+        card_data = {
+            "token": card_data.get("creditcard_token"),
+            "masked_number": card_data.get("creditcard_masked_number"),
+            "expiry_date": card_data.get("creditcard_expiry_date"),
+            "cof_txnid": card_data.get("creditcard_cof_txnid"),
+        }
         today = date.today().strftime("%Y-%m-%d")
         self.check_perm(cursor, uid, "write", context=context)
         polissa = self.browse(cursor, uid, polissa_id, context=context)
