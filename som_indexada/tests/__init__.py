@@ -2,3 +2,4 @@
 from __future__ import absolute_import
 from .test_wizard_change_to_indexada import *
 from .test_wizard_change_to_periodes import *
+from .test_wizard_massive_k_change import *
