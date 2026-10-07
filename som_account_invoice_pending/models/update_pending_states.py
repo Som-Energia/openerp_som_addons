@@ -1012,20 +1012,30 @@ class UpdatePendingStates(osv.osv_memory):
             if len(inv_list) >= 2:
                 for invoice_id in inv_list:
                     try:
-                        # quan es fan testos és False perquè les factures de destral no tene number
-                        inv_number = inv_obj.browse(cursor, uid, invoice_id).number
-                        fact_id = fact_obj.search(cursor, uid, [("number", "=", inv_number)])
-                        polissa = fact_obj.browse(cursor, uid, fact_id[0]).polissa_id
+                        fact_ids = fact_obj.search(
+                            cursor, uid, [("invoice_id", "=", invoice_id)]
+                        )
+                        if len(fact_ids) != 1:
+                            logger.error(
+                                "ERROR resolving invoice {invoice_id} in "
+                                "update_state_with_2_invoices_unpaid: expected one "
+                                "energy invoice, found {count}".format(
+                                    invoice_id=invoice_id, count=len(fact_ids)
+                                )
+                            )
+                            continue
+                        factura_id = fact_ids[0]
+                        polissa = fact_obj.browse(cursor, uid, factura_id).polissa_id
                         if polissa.state == "baixa":
                             if "Bo Social" in process_name:
                                 self.update_waiting_for_annex_cancelled_contracts(
-                                    cursor, uid, fact_id[0], traspas_advocats_bs, context
+                                    cursor, uid, factura_id, traspas_advocats_bs, context
                                 )
                             else:
                                 self.update_waiting_for_annex_cancelled_contracts(
-                                    cursor, uid, fact_id[0], traspas_advocats_dp, context
+                                    cursor, uid, factura_id, traspas_advocats_dp, context
                                 )
-                        fact_obj.set_pending(cursor, uid, fact_id, waiting_notif_id)
+                        fact_obj.set_pending(cursor, uid, [factura_id], waiting_notif_id)
                     except UpdateWaitingCancelledContractsException as e:
                         logger.error(
                             "ERROR updating invoice {invoice_id} in update_state_with_2_invoices_unpaid: {exc}".format(  # noqa: E501

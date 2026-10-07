@@ -304,9 +304,7 @@ class TestUpdatePendingStates(testing.OOTestCaseWithCursor):
         ]
 
         with mock.patch.object(inv_obj, "search", side_effect=[[invoice_ids[0]], invoice_ids]):
-            with mock.patch.object(
-                fact_obj, "search", side_effect=[[self.invoice_1_id], [self.invoice_2_id]]
-            ):
+            with mock.patch.object(fact_obj, "search", wraps=fact_obj.search) as fact_search:
                 with mock.patch.object(
                     fact_obj, "set_pending", side_effect=[Exception("test"), None]
                 ) as set_pending:
@@ -322,6 +320,10 @@ class TestUpdatePendingStates(testing.OOTestCaseWithCursor):
                             self.waiting_48h_bs,
                         )
 
+        self.assertEqual(
+            fact_search.call_args_list,
+            [mock.call(cursor, uid, [("invoice_id", "=", inv_id)]) for inv_id in invoice_ids],
+        )
         self.assertEqual(set_pending.call_count, 2)
         self.assertEqual(set_pending.call_args_list[0][0][2], [self.invoice_1_id])
         self.assertEqual(set_pending.call_args_list[1][0][2], [self.invoice_2_id])
@@ -330,6 +332,54 @@ class TestUpdatePendingStates(testing.OOTestCaseWithCursor):
                 invoice_ids[0]
             ),
             exc_info=True,
+        )
+
+    def test__update_state_with_2_invoices_unpaid__skips_missing_energy_invoice(self):
+        self._check_invalid_energy_invoice_mapping([])
+
+    def test__update_state_with_2_invoices_unpaid__skips_ambiguous_energy_invoice(self):
+        self._check_invalid_energy_invoice_mapping([self.invoice_1_id, self.invoice_2_id])
+
+    def _check_invalid_energy_invoice_mapping(self, invalid_ids):
+        cursor = self.txn.cursor
+        uid = self.txn.user
+        self._load_data_unpaid_invoices(
+            cursor, uid, [self.waiting_unpaid_id, self.waiting_unpaid_id]
+        )
+        pending_obj = self.pool.get("update.pending.states")
+        inv_obj = self.pool.get("account.invoice")
+        fact_obj = self.pool.get("giscedata.facturacio.factura")
+        invoice_ids = [
+            fact_obj.read(cursor, uid, factura_id, ["invoice_id"])["invoice_id"][0]
+            for factura_id in (self.invoice_1_id, self.invoice_2_id)
+        ]
+        fields = ["pending_state", "pending_history_ids", "comment"]
+        first_before = fact_obj.read(cursor, uid, self.invoice_1_id, fields)
+
+        with mock.patch.object(inv_obj, "search", side_effect=[[invoice_ids[0]], invoice_ids]):
+            with mock.patch.object(
+                fact_obj, "search", side_effect=[invalid_ids, [self.invoice_2_id]]
+            ):
+                with mock.patch.object(fact_obj, "set_pending") as set_pending:
+                    with mock.patch.object(pending_obj, "send_email") as send_email:
+                        with mock.patch.object(pending_obj, "send_sms") as send_sms:
+                            with mock.patch(
+                                "som_account_invoice_pending.models.update_pending_states.logging.getLogger"  # noqa: E501
+                            ) as get_logger:
+                                pending_obj.update_state_with_2_invoices_unpaid(
+                                    cursor, uid, "Bo Social", self.correct_id,
+                                    self.waiting_unpaid_id, self.waiting_48h_bs
+                                )
+
+        set_pending.assert_called_once_with(
+            cursor, uid, [self.invoice_2_id], self.waiting_48h_bs
+        )
+        send_email.assert_not_called()
+        send_sms.assert_not_called()
+        self.assertEqual(fact_obj.read(cursor, uid, self.invoice_1_id, fields), first_before)
+        get_logger.return_value.error.assert_called_once_with(
+            "ERROR resolving invoice {} in update_state_with_2_invoices_unpaid: "
+            "expected one energy invoice, found {}".format(invoice_ids[0], len(invalid_ids))
         )
 
     def test__update_second_unpaid_invoice__two_invoices_moving(self):
@@ -352,10 +402,20 @@ class TestUpdatePendingStates(testing.OOTestCaseWithCursor):
         inv_data = fact_obj.browse(cursor, uid, self.invoice_2_id)
         self.assertEqual(inv_data.pending_state.id, self.waiting_48h_bs)
 
-    @mock.patch("som_account_invoice_pending.models.update_pending_states.UpdatePendingStates.send_email")  # noqa: E501
-    @mock.patch("som_account_invoice_pending.models.update_pending_states.UpdatePendingStates.send_sms")  # noqa: E501
-    def test__update_second_unpaid_invoice__bo_social_baixa_uses_bo_social_lawyer_state(
-        self, mock_sms, mock_mail
+    def test__update_second_unpaid_invoice__bo_social_baixa_uses_bo_social_lawyer_state(self):
+        self._check_second_unpaid_invoice_baixa(
+            self.waiting_unpaid_id, self.waiting_48h_bs,
+            self.traspas_advocats_bs, self.traspas_advocats_dp
+        )
+
+    def test__update_second_unpaid_invoice__default_baixa_uses_default_lawyer_state(self):
+        self._check_second_unpaid_invoice_baixa(
+            self.def_waiting_unpaid_id, self.waiting_48h_def,
+            self.traspas_advocats_dp, self.traspas_advocats_bs
+        )
+
+    def _check_second_unpaid_invoice_baixa(
+        self, waiting_unpaid_id, waiting_notif_id, lawyer_state_id, other_lawyer_state_id
     ):
         cursor = self.txn.cursor
         uid = self.txn.user
@@ -367,18 +427,27 @@ class TestUpdatePendingStates(testing.OOTestCaseWithCursor):
             cursor, uid, "giscedata_polissa", "polissa_0001"
         )[1]
         pol_obj.write(cursor, uid, [pol_id], {"state": "baixa"})
-        self._load_data_unpaid_invoices(
-            cursor, uid, [self.waiting_unpaid_id, self.waiting_unpaid_id]
-        )
+        self._load_data_unpaid_invoices(cursor, uid, [waiting_unpaid_id, waiting_unpaid_id])
+        third_id = imd_obj.get_object_reference(
+            cursor, uid, "giscedata_facturacio", "factura_0003"
+        )[1]
+        snapshot_fields = ["pending_state", "pending_history_ids", "comment"]
+        third_before = fact_obj.read(cursor, uid, third_id, snapshot_fields)
+        for factura_id in (self.invoice_1_id, self.invoice_2_id, third_id):
+            self.assertFalse(fact_obj.browse(cursor, uid, factura_id).number)
 
         pending_obj = self.pool.get("update.pending.states")
-        pending_obj.update_second_unpaid_invoice(cursor, uid)
+        with mock.patch.object(pending_obj, "send_email") as mock_mail:
+            with mock.patch.object(pending_obj, "send_sms") as mock_sms:
+                pending_obj.update_second_unpaid_invoice(cursor, uid)
 
-        self.assertEqual(mock_mail.call_count, 2)
-        self.assertEqual(mock_sms.call_count, 2)
-        for factura_id in (self.invoice_1_id, self.invoice_2_id):
+        expected_ids = sorted([self.invoice_1_id, self.invoice_2_id])
+        self.assertEqual(sorted(call[0][2] for call in mock_mail.call_args_list), expected_ids)
+        self.assertEqual(sorted(call[0][2] for call in mock_sms.call_args_list), expected_ids)
+        self.assertEqual(fact_obj.read(cursor, uid, third_id, snapshot_fields), third_before)
+        for factura_id in expected_ids:
             factura = fact_obj.browse(cursor, uid, factura_id)
-            self.assertEqual(factura.pending_state.id, self.waiting_48h_bs)
+            self.assertEqual(factura.pending_state.id, waiting_notif_id)
             history_states = history_obj.search(
                 cursor,
                 uid,
@@ -386,8 +455,8 @@ class TestUpdatePendingStates(testing.OOTestCaseWithCursor):
             )
             history_states = history_obj.read(cursor, uid, history_states, ["pending_state_id"])
             history_state_ids = [state["pending_state_id"][0] for state in history_states]
-            self.assertIn(self.traspas_advocats_bs, history_state_ids)
-            self.assertNotIn(self.traspas_advocats_dp, history_state_ids)
+            self.assertIn(lawyer_state_id, history_state_ids)
+            self.assertNotIn(other_lawyer_state_id, history_state_ids)
 
     def test__update_second_unpaid_invoice__two_invoices_not_moving(self):
         cursor = self.txn.cursor
