@@ -171,6 +171,48 @@ class TestsGurbCups(TestsGurbBase):
         self.assertEqual(gurb_cups_br.state, "active")
         self.assertEqual(gurb_cups_beta_br.future_beta, False)
 
+    def test_cancel_gurb_cups_preserves_beta_history(self):
+        gurb_cups_o = self.openerp.pool.get("som.gurb.cups")
+        beta_o = self.openerp.pool.get("som.gurb.cups.beta")
+        refs = self.get_references()
+        gurb_cups_id = refs["gurb_cups_id"]
+        historical_beta_id = refs["gurb_cups_beta_2_id"]
+        beta_o.write(self.cursor, self.uid, historical_beta_id, {
+            "active": False,
+            "end_date": "2016-01-31",
+        })
+        active_beta_id = beta_o.create(self.cursor, self.uid, {
+            "gurb_cups_id": gurb_cups_id,
+            "active": True,
+            "start_date": "2016-02-01",
+            "beta_kw": 3,
+            "extra_beta_kw": 0,
+            "gift_beta_kw": 0,
+        })
+        gurb_cups_o.send_signal(self.cursor, self.uid, [gurb_cups_id], [
+            "button_create_cups", "button_activate_cups",
+            "button_coming_cancellation",
+        ])
+
+        gurb_cups_o.cancel_gurb_cups(
+            self.cursor, self.uid, gurb_cups_id, "2016-06-06",
+            context={"active_test": False}
+        )
+
+        active_beta = beta_o.browse(self.cursor, self.uid, active_beta_id)
+        self.assertFalse(active_beta.active)
+        self.assertEqual(active_beta.end_date, "2016-06-06")
+        historical_beta = beta_o.browse(
+            self.cursor, self.uid, historical_beta_id
+        )
+        self.assertFalse(historical_beta.active)
+        self.assertEqual(historical_beta.end_date, "2016-01-31")
+        unrelated_beta = beta_o.browse(
+            self.cursor, self.uid, refs["gurb_cups_beta_id"]
+        )
+        self.assertTrue(unrelated_beta.active)
+        self.assertFalse(unrelated_beta.end_date)
+
     @mock.patch("som_gurb.models.som_gurb_cups.SomGurbCups.generate_gurb_invoice_base64")
     def test_create_initial__invoice_bank_transfer(
         self, generate_gurb_invoice_base64_mock_function
