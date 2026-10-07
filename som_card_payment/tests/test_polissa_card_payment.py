@@ -33,6 +33,14 @@ class TestCardPaymentInPolissa(testing.OOTestCaseWithCursor):
             self.cursor, self.uid, "som_card_payment", "payment_mode_card_recurrent"
         )[1]
 
+    def _card_data_for_conversion(self, card_data):
+        return {
+            "creditcard_token": card_data["token"],
+            "creditcard_masked_number": card_data["masked_number"],
+            "creditcard_expiry_date": card_data["expiry_date"],
+            "creditcard_cof_txnid": card_data["cof_txnid"],
+        }
+
     def _get_modcontractual_id_for_validation(self):
         self._ensure_modcontractual_for_polissa()
 
@@ -287,10 +295,10 @@ class TestCardPaymentInPolissa(testing.OOTestCaseWithCursor):
             self.uid,
             self.polissa_id,
             {
-                "token": "tok_convert_noop",
-                "cof_txnid": "cof_convert_noop",
-                "expiry_date": "12/35",
-                "masked_number": "**** **** **** 4242",
+                "creditcard_token": "tok_convert_noop",
+                "creditcard_cof_txnid": "cof_convert_noop",
+                "creditcard_expiry_date": "12/35",
+                "creditcard_masked_number": "**** **** **** 4242",
             },
         )
 
@@ -332,7 +340,8 @@ class TestCardPaymentInPolissa(testing.OOTestCaseWithCursor):
             return_value=migrated,
         ):
             result = self.polissa_obj.convert_to_recurring_card(
-                self.cursor, self.uid, self.polissa_id, card_data
+                self.cursor, self.uid, self.polissa_id,
+                self._card_data_for_conversion(card_data),
             )
 
         self.assertEqual(result["status"], "complete")
@@ -369,7 +378,8 @@ class TestCardPaymentInPolissa(testing.OOTestCaseWithCursor):
                     self.polissa_obj.pool, "get", return_value=factura_obj
                 ):
                     result = self.polissa_obj.convert_to_recurring_card(
-                        self.cursor, self.uid, self.polissa_id, card_data
+                        self.cursor, self.uid, self.polissa_id,
+                        self._card_data_for_conversion(card_data),
                     )
 
         self.assertEqual(result["status"], "no-op")
@@ -395,7 +405,8 @@ class TestCardPaymentInPolissa(testing.OOTestCaseWithCursor):
         ) as migrate_invoices:
             with self.assertRaises(osv.except_osv):
                 self.polissa_obj.convert_to_recurring_card(
-                    self.cursor, self.uid, self.polissa_id, card_data
+                    self.cursor, self.uid, self.polissa_id,
+                    self._card_data_for_conversion(card_data),
                 )
 
         self.assertEqual(
@@ -450,7 +461,8 @@ class TestCardPaymentInPolissa(testing.OOTestCaseWithCursor):
         )
 
         result = self.polissa_obj.convert_to_recurring_card(
-            self.cursor, self.uid, self.polissa_id, card_data
+            self.cursor, self.uid, self.polissa_id,
+            self._card_data_for_conversion(card_data),
         )
 
         self.assertEqual(result["status"], "complete")
@@ -482,7 +494,8 @@ class TestCardPaymentInPolissa(testing.OOTestCaseWithCursor):
         }
 
         result = self.polissa_obj.convert_to_recurring_card(
-            self.cursor, self.uid, polissa_id, card_data
+            self.cursor, self.uid, polissa_id,
+            self._card_data_for_conversion(card_data),
         )
 
         self.assertEqual(result["status"], "complete")
