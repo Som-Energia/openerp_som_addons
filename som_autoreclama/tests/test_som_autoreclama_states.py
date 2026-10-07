@@ -19,6 +19,54 @@ from destral.patch import PatchNewCursors
 
 
 class SomAutoreclamaStatesTest(SomAutoreclamaBaseTests):
+    def test_cronjob_closes_outer_cursor_before_state_updater(self):
+        cron_cursor = mock.Mock()
+        cron_cursor.dbname = self.cursor.dbname
+        close_mock = cron_cursor.close
+        updater_obj = self.get_model("som.autoreclama.state.updater")
+
+        def state_updater(*args, **kwargs):
+            close_mock.assert_called_once_with()
+            return "summary"
+
+        with mock.patch.object(
+            updater_obj, "state_updater", side_effect=state_updater
+        ) as state_updater_mock:
+            result = updater_obj._cronjob_state_updater_mail_text(
+                cron_cursor, self.uid, {"emails_to": ""}, {}
+            )
+
+        self.assertTrue(result)
+        state_updater_mock.assert_called_once_with(cron_cursor, self.uid, {})
+
+    @mock.patch.object(som_autoreclama_state_updater, "email_send")
+    @mock.patch.object(som_autoreclama_state_updater.pooler, "get_db")
+    def test_cronjob_reads_sender_with_short_cursor(self, get_db_mock, email_send_mock):
+        cron_cursor = mock.Mock()
+        cron_cursor.dbname = self.cursor.dbname
+        email_cursor = get_db_mock.return_value.cursor.return_value
+        updater_obj = self.get_model("som.autoreclama.state.updater")
+        user_obj = self.get_model("res.users")
+        user = mock.Mock()
+        user.address_id.email = "sender@example.com"
+
+        with mock.patch.object(
+            updater_obj, "state_updater", return_value="summary"
+        ), mock.patch.object(user_obj, "browse", return_value=user) as browse_mock:
+            updater_obj._cronjob_state_updater_mail_text(
+                cron_cursor, self.uid, {"emails_to": "recipient@example.com"}, {}
+            )
+
+        get_db_mock.return_value.cursor.assert_called_once_with(readonly=True)
+        browse_mock.assert_called_once_with(email_cursor, self.uid, self.uid)
+        email_cursor.close.assert_called_once_with()
+        email_send_mock.assert_called_once_with(
+            "sender@example.com",
+            ["recipient@example.com"],
+            mock.ANY,
+            "summary",
+        )
+
     @mock.patch.object(som_autoreclama_state_updater.pooler, "get_db")
     def test_update_items_does_not_query_coordinator_cursor(self, get_db_mock):
         coordinator_cursor = mock.Mock()
