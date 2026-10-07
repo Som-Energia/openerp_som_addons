@@ -20,6 +20,7 @@
                                 <field name="pending_modcon" colspan="4" string="Modcon Pendent" attrs="{'readonly':[('state','!=', 'init')]}"/>
                                 <field name="modcon_actual" colspan="4" string="Modcon Actual" attrs="{'readonly':[('state','!=', 'init')]}"/>
                                 <field name="update_pricelist" colspan="4" string="Actualitzar la llista de preus" attrs="{'readonly':[('state','!=', 'init')]}"/>
+                                <field name="social_tariff" colspan="4" string="Tarifa social" attrs="{'readonly':[('state','!=', 'init')]}"/>
                                 <button
                                     attrs="{'invisible': [('state','!=', 'init')]}"
                                     name="change_k_from_csv" type="object" string="Canviar K"

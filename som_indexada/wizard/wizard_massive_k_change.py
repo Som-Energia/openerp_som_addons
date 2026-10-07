@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
+from __future__ import absolute_import
+
 from osv import osv, fields
-from StringIO import StringIO
+from StringIO import StringIO  # pylint: disable=bad-python3-import
 from datetime import timedelta, date
 import csv
 import base64
@@ -52,6 +54,12 @@ class WizardMassiveKChange(osv.osv_memory):
         polissa_obj = self.pool.get("giscedata.polissa")
         sw_obj = self.pool.get("giscedata.switching")
         ir_model_data = self.pool.get("ir.model.data")
+
+        social_tariff_category_id = False
+        if wiz_og.social_tariff:
+            social_tariff_category_id = ir_model_data.get_object_reference(
+                cursor, uid, "som_indexada", "category_tarifa_social"
+            )[1]
 
         failed_polisses = []
         inexistent_polisses = []
@@ -150,6 +158,16 @@ class WizardMassiveKChange(osv.osv_memory):
                                 }
                             )
                             wiz.action_crear_contracte()
+                    if social_tariff_category_id:
+                        category_ids = polissa_obj.read(
+                            cursor, uid, polissa.id, ["category_id"], context=context
+                        )["category_id"]
+                        if social_tariff_category_id not in category_ids:
+                            polissa_obj.write(
+                                cursor, uid, polissa.id,
+                                {"category_id": [(4, social_tariff_category_id)]},
+                                context=context,
+                            )
                 except Exception:
                     polissa.send_signal("undo_modcontractual")
                     failed_polisses.append(polissa.name)
@@ -234,6 +252,7 @@ class WizardMassiveKChange(osv.osv_memory):
         "pending_modcon": fields.boolean("Modcon pendent"),
         "update_pricelist": fields.boolean("Actualitzar llista de preus"),
         "modcon_actual": fields.boolean("Utilitza la modcon Actual"),
+        "social_tariff": fields.boolean("Tarifa social"),
     }
 
     _defaults = {
@@ -242,6 +261,7 @@ class WizardMassiveKChange(osv.osv_memory):
         "pending_modcon": lambda *a: False,
         "update_pricelist": lambda *a: False,
         "modcon_actual": lambda *a: False,
+        "social_tariff": lambda *a: False,
     }
 
 
