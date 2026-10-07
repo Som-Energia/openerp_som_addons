@@ -116,7 +116,7 @@ class SomHolderChangeRequest(osv.osv):
             cursor,
             uid,
             [request_id],
-            {field: card_values[field] for field in required},
+            dict((field, card_values[field]) for field in required),
             context=context,
         )
         # Preserve the payment information even if PDF rendering fails.
@@ -364,7 +364,7 @@ class SomHolderChangeRequest(osv.osv):
 
     def _run_m1(self, cursor, uid, request, partner_id, address_id, payment_values, context=None):
         m1_payment_values, is_card_payment = self._m1_payment_values(
-            request, payment_values
+            cursor, uid, request, payment_values, context=context
         )
         values = self._m1_values(
             cursor, uid, request, partner_id, address_id, m1_payment_values, context=context
@@ -413,16 +413,17 @@ class SomHolderChangeRequest(osv.osv):
             )
         return switching_ids[0], polissa_id
 
-    def _m1_payment_values(self, request, payment_values):
+    def _m1_payment_values(self, cursor, uid, request, payment_values, context=None):
         values = payment_values.copy()
         is_card_payment = bool(values.pop("creditcard", None))
         if is_card_payment:
             # M1 cannot validate the recurrent card before the copied contract exists.
-            values.update({
-                "bank": request.polissa_id.bank.id,
-                "payment_mode_id": request.polissa_id.payment_mode_id.id,
-                "tipo_pago": request.polissa_id.tipo_pago.id,
-            })
+            values.update(self.pool.get("giscedata.polissa")._get_enginyers_payment_values(
+                cursor, uid, context=context
+            ))
+            values["bank"] = request.polissa_id.bank.id
+            # The bank helper also clears the card, but the M1 wizard has no card field.
+            values.pop("creditcard", None)
         return values, is_card_payment
 
     def _m1_values(
@@ -445,7 +446,9 @@ class SomHolderChangeRequest(osv.osv):
             "pagador": partner_id,
             "contact": partner_id,
             "cnae": request.polissa_id.cnae.id,
-            "vat": request.payload["contract_owner"]["vat"],
+            "vat": holder_change_payload.normalize_holder_vat(
+                request.payload["contract_owner"]
+            )[2:],
             "vat_kind": vat_kind,
             "direccio_pagament": address_id,
             "direccio_notificacio": address_id,
@@ -613,10 +616,6 @@ class SomHolderChangeRequest(osv.osv):
             limit=1,
             context=context,
         )
-        # TODO: This works like webforms, but it may be better
-        #       to update the existing address instead of reusing it.
-        if address_ids:
-            return address_ids[0]
         values = {
             "partner_id": partner_id,
             "name": holder_change_payload.holder_full_name(contract_owner),
@@ -636,6 +635,9 @@ class SomHolderChangeRequest(osv.osv):
             "email": contract_owner["email"],
             "phone": contract_owner["phone"],
         }
+        if address_ids:
+            address_obj.write(cursor, uid, address_ids, values, context=context)
+            return address_ids[0]
         return address_obj.create(cursor, uid, values, context=context)
 
     def _iban_country(self, cursor, uid, iban, context=None):
@@ -760,12 +762,11 @@ class SomHolderChangeRequest(osv.osv):
                 "state_id": request.payload["contract_owner"]["address"]["state_id"],
             })
             bank_id = bank_obj.create(cursor, uid, values, context=context)
-        contract = request.polissa_id
-        return {
-            "bank": bank_id,
-            "payment_mode_id": contract.payment_mode_id.id,
-            "tipo_pago": contract.tipo_pago.id,
-        }
+        values = self.pool.get("giscedata.polissa")._get_enginyers_payment_values(
+            cursor, uid, context=context
+        )
+        values["bank"] = bank_id
+        return values
 
     def _apply_special_documents(
         self,

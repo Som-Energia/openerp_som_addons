@@ -5,6 +5,15 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
+#: model:ir.actions.act_window,name:som_holder_change.action_holder_change_request
+#: model:ir.ui.menu,name:som_holder_change.menu_holder_change_request
+msgid "Holder changes"
+msgstr "Cambios de titular"
+
+#: model:poweremail.templates,def_subject:som_holder_change.email_signature_process_holder_change
+msgid "Holder change signature request"
+msgstr "Solicitud de firma del cambio de titular"
+
 #: field:som.holder.change.request,mandate_number:0
 msgid "Reserved mandate number"
 msgstr "Número de mandato reservado"

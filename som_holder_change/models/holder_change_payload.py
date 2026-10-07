@@ -11,7 +11,7 @@ SPECIAL_CASE_DOCUMENT_SPECS = (
 
 
 def normalize_holder_vat(contract_owner):
-    vat = contract_owner["vat"].upper()
+    vat = contract_owner["vat"].replace(" ", "").upper()
     return vat if vat.startswith("ES") else "ES{}".format(vat)
 
 
@@ -24,7 +24,8 @@ def holder_full_name(contract_owner):
 
 
 def is_individual_holder(contract_owner):
-    return contract_owner["vat"][0].upper() in INDIVIDUAL_VAT_PREFIXES
+    vat = normalize_holder_vat(contract_owner)[2:]
+    return vat[0] in INDIVIDUAL_VAT_PREFIXES
 
 
 def clean_iban(iban):

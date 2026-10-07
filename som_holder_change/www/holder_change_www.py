@@ -65,7 +65,7 @@ class SomHolderChangeWww(osv.osv_memory):
             "SELECT id FROM giscedata_polissa WHERE id = %s FOR UPDATE",
             (polissa_id,),
         )
-        if self._active_request_for_cups(cursor, uid, cups, context=context):
+        if self._active_request_for_contract(cursor, uid, polissa_id, context=context):
             return holder_change_validation.error(
                 "REQUEST_IN_PROGRESS",
                 _("There is already an active holder change request for this CUPS."),
@@ -258,11 +258,11 @@ class SomHolderChangeWww(osv.osv_memory):
                 "The request does not match this CUPS."))
         return request
 
-    def _active_request_for_cups(self, cursor, uid, cups, context=None):
+    def _active_request_for_contract(self, cursor, uid, polissa_id, context=None):
         request_ids = self.pool.get("som.holder.change.request").search(
             cursor,
             uid,
-            [("cups", "=", cups), ("state", "in", ACTIVE_REQUEST_STATES)],
+            [("polissa_id", "=", polissa_id), ("state", "in", ACTIVE_REQUEST_STATES)],
             limit=1,
             context=context,
         )
