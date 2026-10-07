@@ -29,10 +29,13 @@ class TestSignLeadWizard(testing.OOTestCase):
         self.wizard.pool = _WizardPool(self.lead_obj, self.process_obj)
 
     def _set_signature(self, lead_id, process_id=False, firmat=False, status=None,
-                       signature_id=False):
+                       signature_id=False, polissa_id=False,
+                       crm_lead_type=False):
         self.lead_obj.read.return_value = {
             'signature_process': [process_id, 'Process'] if process_id else False,
             'firmat': firmat,
+            'polissa_id': polissa_id,
+            'crm_lead_type': crm_lead_type,
         }
         self.process_obj.read.return_value = {
             'status': status,
@@ -78,6 +81,32 @@ class TestSignLeadWizard(testing.OOTestCase):
         )
 
         self.assertEqual([item['lead_id'] for item in blocked], [1])
+        self.assertEqual(active, [])
+        self.assertEqual(replaceable, [])
+
+    def test_contract_is_blocked_unless_lead_is_renovation(self):
+        self._set_signature(1, polissa_id=[20, 'Contract'])
+
+        blocked, active, replaceable = self.wizard._inspect_leads(
+            None, 1, [1], context={}
+        )
+
+        self.assertEqual([item['lead_id'] for item in blocked], [1])
+        self.assertEqual(active, [])
+        self.assertEqual(replaceable, [])
+        self.assertEqual(
+            self.wizard._get_blocked_message(blocked),
+            WizardGenerarLeadPerFirmar._CONTRACT_MESSAGE,
+        )
+
+        self._set_signature(
+            1, polissa_id=[20, 'Contract'], crm_lead_type='renovation'
+        )
+        blocked, active, replaceable = self.wizard._inspect_leads(
+            None, 1, [1], context={}
+        )
+
+        self.assertEqual(blocked, [])
         self.assertEqual(active, [])
         self.assertEqual(replaceable, [])
 
@@ -167,6 +196,30 @@ class TestSignLeadWizard(testing.OOTestCase):
             context={'active_ids': [1]},
         )
 
+    def test_action_blocks_lead_with_contract(self):
+        self._set_signature(1, polissa_id=[20, 'Contract'])
+        self.wizard.write = mock.Mock()
+
+        with mock.patch.object(
+            WizardGenerarLeadPerFirmar.__bases__[0],
+            'action_generar_lead_per_firmar',
+            create=True,
+        ) as base_action:
+            result = self.wizard.action_generar_lead_per_firmar(
+                None, 1, [7], context={'active_ids': [1]}
+            )
+
+        self.assertTrue(result)
+        self.assertFalse(base_action.called)
+        self.wizard.write.assert_called_once_with(
+            None, 1, [7],
+            {
+                'state': 'blocked',
+                'info': WizardGenerarLeadPerFirmar._CONTRACT_MESSAGE,
+            },
+            context={'active_ids': [1]},
+        )
+
     def test_action_confirms_active_signature(self):
         self._set_signature(
             1, process_id=10, status='doing', signature_id='remote-10'
@@ -193,9 +246,11 @@ class TestSignLeadWizard(testing.OOTestCase):
             context={'active_ids': [1]},
         )
 
-    def test_action_returns_success_result_when_wizard_ends(self):
+    def test_action_returns_success_result_without_end_state(self):
         self._set_signature(1)
         self.wizard.browse = mock.Mock(return_value=mock.Mock(state='end'))
+        self.wizard.write = mock.Mock()
+        context = {'active_ids': [1]}
 
         with mock.patch.object(
             WizardGenerarLeadPerFirmar.__bases__[0],
@@ -204,15 +259,19 @@ class TestSignLeadWizard(testing.OOTestCase):
             return_value='base-result',
         ) as base_action:
             result = self.wizard.action_generar_lead_per_firmar(
-                None, 1, [7], context={'active_ids': [1]}
+                None, 1, [7], context=context
             )
 
         self.assertEqual(result['status'], 'success')
         self.assertEqual(base_action.call_count, 1)
+        self.wizard.write.assert_called_once_with(
+            None, 1, [7], {'state': 'init'}, context=context
+        )
 
     def test_action_returns_base_result_when_wizard_does_not_end(self):
         self._set_signature(1)
         self.wizard.browse = mock.Mock(return_value=mock.Mock(state='init'))
+        self.wizard.write = mock.Mock()
 
         with mock.patch.object(
             WizardGenerarLeadPerFirmar.__bases__[0],
@@ -225,6 +284,7 @@ class TestSignLeadWizard(testing.OOTestCase):
             )
 
         self.assertEqual(result, 'base-result')
+        self.assertFalse(self.wizard.write.called)
 
     def test_confirm_action_blocks_completed_signature(self):
         self._set_signature(1, process_id=10, status='completed')
@@ -250,9 +310,11 @@ class TestSignLeadWizard(testing.OOTestCase):
             context={'active_ids': [1]},
         )
 
-    def test_confirm_action_returns_success_result(self):
+    def test_confirm_action_returns_success_result_without_end_state(self):
         self._set_signature(1)
         self.wizard.browse = mock.Mock(return_value=mock.Mock(state='end'))
+        self.wizard.write = mock.Mock()
+        context = {'active_ids': [1]}
 
         with mock.patch.object(
             WizardGenerarLeadPerFirmar.__bases__[0],
@@ -261,11 +323,14 @@ class TestSignLeadWizard(testing.OOTestCase):
             return_value='base-result',
         ) as base_action:
             result = self.wizard.action_confirm_signature_replacement(
-                None, 1, [7], context={'active_ids': [1]}
+                None, 1, [7], context=context
             )
 
         self.assertEqual(result['status'], 'success')
         self.assertEqual(base_action.call_count, 1)
+        self.wizard.write.assert_called_once_with(
+            None, 1, [7], {'state': 'init'}, context=context
+        )
 
     def test_reject_signature_replacement(self):
         self.wizard.write = mock.Mock()
@@ -287,4 +352,5 @@ class TestSignLeadWizard(testing.OOTestCase):
             'status': 'success',
             'title': u'Oferta generada correctament',
             'body': u'L’oferta s’ha generat i està preparada per al procés de firma.',
+            'close_parent': True,
         })
