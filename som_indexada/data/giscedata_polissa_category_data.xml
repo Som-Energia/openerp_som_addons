@@ -7,5 +7,11 @@
             <field name="active">True</field>
             <field name="code">PPI</field>
         </record>
+        <record id="category_tarifa_social" model="giscedata.polissa.category">
+            <field name="name">Tarifa social</field>
+            <field name="complete_name">Tarifa social</field>
+            <field name="active">True</field>
+            <field name="code">TS</field>
+        </record>
     </data>
 </openerp>
