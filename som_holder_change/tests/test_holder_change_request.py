@@ -46,6 +46,7 @@ class TestHolderChangeRequest(testing.OOTestCase):
             {"polissa_id": self.polissa_id},
             {"cups": "ES00000000000000000000"},
             {"owner_change_type": "S"},
+            {"report_snapshot": {"version": 1}},
         ):
             with self.assertRaises(osv.except_osv):
                 self.request_obj.write(
