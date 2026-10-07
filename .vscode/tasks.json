@@ -1,0 +1,58 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "ERP: Bootstrap workspace",
+      "type": "shell",
+      "command": "bash",
+      "args": [
+        "-lc",
+        "bootstrap-erp-workspace"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared",
+        "clear": true
+      }
+    },
+    {
+      "label": "ERP: Start runtime",
+      "type": "shell",
+      "command": "bash",
+      "args": [
+        "-lc",
+        "start-erp-runtime"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared",
+        "clear": true
+      }
+    },
+    {
+      "label": "ERP: PuDB remote debugging help",
+      "type": "shell",
+      "command": "bash",
+      "args": [
+        ".devcontainer/bin/show-pudb-remote-debug"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared",
+        "clear": true
+      }
+    }
+  ]
+}
