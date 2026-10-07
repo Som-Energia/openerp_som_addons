@@ -1,10 +1,6 @@
 <?xml version="1.0" ?>
 <openerp>
     <data>
-        <record id="sign_lead_signature_account" model="giscedata.signature.provider.account">
-            <field name="provider_id" ref="giscedata_signatura_documents_signaturit.signaturit_provider"/>
-            <field name="company_id" ref="base.main_company"/>
-        </record>
         <record id="som_polissa_soci.mode_pagament_socis" model="payment.mode">
             <field name="sepa_creditor_code">ES10000B22350466</field>
         </record>
