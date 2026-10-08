@@ -482,6 +482,32 @@ class TestCardPaymentInPolissa(testing.OOTestCaseWithCursor):
             other_partner_id,
         )
 
+    def test_convert_to_recurring_card_skips_open_atr_check(self):
+        self._ensure_modcontractual_for_polissa()
+        self.polissa_obj.wkf_activa(self.cursor, self.uid, [self.polissa_id])
+        card_data = {
+            "token": "tok_convert_open_atr",
+            "cof_txnid": "cof_convert_open_atr",
+            "expiry_date": "12/35",
+            "masked_number": "**** **** **** 4248",
+        }
+
+        with mock.patch.object(
+            self.polissa_obj, "check_modifiable_polissa"
+        ) as check_modifiable:
+            result = self.polissa_obj.convert_to_recurring_card(
+                self.cursor, self.uid, self.polissa_id, card_data
+            )
+
+        self.assertEqual(result["status"], "complete")
+        check_modifiable.assert_called_once_with(
+            self.cursor,
+            self.uid,
+            self.polissa_id,
+            skip_atr_check=True,
+            context=None,
+        )
+
     def test_convert_to_recurring_card_creates_today_modification(self):
         self._ensure_modcontractual_for_polissa()
         self.polissa_obj.wkf_activa(self.cursor, self.uid, [self.polissa_id])
