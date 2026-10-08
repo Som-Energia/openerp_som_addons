@@ -421,9 +421,11 @@ class SomGurbCups(osv.osv):
             )
         gurb_cups = self.browse(cursor, uid, gurb_cups_id, context=context)
         if gurb_cups.state == "atr_pending":
-            gurb_cups.send_signal(["button_confirm_atr"])
+            gurb_cups.send_signal(["button_reject_atr"])
         elif gurb_cups.state == "comming_registration":
             gurb_cups.send_signal(["button_activate_cups"])
+        elif gurb_cups.state == "comming_modification":
+            gurb_cups.send_signal(["button_activate_modification"])
 
     def check_only_one_gurb_service(self, cursor, uid, gurb_cups_id, context=None):
         if context is None:
