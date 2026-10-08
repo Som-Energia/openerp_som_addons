@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
+from __future__ import absolute_import
+
 import mock
-from tests_gurb_base import TestsGurbBase
+from .tests_gurb_base import TestsGurbBase
 from osv import osv
 from datetime import datetime, timedelta
 
@@ -170,6 +172,64 @@ class TestsGurbCups(TestsGurbBase):
         self.assertEqual(gurb_cups_br.start_date, "2024-01-01")
         self.assertEqual(gurb_cups_br.state, "active")
         self.assertEqual(gurb_cups_beta_br.future_beta, False)
+
+    @mock.patch("som_gurb.models.som_gurb_cups.SomGurbCups.create_initial_invoice")
+    def test_create_initial_invoices_collects_exception(self, mock_create_invoice):
+        mock_create_invoice.side_effect = [ValueError("Invoice failed"), (42, False)]
+        gurb_cups_o = self.openerp.pool.get("som.gurb.cups")
+        refs = self.get_references()
+        gurb_cups_id = refs["gurb_cups_id"]
+
+        invoice_ids, errors = gurb_cups_o.create_initial_invoices(
+            self.cursor, self.uid, [gurb_cups_id, refs["owner_gurb_cups_id"]]
+        )
+
+        self.assertEqual(invoice_ids, [42])
+        self.assertEqual(errors, [
+            "[GURB CUPS ID {}]: Invoice failed".format(gurb_cups_id)
+        ])
+
+    def test_cancel_gurb_cups_preserves_beta_history(self):
+        gurb_cups_o = self.openerp.pool.get("som.gurb.cups")
+        beta_o = self.openerp.pool.get("som.gurb.cups.beta")
+        refs = self.get_references()
+        gurb_cups_id = refs["gurb_cups_id"]
+        historical_beta_id = refs["gurb_cups_beta_2_id"]
+        beta_o.write(self.cursor, self.uid, historical_beta_id, {
+            "active": False,
+            "end_date": "2016-01-31",
+        })
+        active_beta_id = beta_o.create(self.cursor, self.uid, {
+            "gurb_cups_id": gurb_cups_id,
+            "active": True,
+            "start_date": "2016-02-01",
+            "beta_kw": 3,
+            "extra_beta_kw": 0,
+            "gift_beta_kw": 0,
+        })
+        gurb_cups_o.send_signal(self.cursor, self.uid, [gurb_cups_id], [
+            "button_create_cups", "button_activate_cups",
+            "button_coming_cancellation",
+        ])
+
+        gurb_cups_o.cancel_gurb_cups(
+            self.cursor, self.uid, gurb_cups_id, "2016-06-06",
+            context={"active_test": False}
+        )
+
+        active_beta = beta_o.browse(self.cursor, self.uid, active_beta_id)
+        self.assertFalse(active_beta.active)
+        self.assertEqual(active_beta.end_date, "2016-06-06")
+        historical_beta = beta_o.browse(
+            self.cursor, self.uid, historical_beta_id
+        )
+        self.assertFalse(historical_beta.active)
+        self.assertEqual(historical_beta.end_date, "2016-01-31")
+        unrelated_beta = beta_o.browse(
+            self.cursor, self.uid, refs["gurb_cups_beta_id"]
+        )
+        self.assertTrue(unrelated_beta.active)
+        self.assertFalse(unrelated_beta.end_date)
 
     @mock.patch("som_gurb.models.som_gurb_cups.SomGurbCups.generate_gurb_invoice_base64")
     def test_create_initial__invoice_bank_transfer(

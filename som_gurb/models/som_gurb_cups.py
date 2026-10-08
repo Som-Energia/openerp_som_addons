@@ -1,4 +1,6 @@
 # -*- encoding: utf-8 -*-
+from __future__ import absolute_import, division
+
 from osv import osv, fields
 from oorq.decorators import job
 from datetime import datetime, timedelta
@@ -581,6 +583,15 @@ class SomGurbCups(osv.osv):
             # Desactivate GURB CUPS, Close Beta, Unsubscribe Service
             self.send_signal(cursor, uid, [gurb_cups_id], "button_cancel_cups")
             self.write(cursor, uid, gurb_cups_id, {"active": False, "end_date": end_date})
+            beta_obj = self.pool.get("som.gurb.cups.beta")
+            beta_ids = beta_obj.search(cursor, uid, [
+                ("gurb_cups_id", "=", gurb_cups_id),
+                ("active", "=", True),
+            ], context=context)
+            beta_obj.write(cursor, uid, beta_ids, {
+                "active": False,
+                "end_date": end_date,
+            }, context=context)
             self.terminate_service_gurb_cups(
                 cursor, uid, gurb_cups_id, end_date, context=context
             )
@@ -749,7 +760,7 @@ class SomGurbCups(osv.osv):
                 errors.append(
                     "[GURB CUPS ID {}]: {}".format(
                         gurb_cups_id,
-                        e.message,
+                        str(e),
                     )
                 )
 
