@@ -24,6 +24,8 @@ class SomHolderChangeWww(osv.osv_memory):
     _name = "som.holder.change.www"
     _description = "Holder change web facade"
     _SIGNATURE_ERROR_STATUSES = ("error", "canceled", "declined", "expired")
+    _SIGNATURE_RETRY_ATTEMPTS = 5
+    _SIGNATURE_RETRY_WAIT_SECONDS = 10
 
     def create_request(self, cursor, uid, payload, context=None):
         if context is None:
@@ -151,6 +153,29 @@ class SomHolderChangeWww(osv.osv_memory):
     def execute_request_async(self, cursor, uid, request_id, context=None):
         request_obj = self.pool.get("som.holder.change.request")
         try:
+            signature_result = self._signature_allows_execution(
+                cursor, uid, request_id, context=context
+            )
+        except Exception as error:
+            request_obj.write(
+                cursor, uid, [request_id],
+                {"state": "awaiting_signature", "error_code": "SIGNATURE_ERROR",
+                 "error_message": str(error)},
+                context=context,
+            )
+            raise
+
+        if not signature_result["completed"]:
+            self._return_to_signature_wait(
+                cursor, uid, request_id, signature_result, context=context
+            )
+            return signature_result
+
+        try:
+            request_obj.write(
+                cursor, uid, [request_id],
+                {"error_code": False, "error_message": False}, context=context,
+            )
             return request_obj.execute(cursor, uid, request_id, context=context)
         except Exception as error:
             request_obj.write(
@@ -163,6 +188,14 @@ class SomHolderChangeWww(osv.osv_memory):
             )
             raise
 
+    def _return_to_signature_wait(self, cursor, uid, request_id, result, context=None):
+        self.pool.get("som.holder.change.request").write(
+            cursor, uid, [request_id],
+            {"state": "awaiting_signature", "error_code": result["code"],
+             "error_message": result["message"]},
+            context=context,
+        )
+
     def execute_request(self, cursor, uid, request_id, cups, context=None):
         if context is None:
             context = {}
@@ -172,18 +205,83 @@ class SomHolderChangeWww(osv.osv_memory):
             raise osv.except_osv(_("Signature required"), _(
                 "The request has not been sent for signing."))
 
-        process_obj = self.pool.get("giscedata.signatura.process")
-        process_obj.update(cursor, uid, [request.signature_process_id.id], context=context)
-        status = process_obj.read(cursor, uid, request.signature_process_id.id, [
-                                  "status"], context=context)["status"]
-        if status != "completed":
-            raise osv.except_osv(_("Signature required"), _(
-                "The signature has not been completed."))
-
         request_obj = self.pool.get("som.holder.change.request")
-        request_obj.write(cursor, uid, [request_id], {"state": "queued"}, context=context)
+        cursor.execute(
+            "SELECT id FROM som_holder_change_request WHERE id = %s FOR UPDATE",
+            (request_id,),
+        )
+        request = self._get_request(cursor, uid, request_id, cups, context=context)
+        if request.state == "queued":
+            return {"success": True, "request_id": request_id, "state": "queued"}
+        if request.state == "completed":
+            return {"success": True, "request_id": request_id, "state": "completed"}
+        if request.state != "awaiting_signature":
+            raise osv.except_osv(_("Invalid request state"), _(
+                "The request is not ready for execution."))
+
+        request_obj.write(
+            cursor, uid, [request_id],
+            {"state": "queued", "error_code": False, "error_message": False},
+            context=context,
+        )
+        cursor.commit()
         self.execute_request_async(cursor, uid, request_id, context=context)
         return {"success": True, "request_id": request_id, "state": "queued"}
+
+    def _signature_allows_execution(self, cursor, uid, request_id, context=None):
+        if context is None:
+            context = {}
+        request_obj = self.pool.get("som.holder.change.request")
+        process_obj = self.pool.get("giscedata.signatura.process")
+        attempts = context.get("signature_attempts", self._SIGNATURE_RETRY_ATTEMPTS)
+        wait_seconds = context.get(
+            "signature_retry_wait_seconds", self._SIGNATURE_RETRY_WAIT_SECONDS
+        )
+        db = pooler.get_db(cursor.dbname)
+
+        for attempt in range(attempts):
+            tmp_cursor = db.cursor()
+            try:
+                request = request_obj.browse(
+                    tmp_cursor, uid, request_id, context=context
+                )
+                if not request.signature_process_id:
+                    return {
+                        "completed": False, "code": "SIGNATURE_REQUIRED",
+                        "message": "The request has not been sent for signing.",
+                    }
+                process_id = request.signature_process_id.id
+                status = process_obj.read(
+                    tmp_cursor, uid, process_id, ["status"], context=context
+                )["status"]
+                if status == "completed":
+                    return {"completed": True}
+                if status in self._SIGNATURE_ERROR_STATUSES or status == "unsend":
+                    return {
+                        "completed": False, "code": "SIGNATURE_FAILED",
+                        "message": "The signature process ended with status {}.".format(status),
+                    }
+                process_obj.update(tmp_cursor, uid, [process_id], context=context)
+                tmp_cursor.commit()
+                status = process_obj.read(
+                    tmp_cursor, uid, process_id, ["status"], context=context
+                )["status"]
+                if status == "completed":
+                    return {"completed": True}
+                if status in self._SIGNATURE_ERROR_STATUSES or status == "unsend":
+                    return {
+                        "completed": False, "code": "SIGNATURE_FAILED",
+                        "message": "The signature process ended with status {}.".format(status),
+                    }
+            finally:
+                tmp_cursor.close()
+            if attempt < attempts - 1:
+                time.sleep(wait_seconds)
+
+        return {
+            "completed": False, "code": "SIGNATURE_PENDING",
+            "message": "The signature is still pending. Please retry later.",
+        }
 
     def _find_contract(self, cursor, uid, cups, context=None):
         cups_obj = self.pool.get("giscedata.cups.ps")

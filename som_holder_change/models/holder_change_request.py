@@ -43,7 +43,7 @@ STATE_TRANSITIONS = {
     "received": ("awaiting_payment", "awaiting_signature", "validation_error"),
     "awaiting_payment": ("awaiting_signature",),
     "awaiting_signature": ("queued",),
-    "queued": ("completed", "execution_error"),
+    "queued": ("awaiting_signature", "completed", "execution_error"),
 }
 
 

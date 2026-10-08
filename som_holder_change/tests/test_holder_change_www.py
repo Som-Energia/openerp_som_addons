@@ -748,6 +748,114 @@ class TestHolderChangeWww(testing.OOTestCase):
         self.assertIs(create.call_args[0][0], write.call_args[0][0])
         start.assert_not_called()
 
+    def test_execute_request_queues_without_checking_signature_status(self):
+        payload = self.payload()
+        result = self.www_obj.create_request(self.cursor, self.uid, payload)
+        request = self.request_obj.browse(self.cursor, self.uid, result["request_id"])
+        process_obj = self.openerp.pool.get("giscedata.signatura.process")
+        process_id = process_obj.create(
+            self.cursor, self.uid,
+            {"template_id": self.imd_obj.get_object_reference(
+                self.cursor, self.uid, "som_holder_change",
+                "email_signature_process_holder_change",
+            )[1], "template_res_id": result["request_id"], "delivery_type": "url"},
+        )
+        self.request_obj.write(
+            self.cursor, self.uid, [result["request_id"]],
+            {"signature_process_id": process_id},
+        )
+
+        with mock.patch.object(process_obj, "update") as update:
+            with mock.patch.object(self.www_obj, "execute_request_async") as enqueue:
+                response = self.www_obj.execute_request(
+                    self.cursor, self.uid, result["request_id"],
+                    payload["contract_info"]["cups"],
+                )
+
+        self.assertEqual(response["state"], "queued")
+        update.assert_not_called()
+        enqueue.assert_called_once()
+        self.assertEqual(
+            self.request_obj.read(
+                self.cursor, self.uid, request.id, ["state"]
+            )["state"],
+            "queued",
+        )
+
+    def test_signature_retry_waits_until_process_completes(self):
+        request = mock.Mock(signature_process_id=mock.Mock(id=42))
+        db = mock.Mock()
+        tmp_cursor = db.cursor.return_value
+        process_obj = self.openerp.pool.get("giscedata.signatura.process")
+
+        with mock.patch.object(self.request_obj, "browse", return_value=request):
+            with mock.patch.object(
+                process_obj, "read", side_effect=[
+                    {"status": "doing"}, {"status": "doing"}, {"status": "completed"}
+                ]
+            ):
+                with mock.patch.object(process_obj, "update") as update:
+                    with mock.patch(
+                        "som_holder_change.www.holder_change_www.pooler.get_db",
+                        return_value=db,
+                    ):
+                        with mock.patch(
+                            "som_holder_change.www.holder_change_www.time.sleep"
+                        ) as sleep:
+                            result = self.www_obj._signature_allows_execution(
+                                self.cursor, self.uid, 1,
+                                context={"signature_attempts": 2},
+                            )
+
+        self.assertTrue(result["completed"])
+        update.assert_called_once()
+        self.assertEqual(tmp_cursor.commit.call_count, 1)
+        self.assertEqual(tmp_cursor.close.call_count, 2)
+        sleep.assert_called_once_with(10)
+
+    def test_pending_signature_returns_to_awaiting_signature_without_execution_error(self):
+        request_id = self.request_obj.create(
+            self.cursor, self.uid, self.request_values_for_www()
+        )
+        self.request_obj.write(
+            self.cursor, self.uid, [request_id], {"state": "awaiting_signature"}
+        )
+        self.request_obj.write(
+            self.cursor, self.uid, [request_id], {"state": "queued"}
+        )
+        with mock.patch.object(
+            self.request_obj, "execute"
+        ) as execute:
+            self.www_obj._return_to_signature_wait(
+                self.cursor, self.uid, request_id,
+                {"code": "SIGNATURE_PENDING",
+                 "message": "The signature is still pending. Please retry later."},
+            )
+
+        request = self.request_obj.read(
+            self.cursor, self.uid, request_id, ["state", "error_code"]
+        )
+        self.assertEqual(request["state"], "awaiting_signature")
+        self.assertEqual(request["error_code"], "SIGNATURE_PENDING")
+        execute.assert_not_called()
+
+    def request_values_for_www(self):
+        return {
+            "polissa_id": self.polissa_id,
+            "cups": self.polissa.cups.name,
+            "owner_change_type": "T",
+            "payload": self.payload(),
+            "signature_process_id": self.openerp.pool.get(
+                "giscedata.signatura.process"
+            ).create(
+                self.cursor, self.uid,
+                {"template_id": self.imd_obj.get_object_reference(
+                    self.cursor, self.uid, "som_holder_change",
+                    "email_signature_process_holder_change",
+                )[1], "template_res_id": 1, "delivery_type": "url"},
+            ),
+        }
+
     def test_simulation_uses_dry_run_context_without_mutating_caller_context(self):
         caller_context = {"is_dry_run": False, "caller_marker": True}
 
