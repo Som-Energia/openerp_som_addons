@@ -30,6 +30,7 @@
     ],
     "update_xml": [
         "data/giscedata_crm_lead_data.xml",
+        "data/campaign_category_data.xml",
         "views/giscedata_crm_lead_view.xml",
         "views/res_partner_view.xml",
         "wizard/wizard_crm_lead_create_entities_view.xml",
