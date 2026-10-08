@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
+from __future__ import absolute_import
+
 import mock
-from tests_gurb_base import TestsGurbBase
+from .tests_gurb_base import TestsGurbBase
 from osv import osv
 from datetime import datetime, timedelta
 
@@ -170,6 +172,22 @@ class TestsGurbCups(TestsGurbBase):
         self.assertEqual(gurb_cups_br.start_date, "2024-01-01")
         self.assertEqual(gurb_cups_br.state, "active")
         self.assertEqual(gurb_cups_beta_br.future_beta, False)
+
+    @mock.patch("som_gurb.models.som_gurb_cups.SomGurbCups.create_initial_invoice")
+    def test_create_initial_invoices_collects_exception(self, mock_create_invoice):
+        mock_create_invoice.side_effect = [ValueError("Invoice failed"), (42, False)]
+        gurb_cups_o = self.openerp.pool.get("som.gurb.cups")
+        refs = self.get_references()
+        gurb_cups_id = refs["gurb_cups_id"]
+
+        invoice_ids, errors = gurb_cups_o.create_initial_invoices(
+            self.cursor, self.uid, [gurb_cups_id, refs["owner_gurb_cups_id"]]
+        )
+
+        self.assertEqual(invoice_ids, [42])
+        self.assertEqual(errors, [
+            "[GURB CUPS ID {}]: Invoice failed".format(gurb_cups_id)
+        ])
 
     def test_cancel_gurb_cups_preserves_beta_history(self):
         gurb_cups_o = self.openerp.pool.get("som.gurb.cups")

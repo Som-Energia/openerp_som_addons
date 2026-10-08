@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
-from tests_gurb_base import TestsGurbBase
+from __future__ import absolute_import
+
+from .tests_gurb_base import TestsGurbBase
 from addons import get_module_resource
 from tools.misc import cache
 import mock
@@ -76,7 +78,7 @@ class TestsGurbSwitching(TestsGurbBase):
             "ref": codes.pop(where)
         })
         partner_obj.write(cursor, uid, [other_id], {
-            "ref": codes.values()[0]
+            "ref": list(codes.values())[0]
         })
         partner_obj.write(cursor, uid, [another_id], {
             "ref": "5555"

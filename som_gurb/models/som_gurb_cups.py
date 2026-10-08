@@ -1,4 +1,6 @@
 # -*- encoding: utf-8 -*-
+from __future__ import absolute_import, division
+
 from osv import osv, fields
 from oorq.decorators import job
 from datetime import datetime, timedelta
@@ -758,7 +760,7 @@ class SomGurbCups(osv.osv):
                 errors.append(
                     "[GURB CUPS ID {}]: {}".format(
                         gurb_cups_id,
-                        e.message,
+                        str(e),
                     )
                 )
 
