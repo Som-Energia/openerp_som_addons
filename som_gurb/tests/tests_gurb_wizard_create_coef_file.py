@@ -1,7 +1,9 @@
 # -*- coding: utf-8 -*-
+from __future__ import absolute_import
+
 import base64
 from datetime import datetime
-from tests_gurb_base import TestsGurbBase
+from .tests_gurb_base import TestsGurbBase
 
 
 class TestsGurbWizardCreateCoefFile(TestsGurbBase):

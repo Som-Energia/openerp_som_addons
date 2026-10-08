@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+from __future__ import absolute_import, division
+
 import base64
 from decimal import Decimal, ROUND_HALF_UP
 from osv import osv, fields

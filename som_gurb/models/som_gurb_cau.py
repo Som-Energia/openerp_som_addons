@@ -1,4 +1,6 @@
 # -*- encoding: utf-8 -*-
+from __future__ import absolute_import, division
+
 from osv import osv, fields
 from tools.translate import _
 from datetime import datetime
