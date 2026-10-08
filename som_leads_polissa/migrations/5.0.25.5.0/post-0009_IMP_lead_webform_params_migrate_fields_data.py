@@ -5,8 +5,6 @@ import logging
 
 from oopgrade.oopgrade import load_data
 import pooler
-from tools import config
-from tools.translate import trans_load
 
 
 def up(cursor, installed_version):
@@ -33,16 +31,6 @@ def up(cursor, installed_version):
             data_file,
             idref=None,
             mode='update',
-        )
-
-    logger.info("Loading module translations")
-    for lang in ("ca_ES", "en_US", "es_ES"):
-        trans_load(
-            cursor,
-            "{}/{}/i18n/{}.po".format(
-                config["addons_path"], "som_leads_polissa", lang
-            ),
-            lang,
         )
 
     logger.info("Lead webform params migration completed")
