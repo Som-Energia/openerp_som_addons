@@ -15,6 +15,7 @@ from osv import fields, osv
 from tools.translate import _
 
 from . import holder_change_payload
+from . import holder_change_reports
 
 
 logger = logging.getLogger(__name__)
@@ -25,6 +26,7 @@ IMMUTABLE_FIELDS = frozenset([
     "cups",
     "owner_change_type",
     "payload",
+    "report_snapshot",
 ])
 
 REQUEST_STATES = [
@@ -52,6 +54,15 @@ class SomHolderChangeRequest(osv.osv):
 
     def prepare(self, cursor, uid, request_id, context=None):
         request_id = self._one_id(request_id)
+        request = self.browse(cursor, uid, request_id, context=context)
+        if request.state not in ("received", "validation_error", "awaiting_payment"):
+            raise osv.except_osv(_("Invalid request state"), _(
+                "The request cannot be prepared in its current state."))
+        if self._payment_method(request) == "tpv":
+            if request.creditcard_token:
+                return self._finalize_card_reports(cursor, uid, request_id, context=context)
+            if request.report_snapshot:
+                return True
         self._reserve_references(cursor, uid, request_id, context=context)
         # The isolated simulation cursor must see the stable reserved references.
         cursor.commit()
@@ -70,6 +81,10 @@ class SomHolderChangeRequest(osv.osv):
 
     def set_card_data(self, cursor, uid, request_id, card_values, context=None):
         request_id = self._one_id(request_id)
+        cursor.execute(
+            "SELECT id FROM som_holder_change_request WHERE id = %s FOR UPDATE",
+            (request_id,),
+        )
         request = self.browse(cursor, uid, request_id, context=context)
         if self._payment_method(request) != "tpv":
             raise osv.except_osv(_("Invalid payment method"), _(
@@ -83,19 +98,51 @@ class SomHolderChangeRequest(osv.osv):
         if missing:
             raise osv.except_osv(_("Invalid card data"), _(
                 "Missing card fields: {}.").format(", ".join(missing)))
+        last4 = "".join(
+            char for char in card_values["creditcard_masked_number"] if char.isdigit()
+        )[-4:]
+        if len(last4) != 4:
+            raise osv.except_osv(_("Invalid card data"), _(
+                "The masked card number must contain its last four digits."))
+        if not request.report_snapshot:
+            raise osv.except_osv(_("Missing prepared reports"), _(
+                "The request must be prepared before receiving card data."))
         if request.creditcard_token:
             if any(getattr(request, field) != card_values[field] for field in required):
                 raise osv.except_osv(_("Card data rejected"), _(
                     "Card data cannot be changed for this request."))
-            return self.prepare(cursor, uid, request_id, context=context)
+            return self._finalize_card_reports(cursor, uid, request_id, context=context)
         super(SomHolderChangeRequest, self).write(
             cursor,
             uid,
             [request_id],
-            {field: card_values[field] for field in required},
+            dict((field, card_values[field]) for field in required),
             context=context,
         )
-        return self.prepare(cursor, uid, request_id, context=context)
+        # Preserve the payment information even if PDF rendering fails.
+        cursor.commit()
+        return self._finalize_card_reports(cursor, uid, request_id, context=context)
+
+    def _finalize_card_reports(self, cursor, uid, request_id, context=None):
+        cursor.execute(
+            "SELECT id FROM som_holder_change_request WHERE id = %s FOR UPDATE",
+            (request_id,),
+        )
+        request = self.browse(cursor, uid, request_id, context=context)
+        if request.state == "awaiting_signature":
+            return True
+        if request.state != "awaiting_payment" or not request.creditcard_token:
+            raise osv.except_osv(_("Invalid request state"), _(
+                "The request is not ready to generate card documents."))
+        reports = holder_change_reports.render_snapshot(
+            request.report_snapshot, request.creditcard_masked_number, context=context
+        )
+        super(SomHolderChangeRequest, self).write(
+            cursor, uid, [request_id],
+            dict(reports, state="awaiting_signature", error_code=False, error_message=False),
+            context=context,
+        )
+        return True
 
     def execute(self, cursor, uid, request_id, context=None):
         request_id = self._one_id(request_id)
@@ -147,7 +194,7 @@ class SomHolderChangeRequest(osv.osv):
         if immutable:
             raise osv.except_osv(
                 _("Immutable request"),
-                _("The holder change request identity and payload cannot be modified."),
+                _("The request identity, payload and prepared reports cannot be modified."),
             )
         if "state" in values:
             for request in self.browse(cursor, uid, ids, context=context):
@@ -170,16 +217,26 @@ class SomHolderChangeRequest(osv.osv):
         temporary_context["is_dry_run"] = True
         try:
             request = self.browse(temporary_cursor, uid, request_id, context=temporary_context)
-            switching_id, polissa_id, mandate_id, _new_member_partner_id = self._run_holder_change(
+            _switching_id, polissa_id, mandate_id, _new_member_id = self._run_holder_change(
                 temporary_cursor,
                 uid,
                 request,
                 temporary=True,
                 context=temporary_context,
             )
-            reports = self._render_reports(
-                temporary_cursor, uid, request, polissa_id, mandate_id, context=temporary_context
-            )
+            if self._payment_method(request) == "tpv":
+                reports = {
+                    "report_snapshot": holder_change_reports.prepare_snapshot(
+                        temporary_cursor, uid, self.pool, polissa_id, context=temporary_context
+                    ),
+                    "contract_pdf": False,
+                    "mandate_pdf": False,
+                }
+            else:
+                reports = self._render_reports(
+                    temporary_cursor, uid, request, polissa_id, mandate_id,
+                    context=temporary_context,
+                )
         finally:
             temporary_cursor.rollback()
             temporary_cursor.close()
@@ -307,7 +364,7 @@ class SomHolderChangeRequest(osv.osv):
 
     def _run_m1(self, cursor, uid, request, partner_id, address_id, payment_values, context=None):
         m1_payment_values, is_card_payment = self._m1_payment_values(
-            request, payment_values
+            cursor, uid, request, payment_values, context=context
         )
         values = self._m1_values(
             cursor, uid, request, partner_id, address_id, m1_payment_values, context=context
@@ -332,11 +389,14 @@ class SomHolderChangeRequest(osv.osv):
         )
         polissa_id = switching.polissa_ref_id.id
         if request.owner_change_type == "T":
+            contract_values = {"data_firma_contracte": signature_date}
+            if request.contract_number:
+                contract_values["name"] = request.contract_number
             self.pool.get("giscedata.polissa").write(
                 cursor,
                 uid,
                 polissa_id,
-                {"data_firma_contracte": signature_date},
+                contract_values,
                 context=context,
             )
         if is_card_payment:
@@ -353,16 +413,17 @@ class SomHolderChangeRequest(osv.osv):
             )
         return switching_ids[0], polissa_id
 
-    def _m1_payment_values(self, request, payment_values):
+    def _m1_payment_values(self, cursor, uid, request, payment_values, context=None):
         values = payment_values.copy()
         is_card_payment = bool(values.pop("creditcard", None))
         if is_card_payment:
             # M1 cannot validate the recurrent card before the copied contract exists.
-            values.update({
-                "bank": request.polissa_id.bank.id,
-                "payment_mode_id": request.polissa_id.payment_mode_id.id,
-                "tipo_pago": request.polissa_id.tipo_pago.id,
-            })
+            values.update(self.pool.get("giscedata.polissa")._get_enginyers_payment_values(
+                cursor, uid, context=context
+            ))
+            values["bank"] = request.polissa_id.bank.id
+            # The bank helper also clears the card, but the M1 wizard has no card field.
+            values.pop("creditcard", None)
         return values, is_card_payment
 
     def _m1_values(
@@ -385,7 +446,9 @@ class SomHolderChangeRequest(osv.osv):
             "pagador": partner_id,
             "contact": partner_id,
             "cnae": request.polissa_id.cnae.id,
-            "vat": request.payload["contract_owner"]["vat"],
+            "vat": holder_change_payload.normalize_holder_vat(
+                request.payload["contract_owner"]
+            )[2:],
             "vat_kind": vat_kind,
             "direccio_pagament": address_id,
             "direccio_notificacio": address_id,
@@ -539,8 +602,6 @@ class SomHolderChangeRequest(osv.osv):
     def _create_holder_address(self, cursor, uid, request, partner_id, context=None):
         contract_owner = request.payload["contract_owner"]
         address = contract_owner["address"]
-        iban = holder_change_payload.clean_iban(request.payload.get("iban", ""))
-        country_id = iban and self._iban_country(cursor, uid, iban, context=context) or False
         address_obj = self.pool.get("res.partner.address")
         address_ids = address_obj.search(
             cursor,
@@ -557,6 +618,9 @@ class SomHolderChangeRequest(osv.osv):
         #       to update the existing address instead of reusing it.
         if address_ids:
             return address_ids[0]
+        state = self.pool.get("res.country.state").browse(
+            cursor, uid, address["state_id"], context=context
+        )
         values = {
             "partner_id": partner_id,
             "name": holder_change_payload.holder_full_name(contract_owner),
@@ -572,7 +636,7 @@ class SomHolderChangeRequest(osv.osv):
                 cursor, uid, address["city_id"], context=context
             ),
             "state_id": address["state_id"],
-            "country_id": country_id,
+            "country_id": state.country_id.id,
             "email": contract_owner["email"],
             "phone": contract_owner["phone"],
         }
@@ -700,12 +764,11 @@ class SomHolderChangeRequest(osv.osv):
                 "state_id": request.payload["contract_owner"]["address"]["state_id"],
             })
             bank_id = bank_obj.create(cursor, uid, values, context=context)
-        contract = request.polissa_id
-        return {
-            "bank": bank_id,
-            "payment_mode_id": contract.payment_mode_id.id,
-            "tipo_pago": contract.tipo_pago.id,
-        }
+        values = self.pool.get("giscedata.polissa")._get_enginyers_payment_values(
+            cursor, uid, context=context
+        )
+        values["bank"] = bank_id
+        return values
 
     def _apply_special_documents(
         self,
@@ -1032,6 +1095,7 @@ class SomHolderChangeRequest(osv.osv):
         "contract_number": fields.char("Reserved contract number", size=64, readonly=True),
         "mandate_number": fields.char("Reserved mandate number", size=64, readonly=True),
         "contract_pdf": fields.binary("Simulated contract", readonly=True),
+        "report_snapshot": fields.json("Prepared card reports", readonly=True),
         "mandate_pdf": fields.binary("Simulated mandate", readonly=True),
         "creditcard_token": fields.char("Card token", size=256, readonly=True),
         "creditcard_masked_number": fields.char("Masked card number", size=32, readonly=True),

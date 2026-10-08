@@ -26,6 +26,27 @@ class TestHolderChangePayload(unittest.TestCase):
             "ES9121000418450200051332",
         )
 
+    def test_normalize_holder_vat_removes_spaces(self):
+        for vat in (" 12345678 z ", " es 12345678 z "):
+            self.assertEqual(
+                holder_change_payload.normalize_holder_vat({"vat": vat}), "ES12345678Z"
+            )
+
+    def test_is_individual_holder_accepts_country_prefix_and_spaces(self):
+        for vat in ("ES12345678Z", " es 12345678 z ", " ES X1234567L "):
+            self.assertTrue(holder_change_payload.is_individual_holder({"vat": vat}))
+
+    def test_is_individual_holder_rejects_prefixed_company_vat(self):
+        self.assertFalse(holder_change_payload.is_individual_holder({"vat": " es B12345678 "}))
+
+    def test_holder_full_name_uses_surnames_for_prefixed_individuals(self):
+        self.assertEqual(
+            holder_change_payload.holder_full_name({
+                "vat": " es 12345678 z ", "name": "Maria", "surname": "Nova Titular",
+            }),
+            "Nova Titular, Maria",
+        )
+
     def test_holder_full_name_uses_surnames_for_individuals(self):
         self.assertEqual(
             holder_change_payload.holder_full_name({

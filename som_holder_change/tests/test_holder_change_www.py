@@ -8,6 +8,8 @@ import pooler
 from destral import testing
 from destral.patch import PatchNewCursors
 from destral.transaction import Transaction
+from som_holder_change.models import holder_change_reports
+from tools import config
 
 
 class TestHolderChangeWww(testing.OOTestCase):
@@ -58,6 +60,9 @@ class TestHolderChangeWww(testing.OOTestCase):
         self.polissa_obj.write(
             self.cursor, self.uid, self.polissa_id, {"state": "activa"}
         )
+        lang_obj = self.openerp.pool.get("res.lang")
+        if not lang_obj.search(self.cursor, self.uid, [("code", "=", "ca_ES")]):
+            lang_obj.create(self.cursor, self.uid, {"name": "Català", "code": "ca_ES"})
         # create_request commits so requests from prior tests survive in this DB.
         self.cursor.execute(
             "UPDATE som_holder_change_request SET state = 'completed' "
@@ -66,11 +71,17 @@ class TestHolderChangeWww(testing.OOTestCase):
                 "received", "awaiting_payment", "awaiting_signature", "queued",
             )),
         )
-        self.local_service = mock.patch(self._local_service).start()
-        self.local_service.return_value.create.side_effect = [
-            (b"%PDF-contract", "pdf"),
-            (b"%PDF-mandate", "pdf"),
-        ]
+        self.local_service_patch = mock.patch(self._local_service)
+        self.local_service = self.local_service_patch.start()
+        self.local_service.return_value.create.side_effect = self._create_report
+        self.local_service.return_value._service.get_report_v.return_value = {
+            "id": 1, "context": {},
+        }
+        self.local_service.return_value._service.create_html.side_effect = self._create_html_report
+        self.render_card_reports = mock.patch.object(
+            holder_change_reports, "render_snapshot",
+            return_value={"contract_pdf": b"JVBERi1jYXJk", "mandate_pdf": False},
+        ).start()
         self.send_mail = mock.patch.object(self.request_obj, "_send_mail").start()
         self.subscribe_member = mock.patch(self._subscribe_member).start()
         self.unsubscribe_customer = mock.patch(self._unsubscribe_customer).start()
@@ -94,12 +105,21 @@ class TestHolderChangeWww(testing.OOTestCase):
         finally:
             self.raw_cursor.rollback(savepoint)
 
+    def _create_report(self, cursor, uid, ids, data, context=None):
+        return b"%PDF-document", "pdf"
+
+    def _create_html_report(self, cursor, uid, ids, data, report_values, context=None):
+        return "<html>{}</html>".format(
+            context[holder_change_reports.CARD_PLACEHOLDER_CONTEXT]
+        )
+
     def test_create_request_resolves_active_contract(self):
         result = self.www_obj.create_request(
             self.cursor, self.uid, self.payload()
         )
 
         self.assertTrue(result["success"], result)
+        self.assertTrue(result["request_id"])
         request = self.request_obj.read(
             self.cursor,
             self.uid,
@@ -123,45 +143,6 @@ class TestHolderChangeWww(testing.OOTestCase):
             ],
         )
 
-    def test_create_request_persists_attachments_outside_payload(self):
-        payload = self.payload()
-        payload["especial_cases"]["reason_death"] = True
-        payload["attachments"] = [{
-            "filename": "death-certificate.pdf",
-            "category": "holder_change_death",
-            "datas": "JVBERi0xLjQ=",
-        }]
-
-        result = self.www_obj.create_request(self.cursor, self.uid, payload)
-
-        self.assertTrue(result["success"], result)
-        attachment_obj = self.openerp.pool.get("ir.attachment")
-        attachment_ids = attachment_obj.search(
-            self.cursor,
-            self.uid,
-            [
-                ("res_model", "=", "som.holder.change.request"),
-                ("res_id", "=", result["request_id"]),
-            ],
-        )
-        self.assertEqual(len(attachment_ids), 1)
-        attachment = attachment_obj.read(
-            self.cursor, self.uid, attachment_ids[0], ["datas_fname", "category_id"]
-        )
-        self.assertEqual(attachment["datas_fname"], "death-certificate.pdf")
-        self.assertEqual(attachment["category_id"][1], "Holder change death certificate")
-        request = self.request_obj.read(
-            self.cursor, self.uid, result["request_id"], ["payload"]
-        )
-        self.assertNotIn("datas", request["payload"]["attachments"][0])
-
-    def test_create_request_returns_internal_request_id(self):
-        first = self.www_obj.create_request(
-            self.cursor, self.uid, self.payload()
-        )
-
-        self.assertTrue(first["request_id"])
-
     def test_create_request_rejects_an_active_request_for_the_same_cups(self):
         first = self.www_obj.create_request(self.cursor, self.uid, self.payload())
         second = self.www_obj.create_request(self.cursor, self.uid, self.payload())
@@ -184,6 +165,90 @@ class TestHolderChangeWww(testing.OOTestCase):
 
         self.assertFalse(result["success"])
         self.assertEqual(result["code"], "SAME_OWNER")
+
+    def test_create_request_rejects_short_then_long_cups_duplicate(self):
+        self._check_cups_alias_duplicate(False)
+
+    def test_create_request_rejects_long_then_short_cups_duplicate(self):
+        self._check_cups_alias_duplicate(True)
+
+    def _check_cups_alias_duplicate(self, long_first):
+        payload = self.payload()
+        short_cups = self.polissa.cups.name[:20]
+        long_cups = short_cups + "0F"
+        payload["contract_info"]["cups"] = long_cups if long_first else short_cups
+        first = self.www_obj.create_request(self.cursor, self.uid, payload)
+        self.assertTrue(first["success"], first)
+        payload["contract_info"]["cups"] = short_cups if long_first else long_cups
+        second = self.www_obj.create_request(self.cursor, self.uid, payload)
+        self.assertFalse(second["success"])
+        self.assertEqual(second["code"], "REQUEST_IN_PROGRESS")
+        self.simulate_holder_change.assert_called_once()
+
+    def test_execute_accepts_prefixed_individual_vat(self):
+        self._check_prefixed_individual_vat("ES12345678Z")
+
+    def test_execute_accepts_prefixed_individual_vat_with_spaces(self):
+        self._check_prefixed_individual_vat(" es 12345678 z ")
+
+    def _check_prefixed_individual_vat(self, vat):
+        payload = self.payload()
+        payload["contract_owner"]["vat"] = vat
+        result = self.www_obj.create_request(self.cursor, self.uid, payload)
+        self.assertTrue(result["success"], result)
+        self.queue_request(result["request_id"])
+        execution = self.request_obj.execute(self.cursor, self.uid, result["request_id"])
+        holder = self.polissa_obj.browse(
+            self.cursor, self.uid, execution["result_polissa_id"]
+        ).titular
+        self.assertEqual(holder.vat, "ES12345678Z")
+        self.assertEqual(holder.name, "Nova Titular, Maria")
+
+    def _set_old_contract_card(self):
+        card_id = self.openerp.pool.get("res.partner.creditcard").create(
+            self.cursor, self.uid,
+            {"partner_id": self.polissa.pagador.id, "token": "old-holder-token",
+             "masked_number": "**** 9876", "expiry_date": "12/30", "cof_txnid": "old-cof"},
+        )
+        values = {
+            "creditcard": card_id,
+            "payment_mode_id": self.imd_obj.get_object_reference(
+                self.cursor, self.uid, "som_card_payment", "payment_mode_card_recurrent"
+            )[1],
+            "tipo_pago": self.imd_obj.get_object_reference(
+                self.cursor, self.uid, "som_card_payment", "payment_type_card_recurrent"
+            )[1],
+            "bank": False,
+        }
+        self.polissa_obj.write(self.cursor, self.uid, self.polissa_id, values)
+        return card_id
+
+    def test_execute_changes_card_payment_to_bank_payment(self):
+        old_card_id = self._set_old_contract_card()
+        payload = self.payload()
+        result = self.www_obj.create_request(self.cursor, self.uid, payload)
+        self.assertTrue(result["success"], result)
+        self.queue_request(result["request_id"])
+        execution = self.request_obj.execute(self.cursor, self.uid, result["request_id"])
+        contract = self.polissa_obj.browse(
+            self.cursor, self.uid, execution["result_polissa_id"]
+        )
+        self.assertEqual(contract.payment_mode_id.name, "ENGINYERS")
+        self.assertEqual(contract.tipo_pago.id, contract.payment_mode_id.type.id)
+        self.assertNotEqual(contract.tipo_pago.code, "COBRAMENT_RECURRENT_TARGETA")
+        self.assertEqual(contract.bank.iban, payload["iban"])
+        self.assertEqual(contract.bank.partner_id.id, contract.pagador.id)
+        self.assertFalse(contract.creditcard)
+        self.assertEqual(self.polissa_obj.browse(
+            self.cursor, self.uid, self.polissa_id
+        ).creditcard.id, old_card_id)
+
+    def test_execute_changes_card_payment_to_new_holder_card(self):
+        old_card_id = self._set_old_contract_card()
+        self._check_card_execute_uses_real_card()
+        self.assertEqual(self.polissa_obj.browse(
+            self.cursor, self.uid, self.polissa_id
+        ).creditcard.id, old_card_id)
 
     def test_create_request_rejects_inactive_new_holder(self):
         payload = self.payload()
@@ -222,28 +287,6 @@ class TestHolderChangeWww(testing.OOTestCase):
         self.assertFalse(result["success"])
         self.assertEqual(result["code"], "CONSENT_REQUIRED")
 
-    def test_create_request_derives_subrogation_from_special_case(self):
-        payload = self.payload()
-        payload["especial_cases"]["reason_death"] = True
-        payload["attachments"] = [{
-            "filename": "death-certificate.pdf",
-            "category": "holder_change_death",
-            "datas": "JVBERi0xLjQ=",
-        }]
-
-        result = self.www_obj.create_request(
-            self.cursor, self.uid, payload
-        )
-
-        self.assertTrue(result["success"], result)
-        request = self.request_obj.read(
-            self.cursor,
-            self.uid,
-            result["request_id"],
-            ["owner_change_type"],
-        )
-        self.assertEqual(request["owner_change_type"], "S")
-
     def test_create_request_rejects_inactive_contract(self):
         inactive_id = self.imd_obj.get_object_reference(
             self.cursor, self.uid, "giscedata_polissa", "polissa_0001"
@@ -259,7 +302,7 @@ class TestHolderChangeWww(testing.OOTestCase):
         self.assertFalse(result["success"])
         self.assertEqual(result["code"], "CONTRACT_NOT_ACTIVE")
 
-    def test_card_request_waits_for_card_data(self):
+    def test_card_request_prepares_once_and_waits_for_payment_then_signature(self):
         payload = self.payload()
         payload["payment_type"] = "tpv"
         del payload["iban"]
@@ -275,21 +318,26 @@ class TestHolderChangeWww(testing.OOTestCase):
             self.cursor,
             self.uid,
             result["request_id"],
-            ["state", "contract_pdf", "mandate_pdf"],
+            ["state", "contract_pdf", "mandate_pdf", "report_snapshot"],
         )
         self.assertEqual(request["state"], "awaiting_payment")
-        self.assertTrue(request["contract_pdf"])
+        self.assertFalse(request["contract_pdf"])
         self.assertFalse(request["mandate_pdf"])
+        self.assertEqual(request["report_snapshot"]["version"], 1)
+        self.assertEqual(len(request["report_snapshot"]["documents"]), 2)
+        self.simulate_holder_change.assert_called_once()
+        self.render_card_reports.assert_not_called()
 
-    def test_card_data_generates_documents_and_waits_for_signature(self):
-        payload = self.payload()
-        payload["payment_type"] = "tpv"
-        del payload["iban"]
-        del payload["sepa_accepted"]
-        payload["payment_authorization_accepted"] = True
-        result = self.www_obj.create_request(
-            self.cursor, self.uid, payload
+        self.request_obj.prepare(self.cursor, self.uid, result["request_id"])
+        self.simulate_holder_change.assert_called_once()
+        self.assertEqual(
+            self.request_obj.read(
+                self.cursor, self.uid, result["request_id"], ["report_snapshot"]
+            )["report_snapshot"],
+            request["report_snapshot"],
         )
+        self.render_card_reports.assert_not_called()
+
         card_values = {
             "creditcard_token": "card-token",
             "creditcard_masked_number": "**** **** **** 1234",
@@ -306,6 +354,9 @@ class TestHolderChangeWww(testing.OOTestCase):
         )
 
         self.assertEqual(response["state"], "awaiting_signature")
+        self.simulate_holder_change.assert_called_once()
+        self.render_card_reports.assert_called_once()
+        self.assertEqual(self.render_card_reports.call_args[0][1], "**** **** **** 1234")
         request = self.request_obj.read(
             self.cursor,
             self.uid,
@@ -318,13 +369,14 @@ class TestHolderChangeWww(testing.OOTestCase):
         for field, value in card_values.items():
             self.assertEqual(request[field], value)
 
-    def test_card_data_retries_preparation_after_a_simulation_failure(self):
+    def test_card_data_retries_documents_without_repeating_simulation(self):
         payload = self.payload()
         payload["payment_type"] = "tpv"
         del payload["iban"]
         del payload["sepa_accepted"]
         payload["payment_authorization_accepted"] = True
         result = self.www_obj.create_request(self.cursor, self.uid, payload)
+        self.assertTrue(result["success"], result)
         card_values = {
             "creditcard_token": "card-token",
             "creditcard_masked_number": "**** **** **** 1234",
@@ -332,11 +384,8 @@ class TestHolderChangeWww(testing.OOTestCase):
             "creditcard_cof_txnid": "cof-transaction",
         }
 
-        with mock.patch.object(
-            self.request_obj,
-            "_simulate_holder_change",
-            side_effect=Exception("Simulation failed"),
-        ):
+        self.render_card_reports.side_effect = Exception("PDF rendering failed")
+        with mock.patch.object(self.request_obj, "_simulate_holder_change") as simulate:
             with self.assertRaises(Exception):
                 self.www_obj.add_payment_card_data(
                     self.cursor,
@@ -345,6 +394,7 @@ class TestHolderChangeWww(testing.OOTestCase):
                     payload["contract_info"]["cups"],
                     card_values,
                 )
+            simulate.assert_not_called()
 
         request = self.request_obj.read(
             self.cursor,
@@ -355,6 +405,7 @@ class TestHolderChangeWww(testing.OOTestCase):
         self.assertEqual(request["state"], "awaiting_payment")
         self.assertEqual(request["creditcard_token"], card_values["creditcard_token"])
 
+        self.render_card_reports.side_effect = None
         response = self.www_obj.add_payment_card_data(
             self.cursor,
             self.uid,
@@ -364,6 +415,110 @@ class TestHolderChangeWww(testing.OOTestCase):
         )
 
         self.assertEqual(response["state"], "awaiting_signature")
+        self.simulate_holder_change.assert_called_once()
+        self.assertEqual(self.render_card_reports.call_count, 2)
+
+    def test_card_simulation_failure_prevents_payment_state(self):
+        payload = self.payload()
+        payload["payment_type"] = "tpv"
+        del payload["iban"]
+        del payload["sepa_accepted"]
+        payload["payment_authorization_accepted"] = True
+        with mock.patch.object(
+            self.request_obj, "_run_m1", side_effect=Exception("Invalid M1")
+        ):
+            response = self.www_obj.create_request(self.cursor, self.uid, payload)
+        self.assertEqual(response["code"], "SIMULATION_ERROR")
+        self.render_card_reports.assert_not_called()
+
+    def test_card_report_preparation_failure_prevents_payment_state(self):
+        payload = self.payload()
+        payload["payment_type"] = "tpv"
+        del payload["iban"]
+        del payload["sepa_accepted"]
+        payload["payment_authorization_accepted"] = True
+        with mock.patch.object(
+            holder_change_reports, "prepare_snapshot", side_effect=Exception("Invalid report")
+        ):
+            response = self.www_obj.create_request(self.cursor, self.uid, payload)
+        self.assertEqual(response["code"], "SIMULATION_ERROR")
+        self.render_card_reports.assert_not_called()
+
+    def test_card_snapshot_uses_real_translated_reports(self):
+        self.local_service_patch.stop()
+        mock.patch.dict(holder_change_reports.netsvc.SERVICES).start()
+        tax_obj = self.openerp.pool.get("account.tax")
+        conf_obj = self.openerp.pool.get("res.config")
+        for key, tax_name in (
+            ("default_iva_21_tax_id", "IVA 21%"),
+            ("default_iese_tax_id", "Impuesto especial sobre la electricidad"),
+        ):
+            tax_id = tax_obj.search(self.cursor, self.uid, [("name", "=", tax_name)])[0]
+            conf_obj.set(self.cursor, self.uid, key, tax_id)
+        holder_change_reports.PuppeteerParser(
+            "report.giscedata.polissa.contract.summary",
+            "report.backend.contract.summary",
+            "som_polissa_condicions_generals/report/contract_summary_puppeteer.mako",
+            params={},
+        )
+        holder_change_reports.PuppeteerParser(
+            "report.giscedata.polissa",
+            "report.backend.condicions.particulars",
+            "som_polissa_condicions_generals/report/condicions_particulars_puppeteer.mako",
+            params={},
+        )
+        payload = self.payload()
+        payload["payment_type"] = "tpv"
+        del payload["iban"]
+        del payload["sepa_accepted"]
+        payload["payment_authorization_accepted"] = True
+
+        def prepare_request(cursor, uid, request_id, context=None):
+            self.request_obj.prepare(cursor, uid, request_id, context=context)
+
+        pricelist_id = self.imd_obj.get_object_reference(
+            self.cursor, self.uid, "giscedata_facturacio", "pricelist_tarifas_electricidad"
+        )[1]
+        pricelist = self.openerp.pool.get("product.pricelist").browse(
+            self.cursor, self.uid, pricelist_id
+        )
+        mock.patch.dict(config.options, {"default_lang": "ca_ES"}).start()
+        with mock.patch.object(self.polissa_obj, "escull_llista_preus", return_value=pricelist):
+            with mock.patch.object(
+                self.www_obj, "_prepare_stored_request", side_effect=prepare_request
+            ):
+                with mock.patch.object(holder_change_reports.PuppeteerParser, "render") as render:
+                    response = self.www_obj.create_request(self.cursor, self.uid, payload)
+        self.assertTrue(response["success"], response)
+        render.assert_not_called()
+        request = self.request_obj.read(
+            self.cursor, self.uid, response["request_id"], ["report_snapshot", "contract_number"]
+        )
+        snapshot = request["report_snapshot"]
+        for document in snapshot["documents"]:
+            self.assertIn(snapshot["card_placeholder"], document["html"])
+            self.assertIn(request["contract_number"], document["html"])
+        self.assertIn("**** **** ****", snapshot["documents"][0]["html"])
+
+    def test_card_data_rejects_missing_snapshot_without_simulating(self):
+        payload = self.payload()
+        payload["payment_type"] = "tpv"
+        del payload["iban"]
+        del payload["sepa_accepted"]
+        payload["payment_authorization_accepted"] = True
+        result = self.www_obj.create_request(self.cursor, self.uid, payload)
+        self.cursor.execute(
+            "UPDATE som_holder_change_request SET report_snapshot = NULL WHERE id = %s",
+            (result["request_id"],),
+        )
+        with self.assertRaises(Exception):
+            self.www_obj.add_payment_card_data(
+                self.cursor, self.uid, result["request_id"], payload["contract_info"]["cups"],
+                {"creditcard_token": "token", "creditcard_masked_number": "**** 1234",
+                 "creditcard_expiry_date": "12/30", "creditcard_cof_txnid": "cof"},
+            )
+        self.simulate_holder_change.assert_called_once()
+        self.render_card_reports.assert_not_called()
 
     def test_card_data_rejects_missing_or_repeated_values(self):
         payload = self.payload()
@@ -418,6 +573,37 @@ class TestHolderChangeWww(testing.OOTestCase):
                 self.cursor, self.uid, result["request_id"], "ES0000000000000000AA", {}
             )
 
+    def test_card_execute_uses_real_card_after_single_pre_payment_simulation(self):
+        self._check_card_execute_uses_real_card()
+
+    def _check_card_execute_uses_real_card(self):
+        payload = self.payload()
+        payload["linked_member"] = "new_member"
+        payload["payment_type"] = "tpv"
+        del payload["iban"]
+        del payload["sepa_accepted"]
+        payload["payment_authorization_accepted"] = True
+        result = self.www_obj.create_request(self.cursor, self.uid, payload)
+        self.assertTrue(result["success"], result)
+        self.www_obj.add_payment_card_data(
+            self.cursor, self.uid, result["request_id"], payload["contract_info"]["cups"],
+            {"creditcard_token": "real-token", "creditcard_masked_number": "**** 1234",
+             "creditcard_expiry_date": "12/30", "creditcard_cof_txnid": "real-cof"},
+        )
+        self.queue_request(result["request_id"])
+        execution = self.request_obj.execute(self.cursor, self.uid, result["request_id"])
+        contract = self.polissa_obj.browse(
+            self.cursor, self.uid, execution["result_polissa_id"]
+        )
+        self.assertEqual(contract.creditcard.token, "real-token")
+        self.assertEqual(contract.creditcard.masked_number, "**** 1234")
+        self.assertEqual(contract.creditcard.partner_id.id, contract.titular.id)
+        self.assertEqual(contract.tipo_pago.code, "COBRAMENT_RECURRENT_TARGETA")
+        request = self.request_obj.browse(self.cursor, self.uid, result["request_id"])
+        self.assertEqual(contract.name, request.contract_number)
+        self.simulate_holder_change.assert_called_once()
+        self.render_card_reports.assert_called_once()
+
     def test_sign_request_keeps_process_after_url_wait_failure(self):
         payload = self.payload()
         result = self.www_obj.create_request(self.cursor, self.uid, payload)
@@ -461,7 +647,7 @@ class TestHolderChangeWww(testing.OOTestCase):
             self.cursor,
             self.uid,
             request["signature_process_id"][0],
-            ["template_id", "template_res_id", "account_id"],
+            ["template_id", "template_res_id"],
         )
         template_id = self.imd_obj.get_object_reference(
             self.cursor,
@@ -471,13 +657,6 @@ class TestHolderChangeWww(testing.OOTestCase):
         )[1]
         self.assertEqual(process["template_id"][0], template_id)
         self.assertEqual(process["template_res_id"], result["request_id"])
-        account_id = self.imd_obj.get_object_reference(
-            self.cursor,
-            self.uid,
-            "giscedata_signatura_documents_signaturit",
-            "giscedata_signature_provider_account_0001",
-        )[1]
-        self.assertEqual(process["account_id"][0], account_id)
 
     def test_sign_request_retries_process_after_start_failure(self):
         payload = self.payload()
@@ -616,7 +795,7 @@ class TestHolderChangeWww(testing.OOTestCase):
         }
 
         result = self.www_obj.create_request(
-            self.cursor, self.uid, self.payload()
+            self.cursor, self.uid, dict(self.payload(), linked_member="new_member")
         )
 
         request = self.request_obj.read(
@@ -658,6 +837,7 @@ class TestHolderChangeWww(testing.OOTestCase):
 
     def test_execute_completes_once_without_duplicate_m1(self):
         payload = self.payload()
+        payload["linked_member"] = "new_member"
         payload["contract_owner"]["vat"] = "98765432M"
         result = self.www_obj.create_request(
             self.cursor, self.uid, payload
@@ -705,6 +885,7 @@ class TestHolderChangeWww(testing.OOTestCase):
             self.cursor, self.uid, first_result["result_polissa_id"]
         )
         self.assertTrue(result_polissa.donatiu)
+        self.assertEqual(result_polissa.soci.id, result_polissa.titular.id)
         invoice_number = "QUOTA-SOCIA-CANVI-TITULAR-{}".format(result["request_id"])
         invoice_obj = self.openerp.pool.get("account.invoice")
         invoice_ids = invoice_obj.search(
@@ -759,8 +940,9 @@ class TestHolderChangeWww(testing.OOTestCase):
         self.assertFalse(result_polissa.donatiu)
         self.assertTrue(old_polissa.donatiu)
 
-    def test_subrogation_creates_draft_m1(self):
+    def test_subrogation_creates_draft_m1_and_copies_death_certificates_once(self):
         payload = self.payload()
+        payload["linked_member"] = "new_member"
         payload["especial_cases"].update({"reason_death": True})
         payload["attachments"] = [
             {
@@ -776,6 +958,29 @@ class TestHolderChangeWww(testing.OOTestCase):
         ]
         result = self.www_obj.create_request(self.cursor, self.uid, payload)
         self.assertTrue(result["success"], result)
+        request = self.request_obj.read(
+            self.cursor, self.uid, result["request_id"], ["owner_change_type", "payload"]
+        )
+        self.assertEqual(request["owner_change_type"], "S")
+        for attachment in request["payload"]["attachments"]:
+            self.assertNotIn("datas", attachment)
+
+        attachment_obj = self.openerp.pool.get("ir.attachment")
+        attachment_ids = attachment_obj.search(
+            self.cursor, self.uid,
+            [("res_model", "=", "som.holder.change.request"),
+             ("res_id", "=", result["request_id"])],
+        )
+        self.assertEqual(len(attachment_ids), 2)
+        attachments = attachment_obj.read(
+            self.cursor, self.uid, attachment_ids, ["datas_fname", "category_id"]
+        )
+        self.assertEqual(
+            sorted(attachment["datas_fname"] for attachment in attachments),
+            ["death-certificate-2.pdf", "death-certificate.pdf"],
+        )
+        for attachment in attachments:
+            self.assertEqual(attachment["category_id"][1], "Holder change death certificate")
         self.queue_request(result["request_id"])
 
         execution = self.request_obj.execute(
@@ -795,6 +1000,7 @@ class TestHolderChangeWww(testing.OOTestCase):
         self.assertEqual(self.send_mail.call_args_list[0][0][2:4], (
             "som_polissa_condicions_generals", "notification_atr_M1_01_SS"
         ))
+        self._check_death_certificates_copied_once(result["request_id"], execution)
 
     def test_execute_uses_new_holder_language_and_address(self):
         payload = self.payload()
@@ -838,6 +1044,69 @@ class TestHolderChangeWww(testing.OOTestCase):
         self.assertEqual(polissa.bank.iban, "ES9121000418450200051332")
         self.assertEqual(
             polissa.direccio_notificacio.id, polissa.direccio_pagament.id
+        )
+
+    def test_execute_preserves_reused_holder_address(self):
+        self._check_execute_preserves_reused_holder_address(False)
+
+    def test_card_execute_preserves_reused_holder_address_country_and_contacts(self):
+        self._check_execute_preserves_reused_holder_address(True)
+
+    def _check_execute_preserves_reused_holder_address(self, card_payment):
+        payload = self.payload()
+        payload["linked_member"] = "without_member"
+        if card_payment:
+            payload["payment_type"] = "tpv"
+            del payload["iban"]
+            del payload["sepa_accepted"]
+            payload["payment_authorization_accepted"] = True
+        payload["contract_owner"]["address"].update({
+            "floor": "2", "door": "B", "stair": "A", "block": "3",
+        })
+        partner_id = self.openerp.pool.get("res.partner").create(
+            self.cursor, self.uid,
+            {"name": "Nova Titular, Maria", "vat": "ES12345678Z", "lang": "ca_ES"},
+        )
+        address_obj = self.openerp.pool.get("res.partner.address")
+        address_id = address_obj.create(
+            self.cursor, self.uid,
+            {"partner_id": partner_id, "nv": "Carrer Nou", "pnp": "1",
+             "email": "old@example.com", "phone": "600000001", "zip": "08001",
+             "pt": "1", "pu": "A", "es": "B", "bq": "2",
+             "country_id": self.polissa.cups.id_municipi.state.country_id.id},
+        )
+        fields = [
+            "email", "phone", "zip", "pt", "pu", "es", "bq",
+            "country_id", "state_id", "id_municipi", "id_poblacio",
+        ]
+        old_address = address_obj.read(self.cursor, self.uid, address_id, fields)
+        address_ids = address_obj.search(self.cursor, self.uid, [("partner_id", "=", partner_id)])
+        result = self.www_obj.create_request(self.cursor, self.uid, payload)
+        self.assertTrue(result["success"], result)
+        self.assertEqual(
+            address_obj.read(self.cursor, self.uid, address_id, fields), old_address
+        )
+        if card_payment:
+            self.www_obj.add_payment_card_data(
+                self.cursor, self.uid, result["request_id"], payload["contract_info"]["cups"],
+                {"creditcard_token": "real-token", "creditcard_masked_number": "**** 1234",
+                 "creditcard_expiry_date": "12/30", "creditcard_cof_txnid": "real-cof"},
+            )
+        self.queue_request(result["request_id"])
+        execution = self.request_obj.execute(self.cursor, self.uid, result["request_id"])
+        contract = self.polissa_obj.browse(
+            self.cursor, self.uid, execution["result_polissa_id"]
+        )
+        address = contract.direccio_pagament
+        self.assertEqual(address.id, address_id)
+        self.assertEqual(contract.direccio_notificacio.id, address_id)
+        self.assertEqual(address.country_id.code, "ES")
+        self.assertEqual(
+            address_obj.read(self.cursor, self.uid, address_id, fields), old_address
+        )
+        self.assertEqual(
+            address_obj.search(self.cursor, self.uid, [("partner_id", "=", partner_id)]),
+            address_ids,
         )
 
     def test_execute_stores_legal_representative_for_a_new_company(self):
@@ -884,19 +1153,6 @@ class TestHolderChangeWww(testing.OOTestCase):
             self.cursor, self.uid, execution["result_polissa_id"]
         )
         self.assertEqual(polissa.soci.id, linked_partner_id)
-
-    def test_execute_turns_new_holder_into_member(self):
-        result = self.www_obj.create_request(self.cursor, self.uid, self.payload())
-        self.queue_request(result["request_id"])
-
-        execution = self.request_obj.execute(
-            self.cursor, self.uid, result["request_id"]
-        )
-
-        polissa = self.polissa_obj.browse(
-            self.cursor, self.uid, execution["result_polissa_id"]
-        )
-        self.assertEqual(polissa.soci.id, polissa.titular.id)
 
     def test_execute_assigns_ct_ss_member_and_category_without_member(self):
         payload = self.payload()
@@ -954,28 +1210,7 @@ class TestHolderChangeWww(testing.OOTestCase):
         self.assertEqual(polissa.soci.id, ct_ss_member_id)
         self.assertIn(category_id, polissa.category_id.ids)
 
-    def test_execute_copies_death_certificate_to_result_contract(self):
-        payload = self.payload()
-        payload["especial_cases"].update({"reason_death": True})
-        payload["attachments"] = [
-            {
-                "filename": "death-certificate.pdf",
-                "category": "holder_change_death",
-                "datas": "JVBERi0xLjQ=",
-            },
-            {
-                "filename": "death-certificate-2.pdf",
-                "category": "holder_change_death",
-                "datas": "JVBERi0xLjQy",
-            },
-        ]
-        result = self.www_obj.create_request(self.cursor, self.uid, payload)
-        self.queue_request(result["request_id"])
-
-        execution = self.request_obj.execute(
-            self.cursor, self.uid, result["request_id"]
-        )
-
+    def _check_death_certificates_copied_once(self, request_id, execution):
         attachment_ids = self.openerp.pool.get("ir.attachment").search(
             self.cursor,
             self.uid,
@@ -999,7 +1234,7 @@ class TestHolderChangeWww(testing.OOTestCase):
         )
 
         request = self.request_obj.browse(
-            self.cursor, self.uid, result["request_id"]
+            self.cursor, self.uid, request_id
         )
         self.request_obj._apply_special_documents(
             self.cursor,
@@ -1221,7 +1456,8 @@ class TestHolderChangeWww(testing.OOTestCase):
             "contract_info": {"cups": self.polissa.cups.name},
             "privacy_conditions": True,
             "general_contract_terms_accepted": True,
-            "linked_member": "new_member",
+            # Membership creation is covered explicitly by the main scenarios.
+            "linked_member": "without_member",
             "especial_cases": {
                 "reason_death": False,
                 "reason_merge": False,

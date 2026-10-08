@@ -65,7 +65,7 @@ class SomHolderChangeWww(osv.osv_memory):
             "SELECT id FROM giscedata_polissa WHERE id = %s FOR UPDATE",
             (polissa_id,),
         )
-        if self._active_request_for_cups(cursor, uid, cups, context=context):
+        if self._active_request_for_contract(cursor, uid, polissa_id, context=context):
             return holder_change_validation.error(
                 "REQUEST_IN_PROGRESS",
                 _("There is already an active holder change request for this CUPS."),
@@ -260,11 +260,11 @@ class SomHolderChangeWww(osv.osv_memory):
                 "The request does not match this CUPS."))
         return request
 
-    def _active_request_for_cups(self, cursor, uid, cups, context=None):
+    def _active_request_for_contract(self, cursor, uid, polissa_id, context=None):
         request_ids = self.pool.get("som.holder.change.request").search(
             cursor,
             uid,
-            [("cups", "=", cups), ("state", "in", ACTIVE_REQUEST_STATES)],
+            [("polissa_id", "=", polissa_id), ("state", "in", ACTIVE_REQUEST_STATES)],
             limit=1,
             context=context,
         )
@@ -357,16 +357,12 @@ class SomHolderChangeWww(osv.osv_memory):
         }
 
     def _signature_process_values(self, cursor, uid, request):
-        template_obj = self.pool.get("poweremail.templates")
         template_id = self.pool.get("ir.model.data").get_object_reference(
             cursor,
             uid,
             "som_holder_change",
             "email_signature_process_holder_change",
         )[1]
-        account_id = template_obj._get_signature_account_id(
-            cursor, uid, template_id, request.id
-        )
         contract_owner = request.payload["contract_owner"]
         files = [(0, 0, {"doc_file": request.contract_pdf,
                   "filename": "contract-with-summary.pdf"})]
@@ -376,7 +372,6 @@ class SomHolderChangeWww(osv.osv_memory):
         return {
             "template_id": template_id,
             "template_res_id": request.id,
-            "account_id": account_id,
             "delivery_type": "url",
             "provider": "signaturit",
             "lang": contract_owner["lang"],
