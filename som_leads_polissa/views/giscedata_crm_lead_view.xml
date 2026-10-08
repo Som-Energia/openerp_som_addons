@@ -65,6 +65,7 @@
                         <field name="titular_number" colspan="4" col="4"/>
                         <field name="donation" colspan="4" col="4"/>
                         <field name="comercial_info_accepted" colspan="4" col="4"/>
+                        <field name="lead_tag" colspan="4" col="4"/>
                         <field name="crm_lead_id" colspan="4" col="4" readonly="1"/>
                     </page>
                 </xpath>

@@ -44,6 +44,7 @@ class SomLeadWww(osv.osv_memory):
         values = self._build_lead_values(
             cr, uid, www_vals, member_type, member, contract_data, payment_data, context=context
         )
+        values = self._apply_webform_params(cr, uid, values, www_vals, context=context)
         values = self._apply_self_consumption_values(cr, uid, values, www_vals, context=context)
         values = self._finalize_lead_values(values)
 
@@ -314,6 +315,28 @@ class SomLeadWww(osv.osv_memory):
         values["is_new_contact"] = (
             not self._already_has_contract(cr, uid, values["titular_vat"], context=context)
         )
+
+        return values
+
+    def _apply_webform_params(self, cr, uid, values, www_vals, context=None):
+        if context is None:
+            context = {}
+
+        params = www_vals.get("params") or {}
+        if not isinstance(params, dict):
+            return values
+
+        owner = params.get("owner")
+        if isinstance(owner, (str, type(u""))) and owner.strip():
+            user_ids = self.pool.get("res.users").search(
+                cr, uid, [("login", "=", owner.strip())], limit=1, context=context
+            )
+            if user_ids:
+                values["user_id"] = user_ids[0]
+
+        lead_tag = params.get("lead_tag")
+        if isinstance(lead_tag, (str, type(u""))) and lead_tag.strip():
+            values["lead_tag"] = lead_tag.strip()
 
         return values
 
