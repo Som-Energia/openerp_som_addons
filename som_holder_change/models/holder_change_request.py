@@ -602,8 +602,6 @@ class SomHolderChangeRequest(osv.osv):
     def _create_holder_address(self, cursor, uid, request, partner_id, context=None):
         contract_owner = request.payload["contract_owner"]
         address = contract_owner["address"]
-        iban = holder_change_payload.clean_iban(request.payload.get("iban", ""))
-        country_id = iban and self._iban_country(cursor, uid, iban, context=context) or False
         address_obj = self.pool.get("res.partner.address")
         address_ids = address_obj.search(
             cursor,
@@ -615,6 +613,13 @@ class SomHolderChangeRequest(osv.osv):
             ],
             limit=1,
             context=context,
+        )
+        # TODO: This works like webforms, but it may be better
+        #       to update the existing address instead of reusing it.
+        if address_ids:
+            return address_ids[0]
+        state = self.pool.get("res.country.state").browse(
+            cursor, uid, address["state_id"], context=context
         )
         values = {
             "partner_id": partner_id,
@@ -631,13 +636,10 @@ class SomHolderChangeRequest(osv.osv):
                 cursor, uid, address["city_id"], context=context
             ),
             "state_id": address["state_id"],
-            "country_id": country_id,
+            "country_id": state.country_id.id,
             "email": contract_owner["email"],
             "phone": contract_owner["phone"],
         }
-        if address_ids:
-            address_obj.write(cursor, uid, address_ids, values, context=context)
-            return address_ids[0]
         return address_obj.create(cursor, uid, values, context=context)
 
     def _iban_country(self, cursor, uid, iban, context=None):

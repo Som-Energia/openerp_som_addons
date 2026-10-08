@@ -1087,29 +1087,52 @@ class TestHolderChangeWww(testing.OOTestCase):
             polissa.direccio_notificacio.id, polissa.direccio_pagament.id
         )
 
-    def test_execute_updates_reused_holder_address_after_simulation_rollback(self):
+    def test_execute_preserves_reused_holder_address(self):
+        self._check_execute_preserves_reused_holder_address(False)
+
+    def test_card_execute_preserves_reused_holder_address_country_and_contacts(self):
+        self._check_execute_preserves_reused_holder_address(True)
+
+    def _check_execute_preserves_reused_holder_address(self, card_payment):
         payload = self.payload()
         payload["linked_member"] = "without_member"
+        if card_payment:
+            payload["payment_type"] = "tpv"
+            del payload["iban"]
+            del payload["sepa_accepted"]
+            payload["payment_authorization_accepted"] = True
         payload["contract_owner"]["address"].update({
             "floor": "2", "door": "B", "stair": "A", "block": "3",
         })
         partner_id = self.openerp.pool.get("res.partner").create(
-            self.cursor, self.uid, {"name": "Nova Titular, Maria", "vat": "ES12345678Z"}
+            self.cursor, self.uid,
+            {"name": "Nova Titular, Maria", "vat": "ES12345678Z", "lang": "ca_ES"},
         )
         address_obj = self.openerp.pool.get("res.partner.address")
         address_id = address_obj.create(
             self.cursor, self.uid,
             {"partner_id": partner_id, "nv": "Carrer Nou", "pnp": "1",
              "email": "old@example.com", "phone": "600000001", "zip": "08001",
-             "pt": "1", "pu": "A", "es": "B", "bq": "2"},
+             "pt": "1", "pu": "A", "es": "B", "bq": "2",
+             "country_id": self.polissa.cups.id_municipi.state.country_id.id},
         )
-        fields = ["email", "phone", "zip", "pt", "pu", "es", "bq"]
+        fields = [
+            "email", "phone", "zip", "pt", "pu", "es", "bq",
+            "country_id", "state_id", "id_municipi", "id_poblacio",
+        ]
         old_address = address_obj.read(self.cursor, self.uid, address_id, fields)
+        address_ids = address_obj.search(self.cursor, self.uid, [("partner_id", "=", partner_id)])
         result = self.www_obj.create_request(self.cursor, self.uid, payload)
         self.assertTrue(result["success"], result)
         self.assertEqual(
             address_obj.read(self.cursor, self.uid, address_id, fields), old_address
         )
+        if card_payment:
+            self.www_obj.add_payment_card_data(
+                self.cursor, self.uid, result["request_id"], payload["contract_info"]["cups"],
+                {"creditcard_token": "real-token", "creditcard_masked_number": "**** 1234",
+                 "creditcard_expiry_date": "12/30", "creditcard_cof_txnid": "real-cof"},
+            )
         self.queue_request(result["request_id"])
         execution = self.request_obj.execute(self.cursor, self.uid, result["request_id"])
         contract = self.polissa_obj.browse(
@@ -1118,14 +1141,44 @@ class TestHolderChangeWww(testing.OOTestCase):
         address = contract.direccio_pagament
         self.assertEqual(address.id, address_id)
         self.assertEqual(contract.direccio_notificacio.id, address_id)
-        self.assertEqual(address.email, payload["contract_owner"]["email"])
-        self.assertEqual(address.phone, payload["contract_owner"]["phone"])
-        self.assertEqual(address.zip, payload["contract_owner"]["address"]["postal_code"])
-        self.assertEqual(address.id_municipi.id, payload["contract_owner"]["address"]["city_id"])
-        self.assertEqual(address.state_id.id, payload["contract_owner"]["address"]["state_id"])
         self.assertEqual(address.country_id.code, "ES")
-        self.assertEqual((address.pt, address.pu, address.es, address.bq), ("2", "B", "A", "3"))
-        self.assertEqual(address.id_poblacio.municipi_id.id, address.id_municipi.id)
+        self.assertEqual(
+            address_obj.read(self.cursor, self.uid, address_id, fields), old_address
+        )
+        self.assertEqual(
+            address_obj.search(self.cursor, self.uid, [("partner_id", "=", partner_id)]),
+            address_ids,
+        )
+
+    def test_new_card_holder_address_uses_state_country_without_iban(self):
+        payload = self.payload()
+        payload["payment_type"] = "tpv"
+        del payload["iban"]
+        self._check_new_holder_address_country(payload)
+
+    def test_new_holder_address_country_does_not_follow_foreign_iban(self):
+        payload = self.payload()
+        payload["iban"] = "DE89370400440532013000"
+        self._check_new_holder_address_country(payload)
+
+    def _check_new_holder_address_country(self, payload):
+        partner_id = self.openerp.pool.get("res.partner").create(
+            self.cursor, self.uid, {"name": "New address holder", "vat": "ES76543210S"}
+        )
+        request_id = self.request_obj.create(
+            self.cursor, self.uid,
+            {"polissa_id": self.polissa_id, "cups": self.polissa.cups.name,
+             "owner_change_type": "T", "payload": payload},
+        )
+        request = self.request_obj.browse(self.cursor, self.uid, request_id)
+        address_id = self.request_obj._create_holder_address(
+            self.cursor, self.uid, request, partner_id
+        )
+        address = self.openerp.pool.get("res.partner.address").browse(
+            self.cursor, self.uid, address_id
+        )
+        self.assertEqual(address.country_id.code, "ES")
+        self.assertEqual(address.country_id.id, address.state_id.country_id.id)
 
     def test_execute_stores_legal_representative_for_a_new_company(self):
         payload = self.payload()
