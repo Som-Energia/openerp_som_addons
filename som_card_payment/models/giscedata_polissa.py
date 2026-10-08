@@ -96,7 +96,9 @@ class GiscedataPolissa(osv.osv):
                 reason_code="already_converted",
             )
 
-        self.check_modifiable_polissa(cursor, uid, polissa_id, context=context)
+        self.check_modifiable_polissa(
+            cursor, uid, polissa_id, skip_atr_check=True, context=context
+        )
 
         card_result = self.pool.get("res.partner.creditcard").resolve_for_payer(
             cursor, uid, polissa.pagador.id, card_data, context=context
