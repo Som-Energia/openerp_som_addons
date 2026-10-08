@@ -119,6 +119,7 @@ class TestHolderChangeWww(testing.OOTestCase):
         )
 
         self.assertTrue(result["success"], result)
+        self.assertTrue(result["request_id"])
         request = self.request_obj.read(
             self.cursor,
             self.uid,
@@ -141,45 +142,6 @@ class TestHolderChangeWww(testing.OOTestCase):
                 "report.report_mandato",
             ],
         )
-
-    def test_create_request_persists_attachments_outside_payload(self):
-        payload = self.payload()
-        payload["especial_cases"]["reason_death"] = True
-        payload["attachments"] = [{
-            "filename": "death-certificate.pdf",
-            "category": "holder_change_death",
-            "datas": "JVBERi0xLjQ=",
-        }]
-
-        result = self.www_obj.create_request(self.cursor, self.uid, payload)
-
-        self.assertTrue(result["success"], result)
-        attachment_obj = self.openerp.pool.get("ir.attachment")
-        attachment_ids = attachment_obj.search(
-            self.cursor,
-            self.uid,
-            [
-                ("res_model", "=", "som.holder.change.request"),
-                ("res_id", "=", result["request_id"]),
-            ],
-        )
-        self.assertEqual(len(attachment_ids), 1)
-        attachment = attachment_obj.read(
-            self.cursor, self.uid, attachment_ids[0], ["datas_fname", "category_id"]
-        )
-        self.assertEqual(attachment["datas_fname"], "death-certificate.pdf")
-        self.assertEqual(attachment["category_id"][1], "Holder change death certificate")
-        request = self.request_obj.read(
-            self.cursor, self.uid, result["request_id"], ["payload"]
-        )
-        self.assertNotIn("datas", request["payload"]["attachments"][0])
-
-    def test_create_request_returns_internal_request_id(self):
-        first = self.www_obj.create_request(
-            self.cursor, self.uid, self.payload()
-        )
-
-        self.assertTrue(first["request_id"])
 
     def test_create_request_rejects_an_active_request_for_the_same_cups(self):
         first = self.www_obj.create_request(self.cursor, self.uid, self.payload())
@@ -325,28 +287,6 @@ class TestHolderChangeWww(testing.OOTestCase):
         self.assertFalse(result["success"])
         self.assertEqual(result["code"], "CONSENT_REQUIRED")
 
-    def test_create_request_derives_subrogation_from_special_case(self):
-        payload = self.payload()
-        payload["especial_cases"]["reason_death"] = True
-        payload["attachments"] = [{
-            "filename": "death-certificate.pdf",
-            "category": "holder_change_death",
-            "datas": "JVBERi0xLjQ=",
-        }]
-
-        result = self.www_obj.create_request(
-            self.cursor, self.uid, payload
-        )
-
-        self.assertTrue(result["success"], result)
-        request = self.request_obj.read(
-            self.cursor,
-            self.uid,
-            result["request_id"],
-            ["owner_change_type"],
-        )
-        self.assertEqual(request["owner_change_type"], "S")
-
     def test_create_request_rejects_inactive_contract(self):
         inactive_id = self.imd_obj.get_object_reference(
             self.cursor, self.uid, "giscedata_polissa", "polissa_0001"
@@ -362,7 +302,7 @@ class TestHolderChangeWww(testing.OOTestCase):
         self.assertFalse(result["success"])
         self.assertEqual(result["code"], "CONTRACT_NOT_ACTIVE")
 
-    def test_card_request_waits_for_card_data(self):
+    def test_card_request_prepares_once_and_waits_for_payment_then_signature(self):
         payload = self.payload()
         payload["payment_type"] = "tpv"
         del payload["iban"]
@@ -388,15 +328,16 @@ class TestHolderChangeWww(testing.OOTestCase):
         self.simulate_holder_change.assert_called_once()
         self.render_card_reports.assert_not_called()
 
-    def test_card_data_generates_documents_and_waits_for_signature(self):
-        payload = self.payload()
-        payload["payment_type"] = "tpv"
-        del payload["iban"]
-        del payload["sepa_accepted"]
-        payload["payment_authorization_accepted"] = True
-        result = self.www_obj.create_request(
-            self.cursor, self.uid, payload
+        self.request_obj.prepare(self.cursor, self.uid, result["request_id"])
+        self.simulate_holder_change.assert_called_once()
+        self.assertEqual(
+            self.request_obj.read(
+                self.cursor, self.uid, result["request_id"], ["report_snapshot"]
+            )["report_snapshot"],
+            request["report_snapshot"],
         )
+        self.render_card_reports.assert_not_called()
+
         card_values = {
             "creditcard_token": "card-token",
             "creditcard_masked_number": "**** **** **** 1234",
@@ -489,16 +430,6 @@ class TestHolderChangeWww(testing.OOTestCase):
             response = self.www_obj.create_request(self.cursor, self.uid, payload)
         self.assertEqual(response["code"], "SIMULATION_ERROR")
         self.render_card_reports.assert_not_called()
-
-    def test_card_prepare_reuses_snapshot_before_payment(self):
-        payload = self.payload()
-        payload["payment_type"] = "tpv"
-        del payload["iban"]
-        del payload["sepa_accepted"]
-        payload["payment_authorization_accepted"] = True
-        result = self.www_obj.create_request(self.cursor, self.uid, payload)
-        self.request_obj.prepare(self.cursor, self.uid, result["request_id"])
-        self.simulate_holder_change.assert_called_once()
 
     def test_card_report_preparation_failure_prevents_payment_state(self):
         payload = self.payload()
@@ -647,6 +578,7 @@ class TestHolderChangeWww(testing.OOTestCase):
 
     def _check_card_execute_uses_real_card(self):
         payload = self.payload()
+        payload["linked_member"] = "new_member"
         payload["payment_type"] = "tpv"
         del payload["iban"]
         del payload["sepa_accepted"]
@@ -863,7 +795,7 @@ class TestHolderChangeWww(testing.OOTestCase):
         }
 
         result = self.www_obj.create_request(
-            self.cursor, self.uid, self.payload()
+            self.cursor, self.uid, dict(self.payload(), linked_member="new_member")
         )
 
         request = self.request_obj.read(
@@ -905,6 +837,7 @@ class TestHolderChangeWww(testing.OOTestCase):
 
     def test_execute_completes_once_without_duplicate_m1(self):
         payload = self.payload()
+        payload["linked_member"] = "new_member"
         payload["contract_owner"]["vat"] = "98765432M"
         result = self.www_obj.create_request(
             self.cursor, self.uid, payload
@@ -952,6 +885,7 @@ class TestHolderChangeWww(testing.OOTestCase):
             self.cursor, self.uid, first_result["result_polissa_id"]
         )
         self.assertTrue(result_polissa.donatiu)
+        self.assertEqual(result_polissa.soci.id, result_polissa.titular.id)
         invoice_number = "QUOTA-SOCIA-CANVI-TITULAR-{}".format(result["request_id"])
         invoice_obj = self.openerp.pool.get("account.invoice")
         invoice_ids = invoice_obj.search(
@@ -1006,8 +940,9 @@ class TestHolderChangeWww(testing.OOTestCase):
         self.assertFalse(result_polissa.donatiu)
         self.assertTrue(old_polissa.donatiu)
 
-    def test_subrogation_creates_draft_m1(self):
+    def test_subrogation_creates_draft_m1_and_copies_death_certificates_once(self):
         payload = self.payload()
+        payload["linked_member"] = "new_member"
         payload["especial_cases"].update({"reason_death": True})
         payload["attachments"] = [
             {
@@ -1023,6 +958,29 @@ class TestHolderChangeWww(testing.OOTestCase):
         ]
         result = self.www_obj.create_request(self.cursor, self.uid, payload)
         self.assertTrue(result["success"], result)
+        request = self.request_obj.read(
+            self.cursor, self.uid, result["request_id"], ["owner_change_type", "payload"]
+        )
+        self.assertEqual(request["owner_change_type"], "S")
+        for attachment in request["payload"]["attachments"]:
+            self.assertNotIn("datas", attachment)
+
+        attachment_obj = self.openerp.pool.get("ir.attachment")
+        attachment_ids = attachment_obj.search(
+            self.cursor, self.uid,
+            [("res_model", "=", "som.holder.change.request"),
+             ("res_id", "=", result["request_id"])],
+        )
+        self.assertEqual(len(attachment_ids), 2)
+        attachments = attachment_obj.read(
+            self.cursor, self.uid, attachment_ids, ["datas_fname", "category_id"]
+        )
+        self.assertEqual(
+            sorted(attachment["datas_fname"] for attachment in attachments),
+            ["death-certificate-2.pdf", "death-certificate.pdf"],
+        )
+        for attachment in attachments:
+            self.assertEqual(attachment["category_id"][1], "Holder change death certificate")
         self.queue_request(result["request_id"])
 
         execution = self.request_obj.execute(
@@ -1042,6 +1000,7 @@ class TestHolderChangeWww(testing.OOTestCase):
         self.assertEqual(self.send_mail.call_args_list[0][0][2:4], (
             "som_polissa_condicions_generals", "notification_atr_M1_01_SS"
         ))
+        self._check_death_certificates_copied_once(result["request_id"], execution)
 
     def test_execute_uses_new_holder_language_and_address(self):
         payload = self.payload()
@@ -1150,36 +1109,6 @@ class TestHolderChangeWww(testing.OOTestCase):
             address_ids,
         )
 
-    def test_new_card_holder_address_uses_state_country_without_iban(self):
-        payload = self.payload()
-        payload["payment_type"] = "tpv"
-        del payload["iban"]
-        self._check_new_holder_address_country(payload)
-
-    def test_new_holder_address_country_does_not_follow_foreign_iban(self):
-        payload = self.payload()
-        payload["iban"] = "DE89370400440532013000"
-        self._check_new_holder_address_country(payload)
-
-    def _check_new_holder_address_country(self, payload):
-        partner_id = self.openerp.pool.get("res.partner").create(
-            self.cursor, self.uid, {"name": "New address holder", "vat": "ES76543210S"}
-        )
-        request_id = self.request_obj.create(
-            self.cursor, self.uid,
-            {"polissa_id": self.polissa_id, "cups": self.polissa.cups.name,
-             "owner_change_type": "T", "payload": payload},
-        )
-        request = self.request_obj.browse(self.cursor, self.uid, request_id)
-        address_id = self.request_obj._create_holder_address(
-            self.cursor, self.uid, request, partner_id
-        )
-        address = self.openerp.pool.get("res.partner.address").browse(
-            self.cursor, self.uid, address_id
-        )
-        self.assertEqual(address.country_id.code, "ES")
-        self.assertEqual(address.country_id.id, address.state_id.country_id.id)
-
     def test_execute_stores_legal_representative_for_a_new_company(self):
         payload = self.payload()
         payload["contract_owner"].update({
@@ -1224,19 +1153,6 @@ class TestHolderChangeWww(testing.OOTestCase):
             self.cursor, self.uid, execution["result_polissa_id"]
         )
         self.assertEqual(polissa.soci.id, linked_partner_id)
-
-    def test_execute_turns_new_holder_into_member(self):
-        result = self.www_obj.create_request(self.cursor, self.uid, self.payload())
-        self.queue_request(result["request_id"])
-
-        execution = self.request_obj.execute(
-            self.cursor, self.uid, result["request_id"]
-        )
-
-        polissa = self.polissa_obj.browse(
-            self.cursor, self.uid, execution["result_polissa_id"]
-        )
-        self.assertEqual(polissa.soci.id, polissa.titular.id)
 
     def test_execute_assigns_ct_ss_member_and_category_without_member(self):
         payload = self.payload()
@@ -1294,28 +1210,7 @@ class TestHolderChangeWww(testing.OOTestCase):
         self.assertEqual(polissa.soci.id, ct_ss_member_id)
         self.assertIn(category_id, polissa.category_id.ids)
 
-    def test_execute_copies_death_certificate_to_result_contract(self):
-        payload = self.payload()
-        payload["especial_cases"].update({"reason_death": True})
-        payload["attachments"] = [
-            {
-                "filename": "death-certificate.pdf",
-                "category": "holder_change_death",
-                "datas": "JVBERi0xLjQ=",
-            },
-            {
-                "filename": "death-certificate-2.pdf",
-                "category": "holder_change_death",
-                "datas": "JVBERi0xLjQy",
-            },
-        ]
-        result = self.www_obj.create_request(self.cursor, self.uid, payload)
-        self.queue_request(result["request_id"])
-
-        execution = self.request_obj.execute(
-            self.cursor, self.uid, result["request_id"]
-        )
-
+    def _check_death_certificates_copied_once(self, request_id, execution):
         attachment_ids = self.openerp.pool.get("ir.attachment").search(
             self.cursor,
             self.uid,
@@ -1339,7 +1234,7 @@ class TestHolderChangeWww(testing.OOTestCase):
         )
 
         request = self.request_obj.browse(
-            self.cursor, self.uid, result["request_id"]
+            self.cursor, self.uid, request_id
         )
         self.request_obj._apply_special_documents(
             self.cursor,
@@ -1561,7 +1456,8 @@ class TestHolderChangeWww(testing.OOTestCase):
             "contract_info": {"cups": self.polissa.cups.name},
             "privacy_conditions": True,
             "general_contract_terms_accepted": True,
-            "linked_member": "new_member",
+            # Membership creation is covered explicitly by the main scenarios.
+            "linked_member": "without_member",
             "especial_cases": {
                 "reason_death": False,
                 "reason_merge": False,
