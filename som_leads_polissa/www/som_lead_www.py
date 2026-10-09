@@ -322,11 +322,7 @@ class SomLeadWww(osv.osv_memory):
         if context is None:
             context = {}
 
-        params = www_vals.get("params") or {}
-        if not isinstance(params, dict):
-            return values
-
-        owner = params.get("owner")
+        owner = www_vals.get("owner")
         if isinstance(owner, (str, type(u""))) and owner.strip():
             user_ids = self.pool.get("res.users").search(
                 cr, uid, [("login", "=", owner.strip())], limit=1, context=context
@@ -334,7 +330,7 @@ class SomLeadWww(osv.osv_memory):
             if user_ids:
                 values["user_id"] = user_ids[0]
 
-        lead_tag = params.get("lead_tag")
+        lead_tag = www_vals.get("lead_tag")
         if isinstance(lead_tag, (str, type(u""))) and lead_tag.strip():
             values["lead_tag"] = lead_tag.strip()
 
