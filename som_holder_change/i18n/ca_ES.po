@@ -1,0 +1,498 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: som_holder_change\n"
+"Language: ca_ES\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: model:ir.actions.act_window,name:som_holder_change.action_holder_change_request
+#: model:ir.ui.menu,name:som_holder_change.menu_holder_change_request
+msgid "Holder changes"
+msgstr "Canvis de titular"
+
+#: model:poweremail.templates,def_subject:som_holder_change.email_signature_process_holder_change
+msgid "Holder change signature request"
+msgstr "Sol·licitud de signatura del canvi de titular"
+
+#: field:som.holder.change.request,mandate_number:0
+msgid "Reserved mandate number"
+msgstr "Número de mandat reservat"
+
+#: code:addons/som_holder_change/www/holder_change_www.py:0
+msgid "The signature process failed."
+msgstr "El procés de signatura ha fallat."
+
+#: code:addons/som_holder_change/models/holder_change_request.py:0
+msgid "Missing sender account"
+msgstr "Falta el compte remitent"
+
+#: code:addons/som_holder_change/models/holder_change_request.py:0
+msgid "The request cannot be prepared in its current state."
+msgstr "No es pot preparar la petició en el seu estat actual."
+
+#: field:som.holder.change.request,creditcard_token:0
+msgid "Card token"
+msgstr "Token de la targeta"
+
+#: code:addons/som_holder_change/www/holder_change_www.py:0
+msgid "The request has not been sent for signing."
+msgstr "No s'ha enviat la petició per signar."
+
+#: view:som.holder.change.request:0
+msgid "Signatura i notificacions"
+msgstr "Signatura i notificacions"
+
+#: constraint:ir.actions.act_window:0
+msgid "Invalid model name in the action definition."
+msgstr "El nom del model a la definició de l'acció no és vàlid."
+
+#: code:addons/som_holder_change/www/holder_change_www.py:0
+msgid "Unknown attachment category: {}."
+msgstr "Categoria de document adjunt desconeguda: {}."
+
+#: field:som.holder.change.request,polissa_id:0
+msgid "Contract"
+msgstr "Contracte"
+
+#: code:addons/som_holder_change/www/holder_change_www.py:0
+msgid "The new holder is inactive."
+msgstr "La nova persona titular està inactiva."
+
+#: code:addons/som_holder_change/www/holder_change_www.py:0
+msgid "The CUPS format is invalid."
+msgstr "El format del CUPS no és vàlid."
+
+#: field:som.holder.change.request,result_polissa_id:0
+msgid "Result contract"
+msgstr "Contracte resultant"
+
+#: selection:som.holder.change.request,state:0
+msgid "Completed"
+msgstr "Completada"
+
+#: code:addons/som_holder_change/www/holder_change_www.py:0
+msgid "There is already an active holder change request for this CUPS."
+msgstr "Ja hi ha una petició de canvi de titular activa per a aquest CUPS."
+
+#: field:som.holder.change.request,error_code:0
+msgid "Error code"
+msgstr "Codi d'error"
+
+#: code:addons/som_holder_change/models/holder_change_request.py:0
+msgid "Missing card fields: {}."
+msgstr "Falten camps de la targeta: {}."
+
+#: selection:som.holder.change.request,state:0
+msgid "Received"
+msgstr "Rebuda"
+
+#: code:addons/som_holder_change/models/holder_change_request.py:0
+msgid "No sender account is configured."
+msgstr "No s'ha configurat cap compte remitent."
+
+#: constraint:ir.ui.view:0
+msgid ""
+"Invalid XML for View Architecture! Check server logs for details (view name, "
+"model, line number and RNG error)."
+msgstr ""
+"L'XML de l'arquitectura de la vista no és vàlid! Consulta els registres del "
+"servidor per veure'n els detalls (nom de la vista, model, número de línia i "
+"error RNG)."
+
+#: code:addons/som_holder_change/models/holder_change_request.py:0
+msgid "The linked member does not exist or is inactive."
+msgstr "La persona sòcia vinculada no existeix o està inactiva."
+
+#: field:som.holder.change.request,creditcard_cof_txnid:0
+msgid "Card COF transaction"
+msgstr "Transacció COF de la targeta"
+
+#: code:addons/som_holder_change/www/holder_change_validation.py:0
+msgid "Missing {} fields: {}."
+msgstr "Falten camps de {}: {}."
+
+#: code:addons/som_holder_change/models/holder_change_request.py:0
+msgid "Invalid payment method"
+msgstr "Mètode de pagament no vàlid"
+
+#: code:addons/som_holder_change/www/holder_change_www.py:0
+msgid "The request does not match this CUPS."
+msgstr "La petició no correspon a aquest CUPS."
+
+#: view:som.holder.change.request:0
+msgid "Pagament i sòcia"
+msgstr "Pagament i sòcia"
+
+#: code:addons/som_holder_change/models/holder_change_request.py:0
+#: code:addons/som_holder_change/www/holder_change_www.py:0
+msgid "Invalid holder change"
+msgstr "Canvi de titular no vàlid"
+
+#: code:addons/som_holder_change/models/holder_change_request.py:0
+msgid "The request is not ready to generate card documents."
+msgstr ""
+"La petició no està preparada per generar els documents de pagament amb "
+"targeta."
+
+#: selection:som.holder.change.request,state:0
+msgid "Awaiting payment"
+msgstr "Pendent de pagament"
+
+#: field:som.holder.change.request,state:0
+msgid "State"
+msgstr "Estat"
+
+#: view:som.holder.change.request:0
+msgid "Petició"
+msgstr "Petició"
+
+#: field:som.holder.change.request,cups:0
+msgid "CUPS"
+msgstr "CUPS"
+
+#: code:addons/som_holder_change/models/holder_change_request.py:0
+msgid "Immutable request"
+msgstr "Petició immutable"
+
+#: code:addons/som_holder_change/models/holder_change_request.py:0
+msgid "Member not found"
+msgstr "No s'ha trobat la persona sòcia"
+
+#: field:som.holder.change.request,contract_number:0
+msgid "Reserved contract number"
+msgstr "Número de contracte reservat"
+
+#: code:addons/som_holder_change/www/holder_change_validation.py:0
+msgid "Voluntary cent must be a boolean."
+msgstr "El cèntim voluntari ha de ser un booleà."
+
+#: field:som.holder.change.request,creditcard_expiry_date:0
+msgid "Card expiry date"
+msgstr "Data de caducitat de la targeta"
+
+#: code:addons/som_holder_change/www/holder_change_validation.py:0
+msgid "The linked member selection is invalid."
+msgstr "La selecció de la persona sòcia vinculada no és vàlida."
+
+#: field:som.holder.change.request,creditcard_masked_number:0
+msgid "Masked card number"
+msgstr "Número de targeta emmascarat"
+
+#: view:som.holder.change.request:0
+msgid "Documents simulats"
+msgstr "Documents simulats"
+
+#: code:addons/som_holder_change/models/holder_change_request.py:0
+msgid "The request state transition is not allowed."
+msgstr "No es permet aquesta transició d'estat de la petició."
+
+#: code:addons/som_holder_change/models/holder_change_request.py:0
+msgid "The IBAN is invalid."
+msgstr "L'IBAN no és vàlid."
+
+#: field:som.holder.change.request,error_message:0
+msgid "Error message"
+msgstr "Missatge d'error"
+
+#: code:addons/som_holder_change/models/holder_change_request.py:0
+msgid "The holder change did not generate exactly one M1 case."
+msgstr "El canvi de titular no ha generat exactament un cas M1."
+
+#: model:poweremail.templates,def_body_text:som_holder_change.email_signature_process_holder_change
+msgid "<p></p>"
+msgstr "<p></p>"
+
+#: code:addons/som_holder_change/www/holder_change_www.py:0
+msgid "Invalid attachment"
+msgstr "Document adjunt no vàlid"
+
+#: field:som.holder.change.request,signature_process_id:0
+msgid "Signature process"
+msgstr "Procés de signatura"
+
+#: code:addons/som_holder_change/models/holder_change_request.py:0
+msgid "Invalid card data"
+msgstr "Dades de targeta no vàlides"
+
+#: code:addons/som_holder_change/models/holder_change_request.py:0
+msgid "The request does not use card payment."
+msgstr "La petició no utilitza el pagament amb targeta."
+
+#: code:addons/som_holder_change/models/holder_change_request.py:0
+msgid "The request must be prepared before receiving card data."
+msgstr "Cal preparar la petició abans de rebre les dades de la targeta."
+
+#: code:addons/som_holder_change/models/holder_change_request.py:0
+msgid "Missing no-cutoff reason"
+msgstr "Falta el motiu de no tall de subministrament"
+
+#: model:ir.model,name:som_holder_change.model_som_holder_change_request
+msgid "Holder change request"
+msgstr "Petició de canvi de titular"
+
+#: code:addons/som_holder_change/www/holder_change_www.py:0
+msgid "Signature required"
+msgstr "Cal la signatura"
+
+#: code:addons/som_holder_change/www/holder_change_www.py:0
+msgid "The signature has not been completed."
+msgstr "No s'ha completat la signatura."
+
+#: code:addons/som_holder_change/www/holder_change_validation.py:0
+msgid "The payload must be an object."
+msgstr "Les dades de la petició han de ser un objecte."
+
+#: code:addons/som_holder_change/www/holder_change_validation.py:0
+msgid "A special attachment requires its corresponding special case."
+msgstr "Un document adjunt especial requereix el cas especial corresponent."
+
+#: code:addons/som_holder_change/www/holder_change_validation.py:0
+msgid "Missing required fields: {}."
+msgstr "Falten camps obligatoris: {}."
+
+#: code:addons/som_holder_change/www/holder_change_validation.py:0
+msgid "Missing holder fields: {}."
+msgstr "Falten camps de la persona titular: {}."
+
+#: code:addons/som_holder_change/www/holder_change_www.py:0
+msgid "The request is not ready for execution."
+msgstr "La petició no està preparada per executar-se."
+
+#: code:addons/som_holder_change/www/holder_change_www.py:0
+msgid "The request is not ready for signing."
+msgstr "La petició no està preparada per signar."
+
+#: selection:som.holder.change.request,owner_change_type:0
+msgid "Transfer"
+msgstr "Traspàs"
+
+#: field:som.holder.change.request,owner_change_type:0
+msgid "Holder change type"
+msgstr "Tipus de canvi de titular"
+
+#: view:som.holder.change.request:0
+msgid "Contracte"
+msgstr "Contracte"
+
+#: code:addons/som_holder_change/models/holder_change_request.py:0
+msgid "Invalid IBAN"
+msgstr "IBAN no vàlid"
+
+#: code:addons/som_holder_change/www/holder_change_validation.py:0
+msgid "Payment type must be remesa or tpv."
+msgstr "El tipus de pagament ha de ser remesa o tpv."
+
+#: field:som.holder.change.request,create_date:0
+msgid "Creation date"
+msgstr "Data de creació"
+
+#: field:som.holder.change.request,payload:0
+msgid "Request payload"
+msgstr "Dades de la petició"
+
+#: code:addons/som_holder_change/www/holder_change_validation.py:0
+msgid "The holder VAT is invalid."
+msgstr "El NIF de la persona titular no és vàlid."
+
+#: field:som.holder.change.request,mandate_pdf:0
+msgid "Simulated mandate"
+msgstr "Mandat simulat"
+
+#: code:addons/som_holder_change/models/holder_change_request.py:0
+msgid "The IBAN country is invalid."
+msgstr "El país de l'IBAN no és vàlid."
+
+#: selection:som.holder.change.request,state:0
+msgid "Awaiting signature"
+msgstr "Pendent de signatura"
+
+#: field:som.holder.change.request,old_owner_notification_sent:0
+msgid "Payer notification sent"
+msgstr "Notificació a la persona pagadora enviada"
+
+#: code:addons/som_holder_change/www/holder_change_validation.py:0
+msgid "Special case reasons must be booleans."
+msgstr "Els motius de cas especial han de ser booleans."
+
+#: code:addons/som_holder_change/www/holder_change_validation.py:0
+msgid "Missing member fields: {}."
+msgstr "Falten camps de la persona sòcia: {}."
+
+#: code:addons/som_holder_change/models/holder_change_request.py:0
+msgid "Missing prepared reports"
+msgstr "Falten els informes preparats"
+
+#: code:addons/som_holder_change/models/holder_change_request.py:0
+msgid "The request identity, payload and prepared reports cannot be modified."
+msgstr ""
+"No es poden modificar la identitat, les dades ni els informes preparats de "
+"la petició."
+
+#: selection:som.holder.change.request,state:0
+msgid "Validation error"
+msgstr "Error de validació"
+
+#: field:som.holder.change.request,contract_pdf:0
+msgid "Simulated contract"
+msgstr "Contracte simulat"
+
+#: code:addons/som_holder_change/www/holder_change_validation.py:0
+msgid "The {} attachment is required."
+msgstr "Cal el document adjunt {}."
+
+#: model:ir.actions.act_window,name:som_holder_change.action_holder_change_request
+#: model:ir.ui.menu,name:som_holder_change.menu_holder_change_request
+#: view:som.holder.change.request:0
+msgid "Canvis de titular"
+msgstr "Canvis de titular"
+
+#: constraint:ir.model:0
+msgid ""
+"The Object name must start with x_ and not contain any special character !"
+msgstr ""
+"El nom de l'objecte ha de començar amb x_ i no pot contenir caràcters "
+"especials!"
+
+#: code:addons/som_holder_change/www/holder_change_validation.py:0
+msgid "SEPA consent is required for bank payment."
+msgstr "Cal el consentiment SEPA per al pagament bancari."
+
+#: field:som.holder.change.request,switching_id:0
+msgid "M1 case"
+msgstr "Cas M1"
+
+#: code:addons/som_holder_change/models/holder_change_request.py:0
+msgid "The masked card number must contain its last four digits."
+msgstr ""
+"El número de targeta emmascarat ha de contenir els quatre últims dígits."
+
+#: code:addons/som_holder_change/models/holder_change_request.py:0
+msgid "Exactly one request is required."
+msgstr "Cal exactament una petició."
+
+#: view:som.holder.change.request:0
+msgid "Execució"
+msgstr "Execució"
+
+#: code:addons/som_holder_change/www/holder_change_validation.py:0
+msgid "Card payment authorization is required."
+msgstr "Cal l'autorització de pagament amb targeta."
+
+#: field:som.holder.change.request,new_member_partner_id:0
+msgid "New member"
+msgstr "Nova persona sòcia"
+
+#: code:addons/som_holder_change/www/holder_change_www.py:0
+msgid "Signature error"
+msgstr "Error de signatura"
+
+#: code:addons/som_holder_change/models/holder_change_request.py:0
+msgid "The request has not been signed."
+msgstr "No s'ha signat la petició."
+
+#: code:addons/som_holder_change/models/holder_change_request.py:0
+msgid "The indispensable supply no-cutoff reason is required."
+msgstr "Cal el motiu de no tall de subministrament indispensable."
+
+#: field:som.holder.change.request,owner_notification_sent:0
+msgid "Owner notification sent"
+msgstr "Notificació a la persona titular enviada"
+
+#: code:addons/som_holder_change/models/holder_change_request.py:0
+#: code:addons/som_holder_change/www/holder_change_www.py:0
+msgid "Invalid request state"
+msgstr "Estat de petició no vàlid"
+
+#: code:addons/som_holder_change/www/holder_change_validation.py:0
+msgid "Privacy and contractual consent are required."
+msgstr "Cal el consentiment de privacitat i contractual."
+
+#: model:ir.model,name:som_holder_change.model_som_holder_change_www
+msgid "Holder change web facade"
+msgstr "Façana web de canvi de titular"
+
+#: code:addons/som_holder_change/models/holder_change_request.py:0
+msgid "M1 generation failed"
+msgstr "La generació de l'M1 ha fallat"
+
+#: code:addons/som_holder_change/www/holder_change_www.py:0
+msgid "The contract has an open ATR case."
+msgstr "El contracte té un cas ATR obert."
+
+#: view:som.holder.change.request:0
+msgid "Canvi de titular"
+msgstr "Canvi de titular"
+
+#: code:addons/som_holder_change/models/holder_change_request.py:0
+msgid "Card data cannot be changed for this request."
+msgstr "No es poden canviar les dades de targeta d'aquesta petició."
+
+#: model:ir.module.module,description:som_holder_change.module_meta_information
+msgid ""
+"\n"
+"    Holder change request management for existing contracts.\n"
+"    "
+msgstr ""
+"\n"
+"    Gestió de peticions de canvi de titular de contractes existents.\n"
+"    "
+
+#: model:poweremail.templates,def_subject:som_holder_change.email_signature_process_holder_change
+msgid "Sol·licitud de signatura del canvi de titular"
+msgstr "Sol·licitud de signatura del canvi de titular"
+
+#: field:som.holder.change.request,report_snapshot:0
+msgid "Prepared card reports"
+msgstr "Informes de targeta preparats"
+
+#: code:addons/som_holder_change/www/holder_change_www.py:0
+msgid "The contract is not available."
+msgstr "El contracte no està disponible."
+
+#: code:addons/som_holder_change/models/holder_change_request.py:0
+msgid "Card data rejected"
+msgstr "Dades de targeta rebutjades"
+
+#: field:som.holder.change.request,last_attempt_at:0
+msgid "Last attempt"
+msgstr "Últim intent"
+
+#: selection:som.holder.change.request,state:0
+msgid "Execution error"
+msgstr "Error d'execució"
+
+#: selection:som.holder.change.request,owner_change_type:0
+msgid "Subrogation"
+msgstr "Subrogació"
+
+#: selection:som.holder.change.request,state:0
+msgid "Queued"
+msgstr "En cua"
+
+#: field:som.holder.change.request,attempt_count:0
+msgid "Execution attempts"
+msgstr "Intents d'execució"
+
+#: code:addons/som_holder_change/www/holder_change_validation.py:0
+msgid "The attachment category does not match the special case."
+msgstr "La categoria del document adjunt no correspon al cas especial."
+
+#: code:addons/som_holder_change/www/holder_change_validation.py:0
+msgid "Only one special case reason can be selected."
+msgstr "Només es pot seleccionar un motiu de cas especial."
+
+#: field:som.holder.change.request,member_notification_sent:0
+msgid "Member notification sent"
+msgstr "Notificació a la persona sòcia enviada"
+
+#: model:ir.module.module,shortdesc:som_holder_change.module_meta_information
+msgid "Som Energia Holder Change"
+msgstr "Canvi de titular de Som Energia"
+
+#: code:addons/som_holder_change/www/holder_change_www.py:0
+msgid "Timed out waiting for the signature URL."
+msgstr "S'ha exhaurit el temps d'espera de l'URL de signatura."
+
+#: code:addons/som_holder_change/www/holder_change_www.py:0
+msgid "The new holder must differ from the current holder."
+msgstr "La nova persona titular ha de ser diferent de l'actual."
