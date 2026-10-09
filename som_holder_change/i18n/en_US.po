@@ -252,6 +252,10 @@ msgid "Missing holder fields: {}."
 msgstr "Missing holder fields: {}."
 
 #: code:addons/som_holder_change/www/holder_change_www.py:0
+msgid "The request is not ready for execution."
+msgstr "The request is not ready for execution."
+
+#: code:addons/som_holder_change/www/holder_change_www.py:0
 msgid "The request is not ready for signing."
 msgstr "The request is not ready for signing."
 

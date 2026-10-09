@@ -223,6 +223,10 @@ msgid "Holder change request"
 msgstr ""
 
 #: code:addons/som_holder_change/www/holder_change_www.py:0
+msgid "The request is not ready for execution."
+msgstr ""
+
+#: code:addons/som_holder_change/www/holder_change_www.py:0
 msgid "Signature required"
 msgstr ""
 

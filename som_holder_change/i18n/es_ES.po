@@ -256,6 +256,10 @@ msgid "Missing holder fields: {}."
 msgstr "Faltan campos de la persona titular: {}."
 
 #: code:addons/som_holder_change/www/holder_change_www.py:0
+msgid "The request is not ready for execution."
+msgstr "La petición no está preparada para ejecutarse."
+
+#: code:addons/som_holder_change/www/holder_change_www.py:0
 msgid "The request is not ready for signing."
 msgstr "La petición no está preparada para firmar."
 
