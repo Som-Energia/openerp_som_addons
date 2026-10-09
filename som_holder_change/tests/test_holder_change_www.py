@@ -782,6 +782,38 @@ class TestHolderChangeWww(testing.OOTestCase):
             "queued",
         )
 
+    def test_execute_request_restores_signature_state_when_enqueue_fails(self):
+        payload = self.payload()
+        result = self.www_obj.create_request(self.cursor, self.uid, payload)
+        process_obj = self.openerp.pool.get("giscedata.signatura.process")
+        process_id = process_obj.create(
+            self.cursor, self.uid,
+            {"template_id": self.imd_obj.get_object_reference(
+                self.cursor, self.uid, "som_holder_change",
+                "email_signature_process_holder_change",
+            )[1], "template_res_id": result["request_id"], "delivery_type": "url"},
+        )
+        self.request_obj.write(
+            self.cursor, self.uid, [result["request_id"]],
+            {"signature_process_id": process_id},
+        )
+
+        with mock.patch.object(
+            self.www_obj, "execute_request_async",
+            side_effect=Exception("Queue unavailable"),
+        ):
+            with self.assertRaises(Exception):
+                self.www_obj.execute_request(
+                    self.cursor, self.uid, result["request_id"],
+                    payload["contract_info"]["cups"],
+                )
+
+        request = self.request_obj.read(
+            self.cursor, self.uid, result["request_id"], ["state", "error_code"]
+        )
+        self.assertEqual(request["state"], "awaiting_signature")
+        self.assertEqual(request["error_code"], "QUEUE_ERROR")
+
     def test_signature_retry_waits_until_process_completes(self):
         request = mock.Mock(signature_process_id=mock.Mock(id=42))
         db = mock.Mock()

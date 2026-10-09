@@ -225,8 +225,37 @@ class SomHolderChangeWww(osv.osv_memory):
             context=context,
         )
         cursor.commit()
-        self.execute_request_async(cursor, uid, request_id, context=context)
+        try:
+            self.execute_request_async(cursor, uid, request_id, context=context)
+        except Exception as error:
+            self._restore_request_after_enqueue_failure(
+                cursor, uid, request_id, error, context=context
+            )
+            raise
         return {"success": True, "request_id": request_id, "state": "queued"}
+
+    def _restore_request_after_enqueue_failure(
+        self, cursor, uid, request_id, error, context=None
+    ):
+        request_obj = self.pool.get("som.holder.change.request")
+        with pooler.get_db(cursor.dbname).cursor() as recovery_cursor:
+            recovery_cursor.execute(
+                "SELECT id FROM som_holder_change_request WHERE id = %s FOR UPDATE",
+                (request_id,),
+            )
+            request = request_obj.browse(
+                recovery_cursor, uid, request_id, context=context
+            )
+            # A job may have started despite an enqueue-side error. Never undo
+            # a state transition that the worker has already advanced.
+            if request.state == "queued":
+                request_obj.write(
+                    recovery_cursor, uid, [request_id],
+                    {"state": "awaiting_signature", "error_code": "QUEUE_ERROR",
+                     "error_message": str(error)},
+                    context=context,
+                )
+                recovery_cursor.commit()
 
     def _signature_allows_execution(self, cursor, uid, request_id, context=None):
         if context is None:
