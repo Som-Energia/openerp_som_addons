@@ -496,7 +496,10 @@ class TestCardPaymentInPolissa(testing.OOTestCaseWithCursor):
             self.polissa_obj, "check_modifiable_polissa"
         ) as check_modifiable:
             result = self.polissa_obj.convert_to_recurring_card(
-                self.cursor, self.uid, self.polissa_id, card_data
+                self.cursor,
+                self.uid,
+                self.polissa_id,
+                self._card_data_for_conversion(card_data),
             )
 
         self.assertEqual(result["status"], "complete")
@@ -505,7 +508,7 @@ class TestCardPaymentInPolissa(testing.OOTestCaseWithCursor):
             self.uid,
             self.polissa_id,
             skip_atr_check=True,
-            context=None,
+            context={},
         )
 
     def test_convert_to_recurring_card_creates_today_modification(self):
