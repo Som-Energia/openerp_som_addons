@@ -271,7 +271,47 @@ class GiscedataCrmLead(osv.OsvInherits):
             cursor, uid, crml_id, mandatory_fields, other_fields, context
         )
 
+    def _get_or_create_campaign_category(
+        self, cursor, uid, model_name, root_xml_id, lead_tag, context=None
+    ):
+        if context is None:
+            context = {}
+
+        ir_model_o = self.pool.get("ir.model.data")
+        category_o = self.pool.get(model_name)
+        root_id = ir_model_o.get_object_reference(
+            cursor, uid, "som_leads_polissa", root_xml_id
+        )[1]
+
+        table_name = model_name.replace(".", "_")
+        cursor.execute(
+            "SELECT id FROM {} WHERE id = %s FOR UPDATE".format(table_name),
+            (root_id,),
+        )
+
+        category_context = context.copy()
+        category_context["active_test"] = False
+        category_ids = category_o.search(
+            cursor,
+            uid,
+            [("name", "=", lead_tag), ("parent_id", "=", root_id)],
+            limit=1,
+            context=category_context,
+        )
+        if category_ids:
+            return category_ids[0]
+
+        return category_o.create(
+            cursor,
+            uid,
+            {"name": lead_tag, "parent_id": root_id},
+            context=context,
+        )
+
     def create_entity_polissa(self, cursor, uid, crml_id, context=None):
+        if context is None:
+            context = {}
+
         res = super(GiscedataCrmLead, self).create_entity_polissa(
             cursor, uid, crml_id, context=context
         )
@@ -304,6 +344,17 @@ class GiscedataCrmLead(osv.OsvInherits):
                 break
 
         polissa_o = self.pool.get("giscedata.polissa")
+        if lead.lead_tag:
+            category_id = self._get_or_create_campaign_category(
+                cursor,
+                uid,
+                "giscedata.polissa.category",
+                "giscedata_polissa_category_campaigns",
+                lead.lead_tag,
+                context=context,
+            )
+            values["category_id"] = [(4, category_id)]
+
         polissa = polissa_o.browse(cursor, uid, polissa_id, context=context)
         if polissa.mode_facturacio != 'atr':
             values['mode_facturacio_generacio'] = polissa.mode_facturacio
@@ -496,6 +547,23 @@ class GiscedataCrmLead(osv.OsvInherits):
 
         partner_id = super(GiscedataCrmLead, self).create_partner(
             cursor, uid, create_vals, crml_id, context=context)
+
+        if lead.lead_tag:
+            category_id = self._get_or_create_campaign_category(
+                cursor,
+                uid,
+                "res.partner.category",
+                "res_partner_category_campaigns",
+                lead.lead_tag,
+                context=context,
+            )
+            self.pool.get("res.partner").write(
+                cursor,
+                uid,
+                partner_id,
+                {"category_id": [(4, category_id)]},
+                context=context,
+            )
 
         return partner_id
 
@@ -706,6 +774,7 @@ class GiscedataCrmLead(osv.OsvInherits):
         "comercial_info_accepted": fields.boolean("Accepta informació comercial (SomServeis)"),
         "crm_lead_id": fields.integer("ID del lead al CRM"),
         "is_new_contact": fields.boolean("És una persona nova per la cooperativa"),
+        "lead_tag": fields.char("Campanya", size=64),
         "titular_phone_prefix": fields.many2one(
             'res.phone.national.code', "Prefix", required=False),
         "titular_mobile_prefix": fields.many2one(
