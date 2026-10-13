@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
+from __future__ import absolute_import
 from destral import testing
 from destral.transaction import Transaction
 import mock
 from datetime import datetime, timedelta
 from .. import wizard
-from giscedata_polissa import giscedata_cups
 
 
 class TestRefundRectifyFromOrigin(testing.OOTestCase):
@@ -16,6 +16,24 @@ class TestRefundRectifyFromOrigin(testing.OOTestCase):
 
     def tearDown(self):
         self.txn.stop()
+
+    def prepare_contract_history(self, invoice):
+        """Make the invoice's contract the latest eligible one for its CUPS."""
+        cups_id = invoice["cups_id"][0]
+        polissa_id = invoice["polissa_id"][0]
+        activation_date = (
+            datetime.strptime(invoice["data_inici"], "%Y-%m-%d") + timedelta(days=1)
+        ).strftime("%Y-%m-%d")
+        # Prepare only the history used by the lookup. Direct SQL avoids firing
+        # unrelated stored-field computations; the test transaction rolls it back.
+        self.cursor.execute(
+            "UPDATE giscedata_polissa SET data_alta = NULL WHERE cups = %s AND id != %s",
+            (cups_id, polissa_id),
+        )
+        self.cursor.execute(
+            "UPDATE giscedata_polissa SET cups = %s, data_alta = %s WHERE id = %s",
+            (cups_id, activation_date, polissa_id),
+        )
 
     def test_refund_rectify_by_origin_notEmailTemplates(self):
         cursor = self.cursor
@@ -116,10 +134,7 @@ class TestRefundRectifyFromOrigin(testing.OOTestCase):
             "warning -- Error\n\nPer remesar les factures a pagar cal una ordre de pagament",
         )
 
-    @mock.patch.object(
-        giscedata_cups.GiscedataCupsPs, "find_most_recent_polissa",
-    )
-    def test_refund_rectify_by_origin_nothingToRefundOneDraft(self, mock_most_recent_polissa):
+    def test_refund_rectify_by_origin_nothingToRefundOneDraft(self):
         cursor = self.cursor
         uid = self.uid
 
@@ -140,8 +155,7 @@ class TestRefundRectifyFromOrigin(testing.OOTestCase):
             fact_prov_id,
             ["origin", "polissa_id", "data_inici", "data_final", "cups_id"],
         )
-        mock_most_recent_polissa.return_value = {
-            fact_info["cups_id"][0]: fact_info["polissa_id"][0]}
+        self.prepare_contract_history(fact_info)
         f1_obj.write(
             cursor,
             uid,
@@ -153,6 +167,9 @@ class TestRefundRectifyFromOrigin(testing.OOTestCase):
                 "fecha_factura_hasta": fact_info["data_final"],
                 "type_factura": 'R',
             },
+        )
+        self.assertEqual(
+            f1_obj.browse(cursor, uid, f1_id).polissa_id.id, fact_info["polissa_id"][0]
         )
         f_cli_ids = fact_obj.search(
             cursor,
@@ -179,9 +196,6 @@ class TestRefundRectifyFromOrigin(testing.OOTestCase):
         )
 
     @mock.patch.object(
-        giscedata_cups.GiscedataCupsPs, "find_most_recent_polissa",
-    )
-    @mock.patch.object(
         wizard.wizard_refund_rectify_from_origin.WizardRefundRectifyFromOrigin,
         "refund_rectify_if_needed",
     )
@@ -194,7 +208,7 @@ class TestRefundRectifyFromOrigin(testing.OOTestCase):
         "recarregar_lectures_between_dates",
     )
     def test_refund_rectify_by_origin_refundOne(
-            self, mock_lectures, mock_delete, mock_refund, mock_most_recent_polissa):
+            self, mock_lectures, mock_delete, mock_refund):
         cursor = self.cursor
         uid = self.uid
 
@@ -215,8 +229,7 @@ class TestRefundRectifyFromOrigin(testing.OOTestCase):
             fact_prov_id,
             ["origin", "polissa_id", "data_inici", "data_final", "cups_id"],
         )
-        mock_most_recent_polissa.return_value = {
-            fact_info["cups_id"][0]: fact_info["polissa_id"][0]}
+        self.prepare_contract_history(fact_info)
         f1_obj.write(
             cursor,
             uid,
@@ -230,6 +243,9 @@ class TestRefundRectifyFromOrigin(testing.OOTestCase):
             },
         )
 
+        self.assertEqual(
+            f1_obj.browse(cursor, uid, f1_id).polissa_id.id, fact_info["polissa_id"][0]
+        )
         f_cli_ids = fact_obj.search(
             cursor,
             uid,
@@ -282,10 +298,7 @@ class TestRefundRectifyFromOrigin(testing.OOTestCase):
         wizard.wizard_refund_rectify_from_origin.WizardRefundRectifyFromOrigin,
         "recarregar_lectures_between_dates",
     )
-    @mock.patch.object(
-        giscedata_cups.GiscedataCupsPs, "find_most_recent_polissa",
-    )
-    def test_refund_rectify_by_origin_noLectures(self, mock_most_recent_polissa, mock_lectures):
+    def test_refund_rectify_by_origin_noLectures(self, mock_lectures):
         cursor = self.cursor
         uid = self.uid
         fact_obj = self.pool.get("giscedata.facturacio.factura")
@@ -307,8 +320,7 @@ class TestRefundRectifyFromOrigin(testing.OOTestCase):
             fact_prov_id,
             ["origin", "polissa_id", "data_inici", "data_final", "cups_id"],
         )
-        mock_most_recent_polissa.return_value = {
-            fact_info["cups_id"][0]: fact_info["polissa_id"][0]}
+        self.prepare_contract_history(fact_info)
         f1_obj.write(
             cursor,
             uid,
@@ -320,6 +332,9 @@ class TestRefundRectifyFromOrigin(testing.OOTestCase):
                 "fecha_factura_hasta": fact_info["data_final"],
                 "type_factura": 'R',
             },
+        )
+        self.assertEqual(
+            f1_obj.browse(cursor, uid, f1_id).polissa_id.id, fact_info["polissa_id"][0]
         )
         f_cli_ids = fact_obj.search(
             cursor,
