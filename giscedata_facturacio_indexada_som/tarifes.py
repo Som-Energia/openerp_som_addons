@@ -150,23 +150,35 @@ class TarifaPoolSOM(TarifaPool):
     def get_component_with_fallback(self, component, data_inici, data_final, day, fallback=False):
 
         try:
-            component_class = self.get_component_class(component.title())
+            perdues = 'perdqh' in component.lower()
+            pmdiario = 'prmdiari' in component.lower()
             start_date = datetime.strptime(data_inici, '%Y-%m-%d')
-            component = component.lower()
-            postfix = ('%s_%s' % (data_inici, data_final)).replace('-', '')
-            if component == 'prmdiari' and (start_date.year > 2025 or (start_date.year == 2025 and start_date.month >= 10)):
-                component_inst = Pmdiario('C2_pmdiario_%(postfix)s' %
-                                          locals(), self.conf['esios_token'])
+            if perdues:
+                component_class = self.perdclassqh
+                component = component_class.name
+            elif pmdiario and (
+                    start_date.year > 2025 or (start_date.year == 2025 and start_date.month >= 10)):
+                component_class = Pmdiario
+                component = component_class.name
             else:
-                component_inst = component_class(
-                    'C2_%(component)s_%(postfix)s' % locals(), self.conf['esios_token'])
-            if component == 'prmdiari' and fallback and day:
+                component_class = self.get_component_class(component.title())
+
+            postfix = ('%s_%s' % (data_inici, data_final)).replace('-', '')
+            component_inst = component_class('C2_%(component)s_%(postfix)s' % locals(),
+                                             self.conf['esios_token'])
+
+            if pmdiario and fallback and day:
                 if sum(component_inst.matrix[int(datetime.strptime(day, '%Y-%m-%d').day) - 1]) == 0:
                     raise REECoeficientsNotFound('Prmdiari for day %(day)s not found' % locals())
+
         except REECoeficientsNotFound as e:
             if fallback:
-                if component == 'prmdiari':
+                if pmdiario:
                     component_inst = self.get_alter_prmdiari(day)
+                elif perdues:
+                    component_inst = self.perdclassqh('C2_%(component)s_%(postfix)s' % locals(),
+                                                      self.conf['esios_token'],
+                                                      ignore_cache_timeout=fallback)
                 else:
                     component_inst = Component(datetime.strptime(data_inici, "%Y-%m-%d"))
             else:
@@ -520,7 +532,8 @@ class TarifaPoolSOM(TarifaPool):
             perdues = self.perdclass('C2_%(fname)s_%(postfix)s' % locals(), esios_token)  # [%]
         else:
             fname = self.perdclassqh.name
-            perdues = self.perdclassqh('C2_%(fname)s_%(postfix)s' % locals(), esios_token)  # [%]
+            perdues = self.get_component_with_fallback(fname, start_date_str, end_date_str, day,
+                                                       fallback=preu_dema)  # [%]
 
         # Prdemcad
         prdemcad = self.get_component_with_fallback(
