@@ -448,14 +448,30 @@ class TestRefundRectifyBatchLineProcessOneF1(testing.OOTestCaseWithCursor):
         f1_id, fact_info = self._prepare_rectifying_f1()
         polissa_id = fact_info["polissa_id"][0]
         with self._patch_most_recent_polissa(fact_info):
+            with self.assertRaises(osv.except_osv) as raised:
+                self.line_obj.process_one_f1(
+                    self.cursor, self.uid, f1_id,
+                    expected_polissa_id=polissa_id + 1, context={},
+                )
+        self.assertFalse(isinstance(
+            raised.exception, refund_rectify_batch.RecoverableF1Error
+        ))
+
+    def test_missing_f1_and_unresolved_policy_are_explicit_functional_errors(self):
+        f1_obj = mock.Mock()
+        f1_obj.search.return_value = []
+        f1_obj.browse.return_value.polissa_id = False
+        with mock.patch.object(self.pool, "get", return_value=f1_obj):
             self.assertRaises(
-                osv.except_osv,
+                refund_rectify_batch.RecoverableF1Error,
                 self.line_obj.process_one_f1,
-                self.cursor,
-                self.uid,
-                f1_id,
-                expected_polissa_id=polissa_id + 1,
-                context={},
+                self.cursor, self.uid, 9, context={},
+            )
+            f1_obj.search.return_value = [9]
+            self.assertRaises(
+                refund_rectify_batch.RecoverableF1Error,
+                self.line_obj.process_one_f1,
+                self.cursor, self.uid, 9, context={},
             )
 
     @mock.patch.object(refund_rectify_batch.RefundRectifyBatchLine, "_refund_rectify_if_needed")
@@ -598,7 +614,7 @@ class TestRefundRectifyBatchLineReadingAnchors(testing.OOTestCaseWithCursor):
         meter_obj.browse.return_value = [meter_a, duplicate_meter_a]
         with mock.patch.object(self.pool, "get", return_value=meter_obj):
             self.assertRaises(
-                osv.except_osv,
+                refund_rectify_batch.RecoverableF1Error,
                 self.line_obj._get_f1_meter_ids,
                 self.cursor,
                 self.uid,
@@ -608,7 +624,7 @@ class TestRefundRectifyBatchLineReadingAnchors(testing.OOTestCaseWithCursor):
 
     def test_rejects_f1_without_meter_serials(self):
         self.assertRaises(
-            osv.except_osv,
+            refund_rectify_batch.RecoverableF1Error,
             self.line_obj._get_f1_meter_ids,
             self.cursor,
             self.uid,
@@ -1003,6 +1019,67 @@ class TestRefundRectifyBatchExecutionPersistence(testing.OOTestCaseWithCursor):
         self.assertEqual(write.call_args[0][3]["state"], "running")
 
 
+class TestRefundRectifyRanasErrors(testing.OOTestCaseWithCursor):
+    def setUp(self):
+        super(TestRefundRectifyRanasErrors, self).setUp()
+        self.pool = self.openerp.pool
+        self.line_obj = self.pool.get("refund.rectify.batch.line")
+
+    def test_ranas_success_reads_errors_and_returns_generated_ids(self):
+        wizard = mock.Mock()
+        wizard.create.return_value = 17
+        wizard.action_rectificar.return_value = [31, 32]
+        wizard.read.return_value = [{"errors": ""}]
+        with mock.patch.object(self.pool, "get", return_value=wizard):
+            result = self.line_obj._refund_rectify_if_needed(
+                self.cursor, self.uid, [11, 12], context={}
+            )
+        self.assertEqual(result, [31, 32])
+        wizard.read.assert_called_once_with(
+            self.cursor, self.uid, [17], ["errors"],
+            context={"active_ids": [11, 12], "active_id": 11},
+        )
+
+    def test_unstructured_ranas_errors_are_technical_even_with_partial_results(self):
+        errors = [
+            u"Error desconegut",
+            u"Ja hi ha un procés en marxa per a 1 o més factures de les seleccionades",
+            u"* La factura F-11 genera dues factures rectificadores i no es correcte. "
+            u"No s'ha generat cap factura per aquesta, s'ha d'anular i fer factura manual",
+        ]
+        wizard = mock.Mock()
+        wizard.create.return_value = 17
+        wizard.action_rectificar.return_value = [31]
+        for message in errors:
+            wizard.read.return_value = [{"errors": message}]
+            with mock.patch.object(self.pool, "get", return_value=wizard):
+                with self.assertRaises(RuntimeError) as raised:
+                    self.line_obj._refund_rectify_if_needed(
+                        self.cursor, self.uid, [11, 12], context={}
+                    )
+            detail = str(raised.exception)
+            if not isinstance(detail, type(u"")):
+                detail = detail.decode("utf-8")
+            self.assertTrue(message in detail)
+            self.assertFalse(isinstance(
+                raised.exception, refund_rectify_batch.RecoverableF1Error
+            ))
+
+    def test_ranas_raised_lock_warning_is_not_reclassified(self):
+        wizard = mock.Mock()
+        original = osv.except_osv("Warning!", u"Ja hi ha un procés en marxa")
+        wizard.action_rectificar.side_effect = original
+        with mock.patch.object(self.pool, "get", return_value=wizard):
+            with self.assertRaises(osv.except_osv) as raised:
+                self.line_obj._refund_rectify_if_needed(
+                    self.cursor, self.uid, [11], context={}
+                )
+        self.assertIs(raised.exception, original)
+        self.assertFalse(isinstance(
+            raised.exception, refund_rectify_batch.RecoverableF1Error
+        ))
+
+
 class TestRefundRectifyBatchPerLineTransactions(testing.OOTestCaseWithCursor):
     def setUp(self):
         super(TestRefundRectifyBatchPerLineTransactions, self).setUp()
@@ -1022,7 +1099,8 @@ class TestRefundRectifyBatchPerLineTransactions(testing.OOTestCaseWithCursor):
         line.f1_id.id = f1_id
         return line
 
-    def test_failure_persists_with_new_cursor_blocks_later_lines_and_returns(self):
+    def _assert_failure_transaction_lifecycle(
+            self, error, functional=False, process=None, persistence_error=None):
         outer_cursor = mock.Mock()
         outer_cursor.dbname = "test_batch"
         start_cursor = mock.Mock()
@@ -1038,40 +1116,134 @@ class TestRefundRectifyBatchPerLineTransactions(testing.OOTestCaseWithCursor):
         failing_line = self._line(1, 1, 11)
         line_obj = mock.Mock()
         line_obj.search.side_effect = [[1], [2, 3]]
-        line_obj.browse.return_value = [failing_line]
+        line_obj.browse.return_value = [failing_line, self._line(2, 2, 12)]
         line_obj._mark_line_running.return_value = True
-        line_obj.process_one_f1.side_effect = ValueError("F1 broken")
+        line_obj.process_one_f1.side_effect = process or error
+        line_obj._persist_line_outcome.side_effect = persistence_error
+        events = mock.Mock()
+        events.attach_mock(failed_cursor, "business")
+        events.attach_mock(persistence_cursor, "persistence")
+        events.attach_mock(line_obj._persist_line_outcome, "save_failure")
+        context = {"refund_rectify_debug_sync": True}
         with mock.patch.object(refund_rectify_batch.pooler, "get_db", return_value=database):
             with mock.patch.object(self.pool, "get", return_value=line_obj):
                 with mock.patch.object(self.batch_obj, "browse", return_value=self._batch()):
                     with mock.patch.object(self.batch_obj, "write"):
                         with mock.patch.object(self.batch_obj, "_refresh_execution") as refresh:
-                            results = self.batch_obj.process_batch_f1_lines(
-                                outer_cursor, self.uid, 3, context={}
-                            )
+                            if functional and not persistence_error:
+                                results = self.batch_obj.process_batch_f1_lines(
+                                    outer_cursor, self.uid, 3, context=context
+                                )
+                                self.assertEqual(results, [])
+                            else:
+                                with self.assertRaises(Exception) as raised:
+                                    self.batch_obj.process_batch_f1_lines(
+                                        outer_cursor, self.uid, 3, context=context
+                                    )
+                                expected = persistence_error or error
+                                if expected is not None:
+                                    self.assertIs(raised.exception, expected)
+                                else:
+                                    self.assertIsInstance(raised.exception, RuntimeError)
+                                # These must already have happened when RQ receives the error.
+                                persistence_cursor.close.assert_called_once_with()
+                                if not persistence_error:
+                                    persistence_cursor.commit.assert_called_once_with()
 
-        self.assertEqual(results, [])
+        start_cursor.commit.assert_called_once_with()
+        start_cursor.close.assert_called_once_with()
         claim_cursor.commit.assert_called_once_with()
         claim_cursor.close.assert_called_once_with()
         failed_cursor.rollback.assert_called_once_with()
+        self.assertFalse(failed_cursor.commit.called)
         failed_cursor.close.assert_called_once_with()
-        persistence_cursor.commit.assert_called_once_with()
         persistence_cursor.close.assert_called_once_with()
         line_obj._mark_line_running.assert_called_once_with(
-            claim_cursor, self.uid, 1, started_at=mock.ANY, context={}
+            claim_cursor, self.uid, 1, started_at=mock.ANY, context=context
         )
         started_at = line_obj._mark_line_running.call_args[1]["started_at"]
         line_obj._persist_line_outcome.assert_called_once_with(
             persistence_cursor, self.uid, 1, error=mock.ANY,
-            started_at=started_at, context={}
+            started_at=started_at, context=context
         )
+        calls = events.mock_calls
+        self.assertTrue(calls.index(mock.call.business.rollback()) < calls.index(
+            mock.call.save_failure(
+                persistence_cursor, self.uid, 1, error=mock.ANY,
+                started_at=started_at, context=context,
+            )
+        ))
+        self.assertEqual(line_obj.process_one_f1.call_count, 1)
+        line_obj.process_one_f1.assert_called_once_with(
+            failed_cursor, self.uid, 11, expected_polissa_id=7,
+            previous_f1_id=None, predecessor_processed=False, context=context,
+        )
+        self.assertEqual(outer_cursor.method_calls, [])
+        if persistence_error:
+            self.assertFalse(persistence_cursor.commit.called)
+            self.assertFalse(line_obj.write.called)
+            return
+        persistence_cursor.commit.assert_called_once_with()
+        self.assertTrue(calls.index(mock.call.persistence.commit()) < calls.index(
+            mock.call.persistence.close()
+        ))
         self.assertEqual(
             line_obj.write.call_args[0][2], [2, 3]
         )
         self.assertEqual(line_obj.write.call_args[0][3]["state"], "blocked")
         self.assertTrue("F1 11" in line_obj.write.call_args[0][3]["result"])
-        refresh.assert_called_once_with(persistence_cursor, self.uid, 3, context={})
-        self.assertEqual(line_obj.process_one_f1.call_count, 1)
+        refresh.assert_called_once_with(persistence_cursor, self.uid, 3, context=context)
+
+    def test_explicit_functional_failure_blocks_and_returns(self):
+        self._assert_failure_transaction_lifecycle(
+            refund_rectify_batch.RecoverableF1Error("Error", "L'F1 no té comptadors"),
+            functional=True,
+        )
+
+    def test_unexpected_exception_persists_and_propagates_original(self):
+        self._assert_failure_transaction_lifecycle(ValueError("F1 broken"))
+
+    def test_unclassified_osv_exception_remains_technical(self):
+        self._assert_failure_transaction_lifecycle(
+            osv.except_osv("Error", "L'F1 no té comptadors")
+        )
+
+    def test_failure_persistence_error_is_not_swallowed(self):
+        self._assert_failure_transaction_lifecycle(
+            refund_rectify_batch.RecoverableF1Error("Error", "Sense comptador"),
+            functional=True, persistence_error=RuntimeError("Persistence unavailable"),
+        )
+
+    def test_ranas_partial_results_are_rolled_back_before_error_persistence(self):
+        real_line_obj = self.pool.get("refund.rectify.batch.line")
+        for functional in [False, True]:
+            partial_work = []
+            wizard = mock.Mock()
+            wizard.create.return_value = 17
+            wizard.read.return_value = [{"errors": "Error desconegut"}]
+            error = refund_rectify_batch.RecoverableF1Error("Error", "Sense comptador")
+
+            def action(*args, **kwargs):
+                partial_work.append(31)
+                if functional:
+                    raise error
+                return [31]
+
+            wizard.action_rectificar.side_effect = action
+
+            def process(cursor, *args, **kwargs):
+                def rollback():
+                    del partial_work[:]
+                cursor.rollback.side_effect = rollback
+                with mock.patch.object(self.pool, "get", return_value=wizard):
+                    return real_line_obj._refund_rectify_if_needed(
+                        cursor, self.uid, [11, 12], context={}
+                    )
+
+            self._assert_failure_transaction_lifecycle(
+                error if functional else None, functional=functional, process=process,
+            )
+            self.assertEqual(partial_work, [])
 
     def test_processes_only_pending_lines(self):
         outer_cursor = mock.Mock()

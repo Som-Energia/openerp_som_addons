@@ -38,6 +38,14 @@ ACTIVE_REFUND_RECTIFY_BATCH_STATES = ["pending", "running", "blocked"]
 TERMINAL_REFUND_RECTIFY_BATCH_STATES = ["done", "failed", "blocked", "cancelled"]
 
 
+class RecoverableF1Error(osv.except_osv):
+    """Explicitly known F1 data preconditions, compatible with the legacy UI.
+
+    Only raise at a known functional validation site. Other except_osv errors
+    (including RANAS lock warnings) remain technical failures.
+    """
+
+
 def _csv_value(value):
     if isinstance(value, type(u"")):
         return value.encode("utf-8")
@@ -515,7 +523,10 @@ class RefundRectifyBatch(osv.osv):
                     )
                 finally:
                     persistence_cursor.close()
-                return results
+                if isinstance(error, RecoverableF1Error):
+                    return results
+                # Preserve the original exception and traceback for OORQ/RQ.
+                raise
             finally:
                 f1_cursor.close()
             results.append(result)
@@ -645,7 +656,7 @@ class RefundRectifyBatchLine(osv.osv):
 
     def _persist_line_outcome(
             self, cursor, uid, line_id, result=None, error=None, started_at=None, context=None):
-        """Save a functional outcome or a technical failure for one batch line."""
+        """Save a functional outcome or a failure for one batch line."""
         result = result or {}
         vals = {
             "state": "failed" if error else "done",
@@ -699,7 +710,7 @@ class RefundRectifyBatchLine(osv.osv):
             if lectura.comptador
         ]))
         if not serials:
-            raise osv.except_osv(_("Error"), _("L'F1 no té comptadors"))
+            raise RecoverableF1Error(_("Error"), _("L'F1 no té comptadors"))
         meter_context = (context or {}).copy()
         meter_context["active_test"] = False
         meter_ids = meter_obj.search(
@@ -717,7 +728,7 @@ class RefundRectifyBatchLine(osv.osv):
             if len(meters_by_serial.get(serial, [])) != 1
         ]
         if invalid_serials:
-            raise osv.except_osv(
+            raise RecoverableF1Error(
                 _("Error"),
                 _("No es pot resoldre unívocament el comptador de l'F1: %s")
                 % ", ".join(invalid_serials),
@@ -824,7 +835,24 @@ class RefundRectifyBatchLine(osv.osv):
         wizard_obj = self.pool.get("wizard.ranas")
         wizard_context = {"active_ids": invoice_ids, "active_id": invoice_ids[0]}
         wizard_id = wizard_obj.create(cursor, uid, {}, context=wizard_context)
-        return wizard_obj.action_rectificar(cursor, uid, wizard_id, context=wizard_context)
+        generated_invoice_ids = wizard_obj.action_rectificar(
+            cursor, uid, wizard_id, context=wizard_context
+        )
+        wizard_values = wizard_obj.read(
+            cursor, uid, [wizard_id], ["errors"], context=wizard_context
+        )[0]
+        errors = wizard_values["errors"]
+        if errors:
+            # RANAS exposes only free text, not a functional error code. Its
+            # known per-invoice text belongs to rectificar_substitucio, not
+            # this rectificar action. Do not infer recoverability from text;
+            # fail the entire F1 even when RANAS returned partial invoices.
+            message = _("RANAS ha informat d'errors en abonar i rectificar: %s") % errors
+            # Failure persistence uses str(error); keep it UTF-8 safe on Python 2.
+            if not isinstance(message, str):
+                message = message.encode("utf-8")
+            raise RuntimeError(message)
+        return generated_invoice_ids
 
     def _get_invoice_total_mag(self, cursor, uid, invoice_id, context=None):
         """Equivalent a get_invoice_total_mag del wizard original"""
@@ -959,10 +987,10 @@ class RefundRectifyBatchLine(osv.osv):
         f1_obj = self.pool.get("giscedata.facturacio.importacio.linia")
         f1_ids = f1_obj.search(cursor, uid, [("id", "=", f1_id)], limit=1, context=context)
         if not f1_ids:
-            raise osv.except_osv(_("Error"), _("No existeix l'F1 a processar"))
+            raise RecoverableF1Error(_("Error"), _("No existeix l'F1 a processar"))
         f1 = f1_obj.browse(cursor, uid, f1_ids[0], context=context)
         if not f1.polissa_id:
-            raise osv.except_osv(_("Error"), _("L'F1 no té una pòlissa resolta"))
+            raise RecoverableF1Error(_("Error"), _("L'F1 no té una pòlissa resolta"))
         polissa_id = f1.polissa_id.id
         if expected_polissa_id is not None and polissa_id != expected_polissa_id:
             raise osv.except_osv(
