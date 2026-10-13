@@ -1,7 +1,9 @@
 # -*- coding: utf-8 -*-
+from __future__ import absolute_import
+
 import base64
 from datetime import datetime
-from tests_gurb_base import TestsGurbBase
+from .tests_gurb_base import TestsGurbBase
 
 
 class TestsGurbWizardCreateCoefFile(TestsGurbBase):
@@ -58,6 +60,70 @@ class TestsGurbWizardCreateCoefFile(TestsGurbBase):
         self.assertEqual(
             decoded_file, "ES1234000000000001JN0F;0,350000\r\nES0021126262693495FV;0,050000"
         )
+
+    def check_generation_options(self, save_attachment, update_agreement_date):
+        self.activate_gurb_cups()
+        gurb_id = self.get_references()['gurb_cau_id']
+        ctx = {'active_id': gurb_id}
+        today = datetime.today().strftime('%Y-%m-%d')
+        previous_date = '2020-01-01'
+        gurb_obj = self.openerp.pool.get('som.gurb.cau')
+        attach_obj = self.openerp.pool.get('ir.attachment')
+        wiz_obj = self.openerp.pool.get('wizard.create.coeficients.file')
+        gurb_obj.write(self.cursor, self.uid, [gurb_id], {
+            'last_distribution_agreement_date': previous_date,
+        })
+        domain = [('res_model', '=', 'som.gurb.cau'), ('res_id', '=', gurb_id)]
+        previous_attachments = attach_obj.search(self.cursor, self.uid, domain)
+        wiz_id = wiz_obj.create(self.cursor, self.uid, {
+            'save_attachment': save_attachment,
+            'update_agreement_date': update_agreement_date,
+        }, context=ctx)
+        wizard = wiz_obj.read(self.cursor, self.uid, [wiz_id], context=ctx)[0]
+        self.assertEqual(wizard['generation_date'], today)
+        wiz_obj.create_coeficients_file_txt(self.cursor, self.uid, [wiz_id], context=ctx)
+        wizard = wiz_obj.read(self.cursor, self.uid, [wiz_id], context=ctx)[0]
+        self.assertEqual(wizard['state'], 'done')
+        self.assertEqual(wizard['generation_date'], today)
+        gurb = gurb_obj.read(self.cursor, self.uid, gurb_id, [
+            'last_distribution_agreement_date', 'related_attachments',
+        ])
+        expected_date = today if update_agreement_date else previous_date
+        self.assertEqual(gurb['last_distribution_agreement_date'], expected_date)
+        attachments = attach_obj.search(self.cursor, self.uid, domain)
+        new_attachments = list(set(attachments) - set(previous_attachments))
+        self.assertEqual(len(new_attachments), 1 if save_attachment else 0)
+        if save_attachment:
+            attachment = attach_obj.read(self.cursor, self.uid, new_attachments[0])
+            self.assertEqual(attachment['name'], wizard['file_name'])
+            self.assertEqual(attachment['datas_fname'], wizard['file_name'])
+            self.assertEqual(
+                base64.b64decode(attachment['datas']), base64.b64decode(wizard['file'])
+            )
+            self.assertIn(attachment['id'], gurb['related_attachments'])
+        # A repeated call must not create a duplicate attachment.
+        wiz_obj.create_coeficients_file_txt(self.cursor, self.uid, [wiz_id], context=ctx)
+        self.assertEqual(attach_obj.search(self.cursor, self.uid, domain), attachments)
+
+    def test_generation_without_optional_updates(self):
+        self.check_generation_options(False, False)
+
+    def test_generation_saves_attachment_only(self):
+        self.check_generation_options(True, False)
+
+    def test_generation_updates_agreement_date_only(self):
+        self.check_generation_options(False, True)
+
+    def test_generation_saves_attachment_and_updates_agreement_date(self):
+        self.check_generation_options(True, True)
+
+    def test_generation_defaults(self):
+        wiz_obj = self.openerp.pool.get('wizard.create.coeficients.file')
+        wiz_id = wiz_obj.create(self.cursor, self.uid, {})
+        wizard = wiz_obj.read(self.cursor, self.uid, [wiz_id])[0]
+        self.assertFalse(wizard['save_attachment'])
+        self.assertFalse(wizard['update_agreement_date'])
+        self.assertEqual(wizard['generation_date'], datetime.today().strftime('%Y-%m-%d'))
 
     def test_coef_file_sum_precision(self):
         """3 CUPS with equal betas (1/3 of generation power each) should sum to 1.000000"""
