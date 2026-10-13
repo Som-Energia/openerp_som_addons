@@ -2,7 +2,7 @@
 from osv import osv
 from tools import cache
 from tools.translate import _
-from datetime import datetime
+from datetime import datetime, timedelta
 
 
 class GiscedataFacturacio(osv.osv):
@@ -95,12 +95,13 @@ class GiscedataFacturacioFactura(osv.osv):
             ('cups_id', '=', factura.cups_id.id),
             ('refund_by_id', '=', False),
             ('type', 'in', ['in_invoice', 'in_refund']),
-            ('rectificative_type', '!=', 'BRA')
+            ('rectificative_type', '!=', 'BRA'),
+            ('origin_date_invoice', '!=', False),
         ]
-        fact_prov_ids = fact_obj.search(cursor, uid, search_vals, order="invoice_id.origin_date_invoice desc", context=context)
+        fact_prov_ids = fact_obj.search(cursor, uid, search_vals, order="origin_date_invoice desc", context=context)
         if fact_prov_ids:
             date_invoice_orig = fact_obj.read(cursor, uid, fact_prov_ids[0], ['origin_date_invoice'], context=context)['origin_date_invoice']
-            date_invoice_orig = datetime.strptime(date_invoice_orig, '%Y-%m-%d') + datetime.timedelta(days=31)
+            date_invoice_orig = datetime.strptime(date_invoice_orig, '%Y-%m-%d') + timedelta(days=31)
             res = date_invoice_orig.strftime('%Y-%m-%d')
         else:
             raise osv.except_osv(_("No s'ha trobat factura de proveïdor"),
