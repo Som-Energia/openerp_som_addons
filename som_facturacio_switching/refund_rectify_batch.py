@@ -231,8 +231,14 @@ class RefundRectifyBatch(osv.osv):
         batch = self.browse(cursor, uid, batch_id, context=context)
         if counts["blocked"]:
             state = "blocked"
+        elif batch.state == "running" and (counts["pending"] or counts["running"]):
+            # Functional failures do not release ownership of the serial job.
+            state = "running"
         elif counts["failed"]:
             state = "failed"
+        elif batch.state in ("blocked", "failed") and (counts["pending"] or counts["running"]):
+            # Refresh is not a retry/claim: do not reopen a stopped batch.
+            state = batch.state
         elif counts["running"]:
             state = "running"
         elif counts["pending"]:
@@ -241,8 +247,6 @@ class RefundRectifyBatch(osv.osv):
             state = "cancelled"
         else:
             state = "done"
-        if state == "pending" and batch.state == "running":
-            state = "running"
         summary = "F1 totals: {total}. Completats: {done}. Erronis: {failed}. Bloquejats: {blocked}. Cancel·lats: {cancelled}.".format(  # noqa: E501
             total=len(lines), done=counts["done"], failed=counts["failed"],
             blocked=counts["blocked"], cancelled=counts["cancelled"]
@@ -464,13 +468,16 @@ class RefundRectifyBatch(osv.osv):
                 batch.name, polissa_id, len(pending_lines),
             )
             if not pending_lines:
-                self._refresh_execution(
+                progress = self._refresh_execution(
                     start_cursor, uid, batch_id, context=context
                 )
                 start_cursor.commit()
                 logger.info(
-                    "refund_rectify_f1: batch completed batch_name=%s result_count=%s outcomes=%s",
-                    batch.name, 0, "none",
+                    "refund_rectify_f1: no pending work batch_name=%s state=%s "
+                    "completed_count=%s failed_count=%s blocked_count=%s cancelled_count=%s",
+                    batch.name, progress["state"], progress["completed_lines"],
+                    progress["failed_lines"], progress["blocked_lines"],
+                    progress["cancelled_lines"],
                 )
                 return []
             start_cursor.commit()
@@ -480,6 +487,7 @@ class RefundRectifyBatch(osv.osv):
         previous_f1_id = None
         predecessor_processed = False
         results = []
+        failed_count = 0
         skipped_lines = False
         for line_id, sequence, f1_id in pending_lines:
             claim_cursor = database.cursor()
@@ -517,9 +525,35 @@ class RefundRectifyBatch(osv.osv):
                     result.get("reloaded_reading_count", 0),
                     len(result.get("generated_invoice_ids", [])),
                 )
+            except RecoverableF1Error as error:
+                logger.exception(
+                    "refund_rectify_f1: functional line failed; continuing batch_name=%s "
+                    "line_id=%s sequence=%s f1_id=%s",
+                    batch.name, line_id, sequence, f1_id,
+                )
+                f1_cursor.rollback()
+                persistence_cursor = database.cursor()
+                try:
+                    line_obj._persist_line_outcome(
+                        persistence_cursor, uid, line_id, error=error,
+                        started_at=started_at, context=context,
+                    )
+                    persistence_cursor.commit()
+                    logger.warning(
+                        "refund_rectify_f1: functional failure committed; skipping F1 and "
+                        "continuing batch_name=%s line_id=%s f1_id=%s",
+                        batch.name, line_id, f1_id,
+                    )
+                finally:
+                    persistence_cursor.close()
+                failed_count += 1
+                previous_f1_id = None
+                predecessor_processed = False
+                continue
             except Exception as error:
                 logger.exception(
-                    "refund_rectify_f1: line failed batch_name=%s line_id=%s sequence=%s f1_id=%s",
+                    "refund_rectify_f1: technical line failed; stopping batch_name=%s "
+                    "line_id=%s sequence=%s f1_id=%s",
                     batch.name, line_id, sequence, f1_id,
                 )
                 f1_cursor.rollback()
@@ -531,14 +565,12 @@ class RefundRectifyBatch(osv.osv):
                     )
                     persistence_cursor.commit()
                     logger.warning(
-                        "refund_rectify_f1: batch blocked batch_name=%s failed_line_id=%s "
-                        "failed_f1_id=%s blocked_line_count=%s",
+                        "refund_rectify_f1: technical stop persisted batch_name=%s "
+                        "failed_line_id=%s failed_f1_id=%s blocked_line_count=%s",
                         batch.name, line_id, f1_id, len(blocked_line_ids),
                     )
                 finally:
                     persistence_cursor.close()
-                if isinstance(error, RecoverableF1Error):
-                    return results
                 # Preserve the original exception and traceback for OORQ/RQ.
                 raise
             finally:
@@ -562,8 +594,9 @@ class RefundRectifyBatch(osv.osv):
             for outcome_name in sorted(outcome_counts)
         ])
         logger.info(
-            "refund_rectify_f1: batch completed batch_name=%s result_count=%s outcomes=%s",
-            batch.name, len(results), outcomes,
+            "refund_rectify_f1: serial execution finished batch_name=%s result_count=%s "
+            "failed_count=%s outcomes=%s",
+            batch.name, len(results), failed_count, outcomes or "none",
         )
         return results
 

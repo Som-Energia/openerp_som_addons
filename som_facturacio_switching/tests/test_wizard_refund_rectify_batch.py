@@ -7,6 +7,7 @@ import os
 from datetime import datetime, timedelta
 from destral import testing
 from osv import osv
+from psycopg2 import OperationalError
 import mock
 from .. import refund_rectify_batch
 from giscedata_polissa import giscedata_cups
@@ -1037,6 +1038,106 @@ class TestRefundRectifyBatchExecutionPersistence(testing.OOTestCaseWithCursor):
         self.line_obj = self.pool.get("refund.rectify.batch.line")
         self.batch_obj = self.pool.get("refund.rectify.batch")
 
+    def _refresh_states(self, batch_state, line_states, technical_last=False):
+        line_obj = mock.Mock()
+        lines = []
+        for sequence, state in enumerate(line_states, 1):
+            line = mock.Mock()
+            line.sequence = sequence
+            line.f1_id.id = sequence + 10
+            line.state = state
+            line.outcome = line.result = line.error = False
+            line.generated_invoice_ids = []
+            line.validation_evaluated = False
+            line.validation_warning_count = 0
+            line.validation_warnings = ""
+            lines.append(line)
+        line_obj.search.return_value = list(range(1, len(lines) + 1))
+        line_obj.browse.return_value = lines
+        attachment = mock.Mock()
+        attachment.search.return_value = []
+        batch = mock.Mock()
+        batch.name = "F1_R-TASCA-7"
+        batch.state = batch_state
+
+        def write(cursor, uid, ids, vals, **kwargs):
+            batch.state = vals["state"]
+
+        with mock.patch.object(self.pool, "get", side_effect=lambda model: {
+                "refund.rectify.batch.line": line_obj, "ir.attachment": attachment,
+        }[model]):
+            with mock.patch.object(self.batch_obj, "browse", return_value=batch):
+                with mock.patch.object(self.batch_obj, "write", side_effect=write) as save:
+                    if technical_last:
+                        with mock.patch.object(self.batch_obj, "_block_later_lines",
+                                               return_value=[]):
+                            self.batch_obj._persist_failure_and_block(
+                                self.cursor, self.uid, 7, len(lines), len(lines),
+                                len(lines) + 10, RuntimeError("F1 broken"), context={},
+                            )
+                        return save.call_args[0][3]
+                    return self.batch_obj._refresh_execution(
+                        self.cursor, self.uid, 7, context={}
+                    )
+
+    def test_refresh_state_matrix_preserves_running_ownership_and_terminal_failures(self):
+        cases = [
+            ("running", ["failed", "pending"], "running"),
+            ("running", ["failed", "running"], "running"),
+            ("running", ["failed", "blocked", "pending"], "blocked"),
+            ("running", ["done", "failed"], "failed"),
+            ("running", ["failed", "cancelled"], "failed"),
+            ("running", ["done", "cancelled"], "cancelled"),
+            ("running", ["cancelled"], "cancelled"),
+            ("running", ["done", "done"], "done"),
+            ("pending", ["done", "pending"], "pending"),
+            ("blocked", ["failed", "pending"], "failed"),
+            ("blocked", ["blocked", "pending"], "blocked"),
+            ("failed", ["failed", "running"], "failed"),
+            ("failed", ["failed", "pending"], "failed"),
+            ("blocked", ["pending"], "blocked"),
+            ("blocked", ["running"], "blocked"),
+            ("failed", ["pending"], "failed"),
+            ("failed", ["running"], "failed"),
+        ]
+        for batch_state, line_states, expected in cases:
+            vals = self._refresh_states(batch_state, line_states)
+            self.assertEqual(vals["state"], expected, (batch_state, line_states))
+            self.assertEqual(vals["failed_lines"], line_states.count("failed"))
+            self.assertEqual("finished_at" in vals, expected not in ("pending", "running"))
+
+    def test_last_technical_failure_helper_refresh_finishes_failed_without_blocked_lines(self):
+        vals = self._refresh_states("running", ["done", "failed"], technical_last=True)
+        self.assertEqual(vals["state"], "failed")
+        self.assertEqual((vals["failed_lines"], vals["blocked_lines"]), (1, 0))
+        self.assertTrue(vals["finished_at"])
+
+    def test_failed_with_remaining_work_cannot_be_reopened_by_duplicate_job_or_creation(self):
+        for remaining_state in ["pending", "running"]:
+            vals = self._refresh_states("running", ["failed", remaining_state])
+            batch = mock.Mock()
+            batch.state = vals["state"]
+            batch.name = "F1_R-TASCA-7"
+            database = mock.Mock()
+            line_obj = mock.Mock()
+            outer_cursor = mock.Mock(dbname="test_batch")
+            with mock.patch.object(refund_rectify_batch.pooler, "get_db", return_value=database):
+                with mock.patch.object(self.pool, "get", return_value=line_obj):
+                    with mock.patch.object(self.batch_obj, "browse", return_value=batch):
+                        results = self.batch_obj.process_batch_f1_lines(
+                            outer_cursor, self.uid, 7, context={}
+                        )
+            self.assertEqual(results, [])
+            self.assertFalse(line_obj.process_one_f1.called)
+            self.assertFalse(database.cursor.return_value.execute.called)
+            database.cursor.return_value.close.assert_called_once_with()
+            with mock.patch.object(self.batch_obj, "_validate_batch_selection", return_value=7):
+                with mock.patch.object(self.batch_obj, "search", side_effect=lambda *a, **kw: (
+                        [7] if batch.state in a[2][1][2] else [])):
+                    with mock.patch.object(self.pool, "get", return_value=line_obj):
+                        self.assertRaises(osv.except_osv, self.batch_obj.create_batch,
+                                          self.cursor, self.uid, [11], context={})
+
     def test_persists_functional_line_outcome_and_refreshes_batch(self):
         batch_obj = mock.Mock()
         result = {
@@ -1352,7 +1453,9 @@ class TestRefundRectifyBatchPerLineTransactions(testing.OOTestCaseWithCursor):
         failing_line = self._line(1, 1, 11)
         line_obj = mock.Mock()
         line_obj.search.side_effect = [[1], [2, 3]]
-        line_obj.browse.return_value = [failing_line, self._line(2, 2, 12)]
+        line_obj.browse.return_value = (
+            [failing_line] if functional else [failing_line, self._line(2, 2, 12)]
+        )
         line_obj._mark_line_running.return_value = True
         line_obj.process_one_f1.side_effect = process or error
         line_obj._persist_line_outcome.side_effect = persistence_error
@@ -1423,6 +1526,10 @@ class TestRefundRectifyBatchPerLineTransactions(testing.OOTestCaseWithCursor):
         self.assertTrue(calls.index(mock.call.persistence.commit()) < calls.index(
             mock.call.persistence.close()
         ))
+        if functional:
+            self.assertFalse(line_obj.write.called)
+            self.assertFalse(refresh.called)
+            return
         self.assertEqual(
             line_obj.write.call_args[0][2], [2, 3]
         )
@@ -1430,7 +1537,7 @@ class TestRefundRectifyBatchPerLineTransactions(testing.OOTestCaseWithCursor):
         self.assertTrue("F1 11" in line_obj.write.call_args[0][3]["result"])
         refresh.assert_called_once_with(persistence_cursor, self.uid, 3, context=context)
 
-    def test_explicit_functional_failure_blocks_and_returns(self):
+    def test_last_functional_failure_persists_without_blocking(self):
         self._assert_failure_transaction_lifecycle(
             refund_rectify_batch.RecoverableF1Error("Error", "L'F1 no té comptadors"),
             functional=True,
@@ -1443,6 +1550,174 @@ class TestRefundRectifyBatchPerLineTransactions(testing.OOTestCaseWithCursor):
         self._assert_failure_transaction_lifecycle(
             osv.except_osv("Error", "L'F1 no té comptadors")
         )
+
+    def test_runtime_error_remains_technical(self):
+        self._assert_failure_transaction_lifecycle(RuntimeError("SQL operation failed"))
+
+    def test_sql_error_remains_technical(self):
+        self._assert_failure_transaction_lifecycle(OperationalError("Database unavailable"))
+
+    def test_technical_failure_persistence_error_is_not_swallowed(self):
+        self._assert_failure_transaction_lifecycle(
+            RuntimeError("F1 broken"), persistence_error=RuntimeError("Persistence unavailable"),
+        )
+
+    def _run_serial_outcomes(self, outcomes):
+        """Exercise real outcome/refresh code with a simulated transaction ledger."""
+        real_line_obj = self.pool.get("refund.rectify.batch.line")
+        outer_cursor = mock.Mock(dbname="test_batch")
+        batch = self._batch()
+        batch.name = "F1_R-TASCA-3"
+        lines = [self._line(index, index, index + 10)
+                 for index in range(1, len(outcomes) + 1)]
+        for line in lines:
+            line.state = "pending"
+            line.outcome = False
+            line.generated_invoice_ids = []
+            line.result = line.error = False
+            line.validation_evaluated = False
+            line.validation_warning_count = 0
+            line.validation_warnings = ""
+        line_obj = mock.Mock()
+        line_obj.search.return_value = [line.id for line in lines]
+        line_obj.browse.return_value = lines
+        line_obj.read.return_value = {"batch_id": [3, batch.name]}
+        attachment = mock.Mock()
+        attachment.search.return_value = []
+        database = mock.Mock()
+        cursors = []
+        committed = []
+        reading_contexts = []
+        states = []
+
+        def new_cursor():
+            transaction = mock.Mock()
+            transaction.rowcount = 1
+            if not cursors:
+                def claim_batch(*args, **kwargs):
+                    batch.state = "running"
+                transaction.execute.side_effect = claim_batch
+            transaction.work = []
+            transaction.commit.side_effect = lambda: committed.extend(transaction.work)
+
+            def rollback():
+                del transaction.work[:]
+            transaction.rollback.side_effect = rollback
+            cursors.append(transaction)
+            return transaction
+
+        def claim(cursor, uid, line_id, **kwargs):
+            lines[line_id - 1].state = "running"
+            return True
+
+        def write_line(cursor, uid, ids, vals, **kwargs):
+            for line_id in ids:
+                for field, value in vals.items():
+                    if field == "generated_invoice_ids":
+                        value = []
+                    setattr(lines[line_id - 1], field, value)
+            cursor.work.append("outcome-%s-%s" % (ids[0], vals["state"]))
+
+        def write_batch(cursor, uid, ids, vals, **kwargs):
+            for field, value in vals.items():
+                setattr(batch, field, value)
+            states.append(batch.state)
+
+        def process(cursor, uid, f1_id, **kwargs):
+            cursor.work.append("business-%s" % f1_id)
+            plan = real_line_obj._build_reading_anchor_plan(
+                cursor, uid, mock.Mock(), [7],
+                previous_f1_id=kwargs["previous_f1_id"],
+                predecessor_processed=kwargs["predecessor_processed"], context={},
+            ) if not kwargs["predecessor_processed"] else {"reload_initial": False}
+            reading_contexts.append((kwargs["previous_f1_id"],
+                                     kwargs["predecessor_processed"], plan["reload_initial"]))
+            outcome = outcomes[f1_id - 11]
+            if isinstance(outcome, Exception):
+                raise outcome
+            return {"status": outcome}
+
+        database.cursor.side_effect = new_cursor
+        line_obj._mark_line_running.side_effect = claim
+        line_obj.process_one_f1.side_effect = process
+        line_obj.write.side_effect = write_line
+        line_obj._persist_line_outcome.side_effect = real_line_obj._persist_line_outcome
+        with mock.patch.object(refund_rectify_batch.pooler, "get_db", return_value=database):
+            with mock.patch.object(self.pool, "get", side_effect=lambda model: {
+                    "refund.rectify.batch.line": line_obj,
+                    "refund.rectify.batch": self.batch_obj,
+                    "ir.attachment": attachment,
+            }[model]):
+                with mock.patch.object(self.batch_obj, "browse", return_value=batch):
+                    with mock.patch.object(self.batch_obj, "write", side_effect=write_batch):
+                        with mock.patch.object(real_line_obj, "write", side_effect=write_line):
+                            with mock.patch.object(real_line_obj, "read",
+                                                   return_value={"batch_id": [3, batch.name]}):
+                                with mock.patch.object(refund_rectify_batch, "logger") as log:
+                                    results = self.batch_obj.process_batch_f1_lines(
+                                        outer_cursor, self.uid, 3, context={}
+                                    )
+        for transaction in cursors:
+            transaction.close.assert_called_once_with()
+        return batch, lines, results, committed, reading_contexts, states, cursors, log
+
+    def test_middle_functional_failure_commits_successors_with_reset_reading_context(self):
+        error = refund_rectify_batch.RecoverableF1Error("Error", "Sense comptador")
+        batch, lines, results, committed, contexts, states, cursors, log = (
+            self._run_serial_outcomes(["processed", error, "processed"])
+        )
+        self.assertEqual([line.state for line in lines], ["done", "failed", "done"])
+        self.assertEqual(results, [{"status": "processed"}, {"status": "processed"}])
+        self.assertEqual(contexts, [(None, False, True), (11, True, False), (None, False, True)])
+        self.assertEqual(committed, ["business-11", "outcome-1-done",
+                                     "outcome-2-failed", "business-13", "outcome-3-done"])
+        cursors[4].rollback.assert_called_once_with()
+        self.assertFalse(cursors[4].commit.called)
+        cursors[5].commit.assert_called_once_with()
+        self.assertEqual(states, ["running", "running", "failed"])
+        self.assertEqual((batch.completed_lines, batch.failed_lines,
+                         batch.blocked_lines), (2, 1, 0))
+        self.assertTrue("Erronis: 1" in batch.summary)
+        self.assertEqual(log.info.call_args[0][-2], 1)
+        log.exception.assert_called_once_with(
+            "refund_rectify_f1: functional line failed; continuing batch_name=%s "
+            "line_id=%s sequence=%s f1_id=%s", batch.name, 2, 2, 12,
+        )
+        self.assertFalse(lines[1].validation_evaluated)
+        self.assertEqual(lines[1].validation_warning_count, 0)
+        self.assertFalse(lines[1].validation_warnings)
+
+    def test_multiple_functional_failures_without_success_finish_failed(self):
+        errors = [refund_rectify_batch.RecoverableF1Error("Error", "Sense comptador")
+                  for unused in range(3)]
+        batch, lines, results, committed, contexts, states, cursors, log = (
+            self._run_serial_outcomes(errors)
+        )
+        self.assertEqual(results, [])
+        self.assertEqual(states, ["running", "running", "failed"])
+        self.assertEqual((batch.completed_lines, batch.failed_lines,
+                         batch.blocked_lines), (0, 3, 0))
+        self.assertEqual(committed, ["outcome-1-failed", "outcome-2-failed", "outcome-3-failed"])
+        self.assertEqual(contexts, [(None, False, True)] * 3)
+
+    def test_last_functional_failure_after_success_finishes_failed(self):
+        error = refund_rectify_batch.RecoverableF1Error("Error", "Sense comptador")
+        batch, lines, results, committed, contexts, states, cursors, log = (
+            self._run_serial_outcomes(["processed", error])
+        )
+        self.assertEqual(states, ["running", "failed"])
+        self.assertEqual(batch.failed_lines, 1)
+        self.assertEqual(results, [{"status": "processed"}])
+
+    def test_no_action_continues_with_initial_reading_fallback_and_finishes_done(self):
+        batch, lines, results, committed, contexts, states, cursors, log = (
+            self._run_serial_outcomes(["processed", "no_action", "processed"])
+        )
+        self.assertEqual(contexts[-1], (12, False, True))
+        self.assertEqual([result["status"] for result in results],
+                         ["processed", "no_action", "processed"])
+        self.assertEqual(batch.state, "done")
+        self.assertEqual((batch.completed_lines, batch.failed_lines), (3, 0))
 
     def test_failure_persistence_error_is_not_swallowed(self):
         self._assert_failure_transaction_lifecycle(
