@@ -52,6 +52,13 @@ def _csv_value(value):
     return str(value or "")
 
 
+def _validation_text(value):
+    """Normalize ERP text before joining a Unicode validation snapshot."""
+    if isinstance(value, type(u"")):
+        return value
+    return (value or "").decode("utf-8")
+
+
 class RefundRectifyBatch(osv.osv):
     _name = "refund.rectify.batch"
     _description = "Refund and rectify F1 batch"
@@ -210,6 +217,7 @@ class RefundRectifyBatch(osv.osv):
         csv_writer = csv.writer(csv_file)
         csv_writer.writerow([
             "sequence", "f1_id", "state", "outcome", "invoices", "result", "error",
+            "validation_evaluated", "validation_warning_count", "validation_warnings",
         ])
         for line in lines:
             counts[line.state] += 1
@@ -217,6 +225,8 @@ class RefundRectifyBatch(osv.osv):
                 line.sequence, line.f1_id.id, line.state, line.outcome or "",
                 ",".join([str(invoice.id) for invoice in line.generated_invoice_ids]),
                 _csv_value(line.result), _csv_value(line.error),
+                bool(line.validation_evaluated), line.validation_warning_count or 0,
+                _csv_value(line.validation_warnings),
             ])
         batch = self.browse(cursor, uid, batch_id, context=context)
         if counts["blocked"]:
@@ -355,6 +365,8 @@ class RefundRectifyBatch(osv.osv):
                 "state": "pending", "outcome": False, "started_at": False,
                 "finished_at": False, "result": False, "error": False,
                 "generated_invoice_ids": [(6, 0, [])],
+                "validation_evaluated": False, "validation_warning_count": 0,
+                "validation_warnings": False,
             }, context=context)
             self.write(cursor, uid, [batch.id], {
                 "state": "pending", "finished_at": False,
@@ -384,6 +396,8 @@ class RefundRectifyBatch(osv.osv):
                     "result": _("Cancel·lada manualment abans d'executar-se."),
                     "error": False,
                     "generated_invoice_ids": [(6, 0, [])],
+                    "validation_evaluated": False, "validation_warning_count": 0,
+                    "validation_warnings": False,
                 }, context=context)
             self._refresh_execution(cursor, uid, batch.id, context=context)
         return True
@@ -637,10 +651,16 @@ class RefundRectifyBatchLine(osv.osv):
         ),
         "result": fields.text("Resultat", readonly=True),
         "error": fields.text("Error", readonly=True),
+        "validation_evaluated": fields.boolean("Validació realitzada", readonly=True),
+        "validation_warning_count": fields.integer("Avisos de validació", readonly=True),
+        "validation_warnings": fields.text("Detall dels avisos de validació", readonly=True),
     }
 
     _defaults = {
         "state": lambda *a: "pending",
+        "validation_evaluated": lambda *a: False,
+        "validation_warning_count": lambda *a: 0,
+        "validation_warnings": lambda *a: False,
     }
 
     def _mark_line_running(self, cursor, uid, line_id, started_at=None, context=None):
@@ -658,6 +678,8 @@ class RefundRectifyBatchLine(osv.osv):
             self, cursor, uid, line_id, result=None, error=None, started_at=None, context=None):
         """Save a functional outcome or a failure for one batch line."""
         result = result or {}
+        if error:
+            result = {}
         vals = {
             "state": "failed" if error else "done",
             "outcome": result.get("status", False) if not error else False,
@@ -665,6 +687,9 @@ class RefundRectifyBatchLine(osv.osv):
             "result": "\n".join(result.get("messages", [])),
             "error": str(error) if error else False,
             "generated_invoice_ids": [(6, 0, result.get("generated_invoice_ids", []))],
+            "validation_evaluated": result.get("validation_evaluated", False),
+            "validation_warning_count": result.get("validation_warning_count", 0),
+            "validation_warnings": result.get("validation_warnings", ""),
         }
         if started_at is not None:
             vals["started_at"] = started_at
@@ -944,6 +969,51 @@ class RefundRectifyBatchLine(osv.osv):
                 )
         return messages, generated_invoice_ids
 
+    def _validate_retained_rectifying_invoices(
+            self, cursor, uid, generated_invoice_ids, context=None):
+        """Validate only retained draft R customer invoices, in the F1 transaction.
+
+        RANAS rectificar produces R replacements and B/A nullifiers. Never
+        validate the latter, sources, or IDs already removed by AB/RE cleanup.
+        The registered ERP validator includes inherited Som custom checks.
+        Lookup/validator errors deliberately propagate to the technical path.
+        """
+        result = {"validation_evaluated": False, "validation_warning_count": 0,
+                  "validation_warnings": ""}
+        if not generated_invoice_ids:
+            return result
+        fact_obj = self.pool.get("giscedata.facturacio.factura")
+        invoices = fact_obj.read(
+            cursor, uid, sorted(set(generated_invoice_ids)),
+            ["name", "state", "type", "rectificative_type"], context=context,
+        )
+        snapshots = []
+        validated_ids = set()
+        for invoice in invoices:
+            if (invoice["state"] != "draft"
+                    or invoice["type"] not in ("out_invoice", "out_refund")
+                    or invoice["rectificative_type"] != "R"
+                    or invoice["id"] in validated_ids):
+                continue
+            validator_obj = self.pool.get("giscedata.facturacio.validation.validator")
+            warning_ids = validator_obj.validate_invoice(
+                cursor, uid, invoice["id"], context=context
+            )
+            validated_ids.add(invoice["id"])
+            result["validation_evaluated"] = True
+            warning_obj = self.pool.get("giscedata.facturacio.validation.warning")
+            for warning_id in warning_ids:
+                warning_text = warning_obj.get_warning_text(
+                    cursor, uid, warning_id, context=context
+                )
+                snapshots.append(u"Factura {0} ({1}): {2}".format(
+                    invoice["id"], _validation_text(invoice["name"]),
+                    _validation_text(warning_text),
+                ))
+            result["validation_warning_count"] += len(warning_ids)
+        result["validation_warnings"] = u"\n".join(snapshots)
+        return result
+
     def _write_f1_observation(self, cursor, uid, f1_id, text, context=None):
         """Equivalent a add_f1_observation del wizard original"""
         f1_obj = self.pool.get("giscedata.facturacio.importacio.linia")
@@ -1008,6 +1078,9 @@ class RefundRectifyBatchLine(osv.osv):
             "generated_invoice_ids": [],
             "messages": [],
             "observation_written": False,
+            "validation_evaluated": False,
+            "validation_warning_count": 0,
+            "validation_warnings": "",
         }
         if f1.type_factura != "R":
             result["messages"].append("F1 no és tipus rectificatiu. No s'actua.")
@@ -1074,6 +1147,9 @@ class RefundRectifyBatchLine(osv.osv):
         cleanup_messages, generated_invoice_ids = self._delete_draft_invoices_if_needed(
             cursor, uid, generated_invoice_ids, source_invoice_ids, context=context
         )
+        result.update(self._validate_retained_rectifying_invoices(
+            cursor, uid, generated_invoice_ids, context=context
+        ))
         result["status"] = "processed"
         result["generated_invoice_ids"] = generated_invoice_ids
         result["messages"].append(

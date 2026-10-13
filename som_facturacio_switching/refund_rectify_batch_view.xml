@@ -59,6 +59,7 @@
                             <field name="state"/>
                             <field name="outcome"/>
                             <field name="generated_invoice_count"/>
+                            <field name="validation_warning_count"/>
                             <field name="result"/>
                             <field name="error"/>
                             <field name="started_at"/>
@@ -81,6 +82,7 @@
                     <field name="state"/>
                     <field name="outcome"/>
                     <field name="generated_invoice_count"/>
+                    <field name="validation_warning_count"/>
                     <field name="result"/>
                     <field name="error"/>
                     <field name="started_at"/>
@@ -114,6 +116,11 @@
                     </group>
                     <group colspan="4" col="4" string="Error">
                         <field name="error" nolabel="1" colspan="4" height="60" width="300"/>
+                    </group>
+                    <group colspan="4" col="4" string="Validació de les factures rectificadores">
+                        <field name="validation_evaluated"/>
+                        <field name="validation_warning_count"/>
+                        <field name="validation_warnings" nolabel="1" colspan="4" height="120" width="300"/>
                     </group>
                 </form>
             </field>
