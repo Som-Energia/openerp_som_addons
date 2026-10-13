@@ -9,6 +9,8 @@
                 <tree string="Tasques d'abonar i rectificar">
                     <field name="name"/>
                     <field name="polissa_id"/>
+                    <field name="create_date" string="Data de sol·licitud"/>
+                    <field name="create_uid" string="Sol·licitat per"/>
                     <field name="state"/>
                     <field name="total_lines"/>
                     <field name="completed_lines"/>
@@ -34,6 +36,8 @@
                         <field name="name"/>
                         <field name="state"/>
                         <field name="polissa_id"/>
+                        <field name="create_date" string="Data de sol·licitud"/>
+                        <field name="create_uid" string="Sol·licitat per"/>
                         <field name="started_at"/>
                         <field name="finished_at"/>
                         <field name="job_reference"/>

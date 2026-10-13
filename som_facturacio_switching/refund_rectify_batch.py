@@ -52,6 +52,8 @@ class RefundRectifyBatch(osv.osv):
     _columns = {
         "name": fields.char("Nom", size=64, required=True, readonly=True),
         "polissa_id": fields.many2one("giscedata.polissa", "Polissa", required=True, readonly=True),
+        "create_date": fields.datetime("Data de sol·licitud", readonly=True),
+        "create_uid": fields.many2one("res.users", "Sol·licitat per", readonly=True),
         "started_at": fields.datetime("Començada", readonly=True),
         "finished_at": fields.datetime("Finalitzada", readonly=True),
         "state": fields.selection(
