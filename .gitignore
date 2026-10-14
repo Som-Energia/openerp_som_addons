@@ -149,6 +149,7 @@ patches/
 .atl/
 .pi/
 .pi-lens/
+.agents/workspace-repositories.local
 
 # Local consumer env (secrets)
 runtime-docker/.env.consumer

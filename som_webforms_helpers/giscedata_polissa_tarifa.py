@@ -69,12 +69,12 @@ class GiscedataPolissaTarifa(osv.osv):
                 products.append(("epm", periode.product_exces_pot_max_id.id))
             if periode.product_excedent_ac_id:
                 product_id = facturador_obj.get_productes_autoconsum(
-                    cursor, uid, tipus="autoconsum", tarifa_id=tarifa.id, context=context
+                    cursor, uid, tipus="excedent", tarifa_id=tarifa.id, context=context
                 )[periode.name]
                 products.append(("ex", product_id))
             if periode.product_autoconsum_ac_id:
                 product_id = facturador_obj.get_productes_autoconsum(
-                    cursor, uid, tipus="excedent", tarifa_id=tarifa.id, context=context
+                    cursor, uid, tipus="autoconsum", tarifa_id=tarifa.id, context=context
                 )[periode.name]
                 products.append(("ac", product_id))
             if periode.product_reactiva_capacitiva_id:
