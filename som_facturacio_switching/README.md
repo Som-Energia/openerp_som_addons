@@ -3,7 +3,14 @@
 `_ff_get_polissa` resol els F1 per lots amb una sola consulta de contractes.
 L'índex següent accelera la cerca de l'últim F1 normal durant la generació d'M1.
 
-## Crear l'índex
+## Creació de l'índex
+
+La migració del mòdul el crea en instal·lacions noves i en actualitzacions,
+amb `CREATE INDEX` transaccional (pot bloquejar escriptures mentre es construeix).
+`IF NOT EXISTS` evita repetir-lo si ja s'ha creat manualment, però només comprova
+el nom, no la definició ni la validesa.
+
+En bases de dades grans, es pot crear abans del desplegament amb l'opció concurrent:
 
 Executar a la base de dades corresponent amb `psql`, amb autocommit i **fora
 de qualsevol transacció**. No executar-ho com una migració d'OpenERP.
@@ -20,7 +27,8 @@ WHERE indrelid = 'public.giscedata_facturacio_importacio_linia'::regclass;
 Si ja hi ha un índex equivalent i vàlid, no cal crear-lo. Si el nom ja existeix
 amb una altra definició, aturar-se i revisar-lo.
 
-**2. Si no existeix, crear-lo en una franja de poca càrrega:**
+**2. Si no existeix, crear-lo en una franja de poca càrrega i abans
+d'actualitzar el mòdul:**
 
 ```sql
 \set AUTOCOMMIT on
