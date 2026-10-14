@@ -35,9 +35,9 @@ class TestWizardRefundRectifyBatch(testing.OOTestCaseWithCursor):
             self.cursor, self.uid, polissa_id
         )
         initial_date = polissa.data_alta
-        final_date = (datetime.strptime(initial_date, "%Y-%m-%d") + timedelta(days=27)).strftime(
-            "%Y-%m-%d"
-        )
+        final_date = (
+            datetime.strptime(initial_date, "%Y-%m-%d") + timedelta(days=27)
+        ).strftime("%Y-%m-%d")
         second_initial_date = (
             datetime.strptime(final_date, "%Y-%m-%d") + timedelta(days=1)
         ).strftime("%Y-%m-%d")
@@ -2133,7 +2133,8 @@ class TestRefundRectifyBatchRecoveryActions(testing.OOTestCaseWithCursor):
         self.assertEqual(fact_obj.read(self.cursor, self.uid, invoice_id, ["state", "name"]),
                          original_invoice)
 
-    def test_stored_safe_retry_refreshes_pending_and_reentrant_request_cannot_schedule_twice(self):
+    def test_stored_safe_retry_refreshes_pending_and_reentrant_request_cannot_schedule_twice(
+            self):
         batch_id, line_obj, line_ids, fact_obj, invoice_id = self._stored_retry_batch(
             ["done", "failed", "blocked", "cancelled"]
         )

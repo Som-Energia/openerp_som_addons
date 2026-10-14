@@ -66,7 +66,9 @@ class RefundRectifyBatch(osv.osv):
 
     _columns = {
         "name": fields.char("Nom", size=64, required=True, readonly=True),
-        "polissa_id": fields.many2one("giscedata.polissa", "Polissa", required=True, readonly=True),
+        "polissa_id": fields.many2one(
+            "giscedata.polissa", "Polissa", required=True, readonly=True
+        ),
         "create_date": fields.datetime("Data de sol·licitud", readonly=True),
         "create_uid": fields.many2one("res.users", "Sol·licitat per", readonly=True),
         "started_at": fields.datetime("Començada", readonly=True),
@@ -236,7 +238,10 @@ class RefundRectifyBatch(osv.osv):
             state = "running"
         elif counts["failed"]:
             state = "failed"
-        elif batch.state in ("blocked", "failed") and (counts["pending"] or counts["running"]):
+        elif (
+            batch.state in ("blocked", "failed")
+            and (counts["pending"] or counts["running"])
+        ):
             # Refresh is not a retry/claim: do not reopen a stopped batch.
             state = batch.state
         elif counts["running"]:
@@ -247,7 +252,10 @@ class RefundRectifyBatch(osv.osv):
             state = "cancelled"
         else:
             state = "done"
-        summary = "F1 totals: {total}. Completats: {done}. Erronis: {failed}. Bloquejats: {blocked}. Cancel·lats: {cancelled}.".format(  # noqa: E501
+        summary = (
+            "F1 totals: {total}. Completats: {done}. Erronis: {failed}. "
+            "Bloquejats: {blocked}. Cancel·lats: {cancelled}."
+        ).format(
             total=len(lines), done=counts["done"], failed=counts["failed"],
             blocked=counts["blocked"], cancelled=counts["cancelled"]
         )
@@ -266,7 +274,11 @@ class RefundRectifyBatch(osv.osv):
         attachment_ids = attachment_obj.search(
             cursor,
             uid,
-            [("res_model", "=", self._name), ("res_id", "=", batch_id), ("name", "=", filename)],
+            [
+                ("res_model", "=", self._name),
+                ("res_id", "=", batch_id),
+                ("name", "=", filename),
+            ],
             limit=1,
             context=context,
         )
@@ -771,7 +783,8 @@ class RefundRectifyBatchLine(osv.osv):
         return cursor.rowcount == 1
 
     def _persist_line_outcome(
-            self, cursor, uid, line_id, result=None, error=None, started_at=None, context=None):
+            self, cursor, uid, line_id, result=None, error=None,
+            started_at=None, context=None):
         """Save a functional outcome or a failure for one batch line."""
         result = result or {}
         if error:
@@ -1031,13 +1044,19 @@ class RefundRectifyBatchLine(osv.osv):
             if equal_amounts or close_amounts:
                 if source_info["linies_generacio"] or has_autoconsumption:
                     messages.append(
-                        "Per la factura numero {} no s'esborren perquè alguna de les factures té autoconsum.".format(  # noqa: E501
+                        (
+                            "Per la factura numero {} no s'esborren perquè "
+                            "alguna de les factures té autoconsum."
+                        ).format(
                             source_info["number"]
                         )
                     )
                 elif source_info["is_gkwh"] or has_gkwh:
                     messages.append(
-                        "Per la factura numero {} no s'esborren perquè alguna de les factures té generationkwh.".format(  # noqa: E501
+                        (
+                            "Per la factura numero {} no s'esborren perquè "
+                            "alguna de les factures té generationkwh."
+                        ).format(
                             source_info["number"]
                         )
                     )
@@ -1046,20 +1065,29 @@ class RefundRectifyBatchLine(osv.osv):
                     fact_obj.unlink(cursor, uid, ab_re_ids, context=context)
                     if equal_amounts:
                         messages.append(
-                            "Per la factura numero {} les factures AB i RE tenen mateix import, s'esborren".format(  # noqa: E501
+                            (
+                                "Per la factura numero {} les factures AB i RE "
+                                "tenen mateix import, s'esborren"
+                            ).format(
                                 source_info["number"]
                             )
                         )
                     else:
                         messages.append(
-                            "Per la factura numero {} les factures AB i RE tenen quasi mateix import, s'esborren".format(  # noqa: E501
+                            (
+                                "Per la factura numero {} les factures AB i RE "
+                                "tenen quasi mateix import, s'esborren"
+                            ).format(
                                 source_info["number"]
                             )
                         )
                     generated_invoice_ids = list(set(generated_invoice_ids) - set(ab_re_ids))
             else:
                 messages.append(
-                    "Per la factura numero {} les factures AB i RE tenen import diferent.".format(  # noqa: E501
+                    (
+                        "Per la factura numero {} les factures AB i RE "
+                        "tenen import diferent."
+                    ).format(
                         source_info["number"]
                     )
                 )
