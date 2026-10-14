@@ -32,7 +32,7 @@ d'actualitzar el mòdul:**
 
 ```sql
 \set AUTOCOMMIT on
-CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_f1_normal_cups_fecha_hasta
+CREATE INDEX CONCURRENTLY IF NOT EXISTS giscedata_facturacio_importacio_linia_cups_text_fecha_factura_h
 ON public.giscedata_facturacio_importacio_linia
 (cups_text, fecha_factura_hasta DESC)
 WHERE type_factura = 'N';
@@ -46,7 +46,7 @@ Si una creació fallida deixa aquest índex invàlid, confirmar que ja no
 s'està construint abans d'eliminar-lo i repetir els passos 2 i 3:
 
 ```sql
-DROP INDEX CONCURRENTLY IF EXISTS public.idx_f1_normal_cups_fecha_hasta;
+DROP INDEX CONCURRENTLY IF EXISTS public.giscedata_facturacio_importacio_linia_cups_text_fecha_factura_h;
 ```
 
 No eliminar un índex vàlid o de definició diferent.
