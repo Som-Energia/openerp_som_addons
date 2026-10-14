@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
-from tests_gurb_base import TestsGurbBase
+from __future__ import absolute_import
+
+from .tests_gurb_base import TestsGurbBase
 from addons import get_module_resource
 from tools.misc import cache
 import mock
@@ -76,7 +78,7 @@ class TestsGurbSwitching(TestsGurbBase):
             "ref": codes.pop(where)
         })
         partner_obj.write(cursor, uid, [other_id], {
-            "ref": codes.values()[0]
+            "ref": list(codes.values())[0]
         })
         partner_obj.write(cursor, uid, [another_id], {
             "ref": "5555"
@@ -715,13 +717,20 @@ class TestsGurbSwitching(TestsGurbBase):
         self.assertEqual(d1.notificacio_pendent, False)
         self.assertEqual(sgc_0002.state, "atr_pending")
 
+    def test_do_close_m1_05_gurb_category(self):
+        self._check_do_close_m1_05_gurb_category()
+
+    def test_do_close_m1_05_gurb_pending_modification(self):
+        self._check_do_close_m1_05_gurb_category(pending_modification=True)
+
     @mock.patch(_config_step_validation_fnc)
     @mock.patch('poweremail.poweremail_template.poweremail_templates.generate_mail')
     @mock.patch(
         'giscedata_switching.giscedata_switching.GiscedataSwitchingActivacionsConfig.get_activation_method'  # noqa: F821, E501
     )
-    def test_do_close_m1_05_gurb_category(
-            self, get_activation_method, generate_mail, config_step_validation_mock):
+    def _check_do_close_m1_05_gurb_category(
+            self, get_activation_method, generate_mail, config_step_validation_mock,
+            pending_modification=False):
         """
         Test that self-consumption M1"s are closed when
         contract does have GURB category
@@ -804,6 +813,10 @@ class TestsGurbSwitching(TestsGurbBase):
         sw_obj.importar_xml(
             self.cursor, self.uid, m1_02_xml, "m1_02.xml"
         )
+
+        if pending_modification:
+            gurb_cups_0002.send_signal('button_pending_modification')
+            self.assertEqual(gurb_cups_0002.state, 'comming_modification')
 
         sw_obj.importar_xml(
             self.cursor, self.uid, m1_05_xml, "m1_05.xml"
@@ -1481,6 +1494,11 @@ class TestsGurbSwitching(TestsGurbBase):
         self.assertIsNotNone(step_id)
         scb = sgc_obj.browse(self.cursor, self.uid, sgc_id)
         self.assertEqual(scb.state, "atr_pending")
+        beta = self.openerp.pool.get("som.gurb.cups.beta").browse(
+            self.cursor, self.uid, self.get_references()["gurb_cups_beta_2_id"]
+        )
+        self.assertTrue(beta.active)
+        self.assertFalse(beta.end_date)
 
     @mock.patch("som_gurb.models.giscedata_switching.is_unidirectional_colective_autocons_change")
     def test_create_from_xml_m2_05_expected_leaving_gurb(
@@ -1534,6 +1552,13 @@ class TestsGurbSwitching(TestsGurbBase):
         # Assertions
         self.assertIsNotNone(step_id)
         self.assertEqual(sgc_0002.state, "cancel")
+        self.assertFalse(sgc_0002.active)
+        self.assertEqual(sgc_0002.end_date, "2016-06-06")
+        beta = self.openerp.pool.get("som.gurb.cups.beta").browse(
+            self.cursor, self.uid, self.get_references()["gurb_cups_beta_2_id"]
+        )
+        self.assertFalse(beta.active)
+        self.assertEqual(beta.end_date, "2016-06-06")
 
     @mock.patch("som_gurb.models.giscedata_switching.is_unidirectional_colective_autocons_change")
     @mock.patch("som_gurb.models.som_gurb_cups.SomGurbCups.send_gurb_activation_email")
