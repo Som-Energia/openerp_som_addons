@@ -9,6 +9,8 @@
                 <tree string="Tasques d'abonar i rectificar">
                     <field name="name"/>
                     <field name="polissa_id"/>
+                    <field name="create_date" string="Data de sol·licitud"/>
+                    <field name="create_uid" string="Sol·licitat per"/>
                     <field name="state"/>
                     <field name="total_lines"/>
                     <field name="completed_lines"/>
@@ -34,6 +36,8 @@
                         <field name="name"/>
                         <field name="state"/>
                         <field name="polissa_id"/>
+                        <field name="create_date" string="Data de sol·licitud"/>
+                        <field name="create_uid" string="Sol·licitat per"/>
                         <field name="started_at"/>
                         <field name="finished_at"/>
                         <field name="job_reference"/>
@@ -55,6 +59,7 @@
                             <field name="state"/>
                             <field name="outcome"/>
                             <field name="generated_invoice_count"/>
+                            <field name="validation_warning_count"/>
                             <field name="result"/>
                             <field name="error"/>
                             <field name="started_at"/>
@@ -77,6 +82,7 @@
                     <field name="state"/>
                     <field name="outcome"/>
                     <field name="generated_invoice_count"/>
+                    <field name="validation_warning_count"/>
                     <field name="result"/>
                     <field name="error"/>
                     <field name="started_at"/>
@@ -110,6 +116,11 @@
                     </group>
                     <group colspan="4" col="4" string="Error">
                         <field name="error" nolabel="1" colspan="4" height="60" width="300"/>
+                    </group>
+                    <group colspan="4" col="4" string="Validació de les factures rectificadores">
+                        <field name="validation_evaluated"/>
+                        <field name="validation_warning_count"/>
+                        <field name="validation_warnings" nolabel="1" colspan="4" height="120" width="300"/>
                     </group>
                 </form>
             </field>

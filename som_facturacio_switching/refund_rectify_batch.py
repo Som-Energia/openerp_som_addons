@@ -38,10 +38,25 @@ ACTIVE_REFUND_RECTIFY_BATCH_STATES = ["pending", "running", "blocked"]
 TERMINAL_REFUND_RECTIFY_BATCH_STATES = ["done", "failed", "blocked", "cancelled"]
 
 
+class RecoverableF1Error(osv.except_osv):
+    """Explicitly known F1 data preconditions, compatible with the legacy UI.
+
+    Only raise at a known functional validation site. Other except_osv errors
+    (including RANAS lock warnings) remain technical failures.
+    """
+
+
 def _csv_value(value):
     if isinstance(value, type(u"")):
         return value.encode("utf-8")
     return str(value or "")
+
+
+def _validation_text(value):
+    """Normalize ERP text before joining a Unicode validation snapshot."""
+    if isinstance(value, type(u"")):
+        return value
+    return (value or "").decode("utf-8")
 
 
 class RefundRectifyBatch(osv.osv):
@@ -51,7 +66,11 @@ class RefundRectifyBatch(osv.osv):
 
     _columns = {
         "name": fields.char("Nom", size=64, required=True, readonly=True),
-        "polissa_id": fields.many2one("giscedata.polissa", "Polissa", required=True, readonly=True),
+        "polissa_id": fields.many2one(
+            "giscedata.polissa", "Polissa", required=True, readonly=True
+        ),
+        "create_date": fields.datetime("Data de sol·licitud", readonly=True),
+        "create_uid": fields.many2one("res.users", "Sol·licitat per", readonly=True),
         "started_at": fields.datetime("Començada", readonly=True),
         "finished_at": fields.datetime("Finalitzada", readonly=True),
         "state": fields.selection(
@@ -200,6 +219,7 @@ class RefundRectifyBatch(osv.osv):
         csv_writer = csv.writer(csv_file)
         csv_writer.writerow([
             "sequence", "f1_id", "state", "outcome", "invoices", "result", "error",
+            "validation_evaluated", "validation_warning_count", "validation_warnings",
         ])
         for line in lines:
             counts[line.state] += 1
@@ -207,12 +227,23 @@ class RefundRectifyBatch(osv.osv):
                 line.sequence, line.f1_id.id, line.state, line.outcome or "",
                 ",".join([str(invoice.id) for invoice in line.generated_invoice_ids]),
                 _csv_value(line.result), _csv_value(line.error),
+                bool(line.validation_evaluated), line.validation_warning_count or 0,
+                _csv_value(line.validation_warnings),
             ])
         batch = self.browse(cursor, uid, batch_id, context=context)
         if counts["blocked"]:
             state = "blocked"
+        elif batch.state == "running" and (counts["pending"] or counts["running"]):
+            # Functional failures do not release ownership of the serial job.
+            state = "running"
         elif counts["failed"]:
             state = "failed"
+        elif (
+            batch.state in ("blocked", "failed")
+            and (counts["pending"] or counts["running"])
+        ):
+            # Refresh is not a retry/claim: do not reopen a stopped batch.
+            state = batch.state
         elif counts["running"]:
             state = "running"
         elif counts["pending"]:
@@ -221,9 +252,10 @@ class RefundRectifyBatch(osv.osv):
             state = "cancelled"
         else:
             state = "done"
-        if state == "pending" and batch.state == "running":
-            state = "running"
-        summary = "F1 totals: {total}. Completats: {done}. Erronis: {failed}. Bloquejats: {blocked}. Cancel·lats: {cancelled}.".format(  # noqa: E501
+        summary = (
+            "F1 totals: {total}. Completats: {done}. Erronis: {failed}. "
+            "Bloquejats: {blocked}. Cancel·lats: {cancelled}."
+        ).format(
             total=len(lines), done=counts["done"], failed=counts["failed"],
             blocked=counts["blocked"], cancelled=counts["cancelled"]
         )
@@ -242,7 +274,11 @@ class RefundRectifyBatch(osv.osv):
         attachment_ids = attachment_obj.search(
             cursor,
             uid,
-            [("res_model", "=", self._name), ("res_id", "=", batch_id), ("name", "=", filename)],
+            [
+                ("res_model", "=", self._name),
+                ("res_id", "=", batch_id),
+                ("name", "=", filename),
+            ],
             limit=1,
             context=context,
         )
@@ -321,37 +357,102 @@ class RefundRectifyBatch(osv.osv):
             return False
         return status in (None, "failed", "finished")
 
+    def _get_retry_line_ids(self, cursor, uid, batch_id, context=None):
+        """Validate the whole line snapshot before changing any retry state.
+
+        Caller holds the batch row lock. Even no_action can commit source draft
+        cleanup. Stored outcomes do not prove effect independence: never infer
+        safety from dates, meters, messages or an empty generated-invoice list.
+        """
+        line_obj = self.pool.get("refund.rectify.batch.line")
+        line_ids = line_obj.search(
+            cursor, uid, [("batch_id", "=", batch_id)],
+            order="sequence asc, id asc", context=context,
+        )
+        # read(), not a pre-lock browse cache: eligibility uses current values.
+        lines = line_obj.read(
+            cursor, uid, line_ids, ["sequence", "state", "outcome", "f1_id"],
+            context=context,
+        )
+        # A filtered ORM snapshot must not conceal later committed work. Only
+        # count via SQL: keep record details and permission checks in the ORM.
+        cursor.execute(
+            "SELECT COUNT(*) FROM %s WHERE batch_id=%%s" % line_obj._table,
+            (batch_id,),
+        )
+        if cursor.fetchone()[0] != len(lines) or len(lines) != len(line_ids):
+            raise osv.except_osv(_("Error"), _(
+                u"No es poden comprovar tots els F1 de la tasca. "
+                u"Cal una revisió manual abans de reprendre-la."
+            ))
+        lines = sorted(lines, key=lambda line: (line["sequence"], line["id"]))
+        failed_lines = [line for line in lines if line["state"] == "failed"]
+        if not failed_lines:
+            raise osv.except_osv(_("Error"), _("La tasca no té cap F1 erroni per reprendre."))
+        first_sequence = failed_lines[0]["sequence"]
+        conflicts = [line for line in lines
+                     if line["sequence"] >= first_sequence and line["state"] == "done"]
+        if conflicts:
+            details = u", ".join([
+                _(u"F1 %s (ordre %s)") % (line["f1_id"][0], line["sequence"])
+                for line in conflicts
+            ])
+            raise osv.except_osv(_("Error"), _(
+                u"No es pot reprendre des de l'F1 erroni d'ordre %s: ja hi ha "
+                u"F1 finalitzats en aquest ordre o posteriors: %s. El reintent "
+                u"pot sobreescriure lectures o eliminar factures en esborrany "
+                u"i alterar resultats ja confirmats, també els de 'Sense acció'. "
+                u"Cal una revisió manual; no es reprocessaran els F1 finalitzats."
+            ) % (first_sequence, details))
+        if any(line["state"] == "running" or (
+                line["state"] == "blocked" and line["sequence"] < first_sequence)
+                for line in lines):
+            raise osv.except_osv(_("Error"), _(
+                u"La tasca té F1 en execució o bloquejats abans del primer error. "
+                u"Cal una revisió manual abans de reprendre-la."
+            ))
+        return [line["id"] for line in lines
+                if line["sequence"] >= first_sequence
+                and line["state"] in ("failed", "blocked")]
+
     def action_retry_from_failed(self, cursor, uid, ids, context=None):
         context = context or {}
-        line_obj = self.pool.get("refund.rectify.batch.line")
-        for batch in self.browse(cursor, uid, ids, context=context):
-            if batch.state not in ("blocked", "failed"):
+        batch_ids = sorted(set(ids))
+        # Retain ORM access checks before raw SQL; never use cached state as the
+        # authority. Locks live only in this request, until commit/rollback.
+        self.read(cursor, uid, batch_ids, ["state"], context=context)
+        retry_plans = []
+        for batch_id in batch_ids:
+            cursor.execute(
+                "SELECT state FROM %s WHERE id=%%s FOR UPDATE" % self._table,
+                (batch_id,),
+            )
+            row = cursor.fetchone()
+            # A concurrent retry/worker claim changes state while we wait. The
+            # locked row, not the button or pre-lock read, decides eligibility.
+            if not row or row[0] not in ("blocked", "failed"):
                 raise osv.except_osv(_("Error"), _(
                     "Només es poden reprendre tasques bloquejades o errònies."))
-            failed_ids = line_obj.search(
-                cursor, uid, [("batch_id", "=", batch.id), ("state", "=", "failed")],
-                order="sequence asc, id asc", limit=1, context=context,
-            )
-            if not failed_ids:
-                raise osv.except_osv(_("Error"), _("La tasca no té cap F1 erroni per reprendre."))
-            failed_line = line_obj.browse(cursor, uid, failed_ids[0], context=context)
-            reset_ids = line_obj.search(
-                cursor, uid,
-                [("batch_id", "=", batch.id), ("sequence", ">=", failed_line.sequence),
-                 ("state", "in", ["failed", "blocked"])],
-                order="sequence asc, id asc", context=context,
-            )
+            reset_ids = self._get_retry_line_ids(cursor, uid, batch_id, context=context)
+            retry_plans.append((batch_id, reset_ids))
+        # Validate ALL selected batches before writes or scheduling (including
+        # debug scheduling, which intentionally commits before direct execution).
+        line_obj = self.pool.get("refund.rectify.batch.line")
+        for batch_id, reset_ids in retry_plans:
             line_obj.write(cursor, uid, reset_ids, {
                 "state": "pending", "outcome": False, "started_at": False,
                 "finished_at": False, "result": False, "error": False,
                 "generated_invoice_ids": [(6, 0, [])],
+                "validation_evaluated": False, "validation_warning_count": 0,
+                "validation_warnings": False,
             }, context=context)
-            self.write(cursor, uid, [batch.id], {
+            self.write(cursor, uid, [batch_id], {
                 "state": "pending", "finished_at": False,
                 "summary": _("Tasca pendent de reprendre des de l'F1 erroni."),
             }, context=context)
-            self._refresh_execution(cursor, uid, batch.id, context=context)
-            self.schedule_batch_execution(cursor, uid, batch.id, context=context)
+            self._refresh_execution(cursor, uid, batch_id, context=context)
+        for batch_id, reset_ids in retry_plans:
+            self.schedule_batch_execution(cursor, uid, batch_id, context=context)
         return True
 
     def action_cancel_pending_lines(self, cursor, uid, ids, context=None):
@@ -374,6 +475,8 @@ class RefundRectifyBatch(osv.osv):
                     "result": _("Cancel·lada manualment abans d'executar-se."),
                     "error": False,
                     "generated_invoice_ids": [(6, 0, [])],
+                    "validation_evaluated": False, "validation_warning_count": 0,
+                    "validation_warnings": False,
                 }, context=context)
             self._refresh_execution(cursor, uid, batch.id, context=context)
         return True
@@ -440,13 +543,16 @@ class RefundRectifyBatch(osv.osv):
                 batch.name, polissa_id, len(pending_lines),
             )
             if not pending_lines:
-                self._refresh_execution(
+                progress = self._refresh_execution(
                     start_cursor, uid, batch_id, context=context
                 )
                 start_cursor.commit()
                 logger.info(
-                    "refund_rectify_f1: batch completed batch_name=%s result_count=%s outcomes=%s",
-                    batch.name, 0, "none",
+                    "refund_rectify_f1: no pending work batch_name=%s state=%s "
+                    "completed_count=%s failed_count=%s blocked_count=%s cancelled_count=%s",
+                    batch.name, progress["state"], progress["completed_lines"],
+                    progress["failed_lines"], progress["blocked_lines"],
+                    progress["cancelled_lines"],
                 )
                 return []
             start_cursor.commit()
@@ -456,6 +562,7 @@ class RefundRectifyBatch(osv.osv):
         previous_f1_id = None
         predecessor_processed = False
         results = []
+        failed_count = 0
         skipped_lines = False
         for line_id, sequence, f1_id in pending_lines:
             claim_cursor = database.cursor()
@@ -493,9 +600,35 @@ class RefundRectifyBatch(osv.osv):
                     result.get("reloaded_reading_count", 0),
                     len(result.get("generated_invoice_ids", [])),
                 )
+            except RecoverableF1Error as error:
+                logger.exception(
+                    "refund_rectify_f1: functional line failed; continuing batch_name=%s "
+                    "line_id=%s sequence=%s f1_id=%s",
+                    batch.name, line_id, sequence, f1_id,
+                )
+                f1_cursor.rollback()
+                persistence_cursor = database.cursor()
+                try:
+                    line_obj._persist_line_outcome(
+                        persistence_cursor, uid, line_id, error=error,
+                        started_at=started_at, context=context,
+                    )
+                    persistence_cursor.commit()
+                    logger.warning(
+                        "refund_rectify_f1: functional failure committed; skipping F1 and "
+                        "continuing batch_name=%s line_id=%s f1_id=%s",
+                        batch.name, line_id, f1_id,
+                    )
+                finally:
+                    persistence_cursor.close()
+                failed_count += 1
+                previous_f1_id = None
+                predecessor_processed = False
+                continue
             except Exception as error:
                 logger.exception(
-                    "refund_rectify_f1: line failed batch_name=%s line_id=%s sequence=%s f1_id=%s",
+                    "refund_rectify_f1: technical line failed; stopping batch_name=%s "
+                    "line_id=%s sequence=%s f1_id=%s",
                     batch.name, line_id, sequence, f1_id,
                 )
                 f1_cursor.rollback()
@@ -507,13 +640,14 @@ class RefundRectifyBatch(osv.osv):
                     )
                     persistence_cursor.commit()
                     logger.warning(
-                        "refund_rectify_f1: batch blocked batch_name=%s failed_line_id=%s "
-                        "failed_f1_id=%s blocked_line_count=%s",
+                        "refund_rectify_f1: technical stop persisted batch_name=%s "
+                        "failed_line_id=%s failed_f1_id=%s blocked_line_count=%s",
                         batch.name, line_id, f1_id, len(blocked_line_ids),
                     )
                 finally:
                     persistence_cursor.close()
-                return results
+                # Preserve the original exception and traceback for OORQ/RQ.
+                raise
             finally:
                 f1_cursor.close()
             results.append(result)
@@ -535,8 +669,9 @@ class RefundRectifyBatch(osv.osv):
             for outcome_name in sorted(outcome_counts)
         ])
         logger.info(
-            "refund_rectify_f1: batch completed batch_name=%s result_count=%s outcomes=%s",
-            batch.name, len(results), outcomes,
+            "refund_rectify_f1: serial execution finished batch_name=%s result_count=%s "
+            "failed_count=%s outcomes=%s",
+            batch.name, len(results), failed_count, outcomes or "none",
         )
         return results
 
@@ -624,10 +759,16 @@ class RefundRectifyBatchLine(osv.osv):
         ),
         "result": fields.text("Resultat", readonly=True),
         "error": fields.text("Error", readonly=True),
+        "validation_evaluated": fields.boolean("Validació realitzada", readonly=True),
+        "validation_warning_count": fields.integer("Avisos de validació", readonly=True),
+        "validation_warnings": fields.text("Detall dels avisos de validació", readonly=True),
     }
 
     _defaults = {
         "state": lambda *a: "pending",
+        "validation_evaluated": lambda *a: False,
+        "validation_warning_count": lambda *a: 0,
+        "validation_warnings": lambda *a: False,
     }
 
     def _mark_line_running(self, cursor, uid, line_id, started_at=None, context=None):
@@ -642,9 +783,12 @@ class RefundRectifyBatchLine(osv.osv):
         return cursor.rowcount == 1
 
     def _persist_line_outcome(
-            self, cursor, uid, line_id, result=None, error=None, started_at=None, context=None):
-        """Save a functional outcome or a technical failure for one batch line."""
+            self, cursor, uid, line_id, result=None, error=None,
+            started_at=None, context=None):
+        """Save a functional outcome or a failure for one batch line."""
         result = result or {}
+        if error:
+            result = {}
         vals = {
             "state": "failed" if error else "done",
             "outcome": result.get("status", False) if not error else False,
@@ -652,6 +796,9 @@ class RefundRectifyBatchLine(osv.osv):
             "result": "\n".join(result.get("messages", [])),
             "error": str(error) if error else False,
             "generated_invoice_ids": [(6, 0, result.get("generated_invoice_ids", []))],
+            "validation_evaluated": result.get("validation_evaluated", False),
+            "validation_warning_count": result.get("validation_warning_count", 0),
+            "validation_warnings": result.get("validation_warnings", ""),
         }
         if started_at is not None:
             vals["started_at"] = started_at
@@ -697,7 +844,7 @@ class RefundRectifyBatchLine(osv.osv):
             if lectura.comptador
         ]))
         if not serials:
-            raise osv.except_osv(_("Error"), _("L'F1 no té comptadors"))
+            raise RecoverableF1Error(_("Error"), _("L'F1 no té comptadors"))
         meter_context = (context or {}).copy()
         meter_context["active_test"] = False
         meter_ids = meter_obj.search(
@@ -715,7 +862,7 @@ class RefundRectifyBatchLine(osv.osv):
             if len(meters_by_serial.get(serial, [])) != 1
         ]
         if invalid_serials:
-            raise osv.except_osv(
+            raise RecoverableF1Error(
                 _("Error"),
                 _("No es pot resoldre unívocament el comptador de l'F1: %s")
                 % ", ".join(invalid_serials),
@@ -822,7 +969,24 @@ class RefundRectifyBatchLine(osv.osv):
         wizard_obj = self.pool.get("wizard.ranas")
         wizard_context = {"active_ids": invoice_ids, "active_id": invoice_ids[0]}
         wizard_id = wizard_obj.create(cursor, uid, {}, context=wizard_context)
-        return wizard_obj.action_rectificar(cursor, uid, wizard_id, context=wizard_context)
+        generated_invoice_ids = wizard_obj.action_rectificar(
+            cursor, uid, wizard_id, context=wizard_context
+        )
+        wizard_values = wizard_obj.read(
+            cursor, uid, [wizard_id], ["errors"], context=wizard_context
+        )[0]
+        errors = wizard_values["errors"]
+        if errors:
+            # RANAS exposes only free text, not a functional error code. Its
+            # known per-invoice text belongs to rectificar_substitucio, not
+            # this rectificar action. Do not infer recoverability from text;
+            # fail the entire F1 even when RANAS returned partial invoices.
+            message = _("RANAS ha informat d'errors en abonar i rectificar: %s") % errors
+            # Failure persistence uses str(error); keep it UTF-8 safe on Python 2.
+            if not isinstance(message, str):
+                message = message.encode("utf-8")
+            raise RuntimeError(message)
+        return generated_invoice_ids
 
     def _get_invoice_total_mag(self, cursor, uid, invoice_id, context=None):
         """Equivalent a get_invoice_total_mag del wizard original"""
@@ -880,13 +1044,19 @@ class RefundRectifyBatchLine(osv.osv):
             if equal_amounts or close_amounts:
                 if source_info["linies_generacio"] or has_autoconsumption:
                     messages.append(
-                        "Per la factura numero {} no s'esborren perquè alguna de les factures té autoconsum.".format(  # noqa: E501
+                        (
+                            "Per la factura numero {} no s'esborren perquè "
+                            "alguna de les factures té autoconsum."
+                        ).format(
                             source_info["number"]
                         )
                     )
                 elif source_info["is_gkwh"] or has_gkwh:
                     messages.append(
-                        "Per la factura numero {} no s'esborren perquè alguna de les factures té generationkwh.".format(  # noqa: E501
+                        (
+                            "Per la factura numero {} no s'esborren perquè "
+                            "alguna de les factures té generationkwh."
+                        ).format(
                             source_info["number"]
                         )
                     )
@@ -895,24 +1065,78 @@ class RefundRectifyBatchLine(osv.osv):
                     fact_obj.unlink(cursor, uid, ab_re_ids, context=context)
                     if equal_amounts:
                         messages.append(
-                            "Per la factura numero {} les factures AB i RE tenen mateix import, s'esborren".format(  # noqa: E501
+                            (
+                                "Per la factura numero {} les factures AB i RE "
+                                "tenen mateix import, s'esborren"
+                            ).format(
                                 source_info["number"]
                             )
                         )
                     else:
                         messages.append(
-                            "Per la factura numero {} les factures AB i RE tenen quasi mateix import, s'esborren".format(  # noqa: E501
+                            (
+                                "Per la factura numero {} les factures AB i RE "
+                                "tenen quasi mateix import, s'esborren"
+                            ).format(
                                 source_info["number"]
                             )
                         )
                     generated_invoice_ids = list(set(generated_invoice_ids) - set(ab_re_ids))
             else:
                 messages.append(
-                    "Per la factura numero {} les factures AB i RE tenen import diferent.".format(  # noqa: E501
+                    (
+                        "Per la factura numero {} les factures AB i RE "
+                        "tenen import diferent."
+                    ).format(
                         source_info["number"]
                     )
                 )
         return messages, generated_invoice_ids
+
+    def _validate_retained_rectifying_invoices(
+            self, cursor, uid, generated_invoice_ids, context=None):
+        """Validate only retained draft R customer invoices, in the F1 transaction.
+
+        RANAS rectificar produces R replacements and B/A nullifiers. Never
+        validate the latter, sources, or IDs already removed by AB/RE cleanup.
+        The registered ERP validator includes inherited Som custom checks.
+        Lookup/validator errors deliberately propagate to the technical path.
+        """
+        result = {"validation_evaluated": False, "validation_warning_count": 0,
+                  "validation_warnings": ""}
+        if not generated_invoice_ids:
+            return result
+        fact_obj = self.pool.get("giscedata.facturacio.factura")
+        invoices = fact_obj.read(
+            cursor, uid, sorted(set(generated_invoice_ids)),
+            ["name", "state", "type", "rectificative_type"], context=context,
+        )
+        snapshots = []
+        validated_ids = set()
+        for invoice in invoices:
+            if (invoice["state"] != "draft"
+                    or invoice["type"] not in ("out_invoice", "out_refund")
+                    or invoice["rectificative_type"] != "R"
+                    or invoice["id"] in validated_ids):
+                continue
+            validator_obj = self.pool.get("giscedata.facturacio.validation.validator")
+            warning_ids = validator_obj.validate_invoice(
+                cursor, uid, invoice["id"], context=context
+            )
+            validated_ids.add(invoice["id"])
+            result["validation_evaluated"] = True
+            warning_obj = self.pool.get("giscedata.facturacio.validation.warning")
+            for warning_id in warning_ids:
+                warning_text = warning_obj.get_warning_text(
+                    cursor, uid, warning_id, context=context
+                )
+                snapshots.append(u"Factura {0} ({1}): {2}".format(
+                    invoice["id"], _validation_text(invoice["name"]),
+                    _validation_text(warning_text),
+                ))
+            result["validation_warning_count"] += len(warning_ids)
+        result["validation_warnings"] = u"\n".join(snapshots)
+        return result
 
     def _write_f1_observation(self, cursor, uid, f1_id, text, context=None):
         """Equivalent a add_f1_observation del wizard original"""
@@ -957,10 +1181,10 @@ class RefundRectifyBatchLine(osv.osv):
         f1_obj = self.pool.get("giscedata.facturacio.importacio.linia")
         f1_ids = f1_obj.search(cursor, uid, [("id", "=", f1_id)], limit=1, context=context)
         if not f1_ids:
-            raise osv.except_osv(_("Error"), _("No existeix l'F1 a processar"))
+            raise RecoverableF1Error(_("Error"), _("No existeix l'F1 a processar"))
         f1 = f1_obj.browse(cursor, uid, f1_ids[0], context=context)
         if not f1.polissa_id:
-            raise osv.except_osv(_("Error"), _("L'F1 no té una pòlissa resolta"))
+            raise RecoverableF1Error(_("Error"), _("L'F1 no té una pòlissa resolta"))
         polissa_id = f1.polissa_id.id
         if expected_polissa_id is not None and polissa_id != expected_polissa_id:
             raise osv.except_osv(
@@ -978,6 +1202,9 @@ class RefundRectifyBatchLine(osv.osv):
             "generated_invoice_ids": [],
             "messages": [],
             "observation_written": False,
+            "validation_evaluated": False,
+            "validation_warning_count": 0,
+            "validation_warnings": "",
         }
         if f1.type_factura != "R":
             result["messages"].append("F1 no és tipus rectificatiu. No s'actua.")
@@ -1044,6 +1271,9 @@ class RefundRectifyBatchLine(osv.osv):
         cleanup_messages, generated_invoice_ids = self._delete_draft_invoices_if_needed(
             cursor, uid, generated_invoice_ids, source_invoice_ids, context=context
         )
+        result.update(self._validate_retained_rectifying_invoices(
+            cursor, uid, generated_invoice_ids, context=context
+        ))
         result["status"] = "processed"
         result["generated_invoice_ids"] = generated_invoice_ids
         result["messages"].append(
