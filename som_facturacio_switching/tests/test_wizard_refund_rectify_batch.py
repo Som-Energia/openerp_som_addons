@@ -1878,35 +1878,290 @@ class TestRefundRectifyBatchRecoveryActions(testing.OOTestCaseWithCursor):
         self.assertFalse(line_obj.write.call_args[0][3]["validation_warnings"])
         refresh.assert_called_once_with(self.cursor, self.uid, 7, context={})
 
-    def test_retry_preserves_done_no_action_and_cancelled_lines(self):
+    def _retry_line(self, line_id, state, outcome=False, sequence=None):
+        return {
+            "id": line_id, "sequence": sequence if sequence is not None else line_id,
+            "state": state, "outcome": outcome, "f1_id": (line_id + 100, "F1"),
+            "generated_invoice_ids": [line_id + 200] if state == "done" else [],
+            "result": u"Resultat à", "error": False,
+            "validation_evaluated": state == "done",
+            "validation_warning_count": 1 if state == "done" else 0,
+            "validation_warnings": u"Factura: [TEST] Avís à",
+        }
+
+    def _retry(self, lines, state="failed", stale_state=None, ids=None, total_lines=None):
+        cursor = mock.Mock()
+        cursor.fetchone.return_value = (state,) if state else None
         line_obj = mock.Mock()
-        failed_line = mock.Mock()
-        failed_line.sequence = 2
-        line_obj.search.side_effect = [[2], [2, 3]]
-        line_obj.browse.return_value = failed_line
-        batch = self._batch("blocked")
+        line_obj._table = "refund_rectify_batch_line"
+        line_obj.search.return_value = [line["id"] for line in lines]
+        line_obj.read.side_effect = lambda *args, **kwargs: [dict(line) for line in lines]
+        events = []
+
+        def execute(sql, params):
+            if "COUNT(*)" in sql:
+                events.append("snapshot")
+                cursor.fetchone.return_value = (
+                    len(lines) if total_lines is None else total_lines,
+                )
+            else:
+                events.append("lock")
+                cursor.fetchone.return_value = (state,) if state else None
+
+        cursor.execute.side_effect = execute
+
+        def reset(cursor, uid, reset_ids, vals, context=None):
+            events.append("reset")
+            for line in lines:
+                if line["id"] in reset_ids:
+                    line.update(vals)
+
+        line_obj.write.side_effect = reset
+        error = None
         with mock.patch.object(self.pool, "get", return_value=line_obj):
-            with mock.patch.object(self.batch_obj, "browse", return_value=[batch]):
+            with mock.patch.object(self.batch_obj, "read", return_value=[{
+                    "id": 7, "state": stale_state or state,
+            }]):
                 with mock.patch.object(self.batch_obj, "write") as write:
-                    with mock.patch.object(self.batch_obj, "_refresh_execution"):
+                    with mock.patch.object(self.batch_obj, "_refresh_execution") as refresh:
                         with mock.patch.object(self.batch_obj,
                                                "schedule_batch_execution") as schedule:
-                            self.batch_obj.action_retry_from_failed(
-                                self.cursor, self.uid, [7], context={}
-                            )
+                            try:
+                                self.batch_obj.action_retry_from_failed(
+                                    cursor, self.uid, ids or [7], context={}
+                                )
+                            except osv.except_osv as caught:
+                                error = caught
+        return {"error": error, "line": line_obj, "write": write,
+                "refresh": refresh, "schedule": schedule, "cursor": cursor,
+                "events": events}
 
-        self.assertEqual(line_obj.write.call_args[0][2], [2, 3])
-        self.assertEqual(line_obj.write.call_args[0][3]["state"], "pending")
-        self.assertFalse(line_obj.write.call_args[0][3]["validation_evaluated"])
-        self.assertEqual(line_obj.write.call_args[0][3]["validation_warning_count"], 0)
-        self.assertFalse(line_obj.write.call_args[0][3]["validation_warnings"])
-        self.assertEqual(line_obj.write.call_args[0][3]["generated_invoice_ids"], [(6, 0, [])])
-        self.assertEqual(
-            line_obj.search.call_args_list[1][0][2][-1],
-            ("state", "in", ["failed", "blocked"]),
+    def _assert_retry_rejected(self, result):
+        self.assertIsInstance(result["error"], osv.except_osv)
+        for method in [result["line"].write, result["write"],
+                       result["refresh"], result["schedule"]]:
+            self.assertFalse(method.called)
+        self.assertFalse(result["cursor"].commit.called)
+        self.assertFalse(result["cursor"].rollback.called)
+        self.assertFalse(result["cursor"].close.called)
+
+    def test_retry_preserves_done_no_action_and_cancelled_lines(self):
+        lines = [self._retry_line(1, "done", "processed"),
+                 self._retry_line(2, "done", "no_action"),
+                 self._retry_line(3, "failed"), self._retry_line(4, "blocked"),
+                 self._retry_line(5, "cancelled")]
+        untouched = [dict(lines[index]) for index in [0, 1, 4]]
+        result = self._retry(lines, state="blocked")
+        self.assertIsNone(result["error"])
+        self.assertEqual([lines[index] for index in [0, 1, 4]], untouched)
+        reset = result["line"].write.call_args[0]
+        self.assertEqual(reset[2], [3, 4])
+        self.assertEqual(reset[3], {
+            "state": "pending", "outcome": False, "started_at": False,
+            "finished_at": False, "result": False, "error": False,
+            "generated_invoice_ids": [(6, 0, [])], "validation_evaluated": False,
+            "validation_warning_count": 0, "validation_warnings": False,
+        })
+        self.assertEqual(result["write"].call_args[0][3]["state"], "pending")
+        self.assertFalse(result["write"].call_args[0][3]["finished_at"])
+        result["refresh"].assert_called_once_with(result["cursor"], self.uid, 7, context={})
+        result["schedule"].assert_called_once_with(result["cursor"], self.uid, 7, context={})
+        self.assertEqual(result["events"], ["lock", "snapshot", "reset"])
+
+    def test_retry_rejects_later_processed_no_action_and_unknown_done_before_writes(self):
+        # no_action can commit source-draft cleanup, even without generated IDs.
+        for outcome in ["processed", "no_action", False, "unknown"]:
+            lines = [self._retry_line(1, "failed"), self._retry_line(2, "done", outcome)]
+            if outcome == "no_action":
+                lines[1]["generated_invoice_ids"] = []
+                lines[1]["result"] = u"S'han eliminat factures en esborrany"
+            original = [dict(line) for line in lines]
+            result = self._retry(lines)
+            self._assert_retry_rejected(result)
+            self.assertEqual(lines, original)
+            self.assertIn("102", result["error"].value)
+            self.assertIn("2", result["error"].value)
+            self.assertIn("manual", result["error"].value)
+
+    def test_retry_rejects_all_conflicts_even_without_retained_invoices(self):
+        lines = [self._retry_line(1, "failed"), self._retry_line(2, "done", "processed"),
+                 self._retry_line(3, "done", "no_action"), self._retry_line(4, "failed")]
+        lines[1]["generated_invoice_ids"] = []  # AB/RE may already have been removed.
+        result = self._retry(lines)
+        self._assert_retry_rejected(result)
+        for f1_id in ["102", "103"]:
+            self.assertIn(f1_id, result["error"].value)
+
+    def test_retry_failed_tail_after_earlier_success(self):
+        lines = [self._retry_line(1, "done", "processed"), self._retry_line(2, "failed")]
+        original_done = dict(lines[0])
+        result = self._retry(lines)
+        self.assertIsNone(result["error"])
+        self.assertEqual(result["line"].write.call_args[0][2], [2])
+        self.assertEqual(lines[0], original_done)
+        self.assertEqual(result["schedule"].call_count, 1)
+
+    def test_retry_multiple_functional_failures_and_legacy_blocked_tail(self):
+        for state in ["failed", "blocked"]:
+            lines = [self._retry_line(1, "failed"), self._retry_line(2, "cancelled"),
+                     self._retry_line(3, "failed"), self._retry_line(4, "blocked"),
+                     self._retry_line(5, "pending")]
+            original_pending = dict(lines[4])
+            result = self._retry(lines, state=state)
+            self.assertIsNone(result["error"])
+            self.assertEqual(result["line"].write.call_args[0][2], [1, 3, 4])
+            self.assertEqual(lines[1]["state"], "cancelled")
+            self.assertEqual(lines[4], original_pending)
+            self.assertEqual(result["schedule"].call_count, 1)
+
+    def test_retry_uses_earliest_failed_sequence_not_read_order(self):
+        lines = [self._retry_line(3, "failed"), self._retry_line(2, "done", "processed"),
+                 self._retry_line(1, "failed")]
+        result = self._retry(lines)
+        self._assert_retry_rejected(result)
+        self.assertIn("d'ordre 1", result["error"].value)
+
+    def test_retry_without_failed_line_or_with_invalid_batch_state_is_rejected(self):
+        for state in ["pending", "running", "done", "cancelled", False]:
+            self._assert_retry_rejected(self._retry([self._retry_line(1, "failed")], state))
+        for state in ["failed", "blocked"]:
+            self._assert_retry_rejected(self._retry([self._retry_line(1, "blocked")], state))
+
+    def test_retry_rechecks_locked_state_not_stale_orm_state(self):
+        for state in ["pending", "running", "done"]:
+            result = self._retry([self._retry_line(1, "failed")], state, stale_state="failed")
+            self._assert_retry_rejected(result)
+            self.assertFalse(result["line"].search.called)
+            sql, params = result["cursor"].execute.call_args[0]
+            self.assertIn("FOR UPDATE", sql)
+            self.assertEqual(params, (7,))
+
+    def test_duplicate_ids_reset_and_schedule_once(self):
+        result = self._retry([self._retry_line(1, "failed")], ids=[7, 7])
+        self.assertIsNone(result["error"])
+        self.assertEqual(result["line"].write.call_count, 1)
+        self.assertEqual(result["schedule"].call_count, 1)
+        self.assertEqual(result["events"].count("lock"), 1)
+
+    def test_retry_rejects_incomplete_line_snapshot_before_reset(self):
+        # Record-rule filtering must not hide a later committed done line.
+        result = self._retry([self._retry_line(1, "failed")], total_lines=2)
+        self._assert_retry_rejected(result)
+        self.assertIn("manual", result["error"].value)
+
+    def test_retry_rejects_running_line_or_blocked_line_before_first_failure(self):
+        for lines in [
+                [self._retry_line(1, "failed"), self._retry_line(2, "running")],
+                [self._retry_line(1, "blocked"), self._retry_line(2, "failed")],
+                [self._retry_line(1, "failed"), self._retry_line(2, "done", sequence=1)]]:
+            self._assert_retry_rejected(self._retry(lines))
+
+    def test_retry_validates_all_selected_batches_before_reset_or_schedule(self):
+        line_obj = mock.Mock()
+        line_obj._table = "refund_rectify_batch_line"
+        line_obj.search.side_effect = [[1], [2, 3]]
+        line_obj.read.side_effect = [
+            [self._retry_line(1, "failed")],
+            [self._retry_line(2, "failed"), self._retry_line(3, "done", "processed")],
+        ]
+        cursor = mock.Mock()
+        cursor.fetchone.side_effect = [("failed",), (1,), ("failed",), (2,)]
+        with mock.patch.object(self.pool, "get", return_value=line_obj):
+            with mock.patch.object(self.batch_obj, "read"):
+                with mock.patch.object(self.batch_obj, "write") as write:
+                    with mock.patch.object(self.batch_obj, "schedule_batch_execution") as schedule:
+                        self.assertRaises(osv.except_osv, self.batch_obj.action_retry_from_failed,
+                                          cursor, self.uid, [8, 7], context={})
+        self.assertFalse(line_obj.write.called)
+        self.assertFalse(write.called)
+        self.assertFalse(schedule.called)
+        self.assertEqual([call[0][1] for call in cursor.execute.call_args_list
+                          if "FOR UPDATE" in call[0][0]], [(7,), (8,)])
+
+    def _stored_retry_batch(self, states):
+        imd = self.pool.get("ir.model.data")
+        f1_id = imd.get_object_reference(
+            self.cursor, self.uid, "giscedata_facturacio_switching", "line_01_f1_import_01"
+        )[1]
+        invoice_id = imd.get_object_reference(
+            self.cursor, self.uid, "giscedata_facturacio", "factura_0003"
+        )[1]
+        fact_obj = self.pool.get("giscedata.facturacio.factura")
+        polissa_id = fact_obj.read(
+            self.cursor, self.uid, invoice_id, ["polissa_id"]
+        )["polissa_id"][0]
+        batch_id = self.batch_obj.create(self.cursor, self.uid, {
+            "name": "/", "polissa_id": polissa_id, "state": "failed",
+            "finished_at": "2022-03-01 00:00:00",
+        })
+        line_obj = self.pool.get("refund.rectify.batch.line")
+        line_ids = []
+        for sequence, state in enumerate(states, 1):
+            line_ids.append(line_obj.create(self.cursor, self.uid, {
+                "batch_id": batch_id, "f1_id": f1_id, "sequence": sequence,
+                "state": state, "outcome": "processed" if state == "done" else False,
+                "generated_invoice_ids": [(6, 0, [invoice_id])] if state == "done" else [],
+                "result": u"Resultat original à", "error": "Original error",
+                "validation_evaluated": state == "done", "validation_warning_count": 1,
+                "validation_warnings": u"Factura %s: [TEST] Avís à" % invoice_id,
+            }))
+        return batch_id, line_obj, line_ids, fact_obj, invoice_id
+
+    def test_unsafe_retry_preserves_stored_invoice_relation_and_warning_snapshot(self):
+        batch_id, line_obj, line_ids, fact_obj, invoice_id = self._stored_retry_batch(
+            ["failed", "done"]
         )
-        self.assertEqual(write.call_args[0][3]["state"], "pending")
-        schedule.assert_called_once_with(self.cursor, self.uid, 7, context={})
+        fields = ["state", "outcome", "generated_invoice_ids", "result", "error",
+                  "validation_evaluated", "validation_warning_count", "validation_warnings"]
+        original = line_obj.read(self.cursor, self.uid, line_ids, fields)
+        original_batch = self.batch_obj.read(
+            self.cursor, self.uid, batch_id, ["state", "finished_at", "summary"]
+        )
+        original_invoice = fact_obj.read(self.cursor, self.uid, invoice_id, ["state", "name"])
+        with mock.patch.object(self.batch_obj, "write") as write:
+            with mock.patch.object(line_obj, "write") as line_write:
+                with mock.patch.object(self.batch_obj, "schedule_batch_execution") as schedule:
+                    self.assertRaises(osv.except_osv, self.batch_obj.action_retry_from_failed,
+                                      self.cursor, self.uid, [batch_id], context={})
+        self.assertFalse(write.called)
+        self.assertFalse(line_write.called)
+        self.assertFalse(schedule.called)
+        self.assertEqual(line_obj.read(self.cursor, self.uid, line_ids, fields), original)
+        self.assertEqual(self.batch_obj.read(
+            self.cursor, self.uid, batch_id, ["state", "finished_at", "summary"]
+        ), original_batch)
+        self.assertEqual(fact_obj.read(self.cursor, self.uid, invoice_id, ["state", "name"]),
+                         original_invoice)
+
+    def test_stored_safe_retry_refreshes_pending_and_reentrant_request_cannot_schedule_twice(self):
+        batch_id, line_obj, line_ids, fact_obj, invoice_id = self._stored_retry_batch(
+            ["done", "failed", "blocked", "cancelled"]
+        )
+        fields = ["state", "outcome", "generated_invoice_ids", "result", "error",
+                  "validation_evaluated", "validation_warning_count", "validation_warnings"]
+        original = line_obj.read(self.cursor, self.uid, [line_ids[0], line_ids[3]], fields)
+        with mock.patch.object(self.batch_obj, "schedule_batch_execution") as schedule:
+            self.batch_obj.action_retry_from_failed(self.cursor, self.uid, [batch_id], context={})
+            # Repeat in the same transaction, without a fresh UI/browse refresh.
+            self.assertRaises(osv.except_osv, self.batch_obj.action_retry_from_failed,
+                              self.cursor, self.uid, [batch_id], context={})
+        schedule.assert_called_once_with(self.cursor, self.uid, batch_id, context={})
+        batch = self.batch_obj.read(self.cursor, self.uid, batch_id, [
+            "state", "finished_at", "failed_lines", "blocked_lines", "completed_lines",
+        ])
+        self.assertEqual(batch["state"], "pending")
+        self.assertFalse(batch["finished_at"])
+        self.assertEqual((batch["failed_lines"], batch["blocked_lines"], batch["completed_lines"]),
+                         (0, 0, 1))
+        self.assertEqual(line_obj.read(self.cursor, self.uid, [line_ids[0], line_ids[3]], fields),
+                         original)
+        for line in line_obj.read(self.cursor, self.uid, line_ids[1:3], fields):
+            self.assertEqual(line["state"], "pending")
+            self.assertFalse(line["outcome"])
+            self.assertEqual(line["generated_invoice_ids"], [])
+            self.assertFalse(line["validation_evaluated"])
+            self.assertEqual(line["validation_warning_count"], 0)
+            self.assertFalse(line["validation_warnings"])
 
     def test_stale_recovery_requires_a_failed_or_finished_job(self):
         job = mock.Mock()

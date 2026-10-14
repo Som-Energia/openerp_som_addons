@@ -345,26 +345,88 @@ class RefundRectifyBatch(osv.osv):
             return False
         return status in (None, "failed", "finished")
 
+    def _get_retry_line_ids(self, cursor, uid, batch_id, context=None):
+        """Validate the whole line snapshot before changing any retry state.
+
+        Caller holds the batch row lock. Even no_action can commit source draft
+        cleanup. Stored outcomes do not prove effect independence: never infer
+        safety from dates, meters, messages or an empty generated-invoice list.
+        """
+        line_obj = self.pool.get("refund.rectify.batch.line")
+        line_ids = line_obj.search(
+            cursor, uid, [("batch_id", "=", batch_id)],
+            order="sequence asc, id asc", context=context,
+        )
+        # read(), not a pre-lock browse cache: eligibility uses current values.
+        lines = line_obj.read(
+            cursor, uid, line_ids, ["sequence", "state", "outcome", "f1_id"],
+            context=context,
+        )
+        # A filtered ORM snapshot must not conceal later committed work. Only
+        # count via SQL: keep record details and permission checks in the ORM.
+        cursor.execute(
+            "SELECT COUNT(*) FROM %s WHERE batch_id=%%s" % line_obj._table,
+            (batch_id,),
+        )
+        if cursor.fetchone()[0] != len(lines) or len(lines) != len(line_ids):
+            raise osv.except_osv(_("Error"), _(
+                u"No es poden comprovar tots els F1 de la tasca. "
+                u"Cal una revisió manual abans de reprendre-la."
+            ))
+        lines = sorted(lines, key=lambda line: (line["sequence"], line["id"]))
+        failed_lines = [line for line in lines if line["state"] == "failed"]
+        if not failed_lines:
+            raise osv.except_osv(_("Error"), _("La tasca no té cap F1 erroni per reprendre."))
+        first_sequence = failed_lines[0]["sequence"]
+        conflicts = [line for line in lines
+                     if line["sequence"] >= first_sequence and line["state"] == "done"]
+        if conflicts:
+            details = u", ".join([
+                _(u"F1 %s (ordre %s)") % (line["f1_id"][0], line["sequence"])
+                for line in conflicts
+            ])
+            raise osv.except_osv(_("Error"), _(
+                u"No es pot reprendre des de l'F1 erroni d'ordre %s: ja hi ha "
+                u"F1 finalitzats en aquest ordre o posteriors: %s. El reintent "
+                u"pot sobreescriure lectures o eliminar factures en esborrany "
+                u"i alterar resultats ja confirmats, també els de 'Sense acció'. "
+                u"Cal una revisió manual; no es reprocessaran els F1 finalitzats."
+            ) % (first_sequence, details))
+        if any(line["state"] == "running" or (
+                line["state"] == "blocked" and line["sequence"] < first_sequence)
+                for line in lines):
+            raise osv.except_osv(_("Error"), _(
+                u"La tasca té F1 en execució o bloquejats abans del primer error. "
+                u"Cal una revisió manual abans de reprendre-la."
+            ))
+        return [line["id"] for line in lines
+                if line["sequence"] >= first_sequence
+                and line["state"] in ("failed", "blocked")]
+
     def action_retry_from_failed(self, cursor, uid, ids, context=None):
         context = context or {}
-        line_obj = self.pool.get("refund.rectify.batch.line")
-        for batch in self.browse(cursor, uid, ids, context=context):
-            if batch.state not in ("blocked", "failed"):
+        batch_ids = sorted(set(ids))
+        # Retain ORM access checks before raw SQL; never use cached state as the
+        # authority. Locks live only in this request, until commit/rollback.
+        self.read(cursor, uid, batch_ids, ["state"], context=context)
+        retry_plans = []
+        for batch_id in batch_ids:
+            cursor.execute(
+                "SELECT state FROM %s WHERE id=%%s FOR UPDATE" % self._table,
+                (batch_id,),
+            )
+            row = cursor.fetchone()
+            # A concurrent retry/worker claim changes state while we wait. The
+            # locked row, not the button or pre-lock read, decides eligibility.
+            if not row or row[0] not in ("blocked", "failed"):
                 raise osv.except_osv(_("Error"), _(
                     "Només es poden reprendre tasques bloquejades o errònies."))
-            failed_ids = line_obj.search(
-                cursor, uid, [("batch_id", "=", batch.id), ("state", "=", "failed")],
-                order="sequence asc, id asc", limit=1, context=context,
-            )
-            if not failed_ids:
-                raise osv.except_osv(_("Error"), _("La tasca no té cap F1 erroni per reprendre."))
-            failed_line = line_obj.browse(cursor, uid, failed_ids[0], context=context)
-            reset_ids = line_obj.search(
-                cursor, uid,
-                [("batch_id", "=", batch.id), ("sequence", ">=", failed_line.sequence),
-                 ("state", "in", ["failed", "blocked"])],
-                order="sequence asc, id asc", context=context,
-            )
+            reset_ids = self._get_retry_line_ids(cursor, uid, batch_id, context=context)
+            retry_plans.append((batch_id, reset_ids))
+        # Validate ALL selected batches before writes or scheduling (including
+        # debug scheduling, which intentionally commits before direct execution).
+        line_obj = self.pool.get("refund.rectify.batch.line")
+        for batch_id, reset_ids in retry_plans:
             line_obj.write(cursor, uid, reset_ids, {
                 "state": "pending", "outcome": False, "started_at": False,
                 "finished_at": False, "result": False, "error": False,
@@ -372,12 +434,13 @@ class RefundRectifyBatch(osv.osv):
                 "validation_evaluated": False, "validation_warning_count": 0,
                 "validation_warnings": False,
             }, context=context)
-            self.write(cursor, uid, [batch.id], {
+            self.write(cursor, uid, [batch_id], {
                 "state": "pending", "finished_at": False,
                 "summary": _("Tasca pendent de reprendre des de l'F1 erroni."),
             }, context=context)
-            self._refresh_execution(cursor, uid, batch.id, context=context)
-            self.schedule_batch_execution(cursor, uid, batch.id, context=context)
+            self._refresh_execution(cursor, uid, batch_id, context=context)
+        for batch_id, reset_ids in retry_plans:
+            self.schedule_batch_execution(cursor, uid, batch_id, context=context)
         return True
 
     def action_cancel_pending_lines(self, cursor, uid, ids, context=None):
