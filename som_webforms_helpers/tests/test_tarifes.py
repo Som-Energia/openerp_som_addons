@@ -21,6 +21,44 @@ class tarifes_tests(testing.OOTestCase):
     def tearDown(self):
         pass
 
+    def test__get_products__autoconsum_types(self):
+        period = mock.Mock()
+        period.name = "P1"
+        period.tipus = "te"
+        period.product_id = mock.Mock(id=1)
+        period.product_gkwh_id = False
+        period.product_reactiva_id = False
+        period.product_exces_pot_id = False
+        period.product_exces_pot_max_id = False
+        period.product_excedent_ac_id = mock.Mock()
+        period.product_autoconsum_ac_id = mock.Mock()
+        period.product_reactiva_capacitiva_id = False
+        period.product_energia_carrecs_id = False
+        period.product_potencia_carrecs_id = False
+
+        tariff = mock.Mock(id=12, periodes=[period])
+        invoice_obj = mock.Mock()
+        facturador_obj = mock.Mock()
+        facturador_obj.get_productes_autoconsum.side_effect = [
+            {"P1": 101},
+            {"P1": 102},
+        ]
+        pool = mock.Mock()
+        pool.get.side_effect = lambda model: {
+            "giscedata.facturacio.factura": invoice_obj,
+            "giscedata.facturacio.facturador": facturador_obj,
+        }[model]
+
+        with mock.patch.object(self.tariff_model, "pool", pool):
+            result = self.tariff_model.get_products(None, None, tariff)
+
+        self.assertIn(("ex", 101), result[1]["products"])
+        self.assertIn(("ac", 102), result[1]["products"])
+        self.assertEqual(
+            [call[1]["tipus"] for call in facturador_obj.get_productes_autoconsum.call_args_list],
+            ["excedent", "autoconsum"],
+        )
+
     def _simulation_policy(self, power=5.0, mode="atr", fiscal_position=False):
         period = mock.Mock()
         period.name = "P1"
