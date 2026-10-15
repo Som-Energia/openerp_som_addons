@@ -1,3 +1,5 @@
+from __future__ import absolute_import
+
 from osv import osv
 
 
@@ -44,13 +46,14 @@ class SomPolissaWebformsHelpers(osv.osv_memory):
         factures = fact_obj.browse(cursor, uid, factura_ids)
 
         draft_order_ids = []
+        move_line_ids = []
         for factura in factures:
             if factura.payment_order_id and factura.payment_order_id.state == "draft":
                 draft_order_ids.append(factura.payment_order_id.id)
-            else:
-                continue
+                if factura.move_id:
+                    move_line_ids.extend(line.id for line in factura.move_id.line_id)
 
-        if draft_order_ids:
+        if draft_order_ids and move_line_ids:
             bank_id = pol_obj.read(cursor, uid, polissa_id, ["bank"], context=context)["bank"][0]
             partner_id = pol_obj.read(cursor, uid, polissa_id, ["titular"], context=context)[
                 "titular"
@@ -61,6 +64,7 @@ class SomPolissaWebformsHelpers(osv.osv_memory):
                 [
                     ("order_id", "in", draft_order_ids),
                     ("partner_id", "=", partner_id),
+                    ("move_line_id", "in", move_line_ids),
                 ],
             )
             line_obj.write(cursor, uid, line_ids, {"bank_id": bank_id})
