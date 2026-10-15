@@ -1,0 +1,478 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: som_holder_change\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: model:ir.actions.act_window,name:som_holder_change.action_holder_change_request
+#: model:ir.ui.menu,name:som_holder_change.menu_holder_change_request
+msgid "Holder changes"
+msgstr ""
+
+#: model:poweremail.templates,def_subject:som_holder_change.email_signature_process_holder_change
+msgid "Holder change signature request"
+msgstr ""
+
+#: field:som.holder.change.request,mandate_number:0
+msgid "Reserved mandate number"
+msgstr ""
+
+#: code:addons/som_holder_change/www/holder_change_www.py:0
+msgid "The signature process failed."
+msgstr ""
+
+#: code:addons/som_holder_change/models/holder_change_request.py:0
+msgid "Missing sender account"
+msgstr ""
+
+#: code:addons/som_holder_change/models/holder_change_request.py:0
+msgid "The request cannot be prepared in its current state."
+msgstr ""
+
+#: field:som.holder.change.request,creditcard_token:0
+msgid "Card token"
+msgstr ""
+
+#: code:addons/som_holder_change/www/holder_change_www.py:0
+msgid "The request has not been sent for signing."
+msgstr ""
+
+#: view:som.holder.change.request:0
+msgid "Signatura i notificacions"
+msgstr ""
+
+#: constraint:ir.actions.act_window:0
+msgid "Invalid model name in the action definition."
+msgstr ""
+
+#: code:addons/som_holder_change/www/holder_change_www.py:0
+msgid "Unknown attachment category: {}."
+msgstr ""
+
+#: field:som.holder.change.request,polissa_id:0
+msgid "Contract"
+msgstr ""
+
+#: code:addons/som_holder_change/www/holder_change_www.py:0
+msgid "The new holder is inactive."
+msgstr ""
+
+#: code:addons/som_holder_change/www/holder_change_www.py:0
+msgid "The CUPS format is invalid."
+msgstr ""
+
+#: field:som.holder.change.request,result_polissa_id:0
+msgid "Result contract"
+msgstr ""
+
+#: selection:som.holder.change.request,state:0
+msgid "Completed"
+msgstr ""
+
+#: code:addons/som_holder_change/www/holder_change_www.py:0
+msgid "There is already an active holder change request for this CUPS."
+msgstr ""
+
+#: field:som.holder.change.request,error_code:0
+msgid "Error code"
+msgstr ""
+
+#: code:addons/som_holder_change/models/holder_change_request.py:0
+msgid "Missing card fields: {}."
+msgstr ""
+
+#: selection:som.holder.change.request,state:0
+msgid "Received"
+msgstr ""
+
+#: code:addons/som_holder_change/models/holder_change_request.py:0
+msgid "No sender account is configured."
+msgstr ""
+
+#: constraint:ir.ui.view:0
+msgid "Invalid XML for View Architecture! Check server logs for details (view name, model, line number and RNG error)."
+msgstr ""
+
+#: code:addons/som_holder_change/models/holder_change_request.py:0
+msgid "The linked member does not exist or is inactive."
+msgstr ""
+
+#: field:som.holder.change.request,creditcard_cof_txnid:0
+msgid "Card COF transaction"
+msgstr ""
+
+#: code:addons/som_holder_change/www/holder_change_validation.py:0
+msgid "Missing {} fields: {}."
+msgstr ""
+
+#: code:addons/som_holder_change/models/holder_change_request.py:0
+msgid "Invalid payment method"
+msgstr ""
+
+#: code:addons/som_holder_change/www/holder_change_www.py:0
+msgid "The request does not match this CUPS."
+msgstr ""
+
+#: view:som.holder.change.request:0
+msgid "Pagament i sòcia"
+msgstr ""
+
+#: code:addons/som_holder_change/models/holder_change_request.py:0
+#: code:addons/som_holder_change/www/holder_change_www.py:0
+msgid "Invalid holder change"
+msgstr ""
+
+#: code:addons/som_holder_change/models/holder_change_request.py:0
+msgid "The request is not ready to generate card documents."
+msgstr ""
+
+#: selection:som.holder.change.request,state:0
+msgid "Awaiting payment"
+msgstr ""
+
+#: field:som.holder.change.request,state:0
+msgid "State"
+msgstr ""
+
+#: view:som.holder.change.request:0
+msgid "Petició"
+msgstr ""
+
+#: field:som.holder.change.request,cups:0
+msgid "CUPS"
+msgstr ""
+
+#: code:addons/som_holder_change/models/holder_change_request.py:0
+msgid "Immutable request"
+msgstr ""
+
+#: code:addons/som_holder_change/models/holder_change_request.py:0
+msgid "Member not found"
+msgstr ""
+
+#: field:som.holder.change.request,contract_number:0
+msgid "Reserved contract number"
+msgstr ""
+
+#: code:addons/som_holder_change/www/holder_change_validation.py:0
+msgid "Voluntary cent must be a boolean."
+msgstr ""
+
+#: field:som.holder.change.request,creditcard_expiry_date:0
+msgid "Card expiry date"
+msgstr ""
+
+#: code:addons/som_holder_change/www/holder_change_validation.py:0
+msgid "The linked member selection is invalid."
+msgstr ""
+
+#: field:som.holder.change.request,creditcard_masked_number:0
+msgid "Masked card number"
+msgstr ""
+
+#: view:som.holder.change.request:0
+msgid "Documents simulats"
+msgstr ""
+
+#: code:addons/som_holder_change/models/holder_change_request.py:0
+msgid "The request state transition is not allowed."
+msgstr ""
+
+#: code:addons/som_holder_change/models/holder_change_request.py:0
+msgid "The IBAN is invalid."
+msgstr ""
+
+#: field:som.holder.change.request,error_message:0
+msgid "Error message"
+msgstr ""
+
+#: code:addons/som_holder_change/models/holder_change_request.py:0
+msgid "The holder change did not generate exactly one M1 case."
+msgstr ""
+
+#: model:poweremail.templates,def_body_text:som_holder_change.email_signature_process_holder_change
+msgid "<p></p>"
+msgstr ""
+
+#: code:addons/som_holder_change/www/holder_change_www.py:0
+msgid "Invalid attachment"
+msgstr ""
+
+#: field:som.holder.change.request,signature_process_id:0
+msgid "Signature process"
+msgstr ""
+
+#: code:addons/som_holder_change/models/holder_change_request.py:0
+msgid "Invalid card data"
+msgstr ""
+
+#: code:addons/som_holder_change/models/holder_change_request.py:0
+msgid "The request does not use card payment."
+msgstr ""
+
+#: code:addons/som_holder_change/models/holder_change_request.py:0
+msgid "The request must be prepared before receiving card data."
+msgstr ""
+
+#: code:addons/som_holder_change/models/holder_change_request.py:0
+msgid "Missing no-cutoff reason"
+msgstr ""
+
+#: model:ir.model,name:som_holder_change.model_som_holder_change_request
+msgid "Holder change request"
+msgstr ""
+
+#: code:addons/som_holder_change/www/holder_change_www.py:0
+msgid "The request is not ready for execution."
+msgstr ""
+
+#: code:addons/som_holder_change/www/holder_change_www.py:0
+msgid "Signature required"
+msgstr ""
+
+#: code:addons/som_holder_change/www/holder_change_www.py:0
+msgid "The signature has not been completed."
+msgstr ""
+
+#: code:addons/som_holder_change/www/holder_change_validation.py:0
+msgid "The payload must be an object."
+msgstr ""
+
+#: code:addons/som_holder_change/www/holder_change_validation.py:0
+msgid "A special attachment requires its corresponding special case."
+msgstr ""
+
+#: code:addons/som_holder_change/www/holder_change_validation.py:0
+msgid "Missing required fields: {}."
+msgstr ""
+
+#: code:addons/som_holder_change/www/holder_change_validation.py:0
+msgid "Missing holder fields: {}."
+msgstr ""
+
+#: code:addons/som_holder_change/www/holder_change_www.py:0
+msgid "The request is not ready for signing."
+msgstr ""
+
+#: selection:som.holder.change.request,owner_change_type:0
+msgid "Transfer"
+msgstr ""
+
+#: field:som.holder.change.request,owner_change_type:0
+msgid "Holder change type"
+msgstr ""
+
+#: view:som.holder.change.request:0
+msgid "Contracte"
+msgstr ""
+
+#: code:addons/som_holder_change/models/holder_change_request.py:0
+msgid "Invalid IBAN"
+msgstr ""
+
+#: code:addons/som_holder_change/www/holder_change_validation.py:0
+msgid "Payment type must be remesa or tpv."
+msgstr ""
+
+#: field:som.holder.change.request,create_date:0
+msgid "Creation date"
+msgstr ""
+
+#: field:som.holder.change.request,payload:0
+msgid "Request payload"
+msgstr ""
+
+#: code:addons/som_holder_change/www/holder_change_validation.py:0
+msgid "The holder VAT is invalid."
+msgstr ""
+
+#: field:som.holder.change.request,mandate_pdf:0
+msgid "Simulated mandate"
+msgstr ""
+
+#: code:addons/som_holder_change/models/holder_change_request.py:0
+msgid "The IBAN country is invalid."
+msgstr ""
+
+#: selection:som.holder.change.request,state:0
+msgid "Awaiting signature"
+msgstr ""
+
+#: field:som.holder.change.request,old_owner_notification_sent:0
+msgid "Payer notification sent"
+msgstr ""
+
+#: code:addons/som_holder_change/www/holder_change_validation.py:0
+msgid "Special case reasons must be booleans."
+msgstr ""
+
+#: code:addons/som_holder_change/www/holder_change_validation.py:0
+msgid "Missing member fields: {}."
+msgstr ""
+
+#: code:addons/som_holder_change/models/holder_change_request.py:0
+msgid "Missing prepared reports"
+msgstr ""
+
+#: code:addons/som_holder_change/models/holder_change_request.py:0
+msgid "The request identity, payload and prepared reports cannot be modified."
+msgstr ""
+
+#: selection:som.holder.change.request,state:0
+msgid "Validation error"
+msgstr ""
+
+#: field:som.holder.change.request,contract_pdf:0
+msgid "Simulated contract"
+msgstr ""
+
+#: code:addons/som_holder_change/www/holder_change_validation.py:0
+msgid "The {} attachment is required."
+msgstr ""
+
+#: model:ir.actions.act_window,name:som_holder_change.action_holder_change_request
+#: model:ir.ui.menu,name:som_holder_change.menu_holder_change_request
+#: view:som.holder.change.request:0
+msgid "Canvis de titular"
+msgstr ""
+
+#: constraint:ir.model:0
+msgid "The Object name must start with x_ and not contain any special character !"
+msgstr ""
+
+#: code:addons/som_holder_change/www/holder_change_validation.py:0
+msgid "SEPA consent is required for bank payment."
+msgstr ""
+
+#: field:som.holder.change.request,switching_id:0
+msgid "M1 case"
+msgstr ""
+
+#: code:addons/som_holder_change/models/holder_change_request.py:0
+msgid "The masked card number must contain its last four digits."
+msgstr ""
+
+#: code:addons/som_holder_change/models/holder_change_request.py:0
+msgid "Exactly one request is required."
+msgstr ""
+
+#: view:som.holder.change.request:0
+msgid "Execució"
+msgstr ""
+
+#: code:addons/som_holder_change/www/holder_change_validation.py:0
+msgid "Card payment authorization is required."
+msgstr ""
+
+#: field:som.holder.change.request,new_member_partner_id:0
+msgid "New member"
+msgstr ""
+
+#: code:addons/som_holder_change/www/holder_change_www.py:0
+msgid "Signature error"
+msgstr ""
+
+#: code:addons/som_holder_change/models/holder_change_request.py:0
+msgid "The request has not been signed."
+msgstr ""
+
+#: code:addons/som_holder_change/models/holder_change_request.py:0
+msgid "The indispensable supply no-cutoff reason is required."
+msgstr ""
+
+#: field:som.holder.change.request,owner_notification_sent:0
+msgid "Owner notification sent"
+msgstr ""
+
+#: code:addons/som_holder_change/models/holder_change_request.py:0
+#: code:addons/som_holder_change/www/holder_change_www.py:0
+msgid "Invalid request state"
+msgstr ""
+
+#: code:addons/som_holder_change/www/holder_change_validation.py:0
+msgid "Privacy and contractual consent are required."
+msgstr ""
+
+#: model:ir.model,name:som_holder_change.model_som_holder_change_www
+msgid "Holder change web facade"
+msgstr ""
+
+#: code:addons/som_holder_change/models/holder_change_request.py:0
+msgid "M1 generation failed"
+msgstr ""
+
+#: code:addons/som_holder_change/www/holder_change_www.py:0
+msgid "The contract has an open ATR case."
+msgstr ""
+
+#: view:som.holder.change.request:0
+msgid "Canvi de titular"
+msgstr ""
+
+#: code:addons/som_holder_change/models/holder_change_request.py:0
+msgid "Card data cannot be changed for this request."
+msgstr ""
+
+#: model:ir.module.module,description:som_holder_change.module_meta_information
+msgid "\n    Holder change request management for existing contracts.\n    "
+msgstr ""
+
+#: model:poweremail.templates,def_subject:som_holder_change.email_signature_process_holder_change
+msgid "Sol·licitud de signatura del canvi de titular"
+msgstr ""
+
+#: field:som.holder.change.request,report_snapshot:0
+msgid "Prepared card reports"
+msgstr ""
+
+#: code:addons/som_holder_change/www/holder_change_www.py:0
+msgid "The contract is not available."
+msgstr ""
+
+#: code:addons/som_holder_change/models/holder_change_request.py:0
+msgid "Card data rejected"
+msgstr ""
+
+#: field:som.holder.change.request,last_attempt_at:0
+msgid "Last attempt"
+msgstr ""
+
+#: selection:som.holder.change.request,state:0
+msgid "Execution error"
+msgstr ""
+
+#: selection:som.holder.change.request,owner_change_type:0
+msgid "Subrogation"
+msgstr ""
+
+#: selection:som.holder.change.request,state:0
+msgid "Queued"
+msgstr ""
+
+#: field:som.holder.change.request,attempt_count:0
+msgid "Execution attempts"
+msgstr ""
+
+#: code:addons/som_holder_change/www/holder_change_validation.py:0
+msgid "The attachment category does not match the special case."
+msgstr ""
+
+#: code:addons/som_holder_change/www/holder_change_validation.py:0
+msgid "Only one special case reason can be selected."
+msgstr ""
+
+#: field:som.holder.change.request,member_notification_sent:0
+msgid "Member notification sent"
+msgstr ""
+
+#: model:ir.module.module,shortdesc:som_holder_change.module_meta_information
+msgid "Som Energia Holder Change"
+msgstr ""
+
+#: code:addons/som_holder_change/www/holder_change_www.py:0
+msgid "Timed out waiting for the signature URL."
+msgstr ""
+
+#: code:addons/som_holder_change/www/holder_change_www.py:0
+msgid "The new holder must differ from the current holder."
+msgstr ""

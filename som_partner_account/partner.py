@@ -322,7 +322,6 @@ class ResPartner(osv.osv):
             })],
             "origin_date_invoice": datetime.datetime.today().strftime("%Y-%m-%d"),
             "date_invoice": datetime.datetime.today().strftime("%Y-%m-%d"),
-            "mandate_id": mandate_id,
             "sii_to_send": False,
             "account_id": invoice_account_id,
             "journal_id": journal_id,
@@ -331,6 +330,7 @@ class ResPartner(osv.osv):
             cursor, uid, [], "out_invoice", partner_id).get("value", {})
         )
         invoice_vals.update({
+            "mandate_id": mandate_id,
             "payment_type": payment_type_id,
             "partner_bank": bank_id,
             "sii_to_send": False,

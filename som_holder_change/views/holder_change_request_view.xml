@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+    <data>
+        <record id="view_holder_change_request_tree" model="ir.ui.view">
+            <field name="name">som.holder.change.request.tree</field>
+            <field name="model">som.holder.change.request</field>
+            <field name="type">tree</field>
+            <field name="arch" type="xml">
+                <tree string="Canvis de titular">
+                    <field name="cups"/>
+                    <field name="polissa_id"/>
+                    <field name="owner_change_type"/>
+                    <field name="state"/>
+                    <field name="signature_process_id"/>
+                    <field name="switching_id"/>
+                    <field name="result_polissa_id"/>
+                    <field name="attempt_count"/>
+                    <field name="error_code"/>
+                    <field name="create_date"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="view_holder_change_request_form" model="ir.ui.view">
+            <field name="name">som.holder.change.request.form</field>
+            <field name="model">som.holder.change.request</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <form string="Canvi de titular" col="4">
+                    <group string="Petició" colspan="4" col="4">
+                        <field name="state"/>
+                        <field name="owner_change_type"/>
+                        <field name="cups"/>
+                        <field name="polissa_id"/>
+                        <field name="create_date"/>
+                    </group>
+                    <notebook>
+                        <page string="Contracte">
+                            <group colspan="4" col="4">
+                                <field name="contract_number"/>
+                                <field name="mandate_number"/>
+                                <field name="result_polissa_id"/>
+                                <field name="switching_id"/>
+                            </group>
+                            <group string="Documents simulats" colspan="4" col="4">
+                                <field name="contract_pdf"/>
+                                <field name="mandate_pdf"/>
+                            </group>
+                        </page>
+                        <page string="Pagament i sòcia">
+                            <group colspan="4" col="4">
+                                <field name="creditcard_masked_number"/>
+                                <field name="creditcard_expiry_date"/>
+                                <field name="new_member_partner_id"/>
+                            </group>
+                        </page>
+                        <page string="Signatura i notificacions">
+                            <group colspan="4" col="4">
+                                <field name="signature_process_id"/>
+                                <field name="owner_notification_sent"/>
+                                <field name="old_owner_notification_sent"/>
+                                <field name="member_notification_sent"/>
+                            </group>
+                        </page>
+                        <page string="Execució">
+                            <group colspan="4" col="4">
+                                <field name="attempt_count"/>
+                                <field name="last_attempt_at"/>
+                                <field name="error_code"/>
+                                <field name="error_message" colspan="4" nolabel="1"/>
+                            </group>
+                        </page>
+                    </notebook>
+                </form>
+            </field>
+        </record>
+
+        <record id="action_holder_change_request" model="ir.actions.act_window">
+            <field name="name">Canvis de titular</field>
+            <field name="res_model">som.holder.change.request</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="view_id" ref="view_holder_change_request_tree"/>
+        </record>
+
+        <menuitem id="menu_holder_change_request"
+                  name="Canvis de titular"
+                  parent="giscedata_switching.menu_sw"
+                  action="action_holder_change_request"
+                  sequence="42"/>
+    </data>
+</openerp>
