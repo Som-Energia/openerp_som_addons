@@ -345,6 +345,8 @@ msgstr ""
 #: rml:som_polissa_condicions_generals/report/components/auvi.mako:3
 #: rml:som_polissa_condicions_generals/report/components/prices_info.mako:138
 #: rml:som_polissa_condicions_generals/report/components/prices_info.mako:350
+#: rml:som_polissa_condicions_generals/report/components/summary_offer.mako:56
+#: rml:som_polissa_condicions_generals/report/components/summary_offer.mako:65
 msgid "Terme energia (€/kWh)"
 msgstr ""
 
@@ -516,6 +518,7 @@ msgid "Telèfon 2: "
 msgstr ""
 
 #: rml:som_polissa_condicions_generals/report/components/contact_info.mako:26
+#: rml:som_polissa_condicions_generals/report/components/summary_identification.mako:19
 msgid "DADES DEL PUNT DE SUBMINISTRAMENT"
 msgstr ""
 
@@ -672,6 +675,7 @@ msgstr ""
 
 #: rml:som_polissa_condicions_generals/report/components/prices_info.mako:61
 #: rml:som_polissa_condicions_generals/report/components/prices_info.mako:326
+#: rml:som_polissa_condicions_generals/report/components/summary_offer.mako:43
 msgid "Terme potència (€/kW i any)"
 msgstr ""
 
