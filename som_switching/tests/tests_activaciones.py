@@ -271,8 +271,14 @@ class TestsAutoActiva(testing.OOTestCase):
         r1 = self.openerp.pool.get("giscedata.switching").browse(cursor, uid, r1_id)
         cas = atc_obj.browse(cursor, uid, cas.id)
         self.assertFalse(cas.tancar_cac_al_finalitzar_r1)
-        self.assertEqual(r1.ref, "giscedata.atc, {}".format(cas.id))
-        self.assertEqual(cas.ref, "giscedata.switching, {}".format(r1.id))
+        self.assertEqual(
+            [value.strip() for value in r1.ref.split(",")],
+            ["giscedata.atc", str(cas.id)],
+        )
+        self.assertEqual(
+            [value.strip() for value in cas.ref.split(",")],
+            ["giscedata.switching", str(r1.id)],
+        )
         self.assertEqual(cas.state, "pending")
         self.assertEqual(cas.time_tracking_id.code, "1")
         self.assertEqual(cas.process_step, "01")
@@ -420,8 +426,14 @@ class TestsAutoActiva(testing.OOTestCase):
         r1 = self.openerp.pool.get("giscedata.switching").browse(cursor, uid, r1_id)
         cas = atc_obj.browse(cursor, uid, cas.id)
         self.assertFalse(cas.tancar_cac_al_finalitzar_r1)
-        self.assertEqual(r1.ref, "giscedata.atc, {}".format(cas.id))
-        self.assertEqual(cas.ref, "giscedata.switching, {}".format(r1.id))
+        self.assertEqual(
+            [value.strip() for value in r1.ref.split(",")],
+            ["giscedata.atc", str(cas.id)],
+        )
+        self.assertEqual(
+            [value.strip() for value in cas.ref.split(",")],
+            ["giscedata.switching", str(r1.id)],
+        )
         self.assertEqual(cas.state, "pending")
         self.assertEqual(cas.time_tracking_id.code, "1")
         self.assertEqual(cas.process_step, "01")
