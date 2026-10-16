@@ -1,0 +1,25 @@
+{
+  "name": "openerp_som_addons runtime",
+  "dockerComposeFile": [
+    "../runtime-docker/docker-compose.yml",
+    "docker-compose.devcontainer.yml"
+  ],
+  "service": "erp-runtime",
+  "runServices": [
+    "postgres",
+    "redis",
+    "mongo",
+    "erp-runtime"
+  ],
+  "workspaceFolder": "/opt/somenergia/src/openerp_som_addons",
+  "shutdownAction": "stopCompose",
+  "overrideCommand": false,
+  "containerEnv": {
+    "GITHUB_TOKEN": "${localEnv:GITHUB_TOKEN:devcontainer-placeholder-token}"
+  },
+  "remoteEnv": {
+    "PATH": "/opt/somenergia/src/openerp_som_addons/.devcontainer/bin:${containerEnv:PATH}"
+  },
+  "forwardPorts": [8069, 5432, 6899],
+  "remoteUser": "root"
+}
