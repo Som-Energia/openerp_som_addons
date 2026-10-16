@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 from osv import osv
 from tools import cache
-from datetime import datetime
+from tools.translate import _
+from datetime import datetime, timedelta
 
 
 class GiscedataFacturacio(osv.osv):
@@ -81,6 +82,31 @@ class GiscedataFacturacioFactura(osv.osv):
                 self.write(cursor, uid, fact_id, write_vals)
                 self.set_pending(cursor, uid, [fact_id], pol_data['estat_pendent_cobrament'][0])
 
+        return res
+
+    def get_data_inici_interessos(self, cursor, uid, factura, context=None):
+        if context is None:
+            context = {}
+
+        fact_obj = self.pool.get('giscedata.facturacio.factura')
+        search_vals = [
+            ('data_inici', '>=', factura.data_inici),
+            ('data_final', '<=', factura.data_final),
+            ('cups_id', '=', factura.cups_id.id),
+            ('refund_by_id', '=', False),
+            ('type', 'in', ['in_invoice', 'in_refund']),
+            ('rectificative_type', '!=', 'BRA'),
+            ('origin_date_invoice', '!=', False),
+        ]
+        fact_prov_ids = fact_obj.search(cursor, uid, search_vals, order="origin_date_invoice desc", context=context)
+        if fact_prov_ids:
+            date_invoice_orig = fact_obj.read(cursor, uid, fact_prov_ids[0], ['origin_date_invoice'], context=context)['origin_date_invoice']
+            date_invoice_orig = datetime.strptime(date_invoice_orig, '%Y-%m-%d') + timedelta(days=31)
+            res = date_invoice_orig.strftime('%Y-%m-%d')
+        else:
+            raise osv.except_osv(_("No s'ha trobat factura de proveïdor"),
+                                 _("No s'ha trobat factura de proveïdor entre les dates {} i {}").format(
+                                     factura.data_inici, factura.data_final))
         return res
 
 
