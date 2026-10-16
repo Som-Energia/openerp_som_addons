@@ -462,6 +462,8 @@ class SomAutoreclamaStateUpdater(osv.osv_memory):
             context = {}
 
         subject = _(u"Resultat accions batch d'autoreclama")
+        # Cursor creation assigns an xid; release it before the long-running batch.
+        cursor.rollback()
         msg = self.state_updater(cursor, uid, context)
         emails_to = data.get("emails_to", "").split(",")
         emails = []
