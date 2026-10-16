@@ -1,9 +1,11 @@
 # -*- coding: utf-8 -*-
+from __future__ import absolute_import
 from datetime import datetime
 from osv import fields, osv
 from tools.translate import _
 import xml.etree.ElementTree as ET
 from osv.orm import DEFAULT_VIEW_VERSION
+from six import integer_types
 
 
 class WizardSubtypeR1(osv.osv_memory):
@@ -37,6 +39,23 @@ class WizardSubtypeR1(osv.osv_memory):
         return res
 
     def action_create_r1_case_from_dict(self, cursor, uid, polissa_id, dict_fields, context=None):
+        subtipus_obj = self.pool.get("giscedata.subtipus.reclamacio")
+        subtipus_info = {}
+        subtipus_id = dict_fields.get("subtipus_id")
+        if subtipus_id:
+            subtipus_info = subtipus_obj.read(
+                cursor, uid, subtipus_id, ["name", "type"], context=context
+            )
+        if (
+            subtipus_info.get("type") == "01"
+            and subtipus_info.get("name") == "001"
+            and not dict_fields.get("reclamacio_tipus_atencio_incorrecte")
+        ):
+            raise osv.except_osv(
+                _("Error"),
+                _(u"Cal omplir el camp 'Tipus atenció incorrecte' abans de generar una R1 01-001."),
+            )
+
         # Els hem de borrar perque a dins del create_r1 es fa un write directe
         # d'aquest diccionari a un r1.01
         dict_fields2 = dict_fields.copy()
@@ -47,17 +66,13 @@ class WizardSubtypeR1(osv.osv_memory):
         res = super(WizardSubtypeR1, self).action_create_r1_case_from_dict(
             cursor, uid, polissa_id, dict_fields2, context=context
         )
-        if not isinstance(res[-1], long):  # noqa: F821
+        if not isinstance(res[-1], integer_types):
             return res
 
         pol_obj = self.pool.get("giscedata.polissa")
-        subtipus_obj = self.pool.get("giscedata.subtipus.reclamacio")
         user_obj = self.pool.get("res.users")
         sw_obj = self.pool.get("giscedata.switching")
 
-        subtipus_info = subtipus_obj.read(
-            cursor, uid, dict_fields.get("subtipus_id"), ["name", "type"]
-        )
         if not subtipus_info:
             return res
 
