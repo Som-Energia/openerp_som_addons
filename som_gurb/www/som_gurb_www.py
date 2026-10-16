@@ -108,6 +108,8 @@ class SomGurbWww(osv.osv_memory):
             "active", "atr_pending", "draft", "comming_registration", "comming_modification"
         ]
         for gcau in ggroup.gurb_cau_ids:
+            if gcau.state != "open":
+                continue
             beta_remaining = gcau.generation_power
             for gcups in gcau.gurb_cups_ids:
                 if gcups.state in occupying_states:

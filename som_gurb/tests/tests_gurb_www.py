@@ -1,6 +1,9 @@
 # -*- coding: utf-8 -*-
 
+from datetime import datetime
+
 import mock
+from osv import osv
 from tests_gurb_base import TestsGurbBase
 
 
@@ -28,6 +31,110 @@ class TestsGurbWww(TestsGurbBase):
         )[1]
 
         gurb_cups_o.unlink(self.cursor, self.uid, [gurb_cups_id_1, gurb_cups_id_2])
+
+    def _form_cau_ids(self):
+        imd_obj = self.get_model("ir.model.data")
+        return [imd_obj.get_object_reference(
+            self.cursor, self.uid, "som_gurb", xml_id
+        )[1] for xml_id in ["gurb_cau_0001", "gurb_cau_0002"]]
+
+    def test_new_cau_form_is_closed(self):
+        cau_obj = self.get_model("som.gurb.cau")
+        cau_id = cau_obj.create(self.cursor, self.uid, {
+            "name": "Closed by default", "priority": 10,
+        })
+        self.assertEqual(cau_obj.read(
+            self.cursor, self.uid, cau_id, ["state"]
+        )["state"], "closed")
+
+    def _prepare_form_address(self, cau_id):
+        cau_obj = self.get_model("som.gurb.cau")
+        address_id = cau_obj.read(
+            self.cursor, self.uid, cau_id, ["address_id"]
+        )["address_id"][0]
+        state_ids = self.get_model("res.country.state").search(
+            self.cursor, self.uid, [], limit=1
+        )
+        self.get_model("res.partner.address").write(
+            self.cursor, self.uid, [address_id], {
+                "zip": "08001", "state_id": state_ids[0],
+            }
+        )
+
+    def test_form_can_close_and_reopen(self):
+        cau_obj = self.get_model("som.gurb.cau")
+        cau_1, cau_2 = self._form_cau_ids()
+        self._prepare_form_address(cau_1)
+        self._prepare_form_address(cau_2)
+        cau_obj.button_close(self.cursor, self.uid, [cau_1, cau_2])
+        cau_obj.button_open(self.cursor, self.uid, [cau_1, cau_2])
+        for record in cau_obj.read(
+            self.cursor, self.uid, [cau_1, cau_2], ["state", "state_date"]
+        ):
+            self.assertEqual(record["state"], "open")
+            self.assertEqual(record["state_date"], datetime.now().strftime("%Y-%m-%d"))
+        result = self.get_model("som.gurb.www").get_info_gurb(
+            self.cursor, self.uid, "G001", "2.0TD"
+        )
+        self.assertTrue(result["available_betas"])
+
+    def test_form_open_validates_every_selected_cau(self):
+        cau_obj = self.get_model("som.gurb.cau")
+        cau_ids = self._form_cau_ids()
+        self._prepare_form_address(cau_ids[0])
+        self._prepare_form_address(cau_ids[1])
+        cau_obj.button_close(self.cursor, self.uid, cau_ids)
+        cau_obj.write(self.cursor, self.uid, [cau_ids[1]], {"generation_power": 0})
+        with self.assertRaises(osv.except_osv):
+            cau_obj.button_open(self.cursor, self.uid, cau_ids)
+        for record in cau_obj.read(self.cursor, self.uid, cau_ids, ["state"]):
+            self.assertEqual(record["state"], "closed")
+
+    def test_available_betas_excludes_closed_cau(self):
+        cau_obj = self.get_model("som.gurb.cau")
+        cau_1, cau_2 = self._form_cau_ids()
+        cau_obj.button_close(self.cursor, self.uid, [cau_1])
+        cau_obj.write(self.cursor, self.uid, [cau_2], {"generation_power": 0.5})
+        result = self.get_model("som.gurb.www").get_info_gurb(
+            self.cursor, self.uid, "G001", "2.0TD"
+        )
+        self.assertEqual(result["available_betas"], [0.5])
+
+    def test_closed_forms_have_no_betas_and_reject_new_leads(self):
+        www_obj = self.get_model("som.gurb.www")
+        cau_obj = self.get_model("som.gurb.cau")
+        cups_obj = self.get_model("som.gurb.cups")
+        cups_ids = cups_obj.search(self.cursor, self.uid, [])
+        before = cups_obj.read(self.cursor, self.uid, cups_ids, ["state", "gurb_cau_id"])
+        cau_obj.button_close(self.cursor, self.uid, self._form_cau_ids())
+        result = www_obj.get_info_gurb(self.cursor, self.uid, "G001", "2.0TD")
+        self.assertEqual(result["available_betas"], [])
+        result = www_obj.create_new_gurb_cups(self.cursor, self.uid, {
+            "gurb_code": "G001", "access_tariff": "2.0TD", "beta": 0.5,
+        })
+        self.assertFalse(result["success"])
+        self.assertEqual(result["code"], "BadGurbGroup")
+        self.assertEqual(
+            cups_obj.read(self.cursor, self.uid, cups_ids, ["state", "gurb_cau_id"]),
+            before
+        )
+        self.assertEqual(cups_obj.search(self.cursor, self.uid, []), cups_ids)
+
+    def test_priority_ignores_closed_cau(self):
+        cau_obj = self.get_model("som.gurb.cau")
+        group_obj = self.get_model("som.gurb.group")
+        cau_1, cau_2 = self._form_cau_ids()
+        group_id = cau_obj.read(
+            self.cursor, self.uid, cau_1, ["gurb_group_id"]
+        )["gurb_group_id"][0]
+        cau_obj.button_close(self.cursor, self.uid, [cau_1])
+        self.assertEqual(group_obj.get_prioritary_gurb_cau_id(
+            self.cursor, self.uid, group_id, 0.5
+        ), cau_2)
+        cau_obj.button_close(self.cursor, self.uid, [cau_2])
+        self.assertFalse(group_obj.get_prioritary_gurb_cau_id(
+            self.cursor, self.uid, group_id, 0.5
+        ))
 
     def test_get_info_gurb__bad_gurb_code(self):
         gurb_www_o = self.openerp.pool.get("som.gurb.www")
