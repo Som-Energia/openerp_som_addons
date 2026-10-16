@@ -54,6 +54,7 @@
                     </group>
                     <group col="6" colspan="4" string="Característiques" icon="tool">
                         <field name="activation_date" select="1" />
+                        <field name="last_distribution_agreement_date" select="1" />
                         <field name="cil" />
                         <field name="producer" />
                         <field name="gurb_group_id" />
