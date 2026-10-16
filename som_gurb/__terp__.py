@@ -33,7 +33,6 @@
         "views/som_gurb_cups_view.xml",
         "views/som_gurb_cau_view.xml",
         "views/som_gurb_cau_webview.xml",
-        "workflow/som_gurb_workflow.xml",
         "security/ir.model.access.csv",
         "wizard/wizard_gurb_create_new_beta_view.xml",
         "wizard/wizard_create_gurb_cups_signature_view.xml",

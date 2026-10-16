@@ -187,7 +187,9 @@ class SomGurbGroup(osv.osv):
             context = {}
 
         gurb_cau_obj = self.pool.get("som.gurb.cau")
-        gurb_cau_ids = gurb_cau_obj.search(cursor, uid, [('gurb_group_id', '=', gurb_group_id)])
+        gurb_cau_ids = gurb_cau_obj.search(cursor, uid, [
+            ('gurb_group_id', '=', gurb_group_id), ('state', '=', 'open')
+        ], context=context)
 
         best_gurb_cau_id = False
         best_cups_cau_priority = 9999

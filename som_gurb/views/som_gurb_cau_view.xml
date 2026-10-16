@@ -32,15 +32,8 @@
                     <group col="6" colspan="4" string="Estats" icon="123">
                         <field name="state_date" colspan="1" />
                         <field name="state" select="1" colspan="1" />
-                        <button string="Obrir GURB CAU" name="button_open" states="draft" type="workflow" confirm="Vols obrir el GURB CAU?" />
-                        <button string="Tancar primera obertura" name="button_close_first_opening" states="first_opening" type="workflow" confirm="Vols tancar la primera obertura del GURB CAU?" />
-                        <button string="Registrar" name="button_register" states="complete" type="workflow" confirm="Vols registar el GURB CAU?" />
-                        <button string="Tornar a primera obertura" name="button_first_reopening" states="incomplete" type="workflow" confirm="Vols tornar a la primera obertura?" />
-                        <button string="Tramitar" name="button_process" states="registered" type="workflow" confirm="Vols tramitar el GURB CAU?" />
-                        <button string="Activar" name="button_activate" states="in_process" type="workflow" confirm="Vols activar el GURB CAU?" />
-                        <button string="Reobrir" name="button_reopen_active_incomplete" states="active_inc" type="workflow" confirm="Vols reobrir el GURB CAU?" />
-                        <button string="Reobrir" name="button_reopen_active_critical_incomplete" states="active_crit_inc" type="workflow" confirm="Vols reobrir el GURB CAU?" />
-                        <button string="Tancar reobertura" name="button_close_reopening" states="reopened" type="workflow" confirm="Vols tancar la reobertura del GURB CAU?" />
+                        <button string="Obrir formulari" name="button_open" states="closed" type="object" confirm="Vols obrir el formulari del GURB CAU?" />
+                        <button string="Tancar formulari" name="button_close" states="open" type="object" confirm="Vols tancar el formulari del GURB CAU?" />
                     </group>
                     <group col="6" colspan="4" string="General" icon="building-cottage">
                         <field name="name" select="1" />

@@ -8,19 +8,11 @@ import logging
 logger = logging.getLogger("openerp.{}".format(__name__))
 
 _GURB_STATES = [
-    ("draft", "Esborrany"),
-    ("first_opening", "Primera Obertura"),
-    ("complete", "Complet"),
-    ("incomplete", "No Complet"),
-    ("registered", "Grup registrat"),
-    ("in_process", "En tràmit"),
-    ("active", "Actiu"),
-    ("active_inc", "Actiu no complet"),
-    ("active_crit_inc", "Actiu no complet critic"),
-    ("reopened", "Reobertura"),
+    ("open", "Formulari obert"),
+    ("closed", "Formulari tancat"),
 ]
 
-_REQUIRED_FIRST_OPENING_FIELDS = [
+_REQUIRED_FORM_OPENING_FIELDS = [
     "name",
     "code",
     "address_id",
@@ -259,40 +251,6 @@ class SomGurbCau(osv.osv):
                 }
         return res
 
-    def change_state(self, cursor, uid, ids, new_state, context=None):
-        write_values = {
-            "state": new_state,
-            "state_date": datetime.now().strftime("%Y-%m-%d")
-        }
-        for record_id in ids:
-            self.write(cursor, uid, ids, write_values, context=context)
-
-    def validate_complete(self, cursor, uid, ids, context=None):
-        for record in self.browse(cursor, uid, ids, context=context):
-            return (
-                record.assigned_betas_kw == record.generation_power
-            )
-
-    def validate_incomplete(self, cursor, uid, ids, context=None):
-        for record in self.browse(cursor, uid, ids, context=context):
-            return (
-                record.assigned_betas_kw != record.generation_power
-            )
-
-    def validate_draft_first_opening(self, cursor, uid, ids, context=None):
-        for record in self.read(cursor, uid, ids, _REQUIRED_FIRST_OPENING_FIELDS, context=context):
-            for k, v in record.items():
-                if not v:
-                    raise osv.except_osv(
-                        _("Error al canviar d'estat"),
-                        _("Per poder obrir el GURB CAU s'ha d'omplir el camp: {}".format(k))
-                    )
-            return True
-
-    def validate_active_critic_incomplete(self, cursor, uid, ids, context=None):
-        for record in self.browse(cursor, uid, ids, context=context):
-            return record.assigned_betas_percentage < record.critical_incomplete_state
-
     def activate_gurb_from_m1_05(self, cursor, uid, sw_id, activation_date, context=None):
         if context is None:
             context = {}
@@ -368,6 +326,30 @@ class SomGurbCau(osv.osv):
             res[gurb_cau_id] = list(set(attach_ids))
         return res
 
+    def button_open(self, cursor, uid, ids, context=None):
+        records = self.read(
+            cursor, uid, ids, _REQUIRED_FORM_OPENING_FIELDS, context=context
+        )
+        for record in records:
+            for field_name in _REQUIRED_FORM_OPENING_FIELDS:
+                if not record[field_name]:
+                    raise osv.except_osv(
+                        _("Error al canviar d'estat"),
+                        _("Per poder obrir el GURB CAU s'ha d'omplir el camp: {}").format(
+                            field_name
+                        )
+                    )
+        return self.write(cursor, uid, ids, {
+            "state": "open",
+            "state_date": datetime.now().strftime("%Y-%m-%d"),
+        }, context=context)
+
+    def button_close(self, cursor, uid, ids, context=None):
+        return self.write(cursor, uid, ids, {
+            "state": "closed",
+            "state_date": datetime.now().strftime("%Y-%m-%d"),
+        }, context=context)
+
     _columns = {
         "name": fields.char("Nom GURB CAU", size=60, required=True),
         "priority": fields.integer(
@@ -399,8 +381,8 @@ class SomGurbCau(osv.osv):
         ),
         "sig_data": fields.char("Dades SIG", size=60),
         "activation_date": fields.date("Data activació GURB CAU"),
-        "state": fields.selection(_GURB_STATES, "Estat del GURB CAU", readonly=True),
-        "state_date": fields.date("Data activació estat", readonly=True),
+        "state": fields.selection(_GURB_STATES, "Estat del formulari", readonly=True),
+        "state_date": fields.date("Data canvi d'estat del formulari", readonly=True),
         "gurb_cups_ids": fields.one2many("som.gurb.cups", "gurb_cau_id", "Betes", readonly=False),
         "notes": fields.text("Observacions"),
         "history_box": fields.text("Històric del GURB CAU", readonly=True),
@@ -528,7 +510,7 @@ class SomGurbCau(osv.osv):
 
     _defaults = {
         "logo": lambda *a: False,
-        "state": lambda *a: "draft",
+        "state": lambda *a: "closed",
     }
 
     _sql_constraints = [(
