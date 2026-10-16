@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+        <record model="ir.ui.view" id="view_giscedata_polissa_form">
+            <field name="name">giscedata.polissa.idx_ab.form</field>
+            <field name="model">giscedata.polissa</field>
+            <field name="inherit_id" ref="giscedata_facturacio_indexada.view_giscedata_polissa_form"/>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <xpath expr="/form/notebook/page[@string='Indexada']/field[@name='coeficient_d']" position="after">
+                    <field name="coeficient_h" select="2"/>
+                </xpath>
+            </field>
+        </record>
+        <record model="ir.ui.view" id="view_modcontractuals_form">
+            <field name="name">giscedata.polissa.modcontractual.facturacio.form</field>
+            <field name="model">giscedata.polissa.modcontractual</field>
+            <field name="type">form</field>
+            <field name="inherit_id" ref="giscedata_facturacio_indexada.view_modcontractuals_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="/form/notebook/page[@string='Indexada']/field[@name='coeficient_d']" position="after">
+                    <field name="coeficient_h" select="2"/>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</openerp>
