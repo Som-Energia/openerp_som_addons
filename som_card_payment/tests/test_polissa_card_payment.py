@@ -287,6 +287,7 @@ class TestCardPaymentInPolissa(testing.OOTestCaseWithCursor):
                 "payment_mode_id": self.payment_mode_id,
                 "tipo_pago": self.payment_type_id,
                 "creditcard": card_id,
+                "bank": False,
             },
         )
 
@@ -330,6 +331,7 @@ class TestCardPaymentInPolissa(testing.OOTestCaseWithCursor):
                 "payment_mode_id": self.payment_mode_id,
                 "tipo_pago": self.payment_type_id,
                 "creditcard": card_id,
+                "bank": False,
             },
         )
         migrated = {"migrated": [99], "remitted": [], "failed": [], "unchanged": []}
@@ -515,6 +517,11 @@ class TestCardPaymentInPolissa(testing.OOTestCaseWithCursor):
         self._ensure_modcontractual_for_polissa()
         self.polissa_obj.wkf_activa(self.cursor, self.uid, [self.polissa_id])
         polissa_id = self.polissa_id
+        original_bank = self.polissa_obj.browse(
+            self.cursor, self.uid, polissa_id
+        ).bank
+        self.assertTrue(original_bank)
+        bank_id = original_bank.id
         card_data = {
             "token": "tok_convert_today",
             "cof_txnid": "cof_convert_today",
@@ -538,6 +545,52 @@ class TestCardPaymentInPolissa(testing.OOTestCaseWithCursor):
         self.assertEqual(polissa.creditcard.id, result["card"]["id"])
         self.assertEqual(polissa.tipo_pago.id, self.payment_type_id)
         self.assertEqual(polissa.payment_mode_id.id, self.payment_mode_id)
+        self.assertFalse(polissa.bank)
+        self.assertFalse(polissa.modcontractual_activa.bank)
+        self.assertTrue(self.openerp.pool.get("res.partner.bank").browse(
+            self.cursor, self.uid, bank_id
+        ))
+
+    def test_convert_to_recurring_card_clears_bank_for_equivalent_card(self):
+        self._ensure_modcontractual_for_polissa()
+        self.polissa_obj.wkf_activa(self.cursor, self.uid, [self.polissa_id])
+        polissa = self.polissa_obj.browse(self.cursor, self.uid, self.polissa_id)
+        self.assertTrue(polissa.bank)
+        card_data = {
+            "token": "tok_convert_bank",
+            "cof_txnid": "cof_convert_bank",
+            "expiry_date": "12/35",
+            "masked_number": "**** **** **** 4249",
+        }
+        card_id = self.card_obj.create(
+            self.cursor, self.uid, dict(card_data, partner_id=polissa.pagador.id)
+        )
+        self.polissa_obj.write(
+            self.cursor, self.uid, [self.polissa_id],
+            {
+                "payment_mode_id": self.payment_mode_id,
+                "tipo_pago": self.payment_type_id,
+                "creditcard": card_id,
+            },
+        )
+
+        result = self.polissa_obj.convert_to_recurring_card(
+            self.cursor, self.uid, self.polissa_id,
+            self._card_data_for_conversion(card_data),
+        )
+
+        self.assertEqual(result["status"], "complete")
+        self.assertEqual(result["contract"]["disposition"], "updated")
+        self.assertEqual(result["card"]["id"], card_id)
+        polissa = self.polissa_obj.browse(self.cursor, self.uid, self.polissa_id)
+        self.assertFalse(polissa.bank)
+        self.assertFalse(polissa.modcontractual_activa.bank)
+
+        retry = self.polissa_obj.convert_to_recurring_card(
+            self.cursor, self.uid, self.polissa_id,
+            self._card_data_for_conversion(card_data),
+        )
+        self.assertEqual(retry["status"], "no-op")
 
     def test_recurring_card_result_is_partial_for_remitted_noop_contract(self):
         result = self.polissa_obj._recurring_card_result(

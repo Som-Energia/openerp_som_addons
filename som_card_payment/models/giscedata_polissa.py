@@ -78,6 +78,7 @@ class GiscedataPolissa(osv.osv):
         )
         already_converted = bool(
             equivalent_card
+            and not polissa.bank
             and polissa.tipo_pago
             and polissa.tipo_pago.id == payment_type_id
             and polissa.payment_mode_id
@@ -115,6 +116,7 @@ class GiscedataPolissa(osv.osv):
                 "tipo_pago": payment_type_id,
                 "payment_mode_id": payment_mode_id,
                 "creditcard": card_result["id"],
+                "bank": False,
             },
             today,
             end_date,
