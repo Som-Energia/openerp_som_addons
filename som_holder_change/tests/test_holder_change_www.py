@@ -5,6 +5,7 @@ from copy import deepcopy
 
 import mock
 import pooler
+from gridfs.errors import NoFile
 from destral import testing
 from destral.patch import PatchNewCursors
 from destral.transaction import Transaction
@@ -603,6 +604,95 @@ class TestHolderChangeWww(testing.OOTestCase):
         self.assertEqual(contract.name, request.contract_number)
         self.simulate_holder_change.assert_called_once()
         self.render_card_reports.assert_called_once()
+
+    def test_wait_for_signature_documents_retries_missing_pdf(self):
+        self._check_wait_for_signature_documents({"id": 1, "doc_file": False})
+
+    def test_wait_for_signature_documents_retries_missing_gridfs_file(self):
+        self._check_wait_for_signature_documents(NoFile("Not yet available"))
+
+    def _check_wait_for_signature_documents(self, first_result):
+        process_obj = self.openerp.pool.get("giscedata.signatura.process")
+        document_obj = self.openerp.pool.get("giscedata.signatura.documents")
+        first_read = first_result if isinstance(first_result, Exception) else [first_result]
+        with mock.patch.object(process_obj, "read", return_value={"files": [1, 2]}):
+            with mock.patch.object(document_obj, "read", side_effect=[
+                first_read,
+                [{"id": 1, "doc_file": b"JVBERi0="}, {"id": 2, "doc_file": False}],
+                [{"id": 1, "doc_file": b"JVBERi0="}, {"id": 2, "doc_file": b"JVBERi0="}],
+            ]) as read:
+                with mock.patch("som_holder_change.www.holder_change_www.time.sleep"):
+                    self.assertTrue(self.www_obj._wait_for_signature_documents(
+                        self.cursor, self.uid, 42, context={"bin_size": True}
+                    ))
+        self.assertEqual(read.call_count, 3)
+        self.assertFalse(read.call_args[1]["context"]["bin_size"])
+
+    def test_wait_for_signature_documents_times_out(self):
+        process_obj = self.openerp.pool.get("giscedata.signatura.process")
+        document_obj = self.openerp.pool.get("giscedata.signatura.documents")
+        with mock.patch.object(process_obj, "read", return_value={"files": [1]}):
+            with mock.patch.object(document_obj, "read", return_value=[{"doc_file": False}]):
+                with mock.patch(
+                    "som_holder_change.www.holder_change_www.time.time",
+                    side_effect=[0, 1, 11],
+                ):
+                    with mock.patch("som_holder_change.www.holder_change_www.time.sleep"):
+                        with self.assertRaises(Exception):
+                            self.www_obj._wait_for_signature_documents(
+                                self.cursor, self.uid, 42
+                            )
+
+    def test_sign_request_waits_for_request_pdf_even_when_state_is_ready(self):
+        payload = self.payload()
+        result = self.www_obj.create_request(self.cursor, self.uid, payload)
+        self.assertTrue(result["success"], result)
+        process_obj = self.openerp.pool.get("giscedata.signatura.process")
+        original_read = self.request_obj.read
+        pdf_reads = []
+
+        def delayed_pdf(cursor, uid, ids, fields=None, context=None, **kwargs):
+            values = original_read(cursor, uid, ids, fields, context=context, **kwargs)
+            if fields == ["state", "contract_pdf"]:
+                pdf_reads.append(True)
+                if len(pdf_reads) == 1:
+                    values["contract_pdf"] = False
+            return values
+
+        with mock.patch.object(self.request_obj, "read", side_effect=delayed_pdf):
+            with mock.patch.object(process_obj, "start", return_value=True) as start:
+                with mock.patch.object(
+                    self.www_obj, "_wait_for_signature_url",
+                    return_value="https://app.signaturit.com/document/signature",
+                ):
+                    with mock.patch("som_holder_change.www.holder_change_www.time.sleep"):
+                        self.www_obj.sign_request(
+                            self.cursor, self.uid, result["request_id"],
+                            payload["contract_info"]["cups"],
+                        )
+        self.assertEqual(len(pdf_reads), 2)
+        start.assert_called_once()
+
+    def test_sign_request_does_not_start_with_missing_documents(self):
+        payload = self.payload()
+        result = self.www_obj.create_request(self.cursor, self.uid, payload)
+        self.assertTrue(result["success"], result)
+        process_obj = self.openerp.pool.get("giscedata.signatura.process")
+        with mock.patch.object(
+            self.www_obj, "_wait_for_signature_documents",
+            side_effect=Exception("Documents timed out"),
+        ):
+            with mock.patch.object(process_obj, "start") as start:
+                with self.assertRaises(Exception):
+                    self.www_obj.sign_request(
+                        self.cursor, self.uid, result["request_id"],
+                        payload["contract_info"]["cups"],
+                    )
+        start.assert_not_called()
+        request = self.request_obj.read(
+            self.cursor, self.uid, result["request_id"], ["signature_process_id"]
+        )
+        self.assertTrue(request["signature_process_id"])
 
     def test_sign_request_keeps_process_after_url_wait_failure(self):
         payload = self.payload()
