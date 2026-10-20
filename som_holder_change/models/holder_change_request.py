@@ -247,7 +247,7 @@ class SomHolderChangeRequest(osv.osv):
             cursor, uid, request, temporary=temporary, context=context
         )
         execution = self._execute_m1_change(
-            cursor, uid, request, change_data, context=context
+            cursor, uid, request, change_data, temporary=temporary, context=context
         )
         self._apply_result_contract_values(
             cursor, uid, request, execution["polissa_id"], change_data, context=context
@@ -284,7 +284,9 @@ class SomHolderChangeRequest(osv.osv):
             "payment_values": payment_values,
         }
 
-    def _execute_m1_change(self, cursor, uid, request, change_data, context=None):
+    def _execute_m1_change(
+        self, cursor, uid, request, change_data, temporary=False, context=None
+    ):
         switching_id, polissa_id = self._run_m1(
             cursor,
             uid,
@@ -292,8 +294,26 @@ class SomHolderChangeRequest(osv.osv):
             change_data["partner_id"],
             change_data["address_id"],
             change_data["payment_values"],
+            temporary=temporary,
             context=context,
         )
+        if temporary and request.owner_change_type == "S":
+            # Subrogations keep the existing contract until M1 activation.
+            # Project the future holder only inside the rolled-back simulation,
+            # before preparing either the mandate or the contract reports.
+            values = change_data["payment_values"].copy()
+            values.update({
+                "titular": change_data["partner_id"],
+                "pagador": change_data["partner_id"],
+                "pagador_sel": "titular",
+                "notificacio": "titular",
+                "altre_p": False,
+                "direccio_pagament": change_data["address_id"],
+                "direccio_notificacio": change_data["address_id"],
+            })
+            self.pool.get("giscedata.polissa").write(
+                cursor, uid, polissa_id, values, context=context
+            )
         mandate_id = self._create_mandate(
             cursor, uid, request, change_data["partner_id"], polissa_id, context=context
         )
@@ -362,7 +382,10 @@ class SomHolderChangeRequest(osv.osv):
                     context=context,
                 )
 
-    def _run_m1(self, cursor, uid, request, partner_id, address_id, payment_values, context=None):
+    def _run_m1(
+        self, cursor, uid, request, partner_id, address_id, payment_values,
+        temporary=False, context=None,
+    ):
         m1_payment_values, is_card_payment = self._m1_payment_values(
             cursor, uid, request, payment_values, context=context
         )
@@ -399,7 +422,7 @@ class SomHolderChangeRequest(osv.osv):
                 contract_values,
                 context=context,
             )
-        if is_card_payment:
+        if is_card_payment and not (temporary and request.owner_change_type == "S"):
             self.pool.get("giscedata.polissa").write(
                 cursor,
                 uid,
