@@ -25,9 +25,11 @@ Current verification: `.github/workflows/pull_request_labeler.yml` requires at l
 | Quan necessites fer un commit de codi | git-commit | .agents/skills/git-commit/SKILL.md |
 | Quan necessites crear una Pull Request | git-pr | .agents/skills/git-pr/SKILL.md |
 | Quan un agent ERP ha de treballar en un worktree des d'un pane Herdr mantenint el context multirepo | erp-herdr-worktree | .agents/skills/erp-herdr-worktree/SKILL.md |
+| Abans de crear una branca o worktree ERP, per alinear les dependències compartides amb CI | erp-workspace-sync | .agents/skills/erp-workspace-sync/SKILL.md |
 | Quan necessites executar tests d'un mòdul OpenERP amb destral | erp-test | .agents/skills/erp-test/SKILL.md |
 | Quan necessites arrencar el servei ERP, executar l'ERP, o obrir l'entorn de desenvolupament | erp-start | .agents/skills/erp-start/SKILL.md |
 | Quan necessites crear un script de migració, modificar el model, o actualitzar un mòdul a producció | erp-migration | .agents/skills/erp-migration/SKILL.md |
+| Quan necessites aplicar una PR sobre una branca ERP divergent resolent conflictes reals | erp-apply-pr-divergent | .agents/skills/erp-apply-pr-divergent/SKILL.md |
 | Quan necessites afegir casos de test/demo XML en un mòdul OpenERP | erp-demo-testcase | .agents/skills/erp-demo-testcase/SKILL.md |
 | Quan necessites fer triage d'incidències de Sentry, "analitzar sentry", "triar incidents" | sentry-triage | .agents/skills/sentry-triage/SKILL.md |
 | Quan necessites actualitzar un report legal o contractual `.mako` a partir d'un `docx` o `md` | update-contract-report | .agents/skills/update-contract-report/SKILL.md |
@@ -68,6 +70,13 @@ Current verification: `.github/workflows/pull_request_labeler.yml` requires at l
 - Per un worktree existent, executa `scripts/erp-herdr-worktree.sh open <path-absolut-worktree>` abans d'editar o fer tests.
 - El companion és només un shell auxiliar; no iniciïs tests ni modifiquis enllaços compartits automàticament.
 
+### erp-workspace-sync
+- Abans de crear una branca o worktree ERP nou, executar `scripts/sync-workspace-repositories.sh` des del checkout que es prepara; ometre-ho per canvis només de docs/CI/metadades
+- Perfil de refs: `.agents/workspace-repositories.tsv`; el valor per defecte d'`erp` és `rolling_erp01` i `somenergia-utils` només s'aplica a Python 2
+- Excepció puntual: `--branch <repo>=<branca>`; persistent només després d'un sync correcte amb `--persist`, o amb `--persist-only` sense sync
+- Si algun repositori és brut, absent o ha divergit, aturar-se: no fer `stash`, `reset`, ni canviar-lo manualment; una branca reescrita requereix `--accept-rewritten-branch <repo>`
+- `--allow-missing` no valida un entorn equivalent a CI
+
 ### erp-test
 - Requisits: virtualenv activat, `WORKSPACE` definit i Docker amb PostgreSQL, MongoDB i Redis
 - Verificar `$WORKSPACE/erp`, `$WORKSPACE/destral` i `$WORKSPACE/openerp_som_addons/docker-compose.yaml`
@@ -82,6 +91,13 @@ Current verification: `.github/workflows/pull_request_labeler.yml` requires at l
 - Opcions: `--update=<module>` per actualitzar mòdul, `--run-scripts=<module>` per migracions
 - Compose: `docker compose -f "$WORKSPACE/openerp_som_addons/docker-compose.yaml"`; serveis `postgres`, `mongo`, `redis`
 - Interfície: http://localhost:8069
+
+### erp-apply-pr-divergent
+- Identificar la base real de la PR mitjançant `refs/pull/<PR>/merge` quan estigui disponible
+- No fer un merge directe si la base no és ancestre de la branca objectiu
+- Aplicar els commits de la PR en ordre amb `git cherry-pick`
+- Resoldre manualment preservant els canvis de la branca objectiu i incorporant els de la PR
+- Validar `git diff --check` i absència de conflictes
 
 ### erp-migration
 - Format: `<pre|post>-<0001>_<descripcio>.py`

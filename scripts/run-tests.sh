@@ -6,7 +6,7 @@ set -euo pipefail
 : "${WORKSPACE:?WORKSPACE no definit. Ex: export WORKSPACE=/home/<user>/src}"
 
 export PYTHONIOENCODING="UTF-8"
-export PYTHONPATH="$WORKSPACE/erp/server/bin:$WORKSPACE/erp/server/bin/addons:$WORKSPACE/erp/server/sitecustomize:${PYTHONPATH:-}"
+export PYTHONPATH="$WORKSPACE/destral:$WORKSPACE/erp/server/bin:$WORKSPACE/erp/server/bin/addons:$WORKSPACE/erp/server/sitecustomize:${PYTHONPATH:-}"
 export PYTHONUNBUFFERED="1"
 
 export DEBUG_ENABLED=0

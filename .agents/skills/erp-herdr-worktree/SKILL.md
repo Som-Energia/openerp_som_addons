@@ -16,15 +16,33 @@ infer the target worktree from its current directory.
 - For `open`, the target is an existing, registered Git worktree.
 - The current terminal is a Herdr-managed pane (`HERDR_ENV=1`).
 - `bash`, `git`, `python3`, and the `herdr` CLI are available. The helper is bundled with this skill; no user-local installation is needed.
+- With `HERDR_ENV=1`, never use `git worktree` commands directly, including to create a worktree: this skill's wrapper is mandatory for `create` and `open`.
 
-If Herdr is unavailable, continue normally and report that no companion pane
-was created.
+With `HERDR_ENV=1`, if the wrapper, Herdr CLI, or caller pane metadata is
+unavailable, stop and do not use direct `git worktree` commands.
+
+The normal repository worktree flow applies only outside a Herdr-managed pane.
 
 ## Procedure
 
 1. State the explicit absolute path of the target worktree and, if it must be
    created, its branch name.
-2. Before editing or running tests, use one command from the directory
+2. Before creating a new worktree, synchronize shared dependencies from the
+   primary checkout using `erp-workspace-sync`:
+
+   ```bash
+   /absolute/path/to/openerp_som_addons/scripts/sync-workspace-repositories.sh
+   ```
+
+   Pass an explicit one-off exception when the development needs one, for
+   example `--branch erp=developer`. The script must finish successfully before
+   the worktree is created; it refuses dirty, absent, or divergent dependencies.
+   `--persist` at this point writes the primary checkout's local override, not
+   the new worktree's. To persist the exception in the new worktree, run its
+   own `scripts/sync-workspace-repositories.sh --branch erp=developer --persist`
+   after creation. This synchronization is not required for `open`, which must
+   not unexpectedly change shared repositories.
+3. Before editing or running tests, use one command from the directory
    containing this `SKILL.md`:
 
    ```bash
@@ -38,10 +56,20 @@ was created.
    ```
 
    The wrapper validates the target, creates the worktree only when requested,
-   then creates a vertical sibling pane rooted at that worktree. It preserves
-   focus on the agent pane and reuses a matching companion in the same tab
-   instead of creating a duplicate.
-3. Use the companion for explicit commands such as inspecting `git diff` or
+   then creates or reuses a vertical sibling pane rooted at that worktree. It
+   preserves focus on the agent pane, names that pane `agent`, and reuses a
+   matching companion in the same tab instead of creating a duplicate. It
+   records both the active worktree basename and companion pane ID as caller
+   metadata.
+4. If no matching companion exists, the helper may retarget exactly one
+   same-tab pane labeled `worktree · ...` rather than creating a split. It only
+   retargets a pane when Herdr reports a single foreground process that is the
+   pane shell itself (`sh`, `bash`, `zsh`, or `fish`). The helper never changes
+   a busy or ambiguous pane; it fails rather than sending it a command or
+   creating another pane. After sending a safely quoted `cd -- <worktree>`, it
+   waits until Herdr reports the new foreground working directory before
+   relabeling the pane. If that confirmation fails, no pane is created.
+5. Use the companion for explicit commands such as inspecting `git diff` or
    running approved tests. Do not start tests, redirect shared addon links, or
    mutate shared ERP state merely by creating the pane.
-4. Report the selected worktree and companion-pane result in the handoff.
+6. Report the selected worktree and companion-pane result in the handoff.

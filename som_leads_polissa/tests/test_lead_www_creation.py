@@ -173,6 +173,24 @@ class TestLeadWwwCreation(BaseSomLeadWwwTest):
         self.assertEqual(lead.crm_id.state, 'done')
         create_entities.assert_not_called()
 
+    def test_contract_pdf_does_not_send_mailchimp_updates(self):
+        www_lead_o = self.get_model("som.lead.www")
+        lead_o = self.get_model("giscedata.crm.lead")
+        result = www_lead_o.create_lead(self.cursor, self.uid, self._basic_values)
+        context = {"test_context": True}
+
+        self.mock_subscribe_member.reset_mock()
+        self.mock_unsubscribe_customer.reset_mock()
+        with mock.patch("netsvc.LocalService") as local_service:
+            local_service.return_value.create.return_value = ("pdf", "pdf")
+            lead_o.contract_pdf(
+                self.cursor, self.uid, result["lead_id"], context=context
+            )
+
+        self.assertEqual(context, {"test_context": True})
+        self.mock_subscribe_member.assert_not_called()
+        self.mock_unsubscribe_customer.assert_not_called()
+
     def test_create_simple_domestic_lead_indexada(self):
         www_lead_o = self.get_model("som.lead.www")
         lead_o = self.get_model("giscedata.crm.lead")
