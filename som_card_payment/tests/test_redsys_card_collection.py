@@ -608,6 +608,20 @@ class TestRedsysCardCollectionConfigured(testing.OOTestCaseWithCursor):
         self.assertEqual(len(second_order), 12)
         self.assertNotEqual(first_order, second_order)
 
+    def test_migrate_empty_contract_does_not_search_all_account_invoices(self):
+        with mock.patch.object(
+            self.invoice_obj, "search", wraps=self.invoice_obj.search
+        ) as invoice_search:
+            result = self.factura_obj.migrate_recurring_card_invoices(
+                self.cursor, self.uid, -1, self.card_type_id,
+                date.today().strftime("%Y-%m-%d"),
+            )
+
+        self.assertEqual(result, {
+            "migrated": [], "remitted": [], "failed": [], "unchanged": [],
+        })
+        invoice_search.assert_not_called()
+
     def test_migrate_recurring_card_invoices_keeps_remitted_invoice_unchanged(self):
         factura = self._prepare_eligible_invoice()
         payment_mode_id = self.imd_obj.get_object_reference(
