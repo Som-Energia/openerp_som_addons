@@ -1080,6 +1080,85 @@ class TestHolderChangeWww(testing.OOTestCase):
         self.assertFalse(result_polissa.donatiu)
         self.assertTrue(old_polissa.donatiu)
 
+    def test_subrogation_reports_use_future_holder_and_mandate(self):
+        self._check_subrogation_report_holder(False)
+
+    def test_card_subrogation_snapshot_uses_future_holder(self):
+        self._check_subrogation_report_holder(True)
+
+    def _check_subrogation_report_holder(self, card_payment):
+        payload = self.payload()
+        payload["especial_cases"]["reason_death"] = True
+        payload["attachments"] = [{
+            "filename": "death-certificate.pdf",
+            "category": "holder_change_death",
+            "datas": "JVBERi0xLjQ=",
+        }]
+        if card_payment:
+            payload["payment_type"] = "tpv"
+            payload.pop("iban", None)
+            payload["payment_authorization_accepted"] = True
+        original = self.polissa_obj.read(
+            self.cursor, self.uid, self.polissa_id,
+            ["titular", "pagador", "direccio_pagament", "direccio_notificacio", "bank"],
+        )
+        rendered_contracts = []
+        rendered_mandates = []
+
+        def check_contract(cursor, uid, polissa_id):
+            polissa = self.polissa_obj.browse(cursor, uid, polissa_id)
+            self.assertEqual(polissa.titular.name, "Nova Titular, Maria")
+            self.assertEqual(polissa.titular.vat, "ES" + payload["contract_owner"]["vat"])
+            self.assertEqual(polissa.pagador.id, polissa.titular.id)
+            self.assertEqual(polissa.direccio_pagament.partner_id.id, polissa.titular.id)
+            self.assertEqual(polissa.direccio_notificacio.id, polissa.direccio_pagament.id)
+            self.assertEqual(
+                polissa.direccio_pagament.nv,
+                payload["contract_owner"]["address"]["street"],
+            )
+            if card_payment:
+                self.assertTrue(polissa.creditcard)
+            else:
+                self.assertEqual(polissa.bank.iban, "ES9121000418450200051332")
+            rendered_contracts.append(polissa_id)
+
+        def create_report(cursor, uid, ids, data, context=None):
+            if self.local_service.call_args[0][0] == "report.report_mandato":
+                mandate = self.openerp.pool.get("payment.mandate").browse(cursor, uid, ids[0])
+                self.assertEqual(mandate.debtor_name, "Nova Titular, Maria")
+                self.assertEqual(mandate.debtor_iban, "ES9121000418450200051332")
+                rendered_mandates.append(ids[0])
+            else:
+                check_contract(cursor, uid, ids[0])
+            return b"%PDF-document", "pdf"
+
+        def create_html(cursor, uid, ids, data, report_values, context=None):
+            check_contract(cursor, uid, ids[0])
+            return self._create_html_report(cursor, uid, ids, data, report_values, context)
+
+        self.local_service.return_value.create.side_effect = create_report
+        self.local_service.return_value._service.create_html.side_effect = create_html
+        result = self.www_obj.create_request(self.cursor, self.uid, payload)
+        self.assertTrue(result["success"], result)
+        self.assertEqual(len(rendered_contracts), 2 if card_payment else 1)
+        self.assertEqual(len(rendered_mandates), 0 if card_payment else 1)
+        self.assertEqual(
+            self.polissa_obj.read(
+                self.cursor, self.uid, self.polissa_id,
+                ["titular", "pagador", "direccio_pagament", "direccio_notificacio", "bank"],
+            ),
+            original,
+        )
+        if card_payment:
+            return
+        self.queue_request(result["request_id"])
+        execution = self.request_obj.execute(self.cursor, self.uid, result["request_id"])
+        self.assertEqual(execution["result_polissa_id"], self.polissa_id)
+        self.assertEqual(
+            self.polissa_obj.read(self.cursor, self.uid, self.polissa_id, ["titular"])["titular"],
+            original["titular"],
+        )
+
     def test_subrogation_creates_draft_m1_and_copies_death_certificates_once(self):
         payload = self.payload()
         payload["linked_member"] = "new_member"
