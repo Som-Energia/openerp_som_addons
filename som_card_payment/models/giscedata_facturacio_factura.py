@@ -39,7 +39,7 @@ class GiscedataFacturacioFactura(osv.osv):
                 ("polissa_id", "=", polissa_id),
                 ("type", "=", "out_invoice"),
                 ("state", "=", "open"),
-                ("invoice_id.residual", ">", 0),
+                ("residual", ">", 0),
                 ("date_due", ">=", today),
             ],
             order="id",
