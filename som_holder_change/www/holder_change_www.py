@@ -197,7 +197,6 @@ class SomHolderChangeWww(osv.osv_memory):
         )
 
     def execute_request(self, cursor, uid, request_id, cups, context=None):
-        import pudb; pu.db
         if context is None:
             context = {}
 
