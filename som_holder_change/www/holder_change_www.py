@@ -3,6 +3,7 @@ from __future__ import absolute_import, unicode_literals
 
 import re
 import time
+import logging
 from copy import deepcopy
 
 import pooler
@@ -30,8 +31,11 @@ class SomHolderChangeWww(osv.osv_memory):
     def create_request(self, cursor, uid, payload, context=None):
         if context is None:
             context = {}
+        logger = logging.getLogger("openerp.{0}.create_request".format(__name__))
+        logger.info("Started create_request")
         validation_error = holder_change_validation.validate_payload(payload)
         if validation_error:
+            logger.warning("create_request payload validation failed")
             return validation_error
 
         cups = self._normalize_cups(payload["contract_info"]["cups"])
@@ -75,26 +79,62 @@ class SomHolderChangeWww(osv.osv_memory):
 
         request_id = self._store_request(
             cursor, uid, payload, cups, polissa_id, context=context)
+        logger.info("Stored request_id=%s; starting preparation", request_id)
 
         preparation_error = self._prepare_stored_request(
             cursor, uid, request_id, context=context)
 
-        return preparation_error or self._request_response(
+        if preparation_error:
+            logger.warning("Preparation failed request_id=%s", request_id)
+            return preparation_error
+
+        response = self._request_response(
             cursor, uid, request_id, context=context)
+        logger.info(
+            "Finished create_request request_id=%s state=%s; pending RPC commit",
+            request_id, response["state"],
+        )
+        return response
 
     def add_payment_card_data(
         self, cursor, uid, request_id, cups, card_values, context=None
     ):
+        logger = logging.getLogger("openerp.{0}.add_payment_card_data".format(__name__))
+        logger.info("Started add_payment_card_data request_id=%s", request_id)
+
         request_obj = self.pool.get("som.holder.change.request")
         request = self._get_request(cursor, uid, request_id, cups, context=context)
+        logger.info(
+            "Before set_card_data request_id=%s state=%s",
+            request.id, request.state,
+        )
         cursor.commit()
+        logger.info("Starting set_card_data request_id=%s", request_id)
         request_obj.set_card_data(cursor, uid, request_id, card_values, context=context)
+        logger.info(
+            "Finished set_card_data request_id=%s; committing awaiting_signature",
+            request_id,
+        )
+        cursor.commit()
+        logger.info("Committed awaiting_signature request_id=%s", request_id)
         return {"success": True, "request_id": request.id, "state": "awaiting_signature"}
 
     def sign_request(self, cursor, uid, request_id, cups, context=None):
         if context is None:
             context = {}
+        logger = logging.getLogger("openerp.{0}.sign_request".format(__name__))
+        logger.info("Started sign_request request_id=%s", request_id)
+
+        timeout_seconds = 10.0
+        poll_interval = 0.2
+        deadline = time.time() + timeout_seconds
+
         request = self._get_request(cursor, uid, request_id, cups, context=context)
+        logger.info(
+            "sign_request request_id=%s state=%s signature_process_id=%s",
+            request.id, request.state,
+            request.signature_process_id.id if request.signature_process_id else False,
+        )
         process_obj = self.pool.get("giscedata.signatura.process")
         request_obj = self.pool.get("som.holder.change.request")
         if request.signature_process_id and request.signature_process_id.signature_url:
@@ -102,9 +142,23 @@ class SomHolderChangeWww(osv.osv_memory):
                 request.signature_process_id.signature_url,
                 request.payload["contract_owner"]["lang"],
             )}
+        state = request_obj.read(
+            cursor, uid, request_id, ["state"], context=context
+        )['state']
+        while time.time() < deadline:
+            if state == "awaiting_signature":
+                break
+            state = request_obj.read(
+                cursor, uid, request_id, ["state"], context=context
+            )['state']
+            time.sleep(poll_interval)
         if request.signature_process_id:
             process_id = request.signature_process_id.id
-        elif request.state != "awaiting_signature":
+        elif state != "awaiting_signature":
+            logger.warning(
+                "Signing rejected request_id=%s state=%s: no signature process",
+                request.id, request.state,
+            )
             raise osv.except_osv(_("Invalid request state"), _(
                 "The request is not ready for signing."))
         else:
@@ -200,7 +254,15 @@ class SomHolderChangeWww(osv.osv_memory):
         if context is None:
             context = {}
 
+        logger = logging.getLogger("openerp.{0}.execute_request".format(__name__))
+        logger.info("Started execute_request request_id=%s", request_id)
+
         request = self._get_request(cursor, uid, request_id, cups, context=context)
+        logger.info(
+            "execute_request request_id=%s state=%s signature_process_id=%s",
+            request.id, request.state,
+            request.signature_process_id.id if request.signature_process_id else False,
+        )
         if not request.signature_process_id:
             raise osv.except_osv(_("Signature required"), _(
                 "The request has not been sent for signing."))
@@ -377,6 +439,8 @@ class SomHolderChangeWww(osv.osv_memory):
         return False
 
     def _get_request(self, cursor, uid, request_id, cups, context=None):
+        if context is None:
+            context = {}
         request = self.pool.get("som.holder.change.request").browse(
             cursor, uid, request_id, context=context
         )
