@@ -302,6 +302,8 @@ class SomHolderChangeRequest(osv.osv):
             # Project the future holder only inside the rolled-back simulation,
             # before preparing either the mandate or the contract reports.
             values = change_data["payment_values"].copy()
+            if self._payment_method(request) == "tpv":
+                values["bank"] = False
             values.update({
                 "titular": change_data["partner_id"],
                 "pagador": change_data["partner_id"],
