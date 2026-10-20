@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+from __future__ import absolute_import
+
 from osv import osv
 
 
@@ -18,6 +20,12 @@ class CupsHelper(osv.osv_memory):
         ])
         return bool(sw_ids)
 
+    def get_polissa_id(self, cursor, uid, cups_id, context=None):
+        if context is None:
+            context = {}
+        return self._get_polissa_id(cursor, uid, cups_id, context=context)
+
+    # TODO: Eliminar la privada en 2 mesos.
     def _get_polissa_id(self, cursor, uid, cups_id, context=None):
         if context is None:
             context = {}
@@ -72,7 +80,7 @@ class CupsHelper(osv.osv_memory):
         ]
         pol_ids = pol_obj.search(cursor, uid, search_params, context=context)
         if not pol_ids:
-            return ''
+            return result
 
         pol_br = pol_obj.browse(cursor, uid, pol_ids[-1], context=context)
 
