@@ -166,6 +166,9 @@ class SomHolderChangeWww(osv.osv_memory):
             # Keep the provider process associated even if URL polling later fails.
             with pooler.get_db(cursor.dbname).cursor() as registration_cursor:
                 with Sudo(uid=uid, gid=0):
+                    request = request_obj.browse(
+                        registration_cursor, uid, request_id, context=context
+                    )
                     process_id = process_obj.create(
                         registration_cursor,
                         uid,
