@@ -7,6 +7,7 @@ import logging
 from copy import deepcopy
 
 import pooler
+from gridfs.errors import NoFile
 
 from osv import osv
 from oorq.decorators import job
@@ -142,19 +143,22 @@ class SomHolderChangeWww(osv.osv_memory):
                 request.signature_process_id.signature_url,
                 request.payload["contract_owner"]["lang"],
             )}
-        state = request_obj.read(
-            cursor, uid, request_id, ["state"], context=context
-        )['state']
+        document_context = dict(context, bin_size=False)
+        ready = False
+        state = request.state
         while time.time() < deadline:
-            if state == "awaiting_signature":
+            values = request_obj.read(
+                cursor, uid, request_id, ["state", "contract_pdf"],
+                context=document_context,
+            )
+            state = values["state"]
+            ready = state == "awaiting_signature" and bool(values["contract_pdf"])
+            if ready:
                 break
-            state = request_obj.read(
-                cursor, uid, request_id, ["state"], context=context
-            )['state']
             time.sleep(poll_interval)
         if request.signature_process_id:
             process_id = request.signature_process_id.id
-        elif state != "awaiting_signature":
+        elif not ready:
             logger.warning(
                 "Signing rejected request_id=%s state=%s: no signature process",
                 request.id, request.state,
@@ -167,8 +171,11 @@ class SomHolderChangeWww(osv.osv_memory):
             with pooler.get_db(cursor.dbname).cursor() as registration_cursor:
                 with Sudo(uid=uid, gid=0):
                     request = request_obj.browse(
-                        registration_cursor, uid, request_id, context=context
+                        registration_cursor, uid, request_id, context=document_context
                     )
+                    if not request.contract_pdf:
+                        raise osv.except_osv(_("Signature error"), _(
+                            "The request is not ready for signing."))
                     process_id = process_obj.create(
                         registration_cursor,
                         uid,
@@ -189,8 +196,11 @@ class SomHolderChangeWww(osv.osv_memory):
         with pooler.get_db(cursor.dbname).cursor() as signature_cursor:
             with Sudo(uid=uid, gid=0):
                 try:
+                    self._wait_for_signature_documents(
+                        signature_cursor, uid, process_id, context=context
+                    )
                     process_obj.start(
-                        signature_cursor, uid, [process_id], context=context
+                        signature_cursor, uid, [process_id], context=document_context
                     )
                 except Exception as error:
                     start_error = error
@@ -575,6 +585,27 @@ class SomHolderChangeWww(osv.osv_memory):
             })],
             "files": files,
         }
+
+    def _wait_for_signature_documents(self, cursor, uid, process_id, context=None):
+        process_obj = self.pool.get("giscedata.signatura.process")
+        document_obj = self.pool.get("giscedata.signatura.documents")
+        document_context = dict(context or {}, bin_size=False)
+        deadline = time.time() + 10.0
+        while time.time() < deadline:
+            process = process_obj.read(
+                cursor, uid, process_id, ["files"], context=document_context
+            )
+            try:
+                documents = document_obj.read(
+                    cursor, uid, process["files"], ["doc_file"], context=document_context
+                ) if process["files"] else []
+            except NoFile:
+                documents = []
+            if documents and all(document["doc_file"] for document in documents):
+                return True
+            time.sleep(0.2)
+        raise osv.except_osv(_("Signature error"), _(
+            "The request is not ready for signing."))
 
     def _wait_for_signature_url(self, cursor, uid, process_obj, process_id, context=None):
         deadline = time.time() + 200.0
