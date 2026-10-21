@@ -443,6 +443,7 @@ class RefundRectifyBatch(osv.osv):
                 "state": "pending", "outcome": False, "started_at": False,
                 "finished_at": False, "result": False, "error": False,
                 "generated_invoice_ids": [(6, 0, [])],
+                "source_invoice_ids": [(6, 0, [])],
                 "validation_evaluated": False, "validation_warning_count": 0,
                 "validation_warnings": False,
             }, context=context)
@@ -475,6 +476,7 @@ class RefundRectifyBatch(osv.osv):
                     "result": _("Cancel·lada manualment abans d'executar-se."),
                     "error": False,
                     "generated_invoice_ids": [(6, 0, [])],
+                    "source_invoice_ids": [(6, 0, [])],
                     "validation_evaluated": False, "validation_warning_count": 0,
                     "validation_warnings": False,
                 }, context=context)
@@ -750,6 +752,14 @@ class RefundRectifyBatchLine(osv.osv):
             "Factures generades",
             readonly=True,
         ),
+        "source_invoice_ids": fields.many2many(
+            "giscedata.facturacio.factura",
+            "refund_rectify_batch_line_source_factura_rel",
+            "line_id",
+            "factura_id",
+            "Factures client originals",
+            readonly=True,
+        ),
         "generated_invoice_count": fields.function(
             _get_generated_invoice_count,
             method=True,
@@ -796,6 +806,7 @@ class RefundRectifyBatchLine(osv.osv):
             "result": "\n".join(result.get("messages", [])),
             "error": str(error) if error else False,
             "generated_invoice_ids": [(6, 0, result.get("generated_invoice_ids", []))],
+            "source_invoice_ids": [(6, 0, result.get("source_invoice_ids", []))],
             "validation_evaluated": result.get("validation_evaluated", False),
             "validation_warning_count": result.get("validation_warning_count", 0),
             "validation_warnings": result.get("validation_warnings", ""),

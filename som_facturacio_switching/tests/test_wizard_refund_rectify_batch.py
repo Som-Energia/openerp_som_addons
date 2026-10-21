@@ -457,6 +457,7 @@ class TestRefundRectifyBatchLineProcessOneF1(testing.OOTestCaseWithCursor):
                 result = self.line_obj.process_one_f1(self.cursor, self.uid, f1_id, context={})
 
         self.assertEqual(result["status"], "no_action")
+        self.assertEqual(result["source_invoice_ids"], [])
         self.assertEqual(result["removed_draft_invoice_ids"], [51])
         self.assertFalse(result["validation_evaluated"])
         self.assertEqual(result["validation_warning_count"], 0)
@@ -464,6 +465,43 @@ class TestRefundRectifyBatchLineProcessOneF1(testing.OOTestCaseWithCursor):
         self.assertEqual(result["generated_invoice_ids"], [])
         self.assertTrue(result["observation_written"])
         mock_observation.assert_called_once()
+
+    def _capture_persisted_outcome(self, result):
+        with mock.patch.object(self.line_obj, "write") as write:
+            with mock.patch.object(self.line_obj, "read", return_value={"batch_id": [7, "F1"]}):
+                with mock.patch.object(refund_rectify_batch.RefundRectifyBatch,
+                                       "_refresh_execution"):
+                    self.line_obj._persist_line_outcome(
+                        self.cursor, self.uid, 3, result=result, context={}
+                    )
+        return write.call_args[0][3]
+
+    @mock.patch.object(refund_rectify_batch.RefundRectifyBatchLine, "_write_f1_observation")
+    @mock.patch.object(
+        refund_rectify_batch.RefundRectifyBatchLine, "_delete_draft_invoices_if_needed"
+    )
+    @mock.patch.object(refund_rectify_batch.RefundRectifyBatchLine, "_refund_rectify_if_needed")
+    @mock.patch.object(
+        refund_rectify_batch.RefundRectifyBatchLine, "_recarregar_lectures_between_dates"
+    )
+    @mock.patch.object(refund_rectify_batch.RefundRectifyBatchLine, "_get_factures_client_by_dates")
+    def test_persists_originals_when_ab_re_cleanup_removes_all_generated_invoices(
+            self, invoices, readings, refund, cleanup, observation):
+        f1_id, fact_info = self._prepare_rectifying_f1()
+        invoices.return_value = ([31, 32], "", [51])
+        readings.return_value = 2
+        refund.return_value = [41, 42]
+        cleanup.return_value = (["Les factures AB i RE tenen mateix import, s'esborren"], [])
+        with self._patch_most_recent_polissa(fact_info):
+            with mock.patch.object(self.line_obj, "_get_f1_meter_ids", return_value=[1]):
+                result = self.line_obj.process_one_f1(self.cursor, self.uid, f1_id, context={})
+        vals = self._capture_persisted_outcome(result)
+        self.assertEqual(vals["state"], "done")
+        self.assertEqual(vals["outcome"], "processed")
+        self.assertEqual(vals["source_invoice_ids"], [(6, 0, [31, 32])])
+        self.assertEqual(vals["generated_invoice_ids"], [(6, 0, [])])
+        cleanup.assert_called_once_with(self.cursor, self.uid, [41, 42], [31, 32], context={})
+        invoices.assert_called_once()
 
     def test_process_one_f1_rejects_expected_polissa_mismatch(self):
         f1_id, fact_info = self._prepare_rectifying_f1()
@@ -542,6 +580,12 @@ class TestRefundRectifyBatchLineProcessOneF1(testing.OOTestCaseWithCursor):
                 result = self.line_obj.process_one_f1(self.cursor, self.uid, f1_id, context={})
 
         self.assertEqual(result["status"], "no_action")
+        self.assertEqual(result["source_invoice_ids"], [31])
+        vals = self._capture_persisted_outcome(result)
+        self.assertEqual(vals["source_invoice_ids"], [(6, 0, [31])])
+        self.assertEqual(vals["generated_invoice_ids"], [(6, 0, [])])
+        self.assertEqual(vals["outcome"], "no_action")
+        mock_invoices.assert_called_once()
         self.assertFalse(result["observation_written"])
         self.assertFalse(mock_refund.called)
 
@@ -1143,6 +1187,7 @@ class TestRefundRectifyBatchExecutionPersistence(testing.OOTestCaseWithCursor):
         result = {
             "status": "processed",
             "messages": ["F1 processat"],
+            "source_invoice_ids": [21, 22, 23],
             "generated_invoice_ids": [31, 32],
             "validation_evaluated": True,
             "validation_warning_count": 1,
@@ -1163,6 +1208,7 @@ class TestRefundRectifyBatchExecutionPersistence(testing.OOTestCaseWithCursor):
         self.assertEqual(vals["result"], "F1 processat")
         self.assertFalse(vals["error"])
         self.assertEqual(vals["generated_invoice_ids"], [(6, 0, [31, 32])])
+        self.assertEqual(vals["source_invoice_ids"], [(6, 0, [21, 22, 23])])
         self.assertTrue(vals["validation_evaluated"])
         self.assertEqual(vals["validation_warning_count"], 1)
         self.assertEqual(vals["validation_warnings"], result["validation_warnings"])
@@ -1187,9 +1233,25 @@ class TestRefundRectifyBatchExecutionPersistence(testing.OOTestCaseWithCursor):
         vals = write.call_args[0][3]
         self.assertEqual(vals["state"], "done")
         self.assertEqual(vals["outcome"], "no_action")
+        self.assertEqual(vals["source_invoice_ids"], [(6, 0, [])])
         self.assertFalse(vals["validation_evaluated"])
         self.assertEqual(vals["validation_warning_count"], 0)
         self.assertFalse(vals["validation_warnings"])
+
+    def test_missing_source_result_defaults_without_inferring_from_generated_invoices(self):
+        for result in [None, {}, {"status": "processed", "generated_invoice_ids": [31]}]:
+            with mock.patch.object(self.line_obj, "write") as write:
+                with mock.patch.object(self.line_obj, "read",
+                                       return_value={"batch_id": [7, "F1"]}):
+                    with mock.patch.object(self.batch_obj, "_refresh_execution"):
+                        self.line_obj._persist_line_outcome(
+                            self.cursor, self.uid, 3, result=result, context={}
+                        )
+            vals = write.call_args[0][3]
+            self.assertEqual(vals["source_invoice_ids"], [(6, 0, [])])
+            self.assertEqual(vals["generated_invoice_ids"], [
+                (6, 0, (result or {}).get("generated_invoice_ids", [])),
+            ])
 
     def test_persists_technical_error_for_failed_line(self):
         batch_obj = mock.Mock()
@@ -1204,7 +1266,8 @@ class TestRefundRectifyBatchExecutionPersistence(testing.OOTestCaseWithCursor):
                         3,
                         error=ValueError("Unexpected error"),
                         result={"validation_evaluated": True, "validation_warning_count": 1,
-                                "validation_warnings": "stale"},
+                                "validation_warnings": "stale", "source_invoice_ids": [21, 22],
+                                "generated_invoice_ids": [31], "messages": ["stale"]},
                         started_at=started_at,
                         context={},
                     )
@@ -1212,6 +1275,9 @@ class TestRefundRectifyBatchExecutionPersistence(testing.OOTestCaseWithCursor):
         vals = write.call_args[0][3]
         self.assertEqual(vals["state"], "failed")
         self.assertFalse(vals["outcome"])
+        self.assertEqual(vals["source_invoice_ids"], [(6, 0, [])])
+        self.assertEqual(vals["generated_invoice_ids"], [(6, 0, [])])
+        self.assertEqual(vals["result"], "")
         self.assertEqual(vals["error"], "Unexpected error")
         self.assertEqual(vals["started_at"], started_at)
         self.assertFalse(vals["validation_evaluated"])
@@ -1873,6 +1939,12 @@ class TestRefundRectifyBatchRecoveryActions(testing.OOTestCaseWithCursor):
 
         self.assertEqual(line_obj.write.call_args[0][2], [3, 4])
         self.assertEqual(line_obj.write.call_args[0][3]["state"], "cancelled")
+        self.assertEqual(line_obj.write.call_args[0][3]["source_invoice_ids"], [(6, 0, [])])
+        self.assertEqual(line_obj.write.call_args[0][3]["generated_invoice_ids"], [(6, 0, [])])
+        line_obj.search.assert_called_once_with(
+            self.cursor, self.uid, [("batch_id", "=", 7), ("state", "=", "pending")],
+            context={},
+        )
         self.assertFalse(line_obj.write.call_args[0][3]["validation_evaluated"])
         self.assertEqual(line_obj.write.call_args[0][3]["validation_warning_count"], 0)
         self.assertFalse(line_obj.write.call_args[0][3]["validation_warnings"])
@@ -1883,6 +1955,7 @@ class TestRefundRectifyBatchRecoveryActions(testing.OOTestCaseWithCursor):
             "id": line_id, "sequence": sequence if sequence is not None else line_id,
             "state": state, "outcome": outcome, "f1_id": (line_id + 100, "F1"),
             "generated_invoice_ids": [line_id + 200] if state == "done" else [],
+            "source_invoice_ids": [line_id + 300],
             "result": u"Resultat à", "error": False,
             "validation_evaluated": state == "done",
             "validation_warning_count": 1 if state == "done" else 0,
@@ -1960,8 +2033,11 @@ class TestRefundRectifyBatchRecoveryActions(testing.OOTestCaseWithCursor):
             "state": "pending", "outcome": False, "started_at": False,
             "finished_at": False, "result": False, "error": False,
             "generated_invoice_ids": [(6, 0, [])], "validation_evaluated": False,
+            "source_invoice_ids": [(6, 0, [])],
             "validation_warning_count": 0, "validation_warnings": False,
         })
+        self.assertEqual(lines[2]["source_invoice_ids"], [(6, 0, [])])
+        self.assertEqual(lines[3]["source_invoice_ids"], [(6, 0, [])])
         self.assertEqual(result["write"].call_args[0][3]["state"], "pending")
         self.assertFalse(result["write"].call_args[0][3]["finished_at"])
         result["refresh"].assert_called_once_with(result["cursor"], self.uid, 7, context={})
@@ -2101,6 +2177,7 @@ class TestRefundRectifyBatchRecoveryActions(testing.OOTestCaseWithCursor):
                 "batch_id": batch_id, "f1_id": f1_id, "sequence": sequence,
                 "state": state, "outcome": "processed" if state == "done" else False,
                 "generated_invoice_ids": [(6, 0, [invoice_id])] if state == "done" else [],
+                "source_invoice_ids": [(6, 0, [invoice_id])],
                 "result": u"Resultat original à", "error": "Original error",
                 "validation_evaluated": state == "done", "validation_warning_count": 1,
                 "validation_warnings": u"Factura %s: [TEST] Avís à" % invoice_id,
@@ -2111,7 +2188,8 @@ class TestRefundRectifyBatchRecoveryActions(testing.OOTestCaseWithCursor):
         batch_id, line_obj, line_ids, fact_obj, invoice_id = self._stored_retry_batch(
             ["failed", "done"]
         )
-        fields = ["state", "outcome", "generated_invoice_ids", "result", "error",
+        fields = ["state", "outcome", "generated_invoice_ids", "source_invoice_ids",
+                  "result", "error",
                   "validation_evaluated", "validation_warning_count", "validation_warnings"]
         original = line_obj.read(self.cursor, self.uid, line_ids, fields)
         original_batch = self.batch_obj.read(
@@ -2133,12 +2211,35 @@ class TestRefundRectifyBatchRecoveryActions(testing.OOTestCaseWithCursor):
         self.assertEqual(fact_obj.read(self.cursor, self.uid, invoice_id, ["state", "name"]),
                          original_invoice)
 
+    def test_stored_outcome_keeps_source_and_generated_relations_independent(self):
+        batch_id, line_obj, line_ids, fact_obj, invoice_id = self._stored_retry_batch(["done"])
+        line_id = line_ids[0]
+        line_obj._persist_line_outcome(self.cursor, self.uid, line_id, result={
+            "status": "no_action", "source_invoice_ids": [invoice_id],
+            "generated_invoice_ids": [],
+        }, context={})
+        line = line_obj.read(self.cursor, self.uid, line_id, [
+            "source_invoice_ids", "generated_invoice_ids", "outcome",
+        ])
+        self.assertEqual(line["source_invoice_ids"], [invoice_id])
+        self.assertEqual(line["generated_invoice_ids"], [])
+        self.assertEqual(line["outcome"], "no_action")
+        line_obj._persist_line_outcome(self.cursor, self.uid, line_id, result={
+            "status": "processed", "generated_invoice_ids": [invoice_id],
+        }, context={})
+        line = line_obj.read(self.cursor, self.uid, line_id, [
+            "source_invoice_ids", "generated_invoice_ids",
+        ])
+        self.assertEqual(line["source_invoice_ids"], [])
+        self.assertEqual(line["generated_invoice_ids"], [invoice_id])
+
     def test_stored_safe_retry_refreshes_pending_and_reentrant_request_cannot_schedule_twice(
             self):
         batch_id, line_obj, line_ids, fact_obj, invoice_id = self._stored_retry_batch(
             ["done", "failed", "blocked", "cancelled"]
         )
-        fields = ["state", "outcome", "generated_invoice_ids", "result", "error",
+        fields = ["state", "outcome", "generated_invoice_ids", "source_invoice_ids",
+                  "result", "error",
                   "validation_evaluated", "validation_warning_count", "validation_warnings"]
         original = line_obj.read(self.cursor, self.uid, [line_ids[0], line_ids[3]], fields)
         with mock.patch.object(self.batch_obj, "schedule_batch_execution") as schedule:
@@ -2160,6 +2261,7 @@ class TestRefundRectifyBatchRecoveryActions(testing.OOTestCaseWithCursor):
             self.assertEqual(line["state"], "pending")
             self.assertFalse(line["outcome"])
             self.assertEqual(line["generated_invoice_ids"], [])
+            self.assertEqual(line["source_invoice_ids"], [])
             self.assertFalse(line["validation_evaluated"])
             self.assertEqual(line["validation_warning_count"], 0)
             self.assertFalse(line["validation_warnings"])
