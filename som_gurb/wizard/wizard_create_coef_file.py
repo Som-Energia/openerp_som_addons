@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+from __future__ import absolute_import, division
+
 import base64
 from decimal import Decimal, ROUND_HALF_UP
 from osv import osv, fields
@@ -103,7 +105,26 @@ class WizardCreateCoeficicientsFile(osv.osv_memory):
             "file_name": file_name,
         }
 
-        self.write(cursor, uid, ids, write_vals, context=context)
+        write_vals['generation_date'] = today
+        for wizard in self.read(
+            cursor, uid, ids,
+            ['state', 'save_attachment', 'update_agreement_date'], context=context
+        ):
+            if wizard['state'] == 'done':
+                continue
+            if wizard['save_attachment']:
+                self.pool.get('ir.attachment').create(cursor, uid, {
+                    'name': file_name,
+                    'datas': mfile,
+                    'datas_fname': file_name,
+                    'res_model': 'som.gurb.cau',
+                    'res_id': current_gurb,
+                }, context=context)
+            if wizard['update_agreement_date']:
+                self.pool.get('som.gurb.cau').write(cursor, uid, [current_gurb], {
+                    'last_distribution_agreement_date': today,
+                }, context=context)
+            self.write(cursor, uid, [wizard['id']], write_vals, context=context)
 
     _columns = {
         "state": fields.selection(
@@ -113,12 +134,20 @@ class WizardCreateCoeficicientsFile(osv.osv_memory):
             ],
             "State",
         ),
+        "generation_date": fields.date("Data de generació", readonly=True),
+        "save_attachment": fields.boolean("Guardar fitxer de coeficients al GURB CAU"),
+        "update_agreement_date": fields.boolean(
+            "Actualitzar data d'últim acord de repartiment al GURB CAU"
+        ),
         "file": fields.binary("Fitxer de Coeficients"),
         "file_name": fields.char("Nom fitxer", size=128),
     }
 
     _defaults = {
         "state": lambda *a: "init",
+        "generation_date": lambda *a: datetime.today().strftime('%Y-%m-%d'),
+        "save_attachment": lambda *a: False,
+        "update_agreement_date": lambda *a: False,
     }
 
 
