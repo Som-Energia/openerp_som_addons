@@ -107,8 +107,47 @@
                         <field name="finished_at"/>
                     </group>
                     <separator colspan="4"/>
-                    <group colspan="4" col="4" string="Factures generades" height="400">
-                        <field name="generated_invoice_ids" colspan="4" nolabel="1" width="300" height="300"/>
+                    <group colspan="4" col="4" string="Factures client originals" height="400">
+                        <field name="source_invoice_ids" readonly="1" colspan="4" nolabel="1" width="300" height="300">
+                            <tree string="Factures client originals">
+                                <field name="name" string="Referència / descripció"/>
+                                <field name="number" string="Número de factura"/>
+                                <field name="type" string="Tipus de factura"/>
+                                <field name="rectificative_type" string="Tipus de rectificació"/>
+                                <field name="data_inici" string="Inici del període"/>
+                                <field name="data_final" string="Fi del període"/>
+                                <field name="state" string="Estat"/>
+                                <field name="amount_total" string="Total"/>
+                            </tree>
+                        </field>
+                    </group>
+                    <group colspan="4" col="4" string="Factures client generades" height="400">
+                        <field name="generated_invoice_ids" readonly="1" colspan="4" nolabel="1" width="300" height="300">
+                            <tree string="Factures client generades">
+                                <field name="name" string="Referència / descripció"/>
+                                <field name="number" string="Número de factura"/>
+                                <field name="type" string="Tipus de factura"/>
+                                <field name="rectificative_type" string="Tipus de rectificació"/>
+                                <field name="data_inici" string="Inici del període"/>
+                                <field name="data_final" string="Fi del període"/>
+                                <field name="state" string="Estat"/>
+                                <field name="amount_total" string="Total"/>
+                            </tree>
+                        </field>
+                    </group>
+                    <group colspan="4" col="4" string="Factures proveïdor del període" height="400">
+                        <field name="supplier_invoice_ids" readonly="1" colspan="4" nolabel="1" width="300" height="300">
+                            <tree string="Factures proveïdor del període">
+                                <field name="name" string="Referència / descripció"/>
+                                <field name="number" string="Número de factura"/>
+                                <field name="type" string="Tipus de factura"/>
+                                <field name="rectificative_type" string="Tipus de rectificació"/>
+                                <field name="data_inici" string="Inici del període"/>
+                                <field name="data_final" string="Fi del període"/>
+                                <field name="state" string="Estat"/>
+                                <field name="amount_total" string="Total"/>
+                            </tree>
+                        </field>
                     </group>
                     <separator colspan="4"/>
                     <group colspan="4" col="4" string="Resultat">
