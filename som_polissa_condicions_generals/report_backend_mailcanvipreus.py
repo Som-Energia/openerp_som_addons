@@ -5,6 +5,7 @@ from mako.template import Template
 from giscedata_facturacio.report.utils import get_atr_price
 from som_indexada.utils import calculate_new_indexed_prices
 from datetime import date, timedelta
+import json
 
 
 _DECIMALS = {
@@ -120,7 +121,56 @@ class ReportBackendMailcanvipreusEnviamentMassiu(ReportBackend):
         env_o = self.pool.get("som.enviament.massiu")
         env_br = env_o.browse(cursor, uid, record_id, context=context)
 
+        if env_br.price_change_snapshot:
+            return json.loads(env_br.price_change_snapshot)['lang']
         return env_br.polissa_id.titular.lang
+
+    @report_browsify
+    def get_campaign_data(self, cursor, uid, env, context=None):
+        ctx = dict(context or {})
+        template_id = ctx.get('pem_template_id')
+        if not template_id:
+            raise ValueError('Price-change campaigns require pem_template_id')
+        env_obj = self.pool.get('som.enviament.massiu')
+        snapshot = env_obj._get_price_change_snapshot(
+            cursor, uid, env.id, template_id, context=ctx)
+        ctx.update({
+            'lang': snapshot['lang'],
+            'price_change_old_price_date': snapshot['old_price_date'],
+            'price_change_effective_date': snapshot['effective_date'],
+        })
+        backend = self.pool.get('report.backend.mailcanvipreus.pdf')
+        data = backend.get_data(cursor, uid, env.polissa_id.id, context=ctx)
+        if not data.get('modcon'):
+            data['contract_attachment_id'] = env_obj._check_price_change_attachment(
+                cursor, uid, env.id, context=ctx)
+        data.update({
+            'lang': snapshot['lang'],
+            'campaign': dict((name, snapshot[name]) for name in (
+                'selection_date', 'old_price_date', 'effective_date')),
+            'banners': dict((code, translations[snapshot['lang']])
+                            for code, translations in snapshot['banners'].items()),
+        })
+        return data
+
+    @report_browsify
+    def get_campaign_subject(self, cursor, uid, env, context=None):
+        template_id = env.lot_enviament.email_template.id
+        snapshot = self.pool.get('som.enviament.massiu')._get_price_change_snapshot(
+            cursor, uid, env.id, template_id, context=context)
+        if snapshot['lang'] == 'ca_ES':
+            return '[CORREU INFORMATIU] Canvi de tarifes a partir de {}'.format(
+                snapshot['effective_date'])
+        return '[CORREO INFORMATIVO] Cambio de tarifas a partir de {}'.format(
+            snapshot['effective_date'])
+
+    def format_return(self, cursor, uid, record, func_name, data, context=None):
+        # Campaign data has exactly the same numeric paths as historical data.
+        # Do not introduce the decorator's extra ('campaign_data',) path prefix.
+        if func_name == 'get_campaign_data':
+            func_name = 'get_data'
+        return super(ReportBackendMailcanvipreusEnviamentMassiu, self).format_return(
+            cursor, uid, record, func_name, data, context=context)
 
 
 ReportBackendMailcanvipreusEnviamentMassiu()
@@ -136,8 +186,7 @@ class ReportBackendMailcanvipreusPDF(ReportBackend):
     def get_data(self, cursor, uid, pol_id, context=None):
         imd_obj = self.pool.get('ir.model.data')
         pol_obj = self.pool.get("giscedata.polissa")
-        if context is None:
-            context = {}
+        context = dict(context or {})
 
         # context['iva10'] = pol_id.potencia <= 10
 
@@ -145,6 +194,8 @@ class ReportBackendMailcanvipreusPDF(ReportBackend):
             cursor, uid, pol_id.id, context=context)
 
         impostos_str = self.get_iva_text()
+        if context.get('price_change_effective_date'):
+            context['price_change_taxes'] = dict(self.simplified_taxes)
 
         if 'IVA' in self.simplified_taxes and self.simplified_taxes['IVA'] < 0.21:
             fp_id = imd_obj.get_object_reference(
@@ -152,10 +203,13 @@ class ReportBackendMailcanvipreusPDF(ReportBackend):
             context.update({'force_fiscal_position': fp_id})
 
         context_preus_antics = dict(context)
-        context_preus_antics["date"] = date.today().strftime("%Y-%m-%d")
+        context_preus_antics["date"] = context.get(
+            'price_change_old_price_date', date.today().strftime("%Y-%m-%d"))
 
         context_preus_nous = dict(context)
-        context_preus_nous["date"] = (date.today() + timedelta(days=60)).strftime("%Y-%m-%d")
+        context_preus_nous["date"] = context.get(
+            'price_change_effective_date',
+            (date.today() + timedelta(days=60)).strftime("%Y-%m-%d"))
 
         preus_antics = self.get_preus(
             cursor, uid, pol_id, with_taxes=False, context=context_preus_antics
@@ -193,6 +247,8 @@ class ReportBackendMailcanvipreusPDF(ReportBackend):
             "gurb": gurb,
 
             "impostos_str": impostos_str,
+            "impost_electric_str": '{:.2f}%'.format(
+                self.simplified_taxes.get('IE', 0) * 100).replace('.', ','),
             "modcon": (
                 pol_id.modcontractuals_ids[0].state == "pendent"
                 and pol_id.mode_facturacio
@@ -374,12 +430,19 @@ class ReportBackendMailcanvipreusPDF(ReportBackend):
         context=None,
     ):
         conf_obj = self.pool.get('res.config')
+        campaign = bool((context or {}).get('price_change_effective_date'))
+        ctx = dict(context or {}) if campaign else (context or {})
+        bonus_context = context
+        if campaign:
+            bonus_context = dict(ctx)
+            if date:
+                bonus_context['date'] = date
+        # Only the opt-in campaign circuit changes date/context handling.
+        # Historical callers retain their original bonus and context semantics.
         bo_social_price = self.get_bo_social_price(
-            cursor, uid, polissa_id.llista_preu, context=context)
+            cursor, uid, polissa_id.llista_preu, context=bonus_context)
         preu_estimat_servei_ajust = float(
             conf_obj.get(cursor, uid, 'serveis_ajust_estimated_kwh_price'))
-
-        ctx = context or {}
         if date:
             ctx["date"] = date
         ctx["potencia_anual"] = True
@@ -514,6 +577,7 @@ class ReportBackendMailcanvipreusPDF(ReportBackend):
             consums = self.aplicarCoeficients(consum_total, tarifa)
             origen = "estadistic"
 
+        dades_index = {}
         if origen == "indexada":
             dades_index = calculate_new_indexed_prices(cursor, uid, pol_id, context=context)
             preu_vell = dades_index["import_total_anual_antiga"]
@@ -529,7 +593,8 @@ class ReportBackendMailcanvipreusPDF(ReportBackend):
                 potencies,
                 afegir_servei_ajust=False,
                 bo_social_separat=True,
-                date=date.today().strftime("%Y-%m-%d"),
+                date=(context or {}).get(
+                    'price_change_old_price_date', date.today().strftime("%Y-%m-%d")),
                 context=context,
             )
             preu_nou = self.calcularPreuTotal(
@@ -549,6 +614,7 @@ class ReportBackendMailcanvipreusPDF(ReportBackend):
 
         return {
             "origen": origen,
+            "dades_index": dades_index,
             "preu_vell": preu_vell,
             "preu_nou": preu_nou,
             "preu_vell_imp": preu_vell_imp,
@@ -580,7 +646,8 @@ class ReportBackendMailcanvipreusPDF(ReportBackend):
                 {},
                 afegir_servei_ajust=False,
                 bo_social_separat=False,
-                date=date.today().strftime("%Y-%m-%d"),
+                date=(context or {}).get(
+                    'price_change_old_price_date', date.today().strftime("%Y-%m-%d")),
                 is_gkwh=True,
                 context=context,
             )
@@ -612,6 +679,8 @@ class ReportBackendMailcanvipreusPDF(ReportBackend):
         }
 
     def get_price_change_date(self, cursor, uid, polissa, context=None):
+        if (context or {}).get('price_change_effective_date'):
+            return context['price_change_effective_date']
         today = date.today().strftime("%Y-%m-%d")
         if polissa.llista_preu:
             versions = polissa.llista_preu.version_id

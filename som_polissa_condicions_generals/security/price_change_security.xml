@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+    <data noupdate="0">
+        <record model="res.groups" id="group_price_change_editor">
+            <field name="name">Canvi de preus: edició de textos</field>
+        </record>
+        <record model="ir.model.access" id="access_price_change_banner_editor">
+            <field name="name">Price change editorial HTML</field>
+            <field name="model_id" ref="report_banner.model_report_banner"/>
+            <field name="group_id" ref="group_price_change_editor"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_create" eval="False"/>
+            <field name="perm_unlink" eval="False"/>
+        </record>
+        <record model="ir.model.access" id="access_price_change_pdf_backend">
+            <field name="name">Price change policy backend</field>
+            <field name="model_id" ref="model_report_backend_mailcanvipreus_pdf"/>
+            <field name="group_id" ref="giscedata_facturacio.group_giscedata_facturacio_r"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="False"/>
+            <field name="perm_create" eval="False"/>
+            <field name="perm_unlink" eval="False"/>
+        </record>
+    </data>
+</openerp>
