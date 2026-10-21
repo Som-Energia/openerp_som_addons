@@ -1578,3 +1578,78 @@ msgid ""
 "Las CONSUMIDORAS asociadas representadas por su representante SOM ENERGIA "
 "Sccl con NIF F55091367"
 msgstr ""
+
+#. module: som_polissa_condicions_generals
+#: field:som.infoenergia.lot.enviament,price_change_selection_date:0
+msgid "Data selecció campanya"
+msgstr ""
+
+#. module: som_polissa_condicions_generals
+#: field:som.infoenergia.lot.enviament,price_change_old_price_date:0
+msgid "Data preus anteriors"
+msgstr ""
+
+#. module: som_polissa_condicions_generals
+#: field:som.infoenergia.lot.enviament,price_change_effective_date:0
+msgid "Entrada en vigor preus"
+msgstr ""
+
+#. module: som_polissa_condicions_generals
+#: field:som.enviament.massiu,price_change_snapshot:0
+msgid "Campanya original"
+msgstr ""
+
+#. module: som_polissa_condicions_generals
+#: view:report.banner:0
+msgid "HTML senzill, sense expressions ni codi executable"
+msgstr ""
+
+#. module: som_polissa_condicions_generals
+#: view:report.banner:0
+msgid "Text de canvi de preus"
+msgstr ""
+
+#. module: som_polissa_condicions_generals
+#: view:report.banner:0
+msgid "Textos de canvi de preus"
+msgstr ""
+
+#. module: som_polissa_condicions_generals
+#: model:ir.actions.act_window,name:som_polissa_condicions_generals.price_change_editor_ca
+msgid "Textos de canvi de preus (català)"
+msgstr ""
+
+#. module: som_polissa_condicions_generals
+#: model:ir.actions.act_window,name:som_polissa_condicions_generals.price_change_editor_es
+msgid "Textos de canvi de preus (castellà)"
+msgstr ""
+
+#. module: som_polissa_condicions_generals
+#: model:poweremail.templates,def_subject:som_polissa_condicions_generals.price_change_campaign_template
+msgid "${object.pool.get('report.backend.mailcanvipreus').get_campaign_subject(object._cr, object._uid, object.id)}"
+msgstr ""
+
+#. module: som_polissa_condicions_generals
+#: model:poweremail.templates,def_body_html:som_polissa_condicions_generals.price_change_campaign_template
+msgid "<%include file=\"/som_polissa_condicions_generals/report/mailcanvipreus/campaign.mako\"/>"
+msgstr ""
+
+#. module: som_polissa_condicions_generals
+#: model:ir.model,name:som_polissa_condicions_generals.model_report_backend_mailcanvipreus_pdf
+msgid "report.backend.mailcanvipreus.pdf"
+msgstr ""
+
+#. module: som_polissa_condicions_generals
+#: model:ir.actions.report.xml,name:som_polissa_condicions_generals.action_report_mailcanvipreus
+msgid "Mail Canvi Preus"
+msgstr ""
+
+#. module: som_polissa_condicions_generals
+#: constraint:ir.actions.act_window:0
+msgid "Invalid model name in the action definition."
+msgstr ""
+
+#. module: som_polissa_condicions_generals
+#: constraint:ir.ui.view:0
+msgid "Invalid XML for View Architecture! Check server logs for details (view name, model, line number and RNG error)."
+msgstr ""

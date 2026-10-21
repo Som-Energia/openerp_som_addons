@@ -79,10 +79,13 @@ def calculate_new_indexed_prices(cursor, uid, pol, context=None):
         context = {}
 
     context_preus_antics = dict(context)
-    context_preus_antics["date"] = date.today().strftime("%Y-%m-%d")
+    context_preus_antics["date"] = context.get(
+        'price_change_old_price_date', date.today().strftime("%Y-%m-%d"))
 
     context_preus_nous = dict(context)
-    context_preus_nous["date"] = (date.today() + timedelta(days=60)).strftime("%Y-%m-%d")
+    context_preus_nous["date"] = context.get(
+        'price_change_effective_date',
+        (date.today() + timedelta(days=60)).strftime("%Y-%m-%d"))
 
     dict_preus_antiga = get_preus(
         cursor, uid, pol, with_taxes=False, context=context_preus_antics
@@ -146,9 +149,13 @@ def calculate_new_indexed_prices(cursor, uid, pol, context=None):
     impacte_import = import_total_anual_nova - import_total_anual_antiga
     impacte_perc = impacte_import / import_total_anual_antiga
 
-    # Nota: 1.0511 * 1.21 és el factor per impostos (IE + IVA)
-    import_total_anual_antiga_amb_impost = import_total_anual_antiga * 1.0511 * 1.21
-    import_total_anual_nova_amb_impost = import_total_anual_nova * 1.0511 * 1.21
+    # Campaigns share the policy's fiscal mapping with the mail backend.
+    # Keep the historical default for callers outside the campaign circuit.
+    taxes = context.get('price_change_taxes', {'IVA': 0.21, 'IE': 0.0511})
+    iva = taxes.get('IGIC', taxes.get('IVA', 0.21))
+    ie = taxes.get('IE', 0.0511)
+    import_total_anual_antiga_amb_impost = import_total_anual_antiga * (1 + ie) * (1 + iva)
+    import_total_anual_nova_amb_impost = import_total_anual_nova * (1 + ie) * (1 + iva)
 
     impacte_import_amb_impost = (
         import_total_anual_nova_amb_impost - import_total_anual_antiga_amb_impost
@@ -156,8 +163,8 @@ def calculate_new_indexed_prices(cursor, uid, pol, context=None):
     impacte_perc_amb_impost = impacte_import_amb_impost / import_total_anual_antiga_amb_impost
 
     dades_index = {
-        "iva": 21,
-        "ie": 5.11,
+        "iva": iva * 100 if 'price_change_taxes' in context else 21,
+        "ie": ie * 100 if 'price_change_taxes' in context else 5.11,
         "conany": conany,
         "pot_contractada": potencia,
         "preu_sense_F": preu_sense_F,
