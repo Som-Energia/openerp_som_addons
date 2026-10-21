@@ -726,6 +726,32 @@ class RefundRectifyBatchLine(osv.osv):
             result[line.id] = len(line.generated_invoice_ids)
         return result
 
+    def _get_supplier_invoice_ids(self, cursor, uid, ids, name, arg, context=None):
+        """Look up supplier invoices on read, without a persisted relationship."""
+        result = {}
+        invoices_by_period = {}
+        fact_obj = self.pool.get("giscedata.facturacio.factura")
+        for line in self.browse(cursor, uid, ids, context=context):
+            result[line.id] = []
+            polissa = line.batch_id.polissa_id
+            initial = line.f1_id.fecha_factura_desde
+            final = line.f1_id.fecha_factura_hasta
+            if not polissa or not initial or not final:
+                continue
+            # Reuse identical lookups only within this call, never across reads.
+            period = (polissa.id, initial, final)
+            if period not in invoices_by_period:
+                invoices_by_period[period] = fact_obj.search(
+                    cursor, uid, [
+                        ("polissa_id", "=", polissa.id),
+                        ("type", "in", ["in_invoice", "in_refund"]),
+                        ("data_inici", "<=", final),
+                        ("data_final", ">=", initial),
+                    ], order="data_inici asc, data_final asc, id asc", context=context,
+                )
+            result[line.id] = invoices_by_period[period]
+        return result
+
     _columns = {
         "batch_id": fields.many2one(
             "refund.rectify.batch", "Tasca", required=True, ondelete="cascade", readonly=True
@@ -759,6 +785,15 @@ class RefundRectifyBatchLine(osv.osv):
             "factura_id",
             "Factures client originals",
             readonly=True,
+        ),
+        "supplier_invoice_ids": fields.function(
+            _get_supplier_invoice_ids,
+            method=True,
+            type="many2many",
+            relation="giscedata.facturacio.factura",
+            string="Factures proveïdor del període",
+            readonly=True,
+            store=False,
         ),
         "generated_invoice_count": fields.function(
             _get_generated_invoice_count,

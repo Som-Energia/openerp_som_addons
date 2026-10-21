@@ -339,6 +339,163 @@ class TestRefundRectifyBatchScheduling(testing.OOTestCaseWithCursor):
         })
 
 
+class TestRefundRectifySupplierInvoices(testing.OOTestCaseWithCursor):
+    def setUp(self):
+        super(TestRefundRectifySupplierInvoices, self).setUp()
+        self.pool = self.openerp.pool
+        self.line_obj = self.pool.get("refund.rectify.batch.line")
+        self.fact_obj = self.pool.get("giscedata.facturacio.factura")
+
+    def _line(self, line_id, polissa_id=7, initial="2022-01-01", final="2022-01-31"):
+        line = mock.Mock()
+        line.id = line_id
+        line.batch_id.polissa_id = mock.Mock(id=polissa_id) if polissa_id else False
+        # The batch policy is authoritative, never the F1's current resolution.
+        line.f1_id.polissa_id = mock.Mock(id=99)
+        line.f1_id.fecha_factura_desde = initial
+        line.f1_id.fecha_factura_hasta = final
+        return line
+
+    def _lookup(self, ids, uid=None, context=None):
+        return self.line_obj._get_supplier_invoice_ids(
+            self.cursor, self.uid if uid is None else uid, ids,
+            "supplier_invoice_ids", None, context=context,
+        )
+
+    def test_supplier_domain_is_inclusive_scoped_and_shared_within_call(self):
+        lines = [self._line(1), self._line(2)]
+        context = {"lang": "ca_ES", "allowed_company_ids": [3]}
+        with mock.patch.object(self.line_obj, "browse", return_value=lines) as browse:
+            with mock.patch.object(self.fact_obj, "search", return_value=[31, 32]) as search:
+                with mock.patch.object(self.line_obj, "write") as write:
+                    result = self._lookup([1, 2], uid=42, context=context)
+        self.assertEqual(result, {1: [31, 32], 2: [31, 32]})
+        browse.assert_called_once_with(self.cursor, 42, [1, 2], context=context)
+        search.assert_called_once_with(self.cursor, 42, [
+            ("polissa_id", "=", 7),
+            ("type", "in", ["in_invoice", "in_refund"]),
+            ("data_inici", "<=", "2022-01-31"),
+            ("data_final", ">=", "2022-01-01"),
+        ], order="data_inici asc, data_final asc, id asc", context=context)
+        self.assertFalse(write.called)
+        self.assertEqual(context, {"lang": "ca_ES", "allowed_company_ids": [3]})
+
+    def test_supplier_missing_policy_or_either_date_never_searches(self):
+        lines = [self._line(1, polissa_id=False), self._line(2, initial=False),
+                 self._line(3, final=False), self._line(4, initial=False, final=False)]
+        with mock.patch.object(self.line_obj, "browse", return_value=lines):
+            with mock.patch.object(self.fact_obj, "search") as search:
+                self.assertEqual(self._lookup([1, 2, 3, 4]), {1: [], 2: [], 3: [], 4: []})
+        self.assertFalse(search.called)
+
+    def test_supplier_distinct_policy_or_period_has_its_own_lookup(self):
+        lines = [self._line(1), self._line(2, polissa_id=8),
+                 self._line(3, initial="2022-01-02")]
+        with mock.patch.object(self.line_obj, "browse", return_value=lines):
+            with mock.patch.object(self.fact_obj, "search", side_effect=[[31], [], [33]]) as s:
+                self.assertEqual(self._lookup([1, 2, 3]), {1: [31], 2: [], 3: [33]})
+        self.assertEqual(s.call_count, 3)
+        self.assertEqual(s.call_args_list[1][0][2][0], ("polissa_id", "=", 8))
+        self.assertEqual(s.call_args_list[2][0][2][-1], ("data_final", ">=", "2022-01-02"))
+
+    def test_supplier_subsequent_lookup_does_not_reuse_previous_results(self):
+        with mock.patch.object(self.line_obj, "browse", return_value=[self._line(1)]):
+            with mock.patch.object(self.fact_obj, "search", side_effect=[[], [31]]) as search:
+                self.assertEqual(self._lookup([1]), {1: []})
+                self.assertEqual(self._lookup([1]), {1: [31]})
+        self.assertEqual(search.call_count, 2)
+
+    def test_supplier_orm_read_filters_and_refreshes_without_relationship_writes(self):
+        imd = self.pool.get("ir.model.data")
+        template_id = imd.get_object_reference(
+            self.cursor, self.uid, "giscedata_facturacio", "factura_0003"
+        )[1]
+        f1_id = imd.get_object_reference(
+            self.cursor, self.uid, "giscedata_facturacio_switching", "line_01_f1_import_01"
+        )[1]
+        other_f1_id = imd.get_object_reference(
+            self.cursor, self.uid, "giscedata_facturacio_switching", "line_02_f1_import_01"
+        )[1]
+        polissa_id = self.fact_obj.read(
+            self.cursor, self.uid, template_id, ["polissa_id"]
+        )["polissa_id"][0]
+        other_policy = self.pool.get("giscedata.polissa").search(
+            self.cursor, self.uid, [("id", "!=", polissa_id)], limit=1
+        )[0]
+        self.pool.get("giscedata.facturacio.importacio.linia").write(
+            self.cursor, self.uid, [f1_id], {
+                "fecha_factura_desde": "2098-01-10", "fecha_factura_hasta": "2098-01-20",
+            },
+        )
+        batch_id = self.pool.get("refund.rectify.batch").create(self.cursor, self.uid, {
+            "name": "/", "polissa_id": polissa_id,
+        })
+        line_id = self.line_obj.create(self.cursor, self.uid, {
+            "batch_id": batch_id, "f1_id": f1_id, "sequence": 1,
+            "source_invoice_ids": [(6, 0, [template_id])],
+            "generated_invoice_ids": [(6, 0, [template_id])],
+        })
+
+        def invoice(initial, final, invoice_type="in_invoice", **values):
+            defaults = {"polissa_id": polissa_id, "data_inici": initial, "data_final": final,
+                        "type": invoice_type, "rectificative_type": "N", "rectifying_id": False}
+            defaults.update(values)
+            # Legacy invoice copy always forces draft; set test states afterwards.
+            state = defaults.pop("state", "draft")
+            invoice_id = self.fact_obj.copy(self.cursor, self.uid, template_id, defaults)
+            self.fact_obj.write(self.cursor, self.uid, [invoice_id], {"state": state})
+            return invoice_id
+
+        # Insert out of period order; identical periods are ordered by ID.
+        end_boundary = invoice("2098-01-20", "2098-01-25", state="paid")
+        start_boundary = invoice("2098-01-05", "2098-01-10", "in_refund",
+                                 rectificative_type="B", state="cancel")
+        same_period = invoice("2098-01-05", "2098-01-10", rectificative_type="A")
+        covering = invoice("2098-01-01", "2098-01-31", rectificative_type="R", state="open")
+        covering_account_id = self.fact_obj.read(
+            self.cursor, self.uid, covering, ["invoice_id"]
+        )["invoice_id"][0]
+        self.fact_obj.write(self.cursor, self.uid, [start_boundary], {
+            "rectifying_id": covering_account_id,
+        })
+        self.assertTrue(self.fact_obj.read(
+            self.cursor, self.uid, covering, ["refund_by_id"]
+        )["refund_by_id"])
+        self.pool.get("giscedata.facturacio.importacio.linia.factura").create(
+            self.cursor, self.uid, {"linia_id": other_f1_id, "factura_id": covering},
+        )
+        excluded = [
+            invoice("2098-01-10", "2098-01-20", "out_invoice"),
+            invoice("2098-01-10", "2098-01-20", "out_refund"),
+            invoice("2098-01-10", "2098-01-20", polissa_id=other_policy),
+            invoice("2098-01-01", "2098-01-09"),
+            invoice("2098-01-21", "2098-01-31"),
+        ]
+        expected = [covering, start_boundary, same_period, end_boundary]
+        relations = ["source_invoice_ids", "generated_invoice_ids"]
+        original = self.line_obj.read(self.cursor, self.uid, line_id, relations)
+        with mock.patch.object(self.line_obj, "write") as write:
+            found = self.line_obj.read(
+                self.cursor, self.uid, line_id, ["supplier_invoice_ids"]
+            )["supplier_invoice_ids"]
+        self.assertEqual(found, expected)
+        self.assertFalse(set(found).intersection(excluded))
+        self.assertFalse(write.called)
+        imported_id = invoice("2098-01-15", "2098-01-16", "in_refund")
+        with mock.patch.object(self.line_obj, "write") as write:
+            refreshed = self.line_obj.read(
+                self.cursor, self.uid, line_id, ["supplier_invoice_ids"]
+            )["supplier_invoice_ids"]
+        self.assertEqual(refreshed, expected[:-1] + [imported_id, end_boundary])
+        self.assertFalse(write.called)
+        self.assertEqual(self.line_obj.read(self.cursor, self.uid, line_id, relations), original)
+        field = self.line_obj._columns["supplier_invoice_ids"]
+        self.assertFalse(field.store)
+        self.assertTrue(field.readonly)
+        self.assertEqual(field._type, "many2many")
+        self.assertEqual(field._obj, "giscedata.facturacio.factura")
+
+
 class TestRefundRectifyBatchLineProcessOneF1(testing.OOTestCaseWithCursor):
     def setUp(self):
         super(TestRefundRectifyBatchLineProcessOneF1, self).setUp()
