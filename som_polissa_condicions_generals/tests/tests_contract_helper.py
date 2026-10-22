@@ -36,3 +36,19 @@ class TestsContractHelper(testing.OOTestCase):
         self.assertIn('contract', result)
         decoded = base64.b64decode(result['contract'])
         self.assertEqual(decoded, fake_pdf)
+
+    @mock.patch(_netsvc_local_service)
+    def test_get_contract_summary_returns_base64(self, mock_local_service):
+        fake_pdf = b'%PDF-summary-content'
+        mock_local_service.return_value.create.return_value = (fake_pdf, 'pdf')
+
+        result = self.helper.get_contract_summary_pdf(
+            self.cursor, self.uid, self.pol_id, context={}
+        )
+
+        mock_local_service.assert_called_once_with(
+            'report.giscedata.polissa.contract.summary'
+        )
+        self.assertIn('summary', result)
+        decoded = base64.b64decode(result['summary'])
+        self.assertEqual(decoded, fake_pdf)
