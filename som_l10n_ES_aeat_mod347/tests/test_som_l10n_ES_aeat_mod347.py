@@ -1,9 +1,63 @@
 # -*- coding: utf-8 -*-
+from __future__ import absolute_import
 
 from destral import testing
 from destral.transaction import Transaction
 
 import mock
+
+
+class Soml10nEsAeatMod347AmountExclusions(testing.OOTestCaseWithCursor):
+    def test_donation_amount_exclusions_are_grouped_by_invoice_and_quarter(self):
+        calculator = self.openerp.pool.get(
+            "l10n.es.aeat.mod347.calculate_records"
+        )
+        account_obj = mock.Mock()
+        account_obj.search.return_value = [99]
+
+        invoice_obj = mock.Mock()
+        invoice_obj.search.return_value = [101, 102]
+        invoice_first = mock.Mock()
+        invoice_first.id = 101
+        invoice_first.period_id.quarter = "FIRST"
+        invoice_second = mock.Mock()
+        invoice_second.id = 102
+        invoice_second.period_id.quarter = "SECOND"
+        invoice_obj.browse.return_value = [invoice_first, invoice_second]
+
+        invoice_line_obj = mock.Mock()
+        invoice_line_obj.search.return_value = [201, 202, 203]
+        invoice_line_obj.read.return_value = [
+            {"invoice_id": (101, "INV/101"), "price_subtotal": 10.0},
+            {"invoice_id": (101, "INV/101"), "price_subtotal": 2.5},
+            {"invoice_id": (102, "INV/102"), "price_subtotal": 7.5},
+        ]
+        models = {
+            "account.account": account_obj,
+            "account.invoice": invoice_obj,
+            "account.invoice.line": invoice_line_obj,
+        }
+
+        with mock.patch.object(
+            calculator.pool, "get", side_effect=lambda model: models[model]
+        ):
+            exclusions = calculator._get_mod347_amount_exclusions(
+                self.cursor,
+                self.uid,
+                [1, 2],
+                "out_invoice",
+                [301, 302],
+                sii_send_invoices=True,
+            )
+
+        self.assertEqual(exclusions["total"], 20.0)
+        self.assertEqual(
+            exclusions["quarters"], {"FIRST": 12.5, "SECOND": 7.5}
+        )
+        self.assertEqual(exclusions["invoices"], {101: 12.5, 102: 7.5})
+        self.assertIn(
+            ("sii_registered", "=", True), invoice_obj.search.call_args[0][2]
+        )
 
 
 class Soml10nEsAeatMod347Report(testing.OOTestCase):
