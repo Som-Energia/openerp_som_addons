@@ -107,51 +107,45 @@
                         <field name="finished_at"/>
                     </group>
                     <separator colspan="4"/>
-                    <group colspan="4" col="4" string="Factures client originals" height="180">
-                        <field name="source_invoice_ids" readonly="1" colspan="4" nolabel="1" width="300" height="140">
-                            <tree string="Factures client originals">
-                                <field name="number" string="Número de factura"/>
-                                <field name="type" string="Tipus de factura"/>
-                                <field name="rectificative_type" string="Tipus de rectificació"/>
-                                <field name="data_inici" string="Inici del període"/>
-                                <field name="data_final" string="Fi del període"/>
-                                <field name="energia_kwh" string="Energia facturada (kWh)"/>
-                                <field name="generacio_kwh" string="Energia exportada (kWh)"/>
-                                <field name="state" string="Estat"/>
-                                <field name="amount_total" string="Total"/>
-                            </tree>
-                        </field>
-                    </group>
-                    <group colspan="4" col="4" string="Factures client generades" height="180">
-                        <field name="generated_invoice_ids" readonly="1" colspan="4" nolabel="1" width="300" height="140">
-                            <tree string="Factures client generades">
-                                <field name="number" string="Número de factura"/>
-                                <field name="type" string="Tipus de factura"/>
-                                <field name="rectificative_type" string="Tipus de rectificació"/>
-                                <field name="data_inici" string="Inici del període"/>
-                                <field name="data_final" string="Fi del període"/>
-                                <field name="energia_kwh" string="Energia facturada (kWh)"/>
-                                <field name="generacio_kwh" string="Energia exportada (kWh)"/>
-                                <field name="state" string="Estat"/>
-                                <field name="amount_total" string="Total"/>
-                            </tree>
-                        </field>
-                    </group>
-                    <group colspan="4" col="4" string="Factures proveïdor del període" height="220">
-                        <field name="supplier_invoice_ids" readonly="1" colspan="4" nolabel="1" width="300" height="180">
-                            <tree string="Factures proveïdor del període">
-                                <field name="number" string="Número de factura"/>
-                                <field name="type" string="Tipus de factura"/>
-                                <field name="rectificative_type" string="Tipus de rectificació"/>
-                                <field name="data_inici" string="Inici del període"/>
-                                <field name="data_final" string="Fi del període"/>
-                                <field name="energia_kwh" string="Energia facturada (kWh)"/>
-                                <field name="generacio_kwh" string="Energia exportada (kWh)"/>
-                                <field name="state" string="Estat"/>
-                                <field name="amount_total" string="Total"/>
-                            </tree>
-                        </field>
-                    </group>
+                    <field name="source_invoice_ids" readonly="1" colspan="4" nolabel="1" width="300" height="140">
+                        <tree string="Factures client originals">
+                            <field name="number" string="Número de factura"/>
+                            <field name="type" string="Tipus de factura"/>
+                            <field name="rectificative_type" string="Tipus de rectificació"/>
+                            <field name="data_inici" string="Inici del període"/>
+                            <field name="data_final" string="Fi del període"/>
+                            <field name="energia_kwh" string="Energia facturada (kWh)"/>
+                            <field name="generacio_kwh" string="Energia exportada (kWh)"/>
+                            <field name="state" string="Estat"/>
+                            <field name="amount_total" string="Total"/>
+                        </tree>
+                    </field>
+                    <field name="generated_invoice_ids" readonly="1" colspan="4" nolabel="1" width="300" height="180">
+                        <tree string="Factures client generades">
+                            <field name="number" string="Número de factura"/>
+                            <field name="type" string="Tipus de factura"/>
+                            <field name="rectificative_type" string="Tipus de rectificació"/>
+                            <field name="data_inici" string="Inici del període"/>
+                            <field name="data_final" string="Fi del període"/>
+                            <field name="energia_kwh" string="Energia facturada (kWh)"/>
+                            <field name="generacio_kwh" string="Energia exportada (kWh)"/>
+                            <field name="state" string="Estat"/>
+                            <field name="amount_total" string="Total"/>
+                        </tree>
+                    </field>
+                    <field name="supplier_invoice_ids" readonly="1" colspan="4" nolabel="1" width="300" height="220">
+                        <tree string="Factures proveïdor del període">
+                            <field name="number" string="Número de factura"/>
+                            <field name="type" string="Tipus de factura"/>
+                            <field name="rectificative_type" string="Tipus de rectificació"/>
+                            <field name="data_inici" string="Inici del període"/>
+                            <field name="data_final" string="Fi del període"/>
+                            <field name="energia_kwh" string="Energia facturada (kWh)"/>
+                            <field name="generacio_kwh" string="Energia exportada (kWh)"/>
+                            <field name="state" string="Estat"/>
+                            <field name="amount_total" string="Total"/>
+                        </tree>
+                    </field>
                     <separator colspan="4"/>
                     <group colspan="4" col="4" string="Resultat">
                         <field name="result" nolabel="1" colspan="4" height="60" width="300"/>
