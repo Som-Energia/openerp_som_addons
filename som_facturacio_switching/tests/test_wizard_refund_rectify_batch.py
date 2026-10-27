@@ -362,7 +362,7 @@ class TestRefundRectifySupplierInvoices(testing.OOTestCaseWithCursor):
             "supplier_invoice_ids", None, context=context,
         )
 
-    def test_supplier_domain_is_inclusive_scoped_and_shared_within_call(self):
+    def test_supplier_domain_normalizes_d_minus_one_scoped_and_shared_within_call(self):
         lines = [self._line(1), self._line(2)]
         context = {"lang": "ca_ES", "allowed_company_ids": [3]}
         with mock.patch.object(self.line_obj, "browse", return_value=lines) as browse:
@@ -375,7 +375,7 @@ class TestRefundRectifySupplierInvoices(testing.OOTestCaseWithCursor):
             ("polissa_id", "=", 7),
             ("type", "in", ["in_invoice", "in_refund"]),
             ("data_inici", "<=", "2022-01-31"),
-            ("data_final", ">=", "2022-01-01"),
+            ("data_final", ">=", "2022-01-02"),
         ], order="data_inici asc, data_final asc, id asc", context=context)
         self.assertFalse(write.called)
         self.assertEqual(context, {"lang": "ca_ES", "allowed_company_ids": [3]})
@@ -388,6 +388,14 @@ class TestRefundRectifySupplierInvoices(testing.OOTestCaseWithCursor):
                 self.assertEqual(self._lookup([1, 2, 3, 4]), {1: [], 2: [], 3: [], 4: []})
         self.assertFalse(search.called)
 
+    def test_supplier_invalid_initial_date_propagates(self):
+        with mock.patch.object(self.line_obj, "browse", return_value=[
+                self._line(1, initial="invalid-date")]):
+            with mock.patch.object(self.fact_obj, "search") as search:
+                with self.assertRaises(ValueError):
+                    self._lookup([1])
+        self.assertFalse(search.called)
+
     def test_supplier_distinct_policy_or_period_has_its_own_lookup(self):
         lines = [self._line(1), self._line(2, polissa_id=8),
                  self._line(3, initial="2022-01-02")]
@@ -396,7 +404,7 @@ class TestRefundRectifySupplierInvoices(testing.OOTestCaseWithCursor):
                 self.assertEqual(self._lookup([1, 2, 3]), {1: [31], 2: [], 3: [33]})
         self.assertEqual(s.call_count, 3)
         self.assertEqual(s.call_args_list[1][0][2][0], ("polissa_id", "=", 8))
-        self.assertEqual(s.call_args_list[2][0][2][-1], ("data_final", ">=", "2022-01-02"))
+        self.assertEqual(s.call_args_list[2][0][2][-1], ("data_final", ">=", "2022-01-03"))
 
     def test_supplier_subsequent_lookup_does_not_reuse_previous_results(self):
         with mock.patch.object(self.line_obj, "browse", return_value=[self._line(1)]):
@@ -405,7 +413,7 @@ class TestRefundRectifySupplierInvoices(testing.OOTestCaseWithCursor):
                 self.assertEqual(self._lookup([1]), {1: [31]})
         self.assertEqual(search.call_count, 2)
 
-    def test_supplier_orm_read_filters_and_refreshes_without_relationship_writes(self):
+    def test_supplier_orm_may_15_july_13_excludes_prior_period_and_refreshes_without_writes(self):
         imd = self.pool.get("ir.model.data")
         template_id = imd.get_object_reference(
             self.cursor, self.uid, "giscedata_facturacio", "factura_0003"
@@ -424,7 +432,7 @@ class TestRefundRectifySupplierInvoices(testing.OOTestCaseWithCursor):
         )[0]
         self.pool.get("giscedata.facturacio.importacio.linia").write(
             self.cursor, self.uid, [f1_id], {
-                "fecha_factura_desde": "2098-01-10", "fecha_factura_hasta": "2098-01-20",
+                "fecha_factura_desde": "2023-05-15", "fecha_factura_hasta": "2023-07-13",
             },
         )
         batch_id = self.pool.get("refund.rectify.batch").create(self.cursor, self.uid, {
@@ -447,11 +455,13 @@ class TestRefundRectifySupplierInvoices(testing.OOTestCaseWithCursor):
             return invoice_id
 
         # Insert out of period order; identical periods are ordered by ID.
-        end_boundary = invoice("2098-01-20", "2098-01-25", state="paid")
-        start_boundary = invoice("2098-01-05", "2098-01-10", "in_refund",
-                                 rectificative_type="B", state="cancel")
-        same_period = invoice("2098-01-05", "2098-01-10", rectificative_type="A")
-        covering = invoice("2098-01-01", "2098-01-31", rectificative_type="R", state="open")
+        end_boundary = invoice("2023-07-13", "2023-07-25", state="paid")
+        start_boundary = invoice("2023-05-05", "2023-05-16", "in_refund",
+                                  rectificative_type="B", state="cancel")
+        same_period = invoice("2023-05-05", "2023-05-16", rectificative_type="A")
+        covering = invoice("2023-03-01", "2023-07-31", rectificative_type="R", state="open")
+        first_split = invoice("2023-05-16", "2023-06-15")
+        second_split = invoice("2023-06-16", "2023-07-12")
         covering_account_id = self.fact_obj.read(
             self.cursor, self.uid, covering, ["invoice_id"]
         )["invoice_id"][0]
@@ -465,13 +475,13 @@ class TestRefundRectifySupplierInvoices(testing.OOTestCaseWithCursor):
             self.cursor, self.uid, {"linia_id": other_f1_id, "factura_id": covering},
         )
         excluded = [
-            invoice("2098-01-10", "2098-01-20", "out_invoice"),
-            invoice("2098-01-10", "2098-01-20", "out_refund"),
-            invoice("2098-01-10", "2098-01-20", polissa_id=other_policy),
-            invoice("2098-01-01", "2098-01-09"),
-            invoice("2098-01-21", "2098-01-31"),
+            invoice("2023-05-16", "2023-07-13", "out_invoice"),
+            invoice("2023-05-16", "2023-07-13", "out_refund"),
+            invoice("2023-05-16", "2023-07-13", polissa_id=other_policy),
+            invoice("2023-03-15", "2023-05-15"),
+            invoice("2023-07-14", "2023-07-31"),
         ]
-        expected = [covering, start_boundary, same_period, end_boundary]
+        expected = [covering, start_boundary, same_period, first_split, second_split, end_boundary]
         relations = ["source_invoice_ids", "generated_invoice_ids"]
         original = self.line_obj.read(self.cursor, self.uid, line_id, relations)
         with mock.patch.object(self.line_obj, "write") as write:
@@ -481,7 +491,7 @@ class TestRefundRectifySupplierInvoices(testing.OOTestCaseWithCursor):
         self.assertEqual(found, expected)
         self.assertFalse(set(found).intersection(excluded))
         self.assertFalse(write.called)
-        imported_id = invoice("2098-01-15", "2098-01-16", "in_refund")
+        imported_id = invoice("2023-06-20", "2023-06-21", "in_refund")
         with mock.patch.object(self.line_obj, "write") as write:
             refreshed = self.line_obj.read(
                 self.cursor, self.uid, line_id, ["supplier_invoice_ids"]
