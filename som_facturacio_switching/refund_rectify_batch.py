@@ -734,19 +734,23 @@ class RefundRectifyBatchLine(osv.osv):
         for line in self.browse(cursor, uid, ids, context=context):
             result[line.id] = []
             polissa = line.batch_id.polissa_id
-            initial = line.f1_id.fecha_factura_desde
+            raw_initial = line.f1_id.fecha_factura_desde
             final = line.f1_id.fecha_factura_hasta
-            if not polissa or not initial or not final:
+            if not polissa or not raw_initial or not final:
                 continue
+            # F1 starts at D-1; supplier dates are inclusive billed dates.
+            effective_initial = (
+                datetime.strptime(raw_initial, "%Y-%m-%d") + timedelta(days=1)
+            ).strftime("%Y-%m-%d")
             # Reuse identical lookups only within this call, never across reads.
-            period = (polissa.id, initial, final)
+            period = (polissa.id, effective_initial, final)
             if period not in invoices_by_period:
                 invoices_by_period[period] = fact_obj.search(
                     cursor, uid, [
                         ("polissa_id", "=", polissa.id),
                         ("type", "in", ["in_invoice", "in_refund"]),
                         ("data_inici", "<=", final),
-                        ("data_final", ">=", initial),
+                        ("data_final", ">=", effective_initial),
                     ], order="data_inici asc, data_final asc, id asc", context=context,
                 )
             result[line.id] = invoices_by_period[period]
