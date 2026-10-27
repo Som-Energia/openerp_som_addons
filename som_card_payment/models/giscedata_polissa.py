@@ -84,26 +84,27 @@ class GiscedataPolissa(osv.osv):
             and polissa.payment_mode_id
             and polissa.payment_mode_id.id == payment_mode_id
         )
+        if not already_converted:
+            self.check_modifiable_polissa(
+                cursor, uid, polissa_id, skip_atr_check=True, context=context
+            )
+
+        card_result = self.pool.get("res.partner.creditcard").resolve_for_payer(
+            cursor, uid, polissa.pagador.id, card_data, context=context
+        )
         if already_converted:
             factura_obj = self.pool.get("giscedata.facturacio.factura")
             invoices = factura_obj.migrate_recurring_card_invoices(
                 cursor, uid, polissa_id, payment_type_id, today, context=context
             )
             return self._recurring_card_result(
-                {"id": current_card.id, "disposition": "reused"},
+                card_result,
                 {"id": polissa_id, "disposition": "unchanged", "effective_date": today},
                 invoices,
                 today=today,
                 reason_code="already_converted",
             )
 
-        self.check_modifiable_polissa(
-            cursor, uid, polissa_id, skip_atr_check=True, context=context
-        )
-
-        card_result = self.pool.get("res.partner.creditcard").resolve_for_payer(
-            cursor, uid, polissa.pagador.id, card_data, context=context
-        )
         modcontractual_obj = self.pool.get("giscedata.polissa.modcontractual")
         modcontractual_obj.check_perm(cursor, uid, "create", context=context)
         current_modcon = getattr(polissa, "modcontractual_activa", False)

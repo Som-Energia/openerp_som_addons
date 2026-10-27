@@ -329,53 +329,23 @@ class GiscedataCrmLead(osv.OsvInherits):
             cursor, uid, "som_card_payment", "payment_mode_card_recurrent"
         )[1]
 
-        card_ids = card_o.search(
-            cursor, uid, [("token", "=", lead.creditcard_token)], context=context
+        card_result = card_o.resolve_for_payer(
+            cursor,
+            uid,
+            pagador_id,
+            {
+                "token": lead.creditcard_token,
+                "cof_txnid": lead.creditcard_cof_txnid,
+                "expiry_date": lead.creditcard_expiry_date,
+                "masked_number": lead.creditcard_masked_number,
+            },
+            context=context,
         )
-
-        if card_ids:
-            card = card_o.browse(cursor, uid, card_ids[0], context=context)
-            if (
-                card.masked_number != lead.creditcard_masked_number
-                or card.expiry_date != lead.creditcard_expiry_date
-            ):
-                raise osv.except_osv(
-                    "INVALID_CARD_TOKEN_DATA",
-                    "Ja existeix una targeta amb aquest token pero amb dades diferents."
-                )
-            if card.partner_id.id == pagador_id:
-                card_id = card.id
-            else:
-                card_id = card_o.create(
-                    cursor,
-                    uid,
-                    {
-                        "partner_id": pagador_id,
-                        "token": lead.creditcard_token,
-                        "cof_txnid": lead.creditcard_cof_txnid,
-                        "expiry_date": lead.creditcard_expiry_date,
-                        "masked_number": lead.creditcard_masked_number,
-                    },
-                    context=context,
-                )
-        else:
-            card_id = card_o.create(
-                cursor,
-                uid,
-                {
-                    "partner_id": pagador_id,
-                    "token": lead.creditcard_token,
-                    "cof_txnid": lead.creditcard_cof_txnid,
-                    "expiry_date": lead.creditcard_expiry_date,
-                    "masked_number": lead.creditcard_masked_number,
-                },
-                context=context,
-            )
 
         return {
             "payment_mode_id": payment_mode_id,
             "tipo_pago": payment_type_id,
-            "creditcard": card_id,
+            "creditcard": card_result["id"],
         }
 
     def compute_extra_polissa_vals(self, cursor, uid, crml_id, polissa_vals, context=None):

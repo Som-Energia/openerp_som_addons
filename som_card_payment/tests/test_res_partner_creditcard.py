@@ -24,7 +24,7 @@ class TestResPartnerCreditCard(testing.OOTestCaseWithCursor):
     def _base_vals(self):
         return {
             "partner_id": self.partner_id,
-            "token": "tok_test_123",
+            "token": "tok_test_%s" % self.partner_id,
             "masked_number": "**** **** **** 1234",
             "expiry_date": "12/34",
             "cof_txnid": "cof_test_123",
@@ -50,7 +50,7 @@ class TestResPartnerCreditCard(testing.OOTestCaseWithCursor):
 
         self.assertEqual(result, {"id": card_id, "disposition": "reused"})
         card_ids = self.creditcard_obj.search(
-            self.cursor, self.uid, [("token", "=", "tok_test_123")]
+            self.cursor, self.uid, [("token", "=", self._base_vals()["token"])]
         )
         self.assertEqual(card_ids, [card_id])
 
@@ -65,13 +65,13 @@ class TestResPartnerCreditCard(testing.OOTestCaseWithCursor):
         )
         self.assertEqual(result["disposition"], "created")
         self.assertEqual(card["partner_id"][0], self.partner_id)
-        self.assertEqual(card["token"], "tok_test_123")
+        self.assertEqual(card["token"], self._base_vals()["token"])
         self.assertEqual(card["masked_number"], "**** **** **** 1234")
         self.assertEqual(card["expiry_date"], "12/34")
         self.assertEqual(card["cof_txnid"], "cof_test_123")
         self.assertEqual(
             self.creditcard_obj.search(
-                self.cursor, self.uid, [("token", "=", "tok_test_123")]
+                self.cursor, self.uid, [("token", "=", self._base_vals()["token"])]
             ),
             [result["id"]],
         )
@@ -84,12 +84,21 @@ class TestResPartnerCreditCard(testing.OOTestCaseWithCursor):
         self.assertEqual(retried, {"id": created["id"], "disposition": "reused"})
         self.assertEqual(
             self.creditcard_obj.search(
-                self.cursor, self.uid, [("token", "=", "tok_test_123")]
+                self.cursor, self.uid, [("token", "=", self._base_vals()["token"])]
             ),
             [created["id"]],
         )
 
     def test_resolve_for_payer_serializes_concurrent_new_token_requests(self):
+        self._assert_concurrent_resolution("create", ["created", "reused"])
+
+    def test_resolve_for_payer_serializes_concurrent_reactivation_requests(self):
+        self.creditcard_obj.create(
+            self.cursor, self.uid, dict(self._base_vals(), active=False)
+        )
+        self._assert_concurrent_resolution("write", ["reactivated", "reused"])
+
+    def _assert_concurrent_resolution(self, mutation, expected_dispositions):
         self.cursor.commit()
         database = pooler.get_db(self.cursor.dbname)
         first_create_started = threading.Event()
@@ -98,13 +107,13 @@ class TestResPartnerCreditCard(testing.OOTestCaseWithCursor):
         second_finished = threading.Event()
         results = []
         errors = []
-        original_create = self.creditcard_obj.create
+        original_mutation = getattr(self.creditcard_obj, mutation)
 
         def create_while_holding_token_lock(*args, **kwargs):
             if not first_create_started.is_set():
                 first_create_started.set()
                 release_first_create.wait(5)
-            return original_create(*args, **kwargs)
+            return original_mutation(*args, **kwargs)
 
         def resolve_in_transaction(started, finished):
             cursor = database.cursor()
@@ -123,7 +132,7 @@ class TestResPartnerCreditCard(testing.OOTestCaseWithCursor):
                 cursor.close()
 
         with mock.patch.object(
-            self.creditcard_obj, "create", side_effect=create_while_holding_token_lock
+            self.creditcard_obj, mutation, side_effect=create_while_holding_token_lock
         ):
             first = threading.Thread(
                 target=resolve_in_transaction,
@@ -145,29 +154,154 @@ class TestResPartnerCreditCard(testing.OOTestCaseWithCursor):
         self.assertFalse(first.is_alive())
         self.assertFalse(second.is_alive())
         self.assertEqual(errors, [])
-        self.assertEqual(sorted(result["disposition"] for result in results), ["created", "reused"])
+        self.assertEqual(
+            sorted(result["disposition"] for result in results), expected_dispositions
+        )
         self.assertEqual(len(set(result["id"] for result in results)), 1)
         self.assertEqual(
             self.creditcard_obj.search(
-                self.cursor, self.uid, [("token", "=", "tok_test_123")]
+                self.cursor, self.uid, [("token", "=", self._base_vals()["token"])]
             ),
             [results[0]["id"]],
         )
 
-    def test_resolve_for_payer_rejects_token_metadata_conflict(self):
-        card_id = self.creditcard_obj.create(
-            self.cursor, self.uid, self._base_vals()
+    def _create_card(self, **overrides):
+        values = self._base_vals()
+        values.update(overrides)
+        return self.creditcard_obj.create(self.cursor, self.uid, values)
+
+    def _read_card(self, card_id):
+        return self.creditcard_obj.read(
+            self.cursor, self.uid, card_id,
+            ["active", "partner_id", "token", "masked_number", "expiry_date", "cof_txnid"],
+            context={"active_test": False},
         )
-        conflicting_data = self._base_vals()
-        conflicting_data["masked_number"] = "**** **** **** 9999"
+
+    def test_resolve_for_payer_creates_card_for_each_different_metadata_field(self):
+        original_id = self._create_card()
+        original = self._read_card(original_id)
+        for field_name, value in (
+            ("masked_number", "**** **** **** 9999"),
+            ("expiry_date", "11/35"),
+            ("cof_txnid", "cof_other"),
+        ):
+            card_data = self._base_vals()
+            card_data[field_name] = value
+
+            result = self._resolve(card_data)
+
+            self.assertEqual(result["disposition"], "created")
+            self.assertNotEqual(result["id"], original_id)
+            self.assertEqual(self._read_card(result["id"])[field_name], value)
+            self.assertEqual(
+                self._resolve(card_data),
+                {"id": result["id"], "disposition": "reused"},
+            )
+        self.assertEqual(self._read_card(original_id), original)
+
+    def test_resolve_for_payer_reuses_exact_match_among_different_metadata(self):
+        self._create_card(cof_txnid="cof_other")
+        exact_id = self._create_card()
+
+        self.assertEqual(self._resolve(), {"id": exact_id, "disposition": "reused"})
+
+    def test_resolve_for_payer_reactivates_exact_inactive_card(self):
+        card_id = self._create_card(active=False)
+        before = self._read_card(card_id)
+
+        result = self._resolve()
+
+        self.assertEqual(result, {"id": card_id, "disposition": "reactivated"})
+        self.assertEqual(self._read_card(card_id), dict(before, active=True))
+        self.assertEqual(self._resolve(), {"id": card_id, "disposition": "reused"})
+
+    def test_resolve_for_payer_prefers_active_over_duplicate_inactive_cards(self):
+        inactive_ids = [self._create_card(active=False) for unused in range(2)]
+        active_id = self._create_card()
+
+        result = self._resolve()
+
+        self.assertEqual(result, {"id": active_id, "disposition": "reused"})
+        for card_id in inactive_ids:
+            self.assertFalse(self._read_card(card_id)["active"])
+
+    def test_resolve_for_payer_reactivates_exact_card_despite_other_active_metadata(self):
+        other_id = self._create_card(cof_txnid="cof_other")
+        inactive_id = self._create_card(active=False)
+        other_before = self._read_card(other_id)
+
+        result = self._resolve()
+
+        self.assertEqual(result, {"id": inactive_id, "disposition": "reactivated"})
+        self.assertTrue(self._read_card(inactive_id)["active"])
+        self.assertEqual(self._read_card(other_id), other_before)
+
+    def test_resolve_for_payer_does_not_reactivate_different_inactive_metadata(self):
+        inactive_id = self._create_card(active=False, cof_txnid="cof_other")
+        before = self._read_card(inactive_id)
+
+        result = self._resolve()
+
+        self.assertEqual(result["disposition"], "created")
+        self.assertNotEqual(result["id"], inactive_id)
+        self.assertEqual(self._read_card(inactive_id), before)
+
+    def test_resolve_for_payer_does_not_reactivate_another_payers_card(self):
+        inactive_id = self._create_card(active=False)
+        other_partner_id = self.partner_obj.create(
+            self.cursor, self.uid, {"name": "Other payer"}
+        )
+
+        result = self._resolve(partner_id=other_partner_id)
+
+        self.assertEqual(result["disposition"], "created")
+        self.assertEqual(self._read_card(result["id"])["partner_id"][0], other_partner_id)
+        self.assertFalse(self._read_card(inactive_id)["active"])
+
+    def test_resolve_for_payer_rejects_duplicate_active_exact_matches(self):
+        card_ids = [self._create_card() for unused in range(2)]
+        before = [self._read_card(card_id) for card_id in card_ids]
 
         with self.assertRaises(osv.except_osv):
-            self._resolve(conflicting_data)
+            self._resolve()
 
-        card = self.creditcard_obj.read(
-            self.cursor, self.uid, card_id, ["masked_number"]
+        self.assertEqual([self._read_card(card_id) for card_id in card_ids], before)
+
+    def test_resolve_for_payer_rejects_duplicate_inactive_exact_matches(self):
+        card_ids = [self._create_card(active=False) for unused in range(2)]
+        before = [self._read_card(card_id) for card_id in card_ids]
+
+        with self.assertRaises(osv.except_osv):
+            self._resolve()
+
+        self.assertEqual([self._read_card(card_id) for card_id in card_ids], before)
+
+    def test_resolve_for_payer_requires_write_permission_to_reactivate(self):
+        card_id = self._create_card(active=False)
+        original_check_perm = self.creditcard_obj.check_perm
+
+        def check_perm(cursor, uid, operation, **kwargs):
+            if operation == "write":
+                raise osv.except_osv("Access denied", "Cannot reactivate cards")
+            return original_check_perm(cursor, uid, operation, **kwargs)
+
+        with mock.patch.object(self.creditcard_obj, "check_perm", side_effect=check_perm):
+            with self.assertRaises(osv.except_osv):
+                self._resolve()
+
+        self.assertFalse(self._read_card(card_id)["active"])
+
+    def test_resolve_for_payer_prefers_active_even_with_active_test_disabled(self):
+        self._create_card(active=False)
+        active_id = self._create_card()
+        context = {"active_test": False}
+
+        result = self.creditcard_obj.resolve_for_payer(
+            self.cursor, self.uid, self.partner_id, self._base_vals(), context=context
         )
-        self.assertEqual(card["masked_number"], "**** **** **** 1234")
+
+        self.assertEqual(result, {"id": active_id, "disposition": "reused"})
+        self.assertEqual(context, {"active_test": False})
 
     def test_resolve_for_payer_creates_card_when_token_belongs_to_another_payer(self):
         existing_card_id = self.creditcard_obj.create(
@@ -188,7 +322,7 @@ class TestResPartnerCreditCard(testing.OOTestCaseWithCursor):
         )
         self.assertEqual(
             sorted(self.creditcard_obj.search(
-                self.cursor, self.uid, [("token", "=", "tok_test_123")]
+                self.cursor, self.uid, [("token", "=", self._base_vals()["token"])]
             )),
             sorted([existing_card_id, result["id"]]),
         )

@@ -82,7 +82,7 @@ msgstr ""
 #. module: som_card_payment
 #: code:addons/som_card_payment/models/res_partner_creditcard.py:62
 #, python-format
-msgid "The stored card token has different payer or metadata."
+msgid "Multiple stored cards match the same payer and card data."
 msgstr ""
 
 #. module: som_card_payment
