@@ -41,8 +41,8 @@
             <field name="object_ref" eval="'poweremail.templates,%s' % ref('price_change_campaign_template')"/>
             <field name="domain">[('polissa_id.tipus_subseccio', '=', '21'), ('polissa_id.mode_facturacio', '=', 'atr')]</field>
         </record>
-        <!-- Inactive editorial drafts: configure real validity before use.
-             Empty translations deliberately fail the preflight validation. -->
+        <!-- Inactive drafts: prepare validity, HTML and translations using
+             the existing banner management tools before sending. -->
         <record model="report.banner" id="price_change_reason_20td">
             <field name="name">Esborrany canvi preus: motiu 2.0TD</field>
             <field name="code">CANVI_PREUS_MOTIU</field>

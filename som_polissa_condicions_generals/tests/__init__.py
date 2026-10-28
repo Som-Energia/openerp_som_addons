@@ -7,6 +7,5 @@ from .tests_contract_helper import *
 from .tests_contract_summary_full_report import *
 from .tests_giscedata_polissa import *
 from .tests_demo_product_pricelist_version import *
-from .tests_price_change_validation import *
 from .tests_price_change_campaign import *
 from .tests_price_change_calculations import *

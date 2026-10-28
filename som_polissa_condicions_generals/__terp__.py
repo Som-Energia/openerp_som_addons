@@ -39,7 +39,6 @@
         "security/ir.model.access.csv",
         "security/price_change_security.xml",
         "data/price_change_campaign.xml",
-        "data/price_change_views.xml",
     ],
     "active": False,
     "installable": True,

@@ -1,198 +1,98 @@
 # Correu reutilitzable de canvi de preus
 
-## Abast i contracte
+## Abast
 
-La plantilla `som_polissa_condicions_generals.price_change_campaign_template`
-separa els textos editorials dels càlculs i dels components contractuals.
-És una plantilla nova i optativa: no substitueix les històriques, no s'assigna
-a lots existents i no activa cap enviament automàtic.
+La plantilla optativa
+`som_polissa_condicions_generals.price_change_campaign_template` separa els
+textos editorials dels càlculs. Reutilitza `report.banner` i el backend de
+canvi de preus. No modifica cap plantilla històrica ni activa enviaments.
 
-La configuració pertany al lot `som.infoenergia.lot.enviament`:
+No afegeix herències sobre `poweremail.templates`, `report.banner`,
+`ir.translation`, `som.infoenergia.lot.enviament` o `som.enviament.massiu`.
+Tampoc afegeix models, camps al lot/enviament, snapshots, rols editorials ni
+restriccions als permisos o al contingut dels banners.
 
-| Camp | Ús |
+## Dates i reenviaments
+
+La selecció dels banners utilitza la data del dia en què es prepara/envia el
+correu. La previsualització fa servir la data del dia en què s'executa.
+No hi ha una data de campanya guardada al lot.
+
+Els preus actuals es calculen per aquell mateix dia. L'entrada en vigor dels
+preus nous es resol amb el mecanisme del backend: la primera versió activa
+futura de la llista de preus o, si no n'hi ha, el valor històric de 60 dies.
+L'assumpte i el cos utilitzen aquesta mateixa resolució. Aquesta data futura
+és la dels preus nous, no la data de selecció dels banners.
+
+Cada renderització consulta les dades i els banners vigents. No es fixa cap
+contingut en previsualitzar, no s'escriu al lot/enviament i un reenviament no
+conserva automàticament els textos d'una renderització anterior. Les còpies
+d'enviaments mantenen el comportament estàndard.
+
+## Banners i traduccions
+
+| Codi | Ús |
 | --- | --- |
-| `email_template` | Plantilla Poweremail i aïllament dels dominis |
-| `price_change_selection_date` | Data de selecció de vigència dels banners |
-| `price_change_old_price_date` | Data dels preus anteriors |
-| `price_change_effective_date` | Entrada en vigor; preus nous, assumpte i text |
+| `CANVI_PREUS_MOTIU` | Motiu del canvi; variants 2.0TD/resta |
+| `CANVI_PREUS_AUTOCONSUM` | Compensació simplificada en modalitat per períodes |
+| `CANVI_PREUS_COMIAT` | Comiat |
 
-Les dates són explícites, en format `YYYY-MM-DD`. Els preus anteriors han de
-precedir l'entrada en vigor; la selecció no pot ser posterior a l'entrada en
-vigor. No hi ha periodicitat automàtica ni validació jurídica del termini.
+El backend crida `report.banner.get_report_banners()` amb la referència de la
+plantilla Poweremail, la data actual i l'ID real de l'enviament massiu. Els
+dominis poden seleccionar sobre l'enviament i la seva `polissa_id`.
 
-El backend selecciona sobre **l'enviament massiu**, amb dominis sobre la seva
-`polissa_id`; només després delega els càlculs al backend de pòlissa. El context
-inclou `pem_template_id`. No s'intercanvien identificadors dels dos models.
-L'idioma és el del titular: català i castellà, sense fallback silenciós.
+La vigència, l'ordre de prioritat, les traduccions i el fallback són els que
+ja ofereix el model de banners. No s'exigeixen traduccions duplicades en totes
+dues llengües ni es rebutgen solapaments que el mecanisme estàndard resol per
+prioritat. S'utilitzen les pantalles i permisos habituals de Banner Manager.
+No hi ha menús o grups editorials nous.
 
-## Continguts editorials
+L'HTML dels banners s'insereix com a contingut: no es torna a compilar com a
+Mako ni s'hi aplica una allowlist nova d'etiquetes, atributs o estils. Cal
+revisar-ne la presentació i el contingut abans d'enviar.
 
-| Codi | Obligatorietat | Domini preparat |
-| --- | --- | --- |
-| `CANVI_PREUS_MOTIU` | Sempre | Una variant 2.0TD i una per a la resta |
-| `CANVI_PREUS_AUTOCONSUM` | Compensació simplificada i modalitat `atr` | Subtipus 21 i períodes |
-| `CANVI_PREUS_COMIAT` | Sempre | Tots els contractes |
+Els quatre esborranys inicials tenen vigència `2099-01-01` a `2099-01-01`, per
+no activar-los accidentalment. Cal preparar-los amb les eines habituals abans
+d'enviar. La configuració té IDs propis i `noupdate=1`.
 
-2.0TD / resta conserva la segmentació existent: no defineix comercialment
-què és domèstic o industrial. Es conserva també la condició existent del bloc
-d'autoconsum; no s'estén automàticament a altres modalitats.
+## Preparació i enviament
 
-Es creen quatre esborranys buits, amb vigència **2099-01-01 a 2099-01-01**.
-Aquesta data és una protecció d'esborrany, no una campanya real. L'equip tècnic
-ha de preparar les vigències abans d'utilitzar-los. Encara que algú seleccioni
-aquella data, els textos i les traduccions buits bloquegen la renderització.
-Els esborranys i els dominis tenen XML IDs independents i `noupdate=1`.
+1. Preparar textos, traduccions, vigències i dominis dels banners.
+2. Crear un lot normal amb la plantilla reutilitzable i el remitent adequat.
+3. Preparar els adjunts amb el circuit existent. No s'afegeix una comprovació
+   nova que exigeixi exactament un PDF; cal verificar l'adjunt que anuncia el
+   text i recordar que el circuit massiu existent selecciona el primer adjunt.
+4. Previsualitzar i revisar assumpte, imports, textos, destinataris, CC/BCC,
+   adjunts i variants aplicables abans d'autoritzar l'enviament.
 
-El grup **Canvi de preus: edició de textos** dona accés a les entrades catalana
-i castellana del menú d'enviaments massius. Les pantalles mostren codi i dates
-com a informació de només lectura. Les sobreescriptures actuals de
-`report.banner` restringeixen l'edició a l'HTML d'aquests codis, també davant
-crides directes a aquell model. No concedeixen creació, eliminació ni edició
-de codis, dominis, dates o prioritats. No cal afegir el grup Banner Manager al
-personal editorial.
+Poweremail manté el seu tractament habitual dels errors: pot capturar una
+excepció de renderització i retornar contingut buit. Aquesta funcionalitat no
+sobreescriu `get_mailbox_values()` per canviar-ho. Els cridadors que ja passin
+`raise_exception=True`, com el circuit de previsualització, conserven aquesta
+opció estàndard. No es promet una validació atòmica de tot el lot.
 
-No s'hereta `ir.translation` ni s'hi imposen restriccions específiques de
-campanya: es mantenen els permisos habituals d'OpenERP. La campanya valida les
-traduccions en seleccionar-les, no en qualsevol escriptura al model core.
-L'abast de les restriccions de banners encara és objecte de review; vegeu
-`price-change-review.md` abans de donar el disseny del rol per aprovat.
+## Càlculs, PDF i desplegament
 
-S'admet HTML senzill: paràgrafs, salts, èmfasi, llistes, títols i enllaços
-HTTP/HTTPS/mailto. No s'admeten imatges, scripts, atributs d'esdeveniment,
-CSS, iframes ni expressions/directives Mako. No és un editor visual.
-El contingut editorial **no es compila com a Mako**.
+L'estimació indexada pot rebre el mapa fiscal de la pòlissa perquè els impostos
+coincideixin amb la resta del correu. Sense aquest paràmetre conserva els valors
+històrics. No es canvien les fórmules ni els arrodoniments per aquesta review.
 
-Cal disposar de les dues llengües actives i de traduccions explícites
-`report.banner,html` per a **ca_ES i es_ES**. El text font no substitueix una
-traducció absent. També es rebutgen traduccions duplicades i tots els banners
-aplicables superposats: la prioritat no amaga una configuració ambigua.
+El PDF renderitza el cos HTML de la mateixa plantilla del lot sobre l'enviament
+real. Es pot seleccionar amb `price_change_enviament_id` al context; el report
+comprova que pertanyi a la pòlissa. Sense identificador explícit exigeix una
+associació única. Això no afegeix camps als models compartits.
 
-## Preparació d'una campanya
+La migració `5.0.25.5.0/post-0003_add_price_change_campaign.py` carrega la nova
+plantilla, dominis, esborranys i permís de lectura del backend PDF propi. No
+inicialitza camps de lots/enviaments ni carrega vistes editorials. Cal
+actualitzar el mòdul i reiniciar els processos ERP/workers si encara carreguen
+una revisió anterior d'aquesta PR. No s'eliminen columnes de DB de proves
+anteriors automàticament.
 
-1. Revisar segments, modalitats, dates i textos amb negoci i assessorament jurídic.
-2. Preparar els banners i la vigència real des del rol tècnic. Per a campanyes
-   successives, conservar els banners històrics i crear-ne de nous amb vigències
-   no superposades; no canviar els textos d'una campanya encara pendent de fixar.
-3. Negoci edita només HTML i traduccions des dels dos menús editorials.
-4. Crear un lot amb la plantilla reutilitzable i les tres dates. Configurar el
-   compte remitent apropiat: no s'imposa cap compte de producció des de l'XML.
-5. Generar i adjuntar els contractes amb el circuit existent. Si el text diu
-   que s'adjunta el contracte, s'exigeix un únic adjunt a l'enviament, amb nom
-   `.pdf` i capçalera PDF. Això coincideix amb el circuit massiu que adjunta el
-   primer document de l'enviament. No certifica que el PDF contingui el contracte
-   jurídicament correcte: cal revisar-ne el contingut i la data. El cas `modcon`
-   manté el text existent que no anuncia aquest adjunt.
-6. Renderitzar en un entorn controlat i validar tots els casos aplicables abans
-   d'autoritzar un enviament. No és un flux d'aprovació ni un gestor de campanyes.
-7. Revisar explícitament To, CC, BCC, adjunts i estat del lot abans d'activar-lo.
-   Es conserven els destinataris titular/notificació de la referència; la
-   configuració inicial no afegeix CC ni BCC. Els tests no envien correus.
+El POT es conserva exactament com abans de la PR: no se'n regeneren entrades.
+La ubicació dels nous Mako encara està pendent de discussió; no s'han mogut ni
+duplicat. Vegeu `price-change-review.md` i `price-change-verification.md`.
 
-Els controls s'apliquen per enviament en la renderització. El hook local de
-Poweremail força la propagació dels errors per a aquesta plantilla i per a
-còpies que utilitzin el mateix component: no es converteixen en un cos o
-assumpte buit. No s'ha modificat el comportament de les altres plantilles.
-No es declara una validació atòmica de tot el lot abans del primer enviament.
-
-## Reenviaments i traçabilitat
-
-`som.enviament.massiu.price_change_snapshot` conserva dates, plantilla, llengua
-i els continguts editorials bilingües seleccionats. Es fixa en la **primera
-renderització**, incloent-hi l'assumpte i la previsualització PDF. La selecció es
-serialitza amb un bloqueig de la fila de l'enviament. No es modifica l'estat del
-lot ni es crea un correu en fixar aquest contingut.
-
-Les renderitzacions següents reutilitzen la selecció original encara que
-s'editi el lot o s'eliminin els banners d'origen. Canviar de plantilla, pòlissa
-o lot per a un enviament fixat es rebutja. El camp intern no es pot esborrar o
-reescriure per l'ORM públic. Cal un enviament nou per a una campanya nova.
-La còpia d'un enviament amb snapshot elimina el snapshot, la referència al
-correu i la data d'enviament, i deixa el nou registre obert; no copia el
-contingut binari adjunt. Sense snapshot es manté el comportament habitual de
-còpia, inclosos els valors passats a `default`.
-
-Això **no congela les dades econòmiques o personals** de la pòlissa: els càlculs
-es tornen a fer amb les dates guardades i les dades disponibles. Una modificació
-retroactiva de tarifes o de dades del contracte exigeix revisar el reenviament.
-No es promet una còpia binària idèntica del correu original.
-
-## Components i compatibilitat
-
-Els components estan a `report/mailcanvipreus/`:
-
-- `campaign.mako`: estructura i capçalera/peu comuns.
-- `warning.mako`: modificació contractual, abans de la salutació.
-- `prices.mako`: comparativa d'energia/potència, indexada, autoconsum i Generation kWh.
-- `estimation.mako`: imports i explicacions dels orígens de consum.
-- `legal.mako`: informació contractual, CNMC, documentació i opcions de canvi/baixa.
-
-Els decimals comparteixen les mateixes rutes de format que `get_data()`.
-L'estimació indexada accepta les dates explícites i el mapa fiscal del backend;
-fora d'aquest circuit conserva els valors per defecte històrics. La resta de
-càlculs conserva la fórmula i els arrodoniments; en el circuit de campanya el
-context es copia per no contaminar el càlcul següent i les dates també s'apliquen
-al bo social. Els altres cridadors mantenen el comportament històric.
-El percentatge d'impost elèctric mostrat prové del backend, no d'un literal.
-Això evita aplicar sempre IE 5,11% i IVA 21% a l'estimació indexada quan el
-mapa fiscal de la pòlissa és diferent; no és una auditoria fiscal completa.
-La ubicació dels nous Mako continua pendent d'acord (`price-change-review.md`).
-
-El bloc legal de períodes prové de `correu-canviPreus202610.mako`; per a indexada
-es conserva la referència específica existent a `correu-canviPreus202601.mako`.
-Això no acredita que textos, enllaços o clàusules continuïn vigents: cal revisió
-jurídica abans d'activar qualsevol modalitat, inclosos els enllaços històrics
-que apunten a dominis de prova. No s'han inventat ni aprovat clàusules noves.
-
-### PDF
-
-El report des de pòlissa pot rebre `price_change_enviament_id` al context.
-Valida que l'enviament pertanyi a aquella pòlissa i renderitza la plantilla del
-seu lot sobre l'objecte d'enviament real. Si no es proporciona, només selecciona
-un enviament de canvi de preus quan l'associació és única; davant absència o
-ambigüitat demana l'identificador explícit. Les plantilles antigues declarades
-realment sobre pòlissa mantenen aquell contracte.
-
-El renderer comprova el resultat PDF, propaga errors del procés i neteja els
-fitxers temporals. La generació real amb Puppeteer/Chromium s'ha provat amb dades
-sintètiques, comprovant que l'HTML coincideix exactament amb el de Poweremail i
-que el PDF conté dates, contingut editorial i informació legal.
-
-## Actualització d'instal·lacions existents
-
-La migració és
-`migrations/5.0.25.5.0/post-0003_add_price_change_campaign.py`.
-Inicialitza els camps del lot i de l'enviament i carrega permisos, configuració
-i vistes. La versió coincideix amb la que informa l'entorn ERP utilitzat.
-La dependència `report_banner_poweremail` és explícita al manifest.
-
-No s'escriu `canviPreusBackend`, que és `noupdate=1`. La nova plantilla i els
-esborranys tenen IDs propis. La càrrega de la migració és idempotent i no
-sobreescriu personalitzacions dels nous registres `noupdate` ja existents.
-No s'assigna la nova plantilla a lots existents ni s'activa cap campanya.
-
-La correcció de la review retira una herència només de mètodes sobre
-`ir.translation`, sense canviar camps, ACL ni XML; no necessita una migració
-de dades addicional. Cal reiniciar els processos ERP/workers per descarregar
-el hook antic. S'elimina el POT del mòdul: no es genera ni es carrega com a part
-de la preparació de campanyes. Les traduccions funcionals CA/ES es mantenen.
-
-S'ha executat el generador de migracions en mode `--dry-run`. Compara contra el
-`main` local i no incorpora els fitxers nous encara no versionats: el resultat
-contenia candidats aliens a aquest canvi. No se n'ha aplicat cap. S'ha revisat
-manualment el diff de camps, manifest, XML i permisos; el test de migració real
-l'executa dues vegades i comprova la conservació de les dues plantilles.
-
-## Verificació i límits
-
-La sincronització prèvia del workspace s'ha omès per **excepció expressa de
-l'usuari**. En reprendre la review s'ha intentat executar-la: ha fet fetch,
-però ha refusat canviar dependències perquè confon el symlink `poweremail2`
-amb un altre worktree de `poweremail`. L'usuari ha autoritzat continuar sense
-corregir el sincronitzador. S'utilitzen els checkouts locals existents; no
-s'ha modificat el codi GISCE ERP ni s'ha canviat la seva branca/commit. Els tests només redirigeixen temporalment els dos
-addons Som Energia mitjançant el wrapper amb lock i restauració.
-
-Vegeu `price-change-verification.md` per a resultats, comparació amb la base i
-matriu de cobertura. No s'han provat clients reals de correu ni s'han enviat
-missatges. Les revisions de negoci, jurídica, enllaços i adjunts reals continuen
-sent requisits previs a l'activació, no aprovacions implícites d'aquests tests.
+No s'han enviat correus reals. La revisió funcional/jurídica, els enllaços,
+els adjunts i les proves en clients reals continuen pendents abans d'activar
+cap enviament.

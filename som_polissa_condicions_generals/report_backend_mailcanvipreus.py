@@ -5,7 +5,6 @@ from mako.template import Template
 from giscedata_facturacio.report.utils import get_atr_price
 from som_indexada.utils import calculate_new_indexed_prices
 from datetime import date, timedelta
-import json
 
 
 _DECIMALS = {
@@ -121,8 +120,6 @@ class ReportBackendMailcanvipreusEnviamentMassiu(ReportBackend):
         env_o = self.pool.get("som.enviament.massiu")
         env_br = env_o.browse(cursor, uid, record_id, context=context)
 
-        if env_br.price_change_snapshot:
-            return json.loads(env_br.price_change_snapshot)['lang']
         return env_br.polissa_id.titular.lang
 
     @report_browsify
@@ -131,38 +128,41 @@ class ReportBackendMailcanvipreusEnviamentMassiu(ReportBackend):
         template_id = ctx.get('pem_template_id')
         if not template_id:
             raise ValueError('Price-change campaigns require pem_template_id')
-        env_obj = self.pool.get('som.enviament.massiu')
-        snapshot = env_obj._get_price_change_snapshot(
-            cursor, uid, env.id, template_id, context=ctx)
-        ctx.update({
-            'lang': snapshot['lang'],
-            'price_change_old_price_date': snapshot['old_price_date'],
-            'price_change_effective_date': snapshot['effective_date'],
-        })
         backend = self.pool.get('report.backend.mailcanvipreus.pdf')
+        today = date.today().strftime('%Y-%m-%d')
+        effective_date = backend.get_price_change_date(
+            cursor, uid, env.polissa_id, context=ctx)
+        lang = env.polissa_id.titular.lang
+        ctx.update({
+            'lang': lang,
+            'price_change_old_price_date': today,
+            'price_change_effective_date': effective_date,
+        })
         data = backend.get_data(cursor, uid, env.polissa_id.id, context=ctx)
-        if not data.get('modcon'):
-            data['contract_attachment_id'] = env_obj._check_price_change_attachment(
-                cursor, uid, env.id, context=ctx)
+        banners = self.pool.get('report.banner').get_report_banners(
+            cursor, uid, 'poweremail.templates,{}'.format(template_id),
+            today, env.id, context=ctx)
+        required = ['CANVI_PREUS_MOTIU', 'CANVI_PREUS_COMIAT']
+        if env.polissa_id.tipus_subseccio == '21' and env.polissa_id.mode_facturacio == 'atr':
+            required.append('CANVI_PREUS_AUTOCONSUM')
+        for code in required:
+            if not banners.get(code):
+                raise ValueError('Missing price-change banner: {}'.format(code))
         data.update({
-            'lang': snapshot['lang'],
-            'campaign': dict((name, snapshot[name]) for name in (
-                'selection_date', 'old_price_date', 'effective_date')),
-            'banners': dict((code, translations[snapshot['lang']])
-                            for code, translations in snapshot['banners'].items()),
+            'lang': lang,
+            'campaign': {'selection_date': today, 'old_price_date': today,
+                         'effective_date': effective_date},
+            'banners': dict((code, content) for code, content in banners.items() if content),
         })
         return data
 
     @report_browsify
     def get_campaign_subject(self, cursor, uid, env, context=None):
-        template_id = env.lot_enviament.email_template.id
-        snapshot = self.pool.get('som.enviament.massiu')._get_price_change_snapshot(
-            cursor, uid, env.id, template_id, context=context)
-        if snapshot['lang'] == 'ca_ES':
-            return '[CORREU INFORMATIU] Canvi de tarifes a partir de {}'.format(
-                snapshot['effective_date'])
-        return '[CORREO INFORMATIVO] Cambio de tarifas a partir de {}'.format(
-            snapshot['effective_date'])
+        effective_date = self.pool.get('report.backend.mailcanvipreus.pdf').get_price_change_date(
+            cursor, uid, env.polissa_id, context=context)
+        if env.polissa_id.titular.lang == 'ca_ES':
+            return '[CORREU INFORMATIU] Canvi de tarifes a partir de {}'.format(effective_date)
+        return '[CORREO INFORMATIVO] Cambio de tarifas a partir de {}'.format(effective_date)
 
     def format_return(self, cursor, uid, record, func_name, data, context=None):
         # Campaign data has exactly the same numeric paths as historical data.
