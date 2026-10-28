@@ -154,3 +154,6 @@ patches/
 # Local consumer env (secrets)
 runtime-docker/.env.consumer
 runtime-docker/.env.producer
+
+# webclient docker custom css
+/webclient-docker/custom.css
