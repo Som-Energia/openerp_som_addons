@@ -368,7 +368,7 @@ class TestGiscedataPolissaContractSummaryRoutes(testing.OOTestCase):
             ),
         ])
 
-    def test_lead_migration_loads_only_combined_report_action(self):
+    def test_lead_migration_loads_report_view_and_security(self):
         migration = self._load_lead_migration()
 
         with mock.patch.object(migration, 'load_data') as load_data:
@@ -379,6 +379,20 @@ class TestGiscedataPolissaContractSummaryRoutes(testing.OOTestCase):
                 self.cursor,
                 'som_polissa_condicions_generals',
                 'report/giscedata_crm_lead_contract_summary_full_report.xml',
+                idref=None,
+                mode='update'
+            ),
+            mock.call(
+                self.cursor,
+                'som_polissa_condicions_generals',
+                'views/giscedata_crm_lead_contract_summary_full_view.xml',
+                idref=None,
+                mode='update'
+            ),
+            mock.call(
+                self.cursor,
+                'som_polissa_condicions_generals',
+                'security/ir.model.access.csv',
                 idref=None,
                 mode='update'
             ),
