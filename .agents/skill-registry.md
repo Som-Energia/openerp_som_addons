@@ -33,6 +33,7 @@ Current verification: `.github/workflows/pull_request_labeler.yml` requires at l
 | Quan necessites afegir casos de test/demo XML en un mòdul OpenERP | erp-demo-testcase | .agents/skills/erp-demo-testcase/SKILL.md |
 | Quan necessites fer triage d'incidències de Sentry, "analitzar sentry", "triar incidents" | sentry-triage | .agents/skills/sentry-triage/SKILL.md |
 | Quan necessites actualitzar un report legal o contractual `.mako` a partir d'un `docx` o `md` | update-contract-report | .agents/skills/update-contract-report/SKILL.md |
+| Quan necessites calcular o publicar mètriques verificades de tokens i costos d'IA d'una PR | pr-token-cost-logger | .agents/skills/pr-token-cost-logger/SKILL.md |
 
 ## Compact Rules
 
@@ -125,6 +126,11 @@ Current verification: `.github/workflows/pull_request_labeler.yml` requires at l
 - Tocar només plantilles `.mako`/HTML del report, no backend Python o lògica de render, tret que l'usuari ho demani explícitament
 - Preservar fórmules, subíndexs/superíndexs, notes al peu i enllaços en HTML net
 - Si existeixen versions CA i ES, revisar consistència de contingut entre idiomes
+
+### pr-token-cost-logger
+- Fer servir només mètriques de tokens verificades; no inferir-ne a partir del text
+- Calcular costos només amb tarifes aplicables i identificades; altrament informar només dels tokens
+- Publicar comentaris només si s'ha demanat explícitament i el repositori/PR són inequívocs
 
 ## Project Conventions
 
