@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 """Database-free behavioral tests of the production energy detail template."""
+from __future__ import absolute_import
 import os
 import unittest
 
