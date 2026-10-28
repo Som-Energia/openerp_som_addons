@@ -74,7 +74,7 @@ class TestReportBackendCCPP(testing.OOTestCase):
             u'distri': u'Agrolait',
             u'name': u'ES0021126262693495FV',
             u'provincia': u'Girona',
-            u'ref_catastral': u'referencia catastral',
+            u'ref_catastral': u'referenciacatastral1',
             u'ref_dist': u'',
             u'tensio': 127}
         )

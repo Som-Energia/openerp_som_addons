@@ -368,7 +368,7 @@ class TestGiscedataPolissaContractSummaryRoutes(testing.OOTestCase):
             ),
         ])
 
-    def test_lead_migration_loads_only_combined_report_action(self):
+    def test_lead_migration_loads_report_action_and_security(self):
         migration = self._load_lead_migration()
 
         with mock.patch.object(migration, 'load_data') as load_data:
@@ -379,6 +379,13 @@ class TestGiscedataPolissaContractSummaryRoutes(testing.OOTestCase):
                 self.cursor,
                 'som_polissa_condicions_generals',
                 'report/giscedata_crm_lead_contract_summary_full_report.xml',
+                idref=None,
+                mode='update'
+            ),
+            mock.call(
+                self.cursor,
+                'som_polissa_condicions_generals',
+                'security/ir.model.access.csv',
                 idref=None,
                 mode='update'
             ),
@@ -510,6 +517,19 @@ class TestGiscedataPolissaContractSummaryRoutes(testing.OOTestCase):
         self.values_obj.unlink(self.cursor, self.uid, [combined_value.id])
         self.report_obj.unlink(self.cursor, self.uid, [combined_action.id])
         self.imd_obj.unlink(self.cursor, self.uid, combined_imd_ids)
+        self.imd_obj.loads.clear()
+        for xml_id in (
+            'report_contract_summary_full',
+            'value_report_contract_summary_full',
+        ):
+            self.imd_obj.get_object_reference.clear_cache(
+                self.database, self.uid,
+                'som_polissa_condicions_generals', xml_id
+            )
+            self.imd_obj._get_id.clear_cache(
+                self.database, self.uid,
+                'som_polissa_condicions_generals', xml_id
+            )
 
         migration = self._load_migration()
         migration.up(self.cursor, '5.0.25.7')
@@ -530,6 +550,74 @@ class TestGiscedataPolissaContractSummaryRoutes(testing.OOTestCase):
             ),
             summary_value_data
         )
+
+    def _assert_lead_print_route(self, report_action, report_name, display_name):
+        report_data = self.report_obj.read(
+            self.cursor, self.uid, report_action.id,
+            ['name', 'report_name', 'model']
+        )
+        self.assertEqual(report_data['report_name'], report_name)
+        self.assertEqual(report_data['name'], display_name)
+        self.assertEqual(report_data['model'], 'giscedata.crm.lead')
+
+    def _load_summary_migration(self):
+        migration_path = os.path.abspath(os.path.join(
+            os.path.dirname(__file__),
+            '..',
+            'migrations',
+            '5.0.25.7',
+            'post-0001_add_contract_summary_report.py'
+        ))
+        return imp.load_source(
+            'contract_summary_migration', migration_path
+        )
+
+    def _create_stale_button_views(self):
+        stale_names = [
+            'giscedata_crm_leads_contract_summary_view',
+            'giscedata_crm_leads_contract_summary_full_view',
+        ]
+        stale_view_ids = []
+        for name in stale_names:
+            view_id = self.view_obj.create(self.cursor, self.uid, {
+                'name': name,
+                'model': 'giscedata.crm.lead',
+                'type': 'form',
+                'arch': '<form string="Stale"><field name="name"/></form>',
+            })
+            self.imd_obj.create(self.cursor, self.uid, {
+                'module': 'som_polissa_condicions_generals',
+                'name': name,
+                'model': 'ir.ui.view',
+                'res_id': view_id,
+            })
+            stale_view_ids.append(view_id)
+
+        child_view_ids = [self.view_obj.create(self.cursor, self.uid, {
+            'name': 'contract_summary_child_view',
+            'model': 'giscedata.crm.lead',
+            'type': 'form',
+            'inherit_id': stale_view_ids[0],
+            'arch': '<data><xpath expr="//form" position="inside">'
+                    '<field name="name"/></xpath></data>',
+        })]
+        unrelated_view_id = self.view_obj.create(self.cursor, self.uid, {
+            'name': 'unrelated_contract_summary_view',
+            'model': 'giscedata.crm.lead',
+            'type': 'form',
+            'arch': '<form string="Unrelated"><field name="name"/></form>',
+        })
+        report_action = self.imd_obj._get_obj(
+            self.cursor, self.uid, 'som_polissa_condicions_generals',
+            'lead_contract_summary_full_report'
+        )
+        shortcut_ids = [self.view_sc_obj.create(self.cursor, self.uid, {
+            'action_type': 'ir.actions.report.xml',
+            'action_id': report_action.id,
+            'view_id': view_id,
+            'user_id': self.uid,
+        }) for view_id in stale_view_ids]
+        return stale_view_ids, child_view_ids, shortcut_ids, unrelated_view_id
 
     def _load_migration(self):
         migration_path = os.path.abspath(os.path.join(
