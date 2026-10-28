@@ -1,6 +1,70 @@
 # Verificació del canvi de preus
 
-## Resultats
+## Revisió de la PR 1508
+
+Les correccions i decisions pendents es detallen a `price-change-review.md`.
+Aquesta revisió elimina el POT i l'herència d'`ir.translation`, i acota la
+reinicialització de còpies als enviaments amb snapshot. La validació de
+traduccions es comprova al consum de campanya, no a l'escriptura core.
+
+La sincronització prèvia s'ha intentat i ha refusat canviar dependències pel
+fals positiu del symlink `poweremail2 -> poweremail`. S'ha continuat amb els
+checkouts existents per autorització expressa de l'usuari, sense corregir el
+sincronitzador ni canviar la branca/commit d'ERP. Els serveis de tests es
+reutilitzen amb el projecte Compose del checkout principal, no amb un segon
+projecte que intenti ocupar els mateixos ports.
+
+### Comprovacions de les correccions
+
+- Selecció ERP en una DB nova (`test_branch_price_change_review`): **33 tests,
+  32 passen i 1 omès**, sense errors. L'omès és el smoke PDF real, que no s'ha
+  activat en aquesta revisió. Es comproven explícitament create/write de
+  traduccions invàlides i bloqueig en renderitzar, CRUD de traduccions alienes
+  per a una persona del grup editorial, i còpia sense snapshot que conserva
+  els defaults. La migració s'executa dues vegades i conserva els `noupdate`.
+- Mako: **2 tests passen amb Python 2.7 i 2 amb Python 3**, incloses assertions
+  sobre els deu casos sintètics registrats, apuntant al worktree nou.
+- Flake8 dels fitxers Python modificats, compilació Python 2.7/3 i
+  `git diff --check`: passen.
+- `flake8 .` global: no passa. Les 4.658 línies de diagnòstic són idèntiques,
+  byte a byte, a les de la PR abans de la review; no es corregeixen aquí.
+- Generador de migracions executat amb `--dry-run`: proposa carregar els XML
+  de campanya ja coberts per la migració existent i candidats aliens a la
+  review perquè compara amb el `main` local. No s'aplica cap candidat.
+
+### Suite completa i comparació amb la PR abans de la review
+
+S'ha conservat el worktree anterior en detached HEAD a `ef345599` i s'han
+executat les dues versions amb el wrapper segur, els mateixos dos addons i
+les mateixes dependències. Les DB són diferents: abans de les suites completes
+s'ha clonat la DB sintètica preparada per la selecció específica, amb el mateix
+esquema i dades inicials per a les dues versions. Les execucions es serialitzen
+amb el lock; no s'han canviat symlinks manualment.
+
+| Versió | Tests | Fallades | Errors | Omesos |
+| --- | --- | --- | --- | --- |
+| PR abans de la review (`ef345599`) | 93 | 4 | 16 | 3 |
+| Correccions de la review | 96 | 4 | 16 | 3 |
+
+Els **20 noms de casos fallits coincideixen**: no hi ha cap cas fallit nou.
+La suite completa continua sense estar verda. El cas `test_translate_modules`
+ja fallava, però ara informa explícitament de l'absència del POT eliminat per
+petició de la review. No es genera un catàleg nou ni es relaxa el test global
+per ocultar aquesta decisió.
+
+Logs locals de la review:
+
+- `/tmp/price-change-review-destral.log`: selecció específica, exit 0.
+- `/tmp/price-change-review-full.log`: suite completa corregida, exit 1.
+- `/tmp/price-change-review-full-baseline.log`: suite anterior, exit 1.
+- `/tmp/price-change-review-flake8-global.log` i
+  `/tmp/price-change-review-flake8-baseline.log`: diagnòstics idèntics.
+- `/tmp/price-change-review-migration-dry-run.log`: proposta revisada, no aplicada.
+
+Els resultats de l'apartat següent són històrics: corresponen a la implementació
+inicial i no substitueixen les comprovacions anteriors de la review.
+
+## Resultats de la implementació inicial (històrics)
 
 S'han fet les proves amb PostgreSQL, MongoDB i Redis iniciats, Python 2.7 de
 l'entorn `erp` i `scripts/run-tests-worktree.sh`, declarant explícitament els dos
@@ -90,8 +154,8 @@ Logs locals de l'execució (temporals, no dades de producció):
 | Adjunts | Un únic PDF en l'enviament quan el text anuncia el contracte; absència i tipus incorrecte bloquejats |
 | Poweremail | Renderer real, assumpte dinàmic i CC/BCC inicialment buits; propagació d'errors obligatòria |
 | PDF | Conversió real; HTML idèntic al de Poweremail; selecció no ambigua i verificació pòlissa/enviament |
-| Permisos | Editor pot canviar HTML però no codis, prioritats, imatge, eliminació ni traduccions alienes |
-| Codi executable | Rebuig de Mako, scripts, protocols executables, atributs actius i imatges; també per a traduccions d'administrador |
+| Permisos | Editor pot canviar l'HTML dels banners però no codis, prioritats, imatge ni eliminació; la restricció sobre traduccions alienes d'aquesta versió inicial es retira a la review |
+| Codi executable | Rebuig de Mako, scripts, protocols executables, atributs actius i imatges; la review trasllada el control de traduccions al consum de campanya |
 | Migració | Execució real dues vegades, camps inicialitzats i conservació de plantilles `noupdate` |
 | Històric | Cap plantilla històrica modificada a oomakotest; no es reescriu `canviPreusBackend` |
 | GISCE ERP | Diff versionat buit; únic fitxer no versionat observat, `docker-compose.yaml`, ja hi era abans del treball |

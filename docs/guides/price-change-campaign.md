@@ -45,10 +45,17 @@ Els esborranys i els dominis tenen XML IDs independents i `noupdate=1`.
 
 El grup **Canvi de preus: edició de textos** dona accés a les entrades catalana
 i castellana del menú d'enviaments massius. Les pantalles mostren codi i dates
-com a informació de només lectura. El servidor restringeix l'edició a HTML i
-traduccions d'aquests codis, també davant crides directes a l'ORM. No concedeix
-creació, eliminació ni edició de codis, dominis, dates o prioritats.
-No cal afegir el grup Banner Manager al personal editorial.
+com a informació de només lectura. Les sobreescriptures actuals de
+`report.banner` restringeixen l'edició a l'HTML d'aquests codis, també davant
+crides directes a aquell model. No concedeixen creació, eliminació ni edició
+de codis, dominis, dates o prioritats. No cal afegir el grup Banner Manager al
+personal editorial.
+
+No s'hereta `ir.translation` ni s'hi imposen restriccions específiques de
+campanya: es mantenen els permisos habituals d'OpenERP. La campanya valida les
+traduccions en seleccionar-les, no en qualsevol escriptura al model core.
+L'abast de les restriccions de banners encara és objecte de review; vegeu
+`price-change-review.md` abans de donar el disseny del rol per aprovat.
 
 S'admet HTML senzill: paràgrafs, salts, èmfasi, llistes, títols i enllaços
 HTTP/HTTPS/mailto. No s'admeten imatges, scripts, atributs d'esdeveniment,
@@ -99,8 +106,10 @@ Les renderitzacions següents reutilitzen la selecció original encara que
 s'editi el lot o s'eliminin els banners d'origen. Canviar de plantilla, pòlissa
 o lot per a un enviament fixat es rebutja. El camp intern no es pot esborrar o
 reescriure per l'ORM públic. Cal un enviament nou per a una campanya nova.
-La còpia d'un enviament elimina el snapshot, la referència al correu i la data
-d'enviament, i deixa el nou registre obert; no copia el contingut binari adjunt.
+La còpia d'un enviament amb snapshot elimina el snapshot, la referència al
+correu i la data d'enviament, i deixa el nou registre obert; no copia el
+contingut binari adjunt. Sense snapshot es manté el comportament habitual de
+còpia, inclosos els valors passats a `default`.
 
 Això **no congela les dades econòmiques o personals** de la pòlissa: els càlculs
 es tornen a fer amb les dates guardades i les dades disponibles. Una modificació
@@ -124,6 +133,9 @@ càlculs conserva la fórmula i els arrodoniments; en el circuit de campanya el
 context es copia per no contaminar el càlcul següent i les dates també s'apliquen
 al bo social. Els altres cridadors mantenen el comportament històric.
 El percentatge d'impost elèctric mostrat prové del backend, no d'un literal.
+Això evita aplicar sempre IE 5,11% i IVA 21% a l'estimació indexada quan el
+mapa fiscal de la pòlissa és diferent; no és una auditoria fiscal completa.
+La ubicació dels nous Mako continua pendent d'acord (`price-change-review.md`).
 
 El bloc legal de períodes prové de `correu-canviPreus202610.mako`; per a indexada
 es conserva la referència específica existent a `correu-canviPreus202601.mako`.
@@ -158,6 +170,12 @@ esborranys tenen IDs propis. La càrrega de la migració és idempotent i no
 sobreescriu personalitzacions dels nous registres `noupdate` ja existents.
 No s'assigna la nova plantilla a lots existents ni s'activa cap campanya.
 
+La correcció de la review retira una herència només de mètodes sobre
+`ir.translation`, sense canviar camps, ACL ni XML; no necessita una migració
+de dades addicional. Cal reiniciar els processos ERP/workers per descarregar
+el hook antic. S'elimina el POT del mòdul: no es genera ni es carrega com a part
+de la preparació de campanyes. Les traduccions funcionals CA/ES es mantenen.
+
 S'ha executat el generador de migracions en mode `--dry-run`. Compara contra el
 `main` local i no incorpora els fitxers nous encara no versionats: el resultat
 contenia candidats aliens a aquest canvi. No se n'ha aplicat cap. S'ha revisat
@@ -167,8 +185,11 @@ l'executa dues vegades i comprova la conservació de les dues plantilles.
 ## Verificació i límits
 
 La sincronització prèvia del workspace s'ha omès per **excepció expressa de
-l'usuari**. S'utilitzen dependències locals; no s'ha modificat el repositori
-GISCE ERP ni les seves refs. Els tests només redirigeixen temporalment els dos
+l'usuari**. En reprendre la review s'ha intentat executar-la: ha fet fetch,
+però ha refusat canviar dependències perquè confon el symlink `poweremail2`
+amb un altre worktree de `poweremail`. L'usuari ha autoritzat continuar sense
+corregir el sincronitzador. S'utilitzen els checkouts locals existents; no
+s'ha modificat el codi GISCE ERP ni s'ha canviat la seva branca/commit. Els tests només redirigeixen temporalment els dos
 addons Som Energia mitjançant el wrapper amb lock i restauració.
 
 Vegeu `price-change-verification.md` per a resultats, comparació amb la base i

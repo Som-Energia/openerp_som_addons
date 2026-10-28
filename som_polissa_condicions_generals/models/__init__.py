@@ -6,4 +6,3 @@ from . import report_backend_ccpp_m1
 from . import report_backend_ccpp_ignore_modcon
 from . import giscedata_polissa
 from . import price_change_campaign
-from . import price_change_translation

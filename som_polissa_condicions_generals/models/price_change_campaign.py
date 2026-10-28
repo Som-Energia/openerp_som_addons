@@ -122,10 +122,13 @@ class PriceChangeEnviament(osv.osv):
         return super(PriceChangeEnviament, self).write(cursor, uid, ids, vals, context=context)
 
     def copy(self, cursor, uid, record_id, default=None, context=None):
-        values = dict(default or {}, price_change_snapshot=False, mail_id=False,
-                      data_enviament=False, estat='obert')
+        record = self.read(
+            cursor, uid, record_id, ['price_change_snapshot'], context=context)
+        if record['price_change_snapshot']:
+            default = dict(default or {}, price_change_snapshot=False, mail_id=False,
+                           data_enviament=False, estat='obert')
         return super(PriceChangeEnviament, self).copy(
-            cursor, uid, record_id, default=values, context=context)
+            cursor, uid, record_id, default=default, context=context)
 
     def _domain_matches(self, cursor, uid, record_id, domain, context=None):
         try:

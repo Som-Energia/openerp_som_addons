@@ -156,6 +156,20 @@ class TestPriceChangeCampaign(testing.OOTestCase):
         self.assertFalse(copied['mail_id'])
         self.assertFalse(copied['data_enviament'])
 
+    def test_copy_without_a_campaign_snapshot_preserves_standard_defaults(self):
+        self.lot_obj.write(self.cursor, self.uid, [self.lot_id], {
+            'email_template': self.ref('canviPreusBackend')})
+        defaults = {'estat': 'enviat', 'data_enviament': '2026-08-27'}
+        copied_id = self.env_obj.copy(
+            self.cursor, self.uid, self.env_id, default=defaults)
+        copied = self.env_obj.read(
+            self.cursor, self.uid, copied_id,
+            ['price_change_snapshot', 'estat', 'data_enviament'])
+        self.assertFalse(copied['price_change_snapshot'])
+        self.assertEqual(copied['estat'], 'enviat')
+        self.assertEqual(copied['data_enviament'], '2026-08-27')
+        self.assertEqual(defaults, {'estat': 'enviat', 'data_enviament': '2026-08-27'})
+
     def test_backend_delegates_policy_with_explicit_dates_and_template_context(self):
         backend = self.pool.get('report.backend.mailcanvipreus')
         pdf_backend = self.pool.get('report.backend.mailcanvipreus.pdf')
@@ -177,14 +191,16 @@ class TestPriceChangeCampaign(testing.OOTestCase):
         with self.assertRaises(osv.except_osv):
             self.snapshot(template_id=self.template_id + 10000)
 
-    def test_editor_can_change_only_html_and_campaign_translations(self):
-        user_obj = self.pool.get('res.users')
+    def make_editor(self):
         base_group = self.pool.get('ir.model.data').get_object_reference(
             self.cursor, self.uid, 'base', 'group_user')[1]
-        editor_id = user_obj.create(self.cursor, self.uid, {
+        return self.pool.get('res.users').create(self.cursor, self.uid, {
             'name': 'Synthetic editorial user', 'login': 'synthetic-price-editor',
             'groups_id': [(6, 0, [base_group, self.ref('group_price_change_editor')])],
         })
+
+    def test_editor_can_change_only_campaign_banner_html(self):
+        editor_id = self.make_editor()
         self.banner_obj.write(self.cursor, editor_id, [self.motiu_id],
                               {'html': '<p>Nou motiu</p>'}, context={'lang': 'ca_ES'})
         for values in ({'code': 'OTHER'}, {'sequence': 999},
@@ -194,11 +210,21 @@ class TestPriceChangeCampaign(testing.OOTestCase):
                                       values, context={'lang': 'ca_ES'})
         with self.assertRaises(osv.except_osv):
             self.banner_obj.unlink(self.cursor, editor_id, [self.motiu_id])
-        with self.assertRaises(osv.except_osv):
-            self.translation_obj.create(self.cursor, editor_id, {
-                'name': 'poweremail.templates,def_body_html', 'type': 'model',
-                'res_id': self.template_id, 'lang': 'ca_ES', 'value': '<p>No</p>',
-            })
+
+    def test_editor_membership_does_not_restrict_other_models_translations(self):
+        editor_id = self.make_editor()
+        translation_id = self.translation_obj.create(self.cursor, editor_id, {
+            'name': 'poweremail.templates,def_body_html', 'type': 'model',
+            'res_id': self.template_id, 'lang': 'ca_ES', 'value': '<p>Original</p>',
+        })
+        self.translation_obj.write(self.cursor, editor_id, [translation_id], {
+            'value': '<p>Updated</p>'})
+        translation = self.translation_obj.read(
+            self.cursor, editor_id, translation_id, ['value'])
+        self.assertEqual(translation['value'], '<p>Updated</p>')
+        self.translation_obj.unlink(self.cursor, editor_id, [translation_id])
+        self.assertFalse(self.translation_obj.search(
+            self.cursor, editor_id, [('id', '=', translation_id)]))
 
     def render_data(self):
         prices = {'te': {'P1': 0.123, 'P2': 0.101, 'P3': 0.099},
@@ -340,9 +366,35 @@ class TestPriceChangeCampaign(testing.OOTestCase):
                                       ['def_subject', 'def_body_html'])
         self.assertEqual(legacy_after, legacy_before)
 
-    def test_executable_translation_is_rejected_for_administrators_too(self):
-        with self.assertRaises(ValueError):
-            self.translation_obj.create(self.cursor, self.uid, {
-                'name': 'report.banner,html', 'type': 'model',
-                'res_id': self.motiu_id, 'lang': 'es_ES', 'value': '${object.name}',
-            })
+    def test_created_executable_translation_blocks_campaign_not_core_storage(self):
+        translation_ids = self.translation_obj.search(self.cursor, self.uid, [
+            ('name', '=', 'report.banner,html'), ('type', '=', 'model'),
+            ('res_id', '=', self.motiu_id), ('lang', '=', 'es_ES'),
+        ])
+        self.translation_obj.unlink(self.cursor, self.uid, translation_ids)
+        translation_id = self.translation_obj.create(self.cursor, self.uid, {
+            'name': 'report.banner,html', 'type': 'model',
+            'res_id': self.motiu_id, 'lang': 'es_ES', 'value': '${object.name}',
+        })
+        self.assertTrue(translation_id)
+        with self.assertRaises(osv.except_osv):
+            self.snapshot()
+        with self.assertRaises(osv.except_osv):
+            self.mailbox_values()
+        self.assertFalse(self.env_obj.read(
+            self.cursor, self.uid, self.env_id,
+            ['price_change_snapshot'])['price_change_snapshot'])
+
+    def test_updated_invalid_translation_blocks_campaign_rendering(self):
+        translation_ids = self.translation_obj.search(self.cursor, self.uid, [
+            ('name', '=', 'report.banner,html'), ('type', '=', 'model'),
+            ('res_id', '=', self.motiu_id), ('lang', '=', 'es_ES'),
+        ])
+        for content in ('${object.name}', '<script>alert(1)</script>', ''):
+            self.translation_obj.write(self.cursor, self.uid, translation_ids,
+                                       {'value': content})
+            with self.assertRaises(osv.except_osv):
+                self.mailbox_values()
+            self.assertFalse(self.env_obj.read(
+                self.cursor, self.uid, self.env_id,
+                ['price_change_snapshot'])['price_change_snapshot'])
