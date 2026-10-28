@@ -1912,33 +1912,3 @@ msgid ""
 "Las CONSUMIDORAS asociadas representadas por su representante SOM ENERGIA "
 "Sccl con NIF F55091367"
 msgstr ""
-
-#. module: som_polissa_condicions_generals
-#: model:ir.actions.report.xml,name:som_polissa_condicions_generals.lead_contract_summary_full_report
-msgid "Contract Summary and Conditions"
-msgstr "Resumen del contrato y condiciones"
-
-#. module: som_polissa_condicions_generals
-#: model:ir.model,name:som_polissa_condicions_generals.model_report_backend_mailcanvipreus_pdf
-msgid "report.backend.mailcanvipreus.pdf"
-msgstr "report.backend.mailcanvipreus.pdf"
-
-#. module: som_polissa_condicions_generals
-#: model:ir.actions.report.xml,name:som_polissa_condicions_generals.lead_contract_summary_report
-msgid "Resum contracte"
-msgstr "Resumen del contrato"
-
-#. module: som_polissa_condicions_generals
-#: model:ir.actions.report.xml,name:som_polissa_condicions_generals.report_contract_summary
-msgid "Contract Summary"
-msgstr "Resumen del contrato"
-
-#. module: som_polissa_condicions_generals
-#: model:ir.actions.report.xml,name:som_polissa_condicions_generals.report_mailcanvipreus
-msgid "Mail Canvi Preus"
-msgstr "Correo de cambio de precios"
-
-#. module: som_polissa_condicions_generals
-#: model:ir.model,name:som_polissa_condicions_generals.model_report_backend_contract_summary
-msgid "report.backend.contract.summary"
-msgstr "report.backend.contract.summary"
