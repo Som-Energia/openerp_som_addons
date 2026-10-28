@@ -55,7 +55,8 @@ class GiscedataPolissa(osv.osv):
 
     def get_generationkwh_use(self, cursor, uid, pol_id, date_start, date_end, context=None):
         """
-            Returns a dict with invoice date as first key, period as second key, and kWh as value:
+            Returns use from invoices with the same number of energy periods as the contract.
+            Invoice date is the first key, period the second key, and kWh the value:
             In exemple: {
                 '2026-04-11': {
                     'P1': 10,
@@ -70,6 +71,9 @@ class GiscedataPolissa(osv.osv):
             }
         """
         GenerationkWhInvoiceLineOwner = self.pool.get('generationkwh.invoice.line.owner')
+        polissa = self.browse(cursor, uid, pol_id, context=context)
+        num_periods = len(polissa.tarifa.get_periodes('te', context=context))
+        compatible_tariffs = {}
         q = OOQuery(GenerationkWhInvoiceLineOwner, cursor, uid)
 
         date_domain = [
@@ -85,6 +89,13 @@ class GiscedataPolissa(osv.osv):
         response = defaultdict(lambda: defaultdict(int))
         for gkwh_line in GenerationkWhInvoiceLineOwner.browse(cursor, uid, generation_line_ids, context=context):  # noqa: E501
             invoice = gkwh_line.factura_id
+            tariff = invoice.tarifa_acces_id
+            if tariff.id not in compatible_tariffs:
+                compatible_tariffs[tariff.id] = (
+                    len(tariff.get_periodes('te', context=context)) == num_periods
+                )
+            if not compatible_tariffs[tariff.id]:
+                continue
             line = gkwh_line.factura_line_id
             date_invoice = invoice.invoice_id.date_invoice
             multiplier = 1 if invoice.type in ('out_invoice', 'in_refund') else -1
@@ -98,6 +109,7 @@ class GiscedataPolissa(osv.osv):
     def generationkwh_anual_estimation(self, cursor, uid, pol_id, date_end=None, context=None):
         """
             Calculates generationkwh anual estimation:
+                - Only invoices with the same number of energy periods as the contract are used
                 - If there are 12 months of data, is just the sum of every period
                 - If there are some data, is ponerated to 12 months with a rule of 3
                 - If there are no data, returns False
@@ -124,7 +136,10 @@ class GiscedataPolissa(osv.osv):
 
         num_invoices = len(use_data)
         factor = 12.0 / num_invoices
-        res = {p: int(round(kwh * factor)) for p, kwh in period_sums.items()}
+        res = {
+            p: int(round(kwh * factor))  # pylint: disable=round-builtin
+            for p, kwh in period_sums.items()
+        }
 
         return res, 'full_data' if num_invoices >= 12 else 'partial_data'
 
