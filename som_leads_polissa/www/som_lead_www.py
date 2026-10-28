@@ -44,6 +44,7 @@ class SomLeadWww(osv.osv_memory):
         values = self._build_lead_values(
             cr, uid, www_vals, member_type, member, contract_data, payment_data, context=context
         )
+        values = self._apply_webform_params(cr, uid, values, www_vals, context=context)
         values = self._apply_self_consumption_values(cr, uid, values, www_vals, context=context)
         values = self._finalize_lead_values(values)
 
@@ -317,6 +318,24 @@ class SomLeadWww(osv.osv_memory):
 
         return values
 
+    def _apply_webform_params(self, cr, uid, values, www_vals, context=None):
+        if context is None:
+            context = {}
+
+        owner = www_vals.get("owner")
+        if isinstance(owner, (str, type(u""))) and owner.strip():
+            user_ids = self.pool.get("res.users").search(
+                cr, uid, [("login", "=", owner.strip())], limit=1, context=context
+            )
+            if user_ids:
+                values["user_id"] = user_ids[0]
+
+        lead_tag = www_vals.get("lead_tag")
+        if isinstance(lead_tag, (str, type(u""))) and lead_tag.strip():
+            values["lead_tag"] = lead_tag.strip()
+
+        return values
+
     def _apply_self_consumption_values(self, cr, uid, values, www_vals, context=None):
         if context is None:
             context = {}
@@ -458,28 +477,43 @@ class SomLeadWww(osv.osv_memory):
 
         for _ in range(attempts):
             tmp_cursor = db.cursor()
-            lead_data = lead_o.read(
-                tmp_cursor, uid, lead_id, ['signature_process', 'status_firma'], context=context
-            )
-            signature_process = lead_data.get('signature_process')
-            signature_status = lead_data.get('status_firma')
+            try:
+                lead_data = lead_o.read(
+                    tmp_cursor, uid, lead_id, ['signature_process', 'status_firma'], context=context
+                )
+                signature_process = lead_data.get('signature_process')
+                signature_status = lead_data.get('status_firma')
 
-            if not signature_process:
-                return False
+                if not signature_process:
+                    return False
 
-            if signature_status == self._SIGNATURE_COMPLETED_STATUS:
-                return True
+                if signature_status == self._SIGNATURE_COMPLETED_STATUS:
+                    return True
 
-            if signature_status in self._SIGNATURE_ERROR_STATUSES or signature_status == 'unsend':
-                return False
+                if (
+                        signature_status in self._SIGNATURE_ERROR_STATUSES
+                        or signature_status == 'unsend'
+                ):
+                    return False
 
-            sign_process_obj.update(tmp_cursor, uid, [signature_process[0]], context=context)
+                sign_process_obj.update(tmp_cursor, uid, [signature_process[0]], context=context)
+                tmp_cursor.commit()
+                signature_status = lead_o.read(
+                    tmp_cursor, uid, lead_id, ['status_firma'], context=context
+                )['status_firma']
+                if signature_status == self._SIGNATURE_COMPLETED_STATUS:
+                    return True
+                if (
+                        signature_status in self._SIGNATURE_ERROR_STATUSES
+                        or signature_status == 'unsend'
+                ):
+                    return False
+            finally:
+                tmp_cursor.close()
+            if _ < attempts - 1:
+                time.sleep(wait_seconds)
 
-            tmp_cursor.commit()
-            tmp_cursor.close()
-            time.sleep(wait_seconds)
-
-        return False
+        return None
 
     def activate_lead(self, cr, uid, lead_id, context=None):
         if context is None:
@@ -498,11 +532,16 @@ class SomLeadWww(osv.osv_memory):
         tmp_cursor = db.cursor()
         try:
             query = """SELECT l.id from giscedata_crm_lead as l
-                       LEFT JOIN crm_case as c on c.id = l.crm_id
-                       where c.state in ('open', 'pending')
-                       and l.create_date >= now() - INTERVAL '5 days'
+                       JOIN crm_case as c on c.id = l.crm_id
+                       JOIN giscedata_signatura_process as sp
+                           on sp.id = l.signature_process
+                       where c.state in ('draft', 'open', 'pending')
+                       and sp.create_date >= now() - INTERVAL '15 days'
+                       and sp.status not in (
+                           'unsend', 'canceled', 'expired', 'declined', 'error'
+                       )
                        order by id desc
-                       FOR UPDATE skip locked
+                       FOR UPDATE OF l skip locked
                        """
             tmp_cursor.execute(query)
             all_data = tmp_cursor.fetchall()
@@ -531,11 +570,23 @@ class SomLeadWww(osv.osv_memory):
         ir_model_o = self.pool.get("ir.model.data")
 
         signature_allows = self._signature_allows_activation(cr, uid, lead_id, context=context)
+        if signature_allows is None:
+            return False
         payment_allows = self._payment_allows_activation(cr, uid, lead_id, context=context)
 
         logger = logging.getLogger("openerp.{0}.activate_lead".format(__name__))
 
         if signature_allows and payment_allows:
+            lead_data = lead_o.read(
+                cr, uid, lead_id, ['crm_id', 'polissa_id', 'state'], context=context
+            )
+            if lead_data['polissa_id']:
+                if lead_data['state'] not in ('done', 'cancel'):
+                    self.pool.get('crm.case').case_close(
+                        cr, uid, [lead_data['crm_id'][0]]
+                    )
+                return True
+
             context["create_draft_atr"] = True
             msg = lead_o.create_entities(cr, uid, lead_id, context=context)
 
@@ -658,7 +709,7 @@ class SomLeadWww(osv.osv_memory):
         cr.savepoint(savepoint)
 
         ctxt = context.copy()
-        ctxt['in_rollback_transaction'] = True
+        ctxt['is_dry_run'] = True
         error = None
         try:
             if lead.billing_payment_method == "card_recurrent" and not lead.creditcard_token:
@@ -788,6 +839,8 @@ class SomLeadWww(osv.osv_memory):
         ctx = context.copy()
         ctx['delivery_type'] = 'url'
         ctx['provider'] = 'signaturit'
+        ctx['signaturit_document_names'] = True
+        ctx['lang'] = lead_data.get('lang')
 
         lead_o.write(cr, uid, lead_id, {'delivery_type': 'url'})
 

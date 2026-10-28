@@ -1,9 +1,22 @@
 # -*- coding: utf-8 -*-
+from __future__ import absolute_import
+
 import mock
 from destral import testing
 
 
 class TestsPartnerAddress(testing.OOTestCaseWithCursor):
+
+    def setUp(self):
+        super(TestsPartnerAddress, self).setUp()
+        imd_obj = self.openerp.pool.get("ir.model.data")
+        polissa_obj = self.openerp.pool.get("giscedata.polissa")
+        polissa_id = imd_obj.get_object_reference(
+            self.cursor, self.uid, "giscedata_polissa", "polissa_0001"
+        )[1]
+        polissa_obj.write(
+            self.cursor, self.uid, polissa_id, {"category_id": [(6, 0, [])]}
+        )
 
     @mock.patch('som_polissa_soci.models.res_partner_address.ResPartnerAddress.subscribe_mail_in_list_async')  # noqa: E501
     @mock.patch('som_polissa_soci.models.res_partner_address.ResPartnerAddress.get_mailchimp_list_id')  # noqa: E501
@@ -94,5 +107,19 @@ class TestsPartnerAddress(testing.OOTestCaseWithCursor):
         rpa_obj.unsubscribe_titular_in_ctss_lists(cursor, uid, partner_id)
 
         mocked_archive.assert_called_once_with(
-            cursor, uid, address_id, 77, mailchimp_client
+            mock.ANY, uid, address_id, 77, mailchimp_client, context=None
         )
+
+    @mock.patch('som_polissa_soci.models.res_partner_address.ResPartnerAddress._get_mailchimp_client')  # noqa: E501
+    @mock.patch('som_polissa_soci.models.res_partner_address.ResPartnerAddress.subscribe_mail_in_list_async')  # noqa: E501
+    def test__subscribe_polissa_titular_in_ctss_lists__dry_run(
+            self, mocked_subscribe, mocked_get_mailchimp_client):
+        rpa_obj = self.openerp.pool.get("res.partner.address")
+
+        result = rpa_obj.subscribe_polissa_titular_in_ctss_lists(
+            self.cursor, self.uid, 1, context={'is_dry_run': True}
+        )
+
+        self.assertIs(result, False)
+        mocked_get_mailchimp_client.assert_not_called()
+        mocked_subscribe.assert_not_called()

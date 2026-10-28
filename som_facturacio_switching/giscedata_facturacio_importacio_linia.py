@@ -6,6 +6,9 @@ import re
 from tools.translate import _
 from gestionatr.defs import TABLA_17, TABLA_113_NEW, TENEN_AUTOCONSUM, TABLA_133
 from datetime import datetime, timedelta
+from bisect import bisect_right
+from osv.expression import OOQuery
+from six import string_types
 from tools import cache
 import logging
 
@@ -120,7 +123,7 @@ class GiscedataFacturacioImportacioLinia(osv.osv):
                     if (
                         exact_origin
                         and field == "invoice_number_text"
-                        and isinstance(match, (unicode, str))  # noqa: F821
+                        and isinstance(match, string_types)
                     ):
                         if "%" not in match:
                             operator = "="
@@ -214,9 +217,10 @@ class GiscedataFacturacioImportacioLinia(osv.osv):
 
     def _ff_get_polissa(self, cursor, uid, ids, field_name, arg, context):
         """Pòlissa a la que fa referència l'F1."""
-        cups_obj = self.pool.get("giscedata.cups.ps")
-
         res = dict.fromkeys(ids, False)
+        if not ids:
+            return res
+        invoice_dates = {}
         for f1_info in self.read(cursor, uid, ids, ["cups_id", "fecha_factura_desde"]):
             if f1_info["cups_id"] and f1_info["fecha_factura_desde"]:
                 data_inici_factura = datetime.strftime(
@@ -224,10 +228,30 @@ class GiscedataFacturacioImportacioLinia(osv.osv):
                     + timedelta(days=1),
                     "%Y-%m-%d",
                 )
-                pol_id = cups_obj.find_most_recent_polissa(
-                    cursor, uid, f1_info["cups_id"][0], data_inici_factura
-                )
-                res[f1_info["id"]] = pol_id[f1_info["cups_id"][0]]
+                invoice_dates[f1_info["id"]] = (f1_info["cups_id"][0], data_inici_factura)
+        if not invoice_dates:
+            return res
+
+        cups_ids = list(set(cups_id for cups_id, date in invoice_dates.values()))
+        latest_date = max(date for cups_id, date in invoice_dates.values())
+        pol_querier = OOQuery(self.pool.get("giscedata.polissa"), cursor, uid)
+        pol_query = pol_querier.select(
+            ["id", "cups", "data_alta"], order_by=["data_alta.desc"], only_active=False
+        ).where([("cups", "in", cups_ids), ("data_alta", "<=", latest_date)])
+        cursor.execute(*pol_query)
+        contracts_by_cups = {}
+        for contract in cursor.dictfetchall():
+            contracts = contracts_by_cups.setdefault(contract["cups"], {})
+            # Preserve the first result for a date, as in the previous LIMIT 1.
+            contracts.setdefault(contract["data_alta"], contract["id"])
+        dates_by_cups = {}
+        for cups_id, contracts in contracts_by_cups.items():
+            dates_by_cups[cups_id] = sorted(contracts)
+        for f1_id, (cups_id, invoice_date) in invoice_dates.items():
+            dates = dates_by_cups.get(cups_id, [])
+            position = bisect_right(dates, invoice_date) - 1
+            if position >= 0:
+                res[f1_id] = contracts_by_cups[cups_id][dates[position]]
         return res
 
     def _get_importacio_linia_polissa(self, cr, uid, ids, context={}):

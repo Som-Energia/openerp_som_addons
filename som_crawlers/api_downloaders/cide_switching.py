@@ -1,12 +1,14 @@
 # -*- coding: utf-8 -*-
+from __future__ import absolute_import
+
 import requests
 
 from som_crawlers.api_downloaders.cide import Cide, REQUEST_TIMEOUT
 from som_crawlers.models.exceptions import CrawlingProcessException, NoResultsException
 
 
-def instance(_config):
-    return CideSwitching(_config)
+def instance(_config, **kwargs):
+    return CideSwitching(_config, **kwargs)
 
 
 class CideSwitching(Cide):
@@ -29,6 +31,7 @@ class CideSwitching(Cide):
 
         if self.config.pending_files_only:
             params["downloaded"] = False
+        params = self.with_retailer_cdos(params)
 
         try:
             res = requests.get(
@@ -59,7 +62,7 @@ class CideSwitching(Cide):
         if not file_ids:
             raise NoResultsException("No s'han trobat fitxers de switching amb identificador")
 
-        params = {"file_id": file_ids}
+        params = self.with_retailer_cdos({"file_id": file_ids})
 
         try:
             res = requests.get(

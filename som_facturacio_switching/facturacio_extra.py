@@ -230,6 +230,7 @@ class FacturacioExtra(osv.osv):
             string="Data fitxer origen",
             fnct_search=_ff_data_origen_search,
         ),
+        'origin': fields.char('Codi sol·licitud', size=64),
     }
 
 

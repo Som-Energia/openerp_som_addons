@@ -8,19 +8,6 @@ from .base_som_lead_www import BaseSomLeadWwwTest
 
 
 class TestLeadWwwCardActivation(BaseSomLeadWwwTest):
-    def setUp(self):
-        super(TestLeadWwwCardActivation, self).setUp()
-        # Exercise payment activation without external signatures or mail commits.
-        www_lead_o = self.get_model("som.lead.www")
-        for method_name in (
-            "_signature_allows_activation",
-            "_send_activation_mail_sync",
-            "_send_activation_mail_async",
-        ):
-            patcher = mock.patch.object(www_lead_o, method_name, return_value=True)
-            patcher.start()
-            self.addCleanup(patcher.stop)
-
     def _get_existing_member_values(self):
         member_o = self.get_model("somenergia.soci")
         ir_model_o = self.get_model("ir.model.data")
@@ -108,10 +95,15 @@ class TestLeadWwwCardActivation(BaseSomLeadWwwTest):
         activation_result = www_lead_o.activate_lead_sync(
             self.cursor, self.uid, result["lead_id"]
         )
+        error_stage_id = ir_model_o.get_object_reference(
+            self.cursor, self.uid, "som_leads_polissa", "webform_stage_error"
+        )[1]
         lead = lead_o.browse(self.cursor, self.uid, result["lead_id"])
+
         self.assertFalse(activation_result)
         self.assertFalse(lead.polissa_id)
         self.assertEqual(lead.crm_id.state, "pending")
+        self.assertEqual(lead.crm_id.stage_id.id, error_stage_id)
 
     def test_add_payment_card_data_allows_activation_after_missing_card_data(self):
         www_lead_o = self.get_model("som.lead.www")
@@ -191,7 +183,7 @@ class TestLeadWwwCardActivation(BaseSomLeadWwwTest):
 
     def _activate_and_get_card(self, lead_id):
         self.get_model("som.lead.www").activate_lead_sync(
-            self.cursor, self.uid, lead_id, context={"sync": True}
+            self.cursor, self.uid, lead_id
         )
         lead = self.get_model("giscedata.crm.lead").browse(
             self.cursor, self.uid, lead_id
@@ -270,7 +262,7 @@ class TestLeadWwwCardActivation(BaseSomLeadWwwTest):
 
         with self.assertRaises(osv.except_osv):
             self.get_model("som.lead.www").activate_lead_sync(
-                self.cursor, self.uid, lead_id, context={"sync": True}
+                self.cursor, self.uid, lead_id
             )
 
         lead = self.get_model("giscedata.crm.lead").browse(self.cursor, self.uid, lead_id)

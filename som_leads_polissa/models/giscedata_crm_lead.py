@@ -27,7 +27,6 @@ _billing_payment_methods = [
 ]
 
 WWW_DATA_FORM_HEADER = "**** DADES DEL FORMULARI ****"
-_MEMBER_FEE_PURPOSE = 'QUOTA SOCI'
 
 
 class GiscedataCrmLead(osv.OsvInherits):
@@ -66,7 +65,7 @@ class GiscedataCrmLead(osv.OsvInherits):
                 "Error",
                 "No hi ha cap procés de signatura associat a aquest lead."
             )
-        if lead.signature_process.status != "wait":
+        if lead.signature_process.status not in ["wait", "doing"]:
             raise osv.except_osv(
                 "Error",
                 "El procés de signatura associat al lead no ha estat creat o ja està completat."
@@ -90,13 +89,30 @@ class GiscedataCrmLead(osv.OsvInherits):
         msg = u"S'ha sol·licitat l'enviament de l'e-mail de Signatura manualment" \
             u"(en cas de dubte, mirar HelpScout)"
 
-        self.historize_msg(cursor, uid, lead_id, msg, context=context)
+        self.historize_msg(cursor, uid, [lead.id], msg, context=context)
 
         return True
+
+    def process_signature_callback(self, cursor, uid, lead_id, context=None):
+        if isinstance(lead_id, (list, tuple)):
+            lead_id = lead_id[0]
+        result = super(GiscedataCrmLead, self).process_signature_callback(
+            cursor, uid, lead_id, context=context
+        )
+        lead = self.read(
+            cursor, uid, lead_id, ['crm_id', 'polissa_id', 'state'], context=context
+        )
+        if lead['polissa_id'] and lead['state'] not in ('done', 'cancel'):
+            self.pool.get('crm.case').case_close(
+                cursor, uid, [lead['crm_id'][0]]
+            )
+        return result
 
     def contract_pdf(self, cursor, uid, ids, context=None):
         if context is None:
             context = {}
+        context = context.copy()
+        context["is_dry_run"] = True
         if not isinstance(ids, (list, tuple)):
             ids = [ids]
 
@@ -142,7 +158,7 @@ class GiscedataCrmLead(osv.OsvInherits):
             summary_context.update({
                 "lead": True,
                 "lang": lead.lang,
-                "in_rollback_transaction": True,
+                "is_dry_run": True,
                 "summary_contract": True,
             })
 
@@ -185,7 +201,7 @@ class GiscedataCrmLead(osv.OsvInherits):
             summary_context.update({
                 "lead": True,
                 "lang": lead.lang,
-                "in_rollback_transaction": True,
+                "is_dry_run": True,
                 "summary_contract": True,
             })
 
@@ -255,7 +271,47 @@ class GiscedataCrmLead(osv.OsvInherits):
             cursor, uid, crml_id, mandatory_fields, other_fields, context
         )
 
+    def _get_or_create_campaign_category(
+        self, cursor, uid, model_name, root_xml_id, lead_tag, context=None
+    ):
+        if context is None:
+            context = {}
+
+        ir_model_o = self.pool.get("ir.model.data")
+        category_o = self.pool.get(model_name)
+        root_id = ir_model_o.get_object_reference(
+            cursor, uid, "som_leads_polissa", root_xml_id
+        )[1]
+
+        table_name = model_name.replace(".", "_")
+        cursor.execute(
+            "SELECT id FROM {} WHERE id = %s FOR UPDATE".format(table_name),
+            (root_id,),
+        )
+
+        category_context = context.copy()
+        category_context["active_test"] = False
+        category_ids = category_o.search(
+            cursor,
+            uid,
+            [("name", "=", lead_tag), ("parent_id", "=", root_id)],
+            limit=1,
+            context=category_context,
+        )
+        if category_ids:
+            return category_ids[0]
+
+        return category_o.create(
+            cursor,
+            uid,
+            {"name": lead_tag, "parent_id": root_id},
+            context=context,
+        )
+
     def create_entity_polissa(self, cursor, uid, crml_id, context=None):
+        if context is None:
+            context = {}
+
         res = super(GiscedataCrmLead, self).create_entity_polissa(
             cursor, uid, crml_id, context=context
         )
@@ -288,6 +344,17 @@ class GiscedataCrmLead(osv.OsvInherits):
                 break
 
         polissa_o = self.pool.get("giscedata.polissa")
+        if lead.lead_tag:
+            category_id = self._get_or_create_campaign_category(
+                cursor,
+                uid,
+                "giscedata.polissa.category",
+                "giscedata_polissa_category_campaigns",
+                lead.lead_tag,
+                context=context,
+            )
+            values["category_id"] = [(4, category_id)]
+
         polissa = polissa_o.browse(cursor, uid, polissa_id, context=context)
         if polissa.mode_facturacio != 'atr':
             values['mode_facturacio_generacio'] = polissa.mode_facturacio
@@ -386,6 +453,26 @@ class GiscedataCrmLead(osv.OsvInherits):
             context = {}
 
         partner_o = self.pool.get("res.partner")
+        lead = self.browse(cursor, uid, crml_id, context=context)
+
+        if not lead.titular_es_empresa and lead.titular_nom and lead.titular_cognom1:
+            partner_ids = partner_o.search(
+                cursor, uid, [("vat", "=", lead.titular_vat)]
+            )
+            if partner_ids and partner_o.search(
+                cursor, uid, [("representante_id", "=", partner_ids[0])]
+            ):
+                surnames = " ".join(filter(None, [
+                    lead.titular_cognom1, lead.titular_cognom2
+                ]))
+                legacy_name = "{} {}".format(lead.titular_nom, surnames)
+                partner_name = partner_o.read(
+                    cursor, uid, partner_ids[0], ["name"], context=context
+                )["name"]
+                if partner_name == legacy_name:
+                    partner_o.write(cursor, uid, partner_ids[0], {
+                        "name": "{}, {}".format(surnames, lead.titular_nom)
+                    }, context=context)
 
         res = super(GiscedataCrmLead, self).create_entity_titular(
             cursor, uid, crml_id, context=context
@@ -430,6 +517,23 @@ class GiscedataCrmLead(osv.OsvInherits):
 
         partner_id = super(GiscedataCrmLead, self).create_partner(
             cursor, uid, create_vals, crml_id, context=context)
+
+        if lead.lead_tag:
+            category_id = self._get_or_create_campaign_category(
+                cursor,
+                uid,
+                "res.partner.category",
+                "res_partner_category_campaigns",
+                lead.lead_tag,
+                context=context,
+            )
+            self.pool.get("res.partner").write(
+                cursor,
+                uid,
+                partner_id,
+                {"category_id": [(4, category_id)]},
+                context=context,
+            )
 
         return partner_id
 
@@ -477,6 +581,13 @@ class GiscedataCrmLead(osv.OsvInherits):
             if representative_ids:
                 representative_id = representative_ids[0]
             else:
+                if name and "," not in name:
+                    config_o = self.pool.get("res.config")
+                    with config_o.ResConfigPatch({"partner_name_format": "N C1 C2"}):
+                        names = partner_o.separa_cognoms(cursor, uid, name)
+                    surnames = " ".join(filter(None, names["cognoms"]))
+                    if names["nom"] and surnames:
+                        name = "{}, {}".format(surnames, names["nom"])
                 values = {
                     "vat": vat,
                     "name": name,
@@ -510,112 +621,22 @@ class GiscedataCrmLead(osv.OsvInherits):
         if context is None:
             context = {}
 
-        invoice_o = self.pool.get("account.invoice")
-        account_o = self.pool.get("account.account")
-        journal_o = self.pool.get("account.journal")
-        payment_type_o = self.pool.get("payment.type")
-        payment_mode_o = self.pool.get("payment.mode")
-        payment_order_o = self.pool.get("payment.order")
-        payment_line_o = self.pool.get("payment.line")
-        mandate_o = self.pool.get("payment.mandate")
-        bank_o = self.pool.get("res.partner.bank")
-        currency_o = self.pool.get("res.currency")
-        conf_o = self.pool.get("res.config")
-        ir_model_o = self.pool.get("ir.model.data")
-
         lead = self.browse(cursor, uid, crml_id, context=context)
 
         if lead.initial_invoice_id:
             raise osv.except_osv('Error', 'Ja existeix una factura de remesa inicial')
 
-        partner_id = lead.partner_id.id
-        mandate_id = mandate_o.get_or_create_payment_mandate(
-            cursor, uid, partner_id, lead.iban, _MEMBER_FEE_PURPOSE,
-            payment_type="one_payment", context=context
+        partner_o = self.pool.get("res.partner")
+        invoice_id = partner_o.create_member_fee_payment(
+            cursor,
+            uid,
+            lead.partner_id.id,
+            lead.iban,
+            lead.member_number,
+            "QUOTA-SOCIA-LEAD-{}".format(lead.id),
+            context=context,
         )
-
-        socia_fee_amount = conf_o.get(cursor, uid, "socia_member_fee_amount", "100")
-        euro_id = currency_o.search(cursor, uid, [('code', '=', 'EUR')])[0]
-        invoice_account_ids = account_o.search(
-            cursor, uid, [("code", "=", "100000000000")], context=context
-        )
-
-        # Create invoice line
-        inv_line = {
-            "name": _MEMBER_FEE_PURPOSE,
-            "account_id": invoice_account_ids[0],
-            "price_unit": socia_fee_amount,
-            "quantity": 1,
-            "uom_id": 1,
-            "company_currency_id": euro_id,
-        }
-
-        # Create invoice
-        bank_id = bank_o.search(
-            cursor, uid,
-            [("iban", "=", lead.iban), ("partner_id", "=", lead.partner_id.id)],
-            limit=1, context=context
-        )[0]
-        journal_ids = journal_o.search(
-            cursor, uid, [("code", "=", "SOCIS")], context=context
-        )
-        payment_type_id = payment_type_o.search(
-            cursor, uid, [("code", "=", "TRANSFERENCIA_CSB")], context=context
-        )[0]
-        invoice_vals = {
-            "number": "QUOTA-SOCIA-LEAD-{}".format(lead.id),
-            "partner_id": partner_id,
-            "type": "out_invoice",
-            "invoice_line": [(0, 0, inv_line)],
-            "origin_date_invoice": datetime.today().strftime("%Y-%m-%d"),
-            "date_invoice": datetime.today().strftime("%Y-%m-%d"),
-            "mandate_id": mandate_id,
-            "sii_to_send": False,
-            "account_id": invoice_account_ids[0],
-            "journal_id": journal_ids[0],
-        }
-
-        invoice_vals.update(invoice_o.onchange_partner_id(  # Get invoice default values
-            cursor, uid, [], "out_invoice", partner_id).get("value", {})
-        )
-        invoice_vals.update({"payment_type": payment_type_id})
-        invoice_vals.update({"partner_bank": bank_id})
-
-        invoice_id = invoice_o.create(cursor, uid, invoice_vals, context=context)
-        invoice_o.button_reset_taxes(cursor, uid, [invoice_id])
-
         self.write(cursor, uid, lead.id, {"initial_invoice_id": invoice_id}, context=context)
-
-        # open the invoice
-        wf_service = netsvc.LocalService("workflow")
-        wf_service.trg_validate(uid, 'account.invoice', invoice_id, 'invoice_open', cursor)
-
-        # fer un tipus de pagament especial per a la quota de soci i despres buscar una remesa
-        # oberta o crearla de nou com fa generation a get_or_create_open_payment_order
-        payment_mode_id = ir_model_o.get_object_reference(
-            cursor, uid, "som_leads_polissa", "mode_pagament_socis_factura"
-        )[1]
-        payment_mode_name = payment_mode_o.read(
-            cursor, uid, payment_mode_id, ["name"], context=context
-        )["name"]
-        payment_order_id = payment_order_o.get_or_create_open_payment_order(
-            cursor, uid, payment_mode_name, use_invoice=True, context={'type': 'receivable'}
-        )
-        invoice_o.afegeix_a_remesa(cursor, uid, [invoice_id], payment_order_id, context=context)
-
-        # set the member number as the payment line name
-        invoice = invoice_o.browse(cursor, uid, invoice_id)
-        payment_line_id = payment_line_o.search(
-            cursor, uid,
-            [
-                ("partner_id", "=", partner_id),
-                ("communication", "=", invoice.number),
-                ("order_id", "=", payment_order_id),
-            ],
-            context=context
-        )
-        payment_line_o.write(
-            cursor, uid, payment_line_id, {"name": lead.member_number}, context=context)
 
     def create(self, cursor, uid, vals, context=None):
         if context is None:
@@ -683,6 +704,12 @@ class GiscedataCrmLead(osv.OsvInherits):
         wiz_id = wiz_send_obj.create(cr, uid, params, context)
         return wiz_send_obj.send_mail(cr, uid, [wiz_id], context)
 
+    def onchange_data_alta_prevista(self, cursor, uid, ids, data_alta_prevista, context=None):
+        res = {'value': {'activacio_cicle': 'A'}, 'warning': {}, 'domain': {}}
+        if data_alta_prevista:
+            res['value']['activacio_cicle'] = 'F'
+        return res
+
     _columns = {
         "tipus_tarifa_lead": fields.selection(_tipus_tarifes_lead, "Tipus de tarifa del contracte"),
         "set_custom_potencia": fields.boolean("Sobreescriure preus potència"),
@@ -717,6 +744,7 @@ class GiscedataCrmLead(osv.OsvInherits):
         "comercial_info_accepted": fields.boolean("Accepta informació comercial (SomServeis)"),
         "crm_lead_id": fields.integer("ID del lead al CRM"),
         "is_new_contact": fields.boolean("És una persona nova per la cooperativa"),
+        "lead_tag": fields.char("Campanya", size=64),
         "titular_phone_prefix": fields.many2one(
             'res.phone.national.code', "Prefix", required=False),
         "titular_mobile_prefix": fields.many2one(

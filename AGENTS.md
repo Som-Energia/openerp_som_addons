@@ -38,21 +38,36 @@ Les skills següents estan disponibles al projecte i s'han d'utilitzar quan corr
 ### Git Workflow
 
 **PR worktree policy:**
-- PR-affecting work must use a named worktree under `<WORKSPACE>/openerp_som_addons-worktrees/`, where `<WORKSPACE>` is the directory containing the primary repository checkout; never use `/tmp/opencode`.
-- Announce the active worktree before making edits.
-- If no appropriate worktree exists, stop and get explicit approval before creating one.
+- Using a named worktree for PR-affecting work is optional. If used, place it under `<WORKSPACE>/openerp_som_addons-worktrees/`, where `<WORKSPACE>` is the directory containing the primary repository checkout; never use `/tmp/opencode`.
+- Before making edits, stop and get an explicit decision on whether to use the active checkout or a worktree. This applies even when the selected worktree already exists.
+- Before creating any worktree, stop and get explicit approval. Fetch `origin` first and create a new worktree branch from the current `origin/main`, never from a potentially stale local `main`.
+- Quan s'hagi seleccionat un worktree amb nom en un pane Herdr (`HERDR_ENV=1`), abans d'editar o executar tests useu el wrapper `create` o `open` de la skill `erp-herdr-worktree`; crear o obrir directament amb `git worktree` no n'és una alternativa.
+- En presentar l'elecció entre el checkout actiu i un worktree nou, indiqueu explícitament que escollir un worktree nou autoritza el `fetch` i la creació necessaris i que no s'ha de demanar una segona confirmació per la mateixa decisió.
 
+**Main branch policy:** No facis commits directament a `main`: treballa sempre en una branca separada —també pots fer-ho en un worktree— i integra els canvis mitjançant una PR.
 | Skill | Quan usar | Com usar |
 |-------|-----------|----------|
 | `git-branch` | Crear branca nova | Veure [.agents/skills/git-branch/SKILL.md](.agents/skills/git-branch/SKILL.md) |
 | `git-commit` | Fer commit | Veure [.agents/skills/git-commit/SKILL.md](.agents/skills/git-commit/SKILL.md) |
 | `git-pr` | Crear PR | Veure [.agents/skills/git-pr/SKILL.md](.agents/skills/git-pr/SKILL.md) |
+| `erp-herdr-worktree` | Treballar en un worktree ERP des d'un pane Herdr mantenint l'agent al workspace multirepo | Veure [.agents/skills/erp-herdr-worktree/SKILL.md](.agents/skills/erp-herdr-worktree/SKILL.md) |
+| `erp-workspace-sync` | Sincronitzar dependències compartides amb les refs de CI abans d'una branca o worktree nou | Veure [.agents/skills/erp-workspace-sync/SKILL.md](.agents/skills/erp-workspace-sync/SKILL.md) |
 
 ### Current PR Policy
 
 Repository GitHub workflows and repository rules are authoritative for PR requirements. Verify any generic or global skill requirement against them before applying it to this repository.
 
 Currently, `.github/workflows/pull_request_labeler.yml` requires each PR to have at least one label. It does not require an approved linked issue or a `type:*` label. This is the current policy and may change with repository workflows or rules.
+
+### Sincronització del workspace
+
+Abans de crear una branca de funcionalitat o un worktree nou, executa la skill
+`erp-workspace-sync`. El perfil versionat replica les dependències de CI i
+situa `erp` a `rolling_erp01` per defecte. Una excepció es declara de manera
+explícita amb `--branch <repo>=<branca>`; no canviïs repositoris germans a mà.
+No s'aplica a branques exclusivament de documentació, CI o metadades que no
+requereixin l'entorn ERP. El script refusa dependències amb canvis locals i no
+descarta mai estat local.
 
 ### Noms de branca
 
@@ -77,9 +92,9 @@ Exemple: `IMP_invoice_payment_type_views`.
 | `erp-migration` | Crear scripts de migració | Veure [.agents/skills/erp-migration/SKILL.md](.agents/skills/erp-migration/SKILL.md) |
 | `erp-demo-testcase` | Crear casos demo XML de test | Veure [.agents/skills/erp-demo-testcase/SKILL.md](.agents/skills/erp-demo-testcase/SKILL.md) |
 
-### Migracions obligatòries
+### Migracions
 
-Qualsevol canvi de model o fitxer XML, incloses les vistes, requereix llegir la skill `erp-migration` abans d'editar i incloure el script de migració corresponent.
+Qualsevol canvi de model o fitxer XML, incloses les vistes, requereix llegir la skill `erp-migration` abans d'editar i avaluar si cal un script de migració. No és obligatori crear una migració quan la PR parteix d'un mòdul nou, perquè no hi ha instal·lacions existents que actualitzar.
 
 ### Sentry
 
@@ -104,48 +119,18 @@ Qualsevol canvi de model o fitxer XML, incloses les vistes, requereix llegir la 
 
 ### Tests en worktrees
 
-Useu el wrapper del projecte, no un runner de tests manual. Inicieu sempre PostgreSQL, MongoDB i Redis abans dels tests. `$WORKSPACE/erp/server/bin/addons` és estat compartit i mutable: redirigiu temporalment només els enllaços dels addons modificats del worktree (directoris amb `__terp__.py`) i preserveu-ne el destí original.
+Useu obligatòriament `scripts/run-tests-worktree.sh` des de qualsevol worktree. `$WORKSPACE/erp/server/bin/addons` és estat compartit i mutable: executar-hi `scripts/run-tests.sh` directament o modificar-ne els symlinks manualment és insegur.
 
-No modifiqueu aquests enllaços alhora que ERP o tests d'un altre worktree. El manifest temporal extern i el `trap` següents restauren tots els enllaços originals tant si el test acaba bé com si falla o s'interromp:
+Indiqueu explícitament cada addon que el test ha de redirigir. El wrapper valida els addons, adquireix un únic lock global entre worktrees i el manté durant la captura, la redirecció, tota l'execució de Destral i la restauració. El lock només serialitza processos que usen aquest wrapper: cap eina ha de modificar manualment els symlinks compartits. `--no-requirements` continua sent la ruta recomanada:
 
 ```bash
-WORKTREE="$(git rev-parse --show-toplevel)"
-WORKSPACE="$(dirname "$(dirname "$WORKTREE")")"
-DATABASE="<database>"
-MODULE="<module>"
-ADDONS="$WORKSPACE/erp/server/bin/addons"
-MANIFEST="$(mktemp)"
-
-restore_links() {
-    while IFS=$'\t' read -r link target; do
-        rm -f "$link"
-        ln -s "$target" "$link"
-    done < "$MANIFEST"
-    rm -f "$MANIFEST"
-}
-trap restore_links EXIT INT TERM
-
-docker compose -f "$WORKTREE/docker-compose.yaml" up -d
-
-while IFS= read -r -d '' addon; do
-    name="$(basename "$addon")"
-    link="$ADDONS/$name"
-
-    if [ -e "$link" ] && [ ! -L "$link" ]; then
-        printf 'Refuso substituir %s: no és un enllaç simbòlic.\n' "$link" >&2
-        exit 1
-    fi
-    if [ -L "$link" ]; then
-        printf '%s\t%s\n' "$link" "$(readlink "$link")" >> "$MANIFEST"
-        rm "$link"
-    fi
-    ln -s "$addon" "$link"
-done < <(find "$WORKTREE" -type f -name __terp__.py -printf '%h\0')
-
-PYENV_VERSION=erp "$WORKTREE/scripts/run-tests.sh" "$DATABASE" --no-requirements -m "$MODULE"
+REPO_ROOT="$(git rev-parse --show-toplevel)"
+docker compose -f "$REPO_ROOT/docker-compose.yaml" up -d
+PYENV_VERSION=erp scripts/run-tests-worktree.sh \
+    --addon <module> -- <database> --no-requirements -m <module>
 ```
 
-En acabar, el `trap` restaura tots els enllaços originals. No executeu canvis d'enllaços d'addons de worktrees concurrentment amb ERP o tests d'un altre worktree.
+El timeout del lock és finit i configurable amb `OPENERP_WORKTREE_TEST_LOCK_TIMEOUT` (600 segons per defecte). En timeout, el wrapper mostra metadata limitada del propietari; no mata processos. Si observa una alteració externa o una recuperació que no pot demostrar segura, no sobreescriu l'entrada i conserva el manifest per diagnosticar-la. Aquesta detecció no és una garantia davant d'escriptures externes que ignorin el lock durant un swap.
 
 ## Estil de Programació
 

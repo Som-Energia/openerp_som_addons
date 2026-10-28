@@ -1,9 +1,16 @@
 # -*- coding: utf-8 -*-
+from __future__ import absolute_import
+
 from destral import testing
 import json
 
 
 class TestsFacturacioDonatiu(testing.OOTestCaseWithCursor):
+    @classmethod
+    def setUpClass(cls):
+        super(TestsFacturacioDonatiu, cls).setUpClass()
+        cls.openerp.install_module("giscedata_tarifas_peajes_20160101")
+
     def get_object_id(self, module, obj_ref):
         cursor, uid, pool = (self.txn.cursor, self.txn.user, self.openerp.pool)
         irmd_o = pool.get("ir.model.data")

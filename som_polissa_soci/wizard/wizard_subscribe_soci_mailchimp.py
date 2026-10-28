@@ -1,7 +1,10 @@
 # -*- coding: utf-8 -*-
+from __future__ import absolute_import
 
 from osv import osv, fields
 from tools.translate import _
+
+from base_extended_som.utils import is_dry_run
 
 
 class WizardSubscribeSociMailchimp(osv.osv_memory):
@@ -12,6 +15,8 @@ class WizardSubscribeSociMailchimp(osv.osv_memory):
     def subscribe_soci_address(self, cursor, uid, ids, context=None):
         if context is None:
             context = {}
+        if is_dry_run(context):
+            return False
 
         address_ids = context.get("active_ids", False)
         info_wizard = "S'ha iniciat el procés de subscripció de les adreces següents: \n"
@@ -23,11 +28,14 @@ class WizardSubscribeSociMailchimp(osv.osv_memory):
         soci_obj = self.pool.get("somenergia.soci")
         self.pool.get("res.config")
 
-        MAILCHIMP_CLIENT = address_obj._get_mailchimp_client()
+        MAILCHIMP_CLIENT = address_obj._get_mailchimp_client(context=context)
         list_names = self._get_members_mailchimp_lists(cursor, uid, ids, context=context)
 
         try:
-            list_ids = [self.get_mailchimp_list_id(name, MAILCHIMP_CLIENT) for name in list_names]
+            list_ids = [
+                self.get_mailchimp_list_id(name, MAILCHIMP_CLIENT, context=context)
+                for name in list_names
+            ]
         except Exception as e:
             raise osv.except_osv(u"Error", str(e))
 
@@ -45,7 +53,8 @@ class WizardSubscribeSociMailchimp(osv.osv_memory):
                 soci_data = address_obj.fill_merge_fields_soci(cursor, uid, address)
                 for list_client_id in list_ids:
                     address_obj.subscribe_mail_in_list(
-                        cursor, uid, [soci_data], list_client_id, MAILCHIMP_CLIENT
+                        cursor, uid, [soci_data], list_client_id, MAILCHIMP_CLIENT,
+                        context=context
                     )
 
                 info_wizard += address_data["email"] + "\n"

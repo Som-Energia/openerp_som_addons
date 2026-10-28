@@ -69,12 +69,12 @@ class GiscedataPolissaTarifa(osv.osv):
                 products.append(("epm", periode.product_exces_pot_max_id.id))
             if periode.product_excedent_ac_id:
                 product_id = facturador_obj.get_productes_autoconsum(
-                    cursor, uid, tipus="autoconsum", tarifa_id=tarifa.id, context=context
+                    cursor, uid, tipus="excedent", tarifa_id=tarifa.id, context=context
                 )[periode.name]
                 products.append(("ex", product_id))
             if periode.product_autoconsum_ac_id:
                 product_id = facturador_obj.get_productes_autoconsum(
-                    cursor, uid, tipus="excedent", tarifa_id=tarifa.id, context=context
+                    cursor, uid, tipus="autoconsum", tarifa_id=tarifa.id, context=context
                 )[periode.name]
                 products.append(("ac", product_id))
             if periode.product_reactiva_capacitiva_id:
@@ -1230,12 +1230,12 @@ class GiscedataPolissaTarifa(osv.osv):
         self, cursor, uid, contract_id, with_taxes=False, context=None
     ):
         """
-        Return a dictionary with the prices for each historic and current tariffs of the contract
+        Return today's prices for the contract's active contractual modification.
         Format of return value:
-            key: tariff_id
+            key: active tariff_id
             values: a dictionary with 'current' and 'history' items
             'current': can be {} or prices of current price list
-            'history': a list of dictionaries one for each pricelist version
+            'history': always an empty list
         """
         pol_obj = self.pool.get("giscedata.polissa")
         rp_obj = self.pool.get("res.partner")
@@ -1245,50 +1245,38 @@ class GiscedataPolissaTarifa(osv.osv):
 
             municipi_id = polissa.titular.address[0].id_municipi.id
             home = rp_obj.is_enterprise_vat(polissa.titular.vat)
-            modcontractuals = polissa.modcontractuals_ids
+            modcontractual = polissa.modcontractual_activa
 
-            if not modcontractuals:
+            if not modcontractual:
                 raise som_webforms_exceptions.ContractWithoutModcons()
 
-            # Add fiscal_postion value to modcon_data tuple or False
-            modcon_data = []
-            for mod in modcontractuals:
-                fiscal_position = False
-                if mod.fiscal_position_id:
-                    fiscal_position = mod.fiscal_position_id
-                modcon_data.append(
-                    (mod.tarifa.id, fiscal_position, mod.potencia, mod.data_inici, mod.data_final)
-                )
+            tariff_id = modcontractual.tarifa.id
+            fiscal_position_id = (
+                modcontractual.fiscal_position_id.id if modcontractual.fiscal_position_id else False
+            )
+            max_power = modcontractual.potencia * 1000 if modcontractual.potencia else 10000
+            today = datetime.today().strftime("%Y-%m-%d")
 
-            pricelist_data = self._get_dades_modcontractuals(modcon_data)
+            price_by_date_range = self.get_tariff_prices_by_range(
+                cursor,
+                uid,
+                tariff_id,
+                municipi_id,
+                max_power,
+                fiscal_position_id,
+                with_taxes,
+                home,
+                today,
+                today,
+                (context or {}).copy(),
+            )
 
-            prices_by_contract = {}
-
-            for tariff_id, fiscal_position_id, max_power, date_from, date_to in pricelist_data:
-
-                max_power = max_power * 1000 if max_power else 10000
-
-                price_by_date_range = self.get_tariff_prices_by_range(
-                    cursor,
-                    uid,
-                    int(tariff_id),
-                    municipi_id,
-                    max_power,
-                    int(fiscal_position_id),
-                    with_taxes,
-                    home,
-                    date_from,
-                    date_to,
-                    context,
-                )
-
-                if not str(tariff_id) in prices_by_contract:
-                    prices_by_contract[str(tariff_id)] = {"history": []}
-
-                prices_by_contract[str(tariff_id)]["current"] = price_by_date_range["current"]
-                prices_by_contract[str(tariff_id)]["history"].extend(price_by_date_range["history"])
-
-            return prices_by_contract
+            return {
+                str(tariff_id): {
+                    "current": price_by_date_range["current"],
+                    "history": [],
+                }
+            }
 
         except som_webforms_exceptions.SomWebformsException as e:
             raise e

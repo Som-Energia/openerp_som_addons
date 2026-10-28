@@ -5,6 +5,8 @@ import os
 import base64
 from datetime import datetime
 
+import mock
+
 from .base_som_lead_www import BaseSomLeadWwwTest
 
 
@@ -50,13 +52,18 @@ class TestLeadWwwCreation(BaseSomLeadWwwTest):
         lead_o = self.get_model("giscedata.crm.lead")
         sw_o = self.get_model("giscedata.switching")
         ir_model_o = self.get_model("ir.model.data")
-        mailbox_o = self.get_model('poweremail.mailbox')
 
         result = www_lead_o.create_lead(self.cursor, self.uid, self._basic_values)
         self.assertFalse(result["error"])
 
-        www_lead_o.activate_lead_sync(
-            self.cursor, self.uid, result["lead_id"], context={"sync": True})
+        with mock.patch.object(www_lead_o, "_send_activation_mail_sync") as send_mail:
+            www_lead_o.activate_lead_sync(
+                self.cursor, self.uid, result["lead_id"], context={"sync": True})
+
+        send_mail.assert_called_once()
+        args, kwargs = send_mail.call_args
+        self.assertEqual(args, (self.cursor, self.uid, result["lead_id"]))
+        self.assertTrue(kwargs["context"]["sync"])
 
         lead = lead_o.browse(self.cursor, self.uid, result["lead_id"])
         # Check that the name is correctly set
@@ -125,23 +132,64 @@ class TestLeadWwwCreation(BaseSomLeadWwwTest):
         # Check the catastral reference
         self.assertEqual(lead.polissa_id.cups.ref_catastral, "9872023VH5797S0001WX")
 
-        # Check that the mail was sent
-        template_name = "email_contracte_esborrany_nou_soci"
-        template_id = ir_model_o.get_object_reference(
-            self.cursor, self.uid, 'som_polissa_soci', template_name)[1]
-        mails = mailbox_o.search(
-            self.cursor, self.uid, [
-                ("template_id", "=", template_id),
-                ("folder", "=", "outbox"),
-            ]
-        )
-        self.assertEqual(len(mails), 1)
-
         # Check partner lang and member date
         self.assertEqual(lead.partner_id.lang, "es_ES")
         self.assertEqual(lead.partner_id.date, datetime.today().strftime("%Y-%m-%d"))
         self.mock_subscribe_member.assert_called()
         self.mock_unsubscribe_customer.assert_called()
+
+    def test_signature_callback_closes_pending_lead_with_contract(self):
+        www_lead_o = self.get_model("som.lead.www")
+        lead_o = self.get_model("giscedata.crm.lead")
+        result = www_lead_o.create_lead(self.cursor, self.uid, self._basic_values)
+        lead_id = result["lead_id"]
+
+        www_lead_o.activate_lead_sync(self.cursor, self.uid, lead_id)
+        lead_o.write(self.cursor, self.uid, lead_id, {'state': 'pending'})
+
+        lead_o.process_signature_callback(self.cursor, self.uid, lead_id)
+
+        lead = lead_o.browse(self.cursor, self.uid, lead_id)
+        self.assertTrue(lead.polissa_id)
+        self.assertEqual(lead.crm_id.state, 'done')
+
+    def test_activation_closes_pending_lead_with_contract(self):
+        www_lead_o = self.get_model("som.lead.www")
+        lead_o = self.get_model("giscedata.crm.lead")
+        result = www_lead_o.create_lead(self.cursor, self.uid, self._basic_values)
+        lead_id = result["lead_id"]
+
+        www_lead_o.activate_lead_sync(self.cursor, self.uid, lead_id)
+        lead_o.write(self.cursor, self.uid, lead_id, {'state': 'pending'})
+
+        with mock.patch.object(lead_o, 'create_entities') as create_entities:
+            activation_result = www_lead_o.activate_lead_sync(
+                self.cursor, self.uid, lead_id
+            )
+
+        lead = lead_o.browse(self.cursor, self.uid, lead_id)
+        self.assertTrue(activation_result)
+        self.assertTrue(lead.polissa_id)
+        self.assertEqual(lead.crm_id.state, 'done')
+        create_entities.assert_not_called()
+
+    def test_contract_pdf_does_not_send_mailchimp_updates(self):
+        www_lead_o = self.get_model("som.lead.www")
+        lead_o = self.get_model("giscedata.crm.lead")
+        result = www_lead_o.create_lead(self.cursor, self.uid, self._basic_values)
+        context = {"test_context": True}
+
+        self.mock_subscribe_member.reset_mock()
+        self.mock_unsubscribe_customer.reset_mock()
+        with mock.patch("netsvc.LocalService") as local_service:
+            local_service.return_value.create.return_value = ("pdf", "pdf")
+            lead_o.contract_pdf(
+                self.cursor, self.uid, result["lead_id"], context=context
+            )
+
+        self.assertEqual(context, {"test_context": True})
+        self.mock_subscribe_member.assert_not_called()
+        self.mock_unsubscribe_customer.assert_not_called()
 
     def test_create_simple_domestic_lead_indexada(self):
         www_lead_o = self.get_model("som.lead.www")
@@ -189,6 +237,7 @@ class TestLeadWwwCreation(BaseSomLeadWwwTest):
         # Check that the representative is created and correctly linked
         rep_id = partner_o.search(self.cursor, self.uid, [("vat", "=", "ES40323835M")])[0]
         self.assertEqual(lead.polissa_id.titular.representante_id.id, rep_id)
+        self.assertEqual(lead.polissa_id.titular.representante_id.name, "Palotes, Pepito")
         self.assertEqual(lead.polissa_id.titular.name, "PEC COOP SCCL")
         self.mock_subscribe_member.assert_called()
         self.mock_unsubscribe_customer.assert_called()

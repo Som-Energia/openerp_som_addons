@@ -2,6 +2,7 @@
 from __future__ import absolute_import, division
 
 from datetime import datetime, timedelta
+from dateutil.relativedelta import relativedelta
 from addons import get_module_resource
 from osv import osv, fields
 from addons.giscedata_facturacio.giscedata_polissa import _get_polissa_from_energy_invoice
@@ -47,6 +48,28 @@ TARIFF_MAPPING = {
 class GiscedataPolissa(osv.osv):
     _name = "giscedata.polissa"
     _inherit = "giscedata.polissa"
+
+    def _get_draft_polissa_ids_older_than(self, cursor, uid, reference_date, context=None):
+        """Return draft policies created before reference_date."""
+        return self.search(
+            cursor,
+            uid,
+            [
+                ("state", "=", "esborrany"),
+                ("create_date", "<", reference_date.strftime("%Y-%m-%d %H:%M:%S")),
+            ],
+            context=context,
+        )
+
+    def _cron_cancel_draft_polisses(self, cursor, uid, context=None):
+        """Cancel policies that have remained in draft for over three months."""
+        reference_date = datetime.now() - relativedelta(months=3)
+        polissa_ids = self._get_draft_polissa_ids_older_than(
+            cursor, uid, reference_date, context=context
+        )
+        if polissa_ids:
+            self.send_signal(cursor, uid, polissa_ids, "cancelar")
+        return True
 
     def update_contract_type(self, cursor, uid, vals, context=None):
         if context is None:

@@ -138,7 +138,7 @@ class TestLeadWwwMemberPayment(BaseSomLeadWwwTest):
         self.assertEqual(invoice.state, "open")
 
         payment_mode_id = ir_model_o.get_object_reference(
-            self.cursor, self.uid, "som_leads_polissa", "mode_pagament_socis_factura"
+            self.cursor, self.uid, "som_partner_account", "mode_pagament_socis_factura"
         )[1]
 
         payment_order = invoice.payment_order_id

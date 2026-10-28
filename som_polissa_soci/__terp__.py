@@ -9,6 +9,7 @@
     "author": "GISCE",
     "category": "SomEnergia",
     "depends": [
+        "base_extended_som",
         "giscedata_facturacio_comer",
         "giscedata_lectures_estimacio",
         "giscedata_polissa_category",
