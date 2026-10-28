@@ -32,23 +32,33 @@ class GiscedataFacturacioFactura(osv.osv):
         invoice_obj = self.pool.get("account.invoice")
         self.check_perm(cursor, uid, "read", context=context)
         invoice_obj.check_perm(cursor, uid, "write", context=context)
-        factura_ids = self.search(
-            cursor,
-            uid,
-            [
-                ("polissa_id", "=", polissa_id),
-                ("type", "=", "out_invoice"),
-                ("state", "=", "open"),
-                ("residual", ">", 0),
-                ("date_due", ">=", today),
-            ],
-            order="id",
-            context=context,
-        )
+        domain = [
+            ("polissa_id", "=", polissa_id),
+            ("type", "=", "out_invoice"),
+            ("state", "=", "open"),
+            ("residual", ">", 0),
+            ("date_due", ">=", today),
+        ]
+        factura_ids = self.search(cursor, uid, domain, order="id", context=context)
         result = {"migrated": [], "remitted": [], "failed": [], "unchanged": []}
+        if not factura_ids:
+            return result
+        invoices = self.read(cursor, uid, factura_ids, ["invoice_id"], context=context)
+        invoice_obj._lock_payment_route(
+            cursor, uid, [invoice["invoice_id"][0] for invoice in invoices], context=context
+        )
+        # A competing transaction may have changed eligibility while we waited.
+        eligible_ids = set(self.search(
+            cursor, uid, domain + [("id", "in", factura_ids)], context=context
+        ))
         for factura in self.browse(cursor, uid, factura_ids, context=context):
             if factura.payment_order_id:
                 result["remitted"].append(factura.id)
+                continue
+            if factura.id not in eligible_ids:
+                result["unchanged"].append(
+                    {"id": factura.id, "reason_code": "invoice_not_eligible"}
+                )
                 continue
             if factura.redsys_collection_state:
                 result["unchanged"].append(
