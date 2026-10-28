@@ -13,8 +13,25 @@ import pypdftk
 from destral import testing
 from destral.transaction import Transaction
 from som_polissa_condicions_generals.report import (
+    giscedata_crm_lead_contract_summary,
     giscedata_crm_lead_contract_summary_full,
+    giscedata_polissa_contract_summary,
+    giscedata_polissa_contract_summary_full,
 )
+
+
+def _restore_report_services():
+    # Destral clears netsvc.SERVICES after importing the addon test modules.
+    # Reload the report modules so their report_int instances are registered
+    # again for each isolated test run.
+    for report_module in (
+        giscedata_polissa_contract_summary,
+        giscedata_polissa_contract_summary_full,
+        giscedata_crm_lead_contract_summary,
+        giscedata_crm_lead_contract_summary_full,
+    ):
+        imp.reload(report_module)
+
 
 _netsvc_local_service = (
     'som_polissa_condicions_generals.report.'
@@ -33,6 +50,7 @@ _os_fdopen = (
 class TestContractSummaryFullReport(testing.OOTestCase):
 
     def setUp(self):
+        _restore_report_services()
         self.txn = Transaction().start(self.database)
         self.cursor = self.txn.cursor
         self.uid = self.txn.user
@@ -185,6 +203,7 @@ class TestContractSummaryFullReport(testing.OOTestCase):
 class TestGiscedataPolissaContractSummaryRoutes(testing.OOTestCase):
 
     def setUp(self):
+        _restore_report_services()
         self.txn = Transaction().start(self.database)
         self.cursor = self.txn.cursor
         self.uid = self.txn.user
@@ -349,7 +368,7 @@ class TestGiscedataPolissaContractSummaryRoutes(testing.OOTestCase):
             ),
         ])
 
-    def test_lead_migration_loads_only_combined_report_action(self):
+    def test_lead_migration_loads_report_view_and_security(self):
         migration = self._load_lead_migration()
 
         with mock.patch.object(migration, 'load_data') as load_data:
@@ -360,6 +379,20 @@ class TestGiscedataPolissaContractSummaryRoutes(testing.OOTestCase):
                 self.cursor,
                 'som_polissa_condicions_generals',
                 'report/giscedata_crm_lead_contract_summary_full_report.xml',
+                idref=None,
+                mode='update'
+            ),
+            mock.call(
+                self.cursor,
+                'som_polissa_condicions_generals',
+                'views/giscedata_crm_lead_contract_summary_full_view.xml',
+                idref=None,
+                mode='update'
+            ),
+            mock.call(
+                self.cursor,
+                'som_polissa_condicions_generals',
+                'security/ir.model.access.csv',
                 idref=None,
                 mode='update'
             ),

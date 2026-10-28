@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from __future__ import absolute_import
 import base64
 import mock
 from destral import testing
@@ -35,4 +36,24 @@ class TestsContractHelper(testing.OOTestCase):
 
         self.assertIn('contract', result)
         decoded = base64.b64decode(result['contract'])
+        self.assertEqual(decoded, fake_pdf)
+
+    @mock.patch(_netsvc_local_service)
+    def test_get_contract_summary_returns_base64(self, mock_local_service):
+        fake_pdf = b'%PDF-summary-content'
+        mock_local_service.return_value.create.return_value = (fake_pdf, 'pdf')
+        context = {'lang': 'ca_ES'}
+
+        result = self.helper.get_contract_summary_pdf(
+            self.cursor, self.uid, self.pol_id, context=context
+        )
+
+        mock_local_service.assert_called_once_with(
+            'report.giscedata.polissa.contract.summary'
+        )
+        mock_local_service.return_value.create.assert_called_once_with(
+            self.cursor, self.uid, [self.pol_id], {}, context
+        )
+        self.assertIn('summary', result)
+        decoded = base64.b64decode(result['summary'])
         self.assertEqual(decoded, fake_pdf)

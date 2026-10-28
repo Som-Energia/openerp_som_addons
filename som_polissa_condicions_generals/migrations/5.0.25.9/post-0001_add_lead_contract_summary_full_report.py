@@ -25,6 +25,13 @@ def up(cursor, installed_version):
         idref=None,
         mode='update'
     )
+    load_data(
+        cursor,
+        'som_polissa_condicions_generals',
+        'security/ir.model.access.csv',
+        idref=None,
+        mode='update'
+    )
 
 
 def down(cursor, installed_version):
