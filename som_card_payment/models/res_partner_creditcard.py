@@ -34,36 +34,32 @@ class ResPartnerCreditCard(osv.osv):
         )
         lookup_context = context.copy()
         lookup_context["active_test"] = False
-        card_ids = self.search(
-            cursor,
-            uid,
-            [("token", "=", values["token"])],
-            context=lookup_context,
-        )
-        if card_ids:
-            cards = self.read(
+        exact_domain = [("partner_id", "=", partner_id)] + [
+            (name, "=", values[name]) for name in self._resolution_fields
+        ]
+        # An active exact match takes precedence over any archived duplicates.
+        for active in (True, False):
+            card_ids = self.search(
                 cursor,
                 uid,
-                card_ids,
-                ["partner_id", "active"] + list(self._resolution_fields),
+                exact_domain + [("active", "=", active)],
                 context=lookup_context,
             )
-            same_payer_cards = [
-                card for card in cards if card["partner_id"][0] == partner_id
-            ]
-            compatible = [
-                card
-                for card in same_payer_cards
-                if card["active"]
-                and all(card[name] == values[name] for name in self._resolution_fields)
-            ]
-            if len(compatible) == 1:
-                return {"id": compatible[0]["id"], "disposition": "reused"}
-            if same_payer_cards:
+            if len(card_ids) > 1:
                 raise osv.except_osv(
                     _("Card token conflict"),
-                    _("The stored card token has different payer or metadata."),
+                    _("Multiple stored cards match the same payer and card data."),
                 )
+            if card_ids:
+                if not active:
+                    self.check_perm(cursor, uid, "write", context=context)
+                    self.write(
+                        cursor, uid, card_ids, {"active": True}, context=lookup_context
+                    )
+                return {
+                    "id": card_ids[0],
+                    "disposition": "reused" if active else "reactivated",
+                }
 
         self.check_perm(cursor, uid, "create", context=context)
         values["partner_id"] = partner_id

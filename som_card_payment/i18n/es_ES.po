@@ -16,8 +16,8 @@ msgstr "Conflicto de token de tarjeta"
 
 #. module: som_card_payment
 #: code:addons/som_card_payment/models/res_partner_creditcard.py:56
-msgid "The stored card token has different payer or metadata."
-msgstr "El token de tarjeta almacenado tiene un pagador o metadatos distintos."
+msgid "Multiple stored cards match the same payer and card data."
+msgstr "Varias tarjetas guardadas coinciden con el mismo pagador y los mismos datos de tarjeta."
 
 #: field:giscedata.facturacio.factura,redsys_currency:0
 msgid "Moneda Redsys"

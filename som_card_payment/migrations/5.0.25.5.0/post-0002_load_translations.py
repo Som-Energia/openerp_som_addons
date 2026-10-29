@@ -15,11 +15,12 @@ def up(cursor, installed_version):
     module_name = 'som_card_payment'
 
     logger.info('Updating translations')
-    trans_load(
-        cursor,
-        '{}/{}/i18n/es_ES.po'.format(config['addons_path'], module_name),
-        'es_ES'
-    )
+    for language in ('ca_ES', 'es_ES'):
+        trans_load(
+            cursor,
+            '{}/{}/i18n/{}.po'.format(config['addons_path'], module_name, language),
+            language
+        )
     logger.info('Translations successfully updated.')
 
 
