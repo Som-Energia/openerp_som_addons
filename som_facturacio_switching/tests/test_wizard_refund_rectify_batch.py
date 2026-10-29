@@ -1,0 +1,2476 @@
+# -*- coding: utf-8 -*-
+from __future__ import absolute_import
+
+import base64
+import csv
+import os
+from datetime import datetime, timedelta
+from destral import testing
+from osv import osv
+from psycopg2 import OperationalError
+import mock
+from .. import refund_rectify_batch
+from giscedata_polissa import giscedata_cups
+
+
+class TestWizardRefundRectifyBatch(testing.OOTestCaseWithCursor):
+    def setUp(self):
+        super(TestWizardRefundRectifyBatch, self).setUp()
+        self.pool = self.openerp.pool
+        self.wizard_obj = self.pool.get("wizard.refund.rectify.batch")
+        self.f1_obj = self.pool.get("giscedata.facturacio.importacio.linia")
+        self.imd_obj = self.pool.get("ir.model.data")
+
+    def _f1_id(self, xml_id):
+        return self.imd_obj.get_object_reference(
+            self.cursor, self.uid, "giscedata_facturacio_switching", xml_id
+        )[1]
+
+    def _same_polissa_f1s(self):
+        first_id = self._f1_id("line_01_f1_import_01")
+        polissa_id = self.imd_obj.get_object_reference(
+            self.cursor, self.uid, "giscedata_polissa", "polissa_0001"
+        )[1]
+        polissa = self.pool.get("giscedata.polissa").browse(
+            self.cursor, self.uid, polissa_id
+        )
+        initial_date = polissa.data_alta
+        final_date = (
+            datetime.strptime(initial_date, "%Y-%m-%d") + timedelta(days=27)
+        ).strftime("%Y-%m-%d")
+        second_initial_date = (
+            datetime.strptime(final_date, "%Y-%m-%d") + timedelta(days=1)
+        ).strftime("%Y-%m-%d")
+        second_final_date = (
+            datetime.strptime(second_initial_date, "%Y-%m-%d") + timedelta(days=27)
+        ).strftime("%Y-%m-%d")
+        self.f1_obj.write(
+            self.cursor,
+            self.uid,
+            first_id,
+            {
+                "state": "valid",
+                "cups_id": polissa.cups.id,
+                "cups_text": polissa.cups.name,
+                "fecha_factura_desde": initial_date,
+                "fecha_factura_hasta": final_date,
+                "type_factura": "R",
+            },
+        )
+        second_id = self.f1_obj.copy(
+            self.cursor,
+            self.uid,
+            first_id,
+            {
+                "fecha_factura_desde": second_initial_date,
+                "fecha_factura_hasta": second_final_date,
+            },
+        )
+        return first_id, second_id
+
+    def test_create_batch_rejects_empty_selection(self):
+        wizard_id = self.wizard_obj.create(self.cursor, self.uid, {}, context={})
+
+        self.assertRaises(
+            osv.except_osv,
+            self.wizard_obj.create_batch,
+            self.cursor,
+            self.uid,
+            [wizard_id],
+            context={},
+        )
+
+    def test_create_batch_creates_ordered_lines_for_one_polissa(self):
+        first_id, second_id = self._same_polissa_f1s()
+        context = {"active_ids": [second_id, first_id]}
+        wizard_id = self.wizard_obj.create(self.cursor, self.uid, {}, context=context)
+
+        batch_obj = self.pool.get("refund.rectify.batch")
+        with mock.patch.object(batch_obj, "schedule_batch_execution"):
+            action = self.wizard_obj.create_batch(
+                self.cursor, self.uid, [wizard_id], context=context
+            )
+        batch = self.pool.get("refund.rectify.batch").browse(
+            self.cursor, self.uid, action["res_id"]
+        )
+
+        self.assertEqual(batch.state, "pending")
+        self.assertEqual([line.f1_id.id for line in batch.line_ids], [first_id, second_id])
+        self.assertEqual([line.sequence for line in batch.line_ids], [1, 2])
+
+    def test_create_batch_rejects_multiple_policies(self):
+        first_id = self._f1_id("line_01_f1_import_01")
+        second_id = self._f1_id("line_02_f1_import_01")
+        self.f1_obj.write(
+            self.cursor, self.uid, [first_id, second_id], {"type_factura": "R"}
+        )
+        context = {"active_ids": [first_id, second_id]}
+        wizard_id = self.wizard_obj.create(self.cursor, self.uid, {}, context=context)
+
+        self.assertRaises(
+            osv.except_osv,
+            self.wizard_obj.create_batch,
+            self.cursor,
+            self.uid,
+            [wizard_id],
+            context=context,
+        )
+
+
+class TestRefundRectifyBatchCreation(testing.OOTestCaseWithCursor):
+    def setUp(self):
+        super(TestRefundRectifyBatchCreation, self).setUp()
+        self.pool = self.openerp.pool
+        self.batch_obj = self.pool.get("refund.rectify.batch")
+
+    def _f1(self, f1_id, polissa_id=7, **values):
+        cups = mock.Mock()
+        cups.id = 13
+        f1 = mock.Mock()
+        f1.id = f1_id
+        f1.type_factura = "R"
+        f1.fecha_factura_desde = "2022-01-01"
+        f1.fecha_factura_hasta = "2022-01-31"
+        f1.cups_id = cups
+        if polissa_id:
+            polissa = mock.Mock()
+            polissa.id = polissa_id
+            polissa.name = "POL-%s" % polissa_id
+            f1.polissa_id = polissa
+        else:
+            f1.polissa_id = False
+        for field, value in values.items():
+            setattr(f1, field, value)
+        return f1
+
+    def _assert_create_batch_rejected(self, f1s):
+        f1_obj = mock.Mock()
+        line_obj = mock.Mock()
+        f1_obj.search.return_value = [f1.id for f1 in f1s]
+        f1_obj.browse.return_value = f1s
+        with mock.patch.object(
+                self.pool,
+                "get",
+                side_effect=lambda model: {
+                    "giscedata.facturacio.importacio.linia": f1_obj,
+                    "refund.rectify.batch.line": line_obj,
+                }[model]):
+            with mock.patch.object(self.batch_obj, "create", return_value=12):
+                try:
+                    self.batch_obj.create_batch(
+                        self.cursor,
+                        self.uid,
+                        [f1.id for f1 in f1s],
+                        context={},
+                    )
+                except osv.except_osv as error:
+                    return error
+        self.fail("Expected batch creation to be rejected")
+
+    def test_create_batch_rejects_empty_selection_without_wizard(self):
+        self._assert_create_batch_rejected([])
+
+    def test_create_batch_rejects_invalid_f1_data_without_wizard(self):
+        invalid_f1s = [
+            self._f1(1, type_factura="C"),
+            self._f1(2, fecha_factura_desde=False),
+            self._f1(3, fecha_factura_hasta="not-a-date"),
+            self._f1(
+                4,
+                fecha_factura_desde="2022-02-01",
+                fecha_factura_hasta="2022-01-31",
+            ),
+            self._f1(5, cups_id=False),
+            self._f1(6, polissa_id=False),
+        ]
+        for f1 in invalid_f1s:
+            self._assert_create_batch_rejected([f1])
+
+    def test_create_batch_rejects_f1s_resolved_to_multiple_policies(self):
+        error = self._assert_create_batch_rejected([
+            self._f1(1, polissa_id=7), self._f1(2, polissa_id=9),
+        ])
+        self.assertTrue("POL-7" in error.value)
+        self.assertTrue("POL-9" in error.value)
+
+    def test_create_batch_rejects_existing_active_batch(self):
+        f1 = self._f1(1)
+        f1_obj = mock.Mock()
+        f1_obj.search.return_value = [f1.id]
+        f1_obj.browse.return_value = [f1]
+        line_obj = mock.Mock()
+        cursor = mock.Mock()
+        with mock.patch.object(
+                self.pool,
+                "get",
+                side_effect=lambda model: {
+                    "giscedata.facturacio.importacio.linia": f1_obj,
+                    "refund.rectify.batch.line": line_obj,
+                }[model]):
+            with mock.patch.object(self.batch_obj, "search", return_value=[12]) as search:
+                self.assertRaises(
+                    osv.except_osv,
+                    self.batch_obj.create_batch,
+                    cursor,
+                    self.uid,
+                    [f1.id],
+                    context={},
+                )
+
+        search.assert_called_once_with(
+            cursor,
+            self.uid,
+            [("polissa_id", "=", 7), ("state", "in", ["pending", "running", "blocked"])],
+            context={},
+        )
+
+    def test_create_batch_creates_chronological_lines_without_policy_lock(self):
+        first_f1 = self._f1(1)
+        second_f1 = self._f1(2)
+        f1_obj = mock.Mock()
+        f1_obj.search.return_value = [first_f1.id, second_f1.id]
+        f1_obj.browse.return_value = [second_f1, first_f1]
+        line_obj = mock.Mock()
+        cursor = mock.Mock()
+        with mock.patch.object(
+                self.pool,
+                "get",
+                side_effect=lambda model: {
+                    "giscedata.facturacio.importacio.linia": f1_obj,
+                    "refund.rectify.batch.line": line_obj,
+                }[model]):
+            with mock.patch.object(self.batch_obj, "search", return_value=[]):
+                with mock.patch.object(self.batch_obj, "create", return_value=12):
+                    batch_id = self.batch_obj.create_batch(
+                        cursor, self.uid, [second_f1.id, first_f1.id], context={}
+                    )
+
+        self.assertEqual(batch_id, 12)
+        self.assertEqual(cursor.execute.call_count, 0)
+        self.assertEqual(
+            [call[0][2] for call in line_obj.create.call_args_list],
+            [
+                {"batch_id": 12, "f1_id": first_f1.id, "sequence": 1},
+                {"batch_id": 12, "f1_id": second_f1.id, "sequence": 2},
+            ],
+        )
+
+
+class TestRefundRectifyBatchScheduling(testing.OOTestCaseWithCursor):
+    def setUp(self):
+        super(TestRefundRectifyBatchScheduling, self).setUp()
+        self.pool = self.openerp.pool
+        self.batch_obj = self.pool.get("refund.rectify.batch")
+        self.wizard_obj = self.pool.get("wizard.refund.rectify.batch")
+
+    def test_schedules_one_primitive_batch_job_regardless_of_oorq_async_setting(self):
+        cursor = mock.Mock()
+        queued_job = mock.Mock()
+        queued_job.id = "rq-job-12"
+        context = {"active_ids": [3, 4]}
+        with mock.patch.dict(os.environ, {"OORQ_ASYNC": "False"}):
+            with mock.patch.object(
+                    self.batch_obj,
+                    "process_batch_f1_lines_async",
+                    return_value=queued_job) as async_job:
+                with mock.patch.object(refund_rectify_batch, "AutoWorker") as worker_class:
+                    worker = worker_class.return_value
+                    with mock.patch.object(self.batch_obj, "write") as write:
+                        self.batch_obj.schedule_batch_execution(
+                            cursor, self.uid, 12, context=context
+                        )
+
+        async_job.assert_called_once_with(cursor, self.uid, 12)
+        write.assert_called_once_with(
+            cursor, self.uid, [12], {"job_reference": "rq-job-12"}, context=context
+        )
+        worker_class.assert_called_once_with(
+            queue="refund_rectify_f1", default_result_ttl=24 * 3600, max_procs=1
+        )
+        worker.work.assert_called_once_with(cursor)
+
+    def test_processes_batch_directly_in_explicit_debug_mode(self):
+        cursor = mock.Mock()
+        context = {"active_ids": [3, 4], "refund_rectify_debug_sync": True}
+        results = [{"status": "processed"}]
+        with mock.patch.object(
+                self.batch_obj, "process_batch_f1_lines", return_value=results) as process:
+            with mock.patch.object(
+                    self.batch_obj, "process_batch_f1_lines_async") as async_job:
+                with mock.patch.object(refund_rectify_batch, "AutoWorker") as worker_class:
+                    with mock.patch.object(self.batch_obj, "write") as write:
+                        returned_results = self.batch_obj.schedule_batch_execution(
+                            cursor, self.uid, 12, context=context
+                        )
+
+        self.assertEqual(returned_results, results)
+        cursor.commit.assert_called_once_with()
+        process.assert_called_once_with(
+            cursor, self.uid, 12, context=context
+        )
+        self.assertFalse(async_job.called)
+        self.assertFalse(write.called)
+        self.assertFalse(worker_class.called)
+        self.assertFalse(cursor.on_commit.called)
+
+    def test_wizard_returns_batch_form_after_requesting_schedule(self):
+        batch_obj = mock.Mock()
+        batch_obj.create_batch.return_value = 12
+        context = {"active_ids": [3, 4]}
+        with mock.patch.object(self.pool, "get", return_value=batch_obj):
+            action = self.wizard_obj.create_batch(
+                self.cursor, self.uid, [1], context=context
+            )
+
+        batch_obj.create_batch.assert_called_once_with(
+            self.cursor, self.uid, [3, 4], context=context
+        )
+        batch_obj.schedule_batch_execution.assert_called_once_with(
+            self.cursor, self.uid, 12, context=context
+        )
+        self.assertEqual(action, {
+            "type": "ir.actions.act_window",
+            "name": "Lot pendent d'abonar i rectificar",
+            "res_model": "refund.rectify.batch",
+            "view_type": "form",
+            "view_mode": "form",
+            "res_id": 12,
+            "target": "current",
+        })
+
+
+class TestRefundRectifySupplierInvoices(testing.OOTestCaseWithCursor):
+    def setUp(self):
+        super(TestRefundRectifySupplierInvoices, self).setUp()
+        self.pool = self.openerp.pool
+        self.line_obj = self.pool.get("refund.rectify.batch.line")
+        self.fact_obj = self.pool.get("giscedata.facturacio.factura")
+
+    def _line(self, line_id, polissa_id=7, initial="2022-01-01", final="2022-01-31"):
+        line = mock.Mock()
+        line.id = line_id
+        line.batch_id.polissa_id = mock.Mock(id=polissa_id) if polissa_id else False
+        # The batch policy is authoritative, never the F1's current resolution.
+        line.f1_id.polissa_id = mock.Mock(id=99)
+        line.f1_id.fecha_factura_desde = initial
+        line.f1_id.fecha_factura_hasta = final
+        return line
+
+    def _lookup(self, ids, uid=None, context=None):
+        return self.line_obj._get_supplier_invoice_ids(
+            self.cursor, self.uid if uid is None else uid, ids,
+            "supplier_invoice_ids", None, context=context,
+        )
+
+    def test_supplier_domain_normalizes_d_minus_one_scoped_and_shared_within_call(self):
+        lines = [self._line(1), self._line(2)]
+        context = {"lang": "ca_ES", "allowed_company_ids": [3]}
+        with mock.patch.object(self.line_obj, "browse", return_value=lines) as browse:
+            with mock.patch.object(self.fact_obj, "search", return_value=[31, 32]) as search:
+                with mock.patch.object(self.line_obj, "write") as write:
+                    result = self._lookup([1, 2], uid=42, context=context)
+        self.assertEqual(result, {1: [31, 32], 2: [31, 32]})
+        browse.assert_called_once_with(self.cursor, 42, [1, 2], context=context)
+        search.assert_called_once_with(self.cursor, 42, [
+            ("polissa_id", "=", 7),
+            ("type", "in", ["in_invoice", "in_refund"]),
+            ("data_inici", "<=", "2022-01-31"),
+            ("data_final", ">=", "2022-01-02"),
+        ], order="data_inici asc, data_final asc, id asc", context=context)
+        self.assertFalse(write.called)
+        self.assertEqual(context, {"lang": "ca_ES", "allowed_company_ids": [3]})
+
+    def test_supplier_missing_policy_or_either_date_never_searches(self):
+        lines = [self._line(1, polissa_id=False), self._line(2, initial=False),
+                 self._line(3, final=False), self._line(4, initial=False, final=False)]
+        with mock.patch.object(self.line_obj, "browse", return_value=lines):
+            with mock.patch.object(self.fact_obj, "search") as search:
+                self.assertEqual(self._lookup([1, 2, 3, 4]), {1: [], 2: [], 3: [], 4: []})
+        self.assertFalse(search.called)
+
+    def test_supplier_invalid_initial_date_propagates(self):
+        with mock.patch.object(self.line_obj, "browse", return_value=[
+                self._line(1, initial="invalid-date")]):
+            with mock.patch.object(self.fact_obj, "search") as search:
+                with self.assertRaises(ValueError):
+                    self._lookup([1])
+        self.assertFalse(search.called)
+
+    def test_supplier_distinct_policy_or_period_has_its_own_lookup(self):
+        lines = [self._line(1), self._line(2, polissa_id=8),
+                 self._line(3, initial="2022-01-02")]
+        with mock.patch.object(self.line_obj, "browse", return_value=lines):
+            with mock.patch.object(self.fact_obj, "search", side_effect=[[31], [], [33]]) as s:
+                self.assertEqual(self._lookup([1, 2, 3]), {1: [31], 2: [], 3: [33]})
+        self.assertEqual(s.call_count, 3)
+        self.assertEqual(s.call_args_list[1][0][2][0], ("polissa_id", "=", 8))
+        self.assertEqual(s.call_args_list[2][0][2][-1], ("data_final", ">=", "2022-01-03"))
+
+    def test_supplier_subsequent_lookup_does_not_reuse_previous_results(self):
+        with mock.patch.object(self.line_obj, "browse", return_value=[self._line(1)]):
+            with mock.patch.object(self.fact_obj, "search", side_effect=[[], [31]]) as search:
+                self.assertEqual(self._lookup([1]), {1: []})
+                self.assertEqual(self._lookup([1]), {1: [31]})
+        self.assertEqual(search.call_count, 2)
+
+    def test_supplier_orm_may_15_july_13_excludes_prior_period_and_refreshes_without_writes(self):
+        imd = self.pool.get("ir.model.data")
+        template_id = imd.get_object_reference(
+            self.cursor, self.uid, "giscedata_facturacio", "factura_0003"
+        )[1]
+        f1_id = imd.get_object_reference(
+            self.cursor, self.uid, "giscedata_facturacio_switching", "line_01_f1_import_01"
+        )[1]
+        other_f1_id = imd.get_object_reference(
+            self.cursor, self.uid, "giscedata_facturacio_switching", "line_02_f1_import_01"
+        )[1]
+        polissa_id = self.fact_obj.read(
+            self.cursor, self.uid, template_id, ["polissa_id"]
+        )["polissa_id"][0]
+        other_policy = self.pool.get("giscedata.polissa").search(
+            self.cursor, self.uid, [("id", "!=", polissa_id)], limit=1
+        )[0]
+        self.pool.get("giscedata.facturacio.importacio.linia").write(
+            self.cursor, self.uid, [f1_id], {
+                "fecha_factura_desde": "2023-05-15", "fecha_factura_hasta": "2023-07-13",
+            },
+        )
+        batch_id = self.pool.get("refund.rectify.batch").create(self.cursor, self.uid, {
+            "name": "/", "polissa_id": polissa_id,
+        })
+        line_id = self.line_obj.create(self.cursor, self.uid, {
+            "batch_id": batch_id, "f1_id": f1_id, "sequence": 1,
+            "source_invoice_ids": [(6, 0, [template_id])],
+            "generated_invoice_ids": [(6, 0, [template_id])],
+        })
+
+        def invoice(initial, final, invoice_type="in_invoice", **values):
+            defaults = {"polissa_id": polissa_id, "data_inici": initial, "data_final": final,
+                        "type": invoice_type, "rectificative_type": "N", "rectifying_id": False}
+            defaults.update(values)
+            # Legacy invoice copy always forces draft; set test states afterwards.
+            state = defaults.pop("state", "draft")
+            invoice_id = self.fact_obj.copy(self.cursor, self.uid, template_id, defaults)
+            self.fact_obj.write(self.cursor, self.uid, [invoice_id], {"state": state})
+            return invoice_id
+
+        # Insert out of period order; identical periods are ordered by ID.
+        end_boundary = invoice("2023-07-13", "2023-07-25", state="paid")
+        start_boundary = invoice("2023-05-05", "2023-05-16", "in_refund",
+                                  rectificative_type="B", state="cancel")
+        same_period = invoice("2023-05-05", "2023-05-16", rectificative_type="A")
+        covering = invoice("2023-03-01", "2023-07-31", rectificative_type="R", state="open")
+        first_split = invoice("2023-05-16", "2023-06-15")
+        second_split = invoice("2023-06-16", "2023-07-12")
+        covering_account_id = self.fact_obj.read(
+            self.cursor, self.uid, covering, ["invoice_id"]
+        )["invoice_id"][0]
+        self.fact_obj.write(self.cursor, self.uid, [start_boundary], {
+            "rectifying_id": covering_account_id,
+        })
+        self.assertTrue(self.fact_obj.read(
+            self.cursor, self.uid, covering, ["refund_by_id"]
+        )["refund_by_id"])
+        self.pool.get("giscedata.facturacio.importacio.linia.factura").create(
+            self.cursor, self.uid, {"linia_id": other_f1_id, "factura_id": covering},
+        )
+        excluded = [
+            invoice("2023-05-16", "2023-07-13", "out_invoice"),
+            invoice("2023-05-16", "2023-07-13", "out_refund"),
+            invoice("2023-05-16", "2023-07-13", polissa_id=other_policy),
+            invoice("2023-03-15", "2023-05-15"),
+            invoice("2023-07-14", "2023-07-31"),
+        ]
+        expected = [covering, start_boundary, same_period, first_split, second_split, end_boundary]
+        relations = ["source_invoice_ids", "generated_invoice_ids"]
+        original = self.line_obj.read(self.cursor, self.uid, line_id, relations)
+        with mock.patch.object(self.line_obj, "write") as write:
+            found = self.line_obj.read(
+                self.cursor, self.uid, line_id, ["supplier_invoice_ids"]
+            )["supplier_invoice_ids"]
+        self.assertEqual(found, expected)
+        self.assertFalse(set(found).intersection(excluded))
+        self.assertFalse(write.called)
+        imported_id = invoice("2023-06-20", "2023-06-21", "in_refund")
+        with mock.patch.object(self.line_obj, "write") as write:
+            refreshed = self.line_obj.read(
+                self.cursor, self.uid, line_id, ["supplier_invoice_ids"]
+            )["supplier_invoice_ids"]
+        self.assertEqual(refreshed, expected[:-1] + [imported_id, end_boundary])
+        self.assertFalse(write.called)
+        self.assertEqual(self.line_obj.read(self.cursor, self.uid, line_id, relations), original)
+        field = self.line_obj._columns["supplier_invoice_ids"]
+        self.assertFalse(field.store)
+        self.assertTrue(field.readonly)
+        self.assertEqual(field._type, "many2many")
+        self.assertEqual(field._obj, "giscedata.facturacio.factura")
+
+
+class TestRefundRectifyBatchLineProcessOneF1(testing.OOTestCaseWithCursor):
+    def setUp(self):
+        super(TestRefundRectifyBatchLineProcessOneF1, self).setUp()
+        self.pool = self.openerp.pool
+        self.line_obj = self.pool.get("refund.rectify.batch.line")
+        self.f1_obj = self.pool.get("giscedata.facturacio.importacio.linia")
+        self.fact_obj = self.pool.get("giscedata.facturacio.factura")
+        self.imd_obj = self.pool.get("ir.model.data")
+
+    def _prepare_rectifying_f1(self):
+        fact_id = self.imd_obj.get_object_reference(
+            self.cursor, self.uid, "giscedata_facturacio", "factura_0003"
+        )[1]
+        f1_id = self.imd_obj.get_object_reference(
+            self.cursor, self.uid, "giscedata_facturacio_switching", "line_01_f1_import_01"
+        )[1]
+        fact_info = self.fact_obj.read(
+            self.cursor, self.uid, fact_id,
+            ["origin", "polissa_id", "data_inici", "data_final", "cups_id"]
+        )
+        self.f1_obj.write(
+            self.cursor, self.uid, [f1_id], {
+                "invoice_number_text": fact_info["origin"],
+                "cups_id": fact_info["cups_id"][0],
+                "fecha_factura_desde": fact_info["data_inici"],
+                "fecha_factura_hasta": fact_info["data_final"],
+                "type_factura": "R",
+            }
+        )
+        fact_info["polissa_id"] = self.f1_obj.read(
+            self.cursor, self.uid, f1_id, ["polissa_id"]
+        )["polissa_id"]
+        return f1_id, fact_info
+
+    def _patch_most_recent_polissa(self, fact_info):
+        return mock.patch.object(
+            giscedata_cups.GiscedataCupsPs,
+            "find_most_recent_polissa",
+            return_value={fact_info["cups_id"][0]: fact_info["polissa_id"][0]},
+        )
+
+    @mock.patch.object(
+        refund_rectify_batch.RefundRectifyBatchLine, "_validate_retained_rectifying_invoices"
+    )
+    @mock.patch.object(refund_rectify_batch.RefundRectifyBatchLine, "_write_f1_observation")
+    @mock.patch.object(
+        refund_rectify_batch.RefundRectifyBatchLine, "_delete_draft_invoices_if_needed"
+    )
+    @mock.patch.object(refund_rectify_batch.RefundRectifyBatchLine, "_refund_rectify_if_needed")
+    @mock.patch.object(
+        refund_rectify_batch.RefundRectifyBatchLine, "_recarregar_lectures_between_dates"
+    )
+    @mock.patch.object(refund_rectify_batch.RefundRectifyBatchLine, "_get_factures_client_by_dates")
+    def test_process_one_f1_returns_generated_ids_after_cleanup(
+            self, mock_invoices, mock_readings, mock_refund, mock_cleanup,
+            mock_observation, mock_validation):
+        f1_id, fact_info = self._prepare_rectifying_f1()
+        polissa_id = fact_info["polissa_id"][0]
+        with self._patch_most_recent_polissa(fact_info):
+            call_order = []
+            mock_invoices.side_effect = lambda *args, **kwargs: (
+                call_order.append("invoices")
+                or ([31], "S'han eliminat 1 factures en esborrany", [])
+            )
+            mock_readings.side_effect = lambda *args, **kwargs: call_order.append("readings") or 2
+            mock_refund.side_effect = (
+                lambda *args, **kwargs: call_order.append("refund") or [41, 42, 43]
+            )
+            mock_cleanup.side_effect = lambda *args, **kwargs: (
+                call_order.append("cleanup")
+                or (["Les factures AB i RE tenen import diferent."], [42, 43])
+            )
+            mock_observation.side_effect = lambda *args, **kwargs: call_order.append("observation")
+            mock_validation.side_effect = lambda *args, **kwargs: (
+                call_order.append("validation") or {
+                    "validation_evaluated": True, "validation_warning_count": 1,
+                    "validation_warnings": u"Factura 42 (RE-42): [F001] Avís",
+                }
+            )
+            with mock.patch.object(
+                    self.line_obj, "_get_f1_meter_ids", return_value=[1]):
+                result = self.line_obj.process_one_f1(
+                    self.cursor, self.uid, f1_id, expected_polissa_id=polissa_id, context={}
+                )
+
+        self.assertEqual(result["status"], "processed")
+        self.assertEqual(result["source_invoice_ids"], [31])
+        self.assertEqual(result["removed_draft_invoice_ids"], [])
+        self.assertEqual(result["reloaded_reading_count"], 2)
+        self.assertEqual(result["generated_invoice_ids"], [42, 43])
+        self.assertTrue(result["observation_written"])
+        self.assertEqual(result["validation_warning_count"], 1)
+        self.assertTrue(result["validation_evaluated"])
+        self.assertEqual(call_order, [
+            "invoices", "readings", "refund", "cleanup", "validation", "observation",
+        ])
+        mock_validation.assert_called_once_with(
+            self.cursor, self.uid, [42, 43], context={}
+        )
+        mock_refund.assert_called_once_with(
+            self.cursor, self.uid, [31], context={}
+        )
+        mock_cleanup.assert_called_once_with(
+            self.cursor, self.uid, [41, 42, 43], [31], context={}
+        )
+
+    @mock.patch.object(refund_rectify_batch.RefundRectifyBatchLine, "_write_f1_observation")
+    @mock.patch.object(refund_rectify_batch.RefundRectifyBatchLine, "_get_factures_client_by_dates")
+    def test_process_one_f1_preserves_draft_cleanup_before_no_action(
+            self, mock_invoices, mock_observation):
+        f1_id, fact_info = self._prepare_rectifying_f1()
+        with self._patch_most_recent_polissa(fact_info):
+            mock_invoices.return_value = ([], "S'han eliminat 1 factures en esborrany", [51])
+            with mock.patch.object(
+                    self.line_obj, "_get_f1_meter_ids", return_value=[1]):
+                result = self.line_obj.process_one_f1(self.cursor, self.uid, f1_id, context={})
+
+        self.assertEqual(result["status"], "no_action")
+        self.assertEqual(result["source_invoice_ids"], [])
+        self.assertEqual(result["removed_draft_invoice_ids"], [51])
+        self.assertFalse(result["validation_evaluated"])
+        self.assertEqual(result["validation_warning_count"], 0)
+        self.assertEqual(result["validation_warnings"], "")
+        self.assertEqual(result["generated_invoice_ids"], [])
+        self.assertTrue(result["observation_written"])
+        mock_observation.assert_called_once()
+
+    def _capture_persisted_outcome(self, result):
+        with mock.patch.object(self.line_obj, "write") as write:
+            with mock.patch.object(self.line_obj, "read", return_value={"batch_id": [7, "F1"]}):
+                with mock.patch.object(refund_rectify_batch.RefundRectifyBatch,
+                                       "_refresh_execution"):
+                    self.line_obj._persist_line_outcome(
+                        self.cursor, self.uid, 3, result=result, context={}
+                    )
+        return write.call_args[0][3]
+
+    @mock.patch.object(refund_rectify_batch.RefundRectifyBatchLine, "_write_f1_observation")
+    @mock.patch.object(
+        refund_rectify_batch.RefundRectifyBatchLine, "_delete_draft_invoices_if_needed"
+    )
+    @mock.patch.object(refund_rectify_batch.RefundRectifyBatchLine, "_refund_rectify_if_needed")
+    @mock.patch.object(
+        refund_rectify_batch.RefundRectifyBatchLine, "_recarregar_lectures_between_dates"
+    )
+    @mock.patch.object(refund_rectify_batch.RefundRectifyBatchLine, "_get_factures_client_by_dates")
+    def test_persists_originals_when_ab_re_cleanup_removes_all_generated_invoices(
+            self, invoices, readings, refund, cleanup, observation):
+        f1_id, fact_info = self._prepare_rectifying_f1()
+        invoices.return_value = ([31, 32], "", [51])
+        readings.return_value = 2
+        refund.return_value = [41, 42]
+        cleanup.return_value = (["Les factures AB i RE tenen mateix import, s'esborren"], [])
+        with self._patch_most_recent_polissa(fact_info):
+            with mock.patch.object(self.line_obj, "_get_f1_meter_ids", return_value=[1]):
+                result = self.line_obj.process_one_f1(self.cursor, self.uid, f1_id, context={})
+        vals = self._capture_persisted_outcome(result)
+        self.assertEqual(vals["state"], "done")
+        self.assertEqual(vals["outcome"], "processed")
+        self.assertEqual(vals["source_invoice_ids"], [(6, 0, [31, 32])])
+        self.assertEqual(vals["generated_invoice_ids"], [(6, 0, [])])
+        cleanup.assert_called_once_with(self.cursor, self.uid, [41, 42], [31, 32], context={})
+        invoices.assert_called_once()
+
+    def test_process_one_f1_rejects_expected_polissa_mismatch(self):
+        f1_id, fact_info = self._prepare_rectifying_f1()
+        polissa_id = fact_info["polissa_id"][0]
+        with self._patch_most_recent_polissa(fact_info):
+            with self.assertRaises(osv.except_osv) as raised:
+                self.line_obj.process_one_f1(
+                    self.cursor, self.uid, f1_id,
+                    expected_polissa_id=polissa_id + 1, context={},
+                )
+        self.assertFalse(isinstance(
+            raised.exception, refund_rectify_batch.RecoverableF1Error
+        ))
+
+    def test_missing_f1_and_unresolved_policy_are_explicit_functional_errors(self):
+        f1_obj = mock.Mock()
+        f1_obj.search.return_value = []
+        f1_obj.browse.return_value.polissa_id = False
+        with mock.patch.object(self.pool, "get", return_value=f1_obj):
+            self.assertRaises(
+                refund_rectify_batch.RecoverableF1Error,
+                self.line_obj.process_one_f1,
+                self.cursor, self.uid, 9, context={},
+            )
+            f1_obj.search.return_value = [9]
+            self.assertRaises(
+                refund_rectify_batch.RecoverableF1Error,
+                self.line_obj.process_one_f1,
+                self.cursor, self.uid, 9, context={},
+            )
+
+    @mock.patch.object(refund_rectify_batch.RefundRectifyBatchLine, "_refund_rectify_if_needed")
+    def test_process_one_f1_returns_no_action_for_non_rectifying_f1(
+            self, mock_refund):
+        f1_id, fact_info = self._prepare_rectifying_f1()
+        self.f1_obj.write(self.cursor, self.uid, f1_id, {"type_factura": "C"})
+        with self._patch_most_recent_polissa(fact_info):
+            with mock.patch.object(
+                    self.line_obj, "_get_f1_meter_ids", return_value=[1]):
+                result = self.line_obj.process_one_f1(self.cursor, self.uid, f1_id, context={})
+
+        self.assertEqual(result["status"], "no_action")
+        self.assertFalse(result["observation_written"])
+        self.assertFalse(mock_refund.called)
+
+    @mock.patch.object(refund_rectify_batch.RefundRectifyBatchLine, "_refund_rectify_if_needed")
+    def test_process_one_f1_returns_no_action_for_suspended_polissa(
+            self, mock_refund):
+        f1_id, fact_info = self._prepare_rectifying_f1()
+        polissa_id = fact_info["polissa_id"][0]
+        self.pool.get("giscedata.polissa").write(
+            self.cursor, self.uid, polissa_id, {"facturacio_suspesa": True}
+        )
+        with self._patch_most_recent_polissa(fact_info):
+            with mock.patch.object(
+                    self.line_obj, "_get_f1_meter_ids", return_value=[1]):
+                result = self.line_obj.process_one_f1(self.cursor, self.uid, f1_id, context={})
+
+        self.assertEqual(result["status"], "no_action")
+        self.assertFalse(result["observation_written"])
+        self.assertFalse(mock_refund.called)
+
+    @mock.patch.object(refund_rectify_batch.RefundRectifyBatchLine, "_refund_rectify_if_needed")
+    @mock.patch.object(
+        refund_rectify_batch.RefundRectifyBatchLine, "_recarregar_lectures_between_dates"
+    )
+    @mock.patch.object(refund_rectify_batch.RefundRectifyBatchLine, "_get_factures_client_by_dates")
+    def test_process_one_f1_returns_no_action_without_readings(
+            self, mock_invoices, mock_readings, mock_refund):
+        f1_id, fact_info = self._prepare_rectifying_f1()
+        with self._patch_most_recent_polissa(fact_info):
+            mock_invoices.return_value = ([31], "", [])
+            mock_readings.return_value = 0
+            with mock.patch.object(
+                    self.line_obj, "_get_f1_meter_ids", return_value=[1]):
+                result = self.line_obj.process_one_f1(self.cursor, self.uid, f1_id, context={})
+
+        self.assertEqual(result["status"], "no_action")
+        self.assertEqual(result["source_invoice_ids"], [31])
+        vals = self._capture_persisted_outcome(result)
+        self.assertEqual(vals["source_invoice_ids"], [(6, 0, [31])])
+        self.assertEqual(vals["generated_invoice_ids"], [(6, 0, [])])
+        self.assertEqual(vals["outcome"], "no_action")
+        mock_invoices.assert_called_once()
+        self.assertFalse(result["observation_written"])
+        self.assertFalse(mock_refund.called)
+
+    def test_process_one_f1_never_owns_transactions(self):
+        polissa = mock.Mock()
+        polissa.id = 7
+        polissa.name = "0123456"
+        polissa.facturacio_suspesa = False
+        f1 = mock.Mock()
+        f1.id = 9
+        f1.polissa_id = polissa
+        f1.invoice_number_text = "ESDFER0123456789B"
+        f1.type_factura = "R"
+        f1.fecha_factura_desde = "2022-01-01"
+        f1.fecha_factura_hasta = "2022-01-31"
+        f1_obj = mock.Mock()
+        f1_obj.search.return_value = [f1.id]
+        f1_obj.browse.return_value = f1
+        cursor = mock.Mock()
+
+        with mock.patch.object(
+                self.line_obj, "_validate_retained_rectifying_invoices", return_value={}):
+            self._assert_process_one_f1_never_owns_transactions(f1_obj, cursor, f1)
+
+    def _assert_process_one_f1_never_owns_transactions(self, f1_obj, cursor, f1):
+        with mock.patch.object(self.pool, "get", return_value=f1_obj):
+            with mock.patch.object(self.line_obj, "_get_f1_meter_ids", return_value=[1]):
+                with mock.patch.object(
+                        self.line_obj,
+                        "_get_factures_client_by_dates",
+                        return_value=([10], "", [])):
+                    with mock.patch.object(
+                            self.line_obj, "_recarregar_lectures_between_dates", return_value=1):
+                        with mock.patch.object(
+                                self.line_obj, "_refund_rectify_if_needed", return_value=[20]):
+                            with mock.patch.object(
+                                    self.line_obj,
+                                    "_delete_draft_invoices_if_needed",
+                                    return_value=([], [20])):
+                                with mock.patch.object(
+                                        self.line_obj, "_write_refacturation_observation"):
+                                    result = self.line_obj.process_one_f1(
+                                        cursor, self.uid, f1.id, context={}
+                                    )
+
+        self.assertEqual(result["generated_invoice_ids"], [20])
+        self.assertFalse(cursor.commit.called)
+        self.assertFalse(cursor.rollback.called)
+
+
+class TestRefundRectifyInvoiceValidation(testing.OOTestCaseWithCursor):
+    def setUp(self):
+        super(TestRefundRectifyInvoiceValidation, self).setUp()
+        self.pool = self.openerp.pool
+        self.line_obj = self.pool.get("refund.rectify.batch.line")
+        self.fact = mock.Mock()
+        self.validator = mock.Mock()
+        self.warning = mock.Mock()
+
+    def _invoice(self, invoice_id, rect_type="R", state="draft", inv_type="out_invoice"):
+        return {"id": invoice_id, "name": u"RE-%s à" % invoice_id,
+                "rectificative_type": rect_type, "state": state, "type": inv_type}
+
+    def _validate(self, ids):
+        with mock.patch.object(self.pool, "get", side_effect=lambda model: {
+                "giscedata.facturacio.factura": self.fact,
+                "giscedata.facturacio.validation.validator": self.validator,
+                "giscedata.facturacio.validation.warning": self.warning,
+        }[model]):
+            return self.line_obj._validate_retained_rectifying_invoices(
+                self.cursor, self.uid, ids, context={}
+            )
+
+    def test_only_retained_draft_customer_rectifiers_are_validated_once(self):
+        self.fact.read.return_value = [
+            self._invoice(1), self._invoice(2, "B"), self._invoice(3, "A"),
+            self._invoice(4, state="open"), self._invoice(5, "N"),
+            self._invoice(6, inv_type="in_invoice"), self._invoice(7, "BRA"),
+        ]
+        self.validator.validate_invoice.return_value = []
+        result = self._validate([1, 2, 3, 4, 5, 6, 7, 1])
+        self.validator.validate_invoice.assert_called_once_with(
+            self.cursor, self.uid, 1, context={}
+        )
+        self.assertTrue(result["validation_evaluated"])
+        self.assertEqual(result["validation_warning_count"], 0)
+        self.assertEqual(result["validation_warnings"], "")
+
+    def test_customer_credit_rectifier_is_not_confused_with_b_a_nullifiers(self):
+        self.fact.read.return_value = [self._invoice(6, inv_type="out_refund")]
+        self.validator.validate_invoice.return_value = []
+        result = self._validate([6])
+        self.assertTrue(result["validation_evaluated"])
+        self.validator.validate_invoice.assert_called_once_with(
+            self.cursor, self.uid, 6, context={}
+        )
+
+    def test_multiple_invoices_snapshot_preserves_unicode_and_codes(self):
+        self.fact.read.return_value = [self._invoice(1), self._invoice(8)]
+        self.validator.validate_invoice.side_effect = [[11, 12], [13]]
+        self.warning.get_warning_text.side_effect = [
+            u"[F001] Avís, lectura\nsegona línia", u"[F002] Potència".encode("utf-8"),
+            u"[F003] Consum",
+        ]
+        result = self._validate([1, 8])
+        self.assertEqual(result["validation_warning_count"], 3)
+        self.assertEqual(result["validation_warnings"],
+                         u"Factura 1 (RE-1 à): [F001] Avís, lectura\nsegona línia\n"
+                         u"Factura 1 (RE-1 à): [F002] Potència\n"
+                         u"Factura 8 (RE-8 à): [F003] Consum")
+        self.assertEqual(self.validator.validate_invoice.call_args_list, [
+            mock.call(self.cursor, self.uid, 1, context={}),
+            mock.call(self.cursor, self.uid, 8, context={}),
+        ])
+
+    def test_no_retained_invoice_or_no_eligible_invoice_is_not_evaluated(self):
+        self.fact.read.return_value = [self._invoice(2, "B")]
+        for ids in [[], [2]]:
+            result = self._validate(ids)
+            self.assertEqual(result, {"validation_evaluated": False,
+                                      "validation_warning_count": 0,
+                                      "validation_warnings": ""})
+        self.assertFalse(self.validator.validate_invoice.called)
+
+    def test_removed_invoice_ids_are_not_looked_up(self):
+        self.fact.read.return_value = [self._invoice(8)]
+        self.validator.validate_invoice.return_value = []
+        self._validate([8])
+        self.assertEqual(self.fact.read.call_args[0][2], [8])
+        self.validator.validate_invoice.assert_called_once_with(
+            self.cursor, self.uid, 8, context={}
+        )
+
+    def test_validator_and_warning_lookup_errors_propagate_unchanged(self):
+        self.fact.read.return_value = [self._invoice(1)]
+        error = RuntimeError("Validator unavailable")
+        self.validator.validate_invoice.side_effect = error
+        with self.assertRaises(RuntimeError) as raised:
+            self._validate([1])
+        self.assertIs(raised.exception, error)
+        self.validator.validate_invoice.side_effect = None
+        self.validator.validate_invoice.return_value = [11]
+        self.warning.get_warning_text.side_effect = error
+        with self.assertRaises(RuntimeError) as raised:
+            self._validate([1])
+        self.assertIs(raised.exception, error)
+
+    def test_invoice_lookup_errors_propagate(self):
+        error = RuntimeError("Invoice lookup failed")
+        self.fact.read.side_effect = error
+        with self.assertRaises(RuntimeError) as raised:
+            self._validate([1])
+        self.assertIs(raised.exception, error)
+        self.assertFalse(self.validator.validate_invoice.called)
+
+    def test_warning_row_snapshot_and_csv_are_persisted_together(self):
+        imd = self.pool.get("ir.model.data")
+        invoice_id = imd.get_object_reference(
+            self.cursor, self.uid, "giscedata_facturacio", "factura_0003"
+        )[1]
+        f1_id = imd.get_object_reference(
+            self.cursor, self.uid, "giscedata_facturacio_switching", "line_01_f1_import_01"
+        )[1]
+        fact_obj = self.pool.get("giscedata.facturacio.factura")
+        fact_obj.write(self.cursor, self.uid, [invoice_id], {
+            "rectificative_type": "R", "state": "draft", "type": "out_invoice",
+            "name": u"RE de prova à",
+        })
+        polissa_id = fact_obj.read(
+            self.cursor, self.uid, invoice_id, ["polissa_id"]
+        )["polissa_id"][0]
+        batch_obj = self.pool.get("refund.rectify.batch")
+        batch_id = batch_obj.create(
+            self.cursor, self.uid, {"name": "/", "polissa_id": polissa_id}
+        )
+        line_id = self.line_obj.create(self.cursor, self.uid, {
+            "batch_id": batch_id, "f1_id": f1_id, "sequence": 1,
+        })
+        warning_obj = self.pool.get("giscedata.facturacio.validation.warning")
+        validator_obj = self.pool.get("giscedata.facturacio.validation.validator")
+        created_ids = []
+
+        def validate(cursor, uid, fact_id, context=None):
+            self.assertIs(cursor, self.cursor)
+            warning_id = warning_obj.create(cursor, uid, {
+                "factura_id": fact_id, "name": "TEST", "message": u"Avís, lectura\nà",
+            }, context=context)
+            created_ids.append(warning_id)
+            return [warning_id]
+
+        with mock.patch.object(validator_obj, "validate_invoice", side_effect=validate):
+            result = self.line_obj._validate_retained_rectifying_invoices(
+                self.cursor, self.uid, [invoice_id], context={}
+            )
+        result.update({"status": "processed", "generated_invoice_ids": [invoice_id]})
+        self.line_obj._persist_line_outcome(
+            self.cursor, self.uid, line_id, result=result, context={}
+        )
+        line = self.line_obj.read(self.cursor, self.uid, line_id, [
+            "state", "validation_evaluated", "validation_warning_count", "validation_warnings",
+        ])
+        self.assertEqual(line["state"], "done")
+        self.assertTrue(line["validation_evaluated"])
+        self.assertEqual(line["validation_warning_count"], 1)
+        self.assertEqual(line["validation_warnings"], result["validation_warnings"])
+        self.assertEqual(warning_obj.read(
+            self.cursor, self.uid, created_ids[0], ["factura_id"]
+        )["factura_id"][0], invoice_id)
+        attachment_obj = self.pool.get("ir.attachment")
+        attachment_id = attachment_obj.search(self.cursor, self.uid, [
+            ("res_model", "=", "refund.rectify.batch"), ("res_id", "=", batch_id),
+        ])[0]
+        encoded = attachment_obj.read(
+            self.cursor, self.uid, attachment_id, ["datas"]
+        )["datas"]
+        csv_data = base64.b64decode(encoded)
+        if not isinstance(csv_data, str):
+            csv_data = csv_data.decode("utf-8")
+        rows = list(csv.reader(refund_rectify_batch.StringIO(csv_data)))
+        self.assertEqual(rows[1][-3:-1], ["True", "1"])
+        self.assertEqual(refund_rectify_batch._validation_text(rows[1][-1]),
+                         result["validation_warnings"])
+
+
+class TestRefundRectifyBatchLineReadingAnchors(testing.OOTestCaseWithCursor):
+    def setUp(self):
+        super(TestRefundRectifyBatchLineReadingAnchors, self).setUp()
+        self.pool = self.openerp.pool
+        self.line_obj = self.pool.get("refund.rectify.batch.line")
+
+    def _f1(self, serials, polissa_id=7):
+        f1 = mock.Mock()
+        f1.polissa_id.id = polissa_id
+        f1.importacio_lectures_ids = []
+        for serial in serials:
+            lectura = mock.Mock()
+            lectura.comptador = serial
+            f1.importacio_lectures_ids.append(lectura)
+        return f1
+
+    def test_resolves_only_f1_meters_including_inactive_ones(self):
+        meter_obj = mock.Mock()
+        meter_obj.search.return_value = [3, 9]
+        meter_a = mock.Mock()
+        meter_a.id = 3
+        meter_a.name = "METER-A"
+        meter_b = mock.Mock()
+        meter_b.id = 9
+        meter_b.name = "METER-B"
+        meter_obj.browse.return_value = [meter_a, meter_b]
+        with mock.patch.object(self.pool, "get", return_value=meter_obj):
+            meter_ids = self.line_obj._get_f1_meter_ids(
+                self.cursor, self.uid, self._f1(["METER-B", "METER-A"]), context={}
+            )
+
+        self.assertEqual(meter_ids, [3, 9])
+        domain = meter_obj.search.call_args[0][2]
+        self.assertEqual(domain, [("polissa", "=", 7), ("name", "in", ["METER-A", "METER-B"])])
+        self.assertFalse(meter_obj.search.call_args[1]["context"]["active_test"])
+
+    def test_rejects_missing_or_ambiguous_f1_meter_serials(self):
+        meter_obj = mock.Mock()
+        meter_obj.search.return_value = [3, 9]
+        meter_a = mock.Mock()
+        meter_a.id = 3
+        meter_a.name = "METER-A"
+        duplicate_meter_a = mock.Mock()
+        duplicate_meter_a.id = 9
+        duplicate_meter_a.name = "METER-A"
+        meter_obj.browse.return_value = [meter_a, duplicate_meter_a]
+        with mock.patch.object(self.pool, "get", return_value=meter_obj):
+            self.assertRaises(
+                refund_rectify_batch.RecoverableF1Error,
+                self.line_obj._get_f1_meter_ids,
+                self.cursor,
+                self.uid,
+                self._f1(["METER-A", "METER-B"]),
+                context={},
+            )
+
+    def test_rejects_f1_without_meter_serials(self):
+        self.assertRaises(
+            refund_rectify_batch.RecoverableF1Error,
+            self.line_obj._get_f1_meter_ids,
+            self.cursor,
+            self.uid,
+            self._f1([]),
+            context={},
+        )
+
+    def test_rejects_meter_mapping_before_invoice_lookup(self):
+        polissa = mock.Mock()
+        polissa.id = 7
+        polissa.facturacio_suspesa = False
+        f1 = self._f1(["METER-A"])
+        f1.id = 9
+        f1.polissa_id = polissa
+        f1.invoice_number_text = "ESDFE987654321A"
+        f1.type_factura = "R"
+        f1.fecha_factura_desde = "2022-01-01"
+        f1.fecha_factura_hasta = "2022-01-31"
+        f1_obj = mock.Mock()
+        f1_obj.search.return_value = [f1.id]
+        f1_obj.browse.return_value = f1
+        with mock.patch.object(self.pool, "get", return_value=f1_obj):
+            with mock.patch.object(
+                    self.line_obj,
+                    "_get_f1_meter_ids",
+                    side_effect=osv.except_osv("Error", "Sense comptador")):
+                with mock.patch.object(self.line_obj, "_get_factures_client_by_dates") as invoices:
+                    self.assertRaises(
+                        osv.except_osv,
+                        self.line_obj.process_one_f1,
+                        self.cursor,
+                        self.uid,
+                        f1.id,
+                        context={},
+                    )
+        self.assertFalse(invoices.called)
+
+    def test_builds_anchors_for_every_f1_meter_with_initial_date_priority(self):
+        lectura_pool_obj = mock.Mock()
+        lectura_pool_obj.search.side_effect = [[101], [102], [201], [202]]
+        with mock.patch.object(self.pool, "get", return_value=lectura_pool_obj):
+            anchors = self.line_obj._get_reading_anchor_ids(
+                self.cursor, self.uid, [1, 2], "2022-02-01", "2022-02-28", context={}
+            )
+
+        self.assertEqual(anchors, [101, 102, 201, 202])
+        self.assertEqual(
+            lectura_pool_obj.search.call_args_list[0][0][2],
+            [("comptador", "=", 1), ("name", "=", "2022-02-01")],
+        )
+        self.assertEqual(
+            lectura_pool_obj.search.call_args_list[2][0][2],
+            [("comptador", "=", 2), ("name", "=", "2022-02-01")],
+        )
+
+    def test_uses_previous_day_only_when_initial_anchor_is_missing(self):
+        lectura_pool_obj = mock.Mock()
+        lectura_pool_obj.search.side_effect = [[], [201], [202]]
+        with mock.patch.object(self.pool, "get", return_value=lectura_pool_obj):
+            anchors = self.line_obj._get_reading_anchor_ids(
+                self.cursor, self.uid, [2], "2022-02-01", "2022-02-28", context={}
+            )
+
+        self.assertEqual(anchors, [201, 202])
+        self.assertEqual(
+            lectura_pool_obj.search.call_args_list[1][0][2],
+            [("comptador", "=", 2), ("name", "=", "2022-01-31")],
+        )
+
+    def test_deduplicates_identical_meter_date_anchors(self):
+        lectura_pool_obj = mock.Mock()
+        lectura_pool_obj.search.side_effect = [[101], [102]]
+        with mock.patch.object(self.pool, "get", return_value=lectura_pool_obj):
+            anchors = self.line_obj._get_reading_anchor_ids(
+                self.cursor, self.uid, [1], "2022-02-01", "2022-02-01", context={}
+            )
+
+        self.assertEqual(anchors, [101])
+
+    def test_omits_initial_anchor_when_requested(self):
+        lectura_pool_obj = mock.Mock()
+        lectura_pool_obj.search.return_value = [102]
+        with mock.patch.object(self.pool, "get", return_value=lectura_pool_obj):
+            anchors = self.line_obj._get_reading_anchor_ids(
+                self.cursor, self.uid, [1], "2022-02-01", "2022-02-28",
+                reload_initial=False, context={}
+            )
+
+        self.assertEqual(anchors, [102])
+        self.assertEqual(lectura_pool_obj.search.call_count, 1)
+        self.assertEqual(
+            lectura_pool_obj.search.call_args[0][2],
+            [("comptador", "=", 1), ("name", "=", "2022-02-28")],
+        )
+
+
+class TestRefundRectifyBatchLineSequentialReadingPlan(testing.OOTestCaseWithCursor):
+    def setUp(self):
+        super(TestRefundRectifyBatchLineSequentialReadingPlan, self).setUp()
+        self.pool = self.openerp.pool
+        self.line_obj = self.pool.get("refund.rectify.batch.line")
+        self.batch_obj = self.pool.get("refund.rectify.batch")
+
+    def _f1(self, initial, final):
+        f1 = mock.Mock()
+        f1.fecha_factura_desde = initial
+        f1.fecha_factura_hasta = final
+        return f1
+
+    def test_omits_initial_only_after_continuous_same_meter_predecessor(self):
+        previous_f1 = self._f1("2022-01-01", "2022-01-31")
+        current_f1 = self._f1("2022-02-01", "2022-02-28")
+        f1_obj = mock.Mock()
+        f1_obj.browse.return_value = previous_f1
+        with mock.patch.object(self.pool, "get", return_value=f1_obj):
+            with mock.patch.object(self.line_obj, "_get_f1_meter_ids", return_value=[7]):
+                plan = self.line_obj._build_reading_anchor_plan(
+                    self.cursor, self.uid, current_f1, [7], previous_f1_id=10,
+                    predecessor_processed=True, context={}
+                )
+
+        self.assertEqual(plan, {"meter_ids": [7], "reload_initial": False})
+
+    def test_reloads_both_anchors_after_gap_meter_change_or_no_action(self):
+        previous_f1 = self._f1("2022-01-01", "2022-01-30")
+        current_f1 = self._f1("2022-02-01", "2022-02-28")
+        f1_obj = mock.Mock()
+        f1_obj.browse.return_value = previous_f1
+        with mock.patch.object(self.pool, "get", return_value=f1_obj):
+            with mock.patch.object(self.line_obj, "_get_f1_meter_ids", return_value=[8]):
+                gap_plan = self.line_obj._build_reading_anchor_plan(
+                    self.cursor, self.uid, current_f1, [7], previous_f1_id=10,
+                    predecessor_processed=True, context={}
+                )
+                no_action_plan = self.line_obj._build_reading_anchor_plan(
+                    self.cursor, self.uid, current_f1, [7], previous_f1_id=10,
+                    predecessor_processed=False, context={}
+                )
+
+        self.assertTrue(gap_plan["reload_initial"])
+        self.assertTrue(no_action_plan["reload_initial"])
+
+    def test_processes_batch_lines_in_order_with_predecessor_outcome(self):
+        outer_cursor = mock.Mock()
+        outer_cursor.dbname = "test_batch"
+        start_cursor = mock.Mock()
+        first_claim_cursor = mock.Mock()
+        first_cursor = mock.Mock()
+        second_claim_cursor = mock.Mock()
+        second_cursor = mock.Mock()
+        database = mock.Mock()
+        database.cursor.side_effect = [
+            start_cursor, first_claim_cursor, first_cursor,
+            second_claim_cursor, second_cursor,
+        ]
+        start_cursor.rowcount = 1
+        first_claim_cursor.rowcount = 1
+        second_claim_cursor.rowcount = 1
+        batch = mock.Mock()
+        batch.state = "pending"
+        batch.polissa_id.id = 7
+        first_line = mock.Mock()
+        first_line.id = 1
+        first_line.sequence = 1
+        first_line.f1_id.id = 11
+        second_line = mock.Mock()
+        second_line.id = 2
+        second_line.sequence = 2
+        second_line.f1_id.id = 12
+        line_obj = mock.Mock()
+        line_obj.search.return_value = [1, 2]
+        line_obj.browse.return_value = [first_line, second_line]
+        line_obj._mark_line_running.return_value = True
+        line_obj.process_one_f1.side_effect = [
+            {"status": "processed"}, {"status": "no_action"}
+        ]
+        with mock.patch.object(refund_rectify_batch.pooler, "get_db", return_value=database):
+            with mock.patch.object(self.pool, "get", return_value=line_obj):
+                with mock.patch.object(self.batch_obj, "browse", return_value=batch):
+                    with mock.patch.object(self.batch_obj, "write"):
+                        results = self.batch_obj.process_batch_f1_lines(
+                            outer_cursor, self.uid, 3, context={}
+                        )
+
+        self.assertEqual(results, [{"status": "processed"}, {"status": "no_action"}])
+        self.assertEqual(
+            line_obj.process_one_f1.call_args_list,
+            [
+                mock.call(
+                    first_cursor, self.uid, 11, expected_polissa_id=7,
+                    previous_f1_id=None, predecessor_processed=False, context={}
+                ),
+                mock.call(
+                    second_cursor, self.uid, 12, expected_polissa_id=7,
+                    previous_f1_id=11, predecessor_processed=True, context={}
+                ),
+            ],
+        )
+        self.assertEqual(outer_cursor.method_calls, [])
+        for execution_cursor in [
+                start_cursor, first_claim_cursor, first_cursor,
+                second_claim_cursor, second_cursor]:
+            execution_cursor.commit.assert_called_once_with()
+            execution_cursor.close.assert_called_once_with()
+
+
+class TestRefundRectifyBatchExecutionPersistence(testing.OOTestCaseWithCursor):
+    def setUp(self):
+        super(TestRefundRectifyBatchExecutionPersistence, self).setUp()
+        self.pool = self.openerp.pool
+        self.line_obj = self.pool.get("refund.rectify.batch.line")
+        self.batch_obj = self.pool.get("refund.rectify.batch")
+
+    def _refresh_states(self, batch_state, line_states, technical_last=False):
+        line_obj = mock.Mock()
+        lines = []
+        for sequence, state in enumerate(line_states, 1):
+            line = mock.Mock()
+            line.sequence = sequence
+            line.f1_id.id = sequence + 10
+            line.state = state
+            line.outcome = line.result = line.error = False
+            line.generated_invoice_ids = []
+            line.validation_evaluated = False
+            line.validation_warning_count = 0
+            line.validation_warnings = ""
+            lines.append(line)
+        line_obj.search.return_value = list(range(1, len(lines) + 1))
+        line_obj.browse.return_value = lines
+        attachment = mock.Mock()
+        attachment.search.return_value = []
+        batch = mock.Mock()
+        batch.name = "F1_R-TASCA-7"
+        batch.state = batch_state
+
+        def write(cursor, uid, ids, vals, **kwargs):
+            batch.state = vals["state"]
+
+        with mock.patch.object(self.pool, "get", side_effect=lambda model: {
+                "refund.rectify.batch.line": line_obj, "ir.attachment": attachment,
+        }[model]):
+            with mock.patch.object(self.batch_obj, "browse", return_value=batch):
+                with mock.patch.object(self.batch_obj, "write", side_effect=write) as save:
+                    if technical_last:
+                        with mock.patch.object(self.batch_obj, "_block_later_lines",
+                                               return_value=[]):
+                            self.batch_obj._persist_failure_and_block(
+                                self.cursor, self.uid, 7, len(lines), len(lines),
+                                len(lines) + 10, RuntimeError("F1 broken"), context={},
+                            )
+                        return save.call_args[0][3]
+                    return self.batch_obj._refresh_execution(
+                        self.cursor, self.uid, 7, context={}
+                    )
+
+    def test_refresh_state_matrix_preserves_running_ownership_and_terminal_failures(self):
+        cases = [
+            ("running", ["failed", "pending"], "running"),
+            ("running", ["failed", "running"], "running"),
+            ("running", ["failed", "blocked", "pending"], "blocked"),
+            ("running", ["done", "failed"], "failed"),
+            ("running", ["failed", "cancelled"], "failed"),
+            ("running", ["done", "cancelled"], "cancelled"),
+            ("running", ["cancelled"], "cancelled"),
+            ("running", ["done", "done"], "done"),
+            ("pending", ["done", "pending"], "pending"),
+            ("blocked", ["failed", "pending"], "failed"),
+            ("blocked", ["blocked", "pending"], "blocked"),
+            ("failed", ["failed", "running"], "failed"),
+            ("failed", ["failed", "pending"], "failed"),
+            ("blocked", ["pending"], "blocked"),
+            ("blocked", ["running"], "blocked"),
+            ("failed", ["pending"], "failed"),
+            ("failed", ["running"], "failed"),
+        ]
+        for batch_state, line_states, expected in cases:
+            vals = self._refresh_states(batch_state, line_states)
+            self.assertEqual(vals["state"], expected, (batch_state, line_states))
+            self.assertEqual(vals["failed_lines"], line_states.count("failed"))
+            self.assertEqual("finished_at" in vals, expected not in ("pending", "running"))
+
+    def test_last_technical_failure_helper_refresh_finishes_failed_without_blocked_lines(self):
+        vals = self._refresh_states("running", ["done", "failed"], technical_last=True)
+        self.assertEqual(vals["state"], "failed")
+        self.assertEqual((vals["failed_lines"], vals["blocked_lines"]), (1, 0))
+        self.assertTrue(vals["finished_at"])
+
+    def test_failed_with_remaining_work_cannot_be_reopened_by_duplicate_job_or_creation(self):
+        for remaining_state in ["pending", "running"]:
+            vals = self._refresh_states("running", ["failed", remaining_state])
+            batch = mock.Mock()
+            batch.state = vals["state"]
+            batch.name = "F1_R-TASCA-7"
+            database = mock.Mock()
+            line_obj = mock.Mock()
+            outer_cursor = mock.Mock(dbname="test_batch")
+            with mock.patch.object(refund_rectify_batch.pooler, "get_db", return_value=database):
+                with mock.patch.object(self.pool, "get", return_value=line_obj):
+                    with mock.patch.object(self.batch_obj, "browse", return_value=batch):
+                        results = self.batch_obj.process_batch_f1_lines(
+                            outer_cursor, self.uid, 7, context={}
+                        )
+            self.assertEqual(results, [])
+            self.assertFalse(line_obj.process_one_f1.called)
+            self.assertFalse(database.cursor.return_value.execute.called)
+            database.cursor.return_value.close.assert_called_once_with()
+            with mock.patch.object(self.batch_obj, "_validate_batch_selection", return_value=7):
+                with mock.patch.object(self.batch_obj, "search", side_effect=lambda *a, **kw: (
+                        [7] if batch.state in a[2][1][2] else [])):
+                    with mock.patch.object(self.pool, "get", return_value=line_obj):
+                        self.assertRaises(osv.except_osv, self.batch_obj.create_batch,
+                                          self.cursor, self.uid, [11], context={})
+
+    def test_persists_functional_line_outcome_and_refreshes_batch(self):
+        batch_obj = mock.Mock()
+        result = {
+            "status": "processed",
+            "messages": ["F1 processat"],
+            "source_invoice_ids": [21, 22, 23],
+            "generated_invoice_ids": [31, 32],
+            "validation_evaluated": True,
+            "validation_warning_count": 1,
+            "validation_warnings": u"Factura 32 (RE-32): [F001] Avís",
+        }
+
+        with mock.patch.object(self.pool, "get", return_value=batch_obj):
+            with mock.patch.object(
+                    self.line_obj, "read", return_value={"batch_id": [7, "F1_R-TASCA-7"]}):
+                with mock.patch.object(self.line_obj, "write") as write:
+                    self.line_obj._persist_line_outcome(
+                        self.cursor, self.uid, 3, result=result, context={}
+                    )
+
+        vals = write.call_args[0][3]
+        self.assertEqual(vals["state"], "done")
+        self.assertEqual(vals["outcome"], "processed")
+        self.assertEqual(vals["result"], "F1 processat")
+        self.assertFalse(vals["error"])
+        self.assertEqual(vals["generated_invoice_ids"], [(6, 0, [31, 32])])
+        self.assertEqual(vals["source_invoice_ids"], [(6, 0, [21, 22, 23])])
+        self.assertTrue(vals["validation_evaluated"])
+        self.assertEqual(vals["validation_warning_count"], 1)
+        self.assertEqual(vals["validation_warnings"], result["validation_warnings"])
+        batch_obj._refresh_execution.assert_called_once_with(
+            self.cursor, self.uid, 7, context={}
+        )
+
+    def test_persists_no_action_functional_outcome(self):
+        batch_obj = mock.Mock()
+        with mock.patch.object(self.pool, "get", return_value=batch_obj):
+            with mock.patch.object(
+                    self.line_obj, "read", return_value={"batch_id": [7, "F1_R-TASCA-7"]}):
+                with mock.patch.object(self.line_obj, "write") as write:
+                    self.line_obj._persist_line_outcome(
+                        self.cursor,
+                        self.uid,
+                        3,
+                        result={"status": "no_action", "messages": ["No s'actua."]},
+                        context={},
+                    )
+
+        vals = write.call_args[0][3]
+        self.assertEqual(vals["state"], "done")
+        self.assertEqual(vals["outcome"], "no_action")
+        self.assertEqual(vals["source_invoice_ids"], [(6, 0, [])])
+        self.assertFalse(vals["validation_evaluated"])
+        self.assertEqual(vals["validation_warning_count"], 0)
+        self.assertFalse(vals["validation_warnings"])
+
+    def test_missing_source_result_defaults_without_inferring_from_generated_invoices(self):
+        for result in [None, {}, {"status": "processed", "generated_invoice_ids": [31]}]:
+            with mock.patch.object(self.line_obj, "write") as write:
+                with mock.patch.object(self.line_obj, "read",
+                                       return_value={"batch_id": [7, "F1"]}):
+                    with mock.patch.object(self.batch_obj, "_refresh_execution"):
+                        self.line_obj._persist_line_outcome(
+                            self.cursor, self.uid, 3, result=result, context={}
+                        )
+            vals = write.call_args[0][3]
+            self.assertEqual(vals["source_invoice_ids"], [(6, 0, [])])
+            self.assertEqual(vals["generated_invoice_ids"], [
+                (6, 0, (result or {}).get("generated_invoice_ids", [])),
+            ])
+
+    def test_persists_technical_error_for_failed_line(self):
+        batch_obj = mock.Mock()
+        started_at = "2024-05-06 12:34:56"
+        with mock.patch.object(self.pool, "get", return_value=batch_obj):
+            with mock.patch.object(
+                    self.line_obj, "read", return_value={"batch_id": [7, "F1_R-TASCA-7"]}):
+                with mock.patch.object(self.line_obj, "write") as write:
+                    self.line_obj._persist_line_outcome(
+                        self.cursor,
+                        self.uid,
+                        3,
+                        error=ValueError("Unexpected error"),
+                        result={"validation_evaluated": True, "validation_warning_count": 1,
+                                "validation_warnings": "stale", "source_invoice_ids": [21, 22],
+                                "generated_invoice_ids": [31], "messages": ["stale"]},
+                        started_at=started_at,
+                        context={},
+                    )
+
+        vals = write.call_args[0][3]
+        self.assertEqual(vals["state"], "failed")
+        self.assertFalse(vals["outcome"])
+        self.assertEqual(vals["source_invoice_ids"], [(6, 0, [])])
+        self.assertEqual(vals["generated_invoice_ids"], [(6, 0, [])])
+        self.assertEqual(vals["result"], "")
+        self.assertEqual(vals["error"], "Unexpected error")
+        self.assertEqual(vals["started_at"], started_at)
+        self.assertFalse(vals["validation_evaluated"])
+        self.assertEqual(vals["validation_warning_count"], 0)
+        self.assertFalse(vals["validation_warnings"])
+
+    def test_refreshes_derived_counts_state_and_csv(self):
+        line_obj = mock.Mock()
+        line_obj.search.return_value = [1, 2, 3, 4]
+        first_line = mock.Mock()
+        first_line.sequence = 1
+        first_line.f1_id.id = 11
+        first_line.state = "done"
+        first_line.outcome = "processed"
+        first_line.generated_invoice_ids = []
+        first_line.result = "F1 processat"
+        first_line.error = False
+        second_line = mock.Mock()
+        second_line.sequence = 2
+        second_line.f1_id.id = 12
+        second_line.state = "failed"
+        second_line.outcome = False
+        second_line.generated_invoice_ids = []
+        second_line.result = False
+        second_line.error = "Error tecnic"
+        third_line = mock.Mock()
+        third_line.sequence = 3
+        third_line.f1_id.id = 13
+        third_line.state = "blocked"
+        third_line.outcome = False
+        third_line.generated_invoice_ids = []
+        third_line.result = "No s'actua."
+        third_line.error = False
+        cancelled_line = mock.Mock()
+        cancelled_line.sequence = 4
+        cancelled_line.f1_id.id = 14
+        cancelled_line.state = "cancelled"
+        cancelled_line.outcome = False
+        cancelled_line.generated_invoice_ids = []
+        cancelled_line.result = "Cancel·lada manualment"
+        cancelled_line.error = False
+        line_obj.browse.return_value = [
+            first_line, second_line, third_line, cancelled_line,
+        ]
+        for line in line_obj.browse.return_value:
+            line.validation_evaluated = False
+            line.validation_warning_count = 0
+            line.validation_warnings = ""
+        first_line.validation_evaluated = True
+        first_line.validation_warning_count = 1
+        first_line.validation_warnings = u"Factura 32 (RE-32): [F001] Avís, lectura\nsegona"
+        batch = mock.Mock()
+        batch.name = "F1_R-TASCA-7"
+        batch.state = "running"
+        attachment_obj = mock.Mock()
+        attachment_obj.create.return_value = 30
+        attachment_obj.search.return_value = []
+        with mock.patch.object(
+                self.pool,
+                "get",
+                side_effect=lambda model: {
+                    "refund.rectify.batch.line": line_obj,
+                    "ir.attachment": attachment_obj,
+                }[model]):
+            with mock.patch.object(self.batch_obj, "browse", return_value=batch):
+                with mock.patch.object(self.batch_obj, "write") as write:
+                    self.batch_obj._refresh_execution(
+                        self.cursor, self.uid, 7, context={}
+                    )
+
+        vals = write.call_args[0][3]
+        self.assertEqual(vals["state"], "blocked")
+        self.assertEqual(vals["total_lines"], 4)
+        self.assertEqual(vals["completed_lines"], 1)
+        self.assertEqual(vals["failed_lines"], 1)
+        self.assertEqual(vals["blocked_lines"], 1)
+        self.assertEqual(vals["cancelled_lines"], 1)
+        attachment_vals = attachment_obj.create.call_args[0][2]
+        self.assertEqual(attachment_vals["name"], "F1_R-TASCA-7.csv")
+        self.assertEqual(attachment_vals["res_model"], "refund.rectify.batch")
+        csv_content = base64.b64decode(attachment_vals["datas"])
+        self.assertTrue("Error tecnic" in csv_content)
+        self.assertTrue("outcome" in csv_content)
+        self.assertTrue("processed" in csv_content)
+        self.assertTrue("blocked" in csv_content)
+        self.assertTrue("cancelled" in csv_content)
+        self.assertTrue(
+            "validation_evaluated,validation_warning_count,validation_warnings" in csv_content)
+        self.assertTrue("True,1," in csv_content)
+        self.assertTrue("False,0," in csv_content)
+        self.assertTrue(first_line.validation_warnings.encode("utf-8") in csv_content)
+
+    def test_refresh_keeps_running_batch_running_with_pending_lines(self):
+        line_obj = mock.Mock()
+        line_obj.search.return_value = [1, 2]
+        done_line = mock.Mock()
+        done_line.sequence = 1
+        done_line.f1_id.id = 11
+        done_line.state = "done"
+        done_line.outcome = "processed"
+        done_line.generated_invoice_ids = []
+        done_line.result = "F1 processat"
+        done_line.error = False
+        pending_line = mock.Mock()
+        pending_line.sequence = 2
+        pending_line.f1_id.id = 12
+        pending_line.state = "pending"
+        pending_line.outcome = False
+        pending_line.generated_invoice_ids = []
+        pending_line.result = False
+        pending_line.error = False
+        line_obj.browse.return_value = [done_line, pending_line]
+        for line in line_obj.browse.return_value:
+            line.validation_evaluated = line == done_line
+            line.validation_warning_count = 0
+            line.validation_warnings = ""
+        batch = mock.Mock()
+        batch.name = "F1_R-TASCA-7"
+        batch.state = "running"
+        attachment_obj = mock.Mock()
+        attachment_obj.search.return_value = []
+        with mock.patch.object(
+                self.pool,
+                "get",
+                side_effect=lambda model: {
+                    "refund.rectify.batch.line": line_obj,
+                    "ir.attachment": attachment_obj,
+                }[model]):
+            with mock.patch.object(self.batch_obj, "browse", return_value=batch):
+                with mock.patch.object(self.batch_obj, "write") as write:
+                    self.batch_obj._refresh_execution(
+                        self.cursor, self.uid, 7, context={}
+                    )
+
+        self.assertEqual(write.call_args[0][3]["state"], "running")
+        attachment_vals = attachment_obj.create.call_args[0][2]
+        csv_data = base64.b64decode(attachment_vals["datas"])
+        if not isinstance(csv_data, str):
+            csv_data = csv_data.decode("utf-8")
+        rows = list(csv.reader(refund_rectify_batch.StringIO(csv_data)))
+        self.assertEqual(rows[1][-3:], ["True", "0", ""])
+        self.assertEqual(rows[2][-3:], ["False", "0", ""])
+
+
+class TestRefundRectifyRanasErrors(testing.OOTestCaseWithCursor):
+    def setUp(self):
+        super(TestRefundRectifyRanasErrors, self).setUp()
+        self.pool = self.openerp.pool
+        self.line_obj = self.pool.get("refund.rectify.batch.line")
+
+    def test_ranas_success_reads_errors_and_returns_generated_ids(self):
+        wizard = mock.Mock()
+        wizard.create.return_value = 17
+        wizard.action_rectificar.return_value = [31, 32]
+        wizard.read.return_value = [{"errors": ""}]
+        with mock.patch.object(self.pool, "get", return_value=wizard):
+            result = self.line_obj._refund_rectify_if_needed(
+                self.cursor, self.uid, [11, 12], context={}
+            )
+        self.assertEqual(result, [31, 32])
+        wizard.read.assert_called_once_with(
+            self.cursor, self.uid, [17], ["errors"],
+            context={"active_ids": [11, 12], "active_id": 11},
+        )
+
+    def test_unstructured_ranas_errors_are_technical_even_with_partial_results(self):
+        errors = [
+            u"Error desconegut",
+            u"Ja hi ha un procés en marxa per a 1 o més factures de les seleccionades",
+            u"* La factura F-11 genera dues factures rectificadores i no es correcte. "
+            u"No s'ha generat cap factura per aquesta, s'ha d'anular i fer factura manual",
+        ]
+        wizard = mock.Mock()
+        wizard.create.return_value = 17
+        wizard.action_rectificar.return_value = [31]
+        for message in errors:
+            wizard.read.return_value = [{"errors": message}]
+            with mock.patch.object(self.pool, "get", return_value=wizard):
+                with self.assertRaises(RuntimeError) as raised:
+                    self.line_obj._refund_rectify_if_needed(
+                        self.cursor, self.uid, [11, 12], context={}
+                    )
+            detail = str(raised.exception)
+            if not isinstance(detail, type(u"")):
+                detail = detail.decode("utf-8")
+            self.assertTrue(message in detail)
+            self.assertFalse(isinstance(
+                raised.exception, refund_rectify_batch.RecoverableF1Error
+            ))
+
+    def test_ranas_raised_lock_warning_is_not_reclassified(self):
+        wizard = mock.Mock()
+        original = osv.except_osv("Warning!", u"Ja hi ha un procés en marxa")
+        wizard.action_rectificar.side_effect = original
+        with mock.patch.object(self.pool, "get", return_value=wizard):
+            with self.assertRaises(osv.except_osv) as raised:
+                self.line_obj._refund_rectify_if_needed(
+                    self.cursor, self.uid, [11], context={}
+                )
+        self.assertIs(raised.exception, original)
+        self.assertFalse(isinstance(
+            raised.exception, refund_rectify_batch.RecoverableF1Error
+        ))
+
+
+class TestRefundRectifyBatchPerLineTransactions(testing.OOTestCaseWithCursor):
+    def setUp(self):
+        super(TestRefundRectifyBatchPerLineTransactions, self).setUp()
+        self.pool = self.openerp.pool
+        self.batch_obj = self.pool.get("refund.rectify.batch")
+
+    def _batch(self, state="pending"):
+        batch = mock.Mock()
+        batch.state = state
+        batch.polissa_id.id = 7
+        return batch
+
+    def _line(self, line_id, sequence, f1_id):
+        line = mock.Mock()
+        line.id = line_id
+        line.sequence = sequence
+        line.f1_id.id = f1_id
+        return line
+
+    def _assert_failure_transaction_lifecycle(
+            self, error, functional=False, process=None, persistence_error=None):
+        outer_cursor = mock.Mock()
+        outer_cursor.dbname = "test_batch"
+        start_cursor = mock.Mock()
+        claim_cursor = mock.Mock()
+        failed_cursor = mock.Mock()
+        persistence_cursor = mock.Mock()
+        database = mock.Mock()
+        database.cursor.side_effect = [
+            start_cursor, claim_cursor, failed_cursor, persistence_cursor,
+        ]
+        start_cursor.rowcount = 1
+        claim_cursor.rowcount = 1
+        failing_line = self._line(1, 1, 11)
+        line_obj = mock.Mock()
+        line_obj.search.side_effect = [[1], [2, 3]]
+        line_obj.browse.return_value = (
+            [failing_line] if functional else [failing_line, self._line(2, 2, 12)]
+        )
+        line_obj._mark_line_running.return_value = True
+        line_obj.process_one_f1.side_effect = process or error
+        line_obj._persist_line_outcome.side_effect = persistence_error
+        events = mock.Mock()
+        events.attach_mock(failed_cursor, "business")
+        events.attach_mock(persistence_cursor, "persistence")
+        events.attach_mock(line_obj._persist_line_outcome, "save_failure")
+        context = {"refund_rectify_debug_sync": True}
+        with mock.patch.object(refund_rectify_batch.pooler, "get_db", return_value=database):
+            with mock.patch.object(self.pool, "get", return_value=line_obj):
+                with mock.patch.object(self.batch_obj, "browse", return_value=self._batch()):
+                    with mock.patch.object(self.batch_obj, "write"):
+                        with mock.patch.object(self.batch_obj, "_refresh_execution") as refresh:
+                            if functional and not persistence_error:
+                                results = self.batch_obj.process_batch_f1_lines(
+                                    outer_cursor, self.uid, 3, context=context
+                                )
+                                self.assertEqual(results, [])
+                            else:
+                                with self.assertRaises(Exception) as raised:
+                                    self.batch_obj.process_batch_f1_lines(
+                                        outer_cursor, self.uid, 3, context=context
+                                    )
+                                expected = persistence_error or error
+                                if expected is not None:
+                                    self.assertIs(raised.exception, expected)
+                                else:
+                                    self.assertIsInstance(raised.exception, RuntimeError)
+                                # These must already have happened when RQ receives the error.
+                                persistence_cursor.close.assert_called_once_with()
+                                if not persistence_error:
+                                    persistence_cursor.commit.assert_called_once_with()
+
+        start_cursor.commit.assert_called_once_with()
+        start_cursor.close.assert_called_once_with()
+        claim_cursor.commit.assert_called_once_with()
+        claim_cursor.close.assert_called_once_with()
+        failed_cursor.rollback.assert_called_once_with()
+        self.assertFalse(failed_cursor.commit.called)
+        failed_cursor.close.assert_called_once_with()
+        persistence_cursor.close.assert_called_once_with()
+        line_obj._mark_line_running.assert_called_once_with(
+            claim_cursor, self.uid, 1, started_at=mock.ANY, context=context
+        )
+        started_at = line_obj._mark_line_running.call_args[1]["started_at"]
+        line_obj._persist_line_outcome.assert_called_once_with(
+            persistence_cursor, self.uid, 1, error=mock.ANY,
+            started_at=started_at, context=context
+        )
+        calls = events.mock_calls
+        self.assertTrue(calls.index(mock.call.business.rollback()) < calls.index(
+            mock.call.save_failure(
+                persistence_cursor, self.uid, 1, error=mock.ANY,
+                started_at=started_at, context=context,
+            )
+        ))
+        self.assertEqual(line_obj.process_one_f1.call_count, 1)
+        line_obj.process_one_f1.assert_called_once_with(
+            failed_cursor, self.uid, 11, expected_polissa_id=7,
+            previous_f1_id=None, predecessor_processed=False, context=context,
+        )
+        self.assertEqual(outer_cursor.method_calls, [])
+        if persistence_error:
+            self.assertFalse(persistence_cursor.commit.called)
+            self.assertFalse(line_obj.write.called)
+            return
+        persistence_cursor.commit.assert_called_once_with()
+        self.assertTrue(calls.index(mock.call.persistence.commit()) < calls.index(
+            mock.call.persistence.close()
+        ))
+        if functional:
+            self.assertFalse(line_obj.write.called)
+            self.assertFalse(refresh.called)
+            return
+        self.assertEqual(
+            line_obj.write.call_args[0][2], [2, 3]
+        )
+        self.assertEqual(line_obj.write.call_args[0][3]["state"], "blocked")
+        self.assertTrue("F1 11" in line_obj.write.call_args[0][3]["result"])
+        refresh.assert_called_once_with(persistence_cursor, self.uid, 3, context=context)
+
+    def test_last_functional_failure_persists_without_blocking(self):
+        self._assert_failure_transaction_lifecycle(
+            refund_rectify_batch.RecoverableF1Error("Error", "L'F1 no té comptadors"),
+            functional=True,
+        )
+
+    def test_unexpected_exception_persists_and_propagates_original(self):
+        self._assert_failure_transaction_lifecycle(ValueError("F1 broken"))
+
+    def test_unclassified_osv_exception_remains_technical(self):
+        self._assert_failure_transaction_lifecycle(
+            osv.except_osv("Error", "L'F1 no té comptadors")
+        )
+
+    def test_runtime_error_remains_technical(self):
+        self._assert_failure_transaction_lifecycle(RuntimeError("SQL operation failed"))
+
+    def test_sql_error_remains_technical(self):
+        self._assert_failure_transaction_lifecycle(OperationalError("Database unavailable"))
+
+    def test_technical_failure_persistence_error_is_not_swallowed(self):
+        self._assert_failure_transaction_lifecycle(
+            RuntimeError("F1 broken"), persistence_error=RuntimeError("Persistence unavailable"),
+        )
+
+    def _run_serial_outcomes(self, outcomes):
+        """Exercise real outcome/refresh code with a simulated transaction ledger."""
+        real_line_obj = self.pool.get("refund.rectify.batch.line")
+        outer_cursor = mock.Mock(dbname="test_batch")
+        batch = self._batch()
+        batch.name = "F1_R-TASCA-3"
+        lines = [self._line(index, index, index + 10)
+                 for index in range(1, len(outcomes) + 1)]
+        for line in lines:
+            line.state = "pending"
+            line.outcome = False
+            line.generated_invoice_ids = []
+            line.result = line.error = False
+            line.validation_evaluated = False
+            line.validation_warning_count = 0
+            line.validation_warnings = ""
+        line_obj = mock.Mock()
+        line_obj.search.return_value = [line.id for line in lines]
+        line_obj.browse.return_value = lines
+        line_obj.read.return_value = {"batch_id": [3, batch.name]}
+        attachment = mock.Mock()
+        attachment.search.return_value = []
+        database = mock.Mock()
+        cursors = []
+        committed = []
+        reading_contexts = []
+        states = []
+
+        def new_cursor():
+            transaction = mock.Mock()
+            transaction.rowcount = 1
+            if not cursors:
+                def claim_batch(*args, **kwargs):
+                    batch.state = "running"
+                transaction.execute.side_effect = claim_batch
+            transaction.work = []
+            transaction.commit.side_effect = lambda: committed.extend(transaction.work)
+
+            def rollback():
+                del transaction.work[:]
+            transaction.rollback.side_effect = rollback
+            cursors.append(transaction)
+            return transaction
+
+        def claim(cursor, uid, line_id, **kwargs):
+            lines[line_id - 1].state = "running"
+            return True
+
+        def write_line(cursor, uid, ids, vals, **kwargs):
+            for line_id in ids:
+                for field, value in vals.items():
+                    if field == "generated_invoice_ids":
+                        value = []
+                    setattr(lines[line_id - 1], field, value)
+            cursor.work.append("outcome-%s-%s" % (ids[0], vals["state"]))
+
+        def write_batch(cursor, uid, ids, vals, **kwargs):
+            for field, value in vals.items():
+                setattr(batch, field, value)
+            states.append(batch.state)
+
+        def process(cursor, uid, f1_id, **kwargs):
+            cursor.work.append("business-%s" % f1_id)
+            plan = real_line_obj._build_reading_anchor_plan(
+                cursor, uid, mock.Mock(), [7],
+                previous_f1_id=kwargs["previous_f1_id"],
+                predecessor_processed=kwargs["predecessor_processed"], context={},
+            ) if not kwargs["predecessor_processed"] else {"reload_initial": False}
+            reading_contexts.append((kwargs["previous_f1_id"],
+                                     kwargs["predecessor_processed"], plan["reload_initial"]))
+            outcome = outcomes[f1_id - 11]
+            if isinstance(outcome, Exception):
+                raise outcome
+            return {"status": outcome}
+
+        database.cursor.side_effect = new_cursor
+        line_obj._mark_line_running.side_effect = claim
+        line_obj.process_one_f1.side_effect = process
+        line_obj.write.side_effect = write_line
+        line_obj._persist_line_outcome.side_effect = real_line_obj._persist_line_outcome
+        with mock.patch.object(refund_rectify_batch.pooler, "get_db", return_value=database):
+            with mock.patch.object(self.pool, "get", side_effect=lambda model: {
+                    "refund.rectify.batch.line": line_obj,
+                    "refund.rectify.batch": self.batch_obj,
+                    "ir.attachment": attachment,
+            }[model]):
+                with mock.patch.object(self.batch_obj, "browse", return_value=batch):
+                    with mock.patch.object(self.batch_obj, "write", side_effect=write_batch):
+                        with mock.patch.object(real_line_obj, "write", side_effect=write_line):
+                            with mock.patch.object(real_line_obj, "read",
+                                                   return_value={"batch_id": [3, batch.name]}):
+                                with mock.patch.object(refund_rectify_batch, "logger") as log:
+                                    results = self.batch_obj.process_batch_f1_lines(
+                                        outer_cursor, self.uid, 3, context={}
+                                    )
+        for transaction in cursors:
+            transaction.close.assert_called_once_with()
+        return batch, lines, results, committed, reading_contexts, states, cursors, log
+
+    def test_middle_functional_failure_commits_successors_with_reset_reading_context(self):
+        error = refund_rectify_batch.RecoverableF1Error("Error", "Sense comptador")
+        batch, lines, results, committed, contexts, states, cursors, log = (
+            self._run_serial_outcomes(["processed", error, "processed"])
+        )
+        self.assertEqual([line.state for line in lines], ["done", "failed", "done"])
+        self.assertEqual(results, [{"status": "processed"}, {"status": "processed"}])
+        self.assertEqual(contexts, [(None, False, True), (11, True, False), (None, False, True)])
+        self.assertEqual(committed, ["business-11", "outcome-1-done",
+                                     "outcome-2-failed", "business-13", "outcome-3-done"])
+        cursors[4].rollback.assert_called_once_with()
+        self.assertFalse(cursors[4].commit.called)
+        cursors[5].commit.assert_called_once_with()
+        self.assertEqual(states, ["running", "running", "failed"])
+        self.assertEqual((batch.completed_lines, batch.failed_lines,
+                         batch.blocked_lines), (2, 1, 0))
+        self.assertTrue("Erronis: 1" in batch.summary)
+        self.assertEqual(log.info.call_args[0][-2], 1)
+        log.exception.assert_called_once_with(
+            "refund_rectify_f1: functional line failed; continuing batch_name=%s "
+            "line_id=%s sequence=%s f1_id=%s", batch.name, 2, 2, 12,
+        )
+        self.assertFalse(lines[1].validation_evaluated)
+        self.assertEqual(lines[1].validation_warning_count, 0)
+        self.assertFalse(lines[1].validation_warnings)
+
+    def test_multiple_functional_failures_without_success_finish_failed(self):
+        errors = [refund_rectify_batch.RecoverableF1Error("Error", "Sense comptador")
+                  for unused in range(3)]
+        batch, lines, results, committed, contexts, states, cursors, log = (
+            self._run_serial_outcomes(errors)
+        )
+        self.assertEqual(results, [])
+        self.assertEqual(states, ["running", "running", "failed"])
+        self.assertEqual((batch.completed_lines, batch.failed_lines,
+                         batch.blocked_lines), (0, 3, 0))
+        self.assertEqual(committed, ["outcome-1-failed", "outcome-2-failed", "outcome-3-failed"])
+        self.assertEqual(contexts, [(None, False, True)] * 3)
+
+    def test_last_functional_failure_after_success_finishes_failed(self):
+        error = refund_rectify_batch.RecoverableF1Error("Error", "Sense comptador")
+        batch, lines, results, committed, contexts, states, cursors, log = (
+            self._run_serial_outcomes(["processed", error])
+        )
+        self.assertEqual(states, ["running", "failed"])
+        self.assertEqual(batch.failed_lines, 1)
+        self.assertEqual(results, [{"status": "processed"}])
+
+    def test_no_action_continues_with_initial_reading_fallback_and_finishes_done(self):
+        batch, lines, results, committed, contexts, states, cursors, log = (
+            self._run_serial_outcomes(["processed", "no_action", "processed"])
+        )
+        self.assertEqual(contexts[-1], (12, False, True))
+        self.assertEqual([result["status"] for result in results],
+                         ["processed", "no_action", "processed"])
+        self.assertEqual(batch.state, "done")
+        self.assertEqual((batch.completed_lines, batch.failed_lines), (3, 0))
+
+    def test_failure_persistence_error_is_not_swallowed(self):
+        self._assert_failure_transaction_lifecycle(
+            refund_rectify_batch.RecoverableF1Error("Error", "Sense comptador"),
+            functional=True, persistence_error=RuntimeError("Persistence unavailable"),
+        )
+
+    def test_ranas_partial_results_are_rolled_back_before_error_persistence(self):
+        real_line_obj = self.pool.get("refund.rectify.batch.line")
+        for functional in [False, True]:
+            partial_work = []
+            wizard = mock.Mock()
+            wizard.create.return_value = 17
+            wizard.read.return_value = [{"errors": "Error desconegut"}]
+            error = refund_rectify_batch.RecoverableF1Error("Error", "Sense comptador")
+
+            def action(*args, **kwargs):
+                partial_work.append(31)
+                if functional:
+                    raise error
+                return [31]
+
+            wizard.action_rectificar.side_effect = action
+
+            def process(cursor, *args, **kwargs):
+                def rollback():
+                    del partial_work[:]
+                cursor.rollback.side_effect = rollback
+                with mock.patch.object(self.pool, "get", return_value=wizard):
+                    return real_line_obj._refund_rectify_if_needed(
+                        cursor, self.uid, [11, 12], context={}
+                    )
+
+            self._assert_failure_transaction_lifecycle(
+                error if functional else None, functional=functional, process=process,
+            )
+            self.assertEqual(partial_work, [])
+
+    def test_validator_partial_warnings_roll_back_and_technical_error_reaches_runner(self):
+        real_line_obj = self.pool.get("refund.rectify.batch.line")
+        work = []
+        fact_obj = mock.Mock()
+        fact_obj.read.return_value = [
+            {"id": 31, "name": "RE-31", "state": "draft",
+             "type": "out_invoice", "rectificative_type": "R"},
+            {"id": 32, "name": "RE-32", "state": "draft",
+             "type": "out_invoice", "rectificative_type": "R"},
+        ]
+        validator_obj = mock.Mock()
+        warning_obj = mock.Mock()
+        warning_obj.get_warning_text.return_value = u"[F001] Avís"
+        error = RuntimeError("Validation failed")
+
+        def validate(cursor, uid, invoice_id, context=None):
+            if invoice_id == 32:
+                raise error
+            work.append("warning-31")
+            return [51]
+
+        validator_obj.validate_invoice.side_effect = validate
+
+        def process(cursor, *args, **kwargs):
+            work.extend(["invoice-31", "invoice-32"])
+
+            def rollback():
+                del work[:]
+            cursor.rollback.side_effect = rollback
+            with mock.patch.object(self.pool, "get", side_effect=lambda model: {
+                    "giscedata.facturacio.factura": fact_obj,
+                    "giscedata.facturacio.validation.validator": validator_obj,
+                    "giscedata.facturacio.validation.warning": warning_obj,
+            }[model]):
+                return real_line_obj._validate_retained_rectifying_invoices(
+                    cursor, self.uid, [31, 32], context={}
+                )
+
+        self._assert_failure_transaction_lifecycle(error, process=process)
+        self.assertEqual(work, [])
+
+    def test_processes_only_pending_lines(self):
+        outer_cursor = mock.Mock()
+        outer_cursor.dbname = "test_batch"
+        start_cursor = mock.Mock()
+        claim_cursor = mock.Mock()
+        line_cursor = mock.Mock()
+        database = mock.Mock()
+        database.cursor.side_effect = [start_cursor, claim_cursor, line_cursor]
+        start_cursor.rowcount = 1
+        claim_cursor.rowcount = 1
+        pending_line = self._line(2, 2, 12)
+        line_obj = mock.Mock()
+        line_obj.search.return_value = [2]
+        line_obj.browse.return_value = [pending_line]
+        line_obj._mark_line_running.return_value = True
+        line_obj.process_one_f1.return_value = {"status": "no_action"}
+        with mock.patch.object(refund_rectify_batch.pooler, "get_db", return_value=database):
+            with mock.patch.object(self.pool, "get", return_value=line_obj):
+                with mock.patch.object(self.batch_obj, "browse", return_value=self._batch()):
+                    with mock.patch.object(self.batch_obj, "write"):
+                        self.batch_obj.process_batch_f1_lines(outer_cursor, self.uid, 3, context={})
+
+        self.assertEqual(
+            line_obj.search.call_args[0][2],
+            [("batch_id", "=", 3), ("state", "=", "pending")],
+        )
+        line_obj.process_one_f1.assert_called_once_with(
+            line_cursor, self.uid, 12, expected_polissa_id=7,
+            previous_f1_id=None, predecessor_processed=False, context={}
+        )
+
+    def test_duplicate_running_job_is_skipped_without_processing(self):
+        outer_cursor = mock.Mock()
+        outer_cursor.dbname = "test_batch"
+        state_cursor = mock.Mock()
+        database = mock.Mock()
+        database.cursor.return_value = state_cursor
+        line_obj = mock.Mock()
+        with mock.patch.object(refund_rectify_batch.pooler, "get_db", return_value=database):
+            with mock.patch.object(self.pool, "get", return_value=line_obj):
+                with mock.patch.object(self.batch_obj, "browse",
+                                       return_value=self._batch("running")):
+                    results = self.batch_obj.process_batch_f1_lines(
+                        outer_cursor, self.uid, 3, context={}
+                    )
+
+        self.assertEqual(results, [])
+        self.assertFalse(line_obj.search.called)
+        self.assertFalse(state_cursor.commit.called)
+
+
+class TestRefundRectifyBatchRecoveryActions(testing.OOTestCaseWithCursor):
+    def setUp(self):
+        super(TestRefundRectifyBatchRecoveryActions, self).setUp()
+        self.pool = self.openerp.pool
+        self.batch_obj = self.pool.get("refund.rectify.batch")
+
+    def _batch(self, state, job_reference=False):
+        batch = mock.Mock()
+        batch.id = 7
+        batch.state = state
+        batch.job_reference = job_reference
+        return batch
+
+    def test_cancels_only_pending_lines_and_refreshes_counts(self):
+        line_obj = mock.Mock()
+        line_obj.search.return_value = [3, 4]
+        with mock.patch.object(self.pool, "get", return_value=line_obj):
+            with mock.patch.object(self.batch_obj, "browse", return_value=[self._batch("running")]):
+                with mock.patch.object(self.batch_obj, "_refresh_execution") as refresh:
+                    self.batch_obj.action_cancel_pending_lines(
+                        self.cursor, self.uid, [7], context={}
+                    )
+
+        self.assertEqual(line_obj.write.call_args[0][2], [3, 4])
+        self.assertEqual(line_obj.write.call_args[0][3]["state"], "cancelled")
+        self.assertEqual(line_obj.write.call_args[0][3]["source_invoice_ids"], [(6, 0, [])])
+        self.assertEqual(line_obj.write.call_args[0][3]["generated_invoice_ids"], [(6, 0, [])])
+        line_obj.search.assert_called_once_with(
+            self.cursor, self.uid, [("batch_id", "=", 7), ("state", "=", "pending")],
+            context={},
+        )
+        self.assertFalse(line_obj.write.call_args[0][3]["validation_evaluated"])
+        self.assertEqual(line_obj.write.call_args[0][3]["validation_warning_count"], 0)
+        self.assertFalse(line_obj.write.call_args[0][3]["validation_warnings"])
+        refresh.assert_called_once_with(self.cursor, self.uid, 7, context={})
+
+    def _retry_line(self, line_id, state, outcome=False, sequence=None):
+        return {
+            "id": line_id, "sequence": sequence if sequence is not None else line_id,
+            "state": state, "outcome": outcome, "f1_id": (line_id + 100, "F1"),
+            "generated_invoice_ids": [line_id + 200] if state == "done" else [],
+            "source_invoice_ids": [line_id + 300],
+            "result": u"Resultat à", "error": False,
+            "validation_evaluated": state == "done",
+            "validation_warning_count": 1 if state == "done" else 0,
+            "validation_warnings": u"Factura: [TEST] Avís à",
+        }
+
+    def _retry(self, lines, state="failed", stale_state=None, ids=None, total_lines=None):
+        cursor = mock.Mock()
+        cursor.fetchone.return_value = (state,) if state else None
+        line_obj = mock.Mock()
+        line_obj._table = "refund_rectify_batch_line"
+        line_obj.search.return_value = [line["id"] for line in lines]
+        line_obj.read.side_effect = lambda *args, **kwargs: [dict(line) for line in lines]
+        events = []
+
+        def execute(sql, params):
+            if "COUNT(*)" in sql:
+                events.append("snapshot")
+                cursor.fetchone.return_value = (
+                    len(lines) if total_lines is None else total_lines,
+                )
+            else:
+                events.append("lock")
+                cursor.fetchone.return_value = (state,) if state else None
+
+        cursor.execute.side_effect = execute
+
+        def reset(cursor, uid, reset_ids, vals, context=None):
+            events.append("reset")
+            for line in lines:
+                if line["id"] in reset_ids:
+                    line.update(vals)
+
+        line_obj.write.side_effect = reset
+        error = None
+        with mock.patch.object(self.pool, "get", return_value=line_obj):
+            with mock.patch.object(self.batch_obj, "read", return_value=[{
+                    "id": 7, "state": stale_state or state,
+            }]):
+                with mock.patch.object(self.batch_obj, "write") as write:
+                    with mock.patch.object(self.batch_obj, "_refresh_execution") as refresh:
+                        with mock.patch.object(self.batch_obj,
+                                               "schedule_batch_execution") as schedule:
+                            try:
+                                self.batch_obj.action_retry_from_failed(
+                                    cursor, self.uid, ids or [7], context={}
+                                )
+                            except osv.except_osv as caught:
+                                error = caught
+        return {"error": error, "line": line_obj, "write": write,
+                "refresh": refresh, "schedule": schedule, "cursor": cursor,
+                "events": events}
+
+    def _assert_retry_rejected(self, result):
+        self.assertIsInstance(result["error"], osv.except_osv)
+        for method in [result["line"].write, result["write"],
+                       result["refresh"], result["schedule"]]:
+            self.assertFalse(method.called)
+        self.assertFalse(result["cursor"].commit.called)
+        self.assertFalse(result["cursor"].rollback.called)
+        self.assertFalse(result["cursor"].close.called)
+
+    def test_retry_preserves_done_no_action_and_cancelled_lines(self):
+        lines = [self._retry_line(1, "done", "processed"),
+                 self._retry_line(2, "done", "no_action"),
+                 self._retry_line(3, "failed"), self._retry_line(4, "blocked"),
+                 self._retry_line(5, "cancelled")]
+        untouched = [dict(lines[index]) for index in [0, 1, 4]]
+        result = self._retry(lines, state="blocked")
+        self.assertIsNone(result["error"])
+        self.assertEqual([lines[index] for index in [0, 1, 4]], untouched)
+        reset = result["line"].write.call_args[0]
+        self.assertEqual(reset[2], [3, 4])
+        self.assertEqual(reset[3], {
+            "state": "pending", "outcome": False, "started_at": False,
+            "finished_at": False, "result": False, "error": False,
+            "generated_invoice_ids": [(6, 0, [])], "validation_evaluated": False,
+            "source_invoice_ids": [(6, 0, [])],
+            "validation_warning_count": 0, "validation_warnings": False,
+        })
+        self.assertEqual(lines[2]["source_invoice_ids"], [(6, 0, [])])
+        self.assertEqual(lines[3]["source_invoice_ids"], [(6, 0, [])])
+        self.assertEqual(result["write"].call_args[0][3]["state"], "pending")
+        self.assertFalse(result["write"].call_args[0][3]["finished_at"])
+        result["refresh"].assert_called_once_with(result["cursor"], self.uid, 7, context={})
+        result["schedule"].assert_called_once_with(result["cursor"], self.uid, 7, context={})
+        self.assertEqual(result["events"], ["lock", "snapshot", "reset"])
+
+    def test_retry_rejects_later_processed_no_action_and_unknown_done_before_writes(self):
+        # no_action can commit source-draft cleanup, even without generated IDs.
+        for outcome in ["processed", "no_action", False, "unknown"]:
+            lines = [self._retry_line(1, "failed"), self._retry_line(2, "done", outcome)]
+            if outcome == "no_action":
+                lines[1]["generated_invoice_ids"] = []
+                lines[1]["result"] = u"S'han eliminat factures en esborrany"
+            original = [dict(line) for line in lines]
+            result = self._retry(lines)
+            self._assert_retry_rejected(result)
+            self.assertEqual(lines, original)
+            self.assertIn("102", result["error"].value)
+            self.assertIn("2", result["error"].value)
+            self.assertIn("manual", result["error"].value)
+
+    def test_retry_rejects_all_conflicts_even_without_retained_invoices(self):
+        lines = [self._retry_line(1, "failed"), self._retry_line(2, "done", "processed"),
+                 self._retry_line(3, "done", "no_action"), self._retry_line(4, "failed")]
+        lines[1]["generated_invoice_ids"] = []  # AB/RE may already have been removed.
+        result = self._retry(lines)
+        self._assert_retry_rejected(result)
+        for f1_id in ["102", "103"]:
+            self.assertIn(f1_id, result["error"].value)
+
+    def test_retry_failed_tail_after_earlier_success(self):
+        lines = [self._retry_line(1, "done", "processed"), self._retry_line(2, "failed")]
+        original_done = dict(lines[0])
+        result = self._retry(lines)
+        self.assertIsNone(result["error"])
+        self.assertEqual(result["line"].write.call_args[0][2], [2])
+        self.assertEqual(lines[0], original_done)
+        self.assertEqual(result["schedule"].call_count, 1)
+
+    def test_retry_multiple_functional_failures_and_legacy_blocked_tail(self):
+        for state in ["failed", "blocked"]:
+            lines = [self._retry_line(1, "failed"), self._retry_line(2, "cancelled"),
+                     self._retry_line(3, "failed"), self._retry_line(4, "blocked"),
+                     self._retry_line(5, "pending")]
+            original_pending = dict(lines[4])
+            result = self._retry(lines, state=state)
+            self.assertIsNone(result["error"])
+            self.assertEqual(result["line"].write.call_args[0][2], [1, 3, 4])
+            self.assertEqual(lines[1]["state"], "cancelled")
+            self.assertEqual(lines[4], original_pending)
+            self.assertEqual(result["schedule"].call_count, 1)
+
+    def test_retry_uses_earliest_failed_sequence_not_read_order(self):
+        lines = [self._retry_line(3, "failed"), self._retry_line(2, "done", "processed"),
+                 self._retry_line(1, "failed")]
+        result = self._retry(lines)
+        self._assert_retry_rejected(result)
+        self.assertIn("d'ordre 1", result["error"].value)
+
+    def test_retry_without_failed_line_or_with_invalid_batch_state_is_rejected(self):
+        for state in ["pending", "running", "done", "cancelled", False]:
+            self._assert_retry_rejected(self._retry([self._retry_line(1, "failed")], state))
+        for state in ["failed", "blocked"]:
+            self._assert_retry_rejected(self._retry([self._retry_line(1, "blocked")], state))
+
+    def test_retry_rechecks_locked_state_not_stale_orm_state(self):
+        for state in ["pending", "running", "done"]:
+            result = self._retry([self._retry_line(1, "failed")], state, stale_state="failed")
+            self._assert_retry_rejected(result)
+            self.assertFalse(result["line"].search.called)
+            sql, params = result["cursor"].execute.call_args[0]
+            self.assertIn("FOR UPDATE", sql)
+            self.assertEqual(params, (7,))
+
+    def test_duplicate_ids_reset_and_schedule_once(self):
+        result = self._retry([self._retry_line(1, "failed")], ids=[7, 7])
+        self.assertIsNone(result["error"])
+        self.assertEqual(result["line"].write.call_count, 1)
+        self.assertEqual(result["schedule"].call_count, 1)
+        self.assertEqual(result["events"].count("lock"), 1)
+
+    def test_retry_rejects_incomplete_line_snapshot_before_reset(self):
+        # Record-rule filtering must not hide a later committed done line.
+        result = self._retry([self._retry_line(1, "failed")], total_lines=2)
+        self._assert_retry_rejected(result)
+        self.assertIn("manual", result["error"].value)
+
+    def test_retry_rejects_running_line_or_blocked_line_before_first_failure(self):
+        for lines in [
+                [self._retry_line(1, "failed"), self._retry_line(2, "running")],
+                [self._retry_line(1, "blocked"), self._retry_line(2, "failed")],
+                [self._retry_line(1, "failed"), self._retry_line(2, "done", sequence=1)]]:
+            self._assert_retry_rejected(self._retry(lines))
+
+    def test_retry_validates_all_selected_batches_before_reset_or_schedule(self):
+        line_obj = mock.Mock()
+        line_obj._table = "refund_rectify_batch_line"
+        line_obj.search.side_effect = [[1], [2, 3]]
+        line_obj.read.side_effect = [
+            [self._retry_line(1, "failed")],
+            [self._retry_line(2, "failed"), self._retry_line(3, "done", "processed")],
+        ]
+        cursor = mock.Mock()
+        cursor.fetchone.side_effect = [("failed",), (1,), ("failed",), (2,)]
+        with mock.patch.object(self.pool, "get", return_value=line_obj):
+            with mock.patch.object(self.batch_obj, "read"):
+                with mock.patch.object(self.batch_obj, "write") as write:
+                    with mock.patch.object(self.batch_obj, "schedule_batch_execution") as schedule:
+                        self.assertRaises(osv.except_osv, self.batch_obj.action_retry_from_failed,
+                                          cursor, self.uid, [8, 7], context={})
+        self.assertFalse(line_obj.write.called)
+        self.assertFalse(write.called)
+        self.assertFalse(schedule.called)
+        self.assertEqual([call[0][1] for call in cursor.execute.call_args_list
+                          if "FOR UPDATE" in call[0][0]], [(7,), (8,)])
+
+    def _stored_retry_batch(self, states):
+        imd = self.pool.get("ir.model.data")
+        f1_id = imd.get_object_reference(
+            self.cursor, self.uid, "giscedata_facturacio_switching", "line_01_f1_import_01"
+        )[1]
+        invoice_id = imd.get_object_reference(
+            self.cursor, self.uid, "giscedata_facturacio", "factura_0003"
+        )[1]
+        fact_obj = self.pool.get("giscedata.facturacio.factura")
+        polissa_id = fact_obj.read(
+            self.cursor, self.uid, invoice_id, ["polissa_id"]
+        )["polissa_id"][0]
+        batch_id = self.batch_obj.create(self.cursor, self.uid, {
+            "name": "/", "polissa_id": polissa_id, "state": "failed",
+            "finished_at": "2022-03-01 00:00:00",
+        })
+        line_obj = self.pool.get("refund.rectify.batch.line")
+        line_ids = []
+        for sequence, state in enumerate(states, 1):
+            line_ids.append(line_obj.create(self.cursor, self.uid, {
+                "batch_id": batch_id, "f1_id": f1_id, "sequence": sequence,
+                "state": state, "outcome": "processed" if state == "done" else False,
+                "generated_invoice_ids": [(6, 0, [invoice_id])] if state == "done" else [],
+                "source_invoice_ids": [(6, 0, [invoice_id])],
+                "result": u"Resultat original à", "error": "Original error",
+                "validation_evaluated": state == "done", "validation_warning_count": 1,
+                "validation_warnings": u"Factura %s: [TEST] Avís à" % invoice_id,
+            }))
+        return batch_id, line_obj, line_ids, fact_obj, invoice_id
+
+    def test_unsafe_retry_preserves_stored_invoice_relation_and_warning_snapshot(self):
+        batch_id, line_obj, line_ids, fact_obj, invoice_id = self._stored_retry_batch(
+            ["failed", "done"]
+        )
+        fields = ["state", "outcome", "generated_invoice_ids", "source_invoice_ids",
+                  "result", "error",
+                  "validation_evaluated", "validation_warning_count", "validation_warnings"]
+        original = line_obj.read(self.cursor, self.uid, line_ids, fields)
+        original_batch = self.batch_obj.read(
+            self.cursor, self.uid, batch_id, ["state", "finished_at", "summary"]
+        )
+        original_invoice = fact_obj.read(self.cursor, self.uid, invoice_id, ["state", "name"])
+        with mock.patch.object(self.batch_obj, "write") as write:
+            with mock.patch.object(line_obj, "write") as line_write:
+                with mock.patch.object(self.batch_obj, "schedule_batch_execution") as schedule:
+                    self.assertRaises(osv.except_osv, self.batch_obj.action_retry_from_failed,
+                                      self.cursor, self.uid, [batch_id], context={})
+        self.assertFalse(write.called)
+        self.assertFalse(line_write.called)
+        self.assertFalse(schedule.called)
+        self.assertEqual(line_obj.read(self.cursor, self.uid, line_ids, fields), original)
+        self.assertEqual(self.batch_obj.read(
+            self.cursor, self.uid, batch_id, ["state", "finished_at", "summary"]
+        ), original_batch)
+        self.assertEqual(fact_obj.read(self.cursor, self.uid, invoice_id, ["state", "name"]),
+                         original_invoice)
+
+    def test_stored_outcome_keeps_source_and_generated_relations_independent(self):
+        batch_id, line_obj, line_ids, fact_obj, invoice_id = self._stored_retry_batch(["done"])
+        line_id = line_ids[0]
+        line_obj._persist_line_outcome(self.cursor, self.uid, line_id, result={
+            "status": "no_action", "source_invoice_ids": [invoice_id],
+            "generated_invoice_ids": [],
+        }, context={})
+        line = line_obj.read(self.cursor, self.uid, line_id, [
+            "source_invoice_ids", "generated_invoice_ids", "outcome",
+        ])
+        self.assertEqual(line["source_invoice_ids"], [invoice_id])
+        self.assertEqual(line["generated_invoice_ids"], [])
+        self.assertEqual(line["outcome"], "no_action")
+        line_obj._persist_line_outcome(self.cursor, self.uid, line_id, result={
+            "status": "processed", "generated_invoice_ids": [invoice_id],
+        }, context={})
+        line = line_obj.read(self.cursor, self.uid, line_id, [
+            "source_invoice_ids", "generated_invoice_ids",
+        ])
+        self.assertEqual(line["source_invoice_ids"], [])
+        self.assertEqual(line["generated_invoice_ids"], [invoice_id])
+
+    def test_stored_safe_retry_refreshes_pending_and_reentrant_request_cannot_schedule_twice(
+            self):
+        batch_id, line_obj, line_ids, fact_obj, invoice_id = self._stored_retry_batch(
+            ["done", "failed", "blocked", "cancelled"]
+        )
+        fields = ["state", "outcome", "generated_invoice_ids", "source_invoice_ids",
+                  "result", "error",
+                  "validation_evaluated", "validation_warning_count", "validation_warnings"]
+        original = line_obj.read(self.cursor, self.uid, [line_ids[0], line_ids[3]], fields)
+        with mock.patch.object(self.batch_obj, "schedule_batch_execution") as schedule:
+            self.batch_obj.action_retry_from_failed(self.cursor, self.uid, [batch_id], context={})
+            # Repeat in the same transaction, without a fresh UI/browse refresh.
+            self.assertRaises(osv.except_osv, self.batch_obj.action_retry_from_failed,
+                              self.cursor, self.uid, [batch_id], context={})
+        schedule.assert_called_once_with(self.cursor, self.uid, batch_id, context={})
+        batch = self.batch_obj.read(self.cursor, self.uid, batch_id, [
+            "state", "finished_at", "failed_lines", "blocked_lines", "completed_lines",
+        ])
+        self.assertEqual(batch["state"], "pending")
+        self.assertFalse(batch["finished_at"])
+        self.assertEqual((batch["failed_lines"], batch["blocked_lines"], batch["completed_lines"]),
+                         (0, 0, 1))
+        self.assertEqual(line_obj.read(self.cursor, self.uid, [line_ids[0], line_ids[3]], fields),
+                         original)
+        for line in line_obj.read(self.cursor, self.uid, line_ids[1:3], fields):
+            self.assertEqual(line["state"], "pending")
+            self.assertFalse(line["outcome"])
+            self.assertEqual(line["generated_invoice_ids"], [])
+            self.assertEqual(line["source_invoice_ids"], [])
+            self.assertFalse(line["validation_evaluated"])
+            self.assertEqual(line["validation_warning_count"], 0)
+            self.assertFalse(line["validation_warnings"])
+
+    def test_stale_recovery_requires_a_failed_or_finished_job(self):
+        job = mock.Mock()
+        job.get_status.return_value = "started"
+        with mock.patch.object(refund_rectify_batch, "setup_redis_connection"):
+            with mock.patch.object(refund_rectify_batch.Job, "fetch", return_value=job):
+                self.assertFalse(self.batch_obj._job_is_recovery_eligible("job-7"))
+                job.get_status.return_value = "failed"
+                self.assertTrue(self.batch_obj._job_is_recovery_eligible("job-7"))
+
+    def test_stale_recovery_rejects_running_batch_without_running_line(self):
+        line_obj = mock.Mock()
+        line_obj.search.return_value = []
+        with mock.patch.object(self.pool, "get", return_value=line_obj):
+            with mock.patch.object(self.batch_obj, "browse", return_value=[self._batch("running")]):
+                with mock.patch.object(self.batch_obj, "_job_is_recovery_eligible",
+                                       return_value=True):
+                    self.assertRaises(
+                        osv.except_osv, self.batch_obj.action_recover_stale,
+                        self.cursor, self.uid, [7], context={}
+                    )
+
+    def test_terminal_batch_is_not_reopened(self):
+        outer_cursor = mock.Mock()
+        outer_cursor.dbname = "test_batch"
+        state_cursor = mock.Mock()
+        database = mock.Mock()
+        database.cursor.return_value = state_cursor
+        line_obj = mock.Mock()
+        with mock.patch.object(refund_rectify_batch.pooler, "get_db", return_value=database):
+            with mock.patch.object(self.pool, "get", return_value=line_obj):
+                with mock.patch.object(self.batch_obj, "browse", return_value=self._batch("done")):
+                    with mock.patch.object(self.batch_obj, "write") as write:
+                        results = self.batch_obj.process_batch_f1_lines(
+                            outer_cursor, self.uid, 3, context={}
+                        )
+
+        self.assertEqual(results, [])
+        self.assertFalse(write.called)
+        self.assertFalse(line_obj.search.called)
+        self.assertFalse(state_cursor.commit.called)
+        state_cursor.close.assert_called_once_with()
