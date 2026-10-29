@@ -33,6 +33,17 @@ Aquesta skill requereix:
 
 ## Workflow
 
+### Pas 0: Preparar les eines si és un entorn nou
+
+```bash
+PYENV_VERSION=erp scripts/setup-local-validation.sh
+```
+
+Executa-ho una vegada per virtualenv o quan canviïn les versions fixades.
+`run-tests.sh` comprova les eines i els imports ERP abans de Destral, sense
+instal·lar paquets. Si falla, consulta
+[validació local](../../../docs/guides/local-validation.md).
+
 ### Pas 1: Arrencar i esperar els serveis compartits
 
 Des del checkout o worktree seleccionat:

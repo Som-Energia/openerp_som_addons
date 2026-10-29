@@ -30,6 +30,10 @@ export OPENERP_ENVIRONMENT=local
 export OPENERP_SII_TEST_MODE=1
 export OPENERP_IGNORE_PUBSUB=1
 
+# Fail before creating/reusing a database or installing addon dependencies.
+script_dir="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
+python "$script_dir/check_local_env.py" --workspace "$WORKSPACE"
+
 sanitize_db_name() {
   local value="${1:-}"
   value="$(printf '%s' "$value" | tr '[:upper:]' '[:lower:]' | tr -cs 'a-z0-9' '_')"

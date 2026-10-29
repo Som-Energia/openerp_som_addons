@@ -85,6 +85,10 @@ git diff --cached
 
 ### Pas 3: Executar pre-commit
 
+Si falta l'eina o és un virtualenv nou, prepara'l amb
+`scripts/setup-local-validation.sh`; consulta
+[validació local](../../../docs/guides/local-validation.md).
+
 Activar l'entorn virtual habitual del projecte i executar pre-commit sobre els
 fitxers preparats:
 
