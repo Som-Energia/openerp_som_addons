@@ -65,8 +65,22 @@ No s'eliminen caches ni s'instal·len paquets automàticament durant els tests.
 
 ## Tests dels scripts
 
-Els tests de `scripts/tests/*-test.sh` usen fixtures temporals i dobles de les
-comandes externes. No necessiten l'ERP, Docker ni credencials. Els tests
-Destral continuen passant obligatòriament per `scripts/run-tests-worktree.sh`
-quan es treballa des d'un worktree; vegeu la skill
-[erp-test](../../.agents/skills/erp-test/SKILL.md).
+Executa la mateixa comanda que el workflow `Local validation scripts`:
+
+```bash
+scripts/test-local-validation.sh
+```
+
+Comprova la sintaxi Bash i executa tots els `scripts/tests/*-test.sh`, inclosos
+els tests existents dels locks, els manifests, la restauració dels enllaços i la
+sincronització de dependències. El workflow s'activa a les PR que modifiquen
+scripts o el perfil del workspace, i també es pot executar manualment.
+
+Els tests usen fixtures temporals i dobles de les comandes externes. Només
+necessiten Bash, Git, flock i Python 3; no necessiten l'ERP, Docker ni
+credencials. `TEST_PYTHON` permet repetir els tests Python amb un altre
+intèrpret, per exemple el del virtualenv ERP.
+
+Els tests Destral continuen passant obligatòriament per
+`scripts/run-tests-worktree.sh` quan es treballa des d'un worktree; vegeu la
+skill [erp-test](../../.agents/skills/erp-test/SKILL.md).
