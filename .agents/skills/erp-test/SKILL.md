@@ -33,22 +33,28 @@ Aquesta skill requereix:
 
 ## Workflow
 
-### Pas 1: Verificar Contenidors
+### Pas 0: Preparar les eines si és un entorn nou
 
 ```bash
-COMPOSE_FILE="$WORKSPACE/openerp_som_addons/docker-compose.yaml"
-docker compose -f "$COMPOSE_FILE" ps
+PYENV_VERSION=erp scripts/setup-local-validation.sh
 ```
 
-Serveis esperats:
-- `postgres`
-- `mongo`
-- `redis`
+Executa-ho una vegada per virtualenv o quan canviïn les versions fixades.
+`run-tests.sh` comprova les eines i els imports ERP abans de Destral, sense
+instal·lar paquets. Si falla, consulta
+[validació local](../../../docs/guides/local-validation.md).
 
-Si no estan actius:
+### Pas 1: Arrencar i esperar els serveis compartits
+
+Des del checkout o worktree seleccionat:
+
 ```bash
-docker compose -f "$COMPOSE_FILE" up -d postgres mongo redis
+scripts/start-local-services.sh
 ```
+
+El helper usa sempre el projecte Compose del checkout principal i espera
+PostgreSQL, MongoDB i Redis. Consulta
+[validació local](../../../docs/guides/local-validation.md) si falla.
 
 ### Pas 2: Executar tests
 
@@ -94,9 +100,9 @@ OPENERP_TEST_DB_REF="<branch_name>" scripts/run-tests-worktree.sh --addon <modul
 |-------|-------|----------|
 | `WORKSPACE no definit` | Falta la ruta arrel del workspace | `export WORKSPACE=/home/<user>/src` |
 | `destral: command not found` | Virtualenv no activat | `pyenv activate erp` o `workon erp` |
-| `Connection refused to localhost:5432` | PostgreSQL no corrent | `docker compose -f "$WORKSPACE/openerp_som_addons/docker-compose.yaml" up -d postgres` |
-| `Connection refused to localhost:27017` | MongoDB no corrent | `docker compose -f "$WORKSPACE/openerp_som_addons/docker-compose.yaml" up -d mongo` |
-| `Connection refused to localhost:6379` | Redis no corrent | `docker compose -f "$WORKSPACE/openerp_som_addons/docker-compose.yaml" up -d redis` |
+| `Connection refused to localhost:5432` | PostgreSQL no corrent | `scripts/start-local-services.sh` |
+| `Connection refused to localhost:27017` | MongoDB no corrent | `scripts/start-local-services.sh` |
+| `Connection refused to localhost:6379` | Redis no corrent | `scripts/start-local-services.sh` |
 | `Database does not exist` | DB no creada | destral la crea automàticament |
 | `timeout` | Tests molt lents | Els tests d'OpenERP poden trigar 10+ min |
 

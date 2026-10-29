@@ -1,0 +1,7 @@
+# Local Python 2.7 tooling; versions match the legacy pre-commit hooks.
+pre-commit==1.21.0
+flake8==3.9.2
+# Newer virtualenv/identify releases cannot manage the Python 2 hook environments.
+virtualenv==20.15.1
+identify==1.6.2
+typing==3.10.0.0

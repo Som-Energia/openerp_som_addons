@@ -32,22 +32,17 @@ Aquesta skill requereix:
 
 ## Workflow
 
-### Pas 1: Verificar Contenidors
+### Pas 1: Arrencar i esperar els serveis compartits
+
+Des del checkout o worktree seleccionat:
 
 ```bash
-COMPOSE_FILE="$WORKSPACE/openerp_som_addons/docker-compose.yaml"
-docker compose -f "$COMPOSE_FILE" ps
+scripts/start-local-services.sh
 ```
 
-Serveis esperats:
-- `postgres`
-- `mongo`
-- `redis`
-
-Si no estan actius:
-```bash
-docker compose -f "$COMPOSE_FILE" up -d postgres mongo redis
-```
+El helper reutilitza el projecte Compose del checkout principal i espera
+PostgreSQL, MongoDB i Redis. Consulta
+[validació local](../../../docs/guides/local-validation.md) si falla.
 
 ### Pas 2: Arrencar l'ERP
 
@@ -91,9 +86,9 @@ Un cop arrencat, l'ERP està disponible a:
 |-------|-------|----------|
 | `WORKSPACE no definit` | Falta la ruta arrel del workspace | `export WORKSPACE=/home/<user>/src` |
 | `openerp-server.py: command not found` | Virtualenv no activat o ruta incorrecta | Activa `erp` i comprova `$WORKSPACE/erp` |
-| `Connection refused to localhost:5432` | PostgreSQL no corrent | `docker compose -f "$WORKSPACE/openerp_som_addons/docker-compose.yaml" up -d postgres` |
-| `Connection refused to localhost:27017` | MongoDB no corrent | `docker compose -f "$WORKSPACE/openerp_som_addons/docker-compose.yaml" up -d mongo` |
-| `Connection refused to localhost:6379` | Redis no corrent | `docker compose -f "$WORKSPACE/openerp_som_addons/docker-compose.yaml" up -d redis` |
+| `Connection refused to localhost:5432` | PostgreSQL no corrent | `scripts/start-local-services.sh` |
+| `Connection refused to localhost:27017` | MongoDB no corrent | `scripts/start-local-services.sh` |
+| `Connection refused to localhost:6379` | Redis no corrent | `scripts/start-local-services.sh` |
 | `Config file not found` | Fitxer de configuració inexistent | Crear `$HOME/conf/erp.conf` |
 
 ## Variables d'Entorn
