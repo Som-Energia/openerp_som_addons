@@ -17,6 +17,7 @@ import json
 from collections import Counter
 import base64
 from decimal import Decimal
+from .complementary_blocks import merge_complementary_blocks
 
 STRING_TYPES = (str, type(u""))
 
@@ -3780,10 +3781,16 @@ class GiscedataFacturacioFacturaReport(osv.osv):
         ]
 
         block = []
+        source_signatures = []
+        # A global expediente label cannot establish per-line provenance when
+        # several source invoices/F1s are involved. Keep those blocks separate.
+        known_origin = (len(origins) == 1 and bool(origins[0]) and len(f1_ids) == 1 and
+                        len(set(expedients)) == 1 and len(types) == 1)
         for type, units, compl_lines_x in compl_matrix:
             for start_date in sorted(set([x.data_desde for x in compl_lines_x])):
                 date_lines = [x for x in compl_lines_x if x.data_desde == start_date]
                 lines = {}
+                period_sources = {}
                 total = 0.0
                 for l in date_lines:  # noqa: E741
                     sign = -1.0 if l.price_subtotal < 0.0 else 1.0
@@ -3793,6 +3800,12 @@ class GiscedataFacturacioFacturaReport(osv.osv):
                     else:
                         atr_tolls = 0.0
                         atr_charges = 0.0
+                    source = (
+                        l.tipus, l.product_id.id, l.uos_id.id,
+                        tuple(sorted(tax.id for tax in l.invoice_line_tax_id)),
+                        l.price_unit_multi, atr_tolls * sign, atr_charges * sign,
+                    )
+                    period_sources.setdefault(l.product_id.name, []).append(source)
                     if l.product_id.name in lines:
                         lines[l.product_id.name]["quantity"] += l["quantity"]
                         lines[l.product_id.name]["price_subtotal"] += l["price_subtotal"]
@@ -3816,8 +3829,21 @@ class GiscedataFacturacioFacturaReport(osv.osv):
                 lines["type"] = type
                 lines["units"] = units
                 block.append(lines)
+                homogeneous = all(
+                    all(source == sources[0] for source in sources)
+                    for sources in period_sources.values())
+                same_end = len(set(x.data_fins for x in date_lines)) == 1
+                if known_origin and homogeneous and same_end:
+                    source_signatures.append(tuple(
+                        (period, sources[0])
+                        for period, sources in sorted(period_sources.items())))
+                else:
+                    source_signatures.append(None)
 
-        data['energy_lines_data'] = block
+        data['energy_lines_data'] = merge_complementary_blocks(block, source_signatures)
+        if len(data['energy_lines_data']) < len(block):
+            # Native containers survive fill_all_components_data's YAML roundtrip.
+            data['original_energy_lines_data'] = block
         return data
 
     def get_sub_component_invoice_details_td_excess_power_maximeter(self, fact, pol):
@@ -4114,7 +4140,10 @@ class GiscedataFacturacioFacturaReport(osv.osv):
         other_data = self.get_sub_component_invoice_details_td_other_concepts_data(fact, pol)
         if 'compl_info' in other_data and 'energy_lines_data' in other_data['compl_info']:
             periods = self.get_matrix_show_periods(pol)
-            for block in other_data['compl_info']['energy_lines_data']:
+            compl_info = other_data['compl_info']
+            blocks = compl_info.get('original_energy_lines_data', compl_info['energy_lines_data'])
+            # Retain historical per-original-block, per-period cent rounding.
+            for block in blocks:
                 for period in periods:
                     if period in block:
                         data = block[period]

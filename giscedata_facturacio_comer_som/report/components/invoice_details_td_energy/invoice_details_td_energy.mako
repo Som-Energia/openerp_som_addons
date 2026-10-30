@@ -155,7 +155,7 @@ first_energy_line = True
 % endif
 % if id.adjustment_services:
     <tr class="tr_bold">
-        <td class="detall_td">
+        <td class="detall_td" colspan="${2 if first_pass else 1}">
             % if id.adjustment_services.get('is_generation_adjustment'):
                 ${_(u"Serveis d'Ajust segons preu REE pel periode facturat, aplicat a assignació GenerationkWh")}
             % else:
