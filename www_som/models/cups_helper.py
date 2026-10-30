@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+from __future__ import absolute_import
+
 from osv import osv
 
 
@@ -17,6 +19,11 @@ class CupsHelper(osv.osv_memory):
             ('proces_id', 'not in', ["R1"])
         ])
         return bool(sw_ids)
+
+    def get_polissa_id(self, cursor, uid, cups_id, context=None):
+        if context is None:
+            context = {}
+        return self._get_polissa_id(self, cursor, uid, cups_id, context=context)
 
     def _get_polissa_id(self, cursor, uid, cups_id, context=None):
         if context is None:
