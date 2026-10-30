@@ -709,6 +709,115 @@ class TestCardPaymentInPolissa(testing.OOTestCaseWithCursor):
         )
         self.assertEqual(retry["status"], "no-op")
 
+    def _assert_recurring_card_replacement(self, original_expiry, reuse_replacement=False):
+        self._ensure_modcontractual_for_polissa()
+        self.polissa_obj.wkf_activa(self.cursor, self.uid, [self.polissa_id])
+        polissa = self.polissa_obj.browse(self.cursor, self.uid, self.polissa_id)
+        partner_id = polissa.pagador.id
+        original_id = self.card_obj.create(
+            self.cursor, self.uid,
+            {
+                "partner_id": partner_id,
+                "token": "tok_replace_original",
+                "cof_txnid": "cof_replace_original",
+                "masked_number": "**** **** **** 1111",
+                "expiry_date": original_expiry,
+            },
+        )
+        original_payment = {
+            "tipo_pago": self.payment_type_id,
+            "payment_mode_id": self.payment_mode_id,
+            "creditcard": original_id,
+            "bank": False,
+        }
+        self.polissa_obj.write(self.cursor, self.uid, [self.polissa_id], original_payment)
+        self.modcontractual_obj.write(
+            self.cursor, self.uid, [polissa.modcontractual_activa.id], original_payment
+        )
+        card_fields = ["active", "partner_id", "token", "cof_txnid", "masked_number", "expiry_date"]
+        original_card = self.card_obj.read(self.cursor, self.uid, original_id, card_fields)
+        replacement_data = {
+            "token": "tok_replace_new",
+            "cof_txnid": "cof_replace_new",
+            "masked_number": "**** **** **** 9999",
+            "expiry_date": "12/%02d" % ((date.today().year + 3) % 100),
+        }
+        replacement_id = False
+        if reuse_replacement:
+            replacement_id = self.card_obj.create(
+                self.cursor, self.uid, dict(replacement_data, partner_id=partner_id)
+            )
+        card_domain = [("partner_id", "=", partner_id)]
+        lookup_context = {"active_test": False}
+        before_cards = set(self.card_obj.search(
+            self.cursor, self.uid, card_domain, context=lookup_context
+        ))
+
+        result = self.polissa_obj.convert_to_recurring_card(
+            self.cursor, self.uid, self.polissa_id,
+            self._card_data_for_conversion(replacement_data),
+        )
+
+        self.assertEqual(result["status"], "complete")
+        self.assertEqual(result["reason_code"], "converted")
+        self.assertEqual(result["contract"], {
+            "id": self.polissa_id,
+            "disposition": "updated",
+            "effective_date": date.today().strftime("%Y-%m-%d"),
+        })
+        self.assertEqual(result["card"]["disposition"],
+                         "reused" if reuse_replacement else "created")
+        if reuse_replacement:
+            self.assertEqual(result["card"]["id"], replacement_id)
+        replacement_id = result["card"]["id"]
+        self.assertNotEqual(replacement_id, original_id)
+        polissa = self.polissa_obj.browse(self.cursor, self.uid, self.polissa_id)
+        for contract in (polissa, polissa.modcontractual_activa):
+            self.assertEqual(contract.creditcard.id, replacement_id)
+            self.assertEqual(contract.tipo_pago.id, self.payment_type_id)
+            self.assertEqual(contract.payment_mode_id.id, self.payment_mode_id)
+            self.assertFalse(contract.bank)
+        for field_name, value in replacement_data.items():
+            self.assertEqual(getattr(polissa.creditcard, field_name), value)
+        self.assertEqual(polissa.creditcard.partner_id.id, partner_id)
+        factura_obj = self.openerp.pool.get("giscedata.facturacio.factura")
+        next_card = factura_obj._get_recurrent_card_for_factura(
+            self.cursor, self.uid, mock.Mock(polissa_id=polissa)
+        )
+        self.assertEqual(next_card.id, replacement_id)
+        modcon_domain = [("polissa_id", "=", self.polissa_id)]
+        before_retry = self.modcontractual_obj.search(self.cursor, self.uid, modcon_domain)
+
+        retry = self.polissa_obj.convert_to_recurring_card(
+            self.cursor, self.uid, self.polissa_id,
+            self._card_data_for_conversion(replacement_data),
+        )
+
+        self.assertEqual(retry["status"], "no-op")
+        self.assertEqual(retry["card"], {"id": replacement_id, "disposition": "reused"})
+        self.assertEqual(retry["contract"]["disposition"], "unchanged")
+        self.assertEqual(
+            self.modcontractual_obj.search(self.cursor, self.uid, modcon_domain), before_retry
+        )
+        self.assertEqual(
+            set(self.card_obj.search(self.cursor, self.uid, card_domain, context=lookup_context)),
+            before_cards | set([replacement_id]),
+        )
+        self.assertEqual(
+            self.card_obj.read(self.cursor, self.uid, original_id, card_fields), original_card
+        )
+
+    def test_convert_to_recurring_card_replaces_expired_card(self):
+        self._assert_recurring_card_replacement("12/%02d" % ((date.today().year - 1) % 100))
+
+    def test_convert_to_recurring_card_replaces_unexpired_card(self):
+        self._assert_recurring_card_replacement("12/%02d" % ((date.today().year + 1) % 100))
+
+    def test_convert_to_recurring_card_replaces_card_with_existing_payer_card(self):
+        self._assert_recurring_card_replacement(
+            "12/%02d" % ((date.today().year + 1) % 100), reuse_replacement=True
+        )
+
     def test_recurring_card_result_is_partial_for_remitted_noop_contract(self):
         result = self.polissa_obj._recurring_card_result(
             {"id": 10, "disposition": "reused"},
