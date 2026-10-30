@@ -101,7 +101,8 @@ class TestLeadWwwCardActivation(BaseSomLeadWwwTest):
         lead = lead_o.browse(self.cursor, self.uid, result["lead_id"])
 
         self.assertFalse(activation_result)
-        self.assertEqual(lead.crm_id.state, 'pending')
+        self.assertFalse(lead.polissa_id)
+        self.assertEqual(lead.crm_id.state, "pending")
         self.assertEqual(lead.crm_id.stage_id.id, error_stage_id)
 
     def test_add_payment_card_data_allows_activation_after_missing_card_data(self):
@@ -158,68 +159,121 @@ class TestLeadWwwCardActivation(BaseSomLeadWwwTest):
         self.assertEqual(captured["token"], "validation-token-{}".format(result["lead_id"]))
         self.assertFalse(lead.creditcard_token)
 
-    def test_activate_lead_reuses_existing_card_with_same_token_and_data(self):
+    def _prepare_lead_with_existing_card(self, **stored_overrides):
         www_lead_o = self.get_model("som.lead.www")
-        lead_o = self.get_model("giscedata.crm.lead")
         card_o = self.get_model("res.partner.creditcard")
-
         values, partner_id = self._get_existing_member_values()
         values["payment_type"] = "tpv"
         values["billing_payment_method"] = "card_recurrent"
         values.pop("iban")
-
-        existing_card_id = card_o.create(
-            self.cursor,
-            self.uid,
-            {
-                "partner_id": partner_id,
-                "token": "tok_existing_member",
-                "masked_number": "**** **** **** 1111",
-                "expiry_date": "12/30",
-                "cof_txnid": "cof_existing",
-            },
-        )
-
+        card_values = {
+            "partner_id": partner_id,
+            "token": "tok_lead_123",
+            "masked_number": "**** **** **** 4242",
+            "expiry_date": "12/30",
+            "cof_txnid": "cof_123",
+        }
+        card_values.update(stored_overrides)
+        existing_card_id = card_o.create(self.cursor, self.uid, card_values)
         result = www_lead_o.create_lead(self.cursor, self.uid, values)
         www_lead_o.add_payment_card_data(
-            self.cursor,
-            self.uid,
-            result["lead_id"],
-            self._card_vals(token="tok_existing_member", masked_number="**** **** **** 1111"),
+            self.cursor, self.uid, result["lead_id"], self._card_vals()
         )
+        return result["lead_id"], existing_card_id
 
-        www_lead_o.activate_lead_sync(self.cursor, self.uid, result["lead_id"])
+    def _activate_and_get_card(self, lead_id):
+        self.get_model("som.lead.www").activate_lead_sync(
+            self.cursor, self.uid, lead_id
+        )
+        lead = self.get_model("giscedata.crm.lead").browse(
+            self.cursor, self.uid, lead_id
+        )
+        self.assertTrue(lead.polissa_id)
+        return lead.polissa_id.creditcard
 
-        lead = lead_o.browse(self.cursor, self.uid, result["lead_id"])
-        self.assertEqual(lead.polissa_id.creditcard.id, existing_card_id)
+    def test_activate_lead_reuses_existing_card_with_same_token_and_data(self):
+        lead_id, existing_card_id = self._prepare_lead_with_existing_card()
 
-    def test_activate_lead_fails_when_existing_token_data_does_not_match(self):
-        www_lead_o = self.get_model("som.lead.www")
+        card = self._activate_and_get_card(lead_id)
+
+        self.assertEqual(card.id, existing_card_id)
+        self.assertEqual(card.cof_txnid, "cof_123")
+
+    def _assert_new_card_for_different_metadata(self, **stored_overrides):
+        lead_id, existing_card_id = self._prepare_lead_with_existing_card(**stored_overrides)
         card_o = self.get_model("res.partner.creditcard")
+        fields = ["partner_id", "token", "masked_number", "expiry_date", "cof_txnid", "active"]
+        before = card_o.read(self.cursor, self.uid, existing_card_id, fields)
 
-        values, partner_id = self._get_existing_member_values()
-        values["payment_type"] = "tpv"
-        values["billing_payment_method"] = "card_recurrent"
+        card = self._activate_and_get_card(lead_id)
 
-        card_o.create(
-            self.cursor,
-            self.uid,
-            {
-                "partner_id": partner_id,
-                "token": "tok_existing_member",
-                "masked_number": "**** **** **** 9999",
-                "expiry_date": "12/30",
-                "cof_txnid": "cof_existing",
-            },
+        self.assertNotEqual(card.id, existing_card_id)
+        self.assertEqual(card.token, "tok_lead_123")
+        self.assertEqual(card.masked_number, "**** **** **** 4242")
+        self.assertEqual(card.expiry_date, "12/30")
+        self.assertEqual(card.cof_txnid, "cof_123")
+        self.assertEqual(card_o.read(self.cursor, self.uid, existing_card_id, fields), before)
+
+    def test_activate_lead_creates_card_for_different_masked_number(self):
+        self._assert_new_card_for_different_metadata(masked_number="**** **** **** 9999")
+
+    def test_activate_lead_creates_card_for_different_expiry_date(self):
+        self._assert_new_card_for_different_metadata(expiry_date="11/31")
+
+    def test_activate_lead_creates_card_for_different_cof(self):
+        self._assert_new_card_for_different_metadata(cof_txnid="cof_other")
+
+    def test_activate_lead_reactivates_exact_inactive_card(self):
+        lead_id, existing_card_id = self._prepare_lead_with_existing_card(active=False)
+
+        card = self._activate_and_get_card(lead_id)
+
+        self.assertEqual(card.id, existing_card_id)
+        self.assertTrue(card.active)
+
+    def test_activate_lead_prefers_active_exact_match(self):
+        lead_id, inactive_card_id = self._prepare_lead_with_existing_card(active=False)
+        card_o = self.get_model("res.partner.creditcard")
+        values = card_o.read(
+            self.cursor, self.uid, inactive_card_id,
+            ["partner_id", "token", "masked_number", "expiry_date", "cof_txnid"],
         )
+        values.pop("id")
+        values["partner_id"] = values["partner_id"][0]
+        active_card_id = card_o.create(self.cursor, self.uid, values)
 
-        result = www_lead_o.create_lead(self.cursor, self.uid, values)
-        www_lead_o.add_payment_card_data(
-            self.cursor,
-            self.uid,
-            result["lead_id"],
-            self._card_vals(token="tok_existing_member", masked_number="**** **** **** 1111"),
+        card = self._activate_and_get_card(lead_id)
+
+        self.assertEqual(card.id, active_card_id)
+        self.assertFalse(card_o.read(
+            self.cursor, self.uid, inactive_card_id, ["active"]
+        )["active"])
+
+    def _assert_duplicate_exact_cards_are_rejected(self, active):
+        lead_id, existing_card_id = self._prepare_lead_with_existing_card(active=active)
+        card_o = self.get_model("res.partner.creditcard")
+        values = card_o.read(
+            self.cursor, self.uid, existing_card_id,
+            ["partner_id", "token", "masked_number", "expiry_date", "cof_txnid", "active"],
         )
+        values.pop("id")
+        values["partner_id"] = values["partner_id"][0]
+        duplicate_id = card_o.create(self.cursor, self.uid, values)
 
         with self.assertRaises(osv.except_osv):
-            www_lead_o.activate_lead_sync(self.cursor, self.uid, result["lead_id"])
+            self.get_model("som.lead.www").activate_lead_sync(
+                self.cursor, self.uid, lead_id
+            )
+
+        lead = self.get_model("giscedata.crm.lead").browse(self.cursor, self.uid, lead_id)
+        self.assertFalse(lead.polissa_id)
+        for card_id in (existing_card_id, duplicate_id):
+            self.assertEqual(
+                card_o.read(self.cursor, self.uid, card_id, ["active"])["active"], active
+            )
+
+    def test_activate_lead_rejects_duplicate_active_exact_matches(self):
+        self._assert_duplicate_exact_cards_are_rejected(active=True)
+
+    def test_activate_lead_rejects_duplicate_inactive_exact_matches(self):
+        self._assert_duplicate_exact_cards_are_rejected(active=False)

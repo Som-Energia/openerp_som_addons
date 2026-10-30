@@ -1,0 +1,28 @@
+msgid ""
+msgstr ""
+"Language: ca_ES\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#. module: som_card_payment
+#: code:addons/som_card_payment/models/res_partner_creditcard.py:26
+msgid "Invalid card data"
+msgstr "Dades de targeta no vàlides"
+
+#. module: som_card_payment
+#: code:addons/som_card_payment/models/res_partner_creditcard.py:27
+#, python-format
+msgid "Missing required card fields: %s"
+msgstr "Falten camps obligatoris de la targeta: %s"
+
+#. module: som_card_payment
+#: code:addons/som_card_payment/models/res_partner_creditcard.py:51
+msgid "Card token conflict"
+msgstr "Conflicte de token de targeta"
+
+#. module: som_card_payment
+#: code:addons/som_card_payment/models/res_partner_creditcard.py:52
+msgid "Multiple stored cards match the same payer and card data."
+msgstr "Diverses targetes desades coincideixen amb el mateix pagador i les mateixes dades de targeta."
