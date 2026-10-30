@@ -23,7 +23,7 @@ class CupsHelper(osv.osv_memory):
     def get_polissa_id(self, cursor, uid, cups_id, context=None):
         if context is None:
             context = {}
-        return self._get_polissa_id(self, cursor, uid, cups_id, context=context)
+        return self._get_polissa_id(cursor, uid, cups_id, context=context)
 
     def _get_polissa_id(self, cursor, uid, cups_id, context=None):
         if context is None:
