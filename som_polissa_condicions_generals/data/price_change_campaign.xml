@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+    <data noupdate="1">
+        <!-- New opt-in template. Never overwrite the historical noupdate template. -->
+        <record model="poweremail.templates" id="price_change_campaign_template">
+            <field name="name">Canvi de preus - plantilla reutilitzable</field>
+            <field name="object_name" model="ir.model" search="[('model', '=', 'som.enviament.massiu')]"/>
+            <field name="model_int_name">som.enviament.massiu</field>
+            <field name="template_language">mako</field>
+            <field name="def_to">${object.polissa_id.titular.www_email}, ${object.polissa_id.direccio_notificacio.email}</field>
+            <field name="def_cc"></field>
+            <field name="def_bcc"></field>
+            <field name="lang">${object.pool.get('report.backend.mailcanvipreus').get_lang(object._cr, object._uid, object.id)}</field>
+            <field name="def_subject"><![CDATA[${object.pool.get('report.backend.mailcanvipreus').get_campaign_subject(object._cr, object._uid, object.id)}]]></field>
+            <field name="def_body_html"><![CDATA[<%include file="/som_polissa_condicions_generals/report/mailcanvipreus/campaign.mako"/>]]></field>
+            <field name="auto_email" eval="False"/>
+            <field name="single_email" eval="False"/>
+            <field name="send_on_create" eval="False"/>
+            <field name="send_on_write" eval="False"/>
+            <field name="save_to_drafts" eval="False"/>
+            <field name="use_sign" eval="False"/>
+            <field name="inline" eval="False"/>
+        </record>
+        <record model="report.banner.domain" id="price_change_domain_20td">
+            <field name="name">Canvi preus: 2.0TD</field>
+            <field name="object_ref" eval="'poweremail.templates,%s' % ref('price_change_campaign_template')"/>
+            <field name="domain">[('polissa_id.tarifa.name', '=', '2.0TD')]</field>
+        </record>
+        <record model="report.banner.domain" id="price_change_domain_other_tariffs">
+            <field name="name">Canvi preus: altres tarifes</field>
+            <field name="object_ref" eval="'poweremail.templates,%s' % ref('price_change_campaign_template')"/>
+            <field name="domain">[('polissa_id.tarifa.name', '!=', '2.0TD')]</field>
+        </record>
+        <record model="report.banner.domain" id="price_change_domain_all">
+            <field name="name">Canvi preus: tots els contractes</field>
+            <field name="object_ref" eval="'poweremail.templates,%s' % ref('price_change_campaign_template')"/>
+            <field name="domain">[]</field>
+        </record>
+        <record model="report.banner.domain" id="price_change_domain_autoconsum">
+            <field name="name">Canvi preus: compensació simplificada per períodes</field>
+            <field name="object_ref" eval="'poweremail.templates,%s' % ref('price_change_campaign_template')"/>
+            <field name="domain">[('polissa_id.tipus_subseccio', '=', '21'), ('polissa_id.mode_facturacio', '=', 'atr')]</field>
+        </record>
+        <!-- Inactive drafts: prepare validity, HTML and translations using
+             the existing banner management tools before sending. -->
+        <record model="report.banner" id="price_change_reason_20td">
+            <field name="name">Esborrany canvi preus: motiu 2.0TD</field>
+            <field name="code">CANVI_PREUS_MOTIU</field>
+            <field name="res_model">som.enviament.massiu</field>
+            <field name="start_date">2099-01-01</field>
+            <field name="end_date">2099-01-01</field>
+            <field name="banner_domain_ids" eval="[(6, 0, [ref('price_change_domain_20td')])]"/>
+        </record>
+        <record model="report.banner" id="price_change_reason_other_tariffs">
+            <field name="name">Esborrany canvi preus: motiu altres tarifes</field>
+            <field name="code">CANVI_PREUS_MOTIU</field>
+            <field name="res_model">som.enviament.massiu</field>
+            <field name="start_date">2099-01-01</field>
+            <field name="end_date">2099-01-01</field>
+            <field name="banner_domain_ids" eval="[(6, 0, [ref('price_change_domain_other_tariffs')])]"/>
+        </record>
+        <record model="report.banner" id="price_change_autoconsum">
+            <field name="name">Esborrany canvi preus: autoconsum</field>
+            <field name="code">CANVI_PREUS_AUTOCONSUM</field>
+            <field name="res_model">som.enviament.massiu</field>
+            <field name="start_date">2099-01-01</field>
+            <field name="end_date">2099-01-01</field>
+            <field name="banner_domain_ids" eval="[(6, 0, [ref('price_change_domain_autoconsum')])]"/>
+        </record>
+        <record model="report.banner" id="price_change_farewell">
+            <field name="name">Esborrany canvi preus: comiat</field>
+            <field name="code">CANVI_PREUS_COMIAT</field>
+            <field name="res_model">som.enviament.massiu</field>
+            <field name="start_date">2099-01-01</field>
+            <field name="end_date">2099-01-01</field>
+            <field name="banner_domain_ids" eval="[(6, 0, [ref('price_change_domain_all')])]"/>
+        </record>
+    </data>
+</openerp>
