@@ -5,14 +5,6 @@ from copy import deepcopy
 from datetime import datetime, timedelta
 
 
-class ComplementaryBlocks(list):
-    """Keep original chart rounding boundaries outside public block dictionaries."""
-
-    def __init__(self, blocks, originals):
-        list.__init__(self, blocks)
-        self.original_blocks = originals
-
-
 def block_signature(block):
     metadata = []
     for key, value in sorted(block.items()):
@@ -50,6 +42,4 @@ def merge_complementary_blocks(blocks, source_signatures):
         else:
             result.append(current)
         previous_signature = signature
-    if len(result) < len(blocks):
-        return ComplementaryBlocks(result, deepcopy(blocks))
     return result

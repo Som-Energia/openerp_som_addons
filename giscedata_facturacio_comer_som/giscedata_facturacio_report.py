@@ -3841,6 +3841,9 @@ class GiscedataFacturacioFacturaReport(osv.osv):
                     source_signatures.append(None)
 
         data['energy_lines_data'] = merge_complementary_blocks(block, source_signatures)
+        if len(data['energy_lines_data']) < len(block):
+            # Native containers survive fill_all_components_data's YAML roundtrip.
+            data['original_energy_lines_data'] = block
         return data
 
     def get_sub_component_invoice_details_td_excess_power_maximeter(self, fact, pol):
@@ -4137,9 +4140,10 @@ class GiscedataFacturacioFacturaReport(osv.osv):
         other_data = self.get_sub_component_invoice_details_td_other_concepts_data(fact, pol)
         if 'compl_info' in other_data and 'energy_lines_data' in other_data['compl_info']:
             periods = self.get_matrix_show_periods(pol)
-            blocks = other_data['compl_info']['energy_lines_data']
+            compl_info = other_data['compl_info']
+            blocks = compl_info.get('original_energy_lines_data', compl_info['energy_lines_data'])
             # Retain historical per-original-block, per-period cent rounding.
-            for block in getattr(blocks, 'original_blocks', blocks):
+            for block in blocks:
                 for period in periods:
                     if period in block:
                         data = block[period]
