@@ -8,6 +8,7 @@ from datetime import datetime, timedelta
 import imp
 import os
 import unittest
+from yamlns import namespace as ns
 
 MODULE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -39,6 +40,7 @@ class TestsComplementaryBlocks(unittest.TestCase):
         blocks = synthetic_blocks()
         original = deepcopy(blocks)
         merged = helper.merge_complementary_blocks(blocks, ['safe'] * 4)
+        self.assertEqual(type(merged), list)
         self.assertEqual(len(merged), 1)
         self.assertEqual(merged[0]['data_inici'], '2025-07-03')
         self.assertEqual(merged[0]['data_fi'], '2025-07-18')
@@ -127,14 +129,15 @@ def production_report():
     with open(path) as source:
         tree = ast.parse(source.read())
     selected = ast.parse('class Report(object):\n    pass\n')
-    methods = ('get_sub_component_expedient_data', 'get_component_amount_destination_td_data')
+    methods = ('get_sub_component_expedient_data', 'get_component_amount_destination_td_data',
+               'fill_all_components_data')
     report = next(node for node in tree.body if isinstance(node, ast.ClassDef)
                   and node.name == 'GiscedataFacturacioFacturaReport')
     selected.body[0].body = [node for node in report.body
                              if isinstance(node, ast.FunctionDef) and node.name in methods]
     selected.body.extend(node for node in tree.body if isinstance(node, ast.FunctionDef)
                          and node.name == 'get_iva_line')
-    namespace = dict(datetime=datetime, timedelta=timedelta, is_TD=lambda pol: True)
+    namespace = dict(datetime=datetime, timedelta=timedelta, is_TD=lambda pol: True, ns=ns)
     helper_path = os.path.join(MODULE, 'complementary_blocks.py')
     if os.path.exists(helper_path):
         namespace['merge_complementary_blocks'] = load_helper().merge_complementary_blocks
@@ -177,13 +180,51 @@ def source_fixture(periods=3):
 
 
 class TestsComplementaryProductionMethods(unittest.TestCase):
+    def test_merged_payload_survives_real_report_serialization(self):
+        report, fact, pol, lines = source_fixture()
+        original = deepcopy(lines)
+        data = report.get_sub_component_expedient_data(fact, pol, lines)
+        report.get_sub_component_invoice_details_td_other_concepts_data = (
+            lambda fact, pol: dict(compl_info=data))
+        chart = report.get_component_amount_destination_td_data(fact, pol)
+        cleanup_calls = []
+        report.cleanup_data = lambda fact: cleanup_calls.append(fact.id)
+        result = report.fill_all_components_data(
+            {'other': report.get_sub_component_invoice_details_td_other_concepts_data},
+            fact, pol, {})
+        restored = result['other']['compl_info']
+        blocks = restored['energy_lines_data']
+        self.assertEqual(type(data['energy_lines_data']), list)
+        self.assertEqual(type(data['energy_lines_data'][0]), dict)
+        self.assertEqual(type(data['original_energy_lines_data']), list)
+        self.assertEqual(len(blocks), 1)
+        self.assertEqual(blocks[0]['data_inici'], '2025-07-03')
+        self.assertEqual(blocks[0]['data_fi'], '2025-07-18')
+        self.assertEqual(blocks[0]['P1']['quantity'], 8)
+        self.assertAlmostEqual(float(blocks[0]['total']), 5.48)
+        self.assertAlmostEqual(float(blocks[0]['P1']['price_subtotal']), 5.48 / 3)
+        self.assertEqual(len(restored['original_energy_lines_data']), 4)
+        report.get_sub_component_invoice_details_td_other_concepts_data = (
+            lambda fact, pol: dict(compl_info=restored))
+        self.assertEqual(report.get_component_amount_destination_td_data(fact, pol), chart)
+        self.assertEqual(chart['pie_tolls'], 0)
+        self.assertEqual(chart['pie_charges'], 0.12)
+        self.assertEqual(chart['pie_energy'], 49.88)
+        self.assertEqual(chart['pie_total'], 50)
+        self.assertEqual(cleanup_calls, [fact.id, fact.id])
+        data['energy_lines_data'][0]['P1']['quantity'] = 999
+        self.assertEqual(data['original_energy_lines_data'][0]['P1']['quantity'], 2)
+        self.assertEqual(lines, original)
+
     def test_source_construction_baseline(self):
         report, fact, pol, lines = source_fixture()
         result = report.get_sub_component_expedient_data(fact, pol, lines)
         self.assertEqual(result['expedient'], 'ABC/1234567890/ZZZ')
         self.assertEqual(result['tipus'], '06')
         self.assertAlmostEqual(sum(b['total'] for b in result['energy_lines_data']), 5.48)
-        self.assertEqual(set(result), set(['expedient', 'tipus', 'energy_lines_data']))
+        self.assertEqual(set(result), set(['expedient', 'tipus', 'energy_lines_data',
+                                           'original_energy_lines_data']))
+        self.assertEqual(result['original_energy_lines_data'], synthetic_blocks())
 
     def test_real_source_method_merges_and_chart_retains_original_rounding(self):
         report, fact, pol, lines = source_fixture()
@@ -200,7 +241,7 @@ class TestsComplementaryProductionMethods(unittest.TestCase):
         self.assertEqual(set(blocks[0]), set(synthetic_blocks()[0]))
         self.assertEqual(lines[0]['quantity'], 2.0)
         # Compare the actual chart consumer on original and merged data.
-        data['energy_lines_data'] = blocks.original_blocks
+        data['energy_lines_data'] = data.pop('original_energy_lines_data')
         self.assertEqual(report.get_component_amount_destination_td_data(fact, pol), chart)
         # Demonstrate why rounding the merged values would be a regression.
         # Intentionally exercise the legacy chart's Python 2 rounding semantics.
@@ -280,9 +321,47 @@ class TestsComplementaryProductionMethods(unittest.TestCase):
         chart = report.get_component_amount_destination_td_data(fact, pol)
         self.assertEqual(chart['pie_tolls'], 0)
         self.assertEqual(chart['pie_charges'], -0.24)
-        data['energy_lines_data'] = blocks.original_blocks
+        report.cleanup_data = lambda fact: None
+        result = report.fill_all_components_data(
+            {'other': report.get_sub_component_invoice_details_td_other_concepts_data},
+            fact, pol, {})
+        restored = result['other']['compl_info']
+        self.assertEqual(len(restored['energy_lines_data']), 1)
+        self.assertAlmostEqual(float(restored['energy_lines_data'][0]['total']), -5.48)
+        self.assertEqual(restored['energy_lines_data'][0]['P6']['quantity'], 8)
+        self.assertEqual(len(restored['original_energy_lines_data']), 4)
+        report.get_sub_component_invoice_details_td_other_concepts_data = (
+            lambda fact, pol: dict(compl_info=restored))
+        self.assertEqual(report.get_component_amount_destination_td_data(fact, pol), chart)
+        data['energy_lines_data'] = data.pop('original_energy_lines_data')
+        report.get_sub_component_invoice_details_td_other_concepts_data = (
+            lambda fact, pol: dict(compl_info=data))
         self.assertEqual(report.get_component_amount_destination_td_data(fact, pol), chart)
         self.assertEqual(lines, original)
+
+    def test_unmerged_six_period_payload_survives_real_report_serialization(self):
+        report, fact, pol, lines = source_fixture(6)
+        fact.pool['giscedata.facturacio.importacio.linia.factura'].rows = []
+        data = report.get_sub_component_expedient_data(fact, pol, lines)
+        self.assertEqual(set(data), set(['expedient', 'tipus', 'energy_lines_data']))
+        self.assertEqual(data['energy_lines_data'], synthetic_blocks(6))
+        report.get_sub_component_invoice_details_td_other_concepts_data = (
+            lambda fact, pol: dict(compl_info=data))
+        chart = report.get_component_amount_destination_td_data(fact, pol)
+        report.cleanup_data = lambda fact: None
+        result = report.fill_all_components_data(
+            {'other': report.get_sub_component_invoice_details_td_other_concepts_data},
+            fact, pol, {})
+        restored = result['other']['compl_info']
+        self.assertEqual(set(restored), set(data))
+        self.assertEqual(len(restored['energy_lines_data']), 4)
+        self.assertEqual(restored['energy_lines_data'][0]['P6']['quantity'], 2)
+        self.assertAlmostEqual(sum(float(b['total']) for b in restored['energy_lines_data']),
+                               5.48)
+        report.get_sub_component_invoice_details_td_other_concepts_data = (
+            lambda fact, pol: dict(compl_info=restored))
+        self.assertEqual(report.get_component_amount_destination_td_data(fact, pol), chart)
+        self.assertEqual(chart['pie_charges'], 0.24)
 
     def test_unmerged_public_dictionaries_are_unchanged(self):
         report, fact, pol, lines = source_fixture()
