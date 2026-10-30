@@ -1172,6 +1172,7 @@ class TestsFacturesValidation(testing.OOTestCase):
     ):
         fact = self.prepare_f017_fact(False, [])
         fact.polissa_id.data_alta = "2017-02-09"
+        fact.polissa_id.data_ultima_lectura = False
         self.assertFalse(fact.polissa_id.data_ultima_lectura)
         self.assertLess(fact.dies, 110)
         result = self.vali_obj.check_invoice_from_delayed_contract(
@@ -1184,6 +1185,7 @@ class TestsFacturesValidation(testing.OOTestCase):
     ):
         fact = self.prepare_f017_fact(False, [])
         fact.polissa_id.data_alta = "2017-02-08"
+        fact.polissa_id.data_ultima_lectura = False
         self.assertFalse(fact.polissa_id.data_ultima_lectura)
         self.assertLess(fact.dies, 110)
         result = self.vali_obj.check_invoice_from_delayed_contract(
