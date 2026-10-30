@@ -269,7 +269,7 @@ class TestsFacturesValidation(testing.OOTestCase):
         return {
             "max_delayed_days": 70,
             "today": "2017-05-30",
-            "som_skip_if_20TD_00_and_less_than_days": 90,
+            "som_skip_if_20TD_00_and_less_than_days": 110,
         }
 
     def f003_parameters(self):
@@ -820,7 +820,7 @@ class TestsFacturesValidation(testing.OOTestCase):
         params = {
             "max_delayed_days": 70,
             "today": "2017-05-30",
-            "som_skip_if_20TD_00_and_less_than_days": 90,
+            "som_skip_if_20TD_00_and_less_than_days": 110,
         }
         fact = self.fact_obj.browse(self.txn.cursor, self.txn.user, inv_id)
         fact.tarifa_acces_id.name = u'2.0TD'
@@ -914,7 +914,7 @@ class TestsFacturesValidation(testing.OOTestCase):
             parameters_by_code["F017"],
             {
                 "max_delayed_days": 70,
-                "som_skip_if_20TD_00_and_less_than_days": 90,
+                "som_skip_if_20TD_00_and_less_than_days": 110,
             },
         )
 
@@ -1151,25 +1151,49 @@ class TestsFacturesValidation(testing.OOTestCase):
         )
         self.assertIsNotNone(result)
 
-    def test_check_invoice_from_delayed_contract_prefilter__suppresses_at_90_days(self):
-        fact = self.prepare_f017_fact("2017-03-01", [])
-        self.assertLess(fact.dies, 90)
+    def test_check_invoice_from_delayed_contract_prefilter__suppresses_at_110_days(self):
+        fact = self.prepare_f017_fact("2017-02-09", [])
+        self.assertLess(fact.dies, 110)
         result = self.vali_obj.check_invoice_from_delayed_contract(
             self.txn.cursor, self.txn.user, fact, self.f017_parameters()
         )
         self.assertIsNone(result)
 
-    def test_check_invoice_from_delayed_contract_prefilter__does_not_suppress_at_91_days(self):
-        fact = self.prepare_f017_fact("2017-02-28", [])
-        self.assertLess(fact.dies, 90)
+    def test_check_invoice_from_delayed_contract_prefilter__does_not_suppress_at_111_days(self):
+        fact = self.prepare_f017_fact("2017-02-08", [])
+        self.assertLess(fact.dies, 110)
+        result = self.vali_obj.check_invoice_from_delayed_contract(
+            self.txn.cursor, self.txn.user, fact, self.f017_parameters()
+        )
+        self.assertIsNotNone(result)
+
+    def test_check_invoice_from_delayed_contract_prefilter__suppresses_at_110_days_from_data_alta(  # noqa: E501
+        self,
+    ):
+        fact = self.prepare_f017_fact(False, [])
+        fact.polissa_id.data_alta = "2017-02-09"
+        self.assertFalse(fact.polissa_id.data_ultima_lectura)
+        self.assertLess(fact.dies, 110)
+        result = self.vali_obj.check_invoice_from_delayed_contract(
+            self.txn.cursor, self.txn.user, fact, self.f017_parameters()
+        )
+        self.assertIsNone(result)
+
+    def test_check_invoice_from_delayed_contract_prefilter__does_not_suppress_at_111_days_from_data_alta(  # noqa: E501
+        self,
+    ):
+        fact = self.prepare_f017_fact(False, [])
+        fact.polissa_id.data_alta = "2017-02-08"
+        self.assertFalse(fact.polissa_id.data_ultima_lectura)
+        self.assertLess(fact.dies, 110)
         result = self.vali_obj.check_invoice_from_delayed_contract(
             self.txn.cursor, self.txn.user, fact, self.f017_parameters()
         )
         self.assertIsNotNone(result)
 
     def test_check_invoice_from_delayed_contract_prefilter__suppresses_with_insular_tariff(self):
-        fact = self.prepare_f017_fact("2017-03-01", [])
-        self.assertLess(fact.dies, 90)
+        fact = self.prepare_f017_fact("2017-02-09", [])
+        self.assertLess(fact.dies, 110)
         self.prepare_som_20td_fact(fact, u"2.0TD_SOM_INSULAR")
         result = self.vali_obj.check_invoice_from_delayed_contract(
             self.txn.cursor, self.txn.user, fact, self.f017_parameters()
@@ -1179,8 +1203,8 @@ class TestsFacturesValidation(testing.OOTestCase):
     def test_check_invoice_from_delayed_contract_prefilter__suppresses_with_non_real_and_missing_origins(  # noqa: E501
         self,
     ):
-        fact = self.prepare_f017_fact("2017-03-01", ["40", False])
-        self.assertLess(fact.dies, 90)
+        fact = self.prepare_f017_fact("2017-02-09", ["40", False])
+        self.assertLess(fact.dies, 110)
         result = self.vali_obj.check_invoice_from_delayed_contract(
             self.txn.cursor, self.txn.user, fact, self.f017_parameters()
         )
