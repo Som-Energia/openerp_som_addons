@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+# pylint: disable=bad-python3-import,old-division,round-builtin
 from __future__ import absolute_import
 from osv import osv, fields
 from datetime import datetime
