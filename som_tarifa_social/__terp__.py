@@ -12,9 +12,12 @@
     'installable': True,
     'depends': [
         'base',
+        'poweremail',
     ],
     'init_xml': [],
     'update_xml': [
+        'data/pricelist_social_data.xml',
+        'data/poweremail_templates.xml',
     ],
     'demo_xml': [
     ],
