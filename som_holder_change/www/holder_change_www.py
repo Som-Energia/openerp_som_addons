@@ -188,28 +188,36 @@ class SomHolderChangeWww(osv.osv_memory):
             # Keep the provider process associated even if URL polling later fails.
             with pooler.get_db(cursor.dbname).cursor() as registration_cursor:
                 with Sudo(uid=uid, gid=0):
+                    registration_cursor.execute(
+                        "SELECT id FROM som_holder_change_request WHERE id = %s FOR UPDATE",
+                        (request_id,),
+                    )
                     request = request_obj.browse(
                         registration_cursor, uid, request_id, context=document_context
                     )
-                    if not request.contract_pdf:
+                    if request.signature_process_id:
+                        process_id = request.signature_process_id.id
+                    elif request.state != "awaiting_signature" or not request.contract_pdf:
                         raise osv.except_osv(_("Signature error"), _(
                             "The request is not ready for signing."))
-                    process_id = process_obj.create(
-                        registration_cursor,
-                        uid,
-                        self._signature_process_values(registration_cursor, uid, request),
-                        context=context,
-                    )
-                    request_obj.write(
-                        registration_cursor,
-                        uid,
-                        [request_id],
-                        {"signature_process_id": process_id},
-                        context=context,
-                    )
+                    else:
+                        process_id = process_obj.create(
+                            registration_cursor,
+                            uid,
+                            self._signature_process_values(registration_cursor, uid, request),
+                            context=context,
+                        )
+                        request_obj.write(
+                            registration_cursor,
+                            uid,
+                            [request_id],
+                            {"signature_process_id": process_id},
+                            context=context,
+                        )
                     registration_cursor.commit()
 
-        # start() is idempotent once the provider signature ID is stored.
+        # Reusing the process is not enough: serialize the check/start pair
+        # too, until the provider signature ID has been durably stored.
         start_error = None
         with pooler.get_db(cursor.dbname).cursor() as signature_cursor:
             with Sudo(uid=uid, gid=0):
@@ -217,9 +225,17 @@ class SomHolderChangeWww(osv.osv_memory):
                     self._wait_for_signature_documents(
                         signature_cursor, uid, process_id, context=context
                     )
-                    process_obj.start(
-                        signature_cursor, uid, [process_id], context=document_context
+                    signature_cursor.execute(
+                        "SELECT id FROM giscedata_signatura_process WHERE id = %s FOR UPDATE",
+                        (process_id,),
                     )
+                    process = process_obj.read(
+                        signature_cursor, uid, process_id, ["signature_id"], context=context
+                    )
+                    if not process["signature_id"]:
+                        process_obj.start(
+                            signature_cursor, uid, [process_id], context=document_context
+                        )
                 except Exception as error:
                     start_error = error
                 signature_cursor.commit()

@@ -324,7 +324,8 @@ class SomHolderChangeRequest(osv.osv):
                 cursor, uid, polissa_id, values, context=context
             )
         mandate_id = self._create_mandate(
-            cursor, uid, request, change_data["partner_id"], polissa_id, context=context
+            cursor, uid, request, change_data["partner_id"], polissa_id,
+            change_data["address_id"], change_data["payment_values"], context=context,
         )
         self._apply_post_m1_effects(
             cursor,
@@ -501,36 +502,52 @@ class SomHolderChangeRequest(osv.osv):
             values["new_contract"] = request.polissa_id.id
         return values
 
-    def _create_mandate(self, cursor, uid, request, partner_id, polissa_id, context=None):
+    def _create_mandate(
+        self, cursor, uid, request, partner_id, polissa_id, address_id, payment_values, context=None
+    ):
         if self._payment_method(request) != "remesa":
             return False
-        payment_mode = request.polissa_id.payment_mode_id
-        mandate_obj = self.pool.get("payment.mandate")
-        mandate_scheme = getattr(payment_mode, "mandate_scheme", False) or "core"
-        mandate_id = mandate_obj.create(
-            cursor,
-            uid,
-            {
-                "name": request.mandate_number,
-                "reference": "giscedata.polissa,{}".format(polissa_id),
-                "mandate_scheme": mandate_scheme,
-            },
-            context=context,
+        payment_mode = self.pool.get("payment.mode").browse(
+            cursor, uid, payment_values["payment_mode_id"], context=context
         )
-        mandate_obj.update_from_reference(
-            cursor, uid, [mandate_id], context=context
+        mandate_obj = self.pool.get("payment.mandate")
+        partner = self.pool.get("res.partner").browse(cursor, uid, partner_id, context=context)
+        address = self.pool.get("res.partner.address").browse(
+            cursor, uid, address_id, context=context
+        )
+        bank = self.pool.get("res.partner.bank").browse(
+            cursor, uid, payment_values["bank"], context=context
+        )
+        mandate_context = dict(context or {}, lang=partner.lang, force_bank=bank)
+        # Keep contract/company notes, but explicitly resolve the future debtor.
+        # A subrogation's live contract still belongs to its previous payer.
+        values = self.pool.get("giscedata.polissa").update_mandate_lang(
+            cursor, uid, polissa_id, context=mandate_context
+        )
+        reference = values.pop("reference")
+        debtor_address = (address.name_get(context=mandate_context)[0][1] or "").upper()
+        debtor_contact = "{}, ".format(address.name).upper() if address.name else ""
+        if debtor_contact:
+            debtor_address = debtor_address.replace(debtor_contact, "")
+        values.update({
+            "name": request.mandate_number,
+            "date": datetime.today().strftime("%Y-%m-%d"),
+            "mandate_scheme": payment_mode.mandate_scheme or "core",
+            "creditor_code": payment_mode.sepa_creditor_code,
+            "debtor_name": partner.name,
+            "debtor_vat": partner.vat,
+            "debtor_address": debtor_address,
+            "debtor_state": (address.state_id.name or "").upper(),
+            "debtor_country": (address.country_id.name or "").upper(),
+            "debtor_iban": bank.iban,
+        })
+        # create(reference=...) and update_from_reference() would overwrite
+        # the debtor from the still-old live contract. Link it only afterwards.
+        mandate_id = mandate_obj.create(
+            cursor, uid, values, context=mandate_context
         )
         mandate_obj.write(
-            cursor,
-            uid,
-            [mandate_id],
-            {
-                "name": request.mandate_number,
-                "date": datetime.today().strftime("%Y-%m-%d"),
-                "mandate_scheme": mandate_scheme,
-                "debtor_iban": request.payload["iban"].replace(" ", ""),
-            },
-            context=context,
+            cursor, uid, [mandate_id], {"reference": reference}, context=mandate_context
         )
         return mandate_id
 

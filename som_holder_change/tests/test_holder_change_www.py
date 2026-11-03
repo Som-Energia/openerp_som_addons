@@ -2108,6 +2108,92 @@ class TestHolderChangeWww(testing.OOTestCase):
                 )
         self.assertIn("/v1/ca/", response["url"])
 
+    def test_subrogation_persists_the_signed_new_debtor_mandate(self):
+        self._check_persisted_mandate(subrogation=True)
+
+    def test_member_subrogation_persists_the_signed_new_debtor_mandate(self):
+        self._check_persisted_mandate(subrogation=True, already_member=True)
+
+    def test_transfer_persists_the_signed_new_debtor_mandate(self):
+        self._check_persisted_mandate(subrogation=False)
+
+    def test_card_to_bank_subrogation_uses_requested_creditor_configuration(self):
+        self._set_old_contract_card()
+        old_mode = self.polissa_obj.browse(
+            self.cursor, self.uid, self.polissa_id
+        ).payment_mode_id
+        self.openerp.pool.get("payment.mode").write(
+            self.cursor, self.uid, old_mode.id, {"mandate_scheme": "b2b"}
+        )
+        self._check_persisted_mandate(subrogation=True, already_member=True)
+
+    def _check_persisted_mandate(self, subrogation, already_member=False):
+        if already_member:
+            payload, partner_id, _address_id = self.already_member_payload(subrogation=subrogation)
+            partner = self.openerp.pool.get("res.partner").browse(
+                self.cursor, self.uid, partner_id
+            )
+            expected_name, expected_vat = partner.name, partner.vat
+        else:
+            payload = self.payload()
+            expected_name, expected_vat = "Nova Titular, Maria", "ES12345678Z"
+            if subrogation:
+                payload["especial_cases"]["reason_death"] = True
+                payload["attachments"] = [{
+                    "filename": "death-certificate.pdf", "category": "holder_change_death",
+                    "datas": "JVBERi0xLjQ=",
+                }]
+        mandate_obj = self.openerp.pool.get("payment.mandate")
+        fields = [
+            "name", "debtor_name", "debtor_vat", "debtor_address", "debtor_state",
+            "debtor_country", "debtor_iban", "creditor_id", "creditor_code", "mandate_scheme",
+        ]
+        prepared = []
+
+        def capture_mandate(cursor, uid, ids, data, context=None):
+            if self.local_service.call_args[0][0] == "report.report_mandato":
+                values = mandate_obj.read(cursor, uid, ids[0], fields)
+                values.pop("id")
+                prepared.append(values)
+            return b"%PDF-document", "pdf"
+
+        self.local_service.return_value.create.side_effect = capture_mandate
+        old_contract = self.polissa_obj.read(
+            self.cursor, self.uid, self.polissa_id,
+            ["titular", "pagador", "direccio_pagament", "direccio_notificacio", "bank"],
+        )
+        result = self.www_obj.create_request(self.cursor, self.uid, payload)
+        self.assertTrue(result["success"], result)
+        self.assertEqual(len(prepared), 1)
+        self.queue_request(result["request_id"])
+        execution = self.request_obj.execute(self.cursor, self.uid, result["request_id"])
+        request = self.request_obj.browse(self.cursor, self.uid, result["request_id"])
+        mandate_ids = mandate_obj.search(
+            self.cursor, self.uid, [("name", "=", request.mandate_number)]
+        )
+        self.assertEqual(len(mandate_ids), 1)
+        stored = mandate_obj.read(self.cursor, self.uid, mandate_ids[0], fields + ["reference"])
+        stored.pop("id")
+        reference = stored.pop("reference")
+        self.assertEqual(stored["debtor_name"], expected_name)
+        self.assertEqual(stored["debtor_vat"], expected_vat)
+        self.assertEqual(stored["debtor_iban"], payload["iban"])
+        self.assertEqual(stored, prepared[0])
+        self.assertEqual(reference, "giscedata.polissa,{}".format(execution["result_polissa_id"]))
+        payment_mode_id = self.polissa_obj._get_enginyers_payment_values(
+            self.cursor, self.uid
+        )["payment_mode_id"]
+        mode = self.openerp.pool.get("payment.mode").browse(
+            self.cursor, self.uid, payment_mode_id
+        )
+        self.assertEqual(stored["mandate_scheme"], mode.mandate_scheme or "core")
+        if mode.sepa_creditor_code:
+            self.assertEqual(stored["creditor_code"], mode.sepa_creditor_code)
+        if subrogation:
+            self.assertEqual(self.polissa_obj.read(
+                self.cursor, self.uid, self.polissa_id, list(old_contract.keys())
+            ), old_contract)
+
     def payload(self):
         return {
             "payment_type": "remesa",
