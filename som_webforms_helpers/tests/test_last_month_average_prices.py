@@ -35,7 +35,10 @@ class LastMonthAveragePricesTests(testing.OOTestCase):
                         "tariff": tariff,
                         "type": price_type,
                         "date": "2026-04-01",
-                        "prices": dict(("P%d" % period, 0.123456) for period in range(1, 7)),
+                        "prices": dict(
+                            ("P%d" % period, {"value": 0.123456, "uom": u"€/kWh"})
+                            for period in range(1, 7)
+                        ),
                     })
 
     def test_each_period_returns_its_own_price(self):
@@ -56,12 +59,12 @@ class LastMonthAveragePricesTests(testing.OOTestCase):
 
             result = self.model.get_last_month_average_prices_www(cursor, uid, "3.0TD", "index")
 
-            self.assertEqual(result["prices"]["P1"], 0.123456)
-            self.assertEqual(result["prices"]["P2"], 0.234567)
-            self.assertEqual(result["prices"]["P3"], 0.345678)
-            self.assertEqual(result["prices"]["P4"], 0.456789)
-            self.assertEqual(result["prices"]["P5"], 0.567891)
-            self.assertEqual(result["prices"]["P6"], 0.678912)
+            self.assertEqual(result["prices"]["P1"], {"value": 0.123456, "uom": u"€/kWh"})
+            self.assertEqual(result["prices"]["P2"], {"value": 0.234567, "uom": u"€/kWh"})
+            self.assertEqual(result["prices"]["P3"], {"value": 0.345678, "uom": u"€/kWh"})
+            self.assertEqual(result["prices"]["P4"], {"value": 0.456789, "uom": u"€/kWh"})
+            self.assertEqual(result["prices"]["P5"], {"value": 0.567891, "uom": u"€/kWh"})
+            self.assertEqual(result["prices"]["P6"], {"value": 0.678912, "uom": u"€/kWh"})
 
     def test_latest_date_then_id_and_no_month_filter(self):
         with Transaction().start(self.database) as txn:
@@ -79,7 +82,9 @@ class LastMonthAveragePricesTests(testing.OOTestCase):
             )
 
             self.assertEqual(result["date"], "2026-06-01")
-            self.assertEqual(result["prices"], dict(("P%d" % p, 0.3) for p in range(1, 7)))
+            self.assertEqual(result["prices"], dict(
+                ("P%d" % p, {"value": 0.3, "uom": u"€/kWh"}) for p in range(1, 7)
+            ))
             self.assertEqual(context, {"date": "2020-01-01", "lang": "ca_ES"})
 
     def test_zero_prices_are_valid(self):
@@ -90,7 +95,9 @@ class LastMonthAveragePricesTests(testing.OOTestCase):
 
             result = self.model.get_last_month_average_prices_www(cursor, uid, "2.0TD", "index")
 
-            self.assertEqual(result["prices"], dict(("P%d" % p, 0.0) for p in range(1, 7)))
+            self.assertEqual(result["prices"], dict(
+                ("P%d" % p, {"value": 0.0, "uom": u"€/kWh"}) for p in range(1, 7)
+            ))
             self.assertNotIn("error", result)
 
     def test_missing_configuration(self):
