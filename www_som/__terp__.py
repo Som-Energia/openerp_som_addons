@@ -20,6 +20,7 @@ Mòdul per la integració de l'oficina virtual
         "giscedata_facturacio_impagat_comer",
         "giscedata_atc_switching",
         "som_account_invoice_pending",
+        "som_card_payment",
     ],
     "init_xml": [],
     "demo_xml": [
