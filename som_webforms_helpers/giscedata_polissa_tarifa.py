@@ -1283,5 +1283,53 @@ class GiscedataPolissaTarifa(osv.osv):
         except Exception as e:
             raise e
 
+    def get_last_month_average_prices_www(
+        self, cursor, uid, tariff, price_type, context=None
+    ):
+        """Return the latest stored averages in EUR/kWh, without adding taxes.
+
+        The date is the stored price date, not necessarily the previous month.
+        Each of the six periods contains value and uom (EUR/kWh), including
+        zero prices. No internal IDs are exposed. Errors follow the other
+        webforms price helpers.
+        """
+        try:
+            if tariff not in ("2.0TD", "3.0TD"):
+                raise som_webforms_exceptions.InvalidAveragePriceTariff()
+            if price_type not in ("index", "ssaa"):
+                raise som_webforms_exceptions.InvalidAveragePriceType()
+
+            average_price_obj = self.pool.get("som.last.month.average.price")
+            average = average_price_obj.get_current_price(
+                cursor, uid, tariff, price_type, context=context
+            )
+            if not average:
+                raise som_webforms_exceptions.MissingSimulationConfig()
+
+            return {
+                "tariff": average["tariff"],
+                "type": average["type"],
+                "date": average["date"],
+                "prices": dict(
+                    ("P%d" % period, {
+                        "value": average["p%d_price" % period],
+                        "uom": u"€/kWh",
+                    })
+                    for period in range(1, 7)
+                ),
+            }
+        except som_webforms_exceptions.SomWebformsException as e:
+            return dict(
+                error=e.text,
+                error_code=e.code,
+                trace=self.traceback_info(e),
+            )
+        except Exception as e:
+            return dict(
+                error=str(e),
+                error_code="Unexpected",
+                trace=self.traceback_info(e),
+            )
+
 
 GiscedataPolissaTarifa()
