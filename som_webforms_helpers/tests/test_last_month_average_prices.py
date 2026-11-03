@@ -38,6 +38,31 @@ class LastMonthAveragePricesTests(testing.OOTestCase):
                         "prices": dict(("P%d" % period, 0.123456) for period in range(1, 7)),
                     })
 
+    def test_each_period_returns_its_own_price(self):
+        with Transaction().start(self.database) as txn:
+            cursor, uid = txn.cursor, txn.user
+            self._clear_averages(cursor, uid)
+            self.average_obj.create(cursor, uid, {
+                "tariff": "3.0TD",
+                "type": "index",
+                "date": "2026-04-01",
+                "p1_price": 0.123456,
+                "p2_price": 0.234567,
+                "p3_price": 0.345678,
+                "p4_price": 0.456789,
+                "p5_price": 0.567891,
+                "p6_price": 0.678912,
+            })
+
+            result = self.model.get_last_month_average_prices_www(cursor, uid, "3.0TD", "index")
+
+            self.assertEqual(result["prices"]["P1"], 0.123456)
+            self.assertEqual(result["prices"]["P2"], 0.234567)
+            self.assertEqual(result["prices"]["P3"], 0.345678)
+            self.assertEqual(result["prices"]["P4"], 0.456789)
+            self.assertEqual(result["prices"]["P5"], 0.567891)
+            self.assertEqual(result["prices"]["P6"], 0.678912)
+
     def test_latest_date_then_id_and_no_month_filter(self):
         with Transaction().start(self.database) as txn:
             cursor, uid = txn.cursor, txn.user
