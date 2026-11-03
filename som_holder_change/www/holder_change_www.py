@@ -15,6 +15,7 @@ from service.security import Sudo
 from tools.translate import _
 
 from . import holder_change_validation
+from ..models import holder_change_payload
 
 CUPS_RE = re.compile(r"^ES[0-9]{16}[A-Z]{2}(?:[0-9][A-Z])?$")
 ACTIVE_REQUEST_STATES = (
@@ -48,11 +49,28 @@ class SomHolderChangeWww(osv.osv_memory):
             return holder_change_validation.error(
                 contract_error, _("The contract is not available."))
 
-        if self._is_inactive_holder(
-            cursor, uid, payload["contract_owner"]["vat"], context=context
-        ):
+        holder_vat = (
+            payload["linked_member_info"]["vat"] if payload["linked_member"] == "already_member"
+            else payload["contract_owner"]["vat"]
+        )
+        if self._is_inactive_holder(cursor, uid, holder_vat, context=context):
             return holder_change_validation.error(
                 "CUSTOMER_INACTIVE", _("The new holder is inactive."))
+
+        if payload["linked_member"] == "already_member":
+            payload = deepcopy(payload)
+            try:
+                payload["resolved_holder"] = self.pool.get(
+                    "som.holder.change.request"
+                )._resolve_existing_holder(
+                    cursor, uid, payload["linked_member_info"], context=context
+                )
+            except osv.except_osv as error:
+                code = (
+                    "INCOMPLETE_MEMBER_DATA" if error.name == "INCOMPLETE_MEMBER_DATA"
+                    else "INVALID_MEMBER"
+                )
+                return holder_change_validation.error(code, error.value)
 
         modifiable_error = self._check_contract_modifiable(cursor, uid, polissa_id, context=context)
         if modifiable_error:
@@ -61,7 +79,7 @@ class SomHolderChangeWww(osv.osv_memory):
         polissa = self.pool.get("giscedata.polissa").browse(
             cursor, uid, polissa_id, context=context)
         current_vat = self._normalize_vat(polissa.titular.vat)
-        new_vat = self._normalize_vat(payload["contract_owner"]["vat"])
+        new_vat = self._normalize_vat(holder_vat)
         if current_vat == new_vat:
             return holder_change_validation.error(
                 "SAME_OWNER", _("The new holder must differ from the current holder.")
@@ -141,7 +159,7 @@ class SomHolderChangeWww(osv.osv_memory):
         if request.signature_process_id and request.signature_process_id.signature_url:
             return {"url": self._localized_signature_url(
                 request.signature_process_id.signature_url,
-                request.payload["contract_owner"]["lang"],
+                holder_change_payload.contract_owner(request.payload)["lang"],
             )}
         document_context = dict(context, bin_size=False)
         ready = False
@@ -170,28 +188,36 @@ class SomHolderChangeWww(osv.osv_memory):
             # Keep the provider process associated even if URL polling later fails.
             with pooler.get_db(cursor.dbname).cursor() as registration_cursor:
                 with Sudo(uid=uid, gid=0):
+                    registration_cursor.execute(
+                        "SELECT id FROM som_holder_change_request WHERE id = %s FOR UPDATE",
+                        (request_id,),
+                    )
                     request = request_obj.browse(
                         registration_cursor, uid, request_id, context=document_context
                     )
-                    if not request.contract_pdf:
+                    if request.signature_process_id:
+                        process_id = request.signature_process_id.id
+                    elif request.state != "awaiting_signature" or not request.contract_pdf:
                         raise osv.except_osv(_("Signature error"), _(
                             "The request is not ready for signing."))
-                    process_id = process_obj.create(
-                        registration_cursor,
-                        uid,
-                        self._signature_process_values(registration_cursor, uid, request),
-                        context=context,
-                    )
-                    request_obj.write(
-                        registration_cursor,
-                        uid,
-                        [request_id],
-                        {"signature_process_id": process_id},
-                        context=context,
-                    )
+                    else:
+                        process_id = process_obj.create(
+                            registration_cursor,
+                            uid,
+                            self._signature_process_values(registration_cursor, uid, request),
+                            context=context,
+                        )
+                        request_obj.write(
+                            registration_cursor,
+                            uid,
+                            [request_id],
+                            {"signature_process_id": process_id},
+                            context=context,
+                        )
                     registration_cursor.commit()
 
-        # start() is idempotent once the provider signature ID is stored.
+        # Reusing the process is not enough: serialize the check/start pair
+        # too, until the provider signature ID has been durably stored.
         start_error = None
         with pooler.get_db(cursor.dbname).cursor() as signature_cursor:
             with Sudo(uid=uid, gid=0):
@@ -199,9 +225,17 @@ class SomHolderChangeWww(osv.osv_memory):
                     self._wait_for_signature_documents(
                         signature_cursor, uid, process_id, context=context
                     )
-                    process_obj.start(
-                        signature_cursor, uid, [process_id], context=document_context
+                    signature_cursor.execute(
+                        "SELECT id FROM giscedata_signatura_process WHERE id = %s FOR UPDATE",
+                        (process_id,),
                     )
+                    process = process_obj.read(
+                        signature_cursor, uid, process_id, ["signature_id"], context=context
+                    )
+                    if not process["signature_id"]:
+                        process_obj.start(
+                            signature_cursor, uid, [process_id], context=document_context
+                        )
                 except Exception as error:
                     start_error = error
                 signature_cursor.commit()
@@ -213,7 +247,7 @@ class SomHolderChangeWww(osv.osv_memory):
             cursor, uid, process_obj, process_id, context=context
         )
         return {"url": self._localized_signature_url(
-            signature_url, request.payload["contract_owner"]["lang"]
+            signature_url, holder_change_payload.contract_owner(request.payload)["lang"]
         )}
 
     @job(queue="leads", timeout=300)
@@ -565,7 +599,7 @@ class SomHolderChangeWww(osv.osv_memory):
             "som_holder_change",
             "email_signature_process_holder_change",
         )[1]
-        contract_owner = request.payload["contract_owner"]
+        contract_owner = holder_change_payload.contract_owner(request.payload)
         files = [(0, 0, {"doc_file": request.contract_pdf,
                   "filename": "contract-with-summary.pdf"})]
         if request.mandate_pdf:

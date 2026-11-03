@@ -129,3 +129,70 @@ class TestHolderChangeValidation(unittest.TestCase):
                 "lang": "ca_ES",
             },
         }
+
+    def already_member_payload(self):
+        payload = self.payload()
+        del payload["contract_owner"]
+        payload["linked_member"] = "already_member"
+        payload["linked_member_info"] = {"vat": "97053918J", "code": "202129"}
+        return payload
+
+    def test_accepts_already_member_without_contract_owner(self):
+        self.assertFalse(holder_change_validation.validate_payload(self.already_member_payload()))
+
+    def test_already_member_requires_member_identification(self):
+        for field in ("vat", "code"):
+            payload = self.already_member_payload()
+            del payload["linked_member_info"][field]
+            error = holder_change_validation.validate_payload(payload)
+            self.assertEqual(error["code"], "MISSING_REQUIRED_FIELDS")
+
+    def test_already_member_rejects_invalid_member_identification_types(self):
+        for value in (None, [], "", {"vat": None, "code": "202129"},
+                      {"vat": "97053918J", "code": 202129}):
+            payload = self.already_member_payload()
+            payload["linked_member_info"] = value
+            self.assertTrue(holder_change_validation.validate_payload(payload))
+
+    def test_already_member_rejects_contract_owner(self):
+        payload = self.already_member_payload()
+        payload["contract_owner"] = self.payload()["contract_owner"]
+        self.assertEqual(
+            holder_change_validation.validate_payload(payload)["code"], "INVALID_PAYLOAD"
+        )
+
+    def test_rejects_client_supplied_resolved_holder(self):
+        for payload in (self.payload(), self.already_member_payload()):
+            payload["resolved_holder"] = {"partner_id": 1, "address_id": 1}
+            self.assertEqual(
+                holder_change_validation.validate_payload(payload)["code"], "INVALID_PAYLOAD"
+            )
+
+    def test_other_member_types_still_require_contract_owner(self):
+        for member_type in ("sponsored", "new_member", "without_member"):
+            payload = self.already_member_payload()
+            payload["linked_member"] = member_type
+            self.assertEqual(
+                holder_change_validation.validate_payload(payload)["code"],
+                "MISSING_REQUIRED_FIELDS",
+            )
+
+    def test_already_member_keeps_payment_consent_and_special_case_requirements(self):
+        for field in ("privacy_conditions", "general_contract_terms_accepted", "sepa_accepted"):
+            payload = self.already_member_payload()
+            payload[field] = False
+            self.assertEqual(
+                holder_change_validation.validate_payload(payload)["code"], "CONSENT_REQUIRED"
+            )
+        payload = self.already_member_payload()
+        payload["especial_cases"]["reason_death"] = True
+        self.assertEqual(
+            holder_change_validation.validate_payload(payload)["code"], "MISSING_REQUIRED_FIELDS"
+        )
+
+    def test_accepts_already_member_card_payment_without_iban(self):
+        payload = self.already_member_payload()
+        del payload["iban"]
+        del payload["sepa_accepted"]
+        payload.update(payment_type="tpv", payment_authorization_accepted=True)
+        self.assertFalse(holder_change_validation.validate_payload(payload))

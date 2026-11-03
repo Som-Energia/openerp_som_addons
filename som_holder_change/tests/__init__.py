@@ -7,3 +7,4 @@ from .test_holder_change_validation import *
 from .test_report_services import *
 from .test_holder_change_www import *
 from .test_holder_change_reports import *
+from .test_holder_change_signature_concurrency import *

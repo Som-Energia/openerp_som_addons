@@ -96,3 +96,17 @@ class TestHolderChangePayload(unittest.TestCase):
             holder_change_payload.special_case_document_spec({}),
             (False, False),
         )
+
+    def test_contract_owner_uses_payload_for_other_member_types(self):
+        owner = {"name": "Maria", "vat": "12345678Z"}
+        for member_type in ("new_member", "sponsored", "without_member"):
+            self.assertIs(holder_change_payload.contract_owner({
+                "linked_member": member_type, "contract_owner": owner,
+            }), owner)
+
+    def test_contract_owner_uses_existing_member_snapshot(self):
+        owner = {"name": "Titular existent", "vat": "ES12345678Z"}
+        self.assertIs(holder_change_payload.contract_owner({
+            "linked_member": "already_member",
+            "resolved_holder": {"contract_owner": owner},
+        }), owner)

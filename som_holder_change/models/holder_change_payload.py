@@ -44,3 +44,9 @@ def special_case_document_spec(cases):
         if cases.get(reason):
             return category_code, description
     return False, False
+
+
+def contract_owner(payload):
+    if payload.get("linked_member") == "already_member":
+        return payload["resolved_holder"]["contract_owner"]
+    return payload["contract_owner"]
