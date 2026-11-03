@@ -41,6 +41,7 @@ highlight() {
     # It draws a red outline and
     # sets a semi transparent white background to dimm the document
     run convert "$1" \
+        -channel RGB \
         -morphology Dilate Square:2 -negate -edge 3 \
         -channel rgb -fill "red" -opaque white \
         -channel rgba -fill "rgba(255,255,255,.4)" -opaque black \
@@ -55,7 +56,7 @@ sidebyside() {
     run pdfjam -q "$1" "$2" --nup 2x1 --landscape -o "$3" 2> /dev/null
 }
 join() {
-    run pdfjoin "${@:2}" -o "$1"
+    run pdfjam --fitpaper true --rotateoversize true "${@:2}" -o "$1"
     #run pdftk "${@:2}" cat output "$1"
 }
 rasterjoin() {

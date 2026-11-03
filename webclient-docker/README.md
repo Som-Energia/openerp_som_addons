@@ -4,8 +4,8 @@ Contenidor que serveix el [webclient de GISCE](https://github.com/gisce/webclien
 
 ## Què fa
 
-- Aixeca un `nginx:alpine` que escolta al port **8081** del host.
-- A l'arrencada i cada `CHECK_INTERVAL` segons, consulta `api.github.com/repos/gisce/webclient/releases/latest`, compara el `tag_name` amb el que té guardat, i si és nou descarrega el `.zip` de la release i el descomprimeix a `/usr/share/nginx/html`.
+- Aixeca un `nginx:alpine` que escolta al port **8081** del host per defecte.
+- A l'arrencada i cada `CHECK_INTERVAL` segons, consulta la release indicada per `WEBCLIENT_TAG` o, si no s'ha fixat cap tag, `latest`. Compara el `tag_name` amb el que té guardat i, si és nou, descarrega el `.zip` de la release i el descomprimeix a `/usr/share/nginx/html`.
 - Exposa un `location /api` que fa proxy a `http://localhost:8068` (l'ERP del host).
 - Fa servir `network_mode: host`, així que `localhost` dins el contenidor és el host real (necessari per arribar al túnel SSH lligat a 127.0.0.1).
 
@@ -20,13 +20,18 @@ Contenidor que serveix el [webclient de GISCE](https://github.com/gisce/webclien
 
 ## Posada en marxa
 
-1. Crea el fitxer `.env` al costat del `docker-compose.yml` (ja està a `.gitignore`):
+1. Crea el fitxer `.env` al costat del `docker-compose.yml`:
 
    ```
    GITHUB_TOKEN=ghp_el_teu_token
+   CHECK_INTERVAL=21600
+   WEBCLIENT_REPO=gisce/webclient
+   WEBCLIENT_TAG=
+   WEBCLIENT_LISTEN_PORT=8081
+   WEBCLIENT_API_UPSTREAM=http://localhost:8068/
    ```
 
-   Sense cometes ni espais.
+   El fitxer `.env` està ignorat per Git. No hi posis cometes ni espais al voltant del `=`. També pots ometre variables: s'utilitzaran els valors per defecte de la taula de configuració. Si `GITHUB_TOKEN` ja està exportat a l'entorn des d'on executes Compose, no cal definir-lo al `.env`.
 
 2. Arrenca:
 
@@ -43,34 +48,44 @@ Contenidor que serveix el [webclient de GISCE](https://github.com/gisce/webclien
 
    El log ha de mostrar `[update-webclient] Installed <tag>`. Llavors el webclient es serveix a http://localhost:8081.
 
-## Configuració (variables d'entorn)
+## Configuració (`.env`)
 
-| Variable | Defecte | Descripció |
+Compose llegeix aquestes variables del `.env` i les passa al contenidor. Les variables exportades a l'entorn del procés que executa Compose també es poden utilitzar.
+
+| Variable | Valor per defecte | Descripció |
 |---|---|---|
-| `GITHUB_TOKEN` | — | Token amb lectura a `gisce/webclient`. Obligatori (repo privat). |
+| `GITHUB_TOKEN` | buit | Token amb lectura a `gisce/webclient`. Necessari perquè el repo és privat. |
 | `CHECK_INTERVAL` | `21600` | Segons entre comprovacions de noves releases (21600 = 6h). |
 | `WEBCLIENT_REPO` | `gisce/webclient` | Repositori `owner/name` d'on agafar les releases. |
+| `WEBCLIENT_TAG` | buit | Tag exacte de la release que es vol instal·lar, per exemple `v4.0.0-alpha.329`. Si és buit, s'utilitza `latest`. |
+| `WEBCLIENT_LISTEN_PORT` | `8081` | Port on escolta Nginx al host. |
+| `WEBCLIENT_API_UPSTREAM` | `http://localhost:8068/` | Destinació del proxy de `/api`. Amb `network_mode: host`, `localhost` és el host. |
+
+Per canviar la release, edita `WEBCLIENT_TAG` al `.env` i executa `docker compose up -d`. El tag ha de coincidir exactament amb el publicat a GitHub. Compose recrearà el contenidor si detecta que la configuració ha canviat; no cal reconstruir la imatge per canviar variables del `.env`. El volum `webclient-state` es conserva.
 
 ## Canviar el port del host
 
-Per defecte nginx escolta al 8081. Amb `network_mode: host` el port del contenidor és directament el port del host, així que per canviar-lo cal editar la directiva `listen` a `nginx.conf` i reconstruir:
+Canvia `WEBCLIENT_LISTEN_PORT` al `.env` i aplica-ho amb:
 
 ```bash
-docker compose up -d --build
+docker compose up -d
 ```
 
 ## Canviar l'upstream de `/api`
 
-Si l'ERP no és al 8068 del host, edita `nginx.conf`:
+Canvia `WEBCLIENT_API_UPSTREAM` al `.env` i executa `docker compose up -d`. Si l'ERP corre en un contenidor o màquina remota, recorda que `localhost` vol dir el host perquè el servei utilitza `network_mode: host`.
 
-```nginx
-location /api {
-    proxy_pass http://localhost:NOU_PORT/;
-    ...
-}
+## CSS local (`custom.css`)
+
+Pots crear `webclient-docker/custom.css` per afegir estils locals. Aquest fitxer està ignorat per Git i no s'inclou a la imatge. Compose munta la carpeta de `webclient-docker` com a només lectura a `/opt/webclient-local`; Nginx serveix `/custom.css` directament des d'aquesta carpeta. El webclient ja carrega el full d'estils si existeix.
+
+Desa els canvis a `custom.css` i recarrega el navegador: no cal reiniciar ni recrear el contenidor. Nginx envia capçaleres perquè el navegador no reutilitzi una còpia en caché. El fitxer sobreviu a les actualitzacions del webclient perquè no es copia ni s'esborra de la carpeta que conté els fitxers de la release.
+
+Els canvis a `nginx.conf.template` sí que requereixen reconstruir la imatge:
+
+```bash
+docker compose up -d --build
 ```
-
-i reconstrueix. Si l'ERP corre en un contenidor o màquina remota, recorda que `localhost` aquí vol dir el host (estem en `network_mode: host`).
 
 ## Forçar una actualització ara mateix
 
@@ -104,16 +119,16 @@ El token arriba al contenidor però GitHub el rebutja. Ordre de comprovacions:
    curl -sI -H "Authorization: Bearer $GITHUB_TOKEN" \
      https://api.github.com/repos/gisce/webclient/releases/latest | head -3
    ```
-2. Si dona 200 aquí i 401 dins: problema al `.env` (cometes, CRLF, espais). Mira què veu el contenidor:
-   ```bash
-   docker compose exec webclient printenv GITHUB_TOKEN
-   ```
+2. Si dona 200 aquí i 401 dins, comprova que el contenidor rep un token (sense imprimir-lo):
+    ```bash
+    docker compose exec webclient sh -c 'test -n "$GITHUB_TOKEN" && echo "GITHUB_TOKEN present" || echo "GITHUB_TOKEN buit"'
+    ```
 3. Si dona 401 també fora: token expirat, sense SSO autoritzat a `gisce`, o sense scope suficient.
 
-Després de corregir el `.env`, cal recrear el contenidor perquè agafi el valor nou:
+Després de corregir el `.env`, aplica el valor nou amb:
 
 ```bash
-docker compose up -d --force-recreate
+docker compose up -d
 ```
 
 ### `curl: (22) The requested URL returned error: 404`
@@ -136,22 +151,24 @@ Ha de sortir `0.0.0.0:8068` o `127.0.0.1:8068`. Com que el contenidor fa servir 
 ss -ltn | grep :8081
 ```
 
-Si hi ha una altra cosa, canvia el `listen` a `nginx.conf` i reconstrueix.
+Si hi ha una altra cosa, canvia `WEBCLIENT_LISTEN_PORT` al `.env` i executa `docker compose up -d`.
 
 ## Estructura del directori
 
 ```
 webclient-docker/
 ├── Dockerfile              # nginx:alpine + curl/unzip/jq
-├── docker-compose.yml      # network_mode: host, llegeix .env
-├── nginx.conf.template     # plantilla de nginx per listen + location /api
+├── docker-compose.yml      # network_mode: host, configura variables i munta overrides locals
+├── nginx.conf.template     # plantilla de nginx per listen, /api i custom.css
 ├── entrypoint.sh           # update inicial + bucle + exec nginx
 ├── update-webclient.sh     # descàrrega/instal·lació del zip de la release
 ├── .dockerignore
-├── .gitignore              # protegeix el .env local
-├── .env                    # (no committejat) GITHUB_TOKEN=...
+├── .env                    # configuració local ignorada per Git
+├── custom.css              # CSS local opcional, ignorat per Git
 └── README.md
 ```
+
+Les regles que ignoren `.env` i `custom.css` són al `.gitignore` de l'arrel del repositori.
 
 ## Aturar i netejar
 

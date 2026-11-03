@@ -108,6 +108,12 @@ Qualsevol canvi de model o fitxer XML, incloses les vistes, requereix llegir la 
 |-------|-----------|----------|
 | `update-contract-report` | Actualitzar un report `.mako` legal/contractual a partir d'un `docx` o `md` | Veure [.agents/skills/update-contract-report/SKILL.md](.agents/skills/update-contract-report/SKILL.md) |
 
+### Reports d'ús d'IA
+
+| Skill | Quan usar | Com usar |
+|-------|-----------|----------|
+| `pr-token-cost-logger` | Calcular o publicar mètriques verificades de tokens i costos d'IA d'una PR | Veure [.agents/skills/pr-token-cost-logger/SKILL.md](.agents/skills/pr-token-cost-logger/SKILL.md) |
+
 **Requisits de l'entorn de tests:**
 1. Inicieu els serveis necessaris de PostgreSQL, MongoDB i Redis:
    ```bash

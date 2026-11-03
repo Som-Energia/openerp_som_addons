@@ -5,3 +5,4 @@ from . import wizard_model_list_from_file
 from . import wizard_delete_reimport_2001_f1
 from . import wizard_refund_rectify_from_origin
 from . import wizard_change_cron_reimport_days
+from . import wizard_refund_rectify_batch
