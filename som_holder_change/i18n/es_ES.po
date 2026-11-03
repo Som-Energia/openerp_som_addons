@@ -5,6 +5,34 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
+#: code:addons/som_holder_change/models/holder_change_request.py:0
+msgid "The activated contract payer does not match the card holder."
+msgstr "El pagador del contrato activado no coincide con el titular de la tarjeta."
+
+#: code:addons/som_holder_change/models/holder_change_request.py:0
+msgid "The holder change payment card is missing or inactive."
+msgstr "No se encuentra la tarjeta de pago del cambio de titular o está inactiva."
+
+#: code:addons/som_holder_change/www/holder_change_validation.py:0
+msgid "Resolved holder data is internal."
+msgstr "Los datos resueltos del titular son internos."
+
+#: code:addons/som_holder_change/www/holder_change_validation.py:0
+msgid "Contract owner must not be supplied for an existing member."
+msgstr "No deben enviarse datos del titular cuando ya es una persona socia."
+
+#: code:addons/som_holder_change/models/holder_change_request.py:0
+msgid "The member needs a complete default address, email, phone and language."
+msgstr "La persona socia debe tener una dirección por defecto completa, correo, teléfono e idioma."
+
+#: code:addons/som_holder_change/models/holder_change_request.py:0
+msgid "Member data changed"
+msgstr "Han cambiado los datos de la persona socia"
+
+#: code:addons/som_holder_change/models/holder_change_request.py:0
+msgid "The member data has changed. Please create a new request."
+msgstr "Han cambiado los datos de la persona socia. Cree una nueva petición."
+
 #: model:ir.actions.act_window,name:som_holder_change.action_holder_change_request
 #: model:ir.ui.menu,name:som_holder_change.menu_holder_change_request
 msgid "Holder changes"

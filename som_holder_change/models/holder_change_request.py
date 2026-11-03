@@ -261,6 +261,13 @@ class SomHolderChangeRequest(osv.osv):
         )
 
     def _prepare_change_data(self, cursor, uid, request, temporary=False, context=None):
+        if request.payload["linked_member"] == "already_member":
+            resolved = self._resolve_existing_holder(
+                cursor, uid, request.payload["linked_member_info"], context=context
+            )
+            if resolved != request.payload["resolved_holder"]:
+                raise osv.except_osv(_("Member data changed"), _(
+                    "The member data has changed. Please create a new request."))
         nocutoff_id = False
         if request.payload["especial_cases"].get("reason_electrodep"):
             nocutoff_id = self._indispensable_nocutoff_id(cursor, uid, context=context)
@@ -412,6 +419,12 @@ class SomHolderChangeRequest(osv.osv):
         switching = self.pool.get("giscedata.switching").browse(
             cursor, uid, switching_ids[0], context=context
         )
+        if is_card_payment and request.owner_change_type == "S":
+            # The wizard needed a temporary bank for validation. Never carry
+            # the old payer's bank into the subrogation or create its mandate.
+            self.pool.get("giscedata.switching.m1.01").write(
+                cursor, uid, switching.get_pas().id, {"bank": False}, context=context
+            )
         polissa_id = switching.polissa_ref_id.id
         if request.owner_change_type == "T":
             contract_values = {"data_firma_contracte": signature_date}
@@ -424,7 +437,9 @@ class SomHolderChangeRequest(osv.osv):
                 contract_values,
                 context=context,
             )
-        if is_card_payment and not (temporary and request.owner_change_type == "S"):
+        # Subrogations retain the old payer until ATR activation. Their card
+        # must be applied only after the new payer has been activated.
+        if is_card_payment and request.owner_change_type != "S":
             self.pool.get("giscedata.polissa").write(
                 cursor,
                 uid,
@@ -472,7 +487,7 @@ class SomHolderChangeRequest(osv.osv):
             "contact": partner_id,
             "cnae": request.polissa_id.cnae.id,
             "vat": holder_change_payload.normalize_holder_vat(
-                request.payload["contract_owner"]
+                holder_change_payload.contract_owner(request.payload)
             )[2:],
             "vat_kind": vat_kind,
             "direccio_pagament": address_id,
@@ -598,6 +613,8 @@ class SomHolderChangeRequest(osv.osv):
         )
 
     def _create_holder(self, cursor, uid, request, context=None):
+        if request.payload.get("linked_member") == "already_member":
+            return request.payload["resolved_holder"]["partner_id"]
         contract_owner = request.payload["contract_owner"]
         vat = holder_change_payload.normalize_holder_vat(contract_owner)
         partner_obj = self.pool.get("res.partner")
@@ -618,13 +635,15 @@ class SomHolderChangeRequest(osv.osv):
         return partner_obj.create(cursor, uid, values, context=context)
 
     def _holder_language(self, cursor, uid, request, context=None):
-        language = request.payload["contract_owner"]["lang"]
+        language = holder_change_payload.contract_owner(request.payload)["lang"]
         language_ids = self.pool.get("res.lang").search(
             cursor, uid, [("code", "=", language)], limit=1, context=context
         )
         return language if language_ids else request.polissa_id.titular.lang
 
     def _create_holder_address(self, cursor, uid, request, partner_id, context=None):
+        if request.payload.get("linked_member") == "already_member":
+            return request.payload["resolved_holder"]["address_id"]
         contract_owner = request.payload["contract_owner"]
         address = contract_owner["address"]
         address_obj = self.pool.get("res.partner.address")
@@ -696,6 +715,8 @@ class SomHolderChangeRequest(osv.osv):
 
     def _member_partner(self, cursor, uid, request, holder_id, context=None):
         linked_member = request.payload["linked_member"]
+        if linked_member == "already_member":
+            return holder_id, False, False
         if linked_member == "sponsored":
             member = request.payload["linked_member_info"]
             return self._linked_member_partner(
@@ -786,7 +807,9 @@ class SomHolderChangeRequest(osv.osv):
                 "partner_id": partner_id,
                 "country_id": country_id,
                 "acc_country_id": country_id,
-                "state_id": request.payload["contract_owner"]["address"]["state_id"],
+                "state_id": holder_change_payload.contract_owner(
+                    request.payload
+                )["address"]["state_id"],
             })
             bank_id = bank_obj.create(cursor, uid, values, context=context)
         values = self.pool.get("giscedata.polissa")._get_enginyers_payment_values(
@@ -1097,6 +1120,101 @@ class SomHolderChangeRequest(osv.osv):
                                      _("Exactly one request is required."))
             return ids[0]
         return ids
+
+    def _resolve_existing_holder(self, cursor, uid, member, context=None):
+        """Resolve ERP data once; preparation/execution must match this snapshot."""
+        member_context = dict(context or {}, active_test=True)
+        partner_id = self._linked_member_partner(cursor, uid, member, context=member_context)
+        member_ids = self.pool.get("somenergia.soci").search(
+            cursor, uid,
+            [("partner_id", "=", partner_id), ("baixa", "=", False), ("active", "=", True)],
+            context=member_context,
+        )
+        if not member_ids:
+            raise osv.except_osv(
+                _("Member not found"), _("The linked member does not exist or is inactive."))
+        partner_obj = self.pool.get("res.partner")
+        partner = partner_obj.browse(cursor, uid, partner_id, context=member_context)
+        address_id = partner_obj.address_get(
+            cursor, uid, partner_id, adr_pref=["default"]
+        ).get("default")
+        if not address_id:
+            raise osv.except_osv("INCOMPLETE_MEMBER_DATA", _(
+                "The member needs a complete default address, email, phone and language."))
+        address = self.pool.get("res.partner.address").browse(
+            cursor, uid, address_id, context=member_context
+        )
+        if not all((
+            partner.name, partner.vat, partner.lang, address.street, address.zip,
+            address.country_id, address.state_id, address.id_municipi,
+            address.email, address.phone or address.mobile,
+        )):
+            raise osv.except_osv("INCOMPLETE_MEMBER_DATA", _(
+                "The member needs a complete default address, email, phone and language."))
+        return {
+            "partner_id": partner_id,
+            "address_id": address_id,
+            "contract_owner": {
+                "name": partner.name,
+                "vat": partner.vat,
+                "lang": partner.lang,
+                "email": address.email,
+                "phone": address.phone or address.mobile,
+                "address": {
+                    "name": address.name,
+                    "street": address.street,
+                    "postal_code": address.zip,
+                    "country_id": address.country_id.id,
+                    "state_id": address.state_id.id,
+                    "city_id": address.id_municipi.id,
+                    "population_id": address.id_poblacio.id,
+                },
+            },
+        }
+
+    def _apply_subrogation_card_payment(self, cursor, uid, switching_id, context=None):
+        request_ids = self.search(
+            cursor, uid,
+            [("switching_id", "=", switching_id), ("state", "=", "completed"),
+             ("owner_change_type", "=", "S")],
+            context=context,
+        )
+        for request in self.browse(cursor, uid, request_ids, context=context):
+            if self._payment_method(request) != "tpv":
+                continue
+            contract = request.switching_id.polissa_ref_id
+            owner = holder_change_payload.contract_owner(request.payload)
+            if contract.pagador.vat != holder_change_payload.normalize_holder_vat(owner):
+                raise osv.except_osv(_("Invalid card data"), _(
+                    "The activated contract payer does not match the card holder."))
+            card_ids = self.pool.get("res.partner.creditcard").search(
+                cursor, uid,
+                [("partner_id", "=", contract.pagador.id), ("token", "=", request.creditcard_token),
+                 ("cof_txnid", "=", request.creditcard_cof_txnid)],
+                order="id desc", limit=1, context=context,
+            )
+            if not card_ids:
+                raise osv.except_osv(_("Invalid card data"), _(
+                    "The holder change payment card is missing or inactive."))
+            imd_obj = self.pool.get("ir.model.data")
+            values = {
+                "creditcard": card_ids[0],
+                "bank": False,
+                "payment_mode_id": imd_obj.get_object_reference(
+                    cursor, uid, "som_card_payment", "payment_mode_card_recurrent"
+                )[1],
+                "tipo_pago": imd_obj.get_object_reference(
+                    cursor, uid, "som_card_payment", "payment_type_card_recurrent"
+                )[1],
+            }
+            self.pool.get("giscedata.polissa").write(
+                cursor, uid, contract.id, values, context=context
+            )
+            if contract.modcontractual_activa:
+                self.pool.get("giscedata.polissa.modcontractual").write(
+                    cursor, uid, contract.modcontractual_activa.id, values, context=context
+                )
+        return True
 
     _columns = {
         "create_date": fields.datetime("Creation date", readonly=True),

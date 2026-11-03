@@ -5,7 +5,7 @@ from tools.translate import _
 
 
 LEGAL_PERSON_PREFIXES = set("ABCDEFGHJNPQRSUVW")
-LINKED_MEMBER_TYPES = ("new_member", "sponsored", "without_member")
+LINKED_MEMBER_TYPES = ("new_member", "sponsored", "without_member", "already_member")
 PAYMENT_TYPES = ("remesa", "tpv")
 SPECIAL_CASE_ATTACHMENTS = (
     ("reason_death", "death", "holder_change_death"),
@@ -33,13 +33,24 @@ def validate_base_payload(payload):
     if not isinstance(payload, dict):
         return error("INVALID_PAYLOAD", _("The payload must be an object."))
 
-    sections = ["contract_info", "contract_owner", "especial_cases"]
+    if "resolved_holder" in payload:
+        return error("INVALID_PAYLOAD", _("Resolved holder data is internal."))
+    sections = ["contract_info", "especial_cases"]
+    if payload.get("linked_member") != "already_member":
+        sections.append("contract_owner")
+    elif "contract_owner" in payload:
+        return error(
+            "INVALID_PAYLOAD",
+            _("Contract owner must not be supplied for an existing member."),
+        )
     missing = missing_fields(payload, sections)
     if missing:
         return error(
             "MISSING_REQUIRED_FIELDS",
             _("Missing required fields: {}.").format(", ".join(missing)),
         )
+    if any(not isinstance(payload[section], dict) for section in sections):
+        return error("INVALID_PAYLOAD", _("The payload must be an object."))
 
     if (
         not payload.get("privacy_conditions")
@@ -69,11 +80,10 @@ def validate_required_fields(payload):
         "payload": ["linked_member", "donation"],
         "contract_info": ["cups"],
         "especial_cases": ["reason_death", "reason_merge", "reason_electrodep"],
-        "contract_owner": [
-            "name", "vat", "address", "email", "phone", "lang",
-        ],
-        "address": ["street", "number", "postal_code", "state_id", "city_id"],
     }
+    if payload.get("linked_member") != "already_member":
+        required["contract_owner"] = ["name", "vat", "address", "email", "phone", "lang"]
+        required["address"] = ["street", "number", "postal_code", "state_id", "city_id"]
     if payload["payment_type"] == "remesa":
         required["payload"].append("iban")
     for section, fields_to_check in required.items():
@@ -102,6 +112,8 @@ def validate_payment(payload):
 
 
 def validate_holder(payload):
+    if payload["linked_member"] == "already_member":
+        return False
     contract_owner = payload["contract_owner"]
     vat = normalize_vat(contract_owner.get("vat"))
     if not vat:
@@ -126,14 +138,21 @@ def validate_member(payload):
             "INVALID_MEMBER_SELECTION",
             _("The linked member selection is invalid."),
         )
-    if linked_member == "sponsored":
+    if linked_member in ("sponsored", "already_member"):
         member = payload.get("linked_member_info", {})
+        if not isinstance(member, dict):
+            return error("INVALID_PAYLOAD", _("The payload must be an object."))
         missing = missing_fields(member, ["vat", "code"])
         if missing:
             return error(
                 "MISSING_REQUIRED_FIELDS",
                 _("Missing member fields: {}.").format(", ".join(missing)),
             )
+        if any(
+            not isinstance(member[field], (str, type(u""))) or not member[field].strip()
+            for field in ("vat", "code")
+        ):
+            return error("INVALID_MEMBER_SELECTION", _("The linked member selection is invalid."))
     return False
 
 

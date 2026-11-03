@@ -2,8 +2,10 @@
 from __future__ import absolute_import
 
 from copy import deepcopy
+from datetime import date
 
 import mock
+import netsvc
 import pooler
 from gridfs.errors import NoFile
 from destral import testing
@@ -11,6 +13,7 @@ from destral.patch import PatchNewCursors
 from destral.transaction import Transaction
 from som_holder_change.models import holder_change_reports
 from tools import config
+from osv import osv
 
 
 class TestHolderChangeWww(testing.OOTestCase):
@@ -72,6 +75,7 @@ class TestHolderChangeWww(testing.OOTestCase):
                 "received", "awaiting_payment", "awaiting_signature", "queued",
             )),
         )
+        self.original_local_service = netsvc.LocalService
         self.local_service_patch = mock.patch(self._local_service)
         self.local_service = self.local_service_patch.start()
         self.local_service.return_value.create.side_effect = self._create_report
@@ -1755,6 +1759,354 @@ class TestHolderChangeWww(testing.OOTestCase):
             [("partner_id", "=", partner_id), ("categoria", "=", electro_category_id)],
         )
         self.assertEqual(len(electro_document_ids), 1)
+
+    def already_member_payload(self, card_payment=False, subrogation=False, legal_person=False):
+        partner_obj = self.openerp.pool.get("res.partner")
+        member_obj = self.openerp.pool.get("somenergia.soci")
+        partner_id = self.imd_obj.get_object_reference(
+            self.cursor, self.uid, "som_polissa_soci", "res_partner_soci"
+        )[1]
+        partner_obj.write(self.cursor, self.uid, partner_id, {"lang": "ca_ES", "active": True})
+        if legal_person:
+            partner_obj.write(self.cursor, self.uid, partner_id, {
+                "vat": "ESA08015497", "name": "Empresa Socia SA",
+                "comment": "Persona representant: Maria Representant; NIF: 12345678Z",
+            })
+        member_ids = member_obj.search(self.cursor, self.uid, [("partner_id", "=", partner_id)])
+        member_obj.write(self.cursor, self.uid, member_ids, {"baixa": False})
+        address_id = partner_obj.address_get(
+            self.cursor, self.uid, partner_id, adr_pref=["default"]
+        )["default"]
+        self.openerp.pool.get("res.partner.address").write(
+            self.cursor, self.uid, address_id,
+            {"nv": "Carrer de la Socia", "pnp": "42", "zip": "17001",
+             "id_municipi": self.polissa.cups.id_municipi.id,
+             "state_id": self.polissa.cups.id_municipi.state.id,
+             "country_id": self.polissa.cups.id_municipi.state.country_id.id,
+             "email": "socia@example.com", "phone": "972123456"},
+            context={"is_dry_run": True},
+        )
+        member = member_obj.browse(self.cursor, self.uid, member_ids[0])
+        payload = self.payload()
+        del payload["contract_owner"]
+        payload["linked_member"] = "already_member"
+        payload["linked_member_info"] = {"vat": member.vat, "code": member.www_soci}
+        if card_payment:
+            del payload["iban"]
+            del payload["sepa_accepted"]
+            payload.update(payment_type="tpv", payment_authorization_accepted=True)
+        if subrogation:
+            payload["especial_cases"]["reason_death"] = True
+            payload["attachments"] = [{
+                "filename": "death-certificate.pdf", "category": "holder_change_death",
+                "datas": "JVBERi0xLjQ=",
+            }]
+        return payload, partner_id, address_id
+
+    def test_already_member_bank_reuses_partner_and_address_without_membership_fee(self):
+        self._check_already_member_execution(False, False)
+
+    def test_already_member_card_reuses_partner_and_address_without_membership_fee(self):
+        self._check_already_member_execution(True, False)
+
+    def test_already_member_bank_subrogation_uses_existing_holder(self):
+        self._check_already_member_execution(False, True)
+
+    def test_already_member_card_subrogation_uses_existing_holder(self):
+        self._check_already_member_execution(True, True)
+
+    def test_already_member_legal_person_bank_reuses_existing_holder(self):
+        self._check_already_member_execution(False, False, legal_person=True)
+
+    def test_already_member_legal_person_card_reuses_existing_holder(self):
+        self._check_already_member_execution(True, False, legal_person=True)
+
+    def _check_already_member_execution(self, card_payment, subrogation, legal_person=False):
+        payload, partner_id, address_id = self.already_member_payload(
+            card_payment, subrogation, legal_person
+        )
+        original_payload = deepcopy(payload)
+        old_payment = self.polissa_obj.read(
+            self.cursor, self.uid, self.polissa_id,
+            ["pagador", "creditcard", "bank", "payment_mode_id", "tipo_pago"],
+        )
+        partner_obj = self.openerp.pool.get("res.partner")
+        address_obj = self.openerp.pool.get("res.partner.address")
+        partner_count = partner_obj.search_count(self.cursor, self.uid, [])
+        original_addresses = address_obj.read(
+            self.cursor, self.uid,
+            address_obj.search(self.cursor, self.uid, [("partner_id", "=", partner_id)]),
+        )
+        rendered_holders = []
+
+        def check_holder(cursor, uid, ids, *args, **kwargs):
+            contract = self.polissa_obj.browse(cursor, uid, ids[0])
+            rendered_holders.append(contract.titular.id)
+            self.assertEqual(contract.titular.id, partner_id)
+            self.assertEqual(contract.soci.id, partner_id)
+            self.assertEqual(contract.direccio_notificacio.id, address_id)
+            if card_payment:
+                return self._create_html_report(cursor, uid, ids, *args, **kwargs)
+            return b"%PDF-document", "pdf"
+
+        if card_payment:
+            self.local_service.return_value._service.create_html.side_effect = check_holder
+        else:
+            def create_report(cursor, uid, ids, *args, **kwargs):
+                if self.local_service.call_args[0][0] != "report.report_mandato":
+                    return check_holder(cursor, uid, ids, *args, **kwargs)
+                return b"%PDF-mandate", "pdf"
+            self.local_service.return_value.create.side_effect = create_report
+
+        with mock.patch.object(partner_obj, "become_member") as become_member:
+            with mock.patch.object(partner_obj, "create_member_fee_payment") as create_fee:
+                result = self.www_obj.create_request(self.cursor, self.uid, payload)
+                self.assertTrue(result["success"], result)
+                self.assertEqual(payload, original_payload)
+                self.assertTrue(rendered_holders)
+                self.assertEqual(
+                    result["state"], "awaiting_payment" if card_payment else "awaiting_signature"
+                )
+                request = self.request_obj.browse(self.cursor, self.uid, result["request_id"])
+                self.assertNotIn("contract_owner", request.payload)
+                signature = self.www_obj._signature_process_values(self.cursor, self.uid, request)
+                self.assertEqual(signature["lang"], "ca_ES")
+                self.assertEqual(signature["recipients"][0][2], {
+                    "name": partner_obj.browse(self.cursor, self.uid, partner_id).name,
+                    "email": "socia@example.com",
+                })
+                if card_payment:
+                    self.www_obj.add_payment_card_data(
+                        self.cursor, self.uid, result["request_id"],
+                        payload["contract_info"]["cups"],
+                        {"creditcard_token": "member-card-token",
+                         "creditcard_masked_number": "**** 1234",
+                         "creditcard_expiry_date": "12/30", "creditcard_cof_txnid": "member-cof"},
+                    )
+                self.queue_request(result["request_id"])
+                execution = self.request_obj.execute(self.cursor, self.uid, result["request_id"])
+                become_member.assert_not_called()
+                create_fee.assert_not_called()
+        contract = self.polissa_obj.browse(self.cursor, self.uid, execution["result_polissa_id"])
+        self.assertEqual(contract.soci.id, partner_id)
+        if subrogation:
+            self.assertEqual(self.polissa_obj.read(
+                self.cursor, self.uid, self.polissa_id, list(old_payment.keys())
+            ), old_payment)
+            if card_payment:
+                request = self.request_obj.browse(self.cursor, self.uid, result["request_id"])
+                self.assertFalse(request.switching_id.get_pas().bank)
+        if not subrogation:
+            self.assertEqual(contract.titular.id, partner_id)
+            self.assertEqual(contract.direccio_notificacio.id, address_id)
+            if card_payment:
+                self.assertEqual(contract.creditcard.token, "member-card-token")
+                self.assertEqual(contract.creditcard.partner_id.id, partner_id)
+            else:
+                self.assertEqual(contract.bank.iban, payload["iban"])
+                self.assertEqual(contract.bank.partner_id.id, partner_id)
+        self.assertEqual(partner_obj.search_count(self.cursor, self.uid, []), partner_count)
+        self.assertEqual(address_obj.read(
+            self.cursor, self.uid,
+            address_obj.search(self.cursor, self.uid, [("partner_id", "=", partner_id)]),
+        ), original_addresses)
+        request = self.request_obj.browse(self.cursor, self.uid, result["request_id"])
+        self.assertFalse(request.new_member_partner_id)
+        self.assertFalse(request.member_notification_sent)
+        self.assertEqual(request.state, "completed")
+        if legal_person:
+            partner = partner_obj.browse(self.cursor, self.uid, partner_id)
+            self.assertEqual(partner.name, "Empresa Socia SA")
+            self.assertIn("Maria Representant", partner.comment)
+        return request.id, partner_id, address_id
+
+    def test_already_member_card_subrogation_applies_card_at_atr_activation(self):
+        request_id, partner_id, address_id = self._check_already_member_execution(True, True)
+        # Report mocks replace netsvc.LocalService globally. ATR activation
+        # needs the actual workflow service, not the report mock.
+        with mock.patch(self._local_service, self.original_local_service):
+            self._activate_card_subrogation(request_id, partner_id, address_id)
+
+    def _activate_card_subrogation(self, request_id, partner_id, address_id):
+        request = self.request_obj.browse(self.cursor, self.uid, request_id)
+        self.polissa_obj.send_signal(
+            self.cursor, self.uid, [self.polissa_id], ["validar", "contracte"]
+        )
+        config_obj = self.openerp.pool.get("res.config")
+        config_obj.set(self.cursor, self.uid, "sw_m1_owner_change_subrogacio_new_contract", "0")
+        config_obj.set(self.cursor, self.uid, "sw_m1_S_with_service_order", "0")
+        step_obj = self.openerp.pool.get("giscedata.switching.m1.02")
+        step_id = step_obj.dummy_create(
+            self.cursor, self.uid, request.switching_id.id, {"whereiam": "distri"}
+        )
+        switching_obj = self.openerp.pool.get("giscedata.switching")
+        self.original_local_service("workflow").trg_create(
+            self.uid, "giscedata.switching", request.switching_id.id, self.cursor
+        )
+        switching_obj.create_step(
+            self.cursor, self.uid, request.switching_id.id, "02", step_id
+        )
+        step_obj.write(self.cursor, self.uid, step_id, {"data_activacio": date.today().isoformat()})
+        mandate_obj = self.openerp.pool.get("payment.mandate")
+        mandate_domain = [("reference", "=", "giscedata.polissa,{}".format(self.polissa_id))]
+        mandates = mandate_obj.search(self.cursor, self.uid, mandate_domain)
+        helpers = self.openerp.pool.get("giscedata.switching.helpers")
+        result = helpers.activar_polissa_from_m1_canvi_titular(
+            self.cursor, self.uid, request.switching_id.id, context={"is_dry_run": True}
+        )
+        self.assertEqual(result[0], "OK", result)
+        contract = self.polissa_obj.browse(self.cursor, self.uid, self.polissa_id)
+        self.assertEqual(contract.pagador.id, partner_id)
+        self.assertEqual(contract.direccio_pagament.id, address_id)
+        self.assertEqual(contract.creditcard.token, "member-card-token")
+        self.assertEqual(contract.tipo_pago.code, "COBRAMENT_RECURRENT_TARGETA")
+        self.assertFalse(contract.bank)
+        self.assertEqual(contract.modcontractual_activa.creditcard.id, contract.creditcard.id)
+        self.assertEqual(contract.modcontractual_activa.tipo_pago.id, contract.tipo_pago.id)
+        self.assertEqual(mandate_obj.search(self.cursor, self.uid, mandate_domain), mandates)
+        self.request_obj._apply_subrogation_card_payment(
+            self.cursor, self.uid, request.switching_id.id
+        )
+        self.assertEqual(self.polissa_obj.browse(
+            self.cursor, self.uid, self.polissa_id
+        ).creditcard.id, contract.creditcard.id)
+
+    def test_card_subrogation_does_not_apply_card_to_old_payer(self):
+        request_id, _partner_id, _address_id = self._check_already_member_execution(True, True)
+        request = self.request_obj.browse(self.cursor, self.uid, request_id)
+        with self.assertRaises(osv.except_osv):
+            self.request_obj._apply_subrogation_card_payment(
+                self.cursor, self.uid, request.switching_id.id
+            )
+
+    def test_card_subrogation_hook_does_not_run_after_failed_activation(self):
+        helpers = self.openerp.pool.get("giscedata.switching.helpers")
+        parent_method = (
+            "giscedata_switching.giscedata_switching_helpers."
+            "GiscedataSwitchingHelpers.activar_polissa_from_m1_canvi_titular"
+        )
+        with mock.patch(parent_method, return_value=("ERROR", "Activation failed")):
+            with mock.patch.object(
+                self.request_obj, "_apply_subrogation_card_payment"
+            ) as apply_card:
+                result = helpers.activar_polissa_from_m1_canvi_titular(
+                    self.cursor, self.uid, 0
+                )
+        self.assertEqual(result, ("ERROR", "Activation failed"))
+        apply_card.assert_not_called()
+
+    def test_already_member_rejects_wrong_member_code(self):
+        payload, _partner_id, _address_id = self.already_member_payload()
+        payload["linked_member_info"]["code"] = "invalid-code"
+        result = self.www_obj.create_request(self.cursor, self.uid, payload)
+        self.assertEqual(result["code"], "INVALID_MEMBER")
+        self.simulate_holder_change.assert_not_called()
+
+    def test_already_member_rejects_wrong_member_vat(self):
+        payload, _partner_id, _address_id = self.already_member_payload()
+        payload["linked_member_info"]["vat"] = "12345678Z"
+        result = self.www_obj.create_request(self.cursor, self.uid, payload)
+        self.assertEqual(result["code"], "INVALID_MEMBER")
+
+    def test_already_member_rejects_inactive_partner(self):
+        payload, partner_id, _address_id = self.already_member_payload()
+        self.openerp.pool.get("res.partner").write(
+            self.cursor, self.uid, partner_id, {"active": False}
+        )
+        result = self.www_obj.create_request(self.cursor, self.uid, payload)
+        self.assertEqual(result["code"], "CUSTOMER_INACTIVE")
+
+    def test_already_member_rejects_cancelled_membership(self):
+        payload, partner_id, _address_id = self.already_member_payload()
+        member_obj = self.openerp.pool.get("somenergia.soci")
+        member_ids = member_obj.search(self.cursor, self.uid, [("partner_id", "=", partner_id)])
+        member_obj.write(self.cursor, self.uid, member_ids, {"baixa": True})
+        result = self.www_obj.create_request(self.cursor, self.uid, payload)
+        self.assertEqual(result["code"], "INVALID_MEMBER")
+
+    def test_already_member_rejects_same_holder(self):
+        payload, partner_id, _address_id = self.already_member_payload()
+        self.polissa_obj.write(self.cursor, self.uid, self.polissa_id, {"titular": partner_id})
+        result = self.www_obj.create_request(self.cursor, self.uid, payload)
+        self.assertEqual(result["code"], "SAME_OWNER")
+
+    def test_already_member_requires_default_address(self):
+        payload, _partner_id, _address_id = self.already_member_payload()
+        with mock.patch.object(
+            self.openerp.pool.get("res.partner"), "address_get", return_value={}
+        ):
+            result = self.www_obj.create_request(self.cursor, self.uid, payload)
+        self.assertEqual(result["code"], "INCOMPLETE_MEMBER_DATA")
+
+    def test_already_member_requires_existing_contact_data(self):
+        payload, _partner_id, address_id = self.already_member_payload()
+        self.openerp.pool.get("res.partner.address").write(
+            self.cursor, self.uid, address_id, {"email": False},
+            context={"is_dry_run": True},
+        )
+        result = self.www_obj.create_request(self.cursor, self.uid, payload)
+        self.assertEqual(result["code"], "INCOMPLETE_MEMBER_DATA")
+
+    def test_already_member_accepts_mobile_without_landline(self):
+        payload, _partner_id, address_id = self.already_member_payload()
+        self.openerp.pool.get("res.partner.address").write(
+            self.cursor, self.uid, address_id, {"phone": False, "mobile": "600123456"}
+        )
+        result = self.www_obj.create_request(self.cursor, self.uid, payload)
+        self.assertTrue(result["success"], result)
+        request = self.request_obj.browse(self.cursor, self.uid, result["request_id"])
+        self.assertEqual(request.payload["resolved_holder"]["contract_owner"]["phone"], "600123456")
+
+    def test_already_member_rejects_incomplete_address(self):
+        payload, _partner_id, address_id = self.already_member_payload()
+        self.openerp.pool.get("res.partner.address").write(
+            self.cursor, self.uid, address_id, {"zip": False}
+        )
+        result = self.www_obj.create_request(self.cursor, self.uid, payload)
+        self.assertEqual(result["code"], "INCOMPLETE_MEMBER_DATA")
+
+    def test_already_member_normalizes_vat(self):
+        payload, _partner_id, _address_id = self.already_member_payload()
+        payload["linked_member_info"]["vat"] = " es 97053918j "
+        result = self.www_obj.create_request(self.cursor, self.uid, payload)
+        self.assertTrue(result["success"], result)
+
+    def test_already_member_rejects_changed_data_before_execution(self):
+        payload, _partner_id, address_id = self.already_member_payload()
+        result = self.www_obj.create_request(self.cursor, self.uid, payload)
+        self.assertTrue(result["success"], result)
+        self.openerp.pool.get("res.partner.address").write(
+            self.cursor, self.uid, address_id, {"email": "changed@example.com"},
+            context={"is_dry_run": True},
+        )
+        self.queue_request(result["request_id"])
+        with self.assertRaises(osv.except_osv) as raised:
+            self.request_obj.execute(self.cursor, self.uid, result["request_id"])
+        self.assertIn("changed", raised.exception.value)
+
+    def test_already_member_rechecks_membership_before_execution(self):
+        payload, partner_id, _address_id = self.already_member_payload()
+        result = self.www_obj.create_request(self.cursor, self.uid, payload)
+        self.assertTrue(result["success"], result)
+        member_obj = self.openerp.pool.get("somenergia.soci")
+        member_ids = member_obj.search(self.cursor, self.uid, [("partner_id", "=", partner_id)])
+        member_obj.write(self.cursor, self.uid, member_ids, {"baixa": True})
+        self.queue_request(result["request_id"])
+        with self.assertRaises(osv.except_osv):
+            self.request_obj.execute(self.cursor, self.uid, result["request_id"])
+
+    def test_already_member_sign_url_uses_member_language(self):
+        payload, _partner_id, _address_id = self.already_member_payload()
+        result = self.www_obj.create_request(self.cursor, self.uid, payload)
+        self.assertTrue(result["success"], result)
+        process_obj = self.openerp.pool.get("giscedata.signatura.process")
+        with mock.patch.object(process_obj, "start", return_value=True):
+            with mock.patch.object(self.www_obj, "_wait_for_signature_url",
+                                   return_value="https://app.signaturit.com/document/signature"):
+                response = self.www_obj.sign_request(
+                    self.cursor, self.uid, result["request_id"], payload["contract_info"]["cups"]
+                )
+        self.assertIn("/v1/ca/", response["url"])
 
     def payload(self):
         return {
