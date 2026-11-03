@@ -1289,8 +1289,9 @@ class GiscedataPolissaTarifa(osv.osv):
         """Return the latest stored averages in EUR/kWh, without adding taxes.
 
         The date is the stored price date, not necessarily the previous month.
-        All six periods are returned, including zero prices. No internal IDs
-        are exposed. Errors follow the other webforms price helpers.
+        Each of the six periods contains value and uom (EUR/kWh), including
+        zero prices. No internal IDs are exposed. Errors follow the other
+        webforms price helpers.
         """
         try:
             if tariff not in ("2.0TD", "3.0TD"):
@@ -1310,7 +1311,10 @@ class GiscedataPolissaTarifa(osv.osv):
                 "type": average["type"],
                 "date": average["date"],
                 "prices": dict(
-                    ("P%d" % period, average["p%d_price" % period])
+                    ("P%d" % period, {
+                        "value": average["p%d_price" % period],
+                        "uom": u"€/kWh",
+                    })
                     for period in range(1, 7)
                 ),
             }
