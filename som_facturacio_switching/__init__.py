@@ -10,3 +10,4 @@ from . import giscedata_facturacio_switching_error
 from . import som_error_cron_f1_reimport
 from .giscedata_refacturacio import *
 from . import giscedata_facturacio_factura
+from . import refund_rectify_batch
