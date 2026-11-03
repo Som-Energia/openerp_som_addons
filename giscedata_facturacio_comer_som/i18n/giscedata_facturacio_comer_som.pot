@@ -972,7 +972,7 @@ msgstr ""
 #, python-format
 msgid ""
 "Horari de 9:30 a 14 h. (dilluns i dimecres fins a les 17 h.) 900 103 605 (Gratuït. cost de la trucada per a la "
-"cooperativa).<br />Si tens tarifa plana de telefonia, també pots trucar-"
+"cooperativa). Si tens tarifa plana de telefonia, també pots trucar-"
 "nos al %s.<br />Adreça electrònica: reclama@somenergia.coop<br />Adreça "
 "postal: C/ Riu Güell, 68 - 17005 - Girona<br />"
 msgstr ""

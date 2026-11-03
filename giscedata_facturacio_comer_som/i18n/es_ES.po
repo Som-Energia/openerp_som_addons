@@ -986,10 +986,10 @@ msgstr "Lunes a viernes, de 10 a 14h. (tardes, previa cita) 983 660 112"
 #, python-format
 msgid ""
 "Horari de 9:30 a 14 h. (dilluns i dimecres fins a les 17 h.) 900 103 605 (Gratuït. cost de la trucada per a la "
-"cooperativa).<br />Si tens tarifa plana de telefonia, també pots trucar-nos "
+"cooperativa). Si tens tarifa plana de telefonia, també pots trucar-nos "
 "al %s.<br />Adreça electrònica: reclama@somenergia.coop<br />Adreça postal: "
 "C/ Riu Güell, 68 - 17005 - Girona<br />"
-msgstr "Horario de 9:30 a 14 h. (lunes y miércoles hasta las 17 h.) 900 103 605 (Gratuito. Coste de la llamada para la cooperativa).<br />Si tienes tarifa plana de telefonía, también puedes llamarnos al %s.<br />Correo electrónico: reclama@somenergia.coop<br />Dirección: C/ Riu Güell, 68 - 17005 - Girona<br />"
+msgstr "Horario de 9:30 a 14 h. (lunes y miércoles hasta las 17 h.) 900 103 605 (Gratuito. Coste de la llamada para la cooperativa). Si tienes tarifa plana de telefonía, también puedes llamarnos al %s.<br />Correo electrónico: reclama@somenergia.coop<br />Dirección: C/ Riu Güell, 68 - 17005 - Girona<br />"
 
 #: rml:giscedata_facturacio_comer_som/report/components/emergency_complaints_td/emergency_complaints_td.mako:34
 msgid "Pots obtenir més informació sobre reclamacions en aquest "
