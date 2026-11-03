@@ -6,6 +6,8 @@ from osv import osv
 
 class GiscedataPolissa(osv.osv):
 
+    _inherit = "giscedata.polissa"
+
     def get_pricelist_from_tariff_and_location_no_social(
             self, cursor, uid, mode_facturacio, id_municipi, context=None):
         imd_obj = self.pool.get("ir.model.data")
@@ -18,13 +20,13 @@ class GiscedataPolissa(osv.osv):
             cursor, uid, "som_indexada", "pricelist_periodes_20td_insular"
         )[1]
         pp_indexada_peninsula_id = imd_obj.get_object_reference(
-            cursor, uid, "som_indexada", "pricelist_indexada_20td_peninsula"
+            cursor, uid, "som_indexada", "pricelist_indexada_20td_peninsula_2024"
         )[1]
         pp_indexada_balears_id = imd_obj.get_object_reference(
-            cursor, uid, "som_indexada", "pricelist_indexada_20td_balears"
+            cursor, uid, "som_indexada", "pricelist_indexada_20td_balears_2024"
         )[1]
         pp_indexada_canaries_id = imd_obj.get_object_reference(
-            cursor, uid, "som_indexada", "pricelist_indexada_20td_canaries"
+            cursor, uid, "som_indexada", "pricelist_indexada_20td_canaries_2024"
         )[1]
 
         location = self._get_tariff_zone_from_location(cursor, uid, id_municipi)
@@ -56,29 +58,29 @@ class GiscedataPolissa(osv.osv):
             cursor, uid, "som_indexada", "pricelist_periodes_20td_insular"
         )[1]
         pp_indexada_peninsula_id = imd_obj.get_object_reference(
-            cursor, uid, "som_indexada", "pricelist_indexada_20td_peninsula"
+            cursor, uid, "som_indexada", "pricelist_indexada_20td_peninsula_2024"
         )[1]
         pp_indexada_balears_id = imd_obj.get_object_reference(
-            cursor, uid, "som_indexada", "pricelist_indexada_20td_balears"
+            cursor, uid, "som_indexada", "pricelist_indexada_20td_balears_2024"
         )[1]
         pp_indexada_canaries_id = imd_obj.get_object_reference(
-            cursor, uid, "som_indexada", "pricelist_indexada_20td_canaries"
+            cursor, uid, "som_indexada", "pricelist_indexada_20td_canaries_2024"
         )[1]
         # Tarifes socials
         pp_social_periodes_id = imd_obj.get_object_reference(
-            cursor, uid, "www_som", "tarifa_20TD_SOM_SOCIAL"
+            cursor, uid, "som_tarifa_social", "tarifa_20TD_SOM_SOCIAL"
         )[1]
         pp_social_periodes_insular_id = imd_obj.get_object_reference(
-            cursor, uid, "www_som", "tarifa_20TD_SOM_INSULAR_SOCIAL"
+            cursor, uid, "som_tarifa_social", "tarifa_20TD_SOM_INSULAR_SOCIAL"
         )[1]
         pp_social_indexada_id = imd_obj.get_object_reference(
-            cursor, uid, "www_som", "tarifa_indexada_20TD_peninsula_social"
+            cursor, uid, "som_tarifa_social", "tarifa_indexada_20TD_peninsula_social"
         )[1]
         pp_social_indexada_balears_id = imd_obj.get_object_reference(
-            cursor, uid, "www_som", "tarifa_indexada_20TD_balears_social"
+            cursor, uid, "som_tarifa_social", "tarifa_indexada_20TD_balears_social"
         )[1]
         pp_social_indexada_canaries_id = imd_obj.get_object_reference(
-            cursor, uid, "www_som", "tarifa_indexada_20TD_canaries_social"
+            cursor, uid, "som_tarifa_social", "tarifa_indexada_20TD_canaries_social"
         )[1]
 
         return {

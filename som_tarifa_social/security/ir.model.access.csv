@@ -1,3 +1,4 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
-read,Permission to read some model,model_module_some_model,user_group,1,0,0,0
-write,Permission to write some model,model_module_some_model,manager_group,1,1,1,1
+access_wizard_change_tariff_social_u,wizard.change.tariff.social user,model_wizard_change_tariff_social,giscedata_facturacio.group_giscedata_facturacio_u,1,1,1,1
+access_wizard_change_tariff_social_r,wizard.change.tariff.social read,model_wizard_change_tariff_social,giscedata_facturacio.group_giscedata_facturacio_r,1,1,1,1
+access_wizard_change_tariff_social_w,wizard.change.tariff.social write,model_wizard_change_tariff_social,giscedata_facturacio.group_giscedata_facturacio_w,1,1,1,1

@@ -1,2 +1,2 @@
 # -*- coding: utf-8 -*-
-from . import wizard_model
+from . import wizard_change_tariff_social
