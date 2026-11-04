@@ -23,7 +23,7 @@
                     ${_(u"Correo electrónico: info@energetica.coop")} <br/>
                     ${_(u"Dirección postal: Avda. Ramón Pradera 12, bajo trasera; 47009-Valladolid")}
                 % else:
-                    ${_(u"Horari de 9:30 a 14 h. (dilluns i dimecres fins a les 17 h.) 900 103 605 (Gratuït. cost de la trucada per a la cooperativa). "
+                    ${_(u"Horari: de 9:30 a 14h (dilluns i dimecres fins a les 17h). 900 103 605: gratuït, cost de la trucada per a la cooperativa. "
                     u"Si tens tarifa plana de telefonia, també pots trucar-nos al %s.<br />"
                     u"Adreça electrònica: reclama@somenergia.coop<br />"
                     u"Adreça postal: C/ Riu Güell, 68 - 17005 - Girona<br />") % (ec.comer_phone,)}
