@@ -1,4 +1,6 @@
 # -*- encoding: utf-8 -*-
+from __future__ import absolute_import
+
 import logging
 import pooler
 from oopgrade.oopgrade import load_data, load_data_records, load_access_rules_from_model_name

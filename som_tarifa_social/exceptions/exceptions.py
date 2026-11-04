@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+from __future__ import absolute_import
+
 from tools.translate import _
 
 from addons.som_polissa.exceptions.exceptions import SomPolissaException

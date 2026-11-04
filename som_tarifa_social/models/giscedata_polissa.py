@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+from __future__ import absolute_import
+
 from som_polissa.exceptions import exceptions
 
 from osv import osv
