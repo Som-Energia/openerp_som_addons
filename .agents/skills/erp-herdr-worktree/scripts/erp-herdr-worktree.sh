@@ -22,12 +22,18 @@ worktree_root() {
 }
 
 require_herdr() {
-    if [ "${HERDR_ENV:-}" != "1" ] || [ -z "${HERDR_PANE_ID:-}" ]; then
-        printf 'Run this from a Herdr-managed pane.\n' >&2
-        exit 1
-    fi
-    if ! command -v "$herdr" >/dev/null 2>&1; then
-        printf 'Herdr CLI is unavailable; create or open the worktree normally.\n' >&2
+    # Prefer the inner legacy pane when Herdr TUI is running inside hc.
+    if [ "${HERDR_ENV:-}" = "1" ]; then
+        if [ -z "${HERDR_PANE_ID:-}" ] || ! command -v "$herdr" >/dev/null 2>&1; then
+            printf 'Herdr CLI or caller pane metadata is unavailable; stopping.\n' >&2
+            exit 1
+        fi
+        "$herdr" pane current --pane "$HERDR_PANE_ID" | python3 -c \
+            'import json, sys; assert json.load(sys.stdin)["result"]["pane"]["tab_id"]'
+    elif [ -n "${HC_TERMINAL_ID:-}" ]; then
+        python3 "$script_dir/herdr-app-worktree-companion.py" --check
+    else
+        printf 'Run this from a Herdr TUI pane or a Herdr App terminal.\n' >&2
         exit 1
     fi
 }
