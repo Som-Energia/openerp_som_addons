@@ -109,12 +109,12 @@ def open_companion(worktree):
     try:
         created = app_do('pane.split', pane=caller['pane'],
                          direction='right', argv=argv)
+        companion = created['terminal']
+        # Register before restoring focus or checking startup: either can fail
+        # while the new terminal is still missing its foreground cwd.
+        record_companion(caller_id, companion, worktree)
     finally:
         app_do('pane.focus', pane=focused_pane)
-    companion = created['terminal']
-    # Mark ownership before checking startup: a failed/slow launch must not
-    # cause a second split on retry. Never close an unverified user terminal.
-    record_companion(caller_id, companion, worktree)
     if foreground_cwd(command(CORE, 'get', companion)) != worktree:
         raise ValueError('Companion {0} created, but cwd is not confirmed; '
                          'inspect it before retrying.'.format(companion))

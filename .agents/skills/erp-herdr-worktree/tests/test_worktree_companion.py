@@ -47,6 +47,10 @@ if kind == 'app':
                 state['infos']['t9']['foreground'] = None
             result = {'pane': 'p9', 'terminal': 't9'}
         elif name == 'pane.focus':
+            if state.get('fail_focus'):
+                with open(path, 'w') as stream:
+                    json.dump(state, stream)
+                sys.exit(1)
             state['status']['focused_pane'] = values['pane']
             result = {'ok': True}
         else:
@@ -57,6 +61,10 @@ elif kind == 'core':
     if args[0] == 'get':
         result = state['infos'][args[1]]
     elif args[0] == 'label':
+        if state.get('fail_label'):
+            with open(path, 'w') as stream:
+                json.dump(state, stream)
+            sys.exit(1)
         labels = state['infos'][args[1]].setdefault('labels', {})
         labels.update(item.split('=', 1) for item in args[2:])
     else:
@@ -262,6 +270,33 @@ class CompanionTests(unittest.TestCase):
         self.state['calls'] = []
         self.open(code=1)
         self.assertEqual(self.app_actions(), [])
+
+    def test_focus_failure_records_companion_before_retry(self):
+        self.state.update(slow_start=True, fail_focus=True)
+        self.open(code=1)
+        self.assertEqual(self.app_actions(), ['pane.split', 'pane.focus'])
+        labels = self.state['infos']['t9']['labels']
+        self.assertEqual(labels['erp.role'], 'worktree-companion')
+        self.assertEqual(labels['erp.owner'], 't1')
+        self.assertEqual(labels['erp.worktree'], str(self.repo))
+        self.assertEqual(self.state['infos']['t1']['labels']['erp.companion'],
+                         't9')
+
+        self.state['fail_focus'] = False
+        self.state['calls'] = []
+        self.assertIn('Cannot safely retarget', self.open(code=1).stderr)
+        self.assertEqual(self.app_actions(), [])
+        self.assertEqual(len(self.state['tabs'][0]['terminals']), 2)
+
+        self.state['infos']['t9']['foreground'] = {'cwd': str(self.repo)}
+        self.state['calls'] = []
+        self.assertIn('Reusing worktree companion: t9', self.open().stdout)
+        self.assertEqual(self.app_actions(), [])
+
+    def test_registration_failure_still_restores_focus(self):
+        self.state['fail_label'] = True
+        self.open(code=1)
+        self.assertEqual(self.app_actions(), ['pane.split', 'pane.focus'])
 
     def test_app_create_then_open_new_registered_worktree(self):
         target = self.root / 'openerp_som_addons-worktrees/new'
