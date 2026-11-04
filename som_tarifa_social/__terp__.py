@@ -12,6 +12,7 @@
     'installable': True,
     'depends': [
         'base',
+        'giscedata_crm_leads',
         'giscedata_facturacio',
         'poweremail',
         'som_indexada',
