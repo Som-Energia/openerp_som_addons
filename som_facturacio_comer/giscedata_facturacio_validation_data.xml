@@ -32,7 +32,7 @@
             <field name="parameters">{"inc_days_maximeter": 1, "n_days_bimensual": 10, "n_days_first_invoice": 14, "n_days_mensual": 10, "n_days_not_estimable": 14, "som_skip_if_20TD_00_and_less_than_days": 69}</field>
         </record>
         <record model="giscedata.facturacio.validation.warning.template" id="giscedata_facturacio.warning_F017">
-            <field name="parameters">{"max_delayed_days": 70, "som_skip_if_20TD_00_and_less_than_days": 90}</field>
+            <field name="parameters">{"max_delayed_days": 70, "som_skip_if_20TD_00_and_less_than_days": 110}</field>
         </record>
     </data>
     <data>

@@ -411,5 +411,35 @@ class GiscedataFacturacioValidationValidator(osv.osv):
             GiscedataFacturacioValidationValidator, self
         ).check_max_theoric_consume_by_power(cursor, uid, fact, parameters)
 
+    def check_invoice_from_delayed_contract(self, cursor, uid, fact, parameters):
+        tarifa_acces = fact.tarifa_acces_id.name
+        tarifa_comer = fact.polissa_id.llista_preu.name
+        autoconsum = fact.polissa_id.autoconsumo
+        today = parameters.get("today") or datetime.today().strftime("%Y-%m-%d")
+        today = datetime.strptime(today, "%Y-%m-%d")
+        policy_reference_date = (
+            fact.polissa_id.data_ultima_lectura or fact.polissa_id.data_alta
+        )
+        policy_reference_date = datetime.strptime(
+            policy_reference_date, "%Y-%m-%d"
+        )
+
+        limit_days = parameters.get("som_skip_if_20TD_00_and_less_than_days", None)
+        try:
+            limit_days = int(limit_days)
+        except (ValueError, TypeError):
+            limit_days = None
+        if (limit_days is not None
+            and (today - policy_reference_date).days <= limit_days
+            and tarifa_acces == '2.0TD'
+            and tarifa_comer in ['2.0TD_SOM', '2.0TD_SOM_INSULAR']
+                and autoconsum == '00'):
+            return None
+
+        return super(
+            GiscedataFacturacioValidationValidator,
+            self
+        ).check_invoice_from_delayed_contract(cursor, uid, fact, parameters)
+
 
 GiscedataFacturacioValidationValidator()

@@ -4,12 +4,9 @@ from __future__ import absolute_import
 import threading
 
 from destral import testing
-<<<<<<< HEAD
 import mock
 from osv import osv
-=======
 from ctx import current_session, _context_stack
->>>>>>> origin/IMP_payment_card_order
 from osv.orm import FieldsValidationException
 import pooler
 
@@ -330,6 +327,8 @@ class TestResPartnerCreditCard(testing.OOTestCaseWithCursor):
             )),
             sorted([existing_card_id, result["id"]]),
     
+        )
+
     def _create_cards_with_expiry(self, expiry_dates):
         card_ids = []
         for index, expiry_date in enumerate(expiry_dates):

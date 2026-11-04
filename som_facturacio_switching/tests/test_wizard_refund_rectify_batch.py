@@ -457,7 +457,7 @@ class TestRefundRectifySupplierInvoices(testing.OOTestCaseWithCursor):
         # Insert out of period order; identical periods are ordered by ID.
         end_boundary = invoice("2023-07-13", "2023-07-25", state="paid")
         start_boundary = invoice("2023-05-05", "2023-05-16", "in_refund",
-                                  rectificative_type="B", state="cancel")
+                                 rectificative_type="B", state="cancel")
         same_period = invoice("2023-05-05", "2023-05-16", rectificative_type="A")
         covering = invoice("2023-03-01", "2023-07-31", rectificative_type="R", state="open")
         first_split = invoice("2023-05-16", "2023-06-15")

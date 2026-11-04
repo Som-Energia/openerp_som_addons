@@ -115,13 +115,13 @@ Qualsevol canvi de model o fitxer XML, incloses les vistes, requereix llegir la 
 | `pr-token-cost-logger` | Calcular o publicar mètriques verificades de tokens i costos d'IA d'una PR | Veure [.agents/skills/pr-token-cost-logger/SKILL.md](.agents/skills/pr-token-cost-logger/SKILL.md) |
 
 **Requisits de l'entorn de tests:**
-1. Inicieu els serveis necessaris de PostgreSQL, MongoDB i Redis:
-   ```bash
-   REPO_ROOT="$(git rev-parse --show-toplevel)"
-   docker compose -f "$REPO_ROOT/docker-compose.yaml" up -d
-   ```
-   Inicieu sempre els tres serveis abans d'executar tests.
-2. Virtualenv activat — nom habitual: `erp` (`pyenv activate erp` o `workon erp`)
+1. Inicieu PostgreSQL, MongoDB i Redis amb `scripts/start-local-services.sh`.
+   El helper reutilitza el projecte Compose del checkout principal des de qualsevol
+   worktree i espera que els tres serveis responguin. Vegeu
+   [validació local](docs/guides/local-validation.md).
+2. Virtualenv activat — nom habitual: `erp` (`pyenv activate erp` o `workon erp`).
+   En un entorn nou, executeu `scripts/setup-local-validation.sh`; el setup
+   comprova les eines i els imports (vegeu la guia anterior).
 
 ### Tests en worktrees
 
@@ -130,8 +130,7 @@ Useu obligatòriament `scripts/run-tests-worktree.sh` des de qualsevol worktree.
 Indiqueu explícitament cada addon que el test ha de redirigir. El wrapper valida els addons, adquireix un únic lock global entre worktrees i el manté durant la captura, la redirecció, tota l'execució de Destral i la restauració. El lock només serialitza processos que usen aquest wrapper: cap eina ha de modificar manualment els symlinks compartits. `--no-requirements` continua sent la ruta recomanada:
 
 ```bash
-REPO_ROOT="$(git rev-parse --show-toplevel)"
-docker compose -f "$REPO_ROOT/docker-compose.yaml" up -d
+scripts/start-local-services.sh
 PYENV_VERSION=erp scripts/run-tests-worktree.sh \
     --addon <module> -- <database> --no-requirements -m <module>
 ```
