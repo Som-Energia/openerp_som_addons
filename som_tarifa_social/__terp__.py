@@ -3,7 +3,7 @@
 {
     'name': 'SomEnergia Tarifa social',
     'description': 'Mòdul que conté la lògica per posar i treure la tarifa social',
-    'version': '24.5.0',
+    'version': '24.5.1',
     'category': 'Som Energia module',
     'website': 'https://github.com/Som-Energia/openerp-som-addons',
     'author': 'Som Energia SCCL',
