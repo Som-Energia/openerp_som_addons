@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Verify setup and runner failure paths without installing packages or opening DBs.
+# Verify setup and runner independence without installing packages or opening DBs.
 set -euo pipefail
 script_dir="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd)"
 PYTHONPATH="$script_dir${PYTHONPATH:+:$PYTHONPATH}" \
@@ -44,12 +44,11 @@ for failure in TEST_NOT_VENV TEST_PIP_FAIL TEST_EDITABLE_FAIL TEST_PREFLIGHT_FAI
         fail 'packages installed without a Python 2 virtualenv'
     fi
 done
+# Missing optional validation tools must not prevent Destral from running.
 : > "$TEST_PYTHON_LOG"
-if TEST_PREFLIGHT_FAIL=42 bash "$script_dir/run-tests.sh" fixture_db --no-requirements -m example > "$tmp/output" 2>&1; then
-    fail 'runner ignored failing preflight'
-fi
-if grep -Fq '/destral/destral/cli.py' "$TEST_PYTHON_LOG"; then fail 'Destral started before preflight passed'; fi
-: > "$TEST_PYTHON_LOG"
-bash "$script_dir/run-tests.sh" fixture_db --no-requirements -m example > "$tmp/output" 2>&1
+TEST_PREFLIGHT_FAIL=42 bash "$script_dir/run-tests.sh" fixture_db --no-requirements -m example > "$tmp/output" 2>&1
 grep -Fq $'/destral/destral/cli.py\tfixture_db\t--no-requirements\t-m\texample' "$TEST_PYTHON_LOG" || fail 'Destral arguments changed'
-printf 'PASS: repeatable setup and fail-fast runner\n'
+TEST_PREFLIGHT_FAIL=42 bash "$script_dir/run-tests.sh" fixture_db --help > "$tmp/output" 2>&1
+grep -Fq $'/destral/destral/cli.py\tfixture_db\t--help' "$TEST_PYTHON_LOG" || fail 'Destral help unavailable'
+if grep -Fq 'check_local_env.py' "$TEST_PYTHON_LOG"; then fail 'runner requires optional validation tools'; fi
+printf 'PASS: repeatable setup and independent runner\n'

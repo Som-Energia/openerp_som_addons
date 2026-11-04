@@ -56,10 +56,16 @@ PYENV_VERSION=erp python scripts/check_local_env.py
 ```
 
 La comprovació mostra l'intèrpret i els camins dels imports de les eines,
-Destral i `generationkwh.investmentmodel`. `run-tests.sh` l'executa abans de
-preparar la base de dades o instal·lar addons; qualsevol error retorna un codi
-no zero. El wrapper de worktrees continua mantenint el lock i restaurant els
-enllaços encara que aquesta comprovació falli.
+Destral i `generationkwh.investmentmodel`. És un diagnòstic explícit, executat
+també pel setup; qualsevol error retorna un codi no zero. L'import de
+`investmentmodel` comprova que el paquet sigui accessible, no que funcionin
+totes les seves dependències ni els addons que l'utilitzen.
+
+`run-tests.sh` delega directament a Destral: executar tests o consultar `--help`
+no requereix les eines de lint ni dependències d'addons aliens al test.
+Els bootstraps aturen el procés si falla la instal·lació de `generationkwh`,
+sense repetir aquest diagnòstic. Els tests dels addons validen l'ús real de les
+dependències.
 
 El setup fixa la cadena d'eines de Python 2.7. Per a proves locals amb Python 3,
 cal proveir eines compatibles al seu virtualenv: el checker comprova els imports

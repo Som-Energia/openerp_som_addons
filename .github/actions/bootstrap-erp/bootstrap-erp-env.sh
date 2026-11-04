@@ -117,7 +117,5 @@ else
 	pip install "dm.xmlsec.binding<=1.3.2"
 fi
 
-python -c 'import generationkwh.investmentmodel'
-
 cd "$ROOT_DIR_SRC/erp"
 ./tools/link_addons.sh

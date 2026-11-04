@@ -114,8 +114,8 @@ Qualsevol canvi de model o fitxer XML, incloses les vistes, requereix llegir la 
    worktree i espera que els tres serveis responguin. Vegeu
    [validació local](docs/guides/local-validation.md).
 2. Virtualenv activat — nom habitual: `erp` (`pyenv activate erp` o `workon erp`).
-   En un entorn nou, executeu `scripts/setup-local-validation.sh`; el runner
-   comprova eines i imports abans d'iniciar Destral (vegeu la guia anterior).
+   En un entorn nou, executeu `scripts/setup-local-validation.sh`; el setup
+   comprova les eines i els imports (vegeu la guia anterior).
 
 ### Tests en worktrees
 

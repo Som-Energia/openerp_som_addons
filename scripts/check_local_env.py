@@ -50,7 +50,7 @@ def detect_workspace(script_dir):
 
 def main(argv=None):
     parser = argparse.ArgumentParser(
-        description='Check local tools and ERP imports before Destral.')
+        description='Diagnose local validation tools and ERP imports.')
     parser.add_argument('--tools-only', action='store_true', help='Do not import ERP dependencies')
     parser.add_argument('--workspace', help='Directory containing erp, destral and generationkwh')
     args = parser.parse_args(argv)

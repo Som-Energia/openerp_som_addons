@@ -40,8 +40,9 @@ PYENV_VERSION=erp scripts/setup-local-validation.sh
 ```
 
 Executa-ho una vegada per virtualenv o quan canviïn les versions fixades.
-`run-tests.sh` comprova les eines i els imports ERP abans de Destral, sense
-instal·lar paquets. Si falla, consulta
+El setup comprova les eines i els imports ERP. Per repetir el diagnòstic sense
+instal·lar paquets, executa `python scripts/check_local_env.py`. El runner no
+exigeix eines de lint per executar tests. Consulta
 [validació local](../../../docs/guides/local-validation.md).
 
 ### Pas 1: Arrencar i esperar els serveis compartits
