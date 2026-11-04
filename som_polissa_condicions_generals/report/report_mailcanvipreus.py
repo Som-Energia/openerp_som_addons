@@ -14,85 +14,73 @@ from report_backend.report_parser import ReportParser
 
 class MailCanviPreusReport(report_int):
 
+    def _render_record(self, cursor, uid, pool, pol, context):
+        templates = pool.get('poweremail.templates')
+        model_data = pool.get('ir.model.data')
+        legacy_id = model_data.get_object_reference(
+            cursor, uid, 'som_polissa_condicions_generals', 'canviPreusBackend')[1]
+        env_id = context.get('price_change_enviament_id')
+        if not env_id:
+            legacy = templates.browse(cursor, uid, legacy_id, context=context)
+            if legacy.model_int_name == 'giscedata.polissa':
+                return pol, legacy
+            campaign_id = model_data.get_object_reference(
+                cursor, uid, 'som_polissa_condicions_generals',
+                'price_change_campaign_template')[1]
+            candidates = pool.get('som.enviament.massiu').search(cursor, uid, [
+                ('polissa_id', '=', pol.id),
+                ('lot_enviament.email_template', 'in', [legacy_id, campaign_id]),
+            ], limit=2, context=context)
+            if len(candidates) != 1:
+                raise ValueError(
+                    'Select the original sending with price_change_enviament_id '
+                    'to preview this policy: no unique price-change sending exists')
+            env_id = candidates[0]
+        env = pool.get('som.enviament.massiu').browse(cursor, uid, env_id, context=context)
+        if env.polissa_id.id != pol.id:
+            raise ValueError('The PDF sending must belong to the requested policy')
+        template = env.lot_enviament.email_template
+        if template.model_int_name != 'som.enviament.massiu':
+            raise ValueError('The PDF sending requires a mass-mail template')
+        return env, template
+
     def create(self, cursor, uid, ids, datas, context=None):
-        if context is None:
-            context = {}
-
+        context = dict(context or {})
+        if context.get('price_change_enviament_id') and len(ids) != 1:
+            raise ValueError('An explicit sending can preview only its own policy')
         pool = pooler.get_pool(cursor.dbname)
-        pol_o = pool.get("giscedata.polissa")
-        template_o = pool.get("poweremail.templates")
-
-        ir_model_data = pool.get("ir.model.data")
-        template_id = ir_model_data.get_object_reference(
-            cursor, uid,
-            "som_polissa_condicions_generals",
-            "canviPreusBackend"
-        )[1]
-
-        addons_lookup = TemplateLookup(
-            directories=[config['addons_path']], input_encoding='utf-8'
-        )
-        template = template_o.browse(cursor, uid, template_id, context=context)
-        message = template.def_body_html
-        templ = MakoTemplate(message, input_encoding='utf-8', lookup=addons_lookup)
-
+        pol_o = pool.get('giscedata.polissa')
+        lookup = TemplateLookup(directories=[config['addons_path']], input_encoding='utf-8')
         result = []
-
         for pol_id in ids:
-            pol_br = pol_o.browse(cursor, uid, pol_id, context=context)
-
-            values = {
-                'pool': pool,
-                'cursor': cursor,
-                'uid': uid,
-                'object': pol_br,
-                'peobject': pol_br,
-                'env': {},
-                'format_exceptions': True,
-                'template': template,
-                'lang': context.get('lang'),
-            }
-            reply = templ.render_unicode(**values)
-
-            pdf_file_path = ReportParser.get_temporal_file_path('pdf')
-            html_file_path = ReportParser.write_temporal_file(reply, 'html')
-
-            puppeteer_script_path = 'get_pdf'
-
-            node_bin_path = os.environ.get('NODE_BIN_PATH') or 'node'
-
-            node_modules_path = os.environ.get('NODE_PATH', False)
-            if node_modules_path:
-                node_bin_path = 'NODE_PATH={} {}'.format(
-                    node_modules_path, node_bin_path
-                )
-
+            pol = pol_o.browse(cursor, uid, pol_id, context=context)
+            record, template = self._render_record(cursor, uid, pool, pol, context)
+            templ = MakoTemplate(template.def_body_html, input_encoding='utf-8', lookup=lookup)
+            reply = templ.render_unicode(
+                pool=pool, cursor=cursor, uid=uid, object=record, peobject=record,
+                env={}, format_exceptions=True, template=template, lang=context.get('lang'))
+            pdf_path = ReportParser.get_temporal_file_path('pdf')
+            html_path = None
             try:
+                html_path = ReportParser.write_temporal_file(reply, 'html')
                 params = {
-                    'path': {
-                        'html': html_file_path,
-                        'pdf': pdf_file_path
-                    },
-                    'options': {
-                        'landscape': False,
-                    }
+                    'path': {'html': html_path, 'pdf': pdf_path},
+                    'options': {'landscape': False},
                 }
-                command = [
-                    node_bin_path,
-                    '{}/report_puppeteer/js/{}.js'.format(
-                        config['addons_path'], puppeteer_script_path),
-                    "'{}'".format(json.dumps(params))
-                ]
-                generate_command = ' '.join(command)
-                subprocess.call(generate_command, shell=True)
+                subprocess.check_call([
+                    os.environ.get('NODE_BIN_PATH') or 'node',
+                    os.path.join(config['addons_path'], 'report_puppeteer', 'js', 'get_pdf.js'),
+                    json.dumps(params),
+                ])
+                with open(pdf_path, 'rb') as pdf_file:
+                    pdf = pdf_file.read()
+                if not pdf.startswith(b'%PDF'):
+                    raise ValueError('The PDF renderer did not produce a PDF document')
+                result.append(base64.b64encode(pdf))
             finally:
-                os.remove(html_file_path)
-
-            with open(pdf_file_path, "rb") as pdf_file:
-                result.append(base64.b64encode(pdf_file.read()))
-            if os.path.exists(pdf_file_path):
-                os.remove(pdf_file_path)
-
+                for path in (html_path, pdf_path):
+                    if path and os.path.exists(path):
+                        os.remove(path)
         return result, 'pdf'
 
 
