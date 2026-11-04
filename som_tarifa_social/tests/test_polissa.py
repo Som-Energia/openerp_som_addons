@@ -2,6 +2,7 @@
 from __future__ import absolute_import
 
 from destral import testing
+import mock
 
 
 class TestPolissa(testing.OOTestCaseWithCursor):
@@ -93,6 +94,23 @@ class TestPolissa(testing.OOTestCaseWithCursor):
         )
 
         self.assertEqual(result, self.pp_periodes_peninsula_id)
+
+    def _assert_regular_period_tariff_for_zone(self, zone):
+        with mock.patch.object(
+                type(self.pol_obj), '_get_tariff_zone_from_location',
+                return_value=zone):
+            resolve = (
+                self.pol_obj.get_pricelist_from_tariff_and_location_no_social
+            )
+            result = resolve(self.cursor, self.uid, 'atr', False)
+
+        self.assertEqual(result, self.pp_periodes_insular_id)
+
+    def test_regular_period_tariff_for_balears(self):
+        self._assert_regular_period_tariff_for_zone('balears')
+
+    def test_regular_period_tariff_for_canaries(self):
+        self._assert_regular_period_tariff_for_zone('canaries')
 
     def test_get_new_tariff_change_social_or_regular__invalid_change(self):
         pol_id = self.imd_obj.get_object_reference(

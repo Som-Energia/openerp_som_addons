@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import
 
+import ast
 import os
 
-from addons import MigrationManager
+from addons import MigrationManager, get_module_resource
 from destral import testing
 from oopgrade.oopgrade import load_data
 from tools import cache, config
@@ -13,6 +14,29 @@ ROOT = os.path.dirname(os.path.dirname(__file__))
 
 
 class TestPricelistMigration(testing.OOTestCaseWithCursor):
+
+    def test_www_som_depends_on_owner_without_loading_social_xml(self):
+        with open(get_module_resource('www_som', '__terp__.py'), 'rb') as source:
+            manifest = ast.literal_eval(source.read())
+
+        self.assertIn('som_tarifa_social', manifest['depends'])
+        self.assertNotIn(
+            'data/pricelist_social_data.xml', manifest['update_xml'],
+        )
+
+    def test_www_som_does_not_redefine_social_tariff_methods(self):
+        with open(get_module_resource(
+                'www_som', 'giscedata_polissa.py'), 'rb') as source:
+            tree = ast.parse(source.read())
+        methods = set(node.name for node in ast.walk(tree)
+                      if isinstance(node, ast.FunctionDef))
+        social_methods = {
+            'get_pricelist_from_tariff_and_location_no_social',
+            'mapping_tarifa_social', 'mapping_tarifa_no_social',
+            'get_new_tariff_change_social_or_regular',
+        }
+
+        self.assertFalse(methods & social_methods)
 
     def setUp(self):
         super(TestPricelistMigration, self).setUp()

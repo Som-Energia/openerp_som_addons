@@ -2,6 +2,17 @@
 
 Mòdul que conté la lògica per posar i treure la tarifa social
 
+## Propietat de les tarifes
+
+`som_tarifa_social` defineix les tarifes i els mètodes de canvi. `www_som` hi
+depèn i els utilitza per herència, sense tornar a carregar les dades socials.
+Els identificadors antics `www_som.*` es conserven com a àlies protegits sobre
+els mateixos registres, per mantenir la compatibilitat.
+
+El fitxer `www_som/data/pricelist_social_data.xml` es manté perquè hi apunten
+migracions històriques, però ja no figura al manifest de `www_som`. No és una
+segona font de configuració: els canvis nous corresponen a aquest mòdul.
+
 ## Primera instal·lació (24.5.1)
 
 La instal·lació reutilitza les tarifes existents de `www_som` abans de carregar
@@ -43,4 +54,14 @@ repositoris `erp`, `destral` i `openerp_som_addons`:
 WORKSPACE="/path/to/workspace" scripts/run-tests.sh \
   --no-requirements -m som_tarifa_social \
   -t test_pricelist_migration.TestPricelistMigration
+```
+
+Les proves d'integració amb `www_som` comproven els àlies, els mètodes heretats
+i la recàrrega de les dades declarades als manifests, amb la neteja de metadata,
+en tots dos ordres. Verifiquen que es conserven els IDs i els preus configurats:
+
+```bash
+WORKSPACE="/path/to/workspace" scripts/run-tests.sh \
+  --no-requirements -m www_som \
+  -t test_social_tariff_integration.TestSocialTariffIntegration
 ```
