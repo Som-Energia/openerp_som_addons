@@ -25,14 +25,15 @@ class TestWizardChangeTariff(testing.OOTestCaseWithCursor):
             self.cursor, self.uid, [("name", "=", name)]
         )[0]
 
-    def _prepare_contract(self, pricelist_id):
+    def _prepare_contract(self, pricelist_id, mode_facturacio="atr"):
         pol_id = self.imd_obj.get_object_reference(
             self.cursor, self.uid, "giscedata_polissa", "polissa_tarifa_018"
         )[1]
         self.pol_obj.write(self.cursor, self.uid, pol_id, {
             "llista_preu": pricelist_id,
             "tarifa": self.tarifa,
-            "mode_facturacio": "atr",
+            "mode_facturacio": mode_facturacio,
+            "mode_facturacio_generacio": mode_facturacio,
         })
         self.pol_obj.send_signal(
             self.cursor, self.uid, [pol_id], ["validar", "contracte"]
@@ -64,3 +65,39 @@ class TestWizardChangeTariff(testing.OOTestCaseWithCursor):
 
         modcon = self.modcon_obj.browse(self.cursor, self.uid, modcon_id)
         self.assertEqual(modcon.llista_preu.id, pp_regular_id)
+
+    def test_change_indexed_to_social_uses_invoicing_code(self):
+        regular_id = self.imd_obj.get_object_reference(
+            self.cursor, self.uid, "som_indexada",
+            "pricelist_indexada_20td_peninsula_2024",
+        )[1]
+        social_id = self.imd_obj.get_object_reference(
+            self.cursor, self.uid, "som_tarifa_social",
+            "tarifa_indexada_20TD_peninsula_social",
+        )[1]
+        pol_id = self._prepare_contract(regular_id, "index")
+
+        modcon_id = self._change_tariff(pol_id, "to_social")
+
+        modcon = self.modcon_obj.browse(self.cursor, self.uid, modcon_id)
+        self.assertEqual(modcon.llista_preu.id, social_id)
+        self.assertEqual(modcon.mode_facturacio, "index")
+        self.assertEqual(modcon.mode_facturacio_generacio, "index")
+
+    def test_change_indexed_to_regular_uses_invoicing_code(self):
+        regular_id = self.imd_obj.get_object_reference(
+            self.cursor, self.uid, "som_indexada",
+            "pricelist_indexada_20td_peninsula_2024",
+        )[1]
+        social_id = self.imd_obj.get_object_reference(
+            self.cursor, self.uid, "som_tarifa_social",
+            "tarifa_indexada_20TD_peninsula_social",
+        )[1]
+        pol_id = self._prepare_contract(social_id, "index")
+
+        modcon_id = self._change_tariff(pol_id, "to_regular")
+
+        modcon = self.modcon_obj.browse(self.cursor, self.uid, modcon_id)
+        self.assertEqual(modcon.llista_preu.id, regular_id)
+        self.assertEqual(modcon.mode_facturacio, "index")
+        self.assertEqual(modcon.mode_facturacio_generacio, "index")

@@ -44,7 +44,7 @@ class WizardChangeTariffSocial(osv.osv_memory):
         new_pricelist = pricelist_obj.browse(
             cursor, uid, new_pricelist_id, context=context
         )
-        mode_facturacio = new_pricelist.compatible_invoicing_modes[0].name.lower()
+        mode_facturacio = new_pricelist.compatible_invoicing_modes[0].code
         new_modcon_vals = {
             "mode_facturacio": mode_facturacio,
             "mode_facturacio_generacio": mode_facturacio,
