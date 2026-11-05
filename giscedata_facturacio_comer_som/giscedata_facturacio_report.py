@@ -3784,8 +3784,10 @@ class GiscedataFacturacioFacturaReport(osv.osv):
         source_signatures = []
         # A global expediente label cannot establish per-line provenance when
         # several source invoices/F1s are involved. Keep those blocks separate.
-        known_origin = (len(origins) == 1 and bool(origins[0]) and len(f1_ids) == 1 and
-                        len(set(expedients)) == 1 and len(types) == 1)
+        known_origin = (
+            len(origins) == 1 and bool(origins[0]) and len(f1_ids) == 1
+            and len(set(expedients)) == 1 and len(types) == 1
+        )
         for type, units, compl_lines_x in compl_matrix:
             for start_date in sorted(set([x.data_desde for x in compl_lines_x])):
                 date_lines = [x for x in compl_lines_x if x.data_desde == start_date]

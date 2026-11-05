@@ -25,13 +25,17 @@ def merge_complementary_blocks(blocks, source_signatures):
     previous_signature = None
     for block, signature in zip(blocks, source_signatures):
         current = deepcopy(block)
-        adjacent = (result and
-                    datetime.strptime(result[-1]['data_fi'], '%Y-%m-%d') +
-                    timedelta(days=1) ==
-                    datetime.strptime(current['data_inici'], '%Y-%m-%d'))
-        if (adjacent and signature is not None and
-                signature == previous_signature and
-                block_signature(result[-1]) == block_signature(current)):
+        adjacent = (
+            result
+            and datetime.strptime(result[-1]['data_fi'], '%Y-%m-%d')
+            + timedelta(days=1)
+            == datetime.strptime(current['data_inici'], '%Y-%m-%d')
+        )
+        if (
+            adjacent and signature is not None
+            and signature == previous_signature
+            and block_signature(result[-1]) == block_signature(current)
+        ):
             target = result[-1]
             target['data_fi'] = current['data_fi']
             target['total'] += current['total']
