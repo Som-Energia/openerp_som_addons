@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from __future__ import absolute_import
 from datetime import datetime, timedelta
 from som_polissa.exceptions import exceptions
 from www_som.helpers import www_entry_point
