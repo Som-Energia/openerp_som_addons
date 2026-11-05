@@ -9,6 +9,9 @@ depèn i els utilitza per herència, sense tornar a carregar les dades socials.
 Els identificadors antics `www_som.*` es conserven com a àlies protegits sobre
 els mateixos registres, per mantenir la compatibilitat.
 
+L'excepció `PolissaCannotChangeSocialTariff` continua definida a `som_polissa`,
+amb el mateix import públic i sense duplicar-la en aquest mòdul.
+
 El fitxer `www_som/data/pricelist_social_data.xml` es manté perquè hi apunten
 migracions històriques, però ja no figura al manifest de `www_som`. No és una
 segona font de configuració: els canvis nous corresponen a aquest mòdul.

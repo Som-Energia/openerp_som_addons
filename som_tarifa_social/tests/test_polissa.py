@@ -3,6 +3,7 @@ from __future__ import absolute_import
 
 from destral import testing
 import mock
+from som_polissa.exceptions import exceptions
 
 
 class TestPolissa(testing.OOTestCaseWithCursor):
@@ -124,12 +125,16 @@ class TestPolissa(testing.OOTestCaseWithCursor):
         self.pol_obj.send_signal(self.cursor, self.uid, [pol_id], ['validar', 'contracte'])
         change_type = "invalid_change"
 
-        with self.assertRaises(Exception) as context:
+        with self.assertRaises(
+                exceptions.PolissaCannotChangeSocialTariff) as context:
             self.pol_obj.get_new_tariff_change_social_or_regular(
                 self.cursor, self.uid, pol_id, change_type, context=None
             )
 
-        self.assertTrue('Cannot change {} tariff'.format(change_type) in str(context.exception))
+        self.assertIn(
+            'Cannot change {} tariff'.format(change_type), str(context.exception),
+        )
+        self.assertEqual(context.exception.to_dict()['change_type'], change_type)
 
     def test_get_new_tariff_change_social_or_regular__invalid_from_invalid_tariff(self):
         pol_id = self.imd_obj.get_object_reference(
@@ -145,9 +150,13 @@ class TestPolissa(testing.OOTestCaseWithCursor):
         self.pol_obj.send_signal(self.cursor, self.uid, [pol_id], ['validar', 'contracte'])
         change_type = "to_social"
 
-        with self.assertRaises(Exception) as context:
+        with self.assertRaises(
+                exceptions.PolissaCannotChangeSocialTariff) as context:
             self.pol_obj.get_new_tariff_change_social_or_regular(
                 self.cursor, self.uid, pol_id, change_type, context=None
             )
 
-        self.assertTrue('Cannot change {} tariff'.format(change_type) in str(context.exception))
+        self.assertIn(
+            'Cannot change {} tariff'.format(change_type), str(context.exception),
+        )
+        self.assertEqual(context.exception.to_dict()['change_type'], change_type)
