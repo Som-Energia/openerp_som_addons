@@ -1914,6 +1914,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
         """
         dphone = self.get_distri_phone(pol) or " "
         cphone = fact.company_id.partner_id.address[0].phone
+        cphone = cphone.replace(".", "").replace(" ", "")
 
         data = {
             "distri_name": pol.distribuidora.name,
@@ -1924,9 +1925,7 @@ class GiscedataFacturacioFacturaReport(osv.osv):
             "has_agreement_partner": pol.soci.ref in agreementPartners.keys(),
             "agreement_partner_name": pol.soci.name,
             "is_energetica": pol.soci.ref in agreementPartners.keys() and pol.soci.ref == "S019753",
-            "comer_phone": ".".join([cphone[i: i + 3] for i in range(0, len(cphone), 3)])
-            if "." not in cphone
-            else cphone,
+            "comer_phone": " ".join([cphone[i: i + 3] for i in range(0, len(cphone), 3)]),
             "lang": get_lang_partner(fact),
         }
         return data
