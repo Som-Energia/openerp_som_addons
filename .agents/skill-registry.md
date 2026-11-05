@@ -32,6 +32,7 @@ Current verification: `.github/workflows/pull_request_labeler.yml` requires at l
 | Quan necessites aplicar una PR sobre una branca ERP divergent resolent conflictes reals | erp-apply-pr-divergent | .agents/skills/erp-apply-pr-divergent/SKILL.md |
 | Quan necessites afegir casos de test/demo XML en un mòdul OpenERP | erp-demo-testcase | .agents/skills/erp-demo-testcase/SKILL.md |
 | Quan necessites fer triage d'incidències de Sentry, "analitzar sentry", "triar incidents" | sentry-triage | .agents/skills/sentry-triage/SKILL.md |
+| Quan cal traduir textos de l'ERP, corregir l'idioma de Python/XML/Mako o actualitzar catàlegs PO/POT i carregar-los | erp-translations | .agents/skills/erp-translations/SKILL.md |
 | Quan necessites actualitzar un report legal o contractual `.mako` a partir d'un `docx` o `md` | update-contract-report | .agents/skills/update-contract-report/SKILL.md |
 | Quan necessites calcular o publicar mètriques verificades de tokens i costos d'IA d'una PR | pr-token-cost-logger | .agents/skills/pr-token-cost-logger/SKILL.md |
 
@@ -119,6 +120,16 @@ Current verification: `.github/workflows/pull_request_labeler.yml` requires at l
 - Labels obligatoris: bug + autotask
 - Prohibit: Noms, emails, telèfons, CUPS, dades personals
 - branca PR: developer (gisce/erp) o main (openerp_som_addons), MAI rolling_erp01
+
+### erp-translations
+- Identificar mòdul, mecanisme, font i codis reals dels idiomes; no assumir font anglès ni crear `ca.po`/`es.po` genèrics
+- Traduir literals amb `_()` abans d'interpolar; preservar placeholders, Unicode, HTML, noms tècnics i contingut legal aprovat
+- POT = inventari, PO = traduccions: si canvia el font o la ubicació, sincronitzar tots dos; només POT no resol el text final
+- Les referències `#:` codifiquen recursos OpenERP: afegir ubicacions `rml:` al bloc existent, sense duplicar entrades ni confiar en fallbacks
+- Verificar `context['lang']` al render i als helpers: `tools.translate._` pot llegir el `context` local per introspecció
+- Per instal·lacions existents, preparar càrrega dels PO afectats amb `trans_load` seguint `erp-migration`; el generador compara amb `main` local i només genera càrrega d'`es_ES.po`
+- Validar catàlegs, migració i render CA/ES; `OOBaseTests.test_translate_modules` via `run-tests-worktree.sh` no prova totes les referències ni el comportament final
+- No modificar symlinks compartits ni executar càrregues a producció; informar errors previs i proves no executades
 
 ### update-contract-report
 - La font de veritat (`docx` o `md`) l'ha de confirmar l'usuari; no barrejar fonts sense confirmar

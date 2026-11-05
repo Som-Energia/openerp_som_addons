@@ -102,6 +102,12 @@ Qualsevol canvi de model o fitxer XML, incloses les vistes, requereix llegir la 
 |-------|-----------|----------|
 | `sentry-triage` | Fer triage d'incidències de Sentry | Veure [.agents/skills/sentry-triage/SKILL.md](.agents/skills/sentry-triage/SKILL.md) |
 
+### Traduccions
+
+| Skill | Quan usar | Com usar |
+|-------|-----------|----------|
+| `erp-translations` | Afegir o corregir traduccions Python/XML/Mako, catàlegs PO/POT, context d'idioma i càrrega amb migracions | Veure [.agents/skills/erp-translations/SKILL.md](.agents/skills/erp-translations/SKILL.md) |
+
 ### Reports legals i contractuals
 
 | Skill | Quan usar | Com usar |
