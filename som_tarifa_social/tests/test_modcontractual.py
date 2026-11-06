@@ -394,3 +394,145 @@ class TestModcontractual(testing.OOTestCaseWithCursor):
         self.assertEqual(modcon_obj.search(
             self.cursor, self.uid, domain + [("state", "=", "pendent")],
         ), [])
+
+    def test_renovar_post_creation_failure_requires_caller_rollback(self):
+        polissa_obj = self.openerp.pool.get("giscedata.polissa")
+        modcon_obj = self.openerp.pool.get("giscedata.polissa.modcontractual")
+        wizard_obj = self.openerp.pool.get("giscedata.polissa.crear.contracte")
+        imd_obj = self.openerp.pool.get("ir.model.data")
+        polissa_id = imd_obj.get_object_reference(
+            self.cursor, self.uid, "giscedata_polissa", "polissa_tarifa_018",
+        )[1]
+        social_tariff_id = imd_obj.get_object_reference(
+            self.cursor, self.uid, "som_tarifa_social", "tarifa_20TD_SOM_SOCIAL",
+        )[1]
+        regular_tariff_id = imd_obj.get_object_reference(
+            self.cursor, self.uid, "som_indexada",
+            "pricelist_periodes_20td_peninsula",
+        )[1]
+        tariff_id = imd_obj.get_object_reference(
+            self.cursor, self.uid, "giscedata_polissa", "tarifa_20TD",
+        )[1]
+        polissa_obj.write(self.cursor, self.uid, polissa_id, {
+            "llista_preu": social_tariff_id,
+            "mode_facturacio": "atr",
+            "tarifa": tariff_id,
+        })
+        polissa_obj.send_signal(
+            self.cursor, self.uid, [polissa_id], ["validar", "contracte"],
+        )
+        domain = [("polissa_id", "=", polissa_id)]
+        modcon_ids = modcon_obj.search(self.cursor, self.uid, domain)
+        self.assertEqual(len(modcon_ids), 1)
+        current_id = modcon_ids[0]
+        tomorrow = (date.today() + timedelta(days=1)).isoformat()
+        modcon_obj.write(self.cursor, self.uid, modcon_ids, {
+            "modcon_renovation_type": "automatic",
+            "data_inici": (date.today() - timedelta(days=365)).isoformat(),
+            "data_final": tomorrow,
+        })
+        policy_fields = [
+            "state", "llista_preu", "modcontractual_activa", "mode_facturacio",
+            "tarifa", "data_alta", "data_baixa", "renovacio_auto",
+            "data_firma_contracte",
+        ]
+        modcon_fields = [
+            "state", "active", "llista_preu", "modcontractual_ant",
+            "modcontractual_seg", "data_inici", "data_final",
+            "mode_facturacio", "modcon_renovation_type", "data_firma_contracte",
+        ]
+        policy_before = polissa_obj.read(
+            self.cursor, self.uid, polissa_id, policy_fields,
+        )
+        modcons_before = modcon_obj.read(
+            self.cursor, self.uid, modcon_ids, modcon_fields,
+        )
+        self.assertEqual(policy_before["state"], "activa")
+        self.assertEqual(policy_before["llista_preu"][0], social_tariff_id)
+        self.assertEqual(policy_before["modcontractual_activa"][0], current_id)
+        self.assertEqual(modcons_before[0]["state"], "actiu")
+        self.assertEqual(modcons_before[0]["llista_preu"][0], social_tariff_id)
+        self.assertFalse(modcons_before[0]["modcontractual_seg"])
+
+        fault_marker = "controlled-social-renewal-post-creation-failure"
+        creation_states = []
+        remaining_ids = []
+        original_create = wizard_obj.action_crear_contracte
+
+        def fail_after_creation(cursor, uid, ids, context=None):
+            policy_entered = polissa_obj.read(
+                cursor, uid, polissa_id, policy_fields,
+            )
+            original_create(cursor, uid, ids, context=context)
+            created_ids = modcon_obj.search(cursor, uid, domain)
+            creation_states.append({
+                "entered": policy_entered,
+                "policy": polissa_obj.read(
+                    cursor, uid, polissa_id, policy_fields,
+                ),
+                "modcons": modcon_obj.read(
+                    cursor, uid, created_ids, modcon_fields,
+                ),
+            })
+            raise RuntimeError(fault_marker)
+
+        # Simulate the RPC caller's exception boundary without committing fixtures.
+        # The domain exception reaches this handler BEFORE assertRaises catches it.
+        with mock.patch.object(
+                wizard_obj, "action_crear_contracte", new=fail_after_creation):
+            with self.assertRaises(exceptions.UnexpectedException) as raised:
+                self.cursor.savepoint("social_renewal_caller")
+                try:
+                    modcon_obj.renovar(self.cursor, self.uid, modcon_ids)
+                except exceptions.UnexpectedException:
+                    # Observe method-local undo, before the caller rolls back SQL.
+                    remaining_ids.extend(modcon_obj.search(
+                        self.cursor, self.uid, domain,
+                    ))
+                    self.cursor.rollback(savepoint="social_renewal_caller")
+                    raise
+                finally:
+                    self.cursor.release("social_renewal_caller")
+
+        self.assertEqual(raised.exception.code, "Unexpected")
+        self.assertIn(fault_marker, raised.exception.to_dict()["error"])
+        self.assertEqual(len(creation_states), 1)
+        partial = creation_states[0]
+        self.assertEqual(partial["entered"]["state"], "modcontractual")
+        self.assertEqual(partial["entered"]["llista_preu"][0], regular_tariff_id)
+        self.assertEqual(partial["policy"]["modcontractual_activa"][0], current_id)
+        self.assertEqual(len(partial["modcons"]), 2)
+        successors = [
+            modcon for modcon in partial["modcons"] if modcon["id"] != current_id
+        ]
+        self.assertEqual(len(successors), 1)
+        successor = successors[0]
+        self.assertEqual(successor["state"], "pendent")
+        self.assertEqual(successor["llista_preu"][0], regular_tariff_id)
+        self.assertEqual(successor["modcontractual_ant"][0], current_id)
+        self.assertEqual(successor["data_inici"], tomorrow)
+        self.assertEqual(successor["data_final"],
+                         (date.today() + timedelta(days=365)).isoformat())
+        predecessor = [
+            modcon for modcon in partial["modcons"] if modcon["id"] == current_id
+        ][0]
+        self.assertEqual(predecessor["modcontractual_seg"][0], successor["id"])
+        self.assertEqual(predecessor["data_final"], date.today().isoformat())
+        self.assertNotEqual(predecessor, modcons_before[0])
+        # Undo is not SQL atomicity: the genuine successor survives until rollback.
+        self.assertEqual(set(remaining_ids), set(modcon_ids + [successor["id"]]))
+
+        # Fresh ORM reads, not previously browsed records or fixture teardown.
+        self.assertEqual(modcon_obj.search(
+            self.cursor, self.uid, domain,
+        ), modcon_ids)
+        self.assertEqual(modcon_obj.search(
+            self.cursor, self.uid, [("id", "=", successor["id"])],
+            context={"active_test": False},
+        ), [])
+        self.assertEqual(polissa_obj.read(
+            self.cursor, self.uid, polissa_id, policy_fields,
+        ), policy_before)
+        self.assertEqual(modcon_obj.read(
+            self.cursor, self.uid, modcon_ids, modcon_fields,
+        ), modcons_before)
