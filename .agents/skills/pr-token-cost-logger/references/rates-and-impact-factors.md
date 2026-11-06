@@ -1,7 +1,7 @@
 # Model rates and impact factors
 
 **Effective date:** 2026-11-06
-**Rate source:** User-provided pricing table and subscription figures. These are not provider invoices or independently verified tariffs. Confirm current values before using them for a later report.
+**Rate source:** User-provided pricing table and subscription figures; not independently verified. Confirm current values before using them for a later report.
 
 ## Model rates
 
@@ -32,13 +32,13 @@ Match the exact provider model to a label only when the mapping is known. Do not
 
 The source table marks GPT-6 Astra Law with an asterisk but did not provide its footnote; preserve the mark and do not infer additional pricing conditions.
 
-## Credit-to-currency estimate
+## Credit-to-USD estimate
 
-User-provided subscription basis: 25,000 credits/month and €8,000/year. Assuming the full annual allocation is used:
+User-provided subscription basis: 25,000 credits/month and $8,000/year. Assuming the full annual allocation is used:
 
-`EUR_per_credit = 8,000 / (25,000 * 12) = 0.0266667 EUR`
+`USD_per_credit = 8,000 / (25,000 * 12) = 0.0266667 USD`
 
-This is an amortized average subscription cost per credit, not a marginal or provider-reported token price. If fewer credits are used, the effective cost per consumed credit is higher. Keep credit totals available even when EUR conversion is shown.
+This is an amortized average subscription cost per credit, not a marginal model-token price. If fewer credits are used, the effective cost per consumed credit is higher. Keep credit totals available alongside the USD estimate.
 
 ## Energy and environmental estimates
 
