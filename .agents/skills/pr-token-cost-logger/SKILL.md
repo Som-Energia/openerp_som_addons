@@ -19,6 +19,7 @@ Use when asked to calculate, record, format, or comment on AI token usage or cos
 - Before estimating, load `references/rates-and-impact-factors.md`. Use only an exact model/rate match whose source and effective date are known; if rates may be stale or the model is unmapped, ask or mark cost unavailable.
 - Keep uncached input, cache-read input, cache-write input, output, and reasoning distinct. Apply a cache rate only to cache tokens not already included in the input count. Apply output rates to reasoning only when the usage/provider semantics confirm reasoning is billable as output. If any nonzero category has no rate, mark the cost incomplete instead of presenting a full total.
 - Treat credit conversion, energy, CO₂, and cooling-water results as estimates. State their source, date, units, and assumptions; never present them as metered consumption or verified emissions.
+- In PR comments, report only the effective currency-per-credit conversion. Do not disclose monthly credit allowances or annual subscription spend unless the user explicitly asks.
 - Do not publish a comment unless the user explicitly requested publication and the repository and PR are unambiguous. Never include prompts, completions, or secrets in the report.
 
 ## Decision Gates
@@ -61,7 +62,7 @@ Session: `<session_id>`; scope: <message/date cutoff or export range>
 | CO₂ | <n> kg |
 | Cooling water | <n> L |
 
-Rates/factors: <source and effective date>. Assumptions: <credit conversion and generated-token convention>.
+Rates/factors: <source and effective date>. Assumptions: <effective currency per credit and generated-token convention>; omit subscription totals and allowances.
 
 *Define whether total includes cache and reasoning. Mark cost and impact figures as estimates.
 ```
