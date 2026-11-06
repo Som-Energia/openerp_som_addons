@@ -7,6 +7,7 @@ import time
 from destral import testing
 import mock
 from polissa_base import polissa_base
+from som_polissa.exceptions import exceptions
 
 
 class TestModcontractual(testing.OOTestCaseWithCursor):
@@ -199,3 +200,94 @@ class TestModcontractual(testing.OOTestCaseWithCursor):
             "index", "tarifa_indexada_20TD_peninsula_social",
             "pricelist_indexada_20td_peninsula_2024",
         )
+
+    def test_renovar_invalid_target_rejected_before_policy_mutation(self):
+        polissa_obj = self.openerp.pool.get("giscedata.polissa")
+        modcon_obj = self.openerp.pool.get("giscedata.polissa.modcontractual")
+        imd_obj = self.openerp.pool.get("ir.model.data")
+        polissa_id = imd_obj.get_object_reference(
+            self.cursor, self.uid, "giscedata_polissa", "polissa_tarifa_018",
+        )[1]
+        social_tariff_id = imd_obj.get_object_reference(
+            self.cursor, self.uid, "som_tarifa_social", "tarifa_20TD_SOM_SOCIAL",
+        )[1]
+        tariff_id = imd_obj.get_object_reference(
+            self.cursor, self.uid, "giscedata_polissa", "tarifa_20TD",
+        )[1]
+        polissa_obj.write(self.cursor, self.uid, polissa_id, {
+            "llista_preu": social_tariff_id,
+            "mode_facturacio": "atr",
+            "tarifa": tariff_id,
+        })
+        polissa_obj.send_signal(
+            self.cursor, self.uid, [polissa_id], ["validar", "contracte"],
+        )
+        domain = [("polissa_id", "=", polissa_id)]
+        modcon_ids = modcon_obj.search(self.cursor, self.uid, domain)
+        self.assertEqual(len(modcon_ids), 1)
+        modcon_obj.write(self.cursor, self.uid, modcon_ids, {
+            "modcon_renovation_type": "automatic",
+            "data_inici": (date.today() - timedelta(days=365)).isoformat(),
+            "data_final": (date.today() + timedelta(days=1)).isoformat(),
+        })
+        policy_fields = [
+            "state", "llista_preu", "modcontractual_activa",
+            "mode_facturacio", "tarifa",
+        ]
+        modcon_fields = [
+            "state", "active", "llista_preu", "modcontractual_ant",
+            "modcontractual_seg", "data_inici", "data_final",
+            "mode_facturacio", "modcon_renovation_type",
+        ]
+        policy_before = polissa_obj.read(
+            self.cursor, self.uid, polissa_id, policy_fields,
+        )
+        modcons_before = modcon_obj.read(
+            self.cursor, self.uid, modcon_ids, modcon_fields,
+        )
+        self.assertEqual(policy_before["state"], "activa")
+        self.assertEqual(policy_before["llista_preu"][0], social_tariff_id)
+        self.assertEqual(modcons_before[0]["state"], "actiu")
+
+        entered_states = []
+        original_enter = polissa_obj.wkf_modcontractual
+
+        def enter_modcon(cursor, uid, ids):
+            result = original_enter(cursor, uid, ids)
+            entered_states.append(polissa_obj.read(
+                cursor, uid, polissa_id, policy_fields,
+            ))
+            return result
+
+        for invalid_target in (0, False, None):
+            # Only the resolver result is injected; workflow and writes remain real.
+            with mock.patch.object(
+                    polissa_obj, "mapping_tarifa_no_social",
+                    return_value=invalid_target):
+                with mock.patch.object(
+                        polissa_obj, "wkf_modcontractual", new=enter_modcon):
+                    with self.assertRaises(
+                            exceptions.PolissaCannotChangeSocialTariff) as raised:
+                        modcon_obj.renovar(self.cursor, self.uid, modcon_ids)
+
+            expected_error = exceptions.PolissaCannotChangeSocialTariff(
+                polissa_obj.browse(
+                    self.cursor, self.uid, polissa_id,
+                ).name, "to_regular",
+            )
+            self.assertEqual(raised.exception.to_dict(), expected_error.to_dict())
+
+            # No caller rollback: rejection must precede mutation, not just undo it.
+            self.assertEqual(
+                modcon_obj.search(self.cursor, self.uid, domain), modcon_ids,
+            )
+            self.assertEqual(polissa_obj.read(
+                self.cursor, self.uid, polissa_id, policy_fields,
+            ), policy_before)
+            self.assertEqual(modcon_obj.read(
+                self.cursor, self.uid, modcon_ids, modcon_fields,
+            ), modcons_before)
+            self.assertEqual(
+                entered_states, [],
+                "Invalid renewal target mutated the policy: %r" % entered_states,
+            )

@@ -35,10 +35,14 @@ class GiscedataPolissaModcontractual(osv.osv):
             polissa = polissa_obj.browse(
                 cursor, uid, polissa_id, context=context
             )
-            try:
-                new_pricelist_id = polissa_obj.mapping_tarifa_no_social(
-                    cursor, uid, polissa_id, context=context
+            new_pricelist_id = polissa_obj.mapping_tarifa_no_social(
+                cursor, uid, polissa_id, context=context
+            )
+            if not new_pricelist_id:
+                raise exceptions.PolissaCannotChangeSocialTariff(
+                    polissa.name, "to_regular",
                 )
+            try:
                 polissa.send_signal("modcontractual")
                 polissa_obj.write(
                     cursor, uid, polissa.id,
