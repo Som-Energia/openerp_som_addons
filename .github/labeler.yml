@@ -65,6 +65,8 @@ som_factures_paper:
 -  som_factures_paper/**
 som_gurb:
 -  som_gurb/**
+som_holder_change:
+-  som_holder_change/**
 som_indexada:
 -  som_indexada/**
 som_infoenergia:
