@@ -19,7 +19,7 @@ class ReportTestGroup(osv.osv):
         tgs = self.read(cursor, uid, ids, ['active', 'test_ids', 'priority', 'name'])
         for tg in sorted(tgs, key=lambda e: e['priority']):
             if not tg["active"]:
-                result += _("Grup de test '{}' no està actiu!!\n\n".format[tg['name']])
+                result += _("Grup de test '{}' no està actiu!!\n\n".format(tg['name']))
             else:
                 result += _("Executant tests per grup '{}':\n".format(tg['name']))
                 result += rt_obj.execute_test(cursor, uid, tg['test_ids'], context)
@@ -36,7 +36,7 @@ class ReportTestGroup(osv.osv):
         tgs = self.read(cursor, uid, ids, ['active', 'test_ids', 'priority', 'name'])
         for tg in sorted(tgs, key=lambda e: e['priority']):
             if not tg["active"]:
-                result += _("Grup de test '{}' no està actiu!!\n\n".format[tg['name']])
+                result += _("Grup de test '{}' no està actiu!!\n\n".format(tg['name']))
             else:
                 result += _("Acceptant tests per grup '{}':\n".format(tg['name']))
                 result += rt_obj.accept_test(cursor, uid, tg['test_ids'], context)
@@ -71,6 +71,18 @@ class ReportTestGroup(osv.osv):
                 results.extend(res)
         return results
 
+    def _get_has_running_tests(self, cursor, uid, ids, name, arg, context=None):
+        result = dict.fromkeys(ids, False)
+        rt_obj = self.pool.get('report.test')
+        test_ids = rt_obj.search(cursor, uid, [
+            ('group_id', 'in', ids),
+            ('active', '=', True),
+            ('result', '=', 'doing'),
+        ], context=context)
+        for test in rt_obj.read(cursor, uid, test_ids, ['group_id'], context=context):
+            result[test['group_id'][0]] = True
+        return result
+
     _columns = {
         "name": fields.char(
             _("Nom"),
@@ -93,6 +105,18 @@ class ReportTestGroup(osv.osv):
             "report.test",
             "group_id",
             _(u"Tests"),
+        ),
+        "live_test_ids": fields.one2many(
+            "report.test",
+            "group_id",
+            _("Tests"),
+            readonly=True,
+        ),
+        "has_running_tests": fields.function(
+            _get_has_running_tests,
+            type='boolean',
+            method=True,
+            string=_(u"Tests en execució"),
         ),
         "result": fields.text(
             _("Resultats"),
