@@ -11,6 +11,8 @@ from ..exceptions import exceptions
 from addons.giscedata_lectures_estimacio import (
     giscedata_lectures_estimacio_helpers as estima_helper,
 )
+from tools.sql_utils import readonly
+import logging
 
 
 TIPO_AUTOCONSUMO = TABLA_113
@@ -61,6 +63,24 @@ class GiscedataPolissa(osv.osv):
             context=context,
         )
 
+    def _get_contracts_a_sincronitzar_data_ultima_lectura(self, cursor, uid, context=None):
+        """Return draft policies created before reference_date."""
+        query = """
+            SELECT
+                p.id,
+                p.data_ultima_lectura
+            FROM
+                giscedata_polissa p
+                JOIN giscedata_polissa_f1_info f1
+                    ON f1.polissa_id = p.id
+            WHERE
+                p.data_ultima_lectura > f1.data_ultima_lectura_f1
+                AND p.state = 'activa'
+        """
+        cursor.execute(query)
+        res = cursor.dictfetchall()
+        return res
+
     def _cron_cancel_draft_polisses(self, cursor, uid, context=None):
         """Cancel policies that have remained in draft for over three months."""
         reference_date = datetime.now() - relativedelta(months=3)
@@ -69,6 +89,35 @@ class GiscedataPolissa(osv.osv):
         )
         if polissa_ids:
             self.send_signal(cursor, uid, polissa_ids, "cancelar")
+        return True
+
+    @readonly()
+    def _cron_sincronitzar_data_ultima_lectura_f1(self, cursor, uid, context=None):
+        """ Cron per sincronitzar la data de última lectura F1 si es anterior a la data de ultima lectura facturada """
+
+        logger = logging.getLogger('openerp._cron_sincronitzar_data_ultima_lectura_f1')
+        logger.info("Buscant contractes a sincronitzar data ultima lectura f1")
+
+        res = self._get_contracts_a_sincronitzar_data_ultima_lectura(
+            cursor, uid, context=context
+        )
+
+        if res:
+            logger.info("S'han trobat {} contractes per sincronitzar.".format(len(res)))
+            for row in res:
+                polissa_id = row['id']
+                data_ultima_lectura = row['data_ultima_lectura']
+                try:
+                    with self.api.db.cursor() as write_cursor:
+                        self.write(write_cursor, uid, polissa_id, {'data_ultima_lectura_f1': data_ultima_lectura})
+                except Exception as e:
+                    logger.error("Error actualitzant sincronitzant la data del contracte amb ID {}.".format(polissa_id))
+                    continue
+
+            logger.info("S'han sincronitzat correctament tots els contractes.".format(len(res)))
+        else:
+            logger.info("No hi ha contractes a sincronitzar.")
+
         return True
 
     def update_contract_type(self, cursor, uid, vals, context=None):
