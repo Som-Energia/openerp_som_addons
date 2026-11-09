@@ -111,6 +111,8 @@ som_stash:
 -  som_stash/**
 som_switching:
 -  som_switching/**
+som_tarifa_social:
+-  som_tarifa_social/**
 som_telemesura:
 -  som_telemesura/**
 som_webforms_helpers:

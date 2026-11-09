@@ -6,3 +6,4 @@ from .tests_indexada_helpers import *
 from .tests_partner import *
 from .test_cups_helper import *
 from .test_contract_payment_helper import *
+from .test_social_tariff_integration import *
