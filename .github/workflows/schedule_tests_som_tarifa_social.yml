@@ -7,6 +7,7 @@ on:
     - cron: '0 0 * * 1'
 permissions:
   contents: read
+  checks: write
 jobs:
   erp-tests-module:
     uses: ./.github/workflows/reusable_workflow.yml
