@@ -77,9 +77,19 @@ class WizardChangeTariffSocial(osv.osv_memory):
                 "data_inici": str(data_activacio),
                 "data_final": str(data_activacio + timedelta(days=364)),
             })
+            # The contract workflow derives the next start from the old end.
+            # If it has expired, keep it until today so the new one stays pending.
+            current_modcon = polissa.modcontractual_activa
+            previous_end = str(data_activacio - timedelta(days=1))
+            if current_modcon and current_modcon.data_final < previous_end:
+                current_modcon.write({"data_final": previous_end})
             with AsyncMode("sync"):
                 wiz.action_crear_contracte()
         except Exception:
+            logger.exception(
+                "Error creating %s tariff modcontractual for polissa id %s",
+                change_type, polissa.id,
+            )
             polissa.send_signal("undo_modcontractual")
             raise exceptions.UnexpectedException()
 
