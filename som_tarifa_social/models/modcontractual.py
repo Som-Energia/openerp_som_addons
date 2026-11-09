@@ -16,6 +16,28 @@ class GiscedataPolissaModcontractual(osv.osv):
 
     _inherit = "giscedata.polissa.modcontractual"
 
+    def aplicar_modificacio(self, cursor, uid, mod_id, polissa_id=None):
+        result = super(GiscedataPolissaModcontractual, self).aplicar_modificacio(
+            cursor, uid, mod_id, polissa_id=polissa_id
+        )
+        modcon = self.browse(cursor, uid, mod_id)
+        polissa_id = polissa_id or modcon.polissa_id.id
+        polissa_obj = self.pool.get("giscedata.polissa")
+        category_id = self.pool.get("ir.model.data").get_object_reference(
+            cursor, uid, "som_tarifa_social", "categ_tarifa_social"
+        )[1]
+        social_ids = polissa_obj.mapping_tarifa_social(cursor, uid).values()
+        add_category = 4
+        remove_category = 3
+        if modcon.llista_preu.id in social_ids:
+            category_command = (add_category, category_id)
+        else:
+            category_command = (remove_category, category_id)
+        polissa_obj.write(cursor, uid, [polissa_id], {
+            "category_id": [category_command],
+        })
+        return result
+
     def renovar(self, cursor, uid, ids, context=None):
         polissa_obj = self.pool.get("giscedata.polissa")
         social_tariff_ids = polissa_obj.mapping_tarifa_social(

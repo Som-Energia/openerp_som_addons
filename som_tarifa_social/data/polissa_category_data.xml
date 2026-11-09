@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+    <data noupdate="1">
+        <record id="categ_tarifa_social" model="giscedata.polissa.category">
+            <field name="name">Tarifa Social</field>
+            <field name="code">TARIFA_SOCIAL</field>
+        </record>
+    </data>
+</openerp>
