@@ -16,6 +16,25 @@ El fitxer `www_som/data/pricelist_social_data.xml` es manté perquè hi apunten
 migracions històriques, però ja no figura al manifest de `www_som`. No és una
 segona font de configuració: els canvis nous corresponen a aquest mòdul.
 
+## Caducitat de la tarifa social
+
+Quan el procés estàndard de renovació detecta una modificació social caducada
+amb renovació automàtica i sense modificació següent, utilitza el mateix wizard
+que el canvi manual a tarifa normal. Com en el canvi indexada/períodes, crea una
+modificació **pendent per a l'endemà**, que activa el procés habitual de l'ERP.
+No espera l'emissió d'una factura per activar-la.
+
+Si la modificació social ja ha caducat, se n'allarga el final fins al dia de
+l'execució perquè la nova comenci l'endemà, sense buits entre modificacions ni
+activacions anticipades. Fins llavors es conserven la tarifa i la categoria
+socials; la categoria es retira quan s'aplica la modificació de tarifa normal.
+Reexecutar la renovació no crea una altra modificació si ja n'hi ha una de següent.
+
+La tarifa normal correspon a la zona i al mode de facturació de la pòlissa
+(indexada o períodes). La facturació utilitza l'històric de modificacions i la
+configuració estàndard de canvis de preus; les proves comproven la selecció de
+versions socials abans del canvi i normals a partir de la data d'inici.
+
 ## Primera instal·lació (24.5.1)
 
 La instal·lació reutilitza les tarifes existents de `www_som` abans de carregar

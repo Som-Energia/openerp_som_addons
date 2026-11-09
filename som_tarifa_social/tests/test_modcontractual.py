@@ -19,7 +19,8 @@ class TestModcontractual(testing.OOTestCaseWithCursor):
         )
 
     def _assert_social_expiry(self, billing_mode, social_reference,
-                              regular_reference):
+                              regular_reference, zone="peninsula",
+                              expired_days=1):
         polissa_obj = self.openerp.pool.get("giscedata.polissa")
         modcon_obj = self.openerp.pool.get("giscedata.polissa.modcontractual")
         imd_obj = self.openerp.pool.get("ir.model.data")
@@ -39,7 +40,9 @@ class TestModcontractual(testing.OOTestCaseWithCursor):
         polissa_obj.write(self.cursor, self.uid, polissa_id, {
             "llista_preu": social_tariff_id,
             "mode_facturacio": billing_mode,
+            "mode_facturacio_generacio": billing_mode,
             "tarifa": tariff_id,
+            "renovacio_auto": True,
         })
 
         polissa_obj.send_signal(
@@ -50,19 +53,30 @@ class TestModcontractual(testing.OOTestCaseWithCursor):
         )
         self.assertEqual(len(modcon_ids), 1)
         current_id = modcon_ids[0]
+        category_id = imd_obj.get_object_reference(
+            self.cursor, self.uid, "som_tarifa_social", "categ_tarifa_social",
+        )[1]
+        polissa_obj.write(self.cursor, self.uid, [polissa_id], {
+            "category_id": [(4, category_id)],
+        })
+        categories_before = polissa_obj.read(
+            self.cursor, self.uid, polissa_id, ["category_id"],
+        )["category_id"]
         policy = polissa_obj.browse(self.cursor, self.uid, polissa_id)
         self.assertEqual(policy.modcontractual_activa.id, current_id)
         self.assertEqual(policy.llista_preu.id, social_tariff_id)
         self.assertEqual(policy.mode_facturacio, billing_mode)
         self.assertEqual(polissa_obj._get_tariff_zone_from_location(
             self.cursor, self.uid, policy.cups.id_municipi.id,
-        ), "peninsula")
+        ), zone)
         year_ago = (date.today() - timedelta(days=365)).strftime("%Y-%m-%d")
         tomorrow = (date.today() + timedelta(days=1)).strftime("%Y-%m-%d")
         modcon_obj.write(self.cursor, self.uid, [current_id], {
             "modcon_renovation_type": "automatic",
             "llista_preu": social_tariff_id,
-            "data_final": tomorrow,
+            "data_final": (
+                date.today() - timedelta(days=expired_days)
+            ).isoformat(),
             "data_inici": year_ago,
         })
 
@@ -70,7 +84,12 @@ class TestModcontractual(testing.OOTestCaseWithCursor):
         self.assertEqual(current.llista_preu.id, social_tariff_id)
         self.assertEqual(current.mode_facturacio, billing_mode)
         self.assertEqual(current.state, "actiu")
-        modcon_obj.renovar(self.cursor, self.uid, [current_id])
+        self.assertIn(current_id, modcon_obj.get_contractes_renovar(
+            self.cursor, self.uid, context={"delay_days": -1},
+        ))
+        modcon_obj.renovar(
+            self.cursor, self.uid, [current_id], context={"sync": False},
+        )
 
         modcon_ids_after = modcon_obj.search(
             self.cursor, self.uid, [("polissa_id", "=", polissa_id)]
@@ -89,6 +108,7 @@ class TestModcontractual(testing.OOTestCaseWithCursor):
         self.assertEqual(new_modcon.state, "pendent")
         self.assertEqual(new_modcon.modcontractual_ant.id, current_id)
         self.assertEqual(new_modcon.mode_facturacio, billing_mode)
+        self.assertEqual(new_modcon.mode_facturacio_generacio, billing_mode)
         self.assertEqual(
             new_modcon.data_final,
             (date.today() + timedelta(days=365)).strftime("%Y-%m-%d"),
@@ -104,6 +124,28 @@ class TestModcontractual(testing.OOTestCaseWithCursor):
         self.assertEqual(policy.modcontractual_activa.id, current_id)
         self.assertEqual(policy.llista_preu.id, social_tariff_id)
         self.assertEqual(current.state, "actiu")
+        self.assertEqual(polissa_obj.read(
+            self.cursor, self.uid, polissa_id, ["category_id"],
+        )["category_id"], categories_before)
+        # A retry must neither duplicate the pending change nor renew its dates.
+        pending_before = modcon_obj.read(
+            self.cursor, self.uid, new_modcon_id,
+            ["data_inici", "data_final", "state"],
+        )
+        modcon_obj.renovar(self.cursor, self.uid, [current_id, new_modcon_id])
+        self.assertEqual(modcon_obj.search(
+            self.cursor, self.uid, [("polissa_id", "=", polissa_id)],
+        ), modcon_ids_after)
+        self.assertEqual(modcon_obj.read(
+            self.cursor, self.uid, new_modcon_id,
+            ["data_inici", "data_final", "state"],
+        ), pending_before)
+        self.assertNotIn(current_id, modcon_obj.get_contractes_renovar(
+            self.cursor, self.uid, context={"delay_days": -1},
+        ))
+        self._assert_invoice_price_versions(
+            polissa_id, social_tariff_id, regular_tariff_id, tomorrow,
+        )
         self.assertFalse(modcon_obj.cnd_activar_contracte(
             self.cursor, self.uid, [new_modcon_id],
         ))
@@ -147,6 +189,13 @@ class TestModcontractual(testing.OOTestCaseWithCursor):
         self.assertEqual(successor.state, "actiu")
         self.assertTrue(successor.active)
         self.assertEqual(successor.llista_preu.id, regular_tariff_id)
+        self.assertEqual(policy.mode_facturacio_generacio, billing_mode)
+        categories_after = polissa_obj.read(
+            self.cursor, self.uid, polissa_id, ["category_id"],
+        )["category_id"]
+        self.assertNotIn(category_id, categories_after)
+        self.assertEqual(set(categories_after),
+                         set(categories_before) - {category_id})
         self.assertNotEqual(
             modcon_obj.browse(self.cursor, self.uid, current_id).state, "actiu",
         )
@@ -536,3 +585,68 @@ class TestModcontractual(testing.OOTestCaseWithCursor):
         self.assertEqual(modcon_obj.read(
             self.cursor, self.uid, modcon_ids, modcon_fields,
         ), modcons_before)
+
+    def _assert_invoice_price_versions(self, polissa_id, social_tariff_id,
+                                       regular_tariff_id, activation_date):
+        """Use the invoice engine's price selection across the pending change."""
+        version_obj = self.openerp.pool.get("product.pricelist.version")
+        invoice_start = (date.today() - timedelta(days=7)).isoformat()
+        invoice_end = (date.today() + timedelta(days=7)).isoformat()
+        # Isolate price selection from demo price rules and their dependencies.
+        existing = version_obj.search(self.cursor, self.uid, [
+            ("pricelist_id", "in", [social_tariff_id, regular_tariff_id]),
+        ], context={"active_test": False})
+        version_obj.unlink(self.cursor, self.uid, existing)
+        for pricelist_id in (social_tariff_id, regular_tariff_id):
+            version_obj.create(self.cursor, self.uid, {
+                "name": "Social expiry test prices",
+                "pricelist_id": pricelist_id,
+                "date_start": invoice_start,
+                "date_end": invoice_end,
+            })
+        self.openerp.pool.get("res.config").set(
+            self.cursor, self.uid, "auto_giscedata_pricelist_change_enabled", "1",
+        )
+        versions = self.openerp.pool.get(
+            "giscedata.facturacio.facturador"
+        ).versions_de_preus_ids(
+            self.cursor, self.uid, polissa_id, invoice_start, invoice_end,
+        )
+        self.assertEqual(version_obj.browse(
+            self.cursor, self.uid, versions[invoice_start],
+        ).pricelist_id.id, social_tariff_id)
+        self.assertEqual(version_obj.browse(
+            self.cursor, self.uid, versions[activation_date],
+        ).pricelist_id.id, regular_tariff_id)
+
+    def test_renovar_delayed_social_expiry_keeps_contiguous_dates(self):
+        self._assert_social_expiry(
+            "atr", "tarifa_20TD_SOM_SOCIAL",
+            "pricelist_periodes_20td_peninsula", expired_days=7,
+        )
+
+    def _assert_insular_social_expiry(self, zone, billing_mode):
+        polissa_obj = self.openerp.pool.get("giscedata.polissa")
+        if billing_mode == "atr":
+            social_reference = "tarifa_20TD_SOM_INSULAR_SOCIAL"
+            regular_reference = "pricelist_periodes_20td_insular"
+        else:
+            social_reference = "tarifa_indexada_20TD_{}_social".format(zone)
+            regular_reference = "pricelist_indexada_20td_{}_2024".format(zone)
+        with mock.patch.object(
+                polissa_obj, "_get_tariff_zone_from_location", return_value=zone):
+            self._assert_social_expiry(
+                billing_mode, social_reference, regular_reference, zone=zone,
+            )
+
+    def test_renovar_period_social_expiry_in_balears(self):
+        self._assert_insular_social_expiry("balears", "atr")
+
+    def test_renovar_period_social_expiry_in_canaries(self):
+        self._assert_insular_social_expiry("canaries", "atr")
+
+    def test_renovar_indexed_social_expiry_in_balears(self):
+        self._assert_insular_social_expiry("balears", "index")
+
+    def test_renovar_indexed_social_expiry_in_canaries(self):
+        self._assert_insular_social_expiry("canaries", "index")
