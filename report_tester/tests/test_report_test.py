@@ -2,7 +2,9 @@
 from destral import testing
 from destral.transaction import Transaction
 from tools.translate import _
+from lxml import etree
 from ..models import report_test
+import json
 import mock
 
 
@@ -288,3 +290,105 @@ class TestReportTest(testing.OOTestCase):
 
         self.assertEqual(res_id, value_id)
         self.assertEqual(msg, _(""))
+
+    def test_default_tree_does_not_autorefresh(self):
+        view = self.rp_obj.fields_view_get(
+            self.cursor, self.uid, view_type='tree'
+        )
+        tree = etree.fromstring(view['arch'])
+        result_fields = tree.xpath("./field[@name='result']")
+
+        self.assertEqual(len(result_fields), 1)
+        self.assertIsNone(result_fields[0].get('autorefresh'))
+
+    def test_group_running_indicator_tracks_active_tests(self):
+        group_id = self.create_report_test_group({})
+        self.assertFalse(self.rpg_obj.read(
+            self.cursor, self.uid, group_id, ['has_running_tests']
+        )['has_running_tests'])
+        self.create_report_test({
+            'group_id': group_id, 'result': 'doing', 'active': False,
+        })
+        test_id = self.create_report_test({'group_id': group_id})
+
+        for state in ['pending', 'doing', 'equals', 'differents',
+                      'pdf_error', 'no_expected', 'error']:
+            self.rp_obj.write(self.cursor, self.uid, test_id, {'result': state})
+            group = self.rpg_obj.read(
+                self.cursor, self.uid, group_id, ['has_running_tests'],
+                context={'active_test': False}
+            )
+            self.assertEqual(group['has_running_tests'], state == 'doing')
+
+    def test_group_running_indicator_is_group_scoped(self):
+        idle_group = self.create_report_test_group({})
+        busy_group = self.create_report_test_group({})
+        self.create_report_test({'group_id': idle_group, 'result': 'equals'})
+        self.create_report_test({'group_id': busy_group, 'result': 'equals'})
+        self.create_report_test({'group_id': busy_group, 'result': 'doing'})
+
+        groups = self.rpg_obj.read(
+            self.cursor, self.uid, [idle_group, busy_group],
+            ['has_running_tests']
+        )
+
+        self.assertEqual(
+            dict((group['id'], group['has_running_tests']) for group in groups),
+            {idle_group: False, busy_group: True}
+        )
+
+    def test_queued_tests_enable_group_refresh(self):
+        group_id = self.create_report_test_group({})
+        test_id = self.create_report_test({'group_id': group_id})
+
+        queued_ids = self.rpg_obj.pre_execute_tests_async(
+            self.cursor, self.uid, [group_id]
+        )
+
+        self.assertEqual(queued_ids, [test_id])
+        self.assertTrue(self.rpg_obj.read(
+            self.cursor, self.uid, group_id, ['has_running_tests']
+        )['has_running_tests'])
+
+    def test_live_list_contains_the_same_group_tests(self):
+        group_id = self.create_report_test_group({})
+        test_id = self.create_report_test({'group_id': group_id})
+        inactive_id = self.create_report_test({
+            'group_id': group_id, 'active': False,
+        })
+        other_group = self.create_report_test_group({})
+        self.create_report_test({'group_id': other_group})
+
+        group = self.rpg_obj.read(
+            self.cursor, self.uid, group_id, ['test_ids', 'live_test_ids'],
+            context={'active_test': False}
+        )
+
+        self.assertEqual(set(group['test_ids']), set([test_id, inactive_id]))
+        self.assertEqual(set(group['live_test_ids']), set(group['test_ids']))
+
+    def test_group_view_only_refreshes_the_live_list(self):
+        view = self.rpg_obj.fields_view_get(
+            self.cursor, self.uid, view_type='form'
+        )
+        form = etree.fromstring(view['arch'])
+        control = form.xpath(".//field[@name='has_running_tests']")[0]
+        self.assertEqual(control.get('autorefresh'), '1')
+        self.assertEqual(control.get('invisible'), '1')
+
+        for field_name, hidden_when in [('test_ids', True),
+                                        ('live_test_ids', False)]:
+            field = form.xpath(".//field[@name='{}']".format(field_name))[0]
+            condition = json.loads(field.get('json_attrs'))['invisible']
+            self.assertEqual(condition['rules'], [{
+                'field': 'has_running_tests', 'operator': '=',
+                'value': hidden_when,
+            }])
+
+        live_tree = etree.fromstring(
+            view['fields']['live_test_ids']['views']['tree']['arch']
+        )
+        self.assertEqual(
+            live_tree.xpath("./field[@name='result']")[0].get('autorefresh'),
+            '1'
+        )
