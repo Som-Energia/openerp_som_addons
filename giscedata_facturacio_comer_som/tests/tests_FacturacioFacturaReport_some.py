@@ -342,6 +342,11 @@ class Tests_FacturacioFacturaReport_gdo_component(Tests_FacturacioFacturaReport_
 
 
 class Tests_FacturacioFacturaReport_flags_component(Tests_FacturacioFacturaReport_base):
+    def setUp(self):
+        super(Tests_FacturacioFacturaReport_flags_component, self).setUp()
+        self.r_obj.cursor = self.cursor
+        self.r_obj.uid = self.uid
+
     @mock.patch.object(giscedata_facturacio_report, "te_autoconsum")
     @mock.patch.object(giscedata_facturacio_report, "te_gkwh")
     def test__som_report_comp_flags_no_ghwk_no_auto(
@@ -363,8 +368,10 @@ class Tests_FacturacioFacturaReport_flags_component(Tests_FacturacioFacturaRepor
             {
                 "is_autoconsum": False,
                 "autoconsum_flag": "flag_auto_little_es.png",
+                "autoconsum_banner": False,
                 "is_gkwh": False,
                 "gkwh_flag": "flag_gkwh_little.png",
+                "gkwh_banner": False,
             },
         )
 
@@ -389,8 +396,10 @@ class Tests_FacturacioFacturaReport_flags_component(Tests_FacturacioFacturaRepor
             {
                 "is_autoconsum": True,
                 "autoconsum_flag": "flag_auto_little_ca.png",
+                "autoconsum_banner": False,
                 "is_gkwh": False,
                 "gkwh_flag": "flag_gkwh_little.png",
+                "gkwh_banner": False,
             },
         )
 
@@ -415,8 +424,10 @@ class Tests_FacturacioFacturaReport_flags_component(Tests_FacturacioFacturaRepor
             {
                 "is_autoconsum": True,
                 "autoconsum_flag": "flag_auto_little_es.png",
+                "autoconsum_banner": False,
                 "is_gkwh": False,
                 "gkwh_flag": "flag_gkwh_little.png",
+                "gkwh_banner": False,
             },
         )
 
@@ -441,8 +452,10 @@ class Tests_FacturacioFacturaReport_flags_component(Tests_FacturacioFacturaRepor
             {
                 "is_autoconsum": False,
                 "autoconsum_flag": "flag_auto_little_es.png",
+                "autoconsum_banner": False,
                 "is_gkwh": True,
                 "gkwh_flag": "flag_gkwh_little.png",
+                "gkwh_banner": False,
             },
         )
 
@@ -467,8 +480,10 @@ class Tests_FacturacioFacturaReport_flags_component(Tests_FacturacioFacturaRepor
             {
                 "is_autoconsum": True,
                 "autoconsum_flag": "flag_auto_little_ca.png",
+                "autoconsum_banner": False,
                 "is_gkwh": True,
                 "gkwh_flag": "flag_gkwh_little.png",
+                "gkwh_banner": False,
             },
         )
 
@@ -493,10 +508,100 @@ class Tests_FacturacioFacturaReport_flags_component(Tests_FacturacioFacturaRepor
             {
                 "is_autoconsum": True,
                 "autoconsum_flag": "flag_auto_little_es.png",
+                "autoconsum_banner": False,
                 "is_gkwh": True,
                 "gkwh_flag": "flag_gkwh_little.png",
+                "gkwh_banner": False,
             },
         )
+
+    def create_flag_banner(self, code, image, **values):
+        banner_obj = self.model("report.banner")
+        fields = {
+            "name": code,
+            "code": code,
+            "res_model": "giscedata.facturacio.factura",
+            "start_date": "1900-01-01",
+            "image_mongo": image,
+        }
+        fields.update(values)
+        return banner_obj.create(self.cursor, self.uid, fields)
+
+    @mock.patch.object(giscedata_facturacio_report, "te_autoconsum", return_value=True)
+    @mock.patch.object(giscedata_facturacio_report, "te_gkwh", return_value=True)
+    def test_flags_use_configured_images_and_language(self, gkwh_mock, auto_mock):
+        f_id = self.get_fixture("giscedata_facturacio", "factura_0001")
+        fact = self.bf(f_id)
+        self.setup_langs()
+        self.partner_obj.write(self.cursor, self.uid, fact.partner_id.id, {"lang": "ca_ES"})
+        self.create_flag_banner("invoice_flag_autoconsum_ca", "iVBORw0KGgo=")
+        self.create_flag_banner("invoice_flag_autoconsum_es", "aW1hZ2U=")
+        self.create_flag_banner("invoice_flag_gkwh", "/9j/4AAQ")
+
+        result = self.r_obj.get_component_flags_data(**self.bfp(f_id))
+        self.assertEquals(result["autoconsum_banner"], "data:image/png;base64,iVBORw0KGgo=")
+        self.assertEquals(result["gkwh_banner"], "data:image/jpeg;base64,/9j/4AAQ")
+        self.assertYamlfy(result)
+
+    def test_flag_banner_rejects_unrelated_default_and_html(self):
+        f_id = self.get_fixture("giscedata_facturacio", "factura_0001")
+        fact = self.bf(f_id)
+        self.create_flag_banner("other", "aW1hZ2U=", default=True)
+        self.assertFalse(self.r_obj.get_flag_banner(fact, "invoice_flag_gkwh"))
+        self.create_flag_banner("invoice_flag_gkwh", False, html="<p>Not an image</p>")
+        self.assertFalse(self.r_obj.get_flag_banner(fact, "invoice_flag_gkwh"))
+
+    def test_flag_banner_applies_dates_and_invoice_domain(self):
+        f_id = self.get_fixture("giscedata_facturacio", "factura_0001")
+        fact = self.bf(f_id)
+        banner_id = self.create_flag_banner(
+            "invoice_flag_gkwh", "aW1hZ2U=", start_date="2999-01-01"
+        )
+        self.assertFalse(self.r_obj.get_flag_banner(fact, "invoice_flag_gkwh"))
+        banner_obj = self.model("report.banner")
+        banner_obj.write(self.cursor, self.uid, [banner_id], {"default": True})
+        self.assertFalse(self.r_obj.get_flag_banner(fact, "invoice_flag_gkwh"))
+        banner_obj.write(self.cursor, self.uid, [banner_id], {
+            "start_date": "1900-01-01", "domain": "[('id', '=', -1)]",
+        })
+        self.assertFalse(self.r_obj.get_flag_banner(fact, "invoice_flag_gkwh"))
+        banner_obj.write(self.cursor, self.uid, [banner_id], {
+            "domain": "[('id', '=', %d)]" % f_id,
+        })
+        self.assertEquals(
+            self.r_obj.get_flag_banner(fact, "invoice_flag_gkwh"),
+            "data:image/png;base64,aW1hZ2U=",
+        )
+
+    def test_flag_template_uses_banner_and_existing_fallback(self):
+        component_path = os.path.join(
+            os.path.dirname(__file__), "..", "report", "components", "flags"
+        )
+        lookup = TemplateLookup(directories=[component_path])
+        template = lookup.get_template("flags.mako")
+        flags = ns({
+            "is_autoconsum": True,
+            "is_gkwh": True,
+            "autoconsum_flag": "flag_auto_little_ca.png",
+            "gkwh_flag": "flag_gkwh_little.png",
+            "autoconsum_banner": "data:image/png;base64,aW1hZ2U=",
+            "gkwh_banner": False,
+        })
+        result = template.render(flags=flags, addons_path="/addons")
+        self.assertIn('src="data:image/png;base64,aW1hZ2U="', result)
+        self.assertIn('/flags/flag_gkwh_little.png', result)
+        self.assertIn('logo_little_left', result)
+        self.assertIn('logo_little_right', result)
+
+        legacy_flags = ns({
+            "is_autoconsum": True,
+            "is_gkwh": False,
+            "autoconsum_flag": "flag_auto_little_ca.png",
+            "gkwh_flag": "flag_gkwh_little.png",
+        })
+        legacy_result = template.render(flags=legacy_flags, addons_path="/addons")
+        self.assertIn('/flags/flag_auto_little_ca.png', legacy_result)
+        self.assertIn('logo_little_center', legacy_result)
 
 
 class Tests_FacturacioFacturaReport_renovation_date(Tests_FacturacioFacturaReport_base):

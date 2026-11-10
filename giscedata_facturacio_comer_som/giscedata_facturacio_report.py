@@ -1300,11 +1300,19 @@ class GiscedataFacturacioFacturaReport(osv.osv):
         returns a dictionary with all the flags data needed for the flag component
         """
         lang = get_lang_partner(fact).lower()[0:2]
+        is_autoconsum = te_autoconsum(fact, pol)
+        is_gkwh = te_gkwh(fact)
         data = {
-            "is_autoconsum": te_autoconsum(fact, pol),  # fact.te_autoconsum
+            "is_autoconsum": is_autoconsum,
             "autoconsum_flag": "flag_auto_little_{}.png".format(lang),
-            "is_gkwh": te_gkwh(fact),
+            "autoconsum_banner": self.get_flag_banner(
+                fact, "invoice_flag_autoconsum_{}".format(lang)
+            ) if is_autoconsum else False,
+            "is_gkwh": is_gkwh,
             "gkwh_flag": "flag_gkwh_little.png",
+            "gkwh_banner": self.get_flag_banner(
+                fact, "invoice_flag_gkwh"
+            ) if is_gkwh else False,
         }
         return data
 
@@ -4679,6 +4687,39 @@ class GiscedataFacturacioFacturaReport(osv.osv):
             'link_ov_suns': link_ov_suns,
             'link_no_compens': link_nc,
         }
+
+    def get_flag_banner(self, fact, code):
+        """Return a data URI for a configured invoice flag, or False."""
+        date = fact.date_invoice or fact.data_final
+        if not date:
+            return False
+
+        banner_obj = self.pool.get("report.banner")
+        model = "giscedata.facturacio.factura"
+        banner_id = banner_obj.get_banner_id(
+            self.cursor, self.uid, model, date, code=code, model_id=fact.id
+        )
+        if not banner_id:
+            return False
+
+        banner = banner_obj.read(
+            self.cursor, self.uid, banner_id,
+            ["code", "start_date", "end_date", "image_mongo"]
+        )
+        # get_banner_id may return a model-wide default outside the search.
+        if (banner["code"] != code or not banner["image_mongo"]
+                or banner["start_date"] > date
+                or (banner["end_date"] and banner["end_date"] < date)):
+            return False
+        image = banner_obj.get_banner(
+            self.cursor, self.uid, model, date, code=code, model_id=fact.id
+        )
+        if not image:
+            return False
+        if not isinstance(image, STRING_TYPES):
+            image = image.decode("ascii")
+        mime = "image/jpeg" if image.startswith("/9j/") else "image/png"
+        return "data:{};base64,{}".format(mime, image)
 
 
 GiscedataFacturacioFacturaReport()
