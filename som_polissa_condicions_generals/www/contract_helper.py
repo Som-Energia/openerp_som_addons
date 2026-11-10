@@ -17,5 +17,16 @@ class ContractHelper(osv.osv_memory):
         )
         return {'contract': base64.b64encode(result)}
 
+    def get_contract_summary_pdf(self, cursor, uid, pol_id, context=None):
+        if context is None:
+            context = {}
+        service = netsvc.LocalService(
+            'report.giscedata.polissa.contract.summary'
+        )
+        (result, _doc_format) = service.create(
+            cursor, uid, [pol_id], {}, context
+        )
+        return {'summary': base64.b64encode(result)}
+
 
 ContractHelper()

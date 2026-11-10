@@ -1,0 +1,31 @@
+name: Local validation scripts
+
+on:
+  pull_request:
+    branches: [main, 'rolling_*']
+    paths:
+      - 'scripts/**'
+      - '.agents/workspace-repositories.tsv'
+      - '.github/actions/bootstrap-erp/**'
+      - '.github/workflows/local-validation.yml'
+      - 'requirements-local-validation.txt'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: local-validation-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  script-tests:
+    runs-on: ubuntu-22.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Check syntax and run isolated script tests
+        run: scripts/test-local-validation.sh
