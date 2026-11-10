@@ -370,7 +370,7 @@ class TestReportTest(testing.OOTestCase):
         self.assertEqual(set(group['live_test_ids']), set(group['test_ids']))
 
     def test_group_view_only_refreshes_the_live_list(self):
-        view = self.rpg_obj.fields_view_get(
+        view = self.rpg_obj.fields_view_get_json_attrs(
             self.cursor, self.uid, view_type='form'
         )
         form = etree.fromstring(view['arch'])
@@ -381,6 +381,7 @@ class TestReportTest(testing.OOTestCase):
         for field_name, hidden_when in [('test_ids', True),
                                         ('live_test_ids', False)]:
             field = form.xpath(".//field[@name='{}']".format(field_name))[0]
+            self.assertIsNotNone(field.get('json_attrs'), field_name)
             condition = json.loads(field.get('json_attrs'))['invisible']
             self.assertEqual(condition['rules'], [{
                 'field': 'has_running_tests', 'operator': '=',
