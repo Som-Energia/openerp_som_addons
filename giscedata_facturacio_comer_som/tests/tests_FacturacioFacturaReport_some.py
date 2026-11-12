@@ -55,6 +55,148 @@ class Tests_FacturacioFacturaReport_base(testing.OOTestCase):
         self.assertTrue(len(list((ns.loads(ns(result).dump()).keys()))) >= 0)
 
 
+class Tests_FacturacioFacturaReport_social_tariff(Tests_FacturacioFacturaReport_base):
+    def setUp(self):
+        super(Tests_FacturacioFacturaReport_social_tariff, self).setUp()
+        self.fact = self.bf(self.get_fixture("giscedata_facturacio", "factura_0001"))
+        self.r_obj.cursor = self.cursor
+        self.r_obj.uid = self.uid
+        self.mapping = self.polissa_obj.mapping_tarifa_social(self.cursor, self.uid)
+        self.ordinary_id = self.get_fixture(
+            "som_indexada", "pricelist_periodes_20td_peninsula")
+        self.social_id = self.get_fixture("som_tarifa_social", "tarifa_20TD_SOM_SOCIAL")
+        self.company_category = self.get_fixture("som_polissa", "categ_tarifa_empresa")
+        self.social_category = self.get_fixture("som_tarifa_social", "categ_tarifa_social")
+        self.date_context = {"date": self.fact.data_final}
+
+    def historical_policy(self, historical_price, current_price, categories=None):
+        pol = self.fact.polissa_id
+        self.polissa_obj.write(self.cursor, self.uid, [pol.id], {
+            "llista_preu": current_price,
+            "category_id": [(6, 0, categories or [])],
+        }, context={"skip_cnt_llista_preu_compatible": True})
+        self.model("giscedata.polissa.modcontractual").create(self.cursor, self.uid, {
+            "polissa_id": pol.id,
+            "llista_preu": historical_price,
+            "tarifa": pol.tarifa.id,
+            "data_inici": "2016-01-01",
+            "data_final": "2016-12-31",
+            "cups": pol.cups.id,
+            "tipus": "mod",
+            "name": "1",
+            "tensio_normalitzada": 1,
+            "potencia": 1,
+            "tensio": 220,
+            "tipus_subseccio": "00",
+            "distribuidora": 1,
+            "tipo_pago": 1,
+            "notificacio": "titular",
+            "trafo": 0.0,
+            "facturacio": 2,
+            "facturacio_potencia": "icp",
+            "potencies_periode": "P1: 3.4 P2: 3.4",
+            "titular": pol.titular.id,
+            "pagador": pol.titular.id,
+        })
+        historical = self.polissa_obj.browse(
+            self.cursor, self.uid, pol.id, context=self.date_context)
+        self.assertEqual(historical.llista_preu.id, historical_price)
+        current = self.polissa_obj.read(self.cursor, self.uid, pol.id, ["llista_preu"])
+        self.assertEqual(current["llista_preu"][0], current_price)
+        return historical
+
+    def test_social_dependency_installs_owner_data_and_mapping(self):
+        mapping = self.polissa_obj.mapping_tarifa_social(self.cursor, self.uid)
+        self.assertEqual(len(mapping), 5)
+        social_id = self.get_fixture("som_tarifa_social", "tarifa_20TD_SOM_SOCIAL")
+        self.assertIn(social_id, mapping.values())
+        category_id = self.get_fixture("som_tarifa_social", "categ_tarifa_social")
+        category = self.model("giscedata.polissa.category").read(
+            self.cursor, self.uid, category_id, ["code"])
+        self.assertEqual(category["code"], "TARIFA_SOCIAL")
+
+    def test_ordinary_pricelist_without_categories_is_not_social(self):
+        pol = self.historical_policy(self.ordinary_id, self.ordinary_id)
+        mod_id = self.polissa_obj._get_modcon_date(
+            self.cursor, self.uid, pol.id, self.fact.data_final)
+        self.assertEqual(len(self.mapping), 5)
+        for price_id in self.mapping:
+            self.model("giscedata.polissa.modcontractual").write(
+                self.cursor, self.uid, [mod_id], {"llista_preu": price_id})
+            historical = self.polissa_obj.browse(
+                self.cursor, self.uid, pol.id, context=self.date_context)
+            self.assertEqual(historical.llista_preu.id, price_id)
+            self.assertIs(self.r_obj.get_is_social_tariff(self.fact, historical), False)
+
+    def test_all_canonical_social_pricelists_qualify(self):
+        references = [
+            "tarifa_20TD_SOM_SOCIAL", "tarifa_20TD_SOM_INSULAR_SOCIAL",
+            "tarifa_indexada_20TD_peninsula_social", "tarifa_indexada_20TD_balears_social",
+            "tarifa_indexada_20TD_canaries_social",
+        ]
+        social_ids = [self.get_fixture("som_tarifa_social", ref) for ref in references]
+        self.assertEqual(set(social_ids), set(self.mapping.values()))
+        pol = self.historical_policy(self.social_id, self.ordinary_id)
+        mod_id = self.polissa_obj._get_modcon_date(
+            self.cursor, self.uid, pol.id, self.fact.data_final)
+        for price_id in social_ids:
+            self.model("giscedata.polissa.modcontractual").write(
+                self.cursor, self.uid, [mod_id], {"llista_preu": price_id})
+            historical = self.polissa_obj.browse(
+                self.cursor, self.uid, pol.id, context=self.date_context)
+            self.assertEqual(historical.llista_preu.id, price_id)
+            self.assertIs(self.r_obj.get_is_social_tariff(self.fact, historical), True)
+
+    def test_current_social_pricelist_does_not_leak_into_old_invoice(self):
+        pol = self.historical_policy(self.ordinary_id, self.social_id)
+        self.assertIs(self.r_obj.get_is_social_tariff(self.fact, pol), False)
+
+    def test_current_business_categories_apply_to_historical_invoice(self):
+        pol = self.historical_policy(self.ordinary_id, self.ordinary_id)
+        for categories, expected in [
+                ([self.company_category], False),
+                ([self.social_category], False),
+                ([self.company_category, self.social_category], True),
+                ([], False)]:
+            self.polissa_obj.write(self.cursor, self.uid, [pol.id], {
+                "category_id": [(6, 0, categories)],
+            })
+            self.assertIs(self.r_obj.get_is_social_tariff(self.fact, pol), expected)
+
+    def test_social_pricelist_does_not_require_business_category(self):
+        pol = self.historical_policy(
+            self.social_id, self.ordinary_id, [self.social_category])
+        self.assertIs(self.r_obj.get_is_social_tariff(self.fact, pol), True)
+
+    def test_missing_pricelist_does_not_qualify(self):
+        pol = self.historical_policy(self.ordinary_id, self.ordinary_id)
+        mod_id = self.polissa_obj._get_modcon_date(
+            self.cursor, self.uid, pol.id, self.fact.data_final)
+        self.model("giscedata.polissa.modcontractual").write(
+            self.cursor, self.uid, [mod_id], {"llista_preu": False})
+        historical = self.polissa_obj.browse(
+            self.cursor, self.uid, pol.id, context=self.date_context)
+        self.assertFalse(historical.llista_preu)
+        self.assertIs(self.r_obj.get_is_social_tariff(self.fact, historical), False)
+
+    def test_detector_preserves_policy_invoice_and_date_context(self):
+        pol = self.historical_policy(
+            self.ordinary_id, self.social_id, [self.company_category, self.social_category])
+        fields = ["llista_preu", "category_id", "write_date"]
+        before = self.polissa_obj.read(self.cursor, self.uid, pol.id, fields)
+        invoice_fields = ["llista_preu", "data_final", "write_date"]
+        invoice_before = self.factura_obj.read(
+            self.cursor, self.uid, self.fact.id, invoice_fields)
+
+        self.assertIs(self.r_obj.get_is_social_tariff(self.fact, pol), True)
+
+        self.assertEqual(self.polissa_obj.read(self.cursor, self.uid, pol.id, fields), before)
+        self.assertEqual(self.factura_obj.read(
+            self.cursor, self.uid, self.fact.id, invoice_fields), invoice_before)
+        self.assertEqual(self.date_context, {"date": self.fact.data_final})
+        self.assertEqual(pol.llista_preu.id, self.ordinary_id)
+
+
 class Tests_FacturacioFacturaReport_fill_and_find(Tests_FacturacioFacturaReport_base):
     @mock.patch.object(
         giscedata_facturacio_report.GiscedataFacturacioFacturaReport, "get_auvi_data"
